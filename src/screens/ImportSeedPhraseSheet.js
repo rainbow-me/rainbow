@@ -13,6 +13,7 @@ import { IS_TESTING } from 'react-native-dotenv';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import styled from 'styled-components/primitives';
 import ActivityIndicator from '../components/ActivityIndicator';
+import Spinner from '../components/Spinner';
 import { MiniButton } from '../components/buttons';
 import { Input } from '../components/inputs';
 import { Centered, Column, Row } from '../components/layout';
@@ -62,31 +63,32 @@ const Footer = styled(Row).attrs({
   align: 'start',
   justify: 'end',
 })`
-  bottom: ${Platform.OS === 'android' ? 55 : 0};
+  bottom: ${Platform.OS === 'android' ? 15 : 0};
   position: ${Platform.OS === 'android' ? 'absolute' : 'relative'};
   right: 0;
-  top: ${({ isSmallPhone }) => (isSmallPhone ? sheetBottomPadding * 2 : 0)};
   width: 100%;
+  ${Platform.OS === 'android'
+    ? `top: ${({ isSmallPhone }) =>
+        isSmallPhone ? sheetBottomPadding * 2 : 0};`
+    : ``}
+  ${Platform.OS === 'android' ? 'margin-right: 18;' : ''}
 `;
 
-const Spinner = styled(ActivityIndicator).attrs({
+const LoadingSpinner = styled(
+  Platform.OS === 'android' ? Spinner : ActivityIndicator
+).attrs({
   color: 'white',
   size: 15,
 })`
   margin-right: 5;
-  margin-top: ${Platform.OS === 'android' ? 6 : 2};
+  margin-top: ${Platform.OS === 'android' ? 0 : 2};
 `;
 
 const FooterButton = styled(MiniButton).attrs({
   compensateForTransformOrigin: true,
   testID: 'import-sheet-button',
   transformOrigin: 'right',
-})`
-  ${Platform.OS === 'android' ? 'max-width: 90;' : ''}
-  ${Platform.OS === 'android' ? 'align-items: center;' : ''}
-  ${Platform.OS === 'android' ? 'margin-top: 310;' : ''}
-  ${Platform.OS === 'android' ? 'margin-right: 20;' : ''}
-`;
+})``;
 
 const KeyboardSizeView = styled(KeyboardArea)`
   background-color: ${colors.white};
@@ -376,7 +378,7 @@ export default function ImportSeedPhraseSheet() {
             >
               <Row>
                 {busy ? (
-                  <Spinner />
+                  <LoadingSpinner />
                 ) : (
                   <Text color="white" weight="semibold">
                     􀂍{' '}

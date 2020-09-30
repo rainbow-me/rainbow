@@ -1,5 +1,6 @@
 import { get, isEmpty, isNumber, toLower } from 'lodash';
 import React, { Fragment, useCallback, useMemo } from 'react';
+import { Platform } from 'react-native';
 import styled from 'styled-components/primitives';
 import { useNavigation } from '../../navigation/Navigation';
 import Divider from '../Divider';
@@ -14,7 +15,12 @@ import { colors, padding } from '@rainbow-me/styles';
 import { showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const AddressInputContainer = styled(Row).attrs({ align: 'center' })`
-  ${({ isSmallPhone }) => (isSmallPhone ? padding(12, 15) : padding(19, 15))};
+  ${({ isSmallPhone }) =>
+    isSmallPhone
+      ? padding(12, 15)
+      : Platform.OS === 'android'
+      ? padding(5, 15)
+      : padding(19, 15)};
   background-color: ${colors.white};
   overflow: hidden;
   width: 100%;
