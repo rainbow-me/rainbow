@@ -208,7 +208,6 @@ export default function SettingsModal() {
               height: 49,
               shadowColor: 'transparent',
             },
-            headerTitleAlign: 'center',
             headerTitleStyle: {
               fontFamily: fonts.family.SFProRounded,
               fontSize: parseFloat(fonts.size.large),
