@@ -47,6 +47,7 @@ import PlusCircledIcon from './svg/PlusCircledIcon';
 import PlusIcon from './svg/PlusIcon';
 import ProgressIcon from './svg/ProgressIcon';
 import QRCodeIcon from './svg/QRCodeIcon';
+import ScannerIcon from './svg/ScannerIcon';
 import SearchIcon from './svg/SearchIcon';
 import SendIcon from './svg/SendIcon';
 import SendSmallIcon from './svg/SendSmallIcon';
@@ -107,6 +108,7 @@ const IconTypes = {
   plusCircled: PlusCircledIcon,
   progress: ProgressIcon,
   qrCode: QRCodeIcon,
+  scanner: ScannerIcon,
   search: SearchIcon,
   send: SendIcon,
   sendSmall: SendSmallIcon,

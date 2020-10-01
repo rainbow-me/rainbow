@@ -10443,6 +10443,10 @@ react-native-text-input-mask@^2.0.0:
   resolved "https://registry.yarnpkg.com/react-native-text-input-mask/-/react-native-text-input-mask-2.0.0.tgz#9cb793e764355d9282d92ea5231d8030a7ca5692"
   integrity sha512-kP8gURb1+6iR6CxfUx802f4ja9Jzer76hY1w0cjaCVsfbbzyykYIAANTnlxbmFFv/8pQl4NTm1CbQqkg0Cp/gA==
 
+react-native-text-size@fcsvndev/react-native-text-size:
+  version "4.0.0-rc.1"
+  resolved "https://codeload.github.com/fcsvndev/react-native-text-size/tar.gz/15b21c9f88c6df0d1b5e0f2ba792fe59b5dc255a"
+
 react-native-tooltip@marcosrdz/react-native-tooltip#e0e88d212b5b7f350e5eabba87f588a32e0f2590:
   version "5.2.1"
   resolved "https://codeload.github.com/marcosrdz/react-native-tooltip/tar.gz/e0e88d212b5b7f350e5eabba87f588a32e0f2590"

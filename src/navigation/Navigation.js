@@ -4,8 +4,9 @@ import {
   useIsFocused,
 } from '@react-navigation/native';
 import { get } from 'lodash';
-import React, { useCallback } from 'react';
+import React from 'react';
 import { Value } from 'react-native-reanimated';
+import { useCallbackOne } from 'use-memo-one';
 import { NATIVE_ROUTES } from '@rainbow-me/routes';
 
 let TopLevelNavigationRef = null;
@@ -37,13 +38,14 @@ export function onDidPop() {
 
 export function useNavigation() {
   const { navigate: oldNavigate, ...rest } = oldUseNavigation();
-  const enhancedNavigate = useCallback(
+
+  const handleNavigate = useCallbackOne(
     (...args) => navigate(oldNavigate, ...args),
     [oldNavigate]
   );
 
   return {
-    navigate: enhancedNavigate,
+    navigate: handleNavigate,
     ...rest,
   };
 }
