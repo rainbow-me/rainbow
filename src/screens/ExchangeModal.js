@@ -153,6 +153,7 @@ export default function ExchangeModal({
   // Calculate market details
   const { isSufficientLiquidity, tradeDetails } = useUniswapMarketDetails({
     defaultInputAddress,
+    extraTradeDetails,
     inputAmount,
     inputAsExactAmount,
     inputCurrency,

@@ -18,6 +18,7 @@ export default function useSwapDetails() {
       let inputNativePrice = '';
       let outputExecutionRate = '';
       let outputNativePrice = '';
+      let outputPriceValue = '';
 
       let inputPriceValue = null;
 
@@ -42,7 +43,7 @@ export default function useSwapDetails() {
           outputCurrency.address
         );
 
-        let outputPriceValue = get(
+        outputPriceValue = get(
           outputCurrencyInWallet,
           'native.price.amount',
           null
@@ -71,6 +72,7 @@ export default function useSwapDetails() {
         inputNativePrice,
         outputExecutionRate,
         outputNativePrice,
+        outputPriceValue,
       });
     },
     [allAssets]

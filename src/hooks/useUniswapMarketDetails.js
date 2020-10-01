@@ -15,6 +15,7 @@ const DEFAULT_NATIVE_INPUT_AMOUNT = 50;
 
 export default function useUniswapMarketDetails({
   defaultInputAddress,
+  extraTradeDetails,
   inputAmount,
   inputAsExactAmount,
   inputCurrency,
@@ -138,10 +139,10 @@ export default function useUniswapMarketDetails({
       } else {
         const rawUpdatedOutputAmount = tradeDetails?.outputAmount?.toExact();
         if (!isZero(rawUpdatedOutputAmount)) {
-          let outputNativePrice = get(outputCurrency, 'price.value', null);
+          const { outputPriceValue } = extraTradeDetails;
           const updatedOutputAmountDisplay = updatePrecisionToDisplay(
             rawUpdatedOutputAmount,
-            outputNativePrice
+            outputPriceValue
           );
 
           updateOutputAmount(
@@ -153,8 +154,8 @@ export default function useUniswapMarketDetails({
       }
     },
     [
+      extraTradeDetails,
       inputAsExactAmount,
-      outputCurrency,
       outputFieldRef,
       tradeDetails,
       updateOutputAmount,
