@@ -1,5 +1,5 @@
 import { useIsFocused } from '@react-navigation/native';
-import React, { Fragment, useCallback, useRef, useState } from 'react';
+import React, { Fragment } from 'react';
 import { Platform } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useSafeArea } from 'react-native-safe-area-context';
@@ -11,6 +11,7 @@ import { ColumnWithMargins } from '../layout';
 import { SlackSheet } from '../sheet';
 import DiscoverSheetHeader from './DiscoverSheetHeader';
 import TopMoversSection from './TopMoversSection';
+import { position } from '@rainbow-me/styles';
 
 // eslint-disable-next-line import/no-named-as-default-member
 const { SpringUtils } = Animated;
@@ -37,13 +38,8 @@ const DiscoverSheetContent = () => (
 
 export default function DiscoverSheet() {
   const insets = useSafeArea();
-  const [initialPosition, setInitialPosition] = useState('long');
-  const position = useRef({ x: 0, y: 0 });
-  const setPosition = useCallback(
-    ({ nativeEvent: { contentOffset } }) => (position.current = contentOffset),
-    []
-  );
   const isFocused = useIsFocused();
+
   // noinspection JSConstructorReturnsPrimitive
   return Platform.OS === 'ios' ? (
     <SlackBottomSheet
@@ -55,19 +51,13 @@ export default function DiscoverSheet() {
       initialAnimation={false}
       interactsWithOuterScrollView
       isHapticFeedbackEnabled={false}
-      onWillTransition={({ type }) => setInitialPosition(type)}
       presentGlobally={false}
       scrollsToTopOnTapStatusBar={isFocused}
       showDragIndicator={false}
-      startFromShortForm={initialPosition === 'short'}
       topOffset={insets.top}
       unmountAnimation={false}
     >
-      <SlackSheet
-        contentOffset={position.current}
-        onMomentumScrollEnd={setPosition}
-        onScrollEndDrag={setPosition}
-      >
+      <SlackSheet contentOffset={position.current}>
         <DiscoverSheetContent />
       </SlackSheet>
     </SlackBottomSheet>
