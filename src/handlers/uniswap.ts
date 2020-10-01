@@ -116,7 +116,9 @@ export const estimateSwapGasLimit = async ({
   } catch (error) {
     logger.sentry('error executing estimateSwapGasLimit');
     captureException(error);
-    return ethUnits.basic_swap;
+    return {
+      gasLimit: ethUnits.basic_swap,
+    };
   }
 };
 
