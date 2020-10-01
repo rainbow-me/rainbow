@@ -8,7 +8,7 @@ import { Text } from '../text';
 
 export default function TopMoversSection() {
   const { nativeCurrencySymbol } = useAccountSettings();
-  const { gainers = [], losers = [] } = useTopMovers();
+  const { gainers = [], losers = [] } = useTopMovers() || {};
 
   const formatItems = useCallback(
     ({ address, name, percent_change_24h, price, symbol }) => ({
