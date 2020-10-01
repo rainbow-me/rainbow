@@ -90,10 +90,10 @@ const SwipeableList = ({ components, speed }) => {
 
   return (
     <PanGestureHandler
-      maxPointers={1}
       activeOffsetX={4}
       activeOffsetY={1000}
       failOffsetY={[-10, 10]}
+      maxPointers={1}
       onGestureEvent={onGestureEvent}
       onHandlerStateChange={onGestureEvent}
     >
@@ -161,12 +161,12 @@ const MarqueeList = ({ items = [], speed }) => {
   return (
     <>
       <SwipeableList
-        speed={speed}
         components={items.map((item, idx) => ({
           offset: offsets[idx],
           view: renderItemCallback({ item }),
           width: itemWidths[idx],
         }))}
+        speed={speed}
       />
     </>
   );
