@@ -5,18 +5,18 @@ index 2c8395f..57ee90f 100644
 @@ -2,7 +2,9 @@
  #import <React/RCTUtils.h>
  #import <React/RCTEventDispatcher.h>
-
+ 
 -@implementation ReactNativePayments
 +@implementation ReactNativePayments {
 +  BOOL _presented;
 +}
  @synthesize bridge = _bridge;
-
+ 
  - (dispatch_queue_t)methodQueue
 @@ -10,6 +12,15 @@ - (dispatch_queue_t)methodQueue
      return dispatch_get_main_queue();
  }
-
+ 
 +- (instancetype)init
 +{
 +  self = [super init];
@@ -27,16 +27,17 @@ index 2c8395f..57ee90f 100644
 +}
 +
  RCT_EXPORT_MODULE()
-
+ 
  + (BOOL)requiresMainQueueSetup
 @@ -66,6 +77,10 @@ - (NSDictionary *)constantsToExport
+ 
  RCT_EXPORT_METHOD(show:(RCTResponseSenderBlock)callback)
  {
 +    if (_presented) {
 +      return;
 +    }
 +    _presented = YES;
-
+     
      self.viewController = [[PKPaymentAuthorizationViewController alloc] initWithPaymentRequest: self.paymentRequest];
      self.viewController.delegate = self;
 @@ -74,6 +89,7 @@ - (NSDictionary *)constantsToExport
@@ -46,4 +47,4 @@ index 2c8395f..57ee90f 100644
 +        self->_presented = NO;
      });
  }
-
+ 
