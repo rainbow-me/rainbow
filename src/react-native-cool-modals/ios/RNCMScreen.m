@@ -30,7 +30,7 @@
     _stackAnimation = RNSScreenStackAnimationDefault;
     _gestureEnabled = YES;
     _dismissed = NO;
-    
+
     _startFromShortForm = false;
     _topOffset = [[NSNumber alloc] initWithInt: 42];
     _isShortFormEnabled = false;
@@ -52,7 +52,7 @@
     _ignoreBottomOffset = NO;
     _interactWithScrollView = true;
   }
-  
+
   return self;
 }
 
@@ -63,7 +63,7 @@
 - (void) setIsShortFormEnabled:(BOOL)isShortFormEnabled {
   _isShortFormEnabled = isShortFormEnabled;
   [(PanModalViewController*) [_controller parentVC] panModalSetNeedsLayoutUpdateWrapper];
-  
+
 }
 
 - (void)jumpTo:(nonnull NSNumber*)point {
@@ -172,7 +172,7 @@
 - (void)setStackAnimation:(RNSScreenStackAnimation)stackAnimation
 {
   _stackAnimation = stackAnimation;
-  
+
   switch (stackAnimation) {
     case RNSScreenStackAnimationFade:
       _controller.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
@@ -194,7 +194,7 @@
     _controller.modalInPresentation = !gestureEnabled;
   }
 #endif
-  
+
   _gestureEnabled = gestureEnabled;
 }
 
@@ -302,7 +302,7 @@
 }
 
 - (void)removeController {
-  _controller = nil;
+  //_controller = nil;
 }
 
 @end
@@ -328,7 +328,7 @@
 
 - (void)presentModally:(UIViewController *)viewControllerToPresent animated:(BOOL)flag completion:(void (^)(void))completion  slackStack:(BOOL)slackStack {
   return [_parentVC presentModally:viewControllerToPresent animated:flag completion:completion slackStack:slackStack];
-  
+
 }
 
 - (void)dismissViewControllerAnimated:(BOOL)flag completion:(void (^)(void))completion {
@@ -347,7 +347,7 @@
 {
   [super viewDidLayoutSubviews];
   [_parentVC viewDidLayoutSubviews];
-  
+
   if (!CGRectEqualToRect(_lastViewFrame, self.view.frame)) {
     _lastViewFrame = self.view.frame;
     [((RNCMScreenView *)self.viewIfLoaded) updateBounds];
@@ -419,7 +419,7 @@ RCT_EXPORT_METHOD(jumpTo:(nonnull NSNumber*)point tag:(nonnull NSNumber*) reactT
     }
     [(RNCMScreenView *) view jumpTo:point];
   }];
-  
+
 }
 
 

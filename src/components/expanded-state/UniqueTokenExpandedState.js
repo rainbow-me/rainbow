@@ -60,9 +60,9 @@ const UniqueTokenExpandedState = ({ asset }) => {
         <SheetActionButtonRow>
           <SheetActionButton
             color={colors.dark}
-            emoji="trophy"
-            label={isShowcaseAsset ? 'Remove' : 'Add'}
+            label={isShowcaseAsset ? '􀁏 Showcase' : '􀁍 Showcase'}
             onPress={handlePressShowcase}
+            weight="bold"
           />
           {isSendable && <SendActionButton />}
         </SheetActionButtonRow>
