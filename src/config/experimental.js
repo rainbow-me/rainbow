@@ -4,8 +4,13 @@
  * keeping in mind that they should never be broken
  */
 
-export const discoverSheetAvailable = false;
-export const chartExpandedAvailable = false;
-export const nativeTransactionListAvailable = true;
-export const nativeButtonPressAnimationAvailable = true;
-export const isAvatarPickerAvailable = false;
+// this flag is used outside components and cannot be changed dynamically
+export const chartExpandedAvailable = true;
+
+export const AVATAR_PICKER = 'avatarPicker';
+export const DISCOVER_SHEET = 'discoverSheet';
+
+export const defaultConfig = {
+  [AVATAR_PICKER]: false,
+  [DISCOVER_SHEET]: false,
+};

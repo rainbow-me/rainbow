@@ -3,11 +3,11 @@ import LinearGradient from 'react-native-linear-gradient';
 import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import { useNavigation } from '../../navigation/Navigation';
-import Routes from '../../screens/Routes/routesNames';
-import { colors, padding, position } from '../../styles';
 import { Row, RowWithMargins } from '../layout';
 import { Emoji, Text } from '../text';
 import HeaderButton from './HeaderButton';
+import Routes from '@rainbow-me/routes';
+import { colors, padding, position } from '@rainbow-me/styles';
 
 const DiscoverButtonShadows = [
   [0, 7, 21, colors.dark, 0.06],
@@ -21,7 +21,7 @@ const BackgroundFill = styled.View`
 `;
 
 const BackgroundGradient = styled(LinearGradient).attrs({
-  colors: [colors.white, '#F7F9FA'],
+  colors: colors.gradients.offWhite,
   end: { x: 0.5, y: 1 },
   start: { x: 0.5, y: 0 },
 })`

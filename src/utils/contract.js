@@ -1,19 +1,22 @@
+import { captureException } from '@sentry/react-native';
 import { ethers } from 'ethers';
 import { toHex, web3Provider } from '../handlers/web3';
 import { loadWallet } from '../model/wallet';
 import { ethUnits } from '../references';
 import erc20ABI from '../references/erc20-abi.json';
-import logger from './logger';
+import logger from 'logger';
 
 const estimateApproveWithExchange = async (spender, exchange) => {
   try {
+    logger.sentry('exchange estimate approve', { exchange, spender });
     const gasLimit = await exchange.estimate.approve(
       spender,
       ethers.constants.MaxUint256
     );
     return gasLimit ? gasLimit.toString() : ethUnits.basic_approval;
   } catch (error) {
-    logger.log('error estimating approval', error);
+    logger.sentry('error estimateApproveWithExchange');
+    captureException(error);
     return ethUnits.basic_approval;
   }
 };

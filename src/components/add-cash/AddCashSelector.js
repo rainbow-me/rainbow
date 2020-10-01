@@ -2,11 +2,11 @@ import { toLower, upperFirst } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components/primitives';
-import { colors } from '../../styles';
 import { CoinIcon } from '../coin-icon';
 import { JellySelector, JellySelectorShadowIndicator } from '../jelly-selector';
 import { RowWithMargins } from '../layout';
 import { Text } from '../text';
+import { colors } from '@rainbow-me/styles';
 
 const CurrencyItemHeight = 40;
 
@@ -19,7 +19,7 @@ const CurrencyItemLabel = styled(Text).attrs({
   opacity: ${({ isSelected }) => (isSelected ? 0.8 : 0.6)};
   padding-bottom: 1.5;
 `;
-
+// eslint-disable-next-line react/display-name
 const CurrencyItem = isWalletEthZero => ({ item, isSelected }) => {
   const label = item === 'ETH' ? 'Ethereum' : item;
 

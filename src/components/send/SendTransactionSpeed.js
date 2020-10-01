@@ -1,17 +1,35 @@
 import { get } from 'lodash';
-import PropTypes from 'prop-types';
 import React from 'react';
-import { colors, position } from '../../styles';
+import styled from 'styled-components/primitives';
 import { Button } from '../buttons';
-import { Icon } from '../icons';
 import { Row } from '../layout';
 import { Text } from '../text';
+import { colors } from '@rainbow-me/styles';
 
-const SendTransactionSpeed = ({
+const FeeButton = styled(Button).attrs({
+  backgroundColor: colors.white,
+  borderColor: colors.dark,
+  borderWidth: 1,
+  opacity: 1,
+  showShadow: false,
+  size: 'small',
+  textProps: { color: colors.alpha(colors.blueGreyDark, 0.6) },
+  type: 'pill',
+})``;
+
+const TimeButton = styled(Button).attrs({
+  backgroundColor: colors.blueGreyDark,
+  borderWidth: 1,
+  scaleTo: 0.96,
+  size: 'small',
+  type: 'pill',
+})``;
+
+export default function SendTransactionSpeed({
   gasPrice,
   nativeCurrencySymbol,
   onPressTransactionSpeed,
-}) => {
+}) {
   const fee = get(
     gasPrice,
     'txFee.native.value.display',
@@ -20,49 +38,13 @@ const SendTransactionSpeed = ({
   const time = get(gasPrice, 'estimatedTime.display', '');
 
   return (
-    <Row justify="space-between" marginBottom={10}>
-      <Button
-        backgroundColor={colors.white}
-        borderColor={colors.dark}
-        borderWidth={1}
-        onPress={onPressTransactionSpeed}
-        opacity={1}
-        showShadow={false}
-        size="small"
-        textProps={{ color: colors.alpha(colors.blueGreyDark, 0.6) }}
-        type="pill"
-      >
-        Fee: {fee}
-      </Button>
-      <Button
-        backgroundColor={colors.blueGreyDark}
-        borderWidth={1}
-        onPress={onPressTransactionSpeed}
-        scaleTo={0.96}
-        size="small"
-        type="pill"
-      >
-        <Icon
-          color={colors.white}
-          name="clock"
-          style={{
-            ...position.sizeAsObject(14),
-            flex: 0,
-            marginRight: 5,
-          }}
-        />
-        <Text color={colors.white} size="medium" weight="medium">
-          Arrives in ~ {time}
+    <Row justify="space-between">
+      <FeeButton onPress={onPressTransactionSpeed}>Fee: {fee}</FeeButton>
+      <TimeButton onPress={onPressTransactionSpeed}>
+        <Text color={colors.white} size="medium" weight="semibold">
+          􀐫 Arrives in ~ {time}
         </Text>
-      </Button>
+      </TimeButton>
     </Row>
   );
-};
-
-SendTransactionSpeed.propTypes = {
-  gasPrice: PropTypes.object,
-  nativeCurrencySymbol: PropTypes.string,
-  onPressTransactionSpeed: PropTypes.func.isRequired,
-};
-
-export default SendTransactionSpeed;
+}

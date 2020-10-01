@@ -2,8 +2,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { View } from 'react-native';
 import { Easing } from 'react-native-reanimated';
-import { colors } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
+import { colors } from '@rainbow-me/styles';
 
 const ColorCircle = ({ backgroundColor, isSelected, onPressColor }) => (
   <View align="center" height={42} justify="center" width={39}>
@@ -18,10 +18,10 @@ const ColorCircle = ({ backgroundColor, isSelected, onPressColor }) => (
       width={39}
     >
       <View
+        alignSelf="center"
         backgroundColor={backgroundColor}
         borderRadius={15}
         height={24}
-        alignSelf="center"
         isSelected={isSelected}
         shadowColor={colors.black}
         shadowOffset={{ height: 4, width: 0 }}

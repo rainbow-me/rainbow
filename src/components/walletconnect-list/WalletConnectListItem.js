@@ -1,27 +1,42 @@
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
-import PropTypes from 'prop-types';
-import React from 'react';
-import { compose, withHandlers } from 'recompact';
-import { withWalletConnectConnections } from '../../hoc';
-import { colors, padding } from '../../styles';
+import React, { useCallback, useMemo } from 'react';
 import { RequestVendorLogoIcon } from '../coin-icon';
 import { ContextMenu } from '../context-menu';
 import { Centered, ColumnWithMargins, Row } from '../layout';
-import { TruncatedText } from '../text';
+import { Text, TruncatedText } from '../text';
+import {
+  dappLogoOverride,
+  dappNameOverride,
+  isDappAuthenticated,
+} from '@rainbow-me/helpers/dappNameHandler';
+import { useWalletConnectConnections } from '@rainbow-me/hooks';
+import { colors, padding } from '@rainbow-me/styles';
 
 const ContainerPadding = 15;
 const VendorLogoIconSize = 50;
-const WalletConnectListItemHeight = VendorLogoIconSize + ContainerPadding * 2;
+export const WalletConnectListItemHeight =
+  VendorLogoIconSize + ContainerPadding * 2;
 
-const enhance = compose(
-  withWalletConnectConnections,
-  withHandlers({
-    onPressActionSheet: ({
-      dappName,
-      dappUrl,
-      walletConnectDisconnectAllByDappName,
-    }) => buttonIndex => {
+export default function WalletConnectListItem({ dappIcon, dappName, dappUrl }) {
+  const {
+    walletConnectDisconnectAllByDappName,
+  } = useWalletConnectConnections();
+
+  const isAuthenticated = useMemo(() => {
+    return isDappAuthenticated(dappUrl);
+  }, [dappUrl]);
+
+  const overrideLogo = useMemo(() => {
+    return dappLogoOverride(dappUrl);
+  }, [dappUrl]);
+
+  const overrideName = useMemo(() => {
+    return dappNameOverride(dappUrl);
+  }, [dappUrl]);
+
+  const handlePressActionSheet = useCallback(
+    buttonIndex => {
       if (buttonIndex === 0) {
         walletConnectDisconnectAllByDappName(dappName);
         analytics.track('Manually disconnected from WalletConnect connection', {
@@ -30,11 +45,10 @@ const enhance = compose(
         });
       }
     },
-  })
-);
+    [dappName, dappUrl, walletConnectDisconnectAllByDappName]
+  );
 
-const WalletConnectListItem = enhance(
-  ({ dappName, dappIcon, onPressActionSheet }) => (
+  return (
     <Row align="center" height={WalletConnectListItemHeight}>
       <Row
         align="center"
@@ -44,7 +58,7 @@ const WalletConnectListItem = enhance(
         <RequestVendorLogoIcon
           backgroundColor={colors.white}
           dappName={dappName}
-          imageUrl={dappIcon}
+          imageUrl={overrideLogo || dappIcon}
           size={VendorLogoIconSize}
         />
         <ColumnWithMargins css={padding(0, 19, 1.5, 12)} flex={1} margin={2}>
@@ -53,7 +67,18 @@ const WalletConnectListItem = enhance(
             size="lmedium"
             weight="bold"
           >
-            {dappName || 'Unknown Application'}
+            {overrideName || dappName || 'Unknown Application'}{' '}
+            {isAuthenticated && (
+              <Text
+                align="center"
+                color={colors.appleBlue}
+                letterSpacing="roundedMedium"
+                size="lmedium"
+                weight="bold"
+              >
+                {' 􀇻'}
+              </Text>
+            )}
           </TruncatedText>
           <TruncatedText
             color={colors.alpha(colors.blueGreyDark, 0.6)}
@@ -68,22 +93,11 @@ const WalletConnectListItem = enhance(
         <ContextMenu
           css={padding(16, 19)}
           destructiveButtonIndex={0}
-          onPressActionSheet={onPressActionSheet}
+          onPressActionSheet={handlePressActionSheet}
           options={['Disconnect', lang.t('wallet.action.cancel')]}
           title={`Would you like to disconnect from ${dappName}?`}
         />
       </Centered>
     </Row>
-  )
-);
-
-WalletConnectListItem.propTypes = {
-  dappIcon: PropTypes.string.isRequired,
-  dappName: PropTypes.string.isRequired,
-  dappUrl: PropTypes.string.isRequired,
-  onPressActionSheet: PropTypes.func.isRequired,
-};
-
-WalletConnectListItem.height = WalletConnectListItemHeight;
-
-export default WalletConnectListItem;
+  );
+}

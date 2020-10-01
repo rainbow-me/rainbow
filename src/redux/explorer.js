@@ -1,10 +1,9 @@
-import { get, isNil, keys, toLower } from 'lodash';
+import { get, isNil, keys, map, toLower } from 'lodash';
 import { DATA_API_KEY, DATA_ORIGIN } from 'react-native-dotenv';
 import io from 'socket.io-client';
 import { chartExpandedAvailable } from '../config/experimental';
 import NetworkTypes from '../helpers/networkTypes';
-import { logger } from '../utils';
-import { addressChartsReceived } from './charts';
+import { assetChartsReceived, DEFAULT_CHART_TYPE } from './charts';
 import {
   addressAssetsReceived,
   assetPricesChanged,
@@ -13,16 +12,20 @@ import {
   transactionsRemoved,
 } from './data';
 import {
+  savingsDecrementNumberOfJustFinishedDepositsOrWithdrawals,
+  savingsIncrementNumberOfJustFinishedDepositsOrWithdrawals,
+} from './savings';
+import {
   testnetExplorerClearState,
   testnetExplorerInit,
 } from './testnetExplorer';
+import logger from 'logger';
 
 // -- Constants --------------------------------------- //
 const EXPLORER_UPDATE_SOCKETS = 'explorer/EXPLORER_UPDATE_SOCKETS';
 const EXPLORER_CLEAR_STATE = 'explorer/EXPLORER_CLEAR_STATE';
 
 const TRANSACTIONS_LIMIT = 1000;
-const ASSET_CHARTS_LIMIT = 10000;
 
 const messages = {
   ADDRESS_ASSETS: {
@@ -31,16 +34,16 @@ const messages = {
     RECEIVED: 'received address assets',
     REMOVED: 'removed address assets',
   },
-  ADDRESS_CHARTS: {
-    APPENDED: 'appended chart points',
-    CHANGED: 'changed chart points',
-    RECEIVED: 'received address charts',
-  },
   ADDRESS_TRANSACTIONS: {
     APPENDED: 'appended address transactions',
     CHANGED: 'changed address transactions',
     RECEIVED: 'received address transactions',
     REMOVED: 'removed address transactions',
+  },
+  ASSET_CHARTS: {
+    APPENDED: 'appended chart points',
+    CHANGED: 'changed chart points',
+    RECEIVED: 'received assets charts',
   },
   ASSETS: {
     CHANGED: 'changed assets prices',
@@ -85,20 +88,13 @@ const assetsSubscription = (assetCodes, currency, action = 'subscribe') => [
   },
 ];
 
-const chartsSubscription = (
-  address,
-  currency,
-  chartType,
-  action = 'subscribe'
-) => [
+const chartsRetrieval = (assetCodes, currency, chartType, action = 'get') => [
   action,
   {
     payload: {
-      address,
-      chart_type: chartType,
+      asset_codes: assetCodes,
+      charts_type: chartType,
       currency: toLower(currency),
-      max_assets: ASSET_CHARTS_LIMIT,
-      min_percentage: 0,
     },
     scope: ['charts'],
   },
@@ -110,23 +106,12 @@ const explorerUnsubscribe = () => (dispatch, getState) => {
     addressSubscribed,
     assetsSocket,
   } = getState().explorer;
-  const { chartType } = getState().charts;
   const { nativeCurrency } = getState().settings;
   const { pairs } = getState().uniswap;
   if (!isNil(addressSocket)) {
     addressSocket.emit(
       ...addressSubscription(addressSubscribed, nativeCurrency, 'unsubscribe')
     );
-    if (chartExpandedAvailable) {
-      addressSocket.emit(
-        ...chartsSubscription(
-          addressSubscribed,
-          nativeCurrency,
-          chartType,
-          'unsubscribe'
-        )
-      );
-    }
     addressSocket.close();
   }
   if (!isNil(assetsSocket)) {
@@ -150,7 +135,6 @@ export const explorerClearState = () => (dispatch, getState) => {
 export const explorerInit = () => async (dispatch, getState) => {
   const { network, accountAddress, nativeCurrency } = getState().settings;
   const { pairs } = getState().uniswap;
-  const { chartType } = getState().charts;
   const { addressSocket, assetsSocket } = getState().explorer;
 
   // if there is another socket unsubscribe first
@@ -175,21 +159,39 @@ export const explorerInit = () => async (dispatch, getState) => {
     type: EXPLORER_UPDATE_SOCKETS,
   });
 
+  dispatch(listenOnAddressMessages(newAddressSocket));
+
   newAddressSocket.on(messages.CONNECT, () => {
     newAddressSocket.emit(
       ...addressSubscription(accountAddress, nativeCurrency)
     );
-    if (chartExpandedAvailable) {
-      newAddressSocket.emit(
-        ...chartsSubscription(accountAddress, nativeCurrency, chartType)
-      );
-    }
-    dispatch(listenOnAddressMessages(newAddressSocket));
   });
+
+  dispatch(listenOnAssetMessages(newAssetsSocket));
+
   newAssetsSocket.on(messages.CONNECT, () => {
     newAssetsSocket.emit(...assetsSubscription(keys(pairs), nativeCurrency));
-    dispatch(listenOnAssetMessages(newAssetsSocket));
   });
+};
+
+export const emitChartsRequest = (
+  assetAddress,
+  chartType = DEFAULT_CHART_TYPE
+) => (dispatch, getState) => {
+  if (!chartExpandedAvailable) return;
+  const { nativeCurrency } = getState().settings;
+  const { assetsSocket } = getState().explorer;
+
+  let assetCodes;
+  if (assetAddress) {
+    assetCodes = [assetAddress];
+  } else {
+    const { assets } = getState().data;
+    assetCodes = map(assets, 'address');
+  }
+  assetsSocket?.emit?.(
+    ...chartsRetrieval(assetCodes, nativeCurrency, chartType)
+  );
 };
 
 const listenOnAssetMessages = socket => dispatch => {
@@ -199,6 +201,11 @@ const listenOnAssetMessages = socket => dispatch => {
 
   socket.on(messages.ASSETS.CHANGED, message => {
     dispatch(assetPricesChanged(message));
+  });
+
+  socket.on(messages.ASSET_CHARTS.RECEIVED, message => {
+    //logger.log('charts received', get(message, 'payload.charts', {}));
+    dispatch(assetChartsReceived(message));
   });
 };
 
@@ -214,6 +221,23 @@ const listenOnAddressMessages = socket => dispatch => {
 
   socket.on(messages.ADDRESS_TRANSACTIONS.CHANGED, message => {
     logger.log('txns changed', get(message, 'payload.transactions', []));
+
+    const transactions = get(message, 'payload.transactions', []);
+    let isFoundConfirmed = false;
+    for (let transaction of transactions) {
+      if (
+        (transaction?.type === 'deposit' || transaction?.type === 'withdraw') &&
+        transaction?.status === 'confirmed'
+      ) {
+        isFoundConfirmed = true;
+      }
+    }
+    if (isFoundConfirmed) {
+      dispatch(savingsIncrementNumberOfJustFinishedDepositsOrWithdrawals());
+      setTimeout(() => {
+        dispatch(savingsDecrementNumberOfJustFinishedDepositsOrWithdrawals());
+      }, 60000);
+    }
     dispatch(transactionsReceived(message, true));
   });
 
@@ -224,6 +248,7 @@ const listenOnAddressMessages = socket => dispatch => {
 
   socket.on(messages.ADDRESS_ASSETS.RECEIVED, message => {
     dispatch(addressAssetsReceived(message));
+    dispatch(emitChartsRequest());
   });
 
   socket.on(messages.ADDRESS_ASSETS.APPENDED, message => {
@@ -236,18 +261,6 @@ const listenOnAddressMessages = socket => dispatch => {
 
   socket.on(messages.ADDRESS_ASSETS.REMOVED, message => {
     dispatch(addressAssetsReceived(message, false, false, true));
-  });
-
-  socket.on(messages.ADDRESS_CHARTS.RECEIVED, message => {
-    dispatch(addressChartsReceived(message));
-  });
-
-  socket.on(messages.ADDRESS_CHARTS.APPENDED, message => {
-    dispatch(addressChartsReceived(message, true));
-  });
-
-  socket.on(messages.ADDRESS_CHARTS.CHANGED, message => {
-    dispatch(addressChartsReceived(message, false, true));
   });
 };
 

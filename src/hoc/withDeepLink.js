@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { compose, withHandlers } from 'recompact';
 import { Navigation } from '../navigation';
 import { getRequestDisplayDetails } from '../parsers/requests';
-import Routes from '../screens/Routes/routesNames';
 import { parseObjectToUrlQueryString } from '../utils';
 import {
   PERSONAL_SIGN,
@@ -12,6 +11,7 @@ import {
   SIGN_TRANSACTION,
 } from '../utils/signingMethods';
 import withAccountSettings from './withAccountSettings';
+import Routes from '@rainbow-me/routes';
 
 const mapStateToProps = ({ data: { assets } }) => ({
   assets,
@@ -122,13 +122,10 @@ export default Component =>
           imageUrl,
           payload,
         };
-        return Navigation.handleAction({
-          params: {
-            callback: redirect,
-            openAutomatically: true,
-            transactionDetails: request,
-          },
-          routeName: Routes.CONFIRM_REQUEST,
+        return Navigation.handleAction(Routes.CONFIRM_REQUEST, {
+          callback: redirect,
+          openAutomatically: true,
+          transactionDetails: request,
         });
       },
     })

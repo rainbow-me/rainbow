@@ -1,0 +1,37 @@
+diff --git a/node_modules/rn-dominant-color/ios/RNDominantColor/RNDominantColor.swift b/node_modules/rn-dominant-color/ios/RNDominantColor/RNDominantColor.swift
+index 1e5eb94..644fb25 100644
+--- a/node_modules/rn-dominant-color/ios/RNDominantColor/RNDominantColor.swift
++++ b/node_modules/rn-dominant-color/ios/RNDominantColor/RNDominantColor.swift
+@@ -17,17 +17,22 @@ class RNDominantColor : NSObject {
+     }
+     
+     @objc func getColorFromURL(_ imageURL: NSString,callback successCallback: RCTResponseSenderBlock ) {
+-        let url = URL(string: imageURL as String)
+-        let data = try? Data(contentsOf: url!)
+-        guard let colors = UIImage(data: data!)?.getColors() else {
+-          return successCallback(["#00000000", "#00000000", "#00000000", "#00000000", "#00000000"])
++        guard let url = URL(string: imageURL as String) else {
++            return successCallback(["#00000000", "#00000000", "#00000000", "#00000000", "#00000000"])
++        }
++        if let data = try? Data(contentsOf: url) {
++            guard let colors = UIImage(data: data)?.getColors() else {
++              return successCallback(["#00000000", "#00000000", "#00000000", "#00000000", "#00000000"])
++            }
++            successCallback([
++              colors.primaryHex,
++              colors.secondaryHex,
++              colors.backgroundHex,
++              colors.detailHex
++            ])
++        } else {
++            return successCallback(["#00000000", "#00000000", "#00000000", "#00000000", "#00000000"])
+         }
+-        successCallback([
+-          colors.primaryHex,
+-          colors.secondaryHex,
+-          colors.backgroundHex,
+-          colors.detailHex
+-        ])
+     }
+     
+ }

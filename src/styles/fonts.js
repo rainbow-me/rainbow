@@ -1,14 +1,17 @@
 /* eslint-disable sort-keys */
+import { Platform } from 'react-native';
+
 const font = {};
 
 font.family = {
   SFMono: 'SFMono-Regular',
-  SFProRounded: 'SF Pro Rounded',
+  SFProRounded: Platform.OS === 'ios' ? 'SF Pro Rounded' : 'SF-Pro-Rounded',
 };
 
 font.letterSpacing = {
   zero: 0,
   roundedTightest: 0.2,
+  roundedTighter: 0.3,
   roundedTight: 0.4,
   roundedMedium: 0.5,
   rounded: 0.6,
@@ -40,6 +43,7 @@ font.size = {
   larger: '20px',
   big: '23px',
   bigger: '26px',
+  headline: '50px',
   h1: '41px',
   h2: '32px',
   h3: '30px',

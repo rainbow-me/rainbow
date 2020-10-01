@@ -1,9 +1,9 @@
 import React, { useCallback } from 'react';
 import styled from 'styled-components/primitives';
-import { colors, margin, padding } from '../../styles';
 import { Icon } from '../icons';
 import { ClearInputDecorator, Input } from '../inputs';
 import { InnerBorder, Row } from '../layout';
+import { colors, margin, padding } from '@rainbow-me/styles';
 
 export const ExchangeSearchHeight = 40;
 
@@ -24,7 +24,6 @@ const SearchIcon = styled(Icon).attrs({
 `;
 
 const SearchInput = styled(Input).attrs({
-  allowFontScaling: false,
   autoCapitalize: 'words',
   blurOnSubmit: false,
   clearTextOnFocus: true,
@@ -42,21 +41,18 @@ const SearchInput = styled(Input).attrs({
   margin-left: 7;
 `;
 
-const ExchangeSearch = ({ autoFocus, onChangeText, searchQuery }, ref) => {
+const ExchangeSearch = ({ onChangeText, onFocus, searchQuery }, ref) => {
   const handleClearInput = useCallback(() => {
     ref?.current?.clear();
-    if (onChangeText) onChangeText('');
+    onChangeText?.('');
   }, [ref, onChangeText]);
-
-  const handleFocus = useCallback(event => ref?.current?.focus(event), [ref]);
 
   return (
     <Container>
       <SearchIcon />
       <SearchInput
-        autoFocus={autoFocus}
         onChangeText={onChangeText}
-        onFocus={handleFocus}
+        onFocus={onFocus}
         placeholder="Search"
         ref={ref}
         value={searchQuery}

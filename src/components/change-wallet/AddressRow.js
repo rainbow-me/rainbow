@@ -1,17 +1,18 @@
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { removeFirstEmojiFromString } from '../../helpers/emojiHandler';
-import { colors, fonts } from '../../styles';
-import { getFontSize } from '../../styles/fonts';
 import { deviceUtils } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText } from '../coin-row';
 import CoinCheckButton from '../coin-row/CoinCheckButton';
 import { ContactAvatar } from '../contacts';
+import ImageAvatar from '../contacts/ImageAvatar';
+import { Icon } from '../icons';
 import { Centered, Column, ColumnWithMargins, Row } from '../layout';
 import { TruncatedAddress, TruncatedText } from '../text';
+import { colors, fonts, getFontSize } from '@rainbow-me/styles';
 
 const maxAccountLabelWidth = deviceUtils.dimensions.width - 88;
 
@@ -86,7 +87,11 @@ const linearGradientProps = {
 const OptionsIcon = ({ onPress }) => (
   <ButtonPressAnimation onPress={onPress} scaleTo={0.9}>
     <Centered height={40} width={60}>
-      <Text style={sx.editIcon}>􀍡</Text>
+      {Platform.OS === 'android' ? (
+        <Icon circle color={colors.appleBlue} name="threeDots" tightDots />
+      ) : (
+        <Text style={sx.editIcon}>􀍡</Text>
+      )}
     </Centered>
   </ButtonPressAnimation>
 );
@@ -97,11 +102,12 @@ export default function AddressRow({ data, editMode, onPress, onEditWallet }) {
     balance,
     color: accountColor,
     ens,
+    image: accountImage,
     index,
     isSelected,
     isReadOnly,
     label,
-    wallet_id,
+    walletId,
   } = data;
 
   let cleanedUpBalance = balance;
@@ -115,8 +121,8 @@ export default function AddressRow({ data, editMode, onPress, onEditWallet }) {
   }
 
   const onOptionsPress = useCallback(() => {
-    onEditWallet(wallet_id, address, cleanedUpLabel);
-  }, [address, cleanedUpLabel, onEditWallet, wallet_id]);
+    onEditWallet(walletId, address, cleanedUpLabel);
+  }, [address, cleanedUpLabel, onEditWallet, walletId]);
 
   return (
     <View style={sx.accountRow}>
@@ -128,12 +134,20 @@ export default function AddressRow({ data, editMode, onPress, onEditWallet }) {
       >
         <Row align="center">
           <Row align="center" flex={1} height={59}>
-            <ContactAvatar
-              color={accountColor}
-              marginRight={10}
-              size="medium"
-              value={label || ens || `${index + 1}`}
-            />
+            {accountImage ? (
+              <ImageAvatar
+                image={accountImage}
+                marginRight={10}
+                size="medium"
+              />
+            ) : (
+              <ContactAvatar
+                color={accountColor}
+                marginRight={10}
+                size="medium"
+                value={label || ens || `${index + 1}`}
+              />
+            )}
             <ColumnWithMargins margin={3}>
               {cleanedUpLabel || ens ? (
                 <TruncatedText style={sx.accountLabel}>
@@ -150,7 +164,7 @@ export default function AddressRow({ data, editMode, onPress, onEditWallet }) {
                 />
               )}
               <BottomRowText style={sx.bottomRowText}>
-                {cleanedUpBalance} ETH
+                {cleanedUpBalance || 0} ETH
               </BottomRowText>
             </ColumnWithMargins>
           </Row>
@@ -164,7 +178,7 @@ export default function AddressRow({ data, editMode, onPress, onEditWallet }) {
               </LinearGradient>
             )}
             {!editMode && isSelected && (
-              <CoinCheckButton toggle={isSelected} style={sx.coinCheckIcon} />
+              <CoinCheckButton style={sx.coinCheckIcon} toggle={isSelected} />
             )}
             {editMode && <OptionsIcon onPress={onOptionsPress} />}
           </Column>

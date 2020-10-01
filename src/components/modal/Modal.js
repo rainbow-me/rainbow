@@ -2,9 +2,9 @@ import React from 'react';
 import { StatusBar } from 'react-native';
 import styled from 'styled-components/primitives';
 import { useDimensions } from '../../hooks';
-import { colors, padding, position } from '../../styles';
 import TouchableBackdrop from '../TouchableBackdrop';
 import { Centered, Column } from '../layout';
+import { colors, padding, position } from '@rainbow-me/styles';
 
 const Container = styled(Centered).attrs(({ fixedToTop }) => ({
   direction: 'column',
@@ -12,6 +12,10 @@ const Container = styled(Centered).attrs(({ fixedToTop }) => ({
 }))`
   ${({ containerPadding }) => padding(containerPadding)};
   ${position.size('100%')};
+  shadow-color: ${colors.black};
+  shadow-offset: 0px 10px;
+  shadow-opacity: 0.5;
+  shadow-radius: 25;
 `;
 
 const Content = styled(Column).attrs({ shrink: 0 })`
@@ -19,6 +23,7 @@ const Content = styled(Column).attrs({ shrink: 0 })`
   border-radius: ${({ radius }) => radius};
   height: ${({ height }) => height};
   margin-top: ${({ fixedToTop }) => (fixedToTop ? 91 : 0)};
+  overflow: hidden;
   width: 100%;
 `;
 
@@ -40,7 +45,7 @@ export default function Modal({
       <Content
         {...props}
         fixedToTop={fixedToTop}
-        height={height || deviceHeight - 230}
+        height={height || deviceHeight - 220}
         radius={radius}
       />
     </Container>

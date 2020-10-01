@@ -2,8 +2,8 @@ import React, { useCallback, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import TextInputMask from 'react-native-text-input-mask';
 import styled from 'styled-components/primitives';
-import { buildTextStyles, colors } from '../../styles';
 import { magicMemo } from '../../utils';
+import { buildTextStyles, colors } from '@rainbow-me/styles';
 
 const Input = styled(TextInputMask).attrs({
   allowFontScaling: false,
@@ -19,6 +19,7 @@ const ExchangeInput = (
     color = colors.dark,
     editable,
     keyboardAppearance = 'dark',
+    letterSpacing = 'roundedTightest',
     mask = '[099999999999999999].[999999999999999999]',
     onBlur,
     onChange,
@@ -28,7 +29,7 @@ const ExchangeInput = (
     placeholderTextColor = colors.alpha(colors.blueGreyDark, 0.3),
     size = 'h2',
     value = '',
-    weight = 'medium',
+    weight = 'semibold',
     ...props
   },
   ref
@@ -46,9 +47,7 @@ const ExchangeInput = (
       }
       setIsFocused(false);
       setIsTouched(false);
-      if (onBlur) {
-        onBlur(event);
-      }
+      onBlur?.(event);
     },
     [onBlur, onChangeText, value]
   );
@@ -58,9 +57,8 @@ const ExchangeInput = (
       if (isFocused && !isTouched) {
         InteractionManager.runAfterInteractions(() => setIsTouched(true));
       }
-      if (onChange) {
-        onChange(event);
-      }
+
+      onChange?.(event);
     },
     [isFocused, isTouched, onChange]
   );
@@ -71,9 +69,8 @@ const ExchangeInput = (
       if (isTouched && !text.length && !value) {
         text = '0.';
       }
-      if (onChangeText) {
-        onChangeText(text);
-      }
+
+      onChangeText?.(text);
     },
     [isTouched, onChangeText, value]
   );
@@ -81,9 +78,7 @@ const ExchangeInput = (
   const handleFocus = useCallback(
     event => {
       setIsFocused(true);
-      if (onFocus) {
-        onFocus(event);
-      }
+      onFocus?.(event);
     },
     [onFocus]
   );
@@ -94,6 +89,7 @@ const ExchangeInput = (
       color={color}
       editable={editable}
       keyboardAppearance={keyboardAppearance}
+      letterSpacing={letterSpacing}
       mask={mask}
       onBlur={handleBlur}
       onChange={handleChange}
@@ -114,5 +110,7 @@ export default magicMemo(React.forwardRef(ExchangeInput), [
   'editable',
   'placeholder',
   'placeholderTextColor',
+  'onChangeText',
+  'onFocus',
   'value',
 ]);

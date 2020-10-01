@@ -1,44 +1,63 @@
+import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
-import { Alert } from 'react-native';
-
+import { Alert, StatusBar } from 'react-native';
+import { useSafeArea } from 'react-native-safe-area-context';
+import styled from 'styled-components/primitives';
 import Divider from '../components/Divider';
 import { SavingsCoinRow } from '../components/coin-row';
 import {
   FloatingEmojis,
   FloatingEmojisTapHandler,
 } from '../components/floating-emojis';
-import { Column, RowWithMargins } from '../components/layout';
+import { Centered, Column } from '../components/layout';
 import {
   SavingsPredictionStepper,
   SavingsSheetEmptyState,
   SavingsSheetHeader,
 } from '../components/savings';
-import { Sheet, SheetActionButton } from '../components/sheet';
-import { isSymbolStablecoin } from '../helpers/savings';
-import { convertAmountToNativeDisplay } from '../helpers/utilities';
-import { useAccountSettings, useWallets } from '../hooks';
-import { useNavigation } from '../navigation/Navigation';
-import { colors, padding } from '../styles';
-import Routes from './Routes/routesNames';
+import {
+  SheetActionButton,
+  SheetActionButtonRow,
+  SlackSheet,
+} from '../components/sheet';
+import { isSymbolStablecoin } from '@rainbow-me/helpers/savings';
+import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
+import {
+  useAccountSettings,
+  useDimensions,
+  useWallets,
+} from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
+import Routes from '@rainbow-me/routes';
+import { colors, position } from '@rainbow-me/styles';
+
+export const SavingsSheetEmptyHeight = 313;
+export const SavingsSheetHeight = 352;
+
+const Container = styled(Centered).attrs({ direction: 'column' })`
+  ${position.cover};
+  ${({ deviceHeight, height }) =>
+    height ? `height: ${height + deviceHeight}` : null};
+`;
 
 const SavingsSheet = () => {
-  const { getParam, navigate, goBack } = useNavigation();
+  const { height: deviceHeight } = useDimensions();
+  const { navigate } = useNavigation();
+  const { params } = useRoute();
+  const insets = useSafeArea();
   const { isReadOnlyWallet } = useWallets();
   const { nativeCurrency, nativeCurrencySymbol } = useAccountSettings();
-  const cTokenBalance = getParam('cTokenBalance');
-  const isEmpty = getParam('isEmpty');
-  const underlyingBalanceNativeValue = getParam('underlyingBalanceNativeValue');
-  const underlying = getParam('underlying');
-  const underlyingPrice = getParam('underlyingPrice');
-  const lifetimeSupplyInterestAccrued = getParam(
-    'lifetimeSupplyInterestAccrued'
-  );
-  const lifetimeSupplyInterestAccruedNative = getParam(
-    'lifetimeSupplyInterestAccruedNative'
-  );
-  const supplyBalanceUnderlying = getParam('supplyBalanceUnderlying');
-  const supplyRate = getParam('supplyRate');
+  const cTokenBalance = params['cTokenBalance'];
+  const isEmpty = params['isEmpty'];
+  const underlyingBalanceNativeValue = params['underlyingBalanceNativeValue'];
+  const underlying = params['underlying'];
+  const underlyingPrice = params['underlyingPrice'];
+  const lifetimeSupplyInterestAccrued = params['lifetimeSupplyInterestAccrued'];
+  const lifetimeSupplyInterestAccruedNative =
+    params['lifetimeSupplyInterestAccruedNative'];
+  const supplyBalanceUnderlying = params['supplyBalanceUnderlying'];
+  const supplyRate = params['supplyRate'];
 
   const balance = nativeCurrencySymbol + underlyingBalanceNativeValue;
   const lifetimeAccruedInterest = convertAmountToNativeDisplay(
@@ -88,12 +107,10 @@ const SavingsSheet = () => {
         label: underlying.symbol,
       });
     } else {
-      goBack();
       Alert.alert(`You need to import the wallet in order to do this`);
     }
   }, [
     cTokenBalance,
-    goBack,
     isReadOnlyWallet,
     navigate,
     supplyBalanceUnderlying,
@@ -104,8 +121,14 @@ const SavingsSheet = () => {
   const onDeposit = useCallback(() => {
     if (!isReadOnlyWallet) {
       navigate(Routes.SAVINGS_DEPOSIT_MODAL, {
-        defaultInputAsset: underlying,
-        underlyingPrice,
+        params: {
+          params: {
+            defaultInputAsset: underlying,
+            underlyingPrice,
+          },
+          screen: Routes.MAIN_EXCHANGE_SCREEN,
+        },
+        screen: Routes.MAIN_EXCHANGE_NAVIGATOR,
       });
 
       analytics.track('Navigated to SavingsDepositModal', {
@@ -114,79 +137,80 @@ const SavingsSheet = () => {
         label: underlying.symbol,
       });
     } else {
-      goBack();
       Alert.alert(`You need to import the wallet in order to do this`);
     }
-  }, [
-    goBack,
-    isEmpty,
-    isReadOnlyWallet,
-    navigate,
-    underlying,
-    underlyingPrice,
-  ]);
+  }, [isEmpty, isReadOnlyWallet, navigate, underlying, underlyingPrice]);
 
   return (
-    <Sheet>
-      {isEmpty ? (
-        <SavingsSheetEmptyState
-          isReadOnlyWallet={isReadOnlyWallet}
-          supplyRate={supplyRate}
-          underlying={underlying}
-        />
-      ) : (
-        <Fragment>
-          <SavingsSheetHeader
-            balance={balance}
-            lifetimeAccruedInterest={lifetimeAccruedInterest}
+    <Container
+      deviceHeight={deviceHeight}
+      height={isEmpty ? SavingsSheetEmptyHeight : SavingsSheetHeight}
+      insets={insets}
+    >
+      <StatusBar barStyle="light-content" />
+      <SlackSheet
+        contentHeight={isEmpty ? SavingsSheetEmptyHeight : SavingsSheetHeight}
+      >
+        {isEmpty ? (
+          <SavingsSheetEmptyState
+            isReadOnlyWallet={isReadOnlyWallet}
+            supplyRate={supplyRate}
+            underlying={underlying}
           />
-          <RowWithMargins css={padding(24, 15)} margin={15}>
-            <SheetActionButton
-              color={colors.dark}
-              label="􀁏 Withdraw"
-              onPress={onWithdraw}
+        ) : (
+          <Fragment>
+            <SavingsSheetHeader
+              balance={balance}
+              lifetimeAccruedInterest={lifetimeAccruedInterest}
             />
-            <SheetActionButton
-              color={colors.swapPurple}
-              label="􀁍 Deposit"
-              onPress={onDeposit}
+            <SheetActionButtonRow>
+              <SheetActionButton
+                color={colors.dark}
+                label="􀁏 Withdraw"
+                onPress={onWithdraw}
+              />
+              <SheetActionButton
+                color={colors.swapPurple}
+                label="􀁍 Deposit"
+                onPress={onDeposit}
+              />
+            </SheetActionButtonRow>
+            <Divider color={colors.rowDividerLight} zIndex={0} />
+            <FloatingEmojis
+              disableHorizontalMovement
+              distance={600}
+              duration={600}
+              emojis={['money_with_wings']}
+              opacityThreshold={0.86}
+              scaleTo={0.3}
+              size={40}
+              wiggleFactor={0}
+            >
+              {({ onNewEmoji }) => (
+                <FloatingEmojisTapHandler onNewEmoji={onNewEmoji}>
+                  <Column paddingBottom={9} paddingTop={4}>
+                    <SavingsCoinRow
+                      item={savingsRowItem}
+                      key={underlying.address}
+                    />
+                  </Column>
+                </FloatingEmojisTapHandler>
+              )}
+            </FloatingEmojis>
+            <Divider color={colors.rowDividerLight} zIndex={0} />
+            <SavingsPredictionStepper
+              asset={underlying}
+              balance={
+                isSymbolStablecoin(underlying.symbol)
+                  ? underlyingBalanceNativeValue
+                  : supplyBalanceUnderlying
+              }
+              interestRate={supplyRate}
             />
-          </RowWithMargins>
-          <Divider zIndex={0} />
-          <FloatingEmojis
-            disableHorizontalMovement
-            distance={600}
-            duration={600}
-            emojis={['money_with_wings']}
-            opacityThreshold={0.86}
-            scaleTo={0.3}
-            size={40}
-            wiggleFactor={0}
-          >
-            {({ onNewEmoji }) => (
-              <FloatingEmojisTapHandler onNewEmoji={onNewEmoji}>
-                <Column paddingBottom={9} paddingTop={4}>
-                  <SavingsCoinRow
-                    item={savingsRowItem}
-                    key={underlying.address}
-                  />
-                </Column>
-              </FloatingEmojisTapHandler>
-            )}
-          </FloatingEmojis>
-          <Divider color={colors.rowDividerLight} zIndex={0} />
-          <SavingsPredictionStepper
-            asset={underlying}
-            balance={
-              isSymbolStablecoin(underlying.symbol)
-                ? underlyingBalanceNativeValue
-                : supplyBalanceUnderlying
-            }
-            interestRate={supplyRate}
-          />
-        </Fragment>
-      )}
-    </Sheet>
+          </Fragment>
+        )}
+      </SlackSheet>
+    </Container>
   );
 };
 

@@ -1,12 +1,14 @@
 import React from 'react';
 import { css } from 'styled-components/primitives';
-import { colors, padding } from '../../styles';
+import { deviceUtils } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Text } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
+import { colors, padding } from '@rainbow-me/styles';
 
-const selectedHeight = 78;
+const isTinyPhone = deviceUtils.dimensions.height <= 568;
+const selectedHeight = isTinyPhone ? 62 : 78;
 
 const containerStyles = css`
   padding-bottom: 18;
@@ -36,6 +38,7 @@ export default function SendSavingsCoinRow({
   item,
   onPress,
   selected,
+  testID,
   ...props
 }) {
   return (
@@ -46,6 +49,7 @@ export default function SendSavingsCoinRow({
         bottomRowRender={BottomRow}
         containerStyles={selected ? containerSelectedStyles : containerStyles}
         onPress={onPress}
+        testID={testID}
         topRowRender={TopRow}
       />
     </ButtonPressAnimation>

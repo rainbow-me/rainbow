@@ -1,19 +1,14 @@
-import React, { useMemo } from 'react';
+import { useRoute } from '@react-navigation/native';
+import React from 'react';
 import ExchangeModalTypes from '../helpers/exchangeModalTypes';
-import { useNavigation } from '../navigation/Navigation';
-
 import createUnlockAndSwapRap, {
   estimateUnlockAndSwap,
 } from '../raps/unlockAndSwap';
 import ExchangeModal from './ExchangeModal';
 
 const SwapModal = (props, ref) => {
-  const { dangerouslyGetParent } = useNavigation();
-
-  const { inputAsset, outputAsset } = useMemo(
-    () => dangerouslyGetParent()?.state?.params || {},
-    [dangerouslyGetParent]
-  );
+  const { params = {} } = useRoute();
+  const { inputAsset, outputAsset } = params;
 
   return (
     <ExchangeModal

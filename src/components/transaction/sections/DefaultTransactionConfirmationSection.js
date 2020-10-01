@@ -1,20 +1,14 @@
 import lang from 'i18n-js';
-import PropTypes from 'prop-types';
 import React from 'react';
 import { compose, mapProps, pure } from 'recompact';
-import { colors } from '../../../styles';
 import { Text, TruncatedAddress } from '../../text';
 import TransactionMessage from '../TransactionMessage';
 import TransactionRow from '../TransactionRow';
 import TransactionSheet from '../TransactionSheet';
+import { colors } from '@rainbow-me/styles';
 
-const DefaultTransactionConfirmationSection = ({
-  address,
-  data,
-  sendButton,
-  value,
-}) => (
-  <TransactionSheet sendButton={sendButton}>
+const DefaultTransactionConfirmationSection = ({ address, data, value }) => (
+  <TransactionSheet>
     <TransactionRow title={lang.t('wallet.action.to')}>
       <TruncatedAddress
         address={address}
@@ -30,7 +24,7 @@ const DefaultTransactionConfirmationSection = ({
           size="lmedium"
           uppercase
         >
-          {value}
+          {value} ETH
         </Text>
       </TransactionRow>
     )}
@@ -41,13 +35,6 @@ const DefaultTransactionConfirmationSection = ({
     )}
   </TransactionSheet>
 );
-
-DefaultTransactionConfirmationSection.propTypes = {
-  address: PropTypes.string,
-  data: PropTypes.string,
-  sendButton: PropTypes.object,
-  value: PropTypes.string,
-};
 
 export default compose(
   mapProps(({ asset, ...props }) => ({

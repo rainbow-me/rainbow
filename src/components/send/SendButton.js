@@ -17,7 +17,7 @@ const SendButton = ({
 
   if (!isZeroAssetAmount && !isSufficientGas) {
     disabled = true;
-    label = 'Insufficient Gas';
+    label = 'Insufficient ETH';
   } else if (!isZeroAssetAmount && !isSufficientBalance) {
     disabled = true;
     label = 'Insufficient Funds';
@@ -33,6 +33,7 @@ const SendButton = ({
       isAuthorizing={isAuthorizing}
       label={label}
       onLongPress={onLongPress}
+      testID={label}
     />
   );
 };

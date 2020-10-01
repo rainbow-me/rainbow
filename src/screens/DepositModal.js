@@ -1,18 +1,23 @@
+import { useRoute } from '@react-navigation/native';
 import React from 'react';
 import ExchangeModalTypes from '../helpers/exchangeModalTypes';
+import { ExchangeNavigatorFactory } from '../navigation/ExchangeModalNavigator';
+import useStatusBarManaging from '../navigation/useStatusBarManaging';
 import createSwapAndDepositCompoundRap, {
   estimateSwapAndDepositCompound,
 } from '../raps/swapAndDepositCompound';
 import ExchangeModal from './ExchangeModal';
 
 const DepositModal = ({ navigation, ...props }) => {
-  const defaultInputAsset = navigation.getParam('defaultInputAsset');
-  const underlyingPrice = navigation.getParam('underlyingPrice');
+  useStatusBarManaging();
+  const { params } = useRoute();
+  const defaultInputAsset = params?.defaultInputAsset;
+  const underlyingPrice = params?.underlyingPrice;
   return (
     <ExchangeModal
       createRap={createSwapAndDepositCompoundRap}
-      estimateRap={estimateSwapAndDepositCompound}
       defaultInputAsset={defaultInputAsset}
+      estimateRap={estimateSwapAndDepositCompound}
       inputHeaderTitle="Deposit"
       navigation={navigation}
       showOutputField={false}
@@ -23,4 +28,4 @@ const DepositModal = ({ navigation, ...props }) => {
   );
 };
 
-export default DepositModal;
+export default ExchangeNavigatorFactory(DepositModal);

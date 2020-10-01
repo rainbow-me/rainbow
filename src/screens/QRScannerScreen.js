@@ -1,59 +1,98 @@
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { View } from 'react-native';
-import { useIsEmulator } from 'react-native-device-info';
-import { useSafeArea } from 'react-native-safe-area-context';
+import Animated, { useCode } from 'react-native-reanimated';
+import styled from 'styled-components/primitives';
 import { BubbleSheet } from '../components/bubble-sheet';
-import { Button } from '../components/buttons';
 import { DiscoverSheet } from '../components/discover-sheet';
 import { BackButton, Header, HeaderHeight } from '../components/header';
 import { Centered } from '../components/layout';
-import { QRCodeScanner } from '../components/qrcode-scanner';
+import {
+  CameraDimmer,
+  EmulatorPasteUriButton,
+  QRCodeScanner,
+} from '../components/qrcode-scanner';
 import {
   WalletConnectExplainer,
   WalletConnectList,
 } from '../components/walletconnect-list';
-import { discoverSheetAvailable } from '../config/experimental';
-import { colors, position } from '../styles';
-import { isNewValueForObjectPaths } from '../utils';
+import useExperimentalFlag, {
+  DISCOVER_SHEET,
+} from '@rainbow-me/config/experimentalHooks';
+import { useHeight, useWalletConnectConnections } from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
+import { scrollPosition } from '@rainbow-me/navigation/ScrollPagerWrapper';
+import Routes from '@rainbow-me/routes';
+import { colors, position } from '@rainbow-me/styles';
 
-const QRScannerScreen = ({
-  enableScanning,
-  isCameraAuthorized,
-  isFocused,
-  onPressBackButton,
-  onPressPasteSessionUri,
-  onScanSuccess,
-  onSheetLayout,
-  sheetHeight,
-  walletConnectorsByDappName,
-  walletConnectorsCount,
-  ...props
-}) => {
-  const { result: isEmulator } = useIsEmulator();
-  const insets = useSafeArea();
+const { call, greaterThan, onChange } = Animated;
+
+const ENABLING_CAMERA_OFFSET = 1.01;
+
+const Background = styled.View`
+  background-color: black;
+  height: 100%;
+  position: absolute;
+  width: 100%;
+`;
+
+const ScannerContainer = styled(Centered).attrs({
+  direction: 'column',
+})`
+  ${position.size('100%')};
+  overflow: hidden;
+`;
+
+const ScannerHeader = styled(Header).attrs({
+  justify: 'space-between',
+})`
+  position: absolute;
+  top: 0;
+`;
+
+function useFocusFromSwipe() {
+  const [isFocused, setIsFocused] = useState(false);
+  useCode(
+    () =>
+      onChange(
+        greaterThan(scrollPosition, ENABLING_CAMERA_OFFSET),
+        call([scrollPosition], ([pos]) =>
+          setIsFocused(pos > ENABLING_CAMERA_OFFSET)
+        )
+      ),
+    []
+  );
+  return isFocused;
+}
+
+export default function QRScannerScreen() {
+  const discoverSheetAvailable = useExperimentalFlag(DISCOVER_SHEET);
+  const isFocused = useFocusFromSwipe();
+  const [sheetHeight, onSheetLayout] = useHeight(240);
+  const { navigate } = useNavigation();
+  const {
+    walletConnectorsByDappName,
+    walletConnectorsCount,
+  } = useWalletConnectConnections();
+
+  const handlePressBackButton = useCallback(
+    () => navigate(Routes.WALLET_SCREEN),
+    [navigate]
+  );
+
   return (
     <View>
       {discoverSheetAvailable ? <DiscoverSheet /> : null}
-      <Centered
-        {...position.sizeAsObject('100%')}
-        backgroundColor={colors.appleBlue}
-        direction="column"
-        overflow="hidden"
-      >
-        <QRCodeScanner
-          {...props}
-          contentPositionBottom={sheetHeight}
-          contentPositionTop={HeaderHeight}
-          enableCamera={isFocused}
-          enableScanning={enableScanning}
-          isCameraAuthorized={isCameraAuthorized}
-          isEmulator={isEmulator}
-          onSuccess={onScanSuccess}
-          showCrosshairText={!!walletConnectorsCount}
-        />
+      <ScannerContainer>
+        <Background />
+        <CameraDimmer>
+          <QRCodeScanner
+            contentPositionBottom={sheetHeight}
+            contentPositionTop={HeaderHeight}
+            enableCamera={isFocused}
+          />
+        </CameraDimmer>
         {discoverSheetAvailable ? null : (
-          <BubbleSheet bottom={insets.bottom ? 21 : 0} onLayout={onSheetLayout}>
+          <BubbleSheet onLayout={onSheetLayout}>
             {walletConnectorsCount ? (
               <WalletConnectList items={walletConnectorsByDappName} />
             ) : (
@@ -61,52 +100,16 @@ const QRScannerScreen = ({
             )}
           </BubbleSheet>
         )}
-        <Header justify="space-between" position="absolute" top={0}>
+        <ScannerHeader>
           <BackButton
-            testID="goToBalancesFromScanner"
             color={colors.white}
             direction="left"
-            onPress={onPressBackButton}
+            onPress={handlePressBackButton}
+            testID="goToBalancesFromScanner"
           />
-          {isEmulator && (
-            <Button
-              backgroundColor={colors.white}
-              color={colors.sendScreen.brightBlue}
-              onPress={onPressPasteSessionUri}
-              size="small"
-              type="pill"
-            >
-              Paste session URI
-            </Button>
-          )}
-        </Header>
-      </Centered>
+          <EmulatorPasteUriButton />
+        </ScannerHeader>
+      </ScannerContainer>
     </View>
   );
-};
-
-QRScannerScreen.propTypes = {
-  enableScanning: PropTypes.bool,
-  isCameraAuthorized: PropTypes.bool,
-  isFocused: PropTypes.bool.isRequired,
-  modalVisible: PropTypes.bool.isRequired,
-  onPressBackButton: PropTypes.func,
-  onPressPasteSessionUri: PropTypes.func,
-  onScanSuccess: PropTypes.func,
-  onSheetLayout: PropTypes.func,
-  sheetHeight: PropTypes.number,
-  walletConnectorsByDappName: PropTypes.arrayOf(PropTypes.object),
-  walletConnectorsCount: PropTypes.number,
-};
-
-const arePropsEqual = (prev, next) =>
-  !isNewValueForObjectPaths(prev, next, [
-    'enableScanning',
-    'isCameraAuthorized',
-    'isFocused',
-    'sheetHeight',
-    'walletConnectorsCount',
-    'modalVisible',
-  ]);
-
-export default React.memo(QRScannerScreen, arePropsEqual);
+}

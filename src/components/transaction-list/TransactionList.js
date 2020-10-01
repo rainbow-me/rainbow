@@ -1,21 +1,38 @@
 import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
-import PropTypes from 'prop-types';
+import { find } from 'lodash';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Linking, requireNativeComponent } from 'react-native';
+import ImagePicker from 'react-native-image-crop-picker';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components/primitives';
-import { isAvatarPickerAvailable } from '../../config/experimental';
+import useExperimentalFlag, {
+  AVATAR_PICKER,
+} from '../../config/experimentalHooks';
+import showWalletErrorAlert from '../../helpers/support';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
-import { useAccountProfile } from '../../hooks';
+import {
+  getHumanReadableDate,
+  hasAddableContact,
+} from '../../helpers/transactions';
+import { isENSAddressFormat } from '../../helpers/validators';
+import { useAccountProfile, useWallets } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
 import { removeRequest } from '../../redux/requests';
-import Routes from '../../screens/Routes/routesNames';
-import { colors } from '../../styles';
-import { abbreviations, ethereumUtils } from '../../utils';
-import { showActionSheetWithOptions } from '../../utils/actionsheet';
+import { walletsSetSelected, walletsUpdate } from '../../redux/wallets';
 import { FloatingEmojis } from '../floating-emojis';
+import Routes from '@rainbow-me/routes';
+import { colors } from '@rainbow-me/styles';
+import {
+  abbreviations,
+  ethereumUtils,
+  showActionSheetWithOptions,
+} from '@rainbow-me/utils';
+
 const NativeTransactionListView = requireNativeComponent('TransactionListView');
+
+const isAvatarEmojiPickerEnabled = true;
+const isAvatarImagePickerEnabled = true;
 
 const Container = styled.View`
   flex: 1;
@@ -37,7 +54,7 @@ const FloatingEmojisRegion = styled(FloatingEmojis).attrs({
   width: ${({ tapTarget }) => tapTarget[2]};
 `;
 
-const TransactionList = ({
+export default function TransactionList({
   addCashAvailable,
   contacts,
   initialized,
@@ -45,7 +62,8 @@ const TransactionList = ({
   network,
   requests,
   transactions,
-}) => {
+}) {
+  const { wallets, selectedWallet } = useWallets();
   const [tapTarget, setTapTarget] = useState([0, 0, 0, 0]);
   const onNewEmoji = useRef();
   const setOnNewEmoji = useCallback(
@@ -59,25 +77,116 @@ const TransactionList = ({
     accountColor,
     accountSymbol,
     accountName,
+    accountImage,
   } = useAccountProfile();
 
+  const isDamaged = selectedWallet?.damaged;
+
   const onAddCashPress = useCallback(() => {
-    navigate(Routes.ADD_CASH_SHEET);
+    if (isDamaged) {
+      showWalletErrorAlert();
+      return;
+    }
+
+    navigate(Routes.ADD_CASH_FLOW);
     analytics.track('Tapped Add Cash', {
       category: 'add cash',
     });
-  }, [navigate]);
+  }, [navigate, isDamaged]);
+
+  const onRemovePhoto = useCallback(async () => {
+    // all this code is weak but lets ship it
+    const newWallets = { ...wallets };
+    const newWallet = newWallets[selectedWallet.id];
+    const account = find(newWallet.addresses, ['address', accountAddress]);
+
+    // remove zee photo
+    account.image = null;
+    newWallet.addresses[account.index] = account;
+
+    dispatch(walletsSetSelected(newWallet));
+    await dispatch(walletsUpdate(newWallets));
+  }, [dispatch, selectedWallet, accountAddress, wallets]);
 
   const onAvatarPress = useCallback(() => {
-    navigate(Routes.AVATAR_BUILDER, {
-      accountColor,
-      accountName,
-    });
-  }, [accountColor, accountName, navigate]);
+    if (isAvatarImagePickerEnabled) {
+      const processPhoto = image => {
+        const stringIndex = image?.path.indexOf('/tmp');
+        const newWallets = { ...wallets };
+        const walletId = selectedWallet.id;
+
+        newWallets[walletId].addresses.some((account, index) => {
+          newWallets[walletId].addresses[index].image = `~${image?.path.slice(
+            stringIndex
+          )}`;
+
+          dispatch(walletsSetSelected(newWallets[walletId]));
+          return true;
+        });
+        dispatch(walletsUpdate(newWallets));
+      };
+
+      const avatarActionSheetOptions = [
+        'Take Photo',
+        'Choose from Library',
+        ...(isAvatarEmojiPickerEnabled ? ['Pick an Emoji'] : []),
+        ...(accountImage ? ['Remove Photo'] : []),
+        'Cancel', // <-- cancelButtonIndex
+      ];
+
+      showActionSheetWithOptions(
+        {
+          cancelButtonIndex: avatarActionSheetOptions.length - 1,
+          destructiveButtonIndex: accountImage
+            ? avatarActionSheetOptions.length - 2
+            : undefined,
+          options: avatarActionSheetOptions,
+        },
+        async buttonIndex => {
+          if (buttonIndex === 0) {
+            ImagePicker.openCamera({
+              cropperCircleOverlay: true,
+              cropping: true,
+            }).then(processPhoto);
+          } else if (buttonIndex === 1) {
+            ImagePicker.openPicker({
+              cropperCircleOverlay: true,
+              cropping: true,
+            }).then(processPhoto);
+          } else if (buttonIndex === 2 && isAvatarEmojiPickerEnabled) {
+            navigate(Routes.AVATAR_BUILDER, {
+              initialAccountColor: accountColor,
+              initialAccountName: accountName,
+            });
+          } else if (buttonIndex === 3 && accountImage) {
+            onRemovePhoto();
+          }
+        }
+      );
+    } else if (isAvatarEmojiPickerEnabled) {
+      navigate(Routes.AVATAR_BUILDER, {
+        initialAccountColor: accountColor,
+        initialAccountName: accountName,
+      });
+    }
+  }, [
+    accountColor,
+    accountImage,
+    accountName,
+    dispatch,
+    navigate,
+    onRemovePhoto,
+    selectedWallet.id,
+    wallets,
+  ]);
 
   const onReceivePress = useCallback(() => {
+    if (isDamaged) {
+      showWalletErrorAlert();
+      return;
+    }
     navigate(Routes.RECEIVE_MODAL);
-  }, [navigate]);
+  }, [navigate, isDamaged]);
 
   const onRequestExpire = useCallback(
     e => {
@@ -92,10 +201,7 @@ const TransactionList = ({
     e => {
       const { index } = e.nativeEvent;
       const item = requests[index];
-      navigate({
-        params: { transactionDetails: item },
-        routeName: Routes.CONFIRM_REQUEST,
-      });
+      navigate(Routes.CONFIRM_REQUEST, { transactionDetails: item });
       return;
     },
     [navigate, requests]
@@ -105,10 +211,14 @@ const TransactionList = ({
     e => {
       const { index } = e.nativeEvent;
       const item = transactions[index];
-      const { hash, from, to, status } = item;
+      const { hash, from, minedAt, pending, to, status, type } = item;
 
-      const isPurchasing = status === TransactionStatusTypes.purchasing;
-      const isSent = status === TransactionStatusTypes.sent;
+      const date = getHumanReadableDate(minedAt);
+
+      const isSent =
+        status === TransactionStatusTypes.sending ||
+        status === TransactionStatusTypes.sent;
+      const showContactInfo = hasAddableContact(status, type);
 
       const headerInfo = {
         address: '',
@@ -124,36 +234,44 @@ const TransactionList = ({
         headerInfo.address = contact.nickname;
         contactColor = contact.color;
       } else {
-        headerInfo.address = abbreviations.address(contactAddress, 4, 10);
-        contactColor = Math.floor(Math.random() * colors.avatarColor.length);
+        headerInfo.address = isENSAddressFormat(contactAddress)
+          ? contactAddress
+          : abbreviations.address(contactAddress, 4, 10);
+        contactColor = colors.getRandomColor();
       }
 
       if (hash) {
         let buttons = ['View on Etherscan', 'Cancel'];
-        if (!isPurchasing) {
+        if (showContactInfo) {
           buttons.unshift(contact ? 'View Contact' : 'Add to Contacts');
         }
 
         showActionSheetWithOptions(
           {
-            cancelButtonIndex: isPurchasing ? 1 : 2,
+            cancelButtonIndex: showContactInfo ? 2 : 1,
             options: buttons,
-            title: isPurchasing
-              ? headerInfo.type
-              : `${headerInfo.type} ${headerInfo.divider} ${headerInfo.address}`,
+            title: pending
+              ? `${headerInfo.type}${
+                  showContactInfo
+                    ? ' ' + headerInfo.divider + ' ' + headerInfo.address
+                    : ''
+                }`
+              : showContactInfo
+              ? `${headerInfo.type} ${date} ${headerInfo.divider} ${headerInfo.address}`
+              : `${headerInfo.type} ${date}`,
           },
           buttonIndex => {
-            if (!isPurchasing && buttonIndex === 0) {
+            if (showContactInfo && buttonIndex === 0) {
               navigate(Routes.MODAL_SCREEN, {
                 address: contactAddress,
                 asset: item,
                 color: contactColor,
                 contact,
-                type: 'contact',
+                type: 'contact_profile',
               });
             } else if (
-              (isPurchasing && buttonIndex === 0) ||
-              (!isPurchasing && buttonIndex === 1)
+              (!showContactInfo && buttonIndex === 0) ||
+              (showContactInfo && buttonIndex === 1)
             ) {
               const normalizedHash = hash.replace(/-.*/g, '');
               const etherscanHost = ethereumUtils.getEtherscanHostFromNetwork(
@@ -170,6 +288,10 @@ const TransactionList = ({
 
   const onCopyAddressPress = useCallback(
     e => {
+      if (isDamaged) {
+        showWalletErrorAlert();
+        return;
+      }
       const { x, y, width, height } = e.nativeEvent;
       setTapTarget([x, y, width, height]);
       if (onNewEmoji && onNewEmoji.current) {
@@ -177,7 +299,7 @@ const TransactionList = ({
       }
       Clipboard.setString(accountAddress);
     },
-    [accountAddress]
+    [accountAddress, isDamaged]
   );
 
   const onAccountNamePress = useCallback(() => {
@@ -198,16 +320,20 @@ const TransactionList = ({
     isFocused,
   ]);
 
+  const isAvatarPickerAvailable = useExperimentalFlag(AVATAR_PICKER);
+
   return (
     <Container>
       <Container
         accountAddress={accountName}
         accountColor={colors.avatarColor[accountColor]}
+        accountImage={accountImage}
         accountName={accountSymbol}
         addCashAvailable={addCashAvailable}
         as={NativeTransactionListView}
         data={data}
         isAvatarPickerAvailable={isAvatarPickerAvailable}
+        isLoading={loading}
         onAccountNamePress={onAccountNamePress}
         onAddCashPress={onAddCashPress}
         onAvatarPress={onAvatarPress}
@@ -216,7 +342,6 @@ const TransactionList = ({
         onRequestExpire={onRequestExpire}
         onRequestPress={onRequestPress}
         onTransactionPress={onTransactionPress}
-        isLoading={loading}
       />
       <FloatingEmojisRegion
         setOnNewEmoji={setOnNewEmoji}
@@ -224,16 +349,4 @@ const TransactionList = ({
       />
     </Container>
   );
-};
-
-TransactionList.propTypes = {
-  addCashAvailable: PropTypes.bool,
-  contacts: PropTypes.array,
-  initialized: PropTypes.bool,
-  isLoading: PropTypes.bool,
-  network: PropTypes.string,
-  requests: PropTypes.array,
-  transactions: PropTypes.array,
-};
-
-export default TransactionList;
+}

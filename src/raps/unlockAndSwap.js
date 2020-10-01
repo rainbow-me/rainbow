@@ -1,4 +1,4 @@
-import { concat, reduce } from 'lodash';
+import { concat, get, reduce, toLower } from 'lodash';
 import {
   calculateTradeDetails,
   estimateSwapGasLimit,
@@ -20,11 +20,12 @@ export const estimateUnlockAndSwap = async ({
   outputCurrency,
   outputReserve,
 }) => {
+  if (!inputAmount) inputAmount = 1;
+  if (!outputAmount) outputAmount = 1;
+
   const isValid = isValidSwapInput({
-    inputAmount,
     inputCurrency,
     inputReserve,
-    outputAmount,
     outputCurrency,
     outputReserve,
   });
@@ -32,18 +33,27 @@ export const estimateUnlockAndSwap = async ({
   if (!isValid) return ethUnits.basic_swap;
 
   const { accountAddress, chainId } = store.getState().settings;
-  let gasLimits = [];
+  const { pairs, allPairs } = store.getState().uniswap;
+  const globalPairs = {
+    ...pairs,
+    ...allPairs,
+  };
+  const exchangeAddress = get(
+    globalPairs,
+    `[${toLower(inputCurrency.address)}].exchangeAddress`
+  );
 
+  let gasLimits = [];
   const swapAssetNeedsUnlocking = await assetNeedsUnlocking(
     accountAddress,
     inputAmount,
     inputCurrency,
-    inputCurrency.exchangeAddress
+    exchangeAddress
   );
   if (swapAssetNeedsUnlocking) {
     const unlockGasLimit = await contractUtils.estimateApprove(
       inputCurrency.address,
-      inputCurrency.exchangeAddress
+      exchangeAddress
     );
     gasLimits = concat(gasLimits, unlockGasLimit);
   }
@@ -77,6 +87,15 @@ const createUnlockAndSwapRap = async ({
 }) => {
   // create unlock rap
   const { accountAddress, chainId } = store.getState().settings;
+  const { pairs, allPairs } = store.getState().uniswap;
+  const globalPairs = {
+    ...pairs,
+    ...allPairs,
+  };
+  const exchangeAddress = get(
+    globalPairs,
+    `[${toLower(inputCurrency.address)}].exchangeAddress`
+  );
 
   let actions = [];
 
@@ -84,14 +103,15 @@ const createUnlockAndSwapRap = async ({
     accountAddress,
     inputAmount,
     inputCurrency,
-    inputCurrency.exchangeAddress
+    exchangeAddress
   );
+
   if (swapAssetNeedsUnlocking) {
     const unlock = createNewAction(RapActionTypes.unlock, {
       accountAddress,
       amount: inputAmount,
       assetToUnlock: inputCurrency,
-      contractAddress: inputCurrency.exchangeAddress,
+      contractAddress: exchangeAddress,
     });
     actions = concat(actions, unlock);
   }

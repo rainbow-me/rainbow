@@ -1,9 +1,9 @@
 import React from 'react';
 import styled from 'styled-components/primitives';
-import { colors, padding } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Row } from '../layout';
 import { Text } from '../text';
+import { colors, padding } from '@rainbow-me/styles';
 
 const Container = styled(Row).attrs({
   align: 'center',

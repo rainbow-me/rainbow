@@ -1,8 +1,4 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
-import styled from 'styled-components/primitives';
-import { useShowcaseTokens } from '../../hooks';
-import { colors } from '../../styles';
-import { magicMemo } from '../../utils';
 import Link from '../Link';
 import { Column, ColumnWithDividers } from '../layout';
 import {
@@ -13,22 +9,16 @@ import {
   SlackSheet,
 } from '../sheet';
 import { Text } from '../text';
-import { ShowcaseToast } from '../toasts';
+import { ShowcaseToast, ToastPositionContainer } from '../toasts';
 import { UniqueTokenAttributes } from '../unique-token';
 import ExpandedStateSection from './ExpandedStateSection';
 import {
   UniqueTokenExpandedStateHeader,
   UniqueTokenExpandedStateImage,
 } from './unique-token';
-
-const ToastContainer = styled(Column).attrs({
-  pointerEvents: 'none',
-})`
-  bottom: 0;
-  left: 0;
-  position: absolute;
-  right: 0;
-`;
+import { useShowcaseTokens } from '@rainbow-me/hooks';
+import { colors } from '@rainbow-me/styles';
+import { magicMemo } from '@rainbow-me/utils';
 
 const UniqueTokenExpandedState = ({ asset }) => {
   const {
@@ -64,7 +54,7 @@ const UniqueTokenExpandedState = ({ asset }) => {
 
   return (
     <Fragment>
-      <SlackSheet height="100%">
+      <SlackSheet bottomInset={42} height="100%" scrollEnabled>
         <UniqueTokenExpandedStateHeader asset={asset} />
         <UniqueTokenExpandedStateImage asset={asset} />
         <SheetActionButtonRow>
@@ -104,9 +94,9 @@ const UniqueTokenExpandedState = ({ asset }) => {
           )}
         </ColumnWithDividers>
       </SlackSheet>
-      <ToastContainer>
+      <ToastPositionContainer>
         <ShowcaseToast isShowcaseAsset={isShowcaseAsset} />
-      </ToastContainer>
+      </ToastPositionContainer>
     </Fragment>
   );
 };

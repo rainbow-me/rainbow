@@ -1,19 +1,30 @@
 import GraphemeSplitter from 'grapheme-splitter';
 import { get, toUpper } from 'lodash';
 import { removeFirstEmojiFromString } from '../helpers/emojiHandler';
+import networkTypes from '../helpers/networkTypes';
 import { address } from '../utils/abbreviations';
 import useAccountSettings from './useAccountSettings';
 import useWallets from './useWallets';
 
 export default function useAccountProfile() {
-  const { selectedWallet, walletNames } = useWallets();
+  const wallets = useWallets();
+  const { selectedWallet, walletNames } = wallets;
 
-  const { accountAddress } = useAccountSettings();
+  const { network } = useAccountSettings();
+  const settings = useAccountSettings();
+  const { accountAddress } = settings;
 
-  if (!selectedWallet) return {};
-  if (!accountAddress) return {};
+  if (!selectedWallet) {
+    return {};
+  }
 
-  if (!selectedWallet || !selectedWallet?.addresses?.length) return {};
+  if (!accountAddress) {
+    return {};
+  }
+
+  if (!selectedWallet?.addresses?.length) {
+    return {};
+  }
 
   const accountENS = get(walletNames, `${accountAddress}`);
 
@@ -21,25 +32,37 @@ export default function useAccountProfile() {
     account => account.address === accountAddress
   );
 
-  if (!selectedAccount) return {};
+  if (!selectedAccount) {
+    return {};
+  }
 
-  const { label, color, index } = selectedAccount;
+  const { label, color, index, image } = selectedAccount;
 
   const accountName = removeFirstEmojiFromString(
-    label || accountENS || address(accountAddress, 6, 4)
+    network === networkTypes.mainnet
+      ? label || accountENS || address(accountAddress, 6, 4)
+      : label === accountENS
+      ? address(accountAddress, 6, 4)
+      : label || address(accountAddress, 6, 4)
   ).join('');
 
   const labelOrAccountName =
     accountName === label ? toUpper(accountName) : label;
   const accountSymbol = new GraphemeSplitter().splitGraphemes(
-    labelOrAccountName || toUpper(accountENS) || `${index + 1}`
+    network === networkTypes.mainnet
+      ? labelOrAccountName || toUpper(accountENS) || `${index + 1}`
+      : label === accountENS
+      ? toUpper(accountName)
+      : toUpper(label) || toUpper(accountName)
   )[0];
   const accountColor = color;
+  const accountImage = image;
 
   return {
     accountAddress,
     accountColor,
     accountENS,
+    accountImage,
     accountName,
     accountSymbol,
   };

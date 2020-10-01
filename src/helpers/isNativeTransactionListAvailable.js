@@ -1,5 +1,6 @@
 import { UIManager } from 'react-native';
-import { nativeTransactionListAvailable } from '../config/experimental';
 
-export default nativeTransactionListAvailable &&
+const useNativeTransactionListAvailable = () =>
   !!UIManager.getViewManagerConfig('TransactionListView');
+
+export default useNativeTransactionListAvailable;

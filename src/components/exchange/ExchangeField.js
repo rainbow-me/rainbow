@@ -1,20 +1,21 @@
 import React, { useCallback } from 'react';
 import { Platform, TouchableWithoutFeedback } from 'react-native';
 import styled from 'styled-components/primitives';
-import { colors } from '../../styles';
 import { TokenSelectionButton } from '../buttons';
 import { CoinIcon } from '../coin-icon';
 import { Row, RowWithMargins } from '../layout';
 import { EnDash } from '../text';
 import ExchangeInput from './ExchangeInput';
+import { colors } from '@rainbow-me/styles';
 
 const CoinSize = 40;
-const ExchangeFieldHeight = Platform.OS === 'android' ? 64 : 40;
-const ExchangeFieldPadding = 15;
+const ExchangeFieldHeight = Platform.OS === 'android' ? 64 : 38;
+const ExchangeFieldPadding = 19;
 const skeletonColor = colors.alpha(colors.blueGreyDark, 0.1);
 
-const Container = styled(Row).attrs({ align: 'center' })`
-  background-color: ${colors.white};
+const Container = styled(Row).attrs({
+  align: 'center',
+})`
   width: 100%;
 `;
 
@@ -28,7 +29,9 @@ const FieldRow = styled(RowWithMargins).attrs({
     disableCurrencySelection ? ExchangeFieldPadding : 0};
 `;
 
-const Input = styled(ExchangeInput).attrs({ letterSpacing: 'roundedTightest' })`
+const Input = styled(ExchangeInput).attrs({
+  letterSpacing: 'roundedTightest',
+})`
   height: ${ExchangeFieldHeight};
 `;
 
@@ -48,26 +51,22 @@ const ExchangeField = (
 ) => {
   const handleFocusField = useCallback(() => ref?.current?.focus(), [ref]);
 
-  const placeholderColor = symbol ? undefined : skeletonColor;
-
   return (
     <Container {...props}>
       <TouchableWithoutFeedback onPress={handleFocusField}>
         <FieldRow disableCurrencySelection={disableCurrencySelection}>
-          <CoinIcon
-            address={address}
-            bgColor={placeholderColor}
-            flex={0}
-            size={CoinSize}
-            symbol={symbol}
-          />
+          {symbol ? (
+            <CoinIcon address={address} size={CoinSize} symbol={symbol} />
+          ) : (
+            <CoinIcon bgColor={skeletonColor} size={CoinSize} />
+          )}
           <Input
             editable={!!symbol}
             onBlur={onBlur}
             onChangeText={setAmount}
             onFocus={onFocus}
             placeholder={symbol ? '0' : EnDash.unicode}
-            placeholderTextColor={placeholderColor}
+            placeholderTextColor={symbol ? undefined : skeletonColor}
             ref={ref}
             value={amount}
           />

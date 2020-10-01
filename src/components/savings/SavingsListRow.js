@@ -7,23 +7,27 @@ import LinearGradient from 'react-native-linear-gradient';
 import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import {
-  calculateAPY,
-  calculateCompoundInterestInDays,
-  formatSavingsAmount,
-} from '../../helpers/savings';
-import { useDimensions } from '../../hooks';
-import { useNavigation } from '../../navigation/Navigation';
-import Routes from '../../screens/Routes/routesNames';
-import { colors, padding, position } from '../../styles';
+  SavingsSheetEmptyHeight,
+  SavingsSheetHeight,
+} from '../../screens/SavingsSheet';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
 import { Centered, Row } from '../layout';
 import APYPill from './APYPill';
 import SavingsListRowAnimatedNumber from './SavingsListRowAnimatedNumber';
 import SavingsListRowEmptyState from './SavingsListRowEmptyState';
+import {
+  calculateAPY,
+  calculateCompoundInterestInDays,
+  formatSavingsAmount,
+} from '@rainbow-me/helpers/savings';
+import { useDimensions } from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
+import Routes from '@rainbow-me/routes';
+import { colors, padding, position } from '@rainbow-me/styles';
 
 const MS_IN_1_DAY = 1000 * 60 * 60 * 24;
-const ANIMATE_NUMBER_INTERVAL = 30;
+const ANIMATE_NUMBER_INTERVAL = 60;
 
 const SavingsListRowShadows = [
   [0, 10, 30, colors.dark, 0.1],
@@ -84,6 +88,9 @@ const SavingsListRow = ({
       isEmpty: !supplyBalanceUnderlying,
       lifetimeSupplyInterestAccrued,
       lifetimeSupplyInterestAccruedNative,
+      longFormHeight: supplyBalanceUnderlying
+        ? SavingsSheetHeight
+        : SavingsSheetEmptyHeight,
       supplyBalanceUnderlying,
       supplyRate,
       underlying,
@@ -153,24 +160,22 @@ const SavingsListRow = ({
             css={padding(9, 10, 10, 11)}
             justify="space-between"
           >
-            <Row align="center" justify="space-between">
-              {underlying.symbol && supplyBalanceUnderlying ? (
-                <Centered marginRight={6}>
-                  <CoinIcon size={26} symbol={underlying.symbol} />
-                </Centered>
-              ) : null}
-              {supplyBalanceUnderlying && !isNaN(displayValue) ? (
-                <SavingsListRowAnimatedNumber
-                  initialValue={initialValue}
-                  interval={ANIMATE_NUMBER_INTERVAL}
-                  steps={steps}
-                  symbol={underlying.symbol}
-                  value={displayValue}
-                />
-              ) : (
-                <SavingsListRowEmptyState onPress={onButtonPress} />
-              )}
-            </Row>
+            {underlying.symbol && supplyBalanceUnderlying ? (
+              <Centered>
+                <CoinIcon size={26} symbol={underlying.symbol} />
+              </Centered>
+            ) : null}
+            {supplyBalanceUnderlying && !isNaN(displayValue) ? (
+              <SavingsListRowAnimatedNumber
+                initialValue={initialValue}
+                interval={ANIMATE_NUMBER_INTERVAL}
+                steps={steps}
+                symbol={underlying.symbol}
+                value={displayValue}
+              />
+            ) : (
+              <SavingsListRowEmptyState onPress={onButtonPress} />
+            )}
             <APYPill value={apyTruncated} />
           </Row>
         </SavingsListRowShadowStack>

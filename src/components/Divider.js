@@ -1,8 +1,8 @@
 import { constant, isNil, isNumber, times } from 'lodash';
 import React from 'react';
 import styled from 'styled-components/primitives';
-import { borders, colors, position } from '../styles';
 import { magicMemo } from '../utils';
+import { borders, colors, position } from '@rainbow-me/styles';
 
 export const DividerSize = 2;
 

@@ -2,11 +2,11 @@ import React, { useMemo, useState } from 'react';
 import FastImage from 'react-native-fast-image';
 import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
-import { colors, position } from '../../styles';
 import { initials } from '../../utils';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { CoinIconSize } from './CoinIcon';
+import { colors, position } from '@rainbow-me/styles';
 
 const RVLIBorderRadius = 16.25;
 const RVLIShadows = {
@@ -60,7 +60,7 @@ export default function RequestVendorLogoIcon({
       <Content color={bgColor} size={size}>
         {imageUrl && !error ? (
           <FastImage
-            onError={err => setError(err)}
+            onError={setError}
             source={imageSource}
             style={position.sizeAsObject('100%')}
           />

@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Text } from 'react-native';
 import { Centered, Page } from '../components/layout';
-import { colors, position } from '../styles';
+import { colors, position } from '@rainbow-me/styles';
 
 class ExampleScreen extends PureComponent {
   render = () => (

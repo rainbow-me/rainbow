@@ -1,6 +1,9 @@
+import AsyncStorage from '@react-native-community/async-storage';
+import { captureException } from '@sentry/react-native';
 import { addHexPrefix, isValidAddress } from 'ethereumjs-util';
 import { find, get, isEmpty, matchesProperty, replace, toLower } from 'lodash';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
+import URL from 'url-parse';
 import networkTypes from '../helpers/networkTypes';
 import {
   add,
@@ -11,6 +14,7 @@ import {
   subtract,
 } from '../helpers/utilities';
 import { chains } from '../references';
+import logger from 'logger';
 
 const getEthPriceUnit = assets => {
   const ethAsset = getAsset(assets);
@@ -138,6 +142,34 @@ const isEthAddress = str => {
   return isValidAddress(withHexPrefix);
 };
 
+const fetchTxWithAlwaysCache = async address => {
+  const url = `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&tag=oldest&page=1&offset=1&apikey=${ETHERSCAN_API_KEY}`;
+  const cachedTxTime = await AsyncStorage.getItem(`first-tx-${address}`);
+  if (cachedTxTime) {
+    return cachedTxTime;
+  }
+  const response = await fetch(url);
+  const parsedResponse = await response.json();
+  const txTime = parsedResponse.result[0].timeStamp;
+  AsyncStorage.setItem(`first-tx-${address}`, txTime);
+  return txTime;
+};
+
+export const daysFromTheFirstTx = address => {
+  return new Promise(async resolve => {
+    try {
+      if (address === 'eth') {
+        resolve(1000);
+        return;
+      }
+      const txTime = await fetchTxWithAlwaysCache(address);
+      const daysFrom = Math.floor((Date.now() / 1000 - txTime) / 60 / 60 / 24);
+      resolve(daysFrom);
+    } catch (e) {
+      resolve(1000);
+    }
+  });
+};
 /**
  * @desc Checks if a an address has previous transactions
  * @param  {String} address
@@ -162,7 +194,24 @@ const hasPreviousTransactions = address => {
   });
 };
 
+const checkIfUrlIsAScam = async url => {
+  try {
+    const request = await fetch('https://api.cryptoscamdb.org/v1/scams');
+    const { result } = await request.json();
+    const { hostname } = new URL(url);
+    const found = result.find(s => toLower(s.name) === toLower(hostname));
+    if (found) {
+      return true;
+    }
+    return false;
+  } catch (e) {
+    logger.sentry('Error fetching cryptoscamdb.org list');
+    captureException(e);
+  }
+};
+
 export default {
+  checkIfUrlIsAScam,
   getAsset,
   getBalanceAmount,
   getChainIdFromNetwork,

@@ -12,9 +12,9 @@ const getListItemLayout = (data, index) => ({
 
 const List = ({ getItemLayout, items, renderItem, ...props }) => (
   <FlatList
+    ItemSeparatorComponent={ListItemDivider}
     data={items}
     getItemLayout={getItemLayout}
-    ItemSeparatorComponent={ListItemDivider}
     removeClippedSubviews
     renderItem={renderItem}
     scrollEventThrottle={16}

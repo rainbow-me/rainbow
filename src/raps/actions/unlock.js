@@ -1,3 +1,4 @@
+import { captureException } from '@sentry/react-native';
 import { ethers } from 'ethers';
 import { get, toLower } from 'lodash';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
@@ -10,7 +11,8 @@ import {
 import { dataAddNewTransaction } from '../../redux/data';
 import { rapsAddOrUpdate } from '../../redux/raps';
 import store from '../../redux/store';
-import { AllowancesCache, contractUtils, gasUtils, logger } from '../../utils';
+import { AllowancesCache, contractUtils, gasUtils } from '../../utils';
+import logger from 'logger';
 
 const NOOP = () => undefined;
 
@@ -31,18 +33,42 @@ const unlock = async (wallet, currentRap, index, parameters) => {
 
   // unlocks should always use fast gas
   const fastGasPrice = get(gasPrices, `[${gasUtils.FAST}]`);
-  const gasLimit = await contractUtils.estimateApprove(
-    assetAddress,
-    contractAddress
-  );
-
-  const { approval } = await contractUtils.approve(
-    assetAddress,
-    contractAddress,
-    gasLimit,
-    get(fastGasPrice, 'value.amount'),
-    wallet
-  );
+  let gasLimit;
+  try {
+    logger.sentry('about to estimate approve', {
+      assetAddress,
+      contractAddress,
+    });
+    gasLimit = await contractUtils.estimateApprove(
+      assetAddress,
+      contractAddress
+    );
+  } catch (e) {
+    logger.sentry('Error estimating approve');
+    captureException(e);
+    throw e;
+  }
+  let approval;
+  try {
+    const gasPrice = get(fastGasPrice, 'value.amount');
+    logger.sentry('about to approve', {
+      assetAddress,
+      contractAddress,
+      gasLimit,
+    });
+    const result = await contractUtils.approve(
+      assetAddress,
+      contractAddress,
+      gasLimit,
+      gasPrice,
+      wallet
+    );
+    approval = result?.approval;
+  } catch (e) {
+    logger.sentry('Error approving');
+    captureException(e);
+    throw e;
+  }
 
   const cacheKey = toLower(
     `${wallet.address}|${assetAddress}|${contractAddress}`

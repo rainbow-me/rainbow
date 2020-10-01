@@ -14,7 +14,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { getBrand } from 'react-native-device-info';
 import {
+  TouchableOpacity as GHTouchableOpacity,
   ScrollView,
   State,
   TapGestureHandler,
@@ -29,10 +31,10 @@ import {
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import 'string.fromcodepoint';
 import EmojiTabBarShadow from '../../assets/emojiTabBarShadow.png';
-import { colors, fonts, position } from '../../styles';
 import { deviceUtils } from '../../utils';
 import { Categories } from './Categories';
 import TabBar from './TabBar';
+import { colors, fonts, position } from '@rainbow-me/styles';
 
 // TODO width attribute is temporary solution that will be removed as soon as I figure out why proper scaling does not work
 
@@ -151,11 +153,15 @@ export default class EmojiSelector extends PureComponent {
           <View key={`categoryEmoji${rowContent[0]}`}>
             <Text
               style={{
+                color: colors.black,
                 marginHorizontal: 10,
-                fontSize: Math.floor(this.state.colSize) - 15,
+                fontSize:
+                  Math.floor(this.state.colSize) -
+                  (Platform.OS === 'ios' ? 15 : 22),
                 height: (width - 21) / this.props.columns,
                 width: deviceUtils.dimensions.width,
-                letterSpacing: 8,
+                letterSpacing:
+                  Platform.OS === 'ios' ? 8 : getBrand() === 'google' ? 11 : 8,
                 backgroundColor: colors.white,
               }}
             >
@@ -168,19 +174,23 @@ export default class EmojiSelector extends PureComponent {
                 position: 'absolute',
               }}
             >
-              {touchableNet.map(singleLine => (
-                <TouchableOpacity
-                  key={`categoryEmojiTouchableOpacity${rowContent[0]}${singleLine.sort_order}`}
-                  activeOpacity={0.5}
-                  style={{
+              {touchableNet.map(singleLine => {
+                const touchableProps = {
+                  key: `categoryEmojiTouchableOpacity${rowContent[0]}${singleLine.sort_order}`,
+                  onPress: () => this.handleEmojiSelect(singleLine),
+                  style: {
                     height: (width - 21) / this.props.columns,
                     width: (width - 21) / this.props.columns,
                     opacity: 0,
                     backgroundColor: 'white',
-                  }}
-                  onPress={() => this.handleEmojiSelect(singleLine)}
-                />
-              ))}
+                  },
+                };
+                return Platform.OS === 'ios' ? (
+                  <TouchableOpacity activeOpacity={0.5} {...touchableProps} />
+                ) : (
+                  <GHTouchableOpacity activeOpacity={0.7} {...touchableProps} />
+                );
+              })}
             </View>
           </View>
         ))}
@@ -245,7 +255,7 @@ export default class EmojiSelector extends PureComponent {
     if (type === HEADER_ROW) {
       return this.renderListHeader(item.title);
     } else if (type === OVERLAY) {
-      return (
+      return Platform.OS === 'ios' ? (
         <View
           style={{
             top: index === 0 && -3000,
@@ -256,7 +266,7 @@ export default class EmojiSelector extends PureComponent {
             position: 'absolute',
           }}
         />
-      );
+      ) : null;
     }
     return this.renderEmojis(item);
   };
@@ -268,21 +278,27 @@ export default class EmojiSelector extends PureComponent {
           opacity: scrollPosition,
         }}
       >
-        <BlurView
-          blurType="light"
-          blurAmount={10}
-          style={[
-            styles.sectionStickyBlur,
-            {
-              width:
-                (index - 1) / 2 <= categoryKeys.length - 1
-                  ? Categories[categoryKeys[(index - 1) / 2]].width
-                  : Categories[categoryKeys[categoryKeys.length - 1]].width,
-            },
-          ]}
-        >
-          <Text style={styles.sectionStickyHeader}>{item.title}</Text>
-        </BlurView>
+        {Platform.OS === 'ios' ? (
+          <BlurView
+            blurAmount={10}
+            blurType="light"
+            style={[
+              styles.sectionStickyBlur,
+              {
+                width:
+                  (index - 1) / 2 <= categoryKeys.length - 1
+                    ? Categories[categoryKeys[(index - 1) / 2]].width
+                    : Categories[categoryKeys[categoryKeys.length - 1]].width,
+              },
+            ]}
+          >
+            <Text style={styles.sectionStickyHeader}>{item.title}</Text>
+          </BlurView>
+        ) : (
+          <View style={styles.sectionStickyBlur}>
+            <Text style={styles.sectionStickyHeader}>{item.title}</Text>
+          </View>
+        )}
       </Animated.View>
     </View>
   );
@@ -334,11 +350,15 @@ export default class EmojiSelector extends PureComponent {
           <Text
             key={`emojiRow${emojis[0]}`}
             style={{
+              color: colors.black,
               marginHorizontal: 10,
-              fontSize: Math.floor(this.state.colSize) - 15,
+              fontSize:
+                Math.floor(this.state.colSize) -
+                (Platform.OS === 'ios' ? 15 : 22),
               height: (width - 21) / this.props.columns,
               width: deviceUtils.dimensions.width,
-              letterSpacing: 8,
+              letterSpacing:
+                Platform.OS === 'ios' ? 8 : getBrand() === 'google' ? 11 : 8,
               top: 0.8,
             }}
           >
@@ -390,14 +410,14 @@ export default class EmojiSelector extends PureComponent {
     const Searchbar = (
       <View style={styles.searchbar_container}>
         <TextInput
-          style={styles.search}
-          placeholder={placeholder}
-          clearButtonMode="always"
-          returnKeyType="done"
           autoCorrect={false}
+          clearButtonMode="always"
+          onChangeText={this.handleSearch}
+          placeholder={placeholder}
+          returnKeyType="done"
+          style={styles.search}
           underlineColorAndroid={theme}
           value={searchQuery}
-          onChangeText={this.handleSearch}
         />
       </View>
     );
@@ -419,22 +439,22 @@ export default class EmojiSelector extends PureComponent {
             ) : null}
             <View style={styles.container}>
               <StickyContainer
-                stickyHeaderIndices={[1, 3, 5, 7, 9, 11, 13, 15, 17]}
                 overrideRowRenderer={this.renderStickyItem}
+                stickyHeaderIndices={[1, 3, 5, 7, 9, 11, 13, 15, 17]}
               >
                 <ProgressiveListView
+                  canChangeSize={false}
                   dataProvider={new DataProvider(
                     this.hasRowChanged
                   ).cloneWithRows(this.state.allEmojiList)}
+                  externalScrollView={this.renderScrollView}
                   layoutProvider={this._layoutProvider}
-                  canChangeSize={false}
-                  renderAheadStep={100}
+                  onScroll={this.handleScroll}
                   renderAheadOffset={300}
+                  renderAheadStep={100}
                   rowRenderer={this.renderItem}
                   scrollIndicatorInsets={[15, 0, 15, 0]}
                   style={{ width: deviceUtils.dimensions.width }}
-                  onScroll={this.handleScroll}
-                  externalScrollView={this.renderScrollView}
                 />
               </StickyContainer>
             </View>
@@ -463,9 +483,9 @@ export default class EmojiSelector extends PureComponent {
             >
               <LinearGradient
                 borderRadius={19}
-                overflow="hidden"
                 colors={['#FFFFFF', '#FFFFFF', '#F0F5FA']}
                 end={{ x: 0.5, y: 1 }}
+                overflow="hidden"
                 pointerEvents="none"
                 start={{ x: 0.5, y: 0 }}
                 style={position.coverAsObject}
@@ -473,9 +493,9 @@ export default class EmojiSelector extends PureComponent {
             </View>
             <TabBar
               activeCategory={category}
+              categoryKeys={categoryKeys}
               onPress={this.handleTabSelect}
               theme={theme}
-              categoryKeys={categoryKeys}
             />
           </View>
         ) : null}

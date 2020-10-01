@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components/primitives';
-import { borders, colors, shadow } from '../../styles';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
+import { borders, colors, shadow } from '@rainbow-me/styles';
 
 const IndicatorIcon = styled(Icon).attrs(({ isPinned }) => ({
   color: colors.white,
@@ -15,7 +15,7 @@ const IndicatorIcon = styled(Icon).attrs(({ isPinned }) => ({
 
 const IndicatorIconContainer = styled(Centered)`
   ${borders.buildCircle(20)};
-  ${shadow.build(0, 4, 6, colors.blueGreyDark, 0.4)}
+  ${shadow.build(0, 4, 12, colors.blueGreyDark, 0.4)}
   background-color: ${colors.blueGreyDark50};
   bottom: 3;
   left: 10;

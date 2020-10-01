@@ -1,6 +1,6 @@
+import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { get } from 'lodash';
-import PropTypes from 'prop-types';
 import React, {
   Fragment,
   useCallback,
@@ -8,10 +8,9 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import Animated from 'react-native-reanimated';
-import { useNavigationParam } from 'react-navigation-hooks';
+import { Platform } from 'react-native';
+import Animated, { Extrapolate } from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
-import HorizontalGestureBlocker from '../components/HorizontalGestureBlocker';
 import { interpolate } from '../components/animations';
 import {
   ConfirmExchangeButton,
@@ -21,10 +20,15 @@ import {
   SlippageWarning,
 } from '../components/exchange';
 import SwapInfo from '../components/exchange/SwapInfo';
-import { FloatingPanel, FloatingPanels } from '../components/expanded-state';
+import { FloatingPanel, FloatingPanels } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
 import ExchangeModalTypes from '../helpers/exchangeModalTypes';
+import { loadWallet } from '../model/wallet';
+import { useNavigation } from '../navigation/Navigation';
+import { executeRap } from '../raps/common';
+import { savingsLoadState } from '../redux/savings';
+import ethUnits from '../references/ethereum-units.json';
 import {
   useAccountSettings,
   useBlockPolling,
@@ -37,35 +41,33 @@ import {
   useUniswapCurrencies,
   useUniswapCurrencyReserves,
   useUniswapMarketDetails,
-} from '../hooks';
-import { loadWallet } from '../model/wallet';
-import { executeRap } from '../raps/common';
-import { savingsLoadState } from '../redux/savings';
-import ethUnits from '../references/ethereum-units.json';
-import { colors, position } from '../styles';
-import { backgroundTask, isNewValueForPath, logger } from '../utils';
-import Routes from './Routes/routesNames';
-
-export const exchangeModalBorderRadius = 30;
+} from '@rainbow-me/hooks';
+import Routes from '@rainbow-me/routes';
+import { colors, position } from '@rainbow-me/styles';
+import { backgroundTask, isNewValueForPath } from '@rainbow-me/utils';
+import logger from 'logger';
 
 const AnimatedFloatingPanels = Animated.createAnimatedComponent(FloatingPanels);
 
-const ExchangeModal = ({
+export default function ExchangeModal({
   createRap,
   cTokenBalance,
   defaultInputAsset,
   estimateRap,
   inputHeaderTitle,
-  navigation,
   showOutputField,
   supplyBalanceUnderlying,
   type,
   underlyingPrice,
-}) => {
+}) {
+  const { navigate, setParams } = useNavigation();
+  const {
+    params: { tabTransitionPosition },
+  } = useRoute();
+
   const isDeposit = type === ExchangeModalTypes.deposit;
   const isWithdrawal = type === ExchangeModalTypes.withdrawal;
-
-  const tabPosition = useNavigationParam('position');
+  const category = isDeposit || isWithdrawal ? 'savings' : 'swap';
 
   const defaultGasLimit = isDeposit
     ? ethUnits.basic_deposit
@@ -110,11 +112,11 @@ const ExchangeModal = ({
     outputCurrency,
     previousInputCurrency,
   } = useUniswapCurrencies({
+    category,
     defaultInputAsset,
     inputHeaderTitle,
     isDeposit,
     isWithdrawal,
-    navigation,
     type,
     underlyingPrice,
   });
@@ -122,6 +124,7 @@ const ExchangeModal = ({
   const {
     handleFocus,
     inputFieldRef,
+    lastFocusedInputHandle,
     nativeFieldRef,
     outputFieldRef,
   } = useSwapInputRefs({ inputCurrency, outputCurrency });
@@ -151,6 +154,10 @@ const ExchangeModal = ({
     type,
   });
 
+  const handleCustomGasBlur = useCallback(() => {
+    lastFocusedInputHandle?.current?.focus();
+  }, [lastFocusedInputHandle]);
+
   const updateGasLimit = useCallback(async () => {
     try {
       const gasLimit = await estimateRap({
@@ -161,7 +168,9 @@ const ExchangeModal = ({
         outputCurrency,
         outputReserve,
       });
-      updateTxFee(gasLimit);
+      if (inputCurrency && outputCurrency) {
+        updateTxFee(gasLimit);
+      }
     } catch (error) {
       updateTxFee(defaultGasLimit);
     }
@@ -181,6 +190,13 @@ const ExchangeModal = ({
   useEffect(() => {
     updateGasLimit();
   }, [updateGasLimit]);
+
+  // Set default gas limit
+  useEffect(() => {
+    setTimeout(() => {
+      updateTxFee(defaultGasLimit);
+    }, 1000);
+  }, [defaultGasLimit, updateTxFee]);
 
   const clearForm = useCallback(() => {
     logger.log('[exchange] - clear form');
@@ -245,15 +261,17 @@ const ExchangeModal = ({
   useEffect(() => {
     if (isMax) {
       let maxBalance = maxInputBalance;
+      inputFieldRef?.current?.blur();
       if (isWithdrawal) {
         maxBalance = supplyBalanceUnderlying;
       }
       updateInputAmount(maxBalance, maxBalance, true, true);
     }
   }, [
-    maxInputBalance,
+    inputFieldRef,
     isMax,
     isWithdrawal,
+    maxInputBalance,
     supplyBalanceUnderlying,
     updateInputAmount,
   ]);
@@ -301,21 +319,45 @@ const ExchangeModal = ({
     updateOutputAmount,
   ]);
 
+  const isSlippageWarningVisible =
+    isSufficientBalance && !!inputAmount && !!outputAmount;
+  const prevIsSlippageWarningVisible = usePrevious(isSlippageWarningVisible);
+  useEffect(() => {
+    if (isSlippageWarningVisible && !prevIsSlippageWarningVisible) {
+      analytics.track('Showing high slippage warning in Swap', {
+        category,
+        exchangeAddress: outputCurrency.exchangeAddress,
+        name: outputCurrency.name,
+        slippage,
+        symbol: outputCurrency.symbol,
+        tokenAddress: outputCurrency.address,
+        type,
+      });
+    }
+  }, [
+    category,
+    isSlippageWarningVisible,
+    outputCurrency,
+    prevIsSlippageWarningVisible,
+    slippage,
+    type,
+  ]);
+
   const handlePressMaxBalance = useCallback(async () => {
     let maxBalance = maxInputBalance;
     if (isWithdrawal) {
       maxBalance = supplyBalanceUnderlying;
     }
     analytics.track('Selected max balance', {
-      category: isDeposit || isWithdrawal ? 'savings' : 'swap',
+      category,
       defaultInputAsset: get(defaultInputAsset, 'symbol', ''),
       type,
       value: Number(maxBalance.toString()),
     });
     return updateInputAmount(maxBalance, maxBalance, true, true);
   }, [
+    category,
     defaultInputAsset,
-    isDeposit,
     isWithdrawal,
     maxInputBalance,
     supplyBalanceUnderlying,
@@ -326,19 +368,30 @@ const ExchangeModal = ({
   const handleSubmit = useCallback(() => {
     backgroundTask.execute(async () => {
       analytics.track(`Submitted ${type}`, {
-        category: isDeposit || isWithdrawal ? 'savings' : 'swap',
+        category,
         defaultInputAsset: get(defaultInputAsset, 'symbol', ''),
+        exchangeAddress: get(outputCurrency, 'exchangeAddress', ''),
+        isSlippageWarningVisible,
+        name: get(outputCurrency, 'name', ''),
+        slippage,
+        symbol: get(outputCurrency, 'symbol', ''),
+        tokenAddress: get(outputCurrency, 'address', ''),
         type,
       });
 
       setIsAuthorizing(true);
       try {
         const wallet = await loadWallet();
+        if (!wallet) {
+          setIsAuthorizing(false);
+          logger.sentry(`aborting ${type} due to missing wallet`);
+          return;
+        }
 
         setIsAuthorizing(false);
         const callback = () => {
-          navigation.setParams({ focused: false });
-          navigation.navigate(Routes.PROFILE_SCREEN);
+          setParams({ focused: false });
+          navigate(Routes.PROFILE_SCREEN);
         };
         const rap = await createRap({
           callback,
@@ -359,20 +412,21 @@ const ExchangeModal = ({
         }
         logger.log('[exchange - handle submit] executed rap!');
         analytics.track(`Completed ${type}`, {
-          category: isDeposit || isWithdrawal ? 'savings' : 'swap',
+          category,
           defaultInputAsset: get(defaultInputAsset, 'symbol', ''),
           type,
         });
       } catch (error) {
         setIsAuthorizing(false);
         logger.log('[exchange - handle submit] error submitting swap', error);
-        navigation.setParams({ focused: false });
-        navigation.navigate(Routes.WALLET_SCREEN);
+        setParams({ focused: false });
+        navigate(Routes.WALLET_SCREEN);
       }
     });
   }, [
-    cTokenBalance,
+    category,
     createRap,
+    cTokenBalance,
     defaultInputAsset,
     dispatch,
     inputAmount,
@@ -381,11 +435,14 @@ const ExchangeModal = ({
     inputReserve,
     isDeposit,
     isMax,
+    isSlippageWarningVisible,
     isWithdrawal,
-    navigation,
+    navigate,
     outputAmount,
     outputCurrency,
     outputReserve,
+    setParams,
+    slippage,
     type,
   ]);
 
@@ -393,28 +450,34 @@ const ExchangeModal = ({
     inputFieldRef?.current?.blur();
     outputFieldRef?.current?.blur();
     nativeFieldRef?.current?.blur();
-    navigation.setParams({ focused: false });
-    navigation.navigate(Routes.SWAP_DETAILS_SCREEN, {
+    setParams({ focused: false });
+    navigate(Routes.SWAP_DETAILS_SCREEN, {
       ...extraTradeDetails,
       inputCurrencySymbol: get(inputCurrency, 'symbol'),
       outputCurrencySymbol: get(outputCurrency, 'symbol'),
-      restoreFocusOnSwapModal: () => {
-        navigation.setParams({ focused: true });
-      },
+      restoreFocusOnSwapModal: () => setParams({ focused: true }),
       type: 'swap_details',
     });
+    analytics.track('Opened Swap Details modal', {
+      category,
+      exchangeAddress: get(outputCurrency, 'exchangeAddress', ''),
+      name: get(outputCurrency, 'name', ''),
+      symbol: get(outputCurrency, 'symbol', ''),
+      tokenAddress: get(outputCurrency, 'address', ''),
+      type,
+    });
   }, [
+    category,
     extraTradeDetails,
     inputCurrency,
     inputFieldRef,
     nativeFieldRef,
-    navigation,
+    navigate,
     outputCurrency,
     outputFieldRef,
+    setParams,
+    type,
   ]);
-
-  const isSlippageWarningVisible =
-    isSufficientBalance && !!inputAmount && !!outputAmount;
 
   const showDetailsButton = useMemo(() => {
     return (
@@ -437,109 +500,112 @@ const ExchangeModal = ({
       : !!inputCurrency && !!outputCurrency;
 
   return (
-    <HorizontalGestureBlocker>
-      <KeyboardFixedOpenLayout>
-        <Centered
-          {...position.sizeAsObject('100%')}
-          backgroundColor={colors.transparent}
-          direction="column"
+    <KeyboardFixedOpenLayout>
+      <Centered
+        {...position.sizeAsObject('100%')}
+        backgroundColor={colors.transparent}
+        direction="column"
+      >
+        <AnimatedFloatingPanels
+          margin={0}
+          paddingTop={24}
+          style={{
+            opacity:
+              Platform.OS === 'android'
+                ? 1
+                : interpolate(tabTransitionPosition, {
+                    extrapolate: Extrapolate.CLAMP,
+                    inputRange: [0, 0, 1],
+                    outputRange: [1, 1, 0],
+                  }),
+            transform: [
+              {
+                scale: interpolate(tabTransitionPosition, {
+                  extrapolate: Animated.Extrapolate.CLAMP,
+                  inputRange: [0, 0, 1],
+                  outputRange: [1, 1, 0.9],
+                }),
+                translateX: interpolate(tabTransitionPosition, {
+                  extrapolate: Animated.Extrapolate.CLAMP,
+                  inputRange: [0, 0, 1],
+                  outputRange: [0, 0, -8],
+                }),
+              },
+            ],
+          }}
         >
-          <AnimatedFloatingPanels
-            margin={0}
-            style={{
-              opacity: interpolate(tabPosition, {
-                extrapolate: Animated.Extrapolate.CLAMP,
-                inputRange: [0, 1],
-                outputRange: [1, 0],
-              }),
-            }}
+          <FloatingPanel
+            overflow="visible"
+            paddingBottom={showOutputField ? 0 : 26}
+            radius={39}
           >
-            <FloatingPanel
-              overflow="visible"
-              paddingBottom={showOutputField ? 0 : 26}
-              radius={exchangeModalBorderRadius}
-            >
-              <ExchangeModalHeader
-                onPressDetails={navigateToSwapDetailsModal}
-                showDetailsButton={showDetailsButton}
-                title={inputHeaderTitle}
-              />
-              <ExchangeInputField
-                disableInputCurrencySelection={isWithdrawal}
-                inputAmount={inputAmountDisplay}
-                inputCurrencyAddress={get(inputCurrency, 'address', null)}
-                inputCurrencySymbol={get(inputCurrency, 'symbol', null)}
-                inputFieldRef={inputFieldRef}
-                nativeAmount={nativeAmount}
-                nativeCurrency={nativeCurrency}
-                nativeFieldRef={nativeFieldRef}
+            <ExchangeModalHeader
+              onPressDetails={navigateToSwapDetailsModal}
+              showDetailsButton={showDetailsButton}
+              title={inputHeaderTitle}
+            />
+            <ExchangeInputField
+              disableInputCurrencySelection={isWithdrawal}
+              inputAmount={inputAmountDisplay}
+              inputCurrencyAddress={get(inputCurrency, 'address', null)}
+              inputCurrencySymbol={get(inputCurrency, 'symbol', null)}
+              inputFieldRef={inputFieldRef}
+              nativeAmount={nativeAmount}
+              nativeCurrency={nativeCurrency}
+              nativeFieldRef={nativeFieldRef}
+              onFocus={handleFocus}
+              onPressMaxBalance={handlePressMaxBalance}
+              onPressSelectInputCurrency={navigateToSelectInputCurrency}
+              setInputAmount={updateInputAmount}
+              setNativeAmount={updateNativeAmount}
+            />
+            {showOutputField && (
+              <ExchangeOutputField
                 onFocus={handleFocus}
-                onPressMaxBalance={handlePressMaxBalance}
-                onPressSelectInputCurrency={navigateToSelectInputCurrency}
-                setInputAmount={updateInputAmount}
-                setNativeAmount={updateNativeAmount}
+                onPressSelectOutputCurrency={navigateToSelectOutputCurrency}
+                outputAmount={outputAmountDisplay}
+                outputCurrencyAddress={get(outputCurrency, 'address', null)}
+                outputCurrencySymbol={get(outputCurrency, 'symbol', null)}
+                outputFieldRef={outputFieldRef}
+                setOutputAmount={updateOutputAmount}
               />
-              {showOutputField && (
-                <ExchangeOutputField
-                  onFocus={handleFocus}
-                  onPressSelectOutputCurrency={navigateToSelectOutputCurrency}
-                  outputAmount={outputAmountDisplay}
-                  outputCurrencyAddress={get(outputCurrency, 'address', null)}
-                  outputCurrencySymbol={get(outputCurrency, 'symbol', null)}
-                  outputFieldRef={outputFieldRef}
-                  setOutputAmount={updateOutputAmount}
+            )}
+          </FloatingPanel>
+          {isDeposit && (
+            <SwapInfo
+              amount={(inputAmount > 0 && outputAmountDisplay) || null}
+              asset={outputCurrency}
+            />
+          )}
+          {isSlippageWarningVisible && <SlippageWarning slippage={slippage} />}
+          {showConfirmButton && (
+            <Fragment>
+              <Centered
+                flexShrink={0}
+                paddingHorizontal={15}
+                paddingTop={24}
+                width="100%"
+              >
+                <ConfirmExchangeButton
+                  disabled={!Number(inputAmountDisplay)}
+                  isAuthorizing={isAuthorizing}
+                  isDeposit={isDeposit}
+                  isSufficientBalance={isSufficientBalance}
+                  isSufficientGas={isSufficientGas}
+                  onSubmit={handleSubmit}
+                  slippage={slippage}
+                  type={type}
                 />
-              )}
-            </FloatingPanel>
-            {isDeposit && (
-              <SwapInfo
-                amount={(inputAmount > 0 && outputAmountDisplay) || null}
-                asset={outputCurrency}
-              />
-            )}
-            {isSlippageWarningVisible && (
-              <SlippageWarning slippage={slippage} />
-            )}
-            {showConfirmButton && (
-              <Fragment>
-                <Centered
-                  flexShrink={0}
-                  paddingHorizontal={15}
-                  paddingTop={24}
-                  width="100%"
-                >
-                  <ConfirmExchangeButton
-                    disabled={!Number(inputAmountDisplay)}
-                    isAuthorizing={isAuthorizing}
-                    isDeposit={isDeposit}
-                    isSufficientBalance={isSufficientBalance}
-                    isSufficientGas={isSufficientGas}
-                    onSubmit={handleSubmit}
-                    slippage={slippage}
-                    type={type}
-                  />
-                </Centered>
-                <GasSpeedButton type={type} />
-              </Fragment>
-            )}
-          </AnimatedFloatingPanels>
-        </Centered>
-      </KeyboardFixedOpenLayout>
-    </HorizontalGestureBlocker>
+              </Centered>
+            </Fragment>
+          )}
+          <GasSpeedButton
+            dontBlur
+            onCustomGasBlur={handleCustomGasBlur}
+            type={type}
+          />
+        </AnimatedFloatingPanels>
+      </Centered>
+    </KeyboardFixedOpenLayout>
   );
-};
-
-ExchangeModal.propTypes = {
-  createRap: PropTypes.func,
-  cTokenBalance: PropTypes.string,
-  defaultInputAddress: PropTypes.string,
-  estimateRap: PropTypes.func,
-  inputHeaderTitle: PropTypes.string,
-  navigation: PropTypes.object,
-  showOutputField: PropTypes.bool,
-  supplyBalanceUnderlying: PropTypes.string,
-  type: PropTypes.oneOf(Object.values(ExchangeModalTypes)),
-  underlyingPrice: PropTypes.string,
-};
-
-export default ExchangeModal;
+}

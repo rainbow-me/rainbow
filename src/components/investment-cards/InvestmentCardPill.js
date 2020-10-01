@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components/primitives';
-import { colors, margin, padding } from '../../styles';
 import { CoinIcon } from '../coin-icon';
 import { Centered, Row } from '../layout';
 import { Text } from '../text';
+import { colors, margin, padding } from '@rainbow-me/styles';
 
 const Pill = styled(Centered)`
   ${margin(0, 5)};

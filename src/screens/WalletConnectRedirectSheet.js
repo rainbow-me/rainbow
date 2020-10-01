@@ -1,11 +1,12 @@
+import { useRoute } from '@react-navigation/native';
 import React, { useEffect } from 'react';
-import { useNavigation } from 'react-navigation-hooks';
 import styled from 'styled-components';
 import { Centered } from '../components/layout';
 import { Sheet } from '../components/sheet';
 import { Text } from '../components/text';
 import { useAppState } from '../hooks';
-import { colors } from '../styles';
+import { useNavigation } from '../navigation/Navigation';
+import { colors } from '@rainbow-me/styles';
 
 const BodyText = styled(Text).attrs({
   align: 'center',
@@ -36,10 +37,11 @@ const titlesMap = {
 };
 
 const WalletConnectRedirectSheet = () => {
-  const { goBack, getParam } = useNavigation();
+  const { goBack } = useNavigation();
   const { appState } = useAppState();
+  const { params } = useRoute();
 
-  const type = getParam('type');
+  const type = params?.type;
 
   useEffect(() => {
     if (appState === 'background') {

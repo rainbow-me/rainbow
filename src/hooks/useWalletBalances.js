@@ -10,8 +10,8 @@ import { web3Provider } from '../handlers/web3';
 import networkInfo from '../helpers/networkInfo';
 import { fromWei, handleSignificantDecimals } from '../helpers/utilities';
 import balanceCheckerContractAbi from '../references/balances-checker-abi.json';
-import { logger } from '../utils';
 import useAccountSettings from './useAccountSettings';
+import logger from 'logger';
 
 const ETH_ADDRESS = '0x0000000000000000000000000000000000000000';
 
@@ -46,11 +46,11 @@ const useWalletBalances = wallets => {
         const formattedBalance = handleSignificantDecimals(amountInETH, 4);
         walletBalances[address] = formattedBalance;
       });
+      saveWalletBalances(walletBalances);
     } catch (e) {
       logger.log('Error fetching ETH balances in batch', e);
     }
 
-    saveWalletBalances(walletBalances);
     return walletBalances;
   }, [network, wallets]);
 
@@ -63,11 +63,11 @@ const useWalletBalances = wallets => {
     WALLET_BALANCES_FROM_STORAGE
   );
 
-  if (!data && !isEmpty(resultFromStorage)) {
+  if (isEmpty(data) && !isEmpty(resultFromStorage)) {
     return resultFromStorage;
   }
 
-  if (!data) {
+  if (isEmpty(data)) {
     return {};
   }
 

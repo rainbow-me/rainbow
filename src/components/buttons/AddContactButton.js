@@ -6,10 +6,10 @@ import { View } from 'react-primitives';
 import { compose, setPropTypes } from 'recompact';
 import AddContactIcon from '../../assets/addContactIcon.png';
 import { withNeverRerender } from '../../hoc';
-import { colors } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import Button from './Button';
+import { colors } from '@rainbow-me/styles';
 
 const duration = 200;
 const transition = (
@@ -52,6 +52,7 @@ const AddButton = enhanceButton(({ onPress }) => (
     backgroundColor={colors.sendScreen.brightBlue}
     onPress={onPress}
     size="small"
+    testID="add-contact-button"
     type="pill"
   >
     <FastImage
@@ -74,6 +75,7 @@ const EditButton = enhanceButton(({ onPress }) => (
       justifyContent: 'center',
       paddingRight: 4,
     }}
+    testID="edit-contact-button"
   >
     <Icon name="threeDots" />
   </ButtonPressAnimation>
@@ -84,8 +86,8 @@ const AddContactButton = ({ edit, onPress }) => {
   const editButtonRef = useRef();
 
   useEffect(() => {
-    if (addButtonRef.current) addButtonRef.current.animateNextTransition();
-    if (editButtonRef.current) editButtonRef.current.animateNextTransition();
+    addButtonRef.current?.animateNextTransition();
+    editButtonRef.current?.animateNextTransition();
   }, [edit]);
 
   return (
@@ -101,11 +103,6 @@ const AddContactButton = ({ edit, onPress }) => {
       )}
     </View>
   );
-};
-
-AddContactButton.propTypes = {
-  edit: PropTypes.bool,
-  onPress: PropTypes.func.isRequired,
 };
 
 export default React.memo(AddContactButton);

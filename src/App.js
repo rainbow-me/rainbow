@@ -6,10 +6,18 @@ import { get } from 'lodash';
 import nanoid from 'nanoid/non-secure';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { AppRegistry, AppState, unstable_enableLogBox } from 'react-native';
+import {
+  AppRegistry,
+  AppState,
+  NativeModules,
+  Platform,
+  StatusBar,
+  unstable_enableLogBox,
+} from 'react-native';
 import branch from 'react-native-branch';
 // eslint-disable-next-line import/default
 import CodePush from 'react-native-code-push';
+
 import {
   REACT_APP_SEGMENT_API_WRITE_KEY,
   SENTRY_ENDPOINT,
@@ -30,20 +38,30 @@ import {
   showNetworkRequests,
   showNetworkResponses,
 } from './config/debug';
-
+import { InitialRouteContext } from './context/initialRoute';
 import monitorNetwork from './debugging/network';
 import handleDeeplink from './handlers/deeplinks';
-import { withAccountSettings } from './hoc';
+import {
+  runKeychainIntegrityChecks,
+  runWalletBackupStatusChecks,
+} from './handlers/walletReadyEvents';
+import DevContextWrapper from './helpers/DevContext';
+import { withAccountSettings, withAppState } from './hoc';
 import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import * as keychain from './model/keychain';
+import { loadAddress } from './model/wallet';
 import { Navigation } from './navigation';
+import RoutesComponent from './navigation/Routes';
 import { requestsForTopic } from './redux/requests';
 import store from './redux/store';
 import { walletConnectLoadState } from './redux/walletconnect';
-import RoutesComponent from './screens/Routes';
-import { logger } from './utils';
+import Routes from '@rainbow-me/routes';
+import logger from 'logger';
+import { Portal } from 'react-native-cool-modals/Portal';
 
 const WALLETCONNECT_SYNC_DELAY = 500;
+
+StatusBar.pushStackEntry({ animated: true, barStyle: 'dark-content' });
 
 if (__DEV__) {
   console.disableYellowBox = reactNativeDisableYellowBox;
@@ -54,9 +72,11 @@ if (__DEV__) {
   initSentry({ dsn: SENTRY_ENDPOINT, environment: SENTRY_ENVIRONMENT });
 }
 
-CodePush.getUpdateMetadata().then(update => {
+CodePush.getUpdateMetadata(CodePush.UpdateState.RUNNING).then(update => {
   if (update) {
-    setRelease(`me.rainbow-${update.appVersion}-codepush:${update.label}`);
+    setRelease(
+      `me.rainbow-${VersionNumber.appVersion}-codepush:${update.label}`
+    );
   } else {
     setRelease(`me.rainbow-${VersionNumber.appVersion}`);
   }
@@ -69,9 +89,14 @@ class App extends Component {
     requestsForTopic: PropTypes.func,
   };
 
-  state = { appState: AppState.currentState };
+  state = { appState: AppState.currentState, initialRoute: null };
 
   async componentDidMount() {
+    if (!__DEV__ && NativeModules.RNTestFlight) {
+      const { isTestFlight } = NativeModules.RNTestFlight.getConstants();
+      logger.sentry(`Test flight usage - ${isTestFlight}`);
+    }
+    this.identifyFlow();
     AppState.addEventListener('change', this.handleAppStateChange);
     await this.handleInitializeAnalytics();
     saveFCMToken();
@@ -109,6 +134,17 @@ class App extends Component {
     });
   }
 
+  componentDidUpdate(prevProps) {
+    if (!prevProps.walletReady && this.props.walletReady) {
+      // Everything we need to do after the wallet is ready goes here
+      logger.sentry('✅ Wallet ready!');
+      runKeychainIntegrityChecks();
+      if (Platform.OS === 'ios') {
+        runWalletBackupStatusChecks();
+      }
+    }
+  }
+
   componentWillUnmount() {
     AppState.removeEventListener('change', this.handleAppStateChange);
     this.onTokenRefreshListener();
@@ -116,6 +152,15 @@ class App extends Component {
     this.backgroundNotificationListener();
     this.branchListener();
   }
+
+  identifyFlow = async () => {
+    const address = await loadAddress();
+    if (address) {
+      this.setState({ initialRoute: Routes.SWIPE_LAYOUT });
+    } else {
+      this.setState({ initialRoute: Routes.WELCOME_SCREEN });
+    }
+  };
 
   onRemoteNotification = notification => {
     const topic = get(notification, 'data.topic');
@@ -167,6 +212,10 @@ class App extends Component {
   handleAppStateChange = async nextAppState => {
     if (nextAppState === 'active') {
       PushNotificationIOS.removeAllDeliveredNotifications();
+    }
+
+    // Restore WC connectors when going from BG => FG
+    if (this.state.appState === 'background' && nextAppState === 'active') {
       store.dispatch(walletConnectLoadState());
     }
 
@@ -182,21 +231,30 @@ class App extends Component {
     Navigation.setTopLevelNavigator(navigatorRef);
 
   render = () => (
-    <SafeAreaProvider>
-      <Provider store={store}>
-        <FlexItem>
-          <RoutesComponent ref={this.handleNavigatorRef} />
-          <OfflineToast />
-          <TestnetToast network={this.props.network} />
-        </FlexItem>
-      </Provider>
-    </SafeAreaProvider>
+    <DevContextWrapper>
+      <Portal>
+        <SafeAreaProvider>
+          <Provider store={store}>
+            <FlexItem>
+              {this.state.initialRoute && (
+                <InitialRouteContext.Provider value={this.state.initialRoute}>
+                  <RoutesComponent ref={this.handleNavigatorRef} />
+                </InitialRouteContext.Provider>
+              )}
+              <OfflineToast />
+              <TestnetToast network={this.props.network} />
+            </FlexItem>
+          </Provider>
+        </SafeAreaProvider>
+      </Portal>
+    </DevContextWrapper>
   );
 }
 
 const AppWithRedux = compose(
   withProps({ store }),
   withAccountSettings,
+  withAppState,
   connect(null, {
     requestsForTopic,
   })

@@ -2,9 +2,9 @@ import Clipboard from '@react-native-community/clipboard';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import ToolTip from 'react-native-tooltip';
-import { withNavigation } from 'react-navigation';
 import { compose, onlyUpdateForKeys } from 'recompact';
-import { colors } from '../../styles';
+import { withNavigation } from '../../navigation/Navigation';
+import { colors } from '@rainbow-me/styles';
 
 class CopyTooltip extends PureComponent {
   static propTypes = {

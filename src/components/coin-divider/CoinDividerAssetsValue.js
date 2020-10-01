@@ -1,9 +1,9 @@
 import React from 'react';
 import styled from 'styled-components/primitives';
 import { convertAmountToNativeDisplay } from '../../helpers/utilities';
-import { colors, position } from '../../styles';
 import { OpacityToggler } from '../animations';
 import { Text } from '../text';
+import { colors, position } from '@rainbow-me/styles';
 
 const Container = styled(OpacityToggler)`
   ${position.centered};

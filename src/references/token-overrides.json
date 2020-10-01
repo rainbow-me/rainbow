@@ -7,6 +7,10 @@
     "color": "#29292E",
     "name": "0x"
   },
+  "0x80fB784B7eD66730e8b1DBd9820aFD29931aab03": {
+    "color": "#4BA7C5",
+    "name": "Aave"
+  },
   "0x960b236A07cf122663c4303350609A66A7B288C0": {
     "color": "#06BCE5",
     "name": "Aragon"
@@ -18,6 +22,11 @@
   "0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C": {
     "color": "#00224D",
     "name": "Bancor"
+  },
+  "0x68a118ef45063051eac49c7e647ce5ace48a68a5": {
+    "color": "#00ADD5",
+    "name": "Based Money",
+    "symbol": "$BASED"
   },
   "0x0D8775F648430679A709E98d2b0Cb6250d2887EF": {
     "color": "#FF5000",
@@ -34,6 +43,11 @@
   "0x41e5560054824eA6B0732E656E3Ad64E20e94E45": {
     "color": "#3AB03E",
     "name": "Civic"
+  },
+  "0xc00e94cb662c3520282e6f5717214004a7f26888": {
+    "color": "#00D395",
+    "name": "Compound",
+    "shadowColor": "#25292E"
   },
   "0x6c8c6b02e7b2be14d4fa6022dfd6d75921d90e4e": {
     "color": "#9669ED",
@@ -84,6 +98,10 @@
     "color": "#E0A83A",
     "name": "Digix Gold"
   },
+  "0xF629cBd94d3791C9250152BD8dfBDF380E2a3B9c": {
+    "color": "#7866D5",
+    "name": "Enjin"
+  },
   "0x4946Fcea7C692606e8908002e55A582af44AC121": {
     "color": "#D79C93",
     "name": "FOAM"
@@ -122,18 +140,19 @@
   "0x2b591e99afe9f32eaa6214f7b7629768c40eeb39": {
     "color": "#FF47A9",
     "name": "HEX",
-    "shadowColor": "#FF9355",
+    "shadowColor": "#FF9355"
   },
   "0x6c6EE5e31d828De241282B9606C8e98Ea48526E2": {
     "color": "#8834FF",
-    "name": "Holo"
+    "name": "Holo",
+    "symbol": "HOT"
   },
   "0x607F4C5BB672230e8672085532f7e901544a7375": {
     "color": "#EBBC2F",
     "name": "iExec"
   },
   "0x93ED3FBe21207Ec2E8f2d3c3de6e058Cb73Bc04d": {
-    "color": "#A2A1A3",
+    "color": "#838285",
     "name": "Kleros"
   },
   "0xdd974D5C2e2928deA5F71b9825b8b646686BD200": {
@@ -176,9 +195,17 @@
     "color": "#25292E",
     "name": "Numeraire"
   },
+  "0x45804880de22913dafe09f4980848ece6ecbaf78": {
+    "color": "#CBB10E",
+    "name": "Paxos Gold"
+  },
   "0x8E870D67F660D95d5be530380D0eC0bd388289E1": {
     "color": "#4EAD46",
     "name": "Paxos Standard"
+  },
+  "0xe3818504c1b32bf1557b16c238b2e01fd3149c17": {
+    "color": "#00BFFF",
+    "name": "Pillar"
   },
   "0x6758B7d441a9739b98552B373703d8d3d14f9e62": {
     "color": "#5332A0",
@@ -189,6 +216,10 @@
     "color": "#25292E",
     "name": "Raiden"
   },
+  "0xfca59cd816ab1ead66534d82bc21e7515ce441cf": {
+    "color": "#F876F2",
+    "name": "Rarible"
+  },
   "0x408e41876cCCDC0F92210600ef50372656052a38": {
     "color": "#00224D",
     "name": "Ren"
@@ -198,7 +229,7 @@
     "name": "Rocket Pool"
   },
   "0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359": {
-    "color": "#FEBE44",
+    "color": "#F0B340",
     "name": "Sai",
     "symbol": "SAI"
   },
@@ -242,13 +273,22 @@
     "color": "#002868",
     "name": "TrueUSD"
   },
+  "0x4c19596f5aaff459fa38b0f7ed92f11ae6543784": {
+    "name": "TrustToken",
+    "symbol": "TRU",
+  },
   "0x04Fa0d235C4abf4BcF4787aF4CF447DE572eF828": {
     "color": "#FF4A4A",
     "name": "UMA"
   },
+  "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984": {
+    "color": "#FD017A",
+    "name": "Uniswap",
+    "shadowColor": "#FDB8DA"
+  },
   "0x23B608675a2B2fB1890d3ABBd85c5775c51691d5": {
     "color": "#E15EE5",
-    "name": "Unisocks Edition 0"
+    "name": "Unisocks"
   },
   "0x09cabEC1eAd1c0Ba254B09efb3EE13841712bE14": {
     "color": "#E15EE5",
@@ -270,5 +310,14 @@
   "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2": {
     "color": "#25292E",
     "name": "Wrapped Ether"
+  },
+  "0x5dbcf33d8c2e976c6b560249878e6f1491bca25c": {
+    "name": "Y Curve Vault",
+    "symbol": "yUSD"
+  },
+  "0x0aacfbec6a24756c20d41914f2caba817c0d8521": {
+    "color": "#B2364F",
+    "name": "YAM",
+    "shadowColor": "#D09AAC"
   }
 }

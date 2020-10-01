@@ -1,16 +1,17 @@
+import { useRoute } from '@react-navigation/core';
 import analytics from '@segment/analytics-react-native';
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment, useCallback, useState } from 'react';
 import { Clock } from 'react-native-reanimated';
 import { useDimensions, useIsWalletEthZero } from '../../hooks';
-import { padding } from '../../styles';
 import { Alert } from '../alerts';
 import { runSpring } from '../animations';
 import { Centered, ColumnWithMargins } from '../layout';
 import { Numpad, NumpadValue } from '../numpad';
 import AddCashFooter from './AddCashFooter';
 import AddCashSelector from './AddCashSelector';
+import { padding } from '@rainbow-me/styles';
 
 const currencies = ['DAI', 'ETH'];
 
@@ -23,13 +24,16 @@ const AddCashForm = ({
   shakeAnim,
 }) => {
   const isWalletEthZero = useIsWalletEthZero();
+  const { params } = useRoute();
 
   const { isNarrowPhone, isSmallPhone, isTallPhone } = useDimensions();
   const [scaleAnim, setScaleAnim] = useState(1);
 
   const initialCurrencyIndex = isWalletEthZero ? 1 : 0;
   const [currency, setCurrency] = useState(currencies[initialCurrencyIndex]);
-  const [value, setValue] = useState(null);
+  const [value, setValue] = useState(
+    params?.amount ? params?.amount?.toString() : ''
+  );
 
   const handlePurchase = useCallback(() => {
     analytics.track('Submitted Purchase', {
@@ -141,8 +145,8 @@ const AddCashForm = ({
           <AddCashSelector
             currencies={currencies}
             initialCurrencyIndex={initialCurrencyIndex}
-            onSelect={onCurrencyChange}
             isWalletEthZero={isWalletEthZero}
+            onSelect={onCurrencyChange}
           />
         </ColumnWithMargins>
       </Centered>

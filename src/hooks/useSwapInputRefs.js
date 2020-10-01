@@ -1,82 +1,46 @@
-import { get } from 'lodash';
-import { useCallback, useEffect, useRef } from 'react';
-import { TextInput } from 'react-native';
-import { useIsFocused } from 'react-navigation-hooks';
-import useInteraction from './useInteraction';
+import { useCallback, useRef } from 'react';
 import useMagicAutofocus from './useMagicAutofocus';
-import usePrevious from './usePrevious';
-
-const getNativeTag = field => get(field, '_nativeTag');
 
 export default function useSwapInputRefs({ inputCurrency, outputCurrency }) {
-  const isScreenFocused = useIsFocused();
-  const wasScreenFocused = usePrevious(isScreenFocused);
-
   const inputFieldRef = useRef();
   const nativeFieldRef = useRef();
   const outputFieldRef = useRef();
 
-  const [handleFocus, lastFocusedInput] = useMagicAutofocus(
-    inputFieldRef.current
-  );
-
-  const findNextFocused = useCallback(
-    ({ inputCurrency, outputCurrency }) => {
-      const inputRefTag = getNativeTag(inputFieldRef.current);
-      const nativeInputRefTag = getNativeTag(nativeFieldRef.current);
-      const outputRefTag = getNativeTag(outputFieldRef.current);
+  const findNextInput = useCallback(
+    currentFocusedInputHandle => {
+      const inputRefHandle = inputFieldRef.current;
+      const nativeInputRefHandle = nativeFieldRef.current;
+      const outputRefHandle = outputFieldRef.current;
 
       const lastFocusedIsInputType =
-        lastFocusedInput &&
-        (lastFocusedInput.current === inputRefTag ||
-          lastFocusedInput.current === nativeInputRefTag);
+        currentFocusedInputHandle?.current === inputRefHandle ||
+        currentFocusedInputHandle?.current === nativeInputRefHandle;
 
       const lastFocusedIsOutputType =
-        lastFocusedInput && lastFocusedInput.current === outputRefTag;
+        currentFocusedInputHandle?.current === outputRefHandle;
 
       if (lastFocusedIsInputType && !inputCurrency) {
-        return outputRefTag;
+        return outputRefHandle;
       }
 
       if (lastFocusedIsOutputType && !outputCurrency) {
-        return inputRefTag;
+        return inputRefHandle;
       }
 
-      return lastFocusedInput.current;
+      return currentFocusedInputHandle.current;
     },
-    [lastFocusedInput]
+    [inputCurrency, outputCurrency]
   );
 
-  const [createRefocusInteraction] = useInteraction();
-  const handleRefocusLastInput = useCallback(() => {
-    createRefocusInteraction(() => {
-      if (isScreenFocused) {
-        TextInput.State.focusTextInput(
-          findNextFocused({
-            inputCurrency,
-            outputCurrency,
-          })
-        );
-      }
-    });
-  }, [
-    createRefocusInteraction,
-    findNextFocused,
-    inputCurrency,
-    isScreenFocused,
-    outputCurrency,
-  ]);
-
-  // Refocus when screen changes to focused
-  useEffect(() => {
-    if (isScreenFocused && !wasScreenFocused) {
-      handleRefocusLastInput();
-    }
-  }, [handleRefocusLastInput, isScreenFocused, wasScreenFocused]);
+  const { handleFocus, lastFocusedInputHandle } = useMagicAutofocus(
+    inputFieldRef,
+    findNextInput
+  );
 
   return {
     handleFocus,
     inputFieldRef,
+    lastFocusedInputHandle,
     nativeFieldRef,
     outputFieldRef,
   };

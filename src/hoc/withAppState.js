@@ -1,18 +1,7 @@
-import { Component, createElement } from 'react';
-import { AppState } from 'react-native';
+import { connect } from 'react-redux';
 
-export default ComponentToWrap =>
-  class AppStateWrapper extends Component {
-    state = { appState: AppState.currentState };
+const mapStateToProps = ({ appState: { walletReady } }) => ({
+  walletReady,
+});
 
-    componentDidMount = () =>
-      AppState.addEventListener('change', this.handleChange);
-
-    componentWillUnmount = () =>
-      AppState.removeEventListener('change', this.handleChange);
-
-    handleChange = appState => this.setState({ appState });
-
-    render = () =>
-      createElement(ComponentToWrap, { ...this.props, ...this.state });
-  };
+export default Component => connect(mapStateToProps)(Component);

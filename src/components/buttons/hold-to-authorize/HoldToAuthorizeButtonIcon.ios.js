@@ -2,10 +2,10 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import Animated from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
-import { position } from '../../../styles';
 import { interpolate, ScaleInAnimation } from '../../animations';
 import { BiometryIcon, Icon } from '../../icons';
 import { Centered } from '../../layout';
+import { position } from '@rainbow-me/styles';
 
 const { cond, divide, greaterThan } = Animated;
 

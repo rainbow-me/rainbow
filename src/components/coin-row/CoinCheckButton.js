@@ -1,11 +1,11 @@
 import React from 'react';
 import styled from 'styled-components/primitives';
-import { borders, colors, padding, position, shadow } from '../../styles';
 import { magicMemo } from '../../utils';
 import { ButtonPressAnimation, OpacityToggler } from '../animations';
 import { CoinIconSize } from '../coin-icon';
 import { Icon } from '../icons';
 import { Row } from '../layout';
+import { borders, colors, padding, position, shadow } from '@rainbow-me/styles';
 
 const Container = styled.View`
   ${position.size(CoinIconSize)};
@@ -14,8 +14,8 @@ const Container = styled.View`
 `;
 
 const Content = styled(Row).attrs(({ isAbsolute }) => ({
-  align: isAbsolute ? 'end' : 'center',
-  justify: 'center',
+  align: 'center',
+  justify: isAbsolute ? 'end' : 'center',
 }))`
   ${position.size('100%')};
 `;
@@ -44,7 +44,7 @@ const CoinCheckButton = ({ isAbsolute, onPress, toggle, ...props }) => (
       <CircleOutline />
       <OpacityToggler friction={20} isVisible={!toggle} tension={1000}>
         <CheckmarkBackground>
-          <Icon name="checkmark" color="white" />
+          <Icon color="white" name="checkmark" />
         </CheckmarkBackground>
       </OpacityToggler>
     </Content>

@@ -1,0 +1,28 @@
+{
+  "name": "react-native-animated-charts",
+  "version": "1.0.0-alpha.1",
+  "description": "The library provides a set of components and helpers for building complex and beautiful animated linear (only - for now) charts. It's a part of the [Rainbow.me project](https://rainbow.me/).",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Michał Osadnik",
+  "files": [
+    "src/"
+  ],
+  "license": "ISC",
+  "dependencies": {
+    "react-native-gesture-handler": "^1.7.0",
+    "react-native-reanimated": "^2.0.0-alpha.5",
+    "react-native-svg": "^12.1.0",
+    "react-native-haptic-feedback": "^1.10.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.11.4",
+    "@babel/runtime": "^7.11.2"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  }
+}

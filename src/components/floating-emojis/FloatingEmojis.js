@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Animated, View } from 'react-native';
 import { useTimeout } from '../../hooks';
-import { position } from '../../styles';
 import FloatingEmoji from './FloatingEmoji';
+import { position } from '@rainbow-me/styles';
 
 const EMPTY_ARRAY = [];
 const getEmoji = emojis => Math.floor(Math.random() * emojis.length);
@@ -136,9 +136,8 @@ FloatingEmojis.defaultProps = {
   duration: 2000,
   // Defaults the emoji to 👍️ (thumbs up).
   // To view complete list of emojis compatible with this component,
-  // head to https://unicodey.com/emoji-data/table.htm and reference the
-  // table's "Short Name" column.
-  emojis: ['+1'],
+  // head to https://github.com/muan/unicode-emoji-json/blob/master/data-by-emoji.json
+  emojis: ['thumbs_up'],
   fadeOut: true,
   opacity: 1,
   range: [0, 80],

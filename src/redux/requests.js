@@ -3,9 +3,10 @@ import {
   getLocalRequests,
   removeLocalRequest,
   saveLocalRequests,
-} from '../handlers/localstorage/walletconnect';
+} from '../handlers/localstorage/walletconnectRequests';
+import { dappLogoOverride, dappNameOverride } from '../helpers/dappNameHandler';
 import { getRequestDisplayDetails } from '../parsers/requests';
-import { logger } from '../utils';
+import logger from 'logger';
 
 // -- Constants --------------------------------------- //
 const REQUESTS_UPDATE_REQUESTS_TO_APPROVE =
@@ -45,12 +46,15 @@ export const addRequestToApprove = (
     logger.log('request expired!');
     return;
   }
+  const imageUrl = dappLogoOverride(peerMeta.url) || get(peerMeta, 'icons[0]');
+  const dappName =
+    dappNameOverride(peerMeta.url) || peerMeta.name || 'Unknown Dapp';
+  const dappUrl = peerMeta.url || 'Unknown Url';
 
-  const dappName = peerMeta.name || 'Unknown Dapp';
-  const imageUrl = get(peerMeta, 'icons[0]');
   const request = {
     clientId,
     dappName,
+    dappUrl,
     displayDetails,
     imageUrl,
     payload,

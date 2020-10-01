@@ -1,16 +1,24 @@
-import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
-import { View } from 'react-native';
-import Animated, { Easing, timing, Value } from 'react-native-reanimated';
+import React, {
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
-import { setSelectedInputId } from '../../redux/selectedInput';
-import store from '../../redux/store';
-import { colors, fonts, position } from '../../styles';
 import { Button } from '../buttons';
 import { ExchangeInput } from '../exchange';
-import { Column, Row } from '../layout';
+import { ColumnWithMargins, Row } from '../layout';
+import { useDimensions } from '@rainbow-me/hooks';
+import { colors, position } from '@rainbow-me/styles';
 
-const Underline = styled(View)`
+const Underline = styled.View`
   ${position.cover};
   background-color: ${colors.blueGreyDark};
   opacity: 0.2;
@@ -22,6 +30,17 @@ const UnderlineAnimated = styled(Animated.View)`
   left: -100%;
 `;
 
+const UnderlineInput = styled(ExchangeInput).attrs(({ isTinyPhone }) => ({
+  color: colors.dark,
+  disableTabularNums: true,
+  keyboardAppearance: 'light',
+  letterSpacing: 'roundedTightest',
+  size: isTinyPhone ? 'bigger' : 'h3',
+  weight: 'medium',
+}))`
+  padding-right: 8;
+`;
+
 const UnderlineContainer = styled(Row)`
   border-radius: 1px;
   height: 2px;
@@ -29,153 +48,146 @@ const UnderlineContainer = styled(Row)`
   width: 100%;
 `;
 
-export default class UnderlineField extends PureComponent {
-  static propTypes = {
-    autoFocus: PropTypes.bool,
-    buttonText: PropTypes.string,
-    format: PropTypes.func,
-    keyboardType: PropTypes.string,
-    mask: PropTypes.string,
-    maxLength: PropTypes.number,
-    onBlur: PropTypes.func,
-    onChange: PropTypes.func,
-    onFocus: PropTypes.func,
-    onPressButton: PropTypes.func,
-    placeholder: PropTypes.string,
-    value: PropTypes.any,
-  };
+const defaultFormatter = string => string;
 
-  static defaultProps = {
-    autoFocus: false,
-  };
+const UnderlineField = (
+  {
+    animatedKey,
+    autoFocus,
+    buttonText,
+    format = defaultFormatter,
+    keyboardType,
+    mask,
+    maxLength,
+    onBlur,
+    onChange,
+    onFocus,
+    onPressButton,
+    placeholder,
+    value: valueProp,
+    ...props
+  },
+  forwardedRef
+) => {
+  const { isTinyPhone } = useDimensions();
 
-  constructor(props) {
-    super(props);
+  const [isFocused, setIsFocused] = useState(autoFocus);
+  const [value, setValue] = useState(valueProp);
+  const [wasButtonPressed, setWasButtonPressed] = useState(false);
+  const underlineSize = useSharedValue(
+    autoFocus ? 1 : 0,
+    'underlineSize' + animatedKey
+  );
 
-    this.state = {
-      isFocused: props.autoFocus,
-      value: props.value,
-      wasButtonPressed: false,
-    };
-  }
+  const ref = useRef();
+  useImperativeHandle(forwardedRef, () => ref.current);
 
-  componentDidUpdate(prevProps) {
-    const { value } = this.props;
+  useEffect(() => {
+    if (isFocused) {
+      underlineSize.value = withTiming(1, {
+        duration: 150,
+      });
+    } else {
+      underlineSize.value = 0;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isFocused]);
 
+  const formattedValue = useMemo(() => format(String(value || '')), [
+    format,
+    value,
+  ]);
+
+  const handleBlur = useCallback(
+    event => {
+      setIsFocused(false);
+      onBlur?.(event);
+    },
+    [onBlur]
+  );
+
+  const handleButtonPress = useCallback(
+    event => {
+      ref.current?.focus?.();
+      setWasButtonPressed(true);
+      onPressButton?.(event);
+    },
+    [onPressButton]
+  );
+
+  const handleChangeText = useCallback(
+    text => {
+      const formattedValue = format(text);
+
+      if (value !== formattedValue) {
+        setValue(formattedValue);
+        onChange?.(formattedValue);
+      }
+    },
+    [format, onChange, value]
+  );
+
+  const handleFocus = useCallback(
+    event => {
+      setIsFocused(true);
+      onFocus?.(event);
+    },
+    [onFocus]
+  );
+
+  useEffect(() => {
     if (
-      value !== prevProps.value &&
-      (!this.input.isFocused() || this.state.wasButtonPressed)
+      valueProp !== value &&
+      (!ref.current?.isFocused?.() || wasButtonPressed)
     ) {
-      // eslint-disable-next-line react/no-did-update-set-state
-      this.setState({ value, wasButtonPressed: false });
+      setValue(valueProp);
+      setWasButtonPressed(false);
     }
-  }
+  }, [forwardedRef, value, valueProp, wasButtonPressed]);
 
-  animation = new Value(0);
+  const animatedStyles = useAnimatedStyle(
+    () => {
+      return {
+        transform: [{ scale: underlineSize.value }],
+      };
+    },
+    undefined,
+    'UnderlineFieldAnimatedStyle' + animatedKey
+  );
 
-  format = string => (this.props.format ? this.props.format(string) : string);
+  return (
+    <ColumnWithMargins flex={1} margin={8} {...props}>
+      <Row align="center" justify="space-between">
+        <UnderlineInput
+          autoFocus={autoFocus}
+          isTinyPhone={isTinyPhone}
+          keyboardType={keyboardType}
+          mask={mask}
+          maxLength={maxLength}
+          onBlur={handleBlur}
+          onChangeText={handleChangeText}
+          onFocus={handleFocus}
+          placeholder={placeholder}
+          ref={ref}
+          value={formattedValue}
+        />
+        {buttonText && isFocused && (
+          <Button
+            backgroundColor={colors.sendScreen.brightBlue}
+            onPress={handleButtonPress}
+            size="small"
+            type="pill"
+          >
+            {buttonText}
+          </Button>
+        )}
+      </Row>
+      <UnderlineContainer>
+        <Underline />
+        <UnderlineAnimated style={animatedStyles} />
+      </UnderlineContainer>
+    </ColumnWithMargins>
+  );
+};
 
-  onBlur = (...props) => {
-    timing(this.animation, {
-      duration: 1,
-      easing: Easing.linear,
-      toValue: 0,
-    }).start();
-
-    this.setState({ isFocused: false });
-
-    if (this.props.onBlur) {
-      this.props.onBlur(...props);
-    }
-  };
-
-  onChangeText = event => {
-    const value = this.format(event);
-
-    if (value !== this.props.value) {
-      this.setState({ value });
-
-      if (this.props.onChange) this.props.onChange(String(value));
-    }
-  };
-
-  onFocus = (...props) => {
-    timing(this.animation, {
-      duration: 150,
-      easing: Easing.ease,
-      toValue: 1,
-    }).start();
-
-    this.setState({ isFocused: true });
-
-    if (this.props.onFocus) this.props.onFocus(...props);
-    if (this.input && this.input.isFocused()) {
-      store.dispatch(setSelectedInputId(this.input));
-    }
-  };
-
-  handleButtonPress = () => {
-    this.setState({ wasButtonPressed: true });
-    this.props.onPressButton();
-  };
-
-  handleRef = ref => {
-    this.input = ref;
-  };
-
-  render() {
-    const {
-      autoFocus,
-      buttonText,
-      keyboardType,
-      mask,
-      maxLength,
-      placeholder,
-      ...props
-    } = this.props;
-
-    const showFieldButton = buttonText && this.state.isFocused;
-
-    return (
-      <Column flex={1} {...props}>
-        <Row align="center" justify="space-between" style={{ marginBottom: 8 }}>
-          <ExchangeInput
-            autoFocus={autoFocus}
-            color={colors.dark}
-            disableTabularNums
-            keyboardAppearance="light"
-            keyboardType={keyboardType}
-            letterSpacing={fonts.letterSpacing.roundedTightest}
-            mask={mask}
-            maxLength={maxLength}
-            onBlur={this.onBlur}
-            onChangeText={this.onChangeText}
-            onFocus={this.onFocus}
-            paddingRight={8}
-            placeholder={placeholder}
-            ref={this.handleRef}
-            size={fonts.size.h3}
-            value={this.format(String(this.state.value || ''))}
-            weight={fonts.weight.medium}
-          />
-          {showFieldButton && (
-            <Button
-              backgroundColor={colors.sendScreen.brightBlue}
-              onPress={this.handleButtonPress}
-              size="small"
-              type="pill"
-            >
-              {buttonText}
-            </Button>
-          )}
-        </Row>
-        <UnderlineContainer>
-          <Underline />
-          <UnderlineAnimated
-            style={{ transform: [{ scaleX: this.animation }] }}
-          />
-        </UnderlineContainer>
-      </Column>
-    );
-  }
-}
+export default React.forwardRef(UnderlineField);

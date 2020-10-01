@@ -10,9 +10,12 @@ import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 import TransactionTypes from '../helpers/transactionTypes';
 import { WYRE_ORDER_STATUS_TYPES } from '../helpers/wyreStatusTypes';
 import { AddCashCurrencies, AddCashCurrencyInfo } from '../references';
-import { ethereumUtils, logger } from '../utils';
+import { ethereumUtils } from '../utils';
+import maybeReviewAlert from '../utils/reviewAlert';
+
 /* eslint-disable-next-line import/no-cycle */
 import { dataAddNewTransaction } from './data';
+import logger from 'logger';
 
 // -- Constants --------------------------------------- //
 const ADD_CASH_UPDATE_PURCHASE_TRANSACTIONS =
@@ -171,6 +174,7 @@ export const addCashGetOrderStatus = (
         analytics.track('Purchase completed', {
           category: 'add cash',
         });
+        maybeReviewAlert();
       } else if (!isFailed) {
         orderStatusHandle = setTimeout(
           () =>

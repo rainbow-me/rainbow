@@ -6,16 +6,20 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { Platform } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
+import networkTypes from '../../helpers/networkTypes';
 import WalletTypes from '../../helpers/walletTypes';
-import { colors, position } from '../../styles';
+import { useAccountSettings } from '../../hooks';
+import { address } from '../../utils/abbreviations';
 import Divider from '../Divider';
 import { EmptyAssetList } from '../asset-list';
 import { Column } from '../layout';
 import AddressRow from './AddressRow';
 import WalletOption from './WalletOption';
+import { colors, position } from '@rainbow-me/styles';
 
 const listTopPadding = 7.5;
 const rowHeight = 59;
@@ -34,7 +38,7 @@ const getItemLayout = (data, index) => {
   };
 };
 
-const keyExtractor = item => item.id;
+const keyExtractor = item => `${item.walletId}-${item.id}`;
 
 const skeletonTransition = (
   <Transition.Sequence>
@@ -90,10 +94,10 @@ export default function WalletList({
   currentWallet,
   editMode,
   height,
+  onChangeAccount,
   onEditWallet,
   onPressAddAccount,
   onPressImportSeedPhrase,
-  onChangeAccount,
   scrollEnabled,
   showDividers,
 }) {
@@ -102,6 +106,7 @@ export default function WalletList({
   const [doneScrolling, setDoneScrolling] = useState(false);
   const scrollView = useRef(null);
   const skeletonTransitionRef = useRef();
+  const { network } = useAccountSettings();
 
   // Update the rows when allWallets changes
   useEffect(() => {
@@ -127,9 +132,13 @@ export default function WalletList({
           isSelected:
             accountAddress === account.address &&
             wallet.id === get(currentWallet, 'id'),
+          label:
+            network !== networkTypes.mainnet && account.ens === account.label
+              ? address(account.address, 6, 4)
+              : account.label,
           onPress: () => onChangeAccount(wallet.id, account.address),
           rowType: RowTypes.ADDRESS,
-          wallet_id: wallet.id,
+          walletId: wallet.id,
         };
         switch (wallet.type) {
           case WalletTypes.mnemonic:
@@ -155,6 +164,7 @@ export default function WalletList({
     allWallets,
     currentWallet,
     editMode,
+    network,
     onChangeAccount,
     onPressAddAccount,
   ]);
@@ -163,7 +173,9 @@ export default function WalletList({
   useEffect(() => {
     if (rows && rows.length && !ready) {
       setTimeout(() => {
-        skeletonTransitionRef.current?.animateNextTransition();
+        if (Platform.OS === 'ios') {
+          skeletonTransitionRef.current?.animateNextTransition();
+        }
         setReady(true);
       }, 50);
     }

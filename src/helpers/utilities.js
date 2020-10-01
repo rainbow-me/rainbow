@@ -251,7 +251,7 @@ export const convertStringToNumber = value => BigNumber(`${value}`).toNumber();
  * @param  {Number}   numberTwo
  * @return {String}
  */
-export const smallerThan = (numberOne, numberTwo) =>
+export const lessThan = (numberOne, numberTwo) =>
   BigNumber(`${numberOne}`).lt(numberTwo);
 
 /**
@@ -270,7 +270,7 @@ export const handleSignificantDecimals = (value, decimals, buffer) => {
   }
   buffer = buffer ? convertStringToNumber(buffer) : 3;
   decimals = convertStringToNumber(decimals);
-  if (smallerThan(BigNumber(`${value}`).abs(), 1)) {
+  if (lessThan(BigNumber(`${value}`).abs(), 1)) {
     decimals =
       BigNumber(`${value}`)
         .toFixed()
@@ -431,3 +431,12 @@ export const convertRawAmountToDecimalFormat = (value, decimals = 18) =>
     .toFixed();
 
 export const fromWei = number => convertRawAmountToDecimalFormat(number, 18);
+
+/**
+ * @desc Promise that will resolve after the ms interval
+ * @param  {Number}  ms
+ * @return {Promise}
+ */
+export const delay = ms => {
+  return new Promise(resolve => setTimeout(resolve, ms));
+};

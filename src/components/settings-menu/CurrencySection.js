@@ -44,6 +44,7 @@ const CurrencySection = ({ nativeCurrency, onSelectCurrency }) => (
   <RadioList
     extraData={nativeCurrency}
     items={currencyListItems}
+    marginTop={7}
     onChange={onSelectCurrency}
     renderItem={CurrencyListItem}
     value={nativeCurrency}

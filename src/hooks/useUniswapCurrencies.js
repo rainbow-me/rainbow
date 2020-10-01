@@ -1,16 +1,20 @@
 /* eslint-disable no-use-before-define */
+import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { find, get } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import CurrencySelectionTypes from '../helpers/currencySelectionTypes';
 import { multiply } from '../helpers/utilities';
-import Routes from '../screens/Routes/routesNames';
-import { ethereumUtils, isNewValueForPath, logger } from '../utils';
+import { useNavigation } from '../navigation/Navigation';
 import useAccountAssets from './useAccountAssets';
+import { delayNext } from './useMagicAutofocus';
 import usePrevious from './usePrevious';
 import useUniswapAssetsInWallet from './useUniswapAssetsInWallet';
 import useUniswapCurrencyReserves from './useUniswapCurrencyReserves';
+import Routes from '@rainbow-me/routes';
+import { ethereumUtils, isNewValueForPath } from '@rainbow-me/utils';
+import logger from 'logger';
 
 const isSameAsset = (newInputCurrency, previousInputCurrency) =>
   !isNewValueForPath(newInputCurrency, previousInputCurrency, 'address');
@@ -38,15 +42,19 @@ const createMissingAsset = (asset, underlyingPrice, priceOfEther) => {
 };
 
 export default function useUniswapCurrencies({
+  category,
   defaultInputAsset,
   inputHeaderTitle,
   isDeposit,
   isWithdrawal,
-  navigation,
   type,
   underlyingPrice,
 }) {
   const { allAssets } = useAccountAssets();
+  const { navigate, setParams, dangerouslyGetParent } = useNavigation();
+  const {
+    params: { blockInteractions },
+  } = useRoute();
 
   const defaultInputAddress = get(defaultInputAsset, 'address');
 
@@ -113,11 +121,25 @@ export default function useUniswapCurrencies({
   const prevDefaultOutputItem = usePrevious(defaultOutputItem);
   const prevDefaultInputItemInWallet = usePrevious(defaultInputItemInWallet);
 
+  const previousInputCurrency = usePrevious(inputCurrency);
+  const previousOutputCurrency = usePrevious(outputCurrency);
+
+  const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
+  const {
+    updateUniswapInputCurrency,
+    updateUniswapOutputCurrency,
+  } = useUniswapCurrencyReserves();
+
   useEffect(() => {
     if (defaultOutputItem && !prevDefaultOutputItem) {
       updateUniswapOutputCurrency(defaultOutputItem);
     }
-  }, [defaultOutputItem, prevDefaultOutputItem, updateUniswapOutputCurrency]);
+  }, [
+    defaultInputItemInWallet,
+    defaultOutputItem,
+    prevDefaultOutputItem,
+    updateUniswapOutputCurrency,
+  ]);
 
   useEffect(() => {
     if (defaultInputItemInWallet && !prevDefaultInputItemInWallet) {
@@ -128,15 +150,6 @@ export default function useUniswapCurrencies({
     prevDefaultInputItemInWallet,
     updateUniswapInputCurrency,
   ]);
-
-  const previousInputCurrency = usePrevious(inputCurrency);
-  const previousOutputCurrency = usePrevious(outputCurrency);
-
-  const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
-  const {
-    updateUniswapInputCurrency,
-    updateUniswapOutputCurrency,
-  } = useUniswapCurrencyReserves();
 
   const updateInputCurrency = useCallback(
     async (newInputCurrency, userSelected = true) => {
@@ -175,7 +188,7 @@ export default function useUniswapCurrencies({
       }
 
       analytics.track('Switched input asset', {
-        category: isDeposit ? 'savings' : 'swap',
+        category,
         defaultInputAsset: get(defaultInputAsset, 'symbol', ''),
         from: get(previousInputCurrency, 'symbol', ''),
         label: get(newInputCurrency, 'symbol', ''),
@@ -183,6 +196,7 @@ export default function useUniswapCurrencies({
       });
     },
     [
+      category,
       defaultChosenInputItem,
       defaultInputAddress,
       defaultInputAsset,
@@ -233,7 +247,7 @@ export default function useUniswapCurrencies({
       }
 
       analytics.track('Switched output asset', {
-        category: isWithdrawal || isDeposit ? 'savings' : 'swap',
+        category,
         defaultInputAsset: get(defaultInputAsset, 'symbol', ''),
         from: get(previousOutputCurrency, 'symbol', ''),
         label: get(newOutputCurrency, 'symbol', ''),
@@ -241,10 +255,9 @@ export default function useUniswapCurrencies({
       });
     },
     [
+      category,
       defaultInputAsset,
       inputCurrency,
-      isDeposit,
-      isWithdrawal,
       previousOutputCurrency,
       type,
       uniswapAssetsInWallet,
@@ -255,31 +268,50 @@ export default function useUniswapCurrencies({
 
   const navigateToSelectInputCurrency = useCallback(() => {
     InteractionManager.runAfterInteractions(() => {
-      navigation.setParams({ focused: false });
-      navigation.navigate(Routes.CURRENCY_SELECT_SCREEN, {
+      dangerouslyGetParent().dangerouslyGetState().index = 0;
+      setParams({ focused: false });
+      delayNext();
+      navigate(Routes.CURRENCY_SELECT_SCREEN, {
+        category,
         headerTitle: inputHeaderTitle,
         onSelectCurrency: updateInputCurrency,
-        restoreFocusOnSwapModal: () => {
-          navigation.setParams({ focused: true });
-        },
+        restoreFocusOnSwapModal: () => setParams({ focused: true }),
         type: CurrencySelectionTypes.input,
       });
+      blockInteractions();
     });
-  }, [inputHeaderTitle, navigation, updateInputCurrency]);
+  }, [
+    blockInteractions,
+    category,
+    dangerouslyGetParent,
+    inputHeaderTitle,
+    navigate,
+    setParams,
+    updateInputCurrency,
+  ]);
 
   const navigateToSelectOutputCurrency = useCallback(() => {
     InteractionManager.runAfterInteractions(() => {
-      navigation.setParams({ focused: false });
-      navigation.navigate(Routes.CURRENCY_SELECT_SCREEN, {
+      setParams({ focused: false });
+      dangerouslyGetParent().dangerouslyGetState().index = 0;
+      delayNext();
+      navigate(Routes.CURRENCY_SELECT_SCREEN, {
+        category,
         headerTitle: 'Receive',
         onSelectCurrency: updateOutputCurrency,
-        restoreFocusOnSwapModal: () => {
-          navigation.setParams({ focused: true });
-        },
+        restoreFocusOnSwapModal: () => setParams({ focused: true }),
         type: CurrencySelectionTypes.output,
       });
+      blockInteractions();
     });
-  }, [navigation, updateOutputCurrency]);
+  }, [
+    blockInteractions,
+    category,
+    dangerouslyGetParent,
+    navigate,
+    setParams,
+    updateOutputCurrency,
+  ]);
 
   return {
     defaultInputAddress,

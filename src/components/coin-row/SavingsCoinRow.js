@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
 import { calculateAPY } from '../../helpers/savings';
 import { convertAmountToBalanceDisplay } from '../../helpers/utilities';
-import { colors } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { FlexItem, Row, RowWithMargins } from '../layout';
 import { APYPill } from '../savings';
@@ -10,6 +9,7 @@ import { Text } from '../text';
 import BalanceText from './BalanceText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
+import { colors } from '@rainbow-me/styles';
 
 const BottomRow = ({ lifetimeSupplyInterestAccrued, supplyRate, symbol }) => {
   const apy = calculateAPY(supplyRate);

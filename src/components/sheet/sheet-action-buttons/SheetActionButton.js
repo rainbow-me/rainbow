@@ -2,16 +2,17 @@ import React, { useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
-import { colors, padding, position } from '../../../styles';
 import { ButtonPressAnimation } from '../../animations';
 import { Icon } from '../../icons';
 import { Centered, InnerBorder, RowWithMargins } from '../../layout';
 import { Emoji, Text } from '../../text';
+import { containsEmoji } from '@rainbow-me/helpers/strings';
+import { colors, position } from '@rainbow-me/styles';
 
-const Button = styled(Centered).attrs(({ size }) => ({
-  scaleTo: size === 'big' ? 0.9 : 0.96,
-}))`
-  flex: 1;
+const Button = styled(Centered).attrs({
+  scaleTo: 0.9,
+})`
+  flex: ${({ noFlex }) => (noFlex ? 'none' : 1)};
   height: ${({ size }) => (size === 'big' ? 56 : 46)};
   z-index: 1;
 `;
@@ -20,7 +21,8 @@ const Content = styled(RowWithMargins).attrs({
   align: 'center',
   margin: 4,
 })`
-  ${padding(10, 15, 14)}
+  padding-bottom: ${({ label }) => (containsEmoji(label) ? 5.5 : 4)};
+  padding-horizontal: 19;
   z-index: 1;
 `;
 
@@ -44,23 +46,31 @@ const WhiteButtonGradient = React.memo(
 const SheetActionButton = ({
   borderRadius = 56,
   color = colors.appleBlue,
+  disabled,
   emoji,
   icon,
+  isTransparent,
   label,
+  noFlex,
   size,
   textColor = colors.white,
+  weight = 'semibold',
   ...props
 }) => {
-  const shadowsForButtonColor = useMemo(
-    () => [
-      [0, 10, 30, colors.dark, 0.2],
-      [0, 5, 15, color, 0.4],
-    ],
-    [color]
-  );
+  const shadowsForButtonColor = useMemo(() => {
+    const isWhite = color === colors.white;
+
+    if (isTransparent) {
+      return [[0, 0, 0, colors.transparent]];
+    } else
+      return [
+        [0, 10, 30, colors.dark, isWhite ? 0.12 : 0.2],
+        [0, 5, 15, isWhite ? colors.dark : color, isWhite ? 0.08 : 0.4],
+      ];
+  }, [color, isTransparent]);
 
   return (
-    <Button as={ButtonPressAnimation} size={size} {...props}>
+    <Button as={ButtonPressAnimation} noFlex={noFlex} size={size} {...props}>
       <ShadowStack
         {...position.coverAsObject}
         backgroundColor={color}
@@ -68,16 +78,23 @@ const SheetActionButton = ({
         shadows={shadowsForButtonColor}
       >
         {color === colors.white && <WhiteButtonGradient />}
-        {color !== colors.white && <InnerBorder radius={borderRadius} />}
+        {color !== colors.white && !isTransparent && (
+          <InnerBorder
+            color={disabled ? textColor : null}
+            opacity={disabled ? 0.02 : null}
+            radius={borderRadius}
+            width={disabled ? 2 : null}
+          />
+        )}
       </ShadowStack>
-      <Content size={size}>
+      <Content label={label} size={size}>
         {emoji && <Emoji lineHeight={23} name={emoji} size="medium" />}
-        {icon && <Icon color="white" name={icon} size={18} height={18} />}
+        {icon && <Icon color="white" height={18} name={icon} size={18} />}
         <Text
           align="center"
           color={textColor}
           size={size === 'big' ? 'larger' : 'large'}
-          weight="semibold"
+          weight={weight}
         >
           {label}
         </Text>

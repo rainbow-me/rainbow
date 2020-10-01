@@ -1,16 +1,17 @@
+import { useIsFocused } from '@react-navigation/native';
 import React, { Fragment, useCallback, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useSafeArea } from 'react-native-safe-area-context';
 // eslint-disable-next-line import/no-unresolved
 import SlackBottomSheet from 'react-native-slack-bottom-sheet';
-import { useIsFocused } from 'react-navigation-hooks';
+
 import BottomSheet from 'reanimated-bottom-sheet';
-import { notifyUnmountBottomSheet } from '../../navigation/Navigation';
 import { ColumnWithMargins } from '../layout';
 import { SlackSheet } from '../sheet';
 import DiscoverSheetHeader from './DiscoverSheetHeader';
 import TopMoversSection from './TopMoversSection';
+
 // eslint-disable-next-line import/no-named-as-default-member
 const { SpringUtils } = Animated;
 
@@ -54,7 +55,6 @@ export default function DiscoverSheet() {
       initialAnimation={false}
       interactsWithOuterScrollView
       isHapticFeedbackEnabled={false}
-      onDidDismiss={notifyUnmountBottomSheet}
       onWillTransition={({ type }) => setInitialPosition(type)}
       presentGlobally={false}
       scrollsToTopOnTapStatusBar={isFocused}
@@ -74,8 +74,8 @@ export default function DiscoverSheet() {
   ) : (
     <BottomSheet
       borderRadius={20}
-      renderContent={DiscoverSheetContent}
       overdragResistanceFactor={0}
+      renderContent={DiscoverSheetContent}
       snapPoints={[300, 744]}
       springConfig={discoverSheetSpring}
     />

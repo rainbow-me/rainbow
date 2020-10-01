@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import React, { Fragment, useEffect, useMemo, useRef } from 'react';
 import { StyleSheet } from 'react-native';
 import { Transition, Transitioning } from 'react-native-reanimated';
-
 import { withProps } from 'recompact';
 import jumpingDaiAnimation from '../../assets/lottie/jumping-dai.json';
 import jumpingEthAnimation from '../../assets/lottie/jumping-eth.json';
@@ -16,14 +15,14 @@ import {
 import { useDimensions, usePrevious, useTimeout } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
 import { getErrorOverride } from '../../references/wyre';
-import Routes from '../../screens/Routes/routesNames';
-import { position } from '../../styles';
 import { CoinIcon } from '../coin-icon';
 import { FloatingEmojisTapper } from '../floating-emojis';
 import { Centered } from '../layout';
 import { Br, Emoji, Text } from '../text';
 import NeedHelpButton from './NeedHelpButton';
 import SupportButton from './SupportButton';
+import Routes from '@rainbow-me/routes';
+import { position } from '@rainbow-me/styles';
 
 const StatusMessageText = withProps({
   align: 'center',
@@ -130,10 +129,10 @@ const AddCashPending = ({ currency }) => (
         <LottieView
           autoPlay
           loop
-          style={{ height: 263 }}
           source={
             currency === 'eth' ? jumpingEthAnimation : jumpingDaiAnimation
           }
+          style={{ height: 263 }}
         />
       </Centered>
       <StatusMessageText>

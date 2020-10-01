@@ -11,11 +11,11 @@ import Animated, {
 } from 'react-native-reanimated';
 import { withProps } from 'recompact';
 import styled from 'styled-components/primitives';
-import { colors, padding, position } from '../../styles';
 import { deviceUtils } from '../../utils';
 import { interpolate } from '../animations';
 import { CoinRowHeight } from '../coin-row';
 import { ColumnWithMargins, Row, RowWithMargins } from '../layout';
+import { colors, padding, position } from '@rainbow-me/styles';
 
 const { block, cond, set, startClock, stopClock } = Animated;
 
@@ -71,7 +71,7 @@ export default class AssetListItemSkeleton extends PureComponent {
     index: 0,
   };
 
-  startShimmerLoop = () => {
+  startShimmerLoop() {
     const clock = new Clock();
 
     const config = {
@@ -96,15 +96,14 @@ export default class AssetListItemSkeleton extends PureComponent {
         set(state.position, 0),
         set(state.time, 0),
         set(state.frameTime, 0),
-        startClock(clock),
       ]),
       state.position,
     ]);
-  };
+  }
 
   animation = this.startShimmerLoop();
 
-  renderShimmer = () => {
+  renderShimmer() {
     const gradientColors = [
       colors.skeleton,
       colors.shimmer,
@@ -134,9 +133,9 @@ export default class AssetListItemSkeleton extends PureComponent {
         />
       </View>
     );
-  };
+  }
 
-  render = () => {
+  render() {
     const { animated, descendingOpacity, index } = this.props;
 
     const skeletonElement = (
@@ -170,5 +169,5 @@ export default class AssetListItemSkeleton extends PureComponent {
         )}
       </Container>
     );
-  };
+  }
 }

@@ -1,8 +1,8 @@
+import { useRoute } from '@react-navigation/core';
 import { get } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
-import { PanGestureHandler } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
-import { useValues } from 'react-native-redash';
+import { useValue } from 'react-native-redash';
 import styled from 'styled-components/primitives';
 import { OpacityToggler } from '../components/animations';
 import { AssetList } from '../components/asset-list';
@@ -15,25 +15,26 @@ import {
 } from '../components/header';
 import { Page } from '../components/layout';
 import { LoadingOverlay } from '../components/modal';
-import { discoverSheetAvailable } from '../config/experimental';
-import { getKeyboardHeight } from '../handlers/localstorage/globalSettings';
+import useExperimentalFlag, {
+  DISCOVER_SHEET,
+} from '../config/experimentalHooks';
 import networkInfo from '../helpers/networkInfo';
 import {
+  useAccountEmptyState,
   useAccountSettings,
   useCoinListEdited,
   useInitializeWallet,
-  useKeyboardHeight,
   useRefreshAccountData,
   useWallets,
   useWalletSectionsData,
 } from '../hooks';
-import { sheetVerticalOffset } from '../navigation/transitions/effects';
-import { position } from '../styles';
+import { sheetVerticalOffset } from '../navigation/effects';
+import { position } from '@rainbow-me/styles';
+import { usePortal } from 'react-native-cool-modals/Portal';
 
 const HeaderOpacityToggler = styled(OpacityToggler).attrs(({ isVisible }) => ({
   endingOpacity: 0.4,
   pointerEvents: isVisible ? 'none' : 'auto',
-  startingOpacity: 1,
 }))`
   padding-top: 5;
   z-index: 1;
@@ -45,13 +46,17 @@ const WalletPage = styled(Page)`
 `;
 
 export default function WalletScreen() {
-  const [initialized, setInitialized] = useState(false);
+  const { params } = useRoute();
+  const discoverSheetAvailable = useExperimentalFlag(DISCOVER_SHEET);
+  const [initialized, setInitialized] = useState(!!params?.initialized);
   const initializeWallet = useInitializeWallet();
   const refreshAccountData = useRefreshAccountData();
   const { isCoinListEdited } = useCoinListEdited();
-  const { updateKeyboardHeight } = useKeyboardHeight();
-  const [scrollViewTracker] = useValues([0], []);
-  const { isCreatingAccount, isReadOnlyWallet } = useWallets();
+  const scrollViewTracker = useValue(0);
+  const { isWalletLoading, isReadOnlyWallet } = useWallets();
+  const { isEmpty } = useAccountEmptyState();
+  const { network } = useAccountSettings();
+  const { isWalletEthZero, sections } = useWalletSectionsData();
 
   useEffect(() => {
     if (!initialized) {
@@ -59,22 +64,7 @@ export default function WalletScreen() {
       initializeWallet(null, null, null, true);
       setInitialized(true);
     }
-  }, [initializeWallet, initialized]);
-
-  useEffect(() => {
-    if (initialized) {
-      getKeyboardHeight()
-        .then(keyboardHeight => {
-          if (keyboardHeight) {
-            updateKeyboardHeight(keyboardHeight);
-          }
-        })
-        .catch(() => {});
-    }
-  }, [initialized, updateKeyboardHeight]);
-
-  const { network } = useAccountSettings();
-  const { isEmpty, isWalletEthZero, sections } = useWalletSectionsData();
+  }, [initializeWallet, initialized, params]);
 
   // Show the exchange fab only for supported networks
   // (mainnet & rinkeby)
@@ -86,8 +76,23 @@ export default function WalletScreen() {
     [network]
   );
 
+  const { setComponent, hide } = usePortal();
+
+  useEffect(() => {
+    if (isWalletLoading) {
+      setComponent(
+        <LoadingOverlay
+          paddingTop={sheetVerticalOffset}
+          title={isWalletLoading}
+        />,
+        true
+      );
+    }
+    return hide;
+  }, [hide, isWalletLoading, setComponent]);
+
   return (
-    <WalletPage>
+    <WalletPage testID="wallet-screen">
       {/* Line below appears to be needed for having scrollViewTracker persistent while
       reattaching of react subviews */}
       <Animated.Code exec={scrollViewTracker} />
@@ -97,33 +102,25 @@ export default function WalletScreen() {
         isCoinListEdited={isCoinListEdited}
         isReadOnlyWallet={isReadOnlyWallet}
       >
-        <PanGestureHandler enabled={isCoinListEdited}>
-          <HeaderOpacityToggler isVisible={isCoinListEdited}>
-            <Header justify="space-between">
-              <ProfileHeaderButton />
-              {discoverSheetAvailable ? (
-                <DiscoverHeaderButton />
-              ) : (
-                <CameraHeaderButton />
-              )}
-            </Header>
-          </HeaderOpacityToggler>
-        </PanGestureHandler>
+        <HeaderOpacityToggler isVisible={isCoinListEdited}>
+          <Header justify="space-between">
+            <ProfileHeaderButton />
+            {discoverSheetAvailable ? (
+              <DiscoverHeaderButton />
+            ) : (
+              <CameraHeaderButton />
+            )}
+          </Header>
+        </HeaderOpacityToggler>
         <AssetList
           fetchData={refreshAccountData}
-          isEmpty={isEmpty}
+          isEmpty={isEmpty || !!params?.emptyWallet}
           isWalletEthZero={isWalletEthZero}
           network={network}
           scrollViewTracker={scrollViewTracker}
           sections={sections}
         />
       </FabWrapper>
-      {isCreatingAccount && (
-        <LoadingOverlay
-          paddingTop={sheetVerticalOffset}
-          title="Creating wallet..."
-        />
-      )}
     </WalletPage>
   );
 }

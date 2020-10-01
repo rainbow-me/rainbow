@@ -3,11 +3,14 @@ import { toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import { darkMode } from '../config/debug';
 
+const buildRgba = (color, alpha = 1) => `rgba(${chroma(color).rgb()},${alpha})`;
+
 let base = {
   appleBlue: '#0E76FD', // '14, 118, 253'
   black: '#000000', // '0, 0, 0'
   blueGreyDark: '#3C4252', // '60, 66, 82'
   blueGreyDark50: '#9DA0A8', // this color is blueGreyDark at 50% over white
+  blueGreyDark60: '#898d97', // this color is blueGreyDark at 60% over white
   blueGreyDarker: '#0F0F11', // '15, 15, 17'
   blueGreyDarkLight: '#F3F4F5', // '243, 244, 245'
   brightRed: '#FF7171', // '255, 113, 113'
@@ -22,11 +25,16 @@ let base = {
   lightestGrey: '#E9EBEF', // '238, 233, 232'
   lightGrey: '#CDCFD4', // '205, 207, 212'
   mediumGrey: '#A1A5B3', // '161, 165, 179'
+  mintDark: '#00E0A9', // '0, 224, 169'
+  neonSkyblue: '#34FFFF', // '52, 255, 255'
+  offWhite: '#F8F9FA', // '248, 249, 250'
   orange: '#FF9900', // '255, 153, 0'
   orangeLight: '#FEBE44', // '254, 190, 68'
   paleBlue: '#579DFF', // 87, 157, 255
   pink: '#FF54BB', // 255, 84, 187
-  purple: '#32325D', // '50, 50, 93'
+  pinkLight: '#FF75E8', // '255, 117, 232'
+  purple: '#735CFF', // '115, 92, 255'
+  purpleDark: '#6F00A3', // '111, 0, 163'
   purpleLight: '#FFD9FE', // '255, 217, 254'
   red: '#FF494A', // '255, 73, 74'
   rowDivider: 'rgba(60, 66, 82, 0.03)', // '60, 66, 82, 0.03'
@@ -61,8 +69,15 @@ const assetIcon = {
   red: '#C95050', // '201, 80, 80',
 };
 
+const gradients = {
+  lighterGrey: [buildRgba('#ECF1F5', 0.15), buildRgba('#DFE4EB', 0.5)],
+  lightGrey: [buildRgba('#ECF1F5', 0.5), buildRgba('#DFE4EB', 0.5)],
+  offWhite: [base.white, base.offWhite],
+  rainbow: ['#FFB114', '#FF54BB', '#7EA4DE'],
+};
+
 const sendScreen = {
-  brightBlue: base.appleBlue, // 14, 118, 253
+  brightBlue: base.appleBlue, // '14, 118, 253'
   grey: '#D8D8D8', // '216, 216, 216'
   lightGrey: '#FAFAFA', // '250, 250, 250'
 };
@@ -78,6 +93,11 @@ let listHeaders = {
   thirdGradient: '#ffffff00',
 };
 
+const light = {
+  clearBlue: buildRgba(base.appleBlue, 0.06),
+  clearGrey: buildRgba(base.blueGreyDark, 0.06),
+};
+
 assetIcon.random = () => {
   const assetIconColors = Object.values(assetIcon);
   return assetIconColors[Math.floor(Math.random() * assetIconColors.length)];
@@ -89,8 +109,6 @@ const vendor = {
   ledger: '#2F3137', // '47, 49, 55'
   walletconnect: '#4099FF', // '64, 153, 255'
 };
-
-const buildRgba = (color, alpha) => `rgba(${chroma(color).rgb()},${alpha})`;
 
 const isColorLight = targetColor =>
   chroma(targetColor || base.white).luminance() > 0.5;
@@ -111,29 +129,35 @@ const getFallbackTextColor = bg =>
   });
 
 const transparent = {
+  appleBlueTransparent: buildRgba(base.appleBlue, 0.2), // '50, 50, 93'
   purpleTransparent: buildRgba(base.purple, 0.7), // '50, 50, 93'
   whiteTransparent: buildRgba(base.white, 0.8), // '255, 255, 255'
+};
+
+const darkModeColors = {
+  appleBlue: '#FFFFFF',
+  black: '#FFFFFF',
+  blueGreyDark: '#E0E8FF',
+  blueGreyDark50: '#FFFFFF',
+  blueGreyDarker: '#FFFFFF',
+  blueGreyDarkLight: '#0F0F0F',
+  dark: '#FFFFFF',
+  darkGrey: '#FFFFFF',
+  green: '#69D44D',
+  grey: '#FFFFFF',
+  grey20: '#FFFFFF',
+  lighterGrey: '#FFFFFF',
+  lightestGrey: '#FFFFFF',
+  lightGrey: '#FFFFFF',
+  purple: '#9C57FF',
+  skeleton: '#0F0F0F',
+  white: '#000000',
 };
 
 if (darkMode) {
   base = {
     ...base,
-    appleBlue: '#FFFFFF',
-    black: '#FFFFFF',
-    blueGreyDark: '#FFFFFF',
-    blueGreyDark50: '#FFFFFF',
-    blueGreyDarker: '#FFFFFF',
-    blueGreyDarkLight: '#0F0F0F',
-    dark: '#FFFFFF',
-    darkGrey: '#FFFFFF',
-    green: '#69D44D',
-    grey: '#FFFFFF',
-    grey20: '#FFFFFF',
-    lighterGrey: '#FFFFFF',
-    lightestGrey: '#FFFFFF',
-    lightGrey: '#FFFFFF',
-    skeleton: '#0F0F0F',
-    white: '#000000',
+    ...darkModeColors,
   };
 
   uniswapInvestmentCards = {
@@ -154,12 +178,14 @@ const colors = {
   avatarColor,
   getFallbackTextColor,
   getTextColorForBackground,
+  gradients,
   isColorLight,
   listHeaders,
   sendScreen,
   uniswapInvestmentCards,
   ...base,
   ...transparent,
+  ...light,
   ...vendor,
 };
 
@@ -175,6 +201,7 @@ const getRandomColor = () =>
 
 export default {
   ...colors,
+  darkModeColors,
   get: getColorForString,
   getRandomColor,
   propType: PropTypes.oneOf([...Object.keys(colors), ...Object.values(colors)]),

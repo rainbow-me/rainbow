@@ -1,16 +1,10 @@
+import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
+import { captureEvent, captureException } from '@sentry/react-native';
 import { get, isEmpty, isString, toLower } from 'lodash';
-import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useState } from 'react';
-import {
-  InteractionManager,
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
-  StatusBar,
-} from 'react-native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { InteractionManager, Keyboard, StatusBar } from 'react-native';
 import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
-import { useNavigation, useNavigationParam } from 'react-navigation-hooks';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components/primitives';
 import { Column } from '../components/layout';
@@ -31,47 +25,55 @@ import {
   formatInputDecimals,
 } from '../helpers/utilities';
 import { checkIsValidAddressOrENS } from '../helpers/validators';
+import { sendTransaction } from '../model/wallet';
+import { useNavigation } from '../navigation/Navigation';
 import {
   useAccountAssets,
   useAccountSettings,
+  useCoinListEditOptions,
   useContacts,
+  useDimensions,
   useGas,
+  useMagicAutofocus,
   useMaxInputBalance,
   usePrevious,
   useRefreshAccountData,
   useSendableUniqueTokens,
   useSendSavingsAccount,
   useTransactionConfirmation,
-} from '../hooks';
-import { sendTransaction } from '../model/wallet';
-import { borders, colors } from '../styles';
-import { deviceUtils, gasUtils } from '../utils';
-import Routes from './Routes/routesNames';
+  useUpdateAssetOnchainBalance,
+} from '@rainbow-me/hooks';
+import Routes from '@rainbow-me/routes';
+import { borders, colors } from '@rainbow-me/styles';
+import { deviceUtils, gasUtils } from '@rainbow-me/utils';
+import logger from 'logger';
 
 const sheetHeight = deviceUtils.dimensions.height - 10;
-
-const Container = styled(Column)`
-  background-color: ${colors.transparent};
-  height: 100%;
-`;
-
 const statusBarHeight = getStatusBarHeight(true);
 
-const SheetContainer = isNativeStackAvailable
-  ? styled(Column)`
-      background-color: ${colors.white};
-      height: ${sheetHeight};
-    `
-  : styled(Column)`
-      ${borders.buildRadius('top', 16)};
-      background-color: ${colors.white};
-      height: 100%;
-      top: ${statusBarHeight};
-    `;
+const Container = styled.View`
+  background-color: ${colors.transparent};
+  flex: 1;
+  padding-top: ${isNativeStackAvailable ? 0 : statusBarHeight};
+  width: 100%;
+`;
 
-const SendSheet = ({ setAppearListener, ...props }) => {
+const SheetContainer = styled(Column).attrs({
+  align: 'center',
+  flex: 1,
+})`
+  ${borders.buildRadius('top', isNativeStackAvailable ? 0 : 16)};
+  background-color: ${colors.white};
+  height: ${isNativeStackAvailable ? sheetHeight : '100%'};
+  width: 100%;
+`;
+
+export default function SendSheet(props) {
   const dispatch = useDispatch();
+  const { isTinyPhone } = useDimensions();
+  const { navigate } = useNavigation();
   const { dataAddNewTransaction } = useTransactionConfirmation();
+  const updateAssetOnchainBalanceIfNeeded = useUpdateAssetOnchainBalance();
   const { allAssets } = useAccountAssets();
   const {
     gasLimit,
@@ -85,18 +87,19 @@ const SendSheet = ({ setAppearListener, ...props }) => {
     updateGasPriceOption,
     updateTxFee,
   } = useGas();
-  const { contacts, onRemoveContact, sortedContacts } = useContacts();
+  const { contacts, onRemoveContact, filteredContacts } = useContacts();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
   const {
     accountAddress,
     nativeCurrency,
     nativeCurrencySymbol,
+    network,
   } = useAccountSettings();
 
   const savings = useSendSavingsAccount();
   const fetchData = useRefreshAccountData();
+  const { hiddenCoins, pinnedCoins } = useCoinListEditOptions();
 
-  const { navigate } = useNavigation();
   const [amountDetails, setAmountDetails] = useState({
     assetAmount: '',
     isSufficientBalance: false,
@@ -114,6 +117,15 @@ const SendSheet = ({ setAppearListener, ...props }) => {
   const showAssetForm = isValidAddress && !isEmpty(selected);
   const prevSelectedGasPrice = usePrevious(selectedGasPrice);
 
+  const recipientFieldRef = useRef();
+  const { handleFocus, triggerFocus } = useMagicAutofocus(
+    recipientFieldRef,
+    useCallback(
+      lastFocusedRef => (showAssetList ? null : lastFocusedRef.current),
+      [showAssetList]
+    )
+  );
+
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => startPollingGasPrices());
     return () => {
@@ -124,7 +136,7 @@ const SendSheet = ({ setAppearListener, ...props }) => {
   // Recalculate balance when gas price changes
   useEffect(() => {
     if (
-      selected.address === 'eth' &&
+      selected?.address === 'eth' &&
       get(prevSelectedGasPrice, 'txFee.value.amount', 0) !==
         get(selectedGasPrice, 'txFee.value.amount', 0)
     ) {
@@ -177,14 +189,27 @@ const SendSheet = ({ setAppearListener, ...props }) => {
       } else {
         setSelected(newSelected);
         sendUpdateAssetAmount('');
+        // Since we don't trust the balance from zerion,
+        // let's hit the blockchain and update it
+        updateAssetOnchainBalanceIfNeeded(
+          newSelected,
+          accountAddress,
+          updatedAsset => {
+            // set selected asset with new balance
+            setSelected(updatedAsset);
+            // Update selected to recalculate the maxInputAmount
+            sendUpdateSelected(updatedAsset);
+          }
+        );
       }
     },
-    [sendUpdateAssetAmount, updateMaxInputBalance]
+    [
+      accountAddress,
+      sendUpdateAssetAmount,
+      updateAssetOnchainBalanceIfNeeded,
+      updateMaxInputBalance,
+    ]
   );
-
-  const sendUpdateRecipient = useCallback(newRecipient => {
-    setRecipient(newRecipient);
-  }, []);
 
   const onChangeNativeAmount = useCallback(
     newNativeAmount => {
@@ -232,8 +257,14 @@ const SendSheet = ({ setAppearListener, ...props }) => {
   const onSubmit = useCallback(async () => {
     const validTransaction =
       isValidAddress && amountDetails.isSufficientBalance && isSufficientGas;
-    if (!selectedGasPrice.txFee || !validTransaction || isAuthorizing)
+    if (!selectedGasPrice.txFee || !validTransaction || isAuthorizing) {
+      logger.sentry('preventing tx submit for one of the following reasons:');
+      logger.sentry('selectedGasPrice.txFee ? ', selectedGasPrice?.txFee);
+      logger.sentry('validTransaction ? ', validTransaction);
+      logger.sentry('isAuthorizing ? ', isAuthorizing);
+      captureEvent('Preventing tx submit');
       return false;
+    }
 
     let submitSuccess = false;
 
@@ -257,6 +288,9 @@ const SendSheet = ({ setAppearListener, ...props }) => {
         await dispatch(dataAddNewTransaction(txDetails));
       }
     } catch (error) {
+      logger.sentry('TX Details', txDetails);
+      logger.sentry('SendSheet onSubmit error');
+      captureException(error);
       submitSuccess = false;
     } finally {
       setIsAuthorizing(false);
@@ -278,13 +312,17 @@ const SendSheet = ({ setAppearListener, ...props }) => {
   ]);
 
   const submitTransaction = useCallback(async () => {
-    if (Number(amountDetails.assetAmount) <= 0) return false;
+    if (Number(amountDetails.assetAmount) <= 0) {
+      logger.sentry('amountDetails.assetAmount ? ', amountDetails?.assetAmount);
+      captureEvent('Preventing tx submit due to amount <= 0');
+      return false;
+    }
 
     try {
       const submitSuccessful = await onSubmit();
       analytics.track('Sent transaction', {
-        assetName: selected.name,
-        assetType: selected.type,
+        assetName: selected?.name || '',
+        assetType: selected?.type || '',
         isRecepientENS: toLower(recipient.slice(-4)) === '.eth',
       });
       if (submitSuccessful) {
@@ -293,25 +331,20 @@ const SendSheet = ({ setAppearListener, ...props }) => {
     } catch (error) {
       setIsAuthorizing(false);
     }
-  }, [
-    amountDetails.assetAmount,
-    navigate,
-    onSubmit,
-    recipient,
-    selected.name,
-    selected.type,
-  ]);
+  }, [amountDetails.assetAmount, navigate, onSubmit, recipient, selected]);
 
   const onPressTransactionSpeed = useCallback(
     onSuccess => {
+      const hideCustom = true;
       gasUtils.showTransactionSpeedOptions(
         gasPrices,
         txFees,
         gasPriceOption => updateGasPriceOption(gasPriceOption),
-        onSuccess
+        onSuccess,
+        hideCustom
       );
     },
-    [gasPrices, txFees, updateGasPriceOption]
+    [txFees, gasPrices, updateGasPriceOption]
   );
 
   const onLongPressSend = useCallback(() => {
@@ -334,18 +367,21 @@ const SendSheet = ({ setAppearListener, ...props }) => {
     setRecipient(event);
   }, []);
 
-  useEffect(() => updateDefaultGasLimit(), [updateDefaultGasLimit]);
+  useEffect(() => {
+    updateDefaultGasLimit();
+  }, [updateDefaultGasLimit]);
 
   useEffect(() => {
     if (
       (isValidAddress && showAssetList) ||
-      (isValidAddress && showAssetForm && selected.type === AssetTypes.nft)
+      (isValidAddress && showAssetForm && selected?.type === AssetTypes.nft)
     ) {
       Keyboard.dismiss();
     }
-  }, [isValidAddress, selected.type, showAssetForm, showAssetList]);
+  }, [isValidAddress, selected, showAssetForm, showAssetList]);
 
-  const assetOverride = useNavigationParam('asset');
+  const { params } = useRoute();
+  const assetOverride = params?.asset;
   const prevAssetOverride = usePrevious(assetOverride);
 
   useEffect(() => {
@@ -354,13 +390,13 @@ const SendSheet = ({ setAppearListener, ...props }) => {
     }
   }, [assetOverride, prevAssetOverride, sendUpdateSelected]);
 
-  const recipientOverride = useNavigationParam('address');
+  const recipientOverride = params?.address;
 
   useEffect(() => {
     if (recipientOverride && !recipient) {
-      sendUpdateRecipient(recipientOverride);
+      setRecipient(recipientOverride);
     }
-  }, [recipient, recipientOverride, sendUpdateRecipient]);
+  }, [recipient, recipientOverride]);
 
   const checkAddress = useCallback(async () => {
     const validAddress = await checkIsValidAddressOrENS(recipient);
@@ -393,81 +429,78 @@ const SendSheet = ({ setAppearListener, ...props }) => {
   ]);
 
   return (
-    <SheetContainer>
+    <Container>
       <StatusBar barStyle="light-content" />
-      <KeyboardAvoidingView
-        enabled={Platform.OS !== 'android'}
-        behavior="padding"
-      >
-        <Container align="center">
-          <SendHeader
-            contacts={contacts}
-            isValidAddress={isValidAddress}
-            onChangeAddressInput={onChangeInput}
-            onPressPaste={sendUpdateRecipient}
-            recipient={recipient}
+      <SheetContainer>
+        <SendHeader
+          contacts={contacts}
+          isValidAddress={isValidAddress}
+          onChangeAddressInput={onChangeInput}
+          onFocus={handleFocus}
+          onPressPaste={setRecipient}
+          onRefocusInput={triggerFocus}
+          recipient={recipient}
+          recipientFieldRef={recipientFieldRef}
+          removeContact={onRemoveContact}
+          showAssetList={showAssetList}
+        />
+        {showEmptyState && (
+          <SendContactList
+            contacts={filteredContacts}
+            currentInput={currentInput}
+            onPressContact={setRecipient}
             removeContact={onRemoveContact}
-            setAppearListener={setAppearListener}
-            showAssetList={showAssetList}
           />
-          {showEmptyState && (
-            <SendContactList
-              allAssets={sortedContacts}
-              currentInput={currentInput}
-              onPressContact={sendUpdateRecipient}
-              removeContact={onRemoveContact}
-            />
-          )}
-          {showAssetList && (
-            <SendAssetList
-              allAssets={allAssets}
-              fetchData={fetchData}
-              onSelectAsset={sendUpdateSelected}
-              savings={savings}
-              uniqueTokens={sendableUniqueTokens}
-            />
-          )}
-          {showAssetForm && (
-            <SendAssetForm
-              {...props}
-              allAssets={allAssets}
-              assetAmount={amountDetails.assetAmount}
-              buttonRenderer={
-                <SendButton
-                  {...props}
-                  assetAmount={amountDetails.assetAmount}
-                  isAuthorizing={isAuthorizing}
-                  isSufficientBalance={amountDetails.isSufficientBalance}
-                  isSufficientGas={isSufficientGas}
-                  onLongPress={onLongPressSend}
+        )}
+        {showAssetList && (
+          <SendAssetList
+            allAssets={allAssets}
+            fetchData={fetchData}
+            hiddenCoins={hiddenCoins}
+            nativeCurrency={nativeCurrency}
+            network={network}
+            onSelectAsset={sendUpdateSelected}
+            pinnedCoins={pinnedCoins}
+            savings={savings}
+            uniqueTokens={sendableUniqueTokens}
+          />
+        )}
+        {showAssetForm && (
+          <SendAssetForm
+            {...props}
+            allAssets={allAssets}
+            assetAmount={amountDetails.assetAmount}
+            buttonRenderer={
+              <SendButton
+                {...props}
+                assetAmount={amountDetails.assetAmount}
+                isAuthorizing={isAuthorizing}
+                isSufficientBalance={amountDetails.isSufficientBalance}
+                isSufficientGas={isSufficientGas}
+                onLongPress={onLongPressSend}
+                smallButton={isTinyPhone}
+              />
+            }
+            nativeAmount={amountDetails.nativeAmount}
+            nativeCurrency={nativeCurrency}
+            onChangeAssetAmount={onChangeAssetAmount}
+            onChangeNativeAmount={onChangeNativeAmount}
+            onFocus={handleFocus}
+            onResetAssetSelection={onResetAssetSelection}
+            selected={selected}
+            sendMaxBalance={sendMaxBalance}
+            txSpeedRenderer={
+              isIphoneX() && (
+                <SendTransactionSpeed
+                  gasPrice={selectedGasPrice}
+                  nativeCurrencySymbol={nativeCurrencySymbol}
+                  onPressTransactionSpeed={onPressTransactionSpeed}
                 />
-              }
-              nativeAmount={amountDetails.nativeAmount}
-              nativeCurrency={nativeCurrency}
-              onChangeAssetAmount={onChangeAssetAmount}
-              onChangeNativeAmount={onChangeNativeAmount}
-              onResetAssetSelection={onResetAssetSelection}
-              selected={selected}
-              sendMaxBalance={sendMaxBalance}
-              txSpeedRenderer={
-                isIphoneX() && (
-                  <SendTransactionSpeed
-                    gasPrice={selectedGasPrice}
-                    nativeCurrencySymbol={nativeCurrencySymbol}
-                    onPressTransactionSpeed={onPressTransactionSpeed}
-                  />
-                )
-              }
-            />
-          )}
-        </Container>
-      </KeyboardAvoidingView>
-    </SheetContainer>
+              )
+            }
+          />
+        )}
+      </SheetContainer>
+    </Container>
   );
-};
-
-SendSheet.propTypes = {
-  setAppearListener: PropTypes.func,
-};
-
-export default SendSheet;
+}

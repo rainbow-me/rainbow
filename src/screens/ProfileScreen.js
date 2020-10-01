@@ -1,6 +1,6 @@
+import { useIsFocused } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
-import { useIsFocused } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
 import { ActivityList } from '../components/activity-list';
 import { BackButton, Header, HeaderButton } from '../components/header';
@@ -9,7 +9,7 @@ import { Page } from '../components/layout';
 import { LoadingOverlay } from '../components/modal';
 import { ProfileMasthead } from '../components/profile';
 import TransactionList from '../components/transaction-list/TransactionList';
-import nativeTransactionListAvailable from '../helpers/isNativeTransactionListAvailable';
+import useNativeTransactionListAvailable from '../helpers/isNativeTransactionListAvailable';
 import NetworkTypes from '../helpers/networkTypes';
 import {
   useAccountSettings,
@@ -19,9 +19,10 @@ import {
   useWallets,
 } from '../hooks';
 import { useNavigation } from '../navigation/Navigation';
-import { sheetVerticalOffset } from '../navigation/transitions/effects';
-import { colors, position } from '../styles';
-import Routes from './Routes/routesNames';
+import { sheetVerticalOffset } from '../navigation/effects';
+import { usePortal } from '../react-native-cool-modals/Portal';
+import Routes from '@rainbow-me/routes';
+import { colors, position } from '@rainbow-me/styles';
 
 const ACTIVITY_LIST_INITIALIZATION_DELAY = 5000;
 
@@ -34,14 +35,29 @@ export default function ProfileScreen({ navigation }) {
   const [activityListInitialized, setActivityListInitialized] = useState(false);
   const isFocused = useIsFocused();
   const { navigate } = useNavigation();
-  const { isCreatingAccount } = useWallets();
+  const { isWalletLoading } = useWallets();
+  const nativeTransactionListAvailable = useNativeTransactionListAvailable();
+  const { setComponent, hide } = usePortal();
 
+  useEffect(() => {
+    if (isWalletLoading) {
+      setComponent(
+        <LoadingOverlay
+          paddingTop={sheetVerticalOffset}
+          title={isWalletLoading}
+        />,
+        false
+      );
+    }
+    return hide;
+  }, [hide, isWalletLoading, setComponent]);
   const {
     isLoadingTransactions: isLoading,
     sections,
     transactions,
     transactionsCount,
   } = useAccountTransactions(activityListInitialized, isFocused);
+
   const { contacts } = useContacts();
   const { pendingRequestCount, requests } = useRequests();
   const { network } = useAccountSettings();
@@ -71,9 +87,9 @@ export default function ProfileScreen({ navigation }) {
   const addCashAvailable = Platform.OS === 'ios' && addCashSupportedNetworks;
 
   return (
-    <ProfileScreenPage>
+    <ProfileScreenPage testID="profile-screen">
       <Header justify="space-between">
-        <HeaderButton onPress={onPressSettings}>
+        <HeaderButton onPress={onPressSettings} testID="settings-button">
           <Icon color={colors.black} name="gear" />
         </HeaderButton>
         <BackButton
@@ -107,12 +123,6 @@ export default function ProfileScreen({ navigation }) {
           navigation={navigation}
           network={network}
           sections={sections}
-        />
-      )}
-      {isCreatingAccount && (
-        <LoadingOverlay
-          paddingTop={sheetVerticalOffset}
-          title="Creating wallet..."
         />
       )}
     </ProfileScreenPage>

@@ -10,11 +10,6 @@ import { BalanceCoinRow } from '../components/coin-row';
 import { UniswapInvestmentCard } from '../components/investment-cards';
 import { CollectibleTokenFamily } from '../components/token-family';
 import EditOptions from '../helpers/editOptionTypes';
-import {
-  add,
-  convertAmountToNativeDisplay,
-  multiply,
-} from '../helpers/utilities';
 import { withNavigation } from '../navigation/Navigation';
 import {
   setHiddenCoins,
@@ -23,7 +18,6 @@ import {
 } from '../redux/editOptions';
 import { setOpenSmallBalances } from '../redux/openStateSettings';
 import store from '../redux/store';
-import Routes from '../screens/Routes/routesNames';
 import { ethereumUtils } from '../utils';
 import {
   amountOfShowedCoins,
@@ -31,6 +25,8 @@ import {
   buildUniqueTokenList,
 } from './assets';
 import networkTypes from './networkTypes';
+import { add, convertAmountToNativeDisplay, multiply } from './utilities';
+import Routes from '@rainbow-me/routes';
 
 const allAssetsCountSelector = state => state.allAssetsCount;
 const allAssetsSelector = state => state.allAssets;
@@ -53,14 +49,12 @@ const uniswapTotalSelector = state => state.uniswapTotal;
 const enhanceRenderItem = compose(
   withNavigation,
   withHandlers({
-    onPress: ({ assetType, navigation }) => item => {
+    onPress: ({ assetType, navigation }) => (item, params) => {
       navigation.navigate(Routes.EXPANDED_ASSET_SHEET, {
         asset: item,
         type: assetType,
+        ...params,
       });
-    },
-    onPressSend: ({ navigation }) => asset => {
-      navigation.navigate(Routes.SEND_SHEET, { asset });
     },
   })
 );
@@ -85,14 +79,58 @@ const filterWalletSections = sections =>
     data ? get(header, 'totalItems') : true
   );
 
+const addEth = section => {
+  const assets = store.getState().data.genericAssets;
+
+  if (assets.eth) {
+    const { relative_change_24h, value } = assets.eth.price;
+    const zeroEthRow = {
+      address: 'eth',
+      balance: {
+        amount: '0',
+        display: '0 ETH',
+      },
+      decimals: 18,
+      isCoin: true,
+      isPinned: true,
+      isSmall: false,
+      name: 'Ethereum',
+      native: {
+        balance: {
+          amount: '0',
+          display: '$0',
+        },
+        change: `${relative_change_24h.toFixed(2)}%`,
+        price: {
+          amount: value,
+          display: String(value),
+        },
+      },
+      price: assets.eth.price,
+      symbol: 'ETH',
+      type: 'token',
+      uniqueId: 'eth',
+    };
+
+    if (section.data.length === 1) {
+      section.data.unshift(zeroEthRow);
+    }
+  }
+
+  return section;
+};
+
 const buildWalletSections = (
   balanceSection,
   uniqueTokenFamiliesSection,
   uniswapSection
 ) => {
-  const sections = [balanceSection, uniswapSection, uniqueTokenFamiliesSection];
+  const sections = [uniswapSection, uniqueTokenFamiliesSection];
 
-  const filteredSections = filterWalletSections(sections);
+  const filteredSections =
+    filterWalletSections(sections).length > 0
+      ? [addEth(balanceSection), ...filterWalletSections(sections)]
+      : filterWalletSections([balanceSection]);
   const isEmpty = !filteredSections.length;
 
   return {
@@ -133,7 +171,10 @@ const withBalanceSavingsSection = (savings, priceOfEther) => {
         underlyingPrice,
         lifetimeSupplyInterestAccrued,
       } = asset;
-      const underlyingNativePrice = multiply(underlyingPrice, priceOfEther);
+      const underlyingNativePrice =
+        asset.underlying.symbol === 'ETH'
+          ? priceOfEther
+          : multiply(underlyingPrice, priceOfEther);
       const underlyingBalanceNativeValue = supplyBalanceUnderlying
         ? multiply(supplyBalanceUnderlying, underlyingNativePrice)
         : 0;
@@ -181,7 +222,9 @@ const coinEditContextMenu = (
     );
   return {
     contextMenuOptions:
-      allAssets.length <= amountOfShowedCoins && noSmallBalances
+      allAssets.length <= amountOfShowedCoins &&
+      allAssets.length > 0 &&
+      noSmallBalances
         ? {
             cancelButtonIndex: 0,
             dynamicOptions: () => {

@@ -1,6 +1,12 @@
 {
-    "setupFilesAfterEnv": ["./init.js"],
-    "testEnvironment": "node",
+    "testEnvironment": "./environment",
+    "testRunner": "jest-circus/runner",
+    "testTimeout": 120000,
+    "testRegex": "\\.spec\\.js$",
     "reporters": ["detox/runners/jest/streamlineReporter"],
-    "verbose": true
+    "verbose": true,
+    "transform": {
+        "^.+\\.js?$": "babel-jest"
+    },
+    "setupFiles": ["dotenv/config"]
 }

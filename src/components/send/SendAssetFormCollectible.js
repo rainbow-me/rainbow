@@ -2,11 +2,11 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components/primitives';
-import { useDimensions, useImageDimensionsCache } from '../../hooks';
-import { colors, padding, position } from '../../styles';
+import { useDimensions, useImageMetadata } from '../../hooks';
 import { OpacityToggler } from '../animations';
 import { Column, ColumnWithMargins } from '../layout';
 import { UniqueTokenCard } from '../unique-token';
+import { colors, padding, position } from '@rainbow-me/styles';
 
 const defaultImageDimensions = { height: 512, width: 512 };
 
@@ -36,8 +36,6 @@ const Gradient = styled(LinearGradient).attrs(({ isTallPhone }) => ({
 `;
 
 const GradientToggler = styled(OpacityToggler).attrs({
-  endingOpacity: 1,
-  startingOpacity: 0,
   tension: 500,
 })`
   ${position.cover};
@@ -69,7 +67,7 @@ export default function SendAssetFormCollectible({
   const [containerWidth, setContainerWidth] = useState();
   const [isGradientVisible, setIsGradientVisible] = useState(false);
 
-  const { imageDimensions: cachedImageDimensions } = useImageDimensionsCache(
+  const { dimensions: cachedImageDimensions } = useImageMetadata(
     asset.image_preview_url
   );
 
@@ -123,7 +121,7 @@ export default function SendAssetFormCollectible({
             {buttonRenderer}
             {txSpeedRenderer}
           </ButtonWrapper>
-          <GradientToggler isVisible={isGradientVisible}>
+          <GradientToggler isVisible={!isGradientVisible}>
             <Gradient isTallPhone={isTallPhone} />
           </GradientToggler>
         </Footer>

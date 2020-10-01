@@ -3,13 +3,12 @@ import { Linking } from 'react-native';
 import { compose, mapProps, onlyUpdateForKeys, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
 import { withAccountSettings } from '../../hoc';
-import { ethereumUtils } from '../../utils/';
-import { showActionSheetWithOptions } from '../../utils/actionsheet';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIconSize, RequestVendorLogoIcon } from '../coin-icon';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
+import { ethereumUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const BottomRow = ({ dappName }) => <CoinName>{dappName}</CoinName>;
 const TopRow = ({ status, title }) => (

@@ -6,7 +6,7 @@ import { explorerInit } from '../redux/explorer';
 import { savingsLoadState } from '../redux/savings';
 import { uniqueTokensRefreshState } from '../redux/uniqueTokens';
 import { uniswapGetAllExchanges, uniswapPairsInit } from '../redux/uniswap';
-import { logger } from '../utils';
+import logger from 'logger';
 
 export default function useInitializeAccountData() {
   const dispatch = useDispatch();
@@ -19,17 +19,18 @@ export default function useInitializeAccountData() {
       });
 
       InteractionManager.runAfterInteractions(async () => {
+        logger.sentry('Initialize uniswapPairsInit & getAllExchanges');
         dispatch(uniswapPairsInit());
         await dispatch(uniswapGetAllExchanges());
       });
 
       InteractionManager.runAfterInteractions(async () => {
+        logger.sentry('Initialize savingsLoadState & uniqueTokens');
         await dispatch(savingsLoadState());
         await dispatch(uniqueTokensRefreshState());
       });
     } catch (error) {
-      // TODO error state
-      logger.log('Error initializing account data: ', error);
+      logger.sentry('Error initializing account data');
       captureException(error);
     }
   }, [dispatch]);

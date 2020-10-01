@@ -1,22 +1,20 @@
 import { BlurView } from '@react-native-community/blur';
-import PropTypes from 'prop-types';
 import React from 'react';
 import { Platform } from 'react-native';
-import styled from 'styled-components/primitives';
-import { colors, padding, position } from '../../styles';
+import styled from 'styled-components/native';
 import ActivityIndicator from '../ActivityIndicator';
 import TouchableBackdrop from '../TouchableBackdrop';
 import { Centered, Column } from '../layout';
 import { Text } from '../text';
+import { colors, padding, position } from '@rainbow-me/styles';
+import { neverRerender } from '@rainbow-me/utils';
 
-const Container = styled.View`
-  ${Platform.OS === 'android'
-    ? `
-      align-self: center;
-      flex: 1;
-    `
-    : ''}
+const Container = styled(Centered).attrs({
+  flex: Platform.OS === 'android' ? 1 : undefined,
+  self: Platform.OS === 'android' ? 'center' : undefined,
+})`
   ${position.size('100%')};
+  position: absolute;
   z-index: 999;
 `;
 
@@ -37,7 +35,7 @@ const OverlayBlur = styled(BlurView).attrs({
 
 const Title = styled(Text).attrs({
   color: colors.blueGreyDark,
-  lineHeight: 'none',
+  lineHeight: Platform.OS === 'ios' ? 'none' : '24px',
   size: 'large',
   weight: 'semibold',
 })`
@@ -53,16 +51,11 @@ const LoadingOverlay = ({ title, ...props }) => (
     <Overlay>
       <Centered zIndex={2}>
         <ActivityIndicator />
-        {title && <Title>{title}</Title>}
+        {title ? <Title>{title}</Title> : null}
       </Centered>
       <OverlayBlur />
     </Overlay>
   </Container>
 );
 
-LoadingOverlay.propTypes = {
-  title: PropTypes.string,
-};
-
-const neverRerender = () => true;
-export default React.memo(LoadingOverlay, neverRerender);
+export default neverRerender(LoadingOverlay);

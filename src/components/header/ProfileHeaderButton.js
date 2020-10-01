@@ -1,17 +1,18 @@
 import React, { useCallback } from 'react';
 import { useAccountProfile, useRequests } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
-import Routes from '../../screens/Routes/routesNames';
-import { colors } from '../../styles';
 import { NumberBadge } from '../badge';
 import { ContactAvatar } from '../contacts';
+import ImageAvatar from '../contacts/ImageAvatar';
 import { Centered } from '../layout';
 import HeaderButton from './HeaderButton';
+import Routes from '@rainbow-me/routes';
+import { colors } from '@rainbow-me/styles';
 
 export default function ProfileHeaderButton() {
   const { navigate } = useNavigation();
   const { pendingRequestCount } = useRequests();
-  const { accountSymbol, accountColor } = useAccountProfile();
+  const { accountSymbol, accountColor, accountImage } = useAccountProfile();
 
   const onPress = useCallback(() => navigate(Routes.PROFILE_SCREEN), [
     navigate,
@@ -29,13 +30,17 @@ export default function ProfileHeaderButton() {
       transformOrigin="left"
     >
       <Centered>
-        <ContactAvatar
-          color={isNaN(accountColor) ? colors.skeleton : accountColor}
-          size="small"
-          value={accountSymbol}
-        />
+        {accountImage ? (
+          <ImageAvatar image={accountImage} size="small" />
+        ) : (
+          <ContactAvatar
+            color={isNaN(accountColor) ? colors.skeleton : accountColor}
+            size="small"
+            value={accountSymbol}
+          />
+        )}
         <NumberBadge
-          isVisible={pendingRequestCount > 0}
+          isVisible={Number(pendingRequestCount) > 0}
           value={pendingRequestCount}
         />
       </Centered>

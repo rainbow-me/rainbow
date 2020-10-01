@@ -6,11 +6,14 @@ const purchaseTransactionsVersion = '0.1.0';
 const savingsVersion = '0.1.0';
 const transactionsVersion = '0.2.5';
 const uniqueTokensVersion = '0.2.0';
+const accountEmptyVersion = '0.1.0';
 
 const ACCOUNT_INFO = 'accountInfo';
+const ACCOUNT_EMPTY = 'accountEmpty';
 const ASSET_PRICES_FROM_UNISWAP = 'assetPricesFromUniswap';
 const ASSETS = 'assets';
-const CHARTS = 'charts';
+const ACCOUNT_CHARTS = 'accountCharts';
+const ACCOUNT_FALLBACK_CHARTS = 'accountFallbackCharts';
 const OPEN_FAMILIES = 'openFamilies';
 const OPEN_INVESTMENT_CARDS = 'openInvestmentCards';
 const PURCHASE_TRANSACTIONS = 'purchaseTransactions';
@@ -27,7 +30,8 @@ export const accountLocalKeys = [
   ACCOUNT_INFO,
   ASSET_PRICES_FROM_UNISWAP,
   ASSETS,
-  CHARTS,
+  ACCOUNT_CHARTS,
+  ACCOUNT_FALLBACK_CHARTS,
   OPEN_FAMILIES,
   OPEN_INVESTMENT_CARDS,
   PURCHASE_TRANSACTIONS,
@@ -58,6 +62,36 @@ export const getSavings = (accountAddress, network) =>
  */
 export const saveSavings = (savings, accountAddress, network) =>
   saveAccountLocal(SAVINGS, savings, accountAddress, network, savingsVersion);
+
+/**
+ * @desc get account empty state
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Boolean}
+ */
+export const getAccountEmptyState = (accountAddress, network) =>
+  getAccountLocal(
+    ACCOUNT_EMPTY,
+    accountAddress,
+    network,
+    false,
+    accountEmptyVersion
+  );
+
+/**
+ * @desc save account empty state
+ * @param  {Boolean}    [val]
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ */
+export const saveAccountEmptyState = (val, accountAddress, network) =>
+  saveAccountLocal(
+    ACCOUNT_EMPTY,
+    val,
+    accountAddress,
+    network,
+    accountEmptyVersion
+  );
 
 /**
  * @desc get assets
@@ -151,8 +185,8 @@ export const savePurchaseTransactions = (
  * @param  {String}   [network]
  * @return {Object}
  */
-export const getCharts = (accountAddress, network) =>
-  getAccountLocal(CHARTS, accountAddress, network, {});
+export const getAccountCharts = (accountAddress, network) =>
+  getAccountLocal(ACCOUNT_CHARTS, accountAddress, network, {});
 
 /**
  * @desc save charts data
@@ -160,8 +194,26 @@ export const getCharts = (accountAddress, network) =>
  * @param  {String}   [address]
  * @param  {String}   [network]
  */
-export const saveCharts = (charts, accountAddress, network) =>
-  saveAccountLocal(CHARTS, charts, accountAddress, network);
+export const saveAccountCharts = (charts, accountAddress, network) =>
+  saveAccountLocal(ACCOUNT_CHARTS, charts, accountAddress, network);
+
+/**
+ * @desc get fallback charts
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Object}
+ */
+export const getAccountFallbackCharts = (accountAddress, network) =>
+  getAccountLocal(ACCOUNT_FALLBACK_CHARTS, accountAddress, network, {});
+
+/**
+ * @desc save fallback charts data
+ * @param  {Object}   [charts]
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ */
+export const saveAccountFallbackCharts = (charts, accountAddress, network) =>
+  saveAccountLocal(ACCOUNT_FALLBACK_CHARTS, charts, accountAddress, network);
 
 /**
  * @desc get transactions

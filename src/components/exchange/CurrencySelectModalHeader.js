@@ -1,12 +1,13 @@
+import { useRoute } from '@react-navigation/native';
 import React, { useCallback } from 'react';
-import { useNavigationParam } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
+import { delayNext } from '../../hooks/useMagicAutofocus';
 import { useNavigation } from '../../navigation/Navigation';
-import Routes from '../../screens/Routes/routesNames';
-import { borders, colors, padding } from '../../styles';
 import { BackButton } from '../header';
 import { Centered } from '../layout';
 import { TruncatedText } from '../text';
+import Routes from '@rainbow-me/routes';
+import { borders, colors, padding } from '@rainbow-me/styles';
 
 const BackButtonWrapper = styled(Centered)`
   bottom: 0;
@@ -34,13 +35,18 @@ const Title = styled(TruncatedText).attrs({
 `;
 
 export default function CurrencySelectModalHeader() {
-  const { navigate } = useNavigation();
-  const title = useNavigationParam('headerTitle');
+  const { navigate, dangerouslyGetState } = useNavigation();
+  const { params } = useRoute();
+  const title = params?.headerTitle;
 
-  const handlePressBack = useCallback(
-    () => navigate(Routes.MAIN_EXCHANGE_SCREEN),
-    [navigate]
-  );
+  const { setPointerEvents } = params;
+
+  const handlePressBack = useCallback(() => {
+    dangerouslyGetState().index = 1;
+    setPointerEvents(false);
+    delayNext();
+    navigate(Routes.MAIN_EXCHANGE_SCREEN);
+  }, [dangerouslyGetState, navigate, setPointerEvents]);
 
   return (
     <HeaderContainer>
@@ -49,6 +55,7 @@ export default function CurrencySelectModalHeader() {
           direction="left"
           height={CurrencySelectModalHeaderHeight}
           onPress={handlePressBack}
+          throttle
         />
       </BackButtonWrapper>
       <Title>{title}</Title>

@@ -1,6 +1,5 @@
-import PropTypes from 'prop-types';
-import { createElement } from 'react';
-import Flex from '../layout/Flex';
+import React from 'react';
+import { Flex } from '../layout';
 import { Emoji } from '../text';
 
 import ApplePayIcon from './svg/ApplePayIcon';
@@ -60,12 +59,10 @@ import SwapIcon from './svg/SwapIcon';
 import ThreeDotsIcon from './svg/ThreeDotsIcon';
 import TouchIdIcon from './svg/TouchIdIcon';
 import WalletConnectIcon from './svg/WalletConnectIcon';
+import WarningCircledIcon from './svg/WarningCircledIcon';
 import WarningIcon from './svg/WarningIcon';
 
-const Icon = ({ name, ...props }) =>
-  createElement(Icon.IconTypes[name] || Flex, { name, ...props });
-
-Icon.IconTypes = {
+const IconTypes = {
   applePay: ApplePayIcon,
   arrow: ArrowIcon,
   arrowBack: ArrowBackIcon,
@@ -125,10 +122,12 @@ Icon.IconTypes = {
   touchid: TouchIdIcon,
   walletConnect: WalletConnectIcon,
   warning: WarningIcon,
+  warningCircled: WarningCircledIcon,
 };
 
-Icon.propTypes = {
-  name: PropTypes.oneOf(Object.keys(Icon.IconTypes)),
+const Icon = ({ name, testID, ...props }, ref) => {
+  const IconElement = IconTypes[name] || Flex;
+  return <IconElement {...props} name={name} ref={ref} testID={testID} />;
 };
 
-export default Icon;
+export default React.forwardRef(Icon);

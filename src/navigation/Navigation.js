@@ -1,23 +1,18 @@
+import {
+  useNavigation as oldUseNavigation,
+  StackActions,
+  useIsFocused,
+} from '@react-navigation/native';
+import { get } from 'lodash';
 import React from 'react';
 import { Value } from 'react-native-reanimated';
-import { StackActions } from 'react-navigation';
-import { useNavigation as oldUseNavigation } from 'react-navigation-hooks';
+// releasing REA value store before populating new one
 import { useCallbackOne } from 'use-memo-one';
+import { releaseStore as releaseREAStore } from '../../node_modules/react-native-reanimated/src/reanimated2/Hooks';
+import { NATIVE_ROUTES } from '@rainbow-me/routes';
 
 let TopLevelNavigationRef = null;
 const transitionPosition = new Value(0);
-const bottomSheetState = { mounted: true, pendingAction: null };
-
-export function notifyUnmountBottomSheet() {
-  bottomSheetState.mounted = false;
-  const action = bottomSheetState.pendingAction;
-  bottomSheetState.pendingAction = null;
-  action && action();
-}
-
-export function notifyMountBottomSheet() {
-  bottomSheetState.mounted = true;
-}
 
 const poppingCounter = { isClosing: false, pendingActions: [] };
 
@@ -64,6 +59,25 @@ export function withNavigation(Component) {
   };
 }
 
+export function withNavigationFocus(Component) {
+  return function WithNavigationWrapper(props) {
+    const isFocused = useIsFocused();
+
+    return <Component {...props} isFocused={isFocused} />;
+  };
+}
+
+let blocked = false;
+let timeout = null;
+function block() {
+  blocked = true;
+  if (timeout !== null) {
+    clearTimeout(timeout);
+    timeout = null;
+  }
+  setTimeout(() => (blocked = false), 200);
+}
+
 /**
  * With this wrapper we allow to delay pushing of native
  * screen with delay when there's a closing transaction in progress
@@ -71,22 +85,26 @@ export function withNavigation(Component) {
  */
 export function navigate(oldNavigate, ...args) {
   if (typeof args[0] === 'string') {
+    if (NATIVE_ROUTES.indexOf(args[0]) !== -1) {
+      releaseREAStore();
+      let wasBlocked = blocked;
+      block();
+      if (wasBlocked) {
+        return;
+      }
+    }
     addActionAfterClosingSheet(() => oldNavigate(...args));
   } else {
     oldNavigate(...args);
   }
 }
 
-function getActiveRoute(navigationState) {
-  navigationState = navigationState || TopLevelNavigationRef?.state?.nav;
-  if (!navigationState) return null;
+function getActiveRoute() {
+  return TopLevelNavigationRef?.getCurrentRoute();
+}
 
-  const route = navigationState.routes[navigationState.index];
-  // recursively dive into nested navigators
-  if (route.routes) {
-    return getActiveRoute(route);
-  }
-  return route;
+function getActiveOptions() {
+  return TopLevelNavigationRef?.getCurrentOptions();
 }
 
 /**
@@ -94,17 +112,17 @@ function getActiveRoute(navigationState) {
  */
 function getActiveRouteName(navigationState) {
   const route = getActiveRoute(navigationState);
-  return route?.routeName;
+  return get(route, 'name');
 }
 
 /**
  * Handle a navigation action or queue the action if navigation actions have been paused.
  * @param  {Object} action      The navigation action to run.
  */
-function handleAction(action) {
+function handleAction(name, params) {
   if (!TopLevelNavigationRef) return;
-  action = StackActions.push(action);
-  TopLevelNavigationRef.dispatch(action);
+  const action = StackActions.push(name, params);
+  TopLevelNavigationRef?.dispatch(action);
 }
 
 /**
@@ -115,6 +133,7 @@ function setTopLevelNavigator(navigatorRef) {
 }
 
 export default {
+  getActiveOptions,
   getActiveRoute,
   getActiveRouteName,
   handleAction,

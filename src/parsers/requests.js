@@ -44,6 +44,11 @@ export const getRequestDisplayDetails = (payload, assets, nativeCurrency) => {
       transaction.nonce = 0;
     }
 
+    // Fallback for dapps sending no data
+    if (!transaction.data) {
+      transaction.data = '0x';
+    }
+
     return getTransactionDisplayDetails(
       transaction,
       assets,
@@ -154,11 +159,15 @@ const getTransactionDisplayDetails = (
     };
   }
   if (transaction.data) {
+    // If it's not a token transfer, let's assume it's an ETH transaction
+    // Once it confirmed, zerion will show the correct data
+    const asset = ethereumUtils.getAsset(assets);
     const value = transaction.value
       ? fromWei(convertHexToString(transaction.value))
       : 0;
     return {
       request: {
+        asset,
         data: transaction.data,
         from: transaction.from,
         gasLimit: BigNumber(convertHexToString(transaction.gasLimit)),

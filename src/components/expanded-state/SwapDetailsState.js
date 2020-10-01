@@ -1,11 +1,10 @@
 import React, { useEffect, useMemo } from 'react';
 import { useNavigation } from '../../navigation/Navigation';
-import { swapDetailsTransitionPosition } from '../../navigation/transitions/effects';
+import { swapDetailsTransitionPosition } from '../../navigation/effects';
 import TouchableBackdrop from '../TouchableBackdrop';
 import { FloatingEmojisTapper } from '../floating-emojis';
+import { AssetPanel, FloatingPanels } from '../floating-panels';
 import { ColumnWithMargins, KeyboardFixedOpenLayout } from '../layout';
-import FloatingPanels from './FloatingPanels';
-import { AssetPanel } from './asset-panel';
 import { SwapDetailRow, SwapDetailsFooter } from './swap-details';
 
 const FloatingEmojisOpacity = swapDetailsTransitionPosition.interpolate({

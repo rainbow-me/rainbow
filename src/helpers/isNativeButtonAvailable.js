@@ -1,5 +1,6 @@
 import { UIManager } from 'react-native';
-import { nativeButtonPressAnimationAvailable } from '../config/experimental';
 
-export default nativeButtonPressAnimationAvailable &&
+const useNativeButtonAvailable = () =>
   !!UIManager.getViewManagerConfig('Button');
+
+export default useNativeButtonAvailable;

@@ -50,8 +50,11 @@
         "assessment": "Results of our security assessment",
         "text_mobile": "You need to use an Ethereum Wallet to access Balance Manager to view, send and exchange your Ether and Ethereum-based tokens."
       },
-      "back": "Back to balance.io",
+      "back": "Back to rainbow.me",
       "coming_soon": "Coming soon."
+    },
+    "icloud": {
+      "backup_success": "Your wallet has been backed up successfully!"
     },
     "account": {
       "tab_balances": "Balances",
@@ -322,6 +325,7 @@
           "authentication": "Authentication Failed",
           "cancelled_transaction": "Failed to send cancelled transaction to WalletConnect",
           "failed_transaction": "Failed to send transaction",
+          "failed_sign_message": "Failed to sign message",
           "failed_transaction_status": "Failed to send failed transaction status",
           "transaction_status": "Failed to send transaction status"
         },

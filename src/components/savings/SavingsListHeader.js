@@ -7,6 +7,7 @@ import styled from 'styled-components/primitives';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
 import { convertAmountToNativeDisplay } from '../../helpers/utilities';
 import { useAccountSettings } from '../../hooks';
+
 import { ButtonPressAnimation, interpolate } from '../animations';
 import { Row, RowWithMargins } from '../layout';
 import { Emoji, Text, TruncatedText } from '../text';
@@ -33,6 +34,7 @@ const SavingsListHeader = ({
   onPress,
   savingsSumValue,
   showSumValue,
+  title,
 }) => {
   const { nativeCurrency } = useAccountSettings();
 
@@ -62,7 +64,7 @@ const SavingsListHeader = ({
             size="large"
             weight="semibold"
           >
-            Savings
+            {title}
           </TruncatedText>
         </RowWithMargins>
         <RowWithMargins align="center" margin={13}>
@@ -116,12 +118,14 @@ SavingsListHeader.propTypes = {
   onPress: PropTypes.func,
   savingsSumValue: PropTypes.string,
   showSumValue: PropTypes.bool,
+  title: PropTypes.string,
 };
 
 SavingsListHeader.defaultProps = {
   emoji: 'sunflower',
   savingsSumValue: '0',
   showSumValue: false,
+  title: 'Savings',
 };
 
 export default SavingsListHeader;

@@ -4,10 +4,10 @@ import React from 'react';
 import { compose, onlyUpdateForKeys, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import { convertBipsToPercentage } from '../../helpers/utilities';
-import { colors, padding } from '../../styles';
 import { Icon } from '../icons';
 import { Row, RowWithMargins } from '../layout';
 import { Text } from '../text';
+import { colors, padding } from '@rainbow-me/styles';
 
 export const SlippageWarningThresholdInBips = 500;
 const SevereSlippageThresholdInBips = SlippageWarningThresholdInBips * 2;

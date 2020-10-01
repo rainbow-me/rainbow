@@ -2,13 +2,13 @@ import { isString } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
-import { fonts, padding, position } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered, Row, RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';
+import { padding, position } from '@rainbow-me/styles';
 
-const ListItemHeight = 54;
+const ListItemHeight = 56;
 
 const renderIcon = icon =>
   isString(icon) ? (
@@ -20,8 +20,9 @@ const renderIcon = icon =>
 const propTypes = {
   activeOpacity: PropTypes.number,
   children: PropTypes.node,
-  icon: PropTypes.oneOfType([Icon.propTypes.name, PropTypes.node]),
+  icon: PropTypes.node,
   iconMargin: PropTypes.number,
+  justify: PropTypes.bool,
   label: PropTypes.string.isRequired,
   onPress: PropTypes.func,
 };
@@ -38,31 +39,43 @@ const enhance = compose(
 );
 
 const ListItem = enhance(
-  ({ activeOpacity, children, icon, iconMargin, label, onPress, ...props }) => (
+  ({
+    activeOpacity,
+    children,
+    justify,
+    icon,
+    iconMargin,
+    label,
+    onPress,
+    testID,
+    ...props
+  }) => (
     <ButtonPressAnimation
       activeOpacity={activeOpacity}
       enableHapticFeedback={false}
       onPress={onPress}
-      scaleTo={0.99}
+      scaleTo={0.975}
+      testID={testID}
     >
       <Row
         align="center"
-        css={padding(0, 16, 2)}
+        css={padding(0, 18, 2, 19)}
         height={ListItemHeight}
         justify="space-between"
         {...props}
       >
-        <RowWithMargins align="center" flex={1} margin={iconMargin}>
+        <RowWithMargins
+          align="center"
+          flex={1}
+          justify={justify}
+          margin={iconMargin}
+        >
           {icon && <Centered>{renderIcon(icon)}</Centered>}
-          <TruncatedText
-            flex={1}
-            paddingRight={fonts.size.bmedium}
-            size="large"
-          >
+          <TruncatedText flex={1} paddingRight={15} size="large">
             {label}
           </TruncatedText>
         </RowWithMargins>
-        {children && <Centered flexShrink={0}>{children}</Centered>}
+        {children && <Centered flex={1}>{children}</Centered>}
       </Row>
     </ButtonPressAnimation>
   )

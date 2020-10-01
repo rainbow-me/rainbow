@@ -1,5 +1,5 @@
 import Clipboard from '@react-native-community/clipboard';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import useAppState from './useAppState';
 
 const listeners = new Set();
@@ -13,19 +13,22 @@ export default function useClipboard() {
   const { justBecameActive } = useAppState();
   const [data, updateClipboardData] = useState('');
 
-  function getClipboardData() {
-    Clipboard.getString().then(updateClipboardData);
-  }
+  const getClipboardData = useCallback(
+    () => Clipboard.getString().then(updateClipboardData),
+    []
+  );
 
   // Get initial data
-  useEffect(() => getClipboardData(), []);
+  useEffect(() => {
+    getClipboardData();
+  }, [getClipboardData]);
 
   // Get data when app just became foregrounded
   useEffect(() => {
     if (justBecameActive) {
       getClipboardData();
     }
-  }, [justBecameActive]);
+  }, [getClipboardData, justBecameActive]);
 
   // Listen for updates
   useEffect(() => {

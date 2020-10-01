@@ -1,24 +1,35 @@
-import React, { useCallback } from 'react';
+import React, { useMemo } from 'react';
 import styled from 'styled-components/primitives';
-import ChartTypes from '../../helpers/chartTypes';
-import { colors, padding } from '../../styles';
 import { JellySelector } from '../jelly-selector';
 import { Centered, Row } from '../layout';
 import { Text } from '../text';
+import ChartTypes from '@rainbow-me/helpers/chartTypes';
+import { colors, padding } from '@rainbow-me/styles';
 
-const TimespanItemLabel = styled(Text).attrs({
-  align: 'center',
-  letterSpacing: 'roundedTightest',
-  size: 'smedium',
-  weight: 'semibold',
-})`
-  ${padding(0, 8)};
-  color: ${({ isSelected }) => (isSelected ? colors.dark : colors.grey)};
+const Container = styled(Centered)`
+  padding-top: 30;
+  width: 100%;
 `;
 
-const TimespanItem = ({ isSelected, item, ...props }) => (
+const TimespanItemLabel = styled(Text).attrs(({ color, isSelected }) => ({
+  align: 'center',
+  color: isSelected ? color : colors.alpha(colors.blueGreyDark, 0.4),
+  letterSpacing: 'roundedTighter',
+  size: 'smedium',
+  weight: 'bold',
+}))`
+  ${padding(0, 9)};
+`;
+
+const TimespanItemRow = styled(Row).attrs({
+  justify: 'space-around',
+})`
+  ${padding(0, 30)};
+`;
+
+const TimespanItem = ({ color, isSelected, item, ...props }) => (
   <Centered flexShrink={0} height={32} {...props}>
-    <TimespanItemLabel isSelected={isSelected}>
+    <TimespanItemLabel color={color} isSelected={isSelected}>
       {ChartTypes[item] === ChartTypes.max
         ? 'MAX'
         : `1${item.charAt(0).toUpperCase()}`}
@@ -26,29 +37,37 @@ const TimespanItem = ({ isSelected, item, ...props }) => (
   </Centered>
 );
 
-const TimespanItemRow = props => (
-  <Row justify="space-between" paddingHorizontal={15} {...props} />
-);
-
-const TimespanSelector = ({ color, defaultIndex = 0, reloadChart }) => {
-  const handleSelect = useCallback(
-    newTimespan => reloadChart(ChartTypes[newTimespan]),
-    [reloadChart]
-  );
-
+const TimespanSelector = ({
+  color = colors.dark,
+  defaultIndex = 0,
+  reloadChart,
+  showMonth,
+  showYear,
+  timespans,
+}) => {
+  const filteredTimespans = useMemo(() => {
+    return timespans.filter(
+      t =>
+        (t !== ChartTypes.month || showMonth) &&
+        (t !== ChartTypes.year || showYear)
+    );
+  }, [showMonth, showYear, timespans]);
   return (
-    <Centered width="100%">
+    <Container>
       <JellySelector
-        backgroundColor={color}
+        backgroundColor={colors.alpha(color, 0.06)}
+        color={color}
         defaultIndex={defaultIndex}
+        enableHapticFeedback
         height={32}
-        items={Object.keys(ChartTypes)}
-        onSelect={handleSelect}
+        items={filteredTimespans}
+        onSelect={reloadChart}
         renderItem={TimespanItem}
         renderRow={TimespanItemRow}
+        scaleTo={1.2}
         width="100%"
       />
-    </Centered>
+    </Container>
   );
 };
 

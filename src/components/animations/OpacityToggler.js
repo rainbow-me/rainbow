@@ -1,32 +1,13 @@
 import React from 'react';
-import Animated, { SpringUtils } from 'react-native-reanimated';
-import { bin, useSpringTransition } from 'react-native-redash';
-import { interpolate } from './procs';
+import Animated from 'react-native-reanimated';
 
 const OpacityToggler = (
-  {
-    endingOpacity = 0,
-    friction = 20,
-    isVisible,
-    startingOpacity = 1,
-    style,
-    tension = 200,
-    ...props
-  },
+  { endingOpacity = 0, isVisible, style, ...props },
   ref
 ) => {
-  const animation = useSpringTransition(bin(isVisible), {
-    ...SpringUtils.makeConfigFromOrigamiTensionAndFriction({
-      ...SpringUtils.makeDefaultConfig(),
-      friction,
-      tension,
-    }),
-  });
+  const startingOpacity = 1;
 
-  const opacity = interpolate(animation, {
-    inputRange: [0, 1],
-    outputRange: [startingOpacity, endingOpacity],
-  });
+  const opacity = isVisible ? endingOpacity : startingOpacity;
 
   return (
     <Animated.View

@@ -1,10 +1,9 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components';
-import { borders, colors, position } from '../../styles';
 import { Centered, Row } from '../layout';
 import { TruncatedText } from '../text';
 import ModalHeaderButton from './ModalHeaderButton';
+import { borders, colors, position } from '@rainbow-me/styles';
 
 export const ModalHeaderHeight = 50;
 
@@ -24,47 +23,33 @@ const TitleContainer = styled(Centered)`
   z-index: 0;
 `;
 
-const ModalHeader = ({
+export default function ModalHeader({
   onPressBack,
   onPressClose,
   showBackButton,
-  showDoneButton,
+  showDoneButton = true,
   title,
   ...props
-}) => (
-  <Container {...props}>
-    {showBackButton && (
-      <ModalHeaderButton label="Settings" onPress={onPressBack} side="left" />
-    )}
-    <TitleContainer>
-      <TruncatedText
-        align="center"
-        height={21}
-        lineHeight="loose"
-        size="large"
-        weight="bold"
-      >
-        {title}
-      </TruncatedText>
-    </TitleContainer>
-    {showDoneButton && (
-      <ModalHeaderButton label="Done" onPress={onPressClose} side="right" />
-    )}
-  </Container>
-);
-
-ModalHeader.propTypes = {
-  onPressBack: PropTypes.func,
-  onPressClose: PropTypes.func,
-  showBackButton: PropTypes.bool,
-  showDoneButton: PropTypes.bool,
-  title: PropTypes.string,
-};
-
-ModalHeader.defaultProps = {
-  showDoneButton: true,
-};
-
-ModalHeader.height = ModalHeaderHeight;
-
-export default ModalHeader;
+}) {
+  return (
+    <Container {...props}>
+      {showBackButton && (
+        <ModalHeaderButton label="Settings" onPress={onPressBack} side="left" />
+      )}
+      <TitleContainer>
+        <TruncatedText
+          align="center"
+          height={21}
+          lineHeight="loose"
+          size="large"
+          weight="bold"
+        >
+          {title}
+        </TruncatedText>
+      </TitleContainer>
+      {showDoneButton && (
+        <ModalHeaderButton label="Done" onPress={onPressClose} side="right" />
+      )}
+    </Container>
+  );
+}

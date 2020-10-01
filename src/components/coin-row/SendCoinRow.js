@@ -3,14 +3,15 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { css } from 'styled-components/primitives';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
-import { colors, padding } from '../../styles';
-import { magicMemo } from '../../utils';
+import { deviceUtils, magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Text } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
+import { colors, padding } from '@rainbow-me/styles';
 
-const selectedHeight = 78;
+const isTinyPhone = deviceUtils.dimensions.height <= 568;
+const selectedHeight = isTinyPhone ? 62 : 78;
 
 const containerStyles = `
   padding-left: 15;
@@ -38,19 +39,21 @@ const TopRow = ({ name, selected }) => (
 );
 
 const SendCoinRow = magicMemo(
-  ({ item, onPress, selected, ...props }) => (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
+  ({ item, onPress, rowHeight, selected, testID, ...props }) => (
+    <ButtonPressAnimation height={rowHeight} onPress={onPress} scaleTo={0.96}>
       <CoinRow
         {...item}
         {...props}
         bottomRowRender={BottomRow}
         containerStyles={selected ? containerSelectedStyles : containerStyles}
+        isHidden={false}
         selected={selected}
+        testID={testID}
         topRowRender={TopRow}
       />
     </ButtonPressAnimation>
   ),
-  'item',
+  ['item', 'selected'],
   buildAssetUniqueIdentifier
 );
 
@@ -59,6 +62,7 @@ SendCoinRow.displayName = 'SendCoinRow';
 SendCoinRow.propTypes = {
   item: PropTypes.object,
   onPress: PropTypes.func,
+  rowHeight: PropTypes.number,
   selected: PropTypes.bool,
 };
 

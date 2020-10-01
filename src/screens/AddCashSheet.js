@@ -18,8 +18,8 @@ import {
   useTimeout,
   useWyreApplePay,
 } from '../hooks';
-import { borders, colors } from '../styles';
 import { deviceUtils } from '../utils';
+import { borders, colors } from '@rainbow-me/styles';
 
 const deviceHeight = deviceUtils.dimensions.height;
 const statusBarHeight = getStatusBarHeight(true);
@@ -38,7 +38,7 @@ const SheetContainer = styled(Column)`
 
 const SubtitleInterval = 3000;
 
-const AddCashSheet = () => {
+export default function AddCashSheet() {
   const { isNarrowPhone } = useDimensions();
   const insets = useSafeArea();
 
@@ -52,8 +52,14 @@ const AddCashSheet = () => {
 
   const cashLimits = useMemo(
     () => ({
-      daily: `Up to $${dailyRemainingLimit} today`,
-      yearly: `$${yearlyRemainingLimit} left this year`,
+      daily:
+        dailyRemainingLimit > 0
+          ? `Up to $${dailyRemainingLimit} today`
+          : 'Daily limit reached',
+      yearly:
+        yearlyRemainingLimit > 0
+          ? `$${yearlyRemainingLimit} left this year`
+          : 'Yearly limit reached',
     }),
     [dailyRemainingLimit, yearlyRemainingLimit]
   );
@@ -127,6 +133,4 @@ const AddCashSheet = () => {
       </Column>
     </SheetContainer>
   );
-};
-
-export default React.memo(AddCashSheet);
+}

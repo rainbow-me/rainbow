@@ -1,3 +1,4 @@
+import { captureException } from '@sentry/react-native';
 import {
   getExecutionDetails,
   getTokenReserves,
@@ -41,8 +42,8 @@ import {
   exchangeABI,
   uniswapTestnetAssets,
 } from '../references';
-import { logger } from '../utils';
 import { toHex, web3Provider } from './web3';
+import logger from 'logger';
 
 const DefaultMaxSlippageInBips = 200;
 const SlippageBufferInBips = 100;
@@ -131,6 +132,8 @@ export const estimateSwapGasLimit = async (accountAddress, tradeDetails) => {
     );
     return gasLimit ? gasLimit.toString() : ethUnits.basic_swap;
   } catch (error) {
+    logger.sentry('error executing estimateSwapGasLimit');
+    captureException(error);
     return ethUnits.basic_swap;
   }
 };
@@ -322,7 +325,7 @@ export const getLiquidityInfo = async (
       );
 
       return {
-        balance,
+        balance: convertRawAmountToDecimalFormat(balance),
         ethBalance,
         ethReserve,
         token: {
@@ -332,7 +335,7 @@ export const getLiquidityInfo = async (
           symbol,
         },
         tokenAddress,
-        totalSupply,
+        totalSupply: convertRawAmountToDecimalFormat(totalSupply),
         uniqueId: `uniswap_${tokenAddress}`,
       };
     } catch (error) {

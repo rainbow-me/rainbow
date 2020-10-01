@@ -1,19 +1,20 @@
+import { useRoute } from '@react-navigation/native';
 import { floor } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useCallback, useMemo } from 'react';
-import { useNavigationState } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
 import { convertAmountToNativeDisplay } from '../../helpers/utilities';
 import { useAccountSettings, useOpenInvestmentCards } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
-import Routes from '../../screens/Routes/routesNames';
-import { colors, padding } from '../../styles';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
+import { LiquidityPoolExpandedStateSheetHeight } from '../expanded-state/LiquidityPoolExpandedState';
 import { ColumnWithMargins, Row } from '../layout';
 import { Text } from '../text';
 import InvestmentCard from './InvestmentCard';
 import InvestmentCardPill from './InvestmentCardPill';
+import Routes from '@rainbow-me/routes';
+import { colors, padding } from '@rainbow-me/styles';
 
 const UniswapInvestmentCardHeight = 114;
 
@@ -38,11 +39,13 @@ const UniswapInvestmentCard = ({
   const { openInvestmentCards } = useOpenInvestmentCards();
 
   const { navigate } = useNavigation();
-  const { routeName } = useNavigationState();
+  const { name } = useRoute();
 
   const handleOpenExpandedState = useCallback(() => {
     navigate(Routes.EXPANDED_ASSET_SHEET, {
       asset: item,
+      cornerRadius: 10,
+      longFormHeight: LiquidityPoolExpandedStateSheetHeight,
       type: assetType,
     });
   }, [assetType, item, navigate]);
@@ -77,7 +80,7 @@ const UniswapInvestmentCard = ({
     ]
   );
 
-  const isExpandedState = routeName === 'ExpandedAssetScreen';
+  const isExpandedState = name === 'ExpandedAssetSheet';
 
   return (
     <InvestmentCard
