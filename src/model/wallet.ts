@@ -1,6 +1,7 @@
 import { captureException, captureMessage } from '@sentry/react-native';
+import { generateMnemonic } from 'bip39';
 import { signTypedData_v4, signTypedDataLegacy } from 'eth-sig-util';
-import { isValidAddress, toBuffer } from 'ethereumjs-util';
+import { isValidAddress, toBuffer, toChecksumAddress } from 'ethereumjs-util';
 import { ethers, Wallet } from 'ethers';
 import {
   Arrayish,
@@ -19,7 +20,6 @@ import {
   isHexString,
   isHexStringIgnorePrefix,
   isValidMnemonic,
-  toChecksumAddress,
   web3Provider,
 } from '../handlers/web3';
 import showWalletErrorAlert from '../helpers/support';
@@ -159,7 +159,7 @@ const seedPhraseVersion = 1.0;
 const selectedWalletVersion = 1.0;
 export const allWalletsVersion = 1.0;
 
-const DEFAULT_HD_PATH = `m/44'/60'/0'/0`;
+export const DEFAULT_HD_PATH = `m/44'/60'/0'/0`;
 export const DEFAULT_WALLET_NAME = 'My Wallet';
 
 const authenticationPrompt = lang.t('wallet.authenticate.please');
@@ -169,7 +169,9 @@ export const publicAccessControlOptions = {
 
 export function generateSeedPhrase(): EthereumMnemonic {
   logger.sentry('Generating a new seed phrase');
-  return ethers.utils.HDNode.entropyToMnemonic(ethers.utils.randomBytes(16));
+  const mnemonic = generateMnemonic();
+  logger.sentry('Generated', mnemonic);
+  return mnemonic;
 }
 
 export const walletInit = async (
@@ -503,9 +505,17 @@ export const createWallet = async (
   const walletSeed = seed || generateSeedPhrase();
   let addresses: RainbowAccount[] = [];
   try {
-    const { hdnode, isHDWallet, type, wallet } =
-      checkedWallet || getWallet(walletSeed);
-    if (!wallet) return null;
+    const { isHDWallet, type, root, wallet: ethereumJSWallet } =
+      checkedWallet ||
+      (await ethereumUtils.deriveAccountFromMnemonicOrPrivateKey(walletSeed));
+    let pkey = walletSeed;
+    if (!ethereumJSWallet) return null;
+    const walletAddress = addHexPrefix(
+      toChecksumAddress(ethereumJSWallet.getAddress().toString('hex'))
+    );
+    if (isHDWallet) {
+      pkey = addHexPrefix(ethereumJSWallet.getPrivateKey().toString('hex'));
+    }
     logger.sentry('[createWallet] - getWallet from seed');
 
     // Get all wallets
@@ -524,7 +534,7 @@ export const createWallet = async (
             someWallet.addresses,
             account =>
               toChecksumAddress(account.address) ===
-                toChecksumAddress(wallet.address) && account.visible
+                toChecksumAddress(walletAddress) && account.visible
           );
         }
       );
@@ -564,15 +574,15 @@ export const createWallet = async (
     logger.sentry('[createWallet] - saved seed phrase');
 
     // Save address
-    await saveAddress(wallet.address);
+    await saveAddress(walletAddress);
     logger.sentry('[createWallet] - saved address');
 
     // Save private key
-    await savePrivateKey(wallet.address, wallet.privateKey);
+    await savePrivateKey(walletAddress, pkey);
     logger.sentry('[createWallet] - saved private key');
 
     addresses.push({
-      address: wallet.address,
+      address: walletAddress,
       avatar: null,
       color: color !== null ? color : colors.getRandomColor(),
       index: 0,
@@ -580,7 +590,7 @@ export const createWallet = async (
       visible: true,
     });
 
-    if (isHDWallet && hdnode && isImported) {
+    if (isHDWallet && root && isImported) {
       logger.sentry('[createWallet] - isHDWallet && isImported');
       let index = 1;
       let lookup = true;
@@ -588,8 +598,11 @@ export const createWallet = async (
       // for each account. If there's history we add it to the wallet.
       //(We stop once we find the first one with no history)
       while (lookup) {
-        const node = hdnode.derivePath(`${DEFAULT_HD_PATH}/${index}`);
-        const nextWallet = new ethers.Wallet(node.privateKey);
+        const child = root.deriveChild(index);
+        const walletObj = child.getWallet();
+        const nextWallet = new ethers.Wallet(
+          addHexPrefix(walletObj.getPrivateKey().toString('hex'))
+        );
         let hasTxHistory = false;
         try {
           hasTxHistory = await ethereumUtils.hasPreviousTransactions(
@@ -694,8 +707,9 @@ export const createWallet = async (
     await saveAllWallets(allWallets);
     logger.sentry('[createWallet] - saveAllWallets');
 
-    if (wallet) {
-      return wallet;
+    if (ethereumJSWallet && walletAddress) {
+      const ethersWallet = new ethers.Wallet(pkey);
+      return ethersWallet;
     }
     return null;
   } catch (error) {

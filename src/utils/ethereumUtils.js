@@ -1,5 +1,7 @@
 import AsyncStorage from '@react-native-community/async-storage';
-import { addHexPrefix, isValidAddress } from 'ethereumjs-util';
+import { mnemonicToSeed } from 'bip39';
+import { addHexPrefix, isValidAddress, stripHexPrefix } from 'ethereumjs-util';
+import { hdkey, Wallet } from 'ethereumjs-wallet';
 import { find, get, isEmpty, matchesProperty, replace, toLower } from 'lodash';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import networkTypes from '../helpers/networkTypes';
@@ -11,6 +13,8 @@ import {
   isZero,
   subtract,
 } from '../helpers/utilities';
+import WalletTypes from '../helpers/walletTypes';
+import { DEFAULT_HD_PATH, identifyWalletType } from '../model/wallet';
 import { chains } from '../references';
 
 const getEthPriceUnit = assets => {
@@ -191,7 +195,38 @@ const hasPreviousTransactions = address => {
   });
 };
 
+const deriveAccountFromMnemonic = async mnemonic => {
+  const seed = await mnemonicToSeed(mnemonic);
+  const hdWallet = hdkey.fromMasterSeed(seed);
+  const root = hdWallet.derivePath(DEFAULT_HD_PATH);
+  const child = root.deriveChild(0);
+  const wallet = child.getWallet();
+  return {
+    isHDWallet: true,
+    root,
+    type: WalletTypes.mnemonic,
+    wallet,
+  };
+};
+
+const deriveAccountFromPkey = privateKey => {
+  const stripped = stripHexPrefix(privateKey);
+  const buffer = Buffer.from(stripped, 'hex');
+  const wallet = Wallet.fromPrivateKey(buffer);
+  return {
+    type: WalletTypes.privateKey,
+    wallet,
+  };
+};
+const deriveAccountFromMnemonicOrPrivateKey = mnemonicOrPrivateKey => {
+  if (identifyWalletType(mnemonicOrPrivateKey) === WalletTypes.privateKey) {
+    return deriveAccountFromPkey(mnemonicOrPrivateKey);
+  }
+  return deriveAccountFromMnemonic(mnemonicOrPrivateKey);
+};
+
 export default {
+  deriveAccountFromMnemonicOrPrivateKey,
   getAsset,
   getBalanceAmount,
   getChainIdFromNetwork,
