@@ -3,7 +3,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { calculateTradeDetails } from '../handlers/uniswap';
 import {
   convertAmountFromNativeValue,
-  convertNumberToString,
   greaterThanOrEqualTo,
   isZero,
   updatePrecisionToDisplay,
@@ -243,9 +242,8 @@ export default function useUniswapMarketDetails({
   useEffect(() => {
     if (swapNotNeeded || isMissingCurrency) return;
     // update slippage
-    const slippage = convertNumberToString(
-      get(tradeDetails, 'executionRateSlippage', 0)
-    );
+    const priceImpact = tradeDetails?.priceImpact?.toFixed(2).toString();
+    const slippage = priceImpact * 100;
     setSlippage(slippage);
   }, [isMissingCurrency, setSlippage, swapNotNeeded, tradeDetails]);
 

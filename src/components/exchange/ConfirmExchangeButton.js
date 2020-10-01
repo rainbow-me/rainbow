@@ -1,7 +1,7 @@
 import React from 'react';
 import ExchangeModalTypes from '../../helpers/exchangeModalTypes';
 import { HoldToAuthorizeButton } from '../buttons';
-import { SlippageWarningTheshold } from './SlippageWarning';
+import { SlippageWarningThresholdInBips } from './SlippageWarning';
 import { colors } from '@rainbow-me/styles';
 
 const ConfirmExchangeButtonShadows = [
@@ -34,7 +34,7 @@ const ConfirmExchangeButton = ({
     label = 'Insufficient Liquidity';
   } else if (!isSufficientGas) {
     label = 'Insufficient ETH';
-  } else if (slippage > SlippageWarningTheshold) {
+  } else if (slippage > SlippageWarningThresholdInBips) {
     label = 'Swap Anyway';
   } else if (disabled) {
     label = 'Enter an Amount';
