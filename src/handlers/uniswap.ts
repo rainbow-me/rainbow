@@ -415,7 +415,7 @@ export const getAllTokens = async (tokenOverrides, excluded = []) => {
     const tokenAddress = toLower(token.id);
     const tokenInfo = {
       address: token.id,
-      decimals: token.decimals,
+      decimals: Number(token.decimals),
       name: token.name,
       symbol: token.symbol,
       totalLiquidity: token.totalLiquidity,
