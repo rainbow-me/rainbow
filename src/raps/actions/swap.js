@@ -1,10 +1,6 @@
 import { captureException } from '@sentry/react-native';
 import { find, get, toLower } from 'lodash';
-import {
-  calculateTradeDetails,
-  estimateSwapGasLimit,
-  executeSwap,
-} from '../../handlers/uniswap';
+import { estimateSwapGasLimit, executeSwap } from '../../handlers/uniswap';
 import ProtocolTypes from '../../helpers/protocolTypes';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import TransactionTypes from '../../helpers/transactionTypes';
@@ -56,28 +52,15 @@ const swap = async (wallet, currentRap, index, parameters) => {
   const {
     accountAddress,
     inputAmount,
-    inputAsExactAmount,
     inputCurrency,
-    outputAmount,
     outputCurrency,
-    pairs,
     selectedGasPrice = null,
+    tradeDetails,
   } = parameters;
   const { dispatch } = store;
   const { chainId } = store.getState().settings;
   const { gasPrices } = store.getState().gas;
   logger.log('[swap] calculating trade details');
-
-  // Get Trade Details
-  const tradeDetails = calculateTradeDetails(
-    chainId,
-    inputAmount,
-    outputAmount,
-    inputCurrency,
-    outputCurrency,
-    pairs,
-    inputAsExactAmount
-  );
 
   // Execute Swap
   logger.log('[swap] execute the swap');

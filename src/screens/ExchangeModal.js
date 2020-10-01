@@ -40,7 +40,6 @@ import {
   useSwapInputs,
   useUniswapCurrencies,
   useUniswapMarketDetails,
-  useUniswapPairs,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { colors, position } from '@rainbow-me/styles';
@@ -116,8 +115,6 @@ export default function ExchangeModal({
     underlyingPrice,
   });
 
-  const { allPairs: pairs } = useUniswapPairs(inputCurrency, outputCurrency);
-
   const {
     handleFocus,
     inputFieldRef,
@@ -154,6 +151,27 @@ export default function ExchangeModal({
     lastFocusedInputHandle?.current?.focus();
   }, [lastFocusedInputHandle]);
 
+  // Calculate market details
+  const { isSufficientLiquidity, tradeDetails } = useUniswapMarketDetails({
+    defaultInputAddress,
+    inputAmount,
+    inputAsExactAmount,
+    inputCurrency,
+    inputFieldRef,
+    isDeposit,
+    isWithdrawal,
+    maxInputBalance,
+    nativeCurrency,
+    outputAmount,
+    outputCurrency,
+    outputFieldRef,
+    setIsSufficientBalance,
+    setSlippage,
+    updateExtraTradeDetails,
+    updateInputAmount,
+    updateOutputAmount,
+  });
+
   const updateGasLimit = useCallback(async () => {
     try {
       const gasLimit = await estimateRap({
@@ -161,7 +179,7 @@ export default function ExchangeModal({
         inputCurrency,
         outputAmount,
         outputCurrency,
-        pairs,
+        tradeDetails,
       });
       if (inputCurrency && outputCurrency) {
         updateTxFee(gasLimit);
@@ -176,7 +194,7 @@ export default function ExchangeModal({
     inputCurrency,
     outputAmount,
     outputCurrency,
-    pairs,
+    tradeDetails,
     updateTxFee,
   ]);
 
@@ -275,27 +293,6 @@ export default function ExchangeModal({
     updateInputAmount,
   ]);
 
-  // Calculate market details
-  const { isSufficientLiquidity } = useUniswapMarketDetails({
-    defaultInputAddress,
-    inputAmount,
-    inputAsExactAmount,
-    inputCurrency,
-    inputFieldRef,
-    isDeposit,
-    isWithdrawal,
-    maxInputBalance,
-    nativeCurrency,
-    outputAmount,
-    outputCurrency,
-    outputFieldRef,
-    setIsSufficientBalance,
-    setSlippage,
-    updateExtraTradeDetails,
-    updateInputAmount,
-    updateOutputAmount,
-  });
-
   const isSlippageWarningVisible =
     isSufficientBalance && !!inputAmount && !!outputAmount;
   const prevIsSlippageWarningVisible = usePrevious(isSlippageWarningVisible);
@@ -371,13 +368,12 @@ export default function ExchangeModal({
         const rap = await createRap({
           callback,
           inputAmount: isWithdrawal && isMax ? cTokenBalance : inputAmount,
-          inputAsExactAmount,
           inputCurrency,
           isMax,
           outputAmount,
           outputCurrency,
-          pairs,
           selectedGasPrice: null,
+          tradeDetails,
         });
         logger.log('[exchange - handle submit] rap', rap);
         await executeRap(wallet, rap);
@@ -404,7 +400,6 @@ export default function ExchangeModal({
     defaultInputAsset,
     dispatch,
     inputAmount,
-    inputAsExactAmount,
     inputCurrency,
     isDeposit,
     isMax,
@@ -413,9 +408,9 @@ export default function ExchangeModal({
     navigate,
     outputAmount,
     outputCurrency,
-    pairs,
     setParams,
     slippage,
+    tradeDetails,
     type,
   ]);
 

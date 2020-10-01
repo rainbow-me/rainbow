@@ -1,5 +1,5 @@
 import { get } from 'lodash';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { calculateTradeDetails } from '../handlers/uniswap';
 import {
   convertAmountFromNativeValue,
@@ -34,65 +34,59 @@ export default function useUniswapMarketDetails({
   updateOutputAmount,
 }) {
   const [isSufficientLiquidity, setIsSufficientLiquidity] = useState(true);
+  const [tradeDetails, setTradeDetails] = useState(null);
   const { chainId } = useAccountSettings();
 
   const { allPairs } = useUniswapPairs(inputCurrency, outputCurrency);
+  const swapNotNeeded = useMemo(() => {
+    return (
+      (isDeposit || isWithdrawal) &&
+      get(inputCurrency, 'address') === defaultInputAddress
+    );
+  }, [defaultInputAddress, inputCurrency, isDeposit, isWithdrawal]);
+  const isMissingCurrency = !inputCurrency || !outputCurrency;
 
-  const updateTradeDetails = useCallback(
-    ({
-      inputAmount,
-      inputAsExactAmount,
-      inputCurrency,
-      outputAmount,
-      outputCurrency,
-    }) => {
-      let updatedInputAmount = inputAmount;
-      let updatedInputAsExactAmount = inputAsExactAmount;
-      const isMissingAmounts = !inputAmount && !outputAmount;
+  const updateTradeDetails = useCallback(() => {
+    let updatedInputAmount = inputAmount;
+    let updatedInputAsExactAmount = inputAsExactAmount;
+    const isMissingAmounts = !inputAmount && !outputAmount;
 
-      if (isMissingAmounts) {
-        const inputNativePrice = get(
-          inputCurrency,
-          'native.price.amount',
-          null
-        );
-        updatedInputAmount = convertAmountFromNativeValue(
-          DEFAULT_NATIVE_INPUT_AMOUNT,
-          inputNativePrice,
-          inputCurrency.decimals
-        );
-        updatedInputAsExactAmount = true;
-      }
-
-      const tradeDetails = calculateTradeDetails(
-        chainId,
-        updatedInputAmount,
-        outputAmount,
-        inputCurrency,
-        outputCurrency,
-        allPairs,
-        updatedInputAsExactAmount
+    if (isMissingAmounts) {
+      const inputNativePrice = get(inputCurrency, 'native.price.amount', null);
+      updatedInputAmount = convertAmountFromNativeValue(
+        DEFAULT_NATIVE_INPUT_AMOUNT,
+        inputNativePrice,
+        inputCurrency.decimals
       );
+      updatedInputAsExactAmount = true;
+    }
 
-      const hasInsufficientLiquidity =
-        !!inputCurrency && !!outputCurrency && !tradeDetails;
-      setIsSufficientLiquidity(!hasInsufficientLiquidity);
-      return tradeDetails;
-    },
-    [allPairs, chainId]
-  );
+    const newTradeDetails = calculateTradeDetails(
+      chainId,
+      updatedInputAmount,
+      outputAmount,
+      inputCurrency,
+      outputCurrency,
+      allPairs,
+      updatedInputAsExactAmount
+    );
+
+    const hasInsufficientLiquidity =
+      !!inputCurrency && !!outputCurrency && !newTradeDetails;
+    setIsSufficientLiquidity(!hasInsufficientLiquidity);
+    setTradeDetails(newTradeDetails);
+  }, [
+    allPairs,
+    chainId,
+    inputAmount,
+    inputAsExactAmount,
+    inputCurrency,
+    outputAmount,
+    outputCurrency,
+  ]);
 
   const calculateInputGivenOutputChange = useCallback(
-    ({
-      inputAsExactAmount,
-      inputCurrency,
-      isOutputEmpty,
-      isOutputZero,
-      maxInputBalance,
-      setIsSufficientBalance,
-      tradeDetails,
-      updateInputAmount,
-    }) => {
+    ({ isOutputEmpty, isOutputZero }) => {
       if (isOutputEmpty || isOutputZero) {
         updateInputAmount(undefined, undefined, false);
         setIsSufficientBalance(true);
@@ -117,19 +111,18 @@ export default function useUniswapMarketDetails({
         setIsSufficientBalance(isSufficientAmountToTrade);
       }
     },
-    []
+    [
+      inputAsExactAmount,
+      inputCurrency,
+      maxInputBalance,
+      setIsSufficientBalance,
+      tradeDetails,
+      updateInputAmount,
+    ]
   );
 
   const calculateOutputGivenInputChange = useCallback(
-    ({
-      inputAsExactAmount,
-      isInputEmpty,
-      isInputZero,
-      outputCurrency,
-      outputFieldRef,
-      tradeDetails,
-      updateOutputAmount,
-    }) => {
+    ({ isInputEmpty, isInputZero }) => {
       logger.log('calculate OUTPUT given INPUT change');
       if (
         (isInputEmpty || isInputZero) &&
@@ -155,37 +148,19 @@ export default function useUniswapMarketDetails({
         }
       }
     },
-    []
+    [
+      inputAsExactAmount,
+      outputCurrency,
+      outputFieldRef,
+      tradeDetails,
+      updateOutputAmount,
+    ]
   );
 
-  const getMarketDetails = useCallback(() => {
-    const isMissingCurrency = !inputCurrency || !outputCurrency;
-    if (isMissingCurrency) return;
-
+  const updateInputOutputAmounts = useCallback(() => {
     try {
-      const tradeDetails = updateTradeDetails({
-        inputAmount,
-        inputAsExactAmount,
-        inputCurrency,
-        outputAmount,
-        outputCurrency,
-      });
-
-      updateExtraTradeDetails({
-        inputCurrency,
-        nativeCurrency,
-        outputCurrency,
-        tradeDetails,
-      });
-
       const isMissingAmounts = !inputAmount && !outputAmount;
       if (isMissingAmounts) return;
-
-      // update slippage
-      const slippage = convertNumberToString(
-        get(tradeDetails, 'executionRateSlippage', 0)
-      );
-      setSlippage(slippage);
 
       const newIsSufficientBalance =
         !inputAmount || greaterThanOrEqualTo(maxInputBalance, inputAmount);
@@ -201,13 +176,8 @@ export default function useUniswapMarketDetails({
       // update output amount given input amount changes
       if (inputAsExactAmount) {
         calculateOutputGivenInputChange({
-          inputAsExactAmount,
           isInputEmpty,
           isInputZero,
-          outputCurrency,
-          outputFieldRef,
-          tradeDetails,
-          updateOutputAmount,
         });
       }
 
@@ -219,14 +189,8 @@ export default function useUniswapMarketDetails({
         !inputFieldRef.current.isFocused()
       ) {
         calculateInputGivenOutputChange({
-          inputAsExactAmount,
-          inputCurrency,
           isOutputEmpty,
           isOutputZero,
-          maxInputBalance,
-          setIsSufficientBalance,
-          tradeDetails,
-          updateInputAmount,
         });
       }
     } catch (error) {
@@ -235,39 +199,53 @@ export default function useUniswapMarketDetails({
   }, [
     inputAmount,
     inputAsExactAmount,
-    inputCurrency,
     inputFieldRef,
     maxInputBalance,
-    nativeCurrency,
     outputAmount,
-    outputCurrency,
-    outputFieldRef,
     setIsSufficientBalance,
-    setSlippage,
-    updateExtraTradeDetails,
-    updateInputAmount,
-    updateOutputAmount,
     calculateInputGivenOutputChange,
     calculateOutputGivenInputChange,
-    updateTradeDetails,
   ]);
 
   useEffect(() => {
-    if (
-      (isDeposit || isWithdrawal) &&
-      get(inputCurrency, 'address') === defaultInputAddress
-    )
-      return;
-    getMarketDetails();
+    if (swapNotNeeded || isMissingCurrency) return;
+    updateTradeDetails();
+  }, [isMissingCurrency, swapNotNeeded, updateTradeDetails]);
+
+  useEffect(() => {
+    if (swapNotNeeded || isMissingCurrency) return;
+    updateInputOutputAmounts();
+  }, [isMissingCurrency, swapNotNeeded, updateInputOutputAmounts]);
+
+  useEffect(() => {
+    if (swapNotNeeded || isMissingCurrency) return;
+    updateExtraTradeDetails({
+      inputCurrency,
+      nativeCurrency,
+      outputCurrency,
+      tradeDetails,
+    });
   }, [
     inputCurrency,
-    isDeposit,
-    isWithdrawal,
-    defaultInputAddress,
-    getMarketDetails,
+    isMissingCurrency,
+    nativeCurrency,
+    outputCurrency,
+    swapNotNeeded,
+    tradeDetails,
+    updateExtraTradeDetails,
   ]);
+
+  useEffect(() => {
+    if (swapNotNeeded || isMissingCurrency) return;
+    // update slippage
+    const slippage = convertNumberToString(
+      get(tradeDetails, 'executionRateSlippage', 0)
+    );
+    setSlippage(slippage);
+  }, [isMissingCurrency, setSlippage, swapNotNeeded, tradeDetails]);
 
   return {
     isSufficientLiquidity,
+    tradeDetails,
   };
 }

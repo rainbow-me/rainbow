@@ -1,8 +1,5 @@
 import { concat, reduce } from 'lodash';
-import {
-  calculateTradeDetails,
-  estimateSwapGasLimit,
-} from '../handlers/uniswap';
+import { estimateSwapGasLimit } from '../handlers/uniswap';
 import { add } from '../helpers/utilities';
 import { rapsAddOrUpdate } from '../redux/raps';
 import store from '../redux/store';
@@ -18,7 +15,7 @@ export const estimateUnlockAndSwap = async ({
   inputCurrency,
   outputAmount,
   outputCurrency,
-  pairs,
+  tradeDetails,
 }) => {
   if (!inputAmount) inputAmount = 1;
   if (!outputAmount) outputAmount = 1;
@@ -47,15 +44,6 @@ export const estimateUnlockAndSwap = async ({
     gasLimits = concat(gasLimits, unlockGasLimit);
   }
 
-  const tradeDetails = calculateTradeDetails(
-    chainId,
-    inputAmount,
-    outputAmount,
-    inputCurrency,
-    outputCurrency,
-    pairs,
-    true
-  );
   const { gasLimit: swapGasLimit } = await estimateSwapGasLimit({
     accountAddress,
     chainId,
@@ -69,12 +57,10 @@ export const estimateUnlockAndSwap = async ({
 const createUnlockAndSwapRap = async ({
   callback,
   inputAmount,
-  inputAsExactAmount,
   inputCurrency,
-  outputAmount,
   outputCurrency,
-  pairs,
   selectedGasPrice,
+  tradeDetails,
 }) => {
   // create unlock rap
   const { accountAddress } = store.getState().settings;
@@ -102,12 +88,10 @@ const createUnlockAndSwapRap = async ({
   const swap = createNewAction(RapActionTypes.swap, {
     accountAddress,
     inputAmount,
-    inputAsExactAmount,
     inputCurrency,
-    outputAmount,
     outputCurrency,
-    pairs,
     selectedGasPrice,
+    tradeDetails,
   });
   actions = concat(actions, swap);
 

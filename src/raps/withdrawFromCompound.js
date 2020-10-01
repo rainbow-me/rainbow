@@ -7,11 +7,11 @@ import logger from 'logger';
 export const estimateWithdrawFromCompound = () => ethUnits.basic_withdrawal;
 
 const createWithdrawFromCompoundRap = ({
-  inputCurrency,
+  callback,
   inputAmount,
+  inputCurrency,
   isMax,
   selectedGasPrice,
-  callback,
 }) => {
   logger.log('[withdraw rap] withdraw', inputCurrency);
   const { accountAddress, network } = store.getState().settings;
