@@ -2,7 +2,6 @@ import React, { useCallback, useMemo } from 'react';
 import { handleSignificantDecimals } from '../../helpers/utilities';
 import { useAccountSettings, useTopMovers } from '../../hooks';
 import { uniswapPairs } from '../../references';
-import { measureTopMoverCoinRow } from '../coin-row';
 import { Column, ColumnWithMargins } from '../layout';
 import { MarqueeList } from '../list';
 import { Text } from '../text';
@@ -38,8 +37,8 @@ export default function TopMoversSection() {
         Top Movers
       </Text>
       <Column>
-        <MarqueeList items={gainerItems} measureItem={measureTopMoverCoinRow} />
-        <MarqueeList items={loserItems} measureItem={measureTopMoverCoinRow} />
+        <MarqueeList items={gainerItems} speed={0.9} />
+        <MarqueeList items={loserItems} speed={-0.7} />
       </Column>
     </ColumnWithMargins>
   );
