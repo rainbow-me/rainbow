@@ -21,11 +21,15 @@ export default function useUniswapPairs(inputCurrency, outputCurrency) {
     // latestBlockNumber // TODO JIN
   );
 
-  const allPairs = useMemo(() => {
+  const { allPairs, doneLoadingResults } = useMemo(() => {
+    let doneLoadingResults = true;
     const viablePairs = multicallResults.map((result, i) => {
       const { result: reserves, loading } = result;
       const tokenA = allPairCombinations[i][0];
       const tokenB = allPairCombinations[i][1];
+      if (loading) {
+        doneLoadingResults = false;
+      }
 
       if (loading || !reserves || !tokenA || !tokenB) return null;
       const { reserve0, reserve1 } = reserves;
@@ -37,10 +41,14 @@ export default function useUniswapPairs(inputCurrency, outputCurrency) {
         new TokenAmount(token1, reserve1.toString())
       );
     });
-    return compact(viablePairs);
+    return {
+      allPairs: compact(viablePairs),
+      doneLoadingResults,
+    };
   }, [allPairCombinations, multicallResults]);
 
   return {
     allPairs,
+    doneLoadingResults,
   };
 }

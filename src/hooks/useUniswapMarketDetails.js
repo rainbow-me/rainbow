@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import { get, isEmpty } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { calculateTradeDetails } from '../handlers/uniswap';
 import {
@@ -37,7 +37,10 @@ export default function useUniswapMarketDetails({
   const [tradeDetails, setTradeDetails] = useState(null);
   const { chainId } = useAccountSettings();
 
-  const { allPairs } = useUniswapPairs(inputCurrency, outputCurrency);
+  const { allPairs, doneLoadingResults } = useUniswapPairs(
+    inputCurrency,
+    outputCurrency
+  );
   const swapNotNeeded = useMemo(() => {
     return (
       (isDeposit || isWithdrawal) &&
@@ -72,10 +75,12 @@ export default function useUniswapMarketDetails({
     );
 
     const hasInsufficientLiquidity =
-      !!inputCurrency && !!outputCurrency && !newTradeDetails;
+      (doneLoadingResults && isEmpty(allPairs)) ||
+      (!isEmpty(allPairs) && !newTradeDetails);
     setIsSufficientLiquidity(!hasInsufficientLiquidity);
     setTradeDetails(newTradeDetails);
   }, [
+    doneLoadingResults,
     allPairs,
     chainId,
     inputAmount,
