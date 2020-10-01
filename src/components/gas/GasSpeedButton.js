@@ -52,7 +52,9 @@ const LittleBorderlessButton = ({ onPress, children, testID }) => (
 );
 
 const BottomRightLabel = ({ formatter }) => (
-  <Label color={colors.white}>{formatter()}</Label>
+  <Row justify="end">
+    <Label color={colors.white}>{formatter()}</Label>
+  </Row>
 );
 
 const formatGasPrice = gasPrice => {
@@ -305,7 +307,7 @@ const GasSpeedButton = ({
 
   return (
     <Container justify="space-between">
-      <Column width={120}>
+      <Column style={{ paddingTop: 5 }}>
         {selectedGasPriceOption !== CUSTOM ? (
           <AnimateNumber
             formatter={formatAnimatedGasPrice}
@@ -366,7 +368,12 @@ const GasSpeedButton = ({
         )}
       </Column>
 
-      <Column as={ButtonPressAnimation} onPress={handlePress} testID={testID}>
+      <Column
+        as={ButtonPressAnimation}
+        flex={1}
+        onPress={handlePress}
+        testID={testID}
+      >
         <GasSpeedLabelPager
           label={selectedGasPriceOption}
           showPager={!inputFocused}

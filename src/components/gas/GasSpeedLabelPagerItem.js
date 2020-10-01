@@ -21,7 +21,7 @@ const springConfig = {
   stiffness: 1200,
 };
 
-export const GasSpeedLabelPagerItemHeight = 19;
+export const GasSpeedLabelPagerItemHeight = 24.5;
 
 const GasSpeedRow = styled(AnimatedRow).attrs({
   align: 'end',
