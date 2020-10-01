@@ -1,8 +1,7 @@
 import AnimateNumber from '@bankify/react-native-animate-number';
 import { get, isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { LayoutAnimation } from 'react-native';
-import { BorderlessButton } from 'react-native-gesture-handler';
+import { LayoutAnimation, Pressable } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import styled from 'styled-components/primitives';
 import ExchangeModalTypes from '../../helpers/exchangeModalTypes';
@@ -19,7 +18,7 @@ import { colors, padding } from '@rainbow-me/styles';
 
 const { GasSpeedOrder, CUSTOM, FAST, SLOW } = gasUtils;
 
-const Container = styled(Column).attrs({
+const Container = styled(Row).attrs({
   hapticType: 'impactHeavy',
   scaleTo: 1.0666,
 })`
@@ -34,7 +33,7 @@ const Label = styled(Text).attrs({
   weight: 'semibold',
 })``;
 
-const ButtonLabel = styled(BorderlessButton).attrs({
+const ButtonLabel = styled(Pressable).attrs({
   color: colors.appleBlue,
   hitSlop: 40,
   opacity: 1,
@@ -305,8 +304,8 @@ const GasSpeedButton = ({
   const focusOnInput = useCallback(() => inputRef.current?.focus());
 
   return (
-    <Container as={ButtonPressAnimation} onPress={handlePress}>
-      <Row align="end" justify="space-between" marginBottom={1} testID={testID}>
+    <Container justify="space-between">
+      <Column width={120}>
         {selectedGasPriceOption !== CUSTOM ? (
           <AnimateNumber
             formatter={formatAnimatedGasPrice}
@@ -317,51 +316,42 @@ const GasSpeedButton = ({
             value={price}
           />
         ) : (
-          <BorderlessButton onPress={focusOnInput} width={120}>
-            <Row>
-              <Input
-                color={colors.white}
-                height={19}
-                keyboardAppearance="dark"
-                keyboardType="numeric"
-                letterSpacing="roundedMedium"
-                maxLength={5}
-                onBlur={handleCustomGasBlur}
-                onChangeText={handleCustomGasChange}
-                onFocus={handleCustomGasFocus}
-                placeholder={`${defaultCustomGasPrice}`}
-                placeholderTextColor={colors.alpha(
-                  colors.darkModeColors.blueGreyDark,
-                  0.3
-                )}
-                ref={inputRef}
-                size="lmedium"
-                testID="custom-gas-input"
-                value={customGasPriceInput}
-                weight="bold"
-              />
-              <Text
-                color={
-                  customGasPriceInput
-                    ? colors.white
-                    : colors.alpha(colors.darkModeColors.blueGreyDark, 0.3)
-                }
-                size="lmedium"
-                weight="bold"
-              >
-                {' '}
-                Gwei
-              </Text>
-            </Row>
-          </BorderlessButton>
+          <Row as={ButtonPressAnimation} onPress={focusOnInput}>
+            <Input
+              color={colors.white}
+              height={19}
+              keyboardAppearance="dark"
+              keyboardType="numeric"
+              letterSpacing="roundedMedium"
+              maxLength={5}
+              onBlur={handleCustomGasBlur}
+              onChangeText={handleCustomGasChange}
+              onFocus={handleCustomGasFocus}
+              placeholder={`${defaultCustomGasPrice}`}
+              placeholderTextColor={colors.alpha(
+                colors.darkModeColors.blueGreyDark,
+                0.3
+              )}
+              ref={inputRef}
+              size="lmedium"
+              testID="custom-gas-input"
+              value={customGasPriceInput}
+              weight="bold"
+            />
+            <Text
+              color={
+                customGasPriceInput
+                  ? colors.white
+                  : colors.alpha(colors.darkModeColors.blueGreyDark, 0.3)
+              }
+              size="lmedium"
+              weight="bold"
+            >
+              {' '}
+              Gwei
+            </Text>
+          </Row>
         )}
-        <GasSpeedLabelPager
-          label={selectedGasPriceOption}
-          showPager={!inputFocused}
-          theme="dark"
-        />
-      </Row>
-      <Row align="center" justify="space-between">
         {selectedGasPriceOption !== CUSTOM ? (
           <Label color={colors.white}>Network Fee</Label>
         ) : (
@@ -374,6 +364,15 @@ const GasSpeedButton = ({
               : `${customGasPriceInput ? 'Edit' : 'Enter'} Gas Price`}
           </LittleBorderlessButton>
         )}
+      </Column>
+
+      <Column as={ButtonPressAnimation} onPress={handlePress} testID={testID}>
+        <GasSpeedLabelPager
+          label={selectedGasPriceOption}
+          showPager={!inputFocused}
+          theme="dark"
+        />
+
         <BottomRightLabel
           formatter={formatBottomRightLabel}
           value={{
@@ -381,7 +380,7 @@ const GasSpeedButton = ({
             price: selectedGasPrice?.value?.display,
           }}
         />
-      </Row>
+      </Column>
     </Container>
   );
 };
