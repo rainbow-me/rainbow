@@ -304,11 +304,15 @@ const GasSpeedButton = ({
   ]);
 
   const focusOnInput = useCallback(() => inputRef.current?.focus());
-
+  const isCustom = selectedGasPriceOption === CUSTOM ? true : false;
   return (
-    <Container justify="space-between">
+    <Container
+      as={!isCustom ? ButtonPressAnimation : null}
+      justify="space-between"
+      onPress={!isCustom ? handlePress : null}
+    >
       <Column style={{ paddingTop: 5 }}>
-        {selectedGasPriceOption !== CUSTOM ? (
+        {!isCustom ? (
           <AnimateNumber
             formatter={formatAnimatedGasPrice}
             interval={6}
@@ -318,7 +322,7 @@ const GasSpeedButton = ({
             value={price}
           />
         ) : (
-          <Row as={ButtonPressAnimation} onPress={focusOnInput}>
+          <Row onPress={focusOnInput}>
             <Input
               color={colors.white}
               height={19}
@@ -354,7 +358,7 @@ const GasSpeedButton = ({
             </Text>
           </Row>
         )}
-        {selectedGasPriceOption !== CUSTOM ? (
+        {!isCustom ? (
           <Label color={colors.white}>Network Fee</Label>
         ) : (
           <LittleBorderlessButton
@@ -369,9 +373,9 @@ const GasSpeedButton = ({
       </Column>
 
       <Column
-        as={ButtonPressAnimation}
+        as={isCustom ? ButtonPressAnimation : null}
         flex={1}
-        onPress={handlePress}
+        onPress={isCustom ? handlePress : null}
         testID={testID}
       >
         <GasSpeedLabelPager
