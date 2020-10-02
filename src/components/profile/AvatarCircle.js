@@ -58,6 +58,7 @@ export default function AvatarCircle({
       enableHapticFeedback={isAvatarPickerAvailable}
       marginTop={2}
       onPress={onPress}
+      opacity
       pressOutDuration={200}
       scaleTo={isAvatarPickerAvailable ? 0.9 : 1}
     >
