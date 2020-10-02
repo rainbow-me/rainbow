@@ -1,6 +1,9 @@
 import AsyncStorage from '@react-native-community/async-storage';
-import { addHexPrefix, isValidAddress } from 'ethereumjs-util';
+import { mnemonicToSeed } from 'bip39';
+import { addHexPrefix, isValidAddress, stripHexPrefix } from 'ethereumjs-util';
+import { hdkey, Wallet } from 'ethereumjs-wallet';
 import { find, get, isEmpty, matchesProperty, replace, toLower } from 'lodash';
+import { NativeModules } from 'react-native';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import networkTypes from '../helpers/networkTypes';
 import {
@@ -11,8 +14,10 @@ import {
   isZero,
   subtract,
 } from '../helpers/utilities';
+import WalletTypes from '../helpers/walletTypes';
+import { DEFAULT_HD_PATH, identifyWalletType } from '../model/wallet';
 import { chains } from '../references';
-
+const { RNBip39 } = NativeModules;
 const getEthPriceUnit = assets => {
   const ethAsset = getAsset(assets);
   return get(ethAsset, 'price.value', 0);
@@ -191,7 +196,45 @@ const hasPreviousTransactions = address => {
   });
 };
 
+const deriveAccountFromMnemonic = async (mnemonic, index = 0) => {
+  let seed;
+  if (ios) {
+    seed = await mnemonicToSeed(mnemonic);
+  } else {
+    const res = await RNBip39.mnemonicToSeed({ mnemonic, passphrase: null });
+    seed = new Buffer(res, 'base64');
+  }
+  const hdWallet = hdkey.fromMasterSeed(seed);
+  const root = hdWallet.derivePath(DEFAULT_HD_PATH);
+  const child = root.deriveChild(index);
+  const wallet = child.getWallet();
+  return {
+    isHDWallet: true,
+    root,
+    type: WalletTypes.mnemonic,
+    wallet,
+  };
+};
+
+const deriveAccountFromPkey = privateKey => {
+  const stripped = stripHexPrefix(privateKey);
+  const buffer = Buffer.from(stripped, 'hex');
+  const wallet = Wallet.fromPrivateKey(buffer);
+  return {
+    type: WalletTypes.privateKey,
+    wallet,
+  };
+};
+const deriveAccountFromMnemonicOrPrivateKey = mnemonicOrPrivateKey => {
+  if (identifyWalletType(mnemonicOrPrivateKey) === WalletTypes.privateKey) {
+    return deriveAccountFromPkey(mnemonicOrPrivateKey);
+  }
+  return deriveAccountFromMnemonic(mnemonicOrPrivateKey);
+};
+
 export default {
+  deriveAccountFromMnemonic,
+  deriveAccountFromMnemonicOrPrivateKey,
   getAsset,
   getBalanceAmount,
   getChainIdFromNetwork,

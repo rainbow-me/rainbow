@@ -1,5 +1,5 @@
 import analytics from '@segment/analytics-react-native';
-import { isValidAddress } from 'ethereumjs-util';
+import { addHexPrefix, isValidAddress } from 'ethereumjs-util';
 import { keys } from 'lodash';
 import React, {
   useCallback,
@@ -20,7 +20,7 @@ import { Centered, Column, Row } from '../components/layout';
 import LoadingOverlay from '../components/modal/LoadingOverlay';
 import { SheetHandle } from '../components/sheet';
 import { Text } from '../components/text';
-import { getWallet } from '../model/wallet';
+import { identifyWalletType } from '../model/wallet';
 
 import { web3Provider } from '@rainbow-me/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
@@ -30,6 +30,7 @@ import {
 } from '@rainbow-me/helpers/validators';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import walletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
+import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import {
   useAccountSettings,
   useClipboard,
@@ -45,6 +46,7 @@ import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import { sheetVerticalOffset } from '@rainbow-me/navigation/effects';
 import Routes from '@rainbow-me/routes';
 import { borders, colors, padding } from '@rainbow-me/styles';
+import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 import { usePortal } from 'react-native-cool-modals/Portal';
 
@@ -89,7 +91,6 @@ const FooterButton = styled(MiniButton).attrs({
 
 const KeyboardSizeView = styled(KeyboardArea)`
   background-color: ${colors.white};
-  height: 0;
 `;
 
 const SecretTextArea = styled(Input).attrs({
@@ -226,9 +227,19 @@ export default function ImportSeedPhraseSheet() {
       try {
         setBusy(true);
         setTimeout(async () => {
-          const { hdnode, isHDWallet, type, wallet } = getWallet(input);
-          setCheckedWallet({ hdnode, isHDWallet, type, wallet });
-          const ens = await web3Provider.lookupAddress(wallet?.address);
+          const type = identifyWalletType(input);
+          let walletResult;
+          if (type === WalletTypes.privateKey) {
+            walletResult = ethereumUtils.deriveAccountFromPkey(input);
+          } else {
+            walletResult = await ethereumUtils.deriveAccountFromMnemonicOrPrivateKey(
+              input
+            );
+          }
+          setCheckedWallet(walletResult);
+          const ens = await web3Provider.lookupAddress(
+            addHexPrefix(walletResult?.wallet?.getAddress().toString('hex'))
+          );
           if (ens && ens !== input) {
             name = ens;
           }
@@ -406,7 +417,7 @@ export default function ImportSeedPhraseSheet() {
           )}
         </Footer>
       </Sheet>
-      <KeyboardSizeView isOpen />
+      {ios ? <KeyboardSizeView isOpen /> : null}
     </Container>
   );
 }
