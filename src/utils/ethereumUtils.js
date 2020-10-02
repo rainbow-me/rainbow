@@ -3,6 +3,7 @@ import { mnemonicToSeed } from 'bip39';
 import { addHexPrefix, isValidAddress, stripHexPrefix } from 'ethereumjs-util';
 import { hdkey, Wallet } from 'ethereumjs-wallet';
 import { find, get, isEmpty, matchesProperty, replace, toLower } from 'lodash';
+import { NativeModules } from 'react-native';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import networkTypes from '../helpers/networkTypes';
 import {
@@ -16,7 +17,7 @@ import {
 import WalletTypes from '../helpers/walletTypes';
 import { DEFAULT_HD_PATH, identifyWalletType } from '../model/wallet';
 import { chains } from '../references';
-
+const { RNBip39 } = NativeModules;
 const getEthPriceUnit = assets => {
   const ethAsset = getAsset(assets);
   return get(ethAsset, 'price.value', 0);
@@ -195,11 +196,20 @@ const hasPreviousTransactions = address => {
   });
 };
 
-const deriveAccountFromMnemonic = async mnemonic => {
-  const seed = await mnemonicToSeed(mnemonic);
+const deriveAccountFromMnemonic = async (mnemonic, index = 0) => {
+  console.log('mnemonic to seed started');
+  let seed;
+  if (ios) {
+    seed = await mnemonicToSeed(mnemonic);
+  } else {
+    const res = await RNBip39.mnemonicToSeed({ mnemonic, passphrase: null });
+    console.log('res', typeof res, res);
+    seed = new Buffer(res, 'base64');
+  }
+  console.log('mnemonic to seed completed', seed);
   const hdWallet = hdkey.fromMasterSeed(seed);
   const root = hdWallet.derivePath(DEFAULT_HD_PATH);
-  const child = root.deriveChild(0);
+  const child = root.deriveChild(index);
   const wallet = child.getWallet();
   return {
     isHDWallet: true,
@@ -226,6 +236,7 @@ const deriveAccountFromMnemonicOrPrivateKey = mnemonicOrPrivateKey => {
 };
 
 export default {
+  deriveAccountFromMnemonic,
   deriveAccountFromMnemonicOrPrivateKey,
   getAsset,
   getBalanceAmount,
