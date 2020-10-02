@@ -27,7 +27,6 @@ import RNIOS11DeviceCheck from 'react-native-ios11-devicecheck';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import VersionNumber from 'react-native-version-number';
-// import { connect, Provider } from '@rainbow-me/react-redux';
 import { compose, withProps } from 'recompact';
 import { FlexItem } from './components/layout';
 import { OfflineToast, TestnetToast } from './components/toasts';
