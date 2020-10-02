@@ -197,16 +197,13 @@ const hasPreviousTransactions = address => {
 };
 
 const deriveAccountFromMnemonic = async (mnemonic, index = 0) => {
-  console.log('mnemonic to seed started');
   let seed;
   if (ios) {
     seed = await mnemonicToSeed(mnemonic);
   } else {
     const res = await RNBip39.mnemonicToSeed({ mnemonic, passphrase: null });
-    console.log('res', typeof res, res);
     seed = new Buffer(res, 'base64');
   }
-  console.log('mnemonic to seed completed', seed);
   const hdWallet = hdkey.fromMasterSeed(seed);
   const root = hdWallet.derivePath(DEFAULT_HD_PATH);
   const child = root.deriveChild(index);

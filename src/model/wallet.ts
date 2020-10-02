@@ -856,7 +856,6 @@ export const generateAccount = async (
     await savePrivateKey(walletAddress, walletPkey);
     return newAccount;
   } catch (error) {
-    console.log('Error creating wallet', error);
     logger.sentry('Error generating account for keychain', id);
     captureException(error);
     return null;
