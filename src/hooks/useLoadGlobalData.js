@@ -1,6 +1,5 @@
 import { useCallback } from 'react';
 import { queryCache } from 'react-query';
-import { useDispatch } from 'react-redux';
 import {
   getTopMovers,
   TOP_MOVERS_FROM_STORAGE,
@@ -9,6 +8,7 @@ import {
   getWalletBalances,
   WALLET_BALANCES_FROM_STORAGE,
 } from '@rainbow-me/handlers/localstorage/walletBalances';
+import { useDispatch } from '@rainbow-me/react-redux';
 import { contactsLoadState } from '@rainbow-me/redux/contacts';
 import { imageMetadataCacheLoadState } from '@rainbow-me/redux/imageMetadata';
 import { keyboardHeightsLoadState } from '@rainbow-me/redux/keyboardHeight';

@@ -3,7 +3,6 @@ import { captureException } from '@sentry/react-native';
 import { values } from 'lodash';
 import { useCallback } from 'react';
 import { Alert, Linking } from 'react-native';
-import { useDispatch } from 'react-redux';
 import {
   addWalletToCloudBackup,
   backupWalletToCloud,
@@ -19,6 +18,7 @@ import {
 import { delay } from '@rainbow-me/helpers/utilities';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import walletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
+import { useDispatch } from '@rainbow-me/react-redux';
 import logger from 'logger';
 
 function getUserError(e) {

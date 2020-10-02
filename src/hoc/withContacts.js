@@ -1,8 +1,8 @@
 import { sortBy, values } from 'lodash';
-import { connect } from 'react-redux';
 import { compose, withProps } from 'recompact';
 import { createSelector } from 'reselect';
 import { contactsAddOrUpdate, removeContact } from '../redux/contacts';
+import { connect } from '@rainbow-me/react-redux';
 
 const contactsSelector = state => state.contacts;
 

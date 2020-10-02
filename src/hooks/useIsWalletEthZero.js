@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import { useSelector } from 'react-redux';
 import { checkWalletEthZero } from '../utils/ethereumUtils';
+import { useSelector } from '@rainbow-me/react-redux';
 
 export default function useIsWalletEthZero() {
   const assets = useSelector(state => state.data.assets);

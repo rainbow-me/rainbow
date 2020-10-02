@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { setOpenSavings } from '../redux/openStateSettings';
+import { useDispatch, useSelector } from '@rainbow-me/react-redux';
 
 export default function useOpenSavings() {
   const dispatch = useDispatch();

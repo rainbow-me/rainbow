@@ -7,7 +7,6 @@ import { get, isEmpty, isNil, omit } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, InteractionManager, Vibration } from 'react-native';
 import { isEmulatorSync } from 'react-native-device-info';
-import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Button, HoldToAuthorizeButton } from '../components/buttons';
 import { RequestVendorLogoIcon } from '../components/coin-icon';
@@ -45,6 +44,7 @@ import {
   SIGN,
   SIGN_TYPED_DATA,
 } from '../utils/signingMethods';
+import { useDispatch, useSelector } from '@rainbow-me/react-redux';
 import { colors, position } from '@rainbow-me/styles';
 import logger from 'logger';
 

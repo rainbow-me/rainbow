@@ -1,12 +1,12 @@
 import { groupBy, mapValues, values } from 'lodash';
 import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { sortList } from '../helpers/sortList';
 import {
   walletConnectDisconnectAllByDappName as rawWalletConnectDisconnectAllByDappName,
   walletConnectOnSessionRequest as rawWalletConnectOnSessionRequest,
 } from '../redux/walletconnect';
+import { useDispatch, useSelector } from '@rainbow-me/react-redux';
 
 const formatDappData = connections =>
   values(

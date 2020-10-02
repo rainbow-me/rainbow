@@ -1,11 +1,11 @@
 import { concat, find, isEmpty } from 'lodash';
 import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import useAccountSettings from '../hooks/useAccountSettings';
 import useAppState from '../hooks/useAppState';
 import { savingsLoadState } from '../redux/savings';
 import { DAI_ADDRESS } from '../references';
 import usePrevious from './usePrevious';
+import { useDispatch, useSelector } from '@rainbow-me/react-redux';
 
 export default function useSavingsAccount(includeDefaultDai) {
   const { justBecameActive } = useAppState();

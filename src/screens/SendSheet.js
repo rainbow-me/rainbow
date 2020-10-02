@@ -5,7 +5,6 @@ import { get, isEmpty, isString, toLower } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { InteractionManager, Keyboard, StatusBar } from 'react-native';
 import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
-import { useDispatch } from 'react-redux';
 import styled from 'styled-components/primitives';
 import { Column } from '../components/layout';
 import {
@@ -43,6 +42,7 @@ import {
   useTransactionConfirmation,
   useUpdateAssetOnchainBalance,
 } from '@rainbow-me/hooks';
+import { useDispatch } from '@rainbow-me/react-redux';
 import Routes from '@rainbow-me/routes';
 import { borders, colors } from '@rainbow-me/styles';
 import { deviceUtils, gasUtils } from '@rainbow-me/utils';

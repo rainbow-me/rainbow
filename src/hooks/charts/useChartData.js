@@ -1,7 +1,6 @@
 import { isEmpty } from 'lodash';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import isEqual from 'react-fast-compare';
-import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { useCallbackOne } from 'use-memo-one';
 import { getChart } from '../../handlers/uniswap';
@@ -13,6 +12,7 @@ import {
 import { emitChartsRequest } from '../../redux/explorer';
 import { daysFromTheFirstTx } from '../../utils/ethereumUtils';
 import useAsset from '../useAsset';
+import { useDispatch, useSelector } from '@rainbow-me/react-redux';
 import logger from 'logger';
 
 const formatChartData = chart => {

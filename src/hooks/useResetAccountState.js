@@ -1,5 +1,4 @@
 import { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
 import { addCashClearState } from '../redux/addCash';
 import { dataResetState } from '../redux/data';
 import { explorerClearState } from '../redux/explorer';
@@ -10,6 +9,7 @@ import { savingsClearState } from '../redux/savings';
 import { uniqueTokensResetState } from '../redux/uniqueTokens';
 import { uniswapResetState } from '../redux/uniswap';
 import { promiseUtils } from '../utils';
+import { useDispatch } from '@rainbow-me/react-redux';
 
 export default function useResetAccountState() {
   const dispatch = useDispatch();

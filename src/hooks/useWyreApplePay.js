@@ -1,6 +1,5 @@
 import analytics from '@segment/analytics-react-native';
 import { useCallback, useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import {
   getOrderId,
   getReferenceId,
@@ -16,6 +15,7 @@ import {
 import useAccountSettings from './useAccountSettings';
 import usePurchaseTransactionStatus from './usePurchaseTransactionStatus';
 import useTimeout from './useTimeout';
+import { useDispatch } from '@rainbow-me/react-redux';
 import logger from 'logger';
 
 export default function useWyreApplePay() {

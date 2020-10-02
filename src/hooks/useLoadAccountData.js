@@ -1,5 +1,4 @@
 import { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
 import networkTypes from '../helpers/networkTypes';
 import { addCashLoadState } from '../redux/addCash';
 import { dataLoadState } from '../redux/data';
@@ -11,6 +10,7 @@ import { uniqueTokensLoadState } from '../redux/uniqueTokens';
 import { uniswapLoadState } from '../redux/uniswap';
 import { walletConnectLoadState } from '../redux/walletconnect';
 import { promiseUtils } from '../utils';
+import { useDispatch } from '@rainbow-me/react-redux';
 import logger from 'logger';
 
 export default function useLoadAccountData() {

@@ -1,9 +1,9 @@
 import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { findLatestBackUp } from '../model/backup';
 import { setIsWalletLoading as rawSetIsWalletLoading } from '../redux/wallets';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
+import { useDispatch, useSelector } from '@rainbow-me/react-redux';
 
 const walletSelector = createSelector(
   ({ wallets: { isWalletLoading, selected = {}, walletNames, wallets } }) => ({

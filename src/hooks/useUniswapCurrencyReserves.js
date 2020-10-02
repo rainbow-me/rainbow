@@ -1,10 +1,10 @@
 import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import {
   uniswapClearCurrenciesAndReserves,
   uniswapUpdateInputCurrency,
   uniswapUpdateOutputCurrency,
 } from '../redux/uniswap';
+import { useDispatch, useSelector } from '@rainbow-me/react-redux';
 
 export default function useUniswapCurrencyReserves() {
   const dispatch = useDispatch();

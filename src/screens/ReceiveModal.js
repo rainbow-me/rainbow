@@ -1,6 +1,5 @@
 import { toLower } from 'lodash';
 import React, { useCallback, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import styled from 'styled-components/primitives';
 import TouchableBackdrop from '../components/TouchableBackdrop';
@@ -14,6 +13,7 @@ import { CopyToast, ToastPositionContainer } from '../components/toasts';
 import { useAccountProfile } from '../hooks';
 import { useNavigation } from '../navigation/Navigation';
 import { abbreviations } from '../utils';
+import { useSelector } from '@rainbow-me/react-redux';
 import { colors, padding, shadow } from '@rainbow-me/styles';
 
 const QRCodeSize = ios ? 250 : 190;

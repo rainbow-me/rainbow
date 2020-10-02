@@ -9,7 +9,6 @@ import React, {
   useState,
 } from 'react';
 import Animated, { Extrapolate } from 'react-native-reanimated';
-import { useDispatch } from 'react-redux';
 import { interpolate } from '../components/animations';
 import {
   ConfirmExchangeButton,
@@ -41,6 +40,7 @@ import {
   useUniswapCurrencyReserves,
   useUniswapMarketDetails,
 } from '@rainbow-me/hooks';
+import { useDispatch } from '@rainbow-me/react-redux';
 import Routes from '@rainbow-me/routes';
 import { colors, position } from '@rainbow-me/styles';
 import { backgroundTask, isNewValueForPath } from '@rainbow-me/utils';

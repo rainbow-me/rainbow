@@ -4,7 +4,6 @@ import { find } from 'lodash';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Linking, requireNativeComponent } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
-import { useDispatch } from 'react-redux';
 import styled from 'styled-components/primitives';
 import useExperimentalFlag, {
   AVATAR_PICKER,
@@ -21,6 +20,7 @@ import { useNavigation } from '../../navigation/Navigation';
 import { removeRequest } from '../../redux/requests';
 import { walletsSetSelected, walletsUpdate } from '../../redux/wallets';
 import { FloatingEmojis } from '../floating-emojis';
+import { useDispatch } from '@rainbow-me/react-redux';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 import {

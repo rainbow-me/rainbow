@@ -1,10 +1,10 @@
 import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { setOpenFamilyTabs } from '../redux/openStateSettings';
 import {
   addShowcaseToken as rawAddShowcaseToken,
   removeShowcaseToken as rawRemoveShowcaseToken,
 } from '../redux/showcaseTokens';
+import { useDispatch, useSelector } from '@rainbow-me/react-redux';
 
 export default function useShowcaseTokens() {
   const dispatch = useDispatch();

@@ -9,7 +9,6 @@ import React, {
 } from 'react';
 import { InteractionManager } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import Divider from '../components/Divider';
 import { ButtonPressAnimation } from '../components/animations';
@@ -37,6 +36,7 @@ import {
   useInitializeWallet,
   useWallets,
 } from '@rainbow-me/hooks';
+import { useDispatch } from '@rainbow-me/react-redux';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 import {

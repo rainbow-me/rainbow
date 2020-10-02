@@ -1,5 +1,4 @@
 import { Linking } from 'react-native';
-import { connect } from 'react-redux';
 import { compose, withHandlers } from 'recompact';
 import { Navigation } from '../navigation';
 import { getRequestDisplayDetails } from '../parsers/requests';
@@ -11,6 +10,7 @@ import {
   SIGN_TRANSACTION,
 } from '../utils/signingMethods';
 import withAccountSettings from './withAccountSettings';
+import { connect } from '@rainbow-me/react-redux';
 import Routes from '@rainbow-me/routes';
 
 const mapStateToProps = ({ data: { assets } }) => ({

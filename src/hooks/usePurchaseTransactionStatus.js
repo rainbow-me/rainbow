@@ -1,6 +1,6 @@
 import { find } from 'lodash';
 import { useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector } from '@rainbow-me/react-redux';
 
 export default function usePurchaseTransactionStatus() {
   const {

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import Animated from 'react-native-reanimated';
 import { useValues } from 'react-native-redash';
-import { useDispatch } from 'react-redux';
 import styled from 'styled-components/primitives';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import ColorCircle from '../components/avatar-builder/ColorCircle';
@@ -12,6 +11,7 @@ import { useWallets } from '../hooks';
 import { useNavigation } from '../navigation/Navigation';
 import { walletsSetSelected, walletsUpdate } from '../redux/wallets';
 import { deviceUtils } from '../utils';
+import { useDispatch } from '@rainbow-me/react-redux';
 import { colors } from '@rainbow-me/styles';
 
 const AvatarCircleHeight = 65;

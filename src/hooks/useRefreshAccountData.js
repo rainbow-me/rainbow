@@ -1,12 +1,12 @@
 import { captureException } from '@sentry/react-native';
 import delay from 'delay';
 import { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
 import NetworkTypes from '../helpers/networkTypes';
 import { uniqueTokensRefreshState } from '../redux/uniqueTokens';
 import { uniswapUpdateState } from '../redux/uniswap';
 import { fetchWalletNames } from '../redux/wallets';
 import useAccountSettings from './useAccountSettings';
+import { useDispatch } from '@rainbow-me/react-redux';
 import logger from 'logger';
 
 export default function useRefreshAccountData() {
