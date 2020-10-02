@@ -31,3 +31,102 @@ index 637f112..da0492a 100644
    }
  }
  
+diff --git a/node_modules/react-native-slack-bottom-sheet/ios/UIViewController+PanModalPresenter.swift b/node_modules/react-native-slack-bottom-sheet/ios/UIViewController+PanModalPresenter.swift
+index b688639..39631d3 100644
+--- a/node_modules/react-native-slack-bottom-sheet/ios/UIViewController+PanModalPresenter.swift
++++ b/node_modules/react-native-slack-bottom-sheet/ios/UIViewController+PanModalPresenter.swift
+@@ -29,6 +29,8 @@ class BetterGestureRecognizerDelegateAdapter: NSObject, UIGestureRecognizerDeleg
+   }
+ }
+ 
++var moved = false
++
+ class PossiblyTouchesPassableUIView: UIView {
+   var grdelegate: UIGestureRecognizerDelegate?
+   var config: NSObject?
+@@ -49,12 +51,17 @@ class PossiblyTouchesPassableUIView: UIView {
+     super.layoutSubviews()
+     let outerView = self.config?.value(forKey: "outerView") as? UIView
+     if (!(self.config!.value(forKey: "presentGlobally") as! Bool)) {
++      if moved {
++        return
++      }
++      moved = true
+       removeFromSuperview()
+       let helperView: UIView = self.subviews[1].subviews[0]
+-      let bounds = outerView!.bounds
+-      let topOffset:CGFloat = (topLayoutGuideLength ?? 0) + CGFloat(truncating: self.config?.value(forKey: "topOffset") as! NSNumber)
+-      let newBounds = CGRect.init(x: bounds.minX, y: bounds.minY, width: bounds.width, height: bounds.height - topOffset)
+-      helperView.setValue(newBounds, forKeyPath: "specialBounds")
++        let bounds = outerView!.bounds
++        let topOffset:CGFloat = (topLayoutGuideLength ?? 0) + CGFloat(truncating: self.config?.value(forKey: "topOffset") as! NSNumber)
++
++        let newBounds = CGRect.init(x: bounds.minX, y: bounds.minY, width: bounds.width, height: bounds.height - topOffset)
++        helperView.setValue(newBounds, forKeyPath: "specialBounds")
+       outerView?.addSubview(self)
+     }
+     let gr: UIGestureRecognizer = self.gestureRecognizers![0]
+@@ -104,6 +111,11 @@ class PanModalViewController: UIViewController, PanModalPresentable {
+     self.config = config
+   }
+   
++  override func viewDidLoad() {
++    super.viewDidLoad()
++    hack()
++  }
++
+ 
+   override var preferredStatusBarStyle: UIStatusBarStyle {
+     return .lightContent
+@@ -203,6 +215,15 @@ class PanModalViewController: UIViewController, PanModalPresentable {
+     return self.config?.value(forKey: "isHapticFeedbackEnabled") as! Bool  }
+ 
+   var shouldRoundTopCorners: Bool {
++    hack()
++    return self.config?.value(forKey: "shouldRoundTopCorners") as! Bool
++  }
++  
++  override func viewDidLayoutSubviews() {
++    hack()
++  }
++  
++  public func hack() {
+     let pview = view.superview!.superview!
+     if !(pview is PossiblyTouchesPassableUIView) {
+       let oldClass: AnyClass = type(of: pview)
+@@ -212,7 +233,6 @@ class PanModalViewController: UIViewController, PanModalPresentable {
+       (pview as! PossiblyTouchesPassableUIView).oldClass = oldClass
+       (pview as! PossiblyTouchesPassableUIView).justModifiedClass = NSNumber.init(value: true)
+     }
+-    return self.config?.value(forKey: "shouldRoundTopCorners") as! Bool
+   }
+ 
+   var showDragIndicator: Bool {
+@@ -264,13 +284,19 @@ class PanModalViewController: UIViewController, PanModalPresentable {
+ 
+ 
+ extension UIViewController {
+-  @objc public func presentPanModal(view: UIView, config: UIView) -> UIViewController {
+-
+-    let viewControllerToPresent: UIViewController & PanModalPresentable = PanModalViewController(config: config)
+-    viewControllerToPresent.view = view
+-    let sourceView: UIView? = nil, sourceRect: CGRect = .zero
+-
+-    self.presentPanModal(viewControllerToPresent, sourceView: sourceView, sourceRect: sourceRect)
+-    return viewControllerToPresent
++  @objc public func presentPanModal(view: UIView, config: UIView) -> UIViewController? {
++    moved = false;
++    if self.presentedViewController != nil {
++      DispatchQueue.main.asyncAfter(deadline: .now() + 0.03) {
++        self.presentPanModal(view: view, config: config)
++      }
++    } else {
++      let viewControllerToPresent: UIViewController & PanModalPresentable = PanModalViewController(config: config)
++      viewControllerToPresent.view = view
++      let sourceView: UIView? = nil, sourceRect: CGRect = .zero
++      self.presentPanModal(viewControllerToPresent, sourceView: sourceView, sourceRect: sourceRect)
++      return viewControllerToPresent
++    }
++    return nil
+   }
+ }

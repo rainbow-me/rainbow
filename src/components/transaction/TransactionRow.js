@@ -5,9 +5,11 @@ import { ColumnWithMargins } from '../layout';
 import { Smallcaps } from '../text';
 import { padding } from '@rainbow-me/styles';
 
-const Container = styled(ColumnWithMargins).attrs({ margin: 5 })`
-  ${padding(19)};
-  flex-shrink: 0;
+const Container = styled(ColumnWithMargins).attrs({
+  marginLeft: 5,
+  marginRight: 5,
+})`
+  ${padding(0, 19)};
 `;
 
 const TransactionRow = ({ children, title, ...props }) => (

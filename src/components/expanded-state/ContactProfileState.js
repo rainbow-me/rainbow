@@ -90,6 +90,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
           color={color}
           marginBottom={19}
           setColor={setColor}
+          testID="contact-profile-avatar-button"
           value={value}
         />
         <ProfileNameInput
@@ -98,6 +99,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
           placeholder="Name"
           ref={inputRef}
           selectionColor={colors.avatarColor[color]}
+          testID="contact-profile-name-input"
           value={value}
         />
         <CopyTooltip
@@ -110,7 +112,11 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
         <Centered paddingVertical={19} width={93}>
           <Divider inset={false} />
         </Centered>
-        <SubmitButton onPress={handleAddContact} value={value}>
+        <SubmitButton
+          onPress={handleAddContact}
+          testID="contact-profile-add-button"
+          value={value}
+        >
           <SubmitButtonLabel>
             {contact ? 'Done' : 'Add Contact'}
           </SubmitButtonLabel>
@@ -119,7 +125,11 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
           marginTop={11}
           onPress={contact ? handleDeleteContact : goBack}
         >
-          <Centered backgroundColor={colors.white} css={padding(8, 9)}>
+          <Centered
+            backgroundColor={colors.white}
+            css={padding(8, 9)}
+            testID="contact-profile-cancel-button"
+          >
             <Text
               color={colors.alpha(colors.blueGreyDark, 0.4)}
               size="lmedium"

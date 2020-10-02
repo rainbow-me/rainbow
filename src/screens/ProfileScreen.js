@@ -86,7 +86,7 @@ export default function ProfileScreen({ navigation }) {
   const addCashAvailable = ios && addCashSupportedNetworks;
 
   return (
-    <ProfileScreenPage>
+    <ProfileScreenPage testID="profile-screen">
       <Header justify="space-between">
         <HeaderButton onPress={onPressSettings} testID="settings-button">
           <Icon color={colors.black} name="gear" />

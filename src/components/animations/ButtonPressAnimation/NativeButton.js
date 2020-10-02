@@ -40,7 +40,7 @@ function normalizeTransformOrigin(transformOrigin) {
 }
 
 const NativeButton = (
-  { compensateForTransformOrigin, transformOrigin, ...props },
+  { compensateForTransformOrigin, transformOrigin, testID, ...props },
   ref
 ) => {
   const normalizedTransformOrigin = useMemo(
@@ -58,6 +58,7 @@ const NativeButton = (
       <ButtonWithTransformOrigin
         {...props}
         ref={ref}
+        testID={testID}
         transformOrigin={normalizedTransformOrigin}
       />
     </View>
@@ -65,6 +66,7 @@ const NativeButton = (
     <RawNativeButton
       {...props}
       ref={ref}
+      testID={testID}
       transformOrigin={normalizedTransformOrigin}
     />
   );

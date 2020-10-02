@@ -135,11 +135,6 @@ function MainNavigator() {
         name={Routes.WALLET_CONNECT_REDIRECT_SHEET}
         options={bottomSheetPreset}
       />
-      <Stack.Screen
-        component={TransactionConfirmationScreen}
-        name={Routes.CONFIRM_REQUEST}
-        options={sheetPreset}
-      />
     </Stack.Navigator>
   );
 }
@@ -286,6 +281,19 @@ function NativeStackNavigator() {
         component={SavingsSheet}
         name={Routes.SAVINGS_SHEET}
         {...savingsSheetConfig}
+      />
+      <NativeStack.Screen
+        component={TransactionConfirmationScreen}
+        name={Routes.CONFIRM_REQUEST}
+        options={{
+          allowsDragToDismiss: true,
+          backgroundColor: '#0A0A0A',
+          backgroundOpacity: 1,
+          customStack: true,
+          headerHeight: 0,
+          isShortFormEnabled: false,
+          topOffset: 0,
+        }}
       />
       <NativeStack.Screen
         component={WithdrawModal}

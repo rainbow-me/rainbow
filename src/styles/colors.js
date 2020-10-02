@@ -70,6 +70,7 @@ const assetIcon = {
 };
 
 const gradients = {
+  lighterGrey: [buildRgba('#ECF1F5', 0.15), buildRgba('#DFE4EB', 0.5)],
   lightGrey: [buildRgba('#ECF1F5', 0.5), buildRgba('#DFE4EB', 0.5)],
   offWhite: [base.white, base.offWhite],
   rainbow: ['#FFB114', '#FF54BB', '#7EA4DE'],
@@ -148,6 +149,7 @@ const darkModeColors = {
   lighterGrey: '#FFFFFF',
   lightestGrey: '#FFFFFF',
   lightGrey: '#FFFFFF',
+  purple: '#9C57FF',
   skeleton: '#0F0F0F',
   white: '#000000',
 };

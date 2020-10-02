@@ -335,14 +335,16 @@ export default function SendSheet(props) {
 
   const onPressTransactionSpeed = useCallback(
     onSuccess => {
+      const hideCustom = true;
       gasUtils.showTransactionSpeedOptions(
         gasPrices,
         txFees,
         gasPriceOption => updateGasPriceOption(gasPriceOption),
-        onSuccess
+        onSuccess,
+        hideCustom
       );
     },
-    [gasPrices, txFees, updateGasPriceOption]
+    [txFees, gasPrices, updateGasPriceOption]
   );
 
   const onLongPressSend = useCallback(() => {

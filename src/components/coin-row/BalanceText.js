@@ -1,8 +1,11 @@
-import { withProps } from 'recompact';
-import Text from '../text/Text';
+import styled from 'styled-components/primitives';
+import { colors } from '../../styles';
+import { Text } from '../text';
 
-export default withProps(({ color }) => ({
+const BalanceText = styled(Text).attrs(({ color = colors.dark }) => ({
   align: 'right',
-  color: color || 'dark',
+  color,
   size: 'lmedium',
-}))(Text);
+}))``;
+
+export default BalanceText;
