@@ -1,5 +1,5 @@
 diff --git a/node_modules/react-redux/lib/hooks/useSelector.js b/node_modules/react-redux/lib/hooks/useSelector.js
-index c93b377..506ed0c 100644
+index c93b377..347b366 100644
 --- a/node_modules/react-redux/lib/hooks/useSelector.js
 +++ b/node_modules/react-redux/lib/hooks/useSelector.js
 @@ -6,6 +6,8 @@ exports.__esModule = true;
@@ -19,7 +19,7 @@ index c93b377..506ed0c 100644
 +  if (a === b) {
 +    return true
 +  }
-+  if (typeof a == 'object') {
++  if (typeof a == 'object' && a !== null) {
 +    return isEqual(a, b);
 +  }
 +  return false;
