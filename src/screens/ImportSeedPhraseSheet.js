@@ -91,7 +91,6 @@ const FooterButton = styled(MiniButton).attrs({
 
 const KeyboardSizeView = styled(KeyboardArea)`
   background-color: ${colors.white};
-  height: 0;
 `;
 
 const SecretTextArea = styled(Input).attrs({
@@ -418,7 +417,7 @@ export default function ImportSeedPhraseSheet() {
           )}
         </Footer>
       </Sheet>
-      <KeyboardSizeView isOpen />
+      {ios ? <KeyboardSizeView isOpen /> : null}
     </Container>
   );
 }
