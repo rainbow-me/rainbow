@@ -295,6 +295,7 @@ export default function ImportSeedPhraseSheet() {
                   if (!(isENSAddressFormat(input) || isValidAddress(input))) {
                     IS_TESTING !== 'true' &&
                       Navigation.handleAction(Routes.BACKUP_SHEET, {
+                        single: true,
                         step: WalletBackupStepTypes.imported,
                       });
                   }

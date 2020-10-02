@@ -101,6 +101,7 @@ export default function SendContactList({
         <SendContactFlatList
           data={filteredContacts}
           renderItem={renderItemCallback}
+          testID="send-contact-list"
         />
       )}
       <KeyboardSizeView isOpen />

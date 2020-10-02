@@ -7,16 +7,18 @@ import { Text } from '../text';
 import ExchangeInput from './ExchangeInput';
 import { colors, fonts } from '@rainbow-me/styles';
 
-const CurrencySymbol = styled(Text).attrs({
-  size: 'large',
+const CurrencySymbol = styled(Text).attrs(({ height }) => ({
+  letterSpacing: 'roundedTight',
+  lineHeight: height,
+  size: 'larger',
   weight: 'regular',
-})`
-  margin-bottom: ${android ? 1.5 : 0.5};
+}))`
+  ${android ? 'margin-bottom: 1.5;' : ''};
 `;
 
 const NativeInput = styled(ExchangeInput).attrs({
   letterSpacing: fonts.letterSpacing.roundedTight,
-  size: fonts.size.large,
+  size: fonts.size.larger,
   weight: fonts.weight.regular,
 })`
   height: ${({ height }) => height};
@@ -55,7 +57,9 @@ const ExchangeNativeField = (
   return (
     <TouchableWithoutFeedback onPress={handleFocusNativeField}>
       <Row align="center" flex={1} height={height}>
-        <CurrencySymbol color={nativeAmountColor}>{symbol}</CurrencySymbol>
+        <CurrencySymbol color={nativeAmountColor} height={height}>
+          {symbol}
+        </CurrencySymbol>
         <NativeInput
           color={nativeAmountColor}
           editable={editable}

@@ -30,6 +30,7 @@ const ExchangeFab = ({ disabled, isReadOnlyWallet, ...props }) => {
       disabled={disabled}
       onPress={handlePress}
       shadows={FabShadow}
+      testID="exchange-fab"
     >
       <Icon height={21} marginBottom={2} name="swap" width={26} />
     </FloatingActionButton>

@@ -20,10 +20,8 @@ import {
   TokenInfoSection,
 } from '../token-info';
 import Chart from '../value-chart/Chart';
-import {
-  ChartPathProvider,
-  monotoneCubicInterpolation,
-} from '@rainbow-me/animated-charts';
+import { useLatestChartData, useSetChartData } from './ChartHelper';
+import { monotoneCubicInterpolation } from '@rainbow-me/animated-charts';
 import { chartExpandedAvailable } from '@rainbow-me/config/experimental';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 
@@ -151,25 +149,45 @@ export default function ChartExpandedState({ asset }) {
     }
   }, [throttledPoints, fetchingCharts, debouncedSetThrottledData]);
 
+  const duration = useRef(0);
+
+  const vals = useMemo(
+    () => ({
+      data: throttledData,
+      gestureEnabled: !fetchingCharts && !!throttledData,
+      stroke: color,
+      timingAnimationConfig: { duration: duration.current },
+    }),
+    [color, fetchingCharts, throttledData]
+  );
+
+  if (duration.current === 0) {
+    duration.current = 300;
+  }
+
+  const latest = useLatestChartData();
+  const setChartData = useSetChartData();
+  if (latest !== vals) {
+    setChartData(vals);
+  }
+
   return (
     <SlackSheet
       contentHeight={ChartExpandedStateSheetHeight}
       scrollEnabled={false}
     >
-      <ChartPathProvider data={throttledData}>
-        <Chart
-          {...chartData}
-          {...initialChartDataLabels}
-          asset={asset}
-          chart={chart}
-          chartType={chartType}
-          color={color}
-          fetchingCharts={fetchingCharts}
-          nativePoints={chart}
-          showChart={showChart}
-          throttledData={throttledData}
-        />
-      </ChartPathProvider>
+      <Chart
+        {...chartData}
+        {...initialChartDataLabels}
+        asset={asset}
+        chart={chart}
+        chartType={chartType}
+        color={color}
+        fetchingCharts={fetchingCharts}
+        nativePoints={chart}
+        showChart={showChart}
+        throttledData={throttledData}
+      />
       <SheetDivider />
       <TokenInfoSection>
         <TokenInfoRow>

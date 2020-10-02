@@ -155,7 +155,7 @@ const UnderlineField = (
         transform: [{ scale: underlineSize.value }],
       };
     },
-    undefined,
+    [],
     'UnderlineFieldAnimatedStyle' + animatedKey
   );
 

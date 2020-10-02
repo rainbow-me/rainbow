@@ -52,6 +52,7 @@ const AddButton = enhanceButton(({ onPress }) => (
     backgroundColor={colors.sendScreen.brightBlue}
     onPress={onPress}
     size="small"
+    testID="add-contact-button"
     type="pill"
   >
     <FastImage
@@ -74,6 +75,7 @@ const EditButton = enhanceButton(({ onPress }) => (
       justifyContent: 'center',
       paddingRight: 4,
     }}
+    testID="edit-contact-button"
   >
     <Icon name="threeDots" />
   </ButtonPressAnimation>

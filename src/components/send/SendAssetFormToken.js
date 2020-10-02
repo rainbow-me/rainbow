@@ -54,6 +54,7 @@ export default function SendAssetFormToken({
           onFocus={onFocus}
           onPressButton={sendMaxBalance}
           placeholder="0"
+          testID="selected-asset-field"
           value={assetAmount}
         />
         <SendAssetFormField
@@ -65,6 +66,7 @@ export default function SendAssetFormToken({
           onFocus={onFocus}
           onPressButton={sendMaxBalance}
           placeholder={nativePlaceholder}
+          testID="selected-asset-quantity-field"
           value={nativeAmount}
         />
       </FormContainer>

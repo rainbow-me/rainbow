@@ -1,14 +1,26 @@
 import { useRoute } from '@react-navigation/native';
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { InteractionManager } from 'react-native';
 import styled from 'styled-components/primitives';
-import URL from 'url-parse';
 import Divider from '../components/Divider';
+import { Alert } from '../components/alerts';
 import { RequestVendorLogoIcon } from '../components/coin-icon';
 import { Centered, Row, RowWithMargins } from '../components/layout';
 import { Sheet, SheetActionButton } from '../components/sheet';
 import { Text } from '../components/text';
-import { useNavigation } from '../navigation/Navigation';
+import {
+  getDappHostname,
+  isDappAuthenticated,
+} from '@rainbow-me/helpers/dappNameHandler';
+import { useNavigation } from '@rainbow-me/navigation';
 import { colors, padding } from '@rainbow-me/styles';
+import { ethereumUtils } from '@rainbow-me/utils';
 
 const DappLogo = styled(RequestVendorLogoIcon).attrs({
   backgroundColor: colors.transparent,
@@ -20,19 +32,44 @@ const DappLogo = styled(RequestVendorLogoIcon).attrs({
 `;
 
 export default function WalletConnectApprovalSheet() {
-  // TODO set this to true via everest.link graph
-  // if we can validate the host
-  const authenticated = false;
   const { goBack } = useNavigation();
   const { params } = useRoute();
+  const [scam, setScam] = useState(false);
   const handled = useRef(false);
   const meta = params?.meta || {};
   const { dappName, dappUrl, imageUrl } = meta;
   const callback = params?.callback;
 
+  const checkIfScam = useCallback(
+    async dappUrl => {
+      const isScam = await ethereumUtils.checkIfUrlIsAScam(dappUrl);
+      if (isScam) {
+        Alert({
+          buttons: [
+            {
+              text: 'Proceed Anyway',
+            },
+            {
+              onPress: () => setScam(true),
+              style: 'cancel',
+              text: 'Ignore this request',
+            },
+          ],
+          message:
+            'We found this website in a list of malicious crypto scams.\n\n We recommend you to ignore this request and stop using this website immediately',
+          title: ' 🚨 Heads up! 🚨',
+        });
+      }
+    },
+    [setScam]
+  );
+
+  const isAuthenticated = useMemo(() => {
+    return isDappAuthenticated(dappUrl);
+  }, [dappUrl]);
+
   const formattedDappUrl = useMemo(() => {
-    const urlObject = new URL(dappUrl);
-    return urlObject.hostname;
+    return getDappHostname(dappUrl);
   }, [dappUrl]);
 
   const handleSuccess = useCallback(
@@ -44,14 +81,18 @@ export default function WalletConnectApprovalSheet() {
     [callback]
   );
 
-  // Reject if the modal is dismissed
   useEffect(() => {
+    InteractionManager.runAfterInteractions(() => {
+      checkIfScam(dappUrl);
+    });
+    // Reject if the modal is dismissed
     return () => {
       if (!handled.current) {
         handleSuccess(false);
       }
     };
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleConnect = useCallback(() => {
     handled.current = true;
@@ -65,10 +106,16 @@ export default function WalletConnectApprovalSheet() {
     handleSuccess(false);
   }, [handleSuccess, goBack]);
 
+  useEffect(() => {
+    if (scam) {
+      handleCancel();
+    }
+  }, [handleCancel, scam]);
+
   return (
     <Sheet hideHandle>
       <Centered direction="column" paddingHorizontal={19} paddingTop={17}>
-        <DappLogo dappName={dappName || ''} imageUrl={imageUrl || ''} />
+        <DappLogo dappName={dappName || ''} imageUrl={imageUrl} />
         <Centered paddingHorizontal={23}>
           <Row>
             <Text
@@ -86,7 +133,7 @@ export default function WalletConnectApprovalSheet() {
         </Centered>
         <Row marginBottom={30} marginTop={15}>
           <Text color="appleBlue" lineHeight={29} size="large" weight="bold">
-            {authenticated ? `􀇻 ${formattedDappUrl}` : formattedDappUrl}
+            {isAuthenticated ? `􀇻 ${formattedDappUrl}` : formattedDappUrl}
           </Text>
         </Row>
         <Divider color={colors.rowDividerLight} inset={[0, 84]} />

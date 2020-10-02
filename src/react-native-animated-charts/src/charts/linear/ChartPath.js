@@ -1,4 +1,10 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { Platform } from 'react-native';
 import { LongPressGestureHandler } from 'react-native-gesture-handler';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
@@ -9,7 +15,6 @@ import Animated, {
   useSharedValue,
   withSpring,
   withTiming,
-  // eslint-disable-next-line import/no-unresolved
 } from 'react-native-reanimated';
 import { Path, Svg } from 'react-native-svg';
 import ChartContext, {
@@ -20,8 +25,11 @@ import useReactiveSharedValue from '../../helpers/useReactiveSharedValue';
 import { svgBezierPath } from '../../smoothing/smoothSVG';
 
 function impactHeavy() {
+  'worklet';
   ReactNativeHapticFeedback.trigger('impactHeavy');
 }
+
+export const InternalContext = createContext(null);
 
 const android = Platform.OS === 'android';
 
@@ -140,6 +148,7 @@ export default function ChartPathProvider({
   springConfig = {},
   timingFeedbackConfig = {},
   timingAnimationConfig = {},
+  children,
   ...rest
 }) {
   const valuesStore = useRef(null);
@@ -199,7 +208,7 @@ export default function ChartPathProvider({
   );
 
   useEffect(() => {
-    if (!data || !data.points || data.points.length === 0) {
+    if (!data || !data.points) {
       return;
     }
     const [parsedData] = parse(data.points);
@@ -219,16 +228,21 @@ export default function ChartPathProvider({
       curroriginalData.value = parsedoriginalData;
       currSmoothing.value = data.smoothingFactor || 0;
       isAnimationInProgress.value = true;
-      progress.value = withTiming(
-        1,
-        combineConfigs(timingAnimationDefaultConfig, timingAnimationConfig),
+      setTimeout(
         () => {
           isAnimationInProgress.value = false;
           if (dataQueue.value.length !== 0) {
             setData(dataQueue.value[0]);
             dataQueue.value.shift();
           }
-        }
+        },
+        timingAnimationConfig.duration === undefined
+          ? timingAnimationDefaultConfig.duration
+          : timingAnimationConfig.duration
+      );
+      progress.value = withTiming(
+        1,
+        combineConfigs(timingAnimationDefaultConfig, timingAnimationConfig)
       );
     } else {
       prevSmoothing.value = data.smoothing || 0;
@@ -444,13 +458,14 @@ export default function ChartPathProvider({
         { scale: dotScale.value },
       ],
     }),
-    undefined,
+    [],
     'dotStyle'
   );
 
   return (
     <ChartPath
       {...{
+        children,
         currData,
         currSmoothing,
         data,
@@ -493,6 +508,8 @@ function ChartPath({
   pathOpacity,
   progress,
   layoutSize,
+  __disableRendering,
+  children,
   ...props
 }) {
   const smoothingWhileTransitioningEnabledValue = useReactiveSharedValue(
@@ -635,7 +652,7 @@ function ChartPath({
       }
       return props;
     },
-    undefined,
+    [],
     'ChartPathAnimateProps'
   );
 
@@ -649,6 +666,37 @@ function ChartPath({
     'ChartPathAnimatedStyle'
   );
 
+  return (
+    <InternalContext.Provider
+      value={{
+        animatedProps,
+        animatedStyle,
+        gestureEnabled,
+        height,
+        longPressGestureHandlerProps,
+        onLongPressGestureEvent,
+        props,
+        style,
+        width,
+      }}
+    >
+      {__disableRendering ? children : <SvgComponent />}
+    </InternalContext.Provider>
+  );
+}
+
+export function SvgComponent() {
+  const {
+    style,
+    animatedStyle,
+    height,
+    width,
+    animatedProps,
+    props,
+    onLongPressGestureEvent,
+    gestureEnabled,
+    longPressGestureHandlerProps,
+  } = useContext(InternalContext);
   return (
     <LongPressGestureHandler
       enabled={gestureEnabled}
