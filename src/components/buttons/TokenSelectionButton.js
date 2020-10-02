@@ -11,8 +11,7 @@ import { Text } from '../text';
 import { colors, margin, padding, position } from '@rainbow-me/styles';
 
 const Content = styled(RowWithMargins).attrs({ align: 'center', margin: 7 })`
-  ${padding(11, 14, 14, 16)};
-  height: 46;
+  ${padding(9.5, 14, 11, 15)};
   z-index: 1;
 `;
 
@@ -23,30 +22,21 @@ const CaretIcon = styled(FastImage).attrs({
 })`
   height: 17;
   right: -0.5;
-  top: 0.5;
   width: 9;
 `;
 
-const ButtonShadows = styled(ShadowStack).attrs(({ symbol }) => ({
-  shadows: [
-    [0, 10, 30, colors.dark, 0.2],
-    [0, 5, 15, symbol ? colors.dark : colors.appleBlue, 0.4],
-  ],
-}))``;
-
 const TokenSelectionButton = ({ borderRadius, onPress, shadows, symbol }) => (
   <ButtonPressAnimation onPress={onPress} throttle>
-    <Row accessible css={margin(0, 19)}>
-      <ButtonShadows
+    <Row accessible css={margin(0, 15)}>
+      <ShadowStack
         {...position.coverAsObject}
         backgroundColor={symbol ? colors.dark : colors.appleBlue}
         borderRadius={borderRadius}
         shadows={shadows}
-        symbol={symbol}
       />
       <Content>
-        <Text align="center" color={colors.white} size="large" weight="bold">
-          {symbol || 'Choose Token'}
+        <Text color={colors.white} size="lmedium" weight="semibold">
+          {symbol || 'Choose a Coin'}
         </Text>
         <CaretIcon />
       </Content>
@@ -64,7 +54,12 @@ TokenSelectionButton.propTypes = {
 };
 
 TokenSelectionButton.defaultProps = {
-  borderRadius: 30,
+  borderRadius: 20,
+  shadows: [
+    [0, 2, 5, colors.dark, 0.15],
+    [0, 6, 10, colors.dark, 0.14],
+    [0, 1, 18, colors.dark, 0.08],
+  ],
 };
 
 export default magicMemo(TokenSelectionButton, [

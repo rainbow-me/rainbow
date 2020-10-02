@@ -88,7 +88,7 @@ const enhance = compose(
 );
 
 const CollectiblesSendRow = enhance(
-  ({ item, isFirstRow, onPress, selected, subtitle, testID, ...props }) => (
+  ({ item, isFirstRow, onPress, selected, subtitle, ...props }) => (
     <Fragment>
       {isFirstRow && (
         <Centered height={dividerHeight}>
@@ -104,7 +104,6 @@ const CollectiblesSendRow = enhance(
           containerStyles={selected ? selectedStyles : null}
           selected={selected}
           subtitle={subtitle}
-          testID={testID + item.name}
           topRowRender={TopRow}
         />
       </ButtonPressAnimation>

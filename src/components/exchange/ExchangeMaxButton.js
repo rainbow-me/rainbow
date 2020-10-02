@@ -1,36 +1,38 @@
 import React from 'react';
 import styled from 'styled-components/primitives';
 import { ButtonPressAnimation } from '../animations';
-import { Row } from '../layout';
-import { Text } from '../text';
-import { padding } from '@rainbow-me/styles';
+import { RowWithMargins } from '../layout';
+import { Emoji, Text } from '../text';
 
-const Container = styled(ButtonPressAnimation)`
-  margin-right: 4;
-`;
-
-const MaxButtonContent = styled(Row).attrs({
-  align: 'center',
+const MaxButtonEmoji = styled(Emoji).attrs({
+  lineHeight: 'none',
+  name: 'moneybag',
+  size: 'lmedium',
 })`
-  ${padding(0, 19)};
-  height: 32;
+  margin-top: 0.5;
 `;
 
 const MaxButtonLabel = styled(Text).attrs({
   align: 'center',
   color: 'appleBlue',
   size: 'lmedium',
-  weight: 'bold',
+  weight: 'semibold',
 })`
-  margin-top: 3;
+  margin-top: 1;
 `;
 
 export default function ExchangeMaxButton({ disabled, onPress }) {
   return (
-    <Container disabled={disabled} onPress={onPress}>
-      <MaxButtonContent>
-        <MaxButtonLabel>􀜍 Max</MaxButtonLabel>
-      </MaxButtonContent>
-    </Container>
+    <ButtonPressAnimation disabled={disabled} marginRight={4} onPress={onPress}>
+      <RowWithMargins
+        align="center"
+        height={32}
+        margin={0}
+        paddingHorizontal={15}
+      >
+        <MaxButtonEmoji />
+        <MaxButtonLabel>Max</MaxButtonLabel>
+      </RowWithMargins>
+    </ButtonPressAnimation>
   );
 }

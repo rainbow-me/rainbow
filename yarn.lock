@@ -4535,10 +4535,10 @@ detect-newline@^3.0.0:
   resolved "https://registry.yarnpkg.com/detect-newline/-/detect-newline-3.1.0.tgz#576f5dfc63ae1a192ff192d8ad3af6308991b651"
   integrity sha512-TLz+x/vEXm/Y7P7wn1EJFNLxYpUD4TgMosxY6fAVJUnJMbupHBOncxyWUG9OpTaH9EBD7uFI5LfEgmMOc54DsA==
 
-detox@^17.6.1:
-  version "17.6.1"
-  resolved "https://registry.yarnpkg.com/detox/-/detox-17.6.1.tgz#3bdd8cbdcc079b1c4b604181fe505615db563832"
-  integrity sha512-NPZabH3ixOdXCbDDQeRToUxXTN1kHiK7WhCCjH4YHtKNaprcYiYqPgIloEykauHvpgynebmyTBxOY6hDtsiO4Q==
+detox@^17.5.3:
+  version "17.5.3"
+  resolved "https://registry.yarnpkg.com/detox/-/detox-17.5.3.tgz#e8367f1e27dff8708d4da5140b4627d249cfac49"
+  integrity sha512-FRrFEcesP3UiNH/qNhdQG10I45LshBmfkLiTXSt+37GJ1GZiZ6tOYuMpvTON0auSZ2I1sFtlQZOJH0mUsZV9Gg==
   dependencies:
     bunyan "^1.8.12"
     bunyan-debug-stream "^1.1.0"
@@ -10368,10 +10368,10 @@ react-native-randombytes@^3.5.3:
     buffer "^4.9.1"
     sjcl "^1.0.3"
 
-react-native-reanimated@2.0.0-alpha.7:
-  version "2.0.0-alpha.7"
-  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-2.0.0-alpha.7.tgz#20b9852df6aeab9fc0efb938527bf47ae954370a"
-  integrity sha512-dAOkt087c3uSm9oTe8cDIKHbZ+D6X951OG/SWzGAOWaR9GH/JW5N++YjmxQX2IK1vFlYNCMfBnxjTuWT6QHfmQ==
+react-native-reanimated@2.0.0-alpha.6:
+  version "2.0.0-alpha.6"
+  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-2.0.0-alpha.6.tgz#d3b55127e8202a12b9073c97086dfe85283c9e08"
+  integrity sha512-VlclQ4dlHM7e8F8HBgwqUQTfCNK3k+h13aL/9k/JMqx4CrUAWe2RYdsRWxurV3YrK0RYdjpM4AvmxqGvJKWuWA==
   dependencies:
     "@babel/plugin-transform-object-assign" "^7.10.4"
     fbjs "^1.0.0"
@@ -10475,10 +10475,6 @@ react-native-text-input-mask@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/react-native-text-input-mask/-/react-native-text-input-mask-2.0.0.tgz#9cb793e764355d9282d92ea5231d8030a7ca5692"
   integrity sha512-kP8gURb1+6iR6CxfUx802f4ja9Jzer76hY1w0cjaCVsfbbzyykYIAANTnlxbmFFv/8pQl4NTm1CbQqkg0Cp/gA==
-
-react-native-text-size@fcsvndev/react-native-text-size:
-  version "4.0.0-rc.1"
-  resolved "https://codeload.github.com/fcsvndev/react-native-text-size/tar.gz/15b21c9f88c6df0d1b5e0f2ba792fe59b5dc255a"
 
 react-native-tooltip@marcosrdz/react-native-tooltip#e0e88d212b5b7f350e5eabba87f588a32e0f2590:
   version "5.2.1"

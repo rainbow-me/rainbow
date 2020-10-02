@@ -1,16 +1,27 @@
 import lang from 'i18n-js';
+import PropTypes from 'prop-types';
 import React from 'react';
 import { pure } from 'recompact';
+import { deviceUtils } from '../../../utils';
 import TransactionMessage from '../TransactionMessage';
 import TransactionRow from '../TransactionRow';
 import TransactionSheet from '../TransactionSheet';
 
-const MessageSigningSection = ({ message, method }) => (
-  <TransactionSheet method={method}>
+const MessageSigningSection = ({ message, method, sendButton }) => (
+  <TransactionSheet method={method} sendButton={sendButton}>
     <TransactionRow title={lang.t('wallet.message_signing.message')}>
-      <TransactionMessage maxHeight={200} message={message} method={method} />
+      <TransactionMessage
+        maxHeight={deviceUtils.isSmallPhone ? 100 : 250}
+        message={message}
+        method={method}
+      />
     </TransactionRow>
   </TransactionSheet>
 );
+
+MessageSigningSection.propTypes = {
+  message: PropTypes.string,
+  sendButton: PropTypes.object,
+};
 
 export default pure(MessageSigningSection);

@@ -1,28 +1,34 @@
 
 import PanModal
 
+class PossiblyTouchesPassableUIView: UIView {
+  var oldClass: AnyClass?
 
-public extension UIView {
-  @objc func newHitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-    if (self.superview!.superview == nil && self.subviews.count == 2 && self.subviews[1] is PanModal.PanContainerView) {
-      let container = self.subviews[1]
-      if (container.subviews.count == 1 && container.subviews[0] is RNCMScreenView) {
-        let screen = container.subviews[0]
-        let hacked = ((screen.reactViewController() as? RNCMScreen)?.parentVC() as? PanModalViewController)?.hacked ?? false
-        if hacked {
-          if (self.subviews[1].frame.contains(point)) {
-            return self.subviews[1].hitTest(point, with: event)
-          }
-          return nil
-        }
-      }
+  override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+    if (self.subviews[1].frame.contains(point)) {
+      return super.hitTest(point, with: event)
     }
-    return self.newHitTest(point, with: event)
+    return nil
+  }
+
+  func makeOldClass() {
+    if self.oldClass != nil {
+      let oldClassMem: AnyClass = self.oldClass!
+      self.oldClass = nil
+      object_setClass(self, oldClassMem)
+    }
+  }
+
+  override func didMoveToWindow() {
+    if self.window == nil {
+      makeOldClass()
+    }
+    super.didMoveToWindow()
   }
 }
 
 class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSupport {
-  static var swizzled = false
+
   var config : RNCMScreenView?
   var length: CGFloat = 0
   var topAnchor: NSLayoutYAxisAnchor = NSLayoutYAxisAnchor.init()
@@ -75,7 +81,9 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
 
 
   @objc func unhackParent() {
-    self.hacked = false
+    if self.ppview is PossiblyTouchesPassableUIView {
+      (ppview as! PossiblyTouchesPassableUIView).makeOldClass()
+    }
     self.ppview = nil
   }
 
@@ -97,17 +105,12 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
 
 
   var hacked = false
-  var originalMethod: Method? = nil
   func hackParent() {
     hacked = true
     self.ppview = config!.superview!.superview!
     let poldClass: AnyClass = type(of: self.ppview!)
-    if !PanModalViewController.swizzled {
-      self.originalMethod = class_getInstanceMethod(poldClass, #selector(UIView.hitTest(_:with:)))
-      let swizzledMethod = class_getInstanceMethod(poldClass, #selector(UIView.newHitTest(_:with:)))
-      method_exchangeImplementations(self.originalMethod!, swizzledMethod!)
-      PanModalViewController.swizzled = true
-    }
+    object_setClass(self.ppview!, PossiblyTouchesPassableUIView.self);
+    (self.ppview as! PossiblyTouchesPassableUIView).oldClass = poldClass
   }
 
   var cornerRadius: CGFloat {

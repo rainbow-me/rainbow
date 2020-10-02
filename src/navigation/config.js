@@ -22,7 +22,6 @@ const buildCoolModalConfig = params => ({
   longFormHeight: params.longFormHeight,
   onAppear: params.onAppear || null,
   scrollEnabled: params.scrollEnabled,
-  single: params.single,
   TEMPORARY_autoJumpToNewHeight: params.TEMPORARY_autoJumpToNewHeight,
   topOffset: params.topOffset || sharedCoolModalTopOffset,
 });
@@ -92,6 +91,7 @@ export const backupSheetConfig = {
     return buildCoolModalConfig({
       ...params,
       longFormHeight: heightForStep,
+      TEMPORARY_autoJumpToNewHeight: true,
     });
   },
 };

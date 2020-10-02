@@ -216,7 +216,6 @@ export default function AlreadyBackedUpView() {
           <SheetActionButton
             color={colors.white}
             label="🗝 View recovery key"
-            noFlex
             onPress={handleViewRecoveryPhrase}
             textColor={colors.alpha(colors.blueGreyDark, 0.8)}
           />

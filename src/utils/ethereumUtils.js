@@ -1,12 +1,10 @@
 import AsyncStorage from '@react-native-community/async-storage';
-import { captureException } from '@sentry/react-native';
 import { mnemonicToSeed } from 'bip39';
 import { addHexPrefix, isValidAddress, stripHexPrefix } from 'ethereumjs-util';
 import { hdkey, Wallet } from 'ethereumjs-wallet';
 import { find, get, isEmpty, matchesProperty, replace, toLower } from 'lodash';
 import { NativeModules } from 'react-native';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
-import URL from 'url-parse';
 import networkTypes from '../helpers/networkTypes';
 import {
   add,
@@ -19,8 +17,6 @@ import {
 import WalletTypes from '../helpers/walletTypes';
 import { DEFAULT_HD_PATH, identifyWalletType } from '../model/wallet';
 import { chains } from '../references';
-import logger from 'logger';
-
 const { RNBip39 } = NativeModules;
 const getEthPriceUnit = assets => {
   const ethAsset = getAsset(assets);
@@ -200,22 +196,6 @@ const hasPreviousTransactions = address => {
   });
 };
 
-const checkIfUrlIsAScam = async url => {
-  try {
-    const request = await fetch('https://api.cryptoscamdb.org/v1/scams');
-    const { result } = await request.json();
-    const { hostname } = new URL(url);
-    const found = result.find(s => toLower(s.name) === toLower(hostname));
-    if (found) {
-      return true;
-    }
-    return false;
-  } catch (e) {
-    logger.sentry('Error fetching cryptoscamdb.org list');
-    captureException(e);
-  }
-};
-
 const deriveAccountFromMnemonic = async (mnemonic, index = 0) => {
   let seed;
   if (ios) {
@@ -245,7 +225,6 @@ const deriveAccountFromPkey = privateKey => {
     wallet,
   };
 };
-
 const deriveAccountFromMnemonicOrPrivateKey = mnemonicOrPrivateKey => {
   if (identifyWalletType(mnemonicOrPrivateKey) === WalletTypes.privateKey) {
     return deriveAccountFromPkey(mnemonicOrPrivateKey);
@@ -254,7 +233,6 @@ const deriveAccountFromMnemonicOrPrivateKey = mnemonicOrPrivateKey => {
 };
 
 export default {
-  checkIfUrlIsAScam,
   deriveAccountFromMnemonic,
   deriveAccountFromMnemonicOrPrivateKey,
   getAsset,

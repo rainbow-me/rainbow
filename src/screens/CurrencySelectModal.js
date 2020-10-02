@@ -23,6 +23,7 @@ import { Modal } from '../components/modal';
 import CurrencySelectionTypes from '../helpers/currencySelectionTypes';
 import { delayNext } from '../hooks/useMagicAutofocus';
 import { useNavigation } from '../navigation/Navigation';
+import { exchangeModalBorderRadius } from './ExchangeModal';
 import {
   useInteraction,
   useMagicAutofocus,
@@ -267,7 +268,12 @@ export default function CurrencySelectModal() {
           ],
         }}
       >
-        <Modal containerPadding={0} height="100%" overflow="hidden" radius={30}>
+        <Modal
+          containerPadding={0}
+          height="100%"
+          overflow="hidden"
+          radius={exchangeModalBorderRadius}
+        >
           <GestureBlocker type="top" />
           <Column flex={1}>
             <CurrencySelectModalHeader />

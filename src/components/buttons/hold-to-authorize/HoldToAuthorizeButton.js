@@ -58,7 +58,7 @@ const Content = styled(Centered)`
 const Title = styled(Text).attrs(({ smallButton }) => ({
   color: 'white',
   size: smallButton ? 'large' : 'larger',
-  weight: 'bold',
+  weight: 'semibold',
 }))`
   margin-bottom: 4;
 `;
@@ -191,7 +191,6 @@ class HoldToAuthorizeButton extends PureComponent {
       shadows,
       smallButton,
       style,
-      testID,
       theme,
       ...props
     } = this.props;
@@ -230,7 +229,6 @@ class HoldToAuthorizeButton extends PureComponent {
                       <HoldToAuthorizeButtonIcon
                         animatedValue={this.longPressProgress}
                         biometryType={biometryType}
-                        testID={testID}
                       />
                     )}
                     <Title smallButton={smallButton}>

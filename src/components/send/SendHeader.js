@@ -34,7 +34,6 @@ const AddressFieldLabel = styled(Label)`
 const SheetHandle = styled(Icon).attrs({
   color: colors.sendScreen.grey,
   name: 'handle',
-  testID: 'sheet-handle',
 })`
   height: 11;
   margin-top: 13;
@@ -139,7 +138,6 @@ export default function SendHeader({
           onChange={onChangeAddressInput}
           onFocus={onFocus}
           ref={recipientFieldRef}
-          testID="send-asset-form-field"
         />
         {isValidAddress && (
           <AddContactButton

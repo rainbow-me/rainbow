@@ -22,7 +22,6 @@ export { default as isNewValueForObjectPaths } from './isNewValueForObjectPaths'
 export { default as isNewValueForPath } from './isNewValueForPath';
 export { default as logger } from './logger';
 export { default as magicMemo } from './magicMemo';
-export { default as measureText } from './measureText';
 export { default as neverRerender } from './neverRerender';
 export { default as parseObjectToUrlQueryString } from './parseObjectToUrlQueryString';
 export { default as parseQueryParams } from './parseQueryParams';

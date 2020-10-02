@@ -293,7 +293,6 @@ export default class SendAssetList extends React.Component {
         item={collectible}
         key={collectible.id}
         onPress={() => this.props.onSelectAsset(collectible)}
-        testID="send-collectible"
       />
     ));
 
@@ -302,7 +301,6 @@ export default class SendAssetList extends React.Component {
       {...item}
       onPress={() => this.props.onSelectAsset(item)}
       rowHeight={rowHeight}
-      testID="send-asset"
     />
   );
 
@@ -312,7 +310,6 @@ export default class SendAssetList extends React.Component {
         item={token}
         key={token.address}
         onPress={() => this.props.onSelectAsset(token)}
-        testID="send-savings"
       />
     ));
 
@@ -322,7 +319,6 @@ export default class SendAssetList extends React.Component {
         key={token.uniqueId}
         onPress={() => this.props.onSelectAsset(token)}
         rowHeight={rowHeight}
-        testID="send-shitcoin"
         top={0}
         {...token}
       />
@@ -334,7 +330,6 @@ export default class SendAssetList extends React.Component {
         {...item}
         onPress={() => this.props.onSelectAsset(item)}
         rowHeight={rowHeight}
-        testID="send-asset"
       />
       <SendAssetListDivider />
     </Fragment>
@@ -417,7 +412,6 @@ export default class SendAssetList extends React.Component {
           onScroll={this.handleScroll}
           ref={this.handleRef}
           rowRenderer={this.renderRow}
-          testID="send-asset-list"
         />
       </FlyInAnimation>
     );

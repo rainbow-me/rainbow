@@ -42,7 +42,6 @@ function ScreenView({ colors, descriptors, navigation, route, state }) {
     longFormHeight,
     onTouchTop,
     onWillDismiss,
-    single,
     shortFormHeight,
     showDragIndicator,
     springDamping,
@@ -96,10 +95,6 @@ function ScreenView({ colors, descriptors, navigation, route, state }) {
     shortFormHeight,
     TEMPORARY_autoJumpToNewHeight,
   ]);
-
-  if (single && state.routes.length > 2) {
-    return null;
-  }
 
   return (
     <ModalContext.Provider value={context}>

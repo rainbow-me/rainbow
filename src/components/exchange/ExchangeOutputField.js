@@ -3,10 +3,10 @@ import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import { Row } from '../layout';
 import ExchangeField from './ExchangeField';
-import { colors } from '@rainbow-me/styles';
+import { borders, colors } from '@rainbow-me/styles';
 
-const notchPaddingValue = 11;
-const paddingValue = android ? 15 : 32;
+const notchPaddingValue = 15;
+const paddingValue = android ? 15 : 39;
 
 const FakeNotchShadow = [
   [0, 0, 1, colors.dark, 0.01],
@@ -15,8 +15,10 @@ const FakeNotchShadow = [
 ];
 
 const Container = styled(Row).attrs({ align: 'center' })`
+  ${borders.buildRadius('bottom', 30)};
+  background-color: ${colors.white};
   overflow: hidden;
-  padding-bottom: 21;
+  padding-bottom: 26;
   padding-top: ${paddingValue};
   width: 100%;
 `;

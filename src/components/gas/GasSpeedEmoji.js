@@ -1,25 +1,21 @@
 import { has } from 'lodash';
 import React from 'react';
 import styled from 'styled-components/primitives';
+import { gasUtils, magicMemo } from '../../utils';
 import { Emoji } from '../text';
-import { gasUtils, magicMemo } from '@rainbow-me/utils';
 
 const EmojiForGasSpeedType = {
   [gasUtils.FAST]: {
     emoji: 'rocket', // 🚀️
-    position: [0.5, 0.5], // (x, y)
+    position: [-1, 0], // (x, y)
   },
   [gasUtils.NORMAL]: {
     emoji: 'stopwatch', // ⏱️
-    position: [1, -0.5], // (x, y)
+    position: [-0.5, -1], // (x, y)
   },
   [gasUtils.SLOW]: {
     emoji: 'snail', // 🐌️
-    position: [0, -1.5], // (x, y)
-  },
-  [gasUtils.CUSTOM]: {
-    emoji: 'gear', // ⚙️
-    position: [1, 0.5], // (x, y)
+    position: [-1, -2], // (x, y)
   },
 };
 
@@ -29,8 +25,8 @@ const Container = styled.View`
 `;
 
 const GasEmoji = styled(Emoji).attrs({
-  lineHeight: 'loosest',
-  size: 'medium',
+  lineHeight: 'looser',
+  size: 'lmedium',
 })`
   left: ${({ left }) => left};
   position: absolute;

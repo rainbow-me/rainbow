@@ -448,7 +448,7 @@ export default function WelcomeScreen() {
   const createWalletButtonProps = useMemoOne(() => {
     const color = colorAnimation(rValue, true);
     return {
-      emoji: 'castle',
+      emoji: 'european_castle',
       height: 54,
       shadowStyle: {
         backgroundColor: backgroundColor,

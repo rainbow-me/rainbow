@@ -123,6 +123,13 @@ export const estimateSwapGasLimit = async (accountAddress, tradeDetails) => {
       updatedMethodArgs,
       value,
     } = getContractExecutionDetails(tradeDetails, web3Provider);
+    logger.sentry('about to call getGasLimit with', {
+      accountAddress,
+      exchange,
+      methodName,
+      updatedMethodArgs,
+      value,
+    });
     const gasLimit = await getGasLimit(
       accountAddress,
       exchange,

@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   gasPricesStartPolling,
   gasPricesStopPolling,
-  gasUpdateCustomValues,
   gasUpdateDefaultGasLimit,
   gasUpdateGasPriceOption,
   gasUpdateTxFee,
@@ -54,15 +53,10 @@ export default function useGas() {
   const updateTxFee = useCallback(data => dispatch(gasUpdateTxFee(data)), [
     dispatch,
   ]);
-  const updateCustomValues = useCallback(
-    (price, estimate) => dispatch(gasUpdateCustomValues(price, estimate)),
-    [dispatch]
-  );
 
   return {
     startPollingGasPrices,
     stopPollingGasPrices,
-    updateCustomValues,
     updateDefaultGasLimit,
     updateGasPriceOption,
     updateTxFee,

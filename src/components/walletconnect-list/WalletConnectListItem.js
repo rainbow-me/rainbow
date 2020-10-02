@@ -1,15 +1,10 @@
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import { RequestVendorLogoIcon } from '../coin-icon';
 import { ContextMenu } from '../context-menu';
 import { Centered, ColumnWithMargins, Row } from '../layout';
-import { Text, TruncatedText } from '../text';
-import {
-  dappLogoOverride,
-  dappNameOverride,
-  isDappAuthenticated,
-} from '@rainbow-me/helpers/dappNameHandler';
+import { TruncatedText } from '../text';
 import { useWalletConnectConnections } from '@rainbow-me/hooks';
 import { colors, padding } from '@rainbow-me/styles';
 
@@ -22,18 +17,6 @@ export default function WalletConnectListItem({ dappIcon, dappName, dappUrl }) {
   const {
     walletConnectDisconnectAllByDappName,
   } = useWalletConnectConnections();
-
-  const isAuthenticated = useMemo(() => {
-    return isDappAuthenticated(dappUrl);
-  }, [dappUrl]);
-
-  const overrideLogo = useMemo(() => {
-    return dappLogoOverride(dappUrl);
-  }, [dappUrl]);
-
-  const overrideName = useMemo(() => {
-    return dappNameOverride(dappUrl);
-  }, [dappUrl]);
 
   const handlePressActionSheet = useCallback(
     buttonIndex => {
@@ -58,7 +41,7 @@ export default function WalletConnectListItem({ dappIcon, dappName, dappUrl }) {
         <RequestVendorLogoIcon
           backgroundColor={colors.white}
           dappName={dappName}
-          imageUrl={overrideLogo || dappIcon}
+          imageUrl={dappIcon}
           size={VendorLogoIconSize}
         />
         <ColumnWithMargins css={padding(0, 19, 1.5, 12)} flex={1} margin={2}>
@@ -67,18 +50,7 @@ export default function WalletConnectListItem({ dappIcon, dappName, dappUrl }) {
             size="lmedium"
             weight="bold"
           >
-            {overrideName || dappName || 'Unknown Application'}{' '}
-            {isAuthenticated && (
-              <Text
-                align="center"
-                color={colors.appleBlue}
-                letterSpacing="roundedMedium"
-                size="lmedium"
-                weight="bold"
-              >
-                {' 􀇻'}
-              </Text>
-            )}
+            {dappName || 'Unknown Application'}
           </TruncatedText>
           <TruncatedText
             color={colors.alpha(colors.blueGreyDark, 0.6)}

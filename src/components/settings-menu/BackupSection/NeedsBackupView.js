@@ -123,7 +123,6 @@ export default function NeedsBackupView() {
           <SheetActionButton
             color={colors.white}
             label="🤓 Back up manually"
-            noFlex
             onPress={onManualBackup}
             textColor={colors.alpha(colors.blueGreyDark, 0.8)}
           />

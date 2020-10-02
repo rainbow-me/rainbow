@@ -33,7 +33,6 @@ const SendButton = ({
       isAuthorizing={isAuthorizing}
       label={label}
       onLongPress={onLongPress}
-      testID={label}
     />
   );
 };

@@ -12,7 +12,6 @@ import { colors, position } from '@rainbow-me/styles';
 const Button = styled(Centered).attrs({
   scaleTo: 0.9,
 })`
-  flex: ${({ noFlex }) => (noFlex ? 'none' : 1)};
   height: ${({ size }) => (size === 'big' ? 56 : 46)};
   z-index: 1;
 `;
@@ -46,12 +45,9 @@ const WhiteButtonGradient = React.memo(
 const SheetActionButton = ({
   borderRadius = 56,
   color = colors.appleBlue,
-  disabled,
   emoji,
   icon,
-  isTransparent,
   label,
-  noFlex,
   size,
   textColor = colors.white,
   weight = 'semibold',
@@ -60,17 +56,14 @@ const SheetActionButton = ({
   const shadowsForButtonColor = useMemo(() => {
     const isWhite = color === colors.white;
 
-    if (isTransparent) {
-      return [[0, 0, 0, colors.transparent]];
-    } else
-      return [
-        [0, 10, 30, colors.dark, isWhite ? 0.12 : 0.2],
-        [0, 5, 15, isWhite ? colors.dark : color, isWhite ? 0.08 : 0.4],
-      ];
-  }, [color, isTransparent]);
+    return [
+      [0, 10, 30, colors.dark, isWhite ? 0.12 : 0.2],
+      [0, 5, 15, isWhite ? colors.dark : color, isWhite ? 0.08 : 0.4],
+    ];
+  }, [color]);
 
   return (
-    <Button as={ButtonPressAnimation} noFlex={noFlex} size={size} {...props}>
+    <Button as={ButtonPressAnimation} size={size} {...props}>
       <ShadowStack
         {...position.coverAsObject}
         backgroundColor={color}
@@ -78,14 +71,7 @@ const SheetActionButton = ({
         shadows={shadowsForButtonColor}
       >
         {color === colors.white && <WhiteButtonGradient />}
-        {color !== colors.white && !isTransparent && (
-          <InnerBorder
-            color={disabled ? textColor : null}
-            opacity={disabled ? 0.02 : null}
-            radius={borderRadius}
-            width={disabled ? 2 : null}
-          />
-        )}
+        {color !== colors.white && <InnerBorder radius={borderRadius} />}
       </ShadowStack>
       <Content label={label} size={size}>
         {emoji && <Emoji lineHeight={23} name={emoji} size="medium" />}
