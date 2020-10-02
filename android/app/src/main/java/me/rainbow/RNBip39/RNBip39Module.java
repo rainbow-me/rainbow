@@ -1,19 +1,15 @@
 package me.rainbow.RNBip39;
 
 import android.util.Log;
-
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import android.util.Base64;
-
-
 import io.github.novacrypto.bip39.*;
 
 public class RNBip39Module extends ReactContextBaseJavaModule {
-    public static final String TAG = "RNBip39";
     private final ReactApplicationContext reactContext;
 
     public RNBip39Module(ReactApplicationContext reactContext) {

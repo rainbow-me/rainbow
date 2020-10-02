@@ -170,13 +170,6 @@ export const publicAccessControlOptions = {
   accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY,
 };
 
-export function generateSeedPhrase(): EthereumMnemonic {
-  logger.sentry('Generating a new seed phrase');
-  const mnemonic = generateMnemonic();
-  logger.sentry('Generated', mnemonic);
-  return mnemonic;
-}
-
 export const walletInit = async (
   seedPhrase = null,
   color = null,
@@ -471,7 +464,10 @@ export const createWallet = async (
 ): Promise<null | EthereumWallet> => {
   const isImported = !!seed;
   logger.sentry('Creating wallet, isImported?', isImported);
-  const walletSeed = seed || generateSeedPhrase();
+  if (!seed) {
+    logger.sentry('Generating a new seed phrase');
+  }
+  const walletSeed = seed || generateMnemonic();
   let addresses: RainbowAccount[] = [];
   try {
     let wasLoading = false;
