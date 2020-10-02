@@ -64,7 +64,7 @@ function useWasNotFetchingDataForTheLast5Seconds(isFetchingData) {
 export default function useChartData(asset) {
   const [daysFromFirstTx, setDaysFromFirstTx] = useState(1000);
   const dispatch = useDispatch();
-  const { address, price: priceObject, exchangeAddress } = useAsset(asset);
+  const { address, price: priceObject } = useAsset(asset);
 
   const { value: price } = priceObject || {};
 
@@ -77,7 +77,7 @@ export default function useChartData(asset) {
     fetchingCharts
   );
 
-  const handleRecieveFallbackChart = useCallback(
+  const handleReceiveFallbackChart = useCallback(
     chartData => {
       if (!chartData.length) {
         logger.log('👎️📈️ - receieved no fallback chart data');
@@ -100,21 +100,16 @@ export default function useChartData(asset) {
   }, [asset]);
 
   useEffect(() => {
-    if (
-      !chart &&
-      exchangeAddress &&
-      wasNotFetchingDataForTheLast5Seconds &&
-      !fetchingCharts
-    ) {
+    if (!chart && wasNotFetchingDataForTheLast5Seconds && !fetchingCharts) {
       logger.log('🙈️ - no charts -- fetching fallback...');
-      getChart(exchangeAddress, chartType).then(handleRecieveFallbackChart);
+      getChart(address, chartType).then(handleReceiveFallbackChart);
     }
   }, [
+    address,
     chart,
     chartType,
-    exchangeAddress,
     fetchingCharts,
-    handleRecieveFallbackChart,
+    handleReceiveFallbackChart,
     wasNotFetchingDataForTheLast5Seconds,
   ]);
 
