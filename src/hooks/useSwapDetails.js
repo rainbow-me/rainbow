@@ -25,7 +25,7 @@ export default function useSwapDetails() {
       if (inputCurrency) {
         inputPriceValue = get(inputCurrency, 'native.price.amount', null);
 
-        inputExecutionRate = tradeDetails?.executionPrice?.toFixed();
+        inputExecutionRate = tradeDetails?.executionPrice?.toSignificant();
 
         inputExecutionRate = updatePrecisionToDisplay(
           inputExecutionRate,
@@ -49,7 +49,9 @@ export default function useSwapDetails() {
           null
         );
 
-        outputExecutionRate = tradeDetails?.executionPrice?.invert()?.toFixed();
+        outputExecutionRate = tradeDetails?.executionPrice
+          ?.invert()
+          ?.toSignificant();
 
         // If the output currency was not found in wallet and the input currency has a price
         // Calculate the output currency price based off of the input currency price
