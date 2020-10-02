@@ -65,7 +65,10 @@ const lowercaseAccountAddressSelector = createSelector(
 
 export default function ReceiveModal() {
   const { goBack } = useNavigation();
-  const accountAddress = useSelector(lowercaseAccountAddressSelector);
+  const accountAddress = useSelector(
+    lowercaseAccountAddressSelector,
+    (a, b) => a === b
+  );
   const { accountName } = useAccountProfile();
 
   const [copiedText, setCopiedText] = useState(undefined);
