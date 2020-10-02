@@ -1,5 +1,8 @@
 import React from 'react';
-import { TouchableNativeFeedback } from 'react-native-gesture-handler';
+import {
+  TouchableNativeFeedback,
+  TouchableOpacity,
+} from 'react-native-gesture-handler';
 
 export default function ButtonPressAnimation({
   children,
@@ -8,9 +11,11 @@ export default function ButtonPressAnimation({
   onPress,
   onPressStart,
   style,
+  opacity,
 }) {
+  const Touchable = opacity ? TouchableOpacity : TouchableNativeFeedback;
   return (
-    <TouchableNativeFeedback
+    <Touchable
       disabled={disabled}
       onLongPress={onLongPress}
       onPress={onPress}
@@ -18,6 +23,6 @@ export default function ButtonPressAnimation({
       style={style}
     >
       {children}
-    </TouchableNativeFeedback>
+    </Touchable>
   );
 }
