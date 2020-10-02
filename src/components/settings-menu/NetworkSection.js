@@ -2,6 +2,7 @@ import analytics from '@segment/analytics-react-native';
 import { toLower, values } from 'lodash';
 import React, { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
+import { useDispatch } from 'react-redux';
 import networkInfo from '../../helpers/networkInfo';
 import {
   useAccountSettings,
@@ -11,7 +12,6 @@ import {
 } from '../../hooks';
 import { settingsUpdateNetwork } from '../../redux/settings';
 import { RadioList, RadioListItem } from '../radio-list';
-import { useDispatch } from '@rainbow-me/react-redux';
 
 const networks = values(networkInfo);
 

@@ -1,8 +1,8 @@
 import { useCallback } from 'react';
+import { useDispatch } from 'react-redux';
 import { getOnchainAssetBalance } from '../handlers/assets';
 import { dataUpdateAssets } from '../redux/data';
 import useAccountAssets from './useAccountAssets';
-import { useDispatch } from '@rainbow-me/react-redux';
 import { logger } from '@rainbow-me/utils';
 
 export default function useUpdateAssetOnchainBalance() {

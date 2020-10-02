@@ -1,8 +1,8 @@
 import { filter, get, keys, map, toLower } from 'lodash';
+import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import NetworkTypes from '../helpers/networkTypes';
 import { sortAssetsByNativeAmountSelector } from '../hoc/assetSelectors';
-import { useSelector } from '@rainbow-me/react-redux';
 
 const uniswapPairsSelector = state => state.uniswap.pairs;
 const uniswapAllPairsSelector = state => state.uniswap.allPairs;

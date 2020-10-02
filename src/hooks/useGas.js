@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   gasPricesStartPolling,
   gasPricesStopPolling,
@@ -6,7 +7,6 @@ import {
   gasUpdateGasPriceOption,
   gasUpdateTxFee,
 } from '../redux/gas';
-import { useDispatch, useSelector } from '@rainbow-me/react-redux';
 
 export default function useGas() {
   const dispatch = useDispatch();

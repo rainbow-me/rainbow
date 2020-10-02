@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   clearSelectedCoins as rawClearSelectedCoins,
   pushSelectedCoin as rawPushSelectedCoin,
@@ -7,7 +8,6 @@ import {
   setIsCoinListEdited as rawSetIsCoinListEdited,
   setPinnedCoins as rawSetPinnedCoins,
 } from '../redux/editOptions';
-import { useDispatch, useSelector } from '@rainbow-me/react-redux';
 
 export default function useCoinListEditOptions() {
   const dispatch = useDispatch();

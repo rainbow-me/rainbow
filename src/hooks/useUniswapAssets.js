@@ -9,9 +9,9 @@ import {
   values,
 } from 'lodash';
 import { useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { uniswapUpdateFavorites } from '../redux/uniswap';
-import { useDispatch, useSelector } from '@rainbow-me/react-redux';
 
 const uniswapIsInitializedSelector = state => state.uniswap.isInitialized;
 const uniswapFavoritesSelector = state => state.uniswap.favorites;

@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
+import { useSelector } from 'react-redux';
 import NetworkTypes from '../helpers/networkTypes';
 import { buildTransactionsSectionsSelector } from '../helpers/transactions';
 import useContacts from './useContacts';
 import useRequests from './useRequests';
-import { useSelector } from '@rainbow-me/react-redux';
 
 export default function useAccountTransactions(initialized, isFocused) {
   const { isLoadingTransactions, network, transactions } = useSelector(

@@ -1,4 +1,5 @@
 import lang from 'i18n-js';
+import { connect } from 'react-redux';
 import { compose, withProps } from 'recompact';
 import { createSelector } from 'reselect';
 import {
@@ -7,7 +8,6 @@ import {
   settingsUpdateNetwork,
 } from '../redux/settings';
 import supportedNativeCurrencies from '../references/native-currencies.json';
-import { connect } from '@rainbow-me/react-redux';
 
 const mapStateToProps = ({
   settings: {

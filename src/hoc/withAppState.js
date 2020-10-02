@@ -1,4 +1,4 @@
-import { connect } from '@rainbow-me/react-redux';
+import { connect } from 'react-redux';
 
 const mapStateToProps = ({ appState: { walletReady } }) => ({
   walletReady,

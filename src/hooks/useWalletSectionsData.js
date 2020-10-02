@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useSelector } from 'react-redux';
 import { buildWalletSectionsSelector } from '../helpers/buildWalletSections';
 import { readableUniswapSelector } from '../hoc/uniswapLiquidityTokenInfoSelector';
 import useAccountAssets from './useAccountAssets';
@@ -8,7 +9,6 @@ import useIsWalletEthZero from './useIsWalletEthZero';
 import useSavingsAccount from './useSavingsAccount';
 import useSendableUniqueTokens from './useSendableUniqueTokens';
 import useShowcaseTokens from './useShowcaseTokens';
-import { useSelector } from '@rainbow-me/react-redux';
 
 export default function useWalletSectionsData() {
   const accountData = useAccountAssets();

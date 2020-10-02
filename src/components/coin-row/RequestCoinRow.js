@@ -1,6 +1,7 @@
 import { addHours, differenceInMinutes, isPast } from 'date-fns';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { connect } from 'react-redux';
 import { compose, onlyUpdateForKeys, withProps } from 'recompact';
 import { withNavigation } from '../../navigation/Navigation';
 import { removeRequest } from '../../redux/requests';
@@ -10,7 +11,6 @@ import { RowWithMargins } from '../layout';
 import { Emoji, Text } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
-import { connect } from '@rainbow-me/react-redux';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 

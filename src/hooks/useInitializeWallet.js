@@ -2,6 +2,7 @@ import { captureException } from '@sentry/react-native';
 import { isNil } from 'lodash';
 import { useCallback } from 'react';
 import { Alert } from 'react-native';
+import { useDispatch } from 'react-redux';
 import runMigrations from '../model/migrations';
 import { walletInit } from '../model/wallet';
 import { appStateUpdate } from '../redux/appState';
@@ -16,7 +17,6 @@ import useInitializeAccountData from './useInitializeAccountData';
 import useLoadAccountData from './useLoadAccountData';
 import useLoadGlobalData from './useLoadGlobalData';
 import useResetAccountState from './useResetAccountState';
-import { useDispatch } from '@rainbow-me/react-redux';
 import logger from 'logger';
 
 export default function useInitializeWallet() {

@@ -1,6 +1,6 @@
 import { reverse, sortBy, values } from 'lodash';
 import { useMemo } from 'react';
-import { useSelector } from '@rainbow-me/react-redux';
+import { useSelector } from 'react-redux';
 
 export default function useRequests() {
   const { requests } = useSelector(({ requests: { requests } }) => ({

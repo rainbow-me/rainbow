@@ -1,8 +1,8 @@
+import { connect } from 'react-redux';
 import {
   pushOpenFamilyTab,
   setOpenFamilyTabs,
 } from '../redux/openStateSettings';
-import { connect } from '@rainbow-me/react-redux';
 
 const mapStateToProps = ({ openStateSettings: { openFamilyTabs } }) => ({
   openFamilyTabs,

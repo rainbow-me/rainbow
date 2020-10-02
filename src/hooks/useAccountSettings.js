@@ -1,3 +1,4 @@
+import { useSelector } from 'react-redux';
 import {
   createLanguageSelector,
   createNativeCurrencySelector,
@@ -6,7 +7,6 @@ import {
   settingsUpdateAccountColor,
   settingsUpdateAccountName,
 } from '../redux/settings';
-import { useSelector } from '@rainbow-me/react-redux';
 
 export default function useAccountSettings() {
   const { language } = useSelector(createLanguageSelector);

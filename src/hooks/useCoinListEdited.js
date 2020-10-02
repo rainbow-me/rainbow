@@ -1,4 +1,4 @@
-import { useSelector } from '@rainbow-me/react-redux';
+import { useSelector } from 'react-redux';
 
 export default function useCoinListEdited() {
   return useSelector(({ editOptions: { isCoinListEdited } }) => ({

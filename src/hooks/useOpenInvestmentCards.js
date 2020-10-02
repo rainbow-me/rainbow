@@ -1,9 +1,9 @@
 import { useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   pushOpenInvestmentCard as rawPushOpenInvestmentCard,
   setOpenInvestmentCards as rawSetOpenInvestmentCards,
 } from '../redux/openStateSettings';
-import { useDispatch, useSelector } from '@rainbow-me/react-redux';
 
 export default function useOpenInvestmentCards() {
   const dispatch = useDispatch();

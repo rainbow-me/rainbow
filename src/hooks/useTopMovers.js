@@ -1,12 +1,12 @@
 import { get, isEmpty, map, slice } from 'lodash';
 import { useCallback } from 'react';
 import { queryCache, useQuery } from 'react-query';
+import { useSelector } from 'react-redux';
 import {
   saveTopMovers,
   TOP_MOVERS_FROM_STORAGE,
 } from '../handlers/localstorage/topMovers';
 import { apiGetTopMovers } from '../handlers/topMovers';
-import { useSelector } from '@rainbow-me/react-redux';
 
 const TOP_MOVERS_PER_ROW_MAX = 5;
 const TOP_MOVERS_PER_ROW_MIN = 3;

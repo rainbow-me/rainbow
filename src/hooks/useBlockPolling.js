@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
+import { useDispatch } from 'react-redux';
 import { web3ListenerInit, web3ListenerStop } from '../redux/web3listener';
-import { useDispatch } from '@rainbow-me/react-redux';
 
 export default function useBlockPolling() {
   const dispatch = useDispatch();

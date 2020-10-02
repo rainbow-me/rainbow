@@ -1,9 +1,9 @@
 import { sortBy, values } from 'lodash';
 import { useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import networkTypes from '../helpers/networkTypes';
 import { contactsAddOrUpdate, removeContact } from '../redux/contacts';
-import { useDispatch, useSelector } from '@rainbow-me/react-redux';
 
 const contactsSelector = createSelector(
   ({ contacts: { contacts } }) => contacts,

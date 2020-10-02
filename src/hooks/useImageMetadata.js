@@ -1,8 +1,8 @@
 import { useCallback, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { updateImageMetadataCache } from '../redux/imageMetadata';
 import { getDominantColorFromImage } from '../utils';
 import useDimensions from './useDimensions';
-import { useDispatch, useSelector } from '@rainbow-me/react-redux';
 import { position } from '@rainbow-me/styles';
 
 export default function useImageMetadata(imageUrl) {

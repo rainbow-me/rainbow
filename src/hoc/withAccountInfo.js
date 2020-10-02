@@ -1,11 +1,11 @@
 import { toLower } from 'lodash';
+import { connect } from 'react-redux';
 import { compose, withProps } from 'recompact';
 import { createSelector } from 'reselect';
 import {
   settingsUpdateAccountColor,
   settingsUpdateAccountName,
 } from '../redux/settings';
-import { connect } from '@rainbow-me/react-redux';
 
 const mapStateToProps = ({
   settings: { accountAddress, accountColor, accountName },

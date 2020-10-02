@@ -1,8 +1,8 @@
 import { differenceInHours, differenceInYears } from 'date-fns';
 import { findIndex, sumBy, take } from 'lodash';
 import { useMemo } from 'react';
+import { useSelector } from 'react-redux';
 import TransactionStatusTypes from '../helpers/transactionStatusTypes';
-import { useSelector } from '@rainbow-me/react-redux';
 
 const DEFAULT_DAILY_LIMIT = 250;
 const DEFAULT_YEARLY_LIMIT = 1500;
