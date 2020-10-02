@@ -302,7 +302,7 @@
 }
 
 - (void)removeController {
-  _controller = nil;
+  //_controller = nil;
 }
 
 @end

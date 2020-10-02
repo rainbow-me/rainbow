@@ -1,24 +1,27 @@
 import { upperFirst } from 'lodash';
-import PropTypes from 'prop-types';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import Animated, {
-  Easing,
   Transition,
   Transitioning,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
 } from 'react-native-reanimated';
-import { useTimingTransition } from 'react-native-redash';
 import styled from 'styled-components/primitives';
-import { gasUtils } from '../../utils';
-import { interpolate } from '../animations';
 import { Row } from '../layout';
 import { Text } from '../text';
 import GasSpeedEmoji from './GasSpeedEmoji';
-
-const { cond } = Animated;
+import { gasUtils } from '@rainbow-me/utils';
 
 const AnimatedRow = Animated.createAnimatedComponent(Row);
 
-export const GasSpeedLabelPagerItemHeight = 26;
+const springConfig = {
+  damping: 60,
+  mass: 1.5,
+  stiffness: 1200,
+};
+
+export const GasSpeedLabelPagerItemHeight = 24.5;
 
 const GasSpeedRow = styled(AnimatedRow).attrs({
   align: 'end',
@@ -36,10 +39,8 @@ const TransitionContainer = styled(Transitioning.View)`
 
 const GasSpeedLabel = styled(Text).attrs({
   size: 'lmedium',
-  weight: 'semibold',
-})`
-  margin-bottom: 3;
-`;
+  weight: 'bold',
+})``;
 
 const distance = 20;
 const duration = 150;
@@ -48,65 +49,37 @@ const transition = (
 );
 
 const GasSpeedLabelPagerItem = ({ label, selected, shouldAnimate, theme }) => {
-  const transitionRef = useRef();
-
-  useEffect(() => {
-    if (shouldAnimate) {
-      transitionRef.current?.animateNextTransition();
-    }
-  }, [shouldAnimate]);
+  const opacity = useSharedValue(0);
+  const positionX = useSharedValue(0);
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: opacity.value,
+      transform: [{ translateX: positionX.value }],
+    };
+  });
 
   const index = gasUtils.GasSpeedOrder.indexOf(label);
   const isFirst = index === 0;
   const isLast = index === gasUtils.GasSpeedOrder.length - 1;
 
-  const transitionVal = useTimingTransition(
-    !selected,
-    duration + (isFirst ? 50 : 0),
-    Easing.out(Easing.ease)
-  );
-
-  const defaultOpacity = selected ? 1 : 0;
-  const opacity = cond(
-    shouldAnimate,
-    cond(
-      selected,
-      // animate in
-      interpolate(transitionVal, {
-        inputRange: [0, 1],
-        outputRange: [1, 0],
-      }),
-      // animate out
-      interpolate(transitionVal, {
-        inputRange: [0, 1],
-        outputRange: [1, 0],
-      })
-    ),
-    defaultOpacity
-  );
-
-  const defaultTranslateX = 0;
-  const translateX = cond(
-    shouldAnimate,
-    cond(
-      selected,
-      // animate in
-      interpolate(transitionVal, {
-        inputRange: [0, 1],
-        outputRange: [0, cond(isFirst, distance * -2, distance)],
-      }),
-      // animate out
-      interpolate(transitionVal, {
-        inputRange: [0, 1],
-        outputRange: [0, cond(isLast, distance * 2, distance * -2)],
-      })
-    ),
-    defaultTranslateX
-  );
+  useEffect(() => {
+    if (shouldAnimate) {
+      if (selected) {
+        positionX.value = isFirst ? -distance * 3 : distance;
+        opacity.value = withSpring(1, springConfig);
+        positionX.value = withSpring(0, springConfig);
+      } else {
+        opacity.value = withSpring(0, springConfig);
+        positionX.value = isLast
+          ? withSpring(distance * 3, springConfig)
+          : withSpring(distance * -1, springConfig);
+      }
+    }
+  }, [isFirst, isLast, opacity, positionX, selected, shouldAnimate]);
 
   return (
-    <TransitionContainer ref={transitionRef} transition={transition}>
-      <GasSpeedRow style={{ opacity, transform: [{ translateX }] }}>
+    <TransitionContainer transition={transition}>
+      <GasSpeedRow style={animatedStyle}>
         <GasSpeedEmoji
           containerHeight={GasSpeedLabelPagerItemHeight}
           label={label}
@@ -117,12 +90,6 @@ const GasSpeedLabelPagerItem = ({ label, selected, shouldAnimate, theme }) => {
       </GasSpeedRow>
     </TransitionContainer>
   );
-};
-
-GasSpeedLabelPagerItem.propTypes = {
-  label: PropTypes.oneOf(gasUtils.GasSpeedOrder),
-  selected: PropTypes.bool,
-  shouldAnimate: PropTypes.bool,
 };
 
 export default React.memo(GasSpeedLabelPagerItem);
