@@ -52,7 +52,9 @@ export default function useUniswapMarketDetails({
   const updateTradeDetails = useCallback(() => {
     let updatedInputAmount = inputAmount;
     let updatedInputAsExactAmount = inputAsExactAmount;
-    const isMissingAmounts = !inputAmount && !outputAmount;
+    const isMissingAmounts =
+      (isEmpty(inputAmount) || isZero(inputAmount)) &&
+      (isEmpty(outputAmount) || isZero(outputAmount));
 
     if (isMissingAmounts) {
       const inputNativePrice = get(inputCurrency, 'native.price.amount', null);
@@ -75,8 +77,7 @@ export default function useUniswapMarketDetails({
     );
 
     const hasInsufficientLiquidity =
-      (doneLoadingResults && isEmpty(allPairs)) ||
-      (!isEmpty(allPairs) && !newTradeDetails);
+      doneLoadingResults && (isEmpty(allPairs) || !newTradeDetails);
     setIsSufficientLiquidity(!hasInsufficientLiquidity);
     setTradeDetails(newTradeDetails);
   }, [
