@@ -24,6 +24,8 @@ import {
 } from '../handlers/web3';
 import showWalletErrorAlert from '../helpers/support';
 import { EthereumWalletType } from '../helpers/walletTypes';
+import store from '../redux/store';
+import { setIsWalletLoading } from '../redux/wallets';
 import { ethereumUtils } from '../utils';
 import {
   addressKey,
@@ -34,6 +36,7 @@ import {
   selectedWalletKey,
 } from '../utils/keychainConstants';
 import * as keychain from './keychain';
+import WalletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
 import { colors } from '@rainbow-me/styles';
 import logger from 'logger';
 
@@ -459,40 +462,6 @@ export const identifyWalletType = (
   return EthereumWalletType.seed;
 };
 
-export const getWallet = (
-  walletSeed: EthereumWalletSeed
-): EthereumWalletFromSeed => {
-  let wallet = null;
-  let hdnode = null;
-  let isHDWallet = false;
-  const type = identifyWalletType(walletSeed);
-  switch (type) {
-    case EthereumWalletType.privateKey:
-      wallet = new ethers.Wallet(walletSeed);
-      break;
-    case EthereumWalletType.mnemonic:
-      hdnode = ethers.utils.HDNode.fromMnemonic(walletSeed);
-      isHDWallet = true;
-      break;
-    case EthereumWalletType.seed:
-      hdnode = ethers.utils.HDNode.fromSeed(walletSeed);
-      isHDWallet = true;
-      break;
-    case EthereumWalletType.readOnly:
-      wallet = { address: toChecksumAddress(walletSeed), privateKey: null };
-      break;
-    default:
-  }
-
-  // Always generate the first account if HD node
-  if (isHDWallet && hdnode) {
-    const node = hdnode.derivePath(`${DEFAULT_HD_PATH}/0`);
-    wallet = new ethers.Wallet(node.privateKey);
-  }
-
-  return { hdnode, isHDWallet, type, wallet };
-};
-
 export const createWallet = async (
   seed: null | EthereumSeed = null,
   color: null | number = null,
@@ -505,6 +474,12 @@ export const createWallet = async (
   const walletSeed = seed || generateSeedPhrase();
   let addresses: RainbowAccount[] = [];
   try {
+    let wasLoading = false;
+    const { dispatch } = store;
+    if (!checkedWallet && android) {
+      wasLoading = true;
+      dispatch(setIsWalletLoading(WalletLoadingStates.CREATING_WALLET));
+    }
     const { isHDWallet, type, root, wallet: ethereumJSWallet } =
       checkedWallet ||
       (await ethereumUtils.deriveAccountFromMnemonicOrPrivateKey(walletSeed));
@@ -709,6 +684,13 @@ export const createWallet = async (
 
     if (ethereumJSWallet && walletAddress) {
       const ethersWallet = new ethers.Wallet(pkey);
+
+      if (wasLoading) {
+        setTimeout(() => {
+          dispatch(setIsWalletLoading(null));
+        }, 2000);
+      }
+
       return ethersWallet;
     }
     return null;
@@ -842,36 +824,39 @@ export const generateAccount = async (
     const isSeedPhraseMigrated = await keychain.loadString(
       oldSeedPhraseMigratedKey
     );
-    let seedphrase, hdnode;
+    let seedphrase;
     // We need to migrate the seedphrase & private key first
     // In that case we regenerate the existing private key to store it with the new format
     if (!isSeedPhraseMigrated) {
       const migratedSecrets = await migrateSecrets();
-      hdnode = migratedSecrets?.hdnode;
       seedphrase = migratedSecrets?.seedphrase;
     }
 
     if (!seedphrase) {
       const seedData = await getSeedPhrase(id);
       seedphrase = seedData?.seedphrase;
-      if (seedphrase) {
-        hdnode = ethers.utils.HDNode.fromMnemonic(seedphrase);
-      }
     }
 
     if (!seedphrase) {
       throw new Error(`Can't access seed phrase to create new accounts`);
     }
 
-    if (!hdnode) {
-      return null;
-    }
+    const {
+      wallet: ethereumJSWallet,
+    } = await ethereumUtils.deriveAccountFromMnemonic(seedphrase, index);
+    if (!ethereumJSWallet) return null;
+    const walletAddress = addHexPrefix(
+      toChecksumAddress(ethereumJSWallet.getAddress().toString('hex'))
+    );
+    const walletPkey = addHexPrefix(
+      ethereumJSWallet.getPrivateKey().toString('hex')
+    );
 
-    const node = hdnode.derivePath(`${DEFAULT_HD_PATH}/${index}`);
-    const newAccount = new ethers.Wallet(node.privateKey);
-    await savePrivateKey(newAccount.address, newAccount.privateKey);
+    const newAccount = new ethers.Wallet(walletPkey);
+    await savePrivateKey(walletAddress, walletPkey);
     return newAccount;
   } catch (error) {
+    console.log('Error creating wallet', error);
     logger.sentry('Error generating account for keychain', id);
     captureException(error);
     return null;
@@ -908,7 +893,17 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
         existingAccount = new ethers.Wallet(seedphrase);
         break;
       case EthereumWalletType.mnemonic:
-        hdnode = ethers.utils.HDNode.fromMnemonic(seedphrase);
+        {
+          const {
+            wallet: ethereumJSWallet,
+          } = await ethereumUtils.deriveAccountFromMnemonic(seedphrase);
+          if (!ethereumJSWallet) return null;
+          const walletPkey = addHexPrefix(
+            ethereumJSWallet.getPrivateKey().toString('hex')
+          );
+
+          existingAccount = new ethers.Wallet(walletPkey);
+        }
         break;
       case EthereumWalletType.seed:
         hdnode = ethers.utils.HDNode.fromSeed(seedphrase);
