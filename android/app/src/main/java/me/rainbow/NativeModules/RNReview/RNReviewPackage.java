@@ -1,4 +1,4 @@
-package me.rainbow.RNBip39;
+package me.rainbow.NativeModules.RNReview;
 
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
@@ -9,10 +9,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class RNBip39Package implements ReactPackage {
+public class RNReviewPackage implements ReactPackage {
     @Override
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
-        return Arrays.asList(new RNBip39Module());
+        return Arrays.asList(new RNReviewModule());
     }
 
     @Override
