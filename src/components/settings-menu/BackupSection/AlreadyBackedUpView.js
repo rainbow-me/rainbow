@@ -32,7 +32,7 @@ const CheckmarkIconContainer = styled(View)`
   background-color: ${({ color }) => color};
   border-radius: 25;
   margin-bottom: 19;
-  padding-top: 13;
+  padding-top: ${ios ? 13 : 7};
 `;
 
 const CheckmarkIconText = styled(Text).attrs({
