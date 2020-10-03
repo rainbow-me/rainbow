@@ -1,46 +1,67 @@
 import Clipboard from '@react-native-community/clipboard';
 import { useCallback, useEffect, useState } from 'react';
 import useAppState from './useAppState';
+import { deviceUtils } from '@rainbow-me/utils';
 
 const listeners = new Set();
 
-function setString(content) {
+function setClipboard(content) {
   Clipboard.setString(content);
   listeners.forEach(listener => listener(content));
 }
 
 export default function useClipboard() {
   const { justBecameActive } = useAppState();
-  const [data, updateClipboardData] = useState('');
+  const [hasClipboardData, setHasClipboardData] = useState(false);
+  const [clipboardData, updateClipboardData] = useState('');
 
-  const getClipboardData = useCallback(
-    () => Clipboard.getString().then(updateClipboardData),
+  const checkClipboard = useCallback(
+    () => Clipboard.hasString().then(setHasClipboardData),
+    [setHasClipboardData]
+  );
+
+  const getClipboard = useCallback(
+    callback =>
+      Clipboard.getString().then(result => {
+        callback(result);
+        updateClipboardData(result);
+      }),
     []
   );
 
-  // Get initial data
+  // Get initial clipboardData
   useEffect(() => {
-    getClipboardData();
-  }, [getClipboardData]);
+    if (deviceUtils.isIOS14) {
+      checkClipboard();
+    } else {
+      getClipboard();
+    }
+  }, [checkClipboard, getClipboard]);
 
-  // Get data when app just became foregrounded
+  // Get clipboardData when app just became foregrounded
   useEffect(() => {
     if (justBecameActive) {
-      getClipboardData();
+      if (deviceUtils.isIOS14) {
+        checkClipboard();
+      } else {
+        getClipboard();
+      }
     }
-  }, [getClipboardData, justBecameActive]);
+  }, [checkClipboard, getClipboard, justBecameActive]);
 
   // Listen for updates
   useEffect(() => {
     listeners.add(updateClipboardData);
-
     return () => {
       listeners.delete(updateClipboardData);
     };
   }, []);
 
   return {
-    clipboard: data,
-    setClipboard: setString,
+    clipboard: clipboardData,
+    enablePaste: deviceUtils.isIOS14 ? hasClipboardData : clipboardData,
+    getClipboard,
+    hasClipboardData,
+    setClipboard,
   };
 }
