@@ -28,6 +28,7 @@ export default function BiometricButtonContent({
   color = colors.appleBlue,
   showIcon,
   text,
+  testID,
   ...props
 }) {
   const biometryType = useBiometryType();
@@ -42,7 +43,7 @@ export default function BiometricButtonContent({
       {showBiometryIcon && (
         <BiometryIcon biometryType={biometryType} color={color} />
       )}
-      <ButtonLabel color={color}>
+      <ButtonLabel color={color} testID={testID}>
         {showFaceIDCharacter && '􀎽 '}
         {text}
       </ButtonLabel>

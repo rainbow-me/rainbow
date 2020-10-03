@@ -19,6 +19,7 @@ const SwapModal = (props, ref) => {
       inputHeaderTitle="Swap"
       ref={ref}
       showOutputField
+      testID="exchange-modal"
       type={ExchangeModalTypes.swap}
       {...props}
     />
