@@ -1,7 +1,8 @@
 import AnimateNumber from '@bankify/react-native-animate-number';
 import { get, isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { LayoutAnimation, Pressable } from 'react-native';
+import { LayoutAnimation } from 'react-native';
+import { BorderlessButton } from 'react-native-gesture-handler';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import styled from 'styled-components/primitives';
 import ExchangeModalTypes from '../../helpers/exchangeModalTypes';
@@ -18,7 +19,7 @@ import { colors, padding } from '@rainbow-me/styles';
 
 const { GasSpeedOrder, CUSTOM, FAST, SLOW } = gasUtils;
 
-const Container = styled(Row).attrs({
+const Container = styled(Column).attrs({
   hapticType: 'impactHeavy',
   scaleTo: 1.0666,
 })`
@@ -33,7 +34,7 @@ const Label = styled(Text).attrs({
   weight: 'semibold',
 })``;
 
-const ButtonLabel = styled(Pressable).attrs({
+const ButtonLabel = styled(BorderlessButton).attrs({
   color: colors.appleBlue,
   hitSlop: 40,
   opacity: 1,
@@ -44,12 +45,16 @@ const ButtonLabel = styled(Pressable).attrs({
 `;
 
 const LittleBorderlessButton = ({ onPress, children, testID }) => (
-  <ButtonLabel onPress={onPress} width={120}>
-    <Text color={colors.appleBlue} size="smedium" testID={testID} weight="bold">
+  <ButtonLabel onPress={onPress} testID={testID} width={120}>
+    <Text color={colors.appleBlue} size="smedium" weight="bold">
       {children}
     </Text>
   </ButtonLabel>
 );
+
+const StyledBorderlessButton = styled(LittleBorderlessButton)`
+  z-index: 1500;
+`;
 
 const BottomRightLabel = ({ formatter }) => (
   <Row justify="end">
@@ -260,6 +265,20 @@ const GasSpeedButton = ({
       }
     };
 
+    if (customGasPriceInput === '0') {
+      Alert({
+        buttons: [
+          {
+            onPress: () => inputRef.current?.focus(),
+            text: 'OK',
+          },
+        ],
+        message: 'You need to enter a valid amount',
+        title: 'Invalid Gas Price',
+      });
+      return;
+    }
+
     if (!customGasPriceInput || !inputFocused) {
       complete();
       ReactNativeHapticFeedback.trigger('impactMedium');
@@ -303,15 +322,12 @@ const GasSpeedButton = ({
     handleCustomGasBlur,
   ]);
 
-  const focusOnInput = useCallback(() => inputRef.current?.focus());
+  const focusOnInput = useCallback(() => inputRef.current?.focus(), []);
   const isCustom = selectedGasPriceOption === CUSTOM ? true : false;
+
   return (
-    <Container
-      as={!isCustom ? ButtonPressAnimation : null}
-      justify="space-between"
-      onPress={!isCustom ? handlePress : null}
-    >
-      <Column style={{ paddingTop: 5 }}>
+    <Container as={ButtonPressAnimation} onPress={handlePress} testID={testID}>
+      <Row align="end" justify="space-between" marginBottom={1}>
         {!isCustom ? (
           <AnimateNumber
             formatter={formatAnimatedGasPrice}
@@ -322,67 +338,65 @@ const GasSpeedButton = ({
             value={price}
           />
         ) : (
-          <Row onPress={focusOnInput}>
-            <Input
-              color={colors.white}
-              height={19}
-              keyboardAppearance="dark"
-              keyboardType="numeric"
-              letterSpacing="roundedMedium"
-              maxLength={5}
-              onBlur={handleCustomGasBlur}
-              onChangeText={handleCustomGasChange}
-              onFocus={handleCustomGasFocus}
-              placeholder={`${defaultCustomGasPrice}`}
-              placeholderTextColor={colors.alpha(
-                colors.darkModeColors.blueGreyDark,
-                0.3
-              )}
-              ref={inputRef}
-              size="lmedium"
-              testID="custom-gas-input"
-              value={customGasPriceInput}
-              weight="bold"
-            />
-            <Text
-              color={
-                customGasPriceInput
-                  ? colors.white
-                  : colors.alpha(colors.darkModeColors.blueGreyDark, 0.3)
-              }
-              size="lmedium"
-              weight="bold"
-            >
-              {' '}
-              Gwei
-            </Text>
-          </Row>
+          <BorderlessButton onPress={focusOnInput}>
+            <Row>
+              <Input
+                color={colors.white}
+                height={19}
+                keyboardAppearance="dark"
+                keyboardType="numeric"
+                letterSpacing="roundedMedium"
+                maxLength={5}
+                onBlur={handleCustomGasBlur}
+                onChangeText={handleCustomGasChange}
+                onFocus={handleCustomGasFocus}
+                onSubmitEditing={handleInputButtonManager}
+                placeholder={`${defaultCustomGasPrice}`}
+                placeholderTextColor={colors.alpha(
+                  colors.darkModeColors.blueGreyDark,
+                  0.3
+                )}
+                ref={inputRef}
+                size="lmedium"
+                testID="custom-gas-input"
+                value={customGasPriceInput}
+                weight="bold"
+              />
+              <Text
+                color={
+                  customGasPriceInput
+                    ? colors.white
+                    : colors.alpha(colors.darkModeColors.blueGreyDark, 0.3)
+                }
+                size="lmedium"
+                weight="bold"
+              >
+                {' '}
+                Gwei
+              </Text>
+            </Row>
+          </BorderlessButton>
         )}
+
+        <GasSpeedLabelPager
+          label={selectedGasPriceOption}
+          showPager={!inputFocused}
+          theme="dark"
+        />
+      </Row>
+      <Row align="center" justify="space-between">
         {!isCustom ? (
           <Label color={colors.white}>Network Fee</Label>
         ) : (
-          <LittleBorderlessButton
+          <StyledBorderlessButton
             onPress={handleInputButtonManager}
             testID="custom-gas-edit-button"
           >
             {inputFocused
               ? 'Done'
               : `${customGasPriceInput ? 'Edit' : 'Enter'} Gas Price`}
-          </LittleBorderlessButton>
+          </StyledBorderlessButton>
         )}
-      </Column>
-
-      <Column
-        as={isCustom ? ButtonPressAnimation : null}
-        flex={1}
-        onPress={isCustom ? handlePress : null}
-        testID={testID}
-      >
-        <GasSpeedLabelPager
-          label={selectedGasPriceOption}
-          showPager={!inputFocused}
-          theme="dark"
-        />
 
         <BottomRightLabel
           formatter={formatBottomRightLabel}
@@ -391,7 +405,7 @@ const GasSpeedButton = ({
             price: selectedGasPrice?.value?.display,
           }}
         />
-      </Column>
+      </Row>
     </Container>
   );
 };

@@ -319,7 +319,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('exchange-modal-output-0.');
   });
 
-  it('Should display Gas Button on Normal on completion of all input fields', async () => {
+  it('Should display Gas Button on Normal by default', async () => {
     await Helpers.delay(1000);
     await Helpers.swipe('exchange-modal-header', 'down', 'slow');
     await Helpers.delay(2000);
@@ -333,7 +333,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfElementByTextIsVisible('Normal');
   });
 
-  it('Should rotate between Slow, Normal, Fast, & Custom when Gas Button is Pressed', async () => {
+  it('Should display warning on invalid custom gas price', async () => {
     await Helpers.delay(1000);
     await Helpers.tap('exchange-modal-gas');
     await Helpers.delay(1000);
@@ -341,6 +341,39 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.tap('exchange-modal-gas');
     await Helpers.delay(1000);
     await Helpers.checkIfElementByTextIsVisible('Custom');
+    await Helpers.tap('custom-gas-edit-button');
+    await Helpers.clearField('custom-gas-input');
+    await Helpers.delay(3000);
+    await Helpers.typeText('custom-gas-input', '0\n', true);
+    await Helpers.delay(3000);
+    await Helpers.checkIfElementByTextIsVisible('Invalid Gas Price');
+    await Helpers.delay(1000);
+    await Helpers.tapAlertWithButton('OK');
+    await Helpers.delay(2000);
+  });
+
+  it('Should display warning on high custom gas price', async () => {
+    await Helpers.typeText('custom-gas-input', '9999\n', true);
+    await Helpers.delay(3000);
+    await Helpers.checkIfElementByTextIsVisible('High gas price!');
+    await Helpers.tapAlertWithButton('Proceed Anyway');
+    await Helpers.delay(2000);
+  });
+
+  it('Should display warning on low custom gas price', async () => {
+    await Helpers.tap('custom-gas-edit-button');
+    await Helpers.clearField('custom-gas-input');
+    await Helpers.delay(3000);
+    await Helpers.typeText('custom-gas-input', '1\n', true);
+    await Helpers.delay(3000);
+    await Helpers.checkIfElementByTextIsVisible(
+      'Low gas price–transaction might get stuck!'
+    );
+    await Helpers.tapAlertWithButton('Proceed Anyway');
+    await Helpers.delay(3000);
+  });
+
+  it('Should rotate between Slow, Normal, Fast, & Custom when Gas Button is Pressed', async () => {
     await Helpers.tap('exchange-modal-gas');
     await Helpers.delay(1000);
     await Helpers.checkIfElementByTextIsVisible('Slow');
@@ -354,31 +387,6 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.tap('exchange-modal-gas');
     await Helpers.delay(1000);
     await Helpers.checkIfElementByTextIsVisible('Custom');
-  });
-
-  it('Should display warning on high custom gas price', async () => {
-    await Helpers.tapByText('Enter Gas Price');
-    await Helpers.delay(5000);
-    await Helpers.typeText('custom-gas-input', '9999', true);
-    await Helpers.tapByText('Done');
-    await Helpers.delay(3000);
-    await Helpers.checkIfElementByTextIsVisible('High gas price!');
-    await Helpers.tapAlertWithButton('Proceed Anyway');
-    await Helpers.delay(2000);
-  });
-
-  it('Should display warning on low custom gas price', async () => {
-    await Helpers.tap('custom-gas-edit-button');
-    await Helpers.clearField('custom-gas-input');
-    await Helpers.delay(3000);
-    await Helpers.typeText('custom-gas-input', '0', true);
-    await Helpers.tap('custom-gas-edit-button');
-    await Helpers.delay(3000);
-    await Helpers.checkIfElementByTextIsVisible(
-      'Low gas price–transaction might get stuck!'
-    );
-    await Helpers.tapAlertWithButton('Proceed Anyway');
-    await Helpers.delay(2000);
   });
 
   afterAll(async () => {
