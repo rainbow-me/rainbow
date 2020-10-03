@@ -384,7 +384,7 @@ const GasSpeedButton = ({
           theme="dark"
         />
       </Row>
-      <Row align="center" justify="space-between">
+      <Row justify="space-between">
         {!isCustom ? (
           <Label color={colors.white}>Network Fee</Label>
         ) : (
