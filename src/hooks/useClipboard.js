@@ -23,8 +23,8 @@ export default function useClipboard() {
   const getClipboard = useCallback(
     callback =>
       Clipboard.getString().then(result => {
-        callback(result);
         updateClipboardData(result);
+        callback?.(result);
       }),
     []
   );
@@ -59,7 +59,7 @@ export default function useClipboard() {
 
   return {
     clipboard: clipboardData,
-    enablePaste: deviceUtils.isIOS14 ? hasClipboardData : clipboardData,
+    enablePaste: deviceUtils.isIOS14 ? hasClipboardData : !!clipboardData,
     getClipboard,
     hasClipboardData,
     setClipboard,
