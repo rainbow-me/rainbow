@@ -46,7 +46,7 @@ import {
   runKeychainIntegrityChecks,
   runWalletBackupStatusChecks,
 } from './handlers/walletReadyEvents';
-import DevContextWrapper from './helpers/DevContext';
+import RainbowContextWrapper from './helpers/RainbowContext';
 import { withAccountSettings, withAppState } from './hoc';
 import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import * as keychain from './model/keychain';
@@ -232,7 +232,7 @@ class App extends Component {
     Navigation.setTopLevelNavigator(navigatorRef);
 
   render = () => (
-    <DevContextWrapper>
+    <RainbowContextWrapper>
       <Portal>
         <SafeAreaProvider>
           <Provider store={store}>
@@ -250,7 +250,7 @@ class App extends Component {
           </Provider>
         </SafeAreaProvider>
       </Portal>
-    </DevContextWrapper>
+    </RainbowContextWrapper>
   );
 }
 
