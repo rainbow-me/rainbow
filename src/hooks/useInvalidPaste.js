@@ -1,23 +1,22 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useContext, useEffect } from 'react';
 import useTimeout from './useTimeout';
-
-let isInvalidPaste = false;
+import { RainbowContext } from '@rainbow-me/helpers/RainbowContext';
 
 export default function useInvalidPaste() {
   const [startTimeout] = useTimeout();
+  const { isInvalidPaste = false, setGlobalState } = useContext(RainbowContext);
 
-  const triggerInvalidPaste = useCallback(() => {
-    isInvalidPaste = true;
-  }, []);
+  const triggerInvalidPaste = useCallback(
+    () => setGlobalState({ isInvalidPaste: true }),
+    [setGlobalState]
+  );
 
   // ⏰️ Reset isInvalidPaste value after 3 seconds.
   useEffect(() => {
     if (isInvalidPaste) {
-      startTimeout(() => {
-        isInvalidPaste = false;
-      }, 3000);
+      startTimeout(() => setGlobalState({ isInvalidPaste: false }), 3000);
     }
-  }, [startTimeout]);
+  }, [isInvalidPaste, setGlobalState, startTimeout]);
 
   return {
     isInvalidPaste,
