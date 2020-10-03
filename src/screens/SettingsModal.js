@@ -3,7 +3,6 @@ import { createStackNavigator } from '@react-navigation/stack';
 import React, { useCallback, useEffect } from 'react';
 import { Animated, InteractionManager, View } from 'react-native';
 import styled from 'styled-components/native';
-import { Icon } from '../components/icons';
 import { Modal } from '../components/modal';
 import ModalHeaderButton from '../components/modal/ModalHeaderButton';
 import {
@@ -19,7 +18,8 @@ import DevSection from '../components/settings-menu/DevSection';
 import WalletTypes from '../helpers/walletTypes';
 import { useDimensions, useWallets } from '../hooks';
 import { useNavigation } from '../navigation/Navigation';
-import { colors, fonts } from '@rainbow-me/styles';
+import { settingsOptions } from '../navigation/config';
+import { colors } from '@rainbow-me/styles';
 
 function cardStyleInterpolator({
   current,
@@ -88,17 +88,6 @@ const SettingsPages = {
   },
 };
 
-const BackArrow = styled(Icon).attrs({
-  color: colors.appleBlue,
-  direction: 'left',
-  name: 'caret',
-})`
-  margin-left: 15;
-  margin-right: 5;
-  margin-top: ${android ? 2 : 0.5};
-`;
-const BackImage = () => <BackArrow />;
-
 const Container = styled.View`
   flex: 1;
   overflow: hidden;
@@ -106,20 +95,11 @@ const Container = styled.View`
 
 const Stack = createStackNavigator();
 
-const transitionConfig = {
-  damping: 35,
-  mass: 1,
-  overshootClamping: false,
-  restDisplacementThreshold: 0.01,
-  restSpeedThreshold: 0.01,
-  stiffness: 450,
-};
-
 export default function SettingsModal() {
   const { goBack, navigate } = useNavigation();
   const { wallets, selectedWallet } = useWallets();
   const { params } = useRoute();
-  const { isTinyPhone, width: deviceWidth } = useDimensions();
+  const { isTinyPhone } = useDimensions();
 
   const getRealRoute = useCallback(
     key => {
@@ -182,49 +162,7 @@ export default function SettingsModal() {
     >
       <Container>
         <Stack.Navigator
-          screenOptions={{
-            cardShadowEnabled: false,
-            cardStyle: { backgroundColor: colors.white, overflow: 'visible' },
-            gestureEnabled: true,
-            gestureResponseDistance: { horizontal: deviceWidth },
-            headerBackImage: BackImage,
-            headerBackTitle: 'Back',
-            headerBackTitleStyle: {
-              fontFamily: fonts.family.SFProRounded,
-              fontSize: parseFloat(fonts.size.large),
-              fontWeight: fonts.weight.medium,
-              letterSpacing: fonts.letterSpacing.roundedMedium,
-            },
-            headerRight: renderHeaderRight,
-            ...(android && {
-              headerRightContainerStyle: {
-                paddingTop: 6,
-              },
-            }),
-            headerStatusBarHeight: 0,
-            headerStyle: {
-              backgroundColor: 'transparent',
-              elevation: 0,
-              height: 49,
-              shadowColor: 'transparent',
-            },
-            headerTitleStyle: {
-              fontFamily: fonts.family.SFProRounded,
-              fontSize: parseFloat(fonts.size.large),
-              fontWeight: fonts.weight.bold,
-              letterSpacing: fonts.letterSpacing.roundedMedium,
-            },
-            transitionSpec: {
-              close: {
-                animation: 'spring',
-                config: transitionConfig,
-              },
-              open: {
-                animation: 'spring',
-                config: transitionConfig,
-              },
-            },
-          }}
+          screenOptions={{ ...settingsOptions, headerRight: renderHeaderRight }}
         >
           <Stack.Screen
             name="SettingsSection"
