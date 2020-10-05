@@ -1,4 +1,4 @@
-package me.rainbow.RNBip39;
+package me.rainbow.NativeModules.RNBip39;
 
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
