@@ -1,0 +1,65 @@
+diff --git a/node_modules/recyclerlistview/dist/reactnative/core/ViewabilityTracker.js b/node_modules/recyclerlistview/dist/reactnative/core/ViewabilityTracker.js
+index f5634e7..3910c48 100644
+--- a/node_modules/recyclerlistview/dist/reactnative/core/ViewabilityTracker.js
++++ b/node_modules/recyclerlistview/dist/reactnative/core/ViewabilityTracker.js
+@@ -37,7 +37,7 @@ var ViewabilityTracker = /** @class */ (function () {
+         this._windowBound = isHorizontal ? dimension.width : dimension.height;
+     };
+     ViewabilityTracker.prototype.forceRefresh = function () {
+-        var shouldForceScroll = this._currentOffset >= (this._maxOffset - this._windowBound);
++        var shouldForceScroll = false;
+         this.forceRefreshWithOffset(this._currentOffset);
+         return shouldForceScroll;
+     };
+diff --git a/node_modules/recyclerlistview/dist/reactnative/core/sticky/StickyObject.js b/node_modules/recyclerlistview/dist/reactnative/core/sticky/StickyObject.js
+index a161288..c60b3bf 100644
+--- a/node_modules/recyclerlistview/dist/reactnative/core/sticky/StickyObject.js
++++ b/node_modules/recyclerlistview/dist/reactnative/core/sticky/StickyObject.js
+@@ -33,6 +33,7 @@ var StickyObject = /** @class */ (function (_super) {
+         _this.stickyType = StickyType.HEADER;
+         _this.stickyTypeMultiplier = 1;
+         _this.stickyVisiblity = false;
++        _this.visibility = false;
+         _this.currentIndex = 0;
+         _this.currentStickyIndex = 0;
+         _this.visibleIndices = [];
+@@ -59,7 +60,7 @@ var StickyObject = /** @class */ (function (_super) {
+         // Add the container style if renderContainer is undefined
+         var containerStyle = [{ transform: [{ translateY: this._stickyViewOffset }] },
+             (!this.props.renderContainer && [{ position: "absolute", width: this._scrollableWidth }, this.containerPosition])];
+-        var content = (React.createElement(react_native_1.Animated.View, { style: containerStyle }, this.stickyVisiblity ? this._renderSticky() : null));
++        var content = (React.createElement(react_native_1.Animated.View, { style: containerStyle }, this.visibility ? this._renderSticky() : null));
+         if (this.props.renderContainer) {
+             var _extendedState = this.props.getExtendedState();
+             return this.props.renderContainer(content, this.currentStickyIndex, _extendedState);
+@@ -80,7 +81,15 @@ var StickyObject = /** @class */ (function (_super) {
+         this.stickyViewVisible(this.stickyVisiblity);
+     };
+     StickyObject.prototype.onScroll = function (offsetY) {
+-        offsetY += this.getWindowCorrection(this.props).windowShift;
++        const prevVisibility = this.visibility;
++        if (offsetY < 0 && prevVisibility == true || this._smallestVisibleIndex < this.currentStickyIndex) {
++            this.visibility = false;
++        } else if (offsetY >= 0 && prevVisibility == false) {
++            this.visibility = true;
++        }
++        if (prevVisibility !== this.visibility) {
++            this.setState({});
++        }
+         this._initParams();
+         this._offsetY = offsetY;
+         this.boundaryProcessing(offsetY, this._windowBound);
+diff --git a/node_modules/recyclerlistview/dist/reactnative/core/viewrenderer/BaseViewRenderer.js b/node_modules/recyclerlistview/dist/reactnative/core/viewrenderer/BaseViewRenderer.js
+index c986cd8..f5519cc 100644
+--- a/node_modules/recyclerlistview/dist/reactnative/core/viewrenderer/BaseViewRenderer.js
++++ b/node_modules/recyclerlistview/dist/reactnative/core/viewrenderer/BaseViewRenderer.js
+@@ -28,7 +28,8 @@ var BaseViewRenderer = /** @class */ (function (_super) {
+         var hasInternalSnapshotChanged = this.props.internalSnapshot !== newProps.internalSnapshot;
+         var hasDataChanged = (this.props.dataHasChanged && this.props.dataHasChanged(this.props.data, newProps.data));
+         var shouldUpdate = hasSizeChanged || hasDataChanged || hasExtendedStateChanged || hasInternalSnapshotChanged;
+-        if (shouldUpdate) {
++        var isTooBigFamilyToAnimate = this.props.data.item?.childrenAmount > 50;
++        if (hasSizeChanged && !hasMoved && !isTooBigFamilyToAnimate) {
+             newProps.itemAnimator.animateWillUpdate(this.props.x, this.props.y, newProps.x, newProps.y, this.getRef(), newProps.index);
+         }
+         else if (hasMoved) {
