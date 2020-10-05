@@ -1,5 +1,4 @@
 import React, { Fragment } from 'react';
-import { Platform } from 'react-native';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
@@ -39,9 +38,7 @@ const FormContainer = styled(Column).attrs({
       : padding(19, 15)};
   background-color: ${colors.lighterGrey};
   flex: 1;
-  margin-bottom: ${Platform.OS === 'android'
-    ? 0
-    : ({ isTinyPhone }) => (isTinyPhone ? -19 : 0)};
+  margin-bottom: ${android ? 0 : ({ isTinyPhone }) => (isTinyPhone ? -19 : 0)};
   width: 100%;
 `;
 
@@ -115,7 +112,7 @@ export default function SendAssetForm({
               sendMaxBalance={sendMaxBalance}
               txSpeedRenderer={txSpeedRenderer}
             />
-            {Platform.OS === 'ios' ? <KeyboardSizeView isOpen /> : null}
+            {ios ? <KeyboardSizeView isOpen /> : null}
           </Fragment>
         )}
       </FormContainer>

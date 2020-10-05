@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Platform, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import RadialGradient from 'react-native-radial-gradient';
 import { Centered } from '../layout';
@@ -51,7 +51,7 @@ const textProps = {
   steps: [0, 1],
 };
 
-const TextComponent = Platform.OS === 'ios' ? GradientText : Text;
+const TextComponent = ios ? GradientText : Text;
 
 function APYPill({ small, value }) {
   return (
