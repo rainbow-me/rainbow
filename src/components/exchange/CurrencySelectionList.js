@@ -35,6 +35,7 @@ const CurrencySelectionList = ({
   listItems,
   loading,
   showList,
+  testID,
   query,
 }) => {
   const skeletonTransitionRef = useRef();
@@ -52,6 +53,7 @@ const CurrencySelectionList = ({
     <Transitioning.View
       flex={1}
       ref={skeletonTransitionRef}
+      testID={testID}
       transition={skeletonTransition}
     >
       {showList && (

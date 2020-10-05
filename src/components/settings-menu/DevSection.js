@@ -6,7 +6,7 @@ import { DEV_SEEDS, GANACHE_URL } from 'react-native-dotenv';
 import { Restart } from 'react-native-restart';
 import { deleteAllBackups } from '../../handlers/cloudBackup';
 import { web3SetHttpProvider } from '../../handlers/web3';
-import { DevContext } from '../../helpers/DevContext';
+import { RainbowContext } from '../../helpers/RainbowContext';
 import { useWallets } from '../../hooks';
 import { wipeKeychain } from '../../model/keychain';
 import store from '../../redux/store';
@@ -16,7 +16,7 @@ import { RadioListItem } from '../radio-list';
 import logger from 'logger';
 
 const DevSection = () => {
-  const { config, setConfig } = useContext(DevContext);
+  const { config, setConfig } = useContext(RainbowContext);
   const { wallets } = useWallets();
 
   const onNetworkChange = useCallback(

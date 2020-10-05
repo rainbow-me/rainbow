@@ -1,11 +1,9 @@
 /* eslint-disable sort-keys */
-import { Platform } from 'react-native';
-
 const font = {};
 
 font.family = {
   SFMono: 'SFMono-Regular',
-  SFProRounded: Platform.OS === 'ios' ? 'SF Pro Rounded' : 'SF-Pro-Rounded',
+  SFProRounded: ios ? 'SF Pro Rounded' : 'SF-Pro-Rounded',
 };
 
 font.letterSpacing = {
@@ -22,6 +20,7 @@ font.lineHeight = {
   none: 0,
   tightest: 14,
   tight: 16,
+  normalTight: 18,
   normal: 20,
   loose: 21,
   paragraphSmall: 25,
@@ -43,6 +42,7 @@ font.size = {
   larger: '20px',
   big: '23px',
   bigger: '26px',
+  headline: '50px',
   h1: '41px',
   h2: '32px',
   h3: '30px',

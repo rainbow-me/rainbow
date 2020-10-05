@@ -34,6 +34,7 @@ export default function Modal({
   onCloseModal,
   radius = 12,
   statusBarStyle = 'light-content',
+  fullScreenOnAndroid,
   ...props
 }) {
   const { height: deviceHeight } = useDimensions();
@@ -45,7 +46,10 @@ export default function Modal({
       <Content
         {...props}
         fixedToTop={fixedToTop}
-        height={height || deviceHeight - 220}
+        height={
+          (fullScreenOnAndroid && android ? '100%' : height) ||
+          deviceHeight - 220
+        }
         radius={radius}
       />
     </Container>

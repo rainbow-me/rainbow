@@ -8,7 +8,6 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { Platform } from 'react-native';
 import Animated, { Extrapolate } from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
 import { interpolate } from '../components/animations';
@@ -47,8 +46,6 @@ import { colors, position } from '@rainbow-me/styles';
 import { backgroundTask, isNewValueForPath } from '@rainbow-me/utils';
 import logger from 'logger';
 
-export const exchangeModalBorderRadius = 30;
-
 const AnimatedFloatingPanels = Animated.createAnimatedComponent(FloatingPanels);
 
 export default function ExchangeModal({
@@ -59,6 +56,7 @@ export default function ExchangeModal({
   inputHeaderTitle,
   showOutputField,
   supplyBalanceUnderlying,
+  testID,
   type,
   underlyingPrice,
 }) {
@@ -126,6 +124,7 @@ export default function ExchangeModal({
   const {
     handleFocus,
     inputFieldRef,
+    lastFocusedInputHandle,
     nativeFieldRef,
     outputFieldRef,
   } = useSwapInputRefs({ inputCurrency, outputCurrency });
@@ -154,6 +153,10 @@ export default function ExchangeModal({
     supplyBalanceUnderlying,
     type,
   });
+
+  const handleCustomGasBlur = useCallback(() => {
+    lastFocusedInputHandle?.current?.focus();
+  }, [lastFocusedInputHandle]);
 
   const updateGasLimit = useCallback(async () => {
     try {
@@ -188,13 +191,27 @@ export default function ExchangeModal({
     updateGasLimit();
   }, [updateGasLimit]);
 
+  // Set default gas limit
+  useEffect(() => {
+    setTimeout(() => {
+      updateTxFee(defaultGasLimit);
+    }, 1000);
+  }, [defaultGasLimit, updateTxFee]);
+
   const clearForm = useCallback(() => {
     logger.log('[exchange] - clear form');
     inputFieldRef?.current?.clear();
     nativeFieldRef?.current?.clear();
     outputFieldRef?.current?.clear();
     updateInputAmount();
-  }, [inputFieldRef, nativeFieldRef, outputFieldRef, updateInputAmount]);
+    updateMaxInputBalance();
+  }, [
+    inputFieldRef,
+    nativeFieldRef,
+    outputFieldRef,
+    updateInputAmount,
+    updateMaxInputBalance,
+  ]);
 
   // Clear form and reset max input balance on new input currency
   useEffect(() => {
@@ -251,15 +268,17 @@ export default function ExchangeModal({
   useEffect(() => {
     if (isMax) {
       let maxBalance = maxInputBalance;
+      inputFieldRef?.current?.blur();
       if (isWithdrawal) {
         maxBalance = supplyBalanceUnderlying;
       }
       updateInputAmount(maxBalance, maxBalance, true, true);
     }
   }, [
-    maxInputBalance,
+    inputFieldRef,
     isMax,
     isWithdrawal,
+    maxInputBalance,
     supplyBalanceUnderlying,
     updateInputAmount,
   ]);
@@ -496,15 +515,15 @@ export default function ExchangeModal({
       >
         <AnimatedFloatingPanels
           margin={0}
+          paddingTop={24}
           style={{
-            opacity:
-              Platform.OS === 'android'
-                ? 1
-                : interpolate(tabTransitionPosition, {
-                    extrapolate: Extrapolate.CLAMP,
-                    inputRange: [0, 0, 1],
-                    outputRange: [1, 1, 0],
-                  }),
+            opacity: android
+              ? 1
+              : interpolate(tabTransitionPosition, {
+                  extrapolate: Extrapolate.CLAMP,
+                  inputRange: [0, 0, 1],
+                  outputRange: [1, 1, 0],
+                }),
             transform: [
               {
                 scale: interpolate(tabTransitionPosition, {
@@ -522,13 +541,15 @@ export default function ExchangeModal({
           }}
         >
           <FloatingPanel
-            overflow="hidden"
+            overflow="visible"
             paddingBottom={showOutputField ? 0 : 26}
-            radius={exchangeModalBorderRadius}
+            radius={39}
+            testID={testID}
           >
             <ExchangeModalHeader
               onPressDetails={navigateToSwapDetailsModal}
               showDetailsButton={showDetailsButton}
+              testID={testID + '-header'}
               title={inputHeaderTitle}
             />
             <ExchangeInputField
@@ -545,6 +566,7 @@ export default function ExchangeModal({
               onPressSelectInputCurrency={navigateToSelectInputCurrency}
               setInputAmount={updateInputAmount}
               setNativeAmount={updateNativeAmount}
+              testID={testID + '-input'}
             />
             {showOutputField && (
               <ExchangeOutputField
@@ -555,6 +577,7 @@ export default function ExchangeModal({
                 outputCurrencySymbol={get(outputCurrency, 'symbol', null)}
                 outputFieldRef={outputFieldRef}
                 setOutputAmount={updateOutputAmount}
+                testID={testID + '-output'}
               />
             )}
           </FloatingPanel>
@@ -562,6 +585,7 @@ export default function ExchangeModal({
             <SwapInfo
               amount={(inputAmount > 0 && outputAmountDisplay) || null}
               asset={outputCurrency}
+              testID="swap-info-button"
             />
           )}
           {isSlippageWarningVisible && <SlippageWarning slippage={slippage} />}
@@ -581,12 +605,18 @@ export default function ExchangeModal({
                   isSufficientGas={isSufficientGas}
                   onSubmit={handleSubmit}
                   slippage={slippage}
+                  testID={testID + '-confirm'}
                   type={type}
                 />
               </Centered>
-              <GasSpeedButton type={type} />
             </Fragment>
           )}
+          <GasSpeedButton
+            dontBlur
+            onCustomGasBlur={handleCustomGasBlur}
+            testID={testID + '-gas'}
+            type={type}
+          />
         </AnimatedFloatingPanels>
       </Centered>
     </KeyboardFixedOpenLayout>

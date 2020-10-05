@@ -1,5 +1,5 @@
 import analytics from '@segment/analytics-react-native';
-import { isValidAddress } from 'ethereumjs-util';
+import { addHexPrefix, isValidAddress } from 'ethereumjs-util';
 import { keys } from 'lodash';
 import React, {
   useCallback,
@@ -8,19 +8,23 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Alert, InteractionManager, Platform, StatusBar } from 'react-native';
+import { Alert, InteractionManager, StatusBar } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import styled from 'styled-components/primitives';
 import ActivityIndicator from '../components/ActivityIndicator';
+import Spinner from '../components/Spinner';
 import { MiniButton } from '../components/buttons';
 import { Input } from '../components/inputs';
 import { Centered, Column, Row } from '../components/layout';
 import LoadingOverlay from '../components/modal/LoadingOverlay';
 import { SheetHandle } from '../components/sheet';
 import { Text } from '../components/text';
-import { getWallet } from '../model/wallet';
-
+import {
+  InvalidPasteToast,
+  ToastPositionContainer,
+} from '../components/toasts';
+import { identifyWalletType } from '../model/wallet';
 import { web3Provider } from '@rainbow-me/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import {
@@ -29,11 +33,13 @@ import {
 } from '@rainbow-me/helpers/validators';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import walletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
+import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import {
   useAccountSettings,
   useClipboard,
   useDimensions,
   useInitializeWallet,
+  useInvalidPaste,
   useIsWalletEthZero,
   useMagicAutofocus,
   usePrevious,
@@ -44,14 +50,14 @@ import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import { sheetVerticalOffset } from '@rainbow-me/navigation/effects';
 import Routes from '@rainbow-me/routes';
 import { borders, colors, padding } from '@rainbow-me/styles';
+import { deviceUtils, ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 import { usePortal } from 'react-native-cool-modals/Portal';
 
 const sheetBottomPadding = 19;
-const keyboardVerticalOffset =
-  Platform.OS === 'android'
-    ? sheetVerticalOffset - 240
-    : sheetVerticalOffset + 10;
+const keyboardVerticalOffset = android
+  ? sheetVerticalOffset - 240
+  : sheetVerticalOffset + 10;
 
 const Container = styled.View`
   flex: 1;
@@ -62,19 +68,23 @@ const Footer = styled(Row).attrs({
   align: 'start',
   justify: 'end',
 })`
-  bottom: ${Platform.OS === 'android' ? 55 : 0};
-  position: ${Platform.OS === 'android' ? 'absolute' : 'relative'};
+  bottom: ${android ? 15 : 0};
+  position: ${android ? 'absolute' : 'relative'};
   right: 0;
-  top: ${({ isSmallPhone }) => (isSmallPhone ? sheetBottomPadding * 2 : 0)};
   width: 100%;
+  ${android
+    ? `top: ${({ isSmallPhone }) =>
+        isSmallPhone ? sheetBottomPadding * 2 : 0};`
+    : ``}
+  ${android ? 'margin-right: 18;' : ''}
 `;
 
-const Spinner = styled(ActivityIndicator).attrs({
+const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs({
   color: 'white',
   size: 15,
 })`
-  margin-right: 5px;
-  margin-top: 2px;
+  margin-right: 5;
+  margin-top: ${android ? 0 : 2};
 `;
 
 const FooterButton = styled(MiniButton).attrs({
@@ -93,7 +103,7 @@ const SecretTextArea = styled(Input).attrs({
   autoCorrect: false,
   autoFocus: true,
   enablesReturnKeyAutomatically: true,
-  keyboardType: Platform.OS === 'android' ? 'visible-password' : 'default',
+  keyboardType: android ? 'visible-password' : 'default',
   lineHeight: 'looser',
   multiline: true,
   numberOfLines: 3,
@@ -103,7 +113,7 @@ const SecretTextArea = styled(Input).attrs({
   spellCheck: false,
   weight: 'semibold',
 })`
-  margin-bottom: ${Platform.OS === 'android' ? 55 : 0};
+  margin-bottom: ${android ? 55 : 0};
   min-height: 50;
   width: 100%;
 `;
@@ -126,7 +136,8 @@ const Sheet = styled(Column).attrs({
 export default function ImportSeedPhraseSheet() {
   const { accountAddress } = useAccountSettings();
   const { selectedWallet, wallets } = useWallets();
-  const { clipboard } = useClipboard();
+  const { getClipboard, hasClipboardData, clipboard } = useClipboard();
+  const { triggerInvalidPaste } = useInvalidPaste();
   const { isSmallPhone } = useDimensions();
   const { goBack, navigate, replace, setParams } = useNavigation();
   const initializeWallet = useInitializeWallet();
@@ -145,9 +156,13 @@ export default function ImportSeedPhraseSheet() {
   const inputRef = useRef(null);
   const { handleFocus } = useMagicAutofocus(inputRef);
 
-  const isClipboardValidSecret = useMemo(() => {
-    return clipboard !== accountAddress && isValidWallet(clipboard);
-  }, [accountAddress, clipboard]);
+  const isClipboardValidSecret = useMemo(
+    () =>
+      deviceUtils.isIOS14
+        ? hasClipboardData
+        : clipboard !== accountAddress && isValidWallet(clipboard),
+    [accountAddress, clipboard, hasClipboardData]
+  );
 
   const isSecretValid = useMemo(() => {
     return seedPhrase !== accountAddress && isValidWallet(seedPhrase);
@@ -221,9 +236,19 @@ export default function ImportSeedPhraseSheet() {
       try {
         setBusy(true);
         setTimeout(async () => {
-          const { hdnode, isHDWallet, type, wallet } = getWallet(input);
-          setCheckedWallet({ hdnode, isHDWallet, type, wallet });
-          const ens = await web3Provider.lookupAddress(wallet?.address);
+          const type = identifyWalletType(input);
+          let walletResult;
+          if (type === WalletTypes.privateKey) {
+            walletResult = ethereumUtils.deriveAccountFromPkey(input);
+          } else {
+            walletResult = await ethereumUtils.deriveAccountFromMnemonicOrPrivateKey(
+              input
+            );
+          }
+          setCheckedWallet(walletResult);
+          const ens = await web3Provider.lookupAddress(
+            addHexPrefix(walletResult?.wallet?.getAddress().toString('hex'))
+          );
           if (ens && ens !== input) {
             name = ens;
           }
@@ -238,10 +263,21 @@ export default function ImportSeedPhraseSheet() {
   }, [isSecretValid, seedPhrase, showWalletProfileModal]);
 
   const handlePressPasteButton = useCallback(() => {
-    if (clipboard && isClipboardValidSecret) {
-      return handleSetSeedPhrase(clipboard);
-    }
-  }, [clipboard, handleSetSeedPhrase, isClipboardValidSecret]);
+    if (deviceUtils.isIOS14 && !hasClipboardData) return;
+    getClipboard(result => {
+      if (result !== accountAddress && isValidWallet(result)) {
+        return handleSetSeedPhrase(result);
+      } else {
+        return triggerInvalidPaste();
+      }
+    });
+  }, [
+    accountAddress,
+    getClipboard,
+    handleSetSeedPhrase,
+    hasClipboardData,
+    triggerInvalidPaste,
+  ]);
 
   useEffect(() => {
     if (!wasImporting && isImporting) {
@@ -270,7 +306,7 @@ export default function ImportSeedPhraseSheet() {
                 } else {
                   navigate(Routes.WALLET_SCREEN, { initialized: true });
                 }
-                if (Platform.OS === 'android') {
+                if (android) {
                   hide();
                 }
 
@@ -279,6 +315,7 @@ export default function ImportSeedPhraseSheet() {
                   if (!(isENSAddressFormat(input) || isValidAddress(input))) {
                     IS_TESTING !== 'true' &&
                       Navigation.handleAction(Routes.BACKUP_SHEET, {
+                        single: true,
                         step: WalletBackupStepTypes.imported,
                       });
                   }
@@ -370,7 +407,7 @@ export default function ImportSeedPhraseSheet() {
             >
               <Row>
                 {busy ? (
-                  <Spinner />
+                  <LoadingSpinner />
                 ) : (
                   <Text color="white" weight="semibold">
                     􀂍{' '}
@@ -400,8 +437,11 @@ export default function ImportSeedPhraseSheet() {
             </FooterButton>
           )}
         </Footer>
+        <ToastPositionContainer>
+          <InvalidPasteToast />
+        </ToastPositionContainer>
       </Sheet>
-      <KeyboardSizeView isOpen />
+      {ios ? <KeyboardSizeView isOpen /> : null}
     </Container>
   );
 }

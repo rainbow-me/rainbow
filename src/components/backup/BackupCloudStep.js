@@ -5,6 +5,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import zxcvbn from 'zxcvbn';
 import { saveBackupPassword } from '../../model/backup';
+import { cloudPlatform } from '../../utils/platform';
 import { DelayedAlert } from '../alerts';
 import { PasswordField } from '../fields';
 import { Centered, ColumnWithMargins } from '../layout';
@@ -64,7 +65,7 @@ const Title = styled(Text).attrs(({ isTinyPhone }) => ({
   ${({ isTinyPhone }) => (isTinyPhone ? padding(0) : padding(15, 0, 12))};
 `;
 
-export default function BackupIcloudStep() {
+export default function BackupCloudStep() {
   const { isTallPhone, isTinyPhone } = useDimensions();
   const currentlyFocusedInput = useRef();
   const { params } = useRoute();
@@ -83,7 +84,7 @@ export default function BackupIcloudStep() {
   const { goBack } = useNavigation();
 
   const [label, setLabel] = useState(
-    !validPassword ? '􀙶 Add to iCloud Backup' : '􀎽 Confirm Backup'
+    !validPassword ? `􀙶 Add to ${cloudPlatform} Backup` : '􀎽 Confirm Backup'
   );
   const passwordRef = useRef();
   const confirmPasswordRef = useRef();
@@ -94,7 +95,7 @@ export default function BackupIcloudStep() {
     }, 1);
     analytics.track('Choose Password Step', {
       category: 'backup',
-      label: 'icloud',
+      label: cloudPlatform,
     });
   }, []);
 
@@ -205,16 +206,16 @@ export default function BackupIcloudStep() {
   );
 
   const onSuccess = useCallback(async () => {
-    logger.log('BackupIcloudStep:: saving backup password');
+    logger.log('BackupCloudStep:: saving backup password');
     await saveBackupPassword(password);
     if (!isSettingsRoute) {
-      DelayedAlert({ title: lang.t('icloud.backup_success') }, 1000);
+      DelayedAlert({ title: lang.t('cloud.backup_success') }, 1000);
     }
     // This means the user set a new password
     // and it was the first wallet backed up
     analytics.track('Backup Complete', {
       category: 'backup',
-      label: 'icloud',
+      label: cloudPlatform,
     });
     goBack();
   }, [goBack, isSettingsRoute, password]);

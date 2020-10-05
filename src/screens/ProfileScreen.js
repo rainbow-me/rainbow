@@ -1,6 +1,5 @@
 import { useIsFocused } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Platform } from 'react-native';
 import styled from 'styled-components/primitives';
 import { ActivityList } from '../components/activity-list';
 import { BackButton, Header, HeaderButton } from '../components/header';
@@ -84,10 +83,10 @@ export default function ProfileScreen({ navigation }) {
 
   const addCashSupportedNetworks =
     network === NetworkTypes.kovan || network === NetworkTypes.mainnet;
-  const addCashAvailable = Platform.OS === 'ios' && addCashSupportedNetworks;
+  const addCashAvailable = ios && addCashSupportedNetworks;
 
   return (
-    <ProfileScreenPage>
+    <ProfileScreenPage testID="profile-screen">
       <Header justify="space-between">
         <HeaderButton onPress={onPressSettings} testID="settings-button">
           <Icon color={colors.black} name="gear" />

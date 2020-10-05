@@ -1,17 +1,11 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import React, { Fragment, useCallback, useMemo } from 'react';
-import {
-  InteractionManager,
-  Linking,
-  NativeModules,
-  ScrollView,
-} from 'react-native';
-import { isEmulatorSync } from 'react-native-device-info';
+import { Linking, NativeModules, ScrollView, Share } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import * as StoreReview from 'react-native-store-review';
 import styled from 'styled-components/primitives';
-import { supportedLanguages } from '../../languages';
-import { AppleReviewAddress, REVIEW_DONE_KEY } from '../../utils/reviewAlert';
+import { REVIEW_ANDROID } from '../../config/experimental';
+import useExperimentalFlag from '../../config/experimentalHooks';
+//import { supportedLanguages } from '../../languages';
 import AppVersionStamp from '../AppVersionStamp';
 import { Icon } from '../icons';
 import { Column, ColumnWithDividers } from '../layout';
@@ -22,15 +16,9 @@ import {
   ListItemDivider,
 } from '../list';
 import { Emoji } from '../text';
-
 import BackupIcon from '@rainbow-me/assets/settingsBackup.png';
 import CurrencyIcon from '@rainbow-me/assets/settingsCurrency.png';
-import LanguageIcon from '@rainbow-me/assets/settingsLanguage.png';
 import NetworkIcon from '@rainbow-me/assets/settingsNetwork.png';
-import {
-  getAppStoreReviewCount,
-  saveAppStoreReviewCount,
-} from '@rainbow-me/handlers/localstorage/globalSettings';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import {
@@ -40,10 +28,17 @@ import {
   useWallets,
 } from '@rainbow-me/hooks';
 import { colors, position } from '@rainbow-me/styles';
+import {
+  AppleReviewAddress,
+  REVIEW_DONE_KEY,
+} from '@rainbow-me/utils/reviewAlert';
 
-const { RainbowRequestReview } = NativeModules;
+const { RainbowRequestReview, RNReview } = NativeModules;
 
 export const SettingsExternalURLs = {
+  rainbowHomepage: 'https://rainbow.me',
+  review:
+    'itms-apps://itunes.apple.com/us/app/appName/id1457119021?mt=8&action=write-review',
   twitterDeepLink: 'twitter://user?screen_name=rainbowdotme',
   twitterWebUrl: 'https://twitter.com/rainbowdotme',
 };
@@ -116,18 +111,20 @@ export default function SettingsSection({
   onPressCurrency,
   onPressDev,
   onPressIcloudBackup,
-  onPressLanguage,
+  /*onPressLanguage,*/
   onPressNetwork,
   onPressShowSecret,
 }) {
+  const isReviewAvailable = useExperimentalFlag(REVIEW_ANDROID) || ios;
+
   const { wallets } = useWallets();
-  const { language, nativeCurrency, network } = useAccountSettings();
+  const { /*language,*/ nativeCurrency, network } = useAccountSettings();
   const { isTinyPhone } = useDimensions();
 
   const onSendFeedback = useSendFeedback();
 
   const onPressReview = useCallback(async () => {
-    if (RainbowRequestReview) {
+    if (ios) {
       onCloseModal();
       RainbowRequestReview.requestReview(handled => {
         if (!handled) {
@@ -136,21 +133,15 @@ export default function SettingsSection({
         }
       });
     } else {
-      const maxRequestCount = 2;
-      const count = await getAppStoreReviewCount();
-      const shouldDeeplinkToAppStore =
-        count >= maxRequestCount || !StoreReview.isAvailable;
-
-      if (shouldDeeplinkToAppStore && !isEmulatorSync()) {
-        Linking.openURL(SettingsExternalURLs.review);
-      } else {
-        onCloseModal();
-        InteractionManager.runAfterInteractions(StoreReview.requestReview);
-      }
-
-      return saveAppStoreReviewCount(count + 1);
+      RNReview.show();
     }
   }, [onCloseModal]);
+
+  const onPressShare = useCallback(() => {
+    Share.share({
+      message: `👋️ Hey friend! You should download Rainbow, it's my favorite Ethereum wallet 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️ ${SettingsExternalURLs.rainbowHomepage}`,
+    });
+  }, []);
 
   const onPressTwitter = useCallback(async () => {
     Linking.canOpenURL(SettingsExternalURLs.twitterDeepLink).then(supported =>
@@ -203,20 +194,26 @@ export default function SettingsSection({
             {networkInfo?.[network]?.name}
           </ListItemArrowGroup>
         </ListItem>
-        <ListItem
-          icon={<SettingIcon source={LanguageIcon} />}
-          label="Language"
-          onPress={onPressLanguage}
-        >
-          <ListItemArrowGroup>
-            {supportedLanguages[language] || ''}
-          </ListItemArrowGroup>
-        </ListItem>
+        {/*<ListItem*/}
+        {/*  icon={<SettingIcon source={LanguageIcon} />}*/}
+        {/*  label="Language"*/}
+        {/*  onPress={onPressLanguage}*/}
+        {/*>*/}
+        {/*  <ListItemArrowGroup>*/}
+        {/*    {supportedLanguages[language] || ''}*/}
+        {/*  </ListItemArrowGroup>*/}
+        {/*</ListItem>*/}
       </ColumnWithDividers>
       <ListFooter />
       <ColumnWithDividers dividerRenderer={ListItemDivider}>
         <ListItem
           icon={<Emoji name="rainbow" />}
+          label="Share Rainbow"
+          onPress={onPressShare}
+          value={SettingsExternalURLs.rainbowHomepage}
+        />
+        <ListItem
+          icon={<Emoji name="bird" />}
           label="Follow Us on Twitter"
           onPress={onPressTwitter}
           value={SettingsExternalURLs.twitter}
@@ -226,11 +223,13 @@ export default function SettingsSection({
           label="Feedback and Support"
           onPress={onSendFeedback}
         />
-        <ListItem
-          icon={<Emoji name="red_heart" />}
-          label="Review Rainbow"
-          onPress={onPressReview}
-        />
+        {isReviewAvailable && (
+          <ListItem
+            icon={<Emoji name="red_heart" />}
+            label="Review Rainbow"
+            onPress={onPressReview}
+          />
+        )}
       </ColumnWithDividers>
       {IS_DEV && (
         <Fragment>

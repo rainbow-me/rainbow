@@ -153,6 +153,18 @@ def jscFlavor = 'org.webkit:android-jsc:+'
 def enableHermes = project.ext.react.get("enableHermes", false);
 
 android {
+    def env = project.file('../../.env')
+    def props = project.file('src/main/java/me/rainbow/MainApplication.java')
+    def contents2 = props.getText( 'UTF-8' ).replaceAll( "//_REA ", '' ).replaceAll('/\\* REA', '//_REA /* REA')
+    props.delete()
+    props << contents2
+
+    if (env.getText( 'UTF-8' ).indexOf('DISABLE_REANIMATED_IN_DEV=YES') != -1) {
+        def contents = props.getText( 'UTF-8' ).replaceAll( "//_REA ", '' )
+        props.delete()
+        props << contents
+    }
+
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     compileOptions {
@@ -235,6 +247,7 @@ android {
         pickFirst '**/x86_64/libc++_shared.so'
         pickFirst '**/x86/libjsc.so'
         pickFirst '**/armeabi-v7a/libjsc.so'
+        exclude 'META-INF/DEPENDENCIES'
     }
 
 
@@ -258,18 +271,23 @@ dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
-    implementation 'androidx.appcompat:appcompat:1.1.0-rc01'
-    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
+    implementation 'io.github.novacrypto:BIP39:2019.01.27'
+    implementation 'com.google.android.play:core:1.8.2'
+
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
-      exclude group:'com.facebook.fbjni'
+        exclude group:'com.facebook.fbjni'
     }
+
     debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.flipper'
+        exclude group:'com.squareup.okhttp3', module:'okhttp'
     }
+
     debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.flipper'
     }
-
 
     if (enableHermes) {
         def hermesPath = "../../node_modules/hermes-engine/android/";
@@ -297,5 +315,4 @@ crashlytics {
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
 apply plugin: 'com.google.gms.google-services'
-
 

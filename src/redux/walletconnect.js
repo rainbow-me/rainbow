@@ -18,7 +18,7 @@ import {
   saveWalletConnectSession,
 } from '../handlers/localstorage/walletconnectSessions';
 import { sendRpcCall } from '../handlers/web3';
-import { convertDappNameToDisplay } from '../helpers/dappNameHandler';
+import { dappLogoOverride, dappNameOverride } from '../helpers/dappNameHandler';
 import WalletTypes from '../helpers/walletTypes';
 import { getFCMToken } from '../model/firebase';
 import { Navigation } from '../navigation';
@@ -107,16 +107,20 @@ export const walletConnectOnSessionRequest = (
       walletConnector.on('session_request', (error, payload) => {
         if (error) throw error;
         const { peerId, peerMeta } = payload.params[0];
-        const imageUrl = get(peerMeta, 'icons[0]');
-        const name = convertDappNameToDisplay(peerMeta.name);
+
+        const imageUrl =
+          dappLogoOverride(peerMeta.url) || get(peerMeta, 'icons[0]');
+        const dappName = dappNameOverride(peerMeta.url) || peerMeta.name;
+        const dappUrl = peerMeta.url;
+
         Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {
           callback: async approved => {
             if (approved) {
               dispatch(setPendingRequest(peerId, walletConnector));
               dispatch(walletConnectApproveSession(peerId, callback));
               analytics.track('Approved new WalletConnect session', {
-                dappName: name,
-                dappUrl: peerMeta.url,
+                dappName,
+                dappUrl,
               });
             } else {
               await dispatch(
@@ -124,14 +128,14 @@ export const walletConnectOnSessionRequest = (
               );
               callback && callback('reject');
               analytics.track('Rejected new WalletConnect session', {
-                dappName: name,
-                dappUrl: peerMeta.url,
+                dappName,
+                dappUrl,
               });
             }
           },
           meta: {
-            dappName: name,
-            dappUrl: peerMeta.url,
+            dappName,
+            dappUrl,
             imageUrl,
           },
         });
@@ -147,6 +151,7 @@ export const walletConnectOnSessionRequest = (
 
 const listenOnNewMessages = walletConnector => (dispatch, getState) => {
   walletConnector.on('call_request', async (error, payload) => {
+    logger.log('WC Request!', error, payload);
     if (error) throw error;
     const { clientId, peerId, peerMeta } = walletConnector;
     const requestId = payload.id;

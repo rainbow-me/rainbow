@@ -2,17 +2,18 @@ import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { InteractionManager, Platform, StatusBar } from 'react-native';
+import { InteractionManager, StatusBar } from 'react-native';
 import { DelayedAlert } from '../components/alerts';
 import {
+  BackupCloudStep,
   BackupConfirmPasswordStep,
-  BackupIcloudStep,
   BackupManualStep,
   BackupSheetSection,
 } from '../components/backup';
 import { Column } from '../components/layout';
 import { LoadingOverlay } from '../components/modal';
-import { Sheet, SlackSheet } from '../components/sheet';
+import { SlackSheet } from '../components/sheet';
+import { cloudPlatform } from '../utils/platform';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import {
@@ -81,14 +82,14 @@ export default function BackupSheet() {
   const onSuccess = useCallback(() => {
     goBack();
     if (!isSettingsRoute) {
-      DelayedAlert({ title: lang.t('icloud.backup_success') }, 1000);
+      DelayedAlert({ title: lang.t('cloud.backup_success') }, 1000);
     }
 
     // This means the user had the password saved
     // and at least an other wallet already backed up
     analytics.track('Backup Complete via BackupSheet', {
       category: 'backup',
-      label: 'icloud',
+      label: cloudPlatform,
     });
   }, [goBack, isSettingsRoute]);
 
@@ -141,10 +142,10 @@ export default function BackupSheet() {
       case WalletBackupStepTypes.imported:
         return (
           <BackupSheetSection
-            descriptionText={`Don't lose your wallet! Save an encrypted copy to iCloud.`}
+            descriptionText={`Don't lose your wallet! Save an encrypted copy to ${cloudPlatform}.`}
             onPrimaryAction={onIcloudBackup}
             onSecondaryAction={goBack}
-            primaryLabel="􀙶 Back up to iCloud"
+            primaryLabel={`􀙶 Back up to ${cloudPlatform}`}
             secondaryButtonTestId="backup-sheet-imported-cancel-button"
             secondaryLabel="No thanks"
             titleText="Would you like to back up?"
@@ -155,17 +156,17 @@ export default function BackupSheet() {
         return missingPassword ? (
           <BackupConfirmPasswordStep />
         ) : (
-          <BackupIcloudStep />
+          <BackupCloudStep />
         );
       case WalletBackupStepTypes.manual:
         return <BackupManualStep />;
       default:
         return (
           <BackupSheetSection
-            descriptionText={`Don't lose your wallet! Save an encrypted copy to iCloud.`}
+            descriptionText={`Don't lose your wallet! Save an encrypted copy to ${cloudPlatform}.`}
             onPrimaryAction={onIcloudBackup}
             onSecondaryAction={onManualBackup}
-            primaryLabel="􀙶 Back up to iCloud"
+            primaryLabel={`􀙶 Back up to ${cloudPlatform}`}
             secondaryLabel="🤓 Back up manually"
             titleText="Back up your wallet"
             type="Default"
@@ -182,17 +183,13 @@ export default function BackupSheet() {
     step,
   ]);
 
-  const SheetComponent =
-    Platform.OS === 'android' && step !== WalletBackupStepTypes.manual
-      ? Sheet
-      : SlackSheet;
+  const sheetHeight = android ? 1 : longFormHeight;
+  const wrapperHeight = android ? deviceHeight : deviceHeight + longFormHeight;
 
   return (
-    <Column height={deviceHeight + longFormHeight} testID="backup-sheet">
+    <Column height={wrapperHeight} testID="backup-sheet">
       <StatusBar barStyle="light-content" />
-      <SheetComponent contentHeight={longFormHeight}>
-        {renderStep()}
-      </SheetComponent>
+      <SlackSheet contentHeight={sheetHeight}>{renderStep()}</SlackSheet>
     </Column>
   );
 }

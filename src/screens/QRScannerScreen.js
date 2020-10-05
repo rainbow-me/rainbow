@@ -1,3 +1,4 @@
+import { useIsFocused } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
 import { Platform, View } from 'react-native';
 import Animated, { useCode } from 'react-native-reanimated';
@@ -66,7 +67,8 @@ function useFocusFromSwipe() {
 
 export default function QRScannerScreen() {
   const discoverSheetAvailable = useExperimentalFlag(DISCOVER_SHEET);
-  const isFocused = useFocusFromSwipe();
+  const isFocusedIOS = useFocusFromSwipe();
+  const isFocusedAndroid = useIsFocused();
   const [sheetHeight, onSheetLayout] = useHeight(240);
   const { navigate } = useNavigation();
   const {
@@ -90,7 +92,7 @@ export default function QRScannerScreen() {
           <QRCodeScanner
             contentPositionBottom={sheetHeight}
             contentPositionTop={HeaderHeight}
-            enableCamera={isFocused}
+            enableCamera={ios ? isFocusedIOS : isFocusedAndroid}
           />
         </CameraDimmer>
         {discoverSheetAvailable ? (

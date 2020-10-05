@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { Platform, TouchableWithoutFeedback } from 'react-native';
+import { TouchableWithoutFeedback } from 'react-native';
 import styled from 'styled-components/primitives';
 import supportedNativeCurrencies from '../../references/native-currencies.json';
 import { Row } from '../layout';
@@ -7,23 +7,33 @@ import { Text } from '../text';
 import ExchangeInput from './ExchangeInput';
 import { colors, fonts } from '@rainbow-me/styles';
 
-const CurrencySymbol = styled(Text).attrs({
-  size: 'large',
+const CurrencySymbol = styled(Text).attrs(({ height }) => ({
+  letterSpacing: 'roundedTight',
+  lineHeight: height,
+  size: 'larger',
   weight: 'regular',
-})`
-  margin-bottom: ${Platform.OS === 'android' ? 1.5 : 0.5};
+}))`
+  ${android ? 'margin-bottom: 1.5;' : ''};
 `;
 
 const NativeInput = styled(ExchangeInput).attrs({
   letterSpacing: fonts.letterSpacing.roundedTight,
-  size: fonts.size.large,
+  size: fonts.size.larger,
   weight: fonts.weight.regular,
 })`
   height: ${({ height }) => height};
 `;
 
 const ExchangeNativeField = (
-  { editable, height, nativeAmount, nativeCurrency, onFocus, setNativeAmount },
+  {
+    editable,
+    height,
+    nativeAmount,
+    nativeCurrency,
+    onFocus,
+    setNativeAmount,
+    testID,
+  },
   ref
 ) => {
   const [isFocused, setIsFocused] = useState(false);
@@ -55,7 +65,9 @@ const ExchangeNativeField = (
   return (
     <TouchableWithoutFeedback onPress={handleFocusNativeField}>
       <Row align="center" flex={1} height={height}>
-        <CurrencySymbol color={nativeAmountColor}>{symbol}</CurrencySymbol>
+        <CurrencySymbol color={nativeAmountColor} height={height}>
+          {symbol}
+        </CurrencySymbol>
         <NativeInput
           color={nativeAmountColor}
           editable={editable}
@@ -66,6 +78,7 @@ const ExchangeNativeField = (
           onFocus={handleFocus}
           placeholder={placeholder}
           ref={ref}
+          testID={nativeAmount ? `${testID}-${nativeAmount}` : testID}
           value={nativeAmount}
         />
       </Row>

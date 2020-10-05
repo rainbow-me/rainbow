@@ -1,5 +1,4 @@
 import { createContext } from 'react';
-// eslint-disable-next-line import/no-unresolved
 import { useSharedValue } from 'react-native-reanimated';
 export default createContext(null);
 

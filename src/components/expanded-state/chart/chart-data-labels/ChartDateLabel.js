@@ -95,7 +95,7 @@ export default function ChartDateLabel({ chartTimeSharedValue }) {
             : colors.green,
       };
     },
-    undefined,
+    [],
     'ChartDateLabelTextStyle'
   );
 

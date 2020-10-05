@@ -1,4 +1,5 @@
 import React, { Fragment } from 'react';
+import { Platform } from 'react-native';
 import styled from 'styled-components/primitives';
 import { useDimensions } from '../../hooks';
 import supportedNativeCurrencies from '../../references/native-currencies.json';
@@ -17,7 +18,8 @@ const FooterContainer = styled(ColumnWithMargins).attrs(({ deviceHeight }) => ({
 `;
 
 const FormContainer = styled(Column)`
-  flex: ${({ isSmallPhone }) => (isSmallPhone ? 1.75 : 1)};
+  flex: ${({ isSmallPhone }) =>
+    Platform.OS === 'android' ? 1.8 : isSmallPhone ? 1.75 : 1};
   width: 100%;
 `;
 
@@ -52,6 +54,7 @@ export default function SendAssetFormToken({
           onFocus={onFocus}
           onPressButton={sendMaxBalance}
           placeholder="0"
+          testID="selected-asset-field"
           value={assetAmount}
         />
         <SendAssetFormField
@@ -63,6 +66,7 @@ export default function SendAssetFormToken({
           onFocus={onFocus}
           onPressButton={sendMaxBalance}
           placeholder={nativePlaceholder}
+          testID="selected-asset-quantity-field"
           value={nativeAmount}
         />
       </FormContainer>

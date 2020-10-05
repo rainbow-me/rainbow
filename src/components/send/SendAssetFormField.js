@@ -1,5 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import React, { useCallback } from 'react';
+import { Platform } from 'react-native';
 import { UnderlineField } from '../fields';
 import { RowWithMargins } from '../layout';
 import { Text } from '../text';
@@ -17,6 +18,7 @@ export default function SendAssetFormField({
   onPressButton,
   placeholder,
   value,
+  testID,
   ...props
 }) {
   const { isTinyPhone } = useDimensions();
@@ -47,9 +49,14 @@ export default function SendAssetFormField({
         onFocus={onFocus}
         onPressButton={handlePressButton}
         placeholder={placeholder}
+        testID={testID + '-input'}
         value={value}
       />
-      <Text align="right" color="dark" size={isTinyPhone ? 'bigger' : 'h3'}>
+      <Text
+        align="right"
+        color="dark"
+        size={isTinyPhone || Platform.OS === 'android' ? 'bigger' : 'h3'}
+      >
         {label.length > labelMaxLength
           ? label.substring(0, labelMaxLength)
           : label}

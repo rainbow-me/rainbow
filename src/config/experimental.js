@@ -9,8 +9,10 @@ export const chartExpandedAvailable = true;
 
 export const AVATAR_PICKER = 'avatarPicker';
 export const DISCOVER_SHEET = 'discoverSheet';
+export const REVIEW_ANDROID = 'reviewAndroid';
 
 export const defaultConfig = {
   [AVATAR_PICKER]: false,
   [DISCOVER_SHEET]: false,
+  [REVIEW_ANDROID]: false,
 };

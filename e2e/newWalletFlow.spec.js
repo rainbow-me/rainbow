@@ -12,6 +12,7 @@ describe('New Wallet flow', () => {
     await Helpers.checkIfVisible('wallet-screen');
   });
 
+  // Saving for now in case we want to test iCloud back up sheet
   // it('Should show the backup sheet', async () => {
   //   await Helpers.delay(5000);
   //   await Helpers.checkIfVisible('backup-sheet');
@@ -25,7 +26,7 @@ describe('New Wallet flow', () => {
   it('should show "No transactions yet" in the activity list', async () => {
     await Helpers.swipe('wallet-screen', 'right');
     await Helpers.delay(2000);
-    await Helpers.checkIfVisible('no-transactions-yet-label');
+    await Helpers.checkForElementByLabel('no-transactions-yet-label');
   });
 
   afterAll(async () => {

@@ -88,8 +88,12 @@ function SeedWordGrid({ seed }) {
 export default function SecretDisplayCard({ seed, type }) {
   return (
     <Centered>
-      <CardShadow />
-      <BackgroundGradient />
+      {ios && (
+        <>
+          <CardShadow />
+          <BackgroundGradient />
+        </>
+      )}
       <Content>
         <CopyTooltip textToCopy={seed} tooltipText="Copy to clipboard">
           {seed && type === WalletTypes.mnemonic && (

@@ -1,7 +1,6 @@
 import networkTypes from '../../helpers/networkTypes';
 import { getGlobal, saveGlobal } from './common';
 
-const APPSTORE_REVIEW_COUNT = 'appStoreReviewRequestCount';
 const IMAGE_METADATA = 'imageMetadata';
 const KEYBOARD_HEIGHT = 'keyboardHeight';
 const LANGUAGE = 'language';
@@ -14,11 +13,6 @@ export const getKeychainIntegrityState = () =>
 
 export const saveKeychainIntegrityState = state =>
   saveGlobal(KEYCHAIN_INTEGRITY_STATE, state);
-
-export const getAppStoreReviewCount = () => getGlobal(APPSTORE_REVIEW_COUNT, 0);
-
-export const saveAppStoreReviewCount = reviewCount =>
-  saveGlobal(APPSTORE_REVIEW_COUNT, reviewCount);
 
 export const getLanguage = () => getGlobal(LANGUAGE, 'en');
 

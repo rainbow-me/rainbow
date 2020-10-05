@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Platform } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import styled from 'styled-components/primitives';
 import { isHexString } from '../../handlers/web3';
@@ -14,7 +13,7 @@ import { abbreviations, addressUtils } from '@rainbow-me/utils';
 const AddressInput = styled(Input).attrs({
   autoCapitalize: 'none',
   autoCorrect: false,
-  keyboardType: Platform.OS === 'android' ? 'visible-password' : 'default',
+  keyboardType: android ? 'visible-password' : 'default',
   maxLength: addressUtils.maxLength,
   selectTextOnFocus: true,
   size: 'bmedium',
@@ -22,13 +21,13 @@ const AddressInput = styled(Input).attrs({
   weight: 'semibold',
 })`
   flex-grow: 1;
-  margin-top: 1;
+  margin-top: ${android ? 6 : 1};
   z-index: 1;
 `;
 
 const Placeholder = styled(Row)`
-  margin-left: ${Platform.OS === 'android' ? 3 : 0};
-  margin-top: ${Platform.OS === 'android' ? 14 : 0};
+  margin-left: ${android ? 3 : 0};
+  margin-top: ${android ? 12 : 0};
   position: absolute;
   top: 0;
   z-index: 1;
@@ -44,7 +43,7 @@ const formatValue = value =>
     : value;
 
 const AddressField = (
-  { address, autoFocus, name, onChange, onFocus, ...props },
+  { address, autoFocus, name, onChange, onFocus, testID, ...props },
   ref
 ) => {
   const { clipboard, setClipboard } = useClipboard();
@@ -89,6 +88,7 @@ const AddressField = (
         onChangeText={setInputValue}
         onFocus={onFocus}
         ref={ref}
+        testID={testID}
         value={formatValue(inputValue)}
       />
       {!inputValue && (

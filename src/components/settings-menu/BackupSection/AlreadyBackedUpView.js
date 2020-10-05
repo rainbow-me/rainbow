@@ -1,8 +1,9 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
-import { Platform, View } from 'react-native';
+import { View } from 'react-native';
 import styled from 'styled-components';
+import { cloudPlatform } from '../../../utils/platform';
 import { DelayedAlert } from '../../alerts';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered, Column } from '../../layout';
@@ -31,7 +32,7 @@ const CheckmarkIconContainer = styled(View)`
   background-color: ${({ color }) => color};
   border-radius: 25;
   margin-bottom: 19;
-  padding-top: 13;
+  padding-top: ${ios ? 13 : 7};
 `;
 
 const CheckmarkIconText = styled(Text).attrs({
@@ -131,18 +132,26 @@ export default function AlreadyBackedUpView() {
   }, [walletId, wallets]);
 
   const handleNoLatestBackup = useCallback(() => {
-    Navigation.handleAction(Routes.BACKUP_SHEET, {
-      step: WalletBackupStepTypes.cloud,
-      walletId,
-    });
+    Navigation.handleAction(
+      android ? Routes.BACKUP_SHEET_FROM_SETTINGS : Routes.BACKUP_SHEET,
+      {
+        fromSettings: android,
+        step: WalletBackupStepTypes.cloud,
+        walletId,
+      }
+    );
   }, [walletId]);
 
   const handlePasswordNotFound = useCallback(() => {
-    Navigation.handleAction(Routes.BACKUP_SHEET, {
-      missingPassword: true,
-      step: WalletBackupStepTypes.cloud,
-      walletId,
-    });
+    Navigation.handleAction(
+      android ? Routes.BACKUP_SHEET_FROM_SETTINGS : Routes.BACKUP_SHEET,
+      {
+        fromSettings: android,
+        missingPassword: true,
+        step: WalletBackupStepTypes.cloud,
+        walletId,
+      }
+    );
   }, [walletId]);
 
   const handleIcloudBackup = useCallback(() => {
@@ -154,7 +163,7 @@ export default function AlreadyBackedUpView() {
       return;
     }
 
-    analytics.track('Back up to iCloud pressed', {
+    analytics.track(`Back up to ${cloudPlatform} pressed`, {
       category: 'settings backup',
     });
 
@@ -204,7 +213,7 @@ export default function AlreadyBackedUpView() {
           </Title>
           <DescriptionText>
             {(walletStatus === WalletBackupStatus.CLOUD_BACKUP &&
-              `If you lose this device, you can recover your encrypted wallet backup from iCloud.`) ||
+              `If you lose this device, you can recover your encrypted wallet backup from ${cloudPlatform}.`) ||
               (walletStatus === WalletBackupStatus.MANUAL_BACKUP &&
                 `If you lose this device, you can restore your wallet with the recovery phrase you saved.`) ||
               (walletStatus === WalletBackupStatus.IMPORTED &&
@@ -215,27 +224,27 @@ export default function AlreadyBackedUpView() {
           <SheetActionButton
             color={colors.white}
             label="🗝 View recovery key"
+            noFlex
             onPress={handleViewRecoveryPhrase}
             textColor={colors.alpha(colors.blueGreyDark, 0.8)}
           />
         </Column>
       </Content>
-      {Platform.OS === 'ios' &&
-        walletStatus !== WalletBackupStatus.CLOUD_BACKUP && (
-          <Footer>
-            <ButtonPressAnimation onPress={handleIcloudBackup}>
-              <Text
-                align="center"
-                color={colors.appleBlue}
-                letterSpacing="roundedMedium"
-                size="large"
-                weight="semibold"
-              >
-                􀙶 Back up to iCloud
-              </Text>
-            </ButtonPressAnimation>
-          </Footer>
-        )}
+      {walletStatus !== WalletBackupStatus.CLOUD_BACKUP && (
+        <Footer>
+          <ButtonPressAnimation onPress={handleIcloudBackup}>
+            <Text
+              align="center"
+              color={colors.appleBlue}
+              letterSpacing="roundedMedium"
+              size="large"
+              weight="semibold"
+            >
+              􀙶 Back up to {cloudPlatform}
+            </Text>
+          </ButtonPressAnimation>
+        </Footer>
+      )}
     </Fragment>
   );
 }

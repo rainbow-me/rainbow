@@ -10,7 +10,6 @@ import {
   AppRegistry,
   AppState,
   NativeModules,
-  Platform,
   StatusBar,
   unstable_enableLogBox,
 } from 'react-native';
@@ -30,6 +29,7 @@ import { enableScreens } from 'react-native-screens';
 import VersionNumber from 'react-native-version-number';
 import { connect, Provider } from 'react-redux';
 import { compose, withProps } from 'recompact';
+import { ChartProvider } from './components/expanded-state/ChartHelper';
 import { FlexItem } from './components/layout';
 import { OfflineToast, TestnetToast } from './components/toasts';
 import {
@@ -45,7 +45,7 @@ import {
   runKeychainIntegrityChecks,
   runWalletBackupStatusChecks,
 } from './handlers/walletReadyEvents';
-import DevContextWrapper from './helpers/DevContext';
+import RainbowContextWrapper from './helpers/RainbowContext';
 import { withAccountSettings, withAppState } from './hoc';
 import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import * as keychain from './model/keychain';
@@ -139,9 +139,7 @@ class App extends Component {
       // Everything we need to do after the wallet is ready goes here
       logger.sentry('✅ Wallet ready!');
       runKeychainIntegrityChecks();
-      if (Platform.OS === 'ios') {
-        runWalletBackupStatusChecks();
-      }
+      runWalletBackupStatusChecks();
     }
   }
 
@@ -231,23 +229,25 @@ class App extends Component {
     Navigation.setTopLevelNavigator(navigatorRef);
 
   render = () => (
-    <DevContextWrapper>
+    <RainbowContextWrapper>
       <Portal>
         <SafeAreaProvider>
           <Provider store={store}>
-            <FlexItem>
-              {this.state.initialRoute && (
-                <InitialRouteContext.Provider value={this.state.initialRoute}>
-                  <RoutesComponent ref={this.handleNavigatorRef} />
-                </InitialRouteContext.Provider>
-              )}
-              <OfflineToast />
-              <TestnetToast network={this.props.network} />
-            </FlexItem>
+            <ChartProvider>
+              <FlexItem>
+                {this.state.initialRoute && (
+                  <InitialRouteContext.Provider value={this.state.initialRoute}>
+                    <RoutesComponent ref={this.handleNavigatorRef} />
+                  </InitialRouteContext.Provider>
+                )}
+                <OfflineToast />
+                <TestnetToast network={this.props.network} />
+              </FlexItem>
+            </ChartProvider>
           </Provider>
         </SafeAreaProvider>
       </Portal>
-    </DevContextWrapper>
+    </RainbowContextWrapper>
   );
 }
 

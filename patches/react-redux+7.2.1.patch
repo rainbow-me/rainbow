@@ -1,0 +1,28 @@
+diff --git a/node_modules/react-redux/lib/hooks/useSelector.js b/node_modules/react-redux/lib/hooks/useSelector.js
+index c93b377..347b366 100644
+--- a/node_modules/react-redux/lib/hooks/useSelector.js
++++ b/node_modules/react-redux/lib/hooks/useSelector.js
+@@ -6,6 +6,8 @@ exports.__esModule = true;
+ exports.createSelectorHook = createSelectorHook;
+ exports.useSelector = void 0;
+ 
++import isEqual from "react-fast-compare"
++
+ var _react = require("react");
+ 
+ var _useReduxContext2 = require("./useReduxContext");
+@@ -17,7 +19,13 @@ var _useIsomorphicLayoutEffect = require("../utils/useIsomorphicLayoutEffect");
+ var _Context = require("../components/Context");
+ 
+ var refEquality = function refEquality(a, b) {
+-  return a === b;
++  if (a === b) {
++    return true
++  }
++  if (typeof a == 'object' && a !== null) {
++    return isEqual(a, b);
++  }
++  return false;
+ };
+ 
+ function useSelectorWithStoreAndSubscription(selector, equalityFn, store, contextSub) {
