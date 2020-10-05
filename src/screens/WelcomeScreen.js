@@ -1,7 +1,7 @@
 import MaskedView from '@react-native-community/masked-view';
 import { useNavigation } from '@react-navigation/native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Animated, Easing, Platform, StyleSheet } from 'react-native';
+import { Animated, Easing, StyleSheet } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import Reanimated, {
   Clock,
@@ -160,7 +160,7 @@ const rainbows = [
     id: 'grey',
     rotate: '150deg',
     scale: 0.5066666667,
-    source: Platform.OS === 'ios' ? { uri: 'greyneon' } : RainbowGreyNeon,
+    source: ios ? { uri: 'greyneon' } : RainbowGreyNeon,
     x: -116,
     y: -202,
   },
@@ -169,7 +169,7 @@ const rainbows = [
     id: 'neon',
     rotate: '394.75deg',
     scale: 0.3333333333,
-    source: Platform.OS === 'ios' ? { uri: 'neon' } : RainbowNeon,
+    source: ios ? { uri: 'neon' } : RainbowNeon,
     x: 149,
     y: 380,
   },
@@ -178,7 +178,7 @@ const rainbows = [
     id: 'pixel',
     rotate: '360deg',
     scale: 0.6666666667,
-    source: Platform.OS === 'ios' ? { uri: 'pixel' } : RainbowPixel,
+    source: ios ? { uri: 'pixel' } : RainbowPixel,
     x: 173,
     y: -263,
   },
@@ -187,7 +187,7 @@ const rainbows = [
     id: 'light',
     rotate: '-33deg',
     scale: 0.2826666667,
-    source: Platform.OS === 'ios' ? { uri: 'light' } : RainbowLight,
+    source: ios ? { uri: 'light' } : RainbowLight,
     x: -172,
     y: 180,
   },
@@ -196,7 +196,7 @@ const rainbows = [
     id: 'liquid',
     rotate: '75deg',
     scale: 0.42248,
-    source: Platform.OS === 'ios' ? { uri: 'liquid' } : RainbowLiquid,
+    source: ios ? { uri: 'liquid' } : RainbowLiquid,
     x: 40,
     y: 215,
   },
@@ -354,7 +354,7 @@ export default function WelcomeScreen() {
       try {
         logger.log(`downloading ${cloudPlatform} backup info...`);
         const isAvailable = await isCloudBackupAvailable();
-        if (isAvailable) {
+        if (isAvailable && ios) {
           const data = await fetchUserDataFromCloud();
           setUserData(data);
           logger.log(`Downloaded ${cloudPlatform} backup info`);
