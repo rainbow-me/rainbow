@@ -11,9 +11,11 @@ export default function ButtonPressAnimation({
   onPress,
   onPressStart,
   style,
-  opacity,
+  opacityTouchable = false,
 }) {
-  const Touchable = opacity ? TouchableOpacity : TouchableNativeFeedback;
+  const Touchable = opacityTouchable
+    ? TouchableOpacity
+    : TouchableNativeFeedback;
   return (
     <Touchable
       disabled={disabled}
