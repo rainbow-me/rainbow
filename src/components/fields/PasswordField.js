@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react';
-import { Platform } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import ShadowStack from 'react-native-shadow-stack/dist/ShadowStack';
 import styled from 'styled-components';
@@ -22,11 +21,11 @@ const FieldAccessoryBadgeWrapper = styled(ShadowStack).attrs(({ color }) => ({
 `;
 
 const StyledTouchable = styled(TouchableWithoutFeedback)`
-  ${Platform.OS === 'android' ? 'padding-left: 19;' : ''}
-  ${Platform.OS === 'android' ? 'padding-right: 19;' : ''}
-  ${Platform.OS === 'android' ? 'padding-top: 19;' : ''}
-  ${Platform.OS === 'android' ? 'padding-bottom: 19;' : ''}
-  ${Platform.OS === 'android' ? 'margin-top: -19;' : ''}
+  ${android ? 'padding-left: 19;' : ''}
+  ${android ? 'padding-right: 19;' : ''}
+  ${android ? 'padding-top: 19;' : ''}
+  ${android ? 'padding-bottom: 19;' : ''}
+  ${android ? 'margin-top: -19;' : ''}
 `;
 
 const PasswordInput = styled(Input).attrs({

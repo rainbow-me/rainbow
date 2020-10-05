@@ -21,7 +21,6 @@ deviceUtils.dimensions = {
   width,
 };
 
-deviceUtils.isIOS14 =
-  Platform.OS === 'ios' && parseFloat(Platform.Version) >= 14;
+deviceUtils.isIOS14 = ios && parseFloat(Platform.Version) >= 14;
 
 export default deviceUtils;

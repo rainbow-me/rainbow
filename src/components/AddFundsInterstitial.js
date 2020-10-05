@@ -1,6 +1,6 @@
 import { get } from 'lodash';
 import React, { Fragment, useCallback } from 'react';
-import { Linking, Platform } from 'react-native';
+import { Linking } from 'react-native';
 import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import networkInfo from '../helpers/networkInfo';
@@ -172,7 +172,7 @@ const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
     navigate(Routes.RECEIVE_MODAL);
   }, [navigate, selectedWallet]);
 
-  if (Platform.OS === 'android') {
+  if (android) {
     return (
       <Container style={buildInterstitialTransform(isSmallPhone, offsetY)}>
         <ButtonContainer>

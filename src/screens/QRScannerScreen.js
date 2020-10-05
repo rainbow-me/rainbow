@@ -83,7 +83,7 @@ export default function QRScannerScreen() {
 
   return (
     <View>
-      {discoverSheetAvailable ? <DiscoverSheet /> : null}
+      {discoverSheetAvailable && ios ? <DiscoverSheet /> : null}
       <ScannerContainer>
         <Background />
         <CameraDimmer>
@@ -93,7 +93,11 @@ export default function QRScannerScreen() {
             enableCamera={ios ? isFocusedIOS : isFocusedAndroid}
           />
         </CameraDimmer>
-        {discoverSheetAvailable ? null : (
+        {discoverSheetAvailable ? (
+          android ? (
+            <DiscoverSheet />
+          ) : null
+        ) : (
           <BubbleSheet onLayout={onSheetLayout}>
             {walletConnectorsCount ? (
               <WalletConnectList items={walletConnectorsByDappName} />

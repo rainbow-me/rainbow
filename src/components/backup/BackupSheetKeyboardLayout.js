@@ -1,6 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import React from 'react';
-import { Platform, StatusBar } from 'react-native';
+import { StatusBar } from 'react-native';
 import styled from 'styled-components';
 import { RainbowButton } from '../buttons';
 import { Column } from '../layout';
@@ -29,12 +29,11 @@ export default function BackupSheetKeyboardLayout({
     keyboardType: KeyboardTypes.password,
   });
 
-  const platformKeyboardHeight =
-    Platform.OS === 'android'
-      ? type === 'restore'
-        ? -10
-        : -30
-      : keyboardHeight;
+  const platformKeyboardHeight = android
+    ? type === 'restore'
+      ? -10
+      : -30
+    : keyboardHeight;
 
   const sheetRegionAboveKeyboardHeight =
     deviceHeight -
