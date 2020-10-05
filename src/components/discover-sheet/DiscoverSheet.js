@@ -1,30 +1,19 @@
 import { useIsFocused } from '@react-navigation/native';
 import React, { Fragment } from 'react';
-import Animated from 'react-native-reanimated';
+import { StyleSheet, View } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 // eslint-disable-next-line import/no-unresolved
 import SlackBottomSheet from 'react-native-slack-bottom-sheet';
-
-import BottomSheet from 'reanimated-bottom-sheet';
 import { ColumnWithMargins } from '../layout';
 import { SlackSheet } from '../sheet';
 import DiscoverSheetHeader from './DiscoverSheetHeader';
 import TopMoversSection from './TopMoversSection';
 import { position } from '@rainbow-me/styles';
-
-// eslint-disable-next-line import/no-named-as-default-member
-const { SpringUtils } = Animated;
-
-const discoverSheetSpring = SpringUtils.makeConfigFromBouncinessAndSpeed({
-  ...SpringUtils.makeDefaultConfig(),
-  bounciness: 0,
-  mass: 1,
-  overshootClamping: false,
-  restDisplacementThreshold: 0.99,
-  restSpeedThreshold: 100,
-  speed: 18,
-  toss: 6,
-});
+import { deviceUtils } from '@rainbow-me/utils';
+import {
+  YABSForm,
+  YABSScrollView,
+} from 'react-native-yet-another-bottom-sheet';
 
 const DiscoverSheetContent = () => (
   <Fragment>
@@ -35,12 +24,36 @@ const DiscoverSheetContent = () => (
   </Fragment>
 );
 
-export default function DiscoverSheet() {
+function DiscoverSheetAndroid() {
+  return (
+    <YABSForm
+      panGHProps={{
+        simultaneousHandlers: 'AnimatedScrollViewPager',
+      }}
+      points={[0, 200, deviceUtils.dimensions.height - 200]}
+      style={[
+        StyleSheet.absoluteFillObject,
+        {
+          backgroundColor: 'white',
+          bottom: 0,
+          top: 100,
+        },
+      ]}
+    >
+      <View style={{ backgroundColor: 'yellow', height: 40, width: '100%' }} />
+      <YABSScrollView>
+        <DiscoverSheetContent />
+      </YABSScrollView>
+    </YABSForm>
+  );
+}
+
+function DiscoverSheetIOS() {
   const insets = useSafeArea();
   const isFocused = useIsFocused();
 
   // noinspection JSConstructorReturnsPrimitive
-  return ios ? (
+  return (
     <SlackBottomSheet
       allowsDragToDismiss={false}
       allowsTapToDismiss={false}
@@ -60,13 +73,7 @@ export default function DiscoverSheet() {
         <DiscoverSheetContent />
       </SlackSheet>
     </SlackBottomSheet>
-  ) : (
-    <BottomSheet
-      borderRadius={20}
-      overdragResistanceFactor={0}
-      renderContent={DiscoverSheetContent}
-      snapPoints={[300, 744]}
-      springConfig={discoverSheetSpring}
-    />
   );
 }
+
+export default ios ? DiscoverSheetIOS : DiscoverSheetAndroid;
