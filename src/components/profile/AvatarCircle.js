@@ -18,11 +18,11 @@ const FirstLetter = styled(Text).attrs({
   align: 'center',
   color: colors.white,
   letterSpacing: 2,
-  lineHeight: 66,
+  lineHeight: android ? 68 : 66,
   size: 38,
   weight: 'semibold',
 })`
-  width: 67;
+  width: ${android ? 66 : 67};
 `;
 
 export default function AvatarCircle({
