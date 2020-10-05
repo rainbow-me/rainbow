@@ -209,6 +209,7 @@ class HoldToAuthorizeButton extends PureComponent {
           enableLongPress={enableLongPress}
           minDurationMs={longPressProgressDurationMs}
           onHandlerStateChange={this.onLongPressChange}
+          testID={testID}
         >
           <Animated.View
             {...props}

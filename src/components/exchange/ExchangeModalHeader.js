@@ -48,6 +48,7 @@ const InfoButtonTransition = styled(Transitioning.View)`
 const ExchangeModalHeader = ({
   onPressDetails,
   showDetailsButton,
+  testID,
   title = 'Swap',
 }) => {
   const transitionRef = useRef();
@@ -60,14 +61,14 @@ const ExchangeModalHeader = ({
   }, [prevShowDetailsButton, showDetailsButton]);
 
   return (
-    <Column align="center" css={padding(6, 0)}>
+    <Column align="center" css={padding(6, 0)} testID={testID}>
       <SheetHandle marginBottom={SheetHandleMargin} />
       <Text align="center" lineHeight="loose" size="large" weight="bold">
         {title}
       </Text>
       <InfoButtonTransition ref={transitionRef} transition={transition}>
         {showDetailsButton && (
-          <InfoButton onPress={onPressDetails}>
+          <InfoButton onPress={onPressDetails} testID="swap-info-button">
             <InfoButtonIcon />
           </InfoButton>
         )}

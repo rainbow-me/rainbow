@@ -56,6 +56,7 @@ export default function ExchangeModal({
   inputHeaderTitle,
   showOutputField,
   supplyBalanceUnderlying,
+  testID,
   type,
   underlyingPrice,
 }) {
@@ -203,7 +204,14 @@ export default function ExchangeModal({
     nativeFieldRef?.current?.clear();
     outputFieldRef?.current?.clear();
     updateInputAmount();
-  }, [inputFieldRef, nativeFieldRef, outputFieldRef, updateInputAmount]);
+    updateMaxInputBalance();
+  }, [
+    inputFieldRef,
+    nativeFieldRef,
+    outputFieldRef,
+    updateInputAmount,
+    updateMaxInputBalance,
+  ]);
 
   // Clear form and reset max input balance on new input currency
   useEffect(() => {
@@ -536,10 +544,12 @@ export default function ExchangeModal({
             overflow="visible"
             paddingBottom={showOutputField ? 0 : 26}
             radius={39}
+            testID={testID}
           >
             <ExchangeModalHeader
               onPressDetails={navigateToSwapDetailsModal}
               showDetailsButton={showDetailsButton}
+              testID={testID + '-header'}
               title={inputHeaderTitle}
             />
             <ExchangeInputField
@@ -556,6 +566,7 @@ export default function ExchangeModal({
               onPressSelectInputCurrency={navigateToSelectInputCurrency}
               setInputAmount={updateInputAmount}
               setNativeAmount={updateNativeAmount}
+              testID={testID + '-input'}
             />
             {showOutputField && (
               <ExchangeOutputField
@@ -566,6 +577,7 @@ export default function ExchangeModal({
                 outputCurrencySymbol={get(outputCurrency, 'symbol', null)}
                 outputFieldRef={outputFieldRef}
                 setOutputAmount={updateOutputAmount}
+                testID={testID + '-output'}
               />
             )}
           </FloatingPanel>
@@ -573,6 +585,7 @@ export default function ExchangeModal({
             <SwapInfo
               amount={(inputAmount > 0 && outputAmountDisplay) || null}
               asset={outputCurrency}
+              testID="swap-info-button"
             />
           )}
           {isSlippageWarningVisible && <SlippageWarning slippage={slippage} />}
@@ -592,6 +605,7 @@ export default function ExchangeModal({
                   isSufficientGas={isSufficientGas}
                   onSubmit={handleSubmit}
                   slippage={slippage}
+                  testID={testID + '-confirm'}
                   type={type}
                 />
               </Centered>
@@ -600,6 +614,7 @@ export default function ExchangeModal({
           <GasSpeedButton
             dontBlur
             onCustomGasBlur={handleCustomGasBlur}
+            testID={testID + '-gas'}
             type={type}
           />
         </AnimatedFloatingPanels>

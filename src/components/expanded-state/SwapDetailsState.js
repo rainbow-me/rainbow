@@ -36,7 +36,11 @@ const SwapDetailsState = ({
       <TouchableBackdrop onPress={goBack} />
       <FloatingPanels maxWidth={275} width={275}>
         <FloatingEmojisTapper emojis={emojis} opacity={FloatingEmojisOpacity}>
-          <AssetPanel overflow="visible" radius={20}>
+          <AssetPanel
+            overflow="visible"
+            radius={20}
+            testID="swap-details-state"
+          >
             <ColumnWithMargins
               margin={24}
               paddingHorizontal={19}

@@ -25,7 +25,15 @@ const NativeInput = styled(ExchangeInput).attrs({
 `;
 
 const ExchangeNativeField = (
-  { editable, height, nativeAmount, nativeCurrency, onFocus, setNativeAmount },
+  {
+    editable,
+    height,
+    nativeAmount,
+    nativeCurrency,
+    onFocus,
+    setNativeAmount,
+    testID,
+  },
   ref
 ) => {
   const [isFocused, setIsFocused] = useState(false);
@@ -70,6 +78,7 @@ const ExchangeNativeField = (
           onFocus={handleFocus}
           placeholder={placeholder}
           ref={ref}
+          testID={nativeAmount ? `${testID}-${nativeAmount}` : testID}
           value={nativeAmount}
         />
       </Row>

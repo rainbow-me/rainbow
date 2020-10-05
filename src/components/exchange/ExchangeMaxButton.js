@@ -25,9 +25,9 @@ const MaxButtonLabel = styled(Text).attrs({
   margin-top: 3;
 `;
 
-export default function ExchangeMaxButton({ disabled, onPress }) {
+export default function ExchangeMaxButton({ disabled, onPress, testID }) {
   return (
-    <Container disabled={disabled} onPress={onPress}>
+    <Container disabled={disabled} onPress={onPress} testID={testID}>
       <MaxButtonContent>
         <MaxButtonLabel>􀜍 Max</MaxButtonLabel>
       </MaxButtonContent>

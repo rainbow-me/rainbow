@@ -72,7 +72,7 @@ const depositCompound = async (wallet, currentRap, index, parameters) => {
   let deposit = null;
   try {
     logger.sentry('[deposit] txn params', transactionParams);
-    const deposit = await compound.mint(rawInputAmount, transactionParams);
+    deposit = await compound.mint(rawInputAmount, transactionParams);
     logger.sentry('[deposit] minted - result', deposit);
   } catch (e) {
     logger.sentry('error executing compound.mint');

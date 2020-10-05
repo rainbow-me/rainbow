@@ -15,6 +15,7 @@ export default function BackButton({
   direction = 'left',
   onPress,
   throttle,
+  testID,
   ...props
 }) {
   const navigation = useNavigation();
@@ -33,6 +34,7 @@ export default function BackButton({
   return (
     <HeaderButton
       onPress={handlePress}
+      testID={testID + '-back-button'}
       throttle={throttle}
       transformOrigin={direction}
     >

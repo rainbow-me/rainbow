@@ -41,6 +41,7 @@ export default function ExchangeOutputField({
   outputCurrencySymbol,
   outputFieldRef,
   setOutputAmount,
+  testID,
 }) {
   return (
     <Container>
@@ -53,6 +54,7 @@ export default function ExchangeOutputField({
         ref={outputFieldRef}
         setAmount={setOutputAmount}
         symbol={outputCurrencySymbol}
+        testID={testID}
       />
     </Container>
   );

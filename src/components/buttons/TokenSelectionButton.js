@@ -34,8 +34,14 @@ const ButtonShadows = styled(ShadowStack).attrs(({ symbol }) => ({
   ],
 }))``;
 
-const TokenSelectionButton = ({ borderRadius, onPress, shadows, symbol }) => (
-  <ButtonPressAnimation onPress={onPress} throttle>
+const TokenSelectionButton = ({
+  borderRadius,
+  onPress,
+  shadows,
+  symbol,
+  testID,
+}) => (
+  <ButtonPressAnimation onPress={onPress} testID={testID} throttle>
     <Row accessible css={margin(0, 19)}>
       <ButtonShadows
         {...position.coverAsObject}
@@ -45,7 +51,13 @@ const TokenSelectionButton = ({ borderRadius, onPress, shadows, symbol }) => (
         symbol={symbol}
       />
       <Content>
-        <Text align="center" color={colors.white} size="large" weight="bold">
+        <Text
+          align="center"
+          color={colors.white}
+          size="large"
+          testID={testID + '-text'}
+          weight="bold"
+        >
           {symbol || 'Choose Token'}
         </Text>
         <CaretIcon />
