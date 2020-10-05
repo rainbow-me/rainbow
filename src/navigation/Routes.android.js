@@ -183,6 +183,10 @@ function MainNativeNavigator() {
         component={SettingsModal}
         name={Routes.SETTINGS_MODAL}
       />
+      <NativeStack.Screen
+        component={BackupSheet}
+        name={Routes.BACKUP_SHEET_FROM_SETTINGS}
+      />
     </NativeStack.Navigator>
   );
 }

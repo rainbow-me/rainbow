@@ -1,3 +1,4 @@
+import { useRoute } from '@react-navigation/native';
 import React from 'react';
 import { Platform, StatusBar } from 'react-native';
 import styled from 'styled-components';
@@ -22,6 +23,7 @@ export default function BackupSheetKeyboardLayout({
   onSubmit,
   type,
 }) {
+  const { params: { fromSettings } = {} } = useRoute();
   const { height: deviceHeight, isTallPhone } = useDimensions();
   const keyboardHeight = useKeyboardHeight({
     keyboardType: KeyboardTypes.password,
@@ -41,7 +43,7 @@ export default function BackupSheetKeyboardLayout({
     SheetHandleFixedToTopHeight;
 
   return (
-    <Column height={sheetRegionAboveKeyboardHeight}>
+    <Column height={fromSettings ? undefined : sheetRegionAboveKeyboardHeight}>
       <StatusBar barStyle="light-content" />
       {children}
       <Footer isTallPhone={isTallPhone}>
