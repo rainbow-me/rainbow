@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import useHideSplashScreen from '../../helpers/hideSplashScreen';
 import { YABSForm, YABSScrollView } from '../index';
+import { useHideSplashScreen } from '@rainbow-me/hooks';
 
 function Example() {
   return (

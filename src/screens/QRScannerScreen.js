@@ -1,6 +1,6 @@
 import { useIsFocused } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
-import { Platform, View } from 'react-native';
+import { View } from 'react-native';
 import Animated, { useCode } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
 import { BubbleSheet } from '../components/bubble-sheet';
@@ -83,9 +83,7 @@ export default function QRScannerScreen() {
 
   return (
     <View>
-      {discoverSheetAvailable && Platform.OS === 'ios' ? (
-        <DiscoverSheet />
-      ) : null}
+      {discoverSheetAvailable && ios ? <DiscoverSheet /> : null}
       <ScannerContainer>
         <Background />
         <CameraDimmer>
@@ -96,7 +94,7 @@ export default function QRScannerScreen() {
           />
         </CameraDimmer>
         {discoverSheetAvailable ? (
-          Platform.OS === 'android' ? (
+          android ? (
             <DiscoverSheet />
           ) : null
         ) : (
