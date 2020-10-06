@@ -11,12 +11,9 @@ export default function dropEmojisOnAndroid(text) {
       /([\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2694-\u2697]|\uD83E[\uDD10-\uDD5D])/g,
       '__E__'
     )
+    .replace(String.fromCharCode(8205), '') // drop Zero Width Joiner
     .replace(/__E__ /g, ' ')
     .replace(/ __E__/g, ' ')
     .replace(/__E__/g, '')
-    .replace(
-      /([\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2694-\u2697]|\uD83E[\uDD10-\uDD5D])/g,
-      ''
-    )
     .trim();
 }
