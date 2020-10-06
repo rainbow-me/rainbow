@@ -49,12 +49,13 @@ export default function useUniswapMarketDetails({
   }, [defaultInputAddress, inputCurrency, isDeposit, isWithdrawal]);
   const isMissingCurrency = !inputCurrency || !outputCurrency;
 
+  const isMissingAmounts =
+    (isEmpty(inputAmount) || isZero(inputAmount)) &&
+    (isEmpty(outputAmount) || isZero(outputAmount));
+
   const updateTradeDetails = useCallback(() => {
     let updatedInputAmount = inputAmount;
     let updatedInputAsExactAmount = inputAsExactAmount;
-    const isMissingAmounts =
-      (isEmpty(inputAmount) || isZero(inputAmount)) &&
-      (isEmpty(outputAmount) || isZero(outputAmount));
 
     if (isMissingAmounts) {
       const inputNativePrice = get(inputCurrency, 'native.price.amount', null);
@@ -87,6 +88,7 @@ export default function useUniswapMarketDetails({
     inputAmount,
     inputAsExactAmount,
     inputCurrency,
+    isMissingAmounts,
     outputAmount,
     outputCurrency,
   ]);
@@ -242,12 +244,24 @@ export default function useUniswapMarketDetails({
   ]);
 
   useEffect(() => {
-    if (swapNotNeeded || isMissingCurrency) return;
     // update slippage
-    const priceImpact = tradeDetails?.priceImpact?.toFixed(2).toString();
+    if (swapNotNeeded || isMissingCurrency) return;
+    if (isMissingAmounts) {
+      setSlippage(0);
+      return;
+    }
+    const priceImpact = tradeDetails?.priceImpact
+      ? tradeDetails?.priceImpact?.toFixed(2).toString()
+      : 0;
     const slippage = priceImpact * 100;
     setSlippage(slippage);
-  }, [isMissingCurrency, setSlippage, swapNotNeeded, tradeDetails]);
+  }, [
+    isMissingAmounts,
+    isMissingCurrency,
+    setSlippage,
+    swapNotNeeded,
+    tradeDetails,
+  ]);
 
   return {
     isSufficientLiquidity,
