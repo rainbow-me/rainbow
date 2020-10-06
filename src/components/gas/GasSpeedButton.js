@@ -52,14 +52,8 @@ const LittleBorderlessButton = ({ onPress, children, testID }) => (
   </ButtonLabel>
 );
 
-const StyledBorderlessButton = styled(LittleBorderlessButton)`
-  z-index: 1500;
-`;
-
 const BottomRightLabel = ({ formatter }) => (
-  <Row justify="end">
-    <Label color={colors.white}>{formatter()}</Label>
-  </Row>
+  <Label color={colors.white}>{formatter()}</Label>
 );
 
 const formatGasPrice = gasPrice => {
@@ -388,14 +382,14 @@ const GasSpeedButton = ({
         {!isCustom ? (
           <Label color={colors.white}>Network Fee</Label>
         ) : (
-          <StyledBorderlessButton
+          <LittleBorderlessButton
             onPress={handleInputButtonManager}
             testID="custom-gas-edit-button"
           >
             {inputFocused
               ? 'Done'
               : `${customGasPriceInput ? 'Edit' : 'Enter'} Gas Price`}
-          </StyledBorderlessButton>
+          </LittleBorderlessButton>
         )}
 
         <BottomRightLabel

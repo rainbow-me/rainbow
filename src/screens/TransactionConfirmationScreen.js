@@ -704,7 +704,7 @@ const TransactionConfirmationScreen = () => {
   const ShortSheetHeight = 457 + safeAreaInsetValues.bottom;
   const TallSheetHeight = 604 + safeAreaInsetValues.bottom;
   const MessageSheetHeight =
-    (method === SIGN_TYPED_DATA ? 640 : 495) + safeAreaInsetValues.bottom;
+    (method === SIGN_TYPED_DATA ? 640 : 575) + safeAreaInsetValues.bottom;
   const sheetHeight = isMessageRequest
     ? MessageSheetHeight
     : amount && amount !== '0.00'

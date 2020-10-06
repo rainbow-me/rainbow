@@ -8,7 +8,7 @@ import TransactionSheet from '../TransactionSheet';
 const MessageSigningSection = ({ message, method }) => (
   <TransactionSheet method={method}>
     <TransactionRow title={lang.t('wallet.message_signing.message')}>
-      <TransactionMessage maxHeight={200} message={message} method={method} />
+      <TransactionMessage message={message} method={method} />
     </TransactionRow>
   </TransactionSheet>
 );

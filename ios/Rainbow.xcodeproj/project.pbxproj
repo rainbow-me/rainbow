@@ -100,6 +100,7 @@
 		24979E7D20F84005007EB0DA /* module.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; name = module.modulemap; path = Frameworks/module.modulemap; sourceTree = "<group>"; };
 		24979E7E20F84005007EB0DA /* nanopb.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = nanopb.framework; path = Frameworks/nanopb.framework; sourceTree = "<group>"; };
 		2837FCCEA7D33A4F128B7574 /* Pods-Rainbow.localrelease.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rainbow.localrelease.xcconfig"; path = "Target Support Files/Pods-Rainbow/Pods-Rainbow.localrelease.xcconfig"; sourceTree = "<group>"; };
+		37DDCE5B5EFF34936F06C8B8 /* libPods-Rainbow.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Rainbow.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3C379D5D20FD1F92009AF81F /* Rainbow.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Rainbow.entitlements; path = Rainbow/Rainbow.entitlements; sourceTree = "<group>"; };
 		3CBE29CB2381E43800BE05AC /* Rainbow-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Rainbow-Bridging-Header.h"; sourceTree = "<group>"; };
 		3CBE29CC2381E43900BE05AC /* Dummy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dummy.swift; sourceTree = "<group>"; };
@@ -283,7 +284,7 @@
 				24979E7E20F84005007EB0DA /* nanopb.framework */,
 				24979E3620F84003007EB0DA /* Protobuf.framework */,
 				98AED33BAB4247CEBEF8464D /* libz.tbd */,
-				6B18A416F89667BE0CD3C5E7 /* libPods-Rainbow.a */,
+				37DDCE5B5EFF34936F06C8B8 /* libPods-Rainbow.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
