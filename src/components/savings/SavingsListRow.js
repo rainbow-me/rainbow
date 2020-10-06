@@ -58,7 +58,7 @@ const SavingsListRowShadowStack = styled(ShadowStack).attrs(
     width: deviceWidth - 38,
   })
 )`
-  elevation: 15;
+  elevation: 2;
 `;
 
 const SavingsListRow = ({

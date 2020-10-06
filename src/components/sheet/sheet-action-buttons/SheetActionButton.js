@@ -14,7 +14,6 @@ const Button = styled(Centered).attrs({
 })`
   flex: ${({ noFlex }) => (noFlex ? 'none' : 1)};
   height: ${({ size }) => (size === 'big' ? 56 : 46)};
-  z-index: 1;
 `;
 
 const Content = styled(RowWithMargins).attrs({
@@ -24,6 +23,7 @@ const Content = styled(RowWithMargins).attrs({
   padding-bottom: ${({ label }) => (containsEmoji(label) ? 5.5 : 4)};
   padding-horizontal: 19;
   z-index: 1;
+  height: ${({ size }) => (size === 'big' ? 56 : 46)};
 `;
 
 const neverRerender = () => true;
