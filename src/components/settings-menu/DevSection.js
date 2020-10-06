@@ -60,7 +60,7 @@ const DevSection = () => {
       <ListItem label="💥 Clear async storage" onPress={AsyncStorage.clear} />
       <ListItem label="💣 Reset Keychain" onPress={wipeKeychain} />
       <ListItem label="🔄 Restart app" onPress={Restart} />
-      <ListItem label="🗑️ Remove all backups" onPress={removeBackups} />
+      <ListItem label="🗑 Remove all backups" onPress={removeBackups} />
       <ListItem
         label="🤷 Restore default experimental config"
         onPress={() => AsyncStorage.removeItem('experimentalConfig')}

@@ -12,6 +12,7 @@ import ImageAvatar from '../contacts/ImageAvatar';
 import { Icon } from '../icons';
 import { Centered, Column, ColumnWithMargins, Row } from '../layout';
 import { TruncatedAddress, TruncatedText } from '../text';
+import dropEmojisOnAndroid from '../text/dropEmojisOnAndroid';
 import { colors, fonts, getFontSize } from '@rainbow-me/styles';
 
 const maxAccountLabelWidth = deviceUtils.dimensions.width - 88;
@@ -145,7 +146,7 @@ export default function AddressRow({ data, editMode, onPress, onEditWallet }) {
                 color={accountColor}
                 marginRight={10}
                 size="medium"
-                value={label || ens || `${index + 1}`}
+                value={dropEmojisOnAndroid(label || ens || `${index + 1}`)}
               />
             )}
             <ColumnWithMargins margin={3}>

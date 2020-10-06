@@ -1,5 +1,6 @@
 import GraphemeSplitter from 'grapheme-splitter';
 import { get, toUpper } from 'lodash';
+import dropEmojisOnAndroid from '../components/text/dropEmojisOnAndroid';
 import { removeFirstEmojiFromString } from '../helpers/emojiHandler';
 import networkTypes from '../helpers/networkTypes';
 import { address } from '../utils/abbreviations';
@@ -46,11 +47,14 @@ export default function useAccountProfile() {
       : label || address(accountAddress, 6, 4)
   ).join('');
 
-  const labelOrAccountName =
-    accountName === label ? toUpper(accountName) : label;
+  const labelOrAccountName = dropEmojisOnAndroid(
+    accountName === label ? toUpper(accountName) : label
+  );
   const accountSymbol = new GraphemeSplitter().splitGraphemes(
     network === networkTypes.mainnet
-      ? labelOrAccountName || toUpper(accountENS) || `${index + 1}`
+      ? android
+        ? toUpper(labelOrAccountName)
+        : labelOrAccountName || toUpper(accountENS) || `${index + 1}`
       : label === accountENS
       ? toUpper(accountName)
       : toUpper(label) || toUpper(accountName)

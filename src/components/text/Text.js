@@ -1,9 +1,13 @@
 import PropTypes from 'prop-types';
 import { ViewPropTypes } from 'react-native';
 import styled from 'styled-components/primitives';
+import dropEmojisOnAndroid from './dropEmojisOnAndroid';
 import { buildTextStyles } from '@rainbow-me/styles';
 
-const Text = styled.Text.attrs({ allowFontScaling: false })`
+const Text = styled.Text.attrs(({ children }) => ({
+  allowFontScaling: false,
+  children: dropEmojisOnAndroid(children),
+}))`
   ${buildTextStyles};
 `;
 

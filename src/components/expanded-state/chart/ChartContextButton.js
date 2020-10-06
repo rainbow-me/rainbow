@@ -2,6 +2,7 @@ import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { Linking } from 'react-native';
 import { ContextCircleButton } from '../../context-menu';
+import dropEmojisOnAndroid from '../../text/dropEmojisOnAndroid';
 import EditOptions from '@rainbow-me/helpers/editOptionTypes';
 import { useAccountSettings, useCoinListEditOptions } from '@rainbow-me/hooks';
 import { ethereumUtils } from '@rainbow-me/utils';
@@ -45,12 +46,13 @@ export default function ChartContextButton({ asset, color }) {
   );
 
   const options = useMemo(
-    () => [
-      `📌️ ${currentAction === EditOptions.unpin ? 'Unpin' : 'Pin'}`,
-      `🙈️ ${currentAction === EditOptions.unhide ? 'Unhide' : 'Hide'}`,
-      ...(asset?.address === 'eth' ? [] : ['🔍 View on Etherscan']),
-      lang.t('wallet.action.cancel'),
-    ],
+    () =>
+      [
+        `📌️ ${currentAction === EditOptions.unpin ? 'Unpin' : 'Pin'}`,
+        `🙈️ ${currentAction === EditOptions.unhide ? 'Unhide' : 'Hide'}`,
+        ...(asset?.address === 'eth' ? [] : ['🔍 View on Etherscan']),
+        lang.t('wallet.action.cancel'),
+      ].map(dropEmojisOnAndroid),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [asset?.address, currentAction]
   );
