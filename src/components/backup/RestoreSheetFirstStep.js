@@ -77,7 +77,7 @@ const DescriptionText = styled(Text).attrs({
 `;
 
 export default function RestoreSheetFirstStep({
-  onIcloudRestore,
+  onCloudRestore,
   onManualRestore,
   onWatchAddress,
   userData,
@@ -94,7 +94,7 @@ export default function RestoreSheetFirstStep({
     return count;
   }, [userData]);
 
-  const enableCloudRestore = walletsBackedUp > 0;
+  const enableCloudRestore = android || walletsBackedUp > 0;
   useEffect(() => {
     setParams({ enableCloudRestore });
   }, [enableCloudRestore, setParams]);
@@ -103,7 +103,7 @@ export default function RestoreSheetFirstStep({
     <Container>
       {enableCloudRestore && (
         <React.Fragment>
-          <SheetRow as={ButtonPressAnimation} onPress={onIcloudRestore}>
+          <SheetRow as={ButtonPressAnimation} onPress={onCloudRestore}>
             <Column>
               <Row>
                 <RainbowText>
@@ -117,9 +117,11 @@ export default function RestoreSheetFirstStep({
                 <CaretIcon />
               </TitleRow>
               <DescriptionText>
-                {`You have ${walletsBackedUp} ${
-                  walletsBackedUp > 1 ? 'wallets' : 'wallet'
-                } backed up`}
+                {ios
+                  ? `You have ${walletsBackedUp} ${
+                      walletsBackedUp > 1 ? 'wallets' : 'wallet'
+                    } backed up`
+                  : `If you previously backed up your wallet on ${cloudPlatform} tap here to restore it.`}
               </DescriptionText>
             </Column>
           </SheetRow>

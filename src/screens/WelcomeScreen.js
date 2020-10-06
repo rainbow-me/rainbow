@@ -354,7 +354,7 @@ export default function WelcomeScreen() {
       try {
         logger.log(`downloading ${cloudPlatform} backup info...`);
         const isAvailable = await isCloudBackupAvailable();
-        if (isAvailable) {
+        if (isAvailable && ios) {
           const data = await fetchUserDataFromCloud();
           setUserData(data);
           logger.log(`Downloaded ${cloudPlatform} backup info`);
