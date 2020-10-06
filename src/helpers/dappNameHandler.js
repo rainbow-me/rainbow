@@ -1,7 +1,7 @@
 import URL from 'url-parse';
 
 const buildAssetUrl = hostname =>
-  `https://raw.githubusercontent.com/rainbow-me/rainbow/%40bruno/new-transaction-requests/src/assets/dappLogos/${hostname}.jpg`;
+  `https://raw.githubusercontent.com/rainbow-me/rainbow/develop/src/assets/dappLogos/${hostname}.jpg`;
 
 const DisplayDappNames = Object.freeze({
   '1inch.exchange': {
@@ -91,6 +91,10 @@ const DisplayDappNames = Object.freeze({
   'synthetix.exchange': {
     name: 'Synthetix',
     uri: buildAssetUrl('synthetix.exchange'),
+  },
+  'tokensets.com': {
+    name: 'TokenSets',
+    uri: buildAssetUrl('tokensets.com'),
   },
   'umaproject.org': {
     name: 'UMA',
