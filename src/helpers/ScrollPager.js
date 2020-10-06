@@ -10,6 +10,7 @@ const AnimatedScrollView = Animated.createAnimatedComponent(GHScrollView);
 export default class ScrollPager extends React.Component {
   static defaultProps = {
     bounces: true,
+    id: '',
   };
 
   componentDidMount() {
@@ -189,7 +190,7 @@ export default class ScrollPager extends React.Component {
           }
           contentOffset={this.initialOffset}
           directionalLockEnabled
-          id="AnimatedScrollViewPager"
+          id={'AnimatedScrollViewPager' + this.props.id}
           keyboardShouldPersistTaps="always"
           onMomentumScrollEnd={this.handleMomentumScrollEnd}
           onScroll={this.onScroll}
