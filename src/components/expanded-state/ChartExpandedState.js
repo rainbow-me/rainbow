@@ -21,7 +21,10 @@ import {
 } from '../token-info';
 import Chart from '../value-chart/Chart';
 import { useLatestChartData, useSetChartData } from './ChartHelper';
-import { monotoneCubicInterpolation } from '@rainbow-me/animated-charts';
+import {
+  ChartPathProvider,
+  monotoneCubicInterpolation,
+} from '@rainbow-me/animated-charts';
 import { chartExpandedAvailable } from '@rainbow-me/config/experimental';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 
@@ -83,6 +86,8 @@ function useJumpingForm(isLong) {
 export const ChartExpandedStateSheetHeight = chartExpandedAvailable
   ? heightWithChart
   : heightWithNoChart;
+
+const ChartsWrapper = android ? ChartPathProvider : ({ children }) => children;
 
 export default function ChartExpandedState({ asset }) {
   const color = useColorForAsset(asset);
@@ -176,18 +181,20 @@ export default function ChartExpandedState({ asset }) {
       contentHeight={ChartExpandedStateSheetHeight}
       scrollEnabled={false}
     >
-      <Chart
-        {...chartData}
-        {...initialChartDataLabels}
-        asset={asset}
-        chart={chart}
-        chartType={chartType}
-        color={color}
-        fetchingCharts={fetchingCharts}
-        nativePoints={chart}
-        showChart={showChart}
-        throttledData={throttledData}
-      />
+      <ChartsWrapper data={throttledData}>
+        <Chart
+          {...chartData}
+          {...initialChartDataLabels}
+          asset={asset}
+          chart={chart}
+          chartType={chartType}
+          color={color}
+          fetchingCharts={fetchingCharts}
+          nativePoints={chart}
+          showChart={showChart}
+          throttledData={throttledData}
+        />
+      </ChartsWrapper>
       <SheetDivider />
       <TokenInfoSection>
         <TokenInfoRow>
