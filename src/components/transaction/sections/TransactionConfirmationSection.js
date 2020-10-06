@@ -5,6 +5,7 @@ import { CoinIcon } from '../../coin-icon';
 import { Centered, Column, RowWithMargins } from '../../layout';
 import { Text, TruncatedText } from '../../text';
 import TransactionSheet from '../TransactionSheet';
+import { formatFixedDecimals } from '@rainbow-me/helpers/utilities';
 import { colors, padding } from '@rainbow-me/styles';
 
 const Amount = styled(TruncatedText).attrs({
@@ -53,7 +54,7 @@ const TransactionConfirmationSection = ({
         <RowWithMargins align="center" margin={5}>
           <CoinIcon shadow={coinIconShadow} size={20} symbol={symbol} />
           <Amount>
-            {amount} {symbol}
+            {formatFixedDecimals(amount, 10)} {symbol}
           </Amount>
         </RowWithMargins>
       </Column>
