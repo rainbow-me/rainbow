@@ -150,13 +150,11 @@ const computeSlippageAdjustedAmounts = (
   trade: Trade,
   allowedSlippage: number
 ): { [field in Field]?: TokenAmount } => {
-  console.log('allowed slippage', allowedSlippage);
   const pct = new Percent(allowedSlippage, '10000');
   const results = {
     [Field.INPUT]: trade?.maximumAmountIn(pct),
     [Field.OUTPUT]: trade?.minimumAmountOut(pct),
   };
-  console.log('slippage adjusted amts', results);
   return results;
 };
 
@@ -366,10 +364,10 @@ export const getChart = async (assetAddress, timeframe) => {
             date: startTime,
           },
         })
-        .then(({ data: { exchangeDayDatas } }) =>
-          exchangeDayDatas.map(({ date, tokenPriceUSD }) => [
+        .then(({ data: { tokenDayDatas } }) =>
+          tokenDayDatas.map(({ date, priceUSD }) => [
             date,
-            parseFloat(tokenPriceUSD),
+            parseFloat(priceUSD),
           ])
         );
 
