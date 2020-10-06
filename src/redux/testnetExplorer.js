@@ -91,7 +91,6 @@ export const testnetExplorerInit = () => async (dispatch, getState) => {
       network
     );
 
-    // TODO JIN
     let total = BigNumber.from(0);
 
     if (balances) {

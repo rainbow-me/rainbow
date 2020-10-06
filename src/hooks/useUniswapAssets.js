@@ -66,7 +66,6 @@ const getGlobalUniswapAssets = (assets, favorites) => {
   const [favorited, notFavorited] = partition(sorted, ({ address }) =>
     includes(map(favorites, toLower), toLower(address))
   );
-  // TODO JIN - check totalLiquidity is a good threshold
   const [highLiquidity, lowLiquidity] = partition(
     notFavorited,
     ({ totalLiquidity }) => totalLiquidity > 0.5

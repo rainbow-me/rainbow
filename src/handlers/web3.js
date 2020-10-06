@@ -1,9 +1,6 @@
 import { getAddress } from '@ethersproject/address';
 import { isHexString as isEthersHexString } from '@ethersproject/bytes';
-import {
-  isValidMnemonic as ethersIsValidMnemonic,
-  mnemonicToSeed as ethersMnemonicToSeed,
-} from '@ethersproject/hdnode';
+import { isValidMnemonic as ethersIsValidMnemonic } from '@ethersproject/hdnode';
 
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { parseEther } from '@ethersproject/units';
@@ -72,15 +69,11 @@ export const isHexStringIgnorePrefix = value => {
 export const addHexPrefix = value =>
   startsWith(value, '0x') ? value : `0x${value}`;
 
-// TODO JIN - who is using this?
-export const mnemonicToSeed = value => ethersMnemonicToSeed(value);
-
 /**
  * @desc is valid mnemonic
  * @param {String} value
  * @return {Boolean}
  */
-// TODO JIN - who is using this?
 export const isValidMnemonic = value => ethersIsValidMnemonic(value);
 
 /**
