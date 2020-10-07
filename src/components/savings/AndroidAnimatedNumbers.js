@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { TextInput, View } from 'react-native';
 import Animated, {
-  repeat,
   useAnimatedProps,
   useDerivedValue,
   useSharedValue,
@@ -47,32 +46,23 @@ function TextChunkWrapper({ val, index, default: defaultValue, notAnimated }) {
   return <TextChunk defaultValue={defaultValue} style={props} />;
 }
 
+function animationOneMinuteRec(svalue, target) {
+  'worklet';
+  svalue.value = withTiming(60, { duration: 1000 * 60 }, () => {
+    'worklet';
+    animationOneMinuteRec(svalue, target + 60);
+  });
+}
+
 export default function AndroidText({ animationConfig }) {
   const stepPerSecond = animationConfig.stepPerDay / 24 / 60 / 60;
   const [rawValue] = useState(
     formatSavingsAmount(animationConfig.initialValue)
   );
-  // const [value, maybeCoin] = useMemo(() => formatter(rawValue).split(' '), [
-  // //   rawValue,
-  // //   formatter,
-  // // ]);
-  // const dateWhenStarted = useRef(Date.now());
-  // const [interval] = useInterval();
-  // interval(() => {
-  //   const delta = (Date.now() - dateWhenStarted.current) / 1000;
-  //   console.log(delta * stepPerSecond + animationConfig.initialValue);
-  //   setRawValue(delta * stepPerSecond + animationConfig.initialValue);
-  // }, 1000);
   const svalue = useSharedValue(0);
   const secondsPassed = useSharedValue(0);
   useEffect(() => {
-    svalue.value = repeat(
-      withTiming(100, { duration: 1000 }, () => {
-        'worklet';
-        secondsPassed.value++;
-      }),
-      -1
-    );
+    animationOneMinuteRec(60, svalue);
   }, [secondsPassed, svalue]);
 
   const val = useDerivedValue(() =>
@@ -104,7 +94,6 @@ export default function AndroidText({ animationConfig }) {
           }}
         >
           <View
-            key={`savings-${i}`}
             style={{
               left: i === a.length - 1 && maybeCoin ? 0 : -3,
               width: 60,
@@ -117,26 +106,3 @@ export default function AndroidText({ animationConfig }) {
     </Animated.View>
   );
 }
-
-// const sx = StyleSheet.create({
-//   animatedNumber: {
-//     height: 30,
-//   },
-//   animatedNumberAndroid: {
-//     paddingLeft: 35,
-//     position: 'absolute',
-//     top: 12,
-//   },
-//   text: {
-//     color: colors.dark,
-//     flex: 1,
-//     fontFamily: fonts.family.SFProRounded,
-//     fontSize: parseFloat(fonts.size.lmedium),
-//     fontWeight: fonts.weight.bold,
-//     letterSpacing: fonts.letterSpacing.roundedTightest,
-//     marginBottom: 0.5,
-//     marginLeft: 6,
-//     marginRight: 4,
-//     textAlign: 'left',
-//   },
-// });
