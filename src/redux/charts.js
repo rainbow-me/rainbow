@@ -1,9 +1,7 @@
 import { get, mapValues, reverse } from 'lodash';
 import {
   getAccountCharts,
-  getAccountFallbackCharts,
   saveAccountCharts,
-  saveAccountFallbackCharts,
 } from '../handlers/localstorage/accountLocal';
 import ChartTypes from '../helpers/chartTypes';
 
@@ -12,8 +10,6 @@ const CHARTS_UPDATE_CHART_TYPE = 'charts/CHARTS_UPDATE_CHART_TYPE';
 const CHARTS_LOAD_REQUEST = 'charts/CHARTS_LOAD_REQUEST';
 const CHARTS_LOAD_SUCCESS = 'charts/CHARTS_LOAD_SUCCESS';
 const CHARTS_LOAD_FAILURE = 'charts/CHARTS_LOAD_FAILURE';
-const CHARTS_LOAD_FALLBACK = 'charts/CHARTS_LOAD_FALLBACK';
-const CHARTS_FALLBACK_UPDATE = 'charts/CHARTS_FALLBACK_UPDATE';
 const CHARTS_UPDATE = 'charts/CHARTS_UPDATE';
 const CHARTS_CLEAR_STATE = 'charts/CHARTS_CLEAR_STATE';
 
@@ -32,17 +28,6 @@ export const chartsLoadState = () => async (dispatch, getState) => {
   } catch (error) {
     dispatch({ type: CHARTS_LOAD_FAILURE });
   }
-  try {
-    const fallbackCharts = await getAccountFallbackCharts(
-      accountAddress,
-      network
-    );
-    dispatch({
-      payload: fallbackCharts,
-      type: CHARTS_LOAD_FALLBACK,
-    });
-    // eslint-disable-next-line no-empty
-  } catch (error) {}
 };
 
 export const chartsClearState = () => dispatch =>
@@ -74,30 +59,9 @@ export const assetChartsReceived = message => (dispatch, getState) => {
   });
 };
 
-export const assetChartsFallbackReceived = (address, chartType, chartData) => (
-  dispatch,
-  getState
-) => {
-  const { accountAddress, network } = getState().settings;
-  const { chartsFallback } = getState().charts;
-  const updatedCharts = {
-    ...chartsFallback,
-    [address]: {
-      ...chartsFallback[address],
-      [chartType]: chartData,
-    },
-  };
-  saveAccountFallbackCharts(updatedCharts, accountAddress, network);
-  dispatch({
-    payload: updatedCharts,
-    type: CHARTS_FALLBACK_UPDATE,
-  });
-};
-
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
   charts: {},
-  chartsFallback: {},
   chartType: DEFAULT_CHART_TYPE,
   fetchingCharts: false,
 };
@@ -121,20 +85,9 @@ export default (state = INITIAL_STATE, action) => {
         charts: action.payload,
         fetchingCharts: false,
       };
-    case CHARTS_LOAD_FALLBACK:
-      return {
-        ...state,
-        charts: action.payload,
-      };
     case CHARTS_LOAD_FAILURE:
       return {
         ...state,
-        fetchingCharts: false,
-      };
-    case CHARTS_FALLBACK_UPDATE:
-      return {
-        ...state,
-        chartsFallback: action.payload,
         fetchingCharts: false,
       };
     case CHARTS_UPDATE:
