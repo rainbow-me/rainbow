@@ -322,7 +322,6 @@ const subscribeToMissingPrices = addresses => (dispatch, getState) => {
             historicalPriceCalls
           );
           const mappedHistoricalData = keyBy(historicalPriceResults, 'id');
-          // TODO JIN - this is now only in USD
           const missingHistoricalPrices = mapValues(
             mappedHistoricalData,
             value => value.priceUSD

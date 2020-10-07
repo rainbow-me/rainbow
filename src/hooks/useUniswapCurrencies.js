@@ -133,8 +133,6 @@ export default function useUniswapCurrencies({
 
   const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
 
-  // TODO JIN - maybe a better name for calls
-  // TODO JIN - do we know if calls will have been updated in time given our prev / current currency checks?
   useEffect(() => {
     if (!inputCurrency || !outputCurrency || isEmpty(calls)) return;
     if (

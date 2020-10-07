@@ -6,7 +6,6 @@ import { Wallet } from '@ethersproject/wallet';
 import { captureException, captureMessage } from '@sentry/react-native';
 import { signTypedData_v4, signTypedDataLegacy } from 'eth-sig-util';
 import { isValidAddress, toBuffer } from 'ethereumjs-util';
-// TODO JIN - typings from ethers upgrade - Arrayish, BigNumberish, Transaction
 import lang from 'i18n-js';
 import { find, findKey, forEach, get, isEmpty } from 'lodash';
 import { Alert } from 'react-native';
@@ -452,7 +451,6 @@ export const identifyWalletType = (
   return EthereumWalletType.seed;
 };
 
-// TODO JIN - repeated?
 export const getWallet = (
   walletSeed: EthereumWalletSeed
 ): EthereumWalletFromSeed => {
@@ -885,7 +883,6 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
     let hdnode: undefined | HDNode,
       node: undefined | HDNode,
       existingAccount: undefined | Wallet;
-    // TODO JIN - repeated?
     switch (type) {
       case EthereumWalletType.privateKey:
         existingAccount = new Wallet(seedphrase);
