@@ -4,7 +4,6 @@ import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.
 import { keyBy, map, toLower } from 'lodash';
 import { DAI_ADDRESS, tokenOverrides, USDC_ADDRESS } from '../';
 import MULTICALL_ABI from './uniswap-multicall-abi.json';
-// TODO JIN - update the testnet curated token list json
 import { default as UNISWAP_TESTNET_TOKEN_LIST } from './uniswap-pairs-testnet.json';
 import UNISWAP_TOKEN_LIST from './uniswap-token-list.json';
 import { abi as UNISWAP_V2_ROUTER_ABI } from './uniswap-v2-router.json';
