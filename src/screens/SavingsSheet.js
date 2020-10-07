@@ -3,7 +3,7 @@ import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
 import { Alert, StatusBar } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components/native';
 import Divider from '../components/Divider';
 import { SavingsCoinRow } from '../components/coin-row';
 import {
@@ -40,6 +40,16 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
   ${({ deviceHeight, height }) =>
     height ? `height: ${height + deviceHeight}` : null};
 `;
+
+const ActionRowAndroid = styled.View`
+  flex-direction: row;
+  height: 44;
+  margin-vertical: 12;
+  margin-horizontal: 12;
+  justify-content: space-around;
+`;
+
+const ActionRow = android ? ActionRowAndroid : SheetActionButtonRow;
 
 const SavingsSheet = () => {
   const { height: deviceHeight } = useDimensions();
@@ -163,7 +173,7 @@ const SavingsSheet = () => {
               balance={balance}
               lifetimeAccruedInterest={lifetimeAccruedInterest}
             />
-            <SheetActionButtonRow>
+            <ActionRow>
               <SheetActionButton
                 color={colors.dark}
                 label="􀁏 Withdraw"
@@ -174,7 +184,7 @@ const SavingsSheet = () => {
                 label="􀁍 Deposit"
                 onPress={onDeposit}
               />
-            </SheetActionButtonRow>
+            </ActionRow>
             <Divider color={colors.rowDividerLight} zIndex={0} />
             <FloatingEmojis
               disableHorizontalMovement
