@@ -18,7 +18,6 @@ export default function useUniswapPairs(inputCurrency, outputCurrency) {
     calls,
     PAIR_INTERFACE,
     PAIR_GET_RESERVES_FRAGMENT
-    // latestBlockNumber // TODO JIN
   );
 
   const { allPairs, doneLoadingResults } = useMemo(() => {

@@ -25,12 +25,7 @@ const LOADING_CALL_STATE = {
   valid: true,
 };
 
-export default function useMulticall(
-  calls,
-  contractInterface,
-  fragment,
-  latestBlockNumber
-) {
+export default function useMulticall(calls, contractInterface, fragment) {
   const { chainId, results } = useSelector(
     ({ multicall: { results }, settings: { chainId } }) => ({
       chainId,
@@ -68,11 +63,10 @@ export default function useMulticall(
             success && data
               ? contractInterface.decodeFunctionResult(fragment, data)
               : undefined,
-          syncing: (blockNumber ?? 0) < latestBlockNumber,
           valid: true,
         };
       }),
-    [callResults, contractInterface, fragment, latestBlockNumber]
+    [callResults, contractInterface, fragment]
   );
 
   return { multicallResults };
