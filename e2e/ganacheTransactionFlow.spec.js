@@ -2,11 +2,7 @@
 /* eslint-disable jest/expect-expect */
 import * as Helpers from './helpers';
 
-describe('Ganache Transaction Testing Flow', () => {
-  beforeAll(async () => {
-    // Reset the app state
-    await device.clearKeychain();
-  });
+describe('Ganache Transaction Flow', () => {
   it('Should show the welcome screen', async () => {
     await device.disableSynchronization();
     await Helpers.checkIfVisible('welcome-screen');
@@ -51,6 +47,32 @@ describe('Ganache Transaction Testing Flow', () => {
     await Helpers.tap('wallet-info-submit-button');
     await Helpers.delay(3000);
     await Helpers.checkIfVisible('wallet-screen');
+  });
+
+  it('Should navigate to the Profile screen after swiping right', async () => {
+    await Helpers.delay(1000);
+    await Helpers.swipe('wallet-screen', 'right', 'slow');
+    await Helpers.delay(2000);
+    await Helpers.checkIfVisible('profile-screen');
+    await Helpers.delay(3000);
+  });
+
+  it('Should navigate to Settings Modal after tapping Settings Button', async () => {
+    await Helpers.tap('settings-button');
+    await Helpers.delay(2000);
+    await Helpers.checkIfVisible('settings-modal');
+  });
+
+  it('Should navigate to Developer Settings after tapping Developer Section', async () => {
+    await Helpers.tap('developer-section');
+    await Helpers.delay(2000);
+    await Helpers.checkIfVisible('developer-settings-modal');
+  });
+
+  it('Should show Ganache Toast after pressing Connect To Ganache', async () => {
+    await Helpers.tap('ganache-section');
+    await Helpers.delay(5000);
+    await Helpers.checkIfVisible('testnet-toast-Ganache');
   });
 
   afterAll(async () => {

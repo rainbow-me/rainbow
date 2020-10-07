@@ -174,6 +174,7 @@ export default function SettingsModal() {
       minHeight={isTinyPhone ? 500 : 600}
       onCloseModal={goBack}
       radius={18}
+      testID="settings-modal"
     >
       <Container>
         <Stack.Navigator

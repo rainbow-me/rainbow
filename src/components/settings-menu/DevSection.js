@@ -10,13 +10,16 @@ import { RainbowContext } from '../../helpers/RainbowContext';
 import networkTypes from '../../helpers/networkTypes';
 import { useWallets } from '../../hooks';
 import { wipeKeychain } from '../../model/keychain';
+import { useNavigation } from '../../navigation/Navigation';
 import store from '../../redux/store';
 import { walletsUpdate } from '../../redux/wallets';
 import { ListFooter, ListItem } from '../list';
 import { RadioListItem } from '../radio-list';
+import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 
 const DevSection = () => {
+  const { navigate } = useNavigation();
   const { config, setConfig } = useContext(RainbowContext);
   const { wallets } = useWallets();
 
@@ -58,7 +61,7 @@ const DevSection = () => {
   };
 
   return (
-    <ScrollView>
+    <ScrollView testID="developer-settings-modal">
       <ListItem label="💥 Clear async storage" onPress={AsyncStorage.clear} />
       <ListItem label="💣 Reset Keychain" onPress={wipeKeychain} />
       <ListItem label="🔄 Restart app" onPress={Restart} />
@@ -71,7 +74,14 @@ const DevSection = () => {
         label="‍💻 Copy dev seeds"
         onPress={() => Clipboard.setString(DEV_SEEDS)}
       />
-      <ListItem label="‍👾 Connect to ganache" onPress={connectToGanache} />
+      <ListItem
+        label="‍👾 Connect to ganache"
+        onPress={async () => {
+          await connectToGanache();
+          navigate(Routes.PROFILE_SCREEN);
+        }}
+        testID="ganache-section"
+      />
       <ListFooter />
 
       {Object.keys(config)
