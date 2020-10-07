@@ -6,8 +6,6 @@ describe('Ganache Transaction Testing Flow', () => {
   beforeAll(async () => {
     // Reset the app state
     await device.clearKeychain();
-    //Initialize Ganache
-    await Helpers.delay(5000);
   });
   it('Should show the welcome screen', async () => {
     await device.disableSynchronization();
