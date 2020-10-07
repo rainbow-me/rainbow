@@ -39,6 +39,7 @@ import {
   useInitializeWallet,
   useInvalidPaste,
   useIsWalletEthZero,
+  useKeyboardHeight,
   useMagicAutofocus,
   usePrevious,
   useTimeout,
@@ -134,6 +135,7 @@ export default function ImportSeedPhraseSheet() {
   const { getClipboard, hasClipboardData, clipboard } = useClipboard();
   const { onInvalidPaste } = useInvalidPaste();
   const { isSmallPhone } = useDimensions();
+  const keyboardHeight = useKeyboardHeight();
   const { goBack, navigate, replace, setParams } = useNavigation();
   const initializeWallet = useInitializeWallet();
   const isWalletEthZero = useIsWalletEthZero();
@@ -421,10 +423,10 @@ export default function ImportSeedPhraseSheet() {
             </FooterButton>
           )}
         </Footer>
-        <ToastPositionContainer>
-          <InvalidPasteToast />
-        </ToastPositionContainer>
       </Sheet>
+      <ToastPositionContainer bottom={keyboardHeight}>
+        <InvalidPasteToast />
+      </ToastPositionContainer>
       <KeyboardSizeView isOpen />
     </Container>
   );
