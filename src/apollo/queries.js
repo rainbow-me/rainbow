@@ -55,19 +55,6 @@ export const UNISWAP_PRICES_QUERY = gql`
   }
 `;
 
-export const UNISWAP_CHART_QUERY = gql`
-  query tokenDayDatas($date: Int!, $assetAddress: String!) {
-    tokenDayDatas(
-      where: { token_contains: $assetAddress, date_gt: $date }
-      orderBy: date
-      orderDirection: asc
-    ) {
-      date
-      priceUSD
-    }
-  }
-`;
-
 export const UNISWAP_ALL_TOKENS = gql`
   query tokens($excluded: [String]!, $first: Int!, $skip: Int!) {
     tokens(

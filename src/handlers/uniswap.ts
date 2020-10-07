@@ -10,11 +10,8 @@ import {
   TradeType,
   WETH,
 } from '@uniswap/sdk';
-import { getUnixTime, sub } from 'date-fns';
-import { findKey, get, isEmpty, mapKeys, mapValues, toLower } from 'lodash';
-import { uniswapClient } from '../apollo/client';
-import { UNISWAP_ALL_TOKENS, UNISWAP_CHART_QUERY } from '../apollo/queries';
-import ChartTypes from '../helpers/chartTypes';
+import { get, isEmpty, mapKeys, mapValues, toLower } from 'lodash';
+import { UNISWAP_ALL_TOKENS } from '../apollo/queries';
 import {
   convertAmountToRawAmount,
   convertNumberToString,
@@ -337,53 +334,6 @@ export const executeSwap = async ({
     ...(value ? { value } : {}),
   };
   return exchange[methodName](...updatedMethodArgs, transactionParams);
-};
-
-export const getChart = async (assetAddress, timeframe) => {
-  const now = new Date();
-  const timeframeKey = findKey(ChartTypes, type => type === timeframe);
-  let startTime = getUnixTime(
-    sub(now, {
-      ...(timeframe === ChartTypes.max
-        ? { years: 2 }
-        : { [`${timeframeKey}s`]: 1 }),
-      seconds: 1, // -1 seconds because we filter on greater than in the query
-    })
-  );
-
-  let data = [];
-  try {
-    let dataEnd = false;
-    while (!dataEnd) {
-      const chartData = await uniswapClient
-        .query({
-          fetchPolicy: 'cache-first',
-          query: UNISWAP_CHART_QUERY,
-          variables: {
-            assetAddress,
-            date: startTime,
-          },
-        })
-        .then(({ data: { tokenDayDatas } }) =>
-          tokenDayDatas.map(({ date, priceUSD }) => [
-            date,
-            parseFloat(priceUSD),
-          ])
-        );
-
-      data = data.concat(chartData);
-
-      if (chartData.length !== 100) {
-        dataEnd = true;
-      } else {
-        startTime = chartData[chartData.length - 1][0];
-      }
-    }
-  } catch (err) {
-    logger.log('error: ', err);
-  }
-
-  return data;
 };
 
 export const getAllTokens = async (tokenOverrides, excluded = []) => {
