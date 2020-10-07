@@ -1,5 +1,6 @@
 import { captureException } from '@sentry/react-native';
 import { endsWith, forEach, map } from 'lodash';
+import { Platform } from 'react-native';
 import {
   Options,
   requestSharedWebCredentials,
@@ -212,7 +213,7 @@ export async function saveBackupPassword(
 
 // Attempts to fetch the password to decrypt the backup from the iCloud keychain
 export async function fetchBackupPassword(): Promise<null | BackupPassword> {
-  if (android) {
+  if (Platform.OS === 'android') {
     return null;
   }
 

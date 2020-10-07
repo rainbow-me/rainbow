@@ -12,7 +12,7 @@ import {
 } from 'ethers/utils';
 import lang from 'i18n-js';
 import { find, findKey, forEach, get, isEmpty } from 'lodash';
-import { Alert } from 'react-native';
+import { Alert, Platform } from 'react-native';
 import { ACCESSIBLE } from 'react-native-keychain';
 import { saveAccountEmptyState } from '../handlers/localstorage/accountLocal';
 import {
@@ -36,6 +36,7 @@ import {
   selectedWalletKey,
 } from '../utils/keychainConstants';
 import * as keychain from './keychain';
+// @ts-ignore
 import WalletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
 import { colors } from '@rainbow-me/styles';
 import logger from 'logger';
@@ -472,10 +473,11 @@ export const createWallet = async (
   try {
     let wasLoading = false;
     const { dispatch } = store;
-    if (!checkedWallet && android) {
+    if (!checkedWallet && Platform.OS === 'android') {
       wasLoading = true;
       dispatch(setIsWalletLoading(WalletLoadingStates.CREATING_WALLET));
     }
+    // @ts-ignore
     const { isHDWallet, type, root, wallet: ethereumJSWallet } =
       checkedWallet ||
       (await ethereumUtils.deriveAccountFromMnemonicOrPrivateKey(walletSeed));
