@@ -7,6 +7,7 @@ import { Restart } from 'react-native-restart';
 import { deleteAllBackups } from '../../handlers/cloudBackup';
 import { web3SetHttpProvider } from '../../handlers/web3';
 import { RainbowContext } from '../../helpers/RainbowContext';
+import networkTypes from '../../helpers/networkTypes';
 import { useWallets } from '../../hooks';
 import { wipeKeychain } from '../../model/keychain';
 import store from '../../redux/store';
@@ -33,6 +34,7 @@ const DevSection = () => {
       );
       logger.log('connected to ganache', ready);
     } catch (e) {
+      await web3SetHttpProvider(networkTypes.mainnet);
       logger.log('error connecting to ganache');
     }
   }, []);
