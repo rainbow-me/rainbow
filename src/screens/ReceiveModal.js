@@ -13,10 +13,10 @@ import { Text, TruncatedAddress } from '../components/text';
 import { CopyToast, ToastPositionContainer } from '../components/toasts';
 import { useAccountProfile } from '../hooks';
 import { useNavigation } from '../navigation/Navigation';
-import { abbreviations } from '../utils';
+import { abbreviations, deviceUtils } from '../utils';
 import { colors, padding, shadow } from '@rainbow-me/styles';
 
-const QRCodeSize = ios ? 250 : 190;
+const QRCodeSize = ios ? 250 : Math.min(230, deviceUtils.dimensions.width - 20);
 
 const AddressText = styled(TruncatedAddress).attrs({
   align: 'center',
