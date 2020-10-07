@@ -48,8 +48,7 @@ function TextChunkWrapper({ val, index, default: defaultValue, notAnimated }) {
 
 function animationOneMinuteRec(svalue, target) {
   'worklet';
-  svalue.value = withTiming(60, { duration: 1000 * 60 }, () => {
-    'worklet';
+  svalue.value = withTiming(100, { duration: 1000 * 60 }, () => {
     animationOneMinuteRec(svalue, target + 60);
   });
 }
@@ -60,15 +59,13 @@ export default function AndroidText({ animationConfig }) {
     formatSavingsAmount(animationConfig.initialValue)
   );
   const svalue = useSharedValue(0);
-  const secondsPassed = useSharedValue(0);
   useEffect(() => {
     animationOneMinuteRec(60, svalue);
-  }, [secondsPassed, svalue]);
+  }, [svalue]);
 
   const val = useDerivedValue(() =>
     formatSavingsAmount(
-      (svalue.value + secondsPassed.value) * stepPerSecond +
-        animationConfig.initialValue,
+      svalue.value * stepPerSecond + animationConfig.initialValue,
       animationConfig.symbol
     )
   );
