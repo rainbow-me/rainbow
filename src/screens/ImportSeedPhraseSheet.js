@@ -132,7 +132,7 @@ export default function ImportSeedPhraseSheet() {
   const { accountAddress } = useAccountSettings();
   const { selectedWallet, wallets } = useWallets();
   const { getClipboard, hasClipboardData, clipboard } = useClipboard();
-  const { triggerInvalidPaste } = useInvalidPaste();
+  const { onInvalidPaste } = useInvalidPaste();
   const { isSmallPhone } = useDimensions();
   const { goBack, navigate, replace, setParams } = useNavigation();
   const initializeWallet = useInitializeWallet();
@@ -252,16 +252,15 @@ export default function ImportSeedPhraseSheet() {
     getClipboard(result => {
       if (result !== accountAddress && isValidWallet(result)) {
         return handleSetSeedPhrase(result);
-      } else {
-        return triggerInvalidPaste();
       }
+      return onInvalidPaste();
     });
   }, [
     accountAddress,
     getClipboard,
     handleSetSeedPhrase,
     hasClipboardData,
-    triggerInvalidPaste,
+    onInvalidPaste,
   ]);
 
   useEffect(() => {
