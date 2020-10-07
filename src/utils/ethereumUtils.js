@@ -1,8 +1,13 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import { captureException } from '@sentry/react-native';
 import { mnemonicToSeed } from 'bip39';
-import { addHexPrefix, isValidAddress, stripHexPrefix } from 'ethereumjs-util';
-import { hdkey, Wallet } from 'ethereumjs-wallet';
+import {
+  addHexPrefix,
+  isValidAddress,
+  toChecksumAddress,
+} from 'ethereumjs-util';
+import { hdkey } from 'ethereumjs-wallet';
+import { ethers } from 'ethers';
 import { find, get, isEmpty, matchesProperty, replace, toLower } from 'lodash';
 import { NativeModules } from 'react-native';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
@@ -229,25 +234,29 @@ const deriveAccountFromMnemonic = async (mnemonic, index = 0) => {
   const child = root.deriveChild(index);
   const wallet = child.getWallet();
   return {
+    address: toChecksumAddress(wallet.getAddress().toString('hex')),
     isHDWallet: true,
     root,
     type: WalletTypes.mnemonic,
     wallet,
+    walletType: 'bip39',
   };
 };
 
-const deriveAccountFromPkey = privateKey => {
-  const stripped = stripHexPrefix(privateKey);
-  const buffer = Buffer.from(stripped, 'hex');
-  const wallet = Wallet.fromPrivateKey(buffer);
+const deriveAccountFromPrivateKey = privateKey => {
+  const ethersWallet = new ethers.Wallet(privateKey);
   return {
+    address: ethersWallet.address,
+    isHDWallet: false,
+    root: null,
     type: WalletTypes.privateKey,
-    wallet,
+    wallet: ethersWallet,
+    walletType: 'ethers',
   };
 };
 const deriveAccountFromMnemonicOrPrivateKey = mnemonicOrPrivateKey => {
   if (identifyWalletType(mnemonicOrPrivateKey) === WalletTypes.privateKey) {
-    return deriveAccountFromPkey(mnemonicOrPrivateKey);
+    return deriveAccountFromPrivateKey(mnemonicOrPrivateKey);
   }
   return deriveAccountFromMnemonic(mnemonicOrPrivateKey);
 };
@@ -256,6 +265,7 @@ export default {
   checkIfUrlIsAScam,
   deriveAccountFromMnemonic,
   deriveAccountFromMnemonicOrPrivateKey,
+  deriveAccountFromPrivateKey,
   getAsset,
   getBalanceAmount,
   getChainIdFromNetwork,
