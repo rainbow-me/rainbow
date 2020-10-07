@@ -6,6 +6,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
 import { RowWithMargins } from '../../../layout';
+import ChartChangeDirectionArrow from './ChartChangeDirectionArrow';
 import { useRatio } from './useRatio';
 import { useChartData } from '@rainbow-me/animated-charts';
 import { colors, fonts } from '@rainbow-me/styles';
@@ -44,7 +45,7 @@ export default function ChartPercentChangeLabel() {
               100 -
             100;
           return (
-            (value > 0 ? '↑' : value < 0 ? '↓' : '') +
+            (android ? '' : value > 0 ? '↑' : value < 0 ? '↓' : '') +
             ' ' +
             Math.abs(value).toFixed(2) +
             '%'
@@ -67,7 +68,7 @@ export default function ChartPercentChangeLabel() {
                     100 -
                   100;
                 return (
-                  (value > 0 ? '↑' : value < 0 ? '↓' : '') +
+                  (android ? '' : value > 0 ? '↑' : value < 0 ? '↓' : '') +
                   ' ' +
                   Math.abs(value).toFixed(2) +
                   '%'
@@ -99,6 +100,7 @@ export default function ChartPercentChangeLabel() {
 
   return (
     <RowWithMargins align="center" margin={4}>
+      {android ? <ChartChangeDirectionArrow /> : null}
       <PercentLabel
         alignSelf="flex-end"
         animatedProps={textProps}
