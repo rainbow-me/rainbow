@@ -36,7 +36,6 @@ import {
   selectedWalletKey,
 } from '../utils/keychainConstants';
 import * as keychain from './keychain';
-// @ts-ignore
 import WalletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
 import { colors } from '@rainbow-me/styles';
 import logger from 'logger';
@@ -156,6 +155,11 @@ interface MigratedSecretsResult {
   privateKey: EthereumPrivateKey;
   seedphrase: EthereumWalletSeed;
   type: EthereumWalletType;
+}
+
+export enum WalletLibraryType {
+  ethers = 'ethers',
+  bip39 = 'bip39',
 }
 
 const privateKeyVersion = 1.0;
@@ -687,7 +691,9 @@ export const createWallet = async (
 
     if (walletResult && walletAddress) {
       const ethersWallet =
-        walletType === 'ethers' ? walletResult : new ethers.Wallet(pkey);
+        walletType === WalletLibraryType.ethers
+          ? walletResult
+          : new ethers.Wallet(pkey);
       if (wasLoading) {
         setTimeout(() => {
           dispatch(setIsWalletLoading(null));

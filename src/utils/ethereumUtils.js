@@ -22,7 +22,11 @@ import {
   subtract,
 } from '../helpers/utilities';
 import WalletTypes from '../helpers/walletTypes';
-import { DEFAULT_HD_PATH, identifyWalletType } from '../model/wallet';
+import {
+  DEFAULT_HD_PATH,
+  identifyWalletType,
+  WalletLibraryType,
+} from '../model/wallet';
 import { chains } from '../references';
 import logger from 'logger';
 
@@ -239,7 +243,7 @@ const deriveAccountFromMnemonic = async (mnemonic, index = 0) => {
     root,
     type: WalletTypes.mnemonic,
     wallet,
-    walletType: 'bip39',
+    walletType: WalletLibraryType.bip39,
   };
 };
 
@@ -251,7 +255,7 @@ const deriveAccountFromPrivateKey = privateKey => {
     root: null,
     type: WalletTypes.privateKey,
     wallet: ethersWallet,
-    walletType: 'ethers',
+    walletType: WalletLibraryType.ethers,
   };
 };
 const deriveAccountFromMnemonicOrPrivateKey = mnemonicOrPrivateKey => {
