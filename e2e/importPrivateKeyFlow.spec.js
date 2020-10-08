@@ -36,6 +36,7 @@ describe('Import from private key flow', () => {
     await Helpers.checkIfVisible('wallet-info-input');
     await Helpers.typeText('wallet-info-input', 'PKEY', false);
     await Helpers.tap('wallet-info-submit-button');
+    await Helpers.delay(4000);
     await Helpers.checkIfVisible('wallet-screen');
   });
 
