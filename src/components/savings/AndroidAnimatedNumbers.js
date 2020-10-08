@@ -95,7 +95,8 @@ export default function AndroidText({ animationConfig }) {
           style={{
             height: 38,
             overflow: 'hidden',
-            width: i === a.length - 1 && !isStable ? 50 : v === '.' ? 6 : 9.5,
+            width:
+              i === a.length - 1 && !isStable ? 50 : v.value === '.' ? 6 : 9.5,
           }}
         >
           <View
