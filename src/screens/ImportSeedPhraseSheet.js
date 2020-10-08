@@ -1,5 +1,5 @@
 import analytics from '@segment/analytics-react-native';
-import { addHexPrefix, isValidAddress } from 'ethereumjs-util';
+import { isValidAddress } from 'ethereumjs-util';
 import { keys } from 'lodash';
 import React, {
   useCallback,
@@ -239,16 +239,12 @@ export default function ImportSeedPhraseSheet() {
           const type = identifyWalletType(input);
           let walletResult;
           if (type === WalletTypes.privateKey) {
-            walletResult = ethereumUtils.deriveAccountFromPkey(input);
+            walletResult = ethereumUtils.deriveAccountFromPrivateKey(input);
           } else {
-            walletResult = await ethereumUtils.deriveAccountFromMnemonicOrPrivateKey(
-              input
-            );
+            walletResult = await ethereumUtils.deriveAccountFromMnemonic(input);
           }
           setCheckedWallet(walletResult);
-          const ens = await web3Provider.lookupAddress(
-            addHexPrefix(walletResult?.wallet?.getAddress().toString('hex'))
-          );
+          const ens = await web3Provider.lookupAddress(walletResult.address);
           if (ens && ens !== input) {
             name = ens;
           }
@@ -284,7 +280,6 @@ export default function ImportSeedPhraseSheet() {
       startAnalyticsTimeout(async () => {
         const input = resolvedAddress ? resolvedAddress : seedPhrase.trim();
         const previousWalletCount = keys(wallets).length;
-
         initializeWallet(
           input,
           color,

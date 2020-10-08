@@ -36,7 +36,6 @@ import {
   selectedWalletKey,
 } from '../utils/keychainConstants';
 import * as keychain from './keychain';
-// @ts-ignore
 import WalletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
 import { colors } from '@rainbow-me/styles';
 import logger from 'logger';
@@ -156,6 +155,11 @@ interface MigratedSecretsResult {
   privateKey: EthereumPrivateKey;
   seedphrase: EthereumWalletSeed;
   type: EthereumWalletType;
+}
+
+export enum WalletLibraryType {
+  ethers = 'ethers',
+  bip39 = 'bip39',
 }
 
 const privateKeyVersion = 1.0;
@@ -477,17 +481,22 @@ export const createWallet = async (
       wasLoading = true;
       dispatch(setIsWalletLoading(WalletLoadingStates.CREATING_WALLET));
     }
-    // @ts-ignore
-    const { isHDWallet, type, root, wallet: ethereumJSWallet } =
+
+    const {
+      isHDWallet,
+      type,
+      root,
+      wallet: walletResult,
+      address,
+      walletType,
+    } =
       checkedWallet ||
       (await ethereumUtils.deriveAccountFromMnemonicOrPrivateKey(walletSeed));
     let pkey = walletSeed;
-    if (!ethereumJSWallet) return null;
-    const walletAddress = addHexPrefix(
-      toChecksumAddress(ethereumJSWallet.getAddress().toString('hex'))
-    );
+    if (!walletResult) return null;
+    const walletAddress = address;
     if (isHDWallet) {
-      pkey = addHexPrefix(ethereumJSWallet.getPrivateKey().toString('hex'));
+      pkey = addHexPrefix(walletResult.getPrivateKey().toString('hex'));
     }
     logger.sentry('[createWallet] - getWallet from seed');
 
@@ -680,9 +689,11 @@ export const createWallet = async (
     await saveAllWallets(allWallets);
     logger.sentry('[createWallet] - saveAllWallets');
 
-    if (ethereumJSWallet && walletAddress) {
-      const ethersWallet = new ethers.Wallet(pkey);
-
+    if (walletResult && walletAddress) {
+      const ethersWallet =
+        walletType === WalletLibraryType.ethers
+          ? walletResult
+          : new ethers.Wallet(pkey);
       if (wasLoading) {
         setTimeout(() => {
           dispatch(setIsWalletLoading(null));
