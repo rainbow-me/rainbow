@@ -13,12 +13,11 @@ import Animated, {
 import styled from 'styled-components/native';
 import Spinner from '../../assets/chartSpinner.png';
 import { nativeStackConfig } from '../../navigation/config';
-import { SvgComponent } from '../../react-native-animated-charts/src/charts/linear/ChartPath';
 import { ChartExpandedStateHeader } from '../expanded-state/chart';
 import { Column } from '../layout';
 import Labels from './ExtremeLabels';
 import TimespanSelector from './TimespanSelector';
-import { ChartDot, useChartData } from '@rainbow-me/animated-charts';
+import { ChartDot, ChartPath, useChartData } from '@rainbow-me/animated-charts';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
 import { useNavigation } from '@rainbow-me/navigation';
 import { colors, position } from '@rainbow-me/styles';
@@ -69,6 +68,8 @@ const Dot = styled(ChartDot)`
   background-color: ${({ color }) => color};
 `;
 
+const HEIGHT = 146.5;
+
 const Overlay = styled(Animated.View).attrs({
   pointerEvents: 'none',
 })`
@@ -109,6 +110,7 @@ export default function ChartWrapper({
   showChart,
   showMonth,
   showYear,
+  throttledData,
   ...props
 }) {
   const timespanIndex = useMemo(() => ChartTimespans.indexOf(chartType), [
@@ -208,7 +210,22 @@ export default function ChartWrapper({
         {showChart && (
           <>
             <Labels color={color} width={WIDTH} />
-            <SvgComponent />
+            <ChartPath
+              fill="none"
+              gestureEnabled={!fetchingCharts && !!throttledData}
+              hapticsEnabled
+              height={HEIGHT}
+              hitSlop={30}
+              longPressGestureHandlerProps={{
+                minDurationMs: 60,
+              }}
+              selectedStrokeWidth={3}
+              stroke={color}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={3.5}
+              width={WIDTH}
+            />
             <Dot color={colors.alpha(color, 0.03)} size={65}>
               <InnerDot color={color} />
             </Dot>

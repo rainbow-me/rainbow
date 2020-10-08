@@ -20,8 +20,10 @@ import {
   TokenInfoSection,
 } from '../token-info';
 import Chart from '../value-chart/Chart';
-import { useLatestChartData, useSetChartData } from './ChartHelper';
-import { monotoneCubicInterpolation } from '@rainbow-me/animated-charts';
+import {
+  ChartPathProvider,
+  monotoneCubicInterpolation,
+} from '@rainbow-me/animated-charts';
 import { chartExpandedAvailable } from '@rainbow-me/config/experimental';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 
@@ -151,24 +153,8 @@ export default function ChartExpandedState({ asset }) {
 
   const duration = useRef(0);
 
-  const vals = useMemo(
-    () => ({
-      data: throttledData,
-      gestureEnabled: !fetchingCharts && !!throttledData,
-      stroke: color,
-      timingAnimationConfig: { duration: duration.current },
-    }),
-    [color, fetchingCharts, throttledData]
-  );
-
   if (duration.current === 0) {
     duration.current = 300;
-  }
-
-  const latest = useLatestChartData();
-  const setChartData = useSetChartData();
-  if (latest !== vals) {
-    setChartData(vals);
   }
 
   return (
@@ -176,18 +162,20 @@ export default function ChartExpandedState({ asset }) {
       contentHeight={ChartExpandedStateSheetHeight}
       scrollEnabled={false}
     >
-      <Chart
-        {...chartData}
-        {...initialChartDataLabels}
-        asset={asset}
-        chart={chart}
-        chartType={chartType}
-        color={color}
-        fetchingCharts={fetchingCharts}
-        nativePoints={chart}
-        showChart={showChart}
-        throttledData={throttledData}
-      />
+      <ChartPathProvider data={throttledData}>
+        <Chart
+          {...chartData}
+          {...initialChartDataLabels}
+          asset={asset}
+          chart={chart}
+          chartType={chartType}
+          color={color}
+          fetchingCharts={fetchingCharts}
+          nativePoints={chart}
+          showChart={showChart}
+          throttledData={throttledData}
+        />
+      </ChartPathProvider>
       <SheetDivider />
       <TokenInfoSection>
         <TokenInfoRow>
