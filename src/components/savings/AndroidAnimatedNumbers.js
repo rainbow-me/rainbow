@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { TextInput, View } from 'react-native';
 import Animated, {
+  NewEasing,
   useAnimatedProps,
   useDerivedValue,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
 import styled from 'styled-components/native';
-//import { STABLECOINS } from '../../helpers/savings';
+import { isSymbolStablecoin } from '../../helpers/savings';
 import { colors, fonts } from '@rainbow-me/styles';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
@@ -22,45 +23,52 @@ const TextChunk = styled(AnimatedTextInput).attrs({
   text-align: left;
 `;
 
-// function isSymbolStablecoin(symbol) {
-//   'worklet';
-//   return STABLECOINS.indexOf(symbol) !== -1;
-// }
-
 function formatSavingsAmount(val) {
   'worklet';
   return val.toFixed(10);
 }
 
-// function formatter(val, symbol) {
-//   'worklet';
-//   return isSymbolStablecoin(symbol)
-//     ? `$${formatSavingsAmount(val)}`
-//     : `${formatSavingsAmount(val)} ${symbol}`;
-// }
-
-function TextChunkWrapper({ val, index, default: defaultValue, notAnimated }) {
+function TextChunkWrapper({ val, sub: { value, index } }) {
   const props = useAnimatedProps(() =>
-    notAnimated ? {} : { text: val.value[index] }
+    index === undefined
+      ? {}
+      : {
+          text: val.value[index],
+        }
   );
-  return <TextChunk defaultValue={defaultValue} style={props} />;
+  return <TextChunk defaultValue={value} style={props} />;
 }
 
 function animationOneMinuteRec(svalue, target) {
   'worklet';
-  svalue.value = withTiming(100, { duration: 1000 * 60 }, () => {
-    animationOneMinuteRec(svalue, target + 60);
-  });
+  svalue.value = withTiming(
+    target,
+    { duration: 1000, easing: NewEasing.linear },
+    () => {
+      animationOneMinuteRec(svalue, target + 1);
+    }
+  );
 }
 
 export default function AndroidText({ animationConfig }) {
   const stepPerSecond = animationConfig.stepPerDay / 24 / 60 / 60;
-  const [rawValue] = useState(
-    formatSavingsAmount(animationConfig.initialValue)
+  const isStable = isSymbolStablecoin(animationConfig.symbol);
+  const rawValue = useMemo(
+    () =>
+      (isStable ? [{ value: '$' }] : []).concat(
+        formatSavingsAmount(animationConfig.initialValue)
+          .split('')
+          .map((value, index) => ({
+            index,
+            value,
+          }))
+          .concat(isStable ? [] : { value: animationConfig.symbol })
+      ),
+    [animationConfig, isStable]
   );
   const svalue = useSharedValue(0);
   useEffect(() => {
-    animationOneMinuteRec(60, svalue);
+    animationOneMinuteRec(svalue, 1);
   }, [svalue]);
 
   const val = useDerivedValue(() =>
@@ -70,7 +78,6 @@ export default function AndroidText({ animationConfig }) {
     )
   );
 
-  const maybeCoin = false;
   return (
     <Animated.View
       {...val}
@@ -81,22 +88,23 @@ export default function AndroidText({ animationConfig }) {
         position: 'absolute',
       }}
     >
-      {rawValue.split('').map((v, i, a) => (
+      {rawValue.map((v, i, a) => (
         <View
           key={`savings-${i}`}
+          pointerEvents="none"
           style={{
             height: 38,
             overflow: 'hidden',
-            width: i === a.length - 1 && maybeCoin ? 50 : v === '.' ? 6 : 9.5,
+            width: i === a.length - 1 && !isStable ? 50 : v === '.' ? 6 : 9.5,
           }}
         >
           <View
             style={{
-              left: i === a.length - 1 && maybeCoin ? 0 : -3,
+              left: i === a.length - 1 && !isStable ? 0 : -3,
               width: 60,
             }}
           >
-            <TextChunkWrapper default={v} index={i} val={val} />
+            <TextChunkWrapper sub={v} val={val} />
           </View>
         </View>
       ))}
