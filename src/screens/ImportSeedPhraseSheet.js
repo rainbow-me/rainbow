@@ -41,6 +41,7 @@ import {
   useInitializeWallet,
   useInvalidPaste,
   useIsWalletEthZero,
+  useKeyboardHeight,
   useMagicAutofocus,
   usePrevious,
   useTimeout,
@@ -137,8 +138,9 @@ export default function ImportSeedPhraseSheet() {
   const { accountAddress } = useAccountSettings();
   const { selectedWallet, wallets } = useWallets();
   const { getClipboard, hasClipboardData, clipboard } = useClipboard();
-  const { triggerInvalidPaste } = useInvalidPaste();
+  const { onInvalidPaste } = useInvalidPaste();
   const { isSmallPhone } = useDimensions();
+  const keyboardHeight = useKeyboardHeight();
   const { goBack, navigate, replace, setParams } = useNavigation();
   const initializeWallet = useInitializeWallet();
   const isWalletEthZero = useIsWalletEthZero();
@@ -263,16 +265,15 @@ export default function ImportSeedPhraseSheet() {
     getClipboard(result => {
       if (result !== accountAddress && isValidWallet(result)) {
         return handleSetSeedPhrase(result);
-      } else {
-        return triggerInvalidPaste();
       }
+      return onInvalidPaste();
     });
   }, [
     accountAddress,
     getClipboard,
     handleSetSeedPhrase,
     hasClipboardData,
-    triggerInvalidPaste,
+    onInvalidPaste,
   ]);
 
   useEffect(() => {
@@ -432,10 +433,10 @@ export default function ImportSeedPhraseSheet() {
             </FooterButton>
           )}
         </Footer>
-        <ToastPositionContainer>
-          <InvalidPasteToast />
-        </ToastPositionContainer>
       </Sheet>
+      <ToastPositionContainer bottom={keyboardHeight}>
+        <InvalidPasteToast />
+      </ToastPositionContainer>
       {ios ? <KeyboardSizeView isOpen /> : null}
     </Container>
   );

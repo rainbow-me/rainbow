@@ -20,7 +20,6 @@ import {
   TokenInfoSection,
 } from '../token-info';
 import Chart from '../value-chart/Chart';
-import { useLatestChartData, useSetChartData } from './ChartHelper';
 import {
   ChartPathProvider,
   monotoneCubicInterpolation,
@@ -86,8 +85,6 @@ function useJumpingForm(isLong) {
 export const ChartExpandedStateSheetHeight = chartExpandedAvailable
   ? heightWithChart
   : heightWithNoChart;
-
-const ChartsWrapper = android ? ChartPathProvider : ({ children }) => children;
 
 export default function ChartExpandedState({ asset }) {
   const color = useColorForAsset(asset);
@@ -156,24 +153,8 @@ export default function ChartExpandedState({ asset }) {
 
   const duration = useRef(0);
 
-  const vals = useMemo(
-    () => ({
-      data: throttledData,
-      gestureEnabled: !fetchingCharts && !!throttledData,
-      stroke: color,
-      timingAnimationConfig: { duration: duration.current },
-    }),
-    [color, fetchingCharts, throttledData]
-  );
-
   if (duration.current === 0) {
     duration.current = 300;
-  }
-
-  const latest = useLatestChartData();
-  const setChartData = useSetChartData();
-  if (latest !== vals) {
-    setChartData(vals);
   }
 
   return (
@@ -181,7 +162,7 @@ export default function ChartExpandedState({ asset }) {
       contentHeight={ChartExpandedStateSheetHeight}
       scrollEnabled={false}
     >
-      <ChartsWrapper data={throttledData}>
+      <ChartPathProvider data={throttledData}>
         <Chart
           {...chartData}
           {...initialChartDataLabels}
@@ -194,7 +175,7 @@ export default function ChartExpandedState({ asset }) {
           showChart={showChart}
           throttledData={throttledData}
         />
-      </ChartsWrapper>
+      </ChartPathProvider>
       <SheetDivider />
       <TokenInfoSection>
         <TokenInfoRow>

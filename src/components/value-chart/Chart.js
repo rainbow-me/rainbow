@@ -13,7 +13,6 @@ import Animated, {
 import styled from 'styled-components/native';
 import Spinner from '../../assets/chartSpinner.png';
 import { nativeStackConfig } from '../../navigation/config';
-import { SvgComponent } from '../../react-native-animated-charts/src/charts/linear/ChartPath';
 import { ChartExpandedStateHeader } from '../expanded-state/chart';
 import { Column } from '../layout';
 import Labels from './ExtremeLabels';
@@ -229,7 +228,22 @@ export default function ChartWrapper({
                 width={WIDTH}
               />
             ) : (
-              <SvgComponent />
+              <ChartPath
+                fill="none"
+                gestureEnabled={!fetchingCharts && !!throttledData}
+                hapticsEnabled
+                height={HEIGHT}
+                hitSlop={30}
+                longPressGestureHandlerProps={{
+                  minDurationMs: 60,
+                }}
+                selectedStrokeWidth={3}
+                stroke={color}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={3.5}
+                width={WIDTH}
+              />
             )}
             <Dot color={colors.alpha(color, 0.03)} size={65}>
               <InnerDot color={color} />
