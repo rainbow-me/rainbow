@@ -1,12 +1,20 @@
 import React, { useMemo } from 'react';
+import {
+  Pressable,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components/primitives';
 import { useDimensions } from '../../hooks';
+import deviceUtils from '../../utils/deviceUtils';
 import { Centered } from '../layout';
 import SheetHandleFixedToTop, {
   SheetHandleFixedToTopHeight,
 } from './SheetHandleFixedToTop';
+import { useNavigation } from '@rainbow-me/navigation';
 import { colors } from '@rainbow-me/styles';
 
 const Container = styled(Centered).attrs({ direction: 'column' })`
@@ -15,6 +23,11 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
   left: 0;
   overflow: hidden;
   position: absolute;
+  border-radius: 20;
+  top: ${({ contentHeight }) =>
+    contentHeight && android
+      ? deviceUtils.dimensions.height - contentHeight
+      : 0};
   right: 0;
 `;
 
@@ -46,6 +59,7 @@ export default function SlackSheet({
   ...props
 }) {
   const { height: deviceHeight } = useDimensions();
+  const { goBack } = useNavigation();
   const insets = useSafeArea();
   const bottomInset = useMemo(
     () => (insets.bottom || scrollEnabled ? 42 : 30),
@@ -68,25 +82,43 @@ export default function SlackSheet({
   );
 
   return (
-    <Container backgroundColor={backgroundColor} {...props}>
-      {!hideHandle && ios && <SheetHandleFixedToTop showBlur={scrollEnabled} />}
-      <Content
+    <>
+      {android ? (
+        <Pressable onPress={goBack} style={[StyleSheet.absoluteFillObject]} />
+      ) : null}
+      <Container
         backgroundColor={backgroundColor}
-        contentContainerStyle={scrollEnabled && contentContainerStyle}
         contentHeight={contentHeight}
-        deviceHeight={deviceHeight}
-        directionalLockEnabled
-        scrollEnabled={scrollEnabled}
-        scrollIndicatorInsets={scrollIndicatorInsets}
+        {...props}
       >
-        {children}
-        {!scrollEnabled && (
-          <Whitespace
-            backgroundColor={backgroundColor}
-            deviceHeight={deviceHeight}
+        <TouchableWithoutFeedback
+          style={[StyleSheet.absoluteFillObject, { backgroundColor: 'red' }]}
+        >
+          <View
+            style={[StyleSheet.absoluteFillObject, { backgroundColor: 'red' }]}
           />
+        </TouchableWithoutFeedback>
+        {!hideHandle && ios && (
+          <SheetHandleFixedToTop showBlur={scrollEnabled} />
         )}
-      </Content>
-    </Container>
+        <Content
+          backgroundColor={backgroundColor}
+          contentContainerStyle={scrollEnabled && contentContainerStyle}
+          contentHeight={contentHeight}
+          deviceHeight={deviceHeight}
+          directionalLockEnabled
+          scrollEnabled={scrollEnabled}
+          scrollIndicatorInsets={scrollIndicatorInsets}
+        >
+          {children}
+          {!scrollEnabled && (
+            <Whitespace
+              backgroundColor={backgroundColor}
+              deviceHeight={deviceHeight}
+            />
+          )}
+        </Content>
+      </Container>
+    </>
   );
 }
