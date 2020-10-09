@@ -87,7 +87,12 @@ const getWalletRowCount = wallets => {
 };
 
 export default function ChangeWalletSheet() {
-  const { selectedWallet, setIsWalletLoading, wallets } = useWallets();
+  const {
+    isDamaged,
+    selectedWallet,
+    setIsWalletLoading,
+    wallets,
+  } = useWallets();
   const [editMode, setEditMode] = useState(false);
 
   const { goBack, navigate, replace } = useNavigation();
@@ -371,7 +376,7 @@ export default function ChangeWalletSheet() {
                 } catch (e) {
                   logger.sentry('Error while trying to add account');
                   captureException(e);
-                  if (selectedWallet.damaged) {
+                  if (isDamaged) {
                     setTimeout(() => {
                       showWalletErrorAlert();
                     }, 1000);
@@ -397,8 +402,8 @@ export default function ChangeWalletSheet() {
     dispatch,
     goBack,
     initializeWallet,
+    isDamaged,
     navigate,
-    selectedWallet.damaged,
     selectedWallet.id,
     selectedWallet.primary,
     setIsWalletLoading,
