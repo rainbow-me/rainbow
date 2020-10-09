@@ -88,7 +88,7 @@ function animationOneMinuteRec(svalue, target) {
 }
 
 export default function AndroidText({ animationConfig }) {
-  const stepPerSecond = animationConfig.stepPerDay / 24 / 60 / 60;
+  const stepPerSecond = Math.max(0, animationConfig.stepPerDay / 24 / 60 / 60);
   const isStable = isSymbolStablecoin(animationConfig.symbol);
   const rawValue = useMemo(
     () =>
