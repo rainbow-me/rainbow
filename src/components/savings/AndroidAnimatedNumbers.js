@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo } from 'react';
-import { TextInput, View } from 'react-native';
+import { TextInput } from 'react-native';
 import Animated, {
   NewEasing,
   useAnimatedProps,
@@ -21,6 +21,21 @@ const TextChunk = styled(AnimatedTextInput).attrs({
   font-size: ${parseFloat(fonts.size.lmedium)};
   font-weight: ${fonts.weight.bold};
   text-align: left;
+  width: 60;
+`;
+
+const Wrapper = styled(Animated.View).attrs({
+  pointerEvents: 'none',
+})`
+  height: 38;
+  overflow: hidden;
+`;
+
+const Row = styled.View`
+  flex-direction: row;
+  height: 35;
+  left: 45;
+  position: absolute;
 `;
 
 function formatSavingsAmount(val) {
@@ -28,7 +43,7 @@ function formatSavingsAmount(val) {
   return val.toFixed(10);
 }
 
-function TextChunkWrapper({ val, sub: { value, index } }) {
+function TextChunkWrapper({ val, sub: { value, index }, i, a, isStable }) {
   const props = useAnimatedProps(() =>
     index === undefined
       ? {}
@@ -36,14 +51,36 @@ function TextChunkWrapper({ val, sub: { value, index } }) {
           text: val.value[index],
         }
   );
-  return <TextChunk defaultValue={value} style={props} />;
+
+  const wrapperProps = useAnimatedProps(() => ({
+    width:
+      index !== undefined && val.value[index] === '.'
+        ? 5.8
+        : i === a.length - 1 && !isStable
+        ? 50
+        : 10,
+  }));
+
+  return (
+    <Wrapper style={wrapperProps}>
+      <TextChunk
+        defaultValue={value}
+        style={[
+          {
+            left: i === a.length - 1 && !isStable ? 0 : -3,
+          },
+          props,
+        ]}
+      />
+    </Wrapper>
+  );
 }
 
 function animationOneMinuteRec(svalue, target) {
   'worklet';
   svalue.value = withTiming(
-    target,
-    { duration: 1000, easing: NewEasing.linear },
+    target * 60,
+    { duration: 1000 * 60, easing: NewEasing.linear },
     () => {
       animationOneMinuteRec(svalue, target + 1);
     }
@@ -79,36 +116,17 @@ export default function AndroidText({ animationConfig }) {
   );
 
   return (
-    <Animated.View
-      {...val}
-      style={{
-        flexDirection: 'row',
-        height: 35,
-        left: 45,
-        position: 'absolute',
-      }}
-    >
+    <Row>
       {rawValue.map((v, i, a) => (
-        <View
+        <TextChunkWrapper
+          a={a}
+          i={i}
+          isStable={isStable}
           key={`savings-${i}`}
-          pointerEvents="none"
-          style={{
-            height: 38,
-            overflow: 'hidden',
-            width:
-              i === a.length - 1 && !isStable ? 50 : v.value === '.' ? 6 : 9.5,
-          }}
-        >
-          <View
-            style={{
-              left: i === a.length - 1 && !isStable ? 0 : -3,
-              width: 60,
-            }}
-          >
-            <TextChunkWrapper sub={v} val={val} />
-          </View>
-        </View>
+          sub={v}
+          val={val}
+        />
       ))}
-    </Animated.View>
+    </Row>
   );
 }
