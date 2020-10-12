@@ -22,6 +22,7 @@ const TextChunk = styled(AnimatedTextInput).attrs({
   font-weight: ${fonts.weight.bold};
   text-align: left;
   width: 60;
+  height: 40;
 `;
 
 const Wrapper = styled(Animated.View).attrs({
