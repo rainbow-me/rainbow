@@ -26,7 +26,7 @@ export function SwipeNavigator() {
       tabBar={renderTabBar}
     >
       <Swipe.Screen component={ProfileScreen} name={Routes.PROFILE_SCREEN} />
-      <Swipe.Screen component={WalletScreen} nam name={Routes.WALLET_SCREEN} />
+      <Swipe.Screen component={WalletScreen} name={Routes.WALLET_SCREEN} />
       <Swipe.Screen
         component={QRScannerScreen}
         name={Routes.QR_SCANNER_SCREEN}
