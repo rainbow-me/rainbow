@@ -175,7 +175,7 @@ workflows:
     - custom-test-results-export@0:
         is_always_run: false
         inputs:
-        - base_path: "$BITRISE_SOURCE_DIR/e2e/logs/"
+        - base_path: "$BITRISE_SOURCE_DIR/e2e/logs/iOS/"
         - search_pattern: "*"
         - test_name: Detox e2e - iOS Test Report
     - deploy-to-bitrise-io@1:
