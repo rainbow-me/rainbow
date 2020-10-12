@@ -50,7 +50,7 @@ const ConfirmExchangeButton = ({
       label={label}
       onLongPress={onSubmit}
       shadows={ConfirmExchangeButtonShadows}
-      testID={testID + '-button'}
+      testID={testID}
       theme="dark"
       {...props}
     />

@@ -20,18 +20,7 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.checkIfExists('import-sheet');
   });
 
-  it("Shouldn't do anything when I type jibberish", async () => {
-    await Helpers.tap('import-sheet-input');
-    await Helpers.checkIfElementHasString('import-sheet-button-label', 'Paste');
-    await Helpers.typeText('import-sheet-input', 'asdajksdlakjsd', false);
-    await Helpers.checkIfElementHasString(
-      'import-sheet-button-label',
-      'Import'
-    );
-  });
-
   it('Should show the "Add wallet modal" after tapping import with a valid seed"', async () => {
-    await Helpers.clearField('import-sheet-input');
     await Helpers.typeText('import-sheet-input', process.env.DEV_SEEDS, false);
     await Helpers.delay(1500);
     await Helpers.checkIfElementHasString(
@@ -71,25 +60,31 @@ describe('Ganache Transaction Flow', () => {
 
   it('Should show Ganache Toast after pressing Connect To Ganache', async () => {
     await Helpers.tap('ganache-section');
-    await Helpers.delay(5000);
+    await Helpers.delay(15000);
     await Helpers.checkIfVisible('testnet-toast-Ganache');
+    await Helpers.swipe('profile-screen', 'left', 'slow');
+    await Helpers.delay(2000);
   });
 
   //SwapSheet Transactions
   it('Should open and complete SwapSheet for ETH -> ERC20', async () => {
-    await Helpers.delay(1000);
     await Helpers.tap('exchange-fab');
     await Helpers.delay(2000);
-    await Helpers.typeText('exchange-modal-input', '.03', true);
+    await Helpers.typeText('exchange-modal-input', '0.03', true);
     await Helpers.delay(2000);
     await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.delay(2000);
+    await Helpers.typeText('currency-select-search-input', 'DAI', true);
+    await Helpers.delay(2000);
     await Helpers.tap('exchange-coin-row-DAI');
     await Helpers.delay(2000);
+    await Helpers.tapAndLongPressByText('Hold to Swap');
+    await Helpers.delay(6000);
+    await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
   it('Should open and complete SwapSheet for ERC20 -> ERC20', async () => {
-    await Helpers.delay(1000);
+    await Helpers.delay(2000);
     await Helpers.tap('exchange-fab');
     await Helpers.delay(2000);
     await Helpers.tap('exchange-modal-input-selection-button');
@@ -102,7 +97,32 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.delay(2000);
     await Helpers.tap('exchange-coin-row-ZRX');
     await Helpers.delay(2000);
+    await Helpers.tapAndLongPressByText('Hold to Swap');
+    await Helpers.delay(6000);
+    await Helpers.swipe('profile-screen', 'left', 'slow');
   });
+
+  it('Should open and complete SwapSheet for ERC20 -> ETH', async () => {
+    await Helpers.delay(2000);
+    await Helpers.tap('exchange-fab');
+    await Helpers.delay(2000);
+    await Helpers.tap('exchange-modal-input-selection-button');
+    await Helpers.delay(2000);
+    await Helpers.tap('exchange-coin-row-DAI');
+    await Helpers.delay(2000);
+    await Helpers.typeText('exchange-modal-input', '10', true);
+    await Helpers.delay(2000);
+    await Helpers.tap('exchange-modal-output-selection-button');
+    await Helpers.delay(2000);
+    await Helpers.typeText('currency-select-search-input', 'ETH', true);
+    await Helpers.delay(2000);
+    await Helpers.tap('exchange-coin-row-ETH');
+    await Helpers.delay(2000);
+    await Helpers.tapAndLongPressByText('Hold to Swap');
+    await Helpers.delay(6000);
+    await Helpers.swipe('profile-screen', 'left', 'slow');
+  });
+
   afterAll(async () => {
     // Reset the app state
     await device.clearKeychain();

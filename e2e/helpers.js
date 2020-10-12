@@ -57,6 +57,13 @@ export async function tapAndLongPress(elementId) {
   return element(by.id(elementId)).longPress();
 }
 
+export async function tapAndLongPressByText(text, index) {
+  await element(by.text(text))
+    .atIndex(index || 0)
+    .tap();
+  return element(by.text(text)).longPress();
+}
+
 export async function replaceTextInField(elementId, text) {
   return element(by.id(elementId)).replaceText(text);
 }
