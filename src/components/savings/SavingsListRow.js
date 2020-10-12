@@ -151,14 +151,21 @@ const SavingsListRow = ({
   const displayValue = formatSavingsAmount(value);
 
   return !underlying || !underlying.address ? null : (
-    <ButtonPressAnimation onPress={onButtonPress} scaleTo={0.96}>
+    <ButtonPressAnimation
+      disabled={android}
+      onPress={onButtonPress}
+      scaleTo={0.96}
+    >
       <Centered direction="column" marginBottom={15}>
         <SavingsListRowShadowStack deviceWidth={deviceWidth}>
           <SavingsListRowGradient />
           <Row
             align="center"
+            as={android && ButtonPressAnimation}
             css={padding(9, 10, 10, 11)}
             justify="space-between"
+            onPress={onButtonPress}
+            scaleTo={0.96}
           >
             {underlying.symbol && supplyBalanceUnderlying ? (
               <Centered>

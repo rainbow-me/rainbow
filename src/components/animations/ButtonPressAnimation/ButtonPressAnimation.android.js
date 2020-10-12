@@ -13,6 +13,9 @@ export default function ButtonPressAnimation({
   style,
   opacityTouchable = false,
 }) {
+  if (disabled) {
+    return <View style={style}>{children}</View>;
+  }
   if (opacityTouchable) {
     return (
       <TouchableOpacity
@@ -33,9 +36,10 @@ export default function ButtonPressAnimation({
       onLongPress={onLongPress}
       onPress={onPress}
       onPressStart={onPressStart}
-      style={style}
     >
-      <View pointerEvents="box-only">{children}</View>
+      <View pointerEvents="box-only" style={style}>
+        {children}
+      </View>
     </TouchableNativeFeedback>
   );
 }
