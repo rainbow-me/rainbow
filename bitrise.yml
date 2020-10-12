@@ -12,18 +12,25 @@ workflows:
     steps:
     - activate-ssh-key@4.0.5:
         run_if: '{{getenv "SSH_RSA_PRIVATE_KEY" | ne ""}}'
-    - git-clone@4.0.18: {}
-    - nvm@1.2.2:
+    - git-clone@4: {}
+    - cache-pull@2: {}
+    - nvm@1:
         inputs:
-        - node_version: 10.15.3
-    - cache-pull@2.1.4:
-        title: Restoring cache
+        - node_version: 12.18.3
     - yarn@0.1.1:
         inputs:
         - cache_local_deps: 'yes'
-        - command: install --network-timeout 300000 --frozen-lockfile --network-concurrency
-            1
+        - command: install --network-timeout 300000 --network-concurrency 1
         title: Installing dependencies via yarn
+    - script@1:
+        title: Check for lockfile changes (Fake --frozen-lockfile)
+        inputs:
+        - content: |-
+            git diff yarn.lock
+            if ! git diff --exit-code yarn.lock; then
+              echo "Changes were detected in yarn.lock file after running 'yarn install', which is not expected. Please run 'yarn install' locally and commit the changes.";
+              exit 1;
+            fi
     before_run: 
     after_run: 
   lint:
@@ -50,7 +57,7 @@ workflows:
         - content: |-
             #!/bin/bash
 
-            detox test --configuration ios.sim.release --cleanup
+            detox test --configuration ios.sim.release -l verbose
         title: Detox - Run E2E Tests
   detox_setup:
     steps:
@@ -59,79 +66,113 @@ workflows:
         - cache_local_deps: 'yes'
         - command: global add detox-cli
         title: Detox - Install CLI
+    - script:
+        inputs:
+        - content: |-
+            # Add cache directory to environment variable
+            envman add --key BREW_APPLESIMUTILS --value "$(brew --cellar)/applesimutils"
+            envman add --key BREW_OPT_APPLESIMUTILS --value "/usr/local/opt/applesimutils"
+        title: Detox- Set Env Path for caching deps
     - script@1.1.6:
         inputs:
         - content: |-
             #!/bin/bash
-            detox clean-framework-cache && detox build-framework-cache
-        title: Detox - Clean & Build Framework cache
+            brew tap wix/brew
+        title: Detox - Setup
   pods_setup:
     steps:
-    - script@1.1.6:
+    - cocoapods-install@1.11:
         inputs:
-        - content: pod repo update
-        title: Pods - Update repo
-    - script@1.1.6:
-        inputs:
-        - content: cd ios && pod install
-        title: Pods - Install
-  react_native_setup:
-    before_run: []
-    steps:
-    - script@1.1.6:
-        inputs:
-        - content: |-
-            #!/bin/bash
-            brew update
-            brew tap wix/brew
-            brew install --HEAD applesimutils
-        title: React Native - Install dependencies via Brew
-    - yarn@0.1.1:
-        inputs:
-        - command: global add react-native-cli
-        title: React Native - Install CLI
+        - podfile_path: "./ios/Podfile"
   workflow_testflight:
     before_run:
+    - generate_dot_env_testflight
     - build_setup
-    - generate_dot_env
     - pods_setup
     steps:
     - certificate-and-profile-installer@1.10.3: {}
-    - fastlane@2.7.0:
+    - fastlane@2.7:
         inputs:
         - work_dir: "$BITRISE_SOURCE_DIR/ios"
         - lane: beta
         title: Fastlane - Submit to Testflight
+    - xcode-project-info@2:
+        inputs:
+        - xcodeproj_path: ios/Rainbow.xcodeproj
+        - info_plist_path: ios/Rainbow/Info.plist
+        title: Expose build number to ENV vars
     - yarn@0.1.1:
         inputs:
-        - command: global add sentry-cli
+        - command: global add @sentry/cli
         title: Install Sentry CLI
-    - fastlane@2.7.0:
+    - fastlane@2.7:
         inputs:
         - work_dir: "$BITRISE_SOURCE_DIR/ios"
         - lane: refresh_dsyms
         title: Fastlane - Upload debug symbols and sourcemaps
+    - script@1.1.6:
+        title: Expose version number to ENV vars
+        inputs:
+        - content: |+
+            #!/bin/bash
+            set -ex
+
+            # get the values
+            INFO_XCODE_PROJ=./ios/Rainbow.xcodeproj/project.pbxproj
+            version=$(cat "${INFO_XCODE_PROJ}" | grep "MARKETING_VERSION" | head -n 1 | sed  's/[^0-9\.]//g')
+
+            # expose the env vars for subsequent steps
+            envman add --key RAINBOW_VERSION --value "${version}"
+
+    - slack@3:
+        inputs:
+        - webhook_url: "$SLACK_WEBHOOK_URL"
+        - buttons: 'View Build|${BITRISE_BUILD_URL}
+
+'
+        - fields: |
+            App|${BITRISE_APP_TITLE}
+            Branch|${BITRISE_GIT_BRANCH}
+            Workflow|${BITRISE_TRIGGERED_WORKFLOW_ID}
+            Version|${RAINBOW_VERSION} (${XPI_BUILD})
+        - pretext: "*Build Submitted to Testflight!*"
+    - cache-push@2: {}
     envs:
     - opts:
         is_expand: false
       SENTRY_ENVIRONMENT: Release
-    after_run:
-    - store_cache_artifacts
+    - opts:
+        is_expand: false
+      IS_TESTING: 'false'
+    - opts:
+        is_expand: false
+      ENABLE_DEV_MODE: '0'
+    - opts:
+        is_expand: false
+      GANACHE_URL: http://127.0.0.1:7545
   workflow_tests:
     before_run:
+    - generate_dot_env_testing
     - build_setup
     - lint
     - pods_setup
     - detox_setup
-    - generate_dot_env
-    - react_native_setup
     - detox_tests
     envs:
     - opts:
         is_expand: false
       SENTRY_ENVIRONMENT: LocalRelease
+    - opts:
+        is_expand: false
+      IS_TESTING: 'true'
+    - opts:
+        is_expand: false
+      ENABLE_DEV_MODE: '1'
+    - opts:
+        is_expand: false
+      GANACHE_URL: http://127.0.0.1:7545
     steps:
-    - slack@3.1.3:
+    - slack@3:
         inputs:
         - channel: "#bitrise"
         - from_username: Bitrise Bot
@@ -140,14 +181,25 @@ workflows:
         - text_on_error: Build failed
         - emoji_on_error: ''
         - from_username_on_error: Bitrise bot
+        - buttons: |
+            View Pull Request|${BITRISEIO_PULL_REQUEST_REPOSITORY_URL}
+            View Build|${BITRISE_BUILD_URL}
         - webhook_url: "$SLACK_WEBHOOK_URL"
-    after_run:
-    - store_cache_artifacts
-  generate_dot_env:
+    - cache-push@2:
+        inputs:
+        - cache_paths: |
+            $BITRISE_CACHE_DIR
+            # Add the following two to cache_path
+            $BREW_APPLESIMUTILS
+            $BREW_OPT_APPLESIMUTILS
+    meta:
+      bitrise.io:
+        stack: osx-xcode-12.2.x
+  generate_dot_env_testing:
     steps:
     - script@1.1.6:
         inputs:
-        - content: |
+        - content: |+
             #!/usr/bin/env bash
             # fail if any commands fails
             set -e
@@ -157,7 +209,8 @@ workflows:
             # write your script here
             touch .env
             echo "DATA_ORIGIN=$DATA_ORIGIN" >> .env
-            echo "REACT_APP_INFURA_PROJECT_ID=$REACT_APP_INFURA_PROJECT_ID" >> .env
+            echo "INFURA_PROJECT_ID=$INFURA_PROJECT_ID" >> .env
+            echo "INFURA_PROJECT_ID_DEV=$INFURA_PROJECT_ID_DEV" >> .env
             echo "REACT_APP_SEGMENT_API_WRITE_KEY=$REACT_APP_SEGMENT_API_WRITE_KEY" >> .env
             echo "DATA_API_KEY=$DATA_API_KEY" >> .env
             echo "SENTRY_ENDPOINT=$SENTRY_ENDPOINT" >> .env
@@ -165,14 +218,83 @@ workflows:
             echo "WYRE_ENDPOINT=$WYRE_ENDPOINT" >> .env
             echo "WYRE_ACCOUNT_ID=$WYRE_ACCOUNT_ID" >> .env
             echo "RAINBOW_WYRE_MERCHANT_ID=$RAINBOW_WYRE_MERCHANT_ID" >> .env
-        title: Generate .env file
-  store_cache_artifacts:
+            echo "WYRE_ENDPOINT_TEST=$WYRE_ENDPOINT_TEST" >> .env
+            echo "WYRE_ACCOUNT_ID_TEST=$WYRE_ACCOUNT_ID_TEST" >> .env
+            echo "RAINBOW_WYRE_MERCHANT_ID_TEST=$RAINBOW_WYRE_MERCHANT_ID_TEST" >> .env
+            echo "ETHERSCAN_API_KEY=$ETHERSCAN_API_KEY" >> .env
+            echo "BRANCH_APP_DOMAIN=$BRANCH_APP_DOMAIN" >> .env
+            echo "BRANCH_KEY=$BRANCH_KEY" >> .env
+            echo "RAINBOW_MASTER_KEY=$RAINBOW_MASTER_KEY" >> .env
+            echo "DEV_SEEDS=\"$DEV_SEEDS\"" >> .env
+            echo "DEV_PKEY=\$DEV_PKEY" >> .env
+            echo "IS_TESTING=$IS_TESTING" >> .env
+            echo "WYRE_TOKEN=$WYRE_TOKEN" >> .env
+            echo "WYRE_TOKEN_TEST=$WYRE_TOKEN_TEST" >> .env
+            echo "ENABLE_DEV_MODE=$ENABLE_DEV_MODE" >> .env
+            echo "GANACHE_URL=$GANACHE_URL" >> .env
+            echo "ETH_GAS_STATION_API_KEY=$ETH_GAS_STATION_API_KEY" >> .env
+
+
+
+        title: Generate .env file for testing
+  workflow_remote_access:
+    before_run: []
+    envs:
+    - opts:
+        is_expand: false
+      SENTRY_ENVIRONMENT: LocalRelease
+    after_run: []
     steps:
-    - cache-push@2.2.3:
+    - activate-ssh-key@4.0.5: {}
+    - git-clone@4.0.18: {}
+    - script@1.1.6:
         inputs:
-        - cache_paths: |-
-            $BITRISE_CACHE_DIR
-            $BITRISE_SOURCE_DIR/node_modules
-            ~/Library/Developer/Xcode/DerivedData
-        title: Store cache artifacts
-        is_always_run: true
+        - content: sleep 2700
+    meta:
+      bitrise.io:
+        stack: osx-xcode-12.2.x
+  generate_dot_env_testflight:
+    steps:
+    - script@1.1.6:
+        inputs:
+        - content: |+
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            # write your script here
+            touch .env
+            echo "DATA_ORIGIN=$DATA_ORIGIN" >> .env
+            echo "INFURA_PROJECT_ID=$INFURA_PROJECT_ID" >> .env
+            echo "INFURA_PROJECT_ID_DEV=$INFURA_PROJECT_ID_DEV" >> .env
+            echo "REACT_APP_SEGMENT_API_WRITE_KEY=$REACT_APP_SEGMENT_API_WRITE_KEY" >> .env
+            echo "DATA_API_KEY=$DATA_API_KEY" >> .env
+            echo "SENTRY_ENDPOINT=$SENTRY_ENDPOINT" >> .env
+            echo "SENTRY_ENVIRONMENT=$SENTRY_ENVIRONMENT" >> .env
+            echo "WYRE_ENDPOINT=$WYRE_ENDPOINT" >> .env
+            echo "WYRE_ACCOUNT_ID=$WYRE_ACCOUNT_ID" >> .env
+            echo "RAINBOW_WYRE_MERCHANT_ID=$RAINBOW_WYRE_MERCHANT_ID" >> .env
+            echo "WYRE_ENDPOINT_TEST=$WYRE_ENDPOINT_TEST" >> .env
+            echo "WYRE_ACCOUNT_ID_TEST=$WYRE_ACCOUNT_ID_TEST" >> .env
+            echo "RAINBOW_WYRE_MERCHANT_ID_TEST=$RAINBOW_WYRE_MERCHANT_ID_TEST" >> .env
+            echo "ETHERSCAN_API_KEY=$ETHERSCAN_API_KEY" >> .env
+            echo "BRANCH_APP_DOMAIN=$BRANCH_APP_DOMAIN" >> .env
+            echo "BRANCH_KEY=$BRANCH_KEY" >> .env
+            echo "RAINBOW_MASTER_KEY=$RAINBOW_MASTER_KEY" >> .env
+            echo "DEV_SEEDS=\"$DEV_SEEDS_PROD\"" >> .env
+            echo "DEV_PKEY=$DEV_PKEY_PROD" >> .env
+            echo "IS_TESTING=$IS_TESTING" >> .env
+            echo "WYRE_TOKEN=$WYRE_TOKEN" >> .env
+            echo "WYRE_TOKEN_TEST=$WYRE_TOKEN_TEST" >> .env
+            echo "ENABLE_DEV_MODE=$ENABLE_DEV_MODE" >> .env
+            echo "GANACHE_URL=$GANACHE_URL" >> .env
+            echo "ETH_GAS_STATION_API_KEY=$ETH_GAS_STATION_API_KEY" >> .env
+
+        title: Generate .env file for testflight
+app:
+  envs:
+  - opts:
+      is_expand: false
+    SKIP_FLIPPER: 'true'
