@@ -13,6 +13,9 @@ export default function ButtonPressAnimation({
   style,
   opacityTouchable = false,
 }) {
+  if (disabled) {
+    return <View style={style}>{children}</View>;
+  }
   if (opacityTouchable) {
     return (
       <TouchableOpacity
