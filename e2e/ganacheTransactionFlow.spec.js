@@ -75,6 +75,34 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.checkIfVisible('testnet-toast-Ganache');
   });
 
+  //SwapSheet Transactions
+  it('Should open and complete SwapSheet for ETH -> ERC20', async () => {
+    await Helpers.delay(1000);
+    await Helpers.tap('exchange-fab');
+    await Helpers.delay(2000);
+    await Helpers.typeText('exchange-modal-input', '.03', true);
+    await Helpers.delay(2000);
+    await Helpers.tap('exchange-modal-output-selection-button');
+    await Helpers.delay(2000);
+    await Helpers.tap('exchange-coin-row-DAI');
+    await Helpers.delay(2000);
+  });
+
+  it('Should open and complete SwapSheet for ERC20 -> ERC20', async () => {
+    await Helpers.delay(1000);
+    await Helpers.tap('exchange-fab');
+    await Helpers.delay(2000);
+    await Helpers.tap('exchange-modal-input-selection-button');
+    await Helpers.delay(2000);
+    await Helpers.tap('exchange-coin-row-DAI');
+    await Helpers.delay(2000);
+    await Helpers.typeText('exchange-modal-input', '10', true);
+    await Helpers.delay(2000);
+    await Helpers.tap('exchange-modal-output-selection-button');
+    await Helpers.delay(2000);
+    await Helpers.tap('exchange-coin-row-ZRX');
+    await Helpers.delay(2000);
+  });
   afterAll(async () => {
     // Reset the app state
     await device.clearKeychain();
