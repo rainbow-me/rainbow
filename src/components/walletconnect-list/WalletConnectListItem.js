@@ -76,7 +76,7 @@ export default function WalletConnectListItem({ dappIcon, dappName, dappUrl }) {
                 size="lmedium"
                 weight="bold"
               >
-                {' 􀇻'}
+                􀇻
               </Text>
             )}
           </TruncatedText>

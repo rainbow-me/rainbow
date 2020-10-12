@@ -30,7 +30,6 @@ import { enableScreens } from 'react-native-screens';
 import VersionNumber from 'react-native-version-number';
 import { connect, Provider } from 'react-redux';
 import { compose, withProps } from 'recompact';
-import { ChartProvider } from './components/expanded-state/ChartHelper';
 import { FlexItem } from './components/layout';
 import { OfflineToast, TestnetToast } from './components/toasts';
 import {
@@ -236,17 +235,15 @@ class App extends Component {
       <Portal>
         <SafeAreaProvider>
           <Provider store={store}>
-            <ChartProvider>
-              <FlexItem>
-                {this.state.initialRoute && (
-                  <InitialRouteContext.Provider value={this.state.initialRoute}>
-                    <RoutesComponent ref={this.handleNavigatorRef} />
-                  </InitialRouteContext.Provider>
-                )}
-                <OfflineToast />
-                <TestnetToast network={this.props.network} />
-              </FlexItem>
-            </ChartProvider>
+            <FlexItem>
+              {this.state.initialRoute && (
+                <InitialRouteContext.Provider value={this.state.initialRoute}>
+                  <RoutesComponent ref={this.handleNavigatorRef} />
+                </InitialRouteContext.Provider>
+              )}
+              <OfflineToast />
+              <TestnetToast network={this.props.network} />
+            </FlexItem>
           </Provider>
         </SafeAreaProvider>
       </Portal>

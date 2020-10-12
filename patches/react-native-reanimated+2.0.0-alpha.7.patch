@@ -1,10 +1,109 @@
+diff --git a/node_modules/react-native-reanimated/Common/cpp/SharedItems/FrozenObject.cpp b/node_modules/react-native-reanimated/Common/cpp/SharedItems/FrozenObject.cpp
+index 9c2c2c3..04c2af0 100644
+--- a/node_modules/react-native-reanimated/Common/cpp/SharedItems/FrozenObject.cpp
++++ b/node_modules/react-native-reanimated/Common/cpp/SharedItems/FrozenObject.cpp
+@@ -3,13 +3,24 @@
+ #include "ShareableValue.h"
+
+ namespace reanimated {
++static std::unordered_map<int, std::unordered_map<std::string, ShareableValue*>> cache = std::unordered_map<int, std::unordered_map<std::string, ShareableValue*>>();
++static std::unordered_map<int, int> to_remove = std::unordered_map<int, int>();
++
++static std::unordered_map<int, std::unordered_map<std::string, std::shared_ptr<ShareableValue>>> cache2 = std::unordered_map<int, std::unordered_map<std::string, std::shared_ptr<ShareableValue>>>();
++static int i = 0;
++
+
+ FrozenObject::FrozenObject(jsi::Runtime &rt, const jsi::Object &object, NativeReanimatedModule *module) {
+   auto propertyNames = object.getPropertyNames(rt);
++
+   for (size_t i = 0, count = propertyNames.size(rt); i < count; i++) {
+     auto propertyName = propertyNames.getValueAtIndex(rt, i).asString(rt);
+     map[propertyName.utf8(rt)] = ShareableValue::adapt(rt, object.getProperty(rt, propertyName), module);
+   }
++  for (auto v: to_remove) {
++    cache2.erase(v.second);
++  }
++  to_remove.clear();
+ }
+
+ jsi::Object FrozenObject::shallowClone(jsi::Runtime &rt) {
+@@ -20,4 +31,13 @@ jsi::Object FrozenObject::shallowClone(jsi::Runtime &rt) {
+   return object;
+ }
+
++
++FrozenObject::~FrozenObject() {
++  i++;
++  int j = i;
++  cache2[j] = map;
++  to_remove[j] = j;
++
++}
++
+ }
+diff --git a/node_modules/react-native-reanimated/Common/cpp/Tools/JSIStoreValueUser.cpp b/node_modules/react-native-reanimated/Common/cpp/Tools/JSIStoreValueUser.cpp
+index 26b6b29..dd8946c 100644
+--- a/node_modules/react-native-reanimated/Common/cpp/Tools/JSIStoreValueUser.cpp
++++ b/node_modules/react-native-reanimated/Common/cpp/Tools/JSIStoreValueUser.cpp
+@@ -4,9 +4,11 @@ namespace reanimated {
+
+ int identifier = 0;
+ std::atomic<int> StoreUser::ctr;
++std::mutex StoreUser::storeMutex;
+ std::unordered_map<int, std::vector<std::shared_ptr<jsi::Value>>> StoreUser::store;
+
+ std::weak_ptr<jsi::Value> StoreUser::getWeakRef(jsi::Runtime &rt) {
++  const std::lock_guard<std::mutex> lock(storeMutex);
+   if (StoreUser::store.count(identifier) == 0) {
+     StoreUser::store[identifier] = std::vector<std::shared_ptr<jsi::Value>>();
+   }
+@@ -28,6 +30,7 @@ StoreUser::~StoreUser() {
+
+
+ void StoreUser::clearStore() {
++  const std::lock_guard<std::mutex> lock(storeMutex);
+   StoreUser::store.clear();
+ }
+
+diff --git a/node_modules/react-native-reanimated/Common/cpp/headers/SharedItems/FrozenObject.h b/node_modules/react-native-reanimated/Common/cpp/headers/SharedItems/FrozenObject.h
+index 126fd41..35888bf 100644
+--- a/node_modules/react-native-reanimated/Common/cpp/headers/SharedItems/FrozenObject.h
++++ b/node_modules/react-native-reanimated/Common/cpp/headers/SharedItems/FrozenObject.h
+@@ -24,6 +24,7 @@ class FrozenObject : public jsi::HostObject {
+
+   FrozenObject(jsi::Runtime &rt, const jsi::Object &object, NativeReanimatedModule *module);
+   jsi::Object shallowClone(jsi::Runtime &rt);
++  ~FrozenObject();
+ };
+
+ }
+diff --git a/node_modules/react-native-reanimated/Common/cpp/headers/Tools/JSIStoreValueUser.h b/node_modules/react-native-reanimated/Common/cpp/headers/Tools/JSIStoreValueUser.h
+index da26369..4263b25 100644
+--- a/node_modules/react-native-reanimated/Common/cpp/headers/Tools/JSIStoreValueUser.h
++++ b/node_modules/react-native-reanimated/Common/cpp/headers/Tools/JSIStoreValueUser.h
+@@ -6,6 +6,7 @@
+ #include <vector>
+ #include <unordered_map>
+ #include <jsi/jsi.h>
++#include <mutex>
+
+ using namespace facebook;
+
+@@ -15,6 +16,7 @@ class StoreUser {
+   int identifier = 0;
+   static std::atomic<int> ctr;
+   static std::unordered_map<int, std::vector<std::shared_ptr<jsi::Value>>> store;
++  static std::mutex storeMutex;
+
+ public:
+   StoreUser() {
 diff --git a/node_modules/react-native-reanimated/src/Animated.js b/node_modules/react-native-reanimated/src/Animated.js
 index 523853a..d7813c3 100644
 --- a/node_modules/react-native-reanimated/src/Animated.js
 +++ b/node_modules/react-native-reanimated/src/Animated.js
 @@ -81,7 +81,7 @@ export * from './derived';
  export * from './reanimated2';
- 
+
  export {
 -  EasingNode,
 +  EasingNode as Easing,
@@ -31,34 +130,12 @@ index 48a3c76..0723069 100644
 @@ -235,7 +235,7 @@ function inOut(easing) {
    };
  }
- 
+
 -export const Easing = {
 +export const NewEasing = {
    linear,
    ease,
    quad,
-diff --git a/node_modules/react-native-reanimated/src/reanimated2/NativeReanimated.js b/node_modules/react-native-reanimated/src/reanimated2/NativeReanimated.js
-index dce1ee8..b2e9de4 100644
---- a/node_modules/react-native-reanimated/src/reanimated2/NativeReanimated.js
-+++ b/node_modules/react-native-reanimated/src/reanimated2/NativeReanimated.js
-@@ -26,12 +26,14 @@ const NativeReanimated = {
-     return InnerNativeModule.makeRemote(object);
-   },
- 
--  startMapper(mapper, inputs = [], outputs = []) {
-+  startMapper(mapper, inputs = [], outputs = [], name) {
-+    //console.log(name)
-     return InnerNativeModule.startMapper(mapper, inputs, outputs);
-   },
- 
--  stopMapper(mapperId) {
--    return InnerNativeModule.stopMapper(mapperId);
-+  stopMapper(mapperId, name) {
-+    console.log(name)
-+    //return InnerNativeModule.stopMapper(mapperId);
-   },
- 
-   registerEventHandler(eventHash, eventHandler) {
 diff --git a/node_modules/react-native-reanimated/src/reanimated2/animations.js b/node_modules/react-native-reanimated/src/reanimated2/animations.js
 index 6629e32..daca979 100644
 --- a/node_modules/react-native-reanimated/src/reanimated2/animations.js
@@ -68,19 +145,8 @@ index 6629e32..daca979 100644
 -import { Easing } from './Easing';
 +import { NewEasing as Easing } from './Easing';
  import NativeReanimated from './NativeReanimated';
- 
+
  let IN_STYLE_UPDATER = false;
-diff --git a/node_modules/react-native-reanimated/src/reanimated2/core.js b/node_modules/react-native-reanimated/src/reanimated2/core.js
-index 31c89f6..8352dd7 100644
---- a/node_modules/react-native-reanimated/src/reanimated2/core.js
-+++ b/node_modules/react-native-reanimated/src/reanimated2/core.js
-@@ -148,5 +148,5 @@ export function startMapper(mapper, inputs = [], outputs = []) {
- }
- 
- export function stopMapper(mapperId) {
--  NativeReanimated.stopMapper(mapperId);
-+  //NativeReanimated.stopMapper(mapperId);
- }
 diff --git a/node_modules/react-native-reanimated/src/reanimated2/interpolation.js b/node_modules/react-native-reanimated/src/reanimated2/interpolation.js
 index fc43c60..920eaa9 100644
 --- a/node_modules/react-native-reanimated/src/reanimated2/interpolation.js
@@ -88,7 +154,7 @@ index fc43c60..920eaa9 100644
 @@ -28,7 +28,7 @@ function internalInterpolate(x, l, r, ll, rr, type) {
    return val;
  }
- 
+
 -export function interpolate(x, input, output, type) {
 +export function newInterpolate(x, input, output, type) {
    'worklet';
