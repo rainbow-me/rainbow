@@ -6,7 +6,6 @@ import {
   useColorForAsset,
   useUniswapAssetsInWallet,
 } from '../../hooks';
-import deviceUtils from '../../utils/deviceUtils';
 import {
   SendActionButton,
   SheetActionButtonRow,
@@ -83,9 +82,7 @@ function useJumpingForm(isLong) {
   }, [isLong, setOptions, jumpToShort, jumpToLong]);
 }
 
-export const ChartExpandedStateSheetHeight = android
-  ? deviceUtils.dimensions.height - 40
-  : chartExpandedAvailable
+export const ChartExpandedStateSheetHeight = chartExpandedAvailable
   ? heightWithChart
   : heightWithNoChart;
 

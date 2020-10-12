@@ -24,8 +24,8 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
   overflow: hidden;
   position: absolute;
   border-radius: 20;
-  top: ${({ contentHeight }) =>
-    contentHeight && android
+  top: ${({ contentHeight, additionalTopPadding }) =>
+    contentHeight && additionalTopPadding
       ? deviceUtils.dimensions.height - contentHeight
       : 0};
   right: 0;
@@ -56,6 +56,7 @@ export default function SlackSheet({
   contentHeight,
   hideHandle = false,
   scrollEnabled = true,
+  additionalTopPadding = false,
   ...props
 }) {
   const { height: deviceHeight } = useDimensions();
@@ -87,6 +88,7 @@ export default function SlackSheet({
         <Pressable onPress={goBack} style={[StyleSheet.absoluteFillObject]} />
       ) : null}
       <Container
+        additionalTopPadding={additionalTopPadding}
         backgroundColor={backgroundColor}
         contentHeight={contentHeight}
         {...props}
