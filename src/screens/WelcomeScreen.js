@@ -111,8 +111,8 @@ const RainbowButton = ({
 }) => {
   return (
     <ButtonPressAnimation onPress={onPress} scaleTo={0.9} {...props}>
-      <DarkShadow style={darkShadowStyle} />
-      <Shadow style={shadowStyle} />
+      {ios && <DarkShadow style={darkShadowStyle} />}
+      {ios && <Shadow style={shadowStyle} />}
       <ButtonContainer height={height} style={style}>
         <ButtonContent>
           <ButtonEmoji name={emoji} />
@@ -449,7 +449,7 @@ export default function WelcomeScreen() {
     const color = colorAnimation(rValue, true);
     return {
       emoji: 'castle',
-      height: 54,
+      height: 54 + (ios ? 0 : 8),
       shadowStyle: {
         backgroundColor: backgroundColor,
         shadowColor: color,
@@ -457,7 +457,8 @@ export default function WelcomeScreen() {
       style: {
         backgroundColor: colors.dark,
         borderColor: backgroundColor,
-        width: 230,
+        borderWidth: ios ? 0 : 5,
+        width: 230 + (ios ? 0 : 5),
       },
       text: 'Get a new wallet',
       textColor: colors.white,
