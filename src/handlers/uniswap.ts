@@ -11,6 +11,7 @@ import {
   WETH,
 } from '@uniswap/sdk';
 import { get, isEmpty, mapKeys, mapValues, toLower } from 'lodash';
+import { uniswapClient } from '../apollo/client';
 import { UNISWAP_ALL_TOKENS } from '../apollo/queries';
 import {
   convertAmountToRawAmount,
