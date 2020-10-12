@@ -20,7 +20,7 @@ export function SwipeNavigator() {
     <Swipe.Navigator
       initialLayout={deviceUtils.dimensions}
       initialRouteName={Routes.WALLET_SCREEN}
-      pager={renderPager}
+      {...(ios && { pager: renderPager })}
       position={scrollPosition}
       swipeEnabled={!isCoinListEdited}
       tabBar={renderTabBar}
