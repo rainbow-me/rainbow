@@ -61,6 +61,8 @@ const SavingsListRowShadowStack = styled(ShadowStack).attrs(
   elevation: 2;
 `;
 
+const ButtonIOS = ios ? ButtonPressAnimation : React.Fragment;
+
 const SavingsListRow = ({
   cTokenBalance,
   lifetimeSupplyInterestAccrued,
@@ -151,14 +153,17 @@ const SavingsListRow = ({
   const displayValue = formatSavingsAmount(value);
 
   return !underlying || !underlying.address ? null : (
-    <ButtonPressAnimation onPress={onButtonPress} scaleTo={0.96}>
+    <ButtonIOS onPress={onButtonPress} scaleTo={0.96}>
       <Centered direction="column" marginBottom={15}>
         <SavingsListRowShadowStack deviceWidth={deviceWidth}>
           <SavingsListRowGradient />
           <Row
             align="center"
+            as={ios ? null : ButtonPressAnimation}
             css={padding(9, 10, 10, 11)}
             justify="space-between"
+            onPress={onButtonPress}
+            scaleTo={0.96}
           >
             {underlying.symbol && supplyBalanceUnderlying ? (
               <Centered>
@@ -180,7 +185,7 @@ const SavingsListRow = ({
           </Row>
         </SavingsListRowShadowStack>
       </Centered>
-    </ButtonPressAnimation>
+    </ButtonIOS>
   );
 };
 

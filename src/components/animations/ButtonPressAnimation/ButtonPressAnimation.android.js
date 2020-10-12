@@ -33,9 +33,10 @@ export default function ButtonPressAnimation({
       onLongPress={onLongPress}
       onPress={onPress}
       onPressStart={onPressStart}
-      style={style}
     >
-      <View pointerEvents="box-only">{children}</View>
+      <View pointerEvents="box-only" style={style}>
+        {children}
+      </View>
     </TouchableNativeFeedback>
   );
 }
