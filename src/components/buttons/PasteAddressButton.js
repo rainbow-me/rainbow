@@ -7,7 +7,7 @@ import { deviceUtils } from '@rainbow-me/utils';
 
 export default function PasteAddressButton({ onPress }) {
   const [isValid, setIsValid] = useState(false);
-  const { triggerInvalidPaste } = useInvalidPaste();
+  const { onInvalidPaste } = useInvalidPaste();
   const {
     clipboard,
     enablePaste,
@@ -21,20 +21,24 @@ export default function PasteAddressButton({ onPress }) {
       setIsValid(isValidAddress);
     }
 
-    validate();
+    if (!deviceUtils.isIOS14) {
+      validate();
+    }
   }, [clipboard]);
 
   const handlePress = useCallback(() => {
     if (!enablePaste) return;
 
-    getClipboard(result => {
-      if (isValid) {
-        onPress?.(result);
-      } else {
-        triggerInvalidPaste();
+    getClipboard(async clipboardData => {
+      const isValidAddress = await checkIsValidAddressOrENS(clipboardData);
+
+      if (isValidAddress) {
+        return onPress?.(clipboardData);
       }
+
+      return onInvalidPaste();
     });
-  }, [enablePaste, getClipboard, isValid, onPress, triggerInvalidPaste]);
+  }, [enablePaste, getClipboard, onInvalidPaste, onPress]);
 
   return (
     <MiniButton

@@ -119,7 +119,7 @@ export default function SendHeader({
     setClipboard,
   ]);
 
-  const isPreExistingContact = (contact?.nickname.length || 0) > 0;
+  const isPreExistingContact = (contact?.nickname?.length || 0) > 0;
 
   return (
     <Fragment>
