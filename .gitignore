@@ -71,4 +71,4 @@ buck-out/
 src/screens/ExamplePage.js
 
 #e2e output
-e2e/logs/*.xml
+e2e/logs/*/*.xml
