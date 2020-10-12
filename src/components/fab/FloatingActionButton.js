@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react';
-import { View } from 'react-native';
 import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import { magicMemo } from '../../utils';
@@ -46,22 +45,26 @@ const FloatingActionButton = ({
   );
 
   return (
-    <View {...props}>
+    <ButtonPressAnimation
+      disabled={disabled || android}
+      hapticType="impactLight"
+      onPress={handlePress}
+      onPressIn={handlePressIn}
+      scaleTo={scaleTo}
+      useLateHaptic={false}
+      {...props}
+    >
       <ShadowStack
         {...borders.buildCircleAsObject(size)}
         hideShadow={disabled}
         shadows={shadows}
       >
         <ButtonPressAnimation
-          disabled={disabled}
-          hapticType="impactLight"
+          disabled={disabled || ios}
           onPress={handlePress}
-          onPressIn={handlePressIn}
-          scaleTo={scaleTo}
           style={{
             height: size,
           }}
-          useLateHaptic={false}
         >
           <Content backgroundColor={disabled ? colors.grey : backgroundColor}>
             {typeof children === 'function' ? children({ size }) : children}
@@ -69,7 +72,7 @@ const FloatingActionButton = ({
           </Content>
         </ButtonPressAnimation>
       </ShadowStack>
-    </View>
+    </ButtonPressAnimation>
   );
 };
 
