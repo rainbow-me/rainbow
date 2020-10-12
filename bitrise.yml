@@ -172,6 +172,18 @@ workflows:
         is_expand: false
       GANACHE_URL: http://127.0.0.1:7545
     steps:
+    - custom-test-results-export@0:
+        is_always_run: false
+        inputs:
+        - base_path: "$BITRISE_SOURCE_DIR/e2e/logs/iOS/"
+        - search_pattern: "*"
+        - test_name: Detox e2e - iOS Test Report
+    - deploy-to-bitrise-io@1:
+        inputs:
+        - deploy_path: "$BITRISE_TEST_RESULT_DIR"
+        - notify_user_groups: none
+        - is_enable_public_page: 'false'
+        is_always_run: false
     - slack@3:
         inputs:
         - channel: "#bitrise"
