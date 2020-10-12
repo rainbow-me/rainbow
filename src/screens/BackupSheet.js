@@ -183,8 +183,8 @@ export default function BackupSheet() {
     step,
   ]);
 
-  const sheetHeight = android ? 1 : longFormHeight;
-  const wrapperHeight = android ? deviceHeight : deviceHeight + longFormHeight;
+  const sheetHeight = longFormHeight;
+  const wrapperHeight = deviceHeight + longFormHeight;
 
   return (
     <Column height={wrapperHeight} testID="backup-sheet">

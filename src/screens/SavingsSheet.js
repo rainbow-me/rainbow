@@ -159,6 +159,7 @@ const SavingsSheet = () => {
     >
       <StatusBar barStyle="light-content" />
       <SlackSheet
+        additionalTopPadding={android}
         contentHeight={isEmpty ? SavingsSheetEmptyHeight : SavingsSheetHeight}
       >
         {isEmpty ? (
