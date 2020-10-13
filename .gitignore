@@ -3,6 +3,7 @@ ios/GoogleService-Info.plist
 
 # OSX
 #
+ios/ReaHeader.h
 .DS_Store
 ios/Pods/
 ios/*dSYM.zip
@@ -68,3 +69,6 @@ buck-out/
 
 # Development Templates
 src/screens/ExamplePage.js
+
+#e2e output
+e2e/logs/*/*.xml

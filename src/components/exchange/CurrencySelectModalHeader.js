@@ -34,7 +34,7 @@ const Title = styled(TruncatedText).attrs({
   height: 21;
 `;
 
-export default function CurrencySelectModalHeader() {
+export default function CurrencySelectModalHeader({ testID }) {
   const { navigate, dangerouslyGetState } = useNavigation();
   const { params } = useRoute();
   const title = params?.headerTitle;
@@ -55,6 +55,7 @@ export default function CurrencySelectModalHeader() {
           direction="left"
           height={CurrencySelectModalHeaderHeight}
           onPress={handlePressBack}
+          testID={testID}
           throttle
         />
       </BackButtonWrapper>

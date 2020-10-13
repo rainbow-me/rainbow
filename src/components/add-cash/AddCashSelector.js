@@ -19,7 +19,7 @@ const CurrencyItemLabel = styled(Text).attrs({
   opacity: ${({ isSelected }) => (isSelected ? 0.8 : 0.6)};
   padding-bottom: 1.5;
 `;
-
+// eslint-disable-next-line react/display-name
 const CurrencyItem = isWalletEthZero => ({ item, isSelected }) => {
   const label = item === 'ETH' ? 'Ethereum' : item;
 

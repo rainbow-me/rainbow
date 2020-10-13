@@ -1,9 +1,9 @@
 import { useDerivedValue } from 'react-native-reanimated';
-import { useChartData } from 'react-native-animated-charts';
-import useReactiveSharedValue from 'react-native-animated-charts/useReactiveSharedValue';
+import { useChartData } from '@rainbow-me/animated-charts';
+import useReactiveSharedValue from '@rainbow-me/animated-charts/helpers/useReactiveSharedValue';
 
 export function useRatio(name) {
-  const { nativeY, data } = useChartData();
+  const { originalY, data } = useChartData();
 
   const firstValue = useReactiveSharedValue(
     data?.points?.[0]?.y,
@@ -17,8 +17,9 @@ export function useRatio(name) {
   return useDerivedValue(
     () =>
       firstValue.value === Number(firstValue.value)
-        ? (nativeY.value || lastValue.value) / firstValue.value
+        ? (originalY.value || lastValue.value) / firstValue.value
         : 1,
+    [],
     name ? 'ratio_' + name : undefined
   );
 }

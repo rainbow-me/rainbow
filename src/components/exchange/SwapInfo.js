@@ -74,6 +74,7 @@ const SwapInfo = ({ asset, amount }) => {
           },
         ],
       }}
+      testID="swap-info"
     >
       <Container>
         <CoinIcon
@@ -82,6 +83,7 @@ const SwapInfo = ({ asset, amount }) => {
           marginRight={5}
           size={20}
           symbol={get(asset, 'symbol')}
+          testID="swap-info-container"
         />
         <Text color="grey" size="smedium" weight="medium">
           Swapping for{' '}

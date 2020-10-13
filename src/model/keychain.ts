@@ -1,12 +1,18 @@
 import { captureException, captureMessage } from '@sentry/react-native';
 import { forEach, isNil } from 'lodash';
+import DeviceInfo from 'react-native-device-info';
 import {
+  ACCESS_CONTROL,
+  ACCESSIBLE,
+  AUTHENTICATION_TYPE,
+  canImplyAuthentication,
   getAllInternetCredentials,
   getAllInternetCredentialsKeys,
   getInternetCredentials,
   hasInternetCredentials,
   Options,
   resetInternetCredentials,
+  Result,
   setInternetCredentials,
   UserCredentials,
 } from 'react-native-keychain';
@@ -55,7 +61,7 @@ export async function saveString(
 export async function loadString(
   key: string,
   options?: Options
-): Promise<null | string> {
+): Promise<null | string | -1> {
   try {
     const credentials = await getInternetCredentials(key, options);
     if (credentials) {
@@ -64,6 +70,9 @@ export async function loadString(
     }
     logger.sentry(`Keychain: string does not exist for key: ${key}`);
   } catch (err) {
+    if (err.toString() === 'Error: User canceled the operation.') {
+      return -1;
+    }
     logger.sentry(
       `Keychain: failed to load string for key: ${key} error: ${err}`
     );
@@ -84,9 +93,12 @@ export async function saveObject(
 export async function loadObject(
   key: string,
   options?: Options
-): Promise<null | Object> {
+): Promise<null | Object | -1> {
   const jsonValue = await loadString(key, options);
   if (!jsonValue) return null;
+  if (jsonValue === -1) {
+    return -1;
+  }
   try {
     const objectValue = JSON.parse(jsonValue);
     logger.log(`Keychain: parsed object for key: ${key}`);
@@ -112,7 +124,7 @@ export async function remove(key: string): Promise<void> {
   }
 }
 
-async function loadAllKeys(): Promise<null | UserCredentials[]> {
+export async function loadAllKeys(): Promise<null | UserCredentials[]> {
   try {
     const response = await getAllInternetCredentials();
     if (response) {
@@ -151,7 +163,7 @@ export async function loadAllKeysOnly(): Promise<null | string[]> {
   return null;
 }
 
-export async function hasKey(key: string) {
+export async function hasKey(key: string): Promise<boolean | Result> {
   try {
     const result = await hasInternetCredentials(key);
     return result;
@@ -161,5 +173,45 @@ export async function hasKey(key: string) {
     );
     captureException(err);
   }
-  return null;
+  return false;
+}
+
+export async function wipeKeychain(): Promise<void> {
+  try {
+    const results = await loadAllKeys();
+    if (results) {
+      await Promise.all(
+        results?.map(result => resetInternetCredentials(result.username))
+      );
+      logger.log('keychain wiped!');
+    }
+  } catch (e) {
+    logger.sentry('error while wiping keychain');
+    captureException(e);
+  }
+}
+
+export async function getPrivateAccessControlOptions(): Promise<Options> {
+  let res = {};
+  // This method is iOS Only!!!
+  try {
+    const canAuthenticate = await canImplyAuthentication({
+      authenticationType: AUTHENTICATION_TYPE.DEVICE_PASSCODE_OR_BIOMETRICS,
+    });
+
+    let isSimulator = false;
+
+    if (canAuthenticate) {
+      isSimulator = __DEV__ && (await DeviceInfo.isEmulator());
+    }
+    if (canAuthenticate && !isSimulator) {
+      res = {
+        accessControl: ACCESS_CONTROL.USER_PRESENCE,
+        accessible: ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
+      };
+    }
+    // eslint-disable-next-line no-empty
+  } catch (e) {}
+
+  return res;
 }

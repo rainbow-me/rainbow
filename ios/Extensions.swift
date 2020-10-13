@@ -210,6 +210,8 @@ extension UITableView {
         messageLabel.textAlignment = .center
         messageLabel.textColor = UIColor.RainbowTheme.Transactions.blueGreyDark35
         messageLabel.sizeToFit()
+        messageLabel.isAccessibilityElement = true
+        messageLabel.accessibilityLabel="no-transactions-yet-label"
         paragraphStyle.alignment = .center
         paragraphStyle.lineHeightMultiple = 1.25
         
@@ -220,7 +222,7 @@ extension UITableView {
         
         self.backgroundView = messageLabel
     }
-
+    
     func restore() {
         self.backgroundView = nil
     }

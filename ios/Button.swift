@@ -84,6 +84,9 @@ class Button : RCTView {
   }
   
   override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+    if invalidated {
+      return
+    }
     if let touch = touches.first {
       let location = touch.location(in: self)
       if animator?.isRunning ?? false {

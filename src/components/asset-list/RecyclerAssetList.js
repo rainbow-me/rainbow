@@ -437,7 +437,7 @@ class RecyclerAssetList extends Component {
             ctx.push({
               familySectionIndex: index,
               item: { ...item, ...section.perData },
-              renderItem: section.renderItem, // 8% of CPU
+              renderItem: section.renderItem,
             });
           }
         });
@@ -445,7 +445,7 @@ class RecyclerAssetList extends Component {
         ctx = ctx.concat(
           section.data.map(item => ({
             item: { ...item, ...section.perData },
-            renderItem: section.renderItem, // 1% of CPU
+            renderItem: section.renderItem,
           }))
         );
       }
@@ -572,10 +572,10 @@ class RecyclerAssetList extends Component {
     if (
       collectibles.data &&
       prevCollectibles.data &&
-      collectibles.data[0].familyName === 'Showcase' &&
-      (collectibles.data[0].childrenAmount !==
-        prevCollectibles.data[0].childrenAmount ||
-        prevCollectibles.data[0].familyName !== 'Showcase')
+      collectibles.data[0]?.familyName === 'Showcase' &&
+      (collectibles.data[0]?.childrenAmount !==
+        prevCollectibles.data[0]?.childrenAmount ||
+        prevCollectibles.data[0]?.familyName !== 'Showcase')
     ) {
       const familyIndex = findIndex(this.state.dataProvider._data, function(
         data

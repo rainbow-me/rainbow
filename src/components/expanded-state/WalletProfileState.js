@@ -1,24 +1,22 @@
 import React, { useCallback, useRef, useState } from 'react';
 import styled from 'styled-components/primitives';
-import BiometryTypes from '../../helpers/biometryTypes';
-import { useNavigation } from '../../navigation/Navigation';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
+import { BiometricButtonContent } from '../buttons';
+import ImageAvatar from '../contacts/ImageAvatar';
 import CopyTooltip from '../copy-tooltip';
-import { Icon } from '../icons';
-import { Centered, ColumnWithDividers, RowWithMargins } from '../layout';
+import { Centered, ColumnWithDividers } from '../layout';
 import { Text, TruncatedAddress } from '../text';
 import { ProfileAvatarButton, ProfileModal, ProfileNameInput } from './profile';
-import { useBiometryType } from '@rainbow-me/hooks';
+import {
+  removeFirstEmojiFromString,
+  returnStringFirstEmoji,
+} from '@rainbow-me/helpers/emojiHandler';
+import { useAccountProfile } from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors, margin, padding, position } from '@rainbow-me/styles';
 import { abbreviations } from '@rainbow-me/utils';
-
-const BiometryIcon = styled(Icon).attrs(({ biometryType }) => ({
-  color: colors.appleBlue,
-  name: biometryType.toLowerCase(),
-  size: biometryType === BiometryTypes.passcode ? 19 : 20,
-}))``;
 
 const WalletProfileAddressText = styled(TruncatedAddress).attrs({
   align: 'center',
@@ -45,6 +43,10 @@ const WalletProfileButtonText = styled(Text).attrs({
   size: 'larger',
 })``;
 
+const ProfileImage = styled(ImageAvatar)`
+  margin-bottom: 15;
+`;
+
 const WalletProfileDivider = styled(Divider).attrs({
   borderRadius: 1,
   color: colors.rowDividerLight,
@@ -65,13 +67,17 @@ export default function WalletProfileState({
   onCloseModal,
   profile,
 }) {
-  const biometryType = useBiometryType();
+  const nameEmoji = returnStringFirstEmoji(profile?.name);
   const { goBack, navigate } = useNavigation();
+  const { accountImage } = useAccountProfile();
 
   const [color, setColor] = useState(
     (profile.color !== null && profile.color) || colors.getRandomColor()
   );
-  const [value, setValue] = useState(profile?.name || '');
+
+  const [value, setValue] = useState(
+    profile?.name ? removeFirstEmojiFromString(profile.name).join('') : ''
+  );
   const inputRef = useRef(null);
 
   const handleCancel = useCallback(() => {
@@ -82,34 +88,50 @@ export default function WalletProfileState({
   }, [actionType, goBack, navigate]);
 
   const handleSubmit = useCallback(() => {
-    onCloseModal({ color, name: value });
+    onCloseModal({ color, name: nameEmoji ? `${nameEmoji} ${value}` : value });
     goBack();
     if (actionType === 'Create' && isNewProfile) {
       navigate(Routes.CHANGE_WALLET_SHEET);
     }
-  }, [actionType, color, goBack, isNewProfile, navigate, onCloseModal, value]);
+  }, [
+    actionType,
+    color,
+    goBack,
+    isNewProfile,
+    nameEmoji,
+    navigate,
+    onCloseModal,
+    value,
+  ]);
 
   const handleTriggerFocusInput = useCallback(() => inputRef.current?.focus(), [
     inputRef,
   ]);
 
-  const showBiometryIcon =
-    actionType === 'Create' &&
-    (biometryType === BiometryTypes.passcode ||
-      biometryType === BiometryTypes.TouchID);
-  const showFaceIDCharacter =
-    actionType === 'Create' && biometryType === BiometryTypes.FaceID;
-
   return (
     <WalletProfileModal>
-      <Centered direction="column" paddingBottom={30} width="100%">
-        <ProfileAvatarButton color={color} setColor={setColor} value={value} />
+      <Centered
+        direction="column"
+        paddingBottom={30}
+        testID="wallet-info-modal"
+        width="100%"
+      >
+        {accountImage ? (
+          <ProfileImage image={accountImage} size="large" />
+        ) : (
+          <ProfileAvatarButton
+            color={color}
+            setColor={setColor}
+            value={nameEmoji || value}
+          />
+        )}
         <ProfileNameInput
           onChange={setValue}
           onSubmitEditing={handleSubmit}
           placeholder="Name your wallet"
           ref={inputRef}
           selectionColor={colors.avatarColor[color]}
+          testID="wallet-info-input"
           value={value}
         />
         {address && (
@@ -124,17 +146,11 @@ export default function WalletProfileState({
       </Centered>
       <ColumnWithDividers dividerRenderer={WalletProfileDivider} width="100%">
         <WalletProfileButton onPress={handleSubmit}>
-          <RowWithMargins align="center" justify="center" margin={7}>
-            {showBiometryIcon && <BiometryIcon biometryType={biometryType} />}
-            <WalletProfileButtonText
-              color="appleBlue"
-              letterSpacing="rounded"
-              weight="semibold"
-            >
-              {showFaceIDCharacter && '􀎽 '}
-              {isNewProfile ? `${actionType} Wallet` : 'Done'}
-            </WalletProfileButtonText>
-          </RowWithMargins>
+          <BiometricButtonContent
+            showIcon={actionType === 'Create'}
+            testID="wallet-info-submit-button"
+            text={isNewProfile ? `${actionType} Wallet` : 'Done'}
+          />
         </WalletProfileButton>
         <WalletProfileButton onPress={handleCancel}>
           <WalletProfileButtonText

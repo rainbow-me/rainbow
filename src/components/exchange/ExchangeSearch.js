@@ -41,7 +41,10 @@ const SearchInput = styled(Input).attrs({
   margin-left: 7;
 `;
 
-const ExchangeSearch = ({ onChangeText, onFocus, searchQuery }, ref) => {
+const ExchangeSearch = (
+  { onChangeText, onFocus, searchQuery, testID },
+  ref
+) => {
   const handleClearInput = useCallback(() => {
     ref?.current?.clear();
     onChangeText?.('');
@@ -55,6 +58,7 @@ const ExchangeSearch = ({ onChangeText, onFocus, searchQuery }, ref) => {
         onFocus={onFocus}
         placeholder="Search"
         ref={ref}
+        testID={testID + '-input'}
         value={searchQuery}
       />
       <ClearInputDecorator

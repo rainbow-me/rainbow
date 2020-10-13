@@ -10,19 +10,27 @@ import {
   FloatingEmojis,
   FloatingEmojisTapHandler,
 } from '../components/floating-emojis';
-import { Centered, Column, RowWithMargins } from '../components/layout';
+import { Centered, Column } from '../components/layout';
 import {
   SavingsPredictionStepper,
   SavingsSheetEmptyState,
   SavingsSheetHeader,
 } from '../components/savings';
-import { SheetActionButton, SlackSheet } from '../components/sheet';
-import { isSymbolStablecoin } from '../helpers/savings';
-import { convertAmountToNativeDisplay } from '../helpers/utilities';
-import { useAccountSettings, useDimensions, useWallets } from '../hooks';
-import { useNavigation } from '../navigation/Navigation';
+import {
+  SheetActionButton,
+  SheetActionButtonRow,
+  SlackSheet,
+} from '../components/sheet';
+import { isSymbolStablecoin } from '@rainbow-me/helpers/savings';
+import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
+import {
+  useAccountSettings,
+  useDimensions,
+  useWallets,
+} from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors, padding, position } from '@rainbow-me/styles';
+import { colors, position } from '@rainbow-me/styles';
 
 export const SavingsSheetEmptyHeight = 313;
 export const SavingsSheetHeight = 352;
@@ -35,7 +43,7 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
 
 const SavingsSheet = () => {
   const { height: deviceHeight } = useDimensions();
-  const { navigate, goBack } = useNavigation();
+  const { navigate } = useNavigation();
   const { params } = useRoute();
   const insets = useSafeArea();
   const { isReadOnlyWallet } = useWallets();
@@ -99,12 +107,10 @@ const SavingsSheet = () => {
         label: underlying.symbol,
       });
     } else {
-      goBack();
       Alert.alert(`You need to import the wallet in order to do this`);
     }
   }, [
     cTokenBalance,
-    goBack,
     isReadOnlyWallet,
     navigate,
     supplyBalanceUnderlying,
@@ -131,17 +137,9 @@ const SavingsSheet = () => {
         label: underlying.symbol,
       });
     } else {
-      goBack();
       Alert.alert(`You need to import the wallet in order to do this`);
     }
-  }, [
-    goBack,
-    isEmpty,
-    isReadOnlyWallet,
-    navigate,
-    underlying,
-    underlyingPrice,
-  ]);
+  }, [isEmpty, isReadOnlyWallet, navigate, underlying, underlyingPrice]);
 
   return (
     <Container
@@ -152,7 +150,6 @@ const SavingsSheet = () => {
       <StatusBar barStyle="light-content" />
       <SlackSheet
         contentHeight={isEmpty ? SavingsSheetEmptyHeight : SavingsSheetHeight}
-        scrollEnabled={false}
       >
         {isEmpty ? (
           <SavingsSheetEmptyState
@@ -166,7 +163,7 @@ const SavingsSheet = () => {
               balance={balance}
               lifetimeAccruedInterest={lifetimeAccruedInterest}
             />
-            <RowWithMargins css={padding(24, 15)} margin={15}>
+            <SheetActionButtonRow>
               <SheetActionButton
                 color={colors.dark}
                 label="􀁏 Withdraw"
@@ -177,8 +174,8 @@ const SavingsSheet = () => {
                 label="􀁍 Deposit"
                 onPress={onDeposit}
               />
-            </RowWithMargins>
-            <Divider zIndex={0} />
+            </SheetActionButtonRow>
+            <Divider color={colors.rowDividerLight} zIndex={0} />
             <FloatingEmojis
               disableHorizontalMovement
               distance={600}

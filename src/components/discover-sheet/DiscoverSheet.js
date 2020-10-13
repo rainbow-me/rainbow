@@ -1,13 +1,17 @@
 import { useIsFocused } from '@react-navigation/native';
-import React, { useCallback, useRef, useState } from 'react';
-import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { BaseButton } from 'react-native-gesture-handler';
+import React, { Fragment } from 'react';
+import { Platform } from 'react-native';
 import Animated from 'react-native-reanimated';
+import { useSafeArea } from 'react-native-safe-area-context';
 // eslint-disable-next-line import/no-unresolved
 import SlackBottomSheet from 'react-native-slack-bottom-sheet';
 
 import BottomSheet from 'reanimated-bottom-sheet';
-import { useNavigation } from '../../navigation/Navigation';
+import { ColumnWithMargins } from '../layout';
+import { SlackSheet } from '../sheet';
+import DiscoverSheetHeader from './DiscoverSheetHeader';
+import TopMoversSection from './TopMoversSection';
+import { position } from '@rainbow-me/styles';
 
 // eslint-disable-next-line import/no-named-as-default-member
 const { SpringUtils } = Animated;
@@ -23,406 +27,19 @@ const discoverSheetSpring = SpringUtils.makeConfigFromBouncinessAndSpeed({
   toss: 6,
 });
 
-const Lorem = () => {
-  const { navigate } = useNavigation();
+const DiscoverSheetContent = () => (
+  <Fragment>
+    <DiscoverSheetHeader />
+    <ColumnWithMargins flex={1} margin={42}>
+      <TopMoversSection />
+    </ColumnWithMargins>
+  </Fragment>
+);
 
-  return (
-    <View
-      style={{
-        paddingLeft: 19,
-        paddingRight: 19,
-      }}
-    >
-      <BaseButton onPress={() => navigate('ImportSeedPhraseSheet')}>
-        <Text style={styles.panelTitle}>Discover</Text>
-      </BaseButton>
-      <Text>
-        At vero eos et accusamus et iusto odio dignissimos ducimus qui
-        blanditiis praesentium voluptatum deleniti atque corrupti quos dolores
-        et quas molestias excepturi sint occaecati cupiditate non provident,
-        similique sunt in culpa qui officia deserunt mollitia animi, id est
-        laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita
-        distinctio. Nam libero tempore, cum soluta nobis est eligendi optio
-        cumque nihil impedit quo minus id quod maxime placeat facere possimus,
-        omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem
-        quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet
-        ut et voluptates repudiandae sint et molestiae non recusandae. Itaque
-        earum rerum hic tenetur a sapiente delectus, ut aut reiciendis
-        voluptatibus maiores alias consequatur aut perferendis doloribus
-        asperiores repellat. At vero eos et accusamus et iusto odio dignissimos
-        ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti
-        quos dolores et quas molestias excepturi sint occaecati cupiditate non
-        provident, similique sunt in culpa qui officia deserunt mollitia animi,
-        id est laborum et dolorum fuga. Et harum quidem rerum facilis est et
-        expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi
-        optio cumque nihil impedit quo minus id quod maxime placeat facere
-        possimus, omnis voluptas assumenda est, omnis dolor repellendus.
-        Temporibus autem quibusdam et aut officiis debitis aut rerum
-        necessitatibus saepe eveniet ut et voluptates repudiandae sint et
-        molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente
-        delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut
-        perferendis doloribus asperiores repellat. At vero eos et accusamus et
-        iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum
-        deleniti atque corrupti quos dolores et quas molestias excepturi sint
-        occaecati cupiditate non provident, similique sunt in culpa qui officia
-        deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem
-        rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta
-        nobis est eligendi optio cumque nihil impedit quo minus id quod maxime
-        placeat facere possimus, omnis voluptas assumenda est, omnis dolor
-        repellendus. Temporibus autem quibusdam et aut officiis debitis aut
-        rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et
-        molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente
-        delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut
-        perferendis doloribus asperiores repellat. At vero eos et accusamus et
-        iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum
-        deleniti atque corrupti quos dolores et quas molestias excepturi sint
-        occaecati cupiditate non provident, similique sunt in culpa qui officia
-        deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem
-        rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta
-        nobis est eligendi optio cumque nihil impedit quo minus id quod maxime
-        placeat facere possimus, omnis voluptas assumenda est, omnis dolor
-        repellendus. Temporibus autem quibusdam et aut officiis debitis aut
-        rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et
-        molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente
-        delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut
-        perferendis doloribus asperiores repellat. At vero eos et accusamus et
-        iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum
-        deleniti atque corrupti quos dolores et quas molestias excepturi sint
-        occaecati cupiditate non provident, similique sunt in culpa qui officia
-        deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem
-        rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta
-        nobis est eligendi optio cumque nihil impedit quo minus id quod maxime
-        placeat facere possimus, omnis voluptas assumenda est, omnis dolor
-        repellendus. Temporibus autem quibusdam et aut officiis debitis aut
-        rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et
-        molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente
-        delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut
-        perferendis doloribus asperiores repellat. At vero eos et accusamus et
-        iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum
-        deleniti atque corrupti quos dolores et quas molestias excepturi sint
-        occaecati cupiditate non provident, similique sunt in culpa qui officia
-        deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem
-        rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta
-        nobis est eligendi optio cumque nihil impedit quo minus id quod maxime
-        placeat facere possimus, omnis voluptas assumenda est, omnis dolor
-        repellendus. Temporibus autem quibusdam et aut officiis debitis aut
-        rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et
-        molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente
-        delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut
-        perferendis doloribus asperiores repellat. At vero eos et accusamus et
-        iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum
-        deleniti atque corrupti quos dolores et quas molestias excepturi sint
-        occaecati cupiditate non provident, similique sunt in culpa qui officia
-        deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem
-        rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta
-        nobis est eligendi optio cumque nihil impedit quo minus id quod maxime
-        placeat facere possimus, omnis voluptas assumenda est, omnis dolor
-        repellendus. Temporibus autem quibusdam et aut officiis debitis aut
-        rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et
-        molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente
-        delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut
-        perferendis doloribus asperiores repellat. At vero eos et accusamus et
-        iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum
-        deleniti atque corrupti quos dolores et quas molestias excepturi sint
-        occaecati cupiditate non provident, similique sunt in culpa qui officia
-        deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem
-        rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta
-        nobis est eligendi optio cumque nihil impedit quo minus id quod maxime
-        placeat facere possimus, omnis voluptas assumenda est, omnis dolor
-        repellendus. Temporibus autem quibusdam et aut officiis debitis aut
-        rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et
-        molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente
-        delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut
-        perferendis doloribus asperiores repellat. At vero eos et accusamus et
-        iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum
-        deleniti atque corrupti quos dolores et quas molestias excepturi sint
-        occaecati cupiditate non provident, similique sunt in culpa qui officia
-        deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem
-        rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta
-        nobis est eligendi optio cumque nihil impedit quo minus id quod maxime
-        placeat facere possimus, omnis voluptas assumenda est, omnis dolor
-        repellendus. Temporibus autem quibusdam et aut officiis debitis aut
-        rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et
-        molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente
-        delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut
-        perferendis doloribus asperiores repellat. At vero eos et accusamus et
-        iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum
-        deleniti atque corrupti quos dolores et quas molestias excepturi sint
-        occaecati cupiditate non provident, similique sunt in culpa qui officia
-        deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem
-        rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta
-        nobis est eligendi optio cumque nihil impedit quo minus id quod maxime
-        placeat facere possimus, omnis voluptas assumenda est, omnis dolor
-        repellendus. Temporibus autem quibusdam et aut officiis debitis aut
-        rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et
-        molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente
-        delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut
-        perferendis doloribus asperiores repellat. At vero eos et accusamus et
-        iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum
-        deleniti atque corrupti quos dolores et quas molestias excepturi sint
-        occaecati cupiditate non provident, similique sunt in culpa qui officia
-        deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem
-        rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta
-        nobis est eligendi optio cumque nihil impedit quo minus id quod maxime
-        placeat facere possimus, omnis voluptas assumenda est, omnis dolor
-        repellendus. Temporibus autem quibusdam et aut officiis debitis aut
-        rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et
-        molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente
-        delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut
-        perferendis doloribus asperiores repellat. At vero eos et accusamus et
-        iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum
-        deleniti atque corrupti quos dolores et quas molestias excepturi sint
-        occaecati cupiditate non provident, similique sunt in culpa qui officia
-        deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem
-        rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta
-        nobis est eligendi optio cumque nihil impedit quo minus id quod maxime
-        placeat facere possimus, omnis voluptas assumenda est, omnis dolor
-        repellendus. Temporibus autem quibusdam et aut officiis debitis aut
-        rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et
-        molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente
-        delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut
-        perferendis doloribus asperiores repellat. At vero eos et accusamus et
-        iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum
-        deleniti atque corrupti quos dolores et quas molestias excepturi sint
-        occaecati cupiditate non provident, similique sunt in culpa qui officia
-        deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem
-        rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta
-        nobis est eligendi optio cumque nihil impedit quo minus id quod maxime
-        placeat facere possimus, omnis voluptas assumenda est, omnis dolor
-        repellendus. Temporibus autem quibusdam et aut officiis debitis aut
-        rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et
-        molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente
-        delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut
-        perferendis doloribus asperiores repellat. At vero eos et accusamus et
-        iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum
-        deleniti atque corrupti quos dolores et quas molestias excepturi sint
-        occaecati cupiditate non provident, similique sunt in culpa qui officia
-        deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem
-        rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta
-        nobis est eligendi optio cumque nihil impedit quo minus id quod maxime
-        placeat facere possimus, omnis voluptas assumenda est, omnis dolor
-        repellendus. Temporibus autem quibusdam et aut officiis debitis aut
-        rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et
-        molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente
-        delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut
-        perferendis doloribus asperiores repellat. At vero eos et accusamus et
-        iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum
-        deleniti atque corrupti quos dolores et quas molestias excepturi sint
-        occaecati cupiditate non provident, similique sunt in culpa qui officia
-        deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem
-        rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta
-        nobis est eligendi optio cumque nihil impedit quo minus id quod maxime
-        placeat facere possimus, omnis voluptas assumenda est, omnis dolor
-        repellendus. Temporibus autem quibusdam et aut officiis debitis aut
-        rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et
-        molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente
-        delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut
-        perferendis doloribus asperiores repellat. At vero eos et accusamus et
-        iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum
-        deleniti atque corrupti quos dolores et quas molestias excepturi sint
-        occaecati cupiditate non provident, similique sunt in culpa qui officia
-        deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem
-        rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta
-        nobis est eligendi optio cumque nihil impedit quo minus id quod maxime
-        placeat facere possimus, omnis voluptas assumenda est, omnis dolor
-        repellendus. Temporibus autem quibusdam et aut officiis debitis aut
-        rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et
-        molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente
-        delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut
-        perferendis doloribus asperiores repellat. At vero eos et accusamus et
-        iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum
-        deleniti atque corrupti quos dolores et quas molestias excepturi sint
-        occaecati cupiditate non provident, similique sunt in culpa qui officia
-        deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem
-        rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta
-        nobis est eligendi optio cumque nihil impedit quo minus id quod maxime
-        placeat facere possimus, omnis voluptas assumenda est, omnis dolor
-        repellendus. Temporibus autem quibusdam et aut officiis debitis aut
-        rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et
-        molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente
-        delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut
-        perferendis doloribus asperiores repellat. At vero eos et accusamus et
-        iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum
-        deleniti atque corrupti quos dolores et quas molestias excepturi sint
-        occaecati cupiditate non provident, similique sunt in culpa qui officia
-        deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem
-        rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta
-        nobis est eligendi optio cumque nihil impedit quo minus id quod maxime
-        placeat facere possimus, omnis voluptas assumenda est, omnis dolor
-        repellendus. Temporibus autem quibusdam et aut officiis debitis aut
-        rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et
-        molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente
-        delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut
-        perferendis doloribus asperiores repellat. At vero eos et accusamus et
-        iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum
-        deleniti atque corrupti quos dolores et quas molestias excepturi sint
-        occaecati cupiditate non provident, similique sunt in culpa qui officia
-        deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem
-        rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta
-        nobis est eligendi optio cumque nihil impedit quo minus id quod maxime
-        placeat facere possimus, omnis voluptas assumenda est, omnis dolor
-        repellendus. Temporibus autem quibusdam et aut officiis debitis aut
-        rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et
-        molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente
-        delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut
-        perferendis doloribus asperiores repellat. At vero eos et accusamus et
-        iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum
-        deleniti atque corrupti quos dolores et quas molestias excepturi sint
-        occaecati cupiditate non provident, similique sunt in culpa qui officia
-        deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem
-        rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta
-        nobis est eligendi optio cumque nihil impedit quo minus id quod maxime
-        placeat facere possimus, omnis voluptas assumenda est, omnis dolor
-        repellendus. Temporibus autem quibusdam et aut officiis debitis aut
-        rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et
-        molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente
-        delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut
-        perferendis doloribus asperiores repellat. At vero eos et accusamus et
-        iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum
-        deleniti atque corrupti quos dolores et quas molestias excepturi sint
-        occaecati cupiditate non provident, similique sunt in culpa qui officia
-        deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem
-        rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta
-        nobis est eligendi optio cumque nihil impedit quo minus id quod maxime
-        placeat facere possimus, omnis voluptas assumenda est, omnis dolor
-        repellendus. Temporibus autem quibusdam et aut officiis debitis aut
-        rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et
-        molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente
-        delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut
-        perferendis doloribus asperiores repellat. At vero eos et accusamus et
-        iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum
-        deleniti atque corrupti quos dolores et quas molestias excepturi sint
-        occaecati cupiditate non provident, similique sunt in culpa qui officia
-        deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem
-        rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta
-        nobis est eligendi optio cumque nihil impedit quo minus id quod maxime
-        placeat facere possimus, omnis voluptas assumenda est, omnis dolor
-        repellendus. Temporibus autem quibusdam et aut officiis debitis aut
-        rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et
-        molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente
-        delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut
-        perferendis doloribus asperiores repellat. At vero eos et accusamus et
-        iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum
-        deleniti atque corrupti quos dolores et quas molestias excepturi sint
-        occaecati cupiditate non provident, similique sunt in culpa qui officia
-        deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem
-        rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta
-        nobis est eligendi optio cumque nihil impedit quo minus id quod maxime
-        placeat facere possimus, omnis voluptas assumenda est, omnis dolor
-        repellendus. Temporibus autem quibusdam et aut officiis debitis aut
-        rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et
-        molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente
-        delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut
-        perferendis doloribus asperiores repellat. At vero eos et accusamus et
-        iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum
-        deleniti atque corrupti quos dolores et quas molestias excepturi sint
-        occaecati cupiditate non provident, similique sunt in culpa qui officia
-        deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem
-        rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta
-        nobis est eligendi optio cumque nihil impedit quo minus id quod maxime
-        placeat facere possimus, omnis voluptas assumenda est, omnis dolor
-        repellendus. Temporibus autem quibusdam et aut officiis debitis aut
-        rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et
-        molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente
-        delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut
-        perferendis doloribus asperiores repellat. At vero eos et accusamus et
-        iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum
-        deleniti atque corrupti quos dolores et quas molestias excepturi sint
-        occaecati cupiditate non provident, similique sunt in culpa qui officia
-        deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem
-        rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta
-        nobis est eligendi optio cumque nihil impedit quo minus id quod maxime
-        placeat facere possimus, omnis voluptas assumenda est, omnis dolor
-        repellendus. Temporibus autem quibusdam et aut officiis debitis aut
-        rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et
-        molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente
-        delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut
-        perferendis doloribus asperiores repellat. At vero eos et accusamus et
-        iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum
-        deleniti atque corrupti quos dolores et quas molestias excepturi sint
-        occaecati cupiditate non provident, similique sunt in culpa qui officia
-        deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem
-        rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta
-        nobis est eligendi optio cumque nihil impedit quo minus id quod maxime
-        placeat facere possimus, omnis voluptas assumenda est, omnis dolor
-        repellendus. Temporibus autem quibusdam et aut officiis debitis aut
-        rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et
-        molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente
-        delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut
-        perferendis doloribus asperiores repellat. At vero eos et accusamus et
-        iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum
-        deleniti atque corrupti quos dolores et quas molestias excepturi sint
-        occaecati cupiditate non provident, similique sunt in culpa qui officia
-        deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem
-        rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta
-        nobis est eligendi optio cumque nihil impedit quo minus id quod maxime
-        placeat facere possimus, omnis voluptas assumenda est, omnis dolor
-        repellendus. Temporibus autem quibusdam et aut officiis debitis aut
-        rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et
-        molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente
-        delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut
-        perferendis doloribus asperiores repellat. At vero eos et accusamus et
-        iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum
-        deleniti atque corrupti quos dolores et quas molestias excepturi sint
-        occaecati cupiditate non provident, similique sunt in culpa qui officia
-        deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem
-        rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta
-        nobis est eligendi optio cumque nihil impedit quo minus id quod maxime
-        placeat facere possimus, omnis voluptas assumenda est, omnis dolor
-        repellendus. Temporibus autem quibusdam et aut officiis debitis aut
-        rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et
-        molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente
-        delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut
-        perferendis doloribus asperiores repellat.
-      </Text>
-    </View>
-  );
-};
-
-function renderInner() {
-  return (
-    <View
-      style={{
-        backgroundColor: 'white',
-        paddingTop: 12,
-      }}
-    >
-      <View style={styles.header}>
-        <View style={styles.panelHeader}>
-          <View style={styles.panelHandle} />
-        </View>
-      </View>
-      <Lorem />
-    </View>
-  );
-}
-
-export function SlackBottomSheetContent() {
-  return (
-    <View style={StyleSheet.absoluteFillObject}>
-      <ScrollView
-        contentContainerStyle={{ marginBottom: 20 }}
-        style={{
-          backgroundColor: 'white',
-          marginBottom: -20,
-          opacity: 1,
-          paddingTop: 12,
-        }}
-      >
-        <Lorem />
-      </ScrollView>
-    </View>
-  );
-}
-
-function DiscoverSheet() {
-  const [initialPosition, setInitialPosition] = useState('long');
-  const position = useRef({ x: 0, y: 0 });
-  const setPosition = useCallback(
-    ({ nativeEvent: { contentOffset } }) => (position.current = contentOffset),
-    []
-  );
+export default function DiscoverSheet() {
+  const insets = useSafeArea();
   const isFocused = useIsFocused();
+
   // noinspection JSConstructorReturnsPrimitive
   return Platform.OS === 'ios' ? (
     <SlackBottomSheet
@@ -430,62 +47,27 @@ function DiscoverSheet() {
       allowsTapToDismiss={false}
       backgroundOpacity={0}
       blocksBackgroundTouches={false}
+      cornerRadius={30}
       initialAnimation={false}
       interactsWithOuterScrollView
       isHapticFeedbackEnabled={false}
-      onWillTransition={({ type }) => setInitialPosition(type)}
       presentGlobally={false}
       scrollsToTopOnTapStatusBar={isFocused}
-      startFromShortForm={initialPosition === 'short'}
-      topOffset={100}
+      showDragIndicator={false}
+      topOffset={insets.top}
       unmountAnimation={false}
     >
-      <View style={StyleSheet.absoluteFillObject}>
-        <ScrollView
-          contentContainerStyle={{ marginBottom: 20 }}
-          contentOffset={position.current}
-          onMomentumScrollEnd={setPosition}
-          onScrollEndDrag={setPosition}
-          style={{
-            backgroundColor: 'white',
-            marginBottom: -20,
-            opacity: 1,
-            paddingTop: 12,
-          }}
-        >
-          <Lorem />
-        </ScrollView>
-      </View>
+      <SlackSheet contentOffset={position.current}>
+        <DiscoverSheetContent />
+      </SlackSheet>
     </SlackBottomSheet>
   ) : (
     <BottomSheet
       borderRadius={20}
       overdragResistanceFactor={0}
-      renderContent={renderInner}
+      renderContent={DiscoverSheetContent}
       snapPoints={[300, 744]}
       springConfig={discoverSheetSpring}
     />
   );
 }
-
-export default DiscoverSheet;
-
-const styles = StyleSheet.create({
-  panelHandle: {
-    backgroundColor: '#3C4252',
-    borderRadius: 2.5,
-    height: 5,
-    marginBottom: 10,
-    opacity: 0.3,
-    width: 36,
-  },
-  panelHeader: {
-    alignItems: 'center',
-  },
-  panelTitle: {
-    fontSize: 27,
-    fontWeight: '700',
-    letterSpacing: -0.4,
-    marginBottom: 10,
-  },
-});

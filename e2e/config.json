@@ -1,6 +1,12 @@
 {
-    "setupFilesAfterEnv": ["./init.js"],
-    "testEnvironment": "node",
-    "reporters": ["detox/runners/jest/streamlineReporter"],
-    "verbose": true
+    "testEnvironment": "./environment",
+    "testRunner": "jest-circus/runner",
+    "testTimeout": 120000,
+    "testRegex": "\\.spec\\.js$",
+    "reporters": [["jest-junit",{"outputDirectory":"./e2e/logs/iOS","outputName":"testResults.xml"}]],
+    "verbose": true,
+    "transform": {
+        "^.+\\.js?$": "babel-jest"
+    },
+    "setupFiles": ["dotenv/config"]
 }

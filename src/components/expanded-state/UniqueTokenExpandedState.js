@@ -1,6 +1,4 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
-import { useShowcaseTokens } from '../../hooks';
-import { magicMemo } from '../../utils';
 import Link from '../Link';
 import { Column, ColumnWithDividers } from '../layout';
 import {
@@ -18,7 +16,9 @@ import {
   UniqueTokenExpandedStateHeader,
   UniqueTokenExpandedStateImage,
 } from './unique-token';
+import { useShowcaseTokens } from '@rainbow-me/hooks';
 import { colors } from '@rainbow-me/styles';
+import { magicMemo } from '@rainbow-me/utils';
 
 const UniqueTokenExpandedState = ({ asset }) => {
   const {
@@ -54,15 +54,15 @@ const UniqueTokenExpandedState = ({ asset }) => {
 
   return (
     <Fragment>
-      <SlackSheet height="100%">
+      <SlackSheet bottomInset={42} height="100%" scrollEnabled>
         <UniqueTokenExpandedStateHeader asset={asset} />
         <UniqueTokenExpandedStateImage asset={asset} />
         <SheetActionButtonRow>
           <SheetActionButton
             color={colors.dark}
-            emoji="trophy"
-            label={isShowcaseAsset ? 'Remove' : 'Add'}
+            label={isShowcaseAsset ? '􀁏 Showcase' : '􀁍 Showcase'}
             onPress={handlePressShowcase}
+            weight="bold"
           />
           {isSendable && <SendActionButton />}
         </SheetActionButtonRow>

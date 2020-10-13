@@ -21,7 +21,7 @@ const BackgroundFill = styled.View`
 `;
 
 const BackgroundGradient = styled(LinearGradient).attrs({
-  colors: [colors.white, '#F7F9FA'],
+  colors: colors.gradients.offWhite,
   end: { x: 0.5, y: 1 },
   start: { x: 0.5, y: 0 },
 })`

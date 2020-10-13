@@ -17,6 +17,7 @@
 #import <RNCPushNotificationIOS.h>
 #import <Sentry/Sentry.h>
 #import "RNSplashScreen.h"
+#import "ReaHeader.h"
 #ifndef DISABLE_REANIMATED
 #import <React/RCTCxxBridgeDelegate.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
@@ -29,7 +30,7 @@
 #import <React/RCTPlatform.h>
 #import <React/RCTImageLoader.h>
 #import <React/JSCExecutorFactory.h>
-#import <RNReanimated/RETurboModuleProvider.h>
+#import <RNReanimated/REATurboModuleProvider.h>
 #import <RNReanimated/REAModule.h>
 #endif
 
@@ -99,9 +100,6 @@ RCT_EXPORT_METHOD(hideAnimated) {
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  #ifndef DISABLE_REANIMATED
-  RCTEnableTurboModule(YES);
-  #endif
   #if DEBUG
     InitializeFlipper(application);
   #endif
@@ -260,20 +258,20 @@ sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
 
 - (Class)getModuleClassFromName:(const char *)name
 {
- return facebook::react::RETurboModuleClassProvider(name);
+ return facebook::react::REATurboModuleClassProvider(name);
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
                                                      jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
- return facebook::react::RETurboModuleProvider(name, jsInvoker);
+ return facebook::react::REATurboModuleProvider(name, jsInvoker);
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
                                                       instance:(id<RCTTurboModule>)instance
                                                      jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
- return facebook::react::RETurboModuleProvider(name, instance, jsInvoker);
+ return facebook::react::REATurboModuleProvider(name, instance, jsInvoker);
 }
 
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass

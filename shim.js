@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 // eslint-disable-next-line import/default
 import ReactNative from 'react-native';
 import Storage from 'react-native-storage';
+import logger from 'logger';
 
 const storage = new Storage({
   defaultExpires: null,
@@ -22,8 +23,10 @@ if (
     },
     makeRemote() {},
     makeShareable() {},
+    registerEventHandler() {},
     startMapper() {},
     stopMapper() {},
+    unregisterEventHandler() {},
   };
 }
 
@@ -46,7 +49,7 @@ if (SHORTEN_PROP_TYPES_ERROR) {
       );
       return;
     }
-    oldConsoleError.apply(this, arguments);
+    oldConsoleError?.apply(this, arguments);
   };
 }
 if (typeof __dirname === 'undefined') global.__dirname = '/';
@@ -69,6 +72,26 @@ const isDev = typeof __DEV__ === 'boolean' && __DEV__;
 process.env.NODE_ENV = isDev ? 'development' : 'production';
 if (typeof localStorage !== 'undefined') {
   localStorage.debug = isDev ? '*' : '';
+}
+
+if (!ReactNative.InteractionManager._shimmed) {
+  const oldCreateInteractionHandle =
+    ReactNative.InteractionManager.createInteractionHandle;
+
+  ReactNative.InteractionManager.createInteractionHandle = function(
+    finishAutomatically = true
+  ) {
+    const handle = oldCreateInteractionHandle();
+    if (finishAutomatically) {
+      setTimeout(() => {
+        ReactNative.InteractionManager.clearInteractionHandle(handle);
+        logger.sentry(`Interaction finished automatically`);
+      }, 3000);
+    }
+    return handle;
+  };
+
+  ReactNative.InteractionManager._shimmed = true;
 }
 
 // If using the crypto shim, uncomment the following line to ensure

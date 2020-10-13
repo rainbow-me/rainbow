@@ -4,12 +4,14 @@ import { omit } from 'lodash';
 import React from 'react';
 import AddCashSheet from '../screens/AddCashSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
+import BackupSheet from '../screens/BackupSheet';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
 import DepositModal from '../screens/DepositModal';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
 import ModalScreen from '../screens/ModalScreen';
 import ReceiveModal from '../screens/ReceiveModal';
+import RestoreSheet from '../screens/RestoreSheet';
 import SavingsSheet from '../screens/SavingsSheet';
 import SendSheet from '../screens/SendSheet';
 import SettingsModal from '../screens/SettingsModal';
@@ -122,6 +124,16 @@ function MainNavigator() {
         options={{
           ...omit(sheetPreset, 'gestureResponseDistance'),
         }}
+      />
+      <Stack.Screen
+        component={BackupSheet}
+        name={Routes.BACKUP_SHEET}
+        options={bottomSheetPreset}
+      />
+      <Stack.Screen
+        component={RestoreSheet}
+        name={Routes.RESTORE_SHEET}
+        options={sheetPreset}
       />
     </Stack.Navigator>
   );

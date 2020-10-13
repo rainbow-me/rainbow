@@ -3,16 +3,16 @@ import React, { useCallback } from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { removeFirstEmojiFromString } from '../../helpers/emojiHandler';
-import { getFontSize } from '../../styles/fonts';
 import { deviceUtils } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText } from '../coin-row';
 import CoinCheckButton from '../coin-row/CoinCheckButton';
 import { ContactAvatar } from '../contacts';
+import ImageAvatar from '../contacts/ImageAvatar';
 import { Icon } from '../icons';
 import { Centered, Column, ColumnWithMargins, Row } from '../layout';
 import { TruncatedAddress, TruncatedText } from '../text';
-import { colors, fonts } from '@rainbow-me/styles';
+import { colors, fonts, getFontSize } from '@rainbow-me/styles';
 
 const maxAccountLabelWidth = deviceUtils.dimensions.width - 88;
 
@@ -102,11 +102,12 @@ export default function AddressRow({ data, editMode, onPress, onEditWallet }) {
     balance,
     color: accountColor,
     ens,
+    image: accountImage,
     index,
     isSelected,
     isReadOnly,
     label,
-    wallet_id,
+    walletId,
   } = data;
 
   let cleanedUpBalance = balance;
@@ -120,8 +121,8 @@ export default function AddressRow({ data, editMode, onPress, onEditWallet }) {
   }
 
   const onOptionsPress = useCallback(() => {
-    onEditWallet(wallet_id, address, cleanedUpLabel);
-  }, [address, cleanedUpLabel, onEditWallet, wallet_id]);
+    onEditWallet(walletId, address, cleanedUpLabel);
+  }, [address, cleanedUpLabel, onEditWallet, walletId]);
 
   return (
     <View style={sx.accountRow}>
@@ -133,12 +134,20 @@ export default function AddressRow({ data, editMode, onPress, onEditWallet }) {
       >
         <Row align="center">
           <Row align="center" flex={1} height={59}>
-            <ContactAvatar
-              color={accountColor}
-              marginRight={10}
-              size="medium"
-              value={label || ens || `${index + 1}`}
-            />
+            {accountImage ? (
+              <ImageAvatar
+                image={accountImage}
+                marginRight={10}
+                size="medium"
+              />
+            ) : (
+              <ContactAvatar
+                color={accountColor}
+                marginRight={10}
+                size="medium"
+                value={label || ens || `${index + 1}`}
+              />
+            )}
             <ColumnWithMargins margin={3}>
               {cleanedUpLabel || ens ? (
                 <TruncatedText style={sx.accountLabel}>
@@ -155,7 +164,7 @@ export default function AddressRow({ data, editMode, onPress, onEditWallet }) {
                 />
               )}
               <BottomRowText style={sx.bottomRowText}>
-                {cleanedUpBalance} ETH
+                {cleanedUpBalance || 0} ETH
               </BottomRowText>
             </ColumnWithMargins>
           </Row>

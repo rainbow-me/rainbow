@@ -18,6 +18,7 @@ const ConfirmExchangeButton = ({
   isSufficientGas,
   onSubmit,
   slippage,
+  testID,
   type,
   ...props
 }) => {
@@ -49,6 +50,7 @@ const ConfirmExchangeButton = ({
       label={label}
       onLongPress={onSubmit}
       shadows={ConfirmExchangeButtonShadows}
+      testID={testID + '-button'}
       theme="dark"
       {...props}
     />

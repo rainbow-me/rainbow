@@ -50,6 +50,7 @@
     _backgroundOpacity = [[NSNumber alloc] initWithDouble:0.7];
     _dismissable = YES;
     _ignoreBottomOffset = NO;
+    _interactWithScrollView = true;
   }
   
   return self;
@@ -69,9 +70,18 @@
   [(PanModalViewController*) [_controller parentVC] jumpToLong:point];
 }
 
+-(void)setLongFormHeight:(NSNumber *)longFormHeight {
+  _longFormHeight = longFormHeight;
+  [(PanModalViewController*) [_controller parentVC] rejump];
+}
+
+-(void)setShortFormHeight:(NSNumber *)shortFormHeight {
+  _shortFormHeight = shortFormHeight;
+  [(PanModalViewController*) [_controller parentVC] rejump];
+}
+
 
 - (void)onTouchTopWrapper:(NSNumber*)dismissing {
-  BOOL dismissingValue = [dismissing boolValue];
   if (_onTouchTop) {
     _onTouchTop(@{ @"dismissing": dismissing });
   }
@@ -292,7 +302,7 @@
 }
 
 - (void)removeController {
-  _controller = nil;
+  //_controller = nil;
 }
 
 @end
@@ -419,6 +429,7 @@ RCT_EXPORT_VIEW_PROPERTY(gestureEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(showDragIndicator, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(customStack, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(dismissable, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(interactWithScrollView, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(topOffset, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(cornerRadius, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(stackPresentation, RNSScreenStackPresentation)

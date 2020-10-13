@@ -1,6 +1,8 @@
 import MaskedView from '@react-native-community/masked-view';
-import React, { useEffect, useRef } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, Easing, StyleSheet } from 'react-native';
+import { IS_TESTING } from 'react-native-dotenv';
 import Reanimated, {
   Clock,
   Easing as REasing,
@@ -14,8 +16,16 @@ import { ButtonPressAnimation } from '../components/animations';
 import RainbowText from '../components/icons/svg/RainbowText';
 import { RowWithMargins } from '../components/layout';
 import { Emoji, Text } from '../components/text';
-import useHideSplashScreen from '../helpers/hideSplashScreen';
+
+import {
+  fetchUserDataFromCloud,
+  isCloudBackupAvailable,
+} from '../handlers/cloudBackup';
+
+import { useHideSplashScreen } from '@rainbow-me/hooks';
+import Routes from '@rainbow-me/routes';
 import { colors, shadow } from '@rainbow-me/styles';
+import logger from 'logger';
 
 const {
   and,
@@ -91,9 +101,10 @@ const RainbowButton = ({
   style,
   textColor,
   text,
+  ...props
 }) => {
   return (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.9}>
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.9} {...props}>
       <DarkShadow style={darkShadowStyle} />
       <Shadow style={shadowStyle} />
       <ButtonContainer height={height} style={style}>
@@ -186,18 +197,22 @@ const rainbows = [
 ];
 
 const traversedRainbows = rainbows.map(
-  ({
-    delay,
-    initialRotate = '0deg',
-    rotate = '0deg',
-    scale = 1,
-    source,
-    x = 0,
-    y = 0,
-  }) => {
+  (
+    {
+      delay,
+      initialRotate = '0deg',
+      rotate = '0deg',
+      scale = 1,
+      source,
+      x = 0,
+      y = 0,
+    },
+    index
+  ) => {
     const animatedValue = new Animated.Value(0);
     return {
       delay,
+      id: index,
       source,
       style: {
         opacity: animatedValue.interpolate({
@@ -279,18 +294,20 @@ function runTiming(value) {
   ]);
 }
 
+/* eslint-disable sort-keys */
 const colorsRGB = [
-  { b: 74, g: 73, r: 255 },
-  { b: 0, g: 170, r: 255 },
-  { b: 111, g: 222, r: 0 },
-  { b: 217, g: 163, r: 0 },
-  { b: 255, g: 92, r: 115 },
+  { r: 255, g: 73, b: 74 },
+  { r: 255, g: 170, b: 0 },
+  { r: 0, g: 222, b: 111 },
+  { r: 0, g: 163, b: 217 },
+  { r: 115, g: 92, b: 255 },
 ];
+/* eslint-enable sort-keys */
 
 const colorRGB = (r, g, b, fromShadow) =>
   // from some reason there's a different bit shifting with shadows
   fromShadow
-    ? color(round(r), round(b), 255, divide(round(r), 256))
+    ? color(round(g), round(b), 255, divide(round(r), 256))
     : color(round(r), round(g), round(b));
 
 const springConfig = {
@@ -320,57 +337,84 @@ function colorAnimation(rValue, fromShadow) {
 }
 
 export default function WelcomeScreen() {
+  const { replace, navigate } = useNavigation();
   const contentAnimation = useAnimatedValue(1);
-  const importButtonAnimation = useAnimatedValue(1);
   const hideSplashScreen = useHideSplashScreen();
+  const createWalletButtonAnimation = useAnimatedValue(1);
+  const [userData, setUserData] = useState(null);
 
   useEffect(() => {
-    hideSplashScreen();
-    Animated.parallel([
-      ...traversedRainbows.map(({ value, delay = 0 }) =>
-        Animated.spring(value, { ...springConfig, delay })
-      ),
-      Animated.sequence([
-        Animated.timing(contentAnimation.current, {
-          duration: 120,
-          easing: Easing.bezier(0.165, 0.84, 0.44, 1),
-          toValue: 1.2,
-        }),
-        Animated.spring(contentAnimation.current, {
-          friction: 8,
-          tension: 100,
-          toValue: 1,
-        }),
-      ]),
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(importButtonAnimation.current, {
-            duration: 1000,
-            toValue: 1.02,
-            useNativeDriver: true,
-          }),
-          Animated.timing(importButtonAnimation.current, {
-            duration: 1000,
-            toValue: 0.98,
-            useNativeDriver: true,
-          }),
-        ])
-      ),
-    ]).start();
+    const initialize = async () => {
+      try {
+        logger.log('downloading iCloud backup info...');
+        const isAvailable = await isCloudBackupAvailable();
+        if (isAvailable) {
+          const data = await fetchUserDataFromCloud();
+          setUserData(data);
+          logger.log('Downloaded iCloud backup info');
+        }
+      } catch (e) {
+        logger.log('error getting userData', e);
+      } finally {
+        hideSplashScreen();
+        Animated.parallel([
+          ...traversedRainbows.map(({ value, delay = 0 }) =>
+            Animated.spring(value, { ...springConfig, delay })
+          ),
+          Animated.sequence([
+            Animated.timing(contentAnimation.current, {
+              duration: 120,
+              easing: Easing.bezier(0.165, 0.84, 0.44, 1),
+              toValue: 1.2,
+            }),
+            Animated.spring(contentAnimation.current, {
+              friction: 8,
+              tension: 100,
+              toValue: 1,
+            }),
+          ]),
+          // We need to disable looping animations
+          // There's no way to disable sync yet
+          // See https://stackoverflow.com/questions/47391019/animated-button-block-the-detox
+          IS_TESTING !== 'true' &&
+            Animated.loop(
+              Animated.sequence([
+                Animated.timing(createWalletButtonAnimation.current, {
+                  duration: 1000,
+                  toValue: 1.02,
+                  useNativeDriver: true,
+                }),
+                Animated.timing(createWalletButtonAnimation.current, {
+                  duration: 1000,
+                  toValue: 0.98,
+                  useNativeDriver: true,
+                }),
+              ])
+            ),
+        ]).start();
+        if (IS_TESTING === 'true') {
+          logger.log(
+            'Disabled loop animations in WelcomeScreen due to .env var IS_TESTING === "true"'
+          );
+        }
+      }
+    };
+    initialize();
+
     return () => {
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      importButtonAnimation.current.setValue(1);
+      createWalletButtonAnimation.current.setValue(1);
       // eslint-disable-next-line react-hooks/exhaustive-deps
       contentAnimation.current.setValue(1);
     };
-  }, [contentAnimation, hideSplashScreen, importButtonAnimation]);
+  }, [contentAnimation, hideSplashScreen, createWalletButtonAnimation]);
 
   const buttonStyle = useMemoOne(
     () => ({
-      transform: [{ scale: importButtonAnimation.current }],
+      transform: [{ scale: createWalletButtonAnimation.current }],
       zIndex: 10,
     }),
-    [importButtonAnimation]
+    [createWalletButtonAnimation]
   );
 
   const contentStyle = useMemoOne(
@@ -381,17 +425,24 @@ export default function WelcomeScreen() {
         },
       ],
     }),
-    [importButtonAnimation]
+    [createWalletButtonAnimation]
   );
 
   const rValue = useValue(0);
 
   const backgroundColor = useMemoOne(() => colorAnimation(rValue, false), []);
 
-  const importButtonProps = useMemoOne(() => {
+  const onCreateWallet = useCallback(async () => {
+    replace(Routes.SWIPE_LAYOUT, {
+      params: { emptyWallet: true },
+      screen: Routes.WALLET_SCREEN,
+    });
+  }, [replace]);
+
+  const createWalletButtonProps = useMemoOne(() => {
     const color = colorAnimation(rValue, true);
     return {
-      emoji: 'european_castle',
+      emoji: 'castle',
       height: 54,
       shadowStyle: {
         backgroundColor: backgroundColor,
@@ -406,6 +457,12 @@ export default function WelcomeScreen() {
       textColor: colors.white,
     };
   }, [rValue]);
+
+  const showRestoreSheet = useCallback(() => {
+    navigate(Routes.RESTORE_SHEET, {
+      userData,
+    });
+  }, [navigate, userData]);
 
   const existingWalletButtonProps = useMemoOne(() => {
     return {
@@ -433,7 +490,7 @@ export default function WelcomeScreen() {
   }, [rValue]);
 
   return (
-    <Container>
+    <Container testID="welcome-screen">
       {traversedRainbows.map(({ source, style, id }) => (
         <RainbowImage key={`rainbow${id}`} source={source} style={style} />
       ))}
@@ -444,10 +501,18 @@ export default function WelcomeScreen() {
         </MaskedView>
 
         <ButtonWrapper style={buttonStyle}>
-          <RainbowButton {...importButtonProps} />
+          <RainbowButton
+            onPress={onCreateWallet}
+            testID="new-wallet-button"
+            {...createWalletButtonProps}
+          />
         </ButtonWrapper>
         <ButtonWrapper>
-          <RainbowButton {...existingWalletButtonProps} />
+          <RainbowButton
+            onPress={showRestoreSheet}
+            {...existingWalletButtonProps}
+            testID="already-have-wallet-button"
+          />
         </ButtonWrapper>
       </ContentWrapper>
     </Container>

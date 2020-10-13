@@ -1,20 +1,19 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { omit } from 'lodash';
-import React from 'react';
+import React, { useContext } from 'react';
 import { StatusBar } from 'react-native';
-import useExperimentalFlag, {
-  NEW_ONBOARDING,
-} from '../config/experimentalHooks';
-import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
+import { InitialRouteContext } from '../context/initialRoute';
 import AddCashSheet from '../screens/AddCashSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
+import BackupSheet from '../screens/BackupSheet';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
 import DepositModal from '../screens/DepositModal';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
 import ModalScreen from '../screens/ModalScreen';
 import ReceiveModal from '../screens/ReceiveModal';
+import RestoreSheet from '../screens/RestoreSheet';
 import SavingsSheet from '../screens/SavingsSheet';
 import SendSheet from '../screens/SendSheet';
 import SettingsModal from '../screens/SettingsModal';
@@ -25,13 +24,14 @@ import WelcomeScreen from '../screens/WelcomeScreen';
 import WithdrawModal from '../screens/WithdrawModal';
 import { SwipeNavigator } from './SwipeNavigator';
 import {
+  backupSheetConfig,
   defaultScreenStackOptions,
   expandedAssetSheetConfig,
   nativeStackConfig,
   nativeStackDefaultConfig,
   nativeStackDefaultConfigWithoutStatusBar,
+  restoreSheetConfig,
   savingsSheetConfig,
-  sharedCoolModalConfig,
   stackNavigationConfig,
 } from './config';
 import {
@@ -45,6 +45,7 @@ import {
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
+import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import createNativeStackNavigator from 'react-native-cool-modals/createNativeStackNavigator';
 
 const Stack = createStackNavigator();
@@ -109,15 +110,11 @@ function AddCashFlowNavigator() {
 }
 
 function MainNavigator() {
-  const isNewOnboardingFlowAvailable = useExperimentalFlag(NEW_ONBOARDING);
+  const initialRoute = useContext(InitialRouteContext);
 
   return (
     <Stack.Navigator
-      initialRouteName={
-        isNewOnboardingFlowAvailable
-          ? Routes.WELCOME_SCREEN
-          : Routes.SWIPE_LAYOUT
-      }
+      initialRouteName={initialRoute}
       {...stackNavigationConfig}
       screenOptions={defaultScreenStackOptions}
     >
@@ -137,11 +134,6 @@ function MainNavigator() {
         component={WalletConnectRedirectSheet}
         name={Routes.WALLET_CONNECT_REDIRECT_SHEET}
         options={bottomSheetPreset}
-      />
-      <Stack.Screen
-        component={TransactionConfirmationScreen}
-        name={Routes.CONFIRM_REQUEST}
-        options={sheetPreset}
       />
     </Stack.Navigator>
   );
@@ -234,12 +226,19 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={SettingsModal}
         name={Routes.SETTINGS_MODAL}
-        {...sharedCoolModalConfig}
+        options={{
+          backgroundColor: '#25292E',
+          backgroundOpacity: 0.7,
+          cornerRadius: 0,
+          customStack: true,
+          ignoreBottomOffset: true,
+          topOffset: 0,
+        }}
       />
       <NativeStack.Screen
         component={ExchangeModalNavigator}
         name={Routes.EXCHANGE_MODAL}
-        options={nativeStackDefaultConfig}
+        options={{ ...nativeStackDefaultConfig, interactWithScrollView: false }}
       />
       <NativeStack.Screen
         component={ExpandedAssetSheet}
@@ -251,11 +250,17 @@ function NativeStackNavigator() {
         name={Routes.CHANGE_WALLET_SHEET}
         options={{
           allowsDragToDismiss: true,
-          backgroundOpacity: 0.6,
+          backgroundColor: '#25292E',
+          backgroundOpacity: 0.7,
           customStack: true,
           springDamping: 1,
           transitionDuration: 0.25,
         }}
+      />
+      <NativeStack.Screen
+        component={BackupSheet}
+        name={Routes.BACKUP_SHEET}
+        {...backupSheetConfig}
       />
       <NativeStack.Screen
         component={ModalScreen}
@@ -268,9 +273,27 @@ function NativeStackNavigator() {
         }}
       />
       <NativeStack.Screen
+        component={RestoreSheet}
+        name={Routes.RESTORE_SHEET}
+        {...restoreSheetConfig}
+      />
+      <NativeStack.Screen
         component={SavingsSheet}
         name={Routes.SAVINGS_SHEET}
         {...savingsSheetConfig}
+      />
+      <NativeStack.Screen
+        component={TransactionConfirmationScreen}
+        name={Routes.CONFIRM_REQUEST}
+        options={{
+          allowsDragToDismiss: true,
+          backgroundColor: '#0A0A0A',
+          backgroundOpacity: 1,
+          customStack: true,
+          headerHeight: 0,
+          isShortFormEnabled: false,
+          topOffset: 0,
+        }}
       />
       <NativeStack.Screen
         component={WithdrawModal}
@@ -282,7 +305,7 @@ function NativeStackNavigator() {
         name={Routes.SAVINGS_DEPOSIT_MODAL}
         options={nativeStackDefaultConfigWithoutStatusBar}
       />
-      {isNativeStackAvailable && (
+      {isNativeStackAvailable ? (
         <>
           <NativeStack.Screen
             component={SendFlowNavigator}
@@ -297,6 +320,12 @@ function NativeStackNavigator() {
             name={Routes.ADD_CASH_SCREEN_NAVIGATOR}
           />
         </>
+      ) : (
+        <NativeStack.Screen
+          component={ImportSeedPhraseFlowNavigator}
+          name={Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR}
+          options={{ customStack: true }}
+        />
       )}
     </NativeStack.Navigator>
   );

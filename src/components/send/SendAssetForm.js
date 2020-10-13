@@ -85,6 +85,7 @@ export default function SendAssetForm({
           item={selectedAsset}
           onPress={onResetAssetSelection}
           selected
+          testID="send-asset-form"
         >
           <Icon name="doubleCaret" />
         </AssetRowElement>

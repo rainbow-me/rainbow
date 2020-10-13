@@ -1,5 +1,5 @@
 import { StackActions, useTheme } from '@react-navigation/native';
-import React, { createContext, useMemo, useRef } from 'react';
+import React, { createContext, useEffect, useMemo, useRef } from 'react';
 import { findNodeHandle, NativeModules, StyleSheet, View } from 'react-native';
 import Components from './screens';
 
@@ -11,8 +11,50 @@ const sx = StyleSheet.create({
   },
 });
 
-function ScreenView({ colors, descriptors, navigation, route, state }) {
+function usePrevious(value) {
   const ref = useRef();
+
+  useEffect(() => {
+    ref.current = value;
+  }, [value]);
+
+  return ref.current;
+}
+
+function ScreenView({ colors, descriptors, navigation, route, state }) {
+  const { options, render: renderScene } = descriptors[route.key];
+  const ref = useRef();
+  const {
+    allowsDragToDismiss,
+    allowsTapToDismiss,
+    anchorModalToLongForm,
+    backgroundColor,
+    backgroundOpacity,
+    contentStyle,
+    cornerRadius,
+    customStack,
+    dismissable,
+    gestureEnabled,
+    headerHeight,
+    ignoreBottomOffset,
+    interactWithScrollView,
+    isShortFormEnabled,
+    longFormHeight,
+    onTouchTop,
+    onWillDismiss,
+    single,
+    shortFormHeight,
+    showDragIndicator,
+    springDamping,
+    stackAnimation,
+    stackPresentation = 'push',
+    startFromShortForm,
+    TEMPORARY_autoJumpToNewHeight,
+    topOffset,
+    transitionDuration,
+  } = options;
+  const prevLongFormHeight = usePrevious(longFormHeight);
+  const prevShortFormHeight = usePrevious(shortFormHeight);
 
   const context = useMemo(
     () => ({
@@ -32,33 +74,32 @@ function ScreenView({ colors, descriptors, navigation, route, state }) {
     []
   );
 
-  const { options, render: renderScene } = descriptors[route.key];
-  const {
-    allowsDragToDismiss,
-    allowsTapToDismiss,
-    anchorModalToLongForm,
-    backgroundColor,
-    backgroundOpacity,
-    contentStyle,
-    cornerRadius,
-    customStack,
-    dismissable,
-    gestureEnabled,
-    headerHeight,
-    ignoreBottomOffset,
-    isShortFormEnabled,
+  // When 'TEMPORARY_autoJumpToNewHeight' option is enabled, automatically "jump" towards either
+  // the new "longFormHeight" or new "shortFormHeight"
+  useEffect(() => {
+    if (
+      TEMPORARY_autoJumpToNewHeight &&
+      longFormHeight !== prevLongFormHeight
+    ) {
+      setImmediate(context.jumpToLong);
+    } else if (
+      TEMPORARY_autoJumpToNewHeight &&
+      shortFormHeight !== prevShortFormHeight
+    ) {
+      setImmediate(context.jumpToShort);
+    }
+  }, [
+    context,
     longFormHeight,
-    onTouchTop,
-    onWillDismiss,
+    prevLongFormHeight,
+    prevShortFormHeight,
     shortFormHeight,
-    showDragIndicator,
-    springDamping,
-    stackAnimation,
-    stackPresentation = 'push',
-    startFromShortForm,
-    topOffset,
-    transitionDuration,
-  } = options;
+    TEMPORARY_autoJumpToNewHeight,
+  ]);
+
+  if (single && state.routes.length > 2) {
+    return null;
+  }
 
   return (
     <ModalContext.Provider value={context}>
@@ -73,6 +114,7 @@ function ScreenView({ colors, descriptors, navigation, route, state }) {
         gestureEnabled={gestureEnabled}
         headerHeight={headerHeight}
         ignoreBottomOffset={ignoreBottomOffset}
+        interactWithScrollView={interactWithScrollView}
         isShortFormEnabled={isShortFormEnabled}
         key={route.key}
         longFormHeight={longFormHeight}

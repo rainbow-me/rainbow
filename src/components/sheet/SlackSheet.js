@@ -10,7 +10,7 @@ import SheetHandleFixedToTop, {
 import { colors } from '@rainbow-me/styles';
 
 const Container = styled(Centered).attrs({ direction: 'column' })`
-  background-color: ${colors.white};
+  background-color: ${({ backgroundColor }) => backgroundColor};
   bottom: 0;
   left: 0;
   overflow: hidden;
@@ -18,8 +18,11 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
   right: 0;
 `;
 
-const Content = styled(ScrollView)`
-  background-color: ${colors.white};
+const Content = styled(ScrollView).attrs({
+  directionalLockEnabled: true,
+  keyboardShouldPersistTaps: 'always',
+})`
+  background-color: ${({ backgroundColor }) => backgroundColor};
   ${({ contentHeight, deviceHeight }) =>
     contentHeight ? `height: ${deviceHeight + contentHeight}` : null};
   padding-top: ${SheetHandleFixedToTopHeight};
@@ -27,16 +30,18 @@ const Content = styled(ScrollView)`
 `;
 
 const Whitespace = styled.View`
-  background-color: ${colors.white};
+  background-color: ${({ backgroundColor }) => backgroundColor};
   flex: 1;
   height: ${({ deviceHeight }) => deviceHeight};
   z-index: -1;
 `;
 
 export default function SlackSheet({
+  backgroundColor = colors.white,
   borderRadius = 30,
   children,
   contentHeight,
+  hideHandle = false,
   scrollEnabled = true,
   ...props
 }) {
@@ -63,9 +68,10 @@ export default function SlackSheet({
   );
 
   return (
-    <Container {...props}>
-      <SheetHandleFixedToTop showBlur={scrollEnabled} />
+    <Container backgroundColor={backgroundColor} {...props}>
+      {!hideHandle && <SheetHandleFixedToTop showBlur={scrollEnabled} />}
       <Content
+        backgroundColor={backgroundColor}
         contentContainerStyle={scrollEnabled && contentContainerStyle}
         contentHeight={contentHeight}
         deviceHeight={deviceHeight}
@@ -74,7 +80,12 @@ export default function SlackSheet({
         scrollIndicatorInsets={scrollIndicatorInsets}
       >
         {children}
-        {!scrollEnabled && <Whitespace deviceHeight={deviceHeight} />}
+        {!scrollEnabled && (
+          <Whitespace
+            backgroundColor={backgroundColor}
+            deviceHeight={deviceHeight}
+          />
+        )}
       </Content>
     </Container>
   );

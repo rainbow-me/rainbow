@@ -47,6 +47,7 @@ import PlusCircledIcon from './svg/PlusCircledIcon';
 import PlusIcon from './svg/PlusIcon';
 import ProgressIcon from './svg/ProgressIcon';
 import QRCodeIcon from './svg/QRCodeIcon';
+import ScannerIcon from './svg/ScannerIcon';
 import SearchIcon from './svg/SearchIcon';
 import SendIcon from './svg/SendIcon';
 import SendSmallIcon from './svg/SendSmallIcon';
@@ -58,6 +59,7 @@ import SwapIcon from './svg/SwapIcon';
 import ThreeDotsIcon from './svg/ThreeDotsIcon';
 import TouchIdIcon from './svg/TouchIdIcon';
 import WalletConnectIcon from './svg/WalletConnectIcon';
+import WarningCircledIcon from './svg/WarningCircledIcon';
 import WarningIcon from './svg/WarningIcon';
 
 const IconTypes = {
@@ -106,6 +108,7 @@ const IconTypes = {
   plusCircled: PlusCircledIcon,
   progress: ProgressIcon,
   qrCode: QRCodeIcon,
+  scanner: ScannerIcon,
   search: SearchIcon,
   send: SendIcon,
   sendSmall: SendSmallIcon,
@@ -119,11 +122,12 @@ const IconTypes = {
   touchid: TouchIdIcon,
   walletConnect: WalletConnectIcon,
   warning: WarningIcon,
+  warningCircled: WarningCircledIcon,
 };
 
-const Icon = ({ name, ...props }, ref) => {
+const Icon = ({ name, testID, ...props }, ref) => {
   const IconElement = IconTypes[name] || Flex;
-  return <IconElement {...props} name={name} ref={ref} />;
+  return <IconElement {...props} name={name} ref={ref} testID={testID} />;
 };
 
 export default React.forwardRef(Icon);

@@ -23,7 +23,6 @@ import { Modal } from '../components/modal';
 import CurrencySelectionTypes from '../helpers/currencySelectionTypes';
 import { delayNext } from '../hooks/useMagicAutofocus';
 import { useNavigation } from '../navigation/Navigation';
-import { exchangeModalBorderRadius } from './ExchangeModal';
 import {
   useInteraction,
   useMagicAutofocus,
@@ -268,20 +267,16 @@ export default function CurrencySelectModal() {
           ],
         }}
       >
-        <Modal
-          containerPadding={0}
-          height="100%"
-          overflow="hidden"
-          radius={exchangeModalBorderRadius}
-        >
+        <Modal containerPadding={0} height="100%" overflow="hidden" radius={30}>
           <GestureBlocker type="top" />
           <Column flex={1}>
-            <CurrencySelectModalHeader />
+            <CurrencySelectModalHeader testID="currency-select-header" />
             <ExchangeSearch
               onChangeText={setSearchQuery}
               onFocus={handleFocus}
               ref={searchInputRef}
               searchQuery={searchQuery}
+              testID="currency-select-search"
             />
             {type === null || type === undefined ? null : (
               <CurrencySelectionList
@@ -290,6 +285,7 @@ export default function CurrencySelectModal() {
                 loading={!isInitialized}
                 query={searchQueryForSearch}
                 showList={isFocused}
+                testID="currency-select-list"
                 type={type}
               />
             )}

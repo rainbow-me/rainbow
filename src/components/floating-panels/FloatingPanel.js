@@ -29,6 +29,7 @@ const FloatingPanel = ({
   hideShadow = true,
   overflow = 'hidden',
   radius = FloatingPanelBorderRadius,
+  testID,
   ...props
 }) => (
   <Container
@@ -38,6 +39,7 @@ const FloatingPanel = ({
     minHeight={height}
     overflow={overflow}
     radius={radius}
+    testID={testID + '-container'}
   />
 );
 
