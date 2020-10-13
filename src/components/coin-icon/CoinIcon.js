@@ -16,7 +16,6 @@ const defaultShadow = [
 const CoinIcon = ({
   address,
   bgColor,
-  isCoinListEdited,
   isHidden,
   isPinned,
   showShadow = true,
@@ -27,9 +26,7 @@ const CoinIcon = ({
 }) =>
   showShadow ? (
     <Fragment>
-      {(isPinned || isHidden) && isCoinListEdited ? (
-        <CoinIconIndicator isPinned={isPinned} />
-      ) : null}
+      {isPinned || isHidden ? <CoinIconIndicator isPinned={isPinned} /> : null}
       <ShadowStack
         {...props}
         {...borders.buildCircleAsObject(size)}
@@ -60,7 +57,6 @@ const CoinIcon = ({
 export default magicMemo(CoinIcon, [
   'address',
   'bgColor',
-  'isCoinListEdited',
   'isHidden',
   'isPinned',
   'symbol',
