@@ -9,6 +9,7 @@ import styled from 'styled-components/primitives';
 const RadiusWrapper = styled.View`
   border-radius: ${({ borderRadius }) => borderRadius};
   overflow: hidden;
+  flex: 1;
 `;
 
 const Wrapper = ({ children, radius }) =>
@@ -26,7 +27,7 @@ export default function ButtonPressAnimation({
   onPressStart,
   style,
   opacityTouchable = false,
-  wrapperStyle,
+  wrapperProps,
   radiusAndroid: radius,
 }) {
   if (disabled) {
@@ -53,7 +54,7 @@ export default function ButtonPressAnimation({
         onLongPress={onLongPress}
         onPress={onPress}
         onPressStart={onPressStart}
-        style={wrapperStyle}
+        {...wrapperProps}
       >
         <View pointerEvents="box-only" style={style}>
           {children}
