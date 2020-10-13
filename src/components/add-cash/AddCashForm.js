@@ -48,7 +48,7 @@ const AddCashForm = ({
     newValue => {
       setValue(prevValue => {
         const isExceedingWeeklyLimit =
-          parseFloat(prevValue + `${parseFloat(newValue)}`) > limitWeekly;
+          parseFloat(prevValue + parseFloat(newValue)) > limitWeekly;
 
         const isInvalidFirstEntry =
           !prevValue &&
