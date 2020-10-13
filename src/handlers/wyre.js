@@ -18,6 +18,7 @@ import { WYRE_SUPPORTED_COUNTRIES_ISO } from '../references/wyre';
 import logger from 'logger';
 
 const WYRE_PERCENT_FEE = 4;
+const WYRE_MINIMUM_FEE_USD = 5;
 const WYRE_FLAT_FEE_USD = 0.3;
 const SOURCE_CURRENCY_USD = 'USD';
 const PAYMENT_PROCESSOR_COUNTRY_CODE = 'US';
@@ -66,7 +67,8 @@ export const showApplePayRequest = async (
   const feeAmount = feeCalculation(
     sourceAmount,
     WYRE_PERCENT_FEE,
-    WYRE_FLAT_FEE_USD
+    WYRE_FLAT_FEE_USD,
+    WYRE_MINIMUM_FEE_USD
   );
 
   const totalAmount = add(sourceAmount, feeAmount);

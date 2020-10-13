@@ -96,15 +96,18 @@ export const mod = (numberOne, numberTwo) =>
  * @desc calculate the fee for a given amount, percent fee, and fixed fee
  * @param  {Number}   amount (base amount to calculate fee off of)
  * @param  {Number}   percent fee (4% would just be 4)
- * @param  {Number}   fixed fee (flat rate to add)
+ * @param  {Number}   minimum fee USD (calculated fee or this minimum)
+ * @param  {Number}   fixed fee USD (flat rate to add)
  * @return {String}   fixed format to 2 decimals with ROUND_HALF_UP
  */
-export const feeCalculation = (amount, percentFee, fixedFee) =>
-  BigNumber(amount)
+export const feeCalculation = (amount, percentFee, fixedFee, minimumFee) => {
+  const dynamicFee = BigNumber(amount)
     .times(percentFee)
     .dividedBy(100)
-    .plus(fixedFee)
-    .toFixed(2, BigNumber.ROUND_HALF_UP);
+    .plus(fixedFee);
+  const fee = BigNumber.max(dynamicFee, minimumFee);
+  return fee.toFixed(2, BigNumber.ROUND_HALF_UP);
+};
 
 /**
  * @desc real floor divides two numbers
