@@ -257,14 +257,17 @@ export const addressAssetsReceived = (
 
   const liquidityTokens = remove(
     assets,
-    asset =>
-      asset?.asset?.type === 'uniswap' ||
-      (toLower(asset?.asset.name) !== 'uniswap' &&
-        toLower(asset?.asset.name).indexOf('uniswap') !== -1)
+    asset => asset?.asset?.type === 'uniswap'
   );
 
-  // UNI is not a liquidity token
-  remove(liquidityTokens, asset => toLower(asset?.asset.name) !== 'uniswap');
+  remove(
+    assets,
+    asset =>
+      // Don't remove UNI when falling back from zerion
+      toLower(asset?.asset.name) !== 'uniswap' &&
+      // Remove duplicate liquidity tokens when falling back from zerion
+      toLower(asset?.asset.name).indexOf('uniswap') !== -1
+  );
 
   // Remove spammy tokens
   remove(assets, asset =>
