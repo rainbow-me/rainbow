@@ -14,6 +14,7 @@ import AddCashSelector from './AddCashSelector';
 import { padding } from '@rainbow-me/styles';
 
 const currencies = ['DAI', 'ETH'];
+const minimumPurchaseAmountUSD = 25;
 
 const AddCashForm = ({
   limitDaily,
@@ -158,7 +159,9 @@ const AddCashForm = ({
           />
         </Centered>
         <AddCashFooter
-          disabled={isEmpty(value) || parseFloat(value) === 0}
+          disabled={
+            isEmpty(value) || parseFloat(value) < minimumPurchaseAmountUSD
+          }
           onDisabledPress={onShake}
           onSubmit={handlePurchase}
         />
