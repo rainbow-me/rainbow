@@ -5,7 +5,6 @@ import networkInfo from '../helpers/networkInfo';
 import networkTypes from '../helpers/networkTypes';
 import { delay } from '../helpers/utilities';
 import balanceCheckerContractAbi from '../references/balances-checker-abi.json';
-import allTokensFallback from '../references/coingecko/allTokens.json';
 import coingeckoIdsFallback from '../references/coingecko/ids.json';
 import migratedTokens from '../references/migratedTokens.json';
 import testnetAssets from '../references/testnet-assets.json';
@@ -23,8 +22,8 @@ const FALLBACK_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER =
   'explorer/FALLBACK_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER';
 
 const ETH_ADDRESS = '0x0000000000000000000000000000000000000000';
-const TOKEN_LIST_URL = 'https://tokens.coingecko.com/uniswap/all.json';
-const COINGECKO_IDS_ENDPOINT = 'https://api.coingecko.com/api/v3/coins/list';
+const COINGECKO_IDS_ENDPOINT =
+  'https://api.coingecko.com/api/v3/coins/list?include_platform=true&asset_platform_id=ethereum';
 const UPDATE_BALANCE_AND_PRICE_FREQUENCY = 10000;
 const DISCOVER_NEW_ASSETS_FREQUENCY = 13000;
 
@@ -34,14 +33,6 @@ const DISCOVER_NEW_ASSETS_FREQUENCY = 13000;
 const getCurrentAddress = address => {
   return migratedTokens[address] || address;
 };
-
-// Required to attempt to fix most inconsistencies between
-// Coingecko's API and coingecko's token
-const cleanupTokenName = str =>
-  str
-    .replace(' ', '')
-    .replace('.', '')
-    .toLowerCase();
 
 const findNewAssetsToWatch = () => async (dispatch, getState) => {
   const { accountAddress } = getState().settings;
@@ -80,37 +71,18 @@ const fetchCoingeckoIds = async () => {
   }
 
   const idsMap = {};
-  ids.forEach(({ name, symbol, id }) => {
-    idsMap[`${symbol.toLowerCase()}|||${cleanupTokenName(name)}`] = id;
+  ids.forEach(({ id, platforms: { ethereum: tokenAddress } }) => {
+    const address = tokenAddress && toLower(tokenAddress);
+    if (address && address.substr(0, 2) === '0x') {
+      idsMap[address] = id;
+    }
   });
   return idsMap;
 };
 
-export const fetchCoingeckoIdsByAddress = async () => {
-  let tokens;
-  try {
-    const response = await fetch(TOKEN_LIST_URL);
-    const responseData = await response.json();
-    tokens = responseData.tokens;
-  } catch (e) {
-    tokens = allTokensFallback.tokens;
-  }
-
-  const idsByAddress = {};
-  const coingeckoIds = await fetchCoingeckoIds();
-
-  tokens.forEach(token => {
-    idsByAddress[token.address.toLowerCase()] =
-      coingeckoIds[
-        `${token.symbol.toLowerCase()}|||${cleanupTokenName(token.name)}`
-      ];
-  });
-  return idsByAddress;
-};
-
 const findAssetsToWatch = async (address, latestTxBlockNumber, dispatch) => {
   // 1 - Discover the list of tokens for the address
-  const coingeckoIds = await fetchCoingeckoIdsByAddress();
+  const coingeckoIds = await fetchCoingeckoIds();
   const tokensInWallet = await discoverTokens(
     coingeckoIds,
     address,
