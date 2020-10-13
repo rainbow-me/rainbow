@@ -301,7 +301,7 @@ const getWyrePaymentDetails = (
   displayItems: [
     {
       amount: { currency: SOURCE_CURRENCY_USD, value: sourceAmount },
-      label: `Purchase ${destCurrency}`,
+      label: destCurrency,
     },
     {
       amount: { currency: SOURCE_CURRENCY_USD, value: purchaseFee },
