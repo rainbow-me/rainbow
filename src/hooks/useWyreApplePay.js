@@ -69,13 +69,14 @@ export default function useWyreApplePay() {
         accountAddress,
         network
       );
-      const sourceAmountWithFees = quotation?.sourceAmount;
+      const { sourceAmountWithFees, purchaseFee } = quotation;
 
       const applePayResponse = await showApplePayRequest(
         referenceInfo,
         accountAddress,
         currency,
         sourceAmountWithFees,
+        purchaseFee,
         value,
         network
       );

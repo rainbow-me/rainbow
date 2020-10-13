@@ -59,10 +59,12 @@ export const showApplePayRequest = async (
   accountAddress,
   destCurrency,
   sourceAmountWithFees,
+  purchaseFee,
   sourceAmount,
   network
 ) => {
   const feeAmount = subtract(sourceAmountWithFees, sourceAmount);
+  const networkFee = subtract(feeAmount, purchaseFee);
 
   const merchantIdentifier =
     network === NetworkTypes.mainnet
@@ -85,7 +87,8 @@ export const showApplePayRequest = async (
   const paymentDetails = getWyrePaymentDetails(
     sourceAmount,
     destCurrency,
-    feeAmount,
+    networkFee,
+    purchaseFee,
     sourceAmountWithFees
   );
 
@@ -149,7 +152,12 @@ export const getWalletOrderQuotation = async (
       data,
       config
     );
-    return response?.data;
+    const responseData = response?.data;
+    const purchaseFee = responseData?.fees[SOURCE_CURRENCY_USD];
+    return {
+      purchaseFee,
+      sourceAmountWithFees: responseData?.sourceAmount,
+    };
   } catch (error) {
     logger.sentry('Apple Pay - error getting wallet order quotation', error);
     return null;
@@ -286,7 +294,8 @@ export const getOrderId = async (
 const getWyrePaymentDetails = (
   sourceAmount,
   destCurrency,
-  feeAmount,
+  networkFee,
+  purchaseFee,
   totalAmount
 ) => ({
   displayItems: [
@@ -295,8 +304,12 @@ const getWyrePaymentDetails = (
       label: `Purchase ${destCurrency}`,
     },
     {
-      amount: { currency: SOURCE_CURRENCY_USD, value: feeAmount },
-      label: 'Fee',
+      amount: { currency: SOURCE_CURRENCY_USD, value: purchaseFee },
+      label: 'Purchase Fee',
+    },
+    {
+      amount: { currency: SOURCE_CURRENCY_USD, value: networkFee },
+      label: 'Network Fee',
     },
   ],
   id: 'rainbow-wyre',
