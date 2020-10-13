@@ -42,7 +42,7 @@ export default function BackupSheet() {
       missingPassword = null,
       step = WalletBackupStepTypes.first,
       walletId = selectedWallet.id,
-      fromSettings = false,
+      nativeScreen = false,
     } = {},
   } = useRoute();
 
@@ -73,8 +73,8 @@ export default function BackupSheet() {
   const handleNoLatestBackup = useCallback(() => {
     if (android) {
       goBack();
-      navigate(Routes.BACKUP_SHEET_FROM_SETTINGS, {
-        fromSettings: true,
+      navigate(Routes.BACKUP_SCREEN, {
+        nativeScreen: true,
         step: WalletBackupStepTypes.cloud,
         walletId,
       });
@@ -87,9 +87,9 @@ export default function BackupSheet() {
     console.log('YY');
     if (android) {
       goBack();
-      navigate(Routes.BACKUP_SHEET_FROM_SETTINGS, {
-        fromSettings: true,
+      navigate(Routes.BACKUP_SCREEN, {
         missingPassword: true,
+        nativeScreen: true,
         step: WalletBackupStepTypes.cloud,
         walletId,
       });
@@ -134,8 +134,8 @@ export default function BackupSheet() {
   const onManualBackup = useCallback(() => {
     if (android) {
       goBack();
-      navigate(Routes.BACKUP_SHEET_FROM_SETTINGS, {
-        fromSettings: true,
+      navigate(Routes.BACKUP_SCREEN, {
+        nativeScreen: true,
         step: WalletBackupStepTypes.manual,
         walletId,
       });
@@ -213,15 +213,15 @@ export default function BackupSheet() {
     step,
   ]);
 
-  const sheetHeight = android && !fromSettings ? AndroidHeight : longFormHeight;
+  const sheetHeight = android && !nativeScreen ? AndroidHeight : longFormHeight;
   const wrapperHeight =
-    deviceHeight + (android && !fromSettings ? AndroidHeight : longFormHeight);
+    deviceHeight + (android && !nativeScreen ? AndroidHeight : longFormHeight);
 
   return (
     <Column height={wrapperHeight} testID="backup-sheet">
       <StatusBar barStyle="light-content" />
       <SlackSheet
-        additionalTopPadding={android && !fromSettings}
+        additionalTopPadding={android && !nativeScreen}
         contentHeight={sheetHeight}
       >
         {renderStep()}
