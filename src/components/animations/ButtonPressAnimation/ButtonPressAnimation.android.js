@@ -26,6 +26,7 @@ export default function ButtonPressAnimation({
   onPressStart,
   style,
   opacityTouchable = false,
+  wrapperStyle,
   radiusAndroid: radius,
 }) {
   if (disabled) {
@@ -52,6 +53,7 @@ export default function ButtonPressAnimation({
         onLongPress={onLongPress}
         onPress={onPress}
         onPressStart={onPressStart}
+        style={wrapperStyle}
       >
         <View pointerEvents="box-only" style={style}>
           {children}
