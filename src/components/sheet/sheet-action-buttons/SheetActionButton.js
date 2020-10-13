@@ -43,13 +43,6 @@ const WhiteButtonGradient = React.memo(
   neverRerender
 );
 
-const Wrapper = ios
-  ? ({ children }) => children
-  : styled.View`
-      overflow: hidden;
-      border-radius: ${({ borderRadius }) => borderRadius || 0};
-    `;
-
 const SheetActionButton = ({
   borderRadius = 56,
   color = colors.appleBlue,
@@ -77,44 +70,42 @@ const SheetActionButton = ({
   }, [color, isTransparent]);
 
   return (
-    <Wrapper borderRadius={borderRadius}>
-      <Button
-        as={ButtonPressAnimation}
+    <Button
+      as={ButtonPressAnimation}
+      noFlex={noFlex}
+      size={size}
+      wrapperStyle={{ flex: 1 }}
+      {...props}
+    >
+      <ShadowStack
+        {...position.coverAsObject}
+        backgroundColor={color}
         borderRadius={borderRadius}
-        noFlex={noFlex}
-        size={size}
-        {...props}
+        shadows={shadowsForButtonColor}
       >
-        <ShadowStack
-          {...position.coverAsObject}
-          backgroundColor={color}
-          borderRadius={borderRadius}
-          shadows={shadowsForButtonColor}
+        {color === colors.white && <WhiteButtonGradient />}
+        {color !== colors.white && !isTransparent && (
+          <InnerBorder
+            color={disabled ? textColor : null}
+            opacity={disabled ? 0.02 : null}
+            radius={borderRadius}
+            width={disabled ? 2 : null}
+          />
+        )}
+      </ShadowStack>
+      <Content label={label} size={size}>
+        {emoji && <Emoji lineHeight={23} name={emoji} size="medium" />}
+        {icon && <Icon color="white" height={18} name={icon} size={18} />}
+        <Text
+          align="center"
+          color={textColor}
+          size={size === 'big' ? 'larger' : 'large'}
+          weight={weight}
         >
-          {color === colors.white && <WhiteButtonGradient />}
-          {color !== colors.white && !isTransparent && (
-            <InnerBorder
-              color={disabled ? textColor : null}
-              opacity={disabled ? 0.02 : null}
-              radius={borderRadius}
-              width={disabled ? 2 : null}
-            />
-          )}
-        </ShadowStack>
-        <Content label={label} size={size}>
-          {emoji && <Emoji lineHeight={23} name={emoji} size="medium" />}
-          {icon && <Icon color="white" height={18} name={icon} size={18} />}
-          <Text
-            align="center"
-            color={textColor}
-            size={size === 'big' ? 'larger' : 'large'}
-            weight={weight}
-          >
-            {label}
-          </Text>
-        </Content>
-      </Button>
-    </Wrapper>
+          {label}
+        </Text>
+      </Content>
+    </Button>
   );
 };
 
