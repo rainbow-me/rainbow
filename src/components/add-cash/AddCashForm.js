@@ -14,7 +14,7 @@ import AddCashSelector from './AddCashSelector';
 import { padding } from '@rainbow-me/styles';
 
 const currencies = ['DAI', 'ETH'];
-const minimumPurchaseAmountUSD = 25;
+const minimumPurchaseAmountUSD = 1;
 
 const AddCashForm = ({
   limitDaily,
