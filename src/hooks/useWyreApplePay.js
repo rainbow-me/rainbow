@@ -1,6 +1,7 @@
 import analytics from '@segment/analytics-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { Alert } from '../components/alerts';
 import {
   getOrderId,
   getReferenceId,
@@ -62,6 +63,13 @@ export default function useWyreApplePay() {
         analytics.track('Wyre order reservation incomplete', {
           category: 'add cash',
         });
+        Alert({
+          buttons: [{ text: 'Okay' }],
+          message:
+            'We were unable to reserve your purchase order. Please try again later.',
+          title: `Something went wrong!`,
+        });
+        return;
       }
       const quotation = await getWalletOrderQuotation(
         value,
@@ -69,6 +77,20 @@ export default function useWyreApplePay() {
         accountAddress,
         network
       );
+
+      if (!quotation) {
+        analytics.track('Wyre order quote incomplete', {
+          category: 'add cash',
+        });
+        Alert({
+          buttons: [{ text: 'Okay' }],
+          message:
+            'We were unable to get a quote on your purchase order. Please try again later.',
+          title: `Something went wrong!`,
+        });
+        return;
+      }
+
       const { sourceAmountWithFees, purchaseFee } = quotation;
 
       const applePayResponse = await showApplePayRequest(
