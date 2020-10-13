@@ -1,11 +1,11 @@
-import { differenceInHours, differenceInYears } from 'date-fns';
+import { differenceInDays, differenceInYears } from 'date-fns';
 import { findIndex, sumBy, take } from 'lodash';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 
-const DEFAULT_DAILY_LIMIT = 250;
-const DEFAULT_YEARLY_LIMIT = 1500;
+const DEFAULT_WEEKLY_LIMIT = 500;
+const DEFAULT_YEARLY_LIMIT = 5000;
 
 const findRemainingAmount = (limit, purchaseTransactions, index) => {
   const transactionsInTimeline =
@@ -28,15 +28,15 @@ export default function useAddCashLimits() {
   const limits = useMemo(() => {
     const now = Date.now();
 
-    const firstIndexBeyondToday = findIndex(purchaseTransactions, txn => {
+    const firstIndexBeyondThisWeek = findIndex(purchaseTransactions, txn => {
       const txnTimestampInMs = txn.timestamp || txn.minedAt * 1000;
-      return differenceInHours(now, txnTimestampInMs) >= 24;
+      return differenceInDays(now, txnTimestampInMs) >= 7;
     });
 
-    const dailyRemainingLimit = findRemainingAmount(
-      DEFAULT_DAILY_LIMIT,
+    const weeklyRemainingLimit = findRemainingAmount(
+      DEFAULT_WEEKLY_LIMIT,
       purchaseTransactions,
-      firstIndexBeyondToday
+      firstIndexBeyondThisWeek
     );
 
     const firstIndexBeyondThisYear = findIndex(
@@ -45,7 +45,7 @@ export default function useAddCashLimits() {
         const txnTimestampInMs = txn.timestamp || txn.minedAt * 1000;
         return differenceInYears(now, txnTimestampInMs) >= 1;
       },
-      Math.max(firstIndexBeyondToday, 0)
+      Math.max(firstIndexBeyondThisWeek, 0)
     );
     const yearlyRemainingLimit = findRemainingAmount(
       DEFAULT_YEARLY_LIMIT,
@@ -54,7 +54,7 @@ export default function useAddCashLimits() {
     );
 
     return {
-      dailyRemainingLimit: Math.max(dailyRemainingLimit, 0),
+      weeklyRemainingLimit: Math.max(weeklyRemainingLimit, 0),
       yearlyRemainingLimit: Math.max(yearlyRemainingLimit, 0),
     };
   }, [purchaseTransactions]);
