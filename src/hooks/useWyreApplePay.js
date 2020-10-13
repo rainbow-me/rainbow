@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import {
   getOrderId,
   getReferenceId,
+  getWalletOrderQuotation,
   PaymentRequestStatusTypes,
   reserveWyreOrder,
   showApplePayRequest,
@@ -62,11 +63,19 @@ export default function useWyreApplePay() {
           category: 'add cash',
         });
       }
+      const quotation = await getWalletOrderQuotation(
+        value,
+        currency,
+        accountAddress,
+        network
+      );
+      const sourceAmountWithFees = quotation?.sourceAmount;
 
       const applePayResponse = await showApplePayRequest(
         referenceInfo,
         accountAddress,
         currency,
+        sourceAmountWithFees,
         value,
         network
       );
@@ -74,7 +83,6 @@ export default function useWyreApplePay() {
       setOrderCurrency(currency);
 
       if (applePayResponse) {
-        const { paymentResponse, totalAmount } = applePayResponse;
         logger.log('[add cash] - get order id');
         const {
           orderId,
@@ -83,8 +91,8 @@ export default function useWyreApplePay() {
           errorMessage,
         } = await getOrderId(
           referenceInfo,
-          paymentResponse,
-          totalAmount,
+          applePayResponse,
+          sourceAmountWithFees,
           accountAddress,
           currency,
           network,
@@ -92,14 +100,14 @@ export default function useWyreApplePay() {
         );
         if (orderId) {
           referenceInfo.orderId = orderId;
-          paymentResponse.complete(PaymentRequestStatusTypes.SUCCESS);
+          applePayResponse.complete(PaymentRequestStatusTypes.SUCCESS);
           handlePaymentCallback();
           dispatch(
             addCashGetOrderStatus(
               referenceInfo,
               currency,
               orderId,
-              paymentResponse,
+              applePayResponse,
               value
             )
           );
@@ -111,7 +119,7 @@ export default function useWyreApplePay() {
               errorMessage,
             })
           );
-          paymentResponse.complete(PaymentRequestStatusTypes.FAIL);
+          applePayResponse.complete(PaymentRequestStatusTypes.FAIL);
           handlePaymentCallback();
           analytics.track('Purchase failed', {
             category: 'add cash',
