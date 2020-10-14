@@ -92,6 +92,7 @@ const IconTypes = {
   emojiSmileys: EmojiSmileysIcon,
   emojiSymbols: EmojiSymbolsIcon,
   emojiTravel: EmojiTravelIcon,
+  face: FaceIdIcon,
   faceid: FaceIdIcon,
   fatArrow: FatArrowIcon,
   gear: GearIcon,

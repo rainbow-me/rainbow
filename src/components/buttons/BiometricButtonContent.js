@@ -36,7 +36,10 @@ export default function BiometricButtonContent({
     showIcon &&
     (biometryType === BiometryTypes.passcode ||
       biometryType === BiometryTypes.TouchID);
-  const showFaceIDCharacter = showIcon && biometryType === BiometryTypes.FaceID;
+  const showFaceIDCharacter =
+    showIcon &&
+    (biometryType === BiometryTypes.FaceID ||
+      biometryType === BiometryTypes.Face);
 
   return (
     <RowWithMargins centered margin={7} {...props}>

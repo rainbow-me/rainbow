@@ -217,7 +217,9 @@ export const loadWallet = async (): Promise<null | Wallet> => {
   if (privateKey) {
     return new ethers.Wallet(privateKey, web3Provider);
   }
-  showWalletErrorAlert();
+  if (ios) {
+    showWalletErrorAlert();
+  }
   return null;
 };
 
