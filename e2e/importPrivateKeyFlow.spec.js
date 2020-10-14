@@ -11,7 +11,7 @@ describe('Import from private key flow', () => {
     await device.disableSynchronization();
     await Helpers.tap('already-have-wallet-button');
     await Helpers.delay(2000);
-    await Helpers.checkIfExists('restore-sheet fail');
+    await Helpers.checkIfExists('restore-sheet');
   });
 
   it('show the "Import Sheet" when tapping on "Restore with a recovery phrase or private key"', async () => {
