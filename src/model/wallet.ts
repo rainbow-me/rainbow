@@ -1,7 +1,14 @@
-import { arrayify, Hexable, joinSignature } from '@ethersproject/bytes';
+import { TransactionRequest } from '@ethersproject/abstract-provider';
+import {
+  arrayify,
+  BytesLike,
+  Hexable,
+  joinSignature,
+} from '@ethersproject/bytes';
 import { entropyToMnemonic, HDNode } from '@ethersproject/hdnode';
 import { randomBytes } from '@ethersproject/random';
 import { SigningKey } from '@ethersproject/signing-key';
+import { Transaction } from '@ethersproject/transactions';
 import { Wallet } from '@ethersproject/wallet';
 import { captureException, captureMessage } from '@sentry/react-native';
 import { signTypedData_v4, signTypedDataLegacy } from 'eth-sig-util';
@@ -51,17 +58,6 @@ interface WalletInitialized {
 
 interface TransactionRequestParam {
   transaction: TransactionRequest;
-}
-
-interface TransactionRequest {
-  to?: string | Promise<string>;
-  from?: string | Promise<string>;
-  nonce?: BigNumberish | Promise<BigNumberish>;
-  gasLimit?: BigNumberish | Promise<BigNumberish>;
-  gasPrice?: BigNumberish | Promise<BigNumberish>;
-  data?: Arrayish | Promise<Arrayish>;
-  value?: BigNumberish | Promise<BigNumberish>;
-  chainId?: number | Promise<number>;
 }
 
 interface MessageTypeProperty {
@@ -166,10 +162,7 @@ export const publicAccessControlOptions = {
 
 export function generateSeedPhrase(): EthereumMnemonic {
   logger.sentry('Generating a new seed phrase');
-  console.log('HI - generate seed phrase');
-  const seedPhrase = entropyToMnemonic(randomBytes(16));
-  console.log('HI - generate seed phrase', seedPhrase);
-  return seedPhrase;
+  return entropyToMnemonic(randomBytes(16));
 }
 
 export const walletInit = async (
@@ -252,7 +245,7 @@ export const signTransaction = async ({
     const wallet = await loadWallet();
     if (!wallet) return null;
     try {
-      return wallet.sign(transaction);
+      return wallet.signTransaction(transaction);
     } catch (error) {
       Alert.alert(lang.t('wallet.transaction.alert.failed_transaction'));
       logger.sentry('Failed to SIGN transaction, alerted user');
@@ -270,7 +263,7 @@ export const signTransaction = async ({
 };
 
 export const signMessage = async (
-  message: Arrayish | Hexable | string
+  message: BytesLike | Hexable | number
 ): Promise<null | string> => {
   try {
     logger.sentry('about to sign message', message);
