@@ -63,7 +63,7 @@ export default function TransactionList({
   requests,
   transactions,
 }) {
-  const { wallets, selectedWallet } = useWallets();
+  const { wallets, selectedWallet, isDamaged } = useWallets();
   const [tapTarget, setTapTarget] = useState([0, 0, 0, 0]);
   const onNewEmoji = useRef();
   const setOnNewEmoji = useCallback(
@@ -79,8 +79,6 @@ export default function TransactionList({
     accountName,
     accountImage,
   } = useAccountProfile();
-
-  const isDamaged = selectedWallet?.damaged;
 
   const onAddCashPress = useCallback(() => {
     if (isDamaged) {

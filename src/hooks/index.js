@@ -79,6 +79,7 @@ export { default as useWalletCloudBackup } from './useWalletCloudBackup';
 export { default as useWalletConnectConnections } from './useWalletConnectConnections';
 export { default as useWalletManualBackup } from './useWalletManualBackup';
 export { default as useWallets } from './useWallets';
+export { default as useWalletsDebug } from './useWalletsDebug';
 export { default as useWalletSectionsData } from './useWalletSectionsData';
 export { default as useWalletsWithBalancesAndNames } from './useWalletsWithBalancesAndNames';
 export { default as useWyreApplePay } from './useWyreApplePay';
