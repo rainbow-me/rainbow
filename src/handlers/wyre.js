@@ -13,12 +13,10 @@ import {
   WYRE_TOKEN_TEST,
 } from 'react-native-dotenv';
 import NetworkTypes from '../helpers/networkTypes';
-import { add, feeCalculation } from '../helpers/utilities';
+import { subtract } from '../helpers/utilities';
 import { WYRE_SUPPORTED_COUNTRIES_ISO } from '../references/wyre';
 import logger from 'logger';
 
-const WYRE_PERCENT_FEE = 4;
-const WYRE_FLAT_FEE_USD = 0.3;
 const SOURCE_CURRENCY_USD = 'USD';
 const PAYMENT_PROCESSOR_COUNTRY_CODE = 'US';
 
@@ -60,16 +58,13 @@ export const showApplePayRequest = async (
   referenceInfo,
   accountAddress,
   destCurrency,
+  sourceAmountWithFees,
+  purchaseFee,
   sourceAmount,
   network
 ) => {
-  const feeAmount = feeCalculation(
-    sourceAmount,
-    WYRE_PERCENT_FEE,
-    WYRE_FLAT_FEE_USD
-  );
-
-  const totalAmount = add(sourceAmount, feeAmount);
+  const feeAmount = subtract(sourceAmountWithFees, sourceAmount);
+  const networkFee = subtract(feeAmount, purchaseFee);
 
   const merchantIdentifier =
     network === NetworkTypes.mainnet
@@ -92,8 +87,9 @@ export const showApplePayRequest = async (
   const paymentDetails = getWyrePaymentDetails(
     sourceAmount,
     destCurrency,
-    feeAmount,
-    totalAmount
+    networkFee,
+    purchaseFee,
+    sourceAmountWithFees
   );
 
   const paymentOptions = {
@@ -114,12 +110,56 @@ export const showApplePayRequest = async (
 
   try {
     const paymentResponse = await paymentRequest.show();
-    return { paymentResponse, totalAmount };
+    return paymentResponse;
   } catch (error) {
     logger.sentry(
       `Apple Pay - Show payment request catch - ${referenceInfo.referenceId}`
     );
     captureException(error);
+    return null;
+  }
+};
+
+export const getWalletOrderQuotation = async (
+  amount,
+  destCurrency,
+  accountAddress,
+  network
+) => {
+  const partnerId =
+    network === NetworkTypes.mainnet ? WYRE_ACCOUNT_ID : WYRE_ACCOUNT_ID_TEST;
+  const dest = `ethereum:${accountAddress}`;
+  const data = {
+    accountId: partnerId,
+    amount,
+    country: PAYMENT_PROCESSOR_COUNTRY_CODE,
+    dest,
+    destCurrency,
+    sourceCurrency: SOURCE_CURRENCY_USD,
+    walletType: 'APPLE_PAY',
+  };
+  const baseUrl = getBaseUrl(network);
+  try {
+    const wyreAuthToken =
+      network === NetworkTypes.mainnet ? WYRE_TOKEN : WYRE_TOKEN_TEST;
+    const config = {
+      headers: {
+        Authorization: `Bearer ${wyreAuthToken}`,
+      },
+    };
+    const response = await wyreApi.post(
+      `${baseUrl}/v3/orders/quote/partner`,
+      data,
+      config
+    );
+    const responseData = response?.data;
+    const purchaseFee = responseData?.fees[SOURCE_CURRENCY_USD];
+    return {
+      purchaseFee,
+      sourceAmountWithFees: responseData?.sourceAmount,
+    };
+  } catch (error) {
+    logger.sentry('Apple Pay - error getting wallet order quotation', error);
     return null;
   }
 };
@@ -254,17 +294,22 @@ export const getOrderId = async (
 const getWyrePaymentDetails = (
   sourceAmount,
   destCurrency,
-  feeAmount,
+  networkFee,
+  purchaseFee,
   totalAmount
 ) => ({
   displayItems: [
     {
       amount: { currency: SOURCE_CURRENCY_USD, value: sourceAmount },
-      label: `Purchase ${destCurrency}`,
+      label: destCurrency,
     },
     {
-      amount: { currency: SOURCE_CURRENCY_USD, value: feeAmount },
-      label: 'Fee',
+      amount: { currency: SOURCE_CURRENCY_USD, value: purchaseFee },
+      label: 'Purchase Fee',
+    },
+    {
+      amount: { currency: SOURCE_CURRENCY_USD, value: networkFee },
+      label: 'Network Fee',
     },
   ],
   id: 'rainbow-wyre',

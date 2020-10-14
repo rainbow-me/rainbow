@@ -1,7 +1,6 @@
 import { useRoute } from '@react-navigation/core';
 import analytics from '@segment/analytics-react-native';
 import { isEmpty } from 'lodash';
-import PropTypes from 'prop-types';
 import React, { Fragment, useCallback, useState } from 'react';
 import { Clock } from 'react-native-reanimated';
 import { useDimensions, useIsWalletEthZero } from '../../hooks';
@@ -14,9 +13,10 @@ import AddCashSelector from './AddCashSelector';
 import { padding } from '@rainbow-me/styles';
 
 const currencies = ['DAI', 'ETH'];
+const minimumPurchaseAmountUSD = 1;
 
 const AddCashForm = ({
-  limitDaily,
+  limitWeekly,
   onClearError,
   onLimitExceeded,
   onPurchase,
@@ -47,8 +47,8 @@ const AddCashForm = ({
   const handleNumpadPress = useCallback(
     newValue => {
       setValue(prevValue => {
-        const isExceedingDailyLimit =
-          parseFloat(prevValue + `${parseFloat(newValue)}`) > limitDaily;
+        const isExceedingWeeklyLimit =
+          parseFloat(prevValue + parseFloat(newValue)) > limitWeekly;
 
         const isInvalidFirstEntry =
           !prevValue &&
@@ -63,12 +63,12 @@ const AddCashForm = ({
           newValue !== 'back';
 
         if (
-          isExceedingDailyLimit ||
+          isExceedingWeeklyLimit ||
           isInvalidFirstEntry ||
           isMaxDecimalCount ||
           isMaxDecimalLength
         ) {
-          if (isExceedingDailyLimit) onLimitExceeded('daily');
+          if (isExceedingWeeklyLimit) onLimitExceeded('weekly');
           onShake();
           return prevValue;
         }
@@ -104,7 +104,7 @@ const AddCashForm = ({
         category: 'add cash',
       });
     },
-    [limitDaily, onClearError, onLimitExceeded, onShake]
+    [limitWeekly, onClearError, onLimitExceeded, onShake]
   );
 
   const onCurrencyChange = useCallback(
@@ -158,22 +158,15 @@ const AddCashForm = ({
           />
         </Centered>
         <AddCashFooter
-          disabled={isEmpty(value) || parseFloat(value) === 0}
+          disabled={
+            isEmpty(value) || parseFloat(value) < minimumPurchaseAmountUSD
+          }
           onDisabledPress={onShake}
           onSubmit={handlePurchase}
         />
       </ColumnWithMargins>
     </Fragment>
   );
-};
-
-AddCashForm.propTypes = {
-  limitDaily: PropTypes.number,
-  onClearError: PropTypes.func,
-  onLimitExceeded: PropTypes.func,
-  onPurchase: PropTypes.func,
-  onShake: PropTypes.func,
-  shakeAnim: PropTypes.object,
 };
 
 export default React.memo(AddCashForm);
