@@ -76,22 +76,19 @@ export default function BackupSheet() {
       navigate(Routes.BACKUP_SCREEN, {
         nativeScreen: true,
         step: WalletBackupStepTypes.cloud,
-        walletId,
       });
     } else {
       setParams({ step: WalletBackupStepTypes.cloud });
     }
-  }, [goBack, navigate, setParams, walletId]);
+  }, [goBack, navigate, setParams]);
 
   const handlePasswordNotFound = useCallback(() => {
-    console.log('YY');
     if (android) {
       goBack();
       navigate(Routes.BACKUP_SCREEN, {
         missingPassword: true,
         nativeScreen: true,
         step: WalletBackupStepTypes.cloud,
-        walletId,
       });
     } else {
       setParams({
@@ -99,7 +96,7 @@ export default function BackupSheet() {
         step: WalletBackupStepTypes.cloud,
       });
     }
-  }, [goBack, navigate, setParams, walletId]);
+  }, [goBack, navigate, setParams]);
 
   const onSuccess = useCallback(() => {
     goBack();
@@ -137,12 +134,11 @@ export default function BackupSheet() {
       navigate(Routes.BACKUP_SCREEN, {
         nativeScreen: true,
         step: WalletBackupStepTypes.manual,
-        walletId,
       });
     } else {
       setParams({ step: WalletBackupStepTypes.manual });
     }
-  }, [goBack, navigate, setParams, walletId]);
+  }, [goBack, navigate, setParams]);
 
   const onBackupNow = useCallback(async () => {
     goBack();
