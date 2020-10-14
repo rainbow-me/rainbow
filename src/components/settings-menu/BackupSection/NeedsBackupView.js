@@ -87,7 +87,8 @@ export default function NeedsBackupView() {
     analytics.track(`Back up to ${cloudPlatform} pressed`, {
       category: 'settings backup',
     });
-    navigate(Routes.BACKUP_SHEET, {
+    navigate(ios ? Routes.BACKUP_SHEET : Routes.BACKUP_SCREEN, {
+      nativeScreen: true,
       step: WalletBackupStepTypes.cloud,
       walletId,
     });
@@ -97,7 +98,8 @@ export default function NeedsBackupView() {
     analytics.track('Manual Backup pressed', {
       category: 'settings backup',
     });
-    navigate(Routes.BACKUP_SHEET, {
+    navigate(ios ? Routes.BACKUP_SHEET : Routes.BACKUP_SCREEN, {
+      nativeScreen: true,
       step: WalletBackupStepTypes.manual,
       walletId,
     });
