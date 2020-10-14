@@ -58,6 +58,17 @@ export function onNavigationStateChange(currentState) {
           true
         );
       }
+
+      if (
+        routeName === Routes.EXPANDED_ASSET_SHEET &&
+        Navigation.getActiveRoute().params.type === 'uniswap'
+      ) {
+        StatusBar.setBarStyle('light-content', true);
+      }
+
+      if (prevRouteName === Routes.EXPANDED_ASSET_SHEET) {
+        StatusBar.setBarStyle('dark-content', true);
+      }
     }
   }
 
