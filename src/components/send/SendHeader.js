@@ -128,7 +128,7 @@ export default function SendHeader({
 
   return (
     <Fragment>
-      <SheetHandle />
+      {ios && <SheetHandle />}
       <AddressInputContainer isSmallPhone={isSmallPhone}>
         <AddressFieldLabel>To:</AddressFieldLabel>
         <AddressField
