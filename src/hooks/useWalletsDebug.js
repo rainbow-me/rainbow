@@ -100,8 +100,8 @@ export default function useWalletsDebug() {
           ]);
 
           await initializeWallet();
+          status = 'restored';
         }
-        status = 'restored';
       } catch (e) {
         logger.sentry(
           'Error while trying to restore wallet on useWalletsDebug'
