@@ -1,5 +1,6 @@
 import produce from 'immer';
 import { concat, difference, filter, isEmpty, union, without } from 'lodash';
+import { Value } from 'react-native-reanimated';
 import {
   getHiddenCoins,
   getPinnedCoins,
@@ -179,6 +180,7 @@ const INITIAL_STATE = {
   currentAction: EditOptions.none,
   hiddenCoins: [],
   isCoinListEdited: false,
+  isCoinListEditedValue: new Value(0),
   pinnedCoins: [],
   recentlyPinnedCount: 0,
   selectedCoins: [],
@@ -192,6 +194,9 @@ export default (state = INITIAL_STATE, action) =>
     } else if (action.type === SET_IS_COIN_LIST_EDITED) {
       draft.currentAction = action.payload.currentAction;
       draft.isCoinListEdited = action.payload.isCoinListEdited;
+      draft.isCoinListEditedValue.setValue(
+        action.payload.isCoinListEdited ? 1 : 0
+      );
       draft.selectedCoins = action.payload.selectedCoins;
     } else if (action.type === UPDATE_SELECTED_COIN) {
       draft.selectedCoins = action.payload.selectedCoins;

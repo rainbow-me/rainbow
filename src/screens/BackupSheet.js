@@ -29,6 +29,8 @@ import { usePortal } from 'react-native-cool-modals/Portal';
 
 const onError = error => DelayedAlert({ title: error }, 500);
 
+const AndroidHeight = 400;
+
 export default function BackupSheet() {
   const { isWalletLoading, selectedWallet, wallets } = useWallets();
   const { height: deviceHeight } = useDimensions();
@@ -40,6 +42,7 @@ export default function BackupSheet() {
       missingPassword = null,
       step = WalletBackupStepTypes.first,
       walletId = selectedWallet.id,
+      nativeScreen = false,
     } = {},
   } = useRoute();
 
@@ -67,17 +70,33 @@ export default function BackupSheet() {
     return hide;
   }, [hide, isWalletLoading, setComponent]);
 
-  const handleNoLatestBackup = useCallback(
-    () => setParams({ step: WalletBackupStepTypes.cloud }),
-    [setParams]
-  );
+  const handleNoLatestBackup = useCallback(() => {
+    if (android) {
+      goBack();
+      navigate(Routes.BACKUP_SCREEN, {
+        nativeScreen: true,
+        step: WalletBackupStepTypes.cloud,
+      });
+    } else {
+      setParams({ step: WalletBackupStepTypes.cloud });
+    }
+  }, [goBack, navigate, setParams]);
 
   const handlePasswordNotFound = useCallback(() => {
-    setParams({
-      missingPassword: true,
-      step: WalletBackupStepTypes.cloud,
-    });
-  }, [setParams]);
+    if (android) {
+      goBack();
+      navigate(Routes.BACKUP_SCREEN, {
+        missingPassword: true,
+        nativeScreen: true,
+        step: WalletBackupStepTypes.cloud,
+      });
+    } else {
+      setParams({
+        missingPassword: true,
+        step: WalletBackupStepTypes.cloud,
+      });
+    }
+  }, [goBack, navigate, setParams]);
 
   const onSuccess = useCallback(() => {
     goBack();
@@ -109,10 +128,17 @@ export default function BackupSheet() {
     onSuccess,
   ]);
 
-  const onManualBackup = useCallback(
-    () => setParams({ step: WalletBackupStepTypes.manual }),
-    [setParams]
-  );
+  const onManualBackup = useCallback(() => {
+    if (android) {
+      goBack();
+      navigate(Routes.BACKUP_SCREEN, {
+        nativeScreen: true,
+        step: WalletBackupStepTypes.manual,
+      });
+    } else {
+      setParams({ step: WalletBackupStepTypes.manual });
+    }
+  }, [goBack, navigate, setParams]);
 
   const onBackupNow = useCallback(async () => {
     goBack();
@@ -183,13 +209,19 @@ export default function BackupSheet() {
     step,
   ]);
 
-  const sheetHeight = longFormHeight;
-  const wrapperHeight = deviceHeight + longFormHeight;
+  const sheetHeight = android && !nativeScreen ? AndroidHeight : longFormHeight;
+  const wrapperHeight =
+    deviceHeight + (android && !nativeScreen ? AndroidHeight : longFormHeight);
 
   return (
     <Column height={wrapperHeight} testID="backup-sheet">
       <StatusBar barStyle="light-content" />
-      <SlackSheet contentHeight={sheetHeight}>{renderStep()}</SlackSheet>
+      <SlackSheet
+        additionalTopPadding={android && !nativeScreen}
+        contentHeight={sheetHeight}
+      >
+        {renderStep()}
+      </SlackSheet>
     </Column>
   );
 }

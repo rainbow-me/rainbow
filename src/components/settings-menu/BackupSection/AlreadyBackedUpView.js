@@ -133,9 +133,9 @@ export default function AlreadyBackedUpView() {
 
   const handleNoLatestBackup = useCallback(() => {
     Navigation.handleAction(
-      android ? Routes.BACKUP_SHEET_FROM_SETTINGS : Routes.BACKUP_SHEET,
+      android ? Routes.BACKUP_SCREEN : Routes.BACKUP_SHEET,
       {
-        fromSettings: android,
+        nativeScreen: android,
         step: WalletBackupStepTypes.cloud,
         walletId,
       }
@@ -144,10 +144,10 @@ export default function AlreadyBackedUpView() {
 
   const handlePasswordNotFound = useCallback(() => {
     Navigation.handleAction(
-      android ? Routes.BACKUP_SHEET_FROM_SETTINGS : Routes.BACKUP_SHEET,
+      android ? Routes.BACKUP_SCREEN : Routes.BACKUP_SHEET,
       {
-        fromSettings: android,
         missingPassword: true,
+        nativeScreen: android,
         step: WalletBackupStepTypes.cloud,
         walletId,
       }
@@ -222,7 +222,7 @@ export default function AlreadyBackedUpView() {
         </Centered>
         <Column>
           <SheetActionButton
-            color={colors.white}
+            color={ios ? colors.white : colors.lightestGrey}
             label="🗝 View recovery key"
             noFlex
             onPress={handleViewRecoveryPhrase}
