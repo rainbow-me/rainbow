@@ -1,7 +1,10 @@
+import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
+import { ChainId } from '@uniswap/sdk';
 import { chunk, forEach, get, keys, map, omit } from 'lodash';
 import { web3Provider } from '../handlers/web3';
 import { MULTICALL_ABI, MULTICALL_NETWORKS } from '../references/uniswap';
+import { AppDispatch, AppGetState } from './store';
 
 // -- Constants ------------------------------------------------------------- //
 const MULTICALL_UPDATE_RESULTS = 'multicall/MULTICALL_UPDATE_RESULTS';
@@ -13,16 +16,16 @@ const CALL_CHUNK_SIZE = 500;
 
 // -- Actions --------------------------------------------------------------- //
 export interface MulticallState {
-  listeners?: {
+  listeners: {
     // on a per-chain basis
-    [chainId: number]: {
+    [chainId in ChainId]?: {
       // stores how many listeners there are for each call key
       [callKey: string]: number;
     };
   };
 
   results: {
-    [chainId: number]: {
+    [chainId in ChainId]?: {
       [callKey: string]: {
         data?: string | null;
         blockNumber?: number;
@@ -31,6 +34,26 @@ export interface MulticallState {
     };
   };
 }
+
+interface MulticallUpdateResultsAction {
+  type: typeof MULTICALL_UPDATE_RESULTS;
+  payload: MulticallState['results'];
+}
+
+interface MulticallAddListenersAction {
+  type: typeof MULTICALL_ADD_LISTENERS;
+  payload: MulticallState['listeners'];
+}
+
+interface MulticallRemoveListenersAction {
+  type: typeof MULTICALL_REMOVE_LISTENERS;
+  payload: MulticallState['listeners'];
+}
+
+export type MulticallActionTypes =
+  | MulticallUpdateResultsAction
+  | MulticallAddListenersAction
+  | MulticallRemoveListenersAction;
 
 export interface Call {
   address: string;
@@ -49,10 +72,13 @@ export function parseCallKey(callKey: string): Call {
   };
 }
 
-export const multicallAddListeners = ({ calls, chainId }) => (
-  dispatch,
-  getState
-) => {
+export const multicallAddListeners = ({
+  calls,
+  chainId,
+}: {
+  calls: Call[];
+  chainId: ChainId;
+}) => (dispatch: AppDispatch, getState: AppGetState) => {
   const { listeners: existingListeners } = getState().multicall;
   const updatedListeners = {
     ...existingListeners,
@@ -62,8 +88,9 @@ export const multicallAddListeners = ({ calls, chainId }) => (
 
   forEach(calls, call => {
     const callKey = toCallKey(call);
-    updatedListeners[chainId][callKey] =
-      (updatedListeners[chainId][callKey] ?? 0) + 1;
+    updatedListeners[chainId] = {
+      [callKey]: (updatedListeners?.[chainId]?.[callKey] ?? 0) + 1,
+    };
   });
 
   dispatch({
@@ -72,10 +99,13 @@ export const multicallAddListeners = ({ calls, chainId }) => (
   });
 };
 
-export const multicallRemoveListeners = ({ chainId, calls }) => (
-  dispatch,
-  getState
-) => {
+export const multicallRemoveListeners = ({
+  calls,
+  chainId,
+}: {
+  calls: object;
+  chainId: ChainId;
+}) => (dispatch: AppDispatch, getState: AppGetState) => {
   const { listeners: existingListeners } = getState().multicall;
   let updatedListeners = {
     ...existingListeners,
@@ -85,11 +115,15 @@ export const multicallRemoveListeners = ({ chainId, calls }) => (
 
   forEach(calls, call => {
     const callKey = toCallKey(call);
-    if (!updatedListeners[chainId][callKey]) return;
-    if (updatedListeners[chainId][callKey] === 1) {
+    const listenerCount = updatedListeners?.[chainId]?.[callKey];
+    if (!listenerCount) return;
+
+    if (listenerCount === 1) {
       updatedListeners = omit(updatedListeners, `[${chainId}][${callKey}]`);
     } else {
-      updatedListeners[chainId][callKey]--;
+      updatedListeners[chainId] = {
+        [callKey]: listenerCount - 1,
+      };
     }
   });
   dispatch({
@@ -98,10 +132,15 @@ export const multicallRemoveListeners = ({ chainId, calls }) => (
   });
 };
 
-const multicallUpdateResults = ({ chainId, results, blockNumber }) => (
-  dispatch,
-  getState
-) => {
+const multicallUpdateResults = ({
+  blockNumber,
+  chainId,
+  results,
+}: {
+  blockNumber: number;
+  chainId: ChainId;
+  results: Record<string, string | null>;
+}) => (dispatch: AppDispatch, getState: AppGetState) => {
   const { results: existingResults } = getState().multicall;
   const updatedResults = {
     ...existingResults,
@@ -109,9 +148,11 @@ const multicallUpdateResults = ({ chainId, results, blockNumber }) => (
   updatedResults[chainId] = updatedResults[chainId] ?? {};
 
   forEach(keys(results), callKey => {
-    const current = get(results, `[${chainId}][${callKey}]`);
+    const current = get(existingResults, `[${chainId}][${callKey}]`);
     if ((current?.blockNumber ?? 0) > blockNumber) return;
-    updatedResults[chainId][callKey] = { blockNumber, data: results[callKey] };
+    updatedResults[chainId] = {
+      [callKey]: { blockNumber, data: results[callKey] },
+    };
   });
 
   dispatch({
@@ -128,9 +169,9 @@ const multicallUpdateResults = ({ chainId, results, blockNumber }) => (
  * @param latestBlockNumber the latest block number
  */
 function outdatedListeningKeys(
-  callResults,
+  callResults: MulticallState['results'],
   listeningKeys: string[],
-  chainId: number | undefined,
+  chainId: ChainId | undefined,
   latestBlockNumber: number | undefined
 ): string[] {
   if (!chainId) return [];
@@ -139,7 +180,7 @@ function outdatedListeningKeys(
   if (!results) return listeningKeys;
 
   return listeningKeys.filter(callKey => {
-    const data = callResults[chainId][callKey];
+    const data = get(callResults, `${chainId}.${callKey}`);
     // no data, must fetch
     if (!data) return true;
 
@@ -160,20 +201,22 @@ function outdatedListeningKeys(
   });
 }
 
-export function activeListeningKeys(allListeners, chainId?: number): string[] {
-  if (!allListeners || !chainId) return {};
+export function activeListeningKeys(
+  allListeners: MulticallState['listeners'],
+  chainId?: ChainId
+): string[] {
+  if (!allListeners || !chainId) return [];
   const listeners = allListeners[chainId];
-  if (!listeners) return {};
+  if (!listeners) return [];
   return keys(listeners);
 }
 
-export const multicallUpdateOutdatedListeners = (latestBlockNumber?) => (
-  dispatch,
-  getState
-) => {
+export const multicallUpdateOutdatedListeners = (
+  latestBlockNumber?: number
+) => (dispatch: AppDispatch, getState: AppGetState) => {
   const { chainId } = getState().settings;
   const { listeners, results } = getState().multicall;
-  const listeningKeys: string[] = activeListeningKeys(listeners, chainId);
+  const listeningKeys = activeListeningKeys(listeners, chainId);
   const outdatedCallKeys = outdatedListeningKeys(
     results,
     listeningKeys,
@@ -197,7 +240,7 @@ export const multicallUpdateOutdatedListeners = (latestBlockNumber?) => (
           return [obj.address, obj.callData];
         })
       )
-      .then(([resultsBlockNumber, returnData]) => {
+      .then(([resultsBlockNumber, returnData]: [BigNumber, string[]]) => {
         // accumulates the length of all previous indices
         const firstCallKeyIndex = chunkIndex * CALL_CHUNK_SIZE;
         const lastCallKeyIndex = firstCallKeyIndex + returnData.length;
@@ -227,12 +270,15 @@ export const multicallUpdateOutdatedListeners = (latestBlockNumber?) => (
 };
 
 // -- Reducer --------------------------------------------------------------- //
-export const INITIAL_MULTICALL_STATE = {
+export const INITIAL_MULTICALL_STATE: MulticallState = {
   listeners: {},
   results: {},
 };
 
-export default (state = INITIAL_MULTICALL_STATE, action) => {
+export default (
+  state = INITIAL_MULTICALL_STATE,
+  action: MulticallActionTypes
+) => {
   switch (action.type) {
     case MULTICALL_ADD_LISTENERS:
       return {
