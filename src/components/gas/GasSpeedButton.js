@@ -320,7 +320,12 @@ const GasSpeedButton = ({
   const isCustom = selectedGasPriceOption === CUSTOM ? true : false;
 
   return (
-    <Container as={ButtonPressAnimation} onPress={handlePress} testID={testID}>
+    <Container
+      as={ButtonPressAnimation}
+      onPress={handlePress}
+      opacityTouchable
+      testID={testID}
+    >
       <Row align="end" justify="space-between" marginBottom={1}>
         {!isCustom ? (
           <AnimateNumber
