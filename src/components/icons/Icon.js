@@ -95,6 +95,7 @@ const IconTypes = {
   face: FaceIdIcon,
   faceid: FaceIdIcon,
   fatArrow: FatArrowIcon,
+  fingerprint: TouchIdIcon,
   gear: GearIcon,
   handle: HandleIcon,
   hidden: HiddenIcon,

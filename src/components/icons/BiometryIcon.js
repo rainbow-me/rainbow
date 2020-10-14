@@ -36,7 +36,7 @@ const Container = styled(Centered).attrs({
       : ''}
 
   ${({ type }) =>
-    type === BiometryTypes.TouchID
+    type === BiometryTypes.TouchID || type === BiometryTypes.Fingerprint
       ? `
         ${position.size(31)};
         margin-bottom: 1;

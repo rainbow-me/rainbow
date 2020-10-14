@@ -35,7 +35,8 @@ export default function BiometricButtonContent({
   const showBiometryIcon =
     showIcon &&
     (biometryType === BiometryTypes.passcode ||
-      biometryType === BiometryTypes.TouchID);
+      biometryType === BiometryTypes.TouchID ||
+      biometryType === BiometryTypes.Fingerprint);
   const showFaceIDCharacter =
     showIcon &&
     (biometryType === BiometryTypes.FaceID ||
