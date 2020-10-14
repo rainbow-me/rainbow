@@ -1,6 +1,5 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { omit } from 'lodash';
 import React, { useContext } from 'react';
 import { createNativeStackNavigator } from 'react-native-screens/src/native-stack/index';
 import { InitialRouteContext } from '../context/initialRoute';
@@ -140,13 +139,6 @@ function MainNavigator() {
         options={exchangePreset}
       />
       <Stack.Screen
-        component={SendSheet}
-        name={Routes.SEND_SHEET}
-        options={{
-          ...omit(sheetPreset, 'gestureResponseDistance'),
-        }}
-      />
-      <Stack.Screen
         component={BackupSheet}
         name={Routes.BACKUP_SHEET}
         options={bottomSheetPreset}
@@ -188,6 +180,7 @@ function MainNativeNavigator() {
         component={SettingsModal}
         name={Routes.SETTINGS_MODAL}
       />
+      <NativeStack.Screen component={SendSheet} name={Routes.SEND_SHEET} />
       <NativeStack.Screen component={BackupSheet} name={Routes.BACKUP_SCREEN} />
     </NativeStack.Navigator>
   );

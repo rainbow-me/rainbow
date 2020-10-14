@@ -430,7 +430,7 @@ export default function SendSheet(props) {
 
   return (
     <Container>
-      <StatusBar barStyle="light-content" />
+      {ios && <StatusBar barStyle="light-content" />}
       <SheetContainer>
         <SendHeader
           contacts={contacts}
