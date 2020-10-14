@@ -40,6 +40,7 @@ const CoinCheckButton = ({ isAbsolute, onPress, toggle, ...props }) => (
       as={ButtonPressAnimation}
       isAbsolute={isAbsolute}
       onPress={onPress}
+      opacityTouchable
     >
       <CircleOutline />
       <OpacityToggler friction={20} isVisible={!toggle} tension={1000}>

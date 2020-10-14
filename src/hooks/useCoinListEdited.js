@@ -5,3 +5,9 @@ export default function useCoinListEdited() {
     isCoinListEdited,
   }));
 }
+
+export function useCoinListEditedValue() {
+  return useSelector(
+    ({ editOptions: { isCoinListEditedValue } }) => isCoinListEditedValue
+  );
+}
