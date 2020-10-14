@@ -75,6 +75,11 @@ function MainNavigator() {
         options={emojiPreset}
       />
       <Stack.Screen
+        component={ExpandedAssetSheet}
+        name={Routes.EXPANDED_ASSET_SHEET}
+        options={expandedPreset}
+      />
+      <Stack.Screen
         component={ChangeWalletSheet}
         name={Routes.CHANGE_WALLET_SHEET}
         options={expandedPreset}
@@ -177,7 +182,7 @@ function MainNativeNavigator() {
       />
       <NativeStack.Screen
         component={ExpandedAssetSheet}
-        name={Routes.EXPANDED_ASSET_SHEET}
+        name={Routes.EXPANDED_ASSET_SCREEN}
       />
       <NativeStack.Screen
         component={SettingsModal}

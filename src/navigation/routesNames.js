@@ -12,6 +12,7 @@ const Routes = {
   CURRENCY_SELECT_SCREEN: 'CurrencySelectScreen',
   EXAMPLE_SCREEN: 'ExampleScreen',
   EXCHANGE_MODAL: 'ExchangeModal',
+  EXPANDED_ASSET_SCREEN: 'ExpandedAssetScreen',
   EXPANDED_ASSET_SHEET: 'ExpandedAssetSheet',
   IMPORT_SCREEN: 'ImportScreen',
   IMPORT_SEED_PHRASE_SHEET: 'ImportSeedPhraseSheet',
