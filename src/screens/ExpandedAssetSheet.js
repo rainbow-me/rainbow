@@ -42,7 +42,7 @@ export default function ExpandedAssetSheet(props) {
       height={params.longFormHeight}
       insets={insets}
     >
-      <StatusBar barStyle="light-content" />
+      {ios && <StatusBar barStyle="light-content" />}
       <TouchableBackdrop onPress={goBack} />
       {createElement(ScreenTypes[params.type], {
         asset: selectedAsset,

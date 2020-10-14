@@ -159,6 +159,7 @@ export default function SettingsModal() {
       onCloseModal={goBack}
       radius={18}
       showDoneButton={ios}
+      skipStatusBar={android}
     >
       <Container>
         <Stack.Navigator
