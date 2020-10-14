@@ -75,7 +75,6 @@ const SheetActionButton = ({
       noFlex={noFlex}
       radiusAndroid={borderRadius}
       size={size}
-      wrapperProps={{ containerStyle: { flex: 1 }, style: { flex: 1 } }}
       {...props}
     >
       <ShadowStack

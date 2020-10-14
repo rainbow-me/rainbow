@@ -9,12 +9,13 @@ import styled from 'styled-components/primitives';
 const RadiusWrapper = styled.View`
   border-radius: ${({ borderRadius }) => borderRadius};
   overflow: hidden;
-  flex: 1;
 `;
 
-const Wrapper = ({ children, radius }) =>
+const Wrapper = ({ children, radius, style }) =>
   radius ? (
-    <RadiusWrapper borderRadius={radius}>{children}</RadiusWrapper>
+    <RadiusWrapper borderRadius={radius} style={style}>
+      {children}
+    </RadiusWrapper>
   ) : (
     children
   );
@@ -29,6 +30,7 @@ export default function ButtonPressAnimation({
   opacityTouchable = false,
   wrapperProps,
   radiusAndroid: radius,
+  radiusWrapperStyle,
 }) {
   if (disabled) {
     return <View style={style}>{children}</View>;
@@ -47,7 +49,7 @@ export default function ButtonPressAnimation({
     );
   }
   return (
-    <Wrapper radius={radius}>
+    <Wrapper radius={radius} style={radiusWrapperStyle}>
       <TouchableNativeFeedback
         background={TouchableNativeFeedback.Ripple('#CCCCCC')}
         disabled={disabled}
