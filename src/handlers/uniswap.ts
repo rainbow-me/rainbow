@@ -123,20 +123,20 @@ export const estimateSwapGasLimit = async ({
 const getSwapType = (
   tokens: { [field in Field]?: Token },
   isExactIn: boolean,
-  chainId: number
+  chainId: ChainId
 ): SwapType => {
   if (isExactIn) {
-    if (tokens[Field.INPUT]?.equals(WETH[chainId as ChainId])) {
+    if (tokens[Field.INPUT]?.equals(WETH[chainId])) {
       return SwapType.EXACT_ETH_FOR_TOKENS;
-    } else if (tokens[Field.OUTPUT]?.equals(WETH[chainId as ChainId])) {
+    } else if (tokens[Field.OUTPUT]?.equals(WETH[chainId])) {
       return SwapType.EXACT_TOKENS_FOR_ETH;
     } else {
       return SwapType.EXACT_TOKENS_FOR_TOKENS;
     }
   } else {
-    if (tokens[Field.INPUT]?.equals(WETH[chainId as ChainId])) {
+    if (tokens[Field.INPUT]?.equals(WETH[chainId])) {
       return SwapType.ETH_FOR_EXACT_TOKENS;
-    } else if (tokens[Field.OUTPUT]?.equals(WETH[chainId as ChainId])) {
+    } else if (tokens[Field.OUTPUT]?.equals(WETH[chainId])) {
       return SwapType.TOKENS_FOR_EXACT_ETH;
     } else {
       return SwapType.TOKENS_FOR_EXACT_TOKENS;
