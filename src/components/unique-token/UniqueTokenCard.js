@@ -50,7 +50,11 @@ const UniqueTokenCard = ({
       shadow={shadow}
     >
       <Content {...props} height={height} style={style} width={width}>
-        <ButtonPressAnimation disabled={ios} style={{ height, width }}>
+        <ButtonPressAnimation
+          disabled={ios}
+          onPress={handlePress}
+          style={{ height, width }}
+        >
           <UniqueTokenImage
             backgroundColor={background || colors.lightestGrey}
             imageUrl={image_preview_url}

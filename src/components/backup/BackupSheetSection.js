@@ -78,7 +78,7 @@ export default function BackupSheetSection({
           testID={primaryButtonTestId}
         />
         <SheetActionButton
-          color={colors.white}
+          color={ios ? colors.white : colors.lightestGrey}
           label={secondaryLabel}
           onPress={onSecondaryAction}
           size="big"
