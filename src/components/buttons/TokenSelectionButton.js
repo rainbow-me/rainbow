@@ -34,6 +34,14 @@ const ButtonShadows = styled(ShadowStack).attrs(({ symbol }) => ({
   ],
 }))``;
 
+const Button = styled(ButtonPressAnimation).attrs({
+  radiusWrapperStyle: {
+    marginHorizontal: 19,
+  },
+})`
+  background-color: red;
+`;
+
 const TokenSelectionButton = ({
   borderRadius,
   onPress,
@@ -41,8 +49,13 @@ const TokenSelectionButton = ({
   symbol,
   testID,
 }) => (
-  <ButtonPressAnimation onPress={onPress} testID={testID} throttle>
-    <Row accessible css={margin(0, 19)}>
+  <Button
+    onPress={onPress}
+    radiusAndroid={borderRadius}
+    testID={testID}
+    throttle
+  >
+    <Row accessible css={margin(0, ios ? 19 : 0)}>
       <ButtonShadows
         {...position.coverAsObject}
         backgroundColor={symbol ? colors.dark : colors.appleBlue}
@@ -64,7 +77,7 @@ const TokenSelectionButton = ({
       </Content>
       <InnerBorder radius={borderRadius} />
     </Row>
-  </ButtonPressAnimation>
+  </Button>
 );
 
 TokenSelectionButton.propTypes = {
