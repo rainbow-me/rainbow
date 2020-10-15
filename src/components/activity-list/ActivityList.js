@@ -1,8 +1,11 @@
 import React from 'react';
 import { SectionList } from 'react-native';
 import { mapProps } from 'recompact';
+import networkTypes from '../../helpers/networkTypes';
 import { CoinRowHeight } from '../coin-row';
+import ActivityListEmptyState from './ActivityListEmptyState';
 import ActivityListHeader from './ActivityListHeader';
+import RecyclerActivityList from './RecyclerActivityList';
 
 const getItemLayout = (data, index) => ({
   index,
@@ -24,25 +27,51 @@ const ActivityList = ({
   pendingTransactionsCount,
   sections,
   transactionsCount,
-}) => (
-  <SectionList
-    ListHeaderComponent={header}
-    alwaysBounceVertical={false}
-    contentContainerStyle={{ paddingBottom: !transactionsCount ? 0 : 40 }}
-    extraData={{
-      hasPendingTransaction,
-      nativeCurrency,
-      pendingTransactionsCount,
-    }}
-    getItemLayout={getItemLayout}
-    initialNumToRender={12}
-    keyExtractor={keyExtractor}
-    removeClippedSubviews
-    renderSectionHeader={renderSectionHeader}
-    sections={sections}
-    windowSize={50}
-  />
-);
+  addCashAvailable,
+  isEmpty,
+  isLoading,
+  navigation,
+  network,
+  recyclerListView,
+}) => {
+  return network === networkTypes.mainnet || sections.length ? (
+    recyclerListView ? (
+      <RecyclerActivityList
+        addCashAvailable={addCashAvailable}
+        header={header}
+        isEmpty={isEmpty}
+        isLoading={isLoading}
+        navigation={navigation}
+        sections={sections}
+      />
+    ) : (
+      <SectionList
+        ListHeaderComponent={header}
+        alwaysBounceVertical={false}
+        contentContainerStyle={{ paddingBottom: !transactionsCount ? 0 : 40 }}
+        extraData={{
+          hasPendingTransaction,
+          nativeCurrency,
+          pendingTransactionsCount,
+        }}
+        getItemLayout={getItemLayout}
+        initialNumToRender={12}
+        keyExtractor={keyExtractor}
+        removeClippedSubviews
+        renderSectionHeader={renderSectionHeader}
+        sections={sections}
+        windowSize={50}
+      />
+    )
+  ) : (
+    <ActivityListEmptyState
+      emoji="👻"
+      label="Your testnet transaction history starts now!"
+    >
+      {header}
+    </ActivityListEmptyState>
+  );
+};
 
 export default mapProps(({ nativeCurrency, requests, sections, ...props }) => {
   let pendingTransactionsCount = 0;

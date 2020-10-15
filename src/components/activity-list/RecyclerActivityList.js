@@ -109,7 +109,7 @@ export default class RecyclerActivityList extends PureComponent {
         if (type === ViewTypes.ROW) {
           dim.height = 70;
         } else if (type === ViewTypes.SWAPPED_ROW) {
-          dim.height = 52;
+          dim.height = 70;
         } else if (type === ViewTypes.FOOTER) {
           dim.height = 19;
         } else if (type === ViewTypes.HEADER) {
@@ -173,11 +173,7 @@ export default class RecyclerActivityList extends PureComponent {
     if (type === ViewTypes.COMPONENT_HEADER) {
       const header = (
         <ProfileMasthead
-          accountAddress={this.props.accountAddress}
-          accountColor={this.props.accountColor}
-          accountName={this.props.accountName}
           addCashAvailable={this.props.addCashAvailable}
-          navigation={this.props.navigation}
           recyclerListRef={this.rlv}
         />
       );

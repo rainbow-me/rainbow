@@ -116,7 +116,6 @@ export default function ProfileScreen({ navigation }) {
           header={
             <ProfileMasthead
               addCashAvailable={addCashAvailable}
-              navigation={navigation}
               onChangeWallet={onChangeWallet}
             />
           }
@@ -124,6 +123,7 @@ export default function ProfileScreen({ navigation }) {
           isLoading={isLoading}
           navigation={navigation}
           network={network}
+          recyclerListView={ios}
           sections={sections}
           {...accountTransactions}
         />
