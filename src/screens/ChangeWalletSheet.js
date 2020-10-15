@@ -17,6 +17,7 @@ import WalletList from '../components/change-wallet/WalletList';
 import { Column } from '../components/layout';
 import { Sheet, SheetTitle } from '../components/sheet';
 import { Text } from '../components/text';
+import { backupUserDataIntoCloud } from '../handlers/cloudBackup';
 import { removeWalletData } from '../handlers/localstorage/removeWallet';
 import showWalletErrorAlert from '../helpers/support';
 import WalletLoadingStates from '../helpers/walletLoadingStates';
@@ -32,6 +33,7 @@ import {
   walletsSetSelected,
   walletsUpdate,
 } from '../redux/wallets';
+import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import {
   useAccountSettings,
   useInitializeWallet,
@@ -44,6 +46,7 @@ import {
   deviceUtils,
   showActionSheetWithOptions,
 } from '@rainbow-me/utils';
+
 import logger from 'logger';
 
 const deviceHeight = deviceUtils.dimensions.height;
@@ -363,10 +366,28 @@ export default function ChangeWalletSheet() {
                 try {
                   // If we found it and it's not damaged use it to create the new account
                   if (primaryWalletKey && !wallets[primaryWalletKey].damaged) {
-                    await dispatch(
+                    const newWallets = await dispatch(
                       createAccountForWallet(primaryWalletKey, color, name)
                     );
                     await initializeWallet();
+                    // If this wallet was previously backed up to the cloud
+                    // We need to update userData backup so it can be restored too
+                    if (
+                      wallets[primaryWalletKey].backedUp &&
+                      wallets[primaryWalletKey].backupType ===
+                        WalletBackupTypes.cloud
+                    ) {
+                      try {
+                        await backupUserDataIntoCloud({ wallets: newWallets });
+                      } catch (e) {
+                        logger.sentry(
+                          'Updating wallet userdata failed after new account creation'
+                        );
+                        captureException(e);
+                        throw e;
+                      }
+                    }
+
                     // If doesn't exist, we need to create a new wallet
                   } else {
                     await createWallet(null, color, name);
