@@ -44,14 +44,12 @@ const AddCashForm = ({
         label: currency,
         value: Number(value),
       });
-      console.log('visible!');
       setPaymentSheetVisible(true);
       await onPurchase({ currency, value });
       // eslint-disable-next-line no-empty
     } catch (e) {
     } finally {
       setPaymentSheetVisible(false);
-      console.log('done!');
     }
   }, [currency, onPurchase, paymentSheetVisible, value]);
 
