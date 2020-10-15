@@ -35,13 +35,14 @@ export default function Modal({
   radius = 12,
   statusBarStyle = 'light-content',
   fullScreenOnAndroid,
+  skipStatusBar,
   ...props
 }) {
   const { height: deviceHeight } = useDimensions();
 
   return (
     <Container containerPadding={containerPadding} fixedToTop={fixedToTop}>
-      <StatusBar barStyle={statusBarStyle} />
+      {skipStatusBar || <StatusBar barStyle={statusBarStyle} />}
       <TouchableBackdrop onPress={onCloseModal} />
       <Content
         {...props}
