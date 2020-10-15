@@ -21,7 +21,7 @@ describe('Ganache Transaction Flow', () => {
   });
 
   it('Should show the "Add wallet modal" after tapping import with a valid seed"', async () => {
-    await Helpers.typeText('import-sheet-input', process.env.DEV_SEEDS, false);
+    await Helpers.typeText('import-sheet-input', process.env.TEST_SEEDS, false);
     await Helpers.delay(1500);
     await Helpers.checkIfElementHasString(
       'import-sheet-button-label',
@@ -120,12 +120,28 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.delay(2000);
     await Helpers.tapAndLongPressByText('Hold to Swap');
     await Helpers.delay(6000);
+    await Helpers.swipe('profile-screen', 'left', 'slow');
+  });
+
+  it('Should open and complete Send Sheet for ETH', async () => {
+    await Helpers.delay(2000);
+    await Helpers.tap('send-fab');
+    await Helpers.delay(2000);
+    await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
+    await Helpers.delay(2000);
+    await Helpers.tap('send-asset-DAI');
+    await Helpers.delay(2000);
+    await Helpers.typeText('selected-asset-field-input', '10', true);
+    await Helpers.delay(1000);
+    await Helpers.tapAndLongPressByText('Hold to Send');
+    await Helpers.delay(6000);
   });
 
   it('Should show completed transactions', async () => {
-    await Helpers.delay(120000);
-    await Helpers.checkIfVisible('swap-Ethereum');
-    await Helpers.checkIfVisible('swap-Dai');
+    await Helpers.delay(2000);
+    await Helpers.checkIfVisible('Sent-Dai');
+    await Helpers.checkIfVisible('Swapped-Dai');
+    await Helpers.checkIfVisible('Swapped-Ethereum');
   });
 
   afterAll(async () => {
