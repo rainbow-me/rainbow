@@ -374,7 +374,7 @@ export default function ChangeWalletSheet() {
                     // We need to update userData backup so it can be restored too
                     if (
                       wallets[primaryWalletKey].backedUp &&
-                      wallets[primaryWalletKey].backedUp.backupType ===
+                      wallets[primaryWalletKey].backupType ===
                         WalletBackupTypes.cloud
                     ) {
                       try {
