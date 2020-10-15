@@ -50,13 +50,16 @@ export default function ProfileScreen({ navigation }) {
     }
     return hide;
   }, [hide, isWalletLoading, setComponent]);
+  const accountTransactions = useAccountTransactions(
+    activityListInitialized,
+    isFocused
+  );
   const {
     isLoadingTransactions: isLoading,
     sections,
     transactions,
     transactionsCount,
-  } = useAccountTransactions(activityListInitialized, isFocused);
-
+  } = accountTransactions;
   const { contacts } = useContacts();
   const { pendingRequestCount, requests } = useRequests();
   const { network } = useAccountSettings();
@@ -122,6 +125,7 @@ export default function ProfileScreen({ navigation }) {
           navigation={navigation}
           network={network}
           sections={sections}
+          {...accountTransactions}
         />
       )}
     </ProfileScreenPage>

@@ -1,57 +1,61 @@
-import PropTypes from 'prop-types';
 import React from 'react';
-import networkTypes from '../../helpers/networkTypes';
-import { useAccountProfile } from '../../hooks';
-import ActivityListEmptyState from './ActivityListEmptyState';
-import RecyclerActivityList from './RecyclerActivityList';
+import { SectionList } from 'react-native';
+import { mapProps } from 'recompact';
+import { CoinRowHeight } from '../coin-row';
+import ActivityListHeader from './ActivityListHeader';
+
+const getItemLayout = (data, index) => ({
+  index,
+  length: CoinRowHeight,
+  offset: CoinRowHeight * index,
+});
+
+const keyExtractor = ({ hash, timestamp, transactionDisplayDetails }) =>
+  hash || (timestamp ? timestamp.ms : transactionDisplayDetails.timestampInMs);
+
+const renderSectionHeader = ({ section }) => (
+  <ActivityListHeader {...section} />
+);
 
 const ActivityList = ({
-  addCashAvailable,
+  hasPendingTransaction,
   header,
-  isEmpty,
-  isLoading,
-  navigation,
-  network,
+  nativeCurrency,
+  pendingTransactionsCount,
   sections,
-}) => {
-  const { accountAddress, accountColor, accountName } = useAccountProfile();
+  transactionsCount,
+}) => (
+  <SectionList
+    ListHeaderComponent={header}
+    alwaysBounceVertical={false}
+    contentContainerStyle={{ paddingBottom: !transactionsCount ? 0 : 40 }}
+    extraData={{
+      hasPendingTransaction,
+      nativeCurrency,
+      pendingTransactionsCount,
+    }}
+    getItemLayout={getItemLayout}
+    initialNumToRender={12}
+    keyExtractor={keyExtractor}
+    removeClippedSubviews
+    renderSectionHeader={renderSectionHeader}
+    sections={sections}
+    windowSize={50}
+  />
+);
 
-  return network === networkTypes.mainnet || sections.length ? (
-    <RecyclerActivityList
-      accountAddress={accountAddress}
-      accountColor={accountColor}
-      accountName={accountName}
-      addCashAvailable={addCashAvailable}
-      header={header}
-      isEmpty={isEmpty}
-      isLoading={isLoading}
-      navigation={navigation}
-      sections={sections}
-    />
-  ) : (
-    <ActivityListEmptyState
-      emoji="👻"
-      label="Your testnet transaction history starts now!"
-    >
-      {header}
-    </ActivityListEmptyState>
-  );
-};
+export default mapProps(({ nativeCurrency, requests, sections, ...props }) => {
+  let pendingTransactionsCount = 0;
+  const pendingTxSection = sections[requests?.length ? 1 : 0];
 
-ActivityList.propTypes = {
-  addCashAvailable: PropTypes.bool,
-  header: PropTypes.node,
-  isEmpty: PropTypes.bool,
-  isLoading: PropTypes.bool,
-  navigation: PropTypes.object,
-  network: PropTypes.string,
-  sections: PropTypes.arrayOf(
-    PropTypes.shape({
-      data: PropTypes.array,
-      renderItem: PropTypes.func,
-      title: PropTypes.string.isRequired,
-    })
-  ),
-};
+  if (pendingTxSection && pendingTxSection.title === 'Pending') {
+    pendingTransactionsCount = pendingTxSection.data.length;
+  }
 
-export default ActivityList;
+  return {
+    ...props,
+    nativeCurrency,
+    pendingTransactionsCount,
+    sections,
+  };
+})(ActivityList);
