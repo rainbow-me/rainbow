@@ -73,9 +73,16 @@ export function onNavigationStateChange(currentState) {
         );
       }
 
+      if ([prevRouteName, routeName].includes(Routes.BACKUP_SHEET)) {
+        StatusBar.setBarStyle(
+          !isOnSwipeScreen(routeName) ? 'light-content' : 'dark-content',
+          true
+        );
+      }
+
       if ([prevRouteName, routeName].includes(Routes.SAVINGS_SHEET)) {
         StatusBar.setBarStyle(
-          routeName === Routes.SAVINGS_SHEET ? 'light-content' : 'dark-content',
+          !isOnSwipeScreen(routeName) ? 'light-content' : 'dark-content',
           true
         );
       }
