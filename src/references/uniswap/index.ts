@@ -36,11 +36,9 @@ const UNISWAP_V2_BASES = {
 
 const PAIR_INTERFACE = new Interface(IUniswapV2PairABI);
 const PAIR_GET_RESERVES_FRAGMENT = PAIR_INTERFACE.getFunction('getReserves');
-const PAIR_GET_RESERVES_CALL_DATA:
-  | string
-  | undefined = PAIR_GET_RESERVES_FRAGMENT
-  ? PAIR_INTERFACE.encodeFunctionData(PAIR_GET_RESERVES_FRAGMENT)
-  : undefined;
+const PAIR_GET_RESERVES_CALL_DATA: string = PAIR_INTERFACE.encodeFunctionData(
+  PAIR_GET_RESERVES_FRAGMENT
+);
 
 const MULTICALL_NETWORKS: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: '0xeefBa1e63905eF1D7ACbA5a8513c70307C1cE441',

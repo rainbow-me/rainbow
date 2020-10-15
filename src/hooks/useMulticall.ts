@@ -1,7 +1,8 @@
+import { FunctionFragment, Interface } from '@ethersproject/abi';
 import { map } from 'lodash';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { toCallKey } from '../redux/multicall';
+import { Call, toCallKey } from '../redux/multicall';
 
 const INVALID_RESULT = {
   blockNumber: undefined,
@@ -25,7 +26,11 @@ const LOADING_CALL_STATE = {
   valid: true,
 };
 
-export default function useMulticall(calls, contractInterface, fragment) {
+export default function useMulticall(
+  calls: Call[],
+  contractInterface: Interface,
+  fragment: FunctionFragment
+) {
   const { chainId, results } = useSelector(
     ({ multicall: { results }, settings: { chainId } }) => ({
       chainId,

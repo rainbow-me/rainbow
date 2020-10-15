@@ -26,25 +26,18 @@ export default function useUniswapCalls(
   }, [chainId, outputCurrency]);
 
   const bases = useMemo(() => {
-    const basebase = UNISWAP_V2_BASES[chainId as ChainId] ?? [];
-    return basebase;
+    return UNISWAP_V2_BASES[chainId as ChainId] ?? [];
   }, [chainId]);
 
   const allPairCombinations = useMemo(() => {
     if (!inputToken || !outputToken) return [];
-    const combos = [
+    const combos: [Token, Token][] = [
       // the direct pair
       [inputToken, outputToken],
       // token A against all bases
-      ...bases.map((base): [Token | undefined, Token | undefined] => [
-        inputToken,
-        base,
-      ]),
+      ...bases.map((base): [Token, Token] => [inputToken, base]),
       // token B against all bases
-      ...bases.map((base): [Token | undefined, Token | undefined] => [
-        outputToken,
-        base,
-      ]),
+      ...bases.map((base): [Token, Token] => [outputToken, base]),
       // each base against all bases
       ...flatMap(bases, (base): [Token, Token][] =>
         bases.map(otherBase => [base, otherBase])
@@ -70,13 +63,10 @@ export default function useUniswapCalls(
   }, [allPairCombinations]);
 
   const calls = useMemo(() => {
-    const theCalls = PAIR_GET_RESERVES_CALL_DATA
-      ? map(pairAddresses, address => ({
-          address,
-          callData: PAIR_GET_RESERVES_CALL_DATA,
-        }))
-      : [];
-    return theCalls;
+    return map(pairAddresses, address => ({
+      address,
+      callData: PAIR_GET_RESERVES_CALL_DATA,
+    }));
   }, [pairAddresses]);
 
   return {
