@@ -43,7 +43,7 @@ export default function ExpandedAssetSheet(props) {
       insets={insets}
     >
       {ios && <StatusBar barStyle="light-content" />}
-      <TouchableBackdrop onPress={goBack} />
+      {ios && <TouchableBackdrop onPress={goBack} />}
       {createElement(ScreenTypes[params.type], {
         asset: selectedAsset,
         ...props,

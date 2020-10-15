@@ -8,10 +8,31 @@ import { Navigation } from './index';
 let memRouteName;
 let memState;
 
+let action = null;
+
+const isOnSwipeScreen = name =>
+  [
+    Routes.WALLET_SCREEN,
+    Routes.QR_SCANNER_SCREEN,
+    Routes.PROFILE_SCREEN,
+  ].includes(name);
+
+export function triggerOnSwipeLayout(newAction) {
+  if (isOnSwipeScreen(Navigation.getActiveRoute().name)) {
+    newAction();
+  } else {
+    action = newAction;
+  }
+}
+
 export function onNavigationStateChange(currentState) {
   const prevState = memState;
   memState = currentState;
   const { name: routeName } = Navigation.getActiveRoute();
+  if (isOnSwipeScreen(routeName)) {
+    action?.();
+    action = undefined;
+  }
   const prevRouteName = memRouteName;
   memRouteName = routeName;
 
