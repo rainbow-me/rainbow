@@ -120,7 +120,12 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.delay(2000);
     await Helpers.tapAndLongPressByText('Hold to Swap');
     await Helpers.delay(6000);
-    await Helpers.swipe('profile-screen', 'left', 'slow');
+  });
+
+  it('Should show completed transactions', async () => {
+    await Helpers.delay(120000);
+    await Helpers.checkIfVisible('swap-Ethereum');
+    await Helpers.checkIfVisible('swap-Dai');
   });
 
   afterAll(async () => {
