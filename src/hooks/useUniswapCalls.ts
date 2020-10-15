@@ -1,7 +1,7 @@
 import { ChainId, Pair, Token } from '@uniswap/sdk';
 import { filter, flatMap, map, toLower, uniqBy } from 'lodash';
 import { useMemo } from 'react';
-import { getTokenForCurrency } from '../handlers/uniswap';
+import { getTokenForCurrency, SwapCurrency } from '../handlers/uniswap';
 import {
   PAIR_GET_RESERVES_CALL_DATA,
   UNISWAP_V2_BASES,
@@ -9,18 +9,21 @@ import {
 
 import useAccountSettings from './useAccountSettings';
 
-export default function useUniswapCalls(inputCurrency, outputCurrency) {
+export default function useUniswapCalls(
+  inputCurrency: SwapCurrency | null,
+  outputCurrency: SwapCurrency | null
+) {
   const { chainId } = useAccountSettings();
 
-  const inputToken: Token = useMemo(
-    () => getTokenForCurrency(inputCurrency, chainId),
-    [chainId, inputCurrency]
-  );
+  const inputToken: Token | null = useMemo(() => {
+    if (!inputCurrency) return null;
+    return getTokenForCurrency(inputCurrency, chainId);
+  }, [chainId, inputCurrency]);
 
-  const outputToken: Token | null = useMemo(
-    () => getTokenForCurrency(outputCurrency, chainId),
-    [chainId, outputCurrency]
-  );
+  const outputToken: Token | null = useMemo(() => {
+    if (!outputCurrency) return null;
+    return getTokenForCurrency(outputCurrency, chainId);
+  }, [chainId, outputCurrency]);
 
   const bases = useMemo(() => {
     const basebase = UNISWAP_V2_BASES[chainId as ChainId] ?? [];

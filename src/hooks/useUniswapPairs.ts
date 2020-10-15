@@ -1,6 +1,7 @@
 import { Pair, TokenAmount } from '@uniswap/sdk';
 import { compact } from 'lodash';
 import { useMemo } from 'react';
+import { SwapCurrency } from '../handlers/uniswap';
 import {
   PAIR_GET_RESERVES_FRAGMENT,
   PAIR_INTERFACE,
@@ -8,7 +9,10 @@ import {
 import useMulticall from './useMulticall';
 import useUniswapCalls from './useUniswapCalls';
 
-export default function useUniswapPairs(inputCurrency, outputCurrency) {
+export default function useUniswapPairs(
+  inputCurrency: SwapCurrency,
+  outputCurrency: SwapCurrency
+) {
   const { allPairCombinations, calls } = useUniswapCalls(
     inputCurrency,
     outputCurrency

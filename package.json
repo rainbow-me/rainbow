@@ -46,6 +46,7 @@
     "@bankify/react-native-animate-number": "^0.2.1",
     "@ethersproject/abi": "^5.0.3",
     "@ethersproject/abstract-provider": "^5.0.5",
+    "@ethersproject/abstract-signer": "^5.0.6",
     "@ethersproject/address": "^5.0.2",
     "@ethersproject/bignumber": "^5.0.5",
     "@ethersproject/bytes": "^5.0.3",
