@@ -370,13 +370,13 @@ export default function ChangeWalletSheet() {
                       createAccountForWallet(primaryWalletKey, color, name)
                     );
                     await initializeWallet();
-
+                    // If this wallet was previously backed up to the cloud
+                    // We need to update userData backup so it can be restored too
                     if (
                       wallets[primaryWalletKey].backedUp &&
                       wallets[primaryWalletKey].backedUp.backupType ===
                         WalletBackupTypes.cloud
                     ) {
-                      // We should update the backup
                       try {
                         await backupUserDataIntoCloud({ wallets: newWallets });
                       } catch (e) {
