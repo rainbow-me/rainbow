@@ -69,3 +69,6 @@ buck-out/
 
 # Development Templates
 src/screens/ExamplePage.js
+
+#e2e output
+e2e/logs/*/*.xml
