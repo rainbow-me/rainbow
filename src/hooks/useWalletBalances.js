@@ -42,7 +42,7 @@ const useWalletBalances = wallets => {
       );
 
       forEach(keys(walletBalances), (address, index) => {
-        const amountInETH = fromWei(balances[index]);
+        const amountInETH = fromWei(balances[index].toString());
         const formattedBalance = handleSignificantDecimals(amountInETH, 4);
         walletBalances[address] = formattedBalance;
       });
