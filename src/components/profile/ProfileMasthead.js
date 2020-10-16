@@ -70,7 +70,7 @@ export default function ProfileMasthead({
   recyclerListRef,
   showBottomDivider = true,
 }) {
-  const { selectedWallet } = useWallets();
+  const { isDamaged } = useWallets();
   const { width: deviceWidth } = useDimensions();
   const { navigate } = useNavigation();
   const {
@@ -103,15 +103,15 @@ export default function ProfileMasthead({
   ]);
 
   const handlePressReceive = useCallback(() => {
-    if (selectedWallet?.damaged) {
+    if (isDamaged) {
       showWalletErrorAlert();
       return;
     }
     navigate(Routes.RECEIVE_MODAL);
-  }, [navigate, selectedWallet]);
+  }, [navigate, isDamaged]);
 
   const handlePressAddCash = useCallback(() => {
-    if (selectedWallet?.damaged) {
+    if (isDamaged) {
       showWalletErrorAlert();
       return;
     }
@@ -119,17 +119,17 @@ export default function ProfileMasthead({
     analytics.track('Tapped Add Cash', {
       category: 'add cash',
     });
-  }, [navigate, selectedWallet]);
+  }, [navigate, isDamaged]);
 
   const handlePressChangeWallet = useCallback(() => {
     navigate(Routes.CHANGE_WALLET_SHEET);
   }, [navigate]);
 
   const handlePressCopyAddress = useCallback(() => {
-    if (selectedWallet?.damaged) {
+    if (isDamaged) {
       showWalletErrorAlert();
     }
-  }, [selectedWallet]);
+  }, [isDamaged]);
 
   return (
     <Column
@@ -158,7 +158,7 @@ export default function ProfileMasthead({
       </ButtonPressAnimation>
       <RowWithMargins align="center" margin={19}>
         <CopyFloatingEmojis
-          disabled={selectedWallet?.damaged}
+          disabled={isDamaged}
           onPress={handlePressCopyAddress}
           textToCopy={accountAddress}
         >

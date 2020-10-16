@@ -148,11 +148,11 @@ const AmountButton = ({ amount, backgroundColor, color, onPress }) => {
 const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
   const { isSmallPhone } = useDimensions();
   const { navigate } = useNavigation();
-  const { selectedWallet } = useWallets();
+  const { isDamaged } = useWallets();
 
   const handlePressAmount = useCallback(
     amount => {
-      if (selectedWallet?.damaged) {
+      if (isDamaged) {
         showWalletErrorAlert();
         return;
       }
@@ -161,16 +161,16 @@ const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
         screen: Routes.ADD_CASH_SCREEN_NAVIGATOR,
       });
     },
-    [navigate, selectedWallet]
+    [navigate, isDamaged]
   );
 
   const handlePressCopyAddress = useCallback(() => {
-    if (selectedWallet?.damaged) {
+    if (isDamaged) {
       showWalletErrorAlert();
       return;
     }
     navigate(Routes.RECEIVE_MODAL);
-  }, [navigate, selectedWallet]);
+  }, [navigate, isDamaged]);
 
   return (
     <Container style={buildInterstitialTransform(isSmallPhone, offsetY)}>

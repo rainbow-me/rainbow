@@ -45,7 +45,7 @@ import {
   getTransactionLabel,
   parseTransactions,
 } from '../parsers/transactions';
-import { tokenOverrides } from '../references';
+import { shitcoins, tokenOverrides } from '../references';
 import { ethereumUtils, isLowerCaseMatch } from '../utils';
 
 /* eslint-disable-next-line import/no-cycle */
@@ -200,7 +200,7 @@ export const transactionsReceived = (message, appended = false) => async (
       selected.type !== WalletTypes.readOnly
     ) {
       setTimeout(() => {
-        Navigation.handleAction(Routes.BACKUP_SHEET);
+        Navigation.handleAction(Routes.BACKUP_SHEET, { single: true });
       }, BACKUP_SHEET_DELAY_MS);
     }
   }
@@ -257,8 +257,23 @@ export const addressAssetsReceived = (
 
   const liquidityTokens = remove(
     assets,
-    asset => asset.asset.type === 'uniswap'
+    asset =>
+      asset?.asset?.type === 'uniswap' ||
+      // Remove duplicate liquidity tokens when falling back from zerion
+      (toLower(asset?.asset.name).indexOf('uniswap') !== -1 &&
+        toLower(asset?.asset.name) !== 'uniswap')
   );
+
+  // Remove spammy tokens
+  remove(assets, asset =>
+    shitcoins.includes(toLower(asset?.asset?.asset_code))
+  );
+  // Remove compound tokens
+  remove(
+    assets,
+    asset => toLower(asset?.asset?.name).indexOf('compound') !== -1
+  );
+
   dispatch(
     uniswapUpdateLiquidityTokens(liquidityTokens, append || change || removed)
   );

@@ -497,7 +497,7 @@ PODS:
     - React
   - RNReactNativeHapticFeedback (1.10.0):
     - React
-  - RNReanimated (2.0.0-alpha.6):
+  - RNReanimated (2.0.0-alpha.7):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -534,6 +534,8 @@ PODS:
   - RNStoreReview (0.1.5):
     - React
   - RNSVG (12.1.0):
+    - React
+  - RNTextSize (4.0.0-rc.1):
     - React
   - RNTooltips (1.0.2):
     - pop (~> 1.0)
@@ -595,7 +597,7 @@ DEPENDENCIES:
   - libwebp
   - lottie-ios (from `../node_modules/lottie-ios`)
   - lottie-react-native (from `../node_modules/lottie-react-native`)
-  - PanModal (from `https://github.com/osdnk/PanModal`, commit `eb9ff73833957de5c7ff30ccf08d3037266783d8`)
+  - PanModal (from `https://github.com/osdnk/PanModal`, commit `4588162c55cc0e70fecafbf6af002340b6ae27e3`)
   - Permission-Camera (from `../node_modules/react-native-permissions/ios/Camera.podspec`)
   - Permission-FaceID (from `../node_modules/react-native-permissions/ios/FaceID.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
@@ -664,6 +666,7 @@ DEPENDENCIES:
   - "RNSentry (from `../node_modules/@sentry/react-native`)"
   - RNStoreReview (from `../node_modules/react-native-store-review/ios`)
   - RNSVG (from `../node_modules/react-native-svg`)
+  - RNTextSize (from `../node_modules/react-native-text-size`)
   - RNTooltips (from `../node_modules/react-native-tooltips/ios`)
   - Shimmer
   - SRSRadialGradient (from `../node_modules/react-native-radial-gradient/ios`)
@@ -732,7 +735,7 @@ EXTERNAL SOURCES:
   lottie-react-native:
     :path: "../node_modules/lottie-react-native"
   PanModal:
-    :commit: eb9ff73833957de5c7ff30ccf08d3037266783d8
+    :commit: 4588162c55cc0e70fecafbf6af002340b6ae27e3
     :git: https://github.com/osdnk/PanModal
   Permission-Camera:
     :path: "../node_modules/react-native-permissions/ios/Camera.podspec"
@@ -866,6 +869,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-store-review/ios"
   RNSVG:
     :path: "../node_modules/react-native-svg"
+  RNTextSize:
+    :path: "../node_modules/react-native-text-size"
   RNTooltips:
     :path: "../node_modules/react-native-tooltips/ios"
   SRSRadialGradient:
@@ -879,7 +884,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   PanModal:
-    :commit: eb9ff73833957de5c7ff30ccf08d3037266783d8
+    :commit: 4588162c55cc0e70fecafbf6af002340b6ae27e3
     :git: https://github.com/osdnk/PanModal
 
 SPEC CHECKSUMS:
@@ -984,11 +989,12 @@ SPEC CHECKSUMS:
   RNOS: 31db6fa4a197d179afbba9e6b4d28d450a7f250b
   RNPermissions: ad71dd4f767ec254f2cd57592fbee02afee75467
   RNReactNativeHapticFeedback: 22c5ecf474428766c6b148f96f2ff6155cd7225e
-  RNReanimated: 6bd3347e383cee6eb879a1a7d6c748934a015a05
+  RNReanimated: c40c29429b22a1564e505b789132cfcef456c6bd
   RNScreens: 812b79d384e2bea7eebc4ec981469160d4948fd5
   RNSentry: 0a70359ddacbfb9b1cbbb0971e54065b9f70ac57
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
+  RNTextSize: 21c94a67819fbf2c358a219bf6d251e3be9e5f29
   RNTooltips: e13180e4339e2a85daabd09507f62a5a32d3dc8a
   SDWebImage: 62ae4a18473520c67b79e9724c31a63599cc9423
   SDWebImageWebPCoder: d0dac55073088d24b2ac1b191a71a8f8d0adac21
@@ -1003,6 +1009,6 @@ SPEC CHECKSUMS:
   Yoga: 7740b94929bbacbddda59bf115b5317e9a161598
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: cd4784bce0a88c44a91214da329d3a23a704f37d
+PODFILE CHECKSUM: 5db2e07714af0e329feeadb6060bdf0392a26da9
 
 COCOAPODS: 1.9.3

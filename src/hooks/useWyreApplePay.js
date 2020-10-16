@@ -1,9 +1,11 @@
 import analytics from '@segment/analytics-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { Alert } from '../components/alerts';
 import {
   getOrderId,
   getReferenceId,
+  getWalletOrderQuotation,
   PaymentRequestStatusTypes,
   reserveWyreOrder,
   showApplePayRequest,
@@ -61,12 +63,42 @@ export default function useWyreApplePay() {
         analytics.track('Wyre order reservation incomplete', {
           category: 'add cash',
         });
+        Alert({
+          buttons: [{ text: 'Okay' }],
+          message:
+            'We were unable to reserve your purchase order. Please try again later.',
+          title: `Something went wrong!`,
+        });
+        return;
       }
+      const quotation = await getWalletOrderQuotation(
+        value,
+        currency,
+        accountAddress,
+        network
+      );
+
+      if (!quotation) {
+        analytics.track('Wyre order quote incomplete', {
+          category: 'add cash',
+        });
+        Alert({
+          buttons: [{ text: 'Okay' }],
+          message:
+            'We were unable to get a quote on your purchase order. Please try again later.',
+          title: `Something went wrong!`,
+        });
+        return;
+      }
+
+      const { sourceAmountWithFees, purchaseFee } = quotation;
 
       const applePayResponse = await showApplePayRequest(
         referenceInfo,
         accountAddress,
         currency,
+        sourceAmountWithFees,
+        purchaseFee,
         value,
         network
       );
@@ -74,7 +106,6 @@ export default function useWyreApplePay() {
       setOrderCurrency(currency);
 
       if (applePayResponse) {
-        const { paymentResponse, totalAmount } = applePayResponse;
         logger.log('[add cash] - get order id');
         const {
           orderId,
@@ -83,8 +114,8 @@ export default function useWyreApplePay() {
           errorMessage,
         } = await getOrderId(
           referenceInfo,
-          paymentResponse,
-          totalAmount,
+          applePayResponse,
+          sourceAmountWithFees,
           accountAddress,
           currency,
           network,
@@ -92,14 +123,14 @@ export default function useWyreApplePay() {
         );
         if (orderId) {
           referenceInfo.orderId = orderId;
-          paymentResponse.complete(PaymentRequestStatusTypes.SUCCESS);
+          applePayResponse.complete(PaymentRequestStatusTypes.SUCCESS);
           handlePaymentCallback();
           dispatch(
             addCashGetOrderStatus(
               referenceInfo,
               currency,
               orderId,
-              paymentResponse,
+              applePayResponse,
               value
             )
           );
@@ -111,7 +142,7 @@ export default function useWyreApplePay() {
               errorMessage,
             })
           );
-          paymentResponse.complete(PaymentRequestStatusTypes.FAIL);
+          applePayResponse.complete(PaymentRequestStatusTypes.FAIL);
           handlePaymentCallback();
           analytics.track('Purchase failed', {
             category: 'add cash',

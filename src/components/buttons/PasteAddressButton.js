@@ -1,12 +1,19 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { checkIsValidAddressOrENS } from '../../helpers/validators';
 import { Text } from '../text';
 import MiniButton from './MiniButton';
-import { useClipboard } from '@rainbow-me/hooks';
+import { checkIsValidAddressOrENS } from '@rainbow-me/helpers/validators';
+import { useClipboard, useInvalidPaste } from '@rainbow-me/hooks';
+import { deviceUtils } from '@rainbow-me/utils';
 
 export default function PasteAddressButton({ onPress }) {
-  const { clipboard } = useClipboard();
   const [isValid, setIsValid] = useState(false);
+  const { onInvalidPaste } = useInvalidPaste();
+  const {
+    clipboard,
+    enablePaste,
+    getClipboard,
+    hasClipboardData,
+  } = useClipboard();
 
   useEffect(() => {
     async function validate() {
@@ -14,18 +21,28 @@ export default function PasteAddressButton({ onPress }) {
       setIsValid(isValidAddress);
     }
 
-    validate();
+    if (!deviceUtils.isIOS14) {
+      validate();
+    }
   }, [clipboard]);
 
   const handlePress = useCallback(() => {
-    if (isValid) {
-      onPress?.(clipboard);
-    }
-  }, [clipboard, isValid, onPress]);
+    if (!enablePaste) return;
+
+    getClipboard(async clipboardData => {
+      const isValidAddress = await checkIsValidAddressOrENS(clipboardData);
+
+      if (isValidAddress) {
+        return onPress?.(clipboardData);
+      }
+
+      return onInvalidPaste();
+    });
+  }, [enablePaste, getClipboard, onInvalidPaste, onPress]);
 
   return (
     <MiniButton
-      disabled={!isValid}
+      disabled={deviceUtils.isIOS14 ? !hasClipboardData : clipboard && !isValid}
       onPress={handlePress}
       testID="paste-address-button"
     >

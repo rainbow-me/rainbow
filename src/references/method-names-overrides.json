@@ -1,0 +1,15 @@
+{
+  "Add Liquidity E T H": "Add Liquidity", 
+  "Swap Exact E T H For Tokens": "Swap",
+  "Swap Exact Tokens For E T H": "Swap",
+  "Swap Tokens For Exact E T H": "Swap",
+  "Swap E T H For Exact Tokens": "Swap",
+  "Swap Tokens For Exact Tokens": "Swap",
+  "Swap Exact Tokens For Tokens": "Swap",
+  "Token To Eth Transfer Input": "Swap",
+  "Token To Eth Transfer Output": "Swap",
+  "Token To Token Transfer Input": "Swap",
+  "Token To Token Transfer Output": "Swap",
+  "Eth To Token Transfer Input": "Swap",
+  "Eth To Token Transfer Output": "Swap"
+}

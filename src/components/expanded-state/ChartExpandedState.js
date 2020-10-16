@@ -151,6 +151,12 @@ export default function ChartExpandedState({ asset }) {
     }
   }, [throttledPoints, fetchingCharts, debouncedSetThrottledData]);
 
+  const duration = useRef(0);
+
+  if (duration.current === 0) {
+    duration.current = 300;
+  }
+
   return (
     <SlackSheet
       contentHeight={ChartExpandedStateSheetHeight}

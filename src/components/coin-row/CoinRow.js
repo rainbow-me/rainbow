@@ -45,6 +45,7 @@ export default function CoinRow({
 }) {
   const accountSettings = useAccountSettings();
   const { isCoinListEdited } = useCoinListEdited();
+
   return (
     <Container css={containerStyles}>
       {isPool ? (

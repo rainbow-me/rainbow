@@ -77,6 +77,7 @@ const ExchangeCoinRow = ({
           )
         )}
         showBalance={showBalance}
+        testID="exchange-coin-row"
         topRowRender={TopRow}
       >
         {showBalance && (

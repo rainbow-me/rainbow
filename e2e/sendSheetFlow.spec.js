@@ -22,24 +22,30 @@ describe('Send Sheet Interaction Flow', () => {
 
   it("Shouldn't do anything when I type jibberish", async () => {
     await Helpers.tap('import-sheet-input');
-    await Helpers.checkIfHasText('import-sheet-button-label', 'Paste');
+    await Helpers.checkIfElementHasString('import-sheet-button-label', 'Paste');
     await Helpers.typeText('import-sheet-input', 'asdajksdlakjsd', false);
-    await Helpers.checkIfHasText('import-sheet-button-label', 'Import');
+    await Helpers.checkIfElementHasString(
+      'import-sheet-button-label',
+      'Import'
+    );
   });
 
   it('Should show the "Add wallet modal" after tapping import with a valid seed"', async () => {
     await Helpers.clearField('import-sheet-input');
     await Helpers.typeText('import-sheet-input', process.env.DEV_SEEDS, false);
     await Helpers.delay(1500);
-    await Helpers.checkIfHasText('import-sheet-button-label', 'Import');
+    await Helpers.checkIfElementHasString(
+      'import-sheet-button-label',
+      'Import'
+    );
     await Helpers.tap('import-sheet-button');
     await Helpers.checkIfVisible('wallet-info-modal');
   });
 
   it('Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
-    await Helpers.delay(1000);
+    await Helpers.delay(5000);
     await Helpers.tap('wallet-info-submit-button');
-    await Helpers.delay(1000);
+    await Helpers.delay(3000);
     await Helpers.checkIfVisible('wallet-screen');
   });
 
@@ -119,7 +125,7 @@ describe('Send Sheet Interaction Flow', () => {
   });
 
   it('Should display Asset Form after tapping on asset', async () => {
-    await Helpers.delay(1000);
+    await Helpers.delay(2000);
     await Helpers.checkIfVisible('send-asset-DAI');
     await Helpers.tap('send-asset-DAI');
     await Helpers.delay(1000);
@@ -153,7 +159,7 @@ describe('Send Sheet Interaction Flow', () => {
 
   it('Should prepend a 0 to quantity field on input of .', async () => {
     await Helpers.tap('send-asset-form-DAI');
-    await Helpers.delay(2000);
+    await Helpers.delay(3000);
     await Helpers.tap('send-asset-DAI');
     await Helpers.delay(1000);
     await Helpers.checkIfVisible('selected-asset-quantity-field-input');
@@ -164,7 +170,7 @@ describe('Send Sheet Interaction Flow', () => {
 
   it('Should only show a max of 2 decimals in quantity field', async () => {
     await Helpers.tap('send-asset-form-DAI');
-    await Helpers.delay(1500);
+    await Helpers.delay(3000);
     await Helpers.tap('send-asset-DAI');
     await Helpers.delay(1000);
     await Helpers.checkIfVisible('selected-asset-quantity-field-input');
@@ -179,10 +185,10 @@ describe('Send Sheet Interaction Flow', () => {
   });
 
   it('Should display Asset Form after tapping on asset ETH', async () => {
-    await Helpers.delay(1000);
+    await Helpers.delay(2000);
     await Helpers.checkIfVisible('send-asset-ETH');
     await Helpers.tap('send-asset-ETH');
-    await Helpers.delay(1000);
+    await Helpers.delay(2000);
     await Helpers.checkIfVisible('selected-asset-field-input');
   });
 
@@ -224,7 +230,7 @@ describe('Send Sheet Interaction Flow', () => {
 
   it('Should only show a max of 2 decimals in quantity field ETH', async () => {
     await Helpers.tap('send-asset-form-ETH');
-    await Helpers.delay(1500);
+    await Helpers.delay(3000);
     await Helpers.tap('send-asset-ETH');
     await Helpers.delay(1000);
     await Helpers.checkIfVisible('selected-asset-quantity-field-input');
@@ -236,12 +242,13 @@ describe('Send Sheet Interaction Flow', () => {
     );
     await Helpers.checkIfElementByTextIsVisible('8.12');
     await Helpers.tap('send-asset-form-ETH');
+    await Helpers.delay(1000);
   });
 
   it('Should show Add Contact Screen after tapping Add Contact Button', async () => {
     await Helpers.checkIfVisible('add-contact-button');
     await Helpers.tap('add-contact-button');
-    await Helpers.delay(500);
+    await Helpers.delay(1000);
     await Helpers.checkIfVisible('contact-profile-name-input');
   });
 
@@ -257,7 +264,7 @@ describe('Send Sheet Interaction Flow', () => {
   it('Should update address field to show contact name & show edit contact button', async () => {
     await Helpers.delay(1000);
     await Helpers.tap('add-contact-button');
-    await Helpers.delay(1000);
+    await Helpers.delay(2000);
     await Helpers.typeText('contact-profile-name-input', 'poopcoin.test', true);
     await Helpers.tap('contact-profile-add-button');
     await Helpers.checkIfElementByTextIsVisible('poopcoin.test');
@@ -286,7 +293,7 @@ describe('Send Sheet Interaction Flow', () => {
   });
 
   it('Should load contacts if contacts exist', async () => {
-    await Helpers.delay(2000);
+    await Helpers.delay(5000);
     await Helpers.swipe('send-asset-form-field', 'down', 'slow');
     await Helpers.delay(1000);
     await Helpers.tap('send-fab');

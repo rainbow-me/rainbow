@@ -106,11 +106,11 @@ export default function ChartWrapper({
   chartType,
   color,
   fetchingCharts,
-  throttledData,
   updateChartType,
   showChart,
   showMonth,
   showYear,
+  throttledData,
   ...props
 }) {
   const timespanIndex = useMemo(() => ChartTimespans.indexOf(chartType), [
@@ -165,7 +165,7 @@ export default function ChartWrapper({
         opacity: spinnerScale.value,
       };
     },
-    undefined,
+    [],
     'overlayStyle'
   );
 

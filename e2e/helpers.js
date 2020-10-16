@@ -100,22 +100,28 @@ export function checkIfVisible(elementId) {
     .withTimeout(15000);
 }
 
+export function checkIfNotVisible(elementId) {
+  return waitFor(element(by.id(elementId)))
+    .toBeNotVisible()
+    .withTimeout(10000);
+}
+
 export function checkIfExists(elementId) {
   return expect(element(by.id(elementId))).toExist();
-}
-
-export function checkIfHasText(elementId, text) {
-  return expect(element(by.id(elementId))).toHaveLabel(text);
-}
-
-export function checkIfElementWithTextIsVisible(text, index) {
-  return expect(element(by.text(text)).atIndex(index || 0)).toBeVisible();
 }
 
 export function checkIfElementByTextIsVisible(text) {
   return waitFor(element(by.text(text)))
     .toBeVisible()
     .withTimeout(25000);
+}
+
+export function checkForElementByLabel(text) {
+  return expect(element(by.label(text))).toExist();
+}
+
+export function checkIfElementHasString(elementID, text) {
+  return expect(element(by.id(elementID).and(by.text(text)))).toExist();
 }
 
 export function relaunchApp() {

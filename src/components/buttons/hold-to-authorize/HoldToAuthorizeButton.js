@@ -58,7 +58,7 @@ const Content = styled(Centered)`
 const Title = styled(Text).attrs(({ smallButton }) => ({
   color: 'white',
   size: smallButton ? 'large' : 'larger',
-  weight: 'semibold',
+  weight: 'bold',
 }))`
   margin-bottom: 4;
 `;
@@ -209,6 +209,7 @@ class HoldToAuthorizeButton extends PureComponent {
           enableLongPress={enableLongPress}
           minDurationMs={longPressProgressDurationMs}
           onHandlerStateChange={this.onLongPressChange}
+          testID={testID}
         >
           <Animated.View
             {...props}

@@ -9,14 +9,13 @@ import ExchangeInput from './ExchangeInput';
 import { colors } from '@rainbow-me/styles';
 
 const CoinSize = 40;
-const ExchangeFieldHeight = Platform.OS === 'android' ? 64 : 40;
-const ExchangeFieldPadding = 15;
+const ExchangeFieldHeight = Platform.OS === 'android' ? 64 : 38;
+const ExchangeFieldPadding = 19;
 const skeletonColor = colors.alpha(colors.blueGreyDark, 0.1);
 
 const Container = styled(Row).attrs({
   align: 'center',
 })`
-  background-color: ${colors.white};
   width: 100%;
 `;
 
@@ -46,6 +45,7 @@ const ExchangeField = (
     onPressSelectCurrency,
     setAmount,
     symbol,
+    testID,
     ...props
   },
   ref
@@ -69,12 +69,17 @@ const ExchangeField = (
             placeholder={symbol ? '0' : EnDash.unicode}
             placeholderTextColor={symbol ? undefined : skeletonColor}
             ref={ref}
+            testID={amount ? `${testID}-${amount}` : testID}
             value={amount}
           />
         </FieldRow>
       </TouchableWithoutFeedback>
       {!disableCurrencySelection && (
-        <TokenSelectionButton onPress={onPressSelectCurrency} symbol={symbol} />
+        <TokenSelectionButton
+          onPress={onPressSelectCurrency}
+          symbol={symbol}
+          testID={testID + '-selection-button'}
+        />
       )}
     </Container>
   );
