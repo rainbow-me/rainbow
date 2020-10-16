@@ -84,14 +84,17 @@ export const multicallAddListeners = ({
     ...existingListeners,
   };
 
-  updatedListeners[chainId] = updatedListeners[chainId] ?? {};
+  const listenersForChainId = {
+    ...updatedListeners[chainId],
+  };
 
   forEach(calls, call => {
     const callKey = toCallKey(call);
-    updatedListeners[chainId] = {
-      [callKey]: (updatedListeners?.[chainId]?.[callKey] ?? 0) + 1,
-    };
+    listenersForChainId[callKey] =
+      (updatedListeners?.[chainId]?.[callKey] ?? 0) + 1;
   });
+
+  updatedListeners[chainId] = listenersForChainId;
 
   dispatch({
     payload: updatedListeners,
@@ -145,15 +148,21 @@ const multicallUpdateResults = ({
   const updatedResults = {
     ...existingResults,
   };
-  updatedResults[chainId] = updatedResults[chainId] ?? {};
+
+  const resultsForChainId = {
+    ...updatedResults[chainId],
+  };
 
   forEach(keys(results), callKey => {
     const current = get(existingResults, `[${chainId}][${callKey}]`);
     if ((current?.blockNumber ?? 0) > blockNumber) return;
-    updatedResults[chainId] = {
-      [callKey]: { blockNumber, data: results[callKey] },
+    resultsForChainId[callKey] = {
+      blockNumber,
+      data: results[callKey],
     };
   });
+
+  updatedResults[chainId] = resultsForChainId;
 
   dispatch({
     payload: updatedResults,

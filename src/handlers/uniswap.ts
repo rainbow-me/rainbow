@@ -438,7 +438,7 @@ export const calculateTradeDetails = (
   outputAmount: number,
   inputCurrency: SwapCurrency,
   outputCurrency: SwapCurrency,
-  pairs: Record<string, Pair>,
+  pairs: Pair[],
   exactInput: boolean
 ): Trade | null => {
   if (!inputCurrency || !outputCurrency || isEmpty(pairs)) {
@@ -454,7 +454,7 @@ export const calculateTradeDetails = (
     );
 
     const amountIn = new TokenAmount(inputToken, inputRawAmount);
-    return Trade.bestTradeExactIn(Object.values(pairs), amountIn, outputToken, {
+    return Trade.bestTradeExactIn(pairs, amountIn, outputToken, {
       maxNumResults: 1,
     })[0];
   } else {
@@ -463,14 +463,9 @@ export const calculateTradeDetails = (
       outputToken.decimals
     );
     const amountOut = new TokenAmount(outputToken, outputRawAmount);
-    return Trade.bestTradeExactOut(
-      Object.values(pairs),
-      inputToken,
-      amountOut,
-      {
-        maxNumResults: 1,
-      }
-    )[0];
+    return Trade.bestTradeExactOut(pairs, inputToken, amountOut, {
+      maxNumResults: 1,
+    })[0];
   }
 };
 
