@@ -60,7 +60,7 @@ describe('Ganache Transaction Flow', () => {
 
   it('Should show Ganache Toast after pressing Connect To Ganache', async () => {
     await Helpers.tap('ganache-section');
-    await Helpers.delay(20000);
+    await Helpers.delay(30000);
     await Helpers.checkIfVisible('testnet-toast-Ganache');
     await Helpers.swipe('profile-screen', 'left', 'slow');
     await Helpers.delay(2000);
@@ -123,7 +123,7 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
-  it('Should open and complete Send Sheet for ETH', async () => {
+  it('Should open and complete Send Sheet for cSAI', async () => {
     await Helpers.delay(2000);
     await Helpers.tap('send-fab');
     await Helpers.delay(2000);
@@ -135,17 +135,71 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.delay(1000);
     await Helpers.tapAndLongPressByText('Hold to Send');
     await Helpers.delay(6000);
+    await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
-  it('Should show completed transactions', async () => {
+  it('Should open and complete Send Sheet for NFT', async () => {
     await Helpers.delay(2000);
-    //await Helpers.checkIfVisible('Swapped-Dai');
-    //await Helpers.checkIfVisible('Swapped-Ethereum');
+    await Helpers.tap('send-fab');
+    await Helpers.delay(2000);
+    await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
+    await Helpers.delay(2000);
+    await Helpers.tapByText('CryptoKitties');
+    await Helpers.delay(2000);
+    await Helpers.tapByText('Arun Cattybinky');
+    await Helpers.delay(3000);
+    await Helpers.tapAndLongPressByText('Hold to Send');
+    await Helpers.delay(6000);
+  });
+
+  it('Should show completed transaction - Swap ETH -> ERC20', async () => {
+    try {
+      await Helpers.checkIfVisible('Swapped-Ethereum');
+    } catch (e) {
+      await Helpers.checkIfVisible('Swapping-Ethereum');
+    }
+    await Helpers.swipe('profile-screen', 'left', 'slow');
+  });
+
+  it('Should open and complete Send Sheet for ERC20', async () => {
+    await Helpers.delay(2000);
+    await Helpers.tap('send-fab');
+    await Helpers.delay(2000);
+    await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
+    await Helpers.delay(2000);
+    await Helpers.tap('send-asset-BAT');
+    await Helpers.delay(2000);
+    await Helpers.typeText('selected-asset-field-input', '2', true);
+    await Helpers.delay(3000);
+    await Helpers.tapAndLongPressByText('Hold to Send');
+    await Helpers.delay(6000);
+    await Helpers.swipe('profile-screen', 'left', 'slow');
+  });
+
+  it('Should open and complete Send Sheet for ETH', async () => {
+    await Helpers.delay(2000);
+    await Helpers.tap('send-fab');
+    await Helpers.delay(2000);
+    await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
+    await Helpers.delay(2000);
+    await Helpers.tap('send-asset-ETH');
+    await Helpers.delay(2000);
+    await Helpers.typeText('selected-asset-field-input', '.01', true);
+    await Helpers.delay(3000);
+    await Helpers.tapAndLongPressByText('Hold to Send');
+    await Helpers.delay(6000);
+  });
+
+  it('Should show completed transaction - Swap ERC20 -> ERC20', async () => {
+    await Helpers.delay(2000);
     try {
       await Helpers.checkIfVisible('Swapped-Basic Attention Token');
     } catch (e) {
       await Helpers.checkIfVisible('Swapping-Basic Attention Token');
     }
+  });
+
+  it('Should show completed transaction - Swap ERC20 -> ETH', async () => {
     try {
       await Helpers.checkIfVisible('Swapped-USD Coin');
     } catch (e) {
@@ -154,7 +208,39 @@ describe('Ganache Transaction Flow', () => {
     try {
       await Helpers.checkIfVisible('Sent-Compound Sai');
     } catch (e) {
+      await Helpers.checkIfVisible('Sending-Compound Sai');
+    }
+  });
+
+  it('Should show completed transaction - Send Savings Asset', async () => {
+    try {
       await Helpers.checkIfVisible('Sent-Compound Sai');
+    } catch (e) {
+      await Helpers.checkIfVisible('Sending-Compound Sai');
+    }
+  });
+
+  it('Should show completed transaction - Send NFT', async () => {
+    try {
+      await Helpers.checkIfVisible('Sent-Arun Cattybinky');
+    } catch (e) {
+      await Helpers.checkIfVisible('Sending-Arun Cattybinky');
+    }
+  });
+
+  it('Should show completed transaction - Send ERC20', async () => {
+    try {
+      await Helpers.checkIfVisible('Sent-Basic Attention Token');
+    } catch (e) {
+      await Helpers.checkIfVisible('Sending-Basic Attention Token');
+    }
+  });
+
+  it('Should show completed transaction - Send ETH', async () => {
+    try {
+      await Helpers.checkIfVisible('Sent-Ethereum');
+    } catch (e) {
+      await Helpers.checkIfVisible('Sending-Ethereum');
     }
   });
 
