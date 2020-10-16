@@ -214,7 +214,7 @@ const fetchAssetBalances = async (tokens, address, network) => {
       balances[addr] = {};
       tokens.forEach((tokenAddr, tokenIdx) => {
         const balance = values[addrIdx * tokens.length + tokenIdx];
-        balances[addr][tokenAddr] = balance;
+        balances[addr][tokenAddr] = balance.toString();
       });
     });
     return balances[address];
