@@ -111,7 +111,7 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   }
 
   var cornerRadius: CGFloat {
-    return CGFloat(truncating: config!.cornerRadius!)
+    return CGFloat(truncating: config?.cornerRadius ?? 0)
   }
 
   var ignoreBottomOffset: Bool {
