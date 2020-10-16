@@ -1,6 +1,8 @@
+import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
 import contractMap from 'eth-contract-metadata';
 import { get, map, toLower, zipObject } from 'lodash';
+import { SwapCurrency } from '../handlers/uniswap';
 import {
   convertRawAmountToDecimalFormat,
   divide,
@@ -12,11 +14,21 @@ import { UNISWAP_V1_EXCHANGE_ABI } from '../references/uniswap';
 import { web3Provider } from './web3';
 import logger from 'logger';
 
+export interface LiquidityInfo {
+  balance: string;
+  ethBalance: string;
+  ethReserve: BigNumber;
+  token: { balance: string; decimals: number; name: string; symbol: string };
+  tokenAddress: string;
+  totalSupply: string;
+  uniqueId: string;
+}
+
 export const getLiquidityInfo = async (
-  accountAddress,
-  liquidityPoolContracts,
-  pairs
-) => {
+  accountAddress: string,
+  liquidityPoolContracts: string[],
+  pairs: Record<string, SwapCurrency>
+): Promise<Record<string, LiquidityInfo | {}>> => {
   const promises = map(liquidityPoolContracts, async liquidityPoolAddress => {
     try {
       const ethReserveCall = web3Provider.getBalance(liquidityPoolAddress);
@@ -45,16 +57,16 @@ export const getLiquidityInfo = async (
 
       const token = get(pairs, `[${toLower(tokenAddress)}]`);
 
-      let decimals = '';
+      let decimals: string | number = 18;
       let name = '';
       let symbol = '';
 
       if (token) {
         name = token.name;
         symbol = token.symbol;
-        decimals = token.decimals;
+        decimals = Number(token.decimals);
       } else {
-        decimals = get(contractMap, `[${tokenAddress}].decimals`, '');
+        decimals = get(contractMap, `[${tokenAddress}].decimals`);
         if (!decimals) {
           try {
             decimals = await tokenContract.decimals().catch();
@@ -101,11 +113,14 @@ export const getLiquidityInfo = async (
       const reserve = await tokenContract.balanceOf(liquidityPoolAddress);
 
       const ethBalance = fromWei(
-        divide(multiply(ethReserve, balance), totalSupply)
+        divide(
+          multiply(ethReserve.toString(), balance.toString()),
+          totalSupply.toString()
+        )
       );
       const tokenBalance = convertRawAmountToDecimalFormat(
         divide(multiply(reserve, balance), totalSupply),
-        decimals
+        Number(decimals)
       );
 
       return {
