@@ -9,7 +9,8 @@ import createSwapAndDepositCompoundRap, {
 import ExchangeModal from './ExchangeModal';
 
 const DepositModal = ({ navigation, ...props }) => {
-  useStatusBarManaging();
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  android && useStatusBarManaging();
   const { params } = useRoute();
   const defaultInputAsset = params?.defaultInputAsset;
   const underlyingPrice = params?.underlyingPrice;

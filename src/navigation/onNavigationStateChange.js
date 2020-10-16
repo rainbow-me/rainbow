@@ -8,10 +8,31 @@ import { Navigation } from './index';
 let memRouteName;
 let memState;
 
+let action = null;
+
+const isOnSwipeScreen = name =>
+  [
+    Routes.WALLET_SCREEN,
+    Routes.QR_SCANNER_SCREEN,
+    Routes.PROFILE_SCREEN,
+  ].includes(name);
+
+export function triggerOnSwipeLayout(newAction) {
+  if (isOnSwipeScreen(Navigation.getActiveRoute().name)) {
+    newAction();
+  } else {
+    action = newAction;
+  }
+}
+
 export function onNavigationStateChange(currentState) {
   const prevState = memState;
   memState = currentState;
   const { name: routeName } = Navigation.getActiveRoute();
+  if (isOnSwipeScreen(routeName)) {
+    action?.();
+    action = undefined;
+  }
   const prevRouteName = memRouteName;
   memRouteName = routeName;
 
@@ -35,124 +56,48 @@ export function onNavigationStateChange(currentState) {
       );
     }
   } else {
-    if (
-      prevRouteName !== Routes.CHANGE_WALLET_SHEET &&
-      routeName === Routes.CHANGE_WALLET_SHEET
-    ) {
-      StatusBar.setBarStyle('light-content', true);
+    if (routeName !== prevRouteName) {
+      if ([prevRouteName, routeName].includes(Routes.RECEIVE_MODAL)) {
+        StatusBar.setBarStyle(
+          routeName === Routes.RECEIVE_MODAL ? 'light-content' : 'dark-content',
+          true
+        );
+      }
+
+      if ([prevRouteName, routeName].includes(Routes.QR_SCANNER_SCREEN)) {
+        StatusBar.setBarStyle(
+          routeName === Routes.QR_SCANNER_SCREEN
+            ? 'light-content'
+            : 'dark-content',
+          true
+        );
+      }
+
+      if ([prevRouteName, routeName].includes(Routes.BACKUP_SHEET)) {
+        StatusBar.setBarStyle(
+          !isOnSwipeScreen(routeName) ? 'light-content' : 'dark-content',
+          true
+        );
+      }
+
+      if ([prevRouteName, routeName].includes(Routes.SAVINGS_SHEET)) {
+        StatusBar.setBarStyle(
+          !isOnSwipeScreen(routeName) ? 'light-content' : 'dark-content',
+          true
+        );
+      }
+
+      if (
+        routeName === Routes.EXPANDED_ASSET_SHEET &&
+        Navigation.getActiveRoute().params.type === 'uniswap'
+      ) {
+        StatusBar.setBarStyle('light-content', true);
+      }
+
+      if (prevRouteName === Routes.EXPANDED_ASSET_SHEET) {
+        StatusBar.setBarStyle('dark-content', true);
+      }
     }
-
-    if (
-      prevRouteName === Routes.CHANGE_WALLET_SHEET &&
-      routeName !== Routes.CHANGE_WALLET_SHEET
-    ) {
-      StatusBar.setBarStyle('dark-content', true);
-    }
-
-    if (
-      prevRouteName !== Routes.CONFIRM_REQUEST &&
-      routeName === Routes.CONFIRM_REQUEST
-    ) {
-      StatusBar.setBarStyle('light-content', true);
-    }
-
-    if (
-      prevRouteName === Routes.CONFIRM_REQUEST &&
-      routeName !== Routes.CONFIRM_REQUEST
-    ) {
-      StatusBar.setBarStyle('dark-content', true);
-    }
-
-    if (
-      prevRouteName !== Routes.RECEIVE_MODAL &&
-      routeName === Routes.RECEIVE_MODAL
-    ) {
-      StatusBar.setBarStyle('light-content', true);
-    }
-
-    if (
-      prevRouteName === Routes.RECEIVE_MODAL &&
-      routeName !== Routes.RECEIVE_MODAL
-    ) {
-      StatusBar.setBarStyle('dark-content', true);
-    }
-
-    if (
-      prevRouteName !== Routes.SAVINGS_SHEET &&
-      routeName === Routes.SAVINGS_SHEET
-    ) {
-      StatusBar.setBarStyle('light-content', true);
-    }
-
-    if (
-      prevRouteName === Routes.SAVINGS_SHEET &&
-      routeName !== Routes.SAVINGS_SHEET
-    ) {
-      StatusBar.setBarStyle('dark-content', true);
-    }
-
-    if (
-      prevRouteName !== Routes.MODAL_SCREEN &&
-      routeName === Routes.MODAL_SCREEN
-    ) {
-      StatusBar.setBarStyle('light-content', true);
-    }
-
-    if (
-      prevRouteName === Routes.MODAL_SCREEN &&
-      routeName !== Routes.MODAL_SCREEN
-    ) {
-      StatusBar.setBarStyle('dark-content', true);
-    }
-  }
-
-  if (
-    prevRouteName !== Routes.QR_SCANNER_SCREEN &&
-    routeName === Routes.QR_SCANNER_SCREEN
-  ) {
-    StatusBar.setBarStyle('light-content', true);
-  }
-
-  if (
-    prevRouteName === Routes.QR_SCANNER_SCREEN &&
-    routeName !== Routes.QR_SCANNER_SCREEN
-  ) {
-    StatusBar.setBarStyle('dark-content', true);
-  }
-
-  if (
-    prevRouteName === Routes.IMPORT_SEED_PHRASE_SHEET &&
-    (routeName === Routes.PROFILE_SCREEN ||
-      routeName === Routes.WALLET_SCREEN ||
-      routeName === Routes.RESTORE_SHEET)
-  ) {
-    StatusBar.setBarStyle('dark-content', true);
-  }
-
-  if (prevRouteName === Routes.WALLET_SCREEN && routeName === 'SendSheet') {
-    StatusBar.setBarStyle('light-content', true);
-  }
-
-  if (
-    prevRouteName === Routes.SEND_SHEET &&
-    (routeName === Routes.PROFILE_SCREEN || routeName === Routes.WALLET_SCREEN)
-  ) {
-    StatusBar.setBarStyle('dark-content', true);
-  }
-
-  if (
-    prevRouteName === Routes.ADD_CASH_SHEET &&
-    (routeName === Routes.PROFILE_SCREEN || routeName === Routes.WALLET_SCREEN)
-  ) {
-    StatusBar.setBarStyle('dark-content', true);
-  }
-
-  if (
-    (prevRouteName === Routes.RESTORE_SHEET ||
-      prevRouteName === Routes.WELCOME_SCREEN) &&
-    (routeName === Routes.PROFILE_SCREEN || routeName === Routes.WALLET_SCREEN)
-  ) {
-    StatusBar.setBarStyle('dark-content', true);
   }
 
   if (routeName !== prevRouteName) {

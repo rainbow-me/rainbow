@@ -704,6 +704,7 @@ class RecyclerAssetList extends Component {
       <RefreshControl
         onRefresh={this.handleRefresh}
         refreshing={this.state.isRefreshing}
+        style={ios ? {} : { top: 20 }}
         tintColor={colors.alpha(colors.blueGreyDark, 0.4)}
       />
     );

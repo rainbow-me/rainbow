@@ -10,7 +10,7 @@ import { colors, padding, shadow } from '@rainbow-me/styles';
 const ButtonContent = styled(Row).attrs({
   justify: 'center',
 })`
-  ${padding(5, 10, 6)};
+  ${padding(ios ? 5 : 0, 10, 6)};
   ${({ isActive }) =>
     isActive ? shadow.build(0, 4, 12, colors.appleBlue, 0.4) : ''};
   background-color: ${({ isActive }) =>
@@ -41,6 +41,7 @@ const CoinDividerEditButton = ({
     <OpacityToggler isVisible={!isVisible}>
       <ButtonPressAnimation
         onPress={handlePress}
+        radiusAndroid={15}
         scaleTo={textOpacityAlwaysOn || isActive ? 0.9 : 1}
       >
         <ButtonContent isActive={isActive} style={style}>

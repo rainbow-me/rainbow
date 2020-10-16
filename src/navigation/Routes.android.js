@@ -1,6 +1,5 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { omit } from 'lodash';
 import React, { useContext } from 'react';
 import { createNativeStackNavigator } from 'react-native-screens/src/native-stack/index';
 import { InitialRouteContext } from '../context/initialRoute';
@@ -75,6 +74,11 @@ function MainNavigator() {
         options={emojiPreset}
       />
       <Stack.Screen
+        component={ExpandedAssetSheet}
+        name={Routes.EXPANDED_ASSET_SHEET}
+        options={expandedPreset}
+      />
+      <Stack.Screen
         component={ChangeWalletSheet}
         name={Routes.CHANGE_WALLET_SHEET}
         options={expandedPreset}
@@ -135,13 +139,6 @@ function MainNavigator() {
         options={exchangePreset}
       />
       <Stack.Screen
-        component={SendSheet}
-        name={Routes.SEND_SHEET}
-        options={{
-          ...omit(sheetPreset, 'gestureResponseDistance'),
-        }}
-      />
-      <Stack.Screen
         component={BackupSheet}
         name={Routes.BACKUP_SHEET}
         options={bottomSheetPreset}
@@ -177,16 +174,14 @@ function MainNativeNavigator() {
       />
       <NativeStack.Screen
         component={ExpandedAssetSheet}
-        name={Routes.EXPANDED_ASSET_SHEET}
+        name={Routes.EXPANDED_ASSET_SCREEN}
       />
       <NativeStack.Screen
         component={SettingsModal}
         name={Routes.SETTINGS_MODAL}
       />
-      <NativeStack.Screen
-        component={BackupSheet}
-        name={Routes.BACKUP_SHEET_FROM_SETTINGS}
-      />
+      <NativeStack.Screen component={SendSheet} name={Routes.SEND_SHEET} />
+      <NativeStack.Screen component={BackupSheet} name={Routes.BACKUP_SCREEN} />
     </NativeStack.Navigator>
   );
 }

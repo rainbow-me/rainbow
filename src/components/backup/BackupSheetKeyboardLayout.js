@@ -23,7 +23,7 @@ export default function BackupSheetKeyboardLayout({
   onSubmit,
   type,
 }) {
-  const { params: { fromSettings } = {} } = useRoute();
+  const { params: { nativeScreen } = {} } = useRoute();
   const { height: deviceHeight, isTallPhone } = useDimensions();
   const keyboardHeight = useKeyboardHeight({
     keyboardType: KeyboardTypes.password,
@@ -42,7 +42,7 @@ export default function BackupSheetKeyboardLayout({
     SheetHandleFixedToTopHeight;
 
   return (
-    <Column height={fromSettings ? undefined : sheetRegionAboveKeyboardHeight}>
+    <Column height={nativeScreen ? undefined : sheetRegionAboveKeyboardHeight}>
       <StatusBar barStyle="light-content" />
       {children}
       <Footer isTallPhone={isTallPhone}>

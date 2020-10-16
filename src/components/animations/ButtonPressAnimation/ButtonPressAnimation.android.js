@@ -4,6 +4,22 @@ import {
   TouchableNativeFeedback,
   TouchableOpacity,
 } from 'react-native-gesture-handler';
+import styled from 'styled-components/primitives';
+
+const RadiusWrapper = styled.View`
+  border-radius: ${({ borderRadius }) => borderRadius};
+  overflow: hidden;
+`;
+
+const Wrapper = ({ children, radius, style }) =>
+  radius ? (
+    <RadiusWrapper borderRadius={radius} style={style}>
+      {children}
+    </RadiusWrapper>
+  ) : (
+    children
+  );
+
 export default function ButtonPressAnimation({
   children,
   disabled,
@@ -12,7 +28,9 @@ export default function ButtonPressAnimation({
   onPressStart,
   style,
   opacityTouchable = false,
-  wrapperStyle,
+  wrapperProps,
+  radiusAndroid: radius,
+  radiusWrapperStyle,
 }) {
   if (disabled) {
     return <View style={style}>{children}</View>;
@@ -31,17 +49,19 @@ export default function ButtonPressAnimation({
     );
   }
   return (
-    <TouchableNativeFeedback
-      background={TouchableNativeFeedback.Ripple('#CCCCCC')}
-      disabled={disabled}
-      onLongPress={onLongPress}
-      onPress={onPress}
-      onPressStart={onPressStart}
-      style={wrapperStyle}
-    >
-      <View pointerEvents="box-only" style={style}>
-        {children}
-      </View>
-    </TouchableNativeFeedback>
+    <Wrapper radius={radius} style={radiusWrapperStyle}>
+      <TouchableNativeFeedback
+        background={TouchableNativeFeedback.Ripple('#CCCCCC')}
+        disabled={disabled}
+        onLongPress={onLongPress}
+        onPress={onPress}
+        onPressStart={onPressStart}
+        {...wrapperProps}
+      >
+        <View pointerEvents="box-only" style={style}>
+          {children}
+        </View>
+      </TouchableNativeFeedback>
+    </Wrapper>
   );
 }

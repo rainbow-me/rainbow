@@ -115,7 +115,7 @@ export default function TransactionCoinRow({ item, ...props }) {
     }
 
     if (hash) {
-      let buttons = ['View on Etherscan', 'Cancel'];
+      let buttons = ['View on Etherscan', ...(ios ? ['Cancel'] : [])];
       if (showContactInfo) {
         buttons.unshift(contact ? 'View Contact' : 'Add to Contacts');
       }

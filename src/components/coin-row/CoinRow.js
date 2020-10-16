@@ -1,6 +1,6 @@
 import React, { createElement } from 'react';
 import styled from 'styled-components/primitives';
-import { useAccountSettings, useCoinListEdited } from '../../hooks';
+import { useAccountSettings } from '../../hooks';
 import { CoinIcon, CoinIconSize } from '../coin-icon';
 import { Column, Row } from '../layout';
 import { padding } from '@rainbow-me/styles';
@@ -41,13 +41,11 @@ export default function CoinRow({
   ...props
 }) {
   const accountSettings = useAccountSettings();
-  const { isCoinListEdited } = useCoinListEdited();
 
   return (
     <Container css={containerStyles}>
       {createElement(coinIconRender, {
         address,
-        isCoinListEdited,
         isHidden,
         isPinned,
         symbol,

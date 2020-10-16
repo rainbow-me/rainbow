@@ -7,7 +7,8 @@ import createWithdrawFromCompoundRap, {
 import ExchangeModal from './ExchangeModal';
 
 const WithdrawModal = ({ route, navigation, ...props }) => {
-  useStatusBarManaging();
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  android && useStatusBarManaging();
   const cTokenBalance = route.params?.cTokenBalance;
   const defaultInputAsset = route.params?.defaultInputAsset;
   const underlyingPrice = route.params?.underlyingPrice;
