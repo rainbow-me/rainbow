@@ -1,8 +1,10 @@
 import { FunctionFragment, Interface } from '@ethersproject/abi';
+import { ChainId } from '@uniswap/sdk';
 import { map } from 'lodash';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { Call, toCallKey } from '../redux/multicall';
+import { AppState } from '../redux/store';
 
 const INVALID_RESULT = {
   blockNumber: undefined,
@@ -32,7 +34,7 @@ export default function useMulticall(
   fragment: FunctionFragment
 ) {
   const { chainId, results } = useSelector(
-    ({ multicall: { results }, settings: { chainId } }) => ({
+    ({ multicall: { results }, settings: { chainId } }: AppState) => ({
       chainId,
       results,
     })
@@ -42,7 +44,7 @@ export default function useMulticall(
     () =>
       map(calls, call => {
         if (!call) return INVALID_RESULT;
-        const result = results[chainId]?.[toCallKey(call)];
+        const result = results[chainId as ChainId]?.[toCallKey(call)];
         let data;
         if (result?.data && result?.data !== '0x') {
           data = result.data;

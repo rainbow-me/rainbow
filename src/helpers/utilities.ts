@@ -321,9 +321,6 @@ export const convertAmountToNativeDisplay = (
 
 /**
  * @desc convert from raw amount to decimal format
- * @param  {String|Number}  value
- * @param  {Number}     decimals
- * @return {String}
  */
 export const convertRawAmountToDecimalFormat = (
   value: BigNumberish,
