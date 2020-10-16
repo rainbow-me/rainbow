@@ -326,12 +326,7 @@ const getContractExecutionDetails = ({
   chainId: ChainId;
   providerOrSigner: Provider | Signer;
   tradeDetails: Trade;
-}): {
-  exchange: Contract;
-  methodNames: string[];
-  updatedMethodArgs: (string | string[] | number)[];
-  value: string | null;
-} => {
+}) => {
   const priceImpact = tradeDetails?.priceImpact?.toFixed(2).toString();
   const slippage = Number(priceImpact) * 100;
   const maxSlippage = Math.max(
@@ -379,14 +374,12 @@ export const executeSwap = async ({
 }) => {
   const walletToUse = wallet || (await loadWallet());
   if (!walletToUse || !tradeDetails) return null;
-  const executionDetails = getContractExecutionDetails({
+  const { exchange, updatedMethodArgs, value } = getContractExecutionDetails({
     accountAddress,
     chainId,
     providerOrSigner: walletToUse,
     tradeDetails,
   });
-  if (!executionDetails) return null;
-  const { exchange, updatedMethodArgs, value } = executionDetails;
 
   const transactionParams = {
     gasLimit: gasLimit || undefined,
