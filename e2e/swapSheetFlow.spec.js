@@ -41,7 +41,7 @@ describe('Swap Sheet Interaction Flow', () => {
 
   it('Should show all wallet sections', async () => {
     await Helpers.delay(1000);
-    await Helpers.checkIfElementByTextIsVisible('Investments');
+    await Helpers.checkIfElementByTextIsVisible('Pools');
     await Helpers.swipe('wallet-screen', 'up');
     await Helpers.checkIfElementByTextIsVisible('Collectibles');
   });

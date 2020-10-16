@@ -54,7 +54,7 @@ export default function ListHeader({
 }) {
   const deviceDimensions = useDimensions();
 
-  if (title === 'Investments') {
+  if (title === 'Pools') {
     return (
       <SavingsListHeader
         emoji="whale"

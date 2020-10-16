@@ -148,12 +148,12 @@ const withUniswapSection = (
   return {
     data: uniswap,
     header: {
-      title: 'Investments',
+      title: 'Pools',
       totalItems: uniswap.length,
       totalValue: uniswapTotal,
     },
-    investments: true,
-    name: 'investments',
+    name: 'pools',
+    pools: true,
     renderItem: uniswapRenderItem,
   };
 };

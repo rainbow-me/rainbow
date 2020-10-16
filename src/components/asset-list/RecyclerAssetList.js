@@ -186,8 +186,8 @@ class RecyclerAssetList extends Component {
           totalItems: PropTypes.number,
           totalValue: PropTypes.string,
         }),
-        investments: PropTypes.bool,
         perData: PropTypes.object,
+        pools: PropTypes.bool,
         renderItem: PropTypes.func.isRequired,
         type: PropTypes.string,
       })
@@ -231,17 +231,14 @@ class RecyclerAssetList extends Component {
           sections,
           ({ name }) => name === 'collectibles'
         );
-        const investmentsIndex = findIndex(
-          sections,
-          ({ name }) => name === 'investments'
-        );
+        const poolsIndex = findIndex(sections, ({ name }) => name === 'pools');
 
         const { sectionsIndices } = this.state;
         if (sectionsIndices.includes(index)) {
-          if (index === sectionsIndices[investmentsIndex]) {
+          if (index === sectionsIndices[poolsIndex]) {
             return {
               height: ViewTypes.POOLS.calculateHeight({
-                amountOfRows: sections[investmentsIndex].data.length,
+                amountOfRows: sections[poolsIndex].data.length,
                 isLast: true,
                 isOpen: openInvestmentCards,
               }),
@@ -273,7 +270,7 @@ class RecyclerAssetList extends Component {
           balancesIndex > -1 &&
           (index <= sectionsIndices[collectiblesIndex] ||
             collectiblesIndex < 0) &&
-          (index <= sectionsIndices[investmentsIndex] || investmentsIndex < 0)
+          (index <= sectionsIndices[poolsIndex] || poolsIndex < 0)
         ) {
           const balanceItemsCount = get(
             sections,
@@ -332,7 +329,7 @@ class RecyclerAssetList extends Component {
                 height: ViewTypes.COIN_SAVINGS.calculateHeight({
                   amountOfRows:
                     sections[balancesIndex].data[index - 1].assets.length,
-                  isLast: investmentsIndex < 0,
+                  isLast: poolsIndex < 0,
                   isOpen: this.props.openSavings,
                 }),
                 index: ViewTypes.COIN_SAVINGS.index,
@@ -407,11 +404,11 @@ class RecyclerAssetList extends Component {
     const stickyComponentsIndices = [];
     const items = sections.reduce((ctx, section) => {
       sectionsIndices.push(ctx.length);
-      if (section.investments) {
+      if (section.pools) {
         ctx = ctx.concat([
           {
             data: section.data,
-            investments: true,
+            pools: true,
             ...section.header,
           },
         ]);
@@ -629,7 +626,7 @@ class RecyclerAssetList extends Component {
     }
 
     if (row.item && row.item.uniqueId) {
-      return `investment_${row.item.uniqueId}`;
+      return `pool_${row.item.uniqueId}`;
     }
 
     if (row.item && row.item.smallBalancesContainer) {

@@ -3,13 +3,13 @@ import PropTypes from 'prop-types';
 import React, { Fragment, useCallback } from 'react';
 import { View } from 'react-native';
 import styled from 'styled-components/primitives';
-import { useNavigation } from '../../navigation/Navigation';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText, CoinRow } from '../coin-row';
 import BalanceText from '../coin-row/BalanceText';
 import CoinName from '../coin-row/CoinName';
 import { LiquidityPoolExpandedStateSheetHeight } from '../expanded-state/LiquidityPoolExpandedState';
 import { FlexItem } from '../layout';
+import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 
@@ -81,14 +81,6 @@ const UniswapInvestmentRow = ({ assetType, item, ...props }) => {
         tokenSymbols={[
           { tokenSymbol: item.tokenSymbol },
           { tokenSymbol: 'ETH' },
-
-          // TEST PURPOSE 👇
-          // { tokenSymbol: 'ANT' },
-          // { tokenSymbol: 'MKR' },
-          // { tokenSymbol: 'MANA' },
-          // { tokenSymbol: 'BLT' },
-          // { tokenSymbol: 'NEXO' },
-          // { tokenSymbol: 'PNK' },
         ]}
         topRowRender={TopRow}
         {...item}
