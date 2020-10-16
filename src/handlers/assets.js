@@ -23,7 +23,10 @@ async function getOnchainTokenBalance(
   try {
     const tokenContract = new Contract(address, erc20ABI, web3Provider);
     const balance = await tokenContract.balanceOf(userAddress);
-    const tokenBalance = convertRawAmountToDecimalFormat(balance, decimals);
+    const tokenBalance = convertRawAmountToDecimalFormat(
+      balance.toString(),
+      decimals
+    );
     const displayBalance = convertAmountToBalanceDisplay(tokenBalance, {
       address,
       decimals,
@@ -45,7 +48,10 @@ async function getOnchainEtherBalance(
 ) {
   try {
     const balance = await web3Provider.getBalance(userAddress);
-    const tokenBalance = convertRawAmountToDecimalFormat(balance, decimals);
+    const tokenBalance = convertRawAmountToDecimalFormat(
+      balance.toString(),
+      decimals
+    );
     const displayBalance = convertAmountToBalanceDisplay(tokenBalance, {
       address,
       decimals,
