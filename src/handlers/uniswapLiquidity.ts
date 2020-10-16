@@ -42,16 +42,20 @@ export const getLiquidityInfo = async (
       const totalSupplyCall = exchange.totalSupply();
 
       const [
-        ethReserve,
+        ethReserveResult,
         tokenAddress,
-        balance,
-        totalSupply,
+        balanceResult,
+        totalSupplyResult,
       ] = await Promise.all([
         ethReserveCall,
         tokenAddressCall,
         balanceCall,
         totalSupplyCall,
       ]);
+
+      const ethReserve = ethReserveResult.toString();
+      const balance = balanceResult.toString();
+      const totalSupply = totalSupplyResult.toString();
 
       const tokenContract = new Contract(tokenAddress, erc20ABI, web3Provider);
 
@@ -110,13 +114,11 @@ export const getLiquidityInfo = async (
         }
       }
 
-      const reserve = await tokenContract.balanceOf(liquidityPoolAddress);
+      const reserveResult = await tokenContract.balanceOf(liquidityPoolAddress);
+      const reserve = reserveResult.toString();
 
       const ethBalance = fromWei(
-        divide(
-          multiply(ethReserve.toString(), balance.toString()),
-          totalSupply.toString()
-        )
+        divide(multiply(ethReserve, balance), totalSupply)
       );
       const tokenBalance = convertRawAmountToDecimalFormat(
         divide(multiply(reserve, balance), totalSupply),
