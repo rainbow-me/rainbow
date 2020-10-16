@@ -60,7 +60,7 @@ describe('Ganache Transaction Flow', () => {
 
   it('Should show Ganache Toast after pressing Connect To Ganache', async () => {
     await Helpers.tap('ganache-section');
-    await Helpers.delay(15000);
+    await Helpers.delay(20000);
     await Helpers.checkIfVisible('testnet-toast-Ganache');
     await Helpers.swipe('profile-screen', 'left', 'slow');
     await Helpers.delay(2000);
@@ -70,14 +70,14 @@ describe('Ganache Transaction Flow', () => {
   it('Should open and complete SwapSheet for ETH -> ERC20', async () => {
     await Helpers.tap('exchange-fab');
     await Helpers.delay(2000);
-    await Helpers.typeText('exchange-modal-input', '0.03', true);
+    await Helpers.typeText('exchange-modal-input', '0.01', true);
     await Helpers.delay(2000);
     await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.delay(2000);
     await Helpers.typeText('currency-select-search-input', 'DAI', true);
     await Helpers.delay(2000);
     await Helpers.tap('exchange-coin-row-DAI');
-    await Helpers.delay(2000);
+    await Helpers.delay(3000);
     await Helpers.tapAndLongPressByText('Hold to Swap');
     await Helpers.delay(6000);
     await Helpers.swipe('profile-screen', 'left', 'slow');
@@ -89,14 +89,14 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.delay(2000);
     await Helpers.tap('exchange-modal-input-selection-button');
     await Helpers.delay(2000);
-    await Helpers.tap('exchange-coin-row-DAI');
+    await Helpers.tap('exchange-coin-row-BAT');
     await Helpers.delay(2000);
-    await Helpers.typeText('exchange-modal-input', '10', true);
+    await Helpers.typeText('exchange-modal-input', '5', true);
     await Helpers.delay(2000);
     await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.delay(2000);
     await Helpers.tap('exchange-coin-row-ZRX');
-    await Helpers.delay(2000);
+    await Helpers.delay(3000);
     await Helpers.tapAndLongPressByText('Hold to Swap');
     await Helpers.delay(6000);
     await Helpers.swipe('profile-screen', 'left', 'slow');
@@ -108,16 +108,16 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.delay(2000);
     await Helpers.tap('exchange-modal-input-selection-button');
     await Helpers.delay(2000);
-    await Helpers.tap('exchange-coin-row-DAI');
+    await Helpers.tap('exchange-coin-row-USDC');
     await Helpers.delay(2000);
-    await Helpers.typeText('exchange-modal-input', '10', true);
+    await Helpers.typeText('exchange-modal-input', '2', true);
     await Helpers.delay(2000);
     await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.delay(2000);
     await Helpers.typeText('currency-select-search-input', 'ETH', true);
     await Helpers.delay(2000);
     await Helpers.tap('exchange-coin-row-ETH');
-    await Helpers.delay(2000);
+    await Helpers.delay(3000);
     await Helpers.tapAndLongPressByText('Hold to Swap');
     await Helpers.delay(6000);
     await Helpers.swipe('profile-screen', 'left', 'slow');
@@ -129,9 +129,9 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.delay(2000);
     await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
     await Helpers.delay(2000);
-    await Helpers.tap('send-asset-DAI');
+    await Helpers.tap('send-savings-cSAI');
     await Helpers.delay(2000);
-    await Helpers.typeText('selected-asset-field-input', '10', true);
+    await Helpers.typeText('selected-asset-field-input', '1', true);
     await Helpers.delay(1000);
     await Helpers.tapAndLongPressByText('Hold to Send');
     await Helpers.delay(6000);
@@ -139,9 +139,23 @@ describe('Ganache Transaction Flow', () => {
 
   it('Should show completed transactions', async () => {
     await Helpers.delay(2000);
-    await Helpers.checkIfVisible('Sent-Dai');
-    await Helpers.checkIfVisible('Swapped-Dai');
-    await Helpers.checkIfVisible('Swapped-Ethereum');
+    //await Helpers.checkIfVisible('Swapped-Dai');
+    //await Helpers.checkIfVisible('Swapped-Ethereum');
+    try {
+      await Helpers.checkIfVisible('Swapped-Basic Attention Token');
+    } catch (e) {
+      await Helpers.checkIfVisible('Swapping-Basic Attention Token');
+    }
+    try {
+      await Helpers.checkIfVisible('Swapped-USD Coin');
+    } catch (e) {
+      await Helpers.checkIfVisible('Swapping-USD Coin');
+    }
+    try {
+      await Helpers.checkIfVisible('Sent-Compound Sai');
+    } catch (e) {
+      await Helpers.checkIfVisible('Sent-Compound Sai');
+    }
   });
 
   afterAll(async () => {

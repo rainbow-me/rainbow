@@ -32,7 +32,7 @@ describe('Send Sheet Interaction Flow', () => {
 
   it('Should show the "Add wallet modal" after tapping import with a valid seed"', async () => {
     await Helpers.clearField('import-sheet-input');
-    await Helpers.typeText('import-sheet-input', process.env.TEST_SEEDS, false);
+    await Helpers.typeText('import-sheet-input', process.env.DEV_SEEDS, false);
     await Helpers.delay(1500);
     await Helpers.checkIfElementHasString(
       'import-sheet-button-label',
@@ -61,14 +61,6 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.checkIfElementByTextIsVisible('Investments');
     await Helpers.swipe('wallet-screen', 'up');
     await Helpers.checkIfElementByTextIsVisible('Collectibles');
-  });
-
-  it('Should say "poopcoin.eth" in the Profile Screen header', async () => {
-    await Helpers.delay(1000);
-    await Helpers.swipe('wallet-screen', 'right');
-    await Helpers.delay(2000);
-    await Helpers.checkIfElementByTextIsVisible('poopcoin.eth');
-    await Helpers.swipe('profile-screen', 'left');
   });
 
   it('Should open send sheet after tapping send fab', async () => {
@@ -265,9 +257,9 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.delay(1000);
     await Helpers.tap('add-contact-button');
     await Helpers.delay(2000);
-    await Helpers.typeText('contact-profile-name-input', 'poopcoin.test', true);
+    await Helpers.typeText('contact-profile-name-input', 'testcoin.test', true);
     await Helpers.tap('contact-profile-add-button');
-    await Helpers.checkIfElementByTextIsVisible('poopcoin.test');
+    await Helpers.checkIfElementByTextIsVisible('testcoin.test');
     await Helpers.checkIfVisible('edit-contact-button');
   });
 
