@@ -19,6 +19,7 @@
 		15E531D5242B28EF00797B89 /* UIImageViewWithPersistentAnimations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E531D4242B28EF00797B89 /* UIImageViewWithPersistentAnimations.swift */; };
 		15E531DA242DAB7100797B89 /* NotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 15E531D9242DAB7100797B89 /* NotificationManager.m */; };
 		24979E8920F84250007EB0DA /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 24979E7720F84004007EB0DA /* GoogleService-Info.plist */; };
+		356973DFA8A8728D633A27DA /* libPods-Rainbow.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 37DDCE5B5EFF34936F06C8B8 /* libPods-Rainbow.a */; };
 		3CBE29CD2381E43900BE05AC /* Dummy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CBE29CC2381E43900BE05AC /* Dummy.swift */; };
 		6630540924A38A1900E5B030 /* RainbowText.m in Sources */ = {isa = PBXBuildFile; fileRef = 6630540824A38A1900E5B030 /* RainbowText.m */; };
 		6635730624939991006ACFA6 /* SafeStoreReview.m in Sources */ = {isa = PBXBuildFile; fileRef = 6635730524939991006ACFA6 /* SafeStoreReview.m */; };
@@ -165,6 +166,7 @@
 				C72F456C99A646399192517D /* libz.tbd in Frameworks */,
 				ADBDB9381DFEBF1600ED6528 /* BuildFile in Frameworks */,
 				08D9E6CDDD7E6738B290214F /* libPods-Rainbow.a in Frameworks */,
+				356973DFA8A8728D633A27DA /* libPods-Rainbow.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

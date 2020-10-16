@@ -352,7 +352,7 @@ PODS:
     - React
   - react-native-camera/RN (3.36.0):
     - React
-  - react-native-cloud-fs (2.0.0):
+  - react-native-cloud-fs (2.1.0):
     - React
   - react-native-mail (4.1.0):
     - React
@@ -487,7 +487,7 @@ PODS:
   - RNInputMask (4.1.0)
   - RNKeyboard (1.0.5):
     - React
-  - RNKeychain (6.1.1):
+  - RNKeychain (6.2.0):
     - React
   - RNLanguages (3.0.2):
     - React
@@ -945,7 +945,7 @@ SPEC CHECKSUMS:
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-branch: 102e3783f839366246b6f7ace5cbfdae954f1257
   react-native-camera: 8016138a8348b889e22c95b23f668a234f124335
-  react-native-cloud-fs: 1a08a6f9d6755c87beeaecd6aa79956f63b05f7e
+  react-native-cloud-fs: 8339f6e6e353f266f63a3f754882637443bc4c2c
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
   react-native-netinfo: 38a1e0b3e89b48e4b5833ed475d8df5f049f6f90
   react-native-randombytes: 3638d24759d67c68f6ccba60c52a7a8a8faa6a23
@@ -984,7 +984,7 @@ SPEC CHECKSUMS:
   RNImageCropPicker: f0557a908758c4a3f83978894ec7227651529b45
   RNInputMask: 815461ebdf396beb62cf58916c35cf6930adb991
   RNKeyboard: ceec456427493b286539f40442620881b5840dff
-  RNKeychain: db956c02a018f7dd3a0ea8a6cf3087bc1894bf2b
+  RNKeychain: b8e0711b959a19c5b057d1e970d3c83d159b6da5
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNOS: 31db6fa4a197d179afbba9e6b4d28d450a7f250b
   RNPermissions: ad71dd4f767ec254f2cd57592fbee02afee75467
