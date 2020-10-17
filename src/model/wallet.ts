@@ -41,7 +41,6 @@ import {
   selectedWalletKey,
 } from '../utils/keychainConstants';
 import * as keychain from './keychain';
-import { delay } from '@rainbow-me/helpers/utilities';
 import WalletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
 import { colors } from '@rainbow-me/styles';
 import logger from 'logger';
@@ -591,8 +590,8 @@ export const createWallet = async (
           if (!userPIN) {
             // We gotta dismiss the modal before showing the PIN screen
             dispatch(setIsWalletLoading(null));
-            await delay(1000);
             userPIN = await authenticateWithPIN();
+            dispatch(setIsWalletLoading(WalletLoadingStates.CREATING_WALLET));
           }
           console.log('⚠️⚠️⚠️ got userpin', userPIN);
         } catch (e) {

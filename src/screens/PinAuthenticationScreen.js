@@ -7,6 +7,7 @@ import { Centered, Column, ColumnWithMargins } from '../components/layout';
 import { Numpad, PinValue } from '../components/numpad';
 import { SheetTitle } from '../components/sheet';
 import { useDimensions, useShakeAnimation } from '../hooks';
+import { useNavigation } from '../navigation/Navigation';
 import { colors, padding } from '@rainbow-me/styles';
 const Logo = styled(FastImage).attrs({
   source: RainbowLogo,
@@ -17,6 +18,7 @@ const Logo = styled(FastImage).attrs({
 
 const PinAuthenticationScreen = () => {
   const { params } = useRoute();
+  const { goBack } = useNavigation();
   const [errorAnimation, onShake] = useShakeAnimation();
 
   const { isNarrowPhone, isSmallPhone, isTallPhone } = useDimensions();
@@ -51,6 +53,7 @@ const PinAuthenticationScreen = () => {
               onShake();
             } else {
               params.onSuccess(nextValue);
+              goBack();
             }
           } else if (actionType === 'creation') {
             // Ask for confirmation
@@ -68,6 +71,7 @@ const PinAuthenticationScreen = () => {
               console.log('shake it up baby');
             } else {
               params.onSuccess(nextValue);
+              goBack();
             }
           }
         }
@@ -75,7 +79,7 @@ const PinAuthenticationScreen = () => {
         return nextValue;
       });
     },
-    [actionType, initialPin, onShake, params]
+    [actionType, goBack, initialPin, onShake, params]
   );
 
   return (
