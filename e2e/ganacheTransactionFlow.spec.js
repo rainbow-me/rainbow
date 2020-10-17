@@ -128,7 +128,7 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.tap('send-fab');
     await Helpers.delay(2000);
     await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
-    await Helpers.delay(2000);
+    await Helpers.delay(2500);
     await Helpers.tap('send-savings-cSAI');
     await Helpers.delay(2000);
     await Helpers.typeText('selected-asset-field-input', '1', true);
@@ -166,7 +166,7 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.tap('send-fab');
     await Helpers.delay(2000);
     await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
-    await Helpers.delay(2000);
+    await Helpers.delay(2500);
     await Helpers.tap('send-asset-BAT');
     await Helpers.delay(2000);
     await Helpers.typeText('selected-asset-field-input', '2', true);
@@ -181,7 +181,7 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.tap('send-fab');
     await Helpers.delay(2000);
     await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
-    await Helpers.delay(2000);
+    await Helpers.delay(2500);
     await Helpers.tap('send-asset-ETH');
     await Helpers.delay(2000);
     await Helpers.typeText('selected-asset-field-input', '.01', true);
