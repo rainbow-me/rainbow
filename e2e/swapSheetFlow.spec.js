@@ -208,7 +208,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.delay(2000);
     await Helpers.checkIfVisible('exchange-modal-input-native');
     await Helpers.checkIfVisible('exchange-modal-output');
-    await Helpers.delay(2000);
+    await Helpers.delay(2500);
     await Helpers.typeText('exchange-modal-input', '0.246', false);
     await Helpers.delay(2000);
     await Helpers.checkIfVisible('exchange-modal-input-0.246');
@@ -275,7 +275,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.delay(1000);
     await Helpers.tap('exchange-fab');
     await Helpers.delay(2000);
-    await Helpers.typeText('exchange-modal-input', '0.246', false);
+    await Helpers.typeText('exchange-modal-input', '0.546', false);
     await Helpers.delay(2000);
     await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.delay(2000);

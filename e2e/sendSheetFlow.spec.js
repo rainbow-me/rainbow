@@ -102,17 +102,17 @@ describe('Send Sheet Interaction Flow', () => {
   });
 
   it('Should display Asset Form after tapping on savings asset', async () => {
-    await Helpers.delay(1000);
+    await Helpers.delay(1500);
     await Helpers.checkIfVisible('send-savings-cSAI');
     await Helpers.tap('send-savings-cSAI');
-    await Helpers.delay(1000);
+    await Helpers.delay(2000);
     await Helpers.checkIfVisible('selected-asset-field-input');
   });
 
   it('Should go back to Asset List after tapping on savings asset', async () => {
     await Helpers.delay(1000);
     await Helpers.tap('send-asset-form-cSAI');
-    await Helpers.delay(1000);
+    await Helpers.delay(2000);
     await Helpers.checkIfVisible('send-asset-list');
   });
 
@@ -289,6 +289,7 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.swipe('send-asset-form-field', 'down', 'slow');
     await Helpers.delay(1000);
     await Helpers.tap('send-fab');
+    await Helpers.delay(2000);
     await Helpers.checkIfElementByTextIsVisible('testcoin.eth');
   });
 
