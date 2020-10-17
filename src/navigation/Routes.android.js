@@ -11,6 +11,7 @@ import DepositModal from '../screens/DepositModal';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
 import ModalScreen from '../screens/ModalScreen';
+import PinAuthenticationScreen from '../screens/PinAuthenticationScreen';
 import ReceiveModal from '../screens/ReceiveModal';
 import RestoreSheet from '../screens/RestoreSheet';
 import SavingsSheet from '../screens/SavingsSheet';
@@ -101,6 +102,11 @@ function MainNavigator() {
       <Stack.Screen
         component={ReceiveModal}
         name={Routes.RECEIVE_MODAL}
+        options={expandedPreset}
+      />
+      <Stack.Screen
+        component={PinAuthenticationScreen}
+        name={Routes.PIN_AUTHENTICATION_SCREEN}
         options={expandedPreset}
       />
       <Stack.Screen

@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react';
 import styled from 'styled-components/primitives';
 import { useDimensions } from '../../hooks';
-import { neverRerender } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered, FlexItem, Row } from '../layout';
@@ -75,4 +74,4 @@ const Numpad = ({ decimal = true, onPress, width }) => {
   );
 };
 
-export default neverRerender(Numpad);
+export default Numpad;

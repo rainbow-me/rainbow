@@ -13,7 +13,12 @@ import {
 import lang from 'i18n-js';
 import { find, findKey, forEach, get, isEmpty } from 'lodash';
 import { Alert, Platform } from 'react-native';
-import { ACCESSIBLE } from 'react-native-keychain';
+import { ACCESSIBLE, getSupportedBiometryType } from 'react-native-keychain';
+import AesEncryptor from '../handlers/aesEncryption';
+import {
+  authenticateWithPIN,
+  getExistingPIN,
+} from '../handlers/authentication';
 import { saveAccountEmptyState } from '../handlers/localstorage/accountLocal';
 import {
   addHexPrefix,
@@ -36,9 +41,11 @@ import {
   selectedWalletKey,
 } from '../utils/keychainConstants';
 import * as keychain from './keychain';
+import { delay } from '@rainbow-me/helpers/utilities';
 import WalletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
 import { colors } from '@rainbow-me/styles';
 import logger from 'logger';
+const encryptor = new AesEncryptor();
 
 type EthereumAddress = string;
 type EthereumPrivateKey = string;
@@ -416,11 +423,28 @@ const loadPrivateKey = async (): Promise<null | EthereumPrivateKey | -1> => {
       if (!address) {
         return null;
       }
+
       const privateKeyData = await getPrivateKey(address);
       if (privateKeyData === -1) {
         return -1;
       }
       privateKey = get(privateKeyData, 'privateKey', null);
+
+      let userPIN = null;
+      if (android) {
+        const hasBiometricsEnabled = await getSupportedBiometryType();
+        // Fallback to custom PIN
+        if (!hasBiometricsEnabled) {
+          try {
+            userPIN = await authenticateWithPIN();
+          } catch (e) {
+            return null;
+          }
+        }
+      }
+      if (privateKey && userPIN) {
+        privateKey = await encryptor.decrypt(userPIN, privateKey);
+      }
     }
 
     return privateKey;
@@ -553,8 +577,39 @@ export const createWallet = async (
     const id = existingWalletId || `wallet_${Date.now()}`;
     logger.sentry('[createWallet] - wallet ID', { id });
 
+    // Android users without biometrics need to secure their keys with a PIN
+    let userPIN = null;
+    if (android) {
+      console.log('⚠️⚠️⚠️ IS ANDROID?', android);
+      const hasBiometricsEnabled = await getSupportedBiometryType();
+      console.log('⚠️⚠️⚠️ hasBiometricsEnabled?', hasBiometricsEnabled);
+      // Fallback to custom PIN
+      if (!hasBiometricsEnabled) {
+        try {
+          console.log('⚠️⚠️⚠️ getting userpin');
+          userPIN = await getExistingPIN();
+          if (!userPIN) {
+            // We gotta dismiss the modal before showing the PIN screen
+            dispatch(setIsWalletLoading(null));
+            await delay(1000);
+            userPIN = await authenticateWithPIN();
+          }
+          console.log('⚠️⚠️⚠️ got userpin', userPIN);
+        } catch (e) {
+          return null;
+        }
+      }
+    }
+
     // Save seed - save this first
-    await saveSeedPhrase(walletSeed, id);
+    if (userPIN) {
+      // Encrypt with the PIN
+      const encryptedSeed = await encryptor.encrypt(userPIN, walletSeed);
+      await saveSeedPhrase(encryptedSeed, id);
+    } else {
+      await saveSeedPhrase(walletSeed, id);
+    }
+
     logger.sentry('[createWallet] - saved seed phrase');
 
     // Save address
@@ -562,7 +617,13 @@ export const createWallet = async (
     logger.sentry('[createWallet] - saved address');
 
     // Save private key
-    await savePrivateKey(walletAddress, pkey);
+    if (userPIN) {
+      // Encrypt with the PIN
+      const encryptedPkey = await encryptor.encrypt(userPIN, pkey);
+      await savePrivateKey(walletAddress, encryptedPkey);
+    } else {
+      await savePrivateKey(walletAddress, pkey);
+    }
     logger.sentry('[createWallet] - saved private key');
 
     addresses.push({
@@ -630,7 +691,16 @@ export const createWallet = async (
 
         if (hasTxHistory) {
           // Save private key
-          await savePrivateKey(nextWallet.address, nextWallet.privateKey);
+          if (userPIN) {
+            // Encrypt with the PIN
+            const encryptedPkey = await encryptor.encrypt(
+              userPIN,
+              nextWallet.privateKey
+            );
+            await savePrivateKey(nextWallet.address, encryptedPkey);
+          } else {
+            await savePrivateKey(nextWallet.address, nextWallet.privateKey);
+          }
           logger.sentry(
             `[createWallet] - saved private key for next wallet ${index}`
           );
@@ -736,6 +806,7 @@ export const getPrivateKey = async (
     const pkey = (await keychain.loadObject(key, {
       authenticationPrompt,
     })) as PrivateKeyData;
+
     return pkey || null;
   } catch (error) {
     logger.sentry('Error in getPrivateKey');
@@ -767,6 +838,7 @@ export const getSeedPhrase = async (
     const seedPhraseData = (await keychain.loadObject(key, {
       authenticationPrompt,
     })) as SeedPhraseData;
+
     return seedPhraseData || null;
   } catch (error) {
     logger.sentry('Error in getSeedPhrase');
@@ -843,9 +915,30 @@ export const generateAccount = async (
       seedphrase = migratedSecrets?.seedphrase;
     }
 
+    let userPIN = null;
+    if (android) {
+      const hasBiometricsEnabled = await getSupportedBiometryType();
+      // Fallback to custom PIN
+      if (!hasBiometricsEnabled) {
+        try {
+          // If we have a PIN we need to decrypt before returning
+          userPIN = await authenticateWithPIN();
+        } catch (e) {
+          return null;
+        }
+      }
+    }
+
     if (!seedphrase) {
       const seedData = await getSeedPhrase(id);
       seedphrase = seedData?.seedphrase;
+      if (userPIN) {
+        try {
+          seedphrase = await encryptor.decrypt(userPIN, seedphrase);
+        } catch (e) {
+          return null;
+        }
+      }
     }
 
     if (!seedphrase) {
@@ -864,7 +957,18 @@ export const generateAccount = async (
     );
 
     const newAccount = new ethers.Wallet(walletPkey);
-    await savePrivateKey(walletAddress, walletPkey);
+    // Android users without biometrics need to secure their keys with a PIN
+    if (userPIN) {
+      try {
+        const encryptedPkey = await encryptor.encrypt(userPIN, walletPkey);
+        await savePrivateKey(walletAddress, encryptedPkey);
+      } catch (e) {
+        return null;
+      }
+    } else {
+      await savePrivateKey(walletAddress, walletPkey);
+    }
+
     return newAccount;
   } catch (error) {
     logger.sentry('Error generating account for keychain', id);
@@ -932,6 +1036,19 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
       return null;
     }
 
+    let userPIN = null;
+    if (android) {
+      const hasBiometricsEnabled = await getSupportedBiometryType();
+      // Fallback to custom PIN
+      if (!hasBiometricsEnabled) {
+        try {
+          userPIN = await getExistingPIN();
+        } catch (e) {
+          return null;
+        }
+      }
+    }
+
     // Check that wasn't migrated already!
     const pkeyExists = await keychain.hasKey(
       `${existingAccount.address}_${privateKeyKey}`
@@ -939,7 +1056,19 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
     if (!pkeyExists) {
       logger.sentry('new pkey didnt exist so we should save it');
       // Save the private key in the new format
-      await savePrivateKey(existingAccount.address, existingAccount.privateKey);
+      if (userPIN) {
+        // Encrypt with the PIN
+        const encryptedPkey = await encryptor.encrypt(
+          userPIN,
+          existingAccount.privateKey
+        );
+        await savePrivateKey(existingAccount.address, encryptedPkey);
+      } else {
+        await savePrivateKey(
+          existingAccount.address,
+          existingAccount.privateKey
+        );
+      }
       logger.sentry('new pkey saved');
     }
 
@@ -953,7 +1082,13 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
     const seedExists = await keychain.hasKey(`${wallet.id}_${seedPhraseKey}`);
     if (!seedExists) {
       logger.sentry('new seed didnt exist so we should save it');
-      await saveSeedPhrase(seedphrase, wallet.id);
+      if (userPIN) {
+        // Encrypt with the PIN
+        const encryptedSeed = await encryptor.encrypt(userPIN, seedphrase);
+        await saveSeedPhrase(encryptedSeed, wallet.id);
+      } else {
+        await saveSeedPhrase(seedphrase, wallet.id);
+      }
       logger.sentry('new seed saved');
     }
     // Save the migration flag to prevent this flow in the future
@@ -1004,6 +1139,25 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (
       logger.sentry('Getting seed directly');
       const seedData = await getSeedPhrase(id);
       seedPhrase = get(seedData, 'seedphrase', null);
+      let userPIN = null;
+      if (android) {
+        const hasBiometricsEnabled = await getSupportedBiometryType();
+        // Fallback to custom PIN
+        if (!hasBiometricsEnabled) {
+          try {
+            userPIN = await authenticateWithPIN();
+            if (userPIN) {
+              // Encrypt with the PIN
+              seedPhrase = await encryptor.decrypt(userPIN, seedPhrase);
+            } else {
+              return null;
+            }
+          } catch (e) {
+            return null;
+          }
+        }
+      }
+
       if (seedPhrase) {
         logger.sentry('got seed succesfully');
       } else {

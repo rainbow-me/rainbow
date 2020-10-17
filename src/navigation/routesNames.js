@@ -24,6 +24,7 @@ const Routes = {
   MAIN_NAVIGATOR_WRAPPER: 'MainNavigatorWrapper',
   MODAL_SCREEN: 'ModalScreen',
   NATIVE_STACK: 'NativeStack',
+  PIN_AUTHENTICATION_SCREEN: 'PinAuthenticationScreen',
   PROFILE_SCREEN: 'ProfileScreen',
   QR_SCANNER_SCREEN: 'QRScannerScreen',
   RECEIVE_MODAL: 'ReceiveModal',
