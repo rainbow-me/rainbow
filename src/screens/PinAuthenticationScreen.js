@@ -1,5 +1,5 @@
 import { useRoute } from '@react-navigation/core';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components/primitives';
 import RainbowLogo from '../assets/rainbows/light.png';
@@ -18,7 +18,7 @@ const Logo = styled(FastImage).attrs({
 
 const PinAuthenticationScreen = () => {
   const { params } = useRoute();
-  const { goBack } = useNavigation();
+  const { goBack, setParams } = useNavigation();
   const [errorAnimation, onShake] = useShakeAnimation();
 
   const { isNarrowPhone, isSmallPhone, isTallPhone } = useDimensions();
@@ -29,6 +29,18 @@ const PinAuthenticationScreen = () => {
   const [actionType, setActionType] = useState(
     params.validPin ? 'authentication' : 'creation'
   );
+
+  const finished = useRef(false);
+
+  useEffect(() => {
+    // setParams({ gesturesEnabled: false });
+    return () => {
+      if (!finished.current) {
+        params.onCancel();
+        //setParams({ gesturesEnabled: true });
+      }
+    };
+  }, [params, setParams]);
 
   const handleNumpadPress = useCallback(
     newValue => {
@@ -53,6 +65,7 @@ const PinAuthenticationScreen = () => {
               onShake();
             } else {
               params.onSuccess(nextValue);
+              finished.current = true;
               goBack();
             }
           } else if (actionType === 'creation') {
@@ -71,6 +84,7 @@ const PinAuthenticationScreen = () => {
               console.log('shake it up baby');
             } else {
               params.onSuccess(nextValue);
+              finished.current = true;
               goBack();
             }
           }
