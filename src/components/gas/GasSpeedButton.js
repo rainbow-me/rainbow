@@ -1,4 +1,5 @@
 import AnimateNumber from '@bankify/react-native-animate-number';
+import lang from 'i18n-js';
 import { get, isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { LayoutAnimation } from 'react-native';
@@ -63,13 +64,13 @@ const formatGasPrice = gasPrice => {
 const getActionLabel = type => {
   switch (type) {
     case ExchangeModalTypes.deposit:
-      return 'Deposits in';
+      return lang.t('swap.modal_types.deposit');
     case ExchangeModalTypes.withdrawal:
-      return 'Withdraws in';
+      return lang.t('swap.modal_types.withdraw');
     case 'transaction':
-      return 'Confirms in';
+      return lang.t('swap.modal_types.confirm');
     default:
-      return 'Swaps in';
+      return lang.t('swap.modal_types.swap');
   }
 };
 
@@ -162,7 +163,7 @@ const GasSpeedButton = ({
         {isEmpty(gasPrices) ||
         isEmpty(txFees) ||
         typeof isSufficientGas === 'undefined'
-          ? 'Loading...'
+          ? `${lang.t('button.loading')}...`
           : animatedNumber}
       </Text>
     ),
@@ -264,11 +265,11 @@ const GasSpeedButton = ({
         buttons: [
           {
             onPress: () => inputRef.current?.focus(),
-            text: 'OK',
+            text: lang.t('button.ok'),
           },
         ],
-        message: 'You need to enter a valid amount',
-        title: 'Invalid Gas Price',
+        message: lang.t('swap.warning.invalid_price.message'),
+        title: lang.t('swap.warning.invalid_price.title'),
       });
       return;
     }
@@ -290,20 +291,20 @@ const GasSpeedButton = ({
         buttons: [
           {
             onPress: complete,
-            text: 'Proceed Anyway',
+            text: lang.t('swap.warning.proceed_anyway'),
           },
           {
             onPress: () => inputRef.current?.focus(),
-            style: 'cancel',
-            text: 'Edit Gas Price',
+            style: lang.t('button.cancel'),
+            text: lang.t('swap.gas.edit_price'),
           },
         ],
         message: tooLow
-          ? 'Setting a higher gas price is recommended to avoid issues.'
-          : 'Double check that you entered the correct amount—you’re likely paying more than you need to!',
+          ? lang.t('swap.warning.too_low.message')
+          : lang.t('swap.warning.too_high.message'),
         title: tooLow
-          ? 'Low gas price–transaction might get stuck!'
-          : 'High gas price!',
+          ? lang.t('swap.warning.too_low.title')
+          : lang.t('swap.warning.too_high.title'),
       });
     } else {
       complete();
@@ -380,15 +381,19 @@ const GasSpeedButton = ({
       </Row>
       <Row justify="space-between">
         {!isCustom ? (
-          <Label color={colors.white}>Network Fee</Label>
+          <Label color={colors.white}>{lang.t('swap.gas.network_fee')}</Label>
         ) : (
           <LittleBorderlessButton
             onPress={handleInputButtonManager}
             testID="custom-gas-edit-button"
           >
             {inputFocused
-              ? 'Done'
-              : `${customGasPriceInput ? 'Edit' : 'Enter'} Gas Price`}
+              ? lang.t('button.done')
+              : `${
+                  customGasPriceInput
+                    ? lang.t('button.edit')
+                    : lang.t('button.enter')
+                } Gas Price`}
           </LittleBorderlessButton>
         )}
 

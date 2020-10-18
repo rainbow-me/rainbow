@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useCallback, useEffect } from 'react';
 import { LayoutAnimation, View } from 'react-native';
 import styled from 'styled-components/primitives';
@@ -99,14 +100,22 @@ export default function CoinDivider({
             isVisible={isCoinListEdited}
             onPress={setPinnedCoins}
             shouldReloadList
-            text={currentAction === EditOptions.unpin ? 'Unpin' : 'Pin'}
+            text={
+              currentAction === EditOptions.unpin
+                ? lang.t('button.unpin')
+                : lang.t('button.pin')
+            }
           />
           <CoinDividerEditButton
             isActive={currentAction !== EditOptions.none}
             isVisible={isCoinListEdited}
             onPress={setHiddenCoins}
             shouldReloadList
-            text={currentAction === EditOptions.unhide ? 'Unhide' : 'Hide'}
+            text={
+              currentAction === EditOptions.unhide
+                ? lang.t('button.unhide')
+                : lang.t('button.hide')
+            }
           />
         </CoinDividerButtonRow>
       </Row>
@@ -126,7 +135,9 @@ export default function CoinDivider({
             isActive={isCoinListEdited}
             isVisible={isSmallBalancesOpen || assetsAmount === 0}
             onPress={handlePressEdit}
-            text={isCoinListEdited ? 'Done' : 'Edit'}
+            text={
+              isCoinListEdited ? lang.t('button.done') : lang.t('button.edit')
+            }
             textOpacityAlwaysOn
           />
         </EditButtonWrapper>

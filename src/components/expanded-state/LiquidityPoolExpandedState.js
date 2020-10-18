@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useMemo } from 'react';
 import { tokenOverrides } from '../../references';
 import { magicMemo } from '../../utils';
@@ -49,17 +50,22 @@ const LiquidityPoolExpandedState = ({
         <TokenInfoRow>
           <TokenInfoItem
             asset={tokenAsset}
-            title={`${tokenAsset.symbol} balance`}
+            title={`${tokenAsset.symbol} ${lang.t('pools.balance')}`}
           >
             <TokenInfoBalanceValue />
           </TokenInfoItem>
-          <TokenInfoItem asset={ethAsset} title="ETH balance">
+          <TokenInfoItem
+            asset={ethAsset}
+            title={`ETH ${lang.t('pools.balance')}`}
+          >
             <TokenInfoBalanceValue />
           </TokenInfoItem>
         </TokenInfoRow>
         <TokenInfoRow>
-          <TokenInfoItem title="Pool shares">{uniBalance}</TokenInfoItem>
-          <TokenInfoItem title="Total value">
+          <TokenInfoItem title={lang.t('pools.pool_shares')}>
+            {uniBalance}
+          </TokenInfoItem>
+          <TokenInfoItem title={lang.t('pools.total_value')}>
             {totalNativeDisplay}
           </TokenInfoItem>
         </TokenInfoRow>

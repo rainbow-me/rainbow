@@ -1,4 +1,5 @@
 import analytics from '@segment/analytics-react-native';
+import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import styled from 'styled-components/primitives';
 import Divider from '../Divider';
@@ -165,7 +166,7 @@ export default function ProfileMasthead({
           <ProfileAction
             icon="copy"
             scaleTo={0.88}
-            text="Copy Address"
+            text={lang.t('wallet.settings.copy_address')}
             width={127}
           />
         </CopyFloatingEmojis>
@@ -173,7 +174,7 @@ export default function ProfileMasthead({
           icon="qrCode"
           onPress={handlePressReceive}
           scaleTo={0.88}
-          text="Receive"
+          text={lang.t('wallet.recieve')}
           width={81}
         />
       </RowWithMargins>

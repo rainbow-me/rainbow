@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { useExpandedStateNavigation } from '../../../hooks';
 import SheetActionButton from './SheetActionButton';
@@ -26,7 +27,7 @@ export default function SwapActionButton({
     <SheetActionButton
       {...props}
       color={color}
-      label="􀖅 Swap"
+      label={`􀖅 ${lang.t('button.swap')}`}
       onPress={handlePress}
       weight="bold"
     />

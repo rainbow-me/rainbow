@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import PropTypes from 'prop-types';
 import React from 'react';
 import FastImage from 'react-native-fast-image';
@@ -7,7 +8,6 @@ import styled from 'styled-components/primitives';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
 import { convertAmountToNativeDisplay } from '../../helpers/utilities';
 import { useAccountSettings } from '../../hooks';
-
 import { ButtonPressAnimation, interpolate } from '../animations';
 import { Row, RowWithMargins } from '../layout';
 import { Emoji, Text, TruncatedText } from '../text';
@@ -125,7 +125,7 @@ SavingsListHeader.defaultProps = {
   emoji: 'sunflower',
   savingsSumValue: '0',
   showSumValue: false,
-  title: 'Savings',
+  title: lang.t('account.tab_savings'),
 };
 
 export default SavingsListHeader;

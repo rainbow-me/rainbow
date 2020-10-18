@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useCallback, useRef, useState } from 'react';
 import styled from 'styled-components/primitives';
 import Divider from '../Divider';
@@ -138,7 +139,7 @@ export default function WalletProfileState({
           <CopyTooltip
             onHide={handleTriggerFocusInput}
             textToCopy={address}
-            tooltipText="Copy Address"
+            tooltipText={lang.t('wallet.copy_address')}
           >
             <WalletProfileAddressText address={address} />
           </CopyTooltip>

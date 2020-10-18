@@ -125,7 +125,7 @@ export const INITIAL_STATE = {
   accountColor: 6,
   accountName: '',
   chainId: 1,
-  language: 'en',
+  language: 'fr',
   nativeCurrency: 'USD',
   network: networkTypes.mainnet,
 };

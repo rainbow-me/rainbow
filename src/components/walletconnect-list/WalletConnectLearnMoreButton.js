@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { debounce } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -23,7 +24,7 @@ const WalletConnectLearnMoreButton = ({ onPressLearnMore }) => (
           size="lmedium"
           weight="semibold"
         >
-          Learn More
+          {lang.t('walletconnect.learn_more')}
         </Text>
         <Divider color={colors.rowDividerLight} inset={false} />
       </Centered>

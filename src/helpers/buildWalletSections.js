@@ -147,7 +147,7 @@ const withUniswapSection = (
 ) => ({
   data: uniswap,
   header: {
-    title: 'Investments',
+    title: lang.t('account.tab_investments'),
     totalItems: uniswap.length,
     totalValue: uniswapTotal,
   },

@@ -30,6 +30,8 @@
     "account": {
       "tab_balances": "Soldes",
       "tab_collectibles": "Collections",
+      "tab_investments": "Investissements",
+      "tab_savings": "Epargnes",
       "tab_transactions": "Transactions",
       "tab_interactions": "Interactions",
       "tab_uniquetokens": "Tokens uniques",
@@ -64,6 +66,7 @@
       "unknown_token": "Token inconnu"
     },
     "button": {
+      "add_cash": "Ajouter de l'argent",
       "connect_walletconnect": "Utiliser WalletConnect",
       "exchange": "Échanger",
       "send": "Envoyer",
@@ -78,7 +81,33 @@
       "notify_me": "Recevoir des notifications",
       "try_again": "Réessayer",
       "learn_more": "En savoir plus",
-      "view": "Affichage"
+      "view": "Affichage",
+      "all": "Tous",
+      "add": "Ajouter",
+      "less": "Moins",
+      "edit": "Modifier",
+      "delete": "Effacer",
+      "done": "Terminé",
+      "pin": "Epingler", 
+      "unpin":"Détacher",
+      "hide": "Cacher",
+      "unhide": "Afficher",
+      "ok": "D'accord",
+      "loading": "Se charge",
+      "enter": "Entrer",
+      "search": "Cherche",
+      "swap": "Swap",
+      "confirm_exchange":{
+        "deposit": "Tenir pour Déposer",
+        "withdraw": "Tenir pour Retirer",
+        "swap": "Tenir pour Swap",
+        "insuffecient_funds": "Fonds Insuffisants",
+        "insuffecient_eth": "ETH Insuffisants",
+        "enter_amount": "Entrez un Montant",
+        "swap_anyway": "Echanger quand Même"
+      }
+      
+
     },
     "input": {
       "recipient_address": "Adresse du destinataire",
@@ -289,7 +318,101 @@
       },
       "wallet_connect": {
         "error": "Erreur d'initialisation avec WalletConnect"
+      },
+      "receive": "Recovoir"
+    },
+    "contacts": {
+      "options":{
+        "delete": "Effacer le contact",
+        "edit": "Modifier le contact",
+        "cancel": "Annuler"
       }
+
+    },
+    "settings":{
+      "label": "Réglages",
+      "backup": "Sauvegarder",
+      "currency": "Devise",
+      "dev": "Dev",
+      "language": "Langue",
+      "network": "Réseau", 
+      "back": "Retour",
+      "done": "Terminé"
+    },
+    "walletconnect":{
+      "scan_to_send":{
+        "label": "Numériser pour envoyer",
+        "description": "Vous pouvez scanner un code QR pour envoyer de l'argent"
+      },
+      "scan_to_connect":{
+        "label": "Scannez pour connecter votre portefeuille" ,
+        "description": "WalletConnect vous permet de vous connecter à des sites Web de bureau en scannant un code QR"
+      },
+      "learn_more": "Apprendre encore plus",
+      "paste_uri": {
+       "button": "Coller l'URI de session",
+       "message": "Collez l'URI WalletConnect ci-dessous",
+       "title": "Nouvelle session WalletConnect"
+      }
+    },
+    "swap":{
+      "label": "Swap",
+      "max": "Max",
+      "choose_token": "Choisir le Jeton",
+      "gas":{
+        "network_fee": "Frais de Réseau",
+        "edit_price": "Modifier le prix du gaz",
+        "slow": "Lent",
+        "normal": "Normal",
+        "fast": "Rapide",
+        "custom": "Personnalisé" 
+      },
+      "warning":{
+        "proceed_anyway": "Continuer malgré tout",
+        "too_low":{
+          "message": "Il est recommandé de fixer un prix du gaz plus élevé pour éviter les problèmes.",
+          "title": "Prix de l'essence bas - la transaction pourrait rester bloquée!" ,
+        },
+        "too_high":{
+          "message": "Vérifiez à nouveau que vous avez saisi le montant correct. Vous paierez probablement plus que nécessaire!",
+          "title":  "Prix de l'essence élevé!"
+        },
+        "invalid_price":{
+          "message": "Vous devez entrer un montant valide",
+          "title":  "Prix du gaz invalide"
+        }
+      },
+      "modal_types":{
+        "deposit": "Dépôts dans",
+        "withdraw": "Se retire dans",
+        "confirm": "Confirme dans",
+        "swap": "Swaps en"
+      }
+    },
+    "savings":{
+      "label": "Epargne",
+      "withdraw": "Retrait",
+      "deposit": "Dépôt",
+      "earnings":{
+        "label": "Gains",
+        "est": "Est.",
+        "monthly": "Mensuel",
+        "yearly": "Annuel",
+        "5_year": "5-Ans",
+        "10_year": "10-Ans",
+        "20_year": "20-Ans",
+        "50_year": "50-Ans",
+        "100_year": "100-Ans"
+      }
+    },
+    "pools":{
+      "per_share": "par action",
+      "balance": "Soldes",
+      "pool_shares": "Partages de Pool",
+      "total_value": "Valeur totale",
+      "withdraw": "Retrait",
+      "deposit": "Dépôt"
+
     }
   }
 }

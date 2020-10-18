@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { debounce, find } from 'lodash';
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -179,11 +180,11 @@ export default function ChartExpandedState({ asset }) {
       <SheetDivider />
       <TokenInfoSection>
         <TokenInfoRow>
-          <TokenInfoItem asset={asset} title="Balance">
+          <TokenInfoItem asset={asset} title={lang.t('modal.helper_balance')}>
             <TokenInfoBalanceValue />
           </TokenInfoItem>
           {asset?.native?.price.display && (
-            <TokenInfoItem title="Value" weight="bold">
+            <TokenInfoItem title={lang.t('modal.helper_value')} weight="bold">
               {asset?.native?.balance.display}
             </TokenInfoItem>
           )}

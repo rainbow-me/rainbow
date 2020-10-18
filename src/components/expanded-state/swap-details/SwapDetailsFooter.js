@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React from 'react';
 import { neverRerender } from '../../../utils';
 import { Row, RowWithMargins } from '../../layout';
@@ -5,7 +6,7 @@ import { Emoji, Text } from '../../text';
 
 const SwapDetailsFooter = () => (
   <Row align="center" justify="space-between">
-    <Text size="lmedium">Exchange</Text>
+    <Text size="lmedium">{lang.t('button.exchange')}</Text>
     <RowWithMargins align="center" margin={2}>
       <Emoji lineHeight="none" name="unicorn" size="lmedium" weight="medium" />
       <Text

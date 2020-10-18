@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { useIsEmulator } from 'react-native-device-info';
 import { Prompt } from '../alerts';
@@ -17,8 +18,8 @@ export default function EmulatorPasteUriButton() {
   const handlePressPasteSessionUri = useCallback(() => {
     Prompt({
       callback: handlePastedUri,
-      message: 'Paste WalletConnect URI below',
-      title: 'New WalletConnect Session',
+      message: lang.t('walletconnect.paste_uri.message'),
+      title: lang.t('walletconnect.paste_uri.title'),
       type: 'plain-text',
     });
   }, [handlePastedUri]);
@@ -31,7 +32,7 @@ export default function EmulatorPasteUriButton() {
       size="small"
       type="pill"
     >
-      Paste session URI
+      {lang.t('walletconnect.paste_uri.button')}
     </Button>
   ) : null;
 }

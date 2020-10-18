@@ -1,5 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
+import lang from 'i18n-js';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
 import { Alert, StatusBar } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
@@ -166,12 +167,12 @@ const SavingsSheet = () => {
             <SheetActionButtonRow>
               <SheetActionButton
                 color={colors.dark}
-                label="􀁏 Withdraw"
+                label={`􀁏 ${lang.t('savings.withdraw')}`}
                 onPress={onWithdraw}
               />
               <SheetActionButton
                 color={colors.swapPurple}
-                label="􀁍 Deposit"
+                label={`􀁍 ${lang.t('savings.deposit')}`}
                 onPress={onDeposit}
               />
             </SheetActionButtonRow>

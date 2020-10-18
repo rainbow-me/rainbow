@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import styled from 'styled-components/primitives';
 import { Icon } from '../icons';
@@ -56,7 +57,7 @@ const ExchangeSearch = (
       <SearchInput
         onChangeText={onChangeText}
         onFocus={onFocus}
-        placeholder="Search"
+        placeholder={lang.t('button.search')}
         ref={ref}
         testID={testID + '-input'}
         value={searchQuery}

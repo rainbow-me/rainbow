@@ -1,4 +1,5 @@
 import MaskedView from '@react-native-community/masked-view';
+import lang from 'i18n-js';
 import React from 'react';
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components/primitives';
@@ -105,7 +106,9 @@ const RainbowButton = ({
         <ButtonContent type={type}>
           {type === RainbowButtonTypes.addCash && <AddCashIcon />}
           <ButtonLabel type={type}>
-            {type === RainbowButtonTypes.addCash ? 'Add Cash' : label}
+            {type === RainbowButtonTypes.addCash
+              ? lang.t('button.add_cash')
+              : label}
           </ButtonLabel>
         </ButtonContent>
       </ButtonContainer>

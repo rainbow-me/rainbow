@@ -20,7 +20,7 @@ export const getAppStoreReviewCount = () => getGlobal(APPSTORE_REVIEW_COUNT, 0);
 export const saveAppStoreReviewCount = reviewCount =>
   saveGlobal(APPSTORE_REVIEW_COUNT, reviewCount);
 
-export const getLanguage = () => getGlobal(LANGUAGE, 'en');
+export const getLanguage = () => getGlobal(LANGUAGE, 'fr');
 
 export const saveLanguage = language => saveGlobal(LANGUAGE, language);
 

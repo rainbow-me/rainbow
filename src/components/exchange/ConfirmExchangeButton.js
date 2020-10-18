@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import PropTypes from 'prop-types';
 import React from 'react';
 import ExchangeModalTypes from '../../helpers/exchangeModalTypes';
@@ -24,18 +25,18 @@ const ConfirmExchangeButton = ({
 }) => {
   let label =
     type === ExchangeModalTypes.deposit
-      ? 'Hold to Deposit'
+      ? lang.t('button.confirm_exchange.deposit')
       : type === ExchangeModalTypes.withdrawal
-      ? 'Hold to Withdraw '
-      : 'Hold to Swap';
+      ? lang.t('button.confirm_exchange.withdraw')
+      : lang.t('button.confirm_exchange.swap');
   if (!isSufficientBalance) {
-    label = 'Insufficient Funds';
+    label = lang.t('button.confirm_exchange.insuffecient_funds');
   } else if (!isSufficientGas) {
-    label = 'Insufficient ETH';
+    label = lang.t('button.confirm_exchange.insuffecient_eth');
   } else if (slippage > SlippageWarningTheshold) {
-    label = 'Swap Anyway';
+    label = lang.t('button.confirm_exchange.swap_anyway');
   } else if (disabled) {
-    label = 'Enter an Amount';
+    label = lang.t('button.confirm_exchange.enter_amount');
   }
 
   const isDisabled = disabled || !isSufficientBalance || !isSufficientGas;

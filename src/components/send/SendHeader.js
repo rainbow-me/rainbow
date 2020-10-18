@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { get, isEmpty, isNumber, toLower } from 'lodash';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import styled from 'styled-components/primitives';
@@ -82,10 +83,10 @@ export default function SendHeader({
         cancelButtonIndex: 3,
         destructiveButtonIndex: 0,
         options: [
-          'Delete Contact', // <-- destructiveButtonIndex
-          'Edit Contact',
-          'Copy Address',
-          'Cancel', // <-- cancelButtonIndex
+          lang.t('contacts.options.delete'), // <-- destructiveButtonIndex
+          lang.t('contacts.options.edit'),
+          lang.t('wallet.settings.copy_address'),
+          lang.t('contacts.options.cancel'), // <-- cancelButtonIndex
         ],
       },
       async buttonIndex => {
@@ -94,7 +95,10 @@ export default function SendHeader({
             {
               cancelButtonIndex: 1,
               destructiveButtonIndex: 0,
-              options: ['Delete Contact', 'Cancel'],
+              options: [
+                lang.t('contacts.options.delete'),
+                lang.t('contacts.options.cancel'),
+              ],
             },
             async buttonIndex => {
               if (buttonIndex === 0) {

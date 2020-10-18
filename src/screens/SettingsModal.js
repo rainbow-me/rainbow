@@ -1,5 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import lang from 'i18n-js';
 import React, { useCallback, useEffect } from 'react';
 import { Animated, InteractionManager, Platform, View } from 'react-native';
 import styled from 'styled-components/native';
@@ -59,32 +60,32 @@ const SettingsPages = {
   backup: {
     component: View,
     key: 'BackupSection',
-    title: 'Backup',
+    title: lang.t('settings.backup'),
   },
   currency: {
     component: CurrencySection,
     key: 'CurrencySection',
-    title: 'Currency',
+    title: lang.t('settings.currency'),
   },
   default: {
     component: null,
     key: 'SettingsSection',
-    title: 'Settings',
+    title: lang.t('settings.label'),
   },
   dev: {
     component: IS_DEV ? DevSection : null,
     key: 'DevSection',
-    title: 'Dev',
+    title: lang.t('settings.dev'),
   },
   language: {
     component: LanguageSection,
     key: 'LanguageSection',
-    title: 'Language',
+    title: lang.t('settings.language'),
   },
   network: {
     component: NetworkSection,
     key: 'NetworkSection',
-    title: 'Network',
+    title: lang.t('settings.network'),
   },
 };
 
@@ -156,7 +157,13 @@ export default function SettingsModal() {
   );
 
   const renderHeaderRight = useCallback(
-    () => <ModalHeaderButton label="Done" onPress={goBack} side="right" />,
+    () => (
+      <ModalHeaderButton
+        label={lang.t('settings.done')}
+        onPress={goBack}
+        side="right"
+      />
+    ),
     [goBack]
   );
 
@@ -183,7 +190,7 @@ export default function SettingsModal() {
             gestureEnabled: true,
             gestureResponseDistance: { horizontal: deviceWidth },
             headerBackImage: BackImage,
-            headerBackTitle: 'Back',
+            headerBackTitle: lang.t('settings.back'),
             headerBackTitleStyle: {
               fontFamily: fonts.family.SFProRounded,
               fontSize: parseFloat(fonts.size.large),
@@ -226,7 +233,7 @@ export default function SettingsModal() {
             name="SettingsSection"
             options={{
               ...(Platform.OS === 'android' && { headerLeft: null }),
-              title: 'Settings',
+              title: lang.t('settings.label'),
             }}
           >
             {() => (
@@ -262,7 +269,7 @@ export default function SettingsModal() {
             options={{
               cardStyle: { backgroundColor: colors.white, marginTop: 6 },
               cardStyleInterpolator,
-              title: 'Backup',
+              title: lang.t('settings.backup'),
             }}
           />
           <Stack.Screen
@@ -270,7 +277,7 @@ export default function SettingsModal() {
             name="SettingsBackupView"
             options={({ route }) => ({
               cardStyleInterpolator,
-              title: route.params?.title || 'Backup',
+              title: route.params?.title || lang.t('settings.backup'),
             })}
           />
           <Stack.Screen
@@ -278,7 +285,7 @@ export default function SettingsModal() {
             name="ShowSecretView"
             options={({ route }) => ({
               cardStyleInterpolator,
-              title: route.params?.title || 'Backup',
+              title: route.params?.title || lang.t('settings.backup'),
             })}
           />
         </Stack.Navigator>

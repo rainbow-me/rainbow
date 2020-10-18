@@ -1,4 +1,5 @@
 import analytics from '@segment/analytics-react-native';
+import lang from 'i18n-js';
 import React, { useCallback, useState } from 'react';
 import { neverRerender } from '../../../utils';
 import { ComingSoonFloatingEmojis } from '../../floating-emojis';
@@ -23,7 +24,7 @@ function DepositActionButton({ color = colors.dark, symbol, ...props }) {
       <SheetActionButton
         {...props}
         color={color}
-        label="􀁍 Deposit"
+        label={`􀁍 ${lang.t('pools.deposit')}`}
         onPress={handlePress}
       />
     </ComingSoonFloatingEmojis>

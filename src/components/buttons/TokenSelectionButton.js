@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import PropTypes from 'prop-types';
 import React from 'react';
 import FastImage from 'react-native-fast-image';
@@ -58,7 +59,7 @@ const TokenSelectionButton = ({
           testID={testID + '-text'}
           weight="bold"
         >
-          {symbol || 'Choose Token'}
+          {symbol || lang.t('swap.choose_token')}
         </Text>
         <CaretIcon />
       </Content>

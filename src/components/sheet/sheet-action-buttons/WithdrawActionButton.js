@@ -1,4 +1,5 @@
 import analytics from '@segment/analytics-react-native';
+import lang from 'i18n-js';
 import React, { useCallback, useState } from 'react';
 import { neverRerender } from '../../../utils';
 import { ComingSoonFloatingEmojis } from '../../floating-emojis';
@@ -23,7 +24,7 @@ function WithdrawActionButton({ color = colors.white, symbol, ...props }) {
       <SheetActionButton
         {...props}
         color={color}
-        label="􀁏 Withdraw"
+        label={`􀁏 ${lang.t('pools.withdraw')}`}
         onPress={handlePress}
         textColor={colors.dark}
       />

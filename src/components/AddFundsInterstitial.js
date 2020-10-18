@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { get } from 'lodash';
 import React, { Fragment, useCallback } from 'react';
 import { Linking } from 'react-native';
@@ -16,7 +17,6 @@ import { Centered, Row, RowWithMargins } from './layout';
 import { Text } from './text';
 import Routes from '@rainbow-me/routes';
 import { colors, padding, position } from '@rainbow-me/styles';
-
 const ButtonContainerHeight = 400;
 const ButtonContainerWidth = 261;
 
@@ -266,7 +266,7 @@ const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
               size="large"
               weight="bold"
             >
-              Copy address
+              {lang.t('wallet.settings.copy_address')}
             </Text>
           </RowWithMargins>
         </CopyAddressButton>

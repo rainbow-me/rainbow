@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import isNativeStackAvailable from '../../../helpers/isNativeStackAvailable';
 import { useExpandedStateNavigation } from '../../../hooks';
@@ -27,7 +28,7 @@ export default function SendActionButton({
     <SheetActionButton
       {...props}
       color={color}
-      label="􀈠 Send"
+      label={`􀈠 ${lang.t('button.send')}`}
       onPress={handlePress}
       weight="bold"
     />

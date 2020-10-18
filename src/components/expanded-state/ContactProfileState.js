@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useCallback, useRef, useState } from 'react';
 import styled from 'styled-components/primitives';
 import { useAccountSettings, useContacts } from '../../hooks';
@@ -105,7 +106,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
         <CopyTooltip
           onHide={handleTriggerFocusInput}
           textToCopy={address}
-          tooltipText="Copy Address"
+          tooltipText={lang.t('wallet.settings.copy_address')}
         >
           <AddressAbbreviation address={address} />
         </CopyTooltip>
@@ -135,7 +136,9 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
               size="lmedium"
               weight="regular"
             >
-              {contact ? 'Delete Contact' : 'Cancel'}
+              {contact
+                ? lang.t('contacts.options.delete')
+                : lang.t('contacts.options.cancel')}
             </Text>
           </Centered>
         </ButtonPressAnimation>

@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useMemo } from 'react';
 import styled from 'styled-components/primitives';
 import { useColorForAsset } from '../../../hooks';
@@ -63,7 +64,7 @@ function LiquidityPoolExpandedStateHeader({ asset }) {
           <Title>{`${symbol}-ETH Pool`}</Title>
           <Subtitle>
             {pricePerShare}
-            <PerShareText> per share</PerShareText>
+            <PerShareText> {lang.t('pools.per_share')}</PerShareText>
           </Subtitle>
         </ColumnWithMargins>
       </Row>

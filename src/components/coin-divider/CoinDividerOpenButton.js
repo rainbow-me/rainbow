@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React from 'react';
 import { View } from 'react-native';
 import FastImage from 'react-native-fast-image';
@@ -67,10 +68,13 @@ const CoinDividerOpenButton = ({
           startingWidth={3}
         />
         <View>
-          <CoinDividerButtonLabel isVisible={isSmallBalancesOpen} label="All" />
+          <CoinDividerButtonLabel
+            isVisible={isSmallBalancesOpen}
+            label={lang.t('button.all')}
+          />
           <CoinDividerButtonLabel
             isVisible={!isSmallBalancesOpen}
-            label="Less"
+            label={lang.t('button.less')}
           />
         </View>
         <CaretContainer>
