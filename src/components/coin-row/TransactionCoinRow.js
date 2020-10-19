@@ -141,7 +141,7 @@ export default function TransactionCoinRow({ item, ...props }) {
               asset: item,
               color: contactColor,
               contact,
-              type: 'contact',
+              type: 'contact_profile',
             });
           } else if (
             (!showContactInfo && buttonIndex === 0) ||
