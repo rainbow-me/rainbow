@@ -63,5 +63,6 @@ export default magicMemo(CoinIcon, [
   'isCoinListEdited',
   'isHidden',
   'isPinned',
+  'size',
   'symbol',
 ]);
