@@ -1,5 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import { isValidAddress } from 'ethereumjs-util';
+import lang from 'i18n-js';
 import { keys } from 'lodash';
 import React, {
   useCallback,
@@ -92,7 +93,7 @@ const FooterButton = styled(MiniButton).attrs({
 const KeyboardSizeView = styled(KeyboardArea)`
   background-color: ${colors.white};
 `;
-
+const trying = lang.t('wallet.new.enter_seeds');
 const SecretTextArea = styled(Input).attrs({
   align: 'center',
   autoCapitalize: 'none',
@@ -103,7 +104,7 @@ const SecretTextArea = styled(Input).attrs({
   lineHeight: 'looser',
   multiline: true,
   numberOfLines: 3,
-  placeholder: 'Seed phrase, private key, Ethereum address or ENS name',
+  placeholder: trying,
   returnKeyType: 'done',
   size: 'large',
   spellCheck: false,
@@ -210,16 +211,14 @@ export default function ImportSeedPhraseSheet() {
       try {
         const address = await web3Provider.resolveName(input);
         if (!address) {
-          Alert.alert('This is not a valid ENS name');
+          Alert.alert(lang.t('wallet.new.ens_invalid'));
           return;
         }
         setResolvedAddress(address);
         name = input;
         showWalletProfileModal(name);
       } catch (e) {
-        Alert.alert(
-          'Sorry, we cannot add this ENS name at this time. Please try again later!'
-        );
+        Alert.alert(lang.t('wallet.new.ens_try_again'));
         return;
       }
       // Look up ENS for 0x address
@@ -376,7 +375,7 @@ export default function ImportSeedPhraseSheet() {
             onChangeText={handleSetSeedPhrase}
             onFocus={handleFocus}
             onSubmitEditing={handlePressImportButton}
-            placeholder="Seed phrase, private key, Ethereum address or ENS name"
+            placeholder={lang.t('wallet.new.enter_seeds')}
             ref={inputRef}
             returnKeyType="done"
             size="large"
@@ -404,7 +403,7 @@ export default function ImportSeedPhraseSheet() {
                   testID="import-sheet-button-label"
                   weight="semibold"
                 >
-                  Import
+                  {lang.t('button.import')}
                 </Text>
               </Row>
             </FooterButton>
@@ -418,7 +417,7 @@ export default function ImportSeedPhraseSheet() {
                 testID="import-sheet-button-label"
                 weight="semibold"
               >
-                Paste
+                {lang.t('button.paste')}
               </Text>
             </FooterButton>
           )}

@@ -61,7 +61,7 @@ function LiquidityPoolExpandedStateHeader({ asset }) {
       </Row>
       <Row align="center" justify="space-between">
         <ColumnWithMargins align="start" margin={2}>
-          <Title>{`${symbol}-ETH Pool`}</Title>
+          <Title>{`${symbol}-ETH ${lang.t('pools.pool')}`}</Title>
           <Subtitle>
             {pricePerShare}
             <PerShareText> {lang.t('pools.per_share')}</PerShareText>

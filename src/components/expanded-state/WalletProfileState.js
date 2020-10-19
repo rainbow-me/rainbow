@@ -129,7 +129,7 @@ export default function WalletProfileState({
         <ProfileNameInput
           onChange={setValue}
           onSubmitEditing={handleSubmit}
-          placeholder="Name your wallet"
+          placeholder={lang.t('wallet.new.name_wallet')}
           ref={inputRef}
           selectionColor={colors.avatarColor[color]}
           testID="wallet-info-input"
@@ -150,7 +150,11 @@ export default function WalletProfileState({
           <BiometricButtonContent
             showIcon={actionType === 'Create'}
             testID="wallet-info-submit-button"
-            text={isNewProfile ? `${actionType} Wallet` : 'Done'}
+            text={
+              isNewProfile
+                ? lang.t('wallet.new.create_wallet')
+                : lang.t('button.done')
+            }
           />
         </WalletProfileButton>
         <WalletProfileButton onPress={handleCancel}>
@@ -159,7 +163,7 @@ export default function WalletProfileState({
             letterSpacing="roundedMedium"
             weight="medium"
           >
-            Cancel
+            {lang.t('button.cancel')}
           </WalletProfileButtonText>
         </WalletProfileButton>
       </ColumnWithDividers>

@@ -1,4 +1,5 @@
 import { captureException } from '@sentry/react-native';
+import lang from 'i18n-js';
 import { get } from 'lodash';
 import React, {
   useCallback,
@@ -239,9 +240,9 @@ export default function ChangeWalletSheet() {
         }
       }
 
-      const buttons = ['Edit Wallet'];
-      buttons.push('Delete Wallet');
-      buttons.push('Cancel');
+      const buttons = [lang.t('wallet.action.edit')];
+      buttons.push(lang.t('wallet.action.delete'));
+      buttons.push(lang.t('button.cancel'));
 
       showActionSheetWithOptions(
         {
@@ -260,8 +261,11 @@ export default function ChangeWalletSheet() {
               {
                 cancelButtonIndex: 1,
                 destructiveButtonIndex: 0,
-                message: `Are you sure you want to delete this wallet?`,
-                options: ['Delete Wallet', 'Cancel'],
+                message: lang.t('wallet.action.delete_confirm'),
+                options: [
+                  lang.t('wallet.action.delete'),
+                  lang.t('button.cancel'),
+                ],
               },
               async buttonIndex => {
                 if (buttonIndex === 0) {
@@ -439,14 +443,14 @@ export default function ChangeWalletSheet() {
     <Sheet borderRadius={30}>
       {Platform.OS === 'android' && <Whitespace />}
       <Column height={headerHeight} justify="space-between">
-        <SheetTitle>Wallets</SheetTitle>
+        <SheetTitle>{lang.t('wallet.label')}</SheetTitle>
         {showDividers && (
           <Divider color={colors.rowDividerExtraLight} inset={[0, 15]} />
         )}
       </Column>
       <EditButton onPress={() => setEditMode(e => !e)}>
         <EditButtonLabel editMode={editMode}>
-          {editMode ? 'Done' : 'Edit'}
+          {editMode ? lang.t('button.done') : lang.t('button.edit')}
         </EditButtonLabel>
       </EditButton>
       <WalletList

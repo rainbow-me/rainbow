@@ -119,7 +119,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
           value={value}
         >
           <SubmitButtonLabel>
-            {contact ? 'Done' : 'Add Contact'}
+            {contact ? lang.t('button.done') : lang.t('contacts.options.add')}
           </SubmitButtonLabel>
         </SubmitButton>
         <ButtonPressAnimation
