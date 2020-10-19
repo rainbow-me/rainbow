@@ -39,6 +39,13 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('wallet-screen');
   });
 
+  it('Should show all wallet sections', async () => {
+    await Helpers.delay(1000);
+    await Helpers.checkIfElementByTextIsVisible('Pools');
+    await Helpers.swipe('wallet-screen', 'up');
+    await Helpers.checkIfElementByTextIsVisible('Collectibles');
+  });
+
   it('Should display swap modal on swap-fab press', async () => {
     await Helpers.delay(5000);
     await Helpers.checkIfVisible('wallet-screen');

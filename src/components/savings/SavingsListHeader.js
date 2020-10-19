@@ -42,7 +42,6 @@ const SavingsListHeader = ({
     duration: TokenFamilyHeaderAnimationDuration,
     easing: Easing.bezier(0.25, 0.1, 0.25, 1),
   });
-
   return (
     <ButtonPressAnimation
       key={`${emoji}_${isOpen}`}
@@ -78,7 +77,12 @@ const SavingsListHeader = ({
               }}
             >
               <SumValueText>
-                {convertAmountToNativeDisplay(savingsSumValue, nativeCurrency)}
+                {Number(savingsSumValue)
+                  ? convertAmountToNativeDisplay(
+                      savingsSumValue,
+                      nativeCurrency
+                    )
+                  : savingsSumValue}
               </SumValueText>
             </Animated.View>
           )}
