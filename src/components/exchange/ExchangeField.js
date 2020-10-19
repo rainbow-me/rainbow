@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
 import styled from 'styled-components/primitives';
 import { TokenSelectionButton } from '../buttons';
@@ -46,12 +46,16 @@ const ExchangeField = (
     setAmount,
     symbol,
     testID,
+    autoFocus,
     ...props
   },
   ref
 ) => {
   const handleFocusField = useCallback(() => ref?.current?.focus(), [ref]);
 
+  useEffect(() => {
+    autoFocus && handleFocusField();
+  }, [autoFocus, handleFocusField]);
   return (
     <Container {...props}>
       <TouchableWithoutFeedback onPress={handleFocusField}>
