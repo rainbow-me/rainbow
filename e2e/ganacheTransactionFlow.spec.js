@@ -75,7 +75,7 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.delay(2000);
     await Helpers.typeText('currency-select-search-input', 'DAI', true);
-    await Helpers.delay(2000);
+    await Helpers.delay(3000);
     await Helpers.tap('exchange-coin-row-DAI');
     await Helpers.delay(3000);
     await Helpers.tapAndLongPressByText('Hold to Swap');
@@ -88,7 +88,7 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.tap('exchange-fab');
     await Helpers.delay(2000);
     await Helpers.tap('exchange-modal-input-selection-button');
-    await Helpers.delay(2000);
+    await Helpers.delay(3000);
     await Helpers.tap('exchange-coin-row-BAT');
     await Helpers.delay(2000);
     await Helpers.typeText('exchange-modal-input', '5', true);
@@ -107,7 +107,7 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.tap('exchange-fab');
     await Helpers.delay(2000);
     await Helpers.tap('exchange-modal-input-selection-button');
-    await Helpers.delay(2000);
+    await Helpers.delay(3000);
     await Helpers.tap('exchange-coin-row-USDC');
     await Helpers.delay(2000);
     await Helpers.typeText('exchange-modal-input', '2', true);
@@ -128,7 +128,7 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.tap('send-fab');
     await Helpers.delay(2000);
     await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
-    await Helpers.delay(2500);
+    await Helpers.delay(3000);
     await Helpers.tap('send-savings-cSAI');
     await Helpers.delay(2000);
     await Helpers.typeText('selected-asset-field-input', '1', true);
@@ -143,7 +143,7 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.tap('send-fab');
     await Helpers.delay(2000);
     await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
-    await Helpers.delay(2000);
+    await Helpers.delay(3000);
     await Helpers.tapByText('CryptoKitties');
     await Helpers.delay(2000);
     await Helpers.tapByText('Arun Cattybinky');
@@ -166,7 +166,7 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.tap('send-fab');
     await Helpers.delay(2000);
     await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
-    await Helpers.delay(2500);
+    await Helpers.delay(3000);
     await Helpers.tap('send-asset-BAT');
     await Helpers.delay(2000);
     await Helpers.typeText('selected-asset-field-input', '2', true);
@@ -181,7 +181,7 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.tap('send-fab');
     await Helpers.delay(2000);
     await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
-    await Helpers.delay(2500);
+    await Helpers.delay(3000);
     await Helpers.tap('send-asset-ETH');
     await Helpers.delay(2000);
     await Helpers.typeText('selected-asset-field-input', '.01', true);
