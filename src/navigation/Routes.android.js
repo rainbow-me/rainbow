@@ -22,7 +22,11 @@ import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import WithdrawModal from '../screens/WithdrawModal';
 import { SwipeNavigator } from './SwipeNavigator';
-import { defaultScreenStackOptions, stackNavigationConfig } from './config';
+import {
+  closeKeyboardOnClose,
+  defaultScreenStackOptions,
+  stackNavigationConfig,
+} from './config';
 import {
   bottomSheetPreset,
   emojiPreset,
@@ -95,6 +99,7 @@ function MainNavigator() {
       />
       <Stack.Screen
         component={ModalScreen}
+        {...closeKeyboardOnClose}
         name={Routes.MODAL_SCREEN}
         options={overlayExpandedPreset}
       />

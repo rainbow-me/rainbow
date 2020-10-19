@@ -56,6 +56,10 @@ export default function useMagicAutofocus(
   // ✨️ Make the magic happen
   useFocusEffect(
     useCallback(() => {
+      if (android) {
+        return;
+      }
+
       setListener(triggerFocus);
       if (delay) {
         InteractionManager.runAfterInteractions(() => {

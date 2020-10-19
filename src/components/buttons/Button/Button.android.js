@@ -1,9 +1,9 @@
 import { isArray, isString } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { TouchableOpacity } from 'react-native';
 import styled from 'styled-components/primitives';
-import { Centered } from '../../layout';
+import { ButtonPressAnimation } from '../../animations';
+import { Centered, InnerBorder } from '../../layout';
 import { Text } from '../../text';
 import { colors, padding } from '@rainbow-me/styles';
 
@@ -52,33 +52,53 @@ const Button = ({
   style,
   textProps,
   type,
+  borderColor,
+  borderOpacity,
+  borderWidth,
+  disabled,
   ...props
-}) => (
-  <Container
-    {...props}
-    backgroundColor={backgroundColor}
-    css={containerStyles}
-    showShadow={showShadow}
-    size={size}
-    style={style}
-    type={type}
-  >
-    <TouchableOpacity onPress={onPress}>
-      {!shouldRenderChildrenAsText(children) ? (
-        children
-      ) : (
-        <Text
-          color={color}
-          size={ButtonSizeTypes[size].fontSize}
-          weight="semibold"
-          {...textProps}
-        >
-          {children}
-        </Text>
-      )}
-    </TouchableOpacity>
-  </Container>
-);
+}) => {
+  const borderRadius = type === 'rounded' ? 14 : 50;
+
+  return (
+    <ButtonPressAnimation
+      disabled={disabled}
+      onPress={onPress}
+      radiusAndroid={borderRadius}
+    >
+      <Container
+        {...props}
+        backgroundColor={backgroundColor}
+        css={containerStyles}
+        showShadow={showShadow}
+        size={size}
+        style={style}
+        type={type}
+      >
+        {shouldRenderChildrenAsText(children) ? (
+          <Text
+            color={color}
+            size={ButtonSizeTypes[size].fontSize}
+            weight="semibold"
+            {...textProps}
+          >
+            {children}
+          </Text>
+        ) : (
+          children
+        )}
+        {(!onPress || !disabled) && (
+          <InnerBorder
+            color={borderColor}
+            opacity={borderOpacity}
+            radius={borderRadius}
+            width={borderWidth}
+          />
+        )}
+      </Container>
+    </ButtonPressAnimation>
+  );
+};
 
 Button.propTypes = {
   backgroundColor: PropTypes.string,

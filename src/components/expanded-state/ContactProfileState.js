@@ -58,6 +58,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
       onAddOrUpdateContacts(address, value, color, network);
       goBack();
     }
+    akd();
   }, [
     address,
     color,
@@ -68,16 +69,15 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
     value,
   ]);
 
-  const handleDeleteContact = useCallback(
-    () =>
-      showDeleteContactActionSheet({
-        address,
-        nickname: value,
-        onDelete: goBack,
-        removeContact: onRemoveContact,
-      }),
-    [address, goBack, onRemoveContact, value]
-  );
+  const handleDeleteContact = useCallback(() => {
+    showDeleteContactActionSheet({
+      address,
+      nickname: value,
+      onDelete: goBack,
+      removeContact: onRemoveContact,
+    });
+    akd();
+  }, [address, goBack, onRemoveContact, value]);
 
   const handleTriggerFocusInput = useCallback(() => inputRef.current?.focus(), [
     inputRef,
@@ -123,7 +123,14 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
         </SubmitButton>
         <ButtonPressAnimation
           marginTop={11}
-          onPress={contact ? handleDeleteContact : goBack}
+          onPress={
+            contact
+              ? handleDeleteContact
+              : () => {
+                  goBack();
+                  akd();
+                }
+          }
         >
           <Centered
             backgroundColor={colors.white}

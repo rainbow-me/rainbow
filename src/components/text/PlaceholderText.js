@@ -9,7 +9,7 @@ const Placeholder = styled(Text).attrs({
   size: 'big',
   weight: 'semibold',
 })`
-  margin-bottom: ${android ? -39 : -27};
+  margin-bottom: ${android ? -48 : -27};
   width: 100%;
 `;
 
