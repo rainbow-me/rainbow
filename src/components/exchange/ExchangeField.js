@@ -32,7 +32,7 @@ const FieldRow = styled(RowWithMargins).attrs({
 const Input = styled(ExchangeInput).attrs({
   letterSpacing: 'roundedTightest',
 })`
-  height: ${ExchangeFieldHeight};
+  height: ${ExchangeFieldHeight + (android ? 20 : 0)};
 `;
 
 const ExchangeField = (

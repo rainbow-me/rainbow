@@ -1,16 +1,16 @@
 import React, { useCallback, useState } from 'react';
-import { InteractionManager } from 'react-native';
-import TextInputMask from 'react-native-text-input-mask';
+import { InteractionManager, TextInput } from 'react-native';
 import styled from 'styled-components/primitives';
 import { magicMemo } from '../../utils';
 import { buildTextStyles, colors } from '@rainbow-me/styles';
 
-const Input = styled(TextInputMask).attrs({
+const Input = styled(TextInput).attrs({
   allowFontScaling: false,
   keyboardType: 'decimal-pad',
   selectionColor: colors.appleBlue,
 })`
   ${buildTextStyles};
+  ${android ? 'font-weight: normal' : ''};
   flex: 1;
 `;
 
