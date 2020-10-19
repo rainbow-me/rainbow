@@ -77,7 +77,7 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
 
     const setPointerEvents = useCallback(pointerEventsVal => {
       pointerEvents.current = pointerEventsVal;
-      ref.current.setNativeProps({
+      ref.current?.setNativeProps?.({
         pointerEvents: pointerEventsVal ? 'none' : 'auto',
       });
     }, []);
@@ -210,16 +210,18 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
             name={Routes.CURRENCY_SELECT_SCREEN}
           />
         </Tabs.Navigator>
-        <View
-          pointerEvents="none"
-          ref={ref}
-          style={{
-            backgroundColor: 'transparent',
-            height: '100%',
-            position: 'absolute',
-            width: '100%',
-          }}
-        />
+        {ios && (
+          <View
+            pointerEvents="none"
+            ref={ref}
+            style={{
+              backgroundColor: 'red',
+              height: '100%',
+              position: 'absolute',
+              width: '100%',
+            }}
+          />
+        )}
       </View>
     );
   };

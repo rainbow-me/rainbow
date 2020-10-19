@@ -47,6 +47,7 @@ import { backgroundTask, isNewValueForPath } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const AnimatedFloatingPanels = Animated.createAnimatedComponent(FloatingPanels);
+const Wrapper = ios ? KeyboardFixedOpenLayout : Fragment;
 
 export default function ExchangeModal({
   createRap,
@@ -507,9 +508,11 @@ export default function ExchangeModal({
       : !!inputCurrency && !!outputCurrency;
 
   return (
-    <KeyboardFixedOpenLayout>
+    <Wrapper>
       <Centered
-        {...position.sizeAsObject('100%')}
+        {...(ios
+          ? position.sizeAsObject('100%')
+          : { style: { height: 500, top: 0 } })}
         backgroundColor={colors.transparent}
         direction="column"
       >
@@ -526,16 +529,22 @@ export default function ExchangeModal({
                 }),
             transform: [
               {
-                scale: interpolate(tabTransitionPosition, {
-                  extrapolate: Animated.Extrapolate.CLAMP,
-                  inputRange: [0, 0, 1],
-                  outputRange: [1, 1, 0.9],
-                }),
-                translateX: interpolate(tabTransitionPosition, {
-                  extrapolate: Animated.Extrapolate.CLAMP,
-                  inputRange: [0, 0, 1],
-                  outputRange: [0, 0, -8],
-                }),
+                scale: android
+                  ? 1
+                  : interpolate(tabTransitionPosition, {
+                      extrapolate: Animated.Extrapolate.CLAMP,
+                      inputRange: [0, 0, 1],
+                      outputRange: [1, 1, 0.9],
+                    }),
+              },
+              {
+                translateX: android
+                  ? 0
+                  : interpolate(tabTransitionPosition, {
+                      extrapolate: Animated.Extrapolate.CLAMP,
+                      inputRange: [0, 0, 1],
+                      outputRange: [0, 0, -8],
+                    }),
               },
             ],
           }}
@@ -619,6 +628,6 @@ export default function ExchangeModal({
           />
         </AnimatedFloatingPanels>
       </Centered>
-    </KeyboardFixedOpenLayout>
+    </Wrapper>
   );
 }

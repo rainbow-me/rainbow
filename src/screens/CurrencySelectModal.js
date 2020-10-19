@@ -3,6 +3,7 @@ import analytics from '@segment/analytics-react-native';
 import { concat, map } from 'lodash';
 import matchSorter from 'match-sorter';
 import React, {
+  Fragment,
   useCallback,
   useEffect,
   useMemo,
@@ -40,6 +41,7 @@ const TabTransitionAnimation = styled(Animated.View)`
 `;
 
 const headerlessSection = data => [{ data, title: '' }];
+const Wrapper = ios ? KeyboardFixedOpenLayout : Fragment;
 
 export default function CurrencySelectModal() {
   const isFocused = useIsFocused();
@@ -58,7 +60,7 @@ export default function CurrencySelectModal() {
   } = useRoute();
 
   const searchInputRef = useRef();
-  const { handleFocus } = useMagicAutofocus(searchInputRef);
+  const { handleFocus } = useMagicAutofocus(searchInputRef, undefined, true);
 
   const [assetsToFavoriteQueue, setAssetsToFavoriteQueue] = useState({});
   const [searchQuery, setSearchQuery] = useState('');
@@ -248,21 +250,25 @@ export default function CurrencySelectModal() {
   }, [assetsToFavoriteQueue, handleApplyFavoritesQueue, searchQueryExists]);
 
   return (
-    <KeyboardFixedOpenLayout>
+    <Wrapper>
       <TabTransitionAnimation
         style={{
-          opacity: interpolate(tabTransitionPosition, {
-            extrapolate: Extrapolate.CLAMP,
-            inputRange: [0, 1, 1],
-            outputRange: [0, 1, 1],
-          }),
+          opacity: android
+            ? 1
+            : interpolate(tabTransitionPosition, {
+                extrapolate: Extrapolate.CLAMP,
+                inputRange: [0, 1, 1],
+                outputRange: [0, 1, 1],
+              }),
           transform: [
             {
-              translateX: interpolate(tabTransitionPosition, {
-                extrapolate: Animated.Extrapolate.CLAMP,
-                inputRange: [0, 1, 1],
-                outputRange: [8, 0, 0],
-              }),
+              translateX: android
+                ? 0
+                : interpolate(tabTransitionPosition, {
+                    extrapolate: Animated.Extrapolate.CLAMP,
+                    inputRange: [0, 1, 1],
+                    outputRange: [8, 0, 0],
+                  }),
             },
           ],
         }}
@@ -293,6 +299,6 @@ export default function CurrencySelectModal() {
           <GestureBlocker type="bottom" />
         </Modal>
       </TabTransitionAnimation>
-    </KeyboardFixedOpenLayout>
+    </Wrapper>
   );
 }

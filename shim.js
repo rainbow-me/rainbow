@@ -47,7 +47,9 @@ Object.defineProperty(global, 'ios', {
 });
 
 Object.defineProperty(global, 'akd', {
-  get: () => () => android && ReactNative.Keyboard.dismiss(),
+  get: () => () => {
+    android && ReactNative.Keyboard.dismiss();
+  },
   set: () => {
     throw new Error('Trying to override internal Rainbow var');
   },
