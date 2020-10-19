@@ -25,6 +25,7 @@ const AddCashForm = ({
 }) => {
   const isWalletEthZero = useIsWalletEthZero();
   const { params } = useRoute();
+  const [paymentSheetVisible, setPaymentSheetVisible] = useState(false);
 
   const { isNarrowPhone, isSmallPhone, isTallPhone } = useDimensions();
   const [scaleAnim, setScaleAnim] = useState(1);
@@ -35,14 +36,22 @@ const AddCashForm = ({
     params?.amount ? params?.amount?.toString() : ''
   );
 
-  const handlePurchase = useCallback(() => {
-    analytics.track('Submitted Purchase', {
-      category: 'add cash',
-      label: currency,
-      value: Number(value),
-    });
-    return onPurchase({ currency, value });
-  }, [currency, onPurchase, value]);
+  const handlePurchase = useCallback(async () => {
+    if (paymentSheetVisible) return;
+    try {
+      analytics.track('Submitted Purchase', {
+        category: 'add cash',
+        label: currency,
+        value: Number(value),
+      });
+      setPaymentSheetVisible(true);
+      await onPurchase({ currency, value });
+      // eslint-disable-next-line no-empty
+    } catch (e) {
+    } finally {
+      setPaymentSheetVisible(false);
+    }
+  }, [currency, onPurchase, paymentSheetVisible, value]);
 
   const handleNumpadPress = useCallback(
     newValue => {
