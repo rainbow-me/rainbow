@@ -1,7 +1,8 @@
 import { get } from 'lodash';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
+import { usePrevious } from '../../hooks';
 import { magicMemo } from '../../utils';
 import { EmptyAssetList } from '../asset-list';
 import { Centered } from '../layout';
@@ -39,15 +40,15 @@ const CurrencySelectionList = ({
   query,
 }) => {
   const skeletonTransitionRef = useRef();
-  const [showSkeleton, setShowSkeleton] = useState(true);
   const showNoResults = get(listItems, '[0].data', []).length === 0;
+  const showSkeleton = showNoResults && loading;
+  const prevShowSkeleton = usePrevious(showSkeleton);
 
   useEffect(() => {
-    if (showSkeleton && !loading) {
+    if (!showSkeleton && prevShowSkeleton) {
       skeletonTransitionRef.current?.animateNextTransition();
-      setShowSkeleton(false);
     }
-  }, [loading, showSkeleton]);
+  }, [loading, prevShowSkeleton, showSkeleton]);
 
   return (
     <Transitioning.View

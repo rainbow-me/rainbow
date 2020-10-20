@@ -72,6 +72,7 @@ export default function CurrencySelectModal() {
     favorites,
     globalHighLiquidityAssets,
     globalLowLiquidityAssets,
+    loadingAllTokens,
     updateFavorites,
   } = useUniswapAssets();
   const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
@@ -296,6 +297,7 @@ export default function CurrencySelectModal() {
               <CurrencySelectionList
                 itemProps={itemProps}
                 listItems={currencyList}
+                loading={loadingAllTokens}
                 query={searchQueryForSearch}
                 showList={isFocused}
                 testID="currency-select-list"
