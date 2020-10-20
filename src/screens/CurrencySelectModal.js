@@ -117,7 +117,7 @@ export default function CurrencySelectModal() {
         filteredHighWithoutScams.length &&
           filteredList.push({
             data: filteredHighWithoutScams,
-            title: filteredBest.length ? '􀇿 Unverified' : '',
+            title: '􀇿 Unverified',
           });
 
         const filteredLowWithoutScams = filterScams(filteredBest, filteredLow);
@@ -128,7 +128,13 @@ export default function CurrencySelectModal() {
             title: '􀇿 Low Liquidity',
           });
       } else {
-        filteredList = headerlessSection(concat(favorites, curatedAssets));
+        filteredList = [
+          {
+            data: concat(favorites, curatedAssets),
+            title: '􀇻 Rainbow Verified',
+            useGradientText: true,
+          },
+        ];
       }
     }
 
