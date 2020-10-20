@@ -1,6 +1,7 @@
 import analytics from '@segment/analytics-react-native';
 import { find } from 'lodash';
 import React, { useCallback } from 'react';
+import { Platform } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components/primitives';
@@ -106,9 +107,10 @@ export default function ProfileMasthead({
             const newWallets = { ...wallets };
             const walletId = selectedWallet.id;
             newWallets[walletId].addresses.some((account, index) => {
-              newWallets[walletId].addresses[
-                index
-              ].image = `~${image?.path.slice(stringIndex)}`;
+              newWallets[walletId].addresses[index].image =
+                Platform.OS === 'ios'
+                  ? `~${image?.path.slice(stringIndex)}`
+                  : image?.path;
               dispatch(walletsSetSelected(newWallets[walletId]));
               return true;
             });
