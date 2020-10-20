@@ -56,8 +56,6 @@ const PinAuthenticationScreen = () => {
           }
         }
 
-        console.log('next value', nextValue);
-
         if (nextValue.length === 4) {
           if (actionType === 'authentication') {
             const valid = params.validPin === nextValue;
@@ -73,7 +71,6 @@ const PinAuthenticationScreen = () => {
             setActionType('confirmation');
             // Store the pin in state so we can compare with the conf.
             setInitialPin(nextValue);
-            console.log('set initial pin as', nextValue);
 
             // Clear the pin
             setValue('');
@@ -81,7 +78,6 @@ const PinAuthenticationScreen = () => {
             const valid = initialPin === nextValue;
             if (!valid) {
               onShake();
-              console.log('shake it up baby');
             } else {
               params.onSuccess(nextValue);
               finished.current = true;

@@ -7,7 +7,6 @@ import { cloudPlatform } from '../../../utils/platform';
 import { DelayedAlert } from '../../alerts';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered, Column } from '../../layout';
-import { LoadingOverlay } from '../../modal';
 import { SheetActionButton } from '../../sheet';
 import { Text } from '../../text';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
@@ -15,10 +14,8 @@ import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { useWalletCloudBackup, useWallets } from '@rainbow-me/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
-import { sheetVerticalOffset } from '@rainbow-me/navigation/effects';
 import Routes from '@rainbow-me/routes';
 import { colors, fonts, padding, position, shadow } from '@rainbow-me/styles';
-import { usePortal } from 'react-native-cool-modals/Portal';
 
 const WalletBackupStatus = {
   CLOUD_BACKUP: 0,
@@ -92,30 +89,15 @@ const onError = error => DelayedAlert({ title: error }, 500);
 export default function AlreadyBackedUpView() {
   const { navigate } = useNavigation();
   const { params } = useRoute();
-  const { isWalletLoading, wallets, selectedWallet } = useWallets();
+  const { wallets, selectedWallet } = useWallets();
   const walletCloudBackup = useWalletCloudBackup();
   const walletId = params?.walletId || selectedWallet.id;
-
-  const { setComponent, hide } = usePortal();
 
   useEffect(() => {
     analytics.track('Already Backed Up View', {
       category: 'settings backup',
     });
   }, []);
-
-  useEffect(() => {
-    if (isWalletLoading) {
-      setComponent(
-        <LoadingOverlay
-          paddingTop={sheetVerticalOffset}
-          title={isWalletLoading}
-        />,
-        false
-      );
-    }
-    return hide;
-  }, [hide, isWalletLoading, setComponent]);
 
   const walletStatus = useMemo(() => {
     let status = null;

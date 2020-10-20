@@ -5,7 +5,6 @@ import { ActivityList } from '../components/activity-list';
 import { BackButton, Header, HeaderButton } from '../components/header';
 import { Icon } from '../components/icons';
 import { Page } from '../components/layout';
-import { LoadingOverlay } from '../components/modal';
 import { ProfileMasthead } from '../components/profile';
 import TransactionList from '../components/transaction-list/TransactionList';
 import useNativeTransactionListAvailable from '../helpers/isNativeTransactionListAvailable';
@@ -15,11 +14,8 @@ import {
   useAccountTransactions,
   useContacts,
   useRequests,
-  useWallets,
 } from '../hooks';
 import { useNavigation } from '../navigation/Navigation';
-import { sheetVerticalOffset } from '../navigation/effects';
-import { usePortal } from '../react-native-cool-modals/Portal';
 import Routes from '@rainbow-me/routes';
 import { colors, position } from '@rainbow-me/styles';
 
@@ -34,22 +30,8 @@ export default function ProfileScreen({ navigation }) {
   const [activityListInitialized, setActivityListInitialized] = useState(false);
   const isFocused = useIsFocused();
   const { navigate } = useNavigation();
-  const { isWalletLoading } = useWallets();
   const nativeTransactionListAvailable = useNativeTransactionListAvailable();
-  const { setComponent, hide } = usePortal();
 
-  useEffect(() => {
-    if (isWalletLoading) {
-      setComponent(
-        <LoadingOverlay
-          paddingTop={sheetVerticalOffset}
-          title={isWalletLoading}
-        />,
-        false
-      );
-    }
-    return hide;
-  }, [hide, isWalletLoading, setComponent]);
   const {
     isLoadingTransactions: isLoading,
     sections,

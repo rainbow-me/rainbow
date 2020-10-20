@@ -591,15 +591,13 @@ export const createWallet = async (
             // We gotta dismiss the modal before showing the PIN screen
             dispatch(setIsWalletLoading(null));
             userPIN = await authenticateWithPIN();
-            if (!seed) {
-              dispatch(
-                setIsWalletLoading(
-                  seed
-                    ? WalletLoadingStates.IMPORTING_WALLET
-                    : WalletLoadingStates.CREATING_WALLET
-                )
-              );
-            }
+            dispatch(
+              setIsWalletLoading(
+                seed
+                  ? WalletLoadingStates.IMPORTING_WALLET
+                  : WalletLoadingStates.CREATING_WALLET
+              )
+            );
           }
           console.log('⚠️⚠️⚠️ got userpin', userPIN);
         } catch (e) {

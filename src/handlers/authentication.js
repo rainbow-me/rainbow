@@ -11,18 +11,14 @@ const encryptor = new AesEncryptor();
 
 export async function getExistingPIN() {
   try {
-    console.log('⚠️⚠️⚠️ getting encryptedPin pin');
     const encryptedPin = await keychain.loadString(pinKey);
-    console.log('⚠️⚠️⚠️ got encryptedPin pin', encryptedPin);
     // The user has a PIN already, we need to decrypt it
     if (encryptedPin) {
       const userPIN = await encryptor.decrypt(RAINBOW_MASTER_KEY, encryptedPin);
-      console.log('⚠️⚠️⚠️ got decrypted pin', userPIN);
       return userPIN;
     }
     // eslint-disable-next-line no-empty
   } catch (e) {}
-  console.log('⚠️⚠️⚠️ returning null');
   return null;
 }
 
@@ -41,18 +37,10 @@ export async function savePIN(pin) {
 export async function authenticateWithPIN() {
   let validPin;
   try {
-    console.log('⚠️⚠️⚠️ gettin validPin?', validPin);
     validPin = await getExistingPIN();
-    console.log('⚠️⚠️⚠️ got validPin?', validPin);
-  } catch (e) {
-    console.log('⚠️⚠️⚠️ WUT?', e);
-  }
-  console.log('⚠️⚠️⚠️ valid pin?', validPin);
-  console.log('⚠️⚠️⚠️ navigating');
-
+    // eslint-disable-next-line no-empty
+  } catch (e) {}
   return new Promise((resolve, reject) => {
-    console.log('⚠️⚠️⚠️ navigation', Navigation.handleAction);
-    console.log('⚠️⚠️⚠️ navigating');
     return Navigation.handleAction(Routes.PIN_AUTHENTICATION_SCREEN, {
       onCancel: () => reject(),
       onSuccess: async pin => {
