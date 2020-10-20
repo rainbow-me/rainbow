@@ -96,9 +96,14 @@ export default function CurrencySelectModal() {
         const [filteredBest, filteredHigh, filteredLow] = map(
           [curatedSection, globalHighLiquidityAssets, globalLowLiquidityAssets],
           section =>
-            filterList(section, searchQueryForSearch, ['symbol', 'name'], {
-              threshold: matchSorter.rankings.CONTAINS,
-            })
+            filterList(
+              section,
+              searchQueryForSearch,
+              ['symbol', 'name', 'address'],
+              {
+                threshold: matchSorter.rankings.CONTAINS,
+              }
+            )
         );
 
         filteredList = [];
