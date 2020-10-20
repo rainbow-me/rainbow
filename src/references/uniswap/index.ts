@@ -9,7 +9,7 @@ import UNISWAP_TOKEN_LIST from './uniswap-token-list.json';
 import { abi as UNISWAP_V2_ROUTER_ABI } from './uniswap-v2-router.json';
 import UNISWAP_V1_EXCHANGE_ABI from './v1-exchange-abi';
 
-const CURATED_UNISWAP_TOKEN_LIST = map(UNISWAP_TOKEN_LIST['tokens'], token => {
+const TOKEN_LIST = map(UNISWAP_TOKEN_LIST['tokens'], token => {
   const address = toLower(token.address);
   return {
     ...token,
@@ -17,6 +17,15 @@ const CURATED_UNISWAP_TOKEN_LIST = map(UNISWAP_TOKEN_LIST['tokens'], token => {
     address,
   };
 });
+
+const ETHER_WITH_ADDRESS = {
+  address: 'eth',
+  decimals: 18,
+  name: 'Ethereum',
+  symbol: 'ETH',
+};
+
+const CURATED_UNISWAP_TOKEN_LIST = [ETHER_WITH_ADDRESS, ...TOKEN_LIST];
 
 const CURATED_UNISWAP_TOKENS = keyBy(CURATED_UNISWAP_TOKEN_LIST, 'address');
 
