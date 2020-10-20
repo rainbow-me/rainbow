@@ -235,7 +235,9 @@ class HoldToAuthorizeButton extends PureComponent {
                       />
                     )}
                     <Title smallButton={smallButton}>
-                      {isAuthorizing ? 'Authorizing' : label}
+                      {isAuthorizing || this.props.isAuthorizing
+                        ? 'Authorizing'
+                        : label}
                     </Title>
                   </Fragment>
                 )}
