@@ -27,7 +27,6 @@ export default function useAccountTransactions(initialized, isFocused) {
     [transactions, page]
   );
 
-  console.log(slicedTransaction.length);
 
   const transactionsCount = useMemo(() => {
     return slicedTransaction.length;
