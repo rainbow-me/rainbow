@@ -7,7 +7,6 @@ import {
   includes,
   sortBy,
 } from 'lodash';
-import supportedNativeCurrencies from '../references/native-currencies.json';
 import { add } from './utilities';
 
 export const amountOfShowedCoins = 5;
@@ -47,7 +46,7 @@ export const buildCoinsList = (
 
   const isShortList = assetsLength <= amountOfShowedCoins;
 
-  forEach(assets, asset => {
+  forEach(assets, function(asset, index) {
     if (hiddenCoins && hiddenCoins.includes(asset.uniqueId)) {
       hiddenAssets.push({
         isCoin: true,
@@ -67,10 +66,7 @@ export const buildCoinsList = (
         ...asset,
       });
     } else if (
-      (asset.native &&
-        asset.native.balance.amount >
-          supportedNativeCurrencies[nativeCurrency].smallThreshold) ||
-      asset.address === 'eth' ||
+      index < amountOfShowedCoins - pinnedCoins.length ||
       isShortList
     ) {
       totalBalancesValue = add(
