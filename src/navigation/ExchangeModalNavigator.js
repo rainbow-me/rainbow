@@ -215,7 +215,7 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
             pointerEvents="none"
             ref={ref}
             style={{
-              backgroundColor: 'red',
+              backgroundColor: 'transparent',
               height: '100%',
               position: 'absolute',
               width: '100%',
