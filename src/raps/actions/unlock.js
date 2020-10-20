@@ -151,7 +151,9 @@ export const assetNeedsUnlocking = async (
       contractAddress
     );
     // Cache that value
-    AllowancesCache.cache[cacheKey] = allowance;
+    if (allowance) {
+      AllowancesCache.cache[cacheKey] = allowance;
+    }
   }
 
   const rawAmount = convertAmountToRawAmount(amount, assetToUnlock.decimals);

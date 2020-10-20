@@ -45,10 +45,16 @@ const approve = async (
 };
 
 const getRawAllowance = async (owner, token, spender) => {
-  const { address: tokenAddress } = token;
-  const tokenContract = new Contract(tokenAddress, erc20ABI, web3Provider);
-  const allowance = await tokenContract.allowance(owner, spender);
-  return allowance.toString();
+  try {
+    const { address: tokenAddress } = token;
+    const tokenContract = new Contract(tokenAddress, erc20ABI, web3Provider);
+    const allowance = await tokenContract.allowance(owner, spender);
+    return allowance.toString();
+  } catch (error) {
+    logger.sentry('error getRawAllowance');
+    captureException(error);
+    return null;
+  }
 };
 
 export default {

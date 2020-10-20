@@ -237,7 +237,7 @@ export default function useUniswapCurrencies({
           logger.log(
             '[update output curr] updating input curr with prev output curr'
           );
-          updateInputCurrency(previousOutputCurrency, false);
+          updateInputCurrency(existsInWallet, false);
         } else {
           logger.log('[update output curr] updating input curr with nothing');
           updateInputCurrency(null, false);
