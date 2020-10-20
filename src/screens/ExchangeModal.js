@@ -27,6 +27,7 @@ import ExchangeModalTypes from '../helpers/exchangeModalTypes';
 import { loadWallet } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import { executeRap } from '../raps/common';
+import { multicallClearState } from '../redux/multicall';
 import { savingsLoadState } from '../redux/savings';
 import ethUnits from '../references/ethereum-units.json';
 import {
@@ -203,6 +204,12 @@ export default function ExchangeModal({
   useEffect(() => {
     updateGasLimit();
   }, [updateGasLimit]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(multicallClearState());
+    };
+  }, [dispatch]);
 
   // Set default gas limit
   useEffect(() => {

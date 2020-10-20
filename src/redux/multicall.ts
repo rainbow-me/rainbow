@@ -1,7 +1,7 @@
 import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
 import { ChainId } from '@uniswap/sdk';
-import { chunk, forEach, get, keys, map, omit } from 'lodash';
+import { chunk, forEach, get, keys, map } from 'lodash';
 import { web3Provider } from '../handlers/web3';
 import { MULTICALL_ABI, MULTICALL_NETWORKS } from '../references/uniswap';
 import { AppDispatch, AppGetState } from './store';
@@ -9,7 +9,7 @@ import { AppDispatch, AppGetState } from './store';
 // -- Constants ------------------------------------------------------------- //
 const MULTICALL_UPDATE_RESULTS = 'multicall/MULTICALL_UPDATE_RESULTS';
 const MULTICALL_ADD_LISTENERS = 'multicall/MULTICALL_ADD_LISTENERS';
-const MULTICALL_REMOVE_LISTENERS = 'multicall/MULTICALL_REMOVE_LISTENERS';
+const MULTICALL_CLEAR_STATE = 'multicall/MULTICALL_CLEAR_STATE';
 
 // chunk calls to not exceed the gas limit
 const CALL_CHUNK_SIZE = 500;
@@ -45,15 +45,14 @@ interface MulticallAddListenersAction {
   payload: MulticallState['listeners'];
 }
 
-interface MulticallRemoveListenersAction {
-  type: typeof MULTICALL_REMOVE_LISTENERS;
-  payload: MulticallState['listeners'];
+interface MulticallClearStateAction {
+  type: typeof MULTICALL_CLEAR_STATE;
 }
 
 export type MulticallActionTypes =
   | MulticallUpdateResultsAction
   | MulticallAddListenersAction
-  | MulticallRemoveListenersAction;
+  | MulticallClearStateAction;
 
 export interface Call {
   address: string;
@@ -99,39 +98,6 @@ export const multicallAddListeners = ({
   dispatch({
     payload: updatedListeners,
     type: MULTICALL_ADD_LISTENERS,
-  });
-};
-
-export const multicallRemoveListeners = ({
-  calls,
-  chainId,
-}: {
-  calls: object;
-  chainId: ChainId;
-}) => (dispatch: AppDispatch, getState: AppGetState) => {
-  const { listeners: existingListeners } = getState().multicall;
-  let updatedListeners = {
-    ...existingListeners,
-  };
-
-  if (!updatedListeners[chainId]) return;
-
-  forEach(calls, call => {
-    const callKey = toCallKey(call);
-    const listenerCount = updatedListeners?.[chainId]?.[callKey];
-    if (!listenerCount) return;
-
-    if (listenerCount === 1) {
-      updatedListeners = omit(updatedListeners, `[${chainId}][${callKey}]`);
-    } else {
-      updatedListeners[chainId] = {
-        [callKey]: listenerCount - 1,
-      };
-    }
-  });
-  dispatch({
-    payload: updatedListeners,
-    type: MULTICALL_REMOVE_LISTENERS,
   });
 };
 
@@ -278,6 +244,12 @@ export const multicallUpdateOutdatedListeners = (
   });
 };
 
+export const multicallClearState = () => (dispatch: AppDispatch) => {
+  dispatch({
+    type: MULTICALL_CLEAR_STATE,
+  });
+};
+
 // -- Reducer --------------------------------------------------------------- //
 export const INITIAL_MULTICALL_STATE: MulticallState = {
   listeners: {},
@@ -294,15 +266,14 @@ export default (
         ...state,
         listeners: action.payload,
       };
-    case MULTICALL_REMOVE_LISTENERS:
-      return {
-        ...state,
-        listeners: action.payload,
-      };
     case MULTICALL_UPDATE_RESULTS:
       return {
         ...state,
         results: action.payload,
+      };
+    case MULTICALL_CLEAR_STATE:
+      return {
+        ...INITIAL_MULTICALL_STATE,
       };
     default:
       return state;
