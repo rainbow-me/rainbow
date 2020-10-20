@@ -198,7 +198,7 @@ export const handleSignificantDecimals = (
     decimals = Math.min(decimals, buffer);
   }
   decimals = Math.max(decimals, 2);
-  return new BigNumber(value).toFixed(decimals);
+  return new BigNumber(value).toFormat(decimals);
 };
 
 /**
