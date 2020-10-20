@@ -50,13 +50,16 @@ export default function ProfileScreen({ navigation }) {
     }
     return hide;
   }, [hide, isWalletLoading, setComponent]);
+  const accountTransactions = useAccountTransactions(
+    activityListInitialized,
+    isFocused
+  );
   const {
     isLoadingTransactions: isLoading,
     sections,
     transactions,
     transactionsCount,
-  } = useAccountTransactions(activityListInitialized, isFocused);
-
+  } = accountTransactions;
   const { contacts } = useContacts();
   const { pendingRequestCount, requests } = useRequests();
   const { network } = useAccountSettings();
@@ -113,7 +116,6 @@ export default function ProfileScreen({ navigation }) {
           header={
             <ProfileMasthead
               addCashAvailable={addCashAvailable}
-              navigation={navigation}
               onChangeWallet={onChangeWallet}
             />
           }
@@ -121,7 +123,9 @@ export default function ProfileScreen({ navigation }) {
           isLoading={isLoading}
           navigation={navigation}
           network={network}
+          recyclerListView={ios}
           sections={sections}
+          {...accountTransactions}
         />
       )}
     </ProfileScreenPage>
