@@ -78,6 +78,7 @@ const ExchangeNativeField = (
           onFocus={handleFocus}
           placeholder={placeholder}
           ref={ref}
+          style={{ top: 2.5 }}
           testID={nativeAmount ? `${testID}-${nativeAmount}` : testID}
           value={nativeAmount}
         />
