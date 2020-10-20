@@ -14,6 +14,8 @@ const AvatarCircleSize = 65;
 const AvatarCircleView = styled(Flex)`
   ${position.size(AvatarCircleSize)};
   margin-bottom: 16px;
+  justify-content: ${Platform.OS === 'ios' ? 'flex-start' : 'center'};
+  align-items: ${Platform.OS === 'ios' ? 'flex-start' : 'center'};
 `;
 
 const FirstLetter = styled(Text).attrs({
@@ -21,7 +23,7 @@ const FirstLetter = styled(Text).attrs({
   color: colors.white,
   letterSpacing: 2,
   lineHeight: 66,
-  size: 38,
+  size: Platform.OS === 'ios' ? 38 : 30,
   weight: 'semibold',
 })`
   width: 67;

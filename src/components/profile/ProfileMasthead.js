@@ -122,7 +122,7 @@ export default function ProfileMasthead({
             'Choose from Library',
             ...(isAvatarPickerAvailable ? ['Pick an Emoji'] : []),
             ...(accountImage ? ['Remove Photo'] : []),
-            'Cancel', // <-- cancelButtonIndex
+            ...(Platform.OS === 'ios' ? ['Cancel'] : []),
           ];
 
           showActionSheetWithOptions(
