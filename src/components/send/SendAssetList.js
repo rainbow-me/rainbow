@@ -250,7 +250,7 @@ export default class SendAssetList extends React.Component {
       const renderSize =
         familyHeaderHeight + uniqueTokens[index].data.length * familyRowHeight;
       const screenHeight = this.position + this.componentHeight;
-      if (heightBelow + renderSize + 64 > screenHeight) {
+      if (heightBelow + renderSize + rowHeight > screenHeight) {
         if (renderSize < this.componentHeight) {
           setTimeout(() => {
             this.rlv.scrollToOffset(
