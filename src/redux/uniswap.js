@@ -51,7 +51,7 @@ export const uniswapGetAllExchanges = () => async (dispatch, getState) => {
     });
   } catch (error) {
     dispatch({
-      payload: { allTokens: {} },
+      payload: {},
       type: UNISWAP_UPDATE_ALL_TOKENS,
     });
   }
@@ -95,7 +95,6 @@ export const INITIAL_UNISWAP_STATE = {
   allTokens: {},
   favorites: DefaultUniswapFavorites,
   fetchingUniswap: false,
-  isInitialized: false,
   loadingUniswap: false,
   pairs: CURATED_UNISWAP_TOKENS,
 };
@@ -108,7 +107,6 @@ export default (state = INITIAL_UNISWAP_STATE, action) =>
         break;
       case UNISWAP_UPDATE_ALL_TOKENS:
         draft.allTokens = action.payload;
-        draft.isInitialized = true;
         break;
       case UNISWAP_UPDATE_PAIRS:
         draft.pairs = action.payload;

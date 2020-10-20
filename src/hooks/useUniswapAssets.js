@@ -13,7 +13,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { uniswapUpdateFavorites } from '../redux/uniswap';
 
-const uniswapIsInitializedSelector = state => state.uniswap.isInitialized;
 const uniswapFavoritesSelector = state => state.uniswap.favorites;
 const uniswapPairsSelector = state => state.uniswap.pairs;
 const uniswapAllTokensSelector = state => state.uniswap.allTokens;
@@ -32,7 +31,6 @@ const normalizeAssetItems = assetsArray =>
   map(assetsArray, appendAssetWithUniqueId);
 
 const withUniswapAssets = (
-  isInitialized,
   curatedUniswapAssets,
   globalUniswapAssets,
   favorites
@@ -57,7 +55,6 @@ const withUniswapAssets = (
     favorites: normalizeAssetItems(sortedFavorites),
     globalHighLiquidityAssets: normalizeAssetItems(globalHighLiquidityAssets),
     globalLowLiquidityAssets: normalizeAssetItems(globalLowLiquidityAssets),
-    isInitialized,
   };
 };
 
@@ -95,12 +92,7 @@ const getCuratedUniswapAssets = (assets, favorites) => {
 };
 
 const withUniswapAssetsSelector = createSelector(
-  [
-    uniswapIsInitializedSelector,
-    uniswapPairsSelector,
-    uniswapAllTokensSelector,
-    uniswapFavoritesSelector,
-  ],
+  [uniswapPairsSelector, uniswapAllTokensSelector, uniswapFavoritesSelector],
   withUniswapAssets
 );
 
