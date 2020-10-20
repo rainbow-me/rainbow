@@ -273,7 +273,13 @@ export default function CurrencySelectModal() {
           ],
         }}
       >
-        <Modal containerPadding={0} height="100%" overflow="hidden" radius={30}>
+        <Modal
+          containerPadding={0}
+          fullScreenOnAndroid
+          height="100%"
+          overflow="hidden"
+          radius={30}
+        >
           <GestureBlocker type="top" />
           <Column flex={1}>
             <CurrencySelectModalHeader testID="currency-select-header" />
