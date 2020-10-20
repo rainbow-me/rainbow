@@ -6,9 +6,7 @@ import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
 import {
   ChainId,
-  Currency,
   CurrencyAmount,
-  ETHER,
   Pair,
   Percent,
   Token,
@@ -167,21 +165,23 @@ export const estimateSwapGasLimit = async ({
 };
 
 const getSwapType = (
-  tokens: { [field in Field]: Currency },
+  tokens: { [field in Field]: Token },
+  chainId: ChainId,
   isExactIn: boolean
 ): SwapType => {
+  const WETH_FOR_CHAIN_ID = WETH[chainId];
   if (isExactIn) {
-    if (tokens[Field.INPUT] === ETHER) {
+    if (tokens[Field.INPUT].equals(WETH_FOR_CHAIN_ID)) {
       return SwapType.EXACT_ETH_FOR_TOKENS;
-    } else if (tokens[Field.OUTPUT] === ETHER) {
+    } else if (tokens[Field.OUTPUT].equals(WETH_FOR_CHAIN_ID)) {
       return SwapType.EXACT_TOKENS_FOR_ETH;
     } else {
       return SwapType.EXACT_TOKENS_FOR_TOKENS;
     }
   } else {
-    if (tokens[Field.INPUT] === ETHER) {
+    if (tokens[Field.INPUT].equals(WETH_FOR_CHAIN_ID)) {
       return SwapType.ETH_FOR_EXACT_TOKENS;
-    } else if (tokens[Field.OUTPUT] === ETHER) {
+    } else if (tokens[Field.OUTPUT].equals(WETH_FOR_CHAIN_ID)) {
       return SwapType.TOKENS_FOR_EXACT_ETH;
     } else {
       return SwapType.TOKENS_FOR_EXACT_TOKENS;
@@ -228,9 +228,10 @@ const getExecutionDetails = (
 
   const swapType = getSwapType(
     {
-      [Field.INPUT]: trade.inputAmount.currency,
-      [Field.OUTPUT]: trade.outputAmount.currency,
+      [Field.INPUT]: trade.inputAmount.currency as Token,
+      [Field.OUTPUT]: trade.outputAmount.currency as Token,
     },
+    chainId,
     trade.tradeType === TradeType.EXACT_INPUT
   );
 
