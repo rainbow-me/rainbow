@@ -56,6 +56,7 @@ export default function ContextMenu({
         <ButtonPressAnimation
           activeOpacity={activeOpacity}
           onPress={handleShowActionSheet}
+          radiusAndroid={20}
         >
           {children || <ContextButton {...omit(props, ActionSheetProps)} />}
         </ButtonPressAnimation>

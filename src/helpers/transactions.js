@@ -1,6 +1,8 @@
 import { format } from 'date-fns';
 import { get, groupBy, isEmpty, map, toLower } from 'lodash';
+import { createElement } from 'react';
 import { createSelector } from 'reselect';
+import { TransactionCoinRow } from '../components/coin-row';
 import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 import TransactionTypes from '../helpers/transactionTypes';
 
@@ -12,6 +14,11 @@ const initializedSelector = state => state.initialized;
 
 export const buildTransactionUniqueIdentifier = ({ hash, displayDetails }) =>
   hash || get(displayDetails, 'timestampInMs');
+
+const renderItemElement = renderItem =>
+  function InternarSectionListRender(renderItemProps) {
+    return createElement(renderItem, renderItemProps);
+  };
 
 const calculateTimestampOfToday = () => {
   var d = new Date();
@@ -118,6 +125,7 @@ const buildTransactionsSections = (
     );
     sectionedTransactions = Object.keys(transactionsByDate).map(section => ({
       data: transactionsByDate[section],
+      renderItem: renderItemElement(TransactionCoinRow),
       title: section,
     }));
   }

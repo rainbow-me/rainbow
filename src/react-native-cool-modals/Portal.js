@@ -12,7 +12,7 @@ import {
   View,
 } from 'react-native';
 
-export const NativePortalContext = createContext();
+const NativePortalContext = createContext();
 
 export function usePortal() {
   return useContext(NativePortalContext);
