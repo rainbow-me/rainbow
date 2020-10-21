@@ -171,7 +171,7 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
 
     const toggleGestureEnabled = useCallback(
       dismissable => {
-        setOptions({ dismissable });
+        setOptions({ dismissable, gestureEnabled: dismissable });
       },
       [setOptions]
     );
