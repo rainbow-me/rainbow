@@ -1,7 +1,7 @@
 import AnimateNumber from '@bankify/react-native-animate-number';
 import { get, isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { LayoutAnimation } from 'react-native';
+import { Keyboard, LayoutAnimation } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import styled from 'styled-components/primitives';
@@ -86,6 +86,10 @@ const getActionLabel = type => {
   }
 };
 
+let listener;
+
+Keyboard.addListener('keyboardDidHide', () => listener?.());
+
 const GasSpeedButton = ({
   dontBlur,
   onCustomGasBlur,
@@ -107,6 +111,17 @@ const GasSpeedButton = ({
 
   const gasPrice = get(selectedGasPrice, 'txFee.native.value.amount');
   const customGasPriceTimeEstimateHandler = useRef(null);
+  useEffect(() => {
+    if (android) {
+      listener = () => {
+        inputRef.current?.blur();
+      };
+    }
+
+    return () => {
+      listener = undefined;
+    };
+  }, []);
 
   const [customGasPriceInput, setCustomGasPriceInput] = useState(0);
   const [estimatedTimeValue, setEstimatedTimeValue] = useState(0);
