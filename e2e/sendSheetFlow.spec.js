@@ -43,7 +43,7 @@ describe('Send Sheet Interaction Flow', () => {
   });
 
   it('Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
-    await Helpers.delay(5000);
+    await Helpers.delay(2000);
     await Helpers.tap('wallet-info-submit-button');
     await Helpers.delay(3000);
     await Helpers.checkIfVisible('wallet-screen');
