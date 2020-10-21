@@ -26,6 +26,10 @@ const AddressAbbreviation = styled(TruncatedAddress).attrs({
   width: 100%;
 `;
 
+const Spacer = styled.View`
+  height: 19;
+`;
+
 const SubmitButton = styled(Button).attrs(({ value }) => ({
   backgroundColor: value.length > 0 ? colors.appleBlue : undefined,
   disabled: !value.length > 0,
@@ -58,6 +62,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
       onAddOrUpdateContacts(address, value, color, network);
       goBack();
     }
+    akd();
   }, [
     address,
     color,
@@ -68,16 +73,15 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
     value,
   ]);
 
-  const handleDeleteContact = useCallback(
-    () =>
-      showDeleteContactActionSheet({
-        address,
-        nickname: value,
-        onDelete: goBack,
-        removeContact: onRemoveContact,
-      }),
-    [address, goBack, onRemoveContact, value]
-  );
+  const handleDeleteContact = useCallback(() => {
+    showDeleteContactActionSheet({
+      address,
+      nickname: value,
+      onDelete: goBack,
+      removeContact: onRemoveContact,
+    });
+    akd();
+  }, [address, goBack, onRemoveContact, value]);
 
   const handleTriggerFocusInput = useCallback(() => inputRef.current?.focus(), [
     inputRef,
@@ -88,11 +92,13 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
       <Centered css={padding(24, 25)} direction="column">
         <ProfileAvatarButton
           color={color}
-          marginBottom={19}
+          marginBottom={0}
+          radiusAndroid={32}
           setColor={setColor}
           testID="contact-profile-avatar-button"
           value={value}
         />
+        <Spacer />
         <ProfileNameInput
           onChange={setValue}
           onSubmitEditing={handleAddContact}
@@ -123,7 +129,14 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
         </SubmitButton>
         <ButtonPressAnimation
           marginTop={11}
-          onPress={contact ? handleDeleteContact : goBack}
+          onPress={
+            contact
+              ? handleDeleteContact
+              : () => {
+                  goBack();
+                  akd();
+                }
+          }
         >
           <Centered
             backgroundColor={colors.white}

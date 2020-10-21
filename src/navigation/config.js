@@ -168,6 +168,14 @@ export const defaultScreenStackOptions = {
   gestureEnabled: true,
 };
 
+export const closeKeyboardOnClose = {
+  listeners: {
+    transitionEnd: ({ data: { closing } }) => {
+      closing && akd();
+    },
+  },
+};
+
 export const nativeStackDefaultConfig = {
   allowsDragToDismiss: true,
   backgroundColor: '#0A0A0A',

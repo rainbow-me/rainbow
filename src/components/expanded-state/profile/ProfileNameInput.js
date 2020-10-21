@@ -12,7 +12,7 @@ const NameInput = styled(Input).attrs({
   returnKeyType: 'done',
   size: 'big',
   spellCheck: false,
-  weight: 'bold',
+  weight: android ? 'normal' : 'bold',
 })`
   width: 100%;
 `;

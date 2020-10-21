@@ -42,6 +42,7 @@ export default function ExchangeInputField({
       <ExchangeField
         address={inputCurrencyAddress}
         amount={inputAmount}
+        autoFocus={android}
         disableCurrencySelection={disableInputCurrencySelection}
         onFocus={onFocus}
         onPressSelectCurrency={onPressSelectInputCurrency}
@@ -52,7 +53,7 @@ export default function ExchangeInputField({
       />
       <NativeFieldRow>
         <ExchangeNativeField
-          editable={!!inputCurrencySymbol}
+          editable
           height={BottomRowHeight}
           nativeAmount={nativeAmount}
           nativeCurrency={nativeCurrency}

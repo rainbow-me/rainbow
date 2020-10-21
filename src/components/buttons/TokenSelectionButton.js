@@ -38,9 +38,7 @@ const Button = styled(ButtonPressAnimation).attrs({
   radiusWrapperStyle: {
     marginHorizontal: 19,
   },
-})`
-  background-color: red;
-`;
+})``;
 
 const TokenSelectionButton = ({
   borderRadius,

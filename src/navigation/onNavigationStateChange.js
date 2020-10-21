@@ -1,6 +1,8 @@
 import analytics from '@segment/analytics-react-native';
 import { get } from 'lodash';
 import { StatusBar } from 'react-native';
+// eslint-disable-next-line import/default
+import AndroidKeyboardAdjust from 'react-native-android-keyboard-adjust';
 import { sentryUtils } from '../utils';
 import Routes from './routesNames';
 import { Navigation } from './index';
@@ -62,6 +64,16 @@ export function onNavigationStateChange(currentState) {
           routeName === Routes.RECEIVE_MODAL ? 'light-content' : 'dark-content',
           true
         );
+      }
+
+      if (
+        routeName === Routes.MAIN_EXCHANGE_SCREEN ||
+        routeName === Routes.SAVINGS_WITHDRAW_MODAL ||
+        routeName === Routes.SWAP_DETAILS_SCREEN
+      ) {
+        AndroidKeyboardAdjust.setAdjustPan();
+      } else {
+        AndroidKeyboardAdjust.setAdjustResize();
       }
 
       if ([prevRouteName, routeName].includes(Routes.QR_SCANNER_SCREEN)) {

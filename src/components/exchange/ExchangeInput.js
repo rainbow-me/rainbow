@@ -11,6 +11,7 @@ const Input = styled(TextInputMask).attrs({
   selectionColor: colors.appleBlue,
 })`
   ${buildTextStyles};
+  ${android ? 'font-weight: normal' : ''};
   flex: 1;
 `;
 
