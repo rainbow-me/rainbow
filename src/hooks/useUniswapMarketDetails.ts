@@ -1,6 +1,8 @@
+import { Trade } from '@uniswap/sdk';
 import { get, isEmpty } from 'lodash';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { calculateTradeDetails } from '../handlers/uniswap';
+import { RefObject, useCallback, useEffect, useMemo, useState } from 'react';
+import { TextInput } from 'react-native';
+import { calculateTradeDetails, SwapCurrency } from '../handlers/uniswap';
 import {
   convertAmountFromNativeValue,
   greaterThanOrEqualTo,
@@ -32,9 +34,42 @@ export default function useUniswapMarketDetails({
   updateExtraTradeDetails,
   updateInputAmount,
   updateOutputAmount,
+}: {
+  defaultInputAddress: string;
+  extraTradeDetails: { outputPriceValue: string };
+  inputAmount: string;
+  inputAsExactAmount: boolean;
+  inputCurrency: SwapCurrency;
+  inputFieldRef: RefObject<TextInput>;
+  isDeposit: boolean;
+  isWithdrawal: boolean;
+  maxInputBalance: string;
+  nativeCurrency: string;
+  outputAmount: string;
+  outputCurrency: SwapCurrency;
+  outputFieldRef: RefObject<TextInput>;
+  setIsSufficientBalance: (isSufficientBalance: boolean) => void;
+  setSlippage: (slippage: number) => void;
+  updateExtraTradeDetails: (extraTradeDetails: {
+    inputCurrency: SwapCurrency;
+    nativeCurrency: string;
+    outputCurrency: SwapCurrency;
+    tradeDetails: Trade | null;
+  }) => void;
+  updateInputAmount: (
+    newInputAmount: string | undefined,
+    newAmountDisplay: string | undefined,
+    newInputAsExactAmount?: boolean,
+    newIsMax?: boolean
+  ) => void;
+  updateOutputAmount: (
+    newOutputAmount: string | null,
+    newAmountDisplay: string | null,
+    newInputAsExactAmount?: boolean
+  ) => void;
 }) {
   const [isSufficientLiquidity, setIsSufficientLiquidity] = useState(true);
-  const [tradeDetails, setTradeDetails] = useState(null);
+  const [tradeDetails, setTradeDetails] = useState<Trade | null>(null);
   const { chainId } = useAccountSettings();
 
   const { allPairs, doneLoadingResults } = useUniswapPairs(
@@ -99,7 +134,8 @@ export default function useUniswapMarketDetails({
         updateInputAmount(undefined, undefined, false);
         setIsSufficientBalance(true);
       } else {
-        const rawUpdatedInputAmount = tradeDetails?.inputAmount?.toExact();
+        if (!tradeDetails) return;
+        const rawUpdatedInputAmount = tradeDetails.inputAmount.toExact();
 
         const updatedInputAmountDisplay = updatePrecisionToDisplay(
           rawUpdatedInputAmount,
@@ -139,7 +175,8 @@ export default function useUniswapMarketDetails({
       ) {
         updateOutputAmount(null, null, true);
       } else {
-        const rawUpdatedOutputAmount = tradeDetails?.outputAmount?.toExact();
+        if (!tradeDetails) return;
+        const rawUpdatedOutputAmount = tradeDetails.outputAmount.toExact();
         if (!isZero(rawUpdatedOutputAmount)) {
           const { outputPriceValue } = extraTradeDetails;
           const updatedOutputAmountDisplay = updatePrecisionToDisplay(
@@ -252,7 +289,7 @@ export default function useUniswapMarketDetails({
     const priceImpact = tradeDetails?.priceImpact
       ? tradeDetails?.priceImpact?.toFixed(2).toString()
       : 0;
-    const slippage = priceImpact * 100;
+    const slippage = Number(priceImpact) * 100;
     setSlippage(slippage);
   }, [
     isMissingAmounts,
