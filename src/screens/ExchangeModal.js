@@ -65,7 +65,12 @@ export default function ExchangeModal({
   type,
   underlyingPrice,
 }) {
-  const { navigate, setParams, dangerouslyGetParent } = useNavigation();
+  const {
+    navigate,
+    setParams,
+    dangerouslyGetParent,
+    addListener,
+  } = useNavigation();
   const {
     params: { tabTransitionPosition },
   } = useRoute();
@@ -171,14 +176,19 @@ export default function ExchangeModal({
       Keyboard.dismiss();
       isDismissing.current = true;
     };
-    const unsubscribe = dangerouslyGetParent()
-      ?.dangerouslyGetParent()
-      ?.addListener('transitionEnd', ({ data: { closing } }) => {
+    const listener = [
+      'transitionEnd',
+      ({ data: { closing } }) => {
         if (!closing && isDismissing.current) {
           isDismissing.current = false;
           lastFocusedInputHandle?.current?.focus();
         }
-      });
+      },
+    ];
+    const unsubscribe =
+      dangerouslyGetParent()
+        ?.dangerouslyGetParent()
+        ?.addListener(...listener) || addListener(...listener);
     return () => {
       unsubscribe?.();
       dismissingScreenListener.current = undefined;
