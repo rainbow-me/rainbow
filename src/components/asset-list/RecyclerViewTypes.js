@@ -8,6 +8,7 @@ import {
   SmallBalancesWrapper,
 } from '../coin-divider';
 import { CoinRowHeight } from '../coin-row';
+import { SavingsCoinRowHeight } from '../coin-row/SavingsCoinRow';
 import { FloatingActionButtonSize } from '../fab';
 import { ListFooter } from '../list';
 import PoolsListWrapper from '../pools/PoolsListWrapper';
@@ -16,7 +17,28 @@ import { TokenFamilyHeaderHeight } from '../token-family';
 import { UniqueTokenRow } from '../unique-token';
 import AssetListHeader, { AssetListHeaderHeight } from './AssetListHeader';
 
-const firstCoinRowMarginTop = 6;
+export const firstCoinRowMarginTop = 6;
+const lastCoinRowAdditionalHeight = 1;
+
+const openSmallBalancesAdditionalHeight = 15;
+const closedSmallBalancesAdditionalHeight = 13;
+
+const savingsOpenAdditionalHeight = 6;
+const savingsClosedAdditionalHeight = -5;
+const savingsLastOpenAdditionalHeight = -4;
+const savingsLastClosedAdditionalHeight = -10;
+
+const poolsOpenAdditionalHeight = -12;
+const poolsClosedAdditionalHeight = -15;
+const poolsLastOpenAdditionalHeight = -22;
+const poolsLastClosedAdditionalHeight = -20;
+
+const firstUniqueTokenMarginTop = 4;
+const extraSpaceForDropShadow = 19;
+
+const amountOfImagesWithForcedPrioritizeLoading = 9;
+const editModeAdditionalHeight = 100;
+
 let lastRenderList = [];
 
 export const ViewTypes = {
@@ -34,7 +56,9 @@ export const ViewTypes = {
     calculateHeight: ({ isFirst, isLast, areSmallCollectibles }) =>
       CoinRowHeight +
       (isFirst ? firstCoinRowMarginTop : 0) +
-      (!isFirst && isLast && !areSmallCollectibles ? ListFooter.height + 1 : 0),
+      (!isFirst && isLast && !areSmallCollectibles
+        ? ListFooter.height + lastCoinRowAdditionalHeight
+        : 0),
     index: 1,
     renderComponent: ({ type, data }) => {
       const { item = {}, renderItem } = data;
@@ -63,13 +87,14 @@ export const ViewTypes = {
     },
     visibleDuringCoinEdit: true,
   },
+
   COIN_SMALL_BALANCES: {
     calculateHeight: ({ isOpen, smallBalancesLength, isCoinListEdited }) =>
       isOpen
         ? smallBalancesLength * CoinRowHeight +
-          15 +
-          (isCoinListEdited ? 100 : 0)
-        : 13,
+          openSmallBalancesAdditionalHeight +
+          (isCoinListEdited ? editModeAdditionalHeight : 0)
+        : closedSmallBalancesAdditionalHeight,
     index: 3,
     renderComponent: ({ data, smallBalancedChanged }) => {
       const { item = {}, renderItem } = data;
@@ -102,10 +127,14 @@ export const ViewTypes = {
     calculateHeight: ({ isOpen, isLast, amountOfRows }) =>
       isOpen
         ? TokenFamilyHeaderHeight +
-          (isLast ? ListFooter.height : 10) +
-          61 * amountOfRows -
-          4
-        : TokenFamilyHeaderHeight + (isLast ? ListFooter.height : 5) - 10,
+          (isLast
+            ? ListFooter.height + savingsLastOpenAdditionalHeight
+            : savingsOpenAdditionalHeight) +
+          SavingsCoinRowHeight * amountOfRows
+        : TokenFamilyHeaderHeight +
+          (isLast
+            ? ListFooter.height + savingsLastClosedAdditionalHeight
+            : savingsClosedAdditionalHeight),
     index: 4,
     renderComponent: ({ data }) => {
       const { item = {} } = data;
@@ -119,10 +148,14 @@ export const ViewTypes = {
     calculateHeight: ({ isOpen, isLast, amountOfRows }) =>
       isOpen
         ? TokenFamilyHeaderHeight +
-          (isLast ? ListFooter.height : 10) +
-          CoinRowHeight * amountOfRows -
-          22
-        : TokenFamilyHeaderHeight + (isLast ? ListFooter.height : 5) - 20,
+          (isLast
+            ? ListFooter.height + poolsLastOpenAdditionalHeight
+            : poolsOpenAdditionalHeight) +
+          CoinRowHeight * amountOfRows
+        : TokenFamilyHeaderHeight +
+          (isLast
+            ? ListFooter.height + poolsLastClosedAdditionalHeight
+            : poolsClosedAdditionalHeight),
     index: 5,
     renderComponent: ({ data, isCoinListEdited }) => {
       return <PoolsListWrapper {...data} isCoinListEdited={isCoinListEdited} />;
@@ -132,10 +165,9 @@ export const ViewTypes = {
   UNIQUE_TOKEN_ROW: {
     calculateHeight: ({ amountOfRows, isFirst, isHeader, isOpen }) => {
       const SectionHeaderHeight = isHeader ? TokenFamilyHeaderHeight : 0;
-      const firstRowExtraTopPadding = isFirst ? 4 : 0;
+      const firstRowExtraTopPadding = isFirst ? firstUniqueTokenMarginTop : 0;
       const heightOfRows = amountOfRows * UniqueTokenRow.cardSize;
       const heightOfRowMargins = UniqueTokenRow.cardMargin * (amountOfRows - 1);
-      const extraSpaceForDropShadow = 19;
 
       const height =
         SectionHeaderHeight +
@@ -157,7 +189,9 @@ export const ViewTypes = {
         isHeader: type.isHeader,
         item: item.tokens,
         shouldPrioritizeImageLoading:
-          index < get(sections, '[0].data.length', 0) + 9,
+          index <
+          get(sections, '[0].data.length', 0) +
+            amountOfImagesWithForcedPrioritizeLoading,
         uniqueId: item.uniqueId,
       });
     },

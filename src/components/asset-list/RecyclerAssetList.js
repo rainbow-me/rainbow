@@ -26,16 +26,19 @@ import {
 import { CoinDivider } from '../coin-divider';
 import { CoinRowHeight } from '../coin-row';
 import AssetListHeader, { AssetListHeaderHeight } from './AssetListHeader';
-import { ViewTypes } from './RecyclerViewTypes';
+import { firstCoinRowMarginTop, ViewTypes } from './RecyclerViewTypes';
 import { colors } from '@rainbow-me/styles';
 
 const NOOP = () => undefined;
 let globalDeviceDimensions = 0;
 
 class LayoutItemAnimator extends BaseItemAnimator {
-  constructor(rlv) {
+  constructor(rlv, paddingBottom) {
     super();
     this.rlv = rlv;
+    this.paddingBottom = ViewTypes.FOOTER.calculateHeight({
+      paddingBottom: paddingBottom || 0,
+    });
   }
 
   animateDidMount = NOOP;
@@ -46,7 +49,9 @@ class LayoutItemAnimator extends BaseItemAnimator {
     if (
       this.rlv &&
       this.rlv.getContentDimension().height <
-        this.rlv.getCurrentScrollOffset() + globalDeviceDimensions + 46 &&
+        this.rlv.getCurrentScrollOffset() +
+          globalDeviceDimensions +
+          this.paddingBottom &&
       this.rlv.getCurrentScrollOffset() > 0
     ) {
       LayoutAnimation.configureNext({
@@ -456,7 +461,7 @@ class RecyclerAssetList extends Component {
   }
 
   componentDidMount() {
-    this.animator = new LayoutItemAnimator(this.rlv);
+    this.animator = new LayoutItemAnimator(this.rlv, this.props.paddingBottom);
     this.isCancelled = false;
   }
 
@@ -548,7 +553,11 @@ class RecyclerAssetList extends Component {
     // Auto-scroll to end of the list if something was closed/disappeared 👇
     if (
       this.rlv &&
-      this.rlv.getContentDimension().height < bottomHorizonOfScreen + 46 &&
+      this.rlv.getContentDimension().height <
+        bottomHorizonOfScreen +
+          ViewTypes.FOOTER.calculateHeight({
+            paddingBottom: this.props.paddingBottom || 0,
+          }) &&
       this.rlv.getCurrentScrollOffset() > 0 &&
       (!this.props.isCoinListEdited ||
         (!prevProps.isCoinListEdited && this.props.isCoinListEdited))
@@ -592,7 +601,8 @@ class RecyclerAssetList extends Component {
   renderList = [];
 
   checkEditStickyHeader(offsetY) {
-    const offsetHeight = CoinRowHeight * (this.coinDividerIndex - 1) + 5;
+    const offsetHeight =
+      CoinRowHeight * (this.coinDividerIndex - 1) + firstCoinRowMarginTop;
     if (this.props.isCoinListEdited && offsetY > offsetHeight) {
       this.setState({ showCoinListEditor: true });
     } else if (
