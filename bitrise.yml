@@ -76,7 +76,7 @@ workflows:
                 yarn ganache >> /dev/null 2>&1 & detox test --configuration ios.sim.release -l verbose
                 kill $(lsof -t -i:7545)
               else
-                echo "First Test Run Passed" ;
+                echo "First Test Run Passed"
               fi
         title: Detox - Re-run tests if needed
         is_always_run: true
@@ -256,7 +256,6 @@ workflows:
             echo "DEV_SEEDS=\"$DEV_SEEDS\"" >> .env
             echo "DEV_PKEY=\$DEV_PKEY" >> .env
             echo "TEST_SEEDS=\"$TEST_SEEDS\"" >> .env
-
             echo "IS_TESTING=$IS_TESTING" >> .env
             echo "WYRE_TOKEN=$WYRE_TOKEN" >> .env
             echo "WYRE_TOKEN_TEST=$WYRE_TOKEN_TEST" >> .env
