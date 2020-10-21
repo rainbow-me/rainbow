@@ -176,24 +176,19 @@ export default function ExchangeModal({
       Keyboard.dismiss();
       isDismissing.current = true;
     };
-    const listener = [
-      'transitionEnd',
-      ({ data: { closing } }) => {
-        if (!closing && isDismissing.current) {
-          isDismissing.current = false;
-          lastFocusedInputHandle?.current?.focus();
-        }
-      },
-    ];
-    const unsubscribe =
-      dangerouslyGetParent()
-        ?.dangerouslyGetParent()
-        ?.addListener(...listener) || addListener(...listener);
+    const unsubscribe = (
+      dangerouslyGetParent()?.dangerouslyGetParent()?.addListener || addListener
+    )('transitionEnd', ({ data: { closing } }) => {
+      if (!closing && isDismissing.current) {
+        isDismissing.current = false;
+        lastFocusedInputHandle?.current?.focus();
+      }
+    });
     return () => {
-      unsubscribe?.();
+      unsubscribe();
       dismissingScreenListener.current = undefined;
     };
-  }, [dangerouslyGetParent, lastFocusedInputHandle]);
+  }, [addListener, dangerouslyGetParent, lastFocusedInputHandle]);
 
   const handleCustomGasBlur = useCallback(() => {
     lastFocusedInputHandle?.current?.focus();
