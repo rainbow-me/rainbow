@@ -302,6 +302,7 @@ export const exchangePreset = {
   cardStyleInterpolator: exchangeStyleInterpolator,
   cardTransparent: true,
   gestureDirection: 'vertical',
+  gestureEnabled: true,
   gestureResponseDistance,
   transitionSpec: { close: closeSpec, open: sheetOpenSpec },
 };
@@ -357,6 +358,7 @@ export const exchangeModalPreset = {
       backgroundColor: 'transparent',
     },
   }),
+  gestureEnabled: true,
   gestureResponseDistance,
 };
 

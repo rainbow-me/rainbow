@@ -6,6 +6,7 @@ import FloatingEmojisTapHandler from './FloatingEmojisTapHandler';
 export default function FloatingEmojisTapper({
   activeScale = 1.01,
   children,
+  radiusAndroid,
   ...props
 }) {
   return (
@@ -18,7 +19,10 @@ export default function FloatingEmojisTapper({
     >
       {({ onNewEmoji }) => (
         <FloatingEmojisTapHandler onNewEmoji={onNewEmoji}>
-          <ButtonPressAnimation scaleTo={activeScale}>
+          <ButtonPressAnimation
+            radiusAndroid={radiusAndroid}
+            scaleTo={activeScale}
+          >
             {children}
           </ButtonPressAnimation>
         </FloatingEmojisTapHandler>

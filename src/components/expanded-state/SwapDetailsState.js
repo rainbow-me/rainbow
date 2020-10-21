@@ -42,9 +42,13 @@ const SwapDetailsState = ({
 
   return (
     <KeyboardFixedOpenLayout>
-      <TouchableBackdrop onPress={goBack} />
+      {ios && <TouchableBackdrop onPress={goBack} />}
       <FloatingPanels maxWidth={275} width={275}>
-        <FloatingEmojisTapper emojis={emojis} opacity={FloatingEmojisOpacity}>
+        <FloatingEmojisTapper
+          emojis={emojis}
+          opacity={FloatingEmojisOpacity}
+          radiusAndroid={20}
+        >
           <AssetPanel
             overflow="visible"
             radius={20}

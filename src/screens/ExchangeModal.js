@@ -26,6 +26,7 @@ import { FloatingPanel, FloatingPanels } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
 import ExchangeModalTypes from '../helpers/exchangeModalTypes';
+import isKeyboardOpen from '../helpers/isKeybaordOpen';
 import { loadWallet } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import { executeRap } from '../raps/common';
@@ -131,7 +132,10 @@ export default function ExchangeModal({
     lastFocusedInputHandle,
     nativeFieldRef,
     outputFieldRef,
-  } = useSwapInputRefs({ inputCurrency, outputCurrency });
+  } = useSwapInputRefs({
+    inputCurrency,
+    outputCurrency,
+  });
 
   const {
     inputAmount,
@@ -481,10 +485,12 @@ export default function ExchangeModal({
   ]);
 
   const navigateToSwapDetailsModal = useCallback(() => {
+    akd();
+    const lastFocusedInputHandleTemporary = lastFocusedInputHandle.current;
+    android && (lastFocusedInputHandle.current = null);
     inputFieldRef?.current?.blur();
     outputFieldRef?.current?.blur();
     nativeFieldRef?.current?.blur();
-    akd();
     const internalNavigate = () => {
       android && Keyboard.removeListener('keyboardDidHide', internalNavigate);
       setParams({ focused: false });
@@ -492,7 +498,11 @@ export default function ExchangeModal({
         ...extraTradeDetails,
         inputCurrencySymbol: get(inputCurrency, 'symbol'),
         outputCurrencySymbol: get(outputCurrency, 'symbol'),
-        restoreFocusOnSwapModal: () => setParams({ focused: true }),
+        restoreFocusOnSwapModal: () => {
+          android &&
+            (lastFocusedInputHandle.current = lastFocusedInputHandleTemporary);
+          setParams({ focused: true });
+        },
         type: 'swap_details',
       });
       analytics.track('Opened Swap Details modal', {
@@ -504,7 +514,7 @@ export default function ExchangeModal({
         type,
       });
     };
-    ios
+    ios || !isKeyboardOpen()
       ? internalNavigate()
       : Keyboard.addListener('keyboardDidHide', internalNavigate);
   }, [
@@ -512,6 +522,7 @@ export default function ExchangeModal({
     extraTradeDetails,
     inputCurrency,
     inputFieldRef,
+    lastFocusedInputHandle,
     nativeFieldRef,
     navigate,
     outputCurrency,
