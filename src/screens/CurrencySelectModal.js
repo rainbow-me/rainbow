@@ -220,8 +220,9 @@ export default function CurrencySelectModal() {
   useEffect(() => {
     // on new focus state
     if (isFocused !== prevIsFocused) {
+      android && toggleGestureEnabled(!isFocused);
       startInteraction(() => {
-        toggleGestureEnabled(!isFocused);
+        ios && toggleGestureEnabled(!isFocused);
       });
     }
 

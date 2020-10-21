@@ -1,3 +1,4 @@
+import { useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useEffect, useMemo } from 'react';
 import { useNavigation } from '../../navigation/Navigation';
 import { swapDetailsTransitionPosition } from '../../navigation/effects';
@@ -23,6 +24,14 @@ const SwapDetailsState = ({
 }) => {
   const { goBack } = useNavigation();
   useEffect(() => () => restoreFocusOnSwapModal(), [restoreFocusOnSwapModal]);
+  const {
+    params: { toggleGestureEnabled },
+  } = useRoute();
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    android && toggleGestureEnabled(!isFocused);
+  }, [toggleGestureEnabled, isFocused]);
 
   const emojis = useMemo(() => {
     const symbols = [inputCurrencySymbol, outputCurrencySymbol];

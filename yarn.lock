@@ -10162,6 +10162,11 @@ react-native-aes-crypto@brunobar79/react-native-aes#27d52ea6c2ff8470388b20993e03
   version "2.0.0"
   resolved "https://codeload.github.com/brunobar79/react-native-aes/tar.gz/27d52ea6c2ff8470388b20993e0357ab07ad17e3"
 
+react-native-android-keyboard-adjust@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/react-native-android-keyboard-adjust/-/react-native-android-keyboard-adjust-1.2.0.tgz#7988b1258482c08548ce972401b2ae03a674fcb4"
+  integrity sha512-Q280bmf0zXnzLbHU9DcVoKZSKihd0s3hltz2kIUCJ5Q9EhLVR/pjgZ3Bwd1VgrHxQPnduHXdCp0432msklRMow==
+
 react-native-background-timer@^2.2.0:
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/react-native-background-timer/-/react-native-background-timer-2.3.1.tgz#83044a4572c62f5b99e929057b7bda5596b033ae"

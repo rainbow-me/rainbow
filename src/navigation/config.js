@@ -169,10 +169,10 @@ export const defaultScreenStackOptions = {
 };
 
 export const closeKeyboardOnClose = {
-  transitionEnd: ({ data: { closing } }) => {
-    if (closing) {
-      akd();
-    }
+  listeners: {
+    transitionEnd: ({ data: { closing } }) => {
+      closing && akd();
+    },
   },
 };
 

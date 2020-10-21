@@ -6,10 +6,13 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
+import { Keyboard } from 'react-native';
 import Animated, { Extrapolate } from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
+import { dismissingScreenListener } from '../../shim';
 import { interpolate } from '../components/animations';
 import {
   ConfirmExchangeButton,
@@ -61,7 +64,7 @@ export default function ExchangeModal({
   type,
   underlyingPrice,
 }) {
-  const { navigate, setParams } = useNavigation();
+  const { navigate, setParams, dangerouslyGetParent } = useNavigation();
   const {
     params: { tabTransitionPosition },
   } = useRoute();
@@ -154,6 +157,29 @@ export default function ExchangeModal({
     supplyBalanceUnderlying,
     type,
   });
+
+  const isDismissing = useRef(false);
+  useEffect(() => {
+    if (ios) {
+      return;
+    }
+    dismissingScreenListener.current = () => {
+      Keyboard.dismiss();
+      isDismissing.current = true;
+    };
+    const unsubscribe = dangerouslyGetParent()
+      .dangerouslyGetParent()
+      .addListener('transitionEnd', ({ data: { closing } }) => {
+        if (!closing && isDismissing.current) {
+          isDismissing.current = false;
+          lastFocusedInputHandle?.current?.focus();
+        }
+      });
+    return () => {
+      unsubscribe();
+      dismissingScreenListener.current = undefined;
+    };
+  }, [dangerouslyGetParent, lastFocusedInputHandle]);
 
   const handleCustomGasBlur = useCallback(() => {
     lastFocusedInputHandle?.current?.focus();
@@ -458,22 +484,29 @@ export default function ExchangeModal({
     inputFieldRef?.current?.blur();
     outputFieldRef?.current?.blur();
     nativeFieldRef?.current?.blur();
-    setParams({ focused: false });
-    navigate(Routes.SWAP_DETAILS_SCREEN, {
-      ...extraTradeDetails,
-      inputCurrencySymbol: get(inputCurrency, 'symbol'),
-      outputCurrencySymbol: get(outputCurrency, 'symbol'),
-      restoreFocusOnSwapModal: () => setParams({ focused: true }),
-      type: 'swap_details',
-    });
-    analytics.track('Opened Swap Details modal', {
-      category,
-      exchangeAddress: get(outputCurrency, 'exchangeAddress', ''),
-      name: get(outputCurrency, 'name', ''),
-      symbol: get(outputCurrency, 'symbol', ''),
-      tokenAddress: get(outputCurrency, 'address', ''),
-      type,
-    });
+    akd();
+    const internalNavigate = () => {
+      android && Keyboard.removeListener('keyboardDidHide', internalNavigate);
+      setParams({ focused: false });
+      navigate(Routes.SWAP_DETAILS_SCREEN, {
+        ...extraTradeDetails,
+        inputCurrencySymbol: get(inputCurrency, 'symbol'),
+        outputCurrencySymbol: get(outputCurrency, 'symbol'),
+        restoreFocusOnSwapModal: () => setParams({ focused: true }),
+        type: 'swap_details',
+      });
+      analytics.track('Opened Swap Details modal', {
+        category,
+        exchangeAddress: get(outputCurrency, 'exchangeAddress', ''),
+        name: get(outputCurrency, 'name', ''),
+        symbol: get(outputCurrency, 'symbol', ''),
+        tokenAddress: get(outputCurrency, 'address', ''),
+        type,
+      });
+    };
+    ios
+      ? internalNavigate()
+      : Keyboard.addListener('keyboardDidHide', internalNavigate);
   }, [
     category,
     extraTradeDetails,
