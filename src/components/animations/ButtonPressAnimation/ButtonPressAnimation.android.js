@@ -43,6 +43,7 @@ export default function ButtonPressAnimation({
         onPress={onPress}
         onPressStart={onPressStart}
         style={style}
+        {...wrapperProps}
       >
         {children}
       </TouchableOpacity>

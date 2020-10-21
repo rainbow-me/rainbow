@@ -46,6 +46,15 @@ Object.defineProperty(global, 'ios', {
   },
 });
 
+Object.defineProperty(global, 'akd', {
+  get: () => () => {
+    android && ReactNative.Keyboard.dismiss();
+  },
+  set: () => {
+    throw new Error('Trying to override internal Rainbow var');
+  },
+});
+
 const SHORTEN_PROP_TYPES_ERROR = true;
 
 if (SHORTEN_PROP_TYPES_ERROR) {
@@ -78,6 +87,10 @@ if (typeof process === 'undefined') {
     }
   }
 }
+
+export const dismissingScreenListener = { current: undefined };
+
+global.__rainbowDismissScreen = () => dismissingScreenListener.current?.();
 
 process.browser = false;
 if (typeof Buffer === 'undefined') global.Buffer = require('buffer').Buffer;

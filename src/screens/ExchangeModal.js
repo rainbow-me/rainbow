@@ -6,10 +6,13 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
+import { Keyboard } from 'react-native';
 import Animated, { Extrapolate } from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
+import { dismissingScreenListener } from '../../shim';
 import { interpolate } from '../components/animations';
 import {
   ConfirmExchangeButton,
@@ -23,6 +26,7 @@ import { FloatingPanel, FloatingPanels } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
 import ExchangeModalTypes from '../helpers/exchangeModalTypes';
+import isKeyboardOpen from '../helpers/isKeybaordOpen';
 import { loadWallet } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import { executeRap } from '../raps/common';
@@ -47,6 +51,7 @@ import { backgroundTask, isNewValueForPath } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const AnimatedFloatingPanels = Animated.createAnimatedComponent(FloatingPanels);
+const Wrapper = ios ? KeyboardFixedOpenLayout : Fragment;
 
 export default function ExchangeModal({
   createRap,
@@ -60,7 +65,12 @@ export default function ExchangeModal({
   type,
   underlyingPrice,
 }) {
-  const { navigate, setParams } = useNavigation();
+  const {
+    navigate,
+    setParams,
+    dangerouslyGetParent,
+    addListener,
+  } = useNavigation();
   const {
     params: { tabTransitionPosition },
   } = useRoute();
@@ -127,7 +137,10 @@ export default function ExchangeModal({
     lastFocusedInputHandle,
     nativeFieldRef,
     outputFieldRef,
-  } = useSwapInputRefs({ inputCurrency, outputCurrency });
+  } = useSwapInputRefs({
+    inputCurrency,
+    outputCurrency,
+  });
 
   const {
     inputAmount,
@@ -153,6 +166,29 @@ export default function ExchangeModal({
     supplyBalanceUnderlying,
     type,
   });
+
+  const isDismissing = useRef(false);
+  useEffect(() => {
+    if (ios) {
+      return;
+    }
+    dismissingScreenListener.current = () => {
+      Keyboard.dismiss();
+      isDismissing.current = true;
+    };
+    const unsubscribe = (
+      dangerouslyGetParent()?.dangerouslyGetParent()?.addListener || addListener
+    )('transitionEnd', ({ data: { closing } }) => {
+      if (!closing && isDismissing.current) {
+        isDismissing.current = false;
+        lastFocusedInputHandle?.current?.focus();
+      }
+    });
+    return () => {
+      unsubscribe();
+      dismissingScreenListener.current = undefined;
+    };
+  }, [addListener, dangerouslyGetParent, lastFocusedInputHandle]);
 
   const handleCustomGasBlur = useCallback(() => {
     lastFocusedInputHandle?.current?.focus();
@@ -454,30 +490,44 @@ export default function ExchangeModal({
   ]);
 
   const navigateToSwapDetailsModal = useCallback(() => {
+    akd();
+    const lastFocusedInputHandleTemporary = lastFocusedInputHandle.current;
+    android && (lastFocusedInputHandle.current = null);
     inputFieldRef?.current?.blur();
     outputFieldRef?.current?.blur();
     nativeFieldRef?.current?.blur();
-    setParams({ focused: false });
-    navigate(Routes.SWAP_DETAILS_SCREEN, {
-      ...extraTradeDetails,
-      inputCurrencySymbol: get(inputCurrency, 'symbol'),
-      outputCurrencySymbol: get(outputCurrency, 'symbol'),
-      restoreFocusOnSwapModal: () => setParams({ focused: true }),
-      type: 'swap_details',
-    });
-    analytics.track('Opened Swap Details modal', {
-      category,
-      exchangeAddress: get(outputCurrency, 'exchangeAddress', ''),
-      name: get(outputCurrency, 'name', ''),
-      symbol: get(outputCurrency, 'symbol', ''),
-      tokenAddress: get(outputCurrency, 'address', ''),
-      type,
-    });
+    const internalNavigate = () => {
+      android && Keyboard.removeListener('keyboardDidHide', internalNavigate);
+      setParams({ focused: false });
+      navigate(Routes.SWAP_DETAILS_SCREEN, {
+        ...extraTradeDetails,
+        inputCurrencySymbol: get(inputCurrency, 'symbol'),
+        outputCurrencySymbol: get(outputCurrency, 'symbol'),
+        restoreFocusOnSwapModal: () => {
+          android &&
+            (lastFocusedInputHandle.current = lastFocusedInputHandleTemporary);
+          setParams({ focused: true });
+        },
+        type: 'swap_details',
+      });
+      analytics.track('Opened Swap Details modal', {
+        category,
+        exchangeAddress: get(outputCurrency, 'exchangeAddress', ''),
+        name: get(outputCurrency, 'name', ''),
+        symbol: get(outputCurrency, 'symbol', ''),
+        tokenAddress: get(outputCurrency, 'address', ''),
+        type,
+      });
+    };
+    ios || !isKeyboardOpen()
+      ? internalNavigate()
+      : Keyboard.addListener('keyboardDidHide', internalNavigate);
   }, [
     category,
     extraTradeDetails,
     inputCurrency,
     inputFieldRef,
+    lastFocusedInputHandle,
     nativeFieldRef,
     navigate,
     outputCurrency,
@@ -507,9 +557,11 @@ export default function ExchangeModal({
       : !!inputCurrency && !!outputCurrency;
 
   return (
-    <KeyboardFixedOpenLayout>
+    <Wrapper>
       <Centered
-        {...position.sizeAsObject('100%')}
+        {...(ios
+          ? position.sizeAsObject('100%')
+          : { style: { height: 500, top: 0 } })}
         backgroundColor={colors.transparent}
         direction="column"
       >
@@ -526,16 +578,22 @@ export default function ExchangeModal({
                 }),
             transform: [
               {
-                scale: interpolate(tabTransitionPosition, {
-                  extrapolate: Animated.Extrapolate.CLAMP,
-                  inputRange: [0, 0, 1],
-                  outputRange: [1, 1, 0.9],
-                }),
-                translateX: interpolate(tabTransitionPosition, {
-                  extrapolate: Animated.Extrapolate.CLAMP,
-                  inputRange: [0, 0, 1],
-                  outputRange: [0, 0, -8],
-                }),
+                scale: android
+                  ? 1
+                  : interpolate(tabTransitionPosition, {
+                      extrapolate: Animated.Extrapolate.CLAMP,
+                      inputRange: [0, 0, 1],
+                      outputRange: [1, 1, 0.9],
+                    }),
+              },
+              {
+                translateX: android
+                  ? 0
+                  : interpolate(tabTransitionPosition, {
+                      extrapolate: Animated.Extrapolate.CLAMP,
+                      inputRange: [0, 0, 1],
+                      outputRange: [0, 0, -8],
+                    }),
               },
             ],
           }}
@@ -619,6 +677,6 @@ export default function ExchangeModal({
           />
         </AnimatedFloatingPanels>
       </Centered>
-    </KeyboardFixedOpenLayout>
+    </Wrapper>
   );
 }

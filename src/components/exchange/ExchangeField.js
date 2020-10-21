@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
 import styled from 'styled-components/primitives';
 import { TokenSelectionButton } from '../buttons';
@@ -32,7 +32,8 @@ const FieldRow = styled(RowWithMargins).attrs({
 const Input = styled(ExchangeInput).attrs({
   letterSpacing: 'roundedTightest',
 })`
-  height: ${ExchangeFieldHeight};
+  margin-vertical: -10;
+  height: ${ExchangeFieldHeight + (android ? 20 : 0)};
 `;
 
 const ExchangeField = (
@@ -46,12 +47,16 @@ const ExchangeField = (
     setAmount,
     symbol,
     testID,
+    autoFocus,
     ...props
   },
   ref
 ) => {
   const handleFocusField = useCallback(() => ref?.current?.focus(), [ref]);
 
+  useEffect(() => {
+    autoFocus && handleFocusField();
+  }, [autoFocus, handleFocusField]);
   return (
     <Container {...props}>
       <TouchableWithoutFeedback onPress={handleFocusField}>

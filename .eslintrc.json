@@ -15,7 +15,8 @@
     "__DEV__": true,
     "IS_DEV": true,
     "ios": true,
-    "android": true
+    "android": true,
+    "akd": true
   },
   "rules": {
     "sort-imports": ["error", {
