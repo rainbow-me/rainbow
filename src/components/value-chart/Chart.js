@@ -48,6 +48,7 @@ const ChartSpinner = styled(FastImage).attrs(({ color }) => ({
 
 const Container = styled(Column)`
   padding-bottom: 30px;
+  padding-top: ${ios ? 0 : 20}px;
   width: 100%;
 `;
 
