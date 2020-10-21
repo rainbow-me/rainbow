@@ -172,15 +172,15 @@ export default function ExchangeModal({
       isDismissing.current = true;
     };
     const unsubscribe = dangerouslyGetParent()
-      .dangerouslyGetParent()
-      .addListener('transitionEnd', ({ data: { closing } }) => {
+      ?.dangerouslyGetParent()
+      ?.addListener('transitionEnd', ({ data: { closing } }) => {
         if (!closing && isDismissing.current) {
           isDismissing.current = false;
           lastFocusedInputHandle?.current?.focus();
         }
       });
     return () => {
-      unsubscribe();
+      unsubscribe?.();
       dismissingScreenListener.current = undefined;
     };
   }, [dangerouslyGetParent, lastFocusedInputHandle]);
