@@ -579,13 +579,10 @@ export const createWallet = async (
     // Android users without biometrics need to secure their keys with a PIN
     let userPIN = null;
     if (android) {
-      console.log('⚠️⚠️⚠️ IS ANDROID?', android);
       const hasBiometricsEnabled = await getSupportedBiometryType();
-      console.log('⚠️⚠️⚠️ hasBiometricsEnabled?', hasBiometricsEnabled);
       // Fallback to custom PIN
       if (!hasBiometricsEnabled) {
         try {
-          console.log('⚠️⚠️⚠️ getting userpin');
           userPIN = await getExistingPIN();
           if (!userPIN) {
             // We gotta dismiss the modal before showing the PIN screen
@@ -599,7 +596,6 @@ export const createWallet = async (
               )
             );
           }
-          console.log('⚠️⚠️⚠️ got userpin', userPIN);
         } catch (e) {
           return null;
         }
