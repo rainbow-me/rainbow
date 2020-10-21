@@ -44,7 +44,7 @@ export default function useUniswapCalls(
       ),
     ];
 
-    let validCombos = filter(
+    const validCombos = filter(
       combos,
       ([inputToken, outputToken]) =>
         inputToken && outputToken && !inputToken.equals(outputToken)

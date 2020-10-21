@@ -1,7 +1,7 @@
 import { MaxUint256 } from '@ethersproject/constants';
 import { Contract } from '@ethersproject/contracts';
 import { captureException } from '@sentry/react-native';
-import { web3Provider } from '../handlers/web3';
+import { toHex, web3Provider } from '../handlers/web3';
 import { loadWallet } from '../model/wallet';
 import { ethUnits } from '../references';
 import erc20ABI from '../references/erc20-abi.json';
@@ -35,8 +35,8 @@ const approve = async (
   if (!walletToUse) return null;
   const exchange = new Contract(tokenAddress, erc20ABI, walletToUse);
   const approval = await exchange.approve(spender, MaxUint256, {
-    gasLimit: gasLimit || undefined,
-    gasPrice: gasPrice || undefined,
+    gasLimit: toHex(gasLimit) || undefined,
+    gasPrice: toHex(gasPrice) || undefined,
   });
   return {
     approval,

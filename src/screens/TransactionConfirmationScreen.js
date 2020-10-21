@@ -41,7 +41,7 @@ import {
   MessageSigningSection,
   TransactionConfirmationSection,
 } from '../components/transaction';
-import { estimateGas, getTransactionCount } from '../handlers/web3';
+import { estimateGas, getTransactionCount, toHex } from '../handlers/web3';
 import { isDappAuthenticated } from '../helpers/dappNameHandler';
 import {
   convertAmountToNativeDisplay,
@@ -319,7 +319,7 @@ const TransactionConfirmationScreen = () => {
       const rawGasLimit = await estimateGas(txPayload);
       logger.log('Estimated gas limit', rawGasLimit);
       if (rawGasLimit) {
-        gas = rawGasLimit;
+        gas = toHex(rawGasLimit);
       }
     } catch (error) {
       logger.log('error estimating gas', error);
@@ -400,13 +400,13 @@ const TransactionConfirmationScreen = () => {
 
     const rawGasPrice = get(gasPrices, `${gasUtils.NORMAL}.value.amount`);
     if (rawGasPrice) {
-      gasPrice = rawGasPrice;
+      gasPrice = toHex(rawGasPrice);
     }
 
     if (isNil(gas) && isNil(gasLimitFromPayload)) {
       try {
         const rawGasLimit = await estimateGas(txPayload);
-        gas = rawGasLimit;
+        gas = toHex(rawGasLimit);
       } catch (error) {
         logger.log('error estimating gas', error);
       }

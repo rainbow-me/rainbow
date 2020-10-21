@@ -1,4 +1,5 @@
 import { getAddress } from '@ethersproject/address';
+import { BigNumber } from '@ethersproject/bignumber';
 import { isHexString as isEthersHexString } from '@ethersproject/bytes';
 import { isValidMnemonic as ethersIsValidMnemonic } from '@ethersproject/hdnode';
 
@@ -58,6 +59,8 @@ export const getTransactionReceipt = txHash =>
  * @return {Boolean}
  */
 export const isHexString = value => isEthersHexString(value);
+
+export const toHex = value => BigNumber.from(value).toHexString();
 
 export const isHexStringIgnorePrefix = value => {
   if (!value) return false;
@@ -129,15 +132,15 @@ export const getTransactionCount = address =>
 export const getTxDetails = async transaction => {
   const { from, to } = transaction;
   const data = transaction.data ? transaction.data : '0x';
-  const value = transaction.amount ? toWei(transaction.amount) : '0x00';
-  const gasLimit = transaction.gasLimit || undefined;
-  const gasPrice = transaction.gasPrice || undefined;
+  const value = transaction.amount ? toHex(toWei(transaction.amount)) : '0x00';
+  const gasLimit = toHex(transaction.gasLimit) || undefined;
+  const gasPrice = toHex(transaction.gasPrice) || undefined;
   const nonce = await getTransactionCount(from);
   const tx = {
     data,
     gasLimit,
     gasPrice,
-    nonce,
+    nonce: toHex(nonce),
     to,
     value,
   };
