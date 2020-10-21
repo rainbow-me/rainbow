@@ -1,6 +1,6 @@
 import { MaxUint256 } from '@ethersproject/constants';
 import { captureException } from '@sentry/react-native';
-import { get, toLower } from 'lodash';
+import { get, isNull, toLower } from 'lodash';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import TransactionTypes from '../../helpers/transactionTypes';
 import {
@@ -151,7 +151,7 @@ export const assetNeedsUnlocking = async (
       contractAddress
     );
     // Cache that value
-    if (allowance) {
+    if (isNull(allowance)) {
       AllowancesCache.cache[cacheKey] = allowance;
     }
   }
