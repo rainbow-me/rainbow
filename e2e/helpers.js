@@ -53,7 +53,6 @@ export async function clearField(elementId) {
 }
 
 export async function tapAndLongPress(elementId) {
-  await tap(elementId);
   return element(by.id(elementId)).longPress();
 }
 

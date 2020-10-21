@@ -63,6 +63,14 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.checkIfElementByTextIsVisible('Collectibles');
   });
 
+  it('Should say "poopcoin.eth" in the Profile Screen header', async () => {
+    await Helpers.delay(1000);
+    await Helpers.swipe('wallet-screen', 'right');
+    await Helpers.delay(2000);
+    await Helpers.checkIfElementByTextIsVisible('poopcoin.eth');
+    await Helpers.swipe('profile-screen', 'left');
+  });
+
   it('Should open send sheet after tapping send fab', async () => {
     await Helpers.delay(1000);
     await Helpers.tap('send-fab');

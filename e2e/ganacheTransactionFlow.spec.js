@@ -67,7 +67,7 @@ describe('Ganache Transaction Flow', () => {
   });
 
   //SwapSheet Transactions
-  it('Should open and complete SwapSheet for ETH -> ERC20', async () => {
+  it('Should swap ETH -> ERC20 (DAI)', async () => {
     await Helpers.tap('exchange-fab');
     await Helpers.delay(3000);
     await Helpers.typeText('exchange-modal-input', '0.01', true);
@@ -78,12 +78,12 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.delay(3000);
     await Helpers.tap('exchange-coin-row-DAI');
     await Helpers.delay(5000);
-    await Helpers.tapAndLongPressByText('Hold to Swap');
+    await Helpers.tapAndLongPress('exchange-modal-confirm');
     await Helpers.delay(10000);
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
-  it('Should open and complete SwapSheet for ERC20 -> ERC20', async () => {
+  it('Should swap ERC20 (BAT) -> ERC20 (ZRX)', async () => {
     await Helpers.delay(3000);
     await Helpers.tap('exchange-fab');
     await Helpers.delay(3000);
@@ -97,12 +97,12 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.delay(3000);
     await Helpers.tap('exchange-coin-row-ZRX');
     await Helpers.delay(5000);
-    await Helpers.tapAndLongPressByText('Hold to Swap');
+    await Helpers.tapAndLongPress('exchange-modal-confirm');
     await Helpers.delay(10000);
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
-  it('Should open and complete SwapSheet for ERC20 -> ETH', async () => {
+  it('Should swap ERC20 (USDC)-> ETH', async () => {
     await Helpers.delay(3000);
     await Helpers.tap('exchange-fab');
     await Helpers.delay(3000);
@@ -118,12 +118,12 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.delay(3000);
     await Helpers.tap('exchange-coin-row-ETH');
     await Helpers.delay(5000);
-    await Helpers.tapAndLongPressByText('Hold to Swap');
+    await Helpers.tapAndLongPress('exchange-modal-confirm');
     await Helpers.delay(10000);
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
-  it('Should open and complete Send Sheet for cSAI', async () => {
+  it('Should send ERC20 (cSAI)', async () => {
     await Helpers.delay(3000);
     await Helpers.tap('send-fab');
     await Helpers.delay(3000);
@@ -133,11 +133,11 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.delay(3000);
     await Helpers.typeText('selected-asset-field-input', '1', true);
     await Helpers.delay(5000);
-    await Helpers.tapAndLongPressByText('Hold to Send');
+    await Helpers.tapAndLongPress('send-sheet-confirm');
     await Helpers.delay(10000);
   });
 
-  it('Should show completed transaction - Swap ETH -> ERC20', async () => {
+  it('Should show completed swap ETH -> ERC20 (DAI)', async () => {
     try {
       await Helpers.checkIfVisible('Swapped-Ethereum');
     } catch (e) {
@@ -146,7 +146,7 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
-  it('Should open and complete Send Sheet for NFT', async () => {
+  it('Should send (Cryptokitties)', async () => {
     await Helpers.delay(3000);
     await Helpers.tap('send-fab');
     await Helpers.delay(3000);
@@ -156,12 +156,12 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.delay(3000);
     await Helpers.tapByText('Arun Cattybinky');
     await Helpers.delay(3000);
-    await Helpers.tapAndLongPressByText('Hold to Send');
+    await Helpers.tapAndLongPress('send-sheet-confirm');
     await Helpers.delay(10000);
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
-  it('Should open and complete Send Sheet for ERC20', async () => {
+  it('Should send ERC20 (BAT)', async () => {
     await Helpers.delay(3000);
     await Helpers.tap('send-fab');
     await Helpers.delay(3000);
@@ -171,12 +171,12 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.delay(3000);
     await Helpers.typeText('selected-asset-field-input', '2', true);
     await Helpers.delay(3000);
-    await Helpers.tapAndLongPressByText('Hold to Send');
+    await Helpers.tapAndLongPress('send-sheet-confirm');
     await Helpers.delay(10000);
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
-  it('Should open and complete Send Sheet for ETH', async () => {
+  it('Should show completed send  ETH', async () => {
     await Helpers.delay(3000);
     await Helpers.tap('send-fab');
     await Helpers.delay(3000);
@@ -186,11 +186,11 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.delay(3000);
     await Helpers.typeText('selected-asset-field-input', '.01', true);
     await Helpers.delay(3000);
-    await Helpers.tapAndLongPressByText('Hold to Send');
+    await Helpers.tapAndLongPress('send-sheet-confirm');
     await Helpers.delay(10000);
   });
 
-  it('Should show completed transaction - Swap ERC20 -> ERC20', async () => {
+  it('Should show completed swap ERC20 (BAT) -> ERC20 (ZRX)', async () => {
     await Helpers.delay(3000);
     try {
       await Helpers.checkIfVisible('Swapped-Basic Attention Token');
@@ -199,7 +199,7 @@ describe('Ganache Transaction Flow', () => {
     }
   });
 
-  it('Should show completed transaction - Swap ERC20 -> ETH', async () => {
+  it('Should show completed swap ERC20 (USDC) -> ETH', async () => {
     try {
       await Helpers.checkIfVisible('Swapped-USD Coin');
     } catch (e) {
@@ -212,7 +212,7 @@ describe('Ganache Transaction Flow', () => {
     }
   });
 
-  it('Should show completed transaction - Send Savings Asset', async () => {
+  it('Should show completed send ERC20 (cSAI)', async () => {
     try {
       await Helpers.checkIfVisible('Sent-Compound Sai');
     } catch (e) {
@@ -220,7 +220,7 @@ describe('Ganache Transaction Flow', () => {
     }
   });
 
-  it('Should show completed transaction - Send NFT', async () => {
+  it('Should show completed send NFT (Cryptokitties)', async () => {
     try {
       await Helpers.checkIfVisible('Sent-Arun Cattybinky');
     } catch (e) {
@@ -228,7 +228,7 @@ describe('Ganache Transaction Flow', () => {
     }
   });
 
-  it('Should show completed transaction - Send ERC20', async () => {
+  it('Should show completed send ERC20 (BAT)', async () => {
     try {
       await Helpers.checkIfVisible('Sent-Basic Attention Token');
     } catch (e) {
@@ -236,7 +236,7 @@ describe('Ganache Transaction Flow', () => {
     }
   });
 
-  it('Should show completed transaction - Send ETH', async () => {
+  it('Should show completed send ETH', async () => {
     try {
       await Helpers.checkIfVisible('Sent-Ethereum');
     } catch (e) {

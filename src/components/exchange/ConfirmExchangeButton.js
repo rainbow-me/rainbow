@@ -65,6 +65,7 @@ ConfirmExchangeButton.propTypes = {
   isSufficientGas: PropTypes.bool,
   onSubmit: PropTypes.func,
   slippage: PropTypes.number,
+  testID: PropTypes.string,
   type: PropTypes.oneOf(Object.values(ExchangeModalTypes)),
 };
 

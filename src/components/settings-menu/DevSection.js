@@ -40,7 +40,8 @@ const DevSection = () => {
       await web3SetHttpProvider(networkTypes.mainnet);
       logger.log('error connecting to ganache');
     }
-  }, []);
+    navigate(Routes.PROFILE_SCREEN);
+  }, [navigate]);
 
   const removeBackups = async () => {
     const newWallets = { ...wallets };
@@ -76,10 +77,7 @@ const DevSection = () => {
       />
       <ListItem
         label="‍👾 Connect to ganache"
-        onPress={async () => {
-          await connectToGanache();
-          navigate(Routes.PROFILE_SCREEN);
-        }}
+        onPress={connectToGanache}
         testID="ganache-section"
       />
       <ListFooter />
