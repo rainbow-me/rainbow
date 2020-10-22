@@ -922,8 +922,11 @@ export const generateAccount = async (
       // Fallback to custom PIN
       if (!hasBiometricsEnabled) {
         try {
-          // If we have a PIN we need to decrypt before returning
+          const { dispatch } = store;
+          // Hide the loading overlay while showing the pin auth screen
+          dispatch(setIsWalletLoading(null));
           userPIN = await authenticateWithPIN();
+          dispatch(setIsWalletLoading(WalletLoadingStates.CREATING_WALLET));
         } catch (e) {
           return null;
         }
