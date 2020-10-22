@@ -26,7 +26,7 @@ const Content = styled(Column).attrs({ shrink: 0 })`
   margin-top: ${({ fixedToTop }) => (fixedToTop ? 91 : 0)};
   overflow: hidden;
   padding-top: ${({ fullScreenOnAndroid }) =>
-    fullScreenOnAndroid ? getStatusBarHeight() : 0};
+    fullScreenOnAndroid && android ? getStatusBarHeight() : 0};
   width: 100%;
 `;
 

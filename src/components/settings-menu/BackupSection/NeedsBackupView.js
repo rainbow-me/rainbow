@@ -17,7 +17,7 @@ import { colors, fonts, padding } from '@rainbow-me/styles';
 
 const BackupButton = styled(RainbowButton).attrs({
   type: 'small',
-  width: ios ? 221 : 250,
+  width: ios ? 221 : 270,
 })`
   margin-bottom: 19;
 `;
@@ -123,7 +123,7 @@ export default function NeedsBackupView() {
             onPress={onIcloudBackup}
           />
           <SheetActionButton
-            color={colors.white}
+            color={ios ? colors.white : colors.lightestGrey}
             label="🤓 Back up manually"
             noFlex
             onPress={onManualBackup}
