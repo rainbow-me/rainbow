@@ -66,7 +66,7 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.delay(3000);
   });
 
-  //SwapSheet Transactions
+  /*
   it('Should swap ETH -> ERC20 (DAI)', async () => {
     await Helpers.tap('exchange-fab');
     await Helpers.delay(3000);
@@ -121,7 +121,7 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.tapAndLongPress('exchange-modal-confirm');
     await Helpers.delay(10000);
     await Helpers.swipe('profile-screen', 'left', 'slow');
-  });
+  });*/
 
   it('Should send ERC20 (cSAI)', async () => {
     await Helpers.delay(3000);
@@ -135,16 +135,17 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.delay(5000);
     await Helpers.tapAndLongPress('send-sheet-confirm');
     await Helpers.delay(10000);
+    await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
-  it('Should show completed swap ETH -> ERC20 (DAI)', async () => {
+  /*it('Should show completed swap ETH -> ERC20 (DAI)', async () => {
     try {
       await Helpers.checkIfVisible('Swapped-Ethereum');
     } catch (e) {
       await Helpers.checkIfVisible('Swapping-Ethereum');
     }
     await Helpers.swipe('profile-screen', 'left', 'slow');
-  });
+  });*/
 
   it('Should send (Cryptokitties)', async () => {
     await Helpers.delay(3000);
@@ -190,6 +191,7 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.delay(10000);
   });
 
+  /*
   it('Should show completed swap ERC20 (BAT) -> ERC20 (ZRX)', async () => {
     await Helpers.delay(3000);
     try {
@@ -210,7 +212,7 @@ describe('Ganache Transaction Flow', () => {
     } catch (e) {
       await Helpers.checkIfVisible('Sending-Compound Sai');
     }
-  });
+  });*/
 
   it('Should show completed send ERC20 (cSAI)', async () => {
     try {
