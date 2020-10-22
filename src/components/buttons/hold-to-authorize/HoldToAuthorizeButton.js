@@ -89,6 +89,7 @@ class HoldToAuthorizeButton extends PureComponent {
     shadows: PropTypes.arrayOf(PropTypes.array),
     smallButton: PropTypes.bool,
     style: PropTypes.object,
+    testID: PropTypes.string,
     theme: PropTypes.oneOf(['light', 'dark']),
   };
 
@@ -209,11 +210,11 @@ class HoldToAuthorizeButton extends PureComponent {
           enableLongPress={enableLongPress}
           minDurationMs={longPressProgressDurationMs}
           onHandlerStateChange={this.onLongPressChange}
-          testID={testID}
         >
           <Animated.View
             {...props}
             style={[style, { transform: [{ scale: this.buttonScale }] }]}
+            testID={testID}
           >
             <ShadowStack
               backgroundColor={bgColor}
@@ -231,7 +232,6 @@ class HoldToAuthorizeButton extends PureComponent {
                       <HoldToAuthorizeButtonIcon
                         animatedValue={this.longPressProgress}
                         biometryType={biometryType}
-                        testID={testID}
                       />
                     )}
                     <Title smallButton={smallButton}>
@@ -251,18 +251,18 @@ class HoldToAuthorizeButton extends PureComponent {
   }
 }
 
-const HoldToAuthorizeButtonWithBiometrics = ({ label, ...props }) => {
+const HoldToAuthorizeButtonWithBiometrics = ({ label, testID, ...props }) => {
   const biometryType = useBiometryType();
   const enableLongPress =
     biometryType === BiometryTypes.FaceID ||
     biometryType === BiometryTypes.none;
-
   return (
     <HoldToAuthorizeButton
       {...props}
       biometryType={biometryType}
       enableLongPress={enableLongPress}
       label={enableLongPress ? label : label.replace('Hold', 'Tap')}
+      testID={testID}
     />
   );
 };

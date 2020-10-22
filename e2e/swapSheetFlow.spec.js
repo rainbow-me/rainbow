@@ -22,7 +22,7 @@ describe('Swap Sheet Interaction Flow', () => {
 
   it('Should show the "Add wallet modal" after tapping import with a valid seed"', async () => {
     await Helpers.clearField('import-sheet-input');
-    await Helpers.typeText('import-sheet-input', process.env.DEV_SEEDS, false);
+    await Helpers.typeText('import-sheet-input', process.env.TEST_SEEDS, false);
     await Helpers.delay(1500);
     await Helpers.checkIfElementHasString(
       'import-sheet-button-label',
@@ -39,13 +39,6 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('wallet-screen');
   });
 
-  it('Should show all wallet sections', async () => {
-    await Helpers.delay(1000);
-    await Helpers.checkIfElementByTextIsVisible('Pools');
-    await Helpers.swipe('wallet-screen', 'up');
-    await Helpers.checkIfElementByTextIsVisible('Collectibles');
-  });
-
   it('Should display swap modal on swap-fab press', async () => {
     await Helpers.delay(5000);
     await Helpers.checkIfVisible('wallet-screen');
@@ -56,8 +49,8 @@ describe('Swap Sheet Interaction Flow', () => {
 
   it('Should focus on Asset Input on load', async () => {
     await Helpers.delay(1000);
-    await Helpers.typeText('exchange-modal-input', '1.356', true);
-    await Helpers.checkIfVisible('exchange-modal-input-1.356');
+    await Helpers.typeText('exchange-modal-input', '0.246', true);
+    await Helpers.checkIfVisible('exchange-modal-input-0.246');
   });
 
   it('Should display enabled Choose Token Button for output token selection', async () => {
@@ -215,10 +208,10 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.delay(2000);
     await Helpers.checkIfVisible('exchange-modal-input-native');
     await Helpers.checkIfVisible('exchange-modal-output');
+    await Helpers.delay(2500);
+    await Helpers.typeText('exchange-modal-input', '0.246', false);
     await Helpers.delay(2000);
-    await Helpers.typeText('exchange-modal-input', '1.356', false);
-    await Helpers.delay(2000);
-    await Helpers.checkIfVisible('exchange-modal-input-1.356');
+    await Helpers.checkIfVisible('exchange-modal-input-0.246');
     await Helpers.checkIfNotVisible('exchange-modal-input-native');
     await Helpers.checkIfNotVisible('exchange-modal-output');
     await Helpers.delay(2000);
@@ -236,9 +229,9 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.checkIfVisible('exchange-modal-output');
     await Helpers.delay(2000);
-    await Helpers.typeText('exchange-modal-input-native', '1.356', false);
+    await Helpers.typeText('exchange-modal-input-native', '0.246', false);
     await Helpers.delay(2000);
-    await Helpers.checkIfVisible('exchange-modal-input-native-1.35');
+    await Helpers.checkIfVisible('exchange-modal-input-native-0.24');
     await Helpers.checkIfNotVisible('exchange-modal-input');
     await Helpers.checkIfNotVisible('exchange-modal-output');
     await Helpers.delay(2000);
@@ -256,9 +249,9 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.checkIfVisible('exchange-modal-input-native');
     await Helpers.delay(2000);
-    await Helpers.typeText('exchange-modal-output', '1.356', false);
+    await Helpers.typeText('exchange-modal-output', '0.246', false);
     await Helpers.delay(2000);
-    await Helpers.checkIfVisible('exchange-modal-output-1.356');
+    await Helpers.checkIfVisible('exchange-modal-output-0.246');
     await Helpers.checkIfNotVisible('exchange-modal-input');
     await Helpers.checkIfNotVisible('exchange-modal-input-native');
     await Helpers.delay(1000);
@@ -282,7 +275,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.delay(1000);
     await Helpers.tap('exchange-fab');
     await Helpers.delay(2000);
-    await Helpers.typeText('exchange-modal-input', '1.356', false);
+    await Helpers.typeText('exchange-modal-input', '0.546', false);
     await Helpers.delay(2000);
     await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.delay(2000);

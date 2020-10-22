@@ -58,10 +58,12 @@ workflows:
         - content: |-
             #!/bin/bash
 
-            if detox test --configuration ios.sim.release -l verbose ; then
+            if yarn ganache >> /dev/null 2>&1 & detox test --configuration ios.sim.release -l verbose ; then
               envman add --key TEST_FAIL --value false
+              kill $(lsof -t -i:7545)
             else
               envman add --key TEST_FAIL --value true
+              kill $(lsof -t -i:7545)
               exit 1
             fi
         title: Detox - Run E2E Tests
@@ -71,7 +73,8 @@ workflows:
             #!/bin/bash
 
             if $TEST_FAIL ; then
-                detox test --configuration ios.sim.release -l verbose ;
+                yarn ganache >> /dev/null 2>&1 & detox test --configuration ios.sim.release -l verbose
+                kill $(lsof -t -i:7545)
               else
                 echo "First Test Run Passed"
               fi
@@ -252,6 +255,7 @@ workflows:
             echo "RAINBOW_MASTER_KEY=$RAINBOW_MASTER_KEY" >> .env
             echo "DEV_SEEDS=\"$DEV_SEEDS\"" >> .env
             echo "DEV_PKEY=\$DEV_PKEY" >> .env
+            echo "TEST_SEEDS=\"$TEST_SEEDS\"" >> .env
             echo "IS_TESTING=$IS_TESTING" >> .env
             echo "WYRE_TOKEN=$WYRE_TOKEN" >> .env
             echo "WYRE_TOKEN_TEST=$WYRE_TOKEN_TEST" >> .env

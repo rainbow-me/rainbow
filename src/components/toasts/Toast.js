@@ -40,6 +40,7 @@ export default function Toast({
   distance = 60,
   icon,
   isVisible,
+  testID,
   text,
   textColor = colors.white,
   ...props
@@ -65,6 +66,7 @@ export default function Toast({
         color={color}
         deviceWidth={deviceWidth}
         insets={insets}
+        testID={testID}
         {...props}
       >
         {children || (

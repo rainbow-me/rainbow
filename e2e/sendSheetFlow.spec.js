@@ -43,7 +43,7 @@ describe('Send Sheet Interaction Flow', () => {
   });
 
   it('Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
-    await Helpers.delay(5000);
+    await Helpers.delay(2000);
     await Helpers.tap('wallet-info-submit-button');
     await Helpers.delay(3000);
     await Helpers.checkIfVisible('wallet-screen');
@@ -57,7 +57,7 @@ describe('Send Sheet Interaction Flow', () => {
   // });
 
   it('Should show all wallet sections', async () => {
-    await Helpers.delay(1000);
+    await Helpers.delay(5000);
     await Helpers.checkIfElementByTextIsVisible('Pools');
     await Helpers.swipe('wallet-screen', 'up');
     await Helpers.checkIfElementByTextIsVisible('Collectibles');
@@ -110,17 +110,17 @@ describe('Send Sheet Interaction Flow', () => {
   });
 
   it('Should display Asset Form after tapping on savings asset', async () => {
-    await Helpers.delay(1000);
+    await Helpers.delay(1500);
     await Helpers.checkIfVisible('send-savings-cSAI');
     await Helpers.tap('send-savings-cSAI');
-    await Helpers.delay(1000);
+    await Helpers.delay(2000);
     await Helpers.checkIfVisible('selected-asset-field-input');
   });
 
   it('Should go back to Asset List after tapping on savings asset', async () => {
     await Helpers.delay(1000);
     await Helpers.tap('send-asset-form-cSAI');
-    await Helpers.delay(1000);
+    await Helpers.delay(2000);
     await Helpers.checkIfVisible('send-asset-list');
   });
 
@@ -265,9 +265,9 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.delay(1000);
     await Helpers.tap('add-contact-button');
     await Helpers.delay(2000);
-    await Helpers.typeText('contact-profile-name-input', 'poopcoin.test', true);
+    await Helpers.typeText('contact-profile-name-input', 'testcoin.test', true);
     await Helpers.tap('contact-profile-add-button');
-    await Helpers.checkIfElementByTextIsVisible('poopcoin.test');
+    await Helpers.checkIfElementByTextIsVisible('testcoin.test');
     await Helpers.checkIfVisible('edit-contact-button');
   });
 
@@ -297,6 +297,7 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.swipe('send-asset-form-field', 'down', 'slow');
     await Helpers.delay(1000);
     await Helpers.tap('send-fab');
+    await Helpers.delay(2000);
     await Helpers.checkIfElementByTextIsVisible('testcoin.eth');
   });
 
