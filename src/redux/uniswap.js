@@ -1,12 +1,21 @@
 import produce from 'immer';
-import { concat, filter, keys, map, toLower, uniq, without } from 'lodash';
+import {
+  concat,
+  filter,
+  keys,
+  map,
+  remove,
+  toLower,
+  uniq,
+  without,
+} from 'lodash';
 import {
   getUniswapFavorites,
   saveUniswapFavorites,
 } from '../handlers/localstorage/uniswap';
 import { getAllTokens, getTestnetUniswapPairs } from '../handlers/uniswap';
 import networkTypes from '../helpers/networkTypes';
-import { DefaultUniswapFavorites } from '../references';
+import { DefaultUniswapFavorites, SOCKS_ADDRESS } from '../references';
 import { CURATED_UNISWAP_TOKENS } from '../references/uniswap';
 
 // -- Constants ------------------------------------------------------------- //
@@ -26,6 +35,7 @@ export const uniswapLoadState = () => async (dispatch, getState) => {
   dispatch({ type: UNISWAP_LOAD_REQUEST });
   try {
     const favorites = await getUniswapFavorites(network);
+    remove(favorites, address => toLower(address) === toLower(SOCKS_ADDRESS));
     dispatch({
       payload: favorites,
       type: UNISWAP_LOAD_SUCCESS,
