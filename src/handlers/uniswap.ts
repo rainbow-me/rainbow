@@ -56,6 +56,7 @@ export interface SwapCurrency {
 }
 
 export interface TokenInfo extends SwapCurrency {
+  derivedETH: string;
   totalLiquidity: string;
 }
 
@@ -423,6 +424,7 @@ export const getAllTokens = async (
     const tokenInfo = {
       address: token.id,
       decimals: Number(token.decimals),
+      derivedETH: token.derivedETH,
       name: token.name,
       symbol: token.symbol,
       totalLiquidity: token.totalLiquidity,

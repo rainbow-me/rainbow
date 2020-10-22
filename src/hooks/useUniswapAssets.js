@@ -11,6 +11,7 @@ import {
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
+import { greaterThanOrEqualTo, multiply } from '../helpers/utilities';
 import { uniswapUpdateFavorites } from '../redux/uniswap';
 
 const uniswapLoadingAllTokensSelector = state => state.uniswap.loadingAllTokens;
@@ -68,7 +69,12 @@ const getGlobalUniswapAssets = (assets, favorites) => {
   );
   const [highLiquidity, lowLiquidity] = partition(
     notFavorited,
-    ({ totalLiquidity }) => totalLiquidity > 0.5
+    ({ derivedETH, totalLiquidity }) => {
+      return (
+        derivedETH &&
+        greaterThanOrEqualTo(multiply(derivedETH, totalLiquidity), 0.5)
+      );
+    }
   );
 
   return {

@@ -65,6 +65,7 @@ export const UNISWAP_ALL_TOKENS = gql`
       where: { id_not_in: $excluded, totalLiquidity_gt: 0 }
     ) {
       id
+      derivedETH
       name
       symbol
       decimals
