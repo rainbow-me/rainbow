@@ -21,7 +21,7 @@ const TextChunk = styled(AnimatedTextInput).attrs({
   font-variant: tabular-nums;
   font-size: ${parseFloat(fonts.size.lmedium)};
   text-align: left;
-  height: 44;
+  height: 46;
 `;
 
 const Row = styled.View`
