@@ -5,9 +5,9 @@ import { Column, Row } from '../../components/layout';
 import { colors } from '@rainbow-me/styles';
 
 const FilledValue = styled(Column)`
-  width: 30;
-  height: 30;
-  border-radius: 30;
+  width: 20;
+  height: 20;
+  border-radius: 20;
   margin-left: 10;
   margin-right: 10;
 `;
@@ -20,7 +20,6 @@ const EmptyValue = styled(Column)`
   border-radius: 20;
   margin-left: 10;
   margin-right: 10;
-  margin-top: 5;
 `;
 
 const PinValue = ({ scale, translateX, value, ...props }) => {
