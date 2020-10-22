@@ -435,8 +435,8 @@ export const getAllTokens = async (
 
 export const calculateTradeDetails = (
   chainId: ChainId,
-  inputAmount: number,
-  outputAmount: number,
+  inputAmount: string | null,
+  outputAmount: string | null,
   inputCurrency: SwapCurrency,
   outputCurrency: SwapCurrency,
   pairs: Pair[],

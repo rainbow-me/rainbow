@@ -226,7 +226,7 @@ export default function useUniswapMarketDetails({
   }, [isMissingCurrency, swapNotNeeded, updateInputOutputAmounts]);
 
   useEffect(() => {
-    if (swapNotNeeded || isMissingCurrency) return;
+    if (swapNotNeeded || isMissingCurrency || !tradeDetails) return;
     updateExtraTradeDetails({
       inputCurrency,
       nativeCurrency,

@@ -49,9 +49,13 @@ export default function useSwapDetails() {
           null
         );
 
-        outputExecutionRate = tradeDetails?.executionPrice
-          ?.invert()
-          ?.toSignificant();
+        if (tradeDetails.executionPrice.equalTo(0)) {
+          outputExecutionRate = '0';
+        } else {
+          outputExecutionRate = tradeDetails?.executionPrice
+            ?.invert()
+            ?.toSignificant();
+        }
 
         // If the output currency was not found in wallet and the input currency has a price
         // Calculate the output currency price based off of the input currency price
