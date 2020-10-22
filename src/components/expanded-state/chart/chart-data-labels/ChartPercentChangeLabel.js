@@ -9,16 +9,15 @@ import { RowWithMargins } from '../../../layout';
 import ChartChangeDirectionArrow from './ChartChangeDirectionArrow';
 import { useRatio } from './useRatio';
 import { useChartData } from '@rainbow-me/animated-charts';
-import { colors, fonts } from '@rainbow-me/styles';
+import { colors, fonts, fontWithWidth } from '@rainbow-me/styles';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
 const PercentLabel = styled(AnimatedTextInput)`
+  ${fontWithWidth(fonts.weight.bold)};
   background-color: white;
-  font-family: ${fonts.family.SFProRounded};
   font-size: ${fonts.size.big};
   font-variant: tabular-nums;
-  font-weight: ${fonts.weight.bold};
   letter-spacing: ${fonts.letterSpacing.roundedTightest};
   text-align: right;
 `;

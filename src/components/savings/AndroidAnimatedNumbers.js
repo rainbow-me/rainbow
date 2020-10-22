@@ -9,19 +9,19 @@ import Animated, {
 } from 'react-native-reanimated';
 import styled from 'styled-components/native';
 import { isSymbolStablecoin } from '../../helpers/savings';
-import { colors, fonts } from '@rainbow-me/styles';
+import { colors, fonts, fontWithWidth } from '@rainbow-me/styles';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
 const TextChunk = styled(AnimatedTextInput).attrs({
   editable: false,
 })`
+  ${fontWithWidth(fonts.weight.bold)};
   color: ${colors.dark};
-  font-family: ${fonts.family.SFProRounded};
+  font-variant: tabular-nums;
   font-size: ${parseFloat(fonts.size.lmedium)};
-  font-weight: ${fonts.weight.bold};
   text-align: left;
-  height: 40;
+  height: 44;
 `;
 
 const Row = styled.View`
