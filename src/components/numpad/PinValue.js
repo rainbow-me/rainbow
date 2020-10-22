@@ -1,7 +1,7 @@
 import React from 'react';
 import Animated from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
-import { Column, Row } from '../../components/layout';
+import { Column, Flex } from '../../components/layout';
 import { colors } from '@rainbow-me/styles';
 
 const FilledValue = styled(Column)`
@@ -22,14 +22,15 @@ const EmptyValue = styled(Column)`
   margin-right: 10;
 `;
 
-const PinValue = ({ scale, translateX, value, ...props }) => {
+const PinValue = ({ translateX, value, ...props }) => {
   return (
-    <Animated.View
-      flex={1}
-      style={{ transform: [{ scale, translateX }] }}
-      {...props}
-    >
-      <Row>
+    <Flex {...props}>
+      <Animated.View
+        style={{
+          flexDirection: 'row',
+          transform: [{ translateX }],
+        }}
+      >
         {value && value.length ? (
           <FilledValue backgroundColor={colors.swapPurple} />
         ) : (
@@ -50,8 +51,8 @@ const PinValue = ({ scale, translateX, value, ...props }) => {
         ) : (
           <EmptyValue />
         )}
-      </Row>
-    </Animated.View>
+      </Animated.View>
+    </Flex>
   );
 };
 

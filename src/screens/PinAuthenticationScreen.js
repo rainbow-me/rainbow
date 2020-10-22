@@ -22,7 +22,6 @@ const PinAuthenticationScreen = () => {
   const [errorAnimation, onShake] = useShakeAnimation();
 
   const { isNarrowPhone, isSmallPhone, isTallPhone } = useDimensions();
-  const [scaleAnim] = useState(1);
 
   const [value, setValue] = useState('');
   const [initialPin, setInitialPin] = useState('');
@@ -110,11 +109,7 @@ const PinAuthenticationScreen = () => {
               ? 'Choose your PIN'
               : 'Confirm your PIN'}
           </SheetTitle>
-          <PinValue
-            scale={scaleAnim}
-            translateX={errorAnimation}
-            value={value}
-          />
+          <PinValue translateX={errorAnimation} value={value} />
         </ColumnWithMargins>
       </Centered>
       <ColumnWithMargins align="center" margin={isTallPhone ? 27 : 12}>
