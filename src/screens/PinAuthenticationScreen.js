@@ -22,7 +22,7 @@ const Logo = styled(FastImage).attrs({
 `;
 
 const MAX_ATTEMPTS_LEFT = 10;
-const TIMELOCK_INTERVAL_MINUTES = 1;
+const TIMELOCK_INTERVAL_MINUTES = 5;
 
 const PinAuthenticationScreen = () => {
   const { params } = useRoute();
