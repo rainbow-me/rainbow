@@ -36,6 +36,12 @@
             "name": "USD Coin",
             "symbol": "USDC"
         },
+        "0x35A18000230DA775CAc24873d00Ff85BccdeD550": {
+            "address": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
+            "decimals": 18,
+            "name": "Uniswap",
+            "symbol": "UNI"
+        },
         "0xc11b1268c1a384e55c48c2391d8d480264a3a7f4": {
             "address": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
             "decimals": 8,

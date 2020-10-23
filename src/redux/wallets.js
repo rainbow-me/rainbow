@@ -200,6 +200,8 @@ export const createAccountForWallet = (id, color, name) => async (
     payload: { selected: newWallets[id], wallets: newWallets },
     type: WALLETS_ADDED_ACCOUNT,
   });
+
+  return newWallets;
 };
 
 export const fetchWalletNames = () => async (dispatch, getState) => {

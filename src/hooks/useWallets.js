@@ -1,4 +1,5 @@
-import { useCallback } from 'react';
+import { isEmpty } from 'lodash';
+import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { findLatestBackUp } from '../model/backup';
@@ -36,7 +37,12 @@ export default function useWallets() {
     [dispatch]
   );
 
+  const isDamaged = useMemo(() => {
+    return isEmpty(selectedWallet) || !wallets || selectedWallet?.damaged;
+  }, [selectedWallet, wallets]);
+
   return {
+    isDamaged,
     isReadOnlyWallet: selectedWallet.type === WalletTypes.readOnly,
     isWalletLoading,
     latestBackup,

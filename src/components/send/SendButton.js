@@ -8,6 +8,7 @@ const SendButton = ({
   isSufficientBalance,
   isSufficientGas,
   onLongPress,
+  testID,
   ...props
 }) => {
   const isZeroAssetAmount = Number(assetAmount) <= 0;
@@ -33,7 +34,7 @@ const SendButton = ({
       isAuthorizing={isAuthorizing}
       label={label}
       onLongPress={onLongPress}
-      testID={label}
+      testID={testID}
     />
   );
 };
