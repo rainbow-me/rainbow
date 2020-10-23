@@ -1,6 +1,7 @@
 import { MaxUint256 } from '@ethersproject/constants';
 import { captureException } from '@sentry/react-native';
 import { get, isNull, toLower } from 'lodash';
+import { alwaysRequireApprove } from '../../config/debug';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import TransactionTypes from '../../helpers/transactionTypes';
 import {
@@ -137,6 +138,8 @@ export const assetNeedsUnlocking = async (
   if (isInputEth) {
     return false;
   }
+
+  if (alwaysRequireApprove) return true;
 
   const cacheKey = toLower(`${accountAddress}|${address}|${contractAddress}`);
 
