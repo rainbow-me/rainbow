@@ -1,3 +1,5 @@
+// eslint-disable-next-line import/no-unresolved
+import '@ethersproject/shims';
 import AsyncStorage from '@react-native-community/async-storage';
 // eslint-disable-next-line import/default
 import ReactNative from 'react-native';

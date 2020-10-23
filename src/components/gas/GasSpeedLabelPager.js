@@ -11,7 +11,7 @@ const speedColors = [
   colors.white,
   colors.white,
   colors.white,
-  colors.darkModeColors.purple,
+  colors.appleBlue,
 ];
 
 const PagerItem = styled(Row)`

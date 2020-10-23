@@ -7,16 +7,17 @@
     "color": "#29292E",
     "name": "0x"
   },
-  "0x80fB784B7eD66730e8b1DBd9820aFD29931aab03": {
-    "color": "#4BA7C5",
-    "name": "Aave"
+  "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9": {
+    "color": "#7285B2",
+    "name": "Aave",
+    "symbol": "AAVE"
   },
   "0x960b236A07cf122663c4303350609A66A7B288C0": {
     "color": "#06BCE5",
     "name": "Aragon"
   },
-  "0x1985365e9f78359a9B6AD760e32412f4a445E862": {
-    "color": "#602A52",
+  "0x221657776846890989a759BA2973e427DfF5C9bB": {
+    "color": "#25292E",
     "name": "Augur"
   },
   "0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C": {
@@ -51,27 +52,27 @@
   },
   "0x6c8c6b02e7b2be14d4fa6022dfd6d75921d90e4e": {
     "color": "#9669ED",
-    "name": "Compound Basic Attention Token",
+    "name": "Compound BAT",
     "symbol": "cBAT"
   },
   "0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643": {
     "color": "#9669ED",
-    "name": "Compound Dai",
+    "name": "Compound DAI",
     "symbol": "cDAI"
   },
   "0xF5DCe57282A584D2746FaF1593d3121Fcac444dC": {
     "color": "#9669ED",
-    "name": "Compound Sai",
+    "name": "Compound SAI",
     "symbol": "cSAI"
   },
   "0x39aa39c021dfbae8fac545936693ac917d5e7563": {
     "color": "#9669ED",
-    "name": "Compound USD Coin",
+    "name": "Compound USDC",
     "symbol": "cUSDC"
   },
   "0xc11b1268c1a384e55c48c2391d8d480264a3a7f4": {
     "color": "#9669ED",
-    "name": "Compound Wrapped Bitcoin",
+    "name": "Compound WBTC",
     "symbol": "cWBTC"
   },
   "0xB4272071eCAdd69d933AdcD19cA99fe80664fc08": {
@@ -94,6 +95,10 @@
     "color": "#E0A83A",
     "name": "DigixDAO"
   },
+  "0x1494ca1f11d487c2bbe4543e90080aeba4ba3c2b": {
+    "color": "#8150E6",
+    "name": "DefiPulse Index"
+  },
   "0x4f3AfEC4E5a3F2A6a1A411DEF7D7dFe50eE057bF": {
     "color": "#E0A83A",
     "name": "Digix Gold"
@@ -102,23 +107,28 @@
     "color": "#7866D5",
     "name": "Enjin"
   },
+  "0x80fB784B7eD66730e8b1DBd9820aFD29931aab03": {
+    "color": "#109FCA",
+    "name": "EthLend",
+    "symbol": "LEND"
+  },
   "0x4946Fcea7C692606e8908002e55A582af44AC121": {
     "color": "#D79C93",
     "name": "FOAM"
   },
   "0x493c57c4763932315a328269e1adad09653b9081": {
     "color": "#0F6AD7",
-    "name": "Fulcrum Dai",
+    "name": "Fulcrum DAI",
     "symbol": "iDAI"
   },
   "0x14094949152eddbfcd073717200da82fed8dc960": {
     "color": "#0F6AD7",
-    "name": "Fulcrum Sai",
+    "name": "Fulcrum DAI",
     "symbol": "iSAI"
   },
   "0xf013406a0b1d544238083df0b93ad0d2cbe0f65f": {
     "color": "#0F6AD7",
-    "name": "Fulcrum USD Coin",
+    "name": "Fulcrum USDC",
     "symbol": "iUSDC"
   },
   "0x419D0d8BdD9aF5e606Ae2232ed285Aff190E711b": {
@@ -275,7 +285,7 @@
   },
   "0x4c19596f5aaff459fa38b0f7ed92f11ae6543784": {
     "name": "TrustToken",
-    "symbol": "TRU",
+    "symbol": "TRU"
   },
   "0x04Fa0d235C4abf4BcF4787aF4CF447DE572eF828": {
     "color": "#FF4A4A",

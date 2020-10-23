@@ -1,12 +1,10 @@
-import { concat, get, reduce, toLower } from 'lodash';
-import {
-  calculateTradeDetails,
-  estimateSwapGasLimit,
-} from '../handlers/uniswap';
+import { concat, reduce } from 'lodash';
+import { estimateSwapGasLimit } from '../handlers/uniswap';
 import { add } from '../helpers/utilities';
 import { rapsAddOrUpdate } from '../redux/raps';
 import store from '../redux/store';
 import { ethUnits } from '../references';
+import { UNISWAP_V2_ROUTER_ADDRESS } from '../references/uniswap';
 import { contractUtils } from '../utils';
 import { isValidSwapInput } from './actions/swap';
 import { assetNeedsUnlocking } from './actions/unlock';
@@ -15,60 +13,42 @@ import { createNewAction, createNewRap, RapActionTypes } from './common';
 export const estimateUnlockAndSwap = async ({
   inputAmount,
   inputCurrency,
-  inputReserve,
   outputAmount,
   outputCurrency,
-  outputReserve,
+  tradeDetails,
 }) => {
   if (!inputAmount) inputAmount = 1;
   if (!outputAmount) outputAmount = 1;
 
   const isValid = isValidSwapInput({
     inputCurrency,
-    inputReserve,
     outputCurrency,
-    outputReserve,
   });
 
   if (!isValid) return ethUnits.basic_swap;
 
   const { accountAddress, chainId } = store.getState().settings;
-  const { pairs, allPairs } = store.getState().uniswap;
-  const globalPairs = {
-    ...pairs,
-    ...allPairs,
-  };
-  const exchangeAddress = get(
-    globalPairs,
-    `[${toLower(inputCurrency.address)}].exchangeAddress`
-  );
 
   let gasLimits = [];
   const swapAssetNeedsUnlocking = await assetNeedsUnlocking(
     accountAddress,
     inputAmount,
     inputCurrency,
-    exchangeAddress
+    UNISWAP_V2_ROUTER_ADDRESS
   );
   if (swapAssetNeedsUnlocking) {
     const unlockGasLimit = await contractUtils.estimateApprove(
       inputCurrency.address,
-      exchangeAddress
+      UNISWAP_V2_ROUTER_ADDRESS
     );
     gasLimits = concat(gasLimits, unlockGasLimit);
   }
 
-  const tradeDetails = calculateTradeDetails(
+  const { gasLimit: swapGasLimit } = await estimateSwapGasLimit({
+    accountAddress,
     chainId,
-    inputAmount,
-    inputCurrency,
-    inputReserve,
-    outputAmount,
-    outputCurrency,
-    outputReserve,
-    true
-  );
-  const swapGasLimit = await estimateSwapGasLimit(accountAddress, tradeDetails);
+    tradeDetails,
+  });
   gasLimits = concat(gasLimits, swapGasLimit);
 
   return reduce(gasLimits, (acc, limit) => add(acc, limit), '0');
@@ -77,25 +57,13 @@ export const estimateUnlockAndSwap = async ({
 const createUnlockAndSwapRap = async ({
   callback,
   inputAmount,
-  inputAsExactAmount,
   inputCurrency,
-  inputReserve,
-  outputAmount,
   outputCurrency,
-  outputReserve,
   selectedGasPrice,
+  tradeDetails,
 }) => {
   // create unlock rap
-  const { accountAddress, chainId } = store.getState().settings;
-  const { pairs, allPairs } = store.getState().uniswap;
-  const globalPairs = {
-    ...pairs,
-    ...allPairs,
-  };
-  const exchangeAddress = get(
-    globalPairs,
-    `[${toLower(inputCurrency.address)}].exchangeAddress`
-  );
+  const { accountAddress } = store.getState().settings;
 
   let actions = [];
 
@@ -103,7 +71,7 @@ const createUnlockAndSwapRap = async ({
     accountAddress,
     inputAmount,
     inputCurrency,
-    exchangeAddress
+    UNISWAP_V2_ROUTER_ADDRESS
   );
 
   if (swapAssetNeedsUnlocking) {
@@ -111,7 +79,7 @@ const createUnlockAndSwapRap = async ({
       accountAddress,
       amount: inputAmount,
       assetToUnlock: inputCurrency,
-      contractAddress: exchangeAddress,
+      contractAddress: UNISWAP_V2_ROUTER_ADDRESS,
     });
     actions = concat(actions, unlock);
   }
@@ -119,15 +87,11 @@ const createUnlockAndSwapRap = async ({
   // create a swap rap
   const swap = createNewAction(RapActionTypes.swap, {
     accountAddress,
-    chainId,
     inputAmount,
-    inputAsExactAmount,
     inputCurrency,
-    inputReserve,
-    outputAmount,
     outputCurrency,
-    outputReserve,
     selectedGasPrice,
+    tradeDetails,
   });
   actions = concat(actions, swap);
 

@@ -27,6 +27,7 @@ import ExchangeModalTypes from '../helpers/exchangeModalTypes';
 import { loadWallet } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import { executeRap } from '../raps/common';
+import { multicallClearState } from '../redux/multicall';
 import { savingsLoadState } from '../redux/savings';
 import ethUnits from '../references/ethereum-units.json';
 import {
@@ -39,7 +40,6 @@ import {
   useSwapInputRefs,
   useSwapInputs,
   useUniswapCurrencies,
-  useUniswapCurrencyReserves,
   useUniswapMarketDetails,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
@@ -85,15 +85,9 @@ export default function ExchangeModal({
     updateDefaultGasLimit,
     updateTxFee,
   } = useGas();
-  const {
-    clearUniswapCurrenciesAndReserves,
-    inputReserve,
-    outputReserve,
-  } = useUniswapCurrencyReserves();
   const { initWeb3Listener, stopWeb3Listener } = useBlockPolling();
   const { nativeCurrency } = useAccountSettings();
   const prevSelectedGasPrice = usePrevious(selectedGasPrice);
-  const { getMarketDetails } = useUniswapMarketDetails();
   const { maxInputBalance, updateMaxInputBalance } = useMaxInputBalance();
 
   const {
@@ -150,7 +144,6 @@ export default function ExchangeModal({
     isWithdrawal,
     maxInputBalance,
     nativeFieldRef,
-    outputCurrency,
     supplyBalanceUnderlying,
     type,
   });
@@ -159,15 +152,36 @@ export default function ExchangeModal({
     lastFocusedInputHandle?.current?.focus();
   }, [lastFocusedInputHandle]);
 
+  // Calculate market details
+  const { isSufficientLiquidity, tradeDetails } = useUniswapMarketDetails({
+    defaultInputAddress,
+    extraTradeDetails,
+    inputAmount,
+    inputAsExactAmount,
+    inputCurrency,
+    inputFieldRef,
+    isDeposit,
+    isWithdrawal,
+    maxInputBalance,
+    nativeCurrency,
+    outputAmount,
+    outputCurrency,
+    outputFieldRef,
+    setIsSufficientBalance,
+    setSlippage,
+    updateExtraTradeDetails,
+    updateInputAmount,
+    updateOutputAmount,
+  });
+
   const updateGasLimit = useCallback(async () => {
     try {
       const gasLimit = await estimateRap({
         inputAmount,
         inputCurrency,
-        inputReserve,
         outputAmount,
         outputCurrency,
-        outputReserve,
+        tradeDetails,
       });
       if (inputCurrency && outputCurrency) {
         updateTxFee(gasLimit);
@@ -180,10 +194,9 @@ export default function ExchangeModal({
     estimateRap,
     inputAmount,
     inputCurrency,
-    inputReserve,
     outputAmount,
     outputCurrency,
-    outputReserve,
+    tradeDetails,
     updateTxFee,
   ]);
 
@@ -191,6 +204,12 @@ export default function ExchangeModal({
   useEffect(() => {
     updateGasLimit();
   }, [updateGasLimit]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(multicallClearState());
+    };
+  }, [dispatch]);
 
   // Set default gas limit
   useEffect(() => {
@@ -250,12 +269,10 @@ export default function ExchangeModal({
     startPollingGasPrices();
     initWeb3Listener();
     return () => {
-      clearUniswapCurrenciesAndReserves();
       stopPollingGasPrices();
       stopWeb3Listener();
     };
   }, [
-    clearUniswapCurrenciesAndReserves,
     initWeb3Listener,
     isDeposit,
     isWithdrawal,
@@ -284,49 +301,6 @@ export default function ExchangeModal({
     updateInputAmount,
   ]);
 
-  // Calculate market details
-  useEffect(() => {
-    if (
-      (isDeposit || isWithdrawal) &&
-      get(inputCurrency, 'address') === defaultInputAddress
-    )
-      return;
-    getMarketDetails({
-      inputAmount,
-      inputAsExactAmount,
-      inputCurrency,
-      inputFieldRef,
-      maxInputBalance,
-      nativeCurrency,
-      outputAmount,
-      outputCurrency,
-      outputFieldRef,
-      setIsSufficientBalance,
-      setSlippage,
-      updateExtraTradeDetails,
-      updateInputAmount,
-      updateOutputAmount,
-    });
-  }, [
-    defaultInputAddress,
-    getMarketDetails,
-    inputAmount,
-    inputAsExactAmount,
-    inputCurrency,
-    inputFieldRef,
-    isDeposit,
-    isWithdrawal,
-    maxInputBalance,
-    nativeCurrency,
-    outputAmount,
-    outputCurrency,
-    outputFieldRef,
-    setIsSufficientBalance,
-    updateExtraTradeDetails,
-    updateInputAmount,
-    updateOutputAmount,
-  ]);
-
   const isSlippageWarningVisible =
     isSufficientBalance && !!inputAmount && !!outputAmount;
   const prevIsSlippageWarningVisible = usePrevious(isSlippageWarningVisible);
@@ -334,7 +308,6 @@ export default function ExchangeModal({
     if (isSlippageWarningVisible && !prevIsSlippageWarningVisible) {
       analytics.track('Showing high slippage warning in Swap', {
         category,
-        exchangeAddress: outputCurrency.exchangeAddress,
         name: outputCurrency.name,
         slippage,
         symbol: outputCurrency.symbol,
@@ -378,7 +351,6 @@ export default function ExchangeModal({
       analytics.track(`Submitted ${type}`, {
         category,
         defaultInputAsset: get(defaultInputAsset, 'symbol', ''),
-        exchangeAddress: get(outputCurrency, 'exchangeAddress', ''),
         isSlippageWarningVisible,
         name: get(outputCurrency, 'name', ''),
         slippage,
@@ -404,14 +376,12 @@ export default function ExchangeModal({
         const rap = await createRap({
           callback,
           inputAmount: isWithdrawal && isMax ? cTokenBalance : inputAmount,
-          inputAsExactAmount,
           inputCurrency,
-          inputReserve,
           isMax,
           outputAmount,
           outputCurrency,
-          outputReserve,
           selectedGasPrice: null,
+          tradeDetails,
         });
         logger.log('[exchange - handle submit] rap', rap);
         await executeRap(wallet, rap);
@@ -438,9 +408,7 @@ export default function ExchangeModal({
     defaultInputAsset,
     dispatch,
     inputAmount,
-    inputAsExactAmount,
     inputCurrency,
-    inputReserve,
     isDeposit,
     isMax,
     isSlippageWarningVisible,
@@ -448,9 +416,9 @@ export default function ExchangeModal({
     navigate,
     outputAmount,
     outputCurrency,
-    outputReserve,
     setParams,
     slippage,
+    tradeDetails,
     type,
   ]);
 
@@ -468,7 +436,6 @@ export default function ExchangeModal({
     });
     analytics.track('Opened Swap Details modal', {
       category,
-      exchangeAddress: get(outputCurrency, 'exchangeAddress', ''),
       name: get(outputCurrency, 'name', ''),
       symbol: get(outputCurrency, 'symbol', ''),
       tokenAddress: get(outputCurrency, 'address', ''),
@@ -605,6 +572,7 @@ export default function ExchangeModal({
                   isDeposit={isDeposit}
                   isSufficientBalance={isSufficientBalance}
                   isSufficientGas={isSufficientGas}
+                  isSufficientLiquidity={isSufficientLiquidity}
                   onSubmit={handleSubmit}
                   slippage={slippage}
                   testID={testID + '-confirm'}

@@ -72,7 +72,7 @@ export default function CurrencySelectModal() {
     favorites,
     globalHighLiquidityAssets,
     globalLowLiquidityAssets,
-    isInitialized,
+    loadingAllTokens,
     updateFavorites,
   } = useUniswapAssets();
   const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
@@ -103,7 +103,11 @@ export default function CurrencySelectModal() {
 
         filteredList = [];
         filteredBest.length &&
-          filteredList.push({ data: filteredBest, title: '' });
+          filteredList.push({
+            data: filteredBest,
+            title: '􀇻 Rainbow Verified',
+            useGradientText: true,
+          });
 
         const filteredHighWithoutScams = filterScams(
           filteredBest,
@@ -113,7 +117,7 @@ export default function CurrencySelectModal() {
         filteredHighWithoutScams.length &&
           filteredList.push({
             data: filteredHighWithoutScams,
-            title: filteredBest.length ? 'MORE RESULTS' : '',
+            title: '􀇿 Unverified',
           });
 
         const filteredLowWithoutScams = filterScams(filteredBest, filteredLow);
@@ -121,10 +125,16 @@ export default function CurrencySelectModal() {
         filteredLowWithoutScams.length &&
           filteredList.push({
             data: filteredLowWithoutScams,
-            title: 'LOW LIQUIDITY',
+            title: '􀇿 Low Liquidity',
           });
       } else {
-        filteredList = headerlessSection(concat(favorites, curatedAssets));
+        filteredList = [
+          {
+            data: concat(favorites, curatedAssets),
+            title: '􀇻 Rainbow Verified',
+            useGradientText: true,
+          },
+        ];
       }
     }
 
@@ -282,7 +292,7 @@ export default function CurrencySelectModal() {
               <CurrencySelectionList
                 itemProps={itemProps}
                 listItems={currencyList}
-                loading={!isInitialized}
+                loading={loadingAllTokens}
                 query={searchQueryForSearch}
                 showList={isFocused}
                 testID="currency-select-list"

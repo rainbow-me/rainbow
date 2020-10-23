@@ -1,12 +1,10 @@
-import { concat, get, reduce, toLower } from 'lodash';
-import {
-  calculateTradeDetails,
-  estimateSwapGasLimit,
-} from '../handlers/uniswap';
+import { concat, reduce } from 'lodash';
+import { estimateSwapGasLimit } from '../handlers/uniswap';
 import { add } from '../helpers/utilities';
 import { rapsAddOrUpdate } from '../redux/raps';
 import store from '../redux/store';
 import { ethUnits, savingsAssetsListByUnderlying } from '../references';
+import { UNISWAP_V2_ROUTER_ADDRESS } from '../references/uniswap';
 import { contractUtils } from '../utils';
 
 import { getDepositGasLimit } from './actions/depositCompound';
@@ -18,29 +16,17 @@ import logger from 'logger';
 export const estimateSwapAndDepositCompound = async ({
   inputAmount,
   inputCurrency,
-  inputReserve,
   outputAmount,
   outputCurrency,
-  outputReserve,
+  tradeDetails,
 }) => {
   const { accountAddress, chainId, network } = store.getState().settings;
-  const { pairs, allPairs } = store.getState().uniswap;
-  const globalPairs = {
-    ...pairs,
-    ...allPairs,
-  };
-  const exchangeAddress = get(
-    globalPairs,
-    `[${toLower(inputCurrency.address)}].exchangeAddress`
-  );
   const requiresSwap = !!outputCurrency;
   let gasLimits = [];
   if (requiresSwap) {
     const isValid = isValidSwapInput({
       inputCurrency,
-      inputReserve,
       outputCurrency,
-      outputReserve,
     });
     if (!isValid) return ethUnits.basic_deposit;
 
@@ -48,30 +34,21 @@ export const estimateSwapAndDepositCompound = async ({
       accountAddress,
       inputAmount,
       inputCurrency,
-      exchangeAddress
+      UNISWAP_V2_ROUTER_ADDRESS
     );
     if (swapAssetNeedsUnlocking) {
       const unlockGasLimit = await contractUtils.estimateApprove(
         inputCurrency.address,
-        exchangeAddress
+        UNISWAP_V2_ROUTER_ADDRESS
       );
       gasLimits = concat(gasLimits, unlockGasLimit);
     }
 
-    const tradeDetails = calculateTradeDetails(
-      chainId,
-      inputAmount,
-      inputCurrency,
-      inputReserve,
-      outputAmount,
-      outputCurrency,
-      outputReserve,
-      true
-    );
-    const swapGasLimit = await estimateSwapGasLimit(
+    const { gasLimit: swapGasLimit } = await estimateSwapGasLimit({
       accountAddress,
-      tradeDetails
-    );
+      chainId,
+      tradeDetails,
+    });
     gasLimits = concat(gasLimits, swapGasLimit);
     logger.log('[swap and deposit] making swap func');
   }
@@ -107,22 +84,12 @@ const createSwapAndDepositCompoundRap = async ({
   callback,
   inputAmount,
   inputCurrency,
-  inputReserve,
   outputAmount,
   outputCurrency,
-  outputReserve,
   selectedGasPrice,
+  tradeDetails,
 }) => {
-  const { accountAddress, chainId, network } = store.getState().settings;
-  const { pairs, allPairs } = store.getState().uniswap;
-  const globalPairs = {
-    ...pairs,
-    ...allPairs,
-  };
-  const exchangeAddress = get(
-    globalPairs,
-    `[${toLower(inputCurrency.address)}].exchangeAddress`
-  );
+  const { accountAddress, network } = store.getState().settings;
   const requiresSwap = !!outputCurrency;
   logger.log('[swap and deposit] currencies', inputCurrency, outputCurrency);
   logger.log('[swap and deposit] amounts', inputAmount, outputAmount);
@@ -135,7 +102,7 @@ const createSwapAndDepositCompoundRap = async ({
       accountAddress,
       inputAmount,
       inputCurrency,
-      exchangeAddress
+      UNISWAP_V2_ROUTER_ADDRESS
     );
     if (swapAssetNeedsUnlocking) {
       // create unlock for swap rap
@@ -143,7 +110,7 @@ const createSwapAndDepositCompoundRap = async ({
         accountAddress,
         amount: inputAmount,
         assetToUnlock: inputCurrency,
-        contractAddress: exchangeAddress,
+        contractAddress: UNISWAP_V2_ROUTER_ADDRESS,
       });
       actions = concat(actions, unlock);
       logger.log('[swap and deposit] making unlock for swap func');
@@ -152,15 +119,11 @@ const createSwapAndDepositCompoundRap = async ({
     // create a swap rap
     const swap = createNewAction(RapActionTypes.swap, {
       accountAddress,
-      chainId,
       inputAmount,
-      inputAsExactAmount: true,
       inputCurrency,
-      inputReserve,
-      outputAmount,
       outputCurrency,
-      outputReserve,
       selectedGasPrice,
+      tradeDetails,
     });
     actions = concat(actions, swap);
     logger.log('[swap and deposit] making swap func');

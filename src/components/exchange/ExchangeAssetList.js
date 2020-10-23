@@ -5,7 +5,7 @@ import { usePrevious } from '../../hooks';
 import { exchangeModalBorderRadius } from '../../screens/ExchangeModal';
 import { magicMemo } from '../../utils';
 import { CoinRowHeight, ExchangeCoinRow } from '../coin-row';
-import { Text } from '../text';
+import { GradientText, Text } from '../text';
 import { colors, padding } from '@rainbow-me/styles';
 
 const Header = styled.View`
@@ -15,17 +15,30 @@ const Header = styled.View`
 
 const HeaderTitle = styled(Text).attrs({
   color: colors.blueGreyDark,
-  opacity: 0.4,
-  size: 'smaller',
-  weight: 'semibold',
+  opacity: 0.6,
+  size: 'lmedium',
+  weight: 'bold',
 })``;
 
-const ExchangeAssetSectionListHeader = ({ section }) =>
-  section?.title ? (
+const HeaderTitleGradient = styled(GradientText).attrs({
+  colors: ['#6AA2E3', '#FF54BB', '#FFA230'],
+  end: { x: 1, y: 1 },
+  size: 'lmedium',
+  start: { x: 0, y: 0 },
+  steps: [0, 0.2, 0.45, 1],
+  weight: 'bold',
+})``;
+
+const ExchangeAssetSectionListHeader = ({ section }) => {
+  const TitleComponent = section.useGradientText
+    ? HeaderTitleGradient
+    : HeaderTitle;
+  return section?.title ? (
     <Header>
-      <HeaderTitle>{section.title}</HeaderTitle>
+      <TitleComponent>{section.title}</TitleComponent>
     </Header>
   ) : null;
+};
 
 const contentContainerStyle = { paddingBottom: exchangeModalBorderRadius };
 const keyExtractor = ({ uniqueId }) => `ExchangeAssetList-${uniqueId}`;

@@ -40,7 +40,6 @@ export default function ChartContextButton({ asset, color }) {
         Linking.openURL(`https://${etherscanHost}/token/${asset?.address}`);
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [asset?.address, etherscanHost, setHiddenCoins, setPinnedCoins]
   );
 
@@ -51,7 +50,6 @@ export default function ChartContextButton({ asset, color }) {
       ...(asset?.address === 'eth' ? [] : ['🔍 View on Etherscan']),
       lang.t('wallet.action.cancel'),
     ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [asset?.address, currentAction]
   );
 

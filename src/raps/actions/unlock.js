@@ -1,6 +1,6 @@
+import { MaxUint256 } from '@ethersproject/constants';
 import { captureException } from '@sentry/react-native';
-import { ethers } from 'ethers';
-import { get, toLower } from 'lodash';
+import { get, isNull, toLower } from 'lodash';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import TransactionTypes from '../../helpers/transactionTypes';
 import {
@@ -75,7 +75,7 @@ const unlock = async (wallet, currentRap, index, parameters) => {
   );
 
   // Cache the approved value
-  AllowancesCache.cache[cacheKey] = ethers.constants.MaxUint256;
+  AllowancesCache.cache[cacheKey] = MaxUint256;
 
   // update rap for hash
   currentRap.actions[index].transaction.hash = approval.hash;
@@ -151,7 +151,9 @@ export const assetNeedsUnlocking = async (
       contractAddress
     );
     // Cache that value
-    AllowancesCache.cache[cacheKey] = allowance;
+    if (isNull(allowance)) {
+      AllowancesCache.cache[cacheKey] = allowance;
+    }
   }
 
   const rawAmount = convertAmountToRawAmount(amount, assetToUnlock.decimals);
