@@ -106,7 +106,7 @@ interface EthereumWalletFromSeed {
   wallet: null | EthereumWallet;
   type: EthereumWalletType;
   walletType: WalletLibraryType;
-  root: EthereumHDKey; // FIXME;
+  root: EthereumHDKey;
   address: EthereumAddress;
 }
 
