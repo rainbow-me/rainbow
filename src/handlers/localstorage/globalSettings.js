@@ -7,12 +7,17 @@ const LANGUAGE = 'language';
 const NATIVE_CURRENCY = 'nativeCurrency';
 const NETWORK = 'network';
 const KEYCHAIN_INTEGRITY_STATE = 'keychainIntegrityState';
+const AUTH_TIMELOCK = 'authTimelock';
 
 export const getKeychainIntegrityState = () =>
   getGlobal(KEYCHAIN_INTEGRITY_STATE, null);
 
 export const saveKeychainIntegrityState = state =>
   saveGlobal(KEYCHAIN_INTEGRITY_STATE, state);
+
+export const getAuthTimelock = () => getGlobal(AUTH_TIMELOCK, null);
+
+export const saveAuthTimelock = ts => saveGlobal(AUTH_TIMELOCK, ts);
 
 export const getLanguage = () => getGlobal(LANGUAGE, 'en');
 
