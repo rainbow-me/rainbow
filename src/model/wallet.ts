@@ -808,6 +808,14 @@ export const getPrivateKey = async (
       authenticationPrompt,
     })) as PrivateKeyData;
 
+    if (pkey === -2) {
+      Alert.alert(
+        'Error',
+        'Please use a different biometric authentication method'
+      );
+      return null;
+    }
+
     return pkey || null;
   } catch (error) {
     logger.sentry('Error in getPrivateKey');
@@ -839,6 +847,14 @@ export const getSeedPhrase = async (
     const seedPhraseData = (await keychain.loadObject(key, {
       authenticationPrompt,
     })) as SeedPhraseData;
+
+    if (seedPhraseData === -2) {
+      Alert.alert(
+        'Error',
+        'Please use a different biometric authentication method'
+      );
+      return null;
+    }
 
     return seedPhraseData || null;
   } catch (error) {

@@ -74,6 +74,9 @@ export async function loadString(
     if (err.toString() === 'Error: User canceled the operation.') {
       return -1;
     }
+    if (err.toString() === 'Error: Wrapped error: User not authenticated') {
+      return -2;
+    }
     logger.sentry(
       `Keychain: failed to load string for key: ${key} error: ${err}`
     );
@@ -97,8 +100,8 @@ export async function loadObject(
 ): Promise<null | Object | -1> {
   const jsonValue = await loadString(key, options);
   if (!jsonValue) return null;
-  if (jsonValue === -1) {
-    return -1;
+  if (jsonValue === -1 || jsonValue === -2) {
+    return jsonValue;
   }
   try {
     const objectValue = JSON.parse(jsonValue);

@@ -44,7 +44,7 @@ export default function BiometricButtonContent({
 
   return (
     <RowWithMargins centered margin={7} {...props}>
-      {showBiometryIcon && (
+      {!android && showBiometryIcon && (
         <BiometryIcon biometryType={biometryType} color={color} />
       )}
       <ButtonLabel color={color} testID={testID}>
