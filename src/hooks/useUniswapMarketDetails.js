@@ -112,10 +112,9 @@ export default function useUniswapMarketDetails({
           inputAsExactAmount
         );
 
-        const isSufficientAmountToTrade = greaterThanOrEqualTo(
-          maxInputBalance,
-          rawUpdatedInputAmount
-        );
+        const isSufficientAmountToTrade =
+          !rawUpdatedInputAmount ||
+          greaterThanOrEqualTo(maxInputBalance, rawUpdatedInputAmount);
         setIsSufficientBalance(isSufficientAmountToTrade);
       }
     },
