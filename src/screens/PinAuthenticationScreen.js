@@ -53,10 +53,8 @@ const PinAuthenticationScreen = () => {
       // When opening the screen we need to check
       // if the user wasn't banned for too many tries
       const timelock = await getAuthTimelock();
-      console.log('timelock', timelock);
       if (timelock) {
         const stillBanned = Date.now() < timelock;
-        console.log('stillBanned', stillBanned);
         if (stillBanned) {
           const timeLeftMS = Date.now() - timelock;
           const timeAmountSeconds = Math.abs(timeLeftMS / 1000);
@@ -65,12 +63,6 @@ const PinAuthenticationScreen = () => {
             timeAmountSeconds > 60
               ? Math.ceil(timeAmountSeconds / 60)
               : Math.ceil(timeAmountSeconds);
-          console.log('Data', {
-            timeAmount,
-            timeAmountSeconds,
-            timeLeftMS,
-            unit,
-          });
 
           Alert.alert(
             'Still blocked',
