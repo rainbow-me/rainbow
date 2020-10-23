@@ -21,7 +21,6 @@ const SET_OPEN_FAMILY_TABS = 'openStateSettings/SET_OPEN_FAMILY_TABS';
 const SET_OPEN_SAVINGS = 'openStateSettings/SET_OPEN_SAVINGS';
 const SET_OPEN_SMALL_BALANCES = 'openStateSettings/SET_OPEN_SMALL_BALANCES';
 const SET_OPEN_INVESTMENT_CARDS = 'openStateSettings/SET_OPEN_INVESTMENT_CARDS';
-const PUSH_OPEN_INVESTMENT_CARD = 'openStateSettings/PUSH_OPEN_INVESTMENT_CARD';
 
 // -- Actions --------------------------------------------------------------- //
 export const openStateSettingsLoadState = () => async (dispatch, getState) => {
@@ -91,23 +90,12 @@ export const setOpenFamilyTabs = payload => (dispatch, getState) => {
 
 export const setOpenInvestmentCards = payload => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
-  const { openInvestmentCards } = getState().openStateSettings;
-  const updatedOpenInvestmentCards = {
-    ...openInvestmentCards,
-    [payload.index]: payload.state,
-  };
-  saveOpenInvestmentCards(updatedOpenInvestmentCards, accountAddress, network);
+  saveOpenInvestmentCards(payload, accountAddress, network);
   dispatch({
-    payload: updatedOpenInvestmentCards,
+    payload,
     type: SET_OPEN_INVESTMENT_CARDS,
   });
 };
-
-export const pushOpenInvestmentCard = payload => dispatch =>
-  dispatch({
-    payload,
-    type: PUSH_OPEN_INVESTMENT_CARD,
-  });
 
 export const resetOpenStateSettings = () => dispatch =>
   dispatch({
@@ -138,8 +126,6 @@ export default (state = INITIAL_STATE, action) =>
     } else if (action.type === SET_OPEN_SMALL_BALANCES) {
       draft.openSmallBalances = action.payload;
     } else if (action.type === SET_OPEN_INVESTMENT_CARDS) {
-      draft.openInvestmentCards = action.payload;
-    } else if (action.type === PUSH_OPEN_INVESTMENT_CARD) {
       draft.openInvestmentCards = action.payload;
     } else if (action.type === CLEAR_OPEN_STATE_SETTINGS) {
       return INITIAL_STATE;

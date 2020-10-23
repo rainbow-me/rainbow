@@ -19,6 +19,7 @@ const AssetListHeader = ({
     isCoinListEdited={isCoinListEdited}
     isSticky={isSticky}
     title={title}
+    totalValue={totalValue}
     {...props}
   >
     {totalValue ? (

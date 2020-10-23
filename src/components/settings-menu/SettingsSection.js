@@ -168,6 +168,7 @@ export default function SettingsSection({
             onPress={onPressBackup}
             onPressIcloudBackup={onPressIcloudBackup}
             onPressShowSecret={onPressShowSecret}
+            testID="backup-section"
           >
             <ListItemArrowGroup>
               {areBackedUp ? (
@@ -182,6 +183,7 @@ export default function SettingsSection({
           icon={<SettingIcon source={CurrencyIcon} />}
           label="Currency"
           onPress={onPressCurrency}
+          testID="currency-section"
         >
           <ListItemArrowGroup>{nativeCurrency || ''}</ListItemArrowGroup>
         </ListItem>
@@ -189,6 +191,7 @@ export default function SettingsSection({
           icon={<SettingIcon source={NetworkIcon} />}
           label="Network"
           onPress={onPressNetwork}
+          testID="network-section"
         >
           <ListItemArrowGroup>
             {networkInfo?.[network]?.name}
@@ -210,24 +213,28 @@ export default function SettingsSection({
           icon={<Emoji name="rainbow" />}
           label="Share Rainbow"
           onPress={onPressShare}
+          testID="share-section"
           value={SettingsExternalURLs.rainbowHomepage}
         />
         <ListItem
           icon={<Emoji name="bird" />}
           label="Follow Us on Twitter"
           onPress={onPressTwitter}
+          testID="twitter-section"
           value={SettingsExternalURLs.twitter}
         />
         <ListItem
           icon={<Emoji name="speech_balloon" />}
           label="Feedback and Support"
           onPress={onSendFeedback}
+          testID="feedback-section"
         />
         {isReviewAvailable && (
           <ListItem
             icon={<Emoji name="red_heart" />}
             label="Review Rainbow"
             onPress={onPressReview}
+            testID="review-section"
           />
         )}
       </ColumnWithDividers>
@@ -238,6 +245,7 @@ export default function SettingsSection({
             icon={<Emoji name="construction" />}
             label="Developer settings"
             onPress={onPressDev}
+            testID="developer-section"
           />
         </Fragment>
       )}

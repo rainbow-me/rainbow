@@ -48,20 +48,20 @@ export default function AddCashSheet() {
   const [errorIndex, setErrorIndex] = useState(null);
   const onClearError = useCallback(() => setErrorIndex(null), []);
 
-  const { dailyRemainingLimit, yearlyRemainingLimit } = useAddCashLimits();
+  const { weeklyRemainingLimit, yearlyRemainingLimit } = useAddCashLimits();
 
   const cashLimits = useMemo(
     () => ({
-      daily:
-        dailyRemainingLimit > 0
-          ? `Up to $${dailyRemainingLimit} today`
-          : 'Daily limit reached',
+      weekly:
+        weeklyRemainingLimit > 0
+          ? `$${weeklyRemainingLimit} left this week`
+          : 'Weekly limit reached',
       yearly:
         yearlyRemainingLimit > 0
           ? `$${yearlyRemainingLimit} left this year`
           : 'Yearly limit reached',
     }),
-    [dailyRemainingLimit, yearlyRemainingLimit]
+    [weeklyRemainingLimit, yearlyRemainingLimit]
   );
 
   const {
@@ -121,7 +121,7 @@ export default function AddCashSheet() {
             />
           ) : (
             <AddCashForm
-              limitDaily={dailyRemainingLimit}
+              limitWeekly={weeklyRemainingLimit}
               onClearError={onClearError}
               onLimitExceeded={onLimitExceeded}
               onPurchase={onPurchase}

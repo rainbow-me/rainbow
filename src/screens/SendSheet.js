@@ -479,6 +479,7 @@ export default function SendSheet(props) {
                 isSufficientGas={isSufficientGas}
                 onLongPress={onLongPressSend}
                 smallButton={isTinyPhone}
+                testID="send-sheet-confirm"
               />
             }
             nativeAmount={amountDetails.nativeAmount}

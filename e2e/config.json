@@ -3,7 +3,7 @@
     "testRunner": "jest-circus/runner",
     "testTimeout": 120000,
     "testRegex": "\\.spec\\.js$",
-    "reporters": ["detox/runners/jest/streamlineReporter"],
+    "reporters": [["jest-junit",{"outputDirectory":"./e2e/logs/iOS","outputName":"testResults.xml"}]],
     "verbose": true,
     "transform": {
         "^.+\\.js?$": "babel-jest"

@@ -53,8 +53,11 @@ export async function clearField(elementId) {
 }
 
 export async function tapAndLongPress(elementId) {
-  await tap(elementId);
   return element(by.id(elementId)).longPress();
+}
+
+export async function tapAndLongPressByText(text) {
+  return element(by.text(text)).longPress();
 }
 
 export async function replaceTextInField(elementId, text) {
