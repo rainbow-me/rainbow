@@ -2,6 +2,10 @@ import { captureException, captureMessage } from '@sentry/react-native';
 import { generateMnemonic } from 'bip39';
 import { signTypedData_v4, signTypedDataLegacy } from 'eth-sig-util';
 import { isValidAddress, toBuffer, toChecksumAddress } from 'ethereumjs-util';
+import {
+  hdkey as EthereumHDKey,
+  default as LibWallet,
+} from 'ethereumjs-wallet';
 import { ethers, Wallet } from 'ethers';
 import {
   Arrayish,
@@ -23,6 +27,7 @@ import {
   web3Provider,
 } from '../handlers/web3';
 import showWalletErrorAlert from '../helpers/support';
+import WalletLoadingStates from '../helpers/walletLoadingStates';
 import { EthereumWalletType } from '../helpers/walletTypes';
 import store from '../redux/store';
 import { setIsWalletLoading } from '../redux/wallets';
@@ -36,7 +41,6 @@ import {
   selectedWalletKey,
 } from '../utils/keychainConstants';
 import * as keychain from './keychain';
-import WalletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
 import { colors } from '@rainbow-me/styles';
 import logger from 'logger';
 
@@ -101,6 +105,9 @@ interface EthereumWalletFromSeed {
   isHDWallet: boolean;
   wallet: null | EthereumWallet;
   type: EthereumWalletType;
+  walletType: WalletLibraryType;
+  root: EthereumHDKey; // FIXME;
+  address: EthereumAddress;
 }
 
 type EthereumWallet = Wallet | ReadOnlyWallet;
@@ -496,7 +503,9 @@ export const createWallet = async (
     if (!walletResult) return null;
     const walletAddress = address;
     if (isHDWallet) {
-      pkey = addHexPrefix(walletResult.getPrivateKey().toString('hex'));
+      pkey = addHexPrefix(
+        (walletResult as LibWallet).getPrivateKey().toString('hex')
+      );
     }
     logger.sentry('[createWallet] - getWallet from seed');
 
@@ -692,7 +701,7 @@ export const createWallet = async (
     if (walletResult && walletAddress) {
       const ethersWallet =
         walletType === WalletLibraryType.ethers
-          ? walletResult
+          ? (walletResult as Wallet)
           : new ethers.Wallet(pkey);
       if (wasLoading) {
         setTimeout(() => {

@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { buildTransactionsSectionsSelector } from '../helpers/buildTransactionsSectionsSelector';
 import NetworkTypes from '../helpers/networkTypes';
-import { buildTransactionsSectionsSelector } from '../helpers/transactions';
 import useContacts from './useContacts';
 import useRequests from './useRequests';
 
@@ -26,7 +26,6 @@ export default function useAccountTransactions(initialized, isFocused) {
     () => transactions.slice(0, page * NOE_PAGE),
     [transactions, page]
   );
-
 
   const transactionsCount = useMemo(() => {
     return slicedTransaction.length;
