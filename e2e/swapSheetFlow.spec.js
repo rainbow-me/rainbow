@@ -306,7 +306,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.delay(2000);
     await Helpers.tap('exchange-coin-row-ZRX');
     await Helpers.delay(2000);
-    await Helpers.typeText('exchange-modal-output', '.', false);
+    await Helpers.typeText('exchange-modal-output', '.', true);
     await Helpers.delay(1000);
     await Helpers.checkIfVisible('exchange-modal-output-0.');
     await Helpers.delay(1000);
