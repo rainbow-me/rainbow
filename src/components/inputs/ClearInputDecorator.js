@@ -3,8 +3,8 @@ import { Transition, Transitioning } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
 import { magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
-import { Icon } from '../icons';
 import { Centered } from '../layout';
+import { Text } from '../text';
 import { colors, position } from '@rainbow-me/styles';
 
 const Button = styled(Centered).attrs({
@@ -20,6 +20,14 @@ const Container = styled.View`
   right: 0;
   top: 0;
 `;
+
+const TextIcon = styled(Text).attrs({
+  align: 'center',
+  color: colors.alpha(colors.blueGreyDark, 0.3),
+  letterSpacing: 'zero',
+  size: 'large',
+  weight: 'bold',
+})``;
 
 const duration = 100;
 const transition = (
@@ -66,7 +74,7 @@ const ClearInputDecorator = ({ inputHeight, isVisible, onPress }) => {
             onPress={onPress}
             size={inputHeight}
           >
-            <Icon color={colors.blueGreyDark} name="clearInput" opacity={0.3} />
+            <TextIcon>􀁡</TextIcon>
           </Button>
         </Transitioning.View>
       )}

@@ -28,7 +28,7 @@ const Title = styled(TruncatedText).attrs({
   align: 'center',
   lineHeight: 'loose',
   size: 'large',
-  weight: 'bold',
+  weight: 'heavy',
 })`
   ${padding(1, 0, 0)};
   height: 21;

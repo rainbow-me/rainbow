@@ -21,6 +21,7 @@ const Input = (
     selectionColor = defaultSelectionColor,
     spellCheck = true,
     testID,
+    textContentType = 'none',
     ...props
   },
   ref
@@ -37,6 +38,7 @@ const Input = (
       selectionColor={selectionColor}
       spellCheck={spellCheck}
       testID={testID}
+      textContentType={textContentType}
     />
   );
 };

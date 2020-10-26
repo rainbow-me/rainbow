@@ -1,44 +1,62 @@
 import React, { useCallback } from 'react';
+import RadialGradient from 'react-native-radial-gradient';
 import styled from 'styled-components/primitives';
-import { Icon } from '../icons';
 import { ClearInputDecorator, Input } from '../inputs';
-import { InnerBorder, Row } from '../layout';
+import { Row } from '../layout';
+import { Text } from '../text';
 import { colors, margin, padding } from '@rainbow-me/styles';
+import { deviceUtils } from '@rainbow-me/utils';
 
 export const ExchangeSearchHeight = 40;
+const ExchangeSearchWidth = deviceUtils.dimensions.width - 30;
 
 const Container = styled(Row)`
   ${margin(0, 15, 8)};
-  ${padding(0, 37, 0, 13)};
-  background-color: ${colors.skeleton};
+  ${padding(0, 37, 0, 12)};
+  background-color: ${colors.transparent};
   border-radius: ${ExchangeSearchHeight / 2};
   height: ${ExchangeSearchHeight};
+  overflow: hidden;
 `;
 
-const SearchIcon = styled(Icon).attrs({
-  color: colors.alpha(colors.blueGreyDark, 0.4),
-  name: 'search',
+const BackgroundGradient = styled(RadialGradient).attrs({
+  center: [ExchangeSearchWidth, ExchangeSearchWidth / 2],
+  colors: ['#FCFDFE', '#F0F2F5'],
+})`
+  position: absolute;
+  height: ${ExchangeSearchWidth};
+  top: ${-(ExchangeSearchWidth - ExchangeSearchHeight) / 2};
+  transform: scaleY(${ExchangeSearchHeight / ExchangeSearchWidth});
+  width: ${ExchangeSearchWidth};
+`;
+
+const SearchIcon = styled(Text).attrs({
+  color: colors.alpha(colors.blueGreyDark, 0.5),
+  size: 'large',
+  weight: 'semibold',
 })`
   flex-shrink: 0;
-  margin-top: 10.5;
+  margin-top: 9;
 `;
 
 const SearchInput = styled(Input).attrs({
   autoCapitalize: 'words',
   blurOnSubmit: false,
   clearTextOnFocus: true,
+  color: colors.alpha(colors.blueGreyDark, 0.8),
   enablesReturnKeyAutomatically: true,
   keyboardAppearance: 'dark',
   keyboardType: 'ascii-capable',
   lineHeight: 'loose',
-  placeholderTextColor: colors.grey,
+  placeholderTextColor: colors.alpha(colors.blueGreyDark, 0.5),
   returnKeyType: 'search',
   selectionColor: colors.appleBlue,
   size: 'large',
   spellCheck: false,
+  weight: 'semibold',
 })`
   flex: 1;
-  margin-left: 7;
+  margin-left: 4;
 `;
 
 const ExchangeSearch = (
@@ -52,11 +70,12 @@ const ExchangeSearch = (
 
   return (
     <Container>
-      <SearchIcon />
+      <BackgroundGradient />
+      <SearchIcon>􀊫</SearchIcon>
       <SearchInput
         onChangeText={onChangeText}
         onFocus={onFocus}
-        placeholder="Search"
+        placeholder="Search Uniswap"
         ref={ref}
         testID={testID + '-input'}
         value={searchQuery}
@@ -65,11 +84,6 @@ const ExchangeSearch = (
         inputHeight={ExchangeSearchHeight}
         isVisible={searchQuery !== ''}
         onPress={handleClearInput}
-      />
-      <InnerBorder
-        color={colors.dark}
-        opacity={0.01}
-        radius={ExchangeSearchHeight / 2}
       />
     </Container>
   );
