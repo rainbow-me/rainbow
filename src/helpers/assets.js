@@ -46,7 +46,7 @@ export const buildCoinsList = (
 
   const isShortList = assetsLength <= amountOfShowedCoins;
 
-  forEach(assets, function(asset, index) {
+  forEach(assets, (asset, index) => {
     if (hiddenCoins && hiddenCoins.includes(asset.uniqueId)) {
       hiddenAssets.push({
         isCoin: true,
