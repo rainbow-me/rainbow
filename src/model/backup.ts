@@ -10,7 +10,6 @@ import {
   encryptAndSaveDataToCloud,
   getDataFromCloud,
 } from '../handlers/cloudBackup';
-import WalletBackupTypes from '../helpers/walletBackupTypes';
 import {
   allWalletsKey,
   privateKeyKey,
@@ -24,6 +23,9 @@ import {
   publicAccessControlOptions,
   RainbowWallet,
 } from './wallet';
+import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
+import WalletTypes from '@rainbow-me/helpers/walletTypes';
+
 import logger from 'logger';
 
 type BackupPassword = string;
@@ -151,11 +153,27 @@ export async function restoreCloudBackup(
     if (!data) {
       throw new Error('Invalid password');
     }
+
+    // Restore only wallets that were backed up
+    // or wallets that are read-only
+    const walletsToRestore = {};
+    forEach(userData.wallets, wallet => {
+      if (
+        (wallet.backedUp &&
+          wallet.backupDate &&
+          wallet.backupFile &&
+          wallet.backupType === WalletBackupTypes.cloud) ||
+        wallet.type === WalletTypes.readOnly
+      ) {
+        walletsToRestore[wallet.id] = wallet;
+      }
+    });
+
     const dataToRestore = {
       // All wallets
       [allWalletsKey]: {
         version: allWalletsVersion,
-        wallets: userData.wallets,
+        wallets: walletsToRestore,
       },
       ...data.secrets,
     };
