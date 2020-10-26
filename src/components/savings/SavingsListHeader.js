@@ -55,13 +55,13 @@ const SavingsListHeader = ({
         paddingHorizontal={19}
         width="100%"
       >
-        <RowWithMargins align="center" margin={emoji ? 3.5 : 9}>
+        <RowWithMargins align="center" margin={emoji ? 5 : 9}>
           <ListHeaderEmoji name={emoji} />
           <TruncatedText
             letterSpacing="roundedMedium"
             lineHeight="normal"
             size="large"
-            weight="semibold"
+            weight="bold"
           >
             {title}
           </TruncatedText>
@@ -77,7 +77,7 @@ const SavingsListHeader = ({
               }}
             >
               <SumValueText>
-                {Number(savingsSumValue)
+                {Number(savingsSumValue) || Number(savingsSumValue) === 0
                   ? convertAmountToNativeDisplay(
                       savingsSumValue,
                       nativeCurrency

@@ -49,7 +49,7 @@ const TitleText = styled(TruncatedText).attrs({
   letterSpacing: 'roundedMedium',
   lineHeight: 'normal',
   size: 'large',
-  weight: 'semibold',
+  weight: 'bold',
 })`
   flex: 1;
   margin-bottom: 1;
