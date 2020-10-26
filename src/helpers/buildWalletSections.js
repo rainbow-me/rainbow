@@ -285,7 +285,8 @@ const withBalanceSection = (
   isCoinListEdited,
   pinnedCoins,
   hiddenCoins,
-  currentAction
+  currentAction,
+  uniswapTotalSelector
 ) => {
   const { assets, totalBalancesValue } = buildCoinsList(
     allAssets,
@@ -300,8 +301,20 @@ const withBalanceSection = (
     totalBalancesValue,
     get(savingsSection, 'totalValue', 0)
   );
-  const totalValue = convertAmountToNativeDisplay(
+
+  const poolsBalance = get(
+    uniswapTotalSelector,
+    'header.totalValue',
+    0
+  )?.substring(1);
+
+  const totalBalanceWithSectionValues = add(
     totalBalanceWithSavingsValue,
+    poolsBalance
+  );
+
+  const totalValue = convertAmountToNativeDisplay(
+    totalBalanceWithSectionValues,
     nativeCurrency
   );
 
@@ -416,6 +429,16 @@ const balanceSavingsSectionSelector = createSelector(
   withBalanceSavingsSection
 );
 
+const uniswapSectionSelector = createSelector(
+  [
+    languageSelector,
+    nativeCurrencySelector,
+    uniswapSelector,
+    uniswapTotalSelector,
+  ],
+  withUniswapSection
+);
+
 const balanceSectionSelector = createSelector(
   [
     allAssetsSelector,
@@ -431,18 +454,9 @@ const balanceSectionSelector = createSelector(
     pinnedCoinsSelector,
     hiddenCoinsSelector,
     currentActionSelector,
+    uniswapSectionSelector,
   ],
   withBalanceSection
-);
-
-const uniswapSectionSelector = createSelector(
-  [
-    languageSelector,
-    nativeCurrencySelector,
-    uniswapSelector,
-    uniswapTotalSelector,
-  ],
-  withUniswapSection
 );
 
 const uniqueTokenFamiliesSelector = createSelector(
