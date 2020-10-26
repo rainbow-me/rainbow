@@ -67,7 +67,7 @@ import {
   signTypedDataMessage,
 } from '../model/wallet';
 import { walletConnectRemovePendingRedirect } from '../redux/walletconnect';
-import { ethereumUtils, gasUtils, safeAreaInsetValues } from '../utils';
+import { ethereumUtils, safeAreaInsetValues } from '../utils';
 import { methodRegistryLookupAndParse } from '../utils/methodRegistry';
 import {
   isMessageDisplayType,
@@ -398,7 +398,7 @@ const TransactionConfirmationScreen = () => {
     const txPayload = get(params, '[0]');
     let { gas, gasLimit: gasLimitFromPayload, gasPrice } = txPayload;
 
-    const rawGasPrice = get(gasPrices, `${gasUtils.NORMAL}.value.amount`);
+    const rawGasPrice = get(selectedGasPrice, 'value.amount');
     if (rawGasPrice) {
       gasPrice = toHex(rawGasPrice);
     }
