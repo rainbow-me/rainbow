@@ -1,5 +1,6 @@
 import React, { useCallback, useRef } from 'react';
 import { SectionList } from 'react-native-gesture-handler';
+import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components/primitives';
 import { usePrevious } from '../../hooks';
 import { CoinRowHeight, ExchangeCoinRow } from '../coin-row';
@@ -14,15 +15,19 @@ const Header = styled.View`
   position: relative;
 `;
 
-const HeaderBackground = styled.View`
-  background-color: ${colors.white};
-  height: 38px;
+const HeaderBackground = styled(LinearGradient).attrs({
+  colors: [colors.white, colors.alpha(colors.white, 0)],
+  end: { x: 0.5, y: 1 },
+  locations: [0.55, 1],
+  start: { x: 0.5, y: 0 },
+})`
+  height: 40px;
   position: absolute;
   width: ${deviceWidth};
 `;
 
 const HeaderTitle = styled(Text).attrs({
-  color: colors.alpha(colors.blueGreyDark, 0.5),
+  color: colors.blueGreyDark50,
   letterSpacing: 'roundedMedium',
   size: 'smedium',
   weight: 'heavy',
