@@ -68,6 +68,8 @@ export interface AllTokenInfo {
   [tokenAddress: string]: TokenInfo;
 }
 
+const UniswapPageSize = 1000;
+
 const DefaultMaxSlippageInBips = 200;
 const SlippageBufferInBips = 100;
 
@@ -395,7 +397,6 @@ export const getAllTokens = async (
   tokenOverrides: Record<string, object>,
   excluded = []
 ): Promise<AllTokenInfo> => {
-  const pageSize = 600;
   let allTokens: AllTokenInfo = {};
   let data: UniswapSubgraphToken[] = [];
   try {
@@ -406,13 +407,13 @@ export const getAllTokens = async (
         query: UNISWAP_ALL_TOKENS,
         variables: {
           excluded,
-          first: pageSize,
+          first: UniswapPageSize,
           skip: skip,
         },
       });
       data = data.concat(result.data.tokens);
-      skip = skip + pageSize;
-      if (result.data.tokens.length < pageSize) {
+      skip = skip + UniswapPageSize;
+      if (result.data.tokens.length < UniswapPageSize) {
         dataEnd = true;
       }
     }
