@@ -156,7 +156,7 @@ export async function restoreCloudBackup(
 
     // Restore only wallets that were backed up
     // or wallets that are read-only
-    const walletsToRestore = {};
+    const walletsToRestore: AllRainbowWallets = {};
     forEach(userData.wallets, wallet => {
       if (
         (wallet.backedUp &&
