@@ -10,6 +10,8 @@ import {
   encryptAndSaveDataToCloud,
   getDataFromCloud,
 } from '../handlers/cloudBackup';
+import WalletBackupTypes from '../helpers/walletBackupTypes';
+import WalletTypes from '../helpers/walletTypes';
 import {
   allWalletsKey,
   privateKeyKey,
@@ -23,8 +25,6 @@ import {
   publicAccessControlOptions,
   RainbowWallet,
 } from './wallet';
-import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
-import WalletTypes from '@rainbow-me/helpers/walletTypes';
 
 import logger from 'logger';
 
