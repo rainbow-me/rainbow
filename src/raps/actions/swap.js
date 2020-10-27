@@ -1,5 +1,4 @@
 import { captureException } from '@sentry/react-native';
-import { BigNumber } from 'bignumber.js';
 import { find, get, toLower } from 'lodash';
 import { estimateSwapGasLimit, executeSwap } from '../../handlers/uniswap';
 import ProtocolTypes from '../../helpers/protocolTypes';
@@ -8,7 +7,6 @@ import TransactionTypes from '../../helpers/transactionTypes';
 import {
   convertHexToString,
   convertRawAmountToDecimalFormat,
-  greaterThan,
   isZero,
 } from '../../helpers/utilities';
 import { dataAddNewTransaction } from '../../redux/data';
@@ -56,7 +54,7 @@ const swap = async (wallet, currentRap, index, parameters) => {
     inputAmount,
     inputCurrency,
     outputCurrency,
-    selectedGasPrice = null,
+    selectedGasPrice,
     tradeDetails,
   } = parameters;
   const { dispatch } = store;
@@ -67,14 +65,10 @@ const swap = async (wallet, currentRap, index, parameters) => {
   // Execute Swap
   logger.log('[swap] execute the swap');
   let gasPrice = get(selectedGasPrice, 'value.amount');
-  if (currentRap.actions.length - 1 > index || !gasPrice) {
-    const selectedGasBN = new BigNumber(`${gasPrice}`);
-    const fastPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);
-    const fastPriceBN = new BigNumber(`${fastPrice}`);
-    if (greaterThan(fastPriceBN, selectedGasBN)) {
-      gasPrice = fastPrice;
-    }
+  if (!gasPrice) {
+    gasPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);
   }
+
   let gasLimit, methodName;
   try {
     logger.sentry('estimateSwapGasLimit', { accountAddress, tradeDetails });
