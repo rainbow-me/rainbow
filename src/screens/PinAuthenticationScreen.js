@@ -12,8 +12,10 @@ import {
   saveAuthTimelock,
 } from '../handlers/localstorage/globalSettings';
 import { useDimensions, useShakeAnimation } from '../hooks';
+import { useBlockBackButton } from '../hooks/useBlockBackButton';
 import { useNavigation } from '../navigation/Navigation';
 import { colors, padding } from '@rainbow-me/styles';
+
 const Logo = styled(FastImage).attrs({
   source: RainbowLogo,
 })`
@@ -25,6 +27,7 @@ const MAX_ATTEMPTS_LEFT = 10;
 const TIMELOCK_INTERVAL_MINUTES = 5;
 
 const PinAuthenticationScreen = () => {
+  useBlockBackButton();
   const { params } = useRoute();
   const { goBack, setParams } = useNavigation();
   const [errorAnimation, onShake] = useShakeAnimation();
