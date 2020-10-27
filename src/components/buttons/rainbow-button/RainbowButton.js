@@ -89,7 +89,7 @@ const RainbowButton = ({
       onPress={onPress}
       scaleTo={0.9}
     >
-      <Shadow height={height} width={width} />
+      {ios && <Shadow height={height} width={width} />}
       <ButtonContainer
         height={height}
         maskElement={outerButtonMask}
