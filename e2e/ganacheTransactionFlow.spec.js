@@ -1,6 +1,13 @@
 /* eslint-disable no-undef */
 /* eslint-disable jest/expect-expect */
+import { exec } from 'child_process';
 import * as Helpers from './helpers';
+
+beforeAll(async () => {
+  // Reset the app state
+  await exec('yarn ganache');
+  await Helpers.delay(10000);
+});
 
 describe('Ganache Transaction Flow', () => {
   it('Should show the welcome screen', async () => {
@@ -146,7 +153,7 @@ describe('Ganache Transaction Flow', () => {
     }
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });*/
-  /*
+
   it('Should send (Cryptokitties)', async () => {
     await Helpers.delay(3000);
     await Helpers.tap('send-fab');
@@ -160,7 +167,7 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.tapAndLongPress('send-sheet-confirm');
     await Helpers.delay(10000);
     await Helpers.swipe('profile-screen', 'left', 'slow');
-  });*/
+  });
 
   it('Should send ERC20 (BAT)', async () => {
     await Helpers.delay(3000);
@@ -177,7 +184,7 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
-  it('Should show completed send  ETH', async () => {
+  it('Should send ETH', async () => {
     await Helpers.delay(3000);
     await Helpers.tap('send-fab');
     await Helpers.delay(3000);
@@ -221,14 +228,14 @@ describe('Ganache Transaction Flow', () => {
       await Helpers.checkIfVisible('Sending-Compound SAI');
     }
   });
-  /*
+
   it('Should show completed send NFT (Cryptokitties)', async () => {
     try {
       await Helpers.checkIfVisible('Sent-Arun Cattybinky');
     } catch (e) {
       await Helpers.checkIfVisible('Sending-Arun Cattybinky');
     }
-  });*/
+  });
 
   it('Should show completed send ERC20 (BAT)', async () => {
     try {
@@ -249,5 +256,6 @@ describe('Ganache Transaction Flow', () => {
   afterAll(async () => {
     // Reset the app state
     await device.clearKeychain();
+    await exec('kill $(lsof -t -i:7545)');
   });
 });
