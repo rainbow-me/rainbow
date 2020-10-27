@@ -20,6 +20,7 @@ import { uniswapClient } from '../apollo/client';
 import { UNISWAP_ALL_TOKENS } from '../apollo/queries';
 import { Network } from '../helpers/networkTypes';
 import {
+  addBuffer,
   convertAmountToRawAmount,
   convertNumberToString,
 } from '../helpers/utilities';
@@ -155,7 +156,10 @@ export const estimateSwapGasLimit = async ({
     } else {
       methodName = methodNames[indexOfSuccessfulEstimation];
       const gasEstimate = gasEstimates[indexOfSuccessfulEstimation];
-      const gasLimit = gasEstimate?.toString() || ethUnits.basic_swap;
+      let gasLimit: string | number = ethUnits.basic_swap;
+      if (gasEstimate) {
+        gasLimit = addBuffer(gasEstimate.toString());
+      }
       return { gasLimit, methodName };
     }
   } catch (error) {
