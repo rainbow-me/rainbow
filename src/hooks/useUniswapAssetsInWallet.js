@@ -1,24 +1,16 @@
-import { filter, get, keys, map, toLower } from 'lodash';
+import { filter, keys } from 'lodash';
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import NetworkTypes from '../helpers/networkTypes';
 import { sortAssetsByNativeAmountSelector } from '../hoc/assetSelectors';
 
 const uniswapPairsSelector = state => state.uniswap.pairs;
-const uniswapAllPairsSelector = state => state.uniswap.allPairs;
+const uniswapAllTokensSelector = state => state.uniswap.allTokens;
 const networkSelector = state => state.settings.network;
 
 const filterUniswapAssetsByAvailability = uniswapAssetAddresses => ({
   address,
 }) => uniswapAssetAddresses.includes(address);
-
-const includeExchangeAddress = uniswapPairs => asset => ({
-  ...asset,
-  exchangeAddress: get(
-    uniswapPairs,
-    `[${toLower(asset.address)}].exchangeAddress`
-  ),
-});
 
 const withUniswapAssetsInWallet = (
   network,
@@ -32,7 +24,7 @@ const withUniswapAssetsInWallet = (
   };
 
   const { allAssets } = assetData;
-  const availableAssets =
+  const uniswapAssetsInWallet =
     network === NetworkTypes.mainnet
       ? filter(
           allAssets,
@@ -40,10 +32,6 @@ const withUniswapAssetsInWallet = (
         )
       : allAssets;
 
-  const uniswapAssetsInWallet = map(
-    availableAssets,
-    includeExchangeAddress(uniswapCuratedAndGlobalPairs)
-  );
   return { uniswapAssetsInWallet };
 };
 
@@ -52,7 +40,7 @@ const withUniswapAssetsInWalletSelector = createSelector(
     networkSelector,
     sortAssetsByNativeAmountSelector,
     uniswapPairsSelector,
-    uniswapAllPairsSelector,
+    uniswapAllTokensSelector,
   ],
   withUniswapAssetsInWallet
 );

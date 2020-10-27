@@ -1,5 +1,5 @@
+import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
-import { Wallet } from 'ethers';
 import { isEmpty, map } from 'lodash';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';

@@ -1,16 +1,13 @@
 import { captureException } from '@sentry/react-native';
 import { find, get, toLower } from 'lodash';
-import {
-  calculateTradeDetails,
-  estimateSwapGasLimit,
-  executeSwap,
-} from '../../handlers/uniswap';
+import { estimateSwapGasLimit, executeSwap } from '../../handlers/uniswap';
 import ProtocolTypes from '../../helpers/protocolTypes';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import TransactionTypes from '../../helpers/transactionTypes';
 import {
   convertHexToString,
   convertRawAmountToDecimalFormat,
+  greaterThan,
   isZero,
 } from '../../helpers/utilities';
 import { dataAddNewTransaction } from '../../redux/data';
@@ -25,19 +22,8 @@ import logger from 'logger';
 
 const NOOP = () => undefined;
 
-export const isValidSwapInput = ({
-  inputCurrency,
-  inputReserve,
-  outputCurrency,
-  outputReserve,
-}) => {
-  const isMissingCurrency = !inputCurrency || !outputCurrency;
-  const isMissingReserves =
-    (get(inputCurrency, 'address') !== 'eth' && !inputReserve) ||
-    (get(outputCurrency, 'address') !== 'eth' && !outputReserve);
-
-  return !(isMissingCurrency || isMissingReserves);
-};
+export const isValidSwapInput = ({ inputCurrency, outputCurrency }) =>
+  !!inputCurrency && !!outputCurrency;
 
 export const findSwapOutputAmount = (receipt, accountAddress) => {
   const { logs } = receipt;
@@ -66,44 +52,40 @@ const swap = async (wallet, currentRap, index, parameters) => {
   logger.log('[swap] swap on uniswap!');
   const {
     accountAddress,
-    chainId,
     inputAmount,
-    inputAsExactAmount,
     inputCurrency,
-    inputReserve,
-    outputAmount,
     outputCurrency,
-    outputReserve,
-    selectedGasPrice = null,
+    selectedGasPrice,
+    tradeDetails,
   } = parameters;
   const { dispatch } = store;
+  const { chainId } = store.getState().settings;
   const { gasPrices } = store.getState().gas;
   logger.log('[swap] calculating trade details');
-
-  // Get Trade Details
-  const tradeDetails = calculateTradeDetails(
-    chainId,
-    inputAmount,
-    inputCurrency,
-    inputReserve,
-    outputAmount,
-    outputCurrency,
-    outputReserve,
-    inputAsExactAmount
-  );
 
   // Execute Swap
   logger.log('[swap] execute the swap');
   let gasPrice = get(selectedGasPrice, 'value.amount');
-
-  // if swap is not the final action, use fast gas
+  // if swap isn't the last action, use fast gas or custom (whatever is faster)
   if (currentRap.actions.length - 1 > index || !gasPrice) {
-    gasPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);
+    const fastPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);
+    if (greaterThan(fastPrice, gasPrice)) {
+      gasPrice = fastPrice;
+    }
   }
-  let gasLimit;
+  let gasLimit, methodName;
   try {
     logger.sentry('estimateSwapGasLimit', { accountAddress, tradeDetails });
-    gasLimit = await estimateSwapGasLimit(accountAddress, tradeDetails);
+    const {
+      gasLimit: newGasLimit,
+      methodName: newMethodName,
+    } = await estimateSwapGasLimit({
+      accountAddress,
+      chainId,
+      tradeDetails,
+    });
+    gasLimit = newGasLimit;
+    methodName = newMethodName;
   } catch (e) {
     logger.sentry('error executing estimateSwapGasLimit');
     captureException(e);
@@ -113,7 +95,15 @@ const swap = async (wallet, currentRap, index, parameters) => {
   let swap;
   try {
     logger.sentry('executing swap', { gasLimit, gasPrice, tradeDetails });
-    swap = await executeSwap(tradeDetails, gasLimit, gasPrice, wallet);
+    swap = await executeSwap({
+      accountAddress,
+      chainId,
+      gasLimit,
+      gasPrice,
+      methodName,
+      tradeDetails,
+      wallet,
+    });
   } catch (e) {
     logger.sentry('error executing swap');
     captureException(e);

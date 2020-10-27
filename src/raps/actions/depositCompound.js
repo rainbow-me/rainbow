@@ -1,5 +1,5 @@
+import { Contract } from '@ethersproject/contracts';
 import { captureException } from '@sentry/react-native';
-import { ethers } from 'ethers';
 import { get } from 'lodash';
 import { toHex } from '../../handlers/web3';
 import ProtocolTypes from '../../helpers/protocolTypes';
@@ -57,7 +57,7 @@ const depositCompound = async (wallet, currentRap, index, parameters) => {
       .contractAddress;
   logger.log('ctokencontract', cTokenContract);
 
-  const compound = new ethers.Contract(
+  const compound = new Contract(
     cTokenContract,
     inputCurrency.address === 'eth' ? compoundCETHABI : compoundCERC20ABI,
     wallet
@@ -65,7 +65,7 @@ const depositCompound = async (wallet, currentRap, index, parameters) => {
 
   const transactionParams = {
     gasLimit: getDepositGasLimit(inputCurrency),
-    gasPrice: gasPrice ? toHex(gasPrice) : undefined,
+    gasPrice: toHex(gasPrice) || undefined,
     value: toHex(0),
   };
 

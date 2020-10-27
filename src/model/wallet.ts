@@ -1,3 +1,14 @@
+import { TransactionRequest } from '@ethersproject/abstract-provider';
+import {
+  arrayify,
+  BytesLike,
+  Hexable,
+  joinSignature,
+} from '@ethersproject/bytes';
+import { HDNode } from '@ethersproject/hdnode';
+import { SigningKey } from '@ethersproject/signing-key';
+import { Transaction } from '@ethersproject/transactions';
+import { Wallet } from '@ethersproject/wallet';
 import { captureException, captureMessage } from '@sentry/react-native';
 import { generateMnemonic } from 'bip39';
 import { signTypedData_v4, signTypedDataLegacy } from 'eth-sig-util';
@@ -6,14 +17,6 @@ import {
   hdkey as EthereumHDKey,
   default as LibWallet,
 } from 'ethereumjs-wallet';
-import { ethers, Wallet } from 'ethers';
-import {
-  Arrayish,
-  BigNumberish,
-  HDNode,
-  Hexable,
-  Transaction,
-} from 'ethers/utils';
 import lang from 'i18n-js';
 import { find, findKey, forEach, get, isEmpty } from 'lodash';
 import { Alert, Platform } from 'react-native';
@@ -63,17 +66,6 @@ interface TransactionRequestParam {
   transaction: TransactionRequest;
 }
 
-interface TransactionRequest {
-  to?: string | Promise<string>;
-  from?: string | Promise<string>;
-  nonce?: BigNumberish | Promise<BigNumberish>;
-  gasLimit?: BigNumberish | Promise<BigNumberish>;
-  gasPrice?: BigNumberish | Promise<BigNumberish>;
-  data?: Arrayish | Promise<Arrayish>;
-  value?: BigNumberish | Promise<BigNumberish>;
-  chainId?: number | Promise<number>;
-}
-
 interface MessageTypeProperty {
   name: string;
   type: string;
@@ -101,7 +93,7 @@ interface ReadOnlyWallet {
 }
 
 interface EthereumWalletFromSeed {
-  hdnode: null | HDNode.HDNode;
+  hdnode: null | HDNode;
   isHDWallet: boolean;
   wallet: null | EthereumWallet;
   type: EthereumWalletType;
@@ -158,7 +150,7 @@ interface SeedPhraseData {
 }
 
 interface MigratedSecretsResult {
-  hdnode: undefined | HDNode.HDNode;
+  hdnode: undefined | HDNode;
   privateKey: EthereumPrivateKey;
   seedphrase: EthereumWalletSeed;
   type: EthereumWalletType;
@@ -222,7 +214,7 @@ export const loadWallet = async (): Promise<null | Wallet> => {
     return null;
   }
   if (privateKey) {
-    return new ethers.Wallet(privateKey, web3Provider);
+    return new Wallet(privateKey, web3Provider);
   }
   showWalletErrorAlert();
   return null;
@@ -262,7 +254,7 @@ export const signTransaction = async ({
     const wallet = await loadWallet();
     if (!wallet) return null;
     try {
-      return wallet.sign(transaction);
+      return wallet.signTransaction(transaction);
     } catch (error) {
       Alert.alert(lang.t('wallet.transaction.alert.failed_transaction'));
       logger.sentry('Failed to SIGN transaction, alerted user');
@@ -280,20 +272,16 @@ export const signTransaction = async ({
 };
 
 export const signMessage = async (
-  message: Arrayish | Hexable | string
+  message: BytesLike | Hexable | number
 ): Promise<null | string> => {
   try {
     logger.sentry('about to sign message', message);
     const wallet = await loadWallet();
     try {
-      if (wallet) {
-        const signingKey = new ethers.utils.SigningKey(wallet.privateKey);
-        const sigParams = await signingKey.signDigest(
-          ethers.utils.arrayify(message)
-        );
-        return ethers.utils.joinSignature(sigParams);
-      }
-      return null;
+      if (!wallet) return null;
+      const signingKey = new SigningKey(wallet.privateKey);
+      const sigParams = await signingKey.signDigest(arrayify(message));
+      return joinSignature(sigParams);
     } catch (error) {
       Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
       logger.sentry('Failed to SIGN message, alerted user');
@@ -315,14 +303,12 @@ export const signPersonalMessage = async (
     logger.sentry('about to sign personal message', message);
     const wallet = await loadWallet();
     try {
-      if (wallet) {
-        return wallet.signMessage(
-          typeof message === 'string' && isHexString(message)
-            ? ethers.utils.arrayify(message)
-            : message
-        );
-      }
-      return null;
+      if (!wallet) return null;
+      return wallet.signMessage(
+        typeof message === 'string' && isHexString(message)
+          ? arrayify(message)
+          : message
+      );
     } catch (error) {
       Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
       logger.sentry('Failed to SIGN personal message, alerted user');
@@ -591,7 +577,7 @@ export const createWallet = async (
       while (lookup) {
         const child = root.deriveChild(index);
         const walletObj = child.getWallet();
-        const nextWallet = new ethers.Wallet(
+        const nextWallet = new Wallet(
           addHexPrefix(walletObj.getPrivateKey().toString('hex'))
         );
         let hasTxHistory = false;
@@ -702,7 +688,7 @@ export const createWallet = async (
       const ethersWallet =
         walletType === WalletLibraryType.ethers
           ? (walletResult as Wallet)
-          : new ethers.Wallet(pkey);
+          : new Wallet(pkey);
       if (wasLoading) {
         setTimeout(() => {
           dispatch(setIsWalletLoading(null));
@@ -870,7 +856,7 @@ export const generateAccount = async (
       ethereumJSWallet.getPrivateKey().toString('hex')
     );
 
-    const newAccount = new ethers.Wallet(walletPkey);
+    const newAccount = new Wallet(walletPkey);
     await savePrivateKey(walletAddress, walletPkey);
     return newAccount;
   } catch (error) {
@@ -902,12 +888,12 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
     logger.sentry('Got secret, now idenfifying wallet type');
     const type = identifyWalletType(seedphrase);
     logger.sentry('Got type: ', type);
-    let hdnode: undefined | ethers.utils.HDNode.HDNode,
-      node: undefined | ethers.utils.HDNode.HDNode,
+    let hdnode: undefined | HDNode,
+      node: undefined | HDNode,
       existingAccount: undefined | Wallet;
     switch (type) {
       case EthereumWalletType.privateKey:
-        existingAccount = new ethers.Wallet(seedphrase);
+        existingAccount = new Wallet(seedphrase);
         break;
       case EthereumWalletType.mnemonic:
         {
@@ -919,11 +905,11 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
             ethereumJSWallet.getPrivateKey().toString('hex')
           );
 
-          existingAccount = new ethers.Wallet(walletPkey);
+          existingAccount = new Wallet(walletPkey);
         }
         break;
       case EthereumWalletType.seed:
-        hdnode = ethers.utils.HDNode.fromSeed(seedphrase);
+        hdnode = HDNode.fromSeed(seedphrase);
         break;
       default:
     }
@@ -931,7 +917,7 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
     if (!existingAccount && hdnode) {
       logger.sentry('No existing account, so we have to derive it');
       node = hdnode.derivePath(`${DEFAULT_HD_PATH}/0`);
-      existingAccount = new ethers.Wallet(node.privateKey);
+      existingAccount = new Wallet(node.privateKey);
       logger.sentry('Got existing account');
     }
 

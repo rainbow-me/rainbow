@@ -1,10 +1,14 @@
 import analytics from '@segment/analytics-react-native';
+import { find } from 'lodash';
 import React, { useCallback } from 'react';
+import { Platform } from 'react-native';
+import ImagePicker from 'react-native-image-crop-picker';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components/primitives';
+import { walletsSetSelected, walletsUpdate } from '../../redux/wallets';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { RainbowButton } from '../buttons';
-import ImageAvatar from '../contacts/ImageAvatar';
 import { CopyFloatingEmojis } from '../floating-emojis';
 import { Icon } from '../icons';
 import { Centered, Column, Row, RowWithMargins } from '../layout';
@@ -23,7 +27,7 @@ import {
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
-import { abbreviations } from '@rainbow-me/utils';
+import { abbreviations, showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const dropdownArrowWidth = 21;
 
@@ -61,17 +65,14 @@ const ProfileMastheadDivider = styled(Divider).attrs({
   position: absolute;
 `;
 
-const ProfileImage = styled(ImageAvatar)`
-  margin-bottom: 15;
-`;
-
 export default function ProfileMasthead({
   addCashAvailable,
   recyclerListRef,
   showBottomDivider = true,
 }) {
-  const { isDamaged } = useWallets();
+  const { wallets, selectedWallet, isDamaged } = useWallets();
   const { width: deviceWidth } = useDimensions();
+  const dispatch = useDispatch();
   const { navigate } = useNavigation();
   const {
     accountAddress,
@@ -81,25 +82,100 @@ export default function ProfileMasthead({
     accountImage,
   } = useAccountProfile();
   const isAvatarPickerAvailable = useExperimentalFlag(AVATAR_PICKER);
+  const isAvatarEmojiPickerEnabled = true;
+  const isAvatarImagePickerEnabled = true;
+
+  const onRemovePhoto = useCallback(async () => {
+    const newWallets = { ...wallets };
+    const newWallet = newWallets[selectedWallet.id];
+    const account = find(newWallet.addresses, ['address', accountAddress]);
+
+    account.image = null;
+    newWallet.addresses[account.index] = account;
+
+    dispatch(walletsSetSelected(newWallet));
+    await dispatch(walletsUpdate(newWallets));
+  }, [dispatch, selectedWallet, accountAddress, wallets]);
 
   const handlePressAvatar = useCallback(() => {
-    if (!isAvatarPickerAvailable) return;
-    recyclerListRef.scrollToTop(true);
+    recyclerListRef?.scrollToTop(true);
     setTimeout(
       () => {
-        navigate(Routes.AVATAR_BUILDER, {
-          initialAccountColor: accountColor,
-          initialAccountName: accountName,
-        });
+        if (isAvatarImagePickerEnabled) {
+          const processPhoto = image => {
+            const stringIndex = image?.path.indexOf('/tmp');
+            const newWallets = { ...wallets };
+            const walletId = selectedWallet.id;
+            newWallets[walletId].addresses.some((account, index) => {
+              newWallets[walletId].addresses[index].image =
+                Platform.OS === 'ios'
+                  ? `~${image?.path.slice(stringIndex)}`
+                  : image?.path;
+              dispatch(walletsSetSelected(newWallets[walletId]));
+              return true;
+            });
+            dispatch(walletsUpdate(newWallets));
+          };
+
+          const avatarActionSheetOptions = [
+            'Take Photo',
+            'Choose from Library',
+            ...(isAvatarPickerAvailable ? ['Pick an Emoji'] : []),
+            ...(accountImage ? ['Remove Photo'] : []),
+            ...(Platform.OS === 'ios' ? ['Cancel'] : []),
+          ];
+
+          showActionSheetWithOptions(
+            {
+              cancelButtonIndex: avatarActionSheetOptions.length - 1,
+              destructiveButtonIndex: accountImage
+                ? avatarActionSheetOptions.length - 2
+                : undefined,
+              options: avatarActionSheetOptions,
+            },
+            async buttonIndex => {
+              if (buttonIndex === 0) {
+                ImagePicker.openCamera({
+                  cropperCircleOverlay: true,
+                  cropping: true,
+                }).then(processPhoto);
+              } else if (buttonIndex === 1) {
+                ImagePicker.openPicker({
+                  cropperCircleOverlay: true,
+                  cropping: true,
+                }).then(processPhoto);
+              } else if (buttonIndex === 2 && isAvatarEmojiPickerEnabled) {
+                navigate(Routes.AVATAR_BUILDER, {
+                  initialAccountColor: accountColor,
+                  initialAccountName: accountName,
+                });
+              } else if (buttonIndex === 3 && accountImage) {
+                onRemovePhoto();
+              }
+            }
+          );
+        } else if (isAvatarEmojiPickerEnabled) {
+          navigate(Routes.AVATAR_BUILDER, {
+            initialAccountColor: accountColor,
+            initialAccountName: accountName,
+          });
+        }
       },
-      recyclerListRef.getCurrentScrollOffset() > 0 ? 200 : 1
+      recyclerListRef?.getCurrentScrollOffset() > 0 ? 200 : 1
     );
   }, [
     accountColor,
+    accountImage,
     accountName,
+    dispatch,
+    isAvatarEmojiPickerEnabled,
+    isAvatarImagePickerEnabled,
     isAvatarPickerAvailable,
     navigate,
+    onRemovePhoto,
     recyclerListRef,
+    selectedWallet.id,
+    wallets,
   ]);
 
   const handlePressReceive = useCallback(() => {
@@ -138,16 +214,13 @@ export default function ProfileMasthead({
       marginBottom={24}
       marginTop={0}
     >
-      {accountImage ? (
-        <ProfileImage image={accountImage} size="large" />
-      ) : (
-        <AvatarCircle
-          accountColor={accountColor}
-          accountSymbol={accountSymbol}
-          isAvatarPickerAvailable={isAvatarPickerAvailable}
-          onPress={handlePressAvatar}
-        />
-      )}
+      <AvatarCircle
+        accountColor={accountColor}
+        accountSymbol={accountSymbol}
+        image={accountImage}
+        isAvatarPickerAvailable={isAvatarPickerAvailable}
+        onPress={handlePressAvatar}
+      />
       <ButtonPressAnimation onPress={handlePressChangeWallet} scaleTo={0.9}>
         <Row>
           <AccountName deviceWidth={deviceWidth}>{accountName}</AccountName>

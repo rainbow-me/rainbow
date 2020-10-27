@@ -13,7 +13,6 @@ const ACCOUNT_EMPTY = 'accountEmpty';
 const ASSET_PRICES_FROM_UNISWAP = 'assetPricesFromUniswap';
 const ASSETS = 'assets';
 const ACCOUNT_CHARTS = 'accountCharts';
-const ACCOUNT_FALLBACK_CHARTS = 'accountFallbackCharts';
 const OPEN_FAMILIES = 'openFamilies';
 const OPEN_INVESTMENT_CARDS = 'openInvestmentCards';
 const PURCHASE_TRANSACTIONS = 'purchaseTransactions';
@@ -31,7 +30,6 @@ export const accountLocalKeys = [
   ASSET_PRICES_FROM_UNISWAP,
   ASSETS,
   ACCOUNT_CHARTS,
-  ACCOUNT_FALLBACK_CHARTS,
   OPEN_FAMILIES,
   OPEN_INVESTMENT_CARDS,
   PURCHASE_TRANSACTIONS,
@@ -196,24 +194,6 @@ export const getAccountCharts = (accountAddress, network) =>
  */
 export const saveAccountCharts = (charts, accountAddress, network) =>
   saveAccountLocal(ACCOUNT_CHARTS, charts, accountAddress, network);
-
-/**
- * @desc get fallback charts
- * @param  {String}   [address]
- * @param  {String}   [network]
- * @return {Object}
- */
-export const getAccountFallbackCharts = (accountAddress, network) =>
-  getAccountLocal(ACCOUNT_FALLBACK_CHARTS, accountAddress, network, {});
-
-/**
- * @desc save fallback charts data
- * @param  {Object}   [charts]
- * @param  {String}   [address]
- * @param  {String}   [network]
- */
-export const saveAccountFallbackCharts = (charts, accountAddress, network) =>
-  saveAccountLocal(ACCOUNT_FALLBACK_CHARTS, charts, accountAddress, network);
 
 /**
  * @desc get transactions

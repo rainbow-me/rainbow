@@ -1,4 +1,5 @@
-import { ethers } from 'ethers';
+import { BigNumber } from '@ethersproject/bignumber';
+import { Contract } from '@ethersproject/contracts';
 import { get, toLower, uniqBy } from 'lodash';
 import { web3Provider } from '../handlers/web3';
 import networkInfo from '../helpers/networkInfo';
@@ -200,7 +201,7 @@ const fetchAssetPrices = async (coingeckoIds, nativeCurrency) => {
 };
 
 const fetchAssetBalances = async (tokens, address, network) => {
-  const balanceCheckerContract = new ethers.Contract(
+  const balanceCheckerContract = new Contract(
     get(networkInfo[network], 'balance_checker_contract_address'),
     balanceCheckerContractAbi,
     web3Provider
@@ -213,7 +214,7 @@ const fetchAssetBalances = async (tokens, address, network) => {
       balances[addr] = {};
       tokens.forEach((tokenAddr, tokenIdx) => {
         const balance = values[addrIdx * tokens.length + tokenIdx];
-        balances[addr][tokenAddr] = balance;
+        balances[addr][tokenAddr] = balance.toString();
       });
     });
     return balances[address];
@@ -298,7 +299,7 @@ export const fallbackExplorerInit = () => async (dispatch, getState) => {
       network
     );
 
-    let total = ethers.utils.bigNumberify(0);
+    let total = BigNumber.from(0);
 
     if (balances) {
       Object.keys(balances).forEach(key => {

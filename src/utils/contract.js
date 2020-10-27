@@ -1,5 +1,6 @@
+import { MaxUint256 } from '@ethersproject/constants';
+import { Contract } from '@ethersproject/contracts';
 import { captureException } from '@sentry/react-native';
-import { ethers } from 'ethers';
 import { toHex, web3Provider } from '../handlers/web3';
 import { loadWallet } from '../model/wallet';
 import { ethUnits } from '../references';
@@ -9,10 +10,7 @@ import logger from 'logger';
 const estimateApproveWithExchange = async (spender, exchange) => {
   try {
     logger.sentry('exchange estimate approve', { exchange, spender });
-    const gasLimit = await exchange.estimate.approve(
-      spender,
-      ethers.constants.MaxUint256
-    );
+    const gasLimit = await exchange.estimateGas.approve(spender, MaxUint256);
     return gasLimit ? gasLimit.toString() : ethUnits.basic_approval;
   } catch (error) {
     logger.sentry('error estimateApproveWithExchange');
@@ -22,7 +20,7 @@ const estimateApproveWithExchange = async (spender, exchange) => {
 };
 
 const estimateApprove = (tokenAddress, spender) => {
-  const exchange = new ethers.Contract(tokenAddress, erc20ABI, web3Provider);
+  const exchange = new Contract(tokenAddress, erc20ABI, web3Provider);
   return estimateApproveWithExchange(spender, exchange);
 };
 
@@ -35,15 +33,11 @@ const approve = async (
 ) => {
   const walletToUse = wallet || (await loadWallet());
   if (!walletToUse) return null;
-  const exchange = new ethers.Contract(tokenAddress, erc20ABI, walletToUse);
-  const approval = await exchange.approve(
-    spender,
-    ethers.constants.MaxUint256,
-    {
-      gasLimit: gasLimit ? toHex(gasLimit) : undefined,
-      gasPrice: gasPrice ? toHex(gasPrice) : undefined,
-    }
-  );
+  const exchange = new Contract(tokenAddress, erc20ABI, walletToUse);
+  const approval = await exchange.approve(spender, MaxUint256, {
+    gasLimit: toHex(gasLimit) || undefined,
+    gasPrice: toHex(gasPrice) || undefined,
+  });
   return {
     approval,
     creationTimestamp: Date.now(),
@@ -51,14 +45,16 @@ const approve = async (
 };
 
 const getRawAllowance = async (owner, token, spender) => {
-  const { address: tokenAddress } = token;
-  const tokenContract = new ethers.Contract(
-    tokenAddress,
-    erc20ABI,
-    web3Provider
-  );
-  const allowance = await tokenContract.allowance(owner, spender);
-  return allowance.toString();
+  try {
+    const { address: tokenAddress } = token;
+    const tokenContract = new Contract(tokenAddress, erc20ABI, web3Provider);
+    const allowance = await tokenContract.allowance(owner, spender);
+    return allowance.toString();
+  } catch (error) {
+    logger.sentry('error getRawAllowance');
+    captureException(error);
+    return null;
+  }
 };
 
 export default {

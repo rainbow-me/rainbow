@@ -111,15 +111,15 @@ describe('Send Sheet Interaction Flow', () => {
 
   it('Should display Asset Form after tapping on savings asset', async () => {
     await Helpers.delay(1500);
-    await Helpers.checkIfVisible('send-savings-cSAI');
-    await Helpers.tap('send-savings-cSAI');
+    await Helpers.checkIfVisible('send-savings-cDAI');
+    await Helpers.tap('send-savings-cDAI');
     await Helpers.delay(2000);
     await Helpers.checkIfVisible('selected-asset-field-input');
   });
 
   it('Should go back to Asset List after tapping on savings asset', async () => {
     await Helpers.delay(1000);
-    await Helpers.tap('send-asset-form-cSAI');
+    await Helpers.tap('send-asset-form-cDAI');
     await Helpers.delay(2000);
     await Helpers.checkIfVisible('send-asset-list');
   });

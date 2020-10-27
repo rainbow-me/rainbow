@@ -43,7 +43,7 @@ public class MainApplication extends Application implements ReactApplication {
           return "index";
         }
 
-         //_REA /* REA
+         /* REA
          @Override
          protected JSIModulePackage getJSIModulePackage() {
            return new ReanimatedJSIModulePackage();

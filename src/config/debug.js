@@ -3,6 +3,7 @@
  * could be useful during development.
  */
 
+export const alwaysRequireApprove = false;
 export const darkMode = false;
 export const parseAllTxnsOnReceive = false;
 export const reactNativeDisableYellowBox = true;
