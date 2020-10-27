@@ -400,7 +400,18 @@ const TransactionConfirmationScreen = () => {
 
     const rawGasPrice = get(selectedGasPrice, 'value.amount');
     if (rawGasPrice) {
+      console.log(
+        'GUCCI: no selected gas price',
+        JSON.stringify(selectedGasPrice, null, 2),
+        rawGasPrice
+      );
       gasPrice = toHex(rawGasPrice);
+    } else {
+      console.log(
+        'FAIL: no selected gas price',
+        JSON.stringify(selectedGasPrice, null, 2),
+        rawGasPrice
+      );
     }
 
     if (isNil(gas) && isNil(gasLimitFromPayload)) {
@@ -466,23 +477,23 @@ const TransactionConfirmationScreen = () => {
       await onCancel();
     }
   }, [
+    method,
+    params,
+    selectedGasPrice,
+    transactionCountNonce,
+    gasLimit,
     callback,
+    requestId,
     closeScreen,
+    dispatch,
+    updateTransactionCountNonce,
+    displayDetails,
     dappName,
     dataAddNewTransaction,
-    dispatch,
-    displayDetails,
-    gasPrices,
-    gasLimit,
-    method,
-    onCancel,
-    params,
-    peerId,
     removeRequest,
-    requestId,
-    transactionCountNonce,
-    updateTransactionCountNonce,
     walletConnectSendStatus,
+    peerId,
+    onCancel,
   ]);
 
   const handleSignMessage = useCallback(async () => {
