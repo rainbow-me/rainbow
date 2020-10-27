@@ -46,8 +46,11 @@ export const buildCoinsList = (
 
   const isShortList = assetsLength <= amountOfShowedCoins;
 
+  let hiddenPinned = 0;
+
   forEach(assets, (asset, index) => {
     if (hiddenCoins && hiddenCoins.includes(asset.uniqueId)) {
+      hiddenPinned++;
       hiddenAssets.push({
         isCoin: true,
         isHidden: true,
@@ -55,6 +58,7 @@ export const buildCoinsList = (
         ...asset,
       });
     } else if (pinnedCoins.includes(asset.uniqueId)) {
+      hiddenPinned++;
       totalBalancesValue = add(
         totalBalancesValue,
         get(asset, 'native.balance.amount', 0)
@@ -66,7 +70,8 @@ export const buildCoinsList = (
         ...asset,
       });
     } else if (
-      index < amountOfShowedCoins - pinnedCoins.length ||
+      (standardAssets.length + pinnedAssets.length < amountOfShowedCoins &&
+        index < amountOfShowedCoins + hiddenPinned) ||
       isShortList
     ) {
       totalBalancesValue = add(
