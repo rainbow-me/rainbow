@@ -153,7 +153,7 @@ const withUniswapSection = (
     header: {
       title: 'Pools',
       totalItems: uniswap.length,
-      totalValue: uniswapTotal,
+      totalValue: convertAmountToNativeDisplay(uniswapTotal, nativeCurrency),
     },
     name: 'pools',
     pools: true,
@@ -286,7 +286,7 @@ const withBalanceSection = (
   pinnedCoins,
   hiddenCoins,
   currentAction,
-  uniswapTotalSelector
+  uniswapTotal
 ) => {
   const { assets, totalBalancesValue } = buildCoinsList(
     allAssets,
@@ -301,22 +301,16 @@ const withBalanceSection = (
     totalBalancesValue,
     get(savingsSection, 'totalValue', 0)
   );
-
-  const poolsBalance = get(
-    uniswapTotalSelector,
-    'header.totalValue',
-    0
-  )?.substring(1);
-
-  const totalBalanceWithSectionValues = add(
+  const totalBalanceWithAllSectionValues = add(
     totalBalanceWithSavingsValue,
-    poolsBalance
+    uniswapTotal
   );
 
   const totalValue = convertAmountToNativeDisplay(
-    totalBalanceWithSectionValues,
+    totalBalanceWithAllSectionValues,
     nativeCurrency
   );
+  console.log('total', totalValue);
 
   if (networkTypes.mainnet === network) {
     balanceSectionData.push(savingsSection);
@@ -454,7 +448,7 @@ const balanceSectionSelector = createSelector(
     pinnedCoinsSelector,
     hiddenCoinsSelector,
     currentActionSelector,
-    uniswapSectionSelector,
+    uniswapTotalSelector,
   ],
   withBalanceSection
 );
