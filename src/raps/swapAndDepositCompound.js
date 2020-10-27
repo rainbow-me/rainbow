@@ -111,6 +111,7 @@ const createSwapAndDepositCompoundRap = async ({
         amount: inputAmount,
         assetToUnlock: inputCurrency,
         contractAddress: UNISWAP_V2_ROUTER_ADDRESS,
+        selectedGasPrice,
       });
       actions = concat(actions, unlock);
       logger.log('[swap and deposit] making unlock for swap func');
@@ -149,6 +150,7 @@ const createSwapAndDepositCompoundRap = async ({
       amount: requiresSwap ? outputAmount : inputAmount,
       assetToUnlock: tokenToDeposit,
       contractAddress: cTokenContract,
+      selectedGasPrice,
     });
     actions = concat(actions, unlockTokenToDeposit);
   }
