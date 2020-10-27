@@ -70,7 +70,8 @@ export const buildCoinsList = (
         ...asset,
       });
     } else if (
-      (standardAssets.length + pinnedAssets.length < amountOfShowedCoins &&
+      (pinnedCoins.length < amountOfShowedCoins &&
+        standardAssets.length + pinnedAssets.length < amountOfShowedCoins &&
         index < amountOfShowedCoins + hiddenPinned) ||
       isShortList
     ) {
