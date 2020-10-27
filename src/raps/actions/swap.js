@@ -66,6 +66,7 @@ const swap = async (wallet, currentRap, index, parameters) => {
   // Execute Swap
   logger.log('[swap] execute the swap');
   let gasPrice = get(selectedGasPrice, 'value.amount');
+  // if swap isn't the last action, use fast gas or custom (whatever is faster)
   if (currentRap.actions.length - 1 > index || !gasPrice) {
     const fastPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);
     if (greaterThan(fastPrice, gasPrice)) {
