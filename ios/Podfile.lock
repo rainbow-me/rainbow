@@ -553,7 +553,7 @@ PODS:
   - SexyTooltip (1.2.7):
     - pop (~> 1.0)
   - Shimmer (1.0.2)
-  - SRSRadialGradient (1.0.6):
+  - SRSRadialGradient (1.0.7):
     - React
   - SSZipArchive (2.2.3)
   - TcpSockets (3.3.2):
@@ -1001,7 +1001,7 @@ SPEC CHECKSUMS:
   Sentry: 8715e88b813bde9ad37aead365d5b04ac7302153
   SexyTooltip: e243da5a858c7160141cf35786a4033669d1efca
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86
-  SRSRadialGradient: 77bcb1ae812d0c77560e54ed9e52166df032db1d
+  SRSRadialGradient: 7f9c92f2b31576ab80f059378ef2817404cd0575
   SSZipArchive: 62d4947b08730e4cda640473b0066d209ff033c9
   TcpSockets: bd31674146c0931a064fc254a59812dfd1a73ae0
   TOCropViewController: 2a1ae1242600b1f2d996fd91a5268b2309a33b5c

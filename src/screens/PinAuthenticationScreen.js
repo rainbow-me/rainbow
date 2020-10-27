@@ -101,7 +101,16 @@ const PinAuthenticationScreen = () => {
         if (nextValue === null) {
           nextValue = newValue;
         } else if (newValue === 'back') {
-          nextValue = prevValue.slice(0, -1);
+          // If pressing back while on confirmation and no value
+          // we switch back to "creation" mode so the user can
+          // reenter the original pin in case they did a mistake
+          if (prevValue === '' && actionType === 'confirmation') {
+            setActionType('creation');
+            setInitialPin('');
+            setValue('');
+          } else {
+            nextValue = prevValue.slice(0, -1);
+          }
         } else {
           if (nextValue.length <= 3) {
             nextValue += newValue;
