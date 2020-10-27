@@ -45,7 +45,6 @@ export function fontWithWidth(weight, family = 'SFProRounded', mono = false) {
     // https://www.youtube.com/watch?v=87rhZTumujw
     ...(ios ? { fontWeight: weight } : { fontWeight: 'normal' }),
   };
-  console.log('321', t);
   return t;
 }
 
@@ -58,7 +57,6 @@ const buildTextStyles = css`
     const t = isEmoji
       ? ''
       : `font-family: ${familyFontWithAndroidWidth(weight, family, mono)};`;
-    console.log(t, mono);
     return t;
   }}
 
