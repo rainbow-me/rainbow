@@ -400,18 +400,7 @@ const TransactionConfirmationScreen = () => {
 
     const rawGasPrice = get(selectedGasPrice, 'value.amount');
     if (rawGasPrice) {
-      console.log(
-        'GUCCI: no selected gas price',
-        JSON.stringify(selectedGasPrice, null, 2),
-        rawGasPrice
-      );
       gasPrice = toHex(rawGasPrice);
-    } else {
-      console.log(
-        'FAIL: no selected gas price',
-        JSON.stringify(selectedGasPrice, null, 2),
-        rawGasPrice
-      );
     }
 
     if (isNil(gas) && isNil(gasLimitFromPayload)) {

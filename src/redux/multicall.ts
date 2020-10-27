@@ -236,7 +236,7 @@ export const multicallUpdateOutdatedListeners = (
         );
       })
       .catch((error: any) => {
-        console.log(
+        logger.log(
           '### [multicall redux, aggregate call] - Failed to fetch multicall',
           error
         );
