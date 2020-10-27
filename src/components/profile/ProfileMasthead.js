@@ -1,6 +1,7 @@
+import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
 import { find } from 'lodash';
-import React, { useCallback } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { Platform } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
 import { useDispatch } from 'react-redux';
@@ -9,7 +10,7 @@ import { walletsSetSelected, walletsUpdate } from '../../redux/wallets';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { RainbowButton } from '../buttons';
-import { CopyFloatingEmojis } from '../floating-emojis';
+import { FloatingEmojis } from '../floating-emojis';
 import { Icon } from '../icons';
 import { Centered, Column, Row, RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';
@@ -30,6 +31,21 @@ import { colors } from '@rainbow-me/styles';
 import { abbreviations, showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const dropdownArrowWidth = 21;
+
+const FloatingEmojisRegion = styled(FloatingEmojis).attrs({
+  distance: 250,
+  duration: 500,
+  fadeOut: false,
+  scaleTo: 0,
+  size: 50,
+  wiggleFactor: 0,
+})`
+  height: 0;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 130;
+`;
 
 const AccountName = styled(TruncatedText).attrs({
   align: 'left',
@@ -71,6 +87,11 @@ export default function ProfileMasthead({
   showBottomDivider = true,
 }) {
   const { wallets, selectedWallet, isDamaged } = useWallets();
+  const onNewEmoji = useRef();
+  const setOnNewEmoji = useCallback(
+    newOnNewEmoji => (onNewEmoji.current = newOnNewEmoji),
+    []
+  );
   const { width: deviceWidth } = useDimensions();
   const dispatch = useDispatch();
   const { navigate } = useNavigation();
@@ -205,7 +226,11 @@ export default function ProfileMasthead({
     if (isDamaged) {
       showWalletErrorAlert();
     }
-  }, [isDamaged]);
+    if (onNewEmoji && onNewEmoji.current) {
+      onNewEmoji.current();
+    }
+    Clipboard.setString(accountAddress);
+  }, [accountAddress, isDamaged]);
 
   return (
     <Column
@@ -230,18 +255,14 @@ export default function ProfileMasthead({
         </Row>
       </ButtonPressAnimation>
       <RowWithMargins align="center" margin={19}>
-        <CopyFloatingEmojis
-          disabled={isDamaged}
+        <ProfileAction
+          icon="copy"
           onPress={handlePressCopyAddress}
-          textToCopy={accountAddress}
-        >
-          <ProfileAction
-            icon="copy"
-            scaleTo={0.88}
-            text="Copy Address"
-            width={127}
-          />
-        </CopyFloatingEmojis>
+          scaleTo={0.88}
+          text="Copy Address"
+          width={127}
+        />
+        <FloatingEmojisRegion setOnNewEmoji={setOnNewEmoji} />
         <ProfileAction
           icon="qrCode"
           onPress={handlePressReceive}
