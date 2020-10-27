@@ -7,6 +7,7 @@ import TransactionTypes from '../../helpers/transactionTypes';
 import {
   convertHexToString,
   convertRawAmountToDecimalFormat,
+  greaterThan,
   isZero,
 } from '../../helpers/utilities';
 import { dataAddNewTransaction } from '../../redux/data';
@@ -65,10 +66,12 @@ const swap = async (wallet, currentRap, index, parameters) => {
   // Execute Swap
   logger.log('[swap] execute the swap');
   let gasPrice = get(selectedGasPrice, 'value.amount');
-  if (!gasPrice) {
-    gasPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);
+  if (currentRap.actions.length - 1 > index || !gasPrice) {
+    const fastPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);
+    if (greaterThan(fastPrice, gasPrice)) {
+      gasPrice = fastPrice;
+    }
   }
-
   let gasLimit, methodName;
   try {
     logger.sentry('estimateSwapGasLimit', { accountAddress, tradeDetails });

@@ -58,8 +58,9 @@ const unlock = async (wallet, currentRap, index, parameters) => {
     logger.log('[swap] execute the swap');
     // unlocks should always use fast gas or custom (whatever is faster)
     let gasPrice = get(selectedGasPrice, 'value.amount');
-    if (!gasPrice) {
-      gasPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);
+    const fastPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);
+    if (greaterThan(fastPrice, gasPrice)) {
+      gasPrice = fastPrice;
     }
 
     logger.sentry('about to approve', {
