@@ -30,11 +30,11 @@ index 4c154db..89051c8 100644
      );
      immediates.push(id);
 diff --git a/node_modules/react-native/React/CxxBridge/RCTCxxBridge.mm b/node_modules/react-native/React/CxxBridge/RCTCxxBridge.mm
-index d8938d7..06e01c3 100644
+index d8938d7..32a7265 100644
 --- a/node_modules/react-native/React/CxxBridge/RCTCxxBridge.mm
 +++ b/node_modules/react-native/React/CxxBridge/RCTCxxBridge.mm
 @@ -462,7 +462,7 @@ - (id)moduleForName:(NSString *)moduleName
-
+ 
  - (id)moduleForName:(NSString *)moduleName lazilyLoadIfNecessary:(BOOL)lazilyLoad
  {
 -  if (RCTTurboModuleEnabled() && _turboModuleLookupDelegate) {
@@ -57,4 +57,4 @@ index a5117be..59108bb 100644
 +    }
      return;
    }
-
+ 

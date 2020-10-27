@@ -10,9 +10,11 @@ const RNACBL = [
   'src.react-native-animated-charts.package.json',
 ];
 
+const REAPATCH = [/patches\/reanimated\/.*/];
+
 module.exports = {
   resolver: {
-    blacklistRE: blacklist([...RNACBL]),
+    blacklistRE: blacklist([...RNACBL, ...REAPATCH]),
   },
   transformer: {
     getTransformOptions: async () => ({
