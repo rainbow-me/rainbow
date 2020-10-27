@@ -380,7 +380,7 @@ export default function ExchangeModal({
           isMax,
           outputAmount,
           outputCurrency,
-          selectedGasPrice: null,
+          selectedGasPrice,
           tradeDetails,
         });
         logger.log('[exchange - handle submit] rap', rap);
@@ -402,24 +402,25 @@ export default function ExchangeModal({
       }
     });
   }, [
+    type,
     category,
-    createRap,
-    cTokenBalance,
     defaultInputAsset,
-    dispatch,
+    isSlippageWarningVisible,
+    outputCurrency,
+    slippage,
+    createRap,
+    isWithdrawal,
+    isMax,
+    cTokenBalance,
     inputAmount,
     inputCurrency,
-    isDeposit,
-    isMax,
-    isSlippageWarningVisible,
-    isWithdrawal,
-    navigate,
     outputAmount,
-    outputCurrency,
-    setParams,
-    slippage,
+    selectedGasPrice,
     tradeDetails,
-    type,
+    isDeposit,
+    setParams,
+    navigate,
+    dispatch,
   ]);
 
   const navigateToSwapDetailsModal = useCallback(() => {
