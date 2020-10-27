@@ -76,7 +76,7 @@ const calculateReverseDuration = proc(longPressProgress =>
 );
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs({
-  color: 'white',
+  color: colors.white,
   size: 31,
 })`
   left: 15;
