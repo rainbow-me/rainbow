@@ -1,4 +1,10 @@
-import { ethers } from 'ethers';
+import { getAddress } from '@ethersproject/address';
+import { BigNumber } from '@ethersproject/bignumber';
+import { isHexString as isEthersHexString } from '@ethersproject/bytes';
+import { isValidMnemonic as ethersIsValidMnemonic } from '@ethersproject/hdnode';
+
+import { JsonRpcProvider } from '@ethersproject/providers';
+import { parseEther } from '@ethersproject/units';
 import { get, replace, startsWith } from 'lodash';
 import { INFURA_PROJECT_ID, INFURA_PROJECT_ID_DEV } from 'react-native-dotenv';
 import AssetTypes from '../helpers/assetTypes';
@@ -17,8 +23,9 @@ const infuraUrl = `https://network.infura.io/v3/${infuraProjectId}`;
 /**
  * @desc web3 http instance
  */
-export let web3Provider = new ethers.providers.JsonRpcProvider(
-  replace(infuraUrl, 'network', NetworkTypes.mainnet)
+export let web3Provider = new JsonRpcProvider(
+  replace(infuraUrl, 'network', NetworkTypes.mainnet),
+  NetworkTypes.mainnet
 );
 
 /**
@@ -27,10 +34,11 @@ export let web3Provider = new ethers.providers.JsonRpcProvider(
  */
 export const web3SetHttpProvider = async network => {
   if (network.startsWith('http://')) {
-    web3Provider = new ethers.providers.JsonRpcProvider(network);
+    web3Provider = new JsonRpcProvider(network, NetworkTypes.mainnet);
   } else {
-    web3Provider = new ethers.providers.JsonRpcProvider(
-      replace(infuraUrl, 'network', network)
+    web3Provider = new JsonRpcProvider(
+      replace(infuraUrl, 'network', network),
+      network
     );
   }
   return web3Provider.ready;
@@ -50,7 +58,9 @@ export const getTransactionReceipt = txHash =>
  * @param {String} value
  * @return {Boolean}
  */
-export const isHexString = value => ethers.utils.isHexString(value);
+export const isHexString = value => isEthersHexString(value);
+
+export const toHex = value => BigNumber.from(value).toHexString();
 
 export const isHexStringIgnorePrefix = value => {
   if (!value) return false;
@@ -62,16 +72,12 @@ export const isHexStringIgnorePrefix = value => {
 export const addHexPrefix = value =>
   startsWith(value, '0x') ? value : `0x${value}`;
 
-export const mnemonicToSeed = value =>
-  ethers.utils.HDNode.mnemonicToSeed(value);
-
 /**
  * @desc is valid mnemonic
  * @param {String} value
  * @return {Boolean}
  */
-export const isValidMnemonic = value =>
-  ethers.utils.HDNode.isValidMnemonic(value);
+export const isValidMnemonic = value => ethersIsValidMnemonic(value);
 
 /**
  * @desc convert to checksum address
@@ -80,19 +86,11 @@ export const isValidMnemonic = value =>
  */
 export const toChecksumAddress = address => {
   try {
-    return ethers.utils.getAddress(address);
+    return getAddress(address);
   } catch (error) {
     return null;
   }
 };
-
-/**
- * @desc convert to hex representation
- * @param  {String|Number} value
- * @return {String} hex value
- */
-export const toHex = value =>
-  ethers.utils.hexlify(ethers.utils.bigNumberify(value));
 
 /**
  * @desc estimate gas limit
@@ -114,7 +112,7 @@ export const estimateGas = async estimateGasData => {
  * @return {String} value in wei
  */
 export const toWei = ether => {
-  const result = ethers.utils.parseEther(ether);
+  const result = parseEther(ether);
   return result.toString();
 };
 
@@ -134,13 +132,9 @@ export const getTransactionCount = address =>
 export const getTxDetails = async transaction => {
   const { from, to } = transaction;
   const data = transaction.data ? transaction.data : '0x';
-  const value = transaction.amount ? toWei(transaction.amount) : '0x00';
-  const gasLimit = transaction.gasLimit
-    ? toHex(transaction.gasLimit)
-    : undefined;
-  const gasPrice = transaction.gasPrice
-    ? toHex(transaction.gasPrice)
-    : undefined;
+  const value = transaction.amount ? toHex(toWei(transaction.amount)) : '0x00';
+  const gasLimit = toHex(transaction.gasLimit) || undefined;
+  const gasPrice = toHex(transaction.gasPrice) || undefined;
   const nonce = await getTransactionCount(from);
   const tx = {
     data,
@@ -148,7 +142,7 @@ export const getTxDetails = async transaction => {
     gasPrice,
     nonce: toHex(nonce),
     to,
-    value: toHex(value),
+    value,
   };
   return tx;
 };

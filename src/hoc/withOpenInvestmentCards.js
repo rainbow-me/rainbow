@@ -1,8 +1,5 @@
 import { connect } from 'react-redux';
-import {
-  pushOpenInvestmentCard,
-  setOpenInvestmentCards,
-} from '../redux/openStateSettings';
+import { setOpenInvestmentCards } from '../redux/openStateSettings';
 
 const mapStateToProps = ({ openStateSettings: { openInvestmentCards } }) => ({
   openInvestmentCards,
@@ -10,6 +7,5 @@ const mapStateToProps = ({ openStateSettings: { openInvestmentCards } }) => ({
 
 export default Component =>
   connect(mapStateToProps, {
-    pushOpenInvestmentCard,
     setOpenInvestmentCards,
   })(Component);

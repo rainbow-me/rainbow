@@ -20,7 +20,6 @@ export default async function measureText(text, textStyles = {}) {
     ...textStyles,
   })
     .then(measurements => {
-      // console.log('RESULTS HAHAHAHHA', measurements);
       return measurements;
     })
     .catch(() => {

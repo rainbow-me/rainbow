@@ -1,6 +1,7 @@
+import { MaxUint256 } from '@ethersproject/constants';
 import { captureException } from '@sentry/react-native';
-import { ethers } from 'ethers';
-import { get, toLower } from 'lodash';
+import { get, isNull, toLower } from 'lodash';
+import { alwaysRequireApprove } from '../../config/debug';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import TransactionTypes from '../../helpers/transactionTypes';
 import {
@@ -18,7 +19,13 @@ const NOOP = () => undefined;
 
 const unlock = async (wallet, currentRap, index, parameters) => {
   const { dispatch } = store;
-  const { amount, assetToUnlock, contractAddress, override } = parameters;
+  const {
+    amount,
+    assetToUnlock,
+    contractAddress,
+    override,
+    selectedGasPrice,
+  } = parameters;
   const _amount = override || amount;
   logger.log(
     '[unlock] begin unlock rap for',
@@ -31,8 +38,6 @@ const unlock = async (wallet, currentRap, index, parameters) => {
   const { gasPrices } = store.getState().gas;
   const { address: assetAddress } = assetToUnlock;
 
-  // unlocks should always use fast gas
-  const fastGasPrice = get(gasPrices, `[${gasUtils.FAST}]`);
   let gasLimit;
   try {
     logger.sentry('about to estimate approve', {
@@ -50,7 +55,14 @@ const unlock = async (wallet, currentRap, index, parameters) => {
   }
   let approval;
   try {
-    const gasPrice = get(fastGasPrice, 'value.amount');
+    logger.log('[swap] execute the swap');
+    // unlocks should always use fast gas or custom (whatever is faster)
+    let gasPrice = get(selectedGasPrice, 'value.amount');
+    const fastPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);
+    if (greaterThan(fastPrice, gasPrice)) {
+      gasPrice = fastPrice;
+    }
+
     logger.sentry('about to approve', {
       assetAddress,
       contractAddress,
@@ -75,7 +87,7 @@ const unlock = async (wallet, currentRap, index, parameters) => {
   );
 
   // Cache the approved value
-  AllowancesCache.cache[cacheKey] = ethers.constants.MaxUint256;
+  AllowancesCache.cache[cacheKey] = MaxUint256;
 
   // update rap for hash
   currentRap.actions[index].transaction.hash = approval.hash;
@@ -138,6 +150,8 @@ export const assetNeedsUnlocking = async (
     return false;
   }
 
+  if (alwaysRequireApprove) return true;
+
   const cacheKey = toLower(`${accountAddress}|${address}|${contractAddress}`);
 
   let allowance;
@@ -151,7 +165,9 @@ export const assetNeedsUnlocking = async (
       contractAddress
     );
     // Cache that value
-    AllowancesCache.cache[cacheKey] = allowance;
+    if (isNull(allowance)) {
+      AllowancesCache.cache[cacheKey] = allowance;
+    }
   }
 
   const rawAmount = convertAmountToRawAmount(amount, assetToUnlock.decimals);

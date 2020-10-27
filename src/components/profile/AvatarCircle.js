@@ -4,6 +4,7 @@ import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import { useAccountProfile } from '../../hooks';
 import { ButtonPressAnimation } from '../animations';
+import ImageAvatar from '../contacts/ImageAvatar';
 import { Flex, InnerBorder } from '../layout';
 import { Text } from '../text';
 import { colors, position } from '@rainbow-me/styles';
@@ -13,6 +14,8 @@ const AvatarCircleSize = 65;
 const AvatarCircleView = styled(Flex)`
   ${position.size(AvatarCircleSize)};
   margin-bottom: 16px;
+  justify-content: ${Platform.OS === 'ios' ? 'flex-start' : 'center'};
+  align-items: ${Platform.OS === 'ios' ? 'flex-start' : 'center'};
 `;
 
 const FirstLetter = styled(Text).attrs({
@@ -20,7 +23,7 @@ const FirstLetter = styled(Text).attrs({
   color: colors.white,
   letterSpacing: 2,
   lineHeight: 66,
-  size: 38,
+  size: Platform.OS === 'ios' ? 38 : 30,
   weight: 'semibold',
 })`
   width: 67;
@@ -30,6 +33,7 @@ export default function AvatarCircle({
   isAvatarPickerAvailable,
   onPress,
   overlayStyles,
+  image,
 }) {
   const { accountColor, accountSymbol } = useAccountProfile();
   const shadows =
@@ -70,10 +74,14 @@ export default function AvatarCircle({
         marginBottom={12}
         shadows={shadows[overlayStyles ? 'overlay' : 'default']}
       >
-        <AvatarCircleView backgroundColor={colors.avatarColor[accountColor]}>
-          <FirstLetter>{accountSymbol}</FirstLetter>
-          {!overlayStyles && <InnerBorder opacity={0.02} radius={65} />}
-        </AvatarCircleView>
+        {image ? (
+          <ImageAvatar image={image} size="large" />
+        ) : (
+          <AvatarCircleView backgroundColor={colors.avatarColor[accountColor]}>
+            <FirstLetter>{accountSymbol}</FirstLetter>
+            {!overlayStyles && <InnerBorder opacity={0.02} radius={65} />}
+          </AvatarCircleView>
+        )}
       </ShadowStack>
     </ButtonPressAnimation>
   );

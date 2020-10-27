@@ -5,6 +5,7 @@ import { useDimensions } from '../../hooks';
 import Divider from '../Divider';
 import { ContextMenu } from '../context-menu';
 import { Row } from '../layout';
+import SavingsListHeader from '../savings/SavingsListHeader';
 import { H1 } from '../text';
 import { colors, padding, position } from '@rainbow-me/styles';
 
@@ -49,26 +50,40 @@ export default function ListHeader({
   showDivider = true,
   title,
   titleRenderer = H1,
+  totalValue,
 }) {
   const deviceDimensions = useDimensions();
 
-  return (
-    <Fragment>
-      <BackgroundGradient />
-      <Content isSticky={isSticky}>
-        <Row align="center">
-          {createElement(titleRenderer, { children: title })}
-          <ContextMenu marginTop={3} {...contextMenuOptions} />
-        </Row>
-        {children}
-      </Content>
-      {showDivider && <Divider />}
-      {!isSticky && title !== 'Balances' && (
-        <StickyBackgroundBlocker
-          deviceDimensions={deviceDimensions}
-          isEditMode={isCoinListEdited}
-        />
-      )}
-    </Fragment>
-  );
+  if (title === 'Pools') {
+    return (
+      <SavingsListHeader
+        emoji="whale"
+        isOpen={false}
+        onPress={() => {}}
+        savingsSumValue={totalValue}
+        showSumValue
+        title="Pools"
+      />
+    );
+  } else {
+    return (
+      <Fragment>
+        <BackgroundGradient />
+        <Content isSticky={isSticky}>
+          <Row align="center">
+            {createElement(titleRenderer, { children: title })}
+            <ContextMenu marginTop={3} {...contextMenuOptions} />
+          </Row>
+          {children}
+        </Content>
+        {showDivider && <Divider />}
+        {!isSticky && title !== 'Balances' && (
+          <StickyBackgroundBlocker
+            deviceDimensions={deviceDimensions}
+            isEditMode={isCoinListEdited}
+          />
+        )}
+      </Fragment>
+    );
+  }
 }

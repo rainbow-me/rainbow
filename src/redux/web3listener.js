@@ -1,37 +1,32 @@
-import { get, throttle } from 'lodash';
-import { getReserve } from '../handlers/uniswap';
+import { debounce, isEmpty } from 'lodash';
 import { web3Provider } from '../handlers/web3';
 import store from '../redux/store';
-import { uniswapUpdateTokenReserves } from './uniswap';
+import { multicallUpdateOutdatedListeners } from './multicall';
 import logger from 'logger';
 
 // -- Actions ---------------------------------------- //
-const web3UpdateReserves = () => async (dispatch, getState) => {
-  const { inputCurrency, outputCurrency } = getState().uniswap;
-
-  if (!(inputCurrency || outputCurrency)) return;
+const updateMulticall = blockNumber => async (dispatch, getState) => {
+  const { listeners } = getState().multicall;
   try {
-    const [inputReserve, outputReserve] = await Promise.all([
-      getReserve(get(inputCurrency, 'address')),
-      getReserve(get(outputCurrency, 'address')),
-    ]);
-
-    dispatch(uniswapUpdateTokenReserves(inputReserve, outputReserve));
+    if (isEmpty(listeners)) return;
+    dispatch(multicallUpdateOutdatedListeners(blockNumber));
   } catch (error) {
-    logger.log('Error updating Uniswap token reserves', error);
+    logger.log(
+      '[web3 listener] - Error updating Uniswap V2 token reserves',
+      error
+    );
   }
 };
 
-const debouncedUpdateReserves = throttle(
-  store.dispatch(web3UpdateReserves),
-  8000
-);
+const debouncedUpdateMulticallListeners = debounce(blockNumber => {
+  store.dispatch(updateMulticall(blockNumber));
+}, 1000);
 
-export const web3ListenerInit = () => () => {
+export const web3ListenerInit = () => {
   web3Provider.pollingInterval = 10000;
-  web3Provider.on('block', debouncedUpdateReserves);
+  web3Provider.on('block', debouncedUpdateMulticallListeners);
 };
 
-export const web3ListenerStop = () => () => {
+export const web3ListenerStop = () => {
   web3Provider.removeAllListeners('block');
 };

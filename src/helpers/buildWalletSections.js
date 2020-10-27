@@ -7,7 +7,7 @@ import { compose, withHandlers } from 'recompact';
 import { createSelector } from 'reselect';
 import { AssetListItemSkeleton } from '../components/asset-list';
 import { BalanceCoinRow } from '../components/coin-row';
-import { UniswapInvestmentCard } from '../components/investment-cards';
+import { UniswapInvestmentRow } from '../components/investment-cards';
 import { CollectibleTokenFamily } from '../components/token-family';
 import EditOptions from '../helpers/editOptionTypes';
 import { withNavigation } from '../navigation/Navigation';
@@ -71,7 +71,7 @@ const tokenFamilyItem = item => (
   <CollectibleTokenFamily {...item} uniqueId={item.uniqueId} />
 );
 const uniswapRenderItem = item => (
-  <UniswapInvestmentCard {...item} assetType="uniswap" isCollapsible />
+  <UniswapInvestmentRow {...item} assetType="uniswap" isCollapsible />
 );
 
 const filterWalletSections = sections =>
@@ -144,17 +144,19 @@ const withUniswapSection = (
   nativeCurrency,
   uniswap,
   uniswapTotal
-) => ({
-  data: uniswap,
-  header: {
-    title: 'Investments',
-    totalItems: uniswap.length,
-    totalValue: uniswapTotal,
-  },
-  investments: true,
-  name: 'investments',
-  renderItem: uniswapRenderItem,
-});
+) => {
+  return {
+    data: uniswap,
+    header: {
+      title: 'Pools',
+      totalItems: uniswap.length,
+      totalValue: uniswapTotal,
+    },
+    name: 'pools',
+    pools: true,
+    renderItem: uniswapRenderItem,
+  };
+};
 
 const withEthPrice = allAssets => {
   const ethAsset = ethereumUtils.getAsset(allAssets);

@@ -11,12 +11,13 @@ import {
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
+import { greaterThanOrEqualTo, multiply } from '../helpers/utilities';
 import { uniswapUpdateFavorites } from '../redux/uniswap';
 
-const uniswapIsInitializedSelector = state => state.uniswap.isInitialized;
+const uniswapLoadingAllTokensSelector = state => state.uniswap.loadingAllTokens;
 const uniswapFavoritesSelector = state => state.uniswap.favorites;
 const uniswapPairsSelector = state => state.uniswap.pairs;
-const uniswapAllPairsSelector = state => state.uniswap.allPairs;
+const uniswapAllTokensSelector = state => state.uniswap.allTokens;
 
 const appendFavoriteKey = asset => ({
   ...asset,
@@ -32,7 +33,7 @@ const normalizeAssetItems = assetsArray =>
   map(assetsArray, appendAssetWithUniqueId);
 
 const withUniswapAssets = (
-  isInitialized,
+  loadingAllTokens,
   curatedUniswapAssets,
   globalUniswapAssets,
   favorites
@@ -57,22 +58,23 @@ const withUniswapAssets = (
     favorites: normalizeAssetItems(sortedFavorites),
     globalHighLiquidityAssets: normalizeAssetItems(globalHighLiquidityAssets),
     globalLowLiquidityAssets: normalizeAssetItems(globalLowLiquidityAssets),
-    isInitialized,
+    loadingAllTokens,
   };
 };
 
 const getGlobalUniswapAssets = (assets, favorites) => {
-  const assetsWithAddress = mapValues(assets, (value, key) => ({
-    ...value,
-    address: key,
-  }));
-  const sorted = sortBy(values(assetsWithAddress), ({ name }) => toLower(name));
+  const sorted = sortBy(values(assets), ({ name }) => toLower(name));
   const [favorited, notFavorited] = partition(sorted, ({ address }) =>
     includes(map(favorites, toLower), toLower(address))
   );
   const [highLiquidity, lowLiquidity] = partition(
     notFavorited,
-    ({ ethBalance }) => ethBalance > 0.5
+    ({ derivedETH, totalLiquidity }) => {
+      return (
+        derivedETH &&
+        greaterThanOrEqualTo(multiply(derivedETH, totalLiquidity), 0.5)
+      );
+    }
   );
 
   return {
@@ -100,9 +102,9 @@ const getCuratedUniswapAssets = (assets, favorites) => {
 
 const withUniswapAssetsSelector = createSelector(
   [
-    uniswapIsInitializedSelector,
+    uniswapLoadingAllTokensSelector,
     uniswapPairsSelector,
-    uniswapAllPairsSelector,
+    uniswapAllTokensSelector,
     uniswapFavoritesSelector,
   ],
   withUniswapAssets

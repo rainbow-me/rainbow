@@ -53,30 +53,12 @@ workflows:
             detox build --configuration ios.sim.release
         title: Detox - Build Release App
     - script@1.1.6:
-        is_skippable: true
         inputs:
         - content: |-
             #!/bin/bash
 
-            if detox test --configuration ios.sim.release -l verbose ; then
-              envman add --key TEST_FAIL --value false
-            else
-              envman add --key TEST_FAIL --value true
-              exit 1
-            fi
+            yarn ganache >> /dev/null 2>&1 & detox test -R 1 --configuration ios.sim.release -l verbose
         title: Detox - Run E2E Tests
-    - script@1.1.6:
-        inputs:
-        - content: |-
-            #!/bin/bash
-
-            if $TEST_FAIL ; then
-                detox test --configuration ios.sim.release -l verbose ;
-              else
-                echo "First Test Run Passed"
-              fi
-        title: Detox - Re-run tests if needed
-        is_always_run: true
   detox_setup:
     steps:
     - yarn@0.1.1:
@@ -190,16 +172,6 @@ workflows:
         is_expand: false
       GANACHE_URL: http://127.0.0.1:7545
     steps:
-    - custom-test-results-export@0:
-        inputs:
-        - base_path: "$BITRISE_SOURCE_DIR/e2e/logs/iOS/"
-        - search_pattern: "*"
-        - test_name: Detox e2e - iOS Test Report
-    - deploy-to-bitrise-io@1:
-        inputs:
-        - deploy_path: "$BITRISE_TEST_RESULT_DIR"
-        - notify_user_groups: none
-        - is_enable_public_page: 'false'
     - slack@3:
         inputs:
         - channel: "#bitrise"
@@ -252,6 +224,7 @@ workflows:
             echo "RAINBOW_MASTER_KEY=$RAINBOW_MASTER_KEY" >> .env
             echo "DEV_SEEDS=\"$DEV_SEEDS\"" >> .env
             echo "DEV_PKEY=\$DEV_PKEY" >> .env
+            echo "TEST_SEEDS=\"$TEST_SEEDS\"" >> .env
             echo "IS_TESTING=$IS_TESTING" >> .env
             echo "WYRE_TOKEN=$WYRE_TOKEN" >> .env
             echo "WYRE_TOKEN_TEST=$WYRE_TOKEN_TEST" >> .env
