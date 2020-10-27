@@ -154,7 +154,7 @@ export async function restoreCloudBackup(
       throw new Error('Invalid password');
     }
 
-    // Restore only wallets that were backed up
+    // Restore only wallets that were backed up in cloud
     // or wallets that are read-only
     const walletsToRestore: AllRainbowWallets = {};
     forEach(userData.wallets, wallet => {
