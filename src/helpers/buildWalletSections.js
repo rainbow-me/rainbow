@@ -310,7 +310,6 @@ const withBalanceSection = (
     totalBalanceWithAllSectionValues,
     nativeCurrency
   );
-  console.log('total', totalValue);
 
   if (networkTypes.mainnet === network) {
     balanceSectionData.push(savingsSection);
