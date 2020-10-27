@@ -1,5 +1,6 @@
 import { MaxUint256 } from '@ethersproject/constants';
 import { captureException } from '@sentry/react-native';
+import { BigNumber } from 'bignumber.js';
 import { get, isNull, toLower } from 'lodash';
 import { alwaysRequireApprove } from '../../config/debug';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
@@ -29,11 +30,9 @@ const unlock = async (wallet, currentRap, index, parameters) => {
   );
   logger.log('[unlock]', amount, override, _amount);
 
-  const { gasPrices } = store.getState().gas;
+  const { gasPrices, selectedGasPrice } = store.getState().gas;
   const { address: assetAddress } = assetToUnlock;
 
-  // unlocks should always use fast gas
-  const fastGasPrice = get(gasPrices, `[${gasUtils.FAST}]`);
   let gasLimit;
   try {
     logger.sentry('about to estimate approve', {
@@ -51,7 +50,16 @@ const unlock = async (wallet, currentRap, index, parameters) => {
   }
   let approval;
   try {
-    const gasPrice = get(fastGasPrice, 'value.amount');
+    logger.log('[swap] execute the swap');
+    // unlocks should always use fast gas or custom (whatever is faster)
+    let gasPrice = get(selectedGasPrice, 'value.amount');
+    const selectedGasBN = new BigNumber(`${gasPrice}`);
+    const fastPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);
+    const fastPriceBN = new BigNumber(`${fastPrice}`);
+    if (greaterThan(fastPriceBN, selectedGasBN)) {
+      gasPrice = fastPrice;
+    }
+
     logger.sentry('about to approve', {
       assetAddress,
       contractAddress,
