@@ -2,6 +2,7 @@ import React, { createElement } from 'react';
 import styled from 'styled-components/primitives';
 import { useAccountSettings } from '../../hooks';
 import { CoinIcon, CoinIconSize } from '../coin-icon';
+import CoinIconGroup from '../coin-icon/CoinIconGroup';
 import { Column, Row } from '../layout';
 import { padding } from '@rainbow-me/styles';
 
@@ -35,23 +36,29 @@ export default function CoinRow({
   contentStyles,
   isHidden,
   isPinned,
+  isPool,
   symbol,
   testID,
   topRowRender,
+  tokenSymbols,
   ...props
 }) {
   const accountSettings = useAccountSettings();
 
   return (
     <Container css={containerStyles}>
-      {createElement(coinIconRender, {
-        address,
-        isHidden,
-        isPinned,
-        symbol,
-        ...accountSettings,
-        ...props,
-      })}
+      {isPool ? (
+        <CoinIconGroup tokens={tokenSymbols} />
+      ) : (
+        createElement(coinIconRender, {
+          address,
+          isHidden,
+          isPinned,
+          symbol,
+          ...accountSettings,
+          ...props,
+        })
+      )}
       <Content isHidden={isHidden} justify="center" style={contentStyles}>
         <Row align="center" testID={`${testID}-${symbol || ''}`}>
           {topRowRender({ symbol, ...accountSettings, ...props })}

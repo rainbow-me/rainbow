@@ -63,6 +63,10 @@ class TransactionListViewCell: TransactionListBaseCell {
     setTextSpacing()
     setIcon(transaction)
 
+    transactionType.isAccessibilityElement = true;
+    transactionType.accessibilityIdentifier = "\(transaction.title!)-\(transaction.transactionDescription!)";
+
+
     
     if transaction.symbol != nil {
       if let img = UIImage.init(named: transaction.symbol.lowercased()) {

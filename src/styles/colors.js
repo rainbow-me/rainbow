@@ -82,11 +82,6 @@ const sendScreen = {
   lightGrey: '#FAFAFA', // '250, 250, 250'
 };
 
-let uniswapInvestmentCards = {
-  endGradient: '#E4E9F0',
-  startGradient: '#ECF1F5',
-};
-
 let listHeaders = {
   firstGradient: '#ffffff00',
   secondGradient: '#ffffff80',
@@ -160,11 +155,6 @@ if (darkMode) {
     ...darkModeColors,
   };
 
-  uniswapInvestmentCards = {
-    endGradient: '#000000',
-    startGradient: '#000000',
-  };
-
   listHeaders = {
     firstGradient: '#000000ff',
     secondGradient: '#00000080',
@@ -182,7 +172,6 @@ const colors = {
   isColorLight,
   listHeaders,
   sendScreen,
-  uniswapInvestmentCards,
   ...base,
   ...transparent,
   ...light,

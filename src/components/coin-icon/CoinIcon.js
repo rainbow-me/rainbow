@@ -59,5 +59,6 @@ export default magicMemo(CoinIcon, [
   'bgColor',
   'isHidden',
   'isPinned',
+  'size',
   'symbol',
 ]);

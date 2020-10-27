@@ -116,9 +116,9 @@ function getActiveRouteName(navigationState) {
  * Handle a navigation action or queue the action if navigation actions have been paused.
  * @param  {Object} action      The navigation action to run.
  */
-function handleAction(name, params) {
+function handleAction(name, params, replace = false) {
   if (!TopLevelNavigationRef) return;
-  const action = StackActions.push(name, params);
+  const action = StackActions[replace ? 'replace' : 'push'](name, params);
   TopLevelNavigationRef?.dispatch(action);
 }
 

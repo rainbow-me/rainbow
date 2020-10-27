@@ -160,6 +160,7 @@ export default function SettingsModal() {
       radius={18}
       showDoneButton={ios}
       skipStatusBar={android}
+      testID="settings-modal"
     >
       <Container>
         <Stack.Navigator

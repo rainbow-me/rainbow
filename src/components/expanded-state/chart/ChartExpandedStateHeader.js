@@ -104,7 +104,7 @@ export default function ChartExpandedStateHeader({
             {isNoPriceData ? noPriceData : asset?.name}
           </ChartHeaderSubtitle>
         </ColumnWithMargins>
-        {!isNoPriceData && showChart && (
+        {!isNoPriceData && showChart && !isNaN(latestChange) && (
           <ColumnWithMargins align="end" margin={1}>
             <ChartPercentChangeLabel
               changeDirection={changeDirection}

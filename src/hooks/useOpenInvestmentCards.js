@@ -1,29 +1,20 @@
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  pushOpenInvestmentCard as rawPushOpenInvestmentCard,
-  setOpenInvestmentCards as rawSetOpenInvestmentCards,
-} from '../redux/openStateSettings';
+import { setOpenInvestmentCards } from '../redux/openStateSettings';
 
 export default function useOpenInvestmentCards() {
   const dispatch = useDispatch();
-  const openInvestmentCards = useSelector(
+  const isInvestmentCardsOpen = useSelector(
     ({ openStateSettings: { openInvestmentCards } }) => openInvestmentCards
   );
 
-  const pushOpenInvestmentCard = useCallback(
-    data => dispatch(rawPushOpenInvestmentCard(data)),
-    [dispatch]
-  );
-
-  const setOpenInvestmentCards = useCallback(
-    data => dispatch(rawSetOpenInvestmentCards(data)),
-    [dispatch]
+  const toggleOpenInvestmentCards = useCallback(
+    () => dispatch(setOpenInvestmentCards(!isInvestmentCardsOpen)),
+    [dispatch, isInvestmentCardsOpen]
   );
 
   return {
-    openInvestmentCards,
-    pushOpenInvestmentCard,
-    setOpenInvestmentCards,
+    isInvestmentCardsOpen,
+    toggleOpenInvestmentCards,
   };
 }
