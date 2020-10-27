@@ -7,6 +7,7 @@ import TransactionTypes from '../../helpers/transactionTypes';
 import {
   convertHexToString,
   convertRawAmountToDecimalFormat,
+  greaterThan,
   isZero,
 } from '../../helpers/utilities';
 import { dataAddNewTransaction } from '../../redux/data';
@@ -54,7 +55,7 @@ const swap = async (wallet, currentRap, index, parameters) => {
     inputAmount,
     inputCurrency,
     outputCurrency,
-    selectedGasPrice = null,
+    selectedGasPrice,
     tradeDetails,
   } = parameters;
   const { dispatch } = store;
@@ -65,10 +66,12 @@ const swap = async (wallet, currentRap, index, parameters) => {
   // Execute Swap
   logger.log('[swap] execute the swap');
   let gasPrice = get(selectedGasPrice, 'value.amount');
-
-  // if swap is not the final action, use fast gas
+  // if swap isn't the last action, use fast gas or custom (whatever is faster)
   if (currentRap.actions.length - 1 > index || !gasPrice) {
-    gasPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);
+    const fastPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);
+    if (greaterThan(fastPrice, gasPrice)) {
+      gasPrice = fastPrice;
+    }
   }
   let gasLimit, methodName;
   try {

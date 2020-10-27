@@ -80,6 +80,7 @@ const createUnlockAndSwapRap = async ({
       amount: inputAmount,
       assetToUnlock: inputCurrency,
       contractAddress: UNISWAP_V2_ROUTER_ADDRESS,
+      selectedGasPrice,
     });
     actions = concat(actions, unlock);
   }

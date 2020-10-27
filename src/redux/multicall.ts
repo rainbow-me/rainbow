@@ -5,6 +5,7 @@ import { chunk, forEach, get, keys, map } from 'lodash';
 import { web3Provider } from '../handlers/web3';
 import { MULTICALL_ABI, MULTICALL_NETWORKS } from '../references/uniswap';
 import { AppDispatch, AppGetState } from './store';
+import logger from 'logger';
 
 // -- Constants ------------------------------------------------------------- //
 const MULTICALL_UPDATE_RESULTS = 'multicall/MULTICALL_UPDATE_RESULTS';
@@ -236,7 +237,7 @@ export const multicallUpdateOutdatedListeners = (
         );
       })
       .catch((error: any) => {
-        console.log(
+        logger.log(
           '### [multicall redux, aggregate call] - Failed to fetch multicall',
           error
         );
