@@ -18,7 +18,7 @@
       "@rainbow-me/helpers": ["./src/helpers"],
       "@rainbow-me/hooks": ["src/hooks"],
       "@rainbow-me/navigation": ["src/navigation"],
-      "@rainbow-me/redux": ["src/redux"],      
+      "@rainbow-me/redux": ["src/redux"],
       "@rainbow-me/references": ["src/references"],
       "@rainbow-me/routes": ["src/navigation/routesNames"],
       "@rainbow-me/styles": ["src/styles"],
@@ -30,6 +30,7 @@
     "resolveJsonModule": true
   },
   "exclude": [
+    "patches/reanimated",
     "node_modules",
     "babel.config.js",
     "metro.config.js",

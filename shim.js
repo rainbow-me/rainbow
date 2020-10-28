@@ -24,7 +24,9 @@ if (
       return { value: init };
     },
     makeRemote() {},
-    makeShareable() {},
+    makeShareable() {
+      return () => {};
+    },
     registerEventHandler() {},
     startMapper() {},
     stopMapper() {},
