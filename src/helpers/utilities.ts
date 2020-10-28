@@ -150,6 +150,11 @@ export const multiply = (
   numberTwo: BigNumberish
 ): string => new BigNumber(numberOne).times(numberTwo).toFixed();
 
+export const addBuffer = (
+  numberOne: BigNumberish,
+  buffer: BigNumberish = '1.2'
+): string => new BigNumber(numberOne).times(buffer).toFixed(0);
+
 export const divide = (
   numberOne: BigNumberish,
   numberTwo: BigNumberish
