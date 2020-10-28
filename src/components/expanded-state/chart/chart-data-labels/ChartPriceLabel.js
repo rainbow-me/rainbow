@@ -11,6 +11,9 @@ const Label = styled(ChartYLabel)`
   letter-spacing: ${fonts.letterSpacing.roundedTight};
   font-variant: tabular-nums;
   text-align: right;
+  ${android &&
+    `margin-top: -8;
+  margin-bottom: -16;`}
 `;
 
 export function formatUSD(value, priceSharedValue) {

@@ -1,4 +1,5 @@
 import React from 'react';
+import { View } from 'react-native';
 import { useAnimatedStyle } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
 import { useRatio } from './useRatio';
@@ -12,6 +13,9 @@ const Label = styled(ChartXLabel)`
   font-variant: tabular-nums;
   letter-spacing: ${fonts.letterSpacing.roundedMedium};
   text-align: right;
+  ${android &&
+    `overflow: hidden;
+  margin-vertical: -20;`}
 `;
 
 const MONTHS = [
@@ -99,12 +103,14 @@ export default function ChartDateLabel({ chartTimeSharedValue }) {
   );
 
   return (
-    <Label
-      format={value => {
-        'worklet';
-        return formatDatetime(value, chartTimeSharedValue);
-      }}
-      style={textStyle}
-    />
+    <View style={{ overflow: 'hidden' }}>
+      <Label
+        format={value => {
+          'worklet';
+          return formatDatetime(value, chartTimeSharedValue);
+        }}
+        style={textStyle}
+      />
+    </View>
   );
 }
