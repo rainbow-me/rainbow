@@ -534,7 +534,7 @@ EmojiSelector.defaultProps = {
   showHistory: false,
   showSearchBar: true,
   showSectionTitles: true,
-  showTabs: Platform.OS === 'ios',
+  showTabs: ios,
   theme: '#007AFF',
 };
 

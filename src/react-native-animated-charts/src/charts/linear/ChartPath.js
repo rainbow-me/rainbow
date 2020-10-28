@@ -5,7 +5,6 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Platform } from 'react-native';
 import { LongPressGestureHandler } from 'react-native-gesture-handler';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, {
@@ -30,8 +29,6 @@ function impactHeavy() {
 }
 
 export const InternalContext = createContext(null);
-
-const android = Platform.OS === 'android';
 
 const springDefaultConfig = {
   damping: 15,
@@ -645,7 +642,7 @@ function ChartPath({
               Number(selectedStrokeWidthValue.value)) +
           Number(selectedStrokeWidthValue.value),
       };
-      if (Platform.OS === 'ios') {
+      if (ios) {
         props.style = {
           opacity: pathOpacity.value * (1 - selectedOpacity) + selectedOpacity,
         };
