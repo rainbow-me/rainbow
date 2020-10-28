@@ -453,7 +453,7 @@ export const getWallet = (
   const type = identifyWalletType(walletSeed);
   switch (type) {
     case EthereumWalletType.privateKey:
-      wallet = new Wallet(walletSeed);
+      wallet = new Wallet(addHexPrefix(walletSeed));
       break;
     case EthereumWalletType.mnemonic:
       hdnode = HDNode.fromMnemonic(walletSeed);
@@ -474,7 +474,6 @@ export const getWallet = (
     const node = hdnode.derivePath(`${DEFAULT_HD_PATH}/0`);
     wallet = new Wallet(node.privateKey);
   }
-
   return { hdnode, isHDWallet, type, wallet };
 };
 
@@ -878,7 +877,7 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
       existingAccount: undefined | Wallet;
     switch (type) {
       case EthereumWalletType.privateKey:
-        existingAccount = new Wallet(seedphrase);
+        existingAccount = new Wallet(addHexPrefix(seedphrase));
         break;
       case EthereumWalletType.mnemonic:
         hdnode = HDNode.fromMnemonic(seedphrase);
