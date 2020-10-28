@@ -11,7 +11,7 @@ import store from '../redux/store';
 import supportedNativeCurrencies from '../references/native-currencies.json';
 import { add } from './utilities';
 
-export let amountOfShowedCoins = 5;
+export const amountOfShowedCoins = 5;
 
 export const buildAssetHeaderUniqueIdentifier = ({
   title,
