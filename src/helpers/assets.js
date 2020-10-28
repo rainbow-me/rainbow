@@ -45,9 +45,6 @@ export const buildCoinsList = (
 
   let totalBalancesValue = 0;
   let smallBalancesValue = 0;
-
-  const isShortList = assetsLength <= amountOfShowedCoins;
-
   let hasStandard = false;
 
   forEach(assets, asset => {
@@ -73,10 +70,9 @@ export const buildCoinsList = (
         ...asset,
       });
     } else if (
-      (standardAssets.length + pinnedCoins.length < amountOfShowedCoins &&
-        asset.native?.balance.amount >
-          supportedNativeCurrencies[nativeCurrency].smallThreshold) ||
-      isShortList
+      standardAssets.length + pinnedCoins.length < amountOfShowedCoins &&
+      asset.native.balance.amount >
+        supportedNativeCurrencies[nativeCurrency].smallThreshold
     ) {
       hasStandard = true;
       totalBalancesValue = add(
