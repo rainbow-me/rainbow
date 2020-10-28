@@ -27,3 +27,8 @@ else
   echo "⚠️ .env file missing!! ⚠️"
   echo "Please make sure the file exists and it's located in the root of  the project"
 fi
+
+rm -rf node_modules/react-native-reanimated
+cp -R  patches/reanimated node_modules/react-native-reanimated
+
+echo "✅ Reanimated moved from patches to mode_modules"
