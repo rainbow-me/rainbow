@@ -45,8 +45,8 @@ export const buildCoinsList = (
 
   let totalBalancesValue = 0;
   let smallBalancesValue = 0;
-  let hasStandard = false;
 
+  let hasStandard = false;
   const hasEth =
     assets.filter(asset => asset.address === 'eth').length === 0 ? false : true;
 
