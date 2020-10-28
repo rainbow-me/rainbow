@@ -181,7 +181,7 @@ const INITIAL_STATE = {
   hiddenCoins: [],
   isCoinListEdited: false,
   isCoinListEditedValue: new Value(0),
-  pinnedCoins: [],
+  pinnedCoins: ['eth'],
   recentlyPinnedCount: 0,
   selectedCoins: [],
 };
