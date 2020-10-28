@@ -1,33 +1,49 @@
 import React, { useCallback, useRef } from 'react';
 import { SectionList } from 'react-native-gesture-handler';
+import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components/primitives';
 import { usePrevious } from '../../hooks';
-import { exchangeModalBorderRadius } from '../../screens/ExchangeModal';
-import { magicMemo } from '../../utils';
 import { CoinRowHeight, ExchangeCoinRow } from '../coin-row';
 import { GradientText, Text } from '../text';
 import { colors, padding } from '@rainbow-me/styles';
+import { deviceUtils, magicMemo } from '@rainbow-me/utils';
+
+const deviceWidth = deviceUtils.dimensions.width;
 
 const Header = styled.View`
-  ${padding(12, 19, 6)};
-  background-color: ${colors.white};
+  ${padding(11, 0, 2.5, 19)};
+  position: relative;
+`;
+
+const HeaderBackground = styled(LinearGradient).attrs({
+  colors: [colors.white, colors.alpha(colors.white, 0)],
+  end: { x: 0.5, y: 1 },
+  locations: [0.55, 1],
+  start: { x: 0.5, y: 0 },
+})`
+  height: 40px;
+  position: absolute;
+  width: ${deviceWidth};
 `;
 
 const HeaderTitle = styled(Text).attrs({
-  color: colors.blueGreyDark,
-  opacity: 0.6,
-  size: 'lmedium',
-  weight: 'bold',
+  color: colors.blueGreyDark50,
+  letterSpacing: 'roundedMedium',
+  size: 'smedium',
+  weight: 'heavy',
 })``;
 
 const HeaderTitleGradient = styled(GradientText).attrs({
   colors: ['#6AA2E3', '#FF54BB', '#FFA230'],
-  end: { x: 1, y: 1 },
-  size: 'lmedium',
-  start: { x: 0, y: 0 },
-  steps: [0, 0.2, 0.45, 1],
-  weight: 'bold',
+  letterSpacing: 'roundedMedium',
+  size: 'smedium',
+  steps: [0, 0.2867132868, 1],
+  weight: 'heavy',
 })``;
+
+const HeaderTitleWrapper = styled.View`
+  width: 143px;
+`;
 
 const ExchangeAssetSectionListHeader = ({ section }) => {
   const TitleComponent = section.useGradientText
@@ -35,14 +51,17 @@ const ExchangeAssetSectionListHeader = ({ section }) => {
     : HeaderTitle;
   return section?.title ? (
     <Header>
-      <TitleComponent>{section.title}</TitleComponent>
+      <HeaderBackground />
+      <HeaderTitleWrapper>
+        <TitleComponent>{section.title}</TitleComponent>
+      </HeaderTitleWrapper>
     </Header>
   ) : null;
 };
 
-const contentContainerStyle = { paddingBottom: exchangeModalBorderRadius };
+const contentContainerStyle = { paddingBottom: 9.5 };
 const keyExtractor = ({ uniqueId }) => `ExchangeAssetList-${uniqueId}`;
-const scrollIndicatorInsets = { bottom: exchangeModalBorderRadius };
+const scrollIndicatorInsets = { bottom: 24 };
 const getItemLayout = ({ showBalance }, index) => {
   const height = showBalance ? CoinRowHeight + 1 : CoinRowHeight;
   return {

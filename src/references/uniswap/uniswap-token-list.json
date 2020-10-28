@@ -11,14 +11,6 @@
   "keywords": ["uniswap", "default"],
   "tokens": [
     {
-      "name": "0xBitcoin",
-      "address": "0xB6eD7644C69416d67B522e20bC294A9a9B405B31",
-      "symbol": "0xBTC",
-      "decimals": 8,
-      "chainId": 1,
-      "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xB6eD7644C69416d67B522e20bC294A9a9B405B31/logo.png"
-    },
-    {
       "name": "Aave",
       "address": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
       "symbol": "AAVE",
@@ -587,6 +579,14 @@
       "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x45804880De22913dAFE09f4980848ECE6EcbAf78/logo.png"
     },
     {
+      "name": "Pickle Finance",
+      "address": "0x429881672B9AE42b8EbA0E26cD9C73711b891Ca5",
+      "symbol": "PICKLE",
+      "decimals": 18,
+      "chainId": 1,
+      "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x429881672B9AE42b8EbA0E26cD9C73711b891Ca5/logo.png"
+    },
+    {
       "name": "Kleros",
       "address": "0x93ED3FBe21207Ec2E8f2d3c3de6e058Cb73Bc04d",
       "symbol": "PNK",
@@ -907,6 +907,13 @@
       "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x04Fa0d235C4abf4BcF4787aF4CF447DE572eF828/logo.png"
     },
     {
+      "name": "Unisocks",
+      "address": "0x23b608675a2b2fb1890d3abbd85c5775c51691d5",
+      "symbol": "SOCKS",
+      "decimals": 18,
+      "chainId": 1
+    },
+    {
       "name": "Uniswap",
       "address": "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984",
       "symbol": "UNI",
@@ -1001,6 +1008,13 @@
       "decimals": 18,
       "chainId": 1,
       "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x0f7F961648aE6Db43C75663aC7E5414Eb79b5704/logo.png"
+    },
+    {
+      "name": "Y Curve Vault",
+      "address": "0x5dbcf33d8c2e976c6b560249878e6f1491bca25c",
+      "symbol": "yUSD",
+      "decimals": 18,
+      "chainId": 1
     },
     {
       "name": "0x",

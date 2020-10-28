@@ -13,8 +13,8 @@ import { useDimensions } from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
 import { haptics, neverRerender } from '@rainbow-me/utils';
 
-const CoinRowPaddingTop = 11;
-const CoinRowPaddingBottom = 11;
+const CoinRowPaddingTop = 9.5;
+const CoinRowPaddingBottom = 9.5;
 
 const FloatingFavoriteEmojis = styled(FloatingEmojis).attrs({
   centerVertically: true,
@@ -24,13 +24,13 @@ const FloatingFavoriteEmojis = styled(FloatingEmojis).attrs({
   duration: 400,
   emojis: ['glowing_star'],
   fadeOut: false,
-  marginTop: 11,
+  marginTop: 10.25,
   range: [0, 0],
   scaleTo: 0,
   size: 32,
   wiggleFactor: 0,
 })`
-  left: ${({ deviceWidth }) => deviceWidth - 46};
+  left: ${({ deviceWidth }) => deviceWidth - 52.25};
   position: absolute;
   right: 0;
   top: 0;
