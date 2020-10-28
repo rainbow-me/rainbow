@@ -7,6 +7,8 @@ import {
   includes,
   sortBy,
 } from 'lodash';
+import supportedNativeCurrencies from '../references/native-currencies.json';
+
 import { add } from './utilities';
 
 export const amountOfShowedCoins = 5;
@@ -46,11 +48,13 @@ export const buildCoinsList = (
 
   const isShortList = assetsLength <= amountOfShowedCoins;
 
-  let hiddenPinned = 0;
+  let hasStandard = false;
 
-  forEach(assets, (asset, index) => {
+  forEach(assets, asset => {
+    if (asset.address === 'eth') {
+      console.log('ETHasset: ', asset);
+    }
     if (hiddenCoins && hiddenCoins.includes(asset.uniqueId)) {
-      hiddenPinned++;
       hiddenAssets.push({
         isCoin: true,
         isHidden: true,
@@ -58,7 +62,6 @@ export const buildCoinsList = (
         ...asset,
       });
     } else if (pinnedCoins.includes(asset.uniqueId)) {
-      hiddenPinned++;
       totalBalancesValue = add(
         totalBalancesValue,
         get(asset, 'native.balance.amount', 0)
@@ -70,22 +73,33 @@ export const buildCoinsList = (
         ...asset,
       });
     } else if (
-      (standardAssets.length + pinnedAssets.length <
-        amountOfShowedCoins - pinnedCoins.length &&
-        index < amountOfShowedCoins + hiddenPinned) ||
+      (standardAssets.length + pinnedCoins.length < amountOfShowedCoins &&
+        asset.native?.balance.amount >
+          supportedNativeCurrencies[nativeCurrency].smallThreshold) ||
       isShortList
     ) {
+      hasStandard = true;
       totalBalancesValue = add(
         totalBalancesValue,
         get(asset, 'native.balance.amount', 0)
       );
       standardAssets.push({ isCoin: true, isSmall: false, ...asset });
     } else {
-      smallBalancesValue = add(
-        smallBalancesValue,
-        get(asset, 'native.balance.amount', 0)
-      );
-      smallBalances.assets.push({ isCoin: true, isSmall: true, ...asset });
+      //if only dust assets we want to show the top 5 in standard
+      if (!hasStandard && standardAssets.length < 5) {
+        totalBalancesValue = add(
+          totalBalancesValue,
+          get(asset, 'native.balance.amount', 0)
+        );
+        standardAssets.push({ isCoin: true, isSmall: false, ...asset });
+      } else {
+        //if standard assets exist, partiton normally
+        smallBalancesValue = add(
+          smallBalancesValue,
+          get(asset, 'native.balance.amount', 0)
+        );
+        smallBalances.assets.push({ isCoin: true, isSmall: true, ...asset });
+      }
     }
   });
 
