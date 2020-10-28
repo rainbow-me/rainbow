@@ -51,7 +51,6 @@ export const buildCoinsList = (
     assets.filter(asset => asset.address === 'eth').length === 0 ? false : true;
 
   const genericAssets = store.getState().data.genericAssets;
-
   if (genericAssets.eth) {
     const { relative_change_24h, value } = genericAssets?.eth.price;
 
