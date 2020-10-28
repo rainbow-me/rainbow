@@ -46,7 +46,7 @@ export default function Modal({
   return (
     <Container containerPadding={containerPadding} fixedToTop={fixedToTop}>
       {skipStatusBar || <StatusBar barStyle={statusBarStyle} />}
-      <TouchableBackdrop onPress={onCloseModal} />
+      {ios && <TouchableBackdrop onPress={onCloseModal} />}
       <Content
         fullScreenOnAndroid={fullScreenOnAndroid}
         {...props}
