@@ -7,11 +7,11 @@ import {
   includes,
   sortBy,
 } from 'lodash';
+import store from '../redux/store';
 import supportedNativeCurrencies from '../references/native-currencies.json';
-
 import { add } from './utilities';
 
-export const amountOfShowedCoins = 5;
+export let amountOfShowedCoins = 5;
 
 export const buildAssetHeaderUniqueIdentifier = ({
   title,
@@ -47,10 +47,48 @@ export const buildCoinsList = (
   let smallBalancesValue = 0;
   let hasStandard = false;
 
+  const hasEth =
+    assets.filter(asset => asset.address === 'eth').length === 0 ? false : true;
+
+  const genericAssets = store.getState().data.genericAssets;
+
+  if (genericAssets.eth) {
+    const { relative_change_24h, value } = genericAssets?.eth.price;
+
+    const zeroEth = {
+      address: 'eth',
+      balance: {
+        amount: '0',
+        display: '0 ETH',
+      },
+      color: '#29292E',
+      decimals: 18,
+      icon_url: 'https://s3.amazonaws.com/token-icons/eth.png',
+      isCoin: true,
+      isPinned: pinnedCoins.includes('eth'),
+      isSmall: false,
+      name: 'Ethereum',
+      native: {
+        balance: {
+          amount: '0',
+          display: '$0',
+        },
+        change: relative_change_24h ? `${relative_change_24h.toFixed(2)}%` : '',
+        price: {
+          amount: value,
+          display: String(value),
+        },
+      },
+      price: value,
+      symbol: 'ETH',
+      type: 'token',
+      uniqueId: 'eth',
+    };
+
+    !hasEth && assetsLength > 0 ? assets.push(zeroEth) : null;
+  }
+
   forEach(assets, asset => {
-    if (asset.address === 'eth') {
-      console.log('ETHasset: ', asset);
-    }
     if (hiddenCoins && hiddenCoins.includes(asset.uniqueId)) {
       hiddenAssets.push({
         isCoin: true,
@@ -71,7 +109,7 @@ export const buildCoinsList = (
       });
     } else if (
       standardAssets.length + pinnedCoins.length < amountOfShowedCoins &&
-      asset.native.balance.amount >
+      asset.native?.balance.amount >
         supportedNativeCurrencies[nativeCurrency].smallThreshold
     ) {
       hasStandard = true;
@@ -82,7 +120,12 @@ export const buildCoinsList = (
       standardAssets.push({ isCoin: true, isSmall: false, ...asset });
     } else {
       //if only dust assets we want to show the top 5 in standard
-      if (!hasStandard && standardAssets.length < 5) {
+      if (
+        (!hasStandard && standardAssets.length < amountOfShowedCoins) ||
+        (hasStandard &&
+          standardAssets.length < amountOfShowedCoins &&
+          asset.address === 'eth')
+      ) {
         totalBalancesValue = add(
           totalBalancesValue,
           get(asset, 'native.balance.amount', 0)
@@ -98,7 +141,6 @@ export const buildCoinsList = (
       }
     }
   });
-
   totalBalancesValue = add(totalBalancesValue, smallBalancesValue);
 
   if (isCoinListEdited) {
