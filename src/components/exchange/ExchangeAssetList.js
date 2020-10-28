@@ -76,13 +76,14 @@ const ExchangeAssetSectionList = styled(SectionList).attrs({
   contentContainerStyle,
   directionalLockEnabled: true,
   getItemLayout,
-  initialNumToRender: 8,
+  initialNumToRender: 10,
   keyboardDismissMode: 'none',
   keyboardShouldPersistTaps: 'always',
   keyExtractor,
+  maxToRenderPerBatch: 50,
   scrollEventThrottle: 32,
   scrollIndicatorInsets,
-  windowSize: 11,
+  windowSize: 41,
 })`
   height: 100%;
 `;
