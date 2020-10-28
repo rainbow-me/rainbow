@@ -3,6 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import React, { useCallback, useEffect } from 'react';
 import { Animated, InteractionManager, View } from 'react-native';
 import styled from 'styled-components/native';
+import AndroidCloseButton from '../components/AndroidCloseButton';
 import { Modal } from '../components/modal';
 import ModalHeaderButton from '../components/modal/ModalHeaderButton';
 import {
@@ -136,10 +137,16 @@ export default function SettingsModal() {
   );
 
   const renderHeaderRight = useCallback(
-    () =>
-      ios ? (
-        <ModalHeaderButton label="Done" onPress={goBack} side="right" />
-      ) : null,
+    isOnDefault =>
+      function HeaderRight() {
+        return android ? (
+          isOnDefault ? (
+            <AndroidCloseButton onPress={goBack} />
+          ) : null
+        ) : (
+          <ModalHeaderButton label="Done" onPress={goBack} side="right" />
+        );
+      },
     [goBack]
   );
 
@@ -164,7 +171,14 @@ export default function SettingsModal() {
     >
       <Container>
         <Stack.Navigator
-          screenOptions={{ ...settingsOptions, headerRight: renderHeaderRight }}
+          screenOptions={({ route: { name } }) =>
+            console.log(name, SettingsPages.default) || {
+              ...settingsOptions,
+              headerRight: renderHeaderRight(
+                name === SettingsPages.default.key
+              ),
+            }
+          }
         >
           <Stack.Screen
             name="SettingsSection"

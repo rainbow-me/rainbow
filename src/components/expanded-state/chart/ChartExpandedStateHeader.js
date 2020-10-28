@@ -2,8 +2,9 @@ import React, { useEffect, useMemo } from 'react';
 import Animated, { useSharedValue } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
 import { useCallbackOne } from 'use-memo-one';
+import AndroidCloseButton from '../../AndroidCloseButton';
 import { CoinIcon } from '../../coin-icon';
-import { ColumnWithMargins, Row, RowWithMargins } from '../../layout';
+import { ColumnWithMargins, Flex, Row, RowWithMargins } from '../../layout';
 import ChartContextButton from './ChartContextButton';
 import {
   ChartDateLabel,
@@ -13,6 +14,7 @@ import {
 } from './chart-data-labels';
 import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
 import { useAccountSettings, useBooleanState } from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
 import { colors, padding } from '@rainbow-me/styles';
 
 const { call, cond, onChange, useCode } = Animated;
@@ -42,6 +44,10 @@ function useTabularNumsWhileScrubbing(isScrubbing) {
   return tabularNums;
 }
 
+const CloseButton = styled(AndroidCloseButton)`
+  padding-left: 8;
+`;
+
 export default function ChartExpandedStateHeader({
   asset,
   changeDirection,
@@ -56,6 +62,8 @@ export default function ChartExpandedStateHeader({
   showChart,
 }) {
   const { nativeCurrency } = useAccountSettings();
+  const { goBack } = useNavigation();
+
   const tabularNums = useTabularNumsWhileScrubbing(isScrubbing);
 
   const isNoPriceData = latestPrice === noPriceData;
@@ -88,7 +96,15 @@ export default function ChartExpandedStateHeader({
           shadow={coinIconShadow}
           symbol={asset?.symbol}
         />
-        <ChartContextButton asset={asset} color={color} />
+
+        {ios ? (
+          <CloseButton onPress={goBack} />
+        ) : (
+          <Flex align="center">
+            <ChartContextButton asset={asset} color={color} />
+            <CloseButton onPress={goBack} />
+          </Flex>
+        )}
       </Row>
       <RowWithMargins align="center" justify="space-between" margin={12}>
         <ColumnWithMargins align="start" flex={1} margin={1}>

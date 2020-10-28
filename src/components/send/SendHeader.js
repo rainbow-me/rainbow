@@ -2,6 +2,7 @@ import { get, isEmpty, isNumber, toLower } from 'lodash';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import styled from 'styled-components/primitives';
 import { useNavigation } from '../../navigation/Navigation';
+import AndroidCloseButton from '../AndroidCloseButton';
 import Divider from '../Divider';
 import { AddContactButton, PasteAddressButton } from '../buttons';
 import { AddressField } from '../fields';
@@ -45,6 +46,12 @@ const DefaultContactItem = {
   nickname: '',
 };
 
+const CloseButton = ios
+  ? null
+  : styled(AndroidCloseButton)`
+      padding-left: 8;
+    `;
+
 export default function SendHeader({
   contacts,
   isValidAddress,
@@ -59,7 +66,7 @@ export default function SendHeader({
 }) {
   const { setClipboard } = useClipboard();
   const { isSmallPhone } = useDimensions();
-  const { navigate } = useNavigation();
+  const { navigate, goBack } = useNavigation();
 
   const contact = useMemo(() => {
     return get(contacts, `${[toLower(recipient)]}`, DefaultContactItem);
@@ -151,6 +158,7 @@ export default function SendHeader({
           />
         )}
         {!isValidAddress && <PasteAddressButton onPress={onPressPaste} />}
+        <CloseButton onPress={goBack} />
       </AddressInputContainer>
       <Divider color={colors.rowDivider} flex={0} inset={false} />
     </Fragment>

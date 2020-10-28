@@ -250,6 +250,7 @@ export const settingsOptions = {
   },
   ...(android && {
     headerRightContainerStyle: {
+      paddingRight: 18,
       paddingTop: 6,
     },
   }),
