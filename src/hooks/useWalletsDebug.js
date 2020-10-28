@@ -3,6 +3,7 @@ import { captureException } from '@sentry/react-native';
 import { isEmpty, map } from 'lodash';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
+import { addHexPrefix } from '../handlers/web3';
 import WalletTypes from '../helpers/walletTypes';
 import { loadAllKeys } from '../model/keychain';
 import {
@@ -85,7 +86,7 @@ export default function useWalletsDebug() {
 
           let wallet;
           if (type === WalletTypes.privateKey) {
-            wallet = new Wallet(seedObject.seedphrase);
+            wallet = new Wallet(addHexPrefix(seedObject.seedphrase));
           } else {
             const walletData = getWallet(seedObject.seedphrase);
             wallet = walletData.wallet;
