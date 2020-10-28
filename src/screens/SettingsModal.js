@@ -171,14 +171,10 @@ export default function SettingsModal() {
     >
       <Container>
         <Stack.Navigator
-          screenOptions={({ route: { name } }) =>
-            console.log(name, SettingsPages.default) || {
-              ...settingsOptions,
-              headerRight: renderHeaderRight(
-                name === SettingsPages.default.key
-              ),
-            }
-          }
+          screenOptions={({ route: { name } }) => ({
+            ...settingsOptions,
+            headerRight: renderHeaderRight(name === SettingsPages.default.key),
+          })}
         >
           <Stack.Screen
             name="SettingsSection"
