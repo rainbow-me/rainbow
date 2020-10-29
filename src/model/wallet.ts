@@ -1051,19 +1051,6 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
       return null;
     }
 
-    let userPIN = null;
-    if (android) {
-      const hasBiometricsEnabled = await getSupportedBiometryType();
-      // Fallback to custom PIN
-      if (!hasBiometricsEnabled) {
-        try {
-          userPIN = await getExistingPIN();
-        } catch (e) {
-          return null;
-        }
-      }
-    }
-
     // Check that wasn't migrated already!
     const pkeyExists = await keychain.hasKey(
       `${existingAccount.address}_${privateKeyKey}`
@@ -1071,19 +1058,7 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
     if (!pkeyExists) {
       logger.sentry('new pkey didnt exist so we should save it');
       // Save the private key in the new format
-      if (userPIN) {
-        // Encrypt with the PIN
-        const encryptedPkey = await encryptor.encrypt(
-          userPIN,
-          existingAccount.privateKey
-        );
-        await savePrivateKey(existingAccount.address, encryptedPkey);
-      } else {
-        await savePrivateKey(
-          existingAccount.address,
-          existingAccount.privateKey
-        );
-      }
+      await savePrivateKey(existingAccount.address, existingAccount.privateKey);
       logger.sentry('new pkey saved');
     }
 

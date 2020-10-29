@@ -350,11 +350,9 @@ export default function ImportSeedPhraseSheet() {
   ]);
 
   useEffect(() => {
-    if (isImporting) {
-      setIsWalletLoading(walletLoadingStates.IMPORTING_WALLET);
-    } else {
-      setIsWalletLoading(null);
-    }
+    setIsWalletLoading(
+      isImporting ? walletLoadingStates.IMPORTING_WALLET : null
+    );
   }, [isImporting, setIsWalletLoading]);
 
   return (

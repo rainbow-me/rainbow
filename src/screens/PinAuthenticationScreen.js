@@ -57,10 +57,11 @@ const PinAuthenticationScreen = () => {
       // if the user wasn't banned for too many tries
       const timelock = await getAuthTimelock();
       if (timelock) {
-        const stillBanned = Date.now() < timelock;
+        const now = Date.now();
+        const stillBanned = now < timelock;
         if (stillBanned) {
-          const timeLeftMS = Date.now() - timelock;
-          const timeAmountSeconds = Math.abs(timeLeftMS / 1000);
+          const timeLeftMS = timelock - now;
+          const timeAmountSeconds = timeLeftMS / 1000;
           const unit = timeAmountSeconds > 60 ? 'minutes' : 'seconds';
           const timeAmount =
             timeAmountSeconds > 60
