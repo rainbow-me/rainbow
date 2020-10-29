@@ -64,7 +64,11 @@ const DevSection = () => {
   return (
     <ScrollView testID="developer-settings-modal">
       <ListItem label="💥 Clear async storage" onPress={AsyncStorage.clear} />
-      <ListItem label="💣 Reset Keychain" onPress={wipeKeychain} />
+      <ListItem
+        label="💣 Reset Keychain"
+        onPress={wipeKeychain}
+        testID="reset-keychain-section"
+      />
       <ListItem label="🔄 Restart app" onPress={Restart} />
       <ListItem label="🗑️ Remove all backups" onPress={removeBackups} />
       <ListItem
