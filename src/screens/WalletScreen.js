@@ -82,7 +82,6 @@ export default function WalletScreen() {
       reattaching of react subviews */}
       <Animated.Code exec={scrollViewTracker} />
       <FabWrapper
-        disabled={isWalletEthZero}
         fabs={fabs}
         isCoinListEdited={isCoinListEdited}
         isReadOnlyWallet={isReadOnlyWallet}
