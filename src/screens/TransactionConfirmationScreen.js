@@ -1,7 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import BigNumber from 'bignumber.js';
-import { ethers } from 'ethers';
 import lang from 'i18n-js';
 import { get, isEmpty, isNil, omit } from 'lodash';
 import React, {
@@ -17,7 +16,6 @@ import {
   TurboModuleRegistry,
   Vibration,
 } from 'react-native';
-
 import { isEmulatorSync } from 'react-native-device-info';
 import Animated, {
   useAnimatedStyle,
@@ -44,7 +42,6 @@ import {
   TransactionConfirmationSection,
 } from '../components/transaction';
 import { estimateGas, getTransactionCount, toHex } from '../handlers/web3';
-
 import { isDappAuthenticated } from '../helpers/dappNameHandler';
 import {
   convertAmountToNativeDisplay,
@@ -70,7 +67,7 @@ import {
   signTypedDataMessage,
 } from '../model/wallet';
 import { walletConnectRemovePendingRedirect } from '../redux/walletconnect';
-import { ethereumUtils, gasUtils, safeAreaInsetValues } from '../utils';
+import { ethereumUtils, safeAreaInsetValues } from '../utils';
 import { methodRegistryLookupAndParse } from '../utils/methodRegistry';
 import {
   isMessageDisplayType,
@@ -401,7 +398,7 @@ const TransactionConfirmationScreen = () => {
     const txPayload = get(params, '[0]');
     let { gas, gasLimit: gasLimitFromPayload, gasPrice } = txPayload;
 
-    const rawGasPrice = get(gasPrices, `${gasUtils.NORMAL}.value.amount`);
+    const rawGasPrice = get(selectedGasPrice, 'value.amount');
     if (rawGasPrice) {
       gasPrice = toHex(rawGasPrice);
     }
@@ -417,7 +414,7 @@ const TransactionConfirmationScreen = () => {
 
     const web3TxnCount = await getTransactionCount(txPayload.from);
     const maxTxnCount = Math.max(transactionCountNonce, web3TxnCount);
-    const nonce = ethers.utils.hexlify(maxTxnCount);
+    const nonce = maxTxnCount;
     const calculatedGasLimit = gas || gasLimitFromPayload || gasLimit;
     let txPayloadLatestNonce = {
       ...txPayload,
@@ -469,23 +466,23 @@ const TransactionConfirmationScreen = () => {
       await onCancel();
     }
   }, [
+    method,
+    params,
+    selectedGasPrice,
+    transactionCountNonce,
+    gasLimit,
     callback,
+    requestId,
     closeScreen,
+    dispatch,
+    updateTransactionCountNonce,
+    displayDetails,
     dappName,
     dataAddNewTransaction,
-    dispatch,
-    displayDetails,
-    gasPrices,
-    gasLimit,
-    method,
-    onCancel,
-    params,
-    peerId,
     removeRequest,
-    requestId,
-    transactionCountNonce,
-    updateTransactionCountNonce,
     walletConnectSendStatus,
+    peerId,
+    onCancel,
   ]);
 
   const handleSignMessage = useCallback(async () => {

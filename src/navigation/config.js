@@ -240,7 +240,7 @@ export const settingsOptions = {
   cardStyle: { backgroundColor: colors.white, overflow: 'visible' },
   gestureEnabled: true,
   gestureResponseDistance: { horizontal: deviceUtils.dimensions.width },
-  headerBackImage: BackImage,
+  ...(ios && { headerBackImage: BackImage }),
   headerBackTitle: 'Back',
   headerBackTitleStyle: {
     fontFamily: fonts.family.SFProRounded,

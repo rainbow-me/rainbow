@@ -1,0 +1,60 @@
+diff --git a/node_modules/react-native/Libraries/Core/Timers/JSTimers.js b/node_modules/react-native/Libraries/Core/Timers/JSTimers.js
+index 4c154db..89051c8 100644
+--- a/node_modules/react-native/Libraries/Core/Timers/JSTimers.js
++++ b/node_modules/react-native/Libraries/Core/Timers/JSTimers.js
+@@ -232,7 +232,7 @@ const JSTimers = {
+       );
+     }
+     const id = _allocateCallback(
+-      () => func.apply(undefined, args),
++      () => func?.apply(undefined, args),
+       'setTimeout',
+     );
+     createTimer(id, duration || 0, Date.now(), /* recurring */ false);
+@@ -258,7 +258,7 @@ const JSTimers = {
+       );
+     }
+     const id = _allocateCallback(
+-      () => func.apply(undefined, args),
++      () => func?.apply(undefined, args),
+       'setInterval',
+     );
+     createTimer(id, duration || 0, Date.now(), /* recurring */ true);
+@@ -271,7 +271,7 @@ const JSTimers = {
+    */
+   setImmediate: function(func: Function, ...args: any) {
+     const id = _allocateCallback(
+-      () => func.apply(undefined, args),
++      () => func?.apply(undefined, args),
+       'setImmediate',
+     );
+     immediates.push(id);
+diff --git a/node_modules/react-native/React/CxxBridge/RCTCxxBridge.mm b/node_modules/react-native/React/CxxBridge/RCTCxxBridge.mm
+index d8938d7..32a7265 100644
+--- a/node_modules/react-native/React/CxxBridge/RCTCxxBridge.mm
++++ b/node_modules/react-native/React/CxxBridge/RCTCxxBridge.mm
+@@ -462,7 +462,7 @@ - (id)moduleForName:(NSString *)moduleName
+ 
+ - (id)moduleForName:(NSString *)moduleName lazilyLoadIfNecessary:(BOOL)lazilyLoad
+ {
+-  if (RCTTurboModuleEnabled() && _turboModuleLookupDelegate) {
++  if ((RCTTurboModuleEnabled() || [moduleName  isEqual: @"ReanimatedModule"]) && _turboModuleLookupDelegate) {
+     const char *moduleNameCStr = [moduleName UTF8String];
+     if (lazilyLoad || [_turboModuleLookupDelegate moduleIsInitialized:moduleNameCStr]) {
+       id<RCTTurboModule> module = [_turboModuleLookupDelegate moduleForName:moduleNameCStr warnOnLookupFailure:NO];
+diff --git a/node_modules/react-native/React/Views/RCTView.m b/node_modules/react-native/React/Views/RCTView.m
+index a5117be..59108bb 100644
+--- a/node_modules/react-native/React/Views/RCTView.m
++++ b/node_modules/react-native/React/Views/RCTView.m
+@@ -805,6 +805,11 @@ - (void)displayLayer:(CALayer *)layer
+     layer.contents = nil;
+     layer.needsDisplayOnBoundsChange = NO;
+     layer.mask = nil;
++    if (@available(iOS 13.0, *)) {
++      if (layer.cornerRadius < MIN(self.bounds.size.height, self.bounds.size.width) / 2) {
++        layer.cornerCurve = kCACornerCurveContinuous;
++      }
++    }
+     return;
+   }
+ 

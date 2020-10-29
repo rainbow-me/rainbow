@@ -12,7 +12,7 @@ import android.content.Intent;
 
 public class MainActivity extends ReactActivity {
 
-  @Override
+  @Override 
   protected void onCreate(Bundle savedInstanceState) {
         SplashScreen.show(this, R.style.NoActionBar);
         super.onCreate(savedInstanceState);

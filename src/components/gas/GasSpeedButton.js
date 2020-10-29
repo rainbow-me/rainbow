@@ -15,7 +15,7 @@ import { Input } from '../inputs';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
 import GasSpeedLabelPager from './GasSpeedLabelPager';
-import { colors, margin } from '@rainbow-me/styles';
+import { colors, fonts, fontWithWidth, margin } from '@rainbow-me/styles';
 
 const { GasSpeedOrder, CUSTOM, FAST, SLOW } = gasUtils;
 
@@ -45,15 +45,15 @@ const ButtonLabel = styled(BorderlessButton).attrs({
 
 const GasInput = styled(Input).attrs({
   color: colors.white,
-  height: android ? 48 : 19,
+  height: android ? 58 : 19,
   keyboardAppearance: 'dark',
   keyboardType: 'numeric',
   letterSpacing: 'roundedMedium',
   maxLength: 5,
   size: 'lmedium',
   testID: 'custom-gas-input',
-  weight: android ? 'normal' : 'bold',
 })`
+  ${fontWithWidth(fonts.weight.bold)};
   ${margin(android ? -13 : 0, 0)}
 `;
 
@@ -388,7 +388,7 @@ const GasSpeedButton = ({
                       : colors.alpha(colors.darkModeColors.blueGreyDark, 0.3)
                   }
                   size="lmedium"
-                  weight={android ? 'normal' : 'bold'}
+                  weight="bold"
                 >
                   {ios && ' '}
                   Gwei
