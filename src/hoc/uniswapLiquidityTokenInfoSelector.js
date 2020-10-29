@@ -100,7 +100,7 @@ const buildUniswapCards = (
 
   return {
     uniswap: orderedUniswapPools,
-    uniswapTotal: uniswapTotal,
+    uniswapTotal,
   };
 };
 
