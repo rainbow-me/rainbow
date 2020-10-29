@@ -47,7 +47,7 @@ export const formatFixedDecimals = (
 ): string => {
   const _value = convertNumberToString(value);
   const _decimals = convertStringToNumber(decimals);
-  return new BigNumber(_value).toFixed(_decimals);
+  return new BigNumber(new BigNumber(_value).toFixed(_decimals)).toFixed();
 };
 
 export const mod = (numberOne: BigNumberish, numberTwo: BigNumberish): string =>
@@ -175,9 +175,11 @@ export const convertAmountFromNativeValue = (
   priceUnit: BigNumberish,
   decimals: number = 18
 ) =>
-  new BigNumber(value)
-    .dividedBy(priceUnit)
-    .toFixed(decimals, BigNumber.ROUND_DOWN);
+  new BigNumber(
+    new BigNumber(value)
+      .dividedBy(priceUnit)
+      .toFixed(decimals, BigNumber.ROUND_DOWN)
+  ).toFixed();
 
 export const convertStringToNumber = (value: BigNumberish) =>
   new BigNumber(value).toNumber();
@@ -202,8 +204,11 @@ export const handleSignificantDecimals = (
   } else {
     decimals = Math.min(decimals, buffer);
   }
-  decimals = Math.max(decimals, 2);
-  return new BigNumber(value).toFormat(decimals);
+  const result = new BigNumber(
+    new BigNumber(value).toFixed(decimals)
+  ).toFixed();
+  const resultBN = new BigNumber(result);
+  return resultBN.dp() <= 2 ? resultBN.toFormat(2) : resultBN.toFormat();
 };
 
 /**
