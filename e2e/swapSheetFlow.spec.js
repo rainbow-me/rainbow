@@ -105,14 +105,14 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.tap('exchange-modal-input-selection-button');
     await Helpers.delay(3000);
     await Helpers.typeText('currency-select-search-input', 'SOCKS', true);
-    await Helpers.delay(500);
+    await Helpers.delay(3000);
     await Helpers.checkIfNotVisible('exchange-coin-row-ETH');
   });
 
   it('Should reset Currency Select List on clearing search field', async () => {
     await Helpers.delay(1000);
     await Helpers.clearField('currency-select-search-input');
-    await Helpers.delay(500);
+    await Helpers.delay(3000);
     await Helpers.checkIfVisible('exchange-coin-row-ETH');
     await Helpers.tap('currency-select-header-back-button');
     await Helpers.delay(2000);

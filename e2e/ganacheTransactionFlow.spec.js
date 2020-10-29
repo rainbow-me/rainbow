@@ -67,7 +67,7 @@ describe('Ganache Transaction Flow', () => {
 
   it('Should show Ganache Toast after pressing Connect To Ganache', async () => {
     await Helpers.tap('ganache-section');
-    await Helpers.delay(30000);
+    await Helpers.delay(34000);
     await Helpers.checkIfVisible('testnet-toast-Ganache');
     await Helpers.swipe('profile-screen', 'left', 'slow');
     await Helpers.delay(3000);
