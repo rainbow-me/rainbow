@@ -41,6 +41,10 @@ const formatDepositAmount = (value, symbol, useUSDForStablecoin = true) => {
 };
 
 const isSymbolStablecoin = symbol => STABLECOINS.indexOf(symbol) !== -1;
+const isSymbolStablecoinWorklet = symbol => {
+  'worklet';
+  return STABLECOINS.indexOf(symbol) !== -1;
+};
 
 export {
   APPROX_BLOCK_TIME,
@@ -50,4 +54,5 @@ export {
   formatDepositAmount,
   formatSavingsAmount,
   isSymbolStablecoin,
+  isSymbolStablecoinWorklet,
 };
