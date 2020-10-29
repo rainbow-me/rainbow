@@ -68,6 +68,15 @@ const OuterGradient = styled(RainbowButtonGradient).attrs(
   width: ${({ width }) => width * 2};
 `;
 
+const WrapperView = android
+  ? styled.View`
+      overflow: hidden;
+      position: absolute;
+      height: ${({ height }) => height};
+      width: ${({ width }) => width};
+    `
+  : Fragment;
+
 const RainbowButtonBackground = ({
   disabled,
   height,
@@ -85,7 +94,7 @@ const RainbowButtonBackground = ({
   const outerGradientCenter = [width * 1.5, width];
 
   return (
-    <Fragment>
+    <WrapperView height={height} width={width}>
       <OuterGradient
         center={outerGradientCenter}
         disabled={disabled}
@@ -102,7 +111,7 @@ const RainbowButtonBackground = ({
           width={width}
         />
       </MaskedView>
-    </Fragment>
+    </WrapperView>
   );
 };
 
