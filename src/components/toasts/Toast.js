@@ -34,10 +34,20 @@ const Container = styled(RowWithMargins).attrs({
   z-index: 100;
 `;
 
+const ToastsWrapper = styled.View`
+  position: absolute;
+  bottom: ${({ insets }) => (insets.bottom || 40) + 3};
+`;
+
+export function ToastsContainer({ children }) {
+  return <ToastsWrapper>{children}</ToastsWrapper>;
+}
+
 export default function Toast({
   children,
   color = colors.dark,
   distance = 60,
+  targetTranslate = 0,
   icon,
   isVisible,
   testID,
@@ -57,7 +67,7 @@ export default function Toast({
 
   const translateY = interpolate(animation, {
     inputRange: [0, 1],
-    outputRange: [distance, 0],
+    outputRange: [distance, targetTranslate],
   });
 
   return (
