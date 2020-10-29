@@ -9,7 +9,9 @@ import { Numpad, PinValue } from '../components/numpad';
 import { SheetTitle } from '../components/sheet';
 import {
   getAuthTimelock,
+  getPinAuthAttemptsLeft,
   saveAuthTimelock,
+  savePinAuthAttemptsLeft,
 } from '../handlers/localstorage/globalSettings';
 import { useDimensions, useShakeAnimation } from '../hooks';
 import { useBlockBackButton } from '../hooks/useBlockBackButton';
@@ -23,7 +25,7 @@ const Logo = styled(FastImage).attrs({
   height: 80;
 `;
 
-const MAX_ATTEMPTS_LEFT = 10;
+const MAX_ATTEMPTS = 10;
 const TIMELOCK_INTERVAL_MINUTES = 5;
 
 const PinAuthenticationScreen = () => {
@@ -34,7 +36,7 @@ const PinAuthenticationScreen = () => {
 
   const { isNarrowPhone, isSmallPhone, isTallPhone } = useDimensions();
 
-  const [attemptsLeft, setAttemptsLeft] = useState(MAX_ATTEMPTS_LEFT);
+  const [attemptsLeft, setAttemptsLeft] = useState(MAX_ATTEMPTS);
   const [value, setValue] = useState('');
   const [initialPin, setInitialPin] = useState('');
   const [actionType, setActionType] = useState(
@@ -44,6 +46,18 @@ const PinAuthenticationScreen = () => {
   const finished = useRef(false);
 
   useEffect(() => {
+    // See if the user previously tried and aborted
+    // If that's the case, we need to update the default
+    // amount of attempts left to prevent abuse
+    const init = async () => {
+      const attemptsLeft = await getPinAuthAttemptsLeft();
+      if (!isNaN(attemptsLeft)) {
+        setAttemptsLeft(attemptsLeft);
+      }
+    };
+
+    init();
+
     return () => {
       if (!finished.current) {
         params.onCancel();
@@ -77,6 +91,7 @@ const PinAuthenticationScreen = () => {
           goBack();
         } else {
           await saveAuthTimelock(null);
+          await savePinAuthAttemptsLeft(null);
         }
       }
     };
@@ -127,6 +142,7 @@ const PinAuthenticationScreen = () => {
             if (!valid) {
               onShake();
               setAttemptsLeft(attemptsLeft - 1);
+              savePinAuthAttemptsLeft(attemptsLeft - 1);
               setTimeout(() => {
                 setValue('');
               }, 300);
