@@ -71,7 +71,6 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.tap('exchange-modal-input-max');
     await Helpers.delay(1000);
     await Helpers.checkIfNotVisible('exchange-modal-input');
-    //Need to add helper function
   });
 
   it('Should display Swap Asset List after tapping Input Section Button', async () => {
@@ -225,7 +224,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.tap('exchange-fab');
     await Helpers.delay(2000);
     await Helpers.tap('exchange-modal-output-selection-button');
-    await Helpers.tap(2000);
+    await Helpers.delay(2000);
     await Helpers.typeText('currency-select-search-input', 'ZRX', false);
     await Helpers.delay(5000);
     await Helpers.tap('exchange-coin-row-ZRX');
