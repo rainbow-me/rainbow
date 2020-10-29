@@ -13,7 +13,7 @@ const Label = styled(ChartYLabel)`
   text-align: right;
   ${android &&
     `margin-top: -8;
-  margin-bottom: -16;`}
+     margin-bottom: -16;`}
 `;
 
 export function formatUSD(value, priceSharedValue) {

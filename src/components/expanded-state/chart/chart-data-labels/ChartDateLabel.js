@@ -15,7 +15,7 @@ const Label = styled(ChartXLabel)`
   text-align: right;
   ${android &&
     `overflow: hidden;
-  margin-vertical: -20;`}
+     margin-vertical: -20;`}
 `;
 
 const MONTHS = [
