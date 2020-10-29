@@ -98,6 +98,7 @@ const addEth = section => {
       icon_url: 'https://s3.amazonaws.com/token-icons/eth.png',
       isCoin: true,
       isPinned: true,
+      isPlaceholder: true,
       isSmall: false,
       name: 'Ethereum',
       native: {

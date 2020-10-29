@@ -65,6 +65,7 @@ export const buildCoinsList = (
       icon_url: 'https://s3.amazonaws.com/token-icons/eth.png',
       isCoin: true,
       isPinned: pinnedCoins.includes('eth'),
+      isPlaceholder: true,
       isSmall: false,
       name: 'Ethereum',
       native: {
