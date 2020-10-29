@@ -17,8 +17,8 @@ import WalletSelectionView from '../components/settings-menu/BackupSection/Walle
 import DevSection from '../components/settings-menu/DevSection';
 import WalletTypes from '../helpers/walletTypes';
 import { useDimensions, useWallets } from '../hooks';
-import { useNavigation } from '../navigation/Navigation';
 import { settingsOptions } from '../navigation/config';
+import { useNavigation } from '@rainbow-me/navigation';
 import { colors } from '@rainbow-me/styles';
 
 function cardStyleInterpolator({
