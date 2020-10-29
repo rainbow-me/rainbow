@@ -1,6 +1,7 @@
 import {
   chunk,
   compact,
+  find,
   forEach,
   get,
   groupBy,
@@ -49,8 +50,8 @@ export const buildCoinsList = (
   const isShortList = assetsLength <= amountOfShowedCoins;
 
   let hasStandard = false;
-  const hasEth =
-    assets.filter(asset => asset.address === 'eth').length === 0 ? false : true;
+
+  const hasEth = find(assets, asset => asset.address === 'eth') ? true : false;
 
   const genericAssets = store.getState().data.genericAssets;
   if (genericAssets.eth) {
@@ -73,7 +74,7 @@ export const buildCoinsList = (
       native: {
         balance: {
           amount: '0',
-          display: '$0',
+          display: '$0.00',
         },
         change: relative_change_24h ? `${relative_change_24h.toFixed(2)}%` : '',
         price: {
