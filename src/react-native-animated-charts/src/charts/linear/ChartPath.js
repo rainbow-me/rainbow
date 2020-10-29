@@ -26,7 +26,9 @@ import { svgBezierPath } from '../../smoothing/smoothSVG';
 
 function impactHeavy() {
   'worklet';
-  ReactNativeHapticFeedback.trigger('impactHeavy');
+  (Animated.runOnJS
+    ? Animated.runOnJS(ReactNativeHapticFeedback.trigger)
+    : ReactNativeHapticFeedback.trigger)('impactHeavy');
 }
 
 export const InternalContext = createContext(null);
