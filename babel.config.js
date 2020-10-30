@@ -28,12 +28,16 @@ module.exports = function(api) {
     'graphql-tag',
     ['lodash', { id: ['lodash', 'recompact'] }],
     'react-native-reanimated/plugin',
+    [
+      'module:react-native-dotenv',
+      {
+        allowUndefined: true,
+        moduleName: 'react-native-dotenv',
+      },
+    ],
   ];
 
-  const presets = [
-    'module:metro-react-native-babel-preset',
-    'module:react-native-dotenv',
-  ];
+  const presets = ['module:metro-react-native-babel-preset'];
 
   return {
     env: {
