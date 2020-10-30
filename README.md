@@ -23,9 +23,11 @@ If you are new to React Native, this is a helpful introduction: https://facebook
 2. Run `nvm use 12` to use set the version of node for this project.
 
 3. Set up your .env file, use our env.example as a guide.
-    
+
+    ___Note that some features are currently not accessible, we are working with our Data Providers in order to provide open source API Keys!___
+
     Here are some resources to generate your own API keys:
-    
+
     Etherscan: https://etherscan.io/apis
     Infura: https://infura.io/
     ETH Gas Station: https://docs.ethgasstation.info/
