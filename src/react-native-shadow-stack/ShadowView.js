@@ -6,7 +6,6 @@ const ShadowView = props => {
   if (ios) {
     return <View {...props} />;
   }
-  console.log(props.style);
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const newStyle = useMemo(() => {
     const style = StyleSheet.flatten(props.style);
