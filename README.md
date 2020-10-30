@@ -22,17 +22,25 @@ If you are new to React Native, this is a helpful introduction: https://facebook
 
 2. Run `nvm use 12` to use set the version of node for this project.
 
-3. Run `yarn` to get all of the packages required.
+3. Set up your .env file, use our env.example as a guide.
+    
+    Here are some resources to generate your own API keys:
+    
+    Etherscan: https://etherscan.io/apis
+    Infura: https://infura.io/
+    ETH Gas Station: https://docs.ethgasstation.info/
 
-4. Run `yarn install-bundle`.
+4. Run `yarn` to get all of the packages required.
 
-5. Install required Pods by running `yarn install-pods`.
+5. Run `yarn install-bundle`.
 
-6. Run `yarn start` to start the React Native Bundler.
+6. Install required Pods by running `yarn install-pods`.
 
-7. Open `rainbow-wallet/ios/RainbowWallet.xcworkspace`.
+7. Run `yarn start` to start the React Native Bundler.
 
-8. Run the project by clicking the play button.
+8. Open `rainbow-wallet/ios/RainbowWallet.xcworkspace`.
+
+9. Run the project by clicking the play button.
 
 ## CodePush
 
