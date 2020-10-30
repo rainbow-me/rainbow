@@ -5,7 +5,12 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { requireNativeComponent, StyleSheet, View } from 'react-native';
+import {
+  Platform,
+  requireNativeComponent,
+  StyleSheet,
+  View,
+} from 'react-native';
 
 const NativePortalContext = createContext();
 
@@ -13,7 +18,8 @@ export function usePortal() {
   return useContext(NativePortalContext);
 }
 
-const NativePortal = ios ? requireNativeComponent('WindowPortal') : View;
+const NativePortal =
+  Platform.OS === 'ios' ? requireNativeComponent('WindowPortal') : View;
 
 export function Portal({ children }) {
   const [Component, setComponentState] = useState(null);
@@ -42,7 +48,7 @@ export function Portal({ children }) {
       {children}
       <NativePortal
         blockTouches={blockTouches}
-        pointerEvents={ios || !blockTouches ? 'none' : 'auto'}
+        pointerEvents={Platform.OS === 'ios' || !blockTouches ? 'none' : 'auto'}
         style={StyleSheet.absoluteFillObject}
       >
         {Component}
