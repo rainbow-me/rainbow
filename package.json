@@ -310,7 +310,7 @@
         "build": "cd android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug && cd ..",
         "type": "android.emulator",
         "device": {
-          "avdName": "Nexus_5X_API_29rr_x86"
+          "avdName": "Nexus_5X_API_29_x86"
         }
       },
       "android.emu.release": {
