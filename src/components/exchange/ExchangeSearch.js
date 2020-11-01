@@ -77,7 +77,7 @@ const SearchInput = styled(Input).attrs({
 const SearchSpinner = styled(FastImage).attrs({
   resizeMode: FastImage.resizeMode.contain,
   source: Spinner,
-  tintColor: colors.alpha(colors.blueGreyDark, 0.8),
+  tintColor: colors.alpha(colors.blueGreyDark, 0.6),
 })`
   height: 20;
   width: 20;
