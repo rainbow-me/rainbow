@@ -132,6 +132,7 @@ const ExchangeSearch = (
         timingConfig.duration
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFetching]);
 
   const searchIconStyle = useAnimatedStyle(
