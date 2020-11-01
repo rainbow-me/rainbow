@@ -175,7 +175,7 @@
     "react-native-redash": "14.2.2",
     "react-native-restart": "^0.0.17",
     "react-native-safe-area-context": "^0.5.0",
-    "react-native-safe-area-view": "mikedemarais/react-native-safe-area-view",
+    "react-native-safe-area-view": "mikedemarais/react-native-safe-area-view#26d1cb9a8e39758d891263b94eb05b62405cb4a7",
     "react-native-screens": "2.2.0",
     "react-native-shadow-stack": "^0.0.5",
     "react-native-slack-bottom-sheet": "osdnk/react-native-slack-bottom-sheet#hack",
