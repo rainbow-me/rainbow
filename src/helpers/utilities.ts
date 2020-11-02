@@ -326,7 +326,7 @@ export const convertAmountToNativeDisplay = (
   if (nativeSelected.alignment === 'left') {
     return `${nativeSelected.symbol}${display}`;
   }
-  return `${display} ${nativeSelected.currency}`;
+  return `${display} ${nativeSelected.symbol}`;
 };
 
 /**

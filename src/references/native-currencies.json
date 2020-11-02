@@ -85,7 +85,7 @@
   "RUB": {
     "alignment": "right",
     "assetLimit": 1,
-    "currency": "₽",
+    "currency": "RUB",
     "decimals": 2,
     "emojiName": "russia",
     "label": "Russian Ruble",
