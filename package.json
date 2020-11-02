@@ -151,7 +151,7 @@
     "react-native-code-push": "^6.2.0",
     "react-native-crypto": "^2.2.0",
     "react-native-device-info": "5.3.1",
-    "react-native-dotenv": "^0.2.0",
+    "react-native-dotenv": "^2.4.2",
     "react-native-fast-image": "^8.1.5",
     "react-native-fs": "^2.16.6",
     "react-native-gesture-handler": "1.7.0",
