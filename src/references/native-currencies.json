@@ -1,6 +1,6 @@
 {
   "ETH": {	
-    "alignment": "right",	
+    "alignment": "left",	
     "assetLimit": 0.001,	
     "currency": "ETH",	
     "decimals": 18,
