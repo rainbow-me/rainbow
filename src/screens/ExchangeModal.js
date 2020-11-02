@@ -548,7 +548,9 @@ export default function ExchangeModal({
             {showOutputField && (
               <ExchangeOutputField
                 onFocus={handleFocus}
-                onPressSelectOutputCurrency={navigateToSelectOutputCurrency}
+                onPressSelectOutputCurrency={() =>
+                  performImperativeAction(navigateToSelectOutputCurrency)
+                }
                 outputAmount={outputAmountDisplay}
                 outputCurrencyAddress={get(outputCurrency, 'address', null)}
                 outputCurrencySymbol={get(outputCurrency, 'symbol', null)}
