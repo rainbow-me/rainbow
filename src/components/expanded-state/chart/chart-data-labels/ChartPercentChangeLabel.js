@@ -20,6 +20,7 @@ const PercentLabel = styled(AnimatedTextInput)`
   font-variant: tabular-nums;
   letter-spacing: ${fonts.letterSpacing.roundedTightest};
   text-align: right;
+  margin-vertical: ${android ? -8 : 0};
 `;
 
 export default function ChartPercentChangeLabel() {

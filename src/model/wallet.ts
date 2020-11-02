@@ -19,7 +19,7 @@ import {
 } from 'ethereumjs-wallet';
 import lang from 'i18n-js';
 import { find, findKey, forEach, get, isEmpty } from 'lodash';
-import { Alert, Platform } from 'react-native';
+import { Alert } from 'react-native';
 import { ACCESSIBLE, getSupportedBiometryType } from 'react-native-keychain';
 import AesEncryptor from '../handlers/aesEncryption';
 import {
@@ -495,7 +495,7 @@ export const createWallet = async (
   try {
     let wasLoading = false;
     const { dispatch } = store;
-    if (!checkedWallet && Platform.OS === 'android') {
+    if (!checkedWallet && android) {
       wasLoading = true;
       dispatch(setIsWalletLoading(WalletLoadingStates.CREATING_WALLET));
     }

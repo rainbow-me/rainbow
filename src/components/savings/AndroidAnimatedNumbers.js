@@ -8,7 +8,10 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import styled from 'styled-components/native';
-import { isSymbolStablecoin } from '../../helpers/savings';
+import {
+  isSymbolStablecoin,
+  isSymbolStablecoinWorklet,
+} from '../../helpers/savings';
 import { colors, fonts, fontWithWidth } from '@rainbow-me/styles';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
@@ -38,7 +41,7 @@ function formatSavingsAmount(val) {
 
 function formatter(symbol, val) {
   'worklet';
-  return isSymbolStablecoin(symbol)
+  return isSymbolStablecoinWorklet(symbol)
     ? `$${formatSavingsAmount(val)}`
     : `${formatSavingsAmount(val)} ${symbol}`;
 }

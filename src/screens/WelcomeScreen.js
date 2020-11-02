@@ -110,7 +110,12 @@ const RainbowButton = ({
   ...props
 }) => {
   return (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.9} {...props}>
+    <ButtonPressAnimation
+      onPress={onPress}
+      radiusAndroid={height / 2}
+      scaleTo={0.9}
+      {...props}
+    >
       {ios && <DarkShadow style={darkShadowStyle} />}
       {ios && <Shadow style={shadowStyle} />}
       <ButtonContainer height={height} style={style}>
