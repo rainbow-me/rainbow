@@ -62,8 +62,8 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
         <ScrollPagerWrapper
           {...props}
           onMomentumScrollEnd={onMomentumScrollEnd}
-          onSwipeEnd={(...args) => {
-            onSwipeEnd(...args);
+          onSwipeEnd={(position, targetContentOffset) => {
+            onSwipeEnd(position, targetContentOffset);
             props.onSwipeEnd();
           }}
           onSwipeStart={position => {
