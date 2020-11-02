@@ -1,3 +1,4 @@
+import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useCallback, useState } from 'react';
 import styled from 'styled-components/primitives';
@@ -6,6 +7,8 @@ import {
   isSymbolStablecoin,
 } from '../../helpers/savings';
 import { handleSignificantDecimals } from '../../helpers/utilities';
+import { useAccountSettings } from '../../hooks';
+import supportedNativeCurrencies from '../../references/native-currencies.json';
 import { magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Row, RowWithMargins } from '../layout';
@@ -61,6 +64,8 @@ function useStepper(max, initial = 0) {
 }
 
 const SavingsPredictionStepper = ({ asset, balance, interestRate }) => {
+  const { nativeCurrency } = useAccountSettings();
+  const nativeSelected = get(supportedNativeCurrencies, `${nativeCurrency}`);
   const [step, nextStep] = useStepper(Object.keys(steps).length, 1);
   const { decimals, symbol } = asset;
 
@@ -75,10 +80,12 @@ const SavingsPredictionStepper = ({ asset, balance, interestRate }) => {
       const formattedValue = handleSignificantDecimals(value, decimals, 1);
 
       return isSymbolStablecoin(symbol)
-        ? `$${formattedValue}`
+        ? nativeSelected?.alignment === 'left'
+          ? `${nativeSelected?.symbol}${formattedValue}`
+          : `${formattedValue} ${nativeSelected?.symbol}`
         : `${formattedValue} ${symbol}`;
     },
-    [decimals, symbol]
+    [decimals, symbol, nativeSelected]
   );
 
   return (
