@@ -1,3 +1,4 @@
+import { createContext } from 'react';
 import { Keyboard, Platform, StatusBar } from 'react-native';
 import { SheetHandleFixedToTopHeight } from '../components/sheet';
 import { onDidPop, onWillPop } from './Navigation';
@@ -7,6 +8,8 @@ import { colors, fonts } from '@rainbow-me/styles';
 import { deviceUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 
 export const sharedCoolModalTopOffset = safeAreaInsetValues.top + 5;
+
+export const ExchangeContext = createContext();
 
 const buildCoolModalConfig = params => ({
   allowsDragToDismiss: true,

@@ -1,6 +1,8 @@
-import React, { useCallback, useState } from 'react';
+import { useIsFocused } from '@react-navigation/native';
+import React, { useCallback, useContext, useState } from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
 import styled from 'styled-components/primitives';
+import { ExchangeContext } from '../../navigation/config';
 import supportedNativeCurrencies from '../../references/native-currencies.json';
 import { Row } from '../layout';
 import { Text } from '../text';
@@ -38,6 +40,8 @@ const ExchangeNativeField = (
   const { mask, placeholder, symbol } = supportedNativeCurrencies[
     nativeCurrency
   ];
+  const isRouteFocused = useIsFocused();
+  const { startedTransition } = useContext(ExchangeContext);
 
   const handleFocusNativeField = useCallback(() => ref?.current?.focus(), [
     ref,
@@ -68,7 +72,7 @@ const ExchangeNativeField = (
         </CurrencySymbol>
         <NativeInput
           color={nativeAmountColor}
-          editable={editable}
+          editable={editable && (isRouteFocused || startedTransition)}
           height={height}
           mask={mask}
           onBlur={handleBlur}

@@ -1,6 +1,8 @@
-import React, { useCallback } from 'react';
+import { useIsFocused } from '@react-navigation/native';
+import React, { useCallback, useContext } from 'react';
 import { Platform, TouchableWithoutFeedback } from 'react-native';
 import styled from 'styled-components/primitives';
+import { ExchangeContext } from '../../navigation/config';
 import { TokenSelectionButton } from '../buttons';
 import { CoinIcon } from '../coin-icon';
 import { Row, RowWithMargins } from '../layout';
@@ -51,6 +53,8 @@ const ExchangeField = (
   ref
 ) => {
   const handleFocusField = useCallback(() => ref?.current?.focus(), [ref]);
+  const isFocused = useIsFocused();
+  const { startedTransition } = useContext(ExchangeContext);
 
   return (
     <Container {...props}>
@@ -62,7 +66,7 @@ const ExchangeField = (
             <CoinIcon bgColor={skeletonColor} size={CoinSize} />
           )}
           <Input
-            editable={!!symbol}
+            editable={!!symbol && (isFocused || startedTransition)}
             onBlur={onBlur}
             onChangeText={setAmount}
             onFocus={onFocus}

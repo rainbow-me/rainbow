@@ -1,3 +1,4 @@
+import { useIsFocused } from '@react-navigation/native';
 import React, { useCallback } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import styled from 'styled-components/primitives';
@@ -68,11 +69,13 @@ const ExchangeSearch = (
     onChangeText?.('');
   }, [ref, onChangeText]);
 
+  const isFocused = useIsFocused();
   return (
     <Container>
       <BackgroundGradient />
       <SearchIcon>􀊫</SearchIcon>
       <SearchInput
+        editable={isFocused}
         onChangeText={onChangeText}
         onFocus={onFocus}
         placeholder="Search Uniswap"

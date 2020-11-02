@@ -1,9 +1,11 @@
 import { useRoute } from '@react-navigation/native';
+
 import analytics from '@segment/analytics-react-native';
 import { get } from 'lodash';
 import React, {
   Fragment,
   useCallback,
+  useContext,
   useEffect,
   useMemo,
   useState,
@@ -26,6 +28,7 @@ import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
 import ExchangeModalTypes from '../helpers/exchangeModalTypes';
 import { loadWallet } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
+import { ExchangeContext } from '../navigation/config';
 import { executeRap } from '../raps/common';
 import { multicallClearState } from '../redux/multicall';
 import { savingsLoadState } from '../redux/savings';
@@ -95,6 +98,8 @@ export default function ExchangeModal({
     extraTradeDetails,
     updateExtraTradeDetails,
   } = useSwapDetails();
+
+  const { performImperativeAction } = useContext(ExchangeContext);
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const [slippage, setSlippage] = useState(null);
@@ -533,7 +538,9 @@ export default function ExchangeModal({
               nativeFieldRef={nativeFieldRef}
               onFocus={handleFocus}
               onPressMaxBalance={handlePressMaxBalance}
-              onPressSelectInputCurrency={navigateToSelectInputCurrency}
+              onPressSelectInputCurrency={() =>
+                performImperativeAction(navigateToSelectInputCurrency)
+              }
               setInputAmount={updateInputAmount}
               setNativeAmount={updateNativeAmount}
               testID={testID + '-input'}
