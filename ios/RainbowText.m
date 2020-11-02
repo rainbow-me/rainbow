@@ -92,7 +92,7 @@
 
   NSString *newValue;
   if (_isSymbolStablecoin) {
-    newValue = [NSString stringWithFormat:@"$%@", [_fmt stringFromNumber:@(value)]];
+    newValue = [NSString stringWithFormat:@"%@ %@", [_fmt stringFromNumber:@(value)], _symbol];
   } else {
     newValue = [NSString stringWithFormat:@"%@ %@", [_fmt stringFromNumber:@(value)], _symbol];
   }
@@ -123,7 +123,7 @@
     for (int colorIdx = 0; colorIdx < queueLen; colorIdx++) {
       NSArray *changedIdxs = _annealingColor[colorIdx];
       for (NSNumber *inx in changedIdxs) {
-        [attributedText  setAttributes:@{NSForegroundColorAttributeName:_colorsMap[_annealingColor.count - colorIdx - 1], NSKernAttributeName:@(0.2f)} range:NSMakeRange(inx.intValue, len - inx.intValue - (_isSymbolStablecoin ? 0 : _symbol.length))];
+        [attributedText  setAttributes:@{NSForegroundColorAttributeName:_colorsMap[_annealingColor.count - colorIdx - 1], NSKernAttributeName:@(0.2f)} range:NSMakeRange(inx.intValue, len - inx.intValue - _symbol.length)];
       }
     }
   }

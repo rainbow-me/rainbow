@@ -41,10 +41,7 @@ const SavingsListRowAnimatedNumber = ({
   value,
 }) => {
   const formatter = useCallback(
-    val =>
-      isSymbolStablecoin(symbol)
-        ? `$${formatSavingsAmount(val)}`
-        : `${formatSavingsAmount(val)} ${symbol}`,
+    val => `${formatSavingsAmount(val)} ${symbol} `,
     [symbol]
   );
 
