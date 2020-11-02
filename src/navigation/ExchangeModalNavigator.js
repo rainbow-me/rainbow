@@ -1,21 +1,12 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { useRoute } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import { Keyboard, View } from 'react-native';
-import { useValue } from 'react-native-redash';
+import React, { useCallback } from 'react';
+import { View } from 'react-native';
 import { useMemoOne } from 'use-memo-one';
 import CurrencySelectModal from '../screens/CurrencySelectModal';
 import ModalScreen from '../screens/ModalScreen';
 import SwapModalScreen from '../screens/SwapModal';
-import { deviceUtils } from '../utils';
-import { useNavigation } from './Navigation';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
 import {
   ExchangeContext,
@@ -24,33 +15,10 @@ import {
 } from './config';
 import { exchangeModalPreset, swapDetailsPreset } from './effects';
 import Routes from './routesNames';
-
-const { width } = deviceUtils.dimensions;
+import useOptionsForScrollPager from './useOptionsForScrollPager';
 
 const Stack = createStackNavigator();
 const Tabs = createMaterialTopTabNavigator();
-
-function useStateCallback(initialState) {
-  const [state, setState] = useState(initialState);
-  const cbRef = useRef(null); // mutable ref to store current callback
-
-  const setStateCallback = (state, cb) => {
-    if (cb !== undefined) {
-      cbRef.current = cb; // store passed callback to ref
-    }
-    setState(state);
-  };
-
-  useEffect(() => {
-    // cb.current is `null` on initial render, so we only execute cb on state *updates*
-    if (cbRef.current) {
-      cbRef.current(state);
-      cbRef.current = null; // reset callback after execution
-    }
-  }, [state]);
-
-  return [state, setStateCallback];
-}
 
 export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
   function MainExchangeNavigator() {
@@ -77,87 +45,17 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
   }
 
   return function ExchangeModalNavigator() {
-    const { setOptions } = useNavigation();
-    const pointerEvents = useRef('auto');
-    const ref = useRef();
-    const startPosition = useRef(-1);
-    const [willBeOnSwapSelection, setWillBeOnSwapSelection] = useState(false);
-    const tabTransitionPosition = useValue(0);
-    const [swipeEnabled, setSwipeEnabled] = useStateCallback(false);
-
-    const setPointerEvents = useCallback(pointerEventsVal => {
-      pointerEvents.current = pointerEventsVal;
-      ref.current.setNativeProps({
-        pointerEvents: pointerEventsVal ? 'none' : 'auto',
-      });
-    }, []);
-
-    const performImperativeAction = useCallback(
-      action => {
-        setPointerEvents(false);
-        Keyboard.dismiss();
-        action();
-        const listener = () => {
-          setPointerEvents(true);
-          Keyboard.removeListener('keyboardDidShow', listener);
-        };
-        Keyboard.addListener('keyboardDidShow', listener);
-      },
-      [setPointerEvents]
-    );
-
-    const value = useMemo(
-      () => ({
-        performImperativeAction,
-        startedTransition: willBeOnSwapSelection,
-      }),
-      [performImperativeAction, willBeOnSwapSelection]
-    );
-
-    const blockInteractions = useCallback(() => {
-      setSwipeEnabled(false);
-    }, [setSwipeEnabled]);
-
-    const onMomentumScrollEnd = useCallback(
-      position => {
-        if (position === width) {
-          if (startPosition.current === width) {
-            setPointerEvents(true);
-          }
-          setSwipeEnabled(true);
-        } else if (position === 0) {
-          setSwipeEnabled(false);
-          setPointerEvents(true);
-        }
-        startPosition.current = -1;
-      },
-      [setPointerEvents, setSwipeEnabled]
-    );
-
-    const onSwipeEnd = useCallback(
-      (position, targetContentOffset) => {
-        if (position !== width && position !== 0) {
-          setPointerEvents(false);
-        }
-
-        if (position === width && startPosition.current === width) {
-          setPointerEvents(true);
-        }
-
-        if (position === 0) {
-          setSwipeEnabled(false);
-          setPointerEvents(true);
-        }
-        if (position === targetContentOffset) {
-          startPosition.current = -1;
-        }
-
-        if (targetContentOffset === 0) {
-          setWillBeOnSwapSelection(true);
-        }
-      },
-      [setSwipeEnabled, setPointerEvents]
-    );
+    const {
+      tabTransitionPosition,
+      swipeEnabled,
+      toggleGestureEnabled,
+      onSwipeStart,
+      onMomentumScrollEnd,
+      onSwipeEnd,
+      setPointerEvents,
+      ref,
+      contextValue,
+    } = useOptionsForScrollPager();
 
     const renderPager = useCallback(
       props => (
@@ -169,42 +67,25 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
             props.onSwipeEnd();
           }}
           onSwipeStart={position => {
-            startPosition.current = position;
-            if (position === width) {
-              setPointerEvents(false);
-            }
+            onSwipeStart(position);
             props.onSwipeStart();
           }}
-          setSwipeEnabled={setSwipeEnabled}
         />
       ),
-      [onMomentumScrollEnd, onSwipeEnd, setPointerEvents, setSwipeEnabled]
-    );
-
-    const toggleGestureEnabled = useCallback(
-      dismissable => {
-        setOptions({ dismissable });
-      },
-      [setOptions]
+      [onMomentumScrollEnd, onSwipeEnd, onSwipeStart]
     );
 
     const initialParams = useMemoOne(
       () => ({
-        blockInteractions,
         setPointerEvents,
         tabTransitionPosition,
         toggleGestureEnabled,
       }),
-      [
-        tabTransitionPosition,
-        toggleGestureEnabled,
-        setPointerEvents,
-        blockInteractions,
-      ]
+      [tabTransitionPosition, toggleGestureEnabled, setPointerEvents]
     );
 
     return (
-      <ExchangeContext.Provider value={value}>
+      <ExchangeContext.Provider value={contextValue}>
         <View style={{ flex: 1 }}>
           <Tabs.Navigator
             swipeEnabled={swipeEnabled}
