@@ -6,9 +6,16 @@ import { deviceUtils } from '@rainbow-me/utils';
 
 const { width } = deviceUtils.dimensions;
 
+function performAfterKeyboardAppear(action) {
+  const listener = () => {
+    action();
+    Keyboard.removeListener('keyboardDidShow', listener);
+  };
+  Keyboard.addListener('keyboardDidShow', listener);
+}
+
 export default function useOptionsForScrollPager() {
   const { setOptions } = useNavigation();
-  const pointerEvents = useRef('auto');
   const ref = useRef();
   const startPosition = useRef(-1);
   const [willBeOnSwapSelection, setWillBeOnSwapSelection] = useState(false);
@@ -16,7 +23,6 @@ export default function useOptionsForScrollPager() {
   const [swipeEnabled, setSwipeEnabled] = useState(false);
 
   const setPointerEvents = useCallback(pointerEventsVal => {
-    pointerEvents.current = pointerEventsVal;
     ref.current.setNativeProps({
       pointerEvents: pointerEventsVal ? 'none' : 'auto',
     });
@@ -27,11 +33,7 @@ export default function useOptionsForScrollPager() {
       setPointerEvents(false);
       Keyboard.dismiss();
       action();
-      const listener = () => {
-        setPointerEvents(true);
-        Keyboard.removeListener('keyboardDidShow', listener);
-      };
-      Keyboard.addListener('keyboardDidShow', listener);
+      performAfterKeyboardAppear(() => setPointerEvents(true));
     },
     [setPointerEvents]
   );
@@ -46,15 +48,20 @@ export default function useOptionsForScrollPager() {
 
   const onMomentumScrollEnd = useCallback(
     position => {
+      // if navigated to the second screen
       if (position === width) {
+        setSwipeEnabled(true);
+        // if started from second screen, hence keyboard is visible
         if (startPosition.current === width) {
           setPointerEvents(true);
         }
-        setSwipeEnabled(true);
-      } else if (position === 0) {
+      }
+      // if navigated to the first screen
+      if (position === 0) {
         setSwipeEnabled(false);
         setPointerEvents(true);
       }
+      // reset start position
       startPosition.current = -1;
     },
     [setPointerEvents, setSwipeEnabled]
@@ -66,19 +73,19 @@ export default function useOptionsForScrollPager() {
         setPointerEvents(false);
       }
 
-      if (position === width && startPosition.current === width) {
-        setPointerEvents(true);
-      }
-
       if (position === 0) {
         setSwipeEnabled(false);
         setPointerEvents(true);
       }
       if (position === targetContentOffset) {
         startPosition.current = -1;
+        if (startPosition.current === width) {
+          setPointerEvents(true);
+        }
       }
 
       if (targetContentOffset === 0) {
+        // allow inputs to be accessible and focusable
         setWillBeOnSwapSelection(true);
       }
     },
@@ -87,8 +94,10 @@ export default function useOptionsForScrollPager() {
 
   const onSwipeStart = useCallback(
     position => {
+      // set start position on the beginning of the gesture
       startPosition.current = position;
       if (position === width) {
+        // block immediately further interactions
         setPointerEvents(false);
       }
     },
