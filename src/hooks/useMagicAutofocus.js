@@ -10,12 +10,12 @@ const { currentlyFocusedInput, focusTextInput } = TextInput.State;
 let timeout = null;
 let delay = false;
 
-export function delayNext() {
+export function delayNext(type = 200) {
   if (timeout !== null) {
     clearTimeout(timeout);
     timeout = null;
   }
-  delay = true;
+  delay = type;
 }
 
 export default function useMagicAutofocus(

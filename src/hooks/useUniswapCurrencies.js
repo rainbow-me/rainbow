@@ -263,7 +263,7 @@ export default function useUniswapCurrencies({
     InteractionManager.runAfterInteractions(() => {
       dangerouslyGetParent().dangerouslyGetState().index = 0;
       setParams({ focused: false });
-      delayNext();
+      delayNext(20);
       navigate(Routes.CURRENCY_SELECT_SCREEN, {
         category,
         headerTitle: inputHeaderTitle,
@@ -285,7 +285,7 @@ export default function useUniswapCurrencies({
     InteractionManager.runAfterInteractions(() => {
       setParams({ focused: false });
       dangerouslyGetParent().dangerouslyGetState().index = 0;
-      delayNext();
+      delayNext(20);
       navigate(Routes.CURRENCY_SELECT_SCREEN, {
         category,
         headerTitle: 'Receive',
