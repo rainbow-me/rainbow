@@ -1,8 +1,12 @@
+import { get } from 'lodash';
 import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components/primitives';
+import { useAccountSettings } from '../../hooks';
 import { colors, fonts } from '../../styles';
-import { formatUSD } from '../expanded-state/chart/chart-data-labels/ChartPriceLabel';
+import { formatNative } from '../expanded-state/chart/chart-data-labels/ChartPriceLabel';
 import { Text } from '../text';
+import supportedNativeCurrencies from '..../../references/native-currencies.json';
+
 import { useChartData } from '@rainbow-me/animated-charts';
 
 function trim(val) {
@@ -57,6 +61,8 @@ const CenteredLabel = ({ position, style, width, ...props }) => {
 };
 
 export default function Labels({ color, width }) {
+  const { nativeCurrency } = useAccountSettings();
+  const nativeSelected = get(supportedNativeCurrencies, `${nativeCurrency}`);
   const { greatestX, greatestY, smallestX, smallestY } = useChartData();
   if (!greatestX) {
     return null;
@@ -78,7 +84,7 @@ export default function Labels({ color, width }) {
           }}
           width={width}
         >
-          {formatUSD(smallestY.y)}
+          {formatNative(smallestY.y, null, nativeSelected)}
         </CenteredLabel>
       ) : null}
       {positionMax ? (
@@ -90,7 +96,7 @@ export default function Labels({ color, width }) {
           }}
           width={width}
         >
-          {formatUSD(greatestY.y)}
+          {formatNative(greatestY.y, null, nativeSelected)}
         </CenteredLabel>
       ) : null}
     </>
