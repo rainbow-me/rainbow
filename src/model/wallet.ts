@@ -806,7 +806,7 @@ export const getPrivateKey = async (
     if (pkey === -2) {
       Alert.alert(
         'Error',
-        'Please use a different biometric authentication method'
+        'Your current authentication method (Face Recognition) is not secure enough, please go to "Settings > Biometrics & Security" and enable an alternative biometric method like Fingerprint or Iris'
       );
       return null;
     }
@@ -846,7 +846,7 @@ export const getSeedPhrase = async (
     if (seedPhraseData === -2) {
       Alert.alert(
         'Error',
-        'Please use a different biometric authentication method'
+        'Your current authentication method (Face Recognition) is not secure enough, please go to "Settings > Biometrics & Security" and enable an alternative biometric method like Fingerprint or Iris'
       );
       return null;
     }
