@@ -85,7 +85,7 @@ const TopRow = ({ name, native, nativeCurrencySymbol }) => {
   return (
     <TopRowContainer>
       <FlexItem flex={1}>
-        <CoinName>{name}</CoinName>
+        <CoinName testID={`balance-coin-row-${name}`}>{name}</CoinName>
       </FlexItem>
       <PriceContainer>
         <BalanceText
