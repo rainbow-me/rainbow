@@ -53,6 +53,7 @@ const SheetActionButton = ({
   label,
   noFlex,
   size,
+  testID,
   textColor = colors.white,
   weight = 'semibold',
   ...props
@@ -70,7 +71,13 @@ const SheetActionButton = ({
   }, [color, isTransparent]);
 
   return (
-    <Button as={ButtonPressAnimation} noFlex={noFlex} size={size} {...props}>
+    <Button
+      as={ButtonPressAnimation}
+      noFlex={noFlex}
+      size={size}
+      testID={`${testID}-action-button`}
+      {...props}
+    >
       <ShadowStack
         {...position.coverAsObject}
         backgroundColor={color}
