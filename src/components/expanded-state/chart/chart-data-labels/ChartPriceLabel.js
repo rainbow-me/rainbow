@@ -2,7 +2,6 @@ import React from 'react';
 import styled from 'styled-components/primitives';
 import ChartHeaderTitle from './ChartHeaderTitle';
 import { ChartYLabel } from '@rainbow-me/animated-charts';
-import { chartExpandedAvailable } from '@rainbow-me/config/experimental';
 import { fonts } from '@rainbow-me/styles';
 
 const Label = styled(ChartYLabel)`
@@ -50,7 +49,7 @@ export default function ChartPriceLabel({
   isNoPriceData,
   priceSharedValue,
 }) {
-  return !chartExpandedAvailable || isNoPriceData ? (
+  return isNoPriceData ? (
     <ChartHeaderTitle>{defaultValue}</ChartHeaderTitle>
   ) : (
     <Label
