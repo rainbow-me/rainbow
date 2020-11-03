@@ -156,7 +156,7 @@ const discoverTokens = async (
         asset: {
           asset_code: getCurrentAddress(tx.contractAddress.toLowerCase()),
           coingecko_id: coingeckoIds[tx.contractAddress.toLowerCase()],
-          decimals: tx.tokenDecimal,
+          decimals: Number(tx.tokenDecimal),
           name: tx.tokenName,
           symbol: tx.tokenSymbol,
         },
