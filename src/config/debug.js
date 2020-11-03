@@ -3,7 +3,7 @@
  * could be useful during development.
  */
 
-export const enableFallbackProvider = false;
+export const ignoreDisableFallback = false;
 export const alwaysRequireApprove = false;
 export const darkMode = false;
 export const parseAllTxnsOnReceive = false;
