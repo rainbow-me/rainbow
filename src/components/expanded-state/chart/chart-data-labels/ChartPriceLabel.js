@@ -4,7 +4,6 @@ import styled from 'styled-components/primitives';
 import ChartHeaderTitle from './ChartHeaderTitle';
 
 import { ChartYLabel } from '@rainbow-me/animated-charts';
-import { chartExpandedAvailable } from '@rainbow-me/config/experimental';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import supportedNativeCurrencies from '@rainbow-me/references/native-currencies.json';
 import { fonts } from '@rainbow-me/styles';
@@ -62,7 +61,7 @@ export default function ChartPriceLabel({
 }) {
   const { nativeCurrency } = useAccountSettings();
   const nativeSelected = get(supportedNativeCurrencies, `${nativeCurrency}`);
-  return !chartExpandedAvailable || isNoPriceData ? (
+  return isNoPriceData ? (
     <ChartHeaderTitle>{defaultValue}</ChartHeaderTitle>
   ) : (
     <Label

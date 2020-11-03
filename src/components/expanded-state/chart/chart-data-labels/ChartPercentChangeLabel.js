@@ -25,14 +25,8 @@ const PercentLabel = styled(AnimatedTextInput)`
 export default function ChartPercentChangeLabel() {
   const { originalY, data } = useChartData();
 
-  const firstValue = useSharedValue(
-    data?.points?.[0]?.y,
-    'firstValueChartPercentChangeLabel'
-  );
-  const lastValue = useSharedValue(
-    data?.points?.[data.points.length - 1]?.y,
-    'lastValueChartPercentChangeLabel'
-  );
+  const firstValue = useSharedValue(data?.points?.[0]?.y);
+  const lastValue = useSharedValue(data?.points?.[data.points.length - 1]?.y);
 
   const defaultValue =
     data?.points.length === 0
@@ -56,46 +50,38 @@ export default function ChartPercentChangeLabel() {
     lastValue.value = data?.points?.[data.points.length - 1]?.y;
   }, [data, firstValue, lastValue]);
 
-  const textProps = useAnimatedStyle(
-    () => {
-      return {
-        text:
-          firstValue.value === Number(firstValue.value) && firstValue.value
-            ? (() => {
-                const value =
-                  ((originalY.value || lastValue.value) / firstValue.value) *
-                    100 -
-                  100;
-                return (
-                  (value > 0 ? '↑' : value < 0 ? '↓' : '') +
-                  ' ' +
-                  Math.abs(value).toFixed(2) +
-                  '%'
-                );
-              })()
-            : '',
-      };
-    },
-    [],
-    'ChartPercentChangeLabelTextProps'
-  );
+  const textProps = useAnimatedStyle(() => {
+    return {
+      text:
+        firstValue.value === Number(firstValue.value) && firstValue.value
+          ? (() => {
+              const value =
+                ((originalY.value || lastValue.value) / firstValue.value) *
+                  100 -
+                100;
+              return (
+                (value > 0 ? '↑' : value < 0 ? '↓' : '') +
+                ' ' +
+                Math.abs(value).toFixed(2) +
+                '%'
+              );
+            })()
+          : '',
+    };
+  });
 
-  const ratio = useRatio('ChartPercentChangeLabel');
+  const ratio = useRatio();
 
-  const textStyle = useAnimatedStyle(
-    () => {
-      return {
-        color:
-          ratio.value === 1
-            ? colors.blueGreyDark
-            : ratio.value < 1
-            ? colors.red
-            : colors.green,
-      };
-    },
-    [],
-    'ChartPercentChangeLabelTextStyle'
-  );
+  const textStyle = useAnimatedStyle(() => {
+    return {
+      color:
+        ratio.value === 1
+          ? colors.blueGreyDark
+          : ratio.value < 1
+          ? colors.red
+          : colors.green,
+    };
+  });
 
   return (
     <RowWithMargins align="center" margin={4}>

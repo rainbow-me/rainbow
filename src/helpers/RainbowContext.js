@@ -16,7 +16,7 @@ const EXPERIMENTAL_CONFIG = 'experimentalConfig';
 export default function RainbowContextWrapper({ children }) {
   // This value is hold here to prevent JS VM from shutting down
   // on unmounting all shared values.
-  useSharedValue(0, 'RainbowContextComponent');
+  useSharedValue(0);
   const [config, setConfig] = useState(defaultConfig);
   const [globalState, updateGlobalState] = useState({});
 

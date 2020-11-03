@@ -24,7 +24,6 @@ import {
   ChartPathProvider,
   monotoneCubicInterpolation,
 } from '@rainbow-me/animated-charts';
-import { chartExpandedAvailable } from '@rainbow-me/config/experimental';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 
 import { useNavigation } from '@rainbow-me/navigation';
@@ -82,9 +81,7 @@ function useJumpingForm(isLong) {
   }, [isLong, setOptions, jumpToShort, jumpToLong]);
 }
 
-export const ChartExpandedStateSheetHeight = chartExpandedAvailable
-  ? heightWithChart
-  : heightWithNoChart;
+export const ChartExpandedStateSheetHeight = heightWithChart;
 
 export default function ChartExpandedState({ asset }) {
   const color = useColorForAsset(asset);
@@ -117,10 +114,9 @@ export default function ChartExpandedState({ asset }) {
   // Only show the chart if we have chart data, or if chart data is still loading
   const showChart = useMemo(
     () =>
-      chartExpandedAvailable &&
-      (throttledPoints?.points.length > 5 ||
-        throttledPoints?.points.length > 5 ||
-        (fetchingCharts && !isFetchingInitially)),
+      throttledPoints?.points.length > 5 ||
+      throttledPoints?.points.length > 5 ||
+      (fetchingCharts && !isFetchingInitially),
     [fetchingCharts, isFetchingInitially, throttledPoints]
   );
 
