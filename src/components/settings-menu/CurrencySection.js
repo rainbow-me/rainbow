@@ -20,7 +20,7 @@ const currencyListItems = Object.values(supportedNativeCurrencies).map(
 
 const renderCurrencyIcon = (currency, emojiName) => {
   if (!currency) return null;
-  if (!isNil(emojiName)) return <Emoji name={emojiName} />;
+  if (!isNil(emojiName)) return <Emoji name={'flag_' + emojiName} />;
 
   return <CoinIcon showShadow={false} size={23} symbol={currency} />;
 };

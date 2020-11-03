@@ -1,5 +1,4 @@
 import { get, map } from 'lodash';
-import { formatDepositAmount } from '../helpers/savings';
 import { convertAmountToNativeDisplay, multiply } from '../helpers/utilities';
 import { ethereumUtils } from '../utils';
 import useAccountAssets from './useAccountAssets';
@@ -15,11 +14,7 @@ export default function useSendSavingsAccount() {
   if (priceOfEther) {
     savings = map(savings, asset => {
       const { cToken, cTokenBalance, exchangeRate, underlyingPrice } = asset;
-      const cTokenBalanceDisplay = formatDepositAmount(
-        cTokenBalance,
-        cToken.symbol,
-        false
-      );
+      const cTokenBalanceDisplay = `${cTokenBalance} ${cToken.symbol}`;
 
       const underlyingNativePrice = multiply(underlyingPrice, priceOfEther);
       const cTokenNativePrice = multiply(exchangeRate, underlyingNativePrice);
