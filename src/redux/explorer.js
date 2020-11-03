@@ -1,7 +1,7 @@
 import { get, isNil, keys, map, toLower } from 'lodash';
 import { DATA_API_KEY, DATA_ORIGIN } from 'react-native-dotenv';
 import io from 'socket.io-client';
-import { ignoreDisableFallback } from '../config/debug';
+import { forceFallbackProvider } from '../config/debug';
 import NetworkTypes from '../helpers/networkTypes';
 import { assetChartsReceived, DEFAULT_CHART_TYPE } from './charts';
 import {
@@ -128,9 +128,6 @@ const explorerUnsubscribe = () => (dispatch, getState) => {
 
 const disableFallbackIfNeeded = () => (dispatch, getState) => {
   const { fallback, assetsTimeoutHandler } = getState().explorer;
-  if (ignoreDisableFallback) {
-    return;
-  }
 
   if (fallback) {
     logger.log('😬 Disabling fallback data provider!');
@@ -177,7 +174,7 @@ export const explorerInit = () => async (dispatch, getState) => {
 
   // Fallback to the testnet data provider
   // if we're not on mainnnet
-  if (network !== NetworkTypes.mainnet) {
+  if (network !== NetworkTypes.mainnet || forceFallbackProvider) {
     return dispatch(fallbackExplorerInit());
   }
 
