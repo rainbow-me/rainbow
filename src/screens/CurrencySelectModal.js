@@ -4,6 +4,7 @@ import { concat, map } from 'lodash';
 import matchSorter from 'match-sorter';
 import React, {
   useCallback,
+  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -23,6 +24,7 @@ import { Modal } from '../components/modal';
 import CurrencySelectionTypes from '../helpers/currencySelectionTypes';
 import { delayNext } from '../hooks/useMagicAutofocus';
 import { useNavigation } from '../navigation/Navigation';
+import { ExchangeContext } from '../navigation/config';
 import {
   useInteraction,
   useMagicAutofocus,
@@ -44,6 +46,7 @@ const headerlessSection = data => [{ data, title: '' }];
 export default function CurrencySelectModal() {
   const isFocused = useIsFocused();
   const prevIsFocused = usePrevious(isFocused);
+  const { setKeyboardShouldFocus } = useContext(ExchangeContext);
   const { navigate, dangerouslyGetState } = useNavigation();
   const {
     params: {
@@ -58,7 +61,13 @@ export default function CurrencySelectModal() {
   } = useRoute();
 
   const searchInputRef = useRef();
-  const { handleFocus } = useMagicAutofocus(searchInputRef);
+  const { handleFocus } = useMagicAutofocus(
+    searchInputRef,
+    lastFocusedInputHandle => {
+      setKeyboardShouldFocus();
+      return lastFocusedInputHandle.current;
+    }
+  );
 
   const [assetsToFavoriteQueue, setAssetsToFavoriteQueue] = useState({});
   const [searchQuery, setSearchQuery] = useState('');

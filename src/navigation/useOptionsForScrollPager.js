@@ -6,12 +6,20 @@ import { deviceUtils } from '@rainbow-me/utils';
 
 const { width } = deviceUtils.dimensions;
 
+let fallback;
+let timeout;
+
 function performAfterKeyboardAppear(action) {
   const listener = () => {
     action();
     Keyboard.removeListener('keyboardDidShow', listener);
   };
   Keyboard.addListener('keyboardDidShow', listener);
+  // On simulator keyboard might not be visible
+  fallback = listener;
+  Keyboard.addListener('keyboardWillShow', () => {
+    clearTimeout(timeout);
+  });
 }
 
 export default function useOptionsForScrollPager() {
@@ -37,13 +45,18 @@ export default function useOptionsForScrollPager() {
     },
     [setPointerEvents]
   );
+  const setKeyboardShouldFocus = useCallback(() => {
+    // sometimes it happens on simulator that keyboard is disabled
+    timeout = setTimeout(fallback, 400);
+  }, []);
 
   const contextValue = useMemo(
     () => ({
       performImperativeAction,
+      setKeyboardShouldFocus,
       startedTransition: willBeOnSwapSelection,
     }),
-    [performImperativeAction, willBeOnSwapSelection]
+    [performImperativeAction, willBeOnSwapSelection, setKeyboardShouldFocus]
   );
 
   const onMomentumScrollEnd = useCallback(
