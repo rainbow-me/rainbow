@@ -1,6 +1,7 @@
 import { get, isNil, keys, map, toLower } from 'lodash';
 import { DATA_API_KEY, DATA_ORIGIN } from 'react-native-dotenv';
 import io from 'socket.io-client';
+import { enableFallbackProvider } from '../config/debug';
 import NetworkTypes from '../helpers/networkTypes';
 import { assetChartsReceived, DEFAULT_CHART_TYPE } from './charts';
 import {
@@ -147,7 +148,7 @@ const isValidAssetsResponseFromZerion = msg => {
       const assets = keys(msg.payload.assets);
       // Check that we have assets
       if (assets.length > 0) {
-        return true;
+        return enableFallbackProvider ? false : true;
       }
     }
   }
