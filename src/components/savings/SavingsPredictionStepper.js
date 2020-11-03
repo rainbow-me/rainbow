@@ -7,12 +7,12 @@ import {
   isSymbolStablecoin,
 } from '../../helpers/savings';
 import { handleSignificantDecimals } from '../../helpers/utilities';
-import { useAccountSettings } from '../../hooks';
-import supportedNativeCurrencies from '../../references/native-currencies.json';
 import { magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Row, RowWithMargins } from '../layout';
 import { AnimatedNumber, Emoji, Text } from '../text';
+import { useAccountSettings } from '@rainbow-me/hooks';
+import supportedNativeCurrencies from '@rainbow-me/references/native-currencies.json';
 import { colors, padding } from '@rainbow-me/styles';
 
 const CrystalBallEmoji = styled(Emoji).attrs({
