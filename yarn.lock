@@ -11357,8 +11357,8 @@ react-native-safe-area-context@^0.5.0:
   integrity sha512-ukg9gO9jCdQIkYYwQf0/mp+67XiFSJH7BOxthoBbJq0x3f61Q/6U6E2v5MkcHO0vJg1Ul4/Pq77V+nR5eY/9fA==
 
 react-native-safe-area-view@mikedemarais/react-native-safe-area-view:
-  version "0.10.0"
-  resolved "https://codeload.github.com/mikedemarais/react-native-safe-area-view/tar.gz/b67379092dd176887569465a7e41362a83698a3e"
+  version "0.11.0"
+  resolved "https://codeload.github.com/mikedemarais/react-native-safe-area-view/tar.gz/a543897214519c700fab160a03388cef5a70ec3c"
   dependencies:
     hoist-non-react-statics "^2.3.1"
 

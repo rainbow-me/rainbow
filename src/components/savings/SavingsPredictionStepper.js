@@ -1,4 +1,3 @@
-import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useCallback, useState } from 'react';
 import styled from 'styled-components/primitives';
@@ -6,13 +5,15 @@ import {
   calculateEarningsInDays,
   isSymbolStablecoin,
 } from '../../helpers/savings';
-import { handleSignificantDecimals } from '../../helpers/utilities';
+import {
+  convertAmountToNativeDisplay,
+  handleSignificantDecimals,
+} from '../../helpers/utilities';
 import { magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Row, RowWithMargins } from '../layout';
 import { AnimatedNumber, Emoji, Text } from '../text';
 import { useAccountSettings } from '@rainbow-me/hooks';
-import supportedNativeCurrencies from '@rainbow-me/references/native-currencies.json';
 import { colors, padding } from '@rainbow-me/styles';
 
 const CrystalBallEmoji = styled(Emoji).attrs({
@@ -65,7 +66,6 @@ function useStepper(max, initial = 0) {
 
 const SavingsPredictionStepper = ({ asset, balance, interestRate }) => {
   const { nativeCurrency } = useAccountSettings();
-  const nativeSelected = get(supportedNativeCurrencies, `${nativeCurrency}`);
   const [step, nextStep] = useStepper(Object.keys(steps).length, 1);
   const { decimals, symbol } = asset;
 
@@ -77,15 +77,11 @@ const SavingsPredictionStepper = ({ asset, balance, interestRate }) => {
 
   const formatter = useCallback(
     value => {
-      const formattedValue = handleSignificantDecimals(value, decimals, 1);
-
       return isSymbolStablecoin(symbol)
-        ? nativeSelected?.alignment === 'left'
-          ? `${nativeSelected?.symbol}${formattedValue}`
-          : `${formattedValue} ${nativeSelected?.symbol}`
-        : `${formattedValue} ${symbol}`;
+        ? convertAmountToNativeDisplay(value, nativeCurrency)
+        : `${handleSignificantDecimals(value, decimals, 1)} ${symbol}`;
     },
-    [decimals, symbol, nativeSelected]
+    [decimals, symbol, nativeCurrency]
   );
 
   return (
