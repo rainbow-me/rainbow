@@ -69,8 +69,10 @@ const BottomRightLabel = ({ formatter }) => (
   <Label color={colors.white}>{formatter()}</Label>
 );
 
-const formatGasPrice = gasPrice => {
-  return (Math.ceil(Number(gasPrice) * 100) / 100).toFixed(2);
+const formatGasPrice = (gasPrice, nativeCurrency) => {
+  return nativeCurrency === 'ETH'
+    ? (Math.ceil(Number(gasPrice) * 10000) / 10000).toFixed(4)
+    : (Math.ceil(Number(gasPrice) * 100) / 100).toFixed(2);
 };
 
 const getActionLabel = type => {
@@ -97,8 +99,8 @@ const GasSpeedButton = ({
   testID,
   type,
 }) => {
-  const { nativeCurrencySymbol } = useAccountSettings();
   const inputRef = useRef(null);
+  const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
   const {
     gasPrices,
     updateCustomValues,
@@ -211,8 +213,9 @@ const GasSpeedButton = ({
   }, [inputFocused, selectedGasPriceOption, updateGasPriceOption]);
 
   const formatAnimatedGasPrice = useCallback(
-    animatedPrice => `${nativeCurrencySymbol}${formatGasPrice(animatedPrice)}`,
-    [nativeCurrencySymbol]
+    animatedPrice =>
+      `${nativeCurrencySymbol}${formatGasPrice(animatedPrice, nativeCurrency)}`,
+    [nativeCurrencySymbol, nativeCurrency]
   );
 
   const formatBottomRightLabel = useCallback(() => {

@@ -1,3 +1,4 @@
+import { Wallet } from '@ethersproject/wallet';
 import AsyncStorage from '@react-native-community/async-storage';
 import { captureException } from '@sentry/react-native';
 import { mnemonicToSeed } from 'bip39';
@@ -7,7 +8,6 @@ import {
   toChecksumAddress,
 } from 'ethereumjs-util';
 import { hdkey } from 'ethereumjs-wallet';
-import { ethers } from 'ethers';
 import { find, get, isEmpty, matchesProperty, replace, toLower } from 'lodash';
 import { NativeModules } from 'react-native';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
@@ -248,7 +248,7 @@ const deriveAccountFromMnemonic = async (mnemonic, index = 0) => {
 };
 
 const deriveAccountFromPrivateKey = privateKey => {
-  const ethersWallet = new ethers.Wallet(privateKey);
+  const ethersWallet = new Wallet(addHexPrefix(privateKey));
   return {
     address: ethersWallet.address,
     isHDWallet: false,

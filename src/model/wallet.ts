@@ -1019,7 +1019,7 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
       existingAccount: undefined | Wallet;
     switch (type) {
       case EthereumWalletType.privateKey:
-        existingAccount = new Wallet(seedphrase);
+        existingAccount = new Wallet(addHexPrefix(seedphrase));
         break;
       case EthereumWalletType.mnemonic:
         {

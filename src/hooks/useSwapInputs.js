@@ -125,9 +125,9 @@ export default function useSwapInputs({
         );
       }
 
+      setInputAsExactAmount(true);
       setInputAmount(inputAmount);
       setInputAmountDisplay(inputAmountDisplay);
-      setInputAsExactAmount(true);
     },
     [inputCurrency]
   );

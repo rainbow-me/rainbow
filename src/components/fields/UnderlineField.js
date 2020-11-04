@@ -55,7 +55,6 @@ const defaultFormatter = string => string;
 
 const UnderlineField = (
   {
-    animatedKey,
     autoFocus,
     buttonText,
     format = defaultFormatter,
@@ -77,10 +76,7 @@ const UnderlineField = (
   const [isFocused, setIsFocused] = useState(autoFocus);
   const [value, setValue] = useState(valueProp);
   const [wasButtonPressed, setWasButtonPressed] = useState(false);
-  const underlineSize = useSharedValue(
-    autoFocus ? 1 : 0,
-    'underlineSize' + animatedKey
-  );
+  const underlineSize = useSharedValue(autoFocus ? 1 : 0);
 
   const ref = useRef();
   useImperativeHandle(forwardedRef, () => ref.current);
@@ -148,15 +144,11 @@ const UnderlineField = (
     }
   }, [forwardedRef, value, valueProp, wasButtonPressed]);
 
-  const animatedStyles = useAnimatedStyle(
-    () => {
-      return {
-        transform: [{ scale: underlineSize.value }],
-      };
-    },
-    [],
-    'UnderlineFieldAnimatedStyle' + animatedKey
-  );
+  const animatedStyles = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: underlineSize.value }],
+    };
+  });
 
   return (
     <ColumnWithMargins flex={1} margin={8} {...props}>

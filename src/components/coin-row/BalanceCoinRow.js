@@ -135,7 +135,11 @@ const BalanceCoinRow = ({
           ),
         }}
       >
-        <Content onPress={handlePress} scaleTo={0.96}>
+        <Content
+          onPress={handlePress}
+          scaleTo={0.96}
+          testID={`balance-coin-row-${item.name}`}
+        >
           <CoinRow
             bottomRowRender={BottomRow}
             containerStyles={containerStyles}

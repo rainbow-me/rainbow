@@ -125,6 +125,7 @@ const JellySelector = ({
             onPress={handleItemPress}
             renderItem={renderItem}
             scaleTo={scaleTo}
+            testID={`chart-timespan-${item}`}
             width={widths[index]}
           />
         ))}

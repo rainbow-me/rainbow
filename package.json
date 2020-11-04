@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.2.38-1",
+  "version": "1.2.39-1",
   "private": true,
   "scripts": {
     "android": "adb uninstall me.rainbow || true && react-native run-android",
@@ -156,7 +156,7 @@
     "react-native-code-push": "^6.2.0",
     "react-native-crypto": "^2.2.0",
     "react-native-device-info": "5.3.1",
-    "react-native-dotenv": "^0.2.0",
+    "react-native-dotenv": "^2.4.2",
     "react-native-fast-image": "^8.1.5",
     "react-native-fs": "^2.16.6",
     "react-native-gesture-handler": "1.7.0",
@@ -177,7 +177,7 @@
     "react-native-qrcode-svg": "mikedemarais/react-native-qrcode-svg#c0302a698ea4fa0bb9b506a11ef39905674f2221",
     "react-native-radial-gradient": "rainbow-me/react-native-radial-gradient#d0cf5e6dd3cd069c499d4169f418b98f28a747fe",
     "react-native-randombytes": "^3.5.3",
-    "react-native-reanimated": "file:patches/reanimated",
+    "react-native-reanimated": "^2.0.0-alpha.8",
     "react-native-redash": "14.2.2",
     "react-native-restart": "^0.0.17",
     "react-native-safe-area-context": "^0.5.0",

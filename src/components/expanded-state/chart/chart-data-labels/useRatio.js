@@ -5,13 +5,9 @@ import useReactiveSharedValue from '@rainbow-me/animated-charts/helpers/useReact
 export function useRatio(name) {
   const { originalY, data } = useChartData();
 
-  const firstValue = useReactiveSharedValue(
-    data?.points?.[0]?.y,
-    name ? 'firstValueRatio' + name : undefined
-  );
+  const firstValue = useReactiveSharedValue(data?.points?.[0]?.y);
   const lastValue = useReactiveSharedValue(
-    data?.points?.[data.points.length - 1]?.y,
-    name ? 'lastValueRatio' + name : undefined
+    data?.points?.[data.points.length - 1]?.y
   );
 
   return useDerivedValue(

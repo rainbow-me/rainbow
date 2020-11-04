@@ -1,8 +1,11 @@
+import { get } from 'lodash';
 import React from 'react';
 import styled from 'styled-components/primitives';
 import ChartHeaderTitle from './ChartHeaderTitle';
+
 import { ChartYLabel } from '@rainbow-me/animated-charts';
-import { chartExpandedAvailable } from '@rainbow-me/config/experimental';
+import { useAccountSettings } from '@rainbow-me/hooks';
+import supportedNativeCurrencies from '@rainbow-me/references/native-currencies.json';
 import { fonts, fontWithWidth } from '@rainbow-me/styles';
 
 const Label = styled(ChartYLabel)`
@@ -16,13 +19,15 @@ const Label = styled(ChartYLabel)`
      margin-bottom: -16;`}
 `;
 
-export function formatUSD(value, priceSharedValue) {
+export function formatNative(value, priceSharedValue, nativeSelected) {
   'worklet';
   if (!value) {
     return priceSharedValue?.value || '';
   }
   if (value === 'undefined') {
-    return '$0.00';
+    return nativeSelected?.alignment === 'left'
+      ? `${nativeSelected?.symbol}0.00`
+      : `0.00 ${nativeSelected?.symbol}`;
   }
   const decimals =
     Number(value) < 1
@@ -36,11 +41,15 @@ export function formatUSD(value, priceSharedValue) {
         )
       : 2;
 
-  const res = `$${Number(value)
+  let res = `${Number(value)
     .toFixed(decimals)
     .toLocaleString('en-US', {
       currency: 'USD',
     })}`;
+  res =
+    nativeSelected?.alignment === 'left'
+      ? `${nativeSelected?.symbol}${res}`
+      : `${res} ${nativeSelected?.symbol}`;
   const vals = res.split('.');
   if (vals.length === 2) {
     return vals[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '.' + vals[1];
@@ -53,13 +62,15 @@ export default function ChartPriceLabel({
   isNoPriceData,
   priceSharedValue,
 }) {
-  return !chartExpandedAvailable || isNoPriceData ? (
+  const { nativeCurrency } = useAccountSettings();
+  const nativeSelected = get(supportedNativeCurrencies, `${nativeCurrency}`);
+  return isNoPriceData ? (
     <ChartHeaderTitle>{defaultValue}</ChartHeaderTitle>
   ) : (
     <Label
       format={value => {
         'worklet';
-        return formatUSD(value, priceSharedValue);
+        return formatNative(value, priceSharedValue, nativeSelected);
       }}
     />
   );

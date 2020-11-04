@@ -53,6 +53,7 @@ const SheetActionButton = ({
   label,
   noFlex,
   size,
+  testID,
   textColor = colors.white,
   weight = 'semibold',
   ...props
@@ -75,6 +76,7 @@ const SheetActionButton = ({
       noFlex={noFlex}
       radiusAndroid={borderRadius}
       size={size}
+      testID={`${testID}-action-button`}
       {...props}
     >
       <ShadowStack

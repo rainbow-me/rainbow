@@ -29,6 +29,7 @@ export default function SendActionButton({
       color={color}
       label="􀈠 Send"
       onPress={handlePress}
+      testID="send"
       weight="bold"
     />
   );

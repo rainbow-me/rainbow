@@ -48,13 +48,39 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.delay(3000);
     await Helpers.checkIfVisible('wallet-screen');
   });
-
   // Saving for now in case we want to test iCloud back up sheet
   // it('Should show the backup sheet', async () => {
   //   await Helpers.delay(3000);
   //   await Helpers.checkIfVisible('backup-sheet');
   //   await Helpers.tap('backup-sheet-imported-cancel-button');
   // });
+  it('Should open expanded state', async () => {
+    await Helpers.delay(2000);
+    await Helpers.swipe('wallet-screen', 'down');
+    await Helpers.delay(2000);
+    await Helpers.tap('balance-coin-row-Ethereum');
+    await Helpers.delay(6000);
+  });
+
+  it('Should tap through chart timeseries', async () => {
+    await Helpers.tap('chart-timespan-h');
+    await Helpers.delay(6000);
+    await Helpers.tap('chart-timespan-d');
+    await Helpers.delay(6000);
+    await Helpers.tap('chart-timespan-w');
+    await Helpers.delay(6000);
+    await Helpers.tap('chart-timespan-m');
+    await Helpers.delay(6000);
+    await Helpers.tap('chart-timespan-y');
+    await Helpers.delay(6000);
+  });
+
+  it('Should close Expanded State and navigate to wallet screen', async () => {
+    await Helpers.delay(1000);
+    await Helpers.swipe('expanded-state-header', 'down');
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('wallet-screen');
+  });
 
   it('Should show all wallet sections', async () => {
     await Helpers.delay(5000);

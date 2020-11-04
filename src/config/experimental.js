@@ -4,9 +4,6 @@
  * keeping in mind that they should never be broken
  */
 
-// this flag is used outside components and cannot be changed dynamically
-export const chartExpandedAvailable = true;
-
 export const AVATAR_PICKER = 'avatarPicker';
 export const DISCOVER_SHEET = 'discoverSheet';
 export const REVIEW_ANDROID = 'reviewAndroid';
