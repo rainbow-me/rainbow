@@ -211,6 +211,7 @@ function ButtonPressAnimationJS({
   onPressStart,
   scaleTo,
   style,
+  testID,
   transformOrigin,
 }) {
   const [createHandle, removeHandle, interactionHandle] = useInteraction();
@@ -357,6 +358,7 @@ function ButtonPressAnimationJS({
       enabled={!disabled}
       onHandlerStateChange={onGestureEvent}
       onLayout={onLayout}
+      testID={testID}
     >
       <Animated.View
         accessible
