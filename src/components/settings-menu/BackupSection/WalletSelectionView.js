@@ -147,6 +147,8 @@ const WalletSelectionView = () => {
     );
   }, [dispatch, wallets]);
 
+  let cloudBackedUpWallets = 0;
+
   return (
     <Fragment>
       {Object.keys(wallets)
@@ -157,6 +159,9 @@ const WalletSelectionView = () => {
           const account = visibleAccounts[0];
           const totalAccounts = visibleAccounts.length;
           const { color, label, index, address } = account;
+          if (wallet.backupType === WalletBackupTypes.cloud) {
+            cloudBackedUpWallets += 1;
+          }
           let labelOrName = label;
           if (!label) {
             if (walletNames[address]) {
@@ -242,19 +247,21 @@ const WalletSelectionView = () => {
             </Column>
           );
         })}
-      <Footer>
-        <ButtonPressAnimation onPress={manageCloudBackups}>
-          <Text
-            align="center"
-            color={colors.alpha(colors.blueGreyDark, 0.6)}
-            letterSpacing="roundedMedium"
-            size="lmedium"
-            weight="semibold"
-          >
-            􀍢 Manage iCloud backups
-          </Text>
-        </ButtonPressAnimation>
-      </Footer>
+      {cloudBackedUpWallets > 0 && (
+        <Footer>
+          <ButtonPressAnimation onPress={manageCloudBackups}>
+            <Text
+              align="center"
+              color={colors.alpha(colors.blueGreyDark, 0.6)}
+              letterSpacing="roundedMedium"
+              size="lmedium"
+              weight="semibold"
+            >
+              􀍢 Manage iCloud backups
+            </Text>
+          </ButtonPressAnimation>
+        </Footer>
+      )}
     </Fragment>
   );
 };
