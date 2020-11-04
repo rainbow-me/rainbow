@@ -174,10 +174,10 @@ export default function AlreadyBackedUpView() {
               if (buttonIndex === 0) {
                 const newWallets = { ...wallets };
                 Object.keys(newWallets).forEach(key => {
-                  delete newWallets[key].backedUp;
-                  delete newWallets[key].backupDate;
-                  delete newWallets[key].backupFile;
-                  delete newWallets[key].backupType;
+                  newWallets[key].backedUp = undefined;
+                  newWallets[key].backupDate = undefined;
+                  newWallets[key].backupFile = undefined;
+                  newWallets[key].backupType = undefined;
                 });
 
                 await dispatch(walletsUpdate(newWallets));
