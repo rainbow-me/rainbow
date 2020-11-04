@@ -57,8 +57,6 @@ describe('Send Sheet Interaction Flow', () => {
   it('Should open expanded state', async () => {
     await Helpers.delay(2000);
     await Helpers.swipe('wallet-screen', 'down');
-    await Helpers.delay(500);
-    await Helpers.swipe('recycler-asset-list', 'down');
     await Helpers.delay(2000);
     await Helpers.tap('balance-coin-row-Ethereum');
     await Helpers.delay(6000);
@@ -77,13 +75,34 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.delay(6000);
   });
 
-  it('Should open send sheet after tapping send action button', async () => {
+  it('Should close Expanded State and navigate to wallet screen', async () => {
     await Helpers.delay(1000);
-    await Helpers.tap('send-action-button');
+    await Helpers.swipe('expanded-state-header', 'down');
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('wallet-screen');
+  });
+
+  it('Should show all wallet sections', async () => {
+    await Helpers.delay(5000);
+    await Helpers.checkIfElementByTextIsVisible('Pools');
+    await Helpers.swipe('wallet-screen', 'up');
+    await Helpers.checkIfElementByTextIsVisible('Collectibles');
+  });
+
+  it('Should say "poopcoin.eth" in the Profile Screen header', async () => {
+    await Helpers.delay(1000);
+    await Helpers.swipe('wallet-screen', 'right');
+    await Helpers.delay(2000);
+    await Helpers.checkIfElementByTextIsVisible('poopcoin.eth');
+    await Helpers.swipe('profile-screen', 'left');
+  });
+
+  it('Should open send sheet after tapping send fab', async () => {
+    await Helpers.delay(1000);
+    await Helpers.tap('send-fab');
     await Helpers.delay(1000);
     await Helpers.checkIfVisible('send-asset-form-field');
   });
-  /*
 
   it('Should do nothing on typing jibberish send address', async () => {
     await Helpers.delay(1000);
@@ -322,7 +341,7 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.delay(1000);
     await Helpers.checkIfVisible('add-contact-button');
   });
-*/
+
   afterAll(async () => {
     // Reset the app state
     await device.clearKeychain();
