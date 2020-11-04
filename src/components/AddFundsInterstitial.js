@@ -1,7 +1,6 @@
 import { get } from 'lodash';
 import React, { Fragment, useCallback } from 'react';
 import { Linking } from 'react-native';
-import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import networkInfo from '../helpers/networkInfo';
 import networkTypes from '../helpers/networkTypes';
@@ -16,6 +15,7 @@ import { Centered, Row, RowWithMargins } from './layout';
 import { Text } from './text';
 import Routes from '@rainbow-me/routes';
 import { colors, padding, position } from '@rainbow-me/styles';
+import ShadowStack from 'react-native-shadow-stack';
 
 const ButtonContainerHeight = 400;
 const ButtonContainerWidth = 261;

@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import FastImage from 'react-native-fast-image';
-import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
 import { magicMemo } from '../../utils';
@@ -9,6 +8,7 @@ import { ButtonPressAnimation } from '../animations';
 import { InnerBorder, Row, RowWithMargins } from '../layout';
 import { Text } from '../text';
 import { colors, margin, padding, position } from '@rainbow-me/styles';
+import ShadowStack from 'react-native-shadow-stack';
 
 const Content = styled(RowWithMargins).attrs({ align: 'center', margin: 7 })`
   ${padding(11, 14, 14, 16)};

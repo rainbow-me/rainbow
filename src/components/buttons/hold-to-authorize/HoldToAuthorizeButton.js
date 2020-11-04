@@ -7,7 +7,6 @@ import {
   TapGestureHandler,
 } from 'react-native-gesture-handler';
 import Animated, { Easing, timing, Value } from 'react-native-reanimated';
-import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import BiometryTypes from '../../../helpers/biometryTypes';
 import { useBiometryType } from '../../../hooks';
@@ -17,6 +16,7 @@ import { Centered, InnerBorder } from '../../layout';
 import { Text } from '../../text';
 import HoldToAuthorizeButtonIcon from './HoldToAuthorizeButtonIcon';
 import { colors, padding } from '@rainbow-me/styles';
+import ShadowStack from 'react-native-shadow-stack';
 
 const { divide, multiply, proc } = Animated;
 

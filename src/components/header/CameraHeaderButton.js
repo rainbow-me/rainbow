@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react';
-import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import { useNavigation } from '../../navigation/Navigation';
 import Icon from '../icons/Icon';
@@ -7,6 +6,7 @@ import { Centered } from '../layout';
 import HeaderButton from './HeaderButton';
 import Routes from '@rainbow-me/routes';
 import { borders, colors } from '@rainbow-me/styles';
+import ShadowStack from 'react-native-shadow-stack';
 
 const CameraHeaderButtonShadows = [
   [0, 3, 5, colors.dark, 0.2],

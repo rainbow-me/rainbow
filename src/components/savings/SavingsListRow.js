@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import {
   SavingsSheetEmptyHeight,
@@ -25,6 +24,7 @@ import { useDimensions } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors, padding, position } from '@rainbow-me/styles';
+import ShadowStack from 'react-native-shadow-stack';
 
 const MS_IN_1_DAY = 1000 * 60 * 60 * 24;
 const ANIMATE_NUMBER_INTERVAL = 60;

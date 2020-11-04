@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import { ButtonPressAnimation } from '../../animations';
 import { Icon } from '../../icons';
@@ -8,6 +7,7 @@ import { Centered, InnerBorder, RowWithMargins } from '../../layout';
 import { Emoji, Text } from '../../text';
 import { containsEmoji } from '@rainbow-me/helpers/strings';
 import { colors, position } from '@rainbow-me/styles';
+import ShadowStack from 'react-native-shadow-stack';
 
 const Button = styled(Centered).attrs({
   scaleTo: 0.9,

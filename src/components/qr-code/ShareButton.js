@@ -1,11 +1,11 @@
 import React, { useCallback } from 'react';
 import { Share } from 'react-native';
-import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import { ButtonPressAnimation } from '../animations';
 import { Centered, InnerBorder } from '../layout';
 import { Text } from '../text';
 import { colors } from '@rainbow-me/styles';
+import ShadowStack from 'react-native-shadow-stack';
 
 const shadows = [
   [0, 10, 30, colors.dark, 0.2],

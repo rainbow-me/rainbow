@@ -1,9 +1,9 @@
 import React from 'react';
-import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import { Row } from '../layout';
 import ExchangeField from './ExchangeField';
 import { colors } from '@rainbow-me/styles';
+import ShadowStack from 'react-native-shadow-stack';
 
 const notchPaddingValue = 11;
 const paddingTop = android ? 15 : 39;
