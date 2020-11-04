@@ -62,7 +62,7 @@ export async function saveString(
 export async function loadString(
   key: string,
   options?: Options
-): Promise<null | string | -1> {
+): Promise<null | string | -1 | -2> {
   try {
     const credentials = await getInternetCredentials(key, options);
     if (credentials) {
@@ -97,7 +97,7 @@ export async function saveObject(
 export async function loadObject(
   key: string,
   options?: Options
-): Promise<null | Object | -1> {
+): Promise<null | Object | -1 | -2> {
   const jsonValue = await loadString(key, options);
   if (!jsonValue) return null;
   if (jsonValue === -1 || jsonValue === -2) {
