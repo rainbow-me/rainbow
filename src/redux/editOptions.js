@@ -1,6 +1,10 @@
 import produce from 'immer';
+<<<<<<< HEAD
 import { concat, difference, filter, isEmpty, union, without } from 'lodash';
 import { Value } from 'react-native-reanimated';
+=======
+import { concat, difference, filter, union, without } from 'lodash';
+>>>>>>> dc12f1514... fix repinning ETH
 import {
   getHiddenCoins,
   getPinnedCoins,
@@ -25,9 +29,7 @@ export const coinListLoadState = () => async (dispatch, getState) => {
     const { accountAddress, network } = getState().settings;
     const hiddenCoins = await getHiddenCoins(accountAddress, network);
     let pinnedCoins = await getPinnedCoins(accountAddress, network);
-    if (isEmpty(pinnedCoins)) {
-      pinnedCoins = ['eth'];
-    }
+
     dispatch({
       payload: {
         hiddenCoins,
@@ -180,7 +182,10 @@ const INITIAL_STATE = {
   currentAction: EditOptions.none,
   hiddenCoins: [],
   isCoinListEdited: false,
+<<<<<<< HEAD
   isCoinListEditedValue: new Value(0),
+=======
+>>>>>>> dc12f1514... fix repinning ETH
   pinnedCoins: ['eth'],
   recentlyPinnedCount: 0,
   selectedCoins: [],
