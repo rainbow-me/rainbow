@@ -216,7 +216,7 @@ export const walletInit = async (
 
 export const loadWallet = async (): Promise<null | Wallet> => {
   const privateKey = await loadPrivateKey();
-  if (privateKey === -1) {
+  if (privateKey === -1 || privateKey === -2) {
     return null;
   }
   if (privateKey) {
@@ -396,7 +396,9 @@ export const oldLoadSeedPhrase = async (): Promise<null | EthereumWalletSeed> =>
 export const loadAddress = (): Promise<null | EthereumAddress> =>
   keychain.loadString(addressKey) as Promise<string | null>;
 
-const loadPrivateKey = async (): Promise<null | EthereumPrivateKey | -1> => {
+const loadPrivateKey = async (): Promise<
+  null | EthereumPrivateKey | -1 | -2
+> => {
   try {
     const isSeedPhraseMigrated = await keychain.loadString(
       oldSeedPhraseMigratedKey
@@ -601,7 +603,12 @@ export const createWallet = async (
     if (userPIN) {
       // Encrypt with the PIN
       const encryptedSeed = await encryptor.encrypt(userPIN, walletSeed);
-      await saveSeedPhrase(encryptedSeed, id);
+      if (encryptedSeed) {
+        await saveSeedPhrase(encryptedSeed, id);
+      } else {
+        logger.sentry('Error encrypting seed to save it');
+        return null;
+      }
     } else {
       await saveSeedPhrase(walletSeed, id);
     }
@@ -616,7 +623,12 @@ export const createWallet = async (
     if (userPIN) {
       // Encrypt with the PIN
       const encryptedPkey = await encryptor.encrypt(userPIN, pkey);
-      await savePrivateKey(walletAddress, encryptedPkey);
+      if (encryptedPkey) {
+        await savePrivateKey(walletAddress, encryptedPkey);
+      } else {
+        logger.sentry('Error encrypting pkey to save it');
+        return null;
+      }
     } else {
       await savePrivateKey(walletAddress, pkey);
     }
@@ -693,7 +705,12 @@ export const createWallet = async (
               userPIN,
               nextWallet.privateKey
             );
-            await savePrivateKey(nextWallet.address, encryptedPkey);
+            if (encryptedPkey) {
+              await savePrivateKey(nextWallet.address, encryptedPkey);
+            } else {
+              logger.sentry('Error encrypting pkey to save it');
+              return null;
+            }
           } else {
             await savePrivateKey(nextWallet.address, nextWallet.privateKey);
           }
@@ -801,7 +818,7 @@ export const getPrivateKey = async (
     const key = `${address}_${privateKeyKey}`;
     const pkey = (await keychain.loadObject(key, {
       authenticationPrompt,
-    })) as PrivateKeyData;
+    })) as PrivateKeyData | -2;
 
     if (pkey === -2) {
       Alert.alert(
@@ -841,7 +858,7 @@ export const getSeedPhrase = async (
     const key = `${id}_${seedPhraseKey}`;
     const seedPhraseData = (await keychain.loadObject(key, {
       authenticationPrompt,
-    })) as SeedPhraseData;
+    })) as SeedPhraseData | -2;
 
     if (seedPhraseData === -2) {
       Alert.alert(
@@ -976,7 +993,12 @@ export const generateAccount = async (
     if (userPIN) {
       try {
         const encryptedPkey = await encryptor.encrypt(userPIN, walletPkey);
-        await savePrivateKey(walletAddress, encryptedPkey);
+        if (encryptedPkey) {
+          await savePrivateKey(walletAddress, encryptedPkey);
+        } else {
+          logger.sentry('Error encrypting pkey to save it');
+          return null;
+        }
       } catch (e) {
         return null;
       }
@@ -1072,13 +1094,7 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
     const seedExists = await keychain.hasKey(`${wallet.id}_${seedPhraseKey}`);
     if (!seedExists) {
       logger.sentry('new seed didnt exist so we should save it');
-      if (userPIN) {
-        // Encrypt with the PIN
-        const encryptedSeed = await encryptor.encrypt(userPIN, seedphrase);
-        await saveSeedPhrase(encryptedSeed, wallet.id);
-      } else {
-        await saveSeedPhrase(seedphrase, wallet.id);
-      }
+      await saveSeedPhrase(seedphrase, wallet.id);
       logger.sentry('new seed saved');
     }
     // Save the migration flag to prevent this flow in the future
