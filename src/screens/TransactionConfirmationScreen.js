@@ -171,6 +171,7 @@ const TransactionConfirmationScreen = () => {
     callback,
     transactionDetails: {
       dappName,
+      dappScheme,
       dappUrl,
       displayDetails,
       imageUrl,
@@ -263,7 +264,7 @@ const TransactionConfirmationScreen = () => {
           if (canceled) {
             type = `${type}-canceled`;
           }
-          dispatch(walletConnectRemovePendingRedirect(type));
+          dispatch(walletConnectRemovePendingRedirect(type, dappScheme));
         });
       }
     },
@@ -273,6 +274,7 @@ const TransactionConfirmationScreen = () => {
       pendingRedirect,
       stopPollingGasPrices,
       method,
+      dappScheme,
       dispatch,
     ]
   );
