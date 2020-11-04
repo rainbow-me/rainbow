@@ -1,5 +1,5 @@
 diff --git a/node_modules/react-native-keychain/RNKeychainManager/RNKeychainManager.m b/node_modules/react-native-keychain/RNKeychainManager/RNKeychainManager.m
-index 98e45fe..937e179 100644
+index 98e45fe..128f4d4 100644
 --- a/node_modules/react-native-keychain/RNKeychainManager/RNKeychainManager.m
 +++ b/node_modules/react-native-keychain/RNKeychainManager/RNKeychainManager.m
 @@ -478,6 +478,93 @@ - (OSStatus)deleteCredentialsForServer:(NSString *)server
@@ -96,6 +96,18 @@ index 98e45fe..937e179 100644
  RCT_EXPORT_METHOD(resetInternetCredentialsForServer:(NSString *)server
                    resolver:(RCTPromiseResolveBlock)resolve
                    rejecter:(RCTPromiseRejectBlock)reject)
+@@ -495,7 +582,10 @@ - (OSStatus)deleteCredentialsForServer:(NSString *)server
+ #if TARGET_OS_IOS && !TARGET_OS_UIKITFORMAC
+ RCT_EXPORT_METHOD(requestSharedWebCredentials:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+ {
+-  SecRequestSharedWebCredential(NULL, NULL, ^(CFArrayRef credentials, CFErrorRef error) {
++  CFStringRef domain = CFSTR("rainbow.me");
++  CFStringRef account = CFSTR("Backup Password");
++
++  SecRequestSharedWebCredential(domain, account, ^(CFArrayRef credentials, CFErrorRef error) {
+     if (error != NULL) {
+       NSError *nsError = (__bridge NSError *)error;
+       return reject([NSString stringWithFormat:@"%li", (long)nsError.code], nsError.description, nil);
 diff --git a/node_modules/react-native-keychain/index.js b/node_modules/react-native-keychain/index.js
 index b1a11f2..77cd403 100644
 --- a/node_modules/react-native-keychain/index.js
