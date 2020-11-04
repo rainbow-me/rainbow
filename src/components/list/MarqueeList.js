@@ -48,7 +48,7 @@ function runDecay(clock, value, velocity) {
   ];
 }
 
-const useReanimatedValue = initialValue => {
+export const useReanimatedValue = initialValue => {
   const value = useRef();
 
   if (!value.current) {

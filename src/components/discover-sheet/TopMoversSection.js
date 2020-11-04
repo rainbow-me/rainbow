@@ -6,7 +6,7 @@ import { Column, ColumnWithMargins, Flex } from '../layout';
 import { MarqueeList } from '../list';
 import { Text } from '../text';
 
-export default function TopMoversSection() {
+export default function TopMoversSection({}) {
   const { nativeCurrencySymbol } = useAccountSettings();
   const { gainers = [], losers = [] } = useTopMovers() || {};
 
