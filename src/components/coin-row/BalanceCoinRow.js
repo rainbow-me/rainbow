@@ -126,6 +126,7 @@ const BalanceCoinRow = ({
         isEditMode={isCoinListEdited}
         onPress={isCoinListEdited ? handleEditModePress : handlePress}
         scaleTo={0.96}
+        testID={`balance-coin-row-${item.name}`}
       >
         <CoinRow
           bottomRowRender={BottomRow}

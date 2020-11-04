@@ -28,6 +28,7 @@ export default function SwapActionButton({
       color={color}
       label="􀖅 Swap"
       onPress={handlePress}
+      testID="swap"
       weight="bold"
     />
   );

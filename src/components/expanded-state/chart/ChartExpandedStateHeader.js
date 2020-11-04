@@ -82,7 +82,11 @@ export default function ChartExpandedStateHeader({
 
   return (
     <Container showChart={showChart}>
-      <Row align="center" justify="space-between">
+      <Row
+        align="center"
+        justify="space-between"
+        testID="expanded-state-header"
+      >
         <CoinIcon
           address={asset?.address}
           shadow={coinIconShadow}
