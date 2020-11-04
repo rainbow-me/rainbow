@@ -1,10 +1,9 @@
 import React, { useCallback } from 'react';
 import styled from 'styled-components/primitives';
 import { useDimensions } from '../../hooks';
-import { neverRerender } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
-import { Centered, FlexItem, Row } from '../layout';
+import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';
 import { colors } from '@rainbow-me/styles';
 
@@ -65,7 +64,7 @@ const Numpad = ({ decimal = true, onPress, width }) => {
       {renderRow([4, 5, 6])}
       {renderRow([7, 8, 9])}
       <KeyboardRow>
-        {decimal ? renderCell('.') : <FlexItem />}
+        {decimal ? renderCell('.') : <Column width={80} />}
         {renderCell(0)}
         <KeyboardButton onPress={() => onPress('back')}>
           <Icon align="center" color={KeyColor} name="backspace" width={40} />
@@ -75,4 +74,4 @@ const Numpad = ({ decimal = true, onPress, width }) => {
   );
 };
 
-export default neverRerender(Numpad);
+export default Numpad;

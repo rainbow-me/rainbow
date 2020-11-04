@@ -11,6 +11,7 @@ import DepositModal from '../screens/DepositModal';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
 import ModalScreen from '../screens/ModalScreen';
+import PinAuthenticationScreen from '../screens/PinAuthenticationScreen';
 import ReceiveModal from '../screens/ReceiveModal';
 import RestoreSheet from '../screens/RestoreSheet';
 import SavingsSheet from '../screens/SavingsSheet';
@@ -184,6 +185,10 @@ function MainNativeNavigator() {
       <NativeStack.Screen
         component={SettingsModal}
         name={Routes.SETTINGS_MODAL}
+      />
+      <NativeStack.Screen
+        component={PinAuthenticationScreen}
+        name={Routes.PIN_AUTHENTICATION_SCREEN}
       />
       <NativeStack.Screen component={SendSheet} name={Routes.SEND_SHEET} />
       <NativeStack.Screen component={BackupSheet} name={Routes.BACKUP_SCREEN} />

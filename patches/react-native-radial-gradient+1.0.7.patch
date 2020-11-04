@@ -12,11 +12,11 @@ index f3c1d49..0b3a0a8 100644
 +import androidx.core.graphics.ColorUtils;
  import android.util.AttributeSet;
  import android.view.View;
- 
+
  import com.facebook.react.bridge.ReadableArray;
  import com.facebook.react.uimanager.PixelUtil;
- 
+
 -import java.text.DecimalFormat;
- 
+
  /**
   * Created by Surajit Sarkar on 22/12/17.

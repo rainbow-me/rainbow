@@ -17,7 +17,6 @@ import Spinner from '../components/Spinner';
 import { MiniButton } from '../components/buttons';
 import { Input } from '../components/inputs';
 import { Centered, Column, Row } from '../components/layout';
-import LoadingOverlay from '../components/modal/LoadingOverlay';
 import { SheetHandle } from '../components/sheet';
 import { Text } from '../components/text';
 import {
@@ -53,12 +52,8 @@ import Routes from '@rainbow-me/routes';
 import { borders, colors, padding } from '@rainbow-me/styles';
 import { deviceUtils, ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
-import { usePortal } from 'react-native-cool-modals/Portal';
 
 const sheetBottomPadding = 19;
-const keyboardVerticalOffset = android
-  ? sheetVerticalOffset - 240
-  : sheetVerticalOffset + 10;
 
 const Container = styled.View`
   flex: 1;
@@ -136,7 +131,7 @@ const Sheet = styled(Column).attrs({
 
 export default function ImportSeedPhraseSheet() {
   const { accountAddress } = useAccountSettings();
-  const { selectedWallet, wallets } = useWallets();
+  const { selectedWallet, setIsWalletLoading, wallets } = useWallets();
   const { getClipboard, hasClipboardData, clipboard } = useClipboard();
   const { onInvalidPaste } = useInvalidPaste();
   const { isSmallPhone } = useDimensions();
@@ -153,7 +148,6 @@ export default function ImportSeedPhraseSheet() {
   const [resolvedAddress, setResolvedAddress] = useState(null);
   const [startAnalyticsTimeout] = useTimeout();
   const wasImporting = usePrevious(isImporting);
-  const { setComponent, hide } = usePortal();
 
   const inputRef = useRef(null);
   const { handleFocus } = useMagicAutofocus(inputRef);
@@ -302,9 +296,6 @@ export default function ImportSeedPhraseSheet() {
                 } else {
                   navigate(Routes.WALLET_SCREEN, { initialized: true });
                 }
-                if (android) {
-                  hide();
-                }
 
                 setTimeout(() => {
                   // If it's not read only, show the backup sheet
@@ -343,7 +334,6 @@ export default function ImportSeedPhraseSheet() {
     color,
     isWalletEthZero,
     handleSetImporting,
-    hide,
     goBack,
     initializeWallet,
     isImporting,
@@ -360,17 +350,10 @@ export default function ImportSeedPhraseSheet() {
   ]);
 
   useEffect(() => {
-    if (isImporting) {
-      setComponent(
-        <LoadingOverlay
-          paddingTop={keyboardVerticalOffset}
-          title={walletLoadingStates.IMPORTING_WALLET}
-        />,
-        true
-      );
-      return hide;
-    }
-  }, [hide, isImporting, setComponent]);
+    setIsWalletLoading(
+      isImporting ? walletLoadingStates.IMPORTING_WALLET : null
+    );
+  }, [isImporting, setIsWalletLoading]);
 
   return (
     <Container testID="import-sheet">

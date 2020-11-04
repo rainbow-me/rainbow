@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { InteractionManager, StatusBar } from 'react-native';
 import { DelayedAlert } from '../components/alerts';
 import {
@@ -11,7 +11,6 @@ import {
   BackupSheetSection,
 } from '../components/backup';
 import { Column } from '../components/layout';
-import { LoadingOverlay } from '../components/modal';
 import { SlackSheet } from '../components/sheet';
 import { cloudPlatform } from '../utils/platform';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
@@ -23,16 +22,14 @@ import {
   useWallets,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import { sheetVerticalOffset } from '@rainbow-me/navigation/effects';
 import Routes from '@rainbow-me/routes';
-import { usePortal } from 'react-native-cool-modals/Portal';
 
 const onError = error => DelayedAlert({ title: error }, 500);
 
 const AndroidHeight = 400;
 
 export default function BackupSheet() {
-  const { isWalletLoading, selectedWallet, wallets } = useWallets();
+  const { selectedWallet, wallets } = useWallets();
   const { height: deviceHeight } = useDimensions();
   const { goBack, navigate, setParams } = useNavigation();
   const walletCloudBackup = useWalletCloudBackup();
@@ -55,20 +52,6 @@ export default function BackupSheet() {
       return wallets[id].type !== WalletTypes.readOnly;
     }).length;
   }, [wallets]);
-
-  const { setComponent, hide } = usePortal();
-  useEffect(() => {
-    if (isWalletLoading) {
-      setComponent(
-        <LoadingOverlay
-          paddingTop={sheetVerticalOffset}
-          title={isWalletLoading}
-        />,
-        false
-      );
-    }
-    return hide;
-  }, [hide, isWalletLoading, setComponent]);
 
   const handleNoLatestBackup = useCallback(() => {
     if (android) {

@@ -17,7 +17,7 @@ const Container = styled(Centered).attrs({
   align: 'start',
 })`
   ${({ type }) =>
-    type === BiometryTypes.FaceID
+    type === BiometryTypes.FaceID || type === BiometryTypes.Face
       ? `
         ${position.size(27)};
         margin-bottom: 2;
@@ -36,7 +36,7 @@ const Container = styled(Centered).attrs({
       : ''}
 
   ${({ type }) =>
-    type === BiometryTypes.TouchID
+    type === BiometryTypes.TouchID || type === BiometryTypes.Fingerprint
       ? `
         ${position.size(31)};
         margin-bottom: 1;

@@ -13,6 +13,7 @@ import java.util.List;
 import com.microsoft.codepush.react.CodePush;
 import io.branch.rnbranch.RNBranchModule;
 import me.rainbow.NativeModules.RNBip39.RNBip39Package;
+import me.rainbow.NativeModules.RNBackHandler.RNBackHandlerPackage;
 import me.rainbow.NativeModules.RNReview.RNReviewPackage;
 
 import com.facebook.react.bridge.JSIModulePackage;
@@ -35,6 +36,7 @@ public class MainApplication extends Application implements ReactApplication {
           // Packages that cannot be autolinked yet can be added manually here, for example:
           packages.add(new RNBip39Package());
           packages.add(new RNReviewPackage());
+          packages.add(new RNBackHandlerPackage());
           return packages;
         }
 

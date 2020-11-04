@@ -9,6 +9,7 @@ import {
   getAllInternetCredentials,
   getAllInternetCredentialsKeys,
   getInternetCredentials,
+  getSupportedBiometryType,
   hasInternetCredentials,
   Options,
   resetInternetCredentials,
@@ -73,6 +74,9 @@ export async function loadString(
     if (err.toString() === 'Error: User canceled the operation.') {
       return -1;
     }
+    if (err.toString() === 'Error: Wrapped error: User not authenticated') {
+      return -2;
+    }
     logger.sentry(
       `Keychain: failed to load string for key: ${key} error: ${err}`
     );
@@ -96,8 +100,8 @@ export async function loadObject(
 ): Promise<null | Object | -1> {
   const jsonValue = await loadString(key, options);
   if (!jsonValue) return null;
-  if (jsonValue === -1) {
-    return -1;
+  if (jsonValue === -1 || jsonValue === -2) {
+    return jsonValue;
   }
   try {
     const objectValue = JSON.parse(jsonValue);
@@ -193,11 +197,17 @@ export async function wipeKeychain(): Promise<void> {
 
 export async function getPrivateAccessControlOptions(): Promise<Options> {
   let res = {};
-  // This method is iOS Only!!!
   try {
-    const canAuthenticate = await canImplyAuthentication({
-      authenticationType: AUTHENTICATION_TYPE.DEVICE_PASSCODE_OR_BIOMETRICS,
-    });
+    let canAuthenticate;
+
+    if (ios) {
+      canAuthenticate = await canImplyAuthentication({
+        authenticationType: AUTHENTICATION_TYPE.DEVICE_PASSCODE_OR_BIOMETRICS,
+      });
+    } else {
+      const hasBiometricsEnabled = await getSupportedBiometryType();
+      canAuthenticate = !!hasBiometricsEnabled;
+    }
 
     let isSimulator = false;
 
@@ -206,7 +216,9 @@ export async function getPrivateAccessControlOptions(): Promise<Options> {
     }
     if (canAuthenticate && !isSimulator) {
       res = {
-        accessControl: ACCESS_CONTROL.USER_PRESENCE,
+        accessControl: ios
+          ? ACCESS_CONTROL.USER_PRESENCE
+          : ACCESS_CONTROL.BIOMETRY_CURRENT_SET_OR_DEVICE_PASSCODE,
         accessible: ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
       };
     }

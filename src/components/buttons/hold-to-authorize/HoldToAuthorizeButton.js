@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
-import { Keyboard } from 'react-native';
+import { ActivityIndicator, Keyboard } from 'react-native';
 import {
   LongPressGestureHandler,
   State,
@@ -12,6 +12,7 @@ import styled from 'styled-components/primitives';
 import BiometryTypes from '../../../helpers/biometryTypes';
 import { useBiometryType } from '../../../hooks';
 import { haptics } from '../../../utils';
+import Spinner from '../../Spinner';
 import { Centered, InnerBorder } from '../../layout';
 import { Text } from '../../text';
 import HoldToAuthorizeButtonIcon from './HoldToAuthorizeButtonIcon';
@@ -74,6 +75,14 @@ const calculateReverseDuration = proc(longPressProgress =>
   multiply(divide(longPressProgress, 100), longPressProgressDurationMs)
 );
 
+const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs({
+  color: colors.white,
+  size: 31,
+})`
+  left: 15;
+  position: absolute;
+`;
+
 class HoldToAuthorizeButton extends PureComponent {
   static propTypes = {
     backgroundColor: PropTypes.string,
@@ -123,7 +132,7 @@ class HoldToAuthorizeButton extends PureComponent {
   };
 
   handlePress = () => {
-    if (this.props.onLongPress) {
+    if (!this.state.isAuthorizing && this.props.onLongPress) {
       this.props.onLongPress();
     }
   };
@@ -228,14 +237,19 @@ class HoldToAuthorizeButton extends PureComponent {
               <Content backgroundColor={bgColor} smallButton={smallButton}>
                 {children || (
                   <Fragment>
-                    {!disabled && !hideBiometricIcon && (
+                    {!android && !disabled && !hideBiometricIcon && (
                       <HoldToAuthorizeButtonIcon
                         animatedValue={this.longPressProgress}
                         biometryType={biometryType}
                       />
                     )}
+                    {android && (isAuthorizing || this.props.isAuthorizing) && (
+                      <LoadingSpinner />
+                    )}
                     <Title smallButton={smallButton}>
-                      {isAuthorizing ? 'Authorizing' : label}
+                      {isAuthorizing || this.props.isAuthorizing
+                        ? 'Authorizing'
+                        : label}
                     </Title>
                   </Fragment>
                 )}
@@ -255,6 +269,7 @@ const HoldToAuthorizeButtonWithBiometrics = ({ label, testID, ...props }) => {
   const biometryType = useBiometryType();
   const enableLongPress =
     biometryType === BiometryTypes.FaceID ||
+    biometryType === BiometryTypes.Face ||
     biometryType === BiometryTypes.none;
   return (
     <HoldToAuthorizeButton

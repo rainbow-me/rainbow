@@ -92,8 +92,7 @@ export default function SecretDisplaySection({
 
   useEffect(() => {
     loadSeed();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [loadSeed]);
 
   const typeLabel = type === WalletTypes.privateKey ? 'key' : 'phrase';
 

@@ -1,10 +1,10 @@
 diff --git a/node_modules/react-native-keychain/RNKeychainManager/RNKeychainManager.m b/node_modules/react-native-keychain/RNKeychainManager/RNKeychainManager.m
-index 98e45fe..937e179 100644
+index 98e45fe..e5cbf2f 100644
 --- a/node_modules/react-native-keychain/RNKeychainManager/RNKeychainManager.m
 +++ b/node_modules/react-native-keychain/RNKeychainManager/RNKeychainManager.m
-@@ -478,6 +478,93 @@ - (OSStatus)deleteCredentialsForServer:(NSString *)server
- 
+@@ -542,4 +629,91 @@ - (OSStatus)deleteCredentialsForServer:(NSString *)server
  }
+ #endif
  
 +RCT_EXPORT_METHOD(getAllInternetCredentialsForServer:(NSDictionary *)options resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 +{
@@ -93,9 +93,7 @@ index 98e45fe..937e179 100644
 +}
 +
 +
- RCT_EXPORT_METHOD(resetInternetCredentialsForServer:(NSString *)server
-                   resolver:(RCTPromiseResolveBlock)resolve
-                   rejecter:(RCTPromiseRejectBlock)reject)
+ @end
 diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.java b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.java
 index d4ded69..8503993 100644
 --- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.java
@@ -197,34 +195,64 @@ index e5768c9..113cdcf 100644
    @Nullable
    public ResultSet getEncryptedEntry(@NonNull final String service) {
      byte[] bytesForUsername = getBytesForUsername(service);
+diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreRsaEcb.java b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreRsaEcb.java
+index f718ba5..15236bf 100644
+--- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreRsaEcb.java
++++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreRsaEcb.java
+@@ -225,7 +225,7 @@ public class CipherStorageKeystoreRsaEcb extends CipherStorageBase {
+       .setEncryptionPaddings(PADDING_PKCS1)
+       .setRandomizedEncryptionRequired(true)
+       .setUserAuthenticationRequired(true)
+-      .setUserAuthenticationValidityDurationSeconds(1)
++      .setUserAuthenticationValidityDurationSeconds(5)
+       .setKeySize(ENCRYPTION_KEY_SIZE);
+   }
+ 
 diff --git a/node_modules/react-native-keychain/index.js b/node_modules/react-native-keychain/index.js
-index b1a11f2..6b66d9d 100644
+index e81235e..2b3d825 100644
 --- a/node_modules/react-native-keychain/index.js
 +++ b/node_modules/react-native-keychain/index.js
-@@ -102,6 +102,14 @@ export type Result = {|
-   +storage: string,
- |};
+@@ -98,18 +98,26 @@ export type Options = {
+ };
  
+ export type Result = {|
+-  +service: string,
+-  +storage: string,
++  service: string,
++  storage: string,
++|};
++
 +export type AllCredentials = {|
-+  +results: UserCredentials[],
++  results: UserCredentials[],
 +|};
 +
 +export type AllCredentialsKeys = {|
-+  +results: string[],
-+|};
-+
++  results: string[],
+ |};
+ 
  export type UserCredentials = {|
-   +username: string,
-   +password: string,
+-  +username: string,
+-  +password: string,
++  username: string,
++  password: string,
+   ...Result,
+ |};
+ 
+ export type SharedWebCredentials = {|
+-  +server: string,
++  server: string,
+   ...UserCredentials,
+ |};
+ 
 @@ -256,6 +264,32 @@ export function getInternetCredentials(
    );
  }
  
 +/**
-++ * Fetches all the keychain entries for the app
-++ * @param {object} options Keychain options, iOS only
-++ * @return {Promise} Resolves to `[{ server, username, password }, ...]` when successful
-++ */
++ * Fetches all the keychain entries for the app
++ * @param {object} options Keychain options, iOS only
++ * @return {Promise} Resolves to `[{ server, username, password }, ...]` when successful
++ */
 +export function getAllInternetCredentials(
 +  options?: Options
 +): Promise<false | AllCredentials> {
@@ -234,10 +262,10 @@ index b1a11f2..6b66d9d 100644
 +}
 +
 +/**
-++ * Fetches all the keychain entries for the app
-++ * @param {object} options Keychain options, iOS only
-++ * @return {Promise} Resolves to `[username]` when successful
-++ */
++ * Fetches all the keychain entries for the app
++ * @param {object} options Keychain options, iOS only
++ * @return {Promise} Resolves to `[username]` when successful
++ */
 +export function getAllInternetCredentialsKeys(
 +  options?: Options
 +): Promise<false | AllCredentialsKeys> {
@@ -250,7 +278,7 @@ index b1a11f2..6b66d9d 100644
   * Deletes all internet password keychain entries for `server`.
   * @param {string} server URL to server.
 diff --git a/node_modules/react-native-keychain/typings/react-native-keychain.d.ts b/node_modules/react-native-keychain/typings/react-native-keychain.d.ts
-index e813ef0..f8d0ff3 100644
+index 210e5b1..8ecf2d1 100644
 --- a/node_modules/react-native-keychain/typings/react-native-keychain.d.ts
 +++ b/node_modules/react-native-keychain/typings/react-native-keychain.d.ts
 @@ -9,6 +9,14 @@ declare module 'react-native-keychain' {
@@ -270,7 +298,7 @@ index e813ef0..f8d0ff3 100644
    }
 @@ -109,6 +117,10 @@ declare module 'react-native-keychain' {
      options?: Options
-   ): Promise<false | UserCredentials>;
+   ): Promise<false | SharedWebCredentials>;
  
 +  function getAllInternetCredentials(): Promise<false | AllCredentials>;
 +
