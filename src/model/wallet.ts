@@ -806,7 +806,7 @@ export const getPrivateKey = async (
     if (pkey === -2) {
       Alert.alert(
         'Error',
-        'Your current authentication method (Face Recognition) is not secure enough, please go to "Settings > Biometrics & Security" and enable an alternative biometric method like Fingerprint or Iris'
+        'Your current authentication method (Face Recognition) is not secure enough, please go to "Settings > Biometrics & Security" and enable an alternative biometric method like Fingerprint or Iris.'
       );
       return null;
     }
