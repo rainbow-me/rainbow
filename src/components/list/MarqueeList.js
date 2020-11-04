@@ -1,5 +1,16 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { PanGestureHandler, State } from 'react-native-gesture-handler';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import {
+  LongPressGestureHandler,
+  PanGestureHandler,
+  State,
+  TapGestureHandler,
+} from 'react-native-gesture-handler';
 import Animated, { Clock, decay, Value } from 'react-native-reanimated';
 import { useMemoOne } from 'use-memo-one';
 import { measureTopMoverCoinRow, TopMoverCoinRow } from '../coin-row';
@@ -15,6 +26,7 @@ const {
   clockRunning,
   sub,
   event,
+  or,
 } = Animated;
 
 const DECCELERATION = 0.998;
@@ -49,6 +61,7 @@ const useReanimatedValue = initialValue => {
 const SwipeableList = ({ components, speed }) => {
   const dragX = useReanimatedValue(0);
   const state = useReanimatedValue(-1);
+  const lpstate = useReanimatedValue(-1);
   const dragVX = useReanimatedValue(0);
 
   const onGestureEvent = useMemoOne(
@@ -61,18 +74,35 @@ const SwipeableList = ({ components, speed }) => {
     [dragVX, dragVX, state]
   );
 
+  const onLPGestureEvent = useMemo(
+    () =>
+      event([
+        {
+          nativeEvent: { state: lpstate },
+        },
+      ]),
+    [lpstate]
+  );
+
   const transX = useReanimatedValue(0);
   const prevDragX = useReanimatedValue(0);
 
   const clock = useMemoOne(() => new Clock(), []);
 
-  const transXWrapped = useMemoOne(() =>
+  const transXWrapped = useMemo(() =>
     cond(
-      eq(state, State.ACTIVE),
+      or(eq(state, State.ACTIVE), eq(lpstate, 2)),
       [
         stopClock(clock),
-        set(transX, add(transX, sub(dragX, prevDragX))),
-        set(prevDragX, dragX),
+        cond(
+          eq(state, State.ACTIVE),
+          [
+            set(transX, add(transX, sub(dragX, prevDragX))),
+            set(prevDragX, dragX),
+          ],
+          [set(dragVX, 0)]
+        ),
+
         transX,
       ],
       [
@@ -88,42 +118,65 @@ const SwipeableList = ({ components, speed }) => {
     [components]
   );
 
+  const panRef = useRef();
+  const lpRef = useRef();
+  const tapRef = useRef();
+
   return (
-    <PanGestureHandler
-      activeOffsetX={4}
-      activeOffsetY={1000}
-      failOffsetY={[-10, 10]}
+    <LongPressGestureHandler
+      maxDist={100000}
       maxPointers={1}
-      onGestureEvent={onGestureEvent}
-      onHandlerStateChange={onGestureEvent}
+      ref={lpRef}
+      simultaneousHandlers={[panRef, tapRef]}
     >
-      <Animated.View style={{ height: 78, width: '100%' }}>
-        <Animated.View
-          style={{
-            flexDirection: 'row',
-          }}
+      <Animated.View>
+        <TapGestureHandler
+          onGestureEvent={onLPGestureEvent}
+          onHandlerStateChange={onLPGestureEvent}
+          ref={tapRef}
+          simultaneousHandlers={[panRef, lpRef]}
         >
-          {components.map(({ view, offset, width }) => (
-            <Animated.View
-              key={offset}
-              style={{
-                position: 'absolute',
-                transform: [
-                  {
-                    translateX: sub(
-                      modulo(add(transXWrapped, offset, width), sumWidth || 0),
-                      width
-                    ),
-                  },
-                ],
-              }}
+          <Animated.View>
+            <PanGestureHandler
+              onGestureEvent={onGestureEvent}
+              onHandlerStateChange={onGestureEvent}
+              ref={panRef}
+              simultaneousHandlers={[lpRef, tapRef]}
             >
-              {view}
-            </Animated.View>
-          ))}
-        </Animated.View>
+              <Animated.View style={{ height: 78, width: '100%' }}>
+                <Animated.View
+                  style={{
+                    flexDirection: 'row',
+                  }}
+                >
+                  {components.map(({ view, offset, width }) => (
+                    <Animated.View
+                      key={offset}
+                      style={{
+                        position: 'absolute',
+                        transform: [
+                          {
+                            translateX: sub(
+                              modulo(
+                                add(transXWrapped, offset, width),
+                                sumWidth || 0
+                              ),
+                              width
+                            ),
+                          },
+                        ],
+                      }}
+                    >
+                      {view}
+                    </Animated.View>
+                  ))}
+                </Animated.View>
+              </Animated.View>
+            </PanGestureHandler>
+          </Animated.View>
+        </TapGestureHandler>
       </Animated.View>
-    </PanGestureHandler>
+    </LongPressGestureHandler>
   );
 };
 
