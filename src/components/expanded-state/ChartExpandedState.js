@@ -146,8 +146,7 @@ export default function ChartExpandedState({ asset }) {
     asset.uniqueId,
   ]);
 
-  const needsEth =
-    asset.address === 'eth' && asset.balance.amount === '0' ? true : false;
+  const needsEth = asset.address === 'eth' && asset.balance.amount === '0';
 
   const [throttledData, setThrottledData] = useState({
     nativePoints: throttledPoints.nativePoints,

@@ -74,7 +74,7 @@ export const buildCoinsList = (
       native: {
         balance: {
           amount: '0',
-          display: '$0.00',
+          display: '0.00',
         },
         change: relative_change_24h ? `${relative_change_24h.toFixed(2)}%` : '',
         price: {
