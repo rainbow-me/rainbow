@@ -332,9 +332,9 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.delay(1000);
     await Helpers.checkIfVisible('edit-contact-button');
     await Helpers.tap('edit-contact-button');
-    await Helpers.delay(1000);
+    await Helpers.delay(2000);
     await Helpers.tapByText('Delete Contact');
-    await Helpers.delay(1000);
+    await Helpers.delay(2000);
     await Helpers.tapByText('Delete Contact');
     await Helpers.delay(1000);
     await Helpers.checkIfVisible('add-contact-button');
