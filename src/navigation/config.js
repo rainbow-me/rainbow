@@ -171,7 +171,7 @@ export const defaultScreenStackOptions = {
 export const closeKeyboardOnClose = {
   listeners: {
     transitionEnd: ({ data: { closing } }) => {
-      closing && akd();
+      closing && android && Keyboard.dismiss();
     },
   },
 };

@@ -459,7 +459,7 @@ export default function ExchangeModal({
   ]);
 
   const navigateToSwapDetailsModal = useCallback(() => {
-    akd();
+    android && Keyboard.dismiss();
     const lastFocusedInputHandleTemporary = lastFocusedInputHandle.current;
     android && (lastFocusedInputHandle.current = null);
     inputFieldRef?.current?.blur();

@@ -1,4 +1,5 @@
 import React, { useCallback, useRef, useState } from 'react';
+import { Keyboard } from 'react-native';
 import styled from 'styled-components/primitives';
 import { useAccountSettings, useContacts } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
@@ -62,7 +63,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
       onAddOrUpdateContacts(address, value, color, network);
       goBack();
     }
-    akd();
+    android && Keyboard.dismiss();
   }, [
     address,
     color,
@@ -80,7 +81,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
       onDelete: goBack,
       removeContact: onRemoveContact,
     });
-    akd();
+    android && Keyboard.dismiss();
   }, [address, goBack, onRemoveContact, value]);
 
   const handleTriggerFocusInput = useCallback(() => inputRef.current?.focus(), [
@@ -134,7 +135,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
               ? handleDeleteContact
               : () => {
                   goBack();
-                  akd();
+                  android && Keyboard.dimiss();
                 }
           }
         >
