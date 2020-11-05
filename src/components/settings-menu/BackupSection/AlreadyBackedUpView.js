@@ -1,8 +1,11 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
-import { View } from 'react-native';
+import { Alert, View } from 'react-native';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
+import { deleteAllBackups } from '../../../handlers/cloudBackup';
+import { walletsUpdate } from '../../../redux/wallets';
 import { cloudPlatform } from '../../../utils/platform';
 import { DelayedAlert } from '../../alerts';
 import { ButtonPressAnimation } from '../../animations';
@@ -16,6 +19,7 @@ import { useWalletCloudBackup, useWallets } from '@rainbow-me/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors, fonts, padding, position, shadow } from '@rainbow-me/styles';
+import { showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const WalletBackupStatus = {
   CLOUD_BACKUP: 0,
@@ -89,6 +93,7 @@ const onError = error => DelayedAlert({ title: error }, 500);
 export default function AlreadyBackedUpView() {
   const { navigate } = useNavigation();
   const { params } = useRoute();
+  const dispatch = useDispatch();
   const { wallets, selectedWallet } = useWallets();
   const walletCloudBackup = useWalletCloudBackup();
   const walletId = params?.walletId || selectedWallet.id;
@@ -136,6 +141,50 @@ export default function AlreadyBackedUpView() {
     );
   }, [walletId]);
 
+  const manageCloudBackups = useCallback(() => {
+    const buttons = ['Delete all iCloud backups', 'Cancel'];
+
+    showActionSheetWithOptions(
+      {
+        cancelButtonIndex: 1,
+        destructiveButtonIndex: 0,
+        options: buttons,
+        title: `Manage iCloud backups`,
+      },
+      buttonIndex => {
+        if (buttonIndex === 0) {
+          // Delete wallet with confirmation
+          showActionSheetWithOptions(
+            {
+              cancelButtonIndex: 1,
+              destructiveButtonIndex: 0,
+              message: `Are you sure you want to delete all iCloud Backups`,
+              options: ['YES, Delete All iCloud Backups', 'Cancel'],
+            },
+            async buttonIndex => {
+              if (buttonIndex === 0) {
+                const newWallets = { ...wallets };
+                Object.keys(newWallets).forEach(key => {
+                  newWallets[key].backedUp = undefined;
+                  newWallets[key].backupDate = undefined;
+                  newWallets[key].backupFile = undefined;
+                  newWallets[key].backupType = undefined;
+                });
+
+                await dispatch(walletsUpdate(newWallets));
+
+                // Delete all backups (debugging)
+                await deleteAllBackups();
+
+                Alert.alert('Backups deleted succesfully');
+              }
+            }
+          );
+        }
+      }
+    );
+  }, [dispatch, wallets]);
+
   const handleIcloudBackup = useCallback(() => {
     if (
       ![WalletBackupStatus.MANUAL_BACKUP, WalletBackupStatus.IMPORTED].includes(
@@ -177,6 +226,11 @@ export default function AlreadyBackedUpView() {
       ? colors.green
       : colors.blueGreyDark50;
 
+  const hasMultipleWallets =
+    Object.keys(wallets).filter(
+      key => wallets[key].type !== WalletTypes.readOnly
+    ).length > 1;
+
   return (
     <Fragment>
       <Subtitle>
@@ -212,7 +266,7 @@ export default function AlreadyBackedUpView() {
           />
         </Column>
       </Content>
-      {walletStatus !== WalletBackupStatus.CLOUD_BACKUP && (
+      {walletStatus !== WalletBackupStatus.CLOUD_BACKUP ? (
         <Footer>
           <ButtonPressAnimation onPress={handleIcloudBackup}>
             <Text
@@ -222,11 +276,25 @@ export default function AlreadyBackedUpView() {
               size="large"
               weight="semibold"
             >
-              􀙶 Back up to {cloudPlatform}
+              􀙶 Back up {cloudPlatform}
             </Text>
           </ButtonPressAnimation>
         </Footer>
-      )}
+      ) : !hasMultipleWallets ? (
+        <Footer>
+          <ButtonPressAnimation onPress={manageCloudBackups}>
+            <Text
+              align="center"
+              color={colors.alpha(colors.blueGreyDark, 0.6)}
+              letterSpacing="roundedMedium"
+              size="lmedium"
+              weight="semibold"
+            >
+              􀍢 Manage {cloudPlatform} backups
+            </Text>
+          </ButtonPressAnimation>
+        </Footer>
+      ) : null}
     </Fragment>
   );
 }

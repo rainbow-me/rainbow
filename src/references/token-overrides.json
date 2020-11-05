@@ -12,6 +12,138 @@
     "name": "Aave",
     "symbol": "AAVE"
   },
+  "0xba3D9687Cf50fE253cd2e1cFeEdE1d6787344Ed5": {
+    "color": "#7285B2",
+    "name": "Aave AAVE",
+    "shadowColor": "#7285B2",
+    "symbol": "aAAVE"
+  },
+  "0xE1BA0FB44CCb0D11b80F92f4f8Ed94CA3fF51D00": {
+    "color": "#FF5000",
+    "name": "Aave BAT",
+    "shadowColor": "#7285B2",
+    "symbol": "aBAT"
+  },
+  "0x6Ee0f7BB50a54AB5253dA0667B0Dc2ee526C30a8": {
+    "color": "#F3BA2F",
+    "name": "Aave BUSD",
+    "shadowColor": "#7285B2",
+    "symbol": "aBUSD"
+  },
+  "0xfC1E690f61EFd961294b3e1Ce3313fBD8aa4f85d": {
+    "color": "#F0B340",
+    "name": "Aave DAI",
+    "shadowColor": "#7285B2",
+    "symbol": "aDAI"
+  },
+  "0x712DB54daA836B53Ef1EcBb9c6ba3b9Efb073F40": {
+    "color": "#25292E",
+    "name": "Aave ENJ",
+    "shadowColor": "#7285B2",
+    "symbol": "aENJ"
+  },
+  "0x3a3A65aAb0dd2A17E3F1947bA16138cd37d08c04": {
+    "color": "#25292E",
+    "name": "Aave ETH",
+    "shadowColor": "#7285B2",
+    "symbol": "aETH"
+  },
+  "0x9D91BE44C06d373a8a226E1f3b146956083803eB": {
+    "color": "#31CB9E",
+    "name": "Aave KNC",
+    "shadowColor": "#7285B2",
+    "symbol": "aKNC"
+  },
+  "0x7D2D3688Df45Ce7C552E19c27e007673da9204B8": {
+    "color": "#109FCA",
+    "name": "Aave LEND",
+    "shadowColor": "#7285B2",
+    "symbol": "aLEND"
+  },
+  "0xA64BD6C70Cb9051F6A9ba1F163Fdc07E0DfB5F84": {
+    "color": "#1A56F0",
+    "name": "Aave LINK",
+    "shadowColor": "#7285B2",
+    "symbol": "aLINK"
+  },
+  "0x6FCE4A401B6B80ACe52baAefE4421Bd188e76F6f": {
+    "color": "#FF2D55",
+    "name": "Aave MANA",
+    "shadowColor": "#7285B2",
+    "symbol": "aMANA"
+  },
+  "0x7deB5e830be29F91E298ba5FF1356BB7f8146998": {
+    "color": "#1AAB9B",
+    "name": "Aave MKR",
+    "shadowColor": "#7285B2",
+    "symbol": "aMKR"
+  },
+  "0x69948cC03f478B95283F7dbf1CE764d0fc7EC54C": {
+    "color": "#00224D",
+    "name": "Aave REN",
+    "shadowColor": "#7285B2",
+    "symbol": "aREN"
+  },
+  "0x71010A9D003445aC60C4e6A7017c1E89A477B438": {
+    "color": "#25292E",
+    "name": "Aave REP",
+    "shadowColor": "#7285B2",
+    "symbol": "aREP"
+  },
+  "0x328C4c80BC7aCa0834Db37e6600A6c49E12Da4DE": {
+    "color": "#25292E",
+    "name": "Aave SNX",
+    "shadowColor": "#7285B2",
+    "symbol": "aSNX"
+  },
+  "0x625aE63000f46200499120B906716420bd059240": {
+    "color": "#25292E",
+    "name": "Aave SUSD",
+    "shadowColor": "#7285B2",
+    "symbol": "aSUSD"
+  },
+  "0x4DA9b813057D04BAef4e5800E36083717b4a0341": {
+    "color": "#002868",
+    "name": "Aave TUSD",
+    "shadowColor": "#7285B2",
+    "symbol": "aTUSD"
+  },
+  "0xB124541127A0A657f056D9Dd06188c4F1b0e5aab": {
+    "color": "#FD017A",
+    "name": "Aave UNI",
+    "shadowColor": "#7285B2",
+    "symbol": "aUNI"
+  },
+  "0x9bA00D6856a4eDF4665BcA2C2309936572473B7E": {
+    "color": "#2775CA",
+    "name": "Aave USDC",
+    "shadowColor": "#7285B2",
+    "symbol": "aUSDC"
+  },
+  "0x71fc860F7D3A592A4a98740e39dB31d25db65ae8": {
+    "color": "#22A079",
+    "name": "Aave USDT",
+    "shadowColor": "#7285B2",
+    "symbol": "aUSDT"
+  },
+  "0xFC4B8ED459e00e5400be803A9BB3954234FD50e3": {
+    "color": "#FF9900",
+    "name": "Aave WBTC",
+    "shadowColor": "#7285B2",
+    "symbol": "aWBTC"
+  },
+  "0x12e51E77DAAA58aA0E9247db7510Ea4B46F9bEAd": {
+    "color": "#0072F6",
+    "name": "Aave YFI",
+    "shadowColor": "#7285B2",
+    "symbol": "aYFI"
+  },
+  "0x6Fb0855c404E09c47C3fBCA25f08d4E41f9F062f": {
+    "color": "#25292E",
+    "name": "Aave ZRX",
+    "shadowColor": "#7285B2",
+    "symbol": "aZRX"
+  },
   "0x960b236A07cf122663c4303350609A66A7B288C0": {
     "color": "#06BCE5",
     "name": "Aragon"

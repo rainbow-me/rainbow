@@ -55,9 +55,7 @@ describe('Send Sheet Interaction Flow', () => {
   //   await Helpers.tap('backup-sheet-imported-cancel-button');
   // });
   it('Should open expanded state', async () => {
-    await Helpers.delay(2000);
-    await Helpers.swipe('wallet-screen', 'down');
-    await Helpers.delay(2000);
+    await Helpers.delay(5000);
     await Helpers.tap('balance-coin-row-Ethereum');
     await Helpers.delay(6000);
   });
@@ -334,9 +332,9 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.delay(1000);
     await Helpers.checkIfVisible('edit-contact-button');
     await Helpers.tap('edit-contact-button');
-    await Helpers.delay(1000);
+    await Helpers.delay(2000);
     await Helpers.tapByText('Delete Contact');
-    await Helpers.delay(1000);
+    await Helpers.delay(2000);
     await Helpers.tapByText('Delete Contact');
     await Helpers.delay(1000);
     await Helpers.checkIfVisible('add-contact-button');
