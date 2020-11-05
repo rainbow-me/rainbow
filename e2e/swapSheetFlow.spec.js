@@ -102,7 +102,7 @@ describe('Swap Sheet Interaction Flow', () => {
   it('Should change Currency Select List on search entry', async () => {
     await Helpers.delay(3000);
     await Helpers.tap('exchange-modal-input-selection-button');
-    await Helpers.delay(5000);
+    await Helpers.delay(8000);
     await Helpers.typeText('currency-select-search-input', 'SOCKS', true);
     await Helpers.delay(5000);
     await Helpers.checkIfNotVisible('exchange-coin-row-ETH');
