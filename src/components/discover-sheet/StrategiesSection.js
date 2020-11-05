@@ -6,9 +6,9 @@ import { Text } from '../text';
 import { colors } from '@rainbow-me/styles';
 
 export const StrategyShadow = [
-  [0, 2, 5, colors.orange, 0.2],
-  [0, 6, 10, colors.orange, 0.14],
-  [0, 1, 18, colors.orange, 0.12],
+  [0, 2, 5, colors.red, 0.2],
+  [0, 6, 10, colors.red, 0.14],
+  [0, 1, 18, colors.red, 0.12],
 ];
 
 export default function Strategies() {
