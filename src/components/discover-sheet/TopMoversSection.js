@@ -1,23 +1,24 @@
 import React, { useCallback, useMemo } from 'react';
 import { handleSignificantDecimals } from '../../helpers/utilities';
 import { useAccountSettings, useTopMovers } from '../../hooks';
-import { uniswapPairs } from '../../references';
 import { Column, ColumnWithMargins, Flex } from '../layout';
 import { MarqueeList } from '../list';
 import { Text } from '../text';
 
-export default function TopMoversSection({}) {
+export default function TopMoversSection() {
   const { nativeCurrencySymbol } = useAccountSettings();
   const { gainers = [], losers = [] } = useTopMovers() || {};
 
   const formatItems = useCallback(
-    ({ address, name, percent_change_24h, price, symbol }) => ({
-      address,
-      change: `${parseFloat((percent_change_24h || 0).toFixed(2))}%`,
-      name: uniswapPairs[address]?.name || name,
-      price: `${nativeCurrencySymbol}${handleSignificantDecimals(price, 2)}`,
-      symbol,
-    }),
+    ({ address, name, percent_change_24h, price, symbol }) => {
+      return {
+        address,
+        change: `${parseFloat((percent_change_24h || 0).toFixed(2))}%`,
+        name,
+        price: `${nativeCurrencySymbol}${handleSignificantDecimals(price, 2)}`,
+        symbol,
+      };
+    },
     [nativeCurrencySymbol]
   );
 

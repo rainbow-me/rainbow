@@ -1,18 +1,17 @@
 import React from 'react';
 import { View } from 'react-native';
-import Animated, { Value } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import { borders, colors, position } from '../../styles';
 import { BackButton, HeaderButton } from '../header';
 import { Icon } from '../icons';
-import { Centered, InnerBorder, Row } from '../layout';
-import { AnimatedNumber, Text } from '../text';
+import { Centered, Row } from '../layout';
 
 const Header = styled(Row).attrs({
   align: 'center',
-  position: 'absolute',
   justify: 'space-between',
+  position: 'absolute',
 })`
   height: 42;
   margin-vertical: 12;
@@ -32,18 +31,40 @@ const Content = styled(Centered)`
   background-color: ${colors.grey20};
 `;
 
-function Stack({ children, left }) {
+function Stack({ children, left, yPosition }) {
   return (
     <>
-      <View style={{ zIndex: 10, width: 58 }}>
-        <ShadowStack
-          style={{ position: 'absolute', top: 8, left: 8 }}
-          {...borders.buildCircleAsObject(40)}
-          shadows={FloatingActionButtonShadow}
+      <View style={{ width: 58, zIndex: 10 }}>
+        <Animated.View
+          style={{
+            opacity: yPosition.interpolate({
+              inputRange: [0, 30],
+              outputRange: [0, 1],
+            }),
+          }}
         >
-          <Content />
-        </ShadowStack>
-        <View style={{ top: 7, left, zIndex: 10 }}>{children}</View>
+          <ShadowStack
+            style={{ left: 8, position: 'absolute', top: 8 }}
+            {...borders.buildCircleAsObject(40)}
+            shadows={FloatingActionButtonShadow}
+          >
+            <Content />
+          </ShadowStack>
+        </Animated.View>
+        <View style={{ left, top: 7, zIndex: 10 }}>
+          <View style={{ position: 'absolute' }}>{children[0]}</View>
+
+          <Animated.View
+            style={{
+              opacity: yPosition.interpolate({
+                inputRange: [0, 30],
+                outputRange: [0, 1],
+              }),
+            }}
+          >
+            {children[1]}
+          </Animated.View>
+        </View>
       </View>
     </>
   );
@@ -51,25 +72,16 @@ function Stack({ children, left }) {
 
 export default function DiscoverSheetHeader(props) {
   const { yPosition } = props;
-  console.log(yPosition);
   return (
-    <Header {...props}>
-      <Stack left={3}>
-        <Animated.View
-          style={{
-            opacity: Animated.block([
-              Animated.call([yPosition], console.log),
-              yPosition.interpolate({
-                inputRange: [0, 10],
-                outputRange: [0, 1],
-              }),
-            ]),
-          }}
-        >
-          <BackButton color={colors.white} style={{ zIndex: 40 }} />
-        </Animated.View>
+    <Header {...props} pointerEvents="box-none">
+      <Stack left={3} yPosition={yPosition}>
+        <BackButton color={colors.black} style={{ zIndex: 40 }} />
+        <BackButton color={colors.white} style={{ zIndex: 40 }} />
       </Stack>
-      <Stack left={-1.7}>
+      <Stack left={-1.7} yPosition={yPosition}>
+        <HeaderButton>
+          <Icon color={colors.black} name="scanner" />
+        </HeaderButton>
         <HeaderButton>
           <Icon color={colors.white} name="scanner" />
         </HeaderButton>

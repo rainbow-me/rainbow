@@ -1,19 +1,13 @@
 import { useIsFocused } from '@react-navigation/native';
-import React, { Fragment } from 'react';
-import { Platform, View } from 'react-native';
-import Animated, { Value } from 'react-native-reanimated';
+import React from 'react';
+import { Platform } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { useSafeArea } from 'react-native-safe-area-context';
 // eslint-disable-next-line import/no-unresolved
 import SlackBottomSheet from 'react-native-slack-bottom-sheet';
 
 import BottomSheet from 'reanimated-bottom-sheet';
-import styled from 'styled-components/primitives';
-import { Centered, ColumnWithMargins } from '../layout';
-import { SlackSheet } from '../sheet';
-import { Text } from '../text';
-import DiscoverSheetHeader from './DiscoverSheetHeader';
-import TopMoversSection from './TopMoversSection';
-import { colors, position } from '@rainbow-me/styles';
+import DiscoverSheetContent from './DiscoverSheetContent';
 
 // eslint-disable-next-line import/no-named-as-default-member
 const { SpringUtils } = Animated;
@@ -28,73 +22,6 @@ const discoverSheetSpring = SpringUtils.makeConfigFromBouncinessAndSpeed({
   speed: 18,
   toss: 6,
 });
-
-const HeaderTitle = styled(Text).attrs({
-  align: 'center',
-  color: colors.blueGreyDark,
-  letterSpacing: 'roundedMedium',
-  lineHeight: 'loose',
-  opacity: 0.8,
-  size: 'large',
-  weight: 'bold',
-})``;
-
-function Lorem() {
-  return (
-    <View>
-      <Text>12312</Text>
-      <Text>12312</Text>
-      <Text>12312</Text>
-      <Text>12312</Text>
-      <Text>12312</Text>
-      <Text>12312</Text>
-      <Text>12312</Text>
-      <Text>12312</Text>
-      <Text>12312</Text>
-      <Text>12312</Text>
-      <Text>12312</Text>
-      <Text>12312</Text>
-      <Text>12312</Text>
-      <Text>12312</Text>
-      <Text>12312</Text>
-      <Text>12312</Text>
-      <Text>12312</Text>
-      <Text>12312</Text>
-      <Text>12312</Text>
-      <Text>12312</Text>
-      <Text>12312</Text>
-      <Text>12312</Text>
-      <Text>12312</Text>
-      <Text>12312</Text>
-      <Text>12312</Text>
-      <Text>12312</Text>
-      <Text>12312</Text>
-      <Text>12312</Text>
-      <Text>12312</Text>
-      <Text>12312</Text>
-      <Text>12312</Text>
-      <Text>12312</Text>
-      <Text>12312</Text>
-      <Text>12312</Text>
-      <Text>12312</Text>
-      <Text>12312</Text>
-    </View>
-  );
-}
-
-const renderHeader = yPosition => <DiscoverSheetHeader yPosition={yPosition} />;
-
-function DiscoverSheetContent() {
-  return (
-    <SlackSheet contentOffset={position.current} renderHeader={renderHeader}>
-      <HeaderTitle>Discover</HeaderTitle>
-      <ColumnWithMargins flex={1} margin={42}>
-        <TopMoversSection />
-        <Lorem />
-      </ColumnWithMargins>
-    </SlackSheet>
-  );
-}
 
 export default function DiscoverSheet() {
   const insets = useSafeArea();
