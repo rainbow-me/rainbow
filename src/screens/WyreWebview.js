@@ -41,7 +41,6 @@ export default function WyreWebview() {
         'mainnet',
         'debit-card'
       );
-      console.log('reservation id', url);
       setUrl(url);
     };
     getReservationId();
