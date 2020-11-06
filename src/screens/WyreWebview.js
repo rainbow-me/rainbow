@@ -7,6 +7,7 @@ import { BackButton } from '../components/header';
 import { Centered, Row } from '../components/layout';
 import { Text } from '../components/text';
 import { reserveWyreOrder } from '../handlers/wyre';
+import { useAccountSettings } from '../hooks';
 import { colors } from '../styles';
 
 const HeaderTitle = styled(Text).attrs({
@@ -31,20 +32,21 @@ const Header = styled(Row).attrs({
 export default function WyreWebview() {
   const { params } = useRoute();
   const [url, setUrl] = useState(null);
+  const { accountAddress, network } = useAccountSettings();
 
   useEffect(() => {
     const getReservationId = async () => {
       const { url } = await reserveWyreOrder(
         params.amount,
         'ETH',
-        params.address,
-        'mainnet',
+        accountAddress,
+        network,
         'debit-card'
       );
       setUrl(url);
     };
     getReservationId();
-  }, [params.address, params.amount]);
+  }, [accountAddress, network, params.amount]);
 
   const defaultInputWidth = params.amount?.toString().length > 2 ? 180 : 140;
 
