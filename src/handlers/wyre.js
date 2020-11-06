@@ -184,7 +184,6 @@ export const reserveWyreOrder = async (
   if (paymentMethod) {
     data.paymentMethod = paymentMethod;
   }
-  console.log('sending data', data);
   const baseUrl = getBaseUrl(network);
   try {
     const wyreAuthToken =
