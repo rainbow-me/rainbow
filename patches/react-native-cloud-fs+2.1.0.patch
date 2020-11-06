@@ -1,0 +1,19 @@
+diff --git a/node_modules/react-native-cloud-fs/.DS_Store b/node_modules/react-native-cloud-fs/.DS_Store
+new file mode 100644
+index 0000000..b7fa5d4
+Binary files /dev/null and b/node_modules/react-native-cloud-fs/.DS_Store differ
+diff --git a/node_modules/react-native-cloud-fs/android/build.gradle b/node_modules/react-native-cloud-fs/android/build.gradle
+index c7f51d4..4dd2583 100644
+--- a/node_modules/react-native-cloud-fs/android/build.gradle
++++ b/node_modules/react-native-cloud-fs/android/build.gradle
+@@ -29,6 +29,10 @@ android {
+         sourceCompatibility JavaVersion.VERSION_1_8
+         targetCompatibility JavaVersion.VERSION_1_8
+     }
++
++    packagingOptions {
++        exclude 'META-INF/DEPENDENCIES'
++    }
+ }
+ 
+ allprojects {
