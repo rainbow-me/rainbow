@@ -52,7 +52,7 @@ export default function useWyreApplePay() {
       const referenceInfo = {
         referenceId: getReferenceId(accountAddress),
       };
-      const reservationId = await reserveWyreOrder(
+      const { reservation: reservationId } = await reserveWyreOrder(
         value,
         currency,
         accountAddress,
