@@ -39,13 +39,12 @@ function familyFontWithAndroidWidth(weight, family, mono) {
 }
 
 export function fontWithWidth(weight, family = 'SFProRounded', mono = false) {
-  const t = {
+  return {
     fontFamily: familyFontWithAndroidWidth(weight, family, mono),
     // https://github.com/facebook/react-native/issues/18820
     // https://www.youtube.com/watch?v=87rhZTumujw
     ...(ios ? { fontWeight: weight } : { fontWeight: 'normal' }),
   };
-  return t;
 }
 
 const buildTextStyles = css`
