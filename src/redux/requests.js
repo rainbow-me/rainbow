@@ -50,10 +50,12 @@ export const addRequestToApprove = (
   const dappName =
     dappNameOverride(peerMeta.url) || peerMeta.name || 'Unknown Dapp';
   const dappUrl = peerMeta.url || 'Unknown Url';
+  const dappScheme = peerMeta.scheme || null;
 
   const request = {
     clientId,
     dappName,
+    dappScheme,
     dappUrl,
     displayDetails,
     imageUrl,

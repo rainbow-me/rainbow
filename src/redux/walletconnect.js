@@ -11,7 +11,7 @@ import {
   pickBy,
   values,
 } from 'lodash';
-import { Alert, InteractionManager } from 'react-native';
+import { Alert, InteractionManager, Linking } from 'react-native';
 import {
   getAllValidWalletConnectSessions,
   removeWalletConnectSessions,
@@ -85,14 +85,20 @@ export const walletConnectSetPendingRedirect = () => dispatch => {
     type: WALLETCONNECT_SET_PENDING_REDIRECT,
   });
 };
-export const walletConnectRemovePendingRedirect = type => dispatch => {
+export const walletConnectRemovePendingRedirect = (
+  type,
+  scheme
+) => dispatch => {
   dispatch({
     type: WALLETCONNECT_REMOVE_PENDING_REDIRECT,
   });
-
-  return Navigation.handleAction(Routes.WALLET_CONNECT_REDIRECT_SHEET, {
-    type,
-  });
+  if (scheme) {
+    Linking.openURL(`${scheme}://`);
+  } else {
+    return Navigation.handleAction(Routes.WALLET_CONNECT_REDIRECT_SHEET, {
+      type,
+    });
+  }
 };
 
 export const walletConnectOnSessionRequest = (
@@ -112,12 +118,15 @@ export const walletConnectOnSessionRequest = (
           dappLogoOverride(peerMeta.url) || get(peerMeta, 'icons[0]');
         const dappName = dappNameOverride(peerMeta.url) || peerMeta.name;
         const dappUrl = peerMeta.url;
+        const dappScheme = peerMeta.scheme;
 
         Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {
           callback: async approved => {
             if (approved) {
               dispatch(setPendingRequest(peerId, walletConnector));
-              dispatch(walletConnectApproveSession(peerId, callback));
+              dispatch(
+                walletConnectApproveSession(peerId, callback, dappScheme)
+              );
               analytics.track('Approved new WalletConnect session', {
                 dappName,
                 dappUrl,
@@ -126,7 +135,7 @@ export const walletConnectOnSessionRequest = (
               await dispatch(
                 walletConnectRejectSession(peerId, walletConnector)
               );
-              callback && callback('reject');
+              callback && callback('reject', dappScheme);
               analytics.track('Rejected new WalletConnect session', {
                 dappName,
                 dappUrl,
@@ -322,7 +331,7 @@ export const walletConnectUpdateSessions = () => (dispatch, getState) => {
   });
 };
 
-export const walletConnectApproveSession = (peerId, callback) => (
+export const walletConnectApproveSession = (peerId, callback, dappScheme) => (
   dispatch,
   getState
 ) => {
@@ -342,7 +351,7 @@ export const walletConnectApproveSession = (peerId, callback) => (
 
   dispatch(setWalletConnector(listeningWalletConnector));
   if (callback) {
-    callback('connect');
+    callback('connect', dappScheme);
   }
 };
 
