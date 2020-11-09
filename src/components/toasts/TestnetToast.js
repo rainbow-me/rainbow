@@ -20,7 +20,7 @@ const TestnetToast = () => {
     if (network === networkTypes.mainnet) {
       if (providerUrl?.startsWith('http://')) {
         setVisible(true);
-        setNetworkName('Ganache' + (isConnected ? '' : ' (offline)'));
+        setNetworkName('Ganache');
       } else {
         setVisible(false);
       }
