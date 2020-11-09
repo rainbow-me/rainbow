@@ -593,12 +593,16 @@ const TransactionConfirmationScreen = () => {
       >
         <SheetActionButton
           color={colors.alpha(colors.blueGreyDark, 0.06)}
-          isTransparent
+          isTransparent={ios}
           label="Cancel"
           onPress={onCancel}
           size="big"
           textColor={colors.alpha(colors.blueGreyDark, 0.8)}
           weight="bold"
+          wrapperProps={{
+            containerStyle: { flex: 1 },
+            style: { flex: 1 },
+          }}
         />
         <SheetActionButton
           color={colors.appleBlue}
@@ -606,6 +610,10 @@ const TransactionConfirmationScreen = () => {
           onPress={ready ? onPressSend : NOOP}
           size="big"
           weight="bold"
+          wrapperProps={{
+            containerStyle: { flex: 1 },
+            style: { flex: 1 },
+          }}
         />
       </RowWithMargins>
     );
@@ -704,11 +712,20 @@ const TransactionConfirmationScreen = () => {
   const TallSheetHeight = 604 + safeAreaInsetValues.bottom;
   const MessageSheetHeight =
     (method === SIGN_TYPED_DATA ? 640 : 575) + safeAreaInsetValues.bottom;
-  const sheetHeight = isMessageRequest
-    ? MessageSheetHeight
-    : amount && amount !== '0.00'
-    ? TallSheetHeight
-    : ShortSheetHeight;
+  const sheetHeight =
+    (isMessageRequest
+      ? MessageSheetHeight
+      : amount && amount !== '0.00'
+      ? TallSheetHeight
+      : ShortSheetHeight) * (android ? 1.5 : 1);
+
+  const marginTop = android
+    ? isMessageRequest
+      ? method === SIGN_TYPED_DATA
+        ? 115
+        : 160
+      : 110
+    : null;
 
   return (
     <AnimatedContainer
@@ -726,6 +743,7 @@ const TransactionConfirmationScreen = () => {
             backgroundColor={colors.white}
             borderRadius={39}
             direction="column"
+            marginTop={marginTop}
             paddingBottom={isMessageRequest ? safeAreaInsetValues.bottom : 0}
             paddingHorizontal={19}
             paddingTop={24}
@@ -743,20 +761,20 @@ const TransactionConfirmationScreen = () => {
                 weight="bold"
               >
                 {isAuthenticated ? dappName : formattedDappUrl}
-                {//We only show the checkmark
-                // if it's on the override list (dappNameHandler.js)
-                isAuthenticated && (
-                  <Text
-                    align="center"
-                    color={colors.appleBlue}
-                    letterSpacing="roundedMedium"
-                    size="large"
-                    weight="bold"
-                  >
-                    {' 􀇻'}
-                  </Text>
-                )}
               </Text>
+              {//We only show the checkmark
+              // if it's on the override list (dappNameHandler.js)
+              isAuthenticated && (
+                <Text
+                  align="center"
+                  color={colors.appleBlue}
+                  letterSpacing="roundedMedium"
+                  size="large"
+                  weight="bold"
+                >
+                  {' 􀇻'}
+                </Text>
+              )}
             </Row>
             <Centered marginBottom={24} paddingHorizontal={24}>
               <Text
@@ -776,7 +794,7 @@ const TransactionConfirmationScreen = () => {
               <Column>
                 <WalletLabel>Wallet</WalletLabel>
                 <RowWithMargins margin={5}>
-                  <Column marginTop={2}>
+                  <Column marginTop={ios ? 2 : 10}>
                     <ContactAvatar
                       color={
                         isNaN(accountColor) ? colors.skeleton : accountColor
