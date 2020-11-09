@@ -1,7 +1,6 @@
 import { mapKeys, mapValues, toLower } from 'lodash';
 import savingAssets from './compound/saving-assets.json';
 import tokenOverridesData from './token-overrides.json';
-import uniswapPairsData from './uniswap/uniswap-pairs.json';
 
 export { default as chains } from './chains.json';
 export { default as compoundCERC20ABI } from './compound/compound-cerc20-abi.json';
@@ -72,16 +71,6 @@ export const DefaultUniswapFavorites = {
 export const tokenOverrides = mapKeys(tokenOverridesData, (_, address) =>
   toLower(address)
 );
-
-const loweredUniswapPairs = mapKeys(uniswapPairsData, (value, key) =>
-  toLower(key)
-);
-
-// we use it just for obtaining names of top movers so we can rely on uniswap v1 data.
-export const uniswapPairs = mapValues(loweredUniswapPairs, (value, key) => ({
-  ...value,
-  ...tokenOverrides[key],
-}));
 
 export const savingsAssetsList = savingAssets;
 
