@@ -109,11 +109,9 @@ export default function SlackSheet({
         {...props}
       >
         <TouchableWithoutFeedback
-          style={[StyleSheet.absoluteFillObject, { backgroundColor: 'red' }]}
+          style={[StyleSheet.absoluteFillObject, { backgroundColor }]}
         >
-          <View
-            style={[StyleSheet.absoluteFillObject, { backgroundColor: 'red' }]}
-          />
+          <View style={[StyleSheet.absoluteFillObject, { backgroundColor }]} />
         </TouchableWithoutFeedback>
         {!hideHandle && ios && (
           <SheetHandleFixedToTop showBlur={scrollEnabled} />

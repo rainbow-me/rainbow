@@ -27,7 +27,9 @@ export function logoutFromGoogleDrive() {
 
 // This is used for dev purposes only!
 export async function deleteAllBackups() {
-  await RNCloudFs.loginIfNeeded();
+  if (android) {
+    await RNCloudFs.loginIfNeeded();
+  }
   const backups = await RNCloudFs.listFiles({
     scope: 'hidden',
     targetPath: REMOTE_BACKUP_WALLET_DIR,

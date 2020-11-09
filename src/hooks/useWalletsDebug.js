@@ -1,10 +1,8 @@
 import { captureException } from '@sentry/react-native';
-import { toChecksumAddress } from 'ethereumjs-util';
 import { isEmpty, map } from 'lodash';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { addHexPrefix } from '../handlers/web3';
-import WalletTypes from '../helpers/walletTypes';
 import { loadAllKeys } from '../model/keychain';
 
 import {
@@ -12,6 +10,7 @@ import {
   identifyWalletType,
   loadAddress,
   savePrivateKey,
+  WalletLibraryType,
 } from '../model/wallet';
 import {
   walletsLoadState,
@@ -85,25 +84,18 @@ export default function useWalletsDebug() {
           await dispatch(walletsSetSelected(currentWallet));
           await dispatch(walletsLoadState());
 
-          let walletResult;
-          if (type === WalletTypes.privateKey) {
-            walletResult = ethereumUtils.deriveAccountFromPrivateKey(
-              seedObject.seedphrase
-            );
+          const walletResult = await ethereumUtils.deriveAccountFromMnemonic(
+            seedObject.seedphrase
+          );
+
+          const { wallet } = walletResult;
+          const walletAddress = wallet.address;
+          let walletPkey;
+          if (wallet.walletType === WalletLibraryType.ethers) {
+            walletPkey = wallet.privateKey;
           } else {
-            walletResult = await ethereumUtils.deriveAccountFromMnemonic(
-              seedObject.seedphrase
-            );
+            walletPkey = addHexPrefix(wallet.getPrivateKey().toString('hex'));
           }
-
-          const { wallet: ethereumJSWallet } = walletResult;
-          const walletAddress = addHexPrefix(
-            toChecksumAddress(ethereumJSWallet.getAddress().toString('hex'))
-          );
-          const walletPkey = addHexPrefix(
-            ethereumJSWallet.getPrivateKey().toString('hex')
-          );
-
           await savePrivateKey(walletAddress, walletPkey);
 
           allKeys = allKeys.concat([
