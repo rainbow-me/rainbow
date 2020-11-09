@@ -144,7 +144,9 @@ class App extends Component {
       } catch (e) {
         logger.log('Error opening deeplink', e);
       }
-      Linking.addEventListener('url', handleDeeplink);
+      Linking.addEventListener('url', ({ url }) => {
+        handleDeeplink(url);
+      });
     }
   }
 
