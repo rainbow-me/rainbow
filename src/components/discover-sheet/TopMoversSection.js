@@ -1,8 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { handleSignificantDecimals } from '../../helpers/utilities';
 import { useAccountSettings, useTopMovers } from '../../hooks';
-import { uniswapPairs } from '../../references';
-import { Column, ColumnWithMargins } from '../layout';
+import { Column, ColumnWithMargins, Flex } from '../layout';
 import { MarqueeList } from '../list';
 import { Text } from '../text';
 
@@ -14,7 +13,7 @@ export default function TopMoversSection() {
     ({ address, name, percent_change_24h, price, symbol }) => ({
       address,
       change: `${parseFloat((percent_change_24h || 0).toFixed(2))}%`,
-      name: uniswapPairs[address]?.name || name,
+      name,
       price: `${nativeCurrencySymbol}${handleSignificantDecimals(price, 2)}`,
       symbol,
     }),
@@ -32,10 +31,13 @@ export default function TopMoversSection() {
   ]);
 
   return (
-    <ColumnWithMargins margin={15}>
-      <Text size="larger" weight="bold">
-        Top Movers
-      </Text>
+    <ColumnWithMargins>
+      <Flex paddingHorizontal={12}>
+        <Text size="larger" weight="bold">
+          Top Movers
+        </Text>
+      </Flex>
+
       <Column>
         <MarqueeList items={gainerItems} speed={0.9} />
         <MarqueeList items={loserItems} speed={-0.7} />

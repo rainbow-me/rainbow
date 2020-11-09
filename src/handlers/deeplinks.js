@@ -34,11 +34,11 @@ function handleWalletConnect(uri) {
   const { query } = new URL(uri);
   if (uri && query) {
     dispatch(
-      walletConnectOnSessionRequest(uri, status => {
+      walletConnectOnSessionRequest(uri, (status, dappScheme) => {
         if (status === 'reject') {
-          dispatch(walletConnectRemovePendingRedirect('reject'));
+          dispatch(walletConnectRemovePendingRedirect('reject', dappScheme));
         } else {
-          dispatch(walletConnectRemovePendingRedirect('connect'));
+          dispatch(walletConnectRemovePendingRedirect('connect', dappScheme));
         }
       })
     );
