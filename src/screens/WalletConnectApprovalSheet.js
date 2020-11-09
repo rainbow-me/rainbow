@@ -11,15 +11,19 @@ import styled from 'styled-components/primitives';
 import Divider from '../components/Divider';
 import { Alert } from '../components/alerts';
 import { RequestVendorLogoIcon } from '../components/coin-icon';
-import { Centered, Row, RowWithMargins } from '../components/layout';
-import { Sheet, SheetActionButton } from '../components/sheet';
+import { Centered, Row } from '../components/layout';
+import {
+  Sheet,
+  SheetActionButton,
+  SheetActionButtonRow,
+} from '../components/sheet';
 import { Text } from '../components/text';
 import {
   getDappHostname,
   isDappAuthenticated,
 } from '@rainbow-me/helpers/dappNameHandler';
 import { useNavigation } from '@rainbow-me/navigation';
-import { colors, padding } from '@rainbow-me/styles';
+import { colors } from '@rainbow-me/styles';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 const DappLogo = styled(RequestVendorLogoIcon).attrs({
@@ -30,6 +34,16 @@ const DappLogo = styled(RequestVendorLogoIcon).attrs({
 })`
   margin-bottom: 24;
 `;
+
+const ActionRowAndroid = styled.View`
+  flex-direction: row;
+  height: 44;
+  margin-vertical: 12;
+  margin-horizontal: 12;
+  justify-content: space-around;
+`;
+
+const ActionRow = android ? ActionRowAndroid : SheetActionButtonRow;
 
 export default function WalletConnectApprovalSheet() {
   const { goBack } = useNavigation();
@@ -114,7 +128,12 @@ export default function WalletConnectApprovalSheet() {
 
   return (
     <Sheet hideHandle>
-      <Centered direction="column" paddingHorizontal={19} paddingTop={17}>
+      <Centered
+        direction="column"
+        paddingBottom={android ? 10 : null}
+        paddingHorizontal={19}
+        paddingTop={17}
+      >
         <DappLogo dappName={dappName || ''} imageUrl={imageUrl} />
         <Centered paddingHorizontal={23}>
           <Row>
@@ -137,21 +156,31 @@ export default function WalletConnectApprovalSheet() {
           </Text>
         </Row>
         <Divider color={colors.rowDividerLight} inset={[0, 84]} />
-        <RowWithMargins css={padding(24, 0, 21)} margin={15}>
+        <ActionRow>
           <SheetActionButton
             color={colors.white}
             label="Cancel"
             onPress={handleCancel}
+            radiusWrapperStyle={{ flex: 1 }}
             size="big"
             textColor={colors.dark}
+            wrapperProps={{
+              containerStyle: { flex: 1 },
+              style: { flex: 1 },
+            }}
           />
           <SheetActionButton
             color={colors.appleBlue}
             label="Connect"
             onPress={handleConnect}
+            radiusWrapperStyle={{ flex: 1 }}
             size="big"
+            wrapperProps={{
+              containerStyle: { flex: 1 },
+              style: { flex: 1 },
+            }}
           />
-        </RowWithMargins>
+        </ActionRow>
       </Centered>
     </Sheet>
   );
