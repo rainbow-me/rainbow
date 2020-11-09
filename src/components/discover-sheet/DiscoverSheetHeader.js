@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import { borders, colors, position } from '../../styles';
-import { BackButton, HeaderButton } from '../header';
+import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered, Row } from '../layout';
+import DiscoverSheetContext from './DiscoverSheetContext';
+import { useNavigation } from '@rainbow-me/navigation';
+import Routes from '@rainbow-me/routes';
 
 const Header = styled(Row).attrs({
   align: 'center',
@@ -31,10 +34,13 @@ const Content = styled(Centered)`
   background-color: ${colors.grey20};
 `;
 
-function Stack({ children, left, yPosition }) {
+function Stack({ children, left, yPosition, onPress }) {
   return (
     <>
-      <View style={{ width: 58, zIndex: 10 }}>
+      <ButtonPressAnimation
+        onPress={onPress}
+        style={{ height: 45, width: 58, zIndex: 10 }}
+      >
         <Animated.View
           style={{
             opacity: yPosition.interpolate({
@@ -51,7 +57,7 @@ function Stack({ children, left, yPosition }) {
             <Content />
           </ShadowStack>
         </Animated.View>
-        <View style={{ left, top: 7, zIndex: 10 }}>
+        <View style={{ left, top: 17, zIndex: 10 }}>
           <View style={{ position: 'absolute' }}>{children[0]}</View>
 
           <Animated.View
@@ -65,26 +71,28 @@ function Stack({ children, left, yPosition }) {
             {children[1]}
           </Animated.View>
         </View>
-      </View>
+      </ButtonPressAnimation>
     </>
   );
 }
 
 export default function DiscoverSheetHeader(props) {
+  const { navigate } = useNavigation();
+  const { jumpToShort } = useContext(DiscoverSheetContext);
   const { yPosition } = props;
   return (
     <Header {...props} pointerEvents="box-none">
-      <Stack left={3} yPosition={yPosition}>
-        <BackButton color={colors.black} style={{ zIndex: 40 }} />
-        <BackButton color={colors.white} style={{ zIndex: 40 }} />
+      <Stack
+        left={20}
+        onPress={() => navigate(Routes.WALLET_SCREEN)}
+        yPosition={yPosition}
+      >
+        <Icon color={colors.black} direction="left" name="caret" {...props} />
+        <Icon color={colors.white} direction="left" name="caret" {...props} />
       </Stack>
-      <Stack left={-1.7} yPosition={yPosition}>
-        <HeaderButton>
-          <Icon color={colors.black} name="scanner" />
-        </HeaderButton>
-        <HeaderButton>
-          <Icon color={colors.white} name="scanner" />
-        </HeaderButton>
+      <Stack left={16.6} onPress={jumpToShort} yPosition={yPosition}>
+        <Icon color={colors.black} name="scanner" />
+        <Icon color={colors.white} name="scanner" />
       </Stack>
     </Header>
   );
