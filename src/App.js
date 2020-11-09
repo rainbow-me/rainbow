@@ -117,7 +117,6 @@ class App extends Component {
     );
 
     this.branchListener = branch.subscribe(({ error, params, uri }) => {
-      console.log('GOT DEEPLINK FROM BRANCH', error, params, uri);
       if (error) {
         logger.error('Error from Branch: ' + error);
       }
@@ -183,7 +182,6 @@ class App extends Component {
   };
 
   handleOpenLinkingURL = url => {
-    console.log('⚠️⚠️⚠️⚠️⚠️', url);
     handleDeeplink(url);
   };
 
