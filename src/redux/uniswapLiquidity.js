@@ -67,30 +67,28 @@ export const uniswapUpdateLiquidityTokens = (
   dispatch(uniswapUpdateLiquidityState());
 };
 
-export const uniswapUpdateLiquidityState = () => (dispatch, getState) =>
-  new Promise((resolve, promiseReject) => {
-    const { accountAddress, network } = getState().settings;
-    const { pairs } = getState().uniswap;
-    const { liquidityTokens } = getState().uniswapLiquidity;
+export const uniswapUpdateLiquidityState = () => async (dispatch, getState) => {
+  const { accountAddress, network } = getState().settings;
+  const { pairs } = getState().uniswap;
+  const { liquidityTokens } = getState().uniswapLiquidity;
 
-    if (isEmpty(liquidityTokens)) {
-      return resolve(false);
-    }
+  if (isEmpty(liquidityTokens)) return;
 
-    const exchangeContracts = map(liquidityTokens, getAssetCode);
-    return getLiquidityInfo(accountAddress, exchangeContracts, pairs)
-      .then(liquidityInfo => {
-        saveLiquidityInfo(liquidityInfo, accountAddress, network);
-        dispatch({
-          payload: liquidityInfo,
-          type: UNISWAP_UPDATE_LIQUIDITY_TOKEN_INFO,
-        });
-        resolve(true);
-      })
-      .catch(error => {
-        promiseReject(error);
-      });
-  });
+  const exchangeContracts = map(liquidityTokens, getAssetCode);
+  try {
+    const liquidityInfo = await getLiquidityInfo(
+      accountAddress,
+      exchangeContracts,
+      pairs
+    );
+    saveLiquidityInfo(liquidityInfo, accountAddress, network);
+    dispatch({
+      payload: liquidityInfo,
+      type: UNISWAP_UPDATE_LIQUIDITY_TOKEN_INFO,
+    });
+    // eslint-disable-next-line no-empty
+  } catch (error) {}
+};
 
 // -- Reducer --------------------------------------------------------------- //
 export const INITIAL_UNISWAP_LIQUIDITY_STATE = {
