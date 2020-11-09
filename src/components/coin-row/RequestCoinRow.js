@@ -18,7 +18,6 @@ import { useNavigation } from '@rainbow-me/navigation';
 import { removeRequest } from '@rainbow-me/redux/requests';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
-import { magicMemo } from '@rainbow-me/utils';
 
 const getPercentageOfTimeElapsed = (startDate, endDate) => {
   const originalDifference = differenceInMinutes(endDate, startDate);
@@ -122,4 +121,4 @@ const RequestCoinRow = ({ item, ...props }) => {
   );
 };
 
-export default magicMemo(RequestCoinRow);
+export default RequestCoinRow;

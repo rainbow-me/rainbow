@@ -19,7 +19,8 @@ const getItemLayout = (data, index) => ({
 });
 
 const keyExtractor = ({ hash, timestamp, transactionDisplayDetails }) =>
-  hash || (timestamp ? timestamp.ms : transactionDisplayDetails.timestampInMs);
+  hash ||
+  (timestamp ? timestamp.ms : transactionDisplayDetails?.timestampInMs || 0);
 
 const renderSectionHeader = ({ section }) => (
   <ActivityListHeader {...section} />
