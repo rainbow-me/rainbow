@@ -55,9 +55,9 @@ describe('Send Sheet Interaction Flow', () => {
   //   await Helpers.tap('backup-sheet-imported-cancel-button');
   // });
   it('Should open expanded state', async () => {
-    await Helpers.delay(5000);
+    await Helpers.delay(8000);
     await Helpers.tap('balance-coin-row-Ethereum');
-    await Helpers.delay(6000);
+    await Helpers.delay(8000);
   });
 
   it('Should tap through chart timeseries', async () => {
