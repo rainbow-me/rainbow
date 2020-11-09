@@ -62,12 +62,14 @@ export default function WalletConnectListItem({ dappIcon, dappName, dappUrl }) {
           size={VendorLogoIconSize}
         />
         <ColumnWithMargins css={padding(0, 19, 1.5, 12)} flex={1} margin={2}>
-          <TruncatedText
-            letterSpacing="roundedTight"
-            size="lmedium"
-            weight="bold"
-          >
-            {overrideName || dappName || 'Unknown Application'}{' '}
+          <Row>
+            <TruncatedText
+              letterSpacing="roundedTight"
+              size="lmedium"
+              weight="bold"
+            >
+              {overrideName || dappName || 'Unknown Application'}{' '}
+            </TruncatedText>
             {isAuthenticated && (
               <Text
                 align="center"
@@ -79,7 +81,8 @@ export default function WalletConnectListItem({ dappIcon, dappName, dappUrl }) {
                 􀇻
               </Text>
             )}
-          </TruncatedText>
+          </Row>
+
           <TruncatedText
             color={colors.alpha(colors.blueGreyDark, 0.6)}
             size="smedium"
