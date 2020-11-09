@@ -258,6 +258,7 @@ const deriveAccountFromPrivateKey = privateKey => {
     walletType: WalletLibraryType.ethers,
   };
 };
+
 const deriveAccountFromMnemonicOrPrivateKey = mnemonicOrPrivateKey => {
   if (identifyWalletType(mnemonicOrPrivateKey) === WalletTypes.privateKey) {
     return deriveAccountFromPrivateKey(mnemonicOrPrivateKey);
