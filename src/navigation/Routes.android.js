@@ -22,6 +22,7 @@ import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import WithdrawModal from '../screens/WithdrawModal';
+import WyreWebview from '../screens/WyreWebview';
 import { SwipeNavigator } from './SwipeNavigator';
 import {
   closeKeyboardOnClose,
@@ -160,6 +161,7 @@ function MainNavigator() {
         options={{ customStack: true }}
       />
       <Stack.Screen component={WelcomeScreen} name={Routes.WELCOME_SCREEN} />
+      <Stack.Screen component={WyreWebview} name={Routes.WYRE_WEBVIEW} />
     </Stack.Navigator>
   );
 }

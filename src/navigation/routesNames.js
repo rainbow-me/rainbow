@@ -43,6 +43,7 @@ const Routes = {
   WALLET_CONNECT_REDIRECT_SHEET: 'WalletConnectRedirectSheet',
   WALLET_SCREEN: 'WalletScreen',
   WELCOME_SCREEN: 'WelcomeScreen',
+  WYRE_WEBVIEW: 'WyreWebview',
 };
 
 export const NATIVE_ROUTES = [
