@@ -48,7 +48,7 @@ function runDecay(clock, value, velocity) {
   ];
 }
 
-const useReanimatedValue = initialValue => {
+export const useReanimatedValue = initialValue => {
   const value = useRef();
 
   if (!value.current) {
@@ -89,28 +89,30 @@ const SwipeableList = ({ components, speed }) => {
 
   const clock = useMemoOne(() => new Clock(), []);
 
-  const transXWrapped = useMemo(() =>
-    cond(
-      or(eq(state, State.ACTIVE), eq(lpstate, 2)),
-      [
-        stopClock(clock),
-        cond(
-          eq(state, State.ACTIVE),
-          [
-            set(transX, add(transX, sub(dragX, prevDragX))),
-            set(prevDragX, dragX),
-          ],
-          [set(dragVX, 0)]
-        ),
+  const transXWrapped = useMemo(
+    () =>
+      cond(
+        or(eq(state, State.ACTIVE), eq(lpstate, 2)),
+        [
+          stopClock(clock),
+          cond(
+            eq(state, State.ACTIVE),
+            [
+              set(transX, add(transX, sub(dragX, prevDragX))),
+              set(prevDragX, dragX),
+            ],
+            [set(dragVX, 0)]
+          ),
 
-        transX,
-      ],
-      [
-        set(prevDragX, 0),
-        set(transX, runDecay(clock, transX, dragVX)),
-        set(transX, add(transX, speed)),
-      ]
-    )
+          transX,
+        ],
+        [
+          set(prevDragX, 0),
+          set(transX, runDecay(clock, transX, dragVX)),
+          set(transX, add(transX, speed)),
+        ]
+      ),
+    [clock, dragVX, dragX, lpstate, prevDragX, speed, state, transX]
   );
 
   const sumWidth = useMemoOne(
