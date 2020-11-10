@@ -701,7 +701,7 @@ const TransactionConfirmationScreen = () => {
         -keyboardHeight + safeAreaInsetValues.bottom,
         springConfig
       );
-      sheetOpacity.value = withSpring(0.3, springConfig);
+      sheetOpacity.value = withSpring(android ? 0.8 : 0.3, springConfig);
     } else {
       offset.value = withSpring(0, springConfig);
       sheetOpacity.value = withSpring(1, springConfig);
