@@ -721,11 +721,15 @@ const TransactionConfirmationScreen = () => {
       ? TallSheetHeight
       : ShortSheetHeight) * (android ? 1.5 : 1);
 
-  const marginTop = android
+  let marginTop = android
     ? method === SIGN_TYPED_DATA
       ? deviceHeight - sheetHeight + 260
       : deviceHeight - sheetHeight + 210
     : null;
+
+  if (isTransactionDisplayType(method) && !get(request, 'asset', false)) {
+    marginTop += 50;
+  }
 
   return (
     <AnimatedContainer
