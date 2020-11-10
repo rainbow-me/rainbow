@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { TextInput } from 'react-native';
 import Animated, {
   NewEasing,
+  runOnJS,
   useAnimatedProps,
   useDerivedValue,
   useSharedValue,
@@ -47,12 +48,11 @@ function formatter(symbol, val) {
 }
 
 function animationOneMinuteRec(svalue, target) {
-  'worklet';
   svalue.value = withTiming(
     target * 60,
     { duration: 1000 * 60, easing: NewEasing.linear },
     () => {
-      animationOneMinuteRec(svalue, target + 1);
+      runOnJS(animationOneMinuteRec)(svalue, target + 1);
     }
   );
 }
