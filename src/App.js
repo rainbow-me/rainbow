@@ -9,6 +9,7 @@ import React, { Component } from 'react';
 import {
   AppRegistry,
   AppState,
+  Linking,
   NativeModules,
   StatusBar,
   unstable_enableLogBox,
@@ -132,6 +133,21 @@ class App extends Component {
         handleDeeplink(uri);
       }
     });
+
+    // Walletconnect uses direct deeplinks
+    if (android) {
+      try {
+        const initialUrl = await Linking.getInitialURL();
+        if (initialUrl) {
+          handleDeeplink(initialUrl);
+        }
+      } catch (e) {
+        logger.log('Error opening deeplink', e);
+      }
+      Linking.addEventListener('url', ({ url }) => {
+        handleDeeplink(url);
+      });
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -145,10 +161,10 @@ class App extends Component {
 
   componentWillUnmount() {
     AppState.removeEventListener('change', this.handleAppStateChange);
-    this.onTokenRefreshListener();
-    this.foregroundNotificationListener();
-    this.backgroundNotificationListener();
-    this.branchListener();
+    this.onTokenRefreshListener?.();
+    this.foregroundNotificationListener?.();
+    this.backgroundNotificationListener?.();
+    this.branchListener?.();
   }
 
   identifyFlow = async () => {

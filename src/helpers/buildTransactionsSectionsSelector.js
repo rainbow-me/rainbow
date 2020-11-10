@@ -2,7 +2,7 @@ import { format } from 'date-fns';
 import { get, groupBy, isEmpty, map, toLower } from 'lodash';
 import { createElement } from 'react';
 import { createSelector } from 'reselect';
-import { TransactionCoinRow } from '../components/coin-row';
+import { RequestCoinRow, TransactionCoinRow } from '../components/coin-row';
 import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 import {
   calculateTimestampOfThisMonth,
@@ -107,6 +107,7 @@ const buildTransactionsSections = (
     requestsToApprove = [
       {
         data: requests,
+        renderItem: renderItemElement(RequestCoinRow),
         title: 'Requests',
       },
     ];

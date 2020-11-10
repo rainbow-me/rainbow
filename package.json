@@ -149,7 +149,7 @@
     "react-native-aes-crypto": "brunobar79/react-native-aes#27d52ea6c2ff8470388b20993e0357ab07ad17e3",
     "react-native-android-keyboard-adjust": "^1.2.0",
     "react-native-background-timer": "^2.2.0",
-    "react-native-branch": "^5.0.0-beta.1",
+    "react-native-branch": "^5.0.0",
     "react-native-camera": "^3.35.0",
     "react-native-circular-progress": "^1.3.4",
     "react-native-cloud-fs": "brunobar79/react-native-cloud-fs#cc7436a8a97f038a3ac6ad0ad8cee2bfcf2c92e5",
