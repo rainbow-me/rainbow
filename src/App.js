@@ -32,7 +32,7 @@ import { connect, Provider } from 'react-redux';
 import { compose, withProps } from 'recompact';
 import PortalConsumer from './components/PortalConsumer';
 import { FlexItem } from './components/layout';
-import { OfflineToast, TestnetToast } from './components/toasts';
+import { OfflineToast } from './components/toasts';
 import {
   reactNativeDisableYellowBox,
   reactNativeEnableLogbox,
@@ -257,7 +257,6 @@ class App extends Component {
                 </InitialRouteContext.Provider>
               )}
               <OfflineToast />
-              <TestnetToast network={this.props.network} />
             </FlexItem>
           </Provider>
         </SafeAreaProvider>
