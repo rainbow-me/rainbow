@@ -40,5 +40,4 @@ const TestnetToast = () => {
   );
 };
 
-const neverRerender = () => true;
-export default React.memo(TestnetToast, neverRerender);
+export default TestnetToast;
