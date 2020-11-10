@@ -24,7 +24,7 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
   left: 0;
   overflow: hidden;
   position: absolute;
-  border-radius: 20;
+  ${ios ? 'border-radius: 20' : ''};
   top: ${({ contentHeight, additionalTopPadding }) =>
     contentHeight && additionalTopPadding
       ? deviceUtils.dimensions.height - contentHeight
@@ -108,11 +108,15 @@ export default function SlackSheet({
         contentHeight={contentHeight}
         {...props}
       >
-        <TouchableWithoutFeedback
-          style={[StyleSheet.absoluteFillObject, { backgroundColor }]}
-        >
-          <View style={[StyleSheet.absoluteFillObject, { backgroundColor }]} />
-        </TouchableWithoutFeedback>
+        {android && (
+          <TouchableWithoutFeedback
+            style={[StyleSheet.absoluteFillObject, { backgroundColor }]}
+          >
+            <View
+              style={[StyleSheet.absoluteFillObject, { backgroundColor }]}
+            />
+          </TouchableWithoutFeedback>
+        )}
         {!hideHandle && ios && (
           <SheetHandleFixedToTop showBlur={scrollEnabled} />
         )}
