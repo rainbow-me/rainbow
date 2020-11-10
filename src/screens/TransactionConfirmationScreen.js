@@ -53,6 +53,7 @@ import {
   useAccountAssets,
   useAccountProfile,
   useAccountSettings,
+  useDimensions,
   useGas,
   useKeyboardHeight,
   useTransactionConfirmation,
@@ -147,6 +148,7 @@ const TransactionConfirmationScreen = () => {
     accountName,
     accountSymbol,
   } = useAccountProfile();
+  const { height: deviceHeight } = useDimensions();
   const { wallets } = useWallets();
   const balances = useWalletBalances(wallets);
   const { nativeCurrency } = useAccountSettings();
@@ -720,11 +722,9 @@ const TransactionConfirmationScreen = () => {
       : ShortSheetHeight) * (android ? 1.5 : 1);
 
   const marginTop = android
-    ? isMessageRequest
-      ? method === SIGN_TYPED_DATA
-        ? 115
-        : 160
-      : 110
+    ? method === SIGN_TYPED_DATA
+      ? deviceHeight - sheetHeight + 260
+      : deviceHeight - sheetHeight + 210
     : null;
 
   return (
