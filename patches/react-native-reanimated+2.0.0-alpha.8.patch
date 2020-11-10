@@ -51,7 +51,7 @@ index 48a3c76..0723069 100644
    ease,
    quad,
 diff --git a/node_modules/react-native-reanimated/src/reanimated2/animations.js b/node_modules/react-native-reanimated/src/reanimated2/animations.js
-index 5376843..f32183d 100644
+index 5376843..b21ebe7 100644
 --- a/node_modules/react-native-reanimated/src/reanimated2/animations.js
 +++ b/node_modules/react-native-reanimated/src/reanimated2/animations.js
 @@ -1,5 +1,5 @@
@@ -61,6 +61,15 @@ index 5376843..f32183d 100644
  import { isColor, convertToHSVA, toRGBA } from './Colors';
  import NativeReanimated from './NativeReanimated';
  
+@@ -372,7 +372,7 @@ export function withDecay(userConfig, callback) {
+ 
+       const v0 = velocity / 1000;
+       const v = v0 * kv * 1000;
+-      const x = current + v0 * kx;
++      const x = current + v0 * (config.deceleration === 1 ? 1 : kx);
+ 
+       animation.current = x;
+       animation.velocity = v;
 diff --git a/node_modules/react-native-reanimated/src/reanimated2/interpolation.js b/node_modules/react-native-reanimated/src/reanimated2/interpolation.js
 index fc43c60..920eaa9 100644
 --- a/node_modules/react-native-reanimated/src/reanimated2/interpolation.js
