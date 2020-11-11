@@ -8,7 +8,7 @@ describe('Import from private key flow', () => {
   });
 
   it('with 0x - Should show the "Restore Sheet" after tapping on "I already have a wallet"', async () => {
-    await device.disableSynchronization();
+    await Helpers.disableSynchronization();
     await Helpers.tap('already-have-wallet-button');
     await Helpers.delay(2000);
     await Helpers.checkIfExists('restore-sheet');
@@ -69,7 +69,7 @@ describe('Import from private key flow', () => {
   it('Should reset keychain & reopen app', async () => {
     await Helpers.tap('reset-keychain-section');
     await device.launchApp({ newInstance: true });
-    await device.disableSynchronization();
+    await Helpers.disableSynchronization();
     await Helpers.delay(5000);
     await Helpers.checkIfVisible('welcome-screen');
   });

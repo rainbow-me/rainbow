@@ -11,7 +11,7 @@ beforeAll(async () => {
 
 describe('Ganache Transaction Flow', () => {
   it('Should show the welcome screen', async () => {
-    await device.disableSynchronization();
+    await Helpers.disableSynchronization();
     await Helpers.checkIfVisible('welcome-screen');
   });
 
