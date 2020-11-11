@@ -11,19 +11,15 @@ import styled from 'styled-components/primitives';
 import Divider from '../components/Divider';
 import { Alert } from '../components/alerts';
 import { RequestVendorLogoIcon } from '../components/coin-icon';
-import { Centered, Row } from '../components/layout';
-import {
-  Sheet,
-  SheetActionButton,
-  SheetActionButtonRow,
-} from '../components/sheet';
+import { Centered, Row, RowWithMargins } from '../components/layout';
+import { Sheet, SheetActionButton } from '../components/sheet';
 import { Text } from '../components/text';
 import {
   getDappHostname,
   isDappAuthenticated,
 } from '@rainbow-me/helpers/dappNameHandler';
 import { useNavigation } from '@rainbow-me/navigation';
-import { colors } from '@rainbow-me/styles';
+import { colors, padding } from '@rainbow-me/styles';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 const DappLogo = styled(RequestVendorLogoIcon).attrs({
@@ -43,7 +39,7 @@ const ActionRowAndroid = styled.View`
   justify-content: space-around;
 `;
 
-const ActionRow = android ? ActionRowAndroid : SheetActionButtonRow;
+const ActionRow = android ? ActionRowAndroid : RowWithMargins;
 
 export default function WalletConnectApprovalSheet() {
   const { goBack } = useNavigation();
@@ -156,7 +152,7 @@ export default function WalletConnectApprovalSheet() {
           </Text>
         </Row>
         <Divider color={colors.rowDividerLight} inset={[0, 84]} />
-        <ActionRow>
+        <ActionRow css={padding(24, 0, 21)} margin={15}>
           <SheetActionButton
             color={colors.white}
             label="Cancel"
