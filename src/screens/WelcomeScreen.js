@@ -508,7 +508,7 @@ export default function WelcomeScreen() {
       ))}
 
       <ContentWrapper style={contentStyle}>
-        {android && IS_TESTING ? (
+        {android && IS_TESTING === 'true' ? (
           <RainbowText />
         ) : (
           <MaskedView maskElement={<RainbowText />}>
