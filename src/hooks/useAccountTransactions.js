@@ -20,7 +20,7 @@ export default function useAccountTransactions(initialized, isFocused) {
   );
 
   const [page, setPage] = useState(1);
-  const nextPage = useCallback(() => setPage(page => page + 1), [setPage]);
+  const nextPage = useCallback(() => setPage(page => page + 1), []);
 
   const slicedTransaction = useMemo(
     () => transactions.slice(0, page * NOE_PAGE),

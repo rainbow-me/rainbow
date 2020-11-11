@@ -210,11 +210,19 @@ export default function ProfileMasthead({
       showWalletErrorAlert();
       return;
     }
-    navigate(Routes.ADD_CASH_FLOW);
+
     analytics.track('Tapped Add Cash', {
       category: 'add cash',
     });
-  }, [navigate, isDamaged]);
+
+    if (ios) {
+      navigate(Routes.ADD_CASH_FLOW);
+    } else {
+      navigate(Routes.WYRE_WEBVIEW, {
+        address: accountAddress,
+      });
+    }
+  }, [accountAddress, navigate, isDamaged]);
 
   const handlePressChangeWallet = useCallback(() => {
     navigate(Routes.CHANGE_WALLET_SHEET);

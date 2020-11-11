@@ -1,4 +1,4 @@
-import { get, isEmpty, map, slice } from 'lodash';
+import { get, isEmpty, map, slice, toLower } from 'lodash';
 import { useCallback } from 'react';
 import { queryCache, useQuery } from 'react-query';
 import { useSelector } from 'react-redux';
@@ -16,7 +16,7 @@ const updatePrice = (movers, genericAssets) => {
   if (movers.length < TOP_MOVERS_PER_ROW_MIN) return [];
   const topMovers = slice(movers, 0, TOP_MOVERS_PER_ROW_MAX);
   return map(topMovers, mover => {
-    const price = get(genericAssets, `${mover.address}.price.value`);
+    const price = get(genericAssets, `${toLower(mover.address)}.price.value`);
     return {
       ...mover,
       fallbackPrice: mover.price,

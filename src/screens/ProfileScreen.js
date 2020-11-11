@@ -68,7 +68,7 @@ export default function ProfileScreen({ navigation }) {
 
   const addCashSupportedNetworks =
     network === NetworkTypes.kovan || network === NetworkTypes.mainnet;
-  const addCashAvailable = ios && addCashSupportedNetworks;
+  const addCashAvailable = addCashSupportedNetworks;
 
   return (
     <ProfileScreenPage testID="profile-screen">

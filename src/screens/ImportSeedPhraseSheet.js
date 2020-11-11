@@ -23,7 +23,6 @@ import {
   InvalidPasteToast,
   ToastPositionContainer,
 } from '../components/toasts';
-import { identifyWalletType } from '../model/wallet';
 import { web3Provider } from '@rainbow-me/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import {
@@ -32,7 +31,6 @@ import {
 } from '@rainbow-me/helpers/validators';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import walletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
-import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import {
   useAccountSettings,
   useClipboard,
@@ -232,13 +230,9 @@ export default function ImportSeedPhraseSheet() {
       try {
         setBusy(true);
         setTimeout(async () => {
-          const type = identifyWalletType(input);
-          let walletResult;
-          if (type === WalletTypes.privateKey) {
-            walletResult = ethereumUtils.deriveAccountFromPrivateKey(input);
-          } else {
-            walletResult = await ethereumUtils.deriveAccountFromMnemonic(input);
-          }
+          const walletResult = await ethereumUtils.deriveAccountFromMnemonicOrPrivateKey(
+            input
+          );
           setCheckedWallet(walletResult);
           const ens = await web3Provider.lookupAddress(walletResult.address);
           if (ens && ens !== input) {

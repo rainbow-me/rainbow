@@ -2,13 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { web3Provider } from '../../handlers/web3';
 import networkInfo from '../../helpers/networkInfo';
 import networkTypes from '../../helpers/networkTypes';
-import { useAccountSettings } from '../../hooks';
+import { useAccountSettings, useInternetStatus } from '../../hooks';
 import { Icon } from '../icons';
 import { Nbsp, Text } from '../text';
 import Toast from './Toast';
 import { colors } from '@rainbow-me/styles';
 
 const TestnetToast = () => {
+  const isConnected = useInternetStatus();
   const { network } = useAccountSettings();
   const providerUrl = web3Provider?.connection?.url;
   const { name, color } = networkInfo[network];
@@ -25,9 +26,9 @@ const TestnetToast = () => {
       }
     } else {
       setVisible(true);
-      setNetworkName(name);
+      setNetworkName(name + (isConnected ? '' : ' (offline)'));
     }
-  }, [name, network, providerUrl]);
+  }, [name, network, providerUrl, isConnected]);
 
   return (
     <Toast isVisible={visible} testID={`testnet-toast-${networkName}`}>
@@ -39,5 +40,4 @@ const TestnetToast = () => {
   );
 };
 
-const neverRerender = () => true;
-export default React.memo(TestnetToast, neverRerender);
+export default TestnetToast;
