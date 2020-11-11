@@ -36,6 +36,13 @@ describe('Import from private key flow', () => {
     await Helpers.checkIfVisible('wallet-info-input');
     await Helpers.typeText('wallet-info-input', 'PKEY', false);
     await Helpers.tap('wallet-info-submit-button');
+    if (device.getPlatform() === 'android') {
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      // Set the pin
+      await Helpers.authenticatePin('1234');
+      // Confirm it
+      await Helpers.authenticatePin('1234');
+    }
     await Helpers.delay(4000);
     await Helpers.checkIfVisible('wallet-screen');
   });
@@ -106,6 +113,13 @@ describe('Import from private key flow', () => {
     await Helpers.checkIfVisible('wallet-info-input');
     await Helpers.typeText('wallet-info-input', 'TKEY', false);
     await Helpers.tap('wallet-info-submit-button');
+    if (device.getPlatform() === 'android') {
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      // Set the pin
+      await Helpers.authenticatePin('1234');
+      // Confirm it
+      await Helpers.authenticatePin('1234');
+    }
     await Helpers.delay(4000);
     await Helpers.checkIfVisible('wallet-screen');
   });
