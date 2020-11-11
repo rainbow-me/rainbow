@@ -10,6 +10,7 @@ import RainbowButtonBackground from './RainbowButtonBackground';
 import RainbowButtonTypes from './RainbowButtonTypes';
 import { useDimensions } from '@rainbow-me/hooks';
 import { colors, position, shadow } from '@rainbow-me/styles';
+import ShadowView from 'react-native-shadow-stack/ShadowView';
 
 const AddCashIcon = styled(FastImage).attrs({
   resizeMode: FastImage.resizeMode.contain,
@@ -53,7 +54,7 @@ const OuterButton = styled.View`
   width: ${({ width }) => width};
 `;
 
-const Shadow = styled.View`
+const Shadow = styled(ShadowView)`
   ${shadow.build(0, 10, 30, colors.dark, 1)};
   background-color: ${colors.white};
   border-radius: ${({ height }) => height / 2};
@@ -89,7 +90,7 @@ const RainbowButton = ({
       onPress={onPress}
       scaleTo={0.9}
     >
-      {ios && <Shadow height={height} width={width} />}
+      <Shadow height={height} width={width} />
       <ButtonContainer
         height={height}
         maskElement={outerButtonMask}
