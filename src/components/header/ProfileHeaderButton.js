@@ -26,7 +26,7 @@ export default function ProfileHeaderButton() {
     <HeaderButton
       onLongPress={onLongPress}
       onPress={onPress}
-      testID="goToProfile"
+      testID="navbar-profile-button"
       transformOrigin="left"
     >
       <Centered>
