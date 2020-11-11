@@ -1,7 +1,6 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useContext } from 'react';
-import { createNativeStackNavigator } from 'react-native-screens/src/native-stack/index';
 import { InitialRouteContext } from '../context/initialRoute';
 import AddCashSheet from '../screens/AddCashSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
@@ -40,10 +39,9 @@ import {
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
-import { colors } from '@rainbow-me/styles';
 
 const Stack = createStackNavigator();
-const NativeStack = createNativeStackNavigator();
+const NativeStack = createStackNavigator();
 
 function ImportSeedPhraseFlowNavigator() {
   return (
@@ -170,11 +168,8 @@ function MainNativeNavigator() {
   return (
     <NativeStack.Navigator
       initialRouteName={Routes.MAIN_NAVIGATOR}
-      screenOptions={{
-        contentStyle: { backgroundColor: colors.white },
-        headerShown: false,
-        headerTopInsetEnabled: false,
-      }}
+      {...stackNavigationConfig}
+      screenOptions={defaultScreenStackOptions}
     >
       <NativeStack.Screen
         component={MainNavigator}
@@ -183,17 +178,28 @@ function MainNativeNavigator() {
       <NativeStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SCREEN}
+        options={sheetPreset}
       />
       <NativeStack.Screen
         component={SettingsModal}
         name={Routes.SETTINGS_MODAL}
+        options={sheetPreset}
       />
       <NativeStack.Screen
         component={PinAuthenticationScreen}
         name={Routes.PIN_AUTHENTICATION_SCREEN}
+        options={sheetPreset}
       />
-      <NativeStack.Screen component={SendSheet} name={Routes.SEND_SHEET} />
-      <NativeStack.Screen component={BackupSheet} name={Routes.BACKUP_SCREEN} />
+      <NativeStack.Screen
+        component={SendSheet}
+        name={Routes.SEND_SHEET}
+        options={sheetPreset}
+      />
+      <NativeStack.Screen
+        component={BackupSheet}
+        name={Routes.BACKUP_SCREEN}
+        options={sheetPreset}
+      />
     </NativeStack.Navigator>
   );
 }
