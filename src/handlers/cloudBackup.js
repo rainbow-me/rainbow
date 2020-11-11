@@ -30,7 +30,6 @@ export async function deleteAllBackups() {
   if (android) {
     await RNCloudFs.loginIfNeeded();
   }
-  await RNCloudFs.loginIfNeeded();
   const backups = await RNCloudFs.listFiles({
     scope: 'hidden',
     targetPath: REMOTE_BACKUP_WALLET_DIR,
