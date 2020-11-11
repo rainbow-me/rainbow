@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { KeyboardAvoidingView, Platform } from 'react-native';
+import { KeyboardAvoidingView } from 'react-native';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components/primitives';
@@ -10,7 +10,7 @@ import { position } from '@rainbow-me/styles';
 const Container = styled(Transitioning.View)`
   height: ${({ height }) => height};
   left: 0;
-  position: ${Platform.OS === 'android' ? 'relative' : 'absolute'};
+  position: ${android ? 'relative' : 'absolute'};
   right: 0;
   top: 0;
 `;
@@ -35,7 +35,9 @@ export default function KeyboardFixedOpenLayout({
   const ref = useRef();
 
   const containerHeight = screenHeight - keyboardHeight - additionalPadding;
-  useEffect(() => ref.current.animateNextTransition(), [containerHeight]);
+  ios &&
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useEffect(() => ref.current.animateNextTransition(), [containerHeight]);
 
   return (
     <Container height={containerHeight} ref={ref} transition={transition}>

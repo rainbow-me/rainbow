@@ -6,20 +6,21 @@ import Animated, {
 } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
 import { RowWithMargins } from '../../../layout';
+import ChartChangeDirectionArrow from './ChartChangeDirectionArrow';
 import { useRatio } from './useRatio';
 import { useChartData } from '@rainbow-me/animated-charts';
-import { colors, fonts } from '@rainbow-me/styles';
+import { colors, fonts, fontWithWidth } from '@rainbow-me/styles';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
 const PercentLabel = styled(AnimatedTextInput)`
+  ${fontWithWidth(fonts.weight.bold)};
   background-color: white;
-  font-family: ${fonts.family.SFProRounded};
   font-size: ${fonts.size.big};
   font-variant: tabular-nums;
-  font-weight: ${fonts.weight.bold};
   letter-spacing: ${fonts.letterSpacing.roundedTightest};
   text-align: right;
+  margin-vertical: ${android ? -8 : 0};
 `;
 
 export default function ChartPercentChangeLabel() {
@@ -38,7 +39,7 @@ export default function ChartPercentChangeLabel() {
               100 -
             100;
           return (
-            (value > 0 ? '↑' : value < 0 ? '↓' : '') +
+            (android ? '' : value > 0 ? '↑' : value < 0 ? '↓' : '') +
             ' ' +
             Math.abs(value).toFixed(2) +
             '%'
@@ -50,25 +51,29 @@ export default function ChartPercentChangeLabel() {
     lastValue.value = data?.points?.[data.points.length - 1]?.y;
   }, [data, firstValue, lastValue]);
 
-  const textProps = useAnimatedStyle(() => {
-    return {
-      text:
-        firstValue.value === Number(firstValue.value) && firstValue.value
-          ? (() => {
-              const value =
-                ((originalY.value || lastValue.value) / firstValue.value) *
-                  100 -
-                100;
-              return (
-                (value > 0 ? '↑' : value < 0 ? '↓' : '') +
-                ' ' +
-                Math.abs(value).toFixed(2) +
-                '%'
-              );
-            })()
-          : '',
-    };
-  });
+  const textProps = useAnimatedStyle(
+    () => {
+      return {
+        text:
+          firstValue.value === Number(firstValue.value) && firstValue.value
+            ? (() => {
+                const value =
+                  ((originalY.value || lastValue.value) / firstValue.value) *
+                    100 -
+                  100;
+                return (
+                  (android ? '' : value > 0 ? '↑' : value < 0 ? '↓' : '') +
+                  ' ' +
+                  Math.abs(value).toFixed(2) +
+                  '%'
+                );
+              })()
+            : '',
+      };
+    },
+    [],
+    'ChartPercentChangeLabelTextProps'
+  );
 
   const ratio = useRatio();
 
@@ -85,6 +90,7 @@ export default function ChartPercentChangeLabel() {
 
   return (
     <RowWithMargins align="center" margin={4}>
+      {android ? <ChartChangeDirectionArrow /> : null}
       <PercentLabel
         alignSelf="flex-end"
         animatedProps={textProps}

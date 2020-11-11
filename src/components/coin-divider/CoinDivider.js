@@ -3,6 +3,7 @@ import { LayoutAnimation, View } from 'react-native';
 import styled from 'styled-components/primitives';
 import EditOptions from '../../helpers/editOptionTypes';
 import {
+  useCoinListEdited,
   useCoinListEditOptions,
   useDimensions,
   useOpenSmallBalances,
@@ -54,11 +55,12 @@ export default function CoinDivider({
   const {
     clearSelectedCoins,
     currentAction,
-    isCoinListEdited,
     setHiddenCoins,
     setIsCoinListEdited,
     setPinnedCoins,
   } = useCoinListEditOptions();
+
+  const { isCoinListEdited } = useCoinListEdited();
 
   const {
     isSmallBalancesOpen,

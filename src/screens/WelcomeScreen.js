@@ -12,6 +12,11 @@ import Reanimated, {
 import { useValue } from 'react-native-redash';
 import styled from 'styled-components/native';
 import { useMemoOne } from 'use-memo-one';
+import RainbowGreyNeon from '../assets/rainbows/greyneon.png';
+import RainbowLight from '../assets/rainbows/light.png';
+import RainbowLiquid from '../assets/rainbows/liquid.png';
+import RainbowNeon from '../assets/rainbows/neon.png';
+import RainbowPixel from '../assets/rainbows/pixel.png';
 import { ButtonPressAnimation } from '../components/animations';
 import RainbowText from '../components/icons/svg/RainbowText';
 import { RowWithMargins } from '../components/layout';
@@ -21,6 +26,7 @@ import {
   fetchUserDataFromCloud,
   isCloudBackupAvailable,
 } from '../handlers/cloudBackup';
+import { cloudPlatform } from '../utils/platform';
 
 import { useHideSplashScreen } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
@@ -104,9 +110,14 @@ const RainbowButton = ({
   ...props
 }) => {
   return (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.9} {...props}>
-      <DarkShadow style={darkShadowStyle} />
-      <Shadow style={shadowStyle} />
+    <ButtonPressAnimation
+      onPress={onPress}
+      radiusAndroid={height / 2}
+      scaleTo={0.9}
+      {...props}
+    >
+      {ios && <DarkShadow style={darkShadowStyle} />}
+      {ios && <Shadow style={shadowStyle} />}
       <ButtonContainer height={height} style={style}>
         <ButtonContent>
           <ButtonEmoji name={emoji} />
@@ -154,7 +165,7 @@ const rainbows = [
     id: 'grey',
     rotate: '150deg',
     scale: 0.5066666667,
-    source: { uri: 'greyneon' },
+    source: ios ? { uri: 'greyneon' } : RainbowGreyNeon,
     x: -116,
     y: -202,
   },
@@ -163,7 +174,7 @@ const rainbows = [
     id: 'neon',
     rotate: '394.75deg',
     scale: 0.3333333333,
-    source: { uri: 'neon' },
+    source: ios ? { uri: 'neon' } : RainbowNeon,
     x: 149,
     y: 380,
   },
@@ -172,7 +183,7 @@ const rainbows = [
     id: 'pixel',
     rotate: '360deg',
     scale: 0.6666666667,
-    source: { uri: 'pixel' },
+    source: ios ? { uri: 'pixel' } : RainbowPixel,
     x: 173,
     y: -263,
   },
@@ -181,7 +192,7 @@ const rainbows = [
     id: 'light',
     rotate: '-33deg',
     scale: 0.2826666667,
-    source: { uri: 'light' },
+    source: ios ? { uri: 'light' } : RainbowLight,
     x: -172,
     y: 180,
   },
@@ -190,7 +201,7 @@ const rainbows = [
     id: 'liquid',
     rotate: '75deg',
     scale: 0.42248,
-    source: { uri: 'liquid' },
+    source: ios ? { uri: 'liquid' } : RainbowLiquid,
     x: 40,
     y: 215,
   },
@@ -346,12 +357,12 @@ export default function WelcomeScreen() {
   useEffect(() => {
     const initialize = async () => {
       try {
-        logger.log('downloading iCloud backup info...');
+        logger.log(`downloading ${cloudPlatform} backup info...`);
         const isAvailable = await isCloudBackupAvailable();
-        if (isAvailable) {
+        if (isAvailable && ios) {
           const data = await fetchUserDataFromCloud();
           setUserData(data);
-          logger.log('Downloaded iCloud backup info');
+          logger.log(`Downloaded ${cloudPlatform} backup info`);
         }
       } catch (e) {
         logger.log('error getting userData', e);
@@ -443,7 +454,7 @@ export default function WelcomeScreen() {
     const color = colorAnimation(rValue, true);
     return {
       emoji: 'castle',
-      height: 54,
+      height: 54 + (ios ? 0 : 8),
       shadowStyle: {
         backgroundColor: backgroundColor,
         shadowColor: color,
@@ -451,7 +462,8 @@ export default function WelcomeScreen() {
       style: {
         backgroundColor: colors.dark,
         borderColor: backgroundColor,
-        width: 230,
+        borderWidth: ios ? 0 : 5,
+        width: 230 + (ios ? 0 : 5),
       },
       text: 'Get a new wallet',
       textColor: colors.white,

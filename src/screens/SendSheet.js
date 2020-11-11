@@ -312,6 +312,7 @@ export default function SendSheet(props) {
   ]);
 
   const submitTransaction = useCallback(async () => {
+    setIsAuthorizing(true);
     if (Number(amountDetails.assetAmount) <= 0) {
       logger.sentry('amountDetails.assetAmount ? ', amountDetails?.assetAmount);
       captureEvent('Preventing tx submit due to amount <= 0');
@@ -348,8 +349,6 @@ export default function SendSheet(props) {
   );
 
   const onLongPressSend = useCallback(() => {
-    setIsAuthorizing(true);
-
     if (isIphoneX()) {
       submitTransaction();
     } else {
@@ -430,7 +429,7 @@ export default function SendSheet(props) {
 
   return (
     <Container>
-      <StatusBar barStyle="light-content" />
+      {ios && <StatusBar barStyle="light-content" />}
       <SheetContainer>
         <SendHeader
           contacts={contacts}

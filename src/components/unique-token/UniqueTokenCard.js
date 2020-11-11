@@ -9,7 +9,7 @@ import { colors, shadow as shadowUtil } from '@rainbow-me/styles';
 const UniqueTokenCardBorderRadius = 20;
 const UniqueTokenCardShadow = [0, 2, 6, colors.dark, 0.08];
 
-const Container = styled(ButtonPressAnimation)`
+const Container = styled.View`
   ${({ shadow }) => shadowUtil.build(...shadow)};
 `;
 
@@ -42,6 +42,7 @@ const UniqueTokenCard = ({
 
   return (
     <Container
+      as={ios && ButtonPressAnimation}
       disabled={disabled}
       enableHapticFeedback={enableHapticFeedback}
       onPress={handlePress}
@@ -49,19 +50,25 @@ const UniqueTokenCard = ({
       shadow={shadow}
     >
       <Content {...props} height={height} style={style} width={width}>
-        <UniqueTokenImage
-          backgroundColor={background || colors.lightestGrey}
-          imageUrl={image_preview_url}
-          item={item}
-          resizeMode={resizeMode}
-        />
-        {borderEnabled && (
-          <InnerBorder
-            opacity={0.04}
-            radius={UniqueTokenCardBorderRadius}
-            width={0.5}
+        <ButtonPressAnimation
+          disabled={ios}
+          onPress={handlePress}
+          style={{ height, width }}
+        >
+          <UniqueTokenImage
+            backgroundColor={background || colors.lightestGrey}
+            imageUrl={image_preview_url}
+            item={item}
+            resizeMode={resizeMode}
           />
-        )}
+          {borderEnabled && (
+            <InnerBorder
+              opacity={0.04}
+              radius={UniqueTokenCardBorderRadius}
+              width={0.5}
+            />
+          )}
+        </ButtonPressAnimation>
       </Content>
     </Container>
   );

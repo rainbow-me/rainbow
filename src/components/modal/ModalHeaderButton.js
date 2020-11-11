@@ -1,5 +1,4 @@
 import React from 'react';
-import { Platform } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
 import styled from 'styled-components';
 import { Button } from '../buttons';
@@ -14,7 +13,7 @@ const BackArrow = styled(Icon).attrs({
   name: 'caret',
 })`
   height: 16;
-  margin-top: ${Platform.OS === 'android' ? 6 : 0};
+  margin-top: ${android ? 6 : 0};
 `;
 
 const Container = styled(Row).attrs(({ side }) => ({
@@ -39,11 +38,7 @@ const Text = styled(UnstyledText).attrs({
 `;
 
 const ModalHeaderButton = ({ label, onPress, side }) => (
-  <Container
-    as={Platform.OS === 'ios' ? BorderlessButton : Button}
-    onPress={onPress}
-    side={side}
-  >
+  <Container as={ios ? BorderlessButton : Button} onPress={onPress} side={side}>
     <Row>
       {side === 'left' && <BackArrow />}
       <Text side={side}>{label}</Text>

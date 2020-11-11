@@ -1,5 +1,7 @@
 import React from 'react';
+import Animated from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
+import { useCoinListEditedValue } from '../../hooks/useCoinListEdited';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 import { borders, colors, shadow } from '@rainbow-me/styles';
@@ -24,8 +26,13 @@ const IndicatorIconContainer = styled(Centered)`
 `;
 
 export default function CoinIconIndicator({ isPinned }) {
+  const isCoinListEditedValue = useCoinListEditedValue();
+
   return (
-    <IndicatorIconContainer>
+    <IndicatorIconContainer
+      as={Animated.View}
+      style={{ opacity: isCoinListEditedValue }}
+    >
       <IndicatorIcon isPinned={isPinned} />
     </IndicatorIconContainer>
   );

@@ -1,10 +1,10 @@
 import React from 'react';
-import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder, RowWithMargins } from '../layout';
 import { Text } from '../text';
 import { colors, padding, position } from '@rainbow-me/styles';
+import ShadowStack from 'react-native-shadow-stack';
 
 const shadows = {
   default: [
@@ -40,6 +40,7 @@ export default function MiniButton({
     <ButtonPressAnimation
       disabled={disabled}
       onPress={onPress}
+      radiusAndroid={borderRadius}
       scaleTo={scaleTo}
       {...props}
     >

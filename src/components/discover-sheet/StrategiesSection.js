@@ -1,9 +1,9 @@
 import React from 'react';
 import { View } from 'react-native';
-import ShadowStack from 'react-native-shadow-stack';
 import { Column } from '../layout';
 import { Text } from '../text';
 import { colors } from '@rainbow-me/styles';
+import ShadowStack from 'react-native-shadow-stack';
 
 export const StrategyShadow = [
   [0, 2, 5, colors.red, 0.2],

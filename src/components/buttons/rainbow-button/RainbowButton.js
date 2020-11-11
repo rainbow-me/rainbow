@@ -85,11 +85,11 @@ const RainbowButton = ({
   return (
     <ButtonPressAnimation
       {...props}
-      disabled={disabled}
+      disabled={disabled || android}
       onPress={onPress}
       scaleTo={0.9}
     >
-      <Shadow height={height} width={width} />
+      {ios && <Shadow height={height} width={width} />}
       <ButtonContainer
         height={height}
         maskElement={outerButtonMask}
@@ -102,12 +102,14 @@ const RainbowButton = ({
           type={type}
           width={width}
         />
-        <ButtonContent type={type}>
-          {type === RainbowButtonTypes.addCash && <AddCashIcon />}
-          <ButtonLabel type={type}>
-            {type === RainbowButtonTypes.addCash ? 'Add Cash' : label}
-          </ButtonLabel>
-        </ButtonContent>
+        <ButtonPressAnimation disabled={disabled || ios} onPress={onPress}>
+          <ButtonContent type={type}>
+            {type === RainbowButtonTypes.addCash && <AddCashIcon />}
+            <ButtonLabel type={type}>
+              {type === RainbowButtonTypes.addCash ? 'Add Cash' : label}
+            </ButtonLabel>
+          </ButtonContent>
+        </ButtonPressAnimation>
       </ButtonContainer>
     </ButtonPressAnimation>
   );

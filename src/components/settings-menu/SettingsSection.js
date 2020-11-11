@@ -1,16 +1,10 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import React, { Fragment, useCallback, useMemo } from 'react';
-import {
-  InteractionManager,
-  Linking,
-  NativeModules,
-  ScrollView,
-  Share,
-} from 'react-native';
-import { isEmulatorSync } from 'react-native-device-info';
+import { Linking, NativeModules, ScrollView, Share } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import * as StoreReview from 'react-native-store-review';
 import styled from 'styled-components/primitives';
+import { REVIEW_ANDROID } from '../../config/experimental';
+import useExperimentalFlag from '../../config/experimentalHooks';
 //import { supportedLanguages } from '../../languages';
 import AppVersionStamp from '../AppVersionStamp';
 import { Icon } from '../icons';
@@ -24,12 +18,7 @@ import {
 import { Emoji } from '../text';
 import BackupIcon from '@rainbow-me/assets/settingsBackup.png';
 import CurrencyIcon from '@rainbow-me/assets/settingsCurrency.png';
-//import LanguageIcon from '@rainbow-me/assets/settingsLanguage.png';
 import NetworkIcon from '@rainbow-me/assets/settingsNetwork.png';
-import {
-  getAppStoreReviewCount,
-  saveAppStoreReviewCount,
-} from '@rainbow-me/handlers/localstorage/globalSettings';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import {
@@ -44,7 +33,7 @@ import {
   REVIEW_DONE_KEY,
 } from '@rainbow-me/utils/reviewAlert';
 
-const { RainbowRequestReview } = NativeModules;
+const { RainbowRequestReview, RNReview } = NativeModules;
 
 export const SettingsExternalURLs = {
   rainbowHomepage: 'https://rainbow.me',
@@ -126,6 +115,8 @@ export default function SettingsSection({
   onPressNetwork,
   onPressShowSecret,
 }) {
+  const isReviewAvailable = useExperimentalFlag(REVIEW_ANDROID) || ios;
+
   const { wallets } = useWallets();
   const { /*language,*/ nativeCurrency, network } = useAccountSettings();
   const { isTinyPhone } = useDimensions();
@@ -133,7 +124,7 @@ export default function SettingsSection({
   const onSendFeedback = useSendFeedback();
 
   const onPressReview = useCallback(async () => {
-    if (RainbowRequestReview) {
+    if (ios) {
       onCloseModal();
       RainbowRequestReview.requestReview(handled => {
         if (!handled) {
@@ -142,19 +133,7 @@ export default function SettingsSection({
         }
       });
     } else {
-      const maxRequestCount = 2;
-      const count = await getAppStoreReviewCount();
-      const shouldDeeplinkToAppStore =
-        count >= maxRequestCount || !StoreReview.isAvailable;
-
-      if (shouldDeeplinkToAppStore && !isEmulatorSync()) {
-        Linking.openURL(SettingsExternalURLs.review);
-      } else {
-        onCloseModal();
-        InteractionManager.runAfterInteractions(StoreReview.requestReview);
-      }
-
-      return saveAppStoreReviewCount(count + 1);
+      RNReview.show();
     }
   }, [onCloseModal]);
 
@@ -250,12 +229,14 @@ export default function SettingsSection({
           onPress={onSendFeedback}
           testID="feedback-section"
         />
-        <ListItem
-          icon={<Emoji name="red_heart" />}
-          label="Review Rainbow"
-          onPress={onPressReview}
-          testID="review-section"
-        />
+        {isReviewAvailable && (
+          <ListItem
+            icon={<Emoji name="red_heart" />}
+            label="Review Rainbow"
+            onPress={onPressReview}
+            testID="review-section"
+          />
+        )}
       </ColumnWithDividers>
       {IS_DEV && (
         <Fragment>

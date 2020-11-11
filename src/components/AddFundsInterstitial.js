@@ -1,12 +1,11 @@
 import { get } from 'lodash';
 import React, { Fragment, useCallback } from 'react';
 import { Linking } from 'react-native';
-import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import networkInfo from '../helpers/networkInfo';
 import networkTypes from '../helpers/networkTypes';
 import showWalletErrorAlert from '../helpers/support';
-import { useDimensions, useWallets } from '../hooks';
+import { useAccountSettings, useDimensions, useWallets } from '../hooks';
 import { useNavigation } from '../navigation/Navigation';
 import { magicMemo } from '../utils';
 import Divider from './Divider';
@@ -16,6 +15,7 @@ import { Centered, Row, RowWithMargins } from './layout';
 import { Text } from './text';
 import Routes from '@rainbow-me/routes';
 import { colors, padding, position } from '@rainbow-me/styles';
+import ShadowStack from 'react-native-shadow-stack';
 
 const ButtonContainerHeight = 400;
 const ButtonContainerWidth = 261;
@@ -149,6 +149,7 @@ const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
   const { isSmallPhone } = useDimensions();
   const { navigate } = useNavigation();
   const { isDamaged } = useWallets();
+  const { accountAddress } = useAccountSettings();
 
   const handlePressAmount = useCallback(
     amount => {
@@ -156,12 +157,19 @@ const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
         showWalletErrorAlert();
         return;
       }
-      navigate(Routes.ADD_CASH_FLOW, {
-        params: !isNaN(amount) ? { amount } : null,
-        screen: Routes.ADD_CASH_SCREEN_NAVIGATOR,
-      });
+      if (ios) {
+        navigate(Routes.ADD_CASH_FLOW, {
+          params: !isNaN(amount) ? { amount } : null,
+          screen: Routes.ADD_CASH_SCREEN_NAVIGATOR,
+        });
+      } else {
+        navigate(Routes.WYRE_WEBVIEW, {
+          address: accountAddress,
+          amount: !isNaN(amount) ? amount : null,
+        });
+      }
     },
-    [navigate, isDamaged]
+    [isDamaged, navigate, accountAddress]
   );
 
   const handlePressCopyAddress = useCallback(() => {
@@ -177,7 +185,9 @@ const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
       <ButtonContainer>
         {network === networkTypes.mainnet ? (
           <Fragment>
-            <Title>To get started, buy some ETH with Apple Pay</Title>
+            <Title>
+              To get started, buy some ETH{ios ? ` with Apple Pay` : ''}
+            </Title>
             <Row justify="space-between" marginVertical={30}>
               <AmountButton
                 amount={50}

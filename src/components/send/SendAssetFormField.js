@@ -49,7 +49,11 @@ export default function SendAssetFormField({
         testID={testID + '-input'}
         value={value}
       />
-      <Text align="right" color="dark" size={isTinyPhone ? 'bigger' : 'h3'}>
+      <Text
+        align="right"
+        color="dark"
+        size={isTinyPhone || android ? 'bigger' : 'h3'}
+      >
         {label.length > labelMaxLength
           ? label.substring(0, labelMaxLength)
           : label}

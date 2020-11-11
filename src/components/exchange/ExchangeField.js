@@ -1,5 +1,5 @@
-import React, { useCallback } from 'react';
-import { Platform, TouchableWithoutFeedback } from 'react-native';
+import React, { useCallback, useEffect } from 'react';
+import { TouchableWithoutFeedback } from 'react-native';
 import styled from 'styled-components/primitives';
 import { TokenSelectionButton } from '../buttons';
 import { CoinIcon } from '../coin-icon';
@@ -9,8 +9,8 @@ import ExchangeInput from './ExchangeInput';
 import { colors } from '@rainbow-me/styles';
 
 const CoinSize = 40;
-const ExchangeFieldHeight = Platform.OS === 'android' ? 64 : 38;
-const ExchangeFieldPadding = 19;
+const ExchangeFieldHeight = android ? 64 : 38;
+const ExchangeFieldPadding = android ? 15 : 19;
 const skeletonColor = colors.alpha(colors.blueGreyDark, 0.1);
 
 const Container = styled(Row).attrs({
@@ -32,7 +32,8 @@ const FieldRow = styled(RowWithMargins).attrs({
 const Input = styled(ExchangeInput).attrs({
   letterSpacing: 'roundedTightest',
 })`
-  height: ${ExchangeFieldHeight};
+  margin-vertical: -10;
+  height: ${ExchangeFieldHeight + (android ? 20 : 0)};
 `;
 
 const ExchangeField = (
@@ -46,12 +47,16 @@ const ExchangeField = (
     setAmount,
     symbol,
     testID,
+    autoFocus,
     ...props
   },
   ref
 ) => {
   const handleFocusField = useCallback(() => ref?.current?.focus(), [ref]);
 
+  useEffect(() => {
+    autoFocus && handleFocusField();
+  }, [autoFocus, handleFocusField]);
   return (
     <Container {...props}>
       <TouchableWithoutFeedback onPress={handleFocusField}>

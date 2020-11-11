@@ -12,7 +12,9 @@ const CurrencySymbol = styled(Text).attrs(({ height }) => ({
   lineHeight: height,
   size: 'larger',
   weight: 'regular',
-}))``;
+}))`
+  ${android ? 'margin-bottom: 1.5;' : ''};
+`;
 
 const NativeInput = styled(ExchangeInput).attrs({
   letterSpacing: fonts.letterSpacing.roundedTight,
@@ -76,6 +78,7 @@ const ExchangeNativeField = (
           onFocus={handleFocus}
           placeholder={placeholder}
           ref={ref}
+          style={android ? { height: 58 } : {}}
           testID={nativeAmount ? `${testID}-${nativeAmount}` : testID}
           value={nativeAmount}
         />

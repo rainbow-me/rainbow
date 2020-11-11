@@ -1,7 +1,15 @@
+import { Wallet } from '@ethersproject/wallet';
 import AsyncStorage from '@react-native-community/async-storage';
 import { captureException } from '@sentry/react-native';
-import { addHexPrefix, isValidAddress } from 'ethereumjs-util';
+import { mnemonicToSeed } from 'bip39';
+import {
+  addHexPrefix,
+  isValidAddress,
+  toChecksumAddress,
+} from 'ethereumjs-util';
+import { hdkey } from 'ethereumjs-wallet';
 import { find, get, isEmpty, matchesProperty, replace, toLower } from 'lodash';
+import { NativeModules } from 'react-native';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import URL from 'url-parse';
 import networkTypes from '../helpers/networkTypes';
@@ -13,9 +21,16 @@ import {
   isZero,
   subtract,
 } from '../helpers/utilities';
+import WalletTypes from '../helpers/walletTypes';
+import {
+  DEFAULT_HD_PATH,
+  identifyWalletType,
+  WalletLibraryType,
+} from '../model/wallet';
 import { chains } from '../references';
 import logger from 'logger';
 
+const { RNBip39 } = NativeModules;
 const getEthPriceUnit = assets => {
   const ethAsset = getAsset(assets);
   return get(ethAsset, 'price.value', 0);
@@ -210,8 +225,52 @@ const checkIfUrlIsAScam = async url => {
   }
 };
 
+const deriveAccountFromMnemonic = async (mnemonic, index = 0) => {
+  let seed;
+  if (ios) {
+    seed = await mnemonicToSeed(mnemonic);
+  } else {
+    const res = await RNBip39.mnemonicToSeed({ mnemonic, passphrase: null });
+    seed = new Buffer(res, 'base64');
+  }
+  const hdWallet = hdkey.fromMasterSeed(seed);
+  const root = hdWallet.derivePath(DEFAULT_HD_PATH);
+  const child = root.deriveChild(index);
+  const wallet = child.getWallet();
+  return {
+    address: toChecksumAddress(wallet.getAddress().toString('hex')),
+    isHDWallet: true,
+    root,
+    type: WalletTypes.mnemonic,
+    wallet,
+    walletType: WalletLibraryType.bip39,
+  };
+};
+
+const deriveAccountFromPrivateKey = privateKey => {
+  const ethersWallet = new Wallet(addHexPrefix(privateKey));
+  return {
+    address: ethersWallet.address,
+    isHDWallet: false,
+    root: null,
+    type: WalletTypes.privateKey,
+    wallet: ethersWallet,
+    walletType: WalletLibraryType.ethers,
+  };
+};
+
+const deriveAccountFromMnemonicOrPrivateKey = mnemonicOrPrivateKey => {
+  if (identifyWalletType(mnemonicOrPrivateKey) === WalletTypes.privateKey) {
+    return deriveAccountFromPrivateKey(mnemonicOrPrivateKey);
+  }
+  return deriveAccountFromMnemonic(mnemonicOrPrivateKey);
+};
+
 export default {
   checkIfUrlIsAScam,
+  deriveAccountFromMnemonic,
+  deriveAccountFromMnemonicOrPrivateKey,
+  deriveAccountFromPrivateKey,
   getAsset,
   getBalanceAmount,
   getChainIdFromNetwork,

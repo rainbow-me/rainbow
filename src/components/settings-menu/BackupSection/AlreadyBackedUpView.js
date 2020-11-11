@@ -6,10 +6,10 @@ import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { deleteAllBackups } from '../../../handlers/cloudBackup';
 import { walletsUpdate } from '../../../redux/wallets';
+import { cloudPlatform } from '../../../utils/platform';
 import { DelayedAlert } from '../../alerts';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered, Column } from '../../layout';
-import { LoadingOverlay } from '../../modal';
 import { SheetActionButton } from '../../sheet';
 import { Text } from '../../text';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
@@ -17,11 +17,9 @@ import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { useWalletCloudBackup, useWallets } from '@rainbow-me/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
-import { sheetVerticalOffset } from '@rainbow-me/navigation/effects';
 import Routes from '@rainbow-me/routes';
 import { colors, fonts, padding, position, shadow } from '@rainbow-me/styles';
 import { showActionSheetWithOptions } from '@rainbow-me/utils';
-import { usePortal } from 'react-native-cool-modals/Portal';
 
 const WalletBackupStatus = {
   CLOUD_BACKUP: 0,
@@ -35,7 +33,7 @@ const CheckmarkIconContainer = styled(View)`
   background-color: ${({ color }) => color};
   border-radius: 25;
   margin-bottom: 19;
-  padding-top: 13;
+  padding-top: ${ios ? 13 : 7};
 `;
 
 const CheckmarkIconText = styled(Text).attrs({
@@ -96,30 +94,15 @@ export default function AlreadyBackedUpView() {
   const { navigate } = useNavigation();
   const { params } = useRoute();
   const dispatch = useDispatch();
-  const { isWalletLoading, wallets, selectedWallet } = useWallets();
+  const { wallets, selectedWallet } = useWallets();
   const walletCloudBackup = useWalletCloudBackup();
   const walletId = params?.walletId || selectedWallet.id;
-
-  const { setComponent, hide } = usePortal();
 
   useEffect(() => {
     analytics.track('Already Backed Up View', {
       category: 'settings backup',
     });
   }, []);
-
-  useEffect(() => {
-    if (isWalletLoading) {
-      setComponent(
-        <LoadingOverlay
-          paddingTop={sheetVerticalOffset}
-          title={isWalletLoading}
-        />,
-        false
-      );
-    }
-    return hide;
-  }, [hide, isWalletLoading, setComponent]);
 
   const walletStatus = useMemo(() => {
     let status = null;
@@ -136,18 +119,26 @@ export default function AlreadyBackedUpView() {
   }, [walletId, wallets]);
 
   const handleNoLatestBackup = useCallback(() => {
-    Navigation.handleAction(Routes.BACKUP_SHEET, {
-      step: WalletBackupStepTypes.cloud,
-      walletId,
-    });
+    Navigation.handleAction(
+      android ? Routes.BACKUP_SCREEN : Routes.BACKUP_SHEET,
+      {
+        nativeScreen: android,
+        step: WalletBackupStepTypes.cloud,
+        walletId,
+      }
+    );
   }, [walletId]);
 
   const handlePasswordNotFound = useCallback(() => {
-    Navigation.handleAction(Routes.BACKUP_SHEET, {
-      missingPassword: true,
-      step: WalletBackupStepTypes.cloud,
-      walletId,
-    });
+    Navigation.handleAction(
+      android ? Routes.BACKUP_SCREEN : Routes.BACKUP_SHEET,
+      {
+        missingPassword: true,
+        nativeScreen: android,
+        step: WalletBackupStepTypes.cloud,
+        walletId,
+      }
+    );
   }, [walletId]);
 
   const manageCloudBackups = useCallback(() => {
@@ -203,7 +194,7 @@ export default function AlreadyBackedUpView() {
       return;
     }
 
-    analytics.track('Back up to iCloud pressed', {
+    analytics.track(`Back up to ${cloudPlatform} pressed`, {
       category: 'settings backup',
     });
 
@@ -258,7 +249,7 @@ export default function AlreadyBackedUpView() {
           </Title>
           <DescriptionText>
             {(walletStatus === WalletBackupStatus.CLOUD_BACKUP &&
-              `If you lose this device, you can recover your encrypted wallet backup from iCloud.`) ||
+              `If you lose this device, you can recover your encrypted wallet backup from ${cloudPlatform}.`) ||
               (walletStatus === WalletBackupStatus.MANUAL_BACKUP &&
                 `If you lose this device, you can restore your wallet with the recovery phrase you saved.`) ||
               (walletStatus === WalletBackupStatus.IMPORTED &&
@@ -267,7 +258,7 @@ export default function AlreadyBackedUpView() {
         </Centered>
         <Column>
           <SheetActionButton
-            color={colors.white}
+            color={ios ? colors.white : colors.lightestGrey}
             label="🗝 View recovery key"
             noFlex
             onPress={handleViewRecoveryPhrase}
@@ -285,7 +276,7 @@ export default function AlreadyBackedUpView() {
               size="large"
               weight="semibold"
             >
-              􀙶 Back up to iCloud
+              􀙶 Back up {cloudPlatform}
             </Text>
           </ButtonPressAnimation>
         </Footer>
@@ -299,7 +290,7 @@ export default function AlreadyBackedUpView() {
               size="lmedium"
               weight="semibold"
             >
-              􀍢 Manage iCloud backups
+              􀍢 Manage {cloudPlatform} backups
             </Text>
           </ButtonPressAnimation>
         </Footer>

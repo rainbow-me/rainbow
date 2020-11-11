@@ -1,13 +1,9 @@
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-import {
-  Platform,
-  requireNativeComponent,
-  StyleSheet,
-  Text,
-} from 'react-native';
+import { requireNativeComponent, StyleSheet } from 'react-native';
 import useRainbowTextAvailable from '../../helpers/isRainbowTextAvailable';
 import { formatSavingsAmount, isSymbolStablecoin } from '../../helpers/savings';
+import AndroidText from './AndroidAnimatedNumbers';
 import { colors, fonts } from '@rainbow-me/styles';
 
 const sx = StyleSheet.create({
@@ -48,7 +44,7 @@ const SavingsListRowAnimatedNumber = ({
   const isRainbowTextAvailable = useRainbowTextAvailable();
   const TextComponent = isRainbowTextAvailable
     ? requireNativeComponent('RainbowText')
-    : Text;
+    : AndroidText;
 
   return (
     <TextComponent
@@ -68,7 +64,7 @@ const SavingsListRowAnimatedNumber = ({
       style={[
         sx.text,
         isRainbowTextAvailable ? sx.animatedNumber : null,
-        Platform.OS === 'android' ? sx.animatedNumberAndroid : null,
+        android ? sx.animatedNumberAndroid : null,
       ]}
       time={interval}
       value={Number(value)}

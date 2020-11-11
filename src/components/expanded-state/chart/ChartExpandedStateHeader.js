@@ -94,7 +94,11 @@ export default function ChartExpandedStateHeader({
         />
         <ChartContextButton asset={asset} color={color} />
       </Row>
-      <RowWithMargins align="center" justify="space-between" margin={12}>
+      <RowWithMargins
+        align={ios ? 'center' : 'flex-start'}
+        justify="space-between"
+        margin={12}
+      >
         <ColumnWithMargins align="start" flex={1} margin={1}>
           <ChartPriceLabel
             defaultValue={isNoPriceData ? asset?.name : price}

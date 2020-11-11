@@ -55,6 +55,11 @@ const SearchInput = styled(Input).attrs({
   spellCheck: false,
   weight: 'semibold',
 })`
+  ${android
+    ? `margin-top: -6;
+  margin-bottom: -10;
+  height: 56;`
+    : ''}
   flex: 1;
   margin-left: 4;
 `;

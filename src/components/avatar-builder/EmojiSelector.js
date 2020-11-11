@@ -155,13 +155,10 @@ export default class EmojiSelector extends PureComponent {
               style={{
                 color: colors.black,
                 marginHorizontal: 10,
-                fontSize:
-                  Math.floor(this.state.colSize) -
-                  (Platform.OS === 'ios' ? 15 : 22),
+                fontSize: Math.floor(this.state.colSize) - (ios ? 15 : 22),
                 height: (width - 21) / this.props.columns,
                 width: deviceUtils.dimensions.width,
-                letterSpacing:
-                  Platform.OS === 'ios' ? 8 : getBrand() === 'google' ? 11 : 8,
+                letterSpacing: ios ? 8 : getBrand() === 'google' ? 11 : 8,
                 backgroundColor: colors.white,
               }}
             >
@@ -185,7 +182,7 @@ export default class EmojiSelector extends PureComponent {
                     backgroundColor: 'white',
                   },
                 };
-                return Platform.OS === 'ios' ? (
+                return ios ? (
                   <TouchableOpacity activeOpacity={0.5} {...touchableProps} />
                 ) : (
                   <GHTouchableOpacity activeOpacity={0.7} {...touchableProps} />
@@ -255,7 +252,7 @@ export default class EmojiSelector extends PureComponent {
     if (type === HEADER_ROW) {
       return this.renderListHeader(item.title);
     } else if (type === OVERLAY) {
-      return Platform.OS === 'ios' ? (
+      return ios ? (
         <View
           style={{
             top: index === 0 && -3000,
@@ -278,7 +275,7 @@ export default class EmojiSelector extends PureComponent {
           opacity: scrollPosition,
         }}
       >
-        {Platform.OS === 'ios' ? (
+        {ios ? (
           <BlurView
             blurAmount={10}
             blurType="light"
@@ -352,13 +349,10 @@ export default class EmojiSelector extends PureComponent {
             style={{
               color: colors.black,
               marginHorizontal: 10,
-              fontSize:
-                Math.floor(this.state.colSize) -
-                (Platform.OS === 'ios' ? 15 : 22),
+              fontSize: Math.floor(this.state.colSize) - (ios ? 15 : 22),
               height: (width - 21) / this.props.columns,
               width: deviceUtils.dimensions.width,
-              letterSpacing:
-                Platform.OS === 'ios' ? 8 : getBrand() === 'google' ? 11 : 8,
+              letterSpacing: ios ? 8 : getBrand() === 'google' ? 11 : 8,
               top: 0.8,
             }}
           >
@@ -540,7 +534,7 @@ EmojiSelector.defaultProps = {
   showHistory: false,
   showSearchBar: true,
   showSectionTitles: true,
-  showTabs: Platform.OS === 'ios',
+  showTabs: ios,
   theme: '#007AFF',
 };
 

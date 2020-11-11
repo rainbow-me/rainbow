@@ -59,6 +59,7 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
         />
         <Stack.Screen
           component={ModalScreen}
+          initialParams={params}
           name={Routes.SWAP_DETAILS_SCREEN}
           options={swapDetailsPreset}
         />
@@ -77,7 +78,7 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
 
     const setPointerEvents = useCallback(pointerEventsVal => {
       pointerEvents.current = pointerEventsVal;
-      ref.current.setNativeProps({
+      ref.current?.setNativeProps?.({
         pointerEvents: pointerEventsVal ? 'none' : 'auto',
       });
     }, []);
@@ -151,6 +152,7 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
       props => (
         <ScrollPagerWrapper
           {...props}
+          id="exchange"
           onMomentumScrollEnd={onMomentumScrollEnd}
           onSwipeEnd={(...args) => {
             onSwipeEnd(...args);
@@ -170,7 +172,7 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
 
     const toggleGestureEnabled = useCallback(
       dismissable => {
-        setOptions({ dismissable });
+        setOptions({ dismissable, gestureEnabled: dismissable });
       },
       [setOptions]
     );
@@ -209,16 +211,18 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
             name={Routes.CURRENCY_SELECT_SCREEN}
           />
         </Tabs.Navigator>
-        <View
-          pointerEvents="none"
-          ref={ref}
-          style={{
-            backgroundColor: 'transparent',
-            height: '100%',
-            position: 'absolute',
-            width: '100%',
-          }}
-        />
+        {ios && (
+          <View
+            pointerEvents="none"
+            ref={ref}
+            style={{
+              backgroundColor: 'transparent',
+              height: '100%',
+              position: 'absolute',
+              width: '100%',
+            }}
+          />
+        )}
       </View>
     );
   };

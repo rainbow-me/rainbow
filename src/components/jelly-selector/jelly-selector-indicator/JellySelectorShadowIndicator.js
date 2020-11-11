@@ -1,7 +1,7 @@
 import React from 'react';
 import Animated from 'react-native-reanimated';
-import ShadowStack from 'react-native-shadow-stack';
 import { colors } from '@rainbow-me/styles';
+import ShadowStack from 'react-native-shadow-stack';
 
 const AnimatedShadowStack = Animated.createAnimatedComponent(ShadowStack);
 

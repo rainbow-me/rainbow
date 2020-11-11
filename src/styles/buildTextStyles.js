@@ -1,5 +1,4 @@
 import { get, isNil } from 'lodash';
-import { Platform } from 'react-native';
 import { css } from 'styled-components/primitives';
 import colors from './colors';
 import fonts from './fonts';
@@ -10,6 +9,15 @@ function capitalizeFirstLetter(string) {
 
 function selectBestFontFit(mono, weight) {
   if (weight) {
+    if (weight === 900) {
+      return 'Heavy';
+    }
+    if (weight >= 700) {
+      return 'Bold';
+    }
+    if (weight >= 500) {
+      return 'Semibold';
+    }
     return weight <= 400
       ? 'Regular'
       : mono
@@ -20,27 +28,36 @@ function selectBestFontFit(mono, weight) {
   }
 }
 
+function familyFontWithAndroidWidth(weight, family, mono) {
+  return `${
+    fonts.family[
+      mono
+        ? `SFMono${android ? `-${selectBestFontFit(mono, weight)}` : ''}`
+        : family
+    ]
+  }${android ? `-${selectBestFontFit(mono, weight)}` : ''}`;
+}
+
+export function fontWithWidth(weight, family = 'SFProRounded', mono = false) {
+  return {
+    fontFamily: familyFontWithAndroidWidth(weight, family, mono),
+    // https://github.com/facebook/react-native/issues/18820
+    // https://www.youtube.com/watch?v=87rhZTumujw
+    ...(ios ? { fontWeight: weight } : { fontWeight: 'normal' }),
+  };
+}
+
 const buildTextStyles = css`
   /* Color */
   color: ${({ color }) => colors.get(color) || colors.dark};
 
   /* Font Family */
-  ${({ isEmoji, family = 'SFProRounded', mono, weight }) =>
-    isEmoji
+  ${({ isEmoji, family = 'SFProRounded', mono, weight }) => {
+    const t = isEmoji
       ? ''
-      : `font-family: ${
-          fonts.family[
-            mono
-              ? `SFMono${
-                  Platform.OS === 'android'
-                    ? `-${selectBestFontFit(mono, weight)}`
-                    : ''
-                }`
-              : family
-          ]
-        }${
-          Platform.OS === 'android' ? `-${selectBestFontFit(mono, weight)}` : ''
-        };`}
+      : `font-family: ${familyFontWithAndroidWidth(weight, family, mono)};`;
+    return t;
+  }}
 
   /* Font Size */
   font-size: ${({ size = 'medium' }) =>
@@ -48,7 +65,7 @@ const buildTextStyles = css`
 
   /* Font Weight */
   ${({ isEmoji, weight = 'regular' }) =>
-    isEmoji || isNil(weight)
+    isEmoji || isNil(weight) || android
       ? ''
       : `font-weight: ${get(fonts, `weight[${weight}]`, weight)};`}
 
@@ -64,7 +81,7 @@ const buildTextStyles = css`
 
   /* Line Height */
   ${({ isEmoji, lineHeight }) =>
-    isNil(lineHeight) || (isEmoji && Platform.OS === 'android')
+    isNil(lineHeight) || (isEmoji && android)
       ? ''
       : `line-height: ${get(fonts, `lineHeight[${lineHeight}]`, lineHeight)};`}
 

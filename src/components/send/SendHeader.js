@@ -14,7 +14,12 @@ import { colors, padding } from '@rainbow-me/styles';
 import { showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const AddressInputContainer = styled(Row).attrs({ align: 'center' })`
-  ${({ isSmallPhone }) => (isSmallPhone ? padding(12, 15) : padding(19, 15))};
+  ${({ isSmallPhone }) =>
+    isSmallPhone
+      ? padding(12, 15)
+      : android
+      ? padding(5, 15)
+      : padding(19, 15)};
   background-color: ${colors.white};
   overflow: hidden;
   width: 100%;
@@ -123,7 +128,7 @@ export default function SendHeader({
 
   return (
     <Fragment>
-      <SheetHandle />
+      {ios && <SheetHandle />}
       <AddressInputContainer isSmallPhone={isSmallPhone}>
         <AddressFieldLabel>To:</AddressFieldLabel>
         <AddressField

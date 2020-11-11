@@ -1,12 +1,10 @@
 import { useIsFocused } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Platform } from 'react-native';
 import styled from 'styled-components/primitives';
 import { ActivityList } from '../components/activity-list';
 import { BackButton, Header, HeaderButton } from '../components/header';
 import { Icon } from '../components/icons';
 import { Page } from '../components/layout';
-import { LoadingOverlay } from '../components/modal';
 import { ProfileMasthead } from '../components/profile';
 import TransactionList from '../components/transaction-list/TransactionList';
 import useNativeTransactionListAvailable from '../helpers/isNativeTransactionListAvailable';
@@ -16,11 +14,8 @@ import {
   useAccountTransactions,
   useContacts,
   useRequests,
-  useWallets,
 } from '../hooks';
 import { useNavigation } from '../navigation/Navigation';
-import { sheetVerticalOffset } from '../navigation/effects';
-import { usePortal } from '../react-native-cool-modals/Portal';
 import Routes from '@rainbow-me/routes';
 import { colors, position } from '@rainbow-me/styles';
 
@@ -35,29 +30,18 @@ export default function ProfileScreen({ navigation }) {
   const [activityListInitialized, setActivityListInitialized] = useState(false);
   const isFocused = useIsFocused();
   const { navigate } = useNavigation();
-  const { isWalletLoading } = useWallets();
   const nativeTransactionListAvailable = useNativeTransactionListAvailable();
-  const { setComponent, hide } = usePortal();
 
-  useEffect(() => {
-    if (isWalletLoading) {
-      setComponent(
-        <LoadingOverlay
-          paddingTop={sheetVerticalOffset}
-          title={isWalletLoading}
-        />,
-        false
-      );
-    }
-    return hide;
-  }, [hide, isWalletLoading, setComponent]);
+  const accountTransactions = useAccountTransactions(
+    activityListInitialized,
+    isFocused
+  );
   const {
     isLoadingTransactions: isLoading,
     sections,
     transactions,
     transactionsCount,
-  } = useAccountTransactions(activityListInitialized, isFocused);
-
+  } = accountTransactions;
   const { contacts } = useContacts();
   const { pendingRequestCount, requests } = useRequests();
   const { network } = useAccountSettings();
@@ -84,7 +68,7 @@ export default function ProfileScreen({ navigation }) {
 
   const addCashSupportedNetworks =
     network === NetworkTypes.kovan || network === NetworkTypes.mainnet;
-  const addCashAvailable = Platform.OS === 'ios' && addCashSupportedNetworks;
+  const addCashAvailable = addCashSupportedNetworks;
 
   return (
     <ProfileScreenPage testID="profile-screen">
@@ -114,7 +98,6 @@ export default function ProfileScreen({ navigation }) {
           header={
             <ProfileMasthead
               addCashAvailable={addCashAvailable}
-              navigation={navigation}
               onChangeWallet={onChangeWallet}
             />
           }
@@ -122,7 +105,9 @@ export default function ProfileScreen({ navigation }) {
           isLoading={isLoading}
           navigation={navigation}
           network={network}
+          recyclerListView={ios}
           sections={sections}
+          {...accountTransactions}
         />
       )}
     </ProfileScreenPage>

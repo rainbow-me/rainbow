@@ -1,0 +1,25 @@
+diff --git a/node_modules/@react-native-community/masked-view/android/src/main/java/org/reactnative/maskedview/RNCMaskedView.java b/node_modules/@react-native-community/masked-view/android/src/main/java/org/reactnative/maskedview/RNCMaskedView.java
+index 289d287..bac74c1 100644
+--- a/node_modules/@react-native-community/masked-view/android/src/main/java/org/reactnative/maskedview/RNCMaskedView.java
++++ b/node_modules/@react-native-community/masked-view/android/src/main/java/org/reactnative/maskedview/RNCMaskedView.java
+@@ -35,7 +35,9 @@ public class RNCMaskedView extends ReactViewGroup {
+     // draw the mask
+     if (mBitmapMask != null) {
+       mPaint.setXfermode(mPorterDuffXferMode);
+-      canvas.drawBitmap(mBitmapMask, 0, 0, mPaint);
++      if (!mBitmapMask.isRecycled()) {
++        canvas.drawBitmap(mBitmapMask, 0, 0, mPaint);
++      }
+       mPaint.setXfermode(null);
+     }
+   }
+@@ -55,6 +57,9 @@ public class RNCMaskedView extends ReactViewGroup {
+     }
+ 
+     View maskView = getChildAt(0);
++    if (maskView == null) {
++      return;
++    }
+     maskView.setVisibility(View.VISIBLE);
+     this.mBitmapMask = getBitmapFromView(maskView);
+     maskView.setVisibility(View.INVISIBLE);

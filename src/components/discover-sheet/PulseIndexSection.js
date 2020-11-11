@@ -1,7 +1,7 @@
 import React from 'react';
-import ShadowStack from 'react-native-shadow-stack';
 import { Text } from '../text';
 import { colors } from '@rainbow-me/styles';
+import ShadowStack from 'react-native-shadow-stack';
 
 export const PulseIndexShadow = [
   [0, 2, 5, colors.orange, 0.2],

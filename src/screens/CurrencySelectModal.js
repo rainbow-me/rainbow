@@ -3,12 +3,14 @@ import analytics from '@segment/analytics-react-native';
 import { concat, map } from 'lodash';
 import matchSorter from 'match-sorter';
 import React, {
+  Fragment,
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from 'react';
+import { StatusBar } from 'react-native';
 import Animated, { Extrapolate } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
 import GestureBlocker from '../components/GestureBlocker';
@@ -40,6 +42,7 @@ const TabTransitionAnimation = styled(Animated.View)`
 `;
 
 const headerlessSection = data => [{ data, title: '' }];
+const Wrapper = ios ? KeyboardFixedOpenLayout : Fragment;
 
 export default function CurrencySelectModal() {
   const isFocused = useIsFocused();
@@ -58,7 +61,7 @@ export default function CurrencySelectModal() {
   } = useRoute();
 
   const searchInputRef = useRef();
-  const { handleFocus } = useMagicAutofocus(searchInputRef);
+  const { handleFocus } = useMagicAutofocus(searchInputRef, undefined, true);
 
   const [assetsToFavoriteQueue, setAssetsToFavoriteQueue] = useState({});
   const [searchQuery, setSearchQuery] = useState('');
@@ -227,8 +230,9 @@ export default function CurrencySelectModal() {
   useEffect(() => {
     // on new focus state
     if (isFocused !== prevIsFocused) {
+      android && toggleGestureEnabled(!isFocused);
       startInteraction(() => {
-        toggleGestureEnabled(!isFocused);
+        ios && toggleGestureEnabled(!isFocused);
       });
     }
 
@@ -247,6 +251,8 @@ export default function CurrencySelectModal() {
     toggleGestureEnabled,
   ]);
 
+  const isFocusedAndroid = useIsFocused() && android;
+
   const shouldUpdateFavoritesRef = useRef(false);
   useEffect(() => {
     if (!searchQueryExists && shouldUpdateFavoritesRef.current) {
@@ -258,26 +264,37 @@ export default function CurrencySelectModal() {
   }, [assetsToFavoriteQueue, handleApplyFavoritesQueue, searchQueryExists]);
 
   return (
-    <KeyboardFixedOpenLayout>
+    <Wrapper>
       <TabTransitionAnimation
         style={{
-          opacity: interpolate(tabTransitionPosition, {
-            extrapolate: Extrapolate.CLAMP,
-            inputRange: [0, 1, 1],
-            outputRange: [0, 1, 1],
-          }),
+          opacity: android
+            ? 1
+            : interpolate(tabTransitionPosition, {
+                extrapolate: Extrapolate.CLAMP,
+                inputRange: [0, 1, 1],
+                outputRange: [0, 1, 1],
+              }),
           transform: [
             {
-              translateX: interpolate(tabTransitionPosition, {
-                extrapolate: Animated.Extrapolate.CLAMP,
-                inputRange: [0, 1, 1],
-                outputRange: [8, 0, 0],
-              }),
+              translateX: android
+                ? 0
+                : interpolate(tabTransitionPosition, {
+                    extrapolate: Animated.Extrapolate.CLAMP,
+                    inputRange: [0, 1, 1],
+                    outputRange: [8, 0, 0],
+                  }),
             },
           ],
         }}
       >
-        <Modal containerPadding={0} height="100%" overflow="hidden" radius={30}>
+        <Modal
+          containerPadding={0}
+          fullScreenOnAndroid
+          height="100%"
+          overflow="hidden"
+          radius={30}
+        >
+          {isFocusedAndroid && <StatusBar barStyle="dark-content" />}
           <GestureBlocker type="top" />
           <Column flex={1}>
             <CurrencySelectModalHeader testID="currency-select-header" />
@@ -303,6 +320,6 @@ export default function CurrencySelectModal() {
           <GestureBlocker type="bottom" />
         </Modal>
       </TabTransitionAnimation>
-    </KeyboardFixedOpenLayout>
+    </Wrapper>
   );
 }

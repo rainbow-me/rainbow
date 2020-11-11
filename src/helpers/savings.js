@@ -32,6 +32,10 @@ const formatSavingsAmount = amount => {
 };
 
 const isSymbolStablecoin = symbol => STABLECOINS.indexOf(symbol) !== -1;
+const isSymbolStablecoinWorklet = symbol => {
+  'worklet';
+  return STABLECOINS.indexOf(symbol) !== -1;
+};
 
 export {
   APPROX_BLOCK_TIME,
@@ -40,4 +44,5 @@ export {
   calculateEarningsInDays,
   formatSavingsAmount,
   isSymbolStablecoin,
+  isSymbolStablecoinWorklet,
 };

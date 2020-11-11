@@ -1,3 +1,4 @@
+import { useIsFocused } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
 import { View } from 'react-native';
 import Animated, { useCode } from 'react-native-reanimated';
@@ -66,7 +67,8 @@ function useFocusFromSwipe() {
 
 export default function QRScannerScreen() {
   const discoverSheetAvailable = useExperimentalFlag(DISCOVER_SHEET);
-  const isFocused = useFocusFromSwipe();
+  const isFocusedIOS = useFocusFromSwipe();
+  const isFocusedAndroid = useIsFocused();
   const [sheetHeight, onSheetLayout] = useHeight(240);
   const { navigate } = useNavigation();
   const {
@@ -81,17 +83,21 @@ export default function QRScannerScreen() {
 
   return (
     <View>
-      {discoverSheetAvailable ? <DiscoverSheet /> : null}
+      {discoverSheetAvailable && ios ? <DiscoverSheet /> : null}
       <ScannerContainer>
         <Background />
         <CameraDimmer>
           <QRCodeScanner
             contentPositionBottom={sheetHeight}
             contentPositionTop={HeaderHeight}
-            enableCamera={isFocused}
+            enableCamera={ios ? isFocusedIOS : isFocusedAndroid}
           />
         </CameraDimmer>
-        {discoverSheetAvailable ? null : (
+        {discoverSheetAvailable ? (
+          android ? (
+            <DiscoverSheet />
+          ) : null
+        ) : (
           <BubbleSheet onLayout={onSheetLayout}>
             {walletConnectorsCount ? (
               <WalletConnectList items={walletConnectorsByDappName} />

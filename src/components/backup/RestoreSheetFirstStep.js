@@ -1,6 +1,7 @@
 import { forEach } from 'lodash';
 import React, { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
+import { cloudPlatform } from '../../utils/platform';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
@@ -76,7 +77,7 @@ const DescriptionText = styled(Text).attrs({
 `;
 
 export default function RestoreSheetFirstStep({
-  onIcloudRestore,
+  onCloudRestore,
   onManualRestore,
   onWatchAddress,
   userData,
@@ -93,7 +94,7 @@ export default function RestoreSheetFirstStep({
     return count;
   }, [userData]);
 
-  const enableCloudRestore = walletsBackedUp > 0;
+  const enableCloudRestore = android || walletsBackedUp > 0;
   useEffect(() => {
     setParams({ enableCloudRestore });
   }, [enableCloudRestore, setParams]);
@@ -102,7 +103,7 @@ export default function RestoreSheetFirstStep({
     <Container>
       {enableCloudRestore && (
         <React.Fragment>
-          <SheetRow as={ButtonPressAnimation} onPress={onIcloudRestore}>
+          <SheetRow as={ButtonPressAnimation} onPress={onCloudRestore}>
             <Column>
               <Row>
                 <RainbowText>
@@ -111,14 +112,16 @@ export default function RestoreSheetFirstStep({
               </Row>
               <TitleRow>
                 <RainbowText>
-                  <Title>Restore from iCloud</Title>
+                  <Title>Restore from {cloudPlatform}</Title>
                 </RainbowText>
                 <CaretIcon />
               </TitleRow>
               <DescriptionText>
-                {`You have ${walletsBackedUp} ${
-                  walletsBackedUp > 1 ? 'wallets' : 'wallet'
-                } backed up`}
+                {ios
+                  ? `You have ${walletsBackedUp} ${
+                      walletsBackedUp > 1 ? 'wallets' : 'wallet'
+                    } backed up`
+                  : `If you previously backed up your wallet on ${cloudPlatform} tap here to restore it.`}
               </DescriptionText>
             </Column>
           </SheetRow>

@@ -230,6 +230,10 @@ export async function saveBackupPassword(
 
 // Attempts to fetch the password to decrypt the backup from the iCloud keychain
 export async function fetchBackupPassword(): Promise<null | BackupPassword> {
+  if (android) {
+    return null;
+  }
+
   try {
     const results = await requestSharedWebCredentials();
     if (results) {

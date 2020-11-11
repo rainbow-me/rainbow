@@ -1,11 +1,11 @@
 import React, { useMemo } from 'react';
 import { FallbackIcon } from 'react-coin-icon';
-import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import { initials } from '../../utils';
 import ImageWithCachedMetadata from '../ImageWithCachedMetadata';
 import { Emoji } from '../text';
 import { borders, colors } from '@rainbow-me/styles';
+import ShadowStack from 'react-native-shadow-stack';
 
 const shadows = [
   [0, 4, 6, colors.dark, 0.04],

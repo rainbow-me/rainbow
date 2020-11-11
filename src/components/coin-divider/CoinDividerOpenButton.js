@@ -58,6 +58,7 @@ const CoinDividerOpenButton = ({
     {...props}
     isSmallBalancesOpen={isSmallBalancesOpen}
     onPress={onPress}
+    radiusAndroid={RoundButtonCapSize / 2}
   >
     <OpacityToggler isVisible={isVisible}>
       <Content height={coinDividerHeight}>

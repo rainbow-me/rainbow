@@ -20,6 +20,7 @@ const PagerItem = styled(Row)`
   border-radius: 2px;
   margin-left: ${({ selected }) => (selected ? '2' : '2.5')}px;
   margin-right: ${({ selected }) => (selected ? '0' : '0.5')}px;
+  ${android ? `margin-top: -3px;` : ``}
 `;
 
 const GasSpeedLabelPager = ({ label, theme, showPager = true }) => {

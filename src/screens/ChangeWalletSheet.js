@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { InteractionManager, Platform } from 'react-native';
+import { InteractionManager } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
@@ -326,7 +326,7 @@ export default function ChangeWalletSheet() {
             isNewProfile: true,
             onCloseModal: async args => {
               if (args) {
-                setIsWalletLoading(WalletLoadingStates.CREATING_ACCOUNT);
+                setIsWalletLoading(WalletLoadingStates.CREATING_WALLET);
                 const name = get(args, 'name', '');
                 const color = get(args, 'color', colors.getRandomColor());
                 // Check if the selected wallet is the primary
@@ -437,7 +437,7 @@ export default function ChangeWalletSheet() {
 
   return (
     <Sheet borderRadius={30}>
-      {Platform.OS === 'android' && <Whitespace />}
+      {android && <Whitespace />}
       <Column height={headerHeight} justify="space-between">
         <SheetTitle>Wallets</SheetTitle>
         {showDividers && (

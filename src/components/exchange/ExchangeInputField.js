@@ -1,12 +1,11 @@
 import React from 'react';
-import { Platform } from 'react-native';
 import styled from 'styled-components/primitives';
 import { ColumnWithMargins, Row } from '../layout';
 import ExchangeField from './ExchangeField';
 import ExchangeMaxButton from './ExchangeMaxButton';
 import ExchangeNativeField from './ExchangeNativeField';
 
-const BottomRowHeight = Platform.OS === 'android' ? 52 : 32;
+const BottomRowHeight = android ? 52 : 32;
 
 const Container = styled(ColumnWithMargins).attrs({ margin: 5 })`
   padding-top: 6;
@@ -43,6 +42,7 @@ export default function ExchangeInputField({
       <ExchangeField
         address={inputCurrencyAddress}
         amount={inputAmount}
+        autoFocus={android}
         disableCurrencySelection={disableInputCurrencySelection}
         onFocus={onFocus}
         onPressSelectCurrency={onPressSelectInputCurrency}
@@ -53,7 +53,7 @@ export default function ExchangeInputField({
       />
       <NativeFieldRow>
         <ExchangeNativeField
-          editable={!!inputCurrencySymbol}
+          editable
           height={BottomRowHeight}
           nativeAmount={nativeAmount}
           nativeCurrency={nativeCurrency}

@@ -1,5 +1,5 @@
 import MaskedView from '@react-native-community/masked-view';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Animated, {
   useAnimatedStyle,
   useDerivedValue,
@@ -18,11 +18,6 @@ const ArrowIcon = styled(Icon).attrs({
 
 export default function ChartChangeDirectionArrow() {
   const ratio = useRatio('ChartChangeDirectionArrowRatio');
-
-  const [hidden, setHidden] = useState(true);
-  useEffect(() => {
-    setTimeout(() => setHidden(false), 1000);
-  }, []);
 
   const arrowColor = useDerivedValue(
     () =>
@@ -47,7 +42,7 @@ export default function ChartChangeDirectionArrow() {
     };
   });
 
-  return hidden ? null : (
+  return (
     <Animated.View style={arrowWrapperStyle}>
       <AnimatedMaskedView
         maskElement={<ArrowIcon />}

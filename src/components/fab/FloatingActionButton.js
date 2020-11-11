@@ -1,10 +1,10 @@
 import React, { useCallback } from 'react';
-import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import { magicMemo } from '../../utils';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Centered, InnerBorder } from '../layout';
 import { borders, colors, position } from '@rainbow-me/styles';
+import ShadowStack from 'react-native-shadow-stack';
 
 export const FloatingActionButtonSize = 56;
 
@@ -46,7 +46,7 @@ const FloatingActionButton = ({
 
   return (
     <ButtonPressAnimation
-      disabled={disabled}
+      disabled={disabled || android}
       hapticType="impactLight"
       onPress={handlePress}
       onPressIn={handlePressIn}
@@ -59,10 +59,18 @@ const FloatingActionButton = ({
         hideShadow={disabled}
         shadows={shadows}
       >
-        <Content backgroundColor={disabled ? colors.grey : backgroundColor}>
-          {typeof children === 'function' ? children({ size }) : children}
-          {!disabled && <InnerBorder opacity={0.06} radius={size / 2} />}
-        </Content>
+        <ButtonPressAnimation
+          disabled={disabled || ios}
+          onPress={handlePress}
+          style={{
+            height: size,
+          }}
+        >
+          <Content backgroundColor={disabled ? colors.grey : backgroundColor}>
+            {typeof children === 'function' ? children({ size }) : children}
+            {!disabled && <InnerBorder opacity={0.06} radius={size / 2} />}
+          </Content>
+        </ButtonPressAnimation>
       </ShadowStack>
     </ButtonPressAnimation>
   );

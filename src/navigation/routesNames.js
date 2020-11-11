@@ -4,6 +4,7 @@ const Routes = {
   ADD_CASH_SCREEN_NAVIGATOR: 'AddCashSheetNavigator',
   ADD_CASH_SHEET: 'AddCashSheet',
   AVATAR_BUILDER: 'AvatarBuilder',
+  BACKUP_SCREEN: 'BackupScreen',
   BACKUP_SHEET: 'BackupSheet',
   CHANGE_WALLET_SHEET: 'ChangeWalletSheet',
   CHANGE_WALLET_SHEET_NAVIGATOR: 'ChangeWalletSheetNavigator',
@@ -11,6 +12,7 @@ const Routes = {
   CURRENCY_SELECT_SCREEN: 'CurrencySelectScreen',
   EXAMPLE_SCREEN: 'ExampleScreen',
   EXCHANGE_MODAL: 'ExchangeModal',
+  EXPANDED_ASSET_SCREEN: 'ExpandedAssetScreen',
   EXPANDED_ASSET_SHEET: 'ExpandedAssetSheet',
   IMPORT_SCREEN: 'ImportScreen',
   IMPORT_SEED_PHRASE_SHEET: 'ImportSeedPhraseSheet',
@@ -22,6 +24,7 @@ const Routes = {
   MAIN_NAVIGATOR_WRAPPER: 'MainNavigatorWrapper',
   MODAL_SCREEN: 'ModalScreen',
   NATIVE_STACK: 'NativeStack',
+  PIN_AUTHENTICATION_SCREEN: 'PinAuthenticationScreen',
   PROFILE_SCREEN: 'ProfileScreen',
   QR_SCANNER_SCREEN: 'QRScannerScreen',
   RECEIVE_MODAL: 'ReceiveModal',
@@ -40,6 +43,7 @@ const Routes = {
   WALLET_CONNECT_REDIRECT_SHEET: 'WalletConnectRedirectSheet',
   WALLET_SCREEN: 'WalletScreen',
   WELCOME_SCREEN: 'WelcomeScreen',
+  WYRE_WEBVIEW: 'WyreWebview',
 };
 
 export const NATIVE_ROUTES = [

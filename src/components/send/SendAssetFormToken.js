@@ -17,7 +17,7 @@ const FooterContainer = styled(ColumnWithMargins).attrs(({ deviceHeight }) => ({
 `;
 
 const FormContainer = styled(Column)`
-  flex: ${({ isSmallPhone }) => (isSmallPhone ? 1.75 : 1)};
+  flex: ${({ isSmallPhone }) => (android ? 1.8 : isSmallPhone ? 1.75 : 1)};
   width: 100%;
 `;
 

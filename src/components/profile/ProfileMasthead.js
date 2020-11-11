@@ -2,7 +2,6 @@ import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
 import { find } from 'lodash';
 import React, { useCallback, useRef } from 'react';
-import { Platform } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components/primitives';
@@ -55,9 +54,9 @@ const AccountName = styled(TruncatedText).attrs({
   truncationLength: 4,
   weight: 'bold',
 })`
-  height: 33;
-  margin-top: -1;
-  margin-bottom: 1;
+  height: ${android ? '38' : '33'};
+  margin-top: ${android ? '-10' : '-1'};
+  margin-bottom: ${android ? '10' : '1'};
   max-width: ${({ deviceWidth }) => deviceWidth - dropdownArrowWidth - 60};
   padding-right: 6;
 `;
@@ -128,10 +127,9 @@ export default function ProfileMasthead({
             const newWallets = { ...wallets };
             const walletId = selectedWallet.id;
             newWallets[walletId].addresses.some((account, index) => {
-              newWallets[walletId].addresses[index].image =
-                Platform.OS === 'ios'
-                  ? `~${image?.path.slice(stringIndex)}`
-                  : image?.path;
+              newWallets[walletId].addresses[index].image = ios
+                ? `~${image?.path.slice(stringIndex)}`
+                : image?.path;
               dispatch(walletsSetSelected(newWallets[walletId]));
               return true;
             });
@@ -143,7 +141,7 @@ export default function ProfileMasthead({
             'Choose from Library',
             ...(isAvatarPickerAvailable ? ['Pick an Emoji'] : []),
             ...(accountImage ? ['Remove Photo'] : []),
-            ...(Platform.OS === 'ios' ? ['Cancel'] : []),
+            ...(ios ? ['Cancel'] : []),
           ];
 
           showActionSheetWithOptions(
@@ -212,11 +210,19 @@ export default function ProfileMasthead({
       showWalletErrorAlert();
       return;
     }
-    navigate(Routes.ADD_CASH_FLOW);
+
     analytics.track('Tapped Add Cash', {
       category: 'add cash',
     });
-  }, [navigate, isDamaged]);
+
+    if (ios) {
+      navigate(Routes.ADD_CASH_FLOW);
+    } else {
+      navigate(Routes.WYRE_WEBVIEW, {
+        address: accountAddress,
+      });
+    }
+  }, [accountAddress, navigate, isDamaged]);
 
   const handlePressChangeWallet = useCallback(() => {
     navigate(Routes.CHANGE_WALLET_SHEET);

@@ -35,12 +35,16 @@ export default function BiometricButtonContent({
   const showBiometryIcon =
     showIcon &&
     (biometryType === BiometryTypes.passcode ||
-      biometryType === BiometryTypes.TouchID);
-  const showFaceIDCharacter = showIcon && biometryType === BiometryTypes.FaceID;
+      biometryType === BiometryTypes.TouchID ||
+      biometryType === BiometryTypes.Fingerprint);
+  const showFaceIDCharacter =
+    showIcon &&
+    (biometryType === BiometryTypes.FaceID ||
+      biometryType === BiometryTypes.Face);
 
   return (
     <RowWithMargins centered margin={7} {...props}>
-      {showBiometryIcon && (
+      {!android && showBiometryIcon && (
         <BiometryIcon biometryType={biometryType} color={color} />
       )}
       <ButtonLabel color={color} testID={testID}>

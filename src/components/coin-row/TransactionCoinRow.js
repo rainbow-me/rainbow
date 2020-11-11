@@ -12,6 +12,7 @@ import { isENSAddressFormat } from '../../helpers/validators';
 import { useAccountSettings } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
 import { ButtonPressAnimation } from '../animations';
+import { CoinIconSize } from '../coin-icon';
 import { FlexItem, Row, RowWithMargins } from '../layout';
 import BalanceText from './BalanceText';
 import BottomRowText from './BottomRowText';
@@ -115,7 +116,7 @@ export default function TransactionCoinRow({ item, ...props }) {
     }
 
     if (hash) {
-      let buttons = ['View on Etherscan', 'Cancel'];
+      let buttons = ['View on Etherscan', ...(ios ? ['Cancel'] : [])];
       if (showContactInfo) {
         buttons.unshift(contact ? 'View Contact' : 'Add to Contacts');
       }
@@ -141,7 +142,7 @@ export default function TransactionCoinRow({ item, ...props }) {
               asset: item,
               color: contactColor,
               contact,
-              type: 'contact',
+              type: 'contact_profile',
             });
           } else if (
             (!showContactInfo && buttonIndex === 0) ||
@@ -165,6 +166,15 @@ export default function TransactionCoinRow({ item, ...props }) {
         {...props}
         bottomRowRender={BottomRow}
         containerStyles={containerStyles}
+        {...(android
+          ? {
+              contentStyles: {
+                height:
+                  CoinIconSize +
+                  (item.status === TransactionStatusTypes.swapped ? 0 : 14),
+              },
+            }
+          : {})}
         topRowRender={TopRow}
       />
     </ButtonPressAnimation>

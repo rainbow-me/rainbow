@@ -1,9 +1,10 @@
 import { useRoute } from '@react-navigation/native';
+import { HeaderBackButton } from '@react-navigation/stack';
 import React, { useCallback } from 'react';
 import styled from 'styled-components/primitives';
 import { delayNext } from '../../hooks/useMagicAutofocus';
 import { useNavigation } from '../../navigation/Navigation';
-import { BackButton } from '../header';
+import { BackButton as IOSBackButton } from '../header';
 import { Centered } from '../layout';
 import { TruncatedText } from '../text';
 import Routes from '@rainbow-me/routes';
@@ -33,6 +34,8 @@ const Title = styled(TruncatedText).attrs({
   ${padding(1, 0, 0)};
   height: 21;
 `;
+
+const BackButton = ios ? IOSBackButton : HeaderBackButton;
 
 export default function CurrencySelectModalHeader({ testID }) {
   const { navigate, dangerouslyGetState } = useNavigation();

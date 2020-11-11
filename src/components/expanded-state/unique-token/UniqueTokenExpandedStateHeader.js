@@ -13,7 +13,7 @@ import { colors, padding } from '@rainbow-me/styles';
 const contextButtonOptions = [
   'Share',
   'View on OpenSea',
-  lang.t('wallet.action.cancel'),
+  ...(ios ? [lang.t('wallet.action.cancel')] : []),
 ];
 
 const paddingHorizontal = 19;

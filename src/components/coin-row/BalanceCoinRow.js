@@ -1,14 +1,16 @@
 import { get } from 'lodash';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
+import Animated from 'react-native-reanimated';
 import { View } from 'react-primitives';
 import { compose } from 'recompact';
 import styled from 'styled-components/primitives';
 import {
-  withCoinListEdited,
   withCoinRecentlyPinned,
   withEditOptions,
   withOpenBalances,
 } from '../../hoc';
+import { useCoinListEditedValue } from '../../hooks/useCoinListEdited';
+import store from '../../redux/store';
 import { ButtonPressAnimation } from '../animations';
 import { ChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
 import { Column, FlexItem } from '../layout';
@@ -84,8 +86,6 @@ const TopRow = ({ name, native, nativeCurrencySymbol }) => {
 
 const BalanceCoinRow = ({
   containerStyles,
-  firstCoinRowMarginTop,
-  isCoinListEdited,
   isFirstCoinRow,
   item,
   onPress,
@@ -96,15 +96,16 @@ const BalanceCoinRow = ({
 }) => {
   const [toggle, setToggle] = useState(false);
   const [previousPinned, setPreviousPinned] = useState(0);
-  const firstCoinRowCoinCheckMarginTop = firstCoinRowMarginTop + 9;
-
+  const isCoinListEditedValue = useCoinListEditedValue();
   useEffect(() => {
+    const { isCoinListEdited } = store.getState().editOptions;
+
     if (toggle && (recentlyPinnedCount > previousPinned || !isCoinListEdited)) {
       setPreviousPinned(recentlyPinnedCount);
       setToggle(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isCoinListEdited, recentlyPinnedCount]);
+  }, [recentlyPinnedCount]);
 
   const handleEditModePress = useCallback(() => {
     if (toggle) {
@@ -115,35 +116,49 @@ const BalanceCoinRow = ({
     setToggle(!toggle);
   }, [item.uniqueId, pushSelectedCoin, removeSelectedCoin, setToggle, toggle]);
 
-  const handlePress = useCallback(
-    () => onPress?.(item, { longFormHeight: ChartExpandedStateSheetHeight }),
-    [onPress, item]
-  );
+  const handlePress = useCallback(() => {
+    const { isCoinListEdited } = store.getState().editOptions;
+    if (isCoinListEdited) {
+      handleEditModePress();
+    } else {
+      onPress?.(item, { longFormHeight: ChartExpandedStateSheetHeight });
+    }
+  }, [handleEditModePress, onPress, item]);
 
   return (
     <Column flex={1} justify={isFirstCoinRow ? 'end' : 'start'}>
-      <Content
-        isEditMode={isCoinListEdited}
-        onPress={isCoinListEdited ? handleEditModePress : handlePress}
-        scaleTo={0.96}
-        testID={`balance-coin-row-${item.name}`}
+      <Animated.View
+        style={{
+          paddingLeft: Animated.multiply(
+            editTranslateOffset,
+            isCoinListEditedValue
+          ),
+        }}
       >
-        <CoinRow
-          bottomRowRender={BottomRow}
-          containerStyles={containerStyles}
+        <Content
           onPress={handlePress}
-          topRowRender={TopRow}
-          {...item}
-          {...props}
-        />
-      </Content>
-      {isCoinListEdited ? (
+          scaleTo={0.96}
+          testID={`balance-coin-row-${item.name}`}
+        >
+          <CoinRow
+            bottomRowRender={BottomRow}
+            containerStyles={containerStyles}
+            onPress={handlePress}
+            topRowRender={TopRow}
+            {...item}
+            {...props}
+          />
+        </Content>
+      </Animated.View>
+      <Animated.View
+        style={{ opacity: isCoinListEditedValue, position: 'absolute' }}
+      >
         <BalanceCoinRowCoinCheckButton
           onPress={handleEditModePress}
           toggle={toggle}
-          top={isFirstCoinRow ? firstCoinRowCoinCheckMarginTop : 9}
+          top={isFirstCoinRow ? -53 : 9}
         />
-      ) : null}
+      </Animated.View>
     </Column>
   );
 };
@@ -176,6 +191,5 @@ const MemoizedBalanceCoinRow = React.memo(BalanceCoinRow, arePropsEqual);
 export default compose(
   withOpenBalances,
   withEditOptions,
-  withCoinListEdited,
   withCoinRecentlyPinned
 )(MemoizedBalanceCoinRow);

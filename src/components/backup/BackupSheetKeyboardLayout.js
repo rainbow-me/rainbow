@@ -1,3 +1,4 @@
+import { useRoute } from '@react-navigation/native';
 import React from 'react';
 import { StatusBar } from 'react-native';
 import styled from 'styled-components';
@@ -20,20 +21,28 @@ export default function BackupSheetKeyboardLayout({
   footerButtonDisabled,
   footerButtonLabel,
   onSubmit,
+  type,
 }) {
+  const { params: { nativeScreen } = {} } = useRoute();
   const { height: deviceHeight, isTallPhone } = useDimensions();
   const keyboardHeight = useKeyboardHeight({
     keyboardType: KeyboardTypes.password,
   });
 
+  const platformKeyboardHeight = android
+    ? type === 'restore'
+      ? -10
+      : -30
+    : keyboardHeight;
+
   const sheetRegionAboveKeyboardHeight =
     deviceHeight -
-    keyboardHeight -
+    platformKeyboardHeight -
     sharedCoolModalTopOffset -
     SheetHandleFixedToTopHeight;
 
   return (
-    <Column height={sheetRegionAboveKeyboardHeight}>
+    <Column height={nativeScreen ? undefined : sheetRegionAboveKeyboardHeight}>
       <StatusBar barStyle="light-content" />
       {children}
       <Footer isTallPhone={isTallPhone}>

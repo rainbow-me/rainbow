@@ -1,6 +1,4 @@
 import React, { useMemo } from 'react';
-import { Platform } from 'react-native';
-import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import { useAccountProfile } from '../../hooks';
 import { ButtonPressAnimation } from '../animations';
@@ -8,25 +6,26 @@ import ImageAvatar from '../contacts/ImageAvatar';
 import { Flex, InnerBorder } from '../layout';
 import { Text } from '../text';
 import { colors, position } from '@rainbow-me/styles';
+import ShadowStack from 'react-native-shadow-stack';
 
 const AvatarCircleSize = 65;
 
 const AvatarCircleView = styled(Flex)`
   ${position.size(AvatarCircleSize)};
   margin-bottom: 16px;
-  justify-content: ${Platform.OS === 'ios' ? 'flex-start' : 'center'};
-  align-items: ${Platform.OS === 'ios' ? 'flex-start' : 'center'};
+  justify-content: ${ios ? 'flex-start' : 'center'};
+  align-items: ${ios ? 'flex-start' : 'center'};
 `;
 
 const FirstLetter = styled(Text).attrs({
   align: 'center',
   color: colors.white,
   letterSpacing: 2,
-  lineHeight: 66,
-  size: Platform.OS === 'ios' ? 38 : 30,
+  lineHeight: android ? 68 : 66,
+  size: ios ? 38 : 30,
   weight: 'semibold',
 })`
-  width: 67;
+  width: ${android ? 66 : 67};
 `;
 
 export default function AvatarCircle({
@@ -36,31 +35,31 @@ export default function AvatarCircle({
   image,
 }) {
   const { accountColor, accountSymbol } = useAccountProfile();
-  const shadows =
-    Platform.OS === 'ios'
-      ? // eslint-disable-next-line react-hooks/rules-of-hooks
-        useMemo(
-          () => ({
-            default: [
-              [0, 2, 5, colors.dark, 0.2],
-              [
-                0,
-                6,
-                10,
-                colors.alpha(colors.avatarColor[accountColor || 0], 0.6),
-              ],
+  const shadows = ios
+    ? // eslint-disable-next-line react-hooks/rules-of-hooks
+      useMemo(
+        () => ({
+          default: [
+            [0, 2, 5, colors.dark, 0.2],
+            [
+              0,
+              6,
+              10,
+              colors.alpha(colors.avatarColor[accountColor || 0], 0.6),
             ],
-            overlay: [
-              [0, 6, 10, colors.black, 0.08],
-              [0, 2, 5, colors.black, 0.12],
-            ],
-          }),
-          [accountColor]
-        )
-      : [];
+          ],
+          overlay: [
+            [0, 6, 10, colors.black, 0.08],
+            [0, 2, 5, colors.black, 0.12],
+          ],
+        }),
+        [accountColor]
+      )
+    : [];
 
   return (
     <ButtonPressAnimation
+      disabled={android || !isAvatarPickerAvailable}
       enableHapticFeedback={isAvatarPickerAvailable}
       marginTop={2}
       onPress={onPress}
@@ -78,7 +77,12 @@ export default function AvatarCircle({
           <ImageAvatar image={image} size="large" />
         ) : (
           <AvatarCircleView backgroundColor={colors.avatarColor[accountColor]}>
-            <FirstLetter>{accountSymbol}</FirstLetter>
+            <ButtonPressAnimation
+              disabled={ios || !isAvatarPickerAvailable}
+              onPress={onPress}
+            >
+              <FirstLetter>{accountSymbol}</FirstLetter>
+            </ButtonPressAnimation>
             {!overlayStyles && <InnerBorder opacity={0.02} radius={65} />}
           </AvatarCircleView>
         )}

@@ -1,6 +1,5 @@
 import { toLower } from 'lodash';
 import React, { useCallback, useState } from 'react';
-import { Platform } from 'react-native';
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import styled from 'styled-components/primitives';
@@ -14,10 +13,10 @@ import { Text, TruncatedAddress } from '../components/text';
 import { CopyToast, ToastPositionContainer } from '../components/toasts';
 import { useAccountProfile } from '../hooks';
 import { useNavigation } from '../navigation/Navigation';
-import { abbreviations } from '../utils';
+import { abbreviations, deviceUtils } from '../utils';
 import { colors, padding, shadow } from '@rainbow-me/styles';
 
-const QRCodeSize = Platform.OS === 'ios' ? 250 : 190;
+const QRCodeSize = ios ? 250 : Math.min(230, deviceUtils.dimensions.width - 20);
 
 const AddressText = styled(TruncatedAddress).attrs({
   align: 'center',

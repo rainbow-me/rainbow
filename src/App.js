@@ -9,8 +9,8 @@ import React, { Component } from 'react';
 import {
   AppRegistry,
   AppState,
+  Linking,
   NativeModules,
-  Platform,
   StatusBar,
   unstable_enableLogBox,
 } from 'react-native';
@@ -30,8 +30,9 @@ import { enableScreens } from 'react-native-screens';
 import VersionNumber from 'react-native-version-number';
 import { connect, Provider } from 'react-redux';
 import { compose, withProps } from 'recompact';
+import PortalConsumer from './components/PortalConsumer';
 import { FlexItem } from './components/layout';
-import { OfflineToast, TestnetToast } from './components/toasts';
+import { OfflineToast } from './components/toasts';
 import {
   reactNativeDisableYellowBox,
   reactNativeEnableLogbox,
@@ -132,6 +133,21 @@ class App extends Component {
         handleDeeplink(uri);
       }
     });
+
+    // Walletconnect uses direct deeplinks
+    if (android) {
+      try {
+        const initialUrl = await Linking.getInitialURL();
+        if (initialUrl) {
+          handleDeeplink(initialUrl);
+        }
+      } catch (e) {
+        logger.log('Error opening deeplink', e);
+      }
+      Linking.addEventListener('url', ({ url }) => {
+        handleDeeplink(url);
+      });
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -139,18 +155,16 @@ class App extends Component {
       // Everything we need to do after the wallet is ready goes here
       logger.sentry('✅ Wallet ready!');
       runKeychainIntegrityChecks();
-      if (Platform.OS === 'ios') {
-        runWalletBackupStatusChecks();
-      }
+      runWalletBackupStatusChecks();
     }
   }
 
   componentWillUnmount() {
     AppState.removeEventListener('change', this.handleAppStateChange);
-    this.onTokenRefreshListener();
-    this.foregroundNotificationListener();
-    this.backgroundNotificationListener();
-    this.branchListener();
+    this.onTokenRefreshListener?.();
+    this.foregroundNotificationListener?.();
+    this.backgroundNotificationListener?.();
+    this.branchListener?.();
   }
 
   identifyFlow = async () => {
@@ -239,10 +253,10 @@ class App extends Component {
               {this.state.initialRoute && (
                 <InitialRouteContext.Provider value={this.state.initialRoute}>
                   <RoutesComponent ref={this.handleNavigatorRef} />
+                  <PortalConsumer />
                 </InitialRouteContext.Provider>
               )}
               <OfflineToast />
-              <TestnetToast network={this.props.network} />
             </FlexItem>
           </Provider>
         </SafeAreaProvider>

@@ -2,12 +2,12 @@ import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import Animated, { Easing } from 'react-native-reanimated';
 import { mixColor, useTimingTransition } from 'react-native-redash';
-import ShadowStack from 'react-native-shadow-stack';
 
 import { ButtonPressAnimation, interpolate } from '../animations';
 import { Icon } from '../icons';
 import { Centered, InnerBorder } from '../layout';
 import { colors, position } from '@rainbow-me/styles';
+import ShadowStack from 'react-native-shadow-stack';
 
 const AnimatedCenter = Animated.createAnimatedComponent(Centered);
 const AnimatedShadowStack = Animated.createAnimatedComponent(ShadowStack);

@@ -1,4 +1,7 @@
-import { Keyboard, Platform, StatusBar } from 'react-native';
+import React from 'react';
+import { Keyboard, StatusBar } from 'react-native';
+import styled from 'styled-components/primitives';
+import { Icon } from '../components/icons';
 import { SheetHandleFixedToTopHeight } from '../components/sheet';
 import { onDidPop, onWillPop } from './Navigation';
 import { appearListener } from './nativeStackHelpers';
@@ -156,13 +159,21 @@ export const savingsSheetConfig = {
 
 export const stackNavigationConfig = {
   headerMode: 'none',
-  keyboardHandlingEnabled: Platform.OS === 'ios',
+  keyboardHandlingEnabled: ios,
   mode: 'modal',
 };
 
 export const defaultScreenStackOptions = {
   animationTypeForReplace: 'pop',
   gestureEnabled: true,
+};
+
+export const closeKeyboardOnClose = {
+  listeners: {
+    transitionEnd: ({ data: { closing } }) => {
+      closing && android && Keyboard.dismiss();
+    },
+  },
 };
 
 export const nativeStackDefaultConfig = {
@@ -202,4 +213,67 @@ export const exchangeTabNavigatorConfig = {
   swipeVelocityScale: 1,
   tabBar: () => null,
   transparentCard: true,
+};
+
+const transitionConfig = {
+  damping: 35,
+  mass: 1,
+  overshootClamping: false,
+  restDisplacementThreshold: 0.01,
+  restSpeedThreshold: 0.01,
+  stiffness: 450,
+};
+
+const BackArrow = styled(Icon).attrs({
+  color: colors.appleBlue,
+  direction: 'left',
+  name: 'caret',
+})`
+  margin-left: 15;
+  margin-right: 5;
+  margin-top: ${android ? 2 : 0.5};
+`;
+const BackImage = () => <BackArrow />;
+
+export const settingsOptions = {
+  cardShadowEnabled: false,
+  cardStyle: { backgroundColor: colors.white, overflow: 'visible' },
+  gestureEnabled: true,
+  gestureResponseDistance: { horizontal: deviceUtils.dimensions.width },
+  ...(ios && { headerBackImage: BackImage }),
+  headerBackTitle: 'Back',
+  headerBackTitleStyle: {
+    fontFamily: fonts.family.SFProRounded,
+    fontSize: parseFloat(fonts.size.large),
+    fontWeight: fonts.weight.medium,
+    letterSpacing: fonts.letterSpacing.roundedMedium,
+  },
+  ...(android && {
+    headerRightContainerStyle: {
+      paddingTop: 6,
+    },
+  }),
+  headerStatusBarHeight: 0,
+  headerStyle: {
+    backgroundColor: 'transparent',
+    elevation: 0,
+    height: 49,
+    shadowColor: 'transparent',
+  },
+  headerTitleStyle: {
+    fontFamily: fonts.family.SFProRounded,
+    fontSize: parseFloat(fonts.size.large),
+    fontWeight: fonts.weight.bold,
+    letterSpacing: fonts.letterSpacing.roundedMedium,
+  },
+  transitionSpec: {
+    close: {
+      animation: 'spring',
+      config: transitionConfig,
+    },
+    open: {
+      animation: 'spring',
+      config: transitionConfig,
+    },
+  },
 };

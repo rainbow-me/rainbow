@@ -6,14 +6,17 @@ import ChartHeaderTitle from './ChartHeaderTitle';
 import { ChartYLabel } from '@rainbow-me/animated-charts';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import supportedNativeCurrencies from '@rainbow-me/references/native-currencies.json';
-import { fonts } from '@rainbow-me/styles';
+import { fonts, fontWithWidth } from '@rainbow-me/styles';
 
 const Label = styled(ChartYLabel)`
-  font-family: ${fonts.family.SFProRounded};
+  ${fontWithWidth(fonts.weight.bold)};
   font-size: ${fonts.size.big};
-  font-weight: ${fonts.weight.heavy};
   letter-spacing: ${fonts.letterSpacing.roundedTight};
-  width: 100%;
+  font-variant: tabular-nums;
+  text-align: right;
+  ${android &&
+    `margin-top: -8;
+     margin-bottom: -16;`}
 `;
 
 export function formatNative(value, priceSharedValue, nativeSelected) {

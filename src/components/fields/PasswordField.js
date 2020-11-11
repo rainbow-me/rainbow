@@ -1,12 +1,12 @@
 import React, { useCallback } from 'react';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import ShadowStack from 'react-native-shadow-stack/dist/ShadowStack';
 import styled from 'styled-components';
 import { Icon } from '../icons';
 import { Input } from '../inputs';
 import { cloudBackupPasswordMinLength } from '@rainbow-me/handlers/cloudBackup';
 import { useDimensions } from '@rainbow-me/hooks';
 import { colors, padding, position } from '@rainbow-me/styles';
+import ShadowStack from 'react-native-shadow-stack';
 
 const FieldAccessoryBadgeSize = 22;
 const FieldAccessoryBadgeWrapper = styled(ShadowStack).attrs(({ color }) => ({
@@ -18,6 +18,14 @@ const FieldAccessoryBadgeWrapper = styled(ShadowStack).attrs(({ color }) => ({
   position: absolute;
   right: 12;
   top: 12;
+`;
+
+const StyledTouchable = styled(TouchableWithoutFeedback)`
+  ${android ? 'padding-left: 19;' : ''}
+  ${android ? 'padding-right: 19;' : ''}
+  ${android ? 'padding-top: 19;' : ''}
+  ${android ? 'padding-bottom: 19;' : ''}
+  ${android ? 'margin-top: -19;' : ''}
 `;
 
 const PasswordInput = styled(Input).attrs({
@@ -71,7 +79,7 @@ const PasswordField = (
   const handleFocus = useCallback(() => ref?.current?.focus?.(), [ref]);
 
   return (
-    <TouchableWithoutFeedback onPress={handleFocus}>
+    <StyledTouchable onPress={handleFocus}>
       <ShadowContainer deviceWidth={deviceWidth} style={style}>
         <PasswordInput
           ref={ref}
@@ -90,7 +98,7 @@ const PasswordField = (
           />
         )}
       </ShadowContainer>
-    </TouchableWithoutFeedback>
+    </StyledTouchable>
   );
 };
 

@@ -168,7 +168,8 @@ export const reserveWyreOrder = async (
   amount,
   destCurrency,
   accountAddress,
-  network
+  network,
+  paymentMethod = null
 ) => {
   const partnerId =
     network === NetworkTypes.mainnet ? WYRE_ACCOUNT_ID : WYRE_ACCOUNT_ID_TEST;
@@ -180,6 +181,9 @@ export const reserveWyreOrder = async (
     referrerAccountId: partnerId,
     sourceCurrency: SOURCE_CURRENCY_USD,
   };
+  if (paymentMethod) {
+    data.paymentMethod = paymentMethod;
+  }
   const baseUrl = getBaseUrl(network);
   try {
     const wyreAuthToken =
@@ -194,7 +198,7 @@ export const reserveWyreOrder = async (
       data,
       config
     );
-    return response?.data?.reservation;
+    return response?.data;
   } catch (error) {
     logger.sentry('Apple Pay - error reserving order', error);
     return null;

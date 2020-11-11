@@ -1,5 +1,4 @@
 import React, { useImperativeHandle, useState } from 'react';
-import { Platform } from 'react-native';
 import styled from 'styled-components/primitives';
 import Text from './Text';
 import { colors } from '@rainbow-me/styles';
@@ -10,7 +9,7 @@ const Placeholder = styled(Text).attrs({
   size: 'big',
   weight: 'semibold',
 })`
-  margin-bottom: ${Platform.OS === 'android' ? -39 : -27};
+  margin-bottom: ${android ? -48 : -27};
   width: 100%;
 `;
 

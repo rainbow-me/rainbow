@@ -6,9 +6,9 @@ import {
   restoreCloudBackup,
   saveBackupPassword,
 } from '../../model/backup';
+import { cloudPlatform } from '../../utils/platform';
 import { PasswordField } from '../fields';
 import { Centered, Column } from '../layout';
-import { LoadingOverlay } from '../modal';
 import { GradientText, Text } from '../text';
 import BackupSheetKeyboardLayout from './BackupSheetKeyboardLayout';
 import {
@@ -19,10 +19,8 @@ import { removeWalletData } from '@rainbow-me/handlers/localstorage/removeWallet
 import WalletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
 import { useAccountSettings, useWallets } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import { sheetVerticalOffset } from '@rainbow-me/navigation/effects';
 import Routes from '@rainbow-me/routes';
 import { colors, margin, padding } from '@rainbow-me/styles';
-import { usePortal } from 'react-native-cool-modals/Portal';
 
 const DescriptionText = styled(Text).attrs({
   align: 'center',
@@ -56,29 +54,15 @@ const Title = styled(Text).attrs({
   ${margin(15, 0, 12)};
 `;
 
-export default function RestoreIcloudStep({ userData }) {
+export default function RestoreCloudStep({ userData }) {
   const { goBack, replace } = useNavigation();
-  const { isWalletLoading, setIsWalletLoading } = useWallets();
+  const { setIsWalletLoading } = useWallets();
   const { accountAddress } = useAccountSettings();
   const [validPassword, setValidPassword] = useState(false);
   const [incorrectPassword, setIncorrectPassword] = useState(false);
   const [password, setPassword] = useState('');
   const [label, setLabel] = useState('􀎽 Confirm Backup');
   const passwordRef = useRef();
-
-  const { setComponent, hide } = usePortal();
-  useEffect(() => {
-    if (isWalletLoading) {
-      setComponent(
-        <LoadingOverlay
-          paddingTop={sheetVerticalOffset}
-          title={isWalletLoading}
-        />,
-        false
-      );
-    }
-    return hide;
-  }, [hide, isWalletLoading, setComponent]);
 
   useEffect(() => {
     const fetchPasswordIfPossible = async () => {
@@ -101,7 +85,7 @@ export default function RestoreIcloudStep({ userData }) {
         passwordIsValid = true;
       }
 
-      newLabel = `􀑙 Restore from iCloud`;
+      newLabel = `􀑙 Restore from ${cloudPlatform}`;
     }
 
     setValidPassword(passwordIsValid);
@@ -149,6 +133,7 @@ export default function RestoreIcloudStep({ userData }) {
       footerButtonDisabled={!validPassword}
       footerButtonLabel={label}
       onSubmit={onSubmit}
+      type="restore"
     >
       <Masthead>
         <MastheadIcon>􀙶</MastheadIcon>

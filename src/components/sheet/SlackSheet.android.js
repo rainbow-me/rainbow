@@ -1,14 +1,21 @@
 import React, { useMemo } from 'react';
-import { View } from 'react-native';
+import {
+  Pressable,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components/primitives';
 import { useDimensions } from '../../hooks';
+import deviceUtils from '../../utils/deviceUtils';
 import { Centered } from '../layout';
 import { useReanimatedValue } from '../list/MarqueeList';
 import SheetHandleFixedToTop, {
   SheetHandleFixedToTopHeight,
 } from './SheetHandleFixedToTop';
+import { useNavigation } from '@rainbow-me/navigation';
 import { colors } from '@rainbow-me/styles';
 
 const Container = styled(Centered).attrs({ direction: 'column' })`
@@ -17,6 +24,11 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
   left: 0;
   overflow: hidden;
   position: absolute;
+  ${ios ? 'border-radius: 20' : ''};
+  top: ${({ contentHeight, additionalTopPadding }) =>
+    contentHeight && additionalTopPadding
+      ? deviceUtils.dimensions.height - contentHeight
+      : 0};
   right: 0;
 `;
 
@@ -58,10 +70,12 @@ export default function SlackSheet({
   hideHandle = false,
   renderHeader,
   scrollEnabled = true,
+  additionalTopPadding = false,
   ...props
 }) {
   const yPosition = useReanimatedValue(0);
   const { height: deviceHeight } = useDimensions();
+  const { goBack } = useNavigation();
   const insets = useSafeArea();
   const bottomInset = useMemo(
     () => (insets.bottom || scrollEnabled ? 42 : 30),
@@ -84,30 +98,50 @@ export default function SlackSheet({
   );
 
   return (
-    <Container backgroundColor={backgroundColor} {...props}>
-      {!hideHandle && <SheetHandleFixedToTop showBlur={scrollEnabled} />}
-      <View style={{ backgroundColor, height: '100%', width: '100%' }}>
-        {renderHeader?.(yPosition)}
-
-        <Content
-          backgroundColor={backgroundColor}
-          contentContainerStyle={scrollEnabled && contentContainerStyle}
-          contentHeight={contentHeight}
-          deviceHeight={deviceHeight}
-          directionalLockEnabled
-          scrollEnabled={scrollEnabled}
-          scrollIndicatorInsets={scrollIndicatorInsets}
-          y={yPosition}
-        >
-          {children}
-          {!scrollEnabled && (
-            <Whitespace
-              backgroundColor={backgroundColor}
-              deviceHeight={deviceHeight}
+    <>
+      {android ? (
+        <Pressable onPress={goBack} style={[StyleSheet.absoluteFillObject]} />
+      ) : null}
+      <Container
+        additionalTopPadding={additionalTopPadding}
+        backgroundColor={backgroundColor}
+        contentHeight={contentHeight}
+        {...props}
+      >
+        {android && (
+          <TouchableWithoutFeedback
+            style={[StyleSheet.absoluteFillObject, { backgroundColor }]}
+          >
+            <View
+              style={[StyleSheet.absoluteFillObject, { backgroundColor }]}
             />
-          )}
-        </Content>
-      </View>
-    </Container>
+          </TouchableWithoutFeedback>
+        )}
+        {!hideHandle && ios && (
+          <SheetHandleFixedToTop showBlur={scrollEnabled} />
+        )}
+        <View style={{ backgroundColor, height: '100%', width: '100%' }}>
+          {renderHeader?.(yPosition)}
+          <Content
+            backgroundColor={backgroundColor}
+            contentContainerStyle={scrollEnabled && contentContainerStyle}
+            contentHeight={contentHeight}
+            deviceHeight={deviceHeight}
+            directionalLockEnabled
+            scrollEnabled={scrollEnabled}
+            scrollIndicatorInsets={scrollIndicatorInsets}
+            y={yPosition}
+          >
+            {children}
+            {!scrollEnabled && (
+              <Whitespace
+                backgroundColor={backgroundColor}
+                deviceHeight={deviceHeight}
+              />
+            )}
+          </Content>
+        </View>
+      </Container>
+    </>
   );
 }

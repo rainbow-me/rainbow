@@ -1,6 +1,5 @@
 import React, { Fragment } from 'react';
 import { KeyboardArea } from 'react-native-keyboard-area';
-import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import AssetTypes from '../../helpers/assetTypes';
 import { useAsset, useDimensions } from '../../hooks';
@@ -12,6 +11,7 @@ import { Column } from '../layout';
 import SendAssetFormCollectible from './SendAssetFormCollectible';
 import SendAssetFormToken from './SendAssetFormToken';
 import { colors, padding, position } from '@rainbow-me/styles';
+import ShadowStack from 'react-native-shadow-stack';
 
 const AssetRowShadow = [
   [0, 1, 0, colors.dark, 0.01],
@@ -38,7 +38,7 @@ const FormContainer = styled(Column).attrs({
       : padding(19, 15)};
   background-color: ${colors.lighterGrey};
   flex: 1;
-  margin-bottom: ${({ isTinyPhone }) => (isTinyPhone ? -19 : 0)};
+  margin-bottom: ${android ? 0 : ({ isTinyPhone }) => (isTinyPhone ? -19 : 0)};
   width: 100%;
 `;
 
@@ -112,7 +112,7 @@ export default function SendAssetForm({
               sendMaxBalance={sendMaxBalance}
               txSpeedRenderer={txSpeedRenderer}
             />
-            <KeyboardSizeView isOpen />
+            {ios ? <KeyboardSizeView isOpen /> : null}
           </Fragment>
         )}
       </FormContainer>

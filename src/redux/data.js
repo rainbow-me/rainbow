@@ -38,6 +38,7 @@ import TransactionTypes from '../helpers/transactionTypes';
 import { divide, isZero } from '../helpers/utilities';
 import WalletTypes from '../helpers/walletTypes';
 import { Navigation } from '../navigation';
+import { triggerOnSwipeLayout } from '../navigation/onNavigationStateChange';
 import { parseAccountAssets, parseAsset } from '../parsers/accounts';
 import { parseNewTransaction } from '../parsers/newTransaction';
 import {
@@ -200,7 +201,9 @@ export const transactionsReceived = (message, appended = false) => async (
       selected.type !== WalletTypes.readOnly
     ) {
       setTimeout(() => {
-        Navigation.handleAction(Routes.BACKUP_SHEET, { single: true });
+        triggerOnSwipeLayout(() =>
+          Navigation.handleAction(Routes.BACKUP_SHEET, { single: true })
+        );
       }, BACKUP_SHEET_DELAY_MS);
     }
   }

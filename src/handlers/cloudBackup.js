@@ -1,6 +1,5 @@
 import { captureException } from '@sentry/react-native';
 import { sortBy } from 'lodash';
-import { Platform } from 'react-native';
 import RNCloudFs from 'react-native-cloud-fs';
 import { RAINBOW_MASTER_KEY } from 'react-native-dotenv';
 import RNFS from 'react-native-fs';
@@ -22,8 +21,15 @@ export const CLOUD_BACKUP_ERRORS = {
   WALLET_BACKUP_STATUS_UPDATE_FAILED: 'Update wallet backup status failed',
 };
 
+export function logoutFromGoogleDrive() {
+  android && RNCloudFs.logout();
+}
+
 // This is used for dev purposes only!
 export async function deleteAllBackups() {
+  if (android) {
+    await RNCloudFs.loginIfNeeded();
+  }
   const backups = await RNCloudFs.listFiles({
     scope: 'hidden',
     targetPath: REMOTE_BACKUP_WALLET_DIR,
@@ -50,17 +56,27 @@ export async function encryptAndSaveDataToCloud(data, password, filename) {
     const mimeType = 'application/json';
     // Only available to our app
     const scope = 'hidden';
-    await RNCloudFs.copyToCloud({
+    if (android) {
+      await RNCloudFs.loginIfNeeded();
+    }
+    const result = await RNCloudFs.copyToCloud({
       mimeType,
       scope,
       sourcePath: sourceUri,
       targetPath: destinationPath,
     });
     // Now we need to verify the file has been stored in the cloud
-    const exists = await RNCloudFs.fileExists({
-      scope,
-      targetPath: destinationPath,
-    });
+    const exists = await RNCloudFs.fileExists(
+      ios
+        ? {
+            scope,
+            targetPath: destinationPath,
+          }
+        : {
+            fileId: result,
+            scope,
+          }
+    );
 
     if (!exists) {
       logger.sentry('Backup doesnt exist after completion');
@@ -72,13 +88,25 @@ export async function encryptAndSaveDataToCloud(data, password, filename) {
     await RNFS.unlink(path);
     return filename;
   } catch (e) {
-    logger.sentry('Error during encryptAndSaveDataToCloud');
+    logger.sentry('Error during encryptAndSaveDataToCloud', e);
     captureException(e);
     throw new Error(CLOUD_BACKUP_ERRORS.GENERAL_ERROR);
   }
 }
 
+function getICloudDocument(filename) {
+  return RNCloudFs.getIcloudDocument(filename);
+}
+
+function getGoogleDriveDocument(id) {
+  return RNCloudFs.getGoogleDriveDocument(id);
+}
+
 export async function getDataFromCloud(backupPassword, filename = null) {
+  if (android) {
+    await RNCloudFs.loginIfNeeded();
+  }
+
   const backups = await RNCloudFs.listFiles({
     scope: 'hidden',
     targetPath: REMOTE_BACKUP_WALLET_DIR,
@@ -93,10 +121,17 @@ export async function getDataFromCloud(backupPassword, filename = null) {
 
   let document;
   if (filename) {
-    // .icloud are files that were not yet synced
-    document = backups.files.find(
-      file => file.name === filename || file.name === `.${filename}.icloud`
-    );
+    if (ios) {
+      // .icloud are files that were not yet synced
+      document = backups.files.find(
+        file => file.name === filename || file.name === `.${filename}.icloud`
+      );
+    } else {
+      document = backups.files.find(file => {
+        return file.name === `${REMOTE_BACKUP_WALLET_DIR}/${filename}`;
+      });
+    }
+
     if (!document) {
       logger.sentry('No backup found with that name!', filename);
       const error = new Error(CLOUD_BACKUP_ERRORS.SPECIFIC_BACKUP_NOT_FOUND);
@@ -107,9 +142,12 @@ export async function getDataFromCloud(backupPassword, filename = null) {
     const sortedBackups = sortBy(backups.files, 'lastModified').reverse();
     document = sortedBackups[0];
   }
-  const encryptedData = await RNCloudFs.getIcloudDocument(filename);
+  const encryptedData = ios
+    ? await getICloudDocument(filename)
+    : await getGoogleDriveDocument(document.id);
+
   if (encryptedData) {
-    logger.sentry('Got getICloudDocument ', filename);
+    logger.sentry('Got cloud document ', filename);
     const backedUpDataStringified = await encryptor.decrypt(
       backupPassword,
       encryptedData
@@ -153,8 +191,8 @@ export function isCloudBackupPasswordValid(password) {
 }
 
 export function isCloudBackupAvailable() {
-  if (Platform.OS === 'ios') {
+  if (ios) {
     return RNCloudFs.isAvailable();
   }
-  return false;
+  return true;
 }

@@ -72,6 +72,7 @@ const SavingsCoinRow = ({ item, onPress, ...props }) => (
       {...item}
       {...props}
       bottomRowRender={BottomRow}
+      {...(android && { contentStyles: { height: 50 } })}
       onPress={onPress}
       topRowRender={TopRow}
     />

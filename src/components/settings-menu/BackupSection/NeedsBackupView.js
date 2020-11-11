@@ -1,9 +1,9 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useCallback, useEffect } from 'react';
-import { Platform } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components';
+import { cloudPlatform } from '../../../utils/platform';
 import { RainbowButton } from '../../buttons';
 import { Centered, Column } from '../../layout';
 import { SheetActionButton } from '../../sheet';
@@ -17,7 +17,7 @@ import { colors, fonts, padding } from '@rainbow-me/styles';
 
 const BackupButton = styled(RainbowButton).attrs({
   type: 'small',
-  width: 221,
+  width: ios ? 221 : 270,
 })`
   margin-bottom: 19;
 `;
@@ -84,10 +84,11 @@ export default function NeedsBackupView() {
   }, []);
 
   const onIcloudBackup = useCallback(() => {
-    analytics.track('Back up to iCloud pressed', {
+    analytics.track(`Back up to ${cloudPlatform} pressed`, {
       category: 'settings backup',
     });
-    navigate(Routes.BACKUP_SHEET, {
+    navigate(ios ? Routes.BACKUP_SHEET : Routes.BACKUP_SCREEN, {
+      nativeScreen: true,
       step: WalletBackupStepTypes.cloud,
       walletId,
     });
@@ -97,7 +98,8 @@ export default function NeedsBackupView() {
     analytics.track('Manual Backup pressed', {
       category: 'settings backup',
     });
-    navigate(Routes.BACKUP_SHEET, {
+    navigate(ios ? Routes.BACKUP_SHEET : Routes.BACKUP_SCREEN, {
+      nativeScreen: true,
       step: WalletBackupStepTypes.manual,
       walletId,
     });
@@ -116,14 +118,12 @@ export default function NeedsBackupView() {
           </DescriptionText>
         </Column>
         <Column align="center">
-          {Platform.OS === 'ios' && (
-            <BackupButton
-              label="􀙶 Back up to iCloud"
-              onPress={onIcloudBackup}
-            />
-          )}
+          <BackupButton
+            label={`􀙶 Back up to ${cloudPlatform}`}
+            onPress={onIcloudBackup}
+          />
           <SheetActionButton
-            color={colors.white}
+            color={ios ? colors.white : colors.lightestGrey}
             label="🤓 Back up manually"
             noFlex
             onPress={onManualBackup}

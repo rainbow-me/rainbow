@@ -31,6 +31,16 @@ const DappLogo = styled(RequestVendorLogoIcon).attrs({
   margin-bottom: 24;
 `;
 
+const ActionRowAndroid = styled.View`
+  flex-direction: row;
+  height: 44;
+  margin-vertical: 12;
+  margin-horizontal: 12;
+  justify-content: space-around;
+`;
+
+const ActionRow = android ? ActionRowAndroid : RowWithMargins;
+
 export default function WalletConnectApprovalSheet() {
   const { goBack } = useNavigation();
   const { params } = useRoute();
@@ -114,7 +124,12 @@ export default function WalletConnectApprovalSheet() {
 
   return (
     <Sheet hideHandle>
-      <Centered direction="column" paddingHorizontal={19} paddingTop={17}>
+      <Centered
+        direction="column"
+        paddingBottom={android ? 10 : null}
+        paddingHorizontal={19}
+        paddingTop={17}
+      >
         <DappLogo dappName={dappName || ''} imageUrl={imageUrl} />
         <Centered paddingHorizontal={23}>
           <Row>
@@ -137,21 +152,31 @@ export default function WalletConnectApprovalSheet() {
           </Text>
         </Row>
         <Divider color={colors.rowDividerLight} inset={[0, 84]} />
-        <RowWithMargins css={padding(24, 0, 21)} margin={15}>
+        <ActionRow css={padding(24, 0, 21)} margin={15}>
           <SheetActionButton
             color={colors.white}
             label="Cancel"
             onPress={handleCancel}
+            radiusWrapperStyle={{ flex: 1 }}
             size="big"
             textColor={colors.dark}
+            wrapperProps={{
+              containerStyle: { flex: 1 },
+              style: { flex: 1 },
+            }}
           />
           <SheetActionButton
             color={colors.appleBlue}
             label="Connect"
             onPress={handleConnect}
+            radiusWrapperStyle={{ flex: 1 }}
             size="big"
+            wrapperProps={{
+              containerStyle: { flex: 1 },
+              style: { flex: 1 },
+            }}
           />
-        </RowWithMargins>
+        </ActionRow>
       </Centered>
     </Sheet>
   );

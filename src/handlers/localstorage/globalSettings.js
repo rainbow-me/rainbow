@@ -1,13 +1,14 @@
 import networkTypes from '../../helpers/networkTypes';
 import { getGlobal, saveGlobal } from './common';
 
-const APPSTORE_REVIEW_COUNT = 'appStoreReviewRequestCount';
 const IMAGE_METADATA = 'imageMetadata';
 const KEYBOARD_HEIGHT = 'keyboardHeight';
 const LANGUAGE = 'language';
 const NATIVE_CURRENCY = 'nativeCurrency';
 const NETWORK = 'network';
 const KEYCHAIN_INTEGRITY_STATE = 'keychainIntegrityState';
+const AUTH_TIMELOCK = 'authTimelock';
+const PIN_AUTH_ATTEMPTS_LEFT = 'pinAuthAttemptsLeft';
 
 export const getKeychainIntegrityState = () =>
   getGlobal(KEYCHAIN_INTEGRITY_STATE, null);
@@ -15,10 +16,14 @@ export const getKeychainIntegrityState = () =>
 export const saveKeychainIntegrityState = state =>
   saveGlobal(KEYCHAIN_INTEGRITY_STATE, state);
 
-export const getAppStoreReviewCount = () => getGlobal(APPSTORE_REVIEW_COUNT, 0);
+export const getAuthTimelock = () => getGlobal(AUTH_TIMELOCK, null);
 
-export const saveAppStoreReviewCount = reviewCount =>
-  saveGlobal(APPSTORE_REVIEW_COUNT, reviewCount);
+export const saveAuthTimelock = ts => saveGlobal(AUTH_TIMELOCK, ts);
+export const getPinAuthAttemptsLeft = () =>
+  getGlobal(PIN_AUTH_ATTEMPTS_LEFT, null);
+
+export const savePinAuthAttemptsLeft = amount =>
+  saveGlobal(PIN_AUTH_ATTEMPTS_LEFT, amount);
 
 export const getLanguage = () => getGlobal(LANGUAGE, 'en');
 

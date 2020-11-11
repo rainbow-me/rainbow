@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import ShadowStack from 'react-native-shadow-stack';
 import styled from 'styled-components/primitives';
 import {
   SavingsSheetEmptyHeight,
@@ -25,6 +24,7 @@ import { useDimensions } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors, padding, position } from '@rainbow-me/styles';
+import ShadowStack from 'react-native-shadow-stack';
 
 const MS_IN_1_DAY = 1000 * 60 * 60 * 24;
 const ANIMATE_NUMBER_INTERVAL = 60;
@@ -58,7 +58,7 @@ const SavingsListRowShadowStack = styled(ShadowStack).attrs(
     width: deviceWidth - 38,
   })
 )`
-  elevation: 15;
+  elevation: 2;
 `;
 
 const SavingsListRow = ({
@@ -151,14 +151,21 @@ const SavingsListRow = ({
   const displayValue = formatSavingsAmount(value);
 
   return !underlying || !underlying.address ? null : (
-    <ButtonPressAnimation onPress={onButtonPress} scaleTo={0.96}>
+    <ButtonPressAnimation
+      disabled={android}
+      onPress={onButtonPress}
+      scaleTo={0.96}
+    >
       <Centered direction="column" marginBottom={15}>
         <SavingsListRowShadowStack deviceWidth={deviceWidth}>
           <SavingsListRowGradient />
           <Row
             align="center"
+            as={android && ButtonPressAnimation}
             css={padding(9, 10, 10, 11)}
             justify="space-between"
+            onPress={onButtonPress}
+            scaleTo={0.96}
           >
             {underlying.symbol && supplyBalanceUnderlying ? (
               <Centered>

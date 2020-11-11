@@ -23,6 +23,7 @@ const transition = (
 );
 
 const InfoButton = styled(ButtonPressAnimation).attrs({
+  opacityTouchable: true,
   scaleTo: 1.3,
 })`
   ${padding(0, 19)};

@@ -5,29 +5,40 @@ import {
   Hexable,
   joinSignature,
 } from '@ethersproject/bytes';
-import { entropyToMnemonic, HDNode } from '@ethersproject/hdnode';
-import { randomBytes } from '@ethersproject/random';
+import { HDNode } from '@ethersproject/hdnode';
 import { SigningKey } from '@ethersproject/signing-key';
 import { Transaction } from '@ethersproject/transactions';
 import { Wallet } from '@ethersproject/wallet';
 import { captureException, captureMessage } from '@sentry/react-native';
+import { generateMnemonic } from 'bip39';
 import { signTypedData_v4, signTypedDataLegacy } from 'eth-sig-util';
-import { isValidAddress, toBuffer } from 'ethereumjs-util';
+import { isValidAddress, toBuffer, toChecksumAddress } from 'ethereumjs-util';
+import {
+  hdkey as EthereumHDKey,
+  default as LibWallet,
+} from 'ethereumjs-wallet';
 import lang from 'i18n-js';
 import { find, findKey, forEach, get, isEmpty } from 'lodash';
 import { Alert } from 'react-native';
-import { ACCESSIBLE } from 'react-native-keychain';
+import { ACCESSIBLE, getSupportedBiometryType } from 'react-native-keychain';
+import AesEncryptor from '../handlers/aesEncryption';
+import {
+  authenticateWithPIN,
+  getExistingPIN,
+} from '../handlers/authentication';
 import { saveAccountEmptyState } from '../handlers/localstorage/accountLocal';
 import {
   addHexPrefix,
   isHexString,
   isHexStringIgnorePrefix,
   isValidMnemonic,
-  toChecksumAddress,
   web3Provider,
 } from '../handlers/web3';
 import showWalletErrorAlert from '../helpers/support';
+import WalletLoadingStates from '../helpers/walletLoadingStates';
 import { EthereumWalletType } from '../helpers/walletTypes';
+import store from '../redux/store';
+import { setIsWalletLoading } from '../redux/wallets';
 import { ethereumUtils } from '../utils';
 import {
   addressKey,
@@ -40,6 +51,7 @@ import {
 import * as keychain from './keychain';
 import { colors } from '@rainbow-me/styles';
 import logger from 'logger';
+const encryptor = new AesEncryptor();
 
 type EthereumAddress = string;
 type EthereumPrivateKey = string;
@@ -91,6 +103,9 @@ interface EthereumWalletFromSeed {
   isHDWallet: boolean;
   wallet: null | EthereumWallet;
   type: EthereumWalletType;
+  walletType: WalletLibraryType;
+  root: EthereumHDKey;
+  address: EthereumAddress;
 }
 
 type EthereumWallet = Wallet | ReadOnlyWallet;
@@ -147,23 +162,23 @@ interface MigratedSecretsResult {
   type: EthereumWalletType;
 }
 
+export enum WalletLibraryType {
+  ethers = 'ethers',
+  bip39 = 'bip39',
+}
+
 const privateKeyVersion = 1.0;
 const seedPhraseVersion = 1.0;
 const selectedWalletVersion = 1.0;
 export const allWalletsVersion = 1.0;
 
-const DEFAULT_HD_PATH = `m/44'/60'/0'/0`;
+export const DEFAULT_HD_PATH = `m/44'/60'/0'/0`;
 export const DEFAULT_WALLET_NAME = 'My Wallet';
 
 const authenticationPrompt = lang.t('wallet.authenticate.please');
 export const publicAccessControlOptions = {
   accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY,
 };
-
-export function generateSeedPhrase(): EthereumMnemonic {
-  logger.sentry('Generating a new seed phrase');
-  return entropyToMnemonic(randomBytes(16));
-}
 
 export const walletInit = async (
   seedPhrase = null,
@@ -201,13 +216,15 @@ export const walletInit = async (
 
 export const loadWallet = async (): Promise<null | Wallet> => {
   const privateKey = await loadPrivateKey();
-  if (privateKey === -1) {
+  if (privateKey === -1 || privateKey === -2) {
     return null;
   }
   if (privateKey) {
     return new Wallet(privateKey, web3Provider);
   }
-  showWalletErrorAlert();
+  if (ios) {
+    showWalletErrorAlert();
+  }
   return null;
 };
 
@@ -379,7 +396,9 @@ export const oldLoadSeedPhrase = async (): Promise<null | EthereumWalletSeed> =>
 export const loadAddress = (): Promise<null | EthereumAddress> =>
   keychain.loadString(addressKey) as Promise<string | null>;
 
-const loadPrivateKey = async (): Promise<null | EthereumPrivateKey | -1> => {
+const loadPrivateKey = async (): Promise<
+  null | EthereumPrivateKey | -1 | -2
+> => {
   try {
     const isSeedPhraseMigrated = await keychain.loadString(
       oldSeedPhraseMigratedKey
@@ -398,11 +417,28 @@ const loadPrivateKey = async (): Promise<null | EthereumPrivateKey | -1> => {
       if (!address) {
         return null;
       }
+
       const privateKeyData = await getPrivateKey(address);
       if (privateKeyData === -1) {
         return -1;
       }
       privateKey = get(privateKeyData, 'privateKey', null);
+
+      let userPIN = null;
+      if (android) {
+        const hasBiometricsEnabled = await getSupportedBiometryType();
+        // Fallback to custom PIN
+        if (!hasBiometricsEnabled) {
+          try {
+            userPIN = await authenticateWithPIN();
+          } catch (e) {
+            return null;
+          }
+        }
+      }
+      if (privateKey && userPIN) {
+        privateKey = await encryptor.decrypt(userPIN, privateKey);
+      }
     }
 
     return privateKey;
@@ -444,39 +480,6 @@ export const identifyWalletType = (
   return EthereumWalletType.seed;
 };
 
-export const getWallet = (
-  walletSeed: EthereumWalletSeed
-): EthereumWalletFromSeed => {
-  let wallet = null;
-  let hdnode = null;
-  let isHDWallet = false;
-  const type = identifyWalletType(walletSeed);
-  switch (type) {
-    case EthereumWalletType.privateKey:
-      wallet = new Wallet(addHexPrefix(walletSeed));
-      break;
-    case EthereumWalletType.mnemonic:
-      hdnode = HDNode.fromMnemonic(walletSeed);
-      isHDWallet = true;
-      break;
-    case EthereumWalletType.seed:
-      hdnode = HDNode.fromSeed(walletSeed);
-      isHDWallet = true;
-      break;
-    case EthereumWalletType.readOnly:
-      wallet = { address: toChecksumAddress(walletSeed), privateKey: null };
-      break;
-    default:
-  }
-
-  // Always generate the first account if HD node
-  if (isHDWallet && hdnode) {
-    const node = hdnode.derivePath(`${DEFAULT_HD_PATH}/0`);
-    wallet = new Wallet(node.privateKey);
-  }
-  return { hdnode, isHDWallet, type, wallet };
-};
-
 export const createWallet = async (
   seed: null | EthereumSeed = null,
   color: null | number = null,
@@ -486,12 +489,37 @@ export const createWallet = async (
 ): Promise<null | EthereumWallet> => {
   const isImported = !!seed;
   logger.sentry('Creating wallet, isImported?', isImported);
-  const walletSeed = seed || generateSeedPhrase();
+  if (!seed) {
+    logger.sentry('Generating a new seed phrase');
+  }
+  const walletSeed = seed || generateMnemonic();
   let addresses: RainbowAccount[] = [];
   try {
-    const { hdnode, isHDWallet, type, wallet } =
-      checkedWallet || getWallet(walletSeed);
-    if (!wallet) return null;
+    let wasLoading = false;
+    const { dispatch } = store;
+    if (!checkedWallet && android) {
+      wasLoading = true;
+      dispatch(setIsWalletLoading(WalletLoadingStates.CREATING_WALLET));
+    }
+
+    const {
+      isHDWallet,
+      type,
+      root,
+      wallet: walletResult,
+      address,
+      walletType,
+    } =
+      checkedWallet ||
+      (await ethereumUtils.deriveAccountFromMnemonicOrPrivateKey(walletSeed));
+    let pkey = walletSeed;
+    if (!walletResult) return null;
+    const walletAddress = address;
+    if (isHDWallet) {
+      pkey = addHexPrefix(
+        (walletResult as LibWallet).getPrivateKey().toString('hex')
+      );
+    }
     logger.sentry('[createWallet] - getWallet from seed');
 
     // Get all wallets
@@ -510,7 +538,7 @@ export const createWallet = async (
             someWallet.addresses,
             account =>
               toChecksumAddress(account.address) ===
-                toChecksumAddress(wallet.address) && account.visible
+                toChecksumAddress(walletAddress) && account.visible
           );
         }
       );
@@ -545,20 +573,69 @@ export const createWallet = async (
     const id = existingWalletId || `wallet_${Date.now()}`;
     logger.sentry('[createWallet] - wallet ID', { id });
 
+    // Android users without biometrics need to secure their keys with a PIN
+    let userPIN = null;
+    if (android) {
+      const hasBiometricsEnabled = await getSupportedBiometryType();
+      // Fallback to custom PIN
+      if (!hasBiometricsEnabled) {
+        try {
+          userPIN = await getExistingPIN();
+          if (!userPIN) {
+            // We gotta dismiss the modal before showing the PIN screen
+            dispatch(setIsWalletLoading(null));
+            userPIN = await authenticateWithPIN();
+            dispatch(
+              setIsWalletLoading(
+                seed
+                  ? WalletLoadingStates.IMPORTING_WALLET
+                  : WalletLoadingStates.CREATING_WALLET
+              )
+            );
+          }
+        } catch (e) {
+          return null;
+        }
+      }
+    }
+
     // Save seed - save this first
-    await saveSeedPhrase(walletSeed, id);
+    if (userPIN) {
+      // Encrypt with the PIN
+      const encryptedSeed = await encryptor.encrypt(userPIN, walletSeed);
+      if (encryptedSeed) {
+        await saveSeedPhrase(encryptedSeed, id);
+      } else {
+        logger.sentry('Error encrypting seed to save it');
+        return null;
+      }
+    } else {
+      await saveSeedPhrase(walletSeed, id);
+    }
+
     logger.sentry('[createWallet] - saved seed phrase');
 
     // Save address
-    await saveAddress(wallet.address);
+    await saveAddress(walletAddress);
     logger.sentry('[createWallet] - saved address');
 
     // Save private key
-    await savePrivateKey(wallet.address, wallet.privateKey);
+    if (userPIN) {
+      // Encrypt with the PIN
+      const encryptedPkey = await encryptor.encrypt(userPIN, pkey);
+      if (encryptedPkey) {
+        await savePrivateKey(walletAddress, encryptedPkey);
+      } else {
+        logger.sentry('Error encrypting pkey to save it');
+        return null;
+      }
+    } else {
+      await savePrivateKey(walletAddress, pkey);
+    }
     logger.sentry('[createWallet] - saved private key');
 
     addresses.push({
-      address: wallet.address,
+      address: walletAddress,
       avatar: null,
       color: color !== null ? color : colors.getRandomColor(),
       index: 0,
@@ -566,7 +643,7 @@ export const createWallet = async (
       visible: true,
     });
 
-    if (isHDWallet && hdnode && isImported) {
+    if (isHDWallet && root && isImported) {
       logger.sentry('[createWallet] - isHDWallet && isImported');
       let index = 1;
       let lookup = true;
@@ -574,8 +651,11 @@ export const createWallet = async (
       // for each account. If there's history we add it to the wallet.
       //(We stop once we find the first one with no history)
       while (lookup) {
-        const node = hdnode.derivePath(`${DEFAULT_HD_PATH}/${index}`);
-        const nextWallet = new Wallet(node.privateKey);
+        const child = root.deriveChild(index);
+        const walletObj = child.getWallet();
+        const nextWallet = new Wallet(
+          addHexPrefix(walletObj.getPrivateKey().toString('hex'))
+        );
         let hasTxHistory = false;
         try {
           hasTxHistory = await ethereumUtils.hasPreviousTransactions(
@@ -619,7 +699,21 @@ export const createWallet = async (
 
         if (hasTxHistory) {
           // Save private key
-          await savePrivateKey(nextWallet.address, nextWallet.privateKey);
+          if (userPIN) {
+            // Encrypt with the PIN
+            const encryptedPkey = await encryptor.encrypt(
+              userPIN,
+              nextWallet.privateKey
+            );
+            if (encryptedPkey) {
+              await savePrivateKey(nextWallet.address, encryptedPkey);
+            } else {
+              logger.sentry('Error encrypting pkey to save it');
+              return null;
+            }
+          } else {
+            await savePrivateKey(nextWallet.address, nextWallet.privateKey);
+          }
           logger.sentry(
             `[createWallet] - saved private key for next wallet ${index}`
           );
@@ -680,8 +774,18 @@ export const createWallet = async (
     await saveAllWallets(allWallets);
     logger.sentry('[createWallet] - saveAllWallets');
 
-    if (wallet) {
-      return wallet;
+    if (walletResult && walletAddress) {
+      const ethersWallet =
+        walletType === WalletLibraryType.ethers
+          ? (walletResult as Wallet)
+          : new Wallet(pkey);
+      if (wasLoading) {
+        setTimeout(() => {
+          dispatch(setIsWalletLoading(null));
+        }, 2000);
+      }
+
+      return ethersWallet;
     }
     return null;
   } catch (error) {
@@ -714,7 +818,16 @@ export const getPrivateKey = async (
     const key = `${address}_${privateKeyKey}`;
     const pkey = (await keychain.loadObject(key, {
       authenticationPrompt,
-    })) as PrivateKeyData;
+    })) as PrivateKeyData | -2;
+
+    if (pkey === -2) {
+      Alert.alert(
+        'Error',
+        'Your current authentication method (Face Recognition) is not secure enough, please go to "Settings > Biometrics & Security" and enable an alternative biometric method like Fingerprint or Iris.'
+      );
+      return null;
+    }
+
     return pkey || null;
   } catch (error) {
     logger.sentry('Error in getPrivateKey');
@@ -745,7 +858,16 @@ export const getSeedPhrase = async (
     const key = `${id}_${seedPhraseKey}`;
     const seedPhraseData = (await keychain.loadObject(key, {
       authenticationPrompt,
-    })) as SeedPhraseData;
+    })) as SeedPhraseData | -2;
+
+    if (seedPhraseData === -2) {
+      Alert.alert(
+        'Error',
+        'Your current authentication method (Face Recognition) is not secure enough, please go to "Settings > Biometrics & Security" and enable an alternative biometric method like Fingerprint or Iris'
+      );
+      return null;
+    }
+
     return seedPhraseData || null;
   } catch (error) {
     logger.sentry('Error in getSeedPhrase');
@@ -814,20 +936,40 @@ export const generateAccount = async (
     const isSeedPhraseMigrated = await keychain.loadString(
       oldSeedPhraseMigratedKey
     );
-    let seedphrase, hdnode;
+    let seedphrase;
     // We need to migrate the seedphrase & private key first
     // In that case we regenerate the existing private key to store it with the new format
     if (!isSeedPhraseMigrated) {
       const migratedSecrets = await migrateSecrets();
-      hdnode = migratedSecrets?.hdnode;
       seedphrase = migratedSecrets?.seedphrase;
+    }
+
+    let userPIN = null;
+    if (android) {
+      const hasBiometricsEnabled = await getSupportedBiometryType();
+      // Fallback to custom PIN
+      if (!hasBiometricsEnabled) {
+        try {
+          const { dispatch } = store;
+          // Hide the loading overlay while showing the pin auth screen
+          dispatch(setIsWalletLoading(null));
+          userPIN = await authenticateWithPIN();
+          dispatch(setIsWalletLoading(WalletLoadingStates.CREATING_WALLET));
+        } catch (e) {
+          return null;
+        }
+      }
     }
 
     if (!seedphrase) {
       const seedData = await getSeedPhrase(id);
       seedphrase = seedData?.seedphrase;
-      if (seedphrase) {
-        hdnode = HDNode.fromMnemonic(seedphrase);
+      if (userPIN) {
+        try {
+          seedphrase = await encryptor.decrypt(userPIN, seedphrase);
+        } catch (e) {
+          return null;
+        }
       }
     }
 
@@ -835,13 +977,35 @@ export const generateAccount = async (
       throw new Error(`Can't access seed phrase to create new accounts`);
     }
 
-    if (!hdnode) {
-      return null;
+    const {
+      wallet: ethereumJSWallet,
+    } = await ethereumUtils.deriveAccountFromMnemonic(seedphrase, index);
+    if (!ethereumJSWallet) return null;
+    const walletAddress = addHexPrefix(
+      toChecksumAddress(ethereumJSWallet.getAddress().toString('hex'))
+    );
+    const walletPkey = addHexPrefix(
+      ethereumJSWallet.getPrivateKey().toString('hex')
+    );
+
+    const newAccount = new Wallet(walletPkey);
+    // Android users without biometrics need to secure their keys with a PIN
+    if (userPIN) {
+      try {
+        const encryptedPkey = await encryptor.encrypt(userPIN, walletPkey);
+        if (encryptedPkey) {
+          await savePrivateKey(walletAddress, encryptedPkey);
+        } else {
+          logger.sentry('Error encrypting pkey to save it');
+          return null;
+        }
+      } catch (e) {
+        return null;
+      }
+    } else {
+      await savePrivateKey(walletAddress, walletPkey);
     }
 
-    const node = hdnode.derivePath(`${DEFAULT_HD_PATH}/${index}`);
-    const newAccount = new Wallet(node.privateKey);
-    await savePrivateKey(newAccount.address, newAccount.privateKey);
     return newAccount;
   } catch (error) {
     logger.sentry('Error generating account for keychain', id);
@@ -880,7 +1044,17 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
         existingAccount = new Wallet(addHexPrefix(seedphrase));
         break;
       case EthereumWalletType.mnemonic:
-        hdnode = HDNode.fromMnemonic(seedphrase);
+        {
+          const {
+            wallet: ethereumJSWallet,
+          } = await ethereumUtils.deriveAccountFromMnemonic(seedphrase);
+          if (!ethereumJSWallet) return null;
+          const walletPkey = addHexPrefix(
+            ethereumJSWallet.getPrivateKey().toString('hex')
+          );
+
+          existingAccount = new Wallet(walletPkey);
+        }
         break;
       case EthereumWalletType.seed:
         hdnode = HDNode.fromSeed(seedphrase);
@@ -971,6 +1145,25 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (
       logger.sentry('Getting seed directly');
       const seedData = await getSeedPhrase(id);
       seedPhrase = get(seedData, 'seedphrase', null);
+      let userPIN = null;
+      if (android) {
+        const hasBiometricsEnabled = await getSupportedBiometryType();
+        // Fallback to custom PIN
+        if (!hasBiometricsEnabled) {
+          try {
+            userPIN = await authenticateWithPIN();
+            if (userPIN) {
+              // Dencrypt with the PIN
+              seedPhrase = await encryptor.decrypt(userPIN, seedPhrase);
+            } else {
+              return null;
+            }
+          } catch (e) {
+            return null;
+          }
+        }
+      }
+
       if (seedPhrase) {
         logger.sentry('got seed succesfully');
       } else {

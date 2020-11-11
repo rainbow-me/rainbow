@@ -1,10 +1,10 @@
 import React, { Fragment } from 'react';
 import ReactCoinIcon from 'react-coin-icon';
-import ShadowStack from 'react-native-shadow-stack';
 import { magicMemo } from '../../utils';
 import CoinIconFallback from './CoinIconFallback';
 import CoinIconIndicator from './CoinIconIndicator';
 import { borders, colors } from '@rainbow-me/styles';
+import ShadowStack from 'react-native-shadow-stack';
 
 export const CoinIconSize = 40;
 
@@ -16,7 +16,6 @@ const defaultShadow = [
 const CoinIcon = ({
   address,
   bgColor,
-  isCoinListEdited,
   isHidden,
   isPinned,
   showShadow = true,
@@ -27,9 +26,7 @@ const CoinIcon = ({
 }) =>
   showShadow ? (
     <Fragment>
-      {(isPinned || isHidden) && isCoinListEdited ? (
-        <CoinIconIndicator isPinned={isPinned} />
-      ) : null}
+      {isPinned || isHidden ? <CoinIconIndicator isPinned={isPinned} /> : null}
       <ShadowStack
         {...props}
         {...borders.buildCircleAsObject(size)}
@@ -60,7 +57,6 @@ const CoinIcon = ({
 export default magicMemo(CoinIcon, [
   'address',
   'bgColor',
-  'isCoinListEdited',
   'isHidden',
   'isPinned',
   'size',

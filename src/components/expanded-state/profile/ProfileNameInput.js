@@ -3,6 +3,7 @@ import styled from 'styled-components/primitives';
 import { Input } from '../../inputs';
 import { PlaceholderText } from '../../text';
 import { useMagicAutofocus } from '@rainbow-me/hooks';
+import { fonts, fontWithWidth } from '@rainbow-me/styles';
 
 const NameInput = styled(Input).attrs({
   align: 'center',
@@ -12,8 +13,9 @@ const NameInput = styled(Input).attrs({
   returnKeyType: 'done',
   size: 'big',
   spellCheck: false,
-  weight: 'bold',
 })`
+  ${fontWithWidth(fonts.weight.bold)};
+  ${android ? 'height: 70; margin-vertical: -8;' : ''}
   width: 100%;
 `;
 
