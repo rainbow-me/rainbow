@@ -16,7 +16,7 @@ import {
 } from '../token-info';
 import { LiquidityPoolExpandedStateHeader } from './liquidity-pool';
 
-export const LiquidityPoolExpandedStateSheetHeight = 369 + (android ? 40 : 0);
+export const LiquidityPoolExpandedStateSheetHeight = 369 + (android ? 80 : 0);
 
 const LiquidityPoolExpandedState = ({
   asset: { ethBalance, totalNativeDisplay, uniBalance, ...asset },

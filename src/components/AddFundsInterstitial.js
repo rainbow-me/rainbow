@@ -26,6 +26,10 @@ const ButtonContainer = styled(Centered).attrs({ direction: 'column' })`
 
 const InterstitialButton = styled(ButtonPressAnimation).attrs({
   backgroundColor: colors.alpha(colors.blueGreyDark, 0.06),
+  wrapperProps: {
+    containerStyle: { height: 45, width: 200 },
+    style: { flex: 1 },
+  },
 })`
   ${padding(10.5, 15, 14.5)};
   border-radius: 23px;
@@ -88,7 +92,7 @@ const AmountText = styled(Text).attrs({
   size: 'bigger',
   weight: 'heavy',
 })`
-  ${padding(24, 15, 25)};
+  ${android ? padding(15) : padding(24, 15, 25)};
   align-self: center;
   text-shadow: 0px 0px 20px ${({ color }) => color};
   z-index: 1;
@@ -130,7 +134,7 @@ const AmountButton = ({ amount, backgroundColor, color, onPress }) => {
 
   return (
     <AmountButtonWrapper>
-      <AmountBPA onPress={handlePress}>
+      <AmountBPA onPress={handlePress} radiusAndroid={25}>
         <ShadowStack
           {...position.coverAsObject}
           backgroundColor={backgroundColor}
@@ -208,17 +212,22 @@ const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
                 onPress={handlePressAmount}
               />
             </Row>
-            <InterstitialButton onPress={handlePressAmount}>
-              <Text
-                align="center"
-                color={colors.alpha(colors.blueGreyDark, 0.6)}
-                lineHeight="loose"
-                size="large"
-                weight="bold"
+            <Row>
+              <InterstitialButton
+                onPress={handlePressAmount}
+                radiusAndroid={23}
               >
-                􀍡 Other amount
-              </Text>
-            </InterstitialButton>
+                <Text
+                  align="center"
+                  color={colors.alpha(colors.blueGreyDark, 0.6)}
+                  lineHeight="loose"
+                  size="large"
+                  weight="bold"
+                >
+                  􀍡 Other amount
+                </Text>
+              </InterstitialButton>
+            </Row>
             {!isSmallPhone && <InterstitialDivider />}
             <Subtitle isSmallPhone={isSmallPhone}>
               or send ETH to your wallet
@@ -260,6 +269,7 @@ const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
         )}
         <CopyAddressButton
           onPress={handlePressCopyAddress}
+          radiusAndroid={23}
           testID="copy-address-button"
         >
           <RowWithMargins margin={6}>

@@ -30,7 +30,7 @@ export default function ShareButton({ accountAddress, ...props }) {
   }, [accountAddress]);
 
   return (
-    <ButtonPressAnimation onPress={handlePress} {...props}>
+    <ButtonPressAnimation onPress={handlePress} radiusAndroid={28} {...props}>
       <ShadowStack
         backgroundColor={colors.dark}
         borderRadius={28}

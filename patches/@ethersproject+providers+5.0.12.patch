@@ -2,38 +2,16 @@ diff --git a/node_modules/@ethersproject/providers/package.json b/node_modules/@
 index 843c319..83a436b 100644
 --- a/node_modules/@ethersproject/providers/package.json
 +++ b/node_modules/@ethersproject/providers/package.json
-@@ -2,18 +2,41 @@
-   "author": "Richard Moore <me@ricmoo.com>",
+@@ -3,7 +3,7 @@
    "browser": {
      "./lib/ipc-provider": "./lib/browser-ipc-provider.js",
--    "net": "./lib/browser-net.js",
--    "ws": "./lib/browser-ws.js"
-+    "net": "react-native-tcp",
+     "net": "react-native-tcp",
+-    "ws": "./lib/browser-ws.js",
 +    "ws": "./providers/lib/browser-ws.js",
-+    "zlib": "browserify-zlib",
-+    "console": "console-browserify",
-+    "constants": "constants-browserify",
-+    "crypto": "react-native-crypto",
-+    "dns": "dns.js",
-+    "domain": "domain-browser",
-+    "http": "@tradle/react-native-http",
-+    "https": "https-browserify",
-+    "os": "react-native-os",
-+    "path": "path-browserify",
-+    "querystring": "querystring-es3",
-+    "fs": "react-native-level-fs",
-+    "_stream_transform": "readable-stream/transform",
-+    "_stream_readable": "readable-stream/readable",
-+    "_stream_writable": "readable-stream/writable",
-+    "_stream_duplex": "readable-stream/duplex",
-+    "_stream_passthrough": "readable-stream/passthrough",
-+    "dgram": "react-native-udp",
-+    "stream": "stream-browserify",
-+    "timers": "timers-browserify",
-+    "tty": "tty-browserify",
-+    "vm": "vm-browserify",
-+    "tls": false
-   },
+     "zlib": "browserify-zlib",
+     "console": "console-browserify",
+     "constants": "constants-browserify",
+@@ -31,12 +31,12 @@
    "browser.esm": {
      "./lib.esm/ipc-provider": "./lib.esm/browser-ipc-provider.js",
      "net": "./lib.esm/browser-net.js",
@@ -48,38 +26,12 @@ index 843c319..83a436b 100644
    },
    "dependencies": {
      "@ethersproject/abstract-provider": "^5.0.4",
-@@ -59,5 +82,33 @@
-   },
-   "tarballHash": "0x473ceddb28dd396cfb35fc43187f2a09c4e752e908b80a933432bcb5ad5eae85",
-   "types": "./lib/index.d.ts",
--  "version": "5.0.12"
-+  "version": "5.0.12",
-+  "react-native": {
-+    "./lib/ipc-provider": "./lib/browser-ipc-provider.js",
-+    "net": "react-native-tcp",
+@@ -86,7 +86,7 @@
+   "react-native": {
+     "./lib/ipc-provider": "./lib/browser-ipc-provider.js",
+     "net": "react-native-tcp",
+-    "ws": "./lib/browser-ws.js",
 +    "ws": "./providers/lib/browser-ws.js",
-+    "zlib": "browserify-zlib",
-+    "console": "console-browserify",
-+    "constants": "constants-browserify",
-+    "crypto": "react-native-crypto",
-+    "dns": "dns.js",
-+    "domain": "domain-browser",
-+    "http": "@tradle/react-native-http",
-+    "https": "https-browserify",
-+    "os": "react-native-os",
-+    "path": "path-browserify",
-+    "querystring": "querystring-es3",
-+    "fs": "react-native-level-fs",
-+    "_stream_transform": "readable-stream/transform",
-+    "_stream_readable": "readable-stream/readable",
-+    "_stream_writable": "readable-stream/writable",
-+    "_stream_duplex": "readable-stream/duplex",
-+    "_stream_passthrough": "readable-stream/passthrough",
-+    "dgram": "react-native-udp",
-+    "stream": "stream-browserify",
-+    "timers": "timers-browserify",
-+    "tty": "tty-browserify",
-+    "vm": "vm-browserify",
-+    "tls": false
-+  }
- }
+     "zlib": "browserify-zlib",
+     "console": "console-browserify",
+     "constants": "constants-browserify",

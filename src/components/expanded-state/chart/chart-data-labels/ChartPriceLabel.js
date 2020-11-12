@@ -9,11 +9,10 @@ import supportedNativeCurrencies from '@rainbow-me/references/native-currencies.
 import { fonts, fontWithWidth } from '@rainbow-me/styles';
 
 const Label = styled(ChartYLabel)`
-  ${fontWithWidth(fonts.weight.bold)};
+  ${fontWithWidth(fonts.weight.heavy)};
   font-size: ${fonts.size.big};
   letter-spacing: ${fonts.letterSpacing.roundedTight};
-  font-variant: tabular-nums;
-  text-align: right;
+  width: 100%;
   ${android &&
     `margin-top: -8;
      margin-bottom: -16;`}

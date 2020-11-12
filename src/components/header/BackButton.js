@@ -34,6 +34,15 @@ export default function BackButton({
   return (
     <HeaderButton
       onPress={handlePress}
+      opacityTouchable={false}
+      radiusAndroid={42}
+      radiusWrapperStyle={{
+        alignItems: 'center',
+        height: 42,
+        justifyContent: 'center',
+        marginRight: 5,
+        width: 42,
+      }}
       testID={testID + '-back-button'}
       throttle={throttle}
       transformOrigin={direction}
