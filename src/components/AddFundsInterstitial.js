@@ -92,7 +92,7 @@ const AmountText = styled(Text).attrs({
   size: 'bigger',
   weight: 'heavy',
 })`
-  ${padding(24, 15, 25)};
+  ${android ? padding(15) : padding(24, 15, 25)};
   align-self: center;
   text-shadow: 0px 0px 20px ${({ color }) => color};
   z-index: 1;
