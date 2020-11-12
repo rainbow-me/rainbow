@@ -22,11 +22,11 @@ const ShadowStack = React.forwardRef(
         <ShadowItem
           backgroundColor={backgroundColor}
           borderRadius={borderRadius}
-          height={height}
+          height={height || android ? 0 : undefined}
           key={`${shadow.join('-')}${index}`}
           opacity={hideShadow ? 0 : 1}
           shadow={shadow}
-          width={width}
+          width={width || android ? 0 : undefined}
           zIndex={index + 2}
         />
       ),

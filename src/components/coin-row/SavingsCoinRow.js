@@ -3,7 +3,7 @@ import React, { Fragment } from 'react';
 import { calculateAPY } from '../../helpers/savings';
 import { convertAmountToBalanceDisplay } from '../../helpers/utilities';
 import { ButtonPressAnimation } from '../animations';
-import { FlexItem, Row, RowWithMargins } from '../layout';
+import { Column, FlexItem, Row, RowWithMargins } from '../layout';
 import { APYPill } from '../savings';
 import { Text } from '../text';
 import BalanceText from './BalanceText';
@@ -20,22 +20,25 @@ const BottomRow = ({ lifetimeSupplyInterestAccrued, supplyRate, symbol }) => {
   return (
     <Fragment>
       <APYPill small value={apyTruncated} />
-      <RowWithMargins align="center" margin={4}>
-        <Text
-          align="right"
-          color={colors.green}
-          size="smedium"
-          weight="semibold"
-        >
-          {'􀁍 '}
-          {convertAmountToBalanceDisplay(
-            lifetimeSupplyInterestAccrued,
-            {
-              symbol,
-            },
-            1
-          )}
-        </Text>
+      <RowWithMargins flex={1} margin={4}>
+        <Column flex={1}>
+          <Text
+            align="right"
+            color={colors.green}
+            flex={1}
+            size="smedium"
+            weight="semibold"
+          >
+            {'􀁍 '}
+            {convertAmountToBalanceDisplay(
+              lifetimeSupplyInterestAccrued,
+              {
+                symbol,
+              },
+              1
+            )}
+          </Text>
+        </Column>
       </RowWithMargins>
     </Fragment>
   );

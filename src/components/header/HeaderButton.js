@@ -3,9 +3,9 @@ import { ButtonPressAnimation } from '../animations';
 import { padding } from '@rainbow-me/styles';
 
 const HeaderButton = styled(ButtonPressAnimation).attrs(
-  ({ scaleTo = 0.8 }) => ({
+  ({ scaleTo = 0.8, opacityTouchable = true }) => ({
     compensateForTransformOrigin: true,
-    opacityTouchable: true,
+    opacityTouchable,
     scaleTo,
   })
 )`
