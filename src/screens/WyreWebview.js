@@ -1,38 +1,60 @@
 import { useRoute } from '@react-navigation/core';
-import React, { Fragment, useEffect, useState } from 'react';
+import { HeaderBackButton } from '@react-navigation/stack';
+import React, { useCallback, useEffect, useState } from 'react';
+import { StatusBar } from 'react-native';
 import { WebView } from 'react-native-webview';
 import styled from 'styled-components/primitives';
 import Spinner from '../components/Spinner';
-import { BackButton } from '../components/header';
-import { Centered, Row } from '../components/layout';
+import { Centered, FlexItem, Row } from '../components/layout';
 import { Text } from '../components/text';
 import { reserveWyreOrder } from '../handlers/wyre';
 import { useAccountSettings } from '../hooks';
 import { colors } from '../styles';
+import { useNavigation } from '@rainbow-me/navigation';
 
+const Container = styled(FlexItem)`
+  background-color: ${colors.white};
+`;
+const StyledWebView = styled(WebView)`
+  background-color: ${colors.white};
+`;
 const HeaderTitle = styled(Text).attrs({
-  align: 'center',
-  color: colors.blueGreyDark,
+  align: 'left',
+  color: colors.black,
   letterSpacing: 'roundedMedium',
   lineHeight: 'loose',
   opacity: 0.8,
-  size: 'large',
+  size: 'larger',
   weight: 'bold',
-})``;
+})`
+  margin-left: 24;
+`;
 
 const Header = styled(Row).attrs({
   align: 'center',
-  justify: 'space-between',
+  backgroundColor: colors.white,
 })`
-  height: 42;
-  margin-bottom: 42;
-  top: 24;
+  height: 56;
+  margin-bottom: 24;
+  top: 28;
   width: 100%;
+  elevation: 24;
 `;
 export default function WyreWebview() {
   const { params } = useRoute();
+  const { goBack } = useNavigation();
   const [url, setUrl] = useState(null);
   const { accountAddress, network } = useAccountSettings();
+
+  const handleBackButton = useCallback(() => {
+    goBack();
+  }, [goBack]);
+
+  useEffect(() => {
+    StatusBar.setBackgroundColor('transparent', false);
+    StatusBar.setTranslucent(true);
+    StatusBar.setBarStyle('dark-content', true);
+  }, []);
 
   useEffect(() => {
     const getReservationId = async () => {
@@ -51,15 +73,13 @@ export default function WyreWebview() {
   const defaultInputWidth = params.amount?.toString().length > 2 ? 180 : 140;
 
   return (
-    <Fragment>
+    <Container>
       <Header>
-        <BackButton />
-        <Centered cover>
-          <HeaderTitle>Add Cash</HeaderTitle>
-        </Centered>
+        <HeaderBackButton onPress={handleBackButton} />
+        <HeaderTitle>Add Cash</HeaderTitle>
       </Header>
       {url ? (
-        <WebView
+        <StyledWebView
           injectedJavaScript={`
             document.getElementsByClassName('CloseBtn')[0].style.display = 'none';
             setTimeout(() => {
@@ -75,6 +95,6 @@ export default function WyreWebview() {
           <Spinner color={colors.appleBlue} size={30} />
         </Centered>
       )}
-    </Fragment>
+    </Container>
   );
 }
