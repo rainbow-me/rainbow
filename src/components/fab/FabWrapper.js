@@ -7,7 +7,7 @@ import SendFab from './SendFab';
 
 export const FabWrapperBottomPosition = 21 + safeAreaInsetValues.bottom;
 
-const FabWrapperRow = styled(RowWithMargins).attrs({ margin: 6 })`
+const FabWrapperRow = styled(RowWithMargins).attrs({ margin: 12 })`
   bottom: ${({ isEditMode }) => (isEditMode ? -60 : FabWrapperBottomPosition)};
   position: absolute;
   right: 15;
