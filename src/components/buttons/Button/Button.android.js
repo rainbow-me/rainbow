@@ -56,6 +56,7 @@ const Button = ({
   borderOpacity,
   borderWidth,
   disabled,
+  testID,
   ...props
 }) => {
   const borderRadius = type === 'rounded' ? 14 : 50;
@@ -65,6 +66,7 @@ const Button = ({
       disabled={disabled}
       onPress={onPress}
       radiusAndroid={borderRadius}
+      testID={testID}
     >
       <Container
         {...props}

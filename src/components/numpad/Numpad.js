@@ -44,7 +44,11 @@ const KeyboardButton = ({ children, ...props }) => {
 const Numpad = ({ decimal = true, onPress, width }) => {
   const renderCell = useCallback(
     symbol => (
-      <KeyboardButton key={symbol} onPress={() => onPress(symbol.toString())}>
+      <KeyboardButton
+        key={symbol}
+        onPress={() => onPress(symbol.toString())}
+        testID={`numpad-button-${symbol}`}
+      >
         <Text align="center" color={KeyColor} size={44} weight="bold">
           {symbol}
         </Text>

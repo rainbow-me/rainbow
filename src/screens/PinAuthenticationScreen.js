@@ -179,7 +179,11 @@ const PinAuthenticationScreen = () => {
   );
 
   return (
-    <Column backgroundColor={colors.white} flex={1}>
+    <Column
+      backgroundColor={colors.white}
+      flex={1}
+      testID="pin-authentication-screen"
+    >
       <Centered flex={1}>
         <ColumnWithMargins
           align="center"

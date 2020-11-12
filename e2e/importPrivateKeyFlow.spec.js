@@ -8,7 +8,7 @@ describe('Import from private key flow', () => {
   });
 
   it('with 0x - Should show the "Restore Sheet" after tapping on "I already have a wallet"', async () => {
-    await device.disableSynchronization();
+    await Helpers.disableSynchronization();
     await Helpers.tap('already-have-wallet-button');
     await Helpers.delay(2000);
     await Helpers.checkIfExists('restore-sheet');
@@ -36,6 +36,13 @@ describe('Import from private key flow', () => {
     await Helpers.checkIfVisible('wallet-info-input');
     await Helpers.typeText('wallet-info-input', 'PKEY', false);
     await Helpers.tap('wallet-info-submit-button');
+    if (device.getPlatform() === 'android') {
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      // Set the pin
+      await Helpers.authenticatePin('1234');
+      // Confirm it
+      await Helpers.authenticatePin('1234');
+    }
     await Helpers.delay(4000);
     await Helpers.checkIfVisible('wallet-screen');
   });
@@ -69,7 +76,7 @@ describe('Import from private key flow', () => {
   it('Should reset keychain & reopen app', async () => {
     await Helpers.tap('reset-keychain-section');
     await device.launchApp({ newInstance: true });
-    await device.disableSynchronization();
+    await Helpers.disableSynchronization();
     await Helpers.delay(5000);
     await Helpers.checkIfVisible('welcome-screen');
   });
@@ -106,6 +113,13 @@ describe('Import from private key flow', () => {
     await Helpers.checkIfVisible('wallet-info-input');
     await Helpers.typeText('wallet-info-input', 'TKEY', false);
     await Helpers.tap('wallet-info-submit-button');
+    if (device.getPlatform() === 'android') {
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      // Set the pin
+      await Helpers.authenticatePin('1234');
+      // Confirm it
+      await Helpers.authenticatePin('1234');
+    }
     await Helpers.delay(4000);
     await Helpers.checkIfVisible('wallet-screen');
   });

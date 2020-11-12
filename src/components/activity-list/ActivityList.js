@@ -22,9 +22,9 @@ const keyExtractor = ({ hash, timestamp, transactionDisplayDetails }) =>
   hash ||
   (timestamp ? timestamp.ms : transactionDisplayDetails?.timestampInMs || 0);
 
-const renderSectionHeader = ({ section }) => (
-  <ActivityListHeader {...section} />
-);
+const renderSectionHeader = ({ section }) => {
+  return <ActivityListHeader {...section} />;
+};
 
 const FooterWrapper = styled(ButtonPressAnimation)`
   width: 100%;
@@ -90,6 +90,8 @@ const ActivityList = ({
         navigation={navigation}
         sections={sections}
       />
+    ) : isEmpty ? (
+      <ActivityListEmptyState>{header}</ActivityListEmptyState>
     ) : (
       <SectionList
         ListFooterComponent={() =>
