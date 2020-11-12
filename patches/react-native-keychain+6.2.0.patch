@@ -1,8 +1,8 @@
 diff --git a/node_modules/react-native-keychain/RNKeychainManager/RNKeychainManager.m b/node_modules/react-native-keychain/RNKeychainManager/RNKeychainManager.m
-index 98e45fe..e5cbf2f 100644
+index 98e45fe..01e9b76 100644
 --- a/node_modules/react-native-keychain/RNKeychainManager/RNKeychainManager.m
 +++ b/node_modules/react-native-keychain/RNKeychainManager/RNKeychainManager.m
-@@ -542,4 +629,91 @@ - (OSStatus)deleteCredentialsForServer:(NSString *)server
+@@ -542,4 +542,91 @@ - (OSStatus)deleteCredentialsForServer:(NSString *)server
  }
  #endif
  
