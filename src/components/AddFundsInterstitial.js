@@ -27,7 +27,7 @@ const ButtonContainer = styled(Centered).attrs({ direction: 'column' })`
 const InterstitialButton = styled(ButtonPressAnimation).attrs({
   backgroundColor: colors.alpha(colors.blueGreyDark, 0.06),
   wrapperProps: {
-    containerStyle: { height: 45, width: 240 },
+    containerStyle: { height: 45, width: 200 },
     style: { flex: 1 },
   },
 })`
