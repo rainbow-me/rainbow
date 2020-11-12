@@ -34,8 +34,8 @@ const Header = styled(Row).attrs({
   align: 'center',
   backgroundColor: colors.white,
 })`
-  height: 64;
-  margin-bottom: 28;
+  height: 56;
+  margin-bottom: 24;
   top: 28;
   width: 100%;
   elevation: 24;
