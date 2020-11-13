@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import android.os.Handler;
+import javax.annotation.Nonnull;
 
 
 class UIUpdater {
@@ -70,7 +71,7 @@ public class RNTextAnimatorPackage implements ReactPackage {
             final Map<Integer, UIUpdater> idsToHandler = new HashMap<>();
 
             @ReactMethod
-            public void animate(final int viewId, ReadableMap config) {
+            public void animate(final int viewId, @Nonnull ReadableMap config) {
                 double initialValue = config.getDouble("initialValue");
                 double stepPerDay = config.getDouble("stepPerDay");
                 boolean isStable = config.getBoolean("isStable");
