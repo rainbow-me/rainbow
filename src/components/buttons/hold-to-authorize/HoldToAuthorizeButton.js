@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
-import { ActivityIndicator, Keyboard } from 'react-native';
+import { ActivityIndicator, Dimensions, Keyboard } from 'react-native';
 import {
   LongPressGestureHandler,
   State,
@@ -207,6 +207,7 @@ class HoldToAuthorizeButton extends PureComponent {
     } = this.props;
 
     const { isAuthorizing } = this.state;
+    const androidWidth = Dimensions.get('window').width - 30;
 
     let bgColor = backgroundColor;
     if (disabled) {
@@ -232,7 +233,7 @@ class HoldToAuthorizeButton extends PureComponent {
               shadows={
                 shadows || ButtonShadows[disabled ? 'disabled' : 'default']
               }
-              width="100%"
+              width={ios ? '100%' : androidWidth}
             >
               <Content backgroundColor={bgColor} smallButton={smallButton}>
                 {children || (
