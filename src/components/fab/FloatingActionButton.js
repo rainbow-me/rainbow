@@ -55,8 +55,6 @@ const FloatingActionButton = ({
       useLateHaptic={false}
       {...props}
     >
-      {console.log(`FAB: ${testID}`)}
-
       <ShadowStack
         {...borders.buildCircleAsObject(size)}
         hideShadow={disabled}
