@@ -354,6 +354,8 @@ PODS:
     - React-Core
   - react-native-cloud-fs (2.1.0):
     - React
+  - react-native-get-random-values (1.5.0):
+    - React
   - react-native-mail (4.1.0):
     - React
   - react-native-netinfo (5.9.7):
@@ -622,6 +624,7 @@ DEPENDENCIES:
   - react-native-branch (from `../node_modules/react-native-branch`)
   - react-native-camera (from `../node_modules/react-native-camera`)
   - react-native-cloud-fs (from `../node_modules/react-native-cloud-fs`)
+  - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
   - react-native-mail (from `../node_modules/react-native-mail`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-randombytes (from `../node_modules/react-native-randombytes`)
@@ -779,6 +782,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-camera"
   react-native-cloud-fs:
     :path: "../node_modules/react-native-cloud-fs"
+  react-native-get-random-values:
+    :path: "../node_modules/react-native-get-random-values"
   react-native-mail:
     :path: "../node_modules/react-native-mail"
   react-native-netinfo:
@@ -956,6 +961,7 @@ SPEC CHECKSUMS:
   react-native-branch: 8bda99ca8dc5a16d32bd81c8a8d937cb3d2c5e0c
   react-native-camera: 35854c4f764a4a6cf61c1c3525888b92f0fe4b31
   react-native-cloud-fs: 8339f6e6e353f266f63a3f754882637443bc4c2c
+  react-native-get-random-values: 1404bd5cc0ab0e287f75ee1c489555688fc65f89
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
   react-native-netinfo: 250dc0ca126512f618a8a2ca6a936577e1f66586
   react-native-randombytes: 3638d24759d67c68f6ccba60c52a7a8a8faa6a23
