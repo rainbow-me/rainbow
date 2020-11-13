@@ -33,6 +33,12 @@ const CopyFloatingEmojis = ({
               setClipboard(textToCopy);
             }
           }}
+          radiusAndroid={24}
+          wrapperProps={{
+            containerStyle: {
+              padding: 10,
+            },
+          }}
         >
           {children}
         </ButtonPressAnimation>

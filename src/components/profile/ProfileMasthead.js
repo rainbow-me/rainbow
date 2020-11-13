@@ -252,7 +252,20 @@ export default function ProfileMasthead({
         isAvatarPickerAvailable={isAvatarPickerAvailable}
         onPress={handlePressAvatar}
       />
-      <ButtonPressAnimation onPress={handlePressChangeWallet} scaleTo={0.9}>
+      <ButtonPressAnimation
+        onPress={handlePressChangeWallet}
+        radiusAndroid={24}
+        scaleTo={0.9}
+        wrapperProps={{
+          containerStyle: {
+            alignItems: 'center',
+            height: 40,
+            justifyContent: 'center',
+            paddingTop: 5,
+            width: 250,
+          },
+        }}
+      >
         <Row>
           <AccountName deviceWidth={deviceWidth}>{accountName}</AccountName>
           <DropdownArrow>
@@ -264,17 +277,33 @@ export default function ProfileMasthead({
         <ProfileAction
           icon="copy"
           onPress={handlePressCopyAddress}
+          radiusWrapperStyle={{ marginRight: 10, width: 150 }}
           scaleTo={0.88}
           text="Copy Address"
           width={127}
+          wrapperProps={{
+            containerStyle: {
+              alignItems: 'flex-start',
+              justifyContent: 'flex-start',
+              paddingLeft: 10,
+            },
+          }}
         />
         <FloatingEmojisRegion setOnNewEmoji={setOnNewEmoji} />
         <ProfileAction
           icon="qrCode"
           onPress={handlePressReceive}
+          radiusWrapperStyle={{ marginRight: 10, width: 104 }}
           scaleTo={0.88}
           text="Receive"
           width={81}
+          wrapperProps={{
+            containerStyle: {
+              alignItems: 'flex-start',
+              justifyContent: 'flex-start',
+              paddingLeft: 10,
+            },
+          }}
         />
       </RowWithMargins>
       {addCashAvailable && <AddCashButton onPress={handlePressAddCash} />}

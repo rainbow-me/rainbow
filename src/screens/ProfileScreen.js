@@ -73,7 +73,19 @@ export default function ProfileScreen({ navigation }) {
   return (
     <ProfileScreenPage testID="profile-screen">
       <Header justify="space-between">
-        <HeaderButton onPress={onPressSettings} testID="settings-button">
+        <HeaderButton
+          onPress={onPressSettings}
+          opacityTouchable={false}
+          radiusAndroid={42}
+          radiusWrapperStyle={{
+            alignItems: 'center',
+            height: 42,
+            justifyContent: 'center',
+            marginLeft: 5,
+            width: 42,
+          }}
+          testID="settings-button"
+        >
           <Icon color={colors.black} name="gear" />
         </HeaderButton>
         <BackButton

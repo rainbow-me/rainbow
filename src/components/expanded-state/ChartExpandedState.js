@@ -1,5 +1,6 @@
 import { debounce, find } from 'lodash';
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import styled from 'styled-components';
 import {
   useChartData,
   useChartDataLabels,
@@ -32,6 +33,16 @@ import { ModalContext } from 'react-native-cool-modals/NativeStackView';
 
 const heightWithChart = 606;
 const heightWithNoChart = 309;
+
+const ActionRowAndroid = styled.View`
+  flex-direction: row;
+  height: 44;
+  margin-vertical: 12;
+  margin-horizontal: 12;
+  justify-content: space-around;
+`;
+
+const ActionRow = android ? ActionRowAndroid : SheetActionButtonRow;
 
 const traverseData = (prev, data) => {
   if (!data || data.length === 0) {
@@ -185,12 +196,29 @@ export default function ChartExpandedState({ asset }) {
           )}
         </TokenInfoRow>
       </TokenInfoSection>
-      <SheetActionButtonRow key={`row${showChart}`}>
+      <ActionRow key={`row${showChart}`}>
         {showSwapButton && (
-          <SwapActionButton color={color} inputType={AssetInputTypes.in} />
+          <SwapActionButton
+            color={color}
+            inputType={AssetInputTypes.in}
+            radiusAndroid={24}
+            radiusWrapperStyle={{ flex: 1, marginRight: 10 }}
+            wrapperProps={{
+              containerStyle: { flex: 1 },
+              style: { flex: 1 },
+            }}
+          />
         )}
-        <SendActionButton color={color} />
-      </SheetActionButtonRow>
+        <SendActionButton
+          color={color}
+          radiusAndroid={24}
+          radiusWrapperStyle={{ flex: 1, marginLeft: 10 }}
+          wrapperProps={{
+            containerStyle: { flex: 1 },
+            style: { flex: 1 },
+          }}
+        />
+      </ActionRow>
     </SlackSheet>
   );
 }

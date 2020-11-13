@@ -192,9 +192,15 @@ export default function BackupSheet() {
     step,
   ]);
 
-  const sheetHeight = android && !nativeScreen ? AndroidHeight : longFormHeight;
-  const wrapperHeight =
+  let sheetHeight = android && !nativeScreen ? AndroidHeight : longFormHeight;
+  let wrapperHeight =
     deviceHeight + (android && !nativeScreen ? AndroidHeight : longFormHeight);
+
+  // This sheet it's a bit taller due to an extra line of text
+  if (android && step === WalletBackupStepTypes.existing_user) {
+    sheetHeight += 40;
+    wrapperHeight += 40;
+  }
 
   return (
     <Column height={wrapperHeight} testID="backup-sheet">

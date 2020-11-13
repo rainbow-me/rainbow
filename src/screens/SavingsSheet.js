@@ -33,7 +33,7 @@ import Routes from '@rainbow-me/routes';
 import { colors, position } from '@rainbow-me/styles';
 
 export const SavingsSheetEmptyHeight = 313;
-export const SavingsSheetHeight = 352;
+export const SavingsSheetHeight = android ? 410 : 352;
 
 const Container = styled(Centered).attrs({ direction: 'column' })`
   ${position.cover};
@@ -179,7 +179,8 @@ const SavingsSheet = () => {
                 color={colors.dark}
                 label="􀁏 Withdraw"
                 onPress={onWithdraw}
-                radiusWrapperStyle={{ flex: 1 }}
+                radiusAndroid={24}
+                radiusWrapperStyle={{ flex: 1, marginLeft: 10 }}
                 wrapperProps={{
                   containerStyle: { flex: 1 },
                   style: { flex: 1 },
@@ -189,7 +190,8 @@ const SavingsSheet = () => {
                 color={colors.swapPurple}
                 label="􀁍 Deposit"
                 onPress={onDeposit}
-                radiusWrapperStyle={{ flex: 1 }}
+                radiusAndroid={24}
+                radiusWrapperStyle={{ flex: 1, marginLeft: 10 }}
                 wrapperProps={{
                   containerStyle: { flex: 1 },
                   style: { flex: 1 },

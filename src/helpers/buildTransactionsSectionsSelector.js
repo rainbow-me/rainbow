@@ -5,13 +5,8 @@ import { createSelector } from 'reselect';
 import { RequestCoinRow, TransactionCoinRow } from '../components/coin-row';
 import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 import {
-  calculateTimestampOfThisMonth,
-  calculateTimestampOfThisYear,
-  calculateTimestampOfToday,
-  calculateTimestampOfYesterday,
   thisMonthTimestamp,
   thisYearTimestamp,
-  timestampsCalculation,
   todayTimestamp,
   yesterdayTimestamp,
 } from './transactions';
@@ -22,38 +17,12 @@ const transactionsSelector = state => state.transactions;
 const focusedSelector = state => state.isFocused;
 const initializedSelector = state => state.initialized;
 
-const getTimestamps = () => {
-  const now = new Date();
-  // When the day / month changes, we need to recalculate timestamps
-  if (
-    timestampsCalculation.getDate() !== now.getDate() ||
-    timestampsCalculation.getMonth() !== now.getMonth()
-  ) {
-    todayTimestamp = calculateTimestampOfToday();
-    yesterdayTimestamp = calculateTimestampOfYesterday();
-    thisMonthTimestamp = calculateTimestampOfThisMonth();
-    thisYearTimestamp = calculateTimestampOfThisYear();
-  }
-  return {
-    thisMonthTimestamp,
-    thisYearTimestamp,
-    todayTimestamp,
-    yesterdayTimestamp,
-  };
-};
-
 const renderItemElement = renderItem =>
   function InternarSectionListRender(renderItemProps) {
     return createElement(renderItem, renderItemProps);
   };
 const groupTransactionByDate = ({ pending, minedAt }) => {
   if (pending) return 'Pending';
-  const {
-    todayTimestamp,
-    yesterdayTimestamp,
-    thisMonthTimestamp,
-    thisYearTimestamp,
-  } = getTimestamps();
 
   const ts = parseInt(minedAt, 10) * 1000;
 
