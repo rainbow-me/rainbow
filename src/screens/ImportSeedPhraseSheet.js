@@ -108,7 +108,7 @@ const SecretTextArea = styled(Input).attrs({
   weight: 'semibold',
 })`
   margin-bottom: ${android ? 55 : 0};
-  min-height: 50;
+  min-height: ${android ? 100 : 50};
   width: 100%;
 `;
 

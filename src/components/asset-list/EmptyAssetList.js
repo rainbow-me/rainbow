@@ -59,4 +59,4 @@ const EmptyAssetList = ({
   );
 };
 
-export default React.memo(EmptyAssetList);
+export default EmptyAssetList;

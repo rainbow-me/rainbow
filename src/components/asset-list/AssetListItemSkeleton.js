@@ -101,7 +101,7 @@ export default class AssetListItemSkeleton extends PureComponent {
     ]);
   }
 
-  animation = this.startShimmerLoop();
+  animation = this.props.animated && ios ? this.startShimmerLoop() : () => null;
 
   renderShimmer() {
     const gradientColors = [
@@ -160,7 +160,7 @@ export default class AssetListItemSkeleton extends PureComponent {
 
     return (
       <Container descendingOpacity={descendingOpacity} index={index}>
-        {animated ? (
+        {animated && ios ? (
           <MaskedView maskElement={skeletonElement}>
             {this.renderShimmer()}
           </MaskedView>

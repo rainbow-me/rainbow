@@ -55,11 +55,29 @@ const listPaddingBottom = 6;
 const walletRowHeight = 59;
 const maxListHeight = deviceHeight - 220;
 
-const EditButton = styled(ButtonPressAnimation).attrs({ scaleTo: 0.96 })`
+const EditButton = styled(ButtonPressAnimation).attrs(({ editMode }) => ({
+  radiusAndroid: 24,
+  radiusWrapperStyle: {
+    alignSelf: 'flex-end',
+    height: 40,
+    marginRight: 7,
+    width: editMode ? 70 : 58,
+  },
+  scaleTo: 0.96,
+}))`
   padding: 12px;
+  ${ios
+    ? `
   position: absolute;
   right: 7px;
   top: 6px;
+  `
+    : `
+    position: relative;
+    right: 0px;
+    top: -10px;
+    z-index: 99999;
+  `}
 `;
 
 const EditButtonLabel = styled(Text).attrs(({ editMode }) => ({
@@ -112,13 +130,13 @@ export default function ChangeWalletSheet() {
 
   const walletRowCount = useMemo(() => getWalletRowCount(wallets), [wallets]);
 
-  let headerHeight = 30;
+  let headerHeight = android ? 0 : 30;
   let listHeight =
     walletRowHeight * walletRowCount + footerHeight + listPaddingBottom;
   let scrollEnabled = false;
   let showDividers = false;
   if (listHeight > maxListHeight) {
-    headerHeight = 42;
+    headerHeight = android ? 0 : 40;
     listHeight = maxListHeight;
     scrollEnabled = true;
     showDividers = true;
@@ -444,7 +462,7 @@ export default function ChangeWalletSheet() {
           <Divider color={colors.rowDividerExtraLight} inset={[0, 15]} />
         )}
       </Column>
-      <EditButton onPress={() => setEditMode(e => !e)}>
+      <EditButton editMode={editMode} onPress={() => setEditMode(e => !e)}>
         <EditButtonLabel editMode={editMode}>
           {editMode ? 'Done' : 'Edit'}
         </EditButtonLabel>
