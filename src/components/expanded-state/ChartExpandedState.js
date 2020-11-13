@@ -201,19 +201,21 @@ export default function ChartExpandedState({ asset }) {
           <SwapActionButton
             color={color}
             inputType={AssetInputTypes.in}
-            radiusWrapperStyle={{ flex: 1 }}
+            radiusAndroid={24}
+            radiusWrapperStyle={{ flex: 1, marginRight: 10 }}
             wrapperProps={{
               containerStyle: { flex: 1 },
-              style: { flex: 1, marginRight: 10 },
+              style: { flex: 1 },
             }}
           />
         )}
         <SendActionButton
           color={color}
-          radiusWrapperStyle={{ flex: 1 }}
+          radiusAndroid={24}
+          radiusWrapperStyle={{ flex: 1, marginLeft: 10 }}
           wrapperProps={{
             containerStyle: { flex: 1 },
-            style: { flex: 1, marginRight: 10 },
+            style: { flex: 1 },
           }}
         />
       </ActionRow>
