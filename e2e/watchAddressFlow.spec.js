@@ -7,10 +7,11 @@ describe('Watch address flow', () => {
     await Helpers.checkIfVisible('welcome-screen');
   });
 
-  it('Should show the "Restore Sheet" after tapping on "I already have a wallet"', async () => {
+  it('with 0x - Should show the "Restore Sheet" after tapping on "I already have a wallet"', async () => {
+    await Helpers.disableSynchronization();
     await Helpers.tap('already-have-wallet-button');
     await Helpers.delay(2000);
-    await Helpers.checkIfVisible('restore-sheet');
+    await Helpers.checkIfExists('restore-sheet');
   });
 
   it('show the "Import Sheet" when tapping on "Watch an Ethereum address"', async () => {
