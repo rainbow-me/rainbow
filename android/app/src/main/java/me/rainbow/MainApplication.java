@@ -15,6 +15,7 @@ import io.branch.rnbranch.RNBranchModule;
 import me.rainbow.NativeModules.RNBip39.RNBip39Package;
 import me.rainbow.NativeModules.RNBackHandler.RNBackHandlerPackage;
 import me.rainbow.NativeModules.RNReview.RNReviewPackage;
+import me.rainbow.NativeModules.RNTextAnimatorPackage.RNTextAnimatorPackage;
 
 import com.facebook.react.bridge.JSIModulePackage;
 import com.swmansion.reanimated.ReanimatedJSIModulePackage;
@@ -37,6 +38,7 @@ public class MainApplication extends Application implements ReactApplication {
           packages.add(new RNBip39Package());
           packages.add(new RNReviewPackage());
           packages.add(new RNBackHandlerPackage());
+          packages.add(new RNTextAnimatorPackage());
           return packages;
         }
 
@@ -45,7 +47,7 @@ public class MainApplication extends Application implements ReactApplication {
           return "index";
         }
 
-         /* REA
+         //_REA /* REA
          @Override
          protected JSIModulePackage getJSIModulePackage() {
            return new ReanimatedJSIModulePackage();

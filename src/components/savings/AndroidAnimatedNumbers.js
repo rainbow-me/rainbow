@@ -1,21 +1,10 @@
-import React, { useEffect } from 'react';
-import { TextInput } from 'react-native';
-import Animated, {
-  useAnimatedProps,
-  useDerivedValue,
-  useSharedValue,
-  withDecay,
-} from 'react-native-reanimated';
+import React, { useEffect, useRef } from 'react';
+import { findNodeHandle, NativeModules, TextInput } from 'react-native';
 import styled from 'styled-components/native';
-import {
-  isSymbolStablecoin,
-  isSymbolStablecoinWorklet,
-} from '../../helpers/savings';
+import { isSymbolStablecoin } from '../../helpers/savings';
 import { colors, fonts, fontWithWidth } from '@rainbow-me/styles';
 
-const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
-
-const TextChunk = styled(AnimatedTextInput).attrs({
+const TextChunk = styled(TextInput).attrs({
   editable: false,
 })`
   ${fontWithWidth(fonts.weight.bold)};
@@ -34,45 +23,35 @@ const Row = styled.View`
 `;
 
 function formatSavingsAmount(val) {
-  'worklet';
   return val.toFixed(10);
 }
 
 function formatter(symbol, val) {
-  'worklet';
-  return isSymbolStablecoinWorklet(symbol)
+  return isSymbolStablecoin(symbol)
     ? `$${formatSavingsAmount(val)}`
     : `${formatSavingsAmount(val)} ${symbol}`;
 }
 
 export default function AndroidText({ animationConfig }) {
-  const stepPerSecond = Math.max(0, animationConfig.stepPerDay / 24 / 60 / 60);
   const isStable = isSymbolStablecoin(animationConfig.symbol);
-  const svalue = useSharedValue(0);
+  const ref = useRef();
   useEffect(() => {
-    svalue.value = withDecay({ deceleration: 1, velocity: 1000 / 60 }); // 1000/60 per each frame
-  }, [svalue]);
-
-  const val = useDerivedValue(() =>
-    formatter(
-      animationConfig.symbol,
-      svalue.value * stepPerSecond + animationConfig.initialValue
-    )
-  );
-
-  const props = useAnimatedProps(() => ({
-    text: val.value,
-  }));
+    const screen = findNodeHandle(ref.current.getNativeRef());
+    NativeModules.RNTextAnimator.animate(screen, {
+      ...animationConfig,
+      isStable,
+    });
+    return () => NativeModules.RNTextAnimator.stop(screen);
+  }, [animationConfig, isStable]);
 
   return (
     <Row>
       <TextChunk
-        animatedProps={props}
         defaultValue={formatter(
           animationConfig.symbol,
           animationConfig.initialValue
         )}
-        isStable={isStable}
+        ref={ref}
       />
     </Row>
   );
