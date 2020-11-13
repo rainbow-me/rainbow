@@ -145,13 +145,13 @@ const savingsStyleInterpolator = ({
   };
 };
 
-const sheetStyleInterpolator = ({
+const sheetStyleInterpolator = (targetOpacity = 1) => ({
   current: { progress: current },
   layouts: { screen },
 }) => {
   const backgroundOpacity = current.interpolate({
     inputRange: [-1, 0, 0.975, 2],
-    outputRange: [0, 0, 1, 1],
+    outputRange: [0, 0, targetOpacity, targetOpacity],
   });
 
   const translateY = current.interpolate({
@@ -344,11 +344,16 @@ export const sheetPreset = {
   cardOverlayEnabled: true,
   cardShadowEnabled: true,
   cardStyle: { backgroundColor: 'transparent' },
-  cardStyleInterpolator: sheetStyleInterpolator,
+  cardStyleInterpolator: sheetStyleInterpolator(),
   cardTransparent: true,
   gestureDirection: 'vertical',
   gestureResponseDistance,
   transitionSpec: { close: closeSpec, open: sheetOpenSpec },
+};
+
+export const settingsPreset = {
+  ...sheetPreset,
+  cardStyleInterpolator: sheetStyleInterpolator(0.5),
 };
 
 export const exchangeModalPreset = {

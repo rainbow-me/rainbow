@@ -34,6 +34,7 @@ import {
   exchangePreset,
   expandedPreset,
   overlayExpandedPreset,
+  settingsPreset,
   sheetPreset,
 } from './effects';
 import { onNavigationStateChange } from './onNavigationStateChange';
@@ -183,7 +184,7 @@ function MainNativeNavigator() {
       <NativeStack.Screen
         component={SettingsModal}
         name={Routes.SETTINGS_MODAL}
-        options={sheetPreset}
+        options={settingsPreset}
       />
       <NativeStack.Screen
         component={PinAuthenticationScreen}
@@ -193,7 +194,7 @@ function MainNativeNavigator() {
       <NativeStack.Screen
         component={SendSheet}
         name={Routes.SEND_SHEET}
-        options={sheetPreset}
+        options={settingsPreset}
       />
       <NativeStack.Screen
         component={BackupSheet}

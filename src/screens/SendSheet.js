@@ -7,6 +7,7 @@ import { InteractionManager, Keyboard, StatusBar } from 'react-native';
 import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components/primitives';
+import { dismissingScreenListener } from '../../shim';
 import { Column } from '../components/layout';
 import {
   SendAssetForm,
@@ -71,7 +72,7 @@ const SheetContainer = styled(Column).attrs({
 export default function SendSheet(props) {
   const dispatch = useDispatch();
   const { isTinyPhone } = useDimensions();
-  const { navigate } = useNavigation();
+  const { navigate, addListener } = useNavigation();
   const { dataAddNewTransaction } = useTransactionConfirmation();
   const updateAssetOnchainBalanceIfNeeded = useUpdateAssetOnchainBalance();
   const { allAssets } = useAccountAssets();
@@ -87,6 +88,32 @@ export default function SendSheet(props) {
     updateGasPriceOption,
     updateTxFee,
   } = useGas();
+  const isDismissing = useRef(false);
+
+  const recipientFieldRef = useRef();
+
+  useEffect(() => {
+    if (ios) {
+      return;
+    }
+    dismissingScreenListener.current = () => {
+      Keyboard.dismiss();
+      isDismissing.current = true;
+    };
+    const unsubscribe = addListener(
+      'transitionEnd',
+      ({ data: { closing } }) => {
+        if (!closing && isDismissing.current) {
+          isDismissing.current = false;
+          recipientFieldRef?.current?.focus();
+        }
+      }
+    );
+    return () => {
+      unsubscribe();
+      dismissingScreenListener.current = undefined;
+    };
+  }, [addListener]);
   const { contacts, onRemoveContact, filteredContacts } = useContacts();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
   const {
@@ -117,7 +144,6 @@ export default function SendSheet(props) {
   const showAssetForm = isValidAddress && !isEmpty(selected);
   const prevSelectedGasPrice = usePrevious(selectedGasPrice);
 
-  const recipientFieldRef = useRef();
   const { handleFocus, triggerFocus } = useMagicAutofocus(
     recipientFieldRef,
     useCallback(
