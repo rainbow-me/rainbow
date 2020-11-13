@@ -32,10 +32,8 @@ describe('New Wallet flow', () => {
 
   it('should show "No transactions yet" in the activity list', async () => {
     if (device.getPlatform() === 'android') {
-      // not working on android!
-      // (app isn't idle and test times out)
-      // await Helpers.tap('navbar-profile-button');
-      // await Helpers.checkIfElementByTextIsVisible('No transactions yet');
+      await Helpers.tap('navbar-profile-button');
+      await Helpers.checkIfElementByTextIsVisible('No transactions yet');
     } else {
       await Helpers.tap('navbar-profile-button');
       await Helpers.delay(2000);

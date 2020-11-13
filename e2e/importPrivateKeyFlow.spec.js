@@ -58,7 +58,11 @@ describe('Import from private key flow', () => {
     await Helpers.delay(1000);
     await Helpers.swipe('wallet-screen', 'right');
     await Helpers.delay(2000);
-    await Helpers.checkIfElementByTextIsVisible('PKEY');
+    if (device.getPlatform() === 'android') {
+      await Helpers.checkIfExistsByText('PKEY');
+    } else {
+      await Helpers.checkIfElementByTextIsVisible('PKEY');
+    }
   });
 
   it('Should navigate to Settings Modal after tapping Settings Button', async () => {
@@ -135,7 +139,11 @@ describe('Import from private key flow', () => {
     await Helpers.delay(1000);
     await Helpers.swipe('wallet-screen', 'right');
     await Helpers.delay(2000);
-    await Helpers.checkIfElementByTextIsVisible('TKEY');
+    if (device.getPlatform() === 'android') {
+      await Helpers.checkIfExistsByText('TKEY');
+    } else {
+      await Helpers.checkIfElementByTextIsVisible('TKEY');
+    }
   });
 
   afterAll(async () => {

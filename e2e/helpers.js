@@ -113,6 +113,10 @@ export function checkIfExists(elementId) {
   return expect(element(by.id(elementId))).toExist();
 }
 
+export function checkIfExistsByText(text) {
+  return expect(element(by.text(text))).toExist();
+}
+
 export function checkIfElementByTextIsVisible(text) {
   return waitFor(element(by.text(text)))
     .toBeVisible()
