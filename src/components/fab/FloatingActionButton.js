@@ -28,6 +28,7 @@ const FloatingActionButton = ({
   scaleTo = 0.86,
   shadows = FloatingActionButtonShadow,
   size = FloatingActionButtonSize,
+  testID,
   ...props
 }) => {
   const handlePress = useCallback(
@@ -54,6 +55,8 @@ const FloatingActionButton = ({
       useLateHaptic={false}
       {...props}
     >
+      {console.log(`FAB: ${testID}`)}
+
       <ShadowStack
         {...borders.buildCircleAsObject(size)}
         hideShadow={disabled}
@@ -65,6 +68,7 @@ const FloatingActionButton = ({
           style={{
             height: size,
           }}
+          testID={testID}
         >
           <Content backgroundColor={disabled ? colors.grey : backgroundColor}>
             {typeof children === 'function' ? children({ size }) : children}
