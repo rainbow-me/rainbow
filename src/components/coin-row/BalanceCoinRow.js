@@ -13,7 +13,7 @@ import { useCoinListEditedValue } from '../../hooks/useCoinListEdited';
 import store from '../../redux/store';
 import { ButtonPressAnimation } from '../animations';
 import { ChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
-import { Column, FlexItem } from '../layout';
+import { Column, FlexItem, Row } from '../layout';
 import BalanceText from './BalanceText';
 import BottomRowText from './BottomRowText';
 import CoinCheckButton from './CoinCheckButton';
@@ -44,6 +44,25 @@ const PercentageText = styled(BottomRowText).attrs({
   ${({ isPositive }) => (isPositive ? `color: ${colors.green};` : null)};
 `;
 
+const BottomRowContainer = ios
+  ? Fragment
+  : styled(Row).attrs({ marginBottom: 10, marginTop: -10 })``;
+
+const TopRowContainer = ios
+  ? Fragment
+  : styled(Row).attrs({
+      align: 'flex-start',
+      justify: 'flex-start',
+      marginTop: 0,
+    })``;
+
+const PriceContainer = ios
+  ? View
+  : styled(View)`
+      margin-top: -3;
+      margin-bottom: 3;
+    `;
+
 const BottomRow = ({ balance, native }) => {
   const percentChange = get(native, 'change');
   const percentageChangeDisplay = formatPercentageString(percentChange);
@@ -51,7 +70,7 @@ const BottomRow = ({ balance, native }) => {
   const isPositive = percentChange && percentageChangeDisplay.charAt(0) !== '-';
 
   return (
-    <Fragment>
+    <BottomRowContainer>
       <FlexItem flex={1}>
         <BottomRowText>{get(balance, 'display', '')}</BottomRowText>
       </FlexItem>
@@ -60,7 +79,7 @@ const BottomRow = ({ balance, native }) => {
           {percentageChangeDisplay}
         </PercentageText>
       </View>
-    </Fragment>
+    </BottomRowContainer>
   );
 };
 
@@ -68,19 +87,19 @@ const TopRow = ({ name, native, nativeCurrencySymbol }) => {
   const nativeDisplay = get(native, 'balance.display');
 
   return (
-    <Fragment>
+    <TopRowContainer>
       <FlexItem flex={1}>
         <CoinName>{name}</CoinName>
       </FlexItem>
-      <View>
+      <PriceContainer>
         <BalanceText
           color={nativeDisplay ? null : colors.blueGreyLight}
           numberOfLines={1}
         >
           {nativeDisplay || `${nativeCurrencySymbol}0.00`}
         </BalanceText>
-      </View>
-    </Fragment>
+      </PriceContainer>
+    </TopRowContainer>
   );
 };
 
