@@ -1,8 +1,9 @@
+import { join, map } from 'lodash';
 import React, { useMemo } from 'react';
 import styled from 'styled-components/primitives';
-import { useColorForAsset } from '../../../hooks';
+import { useColorForAssets } from '../../../hooks/useColorForAsset';
 import { magicMemo } from '../../../utils';
-import { CoinIcon, CoinIconSize } from '../../coin-icon';
+import { CoinIcon } from '../../coin-icon';
 import { ColumnWithMargins, Row } from '../../layout';
 import { TruncatedText } from '../../text';
 import { colors, padding } from '@rainbow-me/styles';
@@ -11,15 +12,6 @@ const Container = styled(ColumnWithMargins).attrs({
   margin: 12,
 })`
   ${padding(0, 19, 24)};
-`;
-
-const ETHCoinIcon = styled(CoinIcon).attrs({
-  shadow: [[0, 4, 12, colors.dark, 0.3]],
-})`
-  bottom: 0;
-  left: ${CoinIconSize - 10};
-  position: absolute;
-  top: 0;
 `;
 
 const PerShareText = styled(TruncatedText).attrs({
@@ -43,24 +35,38 @@ const Title = styled(TruncatedText).attrs(({ color = colors.dark }) => ({
   weight: 'bold',
 }))``;
 
-function LiquidityPoolExpandedStateHeader({ asset }) {
-  const { address, pricePerShare, shadowColor, symbol } = asset;
+function LiquidityPoolExpandedStateHeader({ assets, pricePerShare }) {
+  const title = `${join(
+    map(assets, asset => asset.symbol),
+    '-'
+  )} Pool`;
+  const colors = useColorForAssets(assets);
 
-  const color = useColorForAsset(asset);
-  const coinIconShadow = useMemo(
-    () => [[0, 4, 12, shadowColor || color, 0.3]],
-    [color, shadowColor]
-  );
+  const shadows = useMemo(() => {
+    return map(assets, (asset, index) => {
+      const coinIconShadow = [
+        [0, 4, 12, asset.shadowColor || colors[index], 0.3],
+      ];
+      return coinIconShadow;
+    });
+  }, [assets, colors]);
 
   return (
     <Container>
       <Row align="center">
-        <ETHCoinIcon symbol="ETH" />
-        <CoinIcon address={address} shadow={coinIconShadow} symbol={symbol} />
+        {map(assets, (asset, index) => {
+          return (
+            <CoinIcon
+              address={asset.address}
+              shadow={shadows[index]}
+              symbol={asset.symbol}
+            />
+          );
+        })}
       </Row>
       <Row align="center" justify="space-between">
         <ColumnWithMargins align="start" margin={2}>
-          <Title>{`${symbol}-ETH Pool`}</Title>
+          <Title>{title}</Title>
           <Subtitle>
             {pricePerShare}
             <PerShareText> per share</PerShareText>

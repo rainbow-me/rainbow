@@ -20,7 +20,7 @@ export const transformPool = (liquidityPool, nativeCurrency) => {
 
   const percentageOwned = multiply(divide(balance, totalSupply), 100);
 
-  const totalBalanceAmount = multiply(balance, price.value);
+  const totalBalanceAmount = multiply(balance, price?.value || 0);
   const totalNativeDisplay = convertAmountToNativeDisplay(
     totalBalanceAmount,
     nativeCurrency

@@ -1,3 +1,4 @@
+import { join, map, toLower } from 'lodash';
 import React, { useMemo } from 'react';
 import { tokenOverrides } from '../../references';
 import { magicMemo } from '../../utils';
@@ -19,46 +20,46 @@ import { LiquidityPoolExpandedStateHeader } from './liquidity-pool';
 export const LiquidityPoolExpandedStateSheetHeight = 369 + (android ? 80 : 0);
 
 const LiquidityPoolExpandedState = ({
-  asset: { ethBalance, totalNativeDisplay, uniBalance, ...asset },
+  asset: {
+    pricePerShare,
+    tokenSymbols,
+    totalNativeDisplay,
+    uniBalance,
+    ...liquidityInfo
+  },
 }) => {
-  const ethAsset = useMemo(
-    () => ({
-      color: tokenOverrides['eth'].color,
-      symbol: 'ETH',
-      value: ethBalance,
-    }),
-    [ethBalance]
-  );
-
-  const tokenAsset = useMemo(() => {
-    const { tokenAddress, tokenBalance, tokenSymbol, ...tokenAsset } = asset;
-    return {
-      ...tokenAsset,
-      ...(tokenAddress ? tokenOverrides[tokenAddress.toLowerCase()] : {}),
-      address: tokenAddress,
-      symbol: tokenSymbol,
-      value: tokenBalance,
-    };
-  }, [asset]);
+  const lpTokenName = join(tokenSymbols, '-');
+  const tokenAssets = useMemo(() => {
+    const { tokens } = liquidityInfo;
+    return map(tokens, token => ({
+      ...token,
+      ...(token.address ? tokenOverrides[toLower(token.address)] : {}),
+      value: token.balance,
+    }));
+  }, [liquidityInfo]);
 
   return (
     <SlackSheet
       additionalTopPadding={android}
       contentHeight={LiquidityPoolExpandedStateSheetHeight}
     >
-      <LiquidityPoolExpandedStateHeader asset={tokenAsset} />
+      <LiquidityPoolExpandedStateHeader
+        assets={tokenAssets}
+        pricePerShare={pricePerShare}
+      />
       <SheetDivider />
       <TokenInfoSection>
         <TokenInfoRow>
-          <TokenInfoItem
-            asset={tokenAsset}
-            title={`${tokenAsset.symbol} balance`}
-          >
-            <TokenInfoBalanceValue />
-          </TokenInfoItem>
-          <TokenInfoItem asset={ethAsset} title="ETH balance">
-            <TokenInfoBalanceValue />
-          </TokenInfoItem>
+          {map(tokenAssets, tokenAsset => {
+            return (
+              <TokenInfoItem
+                asset={tokenAsset}
+                title={`${tokenAsset.symbol} balance`}
+              >
+                <TokenInfoBalanceValue />
+              </TokenInfoItem>
+            );
+          })}
         </TokenInfoRow>
         <TokenInfoRow>
           <TokenInfoItem title="Pool shares">{uniBalance}</TokenInfoItem>
@@ -68,8 +69,8 @@ const LiquidityPoolExpandedState = ({
         </TokenInfoRow>
       </TokenInfoSection>
       <SheetActionButtonRow>
-        <WithdrawActionButton symbol={tokenAsset.symbol} />
-        <DepositActionButton symbol={tokenAsset.symbol} />
+        <WithdrawActionButton symbol={lpTokenName} />
+        <DepositActionButton symbol={lpTokenName} />
       </SheetActionButtonRow>
     </SlackSheet>
   );
