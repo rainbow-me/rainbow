@@ -46,15 +46,12 @@ export default function CoinIconGroup({ containerStyles, tokens }) {
     <Container css={containerStyles} shouldCenter={sizesTable[size].breakIndex}>
       {slicedArray.map((setOfTokens, lineIndex) => (
         <LineWrapper key={`coinLine_${lineIndex}`}>
-          {setOfTokens.map((token, index) => (
+          {setOfTokens.map((tokenSymbol, index) => (
             <Wrapper
               key={`coin_${index}_${lineIndex}`}
               width={sizesTable[size].width}
             >
-              <CoinIcon
-                size={sizesTable[size].iconSize}
-                symbol={token.tokenSymbol}
-              />
+              <CoinIcon size={sizesTable[size].iconSize} symbol={tokenSymbol} />
             </Wrapper>
           ))}
         </LineWrapper>

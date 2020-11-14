@@ -1,5 +1,5 @@
 import produce from 'immer';
-import { concat, filter, get, isEmpty, map, uniqBy } from 'lodash';
+import { concat, filter, get, isEmpty, uniqBy } from 'lodash';
 import {
   getLiquidity,
   getUniswapLiquidityInfo,
@@ -74,11 +74,10 @@ export const uniswapUpdateLiquidityState = () => async (dispatch, getState) => {
 
   if (isEmpty(liquidityTokens)) return;
 
-  const exchangeContracts = map(liquidityTokens, getAssetCode);
   try {
     const liquidityInfo = await getLiquidityInfo(
       accountAddress,
-      exchangeContracts,
+      liquidityTokens,
       pairs
     );
     saveLiquidityInfo(liquidityInfo, accountAddress, network);

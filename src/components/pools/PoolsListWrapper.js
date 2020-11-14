@@ -4,7 +4,7 @@ import { OpacityToggler } from '../animations';
 import { UniswapInvestmentRow } from '../investment-cards';
 import SavingsListHeader from '../savings/SavingsListHeader';
 
-const renderSavingsListRow = item => {
+const renderInvestmentsListRow = item => {
   return (
     <UniswapInvestmentRow assetType="uniswap" item={item} key={item.uniqueId} />
   );
@@ -30,7 +30,7 @@ export default function PoolsListWrapper({ data, totalValue = '0' }) {
         isVisible={!isInvestmentCardsOpen}
         pointerEvents={isInvestmentCardsOpen ? 'auto' : 'none'}
       >
-        {data.map(renderSavingsListRow)}
+        {data.map(renderInvestmentsListRow)}
       </OpacityToggler>
     </Fragment>
   );

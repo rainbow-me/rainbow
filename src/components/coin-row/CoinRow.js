@@ -61,7 +61,7 @@ export default function CoinRow({
       )}
       <Content isHidden={isHidden} justify="center" style={contentStyles}>
         <Row align="center" testID={`${testID}-${symbol || ''}`}>
-          {topRowRender({ symbol, ...accountSettings, ...props })}
+          {topRowRender({ symbol, tokenSymbols, ...accountSettings, ...props })}
         </Row>
         <Row align="center" marginBottom={0.5}>
           {bottomRowRender({ symbol, ...accountSettings, ...props })}

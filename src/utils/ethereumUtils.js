@@ -52,7 +52,7 @@ const getBalanceAmount = async (selectedGasPrice, selected) => {
 const getHash = txn => txn.hash.split('-').shift();
 
 const getAsset = (assets, address = 'eth') =>
-  find(assets, matchesProperty('address', address));
+  find(assets, matchesProperty('address', toLower(address)));
 
 export const checkWalletEthZero = assets => {
   const ethAsset = find(assets, asset => asset.address === 'eth');
