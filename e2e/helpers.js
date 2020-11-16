@@ -122,6 +122,11 @@ export function checkIfElementByTextIsVisible(text) {
     .toBeVisible()
     .withTimeout(10000);
 }
+export function checkIfElementByTextToExist(text) {
+  return waitFor(element(by.text(text)))
+    .toExist()
+    .withTimeout(10000);
+}
 
 export function checkForElementByLabel(text) {
   return expect(element(by.label(text))).toExist();
