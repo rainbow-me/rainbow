@@ -8,7 +8,7 @@ import { BottomRowText, CoinRow } from '../coin-row';
 import BalanceText from '../coin-row/BalanceText';
 import CoinName from '../coin-row/CoinName';
 import { LiquidityPoolExpandedStateSheetHeight } from '../expanded-state/LiquidityPoolExpandedState';
-import { FlexItem } from '../layout';
+import { FlexItem, Row } from '../layout';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
@@ -26,6 +26,25 @@ const Content = styled(ButtonPressAnimation)`
   top: 0;
 `;
 
+const BottomRowContainer = ios
+  ? Fragment
+  : styled(Row).attrs({ marginBottom: 10, marginTop: -10 })``;
+
+const TopRowContainer = ios
+  ? Fragment
+  : styled(Row).attrs({
+      align: 'flex-start',
+      justify: 'flex-start',
+      marginTop: 0,
+    })``;
+
+const PriceContainer = ios
+  ? View
+  : styled(View)`
+      margin-top: -3;
+      margin-bottom: 3;
+    `;
+
 const BottomRow = ({ pricePerShare, native }) => {
   const percentChange = get(native, 'change');
   const percentageChangeDisplay = formatPercentageString(percentChange);
@@ -33,7 +52,7 @@ const BottomRow = ({ pricePerShare, native }) => {
   const isPositive = percentChange && percentageChangeDisplay.charAt(0) !== '-';
 
   return (
-    <Fragment>
+    <BottomRowContainer>
       <FlexItem flex={1}>
         <BottomRowText>{pricePerShare}</BottomRowText>
       </FlexItem>
@@ -42,21 +61,21 @@ const BottomRow = ({ pricePerShare, native }) => {
           {percentageChangeDisplay}
         </PercentageText>
       </View>
-    </Fragment>
+    </BottomRowContainer>
   );
 };
 
 const TopRow = ({ tokenSymbol, totalNativeDisplay }) => {
   return (
-    <Fragment>
+    <TopRowContainer>
       <FlexItem flex={1}>
         {/* // TODO Remove hardcoded ETH */}
         <CoinName>{tokenSymbol}-ETH</CoinName>
       </FlexItem>
-      <View>
+      <PriceContainer>
         <BalanceText numberOfLines={1}>{totalNativeDisplay}</BalanceText>
-      </View>
-    </Fragment>
+      </PriceContainer>
+    </TopRowContainer>
   );
 };
 

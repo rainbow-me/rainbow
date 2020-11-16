@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import { get } from 'lodash';
+import { get, isNil } from 'lodash';
 import supportedNativeCurrencies from '../references/native-currencies.json';
 
 type BigNumberish = number | string | BigNumber;
@@ -172,14 +172,16 @@ export const divide = (
  */
 export const convertAmountFromNativeValue = (
   value: BigNumberish,
-  priceUnit: BigNumberish,
+  priceUnit: BigNumberish | null,
   decimals: number = 18
-) =>
-  new BigNumber(
+): string => {
+  if (isNil(priceUnit) || isZero(priceUnit)) return '0';
+  return new BigNumber(
     new BigNumber(value)
       .dividedBy(priceUnit)
       .toFixed(decimals, BigNumber.ROUND_DOWN)
   ).toFixed();
+};
 
 export const convertStringToNumber = (value: BigNumberish) =>
   new BigNumber(value).toNumber();
