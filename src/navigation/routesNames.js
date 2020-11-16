@@ -73,9 +73,7 @@ const RoutesWithNativeStackAvailability = {
   IMPORT_SEED_PHRASE_FLOW: isNativeStackAvailable
     ? Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR
     : Routes.IMPORT_SEED_PHRASE_SHEET,
-  SEND_FLOW: isNativeStackAvailable
-    ? Routes.SEND_SHEET_NAVIGATOR
-    : Routes.SEND_SHEET,
+  SEND_FLOW: Routes.SEND_SHEET_NAVIGATOR,
 };
 
 export default RoutesWithNativeStackAvailability;
