@@ -136,7 +136,7 @@ const BalanceCoinRow = ({
     } else {
       onPress?.(item, { longFormHeight: ChartExpandedStateSheetHeight });
     }
-  }, [handleEditModePress, isCoinListEdited, onPress, item]);
+  }, [handleEditModePress, isCoinListEdited, item, onPress]);
 
   return (
     <Column flex={1} justify={isFirstCoinRow ? 'end' : 'start'}>
