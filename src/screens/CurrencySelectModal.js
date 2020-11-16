@@ -299,6 +299,7 @@ export default function CurrencySelectModal() {
           <Column flex={1}>
             <CurrencySelectModalHeader testID="currency-select-header" />
             <ExchangeSearch
+              isFetching={loadingAllTokens}
               onChangeText={setSearchQuery}
               onFocus={handleFocus}
               ref={searchInputRef}

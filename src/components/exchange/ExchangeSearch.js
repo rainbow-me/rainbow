@@ -1,3 +1,4 @@
+import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useRef } from 'react';
 import FastImage from 'react-native-fast-image';
 import RadialGradient from 'react-native-radial-gradient';
@@ -101,7 +102,7 @@ const timingConfig = {
 };
 
 const ExchangeSearch = (
-  { onChangeText, onFocus, searchQuery, testID },
+  { isFetching, onChangeText, onFocus, searchQuery, testID },
   ref
 ) => {
   const handleClearInput = useCallback(() => {
@@ -109,14 +110,12 @@ const ExchangeSearch = (
     onChangeText?.('');
   }, [ref, onChangeText]);
 
-  const isFetching = false;
-
   const spinnerRotation = useSharedValue(0, 'spinnerRotation');
   const spinnerScale = useSharedValue(0, 'spinnerScale');
 
   const spinnerTimeout = useRef();
   useEffect(() => {
-    if (isFetching) {
+    if (isFetching && !isEmpty(searchQuery)) {
       clearTimeout(spinnerTimeout.current);
       spinnerRotation.value = 0;
       spinnerRotation.value = repeat(
@@ -133,7 +132,7 @@ const ExchangeSearch = (
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isFetching]);
+  }, [isFetching, searchQuery]);
 
   const searchIconStyle = useAnimatedStyle(
     () => {
