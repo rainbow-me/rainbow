@@ -26,7 +26,6 @@ const buildCoolModalConfig = params => ({
   onAppear: params.onAppear || null,
   scrollEnabled: params.scrollEnabled,
   single: params.single,
-  TEMPORARY_autoJumpToNewHeight: params.TEMPORARY_autoJumpToNewHeight,
   topOffset: params.topOffset || sharedCoolModalTopOffset,
 });
 
@@ -142,7 +141,6 @@ export const restoreSheetConfig = {
       ...params,
       backgroundColor: colors.dark,
       longFormHeight: heightForStep,
-      TEMPORARY_autoJumpToNewHeight: true,
     });
   },
 };
