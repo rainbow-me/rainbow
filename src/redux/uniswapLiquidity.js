@@ -68,7 +68,7 @@ export const uniswapUpdateLiquidityTokens = (
 };
 
 export const uniswapUpdateLiquidityState = () => async (dispatch, getState) => {
-  const { accountAddress, network } = getState().settings;
+  const { accountAddress, chainId, network } = getState().settings;
   const { pairs } = getState().uniswap;
   const { liquidityTokens } = getState().uniswapLiquidity;
 
@@ -76,6 +76,7 @@ export const uniswapUpdateLiquidityState = () => async (dispatch, getState) => {
 
   try {
     const liquidityInfo = await getLiquidityInfo(
+      chainId,
       accountAddress,
       liquidityTokens,
       pairs

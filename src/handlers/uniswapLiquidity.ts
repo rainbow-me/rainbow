@@ -1,4 +1,5 @@
 import { Contract } from '@ethersproject/contracts';
+import { ChainId, WETH } from '@uniswap/sdk';
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json';
 import contractMap from 'eth-contract-metadata';
 import { get, keyBy, map, partition, toLower } from 'lodash';
@@ -50,14 +51,23 @@ export interface LPToken {
 const getAssetCode = (token: LPToken): string => get(token, 'asset.asset_code');
 
 const getTokenDetails = async (
+  chainId: ChainId,
   tokenAddress: string,
   pairs: Record<string, SwapCurrency>
 ) => {
+  if (toLower(tokenAddress) === toLower(WETH[chainId].address)) {
+    return {
+      decimals: 18,
+      name: 'Ethereum',
+      symbol: 'ETH',
+    };
+  }
+
   const tokenContract = new Contract(tokenAddress, erc20ABI, web3Provider);
 
   const token = get(pairs, `[${toLower(tokenAddress)}]`);
 
-  let decimals: string | number = 18;
+  let decimals: string | number;
   let name = '';
   let symbol = '';
 
@@ -117,6 +127,7 @@ const getTokenDetails = async (
 };
 
 export const getLiquidityInfo = async (
+  chainId: ChainId,
   accountAddress: string,
   liquidityPoolTokens: LPToken[],
   pairs: Record<string, SwapCurrency>
@@ -125,12 +136,24 @@ export const getLiquidityInfo = async (
     liquidityPoolTokens,
     token => token?.asset?.type === 'uniswap'
   );
-  const v1Results = await getLiquidityInfoV1(accountAddress, v1Tokens, pairs);
-  const v2Results = await getLiquidityInfoV2(accountAddress, v2Tokens, pairs);
+  // TODO JIN - promise all here?
+  const v1Results = await getLiquidityInfoV1(
+    chainId,
+    accountAddress,
+    v1Tokens,
+    pairs
+  );
+  const v2Results = await getLiquidityInfoV2(
+    chainId,
+    accountAddress,
+    v2Tokens,
+    pairs
+  );
   return { ...v1Results, ...v2Results };
 };
 
 const getLiquidityInfoV2 = async (
+  chainId: ChainId,
   accountAddress: string,
   liquidityTokens: LPToken[],
   pairs: Record<string, SwapCurrency>
@@ -171,8 +194,8 @@ const getLiquidityInfoV2 = async (
       const token1Reserve = token1ReserveBn.toString();
       const totalSupply = totalSupplyResult.toString();
 
-      const token0 = await getTokenDetails(token0Address, pairs);
-      const token1 = await getTokenDetails(token1Address, pairs);
+      const token0 = await getTokenDetails(chainId, token0Address, pairs);
+      const token1 = await getTokenDetails(chainId, token1Address, pairs);
 
       const token0Balance = convertRawAmountToDecimalFormat(
         divide(multiply(token0Reserve, lpTokenBalance), totalSupply),
@@ -214,6 +237,7 @@ const getLiquidityInfoV2 = async (
 };
 
 const getLiquidityInfoV1 = async (
+  chainId: ChainId,
   accountAddress: string,
   liquidityTokens: LPToken[],
   pairs: Record<string, SwapCurrency>
@@ -246,60 +270,11 @@ const getLiquidityInfoV1 = async (
 
       const tokenContract = new Contract(tokenAddress, erc20ABI, web3Provider);
 
-      const token = get(pairs, `[${toLower(tokenAddress)}]`);
-
-      let decimals: string | number = 18;
-      let name = '';
-      let symbol = '';
-
-      if (token) {
-        name = token.name;
-        symbol = token.symbol;
-        decimals = Number(token.decimals);
-      } else {
-        decimals = get(contractMap, `[${tokenAddress}].decimals`);
-        if (!decimals) {
-          try {
-            decimals = await tokenContract.decimals().catch();
-          } catch (error) {
-            decimals = 18;
-            logger.log(
-              'error getting decimals for token: ',
-              tokenAddress,
-              ' Error = ',
-              error
-            );
-          }
-        }
-
-        name = get(contractMap, `[${tokenAddress}].name`, '');
-        if (!name) {
-          try {
-            name = await tokenContract.name().catch();
-          } catch (error) {
-            logger.log(
-              'error getting name for token: ',
-              tokenAddress,
-              ' Error = ',
-              error
-            );
-          }
-        }
-
-        symbol = get(contractMap, `[${tokenAddress}].symbol`, '');
-        if (!symbol) {
-          try {
-            symbol = await tokenContract.symbol().catch();
-          } catch (error) {
-            logger.log(
-              'error getting symbol for token: ',
-              tokenAddress,
-              ' Error = ',
-              error
-            );
-          }
-        }
-      }
+      const { decimals, name, symbol } = await getTokenDetails(
+        chainId,
+        tokenAddress,
+        pairs
+      );
 
       const reserveResult = await tokenContract.balanceOf(liquidityPoolAddress);
       const reserve = reserveResult.toString();
