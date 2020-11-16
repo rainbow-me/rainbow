@@ -227,6 +227,7 @@ const getLiquidityInfoV2 = async (
           },
         ],
         totalSupply: convertRawAmountToDecimalFormat(totalSupply),
+        type: lpToken?.asset?.type,
         uniqueId: `uniswap_${liquidityPoolAddress}`,
       };
     } catch (error) {
@@ -309,6 +310,7 @@ const getLiquidityInfoV1 = async (
           },
         ],
         totalSupply: convertRawAmountToDecimalFormat(totalSupply),
+        type: lpToken?.asset?.type,
         uniqueId: `uniswap_${liquidityPoolAddress}`,
       };
     } catch (error) {

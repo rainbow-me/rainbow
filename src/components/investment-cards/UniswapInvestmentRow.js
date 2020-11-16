@@ -50,17 +50,20 @@ const PriceContainer = ios
       margin-bottom: 3;
     `;
 
-const BottomRow = ({ pricePerShare, relativeChange }) => {
+const BottomRow = ({ uniBalance, type, relativeChange }) => {
   const percentageChangeDisplay = relativeChange
     ? formatPercentageString(convertAmountToPercentageDisplay(relativeChange))
     : '-';
   const isPositive =
     relativeChange && percentageChangeDisplay.charAt(0) !== '-';
 
+  const tokenType = type === 'uniswap' ? 'UNI-V1' : 'UNI-V2';
+  const balanceLabel = `${uniBalance} ${tokenType}`;
+
   return (
     <BottomRowContainer>
       <FlexItem flex={1}>
-        <BottomRowText>{pricePerShare}</BottomRowText>
+        <BottomRowText>{balanceLabel}</BottomRowText>
       </FlexItem>
       <View>
         <PercentageText isPositive={isPositive}>

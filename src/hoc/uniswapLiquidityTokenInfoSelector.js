@@ -16,7 +16,7 @@ export const transformPool = (liquidityPool, nativeCurrency) => {
     return null;
   }
 
-  const { balance, price, tokens, totalSupply, uniqueId } = liquidityPool;
+  const { balance, price, tokens, totalSupply, type, uniqueId } = liquidityPool;
 
   const percentageOwned = multiply(divide(balance, totalSupply), 100);
 
@@ -45,6 +45,7 @@ export const transformPool = (liquidityPool, nativeCurrency) => {
     tokenSymbols,
     totalBalanceAmount,
     totalNativeDisplay,
+    type,
     uniBalance: floor(balance, 7),
     uniqueId,
   };
