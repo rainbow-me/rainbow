@@ -46,7 +46,7 @@ export default function SendAssetFormField({
         onFocus={onFocus}
         onPressButton={handlePressButton}
         placeholder={placeholder}
-        testID={testID + '-input'}
+        testID={testID}
         value={value}
       />
       <Text
