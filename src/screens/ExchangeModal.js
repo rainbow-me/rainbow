@@ -26,7 +26,7 @@ import { FloatingPanel, FloatingPanels } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
 import ExchangeModalTypes from '../helpers/exchangeModalTypes';
-import isKeyboardOpen from '../helpers/isKeybaordOpen';
+import isKeyboardOpen from '../helpers/isKeyboardOpen';
 import { loadWallet } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import { executeRap } from '../raps/common';
