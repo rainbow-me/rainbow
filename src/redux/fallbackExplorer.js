@@ -152,15 +152,24 @@ const discoverTokens = async (
     });
 
     return uniqBy(
-      allTxs.map(tx => ({
-        asset: {
-          asset_code: getCurrentAddress(tx.contractAddress.toLowerCase()),
-          coingecko_id: coingeckoIds[tx.contractAddress.toLowerCase()],
-          decimals: Number(tx.tokenDecimal),
-          name: tx.tokenName,
-          symbol: tx.tokenSymbol,
-        },
-      })),
+      allTxs.map(tx => {
+        const type =
+          tx.tokenSymbol === 'UNI-V1'
+            ? 'uniswap'
+            : tx.tokenSymbol === 'UNI-V2'
+            ? 'uniswap-v2'
+            : undefined;
+        return {
+          asset: {
+            asset_code: getCurrentAddress(tx.contractAddress.toLowerCase()),
+            coingecko_id: coingeckoIds[tx.contractAddress.toLowerCase()],
+            decimals: Number(tx.tokenDecimal),
+            name: tx.tokenName,
+            symbol: tx.tokenSymbol,
+            type,
+          },
+        };
+      }),
       token => token.asset.asset_code
     );
   }

@@ -51,10 +51,9 @@ const PriceContainer = ios
     `;
 
 const BottomRow = ({ pricePerShare, relativeChange }) => {
-  let percentageChangeDisplay = convertAmountToPercentageDisplay(
-    relativeChange
-  );
-  percentageChangeDisplay = formatPercentageString(percentageChangeDisplay);
+  const percentageChangeDisplay = relativeChange
+    ? formatPercentageString(convertAmountToPercentageDisplay(relativeChange))
+    : '-';
   const isPositive =
     relativeChange && percentageChangeDisplay.charAt(0) !== '-';
 

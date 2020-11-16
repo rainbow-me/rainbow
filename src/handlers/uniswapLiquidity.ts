@@ -136,19 +136,22 @@ export const getLiquidityInfo = async (
     liquidityPoolTokens,
     token => token?.asset?.type === 'uniswap'
   );
-  // TODO JIN - promise all here?
-  const v1Results = await getLiquidityInfoV1(
+  const v1TokensCall = getLiquidityInfoV1(
     chainId,
     accountAddress,
     v1Tokens,
     pairs
   );
-  const v2Results = await getLiquidityInfoV2(
+  const v2TokensCall = getLiquidityInfoV2(
     chainId,
     accountAddress,
     v2Tokens,
     pairs
   );
+  const [v1Results, v2Results] = await Promise.all([
+    v1TokensCall,
+    v2TokensCall,
+  ]);
   return { ...v1Results, ...v2Results };
 };
 
