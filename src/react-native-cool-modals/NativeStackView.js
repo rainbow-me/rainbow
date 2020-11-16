@@ -1,5 +1,5 @@
 import { StackActions, useTheme } from '@react-navigation/native';
-import React, { createContext, useEffect, useMemo, useRef } from 'react';
+import React, { createContext, useMemo, useRef } from 'react';
 import { findNodeHandle, NativeModules, StyleSheet, View } from 'react-native';
 import Components from './screens';
 
@@ -10,16 +10,6 @@ const sx = StyleSheet.create({
     flex: 1,
   },
 });
-
-function usePrevious(value) {
-  const ref = useRef();
-
-  useEffect(() => {
-    ref.current = value;
-  }, [value]);
-
-  return ref.current;
-}
 
 function ScreenView({ colors, descriptors, navigation, route, state }) {
   const { options, render: renderScene } = descriptors[route.key];
@@ -49,12 +39,9 @@ function ScreenView({ colors, descriptors, navigation, route, state }) {
     stackAnimation,
     stackPresentation = 'push',
     startFromShortForm,
-    TEMPORARY_autoJumpToNewHeight,
     topOffset,
     transitionDuration,
   } = options;
-  const prevLongFormHeight = usePrevious(longFormHeight);
-  const prevShortFormHeight = usePrevious(shortFormHeight);
 
   const context = useMemo(
     () => ({
@@ -73,29 +60,6 @@ function ScreenView({ colors, descriptors, navigation, route, state }) {
     }),
     []
   );
-
-  // When 'TEMPORARY_autoJumpToNewHeight' option is enabled, automatically "jump" towards either
-  // the new "longFormHeight" or new "shortFormHeight"
-  useEffect(() => {
-    if (
-      TEMPORARY_autoJumpToNewHeight &&
-      longFormHeight !== prevLongFormHeight
-    ) {
-      setImmediate(context.jumpToLong);
-    } else if (
-      TEMPORARY_autoJumpToNewHeight &&
-      shortFormHeight !== prevShortFormHeight
-    ) {
-      setImmediate(context.jumpToShort);
-    }
-  }, [
-    context,
-    longFormHeight,
-    prevLongFormHeight,
-    prevShortFormHeight,
-    shortFormHeight,
-    TEMPORARY_autoJumpToNewHeight,
-  ]);
 
   if (single && state.routes.length > 2) {
     return null;
@@ -153,7 +117,7 @@ function ScreenView({ colors, descriptors, navigation, route, state }) {
         stackAnimation={stackAnimation}
         stackPresentation={stackPresentation}
         startFromShortForm={startFromShortForm}
-        style={StyleSheet.absoluteFill}
+        style={[StyleSheet.absoluteFill, { backgroundColor: 'red' }]}
         topOffset={topOffset}
         transitionDuration={transitionDuration}
       >
