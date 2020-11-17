@@ -52,6 +52,13 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   }
 
   @objc func jumpTo(long: NSNumber) {
+    if (hasAskedAboutShortForm > 0) {
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
+        // actively waiting
+        self.jumpTo(long: long)
+      }
+      return;
+    }
     self.panModalSetNeedsLayoutUpdate()
     if (long.boolValue) {
       panModalTransition(to: .longForm);
@@ -210,7 +217,9 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   }
 
   var isShortFormEnabledInternal = 2
+  var hasAskedAboutShortForm = 2;
   var isShortFormEnabled: Bool {
+    hasAskedAboutShortForm -= 1;
     let startFromShortForm = self.config!.startFromShortForm
     if isShortFormEnabledInternal > 0 && !startFromShortForm {
       isShortFormEnabledInternal -= 1
