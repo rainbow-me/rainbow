@@ -129,7 +129,7 @@ export default function AddressRow({ data, editMode, onPress, onEditWallet }) {
       <ButtonPressAnimation
         enableHapticFeedback={!editMode}
         onLongPress={onOptionsPress}
-        onPress={onPress}
+        onPress={editMode ? onOptionsPress : onPress}
         scaleTo={editMode ? 1 : 0.98}
       >
         <Row align="center">
