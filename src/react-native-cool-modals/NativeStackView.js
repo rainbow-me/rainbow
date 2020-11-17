@@ -117,7 +117,7 @@ function ScreenView({ colors, descriptors, navigation, route, state }) {
         stackAnimation={stackAnimation}
         stackPresentation={stackPresentation}
         startFromShortForm={startFromShortForm}
-        style={[StyleSheet.absoluteFill, { backgroundColor: 'red' }]}
+        style={StyleSheet.absoluteFill}
         topOffset={topOffset}
         transitionDuration={transitionDuration}
       >
