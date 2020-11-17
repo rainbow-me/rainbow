@@ -80,8 +80,6 @@ export default class SendAssetList extends React.Component {
       assets.pop(); // removes not needed coin divider
     }
 
-    //check for placeholder ETH & remove
-    assets[0]?.isPlaceholder ? assets.shift() : null;
     const visibleAssetsLength = assets.length;
 
     this.data = assets;

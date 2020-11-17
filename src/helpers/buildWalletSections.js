@@ -296,7 +296,8 @@ const withBalanceSection = (
     nativeCurrency,
     isCoinListEdited,
     pinnedCoins,
-    hiddenCoins
+    hiddenCoins,
+    true
   );
   let balanceSectionData = [...assets];
 

@@ -1,6 +1,7 @@
 import {
   chunk,
   compact,
+  concat,
   find,
   forEach,
   get,
@@ -10,7 +11,7 @@ import {
 } from 'lodash';
 import store from '../redux/store';
 import supportedNativeCurrencies from '../references/native-currencies.json';
-import { add } from './utilities';
+import { add, convertAmountToNativeDisplay } from './utilities';
 
 export const amountOfShowedCoins = 5;
 
@@ -28,34 +29,17 @@ export const buildAssetUniqueIdentifier = item => {
   return compact([balance, nativePrice, uniqueId]).join('_');
 };
 
-export const buildCoinsList = (
+const addEthPlaceholder = (
   assets,
-  nativeCurrency,
-  isCoinListEdited,
+  includePlaceholder,
   pinnedCoins,
-  hiddenCoins
+  nativeCurrency
 ) => {
-  let standardAssets = [],
-    pinnedAssets = [],
-    hiddenAssets = [];
-  const smallBalances = {
-    assets: [],
-    smallBalancesContainer: true,
-  };
-  const assetsLength = assets.length;
+  const hasEth = !!find(assets, asset => asset.address === 'eth');
 
-  let totalBalancesValue = 0;
-  let smallBalancesValue = 0;
-
-  const isShortList = assetsLength <= amountOfShowedCoins;
-
-  let hasStandard = false;
-
-  const hasEth = find(assets, asset => asset.address === 'eth') ? true : false;
-
-  const genericAssets = store.getState().data.genericAssets;
-  if (genericAssets.eth) {
-    const { relative_change_24h, value } = genericAssets?.eth.price;
+  const { genericAssets } = store.getState().data;
+  if (includePlaceholder && !hasEth && assets.length > 0) {
+    const { relative_change_24h, value } = genericAssets?.eth?.price || {};
 
     const zeroEth = {
       address: 'eth',
@@ -73,13 +57,16 @@ export const buildCoinsList = (
       name: 'Ethereum',
       native: {
         balance: {
-          amount: '0',
-          display: '0.00',
+          amount: '0.00',
+          display: convertAmountToNativeDisplay('0.00', nativeCurrency),
         },
         change: relative_change_24h ? `${relative_change_24h.toFixed(2)}%` : '',
         price: {
-          amount: value,
-          display: String(value),
+          amount: value || '0.00',
+          display: convertAmountToNativeDisplay(
+            value ? value : '0.00',
+            nativeCurrency
+          ),
         },
       },
       price: value,
@@ -88,8 +75,43 @@ export const buildCoinsList = (
       uniqueId: 'eth',
     };
 
-    !hasEth && assetsLength > 0 ? assets.push(zeroEth) : null;
+    return concat([zeroEth], assets);
   }
+  return assets;
+};
+
+export const buildCoinsList = (
+  assetsOriginal,
+  nativeCurrency,
+  isCoinListEdited,
+  pinnedCoins,
+  hiddenCoins,
+  includePlaceholder = false
+) => {
+  let standardAssets = [],
+    pinnedAssets = [],
+    hiddenAssets = [];
+
+  const smallBalances = {
+    assets: [],
+    smallBalancesContainer: true,
+  };
+
+  const assets = addEthPlaceholder(
+    assetsOriginal,
+    includePlaceholder,
+    pinnedCoins,
+    nativeCurrency
+  );
+
+  const assetsLength = assets.length;
+
+  let totalBalancesValue = 0;
+  let smallBalancesValue = 0;
+
+  const isShortList = assetsLength <= amountOfShowedCoins;
+
+  let hasStandard = false;
 
   forEach(assets, asset => {
     if (hiddenCoins && hiddenCoins.includes(asset.uniqueId)) {
