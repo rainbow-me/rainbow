@@ -1,5 +1,8 @@
 import { useRoute } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import {
+  createStackNavigator,
+  HeaderBackButton,
+} from '@react-navigation/stack';
 import React, { useCallback, useEffect } from 'react';
 import { Animated, InteractionManager, View } from 'react-native';
 import styled from 'styled-components/native';
@@ -169,7 +172,10 @@ export default function SettingsModal() {
           <Stack.Screen
             name="SettingsSection"
             options={{
-              ...(android && { headerLeft: null }),
+              ...(android && {
+                // eslint-disable-next-line react/display-name
+                headerLeft: () => <HeaderBackButton onPress={goBack} />,
+              }),
               title: 'Settings',
             }}
           >
