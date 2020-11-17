@@ -50,6 +50,7 @@ export default function CoinIconGroup({ containerStyles, tokens }) {
             <Wrapper
               key={`coin_${index}_${lineIndex}`}
               width={sizesTable[size].width}
+              zIndex={-index}
             >
               <CoinIcon size={sizesTable[size].iconSize} symbol={tokenSymbol} />
             </Wrapper>

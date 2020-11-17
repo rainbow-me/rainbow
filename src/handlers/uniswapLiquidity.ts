@@ -297,16 +297,16 @@ const getLiquidityInfoV1 = async (
         price: lpToken?.asset?.price,
         tokens: [
           {
-            address: null,
-            balance: ethBalance,
-            name: 'Ethereum',
-            symbol: 'ETH',
-          },
-          {
             address: tokenAddress,
             balance: tokenBalance,
             name,
             symbol,
+          },
+          {
+            address: null,
+            balance: ethBalance,
+            name: 'Ethereum',
+            symbol: 'ETH',
           },
         ],
         totalSupply: convertRawAmountToDecimalFormat(totalSupply),
