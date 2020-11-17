@@ -10,7 +10,6 @@ import {
   withOpenBalances,
 } from '../../hoc';
 import { useCoinListEditedValue } from '../../hooks/useCoinListEdited';
-import store from '../../redux/store';
 import { ButtonPressAnimation } from '../animations';
 import { ChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
 import { Column, FlexItem, Row } from '../layout';
@@ -20,6 +19,7 @@ import CoinCheckButton from './CoinCheckButton';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import { buildAssetUniqueIdentifier } from '@rainbow-me/helpers/assets';
+import { useCoinListEdited } from '@rainbow-me/hooks';
 import { colors } from '@rainbow-me/styles';
 import { isNewValueForObjectPaths, isNewValueForPath } from '@rainbow-me/utils';
 
@@ -32,10 +32,6 @@ const BalanceCoinRowCoinCheckButton = styled(CoinCheckButton).attrs({
   isAbsolute: true,
 })`
   top: ${({ top }) => top};
-`;
-
-const Content = styled(ButtonPressAnimation)`
-  padding-left: ${({ isEditMode }) => (isEditMode ? editTranslateOffset : 0)};
 `;
 
 const PercentageText = styled(BottomRowText).attrs({
@@ -115,16 +111,15 @@ const BalanceCoinRow = ({
 }) => {
   const [toggle, setToggle] = useState(false);
   const [previousPinned, setPreviousPinned] = useState(0);
+  const { isCoinListEdited } = useCoinListEdited();
   const isCoinListEditedValue = useCoinListEditedValue();
   useEffect(() => {
-    const { isCoinListEdited } = store.getState().editOptions;
-
     if (toggle && (recentlyPinnedCount > previousPinned || !isCoinListEdited)) {
       setPreviousPinned(recentlyPinnedCount);
       setToggle(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [recentlyPinnedCount]);
+  }, [isCoinListEdited, recentlyPinnedCount]);
 
   const handleEditModePress = useCallback(() => {
     if (toggle) {
@@ -136,13 +131,12 @@ const BalanceCoinRow = ({
   }, [item.uniqueId, pushSelectedCoin, removeSelectedCoin, setToggle, toggle]);
 
   const handlePress = useCallback(() => {
-    const { isCoinListEdited } = store.getState().editOptions;
     if (isCoinListEdited) {
       handleEditModePress();
     } else {
       onPress?.(item, { longFormHeight: ChartExpandedStateSheetHeight });
     }
-  }, [handleEditModePress, onPress, item]);
+  }, [handleEditModePress, isCoinListEdited, item, onPress]);
 
   return (
     <Column flex={1} justify={isFirstCoinRow ? 'end' : 'start'}>
@@ -154,7 +148,7 @@ const BalanceCoinRow = ({
           ),
         }}
       >
-        <Content
+        <ButtonPressAnimation
           onPress={handlePress}
           scaleTo={0.96}
           testID={`balance-coin-row-${item.name}`}
@@ -167,13 +161,14 @@ const BalanceCoinRow = ({
             {...item}
             {...props}
           />
-        </Content>
+        </ButtonPressAnimation>
       </Animated.View>
       <Animated.View
         style={{ opacity: isCoinListEditedValue, position: 'absolute' }}
       >
         <BalanceCoinRowCoinCheckButton
           onPress={handleEditModePress}
+          pointerEvents={isCoinListEdited ? 'auto' : 'none'}
           toggle={toggle}
           top={isFirstCoinRow ? -53 : 9}
         />
