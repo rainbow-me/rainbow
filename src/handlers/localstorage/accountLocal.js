@@ -370,7 +370,7 @@ export const saveAccountInfo = (profileInfo, accountAddress, network) =>
  * @return {Array}
  */
 export const getPinnedCoins = (accountAddress, network) =>
-  getAccountLocal(PINNED_COINS, accountAddress, network, []);
+  getAccountLocal(PINNED_COINS, accountAddress, network, ['eth']);
 
 /**
  * @desc save pinned coins

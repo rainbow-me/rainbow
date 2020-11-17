@@ -28,7 +28,7 @@ export const coinListLoadState = () => async (dispatch, getState) => {
   try {
     const { accountAddress, network } = getState().settings;
     const hiddenCoins = await getHiddenCoins(accountAddress, network);
-    let pinnedCoins = await getPinnedCoins(accountAddress, network);
+    const pinnedCoins = await getPinnedCoins(accountAddress, network);
 
     dispatch({
       payload: {
