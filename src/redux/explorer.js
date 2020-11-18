@@ -1,4 +1,4 @@
-import { get, isNil, keys, map, toLower } from 'lodash';
+import { concat, get, isNil, keys, map, toLower } from 'lodash';
 import { DATA_API_KEY, DATA_ORIGIN } from 'react-native-dotenv';
 import io from 'socket.io-client';
 import { forceFallbackProvider } from '../config/debug';
@@ -229,7 +229,12 @@ export const emitChartsRequest = (
     assetCodes = [assetAddress];
   } else {
     const { assets } = getState().data;
-    assetCodes = map(assets, 'address');
+    const addressAssetCodes = map(assets, 'address');
+
+    const { liquidityTokens } = getState().uniswapLiquidity;
+    const lpAssetCodes = map(liquidityTokens, token => token.asset.asset_code);
+
+    assetCodes = concat(addressAssetCodes, lpAssetCodes);
   }
   assetsSocket?.emit?.(
     ...chartsRetrieval(assetCodes, nativeCurrency, chartType)
