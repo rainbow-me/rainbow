@@ -17,13 +17,13 @@ export function useColorForAssets(assets) {
 
   return useMemo(
     () =>
-      map(assets, (asset, index) => {
-        return (
+      map(
+        assets,
+        (asset, index) =>
           asset.color ||
           fallbackColors[index] ||
           pseudoRandomArrayItemFromString(asset.symbol, colors.avatarColor)
-        );
-      }),
+      ),
     [assets, fallbackColors]
   );
 }

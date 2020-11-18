@@ -7,9 +7,9 @@ import useDimensions from './useDimensions';
 import { position } from '@rainbow-me/styles';
 
 export function useImagesColors(imageUrls) {
-  return useSelector(({ imageMetadata }) => {
-    return map(imageUrls, imageUrl => imageMetadata.imageMetadata[imageUrl]);
-  });
+  return useSelector(({ imageMetadata }) =>
+    map(imageUrls, imageUrl => imageMetadata.imageMetadata[imageUrl]?.color)
+  );
 }
 
 export default function useImageMetadata(imageUrl) {
