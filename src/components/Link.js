@@ -19,7 +19,7 @@ const Container = styled(RowWithMargins).attrs({
   align: 'center',
   margin: 5,
 })`
-  padding-top: 15;
+  ${android ? 'padding-vertical: 10' : 'padding-top: 14'};
 `;
 
 const Link = ({ url }) => {

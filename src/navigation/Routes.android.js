@@ -44,6 +44,26 @@ import { ExchangeModalNavigator } from './index';
 const Stack = createStackNavigator();
 const NativeStack = createStackNavigator();
 
+function SendFlowNavigator() {
+  return (
+    <Stack.Navigator
+      {...stackNavigationConfig}
+      initialRouteName={Routes.SEND_SHEET}
+    >
+      <Stack.Screen
+        component={ModalScreen}
+        name={Routes.MODAL_SCREEN}
+        options={overlayExpandedPreset}
+      />
+      <Stack.Screen
+        component={SendSheet}
+        name={Routes.SEND_SHEET}
+        options={bottomSheetPreset}
+      />
+    </Stack.Navigator>
+  );
+}
+
 function ImportSeedPhraseFlowNavigator() {
   return (
     <Stack.Navigator
@@ -201,6 +221,11 @@ function MainNativeNavigator() {
         name={Routes.BACKUP_SCREEN}
         options={sheetPreset}
       />
+      <NativeStack.Screen
+        component={SendFlowNavigator}
+        name={Routes.SEND_SHEET_NAVIGATOR}
+      />
+      <NativeStack.Screen component={BackupSheet} name={Routes.BACKUP_SCREEN} />
     </NativeStack.Navigator>
   );
 }

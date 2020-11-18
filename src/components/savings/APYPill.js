@@ -51,6 +51,10 @@ const textProps = {
   steps: [0, 1],
 };
 
+if (android) {
+  textProps.color = colors.green;
+}
+
 const TextComponent = ios ? GradientText : Text;
 
 function APYPill({ small, value }) {
