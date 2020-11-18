@@ -1,10 +1,6 @@
 import produce from 'immer';
-<<<<<<< HEAD
-import { concat, difference, filter, isEmpty, union, without } from 'lodash';
-import { Value } from 'react-native-reanimated';
-=======
 import { concat, difference, filter, union, without } from 'lodash';
->>>>>>> dc12f1514... fix repinning ETH
+import { Value } from 'react-native-reanimated';
 import {
   getHiddenCoins,
   getPinnedCoins,
@@ -182,10 +178,7 @@ const INITIAL_STATE = {
   currentAction: EditOptions.none,
   hiddenCoins: [],
   isCoinListEdited: false,
-<<<<<<< HEAD
   isCoinListEditedValue: new Value(0),
-=======
->>>>>>> dc12f1514... fix repinning ETH
   pinnedCoins: ['eth'],
   recentlyPinnedCount: 0,
   selectedCoins: [],
