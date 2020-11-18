@@ -23,7 +23,8 @@ import { useCoinListEdited } from '@rainbow-me/hooks';
 import { colors } from '@rainbow-me/styles';
 import { isNewValueForObjectPaths, isNewValueForPath } from '@rainbow-me/utils';
 
-const editTranslateOffset = 32;
+const editTranslateOffsetInner = android ? -8 : 0;
+const editTranslateOffset = 32 - (android ? editTranslateOffsetInner : 0);
 
 const formatPercentageString = percentString =>
   percentString ? percentString.split('-').join('- ') : '-';
@@ -153,14 +154,23 @@ const BalanceCoinRow = ({
           scaleTo={0.96}
           testID={`balance-coin-row-${item.name}`}
         >
-          <CoinRow
-            bottomRowRender={BottomRow}
-            containerStyles={containerStyles}
-            onPress={handlePress}
-            topRowRender={TopRow}
-            {...item}
-            {...props}
-          />
+          <Animated.View
+            style={{
+              paddingLeft: Animated.multiply(
+                editTranslateOffsetInner,
+                isCoinListEditedValue
+              ),
+            }}
+          >
+            <CoinRow
+              bottomRowRender={BottomRow}
+              containerStyles={containerStyles}
+              onPress={handlePress}
+              topRowRender={TopRow}
+              {...item}
+              {...props}
+            />
+          </Animated.View>
         </ButtonPressAnimation>
       </Animated.View>
       <Animated.View
