@@ -212,11 +212,6 @@ function MainNativeNavigator() {
         options={sheetPreset}
       />
       <NativeStack.Screen
-        component={SendSheet}
-        name={Routes.SEND_SHEET}
-        options={settingsPreset}
-      />
-      <NativeStack.Screen
         component={BackupSheet}
         name={Routes.BACKUP_SCREEN}
         options={sheetPreset}
@@ -225,7 +220,6 @@ function MainNativeNavigator() {
         component={SendFlowNavigator}
         name={Routes.SEND_SHEET_NAVIGATOR}
       />
-      <NativeStack.Screen component={BackupSheet} name={Routes.BACKUP_SCREEN} />
     </NativeStack.Navigator>
   );
 }
