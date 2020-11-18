@@ -1,5 +1,6 @@
 import { join, map } from 'lodash';
 import React, { useMemo } from 'react';
+import { View } from 'react-native';
 import styled from 'styled-components/primitives';
 import { useColorForAssets } from '../../../hooks/useColorForAsset';
 import { magicMemo } from '../../../utils';
@@ -45,7 +46,7 @@ function LiquidityPoolExpandedStateHeader({ assets, pricePerShare }) {
   const shadows = useMemo(() => {
     return map(assets, (asset, index) => {
       const coinIconShadow = [
-        [0, 4, 12, asset.shadowColor || colors[index], 0.3],
+        [0, 4, 12, asset.shadowColor || asset.color || colors[index], 0.3],
       ];
       return coinIconShadow;
     });
@@ -56,11 +57,15 @@ function LiquidityPoolExpandedStateHeader({ assets, pricePerShare }) {
       <Row align="center">
         {map(assets, (asset, index) => {
           return (
-            <CoinIcon
-              address={asset.address}
-              shadow={shadows[index]}
-              symbol={asset.symbol}
-            />
+            <View zIndex={-index}>
+              <CoinIcon
+                address={asset.address}
+                marginRight={-10}
+                position="relative"
+                shadow={shadows[index]}
+                symbol={asset.symbol}
+              />
+            </View>
           );
         })}
       </Row>

@@ -303,7 +303,7 @@ const getLiquidityInfoV1 = async (
             symbol,
           },
           {
-            address: null,
+            address: 'eth',
             balance: ethBalance,
             name: 'Ethereum',
             symbol: 'ETH',
