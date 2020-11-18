@@ -1,4 +1,13 @@
-import { compact, floor, isEmpty, map, orderBy, sumBy, values } from 'lodash';
+import {
+  compact,
+  floor,
+  isEmpty,
+  join,
+  map,
+  orderBy,
+  sumBy,
+  values,
+} from 'lodash';
 import { createSelector } from 'reselect';
 import {
   convertAmountToNativeDisplay,
@@ -36,14 +45,17 @@ export const transformPool = (liquidityPool, nativeCurrency) => {
     balance: handleSignificantDecimalsWithThreshold(token.balance, 4),
   }));
 
-  const tokenSymbols = map(formattedTokens, token => token.symbol);
+  const name = join(
+    map(formattedTokens, token => token.symbol),
+    '-'
+  );
 
   return {
+    name,
     percentageOwned,
     pricePerShare,
     relativeChange: price?.relative_change_24h,
     tokens: formattedTokens,
-    tokenSymbols,
     totalBalanceAmount,
     totalNativeDisplay,
     type,

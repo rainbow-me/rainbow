@@ -1,4 +1,3 @@
-import { join } from 'lodash';
 import React, { Fragment, useCallback } from 'react';
 import { View } from 'react-native';
 import styled from 'styled-components/primitives';
@@ -74,11 +73,11 @@ const BottomRow = ({ uniBalance, type, relativeChange }) => {
   );
 };
 
-const TopRow = ({ tokenSymbols, totalNativeDisplay }) => {
+const TopRow = ({ name, totalNativeDisplay }) => {
   return (
     <TopRowContainer>
       <FlexItem flex={1}>
-        <CoinName>{join(tokenSymbols, '-')}</CoinName>
+        <CoinName>{name}</CoinName>
       </FlexItem>
       <PriceContainer>
         <BalanceText numberOfLines={1}>{totalNativeDisplay}</BalanceText>

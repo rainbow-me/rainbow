@@ -1,4 +1,4 @@
-import { join, map, toLower } from 'lodash';
+import { map, toLower } from 'lodash';
 import React, { useMemo } from 'react';
 import { tokenOverrides } from '../../references';
 import { magicMemo } from '../../utils';
@@ -21,14 +21,13 @@ export const LiquidityPoolExpandedStateSheetHeight = 369 + (android ? 80 : 0);
 
 const LiquidityPoolExpandedState = ({
   asset: {
+    name,
     pricePerShare,
-    tokenSymbols,
     totalNativeDisplay,
     uniBalance,
     ...liquidityInfo
   },
 }) => {
-  const lpTokenName = join(tokenSymbols, '-');
   const tokenAssets = useMemo(() => {
     const { tokens } = liquidityInfo;
     return map(tokens, token => ({
@@ -45,6 +44,7 @@ const LiquidityPoolExpandedState = ({
     >
       <LiquidityPoolExpandedStateHeader
         assets={tokenAssets}
+        name={name}
         pricePerShare={pricePerShare}
       />
       <SheetDivider />
@@ -54,6 +54,7 @@ const LiquidityPoolExpandedState = ({
             return (
               <TokenInfoItem
                 asset={tokenAsset}
+                key={`tokeninfo-${tokenAsset.symbol}`}
                 title={`${tokenAsset.symbol} balance`}
               >
                 <TokenInfoBalanceValue />
@@ -69,8 +70,8 @@ const LiquidityPoolExpandedState = ({
         </TokenInfoRow>
       </TokenInfoSection>
       <SheetActionButtonRow>
-        <WithdrawActionButton symbol={lpTokenName} weight="bold" />
-        <DepositActionButton symbol={lpTokenName} weight="bold" />
+        <WithdrawActionButton symbol={name} weight="bold" />
+        <DepositActionButton symbol={name} weight="bold" />
       </SheetActionButtonRow>
     </SlackSheet>
   );

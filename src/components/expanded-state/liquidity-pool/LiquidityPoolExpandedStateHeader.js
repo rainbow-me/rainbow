@@ -1,4 +1,4 @@
-import { join, map } from 'lodash';
+import { map } from 'lodash';
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import styled from 'styled-components/primitives';
@@ -36,11 +36,8 @@ const Title = styled(TruncatedText).attrs(({ color = colors.dark }) => ({
   weight: 'bold',
 }))``;
 
-function LiquidityPoolExpandedStateHeader({ assets, pricePerShare }) {
-  const title = `${join(
-    map(assets, asset => asset.symbol),
-    '-'
-  )} Pool`;
+function LiquidityPoolExpandedStateHeader({ assets, name, pricePerShare }) {
+  const title = `${name} Pool`;
   const colors = useColorForAssets(assets);
 
   const shadows = useMemo(() => {
@@ -57,7 +54,7 @@ function LiquidityPoolExpandedStateHeader({ assets, pricePerShare }) {
       <Row align="center">
         {map(assets, (asset, index) => {
           return (
-            <View zIndex={-index}>
+            <View key={`coinicon-${index}`} zIndex={-index}>
               <CoinIcon
                 address={asset.address}
                 marginRight={-10}
@@ -82,4 +79,4 @@ function LiquidityPoolExpandedStateHeader({ assets, pricePerShare }) {
   );
 }
 
-export default magicMemo(LiquidityPoolExpandedStateHeader, 'asset');
+export default magicMemo(LiquidityPoolExpandedStateHeader, ['asset', 'name']);
