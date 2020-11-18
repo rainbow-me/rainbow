@@ -22,6 +22,12 @@ interface LiquidityToken {
   symbol: string;
 }
 
+interface TokenDetails {
+  decimals: number;
+  name: string;
+  symbol: string;
+}
+
 export interface LiquidityInfo {
   address: string;
   balance: string;
@@ -54,7 +60,7 @@ const getTokenDetails = async (
   chainId: ChainId,
   tokenAddress: string,
   pairs: Record<string, SwapCurrency>
-) => {
+): Promise<TokenDetails> => {
   if (toLower(tokenAddress) === toLower(WETH[chainId].address)) {
     return {
       decimals: 18,
@@ -67,7 +73,7 @@ const getTokenDetails = async (
 
   const token = get(pairs, `[${toLower(tokenAddress)}]`);
 
-  let decimals: string | number;
+  let decimals: number;
   let name = '';
   let symbol = '';
 
