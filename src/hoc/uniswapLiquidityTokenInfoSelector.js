@@ -1,17 +1,9 @@
-import {
-  compact,
-  floor,
-  isEmpty,
-  join,
-  map,
-  orderBy,
-  sumBy,
-  values,
-} from 'lodash';
+import { compact, isEmpty, join, map, orderBy, sumBy, values } from 'lodash';
 import { createSelector } from 'reselect';
 import {
   convertAmountToNativeDisplay,
   divide,
+  handleSignificantDecimals,
   handleSignificantDecimalsWithThreshold,
   multiply,
 } from '../helpers/utilities';
@@ -59,7 +51,7 @@ export const transformPool = (liquidityPool, nativeCurrency) => {
     totalBalanceAmount,
     totalNativeDisplay,
     type,
-    uniBalance: floor(balance, 7),
+    uniBalance: handleSignificantDecimals(balance, 3),
     uniqueId,
   };
 };
