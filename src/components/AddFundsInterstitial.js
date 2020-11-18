@@ -86,16 +86,13 @@ const Subtitle = styled(Title)`
   margin-top: ${({ isSmallPhone }) => (isSmallPhone ? 19 : 42)};
 `;
 
-const AmountText = styled(Text).attrs(
-  ({ children }) =>
-    console.log(children.join('')) || {
-      align: 'center',
-      children: android ? ` ${children.join('')} ` : children,
-      letterSpacing: 'roundedTightest',
-      size: 'bigger',
-      weight: 'heavy',
-    }
-)`
+const AmountText = styled(Text).attrs(({ children }) => ({
+  align: 'center',
+  children: android ? ` ${children.join('')} ` : children,
+  letterSpacing: 'roundedTightest',
+  size: 'bigger',
+  weight: 'heavy',
+}))`
   ${android ? padding(15, 9.75) : padding(24, 15, 25)};
   align-self: center;
   text-shadow: 0px 0px 20px ${({ color }) => color};
