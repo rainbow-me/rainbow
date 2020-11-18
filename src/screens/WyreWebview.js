@@ -19,7 +19,7 @@ const StyledWebView = styled(WebView)`
   background-color: ${colors.white};
 `;
 const HeaderTitle = styled(Text).attrs({
-  align: 'left',
+  align: 'center',
   color: colors.black,
   letterSpacing: 'roundedMedium',
   lineHeight: 'loose',
@@ -27,7 +27,8 @@ const HeaderTitle = styled(Text).attrs({
   size: 'larger',
   weight: 'bold',
 })`
-  margin-left: 24;
+  margin-left: -55px;
+  width: 100%;
 `;
 
 const Header = styled(Row).attrs({
