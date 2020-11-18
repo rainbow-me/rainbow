@@ -3,6 +3,7 @@ import { createSelector } from 'reselect';
 import {
   convertAmountToNativeDisplay,
   divide,
+  handleSignificantDecimalsWithThreshold,
   multiply,
 } from '../helpers/utilities';
 
@@ -32,7 +33,7 @@ export const transformPool = (liquidityPool, nativeCurrency) => {
 
   const formattedTokens = map(tokens, token => ({
     ...token,
-    balance: floor(parseFloat(token.balance), 4) || '< 0.0001',
+    balance: handleSignificantDecimalsWithThreshold(token.balance, 4),
   }));
 
   const tokenSymbols = map(formattedTokens, token => token.symbol);
