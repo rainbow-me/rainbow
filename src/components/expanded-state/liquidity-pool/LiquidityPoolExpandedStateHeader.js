@@ -46,15 +46,7 @@ function LiquidityPoolExpandedStateHeader({ assets, pricePerShare }) {
   const shadows = useMemo(() => {
     return map(assets, (asset, index) => {
       const coinIconShadow = [
-        [
-          0,
-          4,
-          12,
-          asset.symbol === 'ETH'
-            ? colors.dark
-            : asset.shadowColor || asset.color || colors[index],
-          0.3,
-        ],
+        [0, 4, 12, asset.shadowColor || asset.color || colors[index], 0.3],
       ];
       return coinIconShadow;
     });
