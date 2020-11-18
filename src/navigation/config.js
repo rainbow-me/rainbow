@@ -233,6 +233,34 @@ const BackArrow = styled(Icon).attrs({
 `;
 const BackImage = () => <BackArrow />;
 
+export const wyreWebviewOptions = {
+  headerBackTitleStyle: {
+    fontFamily: fonts.family.SFProRounded,
+    fontSize: parseFloat(fonts.size.large),
+    fontWeight: fonts.weight.medium,
+    letterSpacing: fonts.letterSpacing.roundedMedium,
+  },
+  ...(android && {
+    headerRightContainerStyle: {
+      paddingTop: 6,
+    },
+  }),
+  headerStatusBarHeight: 24,
+  headerStyle: {
+    backgroundColor: colors.white,
+    elevation: 24,
+    shadowColor: 'transparent',
+  },
+  headerTitleAlign: 'center',
+  headerTitleStyle: {
+    fontFamily: fonts.family.SFProRounded,
+    fontSize: parseFloat(fonts.size.large),
+    fontWeight: fonts.weight.bold,
+    letterSpacing: fonts.letterSpacing.roundedMedium,
+  },
+  title: 'Add Cash',
+};
+
 export const settingsOptions = {
   cardShadowEnabled: false,
   cardStyle: { backgroundColor: colors.white, overflow: 'visible' },

@@ -28,6 +28,7 @@ import {
   closeKeyboardOnClose,
   defaultScreenStackOptions,
   stackNavigationConfig,
+  wyreWebviewOptions,
 } from './config';
 import {
   bottomSheetPreset,
@@ -80,6 +81,17 @@ function ImportSeedPhraseFlowNavigator() {
         component={ImportSeedPhraseSheet}
         name={Routes.IMPORT_SEED_PHRASE_SHEET}
       />
+    </Stack.Navigator>
+  );
+}
+
+function AddCashFlowNavigator() {
+  return (
+    <Stack.Navigator
+      initialRouteName={Routes.WYRE_WEBVIEW}
+      screenOptions={wyreWebviewOptions}
+    >
+      <Stack.Screen component={WyreWebview} name={Routes.WYRE_WEBVIEW} />
     </Stack.Navigator>
   );
 }
@@ -181,7 +193,10 @@ function MainNavigator() {
         options={{ customStack: true }}
       />
       <Stack.Screen component={WelcomeScreen} name={Routes.WELCOME_SCREEN} />
-      <Stack.Screen component={WyreWebview} name={Routes.WYRE_WEBVIEW} />
+      <Stack.Screen
+        component={AddCashFlowNavigator}
+        name={Routes.WYRE_WEBVIEW_NAVIGATOR}
+      />
     </Stack.Navigator>
   );
 }

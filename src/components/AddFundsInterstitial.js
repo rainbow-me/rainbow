@@ -167,9 +167,12 @@ const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
           screen: Routes.ADD_CASH_SCREEN_NAVIGATOR,
         });
       } else {
-        navigate(Routes.WYRE_WEBVIEW, {
-          address: accountAddress,
-          amount: !isNaN(amount) ? amount : null,
+        navigate(Routes.WYRE_WEBVIEW_NAVIGATOR, {
+          params: {
+            address: accountAddress,
+            amount: !isNaN(amount) ? amount : null,
+          },
+          screen: Routes.WYRE_WEBVIEW,
         });
       }
     },
