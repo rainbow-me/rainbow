@@ -53,6 +53,7 @@ const CopyAddressButton = styled(ButtonPressAnimation).attrs({
 const AmountBPA = styled(ButtonPressAnimation)`
   ${padding(0, 0, 0)};
   border-radius: 25px;
+  overflow: visible;
 `;
 
 const Container = styled(Centered)`
@@ -100,9 +101,12 @@ const AmountText = styled(Text).attrs(({ children }) => ({
 `;
 
 const AmountButtonWrapper = styled(Row).attrs({
+  justify: 'center',
   marginLeft: 7.5,
   marginRight: 7.5,
-})``;
+})`
+  ${android ? 'width: 100' : ''};
+`;
 
 const buildInterstitialTransform = (isSmallPhone, offsetY) => ({
   transform: [
@@ -130,21 +134,35 @@ const shadows = {
   ],
 };
 
+const InnerBPA = android ? ButtonPressAnimation : ({ children }) => children;
+
 const AmountButton = ({ amount, backgroundColor, color, onPress }) => {
   const handlePress = useCallback(() => onPress?.(amount), [amount, onPress]);
 
   return (
     <AmountButtonWrapper>
-      <AmountBPA onPress={handlePress} radiusAndroid={25}>
+      <AmountBPA disabled={android} onPress={handlePress}>
         <ShadowStack
           {...position.coverAsObject}
           backgroundColor={backgroundColor}
           borderRadius={25}
           shadows={shadows[backgroundColor]}
+          {...(android && {
+            height: 80,
+            width: 100,
+          })}
         />
-        <AmountText color={color} textShadowColor={color}>
-          ${amount}
-        </AmountText>
+        <InnerBPA
+          disabled={ios}
+          onPress={handlePress}
+          radiusAndroid={25}
+          radiusWrapperStyle={{ width: 100, zIndex: 1 }}
+          style={{ flex: 1 }}
+        >
+          <AmountText color={color} textShadowColor={color}>
+            ${amount}
+          </AmountText>
+        </InnerBPA>
       </AmountBPA>
     </AmountButtonWrapper>
   );
