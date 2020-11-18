@@ -218,8 +218,11 @@ export default function ProfileMasthead({
     if (ios) {
       navigate(Routes.ADD_CASH_FLOW);
     } else {
-      navigate(Routes.WYRE_WEBVIEW, {
-        address: accountAddress,
+      navigate(Routes.WYRE_WEBVIEW_NAVIGATOR, {
+        params: {
+          address: accountAddress,
+        },
+        screen: Routes.WYRE_WEBVIEW,
       });
     }
   }, [accountAddress, navigate, isDamaged]);
