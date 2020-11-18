@@ -50,9 +50,19 @@ const CopyAddressButton = styled(ButtonPressAnimation).attrs({
   border-radius: 23px;
 `;
 
-const AmountBPA = styled(ButtonPressAnimation)`
+const AmountBPA = styled(ButtonPressAnimation).attrs({
+  radiusWrapperStyle: {
+    overflow: 'visible',
+  },
+  wrapperProps: {
+    style: {
+      overflow: 'visible',
+    },
+  },
+})`
   ${padding(0, 0, 0)};
   border-radius: 25px;
+  overflow: visible;
 `;
 
 const Container = styled(Centered)`
@@ -86,13 +96,14 @@ const Subtitle = styled(Title)`
   margin-top: ${({ isSmallPhone }) => (isSmallPhone ? 19 : 42)};
 `;
 
-const AmountText = styled(Text).attrs({
+const AmountText = styled(Text).attrs(({ children }) => ({
   align: 'center',
+  children: android ? ` ${children} ` : children,
   letterSpacing: 'roundedTightest',
   size: 'bigger',
   weight: 'heavy',
-})`
-  ${android ? padding(15) : padding(24, 15, 25)};
+}))`
+  ${android ? padding(15, 6) : padding(24, 15, 25)};
   align-self: center;
   text-shadow: 0px 0px 20px ${({ color }) => color};
   z-index: 1;
@@ -124,8 +135,8 @@ const shadows = {
     [0, 10, 30, colors.swapPurple, 0.4],
   ],
   [colors.purpleDark]: [
-    [0, 5, 15, colors.dark, 0.2],
-    [0, 10, 30, colors.purpleDark, 0.4],
+    [0, 5, 15, colors.dark, 0.01],
+    [0, 10, 30, colors.purpleDark, 0.01],
   ],
 };
 
