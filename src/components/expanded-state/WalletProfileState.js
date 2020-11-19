@@ -30,6 +30,10 @@ const WalletProfileAddressText = styled(TruncatedAddress).attrs({
   width: 100%;
 `;
 
+const Spacer = styled.View`
+  height: 19;
+`;
+
 const WalletProfileButton = styled(ButtonPressAnimation)`
   ${padding(15, 0, 19)};
   ${position.centered};
@@ -119,11 +123,16 @@ export default function WalletProfileState({
         {accountImage ? (
           <ProfileImage image={accountImage} size="large" />
         ) : (
-          <ProfileAvatarButton
-            color={color}
-            setColor={setColor}
-            value={nameEmoji || value}
-          />
+          <>
+            <ProfileAvatarButton
+              color={color}
+              marginBottom={0}
+              radiusAndroid={32}
+              setColor={setColor}
+              value={nameEmoji || value}
+            />
+            <Spacer />
+          </>
         )}
         <ProfileNameInput
           onChange={setValue}

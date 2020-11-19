@@ -1,18 +1,20 @@
 import { get } from 'lodash';
 import React from 'react';
+import { Text } from 'react-native';
 import styled from 'styled-components/primitives';
+import { Row } from '../../../layout';
 import ChartHeaderTitle from './ChartHeaderTitle';
 
 import { ChartYLabel } from '@rainbow-me/animated-charts';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import supportedNativeCurrencies from '@rainbow-me/references/native-currencies.json';
-import { fonts, fontWithWidth } from '@rainbow-me/styles';
+import { colors, fonts, fontWithWidth } from '@rainbow-me/styles';
 
 const Label = styled(ChartYLabel)`
+  color: ${colors.black};
   ${fontWithWidth(fonts.weight.heavy)};
   font-size: ${fonts.size.big};
   letter-spacing: ${fonts.letterSpacing.roundedTight};
-  width: 100%;
   ${android &&
     `margin-top: -8;
      margin-bottom: -16;`}
@@ -66,11 +68,34 @@ export default function ChartPriceLabel({
   return isNoPriceData ? (
     <ChartHeaderTitle>{defaultValue}</ChartHeaderTitle>
   ) : (
-    <Label
-      format={value => {
-        'worklet';
-        return formatNative(value, priceSharedValue, nativeSelected);
-      }}
-    />
+    <Row>
+      {android && (
+        <Label
+          as={Text}
+          defaultValue={nativeSelected?.symbol}
+          editable={false}
+          style={{ height: 69, left: 5.5, marginRight: 3, top: 9.75 }}
+        >
+          {nativeSelected?.symbol}
+        </Label>
+      )}
+      <Label
+        format={value => {
+          'worklet';
+          const formatted = formatNative(
+            value,
+            priceSharedValue,
+            nativeSelected
+          );
+          if (android) {
+            return formatted.replace(/[^\d.,-]/g, '');
+          }
+          return formatted;
+        }}
+        style={{
+          width: '100%',
+        }}
+      />
+    </Row>
   );
 }

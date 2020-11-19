@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { ButtonPressAnimation } from '../animations';
@@ -45,10 +44,6 @@ const SavingsListRowEmptyState = ({ onPress }) => (
     </ButtonPressAnimation>
   </RowWithMargins>
 );
-
-SavingsListRowEmptyState.propTypes = {
-  onPress: PropTypes.func,
-};
 
 const neverRerender = () => true;
 export default React.memo(SavingsListRowEmptyState, neverRerender);

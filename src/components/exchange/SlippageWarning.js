@@ -6,7 +6,7 @@ import styled from 'styled-components/primitives';
 import { convertBipsToPercentage } from '../../helpers/utilities';
 import { Icon } from '../icons';
 import { Row, RowWithMargins } from '../layout';
-import { Text } from '../text';
+import { AnimatedNumber as AnimatedNumberAndroid, Text } from '../text';
 import { colors, padding } from '@rainbow-me/styles';
 
 export const SlippageWarningThresholdInBips = 500;
@@ -43,13 +43,15 @@ const enhance = compose(
   })
 );
 
+const AnimatedNumberComponent = ios ? AnimateNumber : AnimatedNumberAndroid;
+
 const SlippageWarning = enhance(
   ({ isSevere, severityColor, showWarning, slippage }) =>
     showWarning ? (
       <Container>
         <RowWithMargins align="center" margin={5}>
           <Icon color={severityColor} name="warning" size="lmedium" />
-          <AnimateNumber
+          <AnimatedNumberComponent
             formatter={formatSlippage}
             interval={1}
             renderContent={renderSlippageText}

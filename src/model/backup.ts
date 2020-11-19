@@ -221,7 +221,9 @@ export async function saveBackupPassword(
   password: BackupPassword
 ): Promise<void> {
   try {
-    await setSharedWebCredentials('rainbow.me', 'Backup Password', password);
+    if (ios) {
+      await setSharedWebCredentials('rainbow.me', 'Backup Password', password);
+    }
   } catch (e) {
     logger.sentry('Error while backing up password');
     captureException(e);

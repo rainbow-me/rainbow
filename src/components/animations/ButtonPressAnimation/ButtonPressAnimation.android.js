@@ -23,6 +23,7 @@ const Wrapper = ({ children, radius, style }) =>
 export default function ButtonPressAnimation({
   children,
   disabled,
+  elevation,
   onLongPress,
   onPress,
   onPressStart,
@@ -52,7 +53,10 @@ export default function ButtonPressAnimation({
     );
   }
   return (
-    <Wrapper radius={radius} style={radiusWrapperStyle}>
+    <Wrapper
+      radius={radius}
+      style={[radiusWrapperStyle, elevation ? { elevation } : null]}
+    >
       <TouchableNativeFeedback
         background={TouchableNativeFeedback.Ripple('#CCCCCC')}
         disabled={disabled}

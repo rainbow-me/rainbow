@@ -135,7 +135,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
               ? handleDeleteContact
               : () => {
                   goBack();
-                  android && Keyboard.dimiss();
+                  android && Keyboard.dismiss();
                 }
           }
         >

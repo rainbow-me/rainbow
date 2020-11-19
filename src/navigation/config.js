@@ -26,7 +26,6 @@ const buildCoolModalConfig = params => ({
   onAppear: params.onAppear || null,
   scrollEnabled: params.scrollEnabled,
   single: params.single,
-  TEMPORARY_autoJumpToNewHeight: params.TEMPORARY_autoJumpToNewHeight,
   topOffset: params.topOffset || sharedCoolModalTopOffset,
 });
 
@@ -142,7 +141,6 @@ export const restoreSheetConfig = {
       ...params,
       backgroundColor: colors.dark,
       longFormHeight: heightForStep,
-      TEMPORARY_autoJumpToNewHeight: true,
     });
   },
 };
@@ -235,13 +233,7 @@ const BackArrow = styled(Icon).attrs({
 `;
 const BackImage = () => <BackArrow />;
 
-export const settingsOptions = {
-  cardShadowEnabled: false,
-  cardStyle: { backgroundColor: colors.white, overflow: 'visible' },
-  gestureEnabled: true,
-  gestureResponseDistance: { horizontal: deviceUtils.dimensions.width },
-  ...(ios && { headerBackImage: BackImage }),
-  headerBackTitle: 'Back',
+const headerConfigOptions = {
   headerBackTitleStyle: {
     fontFamily: fonts.family.SFProRounded,
     fontSize: parseFloat(fonts.size.large),
@@ -252,19 +244,41 @@ export const settingsOptions = {
     headerRightContainerStyle: {
       paddingTop: 6,
     },
+    headerTitleAlign: 'center',
   }),
+  headerTitleStyle: {
+    fontFamily: fonts.family.SFProRounded,
+    fontSize: parseFloat(fonts.size.large),
+    fontWeight: fonts.weight.bold,
+    letterSpacing: fonts.letterSpacing.roundedMedium,
+  },
+};
+
+export const wyreWebviewOptions = {
+  ...headerConfigOptions,
+  headerStatusBarHeight: 24,
+  headerStyle: {
+    backgroundColor: colors.white,
+    elevation: 24,
+    shadowColor: 'transparent',
+  },
+  title: 'Add Cash',
+};
+
+export const settingsOptions = {
+  ...headerConfigOptions,
+  cardShadowEnabled: false,
+  cardStyle: { backgroundColor: colors.white, overflow: 'visible' },
+  gestureEnabled: true,
+  gestureResponseDistance: { horizontal: deviceUtils.dimensions.width },
+  ...(ios && { headerBackImage: BackImage }),
+  headerBackTitle: 'Back',
   headerStatusBarHeight: 0,
   headerStyle: {
     backgroundColor: 'transparent',
     elevation: 0,
     height: 49,
     shadowColor: 'transparent',
-  },
-  headerTitleStyle: {
-    fontFamily: fonts.family.SFProRounded,
-    fontSize: parseFloat(fonts.size.large),
-    fontWeight: fonts.weight.bold,
-    letterSpacing: fonts.letterSpacing.roundedMedium,
   },
   transitionSpec: {
     close: {

@@ -230,7 +230,7 @@ export default function ImportSeedPhraseSheet() {
       try {
         setBusy(true);
         setTimeout(async () => {
-          const walletResult = await ethereumUtils.deriveAccountFromMnemonicOrPrivateKey(
+          const walletResult = await ethereumUtils.deriveAccountFromWalletInput(
             input
           );
           setCheckedWallet(walletResult);

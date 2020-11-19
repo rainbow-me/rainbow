@@ -44,6 +44,7 @@ const Routes = {
   WALLET_SCREEN: 'WalletScreen',
   WELCOME_SCREEN: 'WelcomeScreen',
   WYRE_WEBVIEW: 'WyreWebview',
+  WYRE_WEBVIEW_NAVIGATOR: 'WyreWebviewNavigator',
 };
 
 export const NATIVE_ROUTES = [
@@ -73,9 +74,10 @@ const RoutesWithNativeStackAvailability = {
   IMPORT_SEED_PHRASE_FLOW: isNativeStackAvailable
     ? Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR
     : Routes.IMPORT_SEED_PHRASE_SHEET,
-  SEND_FLOW: isNativeStackAvailable
-    ? Routes.SEND_SHEET_NAVIGATOR
-    : Routes.SEND_SHEET,
+  SEND_FLOW:
+    isNativeStackAvailable || android
+      ? Routes.SEND_SHEET_NAVIGATOR
+      : Routes.SEND_SHEET,
 };
 
 export default RoutesWithNativeStackAvailability;

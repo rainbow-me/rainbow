@@ -28,6 +28,7 @@ import {
   closeKeyboardOnClose,
   defaultScreenStackOptions,
   stackNavigationConfig,
+  wyreWebviewOptions,
 } from './config';
 import {
   bottomSheetPreset,
@@ -45,6 +46,26 @@ import { colors } from '@rainbow-me/styles';
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
 
+function SendFlowNavigator() {
+  return (
+    <Stack.Navigator
+      {...stackNavigationConfig}
+      initialRouteName={Routes.SEND_SHEET}
+    >
+      <Stack.Screen
+        component={ModalScreen}
+        name={Routes.MODAL_SCREEN}
+        options={overlayExpandedPreset}
+      />
+      <Stack.Screen
+        component={SendSheet}
+        name={Routes.SEND_SHEET}
+        options={bottomSheetPreset}
+      />
+    </Stack.Navigator>
+  );
+}
+
 function ImportSeedPhraseFlowNavigator() {
   return (
     <Stack.Navigator
@@ -60,6 +81,17 @@ function ImportSeedPhraseFlowNavigator() {
         component={ImportSeedPhraseSheet}
         name={Routes.IMPORT_SEED_PHRASE_SHEET}
       />
+    </Stack.Navigator>
+  );
+}
+
+function AddCashFlowNavigator() {
+  return (
+    <Stack.Navigator
+      initialRouteName={Routes.WYRE_WEBVIEW}
+      screenOptions={wyreWebviewOptions}
+    >
+      <Stack.Screen component={WyreWebview} name={Routes.WYRE_WEBVIEW} />
     </Stack.Navigator>
   );
 }
@@ -161,7 +193,10 @@ function MainNavigator() {
         options={{ customStack: true }}
       />
       <Stack.Screen component={WelcomeScreen} name={Routes.WELCOME_SCREEN} />
-      <Stack.Screen component={WyreWebview} name={Routes.WYRE_WEBVIEW} />
+      <Stack.Screen
+        component={AddCashFlowNavigator}
+        name={Routes.WYRE_WEBVIEW_NAVIGATOR}
+      />
     </Stack.Navigator>
   );
 }
@@ -192,7 +227,10 @@ function MainNativeNavigator() {
         component={PinAuthenticationScreen}
         name={Routes.PIN_AUTHENTICATION_SCREEN}
       />
-      <NativeStack.Screen component={SendSheet} name={Routes.SEND_SHEET} />
+      <NativeStack.Screen
+        component={SendFlowNavigator}
+        name={Routes.SEND_SHEET_NAVIGATOR}
+      />
       <NativeStack.Screen component={BackupSheet} name={Routes.BACKUP_SCREEN} />
     </NativeStack.Navigator>
   );

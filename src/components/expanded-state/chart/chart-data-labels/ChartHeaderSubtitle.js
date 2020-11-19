@@ -14,6 +14,7 @@ const ChartHeaderSubtitle = styled(TruncatedText).attrs(
   })
 )`
   margin-left: ${android ? 6 : 0};
+  ${android ? 'height: 38' : ''};
 `;
 
 export default ChartHeaderSubtitle;
