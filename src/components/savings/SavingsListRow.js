@@ -154,10 +154,7 @@ const SavingsListRow = ({
 
   return !underlying || !underlying.address ? null : (
     <ButtonPressAnimation
-      // FIXME - This is a hack to get the right ripple effect
-      // While keeping the button working
       disabled={android}
-      enablePressWhileDisabled={android}
       onPress={onButtonPress}
       scaleTo={0.96}
     >
@@ -169,7 +166,7 @@ const SavingsListRow = ({
             as={android && ButtonPressAnimation}
             css={padding(9, 10, 10, 11)}
             justify="space-between"
-            onPress={NOOP}
+            onPress={android ? onButtonPress : NOOP}
             scaleTo={0.96}
           >
             {underlying.symbol && supplyBalanceUnderlying ? (
