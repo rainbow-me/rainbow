@@ -110,7 +110,7 @@ const ExchangeSearch = (
     onChangeText?.('');
   }, [ref, onChangeText]);
 
-  const spinnerRotation = useSharedValue(0, 'spinnerRotation');
+  const spinnerRotation = useSharedValue(0);
   const spinnerScale = useSharedValue(0, 'spinnerScale');
 
   const spinnerTimeout = useRef();
