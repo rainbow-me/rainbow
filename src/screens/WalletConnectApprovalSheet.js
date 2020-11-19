@@ -19,7 +19,7 @@ import {
   isDappAuthenticated,
 } from '@rainbow-me/helpers/dappNameHandler';
 import { useNavigation } from '@rainbow-me/navigation';
-import { colors, padding } from '@rainbow-me/styles';
+import { colors } from '@rainbow-me/styles';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 const DappLogo = styled(RequestVendorLogoIcon).attrs({
@@ -152,12 +152,13 @@ export default function WalletConnectApprovalSheet() {
           </Text>
         </Row>
         <Divider color={colors.rowDividerLight} inset={[0, 84]} />
-        <ActionRow css={padding(24, 0, 21)} margin={15}>
+        <ActionRow>
           <SheetActionButton
             color={colors.white}
             label="Cancel"
             onPress={handleCancel}
-            radiusWrapperStyle={{ flex: 1 }}
+            radiusAndroid={24}
+            radiusWrapperStyle={{ flex: 1, marginLeft: 10 }}
             size="big"
             textColor={colors.dark}
             wrapperProps={{
@@ -169,7 +170,8 @@ export default function WalletConnectApprovalSheet() {
             color={colors.appleBlue}
             label="Connect"
             onPress={handleConnect}
-            radiusWrapperStyle={{ flex: 1 }}
+            radiusAndroid={24}
+            radiusWrapperStyle={{ flex: 1, marginLeft: 10 }}
             size="big"
             wrapperProps={{
               containerStyle: { flex: 1 },
