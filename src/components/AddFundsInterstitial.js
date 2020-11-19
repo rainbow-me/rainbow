@@ -89,12 +89,12 @@ const Subtitle = styled(Title)`
 
 const AmountText = styled(Text).attrs(({ children }) => ({
   align: 'center',
-  children: android ? ` ${children.join('')} ` : children,
+  children: android ? `  ${children.join('')}  ` : children,
   letterSpacing: 'roundedTightest',
   size: 'bigger',
   weight: 'heavy',
 }))`
-  ${android ? padding(15, 9.75) : padding(24, 15, 25)};
+  ${android ? padding(15, 4.5) : padding(24, 15, 25)};
   align-self: center;
   text-shadow: 0px 0px 20px ${({ color }) => color};
   z-index: 1;
