@@ -207,7 +207,15 @@ export default function ChartExpandedState({ asset }) {
       </TokenInfoSection>
       {needsEth ? (
         <ActionRow key={`row${showChart}`}>
-          <BuyActionButton color={color} />
+          <BuyActionButton
+            color={color}
+            radiusAndroid={24}
+            radiusWrapperStyle={{ flex: 1 }}
+            wrapperProps={{
+              containerStyle: { flex: 1 },
+              style: { flex: 1 },
+            }}
+          />
         </ActionRow>
       ) : (
         <ActionRow key={`row${showChart}`}>
