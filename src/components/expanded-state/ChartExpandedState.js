@@ -92,7 +92,8 @@ function useJumpingForm(isLong) {
   }, [isLong, setOptions, jumpToShort, jumpToLong]);
 }
 
-export const ChartExpandedStateSheetHeight = heightWithChart;
+export const ChartExpandedStateSheetHeight =
+  heightWithChart + (android ? 40 : 0);
 
 export default function ChartExpandedState({ asset }) {
   const color = useColorForAsset(asset);
@@ -166,6 +167,7 @@ export default function ChartExpandedState({ asset }) {
 
   return (
     <SlackSheet
+      additionalTopPadding
       contentHeight={ChartExpandedStateSheetHeight}
       scrollEnabled={false}
     >
