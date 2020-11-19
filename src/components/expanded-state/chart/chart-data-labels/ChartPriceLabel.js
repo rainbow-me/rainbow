@@ -1,5 +1,6 @@
 import { get } from 'lodash';
 import React from 'react';
+import { TextInput, View } from 'react-native';
 import styled from 'styled-components/primitives';
 import ChartHeaderTitle from './ChartHeaderTitle';
 
@@ -66,11 +67,22 @@ export default function ChartPriceLabel({
   return isNoPriceData ? (
     <ChartHeaderTitle>{defaultValue}</ChartHeaderTitle>
   ) : (
-    <Label
-      format={value => {
-        'worklet';
-        return formatNative(value, priceSharedValue, nativeSelected);
-      }}
-    />
+    <View style={{ flexDirection: 'row' }}>
+      <Label
+        as={TextInput}
+        defaultValue={nativeSelected?.symbol}
+        editable={false}
+        style={{ width: 24 }}
+      />
+      <Label
+        format={value => {
+          'worklet';
+          return formatNative(value, priceSharedValue, nativeSelected).replace(
+            /[^\d.,-]/g,
+            ''
+          );
+        }}
+      />
+    </View>
   );
 }
