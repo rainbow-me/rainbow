@@ -73,7 +73,7 @@ export default function ChartPriceLabel({
           as={Text}
           defaultValue={nativeSelected?.symbol}
           editable={false}
-          style={{ height: 69, left: 5.5, top: 9.75 }}
+          style={{ height: 69, left: 5.5, marginRight: 3, top: 9.75 }}
         >
           {nativeSelected?.symbol}
         </Label>
