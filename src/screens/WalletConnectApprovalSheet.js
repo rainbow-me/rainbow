@@ -19,7 +19,7 @@ import {
   isDappAuthenticated,
 } from '@rainbow-me/helpers/dappNameHandler';
 import { useNavigation } from '@rainbow-me/navigation';
-import { colors } from '@rainbow-me/styles';
+import { colors, padding } from '@rainbow-me/styles';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 const DappLogo = styled(RequestVendorLogoIcon).attrs({
@@ -33,13 +33,24 @@ const DappLogo = styled(RequestVendorLogoIcon).attrs({
 
 const ActionRowAndroid = styled.View`
   flex-direction: row;
-  height: 44;
-  margin-vertical: 12;
-  margin-horizontal: 12;
+  height: 101;
   justify-content: space-around;
+  padding-top: 24;
+  padding-left: 0;
+  padding-right: 0;
+  padding-bottom: 21;
+`;
+const ActionRowIOS = styled(RowWithMargins).attrs({
+  css: padding(24, 0, 21),
+  margin: 15,
+})`
+  padding-top: 24;
+  padding-left: 0;
+  padding-right: 0;
+  padding-bottom: 21;
 `;
 
-const ActionRow = android ? ActionRowAndroid : RowWithMargins;
+const ActionRow = android ? ActionRowAndroid : ActionRowIOS;
 
 export default function WalletConnectApprovalSheet() {
   const { goBack } = useNavigation();
@@ -158,7 +169,7 @@ export default function WalletConnectApprovalSheet() {
             label="Cancel"
             onPress={handleCancel}
             radiusAndroid={24}
-            radiusWrapperStyle={{ flex: 1, marginLeft: 10 }}
+            radiusWrapperStyle={{ flex: 1 }}
             size="big"
             textColor={colors.dark}
             wrapperProps={{
@@ -171,7 +182,7 @@ export default function WalletConnectApprovalSheet() {
             label="Connect"
             onPress={handleConnect}
             radiusAndroid={24}
-            radiusWrapperStyle={{ flex: 1, marginLeft: 10 }}
+            radiusWrapperStyle={{ flex: 1, marginLeft: 15 }}
             size="big"
             wrapperProps={{
               containerStyle: { flex: 1 },
