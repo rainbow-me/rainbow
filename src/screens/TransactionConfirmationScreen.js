@@ -594,15 +594,16 @@ const TransactionConfirmationScreen = () => {
         marginTop={isMessage ? 0 : 24}
       >
         <SheetActionButton
-          color={colors.alpha(colors.blueGreyDark, 0.06)}
+          color={colors.white}
           isTransparent={ios}
           label="Cancel"
           onPress={onCancel}
+          radiusWrapperStyle={{ flex: 1, marginLeft: 10, marginRight: 15 }}
           size="big"
           textColor={colors.alpha(colors.blueGreyDark, 0.8)}
           weight="bold"
           wrapperProps={{
-            containerStyle: { flex: 1 },
+            containerStyle: { flex: 1, marginRight: -10 },
             style: { flex: 1 },
           }}
         />
@@ -610,6 +611,7 @@ const TransactionConfirmationScreen = () => {
           color={colors.appleBlue}
           label="􀎽 Confirm"
           onPress={ready ? onPressSend : NOOP}
+          radiusWrapperStyle={{ flex: 1, marginRight: 10 }}
           size="big"
           weight="bold"
           wrapperProps={{
