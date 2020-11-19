@@ -12,7 +12,6 @@ import WalletBackupTypes from '../helpers/walletBackupTypes';
 import WalletTypes from '../helpers/walletTypes';
 import { hasKey } from '../model/keychain';
 import {
-  addressKey,
   generateAccount,
   getAllWallets,
   getSelectedWallet,
@@ -24,7 +23,11 @@ import {
 } from '../model/wallet';
 import { settingsUpdateAccountAddress } from '../redux/settings';
 import { logger } from '../utils';
-import { privateKeyKey, seedPhraseKey } from '../utils/keychainConstants';
+import {
+  addressKey,
+  privateKeyKey,
+  seedPhraseKey,
+} from '../utils/keychainConstants';
 
 // -- Constants --------------------------------------- //
 const WALLETS_ADDED_ACCOUNT = 'wallets/WALLETS_ADDED_ACCOUNT';

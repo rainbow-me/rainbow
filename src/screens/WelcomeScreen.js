@@ -43,7 +43,6 @@ const {
   cond,
   interpolate,
   round,
-  divide,
   startClock,
 } = Reanimated;
 
@@ -315,11 +314,7 @@ const colorsRGB = [
 ];
 /* eslint-enable sort-keys */
 
-const colorRGB = (r, g, b, fromShadow) =>
-  // from some reason there's a different bit shifting with shadows
-  fromShadow
-    ? color(round(g), round(b), 255, divide(round(r), 256))
-    : color(round(r), round(g), round(b));
+const colorRGB = (r, g, b) => color(round(r), round(g), round(b));
 
 const springConfig = {
   bounciness: 7.30332,

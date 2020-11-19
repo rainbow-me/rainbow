@@ -37,10 +37,11 @@ export default function CoinRow({
   isHidden,
   isPinned,
   isPool,
+  name,
   symbol,
   testID,
   topRowRender,
-  tokenSymbols,
+  tokens,
   ...props
 }) {
   const accountSettings = useAccountSettings();
@@ -48,7 +49,7 @@ export default function CoinRow({
   return (
     <Container css={containerStyles}>
       {isPool ? (
-        <CoinIconGroup tokens={tokenSymbols} />
+        <CoinIconGroup tokens={tokens} />
       ) : (
         createElement(coinIconRender, {
           address,
@@ -61,7 +62,7 @@ export default function CoinRow({
       )}
       <Content isHidden={isHidden} justify="center" style={contentStyles}>
         <Row align="center" testID={`${testID}-${symbol || ''}`}>
-          {topRowRender({ symbol, ...accountSettings, ...props })}
+          {topRowRender({ name, symbol, ...accountSettings, ...props })}
         </Row>
         <Row align="center" marginBottom={0.5}>
           {bottomRowRender({ symbol, ...accountSettings, ...props })}

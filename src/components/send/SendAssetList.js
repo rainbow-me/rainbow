@@ -34,7 +34,7 @@ const smallBalancesHeader = 36;
 const SendAssetListCoinDividerOpenButton = styled(CoinDividerOpenButton).attrs({
   coinDividerHeight: 30,
 })`
-  margin-left: 16;
+  margin-left: ${android ? 0 : 16};
 `;
 
 const SendAssetRecyclerListView = styled(RecyclerListView)`

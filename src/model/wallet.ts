@@ -511,7 +511,7 @@ export const createWallet = async (
       walletType,
     } =
       checkedWallet ||
-      (await ethereumUtils.deriveAccountFromMnemonicOrPrivateKey(walletSeed));
+      (await ethereumUtils.deriveAccountFromWalletInput(walletSeed));
     let pkey = walletSeed;
     if (!walletResult) return null;
     const walletAddress = address;

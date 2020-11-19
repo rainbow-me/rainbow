@@ -52,7 +52,7 @@ const getBalanceAmount = async (selectedGasPrice, selected) => {
 const getHash = txn => txn.hash.split('-').shift();
 
 const getAsset = (assets, address = 'eth') =>
-  find(assets, matchesProperty('address', address));
+  find(assets, matchesProperty('address', toLower(address)));
 
 export const checkWalletEthZero = assets => {
   const ethAsset = find(assets, asset => asset.address === 'eth');
@@ -259,18 +259,29 @@ const deriveAccountFromPrivateKey = privateKey => {
   };
 };
 
-const deriveAccountFromMnemonicOrPrivateKey = mnemonicOrPrivateKey => {
-  if (identifyWalletType(mnemonicOrPrivateKey) === WalletTypes.privateKey) {
-    return deriveAccountFromPrivateKey(mnemonicOrPrivateKey);
+const deriveAccountFromWalletInput = input => {
+  const type = identifyWalletType(input);
+  if (type === WalletTypes.privateKey) {
+    return deriveAccountFromPrivateKey(input);
+  } else if (type === WalletTypes.readOnly) {
+    const ethersWallet = { address: addHexPrefix(input), privateKey: null };
+    return {
+      address: addHexPrefix(input),
+      isHDWallet: false,
+      root: null,
+      type: WalletTypes.readOnly,
+      wallet: ethersWallet,
+      walletType: WalletLibraryType.ethers,
+    };
   }
-  return deriveAccountFromMnemonic(mnemonicOrPrivateKey);
+  return deriveAccountFromMnemonic(input);
 };
 
 export default {
   checkIfUrlIsAScam,
   deriveAccountFromMnemonic,
-  deriveAccountFromMnemonicOrPrivateKey,
   deriveAccountFromPrivateKey,
+  deriveAccountFromWalletInput,
   getAsset,
   getBalanceAmount,
   getChainIdFromNetwork,

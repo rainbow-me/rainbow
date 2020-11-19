@@ -1,4 +1,3 @@
-import AnimateNumber from '@bankify/react-native-animate-number';
 import { get, isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Keyboard, LayoutAnimation } from 'react-native';
@@ -13,7 +12,7 @@ import { Alert } from '../alerts';
 import { ButtonPressAnimation } from '../animations';
 import { Input } from '../inputs';
 import { Column, Row } from '../layout';
-import { Text } from '../text';
+import { AnimatedNumber, Text } from '../text';
 import GasSpeedLabelPager from './GasSpeedLabelPager';
 import { colors, fonts, fontWithWidth, margin } from '@rainbow-me/styles';
 
@@ -365,7 +364,7 @@ const GasSpeedButton = ({
           justify="space-between"
         >
           {!isCustom ? (
-            <AnimateNumber
+            <AnimatedNumber
               formatter={formatAnimatedGasPrice}
               interval={6}
               renderContent={renderGasPriceText}

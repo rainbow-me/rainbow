@@ -91,7 +91,14 @@ export default function SecretDisplaySection({
   }, [onSecretLoaded, onWalletTypeIdentified, walletId]);
 
   useEffect(() => {
-    loadSeed();
+    // Android doesn't like to show the faceID prompt
+    // while the view isn't fully visible
+    // so we have to add a timeout to prevent the app from freezing
+    android
+      ? setTimeout(() => {
+          loadSeed();
+        }, 300)
+      : loadSeed();
   }, [loadSeed]);
 
   const typeLabel = type === WalletTypes.privateKey ? 'key' : 'phrase';
