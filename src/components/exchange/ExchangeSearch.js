@@ -102,7 +102,7 @@ const timingConfig = {
 };
 
 const ExchangeSearch = (
-  { isFetching, onChangeText, onFocus, searchQuery, testID },
+  { isFetching, isSearching, onChangeText, onFocus, searchQuery, testID },
   ref
 ) => {
   const handleClearInput = useCallback(() => {
@@ -115,7 +115,7 @@ const ExchangeSearch = (
 
   const spinnerTimeout = useRef();
   useEffect(() => {
-    if (isFetching && !isEmpty(searchQuery)) {
+    if ((isFetching || isSearching) && !isEmpty(searchQuery)) {
       clearTimeout(spinnerTimeout.current);
       spinnerRotation.value = 0;
       spinnerRotation.value = repeat(
@@ -132,7 +132,7 @@ const ExchangeSearch = (
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isFetching, searchQuery]);
+  }, [isFetching, isSearching, searchQuery]);
 
   const searchIconStyle = useAnimatedStyle(
     () => {
