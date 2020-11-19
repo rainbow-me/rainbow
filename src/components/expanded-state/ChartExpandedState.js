@@ -167,7 +167,7 @@ export default function ChartExpandedState({ asset }) {
 
   return (
     <SlackSheet
-      additionalTopPadding
+      additionalTopPadding={android}
       contentHeight={ChartExpandedStateSheetHeight}
       scrollEnabled={false}
     >
