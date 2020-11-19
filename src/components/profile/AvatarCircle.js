@@ -62,10 +62,12 @@ export default function AvatarCircle({
         {...position.sizeAsObject(AvatarCircleSize)}
         backgroundColor={overlayStyles ? 'rgb(51, 54, 59)' : colors.white}
         borderRadius={AvatarCircleSize}
-        height={64}
         marginBottom={12}
         shadows={shadows[overlayStyles ? 'overlay' : 'default']}
-        width={64}
+        {...(android && {
+          height: 64,
+          width: 64,
+        })}
       >
         {image ? (
           <ImageAvatar image={image} size="large" />
