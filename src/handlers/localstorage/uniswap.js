@@ -11,6 +11,8 @@ const LIQUIDITY = 'uniswapliquidity';
 const LIQUIDITY_INFO = 'uniswap';
 const UNISWAP_FAVORITES = 'uniswapFavorites';
 
+const uniswapLiquidityInfoVersion = '0.2.0';
+
 export const uniswapAccountLocalKeys = [ASSETS, LIQUIDITY, LIQUIDITY_INFO];
 
 export const getUniswapFavorites = network =>
@@ -20,10 +22,22 @@ export const saveUniswapFavorites = favorites =>
   saveGlobal(UNISWAP_FAVORITES, favorites);
 
 export const getUniswapLiquidityInfo = (accountAddress, network) =>
-  getAccountLocal(LIQUIDITY_INFO, accountAddress, network, {});
+  getAccountLocal(
+    LIQUIDITY_INFO,
+    accountAddress,
+    network,
+    {},
+    uniswapLiquidityInfoVersion
+  );
 
 export const saveLiquidityInfo = (liquidityInfo, accountAddress, network) =>
-  saveAccountLocal(LIQUIDITY_INFO, liquidityInfo, accountAddress, network);
+  saveAccountLocal(
+    LIQUIDITY_INFO,
+    liquidityInfo,
+    accountAddress,
+    network,
+    uniswapLiquidityInfoVersion
+  );
 
 export const getLiquidity = (accountAddress, network) =>
   getAccountLocal(LIQUIDITY, accountAddress, network);

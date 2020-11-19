@@ -261,10 +261,7 @@ export const addressAssetsReceived = (
   const liquidityTokens = remove(
     assets,
     asset =>
-      asset?.asset?.type === 'uniswap' ||
-      // Remove duplicate liquidity tokens when falling back from zerion
-      (toLower(asset?.asset.name).indexOf('uniswap') !== -1 &&
-        toLower(asset?.asset.name) !== 'uniswap')
+      asset?.asset?.type === 'uniswap' || asset?.asset?.type === 'uniswap-v2'
   );
 
   // Remove spammy tokens

@@ -1,14 +1,13 @@
+import { map } from 'lodash';
 import React, { Fragment } from 'react';
 import { useOpenInvestmentCards } from '../../hooks';
 import { OpacityToggler } from '../animations';
 import { UniswapInvestmentRow } from '../investment-cards';
 import SavingsListHeader from '../savings/SavingsListHeader';
 
-const renderSavingsListRow = item => {
-  return (
-    <UniswapInvestmentRow assetType="uniswap" item={item} key={item.uniqueId} />
-  );
-};
+const renderInvestmentsListRow = item => (
+  <UniswapInvestmentRow assetType="uniswap" item={item} key={item.uniqueId} />
+);
 
 export default function PoolsListWrapper({ data, totalValue = '0' }) {
   const {
@@ -30,7 +29,7 @@ export default function PoolsListWrapper({ data, totalValue = '0' }) {
         isVisible={!isInvestmentCardsOpen}
         pointerEvents={isInvestmentCardsOpen ? 'auto' : 'none'}
       >
-        {data.map(renderSavingsListRow)}
+        {map(data, renderInvestmentsListRow)}
       </OpacityToggler>
     </Fragment>
   );

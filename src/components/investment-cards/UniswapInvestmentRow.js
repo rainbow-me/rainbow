@@ -1,8 +1,7 @@
-import { get } from 'lodash';
-import PropTypes from 'prop-types';
 import React, { Fragment, useCallback } from 'react';
 import { View } from 'react-native';
 import styled from 'styled-components/primitives';
+import { convertAmountToPercentageDisplay } from '../../helpers/utilities';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText, CoinRow } from '../coin-row';
 import BalanceText from '../coin-row/BalanceText';
@@ -14,7 +13,12 @@ import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 
 const formatPercentageString = percentString =>
-  percentString ? percentString.split('-').join('- ') : '-';
+  percentString
+    ? percentString
+        .toString()
+        .split('-')
+        .join('- ')
+    : '-';
 
 const PercentageText = styled(BottomRowText).attrs({
   align: 'right',
@@ -45,16 +49,20 @@ const PriceContainer = ios
       margin-bottom: 3;
     `;
 
-const BottomRow = ({ pricePerShare, native }) => {
-  const percentChange = get(native, 'change');
-  const percentageChangeDisplay = formatPercentageString(percentChange);
+const BottomRow = ({ uniBalance, type, relativeChange }) => {
+  const percentageChangeDisplay = relativeChange
+    ? formatPercentageString(convertAmountToPercentageDisplay(relativeChange))
+    : '-';
+  const isPositive =
+    relativeChange && percentageChangeDisplay.charAt(0) !== '-';
 
-  const isPositive = percentChange && percentageChangeDisplay.charAt(0) !== '-';
+  const tokenType = type === 'uniswap' ? 'UNI-V1' : 'UNI-V2';
+  const balanceLabel = `${uniBalance} ${tokenType}`;
 
   return (
     <BottomRowContainer>
       <FlexItem flex={1}>
-        <BottomRowText>{pricePerShare}</BottomRowText>
+        <BottomRowText>{balanceLabel}</BottomRowText>
       </FlexItem>
       <View>
         <PercentageText isPositive={isPositive}>
@@ -65,12 +73,11 @@ const BottomRow = ({ pricePerShare, native }) => {
   );
 };
 
-const TopRow = ({ tokenSymbol, totalNativeDisplay }) => {
+const TopRow = ({ name, totalNativeDisplay }) => {
   return (
     <TopRowContainer>
       <FlexItem flex={1}>
-        {/* // TODO Remove hardcoded ETH */}
-        <CoinName>{tokenSymbol}-ETH</CoinName>
+        <CoinName>{name}</CoinName>
       </FlexItem>
       <PriceContainer>
         <BalanceText numberOfLines={1}>{totalNativeDisplay}</BalanceText>
@@ -97,22 +104,12 @@ const UniswapInvestmentRow = ({ assetType, item, ...props }) => {
         bottomRowRender={BottomRow}
         isPool
         onPress={handleOpenExpandedState}
-        tokenSymbols={[
-          { tokenSymbol: item.tokenSymbol },
-          { tokenSymbol: 'ETH' },
-        ]}
         topRowRender={TopRow}
         {...item}
         {...props}
       />
     </Content>
   );
-};
-
-UniswapInvestmentRow.propTypes = {
-  item: PropTypes.object,
-  onPress: PropTypes.func,
-  onPressContainer: PropTypes.func,
 };
 
 export default UniswapInvestmentRow;
