@@ -73,6 +73,7 @@ const SheetActionButton = ({
   return (
     <Button
       as={ButtonPressAnimation}
+      elevation={android ? 24 : null}
       noFlex={noFlex}
       radiusAndroid={borderRadius}
       size={size}
