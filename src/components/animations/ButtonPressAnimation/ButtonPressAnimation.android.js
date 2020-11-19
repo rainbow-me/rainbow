@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import {
   TouchableNativeFeedback,
   TouchableOpacity,
+  TouchableWithoutFeedback,
 } from 'react-native-gesture-handler';
 import styled from 'styled-components/primitives';
 
@@ -32,9 +33,17 @@ export default function ButtonPressAnimation({
   wrapperProps,
   radiusAndroid: radius,
   radiusWrapperStyle,
+  enablePressWhileDisabled = false,
 }) {
   if (disabled) {
-    return <View style={style}>{children}</View>;
+    return (
+      <TouchableWithoutFeedback
+        onPress={enablePressWhileDisabled ? onPress : null}
+        style={style}
+      >
+        {children}
+      </TouchableWithoutFeedback>
+    );
   }
   if (opacityTouchable) {
     return (
