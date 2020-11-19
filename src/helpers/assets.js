@@ -12,6 +12,7 @@ import {
 import store from '../redux/store';
 import supportedNativeCurrencies from '../references/native-currencies.json';
 import { add, convertAmountToNativeDisplay } from './utilities';
+import { ETH_ICON_URL } from '@rainbow-me/utils';
 
 export const amountOfShowedCoins = 5;
 
@@ -49,7 +50,7 @@ const addEthPlaceholder = (
       },
       color: '#29292E',
       decimals: 18,
-      icon_url: 'https://s3.amazonaws.com/token-icons/eth.png',
+      icon_url: ETH_ICON_URL,
       isCoin: true,
       isPinned: pinnedCoins.includes('eth'),
       isPlaceholder: true,

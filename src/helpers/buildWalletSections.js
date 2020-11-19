@@ -18,7 +18,6 @@ import {
 } from '../redux/editOptions';
 import { setOpenSmallBalances } from '../redux/openStateSettings';
 import store from '../redux/store';
-import { ethereumUtils } from '../utils';
 import {
   amountOfShowedCoins,
   buildCoinsList,
@@ -27,6 +26,7 @@ import {
 import networkTypes from './networkTypes';
 import { add, convertAmountToNativeDisplay, multiply } from './utilities';
 import Routes from '@rainbow-me/routes';
+import { ETH_ICON_URL, ethereumUtils } from '@rainbow-me/utils';
 
 const allAssetsCountSelector = state => state.allAssetsCount;
 const allAssetsSelector = state => state.allAssets;
@@ -95,7 +95,7 @@ const addEth = section => {
       },
       color: '#29292E',
       decimals: 18,
-      icon_url: 'https://s3.amazonaws.com/token-icons/eth.png',
+      icon_url: ETH_ICON_URL,
       isCoin: true,
       isPinned: true,
       isPlaceholder: true,
