@@ -1,7 +1,8 @@
 import { get } from 'lodash';
 import React from 'react';
-import { Text, View } from 'react-native';
+import { Text } from 'react-native';
 import styled from 'styled-components/primitives';
+import { Row } from '../../../layout';
 import ChartHeaderTitle from './ChartHeaderTitle';
 
 import { ChartYLabel } from '@rainbow-me/animated-charts';
@@ -67,7 +68,7 @@ export default function ChartPriceLabel({
   return isNoPriceData ? (
     <ChartHeaderTitle>{defaultValue}</ChartHeaderTitle>
   ) : (
-    <View style={{ flexDirection: 'row' }}>
+    <Row>
       {android && (
         <Label
           as={Text}
@@ -95,6 +96,6 @@ export default function ChartPriceLabel({
           width: '100%',
         }}
       />
-    </View>
+    </Row>
   );
 }
