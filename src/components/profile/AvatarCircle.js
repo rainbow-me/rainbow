@@ -35,27 +35,19 @@ export default function AvatarCircle({
   image,
 }) {
   const { accountColor, accountSymbol } = useAccountProfile();
-  const shadows = ios
-    ? // eslint-disable-next-line react-hooks/rules-of-hooks
-      useMemo(
-        () => ({
-          default: [
-            [0, 2, 5, colors.dark, 0.2],
-            [
-              0,
-              6,
-              10,
-              colors.alpha(colors.avatarColor[accountColor || 0], 0.6),
-            ],
-          ],
-          overlay: [
-            [0, 6, 10, colors.black, 0.08],
-            [0, 2, 5, colors.black, 0.12],
-          ],
-        }),
-        [accountColor]
-      )
-    : [];
+  const shadows = useMemo(
+    () => ({
+      default: [
+        [0, 2, 5, colors.dark, 0.2],
+        [0, 6, 10, colors.alpha(colors.avatarColor[accountColor || 0], 0.6)],
+      ],
+      overlay: [
+        [0, 6, 10, colors.black, 0.08],
+        [0, 2, 5, colors.black, 0.12],
+      ],
+    }),
+    [accountColor]
+  );
 
   return (
     <ButtonPressAnimation
@@ -70,8 +62,10 @@ export default function AvatarCircle({
         {...position.sizeAsObject(AvatarCircleSize)}
         backgroundColor={overlayStyles ? 'rgb(51, 54, 59)' : colors.white}
         borderRadius={AvatarCircleSize}
+        height={64}
         marginBottom={12}
         shadows={shadows[overlayStyles ? 'overlay' : 'default']}
+        width={64}
       >
         {image ? (
           <ImageAvatar image={image} size="large" />
