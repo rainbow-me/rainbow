@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
 import { calculateAPY } from '../../helpers/savings';
 import { convertAmountToBalanceDisplay } from '../../helpers/utilities';
@@ -44,12 +43,6 @@ const BottomRow = ({ lifetimeSupplyInterestAccrued, supplyRate, symbol }) => {
   );
 };
 
-BottomRow.propTypes = {
-  lifetimeSupplyInterestAccrued: PropTypes.string,
-  supplyRate: PropTypes.string,
-  symbol: PropTypes.string,
-};
-
 const TopRow = ({ name, supplyBalanceUnderlying, symbol }) => (
   <Row align="center" justify="space-between" marginBottom={2}>
     <FlexItem flex={1}>
@@ -63,12 +56,6 @@ const TopRow = ({ name, supplyBalanceUnderlying, symbol }) => (
   </Row>
 );
 
-TopRow.propTypes = {
-  name: PropTypes.string,
-  supplyBalanceUnderlying: PropTypes.string,
-  symbol: PropTypes.string,
-};
-
 const SavingsCoinRow = ({ item, onPress, ...props }) => (
   <ButtonPressAnimation onPress={onPress} scaleTo={1.02}>
     <CoinRow
@@ -81,10 +68,5 @@ const SavingsCoinRow = ({ item, onPress, ...props }) => (
     />
   </ButtonPressAnimation>
 );
-
-SavingsCoinRow.propTypes = {
-  item: PropTypes.object,
-  onPress: PropTypes.func,
-};
 
 export default SavingsCoinRow;

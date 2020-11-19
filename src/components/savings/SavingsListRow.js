@@ -34,6 +34,8 @@ const SavingsListRowShadows = [
   [0, 5, 15, colors.dark, 0.04],
 ];
 
+const NOOP = () => undefined;
+
 const neverRerender = () => true;
 // eslint-disable-next-line react/display-name
 const SavingsListRowGradient = React.memo(
@@ -164,7 +166,7 @@ const SavingsListRow = ({
             as={android && ButtonPressAnimation}
             css={padding(9, 10, 10, 11)}
             justify="space-between"
-            onPress={onButtonPress}
+            onPress={NOOP}
             scaleTo={0.96}
           >
             {underlying.symbol && supplyBalanceUnderlying ? (
@@ -181,7 +183,7 @@ const SavingsListRow = ({
                 value={displayValue}
               />
             ) : (
-              <SavingsListRowEmptyState onPress={onButtonPress} />
+              <SavingsListRowEmptyState onPress={NOOP} />
             )}
             <APYPill value={apyTruncated} />
           </Row>
