@@ -1,6 +1,16 @@
-import React, { useCallback } from 'react';
+import { isEmpty } from 'lodash';
+import React, { useCallback, useEffect, useRef } from 'react';
+import FastImage from 'react-native-fast-image';
 import RadialGradient from 'react-native-radial-gradient';
+import Animated, {
+  NewEasing,
+  repeat,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
+import Spinner from '../../assets/chartSpinner.png';
 import { ClearInputDecorator, Input } from '../inputs';
 import { Row } from '../layout';
 import { Text } from '../text';
@@ -34,8 +44,9 @@ const SearchIcon = styled(Text).attrs({
   color: colors.alpha(colors.blueGreyDark, 0.5),
   size: 'large',
   weight: 'semibold',
-})`
-  flex-shrink: 0;
+})``;
+
+const SearchIconWrapper = styled(Animated.View)`
   margin-top: 9;
 `;
 
@@ -64,8 +75,34 @@ const SearchInput = styled(Input).attrs({
   margin-left: 4;
 `;
 
+const SearchSpinner = styled(FastImage).attrs({
+  resizeMode: FastImage.resizeMode.contain,
+  source: Spinner,
+  tintColor: colors.alpha(colors.blueGreyDark, 0.6),
+})`
+  height: 20;
+  width: 20;
+`;
+
+const SearchSpinnerWrapper = styled(Animated.View)`
+  height: 20;
+  left: 12;
+  position: absolute;
+  top: 9.5;
+  width: 20;
+`;
+
+const rotationConfig = {
+  duration: 500,
+  easing: NewEasing.linear,
+};
+
+const timingConfig = {
+  duration: 300,
+};
+
 const ExchangeSearch = (
-  { onChangeText, onFocus, searchQuery, testID },
+  { isFetching, isSearching, onChangeText, onFocus, searchQuery, testID },
   ref
 ) => {
   const handleClearInput = useCallback(() => {
@@ -73,10 +110,64 @@ const ExchangeSearch = (
     onChangeText?.('');
   }, [ref, onChangeText]);
 
+  const spinnerRotation = useSharedValue(0);
+  const spinnerScale = useSharedValue(0, 'spinnerScale');
+
+  const spinnerTimeout = useRef();
+  useEffect(() => {
+    if ((isFetching || isSearching) && !isEmpty(searchQuery)) {
+      clearTimeout(spinnerTimeout.current);
+      spinnerRotation.value = 0;
+      spinnerRotation.value = repeat(
+        withTiming(360, rotationConfig),
+        -1,
+        false
+      );
+      spinnerScale.value = withTiming(1, timingConfig);
+    } else {
+      spinnerScale.value = withTiming(0, timingConfig);
+      spinnerTimeout.current = setTimeout(
+        () => (spinnerRotation.value = 0),
+        timingConfig.duration
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isFetching, isSearching, searchQuery]);
+
+  const searchIconStyle = useAnimatedStyle(
+    () => {
+      return {
+        opacity: 1 - spinnerScale.value,
+        transform: [{ scale: 1 - spinnerScale.value }],
+      };
+    },
+    undefined,
+    'searchIconStyle'
+  );
+
+  const spinnerStyle = useAnimatedStyle(
+    () => {
+      return {
+        opacity: spinnerScale.value,
+        transform: [
+          { rotate: `${spinnerRotation.value}deg` },
+          { scale: spinnerScale.value },
+        ],
+      };
+    },
+    undefined,
+    'spinnerStyle'
+  );
+
   return (
     <Container>
       <BackgroundGradient />
-      <SearchIcon>􀊫</SearchIcon>
+      <SearchIconWrapper style={searchIconStyle}>
+        <SearchIcon>􀊫</SearchIcon>
+      </SearchIconWrapper>
+      <SearchSpinnerWrapper style={spinnerStyle}>
+        <SearchSpinner />
+      </SearchSpinnerWrapper>
       <SearchInput
         onChangeText={onChangeText}
         onFocus={onFocus}
