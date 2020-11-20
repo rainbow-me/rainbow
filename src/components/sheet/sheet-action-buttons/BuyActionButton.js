@@ -1,6 +1,5 @@
 import analytics from '@segment/analytics-react-native';
 import React, { useCallback } from 'react';
-import isNativeStackAvailable from '../../../helpers/isNativeStackAvailable';
 
 import SheetActionButton from './SheetActionButton';
 import showWalletErrorAlert from '@rainbow-me/helpers/support';
@@ -19,15 +18,12 @@ export default function BuyActionButton({ color = colors.paleBlue, ...props }) {
       return;
     }
 
-    navigate(Routes.ADD_CASH_FLOW, () =>
-      isNativeStackAvailable
-        ? {
-            screen: Routes.ADD_CASH_SCREEN_NAVIGATOR,
-          }
-        : {
-            screen: Routes.ADD_CASH_SHEET,
-          }
-    );
+    if (ios) {
+      navigate(Routes.ADD_CASH_FLOW, params => params);
+    } else {
+      navigate(Routes.WYRE_WEBVIEW, params => params);
+    }
+
     analytics.track('Tapped Buy more ETH', {
       category: 'add cash',
     });
