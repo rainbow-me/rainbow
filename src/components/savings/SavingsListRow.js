@@ -176,7 +176,9 @@ const SavingsListRow = ({
                 <CoinIcon size={26} symbol={underlying.symbol} />
               </Centered>
             ) : null}
-            {supplyBalanceUnderlying && !isNaN(displayValue) && !IS_TESTING ? (
+            {supplyBalanceUnderlying &&
+            !isNaN(displayValue) &&
+            IS_TESTING !== 'true' ? (
               <SavingsListRowAnimatedNumber
                 initialValue={initialValue}
                 interval={ANIMATE_NUMBER_INTERVAL}
