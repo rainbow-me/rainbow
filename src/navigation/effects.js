@@ -345,7 +345,9 @@ export const sheetPreset = ({ route }) => ({
   cardShadowEnabled: true,
   cardStyle: { backgroundColor: 'transparent' },
   cardStyleInterpolator: sheetStyleInterpolator(
-    route?.params?.type === 'token' ? 0.7 : 0
+    route?.params?.type === 'token' || route?.params?.type === 'unique_token'
+      ? 0.7
+      : 0
   ),
   cardTransparent: true,
   gestureDirection: 'vertical',
