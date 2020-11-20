@@ -36,7 +36,7 @@ const SearchIcon = styled(Text).attrs({
   weight: 'semibold',
 })`
   flex-shrink: 0;
-  margin-top: 9;
+  margin-top: ${android ? '5' : '9'};
 `;
 
 const SearchInput = styled(Input).attrs({

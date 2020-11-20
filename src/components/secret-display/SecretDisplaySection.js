@@ -8,6 +8,7 @@ import {
   loadSeedPhraseAndMigrateIfNeeded,
 } from '../../model/wallet';
 import ActivityIndicator from '../ActivityIndicator';
+import Spinner from '../Spinner';
 import { BiometricButtonContent, Button } from '../buttons';
 import { CopyFloatingEmojis } from '../floating-emojis';
 import { Icon } from '../icons';
@@ -58,6 +59,8 @@ const ToggleSecretButton = styled(Button)`
   ${shadow.build(0, 5, 15, colors.purple, 0.3)}
   background-color: ${colors.appleBlue};
 `;
+
+const LoadingSpinner = android ? Spinner : ActivityIndicator;
 
 export default function SecretDisplaySection({
   onSecretLoaded,
@@ -118,7 +121,7 @@ export default function SecretDisplaySection({
               <SecretDisplayCard seed={seed} type={type} />
             </Fragment>
           ) : (
-            <ActivityIndicator color={colors.blueGreyDark50} />
+            <LoadingSpinner color={colors.blueGreyDark50} />
           )}
         </Fragment>
       ) : (
