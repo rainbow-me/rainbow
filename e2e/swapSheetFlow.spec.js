@@ -75,9 +75,10 @@ describe('Swap Sheet Interaction Flow', () => {
     } else {
       await Helpers.swipe('exchange-modal-header', 'down', 'slow');
     }
+    console.log('just wiped BRO');
     await Helpers.delay(1000);
     await Helpers.tap('exchange-fab');
-    await Helpers.checkIfExists('exchange-modal-input');
+    await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.delay(1000);
     await Helpers.tap('exchange-modal-input-max');
     await Helpers.delay(1000);
@@ -120,7 +121,7 @@ describe('Swap Sheet Interaction Flow', () => {
       await Helpers.tap('currency-select-header-back-button');
     }
   });
-  /*
+
   it('Should change Currency Select List on search entry', async () => {
     await Helpers.delay(3000);
     await Helpers.tap('exchange-modal-input-selection-button');
@@ -288,7 +289,8 @@ describe('Swap Sheet Interaction Flow', () => {
       await device.pressBack();
     } else {
       await Helpers.swipe('exchange-modal-header', 'down', 'slow');
-    }    await Helpers.delay(2000);
+    }
+    await Helpers.delay(2000);
     await Helpers.tap('exchange-fab');
     await Helpers.delay(2000);
     await Helpers.tap('exchange-modal-output-selection-button');
@@ -449,7 +451,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.delay(1000);
     await Helpers.checkIfElementByTextIsVisible('Custom');
   });
-*/
+
   afterAll(async () => {
     // Reset the app state
     await device.clearKeychain();
