@@ -149,7 +149,6 @@ const PinAuthenticationScreen = () => {
             } else {
               params.onSuccess(nextValue);
               finished.current = true;
-              //goBack();
               setTimeout(() => {
                 goBack();
               }, 300);
