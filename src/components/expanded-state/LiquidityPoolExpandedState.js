@@ -1,6 +1,5 @@
-import { map, toLower } from 'lodash';
-import React, { useMemo } from 'react';
-import { tokenOverrides } from '../../references';
+import { map } from 'lodash';
+import React from 'react';
 import { magicMemo } from '../../utils';
 import {
   DepositActionButton,
@@ -15,42 +14,31 @@ import {
   TokenInfoRow,
   TokenInfoSection,
 } from '../token-info';
-import { LiquidityPoolExpandedStateHeader } from './liquidity-pool';
+import ChartState from './chart/ChartState';
 
-export const LiquidityPoolExpandedStateSheetHeight = 369 + (android ? 80 : 0);
+const heightWithoutChart = 369 + (android ? 80 : 0);
+const heightWithChart = heightWithoutChart + 297;
 
-const LiquidityPoolExpandedState = ({
-  asset: {
-    name,
-    pricePerShare,
-    totalNativeDisplay,
-    uniBalance,
-    ...liquidityInfo
-  },
-}) => {
-  const tokenAssets = useMemo(() => {
-    const { tokens } = liquidityInfo;
-    return map(tokens, token => ({
-      ...token,
-      ...(token.address ? tokenOverrides[toLower(token.address)] : {}),
-      value: token.balance,
-    }));
-  }, [liquidityInfo]);
+export const LiquidityPoolExpandedStateSheetHeight = heightWithoutChart;
+
+const LiquidityPoolExpandedState = ({ asset }) => {
+  const { name, tokens, totalNativeDisplay, uniBalance } = asset;
 
   return (
     <SlackSheet
       additionalTopPadding={android}
       contentHeight={LiquidityPoolExpandedStateSheetHeight}
     >
-      <LiquidityPoolExpandedStateHeader
-        assets={tokenAssets}
-        name={name}
-        pricePerShare={pricePerShare}
+      <ChartState
+        asset={asset}
+        heightWithChart={heightWithChart}
+        heightWithoutChart={heightWithoutChart}
+        isPool
       />
       <SheetDivider />
       <TokenInfoSection>
         <TokenInfoRow>
-          {map(tokenAssets, tokenAsset => {
+          {map(tokens, tokenAsset => {
             return (
               <TokenInfoItem
                 asset={tokenAsset}

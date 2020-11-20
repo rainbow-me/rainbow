@@ -1,4 +1,13 @@
-import { compact, isEmpty, join, map, orderBy, sumBy, values } from 'lodash';
+import {
+  compact,
+  isEmpty,
+  join,
+  map,
+  orderBy,
+  sumBy,
+  toLower,
+  values,
+} from 'lodash';
 import { createSelector } from 'reselect';
 import {
   convertAmountToNativeDisplay,
@@ -7,6 +16,7 @@ import {
   handleSignificantDecimalsWithThreshold,
   multiply,
 } from '../helpers/utilities';
+import { tokenOverrides } from '../references';
 
 const assetsSelector = state => state.data.assets;
 const nativeCurrencySelector = state => state.settings.nativeCurrency;
@@ -18,7 +28,16 @@ export const transformPool = (liquidityPool, nativeCurrency) => {
     return null;
   }
 
-  const { balance, price, tokens, totalSupply, type, uniqueId } = liquidityPool;
+  const {
+    address,
+    balance,
+    price,
+    symbol,
+    tokens,
+    totalSupply,
+    type,
+    uniqueId,
+  } = liquidityPool;
 
   const percentageOwned = multiply(divide(balance, totalSupply), 100);
 
@@ -34,7 +53,8 @@ export const transformPool = (liquidityPool, nativeCurrency) => {
 
   const formattedTokens = map(tokens, token => ({
     ...token,
-    balance: handleSignificantDecimalsWithThreshold(token.balance, 4),
+    ...(token.address ? tokenOverrides[toLower(token.address)] : {}),
+    value: handleSignificantDecimalsWithThreshold(token.balance, 4),
   }));
 
   const name = join(
@@ -43,10 +63,13 @@ export const transformPool = (liquidityPool, nativeCurrency) => {
   );
 
   return {
+    ...liquidityPool,
+    address,
     name,
     percentageOwned,
     pricePerShare,
     relativeChange: price?.relative_change_24h,
+    symbol,
     tokens: formattedTokens,
     totalBalanceAmount,
     totalNativeDisplay,
