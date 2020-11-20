@@ -595,7 +595,6 @@ const TransactionConfirmationScreen = () => {
       >
         <SheetActionButton
           color={colors.white}
-          isTransparent={ios}
           label="Cancel"
           onPress={onCancel}
           radiusWrapperStyle={{ flex: 1, marginLeft: 10, marginRight: 15 }}
