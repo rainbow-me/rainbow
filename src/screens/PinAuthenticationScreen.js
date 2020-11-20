@@ -149,7 +149,9 @@ const PinAuthenticationScreen = () => {
             } else {
               params.onSuccess(nextValue);
               finished.current = true;
-              goBack();
+              setTimeout(() => {
+                goBack();
+              }, 300);
             }
           } else if (actionType === 'creation') {
             // Ask for confirmation
@@ -158,7 +160,9 @@ const PinAuthenticationScreen = () => {
             setInitialPin(nextValue);
 
             // Clear the pin
-            setValue('');
+            setTimeout(() => {
+              setValue('');
+            }, 300);
           } else {
             // Confirmation
             const valid = initialPin === nextValue;
@@ -167,7 +171,9 @@ const PinAuthenticationScreen = () => {
             } else {
               params.onSuccess(nextValue);
               finished.current = true;
-              goBack();
+              setTimeout(() => {
+                goBack();
+              }, 300);
             }
           }
         }
@@ -179,7 +185,11 @@ const PinAuthenticationScreen = () => {
   );
 
   return (
-    <Column backgroundColor={colors.white} flex={1}>
+    <Column
+      backgroundColor={colors.white}
+      flex={1}
+      testID="pin-authentication-screen"
+    >
       <Centered flex={1}>
         <ColumnWithMargins
           align="center"

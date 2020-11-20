@@ -18,7 +18,6 @@ import {
 } from '../redux/editOptions';
 import { setOpenSmallBalances } from '../redux/openStateSettings';
 import store from '../redux/store';
-import { ethereumUtils } from '../utils';
 import {
   amountOfShowedCoins,
   buildCoinsList,
@@ -27,6 +26,7 @@ import {
 import networkTypes from './networkTypes';
 import { add, convertAmountToNativeDisplay, multiply } from './utilities';
 import Routes from '@rainbow-me/routes';
+import { ETH_ICON_URL, ethereumUtils } from '@rainbow-me/utils';
 
 const allAssetsCountSelector = state => state.allAssetsCount;
 const allAssetsSelector = state => state.allAssets;
@@ -93,15 +93,18 @@ const addEth = section => {
         amount: '0',
         display: '0 ETH',
       },
+      color: '#29292E',
       decimals: 18,
+      icon_url: ETH_ICON_URL,
       isCoin: true,
       isPinned: true,
+      isPlaceholder: true,
       isSmall: false,
       name: 'Ethereum',
       native: {
         balance: {
           amount: '0',
-          display: '$0',
+          display: '0.00',
         },
         change: relative_change_24h ? `${relative_change_24h.toFixed(2)}%` : '',
         price: {
@@ -153,7 +156,7 @@ const withUniswapSection = (
     header: {
       title: 'Pools',
       totalItems: uniswap.length,
-      totalValue: uniswapTotal,
+      totalValue: convertAmountToNativeDisplay(uniswapTotal, nativeCurrency),
     },
     name: 'pools',
     pools: true,
@@ -285,14 +288,16 @@ const withBalanceSection = (
   isCoinListEdited,
   pinnedCoins,
   hiddenCoins,
-  currentAction
+  currentAction,
+  uniswapTotal
 ) => {
   const { assets, totalBalancesValue } = buildCoinsList(
     allAssets,
     nativeCurrency,
     isCoinListEdited,
     pinnedCoins,
-    hiddenCoins
+    hiddenCoins,
+    true
   );
   let balanceSectionData = [...assets];
 
@@ -300,8 +305,13 @@ const withBalanceSection = (
     totalBalancesValue,
     get(savingsSection, 'totalValue', 0)
   );
-  const totalValue = convertAmountToNativeDisplay(
+  const totalBalanceWithAllSectionValues = add(
     totalBalanceWithSavingsValue,
+    uniswapTotal
+  );
+
+  const totalValue = convertAmountToNativeDisplay(
+    totalBalanceWithAllSectionValues,
     nativeCurrency
   );
 
@@ -416,6 +426,16 @@ const balanceSavingsSectionSelector = createSelector(
   withBalanceSavingsSection
 );
 
+const uniswapSectionSelector = createSelector(
+  [
+    languageSelector,
+    nativeCurrencySelector,
+    uniswapSelector,
+    uniswapTotalSelector,
+  ],
+  withUniswapSection
+);
+
 const balanceSectionSelector = createSelector(
   [
     allAssetsSelector,
@@ -431,18 +451,9 @@ const balanceSectionSelector = createSelector(
     pinnedCoinsSelector,
     hiddenCoinsSelector,
     currentActionSelector,
-  ],
-  withBalanceSection
-);
-
-const uniswapSectionSelector = createSelector(
-  [
-    languageSelector,
-    nativeCurrencySelector,
-    uniswapSelector,
     uniswapTotalSelector,
   ],
-  withUniswapSection
+  withBalanceSection
 );
 
 const uniqueTokenFamiliesSelector = createSelector(

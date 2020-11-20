@@ -1,5 +1,5 @@
 import produce from 'immer';
-import { concat, difference, filter, isEmpty, union, without } from 'lodash';
+import { concat, difference, filter, union, without } from 'lodash';
 import { Value } from 'react-native-reanimated';
 import {
   getHiddenCoins,
@@ -24,10 +24,8 @@ export const coinListLoadState = () => async (dispatch, getState) => {
   try {
     const { accountAddress, network } = getState().settings;
     const hiddenCoins = await getHiddenCoins(accountAddress, network);
-    let pinnedCoins = await getPinnedCoins(accountAddress, network);
-    if (isEmpty(pinnedCoins)) {
-      pinnedCoins = ['eth'];
-    }
+    const pinnedCoins = await getPinnedCoins(accountAddress, network);
+
     dispatch({
       payload: {
         hiddenCoins,
@@ -181,7 +179,7 @@ const INITIAL_STATE = {
   hiddenCoins: [],
   isCoinListEdited: false,
   isCoinListEditedValue: new Value(0),
-  pinnedCoins: [],
+  pinnedCoins: ['eth'],
   recentlyPinnedCount: 0,
   selectedCoins: [],
 };
