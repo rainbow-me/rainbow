@@ -595,7 +595,6 @@ const TransactionConfirmationScreen = () => {
       >
         <SheetActionButton
           color={colors.white}
-          isTransparent={ios}
           label="Cancel"
           onPress={onCancel}
           radiusWrapperStyle={{ flex: 1, marginLeft: 10, marginRight: 15 }}
@@ -725,8 +724,8 @@ const TransactionConfirmationScreen = () => {
 
   let marginTop = android
     ? method === SIGN_TYPED_DATA
-      ? deviceHeight - sheetHeight + 260
-      : deviceHeight - sheetHeight + 210
+      ? deviceHeight - sheetHeight + 275
+      : deviceHeight - sheetHeight + (isMessageRequest ? 225 : 205)
     : null;
 
   if (isTransactionDisplayType(method) && !get(request, 'asset', false)) {
@@ -750,7 +749,11 @@ const TransactionConfirmationScreen = () => {
             borderRadius={39}
             direction="column"
             marginTop={marginTop}
-            paddingBottom={isMessageRequest ? safeAreaInsetValues.bottom : 0}
+            paddingBottom={
+              isMessageRequest
+                ? safeAreaInsetValues.bottom + (android ? 20 : 0)
+                : 0
+            }
             paddingHorizontal={19}
             paddingTop={24}
             style={animatedSheetStyles}

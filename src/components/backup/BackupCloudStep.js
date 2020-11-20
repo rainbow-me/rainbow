@@ -249,7 +249,7 @@ export default function BackupCloudStep() {
           </ImportantText>
         </DescriptionText>
       </Masthead>
-      <ColumnWithMargins align="center" flex={1} margin={19}>
+      <ColumnWithMargins align="center" flex={1} margin={android ? 0 : 19}>
         <PasswordField
           isInvalid={
             password !== '' &&
