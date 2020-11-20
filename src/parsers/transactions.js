@@ -30,7 +30,7 @@ import {
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
 } from '../helpers/utilities';
-import { savingsAssetsList } from '../references';
+import { savingsAssetsList, tokenOverrides } from '../references';
 import { ethereumUtils } from '../utils';
 
 const LAST_TXN_HASH_BUFFER = 20;
@@ -56,7 +56,6 @@ export const parseTransactions = (
   nativeCurrency,
   existingTransactions,
   purchaseTransactions,
-  tokenOverrides,
   network,
   appended = false
 ) => {
@@ -73,7 +72,6 @@ export const parseTransactions = (
         txn,
         accountAddress,
         nativeCurrency,
-        tokenOverrides,
         purchaseTransactionHashes,
         network
       )
@@ -153,7 +151,6 @@ const parseTransaction = (
   txn,
   accountAddress,
   nativeCurrency,
-  tokenOverrides,
   purchaseTransactions,
   network
 ) => {

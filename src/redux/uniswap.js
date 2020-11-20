@@ -46,15 +46,12 @@ export const uniswapLoadState = () => async (dispatch, getState) => {
 };
 
 export const uniswapGetAllExchanges = () => async (dispatch, getState) => {
-  const { tokenOverrides } = getState().data;
   const { network } = getState().settings;
   const { pairs } = getState().uniswap;
   try {
     const ignoredTokens = filter(keys(pairs), x => x !== 'eth');
     const allTokens =
-      network === networkTypes.mainnet
-        ? await getAllTokens(tokenOverrides, ignoredTokens)
-        : {};
+      network === networkTypes.mainnet ? await getAllTokens(ignoredTokens) : {};
     dispatch({
       payload: allTokens,
       type: UNISWAP_UPDATE_ALL_TOKENS,
