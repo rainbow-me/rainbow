@@ -726,7 +726,7 @@ const TransactionConfirmationScreen = () => {
   let marginTop = android
     ? method === SIGN_TYPED_DATA
       ? deviceHeight - sheetHeight + 275
-      : deviceHeight - sheetHeight + (isMessageRequest ? 225 : 200)
+      : deviceHeight - sheetHeight + (isMessageRequest ? 225 : 205)
     : null;
 
   if (isTransactionDisplayType(method) && !get(request, 'asset', false)) {
