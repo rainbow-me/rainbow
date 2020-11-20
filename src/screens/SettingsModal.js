@@ -175,7 +175,6 @@ export default function SettingsModal() {
 
   return (
     <Modal
-      fullScreenOnAndroid
       minHeight={isTinyPhone ? 500 : 600}
       onCloseModal={goBack}
       radius={18}
