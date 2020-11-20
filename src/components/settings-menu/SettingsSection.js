@@ -225,7 +225,7 @@ export default function SettingsSection({
         />
         <ListItem
           icon={<Emoji name={ios ? 'speech_balloon' : 'bug'} />}
-          label={ios ? 'Feedback and Support' : 'Feedback, Support, & Bugs'}
+          label={ios ? 'Feedback and Support' : 'Feedback, Support & Bugs'}
           onPress={onSendFeedback}
           testID="feedback-section"
         />
