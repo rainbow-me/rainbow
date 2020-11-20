@@ -49,6 +49,7 @@ export interface LPToken {
       value?: number;
       relative_change_24h?: number;
     };
+    symbol: string;
     type: string;
   };
   quantity: string;
@@ -220,6 +221,7 @@ const getLiquidityInfoV2 = async (
         address: liquidityPoolAddress,
         balance: convertRawAmountToDecimalFormat(lpTokenBalance),
         price: lpToken?.asset?.price,
+        symbol: lpToken?.asset?.symbol,
         tokens: [
           {
             address: token0Address,
@@ -301,6 +303,7 @@ const getLiquidityInfoV1 = async (
         address: liquidityPoolAddress,
         balance: convertRawAmountToDecimalFormat(lpTokenBalance),
         price: lpToken?.asset?.price,
+        symbol: lpToken?.asset?.symbol,
         tokens: [
           {
             address: tokenAddress,
