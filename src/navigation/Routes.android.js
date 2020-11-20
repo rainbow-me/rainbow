@@ -59,7 +59,7 @@ function SendFlowNavigator() {
       <Stack.Screen
         component={SendSheet}
         name={Routes.SEND_SHEET}
-        options={bottomSheetPreset}
+        options={sheetPreset}
       />
     </Stack.Navigator>
   );

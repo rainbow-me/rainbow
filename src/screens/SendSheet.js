@@ -17,6 +17,7 @@ import {
   SendHeader,
   SendTransactionSpeed,
 } from '../components/send';
+import { SlackSheet } from '../components/sheet';
 import { createSignableTransaction, estimateGasLimit } from '../handlers/web3';
 import AssetTypes from '../helpers/assetTypes';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
@@ -49,7 +50,7 @@ import { borders, colors } from '@rainbow-me/styles';
 import { deviceUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
-const sheetHeight = deviceUtils.dimensions.height - 10;
+const sheetHeight = deviceUtils.dimensions.height - (android ? 68 : 10);
 const statusBarHeight = getStatusBarHeight(true);
 
 const Container = styled.View`
@@ -65,7 +66,7 @@ const SheetContainer = styled(Column).attrs({
 })`
   ${borders.buildRadius('top', isNativeStackAvailable ? 0 : 16)};
   background-color: ${colors.white};
-  height: ${isNativeStackAvailable ? sheetHeight : '100%'};
+  height: ${isNativeStackAvailable || android ? sheetHeight : '100%'};
   width: 100%;
 `;
 
@@ -454,7 +455,11 @@ export default function SendSheet(props) {
   ]);
 
   return (
-    <Container>
+    <Container
+      additionalTopPadding
+      as={android && SlackSheet}
+      contentHeight={sheetHeight}
+    >
       {ios && <StatusBar barStyle="light-content" />}
       <SheetContainer>
         <SendHeader

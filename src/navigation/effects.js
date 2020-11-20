@@ -4,6 +4,7 @@ import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { HeaderHeightWithStatusBar } from '../components/header';
 import { AvatarCircle } from '../components/profile';
 import { deviceUtils } from '../utils';
+import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 
 const statusBarHeight = getStatusBarHeight(true);
@@ -340,20 +341,25 @@ export const bottomSheetPreset = {
   transitionSpec: { close: closeSpec, open: sheetOpenSpec },
 };
 
-export const sheetPreset = ({ route }) => ({
-  cardOverlayEnabled: true,
-  cardShadowEnabled: true,
-  cardStyle: { backgroundColor: 'transparent' },
-  cardStyleInterpolator: sheetStyleInterpolator(
-    route?.params?.type === 'token' || route?.params?.type === 'unique_token'
-      ? 0.7
-      : 0
-  ),
-  cardTransparent: true,
-  gestureDirection: 'vertical',
-  gestureResponseDistance,
-  transitionSpec: { close: closeSpec, open: sheetOpenSpec },
-});
+export const sheetPreset = ({ route }) => {
+  const shouldUseNonTransparentOverlay =
+    route.params?.type === 'token' ||
+    route.params?.type === 'unique_token' ||
+    route.name === Routes.SEND_SHEET_NAVIGATOR;
+  console.log(route);
+  return {
+    cardOverlayEnabled: true,
+    cardShadowEnabled: true,
+    cardStyle: { backgroundColor: 'transparent' },
+    cardStyleInterpolator: sheetStyleInterpolator(
+      shouldUseNonTransparentOverlay ? 0.7 : 0
+    ),
+    cardTransparent: true,
+    gestureDirection: 'vertical',
+    gestureResponseDistance,
+    transitionSpec: { close: closeSpec, open: sheetOpenSpec },
+  };
+};
 
 export const settingsPreset = ({ route }) => ({
   ...sheetPreset({ route }),
