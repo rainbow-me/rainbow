@@ -3,6 +3,7 @@ import { debounce } from 'lodash';
 import { useCallback } from 'react';
 import Mailer from 'react-native-mail';
 import { Alert } from '../components/alerts';
+import { useAppVersion } from '@rainbow-me/hooks';
 
 const FeedbackEmailAddress = 'support@rainbow.me';
 
@@ -31,12 +32,12 @@ const handleMailError = debounce(
   250
 );
 
-const feedbackEmailOptions = {
-  recipients: [FeedbackEmailAddress],
-  subject: `🌈️ Rainbow Feedback - ${ios ? 'iOS' : 'Android'}`,
-};
-
 export default function useSendFeedback() {
+  const appVersion = useAppVersion();
+  const feedbackEmailOptions = {
+    recipients: [FeedbackEmailAddress],
+    subject: `🌈️ Rainbow Feedback - ${ios ? 'iOS' : 'Android'} ${appVersion}`,
+  };
   const onSendFeedback = useCallback(
     () => Mailer.mail(feedbackEmailOptions, handleMailError),
     []
