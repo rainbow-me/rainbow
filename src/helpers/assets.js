@@ -1,14 +1,18 @@
 import {
   chunk,
   compact,
+  concat,
+  find,
   forEach,
   get,
   groupBy,
   includes,
   sortBy,
 } from 'lodash';
+import store from '../redux/store';
 import supportedNativeCurrencies from '../references/native-currencies.json';
-import { add } from './utilities';
+import { add, convertAmountToNativeDisplay } from './utilities';
+import { ETH_ICON_URL } from '@rainbow-me/utils';
 
 export const amountOfShowedCoins = 5;
 
@@ -26,26 +30,89 @@ export const buildAssetUniqueIdentifier = item => {
   return compact([balance, nativePrice, uniqueId]).join('_');
 };
 
-export const buildCoinsList = (
+const addEthPlaceholder = (
   assets,
+  includePlaceholder,
+  pinnedCoins,
+  nativeCurrency
+) => {
+  const hasEth = !!find(assets, asset => asset.address === 'eth');
+
+  const { genericAssets } = store.getState().data;
+  if (includePlaceholder && !hasEth && assets.length > 0) {
+    const { relative_change_24h, value } = genericAssets?.eth?.price || {};
+
+    const zeroEth = {
+      address: 'eth',
+      balance: {
+        amount: '0',
+        display: '0 ETH',
+      },
+      color: '#29292E',
+      decimals: 18,
+      icon_url: ETH_ICON_URL,
+      isCoin: true,
+      isPinned: pinnedCoins.includes('eth'),
+      isPlaceholder: true,
+      isSmall: false,
+      name: 'Ethereum',
+      native: {
+        balance: {
+          amount: '0.00',
+          display: convertAmountToNativeDisplay('0.00', nativeCurrency),
+        },
+        change: relative_change_24h ? `${relative_change_24h.toFixed(2)}%` : '',
+        price: {
+          amount: value || '0.00',
+          display: convertAmountToNativeDisplay(
+            value ? value : '0.00',
+            nativeCurrency
+          ),
+        },
+      },
+      price: value,
+      symbol: 'ETH',
+      type: 'token',
+      uniqueId: 'eth',
+    };
+
+    return concat([zeroEth], assets);
+  }
+  return assets;
+};
+
+export const buildCoinsList = (
+  assetsOriginal,
   nativeCurrency,
   isCoinListEdited,
   pinnedCoins,
-  hiddenCoins
+  hiddenCoins,
+  includePlaceholder = false
 ) => {
   let standardAssets = [],
     pinnedAssets = [],
     hiddenAssets = [];
+
   const smallBalances = {
     assets: [],
     smallBalancesContainer: true,
   };
+
+  const assets = addEthPlaceholder(
+    assetsOriginal,
+    includePlaceholder,
+    pinnedCoins,
+    nativeCurrency
+  );
+
   const assetsLength = assets.length;
 
   let totalBalancesValue = 0;
   let smallBalancesValue = 0;
 
   const isShortList = assetsLength <= amountOfShowedCoins;
+
+  let hasStandard = false;
 
   forEach(assets, asset => {
     if (hiddenCoins && hiddenCoins.includes(asset.uniqueId)) {
@@ -67,26 +134,40 @@ export const buildCoinsList = (
         ...asset,
       });
     } else if (
-      (asset.native &&
-        asset.native.balance.amount >
+      (standardAssets.length + pinnedCoins.length < amountOfShowedCoins &&
+        asset.native?.balance.amount >
           supportedNativeCurrencies[nativeCurrency].smallThreshold) ||
-      asset.address === 'eth' ||
       isShortList
     ) {
+      hasStandard = true;
       totalBalancesValue = add(
         totalBalancesValue,
         get(asset, 'native.balance.amount', 0)
       );
       standardAssets.push({ isCoin: true, isSmall: false, ...asset });
     } else {
-      smallBalancesValue = add(
-        smallBalancesValue,
-        get(asset, 'native.balance.amount', 0)
-      );
-      smallBalances.assets.push({ isCoin: true, isSmall: true, ...asset });
+      //if only dust assets we want to show the top 5 in standard
+      if (
+        (!hasStandard && standardAssets.length < amountOfShowedCoins) ||
+        (hasStandard &&
+          standardAssets.length < amountOfShowedCoins &&
+          asset.address === 'eth')
+      ) {
+        totalBalancesValue = add(
+          totalBalancesValue,
+          get(asset, 'native.balance.amount', 0)
+        );
+        standardAssets.push({ isCoin: true, isSmall: false, ...asset });
+      } else {
+        //if standard assets exist, partiton normally
+        smallBalancesValue = add(
+          smallBalancesValue,
+          get(asset, 'native.balance.amount', 0)
+        );
+        smallBalances.assets.push({ isCoin: true, isSmall: true, ...asset });
+      }
     }
   });
-
   totalBalancesValue = add(totalBalancesValue, smallBalancesValue);
 
   if (isCoinListEdited) {

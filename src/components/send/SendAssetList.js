@@ -81,8 +81,14 @@ export default class SendAssetList extends React.Component {
     }
 
     const visibleAssetsLength = assets.length;
+
     this.data = assets;
+
     if (smallBalances.assets.length > 0) {
+      //check for placeholder ETH & remove
+      smallBalances.assets = smallBalances.assets.filter(
+        asset => !asset?.isPlaceholder
+      );
       this.data.push(smallBalances);
     }
 

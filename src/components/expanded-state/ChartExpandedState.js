@@ -7,7 +7,9 @@ import {
   useColorForAsset,
   useUniswapAssetsInWallet,
 } from '../../hooks';
+
 import {
+  BuyActionButton,
   SendActionButton,
   SheetActionButtonRow,
   SheetDivider,
@@ -139,6 +141,8 @@ export default function ChartExpandedState({ asset }) {
     asset.uniqueId,
   ]);
 
+  const needsEth = asset.address === 'eth' && asset.balance.amount === '0';
+
   const [throttledData, setThrottledData] = useState({
     nativePoints: throttledPoints.nativePoints,
     points: throttledPoints.points,
@@ -196,29 +200,43 @@ export default function ChartExpandedState({ asset }) {
           )}
         </TokenInfoRow>
       </TokenInfoSection>
-      <ActionRow key={`row${showChart}`}>
-        {showSwapButton && (
-          <SwapActionButton
+      {needsEth ? (
+        <ActionRow key={`row${showChart}`}>
+          <BuyActionButton
             color={color}
-            inputType={AssetInputTypes.in}
             radiusAndroid={24}
-            radiusWrapperStyle={{ flex: 1, marginRight: 10 }}
+            radiusWrapperStyle={{ flex: 1 }}
             wrapperProps={{
               containerStyle: { flex: 1 },
               style: { flex: 1 },
             }}
           />
-        )}
-        <SendActionButton
-          color={color}
-          radiusAndroid={24}
-          radiusWrapperStyle={{ flex: 1, marginLeft: 10 }}
-          wrapperProps={{
-            containerStyle: { flex: 1 },
-            style: { flex: 1 },
-          }}
-        />
-      </ActionRow>
+        </ActionRow>
+      ) : (
+        <ActionRow key={`row${showChart}`}>
+          {showSwapButton && (
+            <SwapActionButton
+              color={color}
+              inputType={AssetInputTypes.in}
+              radiusAndroid={24}
+              radiusWrapperStyle={{ flex: 1, marginRight: 10 }}
+              wrapperProps={{
+                containerStyle: { flex: 1 },
+                style: { flex: 1 },
+              }}
+            />
+          )}
+          <SendActionButton
+            color={color}
+            radiusAndroid={24}
+            radiusWrapperStyle={{ flex: 1, marginLeft: 10 }}
+            wrapperProps={{
+              containerStyle: { flex: 1 },
+              style: { flex: 1 },
+            }}
+          />
+        </ActionRow>
+      )}
     </SlackSheet>
   );
 }
