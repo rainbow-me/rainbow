@@ -3,7 +3,7 @@ import analytics from '@segment/analytics-react-native';
 import { captureEvent, captureException } from '@sentry/react-native';
 import { get, isEmpty, isString, toLower } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { InteractionManager, Keyboard, StatusBar } from 'react-native';
+import { InteractionManager, Keyboard } from 'react-native';
 import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components/primitives';
@@ -17,7 +17,6 @@ import {
   SendHeader,
   SendTransactionSpeed,
 } from '../components/send';
-import { SlackSheet } from '../components/sheet';
 import { createSignableTransaction, estimateGasLimit } from '../handlers/web3';
 import AssetTypes from '../helpers/assetTypes';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
@@ -455,12 +454,7 @@ export default function SendSheet(props) {
   ]);
 
   return (
-    <Container
-      additionalTopPadding
-      as={android && SlackSheet}
-      contentHeight={sheetHeight}
-    >
-      {ios && <StatusBar barStyle="light-content" />}
+    <Container>
       <SheetContainer>
         <SendHeader
           contacts={contacts}

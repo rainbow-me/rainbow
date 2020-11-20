@@ -346,7 +346,6 @@ export const sheetPreset = ({ route }) => {
     route.params?.type === 'token' ||
     route.params?.type === 'unique_token' ||
     route.name === Routes.SEND_SHEET_NAVIGATOR;
-  console.log(route);
   return {
     cardOverlayEnabled: true,
     cardShadowEnabled: true,
