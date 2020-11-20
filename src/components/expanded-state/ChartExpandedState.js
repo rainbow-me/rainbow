@@ -31,7 +31,7 @@ import { useNavigation } from '@rainbow-me/navigation';
 
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
 
-const heightWithChart = 630;
+const heightWithChart = android ? 630 : 606;
 const heightWithNoChart = 309;
 
 const ActionRowAndroid = styled.View`
