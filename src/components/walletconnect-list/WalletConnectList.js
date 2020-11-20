@@ -13,7 +13,7 @@ const scrollIndicatorInsets = {
   top: scrollIndicatorInset,
 };
 
-const keyExtractor = (item) => item.dappUrl;
+const keyExtractor = item => item.dappUrl;
 
 const renderItem = ({ item }) => <WalletConnectListItem {...item} />;
 
