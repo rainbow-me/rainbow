@@ -340,16 +340,18 @@ export const bottomSheetPreset = {
   transitionSpec: { close: closeSpec, open: sheetOpenSpec },
 };
 
-export const sheetPreset = {
+export const sheetPreset = ({ route }) => ({
   cardOverlayEnabled: true,
   cardShadowEnabled: true,
   cardStyle: { backgroundColor: 'transparent' },
-  cardStyleInterpolator: sheetStyleInterpolator(),
+  cardStyleInterpolator: sheetStyleInterpolator(
+    route.params.type === 'token' ? 0.3 : 0
+  ),
   cardTransparent: true,
   gestureDirection: 'vertical',
   gestureResponseDistance,
   transitionSpec: { close: closeSpec, open: sheetOpenSpec },
-};
+});
 
 export const settingsPreset = {
   ...sheetPreset,

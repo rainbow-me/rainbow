@@ -1,9 +1,16 @@
+import { map } from 'lodash';
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateImageMetadataCache } from '../redux/imageMetadata';
 import { getDominantColorFromImage } from '../utils';
 import useDimensions from './useDimensions';
 import { position } from '@rainbow-me/styles';
+
+export function useImagesColors(imageUrls) {
+  return useSelector(({ imageMetadata }) =>
+    map(imageUrls, imageUrl => imageMetadata.imageMetadata[imageUrl]?.color)
+  );
+}
 
 export default function useImageMetadata(imageUrl) {
   const dispatch = useDispatch();

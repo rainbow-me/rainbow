@@ -191,6 +191,16 @@ export const lessThan = (
   numberTwo: BigNumberish
 ): boolean => new BigNumber(numberOne).lt(numberTwo);
 
+export const handleSignificantDecimalsWithThreshold = (
+  value: BigNumberish,
+  decimals: number,
+  buffer: number = 3,
+  threshold: string = '0.0001'
+) => {
+  const result = handleSignificantDecimals(value, decimals, buffer);
+  return lessThan(result, threshold) ? `< ${threshold}` : result;
+};
+
 export const handleSignificantDecimals = (
   value: BigNumberish,
   decimals: number,

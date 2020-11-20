@@ -1,3 +1,4 @@
+import { map } from 'lodash';
 import React from 'react';
 import styled from 'styled-components/primitives';
 import { CoinIcon } from '../coin-icon';
@@ -44,16 +45,18 @@ export default function CoinIconGroup({ containerStyles, tokens }) {
 
   return (
     <Container css={containerStyles} shouldCenter={sizesTable[size].breakIndex}>
-      {slicedArray.map((setOfTokens, lineIndex) => (
+      {map(slicedArray, (setOfTokens, lineIndex) => (
         <LineWrapper key={`coinLine_${lineIndex}`}>
-          {setOfTokens.map((token, index) => (
+          {map(setOfTokens, (token, index) => (
             <Wrapper
               key={`coin_${index}_${lineIndex}`}
               width={sizesTable[size].width}
+              zIndex={-index}
             >
               <CoinIcon
+                address={token.address}
                 size={sizesTable[size].iconSize}
-                symbol={token.tokenSymbol}
+                symbol={token.symbol}
               />
             </Wrapper>
           ))}
