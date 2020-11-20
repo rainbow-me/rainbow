@@ -123,7 +123,7 @@ function MainNavigator() {
       <Stack.Screen
         component={TransactionConfirmationScreen}
         name={Routes.CONFIRM_REQUEST}
-        options={sheetPreset}
+        options={exchangePreset}
       />
       <Stack.Screen
         component={ExchangeModalNavigator}
@@ -144,12 +144,12 @@ function MainNavigator() {
       <Stack.Screen
         component={WalletConnectApprovalSheet}
         name={Routes.WALLET_CONNECT_APPROVAL_SHEET}
-        options={expandedPreset}
+        options={exchangePreset}
       />
       <Stack.Screen
         component={WalletConnectRedirectSheet}
         name={Routes.WALLET_CONNECT_REDIRECT_SHEET}
-        options={bottomSheetPreset}
+        options={exchangePreset}
       />
       <Stack.Screen
         component={AddCashSheet}
@@ -200,6 +200,7 @@ function MainNavigator() {
   );
 }
 
+// FIXME do it in one navigator
 function MainNativeNavigator() {
   return (
     <NativeStack.Navigator
