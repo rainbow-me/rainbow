@@ -11,6 +11,7 @@ import React, {
   useState,
 } from 'react';
 import { StatusBar } from 'react-native';
+import { IS_TESTING } from 'react-native-dotenv';
 import Animated, { Extrapolate } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
 import GestureBlocker from '../components/GestureBlocker';
@@ -109,7 +110,7 @@ export default function CurrencySelectModal() {
           filteredList.push({
             data: filteredBest,
             title: '􀇻 Rainbow Verified',
-            useGradientText: true,
+            useGradientText: IS_TESTING ? false : true,
           });
 
         const filteredHighWithoutScams = filterScams(
@@ -135,7 +136,7 @@ export default function CurrencySelectModal() {
           {
             data: concat(favorites, curatedAssets),
             title: '􀇻 Rainbow Verified',
-            useGradientText: true,
+            useGradientText: IS_TESTING ? false : true,
           },
         ];
       }
