@@ -62,7 +62,7 @@ const TextComponent = ios ? GradientText : Text;
 function APYPill({ small, value }) {
   return (
     <Centered style={small ? sx.containerSmall : sx.container}>
-      {IS_TESTING ? null : small ? (
+      {IS_TESTING === 'true' ? null : small ? (
         <RadialGradient
           {...radialGradientProps}
           borderRadius={21}
