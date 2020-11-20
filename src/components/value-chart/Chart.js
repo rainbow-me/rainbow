@@ -107,6 +107,7 @@ export default function ChartWrapper({
   chartType,
   color,
   fetchingCharts,
+  isPool,
   updateChartType,
   showChart,
   showMonth,
@@ -197,6 +198,7 @@ export default function ChartWrapper({
         {...props}
         chartTimeSharedValue={chartTimeSharedValue}
         color={color}
+        isPool={isPool}
         showChart={showChart}
       />
       <ChartContainer showChart={showChart}>
