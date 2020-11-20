@@ -353,10 +353,10 @@ export const sheetPreset = ({ route }) => ({
   transitionSpec: { close: closeSpec, open: sheetOpenSpec },
 });
 
-export const settingsPreset = {
-  ...sheetPreset,
+export const settingsPreset = ({ route }) => ({
+  ...sheetPreset({ route }),
   cardStyleInterpolator: sheetStyleInterpolator(0.5),
-};
+});
 
 export const exchangeModalPreset = {
   cardStyle: { backgroundColor: 'transparent' },
