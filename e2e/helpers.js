@@ -113,10 +113,19 @@ export function checkIfExists(elementId) {
   return expect(element(by.id(elementId))).toExist();
 }
 
+export function checkIfExistsByText(text) {
+  return expect(element(by.text(text))).toExist();
+}
+
 export function checkIfElementByTextIsVisible(text) {
   return waitFor(element(by.text(text)))
     .toBeVisible()
-    .withTimeout(25000);
+    .withTimeout(10000);
+}
+export function checkIfElementByTextToExist(text) {
+  return waitFor(element(by.text(text)))
+    .toExist()
+    .withTimeout(10000);
 }
 
 export function checkForElementByLabel(text) {
@@ -143,6 +152,21 @@ export async function checkIfDisabled(elementId) {
     console.log(e);
     return Promise.resolve();
   }
+}
+
+export async function authenticatePin(pin) {
+  const digits = pin.split('');
+  for (let i = 0; i < digits.length; i++) {
+    await tap(`numpad-button-${digits[i]}`);
+  }
+  return Promise.resolve();
+}
+
+export async function disableSynchronization() {
+  if (device.getPlatform() === 'ios') {
+    await device.disableSynchronization();
+  }
+  return true;
 }
 
 export function delay(ms) {

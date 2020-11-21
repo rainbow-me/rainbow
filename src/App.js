@@ -10,9 +10,9 @@ import {
   AppRegistry,
   AppState,
   Linking,
+  LogBox,
   NativeModules,
   StatusBar,
-  unstable_enableLogBox,
 } from 'react-native';
 import branch from 'react-native-branch';
 // eslint-disable-next-line import/default
@@ -35,7 +35,6 @@ import { FlexItem } from './components/layout';
 import { OfflineToast } from './components/toasts';
 import {
   reactNativeDisableYellowBox,
-  reactNativeEnableLogbox,
   showNetworkRequests,
   showNetworkResponses,
 } from './config/debug';
@@ -65,8 +64,7 @@ const WALLETCONNECT_SYNC_DELAY = 500;
 StatusBar.pushStackEntry({ animated: true, barStyle: 'dark-content' });
 
 if (__DEV__) {
-  console.disableYellowBox = reactNativeDisableYellowBox;
-  reactNativeEnableLogbox && unstable_enableLogBox();
+  reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
   (showNetworkRequests || showNetworkResponses) &&
     monitorNetwork(showNetworkRequests, showNetworkResponses);
 } else {

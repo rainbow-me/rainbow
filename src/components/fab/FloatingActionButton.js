@@ -28,6 +28,7 @@ const FloatingActionButton = ({
   scaleTo = 0.86,
   shadows = FloatingActionButtonShadow,
   size = FloatingActionButtonSize,
+  testID,
   ...props
 }) => {
   const handlePress = useCallback(
@@ -65,6 +66,7 @@ const FloatingActionButton = ({
           style={{
             height: size,
           }}
+          testID={testID}
         >
           <Content backgroundColor={disabled ? colors.grey : backgroundColor}>
             {typeof children === 'function' ? children({ size }) : children}

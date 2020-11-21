@@ -1,5 +1,6 @@
 import { useIsFocused } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
+import { IS_TESTING } from 'react-native-dotenv';
 import styled from 'styled-components/primitives';
 import { ActivityList } from '../components/activity-list';
 import { BackButton, Header, HeaderButton } from '../components/header';
@@ -68,7 +69,8 @@ export default function ProfileScreen({ navigation }) {
 
   const addCashSupportedNetworks =
     network === NetworkTypes.kovan || network === NetworkTypes.mainnet;
-  const addCashAvailable = addCashSupportedNetworks;
+  const addCashAvailable =
+    IS_TESTING === 'true' ? false : addCashSupportedNetworks;
 
   return (
     <ProfileScreenPage testID="profile-screen">

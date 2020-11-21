@@ -4,7 +4,7 @@ import * as Helpers from './helpers';
 
 describe('Swap Sheet Interaction Flow', () => {
   it('Should show the welcome screen', async () => {
-    await device.disableSynchronization();
+    await Helpers.disableSynchronization();
     await Helpers.checkIfVisible('welcome-screen');
   });
 
@@ -35,6 +35,13 @@ describe('Swap Sheet Interaction Flow', () => {
   it('Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
     await Helpers.delay(5000);
     await Helpers.tap('wallet-info-submit-button');
+    if (device.getPlatform() === 'android') {
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      // Set the pin
+      await Helpers.authenticatePin('1234');
+      // Confirm it
+      await Helpers.authenticatePin('1234');
+    }
     await Helpers.delay(1000);
     await Helpers.checkIfVisible('wallet-screen');
   });
@@ -49,7 +56,7 @@ describe('Swap Sheet Interaction Flow', () => {
 
   it('Should focus on Asset Input on load', async () => {
     await Helpers.delay(1000);
-    await Helpers.typeText('exchange-modal-input', '0.246', true);
+    await Helpers.typeText('exchange-modal-input', '0.246\n', true);
     await Helpers.checkIfVisible('exchange-modal-input-0.246');
   });
 
@@ -63,7 +70,11 @@ describe('Swap Sheet Interaction Flow', () => {
 
   it('Should update input value after tapping Max Button', async () => {
     await Helpers.delay(1000);
-    await Helpers.swipe('exchange-modal-header', 'down', 'slow');
+    if (device.getPlatform() === 'android') {
+      await device.pressBack();
+    } else {
+      await Helpers.swipe('exchange-modal-header', 'down', 'slow');
+    }
     await Helpers.delay(1000);
     await Helpers.tap('exchange-fab');
     await Helpers.checkIfVisible('exchange-modal-input');
@@ -78,7 +89,12 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.tap('exchange-modal-input-selection-button');
     await Helpers.delay(3000);
     await Helpers.checkIfVisible('currency-select-list');
-    await Helpers.tap('currency-select-header-back-button');
+    if (device.getPlatform() === 'android') {
+      await device.pressBack();
+      await device.pressBack();
+    } else {
+      await Helpers.tap('currency-select-header-back-button');
+    }
   });
 
   it('Should reset all fields on selection of new input currency', async () => {
@@ -93,17 +109,23 @@ describe('Swap Sheet Interaction Flow', () => {
 
   it('Should display Receive Currency Select List after tapping Choose Token', async () => {
     await Helpers.delay(1000);
+    //this where it gets stuck, with all the assets loading I imagine
     await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.delay(3000);
     await Helpers.checkIfVisible('currency-select-list');
-    await Helpers.tap('currency-select-header-back-button');
+    if (device.getPlatform() === 'android') {
+      await device.pressBack();
+      await device.pressBack();
+    } else {
+      await Helpers.tap('currency-select-header-back-button');
+    }
   });
 
   it('Should change Currency Select List on search entry', async () => {
     await Helpers.delay(3000);
     await Helpers.tap('exchange-modal-input-selection-button');
     await Helpers.delay(8000);
-    await Helpers.typeText('currency-select-search-input', 'SOCKS', true);
+    await Helpers.typeText('currency-select-search-input', 'SOCKS\n', true);
     await Helpers.delay(5000);
     await Helpers.checkIfNotVisible('exchange-coin-row-ETH');
   });
@@ -113,19 +135,24 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.clearField('currency-select-search-input');
     await Helpers.delay(5000);
     await Helpers.checkIfVisible('exchange-coin-row-ETH');
-    await Helpers.tap('currency-select-header-back-button');
+    if (device.getPlatform() === 'android') {
+      await device.pressBack();
+      await device.pressBack();
+    } else {
+      await Helpers.tap('currency-select-header-back-button');
+    }
     await Helpers.delay(2000);
   });
 
   it('Should show Choose Token Button if input & output are same token(ETH)', async () => {
     await Helpers.tap('exchange-modal-input-selection-button');
-    await Helpers.delay(2000);
+    await Helpers.delay(20000);
     await Helpers.checkIfVisible('exchange-coin-row-ETH');
     await Helpers.tap('exchange-coin-row-ETH');
     await Helpers.delay(2000);
     await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.delay(2000);
-    await Helpers.typeText('currency-select-search-input', 'ETH', false);
+    await Helpers.typeText('currency-select-search-input', 'ETH\n', false);
     await Helpers.delay(5000);
     await Helpers.tap('exchange-coin-row-ETH');
     await Helpers.delay(3000);
@@ -134,7 +161,11 @@ describe('Swap Sheet Interaction Flow', () => {
       'Choose Token'
     );
     await Helpers.delay(1000);
-    await Helpers.swipe('exchange-modal-header', 'down', 'slow');
+    if (device.getPlatform() === 'android') {
+      await device.pressBack();
+    } else {
+      await Helpers.swipe('exchange-modal-header', 'down', 'slow');
+    }
     await Helpers.delay(1000);
     await Helpers.tap('exchange-fab');
   });
@@ -143,14 +174,14 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.delay(2000);
     await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.delay(2000);
-    await Helpers.typeText('currency-select-search-input', 'DAI', true);
+    await Helpers.typeText('currency-select-search-input', 'DAI\n', true);
     await Helpers.delay(5000);
     await Helpers.checkIfVisible('exchange-coin-row-DAI');
     await Helpers.tap('exchange-coin-row-DAI');
     await Helpers.delay(2000);
     await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.delay(2000);
-    await Helpers.typeText('currency-select-search-input', 'ETH', true);
+    await Helpers.typeText('currency-select-search-input', 'ETH\n', true);
     await Helpers.delay(5000);
     await Helpers.tap('exchange-coin-row-ETH');
     await Helpers.delay(2000);
@@ -163,7 +194,11 @@ describe('Swap Sheet Interaction Flow', () => {
       'ETH'
     );
     await Helpers.delay(1000);
-    await Helpers.swipe('exchange-modal-header', 'down', 'slow');
+    if (device.getPlatform() === 'android') {
+      await device.pressBack();
+    } else {
+      await Helpers.swipe('exchange-modal-header', 'down', 'slow');
+    }
     await Helpers.delay(2000);
     await Helpers.tap('exchange-fab');
   });
@@ -172,7 +207,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.delay(2000);
     await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.delay(2000);
-    await Helpers.typeText('currency-select-search-input', 'DAI', true);
+    await Helpers.typeText('currency-select-search-input', 'DAI\n', true);
     await Helpers.delay(5000);
     await Helpers.checkIfVisible('exchange-coin-row-DAI');
     await Helpers.tap('exchange-coin-row-DAI');
@@ -197,20 +232,24 @@ describe('Swap Sheet Interaction Flow', () => {
 
   it('Should update native input & output after input field change', async () => {
     await Helpers.delay(1000);
-    await Helpers.swipe('exchange-modal-header', 'down', 'slow');
+    if (device.getPlatform() === 'android') {
+      await device.pressBack();
+    } else {
+      await Helpers.swipe('exchange-modal-header', 'down', 'slow');
+    }
     await Helpers.delay(2000);
     await Helpers.tap('exchange-fab');
     await Helpers.delay(2000);
     await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.delay(2000);
-    await Helpers.typeText('currency-select-search-input', 'ZRX', false);
+    await Helpers.typeText('currency-select-search-input', 'ZRX\n', false);
     await Helpers.delay(2000);
     await Helpers.tap('exchange-coin-row-ZRX');
     await Helpers.delay(5000);
     await Helpers.checkIfVisible('exchange-modal-input-native');
     await Helpers.checkIfVisible('exchange-modal-output');
     await Helpers.delay(2500);
-    await Helpers.typeText('exchange-modal-input', '0.246', false);
+    await Helpers.typeText('exchange-modal-input', '0.246\n', false);
     await Helpers.delay(2000);
     await Helpers.checkIfVisible('exchange-modal-input-0.246');
     await Helpers.checkIfNotVisible('exchange-modal-input-native');
@@ -219,7 +258,11 @@ describe('Swap Sheet Interaction Flow', () => {
   });
 
   it('Should update input & output after native input field change', async () => {
-    await Helpers.swipe('exchange-modal-header', 'down', 'slow');
+    if (device.getPlatform() === 'android') {
+      await device.pressBack();
+    } else {
+      await Helpers.swipe('exchange-modal-header', 'down', 'slow');
+    }
     await Helpers.delay(2000);
     await Helpers.tap('exchange-fab');
     await Helpers.delay(2000);
@@ -241,7 +284,11 @@ describe('Swap Sheet Interaction Flow', () => {
   });
 
   it('Should update input & native input after output field change', async () => {
-    await Helpers.swipe('exchange-modal-header', 'down', 'slow');
+    if (device.getPlatform() === 'android') {
+      await device.pressBack();
+    } else {
+      await Helpers.swipe('exchange-modal-header', 'down', 'slow');
+    }
     await Helpers.delay(2000);
     await Helpers.tap('exchange-fab');
     await Helpers.delay(2000);
@@ -276,7 +323,11 @@ describe('Swap Sheet Interaction Flow', () => {
 
   it('Should show Insufficient Funds on input greater than balance', async () => {
     await Helpers.delay(1000);
-    await Helpers.swipe('exchange-modal-header', 'down', 'slow');
+    if (device.getPlatform() === 'android') {
+      await device.pressBack();
+    } else {
+      await Helpers.swipe('exchange-modal-header', 'down', 'slow');
+    }
     await Helpers.delay(1000);
     await Helpers.tap('exchange-fab');
     await Helpers.delay(2000);
@@ -293,7 +344,11 @@ describe('Swap Sheet Interaction Flow', () => {
 
   it('Should prepend 0. to input field on typing .', async () => {
     await Helpers.delay(1000);
-    await Helpers.swipe('exchange-modal-header', 'down', 'slow');
+    if (device.getPlatform() === 'android') {
+      await device.pressBack();
+    } else {
+      await Helpers.swipe('exchange-modal-header', 'down', 'slow');
+    }
     await Helpers.delay(1000);
     await Helpers.tap('exchange-fab');
     await Helpers.delay(2000);
@@ -315,6 +370,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.delay(5000);
     await Helpers.tap('exchange-coin-row-ZRX');
     await Helpers.delay(2000);
+    await Helpers.tap('exchange-modal-output');
     await Helpers.typeText('exchange-modal-output', '.', true);
     await Helpers.delay(1000);
     await Helpers.checkIfVisible('exchange-modal-output-0.');
@@ -322,7 +378,11 @@ describe('Swap Sheet Interaction Flow', () => {
   });
 
   it('Should display Gas Button on Normal by default', async () => {
-    await Helpers.swipe('exchange-modal-header', 'down', 'slow');
+    if (device.getPlatform() === 'android') {
+      await device.pressBack();
+    } else {
+      await Helpers.swipe('exchange-modal-header', 'down', 'slow');
+    }
     await Helpers.delay(2000);
     await Helpers.tap('exchange-fab');
     await Helpers.delay(2000);

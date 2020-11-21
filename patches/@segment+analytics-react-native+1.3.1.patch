@@ -1,0 +1,16 @@
+diff --git a/node_modules/@segment/analytics-react-native/android/build.gradle b/node_modules/@segment/analytics-react-native/android/build.gradle
+index 54cffd4..e8edf61 100644
+--- a/node_modules/@segment/analytics-react-native/android/build.gradle
++++ b/node_modules/@segment/analytics-react-native/android/build.gradle
+@@ -22,6 +22,11 @@ android {
+     compileSdkVersion safeExtGet('compileSdkVersion', 26)
+     buildToolsVersion safeExtGet('buildToolsVersion', '26.0.3')
+ 
++    compileOptions {
++        sourceCompatibility JavaVersion.VERSION_1_8
++        targetCompatibility JavaVersion.VERSION_1_8
++    }
++
+     defaultConfig {
+         minSdkVersion safeExtGet('minSdkVersion', 16)
+         targetSdkVersion safeExtGet('targetSdkVersion', 26)

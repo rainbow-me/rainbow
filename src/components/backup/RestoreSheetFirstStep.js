@@ -1,5 +1,6 @@
 import { forEach } from 'lodash';
 import React, { useEffect, useMemo } from 'react';
+import { IS_TESTING } from 'react-native-dotenv';
 import styled from 'styled-components';
 import { cloudPlatform } from '../../utils/platform';
 import Divider from '../Divider';
@@ -38,13 +39,16 @@ const TitleRow = styled(RowWithMargins)`
   width: ${deviceWidth - 60};
 `;
 
-const RainbowText = styled(GradientText).attrs({
-  angle: false,
-  colors: colors.gradients.rainbow,
-  end: { x: 0, y: 0.5 },
-  start: { x: 1, y: 0.5 },
-  steps: [0, 0.774321, 1],
-})``;
+const RainbowText =
+  android && IS_TESTING
+    ? Text
+    : styled(GradientText).attrs({
+        angle: false,
+        colors: colors.gradients.rainbow,
+        end: { x: 0, y: 0.5 },
+        start: { x: 1, y: 0.5 },
+        steps: [0, 0.774321, 1],
+      })``;
 
 const TextIcon = styled(Text).attrs({
   size: 29,

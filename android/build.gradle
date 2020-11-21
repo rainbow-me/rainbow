@@ -11,7 +11,7 @@ buildscript {
         kotlinVersion = "$kotlin_version"
     }
 
-    
+
     repositories {
         google()
         jcenter()
@@ -44,10 +44,6 @@ allprojects {
         maven {
             // Android JSC is installed from npm
             url("$rootDir/../node_modules/jsc-android/dist")
-        }
-        maven {
-            // All of Detox' artifacts are provided via the npm module
-            url "$rootDir/../node_modules/detox/Detox-android"
         }
 
         maven { url 'https://www.jitpack.io' }

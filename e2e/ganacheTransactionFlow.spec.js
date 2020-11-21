@@ -11,7 +11,7 @@ beforeAll(async () => {
 
 describe('Ganache Transaction Flow', () => {
   it('Should show the welcome screen', async () => {
-    await device.disableSynchronization();
+    await Helpers.disableSynchronization();
     await Helpers.checkIfVisible('welcome-screen');
   });
 
@@ -41,6 +41,13 @@ describe('Ganache Transaction Flow', () => {
   it('Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
     await Helpers.delay(2000);
     await Helpers.tap('wallet-info-submit-button');
+    if (device.getPlatform() === 'android') {
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      // Set the pin
+      await Helpers.authenticatePin('1234');
+      // Confirm it
+      await Helpers.authenticatePin('1234');
+    }
     await Helpers.delay(3000);
     await Helpers.checkIfVisible('wallet-screen');
     await Helpers.delay(5000);

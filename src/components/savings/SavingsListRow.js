@@ -3,12 +3,14 @@ import BigNumber from 'bignumber.js';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager } from 'react-native';
+import { IS_TESTING } from 'react-native-dotenv';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components/primitives';
 import {
   SavingsSheetEmptyHeight,
   SavingsSheetHeight,
 } from '../../screens/SavingsSheet';
+
 import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
 import { Centered, Row } from '../layout';
@@ -174,7 +176,9 @@ const SavingsListRow = ({
                 <CoinIcon size={26} symbol={underlying.symbol} />
               </Centered>
             ) : null}
-            {supplyBalanceUnderlying && !isNaN(displayValue) ? (
+            {supplyBalanceUnderlying &&
+            !isNaN(displayValue) &&
+            IS_TESTING !== 'true' ? (
               <SavingsListRowAnimatedNumber
                 initialValue={initialValue}
                 interval={ANIMATE_NUMBER_INTERVAL}

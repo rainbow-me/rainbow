@@ -90,6 +90,8 @@ const ActivityList = ({
         navigation={navigation}
         sections={sections}
       />
+    ) : isEmpty ? (
+      <ActivityListEmptyState>{header}</ActivityListEmptyState>
     ) : (
       <SectionList
         ListFooterComponent={() =>

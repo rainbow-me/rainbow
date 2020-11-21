@@ -66,6 +66,7 @@ const UnderlineField = (
     onFocus,
     onPressButton,
     placeholder,
+    testID,
     value: valueProp,
     ...props
   },
@@ -164,6 +165,7 @@ const UnderlineField = (
           onFocus={handleFocus}
           placeholder={placeholder}
           ref={ref}
+          testID={testID + '-input'}
           value={formattedValue}
         />
         {buttonText && isFocused && (

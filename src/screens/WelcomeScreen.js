@@ -503,9 +503,13 @@ export default function WelcomeScreen() {
       ))}
 
       <ContentWrapper style={contentStyle}>
-        <MaskedView maskElement={<RainbowText />}>
-          <RainbowTextMask style={textStyle} />
-        </MaskedView>
+        {android && IS_TESTING === 'true' ? (
+          <RainbowText />
+        ) : (
+          <MaskedView maskElement={<RainbowText />}>
+            <RainbowTextMask style={textStyle} />
+          </MaskedView>
+        )}
 
         <ButtonWrapper style={buttonStyle}>
           <RainbowButton

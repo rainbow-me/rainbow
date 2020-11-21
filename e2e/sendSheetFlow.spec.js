@@ -4,7 +4,7 @@ import * as Helpers from './helpers';
 
 describe('Send Sheet Interaction Flow', () => {
   it('Should show the welcome screen', async () => {
-    await device.disableSynchronization();
+    await Helpers.disableSynchronization();
     await Helpers.checkIfVisible('welcome-screen');
   });
 
@@ -45,15 +45,24 @@ describe('Send Sheet Interaction Flow', () => {
   it('Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
     await Helpers.delay(2000);
     await Helpers.tap('wallet-info-submit-button');
+    if (device.getPlatform() === 'android') {
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      // Set the pin
+      await Helpers.authenticatePin('1234');
+      // Confirm it
+      await Helpers.authenticatePin('1234');
+    }
     await Helpers.delay(3000);
     await Helpers.checkIfVisible('wallet-screen');
   });
+
   // Saving for now in case we want to test iCloud back up sheet
   // it('Should show the backup sheet', async () => {
   //   await Helpers.delay(3000);
   //   await Helpers.checkIfVisible('backup-sheet');
   //   await Helpers.tap('backup-sheet-imported-cancel-button');
   // });
+  /*
   it('Should open expanded state', async () => {
     await Helpers.delay(8000);
     await Helpers.tap('balance-coin-row-Ethereum');
@@ -79,7 +88,7 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.delay(1000);
     await Helpers.checkIfVisible('wallet-screen');
   });
-
+  */
   it('Should show all wallet sections', async () => {
     await Helpers.delay(5000);
     await Helpers.checkIfElementByTextIsVisible('Pools');
@@ -91,7 +100,11 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.delay(1000);
     await Helpers.swipe('wallet-screen', 'right');
     await Helpers.delay(2000);
-    await Helpers.checkIfElementByTextIsVisible('poopcoin.eth');
+    if (device.getPlatform() === 'android') {
+      await Helpers.checkIfElementByTextToExist('poopcoin.eth');
+    } else {
+      await Helpers.checkIfElementByTextIsVisible('poopcoin.eth');
+    }
     await Helpers.swipe('profile-screen', 'left');
   });
 
@@ -106,8 +119,8 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.delay(1000);
     await Helpers.checkIfVisible('send-asset-form-field');
     await Helpers.typeText('send-asset-form-field', 'gvuabefhiwdnomks', false);
-    await Helpers.delay(1000);
-    await Helpers.checkIfVisible('paste-address-button');
+    await Helpers.delay(2000);
+    await Helpers.checkIfNotVisible('send-asset-ETH');
   });
 
   it('Should show show Contact Button & Asset List on valid public address', async () => {
@@ -128,7 +141,7 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.clearField('send-asset-form-field');
     await Helpers.delay(1000);
     await Helpers.checkIfVisible('send-asset-form-field');
-    await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
+    await Helpers.typeText('send-asset-form-field', 'poopcoin.eth\n', false);
     await Helpers.checkIfVisible('add-contact-button');
     await Helpers.checkIfVisible('send-asset-list');
   });
@@ -176,9 +189,13 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.delay(1000);
     await Helpers.checkIfVisible('selected-asset-field-input');
     await Helpers.tap('selected-asset-field-input');
-    await Helpers.typeText('selected-asset-field-input', '9999', true);
+    await Helpers.typeText('selected-asset-field-input', '9999', false);
     await Helpers.delay(1000);
-    await Helpers.checkIfElementByTextIsVisible('Insufficient Funds');
+    if (device.getPlatform() === 'android') {
+      await Helpers.checkIfElementByTextToExist('Insufficient Funds');
+    } else {
+      await Helpers.checkIfElementByTextIsVisible('Insufficient Funds');
+    }
   });
 
   it('Should prepend a 0 to quantity field on input of .', async () => {
@@ -318,7 +335,11 @@ describe('Send Sheet Interaction Flow', () => {
 
   it('Should load contacts if contacts exist', async () => {
     await Helpers.delay(5000);
-    await Helpers.swipe('send-asset-form-field', 'down', 'slow');
+    if (device.getPlatform() === 'android') {
+      await device.pressBack();
+    } else {
+      await Helpers.swipe('send-asset-form-field', 'down', 'slow');
+    }
     await Helpers.delay(1000);
     await Helpers.tap('send-fab');
     await Helpers.delay(2000);
