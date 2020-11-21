@@ -104,19 +104,21 @@ export default function ChartExpandedStateHeader({
         justify="space-between"
         testID="expanded-state-header"
       >
-        {map(tokens, (token, index) => {
-          return (
-            <View key={`coinicon-${index}`} zIndex={-index}>
-              <CoinIcon
-                address={token.address}
-                marginRight={-10}
-                position="relative"
-                shadow={shadows[index]}
-                symbol={token.symbol}
-              />
-            </View>
-          );
-        })}
+        <Row>
+          {map(tokens, (token, index) => {
+            return (
+              <View key={`coinicon-${index}`} zIndex={-index}>
+                <CoinIcon
+                  address={token.address}
+                  marginRight={0}
+                  position="relative"
+                  shadow={shadows[index]}
+                  symbol={token.symbol}
+                />
+              </View>
+            );
+          })}
+        </Row>
         <ChartContextButton asset={asset} color={color} />
       </Row>
       <RowWithMargins
