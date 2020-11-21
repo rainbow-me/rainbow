@@ -2,16 +2,20 @@ import React, { useCallback, useEffect } from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
 import styled from 'styled-components/primitives';
 import { TokenSelectionButton } from '../buttons';
-import { CoinIcon } from '../coin-icon';
+import { CoinIcon, CoinIconSize } from '../coin-icon';
 import { Row, RowWithMargins } from '../layout';
 import { EnDash } from '../text';
 import ExchangeInput from './ExchangeInput';
-import { colors } from '@rainbow-me/styles';
+import { borders, colors } from '@rainbow-me/styles';
 
-const CoinSize = 40;
 const ExchangeFieldHeight = android ? 64 : 38;
 const ExchangeFieldPadding = android ? 15 : 19;
 const skeletonColor = colors.alpha(colors.blueGreyDark, 0.1);
+
+const CoinIconSkeleton = styled.View`
+  ${borders.buildCircle(CoinIconSize)};
+  background-color: ${skeletonColor};
+`;
 
 const Container = styled(Row).attrs({
   align: 'center',
@@ -62,9 +66,9 @@ const ExchangeField = (
       <TouchableWithoutFeedback onPress={handleFocusField}>
         <FieldRow disableCurrencySelection={disableCurrencySelection}>
           {symbol ? (
-            <CoinIcon address={address} size={CoinSize} symbol={symbol} />
+            <CoinIcon address={address} symbol={symbol} />
           ) : (
-            <CoinIcon bgColor={skeletonColor} size={CoinSize} />
+            <CoinIconSkeleton />
           )}
           <Input
             editable={!!symbol}
