@@ -55,8 +55,13 @@ const sheetBottomPadding = 19;
 
 const Container = styled.View`
   flex: 1;
-  padding-top: ${isNativeStackAvailable ? 0 : sheetVerticalOffset};
-  ${android ? `background-color: ${colors.black};` : ''}
+  padding-top: ${android
+    ? 0
+    : isNativeStackAvailable
+    ? 0
+    : sheetVerticalOffset};
+  ${android ? `margin-top: ${sheetVerticalOffset};` : ''}
+  ${android ? `background-color: ${colors.transparent};` : ''}
 `;
 
 const Footer = styled(Row).attrs({
