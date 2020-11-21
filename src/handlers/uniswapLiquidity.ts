@@ -5,6 +5,7 @@ import contractMap from 'eth-contract-metadata';
 import { compact, get, keyBy, map, partition, toLower } from 'lodash';
 import { SwapCurrency } from '../handlers/uniswap';
 import {
+  convertAmountToRawAmount,
   convertRawAmountToDecimalFormat,
   divide,
   fromWei,
@@ -167,7 +168,10 @@ const getLiquidityInfoV2 = async (
       const token0Address = token0AddressResult.toString();
       const token1Address = token1AddressResult.toString();
 
-      const lpTokenBalance = lpToken?.balance?.amount || 0;
+      const lpTokenBalance = convertAmountToRawAmount(
+        lpToken?.balance?.amount || 0,
+        lpToken?.decimals
+      );
 
       const [token0ReserveBn, token1ReserveBn] = pairReservesResult;
       const token0Reserve = token0ReserveBn.toString();
