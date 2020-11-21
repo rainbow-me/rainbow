@@ -17,7 +17,6 @@ import {
   SendHeader,
   SendTransactionSpeed,
 } from '../components/send';
-import { SlackSheet } from '../components/sheet';
 import { createSignableTransaction, estimateGasLimit } from '../handlers/web3';
 import AssetTypes from '../helpers/assetTypes';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
@@ -455,11 +454,7 @@ export default function SendSheet(props) {
   ]);
 
   return (
-    <Container
-      additionalTopPadding
-      as={android && SlackSheet}
-      contentHeight={sheetHeight}
-    >
+    <Container>
       {ios && <StatusBar barStyle="light-content" />}
       <SheetContainer>
         <SendHeader
