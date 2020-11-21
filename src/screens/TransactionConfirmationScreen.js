@@ -634,26 +634,22 @@ const TransactionConfirmationScreen = () => {
       if (!amount) return;
       return (
         <TransactionConfirmationSection
-          asset={{
-            address: get(request, 'to'),
-            amount,
-            name: get(request, 'asset.name', 'No data'),
-            nativeAmountDisplay,
-            symbol: get(request, 'asset.symbol', 'N/A'),
-          }}
+          address={request?.asset?.address}
+          amount={amount}
           method={method}
+          name={request?.asset?.name || 'No data'}
+          nativeAmountDisplay={nativeAmountDisplay}
+          symbol={request?.asset?.symbol || 'N/A'}
         />
       );
     }
 
     return (
       <DefaultTransactionConfirmationSection
-        asset={{
-          address: get(request, 'to'),
-          data: get(request, 'data'),
-          value: get(request, 'value'),
-        }}
+        address={request?.to}
+        data={request?.data}
         method={method}
+        value={request?.value}
       />
     );
   }, [allAssets, isMessageRequest, method, nativeCurrency, request]);
