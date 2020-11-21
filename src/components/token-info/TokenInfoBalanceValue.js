@@ -1,18 +1,13 @@
-import React, { useMemo } from 'react';
-import { useColorForAsset } from '../../hooks';
-import { magicMemo } from '../../utils';
+import React from 'react';
 import { CoinIcon } from '../coin-icon';
 import { RowWithMargins } from '../layout';
 import TokenInfoValue from './TokenInfoValue';
+import { useColorForAsset } from '@rainbow-me/hooks';
+import { magicMemo } from '@rainbow-me/utils';
 
 const TokenInfoBalanceValue = ({ align, asset, ...props }) => {
-  const { address, balance, shadowColor, symbol, value } = asset;
-
+  const { address, balance, symbol, value } = asset;
   const color = useColorForAsset(asset);
-  const coinIconShadow = useMemo(() => [[0, 3, 9, shadowColor || color, 0.2]], [
-    color,
-    shadowColor,
-  ]);
 
   return (
     <RowWithMargins
@@ -22,12 +17,7 @@ const TokenInfoBalanceValue = ({ align, asset, ...props }) => {
       margin={5}
       marginKey={align === 'left' ? 'marginRight' : 'marginLeft'}
     >
-      <CoinIcon
-        address={address}
-        shadow={coinIconShadow}
-        size={20}
-        symbol={symbol}
-      />
+      <CoinIcon address={address} size={20} symbol={symbol} />
       <TokenInfoValue color={color}>{balance?.display || value}</TokenInfoValue>
     </RowWithMargins>
   );
