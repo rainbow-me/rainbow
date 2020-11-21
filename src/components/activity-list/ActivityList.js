@@ -4,6 +4,7 @@ import { mapProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import networkTypes from '../../helpers/networkTypes';
 import ActivityIndicator from '../ActivityIndicator';
+import Spinner from '../Spinner';
 import { ButtonPressAnimation } from '../animations';
 import { CoinRowHeight } from '../coin-row';
 import Text from '../text/Text';
@@ -25,6 +26,8 @@ const keyExtractor = ({ hash, timestamp, transactionDisplayDetails }) =>
 const renderSectionHeader = ({ section }) => (
   <ActivityListHeader {...section} />
 );
+
+const LoadingSpinner = android ? Spinner : ActivityIndicator;
 
 const FooterWrapper = styled(ButtonPressAnimation)`
   width: 100%;
@@ -49,7 +52,7 @@ function ListFooterComponent({ label, onPress }) {
   return (
     <FooterWrapper onPress={onPressWrapper}>
       {isLoading ? (
-        <ActivityIndicator />
+        <LoadingSpinner />
       ) : (
         <Text
           align="center"
