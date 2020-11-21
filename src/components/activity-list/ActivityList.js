@@ -22,9 +22,9 @@ const keyExtractor = ({ hash, timestamp, transactionDisplayDetails }) =>
   hash ||
   (timestamp ? timestamp.ms : transactionDisplayDetails?.timestampInMs || 0);
 
-const renderSectionHeader = ({ section }) => {
-  return <ActivityListHeader {...section} />;
-};
+const renderSectionHeader = ({ section }) => (
+  <ActivityListHeader {...section} />
+);
 
 const FooterWrapper = styled(ButtonPressAnimation)`
   width: 100%;
