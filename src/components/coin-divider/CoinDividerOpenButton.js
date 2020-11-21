@@ -31,9 +31,9 @@ const CaretIcon = styled(FastImage).attrs({
 `;
 
 const ContainerButton = styled(ButtonPressAnimation).attrs(
-  ({ isSmallBalancesOpen }) => ({
+  ({ isSmallBalancesOpen, isSendSheet }) => ({
     radiusWrapperStyle: {
-      marginLeft: 16,
+      marginLeft: isSendSheet && android ? 16 : 0,
       width: isSmallBalancesOpen ? 80 - (android ? 4 : 0) : closedWidth - 4,
     },
     scaleTo: 0.9,
@@ -58,10 +58,12 @@ const CoinDividerOpenButton = ({
   isSmallBalancesOpen,
   isVisible,
   onPress,
+  isSendSheet,
   ...props
 }) => (
   <ContainerButton
     {...props}
+    isSendSheet={isSendSheet}
     isSmallBalancesOpen={isSmallBalancesOpen}
     onPress={onPress}
     radiusAndroid={RoundButtonCapSize / 2}
