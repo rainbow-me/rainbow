@@ -4,6 +4,7 @@ import isEqual from 'react-fast-compare';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { useCallbackOne } from 'use-memo-one';
+import { disableCharts } from '../../config/debug';
 import { chartsUpdateChartType, DEFAULT_CHART_TYPE } from '../../redux/charts';
 import { emitChartsRequest } from '../../redux/explorer';
 import { daysFromTheFirstTx } from '../../utils/ethereumUtils';
@@ -59,7 +60,9 @@ export default function useChartData(asset) {
   }, [asset]);
 
   useEffect(() => {
-    dispatch(emitChartsRequest(address, chartType));
+    if (!disableCharts) {
+      dispatch(emitChartsRequest(address, chartType));
+    }
   }, [address, chartType, dispatch]);
 
   const updateChartType = useCallback(
