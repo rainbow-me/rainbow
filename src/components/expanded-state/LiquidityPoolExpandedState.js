@@ -19,7 +19,7 @@ import ChartState from './chart/ChartState';
 const heightWithoutChart = 373 + (android ? 80 : 0);
 const heightWithChart = heightWithoutChart + 292;
 
-export const LiquidityPoolExpandedStateSheetHeight = heightWithoutChart;
+export const LiquidityPoolExpandedStateSheetHeight = heightWithChart;
 
 const LiquidityPoolExpandedState = ({ asset }) => {
   const { symbol, tokenNames, tokens, totalNativeDisplay, uniBalance } = asset;
