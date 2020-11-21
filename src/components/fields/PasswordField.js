@@ -21,11 +21,11 @@ const FieldAccessoryBadgeWrapper = styled(ShadowStack).attrs(({ color }) => ({
 `;
 
 const StyledTouchable = styled(TouchableWithoutFeedback)`
-  ${android ? 'padding-left: 19;' : ''}
-  ${android ? 'padding-right: 19;' : ''}
-  ${android ? 'padding-top: 19;' : ''}
-  ${android ? 'padding-bottom: 19;' : ''}
-  ${android ? 'margin-top: -19;' : ''}
+  ${android ? 'padding-left: 30;' : ''}
+  ${android ? 'padding-right: 30;' : ''}
+  ${android ? 'padding-top: 30;' : ''}
+  ${android ? 'padding-bottom: 30;' : ''}
+  ${android ? 'margin-top: -30;' : ''}
 `;
 
 const PasswordInput = styled(Input).attrs({

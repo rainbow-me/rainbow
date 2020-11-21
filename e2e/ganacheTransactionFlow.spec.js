@@ -50,6 +50,7 @@ describe('Ganache Transaction Flow', () => {
     }
     await Helpers.delay(3000);
     await Helpers.checkIfVisible('wallet-screen');
+    await Helpers.delay(5000);
   });
 
   it('Should navigate to the Profile screen after swiping right', async () => {
@@ -74,7 +75,7 @@ describe('Ganache Transaction Flow', () => {
 
   it('Should show Ganache Toast after pressing Connect To Ganache', async () => {
     await Helpers.tap('ganache-section');
-    await Helpers.delay(34000);
+    await Helpers.delay(10000);
     await Helpers.checkIfVisible('testnet-toast-Ganache');
     await Helpers.swipe('profile-screen', 'left', 'slow');
     await Helpers.delay(3000);
@@ -167,8 +168,8 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.delay(3000);
     await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
     await Helpers.delay(3000);
-    await Helpers.tapByText('CryptoKitties', 2);
-    await Helpers.delay(3000);
+    await Helpers.tap('CryptoKitties-family-header');
+    await Helpers.delay(2000);
     await Helpers.tapByText('Arun Cattybinky');
     await Helpers.delay(3000);
     await Helpers.tapAndLongPress('send-sheet-confirm');
@@ -227,7 +228,6 @@ describe('Ganache Transaction Flow', () => {
       await Helpers.checkIfVisible('Sending-Compound Sai');
     }
   });*/
-
   it('Should show completed send ERC20 (cSAI)', async () => {
     try {
       await Helpers.checkIfVisible('Sent-Compound SAI');

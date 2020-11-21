@@ -13,7 +13,8 @@ const scrollIndicatorInsets = {
   top: scrollIndicatorInset,
 };
 
-const keyExtractor = ({ expires }) => expires;
+const keyExtractor = item => item.dappUrl;
+
 const renderItem = ({ item }) => <WalletConnectListItem {...item} />;
 
 export default function WalletConnectList({ items = [], onLayout, ...props }) {

@@ -1,7 +1,6 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useContext } from 'react';
-import { createNativeStackNavigator } from 'react-native-screens/src/native-stack/index';
 import { InitialRouteContext } from '../context/initialRoute';
 import AddCashSheet from '../screens/AddCashSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
@@ -36,15 +35,16 @@ import {
   exchangePreset,
   expandedPreset,
   overlayExpandedPreset,
+  settingsPreset,
   sheetPreset,
+  sheetPresetWithSmallGestureResponseDistance,
 } from './effects';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
-import { colors } from '@rainbow-me/styles';
 
 const Stack = createStackNavigator();
-const NativeStack = createNativeStackNavigator();
+const NativeStack = createStackNavigator();
 
 function SendFlowNavigator() {
   return (
@@ -60,7 +60,7 @@ function SendFlowNavigator() {
       <Stack.Screen
         component={SendSheet}
         name={Routes.SEND_SHEET}
-        options={bottomSheetPreset}
+        options={sheetPreset}
       />
     </Stack.Navigator>
   );
@@ -124,7 +124,7 @@ function MainNavigator() {
       <Stack.Screen
         component={TransactionConfirmationScreen}
         name={Routes.CONFIRM_REQUEST}
-        options={sheetPreset}
+        options={exchangePreset}
       />
       <Stack.Screen
         component={ExchangeModalNavigator}
@@ -145,12 +145,12 @@ function MainNavigator() {
       <Stack.Screen
         component={WalletConnectApprovalSheet}
         name={Routes.WALLET_CONNECT_APPROVAL_SHEET}
-        options={expandedPreset}
+        options={exchangePreset}
       />
       <Stack.Screen
         component={WalletConnectRedirectSheet}
         name={Routes.WALLET_CONNECT_REDIRECT_SHEET}
-        options={bottomSheetPreset}
+        options={exchangePreset}
       />
       <Stack.Screen
         component={AddCashSheet}
@@ -201,15 +201,13 @@ function MainNavigator() {
   );
 }
 
+// FIXME do it in one navigator
 function MainNativeNavigator() {
   return (
     <NativeStack.Navigator
       initialRouteName={Routes.MAIN_NAVIGATOR}
-      screenOptions={{
-        contentStyle: { backgroundColor: colors.white },
-        headerShown: false,
-        headerTopInsetEnabled: false,
-      }}
+      {...stackNavigationConfig}
+      screenOptions={defaultScreenStackOptions}
     >
       <NativeStack.Screen
         component={MainNavigator}
@@ -218,20 +216,28 @@ function MainNativeNavigator() {
       <NativeStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SCREEN}
+        options={sheetPreset}
       />
       <NativeStack.Screen
         component={SettingsModal}
         name={Routes.SETTINGS_MODAL}
+        options={settingsPreset}
       />
       <NativeStack.Screen
         component={PinAuthenticationScreen}
         name={Routes.PIN_AUTHENTICATION_SCREEN}
+        options={sheetPreset}
+      />
+      <NativeStack.Screen
+        component={BackupSheet}
+        name={Routes.BACKUP_SCREEN}
+        options={sheetPreset}
       />
       <NativeStack.Screen
         component={SendFlowNavigator}
         name={Routes.SEND_SHEET_NAVIGATOR}
+        options={sheetPresetWithSmallGestureResponseDistance}
       />
-      <NativeStack.Screen component={BackupSheet} name={Routes.BACKUP_SCREEN} />
     </NativeStack.Navigator>
   );
 }

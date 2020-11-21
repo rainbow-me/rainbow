@@ -7,7 +7,9 @@ import {
   useColorForAsset,
   useUniswapAssetsInWallet,
 } from '../../hooks';
+
 import {
+  BuyActionButton,
   SendActionButton,
   SheetActionButtonRow,
   SheetDivider,
@@ -31,7 +33,7 @@ import { useNavigation } from '@rainbow-me/navigation';
 
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
 
-const heightWithChart = 606;
+const heightWithChart = android ? 630 : 606;
 const heightWithNoChart = 309;
 
 const ActionRowAndroid = styled.View`
@@ -92,7 +94,8 @@ function useJumpingForm(isLong) {
   }, [isLong, setOptions, jumpToShort, jumpToLong]);
 }
 
-export const ChartExpandedStateSheetHeight = heightWithChart;
+export const ChartExpandedStateSheetHeight =
+  heightWithChart + (android ? 40 : 0);
 
 export default function ChartExpandedState({ asset }) {
   const color = useColorForAsset(asset);
@@ -139,6 +142,8 @@ export default function ChartExpandedState({ asset }) {
     asset.uniqueId,
   ]);
 
+  const needsEth = asset.address === 'eth' && asset.balance.amount === '0';
+
   const [throttledData, setThrottledData] = useState({
     nativePoints: throttledPoints.nativePoints,
     points: throttledPoints.points,
@@ -166,6 +171,7 @@ export default function ChartExpandedState({ asset }) {
 
   return (
     <SlackSheet
+      additionalTopPadding={android}
       contentHeight={ChartExpandedStateSheetHeight}
       scrollEnabled={false}
     >
@@ -196,29 +202,43 @@ export default function ChartExpandedState({ asset }) {
           )}
         </TokenInfoRow>
       </TokenInfoSection>
-      <ActionRow key={`row${showChart}`}>
-        {showSwapButton && (
-          <SwapActionButton
+      {needsEth ? (
+        <ActionRow key={`row${showChart}`}>
+          <BuyActionButton
             color={color}
-            inputType={AssetInputTypes.in}
             radiusAndroid={24}
-            radiusWrapperStyle={{ flex: 1, marginRight: 10 }}
+            radiusWrapperStyle={{ flex: 1 }}
             wrapperProps={{
               containerStyle: { flex: 1 },
               style: { flex: 1 },
             }}
           />
-        )}
-        <SendActionButton
-          color={color}
-          radiusAndroid={24}
-          radiusWrapperStyle={{ flex: 1, marginLeft: 10 }}
-          wrapperProps={{
-            containerStyle: { flex: 1 },
-            style: { flex: 1 },
-          }}
-        />
-      </ActionRow>
+        </ActionRow>
+      ) : (
+        <ActionRow key={`row${showChart}`}>
+          {showSwapButton && (
+            <SwapActionButton
+              color={color}
+              inputType={AssetInputTypes.in}
+              radiusAndroid={24}
+              radiusWrapperStyle={{ flex: 1, marginRight: 10 }}
+              wrapperProps={{
+                containerStyle: { flex: 1 },
+                style: { flex: 1 },
+              }}
+            />
+          )}
+          <SendActionButton
+            color={color}
+            radiusAndroid={24}
+            radiusWrapperStyle={{ flex: 1, marginLeft: 10 }}
+            wrapperProps={{
+              containerStyle: { flex: 1 },
+              style: { flex: 1 },
+            }}
+          />
+        </ActionRow>
+      )}
     </SlackSheet>
   );
 }

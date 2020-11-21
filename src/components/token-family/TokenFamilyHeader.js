@@ -64,6 +64,7 @@ const TokenFamilyHeader = ({
   isCoinRow,
   isOpen,
   onPress,
+  testID,
   title,
 }) => {
   const animation = useTimingTransition(!isOpen, {
@@ -83,6 +84,7 @@ const TokenFamilyHeader = ({
       key={`${emoji || familyImage || title}_${isOpen}`}
       onPress={onPress}
       scaleTo={1.05}
+      testID={testID}
     >
       <Content isCoinRow={isCoinRow}>
         <RowWithMargins align="center" margin={emoji ? 5 : 9}>

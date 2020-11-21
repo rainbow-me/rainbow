@@ -66,6 +66,7 @@ export default function CurrencySelectModal() {
 
   const [assetsToFavoriteQueue, setAssetsToFavoriteQueue] = useState({});
   const [searchQuery, setSearchQuery] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
   const [searchQueryForSearch, setSearchQueryForSearch] = useState('');
   const searchQueryExists = useMemo(() => searchQuery.length > 0, [
     searchQuery,
@@ -141,7 +142,7 @@ export default function CurrencySelectModal() {
         ];
       }
     }
-
+    setIsSearching(false);
     return filteredList;
   }, [
     curatedAssets,
@@ -157,7 +158,10 @@ export default function CurrencySelectModal() {
   useEffect(() => {
     stopQueryDebounce();
     startQueryDebounce(
-      () => setSearchQueryForSearch(searchQuery),
+      () => {
+        setIsSearching(true);
+        setSearchQueryForSearch(searchQuery);
+      },
       searchQuery === '' ? 1 : 250
     );
   }, [searchQuery, startQueryDebounce, stopQueryDebounce]);
@@ -300,6 +304,8 @@ export default function CurrencySelectModal() {
           <Column flex={1}>
             <CurrencySelectModalHeader testID="currency-select-header" />
             <ExchangeSearch
+              isFetching={loadingAllTokens}
+              isSearching={isSearching}
               onChangeText={setSearchQuery}
               onFocus={handleFocus}
               ref={searchInputRef}
