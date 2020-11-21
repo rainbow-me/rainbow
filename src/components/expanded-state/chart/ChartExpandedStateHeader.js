@@ -93,7 +93,7 @@ export default function ChartExpandedStateHeader({
     [tokens, colors]
   );
 
-  const title = isPool ? `${asset.name} Pool` : asset?.name;
+  const title = isPool ? `${asset.tokenNames} Pool` : asset?.name;
 
   const titleOrNoPriceData = isNoPriceData ? noPriceData : title;
 

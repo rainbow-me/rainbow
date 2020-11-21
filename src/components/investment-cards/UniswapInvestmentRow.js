@@ -49,7 +49,8 @@ const PriceContainer = ios
       margin-bottom: 3;
     `;
 
-const BottomRow = ({ uniBalance, type, relativeChange }) => {
+const BottomRow = ({ price, type, uniBalance }) => {
+  const relativeChange = price?.relative_change_24h;
   const percentageChangeDisplay = relativeChange
     ? formatPercentageString(convertAmountToPercentageDisplay(relativeChange))
     : '-';
@@ -73,11 +74,11 @@ const BottomRow = ({ uniBalance, type, relativeChange }) => {
   );
 };
 
-const TopRow = ({ name, totalNativeDisplay }) => {
+const TopRow = ({ tokenNames, totalNativeDisplay }) => {
   return (
     <TopRowContainer>
       <FlexItem flex={1}>
-        <CoinName>{name}</CoinName>
+        <CoinName>{tokenNames}</CoinName>
       </FlexItem>
       <PriceContainer>
         <BalanceText numberOfLines={1}>{totalNativeDisplay}</BalanceText>

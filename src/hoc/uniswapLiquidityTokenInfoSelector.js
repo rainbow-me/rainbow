@@ -23,31 +23,23 @@ const nativeCurrencySelector = state => state.settings.nativeCurrency;
 const uniswapLiquidityTokenInfoSelector = state =>
   state.uniswapLiquidity.uniswapLiquidityTokenInfo;
 
-export const transformPool = (liquidityPool, nativeCurrency) => {
+const transformPool = (liquidityPool, nativeCurrency) => {
   if (isEmpty(liquidityPool)) {
     return null;
   }
 
-  const {
-    address,
-    balance,
-    price,
-    symbol,
-    tokens,
-    totalSupply,
-    type,
-    uniqueId,
-  } = liquidityPool;
+  const { balance, price, tokens, totalSupply } = liquidityPool;
+  const balanceAmount = balance.amount;
 
-  const percentageOwned = multiply(divide(balance, totalSupply), 100);
+  const percentageOwned = multiply(divide(balanceAmount, totalSupply), 100);
 
-  const totalBalanceAmount = multiply(balance, price?.value || 0);
+  const totalBalancePrice = multiply(balanceAmount, price?.value || 0);
   const totalNativeDisplay = convertAmountToNativeDisplay(
-    totalBalanceAmount,
+    totalBalancePrice,
     nativeCurrency
   );
   const pricePerShare = convertAmountToNativeDisplay(
-    divide(totalBalanceAmount, balance),
+    divide(totalBalancePrice, balanceAmount),
     nativeCurrency
   );
 
@@ -57,25 +49,20 @@ export const transformPool = (liquidityPool, nativeCurrency) => {
     value: handleSignificantDecimalsWithThreshold(token.balance, 4),
   }));
 
-  const name = join(
+  const tokenNames = join(
     map(formattedTokens, token => token.symbol),
     '-'
   );
 
   return {
     ...liquidityPool,
-    address,
-    name,
     percentageOwned,
     pricePerShare,
-    relativeChange: price?.relative_change_24h,
-    symbol,
+    tokenNames,
     tokens: formattedTokens,
-    totalBalanceAmount,
+    totalBalancePrice,
     totalNativeDisplay,
-    type,
-    uniBalance: handleSignificantDecimals(balance, 3),
-    uniqueId,
+    uniBalance: handleSignificantDecimals(balanceAmount, 3),
   };
 };
 
@@ -91,15 +78,15 @@ const buildUniswapCards = (
   );
   const orderedUniswapPools = orderBy(
     uniswapPools,
-    [({ totalBalanceAmount }) => Number(totalBalanceAmount)],
+    [({ totalBalancePrice }) => Number(totalBalancePrice)],
     ['desc']
   );
 
   let uniswapTotal = 0;
 
   if (Array.isArray(orderedUniswapPools) && orderedUniswapPools.length) {
-    uniswapTotal = sumBy(orderedUniswapPools, ({ totalBalanceAmount }) =>
-      Number(totalBalanceAmount)
+    uniswapTotal = sumBy(orderedUniswapPools, ({ totalBalancePrice }) =>
+      Number(totalBalancePrice)
     );
   }
 
