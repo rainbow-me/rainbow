@@ -16,8 +16,8 @@ import {
 } from '../token-info';
 import ChartState from './chart/ChartState';
 
-const heightWithoutChart = 369 + (android ? 80 : 0);
-const heightWithChart = heightWithoutChart + 297;
+const heightWithoutChart = 373 + (android ? 80 : 0);
+const heightWithChart = heightWithoutChart + 292;
 
 export const LiquidityPoolExpandedStateSheetHeight = heightWithoutChart;
 
