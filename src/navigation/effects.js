@@ -250,6 +250,10 @@ const gestureResponseDistance = {
   vertical: deviceUtils.dimensions.height,
 };
 
+const smallGestureResponseDistance = {
+  vertical: 100,
+};
+
 export const backgroundPreset = {
   cardStyle: { backgroundColor: 'transparent' },
   cardStyleInterpolator: backgroundInterpolator,
@@ -340,6 +344,11 @@ export const bottomSheetPreset = {
   gestureResponseDistance,
   transitionSpec: { close: closeSpec, open: sheetOpenSpec },
 };
+
+export const sheetPresetWithSmallGestureResponseDistance = navigation => ({
+  ...sheetPreset(navigation),
+  gestureResponseDistance: smallGestureResponseDistance,
+});
 
 export const sheetPreset = ({ route }) => {
   const shouldUseNonTransparentOverlay =
