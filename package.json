@@ -54,7 +54,7 @@
     "@ethersproject/constants": "^5.0.2",
     "@ethersproject/contracts": "^5.0.2",
     "@ethersproject/hdnode": "^5.0.2",
-    "@ethersproject/providers": "^5.0.9",
+    "@ethersproject/providers": "5.0.12",
     "@ethersproject/random": "^5.0.2",
     "@ethersproject/shims": "^5.0.5",
     "@ethersproject/signing-key": "^5.0.3",
