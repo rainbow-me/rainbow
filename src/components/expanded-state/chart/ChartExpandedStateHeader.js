@@ -110,7 +110,7 @@ export default function ChartExpandedStateHeader({
               <View key={`coinicon-${index}`} zIndex={-index}>
                 <CoinIcon
                   address={token.address}
-                  marginRight={0}
+                  marginRight={-10}
                   position="relative"
                   shadow={shadows[index]}
                   symbol={token.symbol}
