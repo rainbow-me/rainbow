@@ -53,7 +53,7 @@ const LiquidityPoolExpandedState = ({ asset }) => {
         </TokenInfoRow>
         <TokenInfoRow>
           <TokenInfoItem title="Pool shares">{uniBalanceLabel}</TokenInfoItem>
-          <TokenInfoItem title="Total value">
+          <TokenInfoItem title="Total value" weight="bold">
             {totalNativeDisplay}
           </TokenInfoItem>
         </TokenInfoRow>
