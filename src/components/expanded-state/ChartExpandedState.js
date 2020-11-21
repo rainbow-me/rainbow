@@ -1,6 +1,5 @@
 import { find } from 'lodash';
 import React, { useRef } from 'react';
-import styled from 'styled-components';
 import { useColorForAsset, useUniswapAssetsInWallet } from '../../hooks';
 import {
   BuyActionButton,
@@ -21,16 +20,6 @@ import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 
 const heightWithChart = android ? 630 : 606;
 const heightWithoutChart = 309;
-
-const ActionRowAndroid = styled.View`
-  flex-direction: row;
-  height: 44;
-  margin-vertical: 12;
-  margin-horizontal: 12;
-  justify-content: space-around;
-`;
-
-const ActionRow = android ? ActionRowAndroid : SheetActionButtonRow;
 
 export const ChartExpandedStateSheetHeight =
   heightWithChart + (android ? 40 : 0);
@@ -77,7 +66,7 @@ export default function ChartExpandedState({ asset }) {
         </TokenInfoRow>
       </TokenInfoSection>
       {needsEth ? (
-        <ActionRow key="buyActionRow">
+        <SheetActionButtonRow key="buyActionRow">
           <BuyActionButton
             color={color}
             radiusAndroid={24}
@@ -87,9 +76,9 @@ export default function ChartExpandedState({ asset }) {
               style: { flex: 1 },
             }}
           />
-        </ActionRow>
+        </SheetActionButtonRow>
       ) : (
-        <ActionRow key="actionRow">
+        <SheetActionButtonRow key="actionRow">
           {showSwapButton && (
             <SwapActionButton
               color={color}
@@ -111,7 +100,7 @@ export default function ChartExpandedState({ asset }) {
               style: { flex: 1 },
             }}
           />
-        </ActionRow>
+        </SheetActionButtonRow>
       )}
     </SlackSheet>
   );

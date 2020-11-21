@@ -14,6 +14,18 @@ function renderButton(child) {
   return <FlexItem marginHorizontal={7.5}>{child}</FlexItem>;
 }
 
-export default function SheetActionButtonRow({ children }) {
+const ActionRowAndroid = styled.View`
+  flex-direction: row;
+  height: 44;
+  margin-vertical: 12;
+  margin-horizontal: 12;
+  justify-content: space-around;
+`;
+
+function ActionRow({ children }) {
   return <Container>{Children.map(children, renderButton)}</Container>;
 }
+
+const SheetActionButtonRow = android ? ActionRowAndroid : ActionRow;
+
+export default SheetActionButtonRow;
