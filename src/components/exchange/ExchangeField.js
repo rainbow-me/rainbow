@@ -6,6 +6,7 @@ import { CoinIcon, CoinIconSize } from '../coin-icon';
 import { Row, RowWithMargins } from '../layout';
 import { EnDash } from '../text';
 import ExchangeInput from './ExchangeInput';
+import { useColorForAsset } from '@rainbow-me/hooks';
 import { borders, colors } from '@rainbow-me/styles';
 
 const ExchangeFieldHeight = android ? 64 : 38;
@@ -56,6 +57,7 @@ const ExchangeField = (
   },
   ref
 ) => {
+  const colorForAsset = useColorForAsset({ address });
   const handleFocusField = useCallback(() => ref?.current?.focus(), [ref]);
 
   useEffect(() => {
@@ -71,6 +73,7 @@ const ExchangeField = (
             <CoinIconSkeleton />
           )}
           <Input
+            color={colorForAsset}
             editable={!!symbol}
             onBlur={onBlur}
             onChangeText={setAmount}
@@ -85,6 +88,7 @@ const ExchangeField = (
       </TouchableWithoutFeedback>
       {!disableCurrencySelection && (
         <TokenSelectionButton
+          address={address}
           onPress={onPressSelectCurrency}
           symbol={symbol}
           testID={testID + '-selection-button'}
