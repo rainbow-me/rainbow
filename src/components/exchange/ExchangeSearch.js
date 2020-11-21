@@ -47,7 +47,7 @@ const SearchIcon = styled(Text).attrs({
 })``;
 
 const SearchIconWrapper = styled(Animated.View)`
-  margin-top: 9;
+  margin-top: ${android ? '5' : '9'};
 `;
 
 const SearchInput = styled(Input).attrs({

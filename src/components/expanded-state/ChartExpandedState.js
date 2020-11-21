@@ -33,7 +33,7 @@ import { useNavigation } from '@rainbow-me/navigation';
 
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
 
-const heightWithChart = 606;
+const heightWithChart = android ? 630 : 606;
 const heightWithNoChart = 309;
 
 const ActionRowAndroid = styled.View`
@@ -94,7 +94,8 @@ function useJumpingForm(isLong) {
   }, [isLong, setOptions, jumpToShort, jumpToLong]);
 }
 
-export const ChartExpandedStateSheetHeight = heightWithChart;
+export const ChartExpandedStateSheetHeight =
+  heightWithChart + (android ? 40 : 0);
 
 export default function ChartExpandedState({ asset }) {
   const color = useColorForAsset(asset);
@@ -170,6 +171,7 @@ export default function ChartExpandedState({ asset }) {
 
   return (
     <SlackSheet
+      additionalTopPadding={android}
       contentHeight={ChartExpandedStateSheetHeight}
       scrollEnabled={false}
     >

@@ -16,7 +16,7 @@ import {
   UniqueTokenExpandedStateHeader,
   UniqueTokenExpandedStateImage,
 } from './unique-token';
-import { useShowcaseTokens } from '@rainbow-me/hooks';
+import { useDimensions, useShowcaseTokens } from '@rainbow-me/hooks';
 import { colors } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
@@ -52,9 +52,17 @@ const UniqueTokenExpandedState = ({ asset }) => {
     }
   }, [addShowcaseToken, isShowcaseAsset, removeShowcaseToken, uniqueId]);
 
+  const { height: screenHeight } = useDimensions();
+
   return (
     <Fragment>
-      <SlackSheet bottomInset={42} height="100%" scrollEnabled>
+      <SlackSheet
+        bottomInset={42}
+        {...(ios
+          ? { height: '100%' }
+          : { additionalTopPadding: true, contentHeight: screenHeight - 80 })}
+        scrollEnabled
+      >
         <UniqueTokenExpandedStateHeader asset={asset} />
         <UniqueTokenExpandedStateImage asset={asset} />
         <SheetActionButtonRow>

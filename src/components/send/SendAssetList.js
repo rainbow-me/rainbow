@@ -7,6 +7,7 @@ import {
   LayoutProvider,
   RecyclerListView,
 } from 'recyclerlistview';
+
 import styled from 'styled-components/primitives';
 import { buildCoinsList } from '../../helpers/assets';
 import networkTypes from '../../helpers/networkTypes';
@@ -357,6 +358,7 @@ export default class SendAssetList extends React.Component {
           onPress={() => {
             this.changeOpenTab(item.familyId);
           }}
+          testID={`${item.name}-family-header`}
           title={item.name}
         />
         {this.state.openCards[item.familyId] && this.mapTokens(item.data)}

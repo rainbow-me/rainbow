@@ -1,11 +1,9 @@
 import { useRoute } from '@react-navigation/native';
-import {
-  createStackNavigator,
-  HeaderBackButton,
-} from '@react-navigation/stack';
+import { createStackNavigator } from '@react-navigation/stack';
 import React, { useCallback, useEffect } from 'react';
 import { Animated, InteractionManager, View } from 'react-native';
 import styled from 'styled-components/native';
+import BackButton from '../components/header/BackButton';
 import { Modal } from '../components/modal';
 import ModalHeaderButton from '../components/modal/ModalHeaderButton';
 import {
@@ -175,7 +173,6 @@ export default function SettingsModal() {
 
   return (
     <Modal
-      fullScreenOnAndroid
       minHeight={isTinyPhone ? 500 : 600}
       onCloseModal={goBack}
       radius={18}
@@ -193,6 +190,10 @@ export default function SettingsModal() {
               headerRight: () => <EmptyButtonPlaceholder />,
               // eslint-disable-next-line react/display-name
               headerTitle: props => <SettingsTitle {...props} />,
+              ...(android && {
+                // eslint-disable-next-line react/display-name
+                headerLeft: props => <BackButton {...props} textChevron />,
+              }),
             }),
           }}
         >
@@ -200,10 +201,6 @@ export default function SettingsModal() {
             name="SettingsSection"
             options={{
               title: 'Settings',
-              ...(android && {
-                // eslint-disable-next-line react/display-name
-                headerLeft: () => <HeaderBackButton onPress={goBack} />,
-              }),
             }}
           >
             {() => (

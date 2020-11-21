@@ -69,6 +69,7 @@ export function onNavigationStateChange(currentState) {
       if (
         routeName === Routes.MAIN_EXCHANGE_SCREEN ||
         routeName === Routes.SAVINGS_WITHDRAW_MODAL ||
+        routeName === Routes.SEND_SHEET ||
         routeName === Routes.SWAP_DETAILS_SCREEN
       ) {
         AndroidKeyboardAdjust.setAdjustPan();

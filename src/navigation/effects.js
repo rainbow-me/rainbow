@@ -4,6 +4,7 @@ import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { HeaderHeightWithStatusBar } from '../components/header';
 import { AvatarCircle } from '../components/profile';
 import { deviceUtils } from '../utils';
+import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 
 const statusBarHeight = getStatusBarHeight(true);
@@ -145,13 +146,13 @@ const savingsStyleInterpolator = ({
   };
 };
 
-const sheetStyleInterpolator = ({
+const sheetStyleInterpolator = (targetOpacity = 1) => ({
   current: { progress: current },
   layouts: { screen },
 }) => {
   const backgroundOpacity = current.interpolate({
     inputRange: [-1, 0, 0.975, 2],
-    outputRange: [0, 0, 1, 1],
+    outputRange: [0, 0, targetOpacity, targetOpacity],
   });
 
   const translateY = current.interpolate({
@@ -249,6 +250,10 @@ const gestureResponseDistance = {
   vertical: deviceUtils.dimensions.height,
 };
 
+const smallGestureResponseDistance = {
+  vertical: 100,
+};
+
 export const backgroundPreset = {
   cardStyle: { backgroundColor: 'transparent' },
   cardStyleInterpolator: backgroundInterpolator,
@@ -340,16 +345,34 @@ export const bottomSheetPreset = {
   transitionSpec: { close: closeSpec, open: sheetOpenSpec },
 };
 
-export const sheetPreset = {
-  cardOverlayEnabled: true,
-  cardShadowEnabled: true,
-  cardStyle: { backgroundColor: 'transparent' },
-  cardStyleInterpolator: sheetStyleInterpolator,
-  cardTransparent: true,
-  gestureDirection: 'vertical',
-  gestureResponseDistance,
-  transitionSpec: { close: closeSpec, open: sheetOpenSpec },
+export const sheetPresetWithSmallGestureResponseDistance = navigation => ({
+  ...sheetPreset(navigation),
+  gestureResponseDistance: smallGestureResponseDistance,
+});
+
+export const sheetPreset = ({ route }) => {
+  const shouldUseNonTransparentOverlay =
+    route.params?.type === 'token' ||
+    route.params?.type === 'unique_token' ||
+    route.name === Routes.SEND_SHEET_NAVIGATOR;
+  return {
+    cardOverlayEnabled: true,
+    cardShadowEnabled: true,
+    cardStyle: { backgroundColor: 'transparent' },
+    cardStyleInterpolator: sheetStyleInterpolator(
+      shouldUseNonTransparentOverlay ? 0.7 : 0
+    ),
+    cardTransparent: true,
+    gestureDirection: 'vertical',
+    gestureResponseDistance,
+    transitionSpec: { close: closeSpec, open: sheetOpenSpec },
+  };
 };
+
+export const settingsPreset = ({ route }) => ({
+  ...sheetPreset({ route }),
+  cardStyleInterpolator: sheetStyleInterpolator(0.5),
+});
 
 export const exchangeModalPreset = {
   cardStyle: { backgroundColor: 'transparent' },
