@@ -1,5 +1,3 @@
-import { get } from 'lodash';
-import PropTypes from 'prop-types';
 import React, { useEffect, useRef } from 'react';
 import Animated from 'react-native-reanimated';
 import {
@@ -19,9 +17,15 @@ const Container = styled(Centered)`
   width: 100%;
 `;
 
-const SwapInfo = ({ asset, amount }) => {
+const SwapInfoCoinIcon = styled(CoinIcon).attrs({
+  size: 20,
+})`
+  flex: 0;
+  margin-right: 5;
+`;
+
+export default function SwapInfo({ asset, amount }) {
   const isVisible = !!(asset && amount);
-  const symbol = get(asset, 'symbol');
 
   const prevAmountRef = useRef();
   useEffect(() => {
@@ -77,28 +81,18 @@ const SwapInfo = ({ asset, amount }) => {
       testID="swap-info"
     >
       <Container>
-        <CoinIcon
-          address={get(asset, 'address')}
-          flex={0}
-          marginRight={5}
-          size={20}
-          symbol={get(asset, 'symbol')}
+        <SwapInfoCoinIcon
+          address={asset?.address}
+          symbol={asset?.symbol}
           testID="swap-info-container"
         />
         <Text color="grey" size="smedium" weight="medium">
           Swapping for{' '}
         </Text>
         <Text color="white" size="smedium" weight="semibold">
-          {`${amountToDisplay}  ${symbol}`}
+          {`${amountToDisplay}  ${asset?.symbol}`}
         </Text>
       </Container>
     </Animated.View>
   );
-};
-
-SwapInfo.propTypes = {
-  amount: PropTypes.number,
-  asset: PropTypes.object,
-};
-
-export default SwapInfo;
+}

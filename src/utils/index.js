@@ -17,6 +17,7 @@ export { default as gasUtils } from './gas';
 export { default as getDominantColorFromImage } from './getDominantColorFromImage';
 export { default as getUrlForTrustIconFallback } from './getUrlForTrustIconFallback';
 export { default as haptics } from './haptics';
+export { default as isETH } from './isETH';
 export { default as isLowerCaseMatch } from './isLowerCaseMatch';
 export { default as isNewValueForObjectPaths } from './isNewValueForObjectPaths';
 export { default as isNewValueForPath } from './isNewValueForPath';

@@ -86,7 +86,7 @@ const TopRow = ({ name, totalNativeDisplay }) => {
   );
 };
 
-const UniswapInvestmentRow = ({ assetType, item, ...props }) => {
+export default function UniswapInvestmentRow({ assetType, item, ...props }) {
   const { navigate } = useNavigation();
 
   const handleOpenExpandedState = useCallback(() => {
@@ -110,6 +110,4 @@ const UniswapInvestmentRow = ({ assetType, item, ...props }) => {
       />
     </Content>
   );
-};
-
-export default UniswapInvestmentRow;
+}
