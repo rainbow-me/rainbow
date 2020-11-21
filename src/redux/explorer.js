@@ -233,12 +233,12 @@ export const emitChartsRequest = (
     assetCodes = [assetAddress];
   } else {
     const { assets } = getState().data;
-    const addressAssetCodes = map(assets, 'address');
+    const assetAddresses = map(assets, 'address');
 
     const { liquidityTokens } = getState().uniswapLiquidity;
-    const lpAssetCodes = map(liquidityTokens, token => token.asset.asset_code);
+    const lpTokenAddresses = map(liquidityTokens, token => token.address);
 
-    assetCodes = concat(addressAssetCodes, lpAssetCodes);
+    assetCodes = concat(assetAddresses, lpTokenAddresses);
   }
   assetsSocket?.emit?.(
     ...chartsRetrieval(assetCodes, nativeCurrency, chartType)

@@ -22,7 +22,7 @@ const heightWithChart = heightWithoutChart + 297;
 export const LiquidityPoolExpandedStateSheetHeight = heightWithoutChart;
 
 const LiquidityPoolExpandedState = ({ asset }) => {
-  const { name, tokens, totalNativeDisplay, uniBalance } = asset;
+  const { tokenNames, tokens, totalNativeDisplay, uniBalance } = asset;
 
   return (
     <SlackSheet
@@ -58,8 +58,8 @@ const LiquidityPoolExpandedState = ({ asset }) => {
         </TokenInfoRow>
       </TokenInfoSection>
       <SheetActionButtonRow>
-        <WithdrawActionButton symbol={name} weight="bold" />
-        <DepositActionButton symbol={name} weight="bold" />
+        <WithdrawActionButton symbol={tokenNames} weight="bold" />
+        <DepositActionButton symbol={tokenNames} weight="bold" />
       </SheetActionButtonRow>
     </SlackSheet>
   );

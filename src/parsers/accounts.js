@@ -41,13 +41,17 @@ export const parseAssetSymbol = (symbol, address) => {
  */
 export const parseAsset = ({ asset_code: address, ...asset } = {}) => {
   const name = parseAssetName(asset.name, address);
+  const type =
+    asset.type === AssetTypes.uniswap || asset.type === AssetTypes.uniswapV2
+      ? asset.type
+      : AssetTypes.token;
   return {
     ...asset,
     ...tokenOverrides[address],
     address,
     name,
     symbol: parseAssetSymbol(asset.symbol, address),
-    type: AssetTypes.token,
+    type,
     uniqueId: address || name,
   };
 };
