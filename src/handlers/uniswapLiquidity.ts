@@ -11,6 +11,7 @@ import {
   fromWei,
   multiply,
 } from '../helpers/utilities';
+import { parseAssetsNative } from '../parsers/accounts';
 import { erc20ABI } from '../references';
 import { UNISWAP_V1_EXCHANGE_ABI } from '../references/uniswap';
 import { web3Provider } from './web3';
@@ -107,11 +108,16 @@ const getTokenDetails = async (
 export const getLiquidityInfo = async (
   chainId: ChainId,
   accountAddress: string,
+  nativeCurrency: string,
   liquidityPoolTokens: ParsedAddressAsset[],
   pairs: Record<string, SwapCurrency>
 ): Promise<Record<string, LiquidityInfo>> => {
-  const [v1Tokens, v2Tokens] = partition(
+  const liquidityPoolTokensWithNative = parseAssetsNative(
     liquidityPoolTokens,
+    nativeCurrency
+  );
+  const [v1Tokens, v2Tokens] = partition(
+    liquidityPoolTokensWithNative,
     token => token.type === 'uniswap'
   );
   const v1TokensCall = getLiquidityInfoV1(
