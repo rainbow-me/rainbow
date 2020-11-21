@@ -246,13 +246,14 @@ const sheetOpenSpec = {
   },
 };
 
-const gestureResponseDistance = {
-  vertical: deviceUtils.dimensions.height,
-};
+const gestureResponseDistanceFactory = distance => ({
+  vertical: distance,
+});
 
-const smallGestureResponseDistance = {
-  vertical: 100,
-};
+const gestureResponseDistance = gestureResponseDistanceFactory(
+  deviceUtils.dimensions.height
+);
+const smallGestureResponseDistance = gestureResponseDistanceFactory(100);
 
 export const backgroundPreset = {
   cardStyle: { backgroundColor: 'transparent' },
@@ -367,7 +368,10 @@ export const sheetPreset = ({ route }) => {
     ),
     cardTransparent: true,
     gestureDirection: 'vertical',
-    gestureResponseDistance,
+    gestureResponseDistance:
+      route.params?.type === 'unique_token'
+        ? gestureResponseDistanceFactory(150)
+        : gestureResponseDistance,
     transitionSpec: { close: closeSpec, open: sheetOpenSpec },
   };
 };
