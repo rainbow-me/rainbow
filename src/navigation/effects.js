@@ -356,7 +356,8 @@ export const sheetPreset = ({ route }) => {
     route.params?.type === 'unique_token' ||
     route.params?.type === 'unique_token' ||
     route.name === Routes.SEND_SHEET_NAVIGATOR ||
-    route.name === Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR;
+    route.name === Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR ||
+    route.name === Routes.IMPORT_SEED_PHRASE_SHEET;
   return {
     cardOverlayEnabled: true,
     cardShadowEnabled: true,
