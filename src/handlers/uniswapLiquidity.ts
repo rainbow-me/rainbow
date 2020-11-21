@@ -232,7 +232,11 @@ const getLiquidityInfoV1 = async (
     try {
       const liquidityPoolAddress = lpToken.address;
       const ethReserveCall = web3Provider.getBalance(liquidityPoolAddress);
-      const lpTokenBalance = lpToken?.balance?.amount || 0;
+      const lpTokenBalance = convertAmountToRawAmount(
+        lpToken?.balance?.amount || 0,
+        lpToken?.decimals
+      );
+
       const exchange = new Contract(
         liquidityPoolAddress,
         UNISWAP_V1_EXCHANGE_ABI,
