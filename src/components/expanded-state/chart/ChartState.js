@@ -76,7 +76,12 @@ export default function ChartState({
   heightWithoutChart,
   isPool,
 }) {
-  const color = useColorForAsset(asset);
+  let assetForColor = asset;
+  if (isPool) {
+    assetForColor = asset?.tokens?.[0] || asset;
+  }
+
+  const color = useColorForAsset(assetForColor);
   const [isFetchingInitially, setIsFetchingInitially] = useState(true);
 
   const { chart, chartType, fetchingCharts, ...chartData } = useChartData(
