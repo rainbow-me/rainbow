@@ -48,7 +48,7 @@ function useJumpingForm(isLong, heightWithChart, heightWithoutChart) {
         isShortFormEnabled: true,
       });
       setImmediate(() => {
-        jumpToShort?.();
+        jumpToShort?.(heightWithoutChart);
         setOptions({
           isShortFormEnabled: false,
           longFormHeight: heightWithoutChart,
@@ -58,7 +58,9 @@ function useJumpingForm(isLong, heightWithChart, heightWithoutChart) {
       setOptions({
         longFormHeight: heightWithChart,
       });
-      setImmediate(jumpToLong);
+      setImmediate(() => {
+        jumpToLong(heightWithChart);
+      });
     }
   }, [
     heightWithChart,

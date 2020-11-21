@@ -45,16 +45,16 @@ function ScreenView({ colors, descriptors, navigation, route, state }) {
 
   const context = useMemo(
     () => ({
-      jumpToLong: () => {
+      jumpToLong: point => {
         const screen = findNodeHandle(ref.current);
         if (screen) {
-          NativeModules.RNCMScreenManager.jumpTo(true, screen);
+          NativeModules.RNCMScreenManager.jumpTo(point, screen);
         }
       },
-      jumpToShort: () => {
+      jumpToShort: point => {
         const screen = findNodeHandle(ref.current);
         if (screen) {
-          NativeModules.RNCMScreenManager.jumpTo(false, screen);
+          NativeModules.RNCMScreenManager.jumpTo(point, screen);
         }
       },
     }),
