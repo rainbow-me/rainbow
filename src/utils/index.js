@@ -34,5 +34,6 @@ export { default as sentryUtils } from './sentry';
 export { default as showActionSheetWithOptions } from './actionsheet';
 export { default as simplifyChartData } from './simplifyChartData';
 export { default as statusBar } from './statusBar';
+export { default as urlConstants } from './urlConstants';
 export { filterList, filterScams } from './search';
 export { getFirstGrapheme, initials, removeLeadingZeros } from './formatters';

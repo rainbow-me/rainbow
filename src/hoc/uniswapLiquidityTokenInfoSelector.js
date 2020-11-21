@@ -82,7 +82,7 @@ const buildUniswapCards = (
 
   return {
     uniswap: orderedUniswapPools,
-    uniswapTotal: convertAmountToNativeDisplay(uniswapTotal, nativeCurrency),
+    uniswapTotal,
   };
 };
 

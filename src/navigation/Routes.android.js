@@ -37,6 +37,7 @@ import {
   overlayExpandedPreset,
   settingsPreset,
   sheetPreset,
+  sheetPresetWithSmallGestureResponseDistance,
 } from './effects';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
@@ -235,7 +236,7 @@ function MainNativeNavigator() {
       <NativeStack.Screen
         component={SendFlowNavigator}
         name={Routes.SEND_SHEET_NAVIGATOR}
-        options={sheetPreset}
+        options={sheetPresetWithSmallGestureResponseDistance}
       />
     </NativeStack.Navigator>
   );

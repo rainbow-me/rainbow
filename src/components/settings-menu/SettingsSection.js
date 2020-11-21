@@ -224,8 +224,8 @@ export default function SettingsSection({
           value={SettingsExternalURLs.twitter}
         />
         <ListItem
-          icon={<Emoji name="speech_balloon" />}
-          label="Feedback and Support"
+          icon={<Emoji name={ios ? 'speech_balloon' : 'bug'} />}
+          label={ios ? 'Feedback and Support' : 'Feedback & Bug Reports'}
           onPress={onSendFeedback}
           testID="feedback-section"
         />
@@ -243,7 +243,7 @@ export default function SettingsSection({
           <ListFooter height={10} />
           <ListItem
             icon={<Emoji name="construction" />}
-            label="Developer settings"
+            label="Developer Settings"
             onPress={onPressDev}
             testID="developer-section"
           />
