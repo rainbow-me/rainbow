@@ -1,7 +1,15 @@
-import { get, toUpper } from 'lodash';
+import { get, isNil, map, toUpper } from 'lodash';
 import AssetTypes from '../helpers/assetTypes';
-import { convertRawAmountToBalance } from '../helpers/utilities';
+import {
+  add,
+  convertAmountAndPriceToNativeDisplay,
+  convertAmountToNativeDisplay,
+  convertAmountToPercentageDisplay,
+  convertRawAmountToBalance,
+} from '../helpers/utilities';
+
 import { tokenOverrides } from '../references';
+import { isLowerCaseMatch } from '../utils';
 import { dedupeUniqueTokens } from './uniqueTokens';
 
 /**
@@ -55,3 +63,49 @@ export const parseAsset = ({ asset_code: address, ...asset } = {}) => {
     uniqueId: address || name,
   };
 };
+
+export const parseAssetsNativeWithTotals = (assets, nativeCurrency) => {
+  const assetsNative = parseAssetsNative(assets, nativeCurrency);
+  const totalAmount = assetsNative.reduce(
+    (total, asset) => add(total, get(asset, 'native.balance.amount', 0)),
+    0
+  );
+  const totalDisplay = convertAmountToNativeDisplay(
+    totalAmount,
+    nativeCurrency
+  );
+  const total = { amount: totalAmount, display: totalDisplay };
+  return { assetsNativePrices: assetsNative, total };
+};
+
+export const parseAssetsNative = (assets, nativeCurrency) =>
+  map(assets, asset => {
+    const assetNativePrice = get(asset, 'price');
+    if (isNil(assetNativePrice)) {
+      return asset;
+    }
+
+    const priceUnit = get(assetNativePrice, 'value', 0);
+    const nativeDisplay = convertAmountAndPriceToNativeDisplay(
+      get(asset, 'balance.amount', 0),
+      priceUnit,
+      nativeCurrency
+    );
+    return {
+      ...asset,
+      native: {
+        balance: nativeDisplay,
+        change: isLowerCaseMatch(get(asset, 'symbol'), nativeCurrency)
+          ? null
+          : assetNativePrice.relative_change_24h
+          ? convertAmountToPercentageDisplay(
+              assetNativePrice.relative_change_24h
+            )
+          : '',
+        price: {
+          amount: priceUnit,
+          display: convertAmountToNativeDisplay(priceUnit, nativeCurrency),
+        },
+      },
+    };
+  });
