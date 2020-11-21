@@ -1,13 +1,12 @@
 import { map } from 'lodash';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { View } from 'react-native';
 import styled from 'styled-components/primitives';
-import { useColorForAssets } from '../../../hooks/useColorForAsset';
-import { magicMemo } from '../../../utils';
 import { CoinIcon } from '../../coin-icon';
 import { ColumnWithMargins, Row } from '../../layout';
 import { TruncatedText } from '../../text';
 import { colors, padding } from '@rainbow-me/styles';
+import { magicMemo } from '@rainbow-me/utils';
 
 const Container = styled(ColumnWithMargins).attrs({
   margin: 12,
@@ -37,18 +36,6 @@ const Title = styled(TruncatedText).attrs(({ color = colors.dark }) => ({
 }))``;
 
 function LiquidityPoolExpandedStateHeader({ assets, name, pricePerShare }) {
-  const title = `${name} Pool`;
-  const colors = useColorForAssets(assets);
-
-  const shadows = useMemo(() => {
-    return map(assets, (asset, index) => {
-      const coinIconShadow = [
-        [0, 4, 12, asset.shadowColor || asset.color || colors[index], 0.3],
-      ];
-      return coinIconShadow;
-    });
-  }, [assets, colors]);
-
   return (
     <Container>
       <Row align="center">
@@ -59,7 +46,6 @@ function LiquidityPoolExpandedStateHeader({ assets, name, pricePerShare }) {
                 address={asset.address}
                 marginRight={-10}
                 position="relative"
-                shadow={shadows[index]}
                 symbol={asset.symbol}
               />
             </View>
@@ -68,7 +54,7 @@ function LiquidityPoolExpandedStateHeader({ assets, name, pricePerShare }) {
       </Row>
       <Row align="center" justify="space-between">
         <ColumnWithMargins align="start" margin={2}>
-          <Title>{title}</Title>
+          <Title>{`${name} Pool`}</Title>
           <Subtitle>
             {pricePerShare}
             <PerShareText> per share</PerShareText>

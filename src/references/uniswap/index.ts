@@ -9,20 +9,14 @@ import { default as UNISWAP_TESTNET_TOKEN_LIST } from './uniswap-pairs-testnet.j
 import { abi as UNISWAP_V2_ROUTER_ABI } from './uniswap-v2-router.json';
 import UNISWAP_V1_EXCHANGE_ABI from './v1-exchange-abi';
 
-const TOKEN_LIST = map(
-  filter(
-    RAINBOW_TOKEN_LIST['tokens'],
-    token => !!token?.extensions?.isRainbowCurated
-  ),
-  token => {
-    const address = toLower(token.address);
-    return {
-      ...token,
-      ...tokenOverrides[address],
-      address,
-    };
-  }
-);
+const TOKEN_LIST = map(RAINBOW_TOKEN_LIST.tokens, token => {
+  const address = toLower(token.address);
+  return {
+    ...token,
+    ...tokenOverrides[address],
+    address,
+  };
+});
 
 const ETHER_WITH_ADDRESS = {
   address: 'eth',
@@ -31,7 +25,15 @@ const ETHER_WITH_ADDRESS = {
   symbol: 'ETH',
 };
 
-const CURATED_UNISWAP_TOKEN_LIST = [ETHER_WITH_ADDRESS, ...TOKEN_LIST];
+const RAINBOW_CURATED_TOKENS = filter(
+  TOKEN_LIST,
+  'extensions.isRainbowCurated'
+);
+
+const CURATED_UNISWAP_TOKEN_LIST = [
+  ETHER_WITH_ADDRESS,
+  ...RAINBOW_CURATED_TOKENS,
+];
 
 const CURATED_UNISWAP_TOKENS = keyBy(CURATED_UNISWAP_TOKEN_LIST, 'address');
 
@@ -70,6 +72,7 @@ export {
   PAIR_GET_RESERVES_CALL_DATA,
   PAIR_GET_RESERVES_FRAGMENT,
   PAIR_INTERFACE,
+  RAINBOW_TOKEN_LIST,
   UNISWAP_TESTNET_TOKEN_LIST,
   UNISWAP_V1_EXCHANGE_ABI,
   UNISWAP_V2_BASES,

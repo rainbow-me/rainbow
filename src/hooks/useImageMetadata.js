@@ -1,4 +1,3 @@
-import { map } from 'lodash';
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateImageMetadataCache } from '../redux/imageMetadata';
@@ -7,15 +6,25 @@ import useDimensions from './useDimensions';
 import { position } from '@rainbow-me/styles';
 
 export function useImagesColors(imageUrls) {
-  return useSelector(({ imageMetadata }) =>
-    map(imageUrls, imageUrl => imageMetadata.imageMetadata[imageUrl]?.color)
+  const imageColorSelector = useCallback(
+    ({ imageMetadata }) =>
+      imageUrls.map(imageUrl => imageMetadata.imageMetadata[imageUrl]?.color),
+    [imageUrls]
   );
+
+  return useSelector(imageColorSelector);
 }
 
 export default function useImageMetadata(imageUrl) {
   const dispatch = useDispatch();
-
   const { width: deviceWidth } = useDimensions();
+
+  const imageMetadataSelector = useCallback(
+    state => state.imageMetadata.imageMetadata[imageUrl],
+    [imageUrl]
+  );
+
+  const metadata = useSelector(imageMetadataSelector);
   const defaultMetadata = useMemo(
     () => ({
       dimensions: position.sizeAsObject(deviceWidth - 30),
@@ -23,14 +32,7 @@ export default function useImageMetadata(imageUrl) {
     [deviceWidth]
   );
 
-  const imageMetadataSelector = useCallback(
-    state => state.imageMetadata.imageMetadata[imageUrl],
-    [imageUrl]
-  );
-  const metadata = useSelector(imageMetadataSelector);
-
   const isCached = !!metadata && !!metadata?.color;
-
   const onCacheImageMetadata = useCallback(
     async ({ color, height, width }) => {
       if (isCached || !imageUrl) return;
@@ -54,9 +56,12 @@ export default function useImageMetadata(imageUrl) {
     [dispatch, imageUrl, isCached]
   );
 
-  return {
-    ...(metadata || defaultMetadata),
-    isCached,
-    onCacheImageMetadata,
-  };
+  return useMemo(
+    () => ({
+      ...(metadata || defaultMetadata),
+      isCached,
+      onCacheImageMetadata,
+    }),
+    [defaultMetadata, isCached, metadata, onCacheImageMetadata]
+  );
 }

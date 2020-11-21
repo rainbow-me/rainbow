@@ -75,11 +75,6 @@ export default function ChartExpandedStateHeader({
     }
   }, [price, isNoPriceData, priceSharedValue]);
 
-  const coinIconShadow = useMemo(
-    () => [[0, 4, 12, asset?.shadowColor || color, 0.3]],
-    [asset, color]
-  );
-
   return (
     <Container showChart={showChart}>
       <Row
@@ -87,11 +82,7 @@ export default function ChartExpandedStateHeader({
         justify="space-between"
         testID="expanded-state-header"
       >
-        <CoinIcon
-          address={asset?.address}
-          shadow={coinIconShadow}
-          symbol={asset?.symbol}
-        />
+        <CoinIcon address={asset?.address} symbol={asset?.symbol} />
         <ChartContextButton asset={asset} color={color} />
       </Row>
       <RowWithMargins
