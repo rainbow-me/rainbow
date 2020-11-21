@@ -386,6 +386,7 @@ export default class SendAssetList extends React.Component {
     return (
       <View marginTop={dividerMargin}>
         <SendAssetListCoinDividerOpenButton
+          isSendSheet
           isSmallBalancesOpen={openShitcoins}
           onPress={this.changeOpenShitcoins}
         />
