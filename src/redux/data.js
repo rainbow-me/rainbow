@@ -293,7 +293,6 @@ export const addressAssetsReceived = (
     asset =>
       asset.type === AssetTypes.uniswap || asset.type === AssetTypes.uniswapV2
   );
-  console.log('#### LIQ TOKENS', liquidityTokens);
 
   dispatch(
     uniswapUpdateLiquidityTokens(liquidityTokens, append || change || removed)
