@@ -80,6 +80,7 @@ function ImportSeedPhraseFlowNavigator() {
       <Stack.Screen
         component={ImportSeedPhraseSheet}
         name={Routes.IMPORT_SEED_PHRASE_SHEET}
+        options={sheetPreset}
       />
     </Stack.Navigator>
   );
@@ -190,7 +191,7 @@ function MainNavigator() {
       <Stack.Screen
         component={ImportSeedPhraseFlowNavigator}
         name={Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR}
-        options={{ customStack: true }}
+        options={sheetPresetWithSmallGestureResponseDistance}
       />
       <Stack.Screen component={WelcomeScreen} name={Routes.WELCOME_SCREEN} />
       <Stack.Screen
