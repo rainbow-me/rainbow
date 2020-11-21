@@ -56,6 +56,7 @@ const sheetBottomPadding = 19;
 const Container = styled.View`
   flex: 1;
   padding-top: ${isNativeStackAvailable ? 0 : sheetVerticalOffset};
+  ${android ? `background-color: ${colors.black};` : ''}
 `;
 
 const Footer = styled(Row).attrs({
@@ -146,6 +147,13 @@ export default function ImportSeedPhraseSheet() {
   const [resolvedAddress, setResolvedAddress] = useState(null);
   const [startAnalyticsTimeout] = useTimeout();
   const wasImporting = usePrevious(isImporting);
+
+  useEffect(() => {
+    android &&
+      setTimeout(() => {
+        inputRef?.current.focus();
+      }, 500);
+  }, []);
 
   const inputRef = useRef(null);
   const { handleFocus } = useMagicAutofocus(inputRef);
