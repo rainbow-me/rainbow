@@ -112,7 +112,6 @@
     "eth-sig-util": "^2.5.3",
     "ethereumjs-util": "^6.2.0",
     "ethereumjs-wallet": "^1.0.1",
-    "ethers": "^4.0.44",
     "events": "^1.1.1",
     "fbjs": "^1.0.0",
     "global": "^4.3.2",
