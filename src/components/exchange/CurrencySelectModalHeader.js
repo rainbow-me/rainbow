@@ -3,10 +3,7 @@ import React, { useCallback } from 'react';
 import styled from 'styled-components/primitives';
 import { delayNext } from '../../hooks/useMagicAutofocus';
 import { useNavigation } from '../../navigation/Navigation';
-import {
-  BackButton as ChevronBackButton,
-  BackButton as IOSBackButton,
-} from '../header';
+import { BackButton } from '../header';
 import { Centered } from '../layout';
 import { TruncatedText } from '../text';
 import Routes from '@rainbow-me/routes';
@@ -37,8 +34,6 @@ const Title = styled(TruncatedText).attrs({
   height: 21;
 `;
 
-const BackButton = ios ? IOSBackButton : ChevronBackButton;
-
 export default function CurrencySelectModalHeader({ testID }) {
   const { navigate, dangerouslyGetState } = useNavigation();
   const { params } = useRoute();
@@ -61,7 +56,7 @@ export default function CurrencySelectModalHeader({ testID }) {
           height={CurrencySelectModalHeaderHeight}
           onPress={handlePressBack}
           testID={testID}
-          textChevron
+          textChevron={android}
           throttle
         />
       </BackButtonWrapper>
