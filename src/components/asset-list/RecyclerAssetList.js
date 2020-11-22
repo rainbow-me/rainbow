@@ -224,7 +224,7 @@ class RecyclerAssetList extends Component {
 
         // Height should be calculated via calculateHeight func from ViewTypes object
 
-        // Index is type index not some single row index so should describle one kind of objects
+        // Index is type index not some single row index so should describe one kind of object
 
         const { openFamilyTabs, openInvestmentCards, sections } = this.props;
 

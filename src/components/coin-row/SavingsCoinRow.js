@@ -10,7 +10,7 @@ import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import { colors } from '@rainbow-me/styles';
 
-export const SavingsCoinRowHeight = 61;
+export const SavingsCoinRowHeight = 64;
 
 const BottomRow = ({ lifetimeSupplyInterestAccrued, supplyRate, symbol }) => {
   const apy = calculateAPY(supplyRate);
