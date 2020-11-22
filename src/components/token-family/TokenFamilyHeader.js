@@ -38,10 +38,10 @@ const RotatingArrowIcon = styled(AnimatedFastImage).attrs({
   resizeMode: FastImage.resizeMode.contain,
   source: CaretImageSource,
 })`
-  height: 17;
+  height: 18;
   margin-bottom: 1;
-  right: 4;
-  width: 9;
+  right: 5;
+  width: 8;
 `;
 
 const TitleText = styled(TruncatedText).attrs({

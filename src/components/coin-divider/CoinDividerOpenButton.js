@@ -26,8 +26,8 @@ const CaretIcon = styled(FastImage).attrs({
   source: Caret,
   tintColor: colors.blueGreyDark,
 })`
-  height: 17;
-  width: 9;
+  height: 18;
+  width: 8;
 `;
 
 const ContainerButton = styled(ButtonPressAnimation).attrs(
