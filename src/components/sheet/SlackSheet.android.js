@@ -26,10 +26,13 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
   overflow: hidden;
   position: absolute;
   border-radius: 20;
-  top: ${({ contentHeight, additionalTopPadding }) =>
-    contentHeight && additionalTopPadding
-      ? deviceUtils.dimensions.height - contentHeight
-      : 0};
+  ${({ deferredHeight, contentHeight, additionalTopPadding }) =>
+    !deferredHeight &&
+    `top: ${
+      contentHeight && additionalTopPadding
+        ? deviceUtils.dimensions.height - contentHeight
+        : 0
+    };`}
   right: 0;
 `;
 
@@ -72,6 +75,7 @@ export default function SlackSheet({
   renderHeader,
   scrollEnabled = true,
   additionalTopPadding = false,
+  deferredHeight = false,
   ...props
 }) {
   const yPosition = useReanimatedValue(0);
@@ -107,6 +111,7 @@ export default function SlackSheet({
         additionalTopPadding={additionalTopPadding}
         backgroundColor={backgroundColor}
         contentHeight={contentHeight}
+        deferredHeight={deferredHeight}
         {...props}
       >
         {android && (
