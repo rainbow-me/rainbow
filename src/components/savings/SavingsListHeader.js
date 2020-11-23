@@ -45,6 +45,7 @@ const SavingsListHeader = ({
   return (
     <ButtonPressAnimation
       key={`${emoji}_${isOpen}`}
+      marginBottom={title === 'Pools' ? -6 : 0}
       onPress={onPress}
       scaleTo={1.05}
     >
@@ -90,9 +91,9 @@ const SavingsListHeader = ({
             resizeMode={FastImage.resizeMode.contain}
             source={CaretImageSource}
             style={{
-              height: 17,
+              height: 18,
               marginBottom: 1,
-              right: 4,
+              right: 5,
               transform: [
                 {
                   rotate: toRad(
@@ -103,7 +104,7 @@ const SavingsListHeader = ({
                   ),
                 },
               ],
-              width: 9,
+              width: 8,
             }}
           />
         </RowWithMargins>

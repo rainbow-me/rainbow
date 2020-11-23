@@ -24,9 +24,9 @@ const CaretIcon = styled(FastImage).attrs({
   source: Caret,
   tintColor: colors.alpha(colors.blueGreyDark, 0.6),
 })`
-  height: 17;
+  height: 18;
   margin-top: 15;
-  width: 9;
+  width: 8;
 `;
 
 const Address = styled(TruncatedAddress).attrs({

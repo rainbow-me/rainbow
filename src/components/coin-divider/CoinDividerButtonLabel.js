@@ -9,7 +9,7 @@ const LabelText = styled(Text).attrs({
   color: colors.alpha(colors.blueGreyDark, 0.6),
   letterSpacing: 'roundedTight',
   size: 'lmedium',
-  weight: 'semibold',
+  weight: 'bold',
 })`
   position: absolute;
   top: ${android ? -15.25 : -10.25};
