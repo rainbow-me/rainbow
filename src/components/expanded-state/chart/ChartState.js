@@ -51,7 +51,6 @@ function useJumpingForm(isLong, heightWithChart, heightWithoutChart) {
       setOptions({
         longFormHeight: heightWithChart,
       });
-      jumpToLong();
     }
   }, [
     heightWithChart,
