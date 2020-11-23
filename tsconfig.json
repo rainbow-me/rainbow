@@ -14,6 +14,7 @@
     "paths": {
       "@rainbow-me/assets": ["./src/assets"],
       "@rainbow-me/config": ["./src/config"],
+      "@rainbow-me/entities": ["src/entities"],
       "@rainbow-me/handlers": ["./src/handlers"],
       "@rainbow-me/helpers": ["./src/helpers"],
       "@rainbow-me/hooks": ["src/hooks"],
