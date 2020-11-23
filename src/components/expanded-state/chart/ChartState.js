@@ -45,22 +45,13 @@ function useJumpingForm(isLong, heightWithChart, heightWithoutChart) {
   useEffect(() => {
     if (!isLong) {
       setOptions({
-        isShortFormEnabled: true,
-      });
-      setImmediate(() => {
-        jumpToShort?.(heightWithoutChart);
-        setOptions({
-          isShortFormEnabled: false,
-          longFormHeight: heightWithoutChart,
-        });
+        longFormHeight: heightWithoutChart,
       });
     } else {
       setOptions({
         longFormHeight: heightWithChart,
       });
-      setImmediate(() => {
-        jumpToLong(heightWithChart);
-      });
+      jumpToLong();
     }
   }, [
     heightWithChart,
