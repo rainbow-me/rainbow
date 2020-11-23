@@ -11,6 +11,13 @@ export { default as erc20ABI } from './erc20-abi.json';
 export { default as ethUnits } from './ethereum-units.json';
 export { default as shitcoins } from './shitcoins.json';
 
+interface OverrideInfo {
+  color?: string;
+  name?: string;
+  shadowColor?: string;
+  symbol?: string;
+}
+
 export const CDAI_CONTRACT = '0x5d3a536e4d6dbd6114cc1ead35777bab948e3643';
 export const SAI_ADDRESS = '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359';
 export const DAI_ADDRESS = '0x6b175474e89094c44da98b954eedeac495271d0f';
@@ -69,9 +76,10 @@ export const DefaultUniswapFavorites = {
   ],
 };
 
-export const tokenOverrides = mapKeys(tokenOverridesData, (_, address) =>
-  toLower(address)
-);
+export const tokenOverrides: Record<
+  string,
+  OverrideInfo
+> = mapKeys(tokenOverridesData, (_, address) => toLower(address));
 
 export const savingsAssetsList = savingAssets;
 
