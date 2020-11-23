@@ -168,6 +168,8 @@ export default function ChartExpandedState({ asset }) {
   if (duration.current === 0) {
     duration.current = 300;
   }
+  const ChartExpandedStateSheetHeight =
+    (showChart ? heightWithChart : heightWithNoChart) + (android ? 40 : 0);
 
   return (
     <SlackSheet
