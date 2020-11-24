@@ -11,6 +11,7 @@ import React, {
 } from 'react';
 import { Keyboard } from 'react-native';
 import Animated, { Extrapolate } from 'react-native-reanimated';
+import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import { useDispatch } from 'react-redux';
 import { dismissingScreenListener } from '../../shim';
 import { interpolate } from '../components/animations';
@@ -48,6 +49,7 @@ import {
 import Routes from '@rainbow-me/routes';
 import { colors, position } from '@rainbow-me/styles';
 import { backgroundTask, isNewValueForPath } from '@rainbow-me/utils';
+
 import logger from 'logger';
 
 const AnimatedFloatingPanels = Animated.createAnimatedComponent(FloatingPanels);
@@ -107,6 +109,11 @@ export default function ExchangeModal({
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const [slippage, setSlippage] = useState(null);
+
+  useAndroidBackHandler(() => {
+    navigate(Routes.WALLET_SCREEN);
+    return true;
+  });
 
   const {
     defaultInputAddress,

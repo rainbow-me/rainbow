@@ -25,7 +25,7 @@ import {
   convertNumberToString,
 } from '../helpers/utilities';
 import { loadWallet } from '../model/wallet';
-import { ethUnits } from '../references';
+import { ethUnits, tokenOverrides } from '../references';
 import {
   UNISWAP_TESTNET_TOKEN_LIST,
   UNISWAP_V2_ROUTER_ABI,
@@ -397,10 +397,7 @@ export const executeSwap = async ({
   return exchange[methodName](...updatedMethodArgs, transactionParams);
 };
 
-export const getAllTokens = async (
-  tokenOverrides: Record<string, object>,
-  excluded = []
-): Promise<AllTokenInfo> => {
+export const getAllTokens = async (excluded = []): Promise<AllTokenInfo> => {
   let allTokens: AllTokenInfo = {};
   let data: UniswapSubgraphToken[] = [];
   try {

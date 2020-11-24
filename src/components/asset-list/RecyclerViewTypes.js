@@ -21,17 +21,17 @@ export const firstCoinRowMarginTop = 6;
 const lastCoinRowAdditionalHeight = 1;
 
 const openSmallBalancesAdditionalHeight = 15;
-const closedSmallBalancesAdditionalHeight = 13;
+const closedSmallBalancesAdditionalHeight = 18;
 
-const savingsOpenAdditionalHeight = 6;
+const savingsOpenAdditionalHeight = -7.5;
 const savingsClosedAdditionalHeight = -5;
-const savingsLastOpenAdditionalHeight = -4;
+const savingsLastOpenAdditionalHeight = -13;
 const savingsLastClosedAdditionalHeight = -10;
 
 const poolsOpenAdditionalHeight = -12;
 const poolsClosedAdditionalHeight = -15;
-const poolsLastOpenAdditionalHeight = -22;
-const poolsLastClosedAdditionalHeight = -20;
+const poolsLastOpenAdditionalHeight = -14;
+const poolsLastClosedAdditionalHeight = -10.5;
 
 const firstUniqueTokenMarginTop = 4;
 const extraSpaceForDropShadow = 19;

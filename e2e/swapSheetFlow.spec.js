@@ -249,7 +249,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.delay(2000);
     await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.delay(2000);
-    await Helpers.typeText('currency-select-search-input', 'ZR\n', false);
+    await Helpers.typeText('currency-select-search-input', 'ZRX\n', false);
     await Helpers.delay(2000);
     await Helpers.tap('exchange-coin-row-ZRX');
     await Helpers.delay(5000);
@@ -292,7 +292,6 @@ describe('Swap Sheet Interaction Flow', () => {
 
   it('Should update input & native input after output field change', async () => {
     if (device.getPlatform() === 'android') {
-      await device.pressBack();
       await device.pressBack();
     } else {
       await Helpers.swipe('exchange-modal-header', 'down', 'slow');
@@ -362,8 +361,6 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.delay(1000);
     if (device.getPlatform() === 'android') {
       await device.pressBack();
-      await device.pressBack();
-
     } else {
       await Helpers.swipe('exchange-modal-header', 'down', 'slow');
     }
@@ -397,7 +394,6 @@ describe('Swap Sheet Interaction Flow', () => {
 
   it('Should display Gas Button on Normal by default', async () => {
     if (device.getPlatform() === 'android') {
-      await device.pressBack();
       await device.pressBack();
     } else {
       await Helpers.swipe('exchange-modal-header', 'down', 'slow');

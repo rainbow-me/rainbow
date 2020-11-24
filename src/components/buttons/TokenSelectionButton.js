@@ -21,10 +21,9 @@ const CaretIcon = styled(FastImage).attrs({
   source: CaretImageSource,
   tintColor: colors.white,
 })`
-  height: 17;
-  right: -0.5;
+  height: 18;
   top: 0.5;
-  width: 9;
+  width: 8;
 `;
 
 const ButtonShadows = styled(ShadowStack).attrs(({ symbol }) => ({

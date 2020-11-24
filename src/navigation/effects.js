@@ -246,13 +246,14 @@ const sheetOpenSpec = {
   },
 };
 
-const gestureResponseDistance = {
-  vertical: deviceUtils.dimensions.height,
-};
+const gestureResponseDistanceFactory = distance => ({
+  vertical: distance,
+});
 
-const smallGestureResponseDistance = {
-  vertical: 100,
-};
+const gestureResponseDistance = gestureResponseDistanceFactory(
+  deviceUtils.dimensions.height
+);
+const smallGestureResponseDistance = gestureResponseDistanceFactory(100);
 
 export const backgroundPreset = {
   cardStyle: { backgroundColor: 'transparent' },
@@ -354,7 +355,10 @@ export const sheetPreset = ({ route }) => {
   const shouldUseNonTransparentOverlay =
     route.params?.type === 'token' ||
     route.params?.type === 'unique_token' ||
-    route.name === Routes.SEND_SHEET_NAVIGATOR;
+    route.params?.type === 'unique_token' ||
+    route.name === Routes.SEND_SHEET_NAVIGATOR ||
+    route.name === Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR ||
+    route.name === Routes.IMPORT_SEED_PHRASE_SHEET;
   return {
     cardOverlayEnabled: true,
     cardShadowEnabled: true,
@@ -364,7 +368,10 @@ export const sheetPreset = ({ route }) => {
     ),
     cardTransparent: true,
     gestureDirection: 'vertical',
-    gestureResponseDistance,
+    gestureResponseDistance:
+      route.params?.type === 'unique_token'
+        ? gestureResponseDistanceFactory(150)
+        : gestureResponseDistance,
     transitionSpec: { close: closeSpec, open: sheetOpenSpec },
   };
 };

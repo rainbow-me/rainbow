@@ -54,7 +54,7 @@ const TextIcon = styled(Text).attrs({
   size: 29,
   weight: 'medium',
 })`
-  height: 35;
+  height: ${android ? 45 : 35};
   margin-bottom: 7;
   margin-top: 8;
 `;

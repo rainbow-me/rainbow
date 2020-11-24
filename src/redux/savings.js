@@ -16,9 +16,9 @@ const SAVINGS_CLEAR_STATE = 'savings/SAVINGS_CLEAR_STATE';
 const SAVINGS_SET_NUMBER_OF_JUST_FINISHED_DEPOSITS_OR_WITHDRAWAL =
   'savings/SAVINGS_SET_NUMBER_OF_JUST_FINISHED_DEPOSITS_OR_WITHDRAWAL';
 
-const getMarketData = (marketData, tokenOverrides) => {
-  const underlying = getUnderlyingData(marketData, tokenOverrides);
-  const cToken = getCTokenData(marketData, tokenOverrides);
+const getMarketData = marketData => {
+  const underlying = getUnderlyingData(marketData);
+  const cToken = getCTokenData(marketData);
   const { exchangeRate, supplyRate, underlyingPrice } = marketData;
 
   return {
@@ -30,18 +30,18 @@ const getMarketData = (marketData, tokenOverrides) => {
   };
 };
 
-const getCTokenData = (marketData, tokenOverrides) => {
+const getCTokenData = marketData => {
   const { id: cTokenAddress, name, symbol } = marketData;
 
   return {
     address: cTokenAddress,
     decimals: 8,
-    name: parseAssetName(name, cTokenAddress, tokenOverrides),
-    symbol: parseAssetSymbol(symbol, cTokenAddress, tokenOverrides),
+    name: parseAssetName(name, cTokenAddress),
+    symbol: parseAssetSymbol(symbol, cTokenAddress),
   };
 };
 
-const getUnderlyingData = (marketData, tokenOverrides) => {
+const getUnderlyingData = marketData => {
   const {
     underlyingAddress,
     underlyingDecimals,
@@ -52,12 +52,8 @@ const getUnderlyingData = (marketData, tokenOverrides) => {
   return {
     address: underlyingAddress,
     decimals: underlyingDecimals,
-    name: parseAssetName(underlyingName, underlyingAddress, tokenOverrides),
-    symbol: parseAssetSymbol(
-      underlyingSymbol,
-      underlyingAddress,
-      tokenOverrides
-    ),
+    name: parseAssetName(underlyingName, underlyingAddress),
+    symbol: parseAssetSymbol(underlyingSymbol, underlyingAddress),
   };
 };
 
@@ -119,7 +115,6 @@ export const savingsDecrementNumberOfJustFinishedDepositsOrWithdrawals = () => (
 
 const subscribeToCompoundData = async (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
-  const { tokenOverrides } = getState().data;
   const { savingsQuery } = getState().savings;
   let shouldRefetch = true;
   if (savingsQuery) {
@@ -170,7 +165,7 @@ const subscribeToCompoundData = async (dispatch, getState) => {
             supplyRate,
             underlying,
             underlyingPrice,
-          } = getMarketData(marketData, tokenOverrides);
+          } = getMarketData(marketData);
 
           const ethPrice = multiply(
             underlyingPrice,
@@ -205,10 +200,7 @@ const subscribeToCompoundData = async (dispatch, getState) => {
           savingsAccountData = savingsAccountLocal;
         }
 
-        const daiMarketData = getMarketData(
-          markets[CDAI_CONTRACT],
-          tokenOverrides
-        );
+        const daiMarketData = getMarketData(markets[CDAI_CONTRACT]);
 
         dispatch({
           payload: {
