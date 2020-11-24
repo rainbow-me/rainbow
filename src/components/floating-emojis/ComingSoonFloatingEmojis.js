@@ -19,6 +19,7 @@ export default function ComingSoonFloatingEmojis(props) {
       duration={2000}
       emojis={emojis}
       size={36}
+      style={{ flex: 1 }}
       wiggleFactor={0}
     >
       {({ onNewEmoji }) => (

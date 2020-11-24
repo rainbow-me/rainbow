@@ -59,8 +59,24 @@ const LiquidityPoolExpandedState = ({ asset }) => {
         </TokenInfoRow>
       </TokenInfoSection>
       <SheetActionButtonRow>
-        <WithdrawActionButton symbol={tokenNames} weight="bold" />
-        <DepositActionButton symbol={tokenNames} weight="bold" />
+        <WithdrawActionButton
+          radiusAndroid={24}
+          radiusWrapperStyle={{ flex: 1 }}
+          wrapperProps={{
+            containerStyle: { flex: 1 },
+            style: { flex: 1 },
+          }}
+        />
+        <DepositActionButton
+          radiusAndroid={24}
+          radiusWrapperStyle={{ flex: 1 }}
+          symbol={tokenNames}
+          weight="bold"
+          wrapperProps={{
+            containerStyle: { flex: 1 },
+            style: { flex: 1 },
+          }}
+        />
       </SheetActionButtonRow>
     </SlackSheet>
   );

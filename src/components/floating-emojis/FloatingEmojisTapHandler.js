@@ -23,7 +23,9 @@ export default function FloatingEmojisTapHandler({
       {...position.sizeAsObject('100%')}
       onHandlerStateChange={handleTap}
     >
-      <Animated.View accessible>{children}</Animated.View>
+      <Animated.View {...position.sizeAsObject('100%')} accessible>
+        {children}
+      </Animated.View>
     </TapGestureHandler>
   );
 }
