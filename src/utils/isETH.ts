@@ -1,3 +1,5 @@
+import { toUpper } from 'lodash';
+
 export default function isETH(addressOrSymbol: string): boolean {
-  return addressOrSymbol && addressOrSymbol.toUpperCase() === 'ETH';
+  return toUpper(addressOrSymbol) === 'ETH';
 }
