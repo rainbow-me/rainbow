@@ -112,8 +112,6 @@ export const buildCoinsList = (
 
   const isShortList = assetsLength <= amountOfShowedCoins;
 
-  let hasStandard = false;
-
   forEach(assets, asset => {
     if (hiddenCoins && hiddenCoins.includes(asset.uniqueId)) {
       hiddenAssets.push({
@@ -139,7 +137,6 @@ export const buildCoinsList = (
           supportedNativeCurrencies[nativeCurrency].smallThreshold) ||
       isShortList
     ) {
-      hasStandard = true;
       totalBalancesValue = add(
         totalBalancesValue,
         get(asset, 'native.balance.amount', 0)
@@ -148,10 +145,8 @@ export const buildCoinsList = (
     } else {
       //if only dust assets we want to show the top 5 in standard
       if (
-        (!hasStandard && standardAssets.length < amountOfShowedCoins) ||
-        (hasStandard &&
-          standardAssets.length < amountOfShowedCoins &&
-          asset.address === 'eth')
+        standardAssets.length + pinnedCoins.length < amountOfShowedCoins ||
+        asset.address === 'eth'
       ) {
         totalBalancesValue = add(
           totalBalancesValue,
@@ -169,7 +164,6 @@ export const buildCoinsList = (
     }
   });
   totalBalancesValue = add(totalBalancesValue, smallBalancesValue);
-
   if (isCoinListEdited) {
     if (assetsLength <= amountOfShowedCoins) {
       standardAssets = standardAssets.concat(hiddenAssets);
