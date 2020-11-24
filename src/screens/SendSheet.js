@@ -20,7 +20,6 @@ import {
 } from '../components/send';
 import { createSignableTransaction, estimateGasLimit } from '../handlers/web3';
 import AssetTypes from '../helpers/assetTypes';
-import isKeyboardOpen from '../helpers/isKeyboardOpen';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 import {
   convertAmountAndPriceToNativeDisplay,
@@ -414,7 +413,6 @@ export default function SendSheet(props) {
   const { params } = useRoute();
   const assetOverride = params?.asset;
   const prevAssetOverride = usePrevious(assetOverride);
-  const keyboardIsOpen = isKeyboardOpen();
 
   useEffect(() => {
     if (assetOverride && assetOverride !== prevAssetOverride) {
@@ -533,7 +531,7 @@ export default function SendSheet(props) {
             }
           />
         )}
-        {android ? <KeyboardSizeView isOpen={keyboardIsOpen} /> : null}
+        {android ? <KeyboardSizeView /> : null}
       </SheetContainer>
     </Container>
   );
