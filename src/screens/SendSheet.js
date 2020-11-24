@@ -5,6 +5,7 @@ import { get, isEmpty, isString, toLower } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { InteractionManager, Keyboard, StatusBar } from 'react-native';
 import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
+import { KeyboardArea } from 'react-native-keyboard-area';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components/primitives';
 import { dismissingScreenListener } from '../../shim';
@@ -19,6 +20,7 @@ import {
 } from '../components/send';
 import { createSignableTransaction, estimateGasLimit } from '../handlers/web3';
 import AssetTypes from '../helpers/assetTypes';
+import isKeyboardOpen from '../helpers/isKeyboardOpen';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 import {
   convertAmountAndPriceToNativeDisplay,
@@ -67,6 +69,10 @@ const SheetContainer = styled(Column).attrs({
   background-color: ${colors.white};
   height: ${isNativeStackAvailable || android ? sheetHeight : '100%'};
   width: 100%;
+`;
+
+const KeyboardSizeView = styled(KeyboardArea)`
+  background-color: ${colors.white};
 `;
 
 export default function SendSheet(props) {
@@ -408,6 +414,7 @@ export default function SendSheet(props) {
   const { params } = useRoute();
   const assetOverride = params?.asset;
   const prevAssetOverride = usePrevious(assetOverride);
+  const keyboardIsOpen = isKeyboardOpen();
 
   useEffect(() => {
     if (assetOverride && assetOverride !== prevAssetOverride) {
@@ -526,6 +533,7 @@ export default function SendSheet(props) {
             }
           />
         )}
+        {android ? <KeyboardSizeView isOpen={keyboardIsOpen} /> : null}
       </SheetContainer>
     </Container>
   );
