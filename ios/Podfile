@@ -75,7 +75,7 @@ target 'Rainbow' do
   pod 'Permission-Camera', :path => "#{permissions_path}/Camera.podspec"
   pod 'Permission-FaceID', :path => "#{permissions_path}/FaceID.podspec"
 
-  pod "PanModal", :git => 'https://github.com/osdnk/PanModal', :commit => '4588162c55cc0e70fecafbf6af002340b6ae27e3'
+  pod "PanModal", :git => 'https://github.com/osdnk/PanModal', :commit => '67557e18491ddfd2e2d1af0f36efb8f0202589f7'
 
   pod 'Shimmer'
 
