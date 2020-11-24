@@ -1287,10 +1287,10 @@
   dependencies:
     "@ethersproject/logger" "^5.0.5"
 
-"@ethersproject/providers@5.0.12":
-  version "5.0.12"
-  resolved "https://registry.yarnpkg.com/@ethersproject/providers/-/providers-5.0.12.tgz#de05e865e130709ea1e0870511eb892bda7d41cb"
-  integrity sha512-bRUEVNth+wGlm2Q0cQprVlixBWumfP9anrgAc3V2CbIh+GKvCwisVO8uRLrZOfOvTNSy6PUJi/Z4D5L+k3NAog==
+"@ethersproject/providers@^5.0.9":
+  version "5.0.16"
+  resolved "https://registry.yarnpkg.com/@ethersproject/providers/-/providers-5.0.16.tgz#23892ea140180f22051801b1a2177ee9c1cc3f75"
+  integrity sha512-OCo0NH7VC8hfr7ESuZDMQl2Jdz2jpWulNGsWgnxXZT0tuPrrKHO+5BADS5s1W+YsovL3mKFkQjwGcOP2arvhzw==
   dependencies:
     "@ethersproject/abstract-provider" "^5.0.4"
     "@ethersproject/abstract-signer" "^5.0.4"
@@ -2383,25 +2383,25 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/viewpager/-/viewpager-4.1.0.tgz#b6908329a39e27e5cd3236540aadd65133420563"
   integrity sha512-+YbmuKAL4ahc2D/u0ix+xMCgAN0KukUnc+uvlMD+NPn/zUdUposqF6dsZu1cRarBzKcswchlj3kAH8yN3bazxA==
 
-"@react-native-firebase/app@8.4.5":
-  version "8.4.5"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/app/-/app-8.4.5.tgz#a5194c34a1f75af8641153163700305ae578d31d"
-  integrity sha512-27qsFzX2Z1GPDyU8tUhYYCUkMlhYYCd/XJvteprTAjC8R6zPGdn/Y9Xxdrwkvhpj8Ply19lsxZ8UfvYIUbgOIQ==
+"@react-native-firebase/app@^10.0.0":
+  version "10.0.0"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/app/-/app-10.0.0.tgz#dc18af26accb31028eab00dd36f486fee046e63e"
+  integrity sha512-hvmEOj3vMeaoYX8Q7f2UZCSVGv0VMvTR/RUUka0y7Xmyzg3kpdb2EHCOoqLIN9ySPf5b/At5I6GVazQugbZqLA==
   dependencies:
     opencollective-postinstall "^2.0.1"
     superstruct "^0.6.2"
 
-"@react-native-firebase/crashlytics@8.4.9":
-  version "8.4.9"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/crashlytics/-/crashlytics-8.4.9.tgz#46979f3d34d669201b843fff0feb7bb47739b753"
-  integrity sha512-++t75V+5xd1OWnZ2511zkTmKRDyOHumGqPriUezQ/27ObYrNYQJkkYad3O3FYI/hRWC4GndlvdSz6Z2FGMtHNA==
+"@react-native-firebase/crashlytics@^10.0.0":
+  version "10.0.0"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/crashlytics/-/crashlytics-10.0.0.tgz#955e4f8e7c18ba30ccc5bd9eb2c4816af5503400"
+  integrity sha512-7jy8v7+JGL1Fu5G//UjGZRcJsItTomKXTvPins299VafdOUM1R0WGWwF5RCV5gBmFkEyQr/QXs86kZi07yS1Wg==
   dependencies:
     stacktrace-js "^2.0.0"
 
-"@react-native-firebase/messaging@7.9.0":
-  version "7.9.0"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/messaging/-/messaging-7.9.0.tgz#d7b8bc5a7391c2363e16607610f301118c6049b9"
-  integrity sha512-DEcI3jl3VQz4/Lg/qtM9yeVP/PO4PlOq1qtf9aasQb4pZw5pG0LE6i+Laqcoo+i3GKnBSi1htE39IKzQGeaXFQ==
+"@react-native-firebase/messaging@^10.0.0":
+  version "10.0.0"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/messaging/-/messaging-10.0.0.tgz#fe0bd993e80dbccffd7c5c21ee04754f2196ad81"
+  integrity sha512-XSoHSVvxR5MRzkJ/RQWzO3LQ29N13fWckttd5oxur2OtEMHZM7CseWqlN3fcWcoGNZXh17HXu9XlxsznE/kzxA==
 
 "@react-navigation/core@^5.10.0", "@react-navigation/core@^5.12.5":
   version "5.12.5"
@@ -2450,10 +2450,10 @@
   resolved "https://registry.yarnpkg.com/@scarf/scarf/-/scarf-1.1.0.tgz#b84b4a91cd938a688d36245b7a7db6fbc476a499"
   integrity sha512-b2iE8kjjzzUo2WZ0xuE2N77kfnTds7ClrDxcz3Atz7h2XrNVoAPUoT75i7CY0st5x++70V91Y+c6RpBX9MX7Jg==
 
-"@segment/analytics-react-native@^1.3.1":
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/@segment/analytics-react-native/-/analytics-react-native-1.3.1.tgz#155945e97898a1ddb507067e68ac9419424d963b"
-  integrity sha512-8tEmQPA1WfqHJBCaCtXyTxpLe3vtBP7BSqrx9PN65q4VE/ZS+kvetSkeexNMDWYqEomzSEZlnqutH56Uu0w2OQ==
+"@segment/analytics-react-native@^1.3.2":
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/@segment/analytics-react-native/-/analytics-react-native-1.3.2.tgz#119fe76f98817a22f68d5848ce167f0b4fae91e1"
+  integrity sha512-q5KZYzlCjm67ufRmYLXkGugN1t9VQlJ+ga8QidJXOLmCPk1+Ac/0oKmgEf6tAwjibOPa8atGA99yy8b4zvlX+w==
 
 "@sentry/browser@^5.16.1":
   version "5.26.0"
@@ -3052,7 +3052,7 @@
     tiny-warning "^1.0.3"
     toformat "^2.0.0"
 
-"@uniswap/token-lists@github:rainbow-me/token-lists#40babff279b578e5585d274e1c7c93f35c56ed73":
+"@uniswap/token-lists@rainbow-me/token-lists#40babff279b578e5585d274e1c7c93f35c56ed73":
   version "1.0.0-beta.18-extensions"
   resolved "https://codeload.github.com/rainbow-me/token-lists/tar.gz/40babff279b578e5585d274e1c7c93f35c56ed73"
 
