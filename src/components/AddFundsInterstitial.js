@@ -141,7 +141,7 @@ const AmountButton = ({ amount, backgroundColor, color, onPress }) => {
 
   return (
     <AmountButtonWrapper>
-      <AmountBPA disabled={android} onPress={handlePress}>
+      <AmountBPA disabled={false} onPress={handlePress}>
         <ShadowStack
           {...position.coverAsObject}
           backgroundColor={backgroundColor}
@@ -153,7 +153,7 @@ const AmountButton = ({ amount, backgroundColor, color, onPress }) => {
           })}
         />
         <InnerBPA
-          disabled={ios}
+          disabled
           onPress={handlePress}
           radiusAndroid={25}
           radiusWrapperStyle={{ width: 100, zIndex: 1 }}

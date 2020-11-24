@@ -47,7 +47,7 @@ const FloatingActionButton = ({
 
   return (
     <ButtonPressAnimation
-      disabled={disabled || android}
+      disabled={disabled || false}
       hapticType="impactLight"
       onPress={handlePress}
       onPressIn={handlePressIn}
@@ -61,7 +61,7 @@ const FloatingActionButton = ({
         shadows={shadows}
       >
         <ButtonPressAnimation
-          disabled={disabled || ios}
+          disabled={disabled || true}
           onPress={handlePress}
           style={{
             height: size,

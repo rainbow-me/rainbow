@@ -51,7 +51,7 @@ const UniqueTokenCard = ({
     >
       <Content {...props} height={height} style={style} width={width}>
         <ButtonPressAnimation
-          disabled={ios}
+          disabled
           onPress={handlePress}
           style={{ height, width }}
         >

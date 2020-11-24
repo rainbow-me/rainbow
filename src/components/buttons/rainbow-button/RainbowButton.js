@@ -86,7 +86,7 @@ const RainbowButton = ({
   return (
     <ButtonPressAnimation
       {...props}
-      disabled={disabled || android}
+      disabled={disabled || false}
       onPress={onPress}
       scaleTo={0.9}
     >
@@ -103,7 +103,7 @@ const RainbowButton = ({
           type={type}
           width={width}
         />
-        <ButtonPressAnimation disabled={disabled || ios} onPress={onPress}>
+        <ButtonPressAnimation disabled={disabled || true} onPress={onPress}>
           <ButtonContent type={type}>
             {type === RainbowButtonTypes.addCash && <AddCashIcon />}
             <ButtonLabel type={type}>

@@ -51,7 +51,7 @@ export default function AvatarCircle({
 
   return (
     <ButtonPressAnimation
-      disabled={android || !isAvatarPickerAvailable}
+      disabled={false || !isAvatarPickerAvailable}
       enableHapticFeedback={isAvatarPickerAvailable}
       marginTop={2}
       onPress={onPress}
@@ -74,7 +74,7 @@ export default function AvatarCircle({
         ) : (
           <AvatarCircleView backgroundColor={colors.avatarColor[accountColor]}>
             <ButtonPressAnimation
-              disabled={ios || !isAvatarPickerAvailable}
+              disabled={true || !isAvatarPickerAvailable}
               onPress={onPress}
             >
               <FirstLetter>{accountSymbol}</FirstLetter>
