@@ -313,6 +313,11 @@ export const exchangePreset = {
   transitionSpec: { close: closeSpec, open: sheetOpenSpec },
 };
 
+export const wcPromptPreset = {
+  ...exchangePreset,
+  cardStyleInterpolator: expandStyleInterpolator(0.7),
+};
+
 export const expandedPreset = {
   cardOverlayEnabled: true,
   cardShadowEnabled: true,
