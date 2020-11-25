@@ -81,7 +81,7 @@ const TokenFamilyHeader = ({
 
   return (
     <ButtonPressAnimation
-      key={`${emoji || familyImage || title}_${isOpen}`}
+      key={`token_family_header_${emoji || familyImage || title}`}
       onPress={onPress}
       scaleTo={1.05}
       testID={testID}
