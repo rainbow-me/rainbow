@@ -5,6 +5,7 @@ import { get, isEmpty, isString, toLower } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { InteractionManager, Keyboard, StatusBar } from 'react-native';
 import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
+import { KeyboardArea } from 'react-native-keyboard-area';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components/primitives';
 import { dismissingScreenListener } from '../../shim';
@@ -67,6 +68,10 @@ const SheetContainer = styled(Column).attrs({
   background-color: ${colors.white};
   height: ${isNativeStackAvailable || android ? sheetHeight : '100%'};
   width: 100%;
+`;
+
+const KeyboardSizeView = styled(KeyboardArea)`
+  background-color: ${colors.white};
 `;
 
 export default function SendSheet(props) {
@@ -526,6 +531,7 @@ export default function SendSheet(props) {
             }
           />
         )}
+        {android ? <KeyboardSizeView /> : null}
       </SheetContainer>
     </Container>
   );
