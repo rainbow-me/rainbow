@@ -141,7 +141,7 @@ const AmountButton = ({ amount, backgroundColor, color, onPress }) => {
 
   return (
     <AmountButtonWrapper>
-      <AmountBPA disabled={false} onPress={handlePress}>
+      <AmountBPA onPress={handlePress}>
         <ShadowStack
           {...position.coverAsObject}
           backgroundColor={backgroundColor}

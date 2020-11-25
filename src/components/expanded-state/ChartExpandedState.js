@@ -204,40 +204,15 @@ export default function ChartExpandedState({ asset }) {
       </TokenInfoSection>
       {needsEth ? (
         <ActionRow key={`row${showChart}`}>
-          <BuyActionButton
-            color={color}
-            radiusAndroid={24}
-            radiusWrapperStyle={{ flex: 1 }}
-            wrapperProps={{
-              containerStyle: { flex: 1 },
-              style: { flex: 1 },
-            }}
-          />
+          <BuyActionButton color={color} />
         </ActionRow>
       ) : (
-        <ActionRow key={`row${showChart}`}>
+        <SheetActionButtonRow key={`row${showChart}`}>
           {showSwapButton && (
-            <SwapActionButton
-              color={color}
-              inputType={AssetInputTypes.in}
-              radiusAndroid={24}
-              radiusWrapperStyle={{ flex: 1, marginRight: 10 }}
-              wrapperProps={{
-                containerStyle: { flex: 1 },
-                style: { flex: 1 },
-              }}
-            />
+            <SwapActionButton color={color} inputType={AssetInputTypes.in} />
           )}
-          <SendActionButton
-            color={color}
-            radiusAndroid={24}
-            radiusWrapperStyle={{ flex: 1, marginLeft: 10 }}
-            wrapperProps={{
-              containerStyle: { flex: 1 },
-              style: { flex: 1 },
-            }}
-          />
-        </ActionRow>
+          <SendActionButton color={color} />
+        </SheetActionButtonRow>
       )}
     </SlackSheet>
   );

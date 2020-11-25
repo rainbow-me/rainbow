@@ -123,6 +123,7 @@ export default function ButtonPressAnimation({
   minLongPressDuration = 500,
   testID,
   scaleTo = 0.86,
+  contentContainerStyle,
 }) {
   if (disabled) {
     return <View style={[style, { overflow: 'visible' }]}>{children}</View>;
@@ -130,6 +131,7 @@ export default function ButtonPressAnimation({
 
   return (
     <ScaleButton
+      contentContainerStyle={contentContainerStyle}
       duration={duration}
       minLongPressDuration={minLongPressDuration}
       onLongPress={onLongPress}

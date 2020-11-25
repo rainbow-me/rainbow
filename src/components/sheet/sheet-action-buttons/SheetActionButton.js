@@ -43,6 +43,9 @@ const WhiteButtonGradient = React.memo(
   neverRerender
 );
 
+// FIXME
+const ANDROID_WIDTH = 160;
+
 const SheetActionButton = ({
   borderRadius = 56,
   color = colors.appleBlue,
@@ -62,17 +65,21 @@ const SheetActionButton = ({
     const isWhite = color === colors.white;
 
     if (isTransparent) {
-      return [[0, 0, 0, colors.transparent]];
+      return [[0, 0, 0, colors.transparent, 0.04]];
     } else
       return [
-        [0, 10, 30, colors.dark, isWhite ? 0.12 : 0.2],
-        [0, 5, 15, isWhite ? colors.dark : color, isWhite ? 0.08 : 0.4],
+        [0, 10, 30, colors.white, isWhite ? 0.12 : 0.2],
+        [0, 5, 15, isWhite ? colors.white : color, isWhite ? 0.08 : 0.4],
       ];
   }, [color, isTransparent]);
 
   return (
     <Button
       as={ButtonPressAnimation}
+      contentContainerStyle={{
+        height: size === 'big' ? 56 : 46,
+        ...(android && { width: ANDROID_WIDTH }),
+      }}
       elevation={android ? 24 : null}
       noFlex={noFlex}
       radiusAndroid={borderRadius}
@@ -84,7 +91,9 @@ const SheetActionButton = ({
         {...position.coverAsObject}
         backgroundColor={color}
         borderRadius={borderRadius}
+        height={size === 'big' ? 56 : 46}
         shadows={shadowsForButtonColor}
+        {...(android && { width: ANDROID_WIDTH + 10 })}
       >
         {color === colors.white && <WhiteButtonGradient />}
         {color !== colors.white && !isTransparent && (
