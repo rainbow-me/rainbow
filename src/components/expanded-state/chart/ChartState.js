@@ -1,15 +1,15 @@
 import { debounce } from 'lodash';
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  useChartData,
-  useChartDataLabels,
-  useColorForAsset,
-} from '../../../hooks';
 import Chart from '../../value-chart/Chart';
 import {
   ChartPathProvider,
   monotoneCubicInterpolation,
 } from '@rainbow-me/animated-charts';
+import {
+  useChartData,
+  useChartDataLabels,
+  useColorForAsset,
+} from '@rainbow-me/hooks';
 
 import { useNavigation } from '@rainbow-me/navigation';
 

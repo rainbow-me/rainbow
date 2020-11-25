@@ -1,16 +1,15 @@
 import { get, isNil, map, toUpper } from 'lodash';
-import AssetTypes from '../helpers/assetTypes';
+import { dedupeUniqueTokens } from './uniqueTokens';
+import AssetTypes from '@rainbow-me/helpers/assetTypes';
 import {
   add,
   convertAmountAndPriceToNativeDisplay,
   convertAmountToNativeDisplay,
   convertAmountToPercentageDisplay,
   convertRawAmountToBalance,
-} from '../helpers/utilities';
-
-import { tokenOverrides } from '../references';
-import { isLowerCaseMatch } from '../utils';
-import { dedupeUniqueTokens } from './uniqueTokens';
+} from '@rainbow-me/helpers/utilities';
+import { tokenOverrides } from '@rainbow-me/references';
+import { isLowerCaseMatch } from '@rainbow-me/utils';
 
 /**
  * @desc parse account assets

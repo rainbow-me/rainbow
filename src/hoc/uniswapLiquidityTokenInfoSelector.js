@@ -15,8 +15,8 @@ import {
   handleSignificantDecimals,
   handleSignificantDecimalsWithThreshold,
   multiply,
-} from '../helpers/utilities';
-import { tokenOverrides } from '../references';
+} from '@rainbow-me/helpers/utilities';
+import { tokenOverrides } from '@rainbow-me/references';
 
 const assetsSelector = state => state.data.assets;
 const nativeCurrencySelector = state => state.settings.nativeCurrency;
