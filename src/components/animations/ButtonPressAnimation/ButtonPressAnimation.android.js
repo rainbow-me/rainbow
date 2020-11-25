@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { createContext, useContext, useRef } from 'react';
 import { processColor, View } from 'react-native';
 import {
   createNativeWrapper,
@@ -8,6 +8,7 @@ import Animated, {
   runOnJS,
   useAnimatedGestureHandler,
   useAnimatedStyle,
+  useDerivedValue,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
@@ -20,7 +21,33 @@ const AnimatedRawButton = createNativeWrapper(
   }
 );
 
-const OVERFLOW_MARGIN = 25;
+const OVERFLOW_MARGIN = 5;
+
+const ScaleButtonContext = createContext(null);
+
+// I managed to implement partially overflow in scale button (up to 5px),
+// but overflow is not visible beyond small boundaries. Hence, to make it reactive to touches
+// I couldn't just expend boundaries, because then it intercepts touches, so I managed to
+// extract animated component to external value
+
+export const ScaleButtonZoomable = ({ children, style }) => {
+  const value = useSharedValue(1);
+  const sz = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          scale: value.value,
+        },
+      ],
+    };
+  });
+
+  return (
+    <ScaleButtonContext.Provider value={value}>
+      <Animated.View style={[style, sz]}>{children}</Animated.View>
+    </ScaleButtonContext.Provider>
+  );
+};
 
 const ScaleButton = ({
   duration,
@@ -30,16 +57,28 @@ const ScaleButton = ({
   onLongPress,
   contentContainerStyle,
   minLongPressDuration,
+  overflowMargin,
+  wrapperStyle,
 }) => {
   const longPressTimer = useRef(false);
   const isPressEventLegal = useRef(false);
   const scale = useSharedValue(1);
   const hasScaledDown = useSharedValue(0);
+  const parentValue = useContext(ScaleButtonContext);
+  const scaleTraversed = useDerivedValue(() => {
+    const value = withTiming(scale.value, { duration });
+    if (parentValue) {
+      parentValue.value = value;
+      return 1;
+    } else {
+      return value;
+    }
+  });
   const sz = useAnimatedStyle(() => {
     return {
       transform: [
         {
-          scale: withTiming(scale.value, { duration }),
+          scale: scaleTraversed.value,
         },
       ],
     };
@@ -89,16 +128,16 @@ const ScaleButton = ({
   });
 
   return (
-    <View style={{ overflow: 'visible' }}>
-      <View style={{ margin: -OVERFLOW_MARGIN }}>
+    <View style={[{ overflow: 'visible' }, wrapperStyle]}>
+      <View style={{ margin: -overflowMargin }}>
         <AnimatedRawButton
-          hitSlop={-OVERFLOW_MARGIN + 10}
+          hitSlop={-overflowMargin}
           onGestureEvent={gestureHandler}
           rippleColor={processColor('transparent')}
-          style={{ overflow: 'hidden' }}
+          style={{ overflow: 'visible' }}
         >
           <View style={{ backgroundColor: 'transparent' }}>
-            <View style={{ padding: OVERFLOW_MARGIN }}>
+            <View style={{ padding: overflowMargin }}>
               <Animated.View style={[sz, contentContainerStyle]}>
                 {children}
               </Animated.View>
@@ -124,6 +163,9 @@ export default function ButtonPressAnimation({
   testID,
   scaleTo = 0.86,
   contentContainerStyle,
+  overflowMargin = OVERFLOW_MARGIN,
+  hitSlop,
+  wrapperStyle,
 }) {
   if (disabled) {
     return <View style={[style, { overflow: 'visible' }]}>{children}</View>;
@@ -133,12 +175,15 @@ export default function ButtonPressAnimation({
     <ScaleButton
       contentContainerStyle={contentContainerStyle}
       duration={duration}
+      hitSlop={hitSlop}
       minLongPressDuration={minLongPressDuration}
       onLongPress={onLongPress}
       onPress={onPress}
       onPressStart={onPressStart}
+      overflowMargin={overflowMargin}
       scaleTo={scaleTo}
       testID={testID}
+      wrapperStyle={wrapperStyle}
     >
       <View pointerEvents="box-only" style={[style, { overflow: 'visible' }]}>
         {children}
