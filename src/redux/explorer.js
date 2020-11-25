@@ -1,8 +1,6 @@
 import { concat, get, isNil, keys, map, toLower } from 'lodash';
 import { DATA_API_KEY, DATA_ORIGIN } from 'react-native-dotenv';
 import io from 'socket.io-client';
-import { disableCharts, forceFallbackProvider } from '../config/debug';
-import NetworkTypes from '../helpers/networkTypes';
 import { assetChartsReceived, DEFAULT_CHART_TYPE } from './charts';
 import {
   addressAssetsReceived,
@@ -15,6 +13,8 @@ import {
   fallbackExplorerClearState,
   fallbackExplorerInit,
 } from './fallbackExplorer';
+import { disableCharts, forceFallbackProvider } from '@rainbow-me/config/debug';
+import NetworkTypes from '@rainbow-me/helpers/networkTypes';
 import logger from 'logger';
 
 // -- Constants --------------------------------------- //
