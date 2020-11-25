@@ -196,6 +196,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.delay(1000);
     if (device.getPlatform() === 'android') {
       await device.pressBack();
+      await device.pressBack();
     } else {
       await Helpers.swipe('exchange-modal-header', 'down', 'slow');
     }
@@ -346,6 +347,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.delay(1000);
     if (device.getPlatform() === 'android') {
       await device.pressBack();
+      await device.pressBack();
     } else {
       await Helpers.swipe('exchange-modal-header', 'down', 'slow');
     }
@@ -379,6 +381,7 @@ describe('Swap Sheet Interaction Flow', () => {
 
   it('Should display Gas Button on Normal by default', async () => {
     if (device.getPlatform() === 'android') {
+      await device.pressBack();
       await device.pressBack();
     } else {
       await Helpers.swipe('exchange-modal-header', 'down', 'slow');
