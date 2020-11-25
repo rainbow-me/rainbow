@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { StatusBar } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useValue } from 'react-native-redash';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components/primitives';
 import { OpacityToggler } from '../components/animations';
 import { AssetList } from '../components/asset-list';
@@ -28,6 +29,7 @@ import {
   useWallets,
   useWalletSectionsData,
 } from '../hooks';
+import { updateRefetchSavings } from '../redux/data';
 import { position } from '@rainbow-me/styles';
 
 const HeaderOpacityToggler = styled(OpacityToggler).attrs(({ isVisible }) => ({
@@ -54,7 +56,23 @@ export default function WalletScreen() {
   const { isReadOnlyWallet } = useWallets();
   const { isEmpty } = useAccountEmptyState();
   const { network } = useAccountSettings();
-  const { isWalletEthZero, sections } = useWalletSectionsData();
+  const {
+    isWalletEthZero,
+    refetchSavings,
+    sections,
+    shouldRefetchSavings,
+  } = useWalletSectionsData();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const fetchAndResetFetchSavings = async () => {
+      await refetchSavings();
+      dispatch(updateRefetchSavings(false));
+    };
+    if (shouldRefetchSavings) {
+      fetchAndResetFetchSavings();
+    }
+  }, [dispatch, refetchSavings, shouldRefetchSavings]);
 
   useEffect(() => {
     if (!initialized) {

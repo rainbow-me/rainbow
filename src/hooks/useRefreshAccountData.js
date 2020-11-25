@@ -8,11 +8,13 @@ import { uniqueTokensRefreshState } from '../redux/uniqueTokens';
 import { uniswapUpdateLiquidityState } from '../redux/uniswapLiquidity';
 import { fetchWalletNames } from '../redux/wallets';
 import useAccountSettings from './useAccountSettings';
+import useSavingsAccount from './useSavingsAccount';
 import logger from 'logger';
 
 export default function useRefreshAccountData() {
   const dispatch = useDispatch();
   const { network } = useAccountSettings();
+  const { refetchSavings } = useSavingsAccount();
 
   const refreshAccountData = useCallback(async () => {
     // Refresh unique tokens for Rinkeby
@@ -37,6 +39,7 @@ export default function useRefreshAccountData() {
         getWalletNames,
         getUniswapLiquidity,
         getUniqueTokens,
+        refetchSavings(true),
         explorer,
       ]);
     } catch (error) {
@@ -44,7 +47,7 @@ export default function useRefreshAccountData() {
       captureException(error);
       throw error;
     }
-  }, [dispatch, network]);
+  }, [dispatch, network, refetchSavings]);
 
   return refreshAccountData;
 }
