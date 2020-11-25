@@ -722,11 +722,11 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODEPUSH_KEY = "CHq9hB40PBZqHTxL-f-Wd_rK4anl1e7a8912-936f-4ce7-8505-32a075039f51";
 				CODE_SIGN_ENTITLEMENTS = Rainbow/RainbowRelease.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = L74NQAQB8H;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -765,7 +765,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = me.rainbow;
 				PRODUCT_NAME = Rainbow;
 				PROVISIONING_PROFILE = "";
-				PROVISIONING_PROFILE_SPECIFIER = "match AppStore me.rainbow";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Rainbow-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
