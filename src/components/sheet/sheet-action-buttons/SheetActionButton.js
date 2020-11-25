@@ -14,8 +14,6 @@ const Button = styled(Centered).attrs({
 })`
   flex: ${({ noFlex }) => (noFlex ? 'none' : 1)};
   height: ${({ size }) => (size === 'big' ? 56 : 46)};
-  position: absolute;
-  width: 100%;
 `;
 
 const Content = styled(RowWithMargins).attrs({
