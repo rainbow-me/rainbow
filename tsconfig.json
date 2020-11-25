@@ -18,6 +18,7 @@
       "@rainbow-me/handlers": ["./src/handlers"],
       "@rainbow-me/helpers": ["./src/helpers"],
       "@rainbow-me/hooks": ["src/hooks"],
+      "@rainbow-me/model": ["src/model"],
       "@rainbow-me/navigation": ["src/navigation"],
       "@rainbow-me/redux": ["src/redux"],
       "@rainbow-me/references": ["src/references"],
