@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "uni-v1_dai.png",
+      "filename" : "$based.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "uni-v1_dai@2x.png",
+      "filename" : "$based@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "uni-v1_dai@3x.png",
+      "filename" : "$based@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
