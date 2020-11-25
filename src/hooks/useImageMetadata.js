@@ -33,7 +33,9 @@ export default function useImageMetadata(imageUrl) {
         updateImageMetadataCache({
           id: imageUrl,
           metadata: {
-            color: color || colorFromImage,
+            ...(color || colorFromImage
+              ? { color: color || colorFromImage }
+              : {}),
             dimensions: {
               height,
               isSquare: height === width,

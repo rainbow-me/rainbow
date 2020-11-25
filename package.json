@@ -127,6 +127,7 @@
     "lodash": "^4.17.19",
     "lottie-ios": "3.1.3",
     "lottie-react-native": "3.4.0",
+    "make-color-more-chill": "^0.1.0",
     "match-sorter": "^4.0.2",
     "nanoid": "^2.1.6",
     "ow": "^0.17.0",
