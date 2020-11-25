@@ -66,7 +66,7 @@ export default function ChartExpandedState({ asset }) {
         </TokenInfoRow>
       </TokenInfoSection>
       {needsEth ? (
-        <SheetActionButtonRow key="buyActionRow">
+        <SheetActionButtonRow>
           <BuyActionButton
             color={color}
             radiusAndroid={24}
@@ -78,7 +78,7 @@ export default function ChartExpandedState({ asset }) {
           />
         </SheetActionButtonRow>
       ) : (
-        <SheetActionButtonRow key="actionRow">
+        <SheetActionButtonRow>
           {showSwapButton && (
             <SwapActionButton
               color={color}
