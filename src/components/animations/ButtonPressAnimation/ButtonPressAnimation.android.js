@@ -1,20 +1,15 @@
-import TouchableScale from '@jonny/touchable-scale';
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useRef } from 'react';
+import { processColor, View } from 'react-native';
 import {
-  BaseButton,
   createNativeWrapper,
-  LongPressGestureHandler,
   PureNativeButton,
-  State,
-  TapGestureHandler,
-  TouchableOpacity,
 } from 'react-native-gesture-handler';
 import Animated, {
+  runOnJS,
   useAnimatedGestureHandler,
   useAnimatedStyle,
   useSharedValue,
-  withSpring,
+  withTiming,
 } from 'react-native-reanimated';
 
 const AnimatedRawButton = createNativeWrapper(
@@ -25,109 +20,123 @@ const AnimatedRawButton = createNativeWrapper(
   }
 );
 
+const OVERFLOW_MARGIN = 25;
+
 const ScaleButton = ({
+  duration,
+  scaleTo,
   children,
-  onPress = () => {},
-  activeScale = 0.9,
-  springConfig = {
-    damping: 10,
-    mass: 1,
-    stiffness: 200,
-  },
+  onPress,
+  onLongPress,
   contentContainerStyle,
-  handlerProps,
+  minLongPressDuration,
 }) => {
+  const longPressTimer = useRef(false);
+  const isPressEventLegal = useRef(false);
   const scale = useSharedValue(1);
   const hasScaledDown = useSharedValue(0);
   const sz = useAnimatedStyle(() => {
     return {
       transform: [
         {
-          scale: withSpring(scale.value),
+          scale: withTiming(scale.value, { duration }),
         },
       ],
     };
   });
 
+  const handleStartPress = () => {
+    longPressTimer.current = setTimeout(() => {
+      longPressTimer.current = null;
+      onLongPress?.();
+    }, minLongPressDuration);
+    isPressEventLegal.current = true;
+  };
+  const handlerPress = () => {
+    clearTimeout(longPressTimer.current);
+    if (longPressTimer.current) {
+      onPress();
+      longPressTimer.current = null;
+    }
+  };
+
+  const handleCancel = () => {
+    clearTimeout(longPressTimer.current);
+    isPressEventLegal.current = false;
+  };
+
   const gestureHandler = useAnimatedGestureHandler({
-    onStart: () => {
-      console.log('start');
-    },
-    onCancel: () => {
-      console.log('cancel');
-      scale.value = 1;
-      hasScaledDown.value = 0;
-    },
-    onFail: () => {
-      console.log('fail');
-    },
-    onEnd: () => {
-      console.log('end');
-      hasScaledDown.value = 0;
-      scale.value = 1;
-    },
-    onBegin: () => {
-      console.log('begin');
-    },
     onActive: () => {
-      console.log('active');
+      runOnJS(handleStartPress)();
       if (hasScaledDown.value === 0) {
-        scale.value = activeScale;
+        scale.value = scaleTo;
       }
       hasScaledDown.value = 1;
+    },
+    onCancel: () => {
+      scale.value = 1;
+      hasScaledDown.value = 0;
+      runOnJS(handleCancel)();
+    },
+    onEnd: () => {
+      hasScaledDown.value = 0;
+      scale.value = 1;
+      runOnJS(handlerPress)();
+    },
+    onFail: () => {
+      runOnJS(handleCancel)();
     },
   });
 
   return (
-    <AnimatedRawButton onGestureEvent={gestureHandler}>
-      <Animated.View style={[sz, contentContainerStyle]}>
-        {children}
-      </Animated.View>
-    </AnimatedRawButton>
+    <View style={{ overflow: 'visible' }}>
+      <View style={{ margin: -OVERFLOW_MARGIN }}>
+        <AnimatedRawButton
+          hitSlop={-OVERFLOW_MARGIN + 10}
+          onGestureEvent={gestureHandler}
+          rippleColor={processColor('transparent')}
+          style={{ overflow: 'hidden' }}
+        >
+          <View style={{ backgroundColor: 'transparent' }}>
+            <View style={{ padding: OVERFLOW_MARGIN }}>
+              <Animated.View style={[sz, contentContainerStyle]}>
+                {children}
+              </Animated.View>
+            </View>
+          </View>
+        </AnimatedRawButton>
+      </View>
+    </View>
   );
 };
 
 export default function ButtonPressAnimation({
+  // eslint-disable-next-line no-unused-vars
+  activeOpacity = 1, // TODO
   children,
   disabled,
-  elevation,
+  duration = 160,
   onLongPress,
   onPress,
   onPressStart,
   style,
-  opacityTouchable = false,
-  wrapperProps,
-  radiusAndroid: radius,
-  radiusWrapperStyle,
+  minLongPressDuration = 500,
   testID,
+  scaleTo = 0.86,
 }) {
   if (disabled) {
     return <View style={[style, { overflow: 'visible' }]}>{children}</View>;
   }
-  if (opacityTouchable) {
-    return (
-      <TouchableOpacity
-        disabled={disabled}
-        onLongPress={onLongPress}
-        onPress={onPress}
-        onPressStart={onPressStart}
-        style={style}
-        testID={testID}
-        {...wrapperProps}
-      >
-        {children}
-      </TouchableOpacity>
-    );
-  }
+
   return (
     <ScaleButton
-      disabled={disabled}
+      duration={duration}
+      minLongPressDuration={minLongPressDuration}
       onLongPress={onLongPress}
       onPress={onPress}
       onPressStart={onPressStart}
-      style={style}
+      scaleTo={scaleTo}
       testID={testID}
-      {...wrapperProps}
     >
       <View pointerEvents="box-only" style={[style, { overflow: 'visible' }]}>
         {children}
