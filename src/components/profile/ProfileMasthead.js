@@ -62,6 +62,7 @@ const AccountName = styled(TruncatedText).attrs({
 `;
 
 const AddCashButton = styled(RainbowButton).attrs({
+  overflowMargin: 30,
   type: 'addCash',
 })`
   margin-top: 16;
