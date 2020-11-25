@@ -160,7 +160,6 @@ describe('Swap Sheet Interaction Flow', () => {
       'exchange-modal-input-selection-button-text',
       'Choose Token'
     );
-    console.log('before check');
     await Helpers.delay(1000);
     if (device.getPlatform() === 'android') {
       await device.pressBack();
@@ -171,7 +170,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.delay(1000);
     await Helpers.tap('exchange-fab');
   });
-  /*
+
   it('Should swap input & output and clear form on ETH -> ERC20 when selecting ETH as output', async () => {
     await Helpers.delay(2000);
     await Helpers.tap('exchange-modal-output-selection-button');
@@ -196,6 +195,7 @@ describe('Swap Sheet Interaction Flow', () => {
     );
     await Helpers.delay(1000);
     if (device.getPlatform() === 'android') {
+      await device.pressBack();
       await device.pressBack();
     } else {
       await Helpers.swipe('exchange-modal-header', 'down', 'slow');
@@ -361,6 +361,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.delay(1000);
     if (device.getPlatform() === 'android') {
       await device.pressBack();
+      await device.pressBack();
     } else {
       await Helpers.swipe('exchange-modal-header', 'down', 'slow');
     }
@@ -394,6 +395,7 @@ describe('Swap Sheet Interaction Flow', () => {
 
   it('Should display Gas Button on Normal by default', async () => {
     if (device.getPlatform() === 'android') {
+      await device.pressBack();
       await device.pressBack();
     } else {
       await Helpers.swipe('exchange-modal-header', 'down', 'slow');
@@ -466,7 +468,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.delay(1000);
     await Helpers.checkIfElementByTextIsVisible('Custom');
   });
-  */
+
   afterAll(async () => {
     // Reset the app state
     await device.clearKeychain();
