@@ -82,7 +82,7 @@ const SheetActionButton = ({
       }}
       elevation={android ? 24 : null}
       noFlex={noFlex}
-      overflowMargin={20}
+      overflowMargin={30}
       radiusAndroid={borderRadius}
       size={size}
       testID={`${testID}-action-button`}
