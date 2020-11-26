@@ -20,6 +20,13 @@ const FallbackImage = styled(ImageWithCachedMetadata)`
   background-color: ${({ showImage }) =>
     showImage ? colors.white : colors.transparent};
   border-radius: ${({ size }) => size / 2};
+  overflow: visible;
+  shadow-color: ${({ shadowColorValue }) => shadowColorValue};
+  shadow-offset: ${({ shadowOffsetHeight, shadowOffsetWidth }) =>
+    `${shadowOffsetWidth}px ${shadowOffsetHeight}px`};
+  shadow-opacity: ${({ shadowOpacityValue, showImage }) =>
+    showImage ? shadowOpacityValue : 0};
+  shadow-radius: ${({ shadowRadiusValue }) => shadowRadiusValue};
 `;
 
 const CoinIconFallback = fallbackProps => {
@@ -27,6 +34,7 @@ const CoinIconFallback = fallbackProps => {
     address = '',
     height,
     shadowColor,
+    shadowOffset,
     shadowOpacity,
     shadowRadius,
     symbol,
@@ -43,14 +51,7 @@ const CoinIconFallback = fallbackProps => {
   ]);
 
   return (
-    <Centered
-      {...fallbackProps}
-      height={height}
-      shadowColor={shadowColor}
-      shadowOpacity={shadowOpacity}
-      shadowRadius={shadowRadius}
-      width={width}
-    >
+    <Centered height={height} width={width}>
       {!showImage && (
         <FallbackIcon
           {...fallbackProps}
@@ -61,10 +62,15 @@ const CoinIconFallback = fallbackProps => {
         />
       )}
       <FallbackImage
-        {...fallbackProps}
+        borderRadius={width / 2}
         imageUrl={imageUrl}
         onError={hideFallbackImage}
         onLoad={showFallbackImage}
+        shadowColorValue={shadowColor}
+        shadowOffsetHeight={shadowOffset.height}
+        shadowOffsetWidth={shadowOffset.width}
+        shadowOpacityValue={shadowOpacity}
+        shadowRadiusValue={shadowRadius}
         showImage={showImage}
         size={width}
       />
