@@ -258,6 +258,7 @@ export default function AlreadyBackedUpView() {
         </Centered>
         <Column>
           <SheetActionButton
+            androidWidth={225}
             color={ios ? colors.white : colors.lightestGrey}
             label="🗝 View recovery key"
             noFlex

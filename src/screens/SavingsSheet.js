@@ -43,10 +43,11 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
 
 const ActionRowAndroid = styled.View`
   flex-direction: row;
-  height: 44;
+  height: 50;
   margin-vertical: 12;
   margin-horizontal: 12;
   justify-content: space-around;
+  overflow: visible;
 `;
 
 const ActionRow = android ? ActionRowAndroid : SheetActionButtonRow;
@@ -180,24 +181,14 @@ const SavingsSheet = () => {
                 label="􀁏 Withdraw"
                 onPress={onWithdraw}
                 radiusAndroid={24}
-                radiusWrapperStyle={{ flex: 1, marginLeft: 10 }}
                 weight="bold"
-                wrapperProps={{
-                  containerStyle: { flex: 1 },
-                  style: { flex: 1 },
-                }}
               />
               <SheetActionButton
                 color={colors.swapPurple}
                 label="􀁍 Deposit"
                 onPress={onDeposit}
                 radiusAndroid={24}
-                radiusWrapperStyle={{ flex: 1, marginLeft: 10 }}
                 weight="bold"
-                wrapperProps={{
-                  containerStyle: { flex: 1 },
-                  style: { flex: 1 },
-                }}
               />
             </ActionRow>
             <Divider color={colors.rowDividerLight} zIndex={0} />
