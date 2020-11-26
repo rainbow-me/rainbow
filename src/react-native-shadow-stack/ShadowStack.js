@@ -8,6 +8,7 @@ const ShadowStack = React.forwardRef(
       backgroundColor,
       borderRadius,
       children,
+      elevation = 0,
       height,
       hideShadow,
       shadows,
@@ -22,15 +23,16 @@ const ShadowStack = React.forwardRef(
         <ShadowItem
           backgroundColor={backgroundColor}
           borderRadius={borderRadius}
-          height={ios ? height : height || 0}
+          elevation={elevation}
+          height={height}
           key={`${shadow.join('-')}${index}`}
           opacity={hideShadow ? 0 : 1}
           shadow={shadow}
-          width={ios ? width : width || 0}
+          width={width}
           zIndex={index + 2}
         />
       ),
-      [backgroundColor, borderRadius, height, hideShadow, width]
+      [backgroundColor, borderRadius, elevation, height, hideShadow, width]
     );
 
     return (
@@ -38,7 +40,7 @@ const ShadowStack = React.forwardRef(
         {...props}
         backgroundColor="transparent"
         borderRadius={borderRadius}
-        height={height}
+        height={ios ? height : height || 0}
         ref={ref}
         style={style}
         width={width}
@@ -51,7 +53,7 @@ const ShadowStack = React.forwardRef(
           height={height}
           overflow="hidden"
           style={[StyleSheet.absoluteFill, { backgroundColor }]}
-          width={width}
+          width={ios ? width : width || 0}
           zIndex={shadows?.length + 2 || 0}
         >
           {children}

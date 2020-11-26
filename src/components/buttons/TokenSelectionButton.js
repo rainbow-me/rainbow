@@ -58,10 +58,10 @@ const TokenSelectionButton = ({
       {...position.coverAsObject}
       backgroundColor={symbol ? colors.dark : colors.appleBlue}
       borderRadius={borderRadius}
+      elevation={8}
       height={46}
       shadows={shadows}
       symbol={symbol}
-      {...(android && { width: symbol ? 78 : 168 })}
     />
     <Content>
       <Text

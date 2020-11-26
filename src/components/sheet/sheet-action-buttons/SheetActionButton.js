@@ -70,7 +70,13 @@ const SheetActionButton = ({
     } else
       return [
         [0, 10, 30, colors.white, isWhite ? 0.12 : 0.2],
-        [0, 5, 15, isWhite ? colors.white : color, isWhite ? 0.08 : 0.4],
+        [
+          0,
+          5,
+          15,
+          isWhite ? (android ? colors.dark : colors.white) : color,
+          isWhite ? (android ? 0.14 : 0.08) : 0.4,
+        ],
       ];
   }, [color, isTransparent]);
 

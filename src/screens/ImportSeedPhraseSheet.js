@@ -389,6 +389,7 @@ export default function ImportSeedPhraseSheet() {
           {seedPhrase ? (
             <FooterButton
               disabled={!isSecretValid}
+              {...(android && { height: 30, overflowMargin: 15, width: 90 })}
               onPress={handlePressImportButton}
             >
               <Row>
@@ -410,6 +411,7 @@ export default function ImportSeedPhraseSheet() {
             </FooterButton>
           ) : (
             <FooterButton
+              {...(android && { height: 30, overflowMargin: 15, width: 60 })}
               disabled={!isClipboardValidSecret}
               onPress={handlePressPasteButton}
             >

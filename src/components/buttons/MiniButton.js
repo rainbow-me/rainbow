@@ -34,6 +34,8 @@ export default function MiniButton({
   disabled,
   onPress,
   scaleTo = 1.1,
+  width,
+  height,
   ...props
 }) {
   return (
@@ -48,7 +50,9 @@ export default function MiniButton({
         {...position.coverAsObject}
         backgroundColor={disabled ? colors.lightGrey : colors.appleBlue}
         borderRadius={borderRadius}
+        height={height}
         shadows={disabled ? shadows.disabled : shadows.default}
+        width={width}
       />
       <Content>
         {typeof children === 'string' ? (
