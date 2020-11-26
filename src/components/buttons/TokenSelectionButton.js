@@ -58,7 +58,7 @@ const TokenSelectionButton = ({
       {...position.coverAsObject}
       backgroundColor={symbol ? colors.dark : colors.appleBlue}
       borderRadius={borderRadius}
-      elevation={8}
+      elevation={ios ? 0 : 8}
       height={46}
       shadows={shadows}
       symbol={symbol}
