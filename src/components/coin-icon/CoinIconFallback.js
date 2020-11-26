@@ -19,10 +19,19 @@ const FallbackImage = styled(ImageWithCachedMetadata)`
   ${position.cover};
   background-color: ${({ showImage }) =>
     showImage ? colors.white : colors.transparent};
+  border-radius: ${({ size }) => size / 2};
 `;
 
 const CoinIconFallback = fallbackProps => {
-  const { address = '', height, symbol, width } = fallbackProps;
+  const {
+    address = '',
+    height,
+    shadowColor,
+    shadowOpacity,
+    shadowRadius,
+    symbol,
+    width,
+  } = fallbackProps;
 
   const [showImage, showFallbackImage, hideFallbackImage] = useBooleanState(
     false
@@ -35,9 +44,12 @@ const CoinIconFallback = fallbackProps => {
 
   return (
     <Centered
+      {...fallbackProps}
       borderRadius={height / 2}
       height={height}
-      overflow="hidden"
+      shadowColor={shadowColor}
+      shadowOpacity={shadowOpacity}
+      shadowRadius={shadowRadius}
       width={width}
     >
       <FallbackIcon
@@ -52,6 +64,7 @@ const CoinIconFallback = fallbackProps => {
         onError={hideFallbackImage}
         onLoad={showFallbackImage}
         showImage={showImage}
+        size={width}
       />
     </Centered>
   );
