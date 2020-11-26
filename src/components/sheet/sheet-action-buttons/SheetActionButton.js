@@ -79,7 +79,7 @@ const SheetActionButton = ({
       as={ButtonPressAnimation}
       contentContainerStyle={{
         height: size === 'big' ? 56 : 46,
-        ...(android && { androidWidth }),
+        ...(android && { width: androidWidth }),
       }}
       elevation={android ? 24 : null}
       noFlex={noFlex}
@@ -95,7 +95,7 @@ const SheetActionButton = ({
         borderRadius={borderRadius}
         height={size === 'big' ? 56 : 46}
         shadows={shadowsForButtonColor}
-        {...(android && { width: androidWidth + 10 })}
+        {...(android && { width: androidWidth })}
       >
         {color === colors.white && <WhiteButtonGradient />}
         {color !== colors.white && !isTransparent && (
