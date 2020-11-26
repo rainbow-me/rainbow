@@ -45,19 +45,21 @@ const CoinIconFallback = fallbackProps => {
   return (
     <Centered
       {...fallbackProps}
-      borderRadius={height / 2}
       height={height}
       shadowColor={shadowColor}
       shadowOpacity={shadowOpacity}
       shadowRadius={shadowRadius}
       width={width}
     >
-      <FallbackIcon
-        {...fallbackProps}
-        color={fallbackIconColor}
-        symbol={symbol || ''}
-        textStyles={fallbackTextStyles}
-      />
+      {!showImage && (
+        <FallbackIcon
+          {...fallbackProps}
+          color={fallbackIconColor}
+          showImage={showImage}
+          symbol={symbol || ''}
+          textStyles={fallbackTextStyles}
+        />
+      )}
       <FallbackImage
         {...fallbackProps}
         imageUrl={imageUrl}
