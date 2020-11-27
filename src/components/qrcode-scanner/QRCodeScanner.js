@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { RNCamera } from 'react-native-camera';
 import { useIsEmulator } from 'react-native-device-info';
 import FastImage from 'react-native-fast-image';
@@ -52,12 +52,23 @@ export default function QRCodeScanner({
 
   const showErrorMessage = error && !isInitialized;
   const showCrosshair = !error && !showErrorMessage;
+  const cameraRef = useRef();
+  useEffect(() => {
+    if (ios || !isInitialized) {
+      return;
+    }
+    if (enableCamera) {
+      cameraRef.current?.resumePreview?.();
+    } else {
+      cameraRef.current?.pausePreview?.();
+    }
+  }, [enableCamera, isInitialized]);
 
   return (
     <Container>
       <CameraWrapper>
         {enableCamera && isEmulator && <EmulatorCameraFallback />}
-        {enableCamera && !isEmulator && (
+        {(enableCamera || android) && !isEmulator && (
           <Camera
             captureAudio={false}
             notAuthorizedView={QRCodeScannerNeedsAuthorization}
@@ -65,6 +76,7 @@ export default function QRCodeScanner({
             onCameraReady={setInitialized}
             onMountError={showError}
             pendingAuthorizationView={null}
+            ref={cameraRef}
           />
         )}
       </CameraWrapper>
