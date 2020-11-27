@@ -57,13 +57,13 @@ const maxListHeight = deviceHeight - 220;
 
 const EditButton = styled(ButtonPressAnimation).attrs(({ editMode }) => ({
   radiusAndroid: 24,
-  radiusWrapperStyle: {
+  scaleTo: 0.96,
+  wrapperStyle: {
     alignSelf: 'flex-end',
     height: 40,
     marginRight: 7,
     width: editMode ? 70 : 58,
   },
-  scaleTo: 0.96,
 }))`
   padding: 12px;
   ${ios

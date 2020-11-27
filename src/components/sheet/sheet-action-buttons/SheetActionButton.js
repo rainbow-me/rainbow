@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components/primitives';
 import { ButtonPressAnimation } from '../../animations';
@@ -81,51 +82,53 @@ const SheetActionButton = ({
   }, [color, isTransparent]);
 
   return (
-    <Button
-      as={ButtonPressAnimation}
-      contentContainerStyle={{
-        height: size === 'big' ? 56 : 46,
-        ...(android && { width: androidWidth }),
-      }}
-      elevation={android ? 24 : null}
-      noFlex={noFlex}
-      overflowMargin={30}
-      radiusAndroid={borderRadius}
-      size={size}
-      testID={`${testID}-action-button`}
-      {...props}
-    >
-      <ShadowStack
-        {...position.coverAsObject}
-        backgroundColor={color}
-        borderRadius={borderRadius}
-        height={size === 'big' ? 56 : 46}
-        shadows={shadowsForButtonColor}
-        {...(android && { width: androidWidth })}
+    <View style={{ width: androidWidth }}>
+      <Button
+        as={ButtonPressAnimation}
+        contentContainerStyle={{
+          height: size === 'big' ? 56 : 46,
+          ...(android && { width: androidWidth }),
+        }}
+        elevation={android ? 24 : null}
+        noFlex={noFlex}
+        overflowMargin={30}
+        radiusAndroid={borderRadius}
+        size={size}
+        testID={`${testID}-action-button`}
+        {...props}
       >
-        {color === colors.white && <WhiteButtonGradient />}
-        {color !== colors.white && !isTransparent && (
-          <InnerBorder
-            color={disabled ? textColor : null}
-            opacity={disabled ? 0.02 : null}
-            radius={borderRadius}
-            width={disabled ? 2 : null}
-          />
-        )}
-      </ShadowStack>
-      <Content label={label} size={size}>
-        {emoji && <Emoji lineHeight={23} name={emoji} size="medium" />}
-        {icon && <Icon color="white" height={18} name={icon} size={18} />}
-        <Text
-          align="center"
-          color={textColor}
-          size={size === 'big' ? 'larger' : 'large'}
-          weight={weight}
+        <ShadowStack
+          {...position.coverAsObject}
+          backgroundColor={color}
+          borderRadius={borderRadius}
+          height={size === 'big' ? 56 : 46}
+          shadows={shadowsForButtonColor}
+          {...(android && { width: androidWidth })}
         >
-          {label}
-        </Text>
-      </Content>
-    </Button>
+          {color === colors.white && <WhiteButtonGradient />}
+          {color !== colors.white && !isTransparent && (
+            <InnerBorder
+              color={disabled ? textColor : null}
+              opacity={disabled ? 0.02 : null}
+              radius={borderRadius}
+              width={disabled ? 2 : null}
+            />
+          )}
+        </ShadowStack>
+        <Content label={label} size={size}>
+          {emoji && <Emoji lineHeight={23} name={emoji} size="medium" />}
+          {icon && <Icon color="white" height={18} name={icon} size={18} />}
+          <Text
+            align="center"
+            color={textColor}
+            size={size === 'big' ? 'larger' : 'large'}
+            weight={weight}
+          >
+            {label}
+          </Text>
+        </Content>
+      </Button>
+    </View>
   );
 };
 

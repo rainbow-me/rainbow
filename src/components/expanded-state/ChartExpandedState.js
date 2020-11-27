@@ -1,6 +1,5 @@
 import { debounce, find } from 'lodash';
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import styled from 'styled-components';
 import {
   useChartData,
   useChartDataLabels,
@@ -30,21 +29,12 @@ import {
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 
 import { useNavigation } from '@rainbow-me/navigation';
+import { deviceUtils } from '@rainbow-me/utils';
 
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
 
 const heightWithChart = android ? 630 : 606;
 const heightWithNoChart = 309;
-
-const ActionRowAndroid = styled.View`
-  flex-direction: row;
-  height: 44;
-  margin-vertical: 12;
-  margin-horizontal: 12;
-  justify-content: space-around;
-`;
-
-const ActionRow = android ? ActionRowAndroid : SheetActionButtonRow;
 
 const traverseData = (prev, data) => {
   if (!data || data.length === 0) {
@@ -203,15 +193,23 @@ export default function ChartExpandedState({ asset }) {
         </TokenInfoRow>
       </TokenInfoSection>
       {needsEth ? (
-        <ActionRow key={`row${showChart}`}>
-          <BuyActionButton color={color} />
-        </ActionRow>
+        <SheetActionButtonRow key={`row${showChart}`}>
+          <BuyActionButton
+            androidWidth={deviceUtils.dimensions.width - 39}
+            color={color}
+          />
+        </SheetActionButtonRow>
       ) : (
         <SheetActionButtonRow key={`row${showChart}`}>
           {showSwapButton && (
             <SwapActionButton color={color} inputType={AssetInputTypes.in} />
           )}
-          <SendActionButton color={color} />
+          <SendActionButton
+            androidWidth={
+              showSwapButton ? 160 : deviceUtils.dimensions.width - 39
+            }
+            color={color}
+          />
         </SheetActionButtonRow>
       )}
     </SlackSheet>

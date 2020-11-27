@@ -60,7 +60,7 @@ const ScaleButton = ({
   overflowMargin,
   wrapperStyle,
 }) => {
-  const longPressTimer = useRef(false);
+  const longPressTimer = useRef(null);
   const isPressEventLegal = useRef(false);
   const scale = useSharedValue(1);
   const hasScaledDown = useSharedValue(0);
@@ -85,16 +85,20 @@ const ScaleButton = ({
   });
 
   const handleStartPress = () => {
-    longPressTimer.current = setTimeout(() => {
-      longPressTimer.current = null;
-      onLongPress?.();
-    }, minLongPressDuration);
+    if (longPressTimer.current == null) {
+      longPressTimer.current = setTimeout(() => {
+        longPressTimer.current = null;
+        onLongPress?.();
+      }, minLongPressDuration);
+    }
+
     isPressEventLegal.current = true;
   };
-  const handlerPress = () => {
+  const handlePress = () => {
     clearTimeout(longPressTimer.current);
     if (longPressTimer.current) {
       onPress();
+      console.log('!!!');
       longPressTimer.current = null;
     }
   };
@@ -120,7 +124,7 @@ const ScaleButton = ({
     onEnd: () => {
       hasScaledDown.value = 0;
       scale.value = 1;
-      runOnJS(handlerPress)();
+      runOnJS(handlePress)();
     },
     onFail: () => {
       runOnJS(handleCancel)();
