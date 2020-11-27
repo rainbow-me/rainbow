@@ -77,6 +77,7 @@ const SavingsSheet = () => {
 
   const savingsRowItem = useMemo(
     () => ({
+      address: underlying.address,
       lifetimeSupplyInterestAccrued,
       name: underlying.name,
       supplyBalanceUnderlying,
@@ -87,6 +88,7 @@ const SavingsSheet = () => {
       lifetimeSupplyInterestAccrued,
       supplyBalanceUnderlying,
       supplyRate,
+      underlying.address,
       underlying.name,
       underlying.symbol,
     ]
