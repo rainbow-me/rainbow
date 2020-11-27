@@ -163,10 +163,11 @@ export default function WalletConnectApprovalSheet() {
           </Text>
         </Row>
         <Divider color={colors.rowDividerLight} inset={[0, 84]} />
-        <ActionRow>
+        <ActionRow {...(android && { width: 300 })}>
           <SheetActionButton
+            androidWidth={140}
             color={colors.white}
-            isTransparent
+            isTransparent={ios}
             label="Cancel"
             onPress={handleCancel}
             radiusAndroid={24}
@@ -174,6 +175,7 @@ export default function WalletConnectApprovalSheet() {
             textColor={colors.dark}
           />
           <SheetActionButton
+            androidWidth={140}
             color={colors.appleBlue}
             label="Connect"
             onPress={handleConnect}
