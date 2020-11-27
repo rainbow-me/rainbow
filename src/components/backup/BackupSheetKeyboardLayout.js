@@ -18,7 +18,7 @@ const Footer = styled(Column)`
 `;
 
 const KeyboardSizeView = styled(KeyboardArea)`
-  background-color: ${colors.white};
+  background-color: ${colors.transparent};
 `;
 
 export default function BackupSheetKeyboardLayout({
