@@ -195,6 +195,7 @@ export default function ChartExpandedState({ asset }) {
       {needsEth ? (
         <SheetActionButtonRow key={`row${showChart}`}>
           <BuyActionButton
+            // FIXME
             androidWidth={deviceUtils.dimensions.width - 39}
             color={color}
           />
@@ -206,6 +207,7 @@ export default function ChartExpandedState({ asset }) {
           )}
           <SendActionButton
             androidWidth={
+              // FIXME
               showSwapButton ? 160 : deviceUtils.dimensions.width - 39
             }
             color={color}
