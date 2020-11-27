@@ -41,10 +41,9 @@ function LiquidityPoolExpandedStateHeader({ assets, name, pricePerShare }) {
       <Row align="center">
         {map(assets, (asset, index) => {
           return (
-            <View key={`coinicon-${index}`} zIndex={-index}>
+            <View key={`coinicon-${index}`} marginRight={-10} zIndex={-index}>
               <CoinIcon
                 address={asset.address}
-                marginRight={-10}
                 position="relative"
                 symbol={asset.symbol}
               />
