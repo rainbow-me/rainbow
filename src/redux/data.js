@@ -46,7 +46,7 @@ import {
   getTransactionLabel,
   parseTransactions,
 } from '../parsers/transactions';
-import { shitcoins, tokenOverrides } from '../references';
+import { shitcoins } from '../references';
 import { ethereumUtils, isLowerCaseMatch } from '../utils';
 
 /* eslint-disable-next-line import/no-cycle */
@@ -168,7 +168,7 @@ export const transactionsReceived = (message, appended = false) => async (
   const transactionData = get(message, 'payload.transactions', []);
   const { accountAddress, nativeCurrency, network } = getState().settings;
   const { purchaseTransactions } = getState().addCash;
-  const { transactions, tokenOverrides } = getState().data;
+  const { transactions } = getState().data;
   const { selected } = getState().wallets;
 
   const { parsedTransactions, potentialNftTransaction } = parseTransactions(
@@ -177,7 +177,6 @@ export const transactionsReceived = (message, appended = false) => async (
     nativeCurrency,
     transactions,
     purchaseTransactions,
-    tokenOverrides,
     network,
     appended
   );
@@ -240,7 +239,6 @@ export const addressAssetsReceived = (
   const isValidMeta = dispatch(checkMeta(message));
   if (!isValidMeta) return;
 
-  const { tokenOverrides } = getState().data;
   const { accountAddress, network } = getState().settings;
   const { uniqueTokens } = getState().uniqueTokens;
   const payload = values(get(message, 'payload.assets', {}));
@@ -277,7 +275,7 @@ export const addressAssetsReceived = (
   dispatch(
     uniswapUpdateLiquidityTokens(liquidityTokens, append || change || removed)
   );
-  let parsedAssets = parseAccountAssets(assets, uniqueTokens, tokenOverrides);
+  let parsedAssets = parseAccountAssets(assets, uniqueTokens);
   if (append || change || removed) {
     const { assets: existingAssets } = getState().data;
     parsedAssets = uniqBy(
@@ -393,13 +391,10 @@ const get24HourPrice = async (address, yesterday) => {
   return get(result, 'data.tokenDayDatas[0]');
 };
 
-export const assetPricesReceived = message => (dispatch, getState) => {
-  const { tokenOverrides } = getState().data;
+export const assetPricesReceived = message => dispatch => {
   const assets = get(message, 'payload.prices', {});
   if (isEmpty(assets)) return;
-  const parsedAssets = mapValues(assets, asset =>
-    parseAsset(asset, tokenOverrides)
-  );
+  const parsedAssets = mapValues(assets, asset => parseAsset(asset));
   dispatch({
     payload: parsedAssets,
     type: DATA_UPDATE_GENERIC_ASSETS,
@@ -602,7 +597,6 @@ const INITIAL_STATE = {
     appended: [],
     received: [],
   },
-  tokenOverrides: tokenOverrides,
   transactions: [],
   uniswapPricesQuery: null,
   uniswapPricesSubscription: null,

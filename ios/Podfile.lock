@@ -603,7 +603,7 @@ DEPENDENCIES:
   - libwebp
   - lottie-ios (from `../node_modules/lottie-ios`)
   - lottie-react-native (from `../node_modules/lottie-react-native`)
-  - PanModal (from `https://github.com/osdnk/PanModal`, commit `4588162c55cc0e70fecafbf6af002340b6ae27e3`)
+  - PanModal (from `https://github.com/osdnk/PanModal`, commit `67557e18491ddfd2e2d1af0f36efb8f0202589f7`)
   - Permission-Camera (from `../node_modules/react-native-permissions/ios/Camera.podspec`)
   - Permission-FaceID (from `../node_modules/react-native-permissions/ios/FaceID.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
@@ -744,7 +744,7 @@ EXTERNAL SOURCES:
   lottie-react-native:
     :path: "../node_modules/lottie-react-native"
   PanModal:
-    :commit: 4588162c55cc0e70fecafbf6af002340b6ae27e3
+    :commit: 67557e18491ddfd2e2d1af0f36efb8f0202589f7
     :git: https://github.com/osdnk/PanModal
   Permission-Camera:
     :path: "../node_modules/react-native-permissions/ios/Camera.podspec"
@@ -899,7 +899,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   PanModal:
-    :commit: 4588162c55cc0e70fecafbf6af002340b6ae27e3
+    :commit: 67557e18491ddfd2e2d1af0f36efb8f0202589f7
     :git: https://github.com/osdnk/PanModal
 
 SPEC CHECKSUMS:
@@ -1027,6 +1027,6 @@ SPEC CHECKSUMS:
   Yoga: 7d13633d129fd179e01b8953d38d47be90db185a
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 5db2e07714af0e329feeadb6060bdf0392a26da9
+PODFILE CHECKSUM: 2b38dc4e50f6b19e7a7db1e41739f3209e9d05e6
 
 COCOAPODS: 1.9.1
