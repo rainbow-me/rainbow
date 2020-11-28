@@ -98,7 +98,6 @@ const ScaleButton = ({
     clearTimeout(longPressTimer.current);
     if (longPressTimer.current) {
       onPress();
-      console.log('!!!');
       longPressTimer.current = null;
     }
   };
