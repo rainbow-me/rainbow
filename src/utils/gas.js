@@ -8,6 +8,7 @@ import {
   sortBy,
   upperFirst,
 } from 'lodash';
+import { IS_TESTING } from 'react-native-dotenv';
 import { showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const CUSTOM = 'custom';
@@ -63,7 +64,9 @@ const formatGasSpeedItems = (gasPrices, txFees, hideCustom = false) => {
 
     return {
       gweiValue: gwei,
-      label: `${upperFirst(speed)}: ${cost}   ~${time}`,
+      label: IS_TESTING
+        ? `${upperFirst(speed)}`
+        : `${upperFirst(speed)}: ${cost}   ~${time}`,
       speed,
     };
   });
