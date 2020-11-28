@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
 import { ActivityIndicator, Dimensions, Keyboard } from 'react-native';
+import { IS_TESTING } from 'react-native-dotenv';
 import {
   LongPressGestureHandler,
   State,
@@ -244,9 +245,11 @@ class HoldToAuthorizeButton extends PureComponent {
                         biometryType={biometryType}
                       />
                     )}
-                    {android && (isAuthorizing || this.props.isAuthorizing) && (
-                      <LoadingSpinner />
-                    )}
+                    {android &&
+                      !IS_TESTING &&
+                      (isAuthorizing || this.props.isAuthorizing) && (
+                        <LoadingSpinner />
+                      )}
                     <Title smallButton={smallButton}>
                       {isAuthorizing || this.props.isAuthorizing
                         ? 'Authorizing'

@@ -5,6 +5,10 @@ import * as Helpers from './helpers';
 
 beforeAll(async () => {
   // Reset the app state
+  if (device.getPlatform() === 'android') {
+    exec('adb reverse tcp:7545 tcp:7545');
+  }
+  await Helpers.delay(4000);
   await exec('yarn ganache');
   await Helpers.delay(10000);
 });
@@ -142,13 +146,19 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.delay(3000);
     await Helpers.tap('send-fab');
     await Helpers.delay(3000);
-    await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
+    await Helpers.typeText('send-asset-form-field', 'poopcoin.eth\n', false);
     await Helpers.delay(3000);
     await Helpers.tap('send-savings-cSAI');
     await Helpers.delay(3000);
     await Helpers.typeText('selected-asset-field-input', '1', true);
     await Helpers.delay(5000);
     await Helpers.tapAndLongPress('send-sheet-confirm');
+    if (device.getPlatform() === 'android') {
+      await Helpers.tapAlertWithButton('Normal');
+      await Helpers.delay(2000);
+      await Helpers.authenticatePin('1234');
+    }
+
     await Helpers.delay(10000);
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
@@ -166,13 +176,18 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.delay(3000);
     await Helpers.tap('send-fab');
     await Helpers.delay(3000);
-    await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
+    await Helpers.typeText('send-asset-form-field', 'poopcoin.eth\n', false);
     await Helpers.delay(3000);
     await Helpers.tap('CryptoKitties-family-header');
     await Helpers.delay(2000);
     await Helpers.tapByText('Arun Cattybinky');
     await Helpers.delay(3000);
     await Helpers.tapAndLongPress('send-sheet-confirm');
+    if (device.getPlatform() === 'android') {
+      await Helpers.tapAlertWithButton('Normal');
+      await Helpers.delay(2000);
+      await Helpers.authenticatePin('1234');
+    }
     await Helpers.delay(10000);
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
@@ -181,13 +196,18 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.delay(3000);
     await Helpers.tap('send-fab');
     await Helpers.delay(3000);
-    await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
+    await Helpers.typeText('send-asset-form-field', 'poopcoin.eth\n', false);
     await Helpers.delay(3000);
     await Helpers.tap('send-asset-BAT');
     await Helpers.delay(3000);
     await Helpers.typeText('selected-asset-field-input', '2', true);
     await Helpers.delay(3000);
     await Helpers.tapAndLongPress('send-sheet-confirm');
+    if (device.getPlatform() === 'android') {
+      await Helpers.tapAlertWithButton('Normal');
+      await Helpers.delay(2000);
+      await Helpers.authenticatePin('1234');
+    }
     await Helpers.delay(10000);
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
@@ -196,13 +216,18 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.delay(3000);
     await Helpers.tap('send-fab');
     await Helpers.delay(3000);
-    await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
+    await Helpers.typeText('send-asset-form-field', 'poopcoin.eth\n', false);
     await Helpers.delay(3000);
     await Helpers.tap('send-asset-ETH');
     await Helpers.delay(3000);
     await Helpers.typeText('selected-asset-field-input', '.001', true);
     await Helpers.delay(3000);
     await Helpers.tapAndLongPress('send-sheet-confirm');
+    if (device.getPlatform() === 'android') {
+      await Helpers.tapAlertWithButton('Normal');
+      await Helpers.delay(2000);
+      await Helpers.authenticatePin('1234');
+    }
     await Helpers.delay(10000);
   });
 
