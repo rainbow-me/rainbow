@@ -5,6 +5,7 @@ import {
   PureNativeButton,
 } from 'react-native-gesture-handler';
 import Animated, {
+  NewEasing as Easing,
   runOnJS,
   useAnimatedGestureHandler,
   useAnimatedStyle,
@@ -66,7 +67,10 @@ const ScaleButton = ({
   const hasScaledDown = useSharedValue(0);
   const parentValue = useContext(ScaleButtonContext);
   const scaleTraversed = useDerivedValue(() => {
-    const value = withTiming(scale.value, { duration });
+    const value = withTiming(scale.value, {
+      duration,
+      easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+    });
     if (parentValue) {
       parentValue.value = value;
       return 1;
