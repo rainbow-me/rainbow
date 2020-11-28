@@ -52,10 +52,12 @@ const GasInput = styled(Input).attrs({
   keyboardType: 'numeric',
   letterSpacing: 'roundedMedium',
   maxLength: 5,
+  multiline: false,
   placeholderTextColor: colors.alpha(colors.darkModeColors.blueGreyDark, 0.3),
   size: 'lmedium',
   testID: 'custom-gas-input',
 })`
+  flex: 1;
   ${fontWithWidth(fonts.weight.bold)};
   ${margin(-13, 0)}
 `;
@@ -358,7 +360,7 @@ const GasSpeedButton = ({
       testID={testID}
     >
       <Column>
-        <Row align="end" css={margin(0, 0)} height={30} justify="space-between">
+        <Row align="end" height={30} justify="space-between">
           {!isCustom ? (
             <AnimatedNumber
               formatter={formatAnimatedGasPrice}
@@ -370,16 +372,7 @@ const GasSpeedButton = ({
             />
           ) : (
             <BorderlessButton onPress={focusOnInput}>
-              <Row>
-                <GasInput
-                  onBlur={handleCustomGasBlur}
-                  onChangeText={handleCustomGasChange}
-                  onFocus={handleCustomGasFocus}
-                  onSubmitEditing={handleInputButtonManager}
-                  placeholder={`${defaultCustomGasPrice}`}
-                  ref={inputRef}
-                  value={customGasPriceInput}
-                />
+              <Row width={130}>
                 <Text
                   color={
                     customGasPriceInput
@@ -389,9 +382,17 @@ const GasSpeedButton = ({
                   size="lmedium"
                   weight="bold"
                 >
-                  {ios && ' '}
-                  Gwei
+                  Gwei:{' '}
                 </Text>
+                <GasInput
+                  onBlur={handleCustomGasBlur}
+                  onChangeText={handleCustomGasChange}
+                  onFocus={handleCustomGasFocus}
+                  onSubmitEditing={handleInputButtonManager}
+                  placeholder={`${defaultCustomGasPrice}`}
+                  ref={inputRef}
+                  value={customGasPriceInput}
+                />
               </Row>
             </BorderlessButton>
           )}
