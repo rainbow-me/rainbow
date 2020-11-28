@@ -30,5 +30,13 @@
     "network": "kovan",
     "chain_id": 42,
     "network_id": 42
+  },
+  {
+    "name": "Ethereum Görli",
+    "short_name": "goe",
+    "chain": "ETH",
+    "network": "goerli",
+    "chain_id": 5,
+    "network_id": 5
   }
 ]
