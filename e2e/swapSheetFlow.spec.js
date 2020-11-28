@@ -287,6 +287,7 @@ describe('Swap Sheet Interaction Flow', () => {
   it('Should update input & native input after output field change', async () => {
     if (device.getPlatform() === 'android') {
       await device.pressBack();
+      await device.pressBack();
     } else {
       await Helpers.swipe('exchange-modal-header', 'down', 'slow');
     }
@@ -319,12 +320,17 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.tap('swap-info-button');
     await Helpers.delay(1000);
     await Helpers.checkIfVisible('swap-details-state-container');
-    await Helpers.swipe('swap-details-state-container', 'down', 'slow');
+    if (device.getPlatform() === 'android') {
+      await device.pressBack();
+    } else {
+      await Helpers.swipe('swap-details-state-container', 'down', 'slow');
+    }
   });
 
   it('Should show Insufficient Funds on input greater than balance', async () => {
     await Helpers.delay(1000);
     if (device.getPlatform() === 'android') {
+      await device.pressBack();
       await device.pressBack();
     } else {
       await Helpers.swipe('exchange-modal-header', 'down', 'slow');
