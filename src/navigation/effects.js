@@ -333,7 +333,7 @@ export const overlayExpandedPreset = {
   cardOverlayEnabled: true,
   cardShadowEnabled: false,
   cardStyle: { backgroundColor: 'transparent', overflow: 'visible' },
-  cardStyleInterpolator: expandStyleInterpolator(0.6),
+  cardStyleInterpolator: expandStyleInterpolator(0.7),
   cardTransparent: true,
   gestureDirection: 'vertical',
   gestureResponseDistance,
@@ -383,7 +383,7 @@ export const sheetPreset = ({ route }) => {
 
 export const settingsPreset = ({ route }) => ({
   ...sheetPreset({ route }),
-  cardStyleInterpolator: sheetStyleInterpolator(0.5),
+  cardStyleInterpolator: sheetStyleInterpolator(0.7),
 });
 
 export const exchangeModalPreset = {
