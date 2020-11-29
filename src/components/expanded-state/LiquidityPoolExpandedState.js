@@ -1,7 +1,5 @@
-import { map, toLower } from 'lodash';
+import { map } from 'lodash';
 import React, { useMemo } from 'react';
-import { tokenOverrides } from '../../references';
-import { magicMemo } from '../../utils';
 import {
   DepositActionButton,
   SheetActionButtonRow,
@@ -16,6 +14,7 @@ import {
   TokenInfoSection,
 } from '../token-info';
 import { LiquidityPoolExpandedStateHeader } from './liquidity-pool';
+import { getTokenMetadata, magicMemo } from '@rainbow-me/utils';
 
 export const LiquidityPoolExpandedStateSheetHeight = 369 + (android ? 80 : 0);
 
@@ -30,11 +29,14 @@ const LiquidityPoolExpandedState = ({
 }) => {
   const tokenAssets = useMemo(() => {
     const { tokens } = liquidityInfo;
-    return map(tokens, token => ({
-      ...token,
-      ...(token.address ? tokenOverrides[toLower(token.address)] : {}),
-      value: token.balance,
-    }));
+    return map(tokens, token => {
+      const metadata = getTokenMetadata(token.address);
+      return {
+        ...token,
+        ...metadata,
+        value: token.balance,
+      };
+    });
   }, [liquidityInfo]);
 
   return (

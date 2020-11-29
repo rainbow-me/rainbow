@@ -2,10 +2,11 @@ import { get, keyBy, orderBy, property, toLower } from 'lodash';
 import { compoundClient } from '../apollo/client';
 import { COMPOUND_ACCOUNT_AND_MARKET_QUERY } from '../apollo/queries';
 import { getSavings, saveSavings } from '../handlers/localstorage/accountLocal';
-import assetTypes from '../helpers/assetTypes';
-import { multiply } from '../helpers/utilities';
 import { parseAssetName, parseAssetSymbol } from '../parsers/accounts';
-import { CDAI_CONTRACT } from '../references';
+import assetTypes from '@rainbow-me/helpers/assetTypes';
+import { multiply } from '@rainbow-me/helpers/utilities';
+import { CDAI_CONTRACT } from '@rainbow-me/references';
+import { getTokenMetadata } from '@rainbow-me/utils';
 
 // -- Constants --------------------------------------- //
 const COMPOUND_QUERY_INTERVAL = 120000;
@@ -31,13 +32,20 @@ const getMarketData = marketData => {
 };
 
 const getCTokenData = marketData => {
-  const { id: cTokenAddress, name, symbol } = marketData;
+  const {
+    id: cTokenAddress,
+    name: originalName,
+    symbol: originalSymbol,
+  } = marketData;
+  const metadata = getTokenMetadata(cTokenAddress);
+  const name = parseAssetName(metadata, originalName);
+  const symbol = parseAssetSymbol(metadata, originalSymbol);
 
   return {
     address: cTokenAddress,
     decimals: 8,
-    name: parseAssetName(name, cTokenAddress),
-    symbol: parseAssetSymbol(symbol, cTokenAddress),
+    name,
+    symbol,
   };
 };
 
@@ -48,12 +56,15 @@ const getUnderlyingData = marketData => {
     underlyingName,
     underlyingSymbol,
   } = marketData;
+  const metadata = getTokenMetadata(underlyingAddress);
+  const name = parseAssetName(metadata, underlyingName);
+  const symbol = parseAssetSymbol(metadata, underlyingSymbol);
 
   return {
     address: underlyingAddress,
     decimals: underlyingDecimals,
-    name: parseAssetName(underlyingName, underlyingAddress),
-    symbol: parseAssetSymbol(underlyingSymbol, underlyingAddress),
+    name,
+    symbol,
   };
 };
 

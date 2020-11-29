@@ -1,8 +1,8 @@
-import { get, toUpper } from 'lodash';
-import AssetTypes from '../helpers/assetTypes';
-import { convertRawAmountToBalance } from '../helpers/utilities';
-import { tokenOverrides } from '../references';
+import { toUpper } from 'lodash';
 import { dedupeUniqueTokens } from './uniqueTokens';
+import AssetTypes from '@rainbow-me/helpers/assetTypes';
+import { convertRawAmountToBalance } from '@rainbow-me/helpers/utilities';
+import { getTokenMetadata } from '@rainbow-me/utils';
 
 /**
  * @desc parse account assets
@@ -23,14 +23,13 @@ export const parseAccountAssets = (data, uniqueTokens) => {
 // eslint-disable-next-line no-useless-escape
 const sanitize = s => s.replace(/[^a-z0-9áéíóúñü \.,_@:-]/gim, '');
 
-export const parseAssetName = (name, address) => {
-  if (get(tokenOverrides[address], 'name')) return tokenOverrides[address].name;
+export const parseAssetName = (metadata, name) => {
+  if (metadata?.name) return metadata?.name;
   return name ? sanitize(name) : 'Unknown Token';
 };
 
-export const parseAssetSymbol = (symbol, address) => {
-  if (get(tokenOverrides[address], 'symbol'))
-    return tokenOverrides[address].symbol;
+export const parseAssetSymbol = (metadata, symbol) => {
+  if (metadata?.symbol) return metadata?.symbol;
   return symbol ? toUpper(sanitize(symbol)) : '———';
 };
 
@@ -40,13 +39,16 @@ export const parseAssetSymbol = (symbol, address) => {
  * @return {Object}
  */
 export const parseAsset = ({ asset_code: address, ...asset } = {}) => {
-  const name = parseAssetName(asset.name, address);
+  const metadata = getTokenMetadata(address);
+  const name = parseAssetName(metadata, asset.name);
+  const symbol = parseAssetSymbol(metadata, asset.symbol);
+
   return {
     ...asset,
-    ...tokenOverrides[address],
+    ...metadata,
     address,
     name,
-    symbol: parseAssetSymbol(asset.symbol, address),
+    symbol,
     type: AssetTypes.token,
     uniqueId: address || name,
   };
