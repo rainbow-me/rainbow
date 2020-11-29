@@ -35,7 +35,7 @@ const CoinIcon = ({
         color={color}
         fallbackRenderer={CoinIconFallback}
         forceFallback={forceFallback}
-        shadowColor={tokenMetadata?.shadowColor || color}
+        shadowColor={tokenMetadata?.extensions?.shadowColor || color}
         size={size}
         symbol={symbol}
       />

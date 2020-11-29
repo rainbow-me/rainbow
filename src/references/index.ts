@@ -1,6 +1,5 @@
-import { mapKeys, mapValues, toLower } from 'lodash';
+import { mapKeys, mapValues } from 'lodash';
 import savingAssets from './compound/saving-assets.json';
-import tokenOverridesData from './token-overrides.json';
 import { Asset } from '@rainbow-me/entities';
 
 export { default as chains } from './chains.json';
@@ -11,13 +10,6 @@ export { default as erc20ABI } from './erc20-abi.json';
 export { default as ethUnits } from './ethereum-units.json';
 export { default as supportedNativeCurrencies } from './native-currencies.json';
 export { default as shitcoins } from './shitcoins.json';
-
-interface OverrideInfo {
-  color?: string;
-  name?: string;
-  shadowColor?: string;
-  symbol?: string;
-}
 
 export const CDAI_CONTRACT = '0x5d3a536e4d6dbd6114cc1ead35777bab948e3643';
 export const SAI_ADDRESS = '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359';
@@ -76,11 +68,6 @@ export const DefaultUniswapFavorites = {
     '0x5592ec0cfb4dbc12d3ab100b257153436a1f0fea',
   ],
 };
-
-export const tokenOverrides: Record<
-  string,
-  OverrideInfo
-> = mapKeys(tokenOverridesData, (_, address) => toLower(address));
 
 export const savingsAssetsList = savingAssets;
 
