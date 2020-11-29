@@ -15,6 +15,7 @@ export { default as directionPropType } from './directionPropType';
 export { default as ethereumUtils } from './ethereumUtils';
 export { default as gasUtils } from './gas';
 export { default as getDominantColorFromImage } from './getDominantColorFromImage';
+export { default as getTokenMetadata } from './getTokenMetadata';
 export { default as getUrlForTrustIconFallback } from './getUrlForTrustIconFallback';
 export { default as haptics } from './haptics';
 export { default as isETH } from './isETH';

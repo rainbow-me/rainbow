@@ -1,5 +1,5 @@
-import { toUpper } from 'lodash';
+import { toLower } from 'lodash';
 
-export default function isETH(addressOrSymbol: string): boolean {
-  return toUpper(addressOrSymbol) === 'ETH';
+export default function isETH(address: string): boolean {
+  return toLower(address) === 'eth';
 }
