@@ -11,7 +11,7 @@ import {
 } from '../../hoc';
 import { useCoinListEditedValue } from '../../hooks/useCoinListEdited';
 import { ButtonPressAnimation } from '../animations';
-import { ChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
+import { initialChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
 import { Column, FlexItem, Row } from '../layout';
 import BalanceText from './BalanceText';
 import BottomRowText from './BottomRowText';
@@ -135,7 +135,9 @@ const BalanceCoinRow = ({
     if (isCoinListEdited) {
       handleEditModePress();
     } else {
-      onPress?.(item, { longFormHeight: ChartExpandedStateSheetHeight });
+      onPress?.(item, {
+        longFormHeight: initialChartExpandedStateSheetHeight,
+      });
     }
   }, [handleEditModePress, isCoinListEdited, item, onPress]);
 

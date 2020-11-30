@@ -95,7 +95,7 @@ function useJumpingForm(isLong) {
   }, [isLong, setOptions, jumpToShort, jumpToLong]);
 }
 
-export const ChartExpandedStateSheetHeight =
+export const initialChartExpandedStateSheetHeight =
   heightWithChart + (android ? 40 : 0);
 
 export default function ChartExpandedState({ asset }) {
