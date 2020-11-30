@@ -23,7 +23,6 @@
       "@rainbow-me/navigation": ["src/navigation"],
       "@rainbow-me/redux": ["src/redux"],
       "@rainbow-me/references": ["src/references"],
-      "@rainbow-me/references/uniswap": ["src/references/uniswap"],
       "@rainbow-me/routes": ["src/navigation/routesNames"],
       "@rainbow-me/styles": ["src/styles"],
       "@rainbow-me/utils": ["src/utils"],
