@@ -1,6 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import React from 'react';
 import { StatusBar } from 'react-native';
+import { KeyboardArea } from 'react-native-keyboard-area';
 import styled from 'styled-components';
 import { RainbowButton } from '../buttons';
 import { Column } from '../layout';
@@ -8,12 +9,16 @@ import { SheetHandleFixedToTopHeight } from '../sheet';
 import KeyboardTypes from '@rainbow-me/helpers/keyboardTypes';
 import { useDimensions, useKeyboardHeight } from '@rainbow-me/hooks';
 import { sharedCoolModalTopOffset } from '@rainbow-me/navigation/config';
-import { padding } from '@rainbow-me/styles';
+import { colors, padding } from '@rainbow-me/styles';
 
 const Footer = styled(Column)`
   ${({ isTallPhone }) => padding(0, 15, isTallPhone ? 30 : 15)};
   flex-shrink: 0;
   width: 100%;
+`;
+
+const KeyboardSizeView = styled(KeyboardArea)`
+  background-color: ${colors.transparent};
 `;
 
 export default function BackupSheetKeyboardLayout({
@@ -52,6 +57,7 @@ export default function BackupSheetKeyboardLayout({
           onPress={onSubmit}
         />
       </Footer>
+      {android ? <KeyboardSizeView /> : null}
     </Column>
   );
 }
