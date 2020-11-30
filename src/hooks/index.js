@@ -65,6 +65,7 @@ export { default as useSwapDetails } from './useSwapDetails';
 export { default as useSwapInputRefs } from './useSwapInputRefs';
 export { default as useSwapInputs } from './useSwapInputs';
 export { default as useTimeout } from './useTimeout';
+export { default as useTokenMetadata } from './useTokenMetadata';
 export { default as useTopMovers } from './useTopMovers';
 export { default as useTransactionConfirmation } from './useTransactionConfirmation';
 export { default as useTransformOrigin } from './useTransformOrigin';
@@ -73,8 +74,8 @@ export { default as useUniswapAssetsInWallet } from './useUniswapAssetsInWallet'
 export { default as useUniswapCalls } from './useUniswapCalls';
 export { default as useUniswapCurrencies } from './useUniswapCurrencies';
 export { default as useUniswapMarketDetails } from './useUniswapMarketDetails';
-export { default as useUpdateAssetOnchainBalance } from './useUpdateAssetOnchainBalance';
 export { default as useUniswapPairs } from './useUniswapPairs';
+export { default as useUpdateAssetOnchainBalance } from './useUpdateAssetOnchainBalance';
 export { default as useWalletBalances } from './useWalletBalances';
 export { default as useWalletCloudBackup } from './useWalletCloudBackup';
 export { default as useWalletConnectConnections } from './useWalletConnectConnections';

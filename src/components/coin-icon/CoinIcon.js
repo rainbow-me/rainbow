@@ -4,8 +4,8 @@ import ReactCoinIcon from 'react-coin-icon';
 import styled from 'styled-components/primitives';
 import CoinIconFallback from './CoinIconFallback';
 import CoinIconIndicator from './CoinIconIndicator';
-import { useColorForAsset } from '@rainbow-me/hooks';
-import { getTokenMetadata, isETH, magicMemo } from '@rainbow-me/utils';
+import { useColorForAsset, useTokenMetadata } from '@rainbow-me/hooks';
+import { isETH, magicMemo } from '@rainbow-me/utils';
 
 export const CoinIconSize = 40;
 
@@ -21,7 +21,7 @@ const CoinIcon = ({
   symbol = '',
   ...props
 }) => {
-  const tokenMetadata = getTokenMetadata(address);
+  const tokenMetadata = useTokenMetadata(address);
   const color = useColorForAsset({ address });
 
   const forceFallback = !isETH(address) && isNil(tokenMetadata);
