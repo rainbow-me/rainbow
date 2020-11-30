@@ -23,6 +23,7 @@ interface LiquidityToken {
 }
 
 interface TokenDetails {
+  address: string;
   decimals: number;
   name: string;
   symbol: string;
@@ -63,6 +64,7 @@ const getTokenDetails = async (
 ): Promise<TokenDetails> => {
   if (toLower(tokenAddress) === toLower(WETH[chainId].address)) {
     return {
+      address: 'eth',
       decimals: 18,
       name: 'Ethereum',
       symbol: 'ETH',
@@ -126,6 +128,7 @@ const getTokenDetails = async (
     }
   }
   return {
+    address: tokenAddress,
     decimals,
     name,
     symbol,
@@ -222,12 +225,10 @@ const getLiquidityInfoV2 = async (
         price: lpToken?.asset?.price,
         tokens: [
           {
-            address: token0Address,
             balance: token0Balance,
             ...token0,
           },
           {
-            address: token1Address,
             balance: token1Balance,
             ...token1,
           },

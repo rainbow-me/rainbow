@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import useImageMetadata from './useImageMetadata';
-import useTokenMetadata from './useTokenMetadata';
 import { colors } from '@rainbow-me/styles';
 import {
+  getTokenMetadata,
   getUrlForTrustIconFallback,
   isETH,
   pseudoRandomArrayItemFromString,
@@ -10,7 +10,7 @@ import {
 
 export default function useColorForAsset(asset, fallbackColor) {
   const { address, color } = asset;
-  const token = useTokenMetadata(address);
+  const token = getTokenMetadata(address);
   const tokenListColor = token?.extensions?.color;
 
   const { color: imageColor } = useImageMetadata(
