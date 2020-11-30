@@ -1,10 +1,11 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
 import styled from 'styled-components/primitives';
-import supportedNativeCurrencies from '../../references/native-currencies.json';
 import { Row } from '../layout';
 import { Text } from '../text';
 import ExchangeInput from './ExchangeInput';
+import { useColorForAsset } from '@rainbow-me/hooks';
+import { supportedNativeCurrencies } from '@rainbow-me/references';
 import { colors, fonts } from '@rainbow-me/styles';
 
 const CurrencySymbol = styled(Text).attrs(({ height }) => ({
@@ -26,7 +27,7 @@ const NativeInput = styled(ExchangeInput).attrs({
 
 const ExchangeNativeField = (
   {
-    colorForAsset,
+    address,
     editable,
     height,
     nativeAmount,
@@ -37,6 +38,7 @@ const ExchangeNativeField = (
   },
   ref
 ) => {
+  const colorForAsset = useColorForAsset({ address });
   const [isFocused, setIsFocused] = useState(false);
   const { mask, placeholder, symbol } = supportedNativeCurrencies[
     nativeCurrency
@@ -55,13 +57,15 @@ const ExchangeNativeField = (
     [onFocus]
   );
 
-  const nativeAmountExists =
-    typeof nativeAmount === 'string' && nativeAmount.length > 0;
+  const nativeAmountColor = useMemo(() => {
+    const nativeAmountExists =
+      typeof nativeAmount === 'string' && nativeAmount.length > 0;
 
-  const nativeAmountColor = colors.alpha(
-    isFocused ? colors.dark : colors.blueGreyDark,
-    isFocused ? 1 : nativeAmountExists ? 0.5 : 0.3
-  );
+    const color = isFocused ? colors.dark : colors.blueGreyDark;
+    const opacity = isFocused ? 1 : nativeAmountExists ? 0.5 : 0.3;
+
+    return colors.alpha(color, opacity);
+  }, [isFocused, nativeAmount]);
 
   return (
     <TouchableWithoutFeedback onPress={handleFocusNativeField}>
@@ -72,7 +76,7 @@ const ExchangeNativeField = (
         <NativeInput
           color={nativeAmountColor}
           editable={editable}
-          height={height}
+          height={android ? height : 58}
           mask={mask}
           onBlur={handleBlur}
           onChangeText={setNativeAmount}
@@ -80,7 +84,6 @@ const ExchangeNativeField = (
           placeholder={placeholder}
           ref={ref}
           selectionColor={colorForAsset}
-          style={android ? { height: 58 } : {}}
           testID={nativeAmount ? `${testID}-${nativeAmount}` : testID}
           value={nativeAmount}
         />

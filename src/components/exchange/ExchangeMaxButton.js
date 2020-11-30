@@ -3,6 +3,7 @@ import styled from 'styled-components/primitives';
 import { ButtonPressAnimation } from '../animations';
 import { Row } from '../layout';
 import { Text } from '../text';
+import { useColorForAsset } from '@rainbow-me/hooks';
 import { colors, padding } from '@rainbow-me/styles';
 
 const Container = styled(ButtonPressAnimation)`
@@ -25,15 +26,19 @@ const MaxButtonLabel = styled(Text).attrs({
 `;
 
 export default function ExchangeMaxButton({
-  color = colors.appleBlue,
+  address,
   disabled,
   onPress,
   testID,
 }) {
+  const colorForAsset = useColorForAsset({ address });
+
   return (
     <Container disabled={disabled} onPress={onPress} testID={testID}>
       <MaxButtonContent>
-        <MaxButtonLabel color={color}>􀜍 Max</MaxButtonLabel>
+        <MaxButtonLabel color={colorForAsset || colors.appleBlue}>
+          􀜍 Max
+        </MaxButtonLabel>
       </MaxButtonContent>
     </Container>
   );

@@ -4,7 +4,6 @@ import { ColumnWithMargins, Row } from '../layout';
 import ExchangeField from './ExchangeField';
 import ExchangeMaxButton from './ExchangeMaxButton';
 import ExchangeNativeField from './ExchangeNativeField';
-import { useColorForAsset } from '@rainbow-me/hooks';
 
 const BottomRowHeight = android ? 52 : 32;
 
@@ -38,8 +37,6 @@ export default function ExchangeInputField({
   setNativeAmount,
   testID,
 }) {
-  const colorForAsset = useColorForAsset({ address: inputCurrencyAddress });
-
   return (
     <Container>
       <ExchangeField
@@ -56,7 +53,7 @@ export default function ExchangeInputField({
       />
       <NativeFieldRow>
         <ExchangeNativeField
-          colorForAsset={colorForAsset}
+          address={inputCurrencyAddress}
           editable
           height={BottomRowHeight}
           nativeAmount={nativeAmount}
@@ -67,7 +64,7 @@ export default function ExchangeInputField({
           testID={testID + '-native'}
         />
         <ExchangeMaxButton
-          color={colorForAsset}
+          address={inputCurrencyAddress}
           disabled={!inputCurrencySymbol}
           onPress={onPressMaxBalance}
           testID={testID + '-max'}
