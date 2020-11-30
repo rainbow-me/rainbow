@@ -33,8 +33,9 @@ import { useNavigation } from '@rainbow-me/navigation';
 
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
 
-const heightWithChart = android ? 630 : 606;
-const heightWithNoChart = 309;
+//add's StatusBar height to android
+const heightWithChart = 606 + (android && 24);
+const heightWithNoChart = 309 + (android && 24);
 
 const ActionRowAndroid = styled.View`
   flex-direction: row;
@@ -94,7 +95,7 @@ function useJumpingForm(isLong) {
   }, [isLong, setOptions, jumpToShort, jumpToLong]);
 }
 
-export const ChartExpandedStateSheetHeight =
+export const initialChartExpandedStateSheetHeight =
   heightWithChart + (android ? 40 : 0);
 
 export default function ChartExpandedState({ asset }) {
@@ -168,6 +169,9 @@ export default function ChartExpandedState({ asset }) {
   if (duration.current === 0) {
     duration.current = 300;
   }
+  const ChartExpandedStateSheetHeight =
+    (ios || showChart ? heightWithChart : heightWithNoChart) +
+    (android ? 40 : 0);
 
   return (
     <SlackSheet
