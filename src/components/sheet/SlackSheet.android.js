@@ -19,21 +19,28 @@ import SheetHandleFixedToTop, {
 import { useNavigation } from '@rainbow-me/navigation';
 import { colors } from '@rainbow-me/styles';
 
+const deviceHeight = deviceUtils.dimensions.height;
+
+const calculateTopPosition = (
+  deferredHeight,
+  contentHeight,
+  additionalTopPadding
+) => {
+  if (deferredHeight) return '';
+  const top =
+    contentHeight && additionalTopPadding ? deviceHeight - contentHeight : 0;
+  return `top: ${top};`;
+};
+
 const Container = styled(Centered).attrs({ direction: 'column' })`
   background-color: ${({ backgroundColor }) => backgroundColor};
   bottom: 0;
   left: 0;
   overflow: hidden;
   position: absolute;
-  border-top-left-radius: 20;
-  border-top-right-radius: 20;
+  border-radius: 20;
   ${({ deferredHeight, contentHeight, additionalTopPadding }) =>
-    !deferredHeight &&
-    `top: ${
-      contentHeight && additionalTopPadding
-        ? deviceUtils.dimensions.height - contentHeight
-        : 0
-    };`}
+    calculateTopPosition(deferredHeight, contentHeight, additionalTopPadding)}
   right: 0;
 `;
 
