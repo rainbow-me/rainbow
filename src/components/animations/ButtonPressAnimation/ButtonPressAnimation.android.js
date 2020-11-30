@@ -215,7 +215,12 @@ const SimpleScaleButton = ({
           scaleTo={scaleTo}
           style={{ overflow: 'visible' }}
         >
-          <View style={[{ padding: overflowMargin }, contentContainerStyle]}>
+          <View
+            style={[
+              { backgroundColor: 'transparent', padding: overflowMargin },
+              contentContainerStyle,
+            ]}
+          >
             {children}
           </View>
         </ZoomableButton>
