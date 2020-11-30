@@ -26,6 +26,7 @@ import { SwipeNavigator } from './SwipeNavigator';
 import {
   closeKeyboardOnClose,
   defaultScreenStackOptions,
+  restoreSheetConfig,
   stackNavigationConfig,
   wyreWebviewOptions,
 } from './config';
@@ -187,7 +188,8 @@ function MainNavigator() {
       <Stack.Screen
         component={RestoreSheet}
         name={Routes.RESTORE_SHEET}
-        options={sheetPreset}
+        {...restoreSheetConfig}
+        options={bottomSheetPreset}
       />
       <Stack.Screen
         component={ImportSeedPhraseFlowNavigator}
