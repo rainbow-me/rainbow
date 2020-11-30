@@ -142,9 +142,6 @@ export default function BackupSheet() {
             onSecondaryAction={goBack}
             primaryLabel="Back up now"
             secondaryLabel="Maybe later"
-            titleText={`Back up your wallet${
-              backupableWalletsCount > 1 ? 's' : ''
-            }`}
             type="Existing User"
           />
         );
