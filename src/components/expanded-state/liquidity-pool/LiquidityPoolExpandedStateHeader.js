@@ -1,8 +1,6 @@
-import { map } from 'lodash';
 import React from 'react';
-import { View } from 'react-native';
 import styled from 'styled-components/primitives';
-import { CoinIcon } from '../../coin-icon';
+import { CoinIconGroup } from '../../coin-icon';
 import { ColumnWithMargins, Row } from '../../layout';
 import { TruncatedText } from '../../text';
 import { colors, padding } from '@rainbow-me/styles';
@@ -39,17 +37,7 @@ function LiquidityPoolExpandedStateHeader({ assets, name, pricePerShare }) {
   return (
     <Container>
       <Row align="center">
-        {map(assets, (asset, index) => {
-          return (
-            <View key={`coinicon-${index}`} marginRight={-10} zIndex={-index}>
-              <CoinIcon
-                address={asset.address}
-                position="relative"
-                symbol={asset.symbol}
-              />
-            </View>
-          );
-        })}
+        <CoinIconGroup tokens={assets} />
       </Row>
       <Row align="center" justify="space-between">
         <ColumnWithMargins align="start" margin={2}>
