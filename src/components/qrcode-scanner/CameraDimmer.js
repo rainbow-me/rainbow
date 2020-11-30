@@ -2,7 +2,6 @@ import React from 'react';
 import Animated, {
   and,
   block,
-  call,
   cond,
   eq,
   min,
@@ -26,7 +25,6 @@ export default function CameraDimmer({ children }) {
   const style = useMemoOne(
     () => ({
       opacity: block([
-        call([scrollPosition], ([x]) => console.log(x)),
         set(prevMem, prev),
         set(prev, scrollPosition),
 
