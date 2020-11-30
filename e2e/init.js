@@ -6,7 +6,6 @@ import { detox as config } from '../package.json';
 
 // eslint-disable-next-line import/no-commonjs
 require('dotenv').config({ path: '.env' });
-console.log(process.ENV);
 
 jest.retryTimes(1);
 jasmine.getEnv().addReporter(adapter);
