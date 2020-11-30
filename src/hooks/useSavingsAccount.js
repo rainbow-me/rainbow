@@ -146,11 +146,10 @@ export default function useSavingsAccount(includeDefaultDai) {
           ['ethPrice'],
           ['desc']
         );
+        saveSavings(savingsAccountData, accountAddress, network);
       } else if (loading) {
         savingsAccountData = backupAccountTokens;
       }
-
-      saveSavings(savingsAccountData, accountAddress, network);
 
       const daiMarketData = getMarketData(markets[CDAI_CONTRACT]);
       const result = {
