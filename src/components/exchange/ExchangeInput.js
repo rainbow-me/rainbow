@@ -8,7 +8,6 @@ import { buildTextStyles, colors } from '@rainbow-me/styles';
 const Input = styled(TextInputMask).attrs({
   allowFontScaling: false,
   keyboardType: 'decimal-pad',
-  selectionColor: colors.appleBlue,
 })`
   ${buildTextStyles};
   ${android ? 'font-weight: normal' : ''};
@@ -28,6 +27,7 @@ const ExchangeInput = (
     onFocus,
     placeholder = '0',
     placeholderTextColor = colors.alpha(colors.blueGreyDark, 0.3),
+    selectionColor = color,
     size = 'h2',
     testID,
     value = '',
@@ -100,6 +100,7 @@ const ExchangeInput = (
       placeholder={placeholder}
       placeholderTextColor={placeholderTextColor}
       ref={ref}
+      selectionColor={selectionColor}
       size={size}
       testID={testID}
       value={value}

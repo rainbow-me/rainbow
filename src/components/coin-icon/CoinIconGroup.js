@@ -50,7 +50,11 @@ export default function CoinIconGroup({ tokens }) {
       {tokenRows.map((setOfTokens, lineIndex) => (
         <Row key={`coinLine_${lineIndex}`}>
           {setOfTokens.map((token, index) => (
-            <View key={`coin_${index}_${lineIndex}`} width={width}>
+            <View
+              key={`coin_${index}_${lineIndex}`}
+              width={width}
+              zIndex={-index}
+            >
               <CoinIcon
                 address={token?.address}
                 size={iconSize}

@@ -3,7 +3,11 @@ import { FallbackIcon } from 'react-coin-icon';
 import styled from 'styled-components/primitives';
 import ImageWithCachedMetadata from '../ImageWithCachedMetadata';
 import { Centered } from '../layout';
-import { useBooleanState, useColorForAsset } from '@rainbow-me/hooks';
+import {
+  useBooleanState,
+  useColorForAsset,
+  useTokenMetadata,
+} from '@rainbow-me/hooks';
 import { colors, fonts, position } from '@rainbow-me/styles';
 import { getUrlForTrustIconFallback } from '@rainbow-me/utils';
 
@@ -19,39 +23,61 @@ const FallbackImage = styled(ImageWithCachedMetadata)`
   ${position.cover};
   background-color: ${({ showImage }) =>
     showImage ? colors.white : colors.transparent};
+  border-radius: ${({ size }) => size / 2};
+  overflow: visible;
+  shadow-color: ${({ shadowColorValue }) => shadowColorValue};
+  shadow-offset: ${({ shadowOffsetHeight, shadowOffsetWidth }) =>
+    `${shadowOffsetWidth}px ${shadowOffsetHeight}px`};
+  shadow-opacity: ${({ shadowOpacityValue, showImage }) =>
+    showImage ? shadowOpacityValue : 0};
+  shadow-radius: ${({ shadowRadiusValue }) => shadowRadiusValue};
 `;
 
 const CoinIconFallback = fallbackProps => {
-  const { address = '', height, symbol, width } = fallbackProps;
+  const {
+    address = '',
+    height,
+    shadowColor,
+    shadowOffset,
+    shadowOpacity,
+    shadowRadius,
+    symbol,
+    width,
+  } = fallbackProps;
 
   const [showImage, showFallbackImage, hideFallbackImage] = useBooleanState(
     false
   );
 
+  const tokenMetadata = useTokenMetadata(address);
   const fallbackIconColor = useColorForAsset({ address });
   const imageUrl = useMemo(() => getUrlForTrustIconFallback(address), [
     address,
   ]);
 
   return (
-    <Centered
-      borderRadius={height / 2}
-      height={height}
-      overflow="hidden"
-      width={width}
-    >
-      <FallbackIcon
-        {...fallbackProps}
-        color={fallbackIconColor}
-        symbol={symbol || ''}
-        textStyles={fallbackTextStyles}
-      />
+    <Centered height={height} width={width}>
+      {!showImage && (
+        <FallbackIcon
+          {...fallbackProps}
+          color={fallbackIconColor}
+          showImage={showImage}
+          symbol={symbol || ''}
+          textStyles={fallbackTextStyles}
+        />
+      )}
       <FallbackImage
-        {...fallbackProps}
+        borderRadius={width / 2}
         imageUrl={imageUrl}
         onError={hideFallbackImage}
         onLoad={showFallbackImage}
+        shadowColorValue={tokenMetadata?.extensions?.shadowColor || shadowColor}
+        shadowOffsetHeight={shadowOffset.height}
+        shadowOffsetWidth={shadowOffset.width}
+        shadowOpacityValue={shadowOpacity}
+        shadowRadiusValue={shadowRadius}
         showImage={showImage}
+        size={width}
       />
     </Centered>
   );

@@ -11,14 +11,6 @@ import { isETH, magicMemo } from '@rainbow-me/utils';
 export const CoinIconSize = 40;
 
 const StyledCoinIcon = styled(ReactCoinIcon)`
-  background-color: ${({ color }) => {
-    // We have to give the outermost wrapper a background color
-    // or else React Native complains about shadow performance (and probably
-    // our perf is actually affected too).
-    // Read more about details of RN shadow / background requirements:
-    // 📎️ https://github.com/facebook/react-native/commit/e4c53c28aea7e067e48f5c8c0100c7cafc031b06
-    return color;
-  }};
   opacity: ${({ isHidden }) => (isHidden ? 0.4 : 1)};
 `;
 
