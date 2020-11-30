@@ -26,6 +26,7 @@ const NativeInput = styled(ExchangeInput).attrs({
 
 const ExchangeNativeField = (
   {
+    colorForAsset,
     editable,
     height,
     nativeAmount,
@@ -78,6 +79,7 @@ const ExchangeNativeField = (
           onFocus={handleFocus}
           placeholder={placeholder}
           ref={ref}
+          selectionColor={colorForAsset}
           style={android ? { height: 58 } : {}}
           testID={nativeAmount ? `${testID}-${nativeAmount}` : testID}
           value={nativeAmount}

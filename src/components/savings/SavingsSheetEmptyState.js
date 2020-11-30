@@ -64,7 +64,11 @@ const SavingsSheetEmptyState = ({
 
   return (
     <Centered direction="column" paddingTop={9}>
-      <CoinIcon size={50} symbol="DAI" />
+      <CoinIcon
+        address="0x6b175474e89094c44da98b954eedeac495271d0f"
+        size={50}
+        symbol="DAI"
+      />
       <Centered marginBottom={12} marginTop={15}>
         <APYHeadingText>Get </APYHeadingText>
         <GradientAPYHeadingText>{apy}%</GradientAPYHeadingText>

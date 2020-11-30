@@ -57,6 +57,7 @@ export default function ExchangeInputField({
       />
       <NativeFieldRow>
         <ExchangeNativeField
+          colorForAsset={colorForAsset}
           editable
           height={BottomRowHeight}
           nativeAmount={nativeAmount}
