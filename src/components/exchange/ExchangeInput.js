@@ -6,15 +6,6 @@ import { Text } from '../text';
 import { buildTextStyles, colors } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
-const Input = styled(TextInputMask).attrs({
-  allowFontScaling: false,
-  keyboardType: 'decimal-pad',
-})`
-  ${buildTextStyles};
-  ${android ? 'font-weight: normal' : ''};
-  flex: 1;
-`;
-
 const AndroidMaskWrapper = styled.View`
   background-color: ${colors.white};
   bottom: 0;
@@ -22,6 +13,15 @@ const AndroidMaskWrapper = styled.View`
   position: absolute;
   right: 0;
   top: 11.5;
+`;
+
+const Input = styled(TextInputMask).attrs({
+  allowFontScaling: false,
+  keyboardType: 'decimal-pad',
+})`
+  ${buildTextStyles};
+  ${android ? 'font-weight: normal' : ''};
+  flex: 1;
 `;
 
 const ExchangeInput = (

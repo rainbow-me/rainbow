@@ -10,6 +10,7 @@ export { default as compoundCETHABI } from './compound/compound-ceth-abi.json';
 export { default as emojis } from './emojis.json';
 export { default as erc20ABI } from './erc20-abi.json';
 export { default as ethUnits } from './ethereum-units.json';
+export { default as supportedNativeCurrencies } from './native-currencies.json';
 export { default as shitcoins } from './shitcoins.json';
 
 interface OverrideInfo {
