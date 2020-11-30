@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useRef } from 'react';
+import React, { createContext, useContext, useMemo, useRef } from 'react';
 import { processColor, requireNativeComponent, View } from 'react-native';
 import {
   createNativeWrapper,
@@ -14,6 +14,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import { normalizeTransformOrigin } from './NativeButton';
 
 const ZoomableRawButton = requireNativeComponent('RNZoomableButton');
 
@@ -186,6 +187,7 @@ const SimpleScaleButton = ({
   overflowMargin,
   wrapperStyle,
   duration,
+  transformOrigin,
 }) => {
   const { handleCancel, handlePress, handleStartPress } = useLongPress({
     minLongPressDuration,
@@ -214,6 +216,7 @@ const SimpleScaleButton = ({
           rippleColor={processColor('transparent')}
           scaleTo={scaleTo}
           style={{ overflow: 'visible' }}
+          transformOrigin={transformOrigin}
         >
           <View
             style={{ backgroundColor: 'transparent', padding: overflowMargin }}
@@ -246,7 +249,13 @@ export default function ButtonPressAnimation({
   hitSlop,
   wrapperStyle,
   reanimatedButton,
+  transformOrigin,
 }) {
+  const normalizedTransformOrigin = useMemo(
+    () => normalizeTransformOrigin(transformOrigin),
+    [transformOrigin]
+  );
+
   if (disabled) {
     return <View style={[style, { overflow: 'visible' }]}>{children}</View>;
   }
@@ -265,6 +274,7 @@ export default function ButtonPressAnimation({
       overflowMargin={overflowMargin}
       scaleTo={scaleTo}
       testID={testID}
+      transformOrigin={normalizedTransformOrigin}
       wrapperStyle={wrapperStyle}
     >
       <View pointerEvents="box-only" style={[style, { overflow: 'visible' }]}>

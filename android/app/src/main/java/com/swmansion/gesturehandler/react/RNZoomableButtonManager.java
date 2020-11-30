@@ -4,17 +4,21 @@ import android.view.animation.Animation;
 import android.view.animation.Interpolator;
 import android.view.animation.ScaleAnimation;
 import androidx.core.view.animation.PathInterpolatorCompat;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import java.util.Timer;
 import java.util.TimerTask;
+import javax.annotation.Nullable;
 
 public class RNZoomableButtonManager extends
         RNGestureHandlerButtonViewManager {
     static class ZoomableButtonViewGroup extends ButtonViewGroup {
-        private int mMinLongPressDuration = 500;
-        private float mScaleTo = 0.86f;
-        private int mDuration = 160;
+        int mMinLongPressDuration = 500;
+        float mScaleTo = 0.86f;
+        int mDuration = 160;
+        float pivotX = 0.5f;
+        float pivotY = 0.5f;
 
         public ZoomableButtonViewGroup(Context context) {
             super(context);
@@ -33,8 +37,8 @@ public class RNZoomableButtonManager extends
                 Animation anim = new ScaleAnimation(
                         in ? 1f : mScaleTo, !in ? 1f : mScaleTo,
                         in ? 1f : mScaleTo, !in ? 1f : mScaleTo,
-                        (float)this.getMeasuredWidth() / 2,
-                        (float)this.getMeasuredHeight() / 2);
+                        this.getMeasuredWidth() * pivotX,
+                        this.getMeasuredHeight() * pivotY);
                 anim.setFillAfter(true);
                 anim.setDuration(mDuration);
                 anim.setInterpolator(bezierInterpolator);
@@ -57,18 +61,6 @@ public class RNZoomableButtonManager extends
                 }, mMinLongPressDuration);
             }
         }
-
-        public void setMinLongPressDuration(Integer minLongPressDuration) {
-            this.mMinLongPressDuration = minLongPressDuration;
-        }
-
-        public void setDuration(Integer duration) {
-            this.mDuration = duration;
-        }
-
-        public void setScaleTo(float scaleTo) {
-            this.mScaleTo = scaleTo;
-        }
     }
     @Override
     public ButtonViewGroup createViewInstance(ThemedReactContext context) {
@@ -82,16 +74,27 @@ public class RNZoomableButtonManager extends
 
     @ReactProp(name = "minLongPressDuration")
     public void setMinLongPressDuration(ZoomableButtonViewGroup view, Integer minLongPressDuration) {
-        view.setMinLongPressDuration(minLongPressDuration);
+        view.mMinLongPressDuration = minLongPressDuration;
     }
 
     @ReactProp(name = "scaleTo")
     public void setScaleTo(ZoomableButtonViewGroup view, float scaleTo) {
-        view.setScaleTo(scaleTo);
+        view.mScaleTo = scaleTo;
     }
 
     @ReactProp(name = "duration")
     public void setDuration(ZoomableButtonViewGroup view, Integer duration) {
-        view.setDuration(duration);
+        view.mDuration = duration;
+    }
+
+    @ReactProp(name = "transformOrigin")
+    public void setTransformOrigin(ZoomableButtonViewGroup view, @Nullable ReadableArray transformOrigin) {
+        if (transformOrigin == null) {
+            view.pivotX = 0.5f;
+            view.pivotY = 0.5f;
+        } else {
+            view.pivotX = (float) transformOrigin.getDouble(0);
+            view.pivotY = (float) transformOrigin.getDouble(1);
+        }
     }
 }
