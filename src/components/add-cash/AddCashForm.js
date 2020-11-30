@@ -10,9 +10,10 @@ import { Centered, ColumnWithMargins } from '../layout';
 import { Numpad, NumpadValue } from '../numpad';
 import AddCashFooter from './AddCashFooter';
 import AddCashSelector from './AddCashSelector';
+import { DAI_ADDRESS, ETH_ADDRESS } from '@rainbow-me/references';
 import { padding } from '@rainbow-me/styles';
 
-const currencies = ['DAI', 'ETH'];
+const currencies = [DAI_ADDRESS, ETH_ADDRESS];
 const minimumPurchaseAmountUSD = 1;
 
 const AddCashForm = ({
@@ -45,7 +46,7 @@ const AddCashForm = ({
         value: Number(value),
       });
       setPaymentSheetVisible(true);
-      await onPurchase({ currency, value });
+      await onPurchase({ address: currency, value });
       // eslint-disable-next-line no-empty
     } catch (e) {
     } finally {

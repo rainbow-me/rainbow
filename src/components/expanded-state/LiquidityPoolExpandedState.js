@@ -1,7 +1,5 @@
 import { map } from 'lodash';
 import React from 'react';
-import { useChartThrottledPoints } from '../../hooks';
-import { magicMemo } from '../../utils';
 import {
   DepositActionButton,
   SheetActionButtonRow,
@@ -15,8 +13,10 @@ import {
   TokenInfoRow,
   TokenInfoSection,
 } from '../token-info';
-import Chart from '../value-chart/Chart';
+import { Chart } from '../value-chart';
 import { ChartPathProvider } from '@rainbow-me/animated-charts';
+import { useChartThrottledPoints } from '@rainbow-me/hooks';
+import { magicMemo } from '@rainbow-me/utils';
 
 const heightWithoutChart = 373 + (android && 80);
 const heightWithChart = heightWithoutChart + 292;
@@ -68,17 +68,15 @@ const LiquidityPoolExpandedState = ({ asset }) => {
       <SheetDivider />
       <TokenInfoSection>
         <TokenInfoRow>
-          {map(tokens, tokenAsset => {
-            return (
-              <TokenInfoItem
-                asset={tokenAsset}
-                key={`tokeninfo-${tokenAsset.symbol}`}
-                title={`${tokenAsset.symbol} balance`}
-              >
-                <TokenInfoBalanceValue />
-              </TokenInfoItem>
-            );
-          })}
+          {map(tokens, tokenAsset => (
+            <TokenInfoItem
+              asset={tokenAsset}
+              key={`tokeninfo-${tokenAsset.symbol}`}
+              title={`${tokenAsset.symbol} balance`}
+            >
+              <TokenInfoBalanceValue />
+            </TokenInfoItem>
+          ))}
         </TokenInfoRow>
         <TokenInfoRow>
           <TokenInfoItem title="Pool shares">{uniBalanceLabel}</TokenInfoItem>

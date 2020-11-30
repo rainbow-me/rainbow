@@ -3,13 +3,12 @@ import { FallbackIcon } from 'react-coin-icon';
 import styled from 'styled-components/primitives';
 import ImageWithCachedMetadata from '../ImageWithCachedMetadata';
 import { Centered } from '../layout';
-import {
-  useBooleanState,
-  useColorForAsset,
-  useTokenMetadata,
-} from '@rainbow-me/hooks';
+import { useBooleanState, useColorForAsset } from '@rainbow-me/hooks';
 import { colors, fonts, position } from '@rainbow-me/styles';
-import { getUrlForTrustIconFallback } from '@rainbow-me/utils';
+import {
+  getTokenMetadata,
+  getUrlForTrustIconFallback,
+} from '@rainbow-me/utils';
 
 const fallbackTextStyles = {
   fontFamily: fonts.family.SFProRounded,
@@ -49,7 +48,7 @@ const CoinIconFallback = fallbackProps => {
     false
   );
 
-  const tokenMetadata = useTokenMetadata(address);
+  const tokenMetadata = getTokenMetadata(address);
   const fallbackIconColor = useColorForAsset({ address });
   const imageUrl = useMemo(() => getUrlForTrustIconFallback(address), [
     address,
