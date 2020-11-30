@@ -1,5 +1,5 @@
 import { useIsFocused } from '@react-navigation/native';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import Animated, { useCode } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
@@ -70,6 +70,7 @@ export default function QRScannerScreen() {
   const isFocusedIOS = useFocusFromSwipe();
   const isFocusedAndroid = useIsFocused();
   const [sheetHeight, onSheetLayout] = useHeight(240);
+  const [initializeCamera, setInitializeCamera] = useState(ios ? true : false);
   const { navigate } = useNavigation();
   const {
     walletConnectorsByDappName,
@@ -81,17 +82,23 @@ export default function QRScannerScreen() {
     [navigate]
   );
 
+  useEffect(() => {
+    isFocusedAndroid && !initializeCamera && setInitializeCamera(true);
+  }, [initializeCamera, isFocusedAndroid]);
+
   return (
     <View>
       {discoverSheetAvailable && ios ? <DiscoverSheet /> : null}
       <ScannerContainer>
         <Background />
         <CameraDimmer>
-          <QRCodeScanner
-            contentPositionBottom={sheetHeight}
-            contentPositionTop={HeaderHeight}
-            enableCamera={ios ? isFocusedIOS : isFocusedAndroid}
-          />
+          {initializeCamera && (
+            <QRCodeScanner
+              contentPositionBottom={sheetHeight}
+              contentPositionTop={HeaderHeight}
+              enableCamera={ios ? isFocusedIOS : isFocusedAndroid}
+            />
+          )}
         </CameraDimmer>
         {discoverSheetAvailable ? (
           android ? (
