@@ -155,8 +155,8 @@ const AmountButton = ({ amount, backgroundColor, color, onPress }) => {
           })}
         />
         <InnerBPA
-          disabled={ios}
           onPress={handlePress}
+          reanimatedButton
           style={{ flex: 1 }}
           wrapperStyle={{
             width: 100,

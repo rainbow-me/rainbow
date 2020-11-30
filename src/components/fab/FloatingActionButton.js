@@ -68,6 +68,7 @@ const FloatingActionButton = ({
         <ButtonPressAnimation
           disabled={disabled || ios}
           onPress={handlePress}
+          reanimatedButton
           style={{
             height: size,
           }}

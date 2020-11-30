@@ -1,8 +1,9 @@
 import React, { createContext, useContext, useRef } from 'react';
-import { processColor, View } from 'react-native';
+import { processColor, requireNativeComponent, View } from 'react-native';
 import {
   createNativeWrapper,
   PureNativeButton,
+  State,
 } from 'react-native-gesture-handler';
 import Animated, {
   NewEasing as Easing,
@@ -13,6 +14,10 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+
+const ZoomableRawButton = requireNativeComponent('RNZoomableButton');
+
+const ZoomableButton = createNativeWrapper(ZoomableRawButton);
 
 const AnimatedRawButton = createNativeWrapper(
   Animated.createAnimatedComponent(PureNativeButton),
@@ -50,6 +55,40 @@ export const ScaleButtonZoomable = ({ children, style }) => {
   );
 };
 
+const useLongPress = ({ onPress, onLongPress, minLongPressDuration }) => {
+  const longPressTimer = useRef(null);
+  const isPressEventLegal = useRef(false);
+
+  const handleStartPress = () => {
+    if (longPressTimer.current == null) {
+      longPressTimer.current = setTimeout(() => {
+        longPressTimer.current = null;
+        onLongPress?.();
+      }, minLongPressDuration);
+    }
+
+    isPressEventLegal.current = true;
+  };
+  const handlePress = () => {
+    clearTimeout(longPressTimer.current);
+    if (longPressTimer.current) {
+      onPress();
+      longPressTimer.current = null;
+    }
+  };
+
+  const handleCancel = () => {
+    clearTimeout(longPressTimer.current);
+    isPressEventLegal.current = false;
+  };
+
+  return {
+    handleCancel,
+    handlePress,
+    handleStartPress,
+  };
+};
+
 const ScaleButton = ({
   duration,
   scaleTo,
@@ -61,8 +100,6 @@ const ScaleButton = ({
   overflowMargin,
   wrapperStyle,
 }) => {
-  const longPressTimer = useRef(null);
-  const isPressEventLegal = useRef(false);
   const scale = useSharedValue(1);
   const hasScaledDown = useSharedValue(0);
   const parentValue = useContext(ScaleButtonContext);
@@ -88,28 +125,11 @@ const ScaleButton = ({
     };
   });
 
-  const handleStartPress = () => {
-    if (longPressTimer.current == null) {
-      longPressTimer.current = setTimeout(() => {
-        longPressTimer.current = null;
-        onLongPress?.();
-      }, minLongPressDuration);
-    }
-
-    isPressEventLegal.current = true;
-  };
-  const handlePress = () => {
-    clearTimeout(longPressTimer.current);
-    if (longPressTimer.current) {
-      onPress();
-      longPressTimer.current = null;
-    }
-  };
-
-  const handleCancel = () => {
-    clearTimeout(longPressTimer.current);
-    isPressEventLegal.current = false;
-  };
+  const { handleCancel, handlePress, handleStartPress } = useLongPress({
+    minLongPressDuration,
+    onLongPress,
+    onPress,
+  });
 
   const gestureHandler = useAnimatedGestureHandler({
     onActive: () => {
@@ -156,6 +176,58 @@ const ScaleButton = ({
   );
 };
 
+const SimpleScaleButton = ({
+  scaleTo,
+  children,
+  onPress,
+  onLongPress,
+  contentContainerStyle,
+  minLongPressDuration,
+  overflowMargin,
+  wrapperStyle,
+  duration,
+}) => {
+  const { handleCancel, handlePress, handleStartPress } = useLongPress({
+    minLongPressDuration,
+    onLongPress,
+    onPress,
+  });
+
+  const onHandlerStateChange = ({ nativeEvent: { state, oldState } }) => {
+    if (oldState === State.UNDETERMINED && state === State.BEGAN) {
+      handleStartPress();
+    } else if (oldState === State.ACTIVE && state === State.END) {
+      handlePress();
+    } else {
+      handleCancel();
+    }
+  };
+
+  return (
+    <View style={[{ overflow: 'visible' }, wrapperStyle]}>
+      <View style={{ margin: -overflowMargin }}>
+        <ZoomableButton
+          duration={duration}
+          hitSlop={-overflowMargin}
+          minLongPressDuration={minLongPressDuration}
+          onHandlerStateChange={onHandlerStateChange}
+          rippleColor={processColor('transparent')}
+          scaleTo={scaleTo}
+          style={{ overflow: 'visible' }}
+        >
+          <View style={{ backgroundColor: 'transparent' }}>
+            <View style={{ padding: overflowMargin }}>
+              <Animated.View style={[contentContainerStyle]}>
+                {children}
+              </Animated.View>
+            </View>
+          </View>
+        </ZoomableButton>
+      </View>
+    </View>
+  );
+};
+
 export default function ButtonPressAnimation({
   // eslint-disable-next-line no-unused-vars
   activeOpacity = 1, // TODO
@@ -173,13 +245,16 @@ export default function ButtonPressAnimation({
   overflowMargin = OVERFLOW_MARGIN,
   hitSlop,
   wrapperStyle,
+  reanimatedButton,
 }) {
   if (disabled) {
     return <View style={[style, { overflow: 'visible' }]}>{children}</View>;
   }
 
+  const Button = reanimatedButton ? ScaleButton : SimpleScaleButton;
+
   return (
-    <ScaleButton
+    <Button
       contentContainerStyle={contentContainerStyle}
       duration={duration}
       hitSlop={hitSlop}
@@ -195,6 +270,6 @@ export default function ButtonPressAnimation({
       <View pointerEvents="box-only" style={[style, { overflow: 'visible' }]}>
         {children}
       </View>
-    </ScaleButton>
+    </Button>
   );
 }

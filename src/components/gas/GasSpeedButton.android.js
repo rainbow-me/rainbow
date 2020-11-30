@@ -419,7 +419,7 @@ const GasSpeedButton = ({
         align="end"
         as={isCustom && ButtonPressAnimation}
         onPress={handlePress}
-        opacityTouchable
+        reanimatedButton
         wrapperStyle={{ flex: 1 }}
       >
         <Row align="end" css={margin(3, 0)} justify="end" marginBottom={1}>
