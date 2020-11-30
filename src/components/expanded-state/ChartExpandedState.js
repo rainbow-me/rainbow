@@ -33,8 +33,9 @@ import { useNavigation } from '@rainbow-me/navigation';
 
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
 
-const heightWithChart = android ? 630 : 606;
-const heightWithNoChart = 309;
+//add's StatusBar height to android
+const heightWithChart = 606 + (android && 24);
+const heightWithNoChart = 309 + (android && 24);
 
 const ActionRowAndroid = styled.View`
   flex-direction: row;
