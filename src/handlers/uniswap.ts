@@ -21,12 +21,12 @@ import { UNISWAP_ALL_TOKENS } from '../apollo/queries';
 import { loadWallet } from '../model/wallet';
 import { toHex, web3Provider } from './web3';
 import { Network } from '@rainbow-me/networkTypes';
-import { ethUnits } from '@rainbow-me/references';
 import {
+  ethUnits,
   UNISWAP_TESTNET_TOKEN_LIST,
   UNISWAP_V2_ROUTER_ABI,
   UNISWAP_V2_ROUTER_ADDRESS,
-} from '@rainbow-me/references/uniswap';
+} from '@rainbow-me/references';
 import {
   addBuffer,
   convertAmountToRawAmount,

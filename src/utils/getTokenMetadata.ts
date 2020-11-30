@@ -1,6 +1,6 @@
 import { toLower } from 'lodash';
 import { Types } from 'rainbow-token-list';
-import { RAINBOW_TOKEN_LIST } from '@rainbow-me/references/uniswap';
+import { RAINBOW_TOKEN_LIST } from '@rainbow-me/references';
 
 export default function getTokenMetadata(
   tokenAddress: string
