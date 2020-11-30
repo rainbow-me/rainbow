@@ -218,12 +218,12 @@ const SimpleScaleButton = ({
           style={{ overflow: 'visible' }}
           transformOrigin={transformOrigin}
         >
-          <View
-            style={{ backgroundColor: 'transparent', padding: overflowMargin }}
-          >
-            <Animated.View style={contentContainerStyle}>
-              {children}
-            </Animated.View>
+          <View style={{ backgroundColor: 'transparent' }}>
+            <View style={{ padding: overflowMargin }}>
+              <Animated.View style={contentContainerStyle}>
+                {children}
+              </Animated.View>
+            </View>
           </View>
         </ZoomableButton>
       </View>
