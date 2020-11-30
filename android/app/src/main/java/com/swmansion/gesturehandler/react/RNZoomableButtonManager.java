@@ -29,15 +29,17 @@ public class RNZoomableButtonManager extends
             }
             isActive = in;
             this.clearAnimation();
-            Animation anim = new ScaleAnimation(
-                    in ? 1f : mScaleTo, !in ? 1f : mScaleTo,
-                    in ? 1f : mScaleTo, !in ? 1f : mScaleTo,
-                    (float)this.getMeasuredWidth() / 2,
-                    (float)this.getMeasuredHeight() / 2);
-            anim.setFillAfter(true);
-            anim.setDuration(mDuration);
-            anim.setInterpolator(bezierInterpolator);
-            this.startAnimation(anim);
+            this.postOnAnimation(() -> {
+                Animation anim = new ScaleAnimation(
+                        in ? 1f : mScaleTo, !in ? 1f : mScaleTo,
+                        in ? 1f : mScaleTo, !in ? 1f : mScaleTo,
+                        (float)this.getMeasuredWidth() / 2,
+                        (float)this.getMeasuredHeight() / 2);
+                anim.setFillAfter(true);
+                anim.setDuration(mDuration);
+                anim.setInterpolator(bezierInterpolator);
+                this.startAnimation(anim);
+            });
         }
 
         @Override
