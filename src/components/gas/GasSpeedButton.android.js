@@ -380,7 +380,7 @@ const GasSpeedButton = ({
                   onChangeText={handleCustomGasChange}
                   onFocus={handleCustomGasFocus}
                   onSubmitEditing={handleInputButtonManager}
-                  placeholder={`${defaultCustomGasPrice} `} // see PR #1385 
+                  placeholder={`${defaultCustomGasPrice} `} // see PR #1385
                   ref={inputRef}
                   value={customGasPriceInput}
                 />
