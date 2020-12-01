@@ -2,6 +2,7 @@ import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Keyboard } from 'react-native';
 import styled from 'styled-components';
 import zxcvbn from 'zxcvbn';
 import { saveBackupPassword } from '../../model/backup';
@@ -72,9 +73,15 @@ export default function BackupCloudStep() {
   const walletCloudBackup = useWalletCloudBackup();
   const { selectedWallet, setIsWalletLoading } = useWallets();
   const [validPassword, setValidPassword] = useState(false);
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(true);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+
+  useEffect(() => {
+    Keyboard.addListener('keyboardDidShow', () => setIsKeyboardOpen(true));
+    Keyboard.addListener('keyboardDidHide', () => setIsKeyboardOpen(false));
+  }, []);
 
   const isSettingsRoute = useRouteExistsInNavigationState(
     Routes.SETTINGS_MODAL
@@ -240,7 +247,7 @@ export default function BackupCloudStep() {
       onSubmit={onConfirmBackup}
     >
       <Masthead isTallPhone={isTallPhone} isTinyPhone={isTinyPhone}>
-        {!isTinyPhone && <MastheadIcon>􀌍</MastheadIcon>}
+        {isTinyPhone && isKeyboardOpen ? null : <MastheadIcon>􀌍</MastheadIcon>}
         <Title isTinyPhone={isTinyPhone}>Choose a password</Title>
         <DescriptionText isTinyPhone={isTinyPhone}>
           Please use a password you&apos;ll remember.&nbsp;
