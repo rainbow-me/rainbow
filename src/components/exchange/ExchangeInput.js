@@ -50,8 +50,11 @@ const ExchangeInput = (
       setIsFocused(false);
       setIsTouched(false);
       onBlur?.(event);
+      android &&
+        // eslint-disable-next-line sort-keys
+        ref?.current?.setNativeProps({ selection: { start: 1, end: 1 } });
     },
-    [onBlur, onChangeText, value]
+    [onBlur, onChangeText, ref, value]
   );
 
   const handleChange = useCallback(
