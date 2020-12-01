@@ -73,12 +73,12 @@ export default function RestoreSheet() {
 
   const onManualRestore = useCallback(() => {
     goBack();
-    navigate(Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR);
+    navigate(Routes.IMPORT_SEED_PHRASE_FLOW);
   }, [goBack, navigate]);
 
   const onWatchAddress = useCallback(() => {
     goBack();
-    navigate(Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR);
+    navigate(Routes.IMPORT_SEED_PHRASE_FLOW);
   }, [goBack, navigate]);
 
   const wrapperHeight =
