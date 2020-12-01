@@ -71,7 +71,9 @@ const SheetContainer = styled(Column).attrs({
 `;
 
 const KeyboardSizeView = styled(KeyboardArea)`
-  background-color: ${colors.white};
+  width: 100%;
+  background-color: ${({ showAssetForm }) =>
+    showAssetForm ? colors.lighterGrey : colors.white};
 `;
 
 export default function SendSheet(props) {
@@ -531,7 +533,7 @@ export default function SendSheet(props) {
             }
           />
         )}
-        {android ? <KeyboardSizeView /> : null}
+        {android ? <KeyboardSizeView showAssetForm={showAssetForm} /> : null}
       </SheetContainer>
     </Container>
   );
