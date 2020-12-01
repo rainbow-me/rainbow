@@ -372,7 +372,16 @@ const GasSpeedButton = ({
             />
           ) : (
             <BorderlessButton onPress={focusOnInput}>
-              <Row width={130}>
+              <Row>
+                <GasInput
+                  onBlur={handleCustomGasBlur}
+                  onChangeText={handleCustomGasChange}
+                  onFocus={handleCustomGasFocus}
+                  onSubmitEditing={handleInputButtonManager}
+                  placeholder={`${defaultCustomGasPrice} `} // see PR #1385
+                  ref={inputRef}
+                  value={customGasPriceInput}
+                />
                 <Text
                   color={
                     customGasPriceInput
@@ -382,17 +391,9 @@ const GasSpeedButton = ({
                   size="lmedium"
                   weight="bold"
                 >
-                  Gwei:{' '}
+                  {ios && ' '}
+                  Gwei
                 </Text>
-                <GasInput
-                  onBlur={handleCustomGasBlur}
-                  onChangeText={handleCustomGasChange}
-                  onFocus={handleCustomGasFocus}
-                  onSubmitEditing={handleInputButtonManager}
-                  placeholder={`${defaultCustomGasPrice}`}
-                  ref={inputRef}
-                  value={customGasPriceInput}
-                />
               </Row>
             </BorderlessButton>
           )}

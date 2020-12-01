@@ -88,6 +88,7 @@ const DATA_ADD_NEW_TRANSACTION_SUCCESS =
   'data/DATA_ADD_NEW_TRANSACTION_SUCCESS';
 
 const DATA_ADD_NEW_SUBSCRIBER = 'data/DATA_ADD_NEW_SUBSCRIBER';
+const DATA_UPDATE_REFETCH_SAVINGS = 'data/DATA_UPDATE_REFETCH_SAVINGS';
 
 const DATA_CLEAR_STATE = 'data/DATA_CLEAR_STATE';
 
@@ -159,6 +160,18 @@ const checkMeta = message => (dispatch, getState) => {
   );
 };
 
+const checkForConfirmedSavingsActions = transactionsData => dispatch => {
+  const foundConfirmedSavings = find(
+    transactionsData,
+    transaction =>
+      (transaction?.type === 'deposit' || transaction?.type === 'withdraw') &&
+      transaction?.status === 'confirmed'
+  );
+  if (foundConfirmedSavings) {
+    dispatch(updateRefetchSavings(true));
+  }
+};
+
 export const transactionsReceived = (message, appended = false) => async (
   dispatch,
   getState
@@ -166,6 +179,10 @@ export const transactionsReceived = (message, appended = false) => async (
   const isValidMeta = dispatch(checkMeta(message));
   if (!isValidMeta) return;
   const transactionData = get(message, 'payload.transactions', []);
+  if (appended) {
+    dispatch(checkForConfirmedSavingsActions(transactionData));
+  }
+
   const { accountAddress, nativeCurrency, network } = getState().settings;
   const { purchaseTransactions } = getState().addCash;
   const { transactions } = getState().data;
@@ -586,6 +603,12 @@ export const addNewSubscriber = (subscriber, type) => (dispatch, getState) => {
   });
 };
 
+export const updateRefetchSavings = fetch => dispatch =>
+  dispatch({
+    payload: fetch,
+    type: DATA_UPDATE_REFETCH_SAVINGS,
+  });
+
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
   assetPricesFromUniswap: {},
@@ -593,6 +616,7 @@ const INITIAL_STATE = {
   genericAssets: {},
   isLoadingAssets: true,
   isLoadingTransactions: true,
+  shouldRefetchSavings: false,
   subscribers: {
     appended: [],
     received: [],
@@ -610,6 +634,8 @@ export default (state = INITIAL_STATE, action) => {
         uniswapPricesQuery: action.payload.uniswapPricesQuery,
         uniswapPricesSubscription: action.payload.uniswapPricesSubscription,
       };
+    case DATA_UPDATE_REFETCH_SAVINGS:
+      return { ...state, shouldRefetchSavings: action.payload };
     case DATA_UPDATE_ASSET_PRICES_FROM_UNISWAP:
       return { ...state, assetPricesFromUniswap: action.payload };
     case DATA_UPDATE_GENERIC_ASSETS:
