@@ -32,7 +32,6 @@ import { loadWallet } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import { executeRap } from '../raps/common';
 import { multicallClearState } from '../redux/multicall';
-import { savingsLoadState } from '../redux/savings';
 import ethUnits from '../references/ethereum-units.json';
 import {
   useAccountSettings,
@@ -427,9 +426,6 @@ export default function ExchangeModal({
         });
         logger.log('[exchange - handle submit] rap', rap);
         await executeRap(wallet, rap);
-        if (isDeposit || isWithdrawal) {
-          dispatch(savingsLoadState());
-        }
         logger.log('[exchange - handle submit] executed rap!');
         analytics.track(`Completed ${type}`, {
           category,
@@ -459,10 +455,8 @@ export default function ExchangeModal({
     outputAmount,
     selectedGasPrice,
     tradeDetails,
-    isDeposit,
     setParams,
     navigate,
-    dispatch,
   ]);
 
   const navigateToSwapDetailsModal = useCallback(() => {
