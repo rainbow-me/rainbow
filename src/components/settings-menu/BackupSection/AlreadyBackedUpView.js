@@ -142,14 +142,14 @@ export default function AlreadyBackedUpView() {
   }, [walletId]);
 
   const manageCloudBackups = useCallback(() => {
-    const buttons = ['Delete all iCloud backups', 'Cancel'];
+    const buttons = [`Delete all ${cloudPlatform} backups`, 'Cancel'];
 
     showActionSheetWithOptions(
       {
         cancelButtonIndex: 1,
         destructiveButtonIndex: 0,
         options: buttons,
-        title: `Manage iCloud backups`,
+        title: `Manage ${cloudPlatform} backups`,
       },
       buttonIndex => {
         if (buttonIndex === 0) {
@@ -158,8 +158,8 @@ export default function AlreadyBackedUpView() {
             {
               cancelButtonIndex: 1,
               destructiveButtonIndex: 0,
-              message: `Are you sure you want to delete all iCloud Backups`,
-              options: ['YES, Delete All iCloud Backups', 'Cancel'],
+              message: `Are you sure you want to delete all ${cloudPlatform} Backups`,
+              options: [`YES, Delete All ${cloudPlatform} Backups`, 'Cancel'],
             },
             async buttonIndex => {
               if (buttonIndex === 0) {
