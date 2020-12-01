@@ -57,7 +57,6 @@ const GasInput = styled(Input).attrs({
   size: 'lmedium',
   testID: 'custom-gas-input',
 })`
-  flex: 1;
   ${fontWithWidth(fonts.weight.bold)};
   ${margin(-13, 0)}
 `;
