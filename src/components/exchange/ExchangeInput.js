@@ -49,7 +49,7 @@ const ExchangeInput = (
       }
       android &&
         // eslint-disable-next-line sort-keys
-        ref?.current?.setNativeProps({ selection: { start: 0, end: 0 } });
+        ref.current?.setNativeProps({ selection: { start: 0, end: 0 } });
       setIsFocused(false);
       setIsTouched(false);
       onBlur?.(event);
