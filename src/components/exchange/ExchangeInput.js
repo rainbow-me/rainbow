@@ -47,12 +47,12 @@ const ExchangeInput = (
           onChangeText(`0.${parts[1]}`);
         }
       }
+      android &&
+        // eslint-disable-next-line sort-keys
+        ref?.current?.setNativeProps({ selection: { start: 0, end: 0 } });
       setIsFocused(false);
       setIsTouched(false);
       onBlur?.(event);
-      android &&
-        // eslint-disable-next-line sort-keys
-        ref?.current?.setNativeProps({ selection: { start: 1, end: 1 } });
     },
     [onBlur, onChangeText, ref, value]
   );
@@ -82,10 +82,17 @@ const ExchangeInput = (
 
   const handleFocus = useCallback(
     event => {
+      android &&
+        typeof value === 'string' &&
+        value.length > 0 &&
+        ref?.current?.setNativeProps({
+          // eslint-disable-next-line sort-keys
+          selection: { start: value.length, end: value.length },
+        });
       setIsFocused(true);
       onFocus?.(event);
     },
-    [onFocus]
+    [onFocus, ref, value]
   );
 
   return (
