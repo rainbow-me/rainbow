@@ -247,7 +247,7 @@ export default function BackupCloudStep() {
       onSubmit={onConfirmBackup}
     >
       <Masthead isTallPhone={isTallPhone} isTinyPhone={isTinyPhone}>
-        {isKeyboardOpen ? null : <MastheadIcon>􀌍</MastheadIcon>}
+        {isTinyPhone && isKeyboardOpen ? null : <MastheadIcon>􀌍</MastheadIcon>}
         <Title isTinyPhone={isTinyPhone}>Choose a password</Title>
         <DescriptionText isTinyPhone={isTinyPhone}>
           Please use a password you&apos;ll remember.&nbsp;
