@@ -56,6 +56,7 @@ const SheetActionButton = ({
   testID,
   textColor = colors.white,
   weight = 'semibold',
+  elevation = 24,
   ...props
 }) => {
   const shadowsForButtonColor = useMemo(() => {
@@ -73,7 +74,7 @@ const SheetActionButton = ({
   return (
     <Button
       as={ButtonPressAnimation}
-      elevation={android ? 24 : null}
+      elevation={android ? elevation : null}
       noFlex={noFlex}
       radiusAndroid={borderRadius}
       size={size}
