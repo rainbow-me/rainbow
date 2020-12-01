@@ -107,7 +107,7 @@ public class RNZoomableButtonManager extends
         }
     }
 
-    public Map getExportedCustomDirectEventTypeConstants() {
+    public Map getExportedCustomBubblingEventTypeConstants() {
         return MapBuilder.builder()
                 .put(
                         "topPress",
