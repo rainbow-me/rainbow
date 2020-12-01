@@ -17,7 +17,6 @@ import nonce from './nonce';
 import openStateSettings from './openStateSettings';
 import raps from './raps';
 import requests from './requests';
-import savings from './savings';
 import settings from './settings';
 import showcaseTokens from './showcaseTokens';
 import uniqueTokens from './uniqueTokens';
@@ -44,7 +43,6 @@ export default combineReducers({
   openStateSettings,
   raps,
   requests,
-  savings,
   settings,
   showcaseTokens,
   uniqueTokens,
