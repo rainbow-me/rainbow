@@ -3,7 +3,6 @@ import { processColor, requireNativeComponent, View } from 'react-native';
 import {
   createNativeWrapper,
   PureNativeButton,
-  State,
 } from 'react-native-gesture-handler';
 import Animated, {
   NewEasing as Easing,
@@ -189,19 +188,11 @@ const SimpleScaleButton = ({
   duration,
   transformOrigin,
 }) => {
-  const { handleCancel, handlePress, handleStartPress } = useLongPress({
-    minLongPressDuration,
-    onLongPress,
-    onPress,
-  });
-
-  const onHandlerStateChange = ({ nativeEvent: { state, oldState } }) => {
-    if (oldState === State.UNDETERMINED && state === State.BEGAN) {
-      handleStartPress();
-    } else if (oldState === State.ACTIVE && state === State.END) {
-      handlePress();
+  const onNativePress = ({ nativeEvent: { type } }) => {
+    if (type === 'longPress') {
+      onLongPress?.();
     } else {
-      handleCancel();
+      onPress();
     }
   };
 
@@ -212,7 +203,7 @@ const SimpleScaleButton = ({
           duration={duration}
           hitSlop={-overflowMargin}
           minLongPressDuration={minLongPressDuration}
-          onHandlerStateChange={onHandlerStateChange}
+          onPress={onNativePress}
           rippleColor={processColor('transparent')}
           scaleTo={scaleTo}
           style={{ overflow: 'visible' }}
@@ -268,6 +259,7 @@ export default function ButtonPressAnimation({
       duration={duration}
       hitSlop={hitSlop}
       minLongPressDuration={minLongPressDuration}
+      onChange={({ nativeEvent }) => console.log(nativeEvent)}
       onLongPress={onLongPress}
       onPress={onPress}
       onPressStart={onPressStart}
