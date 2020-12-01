@@ -187,6 +187,7 @@ const SimpleScaleButton = ({
   wrapperStyle,
   duration,
   transformOrigin,
+  skipTopMargin,
 }) => {
   const onNativePress = ({ nativeEvent: { type } }) => {
     if (type === 'longPress') {
@@ -203,7 +204,12 @@ const SimpleScaleButton = ({
         wrapperStyle,
       ]}
     >
-      <View style={{ margin: -overflowMargin }}>
+      <View
+        style={{
+          margin: -overflowMargin,
+          marginTop: skipTopMargin ? -OVERFLOW_MARGIN : -overflowMargin,
+        }}
+      >
         <ZoomableButton
           duration={duration}
           hitSlop={-overflowMargin}
@@ -215,7 +221,12 @@ const SimpleScaleButton = ({
           transformOrigin={transformOrigin}
         >
           <View style={{ backgroundColor: 'transparent' }}>
-            <View style={{ padding: overflowMargin }}>
+            <View
+              style={{
+                padding: overflowMargin,
+                paddingTop: skipTopMargin ? OVERFLOW_MARGIN : overflowMargin,
+              }}
+            >
               <Animated.View style={contentContainerStyle}>
                 {children}
               </Animated.View>
@@ -246,6 +257,7 @@ export default function ButtonPressAnimation({
   wrapperStyle,
   reanimatedButton,
   transformOrigin,
+  skipTopMargin,
 }) {
   const normalizedTransformOrigin = useMemo(
     () => normalizeTransformOrigin(transformOrigin),
@@ -270,6 +282,7 @@ export default function ButtonPressAnimation({
       onPressStart={onPressStart}
       overflowMargin={overflowMargin}
       scaleTo={scaleTo}
+      skipTopMargin={skipTopMargin}
       testID={testID}
       transformOrigin={normalizedTransformOrigin}
       wrapperStyle={wrapperStyle}
