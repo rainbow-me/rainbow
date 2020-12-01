@@ -1,19 +1,18 @@
-import chroma from 'chroma-js';
-import makeColorMoreChill from 'make-color-more-chill';
+import makeColorMoreChill, { isBlackOrWhite } from 'make-color-more-chill';
 import { getColorFromURL } from 'rn-dominant-color';
-import { colors } from '@rainbow-me/styles';
-
-const contrast = color => chroma.contrast(color, colors.white);
 
 export default async function getDominantColorFromImage(imageUrl) {
   const { background, secondary } = await getColorFromURL(imageUrl);
 
-  // rn-dominant-color returns '#00000000' when a color doesnt exist
+  // if rn-dominant-color returned '#00000000' it means the color doesnt exist, in this
+  // case we want to aboooort and let the consumer handle the correct fallback color depending on
+  // their implementation / needs!
   if (background === '#00000000' && secondary === '#00000000') {
     return undefined;
   }
 
-  return contrast(background) > contrast(secondary)
-    ? makeColorMoreChill(background)
-    : makeColorMoreChill(secondary);
+  if (isBlackOrWhite(background)) return makeColorMoreChill(secondary);
+  if (isBlackOrWhite(secondary)) return makeColorMoreChill(background);
+
+  return makeColorMoreChill(secondary);
 }
