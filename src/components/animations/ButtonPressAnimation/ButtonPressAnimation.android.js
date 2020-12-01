@@ -197,7 +197,12 @@ const SimpleScaleButton = ({
   };
 
   return (
-    <View style={[{ overflow: 'visible' }, wrapperStyle]}>
+    <View
+      style={[
+        { backgroundColor: 'transparent', overflow: 'visible' },
+        wrapperStyle,
+      ]}
+    >
       <View style={{ margin: -overflowMargin }}>
         <ZoomableButton
           duration={duration}
