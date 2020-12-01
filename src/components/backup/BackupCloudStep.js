@@ -79,8 +79,8 @@ export default function BackupCloudStep() {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   useEffect(() => {
-    Keyboard.addListener('keyboardDidShow', () => setIsKeyboardOpen(true));
-    Keyboard.addListener('keyboardDidHide', () => setIsKeyboardOpen(false));
+    Keyboard.addListener('keyboardWillShow', () => setIsKeyboardOpen(true));
+    Keyboard.addListener('keyboardWillHide', () => setIsKeyboardOpen(false));
   }, []);
 
   const isSettingsRoute = useRouteExistsInNavigationState(
@@ -247,7 +247,7 @@ export default function BackupCloudStep() {
       onSubmit={onConfirmBackup}
     >
       <Masthead isTallPhone={isTallPhone} isTinyPhone={isTinyPhone}>
-        {isTinyPhone && isKeyboardOpen ? null : <MastheadIcon>􀌍</MastheadIcon>}
+        {isKeyboardOpen ? null : <MastheadIcon>􀌍</MastheadIcon>}
         <Title isTinyPhone={isTinyPhone}>Choose a password</Title>
         <DescriptionText isTinyPhone={isTinyPhone}>
           Please use a password you&apos;ll remember.&nbsp;

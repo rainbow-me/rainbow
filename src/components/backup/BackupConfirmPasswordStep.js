@@ -85,8 +85,8 @@ export default function BackupConfirmPasswordStep() {
   );
 
   useEffect(() => {
-    Keyboard.addListener('keyboardDidShow', () => setIsKeyboardOpen(true));
-    Keyboard.addListener('keyboardDidHide', () => setIsKeyboardOpen(false));
+    Keyboard.addListener('keyboardWillShow', () => setIsKeyboardOpen(true));
+    Keyboard.addListener('keyboardWillHide', () => setIsKeyboardOpen(false));
   }, []);
 
   useEffect(() => {
