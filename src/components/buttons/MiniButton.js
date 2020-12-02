@@ -1,4 +1,5 @@
 import React from 'react';
+import { View } from 'react-native';
 import styled from 'styled-components/primitives';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder, RowWithMargins } from '../layout';
@@ -38,7 +39,7 @@ export default function MiniButton({
   height,
   ...props
 }) {
-  return (
+  const buttonOnly = (
     <ButtonPressAnimation
       disabled={disabled}
       onPress={onPress}
@@ -65,5 +66,11 @@ export default function MiniButton({
       </Content>
       <InnerBorder radius={borderRadius} />
     </ButtonPressAnimation>
+  );
+
+  return android ? (
+    <View style={{ borderRadius, overflow: 'hidden' }}>{buttonOnly}</View>
+  ) : (
+    buttonOnly
   );
 }
