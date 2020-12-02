@@ -119,7 +119,7 @@ function getActiveRouteName(navigationState) {
  */
 function handleAction(name, params, replace = false) {
   if (!TopLevelNavigationRef) return;
-  const action = (replace ? StackActions.push : CommonActions.navigate)(
+  const action = (replace ? StackActions.replace : CommonActions.navigate)(
     name,
     params
   );
