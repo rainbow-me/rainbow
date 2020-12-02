@@ -11,9 +11,9 @@ const sx = StyleSheet.create({
     height: 30,
   },
   animatedNumberAndroid: {
-    paddingLeft: 35,
+    left: 35,
     position: 'absolute',
-    top: 12,
+    top: 4,
   },
   text: {
     color: colors.dark,
