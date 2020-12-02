@@ -55,6 +55,7 @@ export default function ExchangeOutputField({
         setAmount={setOutputAmount}
         symbol={outputCurrencySymbol}
         testID={testID}
+        useCustomAndroidMask={android}
       />
     </Container>
   );

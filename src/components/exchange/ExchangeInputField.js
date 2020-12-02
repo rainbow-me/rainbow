@@ -50,6 +50,7 @@ export default function ExchangeInputField({
         setAmount={setInputAmount}
         symbol={inputCurrencySymbol}
         testID={testID}
+        useCustomAndroidMask={android}
       />
       <NativeFieldRow>
         <ExchangeNativeField

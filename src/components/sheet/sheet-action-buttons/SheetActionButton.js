@@ -61,6 +61,7 @@ const SheetActionButton = ({
   textColor = colors.white,
   androidWidth = ANDROID_WIDTH,
   weight = 'semibold',
+  elevation = 24,
   ...props
 }) => {
   const shadowsForButtonColor = useMemo(() => {
@@ -89,7 +90,7 @@ const SheetActionButton = ({
           height: size === 'big' ? 56 : 46,
           ...(android && { width: androidWidth }),
         }}
-        elevation={android ? 24 : null}
+        elevation={android ? elevation : null}
         noFlex={noFlex}
         overflowMargin={30}
         radiusAndroid={borderRadius}
