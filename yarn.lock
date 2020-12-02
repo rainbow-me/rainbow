@@ -2174,10 +2174,10 @@
   dependencies:
     react-merge-refs "^1.0.0"
 
-"@rainbow-me/react-native-payments@^1.1.5":
-  version "1.1.5"
-  resolved "https://registry.yarnpkg.com/@rainbow-me/react-native-payments/-/react-native-payments-1.1.5.tgz#cdf03c8a55070f0c6cb000a58b906dc9980d9d3f"
-  integrity sha512-8Eyc940oCNep9nYjEZ3bYEfJVGz2fzCb+FIfQx7BuvlfcEIYLw02J7I0Umi+08O9NdWtLswTiEpLcfN3bLEQYg==
+"@rainbow-me/react-native-payments@^1.1.7":
+  version "1.1.7"
+  resolved "https://registry.yarnpkg.com/@rainbow-me/react-native-payments/-/react-native-payments-1.1.7.tgz#6b59e1455e2633fba7e63876528291d061731126"
+  integrity sha512-SZANEPPGEI4T4DsZ5B6rh87MMMET0m09EroxUaiGXFdzbrqc3ZIreOdj4M9ult6SaE+aV7vLqxVaeosEgtpFUg==
   dependencies:
     es6-error "^4.0.2"
     uuid "3.3.2"
