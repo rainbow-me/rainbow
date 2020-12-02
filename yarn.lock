@@ -11224,9 +11224,9 @@ react-native-clean-project@^3.1.0:
   resolved "https://registry.yarnpkg.com/react-native-clean-project/-/react-native-clean-project-3.4.0.tgz#a5ce4e1d49195326ad9d8129369eed9da0a10e8a"
   integrity sha512-5kgu6OMFJwNKvZG5nG1OoNXfI+9XBt2vY5Yy73NJKtE3/N+Bcvg7jVyC9jFmG+OHGnni84FF11P0fHl0BrgPAQ==
 
-react-native-cloud-fs@brunobar79/react-native-cloud-fs#cc7436a8a97f038a3ac6ad0ad8cee2bfcf2c92e5:
-  version "2.1.0"
-  resolved "https://codeload.github.com/brunobar79/react-native-cloud-fs/tar.gz/cc7436a8a97f038a3ac6ad0ad8cee2bfcf2c92e5"
+react-native-cloud-fs@brunobar79/react-native-cloud-fs#356f08f1b704634466b394e364ee2fc1a8b351cc:
+  version "2.3.0"
+  resolved "https://codeload.github.com/brunobar79/react-native-cloud-fs/tar.gz/356f08f1b704634466b394e364ee2fc1a8b351cc"
 
 react-native-code-push@^6.2.0:
   version "6.3.0"
