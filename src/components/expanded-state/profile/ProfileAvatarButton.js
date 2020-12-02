@@ -19,6 +19,7 @@ const ProfileAvatarButton = ({
   return (
     <ButtonPressAnimation
       onPress={handleChangeColor}
+      overflowMargin={10}
       radiusAndroid={radiusAndroid}
       scaleTo={0.96}
       testID={testID}

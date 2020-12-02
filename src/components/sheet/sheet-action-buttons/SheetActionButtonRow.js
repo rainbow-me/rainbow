@@ -4,11 +4,10 @@ import { FlexItem, Row } from '../../layout';
 import { padding } from '@rainbow-me/styles';
 
 const Container = styled(Row)`
-  ${padding(android ? 10 : 19, 11.5, 24)}
+  ${padding(19, 11.5, 24)}
   width: 100%;
   z-index: 2;
   justify-content: space-around;
-  ${android ? 'height: 90' : ''};
 `;
 
 function renderButton(child) {

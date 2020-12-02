@@ -7,7 +7,7 @@ import { colors, padding } from '@rainbow-me/styles';
 const Container = styled(ColumnWithMargins).attrs({
   margin: 12,
 })`
-  ${padding(19, 19, 24)};
+  ${padding(android ? 10 : 19, 19, android ? 12 : 24)};
 `;
 
 export default function ExpandedStateSection({ children, title, ...props }) {
