@@ -5,6 +5,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Keyboard } from 'react-native';
 import styled from 'styled-components';
 import zxcvbn from 'zxcvbn';
+import { isSamsungGalaxy } from '../../helpers/samsung';
 import { saveBackupPassword } from '../../model/backup';
 import { cloudPlatform } from '../../utils/platform';
 import { DelayedAlert } from '../alerts';
@@ -65,6 +66,8 @@ const Title = styled(Text).attrs(({ isTinyPhone }) => ({
 }))`
   ${({ isTinyPhone }) => (isTinyPhone ? padding(0) : padding(15, 0, 12))};
 `;
+
+const samsungGalaxy = (android && isSamsungGalaxy()) || false;
 
 export default function BackupCloudStep() {
   const { isTallPhone, isTinyPhone } = useDimensions();
@@ -247,7 +250,9 @@ export default function BackupCloudStep() {
       onSubmit={onConfirmBackup}
     >
       <Masthead isTallPhone={isTallPhone} isTinyPhone={isTinyPhone}>
-        {isTinyPhone && isKeyboardOpen ? null : <MastheadIcon>􀌍</MastheadIcon>}
+        {(isTinyPhone || samsungGalaxy) && isKeyboardOpen ? null : (
+          <MastheadIcon>􀌍</MastheadIcon>
+        )}
         <Title isTinyPhone={isTinyPhone}>Choose a password</Title>
         <DescriptionText isTinyPhone={isTinyPhone}>
           Please use a password you&apos;ll remember.&nbsp;

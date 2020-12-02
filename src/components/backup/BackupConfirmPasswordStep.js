@@ -4,6 +4,7 @@ import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Keyboard } from 'react-native';
 import styled from 'styled-components';
+import { isSamsungGalaxy } from '../../helpers/samsung';
 import { saveBackupPassword } from '../../model/backup';
 import { cloudPlatform } from '../../utils/platform';
 import { DelayedAlert } from '../alerts';
@@ -61,6 +62,8 @@ const Title = styled(Text).attrs({
 })`
   ${margin(15, 0, 12)};
 `;
+
+const samsungGalaxy = (android && isSamsungGalaxy()) || false;
 
 export default function BackupConfirmPasswordStep() {
   const { isTinyPhone } = useDimensions();
@@ -161,7 +164,9 @@ export default function BackupConfirmPasswordStep() {
       onSubmit={onSubmit}
     >
       <Masthead>
-        {isTinyPhone && isKeyboardOpen ? null : <MastheadIcon>􀙶</MastheadIcon>}
+        {(isTinyPhone || samsungGalaxy) && isKeyboardOpen ? null : (
+          <MastheadIcon>􀙶</MastheadIcon>
+        )}
         <Title>Enter backup password</Title>
         <DescriptionText>
           To add your wallet to the {cloudPlatform} backup, enter the backup

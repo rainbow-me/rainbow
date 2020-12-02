@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, InteractionManager, Keyboard } from 'react-native';
 import styled from 'styled-components';
+import { isSamsungGalaxy } from '../../helpers/samsung';
 import {
   fetchBackupPassword,
   restoreCloudBackup,
@@ -57,6 +58,8 @@ const Title = styled(Text).attrs({
 })`
   ${margin(15, 0, 12)};
 `;
+
+const samsungGalaxy = (android && isSamsungGalaxy()) || false;
 
 export default function RestoreCloudStep({ userData }) {
   const { isTinyPhone } = useDimensions();
@@ -146,7 +149,9 @@ export default function RestoreCloudStep({ userData }) {
       type="restore"
     >
       <Masthead>
-        {isTinyPhone && isKeyboardOpen ? null : <MastheadIcon>􀙶</MastheadIcon>}
+        {(isTinyPhone || samsungGalaxy) && isKeyboardOpen ? null : (
+          <MastheadIcon>􀙶</MastheadIcon>
+        )}
         <Title>Enter backup password</Title>
         <DescriptionText>
           To restore your wallet, enter the backup password you created
