@@ -11,6 +11,7 @@ const paddingHorizontal = 19;
 const Container = styled(Centered)`
   ${padding(0, paddingHorizontal)};
   height: ${({ height }) => height};
+  ${android ? `margin-bottom: 10;` : ``}
 `;
 
 const ImageWrapper = styled(Centered)`
