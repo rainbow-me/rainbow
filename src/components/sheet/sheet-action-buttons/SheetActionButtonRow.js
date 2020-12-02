@@ -8,7 +8,6 @@ const Container = styled(Row)`
   width: 100%;
   z-index: 2;
   justify-content: space-around;
-  ${android ? 'height: 90' : ''};
 `;
 
 function renderButton(child) {
