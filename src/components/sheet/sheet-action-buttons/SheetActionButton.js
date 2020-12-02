@@ -82,7 +82,7 @@ const SheetActionButton = ({
   }, [color, isTransparent]);
 
   return (
-    <View style={{ width: androidWidth }}>
+    <View style={{ ...(android && { width: androidWidth }) }}>
       <Button
         as={ButtonPressAnimation}
         contentContainerStyle={{
@@ -95,6 +95,7 @@ const SheetActionButton = ({
         radiusAndroid={borderRadius}
         size={size}
         testID={`${testID}-action-button`}
+        wrapperStyle={{ alignItems: 'center' }}
         {...props}
       >
         <ShadowStack

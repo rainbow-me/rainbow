@@ -72,6 +72,8 @@ const RainbowButton = ({
   strokeWidth = 1,
   type,
   width,
+  overflowMargin = 35,
+  skipTopMargin = true,
   ...props
 }) => {
   const { width: deviceWidth } = useDimensions();
@@ -88,7 +90,9 @@ const RainbowButton = ({
       {...props}
       disabled={disabled}
       onPress={onPress}
+      overflowMargin={overflowMargin}
       scaleTo={0.9}
+      skipTopMargin={skipTopMargin}
     >
       <Shadow height={height} width={width} />
       <ButtonContainer
