@@ -576,8 +576,9 @@ const TransactionConfirmationScreen = () => {
       isSufficientGas !== undefined ? (
       <Column marginTop={24} width="100%">
         <SheetActionButton
-          color={colors.transparent}
+          color={colors.white}
           disabled
+          elevation={0}
           label="ETH balance too low"
           onPress={onCancel}
           size="big"
