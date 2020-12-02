@@ -587,39 +587,30 @@ const TransactionConfirmationScreen = () => {
         />
       </Column>
     ) : (
-      <RowWithMargins
+      <Row
         css={`
           opacity: ${ready ? 1 : 0.5};
+          justify-content: space-between;
+          width: 330;
         `}
-        margin={15}
         marginTop={isMessage ? 0 : 24}
       >
         <SheetActionButton
           color={colors.white}
           label="Cancel"
           onPress={onCancel}
-          radiusWrapperStyle={{ flex: 1, marginLeft: 10, marginRight: 15 }}
           size="big"
           textColor={colors.alpha(colors.blueGreyDark, 0.8)}
           weight="bold"
-          wrapperProps={{
-            containerStyle: { flex: 1, marginRight: -10 },
-            style: { flex: 1 },
-          }}
         />
         <SheetActionButton
           color={colors.appleBlue}
           label="􀎽 Confirm"
           onPress={ready ? onPressSend : NOOP}
-          radiusWrapperStyle={{ flex: 1, marginRight: 10 }}
           size="big"
           weight="bold"
-          wrapperProps={{
-            containerStyle: { flex: 1 },
-            style: { flex: 1 },
-          }}
         />
-      </RowWithMargins>
+      </Row>
     );
   }, [
     isBalanceEnough,

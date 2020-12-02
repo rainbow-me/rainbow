@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { Shadow } from 'react-native-neomorph-shadows';
 
 const ShadowView = props => {
-  if (ios) {
+  if (ios || props.elevation > 0) {
     return <View {...props} />;
   }
   // eslint-disable-next-line react-hooks/rules-of-hooks

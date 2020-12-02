@@ -48,7 +48,6 @@ const AnimatedRawButton = createNativeWrapper(
   createAnimatedComponent(PureNativeButton),
   {
     shouldActivateOnStart: true,
-    shouldCancelWhenOutside: true,
   }
 );
 

@@ -9,7 +9,7 @@ import { useAccountSettings, useDimensions, useWallets } from '../hooks';
 import { useNavigation } from '../navigation/Navigation';
 import { magicMemo } from '../utils';
 import Divider from './Divider';
-import { ButtonPressAnimation } from './animations';
+import { ButtonPressAnimation, ScaleButtonZoomableAndroid } from './animations';
 import { Icon } from './icons';
 import { Centered, Row, RowWithMargins } from './layout';
 import { Text } from './text';
@@ -136,12 +136,14 @@ const shadows = {
 
 const InnerBPA = android ? ButtonPressAnimation : ({ children }) => children;
 
+const Wrapper = android ? ScaleButtonZoomableAndroid : AmountBPA;
+
 const AmountButton = ({ amount, backgroundColor, color, onPress }) => {
   const handlePress = useCallback(() => onPress?.(amount), [amount, onPress]);
 
   return (
     <AmountButtonWrapper>
-      <AmountBPA disabled={android} onPress={handlePress}>
+      <Wrapper disabled={android} onPress={handlePress}>
         <ShadowStack
           {...position.coverAsObject}
           backgroundColor={backgroundColor}
@@ -153,17 +155,19 @@ const AmountButton = ({ amount, backgroundColor, color, onPress }) => {
           })}
         />
         <InnerBPA
-          disabled={ios}
           onPress={handlePress}
-          radiusAndroid={25}
-          radiusWrapperStyle={{ width: 100, zIndex: 1 }}
+          reanimatedButton
           style={{ flex: 1 }}
+          wrapperStyle={{
+            width: 100,
+            zIndex: 10,
+          }}
         >
           <AmountText color={color} textShadowColor={color}>
             ${amount}
           </AmountText>
         </InnerBPA>
-      </AmountBPA>
+      </Wrapper>
     </AmountButtonWrapper>
   );
 };

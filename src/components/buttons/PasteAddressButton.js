@@ -45,6 +45,7 @@ export default function PasteAddressButton({ onPress }) {
       disabled={deviceUtils.isIOS14 ? !hasClipboardData : clipboard && !isValid}
       onPress={handlePress}
       testID="paste-address-button"
+      {...(android && { height: 30, overflowMargin: 15, width: 60 })}
     >
       <Text color="white" weight="semibold">
         Paste

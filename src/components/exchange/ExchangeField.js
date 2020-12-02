@@ -15,8 +15,10 @@ const skeletonColor = colors.alpha(colors.blueGreyDark, 0.1);
 
 const Container = styled(Row).attrs({
   align: 'center',
+  justify: 'flex-end',
 })`
   width: 100%;
+  padding-right: ${ExchangeFieldPadding};
 `;
 
 const FieldRow = styled(RowWithMargins).attrs({
