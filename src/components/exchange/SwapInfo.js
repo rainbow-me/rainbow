@@ -8,20 +8,16 @@ import {
 import styled from 'styled-components/primitives';
 import { interpolate } from '../animations';
 import { CoinIcon } from '../coin-icon';
-import { Centered } from '../layout';
+import { Centered, RowWithMargins } from '../layout';
 import { Text } from '../text';
 import { padding } from '@rainbow-me/styles';
 
-const Container = styled(Centered)`
+const Container = styled(RowWithMargins).attrs({
+  centered: true,
+  margin: 5,
+})`
   ${padding(19, 19, 2)};
   width: 100%;
-`;
-
-const SwapInfoCoinIcon = styled(CoinIcon).attrs({
-  size: 20,
-})`
-  flex: 0;
-  margin-right: 5;
 `;
 
 export default function SwapInfo({ asset, amount }) {
@@ -81,17 +77,20 @@ export default function SwapInfo({ asset, amount }) {
       testID="swap-info"
     >
       <Container>
-        <SwapInfoCoinIcon
+        <CoinIcon
           address={asset?.address}
+          size={20}
           symbol={asset?.symbol}
           testID="swap-info-container"
         />
-        <Text color="grey" size="smedium" weight="medium">
-          Swapping for{' '}
-        </Text>
-        <Text color="white" size="smedium" weight="semibold">
-          {`${amountToDisplay}  ${asset?.symbol}`}
-        </Text>
+        <Centered>
+          <Text color="grey" size="smedium" weight="medium">
+            Swapping for{' '}
+          </Text>
+          <Text color="white" size="smedium" weight="semibold">
+            {`${amountToDisplay} ${asset?.symbol || ''}`}
+          </Text>
+        </Centered>
       </Container>
     </Animated.View>
   );
