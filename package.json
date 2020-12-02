@@ -152,7 +152,7 @@
     "react-native-branch": "^5.0.0",
     "react-native-camera": "^3.35.0",
     "react-native-circular-progress": "^1.3.4",
-    "react-native-cloud-fs": "brunobar79/react-native-cloud-fs#cc7436a8a97f038a3ac6ad0ad8cee2bfcf2c92e5",
+    "react-native-cloud-fs": "brunobar79/react-native-cloud-fs#0b03ea5401fbcb364fae415984fb6f6f8e36bf2c",
     "react-native-code-push": "^6.2.0",
     "react-native-crypto": "^2.2.0",
     "react-native-device-info": "5.3.1",
