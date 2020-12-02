@@ -323,6 +323,23 @@ const getWyrePaymentDetails = (
   },
 });
 
+const paymentMethodTypes = {
+  credit: 'PKPaymentMethodTypeCredit',
+  debit: 'PKPaymentMethodTypeDebit',
+  prepaid: 'PKPaymentMethodTypePrepaid',
+  store: 'PKPaymentMethodTypeStore',
+  unknown: 'PKPaymentMethodTypeUnknown',
+};
+
+const getPaymentMethodType = paymentMethod => {
+  switch (paymentMethod?.type) {
+    case paymentMethodTypes.credit:
+      return 'credit';
+    default:
+      return 'debit';
+  }
+};
+
 const createPayload = (
   referenceInfo,
   paymentResponse,
@@ -343,12 +360,15 @@ const createPayload = (
       transactionIdentifier,
     },
   } = paymentResponse;
+
   const billingContact = getAddressDetails(billingInfo);
   const shippingContact = {
     ...billingContact,
     emailAddress: shippingInfo.emailAddress,
     phoneNumber: shippingInfo.phoneNumber,
   };
+
+  const type = getPaymentMethodType(paymentMethod);
 
   const partnerId =
     network === NetworkTypes.mainnet ? WYRE_ACCOUNT_ID : WYRE_ACCOUNT_ID_TEST;
@@ -371,7 +391,7 @@ const createPayload = (
           paymentData,
           paymentMethod: {
             ...paymentMethod,
-            type: 'debit',
+            type,
           },
           transactionIdentifier,
         },
