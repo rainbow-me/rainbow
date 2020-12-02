@@ -48,12 +48,12 @@ const ExchangeField = (
     symbol,
     testID,
     autoFocus,
+    useCustomAndroidMask = false,
     ...props
   },
   ref
 ) => {
   const handleFocusField = useCallback(() => ref?.current?.focus(), [ref]);
-
   useEffect(() => {
     autoFocus && handleFocusField();
   }, [autoFocus, handleFocusField]);
@@ -75,6 +75,7 @@ const ExchangeField = (
             placeholderTextColor={symbol ? undefined : skeletonColor}
             ref={ref}
             testID={amount ? `${testID}-${amount}` : testID}
+            useCustomAndroidMask={useCustomAndroidMask}
             value={amount}
           />
         </FieldRow>
