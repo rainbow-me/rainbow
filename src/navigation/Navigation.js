@@ -1,4 +1,5 @@
 import {
+  CommonActions,
   useNavigation as oldUseNavigation,
   StackActions,
   useIsFocused,
@@ -118,7 +119,10 @@ function getActiveRouteName(navigationState) {
  */
 function handleAction(name, params, replace = false) {
   if (!TopLevelNavigationRef) return;
-  const action = StackActions[replace ? 'replace' : 'push'](name, params);
+  const action = (replace ? StackActions.replace : CommonActions.navigate)(
+    name,
+    params
+  );
   TopLevelNavigationRef?.dispatch(action);
 }
 
