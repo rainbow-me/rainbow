@@ -51,7 +51,7 @@ const AddCashFooter = ({ disabled, onDisabledPress, onSubmit, ...props }) => {
               size="lmedium"
               weight="semibold"
             >
-              Works with most debit cards
+              Works with most debit and credit cards
             </Text>
             <Centered marginLeft={2} marginTop={0.5}>
               <Icon
