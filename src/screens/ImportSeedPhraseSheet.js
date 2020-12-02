@@ -392,7 +392,7 @@ export default function ImportSeedPhraseSheet() {
               {...(android && { height: 30, overflowMargin: 15, width: 90 })}
               onPress={handlePressImportButton}
             >
-              <Row width={73}>
+              <Row {...(android && { width: 73 })}>
                 {busy ? (
                   <LoadingSpinner />
                 ) : (
