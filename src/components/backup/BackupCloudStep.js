@@ -2,8 +2,10 @@ import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Keyboard } from 'react-native';
 import styled from 'styled-components';
 import zxcvbn from 'zxcvbn';
+import { isSamsungGalaxy } from '../../helpers/samsung';
 import { saveBackupPassword } from '../../model/backup';
 import { cloudPlatform } from '../../utils/platform';
 import { DelayedAlert } from '../alerts';
@@ -65,6 +67,8 @@ const Title = styled(Text).attrs(({ isTinyPhone }) => ({
   ${({ isTinyPhone }) => (isTinyPhone ? padding(0) : padding(15, 0, 12))};
 `;
 
+const samsungGalaxy = (android && isSamsungGalaxy()) || false;
+
 export default function BackupCloudStep() {
   const { isTallPhone, isTinyPhone } = useDimensions();
   const currentlyFocusedInput = useRef();
@@ -72,9 +76,26 @@ export default function BackupCloudStep() {
   const walletCloudBackup = useWalletCloudBackup();
   const { selectedWallet, setIsWalletLoading } = useWallets();
   const [validPassword, setValidPassword] = useState(false);
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(true);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+
+  useEffect(() => {
+    const keyboardDidShow = () => {
+      setIsKeyboardOpen(true);
+    };
+
+    const keyboardDidHide = () => {
+      setIsKeyboardOpen(false);
+    };
+    Keyboard.addListener('keyboardDidShow', keyboardDidShow);
+    Keyboard.addListener('keyboardDidHide', keyboardDidHide);
+    return () => {
+      Keyboard.removeListener('keyboardDidShow', keyboardDidShow);
+      Keyboard.removeListener('keyboardDidHide', keyboardDidHide);
+    };
+  }, []);
 
   const isSettingsRoute = useRouteExistsInNavigationState(
     Routes.SETTINGS_MODAL
@@ -240,7 +261,9 @@ export default function BackupCloudStep() {
       onSubmit={onConfirmBackup}
     >
       <Masthead isTallPhone={isTallPhone} isTinyPhone={isTinyPhone}>
-        {!isTinyPhone && <MastheadIcon>􀌍</MastheadIcon>}
+        {(isTinyPhone || samsungGalaxy) && isKeyboardOpen ? null : (
+          <MastheadIcon>􀌍</MastheadIcon>
+        )}
         <Title isTinyPhone={isTinyPhone}>Choose a password</Title>
         <DescriptionText isTinyPhone={isTinyPhone}>
           Please use a password you&apos;ll remember.&nbsp;
