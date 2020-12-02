@@ -4,11 +4,8 @@ import styled from 'styled-components/primitives';
 import ImageWithCachedMetadata from '../ImageWithCachedMetadata';
 import { Centered } from '../layout';
 import { useBooleanState, useColorForAsset } from '@rainbow-me/hooks';
-import { colors, fonts, position } from '@rainbow-me/styles';
-import {
-  getTokenMetadata,
-  getUrlForTrustIconFallback,
-} from '@rainbow-me/utils';
+import { colors, fonts, position, shadow } from '@rainbow-me/styles';
+import { getUrlForTrustIconFallback } from '@rainbow-me/utils';
 
 const fallbackTextStyles = {
   fontFamily: fonts.family.SFProRounded,
@@ -20,16 +17,17 @@ const fallbackTextStyles = {
 
 const FallbackImage = styled(ImageWithCachedMetadata)`
   ${position.cover};
+  ${({
+    shadowColor: color,
+    shadowOffset: { height: y, width: x },
+    shadowOpacity: opacity,
+    shadowRadius: radius,
+    showImage,
+  }) => shadow.build(x, y, radius, color, showImage ? opacity : 0)}
   background-color: ${({ showImage }) =>
     showImage ? colors.white : colors.transparent};
   border-radius: ${({ size }) => size / 2};
   overflow: visible;
-  shadow-color: ${({ shadowColorValue }) => shadowColorValue};
-  shadow-offset: ${({ shadowOffsetHeight, shadowOffsetWidth }) =>
-    `${shadowOffsetWidth}px ${shadowOffsetHeight}px`};
-  shadow-opacity: ${({ shadowOpacityValue, showImage }) =>
-    showImage ? shadowOpacityValue : 0};
-  shadow-radius: ${({ shadowRadiusValue }) => shadowRadiusValue};
 `;
 
 const CoinIconFallback = fallbackProps => {
@@ -48,7 +46,6 @@ const CoinIconFallback = fallbackProps => {
     false
   );
 
-  const tokenMetadata = getTokenMetadata(address);
   const fallbackIconColor = useColorForAsset({ address });
   const imageUrl = useMemo(() => getUrlForTrustIconFallback(address), [
     address,
@@ -70,11 +67,10 @@ const CoinIconFallback = fallbackProps => {
         imageUrl={imageUrl}
         onError={hideFallbackImage}
         onLoad={showFallbackImage}
-        shadowColorValue={tokenMetadata?.extensions?.shadowColor || shadowColor}
-        shadowOffsetHeight={shadowOffset.height}
-        shadowOffsetWidth={shadowOffset.width}
-        shadowOpacityValue={shadowOpacity}
-        shadowRadiusValue={shadowRadius}
+        shadowColor={shadowColor}
+        shadowOffset={shadowOffset}
+        shadowOpacity={shadowOpacity}
+        shadowRadius={shadowRadius}
         showImage={showImage}
         size={width}
       />
