@@ -73,8 +73,8 @@ export default function RestoreCloudStep({ userData }) {
   const [label, setLabel] = useState('􀎽 Confirm Backup');
   const passwordRef = useRef();
   useEffect(() => {
-    Keyboard.addListener('keyboardWillShow', () => setIsKeyboardOpen(true));
-    Keyboard.addListener('keyboardWillHide', () => setIsKeyboardOpen(false));
+    Keyboard.addListener('keyboardDidShow', () => setIsKeyboardOpen(true));
+    Keyboard.addListener('keyboardDidHide', () => setIsKeyboardOpen(false));
   }, []);
 
   useEffect(() => {
