@@ -2174,7 +2174,7 @@
   dependencies:
     react-merge-refs "^1.0.0"
 
-"@rainbow-me/react-native-payments@^1.1.5":
+"@rainbow-me/react-native-payments@1.1.5":
   version "1.1.5"
   resolved "https://registry.yarnpkg.com/@rainbow-me/react-native-payments/-/react-native-payments-1.1.5.tgz#cdf03c8a55070f0c6cb000a58b906dc9980d9d3f"
   integrity sha512-8Eyc940oCNep9nYjEZ3bYEfJVGz2fzCb+FIfQx7BuvlfcEIYLw02J7I0Umi+08O9NdWtLswTiEpLcfN3bLEQYg==

@@ -64,7 +64,7 @@
     "@ethersproject/wallet": "^5.0.2",
     "@hocs/safe-timers": "^0.4.0",
     "@rainbow-me/react-native-animated-number": "^0.0.2",
-    "@rainbow-me/react-native-payments": "^1.1.5",
+    "@rainbow-me/react-native-payments": "1.1.5",
     "@react-native-community/art": "^1.2.0",
     "@react-native-community/async-storage": "^1.11.0",
     "@react-native-community/blur": "^3.4.1",
