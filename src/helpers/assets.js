@@ -169,6 +169,7 @@ export const buildCoinsList = (
       }
     }
   });
+
   totalBalancesValue = add(totalBalancesValue, smallBalancesValue);
   if (isCoinListEdited) {
     if (assetsLength <= amountOfShowedCoins) {
