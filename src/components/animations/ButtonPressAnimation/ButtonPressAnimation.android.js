@@ -276,7 +276,6 @@ export default function ButtonPressAnimation({
       duration={duration}
       hitSlop={hitSlop}
       minLongPressDuration={minLongPressDuration}
-      onChange={({ nativeEvent }) => console.log(nativeEvent)}
       onLongPress={onLongPress}
       onPress={onPress}
       onPressStart={onPressStart}
