@@ -367,7 +367,7 @@ export default function ImportSeedPhraseSheet() {
       <Sheet>
         <SheetHandle marginBottom={7} marginTop={6} />
         <Text size="large" weight="bold">
-          Add Wallet
+          {lang.t('wallet.action.import_wallet')}
         </Text>
         <SecretTextAreaContainer>
           <SecretTextArea

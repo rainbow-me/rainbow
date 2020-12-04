@@ -177,7 +177,7 @@ const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
       <ButtonContainer>
         {network === networkTypes.mainnet ? (
           <Fragment>
-            <Title>To get started, buy some ETH with Apple Pay</Title>
+            <Title>{lang.t('add_funds.interstitial.buy_eth')}</Title>
             <Row justify="space-between" marginVertical={30}>
               <AmountButton
                 amount={50}
@@ -206,16 +206,16 @@ const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
                 size="large"
                 weight="bold"
               >
-                􀍡 Other amount
+                {` 􀍡 ${lang.t('add_funds.interstitial.other_amount')}`}
               </Text>
             </InterstitialButton>
             {!isSmallPhone && <InterstitialDivider />}
             <Subtitle isSmallPhone={isSmallPhone}>
-              or send ETH to your wallet
+              {lang.t('add_funds.interstitial.send_eth')}
             </Subtitle>
 
             <Paragraph>
-              Send from Coinbase or another exchange—or ask a friend!
+              {lang.t('add_funds.interstitial.send_description')}
             </Paragraph>
           </Fragment>
         ) : (

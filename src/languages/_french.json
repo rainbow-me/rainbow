@@ -99,6 +99,10 @@
       "swap": "Swap",
       "import": "Importer",
       "paste": "Coller",
+      "offline": "Hors connexion",
+      "share": "Share :)",
+      "no_thanks": "No thanks :)",
+      "etherscan": "🔍 Affichage à Etherscan :)",
       "confirm_exchange":{
         "deposit": "Tenir pour Déposer",
         "withdraw": "Tenir pour Retirer",
@@ -133,7 +137,7 @@
       "invalid_address": "Adresse non valide",
       "send_max": "Envoyer la valeur max",
       "exchange_max": "Échanger la valeur max",
-      "default_wallet": " Wallet",
+      "default_wallet": "Wallet",
       "gas_slow": "Lent",
       "gas_average": "Moyen",
       "gas_fast": "Vite",
@@ -157,8 +161,47 @@
       "helper_rate": "Taux",
       "helper_price": "Prix",
       "helper_min": "Min",
-      "helper_max": "Max"
+      "helper_max": "Max",
+      "back_up":{
+        "label": "Back up your wallet :)",
+        "label_plural": "Back up your wallets :)",
+        "description": "Don't lose your wallet! Save an encrypted copy to iCloud. :)",
+        "imported_title": "Would you like to back up? :)",
+        "imported_description": "You have wallets that have not been backed up yet. Back them up in case you lose this device. :)",
+        "button":{
+          "cloud": "Back up to :)",
+          "manual": "Back up manually :) ",
+          "now": "Back up now :)",
+          "later": "Maybe later : )"
+        },
+        "alerts":{
+          "cloud_not_enabled":{
+            "label":"iCloud not enabled :)",
+            "description": "Looks like iCloud drive is not enabled on your device. Do you want to see how to enable it? :)",
+            "show_me": "Yes, Show me :)",
+            "no_thanks": "No thanks :)"
+          }
+
+        }
+
+      }
     },
+   "back_up":{
+     "manual": {
+        "label": "Back up manually :)",
+        
+          "pkey":{
+            "these_keys": "This is the key to your wallet! :)",
+            "save_them": "Copy it and save it in your password manager, or in another secure spot. :)",
+            "confirm_save": "I've saved my key :)"
+          },
+          "seed":{
+            "these_keys": "These words are the keys to your wallet! :)",
+            "save_them": "Write them down or save them in your password manager. :)",
+            "confirm_save": "I've saved these words :)"
+          }
+    }
+   },
     "message": {
       "web3_not_available": "Veuillez installer l’extension Chrome de MetaMask",
       "web3_not_unlocked": "Veuillez déverrouiller votre wallet MetaMask",
@@ -281,13 +324,26 @@
         "delete_confirm":"Voulez-vous vraiment supprimer ce portefeuille",
         "create_new": "Créez un nouveau portefeuille",
         "add_existing": "Ajouter un portefeuille existant",
+        "import_wallet": "Importer un portefeuille"
       },
       "new":{
         "name_wallet":"Nommez votre portefeuille" ,
         "create_wallet":"Créez un portefeuille",
+        "already_have_wallet": "I already have on :) ",
         "enter_seeds": "Phrase de départ, clé privée, adresse Ethereum ou nom ENS",
         "ens_invalid": "Ce n'est pas un nom ENS valide",
         "ens_try_again": "Désolé, nous ne pouvons pas ajouter ce nom ENS pour le moment. Veuillez réessayer plus tard!"
+      },
+      "restore":{
+        "phrase_key":{
+          "label": "Restore with a recovery phrase or private key :) ",
+          "description": "Use your recovery phrase from Rainbow or another crypto wallet :)"
+        },
+        "watch": {
+          "label": "Watch an Ethereum address  :) ",
+          "description": "Watch a public address or ENS name :)"
+        }
+
       },
 
       "authenticate": {
@@ -350,9 +406,13 @@
       "label": "Réglages",
       "backup": "Sauvegarder",
       "currency": "Devise",
-      "dev": "Dev",
+      "dev": "Developer Réglages :)",
       "language": "Langue",
       "network": "Réseau", 
+      "share": "Share Rainbow:)",
+      "follow_twitter": "Follow Us on Twitter :)" ,
+      "feedback": "Feedback & Support :)",
+      "review": "Review Rainbow :)",
       "back": "Retour",
       "done": "Terminé"
     },
@@ -388,7 +448,7 @@
         "proceed_anyway": "Continuer malgré tout",
         "too_low":{
           "message": "Il est recommandé de fixer un prix du gaz plus élevé pour éviter les problèmes.",
-          "title": "Prix de l'essence bas - la transaction pourrait rester bloquée!" ,
+          "title": "Prix de l'essence bas - la transaction pourrait rester bloquée!"
         },
         "too_high":{
           "message": "Vérifiez à nouveau que vous avez saisi le montant correct. Vous paierez probablement plus que nécessaire!",
@@ -431,6 +491,22 @@
       "total_value": "Valeur totale",
       "withdraw": "Retrait",
       "deposit": "Dépôt"
+
+    },
+    "add_funds":{
+      "interstitial":{
+        "buy_eth": "To get started, buy some ETH with Apple Pay :)",
+        "send_eth": "or send ETH to your wallet :)",
+        "send_description": "Send from Coinbase or another exchange—or ask a friend! :)",
+        "other_amount": "Other amount :) "
+    }
+  },
+  "send_feedback":{
+    "copy_email": "Copy email address :)",
+    "email_error":{
+      "label": "Error launching email client :)",
+      "description": "Would you like to manually copy our feedback email address to your clipboard? :)"
+      } 
 
     }
   }

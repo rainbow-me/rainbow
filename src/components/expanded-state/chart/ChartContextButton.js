@@ -40,18 +40,24 @@ export default function ChartContextButton({ asset, color }) {
         Linking.openURL(`https://${etherscanHost}/token/${asset?.address}`);
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [asset?.address, etherscanHost, setHiddenCoins, setPinnedCoins]
   );
 
   const options = useMemo(
     () => [
-      `📌️ ${currentAction === EditOptions.unpin ? 'Unpin' : 'Pin'}`,
-      `🙈️ ${currentAction === EditOptions.unhide ? 'Unhide' : 'Hide'}`,
-      ...(asset?.address === 'eth' ? [] : ['🔍 View on Etherscan']),
+      `📌️ ${
+        currentAction === EditOptions.unpin
+          ? lang.t('button.unpin')
+          : lang.t('button.pin')
+      }`,
+      `🙈️ ${
+        currentAction === EditOptions.unhide
+          ? lang.t('button.unhide')
+          : lang.t('button.hide')
+      }`,
+      ...(asset?.address === 'eth' ? [] : [lang.t('button.etherscan')]),
       lang.t('wallet.action.cancel'),
     ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [asset?.address, currentAction]
   );
 

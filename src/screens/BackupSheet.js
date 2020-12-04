@@ -127,27 +127,29 @@ export default function BackupSheet() {
       case WalletBackupStepTypes.existing_user:
         return (
           <BackupSheetSection
-            descriptionText="You have wallets that have not been backed up yet. Back them up in case you lose this device."
+            descriptionText={lang.t('modal.back_up.imported_description')}
             onPrimaryAction={onBackupNow}
             onSecondaryAction={goBack}
-            primaryLabel="Back up now"
-            secondaryLabel="Maybe later"
-            titleText={`Back up your wallet${
-              backupableWalletsCount > 1 ? 's' : ''
-            }`}
+            primaryLabel={lang.t('modal.back_up.button.now')}
+            secondaryLabel={lang.t('modal.back_up.button.later')}
+            titleText={
+              backupableWalletsCount > 1
+                ? lang.t('modal.back_up.label_plural')
+                : lang.t('modal.back_up.label')
+            }
             type="Existing User"
           />
         );
       case WalletBackupStepTypes.imported:
         return (
           <BackupSheetSection
-            descriptionText={`Don't lose your wallet! Save an encrypted copy to iCloud.`}
+            descriptionText={lang.t('modal.back_up.description')}
             onPrimaryAction={onIcloudBackup}
             onSecondaryAction={goBack}
-            primaryLabel="􀙶 Back up to iCloud"
+            primaryLabel={`􀙶 ${lang.t('modal.back_up.button.cloud')} iCloud`}
             secondaryButtonTestId="backup-sheet-imported-cancel-button"
-            secondaryLabel="No thanks"
-            titleText="Would you like to back up?"
+            secondaryLabel={lang.t('button.no_thanks')}
+            titleText={lang.t('modal_back_up.imported_title')}
             type="Imported Wallet"
           />
         );
@@ -162,12 +164,12 @@ export default function BackupSheet() {
       default:
         return (
           <BackupSheetSection
-            descriptionText={`Don't lose your wallet! Save an encrypted copy to iCloud.`}
+            descriptionText={lang.t('modal.back_up.description')}
             onPrimaryAction={onIcloudBackup}
             onSecondaryAction={onManualBackup}
-            primaryLabel="􀙶 Back up to iCloud"
-            secondaryLabel="🤓 Back up manually"
-            titleText="Back up your wallet"
+            primaryLabel={`􀙶 ${lang.t('modal.back_up.button.cloud')} iCloud`}
+            secondaryLabel={`🤓 ${lang.t('modal.back_up.button.manual')}`}
+            titleText={lang.t('modal.back_up.label')}
             type="Default"
           />
         );

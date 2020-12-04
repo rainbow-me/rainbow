@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-community/async-storage';
+import lang from 'i18n-js';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import {
   InteractionManager,
@@ -7,6 +8,7 @@ import {
   ScrollView,
   Share,
 } from 'react-native';
+
 import { isEmulatorSync } from 'react-native-device-info';
 import FastImage from 'react-native-fast-image';
 import * as StoreReview from 'react-native-store-review';
@@ -185,7 +187,7 @@ export default function SettingsSection({
         {canBeBackedUp && (
           <ListItem
             icon={<SettingIcon source={BackupIcon} />}
-            label="Backup"
+            label={lang.t('settings.backup')}
             onPress={onPressBackup}
             onPressIcloudBackup={onPressIcloudBackup}
             onPressShowSecret={onPressShowSecret}
@@ -201,14 +203,14 @@ export default function SettingsSection({
         )}
         <ListItem
           icon={<SettingIcon source={CurrencyIcon} />}
-          label="Currency"
+          label={lang.t('settings.currency')}
           onPress={onPressCurrency}
         >
           <ListItemArrowGroup>{nativeCurrency || ''}</ListItemArrowGroup>
         </ListItem>
         <ListItem
           icon={<SettingIcon source={NetworkIcon} />}
-          label="Network"
+          label={lang.t('settings.network')}
           onPress={onPressNetwork}
         >
           <ListItemArrowGroup>
@@ -217,7 +219,7 @@ export default function SettingsSection({
         </ListItem>
         <ListItem
           icon={<SettingIcon source={LanguageIcon} />}
-          label="Language"
+          label={lang.t('settings.language')}
           onPress={onPressLanguage}
         >
           <ListItemArrowGroup>
@@ -229,24 +231,24 @@ export default function SettingsSection({
       <ColumnWithDividers dividerRenderer={ListItemDivider}>
         <ListItem
           icon={<Emoji name="rainbow" />}
-          label="Share Rainbow"
+          label={lang.t('settings.share')}
           onPress={onPressShare}
           value={SettingsExternalURLs.rainbowHomepage}
         />
         <ListItem
           icon={<Emoji name="bird" />}
-          label="Follow Us on Twitter"
+          label={lang.t('settings.follow_twitter')}
           onPress={onPressTwitter}
           value={SettingsExternalURLs.twitter}
         />
         <ListItem
           icon={<Emoji name="speech_balloon" />}
-          label="Feedback and Support"
+          label={lang.t('settings.feedback')}
           onPress={onSendFeedback}
         />
         <ListItem
           icon={<Emoji name="red_heart" />}
-          label="Review Rainbow"
+          label={lang.t('settings.review')}
           onPress={onPressReview}
         />
       </ColumnWithDividers>
@@ -255,7 +257,7 @@ export default function SettingsSection({
           <ListFooter height={10} />
           <ListItem
             icon={<Emoji name="construction" />}
-            label="Developer settings"
+            label={lang.t('settings.dev')}
             onPress={onPressDev}
           />
         </Fragment>

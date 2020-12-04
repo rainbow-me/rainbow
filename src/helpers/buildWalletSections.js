@@ -230,12 +230,21 @@ const coinEditContextMenu = (
             dynamicOptions: () => {
               return isCoinListEdited && currentAction !== EditOptions.none
                 ? [
-                    'Cancel',
-                    currentAction !== EditOptions.unpin ? 'Pin' : 'Unpin',
-                    currentAction !== EditOptions.unhide ? 'Hide' : 'Unhide',
-                    'Finish',
+                    lang.t('button.cancel'),
+                    currentAction !== EditOptions.unpin
+                      ? lang.t('button.pin')
+                      : lang.t('button.unpin'),
+                    currentAction !== EditOptions.unhide
+                      ? lang.t('button.hide')
+                      : lang.t('button.unhide'),
+                    lang.t('button.done'),
                   ]
-                : ['Cancel', isCoinListEdited ? 'Finish' : 'Edit'];
+                : [
+                    lang.t('button.cancel'),
+                    isCoinListEdited
+                      ? lang.t('button.done')
+                      : lang.t('button.edit'),
+                  ];
             },
             onPressActionSheet: async index => {
               if (isCoinListEdited && currentAction !== EditOptions.none) {
