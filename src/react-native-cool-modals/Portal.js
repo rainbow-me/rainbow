@@ -21,6 +21,8 @@ export function usePortal() {
 const NativePortal =
   Platform.OS === 'ios' ? requireNativeComponent('WindowPortal') : View;
 
+const Wrapper = Platform.OS === 'ios' ? ({ children }) => children : View;
+
 export function Portal({ children }) {
   const [Component, setComponentState] = useState(null);
   const [blockTouches, setBlockTouches] = useState(false);
@@ -45,14 +47,21 @@ export function Portal({ children }) {
 
   return (
     <NativePortalContext.Provider value={contextValue}>
-      {children}
-      <NativePortal
-        blockTouches={blockTouches}
-        pointerEvents={Platform.OS === 'ios' || !blockTouches ? 'none' : 'auto'}
-        style={StyleSheet.absoluteFillObject}
+      <Wrapper
+        pointerEvents={blockTouches ? 'none' : 'auto'}
+        style={[StyleSheet.absoluteFillObject]}
       >
-        {Component}
-      </NativePortal>
+        {children}
+        <NativePortal
+          blockTouches={blockTouches}
+          pointerEvents={
+            Platform.OS === 'ios' || !blockTouches ? 'none' : 'auto'
+          }
+          style={StyleSheet.absoluteFillObject}
+        >
+          {Component}
+        </NativePortal>
+      </Wrapper>
     </NativePortalContext.Provider>
   );
 }
