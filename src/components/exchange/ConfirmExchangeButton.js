@@ -32,6 +32,21 @@ const Container = styled(Centered)`
   width: 100%;
 `;
 
+const getLabel = type => {
+  switch (type) {
+    case ExchangeModalTypes.addLiquidity:
+      return 'Add Liquidity';
+    case ExchangeModalTypes.deposit:
+      return 'Hold to Deposit';
+    case ExchangeModalTypes.removeLiquidity:
+      return 'Remove Liquidity';
+    case ExchangeModalTypes.withdrawal:
+      return 'Hold to Withdraw ';
+    default:
+      return 'Hold to Swap';
+  }
+};
+
 export default function ConfirmExchangeButton({
   disabled,
   inputAmount,
@@ -90,14 +105,7 @@ export default function ConfirmExchangeButton({
     };
   }, [colorForAsset, colors, isDarkMode, isSwapDetailsRoute]);
 
-  let label = '';
-  if (type === ExchangeModalTypes.deposit) {
-    label = 'Hold to Deposit';
-  } else if (type === ExchangeModalTypes.swap) {
-    label = 'Hold to Swap';
-  } else if (type === ExchangeModalTypes.withdrawal) {
-    label = 'Hold to Withdraw';
-  }
+  let label = getLabel(type);
 
   if (!isSufficientBalance) {
     label = 'Insufficient Funds';
