@@ -85,8 +85,10 @@ const formatGasPrice = (gasPrice, nativeCurrency) => {
 
 const getActionLabel = type => {
   switch (type) {
+    case ExchangeModalTypes.addLiquidity:
     case ExchangeModalTypes.deposit:
       return 'Deposits in';
+    case ExchangeModalTypes.removeLiquidity:
     case ExchangeModalTypes.withdrawal:
       return 'Withdraws in';
     case 'transaction':

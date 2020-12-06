@@ -89,6 +89,21 @@ const getShowOutputField = type => {
   }
 };
 
+const getDefaultGasLimit = type => {
+  switch (type) {
+    case ExchangeModalTypes.deposit:
+      return ethUnits.basic_deposit;
+    case ExchangeModalTypes.withdrawal:
+      return ethUnits.basic_withdrawal;
+    case ExchangeModalTypes.addLiquidity:
+      return ethUnits.basic_uniswap_add_liquidity;
+    case ExchangeModalTypes.removeLiquidity:
+      return ethUnits.basic_uniswap_remove_liquidity;
+    default:
+      return ethUnits.basic_swap;
+  }
+};
+
 export default function ExchangeModal({
   defaultInputAsset,
   defaultOutputAsset,
@@ -116,11 +131,7 @@ export default function ExchangeModal({
   const isWithdrawal = type === ExchangeModalTypes.withdrawal;
   const isSavings = isDeposit || isWithdrawal;
 
-  const defaultGasLimit = isDeposit
-    ? ethUnits.basic_deposit
-    : isWithdrawal
-    ? ethUnits.basic_withdrawal
-    : ethUnits.basic_swap;
+  const defaultGasLimit = getDefaultGasLimit(type);
 
   const {
     startPollingGasPrices,
