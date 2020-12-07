@@ -9,10 +9,8 @@ import { containsEmoji } from '@rainbow-me/helpers/strings';
 import { colors, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
-const addChartsStyling = isCharts => {
-  if (isCharts) return 'position: absolute; width: 100%;';
-  return '';
-};
+const addChartsStyling = isCharts =>
+  isCharts ? 'position: absolute; width: 100%;' : '';
 
 const Button = styled(Centered).attrs({
   scaleTo: 0.9,
