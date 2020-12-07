@@ -152,7 +152,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.delay(2000);
     await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.delay(2000);
-    await Helpers.typeText('currency-select-search-input', 'ET\n', false);
+    await Helpers.typeText('currency-select-search-input', 'E\n', false);
     await Helpers.delay(5000);
     await Helpers.tap('exchange-coin-row-ETH');
     await Helpers.delay(3000);
@@ -175,13 +175,13 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.delay(2000);
     await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.delay(2000);
-    await Helpers.typeText('currency-select-search-input', 'DA\n', true);
+    await Helpers.typeText('currency-select-search-input', 'D\n', true);
     await Helpers.delay(5000);
     await Helpers.tap('exchange-coin-row-DAI');
     await Helpers.delay(2000);
     await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.delay(2000);
-    await Helpers.typeText('currency-select-search-input', 'ET\n', true);
+    await Helpers.typeText('currency-select-search-input', 'E\n', true);
     await Helpers.delay(5000);
     await Helpers.tap('exchange-coin-row-ETH');
     await Helpers.delay(2000);
@@ -208,7 +208,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.delay(2000);
     await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.delay(2000);
-    await Helpers.typeText('currency-select-search-input', 'DA\n', true);
+    await Helpers.typeText('currency-select-search-input', 'D\n', true);
     await Helpers.delay(5000);
     await Helpers.tap('exchange-coin-row-DAI');
     await Helpers.delay(2000);
@@ -249,7 +249,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.delay(2000);
     await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.delay(2000);
-    await Helpers.typeText('currency-select-search-input', 'ZRX\n', false);
+    await Helpers.typeText('currency-select-search-input', 'Z\n', false);
     await Helpers.delay(2000);
     await Helpers.tap('exchange-coin-row-ZRX');
     await Helpers.delay(5000);
@@ -275,7 +275,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.delay(2000);
     await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.delay(2000);
-    await Helpers.typeText('currency-select-search-input', 'ZR\n', false);
+    await Helpers.typeText('currency-select-search-input', 'Z\n', false);
     await Helpers.delay(5000);
     await Helpers.tap('exchange-coin-row-ZRX');
     await Helpers.delay(2000);
@@ -302,7 +302,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.delay(2000);
     await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.delay(2000);
-    await Helpers.typeText('currency-select-search-input', 'ZR\n', false);
+    await Helpers.typeText('currency-select-search-input', 'Z\n', false);
     await Helpers.delay(5000);
     await Helpers.tap('exchange-coin-row-ZRX');
     await Helpers.delay(2000);
@@ -352,7 +352,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.delay(2000);
     await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.delay(2000);
-    await Helpers.typeText('currency-select-search-input', 'ZR\n', false);
+    await Helpers.typeText('currency-select-search-input', 'Z\n', false);
     await Helpers.delay(5000);
     await Helpers.tap('exchange-coin-row-ZRX');
     await Helpers.delay(2000);
@@ -388,7 +388,7 @@ describe('Swap Sheet Interaction Flow', () => {
   it('Should prepend 0. to output field on typing .', async () => {
     await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.delay(2000);
-    await Helpers.typeText('currency-select-search-input', 'ZR\n', false);
+    await Helpers.typeText('currency-select-search-input', 'Z\n', false);
     await Helpers.delay(5000);
     await Helpers.tap('exchange-coin-row-ZRX');
     await Helpers.delay(2000);
@@ -411,7 +411,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.delay(2000);
     await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.delay(2000);
-    await Helpers.typeText('currency-select-search-input', 'ZR\n', false);
+    await Helpers.typeText('currency-select-search-input', 'Z\n', false);
     await Helpers.delay(5000);
     await Helpers.tap('exchange-coin-row-ZRX');
     await Helpers.delay(2000);

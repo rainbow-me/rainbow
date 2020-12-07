@@ -33,7 +33,7 @@ const DevSection = () => {
   const connectToGanache = useCallback(async () => {
     try {
       const ready = await web3SetHttpProvider(
-        GANACHE_URL || 'http://127.0.0.1:7545'
+        (GANACHE_URL && ios) || 'http://10.0.2.2:7545'
       );
       logger.log('connected to ganache', ready);
     } catch (e) {
