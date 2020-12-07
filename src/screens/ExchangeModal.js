@@ -11,6 +11,7 @@ import React, {
 } from 'react';
 import { Keyboard } from 'react-native';
 import Animated, { Extrapolate } from 'react-native-reanimated';
+import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import { useDispatch } from 'react-redux';
 import { dismissingScreenListener } from '../../shim';
 import { interpolate } from '../components/animations';
@@ -31,7 +32,6 @@ import { loadWallet } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import { executeRap } from '../raps/common';
 import { multicallClearState } from '../redux/multicall';
-import { savingsLoadState } from '../redux/savings';
 import ethUnits from '../references/ethereum-units.json';
 import {
   useAccountSettings,
@@ -48,6 +48,7 @@ import {
 import Routes from '@rainbow-me/routes';
 import { colors, position } from '@rainbow-me/styles';
 import { backgroundTask, isNewValueForPath } from '@rainbow-me/utils';
+
 import logger from 'logger';
 
 const AnimatedFloatingPanels = Animated.createAnimatedComponent(FloatingPanels);
@@ -107,6 +108,11 @@ export default function ExchangeModal({
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const [slippage, setSlippage] = useState(null);
+
+  useAndroidBackHandler(() => {
+    navigate(Routes.WALLET_SCREEN);
+    return true;
+  });
 
   const {
     defaultInputAddress,
@@ -420,9 +426,6 @@ export default function ExchangeModal({
         });
         logger.log('[exchange - handle submit] rap', rap);
         await executeRap(wallet, rap);
-        if (isDeposit || isWithdrawal) {
-          dispatch(savingsLoadState());
-        }
         logger.log('[exchange - handle submit] executed rap!');
         analytics.track(`Completed ${type}`, {
           category,
@@ -452,10 +455,8 @@ export default function ExchangeModal({
     outputAmount,
     selectedGasPrice,
     tradeDetails,
-    isDeposit,
     setParams,
     navigate,
-    dispatch,
   ]);
 
   const navigateToSwapDetailsModal = useCallback(() => {

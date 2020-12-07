@@ -8,7 +8,7 @@ import useSavingsAccount from './useSavingsAccount';
 export default function useSendSavingsAccount() {
   const { allAssets } = useAccountAssets();
   const { nativeCurrency } = useAccountSettings();
-  let savings = useSavingsAccount();
+  let { savings } = useSavingsAccount();
   const eth = ethereumUtils.getAsset(allAssets);
   const priceOfEther = get(eth, 'native.price.amount', null);
   if (priceOfEther) {

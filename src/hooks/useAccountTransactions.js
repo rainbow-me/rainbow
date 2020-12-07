@@ -61,7 +61,7 @@ export default function useAccountTransactions(initialized, isFocused) {
     nextPage,
     remainingItemsLabel,
     sections,
-    transactions: slicedTransaction,
+    transactions: ios ? transactions : slicedTransaction,
     transactionsCount,
   };
 }

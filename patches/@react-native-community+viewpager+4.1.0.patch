@@ -1,0 +1,13 @@
+diff --git a/node_modules/@react-native-community/viewpager/android/src/main/java/com/reactnativecommunity/viewpager/ReactViewPagerManager.java b/node_modules/@react-native-community/viewpager/android/src/main/java/com/reactnativecommunity/viewpager/ReactViewPagerManager.java
+index 3846048..831a0eb 100644
+--- a/node_modules/@react-native-community/viewpager/android/src/main/java/com/reactnativecommunity/viewpager/ReactViewPagerManager.java
++++ b/node_modules/@react-native-community/viewpager/android/src/main/java/com/reactnativecommunity/viewpager/ReactViewPagerManager.java
+@@ -57,6 +57,8 @@ public class ReactViewPagerManager extends ViewGroupManager<ViewPager2> {
+     @Override
+     protected ViewPager2 createViewInstance(@NonNull ThemedReactContext reactContext) {
+         final ViewPager2 vp = new ViewPager2(reactContext);
++        // hack until https://github.com/callstack/react-native-viewpager/pull/245 is not released 
++        vp.setOffscreenPageLimit(4);
+         FragmentAdapter adapter = new FragmentAdapter((FragmentActivity) reactContext.getCurrentActivity());
+         vp.setAdapter(adapter);
+         eventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();

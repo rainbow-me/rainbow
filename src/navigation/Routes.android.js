@@ -38,6 +38,7 @@ import {
   settingsPreset,
   sheetPreset,
   sheetPresetWithSmallGestureResponseDistance,
+  wcPromptPreset,
 } from './effects';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
@@ -146,12 +147,12 @@ function MainNavigator() {
       <Stack.Screen
         component={WalletConnectApprovalSheet}
         name={Routes.WALLET_CONNECT_APPROVAL_SHEET}
-        options={exchangePreset}
+        options={wcPromptPreset}
       />
       <Stack.Screen
         component={WalletConnectRedirectSheet}
         name={Routes.WALLET_CONNECT_REDIRECT_SHEET}
-        options={exchangePreset}
+        options={wcPromptPreset}
       />
       <Stack.Screen
         component={AddCashSheet}

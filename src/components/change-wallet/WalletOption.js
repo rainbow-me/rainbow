@@ -21,7 +21,7 @@ const WalletOption = ({ editMode, label, onPress }) => (
       }
       letterSpacing="roundedMedium"
       size="lmedium"
-      weight="semibold"
+      weight="bold"
     >
       {label}
     </Text>

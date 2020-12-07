@@ -21,7 +21,7 @@ index b7f2207..26c9fda 100644
 +  },
  };
 diff --git a/node_modules/react-native-gesture-handler/android/lib/src/main/java/com/swmansion/gesturehandler/GestureHandlerOrchestrator.java b/node_modules/react-native-gesture-handler/android/lib/src/main/java/com/swmansion/gesturehandler/GestureHandlerOrchestrator.java
-index f08713b..9a6cbb7 100644
+index f08713b..a97b902 100644
 --- a/node_modules/react-native-gesture-handler/android/lib/src/main/java/com/swmansion/gesturehandler/GestureHandlerOrchestrator.java
 +++ b/node_modules/react-native-gesture-handler/android/lib/src/main/java/com/swmansion/gesturehandler/GestureHandlerOrchestrator.java
 @@ -13,6 +13,8 @@ import java.util.Comparator;
@@ -33,7 +33,7 @@ index f08713b..9a6cbb7 100644
  public class GestureHandlerOrchestrator {
  
    // The limit doesn't necessarily need to exists, it was just simpler to implement it that way
-@@ -513,6 +515,9 @@ public class GestureHandlerOrchestrator {
+@@ -513,11 +515,13 @@ public class GestureHandlerOrchestrator {
    }
  
    private static boolean canRunSimultaneously(GestureHandler a, GestureHandler b) {
@@ -41,6 +41,23 @@ index f08713b..9a6cbb7 100644
 +      return true;
 +    }
      return a == b || a.shouldRecognizeSimultaneously(b) || b.shouldRecognizeSimultaneously(a);
+   }
+ 
+   private static boolean shouldHandlerBeCancelledBy(GestureHandler handler, GestureHandler other) {
+-
+     if (!handler.hasCommonPointers(other)) {
+       // if two handlers share no common pointer one can never trigger cancel for the other
+       return false;
+@@ -533,6 +537,11 @@ public class GestureHandlerOrchestrator {
+       // state, we delegate the decision to the implementation of GestureHandler#shouldBeCancelledBy
+       return handler.shouldBeCancelledBy(other);
+     }
++
++    if (other instanceof RNGestureHandlerRootHelper.RootViewGestureHandler && handler instanceof PanGestureHandler) {
++      return false;
++    }
++ 
+     return true;
    }
  
 diff --git a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerRootHelper.java b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerRootHelper.java

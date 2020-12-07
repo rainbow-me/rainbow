@@ -25,7 +25,8 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
   left: 0;
   overflow: hidden;
   position: absolute;
-  border-radius: 20;
+  border-top-left-radius: 20;
+  border-top-right-radius: 20;
   top: ${({ contentHeight, additionalTopPadding }) =>
     contentHeight && additionalTopPadding
       ? deviceUtils.dimensions.height - contentHeight
