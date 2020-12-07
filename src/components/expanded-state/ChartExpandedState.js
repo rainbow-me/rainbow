@@ -69,6 +69,7 @@ export default function ChartExpandedState({ asset }) {
         <SheetActionButtonRow>
           <BuyActionButton
             color={color}
+            isCharts
             radiusAndroid={24}
             radiusWrapperStyle={{ flex: 1 }}
             wrapperProps={{
@@ -83,6 +84,7 @@ export default function ChartExpandedState({ asset }) {
             <SwapActionButton
               color={color}
               inputType={AssetInputTypes.in}
+              isCharts
               radiusAndroid={24}
               radiusWrapperStyle={{ flex: 1, marginRight: 10 }}
               wrapperProps={{
@@ -93,6 +95,7 @@ export default function ChartExpandedState({ asset }) {
           )}
           <SendActionButton
             color={color}
+            isCharts
             radiusAndroid={24}
             radiusWrapperStyle={{ flex: 1, marginLeft: 10 }}
             wrapperProps={{
