@@ -5,9 +5,10 @@ import * as Helpers from './helpers';
 
 beforeAll(async () => {
   // Reset the app state
-  if (device.getPlatform() === 'android') {
+  /*if (device.getPlatform() === 'android') {
     exec('adb reverse tcp:7545 tcp:7545');
-  }
+    exec('adb reverse --remove tcp:7545');
+  }*/
   await Helpers.delay(4000);
   await exec('yarn ganache');
   await Helpers.delay(10000);
@@ -288,6 +289,10 @@ describe('Ganache Transaction Flow', () => {
   afterAll(async () => {
     // Reset the app state
     await device.clearKeychain();
+    /*if (device.getPlatform() === 'android') {
+      exec('adb reverse --remove tcp:7545');
+      await Helpers.delay(5000);
+    }*/
     await exec('kill $(lsof -t -i:7545)');
   });
 });

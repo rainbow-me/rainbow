@@ -63,7 +63,7 @@ export default function CoinRow({
         <Row align="center" testID={`${testID}-${symbol || ''}`}>
           {topRowRender({ name, symbol, ...accountSettings, ...props })}
         </Row>
-        <Row align="center" marginBottom={0.5}>
+        <Row align="center" marginBottom={0.5} testID={testID}>
           {bottomRowRender({ symbol, ...accountSettings, ...props })}
         </Row>
       </Content>
