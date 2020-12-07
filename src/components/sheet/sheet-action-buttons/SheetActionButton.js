@@ -9,11 +9,17 @@ import { containsEmoji } from '@rainbow-me/helpers/strings';
 import { colors, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
+const addChartsStyling = isCharts => {
+  if (isCharts) return 'position: absolute; width: 100%;';
+  return '';
+};
+
 const Button = styled(Centered).attrs({
   scaleTo: 0.9,
 })`
   flex: ${({ noFlex }) => (noFlex ? 'none' : 1)};
   height: ${({ size }) => (size === 'big' ? 56 : 46)};
+  ${({ isCharts }) => addChartsStyling(isCharts)}
 `;
 
 const Content = styled(RowWithMargins).attrs({
@@ -49,6 +55,7 @@ const SheetActionButton = ({
   disabled,
   emoji,
   icon,
+  isCharts,
   isTransparent,
   label,
   noFlex,
@@ -74,6 +81,7 @@ const SheetActionButton = ({
     <Button
       as={ButtonPressAnimation}
       elevation={android ? 24 : null}
+      isCharts={isCharts}
       noFlex={noFlex}
       radiusAndroid={borderRadius}
       size={size}
