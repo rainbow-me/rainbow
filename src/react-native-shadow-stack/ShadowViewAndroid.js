@@ -121,6 +121,7 @@ function splitPositionalStyleProps(style) {
 const INNERALIZING_OF_SHADOW = P(1.3, 1.4);
 const MULTIPLICATING_SHADOW = P(2.4, 2.3);
 const MIN_RADIUS = P(2, 10);
+const EPSILON = P(0, 0.17);
 
 function ShadowView(props) {
   const fstyle = StyleSheet.flatten(props.style);
@@ -289,6 +290,7 @@ function ShadowView(props) {
             style={{
               backgroundColor: 'transparent',
               height: '100%',
+              transform: [{ translateX: -EPSILON }],
               width: '50%',
             }}
           >
@@ -504,7 +506,13 @@ function ShadowView(props) {
               />
             </Svg>
           </View>
-          <View style={{ height: '100%', width: '50%' }}>
+          <View
+            style={{
+              height: '100%',
+              transform: [{ translateX: -EPSILON }],
+              width: '50%',
+            }}
+          >
             <Svg height="100%" width="100%">
               <Defs>
                 {linearGradFactory({ id: 'grad-bottom', y1: 1 }, shadowColor)}
