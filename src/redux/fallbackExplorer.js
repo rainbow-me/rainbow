@@ -2,6 +2,7 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
 import { get, toLower, uniqBy } from 'lodash';
 import { web3Provider } from '../handlers/web3';
+import AssetTypes from '../helpers/assetTypes';
 import networkInfo from '../helpers/networkInfo';
 import networkTypes from '../helpers/networkTypes';
 import { delay } from '../helpers/utilities';
@@ -155,9 +156,9 @@ const discoverTokens = async (
       allTxs.map(tx => {
         const type =
           tx.tokenSymbol === 'UNI-V1'
-            ? 'uniswap'
+            ? AssetTypes.uniswap
             : tx.tokenSymbol === 'UNI-V2'
-            ? 'uniswap-v2'
+            ? AssetTypes.uniswapV2
             : undefined;
         return {
           asset: {

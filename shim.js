@@ -54,12 +54,14 @@ Object.defineProperty(global, 'ios', {
 const SHORTEN_PROP_TYPES_ERROR = true;
 
 if (SHORTEN_PROP_TYPES_ERROR) {
-  const oldConsoleError = console.error;
+  const oldConsoleError = console.error; // eslint-disable-line no-console
+  // eslint-disable-next-line no-console
   console.error = function() {
     if (
       typeof arguments[0] === 'string' &&
       arguments[0].startsWith('Warning: Failed prop type')
     ) {
+      // eslint-disable-next-line no-console
       console.log(
         `PropTypes error in: ${arguments[0]
           .match(/\w+.js:[0-9]+/g)

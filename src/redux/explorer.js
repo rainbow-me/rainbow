@@ -1,8 +1,6 @@
-import { get, isNil, keys, map, toLower } from 'lodash';
+import { concat, get, isNil, keys, map, toLower } from 'lodash';
 import { DATA_API_KEY, DATA_ORIGIN } from 'react-native-dotenv';
 import io from 'socket.io-client';
-import { forceFallbackProvider } from '../config/debug';
-import NetworkTypes from '../helpers/networkTypes';
 import { assetChartsReceived, DEFAULT_CHART_TYPE } from './charts';
 import {
   addressAssetsReceived,
@@ -15,6 +13,8 @@ import {
   fallbackExplorerClearState,
   fallbackExplorerInit,
 } from './fallbackExplorer';
+import { disableCharts, forceFallbackProvider } from '@rainbow-me/config/debug';
+import NetworkTypes from '@rainbow-me/helpers/networkTypes';
 import logger from 'logger';
 
 // -- Constants --------------------------------------- //
@@ -229,7 +229,12 @@ export const emitChartsRequest = (
     assetCodes = [assetAddress];
   } else {
     const { assets } = getState().data;
-    assetCodes = map(assets, 'address');
+    const assetAddresses = map(assets, 'address');
+
+    const { liquidityTokens } = getState().uniswapLiquidity;
+    const lpTokenAddresses = map(liquidityTokens, token => token.address);
+
+    assetCodes = concat(assetAddresses, lpTokenAddresses);
   }
   assetsSocket?.emit?.(
     ...chartsRetrieval(assetCodes, nativeCurrency, chartType)
@@ -273,7 +278,9 @@ const listenOnAddressMessages = socket => dispatch => {
 
   socket.on(messages.ADDRESS_ASSETS.RECEIVED, message => {
     dispatch(addressAssetsReceived(message));
-    dispatch(emitChartsRequest());
+    if (!disableCharts) {
+      dispatch(emitChartsRequest());
+    }
     if (isValidAssetsResponseFromZerion(message)) {
       logger.log(
         '😬 Cancelling fallback data provider listener. Zerion is good!'
