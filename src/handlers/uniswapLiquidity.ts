@@ -2,67 +2,39 @@ import { Contract } from '@ethersproject/contracts';
 import { ChainId, WETH } from '@uniswap/sdk';
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json';
 import contractMap from 'eth-contract-metadata';
-import { get, keyBy, map, partition, toLower } from 'lodash';
+import { compact, get, keyBy, map, partition, toLower } from 'lodash';
 import { SwapCurrency } from '../handlers/uniswap';
 import {
+  convertAmountToRawAmount,
   convertRawAmountToDecimalFormat,
   divide,
   fromWei,
   multiply,
 } from '../helpers/utilities';
+import { parseAssetsNative } from '../parsers/accounts';
 import { erc20ABI } from '../references';
 import { UNISWAP_V1_EXCHANGE_ABI } from '../references/uniswap';
 import { web3Provider } from './web3';
+import { Asset, ParsedAddressAsset } from '@rainbow-me/entities';
 import logger from 'logger';
 
-interface LiquidityToken {
-  address: string;
+interface UnderlyingToken extends Asset {
   balance: string;
-  name: string;
-  symbol: string;
 }
 
-interface TokenDetails {
-  decimals: number;
-  name: string;
-  symbol: string;
-}
-
-export interface LiquidityInfo {
-  address: string;
-  balance: string;
-  price?: {
-    changed_at?: number;
-    value?: number;
-    relative_change_24h?: number;
-  };
-  tokens: LiquidityToken[];
+export interface LiquidityInfo extends ParsedAddressAsset {
+  tokens: UnderlyingToken[];
   totalSupply: string;
-  uniqueId: string;
 }
-
-export interface LPToken {
-  asset: {
-    asset_code: string;
-    price?: {
-      changed_at?: number;
-      value?: number;
-      relative_change_24h?: number;
-    };
-    type: string;
-  };
-  quantity: string;
-}
-
-const getAssetCode = (token: LPToken): string => get(token, 'asset.asset_code');
 
 const getTokenDetails = async (
   chainId: ChainId,
   tokenAddress: string,
   pairs: Record<string, SwapCurrency>
-): Promise<TokenDetails> => {
+): Promise<Asset> => {
   if (toLower(tokenAddress) === toLower(WETH[chainId].address)) {
     return {
+      address: 'eth',
       decimals: 18,
       name: 'Ethereum',
       symbol: 'ETH',
@@ -126,6 +98,7 @@ const getTokenDetails = async (
     }
   }
   return {
+    address: tokenAddress,
     decimals,
     name,
     symbol,
@@ -135,12 +108,17 @@ const getTokenDetails = async (
 export const getLiquidityInfo = async (
   chainId: ChainId,
   accountAddress: string,
-  liquidityPoolTokens: LPToken[],
+  nativeCurrency: string,
+  liquidityPoolTokens: ParsedAddressAsset[],
   pairs: Record<string, SwapCurrency>
-): Promise<Record<string, LiquidityInfo | {}>> => {
-  const [v1Tokens, v2Tokens] = partition(
+): Promise<Record<string, LiquidityInfo>> => {
+  const liquidityPoolTokensWithNative = parseAssetsNative(
     liquidityPoolTokens,
-    token => token?.asset?.type === 'uniswap'
+    nativeCurrency
+  );
+  const [v1Tokens, v2Tokens] = partition(
+    liquidityPoolTokensWithNative,
+    token => token.type === 'uniswap'
   );
   const v1TokensCall = getLiquidityInfoV1(
     chainId,
@@ -164,12 +142,12 @@ export const getLiquidityInfo = async (
 const getLiquidityInfoV2 = async (
   chainId: ChainId,
   accountAddress: string,
-  liquidityTokens: LPToken[],
+  liquidityTokens: ParsedAddressAsset[],
   pairs: Record<string, SwapCurrency>
-): Promise<Record<string, LiquidityInfo | {}>> => {
+): Promise<Record<string, LiquidityInfo>> => {
   const promises = map(liquidityTokens, async lpToken => {
     try {
-      const liquidityPoolAddress = getAssetCode(lpToken);
+      const liquidityPoolAddress = lpToken.address;
       const pair = new Contract(
         liquidityPoolAddress,
         IUniswapV2PairABI,
@@ -196,7 +174,10 @@ const getLiquidityInfoV2 = async (
       const token0Address = token0AddressResult.toString();
       const token1Address = token1AddressResult.toString();
 
-      const lpTokenBalance = lpToken.quantity;
+      const lpTokenBalance = convertAmountToRawAmount(
+        lpToken?.balance?.amount || 0,
+        lpToken?.decimals
+      );
 
       const [token0ReserveBn, token1ReserveBn] = pairReservesResult;
       const token0Reserve = token0ReserveBn.toString();
@@ -208,55 +189,54 @@ const getLiquidityInfoV2 = async (
 
       const token0Balance = convertRawAmountToDecimalFormat(
         divide(multiply(token0Reserve, lpTokenBalance), totalSupply),
-        Number(token0.decimals)
+        token0.decimals
       );
 
       const token1Balance = convertRawAmountToDecimalFormat(
         divide(multiply(token1Reserve, lpTokenBalance), totalSupply),
-        Number(token1.decimals)
+        token1.decimals
       );
 
       return {
-        address: liquidityPoolAddress,
-        balance: convertRawAmountToDecimalFormat(lpTokenBalance),
-        price: lpToken?.asset?.price,
+        ...lpToken,
         tokens: [
           {
-            address: token0Address,
             balance: token0Balance,
             ...token0,
           },
           {
-            address: token1Address,
             balance: token1Balance,
             ...token1,
           },
         ],
         totalSupply: convertRawAmountToDecimalFormat(totalSupply),
-        type: lpToken?.asset?.type,
-        uniqueId: `uniswap_${liquidityPoolAddress}`,
       };
     } catch (error) {
       logger.log('error getting uniswap info', error);
-      return {};
+      return null;
     }
   });
 
   const results = await Promise.all(promises);
-  return keyBy(results, result => result.address);
+  const updatedResults = compact(results);
+  return keyBy(updatedResults, result => result.address);
 };
 
 const getLiquidityInfoV1 = async (
   chainId: ChainId,
   accountAddress: string,
-  liquidityTokens: LPToken[],
+  liquidityTokens: ParsedAddressAsset[],
   pairs: Record<string, SwapCurrency>
-): Promise<Record<string, LiquidityInfo | {}>> => {
+): Promise<Record<string, LiquidityInfo>> => {
   const promises = map(liquidityTokens, async lpToken => {
     try {
-      const liquidityPoolAddress = getAssetCode(lpToken);
+      const liquidityPoolAddress = lpToken.address;
       const ethReserveCall = web3Provider.getBalance(liquidityPoolAddress);
-      const lpTokenBalance = lpToken.quantity;
+      const lpTokenBalance = convertAmountToRawAmount(
+        lpToken?.balance?.amount || 0,
+        lpToken?.decimals
+      );
+
       const exchange = new Contract(
         liquidityPoolAddress,
         UNISWAP_V1_EXCHANGE_ABI,
@@ -280,11 +260,7 @@ const getLiquidityInfoV1 = async (
 
       const tokenContract = new Contract(tokenAddress, erc20ABI, web3Provider);
 
-      const { decimals, name, symbol } = await getTokenDetails(
-        chainId,
-        tokenAddress,
-        pairs
-      );
+      const token = await getTokenDetails(chainId, tokenAddress, pairs);
 
       const reserveResult = await tokenContract.balanceOf(liquidityPoolAddress);
       const reserve = reserveResult.toString();
@@ -294,37 +270,33 @@ const getLiquidityInfoV1 = async (
       );
       const tokenBalance = convertRawAmountToDecimalFormat(
         divide(multiply(reserve, lpTokenBalance), totalSupply),
-        Number(decimals)
+        token.decimals
       );
 
       return {
-        address: liquidityPoolAddress,
-        balance: convertRawAmountToDecimalFormat(lpTokenBalance),
-        price: lpToken?.asset?.price,
+        ...lpToken,
         tokens: [
           {
-            address: tokenAddress,
             balance: tokenBalance,
-            name,
-            symbol,
+            ...token,
           },
           {
             address: 'eth',
             balance: ethBalance,
+            decimals: 18,
             name: 'Ethereum',
             symbol: 'ETH',
           },
         ],
         totalSupply: convertRawAmountToDecimalFormat(totalSupply),
-        type: lpToken?.asset?.type,
-        uniqueId: `uniswap_${liquidityPoolAddress}`,
       };
     } catch (error) {
       logger.log('error getting uniswap info', error);
-      return {};
+      return null;
     }
   });
 
   const results = await Promise.all(promises);
-  return keyBy(results, result => result.address);
+  const updatedResults = compact(results);
+  return keyBy(updatedResults, result => result.address);
 };
