@@ -1,5 +1,6 @@
 import { map } from 'lodash';
 import React from 'react';
+import { useChartThrottledPoints } from '../../hooks';
 import { magicMemo } from '../../utils';
 import {
   DepositActionButton,
@@ -14,28 +15,56 @@ import {
   TokenInfoRow,
   TokenInfoSection,
 } from '../token-info';
-import ChartState from './chart/ChartState';
+import Chart from '../value-chart/Chart';
+import { ChartPathProvider } from '@rainbow-me/animated-charts';
 
-const heightWithoutChart = 373 + (android ? 80 : 0);
+const heightWithoutChart = 373 + (android && 80);
 const heightWithChart = heightWithoutChart + 292;
 
-export const LiquidityPoolExpandedStateSheetHeight = heightWithChart;
+export const initialLiquidityPoolExpandedStateSheetHeight =
+  heightWithChart + (android && 40);
 
 const LiquidityPoolExpandedState = ({ asset }) => {
   const { symbol, tokenNames, tokens, totalNativeDisplay, uniBalance } = asset;
   const uniBalanceLabel = `${uniBalance} ${symbol}`;
+  const {
+    chart,
+    chartData,
+    chartType,
+    color,
+    fetchingCharts,
+    initialChartDataLabels,
+    showChart,
+    throttledData,
+  } = useChartThrottledPoints({
+    asset,
+    heightWithChart,
+    heightWithoutChart,
+    isPool: true,
+  });
 
+  const LiquidityPoolExpandedStateSheetHeight =
+    (ios || showChart ? heightWithChart : heightWithoutChart) + (android && 40);
   return (
     <SlackSheet
       additionalTopPadding={android}
       contentHeight={LiquidityPoolExpandedStateSheetHeight}
     >
-      <ChartState
-        asset={asset}
-        heightWithChart={heightWithChart}
-        heightWithoutChart={heightWithoutChart}
-        isPool
-      />
+      <ChartPathProvider data={throttledData}>
+        <Chart
+          {...chartData}
+          {...initialChartDataLabels}
+          asset={asset}
+          chart={chart}
+          chartType={chartType}
+          color={color}
+          fetchingCharts={fetchingCharts}
+          isPool
+          nativePoints={chart}
+          showChart={showChart}
+          throttledData={throttledData}
+        />
+      </ChartPathProvider>
       <SheetDivider />
       <TokenInfoSection>
         <TokenInfoRow>

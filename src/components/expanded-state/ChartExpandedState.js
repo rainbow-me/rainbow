@@ -1,12 +1,6 @@
-import { debounce, find } from 'lodash';
-import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  useChartData,
-  useChartDataLabels,
-  useColorForAsset,
-  useUniswapAssetsInWallet,
-} from '../../hooks';
-
+import { find } from 'lodash';
+import React, { useRef } from 'react';
+import { useChartThrottledPoints, useUniswapAssetsInWallet } from '../../hooks';
 import {
   BuyActionButton,
   SendActionButton,
@@ -22,110 +16,32 @@ import {
   TokenInfoSection,
 } from '../token-info';
 import Chart from '../value-chart/Chart';
-import {
-  ChartPathProvider,
-  monotoneCubicInterpolation,
-} from '@rainbow-me/animated-charts';
+import { ChartPathProvider } from '@rainbow-me/animated-charts';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
-
-import { useNavigation } from '@rainbow-me/navigation';
 import { deviceUtils } from '@rainbow-me/utils';
 
-import { ModalContext } from 'react-native-cool-modals/NativeStackView';
-
 //add's StatusBar height to android
-const heightWithChart = 606 + (android && 24);
-const heightWithNoChart = 309 + (android && 24);
-
-const traverseData = (prev, data) => {
-  if (!data || data.length === 0) {
-    return prev;
-  }
-  const filtered = data.filter(({ y }) => y);
-  if (
-    filtered[0].y === prev?.nativePoints[0]?.y &&
-    filtered[0].x === prev?.nativePoints[0]?.x
-  ) {
-    return prev;
-  }
-  const points = monotoneCubicInterpolation({
-    data: filtered,
-    includeExtremes: true,
-    range: 100,
-  });
-  return {
-    nativePoints: filtered,
-    points,
-  };
-};
-
-function useJumpingForm(isLong) {
-  const { setOptions } = useNavigation();
-
-  const { jumpToShort, jumpToLong } = useContext(ModalContext) || {};
-
-  useEffect(() => {
-    if (!isLong) {
-      setOptions({
-        isShortFormEnabled: true,
-      });
-      setImmediate(() => {
-        jumpToShort?.();
-        setOptions({
-          isShortFormEnabled: false,
-          longFormHeight: heightWithNoChart,
-        });
-      });
-    } else {
-      setOptions({
-        longFormHeight: heightWithChart,
-      });
-      setImmediate(jumpToLong);
-    }
-  }, [isLong, setOptions, jumpToShort, jumpToLong]);
-}
+const heightWithoutChart = 309 + (android && 24);
+const heightWithChart = heightWithoutChart + 297;
 
 export const initialChartExpandedStateSheetHeight =
-  heightWithChart + (android ? 40 : 0);
+  heightWithChart + (android && 40);
 
 export default function ChartExpandedState({ asset }) {
-  const color = useColorForAsset(asset);
-  const [isFetchingInitially, setIsFetchingInitially] = useState(true);
-
-  const { chart, chartType, fetchingCharts, ...chartData } = useChartData(
-    asset
-  );
-
-  const [throttledPoints, setThrottledPoints] = useState(() =>
-    traverseData({ nativePoints: [], points: [] }, chart)
-  );
-  useEffect(() => {
-    setThrottledPoints(prev => traverseData(prev, chart));
-  }, [chart]);
-
-  const initialChartDataLabels = useChartDataLabels({
-    asset,
+  const {
+    chart,
+    chartData,
     chartType,
     color,
-    points: throttledPoints?.points ?? [],
+    fetchingCharts,
+    initialChartDataLabels,
+    showChart,
+    throttledData,
+  } = useChartThrottledPoints({
+    asset,
+    heightWithChart,
+    heightWithoutChart,
   });
-
-  useEffect(() => {
-    if (!fetchingCharts) {
-      setIsFetchingInitially(false);
-    }
-  }, [fetchingCharts]);
-
-  // Only show the chart if we have chart data, or if chart data is still loading
-  const showChart = useMemo(
-    () =>
-      throttledPoints?.points.length > 5 ||
-      throttledPoints?.points.length > 5 ||
-      (fetchingCharts && !isFetchingInitially),
-    [fetchingCharts, isFetchingInitially, throttledPoints]
-  );
-
-  useJumpingForm(showChart);
 
   const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
   const showSwapButton = find(uniswapAssetsInWallet, [
@@ -135,33 +51,13 @@ export default function ChartExpandedState({ asset }) {
 
   const needsEth = asset.address === 'eth' && asset.balance.amount === '0';
 
-  const [throttledData, setThrottledData] = useState({
-    nativePoints: throttledPoints.nativePoints,
-    points: throttledPoints.points,
-    smoothingStrategy: 'bezier',
-  });
-
-  const debouncedSetThrottledData = useRef(debounce(setThrottledData, 30))
-    .current;
-
-  useEffect(() => {
-    if (throttledPoints.points && !fetchingCharts) {
-      debouncedSetThrottledData({
-        nativePoints: throttledPoints.nativePoints,
-        points: throttledPoints.points,
-        smoothingStrategy: 'bezier',
-      });
-    }
-  }, [throttledPoints, fetchingCharts, debouncedSetThrottledData]);
-
   const duration = useRef(0);
 
   if (duration.current === 0) {
     duration.current = 300;
   }
   const ChartExpandedStateSheetHeight =
-    (ios || showChart ? heightWithChart : heightWithNoChart) +
-    (android ? 40 : 0);
+    (ios || showChart ? heightWithChart : heightWithoutChart) + (android && 40);
 
   return (
     <SlackSheet
@@ -197,7 +93,7 @@ export default function ChartExpandedState({ asset }) {
         </TokenInfoRow>
       </TokenInfoSection>
       {needsEth ? (
-        <SheetActionButtonRow key={`row${showChart}`}>
+        <SheetActionButtonRow>
           <BuyActionButton
             // FIXME
             androidWidth={deviceUtils.dimensions.width - 39}
@@ -205,7 +101,7 @@ export default function ChartExpandedState({ asset }) {
           />
         </SheetActionButtonRow>
       ) : (
-        <SheetActionButtonRow key={`row${showChart}`}>
+        <SheetActionButtonRow>
           {showSwapButton && (
             <SwapActionButton color={color} inputType={AssetInputTypes.in} />
           )}
