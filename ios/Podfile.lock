@@ -335,8 +335,8 @@ PODS:
     - React-cxxreact (= 0.63.3)
     - React-jsi (= 0.63.3)
   - React-jsinspector (0.63.3)
-  - react-native-aes-crypto (2.0.0):
-    - React
+  - react-native-aes-crypto (2.0.2):
+    - React-Core
   - react-native-background-timer (2.4.1):
     - React-Core
   - react-native-blur (0.8.0):
@@ -955,7 +955,7 @@ SPEC CHECKSUMS:
   React-jsi: df07aa95b39c5be3e41199921509bfa929ed2b9d
   React-jsiexecutor: b56c03e61c0dd5f5801255f2160a815f4a53d451
   React-jsinspector: 8e68ffbfe23880d3ee9bafa8be2777f60b25cbe2
-  react-native-aes-crypto: b197adec6d65ff2386478c4e5bd2a66ec9accbbb
+  react-native-aes-crypto: d7e87fd02cee7285983c00957a34063dfc4c94b3
   react-native-background-timer: 17ea5e06803401a379ebf1f20505b793ac44d0fe
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-branch: 8bda99ca8dc5a16d32bd81c8a8d937cb3d2c5e0c

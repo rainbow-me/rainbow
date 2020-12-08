@@ -146,7 +146,7 @@
     "react-native": "0.63.3",
     "react-native-action-sheet": "^2.2.0",
     "react-native-actionsheet": "^2.4.2",
-    "react-native-aes-crypto": "brunobar79/react-native-aes#27d52ea6c2ff8470388b20993e0357ab07ad17e3",
+    "react-native-aes-crypto": "brunobar79/react-native-aes#65c49f7e70266615b2999eaa7db654d3fe4f2e3b",
     "react-native-android-keyboard-adjust": "^1.2.0",
     "react-native-background-timer": "^2.2.0",
     "react-native-branch": "^5.0.0",
