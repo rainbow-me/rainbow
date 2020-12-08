@@ -10,7 +10,9 @@ export default class AesEncryptor {
   }
 
   generateKey = (password, salt) =>
-    AesEncryption.pbkdf2(password, salt, 5000, 256);
+    android
+      ? AesEncryption.pbkdf2(password, salt, 5000, 256)
+      : AesEncryption.pbkdf2(password, salt);
 
   keyFromPassword = (password, salt) => this.generateKey(password, salt);
 
