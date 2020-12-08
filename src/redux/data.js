@@ -262,7 +262,9 @@ export const addressAssetsReceived = (
   const payload = values(get(message, 'payload.assets', {}));
   let assets = filter(
     payload,
-    asset => asset.asset.type !== 'compound' && asset.asset.type !== 'trash'
+    asset =>
+      asset?.asset?.type !== AssetTypes.compound &&
+      asset?.asset?.type !== AssetTypes.trash
   );
 
   if (removed) {
@@ -279,19 +281,13 @@ export const addressAssetsReceived = (
     shitcoins.includes(toLower(asset?.asset?.asset_code))
   );
 
-  // Remove compound tokens
-  remove(
-    assets,
-    asset => toLower(asset?.asset?.name).indexOf('compound') !== -1
-  );
-
   let parsedAssets = parseAccountAssets(assets, uniqueTokens);
 
   // remove LP tokens
   const liquidityTokens = remove(
     parsedAssets,
     asset =>
-      asset.type === AssetTypes.uniswap || asset.type === AssetTypes.uniswapV2
+      asset?.type === AssetTypes.uniswap || asset?.type === AssetTypes.uniswapV2
   );
 
   dispatch(

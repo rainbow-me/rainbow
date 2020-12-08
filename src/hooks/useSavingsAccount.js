@@ -14,7 +14,7 @@ import { useSelector } from 'react-redux';
 import { compoundClient } from '../apollo/client';
 import { COMPOUND_ACCOUNT_AND_MARKET_QUERY } from '../apollo/queries';
 import { getSavings, saveSavings } from '../handlers/localstorage/accountLocal';
-import assetTypes from '../helpers/assetTypes';
+import AssetTypes from '../helpers/assetTypes';
 import { multiply } from '../helpers/utilities';
 import useAccountSettings from '../hooks/useAccountSettings';
 import { parseAssetName, parseAssetSymbol } from '../parsers/accounts';
@@ -136,7 +136,7 @@ export default function useSavingsAccount(includeDefaultDai) {
             lifetimeSupplyInterestAccrued,
             supplyBalanceUnderlying,
             supplyRate,
-            type: assetTypes.cToken,
+            type: AssetTypes.compound,
             underlying,
             underlyingPrice,
           };
