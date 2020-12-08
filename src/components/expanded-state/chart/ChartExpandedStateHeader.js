@@ -1,7 +1,10 @@
+import { map } from 'lodash';
 import React, { useEffect, useMemo } from 'react';
+import { View } from 'react-native';
 import Animated, { useSharedValue } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
 import { useCallbackOne } from 'use-memo-one';
+import { useColorForAssets } from '../../../hooks/useColorForAsset';
 import { CoinIcon } from '../../coin-icon';
 import { ColumnWithMargins, Row, RowWithMargins } from '../../layout';
 import ChartContextButton from './ChartContextButton';
@@ -48,6 +51,7 @@ export default function ChartExpandedStateHeader({
   changeRef,
   color = colors.dark,
   dateRef,
+  isPool,
   isScrubbing,
   latestChange,
   latestPrice = noPriceData,
@@ -55,8 +59,12 @@ export default function ChartExpandedStateHeader({
   chartTimeSharedValue,
   showChart,
 }) {
+  const tokens = useMemo(() => {
+    return isPool ? asset.tokens : [asset];
+  }, [asset, isPool]);
   const { nativeCurrency } = useAccountSettings();
   const tabularNums = useTabularNumsWhileScrubbing(isScrubbing);
+  const colors = useColorForAssets(tokens);
 
   const isNoPriceData = latestPrice === noPriceData;
 
@@ -75,10 +83,19 @@ export default function ChartExpandedStateHeader({
     }
   }, [price, isNoPriceData, priceSharedValue]);
 
-  const coinIconShadow = useMemo(
-    () => [[0, 4, 12, asset?.shadowColor || color, 0.3]],
-    [asset, color]
+  const shadows = useMemo(
+    () =>
+      map(tokens, (asset, index) => {
+        return [
+          [0, 4, 12, asset.shadowColor || asset.color || colors[index], 0.3],
+        ];
+      }),
+    [tokens, colors]
   );
+
+  const title = isPool ? `${asset.tokenNames} Pool` : asset?.name;
+
+  const titleOrNoPriceData = isNoPriceData ? noPriceData : title;
 
   return (
     <Container showChart={showChart}>
@@ -87,11 +104,21 @@ export default function ChartExpandedStateHeader({
         justify="space-between"
         testID="expanded-state-header"
       >
-        <CoinIcon
-          address={asset?.address}
-          shadow={coinIconShadow}
-          symbol={asset?.symbol}
-        />
+        <Row>
+          {map(tokens, (token, index) => {
+            return (
+              <View key={`coinicon-${index}`} zIndex={-index}>
+                <CoinIcon
+                  address={token.address}
+                  marginRight={-10}
+                  position="relative"
+                  shadow={shadows[index]}
+                  symbol={token.symbol}
+                />
+              </View>
+            );
+          })}
+        </Row>
         <ChartContextButton asset={asset} color={color} />
       </Row>
       <RowWithMargins
@@ -101,16 +128,15 @@ export default function ChartExpandedStateHeader({
       >
         <ColumnWithMargins align="start" flex={1} margin={1}>
           <ChartPriceLabel
-            defaultValue={isNoPriceData ? asset?.name : price}
+            defaultValue={isNoPriceData ? title : price}
             isNoPriceData={isNoPriceData}
+            isPool={isPool}
             isScrubbing={isScrubbing}
             priceRef={priceRef}
             priceSharedValue={priceSharedValue}
             tabularNums={tabularNums}
           />
-          <ChartHeaderSubtitle>
-            {isNoPriceData ? noPriceData : asset?.name}
-          </ChartHeaderSubtitle>
+          <ChartHeaderSubtitle>{titleOrNoPriceData}</ChartHeaderSubtitle>
         </ColumnWithMargins>
         {!isNoPriceData && showChart && !isNaN(latestChange) && (
           <ColumnWithMargins align="end" margin={1}>

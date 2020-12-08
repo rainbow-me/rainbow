@@ -1,6 +1,6 @@
-import { map, toLower } from 'lodash';
-import React, { useMemo } from 'react';
-import { tokenOverrides } from '../../references';
+import { map } from 'lodash';
+import React from 'react';
+import { useChartThrottledPoints } from '../../hooks';
 import { magicMemo } from '../../utils';
 import {
   DepositActionButton,
@@ -15,42 +15,60 @@ import {
   TokenInfoRow,
   TokenInfoSection,
 } from '../token-info';
-import { LiquidityPoolExpandedStateHeader } from './liquidity-pool';
+import Chart from '../value-chart/Chart';
+import { ChartPathProvider } from '@rainbow-me/animated-charts';
 
-export const LiquidityPoolExpandedStateSheetHeight = 369 + (android ? 80 : 0);
+const heightWithoutChart = 373 + (android && 80);
+const heightWithChart = heightWithoutChart + 292;
 
-const LiquidityPoolExpandedState = ({
-  asset: {
-    name,
-    pricePerShare,
-    totalNativeDisplay,
-    uniBalance,
-    ...liquidityInfo
-  },
-}) => {
-  const tokenAssets = useMemo(() => {
-    const { tokens } = liquidityInfo;
-    return map(tokens, token => ({
-      ...token,
-      ...(token.address ? tokenOverrides[toLower(token.address)] : {}),
-      value: token.balance,
-    }));
-  }, [liquidityInfo]);
+export const initialLiquidityPoolExpandedStateSheetHeight =
+  heightWithChart + (android && 40);
 
+const LiquidityPoolExpandedState = ({ asset }) => {
+  const { symbol, tokenNames, tokens, totalNativeDisplay, uniBalance } = asset;
+  const uniBalanceLabel = `${uniBalance} ${symbol}`;
+  const {
+    chart,
+    chartData,
+    chartType,
+    color,
+    fetchingCharts,
+    initialChartDataLabels,
+    showChart,
+    throttledData,
+  } = useChartThrottledPoints({
+    asset,
+    heightWithChart,
+    heightWithoutChart,
+    isPool: true,
+  });
+
+  const LiquidityPoolExpandedStateSheetHeight =
+    (ios || showChart ? heightWithChart : heightWithoutChart) + (android && 40);
   return (
     <SlackSheet
       additionalTopPadding={android}
       contentHeight={LiquidityPoolExpandedStateSheetHeight}
     >
-      <LiquidityPoolExpandedStateHeader
-        assets={tokenAssets}
-        name={name}
-        pricePerShare={pricePerShare}
-      />
+      <ChartPathProvider data={throttledData}>
+        <Chart
+          {...chartData}
+          {...initialChartDataLabels}
+          asset={asset}
+          chart={chart}
+          chartType={chartType}
+          color={color}
+          fetchingCharts={fetchingCharts}
+          isPool
+          nativePoints={chart}
+          showChart={showChart}
+          throttledData={throttledData}
+        />
+      </ChartPathProvider>
       <SheetDivider />
       <TokenInfoSection>
         <TokenInfoRow>
-          {map(tokenAssets, tokenAsset => {
+          {map(tokens, tokenAsset => {
             return (
               <TokenInfoItem
                 asset={tokenAsset}
@@ -63,15 +81,15 @@ const LiquidityPoolExpandedState = ({
           })}
         </TokenInfoRow>
         <TokenInfoRow>
-          <TokenInfoItem title="Pool shares">{uniBalance}</TokenInfoItem>
-          <TokenInfoItem title="Total value">
+          <TokenInfoItem title="Pool shares">{uniBalanceLabel}</TokenInfoItem>
+          <TokenInfoItem title="Total value" weight="bold">
             {totalNativeDisplay}
           </TokenInfoItem>
         </TokenInfoRow>
       </TokenInfoSection>
       <SheetActionButtonRow>
-        <WithdrawActionButton symbol={name} weight="bold" />
-        <DepositActionButton symbol={name} weight="bold" />
+        <WithdrawActionButton symbol={tokenNames} weight="bold" />
+        <DepositActionButton symbol={tokenNames} weight="bold" />
       </SheetActionButtonRow>
     </SlackSheet>
   );

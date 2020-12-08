@@ -6,7 +6,7 @@ import { ButtonPressAnimation } from '../animations';
 import { BottomRowText, CoinRow } from '../coin-row';
 import BalanceText from '../coin-row/BalanceText';
 import CoinName from '../coin-row/CoinName';
-import { LiquidityPoolExpandedStateSheetHeight } from '../expanded-state/LiquidityPoolExpandedState';
+import { initialLiquidityPoolExpandedStateSheetHeight } from '../expanded-state/LiquidityPoolExpandedState';
 import { FlexItem, Row } from '../layout';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
@@ -49,7 +49,8 @@ const PriceContainer = ios
       margin-bottom: 3;
     `;
 
-const BottomRow = ({ uniBalance, type, relativeChange }) => {
+const BottomRow = ({ price, type, uniBalance }) => {
+  const relativeChange = price?.relative_change_24h;
   const percentageChangeDisplay = relativeChange
     ? formatPercentageString(convertAmountToPercentageDisplay(relativeChange))
     : '-';
@@ -73,11 +74,11 @@ const BottomRow = ({ uniBalance, type, relativeChange }) => {
   );
 };
 
-const TopRow = ({ name, totalNativeDisplay }) => {
+const TopRow = ({ tokenNames, totalNativeDisplay }) => {
   return (
     <TopRowContainer>
       <FlexItem flex={1}>
-        <CoinName>{name}</CoinName>
+        <CoinName>{tokenNames}</CoinName>
       </FlexItem>
       <PriceContainer>
         <BalanceText numberOfLines={1}>{totalNativeDisplay}</BalanceText>
@@ -93,7 +94,7 @@ const UniswapInvestmentRow = ({ assetType, item, ...props }) => {
     navigate(Routes.EXPANDED_ASSET_SHEET, {
       asset: item,
       cornerRadius: 10,
-      longFormHeight: LiquidityPoolExpandedStateSheetHeight,
+      longFormHeight: initialLiquidityPoolExpandedStateSheetHeight,
       type: assetType,
     });
   }, [assetType, item, navigate]);

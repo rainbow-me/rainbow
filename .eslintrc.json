@@ -19,6 +19,7 @@
     "akd": true
   },
   "rules": {
+    "no-console": 2,
     "sort-imports": ["error", {
       "ignoreCase": true,
       "ignoreDeclarationSort": true,

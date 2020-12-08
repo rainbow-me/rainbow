@@ -1,4 +1,13 @@
-import { compact, isEmpty, join, map, orderBy, sumBy, values } from 'lodash';
+import {
+  compact,
+  isEmpty,
+  join,
+  map,
+  orderBy,
+  sumBy,
+  toLower,
+  values,
+} from 'lodash';
 import { createSelector } from 'reselect';
 import {
   convertAmountToNativeDisplay,
@@ -6,53 +15,54 @@ import {
   handleSignificantDecimals,
   handleSignificantDecimalsWithThreshold,
   multiply,
-} from '../helpers/utilities';
+} from '@rainbow-me/helpers/utilities';
+import { tokenOverrides } from '@rainbow-me/references';
 
 const assetsSelector = state => state.data.assets;
 const nativeCurrencySelector = state => state.settings.nativeCurrency;
 const uniswapLiquidityTokenInfoSelector = state =>
   state.uniswapLiquidity.uniswapLiquidityTokenInfo;
 
-export const transformPool = (liquidityPool, nativeCurrency) => {
+const transformPool = (liquidityPool, nativeCurrency) => {
   if (isEmpty(liquidityPool)) {
     return null;
   }
 
-  const { balance, price, tokens, totalSupply, type, uniqueId } = liquidityPool;
+  const { balance, price, tokens, totalSupply } = liquidityPool;
+  const balanceAmount = balance.amount;
 
-  const percentageOwned = multiply(divide(balance, totalSupply), 100);
+  const percentageOwned = multiply(divide(balanceAmount, totalSupply), 100);
 
-  const totalBalanceAmount = multiply(balance, price?.value || 0);
+  const totalBalancePrice = multiply(balanceAmount, price?.value || 0);
   const totalNativeDisplay = convertAmountToNativeDisplay(
-    totalBalanceAmount,
+    totalBalancePrice,
     nativeCurrency
   );
   const pricePerShare = convertAmountToNativeDisplay(
-    divide(totalBalanceAmount, balance),
+    divide(totalBalancePrice, balanceAmount),
     nativeCurrency
   );
 
   const formattedTokens = map(tokens, token => ({
     ...token,
-    balance: handleSignificantDecimalsWithThreshold(token.balance, 4),
+    ...(token.address ? tokenOverrides[toLower(token.address)] : {}),
+    value: handleSignificantDecimalsWithThreshold(token.balance, 4),
   }));
 
-  const name = join(
+  const tokenNames = join(
     map(formattedTokens, token => token.symbol),
     '-'
   );
 
   return {
-    name,
+    ...liquidityPool,
     percentageOwned,
     pricePerShare,
-    relativeChange: price?.relative_change_24h,
+    tokenNames,
     tokens: formattedTokens,
-    totalBalanceAmount,
+    totalBalancePrice,
     totalNativeDisplay,
-    type,
-    uniBalance: handleSignificantDecimals(balance, 3),
-    uniqueId,
+    uniBalance: handleSignificantDecimals(balanceAmount, 3),
   };
 };
 
@@ -68,15 +78,15 @@ const buildUniswapCards = (
   );
   const orderedUniswapPools = orderBy(
     uniswapPools,
-    [({ totalBalanceAmount }) => Number(totalBalanceAmount)],
+    [({ totalBalancePrice }) => Number(totalBalancePrice)],
     ['desc']
   );
 
   let uniswapTotal = 0;
 
   if (Array.isArray(orderedUniswapPools) && orderedUniswapPools.length) {
-    uniswapTotal = sumBy(orderedUniswapPools, ({ totalBalanceAmount }) =>
-      Number(totalBalanceAmount)
+    uniswapTotal = sumBy(orderedUniswapPools, ({ totalBalancePrice }) =>
+      Number(totalBalancePrice)
     );
   }
 

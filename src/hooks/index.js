@@ -1,10 +1,7 @@
 export {
   useChartData,
   useChartDataLabels,
-  useChartGestures,
-  useExtremeValuesFromPoints,
-  usePathForPoints,
-  usePointsFromChartData,
+  useChartThrottledPoints,
 } from './charts';
 export { default as useAccountAssets } from './useAccountAssets';
 export { default as useAccountEmptyState } from './useAccountEmptyState';
