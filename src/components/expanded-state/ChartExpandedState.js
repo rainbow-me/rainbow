@@ -1,6 +1,5 @@
 import { debounce, find } from 'lodash';
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import styled from 'styled-components';
 import {
   useChartData,
   useChartDataLabels,
@@ -30,21 +29,13 @@ import {
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 
 import { useNavigation } from '@rainbow-me/navigation';
+import { deviceUtils } from '@rainbow-me/utils';
 
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
 
-const heightWithChart = android ? 630 : 606;
-const heightWithNoChart = 309;
-
-const ActionRowAndroid = styled.View`
-  flex-direction: row;
-  height: 44;
-  margin-vertical: 12;
-  margin-horizontal: 12;
-  justify-content: space-around;
-`;
-
-const ActionRow = android ? ActionRowAndroid : SheetActionButtonRow;
+//add's StatusBar height to android
+const heightWithChart = 606 + (android && 24);
+const heightWithNoChart = 309 + (android && 24);
 
 const traverseData = (prev, data) => {
   if (!data || data.length === 0) {
@@ -94,7 +85,7 @@ function useJumpingForm(isLong) {
   }, [isLong, setOptions, jumpToShort, jumpToLong]);
 }
 
-export const ChartExpandedStateSheetHeight =
+export const initialChartExpandedStateSheetHeight =
   heightWithChart + (android ? 40 : 0);
 
 export default function ChartExpandedState({ asset }) {
@@ -168,6 +159,9 @@ export default function ChartExpandedState({ asset }) {
   if (duration.current === 0) {
     duration.current = 300;
   }
+  const ChartExpandedStateSheetHeight =
+    (ios || showChart ? heightWithChart : heightWithNoChart) +
+    (android ? 40 : 0);
 
   return (
     <SlackSheet
@@ -203,41 +197,26 @@ export default function ChartExpandedState({ asset }) {
         </TokenInfoRow>
       </TokenInfoSection>
       {needsEth ? (
-        <ActionRow key={`row${showChart}`}>
+        <SheetActionButtonRow key={`row${showChart}`}>
           <BuyActionButton
+            // FIXME
+            androidWidth={deviceUtils.dimensions.width - 39}
             color={color}
-            radiusAndroid={24}
-            radiusWrapperStyle={{ flex: 1 }}
-            wrapperProps={{
-              containerStyle: { flex: 1 },
-              style: { flex: 1 },
-            }}
           />
-        </ActionRow>
+        </SheetActionButtonRow>
       ) : (
-        <ActionRow key={`row${showChart}`}>
+        <SheetActionButtonRow key={`row${showChart}`}>
           {showSwapButton && (
-            <SwapActionButton
-              color={color}
-              inputType={AssetInputTypes.in}
-              radiusAndroid={24}
-              radiusWrapperStyle={{ flex: 1, marginRight: 10 }}
-              wrapperProps={{
-                containerStyle: { flex: 1 },
-                style: { flex: 1 },
-              }}
-            />
+            <SwapActionButton color={color} inputType={AssetInputTypes.in} />
           )}
           <SendActionButton
+            androidWidth={
+              // FIXME
+              showSwapButton ? 160 : deviceUtils.dimensions.width - 39
+            }
             color={color}
-            radiusAndroid={24}
-            radiusWrapperStyle={{ flex: 1, marginLeft: 10 }}
-            wrapperProps={{
-              containerStyle: { flex: 1 },
-              style: { flex: 1 },
-            }}
           />
-        </ActionRow>
+        </SheetActionButtonRow>
       )}
     </SlackSheet>
   );

@@ -9,7 +9,10 @@ import { useAccountSettings, useGas } from '../../hooks';
 import { gweiToWei, weiToGwei } from '../../parsers/gas';
 import { gasUtils, magicMemo } from '../../utils';
 import { Alert } from '../alerts';
-import { ButtonPressAnimation } from '../animations';
+import {
+  ButtonPressAnimation,
+  ScaleButtonZoomableAndroid,
+} from '../animations';
 import { Input } from '../inputs';
 import { Column, Row } from '../layout';
 import { AnimatedNumber, Text } from '../text';
@@ -23,7 +26,7 @@ const Container = styled(Row).attrs({
   opacityTouchable: true,
   pointerEvents: 'auto',
 })`
-  ${android ? margin(10, 18, 10, 15) : margin(14, 18)}
+  ${margin(10, 18, 10, 15)}
 `;
 
 const Label = styled(Text).attrs({
@@ -44,17 +47,18 @@ const ButtonLabel = styled(BorderlessButton).attrs({
 
 const GasInput = styled(Input).attrs({
   color: colors.white,
-  height: android ? 58 : 19,
+  height: 58,
   keyboardAppearance: 'dark',
   keyboardType: 'numeric',
   letterSpacing: 'roundedMedium',
   maxLength: 5,
+  multiline: false,
   placeholderTextColor: colors.alpha(colors.darkModeColors.blueGreyDark, 0.3),
   size: 'lmedium',
   testID: 'custom-gas-input',
 })`
   ${fontWithWidth(fonts.weight.bold)};
-  ${margin(android ? -13 : 0, 0)}
+  ${margin(-13, 0)}
 `;
 
 const LittleBorderlessButton = ({ onPress, children, testID }) => (
@@ -114,11 +118,9 @@ const GasSpeedButton = ({
   const gasPrice = get(selectedGasPrice, 'txFee.native.value.amount');
   const customGasPriceTimeEstimateHandler = useRef(null);
   useEffect(() => {
-    if (android) {
-      listener = () => {
-        inputRef.current?.blur();
-      };
-    }
+    listener = () => {
+      inputRef.current?.blur();
+    };
 
     return () => {
       listener = undefined;
@@ -352,17 +354,12 @@ const GasSpeedButton = ({
 
   return (
     <Container
-      as={(!isCustom || ios) && ButtonPressAnimation}
+      as={!isCustom ? ButtonPressAnimation : ScaleButtonZoomableAndroid}
       onPress={handlePress}
       testID={testID}
     >
       <Column>
-        <Row
-          align="end"
-          css={margin(android ? 0 : 3, 0)}
-          {...(android ? { height: 30 } : {})}
-          justify="space-between"
-        >
+        <Row align="end" height={30} justify="space-between">
           {!isCustom ? (
             <AnimatedNumber
               formatter={formatAnimatedGasPrice}
@@ -380,7 +377,7 @@ const GasSpeedButton = ({
                   onChangeText={handleCustomGasChange}
                   onFocus={handleCustomGasFocus}
                   onSubmitEditing={handleInputButtonManager}
-                  placeholder={`${defaultCustomGasPrice}`}
+                  placeholder={`${defaultCustomGasPrice} `} // see PR #1385
                   ref={inputRef}
                   value={customGasPriceInput}
                 />
@@ -420,21 +417,12 @@ const GasSpeedButton = ({
       </Column>
       <Column
         align="end"
-        as={isCustom && android && ButtonPressAnimation}
+        as={isCustom && ButtonPressAnimation}
         onPress={handlePress}
-        opacityTouchable
-        style={{ flex: 1 }}
-        wrapperProps={{
-          containerStyle: { flex: 1 },
-          style: { alignItems: 'flex-end', flex: 1 },
-        }}
+        reanimatedButton
+        wrapperStyle={{ flex: 1 }}
       >
-        <Row
-          align="end"
-          css={margin(android ? 3 : 0, 0)}
-          justify="end"
-          marginBottom={1}
-        >
+        <Row align="end" css={margin(3, 0)} justify="end" marginBottom={1}>
           <GasSpeedLabelPager
             label={selectedGasPriceOption}
             showPager={!inputFocused}

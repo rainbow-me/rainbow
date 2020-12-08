@@ -32,11 +32,11 @@ const CaretIcon = styled(FastImage).attrs({
 
 const ContainerButton = styled(ButtonPressAnimation).attrs(
   ({ isSmallBalancesOpen, isSendSheet }) => ({
-    radiusWrapperStyle: {
+    scaleTo: 0.9,
+    wrapperStyle: {
       marginLeft: isSendSheet && android ? 16 : 0,
       width: isSmallBalancesOpen ? 80 - (android ? 4 : 0) : closedWidth - 4,
     },
-    scaleTo: 0.9,
   })
 )`
   width: ${({ isSmallBalancesOpen }) =>

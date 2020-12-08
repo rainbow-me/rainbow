@@ -5,9 +5,9 @@ import styled from 'styled-components/primitives';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
 import { magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
-import { InnerBorder, Row, RowWithMargins } from '../layout';
+import { InnerBorder, RowWithMargins } from '../layout';
 import { Text } from '../text';
-import { colors, margin, padding, position } from '@rainbow-me/styles';
+import { colors, padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const Content = styled(RowWithMargins).attrs({ align: 'center', margin: 7 })`
@@ -34,9 +34,7 @@ const ButtonShadows = styled(ShadowStack).attrs(({ symbol }) => ({
 }))``;
 
 const Button = styled(ButtonPressAnimation).attrs({
-  radiusWrapperStyle: {
-    marginHorizontal: 19,
-  },
+  overflowMargin: 30,
 })``;
 
 const TokenSelectionButton = ({
@@ -47,33 +45,37 @@ const TokenSelectionButton = ({
   testID,
 }) => (
   <Button
+    contentContainerStyle={{
+      height: 46,
+    }}
     onPress={onPress}
+    overflowMargin={30}
     radiusAndroid={borderRadius}
     testID={testID}
     throttle
   >
-    <Row accessible css={margin(0, ios ? 19 : 0)}>
-      <ButtonShadows
-        {...position.coverAsObject}
-        backgroundColor={symbol ? colors.dark : colors.appleBlue}
-        borderRadius={borderRadius}
-        shadows={shadows}
-        symbol={symbol}
-      />
-      <Content>
-        <Text
-          align="center"
-          color={colors.white}
-          size="large"
-          testID={testID + '-text'}
-          weight="bold"
-        >
-          {symbol || 'Choose Token'}
-        </Text>
-        <CaretIcon />
-      </Content>
-      <InnerBorder radius={borderRadius} />
-    </Row>
+    <ButtonShadows
+      {...position.coverAsObject}
+      backgroundColor={symbol ? colors.dark : colors.appleBlue}
+      borderRadius={borderRadius}
+      elevation={ios ? 0 : 8}
+      height={46}
+      shadows={shadows}
+      symbol={symbol}
+    />
+    <Content>
+      <Text
+        align="center"
+        color={colors.white}
+        size="large"
+        testID={testID + '-text'}
+        weight="bold"
+      >
+        {symbol || 'Choose Token'}
+      </Text>
+      <CaretIcon />
+    </Content>
+    <InnerBorder radius={borderRadius} />
   </Button>
 );
 

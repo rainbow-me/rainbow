@@ -72,6 +72,8 @@ const RainbowButton = ({
   strokeWidth = 1,
   type,
   width,
+  overflowMargin = 35,
+  skipTopMargin = true,
   ...props
 }) => {
   const { width: deviceWidth } = useDimensions();
@@ -86,9 +88,11 @@ const RainbowButton = ({
   return (
     <ButtonPressAnimation
       {...props}
-      disabled={disabled || android}
+      disabled={disabled}
       onPress={onPress}
+      overflowMargin={overflowMargin}
       scaleTo={0.9}
+      skipTopMargin={skipTopMargin}
     >
       <Shadow height={height} width={width} />
       <ButtonContainer
@@ -103,14 +107,12 @@ const RainbowButton = ({
           type={type}
           width={width}
         />
-        <ButtonPressAnimation disabled={disabled || ios} onPress={onPress}>
-          <ButtonContent type={type}>
-            {type === RainbowButtonTypes.addCash && <AddCashIcon />}
-            <ButtonLabel type={type}>
-              {type === RainbowButtonTypes.addCash ? 'Add Cash' : label}
-            </ButtonLabel>
-          </ButtonContent>
-        </ButtonPressAnimation>
+        <ButtonContent type={type}>
+          {type === RainbowButtonTypes.addCash && <AddCashIcon />}
+          <ButtonLabel type={type}>
+            {type === RainbowButtonTypes.addCash ? 'Add Cash' : label}
+          </ButtonLabel>
+        </ButtonContent>
       </ButtonContainer>
     </ButtonPressAnimation>
   );

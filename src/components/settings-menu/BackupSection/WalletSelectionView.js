@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { deleteAllBackups } from '../../../handlers/cloudBackup';
 import { walletsUpdate } from '../../../redux/wallets';
+import { cloudPlatform } from '../../../utils/platform';
 import Divider from '../../Divider';
 import { ButtonPressAnimation } from '../../animations';
 import { BottomRowText } from '../../coin-row';
@@ -104,14 +105,14 @@ const WalletSelectionView = () => {
   );
 
   const manageCloudBackups = useCallback(() => {
-    const buttons = ['Delete all iCloud backups', 'Cancel'];
+    const buttons = [`Delete all ${cloudPlatform} backups`, 'Cancel'];
 
     showActionSheetWithOptions(
       {
         cancelButtonIndex: 1,
         destructiveButtonIndex: 0,
         options: buttons,
-        title: `Manage iCloud backups`,
+        title: `Manage ${cloudPlatform} backups`,
       },
       buttonIndex => {
         if (buttonIndex === 0) {
@@ -120,8 +121,8 @@ const WalletSelectionView = () => {
             {
               cancelButtonIndex: 1,
               destructiveButtonIndex: 0,
-              message: `Are you sure you want to delete all iCloud Backups`,
-              options: ['YES, Delete All iCloud Backups', 'Cancel'],
+              message: `Are you sure you want to delete all ${cloudPlatform} Backups`,
+              options: [`YES, Delete All ${cloudPlatform} Backups`, 'Cancel'],
             },
             async buttonIndex => {
               if (buttonIndex === 0) {
@@ -257,7 +258,7 @@ const WalletSelectionView = () => {
               size="lmedium"
               weight="semibold"
             >
-              􀍢 Manage iCloud backups
+              􀍢 Manage ${cloudPlatform} backups
             </Text>
           </ButtonPressAnimation>
         </Footer>

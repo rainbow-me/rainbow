@@ -62,6 +62,8 @@ const AccountName = styled(TruncatedText).attrs({
 `;
 
 const AddCashButton = styled(RainbowButton).attrs({
+  overflowMargin: 30,
+  skipTopMargin: true,
   type: 'addCash',
 })`
   margin-top: 16;
@@ -255,20 +257,7 @@ export default function ProfileMasthead({
         isAvatarPickerAvailable={isAvatarPickerAvailable}
         onPress={handlePressAvatar}
       />
-      <ButtonPressAnimation
-        onPress={handlePressChangeWallet}
-        radiusAndroid={24}
-        scaleTo={0.9}
-        wrapperProps={{
-          containerStyle: {
-            alignItems: 'center',
-            height: 40,
-            justifyContent: 'center',
-            paddingTop: 5,
-            width: 250,
-          },
-        }}
-      >
+      <ButtonPressAnimation onPress={handlePressChangeWallet}>
         <Row>
           <AccountName deviceWidth={deviceWidth}>{accountName}</AccountName>
           <DropdownArrow>

@@ -352,7 +352,7 @@ PODS:
     - React-Core
   - react-native-camera/RN (3.40.0):
     - React-Core
-  - react-native-cloud-fs (2.1.0):
+  - react-native-cloud-fs (2.3.0):
     - React
   - react-native-get-random-values (1.5.0):
     - React
@@ -534,9 +534,9 @@ PODS:
     - Yoga
   - RNScreens (2.9.0):
     - React
-  - RNSentry (1.4.5):
-    - React
-    - Sentry (~> 5.1.4)
+  - RNSentry (2.0.2):
+    - React-Core
+    - Sentry (= 6.0.9)
   - RNStoreReview (0.1.5):
     - React
   - RNSVG (12.1.0):
@@ -553,9 +553,9 @@ PODS:
   - SDWebImageWebPCoder (0.6.1):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.7)
-  - Sentry (5.1.10):
-    - Sentry/Core (= 5.1.10)
-  - Sentry/Core (5.1.10)
+  - Sentry (6.0.9):
+    - Sentry/Core (= 6.0.9)
+  - Sentry/Core (6.0.9)
   - SexyTooltip (1.2.7):
     - pop (~> 1.0)
   - Shimmer (1.0.2)
@@ -960,7 +960,7 @@ SPEC CHECKSUMS:
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-branch: 8bda99ca8dc5a16d32bd81c8a8d937cb3d2c5e0c
   react-native-camera: 35854c4f764a4a6cf61c1c3525888b92f0fe4b31
-  react-native-cloud-fs: 8339f6e6e353f266f63a3f754882637443bc4c2c
+  react-native-cloud-fs: 1cb3deba691efbb5c6fcc831959be58762d8bdfe
   react-native-get-random-values: 1404bd5cc0ab0e287f75ee1c489555688fc65f89
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
   react-native-netinfo: 250dc0ca126512f618a8a2ca6a936577e1f66586
@@ -1009,14 +1009,14 @@ SPEC CHECKSUMS:
   RNReactNativeHapticFeedback: 653a8c126a0f5e88ce15ffe280b3ff37e1fbb285
   RNReanimated: 2041d58f790987a36052d777e34c1f82635c2ef3
   RNScreens: c526239bbe0e957b988dacc8d75ac94ec9cb19da
-  RNSentry: 0a70359ddacbfb9b1cbbb0971e54065b9f70ac57
+  RNSentry: 5ebc2926dbcbb9b77857ba6df0754a869037123d
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
   RNTextSize: 21c94a67819fbf2c358a219bf6d251e3be9e5f29
   RNTooltips: e13180e4339e2a85daabd09507f62a5a32d3dc8a
   SDWebImage: a31ee8e90a97303529e03fb0c333eae0eacb88e9
   SDWebImageWebPCoder: d0dac55073088d24b2ac1b191a71a8f8d0adac21
-  Sentry: 8715e88b813bde9ad37aead365d5b04ac7302153
+  Sentry: 388c9dc093b2fd3a264466a5c5b21e25959610a9
   SexyTooltip: e243da5a858c7160141cf35786a4033669d1efca
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86
   SRSRadialGradient: 7f9c92f2b31576ab80f059378ef2817404cd0575
@@ -1029,4 +1029,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 2b38dc4e50f6b19e7a7db1e41739f3209e9d05e6
 
-COCOAPODS: 1.9.1
+COCOAPODS: 1.10.0

@@ -42,7 +42,7 @@ const UniqueTokenCard = ({
 
   return (
     <Container
-      as={ios && ButtonPressAnimation}
+      as={ButtonPressAnimation}
       disabled={disabled}
       enableHapticFeedback={enableHapticFeedback}
       onPress={handlePress}
@@ -50,25 +50,19 @@ const UniqueTokenCard = ({
       shadow={shadow}
     >
       <Content {...props} height={height} style={style} width={width}>
-        <ButtonPressAnimation
-          disabled={ios}
-          onPress={handlePress}
-          style={{ height, width }}
-        >
-          <UniqueTokenImage
-            backgroundColor={background || colors.lightestGrey}
-            imageUrl={image_preview_url}
-            item={item}
-            resizeMode={resizeMode}
+        <UniqueTokenImage
+          backgroundColor={background || colors.lightestGrey}
+          imageUrl={image_preview_url}
+          item={item}
+          resizeMode={resizeMode}
+        />
+        {borderEnabled && (
+          <InnerBorder
+            opacity={0.04}
+            radius={UniqueTokenCardBorderRadius}
+            width={0.5}
           />
-          {borderEnabled && (
-            <InnerBorder
-              opacity={0.04}
-              radius={UniqueTokenCardBorderRadius}
-              width={0.5}
-            />
-          )}
-        </ButtonPressAnimation>
+        )}
       </Content>
     </Container>
   );

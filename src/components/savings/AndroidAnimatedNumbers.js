@@ -32,7 +32,7 @@ function formatter(symbol, val) {
     : `${formatSavingsAmount(val)} ${symbol}`;
 }
 
-export default function AndroidText({ animationConfig }) {
+export default function AndroidText({ style, animationConfig }) {
   const isStable = isSymbolStablecoin(animationConfig.symbol);
   const ref = useRef();
   useEffect(() => {
@@ -45,7 +45,7 @@ export default function AndroidText({ animationConfig }) {
   }, [animationConfig, isStable]);
 
   return (
-    <Row>
+    <Row style={style}>
       <TextChunk
         defaultValue={formatter(
           animationConfig.symbol,

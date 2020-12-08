@@ -40,7 +40,7 @@ const TitleRow = styled(RowWithMargins)`
 `;
 
 const RainbowText =
-  android && IS_TESTING
+  android && IS_TESTING === 'true'
     ? Text
     : styled(GradientText).attrs({
         angle: false,

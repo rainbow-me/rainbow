@@ -1,5 +1,4 @@
 import MaskedView from '@react-native-community/masked-view';
-import { useNavigation } from '@react-navigation/native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, Easing, StyleSheet } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
@@ -29,6 +28,7 @@ import {
 import { cloudPlatform } from '../utils/platform';
 
 import { useHideSplashScreen } from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors, shadow } from '@rainbow-me/styles';
 import logger from 'logger';

@@ -57,7 +57,7 @@ const TopRow = ({ name, supplyBalanceUnderlying, symbol }) => (
 );
 
 const SavingsCoinRow = ({ item, onPress, ...props }) => (
-  <ButtonPressAnimation onPress={onPress} scaleTo={1.02}>
+  <ButtonPressAnimation disabled onPress={onPress} scaleTo={1.02}>
     <CoinRow
       {...item}
       {...props}

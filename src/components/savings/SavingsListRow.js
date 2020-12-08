@@ -156,8 +156,8 @@ const SavingsListRow = ({
 
   return !underlying || !underlying.address ? null : (
     <ButtonPressAnimation
-      disabled={android}
       onPress={onButtonPress}
+      overflowMargin={10}
       scaleTo={0.96}
     >
       <Centered direction="column" marginBottom={15}>
@@ -165,7 +165,6 @@ const SavingsListRow = ({
           <SavingsListRowGradient />
           <Row
             align="center"
-            as={android && ButtonPressAnimation}
             css={padding(9, 10, 10, 11)}
             justify="space-between"
             onPress={onButtonPress}

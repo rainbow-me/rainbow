@@ -2,7 +2,9 @@ import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Keyboard } from 'react-native';
 import styled from 'styled-components';
+import { isSamsungGalaxy } from '../../helpers/samsung';
 import { saveBackupPassword } from '../../model/backup';
 import { cloudPlatform } from '../../utils/platform';
 import { DelayedAlert } from '../alerts';
@@ -16,6 +18,7 @@ import {
 } from '@rainbow-me/handlers/cloudBackup';
 import {
   useBooleanState,
+  useDimensions,
   useRouteExistsInNavigationState,
   useWalletCloudBackup,
   useWallets,
@@ -60,10 +63,14 @@ const Title = styled(Text).attrs({
   ${margin(15, 0, 12)};
 `;
 
+const samsungGalaxy = (android && isSamsungGalaxy()) || false;
+
 export default function BackupConfirmPasswordStep() {
+  const { isTinyPhone } = useDimensions();
   const { params } = useRoute();
   const { goBack } = useNavigation();
   const walletCloudBackup = useWalletCloudBackup();
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const [validPassword, setValidPassword] = useState(false);
   const [
     passwordFocused,
@@ -79,6 +86,22 @@ export default function BackupConfirmPasswordStep() {
   const isSettingsRoute = useRouteExistsInNavigationState(
     Routes.SETTINGS_MODAL
   );
+
+  useEffect(() => {
+    const keyboardDidShow = () => {
+      setIsKeyboardOpen(true);
+    };
+
+    const keyboardDidHide = () => {
+      setIsKeyboardOpen(false);
+    };
+    Keyboard.addListener('keyboardDidShow', keyboardDidShow);
+    Keyboard.addListener('keyboardDidHide', keyboardDidHide);
+    return () => {
+      Keyboard.removeListener('keyboardDidShow', keyboardDidShow);
+      Keyboard.removeListener('keyboardDidHide', keyboardDidHide);
+    };
+  }, []);
 
   useEffect(() => {
     analytics.track('Confirm Password Step', {
@@ -152,7 +175,9 @@ export default function BackupConfirmPasswordStep() {
       onSubmit={onSubmit}
     >
       <Masthead>
-        <MastheadIcon>􀙶</MastheadIcon>
+        {(isTinyPhone || samsungGalaxy) && isKeyboardOpen ? null : (
+          <MastheadIcon>􀙶</MastheadIcon>
+        )}
         <Title>Enter backup password</Title>
         <DescriptionText>
           To add your wallet to the {cloudPlatform} backup, enter the backup

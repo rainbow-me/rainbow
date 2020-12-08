@@ -183,14 +183,9 @@ sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
 - (void)applicationWillTerminate:(UIApplication *)application {
 
   if(self.isRapRunning){
-
-    NSDictionary *event = @{@"message": @"applicationWillTerminate was called"};
-
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:event
-                                                       options:0
-                                                         error:nil];
-
-    SentryEvent *sentryEvent = [[SentryEvent alloc] initWithJSON:jsonData];
+    SentryMessage *msg = [[SentryMessage alloc] initWithFormatted:@"applicationWillTerminate was called"];
+    SentryEvent *sentryEvent = [[SentryEvent alloc] init];
+    [sentryEvent setMessage: msg];
     [SentrySDK captureEvent:sentryEvent];
   }
 

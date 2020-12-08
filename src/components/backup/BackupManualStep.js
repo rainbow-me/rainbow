@@ -25,7 +25,8 @@ const Content = styled(Column).attrs({
 `;
 
 const Footer = styled(Column).attrs({
-  justify: 'end',
+  align: 'center',
+  justify: 'center',
 })`
   ${padding(0, 15, 21)};
   width: 100%;
@@ -115,6 +116,7 @@ export default function BackupManualStep() {
       <Footer>
         {secretLoaded && (
           <SheetActionButton
+            androidWidth={300}
             color={colors.appleBlue}
             label={`􀁣 I’ve saved ${
               type === WalletTypes.privateKey ? 'my key' : 'these words'

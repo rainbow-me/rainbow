@@ -1,7 +1,7 @@
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import messaging from '@react-native-firebase/messaging';
 import analytics from '@segment/analytics-react-native';
-import { init as initSentry, setRelease } from '@sentry/react-native';
+import * as Sentry from '@sentry/react-native';
 import { get } from 'lodash';
 import nanoid from 'nanoid/non-secure';
 import PropTypes from 'prop-types';
@@ -68,16 +68,32 @@ if (__DEV__) {
   (showNetworkRequests || showNetworkResponses) &&
     monitorNetwork(showNetworkRequests, showNetworkResponses);
 } else {
-  initSentry({ dsn: SENTRY_ENDPOINT, environment: SENTRY_ENVIRONMENT });
+  let sentryOptions = {
+    dsn: SENTRY_ENDPOINT,
+    enableAutoSessionTracking: true,
+    environment: SENTRY_ENVIRONMENT,
+    release: `me.rainbow-${VersionNumber.appVersion}`,
+  };
+
+  if (android) {
+    const dist = VersionNumber.buildVersion;
+    // In order for sourcemaps to work on android,
+    // the release needs to be named with the following format
+    // me.rainbow@1.0+4
+    const releaseName = `me.rainbow@${VersionNumber.appVersion}+${dist}`;
+    sentryOptions.release = releaseName;
+    // and we also need to manually set the dist to the versionCode value
+    sentryOptions.dist = dist.toString();
+  }
+  Sentry.init(sentryOptions);
 }
 
 CodePush.getUpdateMetadata(CodePush.UpdateState.RUNNING).then(update => {
   if (update) {
-    setRelease(
+    // eslint-disable-next-line import/no-deprecated
+    Sentry.setRelease(
       `me.rainbow-${VersionNumber.appVersion}-codepush:${update.label}`
     );
-  } else {
-    setRelease(`me.rainbow-${VersionNumber.appVersion}`);
   }
 });
 

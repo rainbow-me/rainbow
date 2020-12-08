@@ -20,7 +20,7 @@ const ButtonWithTransformOrigin = styled(RawNativeButton)`
   }};
 `;
 
-function normalizeTransformOrigin(transformOrigin) {
+export function normalizeTransformOrigin(transformOrigin) {
   if (Array.isArray(transformOrigin) && transformOrigin.length === 2) {
     return transformOrigin;
   }

@@ -26,7 +26,9 @@ export default function useWalletSectionsData() {
     pinnedCoins,
   } = useCoinListEditOptions();
 
-  const accountSavings = useSavingsAccount(true);
+  const { refetchSavings, savings, shouldRefetchSavings } = useSavingsAccount(
+    true
+  );
 
   const walletSections = useMemo(() => {
     const accountInfo = {
@@ -37,7 +39,7 @@ export default function useWalletSectionsData() {
       nativeCurrency,
       network,
       pinnedCoins,
-      savings: accountSavings,
+      savings,
       ...accountData,
       ...uniqueTokens,
       ...uniswap,
@@ -49,11 +51,12 @@ export default function useWalletSectionsData() {
 
     return {
       isWalletEthZero,
+      refetchSavings,
+      shouldRefetchSavings,
       ...sectionsData,
     };
   }, [
     accountData,
-    accountSavings,
     currentAction,
     hiddenCoins,
     isCoinListEdited,
@@ -62,6 +65,9 @@ export default function useWalletSectionsData() {
     nativeCurrency,
     network,
     pinnedCoins,
+    refetchSavings,
+    savings,
+    shouldRefetchSavings,
     showcaseTokens,
     uniqueTokens,
     uniswap,

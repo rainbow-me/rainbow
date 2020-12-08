@@ -6,7 +6,6 @@ import { explorerClearState } from '../redux/explorer';
 import { nonceClearState } from '../redux/nonce';
 import { resetOpenStateSettings } from '../redux/openStateSettings';
 import { requestsResetState } from '../redux/requests';
-import { savingsClearState } from '../redux/savings';
 import { uniqueTokensResetState } from '../redux/uniqueTokens';
 import { uniswapResetState } from '../redux/uniswap';
 import { uniswapLiquidityResetState } from '../redux/uniswapLiquidity';
@@ -24,8 +23,7 @@ export default function useResetAccountState() {
     const p5 = dispatch(requestsResetState());
     const p6 = dispatch(uniswapResetState());
     const p7 = dispatch(uniswapLiquidityResetState());
-    const p8 = dispatch(savingsClearState());
-    const p9 = dispatch(addCashClearState());
+    const p8 = dispatch(addCashClearState());
     await promiseUtils.PromiseAllWithFails([
       p0,
       p1,
@@ -36,7 +34,6 @@ export default function useResetAccountState() {
       p6,
       p7,
       p8,
-      p9,
     ]);
   }, [dispatch]);
 
