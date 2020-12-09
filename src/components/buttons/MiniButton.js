@@ -39,7 +39,7 @@ export default function MiniButton({
   height,
   ...props
 }) {
-  const buttonOnly = (
+  return (
     <ButtonPressAnimation
       disabled={disabled}
       onPress={onPress}
@@ -47,30 +47,26 @@ export default function MiniButton({
       scaleTo={scaleTo}
       {...props}
     >
-      <ShadowStack
-        {...position.coverAsObject}
-        backgroundColor={disabled ? colors.lightGrey : colors.appleBlue}
-        borderRadius={borderRadius}
-        height={height}
-        shadows={disabled ? shadows.disabled : shadows.default}
-        width={width}
-      />
-      <Content>
-        {typeof children === 'string' ? (
-          <Text color="white" weight="semibold">
-            {children}
-          </Text>
-        ) : (
-          children
-        )}
-      </Content>
-      <InnerBorder radius={borderRadius} />
+      <View style={{ borderRadius, overflow: 'hidden' }}>
+        <ShadowStack
+          {...position.coverAsObject}
+          backgroundColor={disabled ? colors.lightGrey : colors.appleBlue}
+          borderRadius={borderRadius}
+          height={height}
+          shadows={disabled ? shadows.disabled : shadows.default}
+          width={width}
+        />
+        <Content>
+          {typeof children === 'string' ? (
+            <Text color="white" weight="semibold">
+              {children}
+            </Text>
+          ) : (
+            children
+          )}
+        </Content>
+        <InnerBorder radius={borderRadius} />
+      </View>
     </ButtonPressAnimation>
-  );
-
-  return android ? (
-    <View style={{ borderRadius, overflow: 'hidden' }}>{buttonOnly}</View>
-  ) : (
-    buttonOnly
   );
 }
