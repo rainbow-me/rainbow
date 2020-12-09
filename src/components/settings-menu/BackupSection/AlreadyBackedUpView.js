@@ -261,7 +261,6 @@ export default function AlreadyBackedUpView() {
             androidWidth={225}
             color={ios ? colors.white : colors.lightestGrey}
             label="🗝 View recovery key"
-            noFlex
             onPress={handleViewRecoveryPhrase}
             textColor={colors.alpha(colors.blueGreyDark, 0.8)}
           />

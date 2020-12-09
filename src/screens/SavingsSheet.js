@@ -44,9 +44,9 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
 const ActionRowAndroid = styled.View`
   flex-direction: row;
   height: 50;
-  margin-vertical: 12;
-  margin-horizontal: 12;
   justify-content: space-around;
+  margin-horizontal: 12;
+  margin-vertical: 12;
   overflow: visible;
 `;
 
