@@ -20,6 +20,13 @@ const Label = styled(ChartYLabel)`
      margin-bottom: -16;`}
 `;
 
+const AndroidCurrencySymbolLabel = styled(Label)`
+  height: 69;
+  left: 5.5;
+  margin-right: 3;
+  top: 11;
+`;
+
 export function formatNative(value, priceSharedValue, nativeSelected) {
   'worklet';
   if (!value) {
@@ -70,14 +77,13 @@ export default function ChartPriceLabel({
   ) : (
     <Row>
       {android && (
-        <Label
+        <AndroidCurrencySymbolLabel
           as={Text}
           defaultValue={nativeSelected?.symbol}
           editable={false}
-          style={{ height: 69, left: 5.5, marginRight: 3, top: 9.75 }}
         >
           {nativeSelected?.symbol}
-        </Label>
+        </AndroidCurrencySymbolLabel>
       )}
       <Label
         format={value => {
