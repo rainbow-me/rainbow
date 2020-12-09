@@ -574,18 +574,16 @@ const TransactionConfirmationScreen = () => {
     return !isMessage &&
       isBalanceEnough === false &&
       isSufficientGas !== undefined ? (
-      <Column marginTop={24} width="100%">
-        <SheetActionButton
-          color={colors.white}
-          disabled
-          elevation={0}
-          label="ETH balance too low"
-          onPress={onCancel}
+      <Centered marginTop={24}>
+        <Text
+          color={colors.avatarColor[7]}
           size="big"
           textColor={colors.avatarColor[7]}
           weight="bold"
-        />
-      </Column>
+        >
+          ETH balance too low
+        </Text>
+      </Centered>
     ) : (
       <Row
         css={`
