@@ -706,7 +706,8 @@ const TransactionConfirmationScreen = () => {
   const ShortSheetHeight = 457 + safeAreaInsetValues.bottom;
   const TallSheetHeight = 604 + safeAreaInsetValues.bottom;
   const MessageSheetHeight =
-    (method === SIGN_TYPED_DATA ? 640 : 575) + safeAreaInsetValues.bottom;
+    (method === SIGN_TYPED_DATA ? 640 : android ? 595 : 575) +
+    safeAreaInsetValues.bottom;
   const sheetHeight =
     (isMessageRequest
       ? MessageSheetHeight
@@ -717,7 +718,7 @@ const TransactionConfirmationScreen = () => {
   let marginTop = android
     ? method === SIGN_TYPED_DATA
       ? deviceHeight - sheetHeight + 275
-      : deviceHeight - sheetHeight + (isMessageRequest ? 225 : 205)
+      : deviceHeight - sheetHeight + (isMessageRequest ? 265 : 210)
     : null;
 
   if (isTransactionDisplayType(method) && !get(request, 'asset', false)) {
@@ -748,7 +749,12 @@ const TransactionConfirmationScreen = () => {
             }
             paddingHorizontal={19}
             paddingTop={24}
-            style={animatedSheetStyles}
+            style={[
+              animatedSheetStyles,
+              android && isMessageRequest
+                ? { borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }
+                : null,
+            ]}
           >
             <SheetHandleFixedToTop showBlur={false} />
             <Column marginBottom={17} />
