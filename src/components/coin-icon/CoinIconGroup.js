@@ -3,6 +3,7 @@ import React from 'react';
 import styled from 'styled-components/primitives';
 import { CoinIcon } from '../coin-icon';
 import { Row } from '../layout';
+import { colors } from '@rainbow-me/styles';
 
 const componentWidth = 70;
 
@@ -57,6 +58,7 @@ export default function CoinIconGroup({ containerStyles, tokens }) {
                 address={token.address}
                 size={sizesTable[size].iconSize}
                 symbol={token.symbol}
+                {...(android && { shadow: [[0, 4, 6, colors.dark, 0.04]] })}
               />
             </Wrapper>
           ))}

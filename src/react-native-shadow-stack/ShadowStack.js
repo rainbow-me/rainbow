@@ -46,15 +46,19 @@ const ShadowStack = React.forwardRef(
         width={width}
         zIndex={1}
       >
-        {shadows?.map(renderItem)}
+        {ios && shadows?.map(renderItem)}
         <View
           {...props}
           borderRadius={borderRadius}
+          elevation={shadows.reduce(
+            (acc, curr) => acc + Math.min(6, curr[2]),
+            0
+          )}
           height={height}
           overflow="hidden"
           style={[StyleSheet.absoluteFill, { backgroundColor }]}
           width={ios ? width : width || 0}
-          zIndex={shadows?.length + 2 || 0}
+          zIndex={shadows?.length * 8 + 2 || 0}
         >
           {children}
         </View>

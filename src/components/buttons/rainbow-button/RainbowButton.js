@@ -59,7 +59,7 @@ const Shadow = styled(ShadowView)`
   background-color: ${colors.white};
   border-radius: ${({ height }) => height / 2};
   height: ${({ height }) => height};
-  opacity: 0.2;
+  opacity: ${android ? 1 : 0.2};
   position: absolute;
   width: ${({ width }) => width};
 `;
@@ -96,6 +96,7 @@ const RainbowButton = ({
     >
       <Shadow height={height} width={width} />
       <ButtonContainer
+        elevation={5}
         height={height}
         maskElement={outerButtonMask}
         width={width}

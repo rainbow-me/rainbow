@@ -8,7 +8,7 @@ import { borders, colors } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const shadows = [
-  [0, 4, 6, colors.dark, 0.04],
+  [0, 4, android ? 1 : 6, colors.dark, 0.04],
   [0, 1, 3, colors.dark, 0.08],
 ];
 
