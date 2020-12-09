@@ -117,7 +117,7 @@ export default function BackupManualStep() {
           <SheetActionButton
             color={colors.appleBlue}
             label={`􀁣 I’ve saved ${
-              type === WalletTypes.privateKey ? 'my key' : 'these words :) '
+              type === WalletTypes.privateKey ? 'my key' : 'these words'
             }`}
             onPress={onComplete}
             size="big"
