@@ -1,6 +1,5 @@
 import { times } from 'lodash';
 import React, { useMemo } from 'react';
-import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components/primitives';
 import CopyTooltip from '../copy-tooltip';
 import { Centered, ColumnWithMargins, Row, RowWithMargins } from '../layout';
@@ -8,14 +7,6 @@ import { Text } from '../text';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { colors, fonts, padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
-
-const BackgroundGradient = styled(LinearGradient).attrs({
-  colors: colors.gradients.offWhite,
-  end: { x: 0.5, y: 1 },
-  start: { x: 0.5, y: 0 },
-})`
-  ${position.cover};
-`;
 
 const CardShadow = styled(ShadowStack).attrs({
   ...position.coverAsObject,
@@ -91,7 +82,6 @@ export default function SecretDisplayCard({ seed, type }) {
       {ios && (
         <>
           <CardShadow />
-          <BackgroundGradient />
         </>
       )}
       <Content>

@@ -27,7 +27,7 @@ const Content = styled(Column).attrs({
 const Footer = styled(Column).attrs({
   justify: 'end',
 })`
-  ${padding(0, 15, 21)};
+  ${padding(android ? 0 : 20, 15, 21)};
   width: 100%;
 `;
 
@@ -117,7 +117,7 @@ export default function BackupManualStep() {
           <SheetActionButton
             color={colors.appleBlue}
             label={`􀁣 I’ve saved ${
-              type === WalletTypes.privateKey ? 'my key' : 'these words'
+              type === WalletTypes.privateKey ? 'my key' : 'these words :) '
             }`}
             onPress={onComplete}
             size="big"
