@@ -58,7 +58,7 @@ const ShadowStack = React.forwardRef(
           overflow="hidden"
           style={[StyleSheet.absoluteFill, { backgroundColor }]}
           width={ios ? width : width || 0}
-          zIndex={shadows?.length * 8 + 2 || 0}
+          zIndex={shadows?.length + 2 || 0}
         >
           {children}
         </View>
