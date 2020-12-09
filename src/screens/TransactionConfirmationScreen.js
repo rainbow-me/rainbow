@@ -717,7 +717,7 @@ const TransactionConfirmationScreen = () => {
   let marginTop = android
     ? method === SIGN_TYPED_DATA
       ? deviceHeight - sheetHeight + 275
-      : deviceHeight - sheetHeight + (isMessageRequest ? 225 : 205)
+      : deviceHeight - sheetHeight + (isMessageRequest ? 230 : 210)
     : null;
 
   if (isTransactionDisplayType(method) && !get(request, 'asset', false)) {
@@ -748,7 +748,12 @@ const TransactionConfirmationScreen = () => {
             }
             paddingHorizontal={19}
             paddingTop={24}
-            style={animatedSheetStyles}
+            style={[
+              animatedSheetStyles,
+              android && isMessageRequest
+                ? { borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }
+                : null,
+            ]}
           >
             <SheetHandleFixedToTop showBlur={false} />
             <Column marginBottom={17} />
