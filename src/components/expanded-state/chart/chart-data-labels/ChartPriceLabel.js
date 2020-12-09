@@ -1,6 +1,6 @@
 import { get } from 'lodash';
 import React from 'react';
-import { Text } from 'react-native';
+import { PixelRatio, Text } from 'react-native';
 import styled from 'styled-components/primitives';
 import { Row } from '../../../layout';
 import ChartHeaderTitle from './ChartHeaderTitle';
@@ -24,7 +24,7 @@ const AndroidCurrencySymbolLabel = styled(Label)`
   height: 69;
   left: 5.5;
   margin-right: 3;
-  top: 11;
+  top: ${PixelRatio.get() <= 2.625 ? 10 : 12};
 `;
 
 export function formatNative(value, priceSharedValue, nativeSelected) {
