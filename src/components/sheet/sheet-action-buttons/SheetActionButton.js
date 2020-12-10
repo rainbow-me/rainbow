@@ -80,15 +80,17 @@ const SheetActionButton = ({
   }, [color, disabled, isTransparent]);
 
   const androidButtonWidth =
-    androidWidth || fullWidth ? deviceWidth - 38 : (deviceWidth - 53) / 2;
+    androidWidth || (fullWidth ? deviceWidth - 38 : (deviceWidth - 53) / 2);
 
   return (
-    <View style={{ ...(android && { width: androidWidth }) }}>
+    <View
+      style={{ ...((android || fullWidth) && { width: androidButtonWidth }) }}
+    >
       <Button
         as={ButtonPressAnimation}
         contentContainerStyle={{
           height: size === 'big' ? 56 : 46,
-          ...(android && { width: androidButtonWidth }),
+          ...((android || fullWidth) && { width: androidButtonWidth }),
         }}
         elevation={android ? elevation : null}
         isCharts={isCharts}
@@ -105,7 +107,7 @@ const SheetActionButton = ({
           borderRadius={borderRadius}
           height={size === 'big' ? 56 : 46}
           shadows={shadowsForButtonColor}
-          {...(android && { width: androidButtonWidth })}
+          {...((android || fullWidth) && { width: androidButtonWidth })}
         >
           {color === colors.white && <WhiteButtonGradient />}
           {color !== colors.white && !isTransparent && (

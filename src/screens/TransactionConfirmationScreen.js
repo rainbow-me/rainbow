@@ -149,7 +149,7 @@ const TransactionConfirmationScreen = () => {
     accountName,
     accountSymbol,
   } = useAccountProfile();
-  const { height: deviceHeight, width: deviceWidth } = useDimensions();
+  const { height: deviceHeight } = useDimensions();
   const { wallets } = useWallets();
   const balances = useWalletBalances(wallets);
   const { nativeCurrency } = useAccountSettings();
@@ -577,9 +577,9 @@ const TransactionConfirmationScreen = () => {
       isSufficientGas !== undefined ? (
       <Column marginBottom={24} marginTop={19}>
         <SheetActionButton
-          androidWidth={deviceWidth - 38}
           color={colors.transparent}
           disabled
+          fullWidth
           label="ETH balance too low"
           onPress={onCancel}
           size="big"
@@ -590,7 +590,6 @@ const TransactionConfirmationScreen = () => {
     ) : (
       <SheetActionButtonRow>
         <SheetActionButton
-          androidWidth={(deviceWidth - 53) / 2}
           color={colors.white}
           label="Cancel"
           onPress={onCancel}
@@ -599,7 +598,6 @@ const TransactionConfirmationScreen = () => {
           weight="bold"
         />
         <SheetActionButton
-          androidWidth={(deviceWidth - 53) / 2}
           color={colors.appleBlue}
           label="􀎽 Confirm"
           onPress={ready ? onPressSend : NOOP}
@@ -609,7 +607,6 @@ const TransactionConfirmationScreen = () => {
       </SheetActionButtonRow>
     );
   }, [
-    deviceWidth,
     isBalanceEnough,
     isMessageRequest,
     isSufficientGas,
