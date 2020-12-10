@@ -3,6 +3,7 @@ import React, { useCallback } from 'react';
 import { requireNativeComponent, StyleSheet } from 'react-native';
 import useRainbowTextAvailable from '../../helpers/isRainbowTextAvailable';
 import { formatSavingsAmount, isSymbolStablecoin } from '../../helpers/savings';
+import { Text } from '../text';
 import AndroidText from './AndroidAnimatedNumbers';
 import { colors, fonts } from '@rainbow-me/styles';
 
@@ -44,6 +45,8 @@ const SavingsListRowAnimatedNumber = ({
   const isRainbowTextAvailable = useRainbowTextAvailable();
   const TextComponent = isRainbowTextAvailable
     ? requireNativeComponent('RainbowText')
+    : ios
+    ? Text
     : AndroidText;
 
   return (
