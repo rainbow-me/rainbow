@@ -25,7 +25,7 @@ index e6e1541..943d1b6 100644
  export { default as onChange } from './onChange';
  export { default as useCode } from './useCode';
 diff --git a/node_modules/react-native-reanimated/src/reanimated2/Colors.js b/node_modules/react-native-reanimated/src/reanimated2/Colors.js
-index a860f49..bbe780a 100644
+index a75d2b2..b3a081d 100644
 --- a/node_modules/react-native-reanimated/src/reanimated2/Colors.js
 +++ b/node_modules/react-native-reanimated/src/reanimated2/Colors.js
 @@ -10,7 +10,7 @@
@@ -51,7 +51,7 @@ index 48a3c76..0723069 100644
    ease,
    quad,
 diff --git a/node_modules/react-native-reanimated/src/reanimated2/animations.js b/node_modules/react-native-reanimated/src/reanimated2/animations.js
-index 5376843..b21ebe7 100644
+index c49cfb8..2303f2a 100644
 --- a/node_modules/react-native-reanimated/src/reanimated2/animations.js
 +++ b/node_modules/react-native-reanimated/src/reanimated2/animations.js
 @@ -1,5 +1,5 @@
