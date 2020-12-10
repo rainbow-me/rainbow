@@ -79,7 +79,7 @@ const AvatarBuilder = ({ route: { params } }) => {
       [walletId]: {
         ...wallets[walletId],
         addresses: wallets[walletId].addresses.map(singleAddress =>
-          singleAddress.address === accountAddress
+          singleAddress.address.toLowerCase() === accountAddress.toLowerCase()
             ? {
                 ...singleAddress,
                 ...(name && { label: name }),
