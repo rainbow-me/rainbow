@@ -588,7 +588,7 @@ const TransactionConfirmationScreen = () => {
         />
       </Column>
     ) : (
-      <SheetActionButtonRow isWalletConnect>
+      <SheetActionButtonRow ignorePaddingTop>
         <SheetActionButton
           color={colors.white}
           label="Cancel"

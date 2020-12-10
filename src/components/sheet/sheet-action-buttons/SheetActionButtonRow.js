@@ -3,12 +3,12 @@ import styled from 'styled-components/primitives';
 import { FlexItem, Row } from '../../layout';
 import { padding } from '@rainbow-me/styles';
 
-const Container = styled(Row)`
-  ${({ isWalletConnect }) =>
-    isWalletConnect ? padding(0, 11.5, 24) : padding(19, 11.5, 24)};
+const Container = styled(Row).attrs({
+  justify: 'space-around',
+})`
+  ${({ ignorePaddingTop }) => padding(ignorePaddingTop ? 0 : 19, 11.5, 24)};
   width: 100%;
   z-index: 2;
-  justify-content: space-around;
 `;
 
 function renderButton(child) {
@@ -19,12 +19,9 @@ function renderButton(child) {
   return <FlexItem marginHorizontal={7.5}>{child}</FlexItem>;
 }
 
-export default function SheetActionButtonRow({ children, isWalletConnect }) {
+export default function SheetActionButtonRow({ children, ignorePaddingTop }) {
   return (
-    <Container
-      isSingleChildren={children.length === 1}
-      isWalletConnect={isWalletConnect}
-    >
+    <Container ignorePaddingTop={ignorePaddingTop}>
       {Children.map(children, renderButton)}
     </Container>
   );
