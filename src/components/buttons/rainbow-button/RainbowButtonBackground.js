@@ -1,5 +1,5 @@
 import MaskedView from '@react-native-community/masked-view';
-import React, { Fragment } from 'react';
+import React from 'react';
 import { View } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
 import styled from 'styled-components/primitives';
@@ -75,7 +75,7 @@ const WrapperView = android
       height: ${({ height }) => height};
       width: ${({ width }) => width};
     `
-  : Fragment;
+  : ({ children }) => children;
 
 const RainbowButtonBackground = ({
   disabled,
