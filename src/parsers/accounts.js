@@ -8,7 +8,6 @@ import {
   convertAmountToPercentageDisplay,
   convertRawAmountToBalance,
 } from '@rainbow-me/helpers/utilities';
-import { tokenOverrides } from '@rainbow-me/references';
 import { getTokenMetadata, isLowerCaseMatch } from '@rainbow-me/utils';
 
 /**

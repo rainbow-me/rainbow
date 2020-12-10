@@ -25,8 +25,11 @@ export const initialLiquidityPoolExpandedStateSheetHeight =
   heightWithChart + (android && 40);
 
 const LiquidityPoolExpandedState = ({ asset }) => {
-  const { symbol, tokenNames, tokens, totalNativeDisplay, uniBalance } = asset;
-  const uniBalanceLabel = `${uniBalance} ${symbol}`;
+  const { tokenNames, tokens, totalNativeDisplay, type, uniBalance } = asset;
+
+  const tokenType = type === 'uniswap' ? 'UNI-V1' : 'UNI-V2';
+  const uniBalanceLabel = `${uniBalance} ${tokenType}`;
+
   const {
     chart,
     chartData,
@@ -43,12 +46,13 @@ const LiquidityPoolExpandedState = ({ asset }) => {
     isPool: true,
   });
 
-  const LiquidityPoolExpandedStateSheetHeight =
+  const liquidityPoolExpandedStateSheetHeight =
     (ios || showChart ? heightWithChart : heightWithoutChart) + (android && 40);
+
   return (
     <SlackSheet
       additionalTopPadding={android}
-      contentHeight={LiquidityPoolExpandedStateSheetHeight}
+      contentHeight={liquidityPoolExpandedStateSheetHeight}
     >
       <ChartPathProvider data={throttledData}>
         <Chart
