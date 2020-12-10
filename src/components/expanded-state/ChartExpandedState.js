@@ -93,14 +93,14 @@ export default function ChartExpandedState({ asset }) {
       </TokenInfoSection>
       {needsEth ? (
         <SheetActionButtonRow>
-          <BuyActionButton color={color} />
+          <BuyActionButton color={color} fullWidth />
         </SheetActionButtonRow>
       ) : (
         <SheetActionButtonRow>
           {showSwapButton && (
             <SwapActionButton color={color} inputType={AssetInputTypes.in} />
           )}
-          <SendActionButton color={color} />
+          <SendActionButton color={color} fullWidth={!showSwapButton} />
         </SheetActionButtonRow>
       )}
     </SlackSheet>

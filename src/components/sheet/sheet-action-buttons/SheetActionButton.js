@@ -55,6 +55,7 @@ const SheetActionButton = ({
   disabled,
   elevation = 24,
   emoji,
+  fullWidth,
   icon,
   isCharts,
   isTransparent,
@@ -73,12 +74,13 @@ const SheetActionButton = ({
       return [[0, 0, 0, colors.transparent, 0]];
     } else
       return [
-        [0, 10, 30, colors.white, isWhite ? 0.12 : 0.2],
+        [0, 10, 30, colors.dark, isWhite ? 0.12 : 0.2],
         [0, 5, 15, isWhite ? colors.dark : color, isWhite ? 0.08 : 0.4],
       ];
   }, [color, disabled, isTransparent]);
 
-  const androidButtonWidth = androidWidth || (deviceWidth - 53) / 2;
+  const androidButtonWidth =
+    androidWidth || fullWidth ? deviceWidth - 38 : (deviceWidth - 53) / 2;
 
   return (
     <View style={{ ...(android && { width: androidWidth }) }}>
