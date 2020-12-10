@@ -16,11 +16,11 @@ const Container = styled(Row)`
   min-height: ${({ minHeight }) => minHeight};
 `;
 const MessageWrapper = styled(ScrollView)`
-  border-color: ${colors.alpha(colors.blueGreyDark, 0.2)};
+  ${padding(12, 15)}
+  border-color: ${colors.alpha(colors.blueGreyDark, 0.08)};
   border-radius: 20;
   border-width: 1;
   margin-bottom: 14;
-  ${padding(14)}
   min-width: ${deviceWidth - horizontalPadding * 2};
 `;
 
