@@ -9,6 +9,7 @@ import EmojiSelector from '../components/avatar-builder/EmojiSelector';
 import { HeaderHeightWithStatusBar } from '../components/header';
 import { Column, Row } from '../components/layout';
 import { useWallets } from '../hooks';
+import useAccountSettings from '../hooks/useAccountSettings';
 import { useNavigation } from '../navigation/Navigation';
 import { walletsSetSelected, walletsUpdate } from '../redux/wallets';
 import { deviceUtils } from '../utils';
@@ -47,6 +48,7 @@ const AvatarBuilder = ({ route: { params } }) => {
   const { wallets, selectedWallet } = useWallets();
   const [translateX] = useValues((params.initialAccountColor - 4) * 39);
   const { goBack } = useNavigation();
+  const { accountAddress } = useAccountSettings();
   const [currentAccountColor, setCurrentAccountColor] = useState(
     colors.avatarColor[params.initialAccountColor]
   );
@@ -71,20 +73,24 @@ const AvatarBuilder = ({ route: { params } }) => {
   ));
 
   const saveInfo = async (name, color) => {
-    const newWallets = { ...wallets };
     const walletId = selectedWallet.id;
+    const newWallets = {
+      ...wallets,
+      [walletId]: {
+        ...wallets[walletId],
+        addresses: wallets[walletId].addresses.map(singleAddress =>
+          singleAddress.address.toLowerCase() === accountAddress.toLowerCase()
+            ? {
+                ...singleAddress,
+                ...(name && { label: name }),
+                ...(color !== undefined && { color }),
+              }
+            : singleAddress
+        ),
+      },
+    };
 
-    newWallets[walletId].addresses.some((account, index) => {
-      newWallets[walletId].addresses[index].image = undefined;
-      if (name) {
-        newWallets[walletId].addresses[index].label = name;
-      }
-      if (color !== undefined) {
-        newWallets[walletId].addresses[index].color = color;
-      }
-      dispatch(walletsSetSelected(newWallets[walletId]));
-      return true;
-    });
+    await dispatch(walletsSetSelected(newWallets[walletId]));
     await dispatch(walletsUpdate(newWallets));
   };
 
