@@ -22,9 +22,9 @@ const AmountRow = styled(LinearGradient).attrs({
   start: { x: 1, y: 0.5 },
 })`
   ${padding(7, 12, 9, 11)};
-  border-radius: 20;
+  border-radius: 40;
   margin: auto;
-  margin-bottom: 18;
+  margin-bottom: 23;
   overflow: hidden;
 `;
 

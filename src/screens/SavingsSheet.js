@@ -41,17 +41,6 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
     height ? `height: ${height + deviceHeight}` : null};
 `;
 
-const ActionRowAndroid = styled.View`
-  flex-direction: row;
-  height: 50;
-  margin-vertical: 12;
-  margin-horizontal: 12;
-  justify-content: space-around;
-  overflow: visible;
-`;
-
-const ActionRow = android ? ActionRowAndroid : SheetActionButtonRow;
-
 const SavingsSheet = () => {
   const { height: deviceHeight } = useDimensions();
   const { navigate } = useNavigation();
@@ -175,7 +164,7 @@ const SavingsSheet = () => {
               balance={balance}
               lifetimeAccruedInterest={lifetimeAccruedInterest}
             />
-            <ActionRow>
+            <SheetActionButtonRow>
               <SheetActionButton
                 color={colors.dark}
                 label="􀁏 Withdraw"
@@ -190,7 +179,7 @@ const SavingsSheet = () => {
                 radiusAndroid={24}
                 weight="bold"
               />
-            </ActionRow>
+            </SheetActionButtonRow>
             <Divider color={colors.rowDividerLight} zIndex={0} />
             <FloatingEmojis
               disableHorizontalMovement

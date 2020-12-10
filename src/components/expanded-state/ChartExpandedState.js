@@ -18,7 +18,6 @@ import {
 import Chart from '../value-chart/Chart';
 import { ChartPathProvider } from '@rainbow-me/animated-charts';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
-import { deviceUtils } from '@rainbow-me/utils';
 
 //add's StatusBar height to android
 const heightWithoutChart = 309 + (android && 24);
@@ -94,24 +93,14 @@ export default function ChartExpandedState({ asset }) {
       </TokenInfoSection>
       {needsEth ? (
         <SheetActionButtonRow>
-          <BuyActionButton
-            // FIXME
-            androidWidth={deviceUtils.dimensions.width - 39}
-            color={color}
-          />
+          <BuyActionButton color={color} fullWidth />
         </SheetActionButtonRow>
       ) : (
         <SheetActionButtonRow>
           {showSwapButton && (
             <SwapActionButton color={color} inputType={AssetInputTypes.in} />
           )}
-          <SendActionButton
-            androidWidth={
-              // FIXME
-              showSwapButton ? 160 : deviceUtils.dimensions.width - 39
-            }
-            color={color}
-          />
+          <SendActionButton color={color} fullWidth={!showSwapButton} />
         </SheetActionButtonRow>
       )}
     </SlackSheet>

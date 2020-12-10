@@ -7,6 +7,7 @@ import { Icon } from '../../icons';
 import { Centered, InnerBorder, RowWithMargins } from '../../layout';
 import { Emoji, Text } from '../../text';
 import { containsEmoji } from '@rainbow-me/helpers/strings';
+import { useDimensions } from '@rainbow-me/hooks';
 import { colors, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
@@ -16,7 +17,6 @@ const addChartsStyling = isCharts =>
 const Button = styled(Centered).attrs({
   scaleTo: 0.9,
 })`
-  flex: ${({ noFlex }) => (noFlex ? 'none' : 1)};
   height: ${({ size }) => (size === 'big' ? 56 : 46)};
   ${({ isCharts }) => addChartsStyling(isCharts)}
 `;
@@ -25,10 +25,10 @@ const Content = styled(RowWithMargins).attrs({
   align: 'center',
   margin: 4,
 })`
+  height: ${({ size }) => (size === 'big' ? 56 : 46)};
   padding-bottom: ${({ label }) => (containsEmoji(label) ? 5.5 : 4)};
   padding-horizontal: 19;
   z-index: 1;
-  height: ${({ size }) => (size === 'big' ? 56 : 46)};
 `;
 
 const neverRerender = () => true;
@@ -48,56 +48,52 @@ const WhiteButtonGradient = React.memo(
   neverRerender
 );
 
-// FIXME
-const ANDROID_WIDTH = 160;
-
 const SheetActionButton = ({
+  androidWidth,
   borderRadius = 56,
   color = colors.appleBlue,
   disabled,
+  elevation = 24,
   emoji,
+  fullWidth,
   icon,
   isCharts,
   isTransparent,
   label,
-  noFlex,
   size,
   testID,
   textColor = colors.white,
-  androidWidth = ANDROID_WIDTH,
   weight = 'semibold',
-  elevation = 24,
   ...props
 }) => {
+  const { width: deviceWidth } = useDimensions();
   const shadowsForButtonColor = useMemo(() => {
     const isWhite = color === colors.white;
 
-    if (isTransparent) {
-      return [[0, 0, 0, colors.transparent, 0.04]];
+    if (disabled || isTransparent) {
+      return [[0, 0, 0, colors.transparent, 0]];
     } else
       return [
-        [0, 10, 30, colors.white, isWhite ? 0.12 : 0.2],
-        [
-          0,
-          5,
-          15,
-          isWhite ? (android ? colors.dark : colors.white) : color,
-          isWhite ? (android ? 0.14 : 0.08) : 0.4,
-        ],
+        [0, 10, 30, colors.dark, isWhite ? 0.12 : 0.2],
+        [0, 5, 15, isWhite ? colors.dark : color, isWhite ? 0.08 : 0.4],
       ];
-  }, [color, isTransparent]);
+  }, [color, disabled, isTransparent]);
+
+  const androidButtonWidth =
+    androidWidth || (fullWidth ? deviceWidth - 38 : (deviceWidth - 53) / 2);
 
   return (
-    <View style={{ ...(android && { width: androidWidth }) }}>
+    <View
+      style={{ ...((android || fullWidth) && { width: androidButtonWidth }) }}
+    >
       <Button
         as={ButtonPressAnimation}
         contentContainerStyle={{
           height: size === 'big' ? 56 : 46,
-          ...(android && { width: androidWidth }),
+          ...((android || fullWidth) && { width: androidButtonWidth }),
         }}
         elevation={android ? elevation : null}
         isCharts={isCharts}
-        noFlex={noFlex}
         overflowMargin={30}
         radiusAndroid={borderRadius}
         size={size}
@@ -111,7 +107,7 @@ const SheetActionButton = ({
           borderRadius={borderRadius}
           height={size === 'big' ? 56 : 46}
           shadows={shadowsForButtonColor}
-          {...(android && { width: androidWidth })}
+          {...((android || fullWidth) && { width: androidButtonWidth })}
         >
           {color === colors.white && <WhiteButtonGradient />}
           {color !== colors.white && !isTransparent && (

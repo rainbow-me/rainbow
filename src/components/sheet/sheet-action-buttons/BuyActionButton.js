@@ -33,7 +33,7 @@ export default function BuyActionButton({ color = colors.paleBlue, ...props }) {
     <SheetActionButton
       {...props}
       color={color}
-      label="Buy more ETH"
+      label="􀍰 Buy more ETH"
       onPress={handlePress}
       weight="bold"
     />
