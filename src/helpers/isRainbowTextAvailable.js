@@ -1,6 +1,3 @@
 import { UIManager } from 'react-native';
 
-const useRainbowTextAvailable = () =>
-  !!UIManager.getViewManagerConfig('RainbowText');
-
-export default useRainbowTextAvailable;
+export default !!UIManager.getViewManagerConfig('RainbowText');

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { requireNativeComponent, StyleSheet } from 'react-native';
-import useRainbowTextAvailable from '../../helpers/isRainbowTextAvailable';
+import isRainbowTextAvailable from '../../helpers/isRainbowTextAvailable';
 import { formatSavingsAmount, isSymbolStablecoin } from '../../helpers/savings';
 import AndroidText from './AndroidAnimatedNumbers';
 import { colors, fonts } from '@rainbow-me/styles';
@@ -41,7 +41,6 @@ const SavingsListRowAnimatedNumber = ({
     [symbol]
   );
 
-  const isRainbowTextAvailable = useRainbowTextAvailable();
   const TextComponent = isRainbowTextAvailable
     ? requireNativeComponent('RainbowText')
     : AndroidText;
