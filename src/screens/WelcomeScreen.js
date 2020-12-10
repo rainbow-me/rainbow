@@ -449,7 +449,7 @@ export default function WelcomeScreen() {
     const color = colorAnimation(rValue, true);
     return {
       emoji: 'castle',
-      height: 54 + (ios ? 0 : 8),
+      height: 54 + (ios ? 0 : 6),
       shadowStyle: {
         backgroundColor: backgroundColor,
         shadowColor: color,
@@ -457,8 +457,8 @@ export default function WelcomeScreen() {
       style: {
         backgroundColor: colors.dark,
         borderColor: backgroundColor,
-        borderWidth: ios ? 0 : 5,
-        width: 230 + (ios ? 0 : 5),
+        borderWidth: ios ? 0 : 3,
+        width: 230 + (ios ? 0 : 6),
       },
       text: 'Get a new wallet',
       textColor: colors.white,
