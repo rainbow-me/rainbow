@@ -177,6 +177,8 @@ const ScaleButton = ({
 };
 
 const SimpleScaleButton = ({
+  backgroundColor,
+  borderRadius,
   scaleTo,
   children,
   onPress,
@@ -200,7 +202,11 @@ const SimpleScaleButton = ({
   return (
     <View
       style={[
-        { backgroundColor: 'transparent', overflow: 'visible' },
+        {
+          backgroundColor: backgroundColor,
+          borderRadius: borderRadius,
+          overflow: 'visible',
+        },
         wrapperStyle,
       ]}
     >
@@ -241,6 +247,8 @@ const SimpleScaleButton = ({
 export default function ButtonPressAnimation({
   // eslint-disable-next-line no-unused-vars
   activeOpacity = 1, // TODO
+  backgroundColor = 'transparent',
+  borderRadius = 0,
   children,
   disabled,
   duration = 160,
@@ -272,6 +280,8 @@ export default function ButtonPressAnimation({
 
   return (
     <Button
+      backgroundColor={backgroundColor}
+      borderRadius={borderRadius}
       contentContainerStyle={contentContainerStyle}
       duration={duration}
       hitSlop={hitSlop}

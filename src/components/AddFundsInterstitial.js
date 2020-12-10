@@ -26,13 +26,12 @@ const ButtonContainer = styled(Centered).attrs({ direction: 'column' })`
 
 const InterstitialButton = styled(ButtonPressAnimation).attrs({
   backgroundColor: colors.alpha(colors.blueGreyDark, 0.06),
-  wrapperProps: {
-    containerStyle: { height: 45, width: 200 },
-    style: { flex: 1 },
-  },
+  borderRadius: 23,
 })`
   ${padding(10.5, 15, 14.5)};
-  border-radius: 23px;
+`;
+
+const InterstitialButtonRow = styled(Row)`
   margin-bottom: ${({ isSmallPhone }) => (isSmallPhone ? 19 : 42)};
 `;
 
@@ -45,13 +44,12 @@ const InterstitialDivider = styled(Divider).attrs({
 
 const CopyAddressButton = styled(ButtonPressAnimation).attrs({
   backgroundColor: colors.alpha(colors.appleBlue, 0.06),
+  borderRadius: 23,
 })`
   ${padding(10.5, 15, 14.5)};
-  border-radius: 23px;
 `;
 
 const AmountBPA = styled(ButtonPressAnimation)`
-  ${padding(0, 0, 0)};
   border-radius: 25px;
   overflow: visible;
 `;
@@ -113,7 +111,9 @@ const buildInterstitialTransform = (isSmallPhone, offsetY) => ({
     { translateX: (ButtonContainerWidth / 2) * -1 },
     {
       translateY:
-        (ButtonContainerHeight / 2) * -1 + offsetY - (isSmallPhone ? 44 : 22),
+        (ButtonContainerHeight / 2) * -1 +
+        offsetY -
+        (android ? 66 : isSmallPhone ? 44 : 22),
     },
   ],
 });
@@ -238,7 +238,7 @@ const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
                 onPress={handlePressAmount}
               />
             </Row>
-            <Row>
+            <InterstitialButtonRow>
               <InterstitialButton
                 onPress={handlePressAmount}
                 radiusAndroid={23}
@@ -253,7 +253,7 @@ const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
                   􀍡 Other amount
                 </Text>
               </InterstitialButton>
-            </Row>
+            </InterstitialButtonRow>
             {!isSmallPhone && <InterstitialDivider />}
             <Subtitle isSmallPhone={isSmallPhone}>
               or send ETH to your wallet
