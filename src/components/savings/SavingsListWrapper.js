@@ -1,3 +1,4 @@
+import { map } from 'lodash';
 import React, { Fragment } from 'react';
 import { useOpenSavings } from '../../hooks';
 import { OpacityToggler } from '../animations';
@@ -24,7 +25,7 @@ export default function SavingsListWrapper({ assets, totalValue = '0' }) {
         isVisible={!isSavingsOpen}
         pointerEvents={isSavingsOpen ? 'auto' : 'none'}
       >
-        {assets.map(renderSavingsListRow)}
+        {map(assets, renderSavingsListRow)}
       </OpacityToggler>
     </Fragment>
   );
