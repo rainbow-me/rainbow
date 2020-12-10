@@ -61,9 +61,7 @@ const SavingsListRowShadowStack = styled(ShadowStack).attrs(
     shadows: SavingsListRowShadows,
     width: deviceWidth - 38,
   })
-)`
-  elevation: 2;
-`;
+)``;
 
 const SavingsListRow = ({
   cTokenBalance,

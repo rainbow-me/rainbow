@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import { InteractionManager, StatusBar } from 'react-native';
 import { DelayedAlert } from '../components/alerts';
 import {
@@ -14,7 +14,6 @@ import { Column } from '../components/layout';
 import { SlackSheet } from '../components/sheet';
 import { cloudPlatform } from '../utils/platform';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
-import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import {
   useDimensions,
   useRouteExistsInNavigationState,
@@ -29,7 +28,7 @@ const onError = error => DelayedAlert({ title: error }, 500);
 const AndroidHeight = 400;
 
 export default function BackupSheet() {
-  const { selectedWallet, wallets } = useWallets();
+  const { selectedWallet } = useWallets();
   const { height: deviceHeight } = useDimensions();
   const { goBack, navigate, setParams } = useNavigation();
   const walletCloudBackup = useWalletCloudBackup();
@@ -46,12 +45,6 @@ export default function BackupSheet() {
   const isSettingsRoute = useRouteExistsInNavigationState(
     Routes.SETTINGS_MODAL
   );
-
-  const backupableWalletsCount = useMemo(() => {
-    return Object.keys(wallets).filter(id => {
-      return wallets[id].type !== WalletTypes.readOnly;
-    }).length;
-  }, [wallets]);
 
   const handleNoLatestBackup = useCallback(() => {
     if (android) {
@@ -142,9 +135,7 @@ export default function BackupSheet() {
             onSecondaryAction={goBack}
             primaryLabel="Back up now"
             secondaryLabel="Maybe later"
-            titleText={`Back up your wallet${
-              backupableWalletsCount > 1 ? 's' : ''
-            }`}
+            titleText="Would you like to back up?"
             type="Existing User"
           />
         );
@@ -185,7 +176,6 @@ export default function BackupSheet() {
   }, [
     goBack,
     missingPassword,
-    backupableWalletsCount,
     onBackupNow,
     onIcloudBackup,
     onManualBackup,
@@ -196,7 +186,7 @@ export default function BackupSheet() {
   let wrapperHeight =
     deviceHeight + (android && !nativeScreen ? AndroidHeight : longFormHeight);
 
-  // This sheet it's a bit taller due to an extra line of text
+  // This sheet is a bit taller due to an extra line of text
   if (android && step === WalletBackupStepTypes.existing_user) {
     sheetHeight += 40;
     wrapperHeight += 40;

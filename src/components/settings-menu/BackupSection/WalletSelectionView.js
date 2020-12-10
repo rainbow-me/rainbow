@@ -104,14 +104,14 @@ const WalletSelectionView = () => {
   );
 
   const manageCloudBackups = useCallback(() => {
-    const buttons = ['Delete all iCloud backups', 'Cancel'];
+    const buttons = ['Delete All iCloud Backups', 'Cancel'];
 
     showActionSheetWithOptions(
       {
         cancelButtonIndex: 1,
         destructiveButtonIndex: 0,
         options: buttons,
-        title: `Manage iCloud backups`,
+        title: `Manage iCloud Backups`,
       },
       buttonIndex => {
         if (buttonIndex === 0) {
@@ -120,8 +120,8 @@ const WalletSelectionView = () => {
             {
               cancelButtonIndex: 1,
               destructiveButtonIndex: 0,
-              message: `Are you sure you want to delete all iCloud Backups`,
-              options: ['YES, Delete All iCloud Backups', 'Cancel'],
+              message: `Are you sure you want to delete your iCloud wallet backups`,
+              options: ['Confirm and Delete Backups', 'Cancel'],
             },
             async buttonIndex => {
               if (buttonIndex === 0) {
@@ -138,7 +138,7 @@ const WalletSelectionView = () => {
                 // Delete all backups (debugging)
                 await deleteAllBackups();
 
-                Alert.alert('Backups deleted succesfully');
+                Alert.alert('Backups Deleted Succesfully');
               }
             }
           );
@@ -257,7 +257,7 @@ const WalletSelectionView = () => {
               size="lmedium"
               weight="semibold"
             >
-              􀍢 Manage iCloud backups
+              􀍢 Manage iCloud Backups
             </Text>
           </ButtonPressAnimation>
         </Footer>

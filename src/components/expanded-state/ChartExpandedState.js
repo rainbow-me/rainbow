@@ -67,16 +67,7 @@ export default function ChartExpandedState({ asset }) {
       </TokenInfoSection>
       {needsEth ? (
         <SheetActionButtonRow>
-          <BuyActionButton
-            color={color}
-            isCharts
-            radiusAndroid={24}
-            radiusWrapperStyle={{ flex: 1 }}
-            wrapperProps={{
-              containerStyle: { flex: 1 },
-              style: { flex: 1 },
-            }}
-          />
+          <BuyActionButton color={color} fullWidth />
         </SheetActionButtonRow>
       ) : (
         <SheetActionButtonRow>
@@ -93,16 +84,7 @@ export default function ChartExpandedState({ asset }) {
               }}
             />
           )}
-          <SendActionButton
-            color={color}
-            isCharts
-            radiusAndroid={24}
-            radiusWrapperStyle={{ flex: 1, marginLeft: 10 }}
-            wrapperProps={{
-              containerStyle: { flex: 1 },
-              style: { flex: 1 },
-            }}
-          />
+          <SendActionButton color={color} fullWidth={!showSwapButton} />
         </SheetActionButtonRow>
       )}
     </SlackSheet>
