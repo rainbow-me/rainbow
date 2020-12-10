@@ -135,6 +135,7 @@ export default function BackupSheet() {
             onSecondaryAction={goBack}
             primaryLabel="Back up now"
             secondaryLabel="Maybe later"
+            titleText="Would you like to back up?"
             type="Existing User"
           />
         );
@@ -185,7 +186,7 @@ export default function BackupSheet() {
   let wrapperHeight =
     deviceHeight + (android && !nativeScreen ? AndroidHeight : longFormHeight);
 
-  // This sheet it's a bit taller due to an extra line of text
+  // This sheet is a bit taller due to an extra line of text
   if (android && step === WalletBackupStepTypes.existing_user) {
     sheetHeight += 40;
     wrapperHeight += 40;
