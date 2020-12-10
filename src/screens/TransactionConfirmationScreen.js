@@ -588,7 +588,7 @@ const TransactionConfirmationScreen = () => {
         />
       </Column>
     ) : (
-      <SheetActionButtonRow>
+      <SheetActionButtonRow isWalletConnect>
         <SheetActionButton
           color={colors.white}
           label="Cancel"
