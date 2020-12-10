@@ -9,17 +9,20 @@ import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { colors, fonts, padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
+const CardBorderRadius = 25;
+
 const BackgroundGradient = styled(LinearGradient).attrs({
   colors: colors.gradients.offWhite,
   end: { x: 0.5, y: 1 },
   start: { x: 0.5, y: 0 },
 })`
   ${position.cover};
+  border-radius: ${CardBorderRadius};
 `;
 
 const CardShadow = styled(ShadowStack).attrs({
   ...position.coverAsObject,
-  borderRadius: 25,
+  borderRadius: CardBorderRadius,
   shadows: [
     [0, 10, 30, colors.dark, 0.1],
     [0, 5, 15, colors.dark, 0.04],

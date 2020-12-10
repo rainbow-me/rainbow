@@ -107,7 +107,12 @@ export default function SecretDisplaySection({
   const typeLabel = type === WalletTypes.privateKey ? 'key' : 'phrase';
 
   return (
-    <ColumnWithMargins align="center" justify="center" margin={24}>
+    <ColumnWithMargins
+      align="center"
+      justify="center"
+      margin={24}
+      paddingHorizontal={30}
+    >
       {visible ? (
         <Fragment>
           {seed ? (

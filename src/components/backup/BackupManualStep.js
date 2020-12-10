@@ -108,7 +108,7 @@ export default function BackupManualStep() {
             : `Write them down or save them in your password manager.`}
         </MastheadDescription>
       </Masthead>
-      <Content isTallPhone={isTallPhone}>
+      <Content isTallPhone={isTallPhone} paddingHorizontal={30}>
         <SecretDisplaySection
           onSecretLoaded={setSecretLoaded}
           onWalletTypeIdentified={setType}
