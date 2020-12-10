@@ -259,7 +259,7 @@ export default function AlreadyBackedUpView() {
         <Column>
           <SheetActionButton
             androidWidth={225}
-            color={ios ? colors.white : colors.lightestGrey}
+            color={colors.white}
             label="🗝 View recovery key"
             onPress={handleViewRecoveryPhrase}
             textColor={colors.alpha(colors.blueGreyDark, 0.8)}
