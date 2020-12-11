@@ -440,8 +440,6 @@ PODS:
     - React-Core (= 0.63.3)
     - React-cxxreact (= 0.63.3)
     - React-jsi (= 0.63.3)
-  - ReactNativeART (1.2.0):
-    - React
   - ReactNativePayments (1.1.5):
     - React
   - reactnativeslackbottomsheet (0.5.0):
@@ -646,7 +644,6 @@ DEPENDENCIES:
   - React-RCTText (from `../node_modules/react-native/Libraries/Text`)
   - React-RCTVibration (from `../node_modules/react-native/Libraries/Vibration`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
-  - "ReactNativeART (from `../node_modules/@react-native-community/art`)"
   - "ReactNativePayments (from `../node_modules/@rainbow-me/react-native-payments/lib/ios`)"
   - reactnativeslackbottomsheet (from `../node_modules/react-native-slack-bottom-sheet`)
   - "RNAnalytics (from `../node_modules/@segment/analytics-react-native`)"
@@ -826,8 +823,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/Libraries/Vibration"
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
-  ReactNativeART:
-    :path: "../node_modules/@react-native-community/art"
   ReactNativePayments:
     :path: "../node_modules/@rainbow-me/react-native-payments/lib/ios"
   reactnativeslackbottomsheet:
@@ -983,7 +978,6 @@ SPEC CHECKSUMS:
   React-RCTText: 65a6de06a7389098ce24340d1d3556015c38f746
   React-RCTVibration: 8e9fb25724a0805107fc1acc9075e26f814df454
   ReactCommon: 4167844018c9ed375cc01a843e9ee564399e53c3
-  ReactNativeART: 78edc68dd4a1e675338cd0cd113319cf3a65f2ab
   ReactNativePayments: 40a266450628c05db440fe219b631210e4358a49
   reactnativeslackbottomsheet: d44b4c59c1e69c045983044d2f361d256d3ddb98
   RNAnalytics: 589e1b1072d9df2646899627e4582d20c3255127
