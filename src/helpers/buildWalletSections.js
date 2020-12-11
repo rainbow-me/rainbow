@@ -1,13 +1,5 @@
 import lang from 'i18n-js';
-import {
-  compact,
-  flattenDeep,
-  get,
-  groupBy,
-  isEmpty,
-  map,
-  property,
-} from 'lodash';
+import { compact, flattenDeep, get, groupBy, map, property } from 'lodash';
 import React from 'react';
 import { LayoutAnimation } from 'react-native';
 import FastImage from 'react-native-fast-image';
@@ -323,7 +315,7 @@ const withBalanceSection = (
     nativeCurrency
   );
 
-  if (networkTypes.mainnet === network && !isEmpty(savingsSection.assets)) {
+  if (networkTypes.mainnet === network) {
     balanceSectionData.push(savingsSection);
   }
 

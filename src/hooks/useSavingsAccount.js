@@ -23,6 +23,7 @@ import { CDAI_CONTRACT, DAI_ADDRESS } from '../references';
 const COMPOUND_QUERY_INTERVAL = 120000; // 120 seconds
 
 const getMarketData = marketData => {
+  if (!marketData) return {};
   const underlying = getUnderlyingData(marketData);
   const cToken = getCTokenData(marketData);
   const { exchangeRate, supplyRate, underlyingPrice } = marketData;
@@ -154,7 +155,7 @@ export default function useSavingsAccount(includeDefaultDai) {
       const daiMarketData = getMarketData(markets[CDAI_CONTRACT]);
       const result = {
         accountTokens: savingsAccountData,
-        daiMarketData: daiMarketData,
+        daiMarketData,
       };
       setResult(result);
     };
@@ -177,7 +178,7 @@ export default function useSavingsAccount(includeDefaultDai) {
       token => token.underlying.address === DAI_ADDRESS
     );
 
-    let savings = accountTokens;
+    let savings = accountTokens || [];
 
     const shouldAddDai =
       includeDefaultDai && !accountHasCDAI && !isEmpty(daiMarketData);
