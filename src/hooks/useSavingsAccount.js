@@ -177,7 +177,7 @@ export default function useSavingsAccount(includeDefaultDai) {
       token => token.underlying.address === DAI_ADDRESS
     );
 
-    let savings = accountTokens;
+    let savings = accountTokens || [];
 
     const shouldAddDai =
       includeDefaultDai && !accountHasCDAI && !isEmpty(daiMarketData);
