@@ -19,18 +19,28 @@ import SheetHandleFixedToTop, {
 import { useNavigation } from '@rainbow-me/navigation';
 import { colors } from '@rainbow-me/styles';
 
+const deviceHeight = deviceUtils.dimensions.height;
+
+const calculateTopPosition = (
+  deferredHeight,
+  contentHeight,
+  additionalTopPadding
+) => {
+  if (deferredHeight) return '';
+  const top =
+    contentHeight && additionalTopPadding ? deviceHeight - contentHeight : 0;
+  return `top: ${top};`;
+};
+
 const Container = styled(Centered).attrs({ direction: 'column' })`
   background-color: ${({ backgroundColor }) => backgroundColor};
   bottom: 0;
   left: 0;
   overflow: hidden;
   position: absolute;
-  border-top-left-radius: 20;
-  border-top-right-radius: 20;
-  top: ${({ contentHeight, additionalTopPadding }) =>
-    contentHeight && additionalTopPadding
-      ? deviceUtils.dimensions.height - contentHeight
-      : 0};
+  border-radius: 20;
+  ${({ deferredHeight, contentHeight, additionalTopPadding }) =>
+    calculateTopPosition(deferredHeight, contentHeight, additionalTopPadding)}
   right: 0;
 `;
 
@@ -73,6 +83,7 @@ export default function SlackSheet({
   renderHeader,
   scrollEnabled = true,
   additionalTopPadding = false,
+  deferredHeight = false,
   ...props
 }) {
   const yPosition = useReanimatedValue(0);
@@ -108,6 +119,7 @@ export default function SlackSheet({
         additionalTopPadding={additionalTopPadding}
         backgroundColor={backgroundColor}
         contentHeight={contentHeight}
+        deferredHeight={deferredHeight}
         {...props}
       >
         {android && (

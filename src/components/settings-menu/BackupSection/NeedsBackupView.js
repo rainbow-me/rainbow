@@ -123,9 +123,9 @@ export default function NeedsBackupView() {
             onPress={onIcloudBackup}
           />
           <SheetActionButton
-            color={ios ? colors.white : colors.lightestGrey}
+            androidWidth={220}
+            color={colors.white}
             label="🤓 Back up manually"
-            noFlex
             onPress={onManualBackup}
             textColor={colors.alpha(colors.blueGreyDark, 0.8)}
           />

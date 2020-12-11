@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, InteractionManager } from 'react-native';
+import { Alert, InteractionManager, Keyboard } from 'react-native';
 import styled from 'styled-components';
+import { isSamsungGalaxy } from '../../helpers/samsung';
 import {
   fetchBackupPassword,
   restoreCloudBackup,
@@ -17,7 +18,11 @@ import {
 } from '@rainbow-me/handlers/cloudBackup';
 import { removeWalletData } from '@rainbow-me/handlers/localstorage/removeWallet';
 import WalletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
-import { useAccountSettings, useWallets } from '@rainbow-me/hooks';
+import {
+  useAccountSettings,
+  useDimensions,
+  useWallets,
+} from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors, margin, padding } from '@rainbow-me/styles';
@@ -54,15 +59,35 @@ const Title = styled(Text).attrs({
   ${margin(15, 0, 12)};
 `;
 
+const samsungGalaxy = (android && isSamsungGalaxy()) || false;
+
 export default function RestoreCloudStep({ userData }) {
+  const { isTinyPhone } = useDimensions();
   const { goBack, replace } = useNavigation();
   const { setIsWalletLoading } = useWallets();
   const { accountAddress } = useAccountSettings();
   const [validPassword, setValidPassword] = useState(false);
   const [incorrectPassword, setIncorrectPassword] = useState(false);
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const [password, setPassword] = useState('');
   const [label, setLabel] = useState('􀎽 Confirm Backup');
   const passwordRef = useRef();
+
+  useEffect(() => {
+    const keyboardDidShow = () => {
+      setIsKeyboardOpen(true);
+    };
+
+    const keyboardDidHide = () => {
+      setIsKeyboardOpen(false);
+    };
+    Keyboard.addListener('keyboardDidShow', keyboardDidShow);
+    Keyboard.addListener('keyboardDidHide', keyboardDidHide);
+    return () => {
+      Keyboard.removeListener('keyboardDidShow', keyboardDidShow);
+      Keyboard.removeListener('keyboardDidHide', keyboardDidHide);
+    };
+  }, []);
 
   useEffect(() => {
     const fetchPasswordIfPossible = async () => {
@@ -136,7 +161,9 @@ export default function RestoreCloudStep({ userData }) {
       type="restore"
     >
       <Masthead>
-        <MastheadIcon>􀙶</MastheadIcon>
+        {(isTinyPhone || samsungGalaxy) && isKeyboardOpen ? null : (
+          <MastheadIcon>􀙶</MastheadIcon>
+        )}
         <Title>Enter backup password</Title>
         <DescriptionText>
           To restore your wallet, enter the backup password you created

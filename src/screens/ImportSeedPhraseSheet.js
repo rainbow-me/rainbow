@@ -153,14 +153,14 @@ export default function ImportSeedPhraseSheet() {
   const [startAnalyticsTimeout] = useTimeout();
   const wasImporting = usePrevious(isImporting);
 
+  const inputRef = useRef(null);
+
   useEffect(() => {
     android &&
       setTimeout(() => {
-        inputRef?.current.focus();
+        inputRef.current?.focus();
       }, 500);
   }, []);
-
-  const inputRef = useRef(null);
   const { handleFocus } = useMagicAutofocus(inputRef);
 
   const isClipboardValidSecret = useMemo(
@@ -389,6 +389,7 @@ export default function ImportSeedPhraseSheet() {
           {seedPhrase ? (
             <FooterButton
               disabled={!isSecretValid}
+              {...(android && { height: 30, overflowMargin: 15, width: 90 })}
               onPress={handlePressImportButton}
             >
               <Row>
@@ -410,6 +411,7 @@ export default function ImportSeedPhraseSheet() {
             </FooterButton>
           ) : (
             <FooterButton
+              {...(android && { height: 30, overflowMargin: 15, width: 60 })}
               disabled={!isClipboardValidSecret}
               onPress={handlePressPasteButton}
             >

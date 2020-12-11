@@ -6,7 +6,7 @@ import { ButtonPressAnimation } from '../animations';
 import { BottomRowText, CoinRow } from '../coin-row';
 import BalanceText from '../coin-row/BalanceText';
 import CoinName from '../coin-row/CoinName';
-import { LiquidityPoolExpandedStateSheetHeight } from '../expanded-state/LiquidityPoolExpandedState';
+import { initialLiquidityPoolExpandedStateSheetHeight } from '../expanded-state/LiquidityPoolExpandedState';
 import { FlexItem, Row } from '../layout';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
@@ -94,7 +94,7 @@ const UniswapInvestmentRow = ({ assetType, item, ...props }) => {
     navigate(Routes.EXPANDED_ASSET_SHEET, {
       asset: item,
       cornerRadius: 10,
-      longFormHeight: LiquidityPoolExpandedStateSheetHeight,
+      longFormHeight: initialLiquidityPoolExpandedStateSheetHeight,
       type: assetType,
     });
   }, [assetType, item, navigate]);

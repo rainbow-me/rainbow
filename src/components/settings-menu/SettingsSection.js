@@ -224,7 +224,7 @@ export default function SettingsSection({
           value={SettingsExternalURLs.twitter}
         />
         <ListItem
-          icon={<Emoji name={ios ? 'speech_balloon' : 'bug'} />}
+          icon={<Emoji name={ios ? 'speech_balloon' : 'lady_beetle'} />}
           label={ios ? 'Feedback and Support' : 'Feedback & Bug Reports'}
           onPress={onSendFeedback}
           testID="feedback-section"

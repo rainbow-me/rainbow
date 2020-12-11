@@ -32,22 +32,22 @@ const PinValue = ({ translateX, value, ...props }) => {
         }}
       >
         {value && value.length ? (
-          <FilledValue backgroundColor={colors.swapPurple} />
+          <FilledValue backgroundColor={colors.appleBlue} />
         ) : (
           <EmptyValue />
         )}
         {value && value.length > 1 ? (
-          <FilledValue backgroundColor={colors.swapPurple} />
+          <FilledValue backgroundColor={colors.appleBlue} />
         ) : (
           <EmptyValue />
         )}
         {value && value.length > 2 ? (
-          <FilledValue backgroundColor={colors.swapPurple} />
+          <FilledValue backgroundColor={colors.appleBlue} />
         ) : (
           <EmptyValue />
         )}
         {value && value.length > 3 ? (
-          <FilledValue backgroundColor={colors.swapPurple} />
+          <FilledValue backgroundColor={colors.appleBlue} />
         ) : (
           <EmptyValue />
         )}

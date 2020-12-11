@@ -24,7 +24,7 @@ export default function RestoreSheet() {
   const { height: deviceHeight } = useDimensions();
   const {
     params: {
-      longFormHeight = ios ? 0 : 1,
+      longFormHeight = 0,
       step = WalletBackupStepTypes.first,
       userData,
     } = {},
@@ -73,20 +73,27 @@ export default function RestoreSheet() {
 
   const onManualRestore = useCallback(() => {
     goBack();
-    navigate(Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR);
+    navigate(Routes.IMPORT_SEED_PHRASE_FLOW);
   }, [goBack, navigate]);
 
   const onWatchAddress = useCallback(() => {
     goBack();
-    navigate(Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR);
+    navigate(Routes.IMPORT_SEED_PHRASE_FLOW);
   }, [goBack, navigate]);
 
-  const wrapperHeight = android ? deviceHeight : deviceHeight + longFormHeight;
+  const wrapperHeight =
+    deviceHeight +
+    longFormHeight +
+    (android ? StatusBar.currentHeight * 1.5 : 0);
 
   return (
     <Column height={wrapperHeight}>
       <StatusBar barStyle="light-content" />
-      <SlackSheet contentHeight={longFormHeight} testID="restore-sheet">
+      <SlackSheet
+        contentHeight={longFormHeight}
+        deferredHeight={android}
+        testID="restore-sheet"
+      >
         {step === WalletBackupStepTypes.cloud ? (
           <RestoreCloudStep userData={userData} />
         ) : (

@@ -32,6 +32,7 @@ import { GasSpeedButton } from '../components/gas';
 import { Centered, Column, Row, RowWithMargins } from '../components/layout';
 import {
   SheetActionButton,
+  SheetActionButtonRow,
   SheetHandleFixedToTop,
   SlackSheet,
 } from '../components/sheet';
@@ -49,17 +50,6 @@ import {
   fromWei,
   greaterThanOrEqualTo,
 } from '../helpers/utilities';
-import {
-  useAccountAssets,
-  useAccountProfile,
-  useAccountSettings,
-  useDimensions,
-  useGas,
-  useKeyboardHeight,
-  useTransactionConfirmation,
-  useWalletBalances,
-  useWallets,
-} from '../hooks';
 import {
   sendTransaction,
   signMessage,
@@ -80,6 +70,17 @@ import {
   SIGN,
   SIGN_TYPED_DATA,
 } from '../utils/signingMethods';
+import {
+  useAccountAssets,
+  useAccountProfile,
+  useAccountSettings,
+  useDimensions,
+  useGas,
+  useKeyboardHeight,
+  useTransactionConfirmation,
+  useWalletBalances,
+  useWallets,
+} from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { colors, padding } from '@rainbow-me/styles';
 import logger from 'logger';
@@ -574,10 +575,11 @@ const TransactionConfirmationScreen = () => {
     return !isMessage &&
       isBalanceEnough === false &&
       isSufficientGas !== undefined ? (
-      <Column marginTop={24} width="100%">
+      <Column marginBottom={24} marginTop={19}>
         <SheetActionButton
           color={colors.transparent}
           disabled
+          fullWidth
           label="ETH balance too low"
           onPress={onCancel}
           size="big"
@@ -586,39 +588,23 @@ const TransactionConfirmationScreen = () => {
         />
       </Column>
     ) : (
-      <RowWithMargins
-        css={`
-          opacity: ${ready ? 1 : 0.5};
-        `}
-        margin={15}
-        marginTop={isMessage ? 0 : 24}
-      >
+      <SheetActionButtonRow ignorePaddingTop>
         <SheetActionButton
           color={colors.white}
           label="Cancel"
           onPress={onCancel}
-          radiusWrapperStyle={{ flex: 1, marginLeft: 10, marginRight: 15 }}
           size="big"
           textColor={colors.alpha(colors.blueGreyDark, 0.8)}
           weight="bold"
-          wrapperProps={{
-            containerStyle: { flex: 1, marginRight: -10 },
-            style: { flex: 1 },
-          }}
         />
         <SheetActionButton
           color={colors.appleBlue}
           label="􀎽 Confirm"
           onPress={ready ? onPressSend : NOOP}
-          radiusWrapperStyle={{ flex: 1, marginRight: 10 }}
           size="big"
           weight="bold"
-          wrapperProps={{
-            containerStyle: { flex: 1 },
-            style: { flex: 1 },
-          }}
         />
-      </RowWithMargins>
+      </SheetActionButtonRow>
     );
   }, [
     isBalanceEnough,
@@ -714,7 +700,8 @@ const TransactionConfirmationScreen = () => {
   const ShortSheetHeight = 457 + safeAreaInsetValues.bottom;
   const TallSheetHeight = 604 + safeAreaInsetValues.bottom;
   const MessageSheetHeight =
-    (method === SIGN_TYPED_DATA ? 640 : 575) + safeAreaInsetValues.bottom;
+    (method === SIGN_TYPED_DATA ? 640 : android ? 595 : 575) +
+    safeAreaInsetValues.bottom;
   const sheetHeight =
     (isMessageRequest
       ? MessageSheetHeight
@@ -725,7 +712,7 @@ const TransactionConfirmationScreen = () => {
   let marginTop = android
     ? method === SIGN_TYPED_DATA
       ? deviceHeight - sheetHeight + 275
-      : deviceHeight - sheetHeight + (isMessageRequest ? 225 : 205)
+      : deviceHeight - sheetHeight + (isMessageRequest ? 265 : 210)
     : null;
 
   if (isTransactionDisplayType(method) && !get(request, 'asset', false)) {
@@ -754,9 +741,13 @@ const TransactionConfirmationScreen = () => {
                 ? safeAreaInsetValues.bottom + (android ? 20 : 0)
                 : 0
             }
-            paddingHorizontal={19}
             paddingTop={24}
-            style={animatedSheetStyles}
+            style={[
+              animatedSheetStyles,
+              android && isMessageRequest
+                ? { borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }
+                : null,
+            ]}
           >
             <SheetHandleFixedToTop showBlur={false} />
             <Column marginBottom={17} />
@@ -799,11 +790,11 @@ const TransactionConfirmationScreen = () => {
             <Divider color={colors.rowDividerLight} inset={[0, 143.5]} />
             {renderTransactionSection()}
             {renderTransactionButtons()}
-            <RowWithMargins css={padding(24, 5, 30)} margin={15}>
+            <RowWithMargins css={padding(0, 24, 30)} margin={15}>
               <Column>
                 <WalletLabel>Wallet</WalletLabel>
                 <RowWithMargins margin={5}>
-                  <Column marginTop={ios ? 2 : 10}>
+                  <Column marginTop={ios ? 2 : 8}>
                     <ContactAvatar
                       color={
                         isNaN(accountColor) ? colors.skeleton : accountColor

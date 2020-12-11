@@ -8,7 +8,10 @@ export {
   timing,
   updateState,
 } from './procs';
-export { default as ButtonPressAnimation } from './ButtonPressAnimation';
+export {
+  default as ButtonPressAnimation,
+  ScaleButtonZoomableAndroid,
+} from './ButtonPressAnimation';
 export { default as FlyInAnimation } from './FlyInAnimation';
 export { default as OpacityToggler } from './OpacityToggler';
 export { default as RotationArrow } from './RotationArrow';

@@ -1,7 +1,9 @@
 import React, { useCallback } from 'react';
 import styled from 'styled-components/primitives';
 import { magicMemo } from '../../utils';
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import ButtonPressAnimation, {
+  ScaleButtonZoomableAndroid,
+} from '../animations/ButtonPressAnimation';
 import { Centered, InnerBorder } from '../layout';
 import { borders, colors, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
@@ -18,6 +20,8 @@ const Content = styled(Centered)`
   ${position.cover};
   background-color: ${({ backgroundColor }) => backgroundColor};
 `;
+
+const Wrapper = android ? ScaleButtonZoomableAndroid : ButtonPressAnimation;
 
 const FloatingActionButton = ({
   backgroundColor,
@@ -46,11 +50,12 @@ const FloatingActionButton = ({
   );
 
   return (
-    <ButtonPressAnimation
+    <Wrapper
       disabled={disabled || android}
       hapticType="impactLight"
       onPress={handlePress}
       onPressIn={handlePressIn}
+      overflowMargin={25}
       scaleTo={scaleTo}
       useLateHaptic={false}
       {...props}
@@ -63,6 +68,7 @@ const FloatingActionButton = ({
         <ButtonPressAnimation
           disabled={disabled || ios}
           onPress={handlePress}
+          reanimatedButton
           style={{
             height: size,
           }}
@@ -74,7 +80,7 @@ const FloatingActionButton = ({
           </Content>
         </ButtonPressAnimation>
       </ShadowStack>
-    </ButtonPressAnimation>
+    </Wrapper>
   );
 };
 

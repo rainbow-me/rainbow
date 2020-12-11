@@ -142,14 +142,14 @@ export default function AlreadyBackedUpView() {
   }, [walletId]);
 
   const manageCloudBackups = useCallback(() => {
-    const buttons = ['Delete all iCloud backups', 'Cancel'];
+    const buttons = [`Delete All ${cloudPlatform} Backups`, 'Cancel'];
 
     showActionSheetWithOptions(
       {
         cancelButtonIndex: 1,
         destructiveButtonIndex: 0,
         options: buttons,
-        title: `Manage iCloud backups`,
+        title: `Manage ${cloudPlatform} Backups`,
       },
       buttonIndex => {
         if (buttonIndex === 0) {
@@ -158,8 +158,8 @@ export default function AlreadyBackedUpView() {
             {
               cancelButtonIndex: 1,
               destructiveButtonIndex: 0,
-              message: `Are you sure you want to delete all iCloud Backups`,
-              options: ['YES, Delete All iCloud Backups', 'Cancel'],
+              message: `Are you sure you want to delete your ${cloudPlatform} wallet backups?`,
+              options: [`Confirm and Delete Backups`, 'Cancel'],
             },
             async buttonIndex => {
               if (buttonIndex === 0) {
@@ -258,9 +258,9 @@ export default function AlreadyBackedUpView() {
         </Centered>
         <Column>
           <SheetActionButton
-            color={ios ? colors.white : colors.lightestGrey}
+            androidWidth={225}
+            color={colors.white}
             label="🗝 View recovery key"
-            noFlex
             onPress={handleViewRecoveryPhrase}
             textColor={colors.alpha(colors.blueGreyDark, 0.8)}
           />
@@ -276,7 +276,7 @@ export default function AlreadyBackedUpView() {
               size="large"
               weight="semibold"
             >
-              􀙶 Back up {cloudPlatform}
+              􀙶 Back up to {cloudPlatform}
             </Text>
           </ButtonPressAnimation>
         </Footer>
@@ -290,7 +290,7 @@ export default function AlreadyBackedUpView() {
               size="lmedium"
               weight="semibold"
             >
-              􀍢 Manage {cloudPlatform} backups
+              􀍢 Manage {cloudPlatform} Backups
             </Text>
           </ButtonPressAnimation>
         </Footer>

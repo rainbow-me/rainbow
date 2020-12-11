@@ -1,6 +1,6 @@
 import { find } from 'lodash';
 import React, { useRef } from 'react';
-import { useColorForAsset, useUniswapAssetsInWallet } from '../../hooks';
+import { useChartThrottledPoints, useUniswapAssetsInWallet } from '../../hooks';
 import {
   BuyActionButton,
   SendActionButton,
@@ -15,17 +15,32 @@ import {
   TokenInfoRow,
   TokenInfoSection,
 } from '../token-info';
-import ChartState from './chart/ChartState';
+import Chart from '../value-chart/Chart';
+import { ChartPathProvider } from '@rainbow-me/animated-charts';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 
-const heightWithChart = android ? 630 : 606;
-const heightWithoutChart = 309;
+//add's StatusBar height to android
+const heightWithoutChart = 309 + (android && 24);
+const heightWithChart = heightWithoutChart + 297;
 
-export const ChartExpandedStateSheetHeight =
-  heightWithChart + (android ? 40 : 0);
+export const initialChartExpandedStateSheetHeight =
+  heightWithChart + (android && 40);
 
 export default function ChartExpandedState({ asset }) {
-  const color = useColorForAsset(asset);
+  const {
+    chart,
+    chartData,
+    chartType,
+    color,
+    fetchingCharts,
+    initialChartDataLabels,
+    showChart,
+    throttledData,
+  } = useChartThrottledPoints({
+    asset,
+    heightWithChart,
+    heightWithoutChart,
+  });
 
   const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
   const showSwapButton = find(uniswapAssetsInWallet, [
@@ -40,6 +55,8 @@ export default function ChartExpandedState({ asset }) {
   if (duration.current === 0) {
     duration.current = 300;
   }
+  const ChartExpandedStateSheetHeight =
+    (ios || showChart ? heightWithChart : heightWithoutChart) + (android && 40);
 
   return (
     <SlackSheet
@@ -47,11 +64,20 @@ export default function ChartExpandedState({ asset }) {
       contentHeight={ChartExpandedStateSheetHeight}
       scrollEnabled={false}
     >
-      <ChartState
-        asset={asset}
-        heightWithChart={heightWithChart}
-        heightWithoutChart={heightWithoutChart}
-      />
+      <ChartPathProvider data={throttledData}>
+        <Chart
+          {...chartData}
+          {...initialChartDataLabels}
+          asset={asset}
+          chart={chart}
+          chartType={chartType}
+          color={color}
+          fetchingCharts={fetchingCharts}
+          nativePoints={chart}
+          showChart={showChart}
+          throttledData={throttledData}
+        />
+      </ChartPathProvider>
       <SheetDivider />
       <TokenInfoSection>
         <TokenInfoRow>
@@ -67,42 +93,14 @@ export default function ChartExpandedState({ asset }) {
       </TokenInfoSection>
       {needsEth ? (
         <SheetActionButtonRow>
-          <BuyActionButton
-            color={color}
-            isCharts
-            radiusAndroid={24}
-            radiusWrapperStyle={{ flex: 1 }}
-            wrapperProps={{
-              containerStyle: { flex: 1 },
-              style: { flex: 1 },
-            }}
-          />
+          <BuyActionButton color={color} fullWidth />
         </SheetActionButtonRow>
       ) : (
         <SheetActionButtonRow>
           {showSwapButton && (
-            <SwapActionButton
-              color={color}
-              inputType={AssetInputTypes.in}
-              isCharts
-              radiusAndroid={24}
-              radiusWrapperStyle={{ flex: 1, marginRight: 10 }}
-              wrapperProps={{
-                containerStyle: { flex: 1 },
-                style: { flex: 1 },
-              }}
-            />
+            <SwapActionButton color={color} inputType={AssetInputTypes.in} />
           )}
-          <SendActionButton
-            color={color}
-            isCharts
-            radiusAndroid={24}
-            radiusWrapperStyle={{ flex: 1, marginLeft: 10 }}
-            wrapperProps={{
-              containerStyle: { flex: 1 },
-              style: { flex: 1 },
-            }}
-          />
+          <SendActionButton color={color} fullWidth={!showSwapButton} />
         </SheetActionButtonRow>
       )}
     </SlackSheet>

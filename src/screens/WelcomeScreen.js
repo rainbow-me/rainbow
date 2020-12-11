@@ -1,5 +1,4 @@
 import MaskedView from '@react-native-community/masked-view';
-import { useNavigation } from '@react-navigation/native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, Easing, StyleSheet } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
@@ -29,6 +28,7 @@ import {
 import { cloudPlatform } from '../utils/platform';
 
 import { useHideSplashScreen } from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors, shadow } from '@rainbow-me/styles';
 import logger from 'logger';
@@ -449,7 +449,7 @@ export default function WelcomeScreen() {
     const color = colorAnimation(rValue, true);
     return {
       emoji: 'castle',
-      height: 54 + (ios ? 0 : 8),
+      height: 54 + (ios ? 0 : 6),
       shadowStyle: {
         backgroundColor: backgroundColor,
         shadowColor: color,
@@ -457,8 +457,8 @@ export default function WelcomeScreen() {
       style: {
         backgroundColor: colors.dark,
         borderColor: backgroundColor,
-        borderWidth: ios ? 0 : 5,
-        width: 230 + (ios ? 0 : 5),
+        borderWidth: ios ? 0 : 3,
+        width: 230 + (ios ? 0 : 6),
       },
       text: 'Get a new wallet',
       textColor: colors.white,

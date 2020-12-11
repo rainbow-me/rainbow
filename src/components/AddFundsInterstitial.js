@@ -9,7 +9,7 @@ import { useAccountSettings, useDimensions, useWallets } from '../hooks';
 import { useNavigation } from '../navigation/Navigation';
 import { magicMemo } from '../utils';
 import Divider from './Divider';
-import { ButtonPressAnimation } from './animations';
+import { ButtonPressAnimation, ScaleButtonZoomableAndroid } from './animations';
 import { Icon } from './icons';
 import { Centered, Row, RowWithMargins } from './layout';
 import { Text } from './text';
@@ -26,13 +26,12 @@ const ButtonContainer = styled(Centered).attrs({ direction: 'column' })`
 
 const InterstitialButton = styled(ButtonPressAnimation).attrs({
   backgroundColor: colors.alpha(colors.blueGreyDark, 0.06),
-  wrapperProps: {
-    containerStyle: { height: 45, width: 200 },
-    style: { flex: 1 },
-  },
+  borderRadius: 23,
 })`
   ${padding(10.5, 15, 14.5)};
-  border-radius: 23px;
+`;
+
+const InterstitialButtonRow = styled(Row)`
   margin-bottom: ${({ isSmallPhone }) => (isSmallPhone ? 19 : 42)};
 `;
 
@@ -45,13 +44,12 @@ const InterstitialDivider = styled(Divider).attrs({
 
 const CopyAddressButton = styled(ButtonPressAnimation).attrs({
   backgroundColor: colors.alpha(colors.appleBlue, 0.06),
+  borderRadius: 23,
 })`
   ${padding(10.5, 15, 14.5)};
-  border-radius: 23px;
 `;
 
 const AmountBPA = styled(ButtonPressAnimation)`
-  ${padding(0, 0, 0)};
   border-radius: 25px;
   overflow: visible;
 `;
@@ -113,7 +111,9 @@ const buildInterstitialTransform = (isSmallPhone, offsetY) => ({
     { translateX: (ButtonContainerWidth / 2) * -1 },
     {
       translateY:
-        (ButtonContainerHeight / 2) * -1 + offsetY - (isSmallPhone ? 44 : 22),
+        (ButtonContainerHeight / 2) * -1 +
+        offsetY -
+        (android ? 66 : isSmallPhone ? 44 : 22),
     },
   ],
 });
@@ -136,12 +136,14 @@ const shadows = {
 
 const InnerBPA = android ? ButtonPressAnimation : ({ children }) => children;
 
+const Wrapper = android ? ScaleButtonZoomableAndroid : AmountBPA;
+
 const AmountButton = ({ amount, backgroundColor, color, onPress }) => {
   const handlePress = useCallback(() => onPress?.(amount), [amount, onPress]);
 
   return (
     <AmountButtonWrapper>
-      <AmountBPA disabled={android} onPress={handlePress}>
+      <Wrapper disabled={android} onPress={handlePress}>
         <ShadowStack
           {...position.coverAsObject}
           backgroundColor={backgroundColor}
@@ -153,17 +155,19 @@ const AmountButton = ({ amount, backgroundColor, color, onPress }) => {
           })}
         />
         <InnerBPA
-          disabled={ios}
           onPress={handlePress}
-          radiusAndroid={25}
-          radiusWrapperStyle={{ width: 100, zIndex: 1 }}
+          reanimatedButton
           style={{ flex: 1 }}
+          wrapperStyle={{
+            width: 100,
+            zIndex: 10,
+          }}
         >
           <AmountText color={color} textShadowColor={color}>
             ${amount}
           </AmountText>
         </InnerBPA>
-      </AmountBPA>
+      </Wrapper>
     </AmountButtonWrapper>
   );
 };
@@ -234,7 +238,7 @@ const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
                 onPress={handlePressAmount}
               />
             </Row>
-            <Row>
+            <InterstitialButtonRow>
               <InterstitialButton
                 onPress={handlePressAmount}
                 radiusAndroid={23}
@@ -249,7 +253,7 @@ const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
                   􀍡 Other amount
                 </Text>
               </InterstitialButton>
-            </Row>
+            </InterstitialButtonRow>
             {!isSmallPhone && <InterstitialDivider />}
             <Subtitle isSmallPhone={isSmallPhone}>
               or send ETH to your wallet
