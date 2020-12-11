@@ -66,7 +66,7 @@ const getUnderlyingData = marketData => {
 
 export default function useSavingsAccount(includeDefaultDai) {
   const [result, setResult] = useState({});
-  const [backupAccountTokens, setBackupAccountTokens] = useState(null);
+  const [backupSavings, setBackupSavings] = useState(null);
 
   const { accountAddress, network } = useAccountSettings();
 
@@ -91,19 +91,18 @@ export default function useSavingsAccount(includeDefaultDai) {
     if (!hasAccountAddress) return;
     const fetchBackupSavings = async () => {
       const backup = await getSavings(accountAddress, network);
-      setBackupAccountTokens(backup);
+      setBackupSavings(backup);
     };
     fetchBackupSavings();
   }, [accountAddress, hasAccountAddress, network]);
 
   useEffect(() => {
-    if (!hasAccountAddress || isNil(backupAccountTokens)) return;
+    if (!hasAccountAddress || isNil(backupSavings)) return;
     const parseSavingsResult = async data => {
       if (error) return;
-      let savingsAccountData = [];
-      const markets = keyBy(data?.markets || [], property('id'));
 
       if (data) {
+        const markets = keyBy(data?.markets || [], property('id'));
         const resultTokens = data?.account?.tokens || [];
 
         const parsedAccountTokens = resultTokens.map(token => {
@@ -142,27 +141,27 @@ export default function useSavingsAccount(includeDefaultDai) {
             underlyingPrice,
           };
         });
-        savingsAccountData = orderBy(
+        const accountTokens = orderBy(
           parsedAccountTokens,
           ['ethPrice'],
           ['desc']
         );
-        saveSavings(savingsAccountData, accountAddress, network);
+        const daiMarketData = getMarketData(markets[CDAI_CONTRACT]);
+        const result = {
+          accountTokens,
+          daiMarketData,
+        };
+        saveSavings(result, accountAddress, network);
+        setResult(result);
       } else if (loading) {
-        savingsAccountData = backupAccountTokens;
+        const result = backupSavings;
+        setResult(result);
       }
-
-      const daiMarketData = getMarketData(markets[CDAI_CONTRACT]);
-      const result = {
-        accountTokens: savingsAccountData,
-        daiMarketData,
-      };
-      setResult(result);
     };
     parseSavingsResult(data);
   }, [
     accountAddress,
-    backupAccountTokens,
+    backupSavings,
     data,
     error,
     hasAccountAddress,
@@ -171,6 +170,8 @@ export default function useSavingsAccount(includeDefaultDai) {
   ]);
 
   const savings = useMemo(() => {
+    if (isEmpty(result)) return [];
+
     const { accountTokens, daiMarketData } = result;
 
     const accountHasCDAI = find(
