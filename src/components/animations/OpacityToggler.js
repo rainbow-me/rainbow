@@ -1,15 +1,15 @@
 import React from 'react';
-import Animated from 'react-native-reanimated';
+import { View } from 'react-native';
 
-const OpacityToggler = ({ isVisible, style, ...props }, ref) => {
-  return (
-    <Animated.View
-      {...props}
-      accessible
-      ref={ref}
-      style={[style, { display: isVisible ? 'none' : 'flex' }]}
-    />
-  );
+const OpacityToggler = (
+  { endingOpacity = 0, isVisible, style, ...props },
+  ref
+) => {
+  const startingOpacity = 1;
+
+  const opacity = isVisible ? endingOpacity : startingOpacity;
+
+  return <View {...props} accessible ref={ref} style={[style, { opacity }]} />;
 };
 
 export default React.forwardRef(OpacityToggler);
