@@ -53,6 +53,7 @@ export default function ExchangeInputField({
       />
       <NativeFieldRow>
         <ExchangeNativeField
+          address={inputCurrencyAddress}
           editable
           height={BottomRowHeight}
           nativeAmount={nativeAmount}
@@ -63,6 +64,7 @@ export default function ExchangeInputField({
           testID={testID + '-native'}
         />
         <ExchangeMaxButton
+          address={inputCurrencyAddress}
           disabled={!inputCurrencySymbol}
           onPress={onPressMaxBalance}
           testID={testID + '-max'}

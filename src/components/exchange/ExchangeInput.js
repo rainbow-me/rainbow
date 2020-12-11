@@ -2,13 +2,12 @@ import React, { useCallback, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import TextInputMask from 'react-native-text-input-mask';
 import styled from 'styled-components/primitives';
-import { magicMemo } from '../../utils';
 import { buildTextStyles, colors } from '@rainbow-me/styles';
+import { magicMemo } from '@rainbow-me/utils';
 
 const Input = styled(TextInputMask).attrs({
   allowFontScaling: false,
   keyboardType: 'decimal-pad',
-  selectionColor: colors.appleBlue,
 })`
   ${buildTextStyles};
   ${android ? 'font-weight: normal' : ''};
@@ -28,6 +27,7 @@ const ExchangeInput = (
     onFocus,
     placeholder = '0',
     placeholderTextColor = colors.alpha(colors.blueGreyDark, 0.3),
+    selectionColor = color,
     size = 'h2',
     testID,
     value = '',
@@ -100,6 +100,7 @@ const ExchangeInput = (
       placeholder={placeholder}
       placeholderTextColor={placeholderTextColor}
       ref={ref}
+      selectionColor={selectionColor}
       size={size}
       testID={testID}
       value={value}
