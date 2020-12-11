@@ -1,20 +1,13 @@
 import React from 'react';
 import Animated from 'react-native-reanimated';
 
-const OpacityToggler = (
-  { endingOpacity = 0, isVisible, style, ...props },
-  ref
-) => {
-  const startingOpacity = 1;
-
-  const opacity = isVisible ? endingOpacity : startingOpacity;
-
+const OpacityToggler = ({ isVisible, style, ...props }, ref) => {
   return (
     <Animated.View
       {...props}
       accessible
       ref={ref}
-      style={[style, { opacity }]}
+      style={[style, { display: isVisible ? 'none' : 'flex' }]}
     />
   );
 };
