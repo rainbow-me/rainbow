@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "set.png",
+      "filename" : "rook.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "set@2x.png",
+      "filename" : "rook@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "set@3x.png",
+      "filename" : "rook@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

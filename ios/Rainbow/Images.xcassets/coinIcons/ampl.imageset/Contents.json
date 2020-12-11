@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "uni-v1_sai.png",
+      "filename" : "ampl.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "uni-v1_sai@2x.png",
+      "filename" : "ampl@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "uni-v1_sai@3x.png",
+      "filename" : "ampl@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
