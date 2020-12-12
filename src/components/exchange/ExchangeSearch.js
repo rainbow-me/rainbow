@@ -73,7 +73,6 @@ const SearchInput = styled(Input).attrs({
     : ''}
   flex: 1;
   margin-left: 4;
-  text-align: center;
 `;
 
 const SearchSpinner = styled(FastImage).attrs({

@@ -8,6 +8,7 @@ import BalanceText from './BalanceText';
 import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
+import CoinRowAddButton from './CoinRowAddButton';
 import CoinRowFavoriteButton from './CoinRowFavoriteButton';
 import { useDimensions } from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
@@ -48,10 +49,11 @@ const TopRow = ({ name, showBalance }) => (
 
 const ExchangeCoinRow = ({
   item,
-  onFavoriteAsset,
+  onActionAsset,
   onPress,
   showBalance,
   showFavoriteButton,
+  showAddButton,
 }) => {
   const { width: deviceWidth } = useDimensions();
   const [localFavorite, setLocalFavorite] = useState(!!item.favorite);
@@ -72,7 +74,7 @@ const ExchangeCoinRow = ({
           containerStyles={css(
             padding(
               CoinRowPaddingTop,
-              showFavoriteButton ? 38 : 0,
+              showFavoriteButton || showAddButton ? 38 : 0,
               CoinRowPaddingBottom,
               15
             )
@@ -103,13 +105,20 @@ const ExchangeCoinRow = ({
                   } else {
                     haptics.selection();
                   }
-                  onFavoriteAsset(item, newLocalFavorite);
+                  onActionAsset(item, newLocalFavorite);
                   return newLocalFavorite;
                 });
               }}
             />
           )}
         </FloatingFavoriteEmojis>
+      )}
+      {showAddButton && (
+        <CoinRowAddButton
+          onPress={() => {
+            onActionAsset(item);
+          }}
+        />
       )}
     </>
   );

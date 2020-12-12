@@ -49,7 +49,9 @@ export default function CoinRow({
   return (
     <Container css={containerStyles}>
       {isPool ? (
-        <CoinIconGroup tokens={tokens} />
+        tokens?.length ? (
+          <CoinIconGroup tokens={tokens} />
+        ) : null
       ) : (
         createElement(coinIconRender, {
           address,
