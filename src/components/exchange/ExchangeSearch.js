@@ -73,6 +73,7 @@ const SearchInput = styled(Input).attrs({
     : ''}
   flex: 1;
   margin-left: 4;
+  text-align: center;
 `;
 
 const SearchSpinner = styled(FastImage).attrs({
@@ -102,7 +103,15 @@ const timingConfig = {
 };
 
 const ExchangeSearch = (
-  { isFetching, isSearching, onChangeText, onFocus, searchQuery, testID },
+  {
+    isFetching,
+    isSearching,
+    onChangeText,
+    onFocus,
+    searchQuery,
+    testID,
+    placeholderText = 'Search Uniswap',
+  },
   ref
 ) => {
   const handleClearInput = useCallback(() => {
@@ -171,7 +180,7 @@ const ExchangeSearch = (
       <SearchInput
         onChangeText={onChangeText}
         onFocus={onFocus}
-        placeholder="Search Uniswap"
+        placeholder={placeholderText}
         ref={ref}
         testID={testID + '-input'}
         value={searchQuery}

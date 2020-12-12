@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import styled from 'styled-components/primitives';
 import { ColumnWithMargins } from '../layout';
 import { SlackSheet } from '../sheet';
@@ -24,11 +24,15 @@ const HeaderTitle = styled(Text).attrs({
 })``;
 
 export default function DiscoverSheetContent() {
+  const handleSearchPress = useCallback(() => {
+    // do something
+  }, []);
+
   return (
     <SlackSheet contentOffset={position.current} renderHeader={renderHeader}>
       <HeaderTitle>Discover</HeaderTitle>
       <ColumnWithMargins flex={1} margin={42}>
-        <SearchHeader />
+        <SearchHeader onPress={handleSearchPress} />
         <TopMoversSection />
         <PulseIndex />
         <Strategies />
