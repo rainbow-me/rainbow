@@ -71,6 +71,9 @@ public class RNTextAnimatorPackage implements ReactPackage {
         } catch (NoSuchFieldException ignore) {}
     }
 
+    public static String padRight(String s, int n) {
+        return String.format("%1$-" + n + "s", s).replace(' ', '0');
+    }
 
     @Override
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
@@ -105,7 +108,7 @@ public class RNTextAnimatorPackage implements ReactPackage {
                     if (idsToViews.containsKey(viewId)) {
                         ReactEditText view = idsToViews.get(viewId);
                         long diff = System.currentTimeMillis() - date;
-                        String text = String.valueOf((float) initialValue + (diff * stepPerDay) / 24 / 60 / 60 / 1000).substring(0, 12);
+                        String text = padRight(String.valueOf((float) initialValue + (diff * stepPerDay) / 24 / 60 / 60 / 1000), 12).substring(0, 12);
                         String parsedText = (isStable ? ('$' + text) : (text + ' ' + symbol)) + "    ";
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                             view.setFontFeatureSettings("'tnum'");
