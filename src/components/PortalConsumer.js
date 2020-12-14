@@ -14,7 +14,7 @@ export default function PortalConsumer() {
           paddingTop={sheetVerticalOffset}
           title={isWalletLoading}
         />,
-        false
+        true
       );
     }
     return hide;

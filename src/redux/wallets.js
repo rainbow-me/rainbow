@@ -1,6 +1,6 @@
 import { captureException, captureMessage } from '@sentry/react-native';
 import { toChecksumAddress } from 'ethereumjs-util';
-import { filter, flatMap, get, keys, map, values } from 'lodash';
+import { filter, flatMap, get, isEmpty, keys, map, values } from 'lodash';
 import { backupUserDataIntoCloud } from '../handlers/cloudBackup';
 import { saveKeychainIntegrityState } from '../handlers/localstorage/globalSettings';
 import {
@@ -42,7 +42,9 @@ export const walletsLoadState = () => async (dispatch, getState) => {
   try {
     const { accountAddress } = getState().settings;
     let addressFromKeychain = accountAddress;
-    const { wallets } = await getAllWallets();
+    const allWalletsResult = await getAllWallets();
+    const wallets = allWalletsResult?.wallets || {};
+    if (isEmpty(wallets)) return;
     const selected = await getSelectedWallet();
     // Prevent irrecoverable state (no selected wallet)
     let selectedWallet = get(selected, 'wallet', undefined);

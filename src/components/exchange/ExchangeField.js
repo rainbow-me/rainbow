@@ -15,8 +15,10 @@ const skeletonColor = colors.alpha(colors.blueGreyDark, 0.1);
 
 const Container = styled(Row).attrs({
   align: 'center',
+  justify: 'flex-end',
 })`
   width: 100%;
+  padding-right: ${ExchangeFieldPadding};
 `;
 
 const FieldRow = styled(RowWithMargins).attrs({
@@ -48,12 +50,12 @@ const ExchangeField = (
     symbol,
     testID,
     autoFocus,
+    useCustomAndroidMask = false,
     ...props
   },
   ref
 ) => {
   const handleFocusField = useCallback(() => ref?.current?.focus(), [ref]);
-
   useEffect(() => {
     autoFocus && handleFocusField();
   }, [autoFocus, handleFocusField]);
@@ -75,6 +77,7 @@ const ExchangeField = (
             placeholderTextColor={symbol ? undefined : skeletonColor}
             ref={ref}
             testID={amount ? `${testID}-${amount}` : testID}
+            useCustomAndroidMask={useCustomAndroidMask}
             value={amount}
           />
         </FieldRow>

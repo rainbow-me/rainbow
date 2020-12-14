@@ -1,4 +1,5 @@
 import React from 'react';
+import { View } from 'react-native';
 import styled from 'styled-components/primitives';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder, RowWithMargins } from '../layout';
@@ -34,6 +35,8 @@ export default function MiniButton({
   disabled,
   onPress,
   scaleTo = 1.1,
+  width,
+  height,
   ...props
 }) {
   return (
@@ -44,22 +47,26 @@ export default function MiniButton({
       scaleTo={scaleTo}
       {...props}
     >
-      <ShadowStack
-        {...position.coverAsObject}
-        backgroundColor={disabled ? colors.lightGrey : colors.appleBlue}
-        borderRadius={borderRadius}
-        shadows={disabled ? shadows.disabled : shadows.default}
-      />
-      <Content>
-        {typeof children === 'string' ? (
-          <Text color="white" weight="semibold">
-            {children}
-          </Text>
-        ) : (
-          children
-        )}
-      </Content>
-      <InnerBorder radius={borderRadius} />
+      <View style={{ borderRadius, overflow: 'hidden' }}>
+        <ShadowStack
+          {...position.coverAsObject}
+          backgroundColor={disabled ? colors.lightGrey : colors.appleBlue}
+          borderRadius={borderRadius}
+          height={height}
+          shadows={disabled ? shadows.disabled : shadows.default}
+          width={width}
+        />
+        <Content>
+          {typeof children === 'string' ? (
+            <Text color="white" weight="semibold">
+              {children}
+            </Text>
+          ) : (
+            children
+          )}
+        </Content>
+        <InnerBorder radius={borderRadius} />
+      </View>
     </ButtonPressAnimation>
   );
 }

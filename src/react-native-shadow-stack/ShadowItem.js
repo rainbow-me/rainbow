@@ -26,14 +26,19 @@ const ShadowItem = ({
   shadow,
   width,
   zIndex,
+  shadowProps,
+  elevation,
 }) => {
   return (
     <ShadowView
+      elevation={elevation}
+      shadowProps={shadowProps}
       style={[
         StyleSheet.absoluteFill,
         {
           backgroundColor: backgroundColor || '#ffffff',
           borderRadius,
+          elevation,
           height,
           opacity,
           width,

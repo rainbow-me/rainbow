@@ -15,8 +15,10 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
+import com.facebook.react.views.text.ReactTextView;
 import com.facebook.react.views.textinput.ReactEditText;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -58,6 +60,17 @@ class UIUpdater {
 
 public class RNTextAnimatorPackage implements ReactPackage {
     static int DECREASING = 150;
+    static Field sEditListeners;
+    static {
+        sEditListeners = null;
+        try {
+            sEditListeners = ReactEditText.class.
+                    getDeclaredField("mListeners");
+            sEditListeners.setAccessible(true);
+
+        } catch (NoSuchFieldException ignore) {}
+    }
+
 
     @Override
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
@@ -82,7 +95,11 @@ public class RNTextAnimatorPackage implements ReactPackage {
                 final Map<Integer, Integer> lastUpdate = new HashMap<>();
                 UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
                 uiManager.addUIBlock(nativeViewHierarchyManager -> {
-                    idsToViews.put(viewId, (ReactEditText) nativeViewHierarchyManager.resolveView(viewId));
+                    ReactEditText view = (ReactEditText) nativeViewHierarchyManager.resolveView(viewId);
+                    idsToViews.put(viewId, view);
+                    try {
+                        sEditListeners.set(view, null);
+                    } catch (IllegalAccessException ignore) {}
                 });
                 UIUpdater handler = new UIUpdater(() -> {
                     if (idsToViews.containsKey(viewId)) {
@@ -148,6 +165,7 @@ public class RNTextAnimatorPackage implements ReactPackage {
                         view.setText(builder);
                     }
                 }, 30);
+
                 handler.startUpdates();
                 idsToHandler.put(viewId, handler);
             }
@@ -158,6 +176,16 @@ public class RNTextAnimatorPackage implements ReactPackage {
                 handler.stopUpdates();
                 idsToViews.remove(viewId);
                 idsToHandler.remove(viewId);
+
+            }
+
+            @Override
+            public void onCatalystInstanceDestroy() {
+                Object[] keys = idsToHandler.keySet().toArray();
+                for (Object viewId: keys) {
+                    stop((Integer) viewId);
+                }
+                super.onCatalystInstanceDestroy();
 
             }
         });

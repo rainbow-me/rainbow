@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { deleteAllBackups } from '../../../handlers/cloudBackup';
 import { walletsUpdate } from '../../../redux/wallets';
+import { cloudPlatform } from '../../../utils/platform';
 import Divider from '../../Divider';
 import { ButtonPressAnimation } from '../../animations';
 import { BottomRowText } from '../../coin-row';
@@ -104,14 +105,14 @@ const WalletSelectionView = () => {
   );
 
   const manageCloudBackups = useCallback(() => {
-    const buttons = ['Delete all iCloud backups', 'Cancel'];
+    const buttons = [`Delete All ${cloudPlatform} Backups`, 'Cancel'];
 
     showActionSheetWithOptions(
       {
         cancelButtonIndex: 1,
         destructiveButtonIndex: 0,
         options: buttons,
-        title: `Manage iCloud backups`,
+        title: `Manage ${cloudPlatform} Backups`,
       },
       buttonIndex => {
         if (buttonIndex === 0) {
@@ -120,8 +121,8 @@ const WalletSelectionView = () => {
             {
               cancelButtonIndex: 1,
               destructiveButtonIndex: 0,
-              message: `Are you sure you want to delete all iCloud Backups`,
-              options: ['YES, Delete All iCloud Backups', 'Cancel'],
+              message: `Are you sure you want to delete your ${cloudPlatform} wallet backups?`,
+              options: [`Confirm and Delete Backups`, 'Cancel'],
             },
             async buttonIndex => {
               if (buttonIndex === 0) {
@@ -138,7 +139,7 @@ const WalletSelectionView = () => {
                 // Delete all backups (debugging)
                 await deleteAllBackups();
 
-                Alert.alert('Backups deleted succesfully');
+                Alert.alert('Backups Deleted Succesfully');
               }
             }
           );
@@ -257,7 +258,7 @@ const WalletSelectionView = () => {
               size="lmedium"
               weight="semibold"
             >
-              􀍢 Manage iCloud backups
+              􀍢 Manage {cloudPlatform} Backups
             </Text>
           </ButtonPressAnimation>
         </Footer>

@@ -42,7 +42,7 @@
   _interval = ((NSNumber*) config[@"interval"]).doubleValue;
   _stepPerDay = ((NSNumber*) config[@"stepPerDay"]).floatValue;
   _duration = ((NSNumber*) config[@"duration"]).intValue;
-  NSString* color = ((NSNumber*) config[@"color"]).stringValue;
+  NSString* color = ((NSString*) config[@"color"]);
   _isSymbolStablecoin = ((NSNumber*) config[@"isSymbolStablecoin"]).boolValue;
   _symbol = config[@"symbol"];
   _timer = [NSTimer scheduledTimerWithTimeInterval:_interval / 1000  target:self selector:@selector(animate) userInfo:nil repeats:YES];

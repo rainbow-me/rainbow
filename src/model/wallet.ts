@@ -138,7 +138,7 @@ export interface AllRainbowWallets {
 }
 
 interface AllRainbowWalletsData {
-  allWallets: AllRainbowWallets;
+  wallets: AllRainbowWallets;
   version: string;
 }
 

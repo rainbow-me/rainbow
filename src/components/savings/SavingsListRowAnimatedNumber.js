@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { requireNativeComponent, StyleSheet } from 'react-native';
-import useRainbowTextAvailable from '../../helpers/isRainbowTextAvailable';
+import isRainbowTextAvailable from '../../helpers/isRainbowTextAvailable';
 import { formatSavingsAmount, isSymbolStablecoin } from '../../helpers/savings';
 import AndroidText from './AndroidAnimatedNumbers';
 import { colors, fonts } from '@rainbow-me/styles';
@@ -11,9 +11,9 @@ const sx = StyleSheet.create({
     height: 30,
   },
   animatedNumberAndroid: {
-    paddingLeft: 35,
+    left: 35,
     position: 'absolute',
-    top: 12,
+    top: 4,
   },
   text: {
     color: colors.dark,
@@ -41,7 +41,6 @@ const SavingsListRowAnimatedNumber = ({
     [symbol]
   );
 
-  const isRainbowTextAvailable = useRainbowTextAvailable();
   const TextComponent = isRainbowTextAvailable
     ? requireNativeComponent('RainbowText')
     : AndroidText;

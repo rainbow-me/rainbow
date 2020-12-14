@@ -1,10 +1,6 @@
 import { debounce } from 'lodash';
-import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import Chart from '../../value-chart/Chart';
-import {
-  ChartPathProvider,
-  monotoneCubicInterpolation,
-} from '@rainbow-me/animated-charts';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { monotoneCubicInterpolation } from '@rainbow-me/animated-charts';
 import {
   useChartData,
   useChartDataLabels,
@@ -62,7 +58,7 @@ function useJumpingForm(isLong, heightWithChart, heightWithoutChart) {
   ]);
 }
 
-export default function ChartState({
+export default function useChartThrottledPoints({
   asset,
   heightWithChart,
   heightWithoutChart,
@@ -74,6 +70,7 @@ export default function ChartState({
   }
 
   const color = useColorForAsset(assetForColor);
+
   const [isFetchingInitially, setIsFetchingInitially] = useState(true);
 
   const { chart, chartType, fetchingCharts, ...chartData } = useChartData(
@@ -131,27 +128,14 @@ export default function ChartState({
     }
   }, [throttledPoints, fetchingCharts, debouncedSetThrottledData]);
 
-  const duration = useRef(0);
-
-  if (duration.current === 0) {
-    duration.current = 300;
-  }
-
-  return (
-    <ChartPathProvider data={throttledData}>
-      <Chart
-        {...chartData}
-        {...initialChartDataLabels}
-        asset={asset}
-        chart={chart}
-        chartType={chartType}
-        color={color}
-        fetchingCharts={fetchingCharts}
-        isPool={isPool}
-        nativePoints={chart}
-        showChart={showChart}
-        throttledData={throttledData}
-      />
-    </ChartPathProvider>
-  );
+  return {
+    chart,
+    chartData,
+    chartType,
+    color,
+    fetchingCharts,
+    initialChartDataLabels,
+    showChart,
+    throttledData,
+  };
 }

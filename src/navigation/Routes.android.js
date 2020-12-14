@@ -26,6 +26,7 @@ import { SwipeNavigator } from './SwipeNavigator';
 import {
   closeKeyboardOnClose,
   defaultScreenStackOptions,
+  restoreSheetConfig,
   stackNavigationConfig,
   wyreWebviewOptions,
 } from './config';
@@ -45,7 +46,7 @@ import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
 
 const Stack = createStackNavigator();
-const NativeStack = createStackNavigator();
+const OuterStack = createStackNavigator();
 
 function SendFlowNavigator() {
   return (
@@ -187,7 +188,8 @@ function MainNavigator() {
       <Stack.Screen
         component={RestoreSheet}
         name={Routes.RESTORE_SHEET}
-        options={sheetPreset}
+        {...restoreSheetConfig}
+        options={bottomSheetPreset}
       />
       <Stack.Screen
         component={ImportSeedPhraseFlowNavigator}
@@ -204,49 +206,49 @@ function MainNavigator() {
 }
 
 // FIXME do it in one navigator
-function MainNativeNavigator() {
+function MainOuterNavigator() {
   return (
-    <NativeStack.Navigator
+    <OuterStack.Navigator
       initialRouteName={Routes.MAIN_NAVIGATOR}
       {...stackNavigationConfig}
       screenOptions={defaultScreenStackOptions}
     >
-      <NativeStack.Screen
+      <OuterStack.Screen
         component={MainNavigator}
         name={Routes.MAIN_NAVIGATOR}
       />
-      <NativeStack.Screen
+      <OuterStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SCREEN}
         options={sheetPreset}
       />
-      <NativeStack.Screen
+      <OuterStack.Screen
         component={SettingsModal}
         name={Routes.SETTINGS_MODAL}
         options={settingsPreset}
       />
-      <NativeStack.Screen
+      <OuterStack.Screen
         component={PinAuthenticationScreen}
         name={Routes.PIN_AUTHENTICATION_SCREEN}
-        options={sheetPreset}
+        options={{ ...sheetPreset, gestureEnabled: false }}
       />
-      <NativeStack.Screen
+      <OuterStack.Screen
         component={BackupSheet}
         name={Routes.BACKUP_SCREEN}
         options={sheetPreset}
       />
-      <NativeStack.Screen
+      <OuterStack.Screen
         component={SendFlowNavigator}
         name={Routes.SEND_SHEET_NAVIGATOR}
         options={sheetPresetWithSmallGestureResponseDistance}
       />
-    </NativeStack.Navigator>
+    </OuterStack.Navigator>
   );
 }
 
 const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
   <NavigationContainer onStateChange={onNavigationStateChange} ref={ref}>
-    <MainNativeNavigator />
+    <MainOuterNavigator />
   </NavigationContainer>
 ));
 
