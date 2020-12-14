@@ -389,6 +389,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
       cell.row = transaction.originalIndex.intValue
       cell.scaleTo = scaleTo
       cell.set(transaction: transaction)
+      cell.backgroundColor = .clear
       cell.selectionStyle = .none
       
       return cell;
