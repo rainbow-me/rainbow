@@ -19,7 +19,7 @@ const sample = {
   uniTotalSupply: 42.8096419,
 };
 
-const renderSavingsListRow = item => (
+const renderUniswapInvestmentRow = item => (
   <UniswapInvestmentRow assetType="uniswap" item={item} key={item.uniqueId} />
 );
 
@@ -30,7 +30,7 @@ export default function UniswapPools() {
         🦄 Uniswap Pools
       </Text>
       {[sample, sample, sample, sample, sample, sample].map(
-        renderSavingsListRow
+        renderUniswapInvestmentRow
       )}
     </Column>
   );

@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
@@ -89,10 +88,5 @@ function APYPill({ small, value }) {
     </Centered>
   );
 }
-
-APYPill.propTypes = {
-  small: PropTypes.bool,
-  value: PropTypes.node,
-};
 
 export default React.memo(APYPill);

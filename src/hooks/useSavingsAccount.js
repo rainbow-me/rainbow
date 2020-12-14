@@ -91,13 +91,15 @@ export default function useSavingsAccount(includeDefaultDai) {
     if (!hasAccountAddress) return;
     const fetchBackupSavings = async () => {
       const backup = await getSavings(accountAddress, network);
-      setBackupSavings(backup);
+      if (!isEmpty(backup)) {
+        setBackupSavings(backup);
+      }
     };
     fetchBackupSavings();
   }, [accountAddress, hasAccountAddress, network]);
 
   useEffect(() => {
-    if (!hasAccountAddress || isNil(backupSavings)) return;
+    if (!hasAccountAddress) return;
     const parseSavingsResult = async data => {
       if (error) return;
 
@@ -117,16 +119,13 @@ export default function useSavingsAccount(includeDefaultDai) {
             underlyingPrice,
           } = getMarketData(marketData);
 
-          const ethPrice = multiply(
-            underlyingPrice,
-            token.supplyBalanceUnderlying
-          );
-
           const {
             cTokenBalance,
             lifetimeSupplyInterestAccrued,
             supplyBalanceUnderlying,
           } = token;
+
+          const ethPrice = multiply(underlyingPrice, supplyBalanceUnderlying);
 
           return {
             cToken,
@@ -153,9 +152,8 @@ export default function useSavingsAccount(includeDefaultDai) {
         };
         saveSavings(result, accountAddress, network);
         setResult(result);
-      } else if (loading) {
-        const result = backupSavings;
-        setResult(result);
+      } else if (loading && !isNil(backupSavings)) {
+        setResult(backupSavings);
       }
     };
     parseSavingsResult(data);
@@ -183,6 +181,7 @@ export default function useSavingsAccount(includeDefaultDai) {
 
     const shouldAddDai =
       includeDefaultDai && !accountHasCDAI && !isEmpty(daiMarketData);
+
     if (shouldAddDai) {
       savings = concat(accountTokens, {
         ...daiMarketData,
