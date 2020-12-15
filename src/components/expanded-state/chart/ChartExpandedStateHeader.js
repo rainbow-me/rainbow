@@ -136,7 +136,9 @@ export default function ChartExpandedStateHeader({
             priceSharedValue={priceSharedValue}
             tabularNums={tabularNums}
           />
-          <ChartHeaderSubtitle>{titleOrNoPriceData}</ChartHeaderSubtitle>
+          <ChartHeaderSubtitle color={color}>
+            {titleOrNoPriceData}
+          </ChartHeaderSubtitle>
         </ColumnWithMargins>
         {!isNoPriceData && showChart && !isNaN(latestChange) && (
           <ColumnWithMargins align="end" margin={1}>

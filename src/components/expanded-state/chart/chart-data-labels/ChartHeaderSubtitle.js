@@ -10,7 +10,7 @@ const ChartHeaderSubtitle = styled(TruncatedText).attrs(
     color,
     letterSpacing,
     size: 'larger',
-    weight: 'medium',
+    weight: 'bold',
   })
 )`
   margin-left: ${android ? 6 : 0};
