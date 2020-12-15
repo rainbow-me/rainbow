@@ -12,17 +12,6 @@ import ShadowStack from 'react-native-shadow-stack';
 const TokenSelectionButtonHeight = 46;
 const TokenSelectionButtonElevation = ios ? 0 : 8;
 
-const Button = styled(ButtonPressAnimation).attrs({
-  contentContainerStyle: {
-    height: TokenSelectionButtonHeight,
-  },
-  overflowMargin: 30,
-  throttle: true,
-  wrapperStyle: {
-    elevation: TokenSelectionButtonElevation,
-  },
-})``;
-
 const Content = styled(RowWithMargins).attrs({
   align: 'center',
   margin: 7,
@@ -63,9 +52,12 @@ export default function TokenSelectionButton({
   );
 
   return (
-    <Button
-      backgroundColor={colorForAsset}
+    <ButtonPressAnimation
       borderRadius={borderRadius}
+      contentContainerStyle={{
+        backgroundColor: colorForAsset,
+        borderRadius,
+      }}
       onPress={onPress}
       radiusAndroid={borderRadius}
       testID={testID}
@@ -90,6 +82,6 @@ export default function TokenSelectionButton({
         <CaretIcon />
       </Content>
       <InnerBorder radius={borderRadius} />
-    </Button>
+    </ButtonPressAnimation>
   );
 }
