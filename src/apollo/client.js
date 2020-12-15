@@ -13,7 +13,6 @@ const defaultOptions = {
 
 export const compoundClient = new ApolloClient({
   cache: new InMemoryCache(),
-  defaultOptions,
   link: new HttpLink({
     uri: 'https://api.thegraph.com/subgraphs/name/graphprotocol/compound-v2',
   }),
