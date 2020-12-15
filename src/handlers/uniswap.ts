@@ -410,13 +410,13 @@ function optimize({
   return {
     ...tokenInfo,
     get derivedETH() {
-      return LZString.decompress(derivedETHC);
+      return LZString.decompress(derivedETHC) as string;
     },
     get name() {
-      return LZString.decompress(nameC);
+      return LZString.decompress(nameC) as string;
     },
     get totalLiquidity() {
-      return LZString.decompress(totalLiquidityC);
+      return LZString.decompress(totalLiquidityC) as string;
     },
   };
 }
@@ -456,7 +456,7 @@ export const getAllTokens = async (excluded = []): Promise<AllTokenInfo> => {
       totalLiquidity: token.totalLiquidity,
       ...tokenOverrides[tokenAddress],
     };
-    allTokens[tokenAddress] = optimize(tokenInfo);
+    allTokens[tokenAddress] = ios ? tokenInfo : optimize(tokenInfo);
   });
   return allTokens;
 };
