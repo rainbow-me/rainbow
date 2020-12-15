@@ -1,6 +1,6 @@
 import lang from 'i18n-js';
 import { createSelector } from 'reselect';
-import supportedNativeCurrencies from '../references/native-currencies.json';
+import { supportedNativeCurrencies } from '@rainbow-me/references';
 
 const withLanguage = language => {
   if (language !== lang.locale) {

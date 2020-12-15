@@ -18,21 +18,22 @@ import {
 import { get, isEmpty, mapKeys, mapValues, toLower } from 'lodash';
 import { uniswapClient } from '../apollo/client';
 import { UNISWAP_ALL_TOKENS } from '../apollo/queries';
-import { Network } from '../helpers/networkTypes';
+import { loadWallet } from '../model/wallet';
+import { toHex, web3Provider } from './web3';
+import { Network } from '@rainbow-me/networkTypes';
+import {
+  ethUnits,
+  UNISWAP_TESTNET_TOKEN_LIST,
+  UNISWAP_V2_ROUTER_ABI,
+  UNISWAP_V2_ROUTER_ADDRESS,
+} from '@rainbow-me/references';
 import {
   addBuffer,
   convertAmountToRawAmount,
   convertNumberToString,
-} from '../helpers/utilities';
-import { loadWallet } from '../model/wallet';
-import { ethUnits, tokenOverrides } from '../references';
-import {
-  UNISWAP_TESTNET_TOKEN_LIST,
-  UNISWAP_V2_ROUTER_ABI,
-  UNISWAP_V2_ROUTER_ADDRESS,
-} from '../references/uniswap';
+} from '@rainbow-me/utilities';
+import { getTokenMetadata } from '@rainbow-me/utils';
 
-import { toHex, web3Provider } from './web3';
 import logger from 'logger';
 
 enum Field {
@@ -423,6 +424,7 @@ export const getAllTokens = async (excluded = []): Promise<AllTokenInfo> => {
   }
   data.forEach(token => {
     const tokenAddress = toLower(token.id);
+    const metadata = getTokenMetadata(tokenAddress);
     const tokenInfo = {
       address: token.id,
       decimals: Number(token.decimals),
@@ -430,7 +432,7 @@ export const getAllTokens = async (excluded = []): Promise<AllTokenInfo> => {
       name: token.name,
       symbol: token.symbol,
       totalLiquidity: token.totalLiquidity,
-      ...tokenOverrides[tokenAddress],
+      ...metadata,
     };
     allTokens[tokenAddress] = tokenInfo;
   });

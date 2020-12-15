@@ -15,7 +15,7 @@ import {
   TokenInfoRow,
   TokenInfoSection,
 } from '../token-info';
-import Chart from '../value-chart/Chart';
+import { Chart } from '../value-chart';
 import { ChartPathProvider } from '@rainbow-me/animated-charts';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 

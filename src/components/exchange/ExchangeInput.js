@@ -1,32 +1,32 @@
-import React, { useCallback, useState } from 'react';
+import React, { Fragment, useCallback, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import TextInputMask from 'react-native-text-input-mask';
 import styled from 'styled-components/primitives';
-import { magicMemo } from '../../utils';
 import { Text } from '../text';
 import { buildTextStyles, colors } from '@rainbow-me/styles';
+import { magicMemo } from '@rainbow-me/utils';
+
+const AndroidMaskWrapper = styled.View`
+  background-color: ${colors.white};
+  bottom: 0;
+  left: 68.7;
+  position: absolute;
+  right: 0;
+  top: 11.5;
+`;
 
 const Input = styled(TextInputMask).attrs({
   allowFontScaling: false,
   keyboardType: 'decimal-pad',
-  selectionColor: colors.appleBlue,
 })`
   ${buildTextStyles};
   ${android ? 'font-weight: normal' : ''};
   flex: 1;
 `;
 
-const AndroidMaskWrapper = styled.View`
-  background-color: ${colors.white};
-  position: absolute;
-  top: 11.5;
-  right: 0;
-  bottom: 0;
-  left: 68.7;
-`;
-
 const ExchangeInput = (
   {
+    androidMaskMaxLength = 8,
     color = colors.dark,
     editable,
     keyboardAppearance = 'dark',
@@ -38,12 +38,12 @@ const ExchangeInput = (
     onFocus,
     placeholder = '0',
     placeholderTextColor = colors.alpha(colors.blueGreyDark, 0.3),
+    selectionColor = color,
     size = 'h2',
     testID,
+    useCustomAndroidMask = false,
     value = '',
     weight = 'semibold',
-    useCustomAndroidMask = false,
-    androidMaskMaxLength = 8,
     ...props
   },
   ref
@@ -96,13 +96,14 @@ const ExchangeInput = (
     },
     [onFocus]
   );
+
   let valueToRender = value;
   if (value?.length > androidMaskMaxLength) {
     valueToRender = value.substring(0, androidMaskMaxLength) + '...';
   }
 
   return (
-    <React.Fragment>
+    <Fragment>
       <Input
         {...props}
         color={color}
@@ -117,6 +118,7 @@ const ExchangeInput = (
         placeholder={placeholder}
         placeholderTextColor={placeholderTextColor}
         ref={ref}
+        selectionColor={selectionColor}
         size={size}
         testID={testID}
         value={value}
@@ -135,7 +137,7 @@ const ExchangeInput = (
           </Text>
         </AndroidMaskWrapper>
       )}
-    </React.Fragment>
+    </Fragment>
   );
 };
 

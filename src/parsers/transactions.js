@@ -30,8 +30,8 @@ import {
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
 } from '../helpers/utilities';
-import { savingsAssetsList, tokenOverrides } from '../references';
-import { ethereumUtils } from '../utils';
+import { savingsAssetsList } from '../references';
+import { ethereumUtils, getTokenMetadata } from '../utils';
 
 const LAST_TXN_HASH_BUFFER = 20;
 
@@ -246,12 +246,13 @@ const parseTransaction = (
   }
   internalTransactions = internalTransactions.map((internalTxn, index) => {
     const address = toLower(get(internalTxn, 'asset.asset_code'));
+    const metadata = getTokenMetadata(address);
     const updatedAsset = {
       address,
       decimals: get(internalTxn, 'asset.decimals'),
       name: get(internalTxn, 'asset.name'),
       symbol: toUpper(get(internalTxn, 'asset.symbol') || ''),
-      ...tokenOverrides[address],
+      ...metadata,
     };
     const priceUnit =
       internalTxn.price || get(internalTxn, 'asset.price.value') || 0;

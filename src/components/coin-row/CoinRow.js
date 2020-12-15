@@ -1,9 +1,8 @@
 import React, { createElement } from 'react';
 import styled from 'styled-components/primitives';
-import { useAccountSettings } from '../../hooks';
-import { CoinIcon, CoinIconSize } from '../coin-icon';
-import CoinIconGroup from '../coin-icon/CoinIconGroup';
+import { CoinIcon, CoinIconGroup, CoinIconSize } from '../coin-icon';
 import { Column, Row } from '../layout';
+import { useAccountSettings } from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
 
 const CoinRowPaddingTop = 9;
