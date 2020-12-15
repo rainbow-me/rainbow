@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback, useState } from 'react';
+import React, { Fragment, useCallback, useMemo, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import TextInputMask from 'react-native-text-input-mask';
 import styled from 'styled-components/primitives';
@@ -29,6 +29,7 @@ const ExchangeInput = (
     androidMaskMaxLength = 8,
     color = colors.dark,
     editable,
+    enableCustomAndroidMask = false,
     keyboardAppearance = 'dark',
     letterSpacing = 'roundedTightest',
     mask = '[099999999999999999].[999999999999999999]',
@@ -41,7 +42,6 @@ const ExchangeInput = (
     selectionColor = color,
     size = 'h2',
     testID,
-    useCustomAndroidMask = false,
     value = '',
     weight = 'semibold',
     ...props
@@ -50,6 +50,14 @@ const ExchangeInput = (
 ) => {
   const [isFocused, setIsFocused] = useState(false);
   const [isTouched, setIsTouched] = useState(false);
+
+  const customAndroidMaskValue = useMemo(
+    () =>
+      enableCustomAndroidMask && value?.length > androidMaskMaxLength
+        ? value.substring(0, androidMaskMaxLength) + '...'
+        : undefined,
+    [androidMaskMaxLength, enableCustomAndroidMask, value]
+  );
 
   const handleBlur = useCallback(
     event => {
@@ -97,11 +105,6 @@ const ExchangeInput = (
     [onFocus]
   );
 
-  let valueToRender = value;
-  if (value?.length > androidMaskMaxLength) {
-    valueToRender = value.substring(0, androidMaskMaxLength) + '...';
-  }
-
   return (
     <Fragment>
       <Input
@@ -124,8 +127,8 @@ const ExchangeInput = (
         value={value}
         weight={weight}
       />
-      {useCustomAndroidMask && !ref.current?.isFocused() && (
-        <AndroidMaskWrapper>
+      {customAndroidMaskValue && (
+        <AndroidMaskWrapper opacity={ref.current?.isFocused() ? 0 : 1}>
           <Text
             color={color}
             letterSpacing={letterSpacing}
@@ -134,7 +137,7 @@ const ExchangeInput = (
             weight={weight}
             {...props}
           >
-            {valueToRender}
+            {customAndroidMaskValue}
           </Text>
         </AndroidMaskWrapper>
       )}
