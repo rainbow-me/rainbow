@@ -4,11 +4,12 @@ buildscript {
 
     ext {
         buildToolsVersion = "29.0.3"
-        minSdkVersion = 19
+        minSdkVersion = 21
         compileSdkVersion = 29
         targetSdkVersion = 29
         kotlin_version = "1.3.50"
         kotlinVersion = "$kotlin_version"
+        ndkVersion = "20.1.5948944"
     }
 
 
@@ -20,7 +21,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:3.6.4")
+        classpath("com.android.tools.build:gradle:4.1.0")
         classpath 'com.google.gms:google-services:4.3.3'
         classpath 'io.fabric.tools:gradle:1.28.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"

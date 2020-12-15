@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-const blacklist = require('metro-config/src/defaults/blacklist');
+const exclusionList = require('metro-config/src/defaults/exclusionList');
 
 // Denylist is a function that takes an array of regexes and combines
 // them with the default blacklist to return a single regex.
@@ -14,7 +14,7 @@ const REAPATCH = [/patches\/reanimated\/.*/];
 
 module.exports = {
   resolver: {
-    blacklistRE: blacklist([...RNACBL, ...REAPATCH]),
+    blacklistRE: exclusionList([...RNACBL, ...REAPATCH]),
   },
   transformer: {
     getTransformOptions: async () => ({

@@ -57,7 +57,6 @@
           <data android:scheme="https" android:host="rnbwapp.com" />
         </intent-filter>
       </activity>
-      <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
       <!-- Branch init -->
       <meta-data android:name="io.branch.sdk.BranchKey" android:value="${BRANCH_KEY}" />
       <meta-data android:name="io.branch.sdk.TestMode" android:value="false" />
