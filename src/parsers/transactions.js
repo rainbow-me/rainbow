@@ -183,7 +183,10 @@ const parseTransaction = (
     const assetInternalTransaction = {
       address_from: transaction.from,
       address_to: transaction.to,
-      asset,
+      asset: {
+        asset_code: asset.address,
+        ...asset,
+      },
       value: transaction.value,
     };
     internalTransactions = [assetInternalTransaction];
@@ -199,7 +202,7 @@ const parseTransaction = (
       address_from: transaction.from,
       address_to: transaction.to,
       asset: {
-        address: 'eth',
+        asset_code: 'eth',
         decimals: 18,
         name: 'Ethereum',
         symbol: 'ETH',
@@ -222,13 +225,13 @@ const parseTransaction = (
   if (
     isEmpty(internalTransactions) &&
     transaction.type === TransactionTypes.execution &&
-    txn.direction === 'self'
+    txn.direction === DirectionTypes.self
   ) {
     const ethInternalTransaction = {
       address_from: transaction.from,
       address_to: transaction.to,
       asset: {
-        address: 'eth',
+        asset_code: 'eth',
         decimals: 18,
         name: 'Ethereum',
         symbol: 'ETH',
@@ -286,7 +289,10 @@ const parseTransaction = (
 
     return {
       ...transaction,
-      address: toChecksumAddress(updatedAsset.address),
+      address:
+        updatedAsset.address.toLowerCase() === 'eth'
+          ? updatedAsset.address.toLowerCase()
+          : toChecksumAddress(updatedAsset.address),
       balance: convertRawAmountToBalance(valueUnit, updatedAsset),
       description,
       from: internalTxn.address_from,
