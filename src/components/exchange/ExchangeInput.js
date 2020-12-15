@@ -127,7 +127,6 @@ const ExchangeInput = (
       {useCustomAndroidMask && !ref.current?.isFocused() && (
         <AndroidMaskWrapper>
           <Text
-            color={color}
             letterSpacing={letterSpacing}
             size={size}
             testID={testID}
