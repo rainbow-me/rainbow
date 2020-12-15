@@ -8,7 +8,7 @@ import logger from 'logger';
 
 const storage = new Storage({
   defaultExpires: null,
-  enableCache: true,
+  enableCache: ReactNative.Platform.OS === 'ios',
   size: 10000,
   storageBackend: AsyncStorage,
 });
