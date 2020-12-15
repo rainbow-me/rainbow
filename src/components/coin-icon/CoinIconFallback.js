@@ -4,8 +4,8 @@ import styled from 'styled-components/primitives';
 import ImageWithCachedMetadata from '../ImageWithCachedMetadata';
 import { Centered } from '../layout';
 import { useBooleanState, useColorForAsset } from '@rainbow-me/hooks';
-import { colors, fonts, position, shadow } from '@rainbow-me/styles';
-import { getUrlForTrustIconFallback } from '@rainbow-me/utils';
+import { borders, colors, fonts, position, shadow } from '@rainbow-me/styles';
+import { getUrlForTrustIconFallback, magicMemo } from '@rainbow-me/utils';
 
 const fallbackTextStyles = {
   fontFamily: fonts.family.SFProRounded,
@@ -23,24 +23,45 @@ const FallbackImage = styled(ImageWithCachedMetadata)`
     shadowOpacity: opacity,
     shadowRadius: radius,
     showImage,
-  }) => shadow.build(x, y, radius, color, showImage ? opacity : 0)}
+  }) => shadow.build(x, y, radius, color, showImage ? opacity : 0)};
   background-color: ${({ showImage }) =>
     showImage ? colors.white : colors.transparent};
   border-radius: ${({ size }) => size / 2};
   overflow: visible;
 `;
 
+function WrappedFallbackImage({
+  color,
+  elevation = 6,
+  shadowOpacity,
+  showImage,
+  size,
+  ...props
+}) {
+  return (
+    <Centered
+      {...props}
+      {...position.coverAsObject}
+      {...borders.buildCircleAsObject(size)}
+      backgroundColor={colors.alpha(color || colors.dark, shadowOpacity || 0.3)}
+      elevation={showImage ? elevation : 0}
+      opacity={showImage ? 1 : 0}
+    >
+      <FallbackImage
+        {...props}
+        overlayColor={color || colors.dark}
+        shadowOpacity={shadowOpacity}
+        showImage={showImage}
+        size={size}
+      />
+    </Centered>
+  );
+}
+
+const FallbackImageElement = android ? WrappedFallbackImage : FallbackImage;
+
 const CoinIconFallback = fallbackProps => {
-  const {
-    address = '',
-    height,
-    shadowColor,
-    shadowOffset,
-    shadowOpacity,
-    shadowRadius,
-    symbol,
-    width,
-  } = fallbackProps;
+  const { address = '', height, symbol, width } = fallbackProps;
 
   const [showImage, showFallbackImage, hideFallbackImage] = useBooleanState(
     false
@@ -62,15 +83,12 @@ const CoinIconFallback = fallbackProps => {
           textStyles={fallbackTextStyles}
         />
       )}
-      <FallbackImage
-        borderRadius={width / 2}
+      <FallbackImageElement
+        {...fallbackProps}
+        color={fallbackIconColor}
         imageUrl={imageUrl}
         onError={hideFallbackImage}
         onLoad={showFallbackImage}
-        shadowColor={shadowColor}
-        shadowOffset={shadowOffset}
-        shadowOpacity={shadowOpacity}
-        shadowRadius={shadowRadius}
         showImage={showImage}
         size={width}
       />
@@ -78,4 +96,4 @@ const CoinIconFallback = fallbackProps => {
   );
 };
 
-export default React.memo(CoinIconFallback);
+export default magicMemo(CoinIconFallback, ['address', 'style', 'symbol']);

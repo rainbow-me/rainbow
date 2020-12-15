@@ -10655,10 +10655,10 @@ raw-body@^2.2.0:
     iconv-lite "0.4.24"
     unpipe "1.0.0"
 
-react-coin-icon@^0.1.29:
-  version "0.1.29"
-  resolved "https://registry.yarnpkg.com/react-coin-icon/-/react-coin-icon-0.1.29.tgz#8492bc66998035683f5806c5544e8abb30e00eee"
-  integrity sha512-gUj2F5626Xbabe1Rg/Km1iVggJ90Oli1LYAMv5pgRXqJl01sNIQ0LYrdWc60mHPKpiM6NiQvYU4YM9L2H5S+Eg==
+react-coin-icon@^0.1.30:
+  version "0.1.30"
+  resolved "https://registry.yarnpkg.com/react-coin-icon/-/react-coin-icon-0.1.30.tgz#9f0f1d63fedb31c5c5c471310a0abcc7e048e445"
+  integrity sha512-Yn1yEQBoihqZSqHDnA7qO4aeNt/Wrpw53eATXSN68XCKJ7JikgorEQqKIcpe2N+TnHBRXC/BQFJNYBmx+/ty2A==
   dependencies:
     "@svgr/cli" "^4.3.0"
     react-primitives "^0.8.1"
