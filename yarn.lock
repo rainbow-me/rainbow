@@ -7309,10 +7309,10 @@ hash.js@1.1.7, hash.js@^1.0.0, hash.js@^1.0.3, hash.js@^1.1.7:
     inherits "^2.0.3"
     minimalistic-assert "^1.0.1"
 
-hermes-engine@~0.5.0:
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/hermes-engine/-/hermes-engine-0.5.1.tgz#601115e4b1e0a17d9aa91243b96277de4e926e09"
-  integrity sha512-hLwqh8dejHayjlpvZY40e1aDCDvyP98cWx/L5DhAjSJLH8g4z9Tp08D7y4+3vErDsncPOdf1bxm+zUWpx0/Fxg==
+hermes-engine@0.7.1, hermes-engine@~0.5.0:
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/hermes-engine/-/hermes-engine-0.7.1.tgz#a71a5db33b222733dc8ca7544810cea48deafed0"
+  integrity sha512-EMCzVxcjn1zKWF/YqJsOgEpOLzuYCQ75t+9S7oiMN1mXYzq2Y6+ftgo1MR/6cR77PtgHfDBlDv3DGGV0gtbPbw==
 
 hermes-profile-transformer@^0.0.6:
   version "0.0.6"
