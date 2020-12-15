@@ -32,7 +32,7 @@ export default function TopMoversSection() {
 
   return (
     <ColumnWithMargins>
-      <Flex paddingHorizontal={12}>
+      <Flex marginTop={19} paddingHorizontal={19}>
         <Text size="larger" weight="bold">
           Top Movers
         </Text>

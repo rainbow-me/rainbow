@@ -10,6 +10,7 @@ export { default as emojis } from './emojis.json';
 export { default as erc20ABI } from './erc20-abi.json';
 export { default as ethUnits } from './ethereum-units.json';
 export { default as shitcoins } from './shitcoins.json';
+export { default as DefaultTokenLists } from './default-token-lists.json';
 
 interface OverrideInfo {
   color?: string;

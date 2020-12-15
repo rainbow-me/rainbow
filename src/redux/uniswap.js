@@ -11,11 +11,17 @@ import {
 } from 'lodash';
 import {
   getUniswapFavorites,
+  getUniswapLists,
   saveUniswapFavorites,
+  saveUniswapLists,
 } from '../handlers/localstorage/uniswap';
 import { getAllTokens, getTestnetUniswapPairs } from '../handlers/uniswap';
 import networkTypes from '../helpers/networkTypes';
-import { DefaultUniswapFavorites, SOCKS_ADDRESS } from '../references';
+import {
+  DefaultTokenLists,
+  DefaultUniswapFavorites,
+  SOCKS_ADDRESS,
+} from '../references';
 import { CURATED_UNISWAP_TOKENS } from '../references/uniswap';
 
 // -- Constants ------------------------------------------------------------- //
@@ -27,8 +33,9 @@ const UNISWAP_UPDATE_PAIRS = 'uniswap/UNISWAP_UPDATE_PAIRS';
 const UNISWAP_UPDATE_ALL_TOKENS = 'uniswap/UNISWAP_UPDATE_ALL_TOKENS';
 
 const UNISWAP_UPDATE_FAVORITES = 'uniswap/UNISWAP_UPDATE_FAVORITES';
+const UNISWAP_UPDATE_LISTS = 'uniswap/UNISWAP_UPDATE_LISTS';
 const UNISWAP_CLEAR_STATE = 'uniswap/UNISWAP_CLEAR_STATE';
-
+const FAVORITES_LIST_ID = 'favorites';
 // -- Actions --------------------------------------------------------------- //
 export const uniswapLoadState = () => async (dispatch, getState) => {
   const { network } = getState().settings;
@@ -36,8 +43,9 @@ export const uniswapLoadState = () => async (dispatch, getState) => {
   try {
     const favorites = await getUniswapFavorites(network);
     remove(favorites, address => toLower(address) === toLower(SOCKS_ADDRESS));
+    const lists = await getUniswapLists(network);
     dispatch({
-      payload: favorites,
+      payload: { favorites, lists },
       type: UNISWAP_LOAD_SUCCESS,
     });
   } catch (error) {
@@ -97,11 +105,35 @@ export const uniswapUpdateFavorites = (assetAddress, add = true) => (
   saveUniswapFavorites(updatedFavorites);
 };
 
+export const uniswapUpdateList = (assetAddress, listId, add = true) => (
+  dispatch,
+  getState
+) => {
+  const address = toLower(assetAddress);
+  const { lists } = getState().uniswap;
+  if (listId === FAVORITES_LIST_ID) {
+    uniswapUpdateFavorites(assetAddress, add);
+  } else {
+    const normalizedList = map(lists[listId], toLower);
+
+    const updatedList = add
+      ? uniq(concat(normalizedList, address))
+      : without(normalizedList, address);
+    lists[listId] = updatedList;
+    dispatch({
+      payload: lists,
+      type: UNISWAP_UPDATE_LISTS,
+    });
+    saveUniswapLists(lists);
+  }
+};
+
 // -- Reducer --------------------------------------------------------------- //
 export const INITIAL_UNISWAP_STATE = {
   allTokens: {},
   favorites: DefaultUniswapFavorites,
   fetchingUniswap: false,
+  lists: DefaultTokenLists,
   loadingAllTokens: true,
   loadingUniswap: false,
   pairs: CURATED_UNISWAP_TOKENS,
@@ -121,11 +153,15 @@ export default (state = INITIAL_UNISWAP_STATE, action) =>
         draft.pairs = action.payload;
         break;
       case UNISWAP_LOAD_SUCCESS:
-        draft.favorites = action.payload;
+        draft.favorites = action.payload.favorites;
+        draft.lists = action.payload.lists;
         draft.loadingUniswap = false;
         break;
       case UNISWAP_UPDATE_FAVORITES:
         draft.favorites = action.payload;
+        break;
+      case UNISWAP_UPDATE_LISTS:
+        draft.lists = action.payload;
         break;
       case UNISWAP_LOAD_FAILURE:
         draft.loadingUniswap = false;

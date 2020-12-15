@@ -1,0 +1,20 @@
+{ "mainnet": [
+  {
+    "emoji": "glowing_star",
+    "id": "favorites",
+    "name": "Favorites",
+    "tokens": []
+  },
+  {
+    "emoji": "television",
+    "id": "watchlist",
+    "name": "Watchlist",
+    "tokens": []
+  },
+  {
+    "emoji": "roller_coaster",
+    "id": "defi",
+    "name": "DeFi",
+    "tokens": []
+  }
+]}

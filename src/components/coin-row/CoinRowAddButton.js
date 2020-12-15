@@ -32,7 +32,7 @@ const Circle = styled(RadialGradient).attrs(({ isFavorited }) => ({
   width: 30px;
 `;
 
-const StarIcon = styled(Text).attrs({
+const Icon = styled(Text).attrs({
   align: 'center',
   color: colors.alpha(colors.blueGreyDark, 0.2),
   letterSpacing: 'zero',
@@ -47,7 +47,7 @@ const StarIcon = styled(Text).attrs({
 const CoinRowAddButton = ({ onPress }) => (
   <AddButton as={BaseButton} onPress={onPress}>
     <Circle>
-      <StarIcon>􀅼</StarIcon>
+      <Icon>􀅼</Icon>
     </Circle>
   </AddButton>
 );

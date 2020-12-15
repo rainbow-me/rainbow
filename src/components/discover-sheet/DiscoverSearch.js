@@ -1,4 +1,3 @@
-import { useIsFocused } from '@react-navigation/native';
 import { concat, map, toLower } from 'lodash';
 import matchSorter from 'match-sorter';
 import React, {
@@ -27,6 +26,8 @@ import {
   useUniswapAssets,
   useUniswapAssetsInWallet,
 } from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
+import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 import { filterList, filterScams } from '@rainbow-me/utils';
 import logger from 'logger';
@@ -56,6 +57,7 @@ const searchCurrencyList = (searchList, query) => {
 const timingConfig = { duration: 700 };
 
 export default function DiscoverSearch({ onCancel }) {
+  const { navigate } = useNavigation();
   const listOpacity = useSharedValue(0);
 
   const listAnimatedStyles = useAnimatedStyle(() => {
@@ -85,7 +87,6 @@ export default function DiscoverSearch({ onCancel }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [searchQueryForSearch, setSearchQueryForSearch] = useState('');
-  const isFocused = useIsFocused();
   const type = CurrencySelectionTypes.output;
 
   const {
@@ -182,14 +183,18 @@ export default function DiscoverSearch({ onCancel }) {
     // );
   }, [searchQuery, startQueryDebounce, stopQueryDebounce]);
 
-  const handleSelectAsset = useCallback(item => {
-    logger.log('selected item', item);
-  }, []);
+  const handleSelectAsset = useCallback(
+    item => {
+      logger.log('selected item', item);
+      navigate(Routes.ADD_TOKEN_SHEET, { item });
+    },
+    [navigate]
+  );
 
   const itemProps = useMemo(
     () => ({
-      onActionAsset: () => {},
-      onPress: handleSelectAsset,
+      onActionAsset: handleSelectAsset,
+      onPress: () => null,
       showAddButton: true,
       showBalance: false,
     }),
@@ -230,7 +235,7 @@ export default function DiscoverSearch({ onCancel }) {
           listItems={currencyList}
           loading={loadingAllTokens}
           query={searchQueryForSearch}
-          showList={isFocused}
+          showList
           testID="currency-select-list"
           type={type}
         />

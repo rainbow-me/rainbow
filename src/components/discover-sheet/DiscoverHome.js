@@ -1,18 +1,20 @@
 import React from 'react';
-import PulseIndex from './PulseIndexSection';
+import Lists from './ListsSection';
+// import PulseIndex from './PulseIndexSection';
 import SearchHeader from './SearchHeader';
-import Strategies from './StrategiesSection';
+// import Strategies from './StrategiesSection';
 import TopMoversSection from './TopMoversSection';
-import UniswapPools from './UniswapPoolsSection';
+// import UniswapPools from './UniswapPoolsSection';
 
 export default function DiscoverHome({ onSearchPress }) {
   return (
     <React.Fragment>
       <SearchHeader onPress={onSearchPress} />
       <TopMoversSection />
-      <PulseIndex />
+      <Lists />
+      {/* <PulseIndex />
       <Strategies />
-      <UniswapPools />
+      <UniswapPools /> */}
     </React.Fragment>
   );
 }
