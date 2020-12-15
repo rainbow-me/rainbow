@@ -16,50 +16,33 @@ class TransactionListBaseCell : UITableViewCell {
   
   func addShadowLayer(_ view: UIView) {
     let shadowLayer = CAShapeLayer()
-    let secondShadowLayer = CAShapeLayer()
     let radius = view.frame.width / 2.0
     let circle = UIBezierPath(arcCenter: view.center, radius: radius, startAngle: 0, endAngle: 2 * CGFloat.pi, clockwise: true)
     
     shadowLayer.shadowColor = UIColor.RainbowTheme.Transactions.dark.cgColor
     shadowLayer.shadowOffset = CGSize(width: 0, height: 4)
-    shadowLayer.shadowOpacity = 0.04
+    // TODO: once we have token color, increase shadowOpacity to 0.3
+    shadowLayer.shadowOpacity = 0.15
     shadowLayer.shadowPath = circle.cgPath
-    shadowLayer.shadowRadius = 3
+    shadowLayer.shadowRadius = 6
     shadowLayer.zPosition = -1
     
-    secondShadowLayer.shadowColor = UIColor.RainbowTheme.Transactions.dark.cgColor
-    secondShadowLayer.shadowOffset = CGSize(width: 0, height: 1)
-    secondShadowLayer.shadowOpacity = 0.08
-    secondShadowLayer.shadowPath = circle.cgPath
-    secondShadowLayer.shadowRadius = 1.5
-    secondShadowLayer.zPosition = -2
-    
     layer.addSublayer(shadowLayer)
-    layer.addSublayer(secondShadowLayer)
   }
   
   func addRequestShadowLayer(_ view: UIView) {
     let shadowLayer = CAShapeLayer()
-    let secondShadowLayer = CAShapeLayer()
     let rect = CGRect(x: view.frame.minX, y: view.frame.minY, width: 40, height: 40)
     let roundedRect = UIBezierPath(roundedRect: rect, cornerRadius: 12)
     
     shadowLayer.shadowColor = UIColor.RainbowTheme.Transactions.dark.cgColor
     shadowLayer.shadowOffset = CGSize(width: 0, height: 4)
-    shadowLayer.shadowOpacity = 0.04
+    shadowLayer.shadowOpacity = 0.15
     shadowLayer.shadowPath = roundedRect.cgPath
-    shadowLayer.shadowRadius = 3
+    shadowLayer.shadowRadius = 6
     shadowLayer.zPosition = -1
     
-    secondShadowLayer.shadowColor = UIColor.RainbowTheme.Transactions.dark.cgColor
-    secondShadowLayer.shadowOffset = CGSize(width: 0, height: 1)
-    secondShadowLayer.shadowOpacity = 0.08
-    secondShadowLayer.shadowPath = roundedRect.cgPath
-    secondShadowLayer.shadowRadius = 1.5
-    secondShadowLayer.zPosition = -2
-    
     layer.addSublayer(shadowLayer)
-    layer.addSublayer(secondShadowLayer)
   }
   
   override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
