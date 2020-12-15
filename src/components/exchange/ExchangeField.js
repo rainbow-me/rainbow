@@ -47,15 +47,15 @@ const ExchangeField = (
   {
     address,
     amount,
-    autoFocus,
     disableCurrencySelection,
-    enableCustomAndroidMask = false,
     onBlur,
     onFocus,
     onPressSelectCurrency,
     setAmount,
     symbol,
     testID,
+    autoFocus,
+    useCustomAndroidMask = false,
     ...props
   },
   ref
@@ -77,7 +77,6 @@ const ExchangeField = (
           <Input
             color={colorForAsset}
             editable={!!symbol}
-            enableCustomAndroidMask={enableCustomAndroidMask}
             onBlur={onBlur}
             onChangeText={setAmount}
             onFocus={onFocus}
@@ -85,6 +84,7 @@ const ExchangeField = (
             placeholderTextColor={symbol ? undefined : skeletonColor}
             ref={ref}
             testID={amount ? `${testID}-${amount}` : testID}
+            useCustomAndroidMask={useCustomAndroidMask}
             value={amount}
           />
         </FieldRow>

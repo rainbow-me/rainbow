@@ -49,13 +49,13 @@ export default function ExchangeOutputField({
       <ExchangeField
         address={outputCurrencyAddress}
         amount={outputAmount}
-        enableCustomAndroidMask={android}
         onFocus={onFocus}
         onPressSelectCurrency={onPressSelectOutputCurrency}
         ref={outputFieldRef}
         setAmount={setOutputAmount}
         symbol={outputCurrencySymbol}
         testID={testID}
+        useCustomAndroidMask={android}
       />
     </Container>
   );
