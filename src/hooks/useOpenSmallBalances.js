@@ -6,7 +6,7 @@ export default function useOpenSmallBalances() {
   const dispatch = useDispatch();
 
   const isSmallBalancesOpen = useSelector(
-    ({ openStateSettings: { openSmallBalances } }) => openSmallBalances
+    ({ openSmallBalances }) => openSmallBalances
   );
 
   const toggleOpenSmallBalances = useCallback(

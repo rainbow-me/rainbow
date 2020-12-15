@@ -2,6 +2,7 @@ import { findIndex, get, has, isNil } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component, Fragment } from 'react';
 import { LayoutAnimation, RefreshControl, View } from 'react-native';
+import { connect } from 'react-redux';
 import { compose } from 'recompact';
 import {
   BaseItemAnimator,
@@ -837,5 +838,9 @@ export default compose(
   withOpenInvestmentCards,
   withOpenBalances,
   withOpenSavings,
-  withAccountSettings
+  withAccountSettings,
+  connect(({ openSmallBalances, openSavings }) => ({
+    openSavings,
+    openSmallBalances,
+  }))
 )(RecyclerAssetList);
