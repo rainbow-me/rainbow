@@ -5,8 +5,8 @@ import {
   isEmpty,
   isNil,
   keyBy,
+  map,
   orderBy,
-  property,
   toLower,
 } from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
@@ -104,10 +104,10 @@ export default function useSavingsAccount(includeDefaultDai) {
       if (error) return;
 
       if (data) {
-        const markets = keyBy(data?.markets || [], property('id'));
-        const resultTokens = data?.account?.tokens || [];
+        const markets = keyBy(data?.markets, 'id');
+        const resultTokens = data?.account?.tokens;
 
-        const parsedAccountTokens = resultTokens.map(token => {
+        const parsedAccountTokens = map(resultTokens, token => {
           const [cTokenAddress] = token.id.split('-');
           const marketData = markets[cTokenAddress] || {};
 
