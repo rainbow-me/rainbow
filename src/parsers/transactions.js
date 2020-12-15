@@ -290,8 +290,8 @@ const parseTransaction = (
     return {
       ...transaction,
       address:
-        updatedAsset.address === 'eth'
-          ? updatedAsset.address
+        updatedAsset.address.toLowerCase() === 'eth'
+          ? updatedAsset.address.toLowerCase()
           : toChecksumAddress(updatedAsset.address),
       balance: convertRawAmountToBalance(valueUnit, updatedAsset),
       description,
