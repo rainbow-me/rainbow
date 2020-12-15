@@ -10,12 +10,17 @@ import { colors, padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const TokenSelectionButtonHeight = 46;
+const TokenSelectionButtonElevation = ios ? 0 : 8;
 
 const Button = styled(ButtonPressAnimation).attrs({
   contentContainerStyle: {
     height: TokenSelectionButtonHeight,
   },
   overflowMargin: 30,
+  throttle: true,
+  wrapperStyle: {
+    elevation: TokenSelectionButtonElevation,
+  },
 })``;
 
 const Content = styled(RowWithMargins).attrs({
@@ -23,7 +28,7 @@ const Content = styled(RowWithMargins).attrs({
   margin: 7,
 })`
   ${padding(11, 14, 14, 16)};
-  height: 46;
+  height: ${TokenSelectionButtonHeight};
   z-index: 1;
 `;
 
@@ -48,7 +53,8 @@ export default function TokenSelectionButton({
     { address },
     address ? undefined : colors.appleBlue
   );
-  const buttonShadows = useMemo(
+
+  const shadowsForAsset = useMemo(
     () => [
       [0, 10, 30, colors.dark, 0.2],
       [0, 5, 15, colorForAsset, 0.4],
@@ -58,19 +64,18 @@ export default function TokenSelectionButton({
 
   return (
     <Button
+      backgroundColor={colorForAsset}
+      borderRadius={borderRadius}
       onPress={onPress}
       radiusAndroid={borderRadius}
       testID={testID}
-      throttle
     >
       <ShadowStack
         {...position.coverAsObject}
         backgroundColor={colorForAsset}
         borderRadius={borderRadius}
-        elevation={8}
-        height={TokenSelectionButtonHeight}
-        shadows={buttonShadows}
-        symbol={symbol}
+        elevation={TokenSelectionButtonElevation}
+        shadows={shadowsForAsset}
       />
       <Content>
         <Text
