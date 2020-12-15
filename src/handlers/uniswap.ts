@@ -16,6 +16,7 @@ import {
   WETH,
 } from '@uniswap/sdk';
 import { get, isEmpty, mapKeys, mapValues, toLower } from 'lodash';
+import LZString from 'lz-string';
 import { uniswapClient } from '../apollo/client';
 import { UNISWAP_ALL_TOKENS } from '../apollo/queries';
 import { Network } from '../helpers/networkTypes';
@@ -397,6 +398,29 @@ export const executeSwap = async ({
   return exchange[methodName](...updatedMethodArgs, transactionParams);
 };
 
+function optimize({
+  derivedETH,
+  name,
+  totalLiquidity,
+  ...tokenInfo
+}: TokenInfo): TokenInfo {
+  const derivedETHC = LZString.compress(derivedETH);
+  const nameC = LZString.compress(name);
+  const totalLiquidityC = LZString.compress(totalLiquidity);
+  return {
+    ...tokenInfo,
+    get derivedETH() {
+      return LZString.decompress(derivedETHC);
+    },
+    get name() {
+      return LZString.decompress(nameC);
+    },
+    get totalLiquidity() {
+      return LZString.decompress(totalLiquidityC);
+    },
+  };
+}
+
 export const getAllTokens = async (excluded = []): Promise<AllTokenInfo> => {
   let allTokens: AllTokenInfo = {};
   let data: UniswapSubgraphToken[] = [];
@@ -432,7 +456,7 @@ export const getAllTokens = async (excluded = []): Promise<AllTokenInfo> => {
       totalLiquidity: token.totalLiquidity,
       ...tokenOverrides[tokenAddress],
     };
-    allTokens[tokenAddress] = tokenInfo;
+    allTokens[tokenAddress] = optimize(tokenInfo);
   });
   return allTokens;
 };
