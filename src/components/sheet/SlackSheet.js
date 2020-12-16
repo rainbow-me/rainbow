@@ -26,6 +26,9 @@ const calculateTopPosition = (
   contentHeight,
   additionalTopPadding
 ) => {
+  if (ios) {
+    return '';
+  }
   if (deferredHeight) return '';
   const top =
     contentHeight && additionalTopPadding ? deviceHeight - contentHeight : 0;
@@ -38,9 +41,13 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
   left: 0;
   overflow: hidden;
   position: absolute;
-  border-radius: 20;
+  ${android ? 'border-radius: 20;' : ''}
   ${({ deferredHeight, contentHeight, additionalTopPadding }) =>
-    calculateTopPosition(deferredHeight, contentHeight, additionalTopPadding)}
+    calculateTopPosition(
+      deferredHeight,
+      contentHeight,
+      additionalTopPadding
+    )}
   right: 0;
 `;
 
@@ -116,10 +123,12 @@ export default function SlackSheet({
         <Pressable onPress={goBack} style={[StyleSheet.absoluteFillObject]} />
       ) : null}
       <Container
-        additionalTopPadding={additionalTopPadding}
         backgroundColor={backgroundColor}
-        contentHeight={contentHeight}
-        deferredHeight={deferredHeight}
+        {...(android && {
+          additionalTopPadding,
+          contentHeight,
+          deferredHeight,
+        })}
         {...props}
       >
         {android && (
