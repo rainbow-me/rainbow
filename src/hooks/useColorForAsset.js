@@ -1,45 +1,41 @@
-import { map } from 'lodash';
 import { useMemo } from 'react';
-import {
-  getUrlForTrustIconFallback,
-  pseudoRandomArrayItemFromString,
-} from '../utils';
-import useImageMetadata, { useImagesColors } from './useImageMetadata';
+import useImageMetadata from './useImageMetadata';
 import { colors } from '@rainbow-me/styles';
+import {
+  getTokenMetadata,
+  getUrlForTrustIconFallback,
+  isETH,
+  pseudoRandomArrayItemFromString,
+} from '@rainbow-me/utils';
 
-export function useColorForAssets(assets) {
-  const fallbackUrls = useMemo(
-    () => map(assets, asset => getUrlForTrustIconFallback(asset.address)),
-    [assets]
+export default function useColorForAsset(asset, fallbackColor) {
+  const { address, color } = asset;
+  const token = getTokenMetadata(address);
+  const tokenListColor = token?.extensions?.color;
+
+  const { color: imageColor } = useImageMetadata(
+    getUrlForTrustIconFallback(address)
   );
 
-  const fallbackColors = useImagesColors(fallbackUrls);
-
-  return useMemo(
+  const colorDerivedFromAddress = useMemo(
     () =>
-      map(
-        assets,
-        (asset, index) =>
-          asset.color ||
-          fallbackColors[index] ||
-          pseudoRandomArrayItemFromString(asset.symbol, colors.avatarColor)
-      ),
-    [assets, fallbackColors]
+      isETH(address)
+        ? colors.dark
+        : pseudoRandomArrayItemFromString(address, colors.avatarColor),
+    [address]
   );
-}
 
-export default function useColorForAsset({ address, color, symbol }) {
-  const fallbackUrl = useMemo(() => getUrlForTrustIconFallback(address), [
-    address,
+  return useMemo(() => {
+    if (color) return color;
+    if (tokenListColor) return tokenListColor;
+    if (imageColor) return imageColor;
+    if (fallbackColor) return fallbackColor;
+    return colorDerivedFromAddress;
+  }, [
+    color,
+    colorDerivedFromAddress,
+    fallbackColor,
+    imageColor,
+    tokenListColor,
   ]);
-
-  const { color: fallbackColor } = useImageMetadata(fallbackUrl);
-
-  return useMemo(
-    () =>
-      color ||
-      fallbackColor ||
-      pseudoRandomArrayItemFromString(symbol, colors.avatarColor),
-    [color, fallbackColor, symbol]
-  );
 }

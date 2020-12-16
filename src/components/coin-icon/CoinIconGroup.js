@@ -1,31 +1,10 @@
-import { map } from 'lodash';
-import React from 'react';
-import styled from 'styled-components/primitives';
-import { CoinIcon } from '../coin-icon';
-import { Row } from '../layout';
-import { colors } from '@rainbow-me/styles';
+import React, { useMemo } from 'react';
+import { View } from 'react-primitives';
+import { Column, Row } from '../layout';
+import CoinIcon from './CoinIcon';
 
-const componentWidth = 70;
-
-const Container = styled(Row).attrs({
-  grow: 0,
-  shrink: 1,
-})`
-  align-items: ${({ shouldCenter }) =>
-    shouldCenter ? 'center' : 'flex-start'};
-  width: ${componentWidth};
-  flex-direction: column;
-  left: 0;
-`;
-
-const Wrapper = styled.View`
-  width: ${({ width }) => width};
-`;
-
-const LineWrapper = styled.View`
-  flex-direction: row;
-`;
-
+// Note that `width` is always smaller than `iconSize`. We do this to force the
+// `CoinIcon`'s to overlap each other (imagine the Olympics logo).
 const sizesTable = [
   { breakIndex: false, iconSize: 40, width: 30 },
   { breakIndex: false, iconSize: 40, width: 30 },
@@ -37,33 +16,38 @@ const sizesTable = [
   { breakIndex: 4, iconSize: 20, width: 15 },
 ];
 
-export default function CoinIconGroup({ containerStyles, tokens }) {
-  const size = tokens.length - 1;
-  const slicedArray = [
-    tokens.slice(0, sizesTable[size].breakIndex),
-    tokens.slice(sizesTable[size].breakIndex, tokens.length),
-  ];
+export default function CoinIconGroup({ tokens }) {
+  const { breakIndex, iconSize, width } = useMemo(
+    () => sizesTable[tokens.length - 1],
+    [tokens]
+  );
+
+  const tokenRows = useMemo(() => {
+    return [
+      tokens.slice(0, breakIndex),
+      tokens.slice(breakIndex, tokens.length),
+    ];
+  }, [breakIndex, tokens]);
 
   return (
-    <Container css={containerStyles} shouldCenter={sizesTable[size].breakIndex}>
-      {map(slicedArray, (setOfTokens, lineIndex) => (
-        <LineWrapper key={`coinLine_${lineIndex}`}>
-          {map(setOfTokens, (token, index) => (
-            <Wrapper
+    <Column align={breakIndex ? 'center' : 'start'} width={70}>
+      {tokenRows.map((setOfTokens, lineIndex) => (
+        <Row key={`coinLine_${lineIndex}`}>
+          {setOfTokens.map((token, index) => (
+            <View
               key={`coin_${index}_${lineIndex}`}
-              width={sizesTable[size].width}
+              width={width}
               zIndex={-index}
             >
               <CoinIcon
-                address={token.address}
-                size={sizesTable[size].iconSize}
-                symbol={token.symbol}
-                {...(android && { shadow: [[0, 4, 6, colors.dark, 0.04]] })}
+                address={token?.address}
+                size={iconSize}
+                symbol={token?.symbol}
               />
-            </Wrapper>
+            </View>
           ))}
-        </LineWrapper>
+        </Row>
       ))}
-    </Container>
+    </Column>
   );
 }

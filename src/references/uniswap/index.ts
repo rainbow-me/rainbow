@@ -2,38 +2,43 @@ import { Interface } from '@ethersproject/abi';
 import { ChainId, Token, WETH } from '@uniswap/sdk';
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json';
 import { filter, keyBy, map, toLower } from 'lodash';
-import { DAI_ADDRESS, tokenOverrides, USDC_ADDRESS } from '../';
-import RAINBOW_TOKEN_LIST from './rainbow-token-list.json';
+import { DAI_ADDRESS, USDC_ADDRESS } from '../';
+import RAINBOW_TOKEN_LIST_DATA from './rainbow-token-list.json';
 import MULTICALL_ABI from './uniswap-multicall-abi.json';
 import { default as UNISWAP_TESTNET_TOKEN_LIST } from './uniswap-pairs-testnet.json';
 import { abi as UNISWAP_V2_ROUTER_ABI } from './uniswap-v2-router.json';
 import UNISWAP_V1_EXCHANGE_ABI from './v1-exchange-abi';
 
-const TOKEN_LIST = map(
-  filter(
-    RAINBOW_TOKEN_LIST['tokens'],
-    token => !!token?.extensions?.isRainbowCurated
-  ),
-  token => {
-    const address = toLower(token.address);
-    return {
-      ...token,
-      ...tokenOverrides[address],
-      address,
-    };
-  }
-);
+const TOKEN_LIST = map(RAINBOW_TOKEN_LIST_DATA.tokens, token => {
+  const address = toLower(token.address);
+  return {
+    ...token,
+    address,
+  };
+});
 
 const ETHER_WITH_ADDRESS = {
   address: 'eth',
+  chainId: 1,
   decimals: 18,
+  extensions: {
+    isRainbowCurated: true,
+    isVerified: true,
+  },
   name: 'Ethereum',
   symbol: 'ETH',
 };
 
-const CURATED_UNISWAP_TOKEN_LIST = [ETHER_WITH_ADDRESS, ...TOKEN_LIST];
+const TOKEN_LIST_WITH_ETH = [ETHER_WITH_ADDRESS, ...TOKEN_LIST];
 
-const CURATED_UNISWAP_TOKENS = keyBy(CURATED_UNISWAP_TOKEN_LIST, 'address');
+const RAINBOW_TOKEN_LIST = keyBy(TOKEN_LIST_WITH_ETH, 'address');
+
+const CURATED_RAINBOW_TOKEN_LIST = filter(
+  TOKEN_LIST_WITH_ETH,
+  'extensions.isRainbowCurated'
+);
+
+const CURATED_UNISWAP_TOKENS = keyBy(CURATED_RAINBOW_TOKEN_LIST, 'address');
 
 const UNISWAP_V2_ROUTER_ADDRESS = '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D';
 
@@ -70,6 +75,7 @@ export {
   PAIR_GET_RESERVES_CALL_DATA,
   PAIR_GET_RESERVES_FRAGMENT,
   PAIR_INTERFACE,
+  RAINBOW_TOKEN_LIST,
   UNISWAP_TESTNET_TOKEN_LIST,
   UNISWAP_V1_EXCHANGE_ABI,
   UNISWAP_V2_BASES,

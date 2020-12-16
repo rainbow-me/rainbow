@@ -1,9 +1,9 @@
 import { map } from 'lodash';
 import React, { Fragment } from 'react';
-import { useOpenSavings } from '../../hooks';
 import { OpacityToggler } from '../animations';
 import SavingsListHeader from './SavingsListHeader';
 import SavingsListRow from './SavingsListRow';
+import { useFrameDelayedValue, useOpenSavings } from '@rainbow-me/hooks';
 
 const renderSavingsListRow = item =>
   item?.underlying ? (
@@ -12,7 +12,9 @@ const renderSavingsListRow = item =>
 
 export default function SavingsListWrapper({ assets, totalValue = '0' }) {
   const { isSavingsOpen, toggleOpenSavings } = useOpenSavings();
-
+  // wait until refresh of RLV
+  const delayedIsSavingsOpen =
+    useFrameDelayedValue(isSavingsOpen) && isSavingsOpen;
   return (
     <Fragment>
       <SavingsListHeader
@@ -22,7 +24,7 @@ export default function SavingsListWrapper({ assets, totalValue = '0' }) {
         showSumValue
       />
       <OpacityToggler
-        isVisible={!isSavingsOpen}
+        isVisible={!delayedIsSavingsOpen}
         pointerEvents={isSavingsOpen ? 'auto' : 'none'}
       >
         {map(assets, renderSavingsListRow)}

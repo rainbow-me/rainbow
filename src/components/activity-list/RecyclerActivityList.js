@@ -1,5 +1,4 @@
 import { get } from 'lodash';
-import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import {
   DataProvider,
@@ -62,18 +61,6 @@ const hasRowChanged = (r1, r2) => {
 };
 
 export default class RecyclerActivityList extends PureComponent {
-  static propTypes = {
-    addCashAvailable: PropTypes.bool,
-    header: PropTypes.node,
-    isLoading: PropTypes.bool,
-    sections: PropTypes.arrayOf(
-      PropTypes.shape({
-        data: PropTypes.array,
-        title: PropTypes.string.isRequired,
-      })
-    ),
-  };
-
   constructor(props) {
     super(props);
 

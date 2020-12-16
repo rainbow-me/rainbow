@@ -9,9 +9,9 @@ import {
   includes,
   sortBy,
 } from 'lodash';
-import store from '../redux/store';
-import supportedNativeCurrencies from '../references/native-currencies.json';
 import { add, convertAmountToNativeDisplay } from './utilities';
+import store from '@rainbow-me/redux/store';
+import { supportedNativeCurrencies } from '@rainbow-me/references';
 import { ETH_ICON_URL } from '@rainbow-me/utils';
 
 export const amountOfShowedCoins = 5;
