@@ -9,7 +9,7 @@ import {
   orderBy,
   toLower,
 } from 'lodash';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
 import { compoundClient } from '@rainbow-me/apollo/client';
@@ -85,6 +85,7 @@ export default function useSavingsAccount(includeDefaultDai) {
   const { accountAddress, network } = useAccountSettings();
 
   const hasAccountAddress = !!accountAddress;
+
   const { shouldRefetchSavings } = useSelector(
     ({ data: { shouldRefetchSavings } }) => ({
       shouldRefetchSavings,
@@ -112,74 +113,69 @@ export default function useSavingsAccount(includeDefaultDai) {
     fetchBackupSavings();
   }, [accountAddress, hasAccountAddress, network]);
 
+  const parseSavingsResult = useCallback(async () => {
+    if (error) return;
+
+    if (data) {
+      const markets = keyBy(data?.markets, 'id');
+      const resultTokens = data?.account?.tokens;
+
+      const parsedAccountTokens = map(resultTokens, token => {
+        const [cTokenAddress] = token.id.split('-');
+        const marketData = markets[cTokenAddress] || {};
+
+        const {
+          cToken,
+          exchangeRate,
+          supplyRate,
+          underlying,
+          underlyingPrice,
+        } = getMarketData(marketData);
+
+        const {
+          cTokenBalance,
+          lifetimeSupplyInterestAccrued,
+          supplyBalanceUnderlying,
+        } = token;
+
+        const ethPrice = multiply(underlyingPrice, supplyBalanceUnderlying);
+
+        return {
+          cToken,
+          cTokenBalance,
+          ethPrice,
+          exchangeRate,
+          lifetimeSupplyInterestAccrued,
+          supplyBalanceUnderlying,
+          supplyRate,
+          type: AssetTypes.compound,
+          underlying,
+          underlyingPrice,
+        };
+      });
+      const accountTokens = orderBy(
+        parsedAccountTokens,
+        ['ethPrice'],
+        ['desc']
+      );
+      const daiMarketData = getMarketData(markets[CDAI_CONTRACT]);
+      const result = {
+        accountTokens,
+        daiMarketData,
+      };
+      saveSavings(result, accountAddress, network);
+      setResult(result);
+    } else if (loading && !isNil(backupSavings)) {
+      setResult(backupSavings);
+    } else {
+      setResult({});
+    }
+  }, [accountAddress, backupSavings, data, error, loading, network]);
+
   useEffect(() => {
     if (!hasAccountAddress) return;
-    const parseSavingsResult = async data => {
-      if (error) return;
-
-      if (data) {
-        const markets = keyBy(data?.markets, 'id');
-        const resultTokens = data?.account?.tokens;
-
-        const parsedAccountTokens = map(resultTokens, token => {
-          const [cTokenAddress] = token.id.split('-');
-          const marketData = markets[cTokenAddress] || {};
-
-          const {
-            cToken,
-            exchangeRate,
-            supplyRate,
-            underlying,
-            underlyingPrice,
-          } = getMarketData(marketData);
-
-          const {
-            cTokenBalance,
-            lifetimeSupplyInterestAccrued,
-            supplyBalanceUnderlying,
-          } = token;
-
-          const ethPrice = multiply(underlyingPrice, supplyBalanceUnderlying);
-
-          return {
-            cToken,
-            cTokenBalance,
-            ethPrice,
-            exchangeRate,
-            lifetimeSupplyInterestAccrued,
-            supplyBalanceUnderlying,
-            supplyRate,
-            type: AssetTypes.compound,
-            underlying,
-            underlyingPrice,
-          };
-        });
-        const accountTokens = orderBy(
-          parsedAccountTokens,
-          ['ethPrice'],
-          ['desc']
-        );
-        const daiMarketData = getMarketData(markets[CDAI_CONTRACT]);
-        const result = {
-          accountTokens,
-          daiMarketData,
-        };
-        saveSavings(result, accountAddress, network);
-        setResult(result);
-      } else if (loading && !isNil(backupSavings)) {
-        setResult(backupSavings);
-      }
-    };
-    parseSavingsResult(data);
-  }, [
-    accountAddress,
-    backupSavings,
-    data,
-    error,
-    hasAccountAddress,
-    loading,
-    network,
-  ]);
+    parseSavingsResult();
+  }, [hasAccountAddress, parseSavingsResult]);
 
   const savings = useMemo(() => {
     if (isEmpty(result)) return [];
