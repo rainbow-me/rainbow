@@ -108,7 +108,12 @@ export default function ChartExpandedStateHeader({
             priceSharedValue={priceSharedValue}
             tabularNums={tabularNums}
           />
-          <ChartHeaderSubtitle color={color}>
+          <ChartHeaderSubtitle
+            color={
+              isNoPriceData ? colors.alpha(colors.blueGreyDark, 0.8) : color
+            }
+            weight={isNoPriceData ? 'semibold' : 'bold'}
+          >
             {titleOrNoPriceData}
           </ChartHeaderSubtitle>
         </ColumnWithMargins>
