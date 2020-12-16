@@ -90,7 +90,7 @@ export default function useScanner(enabled) {
       navigate(Routes.WALLET_SCREEN);
 
       // And then navigate to Send sheet
-      if (isNativeStackAvailable) {
+      if (isNativeStackAvailable || android) {
         navigate(Routes.SEND_FLOW, {
           params: { address },
           screen: Routes.SEND_SHEET,
