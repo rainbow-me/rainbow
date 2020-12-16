@@ -242,6 +242,7 @@ android {
 
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES'
+        pickFirst '**/*.so'
     }
 
 
