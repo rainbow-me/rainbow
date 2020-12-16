@@ -21,7 +21,6 @@ import ChartContext, {
   useGenerateValues as generateValues,
 } from '../../helpers/ChartContext';
 import { findYExtremes } from '../../helpers/extremesHelpers';
-import useReactiveSharedValue from '../../helpers/useReactiveSharedValue';
 import { svgBezierPath } from '../../smoothing/smoothSVG';
 
 function impactHeavy() {
@@ -185,11 +184,8 @@ export default function ChartPathProvider({
     valuesStore.current.curroriginalData,
     'curroriginalData'
   );
-  const hitSlopValue = useReactiveSharedValue(hitSlop, 'hitSlopValue');
-  const hapticsEnabledValue = useReactiveSharedValue(
-    hapticsEnabled,
-    'hapticsEnabledValue'
-  );
+  const hitSlopValue = useSharedValue(hitSlop);
+  const hapticsEnabledValue = useSharedValue(hapticsEnabled);
   const [extremes, setExtremes] = useState({});
   const isAnimationInProgress = useSharedValue(false, 'isAnimationInProgress');
 
@@ -204,10 +200,7 @@ export default function ChartPathProvider({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [providedData]);
 
-  const smoothingStrategy = useReactiveSharedValue(
-    data.smoothingStrategy,
-    'smoothingStrategy'
-  );
+  const smoothingStrategy = useSharedValue(data.smoothingStrategy);
 
   useEffect(() => {
     if (!data || !data.points) {
@@ -258,7 +251,7 @@ export default function ChartPathProvider({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
-  const isStarted = useReactiveSharedValue(false, 'isStarted');
+  const isStarted = useSharedValue(false, 'isStarted');
 
   const onLongPressGestureEvent = useAnimatedGestureHandler({
     onActive: event => {
@@ -514,18 +507,11 @@ function ChartPath({
   children,
   ...props
 }) {
-  const smoothingWhileTransitioningEnabledValue = useReactiveSharedValue(
-    smoothingWhileTransitioningEnabled,
-    'smoothingWhileTransitioningEnabledValue'
+  const smoothingWhileTransitioningEnabledValue = useSharedValue(
+    smoothingWhileTransitioningEnabled
   );
-  const selectedStrokeWidthValue = useReactiveSharedValue(
-    selectedStrokeWidth,
-    'selectedStrokeWidthValue'
-  );
-  const strokeWidthValue = useReactiveSharedValue(
-    strokeWidth,
-    'strokeWidthValue'
-  );
+  const selectedStrokeWidthValue = useSharedValue(selectedStrokeWidth);
+  const strokeWidthValue = useSharedValue(strokeWidth);
 
   useEffect(() => {
     layoutSize.value = { height, width };
