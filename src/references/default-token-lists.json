@@ -5,6 +5,12 @@
     "name": "Favorites",
     "tokens": []
   },
+  // {
+  //   "emoji": "fire",
+  //   "id": "trending",
+  //   "name": "Trending",
+  //   "tokens": []
+  // },
   {
     "emoji": "television",
     "id": "watchlist",

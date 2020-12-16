@@ -5,7 +5,6 @@ import React, { useContext } from 'react';
 import { StatusBar } from 'react-native';
 import { InitialRouteContext } from '../context/initialRoute';
 import AddCashSheet from '../screens/AddCashSheet';
-import AddTokenSheet from '../screens/AddTokenSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import BackupSheet from '../screens/BackupSheet';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
@@ -281,11 +280,6 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={SavingsSheet}
         name={Routes.SAVINGS_SHEET}
-        {...savingsSheetConfig}
-      />
-      <NativeStack.Screen
-        component={AddTokenSheet}
-        name={Routes.ADD_TOKEN_SHEET}
         {...savingsSheetConfig}
       />
       <NativeStack.Screen

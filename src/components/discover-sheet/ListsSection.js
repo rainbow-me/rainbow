@@ -1,14 +1,26 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { ScrollView } from 'react-native';
 import styled from 'styled-components/native';
 import { DefaultTokenLists } from '../../references';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation/ButtonPressAnimation.ios';
-import { Column, Flex, Row } from '../layout';
-import { Emoji, Text } from '../text';
-import { useAccountSettings } from '@rainbow-me/hooks';
-import { colors } from '@rainbow-me/styles';
+import { ListCoinRow } from '../coin-row';
+import { initialChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
+import { Centered, Column, Flex, Row } from '../layout';
 
-const ListButton = styled(ButtonPressAnimation)`
+import { Emoji, Text } from '../text';
+import {
+  useAccountAssets,
+  useAccountSettings,
+  useUniswapAssets,
+} from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
+import Routes from '@rainbow-me/routes';
+import { colors } from '@rainbow-me/styles';
+import { ethereumUtils } from '@rainbow-me/utils';
+
+const ListButton = styled(ButtonPressAnimation).attrs({
+  scaleTo: 0.96,
+})`
   margin-right: 20;
   ${({ selected }) =>
     selected
@@ -30,13 +42,54 @@ const ListName = styled(Text)`
   margin-top: -5px;
 `;
 
-export default function PulseIndex() {
+const DEFAULT_LIST = 'favorites';
+
+export default function ListSection() {
   const { network } = useAccountSettings();
-  const [selectedList, setSelectedList] = useState('favorites');
+  const { navigate } = useNavigation();
+  const [selectedList, setSelectedList] = useState(DEFAULT_LIST);
+  const { favorites, lists } = useUniswapAssets();
+  const { allAssets } = useAccountAssets();
+
+  const listItems = useMemo(() => {
+    if (selectedList === 'favorites') {
+      return favorites.map(item =>
+        ethereumUtils.getAsset(allAssets, item.address)
+      );
+    } else if (selectedList === 'watchlist') {
+      const watchlist = lists.find(list => list.id === 'watchlist');
+      return watchlist.tokens.map(address =>
+        ethereumUtils.getAsset(allAssets, address)
+      );
+    }
+    return [];
+  }, [allAssets, favorites, lists, selectedList]);
 
   const handleSwitchList = useCallback(id => {
     setSelectedList(id);
   }, []);
+
+  const handlePress = useCallback(
+    item => {
+      navigate(
+        ios ? Routes.EXPANDED_ASSET_SHEET : Routes.EXPANDED_ASSET_SCREEN,
+        {
+          asset: item,
+          longFormHeight: initialChartExpandedStateSheetHeight,
+          type: 'token',
+        }
+      );
+    },
+    [navigate]
+  );
+
+  const itemProps = useMemo(
+    () => ({
+      showAddButton: true,
+      showBalance: false,
+    }),
+    []
+  );
 
   return (
     <Column>
@@ -45,7 +98,11 @@ export default function PulseIndex() {
           Lists
         </Text>
       </Flex>
-      <ScrollView contentContainerStyle={{ paddingHorizontal: 19 }} horizontal>
+      <ScrollView
+        contentContainerStyle={{ paddingHorizontal: 19 }}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+      >
         {DefaultTokenLists[network].map(list => (
           <ListButton
             key={`list-${list.id}`}
@@ -55,7 +112,11 @@ export default function PulseIndex() {
             <Row>
               <Emoji name={list.emoji} size="smedium" />
               <ListName
-                color={colors.blueGreyDark50}
+                color={
+                  selectedList === list.id
+                    ? colors.alpha(colors.blueGreyDark, 0.8)
+                    : colors.blueGreyDark50
+                }
                 lineHeight="paragraphSmall"
                 size="lmedium"
                 weight="bold"
@@ -66,6 +127,24 @@ export default function PulseIndex() {
           </ListButton>
         ))}
       </ScrollView>
+      <Column marginTop={15}>
+        {listItems?.length ? (
+          listItems.map((item, i) => (
+            <ListCoinRow
+              {...itemProps}
+              item={item}
+              key={`discover-list-item-${i}`}
+              onPress={() => handlePress(item)}
+            />
+          ))
+        ) : (
+          <Centered marginBottom={30} marginTop={30}>
+            <Text color={colors.blueGreyDark50} size="large">
+              This list is empty!
+            </Text>
+          </Centered>
+        )}
+      </Column>
     </Column>
   );
 }

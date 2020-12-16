@@ -7,6 +7,7 @@ import { useCallbackOne } from 'use-memo-one';
 import { useColorForAssets } from '../../../hooks/useColorForAsset';
 import { CoinIcon } from '../../coin-icon';
 import { ColumnWithMargins, Row, RowWithMargins } from '../../layout';
+import ChartAddToListButton from './ChartAddToListButton';
 import ChartContextButton from './ChartContextButton';
 import {
   ChartDateLabel,
@@ -104,7 +105,7 @@ export default function ChartExpandedStateHeader({
         justify="space-between"
         testID="expanded-state-header"
       >
-        <Row>
+        <Row backgroundColor={colors.red}>
           {map(tokens, (token, index) => {
             return (
               <View key={`coinicon-${index}`} zIndex={-index}>
@@ -119,7 +120,10 @@ export default function ChartExpandedStateHeader({
             );
           })}
         </Row>
-        <ChartContextButton asset={asset} color={color} />
+        <Row backgroundColor={colors.appleBlue}>
+          <ChartAddToListButton asset={asset} />
+          <ChartContextButton asset={asset} color={color} />
+        </Row>
       </Row>
       <RowWithMargins
         align={ios ? 'center' : 'flex-start'}

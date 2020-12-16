@@ -110,21 +110,39 @@ export const uniswapUpdateList = (assetAddress, listId, add = true) => (
   getState
 ) => {
   const address = toLower(assetAddress);
-  const { lists } = getState().uniswap;
   if (listId === FAVORITES_LIST_ID) {
     uniswapUpdateFavorites(assetAddress, add);
   } else {
-    const normalizedList = map(lists[listId], toLower);
+    const { lists } = getState().uniswap;
+    const allNewLists = [...lists];
 
-    const updatedList = add
-      ? uniq(concat(normalizedList, address))
-      : without(normalizedList, address);
-    lists[listId] = updatedList;
+    // Find the list index
+    let listIndex = null;
+    allNewLists.find((list, index) => {
+      if (list.id === listId) {
+        listIndex = index;
+        return true;
+      }
+      return false;
+    });
+    // Normalize the list
+    const normalizedListTokens = map(allNewLists[listIndex].tokens, toLower);
+
+    // add or remove
+    const updatedListTokens = add
+      ? uniq(concat(normalizedListTokens, address))
+      : without(normalizedListTokens, address);
+
+    // update the list
+    const newList = { ...allNewLists[listIndex] };
+    newList.tokens = updatedListTokens;
+    allNewLists[listIndex] = newList;
+
     dispatch({
-      payload: lists,
+      payload: allNewLists,
       type: UNISWAP_UPDATE_LISTS,
     });
-    saveUniswapLists(lists);
+    saveUniswapLists(allNewLists);
   }
 };
 

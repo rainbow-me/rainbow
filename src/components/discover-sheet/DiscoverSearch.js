@@ -18,6 +18,7 @@ import { addHexPrefix } from '../../handlers/web3';
 import CurrencySelectionTypes from '../../helpers/currencySelectionTypes';
 import { ButtonPressAnimation } from '../animations';
 import { CurrencySelectionList, ExchangeSearch } from '../exchange';
+import { initialChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
 import {
@@ -183,22 +184,27 @@ export default function DiscoverSearch({ onCancel }) {
     // );
   }, [searchQuery, startQueryDebounce, stopQueryDebounce]);
 
-  const handleSelectAsset = useCallback(
+  const handlePress = useCallback(
     item => {
-      logger.log('selected item', item);
-      navigate(Routes.ADD_TOKEN_SHEET, { item });
+      navigate(
+        ios ? Routes.EXPANDED_ASSET_SHEET : Routes.EXPANDED_ASSET_SCREEN,
+        {
+          asset: item,
+          longFormHeight: initialChartExpandedStateSheetHeight,
+          type: 'token',
+        }
+      );
     },
     [navigate]
   );
 
   const itemProps = useMemo(
     () => ({
-      onActionAsset: handleSelectAsset,
-      onPress: () => null,
+      onPress: handlePress,
       showAddButton: true,
       showBalance: false,
     }),
-    [handleSelectAsset]
+    [handlePress]
   );
 
   logger.log('rendering!');

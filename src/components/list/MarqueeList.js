@@ -217,6 +217,7 @@ const MarqueeList = ({ items = [], speed }) => {
     <>
       <SwipeableList
         components={items.map((item, idx) => ({
+          key: `item-${idx}`,
           offset: offsets[idx],
           view: renderItemCallback({ item }),
           width: itemWidths[idx],

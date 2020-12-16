@@ -1,6 +1,7 @@
-import { find } from 'lodash';
-import React, { useRef } from 'react';
-import { useChartThrottledPoints, useUniswapAssetsInWallet } from '../../hooks';
+import { find, includes, toLower } from 'lodash';
+import React, { Fragment, useMemo, useRef } from 'react';
+import styled from 'styled-components/primitives';
+import { Column } from '../layout';
 import {
   BuyActionButton,
   SendActionButton,
@@ -9,6 +10,7 @@ import {
   SlackSheet,
   SwapActionButton,
 } from '../sheet';
+import { ToggleStateToast } from '../toasts';
 import {
   TokenInfoBalanceValue,
   TokenInfoItem,
@@ -18,6 +20,11 @@ import {
 import Chart from '../value-chart/Chart';
 import { ChartPathProvider } from '@rainbow-me/animated-charts';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
+import {
+  useChartThrottledPoints,
+  useUniswapAssets,
+  useUniswapAssetsInWallet,
+} from '@rainbow-me/hooks';
 
 //add's StatusBar height to android
 const heightWithoutChart = 309 + (android && 24);
@@ -25,6 +32,12 @@ const heightWithChart = heightWithoutChart + 297;
 
 export const initialChartExpandedStateSheetHeight =
   heightWithChart + (android && 40);
+
+const ToastWrapper = styled(Column)`
+  width: 100%;
+  height: 400;
+  z-index: 9;
+`;
 
 export default function ChartExpandedState({ asset }) {
   const {
@@ -42,6 +55,7 @@ export default function ChartExpandedState({ asset }) {
     heightWithoutChart,
   });
 
+  const { lists } = useUniswapAssets();
   const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
   const showSwapButton = find(uniswapAssetsInWallet, [
     'uniqueId',
@@ -58,51 +72,74 @@ export default function ChartExpandedState({ asset }) {
   const ChartExpandedStateSheetHeight =
     (ios || showChart ? heightWithChart : heightWithoutChart) + (android && 40);
 
+  const assetWithWatchlistInfo = useMemo(() => {
+    const watchlist = lists.find(list => list.id === 'watchlist');
+    if (includes(watchlist.tokens, toLower(asset.address))) {
+      return {
+        ...asset,
+        isInWatchlist: true,
+      };
+    }
+    return {
+      ...asset,
+      isInWatchlist: false,
+    };
+  }, [asset, lists]);
+
   return (
-    <SlackSheet
-      additionalTopPadding={android}
-      contentHeight={ChartExpandedStateSheetHeight}
-      scrollEnabled={false}
-    >
-      <ChartPathProvider data={throttledData}>
-        <Chart
-          {...chartData}
-          {...initialChartDataLabels}
-          asset={asset}
-          chart={chart}
-          chartType={chartType}
-          color={color}
-          fetchingCharts={fetchingCharts}
-          nativePoints={chart}
-          showChart={showChart}
-          throttledData={throttledData}
-        />
-      </ChartPathProvider>
-      <SheetDivider />
-      <TokenInfoSection>
-        <TokenInfoRow>
-          <TokenInfoItem asset={asset} title="Balance">
-            <TokenInfoBalanceValue />
-          </TokenInfoItem>
-          {asset?.native?.price.display && (
-            <TokenInfoItem title="Value" weight="bold">
-              {asset?.native?.balance.display}
+    <Fragment>
+      <SlackSheet
+        additionalTopPadding={android}
+        contentHeight={ChartExpandedStateSheetHeight}
+        scrollEnabled={false}
+      >
+        <ChartPathProvider data={throttledData}>
+          <Chart
+            {...chartData}
+            {...initialChartDataLabels}
+            asset={assetWithWatchlistInfo}
+            chart={chart}
+            chartType={chartType}
+            color={color}
+            fetchingCharts={fetchingCharts}
+            nativePoints={chart}
+            showChart={showChart}
+            throttledData={throttledData}
+          />
+        </ChartPathProvider>
+        <SheetDivider />
+        <TokenInfoSection>
+          <TokenInfoRow>
+            <TokenInfoItem asset={asset} title="Balance">
+              <TokenInfoBalanceValue />
             </TokenInfoItem>
-          )}
-        </TokenInfoRow>
-      </TokenInfoSection>
-      {needsEth ? (
-        <SheetActionButtonRow>
-          <BuyActionButton color={color} fullWidth />
-        </SheetActionButtonRow>
-      ) : (
-        <SheetActionButtonRow>
-          {showSwapButton && (
-            <SwapActionButton color={color} inputType={AssetInputTypes.in} />
-          )}
-          <SendActionButton color={color} fullWidth={!showSwapButton} />
-        </SheetActionButtonRow>
-      )}
-    </SlackSheet>
+            {asset?.native?.price.display && (
+              <TokenInfoItem title="Value" weight="bold">
+                {asset?.native?.balance.display}
+              </TokenInfoItem>
+            )}
+          </TokenInfoRow>
+        </TokenInfoSection>
+        {needsEth ? (
+          <SheetActionButtonRow>
+            <BuyActionButton color={color} fullWidth />
+          </SheetActionButtonRow>
+        ) : (
+          <SheetActionButtonRow>
+            {showSwapButton && (
+              <SwapActionButton color={color} inputType={AssetInputTypes.in} />
+            )}
+            <SendActionButton color={color} fullWidth={!showSwapButton} />
+          </SheetActionButtonRow>
+        )}
+      </SlackSheet>
+      <ToastWrapper>
+        <ToggleStateToast
+          addCopy="Added to watchlist"
+          isAdded={assetWithWatchlistInfo.isInWatchlist}
+          removeCopy="Removed from watchlist"
+        />
+      </ToastWrapper>
+    </Fragment>
   );
 }

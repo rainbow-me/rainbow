@@ -9,7 +9,7 @@ import {
   SlackSheet,
 } from '../sheet';
 import { Text } from '../text';
-import { ShowcaseToast, ToastPositionContainer } from '../toasts';
+import { ToastPositionContainer, ToggleStateToast } from '../toasts';
 import { UniqueTokenAttributes } from '../unique-token';
 import ExpandedStateSection from './ExpandedStateSection';
 import {
@@ -103,7 +103,11 @@ const UniqueTokenExpandedState = ({ asset }) => {
         </ColumnWithDividers>
       </SlackSheet>
       <ToastPositionContainer>
-        <ShowcaseToast isShowcaseAsset={isShowcaseAsset} />
+        <ToggleStateToast
+          addCopy="Added to showcase"
+          isAdded={isShowcaseAsset}
+          removeCopy="Removed from showcase"
+        />
       </ToastPositionContainer>
     </Fragment>
   );

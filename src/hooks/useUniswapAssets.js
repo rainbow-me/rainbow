@@ -12,10 +12,11 @@ import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { greaterThanOrEqualTo, multiply } from '../helpers/utilities';
-import { uniswapUpdateFavorites } from '../redux/uniswap';
+import { uniswapUpdateFavorites, uniswapUpdateList } from '../redux/uniswap';
 
 const uniswapLoadingAllTokensSelector = state => state.uniswap.loadingAllTokens;
 const uniswapFavoritesSelector = state => state.uniswap.favorites;
+const uniswapListsSelector = state => state.uniswap.lists;
 const uniswapPairsSelector = state => state.uniswap.pairs;
 const uniswapAllTokensSelector = state => state.uniswap.allTokens;
 
@@ -36,7 +37,8 @@ const withUniswapAssets = (
   loadingAllTokens,
   curatedUniswapAssets,
   globalUniswapAssets,
-  favorites
+  favorites,
+  lists
 ) => {
   const {
     globalFavorites,
@@ -58,6 +60,7 @@ const withUniswapAssets = (
     favorites: normalizeAssetItems(sortedFavorites),
     globalHighLiquidityAssets: normalizeAssetItems(globalHighLiquidityAssets),
     globalLowLiquidityAssets: normalizeAssetItems(globalLowLiquidityAssets),
+    lists,
     loadingAllTokens,
   };
 };
@@ -106,6 +109,7 @@ const withUniswapAssetsSelector = createSelector(
     uniswapPairsSelector,
     uniswapAllTokensSelector,
     uniswapFavoritesSelector,
+    uniswapListsSelector,
   ],
   withUniswapAssets
 );
@@ -119,8 +123,14 @@ export default function useUniswapAssets() {
     [dispatch]
   );
 
+  const updateList = useCallback(
+    (...data) => dispatch(uniswapUpdateList(...data)),
+    [dispatch]
+  );
+
   return {
     updateFavorites,
+    updateList,
     ...uniswapAssets,
   };
 }
