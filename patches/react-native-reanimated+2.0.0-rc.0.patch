@@ -1,3 +1,23 @@
+diff --git a/node_modules/react-native-reanimated/android/build.gradle b/node_modules/react-native-reanimated/android/build.gradle
+index 37fe363..1c6f05d 100644
+--- a/node_modules/react-native-reanimated/android/build.gradle
++++ b/node_modules/react-native-reanimated/android/build.gradle
+@@ -5,5 +5,8 @@ def inputFile = new File(projectDir, '../../react-native/package.json')
+ def json = new JsonSlurper().parseText(inputFile.text)
+ def reactNativeVersion = json.version as String
+ def (major, minor, patch) = reactNativeVersion.tokenize('.')
+-
+-artifacts.add("default", file("react-native-reanimated-${minor}.aar"))
+\ No newline at end of file
++if (minor == "64") {
++    artifacts.add("default", file("../../../patches/react-native-reanimated-${minor}.aar"))
++} else {
++    artifacts.add("default", file("react-native-reanimated-${minor}.aar"))
++}
+diff --git a/node_modules/react-native-reanimated/android/react-native-reanimated-64.aar b/node_modules/react-native-reanimated/android/react-native-reanimated-64.aar
+new file mode 100644
+index 0000000..8e81f67
+Binary files /dev/null and b/node_modules/react-native-reanimated/android/react-native-reanimated-64.aar differ
 diff --git a/node_modules/react-native-reanimated/src/Animated.js b/node_modules/react-native-reanimated/src/Animated.js
 index 523853a..d7813c3 100644
 --- a/node_modules/react-native-reanimated/src/Animated.js
