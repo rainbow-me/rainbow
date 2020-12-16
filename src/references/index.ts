@@ -1,23 +1,23 @@
-import { mapKeys, mapValues, toLower } from 'lodash';
+import { mapKeys, mapValues } from 'lodash';
 import savingAssets from './compound/saving-assets.json';
-import tokenOverridesData from './token-overrides.json';
 import { Asset } from '@rainbow-me/entities';
 
+export {
+  RAINBOW_TOKEN_LIST,
+  UNISWAP_TESTNET_TOKEN_LIST,
+  UNISWAP_V2_ROUTER_ABI,
+  UNISWAP_V2_ROUTER_ADDRESS,
+} from './uniswap';
 export { default as chains } from './chains.json';
 export { default as compoundCERC20ABI } from './compound/compound-cerc20-abi.json';
 export { default as compoundCETHABI } from './compound/compound-ceth-abi.json';
 export { default as emojis } from './emojis.json';
 export { default as erc20ABI } from './erc20-abi.json';
 export { default as ethUnits } from './ethereum-units.json';
+export { default as supportedNativeCurrencies } from './native-currencies.json';
 export { default as shitcoins } from './shitcoins.json';
 
-interface OverrideInfo {
-  color?: string;
-  name?: string;
-  shadowColor?: string;
-  symbol?: string;
-}
-
+export const ETH_ADDRESS = 'eth';
 export const CDAI_CONTRACT = '0x5d3a536e4d6dbd6114cc1ead35777bab948e3643';
 export const SAI_ADDRESS = '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359';
 export const DAI_ADDRESS = '0x6b175474e89094c44da98b954eedeac495271d0f';
@@ -75,11 +75,6 @@ export const DefaultUniswapFavorites = {
     '0x5592ec0cfb4dbc12d3ab100b257153436a1f0fea',
   ],
 };
-
-export const tokenOverrides: Record<
-  string,
-  OverrideInfo
-> = mapKeys(tokenOverridesData, (_, address) => toLower(address));
 
 export const savingsAssetsList = savingAssets;
 

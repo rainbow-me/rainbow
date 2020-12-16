@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components/primitives';
-import { useOpenSmallBalances } from '../../hooks';
+import { useFrameDelayedValue, useOpenSmallBalances } from '../../hooks';
 import { OpacityToggler } from '../animations';
 import { CoinRowHeight } from '../coin-row';
 
@@ -13,9 +13,15 @@ const Container = styled(OpacityToggler).attrs(({ isVisible }) => ({
 
 export default function SmallBalancesWrapper({ assets = [] }) {
   const { isSmallBalancesOpen } = useOpenSmallBalances();
+  // wait until refresh of RLV
+  const delayedIsSmallBalancesOpen =
+    useFrameDelayedValue(isSmallBalancesOpen) && isSmallBalancesOpen;
 
   return (
-    <Container isVisible={!isSmallBalancesOpen} numberOfRows={assets.length}>
+    <Container
+      isVisible={!delayedIsSmallBalancesOpen}
+      numberOfRows={assets.length}
+    >
       {assets}
     </Container>
   );

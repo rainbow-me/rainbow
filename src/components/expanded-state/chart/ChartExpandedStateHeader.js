@@ -1,11 +1,8 @@
-import { map } from 'lodash';
 import React, { useEffect, useMemo } from 'react';
-import { View } from 'react-native';
 import Animated, { useSharedValue } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
 import { useCallbackOne } from 'use-memo-one';
-import { useColorForAssets } from '../../../hooks/useColorForAsset';
-import { CoinIcon } from '../../coin-icon';
+import { CoinIconGroup } from '../../coin-icon';
 import { ColumnWithMargins, Row, RowWithMargins } from '../../layout';
 import ChartContextButton from './ChartContextButton';
 import {
@@ -64,7 +61,6 @@ export default function ChartExpandedStateHeader({
   }, [asset, isPool]);
   const { nativeCurrency } = useAccountSettings();
   const tabularNums = useTabularNumsWhileScrubbing(isScrubbing);
-  const colors = useColorForAssets(tokens);
 
   const isNoPriceData = latestPrice === noPriceData;
 
@@ -83,16 +79,6 @@ export default function ChartExpandedStateHeader({
     }
   }, [price, isNoPriceData, priceSharedValue]);
 
-  const shadows = useMemo(
-    () =>
-      map(tokens, (asset, index) => {
-        return [
-          [0, 4, 12, asset.shadowColor || asset.color || colors[index], 0.3],
-        ];
-      }),
-    [tokens, colors]
-  );
-
   const title = isPool ? `${asset.tokenNames} Pool` : asset?.name;
 
   const titleOrNoPriceData = isNoPriceData ? noPriceData : title;
@@ -104,21 +90,7 @@ export default function ChartExpandedStateHeader({
         justify="space-between"
         testID="expanded-state-header"
       >
-        <Row>
-          {map(tokens, (token, index) => {
-            return (
-              <View key={`coinicon-${index}`} zIndex={-index}>
-                <CoinIcon
-                  address={token.address}
-                  marginRight={-10}
-                  position="relative"
-                  shadow={shadows[index]}
-                  symbol={token.symbol}
-                />
-              </View>
-            );
-          })}
-        </Row>
+        <CoinIconGroup tokens={tokens} />
         <ChartContextButton asset={asset} color={color} />
       </Row>
       <RowWithMargins

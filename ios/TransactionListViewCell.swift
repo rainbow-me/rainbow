@@ -76,7 +76,7 @@ class TransactionListViewCell: TransactionListBaseCell {
         let url = URL(string: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/\(transaction.address!)/logo.png");
         coinImage.sd_setImage(with: url) { (image, error, cache, urls) in
           if (error != nil) {
-            let colorIndex = transaction.symbol.lowercased().utf8.compactMap{ Int($0) }.reduce(0, +) % TransactionListViewCell.avatarColors.count
+            let colorIndex = transaction.address!.lowercased().utf8.compactMap{ Int($0) }.reduce(0, +) % TransactionListViewCell.avatarColors.count
             let color = TransactionListViewCell.avatarColors[colorIndex]
             self.coinImage.image = self.generateTextImage(transaction.symbol, backgroundColor: color)
           } else {

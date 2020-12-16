@@ -170,7 +170,11 @@ const SavingsListRow = ({
           >
             {underlying.symbol && supplyBalanceUnderlying ? (
               <Centered>
-                <CoinIcon size={26} symbol={underlying.symbol} />
+                <CoinIcon
+                  address={underlying.address}
+                  size={26}
+                  symbol={underlying.symbol}
+                />
               </Centered>
             ) : null}
             {supplyBalanceUnderlying &&
