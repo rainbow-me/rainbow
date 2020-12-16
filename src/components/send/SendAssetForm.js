@@ -76,6 +76,7 @@ export default function SendAssetForm({
   return (
     <Container>
       <ShadowStack
+        backgroundColor={colors.white}
         borderRadius={0}
         height={SendCoinRow.selectedHeight}
         shadows={AssetRowShadow}
