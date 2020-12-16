@@ -23,7 +23,7 @@ const FallbackImage = styled(ImageWithCachedMetadata)`
     shadowOpacity: opacity,
     shadowRadius: radius,
     showImage,
-  }) => shadow.build(x, y, radius, color, showImage ? opacity : 0)};
+  }) => shadow.build(x, y, radius * 2, color, showImage ? opacity : 0)};
   background-color: ${({ showImage }) =>
     showImage ? colors.white : colors.transparent};
   border-radius: ${({ size }) => size / 2};
