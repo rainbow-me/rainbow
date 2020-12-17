@@ -72,14 +72,14 @@ export default function RestoreSheet() {
   }, [setParams]);
 
   const onManualRestore = useCallback(() => {
-    InteractionManager.runAfterInteractions(() => goBack());
+    InteractionManager.runAfterInteractions(goBack);
     InteractionManager.runAfterInteractions(() => {
       setTimeout(() => navigate(Routes.IMPORT_SEED_PHRASE_FLOW), 50);
     });
   }, [goBack, navigate]);
 
   const onWatchAddress = useCallback(() => {
-    InteractionManager.runAfterInteractions(() => goBack());
+    InteractionManager.runAfterInteractions(goBack);
     InteractionManager.runAfterInteractions(() => {
       setTimeout(() => navigate(Routes.IMPORT_SEED_PHRASE_FLOW), 50);
     });
