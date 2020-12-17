@@ -28,7 +28,6 @@ export function triggerOnSwipeLayout(newAction) {
 }
 
 export function onNavigationStateChange(currentState) {
-  console.log(currentState);
   const prevState = memState;
   memState = currentState;
   const { name: routeName } = Navigation.getActiveRoute();
