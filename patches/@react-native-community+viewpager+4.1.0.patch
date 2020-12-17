@@ -11,3 +11,15 @@ index 3846048..831a0eb 100644
          FragmentAdapter adapter = new FragmentAdapter((FragmentActivity) reactContext.getCurrentActivity());
          vp.setAdapter(adapter);
          eventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+diff --git a/node_modules/@react-native-community/viewpager/ios/ReactNativePageView.h b/node_modules/@react-native-community/viewpager/ios/ReactNativePageView.h
+index 4378be8..07155c2 100644
+--- a/node_modules/@react-native-community/viewpager/ios/ReactNativePageView.h
++++ b/node_modules/@react-native-community/viewpager/ios/ReactNativePageView.h
+@@ -2,6 +2,7 @@
+ #import <React/RCTShadowView.h>
+ #import <React/UIView+React.h>
+ #import <UIKit/UIKit.h>
++#import <React/RCTEventDispatcher.h>
+ 
+ NS_ASSUME_NONNULL_BEGIN
+ 

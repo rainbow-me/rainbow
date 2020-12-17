@@ -66,6 +66,10 @@ target 'Rainbow' do
   # Pods for Rainbow
   config = use_native_modules!
   use_react_native!(:path => config["reactNativePath"])
+  
+  pre_install do |installer|
+     codegen_pre_install(installer)
+   end
 
   pod 'FLAnimatedImage'
   pod 'libwebp'

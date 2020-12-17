@@ -16,8 +16,35 @@ index 37fe363..1c6f05d 100644
 +}
 diff --git a/node_modules/react-native-reanimated/android/react-native-reanimated-64.aar b/node_modules/react-native-reanimated/android/react-native-reanimated-64.aar
 new file mode 100644
-index 0000000..8e81f67
-Binary files /dev/null and b/node_modules/react-native-reanimated/android/react-native-reanimated-64.aar differ
+index 0000000..e69de29
+diff --git a/node_modules/react-native-reanimated/ios/native/NativeMethods.mm b/node_modules/react-native-reanimated/ios/native/NativeMethods.mm
+index a640c5f..0abcb4c 100644
+--- a/node_modules/react-native-reanimated/ios/native/NativeMethods.mm
++++ b/node_modules/react-native-reanimated/ios/native/NativeMethods.mm
+@@ -1,5 +1,6 @@
+ #import "NativeMethods.h"
+ #import <React/RCTScrollView.h>
++#import <React/RCTEventDispatcher.h>
+ 
+ 
+ namespace reanimated {
+diff --git a/node_modules/react-native-reanimated/ios/native/UIResponder+Reanimated.mm b/node_modules/react-native-reanimated/ios/native/UIResponder+Reanimated.mm
+index a6b8b63..991d039 100644
+--- a/node_modules/react-native-reanimated/ios/native/UIResponder+Reanimated.mm
++++ b/node_modules/react-native-reanimated/ios/native/UIResponder+Reanimated.mm
+@@ -35,10 +35,10 @@ @implementation UIResponder (Reanimated)
+     }
+     __typeof(self) strongSelf = weakSelf;
+     if (strongSelf) {
+-      #if RNVERSION == 62
++      #if RNVERSION < 62
+         auto callInvoker = std::make_shared<react::BridgeJSCallInvoker>(bridge.reactInstance);
+         auto reanimatedModule = reanimated::createReanimatedModule(callInvoker);
+-      #elif RNVERSION == 63
++      #else
+         auto reanimatedModule = reanimated::createReanimatedModule(bridge.jsCallInvoker);
+       #endif
+       runtime.global().setProperty(runtime,
 diff --git a/node_modules/react-native-reanimated/src/Animated.js b/node_modules/react-native-reanimated/src/Animated.js
 index 523853a..d7813c3 100644
 --- a/node_modules/react-native-reanimated/src/Animated.js
