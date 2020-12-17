@@ -82,7 +82,7 @@ const SavingsSheetEmptyState = ({
           label="􀁍 Deposit from Wallet"
           onPress={onDeposit}
           size="big"
-          weight="bold"
+          weight={fonts.weight.semibold}
         />
         {/*
           <SheetActionButton
