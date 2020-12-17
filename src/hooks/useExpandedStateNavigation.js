@@ -32,7 +32,7 @@ export default function useExpandedStateNavigation(inputType) {
         return Alert.alert(`You need to import the wallet in order to do this`);
       }
 
-      InteractionManager.runAfterInteractions(() => goBack());
+      InteractionManager.runAfterInteractions(goBack);
       InteractionManager.runAfterInteractions(() => {
         setTimeout(
           () => navigate(routeName, traverseParams(navigationPayload)),
