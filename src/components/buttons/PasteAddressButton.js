@@ -47,7 +47,7 @@ export default function PasteAddressButton({ onPress }) {
       testID="paste-address-button"
       {...(android && { height: 30, overflowMargin: 15, width: 60 })}
     >
-      <Text color="white" weight="semibold">
+      <Text color="white" weight="bold">
         Paste
       </Text>
     </MiniButton>
