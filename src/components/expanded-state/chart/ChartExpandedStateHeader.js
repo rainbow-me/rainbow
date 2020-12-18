@@ -21,8 +21,9 @@ const noPriceData = 'No price data';
 
 const Container = styled(ColumnWithMargins).attrs({
   margin: 12,
+  marginTop: android ? -10 : 0,
 })`
-  ${({ showChart }) => padding(0, 19, showChart ? 30 : 0)};
+  ${({ showChart }) => padding(0, 19, showChart ? (android ? 15 : 30) : 0)};
 `;
 
 function useTabularNumsWhileScrubbing(isScrubbing) {
@@ -93,12 +94,13 @@ export default function ChartExpandedStateHeader({
         <CoinIconGroup tokens={tokens} />
         <ChartContextButton asset={asset} color={color} />
       </Row>
-      <RowWithMargins
-        align={ios ? 'center' : 'flex-start'}
-        justify="space-between"
-        margin={12}
-      >
-        <ColumnWithMargins align="start" flex={1} margin={1}>
+      <ColumnWithMargins margin={0}>
+        <RowWithMargins
+          height={30}
+          justify="space-between"
+          marginHorizontal={1}
+          width="100%"
+        >
           <ChartPriceLabel
             defaultValue={isNoPriceData ? title : price}
             isNoPriceData={isNoPriceData}
@@ -108,31 +110,38 @@ export default function ChartExpandedStateHeader({
             priceSharedValue={priceSharedValue}
             tabularNums={tabularNums}
           />
-          <ChartHeaderSubtitle
+          <ChartPercentChangeLabel
+            changeDirection={changeDirection}
+            changeRef={changeRef}
             color={
               isNoPriceData ? colors.alpha(colors.blueGreyDark, 0.8) : color
             }
-            weight={isNoPriceData ? 'semibold' : 'bold'}
-          >
-            {titleOrNoPriceData}
-          </ChartHeaderSubtitle>
-        </ColumnWithMargins>
+            isScrubbing={isScrubbing}
+            latestChange={latestChange}
+            tabularNums={tabularNums}
+          />
+        </RowWithMargins>
         {!isNoPriceData && showChart && !isNaN(latestChange) && (
-          <ColumnWithMargins align="end" margin={1}>
-            <ChartPercentChangeLabel
-              changeDirection={changeDirection}
-              changeRef={changeRef}
-              isScrubbing={isScrubbing}
-              latestChange={latestChange}
-              tabularNums={tabularNums}
-            />
+          <RowWithMargins
+            height={30}
+            justify="space-between"
+            marginVertical={android ? 4 : 1}
+          >
+            <ChartHeaderSubtitle
+              color={
+                isNoPriceData ? colors.alpha(colors.blueGreyDark, 0.8) : color
+              }
+              weight={isNoPriceData ? 'semibold' : 'bold'}
+            >
+              {titleOrNoPriceData}
+            </ChartHeaderSubtitle>
             <ChartDateLabel
               chartTimeSharedValue={chartTimeSharedValue}
               dateRef={dateRef}
             />
-          </ColumnWithMargins>
+          </RowWithMargins>
         )}
-      </RowWithMargins>
+      </ColumnWithMargins>
     </Container>
   );
 }

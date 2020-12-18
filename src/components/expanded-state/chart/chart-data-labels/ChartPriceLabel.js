@@ -15,15 +15,16 @@ const Label = styled(ChartYLabel)`
   font-size: ${fonts.size.big};
   letter-spacing: ${fonts.letterSpacing.roundedTight};
   ${android &&
-    `margin-top: -8;
-     margin-bottom: -16;`}
+    `margin-top: -30;
+     margin-bottom: -30;
+     `}
 `;
 
 const AndroidCurrencySymbolLabel = styled(Label)`
   height: 69;
   left: 5.5;
   margin-right: 3;
-  top: ${PixelRatio.get() <= 2.625 ? 10 : 12};
+  top: ${PixelRatio.get() <= 2.625 ? 20 : 23};
 `;
 
 export function formatNative(value, priceSharedValue, nativeSelected) {
@@ -98,7 +99,7 @@ export default function ChartPriceLabel({
           return formatted;
         }}
         style={{
-          width: '100%',
+          width: android ? '67%' : '75%',
         }}
       />
     </Row>
