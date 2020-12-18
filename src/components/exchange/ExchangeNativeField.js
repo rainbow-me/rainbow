@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { PixelRatio, TouchableWithoutFeedback } from 'react-native';
+import { TouchableWithoutFeedback } from 'react-native';
 import styled from 'styled-components/primitives';
 import { Row } from '../layout';
 import { Text } from '../text';
@@ -14,7 +14,7 @@ const CurrencySymbol = styled(Text).attrs(({ height }) => ({
   size: 'larger',
   weight: 'regular',
 }))`
-  ${android ? `margin-bottom: ${PixelRatio.get() < 2.625 ? 7 : 6};` : ''};
+  ${android ? 'margin-bottom: 1.5' : ''};
 `;
 
 const NativeInput = styled(ExchangeInput).attrs({
