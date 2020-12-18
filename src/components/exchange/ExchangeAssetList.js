@@ -1,4 +1,5 @@
 import React, { useCallback, useRef } from 'react';
+import { Alert } from 'react-native';
 import { SectionList } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components/primitives';
@@ -107,8 +108,37 @@ const ExchangeAssetList = ({ itemProps, items, onLayout, query }) => {
     itemProps,
   ]);
 
+  const handleUnverifiedTokenPress = useCallback(
+    item => {
+      Alert.alert(
+        `Token Safety Alert!`,
+        'Anyone can create and name any ERC20 token on Ethereum, including creating fake versions of existing tokens and tokens that claim to represent projects that do not have a token. Similar to Etherscan, this site automatically tracks analytics for all ERC20 tokens independent of token integrity. Please do your own research before interacting with any ERC20 token. Do you want to continue?',
+        [
+          {
+            onPress: () => itemProps.onPress(item),
+            text: `Yes, I know what I'm doing`,
+          },
+          {
+            style: 'cancel',
+            text: 'No, thanks',
+          },
+        ]
+      );
+    },
+    [itemProps]
+  );
+
   const renderItemCallback = useCallback(
-    ({ item }) => <ExchangeCoinRow {...itemProps} item={item} />,
+    ({ item, section: { title: sectionTitle } }) => {
+      return (
+        <ExchangeCoinRow
+          {...itemProps}
+          isVerified={sectionTitle === '􀇻 Rainbow Verified'}
+          item={item}
+          onUnverifiedTokenPress={handleUnverifiedTokenPress}
+        />
+      );
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
