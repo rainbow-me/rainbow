@@ -1,5 +1,6 @@
 import { map } from 'lodash';
 import React from 'react';
+import { isSamsungGalaxy } from '../../helpers/samsung';
 import {
   DepositActionButton,
   SheetActionButtonRow,
@@ -18,11 +19,11 @@ import { ChartPathProvider } from '@rainbow-me/animated-charts';
 import { useChartThrottledPoints } from '@rainbow-me/hooks';
 import { magicMemo } from '@rainbow-me/utils';
 
-const heightWithoutChart = 373 + (android && 80);
-const heightWithChart = heightWithoutChart + 292;
+let heightWithoutChart = 373;
+heightWithoutChart += isSamsungGalaxy() ? -30 : 0;
+const heightWithChart = heightWithoutChart + 297;
 
-export const initialLiquidityPoolExpandedStateSheetHeight =
-  heightWithChart + (android && 40);
+export const initialLiquidityPoolExpandedStateSheetHeight = heightWithChart;
 
 const LiquidityPoolExpandedState = ({ asset }) => {
   const { tokenNames, tokens, totalNativeDisplay, type, uniBalance } = asset;
