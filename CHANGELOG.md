@@ -12,6 +12,22 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.2.42](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.42)
+### Added
+* Alert for unverified tokens
+
+### Changed
+* Swap and approval gas estimation improvements
+* Fix for invisible charts issue
+
+## [1.2.41](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.41)
+### Added
+* Android support merged
+
+### Changed
+* Fix for savings
+* Android UI fixes
+
 ## [1.2.40](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.40)
 ### Added
 * Uniswap LP token charts
