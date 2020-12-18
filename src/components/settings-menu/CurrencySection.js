@@ -22,7 +22,7 @@ const renderCurrencyIcon = (currency, emojiName) => {
   if (!currency) return null;
   if (!isNil(emojiName)) return <Emoji name={'flag_' + emojiName} />;
 
-  return <CoinIcon size={23} symbol={currency} />;
+  return <CoinIcon address={currency} size={23} symbol={currency} />;
 };
 
 const CurrencyListItem = ({ currency, emojiName, label, ...item }) => (
