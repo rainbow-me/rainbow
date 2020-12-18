@@ -4,6 +4,7 @@ import { SectionList } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components/primitives';
 import { usePrevious } from '../../hooks';
+import { VERIFIED_TOKEN_SECTION_TITLE } from '../../screens/CurrencySelectModal';
 import { CoinRowHeight, ExchangeCoinRow } from '../coin-row';
 import { GradientText, Text } from '../text';
 import { colors, padding } from '@rainbow-me/styles';
@@ -129,16 +130,14 @@ const ExchangeAssetList = ({ itemProps, items, onLayout, query }) => {
   );
 
   const renderItemCallback = useCallback(
-    ({ item, section: { title: sectionTitle } }) => {
-      return (
-        <ExchangeCoinRow
-          {...itemProps}
-          isVerified={sectionTitle === '􀇻 Rainbow Verified'}
-          item={item}
-          onUnverifiedTokenPress={handleUnverifiedTokenPress}
-        />
-      );
-    },
+    ({ item, section: { title: sectionTitle } }) => (
+      <ExchangeCoinRow
+        {...itemProps}
+        isVerified={sectionTitle === VERIFIED_TOKEN_SECTION_TITLE}
+        item={item}
+        onUnverifiedTokenPress={handleUnverifiedTokenPress}
+      />
+    ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );

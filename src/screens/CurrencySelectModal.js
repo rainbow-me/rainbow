@@ -39,6 +39,10 @@ import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
 import { filterList, filterScams } from '@rainbow-me/utils';
 
+export const VERIFIED_TOKEN_SECTION_TITLE = '􀇻 Rainbow Verified';
+const UNVERIFIED_TOKEN_SECTION_TITLE = '􀇿 Unverified';
+const LOW_LIQUIDITY_SECTION_TITLE = '􀇿 Low Liquidity';
+
 const TabTransitionAnimation = styled(Animated.View)`
   ${position.size('100%')};
 `;
@@ -121,7 +125,7 @@ export default function CurrencySelectModal() {
         filteredBest.length &&
           filteredList.push({
             data: filteredBest,
-            title: '􀇻 Rainbow Verified',
+            title: VERIFIED_TOKEN_SECTION_TITLE,
             useGradientText: IS_TESTING === 'true' ? false : true,
           });
 
@@ -133,7 +137,7 @@ export default function CurrencySelectModal() {
         filteredHighWithoutScams.length &&
           filteredList.push({
             data: filteredHighWithoutScams,
-            title: '􀇿 Unverified',
+            title: UNVERIFIED_TOKEN_SECTION_TITLE,
           });
 
         const filteredLowWithoutScams = filterScams(filteredBest, filteredLow);
@@ -141,13 +145,13 @@ export default function CurrencySelectModal() {
         filteredLowWithoutScams.length &&
           filteredList.push({
             data: filteredLowWithoutScams,
-            title: '􀇿 Low Liquidity',
+            title: LOW_LIQUIDITY_SECTION_TITLE,
           });
       } else {
         filteredList = [
           {
             data: concat(favorites, curatedAssets),
-            title: '􀇻 Rainbow Verified',
+            title: VERIFIED_TOKEN_SECTION_TITLE,
             useGradientText: IS_TESTING === 'true' ? false : true,
           },
         ];
