@@ -1,21 +1,25 @@
 import { useIsFocused } from '@react-navigation/native';
 import React, { useMemo, useRef } from 'react';
-import { findNodeHandle, NativeModules, View } from 'react-native';
+import { findNodeHandle, NativeModules, StyleSheet } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 // eslint-disable-next-line import/no-unresolved
 import SlackBottomSheet from 'react-native-slack-bottom-sheet';
+import { SlackSheet } from '../sheet';
 import DiscoverSheetContent from './DiscoverSheetContent';
 import DiscoverSheetContext from './DiscoverSheetContext';
+import DiscoverSheetHeader from './DiscoverSheetHeader';
 import { deviceUtils } from '@rainbow-me/utils';
 import {
   YABSForm,
   YABSScrollView,
 } from 'react-native-yet-another-bottom-sheet';
+const renderHeader = yPosition => <DiscoverSheetHeader yPosition={yPosition} />;
 
 function DiscoverSheetAndroid() {
   return (
     <YABSForm
       panGHProps={{
+        maxPointers: 17, // magic number for duck typing on native side
         simultaneousHandlers: 'AnimatedScrollViewPager',
       }}
       points={[0, 200, deviceUtils.dimensions.height - 200]}
@@ -28,8 +32,7 @@ function DiscoverSheetAndroid() {
         },
       ]}
     >
-      <View style={{ backgroundColor: 'yellow', height: 40, width: '100%' }} />
-      <YABSScrollView>
+      <YABSScrollView style={{ flex: 1, height: '100%' }}>
         <DiscoverSheetContent />
       </YABSScrollView>
     </YABSForm>
@@ -70,7 +73,9 @@ function DiscoverSheetIOS() {
         topOffset={insets.top}
         unmountAnimation={false}
       >
-        <DiscoverSheetContent />
+        <SlackSheet renderHeader={renderHeader}>
+          <DiscoverSheetContent />
+        </SlackSheet>
       </SlackBottomSheet>
     </DiscoverSheetContext.Provider>
   );

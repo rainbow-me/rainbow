@@ -78,7 +78,7 @@ function Stack({ children, left, yPosition, onPress }) {
 
 export default function DiscoverSheetHeader(props) {
   const { navigate } = useNavigation();
-  const { jumpToShort } = useContext(DiscoverSheetContext);
+  const { jumpToShort } = useContext(DiscoverSheetContext) || {};
   const { yPosition } = props;
   return (
     <Header {...props} pointerEvents="box-none">
@@ -90,7 +90,7 @@ export default function DiscoverSheetHeader(props) {
         <Icon color={colors.black} direction="left" name="caret" {...props} />
         <Icon color={colors.white} direction="left" name="caret" {...props} />
       </Stack>
-      <Stack left={16.6} onPress={jumpToShort} yPosition={yPosition}>
+      <Stack left={16.6} onPress={() => jumpToShort?.()} yPosition={yPosition}>
         <Icon color={colors.black} name="scanner" />
         <Icon color={colors.white} name="scanner" />
       </Stack>
