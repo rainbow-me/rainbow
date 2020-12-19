@@ -133,7 +133,10 @@ const ExchangeAssetList = ({ itemProps, items, onLayout, query }) => {
     ({ item, section: { title: sectionTitle } }) => (
       <ExchangeCoinRow
         {...itemProps}
-        isVerified={sectionTitle === tokenSectionTypes.verifiedTokenSection}
+        isVerified={
+          !sectionTitle ||
+          sectionTitle === tokenSectionTypes.verifiedTokenSection
+        }
         item={item}
         onUnverifiedTokenPress={handleUnverifiedTokenPress}
       />
