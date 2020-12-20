@@ -22,6 +22,7 @@
 		3CBE29CD2381E43900BE05AC /* Dummy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CBE29CC2381E43900BE05AC /* Dummy.swift */; };
 		6630540924A38A1900E5B030 /* RainbowText.m in Sources */ = {isa = PBXBuildFile; fileRef = 6630540824A38A1900E5B030 /* RainbowText.m */; };
 		6635730624939991006ACFA6 /* SafeStoreReview.m in Sources */ = {isa = PBXBuildFile; fileRef = 6635730524939991006ACFA6 /* SafeStoreReview.m */; };
+		667548DC258EC9B500825A32 /* AnimatedNumbers.m in Sources */ = {isa = PBXBuildFile; fileRef = 667548DB258EC9B500825A32 /* AnimatedNumbers.m */; };
 		66A1FEB424AB641100C3F539 /* RNCMScreenStack.m in Sources */ = {isa = PBXBuildFile; fileRef = 66A1FEB024AB641100C3F539 /* RNCMScreenStack.m */; };
 		66A1FEB524AB641100C3F539 /* UIViewController+slack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A1FEB124AB641100C3F539 /* UIViewController+slack.swift */; };
 		66A1FEB624AB641100C3F539 /* RNCMScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = 66A1FEB324AB641100C3F539 /* RNCMScreen.m */; };
@@ -106,6 +107,8 @@
 		466CDCBFE61F83D2AE1C7410 /* Pods-Rainbow.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rainbow.debug.xcconfig"; path = "Target Support Files/Pods-Rainbow/Pods-Rainbow.debug.xcconfig"; sourceTree = "<group>"; };
 		6630540824A38A1900E5B030 /* RainbowText.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RainbowText.m; sourceTree = "<group>"; };
 		6635730524939991006ACFA6 /* SafeStoreReview.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SafeStoreReview.m; sourceTree = "<group>"; };
+		667548DA258EC9B500825A32 /* NSObject+AnimatedNumbers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSObject+AnimatedNumbers.h"; sourceTree = "<group>"; };
+		667548DB258EC9B500825A32 /* AnimatedNumbers.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AnimatedNumbers.m; sourceTree = "<group>"; };
 		668A9E253DAF444A90ECB997 /* SFMono-Medium.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SFMono-Medium.otf"; path = "../src/assets/fonts/SFMono-Medium.otf"; sourceTree = "<group>"; };
 		66A1FEAF24AB641100C3F539 /* RNCMScreenStack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNCMScreenStack.h; path = "../src/react-native-cool-modals/ios/RNCMScreenStack.h"; sourceTree = "<group>"; };
 		66A1FEB024AB641100C3F539 /* RNCMScreenStack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNCMScreenStack.m; path = "../src/react-native-cool-modals/ios/RNCMScreenStack.m"; sourceTree = "<group>"; };
@@ -240,6 +243,8 @@
 			children = (
 				15E531D4242B28EF00797B89 /* UIImageViewWithPersistentAnimations.swift */,
 				6630540824A38A1900E5B030 /* RainbowText.m */,
+				667548DA258EC9B500825A32 /* NSObject+AnimatedNumbers.h */,
+				667548DB258EC9B500825A32 /* AnimatedNumbers.m */,
 			);
 			name = Animations;
 			sourceTree = "<group>";
@@ -619,6 +624,7 @@
 				A485E61423C8ED6000E5C3D4 /* TransactionListViewHeader.swift in Sources */,
 				A49B52B423DB5D1100A00918 /* TransactionViewModelTransactionItem.swift in Sources */,
 				66FEC91623EDA14000A0F367 /* RoundedCornerView.swift in Sources */,
+				667548DC258EC9B500825A32 /* AnimatedNumbers.m in Sources */,
 				A477567E23DB3A85005AE8FD /* TransactionListViewManager.m in Sources */,
 				66A1FEB424AB641100C3F539 /* RNCMScreenStack.m in Sources */,
 				A477567C23DB2FAA005AE8FD /* Transaction.swift in Sources */,

@@ -30,6 +30,7 @@ import { enableScreens } from 'react-native-screens';
 import VersionNumber from 'react-native-version-number';
 import { connect, Provider } from 'react-redux';
 import { compose, withProps } from 'recompact';
+import Animatable from './AnimatedNumbers';
 import PortalConsumer from './components/PortalConsumer';
 import { FlexItem } from './components/layout';
 import { OfflineToast } from './components/toasts';
@@ -263,15 +264,7 @@ class App extends Component {
       <Portal>
         <SafeAreaProvider>
           <Provider store={store}>
-            <FlexItem>
-              {this.state.initialRoute && (
-                <InitialRouteContext.Provider value={this.state.initialRoute}>
-                  <RoutesComponent ref={this.handleNavigatorRef} />
-                  <PortalConsumer />
-                </InitialRouteContext.Provider>
-              )}
-              <OfflineToast />
-            </FlexItem>
+            <Animatable />
           </Provider>
         </SafeAreaProvider>
       </Portal>
@@ -293,4 +286,4 @@ const AppWithCodePush = CodePush({
   installMode: CodePush.InstallMode.ON_NEXT_RESUME,
 })(AppWithRedux);
 
-AppRegistry.registerComponent('Rainbow', () => AppWithCodePush);
+AppRegistry.registerComponent('Rainbow', () => Animatable);
