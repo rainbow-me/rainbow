@@ -21,7 +21,7 @@
 
 @end
 
-@interface AnimatedNumbersNativeComponent:RCTTextView
+@interface AnimatedNumbersNativeComponent:UILabel
 
 @end
 
