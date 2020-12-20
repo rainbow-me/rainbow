@@ -112,16 +112,16 @@ const ExchangeAssetList = ({ itemProps, items, onLayout, query }) => {
   const handleUnverifiedTokenPress = useCallback(
     item => {
       Alert.alert(
-        `Token Safety Alert!`,
-        'Anyone can create and name any ERC20 token on Ethereum, including creating fake versions of existing tokens and tokens that claim to represent projects that do not have a token. Similar to Etherscan, this site automatically tracks analytics for all ERC20 tokens independent of token integrity. Please do your own research before interacting with any ERC20 token. Do you want to continue?',
+        `Unverified Token`,
+        'This token has not been verified! Rainbow surfaces all tokens that exist on Uniswap. Anyone can create a token, including fake versions of existing tokens and tokens that claim to represent projects that do not have a token. Please do your own research and be careful when interacting with unverified tokens!',
         [
           {
             onPress: () => itemProps.onPress(item),
-            text: `Yes, I know what I'm doing`,
+            text: `Proceed Anyway`,
           },
           {
             style: 'cancel',
-            text: 'No, thanks',
+            text: 'Go Back',
           },
         ]
       );
