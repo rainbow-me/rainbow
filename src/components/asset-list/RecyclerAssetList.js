@@ -2,6 +2,7 @@ import { findIndex, get, has, isNil } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component, Fragment } from 'react';
 import { LayoutAnimation, RefreshControl, View } from 'react-native';
+import { connect } from 'react-redux';
 import { compose } from 'recompact';
 import {
   BaseItemAnimator,
@@ -333,7 +334,7 @@ class RecyclerAssetList extends Component {
               return {
                 height: ViewTypes.COIN_SAVINGS.calculateHeight({
                   amountOfRows:
-                    sections[balancesIndex].data[index - 1].assets.length,
+                    sections[balancesIndex].data[index - 1].assets?.length || 0,
                   isLast: poolsIndex < 0,
                   isOpen: this.props.openSavings,
                 }),
@@ -837,5 +838,9 @@ export default compose(
   withOpenInvestmentCards,
   withOpenBalances,
   withOpenSavings,
-  withAccountSettings
+  withAccountSettings,
+  connect(({ openSmallBalances, openSavings }) => ({
+    openSavings,
+    openSmallBalances,
+  }))
 )(RecyclerAssetList);

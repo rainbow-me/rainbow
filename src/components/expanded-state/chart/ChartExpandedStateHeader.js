@@ -2,7 +2,7 @@ import React, { useEffect, useMemo } from 'react';
 import Animated, { useSharedValue } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
 import { useCallbackOne } from 'use-memo-one';
-import { CoinIcon } from '../../coin-icon';
+import { CoinIconGroup } from '../../coin-icon';
 import { ColumnWithMargins, Row, RowWithMargins } from '../../layout';
 import ChartContextButton from './ChartContextButton';
 import {
@@ -48,6 +48,7 @@ export default function ChartExpandedStateHeader({
   changeRef,
   color = colors.dark,
   dateRef,
+  isPool,
   isScrubbing,
   latestChange,
   latestPrice = noPriceData,
@@ -55,6 +56,9 @@ export default function ChartExpandedStateHeader({
   chartTimeSharedValue,
   showChart,
 }) {
+  const tokens = useMemo(() => {
+    return isPool ? asset.tokens : [asset];
+  }, [asset, isPool]);
   const { nativeCurrency } = useAccountSettings();
   const tabularNums = useTabularNumsWhileScrubbing(isScrubbing);
 
@@ -75,10 +79,9 @@ export default function ChartExpandedStateHeader({
     }
   }, [price, isNoPriceData, priceSharedValue]);
 
-  const coinIconShadow = useMemo(
-    () => [[0, 4, 12, asset?.shadowColor || color, 0.3]],
-    [asset, color]
-  );
+  const title = isPool ? `${asset.tokenNames} Pool` : asset?.name;
+
+  const titleOrNoPriceData = isNoPriceData ? noPriceData : title;
 
   return (
     <Container showChart={showChart}>
@@ -87,11 +90,7 @@ export default function ChartExpandedStateHeader({
         justify="space-between"
         testID="expanded-state-header"
       >
-        <CoinIcon
-          address={asset?.address}
-          shadow={coinIconShadow}
-          symbol={asset?.symbol}
-        />
+        <CoinIconGroup tokens={tokens} />
         <ChartContextButton asset={asset} color={color} />
       </Row>
       <RowWithMargins
@@ -101,15 +100,21 @@ export default function ChartExpandedStateHeader({
       >
         <ColumnWithMargins align="start" flex={1} margin={1}>
           <ChartPriceLabel
-            defaultValue={isNoPriceData ? asset?.name : price}
+            defaultValue={isNoPriceData ? title : price}
             isNoPriceData={isNoPriceData}
+            isPool={isPool}
             isScrubbing={isScrubbing}
             priceRef={priceRef}
             priceSharedValue={priceSharedValue}
             tabularNums={tabularNums}
           />
-          <ChartHeaderSubtitle>
-            {isNoPriceData ? noPriceData : asset?.name}
+          <ChartHeaderSubtitle
+            color={
+              isNoPriceData ? colors.alpha(colors.blueGreyDark, 0.8) : color
+            }
+            weight={isNoPriceData ? 'semibold' : 'bold'}
+          >
+            {titleOrNoPriceData}
           </ChartHeaderSubtitle>
         </ColumnWithMargins>
         {!isNoPriceData && showChart && !isNaN(latestChange) && (

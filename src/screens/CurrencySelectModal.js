@@ -1,6 +1,6 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
-import { concat, map } from 'lodash';
+import { concat, map, toLower } from 'lodash';
 import matchSorter from 'match-sorter';
 import React, {
   Fragment,
@@ -23,7 +23,9 @@ import {
 } from '../components/exchange';
 import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
+import { addHexPrefix } from '../handlers/web3';
 import CurrencySelectionTypes from '../helpers/currencySelectionTypes';
+import tokenSectionTypes from '../helpers/tokenSectionTypes';
 import { delayNext } from '../hooks/useMagicAutofocus';
 import { useNavigation } from '../navigation/Navigation';
 import {
@@ -44,6 +46,21 @@ const TabTransitionAnimation = styled(Animated.View)`
 
 const headerlessSection = data => [{ data, title: '' }];
 const Wrapper = ios ? KeyboardFixedOpenLayout : Fragment;
+
+const searchCurrencyList = (searchList, query) => {
+  const isAddress = query.match(/^(0x)?[0-9a-fA-F]{40}$/);
+
+  if (isAddress) {
+    const formattedQuery = toLower(addHexPrefix(query));
+    return filterList(searchList, formattedQuery, ['address'], {
+      threshold: matchSorter.rankings.CASE_SENSITIVE_EQUAL,
+    });
+  }
+
+  return filterList(searchList, query, ['symbol', 'name'], {
+    threshold: matchSorter.rankings.CONTAINS,
+  });
+};
 
 export default function CurrencySelectModal() {
   const isFocused = useIsFocused();
@@ -87,11 +104,9 @@ export default function CurrencySelectModal() {
     if (type === CurrencySelectionTypes.input) {
       filteredList = headerlessSection(uniswapAssetsInWallet);
       if (searchQueryForSearch) {
-        filteredList = filterList(
+        filteredList = searchCurrencyList(
           uniswapAssetsInWallet,
-          searchQueryForSearch,
-          ['symbol', 'name'],
-          { threshold: matchSorter.rankings.CONTAINS }
+          searchQueryForSearch
         );
         filteredList = headerlessSection(filteredList);
       }
@@ -100,17 +115,14 @@ export default function CurrencySelectModal() {
       if (searchQueryForSearch) {
         const [filteredBest, filteredHigh, filteredLow] = map(
           [curatedSection, globalHighLiquidityAssets, globalLowLiquidityAssets],
-          section =>
-            filterList(section, searchQueryForSearch, ['symbol', 'name'], {
-              threshold: matchSorter.rankings.CONTAINS,
-            })
+          section => searchCurrencyList(section, searchQueryForSearch)
         );
 
         filteredList = [];
         filteredBest.length &&
           filteredList.push({
             data: filteredBest,
-            title: '􀇻 Rainbow Verified',
+            title: tokenSectionTypes.verifiedTokenSection,
             useGradientText: IS_TESTING === 'true' ? false : true,
           });
 
@@ -122,7 +134,7 @@ export default function CurrencySelectModal() {
         filteredHighWithoutScams.length &&
           filteredList.push({
             data: filteredHighWithoutScams,
-            title: '􀇿 Unverified',
+            title: tokenSectionTypes.unverifiedTokenSection,
           });
 
         const filteredLowWithoutScams = filterScams(filteredBest, filteredLow);
@@ -130,13 +142,13 @@ export default function CurrencySelectModal() {
         filteredLowWithoutScams.length &&
           filteredList.push({
             data: filteredLowWithoutScams,
-            title: '􀇿 Low Liquidity',
+            title: tokenSectionTypes.lowLiquidityTokenSection,
           });
       } else {
         filteredList = [
           {
             data: concat(favorites, curatedAssets),
-            title: '􀇻 Rainbow Verified',
+            title: tokenSectionTypes.verifiedTokenSection,
             useGradientText: IS_TESTING === 'true' ? false : true,
           },
         ];

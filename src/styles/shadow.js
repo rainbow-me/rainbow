@@ -9,9 +9,9 @@ shadow.color = colors.black;
 shadow.opacity = 0.4;
 
 shadow.build = (
-  x,
-  y,
-  radius,
+  x = 0,
+  y = 0,
+  radius = 0,
   color = shadow.color,
   opacity = shadow.opacity
 ) => `

@@ -65,7 +65,7 @@ export default function SendAssetForm({
   const selectedAsset = useAsset(selected);
 
   const isNft = selectedAsset.type === AssetTypes.nft;
-  const isSavings = selectedAsset.type === AssetTypes.cToken;
+  const isSavings = selectedAsset.type === AssetTypes.compound;
 
   const AssetRowElement = isNft
     ? CollectiblesSendRow
@@ -76,6 +76,7 @@ export default function SendAssetForm({
   return (
     <Container>
       <ShadowStack
+        backgroundColor={colors.white}
         borderRadius={0}
         height={SendCoinRow.selectedHeight}
         shadows={AssetRowShadow}

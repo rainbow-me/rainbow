@@ -22,9 +22,9 @@ const AmountRow = styled(LinearGradient).attrs({
   start: { x: 1, y: 0.5 },
 })`
   ${padding(7, 12, 9, 11)};
-  border-radius: 20;
+  border-radius: 40;
   margin: auto;
-  margin-bottom: 18;
+  margin-bottom: 23;
   overflow: hidden;
 `;
 
@@ -39,27 +39,28 @@ const NativeAmount = styled(Text).attrs({
   margin-top: 19;
 `;
 
-const coinIconShadow = [[0, 3, 9, colors.dark, 0.2]];
-
-const TransactionConfirmationSection = ({
-  asset: { amount, nativeAmountDisplay, symbol },
+export default function TransactionConfirmationSection({
+  address,
+  amount,
+  nativeAmountDisplay,
+  symbol,
   method,
-}) => (
-  <TransactionSheet method={method}>
-    <Centered>
-      <NativeAmount>{nativeAmountDisplay}</NativeAmount>
-    </Centered>
-    <AmountRow>
-      <Column>
-        <RowWithMargins align="center" margin={5}>
-          <CoinIcon shadow={coinIconShadow} size={20} symbol={symbol} />
-          <Amount>
-            {formatFixedDecimals(amount, 10)} {symbol}
-          </Amount>
-        </RowWithMargins>
-      </Column>
-    </AmountRow>
-  </TransactionSheet>
-);
-
-export default TransactionConfirmationSection;
+}) {
+  return (
+    <TransactionSheet method={method}>
+      <Centered>
+        <NativeAmount>{nativeAmountDisplay}</NativeAmount>
+      </Centered>
+      <AmountRow>
+        <Column>
+          <RowWithMargins align="center" margin={5}>
+            <CoinIcon address={address} size={20} symbol={symbol} />
+            <Amount>
+              {formatFixedDecimals(amount, 10)} {symbol}
+            </Amount>
+          </RowWithMargins>
+        </Column>
+      </AmountRow>
+    </TransactionSheet>
+  );
+}

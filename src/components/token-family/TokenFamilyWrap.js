@@ -72,9 +72,6 @@ export default function TokenFamilyWrap({
           title={title}
         />
       ) : null}
-      {/*
-          XXX 👇️👇️👇️👇️ not sure if this Transitioning.View should have a `key` defined for performance or not
-      */}
       <Content areChildrenVisible={areChildrenVisible} ref={transitionRef}>
         {areChildrenVisible ? times(item.length, renderItem) : null}
       </Content>

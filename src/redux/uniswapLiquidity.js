@@ -1,5 +1,5 @@
 import produce from 'immer';
-import { concat, filter, get, isEmpty, uniqBy } from 'lodash';
+import { concat, isEmpty, uniqBy } from 'lodash';
 import {
   getLiquidity,
   getUniswapLiquidityInfo,
@@ -17,8 +17,6 @@ const UNISWAP_UPDATE_LIQUIDITY_TOKENS =
 const UNISWAP_CLEAR_STATE = 'uniswap/UNISWAP_CLEAR_STATE';
 
 // -- Actions --------------------------------------------------------------- //
-const hasTokenQuantity = token => token.quantity > 0;
-const getAssetCode = token => get(token, 'asset.asset_code');
 
 export const uniswapLiquidityLoadState = () => async (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
@@ -48,14 +46,14 @@ export const uniswapUpdateLiquidityTokens = (
   appendOrChange
 ) => (dispatch, getState) => {
   if (isEmpty(liquidityTokens)) return;
-  let updatedLiquidityTokens = filter(liquidityTokens, hasTokenQuantity);
+  let updatedLiquidityTokens = liquidityTokens;
   if (appendOrChange) {
     const {
       liquidityTokens: existingLiquidityTokens,
     } = getState().uniswapLiquidity;
     updatedLiquidityTokens = uniqBy(
       concat(updatedLiquidityTokens, existingLiquidityTokens),
-      getAssetCode
+      token => token.address
     );
   }
   const { accountAddress, network } = getState().settings;
@@ -68,7 +66,12 @@ export const uniswapUpdateLiquidityTokens = (
 };
 
 export const uniswapUpdateLiquidityState = () => async (dispatch, getState) => {
-  const { accountAddress, chainId, network } = getState().settings;
+  const {
+    accountAddress,
+    chainId,
+    nativeCurrency,
+    network,
+  } = getState().settings;
   const { pairs } = getState().uniswap;
   const { liquidityTokens } = getState().uniswapLiquidity;
 
@@ -78,6 +81,7 @@ export const uniswapUpdateLiquidityState = () => async (dispatch, getState) => {
     const liquidityInfo = await getLiquidityInfo(
       chainId,
       accountAddress,
+      nativeCurrency,
       liquidityTokens,
       pairs
     );

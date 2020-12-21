@@ -4,17 +4,18 @@ import React, { useCallback, useContext } from 'react';
 import { Alert, ScrollView } from 'react-native';
 import { DEV_SEEDS, GANACHE_URL } from 'react-native-dotenv';
 import { Restart } from 'react-native-restart';
-import { deleteAllBackups } from '../../handlers/cloudBackup';
-import { web3SetHttpProvider } from '../../handlers/web3';
-import { RainbowContext } from '../../helpers/RainbowContext';
-import networkTypes from '../../helpers/networkTypes';
-import { useWallets } from '../../hooks';
-import { wipeKeychain } from '../../model/keychain';
-import { useNavigation } from '../../navigation/Navigation';
-import store from '../../redux/store';
-import { walletsUpdate } from '../../redux/wallets';
 import { ListFooter, ListItem } from '../list';
 import { RadioListItem } from '../radio-list';
+import { deleteAllBackups } from '@rainbow-me/handlers/cloudBackup';
+import { web3SetHttpProvider } from '@rainbow-me/handlers/web3';
+import { RainbowContext } from '@rainbow-me/helpers/RainbowContext';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
+import { useWallets } from '@rainbow-me/hooks';
+import { wipeKeychain } from '@rainbow-me/model/keychain';
+import { useNavigation } from '@rainbow-me/navigation/Navigation';
+import { clearImageMetadataCache } from '@rainbow-me/redux/imageMetadata';
+import store from '@rainbow-me/redux/store';
+import { walletsUpdate } from '@rainbow-me/redux/wallets';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 
@@ -64,6 +65,10 @@ const DevSection = () => {
   return (
     <ScrollView testID="developer-settings-modal">
       <ListItem label="💥 Clear async storage" onPress={AsyncStorage.clear} />
+      <ListItem
+        label="📷️ Clear Image Metadata Cache"
+        onPress={clearImageMetadataCache}
+      />
       <ListItem
         label="💣 Reset Keychain"
         onPress={wipeKeychain}

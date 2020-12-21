@@ -12,6 +12,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.2.40](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.40)
+### Added
+* Uniswap LP token charts
+* Enable searching by token contract addresses in swap
+
+### Changed
+* Fix cloud backup issues
+* Fix avatar issues
+* Fix small balances/pinning issues
+* Fix limited transaction history
+
 ## [1.2.39](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.39)
 ### Added
 * Surface Uniswap V2 LP tokens
@@ -294,7 +305,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ## [1.2.2-4](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.2-4)
 ### Added
-* Uniswap support 
+* Uniswap support
 * Add to contacts
 * Support for deep linking
 * Support for Sentry

@@ -125,7 +125,6 @@ export default function TransactionList({
       };
 
       const avatarActionSheetOptions = [
-        'Take Photo',
         'Choose from Library',
         ...(isAvatarEmojiPickerEnabled ? ['Pick an Emoji'] : []),
         ...(accountImage ? ['Remove Photo'] : []),
@@ -142,21 +141,16 @@ export default function TransactionList({
         },
         async buttonIndex => {
           if (buttonIndex === 0) {
-            ImagePicker.openCamera({
-              cropperCircleOverlay: true,
-              cropping: true,
-            }).then(processPhoto);
-          } else if (buttonIndex === 1) {
             ImagePicker.openPicker({
               cropperCircleOverlay: true,
               cropping: true,
             }).then(processPhoto);
-          } else if (buttonIndex === 2 && isAvatarEmojiPickerEnabled) {
+          } else if (buttonIndex === 1 && isAvatarEmojiPickerEnabled) {
             navigate(Routes.AVATAR_BUILDER, {
               initialAccountColor: accountColor,
               initialAccountName: accountName,
             });
-          } else if (buttonIndex === 3 && accountImage) {
+          } else if (buttonIndex === 2 && accountImage) {
             onRemovePhoto();
           }
         }

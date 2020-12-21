@@ -9,9 +9,9 @@ import {
   includes,
   sortBy,
 } from 'lodash';
-import store from '../redux/store';
-import supportedNativeCurrencies from '../references/native-currencies.json';
 import { add, convertAmountToNativeDisplay } from './utilities';
+import store from '@rainbow-me/redux/store';
+import { supportedNativeCurrencies } from '@rainbow-me/references';
 import { ETH_ICON_URL } from '@rainbow-me/utils';
 
 export const amountOfShowedCoins = 5;
@@ -148,9 +148,10 @@ export const buildCoinsList = (
     } else {
       //if only dust assets we want to show the top 5 in standard
       if (
-        (!hasStandard && standardAssets.length < amountOfShowedCoins) ||
+        (!hasStandard &&
+          standardAssets.length + pinnedCoins.length < amountOfShowedCoins) ||
         (hasStandard &&
-          standardAssets.length < amountOfShowedCoins &&
+          standardAssets.length + pinnedCoins.length < amountOfShowedCoins &&
           asset.address === 'eth')
       ) {
         totalBalancesValue = add(
@@ -168,8 +169,8 @@ export const buildCoinsList = (
       }
     }
   });
-  totalBalancesValue = add(totalBalancesValue, smallBalancesValue);
 
+  totalBalancesValue = add(totalBalancesValue, smallBalancesValue);
   if (isCoinListEdited) {
     if (assetsLength <= amountOfShowedCoins) {
       standardAssets = standardAssets.concat(hiddenAssets);

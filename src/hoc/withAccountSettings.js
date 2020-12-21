@@ -6,8 +6,8 @@ import {
   settingsChangeLanguage,
   settingsChangeNativeCurrency,
   settingsUpdateNetwork,
-} from '../redux/settings';
-import supportedNativeCurrencies from '../references/native-currencies.json';
+} from '@rainbow-me/redux/settings';
+import { supportedNativeCurrencies } from '@rainbow-me/references';
 
 const mapStateToProps = ({
   settings: {

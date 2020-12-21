@@ -1,12 +1,10 @@
 export {
   useChartData,
   useChartDataLabels,
-  useChartGestures,
-  useExtremeValuesFromPoints,
-  usePathForPoints,
-  usePointsFromChartData,
+  useChartThrottledPoints,
 } from './charts';
 export { default as useAccountAssets } from './useAccountAssets';
+export { default as useFrameDelayedValue } from './useFrameDelayedValue';
 export { default as useAccountEmptyState } from './useAccountEmptyState';
 export { default as useAccountProfile } from './useAccountProfile';
 export { default as useAccountSettings } from './useAccountSettings';

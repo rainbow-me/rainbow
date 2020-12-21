@@ -2,6 +2,7 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
 import { get, toLower, uniqBy } from 'lodash';
 import { web3Provider } from '../handlers/web3';
+import AssetTypes from '../helpers/assetTypes';
 import networkInfo from '../helpers/networkInfo';
 import networkTypes from '../helpers/networkTypes';
 import { delay } from '../helpers/utilities';
@@ -108,6 +109,17 @@ const findAssetsToWatch = async (address, latestTxBlockNumber, dispatch) => {
   ];
 };
 
+const getTokenType = tx => {
+  if (tx.tokenSymbol === 'UNI-V1') return AssetTypes.uniswap;
+  if (tx.tokenSymbol === 'UNI-V2') return AssetTypes.uniswapV2;
+  if (
+    toLower(tx.tokenName).indexOf('compound') !== -1 &&
+    tx.tokenSymbol !== 'COMP'
+  )
+    return AssetTypes.compound;
+  return undefined;
+};
+
 const discoverTokens = async (
   coingeckoIds,
   address,
@@ -153,12 +165,7 @@ const discoverTokens = async (
 
     return uniqBy(
       allTxs.map(tx => {
-        const type =
-          tx.tokenSymbol === 'UNI-V1'
-            ? 'uniswap'
-            : tx.tokenSymbol === 'UNI-V2'
-            ? 'uniswap-v2'
-            : undefined;
+        const type = getTokenType(tx);
         return {
           asset: {
             asset_code: getCurrentAddress(tx.contractAddress.toLowerCase()),

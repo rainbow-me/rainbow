@@ -40,6 +40,10 @@ const DisplayDappNames = Object.freeze({
     name: 'dYdX',
     uri: buildAssetUrl('dydx.exchange'),
   },
+  'furucombo.app': {
+    name: 'Furucombo',
+    uri: buildAssetUrl('furucombo.app'),
+  },
   'instadapp.io': {
     name: 'Instadapp',
     uri: null,

@@ -32,6 +32,7 @@ import {
   saveLocalTransactions,
 } from '../handlers/localstorage/accountLocal';
 import { getTransactionReceipt } from '../handlers/web3';
+import AssetTypes from '../helpers/assetTypes';
 import DirectionTypes from '../helpers/transactionDirectionTypes';
 import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 import TransactionTypes from '../helpers/transactionTypes';
@@ -261,7 +262,9 @@ export const addressAssetsReceived = (
   const payload = values(get(message, 'payload.assets', {}));
   let assets = filter(
     payload,
-    asset => asset.asset.type !== 'compound' && asset.asset.type !== 'trash'
+    asset =>
+      asset?.asset?.type !== AssetTypes.compound &&
+      asset?.asset?.type !== AssetTypes.trash
   );
 
   if (removed) {
@@ -273,26 +276,24 @@ export const addressAssetsReceived = (
     });
   }
 
-  const liquidityTokens = remove(
-    assets,
-    asset =>
-      asset?.asset?.type === 'uniswap' || asset?.asset?.type === 'uniswap-v2'
-  );
-
   // Remove spammy tokens
   remove(assets, asset =>
     shitcoins.includes(toLower(asset?.asset?.asset_code))
   );
-  // Remove compound tokens
-  remove(
-    assets,
-    asset => toLower(asset?.asset?.name).indexOf('compound') !== -1
+
+  let parsedAssets = parseAccountAssets(assets, uniqueTokens);
+
+  // remove LP tokens
+  const liquidityTokens = remove(
+    parsedAssets,
+    asset =>
+      asset?.type === AssetTypes.uniswap || asset?.type === AssetTypes.uniswapV2
   );
 
   dispatch(
     uniswapUpdateLiquidityTokens(liquidityTokens, append || change || removed)
   );
-  let parsedAssets = parseAccountAssets(assets, uniqueTokens);
+
   if (append || change || removed) {
     const { assets: existingAssets } = getState().data;
     parsedAssets = uniqBy(

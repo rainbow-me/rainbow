@@ -1,23 +1,29 @@
 import { get } from 'lodash';
 import React from 'react';
-import { Text } from 'react-native';
+import { PixelRatio, Text } from 'react-native';
 import styled from 'styled-components/primitives';
 import { Row } from '../../../layout';
 import ChartHeaderTitle from './ChartHeaderTitle';
-
 import { ChartYLabel } from '@rainbow-me/animated-charts';
 import { useAccountSettings } from '@rainbow-me/hooks';
-import supportedNativeCurrencies from '@rainbow-me/references/native-currencies.json';
+import { supportedNativeCurrencies } from '@rainbow-me/references';
 import { colors, fonts, fontWithWidth } from '@rainbow-me/styles';
 
 const Label = styled(ChartYLabel)`
-  color: ${colors.black};
+  color: ${colors.dark};
   ${fontWithWidth(fonts.weight.heavy)};
   font-size: ${fonts.size.big};
   letter-spacing: ${fonts.letterSpacing.roundedTight};
   ${android &&
     `margin-top: -8;
      margin-bottom: -16;`}
+`;
+
+const AndroidCurrencySymbolLabel = styled(Label)`
+  height: 69;
+  left: 5.5;
+  margin-right: 3;
+  top: ${PixelRatio.get() <= 2.625 ? 10 : 12};
 `;
 
 export function formatNative(value, priceSharedValue, nativeSelected) {
@@ -70,14 +76,13 @@ export default function ChartPriceLabel({
   ) : (
     <Row>
       {android && (
-        <Label
+        <AndroidCurrencySymbolLabel
           as={Text}
           defaultValue={nativeSelected?.symbol}
           editable={false}
-          style={{ height: 69, left: 5.5, marginRight: 3, top: 9.75 }}
         >
           {nativeSelected?.symbol}
-        </Label>
+        </AndroidCurrencySymbolLabel>
       )}
       <Label
         format={value => {

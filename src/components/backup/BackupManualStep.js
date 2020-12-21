@@ -1,6 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
+import { View } from 'react-native';
 import styled from 'styled-components/primitives';
 import { Column } from '../layout';
 import { SecretDisplaySection } from '../secret-display';
@@ -107,7 +108,7 @@ export default function BackupManualStep() {
             : `Write them down or save them in your password manager.`}
         </MastheadDescription>
       </Masthead>
-      <Content isTallPhone={isTallPhone}>
+      <Content isTallPhone={isTallPhone} paddingHorizontal={30}>
         <SecretDisplaySection
           onSecretLoaded={setSecretLoaded}
           onWalletTypeIdentified={setType}
@@ -115,16 +116,18 @@ export default function BackupManualStep() {
       </Content>
       <Footer>
         {secretLoaded && (
-          <SheetActionButton
-            androidWidth={300}
-            color={colors.appleBlue}
-            label={`􀁣 I’ve saved ${
-              type === WalletTypes.privateKey ? 'my key' : 'these words'
-            }`}
-            onPress={onComplete}
-            size="big"
-            weight="bold"
-          />
+          <View marginTop={30}>
+            <SheetActionButton
+              color={colors.appleBlue}
+              fullWidth
+              label={`􀁣 I’ve saved ${
+                type === WalletTypes.privateKey ? 'my key' : 'these words'
+              }`}
+              onPress={onComplete}
+              size="big"
+              weight="bold"
+            />
+          </View>
         )}
       </Footer>
     </Fragment>

@@ -1,7 +1,9 @@
 import React, { useCallback, useRef } from 'react';
+import { Alert } from 'react-native';
 import { SectionList } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components/primitives';
+import tokenSectionTypes from '../../helpers/tokenSectionTypes';
 import { usePrevious } from '../../hooks';
 import { CoinRowHeight, ExchangeCoinRow } from '../coin-row';
 import { GradientText, Text } from '../text';
@@ -107,8 +109,38 @@ const ExchangeAssetList = ({ itemProps, items, onLayout, query }) => {
     itemProps,
   ]);
 
+  const handleUnverifiedTokenPress = useCallback(
+    item => {
+      Alert.alert(
+        `Unverified Token`,
+        'This token has not been verified! Rainbow surfaces all tokens that exist on Uniswap. Anyone can create a token, including fake versions of existing tokens and tokens that claim to represent projects that do not have a token. Please do your own research and be careful when interacting with unverified tokens!',
+        [
+          {
+            onPress: () => itemProps.onPress(item),
+            text: `Proceed Anyway`,
+          },
+          {
+            style: 'cancel',
+            text: 'Go Back',
+          },
+        ]
+      );
+    },
+    [itemProps]
+  );
+
   const renderItemCallback = useCallback(
-    ({ item }) => <ExchangeCoinRow {...itemProps} item={item} />,
+    ({ item, section: { title: sectionTitle } }) => (
+      <ExchangeCoinRow
+        {...itemProps}
+        isVerified={
+          !sectionTitle ||
+          sectionTitle === tokenSectionTypes.verifiedTokenSection
+        }
+        item={item}
+        onUnverifiedTokenPress={handleUnverifiedTokenPress}
+      />
+    ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );

@@ -105,14 +105,14 @@ const WalletSelectionView = () => {
   );
 
   const manageCloudBackups = useCallback(() => {
-    const buttons = [`Delete all ${cloudPlatform} backups`, 'Cancel'];
+    const buttons = [`Delete All ${cloudPlatform} Backups`, 'Cancel'];
 
     showActionSheetWithOptions(
       {
         cancelButtonIndex: 1,
         destructiveButtonIndex: 0,
         options: buttons,
-        title: `Manage ${cloudPlatform} backups`,
+        title: `Manage ${cloudPlatform} Backups`,
       },
       buttonIndex => {
         if (buttonIndex === 0) {
@@ -121,8 +121,8 @@ const WalletSelectionView = () => {
             {
               cancelButtonIndex: 1,
               destructiveButtonIndex: 0,
-              message: `Are you sure you want to delete all ${cloudPlatform} Backups`,
-              options: [`YES, Delete All ${cloudPlatform} Backups`, 'Cancel'],
+              message: `Are you sure you want to delete your ${cloudPlatform} wallet backups?`,
+              options: [`Confirm and Delete Backups`, 'Cancel'],
             },
             async buttonIndex => {
               if (buttonIndex === 0) {
@@ -139,7 +139,7 @@ const WalletSelectionView = () => {
                 // Delete all backups (debugging)
                 await deleteAllBackups();
 
-                Alert.alert('Backups deleted succesfully');
+                Alert.alert('Backups Deleted Succesfully');
               }
             }
           );
@@ -258,7 +258,7 @@ const WalletSelectionView = () => {
               size="lmedium"
               weight="semibold"
             >
-              􀍢 Manage ${cloudPlatform} backups
+              􀍢 Manage {cloudPlatform} Backups
             </Text>
           </ButtonPressAnimation>
         </Footer>

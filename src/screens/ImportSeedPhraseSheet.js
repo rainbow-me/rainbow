@@ -88,9 +88,7 @@ const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs({
 `;
 
 const FooterButton = styled(MiniButton).attrs({
-  compensateForTransformOrigin: true,
   testID: 'import-sheet-button',
-  transformOrigin: 'right',
 })``;
 
 const KeyboardSizeView = styled(KeyboardArea)`
@@ -389,21 +387,23 @@ export default function ImportSeedPhraseSheet() {
           {seedPhrase ? (
             <FooterButton
               disabled={!isSecretValid}
-              {...(android && { height: 30, overflowMargin: 15, width: 90 })}
+              hasLeadingIcon
+              {...(android && { height: 30, overflowMargin: 15, width: 89 })}
               onPress={handlePressImportButton}
             >
               <Row>
                 {busy ? (
                   <LoadingSpinner />
                 ) : (
-                  <Text color="white" weight="semibold">
+                  <Text align="center" color="white" weight="bold">
                     􀂍{' '}
                   </Text>
                 )}
                 <Text
+                  align="center"
                   color="white"
                   testID="import-sheet-button-label"
-                  weight="semibold"
+                  weight="bold"
                 >
                   Import
                 </Text>
@@ -411,14 +411,15 @@ export default function ImportSeedPhraseSheet() {
             </FooterButton>
           ) : (
             <FooterButton
-              {...(android && { height: 30, overflowMargin: 15, width: 60 })}
+              {...(android && { height: 30, overflowMargin: 15, width: 63 })}
               disabled={!isClipboardValidSecret}
               onPress={handlePressPasteButton}
             >
               <Text
+                align="center"
                 color="white"
                 testID="import-sheet-button-label"
-                weight="semibold"
+                weight="bold"
               >
                 Paste
               </Text>

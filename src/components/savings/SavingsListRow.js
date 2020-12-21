@@ -1,6 +1,5 @@
 import analytics from '@segment/analytics-react-native';
 import BigNumber from 'bignumber.js';
-import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
@@ -10,7 +9,6 @@ import {
   SavingsSheetEmptyHeight,
   SavingsSheetHeight,
 } from '../../screens/SavingsSheet';
-
 import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
 import { Centered, Row } from '../layout';
@@ -61,9 +59,7 @@ const SavingsListRowShadowStack = styled(ShadowStack).attrs(
     shadows: SavingsListRowShadows,
     width: deviceWidth - 38,
   })
-)`
-  elevation: 2;
-`;
+)``;
 
 const SavingsListRow = ({
   cTokenBalance,
@@ -172,7 +168,11 @@ const SavingsListRow = ({
           >
             {underlying.symbol && supplyBalanceUnderlying ? (
               <Centered>
-                <CoinIcon size={26} symbol={underlying.symbol} />
+                <CoinIcon
+                  address={underlying.address}
+                  size={26}
+                  symbol={underlying.symbol}
+                />
               </Centered>
             ) : null}
             {supplyBalanceUnderlying &&
@@ -194,16 +194,6 @@ const SavingsListRow = ({
       </Centered>
     </ButtonPressAnimation>
   );
-};
-
-SavingsListRow.propTypes = {
-  cTokenBalance: PropTypes.string,
-  lifetimeSupplyInterestAccrued: PropTypes.string,
-  supplyBalanceUnderlying: PropTypes.string,
-  supplyRate: PropTypes.string,
-  underlying: PropTypes.object,
-  underlyingBalanceNativeValue: PropTypes.string,
-  underlyingPrice: PropTypes.string,
 };
 
 export default React.memo(SavingsListRow);
