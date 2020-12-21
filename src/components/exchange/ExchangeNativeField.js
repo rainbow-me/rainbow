@@ -14,7 +14,7 @@ const CurrencySymbol = styled(Text).attrs(({ height }) => ({
   size: 'larger',
   weight: 'regular',
 }))`
-  ${android ? 'margin-bottom: 1.5' : ''};
+  ${android ? 'margin-bottom: 1.5;' : ''};
 `;
 
 const NativeInput = styled(ExchangeInput).attrs({
