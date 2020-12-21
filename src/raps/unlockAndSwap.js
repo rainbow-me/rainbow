@@ -38,6 +38,7 @@ export const estimateUnlockAndSwap = async ({
   );
   if (swapAssetNeedsUnlocking) {
     const unlockGasLimit = await contractUtils.estimateApprove(
+      accountAddress,
       inputCurrency.address,
       UNISWAP_V2_ROUTER_ADDRESS
     );

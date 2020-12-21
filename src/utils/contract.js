@@ -7,10 +7,11 @@ import { ethUnits } from '../references';
 import erc20ABI from '../references/erc20-abi.json';
 import logger from 'logger';
 
-const estimateApproveWithExchange = async (spender, exchange) => {
+const estimateApproveWithExchange = async (owner, spender, exchange) => {
   try {
-    logger.sentry('exchange estimate approve', { exchange, spender });
-    const gasLimit = await exchange.estimateGas.approve(spender, MaxUint256);
+    const gasLimit = await exchange.estimateGas.approve(spender, MaxUint256, {
+      from: owner,
+    });
     return gasLimit ? gasLimit.toString() : ethUnits.basic_approval;
   } catch (error) {
     logger.sentry('error estimateApproveWithExchange');
@@ -19,9 +20,10 @@ const estimateApproveWithExchange = async (spender, exchange) => {
   }
 };
 
-const estimateApprove = (tokenAddress, spender) => {
+const estimateApprove = (owner, tokenAddress, spender) => {
+  logger.sentry('exchange estimate approve', { owner, spender, tokenAddress });
   const exchange = new Contract(tokenAddress, erc20ABI, web3Provider);
-  return estimateApproveWithExchange(spender, exchange);
+  return estimateApproveWithExchange(owner, spender, exchange);
 };
 
 const approve = async (
