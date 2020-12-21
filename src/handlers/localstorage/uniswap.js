@@ -47,7 +47,13 @@ export const saveLiquidityInfo = (liquidityInfo, accountAddress, network) =>
   );
 
 export const getLiquidity = (accountAddress, network) =>
-  getAccountLocal(LIQUIDITY, accountAddress, network, uniswapLiquidityVersion);
+  getAccountLocal(
+    LIQUIDITY,
+    accountAddress,
+    network,
+    [],
+    uniswapLiquidityVersion
+  );
 
 export const saveLiquidity = (liquidity, accountAddress, network) =>
   saveAccountLocal(

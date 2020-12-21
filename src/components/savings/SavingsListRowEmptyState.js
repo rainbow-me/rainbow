@@ -33,6 +33,7 @@ const SavingsListRowEmptyState = ({ onPress }) => (
     </Text>
     <ButtonPressAnimation onPress={onPress} scaleTo={0.92} style={sx.button}>
       <Text
+        align="center"
         color={colors.white}
         letterSpacing="roundedTight"
         size="lmedium"

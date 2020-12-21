@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import { forEach } from 'lodash';
 import React, { useCallback } from 'react';
-import { Alert, StatusBar } from 'react-native';
+import { Alert, InteractionManager, StatusBar } from 'react-native';
 import RNCloudFs from 'react-native-cloud-fs';
 import RestoreCloudStep from '../components/backup/RestoreCloudStep';
 import RestoreSheetFirstStep from '../components/backup/RestoreSheetFirstStep';
@@ -72,13 +72,17 @@ export default function RestoreSheet() {
   }, [setParams]);
 
   const onManualRestore = useCallback(() => {
-    goBack();
-    navigate(Routes.IMPORT_SEED_PHRASE_FLOW);
+    InteractionManager.runAfterInteractions(goBack);
+    InteractionManager.runAfterInteractions(() => {
+      setTimeout(() => navigate(Routes.IMPORT_SEED_PHRASE_FLOW), 50);
+    });
   }, [goBack, navigate]);
 
   const onWatchAddress = useCallback(() => {
-    goBack();
-    navigate(Routes.IMPORT_SEED_PHRASE_FLOW);
+    InteractionManager.runAfterInteractions(goBack);
+    InteractionManager.runAfterInteractions(() => {
+      setTimeout(() => navigate(Routes.IMPORT_SEED_PHRASE_FLOW), 50);
+    });
   }, [goBack, navigate]);
 
   const wrapperHeight =

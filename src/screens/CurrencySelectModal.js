@@ -25,6 +25,7 @@ import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
 import { addHexPrefix } from '../handlers/web3';
 import CurrencySelectionTypes from '../helpers/currencySelectionTypes';
+import tokenSectionTypes from '../helpers/tokenSectionTypes';
 import { delayNext } from '../hooks/useMagicAutofocus';
 import { useNavigation } from '../navigation/Navigation';
 import {
@@ -121,7 +122,7 @@ export default function CurrencySelectModal() {
         filteredBest.length &&
           filteredList.push({
             data: filteredBest,
-            title: '􀇻 Rainbow Verified',
+            title: tokenSectionTypes.verifiedTokenSection,
             useGradientText: IS_TESTING === 'true' ? false : true,
           });
 
@@ -133,7 +134,7 @@ export default function CurrencySelectModal() {
         filteredHighWithoutScams.length &&
           filteredList.push({
             data: filteredHighWithoutScams,
-            title: '􀇿 Unverified',
+            title: tokenSectionTypes.unverifiedTokenSection,
           });
 
         const filteredLowWithoutScams = filterScams(filteredBest, filteredLow);
@@ -141,13 +142,13 @@ export default function CurrencySelectModal() {
         filteredLowWithoutScams.length &&
           filteredList.push({
             data: filteredLowWithoutScams,
-            title: '􀇿 Low Liquidity',
+            title: tokenSectionTypes.lowLiquidityTokenSection,
           });
       } else {
         filteredList = [
           {
             data: concat(favorites, curatedAssets),
-            title: '􀇻 Rainbow Verified',
+            title: tokenSectionTypes.verifiedTokenSection,
             useGradientText: IS_TESTING === 'true' ? false : true,
           },
         ];

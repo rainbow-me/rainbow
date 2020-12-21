@@ -14,7 +14,10 @@ import imageMetadata from './imageMetadata';
 import keyboardHeight from './keyboardHeight';
 import multicall from './multicall';
 import nonce from './nonce';
-import openStateSettings from './openStateSettings';
+import openStateSettings, {
+  openSavingsReducer,
+  openSmallBalancesReducer,
+} from './openStateSettings';
 import raps from './raps';
 import requests from './requests';
 import settings from './settings';
@@ -40,6 +43,8 @@ export default combineReducers({
   keyboardHeight,
   multicall,
   nonce,
+  openSavings: openSavingsReducer,
+  openSmallBalances: openSmallBalancesReducer,
   openStateSettings,
   raps,
   requests,

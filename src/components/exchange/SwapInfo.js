@@ -1,5 +1,3 @@
-import { get } from 'lodash';
-import PropTypes from 'prop-types';
 import React, { useEffect, useRef } from 'react';
 import Animated from 'react-native-reanimated';
 import {
@@ -10,18 +8,20 @@ import {
 import styled from 'styled-components/primitives';
 import { interpolate } from '../animations';
 import { CoinIcon } from '../coin-icon';
-import { Centered } from '../layout';
+import { Centered, RowWithMargins } from '../layout';
 import { Text } from '../text';
 import { padding } from '@rainbow-me/styles';
 
-const Container = styled(Centered)`
+const Container = styled(RowWithMargins).attrs({
+  centered: true,
+  margin: 5,
+})`
   ${padding(19, 19, 2)};
   width: 100%;
 `;
 
-const SwapInfo = ({ asset, amount }) => {
+export default function SwapInfo({ asset, amount }) {
   const isVisible = !!(asset && amount);
-  const symbol = get(asset, 'symbol');
 
   const prevAmountRef = useRef();
   useEffect(() => {
@@ -78,27 +78,20 @@ const SwapInfo = ({ asset, amount }) => {
     >
       <Container>
         <CoinIcon
-          address={get(asset, 'address')}
-          flex={0}
-          marginRight={5}
+          address={asset?.address}
           size={20}
-          symbol={get(asset, 'symbol')}
+          symbol={asset?.symbol}
           testID="swap-info-container"
         />
-        <Text color="grey" size="smedium" weight="medium">
-          Swapping for{' '}
-        </Text>
-        <Text color="white" size="smedium" weight="semibold">
-          {`${amountToDisplay}  ${symbol}`}
-        </Text>
+        <Centered>
+          <Text color="grey" size="smedium" weight="medium">
+            Swapping for{' '}
+          </Text>
+          <Text color="white" size="smedium" weight="semibold">
+            {`${amountToDisplay} ${asset?.symbol || ''}`}
+          </Text>
+        </Centered>
       </Container>
     </Animated.View>
   );
-};
-
-SwapInfo.propTypes = {
-  amount: PropTypes.number,
-  asset: PropTypes.object,
-};
-
-export default SwapInfo;
+}

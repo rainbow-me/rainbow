@@ -4,14 +4,13 @@ import { PixelRatio, Text } from 'react-native';
 import styled from 'styled-components/primitives';
 import { Row } from '../../../layout';
 import ChartHeaderTitle from './ChartHeaderTitle';
-
 import { ChartYLabel } from '@rainbow-me/animated-charts';
 import { useAccountSettings } from '@rainbow-me/hooks';
-import supportedNativeCurrencies from '@rainbow-me/references/native-currencies.json';
+import { supportedNativeCurrencies } from '@rainbow-me/references';
 import { colors, fonts, fontWithWidth } from '@rainbow-me/styles';
 
 const Label = styled(ChartYLabel)`
-  color: ${colors.black};
+  color: ${colors.dark};
   ${fontWithWidth(fonts.weight.heavy)};
   font-size: ${fonts.size.big};
   letter-spacing: ${fonts.letterSpacing.roundedTight};

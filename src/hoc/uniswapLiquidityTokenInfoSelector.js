@@ -16,7 +16,7 @@ import {
   handleSignificantDecimalsWithThreshold,
   multiply,
 } from '@rainbow-me/helpers/utilities';
-import { tokenOverrides } from '@rainbow-me/references';
+import { RAINBOW_TOKEN_LIST } from '@rainbow-me/references';
 
 const assetsSelector = state => state.data.assets;
 const nativeCurrencySelector = state => state.settings.nativeCurrency;
@@ -45,7 +45,7 @@ const transformPool = (liquidityPool, nativeCurrency) => {
 
   const formattedTokens = map(tokens, token => ({
     ...token,
-    ...(token.address ? tokenOverrides[toLower(token.address)] : {}),
+    ...(token?.address ? RAINBOW_TOKEN_LIST[toLower(token.address)] : {}),
     value: handleSignificantDecimalsWithThreshold(token.balance, 4),
   }));
 

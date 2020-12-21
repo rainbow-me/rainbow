@@ -1,7 +1,5 @@
 import { map } from 'lodash';
 import React from 'react';
-import { useChartThrottledPoints } from '../../hooks';
-import { magicMemo } from '../../utils';
 import {
   DepositActionButton,
   SheetActionButtonRow,
@@ -15,8 +13,10 @@ import {
   TokenInfoRow,
   TokenInfoSection,
 } from '../token-info';
-import Chart from '../value-chart/Chart';
+import { Chart } from '../value-chart';
 import { ChartPathProvider } from '@rainbow-me/animated-charts';
+import { useChartThrottledPoints } from '@rainbow-me/hooks';
+import { magicMemo } from '@rainbow-me/utils';
 
 const heightWithoutChart = 373 + (android && 80);
 const heightWithChart = heightWithoutChart + 292;
@@ -25,8 +25,11 @@ export const initialLiquidityPoolExpandedStateSheetHeight =
   heightWithChart + (android && 40);
 
 const LiquidityPoolExpandedState = ({ asset }) => {
-  const { symbol, tokenNames, tokens, totalNativeDisplay, uniBalance } = asset;
-  const uniBalanceLabel = `${uniBalance} ${symbol}`;
+  const { tokenNames, tokens, totalNativeDisplay, type, uniBalance } = asset;
+
+  const tokenType = type === 'uniswap' ? 'UNI-V1' : 'UNI-V2';
+  const uniBalanceLabel = `${uniBalance} ${tokenType}`;
+
   const {
     chart,
     chartData,
@@ -43,12 +46,13 @@ const LiquidityPoolExpandedState = ({ asset }) => {
     isPool: true,
   });
 
-  const LiquidityPoolExpandedStateSheetHeight =
+  const liquidityPoolExpandedStateSheetHeight =
     (ios || showChart ? heightWithChart : heightWithoutChart) + (android && 40);
+
   return (
     <SlackSheet
       additionalTopPadding={android}
-      contentHeight={LiquidityPoolExpandedStateSheetHeight}
+      contentHeight={liquidityPoolExpandedStateSheetHeight}
     >
       <ChartPathProvider data={throttledData}>
         <Chart
@@ -68,17 +72,15 @@ const LiquidityPoolExpandedState = ({ asset }) => {
       <SheetDivider />
       <TokenInfoSection>
         <TokenInfoRow>
-          {map(tokens, tokenAsset => {
-            return (
-              <TokenInfoItem
-                asset={tokenAsset}
-                key={`tokeninfo-${tokenAsset.symbol}`}
-                title={`${tokenAsset.symbol} balance`}
-              >
-                <TokenInfoBalanceValue />
-              </TokenInfoItem>
-            );
-          })}
+          {map(tokens, tokenAsset => (
+            <TokenInfoItem
+              asset={tokenAsset}
+              key={`tokeninfo-${tokenAsset.symbol}`}
+              title={`${tokenAsset.symbol} balance`}
+            >
+              <TokenInfoBalanceValue />
+            </TokenInfoItem>
+          ))}
         </TokenInfoRow>
         <TokenInfoRow>
           <TokenInfoItem title="Pool shares">{uniBalanceLabel}</TokenInfoItem>
