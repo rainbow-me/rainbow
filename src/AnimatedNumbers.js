@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import {
+  Button,
   findNodeHandle,
   NativeModules,
   requireNativeComponent,
@@ -7,7 +8,9 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import SplashScreen from 'react-native-splash-screen';
+import { fonts } from '@rainbow-me/styles';
 const { RainbowSplashScreen, AnimatedNumbersManager } = NativeModules;
 
 const Component = requireNativeComponent('AnimatedNumbers');
@@ -15,15 +18,16 @@ const Config = requireNativeComponent('AnimatedNumbersConfig');
 
 RainbowSplashScreen ? RainbowSplashScreen.hideAnimated() : SplashScreen.hide();
 
+function animate(ref, config) {
+  const nodeHandle = findNodeHandle(ref.getNativeRef());
+  AnimatedNumbersManager.animate(nodeHandle, config);
+  return () => AnimatedNumbersManager.stop(nodeHandle);
+}
+
 export default function Animatable() {
   const ref = useRef();
   const configRef = useRef();
-
-  useEffect(() => {
-    const nodeHandle = findNodeHandle(ref.current.getNativeRef());
-    AnimatedNumbersManager.animate(nodeHandle, { '1': 10 });
-    return () => AnimatedNumbersManager.stop(nodeHandle);
-  }, []);
+  const currentAnimation = useRef();
 
   return (
     <View
@@ -34,16 +38,46 @@ export default function Animatable() {
         width: '100%',
       }}
     >
-      <Component
-        style={{
-          width: 300,
-          height: 30,
-          backgroundColor: 'green',
-          textAlign: 'right',
+      <TouchableOpacity
+        onPress={() => {
+          currentAnimation.current?.();
+          currentAnimation.current = animate(ref.current, {
+            stepPerSecond: 2,
+            toValue: 10,
+          });
         }}
-        //value="123"
-      />
+        title="Animate to 10"
+      >
+        <Text>Animate to 10</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        onPress={() => {
+          currentAnimation.current?.();
+          currentAnimation.current = animate(ref.current, {
+            stepPerSecond: -2,
+            toValue: 5,
+          });
+        }}
+        title="Animate down to 5"
+      >
+        <Text>Animate down to 5</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        onPress={() => {
+          currentAnimation.current?.();
+          currentAnimation.current = animate(ref.current, {
+            stepPerSecond: 3,
+          });
+        }}
+        title="Animate to Inf"
+      >
+        <Text>Animate to inf</Text>
+      </TouchableOpacity>
+
       <TextInput
+        editable={false}
         ref={ref}
         style={{
           backgroundColor: 'green',

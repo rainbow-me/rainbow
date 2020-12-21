@@ -1,7 +1,4 @@
 //
-//  NSObject+AnimatedNumbers.m
-//  Rainbow
-//
 //  Created by Michał Osadnik on 20/12/2020.
 //  Copyright © 2020 Rainbow. All rights reserved.
 //
@@ -38,6 +35,9 @@
 @property (nonatomic) NSString* pad;
 @property (nonatomic) NSNumber* maxDigitsAfterDot;
 @property (nonatomic) NSNumber* maxSignsTotally;
+@property (nonatomic) NSNumber* stepPerSecond;
+@property (nonatomic) NSNumber* value;
+@property (nonatomic) NSNumber* framesPerSecond;
 
 @end
 
@@ -50,6 +50,8 @@
     _pad = @"right";
     _maxDigitsAfterDot = @3;
     _maxSignsTotally = @6;
+    _value = @0;
+    _framesPerSecond = @20;
   }
   return self;
 }
@@ -73,6 +75,8 @@ RCT_EXPORT_VIEW_PROPERTY(prefix, NSString)
 RCT_EXPORT_VIEW_PROPERTY(suffix, NSString)
 RCT_EXPORT_VIEW_PROPERTY(maxDigitsAfterDot, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(maxSignsTotally, NSNumber)
+RCT_EXPORT_VIEW_PROPERTY(initialValue, NSNumber)
+RCT_EXPORT_VIEW_PROPERTY(framesPerSecond, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(pad, NSString)
 RCT_EXPORT_MODULE()
 
@@ -115,18 +119,28 @@ RCT_EXPORT_MODULE()
 - (void)performAnimationFrame:(NSTimer*)timer
 {
   NSNumber* reactTag = ((NSDictionary*) timer.userInfo)[@"reactTag"];
+  NSNumber* stepPerSecond = ((NSDictionary*) timer.userInfo)[@"stepPerSecond"];
   NSDate* startTime = ((NSDictionary*) timer.userInfo)[@"startTime"];
-  NSString* deltaString = [[NSNumber numberWithDouble:NSDate.date.timeIntervalSince1970 - startTime.timeIntervalSince1970] stringValue];
-  RCTUITextField* view = _textFields[reactTag];
   AnimatedNumbersConfig* config = _configs[reactTag];
-  long positionOfDot = [deltaString componentsSeparatedByString:@"."].firstObject.length + 1;
+  double value = ((NSNumber *)((NSDictionary*) timer.userInfo)[@"initialValue"]).doubleValue
+  + (NSDate.date.timeIntervalSince1970 - startTime.timeIntervalSince1970)
+  * stepPerSecond.doubleValue;
   
+  
+  if ([((NSDictionary*) timer.userInfo)[@"toValue"] isKindOfClass:NSNumber.class]) {
+    double toValue = ((NSNumber *)((NSDictionary*) timer.userInfo)[@"toValue"]).doubleValue;
+    value = stepPerSecond.doubleValue > 0 ? MIN(value, toValue) : MAX(value, toValue);
+  }
+  
+  config.value = [NSNumber numberWithDouble:value];
+  NSString* deltaString = [config.value stringValue];
+  RCTUITextField* view = _textFields[reactTag];
   NSString* resultText =  [NSString stringWithFormat:@"%@%@%@",
                            config.prefix,
                            [deltaString substringToIndex:
                             MIN(deltaString.length,
                                 MIN(config.maxSignsTotally.longValue,
-                                    positionOfDot + config.maxDigitsAfterDot.longValue)
+                                    [deltaString componentsSeparatedByString:@"."].firstObject.length + 1 + config.maxDigitsAfterDot.longValue)
                                 )
                             ],
                            config.suffix];
@@ -136,34 +150,51 @@ RCT_EXPORT_MODULE()
     [copy replaceCharactersInRange:NSMakeRange(0, copy.mutableString.length) withString:resultText];
     view.attributedText = copy;
   }
+  if ([((NSDictionary*) timer.userInfo)[@"toValue"] isKindOfClass:NSNumber.class] && value == ((NSNumber *)((NSDictionary*) timer.userInfo)[@"toValue"]).doubleValue) {
+    [self invalidateTimer: reactTag];
+  }
 }
 
 
-RCT_EXPORT_METHOD(animate:(nonnull NSNumber*) reactTag config: (NSDictionary*) config)
+RCT_EXPORT_METHOD(animate:(nonnull NSNumber*) reactTag config: (NSDictionary*) animationConfig)
 {
-  
-  RCTExecuteOnUIManagerQueue(^{
-    RCTBaseTextInputShadowView *shadowView = (RCTBaseTextInputShadowView *)[self.bridge.uiManager shadowViewForReactTag:reactTag];
-    [shadowView setText:@"SAMOLA"];
-    [self.bridge.uiManager setNeedsLayout];
-  });
-  _timers[reactTag] = [NSTimer scheduledTimerWithTimeInterval:0.05 target:self selector:@selector(performAnimationFrame:) userInfo:@{ @"reactTag": reactTag, @"startTime": NSDate.date  } repeats:YES];
+  [self invalidateTimer: reactTag];
   RCTExecuteOnUIManagerQueue(^{
     [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *,UIView *> *viewRegistry) {
       RCTBaseTextInputView *view = (RCTBaseTextInputView *) viewRegistry[reactTag];
       AnimatedNumbersConfig* config = (AnimatedNumbersConfig *)view.reactSubviews.firstObject;
       _textFields[reactTag] = [view valueForKey:@"_backedTextInputView"];
       _configs[reactTag] = config;
-      [view setValue:nil forKey:@"_backedTextInputView"];
+      dispatch_async(dispatch_get_main_queue(), ^{
+        _timers[reactTag] =[
+                            NSTimer scheduledTimerWithTimeInterval:0.05
+                            target:self
+                            selector:@selector(performAnimationFrame:)
+                            userInfo:@{
+                              @"reactTag": reactTag,
+                              @"startTime": NSDate.date,
+                              @"stepPerSecond": animationConfig[@"stepPerSecond"],
+                              @"initialValue": config.value.copy,
+                              @"toValue": animationConfig[@"toValue"] == nil ? [NSNull null] : animationConfig[@"toValue"],
+                            } repeats:YES];
+      });
     }];
+    [self.bridge.uiManager setNeedsLayout];
   });
   
 }
 
-RCT_EXPORT_METHOD(stop:(nonnull NSNumber*) reactTag)
+- (void) invalidateTimer:(nonnull NSNumber*) reactTag
 {
   [_timers[reactTag] invalidate];
   _timers[reactTag] = nil;
+  _textFields[reactTag] = nil;
+  _configs[reactTag] = nil;
+}
+
+RCT_EXPORT_METHOD(stop:(nonnull NSNumber*) reactTag)
+{
+  [self invalidateTimer: reactTag];
 }
 
 @end
