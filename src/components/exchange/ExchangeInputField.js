@@ -5,8 +5,6 @@ import ExchangeField from './ExchangeField';
 import ExchangeMaxButton from './ExchangeMaxButton';
 import ExchangeNativeField from './ExchangeNativeField';
 
-const BottomRowHeight = android ? 52 : 32;
-
 const Container = styled(ColumnWithMargins).attrs({ margin: 5 })`
   padding-top: 6;
   width: 100%;
@@ -17,7 +15,7 @@ const NativeFieldRow = styled(Row).attrs({
   align: 'center',
   justify: 'space-between',
 })`
-  height: ${BottomRowHeight};
+  height: ${android ? 16 : 32};
   padding-left: 19;
 `;
 
@@ -56,7 +54,7 @@ export default function ExchangeInputField({
         <ExchangeNativeField
           address={inputCurrencyAddress}
           editable
-          height={BottomRowHeight}
+          height={64}
           nativeAmount={nativeAmount}
           nativeCurrency={nativeCurrency}
           onFocus={onFocus}
