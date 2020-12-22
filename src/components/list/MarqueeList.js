@@ -151,9 +151,9 @@ const SwipeableList = ({ components, speed }) => {
                     flexDirection: 'row',
                   }}
                 >
-                  {components.map(({ view, offset, width }) => (
+                  {components.map(({ view, offset, width }, index) => (
                     <Animated.View
-                      key={offset}
+                      key={`${offset}-${index}`}
                       style={{
                         position: 'absolute',
                         transform: [
@@ -195,7 +195,9 @@ const MarqueeList = ({ items = [], speed }) => {
   }, [updateItemWidths]);
 
   const renderItemCallback = useCallback(
-    ({ item }) => <TopMoverCoinRow {...item} key={item?.address} />,
+    ({ item }) => (
+      <TopMoverCoinRow {...item} key={`topmovercoinrow-${item?.address}`} />
+    ),
     []
   );
 

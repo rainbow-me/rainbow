@@ -1,8 +1,13 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ScrollView } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components/native';
 import { convertAmountToPercentageDisplay } from '../../helpers/utilities';
+import { emitAssetRequest } from '../../redux/explorer';
+import {
+  COINGECKO_TRENDING_ENDPOINT,
+  fetchCoingeckoIds,
+} from '../../redux/fallbackExplorer';
 import { DefaultTokenLists } from '../../references';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation/ButtonPressAnimation.ios';
 import { ListCoinRow } from '../coin-row';
@@ -19,6 +24,23 @@ import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 import { ethereumUtils } from '@rainbow-me/utils';
+
+const fetchTrendingAddresses = async () => {
+  const trendingAddresses = [];
+  try {
+    const coingeckoIds = await fetchCoingeckoIds();
+    const request = await fetch(COINGECKO_TRENDING_ENDPOINT);
+    const trending = await request.json();
+    const idsToLookUp = trending.coins.map(coin => coin.item.id);
+    Object.keys(coingeckoIds).forEach(address => {
+      if (idsToLookUp.indexOf(coingeckoIds[address]) !== -1) {
+        trendingAddresses.push(address);
+      }
+    });
+    // eslint-disable-next-line no-empty
+  } catch (e) {}
+  return trendingAddresses;
+};
 
 const ListButton = styled(ButtonPressAnimation).attrs({
   scaleTo: 0.96,
@@ -60,14 +82,26 @@ const formatGenericAsset = asset => {
 };
 
 export default function ListSection() {
+  const dispatch = useDispatch();
   const { network } = useAccountSettings();
   const { navigate } = useNavigation();
   const [selectedList, setSelectedList] = useState(DEFAULT_LIST);
-  const { favorites, lists } = useUniswapAssets();
+  const { favorites, lists, updateList } = useUniswapAssets();
   const { allAssets } = useAccountAssets();
   const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
     genericAssets,
   }));
+
+  useEffect(() => {
+    const init = async () => {
+      const tokens = await fetchTrendingAddresses();
+      tokens.forEach(address => {
+        dispatch(emitAssetRequest(address));
+        updateList(address, 'trending', true);
+      });
+    };
+    init();
+  }, [dispatch, updateList]);
 
   const listItems = useMemo(() => {
     if (selectedList === 'favorites') {

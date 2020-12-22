@@ -24,7 +24,9 @@ const FALLBACK_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER =
   'explorer/FALLBACK_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER';
 
 const ETH_ADDRESS = '0x0000000000000000000000000000000000000000';
-const COINGECKO_IDS_ENDPOINT =
+export const COINGECKO_TRENDING_ENDPOINT =
+  'https://api.coingecko.com/api/v3/search/trending';
+export const COINGECKO_IDS_ENDPOINT =
   'https://api.coingecko.com/api/v3/coins/list?include_platform=true&asset_platform_id=ethereum';
 const UPDATE_BALANCE_AND_PRICE_FREQUENCY = 10000;
 const DISCOVER_NEW_ASSETS_FREQUENCY = 13000;
@@ -63,7 +65,7 @@ const findNewAssetsToWatch = () => async (dispatch, getState) => {
   }
 };
 
-const fetchCoingeckoIds = async () => {
+export const fetchCoingeckoIds = async () => {
   let ids;
   try {
     const request = await fetch(COINGECKO_IDS_ENDPOINT);
