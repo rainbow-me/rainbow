@@ -58,7 +58,17 @@ const TopMoverCoinRow = ({ address, change, name, onPress, price, symbol }) => {
   }, [address, change, name, onPress, price, symbol]);
 
   return (
-    <ButtonPressAnimation onPress={handlePress} scaleTo={1.02}>
+    <ButtonPressAnimation
+      // we observe that while integrating with
+      // gesture handler event gets always cancelled on iOS
+      // Therefore, in this case under given condition
+      // onPress should be called
+      onCancel={({ nativeEvent: { state, inside } }) =>
+        state === 5 && inside && handlePress()
+      }
+      onPress={handlePress}
+      scaleTo={1.02}
+    >
       <RowWithMargins margin={TopMoverCoinRowMargin}>
         <Centered>
           <CoinIcon
