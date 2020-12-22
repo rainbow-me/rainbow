@@ -1,5 +1,6 @@
 import { find, includes, toLower } from 'lodash';
 import React, { Fragment, useMemo, useRef } from 'react';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components/primitives';
 import { Column } from '../layout';
 import {
@@ -39,7 +40,26 @@ const ToastWrapper = styled(Column)`
   z-index: 9;
 `;
 
+const formatGenericAsset = asset => {
+  if (asset?.price?.value) {
+    return {
+      ...asset,
+      native: { price: { amount: asset?.price?.value } },
+    };
+  }
+  return asset;
+};
+
 export default function ChartExpandedState({ asset }) {
+  const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
+    genericAssets,
+  }));
+  // If we don't have a balance for this asset
+  // It's a generic asset
+  const assetWithPrice = asset.balance
+    ? asset
+    : formatGenericAsset(genericAssets[asset.address]);
+
   const {
     chart,
     chartData,
@@ -50,7 +70,7 @@ export default function ChartExpandedState({ asset }) {
     showChart,
     throttledData,
   } = useChartThrottledPoints({
-    asset,
+    asset: assetWithPrice,
     heightWithChart,
     heightWithoutChart,
   });
@@ -71,20 +91,19 @@ export default function ChartExpandedState({ asset }) {
   }
   const ChartExpandedStateSheetHeight =
     (ios || showChart ? heightWithChart : heightWithoutChart) + (android && 40);
-
   const assetWithWatchlistInfo = useMemo(() => {
     const watchlist = lists.find(list => list.id === 'watchlist');
     if (includes(watchlist.tokens, toLower(asset.address))) {
       return {
-        ...asset,
+        ...assetWithPrice,
         isInWatchlist: true,
       };
     }
     return {
-      ...asset,
+      ...assetWithPrice,
       isInWatchlist: false,
     };
-  }, [asset, lists]);
+  }, [lists, asset.address, assetWithPrice]);
 
   return (
     <Fragment>
@@ -108,18 +127,20 @@ export default function ChartExpandedState({ asset }) {
           />
         </ChartPathProvider>
         <SheetDivider />
-        <TokenInfoSection>
-          <TokenInfoRow>
-            <TokenInfoItem asset={asset} title="Balance">
-              <TokenInfoBalanceValue />
-            </TokenInfoItem>
-            {asset?.native?.price.display && (
-              <TokenInfoItem title="Value" weight="bold">
-                {asset?.native?.balance.display}
+        {asset.balance && (
+          <TokenInfoSection>
+            <TokenInfoRow>
+              <TokenInfoItem asset={asset} title="Balance">
+                <TokenInfoBalanceValue />
               </TokenInfoItem>
-            )}
-          </TokenInfoRow>
-        </TokenInfoSection>
+              {asset?.native?.price.display && (
+                <TokenInfoItem title="Value" weight="bold">
+                  {asset?.native?.balance.display}
+                </TokenInfoItem>
+              )}
+            </TokenInfoRow>
+          </TokenInfoSection>
+        )}
         {needsEth ? (
           <SheetActionButtonRow>
             <BuyActionButton color={color} fullWidth />
@@ -129,7 +150,17 @@ export default function ChartExpandedState({ asset }) {
             {showSwapButton && (
               <SwapActionButton color={color} inputType={AssetInputTypes.in} />
             )}
-            <SendActionButton color={color} fullWidth={!showSwapButton} />
+            {asset.balance ? (
+              <SendActionButton color={color} fullWidth={!showSwapButton} />
+            ) : (
+              <Column marginTop={70}>
+                <SwapActionButton
+                  color={color}
+                  inputType={AssetInputTypes.out}
+                  label={`􀖅 Get ${asset.symbol}`}
+                />
+              </Column>
+            )}
           </SheetActionButtonRow>
         )}
       </SlackSheet>

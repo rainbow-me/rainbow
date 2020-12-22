@@ -7,6 +7,7 @@ import { colors } from '@rainbow-me/styles';
 export default function SwapActionButton({
   color = colors.swapPurple,
   inputType,
+  label,
   ...props
 }) {
   const navigate = useExpandedStateNavigation(inputType);
@@ -26,7 +27,7 @@ export default function SwapActionButton({
     <SheetActionButton
       {...props}
       color={color}
-      label="􀖅 Swap"
+      label={label || '􀖅 Swap'}
       onPress={handlePress}
       testID="swap"
       weight="bold"

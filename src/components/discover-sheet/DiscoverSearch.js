@@ -13,15 +13,18 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components/primitives';
 import { addHexPrefix } from '../../handlers/web3';
 import CurrencySelectionTypes from '../../helpers/currencySelectionTypes';
+import { emitAssetRequest } from '../../redux/explorer';
 import { ButtonPressAnimation } from '../animations';
 import { CurrencySelectionList, ExchangeSearch } from '../exchange';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
 import {
+  useAccountAssets,
   useMagicAutofocus,
   useTimeout,
   useUniswapAssets,
@@ -60,6 +63,7 @@ const timingConfig = { duration: 700 };
 export default function DiscoverSearch({ onCancel }) {
   const { navigate } = useNavigation();
   const listOpacity = useSharedValue(0);
+  const { allAssets } = useAccountAssets();
 
   const listAnimatedStyles = useAnimatedStyle(() => {
     return {
@@ -89,7 +93,7 @@ export default function DiscoverSearch({ onCancel }) {
   const [isSearching, setIsSearching] = useState(false);
   const [searchQueryForSearch, setSearchQueryForSearch] = useState('');
   const type = CurrencySelectionTypes.output;
-
+  const dispatch = useDispatch();
   const {
     curatedAssets,
     favorites,
@@ -186,16 +190,20 @@ export default function DiscoverSearch({ onCancel }) {
 
   const handlePress = useCallback(
     item => {
+      const asset = allAssets.find(asset => item.address === asset.address);
+
+      dispatch(emitAssetRequest(item.address));
+
       navigate(
         ios ? Routes.EXPANDED_ASSET_SHEET : Routes.EXPANDED_ASSET_SCREEN,
         {
-          asset: item,
+          asset: asset || item,
           longFormHeight: initialChartExpandedStateSheetHeight,
           type: 'token',
         }
       );
     },
-    [navigate]
+    [allAssets, dispatch, navigate]
   );
 
   const itemProps = useMemo(

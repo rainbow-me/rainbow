@@ -1,6 +1,8 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { ScrollView } from 'react-native';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components/native';
+import { convertAmountToPercentageDisplay } from '../../helpers/utilities';
 import { DefaultTokenLists } from '../../references';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation/ButtonPressAnimation.ios';
 import { ListCoinRow } from '../coin-row';
@@ -44,12 +46,28 @@ const ListName = styled(Text)`
 
 const DEFAULT_LIST = 'favorites';
 
+const formatGenericAsset = asset => {
+  return {
+    ...asset,
+    native: {
+      change: asset?.price?.relative_change_24h
+        ? convertAmountToPercentageDisplay(
+            `${asset?.price?.relative_change_24h}`
+          )
+        : '',
+    },
+  };
+};
+
 export default function ListSection() {
   const { network } = useAccountSettings();
   const { navigate } = useNavigation();
   const [selectedList, setSelectedList] = useState(DEFAULT_LIST);
   const { favorites, lists } = useUniswapAssets();
   const { allAssets } = useAccountAssets();
+  const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
+    genericAssets,
+  }));
 
   const listItems = useMemo(() => {
     if (selectedList === 'favorites') {
@@ -58,12 +76,15 @@ export default function ListSection() {
       );
     } else if (selectedList === 'watchlist') {
       const watchlist = lists.find(list => list.id === 'watchlist');
-      return watchlist.tokens.map(address =>
-        ethereumUtils.getAsset(allAssets, address)
-      );
+      return watchlist.tokens.map(address => {
+        const asset =
+          ethereumUtils.getAsset(allAssets, address) ||
+          formatGenericAsset(genericAssets[address]);
+        return asset;
+      });
     }
     return [];
-  }, [allAssets, favorites, lists, selectedList]);
+  }, [allAssets, favorites, genericAssets, lists, selectedList]);
 
   const handleSwitchList = useCallback(id => {
     setSelectedList(id);
@@ -133,7 +154,7 @@ export default function ListSection() {
             <ListCoinRow
               {...itemProps}
               item={item}
-              key={`discover-list-item-${i}`}
+              key={`${selectedList}-list-item-${i}`}
               onPress={() => handlePress(item)}
             />
           ))

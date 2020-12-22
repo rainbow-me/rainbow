@@ -159,7 +159,7 @@ export const explorerClearState = () => dispatch => {
 
 export const explorerInit = () => async (dispatch, getState) => {
   const { network, accountAddress, nativeCurrency } = getState().settings;
-  const { pairs } = getState().uniswap;
+  const { pairs, lists } = getState().uniswap;
   const { addressSocket, assetsSocket } = getState().explorer;
 
   // if there is another socket unsubscribe first
@@ -196,7 +196,17 @@ export const explorerInit = () => async (dispatch, getState) => {
   dispatch(listenOnAssetMessages(newAssetsSocket));
 
   newAssetsSocket.on(messages.CONNECT, () => {
-    newAssetsSocket.emit(...assetsSubscription(keys(pairs), nativeCurrency));
+    const uniswapAssets = keys(pairs);
+    let assetsToSubscribe = [...uniswapAssets];
+    // Add all the other list assets here
+    lists.forEach(list => {
+      if (list.tokens.length) {
+        assetsToSubscribe = [...assetsToSubscribe, ...list.tokens];
+      }
+    });
+    newAssetsSocket.emit(
+      ...assetsSubscription(assetsToSubscribe, nativeCurrency)
+    );
   });
 
   if (network === NetworkTypes.mainnet) {
@@ -215,6 +225,25 @@ export const explorerInit = () => async (dispatch, getState) => {
       type: EXPLORER_SET_FALLBACK_HANDLER,
     });
   }
+};
+
+export const emitAssetRequest = assetAddress => (dispatch, getState) => {
+  const { nativeCurrency } = getState().settings;
+  const { assetsSocket } = getState().explorer;
+
+  let assetCodes;
+  if (assetAddress) {
+    assetCodes = [assetAddress];
+  } else {
+    const { assets } = getState().data;
+    const assetAddresses = map(assets, 'address');
+
+    const { liquidityTokens } = getState().uniswapLiquidity;
+    const lpTokenAddresses = map(liquidityTokens, token => token.address);
+
+    assetCodes = concat(assetAddresses, lpTokenAddresses);
+  }
+  assetsSocket.emit(...assetsSubscription(assetCodes, nativeCurrency));
 };
 
 export const emitChartsRequest = (
