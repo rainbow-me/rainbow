@@ -3,8 +3,11 @@ import '@ethersproject/shims';
 import AsyncStorage from '@react-native-community/async-storage';
 // eslint-disable-next-line import/default
 import ReactNative from 'react-native';
+import Animated from 'react-native-reanimated';
 import Storage from 'react-native-storage';
 import logger from 'logger';
+
+Animated.addWhitelistedNativeProps({ d: true });
 
 const storage = new Storage({
   defaultExpires: null,
