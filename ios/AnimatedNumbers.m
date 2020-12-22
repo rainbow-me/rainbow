@@ -47,13 +47,34 @@
   if (self = [super init]) {
     _prefix = @"";
     _suffix = @"";
-    _pad = @"right";
-    _maxDigitsAfterDot = @3;
-    _maxSignsTotally = @6;
+    _pad = @"none";
+    _maxDigitsAfterDot = @10;
+    _maxSignsTotally = @10;
     _value = @0;
     _framesPerSecond = @20;
   }
   return self;
+}
+
+- (void)didMoveToSuperview {
+  
+  [super didMoveToSuperview];
+}
+
+- (void)willMoveToSuperview:(UIView *)newSuperview {
+  [super willMoveToSuperview:newSuperview];
+}
+
+- (void) willMoveToWindow:(UIWindow *)newWindow {
+  [super willMoveToWindow:newWindow];
+}
+
+- (void) layoutSubviews {
+  [super layoutSubviews];
+}
+
+- (void) setValue:(NSNumber *)value {
+  _value = value;
 }
 
 @end
@@ -75,7 +96,7 @@ RCT_EXPORT_VIEW_PROPERTY(prefix, NSString)
 RCT_EXPORT_VIEW_PROPERTY(suffix, NSString)
 RCT_EXPORT_VIEW_PROPERTY(maxDigitsAfterDot, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(maxSignsTotally, NSNumber)
-RCT_EXPORT_VIEW_PROPERTY(initialValue, NSNumber)
+RCT_EXPORT_VIEW_PROPERTY(value, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(framesPerSecond, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(pad, NSString)
 RCT_EXPORT_MODULE()
@@ -120,6 +141,12 @@ RCT_EXPORT_MODULE()
 {
   NSNumber* reactTag = ((NSDictionary*) timer.userInfo)[@"reactTag"];
   NSNumber* stepPerSecond = ((NSDictionary*) timer.userInfo)[@"stepPerSecond"];
+  BOOL isToValueANumber = [((NSDictionary*) timer.userInfo)[@"toValue"] isKindOfClass:NSNumber.class];
+  if (isToValueANumber) {
+    if (((NSNumber *)((NSDictionary*) timer.userInfo)[@"toValue"]).doubleValue < ((NSNumber *)((NSDictionary*) timer.userInfo)[@"initialValue"]).doubleValue) {
+      stepPerSecond = [NSNumber numberWithDouble:-stepPerSecond.doubleValue];
+    }
+  }
   NSDate* startTime = ((NSDictionary*) timer.userInfo)[@"startTime"];
   AnimatedNumbersConfig* config = _configs[reactTag];
   double value = ((NSNumber *)((NSDictionary*) timer.userInfo)[@"initialValue"]).doubleValue
@@ -127,13 +154,30 @@ RCT_EXPORT_MODULE()
   * stepPerSecond.doubleValue;
   
   
-  if ([((NSDictionary*) timer.userInfo)[@"toValue"] isKindOfClass:NSNumber.class]) {
+  if (isToValueANumber) {
     double toValue = ((NSNumber *)((NSDictionary*) timer.userInfo)[@"toValue"]).doubleValue;
     value = stepPerSecond.doubleValue > 0 ? MIN(value, toValue) : MAX(value, toValue);
   }
   
   config.value = [NSNumber numberWithDouble:value];
-  NSString* deltaString = [config.value stringValue];
+  NSMutableString* deltaString = [config.value stringValue].mutableCopy;
+  
+  if ([config.pad isEqualToString:@"right"]) {
+    BOOL isDot = [deltaString componentsSeparatedByString:@"."].firstObject.length != deltaString.length;
+    if (!isDot) {
+      [deltaString appendString:@"."];
+    }
+    deltaString = [
+                   deltaString
+                   stringByPaddingToLength:MIN(
+                                               config.maxSignsTotally.longValue,
+                                               config.maxDigitsAfterDot.longValue + [deltaString componentsSeparatedByString:@"."].firstObject.length)
+                   withString:@"0"
+                   startingAtIndex:0
+                   ]
+    .mutableCopy;
+  }
+  
   RCTUITextField* view = _textFields[reactTag];
   NSString* resultText =  [NSString stringWithFormat:@"%@%@%@",
                            config.prefix,
@@ -165,9 +209,10 @@ RCT_EXPORT_METHOD(animate:(nonnull NSNumber*) reactTag config: (NSDictionary*) a
       AnimatedNumbersConfig* config = (AnimatedNumbersConfig *)view.reactSubviews.firstObject;
       _textFields[reactTag] = [view valueForKey:@"_backedTextInputView"];
       _configs[reactTag] = config;
+      double framesPerSecond = animationConfig[@"framesPerSecond"] == nil ? 20 : ((NSNumber *)animationConfig[@"framesPerSecond"]).doubleValue;
       dispatch_async(dispatch_get_main_queue(), ^{
         _timers[reactTag] =[
-                            NSTimer scheduledTimerWithTimeInterval:0.05
+                            NSTimer scheduledTimerWithTimeInterval:(1 / framesPerSecond)
                             target:self
                             selector:@selector(performAnimationFrame:)
                             userInfo:@{

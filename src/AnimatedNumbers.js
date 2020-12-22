@@ -1,6 +1,10 @@
-import React, { useEffect, useRef } from 'react';
+import React, {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+} from 'react';
 import {
-  Button,
   findNodeHandle,
   NativeModules,
   requireNativeComponent,
@@ -10,24 +14,14 @@ import {
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import SplashScreen from 'react-native-splash-screen';
-import { fonts } from '@rainbow-me/styles';
 const { RainbowSplashScreen, AnimatedNumbersManager } = NativeModules;
 
-const Component = requireNativeComponent('AnimatedNumbers');
 const Config = requireNativeComponent('AnimatedNumbersConfig');
 
 RainbowSplashScreen ? RainbowSplashScreen.hideAnimated() : SplashScreen.hide();
 
-function animate(ref, config) {
-  const nodeHandle = findNodeHandle(ref.getNativeRef());
-  AnimatedNumbersManager.animate(nodeHandle, config);
-  return () => AnimatedNumbersManager.stop(nodeHandle);
-}
-
 export default function Animatable() {
   const ref = useRef();
-  const configRef = useRef();
-  const currentAnimation = useRef();
 
   return (
     <View
@@ -40,8 +34,7 @@ export default function Animatable() {
     >
       <TouchableOpacity
         onPress={() => {
-          currentAnimation.current?.();
-          currentAnimation.current = animate(ref.current, {
+          ref.current.animate({
             stepPerSecond: 2,
             toValue: 10,
           });
@@ -53,21 +46,19 @@ export default function Animatable() {
 
       <TouchableOpacity
         onPress={() => {
-          currentAnimation.current?.();
-          currentAnimation.current = animate(ref.current, {
-            stepPerSecond: -2,
+          ref.current.animate({
+            stepPerSecond: 2,
             toValue: 5,
           });
         }}
-        title="Animate down to 5"
+        title="Animate to 5"
       >
         <Text>Animate down to 5</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         onPress={() => {
-          currentAnimation.current?.();
-          currentAnimation.current = animate(ref.current, {
+          ref.current.animate({
             stepPerSecond: 3,
           });
         }}
@@ -76,17 +67,56 @@ export default function Animatable() {
         <Text>Animate to inf</Text>
       </TouchableOpacity>
 
-      <TextInput
-        editable={false}
+      <AnimatedNumberWrapped
+        initialValue={0.5}
+        pad="right"
+        prefix="X"
         ref={ref}
-        style={{
-          backgroundColor: 'green',
-          borderWidth: 2,
-          fontVariant: ['tabular-nums'],
-        }}
-      >
-        <Config prefix="DOLAR" ref={configRef} suffix="EURO" />
-      </TextInput>
+      />
     </View>
   );
 }
+
+function AnimatedNumbers(
+  { initialValue = 0.0, prefix, suffix, style, pad, ...props },
+  ref
+) {
+  const inputRef = useRef();
+  useEffect(() => {
+    currentAnimation.current?.();
+    const nodeHandle = findNodeHandle(inputRef.current.getNativeRef());
+    AnimatedNumbersManager.animate(nodeHandle, {
+      framesPerSecond: 100,
+      stepPerSecond: initialValue * 1000,
+      toValue: initialValue,
+    });
+  }, [initialValue, ref]);
+
+  const currentAnimation = useRef();
+
+  useImperativeHandle(ref, () => ({
+    animate: (config = {}) => {
+      currentAnimation.current?.();
+      const nodeHandle = findNodeHandle(inputRef.current.getNativeRef());
+      AnimatedNumbersManager.animate(nodeHandle, config);
+      currentAnimation.current = () => AnimatedNumbersManager.stop(nodeHandle);
+      return () => currentAnimation.current?.();
+    },
+    stop: () => {
+      currentAnimation.current?.();
+    },
+  }));
+
+  return (
+    <TextInput
+      editable={false}
+      ref={inputRef}
+      style={[{ fontVariant: ['tabular-nums'] }, style]}
+      {...props}
+    >
+      <Config pad={pad} prefix={prefix} suffix={suffix} />
+    </TextInput>
+  );
+}
+
+const AnimatedNumberWrapped = forwardRef(AnimatedNumbers);
