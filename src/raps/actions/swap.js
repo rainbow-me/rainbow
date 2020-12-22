@@ -75,7 +75,8 @@ const swap = async (wallet, currentRap, index, parameters) => {
   }
   let gasLimit, methodName;
   try {
-    logger.sentry('estimateSwapGasLimit', { accountAddress, tradeDetails });
+    const routeDetails = tradeDetails?.route?.path;
+    logger.sentry('estimateSwapGasLimit', { accountAddress, routeDetails });
     const {
       gasLimit: newGasLimit,
       methodName: newMethodName,
@@ -94,7 +95,11 @@ const swap = async (wallet, currentRap, index, parameters) => {
 
   let swap;
   try {
-    logger.sentry('executing swap', { gasLimit, gasPrice, tradeDetails });
+    logger.sentry('executing swap', {
+      gasLimit,
+      gasPrice,
+      methodName,
+    });
     swap = await executeSwap({
       accountAddress,
       chainId,
