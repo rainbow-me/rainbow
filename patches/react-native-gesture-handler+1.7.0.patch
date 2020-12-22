@@ -20,6 +20,19 @@ index b7f2207..26c9fda 100644
 +    return MEMOIZED.SectionList;
 +  },
  };
+diff --git a/node_modules/react-native-gesture-handler/android/lib/src/main/java/com/swmansion/gesturehandler/GestureHandler.java b/node_modules/react-native-gesture-handler/android/lib/src/main/java/com/swmansion/gesturehandler/GestureHandler.java
+index e3cc6b7..c742e66 100644
+--- a/node_modules/react-native-gesture-handler/android/lib/src/main/java/com/swmansion/gesturehandler/GestureHandler.java
++++ b/node_modules/react-native-gesture-handler/android/lib/src/main/java/com/swmansion/gesturehandler/GestureHandler.java
+@@ -3,6 +3,8 @@ package com.swmansion.gesturehandler;
+ import android.view.MotionEvent;
+ import android.view.View;
+ 
++import com.swmansion.gesturehandler.react.RNGestureHandlerRootHelper;
++
+ import java.util.Arrays;
+ 
+ public class GestureHandler<T extends GestureHandler> {
 diff --git a/node_modules/react-native-gesture-handler/android/lib/src/main/java/com/swmansion/gesturehandler/GestureHandlerOrchestrator.java b/node_modules/react-native-gesture-handler/android/lib/src/main/java/com/swmansion/gesturehandler/GestureHandlerOrchestrator.java
 index f08713b..a97b902 100644
 --- a/node_modules/react-native-gesture-handler/android/lib/src/main/java/com/swmansion/gesturehandler/GestureHandlerOrchestrator.java
@@ -60,6 +73,43 @@ index f08713b..a97b902 100644
      return true;
    }
  
+diff --git a/node_modules/react-native-gesture-handler/android/lib/src/main/java/com/swmansion/gesturehandler/PanGestureHandler.java b/node_modules/react-native-gesture-handler/android/lib/src/main/java/com/swmansion/gesturehandler/PanGestureHandler.java
+index 4f41a14..6224daa 100644
+--- a/node_modules/react-native-gesture-handler/android/lib/src/main/java/com/swmansion/gesturehandler/PanGestureHandler.java
++++ b/node_modules/react-native-gesture-handler/android/lib/src/main/java/com/swmansion/gesturehandler/PanGestureHandler.java
+@@ -31,7 +31,7 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
+   private float mMinVelocityY = MIN_VALUE_IGNORE;
+   private float mMinVelocitySq = MIN_VALUE_IGNORE;
+   private int mMinPointers = DEFAULT_MIN_POINTERS;
+-  private int mMaxPointers = DEFAULT_MAX_POINTERS;
++  public int mMaxPointers = DEFAULT_MAX_POINTERS;
+ 
+   private float mStartX, mStartY;
+   private float mOffsetX, mOffsetY;
+diff --git a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerInteractionManager.java b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerInteractionManager.java
+index 84e3e9b..307c27d 100644
+--- a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerInteractionManager.java
++++ b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerInteractionManager.java
+@@ -6,6 +6,7 @@ import com.facebook.react.bridge.ReadableArray;
+ import com.facebook.react.bridge.ReadableMap;
+ import com.swmansion.gesturehandler.GestureHandler;
+ import com.swmansion.gesturehandler.GestureHandlerInteractionController;
++import com.swmansion.gesturehandler.PanGestureHandler;
+ 
+ public class RNGestureHandlerInteractionManager implements GestureHandlerInteractionController {
+ 
+@@ -43,6 +44,11 @@ public class RNGestureHandlerInteractionManager implements GestureHandlerInterac
+ 
+   @Override
+   public boolean shouldWaitForHandlerFailure(GestureHandler handler, GestureHandler otherHandler) {
++    if (otherHandler instanceof RNGestureHandlerRootHelper.RootViewGestureHandler
++            && handler instanceof PanGestureHandler
++            && ((PanGestureHandler) handler).mMaxPointers == 17) { // magic number for recognizing bottom sheet
++      return true;
++    }
+     int[] waitForTags = mWaitForRelations.get(handler.getTag());
+     if (waitForTags != null) {
+       for (int i = 0; i < waitForTags.length; i++) {
 diff --git a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerRootHelper.java b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerRootHelper.java
 index 9bf0c8f..8d4e58c 100644
 --- a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerRootHelper.java
