@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo, useRef } from 'react';
+import React, { createContext, useContext, useMemo } from 'react';
 import { processColor, requireNativeComponent, View } from 'react-native';
 import {
   createNativeWrapper,
@@ -14,6 +14,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { normalizeTransformOrigin } from './NativeButton';
+import { useLongPressEvents } from '@rainbow-me/hooks';
 
 const ZoomableRawButton = requireNativeComponent('RNZoomableButton');
 
@@ -55,40 +56,6 @@ export const ScaleButtonZoomable = ({ children, style }) => {
   );
 };
 
-const useLongPress = ({ onPress, onLongPress, minLongPressDuration }) => {
-  const longPressTimer = useRef(null);
-  const isPressEventLegal = useRef(false);
-
-  const handleStartPress = () => {
-    if (longPressTimer.current == null) {
-      longPressTimer.current = setTimeout(() => {
-        longPressTimer.current = null;
-        onLongPress?.();
-      }, minLongPressDuration);
-    }
-
-    isPressEventLegal.current = true;
-  };
-  const handlePress = () => {
-    clearTimeout(longPressTimer.current);
-    if (longPressTimer.current) {
-      onPress();
-      longPressTimer.current = null;
-    }
-  };
-
-  const handleCancel = () => {
-    clearTimeout(longPressTimer.current);
-    isPressEventLegal.current = false;
-  };
-
-  return {
-    handleCancel,
-    handlePress,
-    handleStartPress,
-  };
-};
-
 const ScaleButton = ({
   duration,
   scaleTo,
@@ -125,7 +92,7 @@ const ScaleButton = ({
     };
   });
 
-  const { handleCancel, handlePress, handleStartPress } = useLongPress({
+  const { handleCancel, handlePress, handleStartPress } = useLongPressEvents({
     minLongPressDuration,
     onLongPress,
     onPress,
