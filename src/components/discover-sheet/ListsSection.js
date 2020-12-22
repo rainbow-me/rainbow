@@ -1,4 +1,11 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { keys } from 'lodash';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { ScrollView } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components/native';
@@ -32,7 +39,7 @@ const fetchTrendingAddresses = async () => {
     const request = await fetch(COINGECKO_TRENDING_ENDPOINT);
     const trending = await request.json();
     const idsToLookUp = trending.coins.map(coin => coin.item.id);
-    Object.keys(coingeckoIds).forEach(address => {
+    keys(coingeckoIds).forEach(address => {
       if (idsToLookUp.indexOf(coingeckoIds[address]) !== -1) {
         trendingAddresses.push(address);
       }
@@ -81,27 +88,41 @@ const formatGenericAsset = asset => {
   };
 };
 
+// Update trending lists every 5 minutes
+const TRENDING_LIST_UPDATE_INTERVAL = 5 * 60 * 1000;
+
 export default function ListSection() {
   const dispatch = useDispatch();
   const { network } = useAccountSettings();
   const { navigate } = useNavigation();
   const [selectedList, setSelectedList] = useState(DEFAULT_LIST);
-  const { favorites, lists, updateList } = useUniswapAssets();
+  const { favorites, lists, updateList, clearList } = useUniswapAssets();
   const { allAssets } = useAccountAssets();
   const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
     genericAssets,
   }));
+  const trendingListHandler = useRef(null);
+
+  const updateTrendingList = useCallback(async () => {
+    const tokens = await fetchTrendingAddresses();
+    clearList('trending');
+    tokens.forEach(address => {
+      dispatch(emitAssetRequest(address));
+      updateList(address, 'trending', true);
+    });
+
+    trendingListHandler.current = setTimeout(
+      () => updateTrendingList(),
+      TRENDING_LIST_UPDATE_INTERVAL
+    );
+  }, [clearList, dispatch, updateList]);
 
   useEffect(() => {
-    const init = async () => {
-      const tokens = await fetchTrendingAddresses();
-      tokens.forEach(address => {
-        dispatch(emitAssetRequest(address));
-        updateList(address, 'trending', true);
-      });
+    updateTrendingList();
+    return () => {
+      clearTimeout(trendingListHandler.current);
     };
-    init();
-  }, [dispatch, updateList]);
+  }, [clearList, dispatch, updateList, updateTrendingList]);
 
   const listItems = useMemo(() => {
     if (selectedList === 'favorites') {

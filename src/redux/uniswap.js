@@ -105,6 +105,32 @@ export const uniswapUpdateFavorites = (assetAddress, add = true) => (
   saveUniswapFavorites(updatedFavorites);
 };
 
+export const uniswapClearList = listId => (dispatch, getState) => {
+  const { lists } = getState().uniswap;
+  const allNewLists = [...lists];
+
+  // Find the list index
+  let listIndex = null;
+  allNewLists.find((list, index) => {
+    if (list.id === listId) {
+      listIndex = index;
+      return true;
+    }
+    return false;
+  });
+
+  // update the list
+  const newList = { ...allNewLists[listIndex] };
+  newList.tokens = [];
+  allNewLists[listIndex] = newList;
+
+  dispatch({
+    payload: allNewLists,
+    type: UNISWAP_UPDATE_LISTS,
+  });
+  saveUniswapLists(allNewLists);
+};
+
 export const uniswapUpdateList = (assetAddress, listId, add = true) => (
   dispatch,
   getState
