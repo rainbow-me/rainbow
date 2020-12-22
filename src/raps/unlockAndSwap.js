@@ -38,18 +38,19 @@ export const estimateUnlockAndSwap = async ({
   );
   if (swapAssetNeedsUnlocking) {
     const unlockGasLimit = await contractUtils.estimateApprove(
+      accountAddress,
       inputCurrency.address,
       UNISWAP_V2_ROUTER_ADDRESS
     );
-    gasLimits = concat(gasLimits, unlockGasLimit);
+    gasLimits = concat(gasLimits, unlockGasLimit, ethUnits.basic_swap);
+  } else {
+    const { gasLimit: swapGasLimit } = await estimateSwapGasLimit({
+      accountAddress,
+      chainId,
+      tradeDetails,
+    });
+    gasLimits = concat(gasLimits, swapGasLimit);
   }
-
-  const { gasLimit: swapGasLimit } = await estimateSwapGasLimit({
-    accountAddress,
-    chainId,
-    tradeDetails,
-  });
-  gasLimits = concat(gasLimits, swapGasLimit);
 
   return reduce(gasLimits, (acc, limit) => add(acc, limit), '0');
 };

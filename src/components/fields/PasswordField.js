@@ -44,6 +44,7 @@ const PasswordInput = styled(Input).attrs({
 `;
 
 const ShadowContainer = styled(ShadowStack).attrs(({ deviceWidth }) => ({
+  backgroundColor: colors.white,
   borderRadius: 23,
   height: 46,
   shadows: [
