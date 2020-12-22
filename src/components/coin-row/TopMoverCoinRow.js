@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import styled from 'styled-components/primitives';
 import { colors, fonts } from '../../styles';
 import { magicMemo, measureText } from '../../utils';
@@ -52,33 +52,39 @@ export const measureTopMoverCoinRow = async ({
   );
 };
 
-const TopMoverCoinRow = ({ address, change, name, onPress, price, symbol }) => (
-  <ButtonPressAnimation onPress={onPress} scaleTo={1.02}>
-    <RowWithMargins margin={TopMoverCoinRowMargin}>
-      <Centered>
-        <CoinIcon
-          address={address}
-          size={TopMoverCoinIconSize}
-          symbol={symbol}
-        />
-      </Centered>
-      <ColumnWithMargins margin={2}>
-        <TopMoverTitle color={colors.alpha(colors.blueGreyDark, 0.8)}>
-          {name}
-        </TopMoverTitle>
-        <BottomRowText>{price}</BottomRowText>
-      </ColumnWithMargins>
-      <ColumnWithMargins align="end" justify="end" margin={2}>
-        <TopMoverTitle
-          align="right"
-          color={parseFloat(change) > 0 ? colors.green : colors.red}
-        >
-          {change}
-        </TopMoverTitle>
-        <BottomRowText align="right">{symbol}</BottomRowText>
-      </ColumnWithMargins>
-    </RowWithMargins>
-  </ButtonPressAnimation>
-);
+const TopMoverCoinRow = ({ address, change, name, onPress, price, symbol }) => {
+  const handlePress = useCallback(() => {
+    onPress?.({ address, change, name, price, symbol });
+  }, [address, change, name, onPress, price, symbol]);
+
+  return (
+    <ButtonPressAnimation onPress={handlePress} scaleTo={1.02}>
+      <RowWithMargins margin={TopMoverCoinRowMargin}>
+        <Centered>
+          <CoinIcon
+            address={address}
+            size={TopMoverCoinIconSize}
+            symbol={symbol}
+          />
+        </Centered>
+        <ColumnWithMargins margin={2}>
+          <TopMoverTitle color={colors.alpha(colors.blueGreyDark, 0.8)}>
+            {name}
+          </TopMoverTitle>
+          <BottomRowText>{price}</BottomRowText>
+        </ColumnWithMargins>
+        <ColumnWithMargins align="end" justify="end" margin={2}>
+          <TopMoverTitle
+            align="right"
+            color={parseFloat(change) > 0 ? colors.green : colors.red}
+          >
+            {change}
+          </TopMoverTitle>
+          <BottomRowText align="right">{symbol}</BottomRowText>
+        </ColumnWithMargins>
+      </RowWithMargins>
+    </ButtonPressAnimation>
+  );
+};
 
 export default magicMemo(TopMoverCoinRow, ['change', 'name', 'price']);

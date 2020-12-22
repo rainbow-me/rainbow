@@ -58,6 +58,7 @@ export default function ExchangeModal({
   createRap,
   cTokenBalance,
   defaultInputAsset,
+  defaultOutputAsset,
   estimateRap,
   inputHeaderTitle,
   showOutputField,
@@ -124,6 +125,7 @@ export default function ExchangeModal({
   } = useUniswapCurrencies({
     category,
     defaultInputAsset,
+    defaultOutputAsset,
     inputHeaderTitle,
     isDeposit,
     isWithdrawal,

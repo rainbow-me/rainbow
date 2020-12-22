@@ -74,16 +74,19 @@ export default function ListSection() {
       return favorites.map(item =>
         ethereumUtils.getAsset(allAssets, item.address)
       );
-    } else if (selectedList === 'watchlist') {
-      const watchlist = lists.find(list => list.id === 'watchlist');
-      return watchlist.tokens.map(address => {
+    } else {
+      if (!lists?.length) return [];
+      const currentList = lists.find(list => list.id === selectedList);
+      if (!currentList) {
+        return [];
+      }
+      return currentList.tokens.map(address => {
         const asset =
           ethereumUtils.getAsset(allAssets, address) ||
           formatGenericAsset(genericAssets[address]);
         return asset;
       });
     }
-    return [];
   }, [allAssets, favorites, genericAssets, lists, selectedList]);
 
   const handleSwitchList = useCallback(id => {

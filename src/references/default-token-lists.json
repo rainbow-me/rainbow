@@ -21,6 +21,17 @@
     "emoji": "roller_coaster",
     "id": "defi",
     "name": "DeFi",
-    "tokens": []
+    "tokens": [
+      "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9", // AAVE
+      "0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f", // SNX
+      "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984", // UNI
+      "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e", // YFI
+      "0xc00e94cb662c3520282e6f5717214004a7f26888", // COMP
+      "0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2", // MKR
+      "0x408e41876cccdc0f92210600ef50372656052a38", // REN
+      "0xbbbbca6a901c926f240b89eacb641d8aec7aeafd", // LRCv2
+      "0xdd974d5c2e2928dea5f71b9825b8b646686bd200", // KNC
+      "0xba100000625a3754423978a60c9317c58a424e3d", // BAL
+    ]
   }
 ]}

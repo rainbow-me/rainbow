@@ -182,7 +182,6 @@ export default function DiscoverSearch({ onCancel }) {
     // need to figure out wtf is going on
     setIsSearching(true);
     setSearchQueryForSearch(searchQuery);
-    logger.log('searching for ', searchQuery);
     //},
     //  searchQuery === '' ? 1 : 250
     // );
@@ -214,8 +213,6 @@ export default function DiscoverSearch({ onCancel }) {
     }),
     [handlePress]
   );
-
-  logger.log('rendering!');
 
   return (
     <Animated.View style={listAnimatedStyles}>

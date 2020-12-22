@@ -1,23 +1,42 @@
 import React, { useCallback, useMemo } from 'react';
 import { handleSignificantDecimals } from '../../helpers/utilities';
 import { useAccountSettings, useTopMovers } from '../../hooks';
+import { initialChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
 import { Column, ColumnWithMargins, Flex } from '../layout';
 import { MarqueeList } from '../list';
 import { Text } from '../text';
+import { useNavigation } from '@rainbow-me/navigation';
+import Routes from '@rainbow-me/routes';
 
 export default function TopMoversSection() {
   const { nativeCurrencySymbol } = useAccountSettings();
   const { gainers = [], losers = [] } = useTopMovers() || {};
+  const { navigate } = useNavigation();
+
+  const handlePress = useCallback(
+    item => {
+      navigate(
+        ios ? Routes.EXPANDED_ASSET_SHEET : Routes.EXPANDED_ASSET_SCREEN,
+        {
+          asset: item,
+          longFormHeight: initialChartExpandedStateSheetHeight,
+          type: 'token',
+        }
+      );
+    },
+    [navigate]
+  );
 
   const formatItems = useCallback(
     ({ address, name, percent_change_24h, price, symbol }) => ({
       address,
       change: `${parseFloat((percent_change_24h || 0).toFixed(2))}%`,
       name,
+      onPress: handlePress,
       price: `${nativeCurrencySymbol}${handleSignificantDecimals(price, 2)}`,
       symbol,
     }),
-    [nativeCurrencySymbol]
+    [handlePress, nativeCurrencySymbol]
   );
 
   const gainerItems = useMemo(() => gainers.map(formatItems), [

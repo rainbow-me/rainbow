@@ -36,7 +36,7 @@ export const initialChartExpandedStateSheetHeight =
 
 const ToastWrapper = styled(Column)`
   width: 100%;
-  height: 400;
+  height: 320;
   z-index: 9;
 `;
 
@@ -58,7 +58,9 @@ export default function ChartExpandedState({ asset }) {
   // It's a generic asset
   const assetWithPrice = asset.balance
     ? asset
-    : formatGenericAsset(genericAssets[asset.address]);
+    : genericAssets[asset.address]
+    ? formatGenericAsset(genericAssets[asset.address])
+    : asset;
 
   const {
     chart,

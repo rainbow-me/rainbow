@@ -50,6 +50,7 @@ const createMissingAsset = (asset, underlyingPrice, priceOfEther) => {
 export default function useUniswapCurrencies({
   category,
   defaultInputAsset,
+  defaultOutputAsset = null,
   inputHeaderTitle,
   isDeposit,
   isWithdrawal,
@@ -99,7 +100,7 @@ export default function useUniswapCurrencies({
       defaultInputItemInWallet = ethereumUtils.getAsset(allAssets);
     }
 
-    let defaultOutputItem = null;
+    let defaultOutputItem = defaultOutputAsset;
 
     // If it is a deposit and the asset in the wallet is not the same as the defult input asset,
     // set the output
@@ -118,6 +119,7 @@ export default function useUniswapCurrencies({
     allAssets,
     defaultInputAddress,
     defaultInputAsset,
+    defaultOutputAsset,
     isDeposit,
     isWithdrawal,
     underlyingPrice,
