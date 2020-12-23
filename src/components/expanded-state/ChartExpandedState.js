@@ -43,7 +43,7 @@ export default function ChartExpandedState({ asset }) {
   });
 
   const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
-  const showSwapButton = find(uniswapAssetsInWallet, [
+  const uniswapAssetInWallet = find(uniswapAssetsInWallet, [
     'uniqueId',
     asset.uniqueId,
   ]);
@@ -97,10 +97,12 @@ export default function ChartExpandedState({ asset }) {
         </SheetActionButtonRow>
       ) : (
         <SheetActionButtonRow>
-          {showSwapButton && (
-            <SwapActionButton color={color} inputType={AssetInputTypes.in} />
-          )}
-          <SendActionButton color={color} fullWidth={!showSwapButton} />
+          <SwapActionButton
+            color={color}
+            inputType={AssetInputTypes.in}
+            isAvailable={!!uniswapAssetInWallet}
+          />
+          <SendActionButton color={color} />
         </SheetActionButtonRow>
       )}
     </SlackSheet>
