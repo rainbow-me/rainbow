@@ -106,6 +106,7 @@ export default function SendContactList({
       ) : (
         <SendContactFlatList
           data={filteredContacts}
+          marginTop={17}
           renderItem={renderItemCallback}
           testID="send-contact-list"
         />

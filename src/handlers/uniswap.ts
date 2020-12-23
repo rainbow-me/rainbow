@@ -109,6 +109,7 @@ export const estimateSwapGasLimit = async ({
 }> => {
   let methodName = null;
   if (!tradeDetails) {
+    logger.sentry('No trade details in estimateSwapGasLimit');
     return {
       gasLimit: ethUnits.basic_swap,
     };
@@ -140,9 +141,12 @@ export const estimateSwapGasLimit = async ({
     // we expect failures from left to right, so throw if we see failures
     // from right to left
     for (let i = 0; i < gasEstimates.length - 1; i++) {
-      // if the FoT method fails, but the regular method does not, we should not
+      // if the Fee on Transfer method fails, but the regular method does not, we should not
       // use the regular method. this probably means something is wrong with the fot token.
       if (gasEstimates[i] && !gasEstimates[i + 1]) {
+        logger.sentry(
+          'Issue with Fee on Transfer estimate in estimateSwapGasLimit'
+        );
         return { gasLimit: ethUnits.basic_swap, methodName: null };
       }
     }
@@ -153,6 +157,7 @@ export const estimateSwapGasLimit = async ({
 
     // all estimations failed...
     if (indexOfSuccessfulEstimation === -1) {
+      logger.sentry('all swap estimates failed in estimateSwapGasLimit');
       return { gasLimit: ethUnits.basic_swap, methodName: null };
     } else {
       methodName = methodNames[indexOfSuccessfulEstimation];
@@ -413,9 +418,10 @@ export const getAllTokens = async (excluded = []): Promise<AllTokenInfo> => {
           skip: skip,
         },
       });
-      data = data.concat(result.data.tokens);
+      const resultTokens = result?.data?.tokens || [];
+      data = data.concat(resultTokens);
       skip = skip + UniswapPageSize;
-      if (result.data.tokens.length < UniswapPageSize) {
+      if (resultTokens.length < UniswapPageSize) {
         dataEnd = true;
       }
     }
