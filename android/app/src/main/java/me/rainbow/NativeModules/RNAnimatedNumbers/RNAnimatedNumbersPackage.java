@@ -208,6 +208,9 @@ class AnimatedNumbersModule extends ReactContextBaseJavaModule {
 
     @Override
     public void onCatalystInstanceDestroy() {
+        for (Object k : timers.keySet()) {
+            stop((Integer) k);
+        }
     }
 }
 
