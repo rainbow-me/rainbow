@@ -36,7 +36,7 @@ const ScaleButtonContext = createContext(null);
 // I couldn't just expend boundaries, because then it intercepts touches, so I managed to
 // extract animated component to external value
 
-export const ScaleButtonZoomable = ({ children, style }) => {
+export const ScaleButtonZoomable = ({ children, style, testID }) => {
   const value = useSharedValue(1);
   const sz = useAnimatedStyle(() => {
     return {
@@ -50,7 +50,9 @@ export const ScaleButtonZoomable = ({ children, style }) => {
 
   return (
     <ScaleButtonContext.Provider value={value}>
-      <Animated.View style={[style, sz]}>{children}</Animated.View>
+      <Animated.View style={[style, sz]} testID={testID}>
+        {children}
+      </Animated.View>
     </ScaleButtonContext.Provider>
   );
 };
@@ -98,6 +100,7 @@ const ScaleButton = ({
   contentContainerStyle,
   minLongPressDuration,
   overflowMargin,
+  testID,
   wrapperStyle,
 }) => {
   const scale = useSharedValue(1);
@@ -155,7 +158,7 @@ const ScaleButton = ({
   });
 
   return (
-    <View style={[{ overflow: 'visible' }, wrapperStyle]}>
+    <View style={[{ overflow: 'visible' }, wrapperStyle]} testID={testID}>
       <View style={{ margin: -overflowMargin }}>
         <AnimatedRawButton
           hitSlop={-overflowMargin}
@@ -188,6 +191,7 @@ const SimpleScaleButton = ({
   overflowMargin,
   wrapperStyle,
   duration,
+  testID,
   transformOrigin,
   skipTopMargin,
 }) => {
@@ -209,6 +213,7 @@ const SimpleScaleButton = ({
         },
         wrapperStyle,
       ]}
+      testID={testID}
     >
       <View
         style={{

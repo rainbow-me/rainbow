@@ -130,7 +130,6 @@ const ExchangeInput = (
             color={color}
             letterSpacing={letterSpacing}
             size={size}
-            testID={testID}
             weight={weight}
             {...props}
           >
