@@ -12,6 +12,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import com.microsoft.codepush.react.CodePush;
 import io.branch.rnbranch.RNBranchModule;
+import me.rainbow.NativeModules.RNAnimatedNumbers.RNAnimatedNumbersPackage;
 import me.rainbow.NativeModules.RNBip39.RNBip39Package;
 import me.rainbow.NativeModules.RNBackHandler.RNBackHandlerPackage;
 import me.rainbow.NativeModules.RNReview.RNReviewPackage;
@@ -42,6 +43,7 @@ public class MainApplication extends Application implements ReactApplication {
           packages.add(new RNBackHandlerPackage());
           packages.add(new RNTextAnimatorPackage());
           packages.add(new RNZoomableButtonPackage());
+          packages.add(new RNAnimatedNumbersPackage());
           return packages;
         }
 

@@ -51,7 +51,6 @@
     _maxDigitsAfterDot = @10;
     _maxSignsTotally = @10;
     _value = @0;
-    _framesPerSecond = @20;
   }
   return self;
 }
@@ -96,8 +95,6 @@ RCT_EXPORT_VIEW_PROPERTY(prefix, NSString)
 RCT_EXPORT_VIEW_PROPERTY(suffix, NSString)
 RCT_EXPORT_VIEW_PROPERTY(maxDigitsAfterDot, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(maxSignsTotally, NSNumber)
-RCT_EXPORT_VIEW_PROPERTY(value, NSNumber)
-RCT_EXPORT_VIEW_PROPERTY(framesPerSecond, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(pad, NSString)
 RCT_EXPORT_MODULE()
 
@@ -200,15 +197,15 @@ RCT_EXPORT_MODULE()
 }
 
 
-RCT_EXPORT_METHOD(animate:(nonnull NSNumber*) reactTag config: (NSDictionary*) animationConfig)
+RCT_EXPORT_METHOD(animate:(nonnull NSNumber*) reactTag configTag:(nonnull NSNumber*) configTag config: (NSDictionary*) animationConfig)
 {
   [self invalidateTimer: reactTag];
   RCTExecuteOnUIManagerQueue(^{
     [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *,UIView *> *viewRegistry) {
       RCTBaseTextInputView *view = (RCTBaseTextInputView *) viewRegistry[reactTag];
-      AnimatedNumbersConfig* config = (AnimatedNumbersConfig *)view.reactSubviews.firstObject;
+      AnimatedNumbersConfig* configView = (AnimatedNumbersConfig *)viewRegistry[configTag];
       _textFields[reactTag] = [view valueForKey:@"_backedTextInputView"];
-      _configs[reactTag] = config;
+      _configs[reactTag] = configView;
       double framesPerSecond = animationConfig[@"framesPerSecond"] == nil ? 20 : ((NSNumber *)animationConfig[@"framesPerSecond"]).doubleValue;
       dispatch_async(dispatch_get_main_queue(), ^{
         _timers[reactTag] =[
@@ -219,7 +216,7 @@ RCT_EXPORT_METHOD(animate:(nonnull NSNumber*) reactTag config: (NSDictionary*) a
                               @"reactTag": reactTag,
                               @"startTime": NSDate.date,
                               @"stepPerSecond": animationConfig[@"stepPerSecond"],
-                              @"initialValue": config.value.copy,
+                              @"initialValue": configView.value.copy,
                               @"toValue": animationConfig[@"toValue"] == nil ? [NSNull null] : animationConfig[@"toValue"],
                             } repeats:YES];
       });

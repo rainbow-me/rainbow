@@ -82,10 +82,12 @@ function AnimatedNumbers(
   ref
 ) {
   const inputRef = useRef();
+  const configRef = useRef();
   useEffect(() => {
     currentAnimation.current?.();
     const nodeHandle = findNodeHandle(inputRef.current.getNativeRef());
-    AnimatedNumbersManager.animate(nodeHandle, {
+    const configHandle = findNodeHandle(configRef.current);
+    AnimatedNumbersManager.animate(nodeHandle, configHandle, {
       framesPerSecond: 100,
       stepPerSecond: initialValue * 1000,
       toValue: initialValue,
@@ -98,7 +100,8 @@ function AnimatedNumbers(
     animate: (config = {}) => {
       currentAnimation.current?.();
       const nodeHandle = findNodeHandle(inputRef.current.getNativeRef());
-      AnimatedNumbersManager.animate(nodeHandle, config);
+      const configHandle = findNodeHandle(configRef.current);
+      AnimatedNumbersManager.animate(nodeHandle, configHandle, config);
       currentAnimation.current = () => AnimatedNumbersManager.stop(nodeHandle);
       return () => currentAnimation.current?.();
     },
@@ -108,14 +111,15 @@ function AnimatedNumbers(
   }));
 
   return (
-    <TextInput
-      editable={false}
-      ref={inputRef}
-      style={[{ fontVariant: ['tabular-nums'] }, style]}
-      {...props}
-    >
-      <Config pad={pad} prefix={prefix} suffix={suffix} />
-    </TextInput>
+    <>
+      <TextInput
+        editable={false}
+        ref={inputRef}
+        style={[{ fontVariant: ['tabular-nums'] }, style]}
+        {...props}
+      />
+      <Config pad={pad} prefix={prefix} ref={configRef} suffix={suffix} />
+    </>
   );
 }
 
