@@ -232,15 +232,22 @@ export default function TransactionList({
         contactColor = colors.getRandomColor();
       }
 
+      let canBeResubmitted = isSent && true; // minedAt
+
       if (hash) {
-        let buttons = ['View on Etherscan', ...(ios ? ['Cancel'] : [])];
+        let buttons = [
+          ...(canBeResubmitted ? ['Speed Up', 'Attempt Cancellation'] : []),
+          'View on Etherscan',
+          ...(ios ? ['Cancel'] : []),
+        ];
         if (showContactInfo) {
           buttons.unshift(contact ? 'View Contact' : 'Add to Contacts');
         }
 
         showActionSheetWithOptions(
           {
-            cancelButtonIndex: showContactInfo ? 2 : 1,
+            cancelButtonIndex:
+              (canBeResubmitted ? 2 : 0) + (showContactInfo ? 2 : 1),
             options: buttons,
             title: pending
               ? `${headerInfo.type}${
@@ -262,8 +269,25 @@ export default function TransactionList({
                 type: 'contact_profile',
               });
             } else if (
+              canBeResubmitted &&
+              ((!showContactInfo && buttonIndex === 0) ||
+                (showContactInfo && buttonIndex === 1))
+            ) {
+              navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
+                type: 'speed_up',
+              });
+            } else if (
+              canBeResubmitted &&
+              ((!showContactInfo && buttonIndex === 1) ||
+                (showContactInfo && buttonIndex === 2))
+            ) {
+              navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
+                type: 'cancel',
+              });
+            } else if (
               (!showContactInfo && buttonIndex === 0) ||
-              (showContactInfo && buttonIndex === 1)
+              (showContactInfo && buttonIndex === 1 && !canBeResubmitted) ||
+              (showContactInfo && buttonIndex === 3 && canBeResubmitted)
             ) {
               const normalizedHash = hash.replace(/-.*/g, '');
               const etherscanHost = ethereumUtils.getEtherscanHostFromNetwork(

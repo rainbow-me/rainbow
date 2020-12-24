@@ -69,8 +69,10 @@ const LittleBorderlessButton = ({ onPress, children, testID }) => (
   </ButtonLabel>
 );
 
-const BottomRightLabel = ({ formatter }) => (
-  <Label color={colors.white}>{formatter()}</Label>
+const BottomRightLabel = ({ formatter, theme }) => (
+  <Label color={theme === 'dark' ? colors.white : colors.blueGreyDark50}>
+    {formatter()}
+  </Label>
 );
 
 const formatGasPrice = (gasPrice, nativeCurrency) => {
@@ -102,6 +104,7 @@ const GasSpeedButton = ({
   onCustomGasFocus,
   testID,
   type,
+  theme = 'dark',
 }) => {
   const inputRef = useRef(null);
   const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
@@ -186,7 +189,7 @@ const GasSpeedButton = ({
   const renderGasPriceText = useCallback(
     animatedNumber => (
       <Text
-        color={colors.white}
+        color={theme === 'dark' ? colors.white : colors.blueGreyDark50}
         letterSpacing="roundedTight"
         size="lmedium"
         weight="bold"
@@ -198,7 +201,7 @@ const GasSpeedButton = ({
           : animatedNumber}
       </Text>
     ),
-    [gasPrices, isSufficientGas, txFees]
+    [gasPrices, isSufficientGas, theme, txFees]
   );
 
   const handlePress = useCallback(() => {
@@ -384,7 +387,9 @@ const GasSpeedButton = ({
                 <Text
                   color={
                     customGasPriceInput
-                      ? colors.white
+                      ? theme === 'dark'
+                        ? colors.white
+                        : colors.blueGreyDark50
                       : colors.alpha(colors.darkModeColors.blueGreyDark, 0.3)
                   }
                   size="lmedium"
@@ -400,7 +405,10 @@ const GasSpeedButton = ({
 
         <Row justify="space-between" style={{ height: 27 }}>
           {!isCustom ? (
-            <Label color={colors.white} height={10}>
+            <Label
+              color={theme === 'dark' ? colors.white : colors.blueGreyDark50}
+              height={10}
+            >
               Network Fee
             </Label>
           ) : (
@@ -426,13 +434,14 @@ const GasSpeedButton = ({
           <GasSpeedLabelPager
             label={selectedGasPriceOption}
             showPager={!inputFocused}
-            theme="dark"
+            theme={theme}
           />
         </Row>
 
         <Row justify="space-between">
           <BottomRightLabel
             formatter={formatBottomRightLabel}
+            theme={theme}
             value={{
               estimatedTimeValue,
               price: selectedGasPrice?.value?.display,
