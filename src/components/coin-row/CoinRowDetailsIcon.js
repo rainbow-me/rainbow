@@ -31,10 +31,10 @@ const Icon = styled(Text).attrs({
   margin-top: 28px;
 `;
 
-const CoinRowAddIcon = () => (
+const CoinRowDetailsIcon = () => (
   <AddButton as={Column}>
     <Icon>􀁴</Icon>
   </AddButton>
 );
 
-export default CoinRowAddIcon;
+export default CoinRowDetailsIcon;
