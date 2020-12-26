@@ -35,17 +35,17 @@ const PADDING_BETWEEN_ITEMS = 26;
 export const measureTopMoverCoinRow = async ({
   change,
   price,
-  trimmedName,
+  truncatedName,
 }) => {
-  const { width: nameWidth } = await measureTopRowText(trimmedName);
+  const { width: nameWidth } = await measureTopRowText(truncatedName);
   const { width: priceWidth } = await measureBottomRowText(price);
   const { width: changeWidth } = await measureBottomRowText(change);
 
-  const contentWidth = Math.max(nameWidth, priceWidth + changeWidth);
+  const textWidth = Math.max(nameWidth, priceWidth + changeWidth);
 
   return (
     PADDING_BETWEEN_ITEMS +
-    [TopMoverCoinIconSize, contentWidth].reduce(
+    [TopMoverCoinIconSize, textWidth].reduce(
       (acc, val) => acc + val + TopMoverCoinRowMargin
     )
   );
@@ -58,7 +58,7 @@ const TopMoverCoinRow = ({
   onPress,
   price,
   symbol,
-  trimmedName,
+  truncatedName,
 }) => {
   const handlePress = useCallback(() => {
     onPress?.({ address, change, name, price, symbol });
@@ -85,7 +85,7 @@ const TopMoverCoinRow = ({
           />
         </Centered>
         <ColumnWithMargins margin={2}>
-          <TopMoverTitle>{trimmedName}</TopMoverTitle>
+          <TopMoverTitle>{truncatedName}</TopMoverTitle>
           <BottomRowText weight="medium">
             {price}
             <BottomRowText

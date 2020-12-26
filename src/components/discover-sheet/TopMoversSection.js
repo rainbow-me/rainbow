@@ -37,7 +37,7 @@ export default function TopMoversSection() {
       onPress: handlePress,
       price: `${nativeCurrencySymbol}${handleSignificantDecimals(price, 2)} `,
       symbol,
-      trimmedName: `${
+      truncatedName: `${
         name.length > 15 ? name.substring(0, 15).trim() + '...' : name
       }`,
     }),
