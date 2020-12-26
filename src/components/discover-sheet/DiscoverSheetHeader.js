@@ -16,9 +16,7 @@ const Header = styled(Row).attrs({
   justify: 'space-between',
   position: 'absolute',
 })`
-  height: 42;
-  margin-vertical: 12;
-  top: -12;
+  height: 59;
   width: 100%;
   z-index: 10;
 `;
@@ -39,31 +37,31 @@ function Stack({ children, left, yPosition, onPress }) {
     <>
       <ButtonPressAnimation
         onPress={onPress}
-        style={{ height: 45, width: 58, zIndex: 10 }}
+        style={{ height: 59, width: 59, zIndex: 10 }}
       >
         <Animated.View
           style={{
             opacity: yPosition.interpolate({
-              inputRange: [0, 30],
+              inputRange: [90, 100],
               outputRange: [0, 1],
             }),
           }}
         >
           <ShadowStack
             style={{ left: 8, position: 'absolute', top: 8 }}
-            {...borders.buildCircleAsObject(40)}
+            {...borders.buildCircleAsObject(43)}
             shadows={FloatingActionButtonShadow}
           >
             <Content />
           </ShadowStack>
         </Animated.View>
-        <View style={{ left, top: 17, zIndex: 10 }}>
+        <View style={{ left, top: 19, zIndex: 10 }}>
           <View style={{ position: 'absolute' }}>{children[0]}</View>
 
           <Animated.View
             style={{
               opacity: yPosition.interpolate({
-                inputRange: [0, 30],
+                inputRange: [90, 100],
                 outputRange: [0, 1],
               }),
             }}
@@ -83,15 +81,20 @@ export default function DiscoverSheetHeader(props) {
   return (
     <Header {...props} pointerEvents="box-none">
       <Stack
-        left={20}
+        left={19}
         onPress={() => navigate(Routes.WALLET_SCREEN)}
         yPosition={yPosition}
       >
-        <Icon color={colors.black} direction="left" name="caret" {...props} />
+        <Icon
+          color={colors.alpha(colors.blueGreyDark, 0.8)}
+          direction="left"
+          name="caret"
+          {...props}
+        />
         <Icon color={colors.white} direction="left" name="caret" {...props} />
       </Stack>
-      <Stack left={16.6} onPress={() => jumpToShort?.()} yPosition={yPosition}>
-        <Icon color={colors.black} name="scanner" />
+      <Stack left={18} onPress={() => jumpToShort?.()} yPosition={yPosition}>
+        <Icon color={colors.alpha(colors.blueGreyDark, 0.8)} name="scanner" />
         <Icon color={colors.white} name="scanner" />
       </Stack>
     </Header>

@@ -30,11 +30,16 @@ export default function TopMoversSection() {
   const formatItems = useCallback(
     ({ address, name, percent_change_24h, price, symbol }) => ({
       address,
-      change: `${parseFloat((percent_change_24h || 0).toFixed(2))}%`,
+      change: `${percent_change_24h > 0 ? '+' : ''}${parseFloat(
+        (percent_change_24h || 0).toFixed(2)
+      )}%`,
       name,
       onPress: handlePress,
-      price: `${nativeCurrencySymbol}${handleSignificantDecimals(price, 2)}`,
+      price: `${nativeCurrencySymbol}${handleSignificantDecimals(price, 2)} `,
       symbol,
+      trimmedName: `${
+        name.length > 15 ? name.substring(0, 15).trim() + '...' : name
+      }`,
     }),
     [handlePress, nativeCurrencySymbol]
   );
@@ -50,16 +55,16 @@ export default function TopMoversSection() {
   ]);
 
   return (
-    <ColumnWithMargins>
-      <Flex marginTop={19} paddingHorizontal={19}>
-        <Text size="larger" weight="bold">
+    <ColumnWithMargins margin={12} marginBottom={15}>
+      <Flex paddingHorizontal={19}>
+        <Text size="larger" weight="heavy">
           Top Movers
         </Text>
       </Flex>
 
       <Column>
-        <MarqueeList items={gainerItems} speed={0.9} />
-        <MarqueeList items={loserItems} speed={-0.7} />
+        <MarqueeList items={gainerItems} speed={0.6} />
+        <MarqueeList items={loserItems} speed={-0.6} />
       </Column>
     </ColumnWithMargins>
   );

@@ -11,7 +11,7 @@ const searchInputWidth = deviceUtils.dimensions.width - 30;
 export const searchInputHeight = 40;
 
 const Container = styled(Row)`
-  ${margin(10, 15, 8)};
+  ${margin(19, 15)};
   background-color: ${colors.transparent};
   border-radius: ${searchInputHeight / 2};
   height: ${searchInputHeight};
@@ -22,8 +22,8 @@ const BackgroundGradient = styled(RadialGradient).attrs({
   center: [searchInputWidth, searchInputWidth / 2],
   colors: ['#FCFDFE', '#F0F2F5'],
 })`
-  position: absolute;
   height: ${searchInputWidth};
+  position: absolute;
   top: ${-(searchInputWidth - searchInputHeight) / 2};
   transform: scaleY(${searchInputHeight / searchInputWidth});
   width: ${searchInputWidth};
@@ -36,15 +36,15 @@ const SearchIcon = styled(Text).attrs({
 })``;
 
 const PlaceholderWrapper = styled(Row)`
+  justify-content: center;
   margin-left: auto;
   margin-right: auto;
-  margin-top: 4;
+  margin-top: 3;
   width: 100%;
-  justify-content: center;
 `;
 
 const SearchIconWrapper = styled(Flex)`
-  margin-top: ${android ? '5' : '5'};
+  margin-top: 5;
 `;
 
 const PlaceholderText = styled(Text).attrs({
@@ -52,8 +52,8 @@ const PlaceholderText = styled(Text).attrs({
   size: 'large',
   weight: 'semibold',
 })`
-  padding-top: 5;
   margin-left: 3;
+  padding-top: 5;
   text-align: center;
 `;
 

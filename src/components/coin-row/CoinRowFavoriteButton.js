@@ -41,7 +41,7 @@ const StarIcon = styled(Text).attrs(({ isFavorited }) => ({
   weight: 'heavy',
 }))`
   height: 100%;
-  line-height: 28px;
+  line-height: 29px;
   width: 100%;
 `;
 
