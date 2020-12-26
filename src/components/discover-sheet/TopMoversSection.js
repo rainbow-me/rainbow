@@ -37,6 +37,7 @@ export default function TopMoversSection() {
       onPress: handlePress,
       price: `${nativeCurrencySymbol}${handleSignificantDecimals(price, 2)} `,
       symbol,
+      // We’re truncating the coin name manually so the width of the text can be measured accurately
       truncatedName: `${
         name.length > 15 ? name.substring(0, 15).trim() + '...' : name
       }`,
