@@ -63,8 +63,12 @@ export default function TopMoversSection() {
       </Flex>
 
       <Column>
-        <MarqueeList items={gainerItems} speed={0.6} />
-        <MarqueeList items={loserItems} speed={-0.6} />
+        {gainerItems.length !== 0 && (
+          <MarqueeList items={gainerItems} speed={0.666} />
+        )}
+        {loserItems.length !== 0 && (
+          <MarqueeList items={loserItems} speed={-0.666} />
+        )}
       </Column>
     </ColumnWithMargins>
   );
