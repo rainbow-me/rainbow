@@ -7,6 +7,7 @@ import { Centered, FlexItem, Row } from '../layout';
 import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
+import CoinRowDetailsIcon from './CoinRowDetailsIcon';
 import { colors, padding } from '@rainbow-me/styles';
 import { neverRerender } from '@rainbow-me/utils';
 
@@ -73,6 +74,7 @@ const ListCoinRow = ({ item, onPress }) => {
           testID="list-coin-row"
           topRowRender={TopRow}
         />
+        <CoinRowDetailsIcon />
       </ButtonPressAnimation>
     </>
   );

@@ -8,7 +8,7 @@ import BalanceText from './BalanceText';
 import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
-import CoinRowAddIcon from './CoinRowAddIcon';
+import CoinRowAddButton from './CoinRowAddButton';
 import CoinRowFavoriteButton from './CoinRowFavoriteButton';
 import { useDimensions } from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
@@ -122,7 +122,7 @@ const ExchangeCoinRow = ({
         </FloatingFavoriteEmojis>
       )}
       {showAddButton && (
-        <CoinRowAddIcon
+        <CoinRowAddButton
           onPress={() => {
             onActionAsset(item);
           }}

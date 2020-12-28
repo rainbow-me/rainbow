@@ -205,13 +205,22 @@ export default function DiscoverSearch({ onCancel }) {
     [allAssets, dispatch, navigate]
   );
 
+  const handleActionAsset = useCallback(
+    item => {
+      logger.log('selected item', item);
+      navigate(Routes.ADD_TOKEN_SHEET, { item });
+    },
+    [navigate]
+  );
+
   const itemProps = useMemo(
     () => ({
+      onActionAsset: handleActionAsset,
       onPress: handlePress,
       showAddButton: true,
       showBalance: false,
     }),
-    [handlePress]
+    [handleActionAsset, handlePress]
   );
 
   return (

@@ -98,6 +98,15 @@ export const backupSheetConfig = {
   },
 };
 
+export const addTokenSheetConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      longFormHeight: 460,
+    }),
+  }),
+};
+
 export const expandedAssetSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
