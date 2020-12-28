@@ -29,11 +29,14 @@ const Container = styled(Row).attrs({
   ${margin(10, 18, 10, 15)}
 `;
 
-const Label = styled(Text).attrs({
-  color: colors.alpha(colors.darkModeColors.blueGreyDark, 0.6),
+const Label = styled(Text).attrs(({ theme }) => ({
+  color:
+    theme === 'dark'
+      ? colors.alpha(colors.darkModeColors.blueGreyDark, 0.6)
+      : colors.alpha(colors.blueGreyDark, 0.6),
   size: 'smedium',
   weight: 'semibold',
-})``;
+}))``;
 
 const ButtonLabel = styled(BorderlessButton).attrs({
   color: colors.appleBlue,
@@ -70,9 +73,7 @@ const LittleBorderlessButton = ({ onPress, children, testID }) => (
 );
 
 const BottomRightLabel = ({ formatter, theme }) => (
-  <Label color={theme === 'dark' ? colors.white : colors.blueGreyDark50}>
-    {formatter()}
-  </Label>
+  <Label theme={theme}>{formatter()}</Label>
 );
 
 const formatGasPrice = (gasPrice, nativeCurrency) => {

@@ -274,6 +274,7 @@ export default function TransactionList({
                 (showContactInfo && buttonIndex === 1))
             ) {
               navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
+                tx: item,
                 type: 'speed_up',
               });
             } else if (
@@ -282,6 +283,7 @@ export default function TransactionList({
                 (showContactInfo && buttonIndex === 2))
             ) {
               navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
+                tx: item,
                 type: 'cancel',
               });
             } else if (

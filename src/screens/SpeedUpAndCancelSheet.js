@@ -1,14 +1,16 @@
 import { useRoute } from '@react-navigation/native';
-import React, { useCallback, useEffect, useState } from 'react';
-import { TurboModuleRegistry } from 'react-native';
+import { get, isEmpty } from 'lodash';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { InteractionManager, TurboModuleRegistry } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components/native';
 import { GasSpeedButton } from '../components/gas';
-import { Centered, Column } from '../components/layout';
+import { Centered, Column, Row } from '../components/layout';
 
 import {
   SheetActionButton,
@@ -17,8 +19,16 @@ import {
   SlackSheet,
 } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
+import { toHex } from '../handlers/web3';
+import { sendTransaction } from '../model/wallet';
+import { dataAddNewTransaction } from '../redux/data';
 import { safeAreaInsetValues } from '../utils';
-import { useDimensions, useKeyboardHeight } from '@rainbow-me/hooks';
+import {
+  useAccountSettings,
+  useDimensions,
+  useGas,
+  useKeyboardHeight,
+} from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { colors, position } from '@rainbow-me/styles';
 
@@ -52,12 +62,12 @@ const CenteredSheet = styled(Centered)`
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const AnimatedSheet = Animated.createAnimatedComponent(CenteredSheet);
 
-const GasSpeedButtonContainer = styled(Column)`
+const GasSpeedButtonContainer = styled(Row)`
+  padding-left: 10;
+  padding-right: 10;
   justify-content: flex-start;
   margin-bottom: 19px;
 `;
-
-export const sheetHeight = android ? 410 : 500;
 
 const CANCEL_TX = 'cancel';
 const SPEED_UP = 'speed_up';
@@ -74,16 +84,88 @@ const text = {
 
 export default function SpeedUpAndCancelSheet() {
   const { goBack } = useNavigation();
+  const { accountAddress } = useAccountSettings();
+  const dispatch = useDispatch();
   const { height: deviceHeight } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
-
   const {
-    params: { type },
+    gasPrices,
+    selectedGasPrice,
+    startPollingGasPrices,
+    stopPollingGasPrices,
+    updateTxFee,
+  } = useGas();
+  const calculatingGasLimit = useRef(false);
+  const {
+    params: { type, tx },
   } = useRoute();
   const [keyboardVisible, setKeyboardVisible] = useState(false);
 
-  const handleCancellation = useCallback(() => {}, []);
-  const handleSpeedUp = useCallback(() => {}, []);
+  const handleCancellation = useCallback(async () => {
+    const rawGasPrice = get(selectedGasPrice, 'value.amount');
+
+    // TODO - Check that rawGasPrice is >= 1.1x of tx.gasPrice;
+
+    const cancelTxPayload = {
+      gasPrice: toHex(rawGasPrice),
+      nonce: tx.nonce,
+      to: accountAddress,
+    };
+
+    const hash = await sendTransaction({
+      transaction: cancelTxPayload,
+    });
+
+    cancelTxPayload.hash = hash;
+    dispatch(dataAddNewTransaction(cancelTxPayload));
+
+    goBack();
+  }, [accountAddress, dispatch, goBack, selectedGasPrice, tx.nonce]);
+  const handleSpeedUp = useCallback(async () => {
+    const rawGasPrice = get(selectedGasPrice, 'value.amount');
+
+    // TODO - Check that rawGasPrice is >= 1.1x of tx.gasPrice;
+
+    const fasterTxPayload = {
+      data: tx.data,
+      gasLimit: tx.gasLimit,
+      gasPrice: toHex(rawGasPrice),
+      nonce: tx.nonce,
+      to: tx.to,
+    };
+
+    const hash = await sendTransaction({
+      transaction: fasterTxPayload,
+    });
+
+    fasterTxPayload.hash = hash;
+    dispatch(dataAddNewTransaction(fasterTxPayload));
+
+    goBack();
+  }, [
+    dispatch,
+    goBack,
+    selectedGasPrice,
+    tx.data,
+    tx.gasLimit,
+    tx.nonce,
+    tx.to,
+  ]);
+
+  useEffect(() => {
+    InteractionManager.runAfterInteractions(() => {
+      startPollingGasPrices();
+    });
+    return () => {
+      stopPollingGasPrices();
+    };
+  });
+
+  useEffect(() => {
+    if (!isEmpty(gasPrices) && !calculatingGasLimit.current) {
+      updateTxFee(tx.gasLimit);
+    }
+  }, [gasPrices, tx, tx.gasLimit, updateTxFee]);
 
   const handleCustomGasFocus = useCallback(() => {
     setKeyboardVisible(true);

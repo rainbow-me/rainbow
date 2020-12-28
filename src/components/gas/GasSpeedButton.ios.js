@@ -29,7 +29,6 @@ const Container = styled(Column).attrs({
 `;
 
 const Label = styled(Text).attrs({
-  color: colors.alpha(colors.darkModeColors.blueGreyDark, 0.6),
   size: 'smedium',
   weight: 'semibold',
 })``;
@@ -53,7 +52,13 @@ const LittleBorderlessButton = ({ onPress, children, testID }) => (
 );
 
 const BottomRightLabel = ({ formatter, theme }) => (
-  <Label color={theme === 'dark' ? colors.white : colors.blueGreyDark50}>
+  <Label
+    color={
+      theme === 'dark'
+        ? colors.alpha(colors.darkModeColors.blueGreyDark, 0.6)
+        : colors.alpha(colors.blueGreyDark, 0.6)
+    }
+  >
     {formatter()}
   </Label>
 );
@@ -159,7 +164,7 @@ const GasSpeedButton = ({
   const renderGasPriceText = useCallback(
     animatedNumber => (
       <Text
-        color={theme === 'dark' ? colors.white : colors.blueGreyDark50}
+        color={theme === 'dark' ? colors.white : colors.blueGreyDark}
         letterSpacing="roundedTight"
         size="lmedium"
         weight="bold"
@@ -352,10 +357,11 @@ const GasSpeedButton = ({
                 onFocus={handleCustomGasFocus}
                 onSubmitEditing={handleInputButtonManager}
                 placeholder={`${defaultCustomGasPrice}`}
-                placeholderTextColor={colors.alpha(
-                  colors.darkModeColors.blueGreyDark,
-                  0.3
-                )}
+                placeholderTextColor={
+                  theme === 'dark'
+                    ? colors.alpha(colors.darkModeColors.blueGreyDark, 0.3)
+                    : colors.alpha(colors.blueGreyDark, 0.3)
+                }
                 ref={inputRef}
                 size="lmedium"
                 testID="custom-gas-input"
@@ -389,7 +395,11 @@ const GasSpeedButton = ({
       <Row justify="space-between">
         {!isCustom ? (
           <Label
-            color={theme === 'dark' ? colors.white : colors.blueGreyDark50}
+            color={
+              theme === 'dark'
+                ? colors.alpha(colors.darkModeColors.blueGreyDark, 0.6)
+                : colors.alpha(colors.blueGreyDark, 0.6)
+            }
           >
             Network Fee
           </Label>
