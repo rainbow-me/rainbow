@@ -22,6 +22,7 @@ import { initialChartExpandedStateSheetHeight } from '../expanded-state/ChartExp
 import { Centered, Column, Flex, Row } from '../layout';
 
 import { Emoji, Text } from '../text';
+import EdgeFade from './EdgeFade';
 import {
   useAccountAssets,
   useAccountSettings,
@@ -52,15 +53,15 @@ const fetchTrendingAddresses = async () => {
 const ListButton = styled(ButtonPressAnimation).attrs({
   scaleTo: 0.96,
 })`
-  margin-right: 16;
+  margin-right: 16px;
   ${({ selected }) =>
     selected
       ? `
         background-color: ${colors.alpha(colors.blueGreyDark, 0.06)};
+        border-radius: 12px;
         height: 30px;
         padding-horizontal: 8px;
         padding-top: 6px;
-        border-radius: 12px;
       `
       : `
         padding-top: 6px;
@@ -171,41 +172,48 @@ export default function ListSection() {
 
   return (
     <Column>
-      <Flex marginBottom={10} paddingHorizontal={19}>
+      <Flex paddingHorizontal={19}>
         <Text size="larger" weight="heavy">
           Lists
         </Text>
       </Flex>
-      <ScrollView
-        contentContainerStyle={{ paddingHorizontal: 19 }}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-      >
-        {DefaultTokenLists[network].map(list => (
-          <ListButton
-            key={`list-${list.id}`}
-            onPress={() => handleSwitchList(list.id)}
-            selected={selectedList === list.id}
-          >
-            <Row>
-              <Emoji name={list.emoji} size="smedium" />
-              <ListName
-                color={
-                  selectedList === list.id
-                    ? colors.alpha(colors.blueGreyDark, 0.8)
-                    : colors.alpha(colors.blueGreyDark, 0.5)
-                }
-                lineHeight="paragraphSmall"
-                size="lmedium"
-                weight="bold"
-              >
-                {list.name}
-              </ListName>
-            </Row>
-          </ListButton>
-        ))}
-      </ScrollView>
-      <Column marginTop={6}>
+      <Column>
+        <ScrollView
+          contentContainerStyle={{
+            paddingBottom: 6,
+            paddingHorizontal: 19,
+            paddingTop: 10,
+          }}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+        >
+          {DefaultTokenLists[network].map(list => (
+            <ListButton
+              key={`list-${list.id}`}
+              onPress={() => handleSwitchList(list.id)}
+              selected={selectedList === list.id}
+            >
+              <Row>
+                <Emoji name={list.emoji} size="smedium" />
+                <ListName
+                  color={
+                    selectedList === list.id
+                      ? colors.alpha(colors.blueGreyDark, 0.8)
+                      : colors.alpha(colors.blueGreyDark, 0.5)
+                  }
+                  lineHeight="paragraphSmall"
+                  size="lmedium"
+                  weight="bold"
+                >
+                  {list.name}
+                </ListName>
+              </Row>
+            </ListButton>
+          ))}
+        </ScrollView>
+        <EdgeFade />
+      </Column>
+      <Column>
         {listItems?.length ? (
           listItems.map((item, i) => (
             <ListCoinRow

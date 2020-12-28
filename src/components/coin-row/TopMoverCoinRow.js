@@ -74,7 +74,7 @@ const TopMoverCoinRow = ({
         state === 5 && inside && handlePress()
       }
       onPress={handlePress}
-      scaleTo={1.02}
+      scaleTo={0.925}
     >
       <RowWithMargins margin={TopMoverCoinRowMargin}>
         <Centered>

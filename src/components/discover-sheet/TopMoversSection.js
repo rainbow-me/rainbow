@@ -5,6 +5,7 @@ import { initialChartExpandedStateSheetHeight } from '../expanded-state/ChartExp
 import { Column, ColumnWithMargins, Flex } from '../layout';
 import { MarqueeList } from '../list';
 import { Text } from '../text';
+import EdgeFade from './EdgeFade';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 
@@ -71,6 +72,8 @@ export default function TopMoversSection() {
           <MarqueeList items={loserItems} speed={-0.666} />
         )}
       </Column>
+
+      <EdgeFade />
     </ColumnWithMargins>
   );
 }

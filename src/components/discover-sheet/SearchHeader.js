@@ -1,7 +1,7 @@
 import React from 'react';
-import { TouchableWithoutFeedback } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
 import styled from 'styled-components/primitives';
+import { ButtonPressAnimation } from '../animations';
 import { Flex, Row } from '../layout';
 import { Text } from '../text';
 import { colors, margin } from '@rainbow-me/styles';
@@ -59,7 +59,7 @@ const PlaceholderText = styled(Text).attrs({
 
 export default function SearchHeader({ onPress }) {
   return (
-    <TouchableWithoutFeedback onPress={onPress}>
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.975}>
       <Container>
         <BackgroundGradient />
         <PlaceholderWrapper>
@@ -71,6 +71,6 @@ export default function SearchHeader({ onPress }) {
           </PlaceholderText>
         </PlaceholderWrapper>
       </Container>
-    </TouchableWithoutFeedback>
+    </ButtonPressAnimation>
   );
 }
