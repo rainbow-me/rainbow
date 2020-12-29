@@ -27,7 +27,7 @@ import {
   useUniswapAssetsInWallet,
 } from '@rainbow-me/hooks';
 
-//add's StatusBar height to android
+// add status bar height for Android
 const heightWithoutChart = 309 + (android && 24);
 const heightWithChart = heightWithoutChart + 297;
 
@@ -35,8 +35,8 @@ export const initialChartExpandedStateSheetHeight =
   heightWithChart + (android && 40);
 
 const ToastWrapper = styled(Column)`
-  width: 100%;
   height: 320;
+  width: 100%;
   z-index: 9;
 `;
 
@@ -56,10 +56,10 @@ export default function ChartExpandedState({ asset }) {
   }));
   // If we don't have a balance for this asset
   // It's a generic asset
-  const assetWithPrice = asset.balance
+  const assetWithPrice = asset?.balance
     ? asset
-    : genericAssets[asset.address]
-    ? formatGenericAsset(genericAssets[asset.address])
+    : genericAssets[asset?.address]
+    ? formatGenericAsset(genericAssets[asset?.address])
     : asset;
 
   const {
@@ -73,18 +73,18 @@ export default function ChartExpandedState({ asset }) {
     throttledData,
   } = useChartThrottledPoints({
     asset: assetWithPrice,
-    heightWithChart,
-    heightWithoutChart,
+    heightWithChart: heightWithChart - (!asset?.balance && 68),
+    heightWithoutChart: heightWithoutChart - (!asset?.balance && 68),
   });
 
   const { lists } = useUniswapAssets();
   const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
   const showSwapButton = find(uniswapAssetsInWallet, [
     'uniqueId',
-    asset.uniqueId,
+    asset?.uniqueId,
   ]);
 
-  const needsEth = asset.address === 'eth' && asset.balance.amount === '0';
+  const needsEth = asset?.address === 'eth' && asset?.balance.amount === '0';
 
   const duration = useRef(0);
 
@@ -95,7 +95,7 @@ export default function ChartExpandedState({ asset }) {
     (ios || showChart ? heightWithChart : heightWithoutChart) + (android && 40);
   const assetWithWatchlistInfo = useMemo(() => {
     const watchlist = lists.find(list => list.id === 'watchlist');
-    if (includes(watchlist.tokens, toLower(asset.address))) {
+    if (includes(watchlist.tokens, toLower(asset?.address))) {
       return {
         ...assetWithPrice,
         isInWatchlist: true,
@@ -105,7 +105,7 @@ export default function ChartExpandedState({ asset }) {
       ...assetWithPrice,
       isInWatchlist: false,
     };
-  }, [lists, asset.address, assetWithPrice]);
+  }, [lists, asset?.address, assetWithPrice]);
 
   return (
     <Fragment>
@@ -129,7 +129,7 @@ export default function ChartExpandedState({ asset }) {
           />
         </ChartPathProvider>
         <SheetDivider />
-        {asset.balance && (
+        {asset?.balance && (
           <TokenInfoSection>
             <TokenInfoRow>
               <TokenInfoItem asset={asset} title="Balance">
@@ -152,14 +152,14 @@ export default function ChartExpandedState({ asset }) {
             {showSwapButton && (
               <SwapActionButton color={color} inputType={AssetInputTypes.in} />
             )}
-            {asset.balance ? (
+            {asset?.balance ? (
               <SendActionButton color={color} fullWidth={!showSwapButton} />
             ) : (
-              <Column marginTop={70}>
+              <Column marginTop={5}>
                 <SwapActionButton
                   color={color}
                   inputType={AssetInputTypes.out}
-                  label={`􀖅 Get ${asset.symbol}`}
+                  label={`􀖅 Get ${asset?.symbol}`}
                   weight="heavy"
                 />
               </Column>
