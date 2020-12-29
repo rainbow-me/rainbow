@@ -29,14 +29,17 @@ const Header = styled(Animated.View)`
 `;
 
 export const FloatingActionButtonShadow = [
-  [0, 2, 5, colors.dark, 0.2],
-  [0, 6, 10, colors.dark, 0.14],
-  [0, 1, 18, colors.dark, 0.12],
+  [0, 10, 30, colors.dark, 0.5],
+  [0, 5, 15, colors.dark, 1],
 ];
 
-const Content = styled(Centered)`
+const BackgroundFill = styled(Centered).attrs({
+  ...borders.buildCircleAsObject(43),
+})`
   ${position.cover};
-  background-color: ${colors.grey20};
+  background-color: ${colors.dark};
+  left: 8;
+  top: 8;
 `;
 
 function Stack({ children, left, stackOpacity, onPress }) {
@@ -62,12 +65,12 @@ function Stack({ children, left, stackOpacity, onPress }) {
       >
         <Animated.View style={animatedStyleShadow}>
           <ShadowStack
-            style={{ left: 8, position: 'absolute', top: 8 }}
             {...borders.buildCircleAsObject(43)}
+            backgroundColor={colors.dark}
             shadows={FloatingActionButtonShadow}
-          >
-            <Content />
-          </ShadowStack>
+            style={{ left: 8, opacity: 0.4, position: 'absolute', top: 8 }}
+          />
+          <BackgroundFill />
         </Animated.View>
         <View style={{ left, top: 19, zIndex: 10 }}>
           <View style={{ position: 'absolute' }}>{children[0]}</View>
