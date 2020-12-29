@@ -40,7 +40,7 @@ export default function TopMoversSection() {
       symbol,
       // We’re truncating the coin name manually so the width of the text can be measured accurately
       truncatedName: `${
-        name.length > 15 ? name.substring(0, 15).trim() + '...' : name
+        name?.length > 15 ? name.substring(0, 15).trim() + '...' : name
       }`,
     }),
     [handlePress, nativeCurrencySymbol]
@@ -65,10 +65,10 @@ export default function TopMoversSection() {
       </Flex>
 
       <Column>
-        {gainerItems.length !== 0 && (
+        {gainerItems?.length !== 0 && (
           <MarqueeList items={gainerItems} speed={0.666} />
         )}
-        {loserItems.length !== 0 && (
+        {loserItems?.length !== 0 && (
           <MarqueeList items={loserItems} speed={-0.666} />
         )}
       </Column>
