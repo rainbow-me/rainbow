@@ -18,11 +18,11 @@ import Routes from '@rainbow-me/routes';
 import ShadowStack from 'react-native-shadow-stack';
 
 const Header = styled(Animated.View)`
-  position: absolute;
   flex-direction: row;
-  justify-content: space-between;
   height: 59;
+  justify-content: space-between;
   margin-vertical: 12;
+  position: absolute;
   top: -12;
   width: 100%;
   z-index: 10;
@@ -119,12 +119,16 @@ export default function DiscoverSheetHeader(props) {
         <Icon color={colors.white} direction="left" name="caret" {...props} />
       </Stack>
       <Stack
-        left={16.6}
+        left={18}
         onPress={() => jumpToShort?.()}
         stackOpacity={stackOpacity}
       >
-        <Icon color={colors.black} name="scanner" />
-        <Icon color={colors.white} name="scanner" />
+        <Icon
+          bottom={1}
+          color={colors.alpha(colors.blueGreyDark, 0.8)}
+          name="scanner"
+        />
+        <Icon bottom={1} color={colors.white} name="scanner" />
       </Stack>
     </Header>
   );
