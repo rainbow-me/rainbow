@@ -35,6 +35,7 @@ const LeftFade = styled(LinearGradient).attrs({
     0.982,
     1,
   ],
+  pointerEvents: 'none',
   start: { x: 0, y: 0.5 },
 })`
   height: 100%;
@@ -75,6 +76,7 @@ const RightFade = styled(LinearGradient).attrs({
     0.982,
     1,
   ],
+  pointerEvents: 'none',
   start: { x: 1, y: 0.5 },
 })`
   height: 100%;
