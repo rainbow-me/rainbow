@@ -70,8 +70,8 @@ const TopMoverCoinRow = ({
       // gesture handler event gets always cancelled on iOS
       // Therefore, in this case under given condition
       // onPress should be called
-      onCancel={({ nativeEvent: { state, inside } }) =>
-        state === 5 && inside && handlePress()
+      onCancel={({ nativeEvent: { state, close } }) =>
+        state === 5 && close && handlePress()
       }
       onPress={handlePress}
       scaleTo={0.925}

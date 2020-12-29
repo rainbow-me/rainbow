@@ -125,6 +125,18 @@ class Button : RCTView {
       }
     }
   }
+  
+  static func isClose(locationA:CGPoint, locationB: CGPoint) -> Bool {
+    if (abs(locationA.x - locationB.x) > 5) {
+      return false
+    }
+    
+    if (abs(locationA.y - locationB.y) > 5) {
+      return false
+    }
+    
+    return true
+  }
 
   override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
     if invalidated {
@@ -132,7 +144,7 @@ class Button : RCTView {
     }
     if let touch = touches.first {
       let location = touch.location(in: self)
-      onCancel(["inside":self.bounds.contains(location), "state": self.longPress?.value(forKey: "_state")])
+      onCancel(["close":Button.isClose(locationA: location, locationB: tapLocation!), "state": self.longPress?.value(forKey: "_state")])
     }
     animator = animateTapEnd(duration: pressOutDuration == -1 ? duration : pressOutDuration)
     if throttle {
