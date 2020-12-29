@@ -21,7 +21,7 @@ const Header = styled(Animated.View)`
   position: absolute;
   flex-direction: row;
   justify-content: space-between;
-  height: 42;
+  height: 59;
   margin-vertical: 12;
   top: -12;
   width: 100%;
@@ -58,20 +58,19 @@ function Stack({ children, left, stackOpacity, onPress }) {
     <>
       <ButtonPressAnimation
         onPress={onPress}
-        style={{ height: 45, width: 58, zIndex: 10 }}
+        style={{ height: 59, width: 59, zIndex: 10 }}
       >
         <Animated.View style={animatedStyleShadow}>
           <ShadowStack
             style={{ left: 8, position: 'absolute', top: 8 }}
-            {...borders.buildCircleAsObject(40)}
+            {...borders.buildCircleAsObject(43)}
             shadows={FloatingActionButtonShadow}
           >
             <Content />
           </ShadowStack>
         </Animated.View>
-        <View style={{ left, top: 17, zIndex: 10 }}>
+        <View style={{ left, top: 19, zIndex: 10 }}>
           <View style={{ position: 'absolute' }}>{children[0]}</View>
-
           <Animated.View style={animatedStyle}>{children[1]}</Animated.View>
         </View>
       </ButtonPressAnimation>
@@ -107,11 +106,16 @@ export default function DiscoverSheetHeader(props) {
       style={[animatedStyle]}
     >
       <Stack
-        left={20}
+        left={19}
         onPress={() => navigate(Routes.WALLET_SCREEN)}
         stackOpacity={stackOpacity}
       >
-        <Icon color={colors.black} direction="left" name="caret" {...props} />
+        <Icon
+          color={colors.alpha(colors.blueGreyDark, 0.8)}
+          direction="left"
+          name="caret"
+          {...props}
+        />
         <Icon color={colors.white} direction="left" name="caret" {...props} />
       </Stack>
       <Stack

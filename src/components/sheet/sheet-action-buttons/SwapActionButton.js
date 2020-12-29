@@ -8,6 +8,7 @@ export default function SwapActionButton({
   color = colors.swapPurple,
   inputType,
   label,
+  weight = 'bold',
   ...props
 }) {
   const navigate = useExpandedStateNavigation(inputType);
@@ -30,7 +31,7 @@ export default function SwapActionButton({
       label={label || '􀖅 Swap'}
       onPress={handlePress}
       testID="swap"
-      weight="bold"
+      weight={weight}
     />
   );
 }

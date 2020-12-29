@@ -5,6 +5,7 @@ import React, { useContext } from 'react';
 import { StatusBar } from 'react-native';
 import { InitialRouteContext } from '../context/initialRoute';
 import AddCashSheet from '../screens/AddCashSheet';
+import AddTokenSheet from '../screens/AddTokenSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import BackupSheet from '../screens/BackupSheet';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
@@ -24,6 +25,7 @@ import WelcomeScreen from '../screens/WelcomeScreen';
 import WithdrawModal from '../screens/WithdrawModal';
 import { SwipeNavigator } from './SwipeNavigator';
 import {
+  addTokenSheetConfig,
   backupSheetConfig,
   defaultScreenStackOptions,
   expandedAssetSheetConfig,
@@ -244,6 +246,11 @@ function NativeStackNavigator() {
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SHEET}
         {...expandedAssetSheetConfig}
+      />
+      <NativeStack.Screen
+        component={AddTokenSheet}
+        name={Routes.ADD_TOKEN_SHEET}
+        {...addTokenSheetConfig}
       />
       <NativeStack.Screen
         component={ChangeWalletSheet}

@@ -47,7 +47,7 @@ const SearchIcon = styled(Text).attrs({
 })``;
 
 const SearchIconWrapper = styled(Animated.View)`
-  margin-top: ${android ? '5' : '9'};
+  margin-top: ${android ? '5' : '8'};
 `;
 
 const SearchInput = styled(Input).attrs({
@@ -58,7 +58,6 @@ const SearchInput = styled(Input).attrs({
   enablesReturnKeyAutomatically: true,
   keyboardAppearance: 'dark',
   keyboardType: 'ascii-capable',
-  lineHeight: 'loose',
   placeholderTextColor: colors.alpha(colors.blueGreyDark, 0.5),
   returnKeyType: 'search',
   selectionColor: colors.appleBlue,
@@ -72,7 +71,9 @@ const SearchInput = styled(Input).attrs({
   height: 56;`
     : ''}
   flex: 1;
-  margin-left: 4;
+  height: 39;
+  margin-bottom: 1;
+  margin-left: 3;
 `;
 
 const SearchSpinner = styled(FastImage).attrs({

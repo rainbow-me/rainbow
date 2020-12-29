@@ -145,7 +145,7 @@ const SwipeableList = ({ components, speed }) => {
               ref={panRef}
               simultaneousHandlers={[lpRef, tapRef]}
             >
-              <Animated.View style={{ height: 78, width: '100%' }}>
+              <Animated.View style={{ height: 53, width: '100%' }}>
                 <Animated.View
                   style={{
                     flexDirection: 'row',

@@ -37,8 +37,8 @@ import { filterList, filterScams } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const CancelButton = styled(ButtonPressAnimation)`
-  margin-top: 19;
-  margin-right: 15;
+  margin-top: 27;
+  margin-right: 19;
 `;
 
 const headerlessSection = data => [{ data, title: '' }];
@@ -205,19 +205,28 @@ export default function DiscoverSearch({ onCancel }) {
     [allAssets, dispatch, navigate]
   );
 
+  const handleActionAsset = useCallback(
+    item => {
+      logger.log('selected item', item);
+      navigate(Routes.ADD_TOKEN_SHEET, { item });
+    },
+    [navigate]
+  );
+
   const itemProps = useMemo(
     () => ({
+      onActionAsset: handleActionAsset,
       onPress: handlePress,
       showAddButton: true,
       showBalance: false,
     }),
-    [handlePress]
+    [handleActionAsset, handlePress]
   );
 
   return (
     <Animated.View style={listAnimatedStyles}>
       <Row>
-        <Column flex={1} marginTop={10}>
+        <Column flex={1} marginTop={19}>
           <ExchangeSearch
             isFetching={loadingAllTokens}
             isSearching={isSearching}
@@ -231,8 +240,9 @@ export default function DiscoverSearch({ onCancel }) {
         </Column>
         <CancelButton onPress={dismiss}>
           <Text
+            align="right"
             color={colors.appleBlue}
-            lineHeight="loose"
+            letterSpacing="roundedMedium"
             size="large"
             weight="semibold"
           >

@@ -12,6 +12,7 @@ const TopMoverCoinIconSize = 36;
 const TopMoverCoinRowMargin = 8;
 
 const TopMoverTitle = styled(CoinName).attrs({
+  color: colors.alpha(colors.blueGreyDark, 0.8),
   paddingRight: 0,
   weight: 'semibold',
 })``;
@@ -19,6 +20,7 @@ const TopMoverTitle = styled(CoinName).attrs({
 export const measureBottomRowText = text =>
   measureText(text, {
     fontSize: parseFloat(fonts.size.smedium),
+    fontWeight: fonts.weight.medium,
   });
 
 export const measureTopRowText = text =>
@@ -28,31 +30,36 @@ export const measureTopRowText = text =>
     letterSpacing: fonts.letterSpacing.roundedMedium,
   });
 
-const PADDING_BETWEEN_ITEMS = 20;
+const PADDING_BETWEEN_ITEMS = 26;
 
 export const measureTopMoverCoinRow = async ({
   change,
-  name,
   price,
-  symbol,
+  truncatedName,
 }) => {
-  const { width: changeWidth } = await measureTopRowText(change);
-  const { width: nameWidth } = await measureTopRowText(name);
+  const { width: nameWidth } = await measureTopRowText(truncatedName);
   const { width: priceWidth } = await measureBottomRowText(price);
-  const { width: symbolWidth } = await measureBottomRowText(symbol);
+  const { width: changeWidth } = await measureBottomRowText(change);
 
-  const leftWidth = Math.max(nameWidth, priceWidth);
-  const rightWidth = Math.max(changeWidth, symbolWidth);
+  const textWidth = Math.max(nameWidth, priceWidth + changeWidth);
 
   return (
     PADDING_BETWEEN_ITEMS +
-    [TopMoverCoinIconSize, leftWidth, rightWidth].reduce(
+    [TopMoverCoinIconSize, textWidth].reduce(
       (acc, val) => acc + val + TopMoverCoinRowMargin
     )
   );
 };
 
-const TopMoverCoinRow = ({ address, change, name, onPress, price, symbol }) => {
+const TopMoverCoinRow = ({
+  address,
+  change,
+  name,
+  onPress,
+  price,
+  symbol,
+  truncatedName,
+}) => {
   const handlePress = useCallback(() => {
     onPress?.({ address, change, name, price, symbol });
   }, [address, change, name, onPress, price, symbol]);
@@ -67,7 +74,7 @@ const TopMoverCoinRow = ({ address, change, name, onPress, price, symbol }) => {
         state === 5 && inside && handlePress()
       }
       onPress={handlePress}
-      scaleTo={1.02}
+      scaleTo={0.925}
     >
       <RowWithMargins margin={TopMoverCoinRowMargin}>
         <Centered>
@@ -78,19 +85,16 @@ const TopMoverCoinRow = ({ address, change, name, onPress, price, symbol }) => {
           />
         </Centered>
         <ColumnWithMargins margin={2}>
-          <TopMoverTitle color={colors.alpha(colors.blueGreyDark, 0.8)}>
-            {name}
-          </TopMoverTitle>
-          <BottomRowText>{price}</BottomRowText>
-        </ColumnWithMargins>
-        <ColumnWithMargins align="end" justify="end" margin={2}>
-          <TopMoverTitle
-            align="right"
-            color={parseFloat(change) > 0 ? colors.green : colors.red}
-          >
-            {change}
-          </TopMoverTitle>
-          <BottomRowText align="right">{symbol}</BottomRowText>
+          <TopMoverTitle>{truncatedName}</TopMoverTitle>
+          <BottomRowText weight="medium">
+            {price}
+            <BottomRowText
+              color={parseFloat(change) > 0 ? colors.green : colors.red}
+              weight="medium"
+            >
+              {change}
+            </BottomRowText>
+          </BottomRowText>
         </ColumnWithMargins>
       </RowWithMargins>
     </ButtonPressAnimation>
