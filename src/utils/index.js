@@ -38,4 +38,9 @@ export { default as simplifyChartData } from './simplifyChartData';
 export { default as statusBar } from './statusBar';
 export { default as urlConstants } from './urlConstants';
 export { filterList, filterScams } from './search';
-export { getFirstGrapheme, initials, removeLeadingZeros } from './formatters';
+export {
+  getFirstGrapheme,
+  initials,
+  removeLeadingZeros,
+  sanitizeSeedPhrase,
+} from './formatters';

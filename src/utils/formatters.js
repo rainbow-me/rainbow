@@ -41,8 +41,19 @@ export function removeLeadingZeros(value = '') {
   return value;
 }
 
+export function sanitizeSeedPhrase(string) {
+  // trim extraneous whitespaces + remove new lines / line breaks
+  return string
+    .replace(/(\r\n|\n|\r)/gm, ' ')
+    .trim()
+    .split(' ')
+    .filter(word => !!word)
+    .join(' ');
+}
+
 export default {
   getFirstGrapheme,
   initials,
   removeLeadingZeros,
+  sanitizeSeedPhrase,
 };
