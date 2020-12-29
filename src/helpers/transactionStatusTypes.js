@@ -1,6 +1,8 @@
 export default {
   approved: 'approved',
   approving: 'approving',
+  cancelled: 'cancelled',
+  cancelling: 'cancelling',
   deposited: 'deposited',
   depositing: 'depositing',
   failed: 'failed',
@@ -11,6 +13,7 @@ export default {
   self: 'self',
   sending: 'sending',
   sent: 'sent',
+  speeding_up: 'speeding up',
   swapped: 'swapped',
   swapping: 'swapping',
   unknown: 'unknown status',

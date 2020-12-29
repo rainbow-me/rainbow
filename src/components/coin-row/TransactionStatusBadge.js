@@ -14,6 +14,12 @@ const StatusProps = {
     marginRight: 4,
     name: 'dot',
   },
+  [TransactionStatusTypes.cancelled]: {
+    marginRight: 4,
+  },
+  [TransactionStatusTypes.cancelling]: {
+    marginRight: 4,
+  },
   [TransactionStatusTypes.deposited]: {
     name: 'sunflower',
     style: { fontSize: 11, left: -1.3, marginBottom: 1.5, marginRight: 1 },
@@ -25,6 +31,9 @@ const StatusProps = {
     marginRight: 4,
   },
   [TransactionStatusTypes.swapping]: {
+    marginRight: 4,
+  },
+  [TransactionStatusTypes.speeding_up]: {
     marginRight: 4,
   },
   [TransactionStatusTypes.failed]: {

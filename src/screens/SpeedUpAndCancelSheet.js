@@ -20,6 +20,7 @@ import {
 } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
 import { toHex } from '../handlers/web3';
+import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 import { sendTransaction } from '../model/wallet';
 import { dataAddNewTransaction } from '../redux/data';
 import { safeAreaInsetValues } from '../utils';
@@ -31,6 +32,7 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { colors, position } from '@rainbow-me/styles';
+import logger from 'logger';
 
 const isReanimatedAvailable = !(
   !TurboModuleRegistry.get('NativeReanimated') &&
@@ -115,12 +117,15 @@ export default function SpeedUpAndCancelSheet() {
     const hash = await sendTransaction({
       transaction: cancelTxPayload,
     });
-
-    cancelTxPayload.hash = hash;
-    dispatch(dataAddNewTransaction(cancelTxPayload));
+    // Update the hash on the original tx
+    tx.hash = hash;
+    tx.status = TransactionStatusTypes.cancelling;
+    logger.log(JSON.stringify(tx, null, 2));
+    dispatch(dataAddNewTransaction(tx));
 
     goBack();
-  }, [accountAddress, dispatch, goBack, selectedGasPrice, tx.nonce]);
+  }, [accountAddress, dispatch, goBack, selectedGasPrice, tx]);
+
   const handleSpeedUp = useCallback(async () => {
     const rawGasPrice = get(selectedGasPrice, 'value.amount');
 
@@ -138,19 +143,12 @@ export default function SpeedUpAndCancelSheet() {
       transaction: fasterTxPayload,
     });
 
-    fasterTxPayload.hash = hash;
-    dispatch(dataAddNewTransaction(fasterTxPayload));
+    tx.hash = hash;
+    tx.status = TransactionStatusTypes.speeding_up;
+    dispatch(dataAddNewTransaction(tx));
 
     goBack();
-  }, [
-    dispatch,
-    goBack,
-    selectedGasPrice,
-    tx.data,
-    tx.gasLimit,
-    tx.nonce,
-    tx.to,
-  ]);
+  }, [dispatch, goBack, selectedGasPrice, tx]);
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
