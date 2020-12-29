@@ -22,7 +22,8 @@ import { Emoji, Text } from '../components/text';
 import { toHex } from '../handlers/web3';
 import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 import { sendTransaction } from '../model/wallet';
-import { dataAddNewTransaction } from '../redux/data';
+import { getTitle } from '../parsers/transactions';
+import { dataUpdateTransaction } from '../redux/data';
 import { safeAreaInsetValues } from '../utils';
 import {
   useAccountSettings,
@@ -114,16 +115,23 @@ export default function SpeedUpAndCancelSheet() {
       to: accountAddress,
     };
 
-    const hash = await sendTransaction({
-      transaction: cancelTxPayload,
-    });
-    // Update the hash on the original tx
-    tx.hash = hash;
-    tx.status = TransactionStatusTypes.cancelling;
-    logger.log(JSON.stringify(tx, null, 2));
-    dispatch(dataAddNewTransaction(tx));
-
-    goBack();
+    try {
+      const originalHash = tx.hash;
+      const hash = await sendTransaction({
+        transaction: cancelTxPayload,
+      });
+      const updatedTx = { ...tx };
+      // Update the hash on the copy of the original tx
+      updatedTx.hash = hash;
+      updatedTx.status = TransactionStatusTypes.cancelling;
+      updatedTx.title = getTitle(updatedTx);
+      logger.log(JSON.stringify(updatedTx, null, 2));
+      dispatch(dataUpdateTransaction(originalHash, updatedTx));
+    } catch (e) {
+      logger.log('Error submitting cancel tx', e);
+    } finally {
+      goBack();
+    }
   }, [accountAddress, dispatch, goBack, selectedGasPrice, tx]);
 
   const handleSpeedUp = useCallback(async () => {
@@ -139,15 +147,23 @@ export default function SpeedUpAndCancelSheet() {
       to: tx.to,
     };
 
-    const hash = await sendTransaction({
-      transaction: fasterTxPayload,
-    });
-
-    tx.hash = hash;
-    tx.status = TransactionStatusTypes.speeding_up;
-    dispatch(dataAddNewTransaction(tx));
-
-    goBack();
+    try {
+      const originalHash = tx.hash;
+      const hash = await sendTransaction({
+        transaction: fasterTxPayload,
+      });
+      const updatedTx = { ...tx };
+      // Update the hash on the copy of the original tx
+      updatedTx.hash = hash;
+      updatedTx.status = TransactionStatusTypes.speeding_up;
+      updatedTx.title = getTitle(updatedTx);
+      logger.log(JSON.stringify(updatedTx, null, 2));
+      dispatch(dataUpdateTransaction(originalHash, updatedTx));
+    } catch (e) {
+      logger.log('Error submitting cancel tx', e);
+    } finally {
+      goBack();
+    }
   }, [dispatch, goBack, selectedGasPrice, tx]);
 
   useEffect(() => {

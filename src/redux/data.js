@@ -517,7 +517,10 @@ export const dataWatchPendingTransactions = () => async (
               direction: isSelf ? DirectionTypes.self : DirectionTypes.out,
               pending: false,
               protocol: tx?.protocol,
-              status: getConfirmedState(tx.type),
+              status:
+                tx.status === TransactionStatusTypes.cancelling
+                  ? TransactionStatusTypes.cancelled
+                  : getConfirmedState(tx.type),
               type: tx?.type,
             });
             updatedPending.status = newStatus;
@@ -560,6 +563,23 @@ export const dataWatchPendingTransactions = () => async (
   }
 
   return false;
+};
+
+export const dataUpdateTransaction = (txHash, txObj) => (
+  dispatch,
+  getState
+) => {
+  const { transactions } = getState().data;
+
+  const allOtherTx = transactions.filter(tx => tx.hash !== txHash);
+  const updatedTransactions = [txObj].concat(allOtherTx);
+
+  dispatch({
+    payload: updatedTransactions,
+    type: DATA_UPDATE_TRANSACTIONS,
+  });
+  const { accountAddress, network } = getState().settings;
+  saveLocalTransactions(updatedTransactions, accountAddress, network);
 };
 
 const updatePurchases = updatedTransactions => dispatch => {
