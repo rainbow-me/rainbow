@@ -43,8 +43,14 @@ function DiscoverSheetIOS() {
   const insets = useSafeArea();
   const isFocused = useIsFocused();
   const ref = useRef();
+  const listeners = useRef([]);
   const value = useMemo(
     () => ({
+      addOnCrossMagicBorderListener(listener) {
+        listeners.current.push(listener);
+        const index = listeners.current.length - 1;
+        return () => listeners.current.splice(index, 1);
+      },
       jumpToShort() {
         const screen = findNodeHandle(ref.current);
         if (screen) {
@@ -67,6 +73,9 @@ function DiscoverSheetIOS() {
         initialAnimation={false}
         interactsWithOuterScrollView
         isHapticFeedbackEnabled={false}
+        onCrossMagicBorder={({ nativeEvent }) =>
+          listeners.current.forEach(listener => listener(nativeEvent))
+        }
         presentGlobally={false}
         scrollsToTopOnTapStatusBar={isFocused}
         showDragIndicator={false}
