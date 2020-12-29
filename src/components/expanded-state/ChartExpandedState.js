@@ -160,6 +160,7 @@ export default function ChartExpandedState({ asset }) {
                   color={color}
                   inputType={AssetInputTypes.out}
                   label={`􀖅 Get ${asset.symbol}`}
+                  weight="heavy"
                 />
               </Column>
             )}

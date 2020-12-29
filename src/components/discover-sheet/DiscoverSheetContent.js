@@ -9,12 +9,11 @@ import { colors } from '@rainbow-me/styles';
 
 const HeaderTitle = styled(Text).attrs({
   align: 'center',
-  color: colors.blueGreyDark,
+  color: colors.alpha(colors.blueGreyDark, 0.8),
   letterSpacing: 'roundedMedium',
   lineHeight: 'loose',
-  opacity: 0.8,
   size: 'large',
-  weight: 'bold',
+  weight: 'heavy',
 })``;
 
 export default function DiscoverSheetContent() {

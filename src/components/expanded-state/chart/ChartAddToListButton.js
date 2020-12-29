@@ -18,26 +18,24 @@ const AddToListButton = styled(Centered)`
 `;
 
 const Circle = styled(RadialGradient).attrs({
-  center: [0, 15],
-  colors: ['#FFFFFF', '#F2F4F7'],
+  center: [0, 20],
+  colors: colors.gradients.lightestGrey,
 })`
-  border-radius: 30px;
+  border-radius: 20px;
   height: 40px;
   overflow: hidden;
   width: 40px;
-  padding-top: 5px;
-  padding-left: 2px;
 `;
 
 const PlusIcon = styled(Text).attrs({
   align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.2),
+  color: colors.alpha(colors.blueGreyDark, 0.4),
   letterSpacing: 'zero',
-  size: 'larger',
-  weight: 'heavy',
+  size: 'large',
+  weight: 'bold',
 })`
   height: 100%;
-  line-height: 28px;
+  line-height: 39px;
   width: 100%;
 `;
 
