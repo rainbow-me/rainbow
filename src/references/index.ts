@@ -1,7 +1,10 @@
 import { mapKeys, mapValues } from 'lodash';
 import { savingsAssets } from './compound';
 import { Asset, SavingsAsset } from '@rainbow-me/entities';
-
+export {
+  defiSdkAdapterRegistryABI,
+  DEFI_SDK_ADAPTER_REGISTRY_ADDRESS,
+} from './defisdk';
 export {
   CURATED_UNISWAP_TOKENS,
   PAIR_GET_RESERVES_CALL_DATA,
