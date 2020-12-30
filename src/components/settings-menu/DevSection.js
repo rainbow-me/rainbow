@@ -1,12 +1,7 @@
 import AsyncStorage from '@react-native-community/async-storage';
-import Clipboard from '@react-native-community/clipboard';
 import React, { useCallback, useContext } from 'react';
 import { Alert, ScrollView } from 'react-native';
-import {
-  DEV_SEEDS,
-  GANACHE_URL_ANDROID,
-  GANACHE_URL_IOS,
-} from 'react-native-dotenv';
+import { GANACHE_URL_ANDROID, GANACHE_URL_IOS } from 'react-native-dotenv';
 import { Restart } from 'react-native-restart';
 import { ListFooter, ListItem } from '../list';
 import { RadioListItem } from '../radio-list';
@@ -85,10 +80,6 @@ const DevSection = () => {
       <ListItem
         label="🤷 Restore default experimental config"
         onPress={() => AsyncStorage.removeItem('experimentalConfig')}
-      />
-      <ListItem
-        label="‍💻 Copy dev seeds"
-        onPress={() => Clipboard.setString(DEV_SEEDS)}
       />
       <ListItem
         label="‍👾 Connect to ganache"
