@@ -140,6 +140,7 @@ const SwipeableList = ({ components, speed }) => {
         >
           <Animated.View>
             <PanGestureHandler
+              activeOffsetX={[-6, 10]}
               onGestureEvent={onGestureEvent}
               onHandlerStateChange={onGestureEvent}
               ref={panRef}
