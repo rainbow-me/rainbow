@@ -77,6 +77,7 @@ function DiscoverSheetIOS() {
           listeners.current.forEach(listener => listener(nativeEvent))
         }
         presentGlobally={false}
+        ref={ref}
         scrollsToTopOnTapStatusBar={isFocused}
         showDragIndicator={false}
         topOffset={insets.top}
