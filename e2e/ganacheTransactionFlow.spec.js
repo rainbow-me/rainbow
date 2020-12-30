@@ -200,7 +200,7 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.delay(3000);
     await Helpers.tap('send-asset-ETH');
     await Helpers.delay(3000);
-    await Helpers.typeText('selected-asset-field-input', '.01', true);
+    await Helpers.typeText('selected-asset-field-input', '.001', true);
     await Helpers.delay(3000);
     await Helpers.tapAndLongPress('send-sheet-confirm');
     await Helpers.delay(10000);
