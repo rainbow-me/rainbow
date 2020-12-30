@@ -90,6 +90,7 @@ const GasSpeedButton = ({
   type,
   theme = 'dark',
   options = null,
+  minGasPrice = null,
 }) => {
   const inputRef = useRef(null);
   const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
@@ -212,11 +213,11 @@ const GasSpeedButton = ({
         )} ~ ${defaultCustomGasConfirmationTime}`;
       } else if (gasPrices[CUSTOM]?.value) {
         const priceInWei = Number(gasPrices[CUSTOM].value.amount);
-        const minGasPrice = Number(gasPrices[SLOW].value.amount);
-        const maxGasPrice = Number(gasPrices[FAST].value.amount);
-        if (priceInWei < minGasPrice) {
+        const minGasPriceSlow = Number(gasPrices[SLOW].value.amount);
+        const maxGasPriceFast = Number(gasPrices[FAST].value.amount);
+        if (priceInWei < minGasPriceSlow) {
           timeSymbol = '>';
-        } else if (priceInWei > maxGasPrice) {
+        } else if (priceInWei > maxGasPriceFast) {
           timeSymbol = '<';
         }
 
@@ -291,11 +292,25 @@ const GasSpeedButton = ({
       return;
     }
 
+    if (minGasPrice && Number(customGasPriceInput) < minGasPrice) {
+      Alert({
+        buttons: [
+          {
+            onPress: () => inputRef.current?.focus(),
+            text: 'OK',
+          },
+        ],
+        message: `The minimum gas price valid allowed is ${minGasPrice} GWei`,
+        title: 'Gas Price Too Low',
+      });
+      return;
+    }
+
     const priceInWei = gweiToWei(customGasPriceInput);
-    const minGasPrice = Number(gasPrices?.slow?.value?.amount || 0);
-    const maxGasPrice = Number(gasPrices?.fast?.value?.amount || 0);
-    let tooLow = priceInWei < minGasPrice;
-    let tooHigh = priceInWei > maxGasPrice * 2.5;
+    const minGasPriceSlow = Number(gasPrices?.slow?.value?.amount || 0);
+    const maxGasPriceFast = Number(gasPrices?.fast?.value?.amount || 0);
+    let tooLow = priceInWei < minGasPriceSlow;
+    let tooHigh = priceInWei > maxGasPriceFast * 2.5;
 
     if (tooLow || tooHigh) {
       Alert({
@@ -322,9 +337,11 @@ const GasSpeedButton = ({
     }
   }, [
     customGasPriceInput,
-    dontBlur,
-    gasPrices,
     inputFocused,
+    minGasPrice,
+    gasPrices?.slow?.value?.amount,
+    gasPrices?.fast?.value?.amount,
+    dontBlur,
     handleCustomGasBlur,
   ]);
 

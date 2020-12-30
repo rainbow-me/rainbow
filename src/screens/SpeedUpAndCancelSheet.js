@@ -1,6 +1,13 @@
 import { useRoute } from '@react-navigation/native';
+import { BigNumber } from 'bignumber.js';
 import { get, isEmpty } from 'lodash';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { InteractionManager, TurboModuleRegistry } from 'react-native';
 import Animated, {
   useAnimatedStyle,
@@ -22,6 +29,7 @@ import { Emoji, Text } from '../components/text';
 import { toHex } from '../handlers/web3';
 import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 import { sendTransaction } from '../model/wallet';
+import { weiToGwei } from '../parsers/gas';
 import { getTitle } from '../parsers/transactions';
 import { dataUpdateTransaction } from '../redux/data';
 import { safeAreaInsetValues } from '../utils';
@@ -85,6 +93,17 @@ const text = {
   [SPEED_UP]: `This will speed up your pending transaction by replacing it. There’s still a chance your original transaction will confirm first!`,
 };
 
+const calcMinGasPriceAllowed = prevGasPrice => {
+  const prevGasPriceBN = new BigNumber(prevGasPrice);
+
+  const newGasPriceBN = prevGasPriceBN
+    .times(new BigNumber('110'))
+    .dividedBy(new BigNumber('100'));
+
+  const newGasPrice = newGasPriceBN.toFixed();
+  return Number(weiToGwei(newGasPrice));
+};
+
 export default function SpeedUpAndCancelSheet() {
   const { goBack } = useNavigation();
   const { accountAddress } = useAccountSettings();
@@ -104,11 +123,12 @@ export default function SpeedUpAndCancelSheet() {
     params: { type, tx },
   } = useRoute();
   const [keyboardVisible, setKeyboardVisible] = useState(false);
+  const minGasPrice = useMemo(() => calcMinGasPriceAllowed(tx.gasPrice), [
+    tx.gasPrice,
+  ]);
 
   const handleCancellation = useCallback(async () => {
     const rawGasPrice = get(selectedGasPrice, 'value.amount');
-
-    // TODO - Check that rawGasPrice is >= 1.1x of tx.gasPrice;
 
     const cancelTxPayload = {
       gasPrice: toHex(rawGasPrice),
@@ -319,6 +339,7 @@ export default function SpeedUpAndCancelSheet() {
               )}
               <GasSpeedButtonContainer>
                 <GasSpeedButton
+                  minGasPrice={minGasPrice}
                   onCustomGasBlur={handleCustomGasBlur}
                   onCustomGasFocus={handleCustomGasFocus}
                   options={['fast', 'custom']}
