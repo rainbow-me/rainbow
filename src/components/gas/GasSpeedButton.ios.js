@@ -89,6 +89,7 @@ const GasSpeedButton = ({
   testID,
   type,
   theme = 'dark',
+  options = null,
 }) => {
   const inputRef = useRef(null);
   const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
@@ -184,13 +185,13 @@ const GasSpeedButton = ({
       return;
     }
     LayoutAnimation.easeInEaseOut();
+    const gasOptions = options || GasSpeedOrder;
+    const currentSpeedIndex = gasOptions.indexOf(selectedGasPriceOption);
+    const nextSpeedIndex = (currentSpeedIndex + 1) % gasOptions.length;
 
-    const currentSpeedIndex = GasSpeedOrder.indexOf(selectedGasPriceOption);
-    const nextSpeedIndex = (currentSpeedIndex + 1) % GasSpeedOrder.length;
-
-    const nextSpeed = GasSpeedOrder[nextSpeedIndex];
+    const nextSpeed = gasOptions[nextSpeedIndex];
     updateGasPriceOption(nextSpeed);
-  }, [inputFocused, selectedGasPriceOption, updateGasPriceOption]);
+  }, [inputFocused, options, selectedGasPriceOption, updateGasPriceOption]);
 
   const formatAnimatedGasPrice = useCallback(
     animatedPrice =>

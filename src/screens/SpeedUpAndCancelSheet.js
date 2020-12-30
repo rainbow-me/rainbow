@@ -93,6 +93,7 @@ export default function SpeedUpAndCancelSheet() {
   const keyboardHeight = useKeyboardHeight();
   const {
     gasPrices,
+    updateGasPriceOption,
     selectedGasPrice,
     startPollingGasPrices,
     stopPollingGasPrices,
@@ -125,7 +126,6 @@ export default function SpeedUpAndCancelSheet() {
       updatedTx.hash = hash;
       updatedTx.status = TransactionStatusTypes.cancelling;
       updatedTx.title = getTitle(updatedTx);
-      logger.log(JSON.stringify(updatedTx, null, 2));
       dispatch(dataUpdateTransaction(originalHash, updatedTx));
     } catch (e) {
       logger.log('Error submitting cancel tx', e);
@@ -157,7 +157,6 @@ export default function SpeedUpAndCancelSheet() {
       updatedTx.hash = hash;
       updatedTx.status = TransactionStatusTypes.speeding_up;
       updatedTx.title = getTitle(updatedTx);
-      logger.log(JSON.stringify(updatedTx, null, 2));
       dispatch(dataUpdateTransaction(originalHash, updatedTx));
     } catch (e) {
       logger.log('Error submitting cancel tx', e);
@@ -169,11 +168,13 @@ export default function SpeedUpAndCancelSheet() {
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
       startPollingGasPrices();
+      // Always default to fast
+      updateGasPriceOption('fast');
     });
     return () => {
       stopPollingGasPrices();
     };
-  });
+  }, [startPollingGasPrices, stopPollingGasPrices, updateGasPriceOption]);
 
   useEffect(() => {
     if (!isEmpty(gasPrices) && !calculatingGasLimit.current) {
@@ -320,6 +321,7 @@ export default function SpeedUpAndCancelSheet() {
                 <GasSpeedButton
                   onCustomGasBlur={handleCustomGasBlur}
                   onCustomGasFocus={handleCustomGasFocus}
+                  options={['fast', 'custom']}
                   theme="light"
                   type="transaction"
                 />
