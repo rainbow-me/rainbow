@@ -1,6 +1,6 @@
 import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
-import { find } from 'lodash';
+import { find, toLower } from 'lodash';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Linking, requireNativeComponent } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
@@ -209,7 +209,9 @@ export default function TransactionList({
 
       const isSent =
         status === TransactionStatusTypes.sending ||
-        status === TransactionStatusTypes.sent;
+        status === TransactionStatusTypes.sent ||
+        TransactionStatusTypes.cancelling ||
+        TransactionStatusTypes.speeding_up;
       const showContactInfo = hasAddableContact(status, type);
 
       const headerInfo = {
@@ -232,7 +234,8 @@ export default function TransactionList({
         contactColor = colors.getRandomColor();
       }
 
-      const canBeResubmitted = isSent && !minedAt;
+      const isOutgoing = toLower(from) === toLower(accountAddress);
+      const canBeResubmitted = isOutgoing && !minedAt;
 
       if (hash) {
         let buttons = [
@@ -288,6 +291,7 @@ export default function TransactionList({
               });
             } else if (
               (!showContactInfo && buttonIndex === 0) ||
+              (!showContactInfo && buttonIndex === 2 && canBeResubmitted) ||
               (showContactInfo && buttonIndex === 1 && !canBeResubmitted) ||
               (showContactInfo && buttonIndex === 3 && canBeResubmitted)
             ) {
@@ -301,7 +305,7 @@ export default function TransactionList({
         );
       }
     },
-    [contacts, navigate, network, transactions]
+    [accountAddress, contacts, navigate, network, transactions]
   );
 
   const onCopyAddressPress = useCallback(

@@ -32,6 +32,7 @@ import { sendTransaction } from '../model/wallet';
 import { gweiToWei, weiToGwei } from '../parsers/gas';
 import { getTitle } from '../parsers/transactions';
 import { dataUpdateTransaction } from '../redux/data';
+import { updateGasPriceForSpeed } from '../redux/gas';
 import { safeAreaInsetValues } from '../utils';
 import deviceUtils from '../utils/deviceUtils';
 import {
@@ -180,7 +181,7 @@ export default function SpeedUpAndCancelSheet() {
       updatedTx.title = getTitle(updatedTx);
       dispatch(dataUpdateTransaction(originalHash, updatedTx));
     } catch (e) {
-      logger.log('Error submitting cancel tx', e);
+      logger.log('Error submitting speed up tx', e);
     } finally {
       goBack();
     }
@@ -199,9 +200,12 @@ export default function SpeedUpAndCancelSheet() {
 
   useEffect(() => {
     if (!isEmpty(gasPrices) && !calculatingGasLimit.current) {
-      updateTxFee(tx.gasLimit);
+      if (Number(gweiToWei(minGasPrice)) > Number(gasPrices.fast.value)) {
+        dispatch(updateGasPriceForSpeed('fast', gweiToWei(minGasPrice)));
+        updateTxFee(tx.gasLimit);
+      }
     }
-  }, [gasPrices, tx, tx.gasLimit, updateTxFee]);
+  }, [dispatch, gasPrices, minGasPrice, tx, tx.gasLimit, updateTxFee]);
 
   const handleCustomGasFocus = useCallback(() => {
     setKeyboardVisible(true);

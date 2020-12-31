@@ -119,12 +119,6 @@ const GasSpeedButton = ({
     options.forEach(speed => {
       filteredGasPrices[speed] = gasPrices[speed];
     });
-    if (minGasPrice && filteredGasPrices?.fast) {
-      filteredGasPrices.fast.value = {
-        amount: gweiToWei(minGasPrice),
-        display: `${minGasPrice} Gwei`,
-      };
-    }
     return filteredGasPrices;
   }, [gasPrices, minGasPrice, options]);
 
@@ -237,7 +231,9 @@ const GasSpeedButton = ({
         )} ~ ${defaultCustomGasConfirmationTime}`;
       } else if (gasPricesAvailable[CUSTOM]?.value) {
         const priceInWei = Number(gasPricesAvailable[CUSTOM].value.amount);
-        const minGasPriceSlow = Number(gasPricesAvailable[SLOW].value.amount);
+        const minGasPriceSlow = gasPricesAvailable[SLOW]
+          ? Number(gasPricesAvailable[SLOW].value.amount)
+          : Number(gasPricesAvailable[FAST].value.amount);
         const maxGasPriceFast = Number(gasPricesAvailable[FAST].value.amount);
         if (priceInWei < minGasPriceSlow) {
           timeSymbol = '>';

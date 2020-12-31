@@ -507,6 +507,7 @@ export const dataWatchPendingTransactions = () => async (
       const updatedPending = { ...tx };
       const txHash = ethereumUtils.getHash(tx);
       try {
+        logger.log('Checking pending tx with hash', txHash);
         const txObj = await getTransactionReceipt(txHash);
         if (txObj && txObj.blockNumber) {
           const minedAt = Math.floor(Date.now() / 1000);

@@ -1,4 +1,4 @@
-import { compact, get } from 'lodash';
+import { compact, get, toLower } from 'lodash';
 import React, { useCallback } from 'react';
 import { Linking } from 'react-native';
 import { css } from 'styled-components/primitives';
@@ -83,7 +83,7 @@ const TopRow = ({ balance, pending, status, title }) => (
 
 export default function TransactionCoinRow({ item, ...props }) {
   const { contact } = item;
-  const { network } = useAccountSettings();
+  const { network, accountAddress } = useAccountSettings();
   const { navigate } = useNavigation();
 
   const onPressTransaction = useCallback(async () => {
@@ -95,7 +95,8 @@ export default function TransactionCoinRow({ item, ...props }) {
       status === TransactionStatusTypes.sent;
     const showContactInfo = hasAddableContact(status, type);
 
-    const canBeResubmitted = isSent && !minedAt;
+    const isOutgoing = toLower(from) === toLower(accountAddress);
+    const canBeResubmitted = isOutgoing && !minedAt;
 
     const headerInfo = {
       address: '',
@@ -170,9 +171,8 @@ export default function TransactionCoinRow({ item, ...props }) {
             });
           } else if (
             (!showContactInfo && buttonIndex === 0) ||
-            (showContactInfo && buttonIndex === 1)(
-              showContactInfo && buttonIndex === 1 && !canBeResubmitted
-            ) ||
+            (!showContactInfo && buttonIndex === 2 && canBeResubmitted) ||
+            (showContactInfo && buttonIndex === 1 && !canBeResubmitted) ||
             (showContactInfo && buttonIndex === 3 && canBeResubmitted)
           ) {
             const normalizedHash = hash.replace(/-.*/g, '');
@@ -184,7 +184,7 @@ export default function TransactionCoinRow({ item, ...props }) {
         }
       );
     }
-  }, [contact, item, navigate, network]);
+  }, [accountAddress, contact, item, navigate, network]);
 
   return (
     <ButtonPressAnimation onPress={onPressTransaction} scaleTo={0.96}>

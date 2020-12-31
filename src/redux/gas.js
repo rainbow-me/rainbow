@@ -56,6 +56,26 @@ const getDefaultTxFees = () => (dispatch, getState) => {
   };
 };
 
+export const updateGasPriceForSpeed = (speed, newPrice) => async (
+  dispatch,
+  getState
+) => {
+  const { gasPrices } = getState().gas;
+
+  const newGasPrices = { ...gasPrices };
+  newGasPrices[speed].value = {
+    amount: newPrice,
+    display: `${newPrice} Gwei`,
+  };
+
+  dispatch({
+    payload: {
+      gasPrices,
+    },
+    type: GAS_PRICES_SUCCESS,
+  });
+};
+
 export const gasPricesStartPolling = () => async (dispatch, getState) => {
   const { gasPrices } = getState().gas;
 
