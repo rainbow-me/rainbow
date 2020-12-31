@@ -255,7 +255,7 @@ export const emitChartsRequest = (
 
   let assetCodes;
   if (assetAddress) {
-    assetCodes = [assetAddress];
+    assetCodes = Array.isArray(assetAddress) ? assetAddress : [assetAddress];
   } else {
     const { assets } = getState().data;
     const assetAddresses = map(assets, 'address');
