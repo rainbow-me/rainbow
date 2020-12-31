@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import Animated, {
   newInterpolate,
@@ -42,7 +42,7 @@ const BackgroundFill = styled(Centered).attrs({
   top: 8;
 `;
 
-function Stack({ children, left, stackOpacity, onPress }) {
+function Stack({ children, left, stackOpacity, onPress, disabled }) {
   const isVisible = useDerivedValue(() => {
     const value = Math.round(
       newInterpolate(stackOpacity.value, [50, 51], [0, 1], 'clamp')
@@ -60,6 +60,7 @@ function Stack({ children, left, stackOpacity, onPress }) {
   return (
     <>
       <ButtonPressAnimation
+        disabled={disabled}
         onPress={onPress}
         style={{ height: 59, width: 59, zIndex: 10 }}
       >
@@ -83,13 +84,17 @@ function Stack({ children, left, stackOpacity, onPress }) {
 
 export default function DiscoverSheetHeader(props) {
   const { navigate } = useNavigation();
+  const [buttonsEnabled, setButtonsEnabled] = useState(true);
   const buttonOpacity = useSharedValue(1);
   const { jumpToShort, addOnCrossMagicBorderListener } =
     useContext(DiscoverSheetContext) || {};
   const { yPosition } = props;
   const stackOpacity = yPosition;
   const onCrossMagicBorder = useCallback(
-    ({ below }) => (buttonOpacity.value = below ? 0 : 1),
+    ({ below }) => {
+      buttonOpacity.value = below ? 0 : 1;
+      setButtonsEnabled(!below);
+    },
     [buttonOpacity]
   );
   useEffect(() => addOnCrossMagicBorderListener(onCrossMagicBorder), [
@@ -109,6 +114,7 @@ export default function DiscoverSheetHeader(props) {
       style={[animatedStyle]}
     >
       <Stack
+        disabled={!buttonsEnabled}
         left={19}
         onPress={() => navigate(Routes.WALLET_SCREEN)}
         stackOpacity={stackOpacity}
@@ -122,6 +128,7 @@ export default function DiscoverSheetHeader(props) {
         <Icon color={colors.white} direction="left" name="caret" {...props} />
       </Stack>
       <Stack
+        disabled={!buttonsEnabled}
         left={18}
         onPress={() => jumpToShort?.()}
         stackOpacity={stackOpacity}
