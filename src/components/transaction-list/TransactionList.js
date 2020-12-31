@@ -232,7 +232,7 @@ export default function TransactionList({
         contactColor = colors.getRandomColor();
       }
 
-      let canBeResubmitted = isSent && !minedAt;
+      const canBeResubmitted = isSent && !minedAt;
 
       if (hash) {
         let buttons = [
