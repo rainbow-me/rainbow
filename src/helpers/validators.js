@@ -3,7 +3,8 @@ import {
   isHexStringIgnorePrefix,
   isValidMnemonic,
   web3Provider,
-} from '../handlers/web3';
+} from '@rainbow-me/handlers/web3';
+import { sanitizeSeedPhrase } from '@rainbow-me/utils';
 
 // Currently supported Top Level Domains from ENS
 const supportedTLDs = ['eth', 'test', 'xyz', 'luxe', 'kred', 'club', 'art'];
@@ -53,8 +54,11 @@ export const checkIsValidAddressOrENS = async address => {
  * @return {Boolean}
  */
 const isValidSeedPhrase = seedPhrase => {
-  const phrases = seedPhrase.split(' ').filter(word => !!word).length;
-  return phrases >= 12 && isValidMnemonic(seedPhrase);
+  const sanitizedSeedPhrase = sanitizeSeedPhrase(seedPhrase);
+  return (
+    sanitizedSeedPhrase.split(' ').length >= 12 &&
+    isValidMnemonic(sanitizedSeedPhrase)
+  );
 };
 
 /**

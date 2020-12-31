@@ -48,7 +48,11 @@ import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import { sheetVerticalOffset } from '@rainbow-me/navigation/effects';
 import Routes from '@rainbow-me/routes';
 import { borders, colors, padding } from '@rainbow-me/styles';
-import { deviceUtils, ethereumUtils } from '@rainbow-me/utils';
+import {
+  deviceUtils,
+  ethereumUtils,
+  sanitizeSeedPhrase,
+} from '@rainbow-me/utils';
 import logger from 'logger';
 
 const sheetBottomPadding = 19;
@@ -211,7 +215,7 @@ export default function ImportSeedPhraseSheet() {
 
   const handlePressImportButton = useCallback(async () => {
     if (!isSecretValid || !seedPhrase) return null;
-    const input = seedPhrase.trim();
+    const input = sanitizeSeedPhrase(seedPhrase);
     let name = null;
     // Validate ENS
     if (isENSAddressFormat(input)) {
@@ -278,7 +282,10 @@ export default function ImportSeedPhraseSheet() {
   useEffect(() => {
     if (!wasImporting && isImporting) {
       startAnalyticsTimeout(async () => {
-        const input = resolvedAddress ? resolvedAddress : seedPhrase.trim();
+        const input = resolvedAddress
+          ? resolvedAddress
+          : sanitizeSeedPhrase(seedPhrase);
+
         const previousWalletCount = keys(wallets).length;
         initializeWallet(
           input,

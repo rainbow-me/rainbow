@@ -5,6 +5,7 @@ import { createSelector } from 'reselect';
 import { findLatestBackUp } from '../model/backup';
 import { setIsWalletLoading as rawSetIsWalletLoading } from '../redux/wallets';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
+import logger from 'logger';
 
 const walletSelector = createSelector(
   ({ wallets: { isWalletLoading, selected = {}, walletNames, wallets } }) => ({
@@ -38,7 +39,13 @@ export default function useWallets() {
   );
 
   const isDamaged = useMemo(() => {
-    return isEmpty(selectedWallet) || !wallets || selectedWallet?.damaged;
+    const bool = isEmpty(selectedWallet) || !wallets || selectedWallet?.damaged;
+    if (bool) {
+      logger.sentry('Wallet is damaged. Check values below:');
+      logger.sentry('selectedWallet: ', selectedWallet);
+      logger.sentry('wallets: ', wallets);
+    }
+    return bool;
   }, [selectedWallet, wallets]);
 
   return {

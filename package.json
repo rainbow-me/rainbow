@@ -1,11 +1,11 @@
 {
   "name": "Rainbow",
-  "version": "1.2.41-1",
+  "version": "1.2.43-1",
   "private": true,
   "scripts": {
     "android": "adb uninstall me.rainbow || true && react-native run-android",
     "android:apk": "cd android && ./gradlew assembleRelease && (adb uninstall me.rainbow || true) && adb install app/build/outputs/apk/release/app-release.apk",
-    "android:bundle": "cd android && ./gradlew bundleRelease && open app/build/outputs/bundle/release/",
+    "android:bundle": "./scripts/check-env.sh && cd android && ./gradlew bundleRelease && open app/build/outputs/bundle/release/",
     "detox:android": "detox build -c android.emu.debug && detox test -R 1 -c android.emu.debug --loglevel verbose",
     "detox:android:release": "detox build -c android.emu.release && detox test -R 1 -c android.emu.release",
     "detox:ios": "detox build -c ios.sim.debug && detox test -R 1 -c ios.sim.debug",
@@ -134,7 +134,7 @@
     "querystring-es3": "^0.2.1",
     "rainbow-token-list": "^1.0.9",
     "react": "16.11.0",
-    "react-coin-icon": "^0.1.32",
+    "react-coin-icon": "^0.1.33",
     "react-fast-compare": "^2.0.4",
     "react-flatten-children": "^1.1.2",
     "react-native": "0.63.3",

@@ -32,7 +32,7 @@ describe('Send Sheet Interaction Flow', () => {
 
   it('Should show the "Add wallet modal" after tapping import with a valid seed"', async () => {
     await Helpers.clearField('import-sheet-input');
-    await Helpers.typeText('import-sheet-input', process.env.DEV_SEEDS, false);
+    await Helpers.typeText('import-sheet-input', process.env.TEST_SEEDS, false);
     await Helpers.delay(1500);
     await Helpers.checkIfElementHasString(
       'import-sheet-button-label',
@@ -101,9 +101,9 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.swipe('wallet-screen', 'right');
     await Helpers.delay(2000);
     if (device.getPlatform() === 'android') {
-      await Helpers.checkIfElementByTextToExist('poopcoin.eth');
+      await Helpers.checkIfElementByTextToExist('0x3C...D3f608');
     } else {
-      await Helpers.checkIfElementByTextIsVisible('poopcoin.eth');
+      await Helpers.checkIfElementByTextIsVisible('0x3C...D3f608');
     }
     await Helpers.swipe('profile-screen', 'left');
   });

@@ -20,6 +20,7 @@ const NOOP = () => undefined;
 const unlock = async (wallet, currentRap, index, parameters) => {
   const { dispatch } = store;
   const {
+    accountAddress,
     amount,
     assetToUnlock,
     contractAddress,
@@ -36,6 +37,7 @@ const unlock = async (wallet, currentRap, index, parameters) => {
   logger.log('[unlock]', amount, override, _amount);
 
   const { gasPrices } = store.getState().gas;
+
   const { address: assetAddress } = assetToUnlock;
 
   let gasLimit;
@@ -45,6 +47,7 @@ const unlock = async (wallet, currentRap, index, parameters) => {
       contractAddress,
     });
     gasLimit = await contractUtils.estimateApprove(
+      accountAddress,
       assetAddress,
       contractAddress
     );
