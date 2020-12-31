@@ -98,15 +98,6 @@ export const backupSheetConfig = {
   },
 };
 
-export const speedUpAndCancelSheetConfig = {
-  options: ({ route: { params = {} } }) => ({
-    ...buildCoolModalConfig({
-      ...params,
-      longFormHeight: 560,
-    }),
-  }),
-};
-
 export const expandedAssetSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({

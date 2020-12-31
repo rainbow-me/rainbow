@@ -119,7 +119,7 @@ const GasSpeedButton = ({
     options.forEach(speed => {
       filteredGasPrices[speed] = gasPrices[speed];
     });
-    if (minGasPrice) {
+    if (minGasPrice && filteredGasPrices?.fast) {
       filteredGasPrices.fast.value = {
         amount: gweiToWei(minGasPrice),
         display: `${minGasPrice} Gwei`,

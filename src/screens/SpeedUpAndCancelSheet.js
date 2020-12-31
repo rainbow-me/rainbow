@@ -54,9 +54,6 @@ const springConfig = {
   stiffness: 1000,
 };
 
-// const Container = styled(Column)`
-//   flex: 1;
-// `;
 const Container = styled(Centered).attrs({
   direction: 'column',
 })`
@@ -231,17 +228,17 @@ export default function SpeedUpAndCancelSheet() {
   useEffect(() => {
     if (keyboardVisible) {
       offset.value = withSpring(
-        -keyboardHeight + safeAreaInsetValues.bottom,
+        -keyboardHeight + safeAreaInsetValues.bottom - 20,
         springConfig
       );
-      sheetOpacity.value = withSpring(android ? 0.8 : 0.3, springConfig);
+      sheetOpacity.value = withSpring(android ? 0.8 : 1, springConfig);
     } else {
       offset.value = withSpring(0, springConfig);
       sheetOpacity.value = withSpring(1, springConfig);
     }
   }, [keyboardHeight, keyboardVisible, offset, sheetOpacity]);
   const sheetHeight =
-    (type === CANCEL_TX ? 770 : 720) + safeAreaInsetValues.bottom;
+    (type === CANCEL_TX ? 520 : 465) + safeAreaInsetValues.bottom;
 
   const marginTop = android ? deviceHeight - sheetHeight + 210 : null;
 

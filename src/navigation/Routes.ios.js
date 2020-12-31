@@ -33,7 +33,6 @@ import {
   nativeStackDefaultConfigWithoutStatusBar,
   restoreSheetConfig,
   savingsSheetConfig,
-  speedUpAndCancelSheetConfig,
   stackNavigationConfig,
 } from './config';
 import {
@@ -250,7 +249,15 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={SpeedUpAndCancelSheet}
         name={Routes.SPEED_UP_AND_CANCEL_SHEET}
-        {...speedUpAndCancelSheetConfig}
+        options={{
+          allowsDragToDismiss: true,
+          backgroundColor: '#25292E',
+          backgroundOpacity: 0.6,
+          customStack: true,
+          headerHeight: 0,
+          isShortFormEnabled: false,
+          topOffset: 0,
+        }}
       />
       <NativeStack.Screen
         component={ChangeWalletSheet}
