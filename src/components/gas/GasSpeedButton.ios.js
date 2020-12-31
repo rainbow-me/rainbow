@@ -1,6 +1,12 @@
 import AnimateNumber from '@bankify/react-native-animate-number';
 import { get, isEmpty } from 'lodash';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { LayoutAnimation } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
@@ -104,6 +110,24 @@ const GasSpeedButton = ({
     txFees,
   } = useGas();
 
+  const gasPricesAvailable = useMemo(() => {
+    if (!options || !minGasPrice) {
+      return gasPrices;
+    }
+
+    const filteredGasPrices = {};
+    options.forEach(speed => {
+      filteredGasPrices[speed] = gasPrices[speed];
+    });
+    if (minGasPrice) {
+      filteredGasPrices.fast.value = {
+        amount: gweiToWei(minGasPrice),
+        display: `${minGasPrice} Gwei`,
+      };
+    }
+    return filteredGasPrices;
+  }, [gasPrices, minGasPrice, options]);
+
   const gasPrice = get(selectedGasPrice, 'txFee.native.value.amount');
   const customGasPriceTimeEstimateHandler = useRef(null);
 
@@ -113,14 +137,14 @@ const GasSpeedButton = ({
   const [inputFocused, setInputFocused] = useState(false);
 
   const defaultCustomGasPrice = Math.round(
-    weiToGwei(gasPrices?.fast?.value?.amount)
+    weiToGwei(gasPricesAvailable?.fast?.value?.amount)
   );
   const defaultCustomGasPriceUsd = get(
     txFees?.fast,
     'txFee.native.value.amount'
   );
   const defaultCustomGasConfirmationTime =
-    gasPrices?.fast?.estimatedTime?.display;
+    gasPricesAvailable?.fast?.estimatedTime?.display;
 
   const price = isNaN(gasPrice) ? '0.00' : gasPrice;
 
@@ -171,14 +195,14 @@ const GasSpeedButton = ({
         size="lmedium"
         weight="bold"
       >
-        {isEmpty(gasPrices) ||
+        {isEmpty(gasPricesAvailable) ||
         isEmpty(txFees) ||
         typeof isSufficientGas === 'undefined'
           ? 'Loading...'
           : animatedNumber}
       </Text>
     ),
-    [gasPrices, isSufficientGas, theme, txFees]
+    [gasPricesAvailable, isSufficientGas, theme, txFees]
   );
 
   const handlePress = useCallback(() => {
@@ -211,10 +235,10 @@ const GasSpeedButton = ({
         return `${formatAnimatedGasPrice(
           defaultCustomGasPriceUsd
         )} ~ ${defaultCustomGasConfirmationTime}`;
-      } else if (gasPrices[CUSTOM]?.value) {
-        const priceInWei = Number(gasPrices[CUSTOM].value.amount);
-        const minGasPriceSlow = Number(gasPrices[SLOW].value.amount);
-        const maxGasPriceFast = Number(gasPrices[FAST].value.amount);
+      } else if (gasPricesAvailable[CUSTOM]?.value) {
+        const priceInWei = Number(gasPricesAvailable[CUSTOM].value.amount);
+        const minGasPriceSlow = Number(gasPricesAvailable[SLOW].value.amount);
+        const maxGasPriceFast = Number(gasPricesAvailable[FAST].value.amount);
         if (priceInWei < minGasPriceSlow) {
           timeSymbol = '>';
         } else if (priceInWei > maxGasPriceFast) {
@@ -243,7 +267,7 @@ const GasSpeedButton = ({
     estimatedTimeValue,
     formatAnimatedGasPrice,
     gasPrice,
-    gasPrices,
+    gasPricesAvailable,
     selectedGasPrice,
     selectedGasPriceOption,
     type,
@@ -300,15 +324,19 @@ const GasSpeedButton = ({
             text: 'OK',
           },
         ],
-        message: `The minimum gas price valid allowed is ${minGasPrice} GWei`,
+        message: `The minimum gas price valid allowed is ${minGasPrice} GWEI`,
         title: 'Gas Price Too Low',
       });
       return;
     }
 
     const priceInWei = gweiToWei(customGasPriceInput);
-    const minGasPriceSlow = Number(gasPrices?.slow?.value?.amount || 0);
-    const maxGasPriceFast = Number(gasPrices?.fast?.value?.amount || 0);
+    const minGasPriceSlow = Number(
+      gasPricesAvailable?.slow?.value?.amount || 0
+    );
+    const maxGasPriceFast = Number(
+      gasPricesAvailable?.fast?.value?.amount || 0
+    );
     let tooLow = priceInWei < minGasPriceSlow;
     let tooHigh = priceInWei > maxGasPriceFast * 2.5;
 
@@ -339,8 +367,8 @@ const GasSpeedButton = ({
     customGasPriceInput,
     inputFocused,
     minGasPrice,
-    gasPrices?.slow?.value?.amount,
-    gasPrices?.fast?.value?.amount,
+    gasPricesAvailable?.slow?.value?.amount,
+    gasPricesAvailable?.fast?.value?.amount,
     dontBlur,
     handleCustomGasBlur,
   ]);
@@ -392,7 +420,9 @@ const GasSpeedButton = ({
                     ? theme === 'dark'
                       ? colors.white
                       : colors.blueGreyDark50
-                    : colors.alpha(colors.darkModeColors.blueGreyDark, 0.3)
+                    : theme === 'dark'
+                    ? colors.alpha(colors.darkModeColors.blueGreyDark, 0.3)
+                    : colors.alpha(colors.blueGreyDark, 0.3)
                 }
                 size="lmedium"
                 weight="bold"
@@ -406,6 +436,7 @@ const GasSpeedButton = ({
 
         <GasSpeedLabelPager
           label={selectedGasPriceOption}
+          options={options}
           showPager={!inputFocused}
           theme={theme}
         />

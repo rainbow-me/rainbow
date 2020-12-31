@@ -29,7 +29,7 @@ import { Emoji, Text } from '../components/text';
 import { toHex } from '../handlers/web3';
 import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 import { sendTransaction } from '../model/wallet';
-import { weiToGwei } from '../parsers/gas';
+import { gweiToWei, weiToGwei } from '../parsers/gas';
 import { getTitle } from '../parsers/transactions';
 import { dataUpdateTransaction } from '../redux/data';
 import { safeAreaInsetValues } from '../utils';
@@ -127,11 +127,17 @@ export default function SpeedUpAndCancelSheet() {
     tx.gasPrice,
   ]);
 
-  const handleCancellation = useCallback(async () => {
-    const rawGasPrice = get(selectedGasPrice, 'value.amount');
+  const getNewGasPrice = useCallback(() => {
+    const rawGasPrice = new BigNumber(get(selectedGasPrice, 'value.amount'));
+    const minGasPriceAllowed = new BigNumber(gweiToWei(minGasPrice));
+    return rawGasPrice.greaterThan(minGasPriceAllowed)
+      ? toHex(rawGasPrice)
+      : toHex(minGasPriceAllowed);
+  }, [minGasPrice, selectedGasPrice]);
 
+  const handleCancellation = useCallback(async () => {
     const cancelTxPayload = {
-      gasPrice: toHex(rawGasPrice),
+      gasPrice: getNewGasPrice(),
       nonce: tx.nonce,
       to: accountAddress,
     };
@@ -152,17 +158,13 @@ export default function SpeedUpAndCancelSheet() {
     } finally {
       goBack();
     }
-  }, [accountAddress, dispatch, goBack, selectedGasPrice, tx]);
+  }, [accountAddress, dispatch, getNewGasPrice, goBack, tx]);
 
   const handleSpeedUp = useCallback(async () => {
-    const rawGasPrice = get(selectedGasPrice, 'value.amount');
-
-    // TODO - Check that rawGasPrice is >= 1.1x of tx.gasPrice;
-
     const fasterTxPayload = {
       data: tx.data,
       gasLimit: tx.gasLimit,
-      gasPrice: toHex(rawGasPrice),
+      gasPrice: getNewGasPrice(),
       nonce: tx.nonce,
       to: tx.to,
     };
@@ -183,7 +185,7 @@ export default function SpeedUpAndCancelSheet() {
     } finally {
       goBack();
     }
-  }, [dispatch, goBack, selectedGasPrice, tx]);
+  }, [dispatch, getNewGasPrice, goBack, tx]);
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
