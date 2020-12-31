@@ -40,6 +40,7 @@ import {
   settingsPreset,
   sheetPreset,
   sheetPresetWithSmallGestureResponseDistance,
+  speedUpAndCancelStyleInterpolator,
   wcPromptPreset,
 } from './effects';
 import { onNavigationStateChange } from './onNavigationStateChange';
@@ -133,7 +134,10 @@ function MainNavigator() {
       <Stack.Screen
         component={SpeedUpAndCancelSheet}
         name={Routes.SPEED_UP_AND_CANCEL_SHEET}
-        options={exchangePreset}
+        options={{
+          ...exchangePreset,
+          cardStyleInterpolator: speedUpAndCancelStyleInterpolator,
+        }}
       />
       <Stack.Screen
         component={ExchangeModalNavigator}

@@ -33,6 +33,7 @@ const Container = styled(Row).attrs({
   pointerEvents: 'auto',
 })`
   ${margin(10, 18, 10, 15)}
+  width: 350;
 `;
 
 const Label = styled(Text).attrs({

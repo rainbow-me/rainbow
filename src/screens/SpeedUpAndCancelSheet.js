@@ -33,6 +33,7 @@ import { gweiToWei, weiToGwei } from '../parsers/gas';
 import { getTitle } from '../parsers/transactions';
 import { dataUpdateTransaction } from '../redux/data';
 import { safeAreaInsetValues } from '../utils';
+import deviceUtils from '../utils/deviceUtils';
 import {
   useAccountSettings,
   useDimensions,
@@ -71,10 +72,9 @@ const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const AnimatedSheet = Animated.createAnimatedComponent(CenteredSheet);
 
 const GasSpeedButtonContainer = styled(Row)`
-  padding-left: 10;
-  padding-right: 10;
-  justify-content: flex-start;
+  justify-content: center;
   margin-bottom: 19px;
+  width: ${deviceUtils.dimensions.width - 20};
 `;
 
 const CANCEL_TX = 'cancel';
@@ -125,21 +125,23 @@ export default function SpeedUpAndCancelSheet() {
   ]);
 
   const getNewGasPrice = useCallback(() => {
-    const rawGasPrice = new BigNumber(get(selectedGasPrice, 'value.amount'));
-    const minGasPriceAllowed = new BigNumber(gweiToWei(minGasPrice));
-    return rawGasPrice.greaterThan(minGasPriceAllowed)
+    const rawGasPrice = get(selectedGasPrice, 'value.amount');
+    const minGasPriceAllowed = gweiToWei(minGasPrice);
+    const rawGasPriceBN = new BigNumber(rawGasPrice);
+    const minGasPriceAllowedBN = new BigNumber(minGasPriceAllowed);
+    return rawGasPriceBN.isGreaterThan(minGasPriceAllowedBN)
       ? toHex(rawGasPrice)
       : toHex(minGasPriceAllowed);
   }, [minGasPrice, selectedGasPrice]);
 
   const handleCancellation = useCallback(async () => {
-    const cancelTxPayload = {
-      gasPrice: getNewGasPrice(),
-      nonce: tx.nonce,
-      to: accountAddress,
-    };
-
     try {
+      const gasPrice = getNewGasPrice();
+      const cancelTxPayload = {
+        gasPrice,
+        nonce: tx.nonce,
+        to: accountAddress,
+      };
       const originalHash = tx.hash;
       const hash = await sendTransaction({
         transaction: cancelTxPayload,
@@ -158,15 +160,15 @@ export default function SpeedUpAndCancelSheet() {
   }, [accountAddress, dispatch, getNewGasPrice, goBack, tx]);
 
   const handleSpeedUp = useCallback(async () => {
-    const fasterTxPayload = {
-      data: tx.data,
-      gasLimit: tx.gasLimit,
-      gasPrice: getNewGasPrice(),
-      nonce: tx.nonce,
-      to: tx.to,
-    };
-
     try {
+      const gasPrice = getNewGasPrice();
+      const fasterTxPayload = {
+        data: tx.data,
+        gasLimit: tx.gasLimit,
+        gasPrice,
+        nonce: tx.nonce,
+        to: tx.to,
+      };
       const originalHash = tx.hash;
       const hash = await sendTransaction({
         transaction: fasterTxPayload,
@@ -237,10 +239,13 @@ export default function SpeedUpAndCancelSheet() {
       sheetOpacity.value = withSpring(1, springConfig);
     }
   }, [keyboardHeight, keyboardVisible, offset, sheetOpacity]);
-  const sheetHeight =
-    (type === CANCEL_TX ? 520 : 465) + safeAreaInsetValues.bottom;
+  const sheetHeight = ios
+    ? (type === CANCEL_TX ? 520 : 465) + safeAreaInsetValues.bottom
+    : (type === CANCEL_TX ? 845 : 845) + safeAreaInsetValues.bottom;
 
-  const marginTop = android ? deviceHeight - sheetHeight + 210 : null;
+  const marginTop = android
+    ? deviceHeight - sheetHeight + (type === CANCEL_TX ? 290 : 340)
+    : null;
 
   return (
     <AnimatedContainer
@@ -256,9 +261,10 @@ export default function SpeedUpAndCancelSheet() {
         <Column>
           <AnimatedSheet
             backgroundColor={colors.white}
+            borderRadius={39}
             direction="column"
             marginTop={marginTop}
-            paddingBottom={0}
+            paddingBottom={android ? 30 : 0}
             paddingTop={24}
             style={animatedSheetStyles}
           >
@@ -281,7 +287,11 @@ export default function SpeedUpAndCancelSheet() {
                   {title[type]}
                 </Text>
               </Column>
-              <Column marginBottom={56} paddingLeft={60} paddingRight={60}>
+              <Column
+                marginBottom={56}
+                paddingLeft={android ? 40 : 60}
+                paddingRight={android ? 40 : 60}
+              >
                 <Text
                   align="center"
                   color={colors.alpha(colors.blueGreyDark, 0.5)}
@@ -298,6 +308,7 @@ export default function SpeedUpAndCancelSheet() {
                   <SheetActionButtonRow ignorePaddingTop>
                     <SheetActionButton
                       color={colors.red}
+                      fullWidth
                       label="􀎽 Attempt Cancellation"
                       onPress={handleCancellation}
                       size="big"
@@ -308,6 +319,7 @@ export default function SpeedUpAndCancelSheet() {
                   <SheetActionButtonRow ignorePaddingTop>
                     <SheetActionButton
                       color={colors.white}
+                      fullWidth
                       label="Cancel"
                       onPress={goBack}
                       size="big"
