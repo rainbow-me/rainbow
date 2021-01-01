@@ -158,8 +158,9 @@ export default function WalletProfileState({
           <BiometricButtonContent
             showIcon={actionType === 'Create'}
             testID="wallet-info-submit-button"
-            text={isNewProfile ? `${actionType} Wallet` : 'Done'}
-          />
+          >
+            {isNewProfile ? `${actionType} Wallet` : 'Done'}
+          </BiometricButtonContent>
         </WalletProfileButton>
         <WalletProfileButton onPress={handleCancel}>
           <WalletProfileButtonText
