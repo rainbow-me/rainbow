@@ -135,11 +135,9 @@ export default function SecretDisplaySection({
             {`You need to authenticate in order to access your recovery ${typeLabel}`}
           </AuthenticationText>
           <ToggleSecretButton onPress={loadSeed}>
-            <BiometricButtonContent
-              color={colors.white}
-              showIcon={!seed}
-              text={`Show Recovery ${upperFirst(typeLabel)}`}
-            />
+            <BiometricButtonContent color={colors.white} showIcon={!seed}>
+              {`Show Recovery ${upperFirst(typeLabel)}`}
+            </BiometricButtonContent>
           </ToggleSecretButton>
         </Fragment>
       )}
