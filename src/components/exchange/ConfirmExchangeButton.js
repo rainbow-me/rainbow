@@ -1,16 +1,16 @@
 import React from 'react';
-import ExchangeModalTypes from '../../helpers/exchangeModalTypes';
 import { HoldToAuthorizeButton } from '../buttons';
+import { Centered } from '../layout';
 import { SlippageWarningThresholdInBips } from './SlippageWarning';
+import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
+import { useColorForAsset } from '@rainbow-me/hooks';
 import { colors } from '@rainbow-me/styles';
 
-const ConfirmExchangeButtonShadows = [
-  [0, 3, 5, colors.black, 0.2],
-  [0, 6, 10, colors.black, 0.14],
-  [0, 1, 18, colors.black, 0.12],
-];
+const paddingHorizontal = 19;
+const shadows = [[0, 10, 30, colors.black, 0.4]];
 
-const ConfirmExchangeButton = ({
+export default function ConfirmExchangeButton({
+  asset,
   disabled,
   isAuthorizing,
   isSufficientBalance,
@@ -21,13 +21,16 @@ const ConfirmExchangeButton = ({
   testID,
   type,
   ...props
-}) => {
+}) {
+  const colorForAsset = useColorForAsset(asset);
+
   let label =
     type === ExchangeModalTypes.deposit
       ? 'Hold to Deposit'
       : type === ExchangeModalTypes.withdrawal
       ? 'Hold to Withdraw '
       : 'Hold to Swap';
+
   if (!isSufficientBalance) {
     label = 'Insufficient Funds';
   } else if (!isSufficientLiquidity) {
@@ -47,20 +50,27 @@ const ConfirmExchangeButton = ({
     !isSufficientLiquidity;
 
   return (
-    <HoldToAuthorizeButton
-      disabled={isDisabled}
-      disabledBackgroundColor={colors.grey20}
-      flex={1}
-      hideInnerBorder
-      isAuthorizing={isAuthorizing}
-      label={label}
-      onLongPress={onSubmit}
-      shadows={ConfirmExchangeButtonShadows}
-      testID={testID}
-      theme="dark"
-      {...props}
-    />
+    <Centered
+      paddingHorizontal={paddingHorizontal}
+      paddingTop={24}
+      width="100%"
+    >
+      <HoldToAuthorizeButton
+        backgroundColor={colorForAsset}
+        disabled={isDisabled}
+        disabledBackgroundColor={colors.grey20}
+        flex={1}
+        hideInnerBorder
+        isAuthorizing={isAuthorizing}
+        label={label}
+        onLongPress={onSubmit}
+        parentHorizontalPadding={paddingHorizontal}
+        shadows={shadows}
+        showBiometryIcon={!isDisabled}
+        testID={testID}
+        theme="dark"
+        {...props}
+      />
+    </Centered>
   );
-};
-
-export default React.memo(ConfirmExchangeButton);
+}
