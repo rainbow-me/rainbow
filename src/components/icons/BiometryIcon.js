@@ -1,54 +1,20 @@
 import React from 'react';
-import styled from 'styled-components/primitives';
-import { Centered } from '../layout';
-import Icon from './Icon';
+import { Text } from 'react-primitives';
 import BiometryTypes from '@rainbow-me/helpers/biometryTypes';
-import { colors, position } from '@rainbow-me/styles';
-import { magicMemo } from '@rainbow-me/utils';
+import { useBiometryType } from '@rainbow-me/hooks';
 
-const BiometryTypeIcon = styled(Icon).attrs(({ type }) => ({
-  color: colors.white,
-  name: type.toLowerCase(),
-}))`
-  ${position.size('100%')}
-`;
+const { Face, FaceID, Fingerprint, none, passcode, TouchID } = BiometryTypes;
 
-const Container = styled(Centered).attrs({
-  align: 'start',
-})`
-  ${({ type }) =>
-    type === BiometryTypes.FaceID || type === BiometryTypes.Face
-      ? `
-        ${position.size(27)};
-        margin-bottom: 2;
-        margin-left: 4;
-      `
-      : ''}
+export default function BiometryIcon(props) {
+  const biometryType = useBiometryType();
 
-  ${({ type }) =>
-    type === BiometryTypes.passcode
-      ? `
-        height: 25;
-        margin-bottom: 4;
-        margin-left: 4;
-        width: 18;
-      `
-      : ''}
+  const isFace = biometryType === Face || biometryType === FaceID;
+  const isPasscode = biometryType === passcode;
+  const isTouch = biometryType === Fingerprint || biometryType === TouchID;
 
-  ${({ type }) =>
-    type === BiometryTypes.TouchID || type === BiometryTypes.Fingerprint
-      ? `
-        ${position.size(31)};
-        margin-bottom: 1;
-      `
-      : ''}
-`;
-
-const BiometryIcon = ({ biometryType, ...props }) =>
-  !biometryType || biometryType === 'none' ? null : (
-    <Container {...props} type={biometryType}>
-      <BiometryTypeIcon type={biometryType} />
-    </Container>
+  return !biometryType || biometryType === none ? null : (
+    <Text {...props}>
+      {isFace ? '􀎽' : isTouch ? '􀟒' : isPasscode ? '􀒲' : null}
+    </Text>
   );
-
-export default magicMemo(BiometryIcon, 'biometryType');
+}
