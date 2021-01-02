@@ -3,7 +3,7 @@ import Text from './Text';
 import { colors } from '@rainbow-me/styles';
 
 const Smallcaps = styled(Text).attrs({
-  color: colors.alpha(colors.blueGreyDark, 0.8),
+  color: colors.blueGreyDark80,
   size: 'small',
   uppercase: true,
   weight: 'semibold',

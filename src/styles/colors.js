@@ -11,6 +11,7 @@ let base = {
   blueGreyDark: '#3C4252', // '60, 66, 82'
   blueGreyDark50: '#9DA0A8', // this color is blueGreyDark at 50% over white
   blueGreyDark60: '#898d97', // this color is blueGreyDark at 60% over white
+  blueGreyDark80: '#636875', // this color is blueGreyDark at 80% over white
   blueGreyDarker: '#0F0F11', // '15, 15, 17'
   blueGreyDarkLight: '#F3F4F5', // '243, 244, 245'
   brightRed: '#FF7171', // '255, 113, 113'

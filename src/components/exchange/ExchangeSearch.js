@@ -54,7 +54,7 @@ const SearchInput = styled(Input).attrs({
   autoCapitalize: 'words',
   blurOnSubmit: false,
   clearTextOnFocus: true,
-  color: colors.alpha(colors.blueGreyDark, 0.8),
+  color: colors.blueGreyDark80,
   enablesReturnKeyAutomatically: true,
   keyboardAppearance: 'dark',
   keyboardType: 'ascii-capable',

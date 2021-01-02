@@ -128,9 +128,7 @@ const WalletLabel = styled(Text).attrs({
 `;
 
 const WalletText = styled(Text).attrs(({ balanceTooLow }) => ({
-  color: balanceTooLow
-    ? colors.avatarColor[7]
-    : colors.alpha(colors.blueGreyDark, 0.8),
+  color: balanceTooLow ? colors.avatarColor[7] : colors.blueGreyDark80,
   size: 'larger',
   weight: balanceTooLow ? 'bold' : 'semibold',
 }))``;
@@ -599,7 +597,7 @@ const TransactionConfirmationScreen = () => {
           label="Cancel"
           onPress={onCancel}
           size="big"
-          textColor={colors.alpha(colors.blueGreyDark, 0.8)}
+          textColor={colors.blueGreyDark80}
           weight="bold"
         />
         <SheetActionButton
@@ -759,7 +757,7 @@ const TransactionConfirmationScreen = () => {
             <Row marginBottom={5}>
               <Text
                 align="center"
-                color={colors.alpha(colors.blueGreyDark, 0.8)}
+                color={colors.blueGreyDark80}
                 letterSpacing="roundedMedium"
                 size="large"
                 weight="bold"
