@@ -63,9 +63,7 @@ const TopMoverCoinRow = ({ address, change, name, onPress, price, symbol }) => (
         />
       </Centered>
       <ColumnWithMargins margin={2}>
-        <TopMoverTitle color={colors.alpha(colors.blueGreyDark, 0.8)}>
-          {name}
-        </TopMoverTitle>
+        <TopMoverTitle color={colors.blueGreyDark80}>{name}</TopMoverTitle>
         <BottomRowText>{price}</BottomRowText>
       </ColumnWithMargins>
       <ColumnWithMargins align="end" justify="end" margin={2}>

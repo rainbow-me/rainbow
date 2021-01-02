@@ -4,7 +4,7 @@ import { colors } from '@rainbow-me/styles';
 
 const ChartHeaderSubtitle = styled(TruncatedText).attrs(
   ({
-    color = colors.alpha(colors.blueGreyDark, 0.8),
+    color = colors.blueGreyDark80,
     letterSpacing = 'roundedMedium',
     weight = 'bold',
   }) => ({

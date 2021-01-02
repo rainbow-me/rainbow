@@ -109,9 +109,7 @@ export default function ChartExpandedStateHeader({
             tabularNums={tabularNums}
           />
           <ChartHeaderSubtitle
-            color={
-              isNoPriceData ? colors.alpha(colors.blueGreyDark, 0.8) : color
-            }
+            color={isNoPriceData ? colors.blueGreyDark80 : color}
             weight={isNoPriceData ? 'semibold' : 'bold'}
           >
             {titleOrNoPriceData}

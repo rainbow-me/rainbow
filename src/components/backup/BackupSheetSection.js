@@ -87,7 +87,7 @@ export default function BackupSheetSection({
           onPress={onSecondaryAction}
           size="big"
           testID={secondaryButtonTestId}
-          textColor={colors.alpha(colors.blueGreyDark, 0.8)}
+          textColor={colors.blueGreyDark80}
         />
       </Footer>
     </Fragment>

@@ -127,7 +127,7 @@ export default function NeedsBackupView() {
             color={colors.white}
             label="🤓 Back up manually"
             onPress={onManualBackup}
-            textColor={colors.alpha(colors.blueGreyDark, 0.8)}
+            textColor={colors.blueGreyDark80}
           />
         </Column>
       </Content>
