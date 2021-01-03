@@ -67,6 +67,18 @@ export const signUriWithImgix = (
 
 export type MaybeExternalImageUris = readonly string[] | string;
 
+export const signImageSource = (source: Source): Source => {
+  const { uri: maybeStringUri, ...extras } = source;
+  if (typeof maybeStringUri !== 'string') {
+    return source;
+  }
+  const externalImageUri = maybeStringUri as string;
+  return {
+    ...extras,
+    uri: signUriWithImgix({ externalImageUri }),
+  };
+};
+
 // Safely pre-caches image urls using Imgix. This signs the source
 // images so that we can ensure they're served via a trusted provider.
 export const preload = (sources: readonly Source[]) => {
@@ -78,14 +90,6 @@ export const preload = (sources: readonly Source[]) => {
         }
         return false;
       })
-      .map(
-        ({ uri: maybeUri, ...extras }): Source => {
-          const externalImageUri = maybeUri as string;
-          return {
-            ...extras,
-            uri: signUriWithImgix({ externalImageUri }),
-          };
-        }
-      )
+      .map((source): Source => signImageSource(source))
   );
 };
