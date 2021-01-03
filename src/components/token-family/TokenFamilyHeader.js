@@ -11,8 +11,6 @@ import { Emoji, Text, TruncatedText } from '../text';
 import TokenFamilyHeaderIcon from './TokenFamilyHeaderIcon';
 import { colors, padding } from '@rainbow-me/styles';
 
-const AnimatedImgixImage = Animated.createAnimatedComponent(ImgixImage);
-
 export const TokenFamilyHeaderAnimationDuration = 200;
 export const TokenFamilyHeaderHeight = 50;
 
@@ -34,8 +32,8 @@ const ChildrenAmountText = styled(Text).attrs({
   margin-bottom: 1;
 `;
 
-const RotatingArrowIcon = styled(AnimatedImgixImage).attrs({
-  resizeMode: AnimatedImgixImage.resizeMode.contain,
+const RotatingArrowIcon = styled(ImgixImage).attrs({
+  resizeMode: ImgixImage.resizeMode.contain,
   source: CaretImageSource,
 })`
   height: 18;

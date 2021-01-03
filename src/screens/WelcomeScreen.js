@@ -262,9 +262,7 @@ const traversedRainbows = rainbows.map(
   }
 );
 
-const AnimatedImgixImage = Animated.createAnimatedComponent(ImgixImage);
-
-const RainbowImage = styled(AnimatedImgixImage)`
+const RainbowImage = styled(ImgixImage)`
   height: ${INITIAL_SIZE};
   position: absolute;
   width: ${INITIAL_SIZE};

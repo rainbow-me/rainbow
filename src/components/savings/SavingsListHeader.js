@@ -12,8 +12,6 @@ import { ButtonPressAnimation, interpolate } from '../animations';
 import { Row, RowWithMargins } from '../layout';
 import { Emoji, Text, TruncatedText } from '../text';
 
-const AnimatedImgixImage = Animated.createAnimatedComponent(ImgixImage);
-
 const TokenFamilyHeaderAnimationDuration = 200;
 const TokenFamilyHeaderHeight = 44;
 
@@ -87,7 +85,7 @@ const SavingsListHeader = ({
               </SumValueText>
             </Animated.View>
           )}
-          <AnimatedImgixImage
+          <ImgixImage
             resizeMode={ImgixImage.resizeMode.contain}
             source={CaretImageSource}
             style={{

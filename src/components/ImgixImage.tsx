@@ -1,10 +1,9 @@
 import * as React from 'react';
+import { Animated } from 'react-native';
 import FastImage, { FastImageProps, Source } from 'react-native-fast-image';
 
 import { preload as safelyPreloadImages } from '../handlers/imgix';
 import useImgix from '../hooks/useImgix';
-
-export type ImgixImageProps = FastImageProps;
 
 export * from 'react-native-fast-image';
 
@@ -15,10 +14,14 @@ export const preload = (sources: readonly Source[]): void => {
   return safelyPreloadImages(sources);
 };
 
-export default function ImgixImage({
+const AnimatedFastImage = Animated.createAnimatedComponent(FastImage);
+
+function ImgixImage({
   source: maybeDangerousSource,
   ...extras
-}: ImgixImageProps): JSX.Element {
+}: FastImageProps): JSX.Element {
   const source = useImgix(maybeDangerousSource);
-  return <FastImage {...extras} source={source} />;
+  return <AnimatedFastImage {...extras} source={source} />;
 }
+
+export default Object.assign(ImgixImage, FastImage);
