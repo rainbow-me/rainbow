@@ -5,6 +5,7 @@ import React, { useCallback, useRef } from 'react';
 import ImagePicker from 'react-native-image-crop-picker';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components/primitives';
+import { useMaybeSignUri } from '../../hooks/useImgix';
 import { walletsSetSelected, walletsUpdate } from '../../redux/wallets';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
@@ -237,6 +238,8 @@ export default function ProfileMasthead({
     Clipboard.setString(accountAddress);
   }, [accountAddress, isDamaged]);
 
+  const safeAccountImage = useMaybeSignUri(accountImage);
+
   return (
     <Column
       align="center"
@@ -247,7 +250,7 @@ export default function ProfileMasthead({
       <AvatarCircle
         accountColor={accountColor}
         accountSymbol={accountSymbol}
-        image={accountImage}
+        image={safeAccountImage}
         isAvatarPickerAvailable={isAvatarPickerAvailable}
         onPress={handlePressAvatar}
       />

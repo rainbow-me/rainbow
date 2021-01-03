@@ -2,6 +2,7 @@ import QRCodeUtil from 'qrcode';
 import React, { useMemo } from 'react';
 import Svg, { Circle, ClipPath, Defs, G, Image, Rect } from 'react-native-svg';
 import RainbowLogo from '../../assets/rainbow-og.png';
+import { useMaybeSignUri } from '../../hooks/useImgix';
 import { magicMemo } from '../../utils';
 import { colors } from '@rainbow-me/styles';
 
@@ -100,6 +101,7 @@ const QRCode = ({
 
   const logoPosition = size / 2 - logoSize / 2 - logoMargin;
   const logoWrapperSize = logoSize + logoMargin * 2;
+  const href = useMaybeSignUri(logo);
 
   return (
     <Svg height={size} width={size}>
@@ -125,7 +127,7 @@ const QRCode = ({
             <Image
               clipPath="url(#clip-logo)"
               height={logoSize}
-              href={logo}
+              href={href}
               preserveAspectRatio="xMidYMid slice"
               width={logoSize}
             />

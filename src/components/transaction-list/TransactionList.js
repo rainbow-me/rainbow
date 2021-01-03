@@ -9,7 +9,6 @@ import styled from 'styled-components/primitives';
 import useExperimentalFlag, {
   AVATAR_PICKER,
 } from '../../config/experimentalHooks';
-import { canSignUriWithImgix, signUriWithImgix } from '../../handlers/imgix';
 import showWalletErrorAlert from '../../helpers/support';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import {
@@ -18,6 +17,7 @@ import {
 } from '../../helpers/transactions';
 import { isENSAddressFormat } from '../../helpers/validators';
 import { useAccountProfile, useWallets } from '../../hooks';
+import { useMaybeSignUri } from '../../hooks/useImgix';
 import { useNavigation } from '../../navigation/Navigation';
 import { removeRequest } from '../../redux/requests';
 import { walletsSetSelected, walletsUpdate } from '../../redux/wallets';
@@ -314,12 +314,7 @@ export default function TransactionList({
   ]);
 
   const isAvatarPickerAvailable = useExperimentalFlag(AVATAR_PICKER);
-
-  const safeAccountImage = React.useMemo(() => {
-    return canSignUriWithImgix(accountImage)
-      ? signUriWithImgix(accountImage)
-      : accountImage;
-  }, [accountImage]);
+  const safeAccountImage = useMaybeSignUri(accountImage);
 
   return (
     <Container>

@@ -88,6 +88,11 @@ export const signImageSource = (source: Source): Source => {
   };
 };
 
+// Helper function to permit callers to sign an image inline.
+export const maybeSignUri = (uri: string) => {
+  return canSignUriWithImgix(uri) ? signUriWithImgix(uri) : uri;
+};
+
 // Safely pre-caches image urls using Imgix. This signs the source
 // images so that we can ensure they're served via a trusted provider.
 export const preload = (sources: readonly Source[]): void => {

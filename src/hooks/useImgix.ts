@@ -1,12 +1,16 @@
 import * as React from 'react';
 import { Source } from 'react-native-fast-image';
 
-import { signImageSource } from '../handlers/imgix';
+import { maybeSignUri, signImageSource } from '../handlers/imgix';
 
 export type ExternalImageUriOrSource = number | Source;
 
 export type useImgixParams = ExternalImageUriOrSource;
 export type useImgixResult = ExternalImageUriOrSource;
+
+export const useMaybeSignUri = (uri: string): string => {
+  return React.useMemo(() => maybeSignUri(uri), [uri]);
+};
 
 export default function useImgix(params: useImgixParams): useImgixResult {
   return React.useMemo((): useImgixResult => {
