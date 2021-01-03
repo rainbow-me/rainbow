@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
-import FastImage from 'react-native-fast-image';
 import styled from 'styled-components/primitives';
+import ImgixImage from '../ImgixImage';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder, RowWithMargins } from '../layout';
 import { Text } from '../text';
@@ -21,8 +21,8 @@ const Content = styled(RowWithMargins).attrs({
   z-index: 1;
 `;
 
-const CaretIcon = styled(FastImage).attrs({
-  resizeMode: FastImage.resizeMode.contain,
+const CaretIcon = styled(ImgixImage).attrs({
+  resizeMode: ImgixImage.resizeMode.contain,
   source: CaretImageSource,
   tintColor: colors.white,
 })`

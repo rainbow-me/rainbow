@@ -1,17 +1,17 @@
 import React from 'react';
-import FastImage from 'react-native-fast-image';
 import Animated, { Easing } from 'react-native-reanimated';
 import { toRad, useTimingTransition } from 'react-native-redash';
 import styled from 'styled-components/primitives';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
 
+import ImgixImage from '../ImgixImage';
 import { ButtonPressAnimation, interpolate } from '../animations';
 import { Row, RowWithMargins } from '../layout';
 import { Emoji, Text, TruncatedText } from '../text';
 import TokenFamilyHeaderIcon from './TokenFamilyHeaderIcon';
 import { colors, padding } from '@rainbow-me/styles';
 
-const AnimatedFastImage = Animated.createAnimatedComponent(FastImage);
+const AnimatedImgixImage = Animated.createAnimatedComponent(ImgixImage);
 
 export const TokenFamilyHeaderAnimationDuration = 200;
 export const TokenFamilyHeaderHeight = 50;
@@ -34,8 +34,8 @@ const ChildrenAmountText = styled(Text).attrs({
   margin-bottom: 1;
 `;
 
-const RotatingArrowIcon = styled(AnimatedFastImage).attrs({
-  resizeMode: FastImage.resizeMode.contain,
+const RotatingArrowIcon = styled(AnimatedImgixImage).attrs({
+  resizeMode: AnimatedImgixImage.resizeMode.contain,
   source: CaretImageSource,
 })`
   height: 18;

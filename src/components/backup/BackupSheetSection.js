@@ -1,8 +1,8 @@
 import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useEffect } from 'react';
-import FastImage from 'react-native-fast-image';
 import styled from 'styled-components';
 import Divider from '../Divider';
+import ImgixImage from '../ImgixImage';
 import { RainbowButton } from '../buttons';
 import { Column, ColumnWithMargins } from '../layout';
 import { SheetActionButton } from '../sheet';
@@ -35,8 +35,8 @@ const MastheadDescription = styled(Text).attrs({
   ${padding(12, 42, 30)};
 `;
 
-const MastheadIcon = styled(FastImage).attrs({
-  resizeMode: FastImage.resizeMode.contain,
+const MastheadIcon = styled(ImgixImage).attrs({
+  resizeMode: ImgixImage.resizeMode.contain,
   source: BackupIcon,
 })`
   height: 74;

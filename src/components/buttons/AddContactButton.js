@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { useEffect, useRef } from 'react';
-import FastImage from 'react-native-fast-image';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import { View } from 'react-primitives';
 import { compose, setPropTypes } from 'recompact';
 import AddContactIcon from '../../assets/addContactIcon.png';
 import { withNeverRerender } from '../../hoc';
+import ImgixImage from '../ImgixImage';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import Button from './Button';
@@ -55,7 +55,7 @@ const AddButton = enhanceButton(({ onPress }) => (
     testID="add-contact-button"
     type="pill"
   >
-    <FastImage
+    <ImgixImage
       source={AddContactIcon}
       style={{
         height: 14.7,

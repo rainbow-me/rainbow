@@ -1,7 +1,6 @@
 import { invert } from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Dimensions } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import Animated, {
   cancelAnimation,
   NewEasing,
@@ -13,6 +12,7 @@ import Animated, {
 import styled from 'styled-components/native';
 import Spinner from '../../assets/chartSpinner.png';
 import { nativeStackConfig } from '../../navigation/config';
+import ImgixImage from '../ImgixImage';
 import { ChartExpandedStateHeader } from '../expanded-state/chart';
 import { Column } from '../layout';
 import Labels from './ExtremeLabels';
@@ -37,8 +37,8 @@ const ChartContainer = styled.View`
   margin-vertical: ${({ showChart }) => (showChart ? '17px' : '0px')};
 `;
 
-const ChartSpinner = styled(FastImage).attrs(({ color }) => ({
-  resizeMode: FastImage.resizeMode.contain,
+const ChartSpinner = styled(ImgixImage).attrs(({ color }) => ({
+  resizeMode: ImgixImage.resizeMode.contain,
   source: Spinner,
   tintColor: color,
 }))`

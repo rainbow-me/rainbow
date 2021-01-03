@@ -1,6 +1,5 @@
 import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useRef } from 'react';
-import FastImage from 'react-native-fast-image';
 import RadialGradient from 'react-native-radial-gradient';
 import Animated, {
   NewEasing,
@@ -11,6 +10,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
 import Spinner from '../../assets/chartSpinner.png';
+import ImgixImage from '../ImgixImage';
 import { ClearInputDecorator, Input } from '../inputs';
 import { Row } from '../layout';
 import { Text } from '../text';
@@ -75,8 +75,8 @@ const SearchInput = styled(Input).attrs({
   margin-left: 4;
 `;
 
-const SearchSpinner = styled(FastImage).attrs({
-  resizeMode: FastImage.resizeMode.contain,
+const SearchSpinner = styled(ImgixImage).attrs({
+  resizeMode: ImgixImage.resizeMode.contain,
   source: Spinner,
   tintColor: colors.alpha(colors.blueGreyDark, 0.6),
 })`

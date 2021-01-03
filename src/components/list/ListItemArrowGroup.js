@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import FastImage from 'react-native-fast-image';
 import { pure } from 'recompact';
 import Caret from '../../assets/family-dropdown-arrow.png';
+import ImgixImage from '../ImgixImage';
 import { RowWithMargins } from '../layout';
 import { Text } from '../text';
 import { colors } from '@rainbow-me/styles';
@@ -20,7 +20,7 @@ const ListItemArrowGroup = ({ children }) => (
     ) : (
       children
     )}
-    <FastImage
+    <ImgixImage
       source={Caret}
       style={{
         height: 18,

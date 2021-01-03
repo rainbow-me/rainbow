@@ -9,6 +9,7 @@ import styled from 'styled-components/primitives';
 import useExperimentalFlag, {
   AVATAR_PICKER,
 } from '../../config/experimentalHooks';
+import { canSignUriWithImgix, signUriWithImgix } from '../../handlers/imgix';
 import showWalletErrorAlert from '../../helpers/support';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import {
@@ -314,12 +315,18 @@ export default function TransactionList({
 
   const isAvatarPickerAvailable = useExperimentalFlag(AVATAR_PICKER);
 
+  const safeAccountImage = React.useMemo(() => {
+    return canSignUriWithImgix(accountImage)
+      ? signUriWithImgix(accountImage)
+      : accountImage;
+  }, [accountImage]);
+
   return (
     <Container>
       <Container
         accountAddress={accountName}
         accountColor={colors.avatarColor[accountColor]}
-        accountImage={accountImage}
+        accountImage={safeAccountImage}
         accountName={accountSymbol}
         addCashAvailable={addCashAvailable}
         as={NativeTransactionListView}

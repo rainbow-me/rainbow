@@ -40,6 +40,7 @@ if (!imgixClient) {
 // Determines if we're allowed to sign an image using Imgix.
 // This is a placeholder function which can be extended to prevent
 // unsupported urls from being signed.
+// TODO: This **needs** to avoid local images.
 export const canSignUriWithImgix = (
   params: signUriWithImgixParams
 ): boolean => {
@@ -81,7 +82,7 @@ export const signImageSource = (source: Source): Source => {
 
 // Safely pre-caches image urls using Imgix. This signs the source
 // images so that we can ensure they're served via a trusted provider.
-export const preload = (sources: readonly Source[]) => {
+export const preload = (sources: readonly Source[]): void => {
   return FastImage.preload(
     sources
       .filter(({ uri: externalImageUri }) => {
