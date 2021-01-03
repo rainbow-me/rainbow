@@ -9,6 +9,7 @@ import { AssetListItemSkeleton } from '../components/asset-list';
 import { BalanceCoinRow } from '../components/coin-row';
 import { UniswapInvestmentRow } from '../components/investment-cards';
 import { CollectibleTokenFamily } from '../components/token-family';
+import { preload as safelyPreloadImages } from '../handlers/imgix';
 import EditOptions from '../helpers/editOptionTypes';
 import { withNavigation } from '../navigation/Navigation';
 import {
@@ -397,7 +398,7 @@ const withUniqueTokenFamiliesSection = (language, uniqueTokens, data) => {
       data.map(buildImagesToPreloadArray)
     );
     isPreloadComplete = !!imagesToPreload.length;
-    FastImage.preload(imagesToPreload);
+    safelyPreloadImages(imagesToPreload);
   }
 
   return {

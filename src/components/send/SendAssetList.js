@@ -1,6 +1,5 @@
 import React, { Fragment } from 'react';
 import { LayoutAnimation } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import { View } from 'react-primitives';
 import {
   DataProvider,
@@ -9,6 +8,7 @@ import {
 } from 'recyclerlistview';
 
 import styled from 'styled-components/primitives';
+import { preload as safelyPreloadImages } from '../../handlers/imgix';
 import { buildCoinsList } from '../../helpers/assets';
 import networkTypes from '../../helpers/networkTypes';
 import { deviceUtils } from '../../utils';
@@ -120,7 +120,8 @@ export default class SendAssetList extends React.Component {
         }
       });
     });
-    FastImage.preload(imageTokens);
+
+    safelyPreloadImages(imageTokens);
 
     this._layoutProvider = new LayoutProvider(
       i => {
