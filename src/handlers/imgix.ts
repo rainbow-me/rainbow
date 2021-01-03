@@ -2,13 +2,11 @@ import ImgixClient from 'imgix-core-js';
 // @ts-ignore
 import { IMGIX_DOMAIN, IMGIX_TOKEN } from 'react-native-dotenv';
 import FastImage, { Source } from 'react-native-fast-image';
+import parse from 'url-parse';
 
 type MaybeImgixClient = ImgixClient | null;
 
-export type signUriWithImgixParams = {
-  readonly externalImageUri: string;
-};
-
+export type signUriWithImgixParams = string;
 export type signUriWithImgixResult = string;
 
 const maybeCreateImgixClient = (): MaybeImgixClient => {
@@ -42,20 +40,27 @@ if (!imgixClient) {
 // unsupported urls from being signed.
 // TODO: This **needs** to avoid local images.
 export const canSignUriWithImgix = (
-  params: signUriWithImgixParams
+  externalImageUri: signUriWithImgixParams
 ): boolean => {
-  const { externalImageUri } = params;
-  return typeof externalImageUri === 'string';
+  if (typeof externalImageUri === 'string') {
+    try {
+      // Determine whether this is a suitable source.
+      const { host } = parse(externalImageUri);
+      return typeof host === 'string' && !!host.length;
+    } catch (e) {
+      return false;
+    }
+  }
+  return false;
 };
 
 // Signs a url using Imgix.
 // If Imgix environment variables are missing, the url will be
 // returned unchanged.
 export const signUriWithImgix = (
-  params: signUriWithImgixParams
+  externalImageUri: signUriWithImgixParams
 ): signUriWithImgixResult => {
-  const { externalImageUri } = params;
-  if (canSignUriWithImgix(params)) {
+  if (!canSignUriWithImgix(externalImageUri)) {
     throw new Error(
       `[Imgix]: Attempted to sign "${externalImageUri}", but this is not supported.`
     );
@@ -74,9 +79,12 @@ export const signImageSource = (source: Source): Source => {
     return source;
   }
   const externalImageUri = maybeStringUri as string;
+  if (!canSignUriWithImgix(externalImageUri)) {
+    return source;
+  }
   return {
     ...extras,
-    uri: signUriWithImgix({ externalImageUri }),
+    uri: signUriWithImgix(externalImageUri),
   };
 };
 
@@ -87,7 +95,7 @@ export const preload = (sources: readonly Source[]): void => {
     sources
       .filter(({ uri: externalImageUri }) => {
         if (typeof externalImageUri === 'string') {
-          return canSignUriWithImgix({ externalImageUri });
+          return canSignUriWithImgix(externalImageUri);
         }
         return false;
       })

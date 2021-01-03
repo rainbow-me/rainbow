@@ -40,7 +40,6 @@ const Avatar = styled(ImgixImage)`
 
 const ImageAvatar = ({ image, size = 'medium', ...props }) => {
   const { dimensions, shadow } = sizeConfigs[size];
-
   const shadows = useMemo(
     () => (size === 'small' ? buildSmallShadows(colors.dark) : shadow),
     [shadow, size]
