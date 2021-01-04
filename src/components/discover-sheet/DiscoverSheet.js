@@ -1,7 +1,7 @@
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useIsFocused } from '@react-navigation/native';
 import React, { useMemo, useRef } from 'react';
-import { findNodeHandle, NativeModules } from 'react-native';
+import { findNodeHandle, NativeModules, View } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 // eslint-disable-next-line import/no-unresolved
 import SlackBottomSheet from 'react-native-slack-bottom-sheet';
@@ -14,12 +14,14 @@ const renderHeader = yPosition => <DiscoverSheetHeader yPosition={yPosition} />;
 
 const DiscoverSheetAndroid = () => {
   const bottomSheetModalRef = useRef(null);
-  const snapPoints = useMemo(() => ['25%', '50%'], []);
+  const snapPoints = useMemo(() => ['25%', '80%'], []);
 
   return (
     <BottomSheet index={1} ref={bottomSheetModalRef} snapPoints={snapPoints}>
       <BottomSheetScrollView>
         <DiscoverSheetContent />
+        {/* placeholder for now */}
+        <View style={{ backgroundColor: 'red', height: 400, width: 100 }} />
       </BottomSheetScrollView>
     </BottomSheet>
   );
