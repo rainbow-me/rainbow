@@ -129,8 +129,7 @@ export default function TransactionCoinRow({ item, ...props }) {
 
       showActionSheetWithOptions(
         {
-          cancelButtonIndex:
-            (canBeResubmitted ? 2 : 0) + (showContactInfo ? 2 : 1),
+          cancelButtonIndex: buttons.length - 1,
           options: buttons,
           title: pending
             ? `${headerInfo.type}${

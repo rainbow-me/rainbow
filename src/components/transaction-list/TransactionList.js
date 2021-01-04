@@ -209,9 +209,7 @@ export default function TransactionList({
 
       const isSent =
         status === TransactionStatusTypes.sending ||
-        status === TransactionStatusTypes.sent ||
-        TransactionStatusTypes.cancelling ||
-        TransactionStatusTypes.speeding_up;
+        status === TransactionStatusTypes.sent;
       const showContactInfo = hasAddableContact(status, type);
 
       const headerInfo = {
@@ -249,8 +247,7 @@ export default function TransactionList({
 
         showActionSheetWithOptions(
           {
-            cancelButtonIndex:
-              (canBeResubmitted ? 2 : 0) + (showContactInfo ? 2 : 1),
+            cancelButtonIndex: buttons.length - 1,
             options: buttons,
             title: pending
               ? `${headerInfo.type}${
