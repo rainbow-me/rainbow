@@ -1,6 +1,7 @@
+import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useIsFocused } from '@react-navigation/native';
 import React, { useMemo, useRef } from 'react';
-import { findNodeHandle, NativeModules, StyleSheet } from 'react-native';
+import { findNodeHandle, NativeModules } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 // eslint-disable-next-line import/no-unresolved
 import SlackBottomSheet from 'react-native-slack-bottom-sheet';
@@ -8,36 +9,21 @@ import { SlackSheet } from '../sheet';
 import DiscoverSheetContent from './DiscoverSheetContent';
 import DiscoverSheetContext from './DiscoverSheetContext';
 import DiscoverSheetHeader from './DiscoverSheetHeader';
-import { deviceUtils } from '@rainbow-me/utils';
-import {
-  YABSForm,
-  YABSScrollView,
-} from 'react-native-yet-another-bottom-sheet';
+
 const renderHeader = yPosition => <DiscoverSheetHeader yPosition={yPosition} />;
 
-function DiscoverSheetAndroid() {
+const DiscoverSheetAndroid = () => {
+  const bottomSheetModalRef = useRef(null);
+  const snapPoints = useMemo(() => ['25%', '50%'], []);
+
   return (
-    <YABSForm
-      panGHProps={{
-        maxPointers: 17, // magic number for duck typing on native side
-        simultaneousHandlers: 'AnimatedScrollViewPager',
-      }}
-      points={[0, 200, deviceUtils.dimensions.height - 200]}
-      style={[
-        StyleSheet.absoluteFillObject,
-        {
-          backgroundColor: 'white',
-          bottom: 0,
-          top: 100,
-        },
-      ]}
-    >
-      <YABSScrollView style={{ flex: 1, height: '100%' }}>
+    <BottomSheet index={1} ref={bottomSheetModalRef} snapPoints={snapPoints}>
+      <BottomSheetScrollView>
         <DiscoverSheetContent />
-      </YABSScrollView>
-    </YABSForm>
+      </BottomSheetScrollView>
+    </BottomSheet>
   );
-}
+};
 
 function DiscoverSheetIOS() {
   const insets = useSafeArea();
