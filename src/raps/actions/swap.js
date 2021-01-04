@@ -123,6 +123,8 @@ const swap = async (wallet, currentRap, index, parameters) => {
     amount: inputAmount,
     asset: inputCurrency,
     from: accountAddress,
+    gasLimit,
+    gasPrice,
     hash: swap.hash,
     nonce: get(swap, 'nonce'),
     protocol: ProtocolTypes.uniswap.name,

@@ -85,6 +85,8 @@ const depositCompound = async (wallet, currentRap, index, parameters) => {
     amount: _inputAmount,
     asset: inputCurrency,
     from: accountAddress,
+    gasLimit: transactionParams.gasLimit,
+    gasPrice: transactionParams.gasPrice,
     hash: deposit.hash,
     nonce: get(deposit, 'nonce'),
     protocol: ProtocolTypes.compound.name,
