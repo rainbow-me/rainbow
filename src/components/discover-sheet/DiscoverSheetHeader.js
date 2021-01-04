@@ -84,10 +84,10 @@ function Stack({ children, left, stackOpacity, onPress }) {
 export default function DiscoverSheetHeader(props) {
   const { navigate } = useNavigation();
   const buttonOpacity = useSharedValue(1);
-  const { jumpToShort, addOnCrossMagicBorderListener } =
-    useContext(DiscoverSheetContext) || {};
   const { yPosition } = props;
   const stackOpacity = yPosition;
+  const { jumpToShort, addOnCrossMagicBorderListener } =
+    useContext(DiscoverSheetContext) || {};
   const onCrossMagicBorder = useCallback(
     ({ below }) => (buttonOpacity.value = below ? 0 : 1),
     [buttonOpacity]
