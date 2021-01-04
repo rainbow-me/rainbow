@@ -31,9 +31,9 @@ import { chains } from '../references';
 import logger from 'logger';
 
 const { RNBip39 } = NativeModules;
-const getEthPriceUnit = assets => {
-  const ethAsset = getAsset(assets);
-  return get(ethAsset, 'price.value', 0);
+
+const getEthPriceUnit = genericAssets => {
+  return genericAssets?.eth?.price?.value || 0;
 };
 
 const getBalanceAmount = async (selectedGasPrice, selected) => {
