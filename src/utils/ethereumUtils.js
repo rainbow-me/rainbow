@@ -13,14 +13,7 @@ import { NativeModules } from 'react-native';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import URL from 'url-parse';
 import networkTypes from '../helpers/networkTypes';
-import {
-  add,
-  convertNumberToString,
-  fromWei,
-  greaterThan,
-  isZero,
-  subtract,
-} from '../helpers/utilities';
+import { fromWei, greaterThan, isZero, subtract } from '../helpers/utilities';
 import WalletTypes from '../helpers/walletTypes';
 import {
   DEFAULT_HD_PATH,
@@ -122,29 +115,6 @@ const getEtherscanHostFromNetwork = network => {
   } else {
     return `${network}.${base_host}`;
   }
-};
-
-/**
- * @desc returns an object
- * @param  {Array} assets
- * @param  {String} assetAmount
- * @param  {String} gasPrice
- * @return {Object} ethereum, balanceAmount, balance, requestedAmount, txFeeAmount, txFee, amountWithFees
- */
-const transactionData = (assets, assetAmount, gasPrice) => {
-  const ethereum = getAsset(assets);
-  const balance = get(ethereum, 'balance.amount', 0);
-  const requestedAmount = convertNumberToString(assetAmount);
-  const txFee = fromWei(get(gasPrice, 'txFee.value.amount'));
-  const amountWithFees = add(requestedAmount, txFee);
-
-  return {
-    amountWithFees,
-    balance,
-    ethereum,
-    requestedAmount,
-    txFee,
-  };
 };
 
 /**
@@ -294,5 +264,4 @@ export default {
   isEthAddress,
   padLeft,
   removeHexPrefix,
-  transactionData,
 };
