@@ -420,7 +420,7 @@ export const assetPricesReceived = message => dispatch => {
 };
 
 export const assetPricesChanged = message => (dispatch, getState) => {
-  const price = get(message, 'payload.prices[0]');
+  const price = get(message, 'payload.prices[0].price');
   const assetAddress = get(message, 'meta.asset_code');
   if (isNil(price) || isNil(assetAddress)) return;
   const { genericAssets } = getState().data;

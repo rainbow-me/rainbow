@@ -77,16 +77,19 @@ const addressSubscription = (address, currency, action = 'subscribe') => [
   },
 ];
 
-const assetsSubscription = (assetCodes, currency, action = 'subscribe') => [
-  action,
-  {
-    payload: {
-      asset_codes: assetCodes,
-      currency: toLower(currency),
+const assetsSubscription = (pairs, currency, action = 'subscribe') => {
+  const assetCodes = concat(keys(pairs), 'eth');
+  return [
+    action,
+    {
+      payload: {
+        asset_codes: assetCodes,
+        currency: toLower(currency),
+      },
+      scope: ['prices'],
     },
-    scope: ['prices'],
-  },
-];
+  ];
+};
 
 const chartsRetrieval = (assetCodes, currency, chartType, action = 'get') => [
   action,
@@ -116,7 +119,7 @@ const explorerUnsubscribe = () => (dispatch, getState) => {
   }
   if (!isNil(assetsSocket)) {
     assetsSocket.emit(
-      ...assetsSubscription(keys(pairs), nativeCurrency, 'unsubscribe')
+      ...assetsSubscription(pairs, nativeCurrency, 'unsubscribe')
     );
     assetsSocket.close();
   }
@@ -196,7 +199,7 @@ export const explorerInit = () => async (dispatch, getState) => {
   dispatch(listenOnAssetMessages(newAssetsSocket));
 
   newAssetsSocket.on(messages.CONNECT, () => {
-    newAssetsSocket.emit(...assetsSubscription(keys(pairs), nativeCurrency));
+    newAssetsSocket.emit(...assetsSubscription(pairs, nativeCurrency));
   });
 
   if (network === NetworkTypes.mainnet) {
