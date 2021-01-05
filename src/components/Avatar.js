@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Image } from 'react-primitives';
 import styled from 'styled-components/primitives';
+import ImgixImage from './ImgixImage';
 import Icon from './icons/Icon';
 import { Centered } from './layout';
 import { borders, colors, position } from '@rainbow-me/styles';
@@ -23,7 +23,7 @@ const Avatar = ({ size, source }) => (
   >
     <Container size={size}>
       {source ? (
-        <Image
+        <ImgixImage
           source={{ uri: source }}
           {...position.coverAsObject}
           style={position.sizeAsObject(size)}

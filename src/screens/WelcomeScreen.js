@@ -16,6 +16,7 @@ import RainbowLight from '../assets/rainbows/light.png';
 import RainbowLiquid from '../assets/rainbows/liquid.png';
 import RainbowNeon from '../assets/rainbows/neon.png';
 import RainbowPixel from '../assets/rainbows/pixel.png';
+import ImgixImage from '../components/ImgixImage';
 import { ButtonPressAnimation } from '../components/animations';
 import RainbowText from '../components/icons/svg/RainbowText';
 import { RowWithMargins } from '../components/layout';
@@ -261,7 +262,7 @@ const traversedRainbows = rainbows.map(
   }
 );
 
-const RainbowImage = styled(Animated.Image)`
+const RainbowImage = styled(ImgixImage)`
   height: ${INITIAL_SIZE};
   position: absolute;
   width: ${INITIAL_SIZE};
@@ -499,7 +500,12 @@ export default function WelcomeScreen() {
   return (
     <Container testID="welcome-screen">
       {traversedRainbows.map(({ source, style, id }) => (
-        <RainbowImage key={`rainbow${id}`} source={source} style={style} />
+        <RainbowImage
+          Component={Animated.Image}
+          key={`rainbow${id}`}
+          source={source}
+          style={style}
+        />
       ))}
 
       <ContentWrapper style={contentStyle}>

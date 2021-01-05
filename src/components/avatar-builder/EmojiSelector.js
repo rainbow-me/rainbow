@@ -6,7 +6,6 @@ import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import {
   Dimensions,
-  Image,
   Platform,
   StyleSheet,
   Text,
@@ -32,6 +31,7 @@ import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContai
 import 'string.fromcodepoint';
 import EmojiTabBarShadow from '../../assets/emojiTabBarShadow.png';
 import { deviceUtils } from '../../utils';
+import ImgixImage from '../ImgixImage';
 import { Categories } from './Categories';
 import TabBar from './TabBar';
 import { colors, fonts, position } from '@rainbow-me/styles';
@@ -456,18 +456,13 @@ export default class EmojiSelector extends PureComponent {
         </TapGestureHandler>
         {showTabs ? (
           <View style={styles.tabBar}>
-            <Image
-              opacity={0.6}
-              pointerEvents="none"
-              source={EmojiTabBarShadow}
-              style={{
-                height: 138,
-                left: -50.5,
-                position: 'absolute',
-                top: -46,
-                width: 377,
-              }}
-            />
+            <View style={styles.tabBarShadowImage}>
+              <ImgixImage
+                pointerEvents="none"
+                source={EmojiTabBarShadow}
+                style={StyleSheet.absoluteFill}
+              />
+            </View>
             <View
               shadowColor={colors.black}
               shadowOffset={{ height: 0, width: 0 }}
@@ -622,5 +617,13 @@ const styles = StyleSheet.create({
     padding: 4,
     position: 'absolute',
     width: 276,
+  },
+  tabBarShadowImage: {
+    height: 138,
+    left: -50.5,
+    position: 'absolute',
+    top: -46,
+    width: 377,
+    opacity: 0.6,
   },
 });
