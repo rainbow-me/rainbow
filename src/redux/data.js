@@ -514,6 +514,7 @@ export const dataWatchPendingTransactions = (cb = null) => async (
           // because zerion "append" event isn't reliable
           logger.log('TX CONFIRMED!', tx);
           if (cb) {
+            logger.log('executing cb', cb);
             cb(tx);
             return;
           }
@@ -590,7 +591,9 @@ export const dataUpdateTransaction = (txHash, txObj, watch, cb) => (
   saveLocalTransactions(updatedTransactions, accountAddress, network);
   // Always watch cancellation and speed up
   if (watch) {
-    dispatch(watchPendingTransactions(accountAddress, cb));
+    dispatch(
+      watchPendingTransactions(accountAddress, TXN_WATCHER_MAX_TRIES, cb)
+    );
   }
 };
 

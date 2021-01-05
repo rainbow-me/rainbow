@@ -138,8 +138,8 @@ export default function SpeedUpAndCancelSheet() {
   const reloadTransactions = useCallback(
     transaction => {
       if (
-        transaction.status === TransactionStatusTypes.speeding_up &&
-        transaction.status === TransactionStatusTypes.cancelling &&
+        (transaction.status === TransactionStatusTypes.speeding_up ||
+          transaction.status === TransactionStatusTypes.cancelling) &&
         transaction.type !== TransactionTypes.send
       ) {
         logger.log('Reloading zerion in 5!');
