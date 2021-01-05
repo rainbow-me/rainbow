@@ -59,6 +59,34 @@ const emojiStyleInterpolator = ({
   };
 };
 
+export const speedUpAndCancelStyleInterpolator = ({
+  current: { progress: current },
+  layouts: { screen },
+}) => {
+  const backgroundOpacity = current.interpolate({
+    inputRange: [-1, 0, 0.925, 2],
+    outputRange: [0, 0, 0.6, 1],
+  });
+
+  const translateY = current.interpolate({
+    inputRange: [-1, 0, 1, 2],
+    outputRange: [screen.height, screen.height, 0, 0],
+  });
+
+  return {
+    cardStyle: {
+      shadowColor: colors.black,
+      shadowOffset: { height: 10, width: 0 },
+      shadowOpacity: 0.6,
+      shadowRadius: 25,
+      transform: [{ translateY }],
+    },
+    overlayStyle: {
+      opacity: backgroundOpacity,
+    },
+  };
+};
+
 const exchangeStyleInterpolator = ({
   current: { progress: current },
   layouts: { screen },

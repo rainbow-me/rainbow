@@ -1,6 +1,6 @@
 import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
-import { find } from 'lodash';
+import { find, toLower } from 'lodash';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Linking, requireNativeComponent } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
@@ -10,6 +10,7 @@ import useExperimentalFlag, {
   AVATAR_PICKER,
 } from '../../config/experimentalHooks';
 import showWalletErrorAlert from '../../helpers/support';
+import TransactionActions from '../../helpers/transactionActions';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import {
   getHumanReadableDate,
@@ -232,15 +233,29 @@ export default function TransactionList({
         contactColor = colors.getRandomColor();
       }
 
+      const isOutgoing = toLower(from) === toLower(accountAddress);
+      const canBeResubmitted = isOutgoing && !minedAt;
+      const canBeCancelled =
+        canBeResubmitted && status !== TransactionStatusTypes.cancelling;
+
       if (hash) {
-        let buttons = ['View on Etherscan', ...(ios ? ['Cancel'] : [])];
+        let buttons = [
+          ...(canBeResubmitted ? [TransactionActions.speedUp] : []),
+          ...(canBeCancelled ? [TransactionActions.cancel] : []),
+          TransactionActions.viewOnEtherscan,
+          ...(ios ? [TransactionActions.close] : []),
+        ];
         if (showContactInfo) {
-          buttons.unshift(contact ? 'View Contact' : 'Add to Contacts');
+          buttons.unshift(
+            contact
+              ? TransactionActions.viewContact
+              : TransactionActions.addToContacts
+          );
         }
 
         showActionSheetWithOptions(
           {
-            cancelButtonIndex: showContactInfo ? 2 : 1,
+            cancelButtonIndex: buttons.length - 1,
             options: buttons,
             title: pending
               ? `${headerInfo.type}${
@@ -253,29 +268,47 @@ export default function TransactionList({
               : `${headerInfo.type} ${date}`,
           },
           buttonIndex => {
-            if (showContactInfo && buttonIndex === 0) {
-              navigate(Routes.MODAL_SCREEN, {
-                address: contactAddress,
-                asset: item,
-                color: contactColor,
-                contact,
-                type: 'contact_profile',
-              });
-            } else if (
-              (!showContactInfo && buttonIndex === 0) ||
-              (showContactInfo && buttonIndex === 1)
-            ) {
-              const normalizedHash = hash.replace(/-.*/g, '');
-              const etherscanHost = ethereumUtils.getEtherscanHostFromNetwork(
-                network
-              );
-              Linking.openURL(`https://${etherscanHost}/tx/${normalizedHash}`);
+            const action = buttons[buttonIndex];
+            switch (action) {
+              case TransactionActions.viewContact:
+              case TransactionActions.addToContacts:
+                navigate(Routes.MODAL_SCREEN, {
+                  address: contactAddress,
+                  asset: item,
+                  color: contactColor,
+                  contact,
+                  type: 'contact_profile',
+                });
+                break;
+              case TransactionActions.speedUp:
+                navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
+                  tx: item,
+                  type: 'speed_up',
+                });
+                break;
+              case TransactionActions.cancel:
+                navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
+                  tx: item,
+                  type: 'cancel',
+                });
+                break;
+              case TransactionActions.viewOnEtherscan: {
+                const normalizedHash = hash.replace(/-.*/g, '');
+                const etherscanHost = ethereumUtils.getEtherscanHostFromNetwork(
+                  network
+                );
+                Linking.openURL(
+                  `https://${etherscanHost}/tx/${normalizedHash}`
+                );
+                break;
+              }
+              default:
             }
           }
         );
       }
     },
-    [contacts, navigate, network, transactions]
+    [accountAddress, contacts, navigate, network, transactions]
   );
 
   const onCopyAddressPress = useCallback(

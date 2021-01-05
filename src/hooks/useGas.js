@@ -51,9 +51,11 @@ export default function useGas() {
     [dispatch]
   );
 
-  const updateTxFee = useCallback(data => dispatch(gasUpdateTxFee(data)), [
-    dispatch,
-  ]);
+  const updateTxFee = useCallback(
+    (data, overrideGasOption) =>
+      dispatch(gasUpdateTxFee(data, overrideGasOption)),
+    [dispatch]
+  );
   const updateCustomValues = useCallback(
     (price, estimate) => dispatch(gasUpdateCustomValues(price, estimate)),
     [dispatch]
