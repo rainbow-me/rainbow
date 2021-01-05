@@ -1,9 +1,9 @@
 import React, { useCallback, useImperativeHandle, useRef } from 'react';
 import { Animated } from 'react-native';
-import ImgixImage from '../ImgixImage';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import DeleteIcon from '../../assets/swipeToDelete.png';
 import EditIcon from '../../assets/swipeToEdit.png';
+import ImgixImage from '../ImgixImage';
 import { ButtonPressAnimation } from '../animations';
 import { Centered, Row } from '../layout';
 import { Text } from '../text';

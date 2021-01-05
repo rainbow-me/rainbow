@@ -8,9 +8,9 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import ImgixImage from '../ImgixImage';
 import styled from 'styled-components/primitives';
 import Spinner from '../../assets/chartSpinner.png';
+import ImgixImage from '../ImgixImage';
 import { ClearInputDecorator, Input } from '../inputs';
 import { Row } from '../layout';
 import { Text } from '../text';

@@ -10,9 +10,9 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import styled from 'styled-components/native';
-import ImgixImage from '../ImgixImage';
 import Spinner from '../../assets/chartSpinner.png';
 import { nativeStackConfig } from '../../navigation/config';
+import ImgixImage from '../ImgixImage';
 import { ChartExpandedStateHeader } from '../expanded-state/chart';
 import { Column } from '../layout';
 import Labels from './ExtremeLabels';

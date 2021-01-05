@@ -1,9 +1,9 @@
 import React from 'react';
 import Animated, { Easing } from 'react-native-reanimated';
-import ImgixImage from '../ImgixImage';
 import { toRad, useTimingTransition } from 'react-native-redash';
 import styled from 'styled-components/primitives';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
+import ImgixImage from '../ImgixImage';
 
 import { ButtonPressAnimation, interpolate } from '../animations';
 import { Row, RowWithMargins } from '../layout';

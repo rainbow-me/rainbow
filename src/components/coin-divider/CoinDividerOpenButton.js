@@ -1,8 +1,8 @@
 import React from 'react';
 import { View } from 'react-native';
-import ImgixImage from '../ImgixImage';
 import styled from 'styled-components/primitives';
 import Caret from '../../assets/family-dropdown-arrow.png';
+import ImgixImage from '../ImgixImage';
 import {
   ButtonPressAnimation,
   OpacityToggler,

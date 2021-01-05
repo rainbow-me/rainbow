@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import styled from 'styled-components/primitives';
-import ImgixImage from '../ImgixImage';
 import { initials } from '../../utils';
+import ImgixImage from '../ImgixImage';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { CoinIconSize } from './CoinIcon';
