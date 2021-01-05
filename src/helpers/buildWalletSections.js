@@ -26,7 +26,7 @@ import {
 import networkTypes from './networkTypes';
 import { add, convertAmountToNativeDisplay, multiply } from './utilities';
 import Routes from '@rainbow-me/routes';
-import { ETH_ICON_URL } from '@rainbow-me/utils';
+import { ETH_ICON_URL, ethereumUtils } from '@rainbow-me/utils';
 
 const allAssetsSelector = state => state.allAssets;
 const allAssetsCountSelector = state => state.allAssetsCount;
@@ -166,7 +166,7 @@ const withUniswapSection = (
 
 const withBalanceSavingsSection = savings => {
   const { genericAssets } = store.getState().data;
-  const priceOfEther = genericAssets?.eth?.price?.value;
+  const priceOfEther = ethereumUtils.getEthPriceUnit(genericAssets);
 
   let savingsAssets = savings;
   let totalUnderlyingNativeValue = '0';

@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { convertAmountToNativeDisplay, multiply } from '../helpers/utilities';
 import useAccountSettings from './useAccountSettings';
 import useSavingsAccount from './useSavingsAccount';
+import { ethereumUtils } from '@rainbow-me/utils';
 
 export default function useSendSavingsAccount() {
   const { nativeCurrency } = useAccountSettings();
@@ -10,7 +11,7 @@ export default function useSendSavingsAccount() {
   const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
     genericAssets,
   }));
-  const priceOfEther = genericAssets?.eth?.price?.value;
+  const priceOfEther = ethereumUtils.getEthPriceUnit(genericAssets);
   if (priceOfEther) {
     savings = map(savings, asset => {
       const { cToken, cTokenBalance, exchangeRate, underlyingPrice } = asset;
