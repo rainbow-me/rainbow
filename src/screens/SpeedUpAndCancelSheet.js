@@ -273,10 +273,14 @@ export default function SpeedUpAndCancelSheet() {
 
   useEffect(() => {
     if (!isEmpty(gasPrices) && !calculatingGasLimit.current) {
+      calculatingGasLimit.current = true;
       if (Number(gweiToWei(minGasPrice)) > Number(gasPrices.fast.value)) {
         dispatch(updateGasPriceForSpeed('fast', gweiToWei(minGasPrice)));
-        updateTxFee(type === CANCEL_TX ? ethUnits.basic_tx : tx.gasLimit);
       }
+      const gasLimitForNewTx =
+        type === CANCEL_TX ? ethUnits.basic_tx : tx.gasLimit;
+      updateTxFee(gasLimitForNewTx);
+      calculatingGasLimit.current = false;
     }
   }, [dispatch, gasPrices, minGasPrice, tx, tx.gasLimit, type, updateTxFee]);
 
