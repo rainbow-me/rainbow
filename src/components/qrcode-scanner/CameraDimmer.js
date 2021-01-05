@@ -53,10 +53,10 @@ export default function CameraDimmer({ children, cameraDim = { value: 1 } }) {
     []
   );
   return (
-    <Dim
-      style={[style, ios && discoverSheetAvailable ? animatedV2Style : null]}
-    >
-      {children}
+    <Dim style={style}>
+      <Dim style={[ios && discoverSheetAvailable ? animatedV2Style : null]}>
+        {children}
+      </Dim>
     </Dim>
   );
 }

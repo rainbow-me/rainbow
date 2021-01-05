@@ -77,7 +77,7 @@ export default function QRScannerScreen() {
     walletConnectorsCount,
   } = useWalletConnectConnections();
 
-  const cameraDim = useSharedValue(1);
+  const cameraDim = useSharedValue(0);
   const dsRef = useRef();
   const onCrossMagicBorder = useCallback(
     ({ below }) => (cameraDim.value = below ? 1 : 0),
