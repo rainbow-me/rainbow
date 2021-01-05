@@ -1,6 +1,8 @@
 import * as React from 'react';
 import FastImage, { FastImageProps, Source } from 'react-native-fast-image';
 
+import { maybeSignSource } from '../handlers/imgix';
+
 export type ImgixImageProps = FastImageProps & {
   readonly Component?: React.ElementType;
 };
@@ -17,15 +19,17 @@ class ImgixImage extends React.PureComponent<ImgixImageProps> {
   }
 }
 
-//let priority = ImgixImage.priority[isTopFold ? 'high' : 'normal'];
-
 const preload = (sources: Source[]): void => {
   if (sources.length) {
-    console.log('[Imgix]: Should preload ', ...sources);
+    return FastImage.preload(sources.map(source => maybeSignSource(source)));
   }
   return;
 };
 
+// We want to render using ImgixImage, assign all properties of
+// FastImage to ImgixImage, override all properties of FastImage which
+// we do not wish to override by FastImage, and finally override the
+// preload mechanic.
 export default Object.assign(ImgixImage, FastImage, ImgixImage, {
   preload,
 });
