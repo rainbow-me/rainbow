@@ -1,12 +1,12 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { Linking, NativeModules, ScrollView, Share } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import styled from 'styled-components/primitives';
 import { REVIEW_ANDROID } from '../../config/experimental';
 import useExperimentalFlag from '../../config/experimentalHooks';
 //import { supportedLanguages } from '../../languages';
 import AppVersionStamp from '../AppVersionStamp';
+import ImgixImage from '../ImgixImage';
 import { Icon } from '../icons';
 import { Column, ColumnWithDividers } from '../layout';
 import {
@@ -58,7 +58,7 @@ const Container = styled(ScrollView).attrs({
 `;
 
 // ⚠️ Beware: magic numbers lol
-const SettingIcon = styled(FastImage)`
+const SettingIcon = styled(ImgixImage)`
   ${position.size(60)};
   margin-left: -16;
   margin-right: -11;

@@ -1,9 +1,9 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useCallback, useEffect } from 'react';
-import FastImage from 'react-native-fast-image';
 import styled from 'styled-components';
 import { cloudPlatform } from '../../../utils/platform';
+import ImgixImage from '../../ImgixImage';
 import { RainbowButton } from '../../buttons';
 import { Centered, Column } from '../../layout';
 import { SheetActionButton } from '../../sheet';
@@ -57,8 +57,8 @@ const Title = styled(Text).attrs({
   padding-horizontal: 11;
 `;
 
-const TopIcon = styled(FastImage).attrs({
-  resizeMode: FastImage.resizeMode.contain,
+const TopIcon = styled(ImgixImage).attrs({
+  resizeMode: ImgixImage.resizeMode.contain,
   source: BackupIcon,
 })`
   height: 74;

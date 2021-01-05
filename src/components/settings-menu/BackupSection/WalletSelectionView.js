@@ -1,12 +1,12 @@
 import React, { Fragment, useCallback } from 'react';
 import { Alert } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { deleteAllBackups } from '../../../handlers/cloudBackup';
 import { walletsUpdate } from '../../../redux/wallets';
 import { cloudPlatform } from '../../../utils/platform';
 import Divider from '../../Divider';
+import ImgixImage from '../../ImgixImage';
 import { ButtonPressAnimation } from '../../animations';
 import { BottomRowText } from '../../coin-row';
 import { ContactAvatar } from '../../contacts';
@@ -21,7 +21,7 @@ import { useNavigation } from '@rainbow-me/navigation';
 import { colors, fonts, padding } from '@rainbow-me/styles';
 import { abbreviations, showActionSheetWithOptions } from '@rainbow-me/utils';
 
-const CaretIcon = styled(FastImage).attrs({
+const CaretIcon = styled(ImgixImage).attrs({
   source: Caret,
   tintColor: colors.alpha(colors.blueGreyDark, 0.6),
 })`

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
-import FastImage from 'react-native-fast-image';
+import ImgixImage from '../ImgixImage';
 import styled from 'styled-components/primitives';
 import Caret from '../../assets/family-dropdown-arrow.png';
 import {
@@ -22,7 +22,7 @@ const CaretContainer = styled.View`
   padding-bottom: 1;
 `;
 
-const CaretIcon = styled(FastImage).attrs({
+const CaretIcon = styled(ImgixImage).attrs({
   source: Caret,
   tintColor: colors.blueGreyDark,
 })`

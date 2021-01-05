@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import FastImage from 'react-native-fast-image';
 import styled from 'styled-components/primitives';
+import ImgixImage from '../ImgixImage';
 import { initials } from '../../utils';
 import { Centered } from '../layout';
 import { Text } from '../text';
@@ -43,7 +43,7 @@ export default function RequestVendorLogoIcon({
   const imageSource = useMemo(
     () => ({
       priority:
-        FastImage.priority[shouldPrioritizeImageLoading ? 'high' : 'low'],
+        ImgixImage.priority[shouldPrioritizeImageLoading ? 'high' : 'low'],
       uri: imageUrl,
     }),
     [imageUrl, shouldPrioritizeImageLoading]
@@ -59,7 +59,7 @@ export default function RequestVendorLogoIcon({
     >
       <Content color={bgColor} size={size}>
         {imageUrl && !error ? (
-          <FastImage
+          <ImgixImage
             onError={setError}
             source={imageSource}
             style={position.sizeAsObject('100%')}

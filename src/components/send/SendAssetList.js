@@ -1,6 +1,5 @@
 import React, { Fragment } from 'react';
 import { LayoutAnimation } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import { View } from 'react-primitives';
 import {
   DataProvider,
@@ -13,6 +12,7 @@ import { buildCoinsList } from '../../helpers/assets';
 import networkTypes from '../../helpers/networkTypes';
 import { deviceUtils } from '../../utils';
 import Divider, { DividerSize } from '../Divider';
+import ImgixImage from '../ImgixImage';
 import { FlyInAnimation } from '../animations';
 import { CoinDividerOpenButton } from '../coin-divider';
 import {
@@ -120,7 +120,8 @@ export default class SendAssetList extends React.Component {
         }
       });
     });
-    FastImage.preload(imageTokens);
+
+    ImgixImage.preload(imageTokens);
 
     this._layoutProvider = new LayoutProvider(
       i => {
