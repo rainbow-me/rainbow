@@ -9,6 +9,25 @@ type MaybeImgixClient = ImgixClient | null;
 export type signUriWithImgixParams = string;
 export type signUriWithImgixResult = string;
 
+type SignedImageResultCache = {
+  readonly [originalUrl: string]: string;
+};
+
+// Here we latch onto previously signed values to avoid repeatedly
+// generating equivalent signed URLs to improve performance.
+// NOTE: This cache is currently unbounded and can grow forever.
+//       it might be suitable to use something like mnemonist/lru
+//       to cap the maximum size.
+const staticResultCache = {} as SignedImageResultCache;
+
+const maybeAlreadySignedUri = (externalImageUri: string): string | null => {
+  const maybeSignedUri = staticResultCache[externalImageUri];
+  if (typeof maybeSignedUri === 'string') {
+    return maybeSignedUri;
+  }
+  return null;
+};
+
 const maybeCreateImgixClient = (): MaybeImgixClient => {
   const hasImgixDomain =
     typeof IMGIX_DOMAIN === 'string' && !!IMGIX_DOMAIN.length;
@@ -58,13 +77,23 @@ export const canSignUriWithImgix = (
 export const signUriWithImgix = (
   externalImageUri: signUriWithImgixParams
 ): signUriWithImgixResult => {
-  if (!canSignUriWithImgix(externalImageUri)) {
+  // Short circuit. (Perf +)
+  const alreadySignedUri = maybeAlreadySignedUri(externalImageUri);
+  if (alreadySignedUri) {
+    return alreadySignedUri;
+  } else if (!canSignUriWithImgix(externalImageUri)) {
     throw new Error(
       `[Imgix]: Attempted to sign "${externalImageUri}", but this is not supported.`
     );
   }
   if (imgixClient) {
-    return imgixClient.buildURL(externalImageUri, {});
+    const signedImageUri = imgixClient.buildURL(externalImageUri, {});
+    // To improve performance, we latched signed image URLs to prevent
+    // further signature attempts for a successfully signed URL.
+    if (signedImageUri) {
+      // @ts-ignore
+      staticResultCache[externalImageUri] = signedImageUri;
+    }
   }
   return externalImageUri;
 };
@@ -77,7 +106,14 @@ export const signImageSource = (source: Source): Source => {
     return source;
   }
   const externalImageUri = maybeStringUri as string;
-  if (!canSignUriWithImgix(externalImageUri)) {
+  // Short circuit. (Perf +)
+  const alreadySignedUri = maybeAlreadySignedUri(externalImageUri);
+  if (alreadySignedUri) {
+    return {
+      ...extras,
+      uri: alreadySignedUri,
+    };
+  } else if (!canSignUriWithImgix(externalImageUri)) {
     return source;
   }
   return {
@@ -88,7 +124,9 @@ export const signImageSource = (source: Source): Source => {
 
 // Helper function to permit callers to sign an image inline.
 export const maybeSignUri = (uri: string) => {
-  return canSignUriWithImgix(uri) ? signUriWithImgix(uri) : uri;
+  return maybeAlreadySignedUri(uri) || canSignUriWithImgix(uri)
+    ? signUriWithImgix(uri)
+    : uri;
 };
 
 // Safely pre-caches image urls using Imgix. This signs the source
