@@ -165,7 +165,7 @@ const rainbows = [
     id: 'grey',
     rotate: '150deg',
     scale: 0.5066666667,
-    source: RainbowGreyNeon,
+    source: ios ? { uri: 'greyneon' } : RainbowGreyNeon,
     x: -116,
     y: -202,
   },
@@ -174,7 +174,7 @@ const rainbows = [
     id: 'neon',
     rotate: '394.75deg',
     scale: 0.3333333333,
-    source: RainbowNeon,
+    source: ios ? { uri: 'neon' } : RainbowNeon,
     x: 149,
     y: 380,
   },
@@ -183,7 +183,7 @@ const rainbows = [
     id: 'pixel',
     rotate: '360deg',
     scale: 0.6666666667,
-    source: RainbowPixel,
+    source: ios ? { uri: 'pixel' } : RainbowPixel,
     x: 173,
     y: -263,
   },
@@ -192,7 +192,7 @@ const rainbows = [
     id: 'light',
     rotate: '-33deg',
     scale: 0.2826666667,
-    source: RainbowLight,
+    source: ios ? { uri: 'light' } : RainbowLight,
     x: -172,
     y: 180,
   },
@@ -201,7 +201,7 @@ const rainbows = [
     id: 'liquid',
     rotate: '75deg',
     scale: 0.42248,
-    source: RainbowLiquid,
+    source: ios ? { uri: 'liquid' } : RainbowLiquid,
     x: 40,
     y: 215,
   },
@@ -500,7 +500,12 @@ export default function WelcomeScreen() {
   return (
     <Container testID="welcome-screen">
       {traversedRainbows.map(({ source, style, id }) => (
-        <RainbowImage key={`rainbow${id}`} source={source} style={style} />
+        <RainbowImage
+          Component={Animated.Image}
+          key={`rainbow${id}`}
+          source={source}
+          style={style}
+        />
       ))}
 
       <ContentWrapper style={contentStyle}>
