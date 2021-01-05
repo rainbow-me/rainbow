@@ -12,15 +12,20 @@ import { find, get, isEmpty, matchesProperty, replace, toLower } from 'lodash';
 import { NativeModules } from 'react-native';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import URL from 'url-parse';
-import networkTypes from '../helpers/networkTypes';
-import { fromWei, greaterThan, isZero, subtract } from '../helpers/utilities';
-import WalletTypes from '../helpers/walletTypes';
 import {
   DEFAULT_HD_PATH,
   identifyWalletType,
   WalletLibraryType,
 } from '../model/wallet';
-import { chains } from '../references';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
+import {
+  fromWei,
+  greaterThan,
+  isZero,
+  subtract,
+} from '@rainbow-me/helpers/utilities';
+import WalletTypes from '@rainbow-me/helpers/walletTypes';
+import { chains } from '@rainbow-me/references';
 import logger from 'logger';
 
 const { RNBip39 } = NativeModules;

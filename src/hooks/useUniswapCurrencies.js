@@ -5,19 +5,19 @@ import { find, get, isEmpty } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import CurrencySelectionTypes from '../helpers/currencySelectionTypes';
-import { multiply } from '../helpers/utilities';
 import { useNavigation } from '../navigation/Navigation';
-import {
-  multicallAddListeners,
-  multicallUpdateOutdatedListeners,
-} from '../redux/multicall';
 import useAccountAssets from './useAccountAssets';
 import useAccountSettings from './useAccountSettings';
 import { delayNext } from './useMagicAutofocus';
 import usePrevious from './usePrevious';
 import useUniswapAssetsInWallet from './useUniswapAssetsInWallet';
 import useUniswapCalls from './useUniswapCalls';
+import CurrencySelectionTypes from '@rainbow-me/helpers/currencySelectionTypes';
+import { multiply } from '@rainbow-me/helpers/utilities';
+import {
+  multicallAddListeners,
+  multicallUpdateOutdatedListeners,
+} from '@rainbow-me/redux/multicall';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils, isNewValueForPath } from '@rainbow-me/utils';
 import logger from 'logger';
