@@ -10,6 +10,7 @@ import useExperimentalFlag, {
   AVATAR_PICKER,
 } from '../../config/experimentalHooks';
 import showWalletErrorAlert from '../../helpers/support';
+import TransactionActions from '../../helpers/transactionActions';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import {
   getHumanReadableDate,
@@ -234,15 +235,22 @@ export default function TransactionList({
 
       const isOutgoing = toLower(from) === toLower(accountAddress);
       const canBeResubmitted = isOutgoing && !minedAt;
+      const canBeCancelled =
+        canBeResubmitted && status !== TransactionStatusTypes.cancelling;
 
       if (hash) {
         let buttons = [
-          ...(canBeResubmitted ? ['Speed Up', 'Attempt Cancellation'] : []),
-          'View on Etherscan',
-          ...(ios ? ['Cancel'] : []),
+          ...(canBeResubmitted ? [TransactionActions.speedUp] : []),
+          ...(canBeCancelled ? [TransactionActions.attemptCancellation] : []),
+          TransactionActions.viewOnEtherscan,
+          ...(ios ? [TransactionActions.cancel] : []),
         ];
         if (showContactInfo) {
-          buttons.unshift(contact ? 'View Contact' : 'Add to Contacts');
+          buttons.unshift(
+            contact
+              ? TransactionActions.viewContact
+              : TransactionActions.addToContacts
+          );
         }
 
         showActionSheetWithOptions(
@@ -260,43 +268,41 @@ export default function TransactionList({
               : `${headerInfo.type} ${date}`,
           },
           buttonIndex => {
-            if (showContactInfo && buttonIndex === 0) {
-              navigate(Routes.MODAL_SCREEN, {
-                address: contactAddress,
-                asset: item,
-                color: contactColor,
-                contact,
-                type: 'contact_profile',
-              });
-            } else if (
-              canBeResubmitted &&
-              ((!showContactInfo && buttonIndex === 0) ||
-                (showContactInfo && buttonIndex === 1))
-            ) {
-              navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
-                tx: item,
-                type: 'speed_up',
-              });
-            } else if (
-              canBeResubmitted &&
-              ((!showContactInfo && buttonIndex === 1) ||
-                (showContactInfo && buttonIndex === 2))
-            ) {
-              navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
-                tx: item,
-                type: 'cancel',
-              });
-            } else if (
-              (!showContactInfo && buttonIndex === 0) ||
-              (!showContactInfo && buttonIndex === 2 && canBeResubmitted) ||
-              (showContactInfo && buttonIndex === 1 && !canBeResubmitted) ||
-              (showContactInfo && buttonIndex === 3 && canBeResubmitted)
-            ) {
-              const normalizedHash = hash.replace(/-.*/g, '');
-              const etherscanHost = ethereumUtils.getEtherscanHostFromNetwork(
-                network
-              );
-              Linking.openURL(`https://${etherscanHost}/tx/${normalizedHash}`);
+            const action = buttons[buttonIndex];
+            switch (action) {
+              case TransactionActions.viewContact:
+              case TransactionActions.addToContacts:
+                navigate(Routes.MODAL_SCREEN, {
+                  address: contactAddress,
+                  asset: item,
+                  color: contactColor,
+                  contact,
+                  type: 'contact_profile',
+                });
+                break;
+              case TransactionActions.speedUp:
+                navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
+                  tx: item,
+                  type: 'speed_up',
+                });
+                break;
+              case TransactionActions.attemptCancellation:
+                navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
+                  tx: item,
+                  type: 'cancel',
+                });
+                break;
+              case TransactionActions.viewOnEtherscan: {
+                const normalizedHash = hash.replace(/-.*/g, '');
+                const etherscanHost = ethereumUtils.getEtherscanHostFromNetwork(
+                  network
+                );
+                Linking.openURL(
+                  `https://${etherscanHost}/tx/${normalizedHash}`
+                );
+                break;
+              }
+              default:
             }
           }
         );
