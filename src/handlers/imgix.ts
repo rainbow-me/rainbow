@@ -26,13 +26,11 @@ const maybeCreateImgixClient = (): MaybeImgixClient => {
 const imgixClient = maybeCreateImgixClient();
 
 if (!imgixClient) {
-  const message = `[Imgix] Image signing is currently disabled! You can enable it by adding an IMGIX_DOMAIN and IMGIX_TOKEN to the .env. You can get these from https://www.imgix.com/.`;
-  // It isn't suitable to release the application without Imgix support outside of development mode.
-  if (!__DEV__) {
-    throw new Error(message);
-  }
-  // eslint-disable-next-line no-console
-  console.log(message);
+  __DEV__ &&
+    // eslint-disable-next-line no-console
+    console.log(
+      `[Imgix] Image signing is currently disabled! You can enable it by adding an IMGIX_DOMAIN and IMGIX_TOKEN to the .env. You can get these from https://www.imgix.com/.`
+    );
 }
 
 // Determines if we're allowed to sign an image using Imgix.
