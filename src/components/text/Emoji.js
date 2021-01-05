@@ -24,13 +24,20 @@ function getEmoji(name) {
 
 export default function Emoji({
   children,
+  letterSpacing = 'zero',
   lineHeight = 'none',
   name,
   size = 'h4',
   ...props
 }) {
   return (
-    <Text {...props} isEmoji lineHeight={lineHeight} size={size}>
+    <Text
+      {...props}
+      isEmoji
+      letterSpacing={letterSpacing}
+      lineHeight={lineHeight}
+      size={size}
+    >
       {children || getEmoji(name)}
     </Text>
   );

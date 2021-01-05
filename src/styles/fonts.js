@@ -42,6 +42,7 @@ font.size = {
   larger: '20px',
   big: '23px',
   bigger: '26px',
+  biggest: '36px',
   headline: '50px',
   h1: '41px',
   h2: '32px',
