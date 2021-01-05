@@ -1,0 +1,37 @@
+diff --git a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/BottomSheet.tsx b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/BottomSheet.tsx
+index b1f284e..b641d72 100644
+--- a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/BottomSheet.tsx
++++ b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/BottomSheet.tsx
+@@ -18,7 +18,7 @@ import Animated, {
+   useAnimatedStyle,
+   useDerivedValue,
+   runOnJS,
+-  interpolate,
++  newInterpolate as interpolate,
+   Extrapolate,
+   runOnUI,
+   useWorkletCallback,
+diff --git a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/constants.ts b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/constants.ts
+index 7056d1c..2a9898a 100644
+--- a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/constants.ts
++++ b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/constants.ts
+@@ -1,5 +1,5 @@
+ import { Platform } from 'react-native';
+-import Animated, { Easing } from 'react-native-reanimated';
++import Animated, { NewEasing as Easing } from 'react-native-reanimated';
+ 
+ const DEFAULT_ANIMATION_EASING: Animated.EasingFunction = Easing.out(
+   Easing.exp
+diff --git a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheetBackdrop/BottomSheetBackdrop.tsx b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheetBackdrop/BottomSheetBackdrop.tsx
+index 636e5f2..b8ddfbe 100644
+--- a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheetBackdrop/BottomSheetBackdrop.tsx
++++ b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheetBackdrop/BottomSheetBackdrop.tsx
+@@ -1,7 +1,7 @@
+ import React, { memo, useCallback, useMemo, useRef } from 'react';
+ import { TouchableWithoutFeedback } from 'react-native';
+ import Animated, {
+-  interpolate,
++  newInterpolate as interpolate,
+   Extrapolate,
+   useAnimatedStyle,
+   useAnimatedProps,
