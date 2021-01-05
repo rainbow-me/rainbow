@@ -23,6 +23,7 @@ export const SAI_ADDRESS = '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359';
 export const DAI_ADDRESS = '0x6b175474e89094c44da98b954eedeac495271d0f';
 export const USDC_ADDRESS = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';
 export const SOCKS_ADDRESS = '0x23B608675a2B2fB1890d3ABBd85c5775c51691d5';
+export const WBTC_ADDRESS = '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599';
 
 export const TRANSFER_EVENT_TOPIC_LENGTH = 3;
 export const TRANSFER_EVENT_KECCAK =
@@ -67,7 +68,7 @@ export const AddCashCurrencyInfo = {
 };
 
 export const DefaultUniswapFavorites = {
-  mainnet: ['eth', DAI_ADDRESS],
+  mainnet: ['eth', DAI_ADDRESS, WBTC_ADDRESS],
   rinkeby: [
     // Ethereum
     'eth',
