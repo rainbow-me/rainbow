@@ -165,8 +165,8 @@ const withUniswapSection = (
 };
 
 const withBalanceSavingsSection = savings => {
-  const assets = store.getState().data.genericAssets;
-  const priceOfEther = assets?.eth?.price?.value;
+  const { genericAssets } = store.getState().data;
+  const priceOfEther = genericAssets?.eth?.price?.value;
 
   let savingsAssets = savings;
   let totalUnderlyingNativeValue = '0';
