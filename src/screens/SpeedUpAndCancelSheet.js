@@ -23,10 +23,12 @@ import {
 import { Emoji, Text } from '../components/text';
 import { getTransaction, toHex } from '../handlers/web3';
 import TransactionStatusTypes from '../helpers/transactionStatusTypes';
+import TransactionTypes from '../helpers/transactionTypes';
 import { sendTransaction } from '../model/wallet';
 import { gweiToWei, weiToGwei } from '../parsers/gas';
 import { getTitle } from '../parsers/transactions';
 import { dataUpdateTransaction } from '../redux/data';
+import { explorerInit } from '../redux/explorer';
 import { updateGasPriceForSpeed } from '../redux/gas';
 import { safeAreaInsetValues } from '../utils';
 import deviceUtils from '../utils/deviceUtils';
@@ -133,6 +135,24 @@ export default function SpeedUpAndCancelSheet() {
       : toHex(minGasPriceAllowed);
   }, [minGasPrice, selectedGasPrice]);
 
+  const reloadTransactions = useCallback(
+    transaction => {
+      if (
+        transaction.status === TransactionStatusTypes.speeding_up &&
+        transaction.status === TransactionStatusTypes.cancelling &&
+        transaction.type !== TransactionTypes.send
+      ) {
+        logger.log('Reloading zerion in 5!');
+        setTimeout(() => {
+          logger.log('Reloading tx from zerion NOW!');
+          dispatch(explorerInit());
+        }, 5000);
+        return;
+      }
+    },
+    [dispatch]
+  );
+
   const handleCancellation = useCallback(async () => {
     try {
       const gasPrice = getNewGasPrice();
@@ -152,14 +172,24 @@ export default function SpeedUpAndCancelSheet() {
         updatedTx.hash += `-${originalHash.split('-')[1]}`;
       }
       updatedTx.status = TransactionStatusTypes.cancelling;
+      updatedTx.status = TransactionStatusTypes.cancelling;
       updatedTx.title = getTitle(updatedTx);
-      dispatch(dataUpdateTransaction(originalHash, updatedTx));
+      dispatch(
+        dataUpdateTransaction(originalHash, updatedTx, true, reloadTransactions)
+      );
     } catch (e) {
       logger.log('Error submitting cancel tx', e);
     } finally {
       goBack();
     }
-  }, [accountAddress, dispatch, getNewGasPrice, goBack, tx]);
+  }, [
+    accountAddress,
+    dispatch,
+    getNewGasPrice,
+    goBack,
+    reloadTransactions,
+    tx,
+  ]);
 
   const handleSpeedUp = useCallback(async () => {
     try {
@@ -185,8 +215,9 @@ export default function SpeedUpAndCancelSheet() {
         updatedTx.hash += `-${originalHash.split('-')[1]}`;
       }
       updatedTx.status = TransactionStatusTypes.speeding_up;
+      updatedTx.status = TransactionStatusTypes.speeding_up;
       updatedTx.title = getTitle(updatedTx);
-      dispatch(dataUpdateTransaction(originalHash, updatedTx));
+      dispatch(dataUpdateTransaction(originalHash, updatedTx, true));
     } catch (e) {
       logger.log('Error submitting speed up tx', e);
     } finally {
