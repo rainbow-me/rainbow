@@ -237,9 +237,9 @@ export default function TransactionList({
 
       if (hash) {
         let buttons = [
-          ...(canBeResubmitted ? ['Speed Up', 'Attempt Cancellation'] : []),
+          ...(canBeResubmitted ? ['🚀 Speed Up', '☠️ Cancel'] : []),
           'View on Etherscan',
-          ...(ios ? ['Cancel'] : []),
+          ...(ios ? ['Close'] : []),
         ];
         if (showContactInfo) {
           buttons.unshift(contact ? 'View Contact' : 'Add to Contacts');
