@@ -172,7 +172,6 @@ export default function SpeedUpAndCancelSheet() {
         updatedTx.hash += `-${originalHash.split('-')[1]}`;
       }
       updatedTx.status = TransactionStatusTypes.cancelling;
-      updatedTx.status = TransactionStatusTypes.cancelling;
       updatedTx.title = getTitle(updatedTx);
       dispatch(
         dataUpdateTransaction(originalHash, updatedTx, true, reloadTransactions)
@@ -209,21 +208,29 @@ export default function SpeedUpAndCancelSheet() {
       const updatedTx = { ...tx };
       // Update the hash on the copy of the original tx
       updatedTx.hash = hash;
-      // Update the hash on the copy of the original tx
-      updatedTx.hash = hash;
       if (originalHash.split('-').length > 1) {
         updatedTx.hash += `-${originalHash.split('-')[1]}`;
       }
       updatedTx.status = TransactionStatusTypes.speeding_up;
-      updatedTx.status = TransactionStatusTypes.speeding_up;
       updatedTx.title = getTitle(updatedTx);
-      dispatch(dataUpdateTransaction(originalHash, updatedTx, true));
+      dispatch(
+        dataUpdateTransaction(originalHash, updatedTx, true, reloadTransactions)
+      );
     } catch (e) {
       logger.log('Error submitting speed up tx', e);
     } finally {
       goBack();
     }
-  }, [data, dispatch, gasLimit, getNewGasPrice, goBack, tx, value]);
+  }, [
+    data,
+    dispatch,
+    gasLimit,
+    getNewGasPrice,
+    goBack,
+    reloadTransactions,
+    tx,
+    value,
+  ]);
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(async () => {
