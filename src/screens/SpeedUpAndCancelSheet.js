@@ -39,6 +39,7 @@ import {
   useKeyboardHeight,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
+import { ethUnits } from '@rainbow-me/references';
 import { colors, position } from '@rainbow-me/styles';
 import logger from 'logger';
 
@@ -274,10 +275,10 @@ export default function SpeedUpAndCancelSheet() {
     if (!isEmpty(gasPrices) && !calculatingGasLimit.current) {
       if (Number(gweiToWei(minGasPrice)) > Number(gasPrices.fast.value)) {
         dispatch(updateGasPriceForSpeed('fast', gweiToWei(minGasPrice)));
-        updateTxFee(tx.gasLimit);
+        updateTxFee(type === CANCEL_TX ? ethUnits.basic_tx : tx.gasLimit);
       }
     }
-  }, [dispatch, gasPrices, minGasPrice, tx, tx.gasLimit, updateTxFee]);
+  }, [dispatch, gasPrices, minGasPrice, tx, tx.gasLimit, type, updateTxFee]);
 
   const handleCustomGasFocus = useCallback(() => {
     setKeyboardVisible(true);
