@@ -29,7 +29,7 @@ const Container = styled(Column).attrs({
   hapticType: 'impactHeavy',
   scaleTo: 1.0666,
 })`
-  ${padding(14, 19, 0)};
+  ${padding(15, 19, 0)};
   height: 76;
   width: 100%;
 `;
@@ -59,6 +59,7 @@ const LittleBorderlessButton = ({ onPress, children, testID }) => (
 
 const BottomRightLabel = ({ formatter, theme }) => (
   <Label
+    align="right"
     color={
       theme === 'dark'
         ? colors.alpha(colors.darkModeColors.blueGreyDark, 0.6)
@@ -184,7 +185,11 @@ const GasSpeedButton = ({
   const renderGasPriceText = useCallback(
     animatedNumber => (
       <Text
-        color={theme === 'dark' ? colors.white : colors.blueGreyDark}
+        color={
+          theme === 'dark'
+            ? colors.white
+            : colors.alpha(colors.blueGreyDark, 0.8)
+        }
         letterSpacing="roundedTight"
         size="lmedium"
         weight="bold"
@@ -374,7 +379,7 @@ const GasSpeedButton = ({
 
   return (
     <Container as={ButtonPressAnimation} onPress={handlePress} testID={testID}>
-      <Row align="end" justify="space-between" marginBottom={1}>
+      <Row align="end" justify="space-between" marginBottom={1.5}>
         {!isCustom ? (
           <AnimateNumber
             formatter={formatAnimatedGasPrice}
@@ -388,7 +393,11 @@ const GasSpeedButton = ({
           <BorderlessButton onPress={focusOnInput}>
             <Row>
               <Input
-                color={theme === 'dark' ? colors.white : colors.blueGreyDark50}
+                color={
+                  theme === 'dark'
+                    ? colors.white
+                    : colors.alpha(colors.blueGreyDark, 0.8)
+                }
                 height={19}
                 keyboardAppearance="dark"
                 keyboardType="numeric"
@@ -415,7 +424,7 @@ const GasSpeedButton = ({
                   customGasPriceInput
                     ? theme === 'dark'
                       ? colors.white
-                      : colors.blueGreyDark50
+                      : colors.alpha(colors.blueGreyDark, 0.8)
                     : theme === 'dark'
                     ? colors.alpha(colors.darkModeColors.blueGreyDark, 0.3)
                     : colors.alpha(colors.blueGreyDark, 0.3)

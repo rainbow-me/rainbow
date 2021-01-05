@@ -11,6 +11,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components/native';
+import Divider from '../components/Divider';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, Column, Row } from '../components/layout';
 
@@ -67,13 +68,22 @@ const CenteredSheet = styled(Centered)`
   border-top-right-radius: 39;
 `;
 
+const ExtendedSheetBackground = styled.View`
+  background-color: ${colors.white};
+  height: 1000;
+  position: absolute;
+  bottom: -800;
+  width: 100%;
+`;
+
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const AnimatedSheet = Animated.createAnimatedComponent(CenteredSheet);
 
 const GasSpeedButtonContainer = styled(Row)`
   justify-content: center;
   margin-bottom: 19px;
-  width: ${deviceUtils.dimensions.width - 20};
+  margin-top: 4px;
+  width: ${deviceUtils.dimensions.width - 10};
 `;
 
 const CANCEL_TX = 'cancel';
@@ -81,7 +91,7 @@ const SPEED_UP = 'speed_up';
 
 const title = {
   [CANCEL_TX]: 'Cancel transaction',
-  [SPEED_UP]: 'Speed Up transaction',
+  [SPEED_UP]: 'Speed up transaction',
 };
 
 const text = {
@@ -292,15 +302,9 @@ export default function SpeedUpAndCancelSheet() {
   }, []);
 
   const offset = useSharedValue(0);
-  const sheetOpacity = useSharedValue(1);
   const animatedContainerStyles = useAnimatedStyle(() => {
     return {
       transform: [{ translateY: offset.value }],
-    };
-  });
-  const animatedSheetStyles = useAnimatedStyle(() => {
-    return {
-      opacity: sheetOpacity.value,
     };
   });
 
@@ -311,18 +315,16 @@ export default function SpeedUpAndCancelSheet() {
   useEffect(() => {
     if (keyboardVisible) {
       offset.value = withSpring(
-        -keyboardHeight + safeAreaInsetValues.bottom - 20,
+        -keyboardHeight + safeAreaInsetValues.bottom - (android ? 50 : 10),
         springConfig
       );
-      sheetOpacity.value = withSpring(android ? 0.8 : 1, springConfig);
     } else {
       offset.value = withSpring(0, springConfig);
-      sheetOpacity.value = withSpring(1, springConfig);
     }
-  }, [keyboardHeight, keyboardVisible, offset, sheetOpacity]);
+  }, [keyboardHeight, keyboardVisible, offset]);
   const sheetHeight = ios
-    ? (type === CANCEL_TX ? 520 : 465) + safeAreaInsetValues.bottom
-    : (type === CANCEL_TX ? 845 : 845) + safeAreaInsetValues.bottom;
+    ? (type === CANCEL_TX ? 491 : 442) + safeAreaInsetValues.bottom
+    : (type === CANCEL_TX ? 770 : 770) + safeAreaInsetValues.bottom;
 
   const marginTop = android
     ? deviceHeight - sheetHeight + (type === CANCEL_TX ? 290 : 340)
@@ -332,6 +334,7 @@ export default function SpeedUpAndCancelSheet() {
     <AnimatedContainer
       style={isReanimatedAvailable ? animatedContainerStyles : fallbackStyles}
     >
+      <ExtendedSheetBackground />
       <SlackSheet
         backgroundColor={colors.transparent}
         borderRadius={0}
@@ -346,58 +349,55 @@ export default function SpeedUpAndCancelSheet() {
             direction="column"
             marginTop={marginTop}
             paddingBottom={android ? 30 : 0}
-            paddingTop={24}
-            style={animatedSheetStyles}
           >
             <SheetHandleFixedToTop showBlur={false} />
-            <Column marginBottom={17} />
-            <Centered direction="column" paddingTop={9}>
-              <Column marginBottom={15}>
+            <Centered direction="column">
+              <Column marginBottom={12} marginTop={30}>
                 <Emoji
                   name={type === CANCEL_TX ? 'skull_and_crossbones' : 'rocket'}
-                  size="h1"
+                  size="biggest"
                 />
               </Column>
               <Column marginBottom={12}>
                 <Text
-                  color={colors.blueGreyDarker}
-                  lineHeight="paragraphSmall"
-                  size="larger"
+                  align="center"
+                  color={colors.dark}
+                  size="big"
                   weight="bold"
                 >
                   {title[type]}
                 </Text>
               </Column>
-              <Column
-                marginBottom={56}
-                paddingLeft={android ? 40 : 60}
-                paddingRight={android ? 40 : 60}
-              >
+              <Column marginBottom={30} maxWidth={375} paddingHorizontal={42}>
                 <Text
                   align="center"
                   color={colors.alpha(colors.blueGreyDark, 0.5)}
-                  lineHeight="paragraphSmall"
+                  lineHeight="looser"
                   size="large"
-                  weight="normal"
+                  weight="regular"
                 >
                   {text[type]}
                 </Text>
               </Column>
-
+              <Centered marginBottom={24}>
+                <Divider
+                  color={colors.rowDividerExtraLight}
+                  inset={[0, 143.5]}
+                />
+              </Centered>
               {type === CANCEL_TX && (
                 <Column>
-                  <SheetActionButtonRow ignorePaddingTop>
+                  <SheetActionButtonRow ignorePaddingBottom ignorePaddingTop>
                     <SheetActionButton
                       color={colors.red}
                       fullWidth
                       label="􀎽 Attempt Cancellation"
                       onPress={handleCancellation}
                       size="big"
-                      textColor={colors.white}
-                      weight="heavy"
+                      weight="bold"
                     />
                   </SheetActionButtonRow>
-                  <SheetActionButtonRow ignorePaddingTop>
+                  <SheetActionButtonRow ignorePaddingBottom>
                     <SheetActionButton
                       color={colors.white}
                       fullWidth
@@ -405,13 +405,13 @@ export default function SpeedUpAndCancelSheet() {
                       onPress={goBack}
                       size="big"
                       textColor={colors.alpha(colors.blueGreyDark, 0.8)}
-                      weight="heavy"
+                      weight="bold"
                     />
                   </SheetActionButtonRow>
                 </Column>
               )}
               {type === SPEED_UP && (
-                <SheetActionButtonRow ignorePaddingTop>
+                <SheetActionButtonRow ignorePaddingBottom ignorePaddingTop>
                   <SheetActionButton
                     color={colors.white}
                     label="Cancel"

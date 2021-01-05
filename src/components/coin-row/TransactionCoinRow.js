@@ -123,9 +123,9 @@ export default function TransactionCoinRow({ item, ...props }) {
     if (hash) {
       let buttons = [
         ...(canBeResubmitted ? [TransactionActions.speedUp] : []),
-        ...(canBeCancelled ? [TransactionActions.attemptCancellation] : []),
+        ...(canBeCancelled ? [TransactionActions.cancel] : []),
         TransactionActions.viewOnEtherscan,
-        ...(ios ? [TransactionActions.cancel] : []),
+        ...(ios ? [TransactionActions.close] : []),
       ];
       if (showContactInfo) {
         buttons.unshift(
@@ -168,7 +168,7 @@ export default function TransactionCoinRow({ item, ...props }) {
                 type: 'speed_up',
               });
               break;
-            case TransactionActions.attemptCancellation:
+            case TransactionActions.cancel:
               navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
                 tx: item,
                 type: 'cancel',

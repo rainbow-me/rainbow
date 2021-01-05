@@ -18,12 +18,12 @@ const speedColors = {
 };
 
 const PagerItem = styled(Row)`
-  width: ${({ selected }) => (selected ? '4' : '3')}px;
-  height: 3px;
   border-radius: 2px;
+  height: 3px;
   margin-left: ${({ selected }) => (selected ? '2' : '2.5')}px;
   margin-right: ${({ selected }) => (selected ? '0' : '0.5')}px;
   ${android ? `margin-top: -3px;` : ``}
+  width: ${({ selected }) => (selected ? '4' : '3')}px;
 `;
 
 const GasSpeedLabelPager = ({
@@ -43,7 +43,9 @@ const GasSpeedLabelPager = ({
             <PagerItem
               backgroundColor={
                 speed === label
-                  ? speedColors[theme][i]
+                  ? label === 'custom'
+                    ? colors.appleBlue
+                    : speedColors[theme][i]
                   : theme === 'dark'
                   ? colors.alpha(colors.darkModeColors.blueGreyDark, 0.3)
                   : colors.alpha(colors.blueGreyDark, 0.3)
