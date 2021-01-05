@@ -11,6 +11,7 @@ import styled from 'styled-components/primitives';
 import { Row } from '../layout';
 import { Text } from '../text';
 import GasSpeedEmoji from './GasSpeedEmoji';
+import { colors } from '@rainbow-me/styles';
 import { gasUtils } from '@rainbow-me/utils';
 
 const AnimatedRow = Animated.createAnimatedComponent(Row);
@@ -21,7 +22,7 @@ const springConfig = {
   stiffness: 1200,
 };
 
-export const GasSpeedLabelPagerItemHeight = 24.5;
+export const GasSpeedLabelPagerItemHeight = 23.5;
 
 const GasSpeedRow = styled(AnimatedRow).attrs({
   align: 'end',
@@ -38,6 +39,7 @@ const TransitionContainer = styled(Transitioning.View)`
 `;
 
 const GasSpeedLabel = styled(Text).attrs({
+  align: 'right',
   size: 'lmedium',
   weight: 'bold',
 })``;
@@ -84,7 +86,13 @@ const GasSpeedLabelPagerItem = ({ label, selected, shouldAnimate, theme }) => {
           containerHeight={GasSpeedLabelPagerItemHeight}
           label={label}
         />
-        <GasSpeedLabel color={theme !== 'light' ? 'white' : null}>
+        <GasSpeedLabel
+          color={
+            theme !== 'light'
+              ? colors.white
+              : colors.alpha(colors.blueGreyDark, 0.8)
+          }
+        >
           {upperFirst(label)}
         </GasSpeedLabel>
       </GasSpeedRow>

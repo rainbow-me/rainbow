@@ -52,7 +52,8 @@ const ButtonLabel = styled(BorderlessButton).attrs({
 `;
 
 const GasInput = styled(Input).attrs(({ theme }) => ({
-  color: theme === 'dark' ? colors.white : colors.blueGreyDark50,
+  color:
+    theme === 'dark' ? colors.white : colors.alpha(colors.blueGreyDark, 0.8),
   height: 58,
   keyboardAppearance: 'dark',
   keyboardType: 'numeric',
@@ -80,6 +81,7 @@ const LittleBorderlessButton = ({ onPress, children, testID }) => (
 
 const BottomRightLabel = ({ formatter, theme }) => (
   <Label
+    align="right"
     color={
       theme === 'dark'
         ? colors.alpha(colors.darkModeColors.blueGreyDark, 0.6)
@@ -218,7 +220,11 @@ const GasSpeedButton = ({
   const renderGasPriceText = useCallback(
     animatedNumber => (
       <Text
-        color={theme === 'dark' ? colors.white : colors.blueGreyDark}
+        color={
+          theme === 'dark'
+            ? colors.white
+            : colors.alpha(colors.blueGreyDark, 0.8)
+        }
         letterSpacing="roundedTight"
         size="lmedium"
         weight="bold"
@@ -440,7 +446,7 @@ const GasSpeedButton = ({
                     customGasPriceInput
                       ? theme === 'dark'
                         ? colors.white
-                        : colors.blueGreyDark50
+                        : colors.alpha(colors.blueGreyDark, 0.8)
                       : theme === 'dark'
                       ? colors.alpha(colors.darkModeColors.blueGreyDark, 0.3)
                       : colors.alpha(colors.blueGreyDark, 0.3)
