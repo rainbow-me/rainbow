@@ -35,7 +35,7 @@ const staticImgixClient = shouldCreateImgixClient();
 // **unbounded** and will grow **forever**, so we should probably opt to use
 // an LRU to cap memory. https://yomguithereal.github.io/mnemonist/lru-cache.html
 const staticSignatureCache = {} as {
-  readonly [externalImageUri: string]: string;
+  [externalImageUri: string]: string;
 };
 
 const shouldSignUri = (externalImageUri: string): string | undefined => {
@@ -43,9 +43,18 @@ const shouldSignUri = (externalImageUri: string): string | undefined => {
     // We'll only attempt to sign if there's an available client. A client
     // will not exist if the .env hasn't been configured correctly.
     if (staticImgixClient) {
-      // eslint-disable-next-line no-console
-      __DEV__ && console.log(`[Imgix]: Signed "${externalImageUri}".`);
-      return staticImgixClient.buildURL(externalImageUri, {});
+      // Attempt to sign the image.
+      const signedExternalImageUri = staticImgixClient.buildURL(externalImageUri, {});
+      // Check that the URL was signed as expected.
+      if (typeof signedExternalImageUri === 'string') {
+        // Buffer the signature for future use.
+        staticSignatureCache[externalImageUri] = signedExternalImageUri;
+        // Return the signed image.
+        return signedExternalImageUri;
+      }
+      throw new Error(
+        `Expected string signedExternalImageUri, encountered ${typeof signedExternalImageUri} (for input "${externalImageUri}").`
+      );
     }
   } catch (e) {
     // eslint-disable-next-line no-console
