@@ -3,10 +3,12 @@ import savingAssets from './compound/saving-assets.json';
 import { Asset } from '@rainbow-me/entities';
 
 export {
+  CURATED_UNISWAP_TOKENS,
   RAINBOW_TOKEN_LIST,
   UNISWAP_TESTNET_TOKEN_LIST,
   UNISWAP_V2_ROUTER_ABI,
   UNISWAP_V2_ROUTER_ADDRESS,
+  VERIFIED_UNISWAP_TOKENS,
 } from './uniswap';
 export { default as chains } from './chains.json';
 export { default as compoundCERC20ABI } from './compound/compound-cerc20-abi.json';

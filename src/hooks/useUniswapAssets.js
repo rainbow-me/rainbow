@@ -11,8 +11,9 @@ import {
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
-import { greaterThanOrEqualTo, multiply } from '../helpers/utilities';
-import { uniswapUpdateFavorites } from '../redux/uniswap';
+import { greaterThanOrEqualTo, multiply } from '@rainbow-me/helpers/utilities';
+import { uniswapUpdateFavorites } from '@rainbow-me/redux/uniswap';
+import { VERIFIED_UNISWAP_TOKENS } from '@rainbow-me/references';
 
 const uniswapLoadingAllTokensSelector = state => state.uniswap.loadingAllTokens;
 const uniswapFavoritesSelector = state => state.uniswap.favorites;
@@ -31,6 +32,8 @@ const appendAssetWithUniqueId = asset => ({
 
 const normalizeAssetItems = assetsArray =>
   map(assetsArray, appendAssetWithUniqueId);
+
+const verifiedAssets = normalizeAssetItems(VERIFIED_UNISWAP_TOKENS);
 
 const withUniswapAssets = (
   loadingAllTokens,
@@ -59,6 +62,7 @@ const withUniswapAssets = (
     globalHighLiquidityAssets: normalizeAssetItems(globalHighLiquidityAssets),
     globalLowLiquidityAssets: normalizeAssetItems(globalLowLiquidityAssets),
     loadingAllTokens,
+    verifiedAssets,
   };
 };
 

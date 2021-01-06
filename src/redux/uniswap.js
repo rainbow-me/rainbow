@@ -12,11 +12,17 @@ import {
 import {
   getUniswapFavorites,
   saveUniswapFavorites,
-} from '../handlers/localstorage/uniswap';
-import { getAllTokens, getTestnetUniswapPairs } from '../handlers/uniswap';
-import networkTypes from '../helpers/networkTypes';
-import { DefaultUniswapFavorites, SOCKS_ADDRESS } from '../references';
-import { CURATED_UNISWAP_TOKENS } from '../references/uniswap';
+} from '@rainbow-me/handlers/localstorage/uniswap';
+import {
+  getAllTokens,
+  getTestnetUniswapPairs,
+} from '@rainbow-me/handlers/uniswap';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
+import {
+  CURATED_UNISWAP_TOKENS,
+  DefaultUniswapFavorites,
+  SOCKS_ADDRESS,
+} from '@rainbow-me/references';
 
 // -- Constants ------------------------------------------------------------- //
 const UNISWAP_LOAD_REQUEST = 'uniswap/UNISWAP_LOAD_REQUEST';

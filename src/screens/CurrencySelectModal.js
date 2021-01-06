@@ -23,12 +23,11 @@ import {
 } from '../components/exchange';
 import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
-import { addHexPrefix } from '../handlers/web3';
-import CurrencySelectionTypes from '../helpers/currencySelectionTypes';
-import tokenSectionTypes from '../helpers/tokenSectionTypes';
-import { delayNext } from '../hooks/useMagicAutofocus';
-import { useNavigation } from '../navigation/Navigation';
+import { addHexPrefix } from '@rainbow-me/handlers/web3';
+import CurrencySelectionTypes from '@rainbow-me/helpers/currencySelectionTypes';
+import tokenSectionTypes from '@rainbow-me/helpers/tokenSectionTypes';
 import {
+  delayNext,
   useInteraction,
   useMagicAutofocus,
   usePrevious,
@@ -36,6 +35,7 @@ import {
   useUniswapAssets,
   useUniswapAssetsInWallet,
 } from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
 import { filterList, filterScams } from '@rainbow-me/utils';
@@ -96,6 +96,7 @@ export default function CurrencySelectModal() {
     globalLowLiquidityAssets,
     loadingAllTokens,
     updateFavorites,
+    verifiedAssets,
   } = useUniswapAssets();
   const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
 
@@ -111,10 +112,10 @@ export default function CurrencySelectModal() {
         filteredList = headerlessSection(filteredList);
       }
     } else if (type === CurrencySelectionTypes.output) {
-      const curatedSection = concat(favorites, curatedAssets);
       if (searchQueryForSearch) {
+        const verifiedTokens = concat(favorites, verifiedAssets);
         const [filteredBest, filteredHigh, filteredLow] = map(
-          [curatedSection, globalHighLiquidityAssets, globalLowLiquidityAssets],
+          [verifiedTokens, globalHighLiquidityAssets, globalLowLiquidityAssets],
           section => searchCurrencyList(section, searchQueryForSearch)
         );
 
@@ -164,6 +165,7 @@ export default function CurrencySelectModal() {
     searchQueryForSearch,
     type,
     uniswapAssetsInWallet,
+    verifiedAssets,
   ]);
 
   const [startQueryDebounce, stopQueryDebounce] = useTimeout();
