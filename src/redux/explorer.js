@@ -15,6 +15,7 @@ import {
 } from './fallbackExplorer';
 import { disableCharts, forceFallbackProvider } from '@rainbow-me/config/debug';
 import NetworkTypes from '@rainbow-me/helpers/networkTypes';
+import { DPI_ADDRESS, ETH_ADDRESS } from '@rainbow-me/references';
 import logger from 'logger';
 
 // -- Constants --------------------------------------- //
@@ -78,7 +79,7 @@ const addressSubscription = (address, currency, action = 'subscribe') => [
 ];
 
 const assetsSubscription = (pairs, currency, action = 'subscribe') => {
-  const assetCodes = concat(keys(pairs), 'eth');
+  const assetCodes = concat(keys(pairs), ETH_ADDRESS, DPI_ADDRESS);
   return [
     action,
     {
@@ -237,7 +238,7 @@ export const emitChartsRequest = (
     const { liquidityTokens } = getState().uniswapLiquidity;
     const lpTokenAddresses = map(liquidityTokens, token => token.address);
 
-    assetCodes = concat(assetAddresses, lpTokenAddresses);
+    assetCodes = concat(assetAddresses, lpTokenAddresses, DPI_ADDRESS);
   }
   assetsSocket?.emit?.(
     ...chartsRetrieval(assetCodes, nativeCurrency, chartType)
