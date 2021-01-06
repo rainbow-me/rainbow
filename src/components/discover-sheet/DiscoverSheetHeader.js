@@ -17,7 +17,7 @@ import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import ShadowStack from 'react-native-shadow-stack';
 
-const Header = styled(Animated.View)`
+const Header = styled.View`
   flex-direction: row;
   height: 59;
   justify-content: space-between;
@@ -49,6 +49,7 @@ function Stack({
   onPress,
   disabled,
   translateX,
+  wrapperOpacity,
 }) {
   const isVisible = useDerivedValue(() => {
     const value = stackOpacity.value;
@@ -59,6 +60,7 @@ function Stack({
   }));
 
   const animatedWrapperStyle = useAnimatedStyle(() => ({
+    opacity: wrapperOpacity.value,
     transform: [{ translateX: translateX.value }],
   }));
 
@@ -98,15 +100,19 @@ export default function DiscoverSheetHeader(props) {
   const [buttonsEnabled, setButtonsEnabled] = useState(true);
   const buttonOpacity = useSharedValue(1);
   const { yPosition } = props;
+  const { isBackButtonVisible } = useContext(DiscoverSheetContext);
   const stackOpacity = useDerivedValue(() =>
     Math.round(newInterpolate(yPosition.value, [50, 51], [0, 1], 'clamp'))
   );
+
   const translateXLeftButton = useDerivedValue(() =>
     withTiming(stackOpacity.value * 5)
   );
+
   const translateXRightButton = useDerivedValue(() =>
     withTiming(stackOpacity.value * -0.5)
   );
+
   const { jumpToShort, addOnCrossMagicBorderListener } =
     useContext(DiscoverSheetContext) || {};
 
@@ -122,23 +128,23 @@ export default function DiscoverSheetHeader(props) {
     onCrossMagicBorder,
   ]);
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity: withTiming(buttonOpacity.value),
-  }));
+  const animatedWrapperLOpacity = useDerivedValue(
+    () => withTiming(isBackButtonVisible ? buttonOpacity.value : 0),
+    [isBackButtonVisible]
+  );
+  const animatedWrapperROpacity = useDerivedValue(() =>
+    withTiming(buttonOpacity.value)
+  );
 
   return (
-    <Header
-      {...props}
-      opacity={buttonOpacity}
-      pointerEvents="box-none"
-      style={[animatedStyle]}
-    >
+    <Header {...props} pointerEvents="box-none">
       <Stack
         disabled={!buttonsEnabled}
         left={19}
         onPress={() => navigate(Routes.WALLET_SCREEN)}
         stackOpacity={stackOpacity}
         translateX={translateXLeftButton}
+        wrapperOpacity={animatedWrapperLOpacity}
       >
         <Icon
           color={colors.alpha(colors.blueGreyDark, 0.8)}
@@ -154,6 +160,7 @@ export default function DiscoverSheetHeader(props) {
         onPress={() => jumpToShort?.()}
         stackOpacity={stackOpacity}
         translateX={translateXRightButton}
+        wrapperOpacity={animatedWrapperROpacity}
       >
         <Icon
           bottom={1}

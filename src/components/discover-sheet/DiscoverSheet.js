@@ -1,5 +1,5 @@
 import { useIsFocused } from '@react-navigation/native';
-import React, { useMemo, useRef } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { findNodeHandle, NativeModules, StyleSheet } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 // eslint-disable-next-line import/no-unresolved
@@ -15,27 +15,43 @@ import {
 } from 'react-native-yet-another-bottom-sheet';
 const renderHeader = yPosition => <DiscoverSheetHeader yPosition={yPosition} />;
 
+function useAreHeaderButtonVisible() {
+  const [isBackButtonVisible, setIsBackButtonVisible] = useState(true);
+  return [{ isBackButtonVisible, setIsBackButtonVisible }, isBackButtonVisible];
+}
+
 function DiscoverSheetAndroid() {
+  const [headerButtonsHandlers, deps] = useAreHeaderButtonVisible();
+
+  const value = useMemo(
+    () => ({
+      ...headerButtonsHandlers,
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [deps]
+  );
   return (
-    <YABSForm
-      panGHProps={{
-        maxPointers: 17, // magic number for duck typing on native side
-        simultaneousHandlers: 'AnimatedScrollViewPager',
-      }}
-      points={[0, 200, deviceUtils.dimensions.height - 200]}
-      style={[
-        StyleSheet.absoluteFillObject,
-        {
-          backgroundColor: 'white',
-          bottom: 0,
-          top: 100,
-        },
-      ]}
-    >
-      <YABSScrollView style={{ flex: 1, height: '100%' }}>
-        <DiscoverSheetContent />
-      </YABSScrollView>
-    </YABSForm>
+    <DiscoverSheetContext.Provider value={value}>
+      <YABSForm
+        panGHProps={{
+          maxPointers: 17, // magic number for duck typing on native side
+          simultaneousHandlers: 'AnimatedScrollViewPager',
+        }}
+        points={[0, 200, deviceUtils.dimensions.height - 200]}
+        style={[
+          StyleSheet.absoluteFillObject,
+          {
+            backgroundColor: 'white',
+            bottom: 0,
+            top: 100,
+          },
+        ]}
+      >
+        <YABSScrollView style={{ flex: 1, height: '100%' }}>
+          <DiscoverSheetContent />
+        </YABSScrollView>
+      </YABSForm>
+    </DiscoverSheetContext.Provider>
   );
 }
 
@@ -44,6 +60,7 @@ function DiscoverSheetIOS() {
   const isFocused = useIsFocused();
   const ref = useRef();
   const listeners = useRef([]);
+  const [headerButtonsHandlers, deps] = useAreHeaderButtonVisible();
   const value = useMemo(
     () => ({
       addOnCrossMagicBorderListener(listener) {
@@ -57,8 +74,10 @@ function DiscoverSheetIOS() {
           NativeModules.ModalView.jumpTo(false, screen);
         }
       },
+      ...headerButtonsHandlers,
     }),
-    []
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [deps]
   );
 
   // noinspection JSConstructorReturnsPrimitive
