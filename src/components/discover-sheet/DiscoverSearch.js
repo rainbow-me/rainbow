@@ -2,9 +2,9 @@ import { concat, map, toLower } from 'lodash';
 import matchSorter from 'match-sorter';
 import React, {
   useCallback,
+  useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react';
 import { IS_TESTING } from 'react-native-dotenv';
@@ -14,32 +14,23 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components/primitives';
 import { addHexPrefix } from '../../handlers/web3';
 import CurrencySelectionTypes from '../../helpers/currencySelectionTypes';
 import { emitAssetRequest } from '../../redux/explorer';
-import { ButtonPressAnimation } from '../animations';
-import { CurrencySelectionList, ExchangeSearch } from '../exchange';
+import { CurrencySelectionList } from '../exchange';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
-import { Column, Row } from '../layout';
-import { Text } from '../text';
+import { Row } from '../layout';
+import DiscoverSheetContext from './DiscoverSheetContext';
 import {
   useAccountAssets,
-  useMagicAutofocus,
   useTimeout,
   useUniswapAssets,
   useUniswapAssetsInWallet,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
 import { filterList, filterScams } from '@rainbow-me/utils';
 import logger from 'logger';
-
-const CancelButton = styled(ButtonPressAnimation)`
-  margin-top: 27;
-  margin-right: 19;
-`;
 
 const headerlessSection = data => [{ data, title: '' }];
 
@@ -60,7 +51,7 @@ const searchCurrencyList = (searchList, query) => {
 
 const timingConfig = { duration: 700 };
 
-export default function DiscoverSearch({ onCancel }) {
+export default function DiscoverSearch() {
   const { navigate } = useNavigation();
   const listOpacity = useSharedValue(0);
   const { allAssets } = useAccountAssets();
@@ -75,22 +66,7 @@ export default function DiscoverSearch({ onCancel }) {
     listOpacity.value = withTiming(1, timingConfig);
   }, [listOpacity]);
 
-  const dismiss = useCallback(() => {
-    listOpacity.value = withTiming(0, { duration: 100 }, completed => {
-      logger.log('animation completed!', completed);
-    });
-    // TODO - FIX ME
-    // This should be a callback on withTiming
-    // but it never triggers!
-    setTimeout(() => {
-      onCancel();
-    }, 100);
-  }, [listOpacity, onCancel]);
-
-  const searchInputRef = useRef();
-  const { handleFocus } = useMagicAutofocus(searchInputRef, undefined, true);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [isSearching, setIsSearching] = useState(false);
+  const { setIsSearching, searchQuery } = useContext(DiscoverSheetContext);
   const [searchQueryForSearch, setSearchQueryForSearch] = useState('');
   const type = CurrencySelectionTypes.output;
   const dispatch = useDispatch();
@@ -225,31 +201,6 @@ export default function DiscoverSearch({ onCancel }) {
 
   return (
     <Animated.View style={listAnimatedStyles}>
-      <Row>
-        <Column flex={1} marginTop={19}>
-          <ExchangeSearch
-            isFetching={loadingAllTokens}
-            isSearching={isSearching}
-            onChangeText={setSearchQuery}
-            onFocus={handleFocus}
-            placeholderText="Search all of Ethereum"
-            ref={searchInputRef}
-            searchQuery={searchQuery}
-            testID="discover-search"
-          />
-        </Column>
-        <CancelButton onPress={dismiss}>
-          <Text
-            align="right"
-            color={colors.appleBlue}
-            letterSpacing="roundedMedium"
-            size="large"
-            weight="semibold"
-          >
-            Cancel
-          </Text>
-        </CancelButton>
-      </Row>
       <Row>
         <CurrencySelectionList
           itemProps={itemProps}
