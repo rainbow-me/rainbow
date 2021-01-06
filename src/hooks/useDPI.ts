@@ -10,6 +10,7 @@ import {
 } from '../handlers/localstorage/defiPulse';
 import { web3Provider } from '../handlers/web3';
 import { AppState } from '../redux/store';
+import { IndexToken } from '@rainbow-me/entities';
 import {
   DEFI_SDK_ADAPTER_REGISTRY_ADDRESS,
   defiSdkAdapterRegistryABI,
@@ -28,7 +29,7 @@ interface Token {
   };
 }
 
-const getTokenData = (token: Token) => {
+const getTokenData = (token: Token): IndexToken => {
   return {
     address: token?.metadata?.token,
     amount: token?.amount?.toString(),
