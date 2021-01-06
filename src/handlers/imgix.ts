@@ -6,6 +6,7 @@ import {
 } from 'react-native-dotenv';
 import { Source } from 'react-native-fast-image';
 import parse from 'url-parse';
+import logger from 'logger';
 
 const shouldCreateImgixClient = (): ImgixClient | null => {
   if (
@@ -57,8 +58,7 @@ const shouldSignUri = (externalImageUri: string): string | undefined => {
       );
     }
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log(`[Imgix]: Failed to sign "${externalImageUri}"!`, e);
+    logger.log(`[Imgix]: Failed to sign "${externalImageUri}"! (${e.message})`);
     // If something goes wrong, it is not safe to assume the image is valid.
     return undefined;
   }
@@ -77,8 +77,7 @@ export const isPossibleToSignUri = (
       const { host } = parse(externalImageUri);
       return typeof host === 'string' && !!host.length;
     } catch (e) {
-      // eslint-disable-next-line no-console
-      console.log(`[Imgix]: Failed to parse "${externalImageUri}"!`, e);
+      logger.log(`[Imgix]: Failed to parse "${externalImageUri}"! (${e.message})`);
       return false;
     }
   }
