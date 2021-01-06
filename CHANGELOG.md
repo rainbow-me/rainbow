@@ -12,6 +12,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.2.43](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.43)
+### Added
+* Speed up & cancel transactions
+* Add WBTC to default favorites
+
+### Changed
+* Fix 0 ETH scenarios
+
 ## [1.2.42](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.42)
 ### Added
 * Alert for unverified tokens
