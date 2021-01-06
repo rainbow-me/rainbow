@@ -28,8 +28,8 @@ import { add, convertAmountToNativeDisplay, multiply } from './utilities';
 import Routes from '@rainbow-me/routes';
 import { ETH_ICON_URL, ethereumUtils } from '@rainbow-me/utils';
 
-const allAssetsCountSelector = state => state.allAssetsCount;
 const allAssetsSelector = state => state.allAssets;
+const allAssetsCountSelector = state => state.allAssetsCount;
 const assetsTotalSelector = state => state.assetsTotal;
 const currentActionSelector = state => state.currentAction;
 const hiddenCoinsSelector = state => state.hiddenCoins;
@@ -164,12 +164,10 @@ const withUniswapSection = (
   };
 };
 
-const withEthPrice = allAssets => {
-  const ethAsset = ethereumUtils.getAsset(allAssets);
-  return get(ethAsset, 'native.price.amount', null);
-};
+const withBalanceSavingsSection = savings => {
+  const { genericAssets } = store.getState().data;
+  const priceOfEther = ethereumUtils.getEthPriceUnit(genericAssets);
 
-const withBalanceSavingsSection = (savings, priceOfEther) => {
   let savingsAssets = savings;
   let totalUnderlyingNativeValue = '0';
   if (priceOfEther) {
@@ -419,10 +417,8 @@ const uniqueTokenDataSelector = createSelector(
   buildUniqueTokenList
 );
 
-const ethPriceSelector = createSelector([allAssetsSelector], withEthPrice);
-
 const balanceSavingsSectionSelector = createSelector(
-  [savingsSelector, ethPriceSelector],
+  [savingsSelector],
   withBalanceSavingsSection
 );
 

@@ -79,6 +79,7 @@ const SavingsSheetEmptyState = ({
       <ColumnWithMargins css={padding(19, 15)} margin={19} width="100%">
         <SheetActionButton
           color={colors.swapPurple}
+          fullWidth
           label="􀁍 Deposit from Wallet"
           onPress={onDeposit}
           size="big"

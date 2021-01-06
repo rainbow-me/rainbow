@@ -1,7 +1,8 @@
-import { compact, get } from 'lodash';
+import { compact, get, toLower } from 'lodash';
 import React, { useCallback } from 'react';
 import { Linking } from 'react-native';
 import { css } from 'styled-components/primitives';
+import TransactionActions from '../../helpers/transactionActions';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import TransactionTypes from '../../helpers/transactionTypes';
 import {
@@ -83,18 +84,22 @@ const TopRow = ({ balance, pending, status, title }) => (
 
 export default function TransactionCoinRow({ item, ...props }) {
   const { contact } = item;
-  const { network } = useAccountSettings();
+  const { network, accountAddress } = useAccountSettings();
   const { navigate } = useNavigation();
 
   const onPressTransaction = useCallback(async () => {
     const { hash, from, minedAt, pending, to, status, type } = item;
 
     const date = getHumanReadableDate(minedAt);
-
     const isSent =
       status === TransactionStatusTypes.sending ||
       status === TransactionStatusTypes.sent;
     const showContactInfo = hasAddableContact(status, type);
+
+    const isOutgoing = toLower(from) === toLower(accountAddress);
+    const canBeResubmitted = isOutgoing && !minedAt;
+    const canBeCancelled =
+      canBeResubmitted && status !== TransactionStatusTypes.cancelling;
 
     const headerInfo = {
       address: '',
@@ -116,14 +121,23 @@ export default function TransactionCoinRow({ item, ...props }) {
     }
 
     if (hash) {
-      let buttons = ['View on Etherscan', ...(ios ? ['Cancel'] : [])];
+      let buttons = [
+        ...(canBeResubmitted ? [TransactionActions.speedUp] : []),
+        ...(canBeCancelled ? [TransactionActions.cancel] : []),
+        TransactionActions.viewOnEtherscan,
+        ...(ios ? [TransactionActions.close] : []),
+      ];
       if (showContactInfo) {
-        buttons.unshift(contact ? 'View Contact' : 'Add to Contacts');
+        buttons.unshift(
+          contact
+            ? TransactionActions.viewContact
+            : TransactionActions.addToContacts
+        );
       }
 
       showActionSheetWithOptions(
         {
-          cancelButtonIndex: showContactInfo ? 2 : 1,
+          cancelButtonIndex: buttons.length - 1,
           options: buttons,
           title: pending
             ? `${headerInfo.type}${
@@ -136,28 +150,44 @@ export default function TransactionCoinRow({ item, ...props }) {
             : `${headerInfo.type} ${date}`,
         },
         buttonIndex => {
-          if (showContactInfo && buttonIndex === 0) {
-            navigate(Routes.MODAL_SCREEN, {
-              address: contactAddress,
-              asset: item,
-              color: contactColor,
-              contact,
-              type: 'contact_profile',
-            });
-          } else if (
-            (!showContactInfo && buttonIndex === 0) ||
-            (showContactInfo && buttonIndex === 1)
-          ) {
-            const normalizedHash = hash.replace(/-.*/g, '');
-            const etherscanHost = ethereumUtils.getEtherscanHostFromNetwork(
-              network
-            );
-            Linking.openURL(`https://${etherscanHost}/tx/${normalizedHash}`);
+          const action = buttons[buttonIndex];
+          switch (action) {
+            case TransactionActions.viewContact:
+            case TransactionActions.addToContacts:
+              navigate(Routes.MODAL_SCREEN, {
+                address: contactAddress,
+                asset: item,
+                color: contactColor,
+                contact,
+                type: 'contact_profile',
+              });
+              break;
+            case TransactionActions.speedUp:
+              navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
+                tx: item,
+                type: 'speed_up',
+              });
+              break;
+            case TransactionActions.cancel:
+              navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
+                tx: item,
+                type: 'cancel',
+              });
+              break;
+            case TransactionActions.viewOnEtherscan: {
+              const normalizedHash = hash.replace(/-.*/g, '');
+              const etherscanHost = ethereumUtils.getEtherscanHostFromNetwork(
+                network
+              );
+              Linking.openURL(`https://${etherscanHost}/tx/${normalizedHash}`);
+              break;
+            }
+            default:
           }
         }
       );
     }
-  }, [contact, item, navigate, network]);
+  }, [accountAddress, contact, item, navigate, network]);
 
   return (
     <ButtonPressAnimation onPress={onPressTransaction} scaleTo={0.96}>

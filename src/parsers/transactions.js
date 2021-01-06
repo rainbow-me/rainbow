@@ -378,6 +378,15 @@ export const getTransactionLabel = ({
   status,
   type,
 }) => {
+  if (status === TransactionStatusTypes.cancelling)
+    return TransactionStatusTypes.cancelling;
+
+  if (status === TransactionStatusTypes.cancelled)
+    return TransactionStatusTypes.cancelled;
+
+  if (status === TransactionStatusTypes.speeding_up)
+    return TransactionStatusTypes.speeding_up;
+
   if (pending && type === TransactionTypes.purchase)
     return TransactionStatusTypes.purchasing;
 

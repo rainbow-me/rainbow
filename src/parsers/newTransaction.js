@@ -59,6 +59,8 @@ export const parseNewTransaction = async (
     ...tx,
     balance,
     description,
+    gasLimit: txDetails?.gasLimit,
+    gasPrice: txDetails?.gasPrice,
     hash,
     minedAt: null,
     name: txDetails?.asset?.name,

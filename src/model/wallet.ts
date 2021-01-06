@@ -239,6 +239,7 @@ export const sendTransaction = async ({
       const result = await wallet.sendTransaction(transaction);
       return result.hash;
     } catch (error) {
+      logger.log('Failed to SEND transaction', error);
       Alert.alert(lang.t('wallet.transaction.alert.failed_transaction'));
       logger.sentry('Failed to SEND transaction, alerted user');
       captureException(error);
