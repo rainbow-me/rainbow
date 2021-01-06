@@ -16,7 +16,6 @@ import RainbowLight from '../assets/rainbows/light.png';
 import RainbowLiquid from '../assets/rainbows/liquid.png';
 import RainbowNeon from '../assets/rainbows/neon.png';
 import RainbowPixel from '../assets/rainbows/pixel.png';
-import ImgixImage from '../components/ImgixImage';
 import { ButtonPressAnimation } from '../components/animations';
 import RainbowText from '../components/icons/svg/RainbowText';
 import { RowWithMargins } from '../components/layout';
@@ -29,6 +28,7 @@ import {
 import { cloudPlatform } from '../utils/platform';
 
 import { useHideSplashScreen } from '@rainbow-me/hooks';
+import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors, shadow } from '@rainbow-me/styles';

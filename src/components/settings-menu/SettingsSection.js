@@ -6,7 +6,6 @@ import { REVIEW_ANDROID } from '../../config/experimental';
 import useExperimentalFlag from '../../config/experimentalHooks';
 //import { supportedLanguages } from '../../languages';
 import AppVersionStamp from '../AppVersionStamp';
-import ImgixImage from '../ImgixImage';
 import { Icon } from '../icons';
 import { Column, ColumnWithDividers } from '../layout';
 import {
@@ -27,6 +26,7 @@ import {
   useSendFeedback,
   useWallets,
 } from '@rainbow-me/hooks';
+import { ImgixImage } from '@rainbow-me/images';
 import { colors, position } from '@rainbow-me/styles';
 import {
   AppleReviewAddress,

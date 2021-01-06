@@ -12,7 +12,6 @@ import { buildCoinsList } from '../../helpers/assets';
 import networkTypes from '../../helpers/networkTypes';
 import { deviceUtils } from '../../utils';
 import Divider, { DividerSize } from '../Divider';
-import ImgixImage from '../ImgixImage';
 import { FlyInAnimation } from '../animations';
 import { CoinDividerOpenButton } from '../coin-divider';
 import {
@@ -23,6 +22,7 @@ import {
 import { Centered } from '../layout';
 import SavingsListHeader from '../savings/SavingsListHeader';
 import TokenFamilyHeader from '../token-family/TokenFamilyHeader';
+import { ImgixImage } from '@rainbow-me/images';
 import { colors } from '@rainbow-me/styles';
 
 const dividerMargin = 10;

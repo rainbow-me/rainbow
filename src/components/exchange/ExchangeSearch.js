@@ -10,10 +10,10 @@ import Animated, {
 } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
 import Spinner from '../../assets/chartSpinner.png';
-import ImgixImage from '../ImgixImage';
 import { ClearInputDecorator, Input } from '../inputs';
 import { Row } from '../layout';
 import { Text } from '../text';
+import { ImgixImage } from '@rainbow-me/images';
 import { colors, margin, padding } from '@rainbow-me/styles';
 import { deviceUtils } from '@rainbow-me/utils';
 

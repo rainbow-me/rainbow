@@ -2,9 +2,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { pure } from 'recompact';
 import Caret from '../../assets/family-dropdown-arrow.png';
-import ImgixImage from '../ImgixImage';
 import { RowWithMargins } from '../layout';
 import { Text } from '../text';
+import { ImgixImage } from '@rainbow-me/images';
 import { colors } from '@rainbow-me/styles';
 
 const ListItemArrowGroup = ({ children }) => (

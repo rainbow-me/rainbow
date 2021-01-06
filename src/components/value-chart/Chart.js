@@ -12,13 +12,13 @@ import Animated, {
 import styled from 'styled-components/native';
 import Spinner from '../../assets/chartSpinner.png';
 import { nativeStackConfig } from '../../navigation/config';
-import ImgixImage from '../ImgixImage';
 import { ChartExpandedStateHeader } from '../expanded-state/chart';
 import { Column } from '../layout';
 import Labels from './ExtremeLabels';
 import TimespanSelector from './TimespanSelector';
 import { ChartDot, ChartPath, useChartData } from '@rainbow-me/animated-charts';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
+import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import { colors, position } from '@rainbow-me/styles';
 

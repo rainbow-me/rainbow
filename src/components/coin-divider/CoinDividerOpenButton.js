@@ -2,7 +2,6 @@ import React from 'react';
 import { View } from 'react-native';
 import styled from 'styled-components/primitives';
 import Caret from '../../assets/family-dropdown-arrow.png';
-import ImgixImage from '../ImgixImage';
 import {
   ButtonPressAnimation,
   OpacityToggler,
@@ -12,6 +11,7 @@ import {
 } from '../animations';
 import { Row } from '../layout';
 import CoinDividerButtonLabel from './CoinDividerButtonLabel';
+import { ImgixImage } from '@rainbow-me/images';
 import { colors, padding } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 

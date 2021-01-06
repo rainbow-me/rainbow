@@ -3,12 +3,12 @@ import Animated, { Easing } from 'react-native-reanimated';
 import { toRad, useTimingTransition } from 'react-native-redash';
 import styled from 'styled-components/primitives';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
-import ImgixImage from '../ImgixImage';
 
 import { ButtonPressAnimation, interpolate } from '../animations';
 import { Row, RowWithMargins } from '../layout';
 import { Emoji, Text, TruncatedText } from '../text';
 import TokenFamilyHeaderIcon from './TokenFamilyHeaderIcon';
+import { ImgixImage } from '@rainbow-me/images';
 import { colors, padding } from '@rainbow-me/styles';
 
 const AnimatedImgixImage = Animated.createAnimatedComponent(ImgixImage);

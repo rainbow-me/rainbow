@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import SpinnerImageSource from '../assets/spinner.png';
-import ImgixImage from './ImgixImage';
 import { SpinAnimation } from './animations';
 import { Centered } from './layout';
+import { ImgixImage } from '@rainbow-me/images';
 import { colors, position } from '@rainbow-me/styles';
 
 const Spinner = ({ color, duration, size, ...props }) => (

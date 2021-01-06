@@ -4,7 +4,6 @@ import React from 'react';
 import { LayoutAnimation } from 'react-native';
 import { compose, withHandlers } from 'recompact';
 import { createSelector } from 'reselect';
-import ImgixImage from '../components/ImgixImage';
 import { AssetListItemSkeleton } from '../components/asset-list';
 import { BalanceCoinRow } from '../components/coin-row';
 import { UniswapInvestmentRow } from '../components/investment-cards';
@@ -25,6 +24,7 @@ import {
 } from './assets';
 import networkTypes from './networkTypes';
 import { add, convertAmountToNativeDisplay, multiply } from './utilities';
+import { ImgixImage } from '@rainbow-me/images';
 import Routes from '@rainbow-me/routes';
 import { ETH_ICON_URL, ethereumUtils } from '@rainbow-me/utils';
 

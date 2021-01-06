@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
-import ImgixImage from '../ImgixImage';
 import { Centered } from '../layout';
+import { ImgixImage } from '@rainbow-me/images';
 import { borders, colors } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 

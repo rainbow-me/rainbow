@@ -1,7 +1,7 @@
 import * as React from 'react';
 import FastImage, { FastImageProps, Source } from 'react-native-fast-image';
 
-import { maybeSignSource } from '../handlers/imgix';
+import { maybeSignSource } from '../../handlers/imgix';
 
 export type ImgixImageProps = FastImageProps & {
   readonly Component?: React.ElementType;

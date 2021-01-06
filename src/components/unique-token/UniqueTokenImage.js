@@ -1,10 +1,9 @@
 import React, { useCallback, useState } from 'react';
 import { buildUniqueTokenName } from '../../helpers/assets';
 import { magicMemo } from '../../utils';
-import ImageWithCachedMetadata from '../ImageWithCachedMetadata';
-import ImgixImage from '../ImgixImage';
 import { Centered } from '../layout';
 import { Monospace } from '../text';
+import { ImageWithCachedMetadata, ImgixImage } from '@rainbow-me/images';
 import { colors, position } from '@rainbow-me/styles';
 
 const FallbackTextColorVariants = {

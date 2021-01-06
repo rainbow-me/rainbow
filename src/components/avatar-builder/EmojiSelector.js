@@ -31,9 +31,9 @@ import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContai
 import 'string.fromcodepoint';
 import EmojiTabBarShadow from '../../assets/emojiTabBarShadow.png';
 import { deviceUtils } from '../../utils';
-import ImgixImage from '../ImgixImage';
 import { Categories } from './Categories';
 import TabBar from './TabBar';
+import { ImgixImage } from '@rainbow-me/images';
 import { colors, fonts, position } from '@rainbow-me/styles';
 
 // TODO width attribute is temporary solution that will be removed as soon as I figure out why proper scaling does not work

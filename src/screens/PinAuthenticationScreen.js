@@ -3,7 +3,6 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert } from 'react-native';
 import styled from 'styled-components/primitives';
 import RainbowLogo from '../assets/rainbows/light.png';
-import ImgixImage from '../components/ImgixImage';
 import { Centered, Column, ColumnWithMargins } from '../components/layout';
 import { Numpad, PinValue } from '../components/numpad';
 import { SheetTitle } from '../components/sheet';
@@ -16,6 +15,7 @@ import {
 import { useDimensions, useShakeAnimation } from '../hooks';
 import { useBlockBackButton } from '../hooks/useBlockBackButton';
 import { useNavigation } from '../navigation/Navigation';
+import { ImgixImage } from '@rainbow-me/images';
 import { colors, padding } from '@rainbow-me/styles';
 
 const Logo = styled(ImgixImage).attrs({

@@ -2,13 +2,13 @@ import MaskedView from '@react-native-community/masked-view';
 import React from 'react';
 import styled from 'styled-components/primitives';
 import AddCashIconSource from '../../../assets/addCashIcon.png';
-import ImgixImage from '../../ImgixImage';
 import { ButtonPressAnimation } from '../../animations';
 import { RowWithMargins } from '../../layout';
 import { Text } from '../../text';
 import RainbowButtonBackground from './RainbowButtonBackground';
 import RainbowButtonTypes from './RainbowButtonTypes';
 import { useDimensions } from '@rainbow-me/hooks';
+import { ImgixImage } from '@rainbow-me/images';
 import { colors, position, shadow } from '@rainbow-me/styles';
 import ShadowView from 'react-native-shadow-stack/ShadowView';
 

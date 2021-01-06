@@ -5,10 +5,10 @@ import { View } from 'react-primitives';
 import { compose, setPropTypes } from 'recompact';
 import AddContactIcon from '../../assets/addContactIcon.png';
 import { withNeverRerender } from '../../hoc';
-import ImgixImage from '../ImgixImage';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import Button from './Button';
+import { ImgixImage } from '@rainbow-me/images';
 import { colors } from '@rainbow-me/styles';
 
 const duration = 200;

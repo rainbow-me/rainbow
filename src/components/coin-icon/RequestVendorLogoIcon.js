@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from 'react';
 import styled from 'styled-components/primitives';
 import { initials } from '../../utils';
-import ImgixImage from '../ImgixImage';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { CoinIconSize } from './CoinIcon';
+import { ImgixImage } from '@rainbow-me/images';
 import { colors, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
