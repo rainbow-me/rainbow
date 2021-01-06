@@ -45,7 +45,10 @@ const shouldSignUri = (externalImageUri: string): string | undefined => {
     // will not exist if the .env hasn't been configured correctly.
     if (staticImgixClient) {
       // Attempt to sign the image.
-      const signedExternalImageUri = staticImgixClient.buildURL(externalImageUri, {});
+      const signedExternalImageUri = staticImgixClient.buildURL(
+        externalImageUri,
+        {}
+      );
       // Check that the URL was signed as expected.
       if (typeof signedExternalImageUri === 'string') {
         // Buffer the signature for future use.
@@ -77,7 +80,9 @@ export const isPossibleToSignUri = (
       const { host } = parse(externalImageUri);
       return typeof host === 'string' && !!host.length;
     } catch (e) {
-      logger.log(`[Imgix]: Failed to parse "${externalImageUri}"! (${e.message})`);
+      logger.log(
+        `[Imgix]: Failed to parse "${externalImageUri}"! (${e.message})`
+      );
       return false;
     }
   }
