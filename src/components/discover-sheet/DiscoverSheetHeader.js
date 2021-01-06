@@ -42,15 +42,24 @@ const BackgroundFill = styled(Centered).attrs({
   top: 8;
 `;
 
-function Stack({ children, left, stackOpacity, onPress, disabled }) {
+function Stack({
+  children,
+  left,
+  stackOpacity,
+  onPress,
+  disabled,
+  translateX,
+}) {
   const isVisible = useDerivedValue(() => {
-    const value = Math.round(
-      newInterpolate(stackOpacity.value, [50, 51], [0, 1], 'clamp')
-    );
+    const value = stackOpacity.value;
     return withTiming(value);
   });
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: isVisible.value,
+  }));
+
+  const animatedWrapperStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: translateX.value }],
   }));
 
   const animatedStyleShadow = useAnimatedStyle(() => ({
@@ -73,10 +82,12 @@ function Stack({ children, left, stackOpacity, onPress, disabled }) {
           />
           <BackgroundFill />
         </Animated.View>
-        <View style={{ left, top: 19, zIndex: 10 }}>
+        <Animated.View
+          style={[{ left, top: 19, zIndex: 10 }, animatedWrapperStyle]}
+        >
           <View style={{ position: 'absolute' }}>{children[0]}</View>
           <Animated.View style={animatedStyle}>{children[1]}</Animated.View>
-        </View>
+        </Animated.View>
       </ButtonPressAnimation>
     </>
   );
@@ -86,10 +97,19 @@ export default function DiscoverSheetHeader(props) {
   const { navigate } = useNavigation();
   const [buttonsEnabled, setButtonsEnabled] = useState(true);
   const buttonOpacity = useSharedValue(1);
+  const { yPosition } = props;
+  const stackOpacity = useDerivedValue(() =>
+    Math.round(newInterpolate(yPosition.value, [50, 51], [0, 1], 'clamp'))
+  );
+  const translateXLeftButton = useDerivedValue(() =>
+    withTiming(stackOpacity.value * 5)
+  );
+  const translateXRightButton = useDerivedValue(() =>
+    withTiming(stackOpacity.value * -0.5)
+  );
   const { jumpToShort, addOnCrossMagicBorderListener } =
     useContext(DiscoverSheetContext) || {};
-  const { yPosition } = props;
-  const stackOpacity = yPosition;
+
   const onCrossMagicBorder = useCallback(
     ({ below }) => {
       buttonOpacity.value = below ? 0 : 1;
@@ -118,6 +138,7 @@ export default function DiscoverSheetHeader(props) {
         left={19}
         onPress={() => navigate(Routes.WALLET_SCREEN)}
         stackOpacity={stackOpacity}
+        translateX={translateXLeftButton}
       >
         <Icon
           color={colors.alpha(colors.blueGreyDark, 0.8)}
@@ -129,9 +150,10 @@ export default function DiscoverSheetHeader(props) {
       </Stack>
       <Stack
         disabled={!buttonsEnabled}
-        left={18}
+        left={19}
         onPress={() => jumpToShort?.()}
         stackOpacity={stackOpacity}
+        translateX={translateXRightButton}
       >
         <Icon
           bottom={1}
