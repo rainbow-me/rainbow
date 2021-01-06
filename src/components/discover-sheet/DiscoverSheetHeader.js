@@ -105,7 +105,7 @@ export default function DiscoverSheetHeader(props) {
     withTiming(stackOpacity.value * 5)
   );
   const translateXRightButton = useDerivedValue(() =>
-    withTiming(stackOpacity.value * 1)
+    withTiming(stackOpacity.value * -0.5)
   );
   const { jumpToShort, addOnCrossMagicBorderListener } =
     useContext(DiscoverSheetContext) || {};
@@ -150,7 +150,7 @@ export default function DiscoverSheetHeader(props) {
       </Stack>
       <Stack
         disabled={!buttonsEnabled}
-        left={18}
+        left={19}
         onPress={() => jumpToShort?.()}
         stackOpacity={stackOpacity}
         translateX={translateXRightButton}
