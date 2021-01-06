@@ -38,6 +38,13 @@ export function onNavigationStateChange(currentState) {
   const prevRouteName = memRouteName;
   memRouteName = routeName;
 
+  if ([prevRouteName, routeName].includes(Routes.QR_SCANNER_SCREEN)) {
+    StatusBar.setBarStyle(
+      routeName === Routes.QR_SCANNER_SCREEN ? 'light-content' : 'dark-content',
+      true
+    );
+  }
+
   if (ios) {
     const oldBottomSheetStackRoute = prevState?.routes[prevState.index].name;
     const newBottomSheetStackRoute =
@@ -75,15 +82,6 @@ export function onNavigationStateChange(currentState) {
         AndroidKeyboardAdjust.setAdjustPan();
       } else {
         AndroidKeyboardAdjust.setAdjustResize();
-      }
-
-      if ([prevRouteName, routeName].includes(Routes.QR_SCANNER_SCREEN)) {
-        StatusBar.setBarStyle(
-          routeName === Routes.QR_SCANNER_SCREEN
-            ? 'light-content'
-            : 'dark-content',
-          true
-        );
       }
 
       if ([prevRouteName, routeName].includes(Routes.BACKUP_SHEET)) {
