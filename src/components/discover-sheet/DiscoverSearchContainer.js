@@ -23,7 +23,7 @@ export default function DiscoverSearchContainer({
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const upperContext = useContext(DiscoverSheetContext);
-  const { setIsBackButtonVisible } = upperContext;
+  const { setIsSearchModeEnabled } = upperContext;
 
   const contextValue = useMemo(
     () => ({ ...upperContext, searchQuery, setIsSearching }),
@@ -31,7 +31,7 @@ export default function DiscoverSearchContainer({
   );
   const setIsInputFocusedWithLayoutAnimation = value => {
     setShowSearch(value);
-    setIsBackButtonVisible(!value);
+    setIsSearchModeEnabled(!value);
 
     LayoutAnimation.configureNext(
       LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')

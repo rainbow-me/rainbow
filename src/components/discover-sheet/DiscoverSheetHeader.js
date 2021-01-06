@@ -100,7 +100,7 @@ export default function DiscoverSheetHeader(props) {
   const [buttonsEnabled, setButtonsEnabled] = useState(true);
   const buttonOpacity = useSharedValue(1);
   const { yPosition } = props;
-  const { isBackButtonVisible } = useContext(DiscoverSheetContext);
+  const { isSearchModeEnabled } = useContext(DiscoverSheetContext);
   const stackOpacity = useDerivedValue(() =>
     Math.round(newInterpolate(yPosition.value, [50, 51], [0, 1], 'clamp'))
   );
@@ -129,8 +129,8 @@ export default function DiscoverSheetHeader(props) {
   ]);
 
   const animatedWrapperLOpacity = useDerivedValue(
-    () => withTiming(isBackButtonVisible ? buttonOpacity.value : 0),
-    [isBackButtonVisible]
+    () => withTiming(isSearchModeEnabled ? buttonOpacity.value : 0),
+    [isSearchModeEnabled]
   );
   const animatedWrapperROpacity = useDerivedValue(() =>
     withTiming(buttonOpacity.value)

@@ -16,8 +16,8 @@ import {
 const renderHeader = yPosition => <DiscoverSheetHeader yPosition={yPosition} />;
 
 function useAreHeaderButtonVisible() {
-  const [isBackButtonVisible, setIsBackButtonVisible] = useState(true);
-  return [{ isBackButtonVisible, setIsBackButtonVisible }, isBackButtonVisible];
+  const [isSearchModeEnabled, setIsSearchModeEnabled] = useState(true);
+  return [{ isSearchModeEnabled, setIsSearchModeEnabled }, isSearchModeEnabled];
 }
 
 function DiscoverSheetAndroid() {
