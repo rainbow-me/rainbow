@@ -4,6 +4,7 @@
         "gradlew",
         "Imgix",
         "stylelint",
-        "Swipeable"
+        "Swipeable",
+        "untrusted"
     ]
 }
