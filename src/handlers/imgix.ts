@@ -77,9 +77,7 @@ const shouldSignUri = (externalImageUri: string): string | undefined => {
 // It should be a non-empty string which points to a remote address.
 // Other strings (such as those which point to local assets) should
 // not be signed.
-export const isPossibleToSignUri = (
-  externalImageUri: string | undefined
-): boolean => {
+const isPossibleToSignUri = (externalImageUri: string | undefined): boolean => {
   if (typeof externalImageUri === 'string' && !!externalImageUri.length) {
     try {
       const { host } = parse(externalImageUri);
