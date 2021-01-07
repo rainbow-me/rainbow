@@ -1,4 +1,5 @@
 import ImgixClient from 'imgix-core-js';
+import LRUCache from 'mnemonist/lru-cache';
 import {
   IMGIX_DOMAIN as domain,
   IMGIX_TOKEN as secureURLToken,
@@ -35,9 +36,12 @@ const staticImgixClient = shouldCreateImgixClient();
 // increase performance. It's important to recognize that this cache is
 // **unbounded** and will grow **forever**, so we should probably opt to use
 // an LRU to cap memory. https://yomguithereal.github.io/mnemonist/lru-cache.html
-const staticSignatureCache = {} as {
-  [externalImageUri: string]: string;
-};
+
+// TODO: We need to find a suitable upper limit.
+//       This might be conditional based upon either the runtime
+//       hardware or the number of unique tokens a user may have.
+const capacity = 256;
+export const staticSignatureLRU = new LRUCache<string, string>(capacity);
 
 const shouldSignUri = (externalImageUri: string): string | undefined => {
   try {
@@ -51,8 +55,9 @@ const shouldSignUri = (externalImageUri: string): string | undefined => {
       );
       // Check that the URL was signed as expected.
       if (typeof signedExternalImageUri === 'string') {
-        // Buffer the signature for future use.
-        staticSignatureCache[externalImageUri] = signedExternalImageUri;
+        // Buffer the signature into the LRU for future use.
+        !staticSignatureLRU.has(externalImageUri) &&
+          staticSignatureLRU.set(externalImageUri, signedExternalImageUri);
         // Return the signed image.
         return signedExternalImageUri;
       }
@@ -92,11 +97,12 @@ export const isPossibleToSignUri = (
 export const maybeSignUri = (
   externalImageUri: string | undefined
 ): string | undefined => {
-  if (typeof externalImageUri === 'string') {
-    const maybeAlreadySigned = staticSignatureCache[externalImageUri as string];
-    if (maybeAlreadySigned) {
-      return maybeAlreadySigned;
-    }
+  // If the image has already been signed, return this quickly.
+  if (
+    typeof externalImageUri === 'string' &&
+    staticSignatureLRU.has(externalImageUri as string)
+  ) {
+    return staticSignatureLRU.get(externalImageUri);
   }
   if (
     typeof externalImageUri === 'string' &&
