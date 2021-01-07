@@ -45,6 +45,7 @@ const DiscoverSheetAndroid = () => {
       <BottomSheet
         activeOffsetY={[-0.5, 0.5]}
         // animatedPosition={yPos}
+        animationDuration={300}
         failOffsetX={[-10, 10]}
         index={1}
         ref={bottomSheetModalRef}
