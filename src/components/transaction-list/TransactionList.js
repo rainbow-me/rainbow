@@ -18,7 +18,7 @@ import {
 } from '../../helpers/transactions';
 import { isENSAddressFormat } from '../../helpers/validators';
 import { useAccountProfile, useWallets } from '../../hooks';
-import { useSafeImageUri } from '../../hooks/useImgix';
+import useSafeImageUri from '../../hooks/useSafeImageUri';
 import { useNavigation } from '../../navigation/Navigation';
 import { removeRequest } from '../../redux/requests';
 import { walletsSetSelected, walletsUpdate } from '../../redux/wallets';
