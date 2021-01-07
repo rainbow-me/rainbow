@@ -129,7 +129,7 @@ export default function DiscoverSheetHeader(props) {
   ]);
 
   const animatedWrapperLOpacity = useDerivedValue(
-    () => withTiming(isSearchModeEnabled ? buttonOpacity.value : 0),
+    () => withTiming(isSearchModeEnabled ? 0 : buttonOpacity.value),
     [isSearchModeEnabled]
   );
   const animatedWrapperROpacity = useDerivedValue(() =>
@@ -141,7 +141,7 @@ export default function DiscoverSheetHeader(props) {
       <Stack
         disabled={!buttonsEnabled}
         left={19}
-        onPress={() => navigate(Routes.WALLET_SCREEN)}
+        onPress={() => !isSearchModeEnabled && navigate(Routes.WALLET_SCREEN)}
         stackOpacity={stackOpacity}
         translateX={translateXLeftButton}
         wrapperOpacity={animatedWrapperLOpacity}

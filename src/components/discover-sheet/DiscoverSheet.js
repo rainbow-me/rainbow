@@ -22,7 +22,7 @@ import {
 const renderHeader = yPosition => <DiscoverSheetHeader yPosition={yPosition} />;
 
 function useAreHeaderButtonVisible() {
-  const [isSearchModeEnabled, setIsSearchModeEnabled] = useState(true);
+  const [isSearchModeEnabled, setIsSearchModeEnabled] = useState(false);
   return [{ isSearchModeEnabled, setIsSearchModeEnabled }, isSearchModeEnabled];
 }
 
@@ -97,6 +97,7 @@ function DiscoverSheetIOS(_, forwardedRef) {
         backgroundOpacity={0}
         blocksBackgroundTouches={false}
         cornerRadius={30}
+        gestureEnabled={!headerButtonsHandlers.isSearchModeEnabled}
         initialAnimation={false}
         interactsWithOuterScrollView
         isHapticFeedbackEnabled={false}
@@ -110,7 +111,10 @@ function DiscoverSheetIOS(_, forwardedRef) {
         topOffset={insets.top}
         unmountAnimation={false}
       >
-        <SlackSheet renderHeader={renderHeader}>
+        <SlackSheet
+          renderHeader={renderHeader}
+          scrollEnabled={!headerButtonsHandlers.isSearchModeEnabled}
+        >
           <DiscoverSheetContent />
         </SlackSheet>
       </SlackBottomSheet>

@@ -1,3 +1,4 @@
+import { useRoute } from '@react-navigation/native';
 import React, { useContext, useMemo, useRef, useState } from 'react';
 import { LayoutAnimation } from 'react-native';
 import styled from 'styled-components/primitives';
@@ -24,6 +25,9 @@ export default function DiscoverSearchContainer({
   const [isSearching, setIsSearching] = useState(false);
   const upperContext = useContext(DiscoverSheetContext);
   const { setIsSearchModeEnabled } = upperContext;
+  const {
+    params: { setSwipeEnabled: setViewPagerSwipeEnabled },
+  } = useRoute();
 
   const contextValue = useMemo(
     () => ({ ...upperContext, searchQuery, setIsSearching }),
@@ -31,7 +35,8 @@ export default function DiscoverSearchContainer({
   );
   const setIsInputFocusedWithLayoutAnimation = value => {
     setShowSearch(value);
-    setIsSearchModeEnabled(!value);
+    setIsSearchModeEnabled(value);
+    setViewPagerSwipeEnabled(!value);
 
     LayoutAnimation.configureNext(
       LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
