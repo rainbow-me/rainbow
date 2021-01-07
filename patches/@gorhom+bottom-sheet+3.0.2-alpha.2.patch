@@ -1,5 +1,5 @@
 diff --git a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/BottomSheet.tsx b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/BottomSheet.tsx
-index b1f284e..b641d72 100644
+index 43fe860..b682c27 100644
 --- a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/BottomSheet.tsx
 +++ b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/BottomSheet.tsx
 @@ -18,7 +18,7 @@ import Animated, {
@@ -12,7 +12,7 @@ index b1f284e..b641d72 100644
    runOnUI,
    useWorkletCallback,
 diff --git a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/constants.ts b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/constants.ts
-index 7056d1c..2a9898a 100644
+index b8fe21e..e286d8d 100644
 --- a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/constants.ts
 +++ b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/constants.ts
 @@ -1,5 +1,5 @@
@@ -21,7 +21,7 @@ index 7056d1c..2a9898a 100644
 +import Animated, { NewEasing as Easing } from 'react-native-reanimated';
  
  const DEFAULT_ANIMATION_EASING: Animated.EasingFunction = Easing.out(
-   Easing.exp
+   Easing.cubic
 diff --git a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheetBackdrop/BottomSheetBackdrop.tsx b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheetBackdrop/BottomSheetBackdrop.tsx
 index 636e5f2..b8ddfbe 100644
 --- a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheetBackdrop/BottomSheetBackdrop.tsx

@@ -1,7 +1,18 @@
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useIsFocused } from '@react-navigation/native';
 import React, { useMemo, useRef } from 'react';
-import { findNodeHandle, NativeModules, View } from 'react-native';
+import {
+  findNodeHandle,
+  NativeModules,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
+// import {
+//   useAnimatedScrollHandler,
+//   useDerivedValue,
+//   useSharedValue,
+// } from 'react-native-reanimated';
 import { useSafeArea } from 'react-native-safe-area-context';
 // eslint-disable-next-line import/no-unresolved
 import SlackBottomSheet from 'react-native-slack-bottom-sheet';
@@ -15,15 +26,39 @@ const renderHeader = yPosition => <DiscoverSheetHeader yPosition={yPosition} />;
 const DiscoverSheetAndroid = () => {
   const bottomSheetModalRef = useRef(null);
   const snapPoints = useMemo(() => ['25%', '80%'], []);
+  // const scrollHandler = useAnimatedScrollHandler(event => {
+  //   console.log(event.contentOffset.y);
+  // });
+  //
+  // const yPos = useSharedValue(0);
+  // const y = useDerivedValue(() => {
+  //   console.log(yPos.value);
+  // });
 
   return (
-    <BottomSheet index={1} ref={bottomSheetModalRef} snapPoints={snapPoints}>
-      <BottomSheetScrollView>
-        <DiscoverSheetContent />
-        {/* placeholder for now */}
-        <View style={{ backgroundColor: 'red', height: 400, width: 100 }} />
-      </BottomSheetScrollView>
-    </BottomSheet>
+    <ScrollView
+      contentContainerStyle={{ height: '100.1%' }}
+      overScrollMode="never"
+      showsVerticalScrollIndicator={false}
+      style={StyleSheet.absoluteFillObject}
+    >
+      <BottomSheet
+        activeOffsetY={[-0.5, 0.5]}
+        // animatedPosition={yPos}
+        failOffsetX={[-10, 10]}
+        index={1}
+        ref={bottomSheetModalRef}
+        snapPoints={snapPoints}
+      >
+        <BottomSheetScrollView
+        // onScroll={scrollHandler}
+        >
+          <DiscoverSheetContent />
+          {/* placeholder for now */}
+          <View style={{ backgroundColor: 'red', height: 400, width: 100 }} />
+        </BottomSheetScrollView>
+      </BottomSheet>
+    </ScrollView>
   );
 };
 
