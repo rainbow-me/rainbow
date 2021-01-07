@@ -11,7 +11,17 @@ import { colors } from '@rainbow-me/styles';
 
 const CancelButton = styled(ButtonPressAnimation)`
   margin-top: 27;
-  margin-right: 19;
+  right: 15;
+`;
+
+const CancelText = styled(Text).attrs({
+  align: 'right',
+  color: colors.appleBlue,
+  letterSpacing: 'roundedMedium',
+  size: 'large',
+  weight: 'semibold',
+})`
+  margin-left: 12;
 `;
 
 export default function DiscoverSearchContainer({
@@ -60,17 +70,7 @@ export default function DiscoverSearchContainer({
             setIsInputFocusedWithLayoutAnimation(false);
           }}
         >
-          {showSearch && (
-            <Text
-              align="right"
-              color={colors.appleBlue}
-              letterSpacing="roundedMedium"
-              size="large"
-              weight="semibold"
-            >
-              Cancel
-            </Text>
-          )}
+          {showSearch && <CancelText>Cancel</CancelText>}
         </CancelButton>
       </Row>
       <DiscoverSheetContext.Provider value={contextValue}>

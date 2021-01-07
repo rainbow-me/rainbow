@@ -57,7 +57,7 @@ export default function TopMoversSection() {
   ]);
 
   return (
-    <ColumnWithMargins margin={12} marginBottom={15}>
+    <ColumnWithMargins margin={12} marginBottom={15} marginTop={11}>
       <Flex paddingHorizontal={19}>
         <Text size="larger" weight="heavy">
           Top Movers
