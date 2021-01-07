@@ -1,6 +1,6 @@
 { "mainnet": [
   {
-    "emoji": "glowing_star",
+    "emoji": "star",
     "id": "favorites",
     "name": "Favorites",
     "tokens": []

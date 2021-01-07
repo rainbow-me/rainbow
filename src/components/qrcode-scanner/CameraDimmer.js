@@ -7,9 +7,15 @@ import Animated, {
   min,
   set,
   sub,
+  useAnimatedStyle,
+  withTiming,
 } from 'react-native-reanimated';
+
 import styled from 'styled-components/primitives';
 import { useMemoOne } from 'use-memo-one';
+import useExperimentalFlag, {
+  DISCOVER_SHEET,
+} from '../../config/experimentalHooks';
 import { scrollPosition } from '../../navigation/ScrollPagerWrapper';
 import { useReanimatedValue } from '../list/MarqueeList';
 
@@ -18,9 +24,14 @@ const Dim = styled(Animated.View)`
   width: 100%;
 `;
 
-export default function CameraDimmer({ children }) {
+export default function CameraDimmer({ children, cameraDim = { value: 1 } }) {
   const prev = useReanimatedValue(0);
   const prevMem = useReanimatedValue(0);
+  const discoverSheetAvailable = useExperimentalFlag(DISCOVER_SHEET);
+
+  const animatedV2Style = useAnimatedStyle(() => ({
+    opacity: withTiming(cameraDim.value),
+  }));
 
   const style = useMemoOne(
     () => ({
@@ -41,5 +52,11 @@ export default function CameraDimmer({ children }) {
     }),
     []
   );
-  return <Dim style={style}>{children}</Dim>;
+  return (
+    <Dim style={style}>
+      <Dim style={[ios && discoverSheetAvailable ? animatedV2Style : null]}>
+        {children}
+      </Dim>
+    </Dim>
+  );
 }

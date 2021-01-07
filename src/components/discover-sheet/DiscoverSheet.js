@@ -1,5 +1,11 @@
 import { useIsFocused } from '@react-navigation/native';
-import React, { useMemo, useRef, useState } from 'react';
+import React, {
+  forwardRef,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { findNodeHandle, NativeModules, StyleSheet } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 // eslint-disable-next-line import/no-unresolved
@@ -55,7 +61,7 @@ function DiscoverSheetAndroid() {
   );
 }
 
-function DiscoverSheetIOS() {
+function DiscoverSheetIOS(_, forwardedRef) {
   const insets = useSafeArea();
   const isFocused = useIsFocused();
   const ref = useRef();
@@ -79,6 +85,8 @@ function DiscoverSheetIOS() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [deps]
   );
+
+  useImperativeHandle(forwardedRef, () => value);
 
   // noinspection JSConstructorReturnsPrimitive
   return (
@@ -110,4 +118,4 @@ function DiscoverSheetIOS() {
   );
 }
 
-export default ios ? DiscoverSheetIOS : DiscoverSheetAndroid;
+export default ios ? forwardRef(DiscoverSheetIOS) : DiscoverSheetAndroid;

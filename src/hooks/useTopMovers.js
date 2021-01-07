@@ -2,12 +2,13 @@ import { captureMessage } from '@sentry/react-native';
 import { get, isEmpty, map, remove, slice, toLower } from 'lodash';
 import { useCallback } from 'react';
 import { queryCache, useQuery } from 'react-query';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   saveTopMovers,
   TOP_MOVERS_FROM_STORAGE,
 } from '../handlers/localstorage/topMovers';
 import { apiGetTopMovers } from '../handlers/topMovers';
+import { emitChartsRequest } from '../redux/explorer';
 import logger from 'logger';
 
 const TOP_MOVERS_PER_ROW_MAX = 12;
@@ -40,10 +41,14 @@ export default function useTopMovers() {
   const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
     genericAssets,
   }));
+  const dispatch = useDispatch();
 
   const fetchTopMovers = useCallback(async () => {
     const topMovers = await apiGetTopMovers();
     const { gainers: gainersData, losers: losersData } = topMovers;
+
+    dispatch(emitChartsRequest(gainersData.map(({ address }) => address)));
+    dispatch(emitChartsRequest(losersData.map(({ address }) => address)));
 
     const gainers = updatePrice(gainersData, genericAssets);
     const losers = updatePrice(losersData, genericAssets);

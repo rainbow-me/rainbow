@@ -102,7 +102,7 @@ export const addTokenSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,
-      longFormHeight: 460,
+      longFormHeight: 448,
     }),
   }),
 };

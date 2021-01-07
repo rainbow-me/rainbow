@@ -3,6 +3,7 @@ import React from 'react';
 import { StatusBar } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components/native';
+import Divider from '../components/Divider';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import { ButtonPressAnimation } from '../components/animations';
 import { CoinIcon } from '../components/coin-icon';
@@ -27,17 +28,27 @@ const Container = styled(Centered).attrs({
 `;
 
 const ListButton = styled(ButtonPressAnimation)`
-  margin-bottom: 30;
+  padding-bottom: 15;
+  padding-top: 15;
 `;
 
-const ListName = styled(Text)`
-  margin-left: 5px;
-  margin-top: -5px;
+const ListEmoji = styled(Emoji).attrs({
+  size: 'large',
+})`
+  margin-top: 1;
+`;
+
+const ListName = styled(Text).attrs({
+  color: colors.appleBlue,
+  size: 'larger',
+  weight: 'bold',
+})`
+  margin-left: 6;
 `;
 
 const WRITEABLE_LISTS = ['watchlist', 'favorites', 'defi'];
 
-export const sheetHeight = android ? 410 : 500;
+export const sheetHeight = android ? 410 : 448;
 
 export default function AddTokenSheet() {
   const { goBack } = useNavigation();
@@ -58,56 +69,59 @@ export default function AddTokenSheet() {
         contentHeight={sheetHeight}
         scrollEnabled={false}
       >
-        <Centered direction="column" paddingTop={9}>
-          <Column marginTop={24}>
+        <Centered direction="column">
+          <Column marginTop={16}>
             <CoinIcon address={item.address} size={50} symbol={item.symbol} />
           </Column>
-          <Column marginBottom={5} marginTop={14}>
+          <Column marginBottom={4} marginTop={12}>
             <Text
+              align="center"
               color={colors.alpha(colors.blueGreyDark, 0.8)}
-              lineHeight="loose"
+              letterSpacing="roundedMedium"
               size="large"
-              weight="regular"
+              weight="bold"
             >
               {item.name}
             </Text>
           </Column>
-          <Column marginBottom={50}>
+          <Column marginBottom={24}>
             <Text
+              align="center"
               color={colors.blueGreyDarker}
-              lineHeight="paragraphSmall"
+              letterSpacing="roundedMedium"
               size="larger"
-              weight="bold"
+              weight="heavy"
             >
               Add to List
             </Text>
           </Column>
 
-          {DefaultTokenLists[network]
-            .filter(list => WRITEABLE_LISTS.indexOf(list.id) !== -1)
-            .map(list => (
-              <ListButton key={`list-${list.id}`} onPress={() => null}>
-                <Row>
-                  <Emoji name={list.emoji} size="smedium" />
-                  <ListName
-                    color={colors.appleBlue}
-                    lineHeight="paragraphSmall"
-                    size="larger"
-                    weight="bold"
-                  >
-                    {list.name}
-                  </ListName>
-                </Row>
-              </ListButton>
-            ))}
+          <Centered marginBottom={9}>
+            <Divider color={colors.rowDividerExtraLight} inset={[0, 143.5]} />
+          </Centered>
+
+          <Column align="center" marginBottom={8}>
+            {DefaultTokenLists[network]
+              .filter(list => WRITEABLE_LISTS.indexOf(list.id) !== -1)
+              .map(list => (
+                <ListButton key={`list-${list.id}`} onPress={() => null}>
+                  <Row>
+                    <ListEmoji name={list.emoji} />
+                    <ListName>{list.name}</ListName>
+                  </Row>
+                </ListButton>
+              ))}
+          </Column>
+
           <SheetActionButtonRow>
             <SheetActionButton
               color={colors.white}
+              fullWidth
               label="Cancel"
               onPress={goBack}
               size="big"
               textColor={colors.alpha(colors.blueGreyDark, 0.8)}
-              weight="heavy"
+              weight="bold"
             />
           </SheetActionButtonRow>
         </Centered>

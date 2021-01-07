@@ -10,6 +10,6 @@ export const REVIEW_ANDROID = 'reviewAndroid';
 
 export const defaultConfig = {
   [AVATAR_PICKER]: ios,
-  [DISCOVER_SHEET]: false,
+  [DISCOVER_SHEET]: true,
   [REVIEW_ANDROID]: false,
 };
