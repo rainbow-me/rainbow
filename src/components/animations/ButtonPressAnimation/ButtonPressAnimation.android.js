@@ -226,7 +226,7 @@ const SimpleScaleButton = ({
           style={{ overflow: 'visible' }}
           transformOrigin={transformOrigin}
         >
-          <View style={{ backgroundColor: 'transparent' }}>
+          <View>
             <View
               style={{
                 padding: overflowMargin,
