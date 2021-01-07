@@ -203,8 +203,8 @@ const SimpleScaleButton = ({
     <View
       style={[
         {
-          backgroundColor: backgroundColor,
-          borderRadius: borderRadius,
+          backgroundColor,
+          borderRadius,
           overflow: 'visible',
         },
         wrapperStyle,
