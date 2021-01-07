@@ -203,6 +203,8 @@ const SimpleScaleButton = ({
     <View
       style={[
         {
+          backgroundColor,
+          borderRadius,
           overflow: 'visible',
         },
         wrapperStyle,
@@ -224,19 +226,14 @@ const SimpleScaleButton = ({
           style={{ overflow: 'visible' }}
           transformOrigin={transformOrigin}
         >
-          <View style={{ backgroundColor: 'transparent' }}>
+          <View>
             <View
               style={{
                 padding: overflowMargin,
                 paddingTop: skipTopMargin ? OVERFLOW_MARGIN : overflowMargin,
               }}
             >
-              <Animated.View
-                style={[
-                  contentContainerStyle,
-                  { backgroundColor, borderRadius: borderRadius },
-                ]}
-              >
+              <Animated.View style={contentContainerStyle}>
                 {children}
               </Animated.View>
             </View>
