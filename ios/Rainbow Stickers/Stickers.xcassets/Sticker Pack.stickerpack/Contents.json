@@ -1,0 +1,26 @@
+{
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  },
+  "properties" : {
+    "grid-size" : "regular"
+  },
+  "stickers" : [
+    {
+      "filename" : "greyneon.sticker"
+    },
+    {
+      "filename" : "light.sticker"
+    },
+    {
+      "filename" : "liquid.sticker"
+    },
+    {
+      "filename" : "neon.sticker"
+    },
+    {
+      "filename" : "pixel.sticker"
+    }
+  ]
+}
