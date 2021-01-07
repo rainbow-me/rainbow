@@ -1,6 +1,12 @@
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useIsFocused } from '@react-navigation/native';
-import React, { useMemo, useRef } from 'react';
+import React, {
+  forwardRef,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   findNodeHandle,
   NativeModules,
@@ -23,7 +29,21 @@ import DiscoverSheetHeader from './DiscoverSheetHeader';
 
 const renderHeader = yPosition => <DiscoverSheetHeader yPosition={yPosition} />;
 
+function useAreHeaderButtonVisible() {
+  const [isSearchModeEnabled, setIsSearchModeEnabled] = useState(true);
+  return [{ isSearchModeEnabled, setIsSearchModeEnabled }, isSearchModeEnabled];
+}
+
 const DiscoverSheetAndroid = () => {
+  const [headerButtonsHandlers, deps] = useAreHeaderButtonVisible();
+
+  const value = useMemo(
+    () => ({
+      ...headerButtonsHandlers,
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [deps]
+  );
   const bottomSheetModalRef = useRef(null);
   const snapPoints = useMemo(() => ['25%', '80%'], []);
   // const scrollHandler = useAnimatedScrollHandler(event => {
@@ -36,38 +56,41 @@ const DiscoverSheetAndroid = () => {
   // });
 
   return (
-    <ScrollView
-      contentContainerStyle={{ height: '100.1%' }}
-      overScrollMode="never"
-      showsVerticalScrollIndicator={false}
-      style={StyleSheet.absoluteFillObject}
-    >
-      <BottomSheet
-        activeOffsetY={[-0.5, 0.5]}
-        // animatedPosition={yPos}
-        animationDuration={300}
-        failOffsetX={[-10, 10]}
-        index={1}
-        ref={bottomSheetModalRef}
-        snapPoints={snapPoints}
+    <DiscoverSheetContext.Provider value={value}>
+      <ScrollView
+        contentContainerStyle={{ height: '100.1%' }}
+        overScrollMode="never"
+        showsVerticalScrollIndicator={false}
+        style={StyleSheet.absoluteFillObject}
       >
-        <BottomSheetScrollView
-        // onScroll={scrollHandler}
+        <BottomSheet
+          activeOffsetY={[-0.5, 0.5]}
+          // animatedPosition={yPos}
+          animationDuration={300}
+          failOffsetX={[-10, 10]}
+          index={1}
+          ref={bottomSheetModalRef}
+          snapPoints={snapPoints}
         >
-          <DiscoverSheetContent />
-          {/* placeholder for now */}
-          <View style={{ backgroundColor: 'red', height: 400, width: 100 }} />
-        </BottomSheetScrollView>
-      </BottomSheet>
-    </ScrollView>
+          <BottomSheetScrollView
+          // onScroll={scrollHandler}
+          >
+            <DiscoverSheetContent />
+            {/* placeholder for now */}
+            <View style={{ backgroundColor: 'red', height: 400, width: 100 }} />
+          </BottomSheetScrollView>
+        </BottomSheet>
+      </ScrollView>
+    </DiscoverSheetContext.Provider>
   );
 };
 
-function DiscoverSheetIOS() {
+function DiscoverSheetIOS(_, forwardedRef) {
   const insets = useSafeArea();
   const isFocused = useIsFocused();
   const ref = useRef();
   const listeners = useRef([]);
+  const [headerButtonsHandlers, deps] = useAreHeaderButtonVisible();
   const value = useMemo(
     () => ({
       addOnCrossMagicBorderListener(listener) {
@@ -81,9 +104,13 @@ function DiscoverSheetIOS() {
           NativeModules.ModalView.jumpTo(false, screen);
         }
       },
+      ...headerButtonsHandlers,
     }),
-    []
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [deps]
   );
+
+  useImperativeHandle(forwardedRef, () => value);
 
   // noinspection JSConstructorReturnsPrimitive
   return (
@@ -115,4 +142,4 @@ function DiscoverSheetIOS() {
   );
 }
 
-export default ios ? DiscoverSheetIOS : DiscoverSheetAndroid;
+export default ios ? forwardRef(DiscoverSheetIOS) : DiscoverSheetAndroid;

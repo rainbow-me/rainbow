@@ -1,7 +1,7 @@
 import { useIsFocused } from '@react-navigation/native';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
-import Animated, { useCode } from 'react-native-reanimated';
+import Animated, { useCode, useSharedValue } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
 import { BubbleSheet } from '../components/bubble-sheet';
 import { DiscoverSheet } from '../components/discover-sheet';
@@ -77,6 +77,17 @@ export default function QRScannerScreen() {
     walletConnectorsCount,
   } = useWalletConnectConnections();
 
+  const cameraDim = useSharedValue(0);
+  const dsRef = useRef();
+  const onCrossMagicBorder = useCallback(
+    ({ below }) => (cameraDim.value = below ? 1 : 0),
+    [cameraDim]
+  );
+  useEffect(
+    () => dsRef.current?.addOnCrossMagicBorderListener(onCrossMagicBorder),
+    [onCrossMagicBorder]
+  );
+
   const handlePressBackButton = useCallback(
     () => navigate(Routes.WALLET_SCREEN),
     [navigate]
@@ -88,12 +99,13 @@ export default function QRScannerScreen() {
 
   return (
     <View>
-      {discoverSheetAvailable && ios ? <DiscoverSheet /> : null}
+      {discoverSheetAvailable && ios ? <DiscoverSheet ref={dsRef} /> : null}
       <ScannerContainer>
         <Background />
-        <CameraDimmer>
+        <CameraDimmer cameraDim={cameraDim}>
           {initializeCamera && (
             <QRCodeScanner
+              cameraDim={cameraDim}
               contentPositionBottom={sheetHeight}
               contentPositionTop={HeaderHeight}
               enableCamera={ios ? isFocusedIOS : isFocusedAndroid}

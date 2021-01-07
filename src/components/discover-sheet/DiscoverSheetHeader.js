@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import Animated, {
   newInterpolate,
@@ -17,7 +17,7 @@ import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import ShadowStack from 'react-native-shadow-stack';
 
-const Header = styled(Animated.View)`
+const Header = styled.View`
   flex-direction: row;
   height: 59;
   justify-content: space-between;
@@ -42,15 +42,26 @@ const BackgroundFill = styled(Centered).attrs({
   top: 8;
 `;
 
-function Stack({ children, left, stackOpacity, onPress }) {
+function Stack({
+  children,
+  left,
+  stackOpacity,
+  onPress,
+  disabled,
+  translateX,
+  wrapperOpacity,
+}) {
   const isVisible = useDerivedValue(() => {
-    const value = Math.round(
-      newInterpolate(stackOpacity.value, [50, 51], [0, 1], 'clamp')
-    );
+    const value = stackOpacity.value;
     return withTiming(value);
   });
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: isVisible.value,
+  }));
+
+  const animatedWrapperStyle = useAnimatedStyle(() => ({
+    opacity: wrapperOpacity.value,
+    transform: [{ translateX: translateX.value }],
   }));
 
   const animatedStyleShadow = useAnimatedStyle(() => ({
@@ -60,6 +71,7 @@ function Stack({ children, left, stackOpacity, onPress }) {
   return (
     <>
       <ButtonPressAnimation
+        disabled={disabled}
         onPress={onPress}
         style={{ height: 59, width: 59, zIndex: 10 }}
       >
@@ -72,10 +84,12 @@ function Stack({ children, left, stackOpacity, onPress }) {
           />
           <BackgroundFill />
         </Animated.View>
-        <View style={{ left, top: 19, zIndex: 10 }}>
+        <Animated.View
+          style={[{ left, top: 19, zIndex: 10 }, animatedWrapperStyle]}
+        >
           <View style={{ position: 'absolute' }}>{children[0]}</View>
           <Animated.View style={animatedStyle}>{children[1]}</Animated.View>
-        </View>
+        </Animated.View>
       </ButtonPressAnimation>
     </>
   );
@@ -83,13 +97,30 @@ function Stack({ children, left, stackOpacity, onPress }) {
 
 export default function DiscoverSheetHeader(props) {
   const { navigate } = useNavigation();
+  const [buttonsEnabled, setButtonsEnabled] = useState(true);
   const buttonOpacity = useSharedValue(1);
+  const { yPosition } = props;
+  const { isSearchModeEnabled } = useContext(DiscoverSheetContext);
+  const stackOpacity = useDerivedValue(() =>
+    Math.round(newInterpolate(yPosition.value, [50, 51], [0, 1], 'clamp'))
+  );
+
+  const translateXLeftButton = useDerivedValue(() =>
+    withTiming(stackOpacity.value * 5)
+  );
+
+  const translateXRightButton = useDerivedValue(() =>
+    withTiming(stackOpacity.value * -0.5)
+  );
+
   const { jumpToShort, addOnCrossMagicBorderListener } =
     useContext(DiscoverSheetContext) || {};
-  const { yPosition } = props;
-  const stackOpacity = yPosition;
+
   const onCrossMagicBorder = useCallback(
-    ({ below }) => (buttonOpacity.value = below ? 0 : 1),
+    ({ below }) => {
+      buttonOpacity.value = below ? 0 : 1;
+      setButtonsEnabled(!below);
+    },
     [buttonOpacity]
   );
   useEffect(() => addOnCrossMagicBorderListener(onCrossMagicBorder), [
@@ -97,21 +128,23 @@ export default function DiscoverSheetHeader(props) {
     onCrossMagicBorder,
   ]);
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity: withTiming(buttonOpacity.value),
-  }));
+  const animatedWrapperLOpacity = useDerivedValue(
+    () => withTiming(isSearchModeEnabled ? buttonOpacity.value : 0),
+    [isSearchModeEnabled]
+  );
+  const animatedWrapperROpacity = useDerivedValue(() =>
+    withTiming(buttonOpacity.value)
+  );
 
   return (
-    <Header
-      {...props}
-      opacity={buttonOpacity}
-      pointerEvents="box-none"
-      style={[animatedStyle]}
-    >
+    <Header {...props} pointerEvents="box-none">
       <Stack
+        disabled={!buttonsEnabled}
         left={19}
         onPress={() => navigate(Routes.WALLET_SCREEN)}
         stackOpacity={stackOpacity}
+        translateX={translateXLeftButton}
+        wrapperOpacity={animatedWrapperLOpacity}
       >
         <Icon
           color={colors.alpha(colors.blueGreyDark, 0.8)}
@@ -122,9 +155,12 @@ export default function DiscoverSheetHeader(props) {
         <Icon color={colors.white} direction="left" name="caret" {...props} />
       </Stack>
       <Stack
-        left={18}
+        disabled={!buttonsEnabled}
+        left={19}
         onPress={() => jumpToShort?.()}
         stackOpacity={stackOpacity}
+        translateX={translateXRightButton}
+        wrapperOpacity={animatedWrapperROpacity}
       >
         <Icon
           bottom={1}
