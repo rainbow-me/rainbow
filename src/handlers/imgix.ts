@@ -31,11 +31,9 @@ const shouldCreateImgixClient = (): ImgixClient | null => {
 
 const staticImgixClient = shouldCreateImgixClient();
 
-// Here we use a static buffer to prevent multiple successive signing attempts
+// Below, we use a static buffer to prevent multiple successive signing attempts
 // for components which may have been unmounted/remounted. This is done to
-// increase performance. It's important to recognize that this cache is
-// **unbounded** and will grow **forever**, so we should probably opt to use
-// an LRU to cap memory. https://yomguithereal.github.io/mnemonist/lru-cache.html
+// increase performance.
 
 // TODO: We need to find a suitable upper limit.
 //       This might be conditional based upon either the runtime
