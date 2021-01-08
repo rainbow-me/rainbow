@@ -1,3 +1,4 @@
+import { useRoute } from '@react-navigation/native';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import Animated, {
@@ -100,10 +101,16 @@ export default function DiscoverSheetHeader(props) {
   const [buttonsEnabled, setButtonsEnabled] = useState(true);
   const buttonOpacity = useSharedValue(1);
   const { yPosition } = props;
-  const { isSearchModeEnabled } = useContext(DiscoverSheetContext);
+  const { isSearchModeEnabled, setIsSearchModeEnabled } = useContext(
+    DiscoverSheetContext
+  );
   const stackOpacity = useDerivedValue(() =>
     Math.round(newInterpolate(yPosition.value, [50, 51], [0, 1], 'clamp'))
   );
+
+  const {
+    params: { setSwipeEnabled: setViewPagerSwipeEnabled },
+  } = useRoute();
 
   const translateXLeftButton = useDerivedValue(() =>
     withTiming(stackOpacity.value * 5)
@@ -157,7 +164,11 @@ export default function DiscoverSheetHeader(props) {
       <Stack
         disabled={!buttonsEnabled}
         left={19}
-        onPress={() => jumpToShort?.()}
+        onPress={() => {
+          setIsSearchModeEnabled(false);
+          setViewPagerSwipeEnabled(true);
+          jumpToShort?.();
+        }}
         stackOpacity={stackOpacity}
         translateX={translateXRightButton}
         wrapperOpacity={animatedWrapperROpacity}

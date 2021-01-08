@@ -74,6 +74,12 @@ function DiscoverSheetIOS(_, forwardedRef) {
         const index = listeners.current.length - 1;
         return () => listeners.current.splice(index, 1);
       },
+      jumpToLong() {
+        const screen = findNodeHandle(ref.current);
+        if (screen) {
+          NativeModules.ModalView.jumpTo(true, screen);
+        }
+      },
       jumpToShort() {
         const screen = findNodeHandle(ref.current);
         if (screen) {
