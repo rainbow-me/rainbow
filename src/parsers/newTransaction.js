@@ -1,5 +1,5 @@
-import { get, pick } from 'lodash';
-import { getTransactionCount } from '../handlers/web3';
+import { isHexString } from '@ethersproject/bytes';
+import { get, isNil, pick } from 'lodash';
 import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 import {
   convertAmountAndPriceToNativeDisplay,
@@ -40,7 +40,13 @@ export const parseNewTransaction = async (
     'type',
   ]);
   const hash = txDetails.hash ? `${txDetails.hash}-0` : null;
-  const nonce = tx.nonce || (tx.from ? await getTransactionCount(tx.from) : '');
+  // Convert nonces from hex to int (some dapps use hex!)
+  const nonce = !isNil(tx.nonce)
+    ? isHexString(tx.nonce)
+      ? parseInt(tx.nonce, 16)
+      : tx.nonce
+    : '';
+
   const status = txDetails?.status || TransactionStatusTypes.sending;
 
   const title = getTitle({

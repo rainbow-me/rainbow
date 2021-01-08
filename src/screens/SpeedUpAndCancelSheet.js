@@ -3,7 +3,7 @@ import { captureException } from '@sentry/react-native';
 import { BigNumber } from 'bignumber.js';
 import { get, isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { InteractionManager, TurboModuleRegistry } from 'react-native';
+import { Alert, InteractionManager, TurboModuleRegistry } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -132,9 +132,11 @@ export default function SpeedUpAndCancelSheet() {
   const [minGasPrice, setMinGasPrice] = useState(
     calcMinGasPriceAllowed(tx.gasPrice)
   );
+  const fetchedTx = useRef(false);
   const [gasLimit, setGasLimit] = useState(tx.gasLimit);
   const [data, setData] = useState(tx.data);
   const [value, setValue] = useState(tx.value);
+  const [nonce, setNonce] = useState(tx.nonce);
 
   const getNewGasPrice = useCallback(() => {
     const rawGasPrice = get(selectedGasPrice, 'value.amount');
@@ -169,13 +171,14 @@ export default function SpeedUpAndCancelSheet() {
       const gasPrice = getNewGasPrice();
       const cancelTxPayload = {
         gasPrice,
-        nonce: tx.nonce,
+        nonce,
         to: accountAddress,
       };
       const originalHash = tx.hash;
-      const hash = await sendTransaction({
+      const { hash } = await sendTransaction({
         transaction: cancelTxPayload,
       });
+
       const updatedTx = { ...tx };
       // Update the hash on the copy of the original tx
       updatedTx.hash = hash;
@@ -197,6 +200,7 @@ export default function SpeedUpAndCancelSheet() {
     dispatch,
     getNewGasPrice,
     goBack,
+    nonce,
     reloadTransactions,
     tx,
   ]);
@@ -208,12 +212,12 @@ export default function SpeedUpAndCancelSheet() {
         data,
         gasLimit,
         gasPrice,
-        nonce: tx.nonce,
+        nonce,
         to: tx.to,
         value,
       };
       const originalHash = tx.hash;
-      const hash = await sendTransaction({
+      const { hash } = await sendTransaction({
         transaction: fasterTxPayload,
       });
       const updatedTx = { ...tx };
@@ -238,6 +242,7 @@ export default function SpeedUpAndCancelSheet() {
     gasLimit,
     getNewGasPrice,
     goBack,
+    nonce,
     reloadTransactions,
     tx,
     value,
@@ -245,15 +250,17 @@ export default function SpeedUpAndCancelSheet() {
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(async () => {
-      if (!tx.gasPrice || !tx.gasLimit || !tx.data) {
+      if (!fetchedTx.current) {
         const txHash = tx.hash.split('-')[0];
         try {
+          fetchedTx.current = true;
           const txObj = await getTransaction(txHash);
           if (txObj) {
             const hexGasLimit = toHex(txObj.gasLimit.toString());
             const hexGasPrice = toHex(txObj.gasPrice.toString());
             const hexValue = toHex(txObj.value.toString());
             const hexData = txObj.data;
+            setNonce(txObj.nonce);
             setValue(hexValue);
             setData(hexData);
             setGasLimit(hexGasLimit);
@@ -262,22 +269,32 @@ export default function SpeedUpAndCancelSheet() {
         } catch (e) {
           logger.log('something went wrong while fetching tx info ', e);
           captureException(e);
+          if (type === SPEED_UP) {
+            Alert.alert(
+              'Unable to speed up transaction',
+              'There was a problem while fetching the transaction data. Please try again...'
+            );
+            goBack();
+          }
+          // We don't care about this for cancellations
         }
+        startPollingGasPrices();
+        // Always default to fast
+        updateGasPriceOption('fast');
       }
-      startPollingGasPrices();
-      // Always default to fast
-      updateGasPriceOption('fast');
     });
     return () => {
       stopPollingGasPrices();
     };
   }, [
+    goBack,
     startPollingGasPrices,
     stopPollingGasPrices,
     tx,
     tx.gasLimit,
     tx.gasPrice,
     tx.hash,
+    type,
     updateGasPriceOption,
   ]);
 

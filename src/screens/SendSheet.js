@@ -312,12 +312,14 @@ export default function SendSheet(props) {
     };
     try {
       const signableTransaction = await createSignableTransaction(txDetails);
-      const txHash = await sendTransaction({
+      const txResult = await sendTransaction({
         transaction: signableTransaction,
       });
-      if (!isEmpty(txHash)) {
+      const { hash, nonce } = txResult;
+      if (!isEmpty(hash)) {
         submitSuccess = true;
-        txDetails.hash = txHash;
+        txDetails.hash = hash;
+        txDetails.nonce = nonce;
         await dispatch(dataAddNewTransaction(txDetails));
       }
     } catch (error) {
