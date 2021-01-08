@@ -1,5 +1,5 @@
 import { isEmpty } from 'lodash';
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useContext, useEffect, useRef } from 'react';
 import FastImage from 'react-native-fast-image';
 import RadialGradient from 'react-native-radial-gradient';
 import Animated, {
@@ -11,6 +11,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
 import Spinner from '../../assets/chartSpinner.png';
+import DiscoverSheetContext from '../discover-sheet/DiscoverSheetContext';
 import { ClearInputDecorator, Input } from '../inputs';
 import { Row } from '../layout';
 import { Text } from '../text';
@@ -71,6 +72,8 @@ const SearchInput = styled(Input).attrs({
   height: 56;`
     : ''}
   flex: 1;
+  text-align: ${({ isSearchModeEnabled }) =>
+    isSearchModeEnabled ? 'left' : 'center'};
   height: 39;
   margin-bottom: 1;
   margin-left: 3;
@@ -121,6 +124,7 @@ const ExchangeSearch = (
 
   const spinnerRotation = useSharedValue(0);
   const spinnerScale = useSharedValue(0, 'spinnerScale');
+  const { isSearchModeEnabled } = useContext(DiscoverSheetContext);
 
   const spinnerTimeout = useRef();
   useEffect(() => {
@@ -178,6 +182,7 @@ const ExchangeSearch = (
         <SearchSpinner />
       </SearchSpinnerWrapper>
       <SearchInput
+        isSearchModeEnabled={isSearchModeEnabled}
         onChangeText={onChangeText}
         onFocus={onFocus}
         placeholder={placeholderText}

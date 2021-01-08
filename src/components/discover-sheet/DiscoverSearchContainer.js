@@ -82,13 +82,13 @@ export default function DiscoverSearchContainer({
             testID="discover-search"
           />
         </Column>
-        <CancelButton
-          onPress={() => {
-            searchInputRef.current?.blur();
-            setIsInputFocusedWithLayoutAnimation(false);
-          }}
-        >
-          {showSearch && (
+        {showSearch && (
+          <CancelButton
+            onPress={() => {
+              searchInputRef.current?.blur();
+              setIsInputFocusedWithLayoutAnimation(false);
+            }}
+          >
             <Text
               align="right"
               color={colors.appleBlue}
@@ -98,8 +98,8 @@ export default function DiscoverSearchContainer({
             >
               Cancel
             </Text>
-          )}
-        </CancelButton>
+          </CancelButton>
+        )}
       </Row>
       <DiscoverSheetContext.Provider value={contextValue}>
         {children}
