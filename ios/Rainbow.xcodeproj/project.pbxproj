@@ -733,7 +733,7 @@
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 1.2.44;
+				MARKETING_VERSION = 1.2.45;
 				OTHER_CFLAGS = (
 					"$(inherited)",
 					"-DFB_SONARKIT_ENABLED=1",
@@ -793,7 +793,7 @@
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 1.2.44;
+				MARKETING_VERSION = 1.2.45;
 				OTHER_CFLAGS = (
 					"$(inherited)",
 					"-DFB_SONARKIT_ENABLED=1",
@@ -889,7 +889,7 @@
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 1.2.44;
+				MARKETING_VERSION = 1.2.45;
 				OTHER_CFLAGS = (
 					"$(inherited)",
 					"-DFB_SONARKIT_ENABLED=1",
@@ -986,7 +986,7 @@
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 1.2.44;
+				MARKETING_VERSION = 1.2.45;
 				OTHER_CFLAGS = (
 					"$(inherited)",
 					"-DFB_SONARKIT_ENABLED=1",

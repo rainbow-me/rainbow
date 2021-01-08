@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.2.44](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.44)
+### Changed
+* Improve nonce tracking
+* Fix Wallet Connect modals for 0 ETH wallets
+
 ## [1.2.43](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.43)
 ### Added
 * Speed up & cancel transactions
