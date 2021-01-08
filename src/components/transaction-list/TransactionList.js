@@ -262,10 +262,10 @@ export default function TransactionList({
                   showContactInfo
                     ? ' ' + headerInfo.divider + ' ' + headerInfo.address
                     : ''
-                } - NONCE ${item.nonce}`
+                }`
               : showContactInfo
-              ? `${headerInfo.type} ${date} ${headerInfo.divider} ${headerInfo.address} - NONCE ${item.nonce}`
-              : `${headerInfo.type} ${date} - NONCE ${item.nonce}`,
+              ? `${headerInfo.type} ${date} ${headerInfo.divider} ${headerInfo.address}`
+              : `${headerInfo.type} ${date}`,
           },
           buttonIndex => {
             const action = buttons[buttonIndex];

@@ -42,7 +42,7 @@ import {
   MessageSigningSection,
   TransactionConfirmationSection,
 } from '../components/transaction';
-import { estimateGas, getTransactionCount, toHex } from '../handlers/web3';
+import { estimateGas, toHex } from '../handlers/web3';
 import { isDappAuthenticated } from '../helpers/dappNameHandler';
 import {
   convertAmountToNativeDisplay,
@@ -168,8 +168,6 @@ const TransactionConfirmationScreen = () => {
   const {
     dataAddNewTransaction,
     removeRequest,
-    transactionCountNonce,
-    updateTransactionCountNonce,
     walletConnectSendStatus,
   } = useTransactionConfirmation();
 
@@ -420,33 +418,26 @@ const TransactionConfirmationScreen = () => {
       }
     }
 
-    let nonce = txPayload.nonce;
-    const web3TxnCount = await getTransactionCount(txPayload.from);
-    const maxTxnCount = Math.max(transactionCountNonce, web3TxnCount);
-    if (isNil(nonce)) {
-      nonce = maxTxnCount;
-    }
     const calculatedGasLimit = gas || gasLimitFromPayload || gasLimit;
-    let txPayloadLatestNonce = {
+    let txPayloadUpdated = {
       ...txPayload,
       gasPrice,
-      nonce,
     };
     if (calculatedGasLimit) {
-      txPayloadLatestNonce.gasLimit = calculatedGasLimit;
+      txPayloadUpdated.gasLimit = calculatedGasLimit;
     }
 
-    txPayloadLatestNonce = omit(txPayloadLatestNonce, ['from', 'gas']);
+    txPayloadUpdated = omit(txPayloadUpdated, ['from', 'gas']);
     let result = null;
 
     try {
       if (sendInsteadOfSign) {
         result = await sendTransaction({
-          transaction: txPayloadLatestNonce,
+          transaction: txPayloadUpdated,
         });
       } else {
         result = await signTransaction({
-          transaction: txPayloadLatestNonce,
+          transaction: txPayloadUpdated,
         });
       }
     } catch (e) {
@@ -461,7 +452,6 @@ const TransactionConfirmationScreen = () => {
         callback({ result: result.hash });
       }
       if (sendInsteadOfSign) {
-        dispatch(updateTransactionCountNonce(result.nonce + 1));
         const txDetails = {
           amount: get(displayDetails, 'request.value'),
           asset: get(displayDetails, 'request.asset'),
@@ -489,13 +479,11 @@ const TransactionConfirmationScreen = () => {
     method,
     params,
     selectedGasPrice,
-    transactionCountNonce,
     gasLimit,
     callback,
     requestId,
     closeScreen,
     dispatch,
-    updateTransactionCountNonce,
     displayDetails,
     dappName,
     dataAddNewTransaction,

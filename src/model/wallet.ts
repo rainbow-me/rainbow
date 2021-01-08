@@ -230,14 +230,14 @@ export const loadWallet = async (): Promise<null | Wallet> => {
 
 export const sendTransaction = async ({
   transaction,
-}: TransactionRequestParam): Promise<null | Transaction['hash']> => {
+}: TransactionRequestParam): Promise<null | Transaction> => {
   try {
     logger.sentry('about to send transaction', transaction);
     const wallet = await loadWallet();
     if (!wallet) return null;
     try {
       const result = await wallet.sendTransaction(transaction);
-      logger.log('TX RESULT', result);
+      logger.log('tx result', result);
       return result;
     } catch (error) {
       logger.log('Failed to SEND transaction', error);

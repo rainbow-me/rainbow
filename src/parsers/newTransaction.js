@@ -40,10 +40,13 @@ export const parseNewTransaction = async (
     'type',
   ]);
   const hash = txDetails.hash ? `${txDetails.hash}-0` : null;
-  let nonce = '';
-  if (!isNil(tx.nonce)) {
-    nonce = isHexString(tx.nonce) ? parseInt(tx.nonce, 16) : tx.nonce;
-  }
+  // Convert nonces from hex to int (some dapps use hex!)
+  const nonce = !isNil(tx.nonce)
+    ? isHexString(tx.nonce)
+      ? parseInt(tx.nonce, 16)
+      : tx.nonce
+    : '';
+
   const status = txDetails?.status || TransactionStatusTypes.sending;
 
   const title = getTitle({
