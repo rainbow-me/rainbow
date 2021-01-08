@@ -175,9 +175,10 @@ export default function SpeedUpAndCancelSheet() {
         to: accountAddress,
       };
       const originalHash = tx.hash;
-      const hash = await sendTransaction({
+      const { hash } = await sendTransaction({
         transaction: cancelTxPayload,
       });
+
       const updatedTx = { ...tx };
       // Update the hash on the copy of the original tx
       updatedTx.hash = hash;
@@ -216,7 +217,7 @@ export default function SpeedUpAndCancelSheet() {
         value,
       };
       const originalHash = tx.hash;
-      const hash = await sendTransaction({
+      const { hash } = await sendTransaction({
         transaction: fasterTxPayload,
       });
       const updatedTx = { ...tx };

@@ -122,6 +122,7 @@ export const toWei = ether => {
  * @return {Promise}
  */
 export const getTransaction = hash => web3Provider.getTransaction(hash);
+
 /**
  * @desc get address transaction count
  * @param {String} address
@@ -170,11 +171,13 @@ export const getTransferNftTransaction = async transaction => {
   const { from } = transaction;
   const contractAddress = get(transaction, 'asset.asset_contract.address');
   const data = getDataForNftTransfer(from, recipient, transaction.asset);
+  const nonce = await getTransactionCount(from);
   return {
     data,
     from,
     gasLimit: transaction.gasLimit,
     gasPrice: transaction.gasPrice,
+    nonce,
     to: contractAddress,
   };
 };
@@ -191,11 +194,13 @@ export const getTransferTokenTransaction = async transaction => {
   );
   const recipient = await resolveNameOrAddress(transaction.to);
   const data = getDataForTokenTransfer(value, recipient);
+  const nonce = await getTransactionCount(transaction.from);
   return {
     data,
     from: transaction.from,
     gasLimit: transaction.gasLimit,
     gasPrice: transaction.gasPrice,
+    nonce,
     to: transaction.asset.address,
   };
 };

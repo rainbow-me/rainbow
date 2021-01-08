@@ -458,10 +458,10 @@ const TransactionConfirmationScreen = () => {
 
     if (result) {
       if (callback) {
-        callback({ result });
+        callback({ result: result.hash });
       }
       if (sendInsteadOfSign) {
-        dispatch(updateTransactionCountNonce(maxTxnCount + 1));
+        dispatch(updateTransactionCountNonce(result.nonce + 1));
         const txDetails = {
           amount: get(displayDetails, 'request.value'),
           asset: get(displayDetails, 'request.asset'),
@@ -469,8 +469,8 @@ const TransactionConfirmationScreen = () => {
           from: get(displayDetails, 'request.from'),
           gasLimit,
           gasPrice,
-          hash: result,
-          nonce,
+          hash: result.hash,
+          nonce: result.nonce,
           to: get(displayDetails, 'request.to'),
         };
 
