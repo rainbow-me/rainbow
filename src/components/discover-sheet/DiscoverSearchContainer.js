@@ -19,7 +19,17 @@ import { colors } from '@rainbow-me/styles';
 
 const CancelButton = styled(ButtonPressAnimation)`
   margin-top: 27;
-  margin-right: 19;
+`;
+
+const CancelText = styled(Text).attrs({
+  align: 'right',
+  color: colors.appleBlue,
+  letterSpacing: 'roundedMedium',
+  size: 'large',
+  weight: 'semibold',
+})`
+  margin-left: -3;
+  margin-right: 15;
 `;
 
 export default function DiscoverSearchContainer({
@@ -82,24 +92,14 @@ export default function DiscoverSearchContainer({
             testID="discover-search"
           />
         </Column>
-        {showSearch && (
-          <CancelButton
-            onPress={() => {
-              searchInputRef.current?.blur();
-              setIsInputFocusedWithLayoutAnimation(false);
-            }}
-          >
-            <Text
-              align="right"
-              color={colors.appleBlue}
-              letterSpacing="roundedMedium"
-              size="large"
-              weight="semibold"
-            >
-              Cancel
-            </Text>
-          </CancelButton>
-        )}
+        <CancelButton
+          onPress={() => {
+            searchInputRef.current?.blur();
+            setIsInputFocusedWithLayoutAnimation(false);
+          }}
+        >
+          {showSearch && <CancelText>Cancel</CancelText>}
+        </CancelButton>
       </Row>
       <DiscoverSheetContext.Provider value={contextValue}>
         {children}
