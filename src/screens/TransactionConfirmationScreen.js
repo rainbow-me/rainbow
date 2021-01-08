@@ -420,9 +420,12 @@ const TransactionConfirmationScreen = () => {
       }
     }
 
+    let nonce = txPayload.nonce;
     const web3TxnCount = await getTransactionCount(txPayload.from);
     const maxTxnCount = Math.max(transactionCountNonce, web3TxnCount);
-    const nonce = maxTxnCount;
+    if (isNil(nonce)) {
+      nonce = maxTxnCount;
+    }
     const calculatedGasLimit = gas || gasLimitFromPayload || gasLimit;
     let txPayloadLatestNonce = {
       ...txPayload,
