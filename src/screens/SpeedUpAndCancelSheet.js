@@ -341,7 +341,7 @@ export default function SpeedUpAndCancelSheet() {
   }, [keyboardHeight, keyboardVisible, offset]);
   const sheetHeight = ios
     ? (type === CANCEL_TX ? 491 : 442) + safeAreaInsetValues.bottom
-    : (type === CANCEL_TX ? 770 : 770) + safeAreaInsetValues.bottom;
+    : 850 + safeAreaInsetValues.bottom;
 
   const marginTop = android
     ? deviceHeight - sheetHeight + (type === CANCEL_TX ? 290 : 340)
