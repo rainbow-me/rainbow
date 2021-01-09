@@ -18,7 +18,6 @@ let base = {
   chartGreen: '#66d28f', // '102, 210, 143'
   dark: '#25292E', // '37, 41, 46'
   darkGrey: '#71778A', // '113, 119, 138'
-  flamingo: '#E540F1', // '229, 64, 241'
   green: '#2CCC00', // '58, 166, 134'
   grey: '#A9ADB9', // '169, 173, 185'
   grey20: '#333333', // '51, 51, 51'
@@ -29,7 +28,7 @@ let base = {
   mintDark: '#00E0A9', // '0, 224, 169'
   neonSkyblue: '#34FFFF', // '52, 255, 255'
   offWhite: '#F8F9FA', // '248, 249, 250'
-  orange: '#FF9900', // '255, 153, 0'
+  orange: '#F46E38', // '244, 110, 56'
   orangeLight: '#FEBE44', // '254, 190, 68'
   paleBlue: '#579DFF', // 87, 157, 255
   pink: '#FF54BB', // 255, 84, 187
@@ -46,6 +45,8 @@ let base = {
   skeleton: '#F6F7F8', // '246, 247, 248'
   swapPurple: '#575CFF', // '87, 92, 255'
   transparent: 'transparent',
+  uniswapPink: '#DC6BE5', // '229, 64, 241'
+  warning: '#FA881E', // '250, 136, 30'
   white: '#FFFFFF', // '255, 255, 255'
   yellow: '#FFD657', // '255, 214, 87'
   yellowFavorite: '#FFB200', // '255, 178, 0'
@@ -60,7 +61,7 @@ const avatarColor = [
   '#FFD963', // '255, 217, 99'
   '#B140FF', // '177, 64, 255'
   '#41EBC1', // '64, 235, 193'
-  '#F46E38', // '244, 110, 56'
+  base.orange,
   '#6D7E8F', // '109, 126, 143'
 ];
 
