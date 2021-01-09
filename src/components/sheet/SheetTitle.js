@@ -1,14 +1,14 @@
-import React from 'react';
+import styled from 'styled-components';
 import { Text } from '../text';
+import { fonts } from '@rainbow-me/styles';
 
-const SheetTitle = props => (
-  <Text
-    align="center"
-    letterSpacing="roundedMedium"
-    size="large"
-    weight="bold"
-    {...props}
-  />
-);
+const SheetTitle = styled(Text).attrs(
+  ({ size = fonts.size.large, weight = fonts.weight.bold }) => ({
+    align: 'center',
+    letterSpacing: 'roundedMedium',
+    size,
+    weight,
+  })
+)``;
 
 export default SheetTitle;

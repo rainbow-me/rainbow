@@ -1,94 +1,176 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
-import React, { useEffect, useMemo } from 'react';
-import { useNavigation } from '../../navigation/Navigation';
-import { swapDetailsTransitionPosition } from '../../navigation/effects';
-import TouchableBackdrop from '../TouchableBackdrop';
-import { FloatingEmojisTapper } from '../floating-emojis';
-import { AssetPanel, FloatingPanels } from '../floating-panels';
-import { ColumnWithMargins, KeyboardFixedOpenLayout } from '../layout';
-import { SwapDetailRow, SwapDetailsFooter } from './swap-details';
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import styled from 'styled-components/primitives';
+import {
+  // ConfirmExchangeButton,
+  SlippageWarningThresholdInBips,
+} from '../exchange';
+// import { GasSpeedButton } from '../gas';
+import { Centered, ColumnWithMargins } from '../layout';
+import { SheetTitle, SlackSheet } from '../sheet';
+import { CopyToast, ToastPositionContainer } from '../toasts';
+import {
+  SwapDetailsContext,
+  SwapDetailsContractRow,
+  SwapDetailsMasthead,
+  SwapDetailsPriceRow,
+  SwapDetailsRow,
+  SwapDetailsUniswapRow,
+  SwapDetailsValue,
+} from './swap-details';
+// import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
+import { colors, padding } from '@rainbow-me/styles';
+import { abbreviations, isETH } from '@rainbow-me/utils';
+// import logger from 'logger';
 
-const FloatingEmojisOpacity = swapDetailsTransitionPosition.interpolate({
-  inputRange: [0.93, 1],
-  outputRange: [0, 1],
-});
+const Content = styled(ColumnWithMargins).attrs({
+  margin: 24,
+})`
+  ${padding(24, 19)};
+  background-color: blue;
+  height: 100%;
+`;
+
+const Header = styled(Centered)`
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: -6;
+  width: 100%;
+`;
+
+function useAndroidDisableGesturesOnFocus() {
+  const route = useRoute();
+  const isFocused = useIsFocused();
+  useEffect(() => {
+    android && route?.params?.toggleGestureEnabled?.(!isFocused);
+  }, [isFocused, route]);
+}
+
+function useSwapDetailsClipboardState() {
+  const [copiedText, setCopiedText] = useState(undefined);
+  const [copyCount, setCopyCount] = useState(0);
+  const onCopySwapDetailsText = useCallback(text => {
+    setCopiedText(abbreviations.formatAddressForDisplay(text));
+    setCopyCount(count => count + 1);
+  }, []);
+  return {
+    copiedText,
+    copyCount,
+    onCopySwapDetailsText,
+  };
+}
 
 const SwapDetailsState = ({
-  inputCurrencySymbol,
+  inputAmount,
+  inputAmountDisplay,
+  inputCurrency,
   inputExecutionRate,
-  inputNativePrice,
-  outputCurrencySymbol,
+  // inputNativePrice,
+  longFormHeight,
+  outputAmount,
+  outputAmountDisplay,
+  outputCurrency,
   outputExecutionRate,
-  outputNativePrice,
+  // outputNativePrice,
   restoreFocusOnSwapModal,
+  slippage,
+  // ...props
 }) => {
-  const { goBack } = useNavigation();
   useEffect(() => () => restoreFocusOnSwapModal(), [restoreFocusOnSwapModal]);
+  useAndroidDisableGesturesOnFocus();
+
   const {
-    params: { toggleGestureEnabled },
-  } = useRoute();
-  const isFocused = useIsFocused();
+    copiedText,
+    copyCount,
+    onCopySwapDetailsText,
+  } = useSwapDetailsClipboardState();
 
-  useEffect(() => {
-    android && toggleGestureEnabled(!isFocused);
-  }, [toggleGestureEnabled, isFocused]);
-
-  const emojis = useMemo(() => {
-    const symbols = [inputCurrencySymbol, outputCurrencySymbol];
-    if (symbols.includes('FAME')) return ['prayer_beads'];
-    if (symbols.includes('SOCKS')) return ['socks'];
-    return ['unicorn'];
-  }, [inputCurrencySymbol, outputCurrencySymbol]);
+  const contextValue = useMemo(
+    () => ({
+      inputAmount,
+      inputAmountDisplay,
+      inputCurrency,
+      inputExecutionRate,
+      isHighSlippage: slippage > SlippageWarningThresholdInBips,
+      onCopySwapDetailsText,
+      outputAmount,
+      outputAmountDisplay,
+      outputCurrency,
+      outputExecutionRate,
+    }),
+    [
+      inputAmount,
+      inputAmountDisplay,
+      inputCurrency,
+      inputExecutionRate,
+      onCopySwapDetailsText,
+      outputAmount,
+      outputAmountDisplay,
+      outputCurrency,
+      outputExecutionRate,
+      slippage,
+    ]
+  );
 
   return (
-    <KeyboardFixedOpenLayout>
-      {ios && <TouchableBackdrop onPress={goBack} />}
-      <FloatingPanels maxWidth={275} width={275}>
-        <FloatingEmojisTapper
-          emojis={emojis}
-          opacity={FloatingEmojisOpacity}
-          radiusAndroid={20}
+    <SwapDetailsContext.Provider value={contextValue}>
+      <Fragment>
+        <SlackSheet
+          additionalTopPadding={android}
+          contentHeight={longFormHeight}
         >
-          <AssetPanel
-            overflow="visible"
-            radius={20}
-            testID="swap-details-state"
-          >
-            <ColumnWithMargins
-              margin={24}
-              paddingHorizontal={19}
-              paddingVertical={24}
-            >
-              {inputCurrencySymbol && inputExecutionRate && (
-                <SwapDetailRow
-                  label={`1 ${inputCurrencySymbol}`}
-                  value={`${inputExecutionRate} ${outputCurrencySymbol}`}
-                />
-              )}
-              {outputCurrencySymbol && outputExecutionRate && (
-                <SwapDetailRow
-                  label={`1 ${outputCurrencySymbol}`}
-                  value={`${outputExecutionRate} ${inputCurrencySymbol}`}
-                />
-              )}
-              {inputCurrencySymbol && inputNativePrice && (
-                <SwapDetailRow
-                  label={inputCurrencySymbol}
-                  value={inputNativePrice}
-                />
-              )}
-              {outputCurrencySymbol && outputNativePrice && (
-                <SwapDetailRow
-                  label={outputCurrencySymbol}
-                  value={outputNativePrice}
-                />
-              )}
-              <SwapDetailsFooter />
-            </ColumnWithMargins>
-          </AssetPanel>
-        </FloatingEmojisTapper>
-      </FloatingPanels>
-    </KeyboardFixedOpenLayout>
+          <Header>
+            <SheetTitle weight="heavy">Review</SheetTitle>
+          </Header>
+          <SwapDetailsMasthead />
+          <Content testID="swap-details-state">
+            <SwapDetailsRow label="Price impact">
+              <SwapDetailsValue
+                color={colors.green}
+                letterSpacing="roundedTight"
+              >
+                0.25%
+              </SwapDetailsValue>
+            </SwapDetailsRow>
+            <SwapDetailsPriceRow />
+            {!isETH(inputCurrency?.address) && (
+              <SwapDetailsContractRow asset={inputCurrency} />
+            )}
+            {!isETH(outputCurrency?.address) && (
+              <SwapDetailsContractRow asset={outputCurrency} />
+            )}
+            <SwapDetailsUniswapRow />
+          </Content>
+          {/*<ConfirmExchangeButton
+            asset={outputCurrency}
+            disabled={!Number(inputAmountDisplay)}
+            isAuthorizing={false}
+            isDeposit={false}
+            isSufficientBalance
+            isSufficientGas
+            isSufficientLiquidity
+            onSubmit={() => logger.log('submitting from SwapDetails!')}
+            slippage={slippage}
+            testID="swap-details-confirm"
+            type={ExchangeModalTypes.swap}
+          />
+          <GasSpeedButton
+            testID="swap-details-gas"
+            type={ExchangeModalTypes.swap}
+          />*/}
+        </SlackSheet>
+        <ToastPositionContainer>
+          <CopyToast copiedText={copiedText} copyCount={copyCount} />
+        </ToastPositionContainer>
+      </Fragment>
+    </SwapDetailsContext.Provider>
   );
 };
 
