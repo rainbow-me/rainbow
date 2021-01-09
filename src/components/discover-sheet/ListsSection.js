@@ -70,7 +70,7 @@ const ListButton = styled(ButtonPressAnimation).attrs({
 
 const ListName = styled(Text)`
   margin-left: 3px;
-  margin-top: -5px;
+  margin-top: -4.5px;
 `;
 
 const DEFAULT_LIST = 'favorites';
@@ -194,7 +194,7 @@ export default function ListSection() {
               selected={selectedList === list.id}
             >
               <Row>
-                <Emoji name={list.emoji} size="smedium" />
+                <Emoji name={list.emoji} size="small" />
                 <ListName
                   color={
                     selectedList === list.id
