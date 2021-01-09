@@ -1,13 +1,11 @@
 import React, { useMemo } from 'react';
-import { abbreviations } from '../../utils';
 import Text from './Text';
+import { abbreviations } from '@rainbow-me/utils';
 
-export default function TruncatedAddress({
-  address,
-  firstSectionLength,
-  truncationLength,
-  ...props
-}) {
+const TruncatedAddress = (
+  { address, firstSectionLength, truncationLength, ...props },
+  ref
+) => {
   const text = useMemo(
     () =>
       address
@@ -26,8 +24,11 @@ export default function TruncatedAddress({
       adjustsFontSizeToFit
       minimumFontScale={0.5}
       numberOfLines={1}
+      ref={ref}
     >
       {text}
     </Text>
   );
-}
+};
+
+export default React.forwardRef(TruncatedAddress);

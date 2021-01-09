@@ -160,6 +160,7 @@
     "react-native-haptic-feedback": "^1.8.2",
     "react-native-image-crop-picker": "^0.32.2",
     "react-native-indicators": "0.17.0",
+    "react-native-ios-context-menu": "^1.2.2",
     "react-native-ios11-devicecheck": "^0.0.3",
     "react-native-iphone-x-helper": "^1.2.1",
     "react-native-keyboard-area": "^1.0.5",

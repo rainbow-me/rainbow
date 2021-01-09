@@ -3,13 +3,12 @@ import { Animated, View } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { HeaderHeightWithStatusBar } from '../components/header';
 import { AvatarCircle } from '../components/profile';
-import { deviceUtils } from '../utils';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
+import { deviceUtils } from '@rainbow-me/utils';
 
 const statusBarHeight = getStatusBarHeight(true);
 export const sheetVerticalOffset = statusBarHeight;
-export let swapDetailsTransitionPosition = new Animated.Value(0);
 
 const backgroundInterpolator = ({
   current: { progress: current },
@@ -208,13 +207,6 @@ const swapDetailInterpolator = ({
   current: { progress: current },
   layouts: { screen },
 }) => {
-  // kinda hacky... but lets me expose the
-  // stack's transitionPosition in an exportable way
-  Animated.spring(swapDetailsTransitionPosition, {
-    toValue: current,
-    useNativeDriver: true,
-  }).start();
-
   const backgroundOpacity = current.interpolate({
     inputRange: [-1, 0, 0.975, 2],
     outputRange: [0, 0, 0.6, 0.6],
