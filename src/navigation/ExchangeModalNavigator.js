@@ -60,8 +60,8 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
         <Stack.Screen
           component={ModalScreen}
           initialParams={params}
-          name={Routes.SWAP_DETAILS_SCREEN}
           options={swapDetailsPreset}
+          name={Routes.SWAP_DETAILS_SHEET}
         />
       </Stack.Navigator>
     );
