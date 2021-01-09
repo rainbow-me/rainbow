@@ -469,7 +469,7 @@ export default function ExchangeModal({
     const internalNavigate = () => {
       android && Keyboard.removeListener('keyboardDidHide', internalNavigate);
       setParams({ focused: false });
-      navigate(Routes.SWAP_DETAILS_SCREEN, {
+      navigate(Routes.SWAP_DETAILS_SHEET, {
         ...extraTradeDetails,
         inputCurrencySymbol: get(inputCurrency, 'symbol'),
         outputCurrencySymbol: get(outputCurrency, 'symbol'),
