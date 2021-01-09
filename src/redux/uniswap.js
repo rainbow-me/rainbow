@@ -1,14 +1,5 @@
 import produce from 'immer';
-import {
-  concat,
-  filter,
-  keys,
-  map,
-  remove,
-  toLower,
-  uniq,
-  without,
-} from 'lodash';
+import { concat, map, remove, toLower, uniq, without } from 'lodash';
 import {
   getUniswapFavorites,
   saveUniswapFavorites,
@@ -47,11 +38,9 @@ export const uniswapLoadState = () => async (dispatch, getState) => {
 
 export const uniswapGetAllExchanges = () => async (dispatch, getState) => {
   const { network } = getState().settings;
-  const { pairs } = getState().uniswap;
   try {
-    const ignoredTokens = filter(keys(pairs), x => x !== 'eth');
     const allTokens =
-      network === networkTypes.mainnet ? await getAllTokens(ignoredTokens) : {};
+      network === networkTypes.mainnet ? await getAllTokens() : {};
     dispatch({
       payload: allTokens,
       type: UNISWAP_UPDATE_ALL_TOKENS,

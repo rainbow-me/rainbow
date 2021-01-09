@@ -403,7 +403,7 @@ export const executeSwap = async ({
   return exchange[methodName](...updatedMethodArgs, transactionParams);
 };
 
-export const getAllTokens = async (excluded = []): Promise<AllTokenInfo> => {
+export const getAllTokens = async (): Promise<AllTokenInfo> => {
   let allTokens: AllTokenInfo = {};
   let data: UniswapSubgraphToken[] = [];
   try {
@@ -413,7 +413,6 @@ export const getAllTokens = async (excluded = []): Promise<AllTokenInfo> => {
       let result = await uniswapClient.query({
         query: UNISWAP_ALL_TOKENS,
         variables: {
-          excluded,
           first: UniswapPageSize,
           skip: skip,
         },
