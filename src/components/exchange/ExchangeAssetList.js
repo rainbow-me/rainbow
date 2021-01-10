@@ -28,12 +28,12 @@ const HeaderBackground = styled(LinearGradient).attrs({
   width: ${deviceWidth};
 `;
 
-const HeaderTitle = styled(Text).attrs({
-  color: colors.blueGreyDark50,
+const HeaderTitle = styled(Text).attrs(({ color }) => ({
+  color: color || colors.blueGreyDark50,
   letterSpacing: 'roundedMedium',
   size: 'smedium',
   weight: 'heavy',
-})``;
+}))``;
 
 const HeaderTitleGradient = styled(GradientText).attrs({
   colors: ['#6AA2E3', '#FF54BB', '#FFA230'],
@@ -55,7 +55,7 @@ const ExchangeAssetSectionListHeader = ({ section }) => {
     <Header>
       <HeaderBackground />
       <HeaderTitleWrapper>
-        <TitleComponent>{section.title}</TitleComponent>
+        <TitleComponent color={section.color}>{section.title}</TitleComponent>
       </HeaderTitleWrapper>
     </Header>
   ) : null;
