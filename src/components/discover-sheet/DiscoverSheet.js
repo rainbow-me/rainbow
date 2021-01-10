@@ -118,6 +118,7 @@ function DiscoverSheetIOS(_, forwardedRef) {
         unmountAnimation={false}
       >
         <SlackSheet
+          limitScrollViewContent={headerButtonsHandlers.isSearchModeEnabled}
           renderHeader={renderHeader}
           scrollEnabled={!headerButtonsHandlers.isSearchModeEnabled}
         >

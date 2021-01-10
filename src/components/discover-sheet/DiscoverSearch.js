@@ -200,8 +200,8 @@ export default function DiscoverSearch() {
   );
 
   return (
-    <Animated.View style={listAnimatedStyles}>
-      <Row>
+    <Animated.View style={[listAnimatedStyles, { height: '100%' }]}>
+      <Row height="100%">
         <CurrencySelectionList
           itemProps={itemProps}
           listItems={currencyList}
