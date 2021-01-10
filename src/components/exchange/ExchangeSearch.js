@@ -124,7 +124,7 @@ const ExchangeSearch = (
 
   const spinnerRotation = useSharedValue(0);
   const spinnerScale = useSharedValue(0, 'spinnerScale');
-  const { isSearchModeEnabled } = useContext(DiscoverSheetContext);
+  const { isSearchModeEnabled = true } = useContext(DiscoverSheetContext) || {};
 
   const spinnerTimeout = useRef();
   useEffect(() => {
