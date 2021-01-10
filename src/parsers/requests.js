@@ -1,6 +1,6 @@
 import { convertHexToUtf8 } from '@walletconnect/utils';
 import BigNumber from 'bignumber.js';
-import { get } from 'lodash';
+import { get, isNil } from 'lodash';
 import { isHexString } from '../handlers/web3';
 import {
   convertAmountAndPriceToNativeDisplay,
@@ -17,6 +17,7 @@ import {
   SIGN_TRANSACTION,
   SIGN_TYPED_DATA,
 } from '../utils/signingMethods';
+import { ethUnits } from '@rainbow-me/references';
 
 export const getRequestDisplayDetails = (payload, assets, nativeCurrency) => {
   let timestampInMs = Date.now();
@@ -36,12 +37,7 @@ export const getRequestDisplayDetails = (payload, assets, nativeCurrency) => {
 
     // We must pass a number through the bridge
     if (!transaction.gasLimit) {
-      transaction.gasLimit = 0;
-    }
-
-    // Dapps usually won't send this
-    if (!transaction.nonce) {
-      transaction.nonce = 0;
+      transaction.gasLimit = ethUnits.gasLimit;
     }
 
     // Fallback for dapps sending no data
@@ -120,9 +116,11 @@ const getTransactionDisplayDetails = (
         gasPrice: BigNumber(convertHexToString(transaction.gasPrice)),
         nativeAmount: amount,
         nativeAmountDisplay: display,
-        nonce: Number(convertHexToString(transaction.nonce)),
         to: transaction.to,
         value,
+        ...(!isNil(transaction.nonce)
+          ? { nonce: Number(convertHexToString(transaction.nonce)) }
+          : {}),
       },
       timestampInMs,
     };
@@ -151,7 +149,9 @@ const getTransactionDisplayDetails = (
         gasPrice: BigNumber(convertHexToString(transaction.gasPrice)),
         nativeAmount: native.amount,
         nativeAmountDisplay: native.display,
-        nonce: Number(convertHexToString(transaction.nonce)),
+        ...(!isNil(transaction.nonce)
+          ? { nonce: Number(convertHexToString(transaction.nonce)) }
+          : {}),
         to: toAddress,
         value,
       },
@@ -172,7 +172,9 @@ const getTransactionDisplayDetails = (
         from: transaction.from,
         gasLimit: BigNumber(convertHexToString(transaction.gasLimit)),
         gasPrice: BigNumber(convertHexToString(transaction.gasPrice)),
-        nonce: Number(convertHexToString(transaction.nonce)),
+        ...(!isNil(transaction.nonce)
+          ? { nonce: Number(convertHexToString(transaction.nonce)) }
+          : {}),
         to: transaction.to,
         value,
       },
