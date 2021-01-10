@@ -91,7 +91,7 @@ const unlock = async (wallet, currentRap, index, parameters) => {
   );
 
   // Cache the approved value
-  AllowancesCache.cache[cacheKey] = MaxUint256;
+  AllowancesCache.cache[cacheKey] = MaxUint256.toString();
 
   // update rap for hash
   currentRap.actions[index].transaction.hash = approval.hash;
@@ -170,8 +170,9 @@ export const assetNeedsUnlocking = async (
       assetToUnlock,
       contractAddress
     );
+
     // Cache that value
-    if (isNull(allowance)) {
+    if (!isNull(allowance)) {
       AllowancesCache.cache[cacheKey] = allowance;
     }
   }
