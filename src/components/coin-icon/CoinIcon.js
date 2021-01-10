@@ -14,7 +14,7 @@ const StyledCoinIcon = styled(ReactCoinIcon)`
 `;
 
 const CoinIcon = ({
-  address,
+  address = 'eth',
   isHidden,
   isPinned,
   size = CoinIconSize,
