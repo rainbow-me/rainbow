@@ -19,6 +19,7 @@ export { default as supportedNativeCurrencies } from './native-currencies.json';
 export { default as shitcoins } from './shitcoins.json';
 
 export const ETH_ADDRESS = 'eth';
+export const WETH_ADDRESS = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
 export const CDAI_CONTRACT = '0x5d3a536e4d6dbd6114cc1ead35777bab948e3643';
 export const SAI_ADDRESS = '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359';
 export const DAI_ADDRESS = '0x6b175474e89094c44da98b954eedeac495271d0f';
