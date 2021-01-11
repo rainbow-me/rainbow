@@ -1,6 +1,6 @@
 {
   "name": "Rainbow Token List",
-  "timestamp": "2021-01-08T22:24:33.852Z",
+  "timestamp": "2021-01-11T20:28:47.371Z",
   "logoURI": "https://avatars0.githubusercontent.com/u/48327834?s=200&v=4",
   "version": {
     "major": 1,
@@ -1143,6 +1143,7 @@
       "symbol": "AMP",
       "extensions": {
         "color": "#D9327C",
+        "isRainbowCurated": true,
         "isVerified": true
       }
     },
@@ -3793,6 +3794,13 @@
       "decimals": 8,
       "name": "BTSE Token",
       "symbol": "BTSE"
+    },
+    {
+      "address": "0x05079687D35b93538cbd59fe5596380cae9054A9",
+      "chainId": 1,
+      "decimals": 18,
+      "name": "BitSong",
+      "symbol": "BTSG"
     },
     {
       "address": "0x080aa07E2C7185150d7e4DA98838A8d2feac3dfC",
@@ -7360,6 +7368,20 @@
       "symbol": "DST"
     },
     {
+      "address": "0xfa9C3dC54baA9eefBe9453B1f3B3B93aD2AF0A77",
+      "chainId": 1,
+      "decimals": 18,
+      "name": "Dynamic Supply",
+      "symbol": "DST"
+    },
+    {
+      "address": "0x55696EfC7c9779d868Ac34aC6b4a4C5FeD61aC12",
+      "chainId": 1,
+      "decimals": 18,
+      "name": "Dynamic Supply Trac",
+      "symbol": "DSTR"
+    },
+    {
       "address": "0x3f344C88d823F180Fb8b44A3C7Cfc4edc92dFa35",
       "chainId": 1,
       "decimals": 6,
@@ -8249,6 +8271,13 @@
       "symbol": "ESD"
     },
     {
+      "address": "0x5cf9242493bE1411b93d064CA2e468961BBb5924",
+      "chainId": 1,
+      "decimals": 18,
+      "name": "Empty Set Gold",
+      "symbol": "ESG"
+    },
+    {
       "address": "0xD6a55C63865AffD67E2FB9f284F87b7a9E5FF3bD",
       "chainId": 1,
       "decimals": 18,
@@ -8794,6 +8823,13 @@
       "symbol": "FCN"
     },
     {
+      "address": "0x0B66015bC42601d5986b540373B4e02D7383C7c1",
+      "chainId": 1,
+      "decimals": 9,
+      "name": "Fission Cash",
+      "symbol": "FCX"
+    },
+    {
       "address": "0x23352036E911A22Cfc692B5E2E196692658ADED9",
       "chainId": 1,
       "decimals": 18,
@@ -9254,6 +9290,13 @@
       "decimals": 18,
       "name": "FoundryDAO Logistic",
       "symbol": "FRY"
+    },
+    {
+      "address": "0xD27af03cb73a29eE2f37194c70c4Ee13B68fE8cb",
+      "chainId": 1,
+      "decimals": 18,
+      "name": "Freq Set Dollar",
+      "symbol": "FSD"
     },
     {
       "address": "0xD0352a019e9AB9d757776F532377aAEbd36Fd541",
@@ -16772,6 +16815,13 @@
       "symbol": "PRSP"
     },
     {
+      "address": "0x6D0F5149c502faf215C89ab306ec3E50b15e2892",
+      "chainId": 1,
+      "decimals": 18,
+      "name": "Portion",
+      "symbol": "PRT"
+    },
+    {
       "address": "0x5F85c60187aB233Ca6e750731D15e7eFd061fBdE",
       "chainId": 1,
       "decimals": 18,
@@ -17928,6 +17978,13 @@
       "decimals": 18,
       "name": "ROUND",
       "symbol": "ROUND"
+    },
+    {
+      "address": "0x7eaF9C89037e4814DC0d9952Ac7F888C784548DB",
+      "chainId": 1,
+      "decimals": 18,
+      "name": "Royale",
+      "symbol": "ROYA"
     },
     {
       "address": "0xCcc85AA8999505d6f886A32da4a107BBe0D1dE9E",
@@ -19758,7 +19815,13 @@
       "chainId": 1,
       "decimals": 18,
       "name": "Staked Ether",
-      "symbol": "STETH"
+      "symbol": "stETH",
+      "extensions": {
+        "color": "#56A0DD",
+        "isRainbowCurated": true,
+        "isVerified": true,
+        "shadowColor": "#FF884D"
+      }
     },
     {
       "address": "0x160B1E5aaBFD70B2FC40Af815014925D71CEEd7E",
@@ -21837,13 +21900,6 @@
       }
     },
     {
-      "address": "0x27AF23d8db2a3FbCe7d04E84f594285fB0059316",
-      "chainId": 1,
-      "decimals": 18,
-      "name": "UniMex Finance",
-      "symbol": "UMEX"
-    },
-    {
       "address": "0x105d97ef2E723f1cfb24519Bc6fF15a6D091a3F1",
       "chainId": 1,
       "decimals": 4,
@@ -21856,6 +21912,13 @@
       "decimals": 4,
       "name": "UMKA",
       "symbol": "UMKA"
+    },
+    {
+      "address": "0x10Be9a8dAe441d276a5027936c3aADEd2d82bC15",
+      "chainId": 1,
+      "decimals": 18,
+      "name": "UniMex Network",
+      "symbol": "UMX"
     },
     {
       "address": "0xf29e46887FFAE92f1ff87DfE39713875Da541373",
@@ -24677,6 +24740,13 @@
       }
     },
     {
+      "address": "0xf0E3543744AFcEd8042131582f2A19b6AEb82794",
+      "chainId": 1,
+      "decimals": 18,
+      "name": "Variable Time Dolla",
+      "symbol": "VTD"
+    },
+    {
       "address": "0xd957E08ac5421E2C28510586B57d095E5094836a",
       "chainId": 1,
       "decimals": 18,
@@ -25573,6 +25643,13 @@
       "decimals": 18,
       "name": "XinFin Network",
       "symbol": "XDCE"
+    },
+    {
+      "address": "0x5166d4ce79b9bf7Df477da110C560cE3045Aa889",
+      "chainId": 1,
+      "decimals": 9,
+      "name": "Xdef Finance",
+      "symbol": "XDEF2"
     },
     {
       "address": "0x8e57c27761EBBd381b0f9d09Bb92CeB51a358AbB",
@@ -26695,6 +26772,13 @@
       "symbol": "YSEC"
     },
     {
+      "address": "0x9C664F20C0a00a4949DFfcA76748c02754C875aa",
+      "chainId": 1,
+      "decimals": 18,
+      "name": "Yearn Shark Finance",
+      "symbol": "YSKF"
+    },
+    {
       "address": "0xD9A947789974bAD9BE77E45C2b327174A9c59D71",
       "chainId": 1,
       "decimals": 18,
@@ -26860,6 +26944,13 @@
       "extensions": {
         "isVerified": true
       }
+    },
+    {
+      "address": "0x6737fE98389Ffb356F64ebB726aA1a92390D94Fb",
+      "chainId": 1,
+      "decimals": 18,
+      "name": "Zero Carbon Project",
+      "symbol": "ZCC"
     },
     {
       "address": "0xb9EF770B6A5e12E45983C5D80545258aA38F3B78",
