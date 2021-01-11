@@ -1,13 +1,4 @@
-import {
-  compact,
-  isEmpty,
-  join,
-  map,
-  orderBy,
-  sumBy,
-  toLower,
-  values,
-} from 'lodash';
+import { compact, isEmpty, join, map, orderBy, sumBy, values } from 'lodash';
 import { createSelector } from 'reselect';
 import {
   convertAmountToNativeDisplay,
@@ -16,7 +7,7 @@ import {
   handleSignificantDecimalsWithThreshold,
   multiply,
 } from '@rainbow-me/helpers/utilities';
-import { RAINBOW_TOKEN_LIST } from '@rainbow-me/references';
+import { getTokenMetadata } from '@rainbow-me/utils';
 
 const assetsSelector = state => state.data.assets;
 const nativeCurrencySelector = state => state.settings.nativeCurrency;
@@ -45,7 +36,7 @@ const transformPool = (liquidityPool, nativeCurrency) => {
 
   const formattedTokens = map(tokens, token => ({
     ...token,
-    ...(token?.address ? RAINBOW_TOKEN_LIST[toLower(token.address)] : {}),
+    ...getTokenMetadata(token.address),
     value: handleSignificantDecimalsWithThreshold(token.balance, 4),
   }));
 
