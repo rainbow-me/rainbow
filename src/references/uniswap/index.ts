@@ -14,12 +14,14 @@ import { RainbowToken } from '@rainbow-me/entities';
 const TOKEN_LIST: RainbowToken[] = map(
   RAINBOW_TOKEN_LIST_DATA.tokens,
   token => {
-    const { address, decimals, name, symbol, extensions } = token;
+    const { address: rawAddress, decimals, name, symbol, extensions } = token;
+    const address = toLower(rawAddress);
     return {
-      address: toLower(address),
+      address,
       decimals,
       name,
       symbol,
+      uniqueId: address,
       ...extensions,
     };
   }
@@ -32,6 +34,7 @@ const ETHER_WITH_ADDRESS: RainbowToken = {
   isVerified: true,
   name: 'Ethereum',
   symbol: 'ETH',
+  uniqueId: 'eth',
 };
 
 const TOKEN_LIST_WITH_ETH: RainbowToken[] = [ETHER_WITH_ADDRESS, ...TOKEN_LIST];

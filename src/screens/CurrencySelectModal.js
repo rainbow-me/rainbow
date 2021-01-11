@@ -1,6 +1,6 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
-import { concat, isEmpty, map, toLower } from 'lodash';
+import { concat, map, toLower } from 'lodash';
 import matchSorter from 'match-sorter';
 import React, {
   Fragment,
@@ -90,8 +90,6 @@ export default function CurrencySelectModal() {
   ]);
 
   const {
-    curatedAssets,
-    curatedFavorites,
     curatedNotFavorited,
     favorites,
     globalHighLiquidityAssets,
@@ -169,13 +167,11 @@ export default function CurrencySelectModal() {
         filteredList = [
           {
             color: colors.yellowFavorite,
-            data: !isEmpty(favorites) ? favorites : curatedFavorites,
+            data: favorites,
             title: tokenSectionTypes.favoriteTokenSection,
           },
           {
-            data: !isEmpty(curatedNotFavorited)
-              ? curatedNotFavorited
-              : curatedAssets,
+            data: curatedNotFavorited,
             title: tokenSectionTypes.verifiedTokenSection,
             useGradientText: IS_TESTING === 'true' ? false : true,
           },
@@ -185,8 +181,6 @@ export default function CurrencySelectModal() {
     setIsSearching(false);
     return filteredList;
   }, [
-    curatedAssets,
-    curatedFavorites,
     curatedNotFavorited,
     favorites,
     globalVerifiedHighLiquidityAssets,

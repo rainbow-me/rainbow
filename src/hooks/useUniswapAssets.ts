@@ -1,6 +1,7 @@
 import {
   filter,
   includes,
+  isEmpty,
   map,
   partition,
   sortBy,
@@ -12,7 +13,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { AppState } from '../redux/store';
 import { uniswapUpdateFavorites } from '../redux/uniswap';
-import { Asset, UniswapSubgraphAsset } from '@rainbow-me/entities';
+import { RainbowToken, UniswapSubgraphAsset } from '@rainbow-me/entities';
 import { greaterThanOrEqualTo, multiply } from '@rainbow-me/utilities';
 
 const uniswapLoadingAllTokensSelector = (state: AppState) =>
@@ -22,7 +23,7 @@ const uniswapFavoritesSelector = (state: AppState): string[] =>
   state.uniswap.favorites;
 const uniswapAllTokensSelector = (state: AppState) => state.uniswap.allTokens;
 
-const appendFavoriteKey = (asset: Asset) => ({
+const appendFavoriteKey = (asset: RainbowToken) => ({
   ...asset,
   favorite: true,
 });
@@ -32,7 +33,14 @@ const withUniswapAssets = (
   curatedUniswapAssets: Record<string, RainbowToken>,
   globalUniswapAssets: Record<string, UniswapSubgraphAsset>,
   favorites: string[]
-) => {
+): {
+  curatedNotFavorited: RainbowToken[];
+  favorites: RainbowToken[];
+  globalHighLiquidityAssets: RainbowToken[];
+  globalLowLiquidityAssets: RainbowToken[];
+  globalVerifiedHighLiquidityAssets: RainbowToken[];
+  loadingAllTokens: boolean;
+} => {
   const {
     curatedNotFavorited,
     globalFavorites,
@@ -47,10 +55,10 @@ const withUniswapAssets = (
   );
 
   return {
-    curatedAssets,
-    curatedFavorites,
-    curatedNotFavorited,
-    favorites: globalFavorites,
+    curatedNotFavorited: !isEmpty(curatedNotFavorited)
+      ? curatedNotFavorited
+      : curatedAssets,
+    favorites: !isEmpty(globalFavorites) ? globalFavorites : curatedFavorites,
     globalHighLiquidityAssets: globalHighLiquidityAssets,
     globalLowLiquidityAssets: globalLowLiquidityAssets,
     globalVerifiedHighLiquidityAssets: globalVerifiedHighLiquidityAssets,
@@ -61,7 +69,13 @@ const withUniswapAssets = (
 const getGlobalUniswapAssets = (
   assets: Record<string, UniswapSubgraphAsset>,
   favorites: string[]
-) => {
+): {
+  curatedNotFavorited: RainbowToken[];
+  globalFavorites: RainbowToken[];
+  globalHighLiquidityAssets: RainbowToken[];
+  globalLowLiquidityAssets: RainbowToken[];
+  globalVerifiedHighLiquidityAssets: RainbowToken[];
+} => {
   const sorted = sortBy(values(assets), ({ name }) => toLower(name));
 
   const [favorited, notFavorited] = partition(sorted, ({ address }) =>
@@ -94,23 +108,21 @@ const getGlobalUniswapAssets = (
   };
 };
 
-const appendAssetWithUniqueId = asset => ({
-  ...asset,
-  uniqueId: `${asset.address}`,
-});
-
-const normalizeAssetItems = assetsArray =>
-  map(assetsArray, appendAssetWithUniqueId);
-
-const getCuratedUniswapAssets = (assets, favorites) => {
+const getCuratedUniswapAssets = (
+  assets: Record<string, RainbowToken>,
+  favorites: string[]
+): {
+  curatedAssets: RainbowToken[];
+  curatedFavorites: RainbowToken[];
+} => {
   const sorted = sortBy(values(assets), ({ name }) => toLower(name));
   const [favorited, notFavorited] = partition(sorted, ({ address }) =>
     includes(map(favorites, toLower), toLower(address))
   );
 
   return {
-    curatedAssets: normalizeAssetItems(notFavorited),
-    curatedFavorites: normalizeAssetItems(map(favorited, appendFavoriteKey)),
+    curatedAssets: notFavorited,
+    curatedFavorites: map(favorited, appendFavoriteKey),
   };
 };
 

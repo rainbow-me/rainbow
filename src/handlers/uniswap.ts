@@ -440,9 +440,8 @@ export const getAllTokens = async (): Promise<Record<
   const wethToken = allTokens[WETH_ADDRESS];
   const ethMetadata = getTokenMetadata(ETH_ADDRESS);
   const ethToken: UniswapSubgraphAsset = {
-    derivedETH: wethToken.derivedETH,
-    totalLiquidity: wethToken.totalLiquidity,
-    uniqueId: ETH_ADDRESS,
+    derivedETH: wethToken?.derivedETH,
+    totalLiquidity: wethToken?.totalLiquidity,
     ...(ethMetadata as RainbowToken),
   };
   allTokens[ETH_ADDRESS] = ethToken;
