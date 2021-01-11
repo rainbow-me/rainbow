@@ -23,11 +23,9 @@ import {
 } from '../components/exchange';
 import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
-import { addHexPrefix } from '../handlers/web3';
-import CurrencySelectionTypes from '../helpers/currencySelectionTypes';
-import tokenSectionTypes from '../helpers/tokenSectionTypes';
-import { delayNext } from '../hooks/useMagicAutofocus';
-import { useNavigation } from '../navigation/Navigation';
+import { addHexPrefix } from '@rainbow-me/handlers/web3';
+import CurrencySelectionTypes from '@rainbow-me/helpers/currencySelectionTypes';
+import tokenSectionTypes from '@rainbow-me/helpers/tokenSectionTypes';
 import {
   useInteraction,
   useMagicAutofocus,
@@ -36,8 +34,10 @@ import {
   useUniswapAssets,
   useUniswapAssetsInWallet,
 } from '@rainbow-me/hooks';
+import { delayNext } from '@rainbow-me/hooks/useMagicAutofocus';
+import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import Routes from '@rainbow-me/routes';
-import { position } from '@rainbow-me/styles';
+import { colors, position } from '@rainbow-me/styles';
 import { filterList, filterScams } from '@rainbow-me/utils';
 
 const TabTransitionAnimation = styled(Animated.View)`
@@ -90,10 +90,11 @@ export default function CurrencySelectModal() {
   ]);
 
   const {
-    curatedAssets,
+    curatedNotFavorited,
     favorites,
     globalHighLiquidityAssets,
     globalLowLiquidityAssets,
+    globalVerifiedHighLiquidityAssets,
     loadingAllTokens,
     updateFavorites,
   } = useUniswapAssets();
@@ -111,33 +112,51 @@ export default function CurrencySelectModal() {
         filteredList = headerlessSection(filteredList);
       }
     } else if (type === CurrencySelectionTypes.output) {
-      const curatedSection = concat(favorites, curatedAssets);
       if (searchQueryForSearch) {
-        const [filteredBest, filteredHigh, filteredLow] = map(
-          [curatedSection, globalHighLiquidityAssets, globalLowLiquidityAssets],
+        const [
+          filteredFavorite,
+          filteredVerified,
+          filteredHighUnverified,
+          filteredLow,
+        ] = map(
+          [
+            favorites,
+            globalVerifiedHighLiquidityAssets,
+            globalHighLiquidityAssets,
+            globalLowLiquidityAssets,
+          ],
           section => searchCurrencyList(section, searchQueryForSearch)
         );
 
         filteredList = [];
-        filteredBest.length &&
+        filteredFavorite.length &&
           filteredList.push({
-            data: filteredBest,
+            color: colors.yellowFavorite,
+            data: filteredFavorite,
+            title: tokenSectionTypes.favoriteTokenSection,
+          });
+
+        filteredVerified.length &&
+          filteredList.push({
+            data: filteredVerified,
             title: tokenSectionTypes.verifiedTokenSection,
             useGradientText: IS_TESTING === 'true' ? false : true,
           });
 
-        const filteredHighWithoutScams = filterScams(
-          filteredBest,
-          filteredHigh
+        const cleanList = concat(favorites, curatedNotFavorited);
+
+        const filteredHighUnverifiedWithoutScams = filterScams(
+          cleanList,
+          filteredHighUnverified
         );
 
-        filteredHighWithoutScams.length &&
+        filteredHighUnverifiedWithoutScams.length &&
           filteredList.push({
-            data: filteredHighWithoutScams,
+            data: filteredHighUnverifiedWithoutScams,
             title: tokenSectionTypes.unverifiedTokenSection,
           });
 
-        const filteredLowWithoutScams = filterScams(filteredBest, filteredLow);
+        const filteredLowWithoutScams = filterScams(cleanList, filteredLow);
 
         filteredLowWithoutScams.length &&
           filteredList.push({
@@ -147,7 +166,12 @@ export default function CurrencySelectModal() {
       } else {
         filteredList = [
           {
-            data: concat(favorites, curatedAssets),
+            color: colors.yellowFavorite,
+            data: favorites,
+            title: tokenSectionTypes.favoriteTokenSection,
+          },
+          {
+            data: curatedNotFavorited,
             title: tokenSectionTypes.verifiedTokenSection,
             useGradientText: IS_TESTING === 'true' ? false : true,
           },
@@ -157,8 +181,9 @@ export default function CurrencySelectModal() {
     setIsSearching(false);
     return filteredList;
   }, [
-    curatedAssets,
+    curatedNotFavorited,
     favorites,
+    globalVerifiedHighLiquidityAssets,
     globalHighLiquidityAssets,
     globalLowLiquidityAssets,
     searchQueryForSearch,

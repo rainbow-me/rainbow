@@ -20,12 +20,20 @@ import { uniswapClient } from '../apollo/client';
 import { UNISWAP_ALL_TOKENS } from '../apollo/queries';
 import { loadWallet } from '../model/wallet';
 import { toHex, web3Provider } from './web3';
+import {
+  Asset,
+  RainbowToken,
+  RawUniswapSubgraphAsset,
+  UniswapSubgraphAsset,
+} from '@rainbow-me/entities';
 import { Network } from '@rainbow-me/networkTypes';
 import {
+  ETH_ADDRESS,
   ethUnits,
   UNISWAP_TESTNET_TOKEN_LIST,
   UNISWAP_V2_ROUTER_ABI,
   UNISWAP_V2_ROUTER_ADDRESS,
+  WETH_ADDRESS,
 } from '@rainbow-me/references';
 import {
   addBuffer,
@@ -50,26 +58,6 @@ enum SwapType {
   ETH_FOR_EXACT_TOKENS,
 }
 
-export interface SwapCurrency {
-  address: string;
-  decimals: number;
-  name: string;
-  symbol: string;
-}
-
-export interface TokenInfo extends SwapCurrency {
-  derivedETH: string;
-  totalLiquidity: string;
-}
-
-export interface UniswapSubgraphToken extends TokenInfo {
-  id: string;
-}
-
-export interface AllTokenInfo {
-  [tokenAddress: string]: TokenInfo;
-}
-
 const UniswapPageSize = 1000;
 
 const DefaultMaxSlippageInBips = 200;
@@ -82,8 +70,8 @@ const DEFAULT_DEADLINE_FROM_NOW = 60 * 20;
 
 export const getTestnetUniswapPairs = (
   network: Network
-): { [key: string]: SwapCurrency } => {
-  const pairs: { [address: string]: SwapCurrency } = get(
+): { [key: string]: Asset } => {
+  const pairs: { [address: string]: Asset } = get(
     UNISWAP_TESTNET_TOKEN_LIST,
     network,
     {}
@@ -403,9 +391,12 @@ export const executeSwap = async ({
   return exchange[methodName](...updatedMethodArgs, transactionParams);
 };
 
-export const getAllTokens = async (excluded = []): Promise<AllTokenInfo> => {
-  let allTokens: AllTokenInfo = {};
-  let data: UniswapSubgraphToken[] = [];
+export const getAllTokens = async (): Promise<Record<
+  string,
+  UniswapSubgraphAsset
+>> => {
+  let allTokens: Record<string, UniswapSubgraphAsset> = {};
+  let data: RawUniswapSubgraphAsset[] = [];
   try {
     let dataEnd = false;
     let skip = 0;
@@ -413,7 +404,6 @@ export const getAllTokens = async (excluded = []): Promise<AllTokenInfo> => {
       let result = await uniswapClient.query({
         query: UNISWAP_ALL_TOKENS,
         variables: {
-          excluded,
           first: UniswapPageSize,
           skip: skip,
         },
@@ -428,20 +418,34 @@ export const getAllTokens = async (excluded = []): Promise<AllTokenInfo> => {
   } catch (err) {
     logger.log('error: ', err);
   }
+
   data.forEach(token => {
     const tokenAddress = toLower(token.id);
     const metadata = getTokenMetadata(tokenAddress);
+
     const tokenInfo = {
-      address: token.id,
+      address: tokenAddress,
       decimals: Number(token.decimals),
       derivedETH: token.derivedETH,
       name: token.name,
       symbol: token.symbol,
       totalLiquidity: token.totalLiquidity,
+      uniqueId: tokenAddress,
       ...metadata,
     };
     allTokens[tokenAddress] = tokenInfo;
   });
+
+  // Explicitly add ETH token with WETH liquidity data
+  const wethToken = allTokens[WETH_ADDRESS];
+  const ethMetadata = getTokenMetadata(ETH_ADDRESS);
+  const ethToken: UniswapSubgraphAsset = {
+    derivedETH: wethToken?.derivedETH,
+    totalLiquidity: wethToken?.totalLiquidity,
+    ...(ethMetadata as RainbowToken),
+  };
+  allTokens[ETH_ADDRESS] = ethToken;
+
   return allTokens;
 };
 
@@ -449,8 +453,8 @@ export const calculateTradeDetails = (
   chainId: ChainId,
   inputAmount: string | null,
   outputAmount: string | null,
-  inputCurrency: SwapCurrency,
-  outputCurrency: SwapCurrency,
+  inputCurrency: Asset,
+  outputCurrency: Asset,
   pairs: Pair[],
   exactInput: boolean
 ): Trade | null => {
@@ -483,7 +487,7 @@ export const calculateTradeDetails = (
 };
 
 export const getTokenForCurrency = (
-  currency: SwapCurrency,
+  currency: Asset,
   chainId: ChainId
 ): Token => {
   if (currency.address === 'eth') return WETH[chainId];

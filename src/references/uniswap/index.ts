@@ -5,40 +5,54 @@ import { filter, keyBy, map, toLower } from 'lodash';
 import { DAI_ADDRESS, USDC_ADDRESS } from '../';
 import RAINBOW_TOKEN_LIST_DATA from './rainbow-token-list.json';
 import MULTICALL_ABI from './uniswap-multicall-abi.json';
+
 import { default as UNISWAP_TESTNET_TOKEN_LIST } from './uniswap-pairs-testnet.json';
 import { abi as UNISWAP_V2_ROUTER_ABI } from './uniswap-v2-router.json';
 import UNISWAP_V1_EXCHANGE_ABI from './v1-exchange-abi';
+import { RainbowToken } from '@rainbow-me/entities';
 
-const TOKEN_LIST = map(RAINBOW_TOKEN_LIST_DATA.tokens, token => {
-  const address = toLower(token.address);
-  return {
-    ...token,
-    address,
-  };
-});
-
-const ETHER_WITH_ADDRESS = {
-  address: 'eth',
-  chainId: 1,
-  decimals: 18,
-  extensions: {
-    isRainbowCurated: true,
-    isVerified: true,
-  },
-  name: 'Ethereum',
-  symbol: 'ETH',
-};
-
-const TOKEN_LIST_WITH_ETH = [ETHER_WITH_ADDRESS, ...TOKEN_LIST];
-
-const RAINBOW_TOKEN_LIST = keyBy(TOKEN_LIST_WITH_ETH, 'address');
-
-const CURATED_RAINBOW_TOKEN_LIST = filter(
-  TOKEN_LIST_WITH_ETH,
-  'extensions.isRainbowCurated'
+const TOKEN_LIST: RainbowToken[] = map(
+  RAINBOW_TOKEN_LIST_DATA.tokens,
+  token => {
+    const { address: rawAddress, decimals, name, symbol, extensions } = token;
+    const address = toLower(rawAddress);
+    return {
+      address,
+      decimals,
+      name,
+      symbol,
+      uniqueId: address,
+      ...extensions,
+    };
+  }
 );
 
-const CURATED_UNISWAP_TOKENS = keyBy(CURATED_RAINBOW_TOKEN_LIST, 'address');
+const ETHER_WITH_ADDRESS: RainbowToken = {
+  address: 'eth',
+  decimals: 18,
+  isRainbowCurated: true,
+  isVerified: true,
+  name: 'Ethereum',
+  symbol: 'ETH',
+  uniqueId: 'eth',
+};
+
+const TOKEN_LIST_WITH_ETH: RainbowToken[] = [ETHER_WITH_ADDRESS, ...TOKEN_LIST];
+
+const RAINBOW_TOKEN_LIST: Record<string, RainbowToken> = keyBy(
+  TOKEN_LIST_WITH_ETH,
+  'address'
+);
+
+const CURATED_RAINBOW_TOKEN_LIST: RainbowToken[] = filter(
+  TOKEN_LIST_WITH_ETH,
+  'isRainbowCurated'
+);
+
+const CURATED_UNISWAP_TOKENS: Record<string, RainbowToken> = keyBy(
+  CURATED_RAINBOW_TOKEN_LIST,
+  'address'
+);
 
 const UNISWAP_V2_ROUTER_ADDRESS = '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D';
 
