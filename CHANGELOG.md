@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ## [1.2.46](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.46)
 ### Changed
-* Token Approval Impovements
+* Token Approval Improvements
 
 ## [1.2.45](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.45)
 ### Changed
