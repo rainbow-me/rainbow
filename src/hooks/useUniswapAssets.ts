@@ -42,23 +42,25 @@ const withUniswapAssets = (
   loadingAllTokens: boolean;
 } => {
   const {
-    curatedNotFavorited,
+    globalCuratedNotFavorited,
     globalFavorites,
     globalHighLiquidityAssets,
     globalLowLiquidityAssets,
     globalVerifiedHighLiquidityAssets,
-  } = getGlobalUniswapAssets(globalUniswapAssets, favorites);
+  } = parseUniswapSubgraphAssets(globalUniswapAssets, favorites);
 
-  const { curatedAssets, curatedFavorites } = getCuratedUniswapAssets(
-    curatedUniswapAssets,
-    favorites
-  );
+  const {
+    localCuratedAssets,
+    localCuratedFavorites,
+  } = parseCuratedUniswapAssets(curatedUniswapAssets, favorites);
 
   return {
-    curatedNotFavorited: !isEmpty(curatedNotFavorited)
-      ? curatedNotFavorited
-      : curatedAssets,
-    favorites: !isEmpty(globalFavorites) ? globalFavorites : curatedFavorites,
+    curatedNotFavorited: !isEmpty(globalCuratedNotFavorited)
+      ? globalCuratedNotFavorited
+      : localCuratedAssets,
+    favorites: !isEmpty(globalFavorites)
+      ? globalFavorites
+      : localCuratedFavorites,
     globalHighLiquidityAssets: globalHighLiquidityAssets,
     globalLowLiquidityAssets: globalLowLiquidityAssets,
     globalVerifiedHighLiquidityAssets: globalVerifiedHighLiquidityAssets,
@@ -66,23 +68,23 @@ const withUniswapAssets = (
   };
 };
 
-const getGlobalUniswapAssets = (
-  assets: Record<string, UniswapSubgraphAsset>,
+const parseUniswapSubgraphAssets = (
+  globalAssets: Record<string, UniswapSubgraphAsset>,
   favorites: string[]
 ): {
-  curatedNotFavorited: RainbowToken[];
+  globalCuratedNotFavorited: RainbowToken[];
   globalFavorites: RainbowToken[];
   globalHighLiquidityAssets: RainbowToken[];
   globalLowLiquidityAssets: RainbowToken[];
   globalVerifiedHighLiquidityAssets: RainbowToken[];
 } => {
-  const sorted = sortBy(values(assets), ({ name }) => toLower(name));
+  const sorted = sortBy(values(globalAssets), ({ name }) => toLower(name));
 
   const [favorited, notFavorited] = partition(sorted, ({ address }) =>
     includes(map(favorites, toLower), toLower(address))
   );
 
-  const curatedNotFavorited = filter(notFavorited, 'isRainbowCurated');
+  const globalCuratedNotFavorited = filter(notFavorited, 'isRainbowCurated');
 
   const [highLiquidity, lowLiquidity] = partition(
     notFavorited,
@@ -100,7 +102,7 @@ const getGlobalUniswapAssets = (
   ] = partition(highLiquidity, 'isVerified');
 
   return {
-    curatedNotFavorited,
+    globalCuratedNotFavorited,
     globalFavorites: map(favorited, appendFavoriteKey),
     globalHighLiquidityAssets,
     globalLowLiquidityAssets: lowLiquidity,
@@ -108,12 +110,12 @@ const getGlobalUniswapAssets = (
   };
 };
 
-const getCuratedUniswapAssets = (
+const parseCuratedUniswapAssets = (
   assets: Record<string, RainbowToken>,
   favorites: string[]
 ): {
-  curatedAssets: RainbowToken[];
-  curatedFavorites: RainbowToken[];
+  localCuratedAssets: RainbowToken[];
+  localCuratedFavorites: RainbowToken[];
 } => {
   const sorted = sortBy(values(assets), ({ name }) => toLower(name));
   const [favorited, notFavorited] = partition(sorted, ({ address }) =>
@@ -121,8 +123,8 @@ const getCuratedUniswapAssets = (
   );
 
   return {
-    curatedAssets: notFavorited,
-    curatedFavorites: map(favorited, appendFavoriteKey),
+    localCuratedAssets: notFavorited,
+    localCuratedFavorites: map(favorited, appendFavoriteKey),
   };
 };
 

@@ -143,10 +143,10 @@ export default function CurrencySelectModal() {
             useGradientText: IS_TESTING === 'true' ? false : true,
           });
 
-        const verifiedList = concat(favorites, curatedNotFavorited);
+        const cleanList = concat(favorites, curatedNotFavorited);
 
         const filteredHighUnverifiedWithoutScams = filterScams(
-          verifiedList,
+          cleanList,
           filteredHighUnverified
         );
 
@@ -156,7 +156,7 @@ export default function CurrencySelectModal() {
             title: tokenSectionTypes.unverifiedTokenSection,
           });
 
-        const filteredLowWithoutScams = filterScams(verifiedList, filteredLow);
+        const filteredLowWithoutScams = filterScams(cleanList, filteredLow);
 
         filteredLowWithoutScams.length &&
           filteredList.push({
