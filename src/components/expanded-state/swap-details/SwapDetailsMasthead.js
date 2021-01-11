@@ -10,7 +10,7 @@ const Container = styled(RowWithMargins).attrs({
   align: 'center',
   margin: 7,
 })`
-  ${padding(19, 24, 0)};
+  ${padding(34, 24, 0)};
   width: 100%;
 `;
 

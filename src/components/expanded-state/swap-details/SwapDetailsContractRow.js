@@ -27,7 +27,7 @@ const ContractActionsEnum = {
 const ContractActions = {
   [ContractActionsEnum.copyAddress]: {
     actionKey: ContractActionsEnum.copyAddress,
-    actionTitle: 'Copy contract address',
+    actionTitle: 'Copy Contract Address',
     icon: {
       iconType: 'SYSTEM',
       iconValue: 'doc.on.doc',

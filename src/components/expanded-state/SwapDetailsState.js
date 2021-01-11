@@ -32,8 +32,7 @@ import { abbreviations, isETH } from '@rainbow-me/utils';
 const Content = styled(ColumnWithMargins).attrs({
   margin: 24,
 })`
-  ${padding(24, 19)};
-  background-color: blue;
+  ${padding(30, 19)};
   height: 100%;
 `;
 
@@ -41,7 +40,7 @@ const Header = styled(Centered)`
   left: 0;
   position: absolute;
   right: 0;
-  top: -6;
+  top: -2;
   width: 100%;
 `;
 
