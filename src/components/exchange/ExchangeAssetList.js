@@ -3,7 +3,6 @@ import { Alert } from 'react-native';
 import { SectionList } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components/primitives';
-import tokenSectionTypes from '../../helpers/tokenSectionTypes';
 import { usePrevious } from '../../hooks';
 import { CoinRowHeight, ExchangeCoinRow } from '../coin-row';
 import { GradientText, Text } from '../text';
@@ -130,13 +129,10 @@ const ExchangeAssetList = ({ itemProps, items, onLayout, query }) => {
   );
 
   const renderItemCallback = useCallback(
-    ({ item, section: { title: sectionTitle } }) => (
+    ({ item }) => (
       <ExchangeCoinRow
         {...itemProps}
-        isVerified={
-          !sectionTitle ||
-          sectionTitle === tokenSectionTypes.verifiedTokenSection
-        }
+        isVerified={item.isVerified}
         item={item}
         onUnverifiedTokenPress={handleUnverifiedTokenPress}
       />
