@@ -27,7 +27,8 @@ export default function DiscoverSheetContent() {
           setShowSearch={setShowSearch}
           showSearch={showSearch}
         >
-          {showSearch ? <DiscoverSearch /> : <DiscoverHome />}
+          {showSearch ? <DiscoverSearch /> : null}
+          <DiscoverHome />
         </DiscoverSearchContainer>
       </ColumnWithMargins>
     </>

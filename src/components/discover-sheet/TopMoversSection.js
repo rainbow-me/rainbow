@@ -64,7 +64,7 @@ export default function TopMoversSection() {
         </Text>
       </Flex>
 
-      <Column>
+      <Column height={106}>
         {gainerItems?.length !== 0 && (
           <MarqueeList items={gainerItems} speed={0.666} />
         )}
