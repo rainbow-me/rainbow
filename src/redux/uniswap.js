@@ -3,11 +3,17 @@ import { concat, map, remove, toLower, uniq, without } from 'lodash';
 import {
   getUniswapFavorites,
   saveUniswapFavorites,
-} from '../handlers/localstorage/uniswap';
-import { getAllTokens, getTestnetUniswapPairs } from '../handlers/uniswap';
-import networkTypes from '../helpers/networkTypes';
-import { DefaultUniswapFavorites, SOCKS_ADDRESS } from '../references';
-import { CURATED_UNISWAP_TOKENS } from '../references/uniswap';
+} from '@rainbow-me/handlers/localstorage/uniswap';
+import {
+  getAllTokens,
+  getTestnetUniswapPairs,
+} from '@rainbow-me/handlers/uniswap';
+import networkTypes from '@rainbow-me/networkTypes';
+import {
+  CURATED_UNISWAP_TOKENS,
+  DefaultUniswapFavorites,
+  SOCKS_ADDRESS,
+} from '@rainbow-me/references';
 
 // -- Constants ------------------------------------------------------------- //
 const UNISWAP_LOAD_REQUEST = 'uniswap/UNISWAP_LOAD_REQUEST';
@@ -89,7 +95,7 @@ export const uniswapUpdateFavorites = (assetAddress, add = true) => (
 // -- Reducer --------------------------------------------------------------- //
 export const INITIAL_UNISWAP_STATE = {
   allTokens: {},
-  favorites: DefaultUniswapFavorites,
+  favorites: DefaultUniswapFavorites['mainnet'],
   fetchingUniswap: false,
   loadingAllTokens: true,
   loadingUniswap: false,
