@@ -1,6 +1,5 @@
 import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useEffect } from 'react';
-import FastImage from 'react-native-fast-image';
 import styled from 'styled-components';
 import Divider from '../Divider';
 import { RainbowButton } from '../buttons';
@@ -8,6 +7,7 @@ import { Column, ColumnWithMargins } from '../layout';
 import { SheetActionButton } from '../sheet';
 import { Text } from '../text';
 import BackupIcon from '@rainbow-me/assets/backupIcon.png';
+import { ImgixImage } from '@rainbow-me/images';
 import { colors, padding } from '@rainbow-me/styles';
 import { deviceUtils } from '@rainbow-me/utils';
 
@@ -35,8 +35,8 @@ const MastheadDescription = styled(Text).attrs({
   ${padding(12, 42, 30)};
 `;
 
-const MastheadIcon = styled(FastImage).attrs({
-  resizeMode: FastImage.resizeMode.contain,
+const MastheadIcon = styled(ImgixImage).attrs({
+  resizeMode: ImgixImage.resizeMode.contain,
   source: BackupIcon,
 })`
   height: 74;

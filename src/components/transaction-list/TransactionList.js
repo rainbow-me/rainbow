@@ -18,6 +18,7 @@ import {
 } from '../../helpers/transactions';
 import { isENSAddressFormat } from '../../helpers/validators';
 import { useAccountProfile, useWallets } from '../../hooks';
+import useSafeImageUri from '../../hooks/useSafeImageUri';
 import { useNavigation } from '../../navigation/Navigation';
 import { removeRequest } from '../../redux/requests';
 import { walletsSetSelected, walletsUpdate } from '../../redux/wallets';
@@ -347,12 +348,14 @@ export default function TransactionList({
 
   const isAvatarPickerAvailable = useExperimentalFlag(AVATAR_PICKER);
 
+  const safeAccountImage = useSafeImageUri(accountImage);
+
   return (
     <Container>
       <Container
         accountAddress={accountName}
         accountColor={colors.avatarColor[accountColor]}
-        accountImage={accountImage}
+        accountImage={safeAccountImage}
         accountName={accountSymbol}
         addCashAvailable={addCashAvailable}
         as={NativeTransactionListView}

@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { RNCamera } from 'react-native-camera';
 import { useIsEmulator } from 'react-native-device-info';
-import FastImage from 'react-native-fast-image';
 import styled from 'styled-components/primitives';
 import { Centered } from '../layout';
 import { ErrorText } from '../text';
@@ -9,6 +8,7 @@ import QRCodeScannerCrosshair from './QRCodeScannerCrosshair';
 import QRCodeScannerNeedsAuthorization from './QRCodeScannerNeedsAuthorization';
 import SimulatorFakeCameraImageSource from '@rainbow-me/assets/simulator-fake-camera-image.jpg';
 import { useBooleanState, useScanner } from '@rainbow-me/hooks';
+import { ImgixImage } from '@rainbow-me/images';
 import { colors, position } from '@rainbow-me/styles';
 
 const Camera = styled(RNCamera)`
@@ -33,7 +33,7 @@ const ContentOverlay = styled(Centered)`
   top: ${({ contentPositionTop }) => contentPositionTop || 0};
 `;
 
-const EmulatorCameraFallback = styled(FastImage).attrs({
+const EmulatorCameraFallback = styled(ImgixImage).attrs({
   source: SimulatorFakeCameraImageSource,
 })`
   ${position.cover};

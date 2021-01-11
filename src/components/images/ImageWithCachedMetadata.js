@@ -1,9 +1,9 @@
 import React, { useCallback, useMemo } from 'react';
-import FastImage from 'react-native-fast-image';
-import { useImageMetadata } from '../hooks';
+import { useImageMetadata } from '../../hooks';
+import ImgixImage from './ImgixImage';
 
 const ImageWithCachedMetadata = (
-  { cache = FastImage.cacheControl.web, imageUrl, onLoad, ...props },
+  { cache = ImgixImage.cacheControl.web, imageUrl, onLoad, ...props },
   ref
 ) => {
   const { onCacheImageMetadata } = useImageMetadata(imageUrl);
@@ -20,7 +20,9 @@ const ImageWithCachedMetadata = (
     [onCacheImageMetadata, onLoad]
   );
 
-  return <FastImage {...props} onLoad={handleLoad} ref={ref} source={source} />;
+  return (
+    <ImgixImage {...props} onLoad={handleLoad} ref={ref} source={source} />
+  );
 };
 
 export default React.forwardRef(ImageWithCachedMetadata);

@@ -2,7 +2,6 @@ import lang from 'i18n-js';
 import { compact, flattenDeep, get, groupBy, map, property } from 'lodash';
 import React from 'react';
 import { LayoutAnimation } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import { compose, withHandlers } from 'recompact';
 import { createSelector } from 'reselect';
 import { AssetListItemSkeleton } from '../components/asset-list';
@@ -25,6 +24,7 @@ import {
 } from './assets';
 import networkTypes from './networkTypes';
 import { add, convertAmountToNativeDisplay, multiply } from './utilities';
+import { ImgixImage } from '@rainbow-me/images';
 import Routes from '@rainbow-me/routes';
 import { ETH_ICON_URL, ethereumUtils } from '@rainbow-me/utils';
 
@@ -351,17 +351,17 @@ const buildImagesToPreloadArray = (family, index, families) => {
   const isTopFold = index < Math.max(families.length / 2, minTopFoldThreshold);
 
   return family.tokens.map((token, rowIndex) => {
-    let priority = FastImage.priority[isTopFold ? 'high' : 'normal'];
+    let priority = ImgixImage.priority[isTopFold ? 'high' : 'normal'];
 
     if (isTopFold && isLargeFamily) {
       if (rowIndex <= largeFamilyThreshold) {
-        priority = FastImage.priority.high;
+        priority = ImgixImage.priority.high;
       } else if (isJumboFamily) {
         const isMedium =
           rowIndex > largeFamilyThreshold && rowIndex <= jumboFamilyThreshold;
-        priority = FastImage.priority[isMedium ? 'normal' : 'low'];
+        priority = ImgixImage.priority[isMedium ? 'normal' : 'low'];
       } else {
-        priority = FastImage.priority.normal;
+        priority = ImgixImage.priority.normal;
       }
     }
 
@@ -395,7 +395,7 @@ const withUniqueTokenFamiliesSection = (language, uniqueTokens, data) => {
       data.map(buildImagesToPreloadArray)
     );
     isPreloadComplete = !!imagesToPreload.length;
-    FastImage.preload(imagesToPreload);
+    ImgixImage.preload(imagesToPreload);
   }
 
   return {

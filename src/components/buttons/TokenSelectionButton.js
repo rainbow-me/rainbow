@@ -1,11 +1,11 @@
 import React, { useMemo } from 'react';
-import FastImage from 'react-native-fast-image';
 import styled from 'styled-components/primitives';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder, RowWithMargins } from '../layout';
 import { Text } from '../text';
 import CaretImageSource from '@rainbow-me/assets/family-dropdown-arrow.png';
 import { useColorForAsset } from '@rainbow-me/hooks';
+import { ImgixImage } from '@rainbow-me/images';
 import { colors, padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
@@ -21,8 +21,8 @@ const Content = styled(RowWithMargins).attrs({
   z-index: 1;
 `;
 
-const CaretIcon = styled(FastImage).attrs({
-  resizeMode: FastImage.resizeMode.contain,
+const CaretIcon = styled(ImgixImage).attrs({
+  resizeMode: ImgixImage.resizeMode.contain,
   source: CaretImageSource,
   tintColor: colors.white,
 })`
