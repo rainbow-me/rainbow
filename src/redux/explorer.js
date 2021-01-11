@@ -229,7 +229,7 @@ export const explorerInit = () => async (dispatch, getState) => {
 
 export const emitAssetRequest = assetAddress => (dispatch, getState) => {
   const { nativeCurrency } = getState().settings;
-  const { assetsSocket } = getState().explorer;
+  const { assetsSocket, tokensListened } = getState().explorer;
 
   let assetCodes;
   if (assetAddress) {
@@ -243,7 +243,14 @@ export const emitAssetRequest = assetAddress => (dispatch, getState) => {
 
     assetCodes = concat(assetAddresses, lpTokenAddresses);
   }
-  assetsSocket.emit(...assetsSubscription(assetCodes, nativeCurrency));
+
+  const newAssetsCodes = assetCodes.filter(code => !tokensListened[code]);
+
+  newAssetsCodes.forEach(code => (tokensListened[code] = true));
+
+  if (newAssetsCodes.length !== 0) {
+    assetsSocket.emit(...assetsSubscription(newAssetsCodes, nativeCurrency));
+  }
 };
 
 export const emitChartsRequest = (
@@ -341,6 +348,7 @@ const INITIAL_STATE = {
   assetsSocket: null,
   assetsTimeoutHandler: null,
   fallback: false,
+  tokensListened: {},
 };
 
 export default (state = INITIAL_STATE, action) => {
