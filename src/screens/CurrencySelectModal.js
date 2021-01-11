@@ -1,6 +1,6 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
-import { concat, map, toLower } from 'lodash';
+import { map, toLower } from 'lodash';
 import matchSorter from 'match-sorter';
 import React, {
   Fragment,
@@ -38,7 +38,7 @@ import { delayNext } from '@rainbow-me/hooks/useMagicAutofocus';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import Routes from '@rainbow-me/routes';
 import { colors, position } from '@rainbow-me/styles';
-import { filterList, filterScams } from '@rainbow-me/utils';
+import { filterList } from '@rainbow-me/utils';
 
 const TabTransitionAnimation = styled(Animated.View)`
   ${position.size('100%')};
@@ -143,24 +143,15 @@ export default function CurrencySelectModal() {
             useGradientText: IS_TESTING === 'true' ? false : true,
           });
 
-        const cleanList = concat(favorites, curatedNotFavorited);
-
-        const filteredHighUnverifiedWithoutScams = filterScams(
-          cleanList,
-          filteredHighUnverified
-        );
-
-        filteredHighUnverifiedWithoutScams.length &&
+        filteredHighUnverified.length &&
           filteredList.push({
-            data: filteredHighUnverifiedWithoutScams,
+            data: filteredHighUnverified,
             title: tokenSectionTypes.unverifiedTokenSection,
           });
 
-        const filteredLowWithoutScams = filterScams(cleanList, filteredLow);
-
-        filteredLowWithoutScams.length &&
+        filteredLow.length &&
           filteredList.push({
-            data: filteredLowWithoutScams,
+            data: filteredLow,
             title: tokenSectionTypes.lowLiquidityTokenSection,
           });
       } else {
