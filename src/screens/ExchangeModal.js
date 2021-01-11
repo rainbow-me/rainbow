@@ -19,6 +19,7 @@ import {
   ConfirmExchangeButton,
   ExchangeInputField,
   ExchangeModalHeader,
+  ExchangeNotch,
   ExchangeOutputField,
   SlippageWarning,
 } from '../components/exchange';
@@ -580,6 +581,7 @@ export default function ExchangeModal({
               testID={testID + '-header'}
               title={inputHeaderTitle}
             />
+            {showOutputField && <ExchangeNotch />}
             <ExchangeInputField
               disableInputCurrencySelection={isWithdrawal}
               inputAmount={inputAmountDisplay}
