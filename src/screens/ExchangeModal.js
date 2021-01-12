@@ -17,23 +17,26 @@ import { dismissingScreenListener } from '../../shim';
 import { interpolate } from '../components/animations';
 import {
   ConfirmExchangeButton,
+  ExchangeDetailsRow,
   ExchangeInputField,
-  ExchangeModalHeader,
   ExchangeNotch,
   ExchangeOutputField,
-  SlippageWarning,
+  SlippageWarningThresholdInBips,
 } from '../components/exchange';
 import SwapInfo from '../components/exchange/SwapInfo';
 import { FloatingPanel, FloatingPanels } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
-import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
-import ExchangeModalTypes from '../helpers/exchangeModalTypes';
-import isKeyboardOpen from '../helpers/isKeyboardOpen';
-import { loadWallet } from '../model/wallet';
-import { useNavigation } from '../navigation/Navigation';
-import { executeRap } from '../raps/common';
 import { multicallClearState } from '../redux/multicall';
-import ethUnits from '../references/ethereum-units.json';
+import {
+  Centered,
+  Column,
+  KeyboardFixedOpenLayout,
+} from '../components/layout';
+import { SheetHandle } from '../components/sheet';
+import { Text } from '../components/text';
+import ExchangeModalCategoryTypes from '@rainbow-me/helpers/exchangeModalCategoryTypes';
+import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
+import isKeyboardOpen from '@rainbow-me/helpers/isKeyboardOpen';
 import {
   useAccountSettings,
   useBlockPolling,
@@ -46,9 +49,13 @@ import {
   useUniswapCurrencies,
   useUniswapMarketDetails,
 } from '@rainbow-me/hooks';
+import { loadWallet } from '@rainbow-me/model/wallet';
+import { useNavigation } from '@rainbow-me/navigation';
+import { executeRap } from '@rainbow-me/raps/common';
+import { ethUnits } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
-import { colors, position } from '@rainbow-me/styles';
-import { backgroundTask, isNewValueForPath } from '@rainbow-me/utils';
+import { colors, padding, position } from '@rainbow-me/styles';
+import { backgroundTask, isETH, isNewValueForPath } from '@rainbow-me/utils';
 
 import logger from 'logger';
 
@@ -59,8 +66,9 @@ export default function ExchangeModal({
   createRap,
   cTokenBalance,
   defaultInputAsset,
+  defaultOutputAsset,
   estimateRap,
-  inputHeaderTitle,
+  inputHeaderTitle = 'Swap',
   showOutputField,
   supplyBalanceUnderlying,
   testID,
@@ -125,6 +133,7 @@ export default function ExchangeModal({
   } = useUniswapCurrencies({
     category,
     defaultInputAsset,
+    defaultOutputAsset,
     inputHeaderTitle,
     isDeposit,
     isWithdrawal,
@@ -158,6 +167,7 @@ export default function ExchangeModal({
     updateOutputAmount,
   } = useSwapInputs({
     defaultInputAsset,
+    defaultOutputAsset,
     inputCurrency,
     isDeposit,
     isWithdrawal,
@@ -286,7 +296,7 @@ export default function ExchangeModal({
   // Recalculate max input balance when gas price changes if input currency is ETH
   useEffect(() => {
     if (
-      get(inputCurrency, 'address') === 'eth' &&
+      isETH(inputCurrency?.address) &&
       get(prevSelectedGasPrice, 'txFee.value.amount', 0) !==
         get(selectedGasPrice, 'txFee.value.amount', 0)
     ) {
@@ -344,7 +354,10 @@ export default function ExchangeModal({
   ]);
 
   const isSlippageWarningVisible =
-    isSufficientBalance && !!inputAmount && !!outputAmount;
+    isSufficientBalance &&
+    !!inputAmount &&
+    !!outputAmount &&
+    slippage >= SlippageWarningThresholdInBips;
   const prevIsSlippageWarningVisible = usePrevious(isSlippageWarningVisible);
   useEffect(() => {
     if (isSlippageWarningVisible && !prevIsSlippageWarningVisible) {
@@ -460,6 +473,9 @@ export default function ExchangeModal({
     navigate,
   ]);
 
+  // logger.prettyLog('tradeDetails', tradeDetails?.routex);
+  // logger.prettyLog('extraTradeDetails', extraTradeDetails);
+
   const navigateToSwapDetailsModal = useCallback(() => {
     android && Keyboard.dismiss();
     const lastFocusedInputHandleTemporary = lastFocusedInputHandle.current;
@@ -472,13 +488,21 @@ export default function ExchangeModal({
       setParams({ focused: false });
       navigate(Routes.SWAP_DETAILS_SHEET, {
         ...extraTradeDetails,
+        inputAmount,
+        inputAmountDisplay,
+        inputCurrency,
         inputCurrencySymbol: get(inputCurrency, 'symbol'),
+        longFormHeight: 472,
+        outputAmount,
+        outputAmountDisplay,
+        outputCurrency,
         outputCurrencySymbol: get(outputCurrency, 'symbol'),
         restoreFocusOnSwapModal: () => {
           android &&
             (lastFocusedInputHandle.current = lastFocusedInputHandleTemporary);
           setParams({ focused: true });
         },
+        slippage,
         type: 'swap_details',
       });
       analytics.track('Opened Swap Details modal', {
@@ -496,11 +520,16 @@ export default function ExchangeModal({
   }, [
     category,
     extraTradeDetails,
+    inputAmountDisplay,
+    inputAmount,
+    outputAmount,
     inputCurrency,
     inputFieldRef,
+    slippage,
     lastFocusedInputHandle,
     nativeFieldRef,
     navigate,
+    outputAmountDisplay,
     outputCurrency,
     outputFieldRef,
     setParams,
@@ -512,13 +541,17 @@ export default function ExchangeModal({
       !(isDeposit || isWithdrawal) &&
       get(inputCurrency, 'symbol') &&
       get(outputCurrency, 'symbol') &&
-      areTradeDetailsValid
+      areTradeDetailsValid &&
+      inputAmount > 0 &&
+      outputAmountDisplay
     );
   }, [
     areTradeDetailsValid,
+    inputAmount,
     inputCurrency,
     isDeposit,
     isWithdrawal,
+    outputAmountDisplay,
     outputCurrency,
   ]);
 
@@ -575,13 +608,22 @@ export default function ExchangeModal({
             radius={39}
             testID={testID}
           >
-            <ExchangeModalHeader
-              onPressDetails={navigateToSwapDetailsModal}
-              showDetailsButton={showDetailsButton}
-              testID={testID + '-header'}
-              title={inputHeaderTitle}
-            />
             {showOutputField && <ExchangeNotch />}
+            <Column
+              align="center"
+              css={padding(6, 0)}
+              testID={testID + '-header'}
+            >
+              <SheetHandle marginBottom={6} />
+              <Text
+                align="center"
+                lineHeight="loose"
+                size="large"
+                weight="heavy"
+              >
+                {inputHeaderTitle}
+              </Text>
+            </Column>
             <ExchangeInputField
               disableInputCurrencySelection={isWithdrawal}
               inputAmount={inputAmountDisplay}
@@ -618,21 +660,30 @@ export default function ExchangeModal({
               testID="swap-info-button"
             />
           )}
-          {isSlippageWarningVisible && <SlippageWarning slippage={slippage} />}
           {showConfirmButton && (
-            <ConfirmExchangeButton
-              asset={outputCurrency}
-              disabled={!Number(inputAmountDisplay)}
-              isAuthorizing={isAuthorizing}
-              isDeposit={isDeposit}
-              isSufficientBalance={isSufficientBalance}
-              isSufficientGas={isSufficientGas}
-              isSufficientLiquidity={isSufficientLiquidity}
-              onSubmit={handleSubmit}
-              slippage={slippage}
-              testID={testID + '-confirm'}
-              type={type}
-            />
+            <Fragment>
+              {!isDeposit && (
+                <ExchangeDetailsRow
+                  isSlippageWarningVisible={isSlippageWarningVisible}
+                  onFlipCurrencies={onFlipCurrencies}
+                  onPressViewDetails={navigateToSwapDetailsModal}
+                  showDetailsButton={showDetailsButton}
+                  slippage={slippage}
+                />
+              )}
+              <ConfirmExchangeButton
+                asset={outputCurrency}
+                disabled={!Number(inputAmountDisplay)}
+                isAuthorizing={isAuthorizing}
+                isDeposit={isDeposit}
+                isSufficientBalance={isSufficientBalance}
+                isSufficientLiquidity={isSufficientLiquidity}
+                onSubmit={handleSubmit}
+                slippage={slippage}
+                testID={testID + '-confirm'}
+                type={type}
+              />
+            </Fragment>
           )}
           <GasSpeedButton
             dontBlur
