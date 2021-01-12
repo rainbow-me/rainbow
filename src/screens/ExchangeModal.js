@@ -12,7 +12,6 @@ import React, {
 import { Keyboard } from 'react-native';
 import Animated, { Extrapolate } from 'react-native-reanimated';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
-import { useDispatch } from 'react-redux';
 import { dismissingScreenListener } from '../../shim';
 import { interpolate } from '../components/animations';
 import {
@@ -26,7 +25,6 @@ import {
 import SwapInfo from '../components/exchange/SwapInfo';
 import { FloatingPanel, FloatingPanels } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
-import { multicallClearState } from '../redux/multicall';
 import {
   Centered,
   Column,
@@ -95,7 +93,6 @@ export default function ExchangeModal({
     ? ethUnits.basic_withdrawal
     : ethUnits.basic_swap;
 
-  const dispatch = useDispatch();
   const {
     prevSelectedGasPrice,
     selectedGasPrice,
@@ -255,12 +252,6 @@ export default function ExchangeModal({
   useEffect(() => {
     updateGasLimit();
   }, [updateGasLimit]);
-
-  useEffect(() => {
-    return () => {
-      dispatch(multicallClearState());
-    };
-  }, [dispatch]);
 
   // Set default gas limit
   useEffect(() => {
