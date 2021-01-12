@@ -158,7 +158,7 @@ export default function useUniswapCurrencies({
   ]);
 
   const updateInputCurrency = useCallback(
-    async (newInputCurrency, userSelected = true) => {
+    (newInputCurrency, userSelected = true) => {
       logger.log(
         '[update input curr] new input curr, user selected?',
         newInputCurrency,
@@ -314,11 +314,22 @@ export default function useUniswapCurrencies({
     updateOutputCurrency,
   ]);
 
+  const onFlipCurrencies = useCallback(() => {
+    updateInputCurrency(outputCurrency, false);
+    updateOutputCurrency(inputCurrency, false);
+  }, [
+    inputCurrency,
+    outputCurrency,
+    updateInputCurrency,
+    updateOutputCurrency,
+  ]);
+
   return {
     defaultInputAddress,
     inputCurrency,
     navigateToSelectInputCurrency,
     navigateToSelectOutputCurrency,
+    onFlipCurrencies,
     outputCurrency,
     previousInputCurrency,
   };
