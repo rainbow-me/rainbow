@@ -86,10 +86,14 @@ export const getTestnetUniswapPairs = (
 export const estimateSwapGasLimit = async ({
   accountAddress,
   chainId,
+  inputCurrency,
+  outputCurrency,
   tradeDetails,
 }: {
   accountAddress: string;
   chainId: ChainId;
+  inputCurrency: Asset;
+  outputCurrency: Asset;
   tradeDetails: Trade | null;
 }): Promise<{
   gasLimit: string | number;
@@ -111,6 +115,8 @@ export const estimateSwapGasLimit = async ({
     } = getContractExecutionDetails({
       accountAddress,
       chainId,
+      inputCurrency,
+      outputCurrency,
       providerOrSigner: web3Provider,
       tradeDetails,
     });
@@ -166,23 +172,22 @@ export const estimateSwapGasLimit = async ({
 };
 
 const getSwapType = (
-  tokens: { [field in Field]: Token },
+  tokens: { [field in Field]: Asset },
   chainId: ChainId,
   isExactIn: boolean
 ): SwapType => {
-  const WETH_FOR_CHAIN_ID = WETH[chainId];
   if (isExactIn) {
-    if (tokens[Field.INPUT].equals(WETH_FOR_CHAIN_ID)) {
+    if (tokens[Field.INPUT].address === ETH_ADDRESS) {
       return SwapType.EXACT_ETH_FOR_TOKENS;
-    } else if (tokens[Field.OUTPUT].equals(WETH_FOR_CHAIN_ID)) {
+    } else if (tokens[Field.OUTPUT].address === ETH_ADDRESS) {
       return SwapType.EXACT_TOKENS_FOR_ETH;
     } else {
       return SwapType.EXACT_TOKENS_FOR_TOKENS;
     }
   } else {
-    if (tokens[Field.INPUT].equals(WETH_FOR_CHAIN_ID)) {
+    if (tokens[Field.INPUT].address === ETH_ADDRESS) {
       return SwapType.ETH_FOR_EXACT_TOKENS;
-    } else if (tokens[Field.OUTPUT].equals(WETH_FOR_CHAIN_ID)) {
+    } else if (tokens[Field.OUTPUT].address === ETH_ADDRESS) {
       return SwapType.TOKENS_FOR_EXACT_ETH;
     } else {
       return SwapType.TOKENS_FOR_EXACT_TOKENS;
@@ -207,6 +212,8 @@ const computeSlippageAdjustedAmounts = (
 const getExecutionDetails = (
   accountAddress: string,
   chainId: ChainId,
+  inputCurrency: Asset,
+  outputCurrency: Asset,
   trade: Trade,
   providerOrSigner: Provider | Signer,
   allowedSlippage: number = INITIAL_ALLOWED_SLIPPAGE, // in bips, optional
@@ -229,8 +236,8 @@ const getExecutionDetails = (
 
   const swapType = getSwapType(
     {
-      [Field.INPUT]: trade.inputAmount.currency as Token,
-      [Field.OUTPUT]: trade.outputAmount.currency as Token,
+      [Field.INPUT]: inputCurrency,
+      [Field.OUTPUT]: outputCurrency,
     },
     chainId,
     trade.tradeType === TradeType.EXACT_INPUT
@@ -321,11 +328,15 @@ const getExecutionDetails = (
 const getContractExecutionDetails = ({
   accountAddress,
   chainId,
+  inputCurrency,
+  outputCurrency,
   providerOrSigner,
   tradeDetails,
 }: {
   accountAddress: string;
   chainId: ChainId;
+  inputCurrency: Asset;
+  outputCurrency: Asset;
   providerOrSigner: Provider | Signer;
   tradeDetails: Trade;
 }) => {
@@ -338,6 +349,8 @@ const getContractExecutionDetails = ({
   const { methodArguments, methodNames, value } = getExecutionDetails(
     accountAddress,
     chainId,
+    inputCurrency,
+    outputCurrency,
     tradeDetails,
     providerOrSigner,
     maxSlippage
@@ -362,6 +375,8 @@ export const executeSwap = async ({
   chainId,
   gasLimit,
   gasPrice,
+  inputCurrency,
+  outputCurrency,
   methodName,
   tradeDetails,
   wallet,
@@ -370,6 +385,8 @@ export const executeSwap = async ({
   chainId: ChainId;
   gasLimit: string | number;
   gasPrice: string;
+  inputCurrency: Asset;
+  outputCurrency: Asset;
   methodName: string;
   tradeDetails: Trade | null;
   wallet: Wallet | null;
@@ -379,6 +396,8 @@ export const executeSwap = async ({
   const { exchange, updatedMethodArgs, value } = getContractExecutionDetails({
     accountAddress,
     chainId,
+    inputCurrency,
+    outputCurrency,
     providerOrSigner: walletToUse,
     tradeDetails,
   });
