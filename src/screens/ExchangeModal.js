@@ -98,6 +98,7 @@ export default function ExchangeModal({
   const dispatch = useDispatch();
   const {
     isSufficientGas,
+    prevSelectedGasPrice,
     selectedGasPrice,
     startPollingGasPrices,
     stopPollingGasPrices,
@@ -106,7 +107,6 @@ export default function ExchangeModal({
   } = useGas();
   const { initWeb3Listener, stopWeb3Listener } = useBlockPolling();
   const { nativeCurrency } = useAccountSettings();
-  const prevSelectedGasPrice = usePrevious(selectedGasPrice);
   const { maxInputBalance, updateMaxInputBalance } = useMaxInputBalance();
 
   const {
