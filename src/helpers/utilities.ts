@@ -322,7 +322,7 @@ export const convertAmountToPercentageDisplay = (
 export const convertBipsToPercentage = (
   value: BigNumberish,
   decimals: number = 2
-): string => new BigNumber(value).shiftedBy(-2).toFixed(decimals);
+): string => new BigNumber(value || 0).shiftedBy(-2).toFixed(decimals);
 
 /**
  * @desc convert from amount value to display formatted string
