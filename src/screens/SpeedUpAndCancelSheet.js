@@ -155,11 +155,7 @@ export default function SpeedUpAndCancelSheet() {
 
   const reloadTransactions = useCallback(
     transaction => {
-      if (
-        (transaction.status === TransactionStatusTypes.speeding_up ||
-          transaction.status === TransactionStatusTypes.cancelling) &&
-        transaction.type !== TransactionTypes.send
-      ) {
+      if (transaction.type !== TransactionTypes.send) {
         logger.log('Reloading zerion in 5!');
         setTimeout(() => {
           logger.log('Reloading tx from zerion NOW!');
@@ -288,6 +284,7 @@ export default function SpeedUpAndCancelSheet() {
                 existingWallet = null;
               }
             }
+            logger.log('reloading transactions');
             reloadTransactions(transaction);
           }
         )
