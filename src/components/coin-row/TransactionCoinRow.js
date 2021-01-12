@@ -17,11 +17,15 @@ import {
   hasAddableContact,
 } from '@rainbow-me/helpers/transactions';
 import { isENSAddressFormat } from '@rainbow-me/helpers/validators';
-import { useAccountSettings, useEtherscan } from '@rainbow-me/hooks';
+import { useAccountSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
-import { abbreviations, showActionSheetWithOptions } from '@rainbow-me/utils';
+import {
+  abbreviations,
+  ethereumUtils,
+  showActionSheetWithOptions,
+} from '@rainbow-me/utils';
 
 const containerStyles = css`
   padding-left: 19;
@@ -80,7 +84,6 @@ const TopRow = ({ balance, pending, status, title }) => (
 export default function TransactionCoinRow({ item, ...props }) {
   const { contact } = item;
   const { accountAddress } = useAccountSettings();
-  const { openTransactionEtherscanURL } = useEtherscan();
   const { navigate } = useNavigation();
 
   const onPressTransaction = useCallback(async () => {
@@ -145,7 +148,7 @@ export default function TransactionCoinRow({ item, ...props }) {
             ? `${headerInfo.type} ${date} ${headerInfo.divider} ${headerInfo.address}`
             : `${headerInfo.type} ${date}`,
         },
-        buttonIndex => {
+        async buttonIndex => {
           const action = buttons[buttonIndex];
           switch (action) {
             case TransactionActions.viewContact:
@@ -171,7 +174,7 @@ export default function TransactionCoinRow({ item, ...props }) {
               });
               break;
             case TransactionActions.viewOnEtherscan: {
-              openTransactionEtherscanURL(hash);
+              await ethereumUtils.openTransactionEtherscanURL(hash);
               break;
             }
             default:
@@ -179,7 +182,7 @@ export default function TransactionCoinRow({ item, ...props }) {
         }
       );
     }
-  }, [accountAddress, contact, item, navigate, openTransactionEtherscanURL]);
+  }, [accountAddress, contact, item, navigate]);
 
   return (
     <ButtonPressAnimation onPress={onPressTransaction} scaleTo={0.96}>

@@ -24,7 +24,6 @@ export { default as useColorForAsset } from './useColorForAsset';
 export { default as useContacts } from './useContacts';
 export { default as useDimensions } from './useDimensions';
 export { default as useEmailRainbow } from './useEmailRainbow';
-export { default as useEtherscan } from './useEtherscan';
 export { default as useExpandedStateNavigation } from './useExpandedStateNavigation';
 export { default as useGas } from './useGas';
 export { default as useHeight } from './useHeight';

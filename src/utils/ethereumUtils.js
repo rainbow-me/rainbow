@@ -8,15 +8,19 @@ import {
   toChecksumAddress,
 } from 'ethereumjs-util';
 import { hdkey } from 'ethereumjs-wallet';
-import { find, get, isEmpty, matchesProperty, replace, toLower } from 'lodash';
-import { NativeModules } from 'react-native';
+import {
+  find,
+  get,
+  isEmpty,
+  isString,
+  matchesProperty,
+  replace,
+  toLower,
+} from 'lodash';
+import { Linking, NativeModules } from 'react-native';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import URL from 'url-parse';
-import {
-  DEFAULT_HD_PATH,
-  identifyWalletType,
-  WalletLibraryType,
-} from '../model/wallet';
+import { getNetwork } from '@rainbow-me/handlers/localstorage/globalSettings';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   fromWei,
@@ -25,6 +29,11 @@ import {
   subtract,
 } from '@rainbow-me/helpers/utilities';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
+import {
+  DEFAULT_HD_PATH,
+  identifyWalletType,
+  WalletLibraryType,
+} from '@rainbow-me/model/wallet';
 import { chains } from '@rainbow-me/references';
 import logger from 'logger';
 
@@ -113,14 +122,15 @@ const getChainIdFromNetwork = network => {
  * @desc get etherscan host from network string
  * @param  {String} network
  */
-const getEtherscanHostFromNetwork = network => {
+async function getEtherscanHostForNetwork() {
+  const network = await getNetwork();
   const base_host = 'etherscan.io';
   if (network === networkTypes.mainnet) {
     return base_host;
   } else {
     return `${network}.${base_host}`;
   }
-};
+}
 
 /**
  * @desc Checks if a string is a valid ethereum address
@@ -252,6 +262,19 @@ const deriveAccountFromWalletInput = input => {
   return deriveAccountFromMnemonic(input);
 };
 
+async function openTokenEtherscanURL(address) {
+  if (!isString(address)) return;
+  const etherscanHost = await getEtherscanHostForNetwork();
+  Linking.openURL(`https://${etherscanHost}/token/${address}`);
+}
+
+async function openTransactionEtherscanURL(hash) {
+  if (!isString(hash)) return;
+  const etherscanHost = await getEtherscanHostForNetwork();
+  const normalizedHash = hash.replace(/-.*/g, '');
+  Linking.openURL(`https://${etherscanHost}/tx/${normalizedHash}`);
+}
+
 export default {
   checkIfUrlIsAScam,
   deriveAccountFromMnemonic,
@@ -261,12 +284,13 @@ export default {
   getBalanceAmount,
   getChainIdFromNetwork,
   getDataString,
-  getEtherscanHostFromNetwork,
   getEthPriceUnit,
   getHash,
   getNetworkFromChainId,
   hasPreviousTransactions,
   isEthAddress,
+  openTokenEtherscanURL,
+  openTransactionEtherscanURL,
   padLeft,
   removeHexPrefix,
 };

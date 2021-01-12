@@ -18,13 +18,21 @@ import {
   hasAddableContact,
 } from '@rainbow-me/helpers/transactions';
 import { isENSAddressFormat } from '@rainbow-me/helpers/validators';
-import { useAccountProfile, useEtherscan, useSafeImageUri, useWallets } from '@rainbow-me/hooks';
+import {
+  useAccountProfile,
+  useSafeImageUri,
+  useWallets,
+} from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import { removeRequest } from '@rainbow-me/redux/requests';
 import { walletsSetSelected, walletsUpdate } from '@rainbow-me/redux/wallets';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
-import { abbreviations, showActionSheetWithOptions } from '@rainbow-me/utils';
+import {
+  abbreviations,
+  ethereumUtils,
+  showActionSheetWithOptions,
+} from '@rainbow-me/utils';
 
 const NativeTransactionListView = requireNativeComponent('TransactionListView');
 
@@ -59,7 +67,6 @@ export default function TransactionList({
   requests,
   transactions,
 }) {
-  const { openTransactionEtherscanURL } = useEtherscan();
   const { wallets, selectedWallet, isDamaged } = useWallets();
   const [tapTarget, setTapTarget] = useState([0, 0, 0, 0]);
   const onNewEmoji = useRef();
@@ -263,7 +270,7 @@ export default function TransactionList({
               ? `${headerInfo.type} ${date} ${headerInfo.divider} ${headerInfo.address}`
               : `${headerInfo.type} ${date}`,
           },
-          buttonIndex => {
+          async buttonIndex => {
             const action = buttons[buttonIndex];
             switch (action) {
               case TransactionActions.viewContact:
@@ -289,7 +296,7 @@ export default function TransactionList({
                 });
                 break;
               case TransactionActions.viewOnEtherscan: {
-                openTransactionEtherscanURL(hash);
+                await ethereumUtils.openTransactionEtherscanURL(hash);
                 break;
               }
               default:
@@ -298,13 +305,7 @@ export default function TransactionList({
         );
       }
     },
-    [
-      accountAddress,
-      contacts,
-      navigate,
-      openTransactionEtherscanURL,
-      transactions,
-    ]
+    [accountAddress, contacts, navigate, transactions]
   );
 
   const onCopyAddressPress = useCallback(

@@ -5,8 +5,7 @@ import { CoinIconSize, RequestVendorLogoIcon } from '../coin-icon';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
-import { useEtherscan } from '@rainbow-me/hooks';
-import { showActionSheetWithOptions } from '@rainbow-me/utils';
+import { ethereumUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const BottomRow = ({ dappName }) => <CoinName>{dappName}</CoinName>;
 
@@ -18,8 +17,6 @@ export default function ContractInteractionCoinRow({
   item: { hash, ...item },
   ...props
 }) {
-  const { openTransactionEtherscanURL } = useEtherscan();
-
   const handlePressTransaction = useCallback(() => {
     if (!hash) return;
     showActionSheetWithOptions(
@@ -27,13 +24,13 @@ export default function ContractInteractionCoinRow({
         cancelButtonIndex: 1,
         options: ['View on Etherscan', 'Cancel'],
       },
-      buttonIndex => {
+      async buttonIndex => {
         if (buttonIndex === 0) {
-          openTransactionEtherscanURL(hash);
+          await ethereumUtils.openTransactionEtherscanURL(hash);
         }
       }
     );
-  }, [hash, openTransactionEtherscanURL]);
+  }, [hash]);
 
   return (
     <ButtonPressAnimation onPress={handlePressTransaction} scaleTo={0.98}>

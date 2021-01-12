@@ -2,10 +2,10 @@ import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { ContextCircleButton } from '../../context-menu';
 import EditOptions from '@rainbow-me/helpers/editOptionTypes';
-import { useCoinListEditOptions, useEtherscan } from '@rainbow-me/hooks';
+import { useCoinListEditOptions } from '@rainbow-me/hooks';
+import { ethereumUtils } from '@rainbow-me/utils';
 
 export default function ChartContextButton({ asset, color }) {
-  const { openTokenEtherscanURL } = useEtherscan();
   const {
     clearSelectedCoins,
     currentAction,
@@ -24,7 +24,7 @@ export default function ChartContextButton({ asset, color }) {
   }, [asset, clearSelectedCoins, currentAction, pushSelectedCoin]);
 
   const handleActionSheetPress = useCallback(
-    buttonIndex => {
+    async buttonIndex => {
       if (buttonIndex === 0) {
         // 📌️ Pin
         setPinnedCoins();
@@ -33,10 +33,10 @@ export default function ChartContextButton({ asset, color }) {
         setHiddenCoins();
       } else if (buttonIndex === 2 && asset?.address !== 'eth') {
         // 🔍 View on Etherscan
-        openTokenEtherscanURL(asset?.address);
+        await ethereumUtils.openTokenEtherscanURL(asset?.address);
       }
     },
-    [asset?.address, openTokenEtherscanURL, setHiddenCoins, setPinnedCoins]
+    [asset?.address, setHiddenCoins, setPinnedCoins]
   );
 
   const options = useMemo(
