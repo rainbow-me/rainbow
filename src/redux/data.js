@@ -55,6 +55,7 @@ import { addCashUpdatePurchases } from './addCash';
 /* eslint-disable-next-line import/no-cycle */
 import { uniqueTokensRefreshState } from './uniqueTokens';
 import { uniswapUpdateLiquidityTokens } from './uniswapLiquidity';
+import networkTypes from '@rainbow-me/networkTypes';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 
@@ -462,7 +463,7 @@ export const dataAddNewTransaction = (
       type: DATA_ADD_NEW_TRANSACTION_SUCCESS,
     });
     saveLocalTransactions(_transactions, accountAddress, network);
-    if (!disableTxnWatcher) {
+    if (!disableTxnWatcher || network !== networkTypes.mainnet) {
       dispatch(watchPendingTransactions(accountAddress));
     }
     return parsedTransaction;
