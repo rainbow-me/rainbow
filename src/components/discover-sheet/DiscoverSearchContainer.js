@@ -1,4 +1,14 @@
-import React, { useContext, useMemo, useRef, useState } from 'react';
+import { useRoute } from '@react-navigation/native';
+import React, {
+  forwardRef,
+  useCallback,
+  useContext,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { LayoutAnimation } from 'react-native';
 import styled from 'styled-components/primitives';
 import { ButtonPressAnimation } from '../animations';
@@ -11,7 +21,6 @@ import { colors } from '@rainbow-me/styles';
 
 const CancelButton = styled(ButtonPressAnimation)`
   margin-top: 27;
-  right: 15;
 `;
 
 const CancelText = styled(Text).attrs({
@@ -21,32 +30,54 @@ const CancelText = styled(Text).attrs({
   size: 'large',
   weight: 'semibold',
 })`
-  margin-left: 12;
+  margin-left: -3;
+  margin-right: 15;
 `;
 
-export default function DiscoverSearchContainer({
-  children,
-  showSearch,
-  setShowSearch,
-}) {
+export default forwardRef(function DiscoverSearchContainer(
+  { children, showSearch, setShowSearch },
+  ref
+) {
   const searchInputRef = useRef();
+  useImperativeHandle(ref, () => ({
+    focus: () => {
+      searchInputRef.current.focus();
+    },
+  }));
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const upperContext = useContext(DiscoverSheetContext);
-  const { setIsSearchModeEnabled } = upperContext;
+  const { setIsSearchModeEnabled, isSearchModeEnabled } = upperContext;
+  const {
+    params: { setSwipeEnabled: setViewPagerSwipeEnabled },
+  } = useRoute();
 
   const contextValue = useMemo(
     () => ({ ...upperContext, searchQuery, setIsSearching }),
     [searchQuery, upperContext, setIsSearching]
   );
-  const setIsInputFocusedWithLayoutAnimation = value => {
-    setShowSearch(value);
-    setIsSearchModeEnabled(!value);
+  const setIsInputFocusedWithLayoutAnimation = useCallback(
+    value => {
+      setShowSearch(value);
+      setIsSearchModeEnabled(value);
+      setViewPagerSwipeEnabled(!value);
 
-    LayoutAnimation.configureNext(
-      LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
-    );
-  };
+      LayoutAnimation.configureNext(
+        LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
+      );
+    },
+    [setIsSearchModeEnabled, setShowSearch, setViewPagerSwipeEnabled]
+  );
+
+  useEffect(() => {
+    if (!isSearchModeEnabled) {
+      setSearchQuery('');
+      setIsSearching(false);
+      searchInputRef.current?.blur();
+      setIsInputFocusedWithLayoutAnimation(false);
+    }
+  }, [isSearchModeEnabled, setIsInputFocusedWithLayoutAnimation]);
+
   const { loadingAllTokens } = useUniswapAssets();
   return (
     <>
@@ -57,7 +88,10 @@ export default function DiscoverSearchContainer({
             isSearching={isSearching}
             onBlur={() => setIsInputFocusedWithLayoutAnimation(false)}
             onChangeText={setSearchQuery}
-            onFocus={() => setIsInputFocusedWithLayoutAnimation(true)}
+            onFocus={() => {
+              upperContext.jumpToLong?.();
+              setIsInputFocusedWithLayoutAnimation(true);
+            }}
             placeholderText="Search all of Ethereum"
             ref={searchInputRef}
             searchQuery={searchQuery}
@@ -78,4 +112,4 @@ export default function DiscoverSearchContainer({
       </DiscoverSheetContext.Provider>
     </>
   );
-}
+});

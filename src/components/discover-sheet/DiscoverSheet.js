@@ -22,7 +22,7 @@ import {
 const renderHeader = yPosition => <DiscoverSheetHeader yPosition={yPosition} />;
 
 function useAreHeaderButtonVisible() {
-  const [isSearchModeEnabled, setIsSearchModeEnabled] = useState(true);
+  const [isSearchModeEnabled, setIsSearchModeEnabled] = useState(false);
   return [{ isSearchModeEnabled, setIsSearchModeEnabled }, isSearchModeEnabled];
 }
 
@@ -74,6 +74,12 @@ function DiscoverSheetIOS(_, forwardedRef) {
         const index = listeners.current.length - 1;
         return () => listeners.current.splice(index, 1);
       },
+      jumpToLong() {
+        const screen = findNodeHandle(ref.current);
+        if (screen) {
+          NativeModules.ModalView.jumpTo(true, screen);
+        }
+      },
       jumpToShort() {
         const screen = findNodeHandle(ref.current);
         if (screen) {
@@ -97,6 +103,7 @@ function DiscoverSheetIOS(_, forwardedRef) {
         backgroundOpacity={0}
         blocksBackgroundTouches={false}
         cornerRadius={30}
+        gestureEnabled={!headerButtonsHandlers.isSearchModeEnabled}
         initialAnimation={false}
         interactsWithOuterScrollView
         isHapticFeedbackEnabled={false}
@@ -110,7 +117,11 @@ function DiscoverSheetIOS(_, forwardedRef) {
         topOffset={insets.top}
         unmountAnimation={false}
       >
-        <SlackSheet renderHeader={renderHeader}>
+        <SlackSheet
+          limitScrollViewContent={headerButtonsHandlers.isSearchModeEnabled}
+          renderHeader={renderHeader}
+          scrollEnabled={!headerButtonsHandlers.isSearchModeEnabled}
+        >
           <DiscoverSheetContent />
         </SlackSheet>
       </SlackBottomSheet>
