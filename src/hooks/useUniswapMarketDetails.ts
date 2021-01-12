@@ -2,7 +2,7 @@ import { Trade } from '@uniswap/sdk';
 import { get, isEmpty } from 'lodash';
 import { RefObject, useCallback, useEffect, useMemo, useState } from 'react';
 import { TextInput } from 'react-native';
-import { calculateTradeDetails, SwapCurrency } from '../handlers/uniswap';
+import { calculateTradeDetails } from '../handlers/uniswap';
 import {
   convertAmountFromNativeValue,
   greaterThanOrEqualTo,
@@ -12,6 +12,7 @@ import {
 import { logger } from '../utils';
 import useAccountSettings from './useAccountSettings';
 import useUniswapPairs from './useUniswapPairs';
+import { Asset } from '@rainbow-me/entities';
 
 const DEFAULT_NATIVE_INPUT_AMOUNT = 50;
 
@@ -39,21 +40,21 @@ export default function useUniswapMarketDetails({
   extraTradeDetails: { outputPriceValue: string };
   inputAmount: string;
   inputAsExactAmount: boolean;
-  inputCurrency: SwapCurrency;
+  inputCurrency: Asset;
   inputFieldRef: RefObject<TextInput>;
   isDeposit: boolean;
   isWithdrawal: boolean;
   maxInputBalance: string;
   nativeCurrency: string;
   outputAmount: string;
-  outputCurrency: SwapCurrency;
+  outputCurrency: Asset;
   outputFieldRef: RefObject<TextInput>;
   setIsSufficientBalance: (isSufficientBalance: boolean) => void;
   setSlippage: (slippage: number) => void;
   updateExtraTradeDetails: (extraTradeDetails: {
-    inputCurrency: SwapCurrency;
+    inputCurrency: Asset;
     nativeCurrency: string;
-    outputCurrency: SwapCurrency;
+    outputCurrency: Asset;
     tradeDetails: Trade | null;
   }) => void;
   updateInputAmount: (
