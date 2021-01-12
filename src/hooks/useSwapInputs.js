@@ -1,6 +1,7 @@
 import analytics from '@segment/analytics-react-native';
 import { get } from 'lodash';
 import { useCallback, useState } from 'react';
+import usePrevious from './usePrevious';
 import {
   convertAmountFromNativeValue,
   convertAmountToNativeAmount,

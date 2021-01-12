@@ -87,6 +87,7 @@ export default function SendSheet(props) {
     gasLimit,
     gasPrices,
     isSufficientGas,
+    prevSelectedGasPrice,
     selectedGasPrice,
     startPollingGasPrices,
     stopPollingGasPrices,
@@ -149,7 +150,6 @@ export default function SendSheet(props) {
   const showEmptyState = !isValidAddress;
   const showAssetList = isValidAddress && isEmpty(selected);
   const showAssetForm = isValidAddress && !isEmpty(selected);
-  const prevSelectedGasPrice = usePrevious(selectedGasPrice);
 
   const { handleFocus, triggerFocus } = useMagicAutofocus(
     recipientFieldRef,

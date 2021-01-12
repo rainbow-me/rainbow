@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import usePrevious from './usePrevious';
 import {
   gasPricesStartPolling,
   gasPricesStopPolling,
@@ -7,7 +8,7 @@ import {
   gasUpdateDefaultGasLimit,
   gasUpdateGasPriceOption,
   gasUpdateTxFee,
-} from '../redux/gas';
+} from '@rainbow-me/redux/gas';
 
 export default function useGas() {
   const dispatch = useDispatch();
@@ -31,6 +32,8 @@ export default function useGas() {
       txFees,
     })
   );
+
+  const prevSelectedGasPrice = usePrevious(gasData?.selectedGasPrice);
 
   const startPollingGasPrices = useCallback(
     () => dispatch(gasPricesStartPolling()),
@@ -62,6 +65,7 @@ export default function useGas() {
   );
 
   return {
+    prevSelectedGasPrice,
     startPollingGasPrices,
     stopPollingGasPrices,
     updateCustomValues,
