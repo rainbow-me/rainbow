@@ -25,6 +25,7 @@ import {
   SwapDetailsValue,
 } from './swap-details';
 // import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
+import { convertBipsToPercentage } from '@rainbow-me/helpers/utilities';
 import { colors, padding } from '@rainbow-me/styles';
 import { abbreviations, isETH } from '@rainbow-me/utils';
 // import logger from 'logger';
@@ -135,7 +136,7 @@ const SwapDetailsState = ({
                 color={colors.green}
                 letterSpacing="roundedTight"
               >
-                0.25%
+                {`${convertBipsToPercentage(slippage, 1)}%`}
               </SwapDetailsValue>
             </SwapDetailsRow>
             <SwapDetailsPriceRow />
