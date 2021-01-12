@@ -9,10 +9,10 @@ import {
   isZero,
   updatePrecisionToDisplay,
 } from '../helpers/utilities';
-import { logger } from '../utils';
 import useAccountSettings from './useAccountSettings';
 import useUniswapPairs from './useUniswapPairs';
 import { Asset } from '@rainbow-me/entities';
+import logger from 'logger';
 
 const DEFAULT_NATIVE_INPUT_AMOUNT = 50;
 
@@ -116,6 +116,7 @@ export default function useUniswapMarketDetails({
     const hasInsufficientLiquidity =
       doneLoadingResults && (isEmpty(allPairs) || !newTradeDetails);
     setIsSufficientLiquidity(!hasInsufficientLiquidity);
+
     setTradeDetails(newTradeDetails);
   }, [
     doneLoadingResults,

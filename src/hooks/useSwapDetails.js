@@ -1,12 +1,12 @@
 import { get } from 'lodash';
 import { useCallback, useMemo, useState } from 'react';
+import useAccountAssets from './useAccountAssets';
 import {
   convertAmountToNativeDisplay,
   multiply,
   updatePrecisionToDisplay,
-} from '../helpers/utilities';
-import { ethereumUtils } from '../utils';
-import useAccountAssets from './useAccountAssets';
+} from '@rainbow-me/helpers/utilities';
+import { ethereumUtils } from '@rainbow-me/utils';
 
 export default function useSwapDetails() {
   const [extraTradeDetails, setExtraTradeDetails] = useState({});

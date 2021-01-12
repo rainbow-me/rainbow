@@ -8,7 +8,7 @@ import {
   greaterThanOrEqualTo,
   isZero,
   updatePrecisionToDisplay,
-} from '../helpers/utilities';
+} from '@rainbow-me/helpers/utilities';
 import logger from 'logger';
 
 export default function useSwapInputs({
