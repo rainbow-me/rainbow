@@ -85,7 +85,10 @@ export default function ExchangeModal({
 
   const isDeposit = type === ExchangeModalTypes.deposit;
   const isWithdrawal = type === ExchangeModalTypes.withdrawal;
-  const category = isDeposit || isWithdrawal ? 'savings' : 'swap';
+  const category =
+    isDeposit || isWithdrawal
+      ? ExchangeModalCategoryTypes.savings
+      : ExchangeModalCategoryTypes.swap;
 
   const defaultGasLimit = isDeposit
     ? ethUnits.basic_deposit
