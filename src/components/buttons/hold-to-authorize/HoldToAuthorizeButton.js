@@ -260,7 +260,11 @@ class HoldToAuthorizeButton extends PureComponent {
                     </Label>
                   </Fragment>
                 )}
-                <ShimmerAnimation enabled={!disabled} width={width} />
+                <ShimmerAnimation
+                  color={backgroundColor}
+                  enabled={!disabled}
+                  width={width}
+                />
                 {!hideInnerBorder && <InnerBorder radius={height} />}
               </Content>
             </ShadowStack>
