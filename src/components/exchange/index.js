@@ -4,7 +4,6 @@ export { default as CurrencySelectModalHeader } from './CurrencySelectModalHeade
 export { default as ExchangeAssetList } from './ExchangeAssetList';
 export { default as ExchangeInput } from './ExchangeInput';
 export { default as ExchangeInputField } from './ExchangeInputField';
-export { default as ExchangeModalHeader } from './ExchangeModalHeader';
 export { default as ExchangeNativeField } from './ExchangeNativeField';
 export { default as ExchangeNotch } from './ExchangeNotch';
 export { default as ExchangeOutputField } from './ExchangeOutputField';
