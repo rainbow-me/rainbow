@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
-import { ethereumUtils } from '../utils';
 import useGas from './useGas';
+import { ethereumUtils } from '@rainbow-me/utils';
 
 export default function useMaxInputBalance() {
   const [maxInputBalance, setMaxInputBalance] = useState(0);
