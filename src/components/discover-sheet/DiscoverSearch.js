@@ -17,6 +17,7 @@ import { useDispatch } from 'react-redux';
 import { addHexPrefix } from '../../handlers/web3';
 import CurrencySelectionTypes from '../../helpers/currencySelectionTypes';
 import { emitAssetRequest } from '../../redux/explorer';
+import deviceUtils from '../../utils/deviceUtils';
 import { CurrencySelectionList } from '../exchange';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
 import { Row } from '../layout';
@@ -51,7 +52,7 @@ const searchCurrencyList = (searchList, query) => {
 
 const timingConfig = { duration: 700 };
 
-export default function DiscoverSearch() {
+export default function DiscoverSearch({ onScrollTop }) {
   const { navigate } = useNavigation();
   const listOpacity = useSharedValue(0);
   const { allAssets } = useAccountAssets();
@@ -142,6 +143,7 @@ export default function DiscoverSearch() {
     globalHighLiquidityAssets,
     globalLowLiquidityAssets,
     searchQueryForSearch,
+    setIsSearching,
     type,
     uniswapAssetsInWallet,
   ]);
@@ -161,7 +163,7 @@ export default function DiscoverSearch() {
     //},
     //  searchQuery === '' ? 1 : 250
     // );
-  }, [searchQuery, startQueryDebounce, stopQueryDebounce]);
+  }, [searchQuery, setIsSearching, startQueryDebounce, stopQueryDebounce]);
 
   const handlePress = useCallback(
     item => {
@@ -200,12 +202,19 @@ export default function DiscoverSearch() {
   );
 
   return (
-    <Animated.View style={listAnimatedStyles}>
-      <Row>
+    <Animated.View
+      style={[
+        listAnimatedStyles,
+        { height: deviceUtils.dimensions.height - 140 },
+      ]}
+    >
+      <Row height="100%">
         <CurrencySelectionList
           itemProps={itemProps}
+          keyboardDismissMode="on-drag"
           listItems={currencyList}
           loading={loadingAllTokens}
+          onScrollTop={onScrollTop}
           query={searchQueryForSearch}
           showList
           testID="currency-select-list"

@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from 'react';
 import { handleSignificantDecimals } from '../../helpers/utilities';
 import { useAccountSettings, useTopMovers } from '../../hooks';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
-import { Column, ColumnWithMargins, Flex } from '../layout';
+import { Column, Flex } from '../layout';
 import { MarqueeList } from '../list';
 import { Text } from '../text';
 import EdgeFade from './EdgeFade';
@@ -57,8 +57,8 @@ export default function TopMoversSection() {
   ]);
 
   return (
-    <ColumnWithMargins margin={12} marginBottom={15} marginTop={11}>
-      <Flex paddingHorizontal={19}>
+    <Column marginBottom={15} marginTop={11}>
+      <Flex marginBottom={12} paddingHorizontal={19}>
         <Text size="larger" weight="heavy">
           Top Movers
         </Text>
@@ -74,6 +74,6 @@ export default function TopMoversSection() {
       </Column>
 
       <EdgeFade />
-    </ColumnWithMargins>
+    </Column>
   );
 }

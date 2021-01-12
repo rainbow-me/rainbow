@@ -38,6 +38,8 @@ const CurrencySelectionList = ({
   showList,
   testID,
   query,
+  onScrollTop,
+  keyboardDismissMode,
 }) => {
   const skeletonTransitionRef = useRef();
   const showNoResults = get(listItems, '[0].data', []).length === 0;
@@ -65,6 +67,8 @@ const CurrencySelectionList = ({
             <ExchangeAssetList
               itemProps={itemProps}
               items={listItems}
+              keyboardDismissMode={keyboardDismissMode}
+              onScrollTop={onScrollTop}
               query={query}
             />
           )}

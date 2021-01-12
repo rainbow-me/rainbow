@@ -33,13 +33,13 @@ const Circle = styled(RadialGradient).attrs({
 
 const Icon = styled(Text).attrs({
   align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.2),
+  color: colors.alpha(colors.blueGreyDark, 0.3),
   letterSpacing: 'zero',
-  size: 'smaller',
-  weight: 'heavy',
+  size: 'lmedium',
+  weight: 'bold',
 })`
   height: 100%;
-  line-height: 28px;
+  line-height: 29px;
   width: 100%;
 `;
 
