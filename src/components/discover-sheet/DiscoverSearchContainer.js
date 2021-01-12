@@ -1,8 +1,10 @@
 import { useRoute } from '@react-navigation/native';
 import React, {
+  forwardRef,
   useCallback,
   useContext,
   useEffect,
+  useImperativeHandle,
   useMemo,
   useRef,
   useState,
@@ -32,12 +34,16 @@ const CancelText = styled(Text).attrs({
   margin-right: 15;
 `;
 
-export default function DiscoverSearchContainer({
-  children,
-  showSearch,
-  setShowSearch,
-}) {
+export default forwardRef(function DiscoverSearchContainer(
+  { children, showSearch, setShowSearch },
+  ref
+) {
   const searchInputRef = useRef();
+  useImperativeHandle(ref, () => ({
+    focus: () => {
+      searchInputRef.current.focus();
+    },
+  }));
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const upperContext = useContext(DiscoverSheetContext);
@@ -106,4 +112,4 @@ export default function DiscoverSearchContainer({
       </DiscoverSheetContext.Provider>
     </>
   );
-}
+});

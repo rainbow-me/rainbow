@@ -52,7 +52,7 @@ const searchCurrencyList = (searchList, query) => {
 
 const timingConfig = { duration: 700 };
 
-export default function DiscoverSearch() {
+export default function DiscoverSearch({ onScrollTop }) {
   const { navigate } = useNavigation();
   const listOpacity = useSharedValue(0);
   const { allAssets } = useAccountAssets();
@@ -143,6 +143,7 @@ export default function DiscoverSearch() {
     globalHighLiquidityAssets,
     globalLowLiquidityAssets,
     searchQueryForSearch,
+    setIsSearching,
     type,
     uniswapAssetsInWallet,
   ]);
@@ -162,7 +163,7 @@ export default function DiscoverSearch() {
     //},
     //  searchQuery === '' ? 1 : 250
     // );
-  }, [searchQuery, startQueryDebounce, stopQueryDebounce]);
+  }, [searchQuery, setIsSearching, startQueryDebounce, stopQueryDebounce]);
 
   const handlePress = useCallback(
     item => {
@@ -210,8 +211,10 @@ export default function DiscoverSearch() {
       <Row height="100%">
         <CurrencySelectionList
           itemProps={itemProps}
+          keyboardDismissMode="on-drag"
           listItems={currencyList}
           loading={loadingAllTokens}
+          onScrollTop={onScrollTop}
           query={searchQueryForSearch}
           showList
           testID="currency-select-list"
