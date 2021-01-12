@@ -40,7 +40,7 @@ import {
   convertAmountToRawAmount,
   convertNumberToString,
 } from '@rainbow-me/utilities';
-import { getTokenMetadata } from '@rainbow-me/utils';
+import { checkTokenIsScam, getTokenMetadata } from '@rainbow-me/utils';
 
 import logger from 'logger';
 
@@ -422,6 +422,11 @@ export const getAllTokens = async (): Promise<Record<
   data.forEach(token => {
     const tokenAddress = toLower(token.id);
     const metadata = getTokenMetadata(tokenAddress);
+
+    // if unverified AND name/symbol match a curated token, skip
+    if (!metadata?.isVerified && checkTokenIsScam(token.name, token.symbol)) {
+      return;
+    }
 
     const tokenInfo = {
       address: tokenAddress,

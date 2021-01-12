@@ -1,7 +1,7 @@
 import { Interface } from '@ethersproject/abi';
 import { ChainId, Token, WETH } from '@uniswap/sdk';
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json';
-import { filter, keyBy, map, toLower } from 'lodash';
+import { filter, flatMap, keyBy, map, toLower } from 'lodash';
 import { DAI_ADDRESS, USDC_ADDRESS } from '../';
 import RAINBOW_TOKEN_LIST_DATA from './rainbow-token-list.json';
 import MULTICALL_ABI from './uniswap-multicall-abi.json';
@@ -11,23 +11,20 @@ import { abi as UNISWAP_V2_ROUTER_ABI } from './uniswap-v2-router.json';
 import UNISWAP_V1_EXCHANGE_ABI from './v1-exchange-abi';
 import { RainbowToken } from '@rainbow-me/entities';
 
-const TOKEN_LIST: RainbowToken[] = map(
-  RAINBOW_TOKEN_LIST_DATA.tokens,
-  token => {
-    const { address: rawAddress, decimals, name, symbol, extensions } = token;
-    const address = toLower(rawAddress);
-    return {
-      address,
-      decimals,
-      name,
-      symbol,
-      uniqueId: address,
-      ...extensions,
-    };
-  }
-);
+const tokenList: RainbowToken[] = map(RAINBOW_TOKEN_LIST_DATA.tokens, token => {
+  const { address: rawAddress, decimals, name, symbol, extensions } = token;
+  const address = toLower(rawAddress);
+  return {
+    address,
+    decimals,
+    name,
+    symbol,
+    uniqueId: address,
+    ...extensions,
+  };
+});
 
-const ETHER_WITH_ADDRESS: RainbowToken = {
+const ethWithAddress: RainbowToken = {
   address: 'eth',
   decimals: 18,
   isRainbowCurated: true,
@@ -37,20 +34,25 @@ const ETHER_WITH_ADDRESS: RainbowToken = {
   uniqueId: 'eth',
 };
 
-const TOKEN_LIST_WITH_ETH: RainbowToken[] = [ETHER_WITH_ADDRESS, ...TOKEN_LIST];
+const tokenListWithEth: RainbowToken[] = [ethWithAddress, ...tokenList];
 
 const RAINBOW_TOKEN_LIST: Record<string, RainbowToken> = keyBy(
-  TOKEN_LIST_WITH_ETH,
+  tokenListWithEth,
   'address'
 );
 
-const CURATED_RAINBOW_TOKEN_LIST: RainbowToken[] = filter(
-  TOKEN_LIST_WITH_ETH,
+const curatedRainbowTokenList: RainbowToken[] = filter(
+  tokenListWithEth,
   'isRainbowCurated'
 );
 
+const TOKEN_SAFE_LIST: Record<string, string> = keyBy(
+  flatMap(curatedRainbowTokenList, ({ name, symbol }) => [name, symbol]),
+  id => toLower(id)
+);
+
 const CURATED_UNISWAP_TOKENS: Record<string, RainbowToken> = keyBy(
-  CURATED_RAINBOW_TOKEN_LIST,
+  curatedRainbowTokenList,
   'address'
 );
 
@@ -90,6 +92,7 @@ export {
   PAIR_GET_RESERVES_FRAGMENT,
   PAIR_INTERFACE,
   RAINBOW_TOKEN_LIST,
+  TOKEN_SAFE_LIST,
   UNISWAP_TESTNET_TOKEN_LIST,
   UNISWAP_V1_EXCHANGE_ABI,
   UNISWAP_V2_BASES,
