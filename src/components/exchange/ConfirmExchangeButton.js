@@ -1,35 +1,43 @@
 import React from 'react';
+import styled from 'styled-components/primitives';
 import { HoldToAuthorizeButton } from '../buttons';
 import { Centered } from '../layout';
 import { SlippageWarningThresholdInBips } from './SlippageWarning';
 import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
-import { useColorForAsset } from '@rainbow-me/hooks';
-import { colors } from '@rainbow-me/styles';
+import { useColorForAsset, useGas } from '@rainbow-me/hooks';
+import { colors, padding } from '@rainbow-me/styles';
 
 const paddingHorizontal = 19;
 const shadows = [[0, 10, 30, colors.black, 0.4]];
+
+const Container = styled(Centered)`
+  ${padding(5, paddingHorizontal, 0)};
+  width: 100%;
+`;
 
 export default function ConfirmExchangeButton({
   asset,
   disabled,
   isAuthorizing,
   isSufficientBalance,
-  isSufficientGas,
   isSufficientLiquidity,
   onSubmit,
   slippage,
   testID,
-  type,
+  type = ExchangeModalTypes.swap,
   ...props
 }) {
   const colorForAsset = useColorForAsset(asset);
+  const { isSufficientGas } = useGas();
 
-  let label =
-    type === ExchangeModalTypes.deposit
-      ? 'Hold to Deposit'
-      : type === ExchangeModalTypes.withdrawal
-      ? 'Hold to Withdraw '
-      : 'Hold to Swap';
+  let label = '';
+  if (type === ExchangeModalTypes.deposit) {
+    label = 'Hold to Deposit';
+  } else if (type === ExchangeModalTypes.swap) {
+    label = 'Hold to Swap';
+  } else if (type === ExchangeModalTypes.withdrawal) {
+    label = 'Hold to Withdraw';
+  }
 
   if (!isSufficientBalance) {
     label = 'Insufficient Funds';
@@ -50,11 +58,7 @@ export default function ConfirmExchangeButton({
     !isSufficientLiquidity;
 
   return (
-    <Centered
-      paddingHorizontal={paddingHorizontal}
-      paddingTop={24}
-      width="100%"
-    >
+    <Container>
       <HoldToAuthorizeButton
         backgroundColor={colorForAsset}
         disabled={isDisabled}
@@ -71,6 +75,6 @@ export default function ConfirmExchangeButton({
         theme="dark"
         {...props}
       />
-    </Centered>
+    </Container>
   );
 }

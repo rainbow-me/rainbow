@@ -97,7 +97,6 @@ export default function ExchangeModal({
 
   const dispatch = useDispatch();
   const {
-    isSufficientGas,
     prevSelectedGasPrice,
     selectedGasPrice,
     startPollingGasPrices,
