@@ -124,6 +124,7 @@ export default function ExchangeModal({
     inputCurrency,
     navigateToSelectInputCurrency,
     navigateToSelectOutputCurrency,
+    onFlipCurrencies,
     outputCurrency,
     previousInputCurrency,
   } = useUniswapCurrencies({
