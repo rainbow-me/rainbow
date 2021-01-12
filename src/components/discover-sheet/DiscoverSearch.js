@@ -17,6 +17,7 @@ import { useDispatch } from 'react-redux';
 import { addHexPrefix } from '../../handlers/web3';
 import CurrencySelectionTypes from '../../helpers/currencySelectionTypes';
 import { emitAssetRequest } from '../../redux/explorer';
+import deviceUtils from '../../utils/deviceUtils';
 import { CurrencySelectionList } from '../exchange';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
 import { Row } from '../layout';
@@ -200,7 +201,12 @@ export default function DiscoverSearch() {
   );
 
   return (
-    <Animated.View style={[listAnimatedStyles, { height: '100%' }]}>
+    <Animated.View
+      style={[
+        listAnimatedStyles,
+        { height: deviceUtils.dimensions.height - 140 },
+      ]}
+    >
       <Row height="100%">
         <CurrencySelectionList
           itemProps={itemProps}
