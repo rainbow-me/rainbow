@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, {
   useAnimatedStyle,
@@ -17,16 +17,24 @@ const springConfig = {
 
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 const ColorGradient = styled(AnimatedLinearGradient).attrs({
-  colors: colors.gradients.shimmer,
   end: { x: 0, y: 0.5 },
   start: { x: 1, y: 0.5 },
 })`
   ${position.cover};
 `;
 
-export default function ShimmerAnimation({ enabled = true, width = 0 }) {
+export default function ShimmerAnimation({ color, enabled = true, width = 0 }) {
   const opacity = useSharedValue(0.25);
   const positionX = useSharedValue(-width);
+
+  const gradientColors = useMemo(
+    () => [
+      colors.alpha(color, 0),
+      colors.alpha(colors.white, 1),
+      colors.alpha(color, 0),
+    ],
+    [color]
+  );
 
   useEffect(() => {
     if (enabled) {
@@ -43,5 +51,5 @@ export default function ShimmerAnimation({ enabled = true, width = 0 }) {
     transform: [{ translateX: positionX.value }],
   }));
 
-  return <ColorGradient style={animatedStyle} />;
+  return <ColorGradient colors={gradientColors} style={animatedStyle} />;
 }
