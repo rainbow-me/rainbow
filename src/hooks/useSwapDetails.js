@@ -1,4 +1,3 @@
-import { get } from 'lodash';
 import { useCallback, useMemo, useState } from 'react';
 import useAccountAssets from './useAccountAssets';
 import {
@@ -23,12 +22,10 @@ export default function useSwapDetails() {
       let inputPriceValue = null;
 
       if (inputCurrency) {
-        inputPriceValue = get(inputCurrency, 'native.price.amount', null);
-
-        inputExecutionRate = tradeDetails?.executionPrice?.toSignificant();
+        inputPriceValue = inputCurrency?.native?.price?.amount;
 
         inputExecutionRate = updatePrecisionToDisplay(
-          inputExecutionRate,
+          tradeDetails?.executionPrice?.toSignificant(),
           inputPriceValue
         );
 
@@ -43,11 +40,7 @@ export default function useSwapDetails() {
           outputCurrency.address
         );
 
-        outputPriceValue = get(
-          outputCurrencyInWallet,
-          'native.price.amount',
-          null
-        );
+        outputPriceValue = outputCurrencyInWallet?.native?.price?.amount;
 
         if (tradeDetails.executionPrice.equalTo(0)) {
           outputExecutionRate = '0';
@@ -84,24 +77,19 @@ export default function useSwapDetails() {
     [allAssets]
   );
 
-  const areTradeDetailsValid = useMemo(() => {
-    const {
-      inputExecutionRate,
-      inputNativePrice,
-      outputExecutionRate,
-      outputNativePrice,
-    } = extraTradeDetails;
-
-    return (
-      inputExecutionRate &&
-      inputNativePrice &&
-      outputExecutionRate &&
-      outputNativePrice
-    );
-  }, [extraTradeDetails]);
+  const areTradeDetailsValid = useMemo(
+    () =>
+      !!(
+        extraTradeDetails?.inputExecutionRate &&
+        extraTradeDetails?.inputNativePrice &&
+        extraTradeDetails?.outputExecutionRate &&
+        extraTradeDetails?.outputNativePrice
+      ),
+    [extraTradeDetails]
+  );
 
   return {
-    areTradeDetailsValid: !!areTradeDetailsValid,
+    areTradeDetailsValid,
     extraTradeDetails,
     updateExtraTradeDetails,
   };
