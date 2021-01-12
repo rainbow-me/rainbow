@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import { captureException } from '@sentry/react-native';
 import { BigNumber } from 'bignumber.js';
-import { get, isEmpty } from 'lodash';
+import { get, isEmpty, keys } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, InteractionManager, TurboModuleRegistry } from 'react-native';
 import Animated, {
@@ -25,12 +25,15 @@ import { Emoji, Text } from '../components/text';
 import { getTransaction, toHex } from '../handlers/web3';
 import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 import TransactionTypes from '../helpers/transactionTypes';
-import { sendTransaction } from '../model/wallet';
+import { loadWallet, sendTransaction } from '../model/wallet';
 import { gweiToWei, weiToGwei } from '../parsers/gas';
 import { getTitle } from '../parsers/transactions';
+import { executeRap } from '../raps/common';
 import { dataUpdateTransaction } from '../redux/data';
 import { explorerInit } from '../redux/explorer';
 import { updateGasPriceForSpeed } from '../redux/gas';
+import { rapsAddOrUpdate } from '../redux/raps';
+import store from '../redux/store';
 import { safeAreaInsetValues } from '../utils';
 import deviceUtils from '../utils/deviceUtils';
 import {
@@ -99,6 +102,8 @@ const text = {
   [SPEED_UP]: `This will speed up your pending transaction by replacing it. There’s still a chance your original transaction will confirm first!`,
 };
 
+let existingWallet;
+
 const calcMinGasPriceAllowed = prevGasPrice => {
   const prevGasPriceBN = new BigNumber(prevGasPrice);
 
@@ -150,11 +155,7 @@ export default function SpeedUpAndCancelSheet() {
 
   const reloadTransactions = useCallback(
     transaction => {
-      if (
-        (transaction.status === TransactionStatusTypes.speeding_up ||
-          transaction.status === TransactionStatusTypes.cancelling) &&
-        transaction.type !== TransactionTypes.send
-      ) {
+      if (transaction.type !== TransactionTypes.send) {
         logger.log('Reloading zerion in 5!');
         setTimeout(() => {
           logger.log('Reloading tx from zerion NOW!');
@@ -162,6 +163,33 @@ export default function SpeedUpAndCancelSheet() {
         }, 5000);
         return;
       }
+    },
+    [dispatch]
+  );
+
+  const replaceRapActionTx = useCallback(
+    (originalHash, newTxData) => {
+      // 1 - Find the rap based on the orignal tx hash
+      let currentRap;
+      const { raps } = store.getState().raps;
+      keys(raps).forEach(rapId => {
+        const rap = raps[rapId];
+        rap.actions.forEach((action, index) => {
+          if (action.transaction?.hash === originalHash) {
+            // 2 - Set the new tx hash on the rap
+            if (!action.transaction?.confirmed) {
+              rap.actions[index].transaction = {
+                ...rap.actions[index].transaction,
+                ...newTxData,
+              };
+              // 3 - Update the rap on redux with the new tx hash
+              dispatch(rapsAddOrUpdate(rap.id, rap));
+              currentRap = rap;
+            }
+          }
+        });
+      });
+      return currentRap;
     },
     [dispatch]
   );
@@ -216,8 +244,10 @@ export default function SpeedUpAndCancelSheet() {
         to: tx.to,
         value,
       };
+      existingWallet = await loadWallet();
       const originalHash = tx.hash;
       const { hash } = await sendTransaction({
+        existingWallet,
         transaction: fasterTxPayload,
       });
       const updatedTx = { ...tx };
@@ -228,8 +258,36 @@ export default function SpeedUpAndCancelSheet() {
       }
       updatedTx.status = TransactionStatusTypes.speeding_up;
       updatedTx.title = getTitle(updatedTx);
+      const originalHashNormalized = originalHash.split('-')[0];
+      replaceRapActionTx(originalHashNormalized, { hash });
+
       dispatch(
-        dataUpdateTransaction(originalHash, updatedTx, true, reloadTransactions)
+        dataUpdateTransaction(
+          originalHash,
+          updatedTx,
+          true,
+          async transaction => {
+            const hashNormalized = transaction.hash.split('-')[0];
+            // The tx was confirmed
+            const currentRap = replaceRapActionTx(hashNormalized, {
+              confirmed: true,
+            });
+
+            // If there's a rap, we need to resume the execution
+            if (currentRap && existingWallet) {
+              logger.log('Resuming rap', currentRap);
+              try {
+                await executeRap(existingWallet, currentRap);
+              } catch (e) {
+                logger.log('Error resuming rap', e);
+              } finally {
+                existingWallet = null;
+              }
+            }
+            logger.log('reloading transactions');
+            reloadTransactions(transaction);
+          }
+        )
       );
     } catch (e) {
       logger.log('Error submitting speed up tx', e);
@@ -244,6 +302,7 @@ export default function SpeedUpAndCancelSheet() {
     goBack,
     nonce,
     reloadTransactions,
+    replaceRapActionTx,
     tx,
     value,
   ]);
