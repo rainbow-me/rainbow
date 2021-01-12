@@ -5,7 +5,6 @@ import { find, get, isEmpty } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import { useDispatch } from 'react-redux';
-import { useNavigation } from '../navigation/Navigation';
 import useAccountAssets from './useAccountAssets';
 import useAccountSettings from './useAccountSettings';
 import { delayNext } from './useMagicAutofocus';
@@ -14,6 +13,7 @@ import useUniswapAssetsInWallet from './useUniswapAssetsInWallet';
 import useUniswapCalls from './useUniswapCalls';
 import CurrencySelectionTypes from '@rainbow-me/helpers/currencySelectionTypes';
 import { multiply } from '@rainbow-me/helpers/utilities';
+import { useNavigation } from '@rainbow-me/navigation';
 import {
   multicallAddListeners,
   multicallUpdateOutdatedListeners,

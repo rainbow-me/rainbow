@@ -2,13 +2,13 @@ import React, { useContext } from 'react';
 import { View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
-import { borders, colors, position } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered, Row } from '../layout';
 import DiscoverSheetContext from './DiscoverSheetContext';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import { borders, colors, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const Header = styled(Row).attrs({

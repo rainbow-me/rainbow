@@ -1,10 +1,10 @@
 import { useRoute } from '@react-navigation/native';
 import { useCallback, useMemo } from 'react';
 import { Alert, InteractionManager } from 'react-native';
-import AssetInputTypes from '../helpers/assetInputTypes';
-import { useNavigation } from '../navigation/Navigation';
 import useAsset from './useAsset';
 import useWallets from './useWallets';
+import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
+import { useNavigation } from '@rainbow-me/navigation';
 
 export default function useExpandedStateNavigation(inputType) {
   const { goBack, navigate } = useNavigation();
