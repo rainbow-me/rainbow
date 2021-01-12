@@ -136,7 +136,7 @@ export default function useUniswapMarketDetails({
         setIsSufficientBalance(true);
       } else {
         if (!tradeDetails) return;
-        const rawUpdatedInputAmount = tradeDetails.inputAmount.toExact();
+        const rawUpdatedInputAmount = tradeDetails?.inputAmount?.toExact();
 
         const updatedInputAmountDisplay = updatePrecisionToDisplay(
           rawUpdatedInputAmount,
@@ -177,7 +177,7 @@ export default function useUniswapMarketDetails({
         updateOutputAmount(null, null, true);
       } else {
         if (!tradeDetails) return;
-        const rawUpdatedOutputAmount = tradeDetails.outputAmount.toExact();
+        const rawUpdatedOutputAmount = tradeDetails?.outputAmount?.toExact();
         if (!isZero(rawUpdatedOutputAmount)) {
           const { outputPriceValue } = extraTradeDetails;
           const updatedOutputAmountDisplay = updatePrecisionToDisplay(
