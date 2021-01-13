@@ -112,11 +112,11 @@ export const walletConnectOnSessionRequest = (
       walletConnector = new WalletConnect({ clientMeta, uri }, push);
       walletConnector.on('session_request', (error, payload) => {
         if (error) {
-          analytics.track('Error on new wc session', {
+          analytics.track('Error on wc session_request', {
             error,
             payload,
           });
-          logger.log('Error on wc session_request');
+          logger.log('Error on wc session_request', payload);
           captureException(error);
           throw error;
         }
@@ -165,7 +165,7 @@ export const walletConnectOnSessionRequest = (
       });
     } catch (error) {
       logger.log('Exception during wc session_request');
-      analytics.track('Error on new wc session', {
+      analytics.track('Exception on wc session_request', {
         error,
       });
       captureException(error);
@@ -173,7 +173,7 @@ export const walletConnectOnSessionRequest = (
     }
   } catch (error) {
     logger.log('FCM exception during wc session_request');
-    analytics.track('FCM exception on new WalletConnect session', {
+    analytics.track('FCM exception on wc session_request', {
       error,
     });
     captureException(error);
