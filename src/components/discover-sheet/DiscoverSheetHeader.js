@@ -102,7 +102,7 @@ function Stack({
         <Animated.View
           style={[{ left, top: 19, zIndex: 10 }, animatedWrapperStyle]}
         >
-          <Animated.View style={(animatedStyleHide, { position: 'absolute' })}>
+          <Animated.View style={[animatedStyleHide, { position: 'absolute' }]}>
             {children[0]}
           </Animated.View>
           <Animated.View style={animatedStyle}>{children[1]}</Animated.View>
