@@ -24,7 +24,7 @@ export default function ChartContextButton({ asset, color }) {
   }, [asset, clearSelectedCoins, currentAction, pushSelectedCoin]);
 
   const handleActionSheetPress = useCallback(
-    async buttonIndex => {
+    buttonIndex => {
       if (buttonIndex === 0) {
         // 📌️ Pin
         setPinnedCoins();
@@ -33,7 +33,7 @@ export default function ChartContextButton({ asset, color }) {
         setHiddenCoins();
       } else if (buttonIndex === 2 && asset?.address !== 'eth') {
         // 🔍 View on Etherscan
-        await ethereumUtils.openTokenEtherscanURL(asset?.address);
+        ethereumUtils.openTokenEtherscanURL(asset?.address);
       }
     },
     [asset?.address, setHiddenCoins, setPinnedCoins]

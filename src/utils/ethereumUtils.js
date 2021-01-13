@@ -20,7 +20,6 @@ import {
 import { Linking, NativeModules } from 'react-native';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import URL from 'url-parse';
-import { getNetwork } from '@rainbow-me/handlers/localstorage/globalSettings';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   fromWei,
@@ -34,6 +33,7 @@ import {
   identifyWalletType,
   WalletLibraryType,
 } from '@rainbow-me/model/wallet';
+import store from '@rainbow-me/redux/store';
 import { chains } from '@rainbow-me/references';
 import logger from 'logger';
 
@@ -122,8 +122,8 @@ const getChainIdFromNetwork = network => {
  * @desc get etherscan host from network string
  * @param  {String} network
  */
-async function getEtherscanHostForNetwork() {
-  const network = await getNetwork();
+function getEtherscanHostForNetwork() {
+  const { network } = store.getState().settings;
   const base_host = 'etherscan.io';
   if (network === networkTypes.mainnet) {
     return base_host;
@@ -262,15 +262,15 @@ const deriveAccountFromWalletInput = input => {
   return deriveAccountFromMnemonic(input);
 };
 
-async function openTokenEtherscanURL(address) {
+function openTokenEtherscanURL(address) {
   if (!isString(address)) return;
-  const etherscanHost = await getEtherscanHostForNetwork();
+  const etherscanHost = getEtherscanHostForNetwork();
   Linking.openURL(`https://${etherscanHost}/token/${address}`);
 }
 
-async function openTransactionEtherscanURL(hash) {
+function openTransactionEtherscanURL(hash) {
   if (!isString(hash)) return;
-  const etherscanHost = await getEtherscanHostForNetwork();
+  const etherscanHost = getEtherscanHostForNetwork();
   const normalizedHash = hash.replace(/-.*/g, '');
   Linking.openURL(`https://${etherscanHost}/tx/${normalizedHash}`);
 }

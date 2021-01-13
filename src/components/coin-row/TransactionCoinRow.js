@@ -148,7 +148,7 @@ export default function TransactionCoinRow({ item, ...props }) {
             ? `${headerInfo.type} ${date} ${headerInfo.divider} ${headerInfo.address}`
             : `${headerInfo.type} ${date}`,
         },
-        async buttonIndex => {
+        buttonIndex => {
           const action = buttons[buttonIndex];
           switch (action) {
             case TransactionActions.viewContact:
@@ -174,7 +174,7 @@ export default function TransactionCoinRow({ item, ...props }) {
               });
               break;
             case TransactionActions.viewOnEtherscan: {
-              await ethereumUtils.openTransactionEtherscanURL(hash);
+              ethereumUtils.openTransactionEtherscanURL(hash);
               break;
             }
             default:

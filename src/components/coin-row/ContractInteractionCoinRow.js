@@ -24,9 +24,9 @@ export default function ContractInteractionCoinRow({
         cancelButtonIndex: 1,
         options: ['View on Etherscan', 'Cancel'],
       },
-      async buttonIndex => {
+      buttonIndex => {
         if (buttonIndex === 0) {
-          await ethereumUtils.openTransactionEtherscanURL(hash);
+          ethereumUtils.openTransactionEtherscanURL(hash);
         }
       }
     );
