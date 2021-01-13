@@ -20,12 +20,12 @@ import ShadowStack from 'react-native-shadow-stack';
 const springConfig = {
   damping: 20,
   mass: 1,
+  overshootClamping: true,
   stiffness: 400,
 };
 
 const Header = styled.View`
   flex-direction: row;
-  height: 59;
   justify-content: space-between;
   margin-vertical: 12;
   position: absolute;
@@ -73,7 +73,9 @@ function Stack({
   }));
   const animatedStyleShadow = useAnimatedStyle(() => ({
     opacity: isVisible.value,
-    transform: [{ scale: isVisible.value + (0.6 - isVisible.value * 0.6) }],
+    ...(ios && {
+      transform: [{ scale: isVisible.value + (0.6 - isVisible.value * 0.6) }],
+    }),
   }));
 
   return (
@@ -144,7 +146,7 @@ export default function DiscoverSheetHeader(props) {
     },
     [buttonOpacity]
   );
-  useEffect(() => addOnCrossMagicBorderListener(onCrossMagicBorder), [
+  useEffect(() => addOnCrossMagicBorderListener?.(onCrossMagicBorder), [
     addOnCrossMagicBorderListener,
     onCrossMagicBorder,
   ]);
@@ -180,8 +182,8 @@ export default function DiscoverSheetHeader(props) {
         disabled={!buttonsEnabled}
         left={18.5}
         onPress={() => {
-          setIsSearchModeEnabled(false);
-          setViewPagerSwipeEnabled(true);
+          setIsSearchModeEnabled?.(false);
+          setViewPagerSwipeEnabled?.(true);
           jumpToShort?.();
         }}
         stackOpacity={stackOpacity}

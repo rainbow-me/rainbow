@@ -8,11 +8,10 @@ import React, {
   useState,
 } from 'react';
 import { findNodeHandle, NativeModules, View } from 'react-native';
-// import {
-//   useAnimatedScrollHandler,
-//   useDerivedValue,
-//   useSharedValue,
-// } from 'react-native-reanimated';
+import {
+  useAnimatedScrollHandler,
+  useSharedValue,
+} from 'react-native-reanimated';
 import { useSafeArea } from 'react-native-safe-area-context';
 // eslint-disable-next-line import/no-unresolved
 import SlackBottomSheet from 'react-native-slack-bottom-sheet';
@@ -29,7 +28,7 @@ function useAreHeaderButtonVisible() {
   return [{ isSearchModeEnabled, setIsSearchModeEnabled }, isSearchModeEnabled];
 }
 
-const snapPoints = ['25%', deviceUtils.dimensions.height - 50];
+const snapPoints = ['25%', deviceUtils.dimensions.height - 100];
 
 const DiscoverSheetAndroid = () => {
   const [headerButtonsHandlers, deps] = useAreHeaderButtonVisible();
@@ -41,15 +40,12 @@ const DiscoverSheetAndroid = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [deps]
   );
+
+  const yPosition = useSharedValue(0);
   const bottomSheetModalRef = useRef(null);
-  // const scrollHandler = useAnimatedScrollHandler(event => {
-  //   console.log(event.contentOffset.y);
-  // });
-  //
-  // const yPos = useSharedValue(0);
-  // const y = useDerivedValue(() => {
-  //   console.log(yPos.value);
-  // });
+  const scrollHandler = useAnimatedScrollHandler(event => {
+    yPosition.value = event.contentOffset.y;
+  });
 
   return (
     <DiscoverSheetContext.Provider value={value}>
@@ -62,9 +58,8 @@ const DiscoverSheetAndroid = () => {
         ref={bottomSheetModalRef}
         snapPoints={snapPoints}
       >
-        <BottomSheetScrollView
-        // onScroll={scrollHandler}
-        >
+        <DiscoverSheetHeader yPosition={yPosition} />
+        <BottomSheetScrollView onScroll={scrollHandler}>
           <DiscoverSheetContent />
           {/* placeholder for now */}
           <View style={{ backgroundColor: 'red', height: 400, width: 100 }} />
