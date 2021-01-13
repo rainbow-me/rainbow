@@ -26,7 +26,7 @@ platform :ios do
 
     release_version = "me.rainbow-#{version_from_plist}"
 
-    dist = (latest_testflight_build_number(version: get_version_number(target: "Rainbow")) + 1).to_s
+    dist = (latest_testflight_build_number(version: get_version_number(target: "Rainbow")) + 2).to_s
 
     sentry_create_release(
       finalize: true, # Whether to finalize the release. If not provided or false, the release can be finalized using the sentry_finalize_release action
