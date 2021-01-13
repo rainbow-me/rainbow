@@ -2,6 +2,7 @@ import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useIsFocused } from '@react-navigation/native';
 import React, {
   forwardRef,
+  useCallback,
   useImperativeHandle,
   useMemo,
   useRef,
@@ -9,6 +10,8 @@ import React, {
 } from 'react';
 import { findNodeHandle, NativeModules, View } from 'react-native';
 import {
+  runOnJS,
+  useAnimatedReaction,
   useAnimatedScrollHandler,
   useSharedValue,
 } from 'react-native-reanimated';
@@ -33,8 +36,15 @@ const snapPoints = ['25%', deviceUtils.dimensions.height - 100];
 const DiscoverSheetAndroid = () => {
   const [headerButtonsHandlers, deps] = useAreHeaderButtonVisible();
 
+  const listeners = useRef([]);
+
   const value = useMemo(
     () => ({
+      addOnCrossMagicBorderListener(listener) {
+        listeners.current.push(listener);
+        return () =>
+          listeners.current.splice(listeners.current.indexOf(listener), 1);
+      },
       ...headerButtonsHandlers,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -47,11 +57,30 @@ const DiscoverSheetAndroid = () => {
     yPosition.value = event.contentOffset.y;
   });
 
+  const notifyListeners = useCallback(
+    value => listeners.current.forEach(listener => listener(value)),
+    []
+  );
+
+  const sheetPosition = useSharedValue(0);
+
+  const hasCrossedTheMagicBorder = useSharedValue(false);
+  useAnimatedReaction(
+    () => sheetPosition.value > 150,
+    hasJustCrossedTheMagicBorder => {
+      if (hasCrossedTheMagicBorder.value !== hasJustCrossedTheMagicBorder) {
+        runOnJS(notifyListeners)(hasJustCrossedTheMagicBorder);
+        hasCrossedTheMagicBorder.value = hasJustCrossedTheMagicBorder;
+      }
+    },
+    [notifyListeners]
+  );
+
   return (
     <DiscoverSheetContext.Provider value={value}>
       <BottomSheet
         activeOffsetY={[-0.5, 0.5]}
-        // animatedPosition={yPos}
+        animatedPosition={sheetPosition}
         animationDuration={300}
         failOffsetX={[-10, 10]}
         index={1}
@@ -79,8 +108,8 @@ function DiscoverSheetIOS(_, forwardedRef) {
     () => ({
       addOnCrossMagicBorderListener(listener) {
         listeners.current.push(listener);
-        const index = listeners.current.length - 1;
-        return () => listeners.current.splice(index, 1);
+        return () =>
+          listeners.current.splice(listeners.current.indexOf(listener), 1);
       },
       jumpToLong() {
         const screen = findNodeHandle(ref.current);
@@ -115,8 +144,8 @@ function DiscoverSheetIOS(_, forwardedRef) {
         initialAnimation={false}
         interactsWithOuterScrollView
         isHapticFeedbackEnabled={false}
-        onCrossMagicBorder={({ nativeEvent }) =>
-          listeners.current.forEach(listener => listener(nativeEvent))
+        onCrossMagicBorder={({ nativeEvent: { below } }) =>
+          listeners.current.forEach(listener => listener(below))
         }
         presentGlobally={false}
         ref={ref}

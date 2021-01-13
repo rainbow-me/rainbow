@@ -140,7 +140,7 @@ export default function DiscoverSheetHeader(props) {
     useContext(DiscoverSheetContext) || {};
 
   const onCrossMagicBorder = useCallback(
-    ({ below }) => {
+    below => {
       buttonOpacity.value = below ? 0 : 1;
       setButtonsEnabled(!below);
     },
