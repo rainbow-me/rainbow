@@ -111,7 +111,16 @@ export const walletConnectOnSessionRequest = (
     try {
       walletConnector = new WalletConnect({ clientMeta, uri }, push);
       walletConnector.on('session_request', (error, payload) => {
-        if (error) throw error;
+        if (error) {
+          analytics.track('Error on new wc session', {
+            error,
+            payload,
+          });
+          logger.log('Error on wc session_request');
+          captureException(error);
+          throw error;
+        }
+
         const { peerId, peerMeta } = payload.params[0];
 
         const imageUrl =
@@ -119,6 +128,11 @@ export const walletConnectOnSessionRequest = (
         const dappName = dappNameOverride(peerMeta.url) || peerMeta.name;
         const dappUrl = peerMeta.url;
         const dappScheme = peerMeta.scheme;
+
+        analytics.track('New Walletconnect session request', {
+          dappName,
+          dappUrl,
+        });
 
         Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {
           callback: async approved => {
@@ -150,10 +164,19 @@ export const walletConnectOnSessionRequest = (
         });
       });
     } catch (error) {
+      logger.log('Exception during wc session_request');
+      analytics.track('Error on new wc session', {
+        error,
+      });
       captureException(error);
       Alert.alert(lang.t('wallet.wallet_connect.error'));
     }
   } catch (error) {
+    logger.log('FCM exception during wc session_request');
+    analytics.track('FCM exception on new WalletConnect session', {
+      error,
+    });
+    captureException(error);
     Alert.alert(lang.t('wallet.wallet_connect.missing_fcm'));
   }
 };
@@ -161,7 +184,15 @@ export const walletConnectOnSessionRequest = (
 const listenOnNewMessages = walletConnector => (dispatch, getState) => {
   walletConnector.on('call_request', async (error, payload) => {
     logger.log('WC Request!', error, payload);
-    if (error) throw error;
+    if (error) {
+      analytics.track('Error on wc call_request', {
+        error,
+        payload,
+      });
+      logger.log('Error on wc call_request');
+      captureException(error);
+      throw error;
+    }
     const { clientId, peerId, peerMeta } = walletConnector;
     const requestId = payload.id;
     if (!isSigningMethod(payload.method)) {
@@ -199,6 +230,7 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
         : null;
 
       if (request) {
+        analytics.track('Showing wc call_request');
         InteractionManager.runAfterInteractions(() => {
           setTimeout(() => {
             Navigation.handleAction(Routes.CONFIRM_REQUEST, {
@@ -243,6 +275,11 @@ export const walletConnectLoadState = () => async (dispatch, getState) => {
       return dispatch(listenOnNewMessages(walletConnector));
     });
   } catch (error) {
+    analytics.track('Error on walletConnectLoadState', {
+      error,
+    });
+    logger.log('Error on wc walletConnectLoadState', error);
+    captureException(error);
     newWalletConnectors = {};
   }
   if (!isEmpty(newWalletConnectors)) {
