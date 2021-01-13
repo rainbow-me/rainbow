@@ -129,7 +129,7 @@ export const walletConnectOnSessionRequest = (
         const dappUrl = peerMeta.url;
         const dappScheme = peerMeta.scheme;
 
-        analytics.track('New Walletconnect session request', {
+        analytics.track('Showing Walletconnect session request', {
           dappName,
           dappUrl,
         });
@@ -230,7 +230,7 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
         : null;
 
       if (request) {
-        analytics.track('Showing wc call_request');
+        analytics.track('Showing Walletconnect signing request');
         InteractionManager.runAfterInteractions(() => {
           setTimeout(() => {
             Navigation.handleAction(Routes.CONFIRM_REQUEST, {
