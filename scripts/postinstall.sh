@@ -1,6 +1,17 @@
 #!/bin/bash
-
 set -eo pipefail
+
+# Execute the prebuild script, if defined. Note, this is just useful for CI.
+# You don't need to have this variable defined in order to use the project.
+if [ -n "$RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK" ]; then
+  eval $RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK;
+  echo "✅ executed ios prebuild hook"
+fi
+
+# When installing, new native modules may have been installed so we'll attempt to
+# cache these here to avoid synchronization errors.
+yarn install-bundle && yarn install-pods
+echo "✅ pods installed successfully"
 
 # Specifying ONLY the node packages that we need to install via browserify
 # (because those aren't available in react native) and some of our deps require them.

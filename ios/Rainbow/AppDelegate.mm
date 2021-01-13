@@ -17,7 +17,6 @@
 #import <RNCPushNotificationIOS.h>
 #import <Sentry/Sentry.h>
 #import "RNSplashScreen.h"
-#import <Rainbow-Internals/Internals.h>
 
 #if DEBUG
 #import <FlipperKit/FlipperClient.h>

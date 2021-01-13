@@ -33,17 +33,13 @@ If you are new to React Native, this is a helpful introduction: https://facebook
     * ETH Gas Station: https://docs.ethgasstation.info/
     * Imgix: https://www.imgix.com/
 
-4. Run `yarn` to get all of the packages required.
+4. Run `yarn` to get all of the packages and pods required.
 
-5. Run `yarn install-bundle`.
+5. Run `yarn start` to start the React Native Bundler.
 
-6. Install required Pods by running `yarn install-pods`.
+6. Open `rainbow-wallet/ios/RainbowWallet.xcworkspace` in XCode.
 
-7. Run `yarn start` to start the React Native Bundler.
-
-8. Open `rainbow-wallet/ios/RainbowWallet.xcworkspace` in XCode.
-
-9. Run the project by clicking the play button.
+7. Run the project by clicking the play button.
 
 ## CodePush
 
