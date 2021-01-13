@@ -17,6 +17,7 @@
 #import <RNCPushNotificationIOS.h>
 #import <Sentry/Sentry.h>
 #import "RNSplashScreen.h"
+#import <Rainbow-Internals/Internals.h>
 
 #if DEBUG
 #import <FlipperKit/FlipperClient.h>
@@ -54,8 +55,6 @@ RCT_EXPORT_METHOD(hideAnimated) {
 
 @end
 
-
-
 @implementation AppDelegate
 - (void)hideSplashScreenAnimated {
   UIView* subview = self.window.rootViewController.view.subviews.lastObject;
@@ -77,6 +76,9 @@ RCT_EXPORT_METHOD(hideAnimated) {
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  // Developer support; define whether internal support has been declared for this build.
+  NSLog(@"⚙️ Rainbow internals are %@.", RAINBOW_INTERNALS_ENABLED ? @"enabled" : @"disabled");
+  
   #if DEBUG
     InitializeFlipper(application);
   #endif
