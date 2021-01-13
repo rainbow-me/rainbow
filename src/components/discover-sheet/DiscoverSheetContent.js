@@ -16,6 +16,10 @@ const HeaderTitle = styled(Text).attrs({
   weight: 'heavy',
 })``;
 
+const Spacer = styled.View`
+  height: 16;
+`;
+
 export default function DiscoverSheetContent() {
   const [showSearch, setShowSearch] = useState(false);
 
@@ -23,6 +27,7 @@ export default function DiscoverSheetContent() {
   return (
     <>
       <HeaderTitle>{showSearch ? 'Search' : 'Discover'}</HeaderTitle>
+      {android && <Spacer />}
       <ColumnWithMargins flex={1} margin={42}>
         <DiscoverSearchContainer
           ref={ref}
