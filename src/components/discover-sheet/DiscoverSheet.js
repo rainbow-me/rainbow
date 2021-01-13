@@ -16,6 +16,7 @@ import { findNodeHandle, NativeModules, View } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 // eslint-disable-next-line import/no-unresolved
 import SlackBottomSheet from 'react-native-slack-bottom-sheet';
+import deviceUtils from '../../utils/deviceUtils';
 import { SlackSheet } from '../sheet';
 import DiscoverSheetContent from './DiscoverSheetContent';
 import DiscoverSheetContext from './DiscoverSheetContext';
@@ -28,6 +29,8 @@ function useAreHeaderButtonVisible() {
   return [{ isSearchModeEnabled, setIsSearchModeEnabled }, isSearchModeEnabled];
 }
 
+const snapPoints = ['25%', deviceUtils.dimensions.height - 50];
+
 const DiscoverSheetAndroid = () => {
   const [headerButtonsHandlers, deps] = useAreHeaderButtonVisible();
 
@@ -39,7 +42,6 @@ const DiscoverSheetAndroid = () => {
     [deps]
   );
   const bottomSheetModalRef = useRef(null);
-  const snapPoints = useMemo(() => ['25%', '80%'], []);
   // const scrollHandler = useAnimatedScrollHandler(event => {
   //   console.log(event.contentOffset.y);
   // });
