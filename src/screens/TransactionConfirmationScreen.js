@@ -234,6 +234,10 @@ const TransactionConfirmationScreen = () => {
   );
 
   useEffect(() => {
+    analytics.track('Shown Walletconnect signing request');
+  }, []);
+
+  useEffect(() => {
     if (openAutomatically && !isEmulatorSync()) {
       Vibration.vibrate();
     }
