@@ -70,7 +70,7 @@ const Label = styled(BiometricButtonContent).attrs(({ smallButton }) => ({
   size: smallButton ? 'large' : 'larger',
   weight: 'bold',
 }))`
-  margin-bottom: 4;
+  bottom: 2;
 `;
 
 const animate = (value, { duration = buttonScaleDurationMs, toValue }) =>
