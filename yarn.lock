@@ -1513,10 +1513,10 @@
     "@ethersproject/properties" "^5.0.3"
     "@ethersproject/strings" "^5.0.4"
 
-"@gorhom/bottom-sheet@3.0.2-alpha.2":
-  version "3.0.2-alpha.2"
-  resolved "https://registry.yarnpkg.com/@gorhom/bottom-sheet/-/bottom-sheet-3.0.2-alpha.2.tgz#4ecac12836da0d49c315246e64c8ebaf432d0f48"
-  integrity sha512-5y6kKbcc2HPuT4Ym0HDJKJiUcdv0NMGiu5VV0G7IB2y03343mhE41J1ipQrpZ8EX/ynieOyIcN1JwNZSZEFc2w==
+"@gorhom/bottom-sheet@3.0.2-alpha.3":
+  version "3.0.2-alpha.3"
+  resolved "https://registry.yarnpkg.com/@gorhom/bottom-sheet/-/bottom-sheet-3.0.2-alpha.3.tgz#2c9892a895a6da2708bf4ef551dc995f979f52dc"
+  integrity sha512-SVNHsfK0PkUEB7njY5YiOS7el1teqplvNDGrnhyzD75Prs59Gt+cbbiNAY9wO/OWw7LaaF3xGTDgftq6hZuFVg==
   dependencies:
     "@gorhom/portal" "^0.1.4"
     invariant "^2.2.4"

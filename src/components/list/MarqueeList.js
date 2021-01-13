@@ -8,7 +8,6 @@ import React, {
 import {
   LongPressGestureHandler,
   PanGestureHandler,
-  ScrollView,
   State,
   TapGestureHandler,
 } from 'react-native-gesture-handler';
@@ -58,8 +57,6 @@ export const useReanimatedValue = initialValue => {
 
   return value.current;
 };
-
-const Wrapper = ios ? ({ children }) => children : ScrollView;
 
 const SwipeableList = ({ components, speed }) => {
   const dragX = useReanimatedValue(0);
@@ -126,21 +123,20 @@ const SwipeableList = ({ components, speed }) => {
   const panRef = useRef();
   const lpRef = useRef();
   const tapRef = useRef();
-  const svRef = useRef();
 
   return (
     <LongPressGestureHandler
       maxDist={100000}
       maxPointers={1}
       ref={lpRef}
-      simultaneousHandlers={[panRef, tapRef, svRef]}
+      simultaneousHandlers={[panRef, tapRef]}
     >
       <Animated.View>
         <TapGestureHandler
           onGestureEvent={onLPGestureEvent}
           onHandlerStateChange={onLPGestureEvent}
           ref={tapRef}
-          simultaneousHandlers={[panRef, lpRef, svRef]}
+          simultaneousHandlers={[panRef, lpRef]}
         >
           <Animated.View>
             <PanGestureHandler
@@ -148,47 +144,36 @@ const SwipeableList = ({ components, speed }) => {
               onGestureEvent={onGestureEvent}
               onHandlerStateChange={onGestureEvent}
               ref={panRef}
-              simultaneousHandlers={[lpRef, tapRef, svRef]}
+              simultaneousHandlers={[lpRef, tapRef]}
             >
               <Animated.View style={{ height: 53, width: '100%' }}>
-                <Wrapper
-                  contentContainerStyle={{
-                    width: '110%',
+                <Animated.View
+                  style={{
+                    flexDirection: 'row',
                   }}
-                  horizontal
-                  overScrollMode="never"
-                  ref={svRef}
-                  showsHorizontalScrollIndicator={false}
-                  simultaneousHandlers={[panRef, lpRef, tapRef]}
                 >
-                  <Animated.View
-                    style={{
-                      flexDirection: 'row',
-                    }}
-                  >
-                    {components.map(({ view, offset, width }, index) => (
-                      <Animated.View
-                        key={`${offset}-${index}`}
-                        style={{
-                          position: 'absolute',
-                          transform: [
-                            {
-                              translateX: sub(
-                                modulo(
-                                  add(transXWrapped, offset, width),
-                                  sumWidth || 0
-                                ),
-                                width
+                  {components.map(({ view, offset, width }, index) => (
+                    <Animated.View
+                      key={`${offset}-${index}`}
+                      style={{
+                        position: 'absolute',
+                        transform: [
+                          {
+                            translateX: sub(
+                              modulo(
+                                add(transXWrapped, offset, width),
+                                sumWidth || 0
                               ),
-                            },
-                          ],
-                        }}
-                      >
-                        {view}
-                      </Animated.View>
-                    ))}
-                  </Animated.View>
-                </Wrapper>
+                              width
+                            ),
+                          },
+                        ],
+                      }}
+                    >
+                      {view}
+                    </Animated.View>
+                  ))}
+                </Animated.View>
               </Animated.View>
             </PanGestureHandler>
           </Animated.View>

@@ -1,5 +1,5 @@
 diff --git a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/BottomSheet.tsx b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/BottomSheet.tsx
-index 43fe860..b682c27 100644
+index 96de0dd..5342e69 100644
 --- a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/BottomSheet.tsx
 +++ b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/BottomSheet.tsx
 @@ -18,7 +18,7 @@ import Animated, {

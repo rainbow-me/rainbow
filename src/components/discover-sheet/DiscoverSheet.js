@@ -7,13 +7,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import {
-  findNodeHandle,
-  NativeModules,
-  ScrollView,
-  StyleSheet,
-  View,
-} from 'react-native';
+import { findNodeHandle, NativeModules, View } from 'react-native';
 // import {
 //   useAnimatedScrollHandler,
 //   useDerivedValue,
@@ -57,30 +51,23 @@ const DiscoverSheetAndroid = () => {
 
   return (
     <DiscoverSheetContext.Provider value={value}>
-      <ScrollView
-        contentContainerStyle={{ height: '100.1%' }}
-        overScrollMode="never"
-        showsVerticalScrollIndicator={false}
-        style={StyleSheet.absoluteFillObject}
+      <BottomSheet
+        activeOffsetY={[-0.5, 0.5]}
+        // animatedPosition={yPos}
+        animationDuration={300}
+        failOffsetX={[-10, 10]}
+        index={1}
+        ref={bottomSheetModalRef}
+        snapPoints={snapPoints}
       >
-        <BottomSheet
-          activeOffsetY={[-0.5, 0.5]}
-          // animatedPosition={yPos}
-          animationDuration={300}
-          failOffsetX={[-10, 10]}
-          index={1}
-          ref={bottomSheetModalRef}
-          snapPoints={snapPoints}
+        <BottomSheetScrollView
+        // onScroll={scrollHandler}
         >
-          <BottomSheetScrollView
-          // onScroll={scrollHandler}
-          >
-            <DiscoverSheetContent />
-            {/* placeholder for now */}
-            <View style={{ backgroundColor: 'red', height: 400, width: 100 }} />
-          </BottomSheetScrollView>
-        </BottomSheet>
-      </ScrollView>
+          <DiscoverSheetContent />
+          {/* placeholder for now */}
+          <View style={{ backgroundColor: 'red', height: 400, width: 100 }} />
+        </BottomSheetScrollView>
+      </BottomSheet>
     </DiscoverSheetContext.Provider>
   );
 };
