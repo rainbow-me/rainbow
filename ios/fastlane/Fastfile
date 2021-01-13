@@ -50,7 +50,7 @@ platform :ios do
   desc "Submit a new Beta build to Apple TestFlight"
   lane :beta do
     increment_build_number({
-      build_number: latest_testflight_build_number(version: get_version_number(target: "Rainbow")) + 1
+      build_number: latest_testflight_build_number(version: get_version_number(target: "Rainbow")) + 2
     })
 
     update_info_plist(
