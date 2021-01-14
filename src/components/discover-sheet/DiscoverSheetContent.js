@@ -21,9 +21,21 @@ const Spacer = styled.View`
   height: 16;
 `;
 
+function Switcher({ showSearch, children }) {
+  return (
+    <>
+      <View style={{ display: showSearch ? 'flex' : 'none' }}>
+        {children[0]}
+      </View>
+      <View style={{ display: showSearch ? 'none' : 'flex' }}>
+        {children[1]}
+      </View>
+    </>
+  );
+}
+
 export default function DiscoverSheetContent() {
   const [showSearch, setShowSearch] = useState(false);
-
   const ref = useRef();
   return (
     <>
@@ -35,14 +47,10 @@ export default function DiscoverSheetContent() {
           setShowSearch={setShowSearch}
           showSearch={showSearch}
         >
-          <>
-            <View style={{ display: showSearch ? 'none' : 'flex' }}>
-              <DiscoverHome />
-            </View>
-            <View style={{ display: showSearch ? 'flex' : 'none' }}>
-              <DiscoverSearch onScrollTop={() => ref.current?.focus()} />
-            </View>
-          </>
+          <Switcher showSearch={showSearch}>
+            <DiscoverSearch onScrollTop={() => ref.current?.focus()} />
+            <DiscoverHome />
+          </Switcher>
         </DiscoverSearchContainer>
       </ColumnWithMargins>
     </>
