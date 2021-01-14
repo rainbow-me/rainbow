@@ -36,16 +36,12 @@ export default function DiscoverSheetContent() {
           showSearch={showSearch}
         >
           <>
-            {showSearch ? (
-              <DiscoverSearch onScrollTop={() => ref.current?.focus()} />
-            ) : ios ? (
+            <View style={{ display: showSearch ? 'none' : 'flex' }}>
               <DiscoverHome />
-            ) : null}
-            {android && (
-              <View style={{ display: showSearch ? 'none' : 'flex' }}>
-                <DiscoverHome />
-              </View>
-            )}
+            </View>
+            <View style={{ display: showSearch ? 'flex' : 'none' }}>
+              <DiscoverSearch onScrollTop={() => ref.current?.focus()} />
+            </View>
           </>
         </DiscoverSearchContainer>
       </ColumnWithMargins>
