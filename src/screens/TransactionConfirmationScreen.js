@@ -631,9 +631,9 @@ const TransactionConfirmationScreen = () => {
     }
 
     if (isTransactionDisplayType(method) && get(request, 'asset')) {
-      const ethAsset = ethereumUtils.getAsset(genericAssets);
+      const priceOfEther = ethereumUtils.getEthPriceUnit(genericAssets);
       const amount = get(request, 'value', '0.00');
-      const nativeAmount = Number(ethAsset.price.value) * Number(amount);
+      const nativeAmount = Number(priceOfEther) * Number(amount);
       const nativeAmountDisplay = convertAmountToNativeDisplay(
         nativeAmount,
         nativeCurrency
