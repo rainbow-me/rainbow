@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import { View } from 'react-native';
 import styled from 'styled-components/primitives';
 import { ColumnWithMargins } from '../layout';
 import { Text } from '../text';
@@ -34,11 +35,18 @@ export default function DiscoverSheetContent() {
           setShowSearch={setShowSearch}
           showSearch={showSearch}
         >
-          {showSearch ? (
-            <DiscoverSearch onScrollTop={ref.current.focus} />
-          ) : (
-            <DiscoverHome />
-          )}
+          <>
+            {showSearch ? (
+              <DiscoverSearch onScrollTop={() => ref.current?.focus()} />
+            ) : ios ? (
+              <DiscoverHome />
+            ) : null}
+            {android && (
+              <View style={{ display: showSearch ? 'none' : 'flex' }}>
+                <DiscoverHome />
+              </View>
+            )}
+          </>
         </DiscoverSearchContainer>
       </ColumnWithMargins>
     </>
