@@ -12,12 +12,15 @@ fi
 git update-index --assume-unchanged "ios/Internals/ios/Internals.h"
 git update-index --assume-unchanged "ios/Internals/ios/Internals.m"
 git update-index --assume-unchanged "ios/Internals/ios/Internals.swift"
-git update-index --assume-unchanged "ios/Internals/ios/Internals.swift"
+git update-index --assume-unchanged "ios/Internals/ios/Internals-Bridging-Header.h"
 git update-index --assume-unchanged "ios/Extras.json"
 
 # When installing, new native modules may have been installed so we'll attempt to
 # cache these here to avoid synchronization errors.
-yarn install-bundle && yarn install-pods
+
+yarn install-bundle
+yarn install-pods
+
 echo "✅ pods installed successfully"
 
 # Specifying ONLY the node packages that we need to install via browserify
