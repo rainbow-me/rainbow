@@ -39,8 +39,12 @@ import logger from 'logger';
 
 const { RNBip39 } = NativeModules;
 
-const getEthPriceUnit = genericAssets => {
-  return genericAssets?.eth?.price?.value || 0;
+const getEthPriceUnit = () => {
+  const { assets, genericAssets } = store.getState().data;
+  const genericEthPrice = genericAssets?.eth?.price?.value;
+  if (genericEthPrice) return genericEthPrice;
+  const ethInWallet = getAsset(assets);
+  return ethInWallet?.price?.value || 0;
 };
 
 const getBalanceAmount = async (selectedGasPrice, selected) => {
