@@ -73,12 +73,6 @@ RCT_EXPORT_METHOD(hideAnimated) {
   }];
 }
 
-// Reads the contents of Extras.json. This is usually empty.
-- (NSDictionary *)readExtras {
-    NSString *path = [[NSBundle mainBundle] pathForResource:@"Extras" ofType:@"json"];
-    return [NSJSONSerialization JSONObjectWithData: [NSData dataWithContentsOfFile:path] options:kNilOptions error:nil];
-}
-
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   
