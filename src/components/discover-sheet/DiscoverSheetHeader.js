@@ -91,7 +91,11 @@ function Stack({
     transform: [{ translateX: translateX.value }],
   }));
 
-  useLayoutAnimationOnChange(disabled);
+  const { isSearchModeEnabled } = useContext(DiscoverSheetContext);
+
+  const areButtonsVisible = !disabled && !isSearchModeEnabled;
+
+  useLayoutAnimationOnChange(areButtonsVisible);
 
   const animatedStyleShadow = useAnimatedStyle(() => ({
     opacity: isVisible.value,
@@ -124,7 +128,7 @@ function Stack({
         <Animated.View
           style={[
             { left, top: 19, zIndex: 10 },
-            ios ? animatedWrapperStyle : { opacity: disabled ? 0 : 1 },
+            ios ? animatedWrapperStyle : { opacity: areButtonsVisible ? 1 : 0 },
           ]}
         >
           <Animated.View style={[animatedStyleHide, { position: 'absolute' }]}>
