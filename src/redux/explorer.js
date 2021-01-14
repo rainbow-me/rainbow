@@ -227,9 +227,11 @@ export const explorerInit = () => async (dispatch, getState) => {
   }
 };
 
+const tokensListened = {};
+
 export const emitAssetRequest = assetAddress => (dispatch, getState) => {
   const { nativeCurrency } = getState().settings;
-  const { assetsSocket, tokensListened } = getState().explorer;
+  const { assetsSocket } = getState().explorer;
 
   let assetCodes;
   if (assetAddress) {
@@ -348,7 +350,6 @@ const INITIAL_STATE = {
   assetsSocket: null,
   assetsTimeoutHandler: null,
   fallback: false,
-  tokensListened: {},
 };
 
 export default (state = INITIAL_STATE, action) => {
