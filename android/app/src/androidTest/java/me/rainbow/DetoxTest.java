@@ -23,7 +23,7 @@ public class DetoxTest {
     @Test
     public void runDetoxTests() {
         DetoxConfig detoxConfig = new DetoxConfig();
-        detoxConfig.idlePolicyConfig.masterTimeoutSec = 90;
+        detoxConfig.idlePolicyConfig.masterTimeoutSec = 120;
         detoxConfig.idlePolicyConfig.idleResourceTimeoutSec = 60;
         detoxConfig.rnContextLoadTimeoutSec = (me.rainbow.BuildConfig.DEBUG ? 180 : 60);
 
