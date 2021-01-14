@@ -227,6 +227,8 @@ export const explorerInit = () => async (dispatch, getState) => {
   }
 };
 
+const tokensListened = {};
+
 export const emitAssetRequest = assetAddress => (dispatch, getState) => {
   const { nativeCurrency } = getState().settings;
   const { assetsSocket } = getState().explorer;
@@ -243,7 +245,14 @@ export const emitAssetRequest = assetAddress => (dispatch, getState) => {
 
     assetCodes = concat(assetAddresses, lpTokenAddresses);
   }
-  assetsSocket.emit(...assetsSubscription(assetCodes, nativeCurrency));
+
+  const newAssetsCodes = assetCodes.filter(code => !tokensListened[code]);
+
+  newAssetsCodes.forEach(code => (tokensListened[code] = true));
+
+  if (newAssetsCodes.length !== 0) {
+    assetsSocket.emit(...assetsSubscription(newAssetsCodes, nativeCurrency));
+  }
 };
 
 export const emitChartsRequest = (
