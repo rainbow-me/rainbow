@@ -37,6 +37,7 @@ const DiscoverSheetAndroid = () => {
   const [headerButtonsHandlers, deps] = useAreHeaderButtonVisible();
 
   const listeners = useRef([]);
+  const bottomSheetModalRef = useRef(null);
 
   const value = useMemo(
     () => ({
@@ -45,6 +46,12 @@ const DiscoverSheetAndroid = () => {
         return () =>
           listeners.current.splice(listeners.current.indexOf(listener), 1);
       },
+      jumpToLong() {
+        bottomSheetModalRef.current.expand();
+      },
+      jumpToShort() {
+        bottomSheetModalRef.current.collapse();
+      },
       ...headerButtonsHandlers,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -52,7 +59,6 @@ const DiscoverSheetAndroid = () => {
   );
 
   const yPosition = useSharedValue(0);
-  const bottomSheetModalRef = useRef(null);
   const scrollHandler = useAnimatedScrollHandler(event => {
     yPosition.value = event.contentOffset.y;
   });
