@@ -8,10 +8,12 @@ if [ -n "$RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK" ]; then
   echo "✅ executed ios prebuild hook"
 fi
 
-# Ignore any potential tracked changes to mutable Internals.
+# Ignore any potential tracked changes to mutable development files.
 git update-index --assume-unchanged "ios/Internals/ios/Internals.h"
 git update-index --assume-unchanged "ios/Internals/ios/Internals.m"
 git update-index --assume-unchanged "ios/Internals/ios/Internals.swift"
+git update-index --assume-unchanged "ios/Internals/ios/Internals.swift"
+git update-index --assume-unchanged "ios/Extras.json"
 
 # When installing, new native modules may have been installed so we'll attempt to
 # cache these here to avoid synchronization errors.
