@@ -1,11 +1,11 @@
+import { useRoute } from '@react-navigation/native';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { View } from 'react-native';
 import Animated, {
   newInterpolate,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
-  withTiming,
+  withSpring,
 } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
 import { borders, colors, position } from '../../styles';
@@ -16,6 +16,12 @@ import DiscoverSheetContext from './DiscoverSheetContext';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import ShadowStack from 'react-native-shadow-stack';
+
+const springConfig = {
+  damping: 20,
+  mass: 1,
+  stiffness: 400,
+};
 
 const Header = styled.View`
   flex-direction: row;
@@ -53,19 +59,21 @@ function Stack({
 }) {
   const isVisible = useDerivedValue(() => {
     const value = stackOpacity.value;
-    return withTiming(value);
+    return withSpring(value, springConfig);
   });
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: isVisible.value,
   }));
-
+  const animatedStyleHide = useAnimatedStyle(() => ({
+    opacity: 1 - isVisible.value,
+  }));
   const animatedWrapperStyle = useAnimatedStyle(() => ({
     opacity: wrapperOpacity.value,
     transform: [{ translateX: translateX.value }],
   }));
-
   const animatedStyleShadow = useAnimatedStyle(() => ({
     opacity: isVisible.value,
+    transform: [{ scale: isVisible.value + (0.6 - isVisible.value * 0.6) }],
   }));
 
   return (
@@ -75,7 +83,12 @@ function Stack({
         onPress={onPress}
         style={{ height: 59, width: 59, zIndex: 10 }}
       >
-        <Animated.View style={animatedStyleShadow}>
+        <Animated.View
+          height={59}
+          position="absolute"
+          style={animatedStyleShadow}
+          width={59}
+        >
           <ShadowStack
             {...borders.buildCircleAsObject(43)}
             backgroundColor={colors.dark}
@@ -87,7 +100,9 @@ function Stack({
         <Animated.View
           style={[{ left, top: 19, zIndex: 10 }, animatedWrapperStyle]}
         >
-          <View style={{ position: 'absolute' }}>{children[0]}</View>
+          <Animated.View style={(animatedStyleHide, { position: 'absolute' })}>
+            {children[0]}
+          </Animated.View>
           <Animated.View style={animatedStyle}>{children[1]}</Animated.View>
         </Animated.View>
       </ButtonPressAnimation>
@@ -100,17 +115,23 @@ export default function DiscoverSheetHeader(props) {
   const [buttonsEnabled, setButtonsEnabled] = useState(true);
   const buttonOpacity = useSharedValue(1);
   const { yPosition } = props;
-  const { isSearchModeEnabled } = useContext(DiscoverSheetContext);
+  const { isSearchModeEnabled, setIsSearchModeEnabled } = useContext(
+    DiscoverSheetContext
+  );
   const stackOpacity = useDerivedValue(() =>
     Math.round(newInterpolate(yPosition.value, [50, 51], [0, 1], 'clamp'))
   );
 
+  const {
+    params: { setSwipeEnabled: setViewPagerSwipeEnabled },
+  } = useRoute();
+
   const translateXLeftButton = useDerivedValue(() =>
-    withTiming(stackOpacity.value * 5)
+    withSpring(stackOpacity.value * 5, springConfig)
   );
 
   const translateXRightButton = useDerivedValue(() =>
-    withTiming(stackOpacity.value * -0.5)
+    withSpring(0, springConfig)
   );
 
   const { jumpToShort, addOnCrossMagicBorderListener } =
@@ -129,11 +150,12 @@ export default function DiscoverSheetHeader(props) {
   ]);
 
   const animatedWrapperLOpacity = useDerivedValue(
-    () => withTiming(isSearchModeEnabled ? buttonOpacity.value : 0),
+    () =>
+      withSpring(isSearchModeEnabled ? 0 : buttonOpacity.value, springConfig),
     [isSearchModeEnabled]
   );
   const animatedWrapperROpacity = useDerivedValue(() =>
-    withTiming(buttonOpacity.value)
+    withSpring(buttonOpacity.value, springConfig)
   );
 
   return (
@@ -141,7 +163,7 @@ export default function DiscoverSheetHeader(props) {
       <Stack
         disabled={!buttonsEnabled}
         left={19}
-        onPress={() => navigate(Routes.WALLET_SCREEN)}
+        onPress={() => !isSearchModeEnabled && navigate(Routes.WALLET_SCREEN)}
         stackOpacity={stackOpacity}
         translateX={translateXLeftButton}
         wrapperOpacity={animatedWrapperLOpacity}
@@ -156,8 +178,12 @@ export default function DiscoverSheetHeader(props) {
       </Stack>
       <Stack
         disabled={!buttonsEnabled}
-        left={19}
-        onPress={() => jumpToShort?.()}
+        left={18.5}
+        onPress={() => {
+          setIsSearchModeEnabled(false);
+          setViewPagerSwipeEnabled(true);
+          jumpToShort?.();
+        }}
         stackOpacity={stackOpacity}
         translateX={translateXRightButton}
         wrapperOpacity={animatedWrapperROpacity}

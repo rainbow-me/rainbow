@@ -52,11 +52,14 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
   right: 0;
 `;
 
-const Content = styled(Animated.ScrollView).attrs({
-  directionalLockEnabled: true,
-  keyboardShouldPersistTaps: 'always',
-  scrollEventThrottle: 16,
-})`
+const Content = styled(Animated.ScrollView).attrs(
+  ({ limitScrollViewContent }) => ({
+    contentContainerStyle: limitScrollViewContent ? { height: '100%' } : {},
+    directionalLockEnabled: true,
+    keyboardShouldPersistTaps: 'always',
+    scrollEventThrottle: 16,
+  })
+)`
   background-color: ${({ backgroundColor }) => backgroundColor};
   ${({ contentHeight, deviceHeight }) =>
     contentHeight ? `height: ${deviceHeight + contentHeight}` : null};
@@ -81,6 +84,7 @@ export default function SlackSheet({
   scrollEnabled = true,
   additionalTopPadding = false,
   deferredHeight = false,
+  limitScrollViewContent,
   ...props
 }) {
   const yPosition = useSharedValue(0);
@@ -143,6 +147,7 @@ export default function SlackSheet({
             contentHeight={contentHeight}
             deviceHeight={deviceHeight}
             directionalLockEnabled
+            limitScrollViewContent={limitScrollViewContent}
             onScroll={scrollHandler}
             scrollEnabled={scrollEnabled}
             scrollIndicatorInsets={scrollIndicatorInsets}

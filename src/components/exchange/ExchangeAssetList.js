@@ -7,6 +7,7 @@ import tokenSectionTypes from '../../helpers/tokenSectionTypes';
 import { usePrevious } from '../../hooks';
 import { CoinRowHeight, ExchangeCoinRow } from '../coin-row';
 import { GradientText, Text } from '../text';
+
 import { colors, padding } from '@rainbow-me/styles';
 import { deviceUtils, magicMemo } from '@rainbow-me/utils';
 
@@ -79,7 +80,6 @@ const ExchangeAssetSectionList = styled(SectionList).attrs({
   directionalLockEnabled: true,
   getItemLayout,
   initialNumToRender: 10,
-  keyboardDismissMode: 'none',
   keyboardShouldPersistTaps: 'always',
   keyExtractor,
   maxToRenderPerBatch: 50,
@@ -90,7 +90,14 @@ const ExchangeAssetSectionList = styled(SectionList).attrs({
   height: 100%;
 `;
 
-const ExchangeAssetList = ({ itemProps, items, onLayout, query }) => {
+const ExchangeAssetList = ({
+  itemProps,
+  items,
+  onLayout,
+  query,
+  onScrollTop,
+  keyboardDismissMode = 'none',
+}) => {
   const sectionListRef = useRef();
   const prevQuery = usePrevious(query);
 
@@ -145,9 +152,27 @@ const ExchangeAssetList = ({ itemProps, items, onLayout, query }) => {
     []
   );
 
+  const onScrollEnd = useCallback(
+    ({
+      nativeEvent: {
+        targetContentOffset: { y: targetY } = {},
+        contentOffset: { y },
+      },
+    }) => {
+      if (targetY === 0 || targetY === undefined || y === 0) {
+        onScrollTop?.();
+      }
+    },
+    [onScrollTop]
+  );
+
   return (
     <ExchangeAssetSectionList
+      keyboardDismissMode={keyboardDismissMode}
       onLayout={onLayout}
+      onMomentumScrollEnd={onScrollEnd}
+      onScrollEndDrag={onScrollEnd}
+      onScrollToTop={onScrollTop}
       ref={sectionListRef}
       renderItem={renderItemCallback}
       renderSectionHeader={ExchangeAssetSectionListHeader}
