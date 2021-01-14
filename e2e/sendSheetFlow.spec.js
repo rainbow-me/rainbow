@@ -96,7 +96,7 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.checkIfElementByTextIsVisible('Collectibles');
   });
 
-  it('Should say "poopcoin.eth" in the Profile Screen header', async () => {
+  it('Should say "0x3C...D3f608" in the Profile Screen header', async () => {
     await Helpers.delay(1000);
     await Helpers.swipe('wallet-screen', 'right');
     await Helpers.delay(2000);
