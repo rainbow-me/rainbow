@@ -7,7 +7,6 @@ import { detox as config } from '../package.json';
 // eslint-disable-next-line import/no-commonjs
 require('dotenv').config({ path: '.env' });
 
-jest.retryTimes(1);
 jasmine.getEnv().addReporter(adapter);
 
 // This takes care of generating status logs on a per-spec basis. By default, jest only reports at file-level.
