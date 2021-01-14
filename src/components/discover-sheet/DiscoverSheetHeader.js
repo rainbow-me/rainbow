@@ -1,5 +1,12 @@
 import { useRoute } from '@react-navigation/native';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import { LayoutAnimation } from 'react-native';
 import Animated, {
   newInterpolate,
   useAnimatedStyle,
@@ -23,6 +30,18 @@ const springConfig = {
   overshootClamping: true,
   stiffness: 400,
 };
+
+function useLayoutAnimationOnChange(value) {
+  const prevValue = useRef(value);
+
+  if (prevValue.current !== value) {
+    prevValue.current = value;
+  }
+
+  LayoutAnimation.configureNext(
+    LayoutAnimation.create(100, 'easeInEaseOut', 'opacity')
+  );
+}
 
 const Header = styled.View`
   flex-direction: row;
@@ -71,6 +90,9 @@ function Stack({
     opacity: wrapperOpacity.value,
     transform: [{ translateX: translateX.value }],
   }));
+
+  useLayoutAnimationOnChange(disabled);
+
   const animatedStyleShadow = useAnimatedStyle(() => ({
     opacity: isVisible.value,
     ...(ios && {
@@ -100,7 +122,10 @@ function Stack({
           <BackgroundFill />
         </Animated.View>
         <Animated.View
-          style={[{ left, top: 19, zIndex: 10 }, animatedWrapperStyle]}
+          style={[
+            { left, top: 19, zIndex: 10 },
+            ios ? animatedWrapperStyle : { opacity: disabled ? 0 : 1 },
+          ]}
         >
           <Animated.View style={[animatedStyleHide, { position: 'absolute' }]}>
             {children[0]}

@@ -17,6 +17,10 @@ const storage = new Storage({
   storageBackend: AsyncStorage,
 });
 
+if (ReactNative.Platform.OS === 'android') {
+  ReactNative.UIManager.setLayoutAnimationEnabledExperimental?.(true);
+}
+
 if (
   !global.__reanimatedModuleProxy &&
   !ReactNative.TurboModuleRegistry.get('NativeReanimated')
