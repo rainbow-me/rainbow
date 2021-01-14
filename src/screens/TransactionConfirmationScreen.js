@@ -138,9 +138,6 @@ const NOOP = () => undefined;
 
 const TransactionConfirmationScreen = () => {
   const { allAssets } = useAccountAssets();
-  const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
-    genericAssets,
-  }));
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const [keyboardVisible, setKeyboardVisible] = useState(false);
   const [methodName, setMethodName] = useState(null);
@@ -631,7 +628,7 @@ const TransactionConfirmationScreen = () => {
     }
 
     if (isTransactionDisplayType(method) && get(request, 'asset')) {
-      const ethAsset = ethereumUtils.getAsset(genericAssets);
+      const ethAsset = ethereumUtils.getAsset(allAssets);
       const amount = get(request, 'value', '0.00');
       const nativeAmount = Number(ethAsset.price.value) * Number(amount);
       const nativeAmountDisplay = convertAmountToNativeDisplay(
@@ -658,7 +655,7 @@ const TransactionConfirmationScreen = () => {
         value={request?.value}
       />
     );
-  }, [genericAssets, isMessageRequest, method, nativeCurrency, request]);
+  }, [allAssets, isMessageRequest, method, nativeCurrency, request]);
 
   const handleCustomGasFocus = useCallback(() => {
     setKeyboardVisible(true);
