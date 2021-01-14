@@ -49,6 +49,7 @@ import {
   convertHexToString,
   fromWei,
   greaterThanOrEqualTo,
+  multiply,
 } from '../helpers/utilities';
 import {
   sendTransaction,
@@ -633,7 +634,7 @@ const TransactionConfirmationScreen = () => {
     if (isTransactionDisplayType(method) && get(request, 'asset')) {
       const priceOfEther = ethereumUtils.getEthPriceUnit(genericAssets);
       const amount = get(request, 'value', '0.00');
-      const nativeAmount = Number(priceOfEther) * Number(amount);
+      const nativeAmount = multiply(priceOfEther, amount);
       const nativeAmountDisplay = convertAmountToNativeDisplay(
         nativeAmount,
         nativeCurrency
