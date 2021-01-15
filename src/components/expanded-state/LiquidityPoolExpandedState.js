@@ -1,6 +1,5 @@
 import { map } from 'lodash';
 import React from 'react';
-import { isSamsungGalaxy } from '../../helpers/samsung';
 import {
   DepositActionButton,
   SheetActionButtonRow,
@@ -20,7 +19,6 @@ import { useChartThrottledPoints } from '@rainbow-me/hooks';
 import { magicMemo } from '@rainbow-me/utils';
 
 let heightWithoutChart = 373;
-heightWithoutChart += isSamsungGalaxy() ? -30 : 0;
 const heightWithChart = heightWithoutChart + 297;
 
 export const initialLiquidityPoolExpandedStateSheetHeight = heightWithChart;

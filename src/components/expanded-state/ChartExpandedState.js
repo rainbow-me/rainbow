@@ -1,7 +1,5 @@
 import { find } from 'lodash';
 import React, { useRef } from 'react';
-import { StatusBar } from 'react-native';
-import { isSamsungGalaxy } from '../../helpers/samsung';
 import { useChartThrottledPoints, useUniswapAssetsInWallet } from '../../hooks';
 import {
   BuyActionButton,
@@ -23,11 +21,7 @@ import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 
 //add's StatusBar height to android
 let heightWithoutChart = 309;
-heightWithoutChart += android
-  ? isSamsungGalaxy()
-    ? -StatusBar.currentHeight * 1.5
-    : -24
-  : 0;
+heightWithoutChart += android ? -24 : 0;
 const heightWithChart = heightWithoutChart + 310;
 
 export const initialChartExpandedStateSheetHeight = heightWithChart;
