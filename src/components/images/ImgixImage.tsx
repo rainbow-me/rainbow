@@ -1,6 +1,7 @@
 import * as React from 'react';
 import FastImage, { FastImageProps, Source } from 'react-native-fast-image';
 
+import { IMGIX_IMAGES } from '../../config/experimental';
 import { maybeSignSource } from '../../handlers/imgix';
 
 export type ImgixImageProps = FastImageProps & {
@@ -57,6 +58,11 @@ const preload = (sources: Source[]): void => {
 // FastImage to ImgixImage, override all properties of FastImage which
 // we do not wish to override by FastImage, and finally override the
 // preload mechanic.
-export default Object.assign(ImgixImage, FastImage, ImgixImage, {
-  preload,
-});
+export default Object.assign(
+  IMGIX_IMAGES ? ImgixImage : FastImage,
+  FastImage,
+  IMGIX_IMAGES ? ImgixImage : FastImage,
+  {
+    preload,
+  }
+);
