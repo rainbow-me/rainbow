@@ -1,2 +1,2 @@
 #!/bin/bash
-yarn lint-staged;
+yarn lint-staged
