@@ -33,7 +33,7 @@ function useAreHeaderButtonVisible() {
 
 const snapPoints = ['25%', deviceUtils.dimensions.height - 100];
 
-const DiscoverSheetAndroid = () => {
+const DiscoverSheetAndroid = (_, forwardedRef) => {
   const [headerButtonsHandlers, deps] = useAreHeaderButtonVisible();
 
   const listeners = useRef([]);
@@ -57,6 +57,8 @@ const DiscoverSheetAndroid = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [deps]
   );
+
+  useImperativeHandle(forwardedRef, () => value);
 
   const yPosition = useSharedValue(0);
   const scrollHandler = useAnimatedScrollHandler(event => {
@@ -172,4 +174,4 @@ function DiscoverSheetIOS(_, forwardedRef) {
   );
 }
 
-export default ios ? forwardRef(DiscoverSheetIOS) : DiscoverSheetAndroid;
+export default forwardRef(ios ? DiscoverSheetIOS : DiscoverSheetAndroid);
