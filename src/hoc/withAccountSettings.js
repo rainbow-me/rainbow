@@ -10,19 +10,9 @@ import {
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 
 const mapStateToProps = ({
-  settings: {
-    accountAddress,
-    accountColor,
-    accountName,
-    chainId,
-    language,
-    nativeCurrency,
-    network,
-  },
+  settings: { accountAddress, chainId, language, nativeCurrency, network },
 }) => ({
   accountAddress,
-  accountColor,
-  accountName,
   chainId,
   language,
   nativeCurrency,
