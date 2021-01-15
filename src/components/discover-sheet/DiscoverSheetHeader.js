@@ -1,12 +1,5 @@
 import { useRoute } from '@react-navigation/native';
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
-import { LayoutAnimation } from 'react-native';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import Animated, {
   newInterpolate,
   useAnimatedStyle,
@@ -20,6 +13,7 @@ import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 import DiscoverSheetContext from './DiscoverSheetContext';
+import useDelayedValueWithAnimation from './useDelayedValueWithAnimation';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import ShadowStack from 'react-native-shadow-stack';
@@ -30,18 +24,6 @@ const springConfig = {
   overshootClamping: true,
   stiffness: 400,
 };
-
-function useLayoutAnimationOnChange(value) {
-  const prevValue = useRef(value);
-
-  if (prevValue.current !== value) {
-    prevValue.current = value;
-  }
-
-  LayoutAnimation.configureNext(
-    LayoutAnimation.create(100, 'easeInEaseOut', 'opacity')
-  );
-}
 
 const Header = styled.View`
   flex-direction: row;
@@ -93,9 +75,9 @@ function Stack({
 
   const { isSearchModeEnabled } = useContext(DiscoverSheetContext);
 
-  const areButtonsVisible = !disabled && !isSearchModeEnabled;
-
-  useLayoutAnimationOnChange(areButtonsVisible);
+  const areButtonsVisible = useDelayedValueWithAnimation(
+    !disabled && !isSearchModeEnabled
+  );
 
   const animatedStyleShadow = useAnimatedStyle(() => ({
     opacity: isVisible.value,

@@ -9,13 +9,13 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { LayoutAnimation } from 'react-native';
 import styled from 'styled-components/primitives';
 import { ButtonPressAnimation } from '../animations';
 import { ExchangeSearch } from '../exchange';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
 import DiscoverSheetContext from './DiscoverSheetContext';
+import useDelayedValueWithAnimation from './useDelayedValueWithAnimation';
 import { useUniswapAssets } from '@rainbow-me/hooks';
 import { colors } from '@rainbow-me/styles';
 
@@ -33,25 +33,6 @@ const CancelText = styled(Text).attrs({
   margin-left: -3;
   margin-right: 15;
 `;
-
-function useDelayedValueWithAnimation(value) {
-  const [delayedValue, setValue] = useState(value);
-
-  useEffect(() => {
-    setTimeout(() => {
-      LayoutAnimation.configureNext(
-        LayoutAnimation.create(
-          200,
-          LayoutAnimation.Types.easeInEaseOut,
-          LayoutAnimation.Properties.opacity
-        )
-      );
-      setValue(value);
-    }, 10);
-  }, [setValue, value]);
-
-  return delayedValue;
-}
 
 export default forwardRef(function DiscoverSearchContainer(
   { children, showSearch, setShowSearch },
