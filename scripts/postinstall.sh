@@ -1,11 +1,21 @@
 #!/bin/bash
 set -eo pipefail
 
-# Execute the prebuild script, if defined. Note, this is just useful for CI.
-# You don't need to have this variable defined in order to use the project.
-if [ -n "$RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK" ]; then
-  eval $RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK;
-  echo "✅ executed ios prebuild hook"
+OS_ENVIRONMENT="$(uname -s)"
+case "${OS_ENVIRONMENT}" in
+  Linux*)   MACHINE=Linux;;
+  Darwin*)  MACHINE=Mac;;
+  CYGWIN*)  MACHINE=Cygwin;;
+  MINGW*)   MACHINE=MinGw;;
+  *)        MACHINE="UNKNOWN:${OS_ENVIRONMENT}"
+esac
+
+# MacOS
+if [[ "$MACHINE" == Mac ]]; then
+  if [ -n "$RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK" ]; then
+    eval $RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK;
+    echo "✅ executed ios prebuild hook"
+  fi
 fi
 
 # Ignore any potential tracked changes to mutable development files.
@@ -14,14 +24,6 @@ git update-index --assume-unchanged "ios/Internals/ios/Internals.m"
 git update-index --assume-unchanged "ios/Internals/ios/Internals.swift"
 git update-index --assume-unchanged "ios/Internals/ios/Internals-Bridging-Header.h"
 git update-index --assume-unchanged "ios/Extras.json"
-
-# When installing, new native modules may have been installed so we'll attempt to
-# cache these here to avoid synchronization errors.
-
-yarn install-bundle
-yarn install-pods
-
-echo "✅ pods installed successfully"
 
 # Specifying ONLY the node packages that we need to install via browserify
 # (because those aren't available in react native) and some of our deps require them.
