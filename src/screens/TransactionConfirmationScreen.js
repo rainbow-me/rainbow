@@ -473,7 +473,7 @@ const TransactionConfirmationScreen = () => {
       analytics.track('Approved WalletConnect transaction request');
       if (requestId) {
         dispatch(removeRequest(requestId));
-        await dispatch(walletConnectSendStatus(peerId, requestId, result));
+        await dispatch(walletConnectSendStatus(peerId, requestId, result.hash));
       }
       closeScreen(false);
     } else {
