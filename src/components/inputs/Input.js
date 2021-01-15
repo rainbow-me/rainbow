@@ -26,22 +26,20 @@ const Input = (
     ...props
   },
   ref
-) => {
-  return (
-    <TextInput
-      {...props}
-      allowFontScaling={allowFontScaling}
-      autoCapitalize={autoCapitalize}
-      autoCorrect={autoCorrect}
-      keyboardType={keyboardType}
-      placeholderTextColor={placeholderTextColor}
-      ref={ref}
-      selectionColor={selectionColor}
-      spellCheck={spellCheck}
-      testID={testID}
-      textContentType={textContentType}
-    />
-  );
-};
+) => (
+  <TextInput
+    {...props}
+    allowFontScaling={allowFontScaling}
+    autoCapitalize={autoCapitalize}
+    autoCorrect={autoCorrect}
+    keyboardType={keyboardType}
+    placeholderTextColor={placeholderTextColor}
+    ref={ref}
+    selectionColor={selectionColor}
+    spellCheck={spellCheck}
+    testID={testID}
+    textContentType={textContentType}
+  />
+);
 
 export default React.forwardRef(Input);
