@@ -7,7 +7,6 @@ export { default as withCoinListEdited } from './withCoinListEdited';
 export { default as withCoinRecentlyPinned } from './withCoinRecentlyPinned';
 export { default as withDeepLink } from './withDeepLink';
 export { default as withEditOptions } from './withEditOptions';
-export { default as withMessageSigningScreen } from './withMessageSigningScreen';
 export { default as withOpenBalances } from './withOpenBalances';
 export { default as withOpenFamilyTabs } from './withOpenFamilyTabs';
 export { default as withOpenInvestmentCards } from './withOpenInvestmentCards';
