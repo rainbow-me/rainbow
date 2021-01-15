@@ -13,7 +13,10 @@ type HiddenImgixImageProps = { forwardedRef: React.Ref<any> };
 type MergedImgixImageProps = ImgixImageProps & HiddenImgixImageProps;
 
 // ImgixImage must be a class Component to support Animated.createAnimatedComponent.
-class ImgixImage extends React.PureComponent<MergedImgixImageProps, ImgixImageProps> {
+class ImgixImage extends React.PureComponent<
+  MergedImgixImageProps,
+  ImgixImageProps
+> {
   constructor(props: MergedImgixImageProps) {
     super(props);
     const { source } = props;
