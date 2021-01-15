@@ -8,8 +8,6 @@ export const AVATAR_PICKER = 'avatarPicker';
 export const DISCOVER_SHEET = 'discoverSheet';
 export const REVIEW_ANDROID = 'reviewAndroid';
 
-export const IMGIX_IMAGES = !__DEV__;
-
 export const defaultConfig = {
   [AVATAR_PICKER]: ios,
   [DISCOVER_SHEET]: false,
