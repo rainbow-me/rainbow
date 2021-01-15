@@ -1,13 +1,12 @@
 import { includes } from 'lodash';
-import PropTypes from 'prop-types';
 import React from 'react';
-import { onlyUpdateForPropTypes } from 'recompact';
-import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import Spinner from '../Spinner';
-import Icon from '../icons/Icon';
+import { Icon } from '../icons';
 import { Row } from '../layout';
 import { Text } from '../text';
+import TransactionStatusTypes from '@rainbow-me/helpers/transactionStatusTypes';
 import { colors, position } from '@rainbow-me/styles';
+import { magicMemo } from '@rainbow-me/utils';
 
 const StatusProps = {
   [TransactionStatusTypes.approved]: {
@@ -81,7 +80,7 @@ const StatusProps = {
   },
 };
 
-const TransactionStatusBadge = ({ pending, status, title, ...props }) => {
+const TransactionStatusBadge = ({ pending, status, style, title }) => {
   const isSwapping = status === TransactionStatusTypes.swapping;
 
   let statusColor = colors.alpha(colors.blueGreyDark, 0.7);
@@ -96,7 +95,7 @@ const TransactionStatusBadge = ({ pending, status, title, ...props }) => {
   }
 
   return (
-    <Row align="center" {...props}>
+    <Row align="center" style={style}>
       {pending && (
         <Spinner
           color={isSwapping ? colors.swapPurple : colors.appleBlue}
@@ -117,14 +116,8 @@ const TransactionStatusBadge = ({ pending, status, title, ...props }) => {
   );
 };
 
-TransactionStatusBadge.propTypes = {
-  pending: PropTypes.bool,
-  status: PropTypes.oneOf(Object.values(TransactionStatusTypes)),
-  title: PropTypes.string,
-};
-
-TransactionStatusBadge.defaultProps = {
-  status: TransactionStatusTypes.error,
-};
-
-export default onlyUpdateForPropTypes(TransactionStatusBadge);
+export default magicMemo(TransactionStatusBadge, [
+  'pending',
+  'status',
+  'title',
+]);
