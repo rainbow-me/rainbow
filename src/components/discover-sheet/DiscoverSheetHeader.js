@@ -13,7 +13,7 @@ import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 import DiscoverSheetContext from './DiscoverSheetContext';
-import useDelayedValueWithAnimation from './useDelayedValueWithAnimation';
+import { useDelayedValueWithLayoutAnimation } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import ShadowStack from 'react-native-shadow-stack';
@@ -75,7 +75,7 @@ function Stack({
 
   const { isSearchModeEnabled } = useContext(DiscoverSheetContext);
 
-  const areButtonsVisible = useDelayedValueWithAnimation(
+  const areButtonsVisible = useDelayedValueWithLayoutAnimation(
     !disabled && !isSearchModeEnabled
   );
 

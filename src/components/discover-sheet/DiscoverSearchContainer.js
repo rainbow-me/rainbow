@@ -15,8 +15,11 @@ import { ExchangeSearch } from '../exchange';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
 import DiscoverSheetContext from './DiscoverSheetContext';
-import useDelayedValueWithAnimation from './useDelayedValueWithAnimation';
-import { useUniswapAssets } from '@rainbow-me/hooks';
+import {
+  useDelayedValueWithLayoutAnimation,
+  useUniswapAssets,
+} from '@rainbow-me/hooks';
+
 import { colors } from '@rainbow-me/styles';
 
 const CancelButton = styled(ButtonPressAnimation)`
@@ -74,7 +77,7 @@ export default forwardRef(function DiscoverSearchContainer(
     }
   }, [isSearchModeEnabled, setIsInputFocused]);
 
-  const delayedShowSearch = useDelayedValueWithAnimation(showSearch);
+  const delayedShowSearch = useDelayedValueWithLayoutAnimation(showSearch);
 
   const { loadingAllTokens } = useUniswapAssets();
   return (
