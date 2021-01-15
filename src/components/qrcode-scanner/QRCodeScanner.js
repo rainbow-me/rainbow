@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { RNCamera } from 'react-native-camera';
 import { useIsEmulator } from 'react-native-device-info';
 import FastImage from 'react-native-fast-image';
@@ -43,32 +43,42 @@ const EmulatorCameraFallback = styled(FastImage).attrs({
 export default function QRCodeScanner({
   contentPositionBottom,
   contentPositionTop,
-  enableCamera,
+  dsRef,
 }) {
+  const [cameraEnabled, setCameraEnabled] = useState(false);
   const [error, showError] = useBooleanState();
   const [isInitialized, setInitialized] = useBooleanState();
   const { result: isEmulator } = useIsEmulator();
-  const { isCameraAuthorized, onScan } = useScanner(enableCamera);
+  const { isCameraAuthorized, onScan } = useScanner(cameraEnabled);
 
   const showErrorMessage = error && !isInitialized;
   const showCrosshair = !error && !showErrorMessage;
   const cameraRef = useRef();
+
+  const onCrossMagicBorder = useCallback(
+    ({ below }) => setCameraEnabled(below),
+    [setCameraEnabled]
+  );
+  useEffect(
+    () => dsRef.current.addOnCrossMagicBorderListener(onCrossMagicBorder),
+    [dsRef, onCrossMagicBorder]
+  );
   useEffect(() => {
     if (ios || !isInitialized) {
       return;
     }
-    if (enableCamera) {
+    if (cameraEnabled) {
       cameraRef.current?.resumePreview?.();
     } else {
       cameraRef.current?.pausePreview?.();
     }
-  }, [enableCamera, isInitialized]);
+  }, [cameraEnabled, isInitialized]);
 
   return (
     <Container>
       <CameraWrapper>
-        {enableCamera && isEmulator && <EmulatorCameraFallback />}
-        {(enableCamera || android) && !isEmulator && (
+        {cameraEnabled && isEmulator && <EmulatorCameraFallback />}
+        {(cameraEnabled || android) && !isEmulator && (
           <Camera
             captureAudio={false}
             notAuthorizedView={QRCodeScannerNeedsAuthorization}
