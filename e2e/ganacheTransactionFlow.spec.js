@@ -75,7 +75,7 @@ describe('Ganache Transaction Flow', () => {
 
   it('Should show Ganache Toast after pressing Connect To Ganache', async () => {
     await Helpers.tap('ganache-section');
-    await Helpers.delay(10000);
+    await Helpers.delay(13000);
     await Helpers.checkIfVisible('testnet-toast-Ganache');
     await Helpers.swipe('profile-screen', 'left', 'slow');
     await Helpers.delay(3000);
@@ -150,8 +150,8 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.delay(5000);
     await Helpers.tapAndLongPress('send-sheet-confirm');
     if (device.getPlatform() === 'android') {
-      await Helpers.tapAlertWithButton('Normal');
-      await Helpers.delay(2000);
+      await Helpers.tapAlertWithButton('Slow');
+      await Helpers.delay(4000);
       await Helpers.authenticatePin('1234');
     }
 
@@ -180,8 +180,8 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.delay(3000);
     await Helpers.tapAndLongPress('send-sheet-confirm');
     if (device.getPlatform() === 'android') {
-      await Helpers.tapAlertWithButton('Normal');
-      await Helpers.delay(2000);
+      await Helpers.tapAlertWithButton('Slow');
+      await Helpers.delay(4000);
       await Helpers.authenticatePin('1234');
     }
     await Helpers.delay(10000);
@@ -200,8 +200,8 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.delay(3000);
     await Helpers.tapAndLongPress('send-sheet-confirm');
     if (device.getPlatform() === 'android') {
-      await Helpers.tapAlertWithButton('Normal');
-      await Helpers.delay(2000);
+      await Helpers.tapAlertWithButton('Slow');
+      await Helpers.delay(4000);
       await Helpers.authenticatePin('1234');
     }
     await Helpers.delay(10000);
@@ -220,8 +220,8 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.delay(3000);
     await Helpers.tapAndLongPress('send-sheet-confirm');
     if (device.getPlatform() === 'android') {
-      await Helpers.tapAlertWithButton('Normal');
-      await Helpers.delay(2000);
+      await Helpers.tapAlertWithButton('Slow');
+      await Helpers.delay(4000);
       await Helpers.authenticatePin('1234');
     }
     await Helpers.delay(10000);
@@ -283,7 +283,9 @@ describe('Ganache Transaction Flow', () => {
 
   afterAll(async () => {
     // Reset the app state
-    await device.clearKeychain();
-    await exec('kill $(lsof -t -i:7545)');
+    if (device.getPlatform() === 'ios') {
+      await device.clearKeychain();
+      await exec('kill $(lsof -t -i:7545)');
+    }
   });
 });
