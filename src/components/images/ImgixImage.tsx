@@ -7,14 +7,12 @@ export type ImgixImageProps = FastImageProps & {
   readonly Component?: React.ElementType;
 };
 
-// Here we're emulating the pattern used in react-native-fast-image:
-// https://github.com/DylanVann/react-native-fast-image/blob/0439f7190f141e51a391c84890cdd8a7067c6ad3/src/index.tsx#L146
-type HiddenImgixImageProps = { forwardedRef: React.Ref<any> };
-type MergedImgixImageProps = ImgixImageProps & HiddenImgixImageProps;
-
-// ImgixImage must be a class Component to support Animated.createAnimatedComponent.
-class ImgixImage extends React.PureComponent<MergedImgixImageProps, ImgixImageProps> {
-  constructor(props: MergedImgixImageProps) {
+// ImgixImage must be a class Component to support
+// Animated.createAnimatedComponent. We cannot render an AnimatedFastImage
+// instead because this introduces a non-conform interface to callers,
+// resulting in rendering issues (specifically on the SavingsListHeader).
+class ImgixImage extends React.PureComponent<ImgixImageProps, ImgixImageProps> {
+  constructor(props: ImgixImageProps) {
     super(props);
     const { source } = props;
     this.state = {
@@ -27,6 +25,7 @@ class ImgixImage extends React.PureComponent<MergedImgixImageProps, ImgixImagePr
   componentDidUpdate(prevProps: ImgixImageProps) {
     const { source: prevSource } = prevProps;
     const { source } = this.props;
+    // Has the source changed?
     if (prevSource !== source) {
       // If the source has changed and looks signable, attempt to sign it.
       if (!!source && typeof source === 'object') {
@@ -54,19 +53,10 @@ const preload = (sources: Source[]): void => {
   return;
 };
 
-const ImgixImageWithForwardRef = React.forwardRef(
-  (props: ImgixImageProps, ref: React.Ref<any>) => (
-    <ImgixImage forwardedRef={ref} {...props} />
-  ),
-);
-
 // We want to render using ImgixImage, assign all properties of
 // FastImage to ImgixImage, override all properties of FastImage which
 // we do not wish to override by FastImage, and finally override the
 // preload mechanic.
-export default Object.assign(
-  ImgixImageWithForwardRef,
-  FastImage,
-  ImgixImageWithForwardRef,
-  { preload },
-);
+export default Object.assign(ImgixImage, FastImage, ImgixImage, {
+  preload,
+});
