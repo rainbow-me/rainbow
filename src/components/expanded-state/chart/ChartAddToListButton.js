@@ -4,7 +4,7 @@ import styled from 'styled-components/primitives';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered } from '../../layout';
 import { Text } from '../../text';
-import { useUniswapAssets } from '@rainbow-me/hooks';
+import { useUserLists } from '@rainbow-me/hooks';
 import { colors, padding } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
@@ -40,7 +40,7 @@ const PlusIcon = styled(Text).attrs({
 `;
 
 const ChartAddToListButton = ({ asset }) => {
-  const { updateList } = useUniswapAssets();
+  const { updateList } = useUserLists();
   const handlePress = useCallback(() => {
     updateList(asset.address, 'watchlist', !asset.isInWatchlist);
   }, [asset.address, asset.isInWatchlist, updateList]);

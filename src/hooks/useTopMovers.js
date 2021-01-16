@@ -8,7 +8,7 @@ import {
   TOP_MOVERS_FROM_STORAGE,
 } from '../handlers/localstorage/topMovers';
 import { apiGetTopMovers } from '../handlers/topMovers';
-import { emitChartsRequest } from '../redux/explorer';
+import { emitAssetRequest, emitChartsRequest } from '../redux/explorer';
 import logger from 'logger';
 
 const TOP_MOVERS_PER_ROW_MAX = 12;
@@ -46,16 +46,20 @@ export default function useTopMovers() {
   const fetchTopMovers = useCallback(async () => {
     const topMovers = await apiGetTopMovers();
     const { gainers: gainersData, losers: losersData } = topMovers;
+    const allAddresses = gainersData
+      .concat(losersData)
+      .map(({ address }) => address);
 
-    dispatch(emitChartsRequest(gainersData.map(({ address }) => address)));
-    dispatch(emitChartsRequest(losersData.map(({ address }) => address)));
+    // Fetch chart and asset data
+    dispatch(emitChartsRequest(allAddresses));
+    dispatch(emitAssetRequest(allAddresses));
 
     const gainers = updatePrice(gainersData, genericAssets);
     const losers = updatePrice(losersData, genericAssets);
 
     saveTopMovers({ gainers, losers });
     return { gainers, losers };
-  }, [genericAssets]);
+  }, [dispatch, genericAssets]);
 
   const { data } = useQuery(
     !isEmpty(genericAssets) && ['topMovers'],

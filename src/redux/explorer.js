@@ -235,7 +235,7 @@ export const emitAssetRequest = assetAddress => (dispatch, getState) => {
 
   let assetCodes;
   if (assetAddress) {
-    assetCodes = [assetAddress];
+    assetCodes = Array.isArray(assetAddress) ? assetAddress : [assetAddress];
   } else {
     const { assets } = getState().data;
     const assetAddresses = map(assets, 'address');
@@ -250,7 +250,7 @@ export const emitAssetRequest = assetAddress => (dispatch, getState) => {
 
   newAssetsCodes.forEach(code => (tokensListened[code] = true));
 
-  if (newAssetsCodes.length !== 0) {
+  if (newAssetsCodes.length > 0) {
     assetsSocket.emit(...assetsSubscription(newAssetsCodes, nativeCurrency));
   }
 };

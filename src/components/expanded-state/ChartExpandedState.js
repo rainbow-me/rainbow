@@ -23,8 +23,8 @@ import { ChartPathProvider } from '@rainbow-me/animated-charts';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 import {
   useChartThrottledPoints,
-  useUniswapAssets,
   useUniswapAssetsInWallet,
+  useUserLists,
 } from '@rainbow-me/hooks';
 
 // add status bar height for Android
@@ -77,7 +77,7 @@ export default function ChartExpandedState({ asset }) {
     heightWithoutChart: heightWithoutChart - (!asset?.balance && 68),
   });
 
-  const { lists } = useUniswapAssets();
+  const { lists } = useUserLists();
   const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
   const showSwapButton = find(uniswapAssetsInWallet, [
     'uniqueId',

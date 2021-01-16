@@ -12,11 +12,7 @@ import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { greaterThanOrEqualTo, multiply } from '../helpers/utilities';
-import {
-  uniswapClearList,
-  uniswapUpdateFavorites,
-  uniswapUpdateList,
-} from '../redux/uniswap';
+import { uniswapUpdateFavorites } from '../redux/uniswap';
 
 const uniswapLoadingAllTokensSelector = state => state.uniswap.loadingAllTokens;
 const uniswapFavoritesSelector = state => state.uniswap.favorites;
@@ -127,19 +123,8 @@ export default function useUniswapAssets() {
     [dispatch]
   );
 
-  const updateList = useCallback(
-    (...data) => dispatch(uniswapUpdateList(...data)),
-    [dispatch]
-  );
-  const clearList = useCallback(
-    (...data) => dispatch(uniswapClearList(...data)),
-    [dispatch]
-  );
-
   return {
-    clearList,
     updateFavorites,
-    updateList,
     ...uniswapAssets,
   };
 }

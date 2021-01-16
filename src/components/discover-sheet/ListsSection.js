@@ -1,4 +1,4 @@
-import { keys } from 'lodash';
+import { keys, toLower } from 'lodash';
 import React, {
   useCallback,
   useEffect,
@@ -26,7 +26,7 @@ import EdgeFade from './EdgeFade';
 import {
   useAccountAssets,
   useAccountSettings,
-  useUniswapAssets,
+  useUserLists,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
@@ -96,7 +96,7 @@ export default function ListSection() {
   const { network } = useAccountSettings();
   const { navigate } = useNavigation();
   const [selectedList, setSelectedList] = useState(DEFAULT_LIST);
-  const { favorites, lists, updateList, clearList } = useUniswapAssets();
+  const { favorites, lists, updateList, clearList } = useUserLists();
   const { allAssets } = useAccountAssets();
   const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
     genericAssets,
@@ -106,8 +106,8 @@ export default function ListSection() {
   const updateTrendingList = useCallback(async () => {
     const tokens = await fetchTrendingAddresses();
     clearList('trending');
+    dispatch(emitAssetRequest(tokens));
     tokens.forEach(address => {
-      dispatch(emitAssetRequest(address));
       updateList(address, 'trending', true);
     });
 
@@ -118,7 +118,10 @@ export default function ListSection() {
   }, [clearList, dispatch, updateList]);
 
   useEffect(() => {
-    updateTrendingList();
+    // We need to wait for the socket to be created!
+    setTimeout(() => {
+      updateTrendingList();
+    }, 3000);
     return () => {
       clearTimeout(trendingListHandler.current);
     };
@@ -137,8 +140,8 @@ export default function ListSection() {
       }
       return currentList.tokens.map(address => {
         const asset =
-          ethereumUtils.getAsset(allAssets, address) ||
-          formatGenericAsset(genericAssets[address]);
+          ethereumUtils.getAsset(allAssets, toLower(address)) ||
+          formatGenericAsset(genericAssets[toLower(address)]);
         return asset;
       });
     }
