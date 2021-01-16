@@ -4,11 +4,7 @@ import Animated from 'react-native-reanimated';
 import { View } from 'react-primitives';
 import { compose } from 'recompact';
 import styled from 'styled-components/primitives';
-import {
-  withCoinRecentlyPinned,
-  withEditOptions,
-  withOpenBalances,
-} from '../../hoc';
+import { withCoinRecentlyPinned, withOpenBalances } from '../../hoc';
 import { useCoinListEditedValue } from '../../hooks/useCoinListEdited';
 import { ButtonPressAnimation } from '../animations';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
@@ -216,6 +212,5 @@ const MemoizedBalanceCoinRow = React.memo(BalanceCoinRow, arePropsEqual);
 
 export default compose(
   withOpenBalances,
-  withEditOptions,
   withCoinRecentlyPinned
 )(MemoizedBalanceCoinRow);
