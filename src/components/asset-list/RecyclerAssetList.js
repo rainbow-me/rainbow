@@ -11,7 +11,7 @@ import {
   RecyclerListView,
 } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
-import { withOpenBalances, withOpenStateSettings } from '../../hoc';
+import { withOpenBalances } from '../../hoc';
 import {
   deviceUtils,
   isNewValueForPath,
@@ -826,12 +826,19 @@ class RecyclerAssetList extends Component {
 }
 
 export default compose(
-  withOpenStateSettings,
   withOpenBalances,
   connect(
-    ({ editOptions: { isCoinListEdited }, settings: { nativeCurrency } }) => ({
+    ({
+      editOptions: { isCoinListEdited },
+      openSavings,
+      openStateSettings: { openFamilyTabs, openInvestmentCards },
+      settings: { nativeCurrency },
+    }) => ({
       isCoinListEdited,
       nativeCurrency,
+      openFamilyTabs,
+      openInvestmentCards,
+      openSavings,
     })
   )
 )(RecyclerAssetList);
