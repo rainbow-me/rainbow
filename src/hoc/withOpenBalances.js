@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import { setOpenSmallBalances } from '../redux/openStateSettings';
 
-const mapStateToProps = ({ openStateSettings: { openSmallBalances } }) => ({
+const mapStateToProps = ({ openSmallBalances }) => ({
   openSmallBalances,
 });
 
