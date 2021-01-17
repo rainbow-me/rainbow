@@ -2,27 +2,30 @@ import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
 import { find, toLower } from 'lodash';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { Linking, requireNativeComponent } from 'react-native';
+import { requireNativeComponent } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components/primitives';
+import { FloatingEmojis } from '../floating-emojis';
 import useExperimentalFlag, {
   AVATAR_PICKER,
-} from '../../config/experimentalHooks';
-import showWalletErrorAlert from '../../helpers/support';
-import TransactionActions from '../../helpers/transactionActions';
-import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
+} from '@rainbow-me/config/experimentalHooks';
+import showWalletErrorAlert from '@rainbow-me/helpers/support';
+import TransactionActions from '@rainbow-me/helpers/transactionActions';
+import TransactionStatusTypes from '@rainbow-me/helpers/transactionStatusTypes';
 import {
   getHumanReadableDate,
   hasAddableContact,
-} from '../../helpers/transactions';
-import { isENSAddressFormat } from '../../helpers/validators';
-import { useAccountProfile, useWallets } from '../../hooks';
-import useSafeImageUri from '../../hooks/useSafeImageUri';
-import { useNavigation } from '../../navigation/Navigation';
-import { removeRequest } from '../../redux/requests';
-import { walletsSetSelected, walletsUpdate } from '../../redux/wallets';
-import { FloatingEmojis } from '../floating-emojis';
+} from '@rainbow-me/helpers/transactions';
+import { isENSAddressFormat } from '@rainbow-me/helpers/validators';
+import {
+  useAccountProfile,
+  useSafeImageUri,
+  useWallets,
+} from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation/Navigation';
+import { removeRequest } from '@rainbow-me/redux/requests';
+import { walletsSetSelected, walletsUpdate } from '@rainbow-me/redux/wallets';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 import {
@@ -61,7 +64,6 @@ export default function TransactionList({
   contacts,
   initialized,
   isLoading,
-  network,
   requests,
   transactions,
 }) {
@@ -294,13 +296,7 @@ export default function TransactionList({
                 });
                 break;
               case TransactionActions.viewOnEtherscan: {
-                const normalizedHash = hash.replace(/-.*/g, '');
-                const etherscanHost = ethereumUtils.getEtherscanHostFromNetwork(
-                  network
-                );
-                Linking.openURL(
-                  `https://${etherscanHost}/tx/${normalizedHash}`
-                );
+                ethereumUtils.openTransactionEtherscanURL(hash);
                 break;
               }
               default:
@@ -309,7 +305,7 @@ export default function TransactionList({
         );
       }
     },
-    [accountAddress, contacts, navigate, network, transactions]
+    [accountAddress, contacts, navigate, transactions]
   );
 
   const onCopyAddressPress = useCallback(

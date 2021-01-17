@@ -1,9 +1,8 @@
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { Linking } from 'react-native';
 import { ContextCircleButton } from '../../context-menu';
 import EditOptions from '@rainbow-me/helpers/editOptionTypes';
-import { useAccountSettings, useCoinListEditOptions } from '@rainbow-me/hooks';
+import { useCoinListEditOptions } from '@rainbow-me/hooks';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 export default function ChartContextButton({ asset, color }) {
@@ -14,9 +13,6 @@ export default function ChartContextButton({ asset, color }) {
     setHiddenCoins,
     setPinnedCoins,
   } = useCoinListEditOptions();
-
-  const { network } = useAccountSettings();
-  const etherscanHost = ethereumUtils.getEtherscanHostFromNetwork(network);
 
   useEffect(() => {
     // Ensure this expanded state's asset is always actively inside
@@ -37,10 +33,10 @@ export default function ChartContextButton({ asset, color }) {
         setHiddenCoins();
       } else if (buttonIndex === 2 && asset?.address !== 'eth') {
         // 🔍 View on Etherscan
-        Linking.openURL(`https://${etherscanHost}/token/${asset?.address}`);
+        ethereumUtils.openTokenEtherscanURL(asset?.address);
       }
     },
-    [asset?.address, etherscanHost, setHiddenCoins, setPinnedCoins]
+    [asset?.address, setHiddenCoins, setPinnedCoins]
   );
 
   const options = useMemo(

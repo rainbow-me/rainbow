@@ -52,6 +52,7 @@ export { default as useRefreshAccountData } from './useRefreshAccountData';
 export { default as useRequests } from './useRequests';
 export { default as useResetAccountState } from './useResetAccountState';
 export { default as useRouteExistsInNavigationState } from './useRouteExistsInNavigationState';
+export { default as useSafeImageUri } from './useSafeImageUri';
 export { default as useSavingsAccount } from './useSavingsAccount';
 export { default as useScanner } from './useScanner';
 export { default as useSendableUniqueTokens } from './useSendableUniqueTokens';
