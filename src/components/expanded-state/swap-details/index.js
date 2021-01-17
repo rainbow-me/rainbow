@@ -1,4 +1,8 @@
 export { default as CurrencyTile, CurrencyTileHeight } from './CurrencyTile';
+export {
+  default as SwapDetailsContent,
+  SwapDetailsContentMinHeight,
+} from './SwapDetailsContent';
 export { default as SwapDetailsContractRow } from './SwapDetailsContractRow';
 export {
   default as SwapDetailsMasthead,
@@ -11,4 +15,5 @@ export {
   SwapDetailsRowHeight,
   SwapDetailsValue,
 } from './SwapDetailsRow';
+export { default as SwapDetailsSlippageMessage } from './SwapDetailsSlippageMessage';
 export { default as SwapDetailsUniswapRow } from './SwapDetailsUniswapRow';

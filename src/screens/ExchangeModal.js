@@ -20,7 +20,6 @@ import {
   ExchangeInputField,
   ExchangeNotch,
   ExchangeOutputField,
-  SlippageWarningThresholdInBips,
 } from '../components/exchange';
 import SwapInfo from '../components/exchange/SwapInfo';
 import { FloatingPanel, FloatingPanels } from '../components/floating-panels';
@@ -41,6 +40,7 @@ import {
   useGas,
   useMaxInputBalance,
   usePrevious,
+  useSlippageDetails,
   useSwapDetails,
   useSwapInputRefs,
   useSwapInputs,
@@ -349,11 +349,10 @@ export default function ExchangeModal({
     updateInputAmount,
   ]);
 
+  const { isHighSlippage } = useSlippageDetails(slippage);
+
   const isSlippageWarningVisible =
-    isSufficientBalance &&
-    !!inputAmount &&
-    !!outputAmount &&
-    slippage >= SlippageWarningThresholdInBips;
+    isSufficientBalance && !!inputAmount && !!outputAmount && isHighSlippage;
   const prevIsSlippageWarningVisible = usePrevious(isSlippageWarningVisible);
   useEffect(() => {
     if (isSlippageWarningVisible && !prevIsSlippageWarningVisible) {
@@ -516,7 +515,6 @@ export default function ExchangeModal({
         inputAmountDisplay,
         inputCurrency,
         inputCurrencySymbol: get(inputCurrency, 'symbol'),
-        isHighSlippage: slippage > SlippageWarningThresholdInBips,
         outputAmount,
         outputAmountDisplay,
         outputCurrency,
