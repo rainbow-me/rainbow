@@ -1,3 +1,4 @@
+import { useRoute } from '@react-navigation/native';
 import React, { useMemo } from 'react';
 import styled from 'styled-components/primitives';
 import { HoldToAuthorizeButton } from '../buttons';
@@ -8,7 +9,6 @@ import {
   useGas,
   useSlippageDetails,
 } from '@rainbow-me/hooks';
-import { Navigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors, padding } from '@rainbow-me/styles';
 
@@ -32,10 +32,10 @@ export default function ConfirmExchangeButton({
   type = ExchangeModalTypes.swap,
   ...props
 }) {
+  const { name: routeName } = useRoute();
   const colorForAsset = useColorForAsset(asset);
   const { isSufficientGas } = useGas();
   const { isHighSlippage } = useSlippageDetails(slippage);
-  const { name: routeName } = Navigation.getActiveRoute();
 
   let label = '';
   if (type === ExchangeModalTypes.deposit) {
@@ -72,12 +72,6 @@ export default function ConfirmExchangeButton({
     [colorForAsset]
   );
 
-  const isRouteSwapDetails = useMemo(
-    () => routeName === Routes.SWAP_DETAILS_SHEET,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  );
-
   return (
     <Container>
       <HoldToAuthorizeButton
@@ -90,7 +84,9 @@ export default function ConfirmExchangeButton({
         label={label}
         onLongPress={onSubmit}
         parentHorizontalPadding={paddingHorizontal}
-        shadows={isRouteSwapDetails ? shadowsForAsset : shadows}
+        shadows={
+          routeName === Routes.SWAP_DETAILS_SHEET ? shadowsForAsset : shadows
+        }
         showBiometryIcon={!isDisabled}
         testID={testID}
         theme="dark"

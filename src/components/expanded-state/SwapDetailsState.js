@@ -15,7 +15,7 @@ import {
 import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
 import { useHeight } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import { padding } from '@rainbow-me/styles';
+import { margin, padding } from '@rainbow-me/styles';
 import { abbreviations } from '@rainbow-me/utils';
 
 const Footer = styled(Column).attrs({
@@ -28,7 +28,7 @@ const Footer = styled(Column).attrs({
 `;
 
 const GasPositionContainer = styled(Row)`
-  margin-horizontal: 5;
+  ${margin(0, 5)};
 `;
 
 const Header = styled(Column).attrs({
