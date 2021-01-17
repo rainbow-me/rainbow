@@ -2,7 +2,7 @@ import { useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components/primitives';
 import { GasSpeedButton } from '../gas';
-import { Column } from '../layout';
+import { Column, Row } from '../layout';
 import { SheetHandleFixedToTopHeight, SheetTitle, SlackSheet } from '../sheet';
 import { CopyToast, ToastPositionContainer } from '../toasts';
 import {
@@ -15,7 +15,7 @@ import {
 import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
 import { useHeight } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import { padding } from '@rainbow-me/styles';
+import { margin, padding } from '@rainbow-me/styles';
 import { abbreviations } from '@rainbow-me/utils';
 
 const Footer = styled(Column).attrs({
@@ -25,6 +25,10 @@ const Footer = styled(Column).attrs({
   shrink: 0,
 })`
   ${padding(6, 0, 0)};
+`;
+
+const GasPositionContainer = styled(Row)`
+  ${margin(0, 5)};
 `;
 
 const Header = styled(Column).attrs({
@@ -91,7 +95,11 @@ export default function SwapDetailsState({
   }, [setParams, sheetHeight]);
 
   return (
-    <SlackSheet additionalTopPadding={android} contentHeight={sheetHeight}>
+    <SlackSheet
+      additionalTopPadding={android}
+      borderRadius={39}
+      contentHeight={sheetHeight}
+    >
       <Header>
         <SheetTitle weight="heavy">Review</SheetTitle>
       </Header>
@@ -103,11 +111,13 @@ export default function SwapDetailsState({
       />
       <Footer onLayout={setFooterHeight}>
         {renderConfirmButton}
-        <GasSpeedButton
-          testID="swap-details-gas"
-          theme="light"
-          type={ExchangeModalTypes.swap}
-        />
+        <GasPositionContainer>
+          <GasSpeedButton
+            testID="swap-details-gas"
+            theme="light"
+            type={ExchangeModalTypes.swap}
+          />
+        </GasPositionContainer>
       </Footer>
       <ToastPositionContainer>
         <CopyToast copiedText={copiedText} copyCount={copyCount} />

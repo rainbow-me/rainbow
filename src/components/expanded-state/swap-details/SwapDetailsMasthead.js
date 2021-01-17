@@ -6,7 +6,7 @@ import { RowWithMargins } from '../../layout';
 import CurrencyTile, { CurrencyTileHeight } from './CurrencyTile';
 import { colors, padding } from '@rainbow-me/styles';
 
-const containerPaddingTop = 19;
+const containerPaddingTop = 34;
 export const SwapDetailsMastheadHeight =
   CurrencyTileHeight + containerPaddingTop;
 

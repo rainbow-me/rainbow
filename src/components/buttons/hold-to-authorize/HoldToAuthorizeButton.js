@@ -68,7 +68,7 @@ const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs({
 const Label = styled(BiometricButtonContent).attrs(({ smallButton }) => ({
   color: 'white',
   size: smallButton ? 'large' : 'larger',
-  weight: 'bold',
+  weight: 'heavy',
 }))`
   bottom: 2;
 `;
