@@ -205,7 +205,6 @@ export default function useUniswapMarketDetails({
 
   const updateInputOutputAmounts = useCallback(() => {
     try {
-      const isMissingAmounts = !inputAmount && !outputAmount;
       if (isMissingAmounts) return;
 
       const newIsSufficientBalance =
@@ -243,14 +242,15 @@ export default function useUniswapMarketDetails({
       logger.log('error getting market details', error);
     }
   }, [
+    calculateInputGivenOutputChange,
+    calculateOutputGivenInputChange,
     inputAmount,
     inputAsExactAmount,
     inputFieldRef,
+    isMissingAmounts,
     maxInputBalance,
     outputAmount,
     setIsSufficientBalance,
-    calculateInputGivenOutputChange,
-    calculateOutputGivenInputChange,
   ]);
 
   useEffect(() => {
@@ -284,15 +284,11 @@ export default function useUniswapMarketDetails({
   useEffect(() => {
     // update slippage
     if (swapNotNeeded || isMissingCurrency) return;
-    if (isMissingAmounts) {
-      setSlippage(0);
-      return;
-    }
-    const priceImpact = tradeDetails?.priceImpact
-      ? tradeDetails?.priceImpact?.toFixed(2).toString()
-      : 0;
-    const slippage = Number(priceImpact) * 100;
-    setSlippage(slippage);
+    setSlippage(
+      tradeDetails?.priceImpact && !isMissingAmounts
+        ? Number(tradeDetails?.priceImpact?.toFixed(2).toString()) * 100
+        : 0
+    );
   }, [
     isMissingAmounts,
     isMissingCurrency,
