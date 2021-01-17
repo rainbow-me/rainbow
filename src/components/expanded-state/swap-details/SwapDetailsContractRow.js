@@ -1,19 +1,14 @@
-import React, { useCallback, useContext, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import Animated from 'react-native-reanimated';
 import { mixColor, useTimingTransition } from 'react-native-redash';
 import { useMemoOne } from 'use-memo-one';
 import { ButtonPressAnimation, interpolate } from '../../animations';
 import { TruncatedAddress } from '../../text';
-import SwapDetailsContext from './SwapDetailsContext';
 import SwapDetailsRow, { SwapDetailsValue } from './SwapDetailsRow';
-import {
-  useClipboard,
-  useColorForAsset,
-  useEtherscan,
-} from '@rainbow-me/hooks';
+import { useClipboard, useColorForAsset } from '@rainbow-me/hooks';
 import { colors } from '@rainbow-me/styles';
-import { abbreviations } from '@rainbow-me/utils';
+import { abbreviations, ethereumUtils } from '@rainbow-me/utils';
 
 const AnimatedTruncatedAddress = Animated.createAnimatedComponent(
   TruncatedAddress
@@ -42,18 +37,6 @@ const ContractActions = {
     },
   },
 };
-
-function useCopyContractAddress() {
-  const { setClipboard } = useClipboard();
-  const { onCopySwapDetailsText } = useContext(SwapDetailsContext);
-  return useCallback(
-    address => {
-      setClipboard(address);
-      onCopySwapDetailsText(address);
-    },
-    [onCopySwapDetailsText, setClipboard]
-  );
-}
 
 function SwapDetailsContractRowContent({
   asset,
@@ -93,9 +76,19 @@ function SwapDetailsContractRowContent({
   );
 }
 
-export default function SwapDetailsContractRow({ asset, ...props }) {
-  const handleCopyContractAddress = useCopyContractAddress();
-  const { openTokenEtherscanURL } = useEtherscan();
+export default function SwapDetailsContractRow({
+  asset,
+  onCopySwapDetailsText,
+  ...props
+}) {
+  const { setClipboard } = useClipboard();
+  const handleCopyContractAddress = useCallback(
+    address => {
+      setClipboard(address);
+      onCopySwapDetailsText(address);
+    },
+    [onCopySwapDetailsText, setClipboard]
+  );
 
   const menuConfig = useMemo(
     () => ({
@@ -118,10 +111,10 @@ export default function SwapDetailsContractRow({ asset, ...props }) {
       if (actionKey === ContractActionsEnum.copyAddress) {
         handleCopyContractAddress(asset?.address);
       } else if (actionKey === ContractActionsEnum.etherscan) {
-        openTokenEtherscanURL(asset?.address);
+        ethereumUtils.openTokenEtherscanURL(asset?.address);
       }
     },
-    [asset, handleCopyContractAddress, openTokenEtherscanURL]
+    [asset, handleCopyContractAddress]
   );
 
   return (

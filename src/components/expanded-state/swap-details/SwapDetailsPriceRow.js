@@ -1,17 +1,19 @@
-import React, { useContext, useMemo } from 'react';
+import { useRoute } from '@react-navigation/native';
+import React, { useMemo } from 'react';
 import { ButtonPressAnimation } from '../../animations';
-import SwapDetailsContext from './SwapDetailsContext';
 import SwapDetailsRow, { SwapDetailsValue } from './SwapDetailsRow';
 import { useStepper } from '@rainbow-me/hooks';
 import { colors } from '@rainbow-me/styles';
 
 export default function SwapDetailsPriceRow(props) {
   const {
-    inputCurrency,
-    inputExecutionRate,
-    outputCurrency,
-    outputExecutionRate,
-  } = useContext(SwapDetailsContext);
+    params: {
+      inputCurrency,
+      inputExecutionRate,
+      outputCurrency,
+      outputExecutionRate,
+    },
+  } = useRoute();
 
   const steps = useMemo(
     () => [

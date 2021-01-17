@@ -1,40 +1,50 @@
-import React, { useContext } from 'react';
+import { useRoute } from '@react-navigation/native';
+import React from 'react';
 import styled from 'styled-components/primitives';
 import { Icon } from '../../icons';
 import { RowWithMargins } from '../../layout';
-import CurrencyTile from './CurrencyTile';
-import SwapDetailsContext from './SwapDetailsContext';
+import CurrencyTile, { CurrencyTileHeight } from './CurrencyTile';
 import { colors, padding } from '@rainbow-me/styles';
+
+const containerPaddingTop = 19;
+export const SwapDetailsMastheadHeight =
+  CurrencyTileHeight + containerPaddingTop;
 
 const Container = styled(RowWithMargins).attrs({
   align: 'center',
   margin: 7,
 })`
-  ${padding(34, 24, 0)};
+  ${padding(containerPaddingTop, 24, 0)};
   width: 100%;
 `;
 
 export default function SwapDetailsMasthead(props) {
   const {
-    inputAmountDisplay,
-    inputCurrency,
-    isHighSlippage,
-    outputAmountDisplay,
-    outputCurrency,
-  } = useContext(SwapDetailsContext);
+    params: {
+      inputAmount,
+      inputCurrency,
+      inputPriceValue,
+      isHighSlippage,
+      outputAmount,
+      outputCurrency,
+      outputPriceValue,
+    },
+  } = useRoute();
 
   return (
     <Container {...props}>
       <CurrencyTile
-        amountDisplay={inputAmountDisplay}
+        amount={inputAmount}
         asset={inputCurrency}
+        priceValue={inputPriceValue}
         type="input"
       />
       <Icon color={colors.dark} name="doubleChevron" />
       <CurrencyTile
-        amountDisplay={outputAmountDisplay}
+        amount={outputAmount}
         asset={outputCurrency}
         isHighSlippage={isHighSlippage}
+        priceValue={outputPriceValue}
         type="output"
       />
     </Container>

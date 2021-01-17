@@ -166,13 +166,15 @@ export default function ExchangeModal({
     updateNativeAmount,
     updateOutputAmount,
   } = useSwapInputs({
+    category,
     defaultInputAsset,
     defaultOutputAsset,
+    extraTradeDetails,
     inputCurrency,
-    isDeposit,
     isWithdrawal,
     maxInputBalance,
     nativeFieldRef,
+    outputCurrency,
     supplyBalanceUnderlying,
     type,
   });
@@ -467,7 +469,35 @@ export default function ExchangeModal({
     navigate,
   ]);
 
-  // logger.prettyLog('tradeDetails', tradeDetails?.routex);
+  const renderConfirmButton = useMemo(() => {
+    return (
+      <ConfirmExchangeButton
+        asset={outputCurrency}
+        disabled={!Number(inputAmountDisplay)}
+        isAuthorizing={isAuthorizing}
+        isDeposit={isDeposit}
+        isSufficientBalance={isSufficientBalance}
+        isSufficientLiquidity={isSufficientLiquidity}
+        onSubmit={handleSubmit}
+        slippage={slippage}
+        testID={testID + '-confirm'}
+        type={type}
+      />
+    );
+  }, [
+    handleSubmit,
+    inputAmountDisplay,
+    isAuthorizing,
+    isDeposit,
+    isSufficientBalance,
+    isSufficientLiquidity,
+    outputCurrency,
+    slippage,
+    testID,
+    type,
+  ]);
+
+  // logger.prettyLog('tradeDetails', tradeDetails);
   // logger.prettyLog('extraTradeDetails', extraTradeDetails);
 
   const navigateToSwapDetailsModal = useCallback(() => {
@@ -486,11 +516,12 @@ export default function ExchangeModal({
         inputAmountDisplay,
         inputCurrency,
         inputCurrencySymbol: get(inputCurrency, 'symbol'),
-        longFormHeight: 472,
+        isHighSlippage: slippage > SlippageWarningThresholdInBips,
         outputAmount,
         outputAmountDisplay,
         outputCurrency,
         outputCurrencySymbol: get(outputCurrency, 'symbol'),
+        renderConfirmButton,
         restoreFocusOnSwapModal: () => {
           android &&
             (lastFocusedInputHandle.current = lastFocusedInputHandleTemporary);
@@ -501,7 +532,6 @@ export default function ExchangeModal({
       });
       analytics.track('Opened Swap Details modal', {
         category,
-
         name: get(outputCurrency, 'name', ''),
         symbol: get(outputCurrency, 'symbol', ''),
         tokenAddress: get(outputCurrency, 'address', ''),
@@ -514,19 +544,20 @@ export default function ExchangeModal({
   }, [
     category,
     extraTradeDetails,
-    inputAmountDisplay,
     inputAmount,
-    outputAmount,
+    inputAmountDisplay,
     inputCurrency,
     inputFieldRef,
-    slippage,
     lastFocusedInputHandle,
     nativeFieldRef,
     navigate,
+    outputAmount,
     outputAmountDisplay,
     outputCurrency,
     outputFieldRef,
+    renderConfirmButton,
     setParams,
+    slippage,
     type,
   ]);
 
@@ -654,31 +685,16 @@ export default function ExchangeModal({
               testID="swap-info-button"
             />
           )}
-          {showConfirmButton && (
-            <Fragment>
-              {!isDeposit && (
-                <ExchangeDetailsRow
-                  isSlippageWarningVisible={isSlippageWarningVisible}
-                  onFlipCurrencies={onFlipCurrencies}
-                  onPressViewDetails={navigateToSwapDetailsModal}
-                  showDetailsButton={showDetailsButton}
-                  slippage={slippage}
-                />
-              )}
-              <ConfirmExchangeButton
-                asset={outputCurrency}
-                disabled={!Number(inputAmountDisplay)}
-                isAuthorizing={isAuthorizing}
-                isDeposit={isDeposit}
-                isSufficientBalance={isSufficientBalance}
-                isSufficientLiquidity={isSufficientLiquidity}
-                onSubmit={handleSubmit}
-                slippage={slippage}
-                testID={testID + '-confirm'}
-                type={type}
-              />
-            </Fragment>
+          {!isDeposit && showConfirmButton && (
+            <ExchangeDetailsRow
+              isSlippageWarningVisible={isSlippageWarningVisible}
+              onFlipCurrencies={onFlipCurrencies}
+              onPressViewDetails={navigateToSwapDetailsModal}
+              showDetailsButton={showDetailsButton}
+              slippage={slippage}
+            />
           )}
+          {showConfirmButton && renderConfirmButton}
           <GasSpeedButton
             dontBlur
             onCustomGasBlur={handleCustomGasBlur}
