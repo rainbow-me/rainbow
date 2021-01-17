@@ -21,11 +21,26 @@ export default function useSwapDetails() {
 
       let inputPriceValue = null;
 
+      if (outputCurrency) {
+        const outputCurrencyInWallet = ethereumUtils.getAsset(
+          allAssets,
+          outputCurrency.address
+        );
+        outputPriceValue = outputCurrencyInWallet?.native?.price?.amount;
+      }
+
       if (inputCurrency) {
         inputPriceValue = inputCurrency?.native?.price?.amount;
+        inputExecutionRate = tradeDetails?.executionPrice?.toSignificant();
+
+        // If the input currency's price is unknown, then calculate its price
+        // based off of the output currency price
+        if (!inputPriceValue && outputPriceValue) {
+          inputPriceValue = multiply(outputPriceValue, inputExecutionRate);
+        }
 
         inputExecutionRate = updatePrecisionToDisplay(
-          tradeDetails?.executionPrice?.toSignificant(),
+          inputExecutionRate,
           inputPriceValue
         );
 
@@ -35,13 +50,6 @@ export default function useSwapDetails() {
       }
 
       if (outputCurrency) {
-        const outputCurrencyInWallet = ethereumUtils.getAsset(
-          allAssets,
-          outputCurrency.address
-        );
-
-        outputPriceValue = outputCurrencyInWallet?.native?.price?.amount;
-
         if (tradeDetails.executionPrice.equalTo(0)) {
           outputExecutionRate = '0';
         } else {
@@ -69,6 +77,7 @@ export default function useSwapDetails() {
       setExtraTradeDetails({
         inputExecutionRate,
         inputNativePrice,
+        inputPriceValue,
         outputExecutionRate,
         outputNativePrice,
         outputPriceValue,
