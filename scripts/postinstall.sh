@@ -1,21 +1,9 @@
 #!/bin/bash
 set -eo pipefail
 
-OS_ENVIRONMENT="$(uname -s)"
-case "${OS_ENVIRONMENT}" in
-  Linux*)   MACHINE=Linux;;
-  Darwin*)  MACHINE=Mac;;
-  CYGWIN*)  MACHINE=Cygwin;;
-  MINGW*)   MACHINE=MinGw;;
-  *)        MACHINE="UNKNOWN:${OS_ENVIRONMENT}"
-esac
-
-# MacOS
-if [[ "$MACHINE" == Mac ]]; then
-  if [ -n "$RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK" ]; then
-    eval $RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK;
-    echo "✅ executed ios prebuild hook"
-  fi
+if [ -n "$RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK" ]; then
+  eval $RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK;
+  echo "✅ executed ios prebuild hook"
 fi
 
 # Ignore any potential tracked changes to mutable development files.
