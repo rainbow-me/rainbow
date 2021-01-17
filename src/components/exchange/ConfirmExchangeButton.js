@@ -1,4 +1,5 @@
-import React from 'react';
+import { useRoute } from '@react-navigation/native';
+import React, { useMemo } from 'react';
 import styled from 'styled-components/primitives';
 import { HoldToAuthorizeButton } from '../buttons';
 import { Centered } from '../layout';
@@ -8,6 +9,7 @@ import {
   useGas,
   useSlippageDetails,
 } from '@rainbow-me/hooks';
+import Routes from '@rainbow-me/routes';
 import { colors, padding } from '@rainbow-me/styles';
 
 const paddingHorizontal = 19;
@@ -30,6 +32,7 @@ export default function ConfirmExchangeButton({
   type = ExchangeModalTypes.swap,
   ...props
 }) {
+  const { name: routeName } = useRoute();
   const colorForAsset = useColorForAsset(asset);
   const { isSufficientGas } = useGas();
   const { isHighSlippage } = useSlippageDetails(slippage);
@@ -61,6 +64,14 @@ export default function ConfirmExchangeButton({
     !isSufficientGas ||
     !isSufficientLiquidity;
 
+  const shadowsForAsset = useMemo(
+    () => [
+      [0, 10, 30, colors.dark, 0.2],
+      [0, 5, 15, colorForAsset, 0.4],
+    ],
+    [colorForAsset]
+  );
+
   return (
     <Container>
       <HoldToAuthorizeButton
@@ -73,7 +84,9 @@ export default function ConfirmExchangeButton({
         label={label}
         onLongPress={onSubmit}
         parentHorizontalPadding={paddingHorizontal}
-        shadows={shadows}
+        shadows={
+          routeName === Routes.SWAP_DETAILS_SHEET ? shadowsForAsset : shadows
+        }
         showBiometryIcon={!isDisabled}
         testID={testID}
         theme="dark"
