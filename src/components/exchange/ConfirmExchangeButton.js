@@ -2,9 +2,12 @@ import React from 'react';
 import styled from 'styled-components/primitives';
 import { HoldToAuthorizeButton } from '../buttons';
 import { Centered } from '../layout';
-import { SlippageWarningThresholdInBips } from './SlippageWarning';
 import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
-import { useColorForAsset, useGas } from '@rainbow-me/hooks';
+import {
+  useColorForAsset,
+  useGas,
+  useSlippageDetails,
+} from '@rainbow-me/hooks';
 import { colors, padding } from '@rainbow-me/styles';
 
 const paddingHorizontal = 19;
@@ -29,6 +32,7 @@ export default function ConfirmExchangeButton({
 }) {
   const colorForAsset = useColorForAsset(asset);
   const { isSufficientGas } = useGas();
+  const { isHighSlippage } = useSlippageDetails(slippage);
 
   let label = '';
   if (type === ExchangeModalTypes.deposit) {
@@ -45,7 +49,7 @@ export default function ConfirmExchangeButton({
     label = 'Insufficient Liquidity';
   } else if (!isSufficientGas) {
     label = 'Insufficient ETH';
-  } else if (slippage > SlippageWarningThresholdInBips) {
+  } else if (isHighSlippage) {
     label = 'Swap Anyway';
   } else if (disabled) {
     label = 'Enter an Amount';

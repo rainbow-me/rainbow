@@ -8,7 +8,11 @@ import {
   convertAmountAndPriceToNativeDisplay,
   updatePrecisionToDisplay,
 } from '@rainbow-me/helpers/utilities';
-import { useAccountSettings, useColorForAsset } from '@rainbow-me/hooks';
+import {
+  useAccountSettings,
+  useColorForAsset,
+  useSlippageDetails,
+} from '@rainbow-me/hooks';
 import { colors, position } from '@rainbow-me/styles';
 
 export const CurrencyTileHeight = 143;
@@ -53,13 +57,14 @@ export default function CurrencyTile({
   amount,
   asset,
   priceValue,
-  isHighSlippage,
+  slippage,
   type = 'input',
   ...props
 }) {
   const { address, symbol } = asset;
   const { nativeCurrency } = useAccountSettings();
   const colorForAsset = useColorForAsset(asset);
+  const { color: slippageColor, isHighSlippage } = useSlippageDetails(slippage);
 
   const { amountDisplay, priceDisplay } = useMemo(() => {
     const data = [amount, priceValue || 0];
@@ -81,7 +86,7 @@ export default function CurrencyTile({
           <NativePriceText>
             {priceDisplay}
             {isHighSlippage && (
-              <NativePriceText color={colors.warning}>{` 􀇿`}</NativePriceText>
+              <NativePriceText color={slippageColor}>{` 􀇿`}</NativePriceText>
             )}
           </NativePriceText>
           <Row align="center">
