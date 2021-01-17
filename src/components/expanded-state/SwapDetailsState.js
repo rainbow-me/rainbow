@@ -1,43 +1,48 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
-import React, {
-  Fragment,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components/primitives';
-import {
-  // ConfirmExchangeButton,
-  SlippageWarningThresholdInBips,
-} from '../exchange';
-// import { GasSpeedButton } from '../gas';
-import { Centered, ColumnWithMargins } from '../layout';
-import { SheetTitle, SlackSheet } from '../sheet';
+import { GasSpeedButton } from '../gas';
+import { Column, ColumnWithMargins } from '../layout';
+import { SheetHandleFixedToTopHeight, SheetTitle, SlackSheet } from '../sheet';
 import { CopyToast, ToastPositionContainer } from '../toasts';
 import {
-  SwapDetailsContext,
   SwapDetailsContractRow,
   SwapDetailsMasthead,
+  SwapDetailsMastheadHeight,
   SwapDetailsPriceRow,
   SwapDetailsRow,
+  SwapDetailsRowHeight,
   SwapDetailsUniswapRow,
   SwapDetailsValue,
 } from './swap-details';
-// import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
+import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
 import { convertBipsToPercentage } from '@rainbow-me/helpers/utilities';
+import { useHeight } from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
 import { colors, padding } from '@rainbow-me/styles';
 import { abbreviations, isETH } from '@rainbow-me/utils';
-// import logger from 'logger';
 
+const contentRowMargin = 24;
+const contentRowHeight = SwapDetailsRowHeight + contentRowMargin;
 const Content = styled(ColumnWithMargins).attrs({
-  margin: 24,
+  flex: 1,
+  margin: contentRowMargin,
 })`
   ${padding(30, 19)};
-  height: 100%;
 `;
 
-const Header = styled(Centered)`
+const Footer = styled(Column).attrs({
+  align: 'end',
+  grow: 1,
+  justify: 'end',
+  shrink: 0,
+})`
+  ${padding(6, 0, 0)};
+`;
+
+const Header = styled(Column).attrs({
+  justify: 'start',
+})`
   left: 0;
   position: absolute;
   right: 0;
@@ -46,11 +51,11 @@ const Header = styled(Centered)`
 `;
 
 function useAndroidDisableGesturesOnFocus() {
-  const route = useRoute();
+  const { params } = useRoute();
   const isFocused = useIsFocused();
   useEffect(() => {
-    android && route?.params?.toggleGestureEnabled?.(!isFocused);
-  }, [isFocused, route]);
+    android && params?.toggleGestureEnabled?.(!isFocused);
+  }, [isFocused, params]);
 }
 
 function useSwapDetailsClipboardState() {
@@ -67,22 +72,14 @@ function useSwapDetailsClipboardState() {
   };
 }
 
-const SwapDetailsState = ({
-  inputAmount,
-  inputAmountDisplay,
+export default function SwapDetailsState({
   inputCurrency,
-  inputExecutionRate,
-  // inputNativePrice,
-  longFormHeight,
-  outputAmount,
-  outputAmountDisplay,
   outputCurrency,
-  outputExecutionRate,
-  // outputNativePrice,
+  renderConfirmButton,
   restoreFocusOnSwapModal,
   slippage,
-  // ...props
-}) => {
+}) {
+  const { setParams } = useNavigation();
   useEffect(() => () => restoreFocusOnSwapModal(), [restoreFocusOnSwapModal]);
   useAndroidDisableGesturesOnFocus();
 
@@ -92,86 +89,57 @@ const SwapDetailsState = ({
     onCopySwapDetailsText,
   } = useSwapDetailsClipboardState();
 
-  const contextValue = useMemo(
-    () => ({
-      inputAmount,
-      inputAmountDisplay,
-      inputCurrency,
-      inputExecutionRate,
-      isHighSlippage: slippage > SlippageWarningThresholdInBips,
-      onCopySwapDetailsText,
-      outputAmount,
-      outputAmountDisplay,
-      outputCurrency,
-      outputExecutionRate,
-    }),
-    [
-      inputAmount,
-      inputAmountDisplay,
-      inputCurrency,
-      inputExecutionRate,
-      onCopySwapDetailsText,
-      outputAmount,
-      outputAmountDisplay,
-      outputCurrency,
-      outputExecutionRate,
-      slippage,
-    ]
-  );
+  const [contentHeight, setContentHeight] = useHeight(contentRowHeight * 4);
+  const [footerHeight, setFooterHeight] = useHeight();
+
+  const sheetHeight =
+    SheetHandleFixedToTopHeight +
+    SwapDetailsMastheadHeight +
+    contentHeight +
+    footerHeight;
+
+  useEffect(() => {
+    setParams({ longFormHeight: sheetHeight });
+  }, [setParams, sheetHeight]);
 
   return (
-    <SwapDetailsContext.Provider value={contextValue}>
-      <Fragment>
-        <SlackSheet
-          additionalTopPadding={android}
-          contentHeight={longFormHeight}
-        >
-          <Header>
-            <SheetTitle weight="heavy">Review</SheetTitle>
-          </Header>
-          <SwapDetailsMasthead />
-          <Content testID="swap-details-state">
-            <SwapDetailsRow label="Price impact">
-              <SwapDetailsValue
-                color={colors.green}
-                letterSpacing="roundedTight"
-              >
-                {`${convertBipsToPercentage(slippage, 1)}%`}
-              </SwapDetailsValue>
-            </SwapDetailsRow>
-            <SwapDetailsPriceRow />
-            {!isETH(inputCurrency?.address) && (
-              <SwapDetailsContractRow asset={inputCurrency} />
-            )}
-            {!isETH(outputCurrency?.address) && (
-              <SwapDetailsContractRow asset={outputCurrency} />
-            )}
-            <SwapDetailsUniswapRow />
-          </Content>
-          {/*<ConfirmExchangeButton
-            asset={outputCurrency}
-            disabled={!Number(inputAmountDisplay)}
-            isAuthorizing={false}
-            isDeposit={false}
-            isSufficientBalance
-            isSufficientGas
-            isSufficientLiquidity
-            onSubmit={() => logger.log('submitting from SwapDetails!')}
-            slippage={slippage}
-            testID="swap-details-confirm"
-            type={ExchangeModalTypes.swap}
+    <SlackSheet additionalTopPadding={android} contentHeight={sheetHeight}>
+      <Header>
+        <SheetTitle weight="heavy">Review</SheetTitle>
+      </Header>
+      <SwapDetailsMasthead />
+      <Content onLayout={setContentHeight} testID="swap-details-state">
+        <SwapDetailsRow label="Price impact">
+          <SwapDetailsValue color={colors.green} letterSpacing="roundedTight">
+            {`${convertBipsToPercentage(slippage, 1)}%`}
+          </SwapDetailsValue>
+        </SwapDetailsRow>
+        <SwapDetailsPriceRow />
+        {!isETH(inputCurrency?.address) && (
+          <SwapDetailsContractRow
+            asset={inputCurrency}
+            onCopySwapDetailsText={onCopySwapDetailsText}
           />
-          <GasSpeedButton
-            testID="swap-details-gas"
-            type={ExchangeModalTypes.swap}
-          />*/}
-        </SlackSheet>
-        <ToastPositionContainer>
-          <CopyToast copiedText={copiedText} copyCount={copyCount} />
-        </ToastPositionContainer>
-      </Fragment>
-    </SwapDetailsContext.Provider>
+        )}
+        {!isETH(outputCurrency?.address) && (
+          <SwapDetailsContractRow
+            asset={outputCurrency}
+            onCopySwapDetailsText={onCopySwapDetailsText}
+          />
+        )}
+        <SwapDetailsUniswapRow />
+      </Content>
+      <Footer onLayout={setFooterHeight}>
+        {renderConfirmButton}
+        <GasSpeedButton
+          testID="swap-details-gas"
+          theme="light"
+          type={ExchangeModalTypes.swap}
+        />
+      </Footer>
+      <ToastPositionContainer>
+        <CopyToast copiedText={copiedText} copyCount={copyCount} />
+      </ToastPositionContainer>
+    </SlackSheet>
   );
-};
-
-export default React.memo(SwapDetailsState);
+}

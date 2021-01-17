@@ -58,8 +58,9 @@ export default function SwapDetailsUniswapRow(props) {
       scaleTo={0}
       size={50}
       wiggleFactor={0}
+      {...props}
     >
-      <SwapDetailsRow {...props} label="Swapping via">
+      <SwapDetailsRow label="Swapping via">
         <AnimatedSwapDetailsValue color={color}>
           {label}
         </AnimatedSwapDetailsValue>

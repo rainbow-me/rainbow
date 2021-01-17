@@ -1,10 +1,15 @@
 import React from 'react';
 import styled from 'styled-components/primitives';
 import { Centered } from '../../layout';
-import { Nbsp, Text } from '../../text';
+import { Nbsp, Text, TruncatedText } from '../../text';
 import { colors } from '@rainbow-me/styles';
 
-const SwapDetailsText = styled(Text).attrs({ size: 'smedium' })``;
+export const SwapDetailsRowHeight = 17;
+
+const SwapDetailsText = styled(Text).attrs({
+  lineHeight: SwapDetailsRowHeight,
+  size: 'smedium',
+})``;
 
 export const SwapDetailsLabel = styled(SwapDetailsText).attrs({
   color: colors.blueGreyDark50,
@@ -21,7 +26,7 @@ export const SwapDetailsValue = styled(SwapDetailsText).attrs(
 export default function SwapDetailsRow({ children, label, ...props }) {
   return (
     <Centered {...props}>
-      <SwapDetailsText>
+      <SwapDetailsText as={TruncatedText}>
         <SwapDetailsLabel>{label}</SwapDetailsLabel>
         <Nbsp />
         <SwapDetailsValue>{children}</SwapDetailsValue>
