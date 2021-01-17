@@ -2,34 +2,21 @@ import { useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components/primitives';
 import { GasSpeedButton } from '../gas';
-import { Column, ColumnWithMargins } from '../layout';
+import { Column } from '../layout';
 import { SheetHandleFixedToTopHeight, SheetTitle, SlackSheet } from '../sheet';
 import { CopyToast, ToastPositionContainer } from '../toasts';
 import {
-  SwapDetailsContractRow,
+  SwapDetailsContent,
+  SwapDetailsContentMinHeight,
   SwapDetailsMasthead,
   SwapDetailsMastheadHeight,
-  SwapDetailsPriceRow,
-  SwapDetailsRow,
-  SwapDetailsRowHeight,
-  SwapDetailsUniswapRow,
-  SwapDetailsValue,
+  SwapDetailsSlippageMessage,
 } from './swap-details';
 import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
-import { convertBipsToPercentage } from '@rainbow-me/helpers/utilities';
 import { useHeight } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import { colors, padding } from '@rainbow-me/styles';
-import { abbreviations, isETH } from '@rainbow-me/utils';
-
-const contentRowMargin = 24;
-const contentRowHeight = SwapDetailsRowHeight + contentRowMargin;
-const Content = styled(ColumnWithMargins).attrs({
-  flex: 1,
-  margin: contentRowMargin,
-})`
-  ${padding(30, 19)};
-`;
+import { padding } from '@rainbow-me/styles';
+import { abbreviations } from '@rainbow-me/utils';
 
 const Footer = styled(Column).attrs({
   align: 'end',
@@ -73,11 +60,8 @@ function useSwapDetailsClipboardState() {
 }
 
 export default function SwapDetailsState({
-  inputCurrency,
-  outputCurrency,
   renderConfirmButton,
   restoreFocusOnSwapModal,
-  slippage,
 }) {
   const { setParams } = useNavigation();
   useEffect(() => () => restoreFocusOnSwapModal(), [restoreFocusOnSwapModal]);
@@ -89,13 +73,17 @@ export default function SwapDetailsState({
     onCopySwapDetailsText,
   } = useSwapDetailsClipboardState();
 
-  const [contentHeight, setContentHeight] = useHeight(contentRowHeight * 4);
   const [footerHeight, setFooterHeight] = useHeight();
+  const [slippageMessageHeight, setSlippageMessageHeight] = useHeight();
+  const [contentHeight, setContentHeight] = useHeight(
+    SwapDetailsContentMinHeight
+  );
 
   const sheetHeight =
     SheetHandleFixedToTopHeight +
     SwapDetailsMastheadHeight +
     contentHeight +
+    slippageMessageHeight +
     footerHeight;
 
   useEffect(() => {
@@ -108,27 +96,11 @@ export default function SwapDetailsState({
         <SheetTitle weight="heavy">Review</SheetTitle>
       </Header>
       <SwapDetailsMasthead />
-      <Content onLayout={setContentHeight} testID="swap-details-state">
-        <SwapDetailsRow label="Price impact">
-          <SwapDetailsValue color={colors.green} letterSpacing="roundedTight">
-            {`${convertBipsToPercentage(slippage, 1)}%`}
-          </SwapDetailsValue>
-        </SwapDetailsRow>
-        <SwapDetailsPriceRow />
-        {!isETH(inputCurrency?.address) && (
-          <SwapDetailsContractRow
-            asset={inputCurrency}
-            onCopySwapDetailsText={onCopySwapDetailsText}
-          />
-        )}
-        {!isETH(outputCurrency?.address) && (
-          <SwapDetailsContractRow
-            asset={outputCurrency}
-            onCopySwapDetailsText={onCopySwapDetailsText}
-          />
-        )}
-        <SwapDetailsUniswapRow />
-      </Content>
+      <SwapDetailsSlippageMessage onLayout={setSlippageMessageHeight} />
+      <SwapDetailsContent
+        onCopySwapDetailsText={onCopySwapDetailsText}
+        onLayout={setContentHeight}
+      />
       <Footer onLayout={setFooterHeight}>
         {renderConfirmButton}
         <GasSpeedButton

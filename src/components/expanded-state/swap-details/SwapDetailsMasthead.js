@@ -24,10 +24,10 @@ export default function SwapDetailsMasthead(props) {
       inputAmount,
       inputCurrency,
       inputPriceValue,
-      isHighSlippage,
       outputAmount,
       outputCurrency,
       outputPriceValue,
+      slippage,
     },
   } = useRoute();
 
@@ -43,8 +43,8 @@ export default function SwapDetailsMasthead(props) {
       <CurrencyTile
         amount={outputAmount}
         asset={outputCurrency}
-        isHighSlippage={isHighSlippage}
         priceValue={outputPriceValue}
+        slippage={slippage}
         type="output"
       />
     </Container>
