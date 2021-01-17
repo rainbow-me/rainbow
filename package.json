@@ -33,7 +33,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "./scripts/pre-commit.sh"
+      "pre-commit": "lint-staged"
     }
   },
   "lint-staged": {
