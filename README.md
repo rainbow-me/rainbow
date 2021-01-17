@@ -43,6 +43,8 @@ If you are new to React Native, this is a helpful introduction: https://facebook
 
 8. Open `rainbow-wallet/ios/RainbowWallet.xcworkspace` in XCode.
 
+9. Run the project by clicking the play button.
+
 ## CodePush
 
 In order to use code push you must be logged into the correct Microsoft App Center account.
