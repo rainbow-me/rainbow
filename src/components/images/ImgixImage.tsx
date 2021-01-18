@@ -60,13 +60,13 @@ const ImgixImageWithForwardRef = React.forwardRef(
   ),
 );
 
+const { cacheControl, contextTypes, priority, resizeMode } = FastImage;
+
 // We want to render using ImgixImage, assign all properties of
 // FastImage to ImgixImage, override all properties of FastImage which
 // we do not wish to override by FastImage, and finally override the
 // preload mechanic.
 export default Object.assign(
   ImgixImageWithForwardRef,
-  FastImage,
-  ImgixImageWithForwardRef,
-  { preload },
+  { cacheControl, contextTypes, priority, resizeMode, preload },
 );
