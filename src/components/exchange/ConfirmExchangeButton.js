@@ -15,6 +15,15 @@ import { colors, padding } from '@rainbow-me/styles';
 const paddingHorizontal = 19;
 const shadows = [[0, 10, 30, colors.black, 0.4]];
 
+const ConfirmButton = styled(HoldToAuthorizeButton).attrs({
+  disabledBackgroundColor: colors.grey20,
+  hideInnerBorder: true,
+  parentHorizontalPadding: paddingHorizontal,
+  theme: 'dark',
+})`
+  flex: 1;
+`;
+
 const Container = styled(Centered)`
   ${padding(5, paddingHorizontal, 0)};
   width: 100%;
@@ -37,6 +46,8 @@ export default function ConfirmExchangeButton({
   const { isSufficientGas } = useGas();
   const { isHighSlippage } = useSlippageDetails(slippage);
 
+  const isSwapDetailsRoute = routeName === Routes.SWAP_DETAILS_SHEET;
+
   let label = '';
   if (type === ExchangeModalTypes.deposit) {
     label = 'Hold to Deposit';
@@ -53,7 +64,7 @@ export default function ConfirmExchangeButton({
   } else if (!isSufficientGas) {
     label = 'Insufficient ETH';
   } else if (isHighSlippage) {
-    label = 'Swap Anyway';
+    label = isSwapDetailsRoute ? 'Swap Anyway' : '􀕹 View Details';
   } else if (disabled) {
     label = 'Enter an Amount';
   }
@@ -63,6 +74,9 @@ export default function ConfirmExchangeButton({
     !isSufficientBalance ||
     !isSufficientGas ||
     !isSufficientLiquidity;
+
+  const showBiometryIcon =
+    !isDisabled && !isHighSlippage && !isSwapDetailsRoute;
 
   const shadowsForAsset = useMemo(
     () => [
@@ -74,22 +88,15 @@ export default function ConfirmExchangeButton({
 
   return (
     <Container>
-      <HoldToAuthorizeButton
+      <ConfirmButton
         backgroundColor={colorForAsset}
         disabled={isDisabled}
-        disabledBackgroundColor={colors.grey20}
-        flex={1}
-        hideInnerBorder
         isAuthorizing={isAuthorizing}
         label={label}
         onLongPress={onSubmit}
-        parentHorizontalPadding={paddingHorizontal}
-        shadows={
-          routeName === Routes.SWAP_DETAILS_SHEET ? shadowsForAsset : shadows
-        }
-        showBiometryIcon={!isDisabled}
+        shadows={isSwapDetailsRoute ? shadowsForAsset : shadows}
+        showBiometryIcon={showBiometryIcon}
         testID={testID}
-        theme="dark"
         {...props}
       />
     </Container>
