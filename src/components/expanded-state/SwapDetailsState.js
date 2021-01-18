@@ -1,5 +1,11 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
+import { TurboModuleRegistry } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
 import { GasSpeedButton } from '../gas';
 import { Column, Row } from '../layout';
@@ -13,10 +19,26 @@ import {
   SwapDetailsSlippageMessage,
 } from './swap-details';
 import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
-import { useHeight } from '@rainbow-me/hooks';
+import { useDimensions, useHeight, useKeyboardHeight } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { margin, padding } from '@rainbow-me/styles';
-import { abbreviations } from '@rainbow-me/utils';
+import { abbreviations, safeAreaInsetValues } from '@rainbow-me/utils';
+
+const isReanimatedAvailable = !(
+  !TurboModuleRegistry.get('NativeReanimated') &&
+  (!global.__reanimatedModuleProxy || global.__reanimatedModuleProxy.__shimmed)
+);
+
+const springConfig = {
+  damping: 500,
+  mass: 3,
+  stiffness: 1000,
+};
+
+const AnimatedContainer = styled(Animated.View)`
+  height: 100%;
+  width: 100%;
+`;
 
 const Footer = styled(Column).attrs({
   align: 'end',
@@ -68,8 +90,12 @@ export default function SwapDetailsState({
   restoreFocusOnSwapModal,
 }) {
   const { setParams } = useNavigation();
+  const { params: { longFormHeight } = {} } = useRoute();
   useEffect(() => () => restoreFocusOnSwapModal(), [restoreFocusOnSwapModal]);
   useAndroidDisableGesturesOnFocus();
+  const { height: deviceHeight } = useDimensions();
+  const keyboardHeight = useKeyboardHeight();
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
 
   const {
     copiedText,
@@ -83,45 +109,104 @@ export default function SwapDetailsState({
     SwapDetailsContentMinHeight
   );
 
-  const sheetHeight =
+  const keyboardOffset =
+    keyboardHeight + safeAreaInsetValues.bottom + (android ? 50 : 10);
+
+  const sheetHeightWithKeyboard =
+    SheetHandleFixedToTopHeight +
+    SwapDetailsMastheadHeight +
+    contentHeight +
+    footerHeight +
+    keyboardHeight -
+    23;
+
+  const sheetHeightWithoutKeyboard =
     SheetHandleFixedToTopHeight +
     SwapDetailsMastheadHeight +
     contentHeight +
     slippageMessageHeight +
     footerHeight;
 
+  const additionalScrollForKeyboard =
+    sheetHeightWithoutKeyboard + keyboardOffset >
+    deviceHeight - safeAreaInsetValues.top + safeAreaInsetValues.bottom
+      ? deviceHeight -
+        safeAreaInsetValues.top +
+        safeAreaInsetValues.bottom -
+        (sheetHeightWithoutKeyboard + keyboardOffset)
+      : 0;
+
+  const handleCustomGasFocus = useCallback(() => {
+    setKeyboardVisible(true);
+  }, []);
+  const handleCustomGasBlur = useCallback(() => {
+    setKeyboardVisible(false);
+  }, []);
+
+  const contentScroll = useSharedValue(0);
+  const animatedContainerStyles = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateY: contentScroll.value }],
+    };
+  });
+  const fallbackStyles = {
+    marginBottom: keyboardVisible ? keyboardHeight : 0,
+  };
+
   useEffect(() => {
-    setParams({ longFormHeight: sheetHeight });
-  }, [setParams, sheetHeight]);
+    if (keyboardVisible) {
+      contentScroll.value = withSpring(
+        additionalScrollForKeyboard,
+        springConfig
+      );
+      setParams({ longFormHeight: sheetHeightWithKeyboard });
+    } else {
+      contentScroll.value = withSpring(0, springConfig);
+      setParams({ longFormHeight: sheetHeightWithoutKeyboard });
+    }
+  }, [
+    additionalScrollForKeyboard,
+    contentScroll,
+    keyboardVisible,
+    sheetHeightWithKeyboard,
+    sheetHeightWithoutKeyboard,
+    setParams,
+  ]);
 
   return (
-    <SlackSheet
-      additionalTopPadding={android}
-      borderRadius={39}
-      contentHeight={sheetHeight}
+    <AnimatedContainer
+      style={isReanimatedAvailable ? animatedContainerStyles : fallbackStyles}
     >
-      <Header>
-        <SheetTitle weight="heavy">Review</SheetTitle>
-      </Header>
-      <SwapDetailsMasthead />
-      <SwapDetailsSlippageMessage onLayout={setSlippageMessageHeight} />
-      <SwapDetailsContent
-        onCopySwapDetailsText={onCopySwapDetailsText}
-        onLayout={setContentHeight}
-      />
-      <Footer onLayout={setFooterHeight}>
-        {renderConfirmButton}
-        <GasPositionContainer>
-          <GasSpeedButton
-            testID="swap-details-gas"
-            theme="light"
-            type={ExchangeModalTypes.swap}
-          />
-        </GasPositionContainer>
-      </Footer>
-      <ToastPositionContainer>
-        <CopyToast copiedText={copiedText} copyCount={copyCount} />
-      </ToastPositionContainer>
-    </SlackSheet>
+      <SlackSheet
+        additionalTopPadding={android}
+        borderRadius={39}
+        contentHeight={longFormHeight}
+      >
+        <Header>
+          <SheetTitle weight="heavy">Review</SheetTitle>
+        </Header>
+        <SwapDetailsMasthead />
+        <SwapDetailsSlippageMessage onLayout={setSlippageMessageHeight} />
+        <SwapDetailsContent
+          onCopySwapDetailsText={onCopySwapDetailsText}
+          onLayout={setContentHeight}
+        />
+        <Footer onLayout={setFooterHeight}>
+          {renderConfirmButton}
+          <GasPositionContainer>
+            <GasSpeedButton
+              onCustomGasBlur={handleCustomGasBlur}
+              onCustomGasFocus={handleCustomGasFocus}
+              testID="swap-details-gas"
+              theme="light"
+              type={ExchangeModalTypes.swap}
+            />
+          </GasPositionContainer>
+        </Footer>
+        <ToastPositionContainer>
+          <CopyToast copiedText={copiedText} copyCount={copyCount} />
+        </ToastPositionContainer>
+      </SlackSheet>
+    </AnimatedContainer>
   );
 }

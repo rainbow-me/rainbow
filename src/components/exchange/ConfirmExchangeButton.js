@@ -13,7 +13,13 @@ import Routes from '@rainbow-me/routes';
 import { colors, padding } from '@rainbow-me/styles';
 
 const paddingHorizontal = 19;
-const shadows = [[0, 10, 30, colors.black, 0.4]];
+const shadows = {
+  default: [[0, 10, 30, colors.black, 0.4]],
+  disabled: [
+    [0, 10, 30, colors.dark, 0.2],
+    [0, 5, 15, colors.blueGreyDark50, 0.4],
+  ],
+};
 
 const ConfirmButton = styled(HoldToAuthorizeButton).attrs({
   disabledBackgroundColor: colors.grey20,
@@ -91,10 +97,19 @@ export default function ConfirmExchangeButton({
       <ConfirmButton
         backgroundColor={colorForAsset}
         disabled={isDisabled}
+        disabledBackgroundColor={
+          isSwapDetailsRoute ? colors.blueGreyDark50 : colors.grey20
+        }
         isAuthorizing={isAuthorizing}
         label={label}
         onLongPress={onSubmit}
-        shadows={isSwapDetailsRoute ? shadowsForAsset : shadows}
+        shadows={
+          isSwapDetailsRoute
+            ? isDisabled
+              ? shadows.disabled
+              : shadowsForAsset
+            : shadows.default
+        }
         showBiometryIcon={showBiometryIcon}
         testID={testID}
         {...props}
