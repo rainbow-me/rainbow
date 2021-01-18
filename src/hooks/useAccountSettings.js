@@ -1,16 +1,25 @@
+import lang from 'i18n-js';
 import { useSelector } from 'react-redux';
-import {
-  createLanguageSelector,
-  createNativeCurrencySelector,
-} from '../hoc/accountSettingsSelectors';
+import { createSelector } from 'reselect';
 import {
   settingsUpdateAccountColor,
   settingsUpdateAccountName,
 } from '../redux/settings';
+import { supportedNativeCurrencies } from '@rainbow-me/references';
+
+const languageSelector = state => state.settings.language;
+
+const withLanguage = language => {
+  if (language !== lang.locale) {
+    lang.locale = language;
+  }
+  return { language };
+};
+
+const createLanguageSelector = createSelector([languageSelector], withLanguage);
 
 export default function useAccountSettings() {
   const { language } = useSelector(createLanguageSelector);
-  const { nativeCurrencySymbol } = useSelector(createNativeCurrencySelector);
   const settingsData = useSelector(
     ({
       settings: {
@@ -28,7 +37,7 @@ export default function useAccountSettings() {
       chainId,
       language,
       nativeCurrency,
-      nativeCurrencySymbol,
+      nativeCurrencySymbol: supportedNativeCurrencies[nativeCurrency].symbol,
       network,
     })
   );
