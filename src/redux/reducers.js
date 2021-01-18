@@ -13,7 +13,6 @@ import gas from './gas';
 import imageMetadata from './imageMetadata';
 import keyboardHeight from './keyboardHeight';
 import multicall from './multicall';
-import nonce from './nonce';
 import openStateSettings, {
   openSavingsReducer,
   openSmallBalancesReducer,
@@ -43,7 +42,6 @@ export default combineReducers({
   imageMetadata,
   keyboardHeight,
   multicall,
-  nonce,
   openSavings: openSavingsReducer,
   openSmallBalances: openSmallBalancesReducer,
   openStateSettings,

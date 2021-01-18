@@ -1,6 +1,5 @@
 import React, { useCallback, useImperativeHandle, useRef } from 'react';
 import { Animated } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import DeleteIcon from '../../assets/swipeToDelete.png';
 import EditIcon from '../../assets/swipeToEdit.png';
@@ -9,6 +8,7 @@ import { Centered, Row } from '../layout';
 import { Text } from '../text';
 import ContactRow from './ContactRow';
 import showDeleteContactActionSheet from './showDeleteContactActionSheet';
+import { ImgixImage } from '@rainbow-me/images';
 import { colors, margin, position } from '@rainbow-me/styles';
 
 const AnimatedCentered = Animated.createAnimatedComponent(Centered);
@@ -28,7 +28,7 @@ const RightAction = ({ onPress, progress, text, x }) => {
       style={{ transform: [{ translateX }] }}
     >
       <ButtonPressAnimation onPress={onPress} scaleTo={0.9}>
-        <FastImage
+        <ImgixImage
           css={margin(0, 10, 5, 10)}
           source={isEdit ? EditIcon : DeleteIcon}
           style={position.sizeAsObject(35)}

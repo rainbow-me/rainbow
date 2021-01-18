@@ -22,11 +22,11 @@ platform :ios do
       dsym_path: './Rainbow.app.dSYM.zip'
     )
 
-    version_from_plist = get_version_number
+    version_from_plist = get_version_number(target: "Rainbow")
 
     release_version = "me.rainbow-#{version_from_plist}"
 
-    dist = (latest_testflight_build_number(version: get_version_number) + 1).to_s
+    dist = (latest_testflight_build_number(version: get_version_number(target: "Rainbow")) + 1).to_s
 
     sentry_create_release(
       finalize: true, # Whether to finalize the release. If not provided or false, the release can be finalized using the sentry_finalize_release action
@@ -50,7 +50,7 @@ platform :ios do
   desc "Submit a new Beta build to Apple TestFlight"
   lane :beta do
     increment_build_number({
-      build_number: latest_testflight_build_number(version: get_version_number) + 1
+      build_number: latest_testflight_build_number(version: get_version_number(target: "Rainbow")) + 1
     })
 
     update_info_plist(

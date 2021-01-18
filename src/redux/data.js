@@ -55,6 +55,7 @@ import { addCashUpdatePurchases } from './addCash';
 /* eslint-disable-next-line import/no-cycle */
 import { uniqueTokensRefreshState } from './uniqueTokens';
 import { uniswapUpdateLiquidityTokens } from './uniswapLiquidity';
+import networkTypes from '@rainbow-me/networkTypes';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 
@@ -326,7 +327,7 @@ export const addressAssetsReceived = (
 
 const subscribeToMissingPrices = addresses => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
-  const { assets, uniswapPricesQuery } = getState().data;
+  const { genericAssets, uniswapPricesQuery } = getState().data;
   if (uniswapPricesQuery) {
     uniswapPricesQuery.refetch({ addresses });
   } else {
@@ -342,7 +343,7 @@ const subscribeToMissingPrices = addresses => (dispatch, getState) => {
     const newSubscription = newQuery.subscribe({
       next: async ({ data }) => {
         if (data && data.tokens) {
-          const nativePriceOfEth = ethereumUtils.getEthPriceUnit(assets);
+          const nativePriceOfEth = ethereumUtils.getEthPriceUnit(genericAssets);
           const tokenAddresses = map(data.tokens, property('id'));
 
           const yesterday = getUnixTime(subDays(new Date(), 1));
@@ -424,7 +425,7 @@ export const assetPricesReceived = message => (dispatch, getState) => {
 };
 
 export const assetPricesChanged = message => (dispatch, getState) => {
-  const price = get(message, 'payload.prices[0]');
+  const price = get(message, 'payload.prices[0].price');
   const assetAddress = get(message, 'meta.asset_code');
   if (isNil(price) || isNil(assetAddress)) return;
   const { genericAssets } = getState().data;
@@ -466,7 +467,7 @@ export const dataAddNewTransaction = (
       type: DATA_ADD_NEW_TRANSACTION_SUCCESS,
     });
     saveLocalTransactions(_transactions, accountAddress, network);
-    if (!disableTxnWatcher) {
+    if (!disableTxnWatcher || network !== networkTypes.mainnet) {
       dispatch(watchPendingTransactions(accountAddress));
     }
     return parsedTransaction;
@@ -491,7 +492,7 @@ const getConfirmedState = type => {
   }
 };
 
-export const dataWatchPendingTransactions = () => async (
+export const dataWatchPendingTransactions = (cb = null) => async (
   dispatch,
   getState
 ) => {
@@ -511,8 +512,17 @@ export const dataWatchPendingTransactions = () => async (
       const updatedPending = { ...tx };
       const txHash = ethereumUtils.getHash(tx);
       try {
+        logger.log('Checking pending tx with hash', txHash);
         const txObj = await getTransactionReceipt(txHash);
         if (txObj && txObj.blockNumber) {
+          // When speeding up a non "normal tx" we need to resubscribe
+          // because zerion "append" event isn't reliable
+          logger.log('TX CONFIRMED!', tx);
+          if (cb) {
+            logger.log('executing cb', cb);
+            cb(tx);
+            return;
+          }
           const minedAt = Math.floor(Date.now() / 1000);
           txStatusesDidChange = true;
           const isSelf = toLower(tx?.from) === toLower(tx?.to);
@@ -521,7 +531,10 @@ export const dataWatchPendingTransactions = () => async (
               direction: isSelf ? DirectionTypes.self : DirectionTypes.out,
               pending: false,
               protocol: tx?.protocol,
-              status: getConfirmedState(tx.type),
+              status:
+                tx.status === TransactionStatusTypes.cancelling
+                  ? TransactionStatusTypes.cancelled
+                  : getConfirmedState(tx.type),
               type: tx?.type,
             });
             updatedPending.status = newStatus;
@@ -566,6 +579,29 @@ export const dataWatchPendingTransactions = () => async (
   return false;
 };
 
+export const dataUpdateTransaction = (txHash, txObj, watch, cb) => (
+  dispatch,
+  getState
+) => {
+  const { transactions } = getState().data;
+
+  const allOtherTx = transactions.filter(tx => tx.hash !== txHash);
+  const updatedTransactions = [txObj].concat(allOtherTx);
+
+  dispatch({
+    payload: updatedTransactions,
+    type: DATA_UPDATE_TRANSACTIONS,
+  });
+  const { accountAddress, network } = getState().settings;
+  saveLocalTransactions(updatedTransactions, accountAddress, network);
+  // Always watch cancellation and speed up
+  if (watch) {
+    dispatch(
+      watchPendingTransactions(accountAddress, TXN_WATCHER_MAX_TRIES, cb)
+    );
+  }
+};
+
 const updatePurchases = updatedTransactions => dispatch => {
   const confirmedPurchases = filter(updatedTransactions, txn => {
     return (
@@ -578,7 +614,8 @@ const updatePurchases = updatedTransactions => dispatch => {
 
 const watchPendingTransactions = (
   accountAddressToWatch,
-  remainingTries = TXN_WATCHER_MAX_TRIES
+  remainingTries = TXN_WATCHER_MAX_TRIES,
+  cb = null
 ) => async (dispatch, getState) => {
   pendingTransactionsHandle && clearTimeout(pendingTransactionsHandle);
   if (remainingTries === 0) return;
@@ -586,12 +623,12 @@ const watchPendingTransactions = (
   const { accountAddress: currentAccountAddress } = getState().settings;
   if (currentAccountAddress !== accountAddressToWatch) return;
 
-  const done = await dispatch(dataWatchPendingTransactions());
+  const done = await dispatch(dataWatchPendingTransactions(cb));
 
   if (!done) {
     pendingTransactionsHandle = setTimeout(() => {
       dispatch(
-        watchPendingTransactions(accountAddressToWatch, remainingTries - 1)
+        watchPendingTransactions(accountAddressToWatch, remainingTries - 1, cb)
       );
     }, TXN_WATCHER_POLL_INTERVAL);
   }

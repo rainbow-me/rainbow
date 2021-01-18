@@ -83,6 +83,8 @@ const swap = async (wallet, currentRap, index, parameters) => {
     } = await estimateSwapGasLimit({
       accountAddress,
       chainId,
+      inputCurrency,
+      outputCurrency,
       tradeDetails,
     });
     gasLimit = newGasLimit;
@@ -105,7 +107,9 @@ const swap = async (wallet, currentRap, index, parameters) => {
       chainId,
       gasLimit,
       gasPrice,
+      inputCurrency,
       methodName,
+      outputCurrency,
       tradeDetails,
       wallet,
     });
@@ -123,6 +127,8 @@ const swap = async (wallet, currentRap, index, parameters) => {
     amount: inputAmount,
     asset: inputCurrency,
     from: accountAddress,
+    gasLimit,
+    gasPrice,
     hash: swap.hash,
     nonce: get(swap, 'nonce'),
     protocol: ProtocolTypes.uniswap.name,

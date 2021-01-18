@@ -4,20 +4,20 @@ import analytics from '@segment/analytics-react-native';
 import { find, get, isEmpty } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager } from 'react-native';
-import { useDispatch } from 'react-redux';
-import CurrencySelectionTypes from '../helpers/currencySelectionTypes';
-import { multiply } from '../helpers/utilities';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '../navigation/Navigation';
-import {
-  multicallAddListeners,
-  multicallUpdateOutdatedListeners,
-} from '../redux/multicall';
 import useAccountAssets from './useAccountAssets';
 import useAccountSettings from './useAccountSettings';
 import { delayNext } from './useMagicAutofocus';
 import usePrevious from './usePrevious';
 import useUniswapAssetsInWallet from './useUniswapAssetsInWallet';
 import useUniswapCalls from './useUniswapCalls';
+import CurrencySelectionTypes from '@rainbow-me/helpers/currencySelectionTypes';
+import { multiply } from '@rainbow-me/helpers/utilities';
+import {
+  multicallAddListeners,
+  multicallUpdateOutdatedListeners,
+} from '@rainbow-me/redux/multicall';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils, isNewValueForPath } from '@rainbow-me/utils';
 import logger from 'logger';
@@ -60,6 +60,9 @@ export default function useUniswapCurrencies({
   const dispatch = useDispatch();
   const { allAssets } = useAccountAssets();
   const { chainId } = useAccountSettings();
+  const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
+    genericAssets,
+  }));
   const { navigate, setParams, dangerouslyGetParent } = useNavigation();
   const {
     params: { blockInteractions },
@@ -82,8 +85,8 @@ export default function useUniswapCurrencies({
 
     // If default input asset not found in wallet, create the missing asset
     if (!defaultChosenInputItem && defaultInputAsset) {
-      const eth = ethereumUtils.getAsset(allAssets);
-      const priceOfEther = get(eth, 'native.price.amount', null);
+      const priceOfEther = ethereumUtils.getEthPriceUnit(genericAssets);
+
       defaultChosenInputItem = createMissingAsset(
         defaultInputAsset,
         underlyingPrice,
@@ -120,6 +123,7 @@ export default function useUniswapCurrencies({
     defaultInputAddress,
     defaultInputAsset,
     defaultOutputAsset,
+    genericAssets,
     isDeposit,
     isWithdrawal,
     underlyingPrice,

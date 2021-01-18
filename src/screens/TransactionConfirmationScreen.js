@@ -42,7 +42,7 @@ import {
   MessageSigningSection,
   TransactionConfirmationSection,
 } from '../components/transaction';
-import { estimateGas, getTransactionCount, toHex } from '../handlers/web3';
+import { estimateGas, toHex } from '../handlers/web3';
 import { isDappAuthenticated } from '../helpers/dappNameHandler';
 import {
   convertAmountToNativeDisplay,
@@ -138,6 +138,9 @@ const NOOP = () => undefined;
 
 const TransactionConfirmationScreen = () => {
   const { allAssets } = useAccountAssets();
+  const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
+    genericAssets,
+  }));
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const [keyboardVisible, setKeyboardVisible] = useState(false);
   const [methodName, setMethodName] = useState(null);
@@ -165,8 +168,6 @@ const TransactionConfirmationScreen = () => {
   const {
     dataAddNewTransaction,
     removeRequest,
-    transactionCountNonce,
-    updateTransactionCountNonce,
     walletConnectSendStatus,
   } = useTransactionConfirmation();
 
@@ -231,6 +232,10 @@ const TransactionConfirmationScreen = () => {
     },
     [setMethodName]
   );
+
+  useEffect(() => {
+    analytics.track('Shown Walletconnect signing request');
+  }, []);
 
   useEffect(() => {
     if (openAutomatically && !isEmulatorSync()) {
@@ -417,36 +422,40 @@ const TransactionConfirmationScreen = () => {
       }
     }
 
-    const web3TxnCount = await getTransactionCount(txPayload.from);
-    const maxTxnCount = Math.max(transactionCountNonce, web3TxnCount);
-    const nonce = maxTxnCount;
     const calculatedGasLimit = gas || gasLimitFromPayload || gasLimit;
-    let txPayloadLatestNonce = {
+    let txPayloadUpdated = {
       ...txPayload,
       gasPrice,
-      nonce,
     };
     if (calculatedGasLimit) {
-      txPayloadLatestNonce.gasLimit = calculatedGasLimit;
+      txPayloadUpdated.gasLimit = calculatedGasLimit;
     }
-    txPayloadLatestNonce = omit(txPayloadLatestNonce, ['from', 'gas']);
+
+    txPayloadUpdated = omit(txPayloadUpdated, ['from', 'gas']);
     let result = null;
-    if (sendInsteadOfSign) {
-      result = await sendTransaction({
-        transaction: txPayloadLatestNonce,
-      });
-    } else {
-      result = await signTransaction({
-        transaction: txPayloadLatestNonce,
-      });
+
+    try {
+      if (sendInsteadOfSign) {
+        result = await sendTransaction({
+          transaction: txPayloadUpdated,
+        });
+      } else {
+        result = await signTransaction({
+          transaction: txPayloadUpdated,
+        });
+      }
+    } catch (e) {
+      logger.log(
+        `Error while ${sendInsteadOfSign ? 'sending' : 'signing'} transaction`,
+        e
+      );
     }
 
     if (result) {
       if (callback) {
-        callback({ result });
+        callback({ result: result.hash });
       }
       if (sendInsteadOfSign) {
-        dispatch(updateTransactionCountNonce(maxTxnCount + 1));
         const txDetails = {
           amount: get(displayDetails, 'request.value'),
           asset: get(displayDetails, 'request.asset'),
@@ -454,8 +463,8 @@ const TransactionConfirmationScreen = () => {
           from: get(displayDetails, 'request.from'),
           gasLimit,
           gasPrice,
-          hash: result,
-          nonce,
+          hash: result.hash,
+          nonce: result.nonce,
           to: get(displayDetails, 'request.to'),
         };
 
@@ -464,7 +473,7 @@ const TransactionConfirmationScreen = () => {
       analytics.track('Approved WalletConnect transaction request');
       if (requestId) {
         dispatch(removeRequest(requestId));
-        await dispatch(walletConnectSendStatus(peerId, requestId, result));
+        await dispatch(walletConnectSendStatus(peerId, requestId, result.hash));
       }
       closeScreen(false);
     } else {
@@ -474,13 +483,11 @@ const TransactionConfirmationScreen = () => {
     method,
     params,
     selectedGasPrice,
-    transactionCountNonce,
     gasLimit,
     callback,
     requestId,
     closeScreen,
     dispatch,
-    updateTransactionCountNonce,
     displayDetails,
     dappName,
     dataAddNewTransaction,
@@ -624,7 +631,7 @@ const TransactionConfirmationScreen = () => {
     }
 
     if (isTransactionDisplayType(method) && get(request, 'asset')) {
-      const ethAsset = ethereumUtils.getAsset(allAssets);
+      const ethAsset = ethereumUtils.getAsset(genericAssets);
       const amount = get(request, 'value', '0.00');
       const nativeAmount = Number(ethAsset.price.value) * Number(amount);
       const nativeAmountDisplay = convertAmountToNativeDisplay(
@@ -643,7 +650,6 @@ const TransactionConfirmationScreen = () => {
         />
       );
     }
-
     return (
       <DefaultTransactionConfirmationSection
         address={request?.to}
@@ -652,7 +658,7 @@ const TransactionConfirmationScreen = () => {
         value={request?.value}
       />
     );
-  }, [allAssets, isMessageRequest, method, nativeCurrency, request]);
+  }, [genericAssets, isMessageRequest, method, nativeCurrency, request]);
 
   const handleCustomGasFocus = useCallback(() => {
     setKeyboardVisible(true);
@@ -698,10 +704,14 @@ const TransactionConfirmationScreen = () => {
   const MessageSheetHeight =
     (method === SIGN_TYPED_DATA ? 640 : android ? 595 : 575) +
     safeAreaInsetValues.bottom;
+
+  const balanceTooLow =
+    isBalanceEnough === false && isSufficientGas !== undefined;
+
   const sheetHeight =
     (isMessageRequest
       ? MessageSheetHeight
-      : amount && amount !== '0.00'
+      : (amount && amount !== '0.00') || !isBalanceEnough
       ? TallSheetHeight
       : ShortSheetHeight) * (android ? 1.5 : 1);
 
@@ -806,9 +816,7 @@ const TransactionConfirmationScreen = () => {
                 <WalletLabel align="right">Balance</WalletLabel>
                 <WalletText
                   align="right"
-                  balanceTooLow={
-                    isBalanceEnough === false && isSufficientGas !== undefined
-                  }
+                  balanceTooLow={balanceTooLow}
                   letterSpacing="roundedTight"
                 >
                   {isBalanceEnough === false &&

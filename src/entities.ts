@@ -25,3 +25,21 @@ export interface ParsedAddressAsset {
   type?: string;
   uniqueId: string;
 }
+
+export interface RainbowToken extends Asset {
+  color?: string;
+  favorite?: boolean;
+  isRainbowCurated?: boolean;
+  isVerified?: boolean;
+  shadowColor?: string;
+  uniqueId: string;
+}
+
+export interface UniswapSubgraphAsset extends RainbowToken {
+  derivedETH: string;
+  totalLiquidity: string;
+}
+
+export interface RawUniswapSubgraphAsset extends UniswapSubgraphAsset {
+  id: string;
+}

@@ -1,7 +1,6 @@
 import { invert } from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Dimensions } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import Animated, {
   cancelAnimation,
   NewEasing,
@@ -19,6 +18,7 @@ import Labels from './ExtremeLabels';
 import TimespanSelector from './TimespanSelector';
 import { ChartDot, ChartPath, useChartData } from '@rainbow-me/animated-charts';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
+import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import { colors, position } from '@rainbow-me/styles';
 
@@ -37,8 +37,8 @@ const ChartContainer = styled.View`
   margin-vertical: ${({ showChart }) => (showChart ? '17px' : '0px')};
 `;
 
-const ChartSpinner = styled(FastImage).attrs(({ color }) => ({
-  resizeMode: FastImage.resizeMode.contain,
+const ChartSpinner = styled(ImgixImage).attrs(({ color }) => ({
+  resizeMode: ImgixImage.resizeMode.contain,
   source: Spinner,
   tintColor: color,
 }))`

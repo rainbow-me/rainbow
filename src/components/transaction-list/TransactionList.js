@@ -1,26 +1,31 @@
 import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
-import { find } from 'lodash';
+import { find, toLower } from 'lodash';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { Linking, requireNativeComponent } from 'react-native';
+import { requireNativeComponent } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components/primitives';
+import { FloatingEmojis } from '../floating-emojis';
 import useExperimentalFlag, {
   AVATAR_PICKER,
-} from '../../config/experimentalHooks';
-import showWalletErrorAlert from '../../helpers/support';
-import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
+} from '@rainbow-me/config/experimentalHooks';
+import showWalletErrorAlert from '@rainbow-me/helpers/support';
+import TransactionActions from '@rainbow-me/helpers/transactionActions';
+import TransactionStatusTypes from '@rainbow-me/helpers/transactionStatusTypes';
 import {
   getHumanReadableDate,
   hasAddableContact,
-} from '../../helpers/transactions';
-import { isENSAddressFormat } from '../../helpers/validators';
-import { useAccountProfile, useWallets } from '../../hooks';
-import { useNavigation } from '../../navigation/Navigation';
-import { removeRequest } from '../../redux/requests';
-import { walletsSetSelected, walletsUpdate } from '../../redux/wallets';
-import { FloatingEmojis } from '../floating-emojis';
+} from '@rainbow-me/helpers/transactions';
+import { isENSAddressFormat } from '@rainbow-me/helpers/validators';
+import {
+  useAccountProfile,
+  useSafeImageUri,
+  useWallets,
+} from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation/Navigation';
+import { removeRequest } from '@rainbow-me/redux/requests';
+import { walletsSetSelected, walletsUpdate } from '@rainbow-me/redux/wallets';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 import {
@@ -59,7 +64,6 @@ export default function TransactionList({
   contacts,
   initialized,
   isLoading,
-  network,
   requests,
   transactions,
 }) {
@@ -232,15 +236,29 @@ export default function TransactionList({
         contactColor = colors.getRandomColor();
       }
 
+      const isOutgoing = toLower(from) === toLower(accountAddress);
+      const canBeResubmitted = isOutgoing && !minedAt;
+      const canBeCancelled =
+        canBeResubmitted && status !== TransactionStatusTypes.cancelling;
+
       if (hash) {
-        let buttons = ['View on Etherscan', ...(ios ? ['Cancel'] : [])];
+        let buttons = [
+          ...(canBeResubmitted ? [TransactionActions.speedUp] : []),
+          ...(canBeCancelled ? [TransactionActions.cancel] : []),
+          TransactionActions.viewOnEtherscan,
+          ...(ios ? [TransactionActions.close] : []),
+        ];
         if (showContactInfo) {
-          buttons.unshift(contact ? 'View Contact' : 'Add to Contacts');
+          buttons.unshift(
+            contact
+              ? TransactionActions.viewContact
+              : TransactionActions.addToContacts
+          );
         }
 
         showActionSheetWithOptions(
           {
-            cancelButtonIndex: showContactInfo ? 2 : 1,
+            cancelButtonIndex: buttons.length - 1,
             options: buttons,
             title: pending
               ? `${headerInfo.type}${
@@ -253,29 +271,41 @@ export default function TransactionList({
               : `${headerInfo.type} ${date}`,
           },
           buttonIndex => {
-            if (showContactInfo && buttonIndex === 0) {
-              navigate(Routes.MODAL_SCREEN, {
-                address: contactAddress,
-                asset: item,
-                color: contactColor,
-                contact,
-                type: 'contact_profile',
-              });
-            } else if (
-              (!showContactInfo && buttonIndex === 0) ||
-              (showContactInfo && buttonIndex === 1)
-            ) {
-              const normalizedHash = hash.replace(/-.*/g, '');
-              const etherscanHost = ethereumUtils.getEtherscanHostFromNetwork(
-                network
-              );
-              Linking.openURL(`https://${etherscanHost}/tx/${normalizedHash}`);
+            const action = buttons[buttonIndex];
+            switch (action) {
+              case TransactionActions.viewContact:
+              case TransactionActions.addToContacts:
+                navigate(Routes.MODAL_SCREEN, {
+                  address: contactAddress,
+                  asset: item,
+                  color: contactColor,
+                  contact,
+                  type: 'contact_profile',
+                });
+                break;
+              case TransactionActions.speedUp:
+                navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
+                  tx: item,
+                  type: 'speed_up',
+                });
+                break;
+              case TransactionActions.cancel:
+                navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
+                  tx: item,
+                  type: 'cancel',
+                });
+                break;
+              case TransactionActions.viewOnEtherscan: {
+                ethereumUtils.openTransactionEtherscanURL(hash);
+                break;
+              }
+              default:
             }
           }
         );
       }
     },
-    [contacts, navigate, network, transactions]
+    [accountAddress, contacts, navigate, transactions]
   );
 
   const onCopyAddressPress = useCallback(
@@ -314,12 +344,14 @@ export default function TransactionList({
 
   const isAvatarPickerAvailable = useExperimentalFlag(AVATAR_PICKER);
 
+  const safeAccountImage = useSafeImageUri(accountImage);
+
   return (
     <Container>
       <Container
         accountAddress={accountName}
         accountColor={colors.avatarColor[accountColor]}
-        accountImage={accountImage}
+        accountImage={safeAccountImage}
         accountName={accountSymbol}
         addCashAvailable={addCashAvailable}
         as={NativeTransactionListView}

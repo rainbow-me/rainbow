@@ -1,5 +1,7 @@
+import { Trade } from '@uniswap/sdk';
 import { get, isEmpty } from 'lodash';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { RefObject, useCallback, useEffect, useMemo, useState } from 'react';
+import { TextInput } from 'react-native';
 import { calculateTradeDetails } from '../handlers/uniswap';
 import {
   convertAmountFromNativeValue,
@@ -10,6 +12,7 @@ import {
 import { logger } from '../utils';
 import useAccountSettings from './useAccountSettings';
 import useUniswapPairs from './useUniswapPairs';
+import { Asset } from '@rainbow-me/entities';
 
 const DEFAULT_NATIVE_INPUT_AMOUNT = 50;
 
@@ -32,9 +35,42 @@ export default function useUniswapMarketDetails({
   updateExtraTradeDetails,
   updateInputAmount,
   updateOutputAmount,
+}: {
+  defaultInputAddress: string;
+  extraTradeDetails: { outputPriceValue: string };
+  inputAmount: string;
+  inputAsExactAmount: boolean;
+  inputCurrency: Asset;
+  inputFieldRef: RefObject<TextInput>;
+  isDeposit: boolean;
+  isWithdrawal: boolean;
+  maxInputBalance: string;
+  nativeCurrency: string;
+  outputAmount: string;
+  outputCurrency: Asset;
+  outputFieldRef: RefObject<TextInput>;
+  setIsSufficientBalance: (isSufficientBalance: boolean) => void;
+  setSlippage: (slippage: number) => void;
+  updateExtraTradeDetails: (extraTradeDetails: {
+    inputCurrency: Asset;
+    nativeCurrency: string;
+    outputCurrency: Asset;
+    tradeDetails: Trade | null;
+  }) => void;
+  updateInputAmount: (
+    newInputAmount: string | undefined,
+    newAmountDisplay: string | undefined,
+    newInputAsExactAmount?: boolean,
+    newIsMax?: boolean
+  ) => void;
+  updateOutputAmount: (
+    newOutputAmount: string | null,
+    newAmountDisplay: string | null,
+    newInputAsExactAmount?: boolean
+  ) => void;
 }) {
   const [isSufficientLiquidity, setIsSufficientLiquidity] = useState(true);
-  const [tradeDetails, setTradeDetails] = useState(null);
+  const [tradeDetails, setTradeDetails] = useState<Trade | null>(null);
   const { chainId } = useAccountSettings();
 
   const { allPairs, doneLoadingResults } = useUniswapPairs(
@@ -99,6 +135,7 @@ export default function useUniswapMarketDetails({
         updateInputAmount(undefined, undefined, false);
         setIsSufficientBalance(true);
       } else {
+        if (!tradeDetails) return;
         const rawUpdatedInputAmount = tradeDetails?.inputAmount?.toExact();
 
         const updatedInputAmountDisplay = updatePrecisionToDisplay(
@@ -139,6 +176,7 @@ export default function useUniswapMarketDetails({
       ) {
         updateOutputAmount(null, null, true);
       } else {
+        if (!tradeDetails) return;
         const rawUpdatedOutputAmount = tradeDetails?.outputAmount?.toExact();
         if (!isZero(rawUpdatedOutputAmount)) {
           const { outputPriceValue } = extraTradeDetails;
@@ -252,7 +290,7 @@ export default function useUniswapMarketDetails({
     const priceImpact = tradeDetails?.priceImpact
       ? tradeDetails?.priceImpact?.toFixed(2).toString()
       : 0;
-    const slippage = priceImpact * 100;
+    const slippage = Number(priceImpact) * 100;
     setSlippage(slippage);
   }, [
     isMissingAmounts,
