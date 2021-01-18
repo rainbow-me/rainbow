@@ -47,7 +47,6 @@ import {
   runWalletBackupStatusChecks,
 } from './handlers/walletReadyEvents';
 import RainbowContextWrapper from './helpers/RainbowContext';
-import { withAccountSettings, withAppState } from './hoc';
 import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import * as keychain from './model/keychain';
 import { loadAddress } from './model/wallet';
@@ -308,9 +307,7 @@ class App extends Component {
 
 const AppWithRedux = compose(
   withProps({ store }),
-  withAccountSettings,
-  withAppState,
-  connect(null, {
+  connect(({ appState: { walletReady } }) => ({ walletReady }), {
     requestsForTopic,
   })
 )(App);

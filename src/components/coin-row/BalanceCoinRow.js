@@ -2,13 +2,8 @@ import { get } from 'lodash';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import Animated from 'react-native-reanimated';
 import { View } from 'react-primitives';
-import { compose } from 'recompact';
+import { connect } from 'react-redux';
 import styled from 'styled-components/primitives';
-import {
-  withCoinRecentlyPinned,
-  withEditOptions,
-  withOpenBalances,
-} from '../../hoc';
 import { useCoinListEditedValue } from '../../hooks/useCoinListEdited';
 import { ButtonPressAnimation } from '../animations';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
@@ -20,6 +15,10 @@ import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import { buildAssetUniqueIdentifier } from '@rainbow-me/helpers/assets';
 import { useCoinListEdited } from '@rainbow-me/hooks';
+import {
+  pushSelectedCoin,
+  removeSelectedCoin,
+} from '@rainbow-me/redux/editOptions';
 import { colors } from '@rainbow-me/styles';
 import { isNewValueForObjectPaths, isNewValueForPath } from '@rainbow-me/utils';
 
@@ -214,8 +213,13 @@ const arePropsEqual = (prev, next) => {
 
 const MemoizedBalanceCoinRow = React.memo(BalanceCoinRow, arePropsEqual);
 
-export default compose(
-  withOpenBalances,
-  withEditOptions,
-  withCoinRecentlyPinned
+export default connect(
+  ({ editOptions: { recentlyPinnedCount }, openSmallBalances }) => ({
+    openSmallBalances,
+    recentlyPinnedCount,
+  }),
+  {
+    pushSelectedCoin,
+    removeSelectedCoin,
+  }
 )(MemoizedBalanceCoinRow);

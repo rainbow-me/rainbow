@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-import { sortAssetsByNativeAmountSelector } from '../hoc/assetSelectors';
+import { sortAssetsByNativeAmountSelector } from '@rainbow-me/helpers/assetSelectors';
 
 export default function useAccountAssets() {
   const assets = useSelector(sortAssetsByNativeAmountSelector);

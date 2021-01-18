@@ -1,9 +1,10 @@
 import lang from 'i18n-js';
-import { useSelector } from 'react-redux';
+import { useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import {
-  settingsUpdateAccountColor,
-  settingsUpdateAccountName,
+  settingsChangeLanguage as changeLanguage,
+  settingsChangeNativeCurrency as changeNativeCurrency,
 } from '../redux/settings';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 
@@ -20,20 +21,10 @@ const createLanguageSelector = createSelector([languageSelector], withLanguage);
 
 export default function useAccountSettings() {
   const { language } = useSelector(createLanguageSelector);
+  const dispatch = useDispatch();
   const settingsData = useSelector(
-    ({
-      settings: {
-        accountAddress,
-        accountColor,
-        accountName,
-        chainId,
-        nativeCurrency,
-        network,
-      },
-    }) => ({
+    ({ settings: { accountAddress, chainId, nativeCurrency, network } }) => ({
       accountAddress,
-      accountColor,
-      accountName,
       chainId,
       language,
       nativeCurrency,
@@ -41,9 +32,20 @@ export default function useAccountSettings() {
       network,
     })
   );
+
+  const settingsChangeLanguage = useCallback(
+    language => dispatch(changeLanguage(language)),
+    [dispatch]
+  );
+
+  const settingsChangeNativeCurrency = useCallback(
+    currency => dispatch(changeNativeCurrency(currency)),
+    [dispatch]
+  );
+
   return {
-    settingsUpdateAccountColor,
-    settingsUpdateAccountName,
+    settingsChangeLanguage,
+    settingsChangeNativeCurrency,
     ...settingsData,
   };
 }
