@@ -13,7 +13,10 @@ type HiddenImgixImageProps = { forwardedRef: React.Ref<any> };
 type MergedImgixImageProps = ImgixImageProps & HiddenImgixImageProps;
 
 // ImgixImage must be a class Component to support Animated.createAnimatedComponent.
-class ImgixImage extends React.PureComponent<MergedImgixImageProps, ImgixImageProps> {
+class ImgixImage extends React.PureComponent<
+  MergedImgixImageProps,
+  ImgixImageProps
+> {
   constructor(props: MergedImgixImageProps) {
     super(props);
     const { source } = props;
@@ -57,16 +60,15 @@ const preload = (sources: Source[]): void => {
 const ImgixImageWithForwardRef = React.forwardRef(
   (props: ImgixImageProps, ref: React.Ref<any>) => (
     <ImgixImage forwardedRef={ref} {...props} />
-  ),
+  )
 );
 
 const { cacheControl, contextTypes, priority, resizeMode } = FastImage;
 
-// We want to render using ImgixImage, assign all properties of
-// FastImage to ImgixImage, override all properties of FastImage which
-// we do not wish to override by FastImage, and finally override the
-// preload mechanic.
-export default Object.assign(
-  ImgixImageWithForwardRef,
-  { cacheControl, contextTypes, priority, resizeMode, preload },
-);
+export default Object.assign(ImgixImageWithForwardRef, {
+  cacheControl,
+  contextTypes,
+  preload,
+  priority,
+  resizeMode,
+});

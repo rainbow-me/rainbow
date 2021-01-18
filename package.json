@@ -37,8 +37,8 @@
     }
   },
   "lint-staged": {
-    "*.{js,jsx,ts}": [
-      "eslint --ext '.js,.jsx,.ts' -c .eslintrc.json",
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --ext '.js,.jsx,.ts,.tsx' -c .eslintrc.json",
       "stylelint"
     ]
   },
