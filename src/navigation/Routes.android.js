@@ -31,6 +31,7 @@ import {
   stackNavigationConfig,
   wyreWebviewOptions,
 } from './config';
+import createBottomSheetNavigator from './createBottomSheetNavigator';
 import {
   bottomSheetPreset,
   emojiPreset,
@@ -47,7 +48,7 @@ import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
 
 const Stack = createStackNavigator();
-const OuterStack = createStackNavigator();
+const OuterStack = createBottomSheetNavigator();
 
 function SendFlowNavigator() {
   return (
