@@ -25,7 +25,7 @@ const EXPLORER_DISABLE_FALLBACK = 'explorer/EXPLORER_DISABLE_FALLBACK';
 const EXPLORER_SET_FALLBACK_HANDLER = 'explorer/EXPLORER_SET_FALLBACK_HANDLER';
 
 const TRANSACTIONS_LIMIT = 1000;
-const ZERION_ASSETS_TIMEOUT = 15000; // 15 seconds
+const ZERION_ASSETS_TIMEOUT = 150000000; // 15 seconds
 
 const messages = {
   ADDRESS_ASSETS: {
@@ -199,7 +199,7 @@ export const explorerInit = () => async (dispatch, getState) => {
   dispatch(listenOnAssetMessages(newAssetsSocket));
 
   newAssetsSocket.on(messages.CONNECT, () => {
-    newAssetsSocket.emit(...assetsSubscription(pairs, nativeCurrency));
+    dispatch(emitAssetRequest(keys(pairs)));
   });
 
   if (network === NetworkTypes.mainnet) {
@@ -222,29 +222,31 @@ export const explorerInit = () => async (dispatch, getState) => {
 
 const tokensListened = {};
 
+const toAssetSubscriptionPayload = tokensArray => {
+  const payload = {};
+  tokensArray.forEach(address => (payload[address] = true));
+  return payload;
+};
+
 export const emitAssetRequest = assetAddress => (dispatch, getState) => {
   const { nativeCurrency } = getState().settings;
   const { assetsSocket } = getState().explorer;
 
-  let assetCodes;
-  if (assetAddress) {
-    assetCodes = Array.isArray(assetAddress) ? assetAddress : [assetAddress];
-  } else {
-    const { assets } = getState().data;
-    const assetAddresses = map(assets, 'address');
-
-    const { liquidityTokens } = getState().uniswapLiquidity;
-    const lpTokenAddresses = map(liquidityTokens, token => token.address);
-
-    assetCodes = concat(assetAddresses, lpTokenAddresses);
-  }
+  const assetCodes = Array.isArray(assetAddress)
+    ? assetAddress
+    : [assetAddress];
 
   const newAssetsCodes = assetCodes.filter(code => !tokensListened[code]);
 
   newAssetsCodes.forEach(code => (tokensListened[code] = true));
 
   if (newAssetsCodes.length > 0) {
-    assetsSocket.emit(...assetsSubscription(newAssetsCodes, nativeCurrency));
+    assetsSocket.emit(
+      ...assetsSubscription(
+        toAssetSubscriptionPayload(newAssetsCodes),
+        nativeCurrency
+      )
+    );
   }
 };
 

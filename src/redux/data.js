@@ -414,7 +414,9 @@ export const assetPricesReceived = message => (dispatch, getState) => {
   const assets = get(message, 'payload.prices', {});
   if (isEmpty(assets)) return;
   const { genericAssets } = getState().data;
-  const parsedAssets = mapValues(assets, asset => parseAsset(asset));
+  const parsedAssets = mapValues(assets, asset => {
+    return parseAsset(asset);
+  });
   dispatch({
     payload: {
       ...genericAssets,

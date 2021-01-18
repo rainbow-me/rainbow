@@ -1,5 +1,6 @@
 import { keys, toLower } from 'lodash';
 import React, {
+  Fragment,
   useCallback,
   useEffect,
   useMemo,
@@ -16,6 +17,7 @@ import {
   fetchCoingeckoIds,
 } from '../../redux/fallbackExplorer';
 import { DefaultTokenLists } from '../../references';
+import Spinner from '../Spinner';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation/ButtonPressAnimation.ios';
 import { ListCoinRow } from '../coin-row';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
@@ -96,7 +98,7 @@ export default function ListSection() {
   const { network } = useAccountSettings();
   const { navigate } = useNavigation();
   const [selectedList, setSelectedList] = useState(DEFAULT_LIST);
-  const { favorites, lists, updateList, clearList } = useUserLists();
+  const { favorites, lists, updateList, ready, clearList } = useUserLists();
   const { allAssets } = useAccountAssets();
   const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
     genericAssets,
@@ -118,19 +120,18 @@ export default function ListSection() {
   }, [clearList, dispatch, updateList]);
 
   useEffect(() => {
-    // We need to wait for the socket to be created!
-    setTimeout(() => {
-      updateTrendingList();
-    }, 3000);
+    ready && updateTrendingList();
     return () => {
       clearTimeout(trendingListHandler.current);
     };
-  }, [clearList, dispatch, updateList, updateTrendingList]);
+  }, [ready, clearList, dispatch, updateList, updateTrendingList]);
 
   const listItems = useMemo(() => {
     if (selectedList === 'favorites') {
-      return favorites.map(item =>
-        ethereumUtils.getAsset(allAssets, item.address)
+      return favorites.map(
+        item =>
+          ethereumUtils.getAsset(allAssets, toLower(item.address)) ||
+          formatGenericAsset(genericAssets[toLower(item.address)])
       );
     } else {
       if (!lists?.length) return [];
@@ -138,12 +139,11 @@ export default function ListSection() {
       if (!currentList) {
         return [];
       }
-      return currentList.tokens.map(address => {
-        const asset =
+      return currentList.tokens.map(
+        address =>
           ethereumUtils.getAsset(allAssets, toLower(address)) ||
-          formatGenericAsset(genericAssets[toLower(address)]);
-        return asset;
-      });
+          formatGenericAsset(genericAssets[toLower(address)])
+      );
     }
   }, [allAssets, favorites, genericAssets, lists, selectedList]);
 
@@ -180,60 +180,71 @@ export default function ListSection() {
           Lists
         </Text>
       </Flex>
-      <Column>
-        <ScrollView
-          contentContainerStyle={{
-            paddingBottom: 6,
-            paddingHorizontal: 19,
-            paddingTop: 10,
-          }}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-        >
-          {DefaultTokenLists[network].map(list => (
-            <ListButton
-              key={`list-${list.id}`}
-              onPress={() => handleSwitchList(list.id)}
-              selected={selectedList === list.id}
+      {!ready ? (
+        <Centered marginTop={100}>
+          <Spinner color={colors.appleBlue} size={30} />
+        </Centered>
+      ) : (
+        <Fragment>
+          <Column>
+            <ScrollView
+              contentContainerStyle={{
+                paddingBottom: 6,
+                paddingHorizontal: 19,
+                paddingTop: 10,
+              }}
+              horizontal
+              showsHorizontalScrollIndicator={false}
             >
-              <Row>
-                <Emoji name={list.emoji} size="small" />
-                <ListName
-                  color={
-                    selectedList === list.id
-                      ? colors.alpha(colors.blueGreyDark, 0.8)
-                      : colors.alpha(colors.blueGreyDark, 0.5)
-                  }
-                  lineHeight="paragraphSmall"
-                  size="lmedium"
-                  weight="bold"
+              {DefaultTokenLists[network].map(list => (
+                <ListButton
+                  key={`list-${list.id}`}
+                  onPress={() => handleSwitchList(list.id)}
+                  selected={selectedList === list.id}
                 >
-                  {list.name}
-                </ListName>
-              </Row>
-            </ListButton>
-          ))}
-        </ScrollView>
-        <EdgeFade />
-      </Column>
-      <Column>
-        {listItems?.length ? (
-          listItems.map((item, i) => (
-            <ListCoinRow
-              {...itemProps}
-              item={item}
-              key={`${selectedList}-list-item-${i}`}
-              onPress={() => handlePress(item)}
-            />
-          ))
-        ) : (
-          <Centered marginVertical={30}>
-            <Text color={colors.alpha(colors.blueGreyDark, 0.5)} size="large">
-              This list is empty!
-            </Text>
-          </Centered>
-        )}
-      </Column>
+                  <Row>
+                    <Emoji name={list.emoji} size="small" />
+                    <ListName
+                      color={
+                        selectedList === list.id
+                          ? colors.alpha(colors.blueGreyDark, 0.8)
+                          : colors.alpha(colors.blueGreyDark, 0.5)
+                      }
+                      lineHeight="paragraphSmall"
+                      size="lmedium"
+                      weight="bold"
+                    >
+                      {list.name}
+                    </ListName>
+                  </Row>
+                </ListButton>
+              ))}
+            </ScrollView>
+            <EdgeFade />
+          </Column>
+          <Column>
+            {listItems?.length ? (
+              listItems.map((item, i) => (
+                <ListCoinRow
+                  {...itemProps}
+                  item={item}
+                  key={`${selectedList}-list-item-${i}`}
+                  onPress={() => handlePress(item)}
+                />
+              ))
+            ) : (
+              <Centered marginVertical={30}>
+                <Text
+                  color={colors.alpha(colors.blueGreyDark, 0.5)}
+                  size="large"
+                >
+                  This list is empty!
+                </Text>
+              </Centered>
+            )}
+          </Column>
+        </Fragment>
+      )}
     </Column>
   );
 }

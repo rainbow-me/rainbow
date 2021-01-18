@@ -9,6 +9,7 @@ import { emitAssetRequest } from './explorer';
 import { uniswapUpdateFavorites } from './uniswap';
 
 // -- Constants ------------------------------------------------------------- //
+const USER_LISTS_READY = 'userLists/USER_LISTS_READY';
 const USER_LISTS_LOAD_REQUEST = 'userLists/USER_LISTS_LOAD_REQUEST';
 const USER_LISTS_LOAD_SUCCESS = 'userLists/USER_LISTS_LOAD_SUCCESS';
 const USER_LISTS_LOAD_FAILURE = 'userLists/USER_LISTS_LOAD_FAILURE';
@@ -37,6 +38,10 @@ export const userListsLoadState = () => async (dispatch, getState) => {
     // Wait until the socket is ready
     setTimeout(() => {
       dispatch(emitAssetRequest(allAddresses));
+      dispatch({
+        payload: true,
+        type: USER_LISTS_READY,
+      });
     }, 3000);
   } catch (error) {
     dispatch({ type: USER_LISTS_LOAD_FAILURE });
@@ -117,6 +122,7 @@ export const userListsUpdateList = (assetAddress, listId, add = true) => (
 export const INITIAL_USER_LISTS_STATE = {
   lists: [],
   loadingUserLists: false,
+  ready: false,
 };
 
 export default (state = INITIAL_USER_LISTS_STATE, action) =>
@@ -134,6 +140,9 @@ export default (state = INITIAL_USER_LISTS_STATE, action) =>
         break;
       case USER_LISTS_LOAD_FAILURE:
         draft.loadingUserLists = false;
+        break;
+      case USER_LISTS_READY:
+        draft.ready = true;
         break;
       case USER_LISTS_CLEAR_STATE:
         return INITIAL_USER_LISTS_STATE;
