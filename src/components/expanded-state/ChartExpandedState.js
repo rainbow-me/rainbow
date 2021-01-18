@@ -84,7 +84,7 @@ export default function ChartExpandedState({ asset }) {
     asset?.uniqueId,
   ]);
 
-  const needsEth = asset?.address === 'eth' && asset?.balance.amount === '0';
+  const needsEth = asset?.address === 'eth' && asset?.balance?.amount === '0';
 
   const duration = useRef(0);
 
