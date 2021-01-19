@@ -33,7 +33,6 @@ import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 import { filterList } from '@rainbow-me/utils';
-import logger from 'logger';
 
 const headerlessSection = data => [{ data, title: '' }];
 
@@ -160,8 +159,10 @@ export default function DiscoverSearch({ onScrollTop }) {
     uniswapAssetsInWallet,
     searchQueryForSearch,
     favorites,
+    globalVerifiedHighLiquidityAssets,
     globalHighLiquidityAssets,
     globalLowLiquidityAssets,
+    curatedNotFavorited,
   ]);
 
   const [startQueryDebounce, stopQueryDebounce] = useTimeout();
@@ -196,7 +197,6 @@ export default function DiscoverSearch({ onScrollTop }) {
 
   const handleActionAsset = useCallback(
     item => {
-      logger.log('selected item', item);
       navigate(Routes.ADD_TOKEN_SHEET, { item });
     },
     [navigate]

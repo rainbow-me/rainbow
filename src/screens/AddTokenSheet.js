@@ -23,6 +23,7 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { colors, position } from '@rainbow-me/styles';
+import { haptics } from '@rainbow-me/utils';
 
 const Container = styled(Centered).attrs({
   direction: 'column',
@@ -133,9 +134,11 @@ export default function AddTokenSheet() {
                 const handleAdd = () => {
                   if (alreadyAdded) return;
                   updateList(item.address, list.id, !alreadyAdded);
+                  haptics.notificationSuccess();
                 };
                 const handleRemove = () => {
                   updateList(item.address, list.id, false);
+                  haptics.notificationSuccess();
                 };
                 return (
                   <ListButton key={`list-${list.id}`} onPress={handleAdd}>

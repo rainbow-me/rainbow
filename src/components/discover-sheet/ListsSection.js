@@ -224,11 +224,11 @@ export default function ListSection() {
           </Column>
           <Column>
             {listItems?.length ? (
-              listItems.map((item, i) => (
+              listItems.map(item => (
                 <ListCoinRow
                   {...itemProps}
                   item={item}
-                  key={`${selectedList}-list-item-${i}`}
+                  key={`${selectedList}-list-item-${item.address}`}
                   onPress={() => handlePress(item)}
                 />
               ))
