@@ -74,7 +74,7 @@ export default function ProfileScreen({ navigation }) {
 
   return (
     <ProfileScreenPage testID="profile-screen">
-      <Header justify="space-between">
+      <Header align="center" justify="space-between">
         <HeaderButton
           onPress={onPressSettings}
           opacityTouchable={false}

@@ -4,7 +4,7 @@ import analytics from '@segment/analytics-react-native';
 import { find, get, isEmpty } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useNavigation } from '../navigation/Navigation';
 import useAccountAssets from './useAccountAssets';
 import useAccountSettings from './useAccountSettings';
@@ -60,9 +60,6 @@ export default function useUniswapCurrencies({
   const dispatch = useDispatch();
   const { allAssets } = useAccountAssets();
   const { chainId } = useAccountSettings();
-  const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
-    genericAssets,
-  }));
   const { navigate, setParams, dangerouslyGetParent } = useNavigation();
   const {
     params: { blockInteractions },
@@ -85,7 +82,7 @@ export default function useUniswapCurrencies({
 
     // If default input asset not found in wallet, create the missing asset
     if (!defaultChosenInputItem && defaultInputAsset) {
-      const priceOfEther = ethereumUtils.getEthPriceUnit(genericAssets);
+      const priceOfEther = ethereumUtils.getEthPriceUnit();
 
       defaultChosenInputItem = createMissingAsset(
         defaultInputAsset,
@@ -123,7 +120,6 @@ export default function useUniswapCurrencies({
     defaultInputAddress,
     defaultInputAsset,
     defaultOutputAsset,
-    genericAssets,
     isDeposit,
     isWithdrawal,
     underlyingPrice,

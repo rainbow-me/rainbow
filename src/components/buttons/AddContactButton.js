@@ -1,15 +1,13 @@
-import PropTypes from 'prop-types';
 import React, { useEffect, useRef } from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import { View } from 'react-primitives';
-import { compose, setPropTypes } from 'recompact';
 import AddContactIcon from '../../assets/addContactIcon.png';
-import { withNeverRerender } from '../../hoc';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import Button from './Button';
 import { ImgixImage } from '@rainbow-me/images';
 import { colors } from '@rainbow-me/styles';
+import { neverRerender } from '@rainbow-me/utils';
 
 const duration = 200;
 const transition = (
@@ -42,12 +40,7 @@ const transition = (
   </Transition.Sequence>
 );
 
-const enhanceButton = compose(
-  setPropTypes({ onPress: PropTypes.func.isRequired }),
-  withNeverRerender
-);
-
-const AddButton = enhanceButton(({ onPress }) => (
+const AddButton = neverRerender(({ onPress }) => (
   <Button
     backgroundColor={colors.sendScreen.brightBlue}
     onPress={onPress}
@@ -66,7 +59,7 @@ const AddButton = enhanceButton(({ onPress }) => (
   </Button>
 ));
 
-const EditButton = enhanceButton(({ onPress }) => (
+const EditButton = neverRerender(({ onPress }) => (
   <ButtonPressAnimation
     activeOpacity={0.2}
     onPress={onPress}

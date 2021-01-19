@@ -327,7 +327,7 @@ export const addressAssetsReceived = (
 
 const subscribeToMissingPrices = addresses => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
-  const { genericAssets, uniswapPricesQuery } = getState().data;
+  const { uniswapPricesQuery } = getState().data;
   if (uniswapPricesQuery) {
     uniswapPricesQuery.refetch({ addresses });
   } else {
@@ -343,7 +343,7 @@ const subscribeToMissingPrices = addresses => (dispatch, getState) => {
     const newSubscription = newQuery.subscribe({
       next: async ({ data }) => {
         if (data && data.tokens) {
-          const nativePriceOfEth = ethereumUtils.getEthPriceUnit(genericAssets);
+          const nativePriceOfEth = ethereumUtils.getEthPriceUnit();
           const tokenAddresses = map(data.tokens, property('id'));
 
           const yesterday = getUnixTime(subDays(new Date(), 1));

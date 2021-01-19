@@ -1,6 +1,5 @@
 import { combineReducers } from 'redux';
 
-import actionSheetManager from './actionSheetManager';
 import addCash from './addCash';
 import appState from './appState';
 import charts from './charts';
@@ -29,7 +28,6 @@ import walletconnect from './walletconnect';
 import wallets from './wallets';
 
 export default combineReducers({
-  actionSheetManager,
   addCash,
   appState,
   charts,

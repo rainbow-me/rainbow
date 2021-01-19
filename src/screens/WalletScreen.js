@@ -29,6 +29,7 @@ import {
   useWallets,
   useWalletSectionsData,
 } from '../hooks';
+import { useCoinListEditedValue } from '../hooks/useCoinListEdited';
 import { updateRefetchSavings } from '../redux/data';
 import { position } from '@rainbow-me/styles';
 
@@ -92,12 +93,15 @@ export default function WalletScreen() {
     [network]
   );
 
+  const isCoinListEditedValue = useCoinListEditedValue();
+
   return (
     <WalletPage testID="wallet-screen">
       <StatusBar barStyle="dark-content" />
 
       {/* Line below appears to be needed for having scrollViewTracker persistent while
       reattaching of react subviews */}
+      <Animated.View style={{ opacity: isCoinListEditedValue }} />
       <Animated.Code exec={scrollViewTracker} />
       <FabWrapper
         disabled={isEmpty || !!params?.emptyWallet}
