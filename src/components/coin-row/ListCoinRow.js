@@ -21,7 +21,7 @@ const PercentageText = styled(BottomRowText).attrs({
 
 const BottomRowContainer = ios
   ? Fragment
-  : styled(Row).attrs({ marginBottom: 10, marginTop: -10 })``;
+  : styled(Row).attrs({ marginBottom: 10, marginTop: ios ? -10 : 0 })``;
 
 const formatPercentageString = percentString =>
   percentString ? percentString.split('-').join('- ') : '-';
