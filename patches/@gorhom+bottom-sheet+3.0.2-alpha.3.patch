@@ -35,3 +35,24 @@ index 636e5f2..b8ddfbe 100644
    Extrapolate,
    useAnimatedStyle,
    useAnimatedProps,
+diff --git a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheetModal/BottomSheetModal.tsx b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheetModal/BottomSheetModal.tsx
+index d120061..161e613 100644
+--- a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheetModal/BottomSheetModal.tsx
++++ b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheetModal/BottomSheetModal.tsx
+@@ -6,6 +6,7 @@ import React, {
+   useMemo,
+   useRef,
+   useState,
++  useEffect,
+ } from 'react';
+ import { Portal } from '@gorhom/portal';
+ import { nanoid } from 'nanoid/non-secure';
+@@ -188,6 +189,8 @@ const BottomSheetModalComponent = forwardRef<
+   }));
+   //#endregion
+ 
++  useEffect(() => () => unmountSheet(key), [])
++
+   // render
+   // console.log('BottomSheetModal', index, snapPoints)
+   return mount ? (

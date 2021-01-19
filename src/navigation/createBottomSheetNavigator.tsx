@@ -24,14 +24,22 @@ type Props = DefaultNavigatorOptions<StackNavigationOptions> &
     StackRouterOptions &
     StackNavigationConfig;
 
-function Route({ descriptor, onDismiss}) {
+function Route({ descriptor, onDismiss, removing }) {
     const ref = useRef<BottomSheetModal>()
-    useEffect(() => ref.current?.present(), [])
+    useEffect(() => {
+        console.log(ref)
+        ref.current?.present()
+    }, [])
+    useEffect(() => {
+        removing && ref.current.dismiss(true)
+    }, [removing])
     return <BottomSheetModal
         animationDuration={250}
-        onDismiss={onDismiss}
+        onAnimate={(prev, curr) => prev === 1 && curr === -1 && onDismiss(removing)}
+        onDismiss={() => onDismiss(removing)}
         ref={ref}
-        snapPoints={['25%', '50%']}
+        snapPoints={['100%']}
+        //stackBehavior="push"
         // ref={bottomSheetRef}
         // onDismiss={handleDismiss}
         // onChange={handleChange}
@@ -41,24 +49,46 @@ function Route({ descriptor, onDismiss}) {
 }
 
 function StackView({ descriptors, state, navigation }) {
-    console.log(state.routes.map(route => descriptors[route.key]))
+    const descriptorsCache = useRef({})
     const [firstKey, ...restKeys] = state.routes.map(route => route.key)
     const previousKeys = useRef([])
     const [keys, setKeys] = React.useState([])
-    const newKeys = restKeys.map(key => previousKeys.current.indexOf(key))
+    const newKeys = restKeys.filter(key => previousKeys.current.indexOf(key) === -1)
+    const removingKeys = useRef({})
+
     if (newKeys.length) {
+        newKeys.forEach(key => descriptorsCache.current[key] = descriptors[key])
         setKeys(ks => ks.concat(newKeys))
     }
-    const removingKeys = previousKeys.current.map(key => restKeys.indexOf(key))
+    const newRemovingKeys = previousKeys.current.filter(key => restKeys.indexOf(key) === -1)
+    for (let removingKey of newRemovingKeys) {
+        removingKeys.current[removingKey] = true
+    }
+
+    previousKeys.current = restKeys
+
 
     console.log("CCC", keys)
 
-    previousKeys.current = restKeys;
     return (
         <>
             {descriptors[firstKey].render()}
             {keys.map(key => (
-                <Route descriptor={descriptors[key]} key={key} onDismiss={() => setKeys(routesKeys => routesKeys.filter(routeKey => routeKey !== key))} />
+                descriptorsCache.current[key] && <Route descriptor={descriptorsCache.current[key]} key={key} onDismiss={(removing) => {
+                    setTimeout(() => {
+                        console.log("onDismiss")
+                        !removing && navigation?.dispatch?.({
+                            ...StackActions.pop(),
+                            source: key,
+                            target: state.key,
+                        });
+                        descriptorsCache.current[key] = undefined;
+                        removingKeys.current[key] = undefined;
+                        setKeys(routesKeys => routesKeys.filter(routeKey => routeKey !== key))
+                    }, 500)
+                }}
+                    removing={removingKeys.current[key]}
+                />
             ))}
         </>
 
