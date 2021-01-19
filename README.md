@@ -31,6 +31,7 @@ If you are new to React Native, this is a helpful introduction: https://facebook
     * Etherscan: https://etherscan.io/apis
     * Infura: https://infura.io/
     * ETH Gas Station: https://docs.ethgasstation.info/
+    * Imgix: https://www.imgix.com/
 
 4. Run `yarn` to get all of the packages required.
 

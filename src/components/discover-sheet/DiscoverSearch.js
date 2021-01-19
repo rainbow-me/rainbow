@@ -1,4 +1,4 @@
-import { concat, map, toLower } from 'lodash';
+import { map, toLower } from 'lodash';
 import matchSorter from 'match-sorter';
 import React, {
   useCallback,
@@ -16,6 +16,7 @@ import Animated, {
 import { useDispatch } from 'react-redux';
 import { addHexPrefix } from '../../handlers/web3';
 import CurrencySelectionTypes from '../../helpers/currencySelectionTypes';
+import tokenSectionTypes from '../../helpers/tokenSectionTypes';
 import { emitAssetRequest } from '../../redux/explorer';
 import deviceUtils from '../../utils/deviceUtils';
 import { CurrencySelectionList } from '../exchange';
@@ -30,8 +31,8 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { filterList, filterScams } from '@rainbow-me/utils';
-import logger from 'logger';
+import { colors } from '@rainbow-me/styles';
+import { filterList } from '@rainbow-me/utils';
 
 const headerlessSection = data => [{ data, title: '' }];
 
@@ -72,10 +73,11 @@ export default function DiscoverSearch({ onScrollTop }) {
   const type = CurrencySelectionTypes.output;
   const dispatch = useDispatch();
   const {
-    curatedAssets,
+    curatedNotFavorited,
     favorites,
     globalHighLiquidityAssets,
     globalLowLiquidityAssets,
+    globalVerifiedHighLiquidityAssets,
     loadingAllTokens,
   } = useUniswapAssets();
   const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
@@ -92,44 +94,58 @@ export default function DiscoverSearch({ onScrollTop }) {
         filteredList = headerlessSection(filteredList);
       }
     } else if (type === CurrencySelectionTypes.output) {
-      const curatedSection = concat(favorites, curatedAssets);
       if (searchQueryForSearch) {
-        const [filteredBest, filteredHigh, filteredLow] = map(
-          [curatedSection, globalHighLiquidityAssets, globalLowLiquidityAssets],
+        const [
+          filteredFavorite,
+          filteredVerified,
+          filteredHighUnverified,
+          filteredLow,
+        ] = map(
+          [
+            favorites,
+            globalVerifiedHighLiquidityAssets,
+            globalHighLiquidityAssets,
+            globalLowLiquidityAssets,
+          ],
           section => searchCurrencyList(section, searchQueryForSearch)
         );
 
         filteredList = [];
-        filteredBest.length &&
+        filteredFavorite.length &&
           filteredList.push({
-            data: filteredBest,
-            title: '􀇻 Rainbow Verified',
+            color: colors.yellowFavorite,
+            data: filteredFavorite,
+            title: tokenSectionTypes.favoriteTokenSection,
+          });
+
+        filteredVerified.length &&
+          filteredList.push({
+            data: filteredVerified,
+            title: tokenSectionTypes.verifiedTokenSection,
             useGradientText: IS_TESTING === 'true' ? false : true,
           });
 
-        const filteredHighWithoutScams = filterScams(
-          filteredBest,
-          filteredHigh
-        );
-
-        filteredHighWithoutScams.length &&
+        filteredHighUnverified.length &&
           filteredList.push({
-            data: filteredHighWithoutScams,
-            title: '􀇿 Unverified',
+            data: filteredHighUnverified,
+            title: tokenSectionTypes.unverifiedTokenSection,
           });
 
-        const filteredLowWithoutScams = filterScams(filteredBest, filteredLow);
-
-        filteredLowWithoutScams.length &&
+        filteredLow.length &&
           filteredList.push({
-            data: filteredLowWithoutScams,
-            title: '􀇿 Low Liquidity',
+            data: filteredLow,
+            title: tokenSectionTypes.lowLiquidityTokenSection,
           });
       } else {
         filteredList = [
           {
-            data: concat(favorites, curatedAssets),
-            title: '􀇻 Rainbow Verified',
+            color: colors.yellowFavorite,
+            data: favorites,
+            title: tokenSectionTypes.favoriteTokenSection,
+          },
+          {
+            data: curatedNotFavorited,
+            title: tokenSectionTypes.verifiedTokenSection,
             useGradientText: IS_TESTING === 'true' ? false : true,
           },
         ];
@@ -138,31 +154,27 @@ export default function DiscoverSearch({ onScrollTop }) {
     setIsSearching(false);
     return filteredList;
   }, [
-    curatedAssets,
+    type,
+    setIsSearching,
+    uniswapAssetsInWallet,
+    searchQueryForSearch,
     favorites,
+    globalVerifiedHighLiquidityAssets,
     globalHighLiquidityAssets,
     globalLowLiquidityAssets,
-    searchQueryForSearch,
-    setIsSearching,
-    type,
-    uniswapAssetsInWallet,
+    curatedNotFavorited,
   ]);
 
   const [startQueryDebounce, stopQueryDebounce] = useTimeout();
   useEffect(() => {
-    // stopQueryDebounce();
-    // startQueryDebounce(
-    //   () => {
-
-    // TODO - FIX ME
-    // Debounce is temporarilly disabled
-    // because it's triggering an infinite loop
-    // need to figure out wtf is going on
-    setIsSearching(true);
-    setSearchQueryForSearch(searchQuery);
-    //},
-    //  searchQuery === '' ? 1 : 250
-    // );
+    stopQueryDebounce();
+    startQueryDebounce(
+      () => {
+        setIsSearching(true);
+        setSearchQueryForSearch(searchQuery);
+      },
+      searchQuery === '' ? 1 : 250
+    );
   }, [searchQuery, setIsSearching, startQueryDebounce, stopQueryDebounce]);
 
   const handlePress = useCallback(
@@ -185,7 +197,6 @@ export default function DiscoverSearch({ onScrollTop }) {
 
   const handleActionAsset = useCallback(
     item => {
-      logger.log('selected item', item);
       navigate(Routes.ADD_TOKEN_SHEET, { item });
     },
     [navigate]

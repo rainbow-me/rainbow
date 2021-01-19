@@ -1,7 +1,6 @@
-import { find, includes, toLower } from 'lodash';
-import React, { Fragment, useMemo, useRef } from 'react';
+import { find } from 'lodash';
+import React, { Fragment, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import styled from 'styled-components/primitives';
 import { Column } from '../layout';
 import {
   BuyActionButton,
@@ -11,7 +10,6 @@ import {
   SlackSheet,
   SwapActionButton,
 } from '../sheet';
-import { ToggleStateToast } from '../toasts';
 import {
   TokenInfoBalanceValue,
   TokenInfoItem,
@@ -23,7 +21,6 @@ import { ChartPathProvider } from '@rainbow-me/animated-charts';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 import {
   useChartThrottledPoints,
-  useUniswapAssets,
   useUniswapAssetsInWallet,
 } from '@rainbow-me/hooks';
 
@@ -33,12 +30,6 @@ const heightWithChart = heightWithoutChart + 297;
 
 export const initialChartExpandedStateSheetHeight =
   heightWithChart + (android && 40);
-
-const ToastWrapper = styled(Column)`
-  height: 320;
-  width: 100%;
-  z-index: 9;
-`;
 
 const formatGenericAsset = asset => {
   if (asset?.price?.value) {
@@ -77,14 +68,13 @@ export default function ChartExpandedState({ asset }) {
     heightWithoutChart: heightWithoutChart - (!asset?.balance && 68),
   });
 
-  const { lists } = useUniswapAssets();
   const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
   const showSwapButton = find(uniswapAssetsInWallet, [
     'uniqueId',
     asset?.uniqueId,
   ]);
 
-  const needsEth = asset?.address === 'eth' && asset?.balance.amount === '0';
+  const needsEth = asset?.address === 'eth' && asset?.balance?.amount === '0';
 
   const duration = useRef(0);
 
@@ -93,19 +83,6 @@ export default function ChartExpandedState({ asset }) {
   }
   const ChartExpandedStateSheetHeight =
     (ios || showChart ? heightWithChart : heightWithoutChart) + (android && 40);
-  const assetWithWatchlistInfo = useMemo(() => {
-    const watchlist = lists.find(list => list.id === 'watchlist');
-    if (includes(watchlist.tokens, toLower(asset?.address))) {
-      return {
-        ...assetWithPrice,
-        isInWatchlist: true,
-      };
-    }
-    return {
-      ...assetWithPrice,
-      isInWatchlist: false,
-    };
-  }, [lists, asset?.address, assetWithPrice]);
 
   return (
     <Fragment>
@@ -118,7 +95,7 @@ export default function ChartExpandedState({ asset }) {
           <Chart
             {...chartData}
             {...initialChartDataLabels}
-            asset={assetWithWatchlistInfo}
+            asset={assetWithPrice}
             chart={chart}
             chartType={chartType}
             color={color}
@@ -167,13 +144,6 @@ export default function ChartExpandedState({ asset }) {
           </SheetActionButtonRow>
         )}
       </SlackSheet>
-      <ToastWrapper>
-        <ToggleStateToast
-          addCopy="Added to watchlist"
-          isAdded={assetWithWatchlistInfo.isInWatchlist}
-          removeCopy="Removed from watchlist"
-        />
-      </ToastWrapper>
     </Fragment>
   );
 }

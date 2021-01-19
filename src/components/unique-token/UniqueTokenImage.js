@@ -1,10 +1,9 @@
 import React, { useCallback, useState } from 'react';
-import FastImage from 'react-native-fast-image';
 import { buildUniqueTokenName } from '../../helpers/assets';
 import { magicMemo } from '../../utils';
-import ImageWithCachedMetadata from '../ImageWithCachedMetadata';
 import { Centered } from '../layout';
 import { Monospace } from '../text';
+import { ImageWithCachedMetadata, ImgixImage } from '@rainbow-me/images';
 import { colors, position } from '@rainbow-me/styles';
 
 const FallbackTextColorVariants = {
@@ -19,7 +18,7 @@ const UniqueTokenImage = ({
   backgroundColor,
   imageUrl,
   item,
-  resizeMode = FastImage.resizeMode.cover,
+  resizeMode = ImgixImage.resizeMode.cover,
 }) => {
   const [error, setError] = useState(null);
   const handleError = useCallback(error => setError(error), [setError]);
@@ -30,7 +29,7 @@ const UniqueTokenImage = ({
         <ImageWithCachedMetadata
           imageUrl={imageUrl}
           onError={handleError}
-          resizeMode={FastImage.resizeMode[resizeMode]}
+          resizeMode={ImgixImage.resizeMode[resizeMode]}
           style={position.coverAsObject}
         />
       ) : (

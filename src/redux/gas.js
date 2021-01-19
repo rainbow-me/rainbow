@@ -34,11 +34,10 @@ const GAS_UPDATE_GAS_PRICE_OPTION = 'gas/GAS_UPDATE_GAS_PRICE_OPTION';
 let gasPricesHandle = null;
 
 const getDefaultTxFees = () => (dispatch, getState) => {
-  const { assets } = getState().data;
   const { defaultGasLimit } = getState().gas;
   const { nativeCurrency } = getState().settings;
   const fallbackGasPrices = getFallbackGasPrices();
-  const ethPriceUnit = ethereumUtils.getEthPriceUnit(assets);
+  const ethPriceUnit = ethereumUtils.getEthPriceUnit();
   const txFees = parseTxFees(
     fallbackGasPrices,
     ethPriceUnit,
@@ -54,6 +53,26 @@ const getDefaultTxFees = () => (dispatch, getState) => {
     selectedGasPrice,
     txFees,
   };
+};
+
+export const updateGasPriceForSpeed = (speed, newPrice) => async (
+  dispatch,
+  getState
+) => {
+  const { gasPrices } = getState().gas;
+
+  const newGasPrices = { ...gasPrices };
+  newGasPrices[speed].value = {
+    amount: newPrice,
+    display: `${newPrice} Gwei`,
+  };
+
+  dispatch({
+    payload: {
+      gasPrices,
+    },
+    type: GAS_PRICES_SUCCESS,
+  });
 };
 
 export const gasPricesStartPolling = () => async (dispatch, getState) => {
@@ -210,7 +229,7 @@ export const gasUpdateTxFee = (gasLimit, overrideGasOption) => (
   if (isEmpty(gasPrices)) return;
   const { assets } = getState().data;
   const { nativeCurrency } = getState().settings;
-  const ethPriceUnit = ethereumUtils.getEthPriceUnit(assets);
+  const ethPriceUnit = ethereumUtils.getEthPriceUnit();
   const txFees = parseTxFees(
     gasPrices,
     ethPriceUnit,

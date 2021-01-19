@@ -1,7 +1,7 @@
 import React from 'react';
-import { BaseButton } from 'react-native-gesture-handler';
 import RadialGradient from 'react-native-radial-gradient';
 import styled from 'styled-components/primitives';
+import { ButtonPressAnimation } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { CoinRowHeight } from './CoinRow';
@@ -44,7 +44,7 @@ const Icon = styled(Text).attrs({
 `;
 
 const CoinRowAddButton = ({ onPress }) => (
-  <AddButton as={BaseButton} onPress={onPress}>
+  <AddButton as={ButtonPressAnimation} onPress={onPress}>
     <Circle>
       <Icon>􀅼</Icon>
     </Circle>

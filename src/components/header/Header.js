@@ -8,9 +8,9 @@ const StatusBarHeight = getStatusBarHeight(true);
 export const HeaderHeight = 44;
 export const HeaderHeightWithStatusBar = HeaderHeight + StatusBarHeight;
 
-const Container = styled(Row).attrs({
-  align: 'end',
-})`
+const Container = styled(Row).attrs(({ align = 'end' }) => ({
+  align,
+}))`
   height: ${HeaderHeightWithStatusBar};
   padding-top: ${StatusBarHeight};
   width: ${({ width }) => width};

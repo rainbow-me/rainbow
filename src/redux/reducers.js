@@ -1,6 +1,5 @@
 import { combineReducers } from 'redux';
 
-import actionSheetManager from './actionSheetManager';
 import addCash from './addCash';
 import appState from './appState';
 import charts from './charts';
@@ -13,7 +12,6 @@ import gas from './gas';
 import imageMetadata from './imageMetadata';
 import keyboardHeight from './keyboardHeight';
 import multicall from './multicall';
-import nonce from './nonce';
 import openStateSettings, {
   openSavingsReducer,
   openSmallBalancesReducer,
@@ -25,11 +23,11 @@ import showcaseTokens from './showcaseTokens';
 import uniqueTokens from './uniqueTokens';
 import uniswap from './uniswap';
 import uniswapLiquidity from './uniswapLiquidity';
+import userLists from './userLists';
 import walletconnect from './walletconnect';
 import wallets from './wallets';
 
 export default combineReducers({
-  actionSheetManager,
   addCash,
   appState,
   charts,
@@ -42,7 +40,6 @@ export default combineReducers({
   imageMetadata,
   keyboardHeight,
   multicall,
-  nonce,
   openSavings: openSavingsReducer,
   openSmallBalances: openSmallBalancesReducer,
   openStateSettings,
@@ -53,6 +50,7 @@ export default combineReducers({
   uniqueTokens,
   uniswap,
   uniswapLiquidity,
+  userLists,
   walletconnect,
   wallets,
 });

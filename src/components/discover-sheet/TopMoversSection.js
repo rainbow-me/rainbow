@@ -1,6 +1,12 @@
+import { toLower } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
+import { useSelector } from 'react-redux';
 import { handleSignificantDecimals } from '../../helpers/utilities';
-import { useAccountSettings, useTopMovers } from '../../hooks';
+import {
+  useAccountAssets,
+  useAccountSettings,
+  useTopMovers,
+} from '../../hooks';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
 import { Column, Flex } from '../layout';
 import { MarqueeList } from '../list';
@@ -8,24 +14,36 @@ import { Text } from '../text';
 import EdgeFade from './EdgeFade';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import { ethereumUtils } from '@rainbow-me/utils';
 
 export default function TopMoversSection() {
   const { nativeCurrencySymbol } = useAccountSettings();
+  const { allAssets } = useAccountAssets();
+  const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
+    genericAssets,
+  }));
   const { gainers = [], losers = [] } = useTopMovers() || {};
   const { navigate } = useNavigation();
 
   const handlePress = useCallback(
     item => {
+      const asset =
+        ethereumUtils.getAsset(allAssets, toLower(item.address)) ||
+        ethereumUtils.formatGenericAsset(
+          genericAssets[toLower(item.address)]
+        ) ||
+        item;
+
       navigate(
         ios ? Routes.EXPANDED_ASSET_SHEET : Routes.EXPANDED_ASSET_SCREEN,
         {
-          asset: item,
+          asset,
           longFormHeight: initialChartExpandedStateSheetHeight,
           type: 'token',
         }
       );
     },
-    [navigate]
+    [allAssets, genericAssets, navigate]
   );
 
   const formatItems = useCallback(

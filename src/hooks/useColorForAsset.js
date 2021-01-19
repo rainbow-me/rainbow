@@ -11,7 +11,7 @@ import {
 export default function useColorForAsset(asset, fallbackColor) {
   const { address, color } = asset;
   const token = getTokenMetadata(address);
-  const tokenListColor = token?.extensions?.color;
+  const tokenListColor = token?.color;
 
   const { color: imageColor } = useImageMetadata(
     getUrlForTrustIconFallback(address)

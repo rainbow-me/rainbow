@@ -1,7 +1,6 @@
 import { useRoute } from '@react-navigation/core';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import styled from 'styled-components/primitives';
 import RainbowLogo from '../assets/rainbows/light.png';
 import { Centered, Column, ColumnWithMargins } from '../components/layout';
@@ -16,9 +15,10 @@ import {
 import { useDimensions, useShakeAnimation } from '../hooks';
 import { useBlockBackButton } from '../hooks/useBlockBackButton';
 import { useNavigation } from '../navigation/Navigation';
+import { ImgixImage } from '@rainbow-me/images';
 import { colors, padding } from '@rainbow-me/styles';
 
-const Logo = styled(FastImage).attrs({
+const Logo = styled(ImgixImage).attrs({
   source: RainbowLogo,
 })`
   width: 80;
