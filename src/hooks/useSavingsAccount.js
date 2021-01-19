@@ -20,7 +20,7 @@ import {
 } from '@rainbow-me/handlers/localstorage/accountLocal';
 import AssetTypes from '@rainbow-me/helpers/assetTypes';
 import { multiply } from '@rainbow-me/helpers/utilities';
-import { parseAssetName, parseAssetSymbol } from '@rainbow-me/parsers/accounts';
+import { parseAssetName, parseAssetSymbol } from '@rainbow-me/parsers';
 import { CDAI_CONTRACT, DAI_ADDRESS } from '@rainbow-me/references';
 import { getTokenMetadata } from '@rainbow-me/utils';
 

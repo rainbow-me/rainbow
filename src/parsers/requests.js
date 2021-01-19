@@ -185,5 +185,5 @@ const getTransactionDisplayDetails = (
   return null;
 };
 
-export const getTimestampFromPayload = payload =>
+const getTimestampFromPayload = payload =>
   parseInt(payload.id.toString().slice(0, -3), 10);
