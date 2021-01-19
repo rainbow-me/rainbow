@@ -22,6 +22,7 @@ import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import URL from 'url-parse';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
+  convertAmountToPercentageDisplay,
   fromWei,
   greaterThan,
   isZero,
@@ -60,6 +61,19 @@ const getHash = txn => txn.hash.split('-').shift();
 
 const getAsset = (assets, address = 'eth') =>
   find(assets, matchesProperty('address', toLower(address)));
+
+const formatGenericAsset = asset => {
+  return {
+    ...asset,
+    native: {
+      change: asset?.price?.relative_change_24h
+        ? convertAmountToPercentageDisplay(
+            `${asset?.price?.relative_change_24h}`
+          )
+        : '',
+    },
+  };
+};
 
 export const checkWalletEthZero = assets => {
   const ethAsset = find(assets, asset => asset.address === 'eth');
@@ -280,6 +294,7 @@ export default {
   deriveAccountFromMnemonic,
   deriveAccountFromPrivateKey,
   deriveAccountFromWalletInput,
+  formatGenericAsset,
   getAsset,
   getBalanceAmount,
   getChainIdFromNetwork,

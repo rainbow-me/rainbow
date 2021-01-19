@@ -10,7 +10,6 @@ import React, {
 import { ScrollView } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components/native';
-import { convertAmountToPercentageDisplay } from '../../helpers/utilities';
 import { emitAssetRequest } from '../../redux/explorer';
 import {
   COINGECKO_TRENDING_ENDPOINT,
@@ -77,19 +76,6 @@ const ListName = styled(Text)`
 
 const DEFAULT_LIST = 'favorites';
 
-const formatGenericAsset = asset => {
-  return {
-    ...asset,
-    native: {
-      change: asset?.price?.relative_change_24h
-        ? convertAmountToPercentageDisplay(
-            `${asset?.price?.relative_change_24h}`
-          )
-        : '',
-    },
-  };
-};
-
 // Update trending lists every 5 minutes
 const TRENDING_LIST_UPDATE_INTERVAL = 5 * 60 * 1000;
 
@@ -131,7 +117,7 @@ export default function ListSection() {
       return favorites.map(
         item =>
           ethereumUtils.getAsset(allAssets, toLower(item.address)) ||
-          formatGenericAsset(genericAssets[toLower(item.address)])
+          ethereumUtils.formatGenericAsset(genericAssets[toLower(item.address)])
       );
     } else {
       if (!lists?.length) return [];
@@ -142,7 +128,7 @@ export default function ListSection() {
       return currentList.tokens.map(
         address =>
           ethereumUtils.getAsset(allAssets, toLower(address)) ||
-          formatGenericAsset(genericAssets[toLower(address)])
+          ethereumUtils.formatGenericAsset(genericAssets[toLower(address)])
       );
     }
   }, [allAssets, favorites, genericAssets, lists, selectedList]);
