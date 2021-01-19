@@ -1,12 +1,12 @@
 diff --git a/node_modules/react-native-gesture-handler/GestureComponents.js b/node_modules/react-native-gesture-handler/GestureComponents.js
-index b7f2207..26c9fda 100644
+index b7f2207..21eeddf 100644
 --- a/node_modules/react-native-gesture-handler/GestureComponents.js
 +++ b/node_modules/react-native-gesture-handler/GestureComponents.js
 @@ -55,4 +55,17 @@ module.exports = {
      }
      return MEMOIZED.FlatList;
    },
-+  get SectionList() {
++   get SectionList() {
 +    if (!MEMOIZED.SectionList) {
 +      const ScrollView = this.ScrollView;
 +      MEMOIZED.SectionList = React.forwardRef((props, ref) => (
@@ -15,114 +15,11 @@ index b7f2207..26c9fda 100644
 +          {...props}
 +          renderScrollComponent={scrollProps => <ScrollView {...scrollProps} />}
 +        />
-+      ));
++        ));
 +    }
 +    return MEMOIZED.SectionList;
-+  },
++    },
  };
-diff --git a/node_modules/react-native-gesture-handler/android/lib/src/main/java/com/swmansion/gesturehandler/GestureHandler.java b/node_modules/react-native-gesture-handler/android/lib/src/main/java/com/swmansion/gesturehandler/GestureHandler.java
-index e3cc6b7..c742e66 100644
---- a/node_modules/react-native-gesture-handler/android/lib/src/main/java/com/swmansion/gesturehandler/GestureHandler.java
-+++ b/node_modules/react-native-gesture-handler/android/lib/src/main/java/com/swmansion/gesturehandler/GestureHandler.java
-@@ -3,6 +3,8 @@ package com.swmansion.gesturehandler;
- import android.view.MotionEvent;
- import android.view.View;
- 
-+import com.swmansion.gesturehandler.react.RNGestureHandlerRootHelper;
-+
- import java.util.Arrays;
- 
- public class GestureHandler<T extends GestureHandler> {
-diff --git a/node_modules/react-native-gesture-handler/android/lib/src/main/java/com/swmansion/gesturehandler/GestureHandlerOrchestrator.java b/node_modules/react-native-gesture-handler/android/lib/src/main/java/com/swmansion/gesturehandler/GestureHandlerOrchestrator.java
-index f08713b..a97b902 100644
---- a/node_modules/react-native-gesture-handler/android/lib/src/main/java/com/swmansion/gesturehandler/GestureHandlerOrchestrator.java
-+++ b/node_modules/react-native-gesture-handler/android/lib/src/main/java/com/swmansion/gesturehandler/GestureHandlerOrchestrator.java
-@@ -13,6 +13,8 @@ import java.util.Comparator;
- 
- import androidx.annotation.Nullable;
- 
-+import com.swmansion.gesturehandler.react.RNGestureHandlerRootHelper;
-+
- public class GestureHandlerOrchestrator {
- 
-   // The limit doesn't necessarily need to exists, it was just simpler to implement it that way
-@@ -513,11 +515,13 @@ public class GestureHandlerOrchestrator {
-   }
- 
-   private static boolean canRunSimultaneously(GestureHandler a, GestureHandler b) {
-+    if (a instanceof RNGestureHandlerRootHelper.RootViewGestureHandler && b instanceof PanGestureHandler) {
-+      return true;
-+    }
-     return a == b || a.shouldRecognizeSimultaneously(b) || b.shouldRecognizeSimultaneously(a);
-   }
- 
-   private static boolean shouldHandlerBeCancelledBy(GestureHandler handler, GestureHandler other) {
--
-     if (!handler.hasCommonPointers(other)) {
-       // if two handlers share no common pointer one can never trigger cancel for the other
-       return false;
-@@ -533,6 +537,11 @@ public class GestureHandlerOrchestrator {
-       // state, we delegate the decision to the implementation of GestureHandler#shouldBeCancelledBy
-       return handler.shouldBeCancelledBy(other);
-     }
-+
-+    if (other instanceof RNGestureHandlerRootHelper.RootViewGestureHandler && handler instanceof PanGestureHandler) {
-+      return false;
-+    }
-+ 
-     return true;
-   }
- 
-diff --git a/node_modules/react-native-gesture-handler/android/lib/src/main/java/com/swmansion/gesturehandler/PanGestureHandler.java b/node_modules/react-native-gesture-handler/android/lib/src/main/java/com/swmansion/gesturehandler/PanGestureHandler.java
-index 4f41a14..6224daa 100644
---- a/node_modules/react-native-gesture-handler/android/lib/src/main/java/com/swmansion/gesturehandler/PanGestureHandler.java
-+++ b/node_modules/react-native-gesture-handler/android/lib/src/main/java/com/swmansion/gesturehandler/PanGestureHandler.java
-@@ -31,7 +31,7 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
-   private float mMinVelocityY = MIN_VALUE_IGNORE;
-   private float mMinVelocitySq = MIN_VALUE_IGNORE;
-   private int mMinPointers = DEFAULT_MIN_POINTERS;
--  private int mMaxPointers = DEFAULT_MAX_POINTERS;
-+  public int mMaxPointers = DEFAULT_MAX_POINTERS;
- 
-   private float mStartX, mStartY;
-   private float mOffsetX, mOffsetY;
-diff --git a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerInteractionManager.java b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerInteractionManager.java
-index 84e3e9b..307c27d 100644
---- a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerInteractionManager.java
-+++ b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerInteractionManager.java
-@@ -6,6 +6,7 @@ import com.facebook.react.bridge.ReadableArray;
- import com.facebook.react.bridge.ReadableMap;
- import com.swmansion.gesturehandler.GestureHandler;
- import com.swmansion.gesturehandler.GestureHandlerInteractionController;
-+import com.swmansion.gesturehandler.PanGestureHandler;
- 
- public class RNGestureHandlerInteractionManager implements GestureHandlerInteractionController {
- 
-@@ -43,6 +44,11 @@ public class RNGestureHandlerInteractionManager implements GestureHandlerInterac
- 
-   @Override
-   public boolean shouldWaitForHandlerFailure(GestureHandler handler, GestureHandler otherHandler) {
-+    if (otherHandler instanceof RNGestureHandlerRootHelper.RootViewGestureHandler
-+            && handler instanceof PanGestureHandler
-+            && ((PanGestureHandler) handler).mMaxPointers == 17) { // magic number for recognizing bottom sheet
-+      return true;
-+    }
-     int[] waitForTags = mWaitForRelations.get(handler.getTag());
-     if (waitForTags != null) {
-       for (int i = 0; i < waitForTags.length; i++) {
-diff --git a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerRootHelper.java b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerRootHelper.java
-index 9bf0c8f..8d4e58c 100644
---- a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerRootHelper.java
-+++ b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerRootHelper.java
-@@ -81,7 +81,7 @@ public class RNGestureHandlerRootHelper {
-     return mRootView;
-   }
- 
--  private class RootViewGestureHandler extends GestureHandler {
-+  public class RootViewGestureHandler extends GestureHandler {
-     @Override
-     protected void onHandle(MotionEvent event) {
-       int currentState = getState();
 diff --git a/node_modules/react-native-gesture-handler/ios/Handlers/RNNativeViewHandler.m b/node_modules/react-native-gesture-handler/ios/Handlers/RNNativeViewHandler.m
 index 73022d7..49b8507 100644
 --- a/node_modules/react-native-gesture-handler/ios/Handlers/RNNativeViewHandler.m

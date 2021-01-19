@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import { View } from 'react-native';
 import styled from 'styled-components/primitives';
 import { ColumnWithMargins } from '../layout';
 import { Text } from '../text';
@@ -16,24 +17,40 @@ const HeaderTitle = styled(Text).attrs({
   weight: 'heavy',
 })``;
 
+const Spacer = styled.View`
+  height: 16;
+`;
+
+function Switcher({ showSearch, children }) {
+  return (
+    <>
+      <View style={{ display: showSearch ? 'flex' : 'none' }}>
+        {children[0]}
+      </View>
+      <View style={{ display: showSearch ? 'none' : 'flex' }}>
+        {children[1]}
+      </View>
+    </>
+  );
+}
+
 export default function DiscoverSheetContent() {
   const [showSearch, setShowSearch] = useState(false);
-
   const ref = useRef();
   return (
     <>
       <HeaderTitle>{showSearch ? 'Search' : 'Discover'}</HeaderTitle>
+      {android && <Spacer />}
       <ColumnWithMargins flex={1} margin={42}>
         <DiscoverSearchContainer
           ref={ref}
           setShowSearch={setShowSearch}
           showSearch={showSearch}
         >
-          {showSearch ? (
-            <DiscoverSearch onScrollTop={ref.current.focus} />
-          ) : (
+          <Switcher showSearch={showSearch}>
+            <DiscoverSearch onScrollTop={() => ref.current?.focus()} />
             <DiscoverHome />
-          )}
+          </Switcher>
         </DiscoverSearchContainer>
       </ColumnWithMargins>
     </>

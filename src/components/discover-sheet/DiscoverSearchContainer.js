@@ -9,14 +9,17 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { LayoutAnimation } from 'react-native';
 import styled from 'styled-components/primitives';
 import { ButtonPressAnimation } from '../animations';
 import { ExchangeSearch } from '../exchange';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
 import DiscoverSheetContext from './DiscoverSheetContext';
-import { useUniswapAssets } from '@rainbow-me/hooks';
+import {
+  useDelayedValueWithLayoutAnimation,
+  useUniswapAssets,
+} from '@rainbow-me/hooks';
+
 import { colors } from '@rainbow-me/styles';
 
 const CancelButton = styled(ButtonPressAnimation)`
@@ -56,15 +59,11 @@ export default forwardRef(function DiscoverSearchContainer(
     () => ({ ...upperContext, searchQuery, setIsSearching }),
     [searchQuery, upperContext, setIsSearching]
   );
-  const setIsInputFocusedWithLayoutAnimation = useCallback(
+  const setIsInputFocused = useCallback(
     value => {
       setShowSearch(value);
       setIsSearchModeEnabled(value);
       setViewPagerSwipeEnabled(!value);
-
-      LayoutAnimation.configureNext(
-        LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
-      );
     },
     [setIsSearchModeEnabled, setShowSearch, setViewPagerSwipeEnabled]
   );
@@ -74,9 +73,11 @@ export default forwardRef(function DiscoverSearchContainer(
       setSearchQuery('');
       setIsSearching(false);
       searchInputRef.current?.blur();
-      setIsInputFocusedWithLayoutAnimation(false);
+      setIsInputFocused(false);
     }
-  }, [isSearchModeEnabled, setIsInputFocusedWithLayoutAnimation]);
+  }, [isSearchModeEnabled, setIsInputFocused]);
+
+  const delayedShowSearch = useDelayedValueWithLayoutAnimation(showSearch);
 
   const { loadingAllTokens } = useUniswapAssets();
   return (
@@ -86,11 +87,11 @@ export default forwardRef(function DiscoverSearchContainer(
           <ExchangeSearch
             isFetching={loadingAllTokens}
             isSearching={isSearching}
-            onBlur={() => setIsInputFocusedWithLayoutAnimation(false)}
+            onBlur={() => setIsInputFocused(false)}
             onChangeText={setSearchQuery}
             onFocus={() => {
               upperContext.jumpToLong?.();
-              setIsInputFocusedWithLayoutAnimation(true);
+              setIsInputFocused(true);
             }}
             placeholderText="Search all of Ethereum"
             ref={searchInputRef}
@@ -101,10 +102,10 @@ export default forwardRef(function DiscoverSearchContainer(
         <CancelButton
           onPress={() => {
             searchInputRef.current?.blur();
-            setIsInputFocusedWithLayoutAnimation(false);
+            setIsInputFocused(false);
           }}
         >
-          {showSearch && <CancelText>Cancel</CancelText>}
+          {delayedShowSearch && <CancelText>Cancel</CancelText>}
         </CancelButton>
       </Row>
       <DiscoverSheetContext.Provider value={contextValue}>

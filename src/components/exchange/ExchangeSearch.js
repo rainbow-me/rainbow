@@ -68,13 +68,12 @@ const SearchInput = styled(Input).attrs({
 })`
   ${android
     ? `margin-top: -6;
-  margin-bottom: -10;
-  height: 56;`
+  margin-bottom: -10;`
     : ''}
   flex: 1;
   text-align: ${({ isSearchModeEnabled }) =>
     isSearchModeEnabled ? 'left' : 'center'};
-  height: 39;
+  height: ${ios ? 39 : 56};
   margin-bottom: 1;
   margin-left: 3;
 `;

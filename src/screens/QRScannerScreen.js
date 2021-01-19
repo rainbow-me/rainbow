@@ -80,7 +80,7 @@ export default function QRScannerScreen() {
   const cameraDim = useSharedValue(0);
   const dsRef = useRef();
   const onCrossMagicBorder = useCallback(
-    ({ below }) => (cameraDim.value = below ? 1 : 0),
+    below => (cameraDim.value = below ? 1 : 0),
     [cameraDim]
   );
   useEffect(

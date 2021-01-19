@@ -376,7 +376,7 @@ PODS:
     - React
   - react-native-version-number (0.3.6):
     - React
-  - react-native-viewpager (4.1.0):
+  - react-native-viewpager (5.0.5):
     - React
   - react-native-webview (10.10.0):
     - React-Core
@@ -966,7 +966,7 @@ SPEC CHECKSUMS:
   react-native-text-input-mask: 07227297075f9653315f43b0424d596423a01736
   react-native-udp: 96a517e5a121cfe69f4b05eeeafefe00c623debf
   react-native-version-number: b415bbec6a13f2df62bf978e85bc0d699462f37f
-  react-native-viewpager: 6f8c102e8081d70259252b254143b4193a9fb4cb
+  react-native-viewpager: 7238df0b6b9ee5a50f882750269f3c76639b195f
   react-native-webview: 73e409ecc987c189772bda27ba7f0e2f3dcd2e81
   React-RCTActionSheet: 53ea72699698b0b47a6421cb1c8b4ab215a774aa
   React-RCTAnimation: 1befece0b5183c22ae01b966f5583f42e69a83c2

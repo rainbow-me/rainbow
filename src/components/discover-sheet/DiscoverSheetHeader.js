@@ -13,6 +13,7 @@ import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 import DiscoverSheetContext from './DiscoverSheetContext';
+import { useDelayedValueWithLayoutAnimation } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import ShadowStack from 'react-native-shadow-stack';
@@ -20,12 +21,12 @@ import ShadowStack from 'react-native-shadow-stack';
 const springConfig = {
   damping: 20,
   mass: 1,
+  overshootClamping: true,
   stiffness: 400,
 };
 
 const Header = styled.View`
   flex-direction: row;
-  height: 59;
   justify-content: space-between;
   margin-vertical: 12;
   position: absolute;
@@ -71,9 +72,18 @@ function Stack({
     opacity: wrapperOpacity.value,
     transform: [{ translateX: translateX.value }],
   }));
+
+  const { isSearchModeEnabled } = useContext(DiscoverSheetContext);
+
+  const areButtonsVisible = useDelayedValueWithLayoutAnimation(
+    !disabled && !isSearchModeEnabled
+  );
+
   const animatedStyleShadow = useAnimatedStyle(() => ({
     opacity: isVisible.value,
-    transform: [{ scale: isVisible.value + (0.6 - isVisible.value * 0.6) }],
+    ...(ios && {
+      transform: [{ scale: isVisible.value + (0.6 - isVisible.value * 0.6) }],
+    }),
   }));
 
   return (
@@ -98,9 +108,12 @@ function Stack({
           <BackgroundFill />
         </Animated.View>
         <Animated.View
-          style={[{ left, top: 19, zIndex: 10 }, animatedWrapperStyle]}
+          style={[
+            { left, top: 19, zIndex: 10 },
+            ios ? animatedWrapperStyle : { opacity: areButtonsVisible ? 1 : 0 },
+          ]}
         >
-          <Animated.View style={(animatedStyleHide, { position: 'absolute' })}>
+          <Animated.View style={[animatedStyleHide, { position: 'absolute' }]}>
             {children[0]}
           </Animated.View>
           <Animated.View style={animatedStyle}>{children[1]}</Animated.View>
@@ -138,13 +151,13 @@ export default function DiscoverSheetHeader(props) {
     useContext(DiscoverSheetContext) || {};
 
   const onCrossMagicBorder = useCallback(
-    ({ below }) => {
+    below => {
       buttonOpacity.value = below ? 0 : 1;
       setButtonsEnabled(!below);
     },
     [buttonOpacity]
   );
-  useEffect(() => addOnCrossMagicBorderListener(onCrossMagicBorder), [
+  useEffect(() => addOnCrossMagicBorderListener?.(onCrossMagicBorder), [
     addOnCrossMagicBorderListener,
     onCrossMagicBorder,
   ]);
@@ -180,8 +193,8 @@ export default function DiscoverSheetHeader(props) {
         disabled={!buttonsEnabled}
         left={18.5}
         onPress={() => {
-          setIsSearchModeEnabled(false);
-          setViewPagerSwipeEnabled(true);
+          setIsSearchModeEnabled?.(false);
+          setViewPagerSwipeEnabled?.(true);
           jumpToShort?.();
         }}
         stackOpacity={stackOpacity}

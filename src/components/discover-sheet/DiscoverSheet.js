@@ -1,24 +1,29 @@
+import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useIsFocused } from '@react-navigation/native';
 import React, {
   forwardRef,
+  useCallback,
   useImperativeHandle,
   useMemo,
   useRef,
   useState,
 } from 'react';
-import { findNodeHandle, NativeModules, StyleSheet } from 'react-native';
+import { findNodeHandle, NativeModules, View } from 'react-native';
+import {
+  runOnJS,
+  useAnimatedReaction,
+  useAnimatedScrollHandler,
+  useSharedValue,
+} from 'react-native-reanimated';
 import { useSafeArea } from 'react-native-safe-area-context';
 // eslint-disable-next-line import/no-unresolved
 import SlackBottomSheet from 'react-native-slack-bottom-sheet';
+import deviceUtils from '../../utils/deviceUtils';
 import { SlackSheet } from '../sheet';
 import DiscoverSheetContent from './DiscoverSheetContent';
 import DiscoverSheetContext from './DiscoverSheetContext';
 import DiscoverSheetHeader from './DiscoverSheetHeader';
-import { deviceUtils } from '@rainbow-me/utils';
-import {
-  YABSForm,
-  YABSScrollView,
-} from 'react-native-yet-another-bottom-sheet';
+
 const renderHeader = yPosition => <DiscoverSheetHeader yPosition={yPosition} />;
 
 function useAreHeaderButtonVisible() {
@@ -26,40 +31,80 @@ function useAreHeaderButtonVisible() {
   return [{ isSearchModeEnabled, setIsSearchModeEnabled }, isSearchModeEnabled];
 }
 
-function DiscoverSheetAndroid() {
+const snapPoints = ['25%', deviceUtils.dimensions.height - 100];
+
+const DiscoverSheetAndroid = (_, forwardedRef) => {
   const [headerButtonsHandlers, deps] = useAreHeaderButtonVisible();
+
+  const listeners = useRef([]);
+  const bottomSheetModalRef = useRef(null);
 
   const value = useMemo(
     () => ({
+      addOnCrossMagicBorderListener(listener) {
+        listeners.current.push(listener);
+        return () =>
+          listeners.current.splice(listeners.current.indexOf(listener), 1);
+      },
+      jumpToLong() {
+        bottomSheetModalRef.current.expand();
+      },
+      jumpToShort() {
+        bottomSheetModalRef.current.collapse();
+      },
       ...headerButtonsHandlers,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [deps]
   );
+
+  useImperativeHandle(forwardedRef, () => value);
+
+  const yPosition = useSharedValue(0);
+  const scrollHandler = useAnimatedScrollHandler(event => {
+    yPosition.value = event.contentOffset.y;
+  });
+
+  const notifyListeners = useCallback(
+    value => listeners.current.forEach(listener => listener(value)),
+    []
+  );
+
+  const sheetPosition = useSharedValue(0);
+
+  const hasCrossedTheMagicBorder = useSharedValue(false);
+  useAnimatedReaction(
+    () => sheetPosition.value > 150,
+    hasJustCrossedTheMagicBorder => {
+      if (hasCrossedTheMagicBorder.value !== hasJustCrossedTheMagicBorder) {
+        runOnJS(notifyListeners)(hasJustCrossedTheMagicBorder);
+        hasCrossedTheMagicBorder.value = hasJustCrossedTheMagicBorder;
+      }
+    },
+    [notifyListeners]
+  );
+
   return (
     <DiscoverSheetContext.Provider value={value}>
-      <YABSForm
-        panGHProps={{
-          maxPointers: 17, // magic number for duck typing on native side
-          simultaneousHandlers: 'AnimatedScrollViewPager',
-        }}
-        points={[0, 200, deviceUtils.dimensions.height - 200]}
-        style={[
-          StyleSheet.absoluteFillObject,
-          {
-            backgroundColor: 'white',
-            bottom: 0,
-            top: 100,
-          },
-        ]}
+      <BottomSheet
+        activeOffsetY={[-0.5, 0.5]}
+        animatedPosition={sheetPosition}
+        animationDuration={300}
+        failOffsetX={[-10, 10]}
+        index={1}
+        ref={bottomSheetModalRef}
+        snapPoints={snapPoints}
       >
-        <YABSScrollView style={{ flex: 1, height: '100%' }}>
+        <DiscoverSheetHeader yPosition={yPosition} />
+        <BottomSheetScrollView onScroll={scrollHandler}>
           <DiscoverSheetContent />
-        </YABSScrollView>
-      </YABSForm>
+          {/* placeholder for now */}
+          <View style={{ backgroundColor: 'red', height: 400, width: 100 }} />
+        </BottomSheetScrollView>
+      </BottomSheet>
     </DiscoverSheetContext.Provider>
   );
-}
+};
 
 function DiscoverSheetIOS(_, forwardedRef) {
   const insets = useSafeArea();
@@ -71,8 +116,8 @@ function DiscoverSheetIOS(_, forwardedRef) {
     () => ({
       addOnCrossMagicBorderListener(listener) {
         listeners.current.push(listener);
-        const index = listeners.current.length - 1;
-        return () => listeners.current.splice(index, 1);
+        return () =>
+          listeners.current.splice(listeners.current.indexOf(listener), 1);
       },
       jumpToLong() {
         const screen = findNodeHandle(ref.current);
@@ -107,8 +152,8 @@ function DiscoverSheetIOS(_, forwardedRef) {
         initialAnimation={false}
         interactsWithOuterScrollView
         isHapticFeedbackEnabled={false}
-        onCrossMagicBorder={({ nativeEvent }) =>
-          listeners.current.forEach(listener => listener(nativeEvent))
+        onCrossMagicBorder={({ nativeEvent: { below } }) =>
+          listeners.current.forEach(listener => listener(below))
         }
         presentGlobally={false}
         ref={ref}
@@ -129,4 +174,4 @@ function DiscoverSheetIOS(_, forwardedRef) {
   );
 }
 
-export default ios ? forwardRef(DiscoverSheetIOS) : DiscoverSheetAndroid;
+export default forwardRef(ios ? DiscoverSheetIOS : DiscoverSheetAndroid);
