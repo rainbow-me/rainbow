@@ -62,16 +62,16 @@ const ListButton = styled(ButtonPressAnimation).attrs({
         border-radius: 12px;
         height: 30px;
         padding-horizontal: 8px;
-        padding-top: 6px;
+        padding-top: ${ios ? 6 : 4}px;
       `
       : `
-        padding-top: 6px;
+        padding-top: ${ios ? 6 : 4}px;
       `}
 `;
 
 const ListName = styled(Text)`
   margin-left: 3px;
-  margin-top: -4.5px;
+  margin-top: ${ios ? -4.5 : 0}px;
 `;
 
 const DEFAULT_LIST = 'favorites';
