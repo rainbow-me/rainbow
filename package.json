@@ -21,7 +21,7 @@
     "ios": "react-native run-ios --simulator='iPhone 11'",
     "lint": "yarn lint:ts && yarn lint:js && yarn lint:css",
     "lint:css": "stylelint './src/**/*.js'",
-    "lint:js": "eslint --ext '.ts,.js,.jsx' .",
+    "lint:js": "eslint --ext '.ts,.tsx,.js,.jsx' .",
     "lint:ts": "yarn tsc --skipLibCheck --noEmit",
     "postinstall": "./scripts/postinstall.sh",
     "start": "react-native start",
@@ -37,8 +37,8 @@
     }
   },
   "lint-staged": {
-    "*.{js,jsx,ts}": [
-      "eslint --ext '.js,.jsx,.ts' -c .eslintrc.json",
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --ext '.js,.jsx,.ts,.tsx' -c .eslintrc.json",
       "stylelint"
     ]
   },
