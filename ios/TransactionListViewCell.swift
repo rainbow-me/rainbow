@@ -116,6 +116,11 @@ class TransactionListViewCell: TransactionListBaseCell {
       transactionIcon.image = UIImage.init(named: "self")
     }
     
+    // Cancelled Overrides
+    if transaction.status == "cancelled" {
+      transactionIcon.image = UIImage.init(named: "self")
+    }
+    
     // Failed Overrides
     if transaction.status == "failed" {
       statusFrame = CGRect(x: 85, y: 9, width: 206, height: 16)
@@ -129,7 +134,7 @@ class TransactionListViewCell: TransactionListBaseCell {
     }
     
     // Self Overrides
-    if (transaction.status ==  "self" || transaction.status == "approved") {
+    if (transaction.status ==  "self" || transaction.status == "approved" || transaction.status == "cancelled") {
       statusFrame = CGRect(x: 80, y: 9, width: 206, height: 16)
     }
     

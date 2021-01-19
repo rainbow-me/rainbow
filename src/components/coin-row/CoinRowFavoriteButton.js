@@ -35,7 +35,9 @@ const Circle = styled(RadialGradient).attrs(({ isFavorited }) => ({
 
 const StarIcon = styled(Text).attrs(({ isFavorited }) => ({
   align: 'center',
-  color: isFavorited ? '#FFB200' : colors.alpha(colors.blueGreyDark, 0.2),
+  color: isFavorited
+    ? colors.yellowFavorite
+    : colors.alpha(colors.blueGreyDark, 0.2),
   letterSpacing: 'zero',
   size: 'smaller',
   weight: 'heavy',

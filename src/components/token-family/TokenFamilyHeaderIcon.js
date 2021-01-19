@@ -2,8 +2,8 @@ import React, { useMemo } from 'react';
 import { FallbackIcon } from 'react-coin-icon';
 import styled from 'styled-components/primitives';
 import { initials } from '../../utils';
-import ImageWithCachedMetadata from '../ImageWithCachedMetadata';
 import { Emoji } from '../text';
+import { ImageWithCachedMetadata } from '@rainbow-me/images';
 import { borders, colors } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 

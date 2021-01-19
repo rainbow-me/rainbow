@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
 import { FallbackIcon } from 'react-coin-icon';
 import styled from 'styled-components/primitives';
-import ImageWithCachedMetadata from '../ImageWithCachedMetadata';
 import { Centered } from '../layout';
 import { useBooleanState, useColorForAsset } from '@rainbow-me/hooks';
+import { ImageWithCachedMetadata } from '@rainbow-me/images';
 import { borders, colors, fonts, position, shadow } from '@rainbow-me/styles';
 import { getUrlForTrustIconFallback, magicMemo } from '@rainbow-me/utils';
 

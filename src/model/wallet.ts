@@ -70,6 +70,7 @@ interface WalletInitialized {
 
 interface TransactionRequestParam {
   transaction: TransactionRequest;
+  existingWallet?: Wallet;
 }
 
 interface MessageTypeProperty {
@@ -230,15 +231,18 @@ export const loadWallet = async (): Promise<null | Wallet> => {
 
 export const sendTransaction = async ({
   transaction,
-}: TransactionRequestParam): Promise<null | Transaction['hash']> => {
+  existingWallet,
+}: TransactionRequestParam): Promise<null | Transaction> => {
   try {
     logger.sentry('about to send transaction', transaction);
-    const wallet = await loadWallet();
+    const wallet = existingWallet || (await loadWallet());
     if (!wallet) return null;
     try {
       const result = await wallet.sendTransaction(transaction);
-      return result.hash;
+      logger.log('tx result', result);
+      return result;
     } catch (error) {
+      logger.log('Failed to SEND transaction', error);
       Alert.alert(lang.t('wallet.transaction.alert.failed_transaction'));
       logger.sentry('Failed to SEND transaction, alerted user');
       captureException(error);

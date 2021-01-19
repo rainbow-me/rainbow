@@ -1,6 +1,5 @@
 import React from 'react';
 import { View } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import styled from 'styled-components/primitives';
 import Caret from '../../assets/family-dropdown-arrow.png';
 import {
@@ -12,6 +11,7 @@ import {
 } from '../animations';
 import { Row } from '../layout';
 import CoinDividerButtonLabel from './CoinDividerButtonLabel';
+import { ImgixImage } from '@rainbow-me/images';
 import { colors, padding } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
@@ -22,7 +22,7 @@ const CaretContainer = styled.View`
   padding-bottom: 1;
 `;
 
-const CaretIcon = styled(FastImage).attrs({
+const CaretIcon = styled(ImgixImage).attrs({
   source: Caret,
   tintColor: colors.blueGreyDark,
 })`

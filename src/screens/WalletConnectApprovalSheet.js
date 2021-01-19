@@ -1,4 +1,5 @@
 import { useRoute } from '@react-navigation/native';
+import analytics from '@segment/analytics-react-native';
 import React, {
   useCallback,
   useEffect,
@@ -87,6 +88,7 @@ export default function WalletConnectApprovalSheet() {
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
+      analytics.track('Shown Walletconnect session request');
       checkIfScam(dappUrl);
     });
     // Reject if the modal is dismissed

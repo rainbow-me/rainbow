@@ -246,7 +246,7 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   }
 
   var topOffset: CGFloat {
-    return CGFloat(truncating: config!.topOffset)
+    return CGFloat(truncating: config?.topOffset ?? 0)
   }
 
   var panScrollable: UIScrollView? {

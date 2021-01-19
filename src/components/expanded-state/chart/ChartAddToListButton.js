@@ -4,7 +4,8 @@ import styled from 'styled-components/primitives';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered } from '../../layout';
 import { Text } from '../../text';
-import { useUniswapAssets } from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
+import Routes from '@rainbow-me/routes';
 import { colors, padding } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
@@ -40,16 +41,17 @@ const PlusIcon = styled(Text).attrs({
 `;
 
 const ChartAddToListButton = ({ asset }) => {
-  const { updateList } = useUniswapAssets();
+  const { navigate } = useNavigation();
+
   const handlePress = useCallback(() => {
-    updateList(asset.address, 'watchlist', !asset.isInWatchlist);
-  }, [asset.address, asset.isInWatchlist, updateList]);
+    navigate(Routes.ADD_TOKEN_SHEET, { item: asset });
+  }, [asset, navigate]);
 
   return (
     <Fragment>
       <AddToListButton as={ButtonPressAnimation} onPress={handlePress}>
         <Circle>
-          <PlusIcon>{asset.isInWatchlist ? `􀅽` : `􀅼`}</PlusIcon>
+          <PlusIcon>􀅼</PlusIcon>
         </Circle>
       </AddToListButton>
     </Fragment>

@@ -19,9 +19,6 @@ import logger from 'logger';
 
 const SETTINGS_UPDATE_SETTINGS_ADDRESS =
   'settings/SETTINGS_UPDATE_SETTINGS_ADDRESS';
-const SETTINGS_UPDATE_SETTINGS_COLOR =
-  'settings/SETTINGS_UPDATE_SETTINGS_COLOR';
-const SETTINGS_UPDATE_SETTINGS_NAME = 'settings/SETTINGS_UPDATE_SETTINGS_NAME';
 const SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS =
   'settings/SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS';
 const SETTINGS_UPDATE_LANGUAGE_SUCCESS =
@@ -55,18 +52,6 @@ export const settingsLoadNetwork = () => async dispatch => {
     logger.log('Error loading network settings', error);
   }
 };
-
-export const settingsUpdateAccountName = accountName => dispatch =>
-  dispatch({
-    payload: { accountName },
-    type: SETTINGS_UPDATE_SETTINGS_NAME,
-  });
-
-export const settingsUpdateAccountColor = accountColor => dispatch =>
-  dispatch({
-    payload: { accountColor },
-    type: SETTINGS_UPDATE_SETTINGS_COLOR,
-  });
 
 export const settingsUpdateAccountAddress = accountAddress => async dispatch => {
   dispatch({
@@ -122,8 +107,6 @@ export const settingsChangeNativeCurrency = nativeCurrency => async dispatch => 
 // -- Reducer --------------------------------------------------------------- //
 export const INITIAL_STATE = {
   accountAddress: '',
-  accountColor: 6,
-  accountName: '',
   chainId: 1,
   language: 'en',
   nativeCurrency: 'USD',
@@ -136,16 +119,6 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         accountAddress: action.payload,
-      };
-    case SETTINGS_UPDATE_SETTINGS_NAME:
-      return {
-        ...state,
-        accountName: action.payload.accountName,
-      };
-    case SETTINGS_UPDATE_SETTINGS_COLOR:
-      return {
-        ...state,
-        accountColor: action.payload.accountColor,
       };
     case SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS:
       return {

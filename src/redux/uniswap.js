@@ -1,28 +1,20 @@
 import produce from 'immer';
-import {
-  concat,
-  filter,
-  keys,
-  map,
-  remove,
-  toLower,
-  uniq,
-  without,
-} from 'lodash';
+import { concat, map, remove, toLower, uniq, without } from 'lodash';
 import {
   getUniswapFavorites,
   getUniswapLists,
   saveUniswapFavorites,
-  saveUniswapLists,
-} from '../handlers/localstorage/uniswap';
-import { getAllTokens, getTestnetUniswapPairs } from '../handlers/uniswap';
-import networkTypes from '../helpers/networkTypes';
+} from '@rainbow-me/handlers/localstorage/uniswap';
 import {
-  DefaultTokenLists,
+  getAllTokens,
+  getTestnetUniswapPairs,
+} from '@rainbow-me/handlers/uniswap';
+import networkTypes from '@rainbow-me/networkTypes';
+import {
+  CURATED_UNISWAP_TOKENS,
   DefaultUniswapFavorites,
   SOCKS_ADDRESS,
-} from '../references';
-import { CURATED_UNISWAP_TOKENS } from '../references/uniswap';
+} from '@rainbow-me/references';
 
 // -- Constants ------------------------------------------------------------- //
 const UNISWAP_LOAD_REQUEST = 'uniswap/UNISWAP_LOAD_REQUEST';
@@ -33,9 +25,7 @@ const UNISWAP_UPDATE_PAIRS = 'uniswap/UNISWAP_UPDATE_PAIRS';
 const UNISWAP_UPDATE_ALL_TOKENS = 'uniswap/UNISWAP_UPDATE_ALL_TOKENS';
 
 const UNISWAP_UPDATE_FAVORITES = 'uniswap/UNISWAP_UPDATE_FAVORITES';
-const UNISWAP_UPDATE_LISTS = 'uniswap/UNISWAP_UPDATE_LISTS';
 const UNISWAP_CLEAR_STATE = 'uniswap/UNISWAP_CLEAR_STATE';
-const FAVORITES_LIST_ID = 'favorites';
 // -- Actions --------------------------------------------------------------- //
 export const uniswapLoadState = () => async (dispatch, getState) => {
   const { network } = getState().settings;
@@ -55,11 +45,9 @@ export const uniswapLoadState = () => async (dispatch, getState) => {
 
 export const uniswapGetAllExchanges = () => async (dispatch, getState) => {
   const { network } = getState().settings;
-  const { pairs } = getState().uniswap;
   try {
-    const ignoredTokens = filter(keys(pairs), x => x !== 'eth');
     const allTokens =
-      network === networkTypes.mainnet ? await getAllTokens(ignoredTokens) : {};
+      network === networkTypes.mainnet ? await getAllTokens() : {};
     dispatch({
       payload: allTokens,
       type: UNISWAP_UPDATE_ALL_TOKENS,
@@ -105,79 +93,11 @@ export const uniswapUpdateFavorites = (assetAddress, add = true) => (
   saveUniswapFavorites(updatedFavorites);
 };
 
-export const uniswapClearList = listId => (dispatch, getState) => {
-  const { lists } = getState().uniswap;
-  const allNewLists = [...lists];
-
-  // Find the list index
-  let listIndex = null;
-  allNewLists.find((list, index) => {
-    if (list.id === listId) {
-      listIndex = index;
-      return true;
-    }
-    return false;
-  });
-
-  // update the list
-  const newList = { ...allNewLists[listIndex] };
-  newList.tokens = [];
-  allNewLists[listIndex] = newList;
-
-  dispatch({
-    payload: allNewLists,
-    type: UNISWAP_UPDATE_LISTS,
-  });
-  saveUniswapLists(allNewLists);
-};
-
-export const uniswapUpdateList = (assetAddress, listId, add = true) => (
-  dispatch,
-  getState
-) => {
-  const address = toLower(assetAddress);
-  if (listId === FAVORITES_LIST_ID) {
-    uniswapUpdateFavorites(assetAddress, add);
-  } else {
-    const { lists } = getState().uniswap;
-    const allNewLists = [...lists];
-
-    // Find the list index
-    let listIndex = null;
-    allNewLists.find((list, index) => {
-      if (list.id === listId) {
-        listIndex = index;
-        return true;
-      }
-      return false;
-    });
-    // Normalize the list
-    const normalizedListTokens = map(allNewLists[listIndex].tokens, toLower);
-
-    // add or remove
-    const updatedListTokens = add
-      ? uniq(concat(normalizedListTokens, address))
-      : without(normalizedListTokens, address);
-
-    // update the list
-    const newList = { ...allNewLists[listIndex] };
-    newList.tokens = updatedListTokens;
-    allNewLists[listIndex] = newList;
-
-    dispatch({
-      payload: allNewLists,
-      type: UNISWAP_UPDATE_LISTS,
-    });
-    saveUniswapLists(allNewLists);
-  }
-};
-
 // -- Reducer --------------------------------------------------------------- //
 export const INITIAL_UNISWAP_STATE = {
   allTokens: {},
-  favorites: DefaultUniswapFavorites,
+  favorites: DefaultUniswapFavorites['mainnet'],
   fetchingUniswap: false,
-  lists: DefaultTokenLists,
   loadingAllTokens: true,
   loadingUniswap: false,
   pairs: CURATED_UNISWAP_TOKENS,
@@ -203,9 +123,6 @@ export default (state = INITIAL_UNISWAP_STATE, action) =>
         break;
       case UNISWAP_UPDATE_FAVORITES:
         draft.favorites = action.payload;
-        break;
-      case UNISWAP_UPDATE_LISTS:
-        draft.lists = action.payload;
         break;
       case UNISWAP_LOAD_FAILURE:
         draft.loadingUniswap = false;

@@ -1,6 +1,5 @@
 import React, { Fragment, useCallback } from 'react';
 import { Alert } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { deleteAllBackups } from '../../../handlers/cloudBackup';
@@ -17,11 +16,12 @@ import Caret from '@rainbow-me/assets/family-dropdown-arrow.png';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { useWallets } from '@rainbow-me/hooks';
+import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import { colors, fonts, padding } from '@rainbow-me/styles';
 import { abbreviations, showActionSheetWithOptions } from '@rainbow-me/utils';
 
-const CaretIcon = styled(FastImage).attrs({
+const CaretIcon = styled(ImgixImage).attrs({
   source: Caret,
   tintColor: colors.alpha(colors.blueGreyDark, 0.6),
 })`

@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import React, { Component, Fragment } from 'react';
 import { LayoutAnimation, RefreshControl, View } from 'react-native';
 import { connect } from 'react-redux';
-import { compose } from 'recompact';
 import {
   BaseItemAnimator,
   DataProvider,
@@ -11,14 +10,6 @@ import {
   RecyclerListView,
 } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
-import {
-  withAccountSettings,
-  withCoinListEdited,
-  withOpenBalances,
-  withOpenFamilyTabs,
-  withOpenInvestmentCards,
-  withOpenSavings,
-} from '../../hoc';
 import {
   deviceUtils,
   isNewValueForPath,
@@ -832,15 +823,19 @@ class RecyclerAssetList extends Component {
   }
 }
 
-export default compose(
-  withCoinListEdited,
-  withOpenFamilyTabs,
-  withOpenInvestmentCards,
-  withOpenBalances,
-  withOpenSavings,
-  withAccountSettings,
-  connect(({ openSmallBalances, openSavings }) => ({
+export default connect(
+  ({
+    editOptions: { isCoinListEdited },
     openSavings,
     openSmallBalances,
-  }))
+    openStateSettings: { openFamilyTabs, openInvestmentCards },
+    settings: { nativeCurrency },
+  }) => ({
+    isCoinListEdited,
+    nativeCurrency,
+    openFamilyTabs,
+    openInvestmentCards,
+    openSavings,
+    openSmallBalances,
+  })
 )(RecyclerAssetList);

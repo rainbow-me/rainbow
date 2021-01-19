@@ -14,7 +14,7 @@ const StyledCoinIcon = styled(ReactCoinIcon)`
 `;
 
 const CoinIcon = ({
-  address,
+  address = 'eth',
   isHidden,
   isPinned,
   size = CoinIconSize,
@@ -35,7 +35,7 @@ const CoinIcon = ({
         color={color}
         fallbackRenderer={CoinIconFallback}
         forceFallback={forceFallback}
-        shadowColor={tokenMetadata?.extensions?.shadowColor || color}
+        shadowColor={tokenMetadata?.shadowColor || color}
         size={size}
         symbol={symbol}
       />

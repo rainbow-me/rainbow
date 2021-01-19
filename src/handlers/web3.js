@@ -117,6 +117,13 @@ export const toWei = ether => {
 };
 
 /**
+ * @desc get transaction info
+ * @param {String} hash
+ * @return {Promise}
+ */
+export const getTransaction = hash => web3Provider.getTransaction(hash);
+
+/**
  * @desc get address transaction count
  * @param {String} address
  * @return {Promise}
@@ -130,17 +137,15 @@ export const getTransactionCount = address =>
  * @return {Object}
  */
 export const getTxDetails = async transaction => {
-  const { from, to } = transaction;
+  const { to } = transaction;
   const data = transaction.data ? transaction.data : '0x';
   const value = transaction.amount ? toHex(toWei(transaction.amount)) : '0x00';
   const gasLimit = toHex(transaction.gasLimit) || undefined;
   const gasPrice = toHex(transaction.gasPrice) || undefined;
-  const nonce = await getTransactionCount(from);
   const tx = {
     data,
     gasLimit,
     gasPrice,
-    nonce: toHex(nonce),
     to,
     value,
   };

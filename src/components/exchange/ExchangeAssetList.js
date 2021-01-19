@@ -3,7 +3,6 @@ import { Alert } from 'react-native';
 import { SectionList } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components/primitives';
-import tokenSectionTypes from '../../helpers/tokenSectionTypes';
 import { usePrevious } from '../../hooks';
 import { CoinRowHeight, ExchangeCoinRow } from '../coin-row';
 import { GradientText, Text } from '../text';
@@ -29,12 +28,12 @@ const HeaderBackground = styled(LinearGradient).attrs({
   width: ${deviceWidth};
 `;
 
-const HeaderTitle = styled(Text).attrs({
-  color: colors.blueGreyDark50,
+const HeaderTitle = styled(Text).attrs(({ color }) => ({
+  color: color || colors.blueGreyDark50,
   letterSpacing: 'roundedMedium',
   size: 'smedium',
   weight: 'heavy',
-})``;
+}))``;
 
 const HeaderTitleGradient = styled(GradientText).attrs({
   colors: ['#6AA2E3', '#FF54BB', '#FFA230'],
@@ -56,7 +55,7 @@ const ExchangeAssetSectionListHeader = ({ section }) => {
     <Header>
       <HeaderBackground />
       <HeaderTitleWrapper>
-        <TitleComponent>{section.title}</TitleComponent>
+        <TitleComponent color={section.color}>{section.title}</TitleComponent>
       </HeaderTitleWrapper>
     </Header>
   ) : null;
@@ -137,13 +136,10 @@ const ExchangeAssetList = ({
   );
 
   const renderItemCallback = useCallback(
-    ({ item, section: { title: sectionTitle } }) => (
+    ({ item }) => (
       <ExchangeCoinRow
         {...itemProps}
-        isVerified={
-          !sectionTitle ||
-          sectionTitle === tokenSectionTypes.verifiedTokenSection
-        }
+        isVerified={item.isVerified}
         item={item}
         onUnverifiedTokenPress={handleUnverifiedTokenPress}
       />

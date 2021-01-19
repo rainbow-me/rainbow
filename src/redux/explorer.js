@@ -77,16 +77,19 @@ const addressSubscription = (address, currency, action = 'subscribe') => [
   },
 ];
 
-const assetsSubscription = (assetCodes, currency, action = 'subscribe') => [
-  action,
-  {
-    payload: {
-      asset_codes: assetCodes,
-      currency: toLower(currency),
+const assetsSubscription = (pairs, currency, action = 'subscribe') => {
+  const assetCodes = concat(keys(pairs), 'eth');
+  return [
+    action,
+    {
+      payload: {
+        asset_codes: assetCodes,
+        currency: toLower(currency),
+      },
+      scope: ['prices'],
     },
-    scope: ['prices'],
-  },
-];
+  ];
+};
 
 const chartsRetrieval = (assetCodes, currency, chartType, action = 'get') => [
   action,
@@ -116,7 +119,7 @@ const explorerUnsubscribe = () => (dispatch, getState) => {
   }
   if (!isNil(assetsSocket)) {
     assetsSocket.emit(
-      ...assetsSubscription(keys(pairs), nativeCurrency, 'unsubscribe')
+      ...assetsSubscription(pairs, nativeCurrency, 'unsubscribe')
     );
     assetsSocket.close();
   }
@@ -159,7 +162,7 @@ export const explorerClearState = () => dispatch => {
 
 export const explorerInit = () => async (dispatch, getState) => {
   const { network, accountAddress, nativeCurrency } = getState().settings;
-  const { pairs, lists } = getState().uniswap;
+  const { pairs } = getState().uniswap;
   const { addressSocket, assetsSocket } = getState().explorer;
 
   // if there is another socket unsubscribe first
@@ -196,17 +199,7 @@ export const explorerInit = () => async (dispatch, getState) => {
   dispatch(listenOnAssetMessages(newAssetsSocket));
 
   newAssetsSocket.on(messages.CONNECT, () => {
-    const uniswapAssets = keys(pairs);
-    let assetsToSubscribe = [...uniswapAssets];
-    // Add all the other list assets here
-    lists.forEach(list => {
-      if (list.tokens.length) {
-        assetsToSubscribe = [...assetsToSubscribe, ...list.tokens];
-      }
-    });
-    newAssetsSocket.emit(
-      ...assetsSubscription(assetsToSubscribe, nativeCurrency)
-    );
+    dispatch(emitAssetRequest(keys(pairs)));
   });
 
   if (network === NetworkTypes.mainnet) {
@@ -229,29 +222,31 @@ export const explorerInit = () => async (dispatch, getState) => {
 
 const tokensListened = {};
 
+const toAssetSubscriptionPayload = tokensArray => {
+  const payload = {};
+  tokensArray.forEach(address => (payload[address] = true));
+  return payload;
+};
+
 export const emitAssetRequest = assetAddress => (dispatch, getState) => {
   const { nativeCurrency } = getState().settings;
   const { assetsSocket } = getState().explorer;
 
-  let assetCodes;
-  if (assetAddress) {
-    assetCodes = [assetAddress];
-  } else {
-    const { assets } = getState().data;
-    const assetAddresses = map(assets, 'address');
-
-    const { liquidityTokens } = getState().uniswapLiquidity;
-    const lpTokenAddresses = map(liquidityTokens, token => token.address);
-
-    assetCodes = concat(assetAddresses, lpTokenAddresses);
-  }
+  const assetCodes = Array.isArray(assetAddress)
+    ? assetAddress
+    : [assetAddress];
 
   const newAssetsCodes = assetCodes.filter(code => !tokensListened[code]);
 
   newAssetsCodes.forEach(code => (tokensListened[code] = true));
 
-  if (newAssetsCodes.length !== 0) {
-    assetsSocket.emit(...assetsSubscription(newAssetsCodes, nativeCurrency));
+  if (newAssetsCodes.length > 0) {
+    assetsSocket.emit(
+      ...assetsSubscription(
+        toAssetSubscriptionPayload(newAssetsCodes),
+        nativeCurrency
+      )
+    );
   }
 };
 
@@ -296,6 +291,7 @@ const listenOnAssetMessages = socket => dispatch => {
 
 const listenOnAddressMessages = socket => dispatch => {
   socket.on(messages.ADDRESS_TRANSACTIONS.RECEIVED, message => {
+    // logger.log('txns received', get(message, 'payload.transactions', []));
     dispatch(transactionsReceived(message));
   });
 

@@ -19,7 +19,7 @@ index b8fe21e..e286d8d 100644
  import { Platform } from 'react-native';
 -import Animated, { Easing } from 'react-native-reanimated';
 +import Animated, { NewEasing as Easing } from 'react-native-reanimated';
- 
+
  const DEFAULT_ANIMATION_EASING: Animated.EasingFunction = Easing.out(
    Easing.cubic
 diff --git a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheetBackdrop/BottomSheetBackdrop.tsx b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheetBackdrop/BottomSheetBackdrop.tsx
@@ -50,7 +50,7 @@ index d120061..161e613 100644
 @@ -188,6 +189,8 @@ const BottomSheetModalComponent = forwardRef<
    }));
    //#endregion
- 
+
 +  useEffect(() => () => unmountSheet(key), [])
 +
    // render

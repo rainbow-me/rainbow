@@ -1,15 +1,15 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import FastImage from 'react-native-fast-image';
 import SpinnerImageSource from '../assets/spinner.png';
 import { SpinAnimation } from './animations';
 import { Centered } from './layout';
+import { ImgixImage } from '@rainbow-me/images';
 import { colors, position } from '@rainbow-me/styles';
 
 const Spinner = ({ color, duration, size, ...props }) => (
   <Centered {...props}>
     <SpinAnimation duration={duration}>
-      <FastImage
+      <ImgixImage
         source={SpinnerImageSource}
         style={position.sizeAsObject(size)}
         tintColor={color}

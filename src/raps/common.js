@@ -70,6 +70,20 @@ export const executeRap = async (wallet, rap) => {
     if (!previousActionWasSuccess) break;
 
     const action = actions[index];
+    const currentActionHasBeenCompleted = get(
+      action,
+      'transaction.confirmed',
+      false
+    );
+
+    // If the action is complete, skip it (we're resuming a rap!)
+    if (currentActionHasBeenCompleted) {
+      logger.log(
+        '[3.5 INNER] ignoring current action because it was completed!'
+      );
+      continue;
+    }
+
     const { parameters, type } = action;
     const actionPromise = findActionByType(type);
     logger.log('[4 INNER] executing type', type);

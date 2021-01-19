@@ -17,6 +17,7 @@ import RestoreSheet from '../screens/RestoreSheet';
 import SavingsSheet from '../screens/SavingsSheet';
 import SendSheet from '../screens/SendSheet';
 import SettingsModal from '../screens/SettingsModal';
+import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
@@ -41,6 +42,7 @@ import {
   settingsPreset,
   sheetPreset,
   sheetPresetWithSmallGestureResponseDistance,
+  speedUpAndCancelStyleInterpolator,
   wcPromptPreset,
 } from './effects';
 import { onNavigationStateChange } from './onNavigationStateChange';
@@ -130,6 +132,14 @@ function MainNavigator() {
         component={TransactionConfirmationScreen}
         name={Routes.CONFIRM_REQUEST}
         options={exchangePreset}
+      />
+      <Stack.Screen
+        component={SpeedUpAndCancelSheet}
+        name={Routes.SPEED_UP_AND_CANCEL_SHEET}
+        options={{
+          ...exchangePreset,
+          cardStyleInterpolator: speedUpAndCancelStyleInterpolator,
+        }}
       />
       <Stack.Screen
         component={ExchangeModalNavigator}
