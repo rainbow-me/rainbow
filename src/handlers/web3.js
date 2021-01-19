@@ -8,7 +8,7 @@ import UnstoppableResolution from '@unstoppabledomains/resolution';
 import { get, replace, startsWith } from 'lodash';
 import { INFURA_PROJECT_ID, INFURA_PROJECT_ID_DEV } from 'react-native-dotenv';
 import { AssetTypes } from '@rainbow-me/entities';
-import NetworkTypes from '@rainbow-me/helpers/networkTypes';
+import NetworkTypes from '@rainbow-me/networkTypes';
 import { ethUnits, smartContractMethods } from '@rainbow-me/references';
 import {
   addBuffer,

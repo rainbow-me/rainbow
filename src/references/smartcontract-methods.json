@@ -1,4 +1,8 @@
 {
+  "deposit" : {
+    "method": "deposit()",
+    "hash": "0xd0e30db0"
+  },
   "token_transfer": {
     "method": "transfer(address,uint256)",
     "hash": "0xa9059cbb"

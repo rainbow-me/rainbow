@@ -38,7 +38,7 @@ export {
   wyreSupportedCountries,
   WYRE_SUPPORTED_COUNTRIES_ISO,
 } from './wyre';
-export { ZAP_IN_ABI } from './zapper';
+export { ZAP_IN_ABI, ZapInAddress } from './zapper';
 
 export const ETH_COINGECKO_ID = 'ethereum';
 export const ETH_ICON_URL = 'https://s3.amazonaws.com/token-icons/eth.png';
