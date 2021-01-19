@@ -1,5 +1,6 @@
 import { useRoute } from '@react-navigation/native';
-import React from 'react';
+import { toLower } from 'lodash';
+import React, { useCallback } from 'react';
 import { StatusBar } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components/native';
@@ -15,7 +16,11 @@ import {
 } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
 import { DefaultTokenLists } from '../references/';
-import { useAccountSettings, useDimensions } from '@rainbow-me/hooks';
+import {
+  useAccountSettings,
+  useDimensions,
+  useUserLists,
+} from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { colors, position } from '@rainbow-me/styles';
 
@@ -27,6 +32,16 @@ const Container = styled(Centered).attrs({
     height ? `height: ${height + deviceHeight}` : null};
 `;
 
+const RemoveButton = styled(ButtonPressAnimation)`
+  background-color: ${colors.alpha(colors.red, 0.06)};
+  border-radius: 50;
+  padding-left: 10;
+  padding-right: 10;
+  padding-bottom: 5;
+  padding-top: 5;
+  margin-left: 8;
+`;
+
 const ListButton = styled(ButtonPressAnimation)`
   padding-bottom: 15;
   padding-top: 15;
@@ -36,28 +51,38 @@ const ListEmoji = styled(Emoji).attrs({
   size: 'large',
 })`
   margin-top: 1;
+  margin-right: 6;
 `;
 
-const ListName = styled(Text).attrs({
-  color: colors.appleBlue,
-  size: 'larger',
-  weight: 'bold',
-})`
-  margin-left: 6;
-`;
+const WRITEABLE_LISTS = ['watchlist', 'favorites'];
 
-const WRITEABLE_LISTS = ['watchlist', 'favorites', 'defi'];
-
-export const sheetHeight = android ? 410 : 448;
+export const sheetHeight = android ? 410 : 380;
 
 export default function AddTokenSheet() {
   const { goBack } = useNavigation();
   const { height: deviceHeight } = useDimensions();
   const { network } = useAccountSettings();
+  const { favorites, lists, updateList } = useUserLists();
   const insets = useSafeArea();
   const {
     params: { item },
   } = useRoute();
+
+  const isTokenInList = useCallback(
+    listId => {
+      if (listId === 'favorites') {
+        return !!favorites.find(
+          token => toLower(token.address) === toLower(item.address)
+        );
+      } else {
+        const list = lists.find(list => list.id === listId);
+        return !!list.tokens.find(
+          token => toLower(token) === toLower(item.address)
+        );
+      }
+    },
+    [favorites, item.address, lists]
+  );
 
   return (
     <Container deviceHeight={deviceHeight} height={sheetHeight} insets={insets}>
@@ -103,14 +128,41 @@ export default function AddTokenSheet() {
           <Column align="center" marginBottom={8}>
             {DefaultTokenLists[network]
               .filter(list => WRITEABLE_LISTS.indexOf(list.id) !== -1)
-              .map(list => (
-                <ListButton key={`list-${list.id}`} onPress={() => null}>
-                  <Row>
-                    <ListEmoji name={list.emoji} />
-                    <ListName>{list.name}</ListName>
-                  </Row>
-                </ListButton>
-              ))}
+              .map(list => {
+                const alreadyAdded = isTokenInList(list.id);
+                const handleAdd = () => {
+                  if (alreadyAdded) return;
+                  updateList(item.address, list.id, !alreadyAdded);
+                };
+                const handleRemove = () => {
+                  updateList(item.address, list.id, false);
+                };
+                return (
+                  <ListButton key={`list-${list.id}`} onPress={handleAdd}>
+                    <Row>
+                      <ListEmoji name={list.emoji} />
+                      <Text
+                        color={
+                          alreadyAdded
+                            ? colors.alpha(colors.darkGrey, 0.6)
+                            : colors.appleBlue
+                        }
+                        size="larger"
+                        weight="bold"
+                      >
+                        {list.name}
+                      </Text>
+                      {alreadyAdded && (
+                        <RemoveButton onPress={handleRemove}>
+                          <Text color={colors.red} size="lmedium" weight="bold">
+                            􀈔 Remove
+                          </Text>
+                        </RemoveButton>
+                      )}
+                    </Row>
+                  </ListButton>
+                );
+              })}
           </Column>
 
           <SheetActionButtonRow>
