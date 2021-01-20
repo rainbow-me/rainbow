@@ -56,6 +56,7 @@ const ExchangeCoinRow = ({
   showBalance,
   showFavoriteButton,
   showAddButton,
+  testID,
 }) => {
   const { width: deviceWidth } = useDimensions();
   const [localFavorite, setLocalFavorite] = useState(!!item.favorite);
@@ -88,7 +89,7 @@ const ExchangeCoinRow = ({
             )
           )}
           showBalance={showBalance}
-          testID="exchange-coin-row"
+          testID={`${testID}-exchange-coin-row`}
           topRowRender={TopRow}
         >
           {showBalance && (
