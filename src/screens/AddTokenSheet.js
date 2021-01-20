@@ -35,16 +35,17 @@ const Container = styled(Centered).attrs({
 
 const RemoveButton = styled(ButtonPressAnimation)`
   background-color: ${colors.alpha(colors.red, 0.06)};
-  border-radius: 50;
-  padding-left: 10;
+  border-radius: 15;
+  height: 30;
+  padding-left: 6;
   padding-right: 10;
-  padding-bottom: 5;
   padding-top: 5;
   margin-left: 8;
+  top: -2;
 `;
 
 const ListButton = styled(ButtonPressAnimation)`
-  padding-bottom: 15;
+  padding-bottom: ${({ alreadyAdded }) => (alreadyAdded ? 9 : 15)};
   padding-top: 15;
 `;
 
@@ -57,7 +58,7 @@ const ListEmoji = styled(Emoji).attrs({
 
 const WRITEABLE_LISTS = ['watchlist', 'favorites'];
 
-export const sheetHeight = android ? 410 : 380;
+export const sheetHeight = android ? 410 : 394;
 
 export default function AddTokenSheet() {
   const { goBack } = useNavigation();
@@ -141,13 +142,17 @@ export default function AddTokenSheet() {
                   haptics.notificationSuccess();
                 };
                 return (
-                  <ListButton key={`list-${list.id}`} onPress={handleAdd}>
+                  <ListButton
+                    alreadyAdded={alreadyAdded}
+                    key={`list-${list.id}`}
+                    onPress={handleAdd}
+                  >
                     <Row>
                       <ListEmoji name={list.emoji} />
                       <Text
                         color={
                           alreadyAdded
-                            ? colors.alpha(colors.darkGrey, 0.6)
+                            ? colors.alpha(colors.blueGreyDark, 0.6)
                             : colors.appleBlue
                         }
                         size="larger"
@@ -157,7 +162,13 @@ export default function AddTokenSheet() {
                       </Text>
                       {alreadyAdded && (
                         <RemoveButton onPress={handleRemove}>
-                          <Text color={colors.red} size="lmedium" weight="bold">
+                          <Text
+                            align="center"
+                            color={colors.red}
+                            letterSpacing="roundedTight"
+                            size="lmedium"
+                            weight="bold"
+                          >
                             􀈔 Remove
                           </Text>
                         </RemoveButton>

@@ -228,7 +228,7 @@ export default function DiscoverSearch({ onScrollTop }) {
           onScrollTop={onScrollTop}
           query={searchQueryForSearch}
           showList
-          testID="currency-select-list"
+          testID="discover-currency-select-list"
           type={type}
         />
       </Row>

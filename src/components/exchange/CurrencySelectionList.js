@@ -70,6 +70,7 @@ const CurrencySelectionList = ({
               keyboardDismissMode={keyboardDismissMode}
               onScrollTop={onScrollTop}
               query={query}
+              testID={testID}
             />
           )}
         </Centered>
