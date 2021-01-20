@@ -1,7 +1,7 @@
 import { filter, get, groupBy, isEmpty, isNil, map, toNumber } from 'lodash';
 import { createSelector } from 'reselect';
 import { sortList } from '../helpers/sortList';
-import { parseAssetsNativeWithTotals } from '../parsers/accounts';
+import { parseAssetsNativeWithTotals } from '@rainbow-me/parsers';
 
 const EMPTY_ARRAY = [];
 

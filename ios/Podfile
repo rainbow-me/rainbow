@@ -67,6 +67,9 @@ target 'Rainbow' do
   config = use_native_modules!
   use_react_native!(:path => config["reactNativePath"])
 
+  # Rainbow's Internal Modules.
+  pod 'Rainbow-Internals', :path => './Internals'
+
   pod 'FLAnimatedImage'
   pod 'libwebp'
   pod 'RNInputMask', :path => '../node_modules/react-native-text-input-mask/ios/InputMask'
