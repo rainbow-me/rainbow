@@ -7,6 +7,7 @@ import React, {
   useState,
 } from 'react';
 import { useSharedValue } from 'react-native-reanimated';
+import DevButton from '../components/dev-buttons/DevButton';
 import { defaultConfig } from '../config/experimental';
 
 export const RainbowContext = createContext({});
@@ -51,6 +52,7 @@ export default function RainbowContextWrapper({ children }) {
   return (
     <RainbowContext.Provider value={initialValue}>
       {children}
+      {__DEV__ && <DevButton />}
     </RainbowContext.Provider>
   );
 }
