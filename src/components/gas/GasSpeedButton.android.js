@@ -23,7 +23,13 @@ import { Input } from '../inputs';
 import { Column, Row } from '../layout';
 import { AnimatedNumber, Text } from '../text';
 import GasSpeedLabelPager from './GasSpeedLabelPager';
-import { colors, fonts, fontWithWidth, margin } from '@rainbow-me/styles';
+import {
+  colors,
+  fonts,
+  fontWithWidth,
+  margin,
+  padding,
+} from '@rainbow-me/styles';
 
 const { GasSpeedOrder, CUSTOM, FAST, SLOW } = gasUtils;
 
@@ -32,8 +38,9 @@ const Container = styled(Row).attrs({
   opacityTouchable: true,
   pointerEvents: 'auto',
 })`
-  ${margin(10, 18, 10, 15)}
-  width: 350;
+  ${padding(15, 19, 0)};
+  height: 76;
+  width: 100%;
 `;
 
 const Label = styled(Text).attrs({
