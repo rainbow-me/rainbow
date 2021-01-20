@@ -1,5 +1,6 @@
 import { find } from 'lodash';
 import React, { useRef } from 'react';
+import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useChartThrottledPoints, useUniswapAssetsInWallet } from '../../hooks';
 import {
   BuyActionButton,
@@ -20,8 +21,7 @@ import { ChartPathProvider } from '@rainbow-me/animated-charts';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 
 //add's StatusBar height to android
-let heightWithoutChart = 309;
-heightWithoutChart += android ? -24 : 0;
+const heightWithoutChart = 309 - (android ? getSoftMenuBarHeight() : 0);
 const heightWithChart = heightWithoutChart + 310;
 
 export const initialChartExpandedStateSheetHeight = heightWithChart;
@@ -56,7 +56,7 @@ export default function ChartExpandedState({ asset }) {
     duration.current = 300;
   }
   const ChartExpandedStateSheetHeight =
-    (ios || showChart ? heightWithChart : heightWithoutChart) + (android && 40);
+    ios || showChart ? heightWithChart : heightWithoutChart;
 
   return (
     <SlackSheet
