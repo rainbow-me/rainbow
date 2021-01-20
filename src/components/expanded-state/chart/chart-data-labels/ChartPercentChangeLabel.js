@@ -89,7 +89,7 @@ export default function ChartPercentChangeLabel() {
   });
 
   return (
-    <RowWithMargins align="center" margin={4} marginLeft={-40}>
+    <RowWithMargins align="center" margin={4}>
       {android ? <ChartChangeDirectionArrow /> : null}
       <PercentLabel
         alignSelf="flex-end"

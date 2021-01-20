@@ -75,7 +75,7 @@ export default function ChartPriceLabel({
   return isNoPriceData ? (
     <ChartHeaderTitle>{defaultValue}</ChartHeaderTitle>
   ) : (
-    <Row>
+    <Row style={{ width: '50%' }}>
       {android && (
         <AndroidCurrencySymbolLabel
           as={Text}
