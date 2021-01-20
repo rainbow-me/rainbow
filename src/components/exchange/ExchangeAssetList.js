@@ -95,6 +95,7 @@ const ExchangeAssetList = ({
   onLayout,
   query,
   onScrollTop,
+  testID,
   keyboardDismissMode = 'none',
 }) => {
   const sectionListRef = useRef();
@@ -142,6 +143,7 @@ const ExchangeAssetList = ({
         isVerified={item.isVerified}
         item={item}
         onUnverifiedTokenPress={handleUnverifiedTokenPress}
+        testID={testID}
       />
     ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
