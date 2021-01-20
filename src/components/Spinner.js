@@ -9,7 +9,7 @@ import { colors, position } from '@rainbow-me/styles';
 
 const Spinner = ({ color, duration, size, ...props }) => (
   <Centered {...props}>
-    {!IS_TESTING && (
+    {IS_TESTING !== 'true' && (
       <SpinAnimation duration={duration}>
         <ImgixImage
           source={SpinnerImageSource}
