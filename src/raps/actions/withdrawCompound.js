@@ -87,6 +87,8 @@ const withdrawCompound = async (wallet, currentRap, index, parameters) => {
     amount: inputAmount,
     asset: inputCurrency,
     from: accountAddress,
+    gasLimit: transactionParams.gasLimit,
+    gasPrice: transactionParams.gasPrice,
     hash: withdraw.hash,
     nonce: get(withdraw, 'nonce'),
     protocol: ProtocolTypes.compound.name,

@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import FastImage from 'react-native-fast-image';
 import Animated, { Easing } from 'react-native-reanimated';
 import { toRad, useTimingTransition } from 'react-native-redash';
 import styled from 'styled-components/primitives';
@@ -11,8 +10,9 @@ import { useAccountSettings } from '../../hooks';
 import { ButtonPressAnimation, interpolate } from '../animations';
 import { Row, RowWithMargins } from '../layout';
 import { Emoji, Text, TruncatedText } from '../text';
+import { ImgixImage } from '@rainbow-me/images';
 
-const AnimatedFastImage = Animated.createAnimatedComponent(FastImage);
+const AnimatedImgixImage = Animated.createAnimatedComponent(ImgixImage);
 
 const TokenFamilyHeaderAnimationDuration = 200;
 const TokenFamilyHeaderHeight = 44;
@@ -87,8 +87,8 @@ const SavingsListHeader = ({
               </SumValueText>
             </Animated.View>
           )}
-          <AnimatedFastImage
-            resizeMode={FastImage.resizeMode.contain}
+          <AnimatedImgixImage
+            resizeMode={ImgixImage.resizeMode.contain}
             source={CaretImageSource}
             style={{
               height: 18,

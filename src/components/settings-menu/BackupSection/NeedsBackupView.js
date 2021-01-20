@@ -1,7 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useCallback, useEffect } from 'react';
-import FastImage from 'react-native-fast-image';
 import styled from 'styled-components';
 import { cloudPlatform } from '../../../utils/platform';
 import { RainbowButton } from '../../buttons';
@@ -11,6 +10,7 @@ import { Text } from '../../text';
 import BackupIcon from '@rainbow-me/assets/backupIcon.png';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import { useWallets } from '@rainbow-me/hooks';
+import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors, fonts, padding } from '@rainbow-me/styles';
@@ -57,8 +57,8 @@ const Title = styled(Text).attrs({
   padding-horizontal: 11;
 `;
 
-const TopIcon = styled(FastImage).attrs({
-  resizeMode: FastImage.resizeMode.contain,
+const TopIcon = styled(ImgixImage).attrs({
+  resizeMode: ImgixImage.resizeMode.contain,
   source: BackupIcon,
 })`
   height: 74;

@@ -1,16 +1,6 @@
-import { compact, get } from 'lodash';
+import { compact, get, toLower } from 'lodash';
 import React, { useCallback } from 'react';
-import { Linking } from 'react-native';
 import { css } from 'styled-components/primitives';
-import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
-import TransactionTypes from '../../helpers/transactionTypes';
-import {
-  getHumanReadableDate,
-  hasAddableContact,
-} from '../../helpers/transactions';
-import { isENSAddressFormat } from '../../helpers/validators';
-import { useAccountSettings } from '../../hooks';
-import { useNavigation } from '../../navigation/Navigation';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIconSize } from '../coin-icon';
 import { FlexItem, Row, RowWithMargins } from '../layout';
@@ -19,6 +9,16 @@ import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
+import TransactionActions from '@rainbow-me/helpers/transactionActions';
+import TransactionStatusTypes from '@rainbow-me/helpers/transactionStatusTypes';
+import TransactionTypes from '@rainbow-me/helpers/transactionTypes';
+import {
+  getHumanReadableDate,
+  hasAddableContact,
+} from '@rainbow-me/helpers/transactions';
+import { isENSAddressFormat } from '@rainbow-me/helpers/validators';
+import { useAccountSettings } from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 import {
@@ -83,18 +83,22 @@ const TopRow = ({ balance, pending, status, title }) => (
 
 export default function TransactionCoinRow({ item, ...props }) {
   const { contact } = item;
-  const { network } = useAccountSettings();
+  const { accountAddress } = useAccountSettings();
   const { navigate } = useNavigation();
 
   const onPressTransaction = useCallback(async () => {
     const { hash, from, minedAt, pending, to, status, type } = item;
 
     const date = getHumanReadableDate(minedAt);
-
     const isSent =
       status === TransactionStatusTypes.sending ||
       status === TransactionStatusTypes.sent;
     const showContactInfo = hasAddableContact(status, type);
+
+    const isOutgoing = toLower(from) === toLower(accountAddress);
+    const canBeResubmitted = isOutgoing && !minedAt;
+    const canBeCancelled =
+      canBeResubmitted && status !== TransactionStatusTypes.cancelling;
 
     const headerInfo = {
       address: '',
@@ -116,14 +120,23 @@ export default function TransactionCoinRow({ item, ...props }) {
     }
 
     if (hash) {
-      let buttons = ['View on Etherscan', ...(ios ? ['Cancel'] : [])];
+      let buttons = [
+        ...(canBeResubmitted ? [TransactionActions.speedUp] : []),
+        ...(canBeCancelled ? [TransactionActions.cancel] : []),
+        TransactionActions.viewOnEtherscan,
+        ...(ios ? [TransactionActions.close] : []),
+      ];
       if (showContactInfo) {
-        buttons.unshift(contact ? 'View Contact' : 'Add to Contacts');
+        buttons.unshift(
+          contact
+            ? TransactionActions.viewContact
+            : TransactionActions.addToContacts
+        );
       }
 
       showActionSheetWithOptions(
         {
-          cancelButtonIndex: showContactInfo ? 2 : 1,
+          cancelButtonIndex: buttons.length - 1,
           options: buttons,
           title: pending
             ? `${headerInfo.type}${
@@ -136,28 +149,40 @@ export default function TransactionCoinRow({ item, ...props }) {
             : `${headerInfo.type} ${date}`,
         },
         buttonIndex => {
-          if (showContactInfo && buttonIndex === 0) {
-            navigate(Routes.MODAL_SCREEN, {
-              address: contactAddress,
-              asset: item,
-              color: contactColor,
-              contact,
-              type: 'contact_profile',
-            });
-          } else if (
-            (!showContactInfo && buttonIndex === 0) ||
-            (showContactInfo && buttonIndex === 1)
-          ) {
-            const normalizedHash = hash.replace(/-.*/g, '');
-            const etherscanHost = ethereumUtils.getEtherscanHostFromNetwork(
-              network
-            );
-            Linking.openURL(`https://${etherscanHost}/tx/${normalizedHash}`);
+          const action = buttons[buttonIndex];
+          switch (action) {
+            case TransactionActions.viewContact:
+            case TransactionActions.addToContacts:
+              navigate(Routes.MODAL_SCREEN, {
+                address: contactAddress,
+                asset: item,
+                color: contactColor,
+                contact,
+                type: 'contact_profile',
+              });
+              break;
+            case TransactionActions.speedUp:
+              navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
+                tx: item,
+                type: 'speed_up',
+              });
+              break;
+            case TransactionActions.cancel:
+              navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
+                tx: item,
+                type: 'cancel',
+              });
+              break;
+            case TransactionActions.viewOnEtherscan: {
+              ethereumUtils.openTransactionEtherscanURL(hash);
+              break;
+            }
+            default:
           }
         }
       );
     }
-  }, [contact, item, navigate, network]);
+  }, [accountAddress, contact, item, navigate]);
 
   return (
     <ButtonPressAnimation onPress={onPressTransaction} scaleTo={0.96}>

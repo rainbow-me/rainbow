@@ -1,6 +1,5 @@
 import React, { Fragment } from 'react';
 import { LayoutAnimation } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import { View } from 'react-primitives';
 import {
   DataProvider,
@@ -23,6 +22,7 @@ import {
 import { Centered } from '../layout';
 import SavingsListHeader from '../savings/SavingsListHeader';
 import TokenFamilyHeader from '../token-family/TokenFamilyHeader';
+import { ImgixImage } from '@rainbow-me/images';
 import { colors } from '@rainbow-me/styles';
 
 const dividerMargin = 10;
@@ -120,7 +120,8 @@ export default class SendAssetList extends React.Component {
         }
       });
     });
-    FastImage.preload(imageTokens);
+
+    ImgixImage.preload(imageTokens);
 
     this._layoutProvider = new LayoutProvider(
       i => {

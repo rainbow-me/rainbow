@@ -8,6 +8,7 @@ export { default as abbreviations } from './abbreviations';
 export { default as addressUtils } from './address';
 export { default as AllowancesCache } from './allowancesCache';
 export { default as backgroundTask } from './backgroundTask';
+export { default as checkTokenIsScam } from './checkTokenIsScam';
 export { default as contractUtils } from './contract';
 export { default as deviceUtils } from './deviceUtils';
 export { default as dimensionsPropType } from './dimensionsPropType';
@@ -38,4 +39,9 @@ export { default as simplifyChartData } from './simplifyChartData';
 export { default as statusBar } from './statusBar';
 export { default as urlConstants } from './urlConstants';
 export { filterList, filterScams } from './search';
-export { getFirstGrapheme, initials, removeLeadingZeros } from './formatters';
+export {
+  getFirstGrapheme,
+  initials,
+  removeLeadingZeros,
+  sanitizeSeedPhrase,
+} from './formatters';

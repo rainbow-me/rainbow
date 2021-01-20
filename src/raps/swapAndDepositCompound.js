@@ -38,6 +38,7 @@ export const estimateSwapAndDepositCompound = async ({
     );
     if (swapAssetNeedsUnlocking) {
       const unlockGasLimit = await contractUtils.estimateApprove(
+        accountAddress,
         inputCurrency.address,
         UNISWAP_V2_ROUTER_ADDRESS
       );
@@ -47,6 +48,8 @@ export const estimateSwapAndDepositCompound = async ({
     const { gasLimit: swapGasLimit } = await estimateSwapGasLimit({
       accountAddress,
       chainId,
+      inputCurrency,
+      outputCurrency,
       tradeDetails,
     });
     gasLimits = concat(gasLimits, swapGasLimit);
@@ -69,6 +72,7 @@ export const estimateSwapAndDepositCompound = async ({
 
   if (depositAssetNeedsUnlocking) {
     const depositGasLimit = await contractUtils.estimateApprove(
+      accountAddress,
       tokenToDeposit.address,
       cTokenContract
     );

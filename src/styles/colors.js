@@ -47,7 +47,8 @@ let base = {
   transparent: 'transparent',
   white: '#FFFFFF', // '255, 255, 255'
   yellow: '#FFD657', // '255, 214, 87'
-  yellowOrange: '#FFC400', // '255, 178, 0'
+  yellowFavorite: '#FFB200', // '255, 178, 0'
+  yellowOrange: '#FFC400', // '255, 196, 0'
 };
 
 const avatarColor = [

@@ -1,9 +1,9 @@
 import analytics from '@segment/analytics-react-native';
 import React, { useCallback, useState } from 'react';
-import { neverRerender } from '../../../utils';
 import { ComingSoonFloatingEmojis } from '../../floating-emojis';
 import SheetActionButton from './SheetActionButton';
 import { colors } from '@rainbow-me/styles';
+import { neverRerender } from '@rainbow-me/utils';
 
 function DepositActionButton({ color = colors.dark, symbol, ...props }) {
   const [didTrack, setDidTrack] = useState(false);

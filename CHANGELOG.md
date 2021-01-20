@@ -12,6 +12,48 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.2.47](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.47)
+### Changed
+* Search Improvements
+* WalletConnect Error Reporting
+
+## [1.2.46](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.46)
+### Changed
+* Token Approval Improvements
+
+## [1.2.45](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.45)
+### Changed
+* WC nonce fix
+
+## [1.2.44](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.44)
+### Changed
+* Improve nonce tracking
+* Fix Wallet Connect modals for 0 ETH wallets
+
+## [1.2.43](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.43)
+### Added
+* Speed up & cancel transactions
+* Add WBTC to default favorites
+
+### Changed
+* Fix 0 ETH scenarios
+
+## [1.2.42](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.42)
+### Added
+* Alert for unverified tokens
+
+### Changed
+* Swap and approval gas estimation improvements
+* Fix for invisible charts issue
+
+## [1.2.41](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.41)
+### Added
+* Android support merged
+
+### Changed
+* Fix for savings
+* Android UI fixes
+
 ## [1.2.40](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.40)
 ### Added
 * Uniswap LP token charts

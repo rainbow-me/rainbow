@@ -28,6 +28,7 @@ import {
 import { cloudPlatform } from '../utils/platform';
 
 import { useHideSplashScreen } from '@rainbow-me/hooks';
+import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors, shadow } from '@rainbow-me/styles';
@@ -261,7 +262,7 @@ const traversedRainbows = rainbows.map(
   }
 );
 
-const RainbowImage = styled(Animated.Image)`
+const RainbowImage = styled(ImgixImage)`
   height: ${INITIAL_SIZE};
   position: absolute;
   width: ${INITIAL_SIZE};
@@ -499,7 +500,12 @@ export default function WelcomeScreen() {
   return (
     <Container testID="welcome-screen">
       {traversedRainbows.map(({ source, style, id }) => (
-        <RainbowImage key={`rainbow${id}`} source={source} style={style} />
+        <RainbowImage
+          Component={Animated.Image}
+          key={`rainbow${id}`}
+          source={source}
+          style={style}
+        />
       ))}
 
       <ContentWrapper style={contentStyle}>

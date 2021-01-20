@@ -1,57 +1,42 @@
 // FIXME unify with iOS
-import React, { useMemo } from 'react';
-import {
-  Pressable,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  View,
-} from 'react-native';
+import React, { Fragment, useMemo } from 'react';
+import { Pressable, StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components/primitives';
-import { useDimensions } from '../../hooks';
-import deviceUtils from '../../utils/deviceUtils';
 import { Centered } from '../layout';
 import { useReanimatedValue } from '../list/MarqueeList';
 import SheetHandleFixedToTop, {
   SheetHandleFixedToTopHeight,
 } from './SheetHandleFixedToTop';
+import { useDimensions } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import { colors } from '@rainbow-me/styles';
+import { colors, position } from '@rainbow-me/styles';
 
-const deviceHeight = deviceUtils.dimensions.height;
+const { event } = Animated;
 
-const calculateTopPosition = (
-  deferredHeight,
-  contentHeight,
-  additionalTopPadding
-) => {
-  if (ios) {
-    return '';
-  }
-  if (deferredHeight) return '';
-  const top =
-    contentHeight && additionalTopPadding ? deviceHeight - contentHeight : 0;
-  return `top: ${top};`;
-};
+const AndroidBackground = styled.View`
+  ${position.cover};
+  background-color: ${({ backgroundColor }) => backgroundColor};
+`;
 
 const Container = styled(Centered).attrs({ direction: 'column' })`
+  ${({ additionalTopPadding, contentHeight, deferredHeight, deviceHeight }) =>
+    deferredHeight || ios
+      ? ''
+      : `top: ${
+          contentHeight && additionalTopPadding
+            ? deviceHeight - contentHeight
+            : 0
+        };`};
+  ${android ? 'border-radius: 20;' : ''}
   background-color: ${({ backgroundColor }) => backgroundColor};
   bottom: 0;
   left: 0;
   overflow: hidden;
   position: absolute;
-  ${android ? 'border-radius: 20;' : ''}
-  ${({ deferredHeight, contentHeight, additionalTopPadding }) =>
-    calculateTopPosition(
-      deferredHeight,
-      contentHeight,
-      additionalTopPadding
-    )}
   right: 0;
 `;
-
-const { event } = Animated;
 
 const Content = styled(Animated.ScrollView).attrs(({ y }) => ({
   directionalLockEnabled: true,
@@ -74,6 +59,11 @@ const Content = styled(Animated.ScrollView).attrs(({ y }) => ({
   width: 100%;
 `;
 
+const ContentWrapper = styled.View`
+  ${position.size('100%')};
+  background-color: ${({ backgroundColor }) => backgroundColor};
+`;
+
 const Whitespace = styled.View`
   background-color: ${({ backgroundColor }) => backgroundColor};
   flex: 1;
@@ -82,15 +72,15 @@ const Whitespace = styled.View`
 `;
 
 export default function SlackSheet({
+  additionalTopPadding = false,
   backgroundColor = colors.white,
   borderRadius = 30,
   children,
   contentHeight,
+  deferredHeight = false,
   hideHandle = false,
   renderHeader,
   scrollEnabled = true,
-  additionalTopPadding = false,
-  deferredHeight = false,
   ...props
 }) {
   const yPosition = useReanimatedValue(0);
@@ -118,30 +108,28 @@ export default function SlackSheet({
   );
 
   return (
-    <>
+    <Fragment>
       {android ? (
         <Pressable onPress={goBack} style={[StyleSheet.absoluteFillObject]} />
       ) : null}
       <Container
+        additionalTopPadding={additionalTopPadding}
         backgroundColor={backgroundColor}
-        {...(android && {
-          additionalTopPadding,
-          contentHeight,
-          deferredHeight,
-        })}
+        contentHeight={contentHeight}
+        deferredHeight={deferredHeight}
+        deviceHeight={deviceHeight}
         {...props}
       >
         {android && (
-          <TouchableWithoutFeedback
-            style={[StyleSheet.absoluteFillObject, { backgroundColor }]}
+          <AndroidBackground
+            as={TouchableWithoutFeedback}
+            backgroundColor={backgroundColor}
           >
-            <View
-              style={[StyleSheet.absoluteFillObject, { backgroundColor }]}
-            />
-          </TouchableWithoutFeedback>
+            <AndroidBackground backgroundColor={backgroundColor} />
+          </AndroidBackground>
         )}
         {!hideHandle && <SheetHandleFixedToTop showBlur={scrollEnabled} />}
-        <View style={{ backgroundColor, height: '100%', width: '100%' }}>
+        <ContentWrapper backgroundColor={backgroundColor}>
           {renderHeader?.(yPosition)}
           <Content
             backgroundColor={backgroundColor}
@@ -161,8 +149,8 @@ export default function SlackSheet({
               />
             )}
           </Content>
-        </View>
+        </ContentWrapper>
       </Container>
-    </>
+    </Fragment>
   );
 }

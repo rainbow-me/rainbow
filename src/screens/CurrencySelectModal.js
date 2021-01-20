@@ -1,6 +1,6 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
-import { concat, map, toLower } from 'lodash';
+import { map, toLower } from 'lodash';
 import matchSorter from 'match-sorter';
 import React, {
   Fragment,
@@ -23,10 +23,9 @@ import {
 } from '../components/exchange';
 import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
-import { addHexPrefix } from '../handlers/web3';
-import CurrencySelectionTypes from '../helpers/currencySelectionTypes';
-import { delayNext } from '../hooks/useMagicAutofocus';
-import { useNavigation } from '../navigation/Navigation';
+import { addHexPrefix } from '@rainbow-me/handlers/web3';
+import CurrencySelectionTypes from '@rainbow-me/helpers/currencySelectionTypes';
+import tokenSectionTypes from '@rainbow-me/helpers/tokenSectionTypes';
 import {
   useInteraction,
   useMagicAutofocus,
@@ -35,9 +34,11 @@ import {
   useUniswapAssets,
   useUniswapAssetsInWallet,
 } from '@rainbow-me/hooks';
+import { delayNext } from '@rainbow-me/hooks/useMagicAutofocus';
+import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import Routes from '@rainbow-me/routes';
-import { position } from '@rainbow-me/styles';
-import { filterList, filterScams } from '@rainbow-me/utils';
+import { colors, position } from '@rainbow-me/styles';
+import { filterList } from '@rainbow-me/utils';
 
 const TabTransitionAnimation = styled(Animated.View)`
   ${position.size('100%')};
@@ -89,10 +90,11 @@ export default function CurrencySelectModal() {
   ]);
 
   const {
-    curatedAssets,
+    curatedNotFavorited,
     favorites,
     globalHighLiquidityAssets,
     globalLowLiquidityAssets,
+    globalVerifiedHighLiquidityAssets,
     loadingAllTokens,
     updateFavorites,
   } = useUniswapAssets();
@@ -110,44 +112,58 @@ export default function CurrencySelectModal() {
         filteredList = headerlessSection(filteredList);
       }
     } else if (type === CurrencySelectionTypes.output) {
-      const curatedSection = concat(favorites, curatedAssets);
       if (searchQueryForSearch) {
-        const [filteredBest, filteredHigh, filteredLow] = map(
-          [curatedSection, globalHighLiquidityAssets, globalLowLiquidityAssets],
+        const [
+          filteredFavorite,
+          filteredVerified,
+          filteredHighUnverified,
+          filteredLow,
+        ] = map(
+          [
+            favorites,
+            globalVerifiedHighLiquidityAssets,
+            globalHighLiquidityAssets,
+            globalLowLiquidityAssets,
+          ],
           section => searchCurrencyList(section, searchQueryForSearch)
         );
 
         filteredList = [];
-        filteredBest.length &&
+        filteredFavorite.length &&
           filteredList.push({
-            data: filteredBest,
-            title: '􀇻 Rainbow Verified',
+            color: colors.yellowFavorite,
+            data: filteredFavorite,
+            title: tokenSectionTypes.favoriteTokenSection,
+          });
+
+        filteredVerified.length &&
+          filteredList.push({
+            data: filteredVerified,
+            title: tokenSectionTypes.verifiedTokenSection,
             useGradientText: IS_TESTING === 'true' ? false : true,
           });
 
-        const filteredHighWithoutScams = filterScams(
-          filteredBest,
-          filteredHigh
-        );
-
-        filteredHighWithoutScams.length &&
+        filteredHighUnverified.length &&
           filteredList.push({
-            data: filteredHighWithoutScams,
-            title: '􀇿 Unverified',
+            data: filteredHighUnverified,
+            title: tokenSectionTypes.unverifiedTokenSection,
           });
 
-        const filteredLowWithoutScams = filterScams(filteredBest, filteredLow);
-
-        filteredLowWithoutScams.length &&
+        filteredLow.length &&
           filteredList.push({
-            data: filteredLowWithoutScams,
-            title: '􀇿 Low Liquidity',
+            data: filteredLow,
+            title: tokenSectionTypes.lowLiquidityTokenSection,
           });
       } else {
         filteredList = [
           {
-            data: concat(favorites, curatedAssets),
-            title: '􀇻 Rainbow Verified',
+            color: colors.yellowFavorite,
+            data: favorites,
+            title: tokenSectionTypes.favoriteTokenSection,
+          },
+          {
+            data: curatedNotFavorited,
+            title: tokenSectionTypes.verifiedTokenSection,
             useGradientText: IS_TESTING === 'true' ? false : true,
           },
         ];
@@ -156,8 +172,9 @@ export default function CurrencySelectModal() {
     setIsSearching(false);
     return filteredList;
   }, [
-    curatedAssets,
+    curatedNotFavorited,
     favorites,
+    globalVerifiedHighLiquidityAssets,
     globalHighLiquidityAssets,
     globalLowLiquidityAssets,
     searchQueryForSearch,

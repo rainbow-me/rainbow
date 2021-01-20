@@ -1,4 +1,5 @@
 import React, { useCallback, useRef } from 'react';
+import { Alert } from 'react-native';
 import { SectionList } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components/primitives';
@@ -26,12 +27,12 @@ const HeaderBackground = styled(LinearGradient).attrs({
   width: ${deviceWidth};
 `;
 
-const HeaderTitle = styled(Text).attrs({
-  color: colors.blueGreyDark50,
+const HeaderTitle = styled(Text).attrs(({ color }) => ({
+  color: color || colors.blueGreyDark50,
   letterSpacing: 'roundedMedium',
   size: 'smedium',
   weight: 'heavy',
-})``;
+}))``;
 
 const HeaderTitleGradient = styled(GradientText).attrs({
   colors: ['#6AA2E3', '#FF54BB', '#FFA230'],
@@ -53,7 +54,7 @@ const ExchangeAssetSectionListHeader = ({ section }) => {
     <Header>
       <HeaderBackground />
       <HeaderTitleWrapper>
-        <TitleComponent>{section.title}</TitleComponent>
+        <TitleComponent color={section.color}>{section.title}</TitleComponent>
       </HeaderTitleWrapper>
     </Header>
   ) : null;
@@ -107,8 +108,35 @@ const ExchangeAssetList = ({ itemProps, items, onLayout, query }) => {
     itemProps,
   ]);
 
+  const handleUnverifiedTokenPress = useCallback(
+    item => {
+      Alert.alert(
+        `Unverified Token`,
+        'This token has not been verified! Rainbow surfaces all tokens that exist on Uniswap. Anyone can create a token, including fake versions of existing tokens and tokens that claim to represent projects that do not have a token. Please do your own research and be careful when interacting with unverified tokens!',
+        [
+          {
+            onPress: () => itemProps.onPress(item),
+            text: `Proceed Anyway`,
+          },
+          {
+            style: 'cancel',
+            text: 'Go Back',
+          },
+        ]
+      );
+    },
+    [itemProps]
+  );
+
   const renderItemCallback = useCallback(
-    ({ item }) => <ExchangeCoinRow {...itemProps} item={item} />,
+    ({ item }) => (
+      <ExchangeCoinRow
+        {...itemProps}
+        isVerified={item.isVerified}
+        item={item}
+        onUnverifiedTokenPress={handleUnverifiedTokenPress}
+      />
+    ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );

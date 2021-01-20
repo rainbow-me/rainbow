@@ -48,15 +48,23 @@ const TopRow = ({ name, showBalance }) => (
 
 const ExchangeCoinRow = ({
   item,
+  isVerified,
   onFavoriteAsset,
   onPress,
+  onUnverifiedTokenPress,
   showBalance,
   showFavoriteButton,
 }) => {
   const { width: deviceWidth } = useDimensions();
   const [localFavorite, setLocalFavorite] = useState(!!item.favorite);
 
-  const handlePress = useCallback(() => onPress(item), [item, onPress]);
+  const handlePress = useCallback(() => {
+    if (isVerified) {
+      onPress(item);
+    } else {
+      onUnverifiedTokenPress(item);
+    }
+  }, [isVerified, item, onPress, onUnverifiedTokenPress]);
 
   return (
     <>

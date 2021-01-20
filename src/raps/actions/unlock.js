@@ -20,6 +20,7 @@ const NOOP = () => undefined;
 const unlock = async (wallet, currentRap, index, parameters) => {
   const { dispatch } = store;
   const {
+    accountAddress,
     amount,
     assetToUnlock,
     contractAddress,
@@ -36,6 +37,7 @@ const unlock = async (wallet, currentRap, index, parameters) => {
   logger.log('[unlock]', amount, override, _amount);
 
   const { gasPrices } = store.getState().gas;
+
   const { address: assetAddress } = assetToUnlock;
 
   let gasLimit;
@@ -45,6 +47,7 @@ const unlock = async (wallet, currentRap, index, parameters) => {
       contractAddress,
     });
     gasLimit = await contractUtils.estimateApprove(
+      accountAddress,
       assetAddress,
       contractAddress
     );
@@ -54,10 +57,11 @@ const unlock = async (wallet, currentRap, index, parameters) => {
     throw e;
   }
   let approval;
+  let gasPrice;
   try {
     logger.log('[swap] execute the swap');
     // unlocks should always use fast gas or custom (whatever is faster)
-    let gasPrice = get(selectedGasPrice, 'value.amount');
+    gasPrice = get(selectedGasPrice, 'value.amount');
     const fastPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);
     if (greaterThan(fastPrice, gasPrice)) {
       gasPrice = fastPrice;
@@ -87,7 +91,7 @@ const unlock = async (wallet, currentRap, index, parameters) => {
   );
 
   // Cache the approved value
-  AllowancesCache.cache[cacheKey] = MaxUint256;
+  AllowancesCache.cache[cacheKey] = MaxUint256.toString();
 
   // update rap for hash
   currentRap.actions[index].transaction.hash = approval.hash;
@@ -101,6 +105,8 @@ const unlock = async (wallet, currentRap, index, parameters) => {
         amount: 0,
         asset: assetToUnlock,
         from: wallet.address,
+        gasLimit,
+        gasPrice,
         hash: approval.hash,
         nonce: get(approval, 'nonce'),
         status: TransactionStatusTypes.approving,
@@ -164,8 +170,9 @@ export const assetNeedsUnlocking = async (
       assetToUnlock,
       contractAddress
     );
+
     // Cache that value
-    if (isNull(allowance)) {
+    if (!isNull(allowance)) {
       AllowancesCache.cache[cacheKey] = allowance;
     }
   }

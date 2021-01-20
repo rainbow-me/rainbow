@@ -1,4 +1,8 @@
 import { useWindowDimensions } from 'react-native';
+import {
+  getSoftMenuBarHeight,
+  getStatusBarHeight,
+} from 'react-native-extra-dimensions-android';
 
 const deviceDimensions = {
   iphone6: {
@@ -16,7 +20,10 @@ const deviceDimensions = {
 };
 
 export default function useDimensions() {
-  const { height, scale, width } = useWindowDimensions();
+  let { height, scale, width } = useWindowDimensions();
+  if (android) {
+    height -= getSoftMenuBarHeight() + getStatusBarHeight();
+  }
   return {
     height,
     isLargePhone: width >= deviceDimensions.iphoneX.width,
