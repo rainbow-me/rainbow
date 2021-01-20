@@ -5,7 +5,6 @@ import React, {
   useEffect,
   useMemo,
   useRef,
-  useState,
 } from 'react';
 import { ScrollView } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -74,8 +73,6 @@ const ListName = styled(Text)`
   margin-top: ${ios ? -4.5 : 0}px;
 `;
 
-const DEFAULT_LIST = 'favorites';
-
 // Update trending lists every 5 minutes
 const TRENDING_LIST_UPDATE_INTERVAL = 5 * 60 * 1000;
 
@@ -83,8 +80,15 @@ export default function ListSection() {
   const dispatch = useDispatch();
   const { network } = useAccountSettings();
   const { navigate } = useNavigation();
-  const [selectedList, setSelectedList] = useState(DEFAULT_LIST);
-  const { favorites, lists, updateList, ready, clearList } = useUserLists();
+  const {
+    favorites,
+    lists,
+    updateList,
+    ready,
+    selectedList,
+    setSelectedList,
+    clearList,
+  } = useUserLists();
   const { allAssets } = useAccountAssets();
   const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
     genericAssets,
@@ -133,9 +137,12 @@ export default function ListSection() {
     }
   }, [allAssets, favorites, genericAssets, lists, selectedList]);
 
-  const handleSwitchList = useCallback(id => {
-    setSelectedList(id);
-  }, []);
+  const handleSwitchList = useCallback(
+    id => {
+      setSelectedList(id);
+    },
+    [setSelectedList]
+  );
 
   const handlePress = useCallback(
     item => {
