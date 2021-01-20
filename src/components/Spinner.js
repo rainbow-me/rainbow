@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { IS_TESTING } from 'react-native-dotenv';
 import SpinnerImageSource from '../assets/spinner.png';
 import { SpinAnimation } from './animations';
 import { Centered } from './layout';
@@ -8,13 +9,15 @@ import { colors, position } from '@rainbow-me/styles';
 
 const Spinner = ({ color, duration, size, ...props }) => (
   <Centered {...props}>
-    <SpinAnimation duration={duration}>
-      <ImgixImage
-        source={SpinnerImageSource}
-        style={position.sizeAsObject(size)}
-        tintColor={color}
-      />
-    </SpinAnimation>
+    {!IS_TESTING && (
+      <SpinAnimation duration={duration}>
+        <ImgixImage
+          source={SpinnerImageSource}
+          style={position.sizeAsObject(size)}
+          tintColor={color}
+        />
+      </SpinAnimation>
+    )}
   </Centered>
 );
 
