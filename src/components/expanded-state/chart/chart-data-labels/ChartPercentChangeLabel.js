@@ -15,7 +15,7 @@ const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
 const PercentLabel = styled(AnimatedTextInput)`
   ${fontWithWidth(fonts.weight.bold)};
-  background-color: transparent;
+  background-color: ${colors.transparent};
   font-size: ${fonts.size.big};
   font-variant: tabular-nums;
   letter-spacing: ${fonts.letterSpacing.roundedTightest};
