@@ -85,10 +85,7 @@ export default function RestoreSheet() {
     });
   }, [goBack, navigate]);
 
-  const wrapperHeight =
-    deviceHeight +
-    longFormHeight +
-    (android ? StatusBar.currentHeight * 1.5 : 0);
+  const wrapperHeight = deviceHeight + longFormHeight;
 
   return (
     <Column height={wrapperHeight}>
