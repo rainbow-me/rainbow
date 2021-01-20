@@ -6,7 +6,7 @@ import React, {
   useMemo,
   useRef,
 } from 'react';
-import { ScrollView } from 'react-native';
+import { FlatList } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components/native';
 import { emitAssetRequest } from '../../redux/explorer';
@@ -89,10 +89,14 @@ export default function ListSection() {
     setSelectedList,
     clearList,
   } = useUserLists();
+  const listRef = useRef(null);
+  const initialized = useRef(false);
   const { allAssets } = useAccountAssets();
   const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
     genericAssets,
   }));
+  const listData = useMemo(() => DefaultTokenLists[network], [network]);
+
   const trendingListHandler = useRef(null);
 
   const updateTrendingList = useCallback(async () => {
@@ -109,12 +113,43 @@ export default function ListSection() {
     );
   }, [clearList, dispatch, updateList]);
 
+  const handleSwitchList = useCallback(
+    (id, index) => {
+      setSelectedList(id);
+      listRef.current?.scrollToIndex({
+        animated: true,
+        index,
+        viewPosition: 0.5,
+      });
+    },
+    [setSelectedList]
+  );
+
   useEffect(() => {
     ready && updateTrendingList();
+    if (ready && !initialized.current) {
+      lists.forEach((list, index) => {
+        if (list.id === selectedList) {
+          setTimeout(() => {
+            handleSwitchList(list.id, index);
+          }, 300);
+        }
+      });
+      initialized.current = true;
+    }
     return () => {
       clearTimeout(trendingListHandler.current);
     };
-  }, [ready, clearList, dispatch, updateList, updateTrendingList]);
+  }, [
+    ready,
+    clearList,
+    dispatch,
+    updateList,
+    updateTrendingList,
+    lists,
+    selectedList,
+    handleSwitchList,
+  ]);
 
   const listItems = useMemo(() => {
     if (selectedList === 'favorites') {
@@ -136,13 +171,6 @@ export default function ListSection() {
       );
     }
   }, [allAssets, favorites, genericAssets, lists, selectedList]);
-
-  const handleSwitchList = useCallback(
-    id => {
-      setSelectedList(id);
-    },
-    [setSelectedList]
-  );
 
   const handlePress = useCallback(
     item => {
@@ -166,6 +194,33 @@ export default function ListSection() {
     []
   );
 
+  const renderItem = useCallback(
+    ({ item: list, index }) => (
+      <ListButton
+        key={`list-${list.id}`}
+        onPress={() => handleSwitchList(list.id, index)}
+        selected={selectedList === list.id}
+      >
+        <Row>
+          <Emoji name={list.emoji} size="small" />
+          <ListName
+            color={
+              selectedList === list.id
+                ? colors.alpha(colors.blueGreyDark, 0.8)
+                : colors.alpha(colors.blueGreyDark, 0.5)
+            }
+            lineHeight="paragraphSmall"
+            size="lmedium"
+            weight="bold"
+          >
+            {list.name}
+          </ListName>
+        </Row>
+      </ListButton>
+    ),
+    [handleSwitchList, selectedList]
+  );
+
   return (
     <Column>
       <Flex paddingHorizontal={19}>
@@ -180,39 +235,19 @@ export default function ListSection() {
       ) : (
         <Fragment>
           <Column>
-            <ScrollView
+            <FlatList
               contentContainerStyle={{
                 paddingBottom: 6,
                 paddingHorizontal: 19,
                 paddingTop: 10,
               }}
+              data={listData}
               horizontal
+              keyExtractor={item => item.id}
+              ref={listRef}
+              renderItem={renderItem}
               showsHorizontalScrollIndicator={false}
-            >
-              {DefaultTokenLists[network].map(list => (
-                <ListButton
-                  key={`list-${list.id}`}
-                  onPress={() => handleSwitchList(list.id)}
-                  selected={selectedList === list.id}
-                >
-                  <Row>
-                    <Emoji name={list.emoji} size="small" />
-                    <ListName
-                      color={
-                        selectedList === list.id
-                          ? colors.alpha(colors.blueGreyDark, 0.8)
-                          : colors.alpha(colors.blueGreyDark, 0.5)
-                      }
-                      lineHeight="paragraphSmall"
-                      size="lmedium"
-                      weight="bold"
-                    >
-                      {list.name}
-                    </ListName>
-                  </Row>
-                </ListButton>
-              ))}
-            </ScrollView>
+            />
             <EdgeFade />
           </Column>
           <Column>

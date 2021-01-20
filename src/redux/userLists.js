@@ -1,5 +1,6 @@
 import produce from 'immer';
 import { concat, map, toLower, uniq, without } from 'lodash';
+import { InteractionManager } from 'react-native';
 import {
   getSelectedUserList,
   getUserLists,
@@ -28,7 +29,7 @@ export const userListsLoadState = () => async (dispatch, getState) => {
   try {
     const defaultLists = DefaultTokenLists[network] || [];
     const userLists = await getUserLists(network);
-    const lists = defaultLists.concat(userLists);
+    const lists = userLists.length ? userLists : defaultLists;
     let allAddresses = [];
     lists.forEach(list => {
       allAddresses = [...allAddresses, ...list.tokens];
@@ -38,9 +39,8 @@ export const userListsLoadState = () => async (dispatch, getState) => {
       payload: { lists },
       type: USER_LISTS_LOAD_SUCCESS,
     });
-
     const selectedUserList = (await getSelectedUserList()) || FAVORITES_LIST_ID;
-    dispatch(userListsSetSelectedList(selectedUserList));
+    dispatch(userListsSetSelectedList(selectedUserList, false));
 
     // Wait until the socket is ready
     setTimeout(() => {
@@ -58,12 +58,16 @@ export const userListsLoadState = () => async (dispatch, getState) => {
 export const userListsResetState = () => dispatch =>
   dispatch({ type: USER_LISTS_CLEAR_STATE });
 
-export const userListsSetSelectedList = listId => dispatch => {
+export const userListsSetSelectedList = (listId, save = true) => dispatch => {
   dispatch({
     payload: listId,
     type: USER_LISTS_SET_SELECTED_LIST,
   });
-  saveSelectedUserList(listId);
+  if (save) {
+    InteractionManager.runAfterInteractions(() => {
+      saveSelectedUserList(listId);
+    });
+  }
 };
 export const userListsClearList = listId => (dispatch, getState) => {
   const { lists } = getState().userLists;
