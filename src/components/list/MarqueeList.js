@@ -8,6 +8,7 @@ import Animated, {
   cancelAnimation,
   useAnimatedGestureHandler,
   useAnimatedStyle,
+  useDerivedValue,
   useSharedValue,
   Value,
   withDecay,
@@ -60,8 +61,13 @@ const SingleElement = ({
   );
 };
 
-const SwipeableList = ({ components }) => {
+const SwipeableList = ({ components, speed }) => {
   const transX = useSharedValue(0);
+  const swiping = useSharedValue(0);
+
+  useEffect(() => {
+    swiping.value = withDecay({ deceleration: 1, velocity: speed });
+  }, [speed, swiping]);
 
   const onGestureEvent = useAnimatedGestureHandler({
     onActive: (event, ctx) => {
@@ -69,9 +75,10 @@ const SwipeableList = ({ components }) => {
     },
     onEnd: event => {
       transX.value = withDecay({
-        decceleration: DECCELERATION,
-        velocity: event.velocityX,
+        deceleration: DECCELERATION,
+        velocity: event.velocityX - speed,
       });
+      swiping.value = withDecay({ deceleration: 1, velocity: speed });
     },
     onStart: (_, ctx) => {
       ctx.start = transX.value;
@@ -79,8 +86,18 @@ const SwipeableList = ({ components }) => {
   });
 
   const onTapGestureEvent = useAnimatedGestureHandler({
+    onCancel: () => {
+      swiping.value = withDecay({ deceleration: 1, velocity: speed });
+    },
+    onEnd: () => {
+      swiping.value = withDecay({ deceleration: 1, velocity: speed });
+    },
+    onFail: () => {
+      swiping.value = withDecay({ deceleration: 1, velocity: speed });
+    },
     onStart: () => {
       cancelAnimation(transX);
+      cancelAnimation(swiping);
     },
   });
 
@@ -92,6 +109,8 @@ const SwipeableList = ({ components }) => {
   const panRef = useRef();
   const lpRef = useRef();
   const tapRef = useRef();
+
+  const translate = useDerivedValue(() => swiping.value + transX.value, []);
 
   return (
     <LongPressGestureHandler
@@ -127,7 +146,7 @@ const SwipeableList = ({ components }) => {
                       key={`${offset}-${index}`}
                       offset={offset}
                       sumWidth={sumWidth}
-                      transX={transX}
+                      transX={translate}
                       width={width}
                     >
                       {view}
