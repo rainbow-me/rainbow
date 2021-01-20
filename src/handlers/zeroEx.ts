@@ -20,7 +20,7 @@ const parseQuote = (
   const result: ZeroExQuote = response.data;
   return {
     allowanceTarget: result.allowanceTarget,
-    swapData: result.data,
+    swapPayload: result.data,
     swapTarget: result.to,
   };
 };

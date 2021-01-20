@@ -22,6 +22,6 @@ export interface ZeroExQuote {
 
 export interface ZeroExPayload {
   allowanceTarget: string;
-  swapData: string;
+  swapPayload: string;
   swapTarget: string;
 }
