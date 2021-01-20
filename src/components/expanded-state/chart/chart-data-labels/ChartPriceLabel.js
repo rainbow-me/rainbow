@@ -24,7 +24,7 @@ const AndroidCurrencySymbolLabel = styled(Label)`
   height: 69;
   left: 5.5;
   margin-right: 3;
-  top: ${PixelRatio.get() <= 2.625 ? 20 : 23};
+  top: ${PixelRatio.get() <= 2.625 ? 22 : 23};
 `;
 
 export function formatNative(value, priceSharedValue, nativeSelected) {
