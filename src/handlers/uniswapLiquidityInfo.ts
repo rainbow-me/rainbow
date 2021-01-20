@@ -21,7 +21,7 @@ interface UnderlyingToken extends Asset {
   balance: string;
 }
 
-export interface LiquidityInfo extends ParsedAddressAsset {
+interface LiquidityInfo extends ParsedAddressAsset {
   tokens: UnderlyingToken[];
   totalSupply: string;
 }

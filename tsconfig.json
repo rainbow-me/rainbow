@@ -23,6 +23,7 @@
       "@rainbow-me/helpers/*": ["./src/helpers/*"],
       "@rainbow-me/hooks": ["src/hooks"],
       "@rainbow-me/images": ["src/components/images"],
+      "@rainbow-me/localstorage": ["./src/handlers/localstorage"],
       "@rainbow-me/model": ["src/model"],
       "@rainbow-me/navigation": ["src/navigation"],
       "@rainbow-me/networkTypes": ["./src/helpers/networkTypes"],

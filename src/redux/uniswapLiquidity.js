@@ -1,13 +1,13 @@
 import { concat, filter, isEmpty, map, uniqBy } from 'lodash';
 /* eslint-disable-next-line import/no-cycle */
 import { emitChartsRequest } from './explorer';
+import { getLiquidityInfo } from '@rainbow-me/handlers/uniswapLiquidityInfo';
 import {
   getLiquidity,
   getUniswapLiquidityInfo,
   saveLiquidity,
   saveLiquidityInfo,
-} from '@rainbow-me/handlers/localstorage/uniswap';
-import { getLiquidityInfo } from '@rainbow-me/handlers/uniswapLiquidity';
+} from '@rainbow-me/localstorage/uniswap';
 
 // -- Constants ------------------------------------------------------------- //
 const UNISWAP_UPDATE_LIQUIDITY_TOKEN_INFO =
