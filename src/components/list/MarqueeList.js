@@ -32,20 +32,20 @@ const SingleElement = ({
   transX,
   offset,
   width,
-  sumWidth,
+  sumWidth = 0,
   children,
   index,
 }) => {
-  const style = useAnimatedStyle(() => {
-    return {
-      transform: [
-        {
-          translateX:
-            ((transX.value + offset + width) % (sumWidth || 0)) - width,
-        },
-      ],
-    };
-  });
+  const style = useAnimatedStyle(() => ({
+    transform: [
+      {
+        translateX:
+          ((((transX.value + offset + width) % sumWidth) + sumWidth) %
+            sumWidth) -
+          width,
+      },
+    ],
+  }));
   return (
     <Animated.View
       key={`${offset}-${index}`}
@@ -76,7 +76,7 @@ const SwipeableList = ({ components, speed }) => {
     onEnd: event => {
       transX.value = withDecay({
         deceleration: DECCELERATION,
-        velocity: event.velocityX - speed,
+        velocity: event.velocityX,
       });
       swiping.value = withDecay({ deceleration: 1, velocity: speed });
     },
