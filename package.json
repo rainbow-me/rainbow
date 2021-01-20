@@ -124,6 +124,7 @@
     "lottie-react-native": "3.4.0",
     "make-color-more-chill": "^0.1.1",
     "match-sorter": "^4.0.2",
+    "metro-plugin-anisotropic-transform": "rainbow-me/metro-plugin-anisotropic-transform#599af0b51dd88bce1c7b39f0a37782f0aa5e1c32",
     "mnemonist": "^0.38.1",
     "nanoid": "^2.1.6",
     "parse-ms": "^2.1.0",
