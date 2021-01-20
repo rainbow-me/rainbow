@@ -122,7 +122,7 @@ export default function SlackSheet({
         <Pressable onPress={goBack} style={[StyleSheet.absoluteFillObject]} />
       ) : null}
       <Container
-        additionalTopPadding={additionalTopPadding}
+        additionalTopPadding={false}
         backgroundColor={backgroundColor}
         contentHeight={contentHeight}
         deferredHeight={deferredHeight}
