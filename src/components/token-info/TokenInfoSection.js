@@ -5,7 +5,7 @@ import { padding } from '@rainbow-me/styles';
 const TokenInfoSection = styled(ColumnWithMargins).attrs({
   margin: 15,
 })`
-  ${padding(android ? 12 : 24, 0, 5)};
+  ${ios && padding(24, 0, 5)};
   width: 100%;
 `;
 
