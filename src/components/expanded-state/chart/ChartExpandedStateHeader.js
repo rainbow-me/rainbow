@@ -3,7 +3,7 @@ import Animated, { useSharedValue } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
 import { useCallbackOne } from 'use-memo-one';
 import { CoinIconGroup } from '../../coin-icon';
-import { ColumnWithMargins, Row, RowWithMargins } from '../../layout';
+import { Column, ColumnWithMargins, Row, RowWithMargins } from '../../layout';
 import ChartContextButton from './ChartContextButton';
 import {
   ChartDateLabel,
@@ -94,12 +94,11 @@ export default function ChartExpandedStateHeader({
         <CoinIconGroup tokens={tokens} />
         <ChartContextButton asset={asset} color={color} />
       </Row>
-      <ColumnWithMargins margin={0}>
+      <Column>
         <RowWithMargins
           height={30}
           justify="space-between"
           marginHorizontal={1}
-          width="100%"
         >
           <ChartPriceLabel
             defaultValue={isNoPriceData ? title : price}
@@ -141,7 +140,7 @@ export default function ChartExpandedStateHeader({
             />
           </RowWithMargins>
         )}
-      </ColumnWithMargins>
+      </Column>
     </Container>
   );
 }
