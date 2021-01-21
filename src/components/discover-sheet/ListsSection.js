@@ -126,8 +126,8 @@ export default function ListSection() {
   );
 
   useEffect(() => {
-    ready && updateTrendingList();
     if (ready && !initialized.current) {
+      ready && updateTrendingList();
       lists.forEach((list, index) => {
         if (list.id === selectedList) {
           setTimeout(() => {
@@ -252,14 +252,16 @@ export default function ListSection() {
           </Column>
           <Column>
             {listItems?.length ? (
-              listItems.map(item => (
-                <ListCoinRow
-                  {...itemProps}
-                  item={item}
-                  key={`${selectedList}-list-item-${item.address}`}
-                  onPress={() => handlePress(item)}
-                />
-              ))
+              listItems
+                .filter(item => !!item.symbol)
+                .map(item => (
+                  <ListCoinRow
+                    {...itemProps}
+                    item={item}
+                    key={`${selectedList}-list-item-${item.address}`}
+                    onPress={() => handlePress(item)}
+                  />
+                ))
             ) : (
               <Centered marginVertical={30}>
                 <Text
