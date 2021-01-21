@@ -11,7 +11,7 @@ module.exports.transform = function applyRainbowTransform({
     customTransformOptions: {
       'metro-plugin-anisotropic-transform': {
         globalScopeFilter: {
-          //'@react-native-community/clipboard': {},
+          '@react-native-community/clipboard': {},
           'react-native-keychain': {},
         },
       },
