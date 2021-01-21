@@ -1,52 +1,22 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   LongPressGestureHandler,
   PanGestureHandler,
-  State,
   TapGestureHandler,
 } from 'react-native-gesture-handler';
-import Animated, { Clock, decay, Value } from 'react-native-reanimated';
+import Animated, {
+  cancelAnimation,
+  useAnimatedGestureHandler,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+  Value,
+  withDecay,
+} from 'react-native-reanimated';
 import { useMemoOne } from 'use-memo-one';
 import { measureTopMoverCoinRow, TopMoverCoinRow } from '../coin-row';
 
-const {
-  set,
-  cond,
-  eq,
-  add,
-  modulo,
-  startClock,
-  stopClock,
-  clockRunning,
-  sub,
-  event,
-  or,
-} = Animated;
-
 const DECCELERATION = 0.998;
-
-function runDecay(clock, value, velocity) {
-  const state = {
-    finished: new Value(0),
-    position: value,
-    time: new Value(0),
-    velocity: velocity,
-  };
-
-  const config = { deceleration: DECCELERATION };
-
-  return [
-    cond(clockRunning(clock), 0, [set(state.time, 0), startClock(clock)]),
-    decay(clock, state, config),
-    state.position,
-  ];
-}
 
 export const useReanimatedValue = initialValue => {
   const value = useRef();
@@ -58,62 +28,78 @@ export const useReanimatedValue = initialValue => {
   return value.current;
 };
 
+const SingleElement = ({
+  transX,
+  offset,
+  width,
+  sumWidth = 0,
+  children,
+  index,
+}) => {
+  const style = useAnimatedStyle(() => ({
+    transform: [
+      {
+        translateX:
+          ((((transX.value + offset + width) % sumWidth) + sumWidth) %
+            sumWidth) -
+          width,
+      },
+    ],
+  }));
+  return (
+    <Animated.View
+      key={`${offset}-${index}`}
+      style={[
+        {
+          position: 'absolute',
+        },
+        style,
+      ]}
+    >
+      {children}
+    </Animated.View>
+  );
+};
+
 const SwipeableList = ({ components, speed }) => {
-  const dragX = useReanimatedValue(0);
-  const state = useReanimatedValue(-1);
-  const lpstate = useReanimatedValue(-1);
-  const dragVX = useReanimatedValue(0);
+  const transX = useSharedValue(0);
+  const swiping = useSharedValue(0);
 
-  const onGestureEvent = useMemoOne(
-    () =>
-      event([
-        {
-          nativeEvent: { state, translationX: dragX, velocityX: dragVX },
-        },
-      ]),
-    [dragVX, dragVX, state]
-  );
+  useEffect(() => {
+    swiping.value = withDecay({ deceleration: 1, velocity: speed });
+  }, [speed, swiping]);
 
-  const onLPGestureEvent = useMemo(
-    () =>
-      event([
-        {
-          nativeEvent: { state: lpstate },
-        },
-      ]),
-    [lpstate]
-  );
+  const onGestureEvent = useAnimatedGestureHandler({
+    onActive: (event, ctx) => {
+      transX.value = ctx.start + event.translationX;
+    },
+    onEnd: event => {
+      transX.value = withDecay({
+        deceleration: DECCELERATION,
+        velocity: event.velocityX,
+      });
+      swiping.value = withDecay({ deceleration: 1, velocity: speed });
+    },
+    onStart: (_, ctx) => {
+      ctx.start = transX.value;
+    },
+  });
 
-  const transX = useReanimatedValue(0);
-  const prevDragX = useReanimatedValue(0);
-
-  const clock = useMemoOne(() => new Clock(), []);
-
-  const transXWrapped = useMemo(
-    () =>
-      cond(
-        or(eq(state, State.ACTIVE), eq(lpstate, 2)),
-        [
-          stopClock(clock),
-          cond(
-            eq(state, State.ACTIVE),
-            [
-              set(transX, add(transX, sub(dragX, prevDragX))),
-              set(prevDragX, dragX),
-            ],
-            [set(dragVX, 0)]
-          ),
-
-          transX,
-        ],
-        [
-          set(prevDragX, 0),
-          set(transX, runDecay(clock, transX, dragVX)),
-          set(transX, add(transX, speed)),
-        ]
-      ),
-    [clock, dragVX, dragX, lpstate, prevDragX, speed, state, transX]
-  );
+  const onTapGestureEvent = useAnimatedGestureHandler({
+    onCancel: () => {
+      swiping.value = withDecay({ deceleration: 1, velocity: speed });
+    },
+    onEnd: () => {
+      swiping.value = withDecay({ deceleration: 1, velocity: speed });
+    },
+    onFail: () => {
+      swiping.value = withDecay({ deceleration: 1, velocity: speed });
+    },
+    onStart: () => {
+      cancelAnimation(transX);
+      cancelAnimation(swiping);
+    },
+  });
 
   const sumWidth = useMemoOne(
     () => components.reduce((acc, { width }) => acc + width, 0),
@@ -124,6 +110,8 @@ const SwipeableList = ({ components, speed }) => {
   const lpRef = useRef();
   const tapRef = useRef();
 
+  const translate = useDerivedValue(() => swiping.value + transX.value, []);
+
   return (
     <LongPressGestureHandler
       maxDist={100000}
@@ -133,8 +121,8 @@ const SwipeableList = ({ components, speed }) => {
     >
       <Animated.View>
         <TapGestureHandler
-          onGestureEvent={onLPGestureEvent}
-          onHandlerStateChange={onLPGestureEvent}
+          onGestureEvent={onTapGestureEvent}
+          onHandlerStateChange={onTapGestureEvent}
           ref={tapRef}
           simultaneousHandlers={[panRef, lpRef]}
         >
@@ -153,25 +141,16 @@ const SwipeableList = ({ components, speed }) => {
                   }}
                 >
                   {components.map(({ view, offset, width }, index) => (
-                    <Animated.View
+                    <SingleElement
+                      index={index}
                       key={`${offset}-${index}`}
-                      style={{
-                        position: 'absolute',
-                        transform: [
-                          {
-                            translateX: sub(
-                              modulo(
-                                add(transXWrapped, offset, width),
-                                sumWidth || 0
-                              ),
-                              width
-                            ),
-                          },
-                        ],
-                      }}
+                      offset={offset}
+                      sumWidth={sumWidth}
+                      transX={translate}
+                      width={width}
                     >
                       {view}
-                    </Animated.View>
+                    </SingleElement>
                   ))}
                 </Animated.View>
               </Animated.View>
