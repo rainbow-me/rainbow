@@ -211,7 +211,7 @@
     "socket.io-client": "^2.3.0",
     "stream-browserify": "^1.0.0",
     "string.fromcodepoint": "^0.2.1",
-    "styled-components": "5.1.1",
+    "styled-components": "5.2.1",
     "stylelint": "^10.1.0",
     "timers-browserify": "^1.4.2",
     "tty-browserify": "0.0.0",
