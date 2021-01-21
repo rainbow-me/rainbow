@@ -7,6 +7,7 @@ export const disableCharts = false;
 export const forceFallbackProvider = false;
 export const alwaysRequireApprove = false;
 export const darkMode = false;
+export const showReloadButton = false;
 export const parseAllTxnsOnReceive = false;
 export const reactNativeDisableYellowBox = true;
 export const showNetworkRequests = false;

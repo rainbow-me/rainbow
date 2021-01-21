@@ -175,7 +175,7 @@
     "react-native-randombytes": "^3.5.3",
     "react-native-reanimated": "^2.0.0-rc.0",
     "react-native-redash": "14.2.2",
-    "react-native-restart": "^0.0.17",
+    "react-native-restart": "^0.0.20",
     "react-native-safe-area-context": "^0.5.0",
     "react-native-safe-area-view": "mikedemarais/react-native-safe-area-view",
     "react-native-screens": "2.9.0",
