@@ -15,6 +15,7 @@ import styled from 'styled-components/primitives';
 import { Button } from '../buttons';
 import { ExchangeInput } from '../exchange';
 import { ColumnWithMargins, Row } from '../layout';
+import { darkMode } from '@rainbow-me/config/debug';
 import { useDimensions } from '@rainbow-me/hooks';
 import { colors, position } from '@rainbow-me/styles';
 
@@ -33,7 +34,7 @@ const UnderlineAnimated = styled(Animated.View)`
 const UnderlineInput = styled(ExchangeInput).attrs(({ isTinyPhone }) => ({
   color: colors.dark,
   disableTabularNums: true,
-  keyboardAppearance: 'light',
+  keyboardAppearance: darkMode ? 'dark' : 'light',
   letterSpacing: 'roundedTightest',
   size: isTinyPhone || android ? 'bigger' : 'h3',
   weight: 'medium',
