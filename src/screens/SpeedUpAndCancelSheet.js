@@ -3,7 +3,7 @@ import { captureException } from '@sentry/react-native';
 import { BigNumber } from 'bignumber.js';
 import { get, isEmpty, keys } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, InteractionManager, TurboModuleRegistry } from 'react-native';
+import { Alert, InteractionManager } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -14,7 +14,6 @@ import styled from 'styled-components/native';
 import Divider from '../components/Divider';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, Column, Row } from '../components/layout';
-
 import {
   SheetActionButton,
   SheetActionButtonRow,
@@ -24,6 +23,7 @@ import {
 import { Emoji, Text } from '../components/text';
 import { executeRap } from '../raps/common';
 import { getTransaction, toHex } from '@rainbow-me/handlers/web3';
+import { isReanimatedAvailable } from '@rainbow-me/helpers';
 import TransactionStatusTypes from '@rainbow-me/helpers/transactionStatusTypes';
 import TransactionTypes from '@rainbow-me/helpers/transactionTypes';
 import {
@@ -35,7 +35,6 @@ import {
 import { loadWallet, sendTransaction } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
 import { getTitle, gweiToWei, weiToGwei } from '@rainbow-me/parsers';
-
 import { dataUpdateTransaction } from '@rainbow-me/redux/data';
 import { explorerInit } from '@rainbow-me/redux/explorer';
 import { updateGasPriceForSpeed } from '@rainbow-me/redux/gas';
@@ -44,13 +43,7 @@ import store from '@rainbow-me/redux/store';
 import { ethUnits } from '@rainbow-me/references';
 import { colors, position } from '@rainbow-me/styles';
 import { deviceUtils, safeAreaInsetValues } from '@rainbow-me/utils';
-
 import logger from 'logger';
-
-const isReanimatedAvailable = !(
-  !TurboModuleRegistry.get('NativeReanimated') &&
-  (!global.__reanimatedModuleProxy || global.__reanimatedModuleProxy.__shimmed)
-);
 
 const springConfig = {
   damping: 500,

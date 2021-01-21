@@ -10,12 +10,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import {
-  Alert,
-  InteractionManager,
-  TurboModuleRegistry,
-  Vibration,
-} from 'react-native';
+import { Alert, InteractionManager, Vibration } from 'react-native';
 import { isEmulatorSync } from 'react-native-device-info';
 import Animated, {
   useAnimatedStyle,
@@ -42,35 +37,16 @@ import {
   MessageSigningSection,
   TransactionConfirmationSection,
 } from '../components/transaction';
-import { estimateGas, toHex } from '../handlers/web3';
-import { isDappAuthenticated } from '../helpers/dappNameHandler';
+import { estimateGas, toHex } from '@rainbow-me/handlers/web3';
+import { isReanimatedAvailable } from '@rainbow-me/helpers';
+import { isDappAuthenticated } from '@rainbow-me/helpers/dappNameHandler';
 import {
   convertAmountToNativeDisplay,
   convertHexToString,
   fromWei,
   greaterThanOrEqualTo,
   multiply,
-} from '../helpers/utilities';
-import {
-  sendTransaction,
-  signMessage,
-  signPersonalMessage,
-  signTransaction,
-  signTypedDataMessage,
-} from '../model/wallet';
-import { walletConnectRemovePendingRedirect } from '../redux/walletconnect';
-import { ethereumUtils, safeAreaInsetValues } from '../utils';
-import { methodRegistryLookupAndParse } from '../utils/methodRegistry';
-import {
-  isMessageDisplayType,
-  isSignFirstParamType,
-  isSignSecondParamType,
-  isTransactionDisplayType,
-  PERSONAL_SIGN,
-  SEND_TRANSACTION,
-  SIGN,
-  SIGN_TYPED_DATA,
-} from '../utils/signingMethods';
+} from '@rainbow-me/helpers/utilities';
 import {
   useAccountAssets,
   useAccountProfile,
@@ -82,14 +58,29 @@ import {
   useWalletBalances,
   useWallets,
 } from '@rainbow-me/hooks';
+import {
+  sendTransaction,
+  signMessage,
+  signPersonalMessage,
+  signTransaction,
+  signTypedDataMessage,
+} from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
+import { walletConnectRemovePendingRedirect } from '@rainbow-me/redux/walletconnect';
 import { colors, padding } from '@rainbow-me/styles';
+import { ethereumUtils, safeAreaInsetValues } from '@rainbow-me/utils';
+import { methodRegistryLookupAndParse } from '@rainbow-me/utils/methodRegistry';
+import {
+  isMessageDisplayType,
+  isSignFirstParamType,
+  isSignSecondParamType,
+  isTransactionDisplayType,
+  PERSONAL_SIGN,
+  SEND_TRANSACTION,
+  SIGN,
+  SIGN_TYPED_DATA,
+} from '@rainbow-me/utils/signingMethods';
 import logger from 'logger';
-
-const isReanimatedAvailable = !(
-  !TurboModuleRegistry.get('NativeReanimated') &&
-  (!global.__reanimatedModuleProxy || global.__reanimatedModuleProxy.__shimmed)
-);
 
 const springConfig = {
   damping: 500,

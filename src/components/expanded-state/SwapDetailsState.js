@@ -1,6 +1,5 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
-import { TurboModuleRegistry } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -18,16 +17,12 @@ import {
   SwapDetailsMastheadHeight,
   SwapDetailsSlippageMessage,
 } from './swap-details';
+import { isReanimatedAvailable } from '@rainbow-me/helpers';
 import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
 import { useDimensions, useHeight, useKeyboardHeight } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { margin, padding } from '@rainbow-me/styles';
 import { abbreviations, safeAreaInsetValues } from '@rainbow-me/utils';
-
-const isReanimatedAvailable = !(
-  !TurboModuleRegistry.get('NativeReanimated') &&
-  (!global.__reanimatedModuleProxy || global.__reanimatedModuleProxy.__shimmed)
-);
 
 const springConfig = {
   damping: 500,
