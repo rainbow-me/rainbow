@@ -25,7 +25,7 @@ const formatSlippage = slippage =>
   slippage ? convertBipsToPercentage(slippage, 1) : 0;
 
 const renderSlippageText = displayValue => (
-  <Text color="white" size="smedium" weight="semibold">
+  <Text color="whiteLabel" size="smedium" weight="semibold">
     {`${displayValue}% premium`}
   </Text>
 );
