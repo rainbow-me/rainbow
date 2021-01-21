@@ -744,7 +744,7 @@ const TransactionConfirmationScreen = () => {
       <SlackSheet
         backgroundColor={colors.transparent}
         borderRadius={0}
-        height={sheetHeight + 120}
+        height={sheetHeight}
         hideHandle
         scrollEnabled={false}
       >
