@@ -110,7 +110,7 @@ export default function SlackSheet({
     [borderRadius, bottomInset]
   );
 
-  // In discover sheet we need ot set it additionally
+  // In discover sheet we need to set it additionally
   useEffect(
     () => {
       discoverSheet &&
