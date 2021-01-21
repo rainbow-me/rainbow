@@ -697,6 +697,16 @@ const TransactionConfirmationScreen = () => {
 
   const amount = get(request, 'value', '0.00');
 
+  const isAndroidApprovalRequest = useMemo(
+    () =>
+      android &&
+      isTransactionDisplayType(method) &&
+      !!get(request, 'asset', false) &&
+      amount === 0 &&
+      isBalanceEnough,
+    [amount, isBalanceEnough, method, request]
+  );
+
   const ShortSheetHeight = 457 + safeAreaInsetValues.bottom;
   const TallSheetHeight = 604 + safeAreaInsetValues.bottom;
   const MessageSheetHeight =
@@ -706,7 +716,7 @@ const TransactionConfirmationScreen = () => {
   const balanceTooLow =
     isBalanceEnough === false && isSufficientGas !== undefined;
 
-  const sheetHeight =
+  let sheetHeight =
     (isMessageRequest
       ? MessageSheetHeight
       : (amount && amount !== '0.00') || !isBalanceEnough
@@ -721,6 +731,10 @@ const TransactionConfirmationScreen = () => {
 
   if (isTransactionDisplayType(method) && !get(request, 'asset', false)) {
     marginTop += 50;
+  }
+
+  if (isAndroidApprovalRequest) {
+    sheetHeight += 120;
   }
 
   return (
