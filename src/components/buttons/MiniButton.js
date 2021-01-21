@@ -38,6 +38,7 @@ export default function MiniButton({
     <ButtonPressAnimation
       disabled={disabled}
       onPress={onPress}
+      opacity={darkMode && disabled ? 0.6 : 1}
       radiusAndroid={borderRadius}
       scaleTo={scaleTo}
       {...props}

@@ -382,6 +382,7 @@ export default function ImportSeedPhraseSheet() {
             onFocus={handleFocus}
             onSubmitEditing={handlePressImportButton}
             placeholder="Seed phrase, private key, Ethereum address or ENS name"
+            placeholderTextColor={colors.alpha(colors.blueGreyDark, 0.3)}
             ref={inputRef}
             returnKeyType="done"
             size="large"
@@ -402,13 +403,13 @@ export default function ImportSeedPhraseSheet() {
                 {busy ? (
                   <LoadingSpinner />
                 ) : (
-                  <Text align="center" color="white" weight="bold">
+                  <Text align="center" color="whiteLabel" weight="bold">
                     􀂍{' '}
                   </Text>
                 )}
                 <Text
                   align="center"
-                  color="white"
+                  color="whiteLabel"
                   testID="import-sheet-button-label"
                   weight="bold"
                 >
@@ -424,7 +425,7 @@ export default function ImportSeedPhraseSheet() {
             >
               <Text
                 align="center"
-                color="white"
+                color="whiteLabel"
                 testID="import-sheet-button-label"
                 weight="bold"
               >
