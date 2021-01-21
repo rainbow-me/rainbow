@@ -108,13 +108,14 @@ export default function QRScannerScreen() {
               cameraDim={cameraDim}
               contentPositionBottom={sheetHeight}
               contentPositionTop={HeaderHeight}
+              dsRef={dsRef}
               enableCamera={ios ? isFocusedIOS : isFocusedAndroid}
             />
           )}
         </CameraDimmer>
         {discoverSheetAvailable ? (
           android ? (
-            <DiscoverSheet />
+            <DiscoverSheet ref={dsRef} />
           ) : null
         ) : (
           <BubbleSheet onLayout={onSheetLayout}>
