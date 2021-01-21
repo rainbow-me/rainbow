@@ -3,12 +3,15 @@ import { buildUniqueTokenName } from '../../helpers/assets';
 import { magicMemo } from '../../utils';
 import { Centered } from '../layout';
 import { Monospace } from '../text';
+import { darkMode } from '@rainbow-me/config/debug';
 import { ImageWithCachedMetadata, ImgixImage } from '@rainbow-me/images';
 import { colors, position } from '@rainbow-me/styles';
 
 const FallbackTextColorVariants = {
-  dark: colors.alpha(colors.blueGreyDark, 0.5),
-  light: colors.white,
+  dark: darkMode
+    ? colors.alpha(colors.white, 0.25)
+    : colors.alpha(colors.blueGreyDark, 0.5),
+  light: darkMode ? colors.alpha(colors.blueGreyDark, 0.25) : colors.white,
 };
 
 const getFallbackTextColor = bg =>
