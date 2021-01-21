@@ -65,7 +65,7 @@
   float r = ((rgbValue & 0xFF0000) >> 16)/255.0 - startR;
   float g = ((rgbValue & 0xFF00) >> 8)/255.0 - startG;
   float b = (rgbValue & 0xFF)/255.0 - startB;
-  self.textColor = _darkMode ? [UIColor colorWithRed:0.88 green:0.91 blue:1.00 alpha:1.00] : [UIColor colorWithRed:15 green:0.16 blue:0.18 alpha:1.0];
+  self.textColor = _darkMode ? [UIColor colorWithRed:0.88 green:0.91 blue:1.00 alpha:1.00] : [UIColor colorWithRed:0.15 green:0.16 blue:0.18 alpha:1.0];
   
   _colorsMap = [NSMutableArray new];
   for (int i = _duration; i > 0; i--) {
