@@ -5,6 +5,7 @@ import ButtonPressAnimation, {
   ScaleButtonZoomableAndroid,
 } from '../animations/ButtonPressAnimation';
 import { Centered, InnerBorder } from '../layout';
+import { darkMode } from '@rainbow-me/config/debug';
 import { borders, colors, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
@@ -62,6 +63,7 @@ const FloatingActionButton = ({
     >
       <ShadowStack
         {...borders.buildCircleAsObject(size)}
+        backgroundColor={colors.alpha(backgroundColor, darkMode ? 0.8 : 0.5)}
         hideShadow={disabled}
         shadows={shadows}
       >

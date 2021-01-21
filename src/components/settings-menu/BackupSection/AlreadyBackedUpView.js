@@ -12,6 +12,7 @@ import { ButtonPressAnimation } from '../../animations';
 import { Centered, Column } from '../../layout';
 import { SheetActionButton } from '../../sheet';
 import { Text } from '../../text';
+import { darkMode } from '@rainbow-me/config/debug';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
@@ -28,7 +29,8 @@ const WalletBackupStatus = {
 };
 
 const CheckmarkIconContainer = styled(View)`
-  ${({ color }) => shadow.build(0, 4, 6, color, 0.4)};
+  ${({ color }) =>
+    shadow.build(0, 4, 6, darkMode ? colors.shadow : color, 0.4)};
   ${position.size(50)};
   background-color: ${({ color }) => color};
   border-radius: 25;
@@ -38,7 +40,7 @@ const CheckmarkIconContainer = styled(View)`
 
 const CheckmarkIconText = styled(Text).attrs({
   align: 'center',
-  color: colors.white,
+  color: colors.whiteLabel,
   size: 'larger',
   weight: 'bold',
 })``;
@@ -224,7 +226,7 @@ export default function AlreadyBackedUpView() {
   const checkmarkColor =
     walletStatus === WalletBackupStatus.CLOUD_BACKUP
       ? colors.green
-      : colors.blueGreyDark50;
+      : colors.alpha(colors.blueGreyDark, 0.5);
 
   const hasMultipleWallets =
     Object.keys(wallets).filter(

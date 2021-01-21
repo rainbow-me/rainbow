@@ -24,8 +24,8 @@ const CardShadow = styled(ShadowStack).attrs({
   ...position.coverAsObject,
   borderRadius: CardBorderRadius,
   shadows: [
-    [0, 10, 30, colors.dark, 0.1],
-    [0, 5, 15, colors.dark, 0.04],
+    [0, 10, 30, colors.shadow, 0.1],
+    [0, 5, 15, colors.shadow, 0.04],
   ],
 })`
   elevation: 15;

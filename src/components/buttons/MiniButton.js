@@ -4,12 +4,13 @@ import styled from 'styled-components/primitives';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder, RowWithMargins } from '../layout';
 import { Text } from '../text';
+import { darkMode } from '@rainbow-me/config/debug';
 import { colors, padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const shadows = {
-  default: [[0, 4, 12, colors.appleBlue, 0.4]],
-  disabled: [[0, 4, 12, colors.lightGrey, 0.4]],
+  default: [[0, 4, 12, darkMode ? colors.shadow : colors.appleBlue, 0.4]],
+  disabled: [[0, 4, 12, colors.lightGrey, darkMode ? 0 : 0.4]],
 };
 
 const Content = styled(RowWithMargins).attrs({
@@ -52,7 +53,7 @@ export default function MiniButton({
         />
         <Content hasLeadingIcon={hasLeadingIcon}>
           {typeof children === 'string' ? (
-            <Text align="center" color="white" weight="bold">
+            <Text align="center" color="whiteLabel" weight="bold">
               {children}
             </Text>
           ) : (

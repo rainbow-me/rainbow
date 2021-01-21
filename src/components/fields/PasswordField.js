@@ -3,6 +3,7 @@ import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import styled from 'styled-components';
 import { Icon } from '../icons';
 import { Input } from '../inputs';
+import { darkMode } from '@rainbow-me/config/debug';
 import { cloudBackupPasswordMinLength } from '@rainbow-me/handlers/cloudBackup';
 import { useDimensions } from '@rainbow-me/hooks';
 import { colors, padding, position } from '@rainbow-me/styles';
@@ -44,12 +45,12 @@ const PasswordInput = styled(Input).attrs({
 `;
 
 const ShadowContainer = styled(ShadowStack).attrs(({ deviceWidth }) => ({
-  backgroundColor: colors.white,
+  backgroundColor: darkMode ? colors.offWhite : colors.white,
   borderRadius: 23,
   height: 46,
   shadows: [
-    [0, 5, 15, colors.dark, 0.06],
-    [0, 10, 30, colors.dark, 0.12],
+    [0, 5, 15, colors.shadow, 0.06],
+    [0, 10, 30, colors.shadow, 0.12],
   ],
   width: Math.max(deviceWidth - 130, 245),
 }))`

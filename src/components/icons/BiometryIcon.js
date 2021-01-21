@@ -7,7 +7,7 @@ import { colors, position } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
 const BiometryTypeIcon = styled(Icon).attrs(({ type }) => ({
-  color: colors.white,
+  color: colors.whiteLabel,
   name: type.toLowerCase(),
 }))`
   ${position.size('100%')}

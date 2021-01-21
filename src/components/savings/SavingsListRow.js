@@ -30,8 +30,8 @@ const MS_IN_1_DAY = 1000 * 60 * 60 * 24;
 const ANIMATE_NUMBER_INTERVAL = 60;
 
 const SavingsListRowShadows = [
-  [0, 10, 30, colors.dark, 0.1],
-  [0, 5, 15, colors.dark, 0.04],
+  [0, 10, 30, colors.shadow, 0.1],
+  [0, 5, 15, colors.shadow, 0.04],
 ];
 
 const NOOP = () => undefined;
@@ -42,7 +42,7 @@ const SavingsListRowGradient = React.memo(
   () => (
     <LinearGradient
       borderRadius={49}
-      colors={['#FFFFFF', '#F7F9FA']}
+      colors={colors.gradients.savings}
       end={{ x: 0.5, y: 1 }}
       pointerEvents="none"
       start={{ x: 0.5, y: 0 }}
@@ -54,6 +54,7 @@ const SavingsListRowGradient = React.memo(
 
 const SavingsListRowShadowStack = styled(ShadowStack).attrs(
   ({ deviceWidth }) => ({
+    backgroundColor: colors.white,
     borderRadius: 49,
     height: 49,
     shadows: SavingsListRowShadows,

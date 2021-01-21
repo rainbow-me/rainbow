@@ -4,6 +4,7 @@ import { CoinIcon } from '../coin-icon';
 import { JellySelector, JellySelectorShadowIndicator } from '../jelly-selector';
 import { RowWithMargins } from '../layout';
 import { Text } from '../text';
+import { darkMode } from '@rainbow-me/config/debug';
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import { colors } from '@rainbow-me/styles';
 import { getTokenMetadata } from '@rainbow-me/utils';
@@ -16,7 +17,7 @@ const CurrencyItemLabel = styled(Text).attrs({
   size: 'larger',
   weight: 'semibold',
 })`
-  opacity: ${({ isSelected }) => (isSelected ? 0.8 : 0.6)};
+  opacity: ${({ isSelected }) => (isSelected ? (darkMode ? 1 : 0.8) : 0.5)};
   padding-bottom: 1.5;
 `;
 
@@ -52,6 +53,9 @@ const AddCashSelector = ({
   onSelect,
 }) => (
   <JellySelector
+    backgroundColor={
+      darkMode ? colors.darkModeColors.darkModeDark : colors.white
+    }
     defaultIndex={initialCurrencyIndex}
     disableSelection={isWalletEthZero}
     height={CurrencyItemHeight}

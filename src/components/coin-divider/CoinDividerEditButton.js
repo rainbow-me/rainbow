@@ -5,6 +5,7 @@ import { magicMemo } from '../../utils';
 import { ButtonPressAnimation, OpacityToggler } from '../animations';
 import { Row } from '../layout';
 import { Text } from '../text';
+import { darkMode } from '@rainbow-me/config/debug';
 import { colors, padding, shadow } from '@rainbow-me/styles';
 
 const ButtonContent = styled(Row).attrs({
@@ -12,7 +13,9 @@ const ButtonContent = styled(Row).attrs({
 })`
   ${padding(ios ? 5 : 0, 10, 6)};
   ${({ isActive }) =>
-    isActive ? shadow.build(0, 4, 12, colors.appleBlue, 0.4) : ''};
+    isActive
+      ? shadow.build(0, 4, 12, darkMode ? colors.shadow : colors.appleBlue, 0.4)
+      : ''};
   background-color: ${({ isActive }) =>
     isActive ? colors.appleBlue : colors.alpha(colors.blueGreyDark, 0.06)};
   border-radius: 15;
@@ -47,7 +50,9 @@ const CoinDividerEditButton = ({
         <ButtonContent isActive={isActive} style={style}>
           <Text
             align="center"
-            color={isActive ? 'white' : colors.alpha(colors.blueGreyDark, 0.6)}
+            color={
+              isActive ? 'whiteLabel' : colors.alpha(colors.blueGreyDark, 0.6)
+            }
             letterSpacing="roundedTight"
             opacity={textOpacityAlwaysOn || isActive ? 1 : 0.3333333333}
             size="lmedium"

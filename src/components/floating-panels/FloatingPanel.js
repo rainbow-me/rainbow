@@ -11,7 +11,7 @@ export const FloatingPanelPadding = {
   y: 0,
 };
 
-const FloatingPanelShadow = shadow.build(0, 10, 50, colors.dark, 0.6);
+const FloatingPanelShadow = shadow.build(0, 10, 50, colors.shadow, 0.6);
 
 const Container = styled(Column)`
   ${({ hideShadow }) => (hideShadow ? '' : FloatingPanelShadow)};

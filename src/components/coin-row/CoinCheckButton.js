@@ -5,6 +5,7 @@ import { ButtonPressAnimation, OpacityToggler } from '../animations';
 import { CoinIconSize } from '../coin-icon';
 import { Icon } from '../icons';
 import { Row } from '../layout';
+import { darkMode } from '@rainbow-me/config/debug';
 import { borders, colors, padding, position, shadow } from '@rainbow-me/styles';
 
 const Container = styled.View`
@@ -30,7 +31,7 @@ const CircleOutline = styled.View`
 const CheckmarkBackground = styled.View`
   ${borders.buildCircle(22)}
   ${padding(4.5)}
-  ${shadow.build(0, 4, 12, colors.appleBlue, 0.4)}
+  ${shadow.build(0, 4, 12, darkMode ? colors.shadow : colors.appleBlue, 0.4)}
   background-color: ${colors.appleBlue};
 `;
 

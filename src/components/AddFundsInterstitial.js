@@ -29,7 +29,7 @@ const InterstitialButton = styled(ButtonPressAnimation).attrs({
   backgroundColor: colors.alpha(colors.blueGreyDark, 0.06),
   borderRadius: 23,
 })`
-  ${padding(10.5, 15, 14.5)};
+  ${padding(11, 15, 14)};
 `;
 
 const InterstitialButtonRow = styled(Row)`
@@ -126,11 +126,11 @@ const onAddFromFaucet = network => {
 
 const shadows = {
   [colors.swapPurple]: [
-    [0, 5, 15, colors.dark, 0.2],
+    [0, 5, 15, colors.shadow, 0.2],
     [0, 10, 30, colors.swapPurple, 0.4],
   ],
   [colors.purpleDark]: [
-    [0, 5, 15, colors.dark, 0.2],
+    [0, 5, 15, colors.shadow, 0.2],
     [0, 10, 30, colors.purpleDark, 0.4],
   ],
 };

@@ -6,6 +6,7 @@ import { mixColor, useTimingTransition } from 'react-native-redash';
 import { ButtonPressAnimation, interpolate } from '../animations';
 import { Icon } from '../icons';
 import { Centered, InnerBorder } from '../layout';
+import { darkMode } from '@rainbow-me/config/debug';
 import { colors, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
@@ -20,12 +21,12 @@ const ApplePayButtonDimensions = {
 
 const ApplePayButtonShadows = {
   default: [
-    [0, 10, 30, colors.dark, 0.2],
-    [0, 5, 15, colors.dark, 0.4],
+    [0, 10, 30, colors.shadow, 0.2],
+    [0, 5, 15, colors.shadow, 0.4],
   ],
   disabled: [
-    [0, 10, 30, colors.dark, 0.2],
-    [0, 5, 15, colors.blueGreyDark50, 0.4],
+    [0, 10, 30, colors.shadow, 0.2],
+    [0, 5, 15, colors.blueGreyDark50, darkMode ? 0 : 0.4],
   ],
 };
 
@@ -33,6 +34,7 @@ const ApplePayButtonShadowElement = ({ opacity, type }) => (
   <AnimatedShadowStack
     {...position.coverAsObject}
     {...ApplePayButtonDimensions}
+    backgroundColor={colors.white}
     borderRadius={ApplePayButtonBorderRadius}
     shadows={ApplePayButtonShadows[type]}
     style={{ opacity }}
@@ -47,8 +49,8 @@ const ApplePayButton = ({ disabled, onDisabledPress, onSubmit }) => {
 
   const backgroundColor = mixColor(
     disabledAnimation,
-    colors.blueGreyDark50,
-    colors.dark
+    darkMode ? colors.alpha(colors.grey20, 0.3) : colors.blueGreyDark50,
+    darkMode ? colors.darkModeColors.darkModeDark : colors.dark
   );
 
   const defaultShadowOpacity = interpolate(disabledAnimation, {
@@ -93,7 +95,11 @@ const ApplePayButton = ({ disabled, onDisabledPress, onSubmit }) => {
         >
           <Centered {...position.sizeAsObject('100%')}>
             <Icon
-              color={colors.white}
+              color={
+                darkMode && disabled
+                  ? colors.alpha(colors.blueGreyDark, 0.4)
+                  : colors.whiteLabel
+              }
               flex={1}
               marginBottom={2}
               name="applePay"

@@ -4,7 +4,9 @@ import ReactCoinIcon from 'react-coin-icon';
 import styled from 'styled-components/primitives';
 import CoinIconFallback from './CoinIconFallback';
 import CoinIconIndicator from './CoinIconIndicator';
+import { darkMode } from '@rainbow-me/config/debug';
 import { useColorForAsset } from '@rainbow-me/hooks';
+import { colors } from '@rainbow-me/styles';
 import { getTokenMetadata, isETH, magicMemo } from '@rainbow-me/utils';
 
 export const CoinIconSize = 40;
@@ -35,7 +37,9 @@ const CoinIcon = ({
         color={color}
         fallbackRenderer={CoinIconFallback}
         forceFallback={forceFallback}
-        shadowColor={tokenMetadata?.shadowColor || color}
+        shadowColor={
+          darkMode ? colors.shadow : tokenMetadata?.shadowColor || color
+        }
         size={size}
         symbol={symbol}
       />

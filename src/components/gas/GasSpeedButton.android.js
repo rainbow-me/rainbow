@@ -53,7 +53,9 @@ const ButtonLabel = styled(BorderlessButton).attrs({
 
 const GasInput = styled(Input).attrs(({ theme }) => ({
   color:
-    theme === 'dark' ? colors.white : colors.alpha(colors.blueGreyDark, 0.8),
+    theme === 'dark'
+      ? colors.whiteLabel
+      : colors.alpha(colors.blueGreyDark, 0.8),
   height: 58,
   keyboardAppearance: 'dark',
   keyboardType: 'numeric',
@@ -222,7 +224,7 @@ const GasSpeedButton = ({
       <Text
         color={
           theme === 'dark'
-            ? colors.white
+            ? colors.whiteLabel
             : colors.alpha(colors.blueGreyDark, 0.8)
         }
         letterSpacing="roundedTight"
@@ -445,7 +447,7 @@ const GasSpeedButton = ({
                   color={
                     customGasPriceInput
                       ? theme === 'dark'
-                        ? colors.white
+                        ? colors.whiteLabel
                         : colors.alpha(colors.blueGreyDark, 0.8)
                       : theme === 'dark'
                       ? colors.alpha(colors.darkModeColors.blueGreyDark, 0.3)

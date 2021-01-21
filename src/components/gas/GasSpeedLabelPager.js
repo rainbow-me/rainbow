@@ -8,7 +8,12 @@ import { colors } from '@rainbow-me/styles';
 import { gasUtils, magicMemo } from '@rainbow-me/utils';
 
 const speedColors = {
-  dark: [colors.white, colors.white, colors.white, colors.appleBlue],
+  dark: [
+    colors.whiteLabel,
+    colors.whiteLabel,
+    colors.whiteLabel,
+    colors.appleBlue,
+  ],
   light: [
     colors.alpha(colors.blueGreyDark, 0.8),
     colors.alpha(colors.blueGreyDark, 0.8),

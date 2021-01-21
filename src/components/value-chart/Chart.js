@@ -53,7 +53,6 @@ const Container = styled(Column)`
 `;
 
 const InnerDot = styled.View`
-  width: 10px;
   height: 10px;
   border-radius: 5px;
   background-color: ${({ color }) => color};
@@ -61,12 +60,13 @@ const InnerDot = styled.View`
   shadow-offset: 0 3px;
   shadow-opacity: 0.6;
   shadow-radius: 4.5px;
+  width: 10px;
 `;
 
 const Dot = styled(ChartDot)`
-  justify-content: center;
   align-items: center;
   background-color: ${({ color }) => color};
+  justify-content: center;
 `;
 
 const HEIGHT = 146.5;

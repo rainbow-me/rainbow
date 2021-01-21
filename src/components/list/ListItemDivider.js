@@ -5,7 +5,7 @@ import { colors } from '@rainbow-me/styles';
 import { neverRerender } from '@rainbow-me/utils';
 
 const ListItemDivider = ({ inset }) => (
-  <Divider color={colors.alpha(colors.blueGreyDark, 0.01)} inset={[0, inset]} />
+  <Divider color={colors.rowDividerFaint} inset={[0, inset]} />
 );
 
 ListItemDivider.propTypes = {

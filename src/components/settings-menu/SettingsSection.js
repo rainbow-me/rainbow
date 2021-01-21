@@ -16,8 +16,12 @@ import {
 } from '../list';
 import { Emoji } from '../text';
 import BackupIcon from '@rainbow-me/assets/settingsBackup.png';
+import BackupIconDark from '@rainbow-me/assets/settingsBackupDark.png';
 import CurrencyIcon from '@rainbow-me/assets/settingsCurrency.png';
+import CurrencyIconDark from '@rainbow-me/assets/settingsCurrencyDark.png';
 import NetworkIcon from '@rainbow-me/assets/settingsNetwork.png';
+import NetworkIconDark from '@rainbow-me/assets/settingsNetworkDark.png';
+import { darkMode } from '@rainbow-me/config/debug';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import {
@@ -46,7 +50,8 @@ export const SettingsExternalURLs = {
 const CheckmarkIcon = styled(Icon).attrs({
   name: 'checkmarkCircled',
 })`
-  box-shadow: 0px 4px 6px ${colors.alpha(colors.blueGreyDark50, 0.4)};
+  box-shadow: 0px 4px 6px
+    ${colors.alpha(darkMode ? colors.shadow : colors.blueGreyDark50, 0.4)};
 `;
 
 const contentContainerStyle = { flex: 1 };
@@ -156,14 +161,18 @@ export default function SettingsSection({
     [wallets]
   );
 
-  const backupStatusColor = allBackedUp ? colors.green : colors.blueGreyDark50;
+  const backupStatusColor = allBackedUp
+    ? colors.green
+    : colors.alpha(colors.blueGreyDark, 0.5);
 
   return (
     <Container scrollEnabled={isTinyPhone}>
       <ColumnWithDividers dividerRenderer={ListItemDivider} marginTop={7}>
         {canBeBackedUp && (
           <ListItem
-            icon={<SettingIcon source={BackupIcon} />}
+            icon={
+              <SettingIcon source={darkMode ? BackupIconDark : BackupIcon} />
+            }
             label="Backup"
             onPress={onPressBackup}
             onPressIcloudBackup={onPressIcloudBackup}
@@ -180,7 +189,9 @@ export default function SettingsSection({
           </ListItem>
         )}
         <ListItem
-          icon={<SettingIcon source={CurrencyIcon} />}
+          icon={
+            <SettingIcon source={darkMode ? CurrencyIconDark : CurrencyIcon} />
+          }
           label="Currency"
           onPress={onPressCurrency}
           testID="currency-section"
@@ -188,7 +199,9 @@ export default function SettingsSection({
           <ListItemArrowGroup>{nativeCurrency || ''}</ListItemArrowGroup>
         </ListItem>
         <ListItem
-          icon={<SettingIcon source={NetworkIcon} />}
+          icon={
+            <SettingIcon source={darkMode ? NetworkIconDark : NetworkIcon} />
+          }
           label="Network"
           onPress={onPressNetwork}
           testID="network-section"
@@ -198,7 +211,9 @@ export default function SettingsSection({
           </ListItemArrowGroup>
         </ListItem>
         {/*<ListItem*/}
-        {/*  icon={<SettingIcon source={LanguageIcon} />}*/}
+        {/*  icon={*/}
+        {/*    <SettingIcon source={darkMode ? LanguageIconDark : LanguageIcon} />*/}
+        {/*  }*/}
         {/*  label="Language"*/}
         {/*  onPress={onPressLanguage}*/}
         {/*>*/}

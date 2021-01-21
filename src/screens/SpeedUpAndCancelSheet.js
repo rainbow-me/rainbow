@@ -477,7 +477,7 @@ export default function SpeedUpAndCancelSheet() {
                     <SheetActionButton
                       color={colors.white}
                       fullWidth
-                      label="Cancel"
+                      label="Close"
                       onPress={goBack}
                       size="big"
                       textColor={colors.alpha(colors.blueGreyDark, 0.8)}

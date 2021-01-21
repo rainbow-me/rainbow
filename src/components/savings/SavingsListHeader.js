@@ -6,11 +6,11 @@ import styled from 'styled-components/primitives';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
 import { convertAmountToNativeDisplay } from '../../helpers/utilities';
 import { useAccountSettings } from '../../hooks';
-
 import { ButtonPressAnimation, interpolate } from '../animations';
 import { Row, RowWithMargins } from '../layout';
 import { Emoji, Text, TruncatedText } from '../text';
 import { ImgixImage } from '@rainbow-me/images';
+import { colors } from '@rainbow-me/styles';
 
 const AnimatedImgixImage = Animated.createAnimatedComponent(ImgixImage);
 
@@ -106,6 +106,7 @@ const SavingsListHeader = ({
               ],
               width: 8,
             }}
+            tintColor={colors.dark}
           />
         </RowWithMargins>
       </Row>

@@ -4,17 +4,18 @@ import styled from 'styled-components/primitives';
 import { ButtonPressAnimation } from '../animations';
 import { Centered, InnerBorder } from '../layout';
 import { Text } from '../text';
+import { darkMode } from '@rainbow-me/config/debug';
 import { colors } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const shadows = [
-  [0, 10, 30, colors.dark, 0.2],
-  [0, 5, 15, colors.dark, 0.4],
+  [0, 10, 30, colors.shadow, 0.2],
+  [0, 5, 15, colors.shadow, darkMode ? 0 : 0.4],
 ];
 
 const Label = styled(Text).attrs({
   align: 'center',
-  color: colors.white,
+  color: colors.whiteLabel,
   size: 'larger',
   weight: 'bold',
 })`
@@ -37,7 +38,7 @@ export default function ShareButton({ accountAddress, ...props }) {
       {...props}
     >
       <ShadowStack
-        backgroundColor={colors.dark}
+        backgroundColor={darkMode ? colors.white : colors.dark}
         borderRadius={28}
         height={56}
         shadows={shadows}

@@ -7,6 +7,7 @@ import { RowWithMargins } from '../../layout';
 import { Text } from '../../text';
 import RainbowButtonBackground from './RainbowButtonBackground';
 import RainbowButtonTypes from './RainbowButtonTypes';
+import { darkMode } from '@rainbow-me/config/debug';
 import { useDimensions } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { colors, position, shadow } from '@rainbow-me/styles';
@@ -37,9 +38,9 @@ const ButtonContent = styled(RowWithMargins).attrs({
   padding-bottom: 4;
 `;
 
-const ButtonLabel = styled(Text).attrs(({ type }) => ({
+const ButtonLabel = styled(Text).attrs(({ disabled, type }) => ({
   align: type === RainbowButtonTypes.addCash ? 'left' : 'center',
-  color: colors.white,
+  color: darkMode && disabled ? colors.white : colors.whiteLabel,
   letterSpacing:
     type === RainbowButtonTypes.addCash ? 'roundedTight' : 'rounded',
   size: type === RainbowButtonTypes.small ? 'large' : 'larger',
@@ -47,19 +48,20 @@ const ButtonLabel = styled(Text).attrs(({ type }) => ({
 }))``;
 
 const OuterButton = styled.View`
-  ${shadow.build(0, 5, 15, colors.dark, 0.4)};
+  ${shadow.build(0, 5, 15, colors.shadow)};
   background-color: ${colors.dark};
   border-radius: ${({ height, strokeWidth }) => height / 2 + strokeWidth};
   height: ${({ height }) => height};
+  shadow-opacity: ${({ disabled }) => (darkMode && disabled ? 0 : 0.4)};
   width: ${({ width }) => width};
 `;
 
 const Shadow = styled(ShadowView)`
-  ${shadow.build(0, 10, 30, colors.dark, 1)};
+  ${shadow.build(0, 10, 30, colors.shadow, 1)};
   background-color: ${colors.white};
   border-radius: ${({ height, strokeWidth }) => height / 2 + strokeWidth};
   height: ${({ height }) => height};
-  opacity: ${android ? 1 : 0.2};
+  opacity: ${({ disabled }) => (darkMode && disabled ? 0 : android ? 1 : 0.2)};
   position: absolute;
   width: ${({ width }) => width};
 `;
@@ -84,7 +86,12 @@ const RainbowButton = ({
   width = type === RainbowButtonTypes.addCash ? 155 : width || maxButtonWidth;
 
   const outerButtonMask = (
-    <OuterButton height={height} strokeWidth={strokeWidth} width={width} />
+    <OuterButton
+      disabled={disabled}
+      height={height}
+      strokeWidth={strokeWidth}
+      width={width}
+    />
   );
 
   return (
@@ -96,7 +103,12 @@ const RainbowButton = ({
       scaleTo={0.9}
       skipTopMargin={skipTopMargin}
     >
-      <Shadow height={height} strokeWidth={strokeWidth} width={width} />
+      <Shadow
+        disabled={disabled}
+        height={height}
+        strokeWidth={strokeWidth}
+        width={width}
+      />
       <ButtonContainer
         elevation={5}
         height={height}
@@ -112,7 +124,7 @@ const RainbowButton = ({
         />
         <ButtonContent type={type}>
           {type === RainbowButtonTypes.addCash && <AddCashIcon />}
-          <ButtonLabel type={type}>
+          <ButtonLabel disabled={disabled} type={type}>
             {type === RainbowButtonTypes.addCash ? 'Add Cash' : label}
           </ButtonLabel>
         </ButtonContent>

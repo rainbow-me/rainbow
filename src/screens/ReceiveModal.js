@@ -20,7 +20,7 @@ const QRCodeSize = ios ? 250 : Math.min(230, deviceUtils.dimensions.width - 20);
 
 const AddressText = styled(TruncatedAddress).attrs({
   align: 'center',
-  color: colors.white,
+  color: colors.whiteLabel,
   lineHeight: 'loosest',
   opacity: 0.6,
   size: 'large',
@@ -37,21 +37,21 @@ const Container = styled(Centered).attrs({
 `;
 
 const Handle = styled(SheetHandle).attrs({
-  color: colors.white,
+  color: colors.whiteLabel,
 })`
   margin-bottom: 19;
 `;
 
 const QRWrapper = styled(Column).attrs({ align: 'center' })`
   ${padding(24)};
-  ${shadow.build(0, 10, 50, colors.black, 0.6)};
-  background-color: ${colors.white};
+  ${shadow.build(0, 10, 50, colors.shadowBlack, 0.6)};
+  background-color: ${colors.whiteLabel};
   border-radius: 39;
 `;
 
 const NameText = styled(Text).attrs({
   align: 'center',
-  color: colors.white,
+  color: colors.whiteLabel,
   letterSpacing: 'roundedMedium',
   size: 'bigger',
   weight: 'bold',

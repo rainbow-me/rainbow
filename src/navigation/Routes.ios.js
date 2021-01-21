@@ -46,6 +46,7 @@ import {
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
+import { darkMode } from '@rainbow-me/config/debug';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import createNativeStackNavigator from 'react-native-cool-modals/createNativeStackNavigator';
 
@@ -219,7 +220,7 @@ function NativeStackNavigator() {
         component={ReceiveModal}
         name={Routes.RECEIVE_MODAL}
         options={{
-          backgroundColor: '#3B3E43',
+          backgroundColor: darkMode ? '#25292E' : '#3B3E43',
           backgroundOpacity: 1,
           customStack: true,
         }}

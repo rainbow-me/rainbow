@@ -4,6 +4,7 @@ import { View } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
 import styled from 'styled-components/primitives';
 import RainbowButtonTypes from './RainbowButtonTypes';
+import { darkMode } from '@rainbow-me/config/debug';
 import { colors, margin } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
@@ -11,12 +12,16 @@ const RainbowGradientColors = {
   inner: {
     addCash: ['#FFB114', '#FF54BB', '#00F0FF'],
     default: colors.gradients.rainbow,
-    disabled: ['#B0B3B9', '#B0B3B9', '#B0B3B9'],
+    disabled: darkMode
+      ? [colors.blueGreyDark20, colors.blueGreyDark20, colors.blueGreyDark20]
+      : ['#B0B3B9', '#B0B3B9', '#B0B3B9'],
   },
   outer: {
     addCash: ['#F5AA13', '#F551B4', '#00E6F5'],
     default: ['#F5AA13', '#F551B4', '#799DD5'],
-    disabled: ['#A5A8AE', '#A5A8AE', '#A5A8AE'],
+    disabled: darkMode
+      ? [colors.blueGreyDark20, colors.blueGreyDark20, colors.blueGreyDark20]
+      : ['#A5A8AE', '#A5A8AE', '#A5A8AE'],
   },
 };
 

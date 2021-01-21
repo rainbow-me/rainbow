@@ -42,7 +42,7 @@ const transition = (
 
 const AddButton = neverRerender(({ onPress }) => (
   <Button
-    backgroundColor={colors.sendScreen.brightBlue}
+    backgroundColor={colors.appleBlue}
     onPress={onPress}
     size="small"
     testID="add-contact-button"

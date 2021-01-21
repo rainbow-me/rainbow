@@ -4,13 +4,16 @@ import { useNavigation } from '../../navigation/Navigation';
 import { magicMemo } from '../../utils';
 import { Icon } from '../icons';
 import FloatingActionButton from './FloatingActionButton';
+import { darkMode } from '@rainbow-me/config/debug';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 
-const FabShadow = [
-  [0, 10, 30, colors.dark, 0.4],
-  [0, 5, 15, colors.paleBlue, 0.5],
-];
+const FabShadow = darkMode
+  ? [[0, 10, 30, colors.shadow, 1]]
+  : [
+      [0, 10, 30, colors.shadow, 0.8],
+      [0, 5, 15, colors.paleBlue, 1],
+    ];
 
 const SendFab = ({ disabled, isReadOnlyWallet, ...props }) => {
   const { navigate } = useNavigation();
@@ -32,7 +35,13 @@ const SendFab = ({ disabled, isReadOnlyWallet, ...props }) => {
       shadows={FabShadow}
       testID="send-fab"
     >
-      <Icon height={22} marginBottom={4} name="send" width={23} />
+      <Icon
+        color={colors.whiteLabel}
+        height={22}
+        marginBottom={4}
+        name="send"
+        width={23}
+      />
     </FloatingActionButton>
   );
 };

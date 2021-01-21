@@ -8,7 +8,6 @@ import { colors, fonts, fontWithWidth } from '@rainbow-me/styles';
 
 const Label = styled(ChartXLabel)`
   ${fontWithWidth(fonts.weight.semibold)};
-  background-color: white;
   font-size: ${fonts.size.larger};
   font-variant: tabular-nums;
   letter-spacing: ${fonts.letterSpacing.roundedMedium};

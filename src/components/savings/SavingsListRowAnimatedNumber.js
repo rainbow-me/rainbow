@@ -48,7 +48,7 @@ const SavingsListRowAnimatedNumber = ({
   return (
     <TextComponent
       animationConfig={{
-        color: ios ? '#2CCC00' : '#2CFF00', // HEX
+        color: colors.green, // HEX
         decimals: 10,
         duration: 800, // in intervals
         initialValue: Number(initialValue),

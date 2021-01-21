@@ -3,6 +3,7 @@ import { StyleSheet } from 'react-native';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder, RowWithMargins } from '../layout';
 import { Text } from '../text';
+import { darkMode } from '@rainbow-me/config/debug';
 import { colors, position, shadow } from '@rainbow-me/styles';
 
 const ButtonBorderRadius = 15;
@@ -10,7 +11,13 @@ const ButtonBorderRadius = 15;
 const sx = StyleSheet.create({
   button: {
     ...position.centeredAsObject,
-    ...shadow.buildAsObject(0, 4, 6, colors.swapPurple, 0.4),
+    ...shadow.buildAsObject(
+      0,
+      4,
+      6,
+      darkMode ? colors.shadow : colors.swapPurple,
+      darkMode ? 0.15 : 0.4
+    ),
     backgroundColor: colors.swapPurple,
     borderRadius: ButtonBorderRadius,
     height: 30,
@@ -34,7 +41,7 @@ const SavingsListRowEmptyState = ({ onPress }) => (
     <ButtonPressAnimation onPress={onPress} scaleTo={0.92} style={sx.button}>
       <Text
         align="center"
-        color={colors.white}
+        color={colors.whiteLabel}
         letterSpacing="roundedTight"
         size="lmedium"
         weight="semibold"

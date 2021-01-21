@@ -25,7 +25,7 @@ const Container = styled(RowWithMargins).attrs({
 })`
   ${padding(9, 10, 11, 10)};
   ${position.centered};
-  ${shadow.build(0, 6, 10, colors.dark, 0.14)};
+  ${shadow.build(0, 6, 10, colors.shadow, 0.14)};
   background-color: ${({ color }) => color};
   border-radius: 20;
   bottom: ${({ insets }) => (insets.bottom || 40) + 3};

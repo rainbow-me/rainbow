@@ -187,7 +187,7 @@ const GasSpeedButton = ({
       <Text
         color={
           theme === 'dark'
-            ? colors.white
+            ? colors.whiteLabel
             : colors.alpha(colors.blueGreyDark, 0.8)
         }
         letterSpacing="roundedTight"
@@ -395,7 +395,7 @@ const GasSpeedButton = ({
               <Input
                 color={
                   theme === 'dark'
-                    ? colors.white
+                    ? colors.whiteLabel
                     : colors.alpha(colors.blueGreyDark, 0.8)
                 }
                 height={19}
@@ -423,7 +423,7 @@ const GasSpeedButton = ({
                 color={
                   customGasPriceInput
                     ? theme === 'dark'
-                      ? colors.white
+                      ? colors.whiteLabel
                       : colors.alpha(colors.blueGreyDark, 0.8)
                     : theme === 'dark'
                     ? colors.alpha(colors.darkModeColors.blueGreyDark, 0.3)

@@ -2,12 +2,13 @@ import React from 'react';
 import ExchangeModalTypes from '../../helpers/exchangeModalTypes';
 import { HoldToAuthorizeButton } from '../buttons';
 import { SlippageWarningThresholdInBips } from './SlippageWarning';
+import { darkMode } from '@rainbow-me/config/debug';
 import { colors } from '@rainbow-me/styles';
 
 const ConfirmExchangeButtonShadows = [
-  [0, 3, 5, colors.black, 0.2],
-  [0, 6, 10, colors.black, 0.14],
-  [0, 1, 18, colors.black, 0.12],
+  [0, 3, 5, colors.shadowBlack, 0.2],
+  [0, 6, 10, colors.shadowBlack, 0.14],
+  [0, 1, 18, colors.shadowBlack, 0.12],
 ];
 
 const ConfirmExchangeButton = ({
@@ -49,7 +50,9 @@ const ConfirmExchangeButton = ({
   return (
     <HoldToAuthorizeButton
       disabled={isDisabled}
-      disabledBackgroundColor={colors.grey20}
+      disabledBackgroundColor={
+        darkMode ? colors.alpha(colors.blueGreyDark, 0.2) : colors.grey20
+      }
       flex={1}
       hideInnerBorder
       isAuthorizing={isAuthorizing}

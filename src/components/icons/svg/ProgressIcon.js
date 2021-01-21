@@ -115,7 +115,7 @@ ProgressIcon.propTypes = {
 ProgressIcon.defaultProps = {
   color: colors.alpha(colors.sendScreen.grey, 0.3),
   progress: 0,
-  progressColor: colors.white,
+  progressColor: colors.whiteLabel,
   size: 29,
   strokeWidth: 2,
 };

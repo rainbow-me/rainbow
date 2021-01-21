@@ -7,7 +7,7 @@ import UniqueTokenImage from './UniqueTokenImage';
 import { colors, shadow as shadowUtil } from '@rainbow-me/styles';
 
 const UniqueTokenCardBorderRadius = 20;
-const UniqueTokenCardShadow = [0, 2, 6, colors.dark, 0.08];
+const UniqueTokenCardShadow = [0, 2, 6, colors.shadow, 0.08];
 
 const Container = styled.View`
   ${({ shadow }) => shadowUtil.build(...shadow)};

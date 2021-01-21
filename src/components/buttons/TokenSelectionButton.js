@@ -4,6 +4,7 @@ import { ButtonPressAnimation } from '../animations';
 import { InnerBorder, RowWithMargins } from '../layout';
 import { Text } from '../text';
 import CaretImageSource from '@rainbow-me/assets/family-dropdown-arrow.png';
+import { darkMode } from '@rainbow-me/config/debug';
 import { useColorForAsset } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { colors, padding, position } from '@rainbow-me/styles';
@@ -24,7 +25,7 @@ const Content = styled(RowWithMargins).attrs({
 const CaretIcon = styled(ImgixImage).attrs({
   resizeMode: ImgixImage.resizeMode.contain,
   source: CaretImageSource,
-  tintColor: colors.white,
+  tintColor: colors.whiteLabel,
 })`
   height: 18;
   top: 0.5;
@@ -45,8 +46,8 @@ export default function TokenSelectionButton({
 
   const shadowsForAsset = useMemo(
     () => [
-      [0, 10, 30, colors.dark, 0.2],
-      [0, 5, 15, colorForAsset, 0.4],
+      [0, 10, 30, colors.shadow, 0.2],
+      [0, 5, 15, colorForAsset, darkMode ? 0 : 0.4],
     ],
     [colorForAsset]
   );
@@ -55,7 +56,10 @@ export default function TokenSelectionButton({
     <ButtonPressAnimation
       borderRadius={borderRadius}
       contentContainerStyle={{
-        backgroundColor: colorForAsset,
+        backgroundColor:
+          darkMode && (colorForAsset === colors.dark || '#25292E')
+            ? colors.darkModeColors.darkModeDark
+            : colorForAsset,
         borderRadius,
       }}
       onPress={onPress}
@@ -64,7 +68,11 @@ export default function TokenSelectionButton({
     >
       <ShadowStack
         {...position.coverAsObject}
-        backgroundColor={colorForAsset}
+        backgroundColor={
+          darkMode && colorForAsset === colors.dark
+            ? colors.darkModeColors.darkModeDark
+            : colorForAsset
+        }
         borderRadius={borderRadius}
         elevation={TokenSelectionButtonElevation}
         shadows={shadowsForAsset}
@@ -72,7 +80,7 @@ export default function TokenSelectionButton({
       <Content>
         <Text
           align="center"
-          color={colors.white}
+          color={colors.whiteLabel}
           size="large"
           testID={testID + '-text'}
           weight="bold"

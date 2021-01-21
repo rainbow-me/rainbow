@@ -176,7 +176,7 @@ export const closeKeyboardOnClose = {
 
 export const nativeStackDefaultConfig = {
   allowsDragToDismiss: true,
-  backgroundColor: '#0A0A0A',
+  backgroundColor: colors.stackBackground,
   backgroundOpacity: 1,
   customStack: true,
   headerHeight: 0,
@@ -247,6 +247,7 @@ const headerConfigOptions = {
     headerTitleAlign: 'center',
   }),
   headerTitleStyle: {
+    color: colors.dark,
     fontFamily: fonts.family.SFProRounded,
     fontSize: parseFloat(fonts.size.large),
     fontWeight: fonts.weight.bold,

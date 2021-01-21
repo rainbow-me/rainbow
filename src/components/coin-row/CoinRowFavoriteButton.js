@@ -5,6 +5,7 @@ import styled from 'styled-components/primitives';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { CoinRowHeight } from './CoinRow';
+import { darkMode } from '@rainbow-me/config/debug';
 import { colors, padding } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
@@ -24,8 +25,11 @@ const FavoriteButton = styled(Centered)`
 const Circle = styled(RadialGradient).attrs(({ isFavorited }) => ({
   center: [0, 15],
   colors: isFavorited
-    ? [colors.alpha('#FFB200', 0), colors.alpha('#FFB200', 0.2)]
-    : ['#FFFFFF', '#F2F4F7'],
+    ? [
+        colors.alpha('#FFB200', darkMode ? 0.15 : 0),
+        colors.alpha('#FFB200', darkMode ? 0.05 : 0.2),
+      ]
+    : colors.gradients.favoriteCircle,
 }))`
   border-radius: 15px;
   height: 30px;

@@ -44,7 +44,7 @@ const SendAssetRecyclerListView = styled(RecyclerListView)`
 
 const SendAssetListDivider = () => (
   <Centered marginVertical={dividerMargin}>
-    <Divider color={colors.lighterGrey} />
+    <Divider color={colors.rowDividerLight} />
   </Centered>
 );
 

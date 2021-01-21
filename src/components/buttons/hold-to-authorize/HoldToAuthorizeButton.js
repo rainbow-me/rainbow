@@ -33,13 +33,13 @@ const ButtonDisabledBgColor = {
 
 const ButtonShadows = {
   default: [
-    [0, 3, 5, colors.dark, 0.2],
-    [0, 6, 10, colors.dark, 0.14],
-    [0, 1, 18, colors.dark, 0.12],
+    [0, 3, 5, colors.shadow, 0.2],
+    [0, 6, 10, colors.shadow, 0.14],
+    [0, 1, 18, colors.shadow, 0.12],
   ],
   disabled: [
-    [0, 2, 6, colors.dark, 0.06],
-    [0, 3, 9, colors.dark, 0.08],
+    [0, 2, 6, colors.shadow, 0.06],
+    [0, 3, 9, colors.shadow, 0.08],
   ],
 };
 
@@ -57,7 +57,7 @@ const Content = styled(Centered)`
 `;
 
 const Title = styled(Text).attrs(({ smallButton }) => ({
-  color: 'white',
+  color: 'whiteLabel',
   size: smallButton ? 'large' : 'larger',
   weight: 'bold',
 }))`
@@ -76,7 +76,7 @@ const calculateReverseDuration = proc(longPressProgress =>
 );
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs({
-  color: colors.white,
+  color: colors.whiteLabel,
   size: 31,
 })`
   left: 15;

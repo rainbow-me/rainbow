@@ -4,6 +4,7 @@ import styled from 'styled-components/primitives';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered, InnerBorder } from '../../layout';
 import { Text } from '../../text';
+import { darkMode } from '@rainbow-me/config/debug';
 import { colors, padding } from '@rainbow-me/styles';
 
 const ButtonSizeTypes = {
@@ -23,7 +24,10 @@ const ButtonShapeTypes = {
 };
 
 const shadowStyles = `
-  shadow-color: ${colors.alpha(colors.blueGreyDark, 0.5)};
+  shadow-color: ${colors.alpha(
+    darkMode ? colors.shadow : colors.blueGreyDark,
+    0.5
+  )};
   shadow-offset: 0px 4px;
   shadow-opacity: 0.2;
   shadow-radius: 6;
@@ -46,7 +50,7 @@ export default function Button({
   borderOpacity,
   borderWidth,
   children,
-  color = colors.white,
+  color = colors.whiteLabel,
   containerStyles,
   disabled,
   onPress,

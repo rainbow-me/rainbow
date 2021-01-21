@@ -6,6 +6,7 @@ import Spinner from '../Spinner';
 import TouchableBackdrop from '../TouchableBackdrop';
 import { Centered, Column } from '../layout';
 import { Text } from '../text';
+import { darkMode } from '@rainbow-me/config/debug';
 import { colors, padding, position } from '@rainbow-me/styles';
 import { neverRerender } from '@rainbow-me/utils';
 
@@ -27,7 +28,7 @@ const Overlay = styled(Centered)`
 
 const OverlayBlur = styled(BlurView).attrs({
   blurAmount: 40,
-  blurType: 'light',
+  blurType: darkMode ? 'dark' : 'light',
 })`
   ${position.cover};
   z-index: 1;

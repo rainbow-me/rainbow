@@ -9,12 +9,12 @@ import { borders, colors } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const CameraHeaderButtonShadows = [
-  [0, 3, 5, colors.dark, 0.2],
-  [0, 6, 10, colors.dark, 0.14],
+  [0, 3, 5, colors.shadow, 0.2],
+  [0, 6, 10, colors.shadow, 0.14],
 ];
 
 const CameraIcon = styled(Icon).attrs({
-  color: colors.white,
+  color: colors.whiteLabel,
   name: 'camera',
 })`
   margin-bottom: 1;

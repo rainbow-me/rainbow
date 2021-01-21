@@ -75,7 +75,7 @@ export const speedUpAndCancelStyleInterpolator = ({
 
   return {
     cardStyle: {
-      shadowColor: colors.black,
+      shadowColor: colors.shadowBlack,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.6,
       shadowRadius: 25,
@@ -103,7 +103,7 @@ const exchangeStyleInterpolator = ({
 
   return {
     cardStyle: {
-      shadowColor: colors.black,
+      shadowColor: colors.shadowBlack,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.6,
       shadowRadius: 25,
@@ -131,7 +131,7 @@ const expandStyleInterpolator = targetOpacity => ({
 
   return {
     cardStyle: {
-      shadowColor: colors.dark,
+      shadowColor: colors.shadow,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.5,
       shadowRadius: 25,
@@ -161,14 +161,14 @@ const savingsStyleInterpolator = ({
 
   return {
     cardStyle: {
-      shadowColor: colors.dark,
+      shadowColor: colors.shadow,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.6,
       shadowRadius: 25,
       transform: [{ translateY }],
     },
     overlayStyle: {
-      backgroundColor: colors.dark,
+      backgroundColor: colors.shadow,
       opacity: backgroundOpacity,
     },
   };
@@ -191,14 +191,14 @@ const sheetStyleInterpolator = (targetOpacity = 1) => ({
 
   return {
     cardStyle: {
-      shadowColor: colors.black,
+      shadowColor: colors.shadowBlack,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.6,
       shadowRadius: 25,
       transform: [{ translateY }],
     },
     overlayStyle: {
-      backgroundColor: colors.black,
+      backgroundColor: colors.shadowBlack,
       opacity: backgroundOpacity,
     },
   };
@@ -227,7 +227,7 @@ const swapDetailInterpolator = ({
 
   return {
     cardStyle: {
-      shadowColor: colors.dark,
+      shadowColor: colors.shadow,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.5,
       shadowRadius: 25,

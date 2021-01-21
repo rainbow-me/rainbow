@@ -11,10 +11,10 @@ import ShadowStack from 'react-native-shadow-stack';
 const RVLIBorderRadius = 16.25;
 const RVLIShadows = {
   default: [
-    [0, 4, 6, colors.dark, 0.04],
-    [0, 1, 3, colors.dark, 0.08],
+    [0, 4, 6, colors.shadow, 0.04],
+    [0, 1, 3, colors.shadow, 0.08],
   ],
-  large: [[0, 6, 10, colors.dark, 0.14]],
+  large: [[0, 6, 10, colors.shadow, 0.14]],
 };
 
 const Content = styled(Centered)`
@@ -53,7 +53,7 @@ export default function RequestVendorLogoIcon({
     <ShadowStack
       {...props}
       {...position.sizeAsObject(size)}
-      backgroundColor={bgColor}
+      backgroundColor={colors.white}
       borderRadius={borderRadius}
       shadows={RVLIShadows[showLargeShadow ? 'large' : 'default']}
     >

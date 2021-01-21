@@ -89,7 +89,7 @@ const GasSpeedLabelPagerItem = ({ label, selected, shouldAnimate, theme }) => {
         <GasSpeedLabel
           color={
             theme !== 'light'
-              ? colors.white
+              ? colors.whiteLabel
               : colors.alpha(colors.blueGreyDark, 0.8)
           }
         >

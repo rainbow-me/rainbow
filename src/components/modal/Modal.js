@@ -13,7 +13,7 @@ const Container = styled(Centered).attrs(({ fixedToTop }) => ({
 }))`
   ${({ containerPadding }) => padding(containerPadding)};
   ${position.size('100%')};
-  shadow-color: ${colors.black};
+  shadow-color: ${colors.shadowBlack};
   shadow-offset: 0px 10px;
   shadow-opacity: 0.5;
   shadow-radius: 25;

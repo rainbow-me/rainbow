@@ -13,6 +13,7 @@ import { Icon } from '../../icons';
 import { Centered, Column, ColumnWithMargins, Row } from '../../layout';
 import { Text, TruncatedAddress } from '../../text';
 import Caret from '@rainbow-me/assets/family-dropdown-arrow.png';
+import { darkMode } from '@rainbow-me/config/debug';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { useWallets } from '@rainbow-me/hooks';
@@ -55,13 +56,15 @@ const CheckmarkIcon = styled(Icon).attrs({
 const GreenCheck = styled(CheckmarkIcon).attrs({
   color: colors.green,
 })`
-  box-shadow: 0px 4px 6px ${colors.alpha(colors.green, 0.4)};
+  box-shadow: 0px 4px 6px
+    ${colors.alpha(darkMode ? colors.shadow : colors.green, 0.4)};
 `;
 
 const GreyCheck = styled(CheckmarkIcon).attrs({
   color: colors.blueGreyDark50,
 })`
-  box-shadow: 0px 4px 6px ${colors.alpha(colors.blueGreyDark50, 0.4)};
+  box-shadow: 0px 4px 6px
+    ${colors.alpha(darkMode ? colors.shadow : colors.blueGreyDark50, 0.4)};
 `;
 
 const WarningIcon = styled(Icon).attrs({
@@ -241,10 +244,7 @@ const WalletSelectionView = () => {
                   </Row>
                 </Row>
               </ButtonPressAnimation>
-              <Divider
-                color={colors.alpha(colors.blueGreyDark, 0.01)}
-                inset={[0, 15, 0]}
-              />
+              <Divider color={colors.rowDividerFaint} inset={[0, 15, 0]} />
             </Column>
           );
         })}

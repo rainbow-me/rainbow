@@ -3,7 +3,6 @@ import Animated, { Easing } from 'react-native-reanimated';
 import { toRad, useTimingTransition } from 'react-native-redash';
 import styled from 'styled-components/primitives';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
-
 import { ButtonPressAnimation, interpolate } from '../animations';
 import { Row, RowWithMargins } from '../layout';
 import { Emoji, Text, TruncatedText } from '../text';
@@ -37,6 +36,7 @@ const ChildrenAmountText = styled(Text).attrs({
 const RotatingArrowIcon = styled(AnimatedImgixImage).attrs({
   resizeMode: ImgixImage.resizeMode.contain,
   source: CaretImageSource,
+  tintColor: colors.dark,
 })`
   height: 18;
   margin-bottom: 1;

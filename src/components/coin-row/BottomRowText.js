@@ -3,7 +3,7 @@ import { TruncatedText } from '../text';
 import { colors } from '@rainbow-me/styles';
 
 const BottomRowText = styled(TruncatedText).attrs(
-  ({ align = 'left', color = colors.blueGreyDark50 }) => ({
+  ({ align = 'left', color = colors.alpha(colors.blueGreyDark, 0.5) }) => ({
     align,
     color,
     size: 'smedium',

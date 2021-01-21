@@ -68,7 +68,6 @@ const sx = StyleSheet.create({
   },
 });
 
-const gradientColors = ['#ECF1F5', '#DFE4EB'];
 const gradientProps = {
   pointerEvents: 'none',
   style: sx.gradient,
@@ -77,8 +76,8 @@ const gradientProps = {
 const linearGradientProps = {
   ...gradientProps,
   colors: [
-    colors.alpha(gradientColors[0], 0.3),
-    colors.alpha(gradientColors[1], 0.5),
+    colors.alpha(colors.gradients.lightGrey[0], 0.6),
+    colors.gradients.lightGrey[1],
   ],
   end: { x: 1, y: 1 },
   start: { x: 0, y: 0 },

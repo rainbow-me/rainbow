@@ -12,6 +12,7 @@ import CopyTooltip from '../copy-tooltip';
 import { Centered } from '../layout';
 import { Text, TruncatedAddress } from '../text';
 import { ProfileAvatarButton, ProfileModal, ProfileNameInput } from './profile';
+import { darkMode } from '@rainbow-me/config/debug';
 import { colors, margin, padding } from '@rainbow-me/styles';
 
 const AddressAbbreviation = styled(TruncatedAddress).attrs({
@@ -32,7 +33,12 @@ const Spacer = styled.View`
 `;
 
 const SubmitButton = styled(Button).attrs(({ value }) => ({
-  backgroundColor: value.length > 0 ? colors.appleBlue : undefined,
+  backgroundColor:
+    value.length > 0
+      ? colors.appleBlue
+      : darkMode
+      ? colors.alpha(colors.blueGreyDark, 0.2)
+      : undefined,
   disabled: !value.length > 0,
   showShadow: true,
   size: 'small',
@@ -41,11 +47,11 @@ const SubmitButton = styled(Button).attrs(({ value }) => ({
   width: 215;
 `;
 
-const SubmitButtonLabel = styled(Text).attrs({
-  color: 'white',
+const SubmitButtonLabel = styled(Text).attrs(({ value }) => ({
+  color: value.length > 0 ? 'whiteLabel' : 'white',
   size: 'lmedium',
-  weight: 'semibold',
-})`
+  weight: 'bold',
+}))`
   margin-bottom: 1.5;
 `;
 
@@ -124,7 +130,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
           testID="contact-profile-add-button"
           value={value}
         >
-          <SubmitButtonLabel>
+          <SubmitButtonLabel value={value}>
             {contact ? 'Done' : 'Add Contact'}
           </SubmitButtonLabel>
         </SubmitButton>

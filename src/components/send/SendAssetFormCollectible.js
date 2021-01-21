@@ -25,7 +25,7 @@ const Footer = styled(Column).attrs({ justify: 'end' })`
 `;
 
 const Gradient = styled(LinearGradient).attrs(({ isTallPhone }) => ({
-  colors: ['#FAFAFA00', '#FAFAFAFF'],
+  colors: colors.gradients.sendBackground,
   end: { x: 0.5, y: isTallPhone ? 0.2 : 0.4 },
   pointerEvents: 'none',
   start: { x: 0.5, y: 0 },
@@ -46,7 +46,7 @@ const SendFormUniqueTokenCard = styled(UniqueTokenCard).attrs({
   enableHapticFeedback: false,
   resizeMode: 'contain',
   scaleTo: 1,
-  shadow: [0, 10, 25, colors.dark, 0.4],
+  shadow: [0, 10, 25, colors.shadow, 0.4],
 })`
   opacity: 1;
 `;

@@ -31,7 +31,7 @@ const Container = styled(Row)`
 
 const BackgroundGradient = styled(RadialGradient).attrs({
   center: [ExchangeSearchWidth, ExchangeSearchWidth / 2],
-  colors: ['#FCFDFE', '#F0F2F5'],
+  colors: colors.gradients.searchBar,
 })`
   position: absolute;
   height: ${ExchangeSearchWidth};

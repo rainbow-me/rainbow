@@ -1,7 +1,7 @@
 import chroma from 'chroma-js';
 import { toLower } from 'lodash';
 import PropTypes from 'prop-types';
-import { darkMode } from '../config/debug';
+import { darkMode } from '@rainbow-me/config/debug';
 
 const buildRgba = (color, alpha = 1) => `rgba(${chroma(color).rgb()},${alpha})`;
 
@@ -10,11 +10,11 @@ let base = {
   black: '#000000', // '0, 0, 0'
   blueGreyDark: '#3C4252', // '60, 66, 82'
   blueGreyDark50: '#9DA0A8', // this color is blueGreyDark at 50% over white
-  blueGreyDark60: '#898d97', // this color is blueGreyDark at 60% over white
+  blueGreyDark60: '#898D97', // this color is blueGreyDark at 60% over white
   blueGreyDarker: '#0F0F11', // '15, 15, 17'
   blueGreyDarkLight: '#F3F4F5', // '243, 244, 245'
   brightRed: '#FF7171', // '255, 113, 113'
-  chartGreen: '#66d28f', // '102, 210, 143'
+  chartGreen: '#66D28F', // '102, 210, 143'
   dark: '#25292E', // '37, 41, 46'
   darkGrey: '#71778A', // '113, 119, 138'
   flamingo: '#E540F1', // '229, 64, 241'
@@ -39,13 +39,18 @@ let base = {
   red: '#FF494A', // '255, 73, 74'
   rowDivider: 'rgba(60, 66, 82, 0.03)', // '60, 66, 82, 0.03'
   rowDividerExtraLight: 'rgba(60, 66, 82, 0.015)', // '60, 66, 82, 0.015'
+  rowDividerFaint: 'rgba(60, 66, 82, 0.01)', // '60, 66, 82, 0.01'
   rowDividerLight: 'rgba(60, 66, 82, 0.02)', // '60, 66, 82, 0.02'
+  shadow: '#25292E', // '37, 41, 46'
+  shadowBlack: '#000000', // '0, 0, 0'
   shadowGrey: '#6F6F6F', // '111, 111, 111'
   shimmer: '#EDEEF1', // '237, 238, 241'
   skeleton: '#F6F7F8', // '246, 247, 248'
+  stackBackground: '#0A0A0A', // '10, 10, 10'
   swapPurple: '#575CFF', // '87, 92, 255'
   transparent: 'transparent',
   white: '#FFFFFF', // '255, 255, 255'
+  whiteLabel: '#FFFFFF', // '255, 255, 255'
   yellow: '#FFD657', // '255, 214, 87'
   yellowFavorite: '#FFB200', // '255, 178, 0'
   yellowOrange: '#FFC400', // '255, 196, 0'
@@ -70,11 +75,16 @@ const assetIcon = {
   red: '#C95050', // '201, 80, 80',
 };
 
-const gradients = {
+let gradients = {
+  favoriteCircle: ['#FFFFFF', '#F2F4F7'],
   lighterGrey: [buildRgba('#ECF1F5', 0.15), buildRgba('#DFE4EB', 0.5)],
   lightGrey: [buildRgba('#ECF1F5', 0.5), buildRgba('#DFE4EB', 0.5)],
   offWhite: [base.white, base.offWhite],
   rainbow: ['#FFB114', '#FF54BB', '#7EA4DE'],
+  savings: ['#FFFFFF', '#F7F9FA'],
+  searchBar: ['#FCFDFE', '#F0F2F5'],
+  sendBackground: ['#FAFAFA00', '#FAFAFAFF'],
+  whiteButton: ['#FFFFFF', '#F7F9FA'],
 };
 
 const sendScreen = {
@@ -121,7 +131,7 @@ const getTextColorForBackground = (targetColor, textColors = {}) => {
 const getFallbackTextColor = bg =>
   colors.getTextColorForBackground(bg, {
     dark: colors.alpha(colors.blueGreyDark, 0.5),
-    light: colors.white,
+    light: colors.whiteLabel,
   });
 
 const transparent = {
@@ -131,23 +141,37 @@ const transparent = {
 };
 
 const darkModeColors = {
-  appleBlue: '#FFFFFF',
+  appleBlue: '#0E76FD',
   black: '#FFFFFF',
   blueGreyDark: '#E0E8FF',
-  blueGreyDark50: '#FFFFFF',
-  blueGreyDarker: '#FFFFFF',
-  blueGreyDarkLight: '#0F0F0F',
-  dark: '#FFFFFF',
-  darkGrey: '#FFFFFF',
-  green: '#69D44D',
-  grey: '#FFFFFF',
-  grey20: '#FFFFFF',
-  lighterGrey: '#FFFFFF',
+  blueGreyDark20: '#3A3D45',
+  blueGreyDark50: '#797D8B',
+  blueGreyDarker: '#000000',
+  blueGreyDarkLight: '#1E2027',
+  dark: '#E0E8FF',
+  darkGrey: '#333333',
+  darkModeDark: '#404656',
+  green: '#00D146',
+  grey: '#333333',
+  grey20: '#333333',
+  lighterGrey: '#12131A',
   lightestGrey: '#FFFFFF',
-  lightGrey: '#FFFFFF',
-  purple: '#9C57FF',
-  skeleton: '#0F0F0F',
-  white: '#000000',
+  lightGrey: '#333333',
+  offWhite: '#1F222A',
+  rowDivider: 'rgba(60, 66, 82, 0.075)',
+  rowDividerExtraLight: 'rgba(60, 66, 82, 0.0375)',
+  rowDividerFaint: 'rgba(60, 66, 82, 0.025)',
+  rowDividerLight: 'rgba(60, 66, 82, 0.05)',
+  shadow: '#000000',
+  shadowBlack: '#000000',
+  shadowGrey: '#000000',
+  shimmer: '#1F2229',
+  skeleton: '#191B21',
+  stackBackground: '#000000',
+  trueBlack: '#000000',
+  trueWhite: '#FFFFFF',
+  white: '#12131A',
+  whiteLabel: '#FFFFFF',
 };
 
 if (darkMode) {
@@ -156,10 +180,22 @@ if (darkMode) {
     ...darkModeColors,
   };
 
+  gradients = {
+    favoriteCircle: [buildRgba('#1F222A', 0.8), buildRgba('#1F222A', 0.3)],
+    lighterGrey: [buildRgba('#1F222A', 0.8), buildRgba('#1F222A', 0.6)],
+    lightGrey: ['#1F222A', buildRgba('#1F222A', 0.8)],
+    offWhite: ['#1F222A', '#1F222A'],
+    rainbow: ['#FFB114', '#FF54BB', '#7EA4DE'],
+    savings: ['#1F222A', '#1F222A'],
+    searchBar: [buildRgba('#1F222A', 0.4), '#1F222A'],
+    sendBackground: ['#12131A00', '#12131AFF'],
+    whiteButton: ['#242731', '#1F222A'],
+  };
+
   listHeaders = {
-    firstGradient: '#000000ff',
-    secondGradient: '#00000080',
-    thirdGradient: '#000000ff',
+    firstGradient: '#12131Aff',
+    secondGradient: '#12131A80',
+    thirdGradient: '#12131Aff',
   };
 }
 

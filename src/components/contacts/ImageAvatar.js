@@ -6,7 +6,7 @@ import { borders, colors } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const buildSmallShadows = color => [
-  [0, 3, 5, colors.dark, 0.14],
+  [0, 3, 5, colors.shadow, 0.14],
   [0, 6, 10, colors.avatarColor[color] || color, 0.2],
 ];
 
@@ -14,16 +14,16 @@ const sizeConfigs = {
   large: {
     dimensions: 65,
     shadow: [
-      [0, 6, 10, colors.dark, 0.12],
-      [0, 2, 5, colors.dark, 0.08],
+      [0, 6, 10, colors.shadow, 0.12],
+      [0, 2, 5, colors.shadow, 0.08],
     ],
     textSize: 'bigger',
   },
   medium: {
     dimensions: 40,
     shadow: [
-      [0, 4, 6, colors.dark, 0.04],
-      [0, 1, 3, colors.dark, 0.08],
+      [0, 4, 6, colors.shadow, 0.04],
+      [0, 1, 3, colors.shadow, 0.08],
     ],
     textSize: 'larger',
   },
@@ -42,7 +42,7 @@ const ImageAvatar = ({ image, size = 'medium', ...props }) => {
   const { dimensions, shadow } = sizeConfigs[size];
 
   const shadows = useMemo(
-    () => (size === 'small' ? buildSmallShadows(colors.dark) : shadow),
+    () => (size === 'small' ? buildSmallShadows(colors.shadow) : shadow),
     [shadow, size]
   );
 
@@ -50,6 +50,7 @@ const ImageAvatar = ({ image, size = 'medium', ...props }) => {
     <ShadowStack
       {...props}
       {...borders.buildCircleAsObject(dimensions)}
+      backgroundColor={colors.white}
       shadows={shadows}
     >
       <Centered flex={1}>
