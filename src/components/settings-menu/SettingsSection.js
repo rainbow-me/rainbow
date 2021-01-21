@@ -1,10 +1,17 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import React, { Fragment, useCallback, useMemo } from 'react';
-import { Linking, NativeModules, ScrollView, Share } from 'react-native';
+import {
+  Linking,
+  NativeModules,
+  ScrollView,
+  Share,
+  Switch,
+} from 'react-native';
 import styled from 'styled-components/primitives';
 import { REVIEW_ANDROID } from '../../config/experimental';
 import useExperimentalFlag from '../../config/experimentalHooks';
 //import { supportedLanguages } from '../../languages';
+import { useTheme } from '../../context/ThemeContext';
 import AppVersionStamp from '../AppVersionStamp';
 import { Icon } from '../icons';
 import { Column, ColumnWithDividers } from '../layout';
@@ -19,6 +26,8 @@ import BackupIcon from '@rainbow-me/assets/settingsBackup.png';
 import BackupIconDark from '@rainbow-me/assets/settingsBackupDark.png';
 import CurrencyIcon from '@rainbow-me/assets/settingsCurrency.png';
 import CurrencyIconDark from '@rainbow-me/assets/settingsCurrencyDark.png';
+import darkModeIcon from '@rainbow-me/assets/settingsDarkmode.png';
+import darkModeIconDark from '@rainbow-me/assets/settingsDarkmodeDark.png';
 import NetworkIcon from '@rainbow-me/assets/settingsNetwork.png';
 import NetworkIconDark from '@rainbow-me/assets/settingsNetworkDark.png';
 import { darkMode } from '@rainbow-me/config/debug';
@@ -126,6 +135,8 @@ export default function SettingsSection({
   const { /*language,*/ nativeCurrency, network } = useAccountSettings();
   const { isTinyPhone } = useDimensions();
 
+  const { isDarkMode, setTheme } = useTheme();
+
   const onSendFeedback = useSendFeedback();
 
   const onPressReview = useCallback(async () => {
@@ -164,6 +175,10 @@ export default function SettingsSection({
   const backupStatusColor = allBackedUp
     ? colors.green
     : colors.alpha(colors.blueGreyDark, 0.5);
+
+  const toggleDarkMode = useCallback(() => {
+    setTheme(isDarkMode ? 'light' : 'dark');
+  }, [isDarkMode, setTheme]);
 
   return (
     <Container scrollEnabled={isTinyPhone}>
@@ -210,7 +225,27 @@ export default function SettingsSection({
             {networkInfo?.[network]?.name}
           </ListItemArrowGroup>
         </ListItem>
-        {/*<ListItem*/}
+        <ListItem
+          icon={
+            <SettingIcon source={darkMode ? darkModeIconDark : darkModeIcon} />
+          }
+          label="Dark Mode"
+          testID="darkmode-section"
+        >
+          <Column align="end" flex="1" justify="end">
+            <Switch
+              ios_backgroundColor={colors.alpha(colors.blueGreyDark, 0.3)}
+              onValueChange={toggleDarkMode}
+              thumbColor={isDarkMode ? colors.white : colors.white}
+              trackColor={{
+                false: '#767577',
+                true: colors.green,
+              }}
+              value={isDarkMode}
+            />
+          </Column>
+        </ListItem>
+        {/*<ListItem
         {/*  icon={*/}
         {/*    <SettingIcon source={darkMode ? LanguageIconDark : LanguageIcon} />*/}
         {/*  }*/}

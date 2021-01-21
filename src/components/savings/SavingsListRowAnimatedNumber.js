@@ -4,6 +4,7 @@ import { requireNativeComponent, StyleSheet } from 'react-native';
 import isRainbowTextAvailable from '../../helpers/isRainbowTextAvailable';
 import { formatSavingsAmount, isSymbolStablecoin } from '../../helpers/savings';
 import AndroidText from './AndroidAnimatedNumbers';
+import { darkMode } from '@rainbow-me/config/debug';
 import { colors, fonts } from '@rainbow-me/styles';
 
 const sx = StyleSheet.create({
@@ -49,6 +50,7 @@ const SavingsListRowAnimatedNumber = ({
     <TextComponent
       animationConfig={{
         color: colors.green, // HEX
+        darkMode,
         decimals: 10,
         duration: 800, // in intervals
         initialValue: Number(initialValue),
