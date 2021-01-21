@@ -38,7 +38,7 @@ const TokenFamilyHeaderIcon = ({
   ) : (
     <ShadowStack
       {...circleStyle}
-      backgroundColor={familyImage ? colors.white : colors.purpleLight}
+      backgroundColor={colors.white}
       shadows={shadows}
       style={style}
     >
