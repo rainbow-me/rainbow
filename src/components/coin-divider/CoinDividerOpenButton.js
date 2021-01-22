@@ -2,6 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import styled from 'styled-components/primitives';
 import Caret from '../../assets/family-dropdown-arrow.png';
+import { useTheme, withThemeContext } from '../../context/ThemeContext';
 import {
   ButtonPressAnimation,
   OpacityToggler,
@@ -12,7 +13,7 @@ import {
 import { Row } from '../layout';
 import CoinDividerButtonLabel from './CoinDividerButtonLabel';
 import { ImgixImage } from '@rainbow-me/images';
-import { colors, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
 const closedWidth = 52.5;
@@ -22,13 +23,13 @@ const CaretContainer = styled.View`
   padding-bottom: 1;
 `;
 
-const CaretIcon = styled(ImgixImage).attrs({
+const CaretIcon = withThemeContext(styled(ImgixImage).attrs(({ colors }) => ({
   source: Caret,
   tintColor: colors.blueGreyDark,
-})`
+}))`
   height: 18;
   width: 8;
-`;
+`);
 
 const ContainerButton = styled(ButtonPressAnimation).attrs(
   ({ isSmallBalancesOpen, isSendSheet }) => ({
@@ -60,41 +61,48 @@ const CoinDividerOpenButton = ({
   onPress,
   isSendSheet,
   ...props
-}) => (
-  <ContainerButton
-    {...props}
-    isSendSheet={isSendSheet}
-    isSmallBalancesOpen={isSmallBalancesOpen}
-    onPress={onPress}
-    radiusAndroid={RoundButtonCapSize / 2}
-  >
-    <OpacityToggler isVisible={isVisible}>
-      <Content height={coinDividerHeight}>
-        <RoundButtonSizeToggler
-          endingWidth={28}
-          isOpen={isSmallBalancesOpen}
-          startingWidth={3}
-        />
-        <View>
-          <CoinDividerButtonLabel isVisible={isSmallBalancesOpen} label="All" />
-          <CoinDividerButtonLabel
-            isVisible={!isSmallBalancesOpen}
-            label="Less"
-          />
-        </View>
-        <CaretContainer>
-          <RotationArrow
-            endingOffset={20}
-            endingPosition={-90}
+}) => {
+  const { colors } = useTheme();
+  return (
+    <ContainerButton
+      {...props}
+      isSendSheet={isSendSheet}
+      isSmallBalancesOpen={isSmallBalancesOpen}
+      onPress={onPress}
+      radiusAndroid={RoundButtonCapSize / 2}
+    >
+      <OpacityToggler isVisible={isVisible}>
+        <Content height={coinDividerHeight}>
+          <RoundButtonSizeToggler
+            color={colors.blueGreyDarkLight}
+            endingWidth={28}
             isOpen={isSmallBalancesOpen}
-          >
-            <CaretIcon />
-          </RotationArrow>
-        </CaretContainer>
-      </Content>
-    </OpacityToggler>
-  </ContainerButton>
-);
+            startingWidth={3}
+          />
+          <View>
+            <CoinDividerButtonLabel
+              isVisible={isSmallBalancesOpen}
+              label="All"
+            />
+            <CoinDividerButtonLabel
+              isVisible={!isSmallBalancesOpen}
+              label="Less"
+            />
+          </View>
+          <CaretContainer>
+            <RotationArrow
+              endingOffset={20}
+              endingPosition={-90}
+              isOpen={isSmallBalancesOpen}
+            >
+              <CaretIcon />
+            </RotationArrow>
+          </CaretContainer>
+        </Content>
+      </OpacityToggler>
+    </ContainerButton>
+  );
+};
 
 export default magicMemo(CoinDividerOpenButton, [
   'isSmallBalancesOpen',
