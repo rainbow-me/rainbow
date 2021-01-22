@@ -4,7 +4,7 @@ import { useNavigation } from '../../navigation/Navigation';
 import { magicMemo } from '../../utils';
 import { Icon } from '../icons';
 import FloatingActionButton from './FloatingActionButton';
-import { darkMode } from '@rainbow-me/config/debug';
+import { darkMode } from '@rainbow-me/config/debug'; // TODO DARKMODE
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 

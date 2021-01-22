@@ -5,7 +5,7 @@ import ButtonPressAnimation, {
   ScaleButtonZoomableAndroid,
 } from '../animations/ButtonPressAnimation';
 import { Centered, InnerBorder } from '../layout';
-import { darkMode } from '@rainbow-me/config/debug';
+import { darkMode } from '@rainbow-me/config/debug'; // TODO DARKMODE
 import { borders, colors, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 

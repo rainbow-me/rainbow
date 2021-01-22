@@ -15,7 +15,7 @@ import styled from 'styled-components/primitives';
 import { Button } from '../buttons';
 import { ExchangeInput } from '../exchange';
 import { ColumnWithMargins, Row } from '../layout';
-import { darkMode } from '@rainbow-me/config/debug';
+import { darkMode } from '@rainbow-me/config/debug'; // TODO DARKMODE
 import { useDimensions } from '@rainbow-me/hooks';
 import { colors, position } from '@rainbow-me/styles';
 

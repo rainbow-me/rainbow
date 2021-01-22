@@ -6,7 +6,7 @@ import { ButtonPressAnimation } from '../../animations';
 import { Icon } from '../../icons';
 import { Centered, InnerBorder, RowWithMargins } from '../../layout';
 import { Emoji, Text } from '../../text';
-import { darkMode } from '@rainbow-me/config/debug';
+import { darkMode } from '@rainbow-me/config/debug'; // TODO DARKMODE
 import { containsEmoji } from '@rainbow-me/helpers/strings';
 import { useDimensions } from '@rainbow-me/hooks';
 import { colors, position } from '@rainbow-me/styles';

@@ -4,7 +4,7 @@ import styled from 'styled-components/primitives';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered, InnerBorder } from '../../layout';
 import { Text } from '../../text';
-import { darkMode } from '@rainbow-me/config/debug';
+import { darkMode } from '@rainbow-me/config/debug'; // TODO DARKMODE
 import { colors, padding } from '@rainbow-me/styles';
 
 const ButtonSizeTypes = {

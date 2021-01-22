@@ -5,7 +5,7 @@ import { ButtonPressAnimation, OpacityToggler } from '../animations';
 import { CoinIconSize } from '../coin-icon';
 import { Icon } from '../icons';
 import { Row } from '../layout';
-import { darkMode } from '@rainbow-me/config/debug';
+import { darkMode } from '@rainbow-me/config/debug'; // TODO DARKMODE
 import { borders, colors, padding, position, shadow } from '@rainbow-me/styles';
 
 const Container = styled.View`

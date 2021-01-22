@@ -4,7 +4,7 @@ import { View } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
 import styled from 'styled-components/primitives';
 import RainbowButtonTypes from './RainbowButtonTypes';
-import { darkMode } from '@rainbow-me/config/debug';
+import { darkMode } from '@rainbow-me/config/debug'; // TODO DARKMODE
 import { colors, margin } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 

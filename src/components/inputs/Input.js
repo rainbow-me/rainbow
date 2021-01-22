@@ -1,7 +1,7 @@
 import React from 'react';
 import { TextInput as TextInputPrimitive } from 'react-native';
 import styled from 'styled-components/primitives';
-import { darkMode } from '@rainbow-me/config/debug';
+import { darkMode } from '@rainbow-me/config/debug'; // TODO DARKMODE
 import { buildTextStyles, colors } from '@rainbow-me/styles';
 
 const defaultSelectionColor = ios

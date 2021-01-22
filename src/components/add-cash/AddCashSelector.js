@@ -4,7 +4,7 @@ import { CoinIcon } from '../coin-icon';
 import { JellySelector, JellySelectorShadowIndicator } from '../jelly-selector';
 import { RowWithMargins } from '../layout';
 import { Text } from '../text';
-import { darkMode } from '@rainbow-me/config/debug';
+import { darkMode } from '@rainbow-me/config/debug'; // TODO DARKMODE
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import { colors } from '@rainbow-me/styles';
 import { getTokenMetadata } from '@rainbow-me/utils';

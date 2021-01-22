@@ -4,7 +4,7 @@ import { withHandlers } from 'recompact';
 import styled from 'styled-components';
 import Icon from '../icons/Icon';
 import { ListItem } from '../list';
-import { darkMode } from '@rainbow-me/config/debug';
+import { darkMode } from '@rainbow-me/config/debug'; // TODO DARKMODE
 import { colors } from '@rainbow-me/styles';
 
 const CheckmarkIcon = styled(Icon).attrs({

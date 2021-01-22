@@ -2,10 +2,10 @@ import React from 'react';
 import { BaseButton } from 'react-native-gesture-handler';
 import RadialGradient from 'react-native-radial-gradient';
 import styled from 'styled-components/primitives';
+import { useTheme } from '../../context/ThemeContext';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { CoinRowHeight } from './CoinRow';
-import { darkMode } from '@rainbow-me/config/debug';
 import { colors, padding } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
@@ -22,7 +22,7 @@ const FavoriteButton = styled(Centered)`
   width: 68px;
 `;
 
-const Circle = styled(RadialGradient).attrs(({ isFavorited }) => ({
+const Circle = styled(RadialGradient).attrs(({ isFavorited, darkMode }) => ({
   center: [0, 15],
   colors: isFavorited
     ? [
@@ -51,12 +51,16 @@ const StarIcon = styled(Text).attrs(({ isFavorited }) => ({
   width: 100%;
 `;
 
-const CoinRowFavoriteButton = ({ isFavorited, onPress }) => (
-  <FavoriteButton as={BaseButton} onPress={onPress}>
-    <Circle isFavorited={isFavorited}>
-      <StarIcon isFavorited={isFavorited}>􀋃</StarIcon>
-    </Circle>
-  </FavoriteButton>
-);
+const CoinRowFavoriteButton = ({ isFavorited, onPress }) => {
+  const { isDarkMode: darkMode } = useTheme();
+
+  return (
+    <FavoriteButton as={BaseButton} onPress={onPress}>
+      <Circle darkMode={darkMode} isFavorited={isFavorited}>
+        <StarIcon isFavorited={isFavorited}>􀋃</StarIcon>
+      </Circle>
+    </FavoriteButton>
+  );
+};
 
 export default magicMemo(CoinRowFavoriteButton, 'isFavorited');

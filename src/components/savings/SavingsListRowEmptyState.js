@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder, RowWithMargins } from '../layout';
 import { Text } from '../text';
-import { darkMode } from '@rainbow-me/config/debug';
+import { darkMode } from '@rainbow-me/config/debug'; // TODO DARKMODE
 import { colors, position, shadow } from '@rainbow-me/styles';
 
 const ButtonBorderRadius = 15;

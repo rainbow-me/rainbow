@@ -2,11 +2,11 @@ import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import Animated, { Easing } from 'react-native-reanimated';
 import { mixColor, useTimingTransition } from 'react-native-redash';
+import { useTheme } from '../../context/ThemeContext';
 
 import { ButtonPressAnimation, interpolate } from '../animations';
 import { Icon } from '../icons';
 import { Centered, InnerBorder } from '../layout';
-import { darkMode } from '@rainbow-me/config/debug';
 import { colors, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
@@ -19,7 +19,7 @@ const ApplePayButtonDimensions = {
   width: '100%',
 };
 
-const ApplePayButtonShadows = {
+const ApplePayButtonShadows = darkMode => ({
   default: [
     [0, 10, 30, colors.shadow, 0.2],
     [0, 5, 15, colors.shadow, 0.4],
@@ -28,20 +28,25 @@ const ApplePayButtonShadows = {
     [0, 10, 30, colors.shadow, 0.2],
     [0, 5, 15, colors.blueGreyDark50, darkMode ? 0 : 0.4],
   ],
-};
+});
 
-const ApplePayButtonShadowElement = ({ opacity, type }) => (
+const shadowsDark = ApplePayButtonShadows(true);
+const shadowsLight = ApplePayButtonShadows(false);
+
+const ApplePayButtonShadowElement = ({ opacity, type, darkMode }) => (
   <AnimatedShadowStack
     {...position.coverAsObject}
     {...ApplePayButtonDimensions}
     backgroundColor={colors.white}
     borderRadius={ApplePayButtonBorderRadius}
-    shadows={ApplePayButtonShadows[type]}
+    shadows={(darkMode ? shadowsDark : shadowsLight)[type]}
     style={{ opacity }}
   />
 );
 
 const ApplePayButton = ({ disabled, onDisabledPress, onSubmit }) => {
+  const { isDarkMode: darkMode } = useTheme();
+
   const disabledAnimation = useTimingTransition(!disabled, {
     duration: 66,
     ease: Easing.out(Easing.ease),
@@ -78,6 +83,7 @@ const ApplePayButton = ({ disabled, onDisabledPress, onSubmit }) => {
       <Centered {...position.sizeAsObject('100%')}>
         <Centered {...position.sizeAsObject('100%')}>
           <ApplePayButtonShadowElement
+            darkMode={darkMode}
             opacity={disabledShadowOpacity}
             type="disabled"
           />

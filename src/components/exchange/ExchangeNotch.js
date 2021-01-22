@@ -8,7 +8,7 @@ import ExchangeNotchMiddle from '@rainbow-me/assets/exchangeNotchMiddle.png';
 import ExchangeNotchMiddleDark from '@rainbow-me/assets/exchangeNotchMiddleDark.png';
 import ExchangeNotchRight from '@rainbow-me/assets/exchangeNotchRight.png';
 import ExchangeNotchRightDark from '@rainbow-me/assets/exchangeNotchRightDark.png';
-import { darkMode } from '@rainbow-me/config/debug';
+import { darkMode } from '@rainbow-me/config/debug'; // TODO DARKMODE
 import { useDimensions } from '@rainbow-me/hooks';
 
 const notchHeight = 48;

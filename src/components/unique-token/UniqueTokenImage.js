@@ -3,7 +3,7 @@ import { buildUniqueTokenName } from '../../helpers/assets';
 import { magicMemo } from '../../utils';
 import { Centered } from '../layout';
 import { Monospace } from '../text';
-import { darkMode } from '@rainbow-me/config/debug';
+import { darkMode } from '@rainbow-me/config/debug'; // TODO DARKMODE
 import { ImageWithCachedMetadata, ImgixImage } from '@rainbow-me/images';
 import { colors, position } from '@rainbow-me/styles';
 
