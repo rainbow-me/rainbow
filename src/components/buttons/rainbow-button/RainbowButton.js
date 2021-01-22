@@ -52,7 +52,7 @@ const ButtonLabel = styled(Text).attrs(({ disabled, type, isDarkMode }) => ({
 
 const OuterButton = styled.View`
   ${shadow.build(0, 5, 15, colors_NOT_REACTIVE.shadow)};
-  background-color: ${colors_NOT_REACTIVE.dark};
+  background-color: ${({ theme: { colors } }) => colors.dark};
   border-radius: ${({ height, strokeWidth }) => height / 2 + strokeWidth};
   height: ${({ height }) => height};
   shadow-opacity: ${({ disabled, isDarkMode }) =>
@@ -62,7 +62,7 @@ const OuterButton = styled.View`
 
 const Shadow = styled(ShadowView)`
   ${shadow.build(0, 10, 30, colors_NOT_REACTIVE.shadow, 1)};
-  background-color: ${colors_NOT_REACTIVE.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
   border-radius: ${({ height, strokeWidth }) => height / 2 + strokeWidth};
   height: ${({ height }) => height};
   opacity: ${({ disabled, isDarkMode }) =>

@@ -78,7 +78,7 @@ const ButtonEmoji = styled(Emoji).attrs({
 
 const DarkShadow = styled(Reanimated.View)`
   ${shadow.build(0, 10, 30, colors_NOT_REACTIVE.dark, 1)};
-  background-color: ${colors_NOT_REACTIVE.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
   border-radius: 30;
   height: 60;
   left: -3;
@@ -131,7 +131,7 @@ const RainbowButton = ({
 const Container = styled.View`
   ${StyleSheet.absoluteFillObject};
   align-items: center;
-  background-color: ${colors_NOT_REACTIVE.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
   justify-content: center;
 `;
 

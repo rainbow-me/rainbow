@@ -45,7 +45,7 @@ const Handle = styled(SheetHandle).attrs({
 const QRWrapper = styled(Column).attrs({ align: 'center' })`
   ${padding(24)};
   ${shadow.build(0, 10, 50, colors_NOT_REACTIVE.shadowBlack, 0.6)};
-  background-color: ${colors_NOT_REACTIVE.whiteLabel};
+  background-color: ${({ theme: { colors } }) => colors.whiteLabel};
   border-radius: 39;
 `;
 

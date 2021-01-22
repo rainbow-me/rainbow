@@ -57,7 +57,7 @@ const EmptyWalletList = styled(EmptyAssetList).attrs({
   pointerEvents: 'none',
 })`
   ${position.cover};
-  background-color: ${colors_NOT_REACTIVE.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
   padding-top: ${listTopPadding};
 `;
 

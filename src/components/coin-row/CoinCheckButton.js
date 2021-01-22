@@ -29,10 +29,8 @@ const Content = styled(Row).attrs(({ isAbsolute }) => ({
 
 const CircleOutline = styled.View`
   ${borders.buildCircle(22)}
-  border-color: ${colors_NOT_REACTIVE.alpha(
-    colors_NOT_REACTIVE.blueGreyDark,
-    0.12
-  )};
+  border-color: ${({ theme: { colors } }) =>
+    colors.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.12)};
   border-width: 1.5;
   position: absolute;
 `;
@@ -48,7 +46,7 @@ const CheckmarkBackground = styled.View`
       isDarkMode ? colors_NOT_REACTIVE.shadow : colors_NOT_REACTIVE.appleBlue,
       0.4
     )}
-  background-color: ${colors_NOT_REACTIVE.appleBlue};
+  background-color: ${({ theme: { colors } }) => colors.appleBlue};
 `;
 
 const CoinCheckButton = ({ isAbsolute, onPress, toggle, ...props }) => {

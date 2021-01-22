@@ -21,13 +21,13 @@ import { colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
 
 const Underline = styled.View`
   ${position.cover};
-  background-color: ${colors_NOT_REACTIVE.blueGreyDark};
+  background-color: ${({ theme: { colors } }) => colors.blueGreyDark};
   opacity: 0.2;
 `;
 
 const UnderlineAnimated = styled(Animated.View)`
   ${position.cover};
-  background-color: ${colors_NOT_REACTIVE.sendScreen.brightBlue};
+  background-color: ${({ theme: { colors } }) => colors.sendScreen.brightBlue};
   left: -100%;
 `;
 

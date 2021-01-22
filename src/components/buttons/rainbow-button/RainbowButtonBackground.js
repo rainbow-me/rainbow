@@ -49,7 +49,7 @@ const RainbowButtonGradient = styled(RadialGradient).attrs(
 
 const InnerButton = styled(View)`
   ${({ strokeWidth }) => margin(strokeWidth)}
-  background-color: ${colors_NOT_REACTIVE.dark};
+  background-color: ${({ theme: { colors } }) => colors.dark};
   border-radius: ${({ strokeWidth, height }) => height / 2 - strokeWidth};
   height: ${({ strokeWidth, height }) => height - strokeWidth * 2};
   width: ${({ strokeWidth, width }) => width - strokeWidth * 2};

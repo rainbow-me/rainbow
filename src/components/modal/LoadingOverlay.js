@@ -21,10 +21,8 @@ const Container = styled(Centered).attrs({
 
 const Overlay = styled(Centered)`
   ${padding(19, 19, 22)};
-  background-color: ${colors_NOT_REACTIVE.alpha(
-    colors_NOT_REACTIVE.blueGreyDark,
-    0.15
-  )};
+  background-color: ${({ theme: { colors } }) =>
+    colors.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.15)};
   border-radius: ${20};
   overflow: hidden;
 `;

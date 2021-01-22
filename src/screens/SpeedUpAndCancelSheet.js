@@ -72,7 +72,7 @@ const CenteredSheet = styled(Centered)`
 `;
 
 const ExtendedSheetBackground = styled.View`
-  background-color: ${colors_NOT_REACTIVE.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
   height: 1000;
   position: absolute;
   bottom: -800;

@@ -17,10 +17,8 @@ const Container = styled(Row)`
 `;
 const MessageWrapper = styled(ScrollView)`
   ${padding(12, 15)}
-  border-color: ${colors_NOT_REACTIVE.alpha(
-    colors_NOT_REACTIVE.blueGreyDark,
-    0.08
-  )};
+  border-color: ${({ theme: { colors } }) =>
+    colors.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.08)};
   border-radius: 20;
   border-width: 1;
   margin-bottom: 14;

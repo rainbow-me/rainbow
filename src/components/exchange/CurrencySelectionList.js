@@ -10,13 +10,13 @@ import { NoResults } from '../list';
 import { CurrencySelectModalHeaderHeight } from './CurrencySelectModalHeader';
 import ExchangeAssetList from './ExchangeAssetList';
 import { ExchangeSearchHeight } from './ExchangeSearch';
-import { colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 
 const EmptyCurrencySelectionList = styled(EmptyAssetList).attrs({
   pointerEvents: 'none',
 })`
   ${position.cover};
-  background-color: ${colors_NOT_REACTIVE.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
 `;
 
 const NoCurrencyResults = styled(NoResults)`

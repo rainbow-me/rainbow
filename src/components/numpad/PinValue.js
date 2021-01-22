@@ -16,7 +16,7 @@ const EmptyValue = styled(Column)`
   border-width: 3;
   width: 20;
   height: 20;
-  border-color: ${colors_NOT_REACTIVE.appleBlue};
+  border-color: ${({ theme: { colors } }) => colors.appleBlue};
   border-radius: 20;
   margin-left: 10;
   margin-right: 10;

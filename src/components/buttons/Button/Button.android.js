@@ -24,10 +24,8 @@ const ButtonShapeTypes = {
 };
 
 const shadowStyles = `
-  shadow-color: ${colors_NOT_REACTIVE.alpha(
-    colors_NOT_REACTIVE.blueGreyDark,
-    0.5
-  )};
+  shadow-color: ${({ theme: { colors } }) =>
+    colors.alpha(colors.blueGreyDark, 0.5)};
   shadow-offset: 0px 4px;
   shadow-opacity: 0.2;
   shadow-radius: 6;

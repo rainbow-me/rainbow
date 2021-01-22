@@ -54,7 +54,7 @@ const sheetHeight = deviceUtils.dimensions.height - (android ? 30 : 10);
 const statusBarHeight = getStatusBarHeight(true);
 
 const Container = styled.View`
-  background-color: ${colors_NOT_REACTIVE.transparent};
+  background-color: ${({ theme: { colors } }) => colors.transparent};
   flex: 1;
   padding-top: ${isNativeStackAvailable ? 0 : statusBarHeight};
   width: 100%;
@@ -65,7 +65,7 @@ const SheetContainer = styled(Column).attrs({
   flex: 1,
 })`
   ${borders.buildRadius('top', isNativeStackAvailable ? 0 : 16)};
-  background-color: ${colors_NOT_REACTIVE.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
   height: ${isNativeStackAvailable || android ? sheetHeight : '100%'};
   width: 100%;
 `;

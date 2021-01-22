@@ -1,4 +1,12 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import { ThemeProvider as ThemeProviderNative } from 'styled-components/native';
+import { ThemeProvider } from 'styled-components/primitives';
 import { getTheme, saveTheme } from '../handlers/localstorage/theme';
 import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
@@ -35,20 +43,27 @@ export const MainThemeProvider = props => {
     }
   }, [colorScheme]);
 
-  const currentTheme = {
-    // Chaning color schemes according to theme
-    colors: isDarkMode
-      ? colors_NOT_REACTIVE.darkModeThemeColors
-      : colors_NOT_REACTIVE.lightModeThemeColors,
-    isDarkMode,
-    // Overrides the isDarkMode value will cause re-render inside the context.
-    setTheme: scheme => setColorScheme(scheme),
-  };
+  const currentTheme = useMemo(
+    () => ({
+      // Chaning color schemes according to theme
+      colors: isDarkMode
+        ? colors_NOT_REACTIVE.darkModeThemeColors
+        : colors_NOT_REACTIVE.lightModeThemeColors,
+      isDarkMode,
+      // Overrides the isDarkMode value will cause re-render inside the context.
+      setTheme: scheme => setColorScheme(scheme),
+    }),
+    [isDarkMode]
+  );
 
   return (
-    <ThemeContext.Provider value={currentTheme}>
-      {props.children}
-    </ThemeContext.Provider>
+    <ThemeProvider theme={currentTheme}>
+      <ThemeProviderNative theme={currentTheme}>
+        <ThemeContext.Provider value={currentTheme}>
+          {props.children}
+        </ThemeContext.Provider>
+      </ThemeProviderNative>
+    </ThemeProvider>
   );
 };
 

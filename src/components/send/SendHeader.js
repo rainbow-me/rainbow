@@ -21,7 +21,7 @@ const AddressInputContainer = styled(Row).attrs({ align: 'center' })`
       : android
       ? padding(5, 15)
       : padding(19, 15)};
-  background-color: ${colors_NOT_REACTIVE.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
   overflow: hidden;
   width: 100%;
 `;

@@ -65,7 +65,9 @@ const Container = styled.View`
     ? 0
     : sheetVerticalOffset};
   ${android ? `margin-top: ${sheetVerticalOffset};` : ''}
-  ${android ? `background-color: ${colors_NOT_REACTIVE.transparent};` : ''}
+  ${android
+    ? `background-color: ${({ theme: { colors } }) => colors.transparent};`
+    : ''}
 `;
 
 const Footer = styled(Row).attrs({
@@ -96,7 +98,7 @@ const FooterButton = styled(MiniButton).attrs({
 })``;
 
 const KeyboardSizeView = styled(KeyboardArea)`
-  background-color: ${colors_NOT_REACTIVE.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
 `;
 
 const SecretTextArea = styled(Input).attrs({
@@ -131,7 +133,7 @@ const Sheet = styled(Column).attrs({
 })`
   ${borders.buildRadius('top', isNativeStackAvailable ? 0 : 16)};
   ${padding(0, 15, sheetBottomPadding)};
-  background-color: ${colors_NOT_REACTIVE.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
   z-index: 1;
 `;
 

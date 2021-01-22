@@ -11,7 +11,7 @@ const SearchHeaderWrapper = styled(Flex).attrs({
   padding: 6,
 })`
   border-radius: 12;
-  background-color: ${colors_NOT_REACTIVE.lightestGrey};
+  background-color: ${({ theme: { colors } }) => colors.lightestGrey};
 `;
 
 export default function SearchHeader() {

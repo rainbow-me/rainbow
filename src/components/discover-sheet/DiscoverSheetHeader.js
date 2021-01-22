@@ -31,7 +31,7 @@ export const FloatingActionButtonShadow = [
 
 const Content = styled(Centered)`
   ${position.cover};
-  background-color: ${colors_NOT_REACTIVE.grey20};
+  background-color: ${({ theme: { colors } }) => colors.grey20};
 `;
 
 function Stack({ children, left, yPosition, onPress }) {

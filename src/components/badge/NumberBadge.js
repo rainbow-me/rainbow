@@ -30,7 +30,7 @@ const Circle = styled(Centered)`
         padding-right: 5.5;
         transform: translateX(${Math.floor(offset / 2)}px);
       `}
-  background-color: ${colors_NOT_REACTIVE.appleBlue};
+  background-color: ${({ theme: { colors } }) => colors.appleBlue};
   border-radius: 15;
   padding-bottom: 3;
   padding-top: 2;

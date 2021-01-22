@@ -21,11 +21,11 @@ const AvatarBuilderTopPoint =
   HeaderHeightWithStatusBar + AvatarCircleHeight + AvatarCircleMarginTop;
 
 const Container = styled(Column)`
-  background-color: ${colors_NOT_REACTIVE.transparent};
+  background-color: ${({ theme: { colors } }) => colors.transparent};
 `;
 
 const SheetContainer = styled(Column)`
-  background-color: ${colors_NOT_REACTIVE.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
   border-radius: 20px;
   height: 420px;
   overflow: hidden;

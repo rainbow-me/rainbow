@@ -21,7 +21,7 @@ const Container = styled(Row).attrs(({ side }) => ({
   justify: side === 'left' ? 'start' : 'end',
 }))`
   ${({ side }) => (side === 'left' ? 'left: 0;' : 'right: 0;')}
-  background-color: ${colors_NOT_REACTIVE.transparent};
+  background-color: ${({ theme: { colors } }) => colors.transparent};
   bottom: 0;
   padding-left: ${({ side }) => (side === 'left' ? 15 : 48)};
   padding-right: ${({ side }) => (side === 'left' ? 48 : 15)};

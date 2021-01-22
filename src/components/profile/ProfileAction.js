@@ -11,7 +11,7 @@ const Container = styled(RowWithMargins).attrs({
   justify: 'start',
   margin: 6,
 })`
-  background-color: ${colors_NOT_REACTIVE.transparent};
+  background-color: ${({ theme: { colors } }) => colors.transparent};
   height: 34;
   padding-bottom: 2;
 `;

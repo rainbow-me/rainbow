@@ -16,7 +16,7 @@ const DiscoverButtonShadows = [
 
 const BackgroundFill = styled.View`
   ${position.cover};
-  background-color: ${colors_NOT_REACTIVE.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
   opacity: 0.5;
 `;
 

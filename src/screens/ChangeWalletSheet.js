@@ -89,7 +89,7 @@ const EditButtonLabel = styled(Text).attrs(({ editMode }) => ({
 }))``;
 
 const Whitespace = styled.View`
-  background-color: ${colors_NOT_REACTIVE.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
   bottom: -400px;
   height: 400px;
   position: absolute;

@@ -23,7 +23,7 @@ const ExchangeSearchWidth = deviceUtils.dimensions.width - 30;
 const Container = styled(Row)`
   ${margin(0, 15, 8)};
   ${padding(0, 37, 0, 12)};
-  background-color: ${colors_NOT_REACTIVE.transparent};
+  background-color: ${({ theme: { colors } }) => colors.transparent};
   border-radius: ${ExchangeSearchHeight / 2};
   height: ${ExchangeSearchHeight};
   overflow: hidden;

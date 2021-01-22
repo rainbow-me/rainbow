@@ -30,7 +30,7 @@ const Container = styled.View`
 
 const FakeAvatar = styled.View`
   ${position.size(40)};
-  background-color: ${colors_NOT_REACTIVE.skeleton};
+  background-color: ${({ theme: { colors } }) => colors.skeleton};
   border-radius: 20;
 `;
 
@@ -44,7 +44,7 @@ const FakeRow = withProps({
 })(Row);
 
 const FakeText = styled.View`
-  background-color: ${colors_NOT_REACTIVE.skeleton};
+  background-color: ${({ theme: { colors } }) => colors.skeleton};
   border-radius: 5;
   height: 10;
 `;
@@ -56,7 +56,7 @@ const Wrapper = styled(RowWithMargins).attrs({
 })`
   ${padding(9, 19, 10, 19)};
   ${position.size('100%')};
-  background-color: ${colors_NOT_REACTIVE.transparent};
+  background-color: ${({ theme: { colors } }) => colors.transparent};
 `;
 
 export default class AssetListItemSkeleton extends PureComponent {

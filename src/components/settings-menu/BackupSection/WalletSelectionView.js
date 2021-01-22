@@ -83,7 +83,8 @@ const WarningIcon = styled(Icon).attrs({
 })`
   align-self: center;
   box-shadow: 0px 4px 6px
-    ${colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.orangeLight, 0.4)};
+    ${({ theme: { colors } }) =>
+      colors.alpha(colors_NOT_REACTIVE.orangeLight, 0.4)};
   margin-right: 7px;
 `;
 

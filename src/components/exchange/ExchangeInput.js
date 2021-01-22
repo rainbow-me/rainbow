@@ -7,7 +7,7 @@ import { buildTextStyles, colors_NOT_REACTIVE } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
 const AndroidMaskWrapper = styled.View`
-  background-color: ${colors_NOT_REACTIVE.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
   bottom: 0;
   left: 68.7;
   position: absolute;

@@ -28,7 +28,7 @@ const IndicatorIconContainer = styled(Centered)`
         : colors_NOT_REACTIVE.blueGreyDark,
       0.4
     )}
-  background-color: ${colors_NOT_REACTIVE.blueGreyDark50};
+  background-color: ${({ theme: { colors } }) => colors.blueGreyDark50};
   bottom: 3;
   left: 10;
   position: absolute;

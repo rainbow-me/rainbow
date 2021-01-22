@@ -31,7 +31,7 @@ const Container = styled(Centered).attrs({
 })`
   ${padding(30, 50, 60, 30)};
   ${position.cover};
-  background-color: ${colors_NOT_REACTIVE.black};
+  background-color: ${({ theme: { colors } }) => colors.black};
 `;
 
 const QRIcon = styled(Icon).attrs({

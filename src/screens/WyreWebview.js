@@ -10,10 +10,10 @@ import { useAccountSettings } from '../hooks';
 import { colors_NOT_REACTIVE } from '../styles';
 
 const Container = styled(FlexItem)`
-  background-color: ${colors_NOT_REACTIVE.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
 `;
 const StyledWebView = styled(WebView)`
-  background-color: ${colors_NOT_REACTIVE.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
 `;
 export default function WyreWebview() {
   const { params } = useRoute();

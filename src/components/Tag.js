@@ -11,17 +11,15 @@ const TagBorderRadius = 12;
 
 const Container = styled(Column)`
   ${padding(8, 10)};
-  background-color: ${colors_NOT_REACTIVE.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
   border-radius: ${TagBorderRadius};
   text-align: left;
   z-index: 1;
 `;
 
 const OuterBorder = styled(Centered)`
-  border-color: ${colors_NOT_REACTIVE.alpha(
-    colors_NOT_REACTIVE.blueGreyDark,
-    0.06
-  )};
+  border-color: ${({ theme: { colors } }) =>
+    colors.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.06)};
   border-radius: ${TagBorderRadius};
   border-width: 1;
   flex: none;

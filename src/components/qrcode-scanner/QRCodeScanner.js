@@ -9,7 +9,7 @@ import QRCodeScannerNeedsAuthorization from './QRCodeScannerNeedsAuthorization';
 import SimulatorFakeCameraImageSource from '@rainbow-me/assets/simulator-fake-camera-image.jpg';
 import { useBooleanState, useScanner } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
-import { colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 
 const Camera = styled(RNCamera)`
   ${position.cover};
@@ -24,7 +24,7 @@ const Container = styled(Centered).attrs({
   direction: 'column',
 })`
   ${position.cover};
-  background-color: ${colors_NOT_REACTIVE.black};
+  background-color: ${({ theme: { colors } }) => colors.black};
 `;
 
 const ContentOverlay = styled(Centered)`

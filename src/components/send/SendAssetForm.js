@@ -21,7 +21,7 @@ const AssetRowShadow = [
 
 const Container = styled(Column)`
   ${position.size('100%')};
-  background-color: ${colors_NOT_REACTIVE.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
   flex: 1;
   overflow: hidden;
 `;
@@ -36,14 +36,14 @@ const FormContainer = styled(Column).attrs({
       : isTinyPhone
       ? padding(6, 15, 0)
       : padding(19, 15)};
-  background-color: ${colors_NOT_REACTIVE.lighterGrey};
+  background-color: ${({ theme: { colors } }) => colors.lighterGrey};
   flex: 1;
   margin-bottom: ${android ? 0 : ({ isTinyPhone }) => (isTinyPhone ? -19 : 0)};
   width: 100%;
 `;
 
 const KeyboardSizeView = styled(KeyboardArea)`
-  background-color: ${colors_NOT_REACTIVE.lighterGrey};
+  background-color: ${({ theme: { colors } }) => colors.lighterGrey};
 `;
 
 export default function SendAssetForm({
