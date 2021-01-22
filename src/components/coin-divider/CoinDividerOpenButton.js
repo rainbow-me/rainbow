@@ -62,7 +62,7 @@ const CoinDividerOpenButton = ({
   isSendSheet,
   ...props
 }) => {
-  const { colors } = useTheme();
+  const { colors, isDarkMode } = useTheme();
   return (
     <ContainerButton
       {...props}
@@ -76,6 +76,7 @@ const CoinDividerOpenButton = ({
           <RoundButtonSizeToggler
             color={colors.blueGreyDarkLight}
             endingWidth={28}
+            isDarkMode={isDarkMode}
             isOpen={isSmallBalancesOpen}
             startingWidth={3}
           />

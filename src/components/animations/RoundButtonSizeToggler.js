@@ -91,4 +91,5 @@ export default magicMemo(RoundButtonSizeToggler, [
   'endingWidth',
   'isOpen',
   'startingWidth',
+  'isDarkMode',
 ]);
