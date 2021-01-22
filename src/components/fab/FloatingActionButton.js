@@ -1,11 +1,11 @@
 import React, { useCallback } from 'react';
 import styled from 'styled-components/primitives';
+import { useTheme } from '../../context/ThemeContext';
 import { magicMemo } from '../../utils';
 import ButtonPressAnimation, {
   ScaleButtonZoomableAndroid,
 } from '../animations/ButtonPressAnimation';
 import { Centered, InnerBorder } from '../layout';
-import { darkMode } from '@rainbow-me/config/debug'; // TODO DARKMODE
 import { borders, colors, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
@@ -36,6 +36,8 @@ const FloatingActionButton = ({
   testID,
   ...props
 }) => {
+  const { isDarkMode } = useTheme();
+
   const handlePress = useCallback(
     event => {
       if (onPress) onPress(event);
@@ -63,7 +65,7 @@ const FloatingActionButton = ({
     >
       <ShadowStack
         {...borders.buildCircleAsObject(size)}
-        backgroundColor={colors.alpha(backgroundColor, darkMode ? 0.8 : 0.5)}
+        backgroundColor={colors.alpha(backgroundColor, isDarkMode ? 0.8 : 0.5)}
         hideShadow={disabled}
         shadows={shadows}
       >

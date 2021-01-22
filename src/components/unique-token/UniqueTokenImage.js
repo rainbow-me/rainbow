@@ -1,21 +1,21 @@
 import React, { useCallback, useState } from 'react';
+import { useTheme } from '../../context/ThemeContext';
 import { buildUniqueTokenName } from '../../helpers/assets';
 import { magicMemo } from '../../utils';
 import { Centered } from '../layout';
 import { Monospace } from '../text';
-import { darkMode } from '@rainbow-me/config/debug'; // TODO DARKMODE
 import { ImageWithCachedMetadata, ImgixImage } from '@rainbow-me/images';
 import { colors, position } from '@rainbow-me/styles';
 
-const FallbackTextColorVariants = {
+const FallbackTextColorVariants = darkMode => ({
   dark: darkMode
     ? colors.alpha(colors.white, 0.25)
     : colors.alpha(colors.blueGreyDark, 0.5),
   light: darkMode ? colors.alpha(colors.blueGreyDark, 0.25) : colors.white,
-};
+});
 
-const getFallbackTextColor = bg =>
-  colors.getTextColorForBackground(bg, FallbackTextColorVariants);
+const getFallbackTextColor = (bg, darkMode) =>
+  colors.getTextColorForBackground(bg, FallbackTextColorVariants(darkMode));
 
 const UniqueTokenImage = ({
   backgroundColor,
@@ -25,6 +25,7 @@ const UniqueTokenImage = ({
 }) => {
   const [error, setError] = useState(null);
   const handleError = useCallback(error => setError(error), [setError]);
+  const { isDarkMode } = useTheme();
 
   return (
     <Centered backgroundColor={backgroundColor} style={position.coverAsObject}>
@@ -38,7 +39,7 @@ const UniqueTokenImage = ({
       ) : (
         <Monospace
           align="center"
-          color={getFallbackTextColor(backgroundColor)}
+          color={getFallbackTextColor(backgroundColor, isDarkMode)}
           lineHeight="looser"
           size="smedium"
         >

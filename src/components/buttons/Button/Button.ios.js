@@ -1,10 +1,10 @@
 import { isArray, isString, pick } from 'lodash';
 import React from 'react';
 import styled from 'styled-components/primitives';
+import { useTheme } from '../../../context/ThemeContext';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered, InnerBorder } from '../../layout';
 import { Text } from '../../text';
-import { darkMode } from '@rainbow-me/config/debug'; // TODO DARKMODE
 import { colors, padding } from '@rainbow-me/styles';
 
 const ButtonSizeTypes = {
@@ -23,9 +23,9 @@ const ButtonShapeTypes = {
   rounded: 'rounded',
 };
 
-const shadowStyles = `
+const shadowStyles = isDarkMode => `
   shadow-color: ${colors.alpha(
-    darkMode ? colors.shadow : colors.blueGreyDark,
+    isDarkMode ? colors.shadow : colors.blueGreyDark,
     0.5
   )};
   shadow-offset: 0px 4px;
@@ -34,7 +34,8 @@ const shadowStyles = `
 `;
 
 const Container = styled(Centered)`
-  ${({ showShadow }) => (showShadow ? shadowStyles : '')}
+  ${({ showShadow, isDarkMode }) =>
+    showShadow ? shadowStyles(isDarkMode) : ''}
   ${({ size }) => padding(...ButtonSizeTypes[size].padding)}
   background-color: ${({ backgroundColor }) => backgroundColor};
   border-radius: ${({ borderRadius }) => borderRadius};
@@ -62,6 +63,7 @@ export default function Button({
   ...props
 }) {
   const borderRadius = type === 'rounded' ? 14 : 50;
+  const { isDarkMode } = useTheme();
 
   return (
     <ButtonPressAnimation
@@ -74,6 +76,7 @@ export default function Button({
         backgroundColor={backgroundColor}
         borderRadius={borderRadius}
         css={containerStyles}
+        isDarkMode={isDarkMode}
         showShadow={showShadow}
         size={size}
         style={style}

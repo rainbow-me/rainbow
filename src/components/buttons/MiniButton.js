@@ -1,17 +1,20 @@
 import React from 'react';
 import { View } from 'react-native';
 import styled from 'styled-components/primitives';
+import { useTheme } from '../../context/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder, RowWithMargins } from '../layout';
 import { Text } from '../text';
-import { darkMode } from '@rainbow-me/config/debug'; // TODO DARKMODE
 import { colors, padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
-const shadows = {
+const shadowsFactory = darkMode => ({
   default: [[0, 4, 12, darkMode ? colors.shadow : colors.appleBlue, 0.4]],
   disabled: [[0, 4, 12, colors.lightGrey, darkMode ? 0 : 0.4]],
-};
+});
+
+const shadowLight = shadowsFactory(false);
+const shadowsDark = shadowsFactory(true);
 
 const Content = styled(RowWithMargins).attrs({
   align: 'center',
@@ -34,11 +37,15 @@ export default function MiniButton({
   height,
   ...props
 }) {
+  const { isDarkMode } = useTheme();
+
+  const shadows = isDarkMode ? shadowsDark : shadowLight;
+
   return (
     <ButtonPressAnimation
       disabled={disabled}
       onPress={onPress}
-      opacity={darkMode && disabled ? 0.6 : 1}
+      opacity={isDarkMode && disabled ? 0.6 : 1}
       radiusAndroid={borderRadius}
       scaleTo={scaleTo}
       {...props}

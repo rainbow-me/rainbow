@@ -3,12 +3,12 @@ import React from 'react';
 import { View } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
 import styled from 'styled-components/primitives';
+import { useTheme } from '../../../context/ThemeContext';
 import RainbowButtonTypes from './RainbowButtonTypes';
-import { darkMode } from '@rainbow-me/config/debug'; // TODO DARKMODE
 import { colors, margin } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
-const RainbowGradientColors = {
+const RainbowGradientColorsFactory = darkMode => ({
   inner: {
     addCash: ['#FFB114', '#FF54BB', '#00F0FF'],
     default: colors.gradients.rainbow,
@@ -23,7 +23,10 @@ const RainbowGradientColors = {
       ? [colors.blueGreyDark20, colors.blueGreyDark20, colors.blueGreyDark20]
       : ['#A5A8AE', '#A5A8AE', '#A5A8AE'],
   },
-};
+});
+
+const RainbowGradientColorsDark = RainbowGradientColorsFactory(true);
+const RainbowGradientColorsLight = RainbowGradientColorsFactory(false);
 
 const RainbowButtonGradient = styled(RadialGradient).attrs(
   ({ type, width }) => ({
@@ -45,12 +48,12 @@ const InnerButton = styled(View)`
 `;
 
 const InnerGradient = styled(RainbowButtonGradient).attrs(
-  ({ disabled, type }) => ({
+  ({ disabled, type, gradientColors }) => ({
     colors: disabled
-      ? RainbowGradientColors.inner.disabled
+      ? gradientColors.inner.disabled
       : type === RainbowButtonTypes.addCash
-      ? RainbowGradientColors.inner.addCash
-      : RainbowGradientColors.inner.default,
+      ? gradientColors.inner.addCash
+      : gradientColors.inner.default,
   })
 )`
   height: ${({ width }) => width};
@@ -59,12 +62,12 @@ const InnerGradient = styled(RainbowButtonGradient).attrs(
 `;
 
 const OuterGradient = styled(RainbowButtonGradient).attrs(
-  ({ disabled, type }) => ({
+  ({ disabled, type, gradientColors }) => ({
     colors: disabled
-      ? RainbowGradientColors.outer.disabled
+      ? gradientColors.outer.disabled
       : type === RainbowButtonTypes.addCash
-      ? RainbowGradientColors.outer.addCash
-      : RainbowGradientColors.outer.default,
+      ? gradientColors.outer.addCash
+      : gradientColors.outer.default,
   })
 )`
   height: ${({ width }) => width * 2};
@@ -89,6 +92,11 @@ const RainbowButtonBackground = ({
   type,
   width,
 }) => {
+  const { isDarkMode } = useTheme();
+
+  const gradientColors = isDarkMode
+    ? RainbowGradientColorsDark
+    : RainbowGradientColorsLight;
   const maskElement = (
     <InnerButton height={height} strokeWidth={strokeWidth} width={width} />
   );
@@ -103,6 +111,7 @@ const RainbowButtonBackground = ({
       <OuterGradient
         center={outerGradientCenter}
         disabled={disabled}
+        gradientColors={gradientColors}
         height={height}
         type={type}
         width={width}
@@ -111,6 +120,7 @@ const RainbowButtonBackground = ({
         <InnerGradient
           center={innerGradientCenter}
           disabled={disabled}
+          gradientColors={gradientColors}
           height={height}
           type={type}
           width={width}

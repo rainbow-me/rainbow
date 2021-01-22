@@ -1,8 +1,8 @@
 import React from 'react';
+import { useTheme } from '../../context/ThemeContext';
 import ExchangeModalTypes from '../../helpers/exchangeModalTypes';
 import { HoldToAuthorizeButton } from '../buttons';
 import { SlippageWarningThresholdInBips } from './SlippageWarning';
-import { darkMode } from '@rainbow-me/config/debug'; // TODO DARKMODE
 import { colors } from '@rainbow-me/styles';
 
 const ConfirmExchangeButtonShadows = [
@@ -41,6 +41,8 @@ const ConfirmExchangeButton = ({
     label = 'Enter an Amount';
   }
 
+  const { isDarkMode } = useTheme();
+
   const isDisabled =
     disabled ||
     !isSufficientBalance ||
@@ -51,7 +53,7 @@ const ConfirmExchangeButton = ({
     <HoldToAuthorizeButton
       disabled={isDisabled}
       disabledBackgroundColor={
-        darkMode ? colors.alpha(colors.blueGreyDark, 0.04) : colors.grey20
+        isDarkMode ? colors.alpha(colors.blueGreyDark, 0.04) : colors.grey20
       }
       flex={1}
       hideInnerBorder

@@ -2,12 +2,12 @@ import MaskedView from '@react-native-community/masked-view';
 import React from 'react';
 import styled from 'styled-components/primitives';
 import AddCashIconSource from '../../../assets/addCashIcon.png';
+import { useTheme } from '../../../context/ThemeContext';
 import { ButtonPressAnimation } from '../../animations';
 import { RowWithMargins } from '../../layout';
 import { Text } from '../../text';
 import RainbowButtonBackground from './RainbowButtonBackground';
 import RainbowButtonTypes from './RainbowButtonTypes';
-import { darkMode } from '@rainbow-me/config/debug'; // TODO DARKMODE
 import { useDimensions } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { colors, position, shadow } from '@rainbow-me/styles';
@@ -38,9 +38,9 @@ const ButtonContent = styled(RowWithMargins).attrs({
   padding-bottom: 4;
 `;
 
-const ButtonLabel = styled(Text).attrs(({ disabled, type }) => ({
+const ButtonLabel = styled(Text).attrs(({ disabled, type, isDarkMode }) => ({
   align: type === RainbowButtonTypes.addCash ? 'left' : 'center',
-  color: darkMode && disabled ? colors.white : colors.whiteLabel,
+  color: isDarkMode && disabled ? colors.white : colors.whiteLabel,
   letterSpacing:
     type === RainbowButtonTypes.addCash ? 'roundedTight' : 'rounded',
   size: type === RainbowButtonTypes.small ? 'large' : 'larger',
@@ -52,7 +52,8 @@ const OuterButton = styled.View`
   background-color: ${colors.dark};
   border-radius: ${({ height, strokeWidth }) => height / 2 + strokeWidth};
   height: ${({ height }) => height};
-  shadow-opacity: ${({ disabled }) => (darkMode && disabled ? 0 : 0.4)};
+  shadow-opacity: ${({ disabled, isDarkMode }) =>
+    isDarkMode && disabled ? 0 : 0.4};
   width: ${({ width }) => width};
 `;
 
@@ -61,7 +62,8 @@ const Shadow = styled(ShadowView)`
   background-color: ${colors.white};
   border-radius: ${({ height, strokeWidth }) => height / 2 + strokeWidth};
   height: ${({ height }) => height};
-  opacity: ${({ disabled }) => (darkMode && disabled ? 0 : android ? 1 : 0.2)};
+  opacity: ${({ disabled, isDarkMode }) =>
+    isDarkMode && disabled ? 0 : android ? 1 : 0.2};
   position: absolute;
   width: ${({ width }) => width};
 `;
@@ -78,6 +80,8 @@ const RainbowButton = ({
   skipTopMargin = true,
   ...props
 }) => {
+  const { isDarkMode } = useTheme();
+
   const { width: deviceWidth } = useDimensions();
   const maxButtonWidth = deviceWidth - 30;
 
@@ -89,6 +93,7 @@ const RainbowButton = ({
     <OuterButton
       disabled={disabled}
       height={height}
+      isDarkMode={isDarkMode}
       strokeWidth={strokeWidth}
       width={width}
     />
@@ -106,6 +111,7 @@ const RainbowButton = ({
       <Shadow
         disabled={disabled}
         height={height}
+        isDarkMode={isDarkMode}
         strokeWidth={strokeWidth}
         width={width}
       />
@@ -124,7 +130,7 @@ const RainbowButton = ({
         />
         <ButtonContent type={type}>
           {type === RainbowButtonTypes.addCash && <AddCashIcon />}
-          <ButtonLabel disabled={disabled} type={type}>
+          <ButtonLabel disabled={disabled} isDarkMode={isDarkMode} type={type}>
             {type === RainbowButtonTypes.addCash ? 'Add Cash' : label}
           </ButtonLabel>
         </ButtonContent>

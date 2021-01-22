@@ -1,10 +1,10 @@
 import React from 'react';
 import styled from 'styled-components/primitives';
+import { useTheme } from '../../context/ThemeContext';
 import { CoinIcon } from '../coin-icon';
 import { JellySelector, JellySelectorShadowIndicator } from '../jelly-selector';
 import { RowWithMargins } from '../layout';
 import { Text } from '../text';
-import { darkMode } from '@rainbow-me/config/debug'; // TODO DARKMODE
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import { colors } from '@rainbow-me/styles';
 import { getTokenMetadata } from '@rainbow-me/utils';
@@ -17,12 +17,16 @@ const CurrencyItemLabel = styled(Text).attrs({
   size: 'larger',
   weight: 'semibold',
 })`
-  opacity: ${({ isSelected }) => (isSelected ? (darkMode ? 1 : 0.8) : 0.5)};
+  opacity: ${({ isSelected, isDarkMode }) =>
+    isSelected ? (isDarkMode ? 1 : 0.8) : 0.5};
   padding-bottom: 1.5;
 `;
 
 // eslint-disable-next-line react/display-name
-const CurrencyItem = isWalletEthZero => ({ item: address, isSelected }) => {
+const CurrencyItem = (isWalletEthZero, isDarkMode) => ({
+  item: address,
+  isSelected,
+}) => {
   const metadata = getTokenMetadata(address);
 
   return (
@@ -35,7 +39,7 @@ const CurrencyItem = isWalletEthZero => ({ item: address, isSelected }) => {
       paddingRight={11}
     >
       <CoinIcon address={address} size={26} symbol={metadata?.symbol} />
-      <CurrencyItemLabel isSelected={isSelected}>
+      <CurrencyItemLabel isDarkMode={isDarkMode} isSelected={isSelected}>
         {metadata?.name}
       </CurrencyItemLabel>
     </RowWithMargins>
@@ -51,21 +55,24 @@ const AddCashSelector = ({
   initialCurrencyIndex,
   isWalletEthZero,
   onSelect,
-}) => (
-  <JellySelector
-    backgroundColor={
-      darkMode ? colors.darkModeColors.darkModeDark : colors.white
-    }
-    defaultIndex={initialCurrencyIndex}
-    disableSelection={isWalletEthZero}
-    height={CurrencyItemHeight}
-    items={currencies}
-    onSelect={onSelect}
-    renderIndicator={JellySelectorShadowIndicator}
-    renderItem={CurrencyItem(isWalletEthZero)}
-    renderRow={CurrencyItemRow}
-  />
-);
+}) => {
+  const { isDarkMode } = useTheme();
+  return (
+    <JellySelector
+      backgroundColor={
+        isDarkMode ? colors.darkModeColors.darkModeDark : colors.white
+      }
+      defaultIndex={initialCurrencyIndex}
+      disableSelection={isWalletEthZero}
+      height={CurrencyItemHeight}
+      items={currencies}
+      onSelect={onSelect}
+      renderIndicator={JellySelectorShadowIndicator}
+      renderItem={CurrencyItem(isWalletEthZero, isDarkMode)}
+      renderRow={CurrencyItemRow}
+    />
+  );
+};
 
 const neverRerender = () => true;
 export default React.memo(AddCashSelector, neverRerender);

@@ -2,6 +2,7 @@ import React, { Fragment, useCallback } from 'react';
 import { Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
+import { useTheme } from '../../../context/ThemeContext';
 import { deleteAllBackups } from '../../../handlers/cloudBackup';
 import { walletsUpdate } from '../../../redux/wallets';
 import { cloudPlatform } from '../../../utils/platform';
@@ -13,7 +14,6 @@ import { Icon } from '../../icons';
 import { Centered, Column, ColumnWithMargins, Row } from '../../layout';
 import { Text, TruncatedAddress } from '../../text';
 import Caret from '@rainbow-me/assets/family-dropdown-arrow.png';
-import { darkMode } from '@rainbow-me/config/debug'; // TODO DARKMODE
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { useWallets } from '@rainbow-me/hooks';
@@ -57,14 +57,16 @@ const GreenCheck = styled(CheckmarkIcon).attrs({
   color: colors.green,
 })`
   box-shadow: 0px 4px 6px
-    ${colors.alpha(darkMode ? colors.shadow : colors.green, 0.4)};
+    ${({ isDarkMode }) =>
+      colors.alpha(isDarkMode ? colors.shadow : colors.green, 0.4)};
 `;
 
 const GreyCheck = styled(CheckmarkIcon).attrs({
   color: colors.blueGreyDark50,
 })`
   box-shadow: 0px 4px 6px
-    ${colors.alpha(darkMode ? colors.shadow : colors.blueGreyDark50, 0.4)};
+    ${({ isDarkMode }) =>
+      colors.alpha(isDarkMode ? colors.shadow : colors.blueGreyDark50, 0.4)};
 `;
 
 const WarningIcon = styled(Icon).attrs({
@@ -84,6 +86,7 @@ const Footer = styled(Centered)`
 
 const WalletSelectionView = () => {
   const { navigate } = useNavigation();
+  const { isDarkMode } = useTheme();
   const dispatch = useDispatch();
   const { walletNames, wallets } = useWallets();
   const onPress = useCallback(
@@ -230,9 +233,9 @@ const WalletSelectionView = () => {
                   <Row alignSelf="center" height={47} marginRight={18}>
                     {wallet.backedUp ? (
                       wallet.backupType === WalletBackupTypes.cloud ? (
-                        <GreenCheck />
+                        <GreenCheck isDarkMode={isDarkMode} />
                       ) : (
-                        <GreyCheck />
+                        <GreyCheck isDarkMode={isDarkMode} />
                       )
                     ) : wallet.imported ? (
                       <GreyCheck />

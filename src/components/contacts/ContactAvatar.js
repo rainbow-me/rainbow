@@ -1,13 +1,13 @@
 import { toUpper } from 'lodash';
 import React, { useMemo } from 'react';
+import { useTheme } from '../../context/ThemeContext';
 import { getFirstGrapheme } from '../../utils';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import { darkMode } from '@rainbow-me/config/debug'; // TODO DARKMODE
 import { borders, colors } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
-const buildShadows = (color, size) => {
+const buildShadows = (color, size, darkMode) => {
   if (size === 'small' || size === 'smaller') {
     return [
       [0, 3, 5, colors.shadow, 0.14],
@@ -67,8 +67,13 @@ const sizeConfigs = {
 
 const ContactAvatar = ({ color, size = 'medium', value, ...props }) => {
   const { dimensions, textSize } = sizeConfigs[size];
+  const { isDarkMode } = useTheme();
 
-  const shadows = useMemo(() => buildShadows(color, size), [color, size]);
+  const shadows = useMemo(() => buildShadows(color, size, isDarkMode), [
+    color,
+    size,
+    isDarkMode,
+  ]);
 
   return (
     <ShadowStack

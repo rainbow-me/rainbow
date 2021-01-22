@@ -2,9 +2,9 @@ import { isNil } from 'lodash';
 import React, { Fragment } from 'react';
 import ReactCoinIcon from 'react-coin-icon';
 import styled from 'styled-components/primitives';
+import { useTheme } from '../../context/ThemeContext';
 import CoinIconFallback from './CoinIconFallback';
 import CoinIconIndicator from './CoinIconIndicator';
-import { darkMode } from '@rainbow-me/config/debug'; // TODO DARKMODE
 import { useColorForAsset } from '@rainbow-me/hooks';
 import { colors } from '@rainbow-me/styles';
 import { getTokenMetadata, isETH, magicMemo } from '@rainbow-me/utils';
@@ -25,6 +25,7 @@ const CoinIcon = ({
 }) => {
   const tokenMetadata = getTokenMetadata(address);
   const color = useColorForAsset({ address });
+  const { isDarkMode } = useTheme();
 
   const forceFallback = !isETH(address) && isNil(tokenMetadata);
 
@@ -38,7 +39,7 @@ const CoinIcon = ({
         fallbackRenderer={CoinIconFallback}
         forceFallback={forceFallback}
         shadowColor={
-          darkMode ? colors.shadow : tokenMetadata?.shadowColor || color
+          isDarkMode ? colors.shadow : tokenMetadata?.shadowColor || color
         }
         size={size}
         symbol={symbol}

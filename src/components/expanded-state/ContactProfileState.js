@@ -1,6 +1,7 @@
 import React, { useCallback, useRef, useState } from 'react';
 import { Keyboard } from 'react-native';
 import styled from 'styled-components/primitives';
+import { useTheme } from '../../context/ThemeContext';
 import { useAccountSettings, useContacts } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
 import { abbreviations, magicMemo } from '../../utils';
@@ -12,7 +13,6 @@ import CopyTooltip from '../copy-tooltip';
 import { Centered } from '../layout';
 import { Text, TruncatedAddress } from '../text';
 import { ProfileAvatarButton, ProfileModal, ProfileNameInput } from './profile';
-import { darkMode } from '@rainbow-me/config/debug'; // TODO DARKMODE
 import { colors, margin, padding } from '@rainbow-me/styles';
 
 const AddressAbbreviation = styled(TruncatedAddress).attrs({
@@ -32,11 +32,11 @@ const Spacer = styled.View`
   height: 19;
 `;
 
-const SubmitButton = styled(Button).attrs(({ value }) => ({
+const SubmitButton = styled(Button).attrs(({ value, isDarkMode }) => ({
   backgroundColor:
     value.length > 0
       ? colors.appleBlue
-      : darkMode
+      : isDarkMode
       ? colors.alpha(colors.blueGreyDark, 0.2)
       : undefined,
   disabled: !value.length > 0,
@@ -94,6 +94,8 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
     inputRef,
   ]);
 
+  const { isDarkMode } = useTheme();
+
   return (
     <ProfileModal onPressBackdrop={handleAddContact}>
       <Centered css={padding(24, 25)} direction="column">
@@ -126,6 +128,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
           <Divider inset={false} />
         </Centered>
         <SubmitButton
+          isDarkMode={isDarkMode}
           onPress={handleAddContact}
           testID="contact-profile-add-button"
           value={value}

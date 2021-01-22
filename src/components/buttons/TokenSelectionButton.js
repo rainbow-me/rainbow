@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react';
 import styled from 'styled-components/primitives';
+import { useTheme } from '../../context/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder, RowWithMargins } from '../layout';
 import { Text } from '../text';
 import CaretImageSource from '@rainbow-me/assets/family-dropdown-arrow.png';
-import { darkMode } from '@rainbow-me/config/debug'; // TODO DARKMODE
 import { useColorForAsset } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { colors, padding, position } from '@rainbow-me/styles';
@@ -39,6 +39,8 @@ export default function TokenSelectionButton({
   symbol,
   testID,
 }) {
+  const { isDarkMode } = useTheme();
+
   const colorForAsset = useColorForAsset(
     { address },
     address ? undefined : colors.appleBlue
@@ -47,7 +49,7 @@ export default function TokenSelectionButton({
   const shadowsForAsset = useMemo(
     () => [
       [0, 10, 30, colors.shadow, 0.2],
-      [0, 5, 15, colorForAsset, darkMode ? 0 : 0.4],
+      [0, 5, 15, colorForAsset, isDarkMode ? 0 : 0.4],
     ],
     [colorForAsset]
   );
@@ -57,7 +59,7 @@ export default function TokenSelectionButton({
       borderRadius={borderRadius}
       contentContainerStyle={{
         backgroundColor:
-          darkMode && (colorForAsset === colors.dark || '#25292E')
+          isDarkMode && (colorForAsset === colors.dark || '#25292E')
             ? colors.darkModeColors.darkModeDark
             : colorForAsset,
         borderRadius,
@@ -69,7 +71,7 @@ export default function TokenSelectionButton({
       <ShadowStack
         {...position.coverAsObject}
         backgroundColor={
-          darkMode && colorForAsset === colors.dark
+          isDarkMode && colorForAsset === colors.dark
             ? colors.darkModeColors.darkModeDark
             : colorForAsset
         }
