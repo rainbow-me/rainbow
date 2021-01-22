@@ -4,13 +4,13 @@ import Animated, { Easing } from 'react-native-reanimated';
 import { toRad, useTimingTransition } from 'react-native-redash';
 import styled from 'styled-components/primitives';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
+import { useTheme } from '../../context/ThemeContext';
 import { convertAmountToNativeDisplay } from '../../helpers/utilities';
 import { useAccountSettings } from '../../hooks';
 import { ButtonPressAnimation, interpolate } from '../animations';
 import { Row, RowWithMargins } from '../layout';
 import { Emoji, Text, TruncatedText } from '../text';
 import { ImgixImage } from '@rainbow-me/images';
-import { colors } from '@rainbow-me/styles';
 
 const AnimatedImgixImage = Animated.createAnimatedComponent(ImgixImage);
 
@@ -37,6 +37,7 @@ const SavingsListHeader = ({
   title,
 }) => {
   const { nativeCurrency } = useAccountSettings();
+  const { colors } = useTheme();
 
   const animation = useTimingTransition(isOpen, {
     duration: TokenFamilyHeaderAnimationDuration,
@@ -59,6 +60,7 @@ const SavingsListHeader = ({
         <RowWithMargins align="center" margin={emoji ? 5 : 9}>
           <ListHeaderEmoji name={emoji} />
           <TruncatedText
+            color={colors.dark}
             letterSpacing="roundedMedium"
             lineHeight="normal"
             size="large"
