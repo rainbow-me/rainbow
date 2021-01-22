@@ -13,7 +13,7 @@ const FieldAccessoryBadgeSize = 22;
 const FieldAccessoryBadgeWrapper = styled(ShadowStack).attrs(({ color }) => ({
   ...position.sizeAsObject(FieldAccessoryBadgeSize),
   borderRadius: FieldAccessoryBadgeSize,
-  shadows: [[0, 4, 12, color, 0.4]],
+  shadows: [[0, 4, 12, darkMode ? colors.shadow : color, darkMode ? 0.1 : 0.4]],
 }))`
   margin-bottom: 12;
   position: absolute;

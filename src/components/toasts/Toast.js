@@ -7,6 +7,7 @@ import { interpolate } from '../animations';
 import { Icon } from '../icons';
 import { RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';
+import { darkMode } from '@rainbow-me/config/debug';
 import { useDimensions } from '@rainbow-me/hooks';
 import { colors, padding, position, shadow } from '@rainbow-me/styles';
 
@@ -45,14 +46,14 @@ export function ToastsContainer({ children }) {
 
 export default function Toast({
   children,
-  color = colors.dark,
+  color = darkMode ? colors.darkModeColors.darkModeDark : colors.dark,
   distance = 60,
   targetTranslate = 0,
   icon,
   isVisible,
   testID,
   text,
-  textColor = colors.white,
+  textColor = colors.whiteLabel,
   ...props
 }) {
   const { width: deviceWidth } = useDimensions();
@@ -82,7 +83,7 @@ export default function Toast({
         {children || (
           <Fragment>
             {icon && <Icon color={textColor} marginTop={3} name={icon} />}
-            <TruncatedText color={textColor} size="smedium" weight="semibold">
+            <TruncatedText color={textColor} size="smedium" weight="bold">
               {text}
             </TruncatedText>
           </Fragment>

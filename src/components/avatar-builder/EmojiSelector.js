@@ -33,6 +33,7 @@ import EmojiTabBarShadow from '../../assets/emojiTabBarShadow.png';
 import { deviceUtils } from '../../utils';
 import { Categories } from './Categories';
 import TabBar from './TabBar';
+import { darkMode } from '@rainbow-me/config/debug';
 import { ImgixImage } from '@rainbow-me/images';
 import { colors, fonts, position } from '@rainbow-me/styles';
 
@@ -179,7 +180,7 @@ export default class EmojiSelector extends PureComponent {
                     height: (width - 21) / this.props.columns,
                     width: (width - 21) / this.props.columns,
                     opacity: 0,
-                    backgroundColor: 'white',
+                    backgroundColor: colors.white,
                   },
                 };
                 return ios ? (
@@ -464,7 +465,7 @@ export default class EmojiSelector extends PureComponent {
               />
             </View>
             <View
-              shadowColor={colors.black}
+              shadowColor={colors.shadowBlack}
               shadowOffset={{ height: 0, width: 0 }}
               shadowOpacity={0.06}
               shadowRadius={0.5}
@@ -472,7 +473,11 @@ export default class EmojiSelector extends PureComponent {
             >
               <LinearGradient
                 borderRadius={19}
-                colors={['#FFFFFF', '#FFFFFF', '#F0F5FA']}
+                colors={[
+                  colors.white,
+                  colors.white,
+                  darkMode ? colors.white : '#F0F5FA',
+                ]}
                 end={{ x: 0.5, y: 1 }}
                 overflow="hidden"
                 pointerEvents="none"
@@ -621,9 +626,9 @@ const styles = StyleSheet.create({
   tabBarShadowImage: {
     height: 138,
     left: -50.5,
+    opacity: darkMode ? 0.3 : 0.6,
     position: 'absolute',
     top: -46,
     width: 377,
-    opacity: 0.6,
   },
 });

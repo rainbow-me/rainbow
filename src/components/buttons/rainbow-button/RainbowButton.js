@@ -52,7 +52,8 @@ const OuterButton = styled.View`
   background-color: ${colors.dark};
   border-radius: ${({ height, strokeWidth }) => height / 2 + strokeWidth};
   height: ${({ height }) => height};
-  shadow-opacity: ${({ disabled }) => (darkMode && disabled ? 0 : 0.4)};
+  shadow-opacity: ${({ disabled }) =>
+    darkMode && disabled ? 0 : darkMode ? 0.1 : 0.4};
   width: ${({ width }) => width};
 `;
 

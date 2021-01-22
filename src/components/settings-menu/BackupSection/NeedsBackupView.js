@@ -8,6 +8,8 @@ import { Centered, Column } from '../../layout';
 import { SheetActionButton } from '../../sheet';
 import { Text } from '../../text';
 import BackupIcon from '@rainbow-me/assets/backupIcon.png';
+import BackupIconDark from '@rainbow-me/assets/backupIconDark.png';
+import { darkMode } from '@rainbow-me/config/debug';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import { useWallets } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
@@ -59,7 +61,7 @@ const Title = styled(Text).attrs({
 
 const TopIcon = styled(ImgixImage).attrs({
   resizeMode: ImgixImage.resizeMode.contain,
-  source: BackupIcon,
+  source: darkMode ? BackupIconDark : BackupIcon,
 })`
   height: 74;
   width: 75;

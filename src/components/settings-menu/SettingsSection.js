@@ -82,7 +82,8 @@ const WarningIcon = styled(Icon).attrs({
   color: colors.orangeLight,
   name: 'warning',
 })`
-  box-shadow: 0px 4px 6px ${colors.alpha(colors.orangeLight, 0.4)};
+  box-shadow: 0px 4px 6px
+    ${darkMode ? colors.shadow : colors.alpha(colors.orangeLight, 0.4)};
   margin-top: 1;
 `;
 
