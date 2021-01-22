@@ -2,7 +2,8 @@ import { captureMessage } from '@sentry/react-native';
 import { get } from 'lodash';
 import React, { Fragment, useCallback } from 'react';
 import { Linking } from 'react-native';
-import styled from 'styled-components/primitives';
+import styled, { ThemeProvider } from 'styled-components/primitives';
+import { useTheme } from '../context/ThemeContext';
 import networkInfo from '../helpers/networkInfo';
 import networkTypes from '../helpers/networkTypes';
 import showWalletErrorAlert from '../helpers/support';
@@ -25,10 +26,12 @@ const ButtonContainer = styled(Centered).attrs({ direction: 'column' })`
   width: ${ButtonContainerWidth};
 `;
 
-const InterstitialButton = styled(ButtonPressAnimation).attrs({
-  backgroundColor: colors.alpha(colors.blueGreyDark, 0.06),
-  borderRadius: 23,
-})`
+const InterstitialButton = styled(ButtonPressAnimation).attrs(
+  ({ theme: { colors } }) => ({
+    backgroundColor: colors.alpha(colors.blueGreyDark, 0.06),
+    borderRadius: 23,
+  })
+)`
   ${padding(11, 15, 14)};
 `;
 
@@ -36,17 +39,19 @@ const InterstitialButtonRow = styled(Row)`
   margin-bottom: ${({ isSmallPhone }) => (isSmallPhone ? 19 : 42)};
 `;
 
-const InterstitialDivider = styled(Divider).attrs({
+const InterstitialDivider = styled(Divider).attrs(({ theme: { colors } }) => ({
   color: colors.rowDividerExtraLight,
   inset: [0, 0, 0, 0],
-})`
+}))`
   border-radius: 1;
 `;
 
-const CopyAddressButton = styled(ButtonPressAnimation).attrs({
-  backgroundColor: colors.alpha(colors.appleBlue, 0.06),
-  borderRadius: 23,
-})`
+const CopyAddressButton = styled(ButtonPressAnimation).attrs(
+  ({ theme: { colors } }) => ({
+    backgroundColor: colors.alpha(colors.appleBlue, 0.06),
+    borderRadius: 23,
+  })
+)`
   ${padding(10.5, 15, 14.5)};
 `;
 
@@ -61,28 +66,31 @@ const Container = styled(Centered)`
   top: 50%;
 `;
 
-const Paragraph = styled(Text).attrs({
+const Paragraph = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
   color: colors.alpha(colors.blueGreyDark, 0.4),
   letterSpacing: 'roundedMedium',
   lineHeight: 'paragraphSmall',
   size: 'lmedium',
   weight: 'semibold',
-})`
+}))`
   margin-bottom: 24;
   margin-top: 19;
 `;
 
-const Title = styled(Text).attrs({
+const Title = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
+  color: colors.dark,
   lineHeight: 32,
   size: 'bigger',
   weight: 'heavy',
-})`
+}))`
   margin-horizontal: 27;
 `;
 
-const Subtitle = styled(Title)`
+const Subtitle = styled(Title).attrs(({ theme: { colors } }) => ({
+  color: colors.dark,
+}))`
   margin-top: ${({ isSmallPhone }) => (isSmallPhone ? 19 : 42)};
 `;
 
@@ -178,6 +186,7 @@ const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
   const { navigate } = useNavigation();
   const { isDamaged } = useWallets();
   const { accountAddress } = useAccountSettings();
+  const { colors, isDarkMode } = useTheme();
 
   const handlePressAmount = useCallback(
     amount => {
@@ -213,113 +222,115 @@ const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
   }, [navigate, isDamaged]);
 
   return (
-    <Container style={buildInterstitialTransform(isSmallPhone, offsetY)}>
-      <ButtonContainer>
-        {network === networkTypes.mainnet ? (
-          <Fragment>
-            <Title>
-              To get started, buy some ETH{ios ? ` with Apple Pay` : ''}
-            </Title>
-            <Row justify="space-between" marginVertical={30}>
-              <AmountButton
-                amount={50}
-                backgroundColor={colors.swapPurple}
-                color={colors.neonSkyblue}
-                onPress={handlePressAmount}
+    <ThemeProvider theme={{ colors, isDarkMode }}>
+      <Container style={buildInterstitialTransform(isSmallPhone, offsetY)}>
+        <ButtonContainer>
+          {network === networkTypes.mainnet ? (
+            <Fragment>
+              <Title>
+                To get started, buy some ETH{ios ? ` with Apple Pay` : ''}
+              </Title>
+              <Row justify="space-between" marginVertical={30}>
+                <AmountButton
+                  amount={50}
+                  backgroundColor={colors.swapPurple}
+                  color={colors.neonSkyblue}
+                  onPress={handlePressAmount}
+                />
+                <AmountButton
+                  amount={100}
+                  backgroundColor={colors.swapPurple}
+                  color={colors.neonSkyblue}
+                  onPress={handlePressAmount}
+                />
+                <AmountButton
+                  amount={250}
+                  backgroundColor={colors.purpleDark}
+                  color={colors.pinkLight}
+                  onPress={handlePressAmount}
+                />
+              </Row>
+              <InterstitialButtonRow>
+                <InterstitialButton
+                  onPress={handlePressAmount}
+                  radiusAndroid={23}
+                >
+                  <Text
+                    align="center"
+                    color={colors.alpha(colors.blueGreyDark, 0.6)}
+                    lineHeight="loose"
+                    size="large"
+                    weight="bold"
+                  >
+                    􀍡 Other amount
+                  </Text>
+                </InterstitialButton>
+              </InterstitialButtonRow>
+              {!isSmallPhone && <InterstitialDivider />}
+              <Subtitle isSmallPhone={isSmallPhone}>
+                or send ETH to your wallet
+              </Subtitle>
+
+              <Paragraph>
+                Send from Coinbase or another exchange—or ask a friend!
+              </Paragraph>
+            </Fragment>
+          ) : (
+            <Fragment>
+              <Title>
+                Request test ETH through the {get(networkInfo[network], 'name')}{' '}
+                faucet
+              </Title>
+              <Row marginTop={30}>
+                <InterstitialButton onPress={() => onAddFromFaucet(network)}>
+                  <Text
+                    align="center"
+                    color={colors.alpha(colors.blueGreyDark, 0.6)}
+                    lineHeight="loose"
+                    size="large"
+                    weight="bold"
+                  >
+                    􀎬 Add from faucet
+                  </Text>
+                </InterstitialButton>
+              </Row>
+              {!isSmallPhone && <InterstitialDivider />}
+              <Subtitle isSmallPhone={isSmallPhone}>
+                or send test ETH to your wallet
+              </Subtitle>
+
+              <Paragraph>
+                Send test ETH from another {get(networkInfo[network], 'name')}{' '}
+                wallet—or ask a friend!
+              </Paragraph>
+            </Fragment>
+          )}
+          <CopyAddressButton
+            onPress={handlePressCopyAddress}
+            radiusAndroid={23}
+            testID="copy-address-button"
+          >
+            <RowWithMargins margin={6}>
+              <Icon
+                color={colors.appleBlue}
+                marginTop={0.5}
+                name="copy"
+                size={19}
               />
-              <AmountButton
-                amount={100}
-                backgroundColor={colors.swapPurple}
-                color={colors.neonSkyblue}
-                onPress={handlePressAmount}
-              />
-              <AmountButton
-                amount={250}
-                backgroundColor={colors.purpleDark}
-                color={colors.pinkLight}
-                onPress={handlePressAmount}
-              />
-            </Row>
-            <InterstitialButtonRow>
-              <InterstitialButton
-                onPress={handlePressAmount}
-                radiusAndroid={23}
+              <Text
+                align="center"
+                color={colors.appleBlue}
+                lineHeight="loose"
+                size="large"
+                weight="bold"
               >
-                <Text
-                  align="center"
-                  color={colors.alpha(colors.blueGreyDark, 0.6)}
-                  lineHeight="loose"
-                  size="large"
-                  weight="bold"
-                >
-                  􀍡 Other amount
-                </Text>
-              </InterstitialButton>
-            </InterstitialButtonRow>
-            {!isSmallPhone && <InterstitialDivider />}
-            <Subtitle isSmallPhone={isSmallPhone}>
-              or send ETH to your wallet
-            </Subtitle>
-
-            <Paragraph>
-              Send from Coinbase or another exchange—or ask a friend!
-            </Paragraph>
-          </Fragment>
-        ) : (
-          <Fragment>
-            <Title>
-              Request test ETH through the {get(networkInfo[network], 'name')}{' '}
-              faucet
-            </Title>
-            <Row marginTop={30}>
-              <InterstitialButton onPress={() => onAddFromFaucet(network)}>
-                <Text
-                  align="center"
-                  color={colors.alpha(colors.blueGreyDark, 0.6)}
-                  lineHeight="loose"
-                  size="large"
-                  weight="bold"
-                >
-                  􀎬 Add from faucet
-                </Text>
-              </InterstitialButton>
-            </Row>
-            {!isSmallPhone && <InterstitialDivider />}
-            <Subtitle isSmallPhone={isSmallPhone}>
-              or send test ETH to your wallet
-            </Subtitle>
-
-            <Paragraph>
-              Send test ETH from another {get(networkInfo[network], 'name')}{' '}
-              wallet—or ask a friend!
-            </Paragraph>
-          </Fragment>
-        )}
-        <CopyAddressButton
-          onPress={handlePressCopyAddress}
-          radiusAndroid={23}
-          testID="copy-address-button"
-        >
-          <RowWithMargins margin={6}>
-            <Icon
-              color={colors.appleBlue}
-              marginTop={0.5}
-              name="copy"
-              size={19}
-            />
-            <Text
-              align="center"
-              color={colors.appleBlue}
-              lineHeight="loose"
-              size="large"
-              weight="bold"
-            >
-              Copy address
-            </Text>
-          </RowWithMargins>
-        </CopyAddressButton>
-      </ButtonContainer>
-    </Container>
+                Copy address
+              </Text>
+            </RowWithMargins>
+          </CopyAddressButton>
+        </ButtonContainer>
+      </Container>
+    </ThemeProvider>
   );
 };
 

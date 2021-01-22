@@ -30,7 +30,6 @@ import { enableScreens } from 'react-native-screens';
 import VersionNumber from 'react-native-version-number';
 import { connect, Provider } from 'react-redux';
 import { compose, withProps } from 'recompact';
-import { ThemeProvider } from 'styled-components';
 import PortalConsumer from './components/PortalConsumer';
 import { FlexItem } from './components/layout';
 import { OfflineToast } from './components/toasts';
@@ -293,22 +292,13 @@ class App extends Component {
           <SafeAreaProvider>
             <Provider store={store}>
               <FlexItem>
-                <ThemeProvider
-                  theme={{
-                    colors: 'red',
-                    isDarkMode: 'false',
-                  }}
-                >
-                  {this.state.initialRoute && (
-                    <InitialRouteContext.Provider
-                      value={this.state.initialRoute}
-                    >
-                      <RoutesComponent ref={this.handleNavigatorRef} />
-                      <PortalConsumer />
-                    </InitialRouteContext.Provider>
-                  )}
-                  <OfflineToast />
-                </ThemeProvider>
+                {this.state.initialRoute && (
+                  <InitialRouteContext.Provider value={this.state.initialRoute}>
+                    <RoutesComponent ref={this.handleNavigatorRef} />
+                    <PortalConsumer />
+                  </InitialRouteContext.Provider>
+                )}
+                <OfflineToast />
               </FlexItem>
             </Provider>
           </SafeAreaProvider>

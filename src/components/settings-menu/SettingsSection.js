@@ -69,6 +69,7 @@ const Container = styled(ScrollView).attrs({
   scrollEventThrottle: 32,
 })`
   ${position.cover};
+  background-color: ${({ backgroundColor }) => backgroundColor};
 `;
 
 // ⚠️ Beware: magic numbers lol
@@ -130,12 +131,11 @@ export default function SettingsSection({
   onPressShowSecret,
 }) {
   const isReviewAvailable = useExperimentalFlag(REVIEW_ANDROID) || ios;
-
   const { wallets } = useWallets();
   const { /*language,*/ nativeCurrency, network } = useAccountSettings();
   const { isTinyPhone } = useDimensions();
 
-  const { isDarkMode, setTheme } = useTheme();
+  const { colors, isDarkMode, setTheme } = useTheme();
 
   const onSendFeedback = useSendFeedback();
 
@@ -181,7 +181,7 @@ export default function SettingsSection({
   }, [isDarkMode, setTheme]);
 
   return (
-    <Container scrollEnabled={isTinyPhone}>
+    <Container backgroundColor={colors.white} scrollEnabled={isTinyPhone}>
       <ColumnWithDividers dividerRenderer={ListItemDivider} marginTop={7}>
         {canBeBackedUp && (
           <ListItem
