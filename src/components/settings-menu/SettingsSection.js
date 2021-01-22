@@ -244,16 +244,16 @@ export default function SettingsSection({
             />
           }
           label="Dark Mode"
+          scaleTo={1}
           testID="darkmode-section"
         >
           <Column align="end" flex="1" justify="end">
             <Switch
-              ios_backgroundColor={colors.alpha(colors.blueGreyDark, 0.3)}
               onValueChange={toggleDarkMode}
-              thumbColor={isDarkMode ? colors.white : colors.white}
+              thumbColor={colors.whiteLabel}
               trackColor={{
-                false: '#767577',
-                true: colors.green,
+                false: colors.alpha(colors.blueGreyDark, 0.12),
+                true: '#2CCC00',
               }}
               value={isDarkMode}
             />
