@@ -43,21 +43,22 @@ const enhance = compose(
 const ListItem = enhance(
   ({
     activeOpacity,
+    colors,
     children,
     justify,
     icon,
     iconMargin,
     label,
     onPress,
+    scaleTo = 0.975,
     testID,
-    colors,
     ...props
   }) => (
     <ButtonPressAnimation
       activeOpacity={activeOpacity}
       enableHapticFeedback={false}
       onPress={onPress}
-      scaleTo={0.975}
+      scaleTo={scaleTo}
       testID={testID}
     >
       <Row
