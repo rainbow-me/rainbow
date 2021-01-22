@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { ThemeProvider } from 'styled-components';
 import { getTheme, saveTheme } from '../handlers/localstorage/theme';
 import { colors } from '@rainbow-me/styles';
 
@@ -48,7 +47,7 @@ export const MainThemeProvider = props => {
 
   return (
     <ThemeContext.Provider value={currentTheme}>
-      <ThemeProvider theme={currentTheme}>{props.children}</ThemeProvider>
+      {props.children}
     </ThemeContext.Provider>
   );
 };
