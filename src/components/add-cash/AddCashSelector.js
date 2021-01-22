@@ -11,22 +11,19 @@ import { getTokenMetadata } from '@rainbow-me/utils';
 
 const CurrencyItemHeight = 40;
 
-const CurrencyItemLabel = styled(Text).attrs({
-  color: colors_NOT_REACTIVE.blueGreyDark,
+const CurrencyItemLabel = styled(Text).attrs(({ theme: { colors } }) => ({
+  color: colors.blueGreyDark,
   letterSpacing: 'roundedMedium',
   size: 'larger',
   weight: 'semibold',
-})`
-  opacity: ${({ isSelected, isDarkMode }) =>
+}))`
+  opacity: ${({ isSelected, theme: { isDarkMode } }) =>
     isSelected ? (isDarkMode ? 1 : 0.8) : 0.5};
   padding-bottom: 1.5;
 `;
 
 // eslint-disable-next-line react/display-name
-const CurrencyItem = (isWalletEthZero, isDarkMode) => ({
-  item: address,
-  isSelected,
-}) => {
+const CurrencyItem = isWalletEthZero => ({ item: address, isSelected }) => {
   const metadata = getTokenMetadata(address);
 
   return (
@@ -39,7 +36,7 @@ const CurrencyItem = (isWalletEthZero, isDarkMode) => ({
       paddingRight={11}
     >
       <CoinIcon address={address} size={26} symbol={metadata?.symbol} />
-      <CurrencyItemLabel isDarkMode={isDarkMode} isSelected={isSelected}>
+      <CurrencyItemLabel isSelected={isSelected}>
         {metadata?.name}
       </CurrencyItemLabel>
     </RowWithMargins>
@@ -56,13 +53,13 @@ const AddCashSelector = ({
   isWalletEthZero,
   onSelect,
 }) => {
-  const { isDarkMode } = useTheme();
+  const { isDarkMode, colors } = useTheme();
   return (
     <JellySelector
       backgroundColor={
         isDarkMode
           ? colors_NOT_REACTIVE.darkModeColors.darkModeDark
-          : colors_NOT_REACTIVE.white
+          : colors.white
       }
       defaultIndex={initialCurrencyIndex}
       disableSelection={isWalletEthZero}
@@ -70,7 +67,7 @@ const AddCashSelector = ({
       items={currencies}
       onSelect={onSelect}
       renderIndicator={JellySelectorShadowIndicator}
-      renderItem={CurrencyItem(isWalletEthZero, isDarkMode)}
+      renderItem={CurrencyItem(isWalletEthZero)}
       renderRow={CurrencyItemRow}
     />
   );

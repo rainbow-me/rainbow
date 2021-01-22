@@ -1,6 +1,7 @@
 import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useEffect } from 'react';
 import styled from 'styled-components';
+import { useTheme } from '../../context/ThemeContext';
 import Divider from '../Divider';
 import { RainbowButton } from '../buttons';
 import { Column, ColumnWithMargins } from '../layout';
@@ -8,7 +9,7 @@ import { SheetActionButton } from '../sheet';
 import { Text } from '../text';
 import BackupIcon from '@rainbow-me/assets/backupIcon.png';
 import { ImgixImage } from '@rainbow-me/images';
-import { colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 import { deviceUtils } from '@rainbow-me/utils';
 
 const Footer = styled(ColumnWithMargins).attrs({
@@ -26,12 +27,12 @@ const Masthead = styled(Column).attrs({
   padding-top: 8;
 `;
 
-const MastheadDescription = styled(Text).attrs({
+const MastheadDescription = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors_NOT_REACTIVE.blueGreyDark50,
+  color: colors.blueGreyDark50,
   lineHeight: 'looser',
   size: 'large',
-})`
+}))`
   ${padding(12, 42, 30)};
 `;
 
@@ -55,6 +56,7 @@ export default function BackupSheetSection({
   titleText,
   type,
 }) {
+  const { colors } = useTheme();
   useEffect(() => {
     analytics.track('BackupSheet shown', {
       category: 'backup',
@@ -73,7 +75,7 @@ export default function BackupSheetSection({
         </Text>
         <MastheadDescription>{descriptionText}</MastheadDescription>
       </Masthead>
-      <Divider color={colors_NOT_REACTIVE.rowDividerLight} inset={[0, 42]} />
+      <Divider color={colors.rowDividerLight} inset={[0, 42]} />
       <Footer>
         <RainbowButton
           label={primaryLabel}
@@ -82,15 +84,12 @@ export default function BackupSheetSection({
         />
         <SheetActionButton
           androidWidth={maxButtonWidth}
-          color={colors_NOT_REACTIVE.white}
+          color={colors.white}
           label={secondaryLabel}
           onPress={onSecondaryAction}
           size="big"
           testID={secondaryButtonTestId}
-          textColor={colors_NOT_REACTIVE.alpha(
-            colors_NOT_REACTIVE.blueGreyDark,
-            0.8
-          )}
+          textColor={colors.alpha(colors.blueGreyDark, 0.8)}
         />
       </Footer>
     </Fragment>

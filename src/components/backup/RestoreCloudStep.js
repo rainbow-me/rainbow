@@ -25,14 +25,14 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors_NOT_REACTIVE, margin, padding } from '@rainbow-me/styles';
+import { margin, padding } from '@rainbow-me/styles';
 
-const DescriptionText = styled(Text).attrs({
+const DescriptionText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors_NOT_REACTIVE.blueGreyDark50,
+  color: colors.blueGreyDark50,
   lineHeight: 'looser',
   size: 'large',
-})``;
+}))``;
 
 const Masthead = styled(Centered).attrs({
   direction: 'column',

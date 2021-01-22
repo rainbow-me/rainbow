@@ -4,17 +4,16 @@ import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import styled from 'styled-components/primitives';
 import { Text } from './text';
 import { useAppVersion, useTimeout, useWalletsDebug } from '@rainbow-me/hooks';
-import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const DEBUG_TAP_COUNT = 15;
 
-const StampText = styled(Text).attrs({
+const StampText = styled(Text).attrs(({ theme: { colors, isDarkMode } }) => ({
   align: 'center',
-  color: colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.2),
+  color: colors.alpha(colors.blueGreyDark, isDarkMode ? 0.4 : 0.2),
   lineHeight: 'normal',
   size: 'smedium',
   weight: 'bold',
-})``;
+}))``;
 
 export default function AppVersionStamp() {
   const appVersion = useAppVersion();

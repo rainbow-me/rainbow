@@ -11,11 +11,12 @@ import Animated, {
 } from 'react-native-reanimated';
 import { withProps } from 'recompact';
 import styled from 'styled-components/primitives';
+import { withThemeContext } from '../../context/ThemeContext';
 import { deviceUtils } from '../../utils';
 import { interpolate } from '../animations';
 import { CoinRowHeight } from '../coin-row';
 import { ColumnWithMargins, Row, RowWithMargins } from '../layout';
-import { colors_NOT_REACTIVE, padding, position } from '@rainbow-me/styles';
+import { padding, position } from '@rainbow-me/styles';
 
 const { block, cond, set, startClock, stopClock } = Animated;
 
@@ -59,7 +60,7 @@ const Wrapper = styled(RowWithMargins).attrs({
   background-color: ${({ theme: { colors } }) => colors.transparent};
 `;
 
-export default class AssetListItemSkeleton extends PureComponent {
+class AssetListItemSkeleton extends PureComponent {
   static propTypes = {
     animated: PropTypes.bool,
     descendingOpacity: PropTypes.bool,
@@ -104,11 +105,12 @@ export default class AssetListItemSkeleton extends PureComponent {
   animation = this.props.animated && ios ? this.startShimmerLoop() : () => null;
 
   renderShimmer() {
+    const { colors } = this.props;
     const gradientColors = [
-      colors_NOT_REACTIVE.skeleton,
-      colors_NOT_REACTIVE.shimmer,
-      colors_NOT_REACTIVE.skeleton,
-      colors_NOT_REACTIVE.skeleton,
+      colors.skeleton,
+      colors.shimmer,
+      colors.skeleton,
+      colors.skeleton,
     ];
 
     const gradientSteps = [0, 0.2, 0.4, 1];
@@ -136,13 +138,13 @@ export default class AssetListItemSkeleton extends PureComponent {
   }
 
   render() {
-    const { animated, descendingOpacity, index } = this.props;
+    const { animated, descendingOpacity, index, colors } = this.props;
 
     const skeletonElement = (
       <Wrapper index={index}>
         <FakeAvatar />
         <ColumnWithMargins
-          backgroundColor={colors_NOT_REACTIVE.transparent}
+          backgroundColor={colors.transparent}
           flex={1}
           margin={10}
         >
@@ -171,3 +173,5 @@ export default class AssetListItemSkeleton extends PureComponent {
     );
   }
 }
+
+export default withThemeContext(AssetListItemSkeleton);

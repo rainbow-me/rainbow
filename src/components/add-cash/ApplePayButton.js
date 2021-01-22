@@ -33,11 +33,16 @@ const ApplePayButtonShadows = darkMode => ({
 const shadowsDark = ApplePayButtonShadows(true);
 const shadowsLight = ApplePayButtonShadows(false);
 
-const ApplePayButtonShadowElement = ({ opacity, type, darkMode }) => (
+const ApplePayButtonShadowElement = ({
+  backgroundColor,
+  opacity,
+  type,
+  darkMode,
+}) => (
   <AnimatedShadowStack
     {...position.coverAsObject}
     {...ApplePayButtonDimensions}
-    backgroundColor={colors_NOT_REACTIVE.white}
+    backgroundColor={backgroundColor}
     borderRadius={ApplePayButtonBorderRadius}
     shadows={(darkMode ? shadowsDark : shadowsLight)[type]}
     style={{ opacity }}
@@ -45,7 +50,7 @@ const ApplePayButtonShadowElement = ({ opacity, type, darkMode }) => (
 );
 
 const ApplePayButton = ({ disabled, onDisabledPress, onSubmit }) => {
-  const { isDarkMode: darkMode } = useTheme();
+  const { isDarkMode: darkMode, colors } = useTheme();
 
   const disabledAnimation = useTimingTransition(!disabled, {
     duration: 66,
@@ -87,11 +92,13 @@ const ApplePayButton = ({ disabled, onDisabledPress, onSubmit }) => {
       <Centered {...position.sizeAsObject('100%')}>
         <Centered {...position.sizeAsObject('100%')}>
           <ApplePayButtonShadowElement
+            backgroundColor={colors.white}
             darkMode={darkMode}
             opacity={disabledShadowOpacity}
             type="disabled"
           />
           <ApplePayButtonShadowElement
+            backgroundColor={colors.white}
             opacity={defaultShadowOpacity}
             type="default"
           />
@@ -107,11 +114,8 @@ const ApplePayButton = ({ disabled, onDisabledPress, onSubmit }) => {
             <Icon
               color={
                 darkMode && disabled
-                  ? colors_NOT_REACTIVE.alpha(
-                      colors_NOT_REACTIVE.blueGreyDark,
-                      0.4
-                    )
-                  : colors_NOT_REACTIVE.whiteLabel
+                  ? colors.alpha(colors.blueGreyDark, 0.4)
+                  : colors.whiteLabel
               }
               flex={1}
               marginBottom={2}

@@ -1,12 +1,12 @@
 import React, { useCallback } from 'react';
 import { Linking } from 'react-native';
 import styled from 'styled-components/primitives';
+import { useTheme } from '../context/ThemeContext';
 import { magicMemo } from '../utils';
 import { ButtonPressAnimation } from './animations';
 import { Icon } from './icons';
 import { RowWithMargins } from './layout';
 import { Text } from './text';
-import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const formatURLForDisplay = url => {
   const pretty = url.split('://')[1].replace('www.', '');
@@ -24,6 +24,7 @@ const Container = styled(RowWithMargins).attrs({
 
 const Link = ({ url }) => {
   const handlePress = useCallback(() => Linking.openURL(url), [url]);
+  const { colors } = useTheme();
 
   return (
     <ButtonPressAnimation
@@ -33,12 +34,8 @@ const Link = ({ url }) => {
       transformOrigin="left"
     >
       <Container>
-        <Icon color={colors_NOT_REACTIVE.appleBlue} name="compass" />
-        <Text
-          color={colors_NOT_REACTIVE.appleBlue}
-          size="lmedium"
-          weight="semibold"
-        >
+        <Icon color={colors.appleBlue} name="compass" />
+        <Text color={colors.appleBlue} size="lmedium" weight="semibold">
           {formatURLForDisplay(url)}
         </Text>
       </Container>
