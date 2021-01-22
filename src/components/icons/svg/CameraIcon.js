@@ -1,10 +1,10 @@
 import React from 'react';
 import { Path } from 'react-native-svg';
 import Svg from '../Svg';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 export default function CameraIcon({
-  color = colors.black,
+  color = colors_NOT_REACTIVE.black,
   outerOpacity = 1,
   ...props
 }) {

@@ -19,12 +19,12 @@ import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { useWallets } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
-import { colors, fonts, padding } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, fonts, padding } from '@rainbow-me/styles';
 import { abbreviations, showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const CaretIcon = styled(ImgixImage).attrs({
   source: Caret,
-  tintColor: colors.alpha(colors.blueGreyDark, 0.6),
+  tintColor: colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.6),
 })`
   height: 18;
   margin-top: 15;
@@ -32,7 +32,7 @@ const CaretIcon = styled(ImgixImage).attrs({
 `;
 
 const Address = styled(TruncatedAddress).attrs({
-  color: colors.dark,
+  color: colors_NOT_REACTIVE.dark,
   firstSectionLength: 6,
   size: fonts.size.lmedium,
   truncationLength: 4,
@@ -40,7 +40,7 @@ const Address = styled(TruncatedAddress).attrs({
 })``;
 
 const AccountLabel = styled(Text).attrs({
-  color: colors.dark,
+  color: colors_NOT_REACTIVE.dark,
   size: fonts.size.lmedium,
   weight: 'regular',
 })``;
@@ -54,27 +54,36 @@ const CheckmarkIcon = styled(Icon).attrs({
 `;
 
 const GreenCheck = styled(CheckmarkIcon).attrs({
-  color: colors.green,
+  color: colors_NOT_REACTIVE.green,
 })`
   box-shadow: 0px 4px 6px
     ${({ isDarkMode }) =>
-      colors.alpha(isDarkMode ? colors.shadow : colors.green, 0.4)};
+      colors_NOT_REACTIVE.alpha(
+        isDarkMode ? colors_NOT_REACTIVE.shadow : colors_NOT_REACTIVE.green,
+        0.4
+      )};
 `;
 
 const GreyCheck = styled(CheckmarkIcon).attrs({
-  color: colors.blueGreyDark50,
+  color: colors_NOT_REACTIVE.blueGreyDark50,
 })`
   box-shadow: 0px 4px 6px
     ${({ isDarkMode }) =>
-      colors.alpha(isDarkMode ? colors.shadow : colors.blueGreyDark50, 0.4)};
+      colors_NOT_REACTIVE.alpha(
+        isDarkMode
+          ? colors_NOT_REACTIVE.shadow
+          : colors_NOT_REACTIVE.blueGreyDark50,
+        0.4
+      )};
 `;
 
 const WarningIcon = styled(Icon).attrs({
-  color: colors.orangeLight,
+  color: colors_NOT_REACTIVE.orangeLight,
   name: 'warning',
 })`
   align-self: center;
-  box-shadow: 0px 4px 6px ${colors.alpha(colors.orangeLight, 0.4)};
+  box-shadow: 0px 4px 6px
+    ${colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.orangeLight, 0.4)};
   margin-right: 7px;
 `;
 
@@ -222,7 +231,7 @@ const WalletSelectionView = () => {
                         </BottomRowText>
                       ) : (
                         <BottomRowText
-                          color={colors.orangeLight}
+                          color={colors_NOT_REACTIVE.orangeLight}
                           weight={fonts.weight.medium}
                         >
                           Not backed up
@@ -247,7 +256,10 @@ const WalletSelectionView = () => {
                   </Row>
                 </Row>
               </ButtonPressAnimation>
-              <Divider color={colors.rowDividerFaint} inset={[0, 15, 0]} />
+              <Divider
+                color={colors_NOT_REACTIVE.rowDividerFaint}
+                inset={[0, 15, 0]}
+              />
             </Column>
           );
         })}
@@ -256,7 +268,10 @@ const WalletSelectionView = () => {
           <ButtonPressAnimation onPress={manageCloudBackups}>
             <Text
               align="center"
-              color={colors.alpha(colors.blueGreyDark, 0.6)}
+              color={colors_NOT_REACTIVE.alpha(
+                colors_NOT_REACTIVE.blueGreyDark,
+                0.6
+              )}
               letterSpacing="roundedMedium"
               size="lmedium"
               weight="semibold"

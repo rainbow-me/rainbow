@@ -3,10 +3,10 @@ import React, { Children, Fragment } from 'react';
 import styled from 'styled-components';
 import Divider from '../Divider';
 import { Row } from '../layout';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const Container = styled(Row)`
-  border-top-color: ${colors.rowDivider};
+  border-top-color: ${colors_NOT_REACTIVE.rowDivider};
   border-top-width: 2;
 `;
 

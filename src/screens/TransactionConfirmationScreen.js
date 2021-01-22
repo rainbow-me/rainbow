@@ -83,7 +83,7 @@ import {
   useWallets,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import { colors, padding } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
 import logger from 'logger';
 
 const isReanimatedAvailable = !(
@@ -98,7 +98,7 @@ const springConfig = {
 };
 
 const DappLogo = styled(RequestVendorLogoIcon).attrs({
-  backgroundColor: colors.transparent,
+  backgroundColor: colors_NOT_REACTIVE.transparent,
   borderRadius: 16,
   showLargeShadow: true,
   size: 50,
@@ -119,7 +119,7 @@ const GasSpeedButtonContainer = styled(Column)`
 `;
 
 const WalletLabel = styled(Text).attrs({
-  color: colors.alpha(colors.blueGreyDark, 0.5),
+  color: colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.5),
   letterSpacing: 'roundedMedium',
   size: 'smedium',
   weight: 'semibold',
@@ -129,8 +129,8 @@ const WalletLabel = styled(Text).attrs({
 
 const WalletText = styled(Text).attrs(({ balanceTooLow }) => ({
   color: balanceTooLow
-    ? colors.avatarColor[7]
-    : colors.alpha(colors.blueGreyDark, 0.8),
+    ? colors_NOT_REACTIVE.avatarColor[7]
+    : colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.8),
   size: 'larger',
   weight: balanceTooLow ? 'bold' : 'semibold',
 }))``;
@@ -582,28 +582,31 @@ const TransactionConfirmationScreen = () => {
       isSufficientGas !== undefined ? (
       <Column marginBottom={24} marginTop={19}>
         <SheetActionButton
-          color={colors.transparent}
+          color={colors_NOT_REACTIVE.transparent}
           disabled
           fullWidth
           label="ETH balance too low"
           onPress={onCancel}
           size="big"
-          textColor={colors.avatarColor[7]}
+          textColor={colors_NOT_REACTIVE.avatarColor[7]}
           weight="bold"
         />
       </Column>
     ) : (
       <SheetActionButtonRow ignorePaddingTop>
         <SheetActionButton
-          color={colors.white}
+          color={colors_NOT_REACTIVE.white}
           label="Cancel"
           onPress={onCancel}
           size="big"
-          textColor={colors.alpha(colors.blueGreyDark, 0.8)}
+          textColor={colors_NOT_REACTIVE.alpha(
+            colors_NOT_REACTIVE.blueGreyDark,
+            0.8
+          )}
           weight="bold"
         />
         <SheetActionButton
-          color={colors.appleBlue}
+          color={colors_NOT_REACTIVE.appleBlue}
           label="􀎽 Confirm"
           onPress={ready ? onPressSend : NOOP}
           size="big"
@@ -728,7 +731,7 @@ const TransactionConfirmationScreen = () => {
       style={isReanimatedAvailable ? animatedContainerStyles : fallbackStyles}
     >
       <SlackSheet
-        backgroundColor={colors.transparent}
+        backgroundColor={colors_NOT_REACTIVE.transparent}
         borderRadius={0}
         height={sheetHeight}
         hideHandle
@@ -736,7 +739,7 @@ const TransactionConfirmationScreen = () => {
       >
         <Column>
           <AnimatedSheet
-            backgroundColor={colors.white}
+            backgroundColor={colors_NOT_REACTIVE.white}
             borderRadius={39}
             direction="column"
             marginTop={marginTop}
@@ -759,7 +762,10 @@ const TransactionConfirmationScreen = () => {
             <Row marginBottom={5}>
               <Text
                 align="center"
-                color={colors.alpha(colors.blueGreyDark, 0.8)}
+                color={colors_NOT_REACTIVE.alpha(
+                  colors_NOT_REACTIVE.blueGreyDark,
+                  0.8
+                )}
                 letterSpacing="roundedMedium"
                 size="large"
                 weight="bold"
@@ -771,7 +777,7 @@ const TransactionConfirmationScreen = () => {
               isAuthenticated && (
                 <Text
                   align="center"
-                  color={colors.appleBlue}
+                  color={colors_NOT_REACTIVE.appleBlue}
                   letterSpacing="roundedMedium"
                   size="large"
                   weight="bold"
@@ -791,7 +797,10 @@ const TransactionConfirmationScreen = () => {
                 {methodName || 'Placeholder'}
               </Text>
             </Centered>
-            <Divider color={colors.rowDividerLight} inset={[0, 143.5]} />
+            <Divider
+              color={colors_NOT_REACTIVE.rowDividerLight}
+              inset={[0, 143.5]}
+            />
             {renderTransactionSection()}
             {renderTransactionButtons()}
             <RowWithMargins css={padding(0, 24, 30)} margin={15}>
@@ -801,7 +810,9 @@ const TransactionConfirmationScreen = () => {
                   <Column marginTop={ios ? 2 : 8}>
                     <ContactAvatar
                       color={
-                        isNaN(accountColor) ? colors.skeleton : accountColor
+                        isNaN(accountColor)
+                          ? colors_NOT_REACTIVE.skeleton
+                          : accountColor
                       }
                       size="smaller"
                       value={accountSymbol}

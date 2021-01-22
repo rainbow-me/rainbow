@@ -5,7 +5,7 @@ import { magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import { colors, position } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
 
 const Button = styled(Centered).attrs({
   scaleTo: 0.8,
@@ -23,7 +23,7 @@ const Container = styled.View`
 
 const TextIcon = styled(Text).attrs({
   align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.3),
+  color: colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.3),
   letterSpacing: 'zero',
   size: 'large',
   weight: 'bold',

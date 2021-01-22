@@ -5,10 +5,10 @@ import { useTheme } from '../../context/ThemeContext';
 import { useCoinListEditedValue } from '../../hooks/useCoinListEdited';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
-import { borders, colors, shadow } from '@rainbow-me/styles';
+import { borders, colors_NOT_REACTIVE, shadow } from '@rainbow-me/styles';
 
 const IndicatorIcon = styled(Icon).attrs(({ isPinned }) => ({
-  color: colors.whiteLabel,
+  color: colors_NOT_REACTIVE.whiteLabel,
   name: isPinned ? 'pin' : 'hidden',
 }))`
   height: ${({ isPinned }) => (isPinned ? 13 : 10)};
@@ -23,10 +23,12 @@ const IndicatorIconContainer = styled(Centered)`
       0,
       4,
       12,
-      isDarkMode ? colors.shadow : colors.blueGreyDark,
+      isDarkMode
+        ? colors_NOT_REACTIVE.shadow
+        : colors_NOT_REACTIVE.blueGreyDark,
       0.4
     )}
-  background-color: ${colors.blueGreyDark50};
+  background-color: ${colors_NOT_REACTIVE.blueGreyDark50};
   bottom: 3;
   left: 10;
   position: absolute;

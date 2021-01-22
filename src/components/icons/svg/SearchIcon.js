@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Path } from 'react-native-svg';
 import Svg from '../Svg';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const SearchIcon = ({ color, ...props }) => (
   <Svg height="18" viewBox="0 0 18 18" width="18" {...props}>
@@ -19,7 +19,7 @@ SearchIcon.propTypes = {
 };
 
 SearchIcon.defaultProps = {
-  color: colors.black,
+  color: colors_NOT_REACTIVE.black,
 };
 
 export default SearchIcon;

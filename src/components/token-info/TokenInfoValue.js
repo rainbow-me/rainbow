@@ -1,9 +1,9 @@
 import styled from 'styled-components/primitives';
 import { TruncatedText } from '../text';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const TokenInfoValue = styled(TruncatedText).attrs(
-  ({ color = colors.dark, weight = 'semibold' }) => ({
+  ({ color = colors_NOT_REACTIVE.dark, weight = 'semibold' }) => ({
     color,
     letterSpacing: 'roundedTight',
     size: 'larger',

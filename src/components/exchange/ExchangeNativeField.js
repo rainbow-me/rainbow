@@ -6,7 +6,7 @@ import { Text } from '../text';
 import ExchangeInput from './ExchangeInput';
 import { useColorForAsset } from '@rainbow-me/hooks';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
-import { colors, fonts } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, fonts } from '@rainbow-me/styles';
 
 const CurrencySymbol = styled(Text).attrs(({ height }) => ({
   letterSpacing: 'roundedTight',
@@ -61,10 +61,12 @@ const ExchangeNativeField = (
     const nativeAmountExists =
       typeof nativeAmount === 'string' && nativeAmount.length > 0;
 
-    const color = isFocused ? colors.dark : colors.blueGreyDark;
+    const color = isFocused
+      ? colors_NOT_REACTIVE.dark
+      : colors_NOT_REACTIVE.blueGreyDark;
     const opacity = isFocused ? 1 : nativeAmountExists ? 0.5 : 0.3;
 
-    return colors.alpha(color, opacity);
+    return colors_NOT_REACTIVE.alpha(color, opacity);
   }, [isFocused, nativeAmount]);
 
   return (

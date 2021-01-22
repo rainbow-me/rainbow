@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Defs, G, LinearGradient, Path, Stop } from 'react-native-svg';
 import Svg from '../Svg';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const PasscodeIcon = ({ color, size, ...props }) => (
   <Svg
@@ -38,7 +38,7 @@ PasscodeIcon.propTypes = {
 };
 
 PasscodeIcon.defaultProps = {
-  color: colors.white,
+  color: colors_NOT_REACTIVE.white,
 };
 
 export default PasscodeIcon;

@@ -47,7 +47,7 @@ import {
   useUniswapMarketDetails,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
-import { colors, position } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
 import { backgroundTask, isNewValueForPath } from '@rainbow-me/utils';
 
 import logger from 'logger';
@@ -533,7 +533,7 @@ export default function ExchangeModal({
         {...(ios
           ? position.sizeAsObject('100%')
           : { style: { height: 500, top: 0 } })}
-        backgroundColor={colors.transparent}
+        backgroundColor={colors_NOT_REACTIVE.transparent}
         direction="column"
       >
         <AnimatedFloatingPanels

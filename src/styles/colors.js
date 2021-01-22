@@ -1,7 +1,7 @@
 import chroma from 'chroma-js';
 import { toLower } from 'lodash';
 import PropTypes from 'prop-types';
-import { darkMode } from '@rainbow-me/config/debug'; // TODO DARKMODE
+import { darkMode } from '../config/debug';
 
 const buildRgba = (color, alpha = 1) => `rgba(${chroma(color).rgb()},${alpha})`;
 const darkModeColors = {

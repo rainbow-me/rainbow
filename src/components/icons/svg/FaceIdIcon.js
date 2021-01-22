@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Path } from 'react-native-svg';
 import Svg from '../Svg';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const FaceIdIcon = ({ color, ...props }) => (
   <Svg viewBox="0 0 27 27" {...props}>
@@ -20,7 +20,7 @@ FaceIdIcon.propTypes = {
 };
 
 FaceIdIcon.defaultProps = {
-  color: colors.white,
+  color: colors_NOT_REACTIVE.white,
 };
 
 export default FaceIdIcon;

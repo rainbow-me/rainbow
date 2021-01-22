@@ -6,7 +6,7 @@ import { ButtonPressAnimation } from './animations';
 import { Icon } from './icons';
 import { RowWithMargins } from './layout';
 import { Text } from './text';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const formatURLForDisplay = url => {
   const pretty = url.split('://')[1].replace('www.', '');
@@ -33,8 +33,12 @@ const Link = ({ url }) => {
       transformOrigin="left"
     >
       <Container>
-        <Icon color={colors.appleBlue} name="compass" />
-        <Text color={colors.appleBlue} size="lmedium" weight="semibold">
+        <Icon color={colors_NOT_REACTIVE.appleBlue} name="compass" />
+        <Text
+          color={colors_NOT_REACTIVE.appleBlue}
+          size="lmedium"
+          weight="semibold"
+        >
           {formatURLForDisplay(url)}
         </Text>
       </Container>

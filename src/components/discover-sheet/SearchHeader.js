@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components/primitives';
 import { Flex } from '../layout';
 import { Text } from '../text';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const SearchHeaderWrapper = styled(Flex).attrs({
   align: 'center',
@@ -11,7 +11,7 @@ const SearchHeaderWrapper = styled(Flex).attrs({
   padding: 6,
 })`
   border-radius: 12;
-  background-color: ${colors.lightestGrey};
+  background-color: ${colors_NOT_REACTIVE.lightestGrey};
 `;
 
 export default function SearchHeader() {
@@ -20,7 +20,7 @@ export default function SearchHeader() {
       height={32}
       margin={8}
       radius={12}
-      style={{ backgroundColor: colors.lightestGrey }}
+      style={{ backgroundColor: colors_NOT_REACTIVE.lightestGrey }}
     >
       <Text size="medium" weight="bold">
         Here will be search

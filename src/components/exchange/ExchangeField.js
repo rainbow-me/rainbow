@@ -7,11 +7,14 @@ import { Row, RowWithMargins } from '../layout';
 import { EnDash } from '../text';
 import ExchangeInput from './ExchangeInput';
 import { useColorForAsset } from '@rainbow-me/hooks';
-import { borders, colors } from '@rainbow-me/styles';
+import { borders, colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const ExchangeFieldHeight = android ? 64 : 38;
 const ExchangeFieldPadding = android ? 15 : 19;
-const skeletonColor = colors.alpha(colors.blueGreyDark, 0.1);
+const skeletonColor = colors_NOT_REACTIVE.alpha(
+  colors_NOT_REACTIVE.blueGreyDark,
+  0.1
+);
 
 const CoinIconSkeleton = styled.View`
   ${borders.buildCircle(CoinIconSize)};

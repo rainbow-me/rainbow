@@ -2,11 +2,11 @@ import React from 'react';
 import { TextInput as TextInputPrimitive } from 'react-native';
 import styled from 'styled-components/primitives';
 import { useTheme } from '../../context/ThemeContext';
-import { buildTextStyles, colors } from '@rainbow-me/styles';
+import { buildTextStyles, colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const defaultSelectionColor = ios
-  ? colors.appleBlue
-  : colors.appleBlueTransparent;
+  ? colors_NOT_REACTIVE.appleBlue
+  : colors_NOT_REACTIVE.appleBlueTransparent;
 
 const TextInput = styled(TextInputPrimitive)`
   /* our Input uses same styling system as our <Text /> component */
@@ -20,7 +20,7 @@ const Input = (
     autoCorrect = false,
     keyboardAppearance,
     keyboardType,
-    placeholderTextColor = colors.placeholder,
+    placeholderTextColor = colors_NOT_REACTIVE.placeholder,
     selectionColor = defaultSelectionColor,
     spellCheck = true,
     testID,

@@ -2,14 +2,14 @@ import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components/primitives';
+import { useTheme } from '../../../context/ThemeContext';
 import { ButtonPressAnimation } from '../../animations';
 import { Icon } from '../../icons';
 import { Centered, InnerBorder, RowWithMargins } from '../../layout';
 import { Emoji, Text } from '../../text';
-import { darkMode } from '@rainbow-me/config/debug'; // TODO DARKMODE
 import { containsEmoji } from '@rainbow-me/helpers/strings';
 import { useDimensions } from '@rainbow-me/hooks';
-import { colors, position } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const addChartsStyling = isCharts =>
@@ -38,7 +38,7 @@ const WhiteButtonGradient = React.memo(
   () => (
     <LinearGradient
       borderRadius={49}
-      colors={colors.gradients.whiteButton}
+      colors={colors_NOT_REACTIVE.gradients.whiteButton}
       end={{ x: 0.5, y: 1 }}
       opacity={0.5}
       pointerEvents="none"
@@ -52,7 +52,7 @@ const WhiteButtonGradient = React.memo(
 const SheetActionButton = ({
   androidWidth,
   borderRadius = 56,
-  color = colors.appleBlue,
+  color = colors_NOT_REACTIVE.appleBlue,
   disabled,
   elevation = 24,
   emoji,
@@ -63,28 +63,29 @@ const SheetActionButton = ({
   label,
   size,
   testID,
-  textColor = colors.whiteLabel,
+  textColor = colors_NOT_REACTIVE.whiteLabel,
   weight = 'semibold',
   ...props
 }) => {
   const { width: deviceWidth } = useDimensions();
+  const { isDarkMode } = useTheme();
   const shadowsForButtonColor = useMemo(() => {
-    const isWhite = color === colors.white;
+    const isWhite = color === colors_NOT_REACTIVE.white;
 
     if (disabled || isTransparent) {
-      return [[0, 0, 0, colors.transparent, 0]];
+      return [[0, 0, 0, colors_NOT_REACTIVE.transparent, 0]];
     } else
       return [
-        [0, 10, 30, colors.shadow, isWhite ? 0.12 : 0.2],
+        [0, 10, 30, colors_NOT_REACTIVE.shadow, isWhite ? 0.12 : 0.2],
         [
           0,
           5,
           15,
-          darkMode || isWhite ? colors.shadow : color,
+          isDarkMode || isWhite ? colors_NOT_REACTIVE.shadow : color,
           isWhite ? 0.08 : 0.4,
         ],
       ];
-  }, [color, disabled, isTransparent]);
+  }, [color, disabled, isTransparent, isDarkMode]);
 
   const androidButtonWidth =
     androidWidth || (fullWidth ? deviceWidth - 38 : (deviceWidth - 53) / 2);
@@ -111,8 +112,8 @@ const SheetActionButton = ({
         <ShadowStack
           {...position.coverAsObject}
           backgroundColor={
-            darkMode && color === colors.dark
-              ? colors.darkModeColors.darkModeDark
+            isDarkMode && color === colors_NOT_REACTIVE.dark
+              ? colors_NOT_REACTIVE.darkModeColors.darkModeDark
               : color
           }
           borderRadius={borderRadius}
@@ -120,8 +121,8 @@ const SheetActionButton = ({
           shadows={shadowsForButtonColor}
           {...((android || fullWidth) && { width: androidButtonWidth })}
         >
-          {color === colors.white && <WhiteButtonGradient />}
-          {color !== colors.white && !isTransparent && (
+          {color === colors_NOT_REACTIVE.white && <WhiteButtonGradient />}
+          {color !== colors_NOT_REACTIVE.white && !isTransparent && (
             <InnerBorder
               color={disabled ? textColor : null}
               opacity={disabled ? 0.02 : null}

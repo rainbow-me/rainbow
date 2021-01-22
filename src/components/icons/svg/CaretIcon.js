@@ -1,9 +1,12 @@
 import React from 'react';
 import { Path } from 'react-native-svg';
 import Svg from '../Svg';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
-const CaretIcon = ({ color = colors.dark, size, ...props }, ref) => (
+const CaretIcon = (
+  { color = colors_NOT_REACTIVE.dark, size, ...props },
+  ref
+) => (
   <Svg
     {...props}
     height={size ? (size * 21) / 9 : '21'}

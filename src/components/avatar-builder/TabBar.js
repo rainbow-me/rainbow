@@ -3,7 +3,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Categories } from './Categories';
-import { colors, position } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
 
 const TabBar = ({ categoryKeys, activeCategory, onPress }) => {
   return categoryKeys.map(c => {
@@ -41,7 +41,10 @@ const TabBar = ({ categoryKeys, activeCategory, onPress }) => {
             color={
               category === activeCategory
                 ? null
-                : colors.alpha(colors.blueGreyDark, 0.4)
+                : colors_NOT_REACTIVE.alpha(
+                    colors_NOT_REACTIVE.blueGreyDark,
+                    0.4
+                  )
             }
             name={category.icon}
           />

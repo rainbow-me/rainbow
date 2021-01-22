@@ -5,7 +5,12 @@ import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import { colors, margin, padding, position } from '@rainbow-me/styles';
+import {
+  colors_NOT_REACTIVE,
+  margin,
+  padding,
+  position,
+} from '@rainbow-me/styles';
 
 const Button = styled(ButtonPressAnimation).attrs({
   scaleTo: 1.1,
@@ -16,7 +21,7 @@ const Button = styled(ButtonPressAnimation).attrs({
 
 const ButtonLabel = styled(Text).attrs({
   align: 'center',
-  color: colors.mintDark,
+  color: colors_NOT_REACTIVE.mintDark,
   size: 'large',
   weight: 'semibold',
 })``;
@@ -26,11 +31,11 @@ const Container = styled(Centered).attrs({
 })`
   ${padding(30, 50, 60, 30)};
   ${position.cover};
-  background-color: ${colors.black};
+  background-color: ${colors_NOT_REACTIVE.black};
 `;
 
 const QRIcon = styled(Icon).attrs({
-  color: colors.mintDark,
+  color: colors_NOT_REACTIVE.mintDark,
   name: 'camera',
   outerOpacity: 0.5,
 })`
@@ -39,14 +44,17 @@ const QRIcon = styled(Icon).attrs({
 
 const Subtitle = styled(Text).attrs({
   align: 'center',
-  color: colors.alpha(colors.darkModeColors.blueGreyDark, 0.6),
+  color: colors_NOT_REACTIVE.alpha(
+    colors_NOT_REACTIVE.darkModeColors.blueGreyDark,
+    0.6
+  ),
   size: 'smedium',
   weight: 'semibold',
 })``;
 
 const Title = styled(Text).attrs({
   align: 'center',
-  color: colors.white,
+  color: colors_NOT_REACTIVE.white,
   size: 'larger',
   weight: 'bold',
 })`

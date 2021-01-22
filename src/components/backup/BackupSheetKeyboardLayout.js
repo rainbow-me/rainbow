@@ -9,7 +9,7 @@ import { SheetHandleFixedToTopHeight } from '../sheet';
 import KeyboardTypes from '@rainbow-me/helpers/keyboardTypes';
 import { useDimensions, useKeyboardHeight } from '@rainbow-me/hooks';
 import { sharedCoolModalTopOffset } from '@rainbow-me/navigation/config';
-import { colors, padding } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
 
 const Footer = styled(Column)`
   ${({ isTallPhone }) => padding(0, 15, isTallPhone ? 30 : 15)};
@@ -18,7 +18,7 @@ const Footer = styled(Column)`
 `;
 
 const KeyboardSizeView = styled(KeyboardArea)`
-  background-color: ${colors.transparent};
+  background-color: ${colors_NOT_REACTIVE.transparent};
 `;
 
 export default function BackupSheetKeyboardLayout({

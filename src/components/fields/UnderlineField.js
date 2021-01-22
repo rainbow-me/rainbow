@@ -17,23 +17,23 @@ import { Button } from '../buttons';
 import { ExchangeInput } from '../exchange';
 import { ColumnWithMargins, Row } from '../layout';
 import { useDimensions } from '@rainbow-me/hooks';
-import { colors, position } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
 
 const Underline = styled.View`
   ${position.cover};
-  background-color: ${colors.blueGreyDark};
+  background-color: ${colors_NOT_REACTIVE.blueGreyDark};
   opacity: 0.2;
 `;
 
 const UnderlineAnimated = styled(Animated.View)`
   ${position.cover};
-  background-color: ${colors.sendScreen.brightBlue};
+  background-color: ${colors_NOT_REACTIVE.sendScreen.brightBlue};
   left: -100%;
 `;
 
 const UnderlineInput = styled(ExchangeInput).attrs(
   ({ isTinyPhone, isDarkMode }) => ({
-    color: colors.dark,
+    color: colors_NOT_REACTIVE.dark,
     disableTabularNums: true,
     keyboardAppearance: isDarkMode ? 'dark' : 'light',
     letterSpacing: 'roundedTightest',
@@ -176,7 +176,7 @@ const UnderlineField = (
         />
         {buttonText && isFocused && (
           <Button
-            backgroundColor={colors.sendScreen.brightBlue}
+            backgroundColor={colors_NOT_REACTIVE.sendScreen.brightBlue}
             onPress={handleButtonPress}
             size="small"
             type="pill"

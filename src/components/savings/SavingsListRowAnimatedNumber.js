@@ -5,7 +5,7 @@ import { useTheme } from '../../context/ThemeContext';
 import isRainbowTextAvailable from '../../helpers/isRainbowTextAvailable';
 import { formatSavingsAmount, isSymbolStablecoin } from '../../helpers/savings';
 import AndroidText from './AndroidAnimatedNumbers';
-import { colors, fonts } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, fonts } from '@rainbow-me/styles';
 
 const sx = StyleSheet.create({
   animatedNumber: {
@@ -17,7 +17,7 @@ const sx = StyleSheet.create({
     top: 4,
   },
   text: {
-    color: colors.dark,
+    color: colors_NOT_REACTIVE.dark,
     flex: 1,
     fontFamily: fonts.family.SFProRounded,
     fontSize: parseFloat(fonts.size.lmedium),
@@ -51,7 +51,7 @@ const SavingsListRowAnimatedNumber = ({
   return (
     <TextComponent
       animationConfig={{
-        color: colors.green, // HEX
+        color: colors_NOT_REACTIVE.green, // HEX
         darkMode,
         decimals: 10,
         duration: 800, // in intervals

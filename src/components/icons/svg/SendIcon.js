@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Path } from 'react-native-svg';
 import Svg from '../Svg';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const SendIcon = ({ color, ...props }) => (
   <Svg height={23} viewBox="0 0 23 22" width={22} {...props}>
@@ -19,7 +19,7 @@ SendIcon.propTypes = {
 };
 
 SendIcon.defaultProps = {
-  color: colors.white,
+  color: colors_NOT_REACTIVE.white,
 };
 
 export default SendIcon;

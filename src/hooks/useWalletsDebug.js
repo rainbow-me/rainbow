@@ -26,7 +26,7 @@ import {
 } from '../utils/keychainConstants';
 import useInitializeWallet from './useInitializeWallet';
 import useWallets from './useWallets';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 import logger from 'logger';
 
 const keysOnly = keysWithValues => map(keysWithValues, item => item?.username);
@@ -64,7 +64,7 @@ export default function useWalletsDebug() {
               {
                 address,
                 avatar: null,
-                color: colors.getRandomColor(),
+                color: colors_NOT_REACTIVE.getRandomColor(),
                 index: 0,
                 label: '',
                 visible: true,

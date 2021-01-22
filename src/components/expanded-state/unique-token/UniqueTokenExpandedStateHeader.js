@@ -8,7 +8,7 @@ import Pill from '../../Pill';
 import { ContextCircleButton } from '../../context-menu';
 import { ColumnWithMargins, FlexItem, Row, RowWithMargins } from '../../layout';
 import { Text } from '../../text';
-import { colors, padding } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
 
 const contextButtonOptions = [
   'Share',
@@ -55,7 +55,7 @@ const UniqueTokenExpandedStateHeader = ({ asset }) => {
       <HeadingColumn>
         <RowWithMargins align="center" margin={3}>
           <Text
-            color={colors.blueGreyDark50}
+            color={colors_NOT_REACTIVE.blueGreyDark50}
             letterSpacing="uppercase"
             size="smedium"
             uppercase

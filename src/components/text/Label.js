@@ -1,9 +1,9 @@
 import styled from 'styled-components/primitives';
 import Text from './Text';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const labelStyles = {
-  color: colors.blueGreyDark,
+  color: colors_NOT_REACTIVE.blueGreyDark,
   opacity: 0.6,
   size: 'h5',
   weight: 'semibold',

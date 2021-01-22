@@ -3,11 +3,11 @@ import styled from 'styled-components/primitives';
 import { Centered } from '../layout';
 import Icon from './Icon';
 import BiometryTypes from '@rainbow-me/helpers/biometryTypes';
-import { colors, position } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
 const BiometryTypeIcon = styled(Icon).attrs(({ type }) => ({
-  color: colors.whiteLabel,
+  color: colors_NOT_REACTIVE.whiteLabel,
   name: type.toLowerCase(),
 }))`
   ${position.size('100%')}

@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Circle, G } from 'react-native-svg';
 import Svg from '../Svg';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const ThreeDotsIcon = ({ color, tightDots, circle, ...props }) => (
   <Svg
@@ -33,7 +33,7 @@ ThreeDotsIcon.propTypes = {
 };
 
 ThreeDotsIcon.defaultProps = {
-  color: colors.grey,
+  color: colors_NOT_REACTIVE.grey,
 };
 
 export default ThreeDotsIcon;

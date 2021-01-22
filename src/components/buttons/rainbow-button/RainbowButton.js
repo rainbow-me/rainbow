@@ -10,7 +10,7 @@ import RainbowButtonBackground from './RainbowButtonBackground';
 import RainbowButtonTypes from './RainbowButtonTypes';
 import { useDimensions } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
-import { colors, position, shadow } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, position, shadow } from '@rainbow-me/styles';
 import ShadowView from 'react-native-shadow-stack/ShadowView';
 
 const AddCashIcon = styled(ImgixImage).attrs({
@@ -40,7 +40,10 @@ const ButtonContent = styled(RowWithMargins).attrs({
 
 const ButtonLabel = styled(Text).attrs(({ disabled, type, isDarkMode }) => ({
   align: type === RainbowButtonTypes.addCash ? 'left' : 'center',
-  color: isDarkMode && disabled ? colors.white : colors.whiteLabel,
+  color:
+    isDarkMode && disabled
+      ? colors_NOT_REACTIVE.white
+      : colors_NOT_REACTIVE.whiteLabel,
   letterSpacing:
     type === RainbowButtonTypes.addCash ? 'roundedTight' : 'rounded',
   size: type === RainbowButtonTypes.small ? 'large' : 'larger',
@@ -48,8 +51,8 @@ const ButtonLabel = styled(Text).attrs(({ disabled, type, isDarkMode }) => ({
 }))``;
 
 const OuterButton = styled.View`
-  ${shadow.build(0, 5, 15, colors.shadow)};
-  background-color: ${colors.dark};
+  ${shadow.build(0, 5, 15, colors_NOT_REACTIVE.shadow)};
+  background-color: ${colors_NOT_REACTIVE.dark};
   border-radius: ${({ height, strokeWidth }) => height / 2 + strokeWidth};
   height: ${({ height }) => height};
   shadow-opacity: ${({ disabled, isDarkMode }) =>
@@ -58,8 +61,8 @@ const OuterButton = styled.View`
 `;
 
 const Shadow = styled(ShadowView)`
-  ${shadow.build(0, 10, 30, colors.shadow, 1)};
-  background-color: ${colors.white};
+  ${shadow.build(0, 10, 30, colors_NOT_REACTIVE.shadow, 1)};
+  background-color: ${colors_NOT_REACTIVE.white};
   border-radius: ${({ height, strokeWidth }) => height / 2 + strokeWidth};
   height: ${({ height }) => height};
   opacity: ${({ disabled, isDarkMode }) =>

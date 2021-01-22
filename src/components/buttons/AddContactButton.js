@@ -6,7 +6,7 @@ import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import Button from './Button';
 import { ImgixImage } from '@rainbow-me/images';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 import { neverRerender } from '@rainbow-me/utils';
 
 const duration = 200;
@@ -42,7 +42,7 @@ const transition = (
 
 const AddButton = neverRerender(({ onPress }) => (
   <Button
-    backgroundColor={colors.appleBlue}
+    backgroundColor={colors_NOT_REACTIVE.appleBlue}
     onPress={onPress}
     size="small"
     testID="add-contact-button"

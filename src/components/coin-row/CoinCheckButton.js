@@ -6,7 +6,13 @@ import { ButtonPressAnimation, OpacityToggler } from '../animations';
 import { CoinIconSize } from '../coin-icon';
 import { Icon } from '../icons';
 import { Row } from '../layout';
-import { borders, colors, padding, position, shadow } from '@rainbow-me/styles';
+import {
+  borders,
+  colors_NOT_REACTIVE,
+  padding,
+  position,
+  shadow,
+} from '@rainbow-me/styles';
 
 const Container = styled.View`
   ${position.size(CoinIconSize)};
@@ -23,7 +29,10 @@ const Content = styled(Row).attrs(({ isAbsolute }) => ({
 
 const CircleOutline = styled.View`
   ${borders.buildCircle(22)}
-  border-color: ${colors.alpha(colors.blueGreyDark, 0.12)};
+  border-color: ${colors_NOT_REACTIVE.alpha(
+    colors_NOT_REACTIVE.blueGreyDark,
+    0.12
+  )};
   border-width: 1.5;
   position: absolute;
 `;
@@ -32,8 +41,14 @@ const CheckmarkBackground = styled.View`
   ${borders.buildCircle(22)}
   ${padding(4.5)}
   ${({ isDarkMode }) =>
-    shadow.build(0, 4, 12, isDarkMode ? colors.shadow : colors.appleBlue, 0.4)}
-  background-color: ${colors.appleBlue};
+    shadow.build(
+      0,
+      4,
+      12,
+      isDarkMode ? colors_NOT_REACTIVE.shadow : colors_NOT_REACTIVE.appleBlue,
+      0.4
+    )}
+  background-color: ${colors_NOT_REACTIVE.appleBlue};
 `;
 
 const CoinCheckButton = ({ isAbsolute, onPress, toggle, ...props }) => {

@@ -6,7 +6,7 @@ import { Icon } from '../icons';
 import { Input } from '../inputs';
 import { cloudBackupPasswordMinLength } from '@rainbow-me/handlers/cloudBackup';
 import { useDimensions } from '@rainbow-me/hooks';
-import { colors, padding, position } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const FieldAccessoryBadgeSize = 22;
@@ -33,7 +33,10 @@ const PasswordInput = styled(Input).attrs({
   autoCompleteType: 'password',
   blurOnSubmit: false,
   passwordRules: `minlength: ${cloudBackupPasswordMinLength};`,
-  placeholderTextColor: colors.alpha(colors.blueGreyDark, 0.4),
+  placeholderTextColor: colors_NOT_REACTIVE.alpha(
+    colors_NOT_REACTIVE.blueGreyDark,
+    0.4
+  ),
   secureTextEntry: true,
   selectTextOnFocus: true,
   size: 'large',
@@ -46,12 +49,14 @@ const PasswordInput = styled(Input).attrs({
 
 const ShadowContainer = styled(ShadowStack).attrs(
   ({ deviceWidth, isDarkMode }) => ({
-    backgroundColor: isDarkMode ? colors.offWhite : colors.white,
+    backgroundColor: isDarkMode
+      ? colors_NOT_REACTIVE.offWhite
+      : colors_NOT_REACTIVE.white,
     borderRadius: 23,
     height: 46,
     shadows: [
-      [0, 5, 15, colors.shadow, 0.06],
-      [0, 10, 30, colors.shadow, 0.12],
+      [0, 5, 15, colors_NOT_REACTIVE.shadow, 0.06],
+      [0, 10, 30, colors_NOT_REACTIVE.shadow, 0.12],
     ],
     width: Math.max(deviceWidth - 130, 245),
   })
@@ -98,11 +103,14 @@ const PasswordField = (
           {...props}
         />
         {isValid && (
-          <FieldAccessoryBadge color={colors.green} name="checkmarkCircled" />
+          <FieldAccessoryBadge
+            color={colors_NOT_REACTIVE.green}
+            name="checkmarkCircled"
+          />
         )}
         {isInvalid && (
           <FieldAccessoryBadge
-            color={colors.orangeLight}
+            color={colors_NOT_REACTIVE.orangeLight}
             name="warningCircled"
           />
         )}

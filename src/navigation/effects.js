@@ -5,7 +5,7 @@ import { HeaderHeightWithStatusBar } from '../components/header';
 import { AvatarCircle } from '../components/profile';
 import { deviceUtils } from '../utils';
 import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const statusBarHeight = getStatusBarHeight(true);
 export const sheetVerticalOffset = statusBarHeight;
@@ -75,7 +75,7 @@ export const speedUpAndCancelStyleInterpolator = ({
 
   return {
     cardStyle: {
-      shadowColor: colors.shadowBlack,
+      shadowColor: colors_NOT_REACTIVE.shadowBlack,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.6,
       shadowRadius: 25,
@@ -103,7 +103,7 @@ const exchangeStyleInterpolator = ({
 
   return {
     cardStyle: {
-      shadowColor: colors.shadowBlack,
+      shadowColor: colors_NOT_REACTIVE.shadowBlack,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.6,
       shadowRadius: 25,
@@ -131,14 +131,14 @@ const expandStyleInterpolator = targetOpacity => ({
 
   return {
     cardStyle: {
-      shadowColor: colors.shadow,
+      shadowColor: colors_NOT_REACTIVE.shadow,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.5,
       shadowRadius: 25,
       transform: [{ translateY }],
     },
     overlayStyle: {
-      backgroundColor: colors.blueGreyDarker,
+      backgroundColor: colors_NOT_REACTIVE.blueGreyDarker,
       opacity: backgroundOpacity,
     },
   };
@@ -161,14 +161,14 @@ const savingsStyleInterpolator = ({
 
   return {
     cardStyle: {
-      shadowColor: colors.shadow,
+      shadowColor: colors_NOT_REACTIVE.shadow,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.6,
       shadowRadius: 25,
       transform: [{ translateY }],
     },
     overlayStyle: {
-      backgroundColor: colors.shadow,
+      backgroundColor: colors_NOT_REACTIVE.shadow,
       opacity: backgroundOpacity,
     },
   };
@@ -191,14 +191,14 @@ const sheetStyleInterpolator = (targetOpacity = 1) => ({
 
   return {
     cardStyle: {
-      shadowColor: colors.shadowBlack,
+      shadowColor: colors_NOT_REACTIVE.shadowBlack,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.6,
       shadowRadius: 25,
       transform: [{ translateY }],
     },
     overlayStyle: {
-      backgroundColor: colors.shadowBlack,
+      backgroundColor: colors_NOT_REACTIVE.shadowBlack,
       opacity: backgroundOpacity,
     },
   };
@@ -227,14 +227,14 @@ const swapDetailInterpolator = ({
 
   return {
     cardStyle: {
-      shadowColor: colors.shadow,
+      shadowColor: colors_NOT_REACTIVE.shadow,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.5,
       shadowRadius: 25,
       transform: [{ translateY }],
     },
     overlayStyle: {
-      backgroundColor: colors.blueGreyDarker,
+      backgroundColor: colors_NOT_REACTIVE.blueGreyDarker,
       opacity: backgroundOpacity,
       overflow: 'hidden',
     },

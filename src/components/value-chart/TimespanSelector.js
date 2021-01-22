@@ -4,7 +4,7 @@ import { JellySelector } from '../jelly-selector';
 import { Centered, Row } from '../layout';
 import { Text } from '../text';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
-import { colors, padding } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
 
 const Container = styled(Centered)`
   padding-top: 30;
@@ -13,7 +13,9 @@ const Container = styled(Centered)`
 
 const TimespanItemLabel = styled(Text).attrs(({ color, isSelected }) => ({
   align: 'center',
-  color: isSelected ? color : colors.alpha(colors.blueGreyDark, 0.4),
+  color: isSelected
+    ? color
+    : colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.4),
   letterSpacing: 'roundedTighter',
   size: 'smedium',
   weight: 'bold',
@@ -38,7 +40,7 @@ const TimespanItem = ({ color, isSelected, item, ...props }) => (
 );
 
 const TimespanSelector = ({
-  color = colors.dark,
+  color = colors_NOT_REACTIVE.dark,
   defaultIndex = 0,
   reloadChart,
   showMonth,
@@ -55,7 +57,7 @@ const TimespanSelector = ({
   return (
     <Container>
       <JellySelector
-        backgroundColor={colors.alpha(color, 0.06)}
+        backgroundColor={colors_NOT_REACTIVE.alpha(color, 0.06)}
         color={color}
         defaultIndex={defaultIndex}
         enableHapticFeedback

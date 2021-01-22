@@ -27,7 +27,7 @@ import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import { removeRequest } from '@rainbow-me/redux/requests';
 import { walletsSetSelected, walletsUpdate } from '@rainbow-me/redux/wallets';
 import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 import {
   abbreviations,
   ethereumUtils,
@@ -233,7 +233,7 @@ export default function TransactionList({
         headerInfo.address = isENSAddressFormat(contactAddress)
           ? contactAddress
           : abbreviations.address(contactAddress, 4, 10);
-        contactColor = colors.getRandomColor();
+        contactColor = colors_NOT_REACTIVE.getRandomColor();
       }
 
       const isOutgoing = toLower(from) === toLower(accountAddress);
@@ -350,7 +350,7 @@ export default function TransactionList({
     <Container>
       <Container
         accountAddress={accountName}
-        accountColor={colors.avatarColor[accountColor]}
+        accountColor={colors_NOT_REACTIVE.avatarColor[accountColor]}
         accountImage={safeAccountImage}
         accountName={accountSymbol}
         addCashAvailable={addCashAvailable}

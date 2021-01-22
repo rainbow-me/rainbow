@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Path } from 'react-native-svg';
 import Svg from '../Svg';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const CloseCircledIcon = ({ color, ...props }) => (
   <Svg height="12" viewBox="0 0 12 12" width="12" {...props}>
@@ -19,7 +19,7 @@ CloseCircledIcon.propTypes = {
 };
 
 CloseCircledIcon.defaultProps = {
-  color: colors.black,
+  color: colors_NOT_REACTIVE.black,
 };
 
 export default CloseCircledIcon;

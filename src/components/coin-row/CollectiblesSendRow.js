@@ -11,7 +11,7 @@ import { Centered, InnerBorder } from '../layout';
 import { TruncatedText } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
-import { colors, padding } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
 
 const dividerHeight = 22;
 const isTinyPhone = deviceUtils.dimensions.height <= 568;
@@ -23,7 +23,10 @@ const selectedStyles = css`
 `;
 
 const BottomRow = ({ subtitle }) => (
-  <TruncatedText color={colors.alpha(colors.blueGreyDark, 0.5)} size="smedium">
+  <TruncatedText
+    color={colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.5)}
+    size="smedium"
+  >
     {subtitle}
   </TruncatedText>
 );
@@ -52,7 +55,7 @@ const UniqueTokenCoinIcon = enhanceUniqueTokenCoinIcon(
   }) => (
     <Centered>
       <RequestVendorLogoIcon
-        backgroundColor={background || colors.lightestGrey}
+        backgroundColor={background || colors_NOT_REACTIVE.lightestGrey}
         borderRadius={8}
         dappName={name}
         imageUrl={image_thumbnail_url}
@@ -92,7 +95,7 @@ const CollectiblesSendRow = enhance(
     <Fragment>
       {isFirstRow && (
         <Centered height={dividerHeight}>
-          <Divider color={colors.rowDividerLight} />
+          <Divider color={colors_NOT_REACTIVE.rowDividerLight} />
         </Centered>
       )}
       <ButtonPressAnimation onPress={onPress} scaleTo={0.98}>

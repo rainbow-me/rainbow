@@ -4,7 +4,7 @@ import React, { PureComponent } from 'react';
 import ToolTip from 'react-native-tooltip';
 import { compose, onlyUpdateForKeys } from 'recompact';
 import { withNavigation } from '../../navigation/Navigation';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 class CopyTooltip extends PureComponent {
   static propTypes = {
@@ -41,7 +41,7 @@ class CopyTooltip extends PureComponent {
       activeOpacity={this.props.activeOpacity}
       onPress={this.handlePress}
       ref={this.handleRef}
-      underlayColor={colors.transparent}
+      underlayColor={colors_NOT_REACTIVE.transparent}
     />
   );
 }

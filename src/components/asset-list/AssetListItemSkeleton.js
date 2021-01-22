@@ -15,7 +15,7 @@ import { deviceUtils } from '../../utils';
 import { interpolate } from '../animations';
 import { CoinRowHeight } from '../coin-row';
 import { ColumnWithMargins, Row, RowWithMargins } from '../layout';
-import { colors, padding, position } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, padding, position } from '@rainbow-me/styles';
 
 const { block, cond, set, startClock, stopClock } = Animated;
 
@@ -30,7 +30,7 @@ const Container = styled.View`
 
 const FakeAvatar = styled.View`
   ${position.size(40)};
-  background-color: ${colors.skeleton};
+  background-color: ${colors_NOT_REACTIVE.skeleton};
   border-radius: 20;
 `;
 
@@ -44,7 +44,7 @@ const FakeRow = withProps({
 })(Row);
 
 const FakeText = styled.View`
-  background-color: ${colors.skeleton};
+  background-color: ${colors_NOT_REACTIVE.skeleton};
   border-radius: 5;
   height: 10;
 `;
@@ -56,7 +56,7 @@ const Wrapper = styled(RowWithMargins).attrs({
 })`
   ${padding(9, 19, 10, 19)};
   ${position.size('100%')};
-  background-color: ${colors.transparent};
+  background-color: ${colors_NOT_REACTIVE.transparent};
 `;
 
 export default class AssetListItemSkeleton extends PureComponent {
@@ -105,10 +105,10 @@ export default class AssetListItemSkeleton extends PureComponent {
 
   renderShimmer() {
     const gradientColors = [
-      colors.skeleton,
-      colors.shimmer,
-      colors.skeleton,
-      colors.skeleton,
+      colors_NOT_REACTIVE.skeleton,
+      colors_NOT_REACTIVE.shimmer,
+      colors_NOT_REACTIVE.skeleton,
+      colors_NOT_REACTIVE.skeleton,
     ];
 
     const gradientSteps = [0, 0.2, 0.4, 1];
@@ -142,7 +142,7 @@ export default class AssetListItemSkeleton extends PureComponent {
       <Wrapper index={index}>
         <FakeAvatar />
         <ColumnWithMargins
-          backgroundColor={colors.transparent}
+          backgroundColor={colors_NOT_REACTIVE.transparent}
           flex={1}
           margin={10}
         >

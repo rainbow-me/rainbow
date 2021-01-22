@@ -4,21 +4,21 @@ import { Row } from '../layout';
 import GasSpeedLabelPagerItem, {
   GasSpeedLabelPagerItemHeight,
 } from './GasSpeedLabelPagerItem';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 import { gasUtils, magicMemo } from '@rainbow-me/utils';
 
 const speedColors = {
   dark: [
-    colors.whiteLabel,
-    colors.whiteLabel,
-    colors.whiteLabel,
-    colors.appleBlue,
+    colors_NOT_REACTIVE.whiteLabel,
+    colors_NOT_REACTIVE.whiteLabel,
+    colors_NOT_REACTIVE.whiteLabel,
+    colors_NOT_REACTIVE.appleBlue,
   ],
   light: [
-    colors.alpha(colors.blueGreyDark, 0.8),
-    colors.alpha(colors.blueGreyDark, 0.8),
-    colors.alpha(colors.blueGreyDark, 0.8),
-    colors.appleBlue,
+    colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.8),
+    colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.8),
+    colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.8),
+    colors_NOT_REACTIVE.appleBlue,
   ],
 };
 
@@ -49,11 +49,17 @@ const GasSpeedLabelPager = ({
               backgroundColor={
                 speed === label
                   ? label === 'custom'
-                    ? colors.appleBlue
+                    ? colors_NOT_REACTIVE.appleBlue
                     : speedColors[theme][i]
                   : theme === 'dark'
-                  ? colors.alpha(colors.darkModeColors.blueGreyDark, 0.3)
-                  : colors.alpha(colors.blueGreyDark, 0.3)
+                  ? colors_NOT_REACTIVE.alpha(
+                      colors_NOT_REACTIVE.darkModeColors.blueGreyDark,
+                      0.3
+                    )
+                  : colors_NOT_REACTIVE.alpha(
+                      colors_NOT_REACTIVE.blueGreyDark,
+                      0.3
+                    )
               }
               key={`pager-${speed}-${i}`}
               selected={speed === label}

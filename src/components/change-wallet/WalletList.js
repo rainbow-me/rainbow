@@ -18,7 +18,7 @@ import { EmptyAssetList } from '../asset-list';
 import { Column } from '../layout';
 import AddressRow from './AddressRow';
 import WalletOption from './WalletOption';
-import { colors, position } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
 
 const listTopPadding = 7.5;
 const rowHeight = 59;
@@ -57,7 +57,7 @@ const EmptyWalletList = styled(EmptyAssetList).attrs({
   pointerEvents: 'none',
 })`
   ${position.cover};
-  background-color: ${colors.white};
+  background-color: ${colors_NOT_REACTIVE.white};
   padding-top: ${listTopPadding};
 `;
 
@@ -75,7 +75,7 @@ const WalletFlatList = styled(FlatList).attrs(({ showDividers }) => ({
 `;
 
 const WalletListDivider = styled(Divider).attrs({
-  color: colors.rowDividerExtraLight,
+  color: colors_NOT_REACTIVE.rowDividerExtraLight,
   inset: [0, 15],
 })`
   margin-bottom: 1;

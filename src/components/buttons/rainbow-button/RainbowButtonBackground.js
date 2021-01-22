@@ -5,22 +5,30 @@ import RadialGradient from 'react-native-radial-gradient';
 import styled from 'styled-components/primitives';
 import { useTheme } from '../../../context/ThemeContext';
 import RainbowButtonTypes from './RainbowButtonTypes';
-import { colors, margin } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, margin } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
 const RainbowGradientColorsFactory = darkMode => ({
   inner: {
     addCash: ['#FFB114', '#FF54BB', '#00F0FF'],
-    default: colors.gradients.rainbow,
+    default: colors_NOT_REACTIVE.gradients.rainbow,
     disabled: darkMode
-      ? [colors.blueGreyDark20, colors.blueGreyDark20, colors.blueGreyDark20]
+      ? [
+          colors_NOT_REACTIVE.blueGreyDark20,
+          colors_NOT_REACTIVE.blueGreyDark20,
+          colors_NOT_REACTIVE.blueGreyDark20,
+        ]
       : ['#B0B3B9', '#B0B3B9', '#B0B3B9'],
   },
   outer: {
     addCash: ['#F5AA13', '#F551B4', '#00E6F5'],
     default: ['#F5AA13', '#F551B4', '#799DD5'],
     disabled: darkMode
-      ? [colors.blueGreyDark20, colors.blueGreyDark20, colors.blueGreyDark20]
+      ? [
+          colors_NOT_REACTIVE.blueGreyDark20,
+          colors_NOT_REACTIVE.blueGreyDark20,
+          colors_NOT_REACTIVE.blueGreyDark20,
+        ]
       : ['#A5A8AE', '#A5A8AE', '#A5A8AE'],
   },
 });
@@ -41,7 +49,7 @@ const RainbowButtonGradient = styled(RadialGradient).attrs(
 
 const InnerButton = styled(View)`
   ${({ strokeWidth }) => margin(strokeWidth)}
-  background-color: ${colors.dark};
+  background-color: ${colors_NOT_REACTIVE.dark};
   border-radius: ${({ strokeWidth, height }) => height / 2 - strokeWidth};
   height: ${({ strokeWidth, height }) => height - strokeWidth * 2};
   width: ${({ strokeWidth, width }) => width - strokeWidth * 2};

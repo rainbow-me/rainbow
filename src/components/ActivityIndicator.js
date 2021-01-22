@@ -2,14 +2,14 @@ import React from 'react';
 import { UIActivityIndicator } from 'react-native-indicators';
 import styled from 'styled-components/primitives';
 import { Centered } from './layout';
-import { colors, position } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
 
 const Container = styled(Centered)`
   ${({ size }) => position.size(Number(size))};
 `;
 
 export default function ActivityIndicator({
-  color = colors.blueGreyDark,
+  color = colors_NOT_REACTIVE.blueGreyDark,
   isInteraction = false,
   size = 25,
   ...props

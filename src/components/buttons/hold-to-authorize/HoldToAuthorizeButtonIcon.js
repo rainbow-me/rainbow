@@ -5,7 +5,7 @@ import styled from 'styled-components/primitives';
 import { interpolate, ScaleInAnimation } from '../../animations';
 import { BiometryIcon, Icon } from '../../icons';
 import { Centered } from '../../layout';
-import { colors, position } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
 
 const { cond, divide, greaterThan } = Animated;
 
@@ -34,7 +34,7 @@ const HoldToAuthorizeButtonIcon = ({ animatedValue, biometryType }) => (
       )}
     >
       <Icon
-        color={colors.whiteLabel}
+        color={colors_NOT_REACTIVE.whiteLabel}
         name="progress"
         progress={animatedValue}
       />

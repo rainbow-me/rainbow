@@ -5,7 +5,7 @@ import { Icon } from '../icons';
 import { Row } from '../layout';
 import { Text } from '../text';
 import TransactionStatusTypes from '@rainbow-me/helpers/transactionStatusTypes';
-import { colors, position } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
 const StatusProps = {
@@ -83,22 +83,29 @@ const StatusProps = {
 const TransactionStatusBadge = ({ pending, status, style, title }) => {
   const isSwapping = status === TransactionStatusTypes.swapping;
 
-  let statusColor = colors.alpha(colors.blueGreyDark, 0.7);
+  let statusColor = colors_NOT_REACTIVE.alpha(
+    colors_NOT_REACTIVE.blueGreyDark,
+    0.7
+  );
   if (pending) {
     if (isSwapping) {
-      statusColor = colors.swapPurple;
+      statusColor = colors_NOT_REACTIVE.swapPurple;
     } else {
-      statusColor = colors.appleBlue;
+      statusColor = colors_NOT_REACTIVE.appleBlue;
     }
   } else if (status === TransactionStatusTypes.swapped) {
-    statusColor = colors.swapPurple;
+    statusColor = colors_NOT_REACTIVE.swapPurple;
   }
 
   return (
     <Row align="center" style={style}>
       {pending && (
         <Spinner
-          color={isSwapping ? colors.swapPurple : colors.appleBlue}
+          color={
+            isSwapping
+              ? colors_NOT_REACTIVE.swapPurple
+              : colors_NOT_REACTIVE.appleBlue
+          }
           size={12}
         />
       )}

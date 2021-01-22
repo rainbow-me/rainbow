@@ -5,7 +5,7 @@ import { RowWithMargins } from '../layout';
 import { Text } from '../text';
 import BiometryTypes from '@rainbow-me/helpers/biometryTypes';
 import { useBiometryType } from '@rainbow-me/hooks';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const BiometryIcon = styled(Icon).attrs(({ biometryType, color }) => ({
   color,
@@ -25,7 +25,7 @@ const ButtonLabel = styled(Text).attrs(({ color }) => ({
 }))``;
 
 export default function BiometricButtonContent({
-  color = colors.appleBlue,
+  color = colors_NOT_REACTIVE.appleBlue,
   showIcon,
   text,
   testID,

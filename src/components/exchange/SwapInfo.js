@@ -10,7 +10,7 @@ import { interpolate } from '../animations';
 import { CoinIcon } from '../coin-icon';
 import { Centered, RowWithMargins } from '../layout';
 import { Text } from '../text';
-import { colors, padding } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
 
 const Container = styled(RowWithMargins).attrs({
   centered: true,
@@ -85,7 +85,10 @@ export default function SwapInfo({ asset, amount }) {
         />
         <Centered>
           <Text
-            color={colors.alpha(colors.darkModeColors.blueGreyDark, 0.6)}
+            color={colors_NOT_REACTIVE.alpha(
+              colors_NOT_REACTIVE.darkModeColors.blueGreyDark,
+              0.6
+            )}
             size="smedium"
             weight="semibold"
           >

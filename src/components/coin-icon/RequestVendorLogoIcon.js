@@ -5,16 +5,16 @@ import { Centered } from '../layout';
 import { Text } from '../text';
 import { CoinIconSize } from './CoinIcon';
 import { ImgixImage } from '@rainbow-me/images';
-import { colors, position } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const RVLIBorderRadius = 16.25;
 const RVLIShadows = {
   default: [
-    [0, 4, 6, colors.shadow, 0.04],
-    [0, 1, 3, colors.shadow, 0.08],
+    [0, 4, 6, colors_NOT_REACTIVE.shadow, 0.04],
+    [0, 1, 3, colors_NOT_REACTIVE.shadow, 0.08],
   ],
-  large: [[0, 6, 10, colors.shadow, 0.14]],
+  large: [[0, 6, 10, colors_NOT_REACTIVE.shadow, 0.14]],
 };
 
 const Content = styled(Centered)`
@@ -23,7 +23,7 @@ const Content = styled(Centered)`
 `;
 
 export default function RequestVendorLogoIcon({
-  backgroundColor = colors.dark,
+  backgroundColor = colors_NOT_REACTIVE.dark,
   borderRadius = RVLIBorderRadius,
   dappName,
   imageUrl,
@@ -38,7 +38,9 @@ export default function RequestVendorLogoIcon({
   // Having a transparent background breaks our UI, so we instead show a background
   // color of white.
   const bgColor =
-    backgroundColor === 'transparent' ? colors.white : backgroundColor;
+    backgroundColor === 'transparent'
+      ? colors_NOT_REACTIVE.white
+      : backgroundColor;
 
   const imageSource = useMemo(
     () => ({
@@ -53,7 +55,7 @@ export default function RequestVendorLogoIcon({
     <ShadowStack
       {...props}
       {...position.sizeAsObject(size)}
-      backgroundColor={colors.white}
+      backgroundColor={colors_NOT_REACTIVE.white}
       borderRadius={borderRadius}
       shadows={RVLIShadows[showLargeShadow ? 'large' : 'default']}
     >
@@ -67,7 +69,7 @@ export default function RequestVendorLogoIcon({
         ) : (
           <Text
             align="center"
-            color={colors.getFallbackTextColor(bgColor)}
+            color={colors_NOT_REACTIVE.getFallbackTextColor(bgColor)}
             size="smedium"
             weight="semibold"
           >

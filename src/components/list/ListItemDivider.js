@@ -1,11 +1,11 @@
 import { PropTypes } from 'prop-types';
 import React from 'react';
 import Divider from '../Divider';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 import { neverRerender } from '@rainbow-me/utils';
 
 const ListItemDivider = ({ inset }) => (
-  <Divider color={colors.rowDividerFaint} inset={[0, inset]} />
+  <Divider color={colors_NOT_REACTIVE.rowDividerFaint} inset={[0, inset]} />
 );
 
 ListItemDivider.propTypes = {

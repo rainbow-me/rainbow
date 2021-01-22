@@ -2,12 +2,12 @@ import React from 'react';
 import Animated from 'react-native-reanimated';
 import { Path } from 'react-native-svg';
 import Svg from '../Svg';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 const AnimatedSvg = Animated.createAnimatedComponent(Svg);
 
-const FatArrowIcon = ({ color = colors.black, ...props }, ref) => (
+const FatArrowIcon = ({ color = colors_NOT_REACTIVE.black, ...props }, ref) => (
   <AnimatedSvg
     fill={color}
     height="18"

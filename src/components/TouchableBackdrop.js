@@ -1,7 +1,7 @@
 import React from 'react';
 import { BorderlessButton } from 'react-native-gesture-handler';
 import { neverRerender } from '../utils';
-import { colors, position } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
 
 const TouchableBackdrop = ({ zIndex = 0, ...props }) => (
   <BorderlessButton
@@ -9,7 +9,7 @@ const TouchableBackdrop = ({ zIndex = 0, ...props }) => (
     {...position.centeredAsObject}
     {...position.coverAsObject}
     activeOpacity={1}
-    backgroundColor={colors.transparent}
+    backgroundColor={colors_NOT_REACTIVE.transparent}
     zIndex={zIndex}
   />
 );

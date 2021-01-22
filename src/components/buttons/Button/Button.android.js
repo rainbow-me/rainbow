@@ -5,7 +5,7 @@ import styled from 'styled-components/primitives';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered, InnerBorder } from '../../layout';
 import { Text } from '../../text';
-import { colors, padding } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
 
 const ButtonSizeTypes = {
   default: {
@@ -24,7 +24,10 @@ const ButtonShapeTypes = {
 };
 
 const shadowStyles = `
-  shadow-color: ${colors.alpha(colors.blueGreyDark, 0.5)};
+  shadow-color: ${colors_NOT_REACTIVE.alpha(
+    colors_NOT_REACTIVE.blueGreyDark,
+    0.5
+  )};
   shadow-offset: 0px 4px;
   shadow-opacity: 0.2;
   shadow-radius: 6;
@@ -120,8 +123,8 @@ Button.propTypes = {
 };
 
 Button.defaultProps = {
-  backgroundColor: colors.grey,
-  color: colors.white,
+  backgroundColor: colors_NOT_REACTIVE.grey,
+  color: colors_NOT_REACTIVE.white,
   showShadow: true,
   size: 'default',
   type: ButtonShapeTypes.pill,

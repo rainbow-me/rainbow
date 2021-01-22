@@ -8,7 +8,7 @@ import { SheetActionButton } from '../sheet';
 import { Text } from '../text';
 import BackupIcon from '@rainbow-me/assets/backupIcon.png';
 import { ImgixImage } from '@rainbow-me/images';
-import { colors, padding } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
 import { deviceUtils } from '@rainbow-me/utils';
 
 const Footer = styled(ColumnWithMargins).attrs({
@@ -28,7 +28,7 @@ const Masthead = styled(Column).attrs({
 
 const MastheadDescription = styled(Text).attrs({
   align: 'center',
-  color: colors.blueGreyDark50,
+  color: colors_NOT_REACTIVE.blueGreyDark50,
   lineHeight: 'looser',
   size: 'large',
 })`
@@ -73,7 +73,7 @@ export default function BackupSheetSection({
         </Text>
         <MastheadDescription>{descriptionText}</MastheadDescription>
       </Masthead>
-      <Divider color={colors.rowDividerLight} inset={[0, 42]} />
+      <Divider color={colors_NOT_REACTIVE.rowDividerLight} inset={[0, 42]} />
       <Footer>
         <RainbowButton
           label={primaryLabel}
@@ -82,12 +82,15 @@ export default function BackupSheetSection({
         />
         <SheetActionButton
           androidWidth={maxButtonWidth}
-          color={colors.white}
+          color={colors_NOT_REACTIVE.white}
           label={secondaryLabel}
           onPress={onSecondaryAction}
           size="big"
           testID={secondaryButtonTestId}
-          textColor={colors.alpha(colors.blueGreyDark, 0.8)}
+          textColor={colors_NOT_REACTIVE.alpha(
+            colors_NOT_REACTIVE.blueGreyDark,
+            0.8
+          )}
         />
       </Footer>
     </Fragment>

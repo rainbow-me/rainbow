@@ -11,14 +11,14 @@ import ImageAvatar from '../contacts/ImageAvatar';
 import { Icon } from '../icons';
 import { Centered, Column, ColumnWithMargins, Row } from '../layout';
 import { TruncatedAddress, TruncatedText } from '../text';
-import { colors, fonts, getFontSize } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, fonts, getFontSize } from '@rainbow-me/styles';
 
 const maxAccountLabelWidth = deviceUtils.dimensions.width - 88;
 const NOOP = () => undefined;
 
 const sx = StyleSheet.create({
   accountLabel: {
-    color: colors.dark,
+    color: colors_NOT_REACTIVE.dark,
     fontFamily: fonts.family.SFProRounded,
     fontSize: getFontSize(fonts.size.lmedium),
     fontWeight: fonts.weight.medium,
@@ -31,7 +31,7 @@ const sx = StyleSheet.create({
     marginLeft: 19,
   },
   bottomRowText: {
-    color: colors.alpha(colors.blueGreyDark, 0.5),
+    color: colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.5),
     fontWeight: fonts.weight.medium,
     letterSpacing: fonts.letterSpacing.roundedMedium,
   },
@@ -39,7 +39,7 @@ const sx = StyleSheet.create({
     width: 60,
   },
   editIcon: {
-    color: colors.appleBlue,
+    color: colors_NOT_REACTIVE.appleBlue,
     fontFamily: fonts.family.SFProRounded,
     fontSize: getFontSize(fonts.size.large),
     fontWeight: fonts.weight.medium,
@@ -53,7 +53,7 @@ const sx = StyleSheet.create({
     textAlign: 'center',
   },
   readOnlyText: {
-    color: colors.alpha(colors.blueGreyDark, 0.5),
+    color: colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.5),
     fontFamily: fonts.family.SFProRounded,
     fontWeight: fonts.weight.semibold,
     letterSpacing: fonts.letterSpacing.roundedTight,
@@ -76,8 +76,8 @@ const gradientProps = {
 const linearGradientProps = {
   ...gradientProps,
   colors: [
-    colors.alpha(colors.gradients.lightGrey[0], 0.6),
-    colors.gradients.lightGrey[1],
+    colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.gradients.lightGrey[0], 0.6),
+    colors_NOT_REACTIVE.gradients.lightGrey[1],
   ],
   end: { x: 1, y: 1 },
   start: { x: 0, y: 0 },
@@ -87,7 +87,12 @@ const OptionsIcon = ({ onPress }) => (
   <ButtonPressAnimation onPress={onPress} scaleTo={0.9}>
     <Centered height={40} width={60}>
       {android ? (
-        <Icon circle color={colors.appleBlue} name="threeDots" tightDots />
+        <Icon
+          circle
+          color={colors_NOT_REACTIVE.appleBlue}
+          name="threeDots"
+          tightDots
+        />
       ) : (
         <Text style={sx.editIcon}>􀍡</Text>
       )}

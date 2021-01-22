@@ -25,11 +25,11 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors, margin, padding } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, margin, padding } from '@rainbow-me/styles';
 
 const DescriptionText = styled(Text).attrs({
   align: 'center',
-  color: colors.blueGreyDark50,
+  color: colors_NOT_REACTIVE.blueGreyDark50,
   lineHeight: 'looser',
   size: 'large',
 })``;

@@ -5,7 +5,7 @@ import { useTheme } from '../../../context/ThemeContext';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered, InnerBorder } from '../../layout';
 import { Text } from '../../text';
-import { colors, padding } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
 
 const ButtonSizeTypes = {
   default: {
@@ -24,8 +24,8 @@ const ButtonShapeTypes = {
 };
 
 const shadowStyles = isDarkMode => `
-  shadow-color: ${colors.alpha(
-    isDarkMode ? colors.shadow : colors.blueGreyDark,
+  shadow-color: ${colors_NOT_REACTIVE.alpha(
+    isDarkMode ? colors_NOT_REACTIVE.shadow : colors_NOT_REACTIVE.blueGreyDark,
     0.5
   )};
   shadow-offset: 0px 4px;
@@ -46,12 +46,12 @@ const shouldRenderChildrenAsText = children =>
   isArray(children) ? isString(children[0]) : isString(children);
 
 export default function Button({
-  backgroundColor = colors.grey,
+  backgroundColor = colors_NOT_REACTIVE.grey,
   borderColor,
   borderOpacity,
   borderWidth,
   children,
-  color = colors.whiteLabel,
+  color = colors_NOT_REACTIVE.whiteLabel,
   containerStyles,
   disabled,
   onPress,

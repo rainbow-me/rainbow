@@ -4,7 +4,13 @@ import styled from 'styled-components/primitives';
 import { Centered } from '../layout';
 import { useBooleanState, useColorForAsset } from '@rainbow-me/hooks';
 import { ImageWithCachedMetadata } from '@rainbow-me/images';
-import { borders, colors, fonts, position, shadow } from '@rainbow-me/styles';
+import {
+  borders,
+  colors_NOT_REACTIVE,
+  fonts,
+  position,
+  shadow,
+} from '@rainbow-me/styles';
 import { getUrlForTrustIconFallback, magicMemo } from '@rainbow-me/utils';
 
 const fallbackTextStyles = {
@@ -25,7 +31,7 @@ const FallbackImage = styled(ImageWithCachedMetadata)`
     showImage,
   }) => shadow.build(x, y, radius * 2, color, showImage ? opacity : 0)};
   background-color: ${({ showImage }) =>
-    showImage ? colors.white : colors.transparent};
+    showImage ? colors_NOT_REACTIVE.white : colors_NOT_REACTIVE.transparent};
   border-radius: ${({ size }) => size / 2};
   overflow: visible;
 `;
@@ -43,13 +49,16 @@ function WrappedFallbackImage({
       {...props}
       {...position.coverAsObject}
       {...borders.buildCircleAsObject(size)}
-      backgroundColor={colors.alpha(color || colors.dark, shadowOpacity || 0.3)}
+      backgroundColor={colors_NOT_REACTIVE.alpha(
+        color || colors_NOT_REACTIVE.dark,
+        shadowOpacity || 0.3
+      )}
       elevation={showImage ? elevation : 0}
       opacity={showImage ? 1 : 0}
     >
       <FallbackImage
         {...props}
-        overlayColor={color || colors.dark}
+        overlayColor={color || colors_NOT_REACTIVE.dark}
         shadowOpacity={shadowOpacity}
         showImage={showImage}
         size={size}

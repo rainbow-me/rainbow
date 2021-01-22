@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Path } from 'react-native-svg';
-import { colors } from '../../../styles';
+import { colors_NOT_REACTIVE } from '../../../styles';
 import Svg from '../Svg';
 
 const ScannerIcon = ({ color, ...props }) => (
@@ -20,7 +20,7 @@ ScannerIcon.propTypes = {
 };
 
 ScannerIcon.defaultProps = {
-  color: colors.black,
+  color: colors_NOT_REACTIVE.black,
 };
 
 export default ScannerIcon;

@@ -11,7 +11,7 @@ import Text from '../text/Text';
 import ActivityListEmptyState from './ActivityListEmptyState';
 import ActivityListHeader from './ActivityListHeader';
 import RecyclerActivityList from './RecyclerActivityList';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const getItemLayout = (data, index) => ({
   index,
@@ -56,7 +56,7 @@ function ListFooterComponent({ label, onPress }) {
       ) : (
         <Text
           align="center"
-          color={colors.grey}
+          color={colors_NOT_REACTIVE.grey}
           lineHeight="loose"
           size="small"
         >

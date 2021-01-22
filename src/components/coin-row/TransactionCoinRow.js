@@ -20,7 +20,7 @@ import { isENSAddressFormat } from '@rainbow-me/helpers/validators';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 import {
   abbreviations,
   ethereumUtils,
@@ -43,14 +43,21 @@ const BottomRow = ({ description, native, status, type }) => {
     status === TransactionStatusTypes.received &&
     type === TransactionTypes.trade;
 
-  let coinNameColor = colors.dark;
-  if (isOutgoingSwap) coinNameColor = colors.alpha(colors.blueGreyDark, 0.5);
+  let coinNameColor = colors_NOT_REACTIVE.dark;
+  if (isOutgoingSwap)
+    coinNameColor = colors_NOT_REACTIVE.alpha(
+      colors_NOT_REACTIVE.blueGreyDark,
+      0.5
+    );
 
-  let balanceTextColor = colors.alpha(colors.blueGreyDark, 0.5);
-  if (isReceived) balanceTextColor = colors.green;
-  if (isSent) balanceTextColor = colors.dark;
-  if (isIncomingSwap) balanceTextColor = colors.swapPurple;
-  if (isOutgoingSwap) balanceTextColor = colors.dark;
+  let balanceTextColor = colors_NOT_REACTIVE.alpha(
+    colors_NOT_REACTIVE.blueGreyDark,
+    0.5
+  );
+  if (isReceived) balanceTextColor = colors_NOT_REACTIVE.green;
+  if (isSent) balanceTextColor = colors_NOT_REACTIVE.dark;
+  if (isIncomingSwap) balanceTextColor = colors_NOT_REACTIVE.swapPurple;
+  if (isOutgoingSwap) balanceTextColor = colors_NOT_REACTIVE.dark;
 
   const nativeDisplay = get(native, 'display');
   const balanceText = nativeDisplay
@@ -116,7 +123,7 @@ export default function TransactionCoinRow({ item, ...props }) {
       headerInfo.address = isENSAddressFormat(contactAddress)
         ? contactAddress
         : abbreviations.address(contactAddress, 4, 10);
-      contactColor = colors.getRandomColor();
+      contactColor = colors_NOT_REACTIVE.getRandomColor();
     }
 
     if (hash) {

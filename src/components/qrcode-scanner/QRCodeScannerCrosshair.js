@@ -5,7 +5,7 @@ import { Icon } from '../icons';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { useDimensions } from '@rainbow-me/hooks';
-import { colors, position } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
 
 const CrossHairAspectRatio = 259 / 375;
 
@@ -27,7 +27,7 @@ export default function QRCodeScannerCrosshair() {
 
   return (
     <Container size={deviceWidth * CrossHairAspectRatio}>
-      <Crosshair color={colors.whiteLabel} />
+      <Crosshair color={colors_NOT_REACTIVE.whiteLabel} />
       <Text color="whiteLabel" lineHeight="none" size="large" weight="bold">
         {isEmulator ? 'Simulator Mode' : 'Find a code to scan'}
       </Text>

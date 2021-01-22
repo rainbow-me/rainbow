@@ -17,7 +17,7 @@ import CoinRow from './CoinRow';
 import { useNavigation } from '@rainbow-me/navigation';
 import { removeRequest } from '@rainbow-me/redux/requests';
 import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const getPercentageOfTimeElapsed = (startDate, endDate) => {
   const originalDifference = differenceInMinutes(endDate, startDate);
@@ -71,7 +71,9 @@ const RequestCoinRow = ({ item, ...props }) => {
       setExpiresAt(_expiresAt);
       setPercentElapsed(_percentElapsed);
       setExpirationColor(
-        _percentElapsed > 25 ? colors.appleBlue : colors.orange
+        _percentElapsed > 25
+          ? colors_NOT_REACTIVE.appleBlue
+          : colors_NOT_REACTIVE.orange
       );
     }
   }, [item]);

@@ -8,7 +8,7 @@ import { Text } from '../text';
 import BalanceText from './BalanceText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 export const SavingsCoinRowHeight = 64;
 
@@ -23,7 +23,7 @@ const BottomRow = ({ lifetimeSupplyInterestAccrued, supplyRate, symbol }) => {
         <Column flex={1}>
           <Text
             align="right"
-            color={colors.green}
+            color={colors_NOT_REACTIVE.green}
             flex={1}
             size="smedium"
             weight="semibold"

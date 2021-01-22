@@ -2,13 +2,13 @@ import React from 'react';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components/primitives';
 import { Column } from '../layout';
-import { colors, shadow } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, shadow } from '@rainbow-me/styles';
 
 export const BubbleSheetBorderRadius = 30;
 
 const Container = styled(Column)`
-  ${shadow.build(0, 10, 50, colors.shadowBlack, 0.6)}
-  background-color: ${colors.white};
+  ${shadow.build(0, 10, 50, colors_NOT_REACTIVE.shadowBlack, 0.6)}
+  background-color: ${colors_NOT_REACTIVE.white};
   border-radius: ${BubbleSheetBorderRadius};
   bottom: ${({ bottom }) => (bottom ? 21 : 0)};
   flex-grow: 0;

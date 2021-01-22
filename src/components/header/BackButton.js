@@ -5,7 +5,7 @@ import Icon from '../icons/Icon';
 import { Row } from '../layout';
 import Text from '../text/Text';
 import HeaderButton from './HeaderButton';
-import { colors, fonts, fontWithWidth } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, fonts, fontWithWidth } from '@rainbow-me/styles';
 
 const Container = styled(Row).attrs({ align: 'center' })`
   height: 44;
@@ -13,7 +13,7 @@ const Container = styled(Row).attrs({ align: 'center' })`
 `;
 
 const IconText = styled(Text).attrs({
-  color: colors.dark,
+  color: colors_NOT_REACTIVE.dark,
   size: 'big',
 })`
   ${fontWithWidth(fonts.weight.bold)};

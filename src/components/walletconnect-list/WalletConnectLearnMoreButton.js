@@ -7,7 +7,7 @@ import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { Centered, Row } from '../layout';
 import { Text } from '../text';
-import { colors, padding } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
 
 const WalletConnectLearnMoreButton = ({ onPressLearnMore }) => (
   <Row align="start">
@@ -25,7 +25,7 @@ const WalletConnectLearnMoreButton = ({ onPressLearnMore }) => (
         >
           Learn More
         </Text>
-        <Divider color={colors.rowDividerLight} inset={false} />
+        <Divider color={colors_NOT_REACTIVE.rowDividerLight} inset={false} />
       </Centered>
     </ButtonPressAnimation>
   </Row>

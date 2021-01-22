@@ -34,7 +34,7 @@ import { deviceUtils } from '../../utils';
 import { Categories } from './Categories';
 import TabBar from './TabBar';
 import { ImgixImage } from '@rainbow-me/images';
-import { colors, fonts, position } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, fonts, position } from '@rainbow-me/styles';
 
 // TODO width attribute is temporary solution that will be removed as soon as I figure out why proper scaling does not work
 
@@ -153,13 +153,13 @@ export default class EmojiSelector extends PureComponent {
           <View key={`categoryEmoji${rowContent[0]}`}>
             <Text
               style={{
-                color: colors.black,
+                color: colors_NOT_REACTIVE.black,
                 marginHorizontal: 10,
                 fontSize: Math.floor(this.state.colSize) - (ios ? 15 : 22),
                 height: (width - 21) / this.props.columns,
                 width: deviceUtils.dimensions.width,
                 letterSpacing: ios ? 8 : getBrand() === 'google' ? 11 : 8,
-                backgroundColor: colors.white,
+                backgroundColor: colors_NOT_REACTIVE.white,
               }}
             >
               {rowContent}
@@ -259,7 +259,7 @@ export default class EmojiSelector extends PureComponent {
             bottom: index !== 0 && -3000,
             height: 400,
             width: width,
-            backgroundColor: colors.white,
+            backgroundColor: colors_NOT_REACTIVE.white,
             position: 'absolute',
           }}
         />
@@ -347,7 +347,7 @@ export default class EmojiSelector extends PureComponent {
           <Text
             key={`emojiRow${emojis[0]}`}
             style={{
-              color: colors.black,
+              color: colors_NOT_REACTIVE.black,
               marginHorizontal: 10,
               fontSize: Math.floor(this.state.colSize) - (ios ? 15 : 22),
               height: (width - 21) / this.props.columns,
@@ -464,7 +464,7 @@ export default class EmojiSelector extends PureComponent {
               />
             </View>
             <View
-              shadowColor={colors.black}
+              shadowColor={colors_NOT_REACTIVE.black}
               shadowOffset={{ height: 0, width: 0 }}
               shadowOpacity={0.06}
               shadowRadius={0.5}
@@ -556,7 +556,10 @@ const styles = StyleSheet.create({
   search: {
     ...Platform.select({
       ios: {
-        backgroundColor: colors.alpha(colors.white, 0.75),
+        backgroundColor: colors_NOT_REACTIVE.alpha(
+          colors_NOT_REACTIVE.white,
+          0.75
+        ),
         borderRadius: 10,
         height: 36,
         paddingLeft: 8,
@@ -565,12 +568,12 @@ const styles = StyleSheet.create({
     margin: 8,
   },
   searchbar_container: {
-    backgroundColor: colors.alpha(colors.white, 0.75),
+    backgroundColor: colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.white, 0.75),
     width: '100%',
     zIndex: 1,
   },
   sectionHeader: {
-    color: colors.alpha(colors.blueGreyDark, 0.5),
+    color: colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.5),
     fontFamily: fonts.family.SFProRounded,
     fontSize: parseFloat(fonts.size.small),
     fontWeight: fonts.weight.semibold,
@@ -583,7 +586,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   sectionHeaderWrap: {
-    backgroundColor: colors.white,
+    backgroundColor: colors_NOT_REACTIVE.white,
     marginRight: 10,
     paddingLeft: 10,
   },
@@ -592,8 +595,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   sectionStickyHeader: {
-    backgroundColor: colors.alpha(colors.white, 0.7),
-    color: colors.alpha(colors.blueGreyDark, 0.5),
+    backgroundColor: colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.white, 0.7),
+    color: colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.5),
     fontFamily: fonts.family.SFProRounded,
     fontSize: parseFloat(fonts.size.small),
     fontWeight: fonts.weight.semibold,

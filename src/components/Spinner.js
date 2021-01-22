@@ -4,7 +4,7 @@ import SpinnerImageSource from '../assets/spinner.png';
 import { SpinAnimation } from './animations';
 import { Centered } from './layout';
 import { ImgixImage } from '@rainbow-me/images';
-import { colors, position } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
 
 const Spinner = ({ color, duration, size, ...props }) => (
   <Centered {...props}>
@@ -25,7 +25,7 @@ Spinner.propTypes = {
 };
 
 Spinner.defaultProps = {
-  color: colors.white,
+  color: colors_NOT_REACTIVE.white,
   duration: 1500,
   size: 20,
 };

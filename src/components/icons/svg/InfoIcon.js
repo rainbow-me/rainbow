@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import Svg, { Path } from 'react-native-svg';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const InfoIcon = ({ color, ...props }) => (
   <Svg viewBox="0 0 18 18" {...props}>
@@ -18,7 +18,7 @@ InfoIcon.propTypes = {
 };
 
 InfoIcon.defaultProps = {
-  color: colors.white,
+  color: colors_NOT_REACTIVE.white,
 };
 
 export default InfoIcon;

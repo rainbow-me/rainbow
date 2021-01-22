@@ -5,20 +5,23 @@ import styled from 'styled-components/primitives';
 import { magicMemo } from '../utils';
 import { Centered, Column } from './layout';
 import { Text as TextElement } from './text';
-import { colors, padding } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
 
 const TagBorderRadius = 12;
 
 const Container = styled(Column)`
   ${padding(8, 10)};
-  background-color: ${colors.white};
+  background-color: ${colors_NOT_REACTIVE.white};
   border-radius: ${TagBorderRadius};
   text-align: left;
   z-index: 1;
 `;
 
 const OuterBorder = styled(Centered)`
-  border-color: ${colors.alpha(colors.blueGreyDark, 0.06)};
+  border-color: ${colors_NOT_REACTIVE.alpha(
+    colors_NOT_REACTIVE.blueGreyDark,
+    0.06
+  )};
   border-radius: ${TagBorderRadius};
   border-width: 1;
   flex: none;
@@ -27,7 +30,7 @@ const OuterBorder = styled(Centered)`
 `;
 
 const Text = styled(TextElement).attrs({
-  color: colors.alpha(colors.blueGreyDark, 0.5),
+  color: colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.5),
   letterSpacing: 'roundedMedium',
   size: 'lmedium',
   weight: 'medium',
@@ -36,7 +39,7 @@ const Text = styled(TextElement).attrs({
 `;
 
 const Title = styled(TextElement).attrs({
-  color: colors.alpha(colors.blueGreyDark, 0.4),
+  color: colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.4),
   letterSpacing: 'roundedMedium',
   size: 'tiny',
   weight: 'semibold',

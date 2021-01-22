@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Path } from 'react-native-svg';
 import Svg from '../Svg';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const CopyIcon = ({ color, size = '16', ...props }) => (
   <Svg fill="none" height={size} viewBox="0 0 16 16" width={size} {...props}>
@@ -20,7 +20,7 @@ CopyIcon.propTypes = {
 };
 
 CopyIcon.defaultProps = {
-  color: colors.black,
+  color: colors_NOT_REACTIVE.black,
 };
 
 export default CopyIcon;

@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Path } from 'react-native-svg';
 import Svg from '../Svg';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const InboxIcon = ({ color, ...props }) => (
   <Svg height="17" viewBox="0 0 16 17" width="16" {...props}>
@@ -19,7 +19,7 @@ InboxIcon.propTypes = {
 };
 
 InboxIcon.defaultProps = {
-  color: colors.appleBlue,
+  color: colors_NOT_REACTIVE.appleBlue,
 };
 
 export default InboxIcon;

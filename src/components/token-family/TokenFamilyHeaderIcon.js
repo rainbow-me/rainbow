@@ -4,12 +4,12 @@ import styled from 'styled-components/primitives';
 import { initials } from '../../utils';
 import { Emoji } from '../text';
 import { ImageWithCachedMetadata } from '@rainbow-me/images';
-import { borders, colors } from '@rainbow-me/styles';
+import { borders, colors_NOT_REACTIVE } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const shadows = [
-  [0, 4, android ? 1 : 6, colors.shadow, 0.04],
-  [0, 1, 3, colors.shadow, 0.08],
+  [0, 4, android ? 1 : 6, colors_NOT_REACTIVE.shadow, 0.04],
+  [0, 1, 3, colors_NOT_REACTIVE.shadow, 0.08],
 ];
 
 const TrophyEmoji = styled(Emoji).attrs({
@@ -38,7 +38,7 @@ const TokenFamilyHeaderIcon = ({
   ) : (
     <ShadowStack
       {...circleStyle}
-      backgroundColor={colors.white}
+      backgroundColor={colors_NOT_REACTIVE.white}
       shadows={shadows}
       style={style}
     >

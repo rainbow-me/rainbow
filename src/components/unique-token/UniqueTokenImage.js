@@ -5,17 +5,22 @@ import { magicMemo } from '../../utils';
 import { Centered } from '../layout';
 import { Monospace } from '../text';
 import { ImageWithCachedMetadata, ImgixImage } from '@rainbow-me/images';
-import { colors, position } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
 
 const FallbackTextColorVariants = darkMode => ({
   dark: darkMode
-    ? colors.alpha(colors.white, 0.25)
-    : colors.alpha(colors.blueGreyDark, 0.5),
-  light: darkMode ? colors.alpha(colors.blueGreyDark, 0.25) : colors.white,
+    ? colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.white, 0.25)
+    : colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.5),
+  light: darkMode
+    ? colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.25)
+    : colors_NOT_REACTIVE.white,
 });
 
 const getFallbackTextColor = (bg, darkMode) =>
-  colors.getTextColorForBackground(bg, FallbackTextColorVariants(darkMode));
+  colors_NOT_REACTIVE.getTextColorForBackground(
+    bg,
+    FallbackTextColorVariants(darkMode)
+  );
 
 const UniqueTokenImage = ({
   backgroundColor,

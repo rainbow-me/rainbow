@@ -9,13 +9,13 @@ import SearchHeader from './SearchHeader';
 import Strategies from './StrategiesSection';
 import TopMoversSection from './TopMoversSection';
 import UniswapPools from './UniswapPoolsSection';
-import { colors, position } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
 
 const renderHeader = yPosition => <DiscoverSheetHeader yPosition={yPosition} />;
 
 const HeaderTitle = styled(Text).attrs({
   align: 'center',
-  color: colors.blueGreyDark,
+  color: colors_NOT_REACTIVE.blueGreyDark,
   letterSpacing: 'roundedMedium',
   lineHeight: 'loose',
   opacity: 0.8,

@@ -3,7 +3,7 @@ import React from 'react';
 import { Path } from 'react-native-svg';
 import { SpinAnimation } from '../../animations';
 import Svg from '../Svg';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const SpinnerIcon = ({ color, size }) => (
   <SpinAnimation>
@@ -22,7 +22,7 @@ SpinnerIcon.propTypes = {
 };
 
 SpinnerIcon.defaultProps = {
-  color: colors.appleBlue,
+  color: colors_NOT_REACTIVE.appleBlue,
   size: 12,
 };
 

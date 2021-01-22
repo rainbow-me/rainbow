@@ -11,7 +11,7 @@ import { SheetHandle as SheetHandleAndroid } from '../sheet';
 import { Label } from '../text';
 import { useClipboard, useDimensions } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
-import { colors, padding } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
 import { showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const AddressInputContainer = styled(Row).attrs({ align: 'center' })`
@@ -21,7 +21,7 @@ const AddressInputContainer = styled(Row).attrs({ align: 'center' })`
       : android
       ? padding(5, 15)
       : padding(19, 15)};
-  background-color: ${colors.white};
+  background-color: ${colors_NOT_REACTIVE.white};
   overflow: hidden;
   width: 100%;
 `;
@@ -36,7 +36,7 @@ const SheetHandle = android
       margin-top: 6;
     `
   : styled(Icon).attrs({
-      color: colors.sendScreen.grey,
+      color: colors_NOT_REACTIVE.sendScreen.grey,
       name: 'handle',
       testID: 'sheet-handle',
     })`
@@ -73,7 +73,7 @@ export default function SendHeader({
   const handleNavigateToContact = useCallback(() => {
     let color = get(contact, 'color');
     if (!isNumber(color)) {
-      color = colors.getRandomColor();
+      color = colors_NOT_REACTIVE.getRandomColor();
     }
 
     navigate(Routes.MODAL_SCREEN, {
@@ -157,7 +157,7 @@ export default function SendHeader({
         )}
         {!isValidAddress && <PasteAddressButton onPress={onPressPaste} />}
       </AddressInputContainer>
-      <Divider color={colors.rowDivider} flex={0} inset={false} />
+      <Divider color={colors_NOT_REACTIVE.rowDivider} flex={0} inset={false} />
     </Fragment>
   );
 }

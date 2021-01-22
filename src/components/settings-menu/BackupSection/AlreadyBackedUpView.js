@@ -4,6 +4,7 @@ import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
 import { Alert, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
+import { useTheme } from '../../../context/ThemeContext';
 import { deleteAllBackups } from '../../../handlers/cloudBackup';
 import { walletsUpdate } from '../../../redux/wallets';
 import { cloudPlatform } from '../../../utils/platform';
@@ -12,14 +13,19 @@ import { ButtonPressAnimation } from '../../animations';
 import { Centered, Column } from '../../layout';
 import { SheetActionButton } from '../../sheet';
 import { Text } from '../../text';
-import { darkMode } from '@rainbow-me/config/debug'; // TODO DARKMODE
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { useWalletCloudBackup, useWallets } from '@rainbow-me/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors, fonts, padding, position, shadow } from '@rainbow-me/styles';
+import {
+  colors_NOT_REACTIVE,
+  fonts,
+  padding,
+  position,
+  shadow,
+} from '@rainbow-me/styles';
 import { showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const WalletBackupStatus = {
@@ -29,8 +35,14 @@ const WalletBackupStatus = {
 };
 
 const CheckmarkIconContainer = styled(View)`
-  ${({ color }) =>
-    shadow.build(0, 4, 6, darkMode ? colors.shadow : color, 0.4)};
+  ${({ color, isDarkMode }) =>
+    shadow.build(
+      0,
+      4,
+      6,
+      isDarkMode ? colors_NOT_REACTIVE.shadow : color,
+      0.4
+    )};
   ${position.size(50)};
   background-color: ${({ color }) => color};
   border-radius: 25;
@@ -40,13 +52,13 @@ const CheckmarkIconContainer = styled(View)`
 
 const CheckmarkIconText = styled(Text).attrs({
   align: 'center',
-  color: colors.whiteLabel,
+  color: colors_NOT_REACTIVE.whiteLabel,
   size: 'larger',
   weight: 'bold',
 })``;
 
-const CheckmarkIcon = ({ color }) => (
-  <CheckmarkIconContainer color={color}>
+const CheckmarkIcon = ({ color, isDarkMode }) => (
+  <CheckmarkIconContainer color={color} isDarkMode={isDarkMode}>
     <CheckmarkIconText>􀆅</CheckmarkIconText>
   </CheckmarkIconContainer>
 );
@@ -60,7 +72,7 @@ const Content = styled(Centered).attrs({
 
 const DescriptionText = styled(Text).attrs({
   align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.5),
+  color: colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.5),
   lineHeight: 'loosest',
   size: 'large',
 })`
@@ -74,7 +86,7 @@ const Footer = styled(Centered)`
 
 const Subtitle = styled(Text).attrs({
   align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.5),
+  color: colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.5),
   size: fonts.size.smedium,
   weight: fonts.weight.medium,
 })`
@@ -225,13 +237,15 @@ export default function AlreadyBackedUpView() {
 
   const checkmarkColor =
     walletStatus === WalletBackupStatus.CLOUD_BACKUP
-      ? colors.green
-      : colors.alpha(colors.blueGreyDark, 0.5);
+      ? colors_NOT_REACTIVE.green
+      : colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.5);
 
   const hasMultipleWallets =
     Object.keys(wallets).filter(
       key => wallets[key].type !== WalletTypes.readOnly
     ).length > 1;
+
+  const { isDarkMode } = useTheme();
 
   return (
     <Fragment>
@@ -243,7 +257,7 @@ export default function AlreadyBackedUpView() {
       </Subtitle>
       <Content>
         <Centered direction="column">
-          <CheckmarkIcon color={checkmarkColor} />
+          <CheckmarkIcon color={checkmarkColor} isDarkMode={isDarkMode} />
           <Title>
             {(walletStatus === WalletBackupStatus.IMPORTED &&
               `Your wallet was imported`) ||
@@ -261,10 +275,13 @@ export default function AlreadyBackedUpView() {
         <Column>
           <SheetActionButton
             androidWidth={225}
-            color={colors.white}
+            color={colors_NOT_REACTIVE.white}
             label="🗝 View recovery key"
             onPress={handleViewRecoveryPhrase}
-            textColor={colors.alpha(colors.blueGreyDark, 0.8)}
+            textColor={colors_NOT_REACTIVE.alpha(
+              colors_NOT_REACTIVE.blueGreyDark,
+              0.8
+            )}
           />
         </Column>
       </Content>
@@ -273,7 +290,7 @@ export default function AlreadyBackedUpView() {
           <ButtonPressAnimation onPress={handleIcloudBackup}>
             <Text
               align="center"
-              color={colors.appleBlue}
+              color={colors_NOT_REACTIVE.appleBlue}
               letterSpacing="roundedMedium"
               size="large"
               weight="semibold"
@@ -287,7 +304,10 @@ export default function AlreadyBackedUpView() {
           <ButtonPressAnimation onPress={manageCloudBackups}>
             <Text
               align="center"
-              color={colors.alpha(colors.blueGreyDark, 0.6)}
+              color={colors_NOT_REACTIVE.alpha(
+                colors_NOT_REACTIVE.blueGreyDark,
+                0.6
+              )}
               letterSpacing="roundedMedium"
               size="lmedium"
               weight="semibold"

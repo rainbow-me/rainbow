@@ -6,7 +6,7 @@ import styled from 'styled-components/primitives';
 import { usePrevious } from '../../hooks';
 import { CoinRowHeight, ExchangeCoinRow } from '../coin-row';
 import { GradientText, Text } from '../text';
-import { colors, padding } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
 import { deviceUtils, magicMemo } from '@rainbow-me/utils';
 
 const deviceWidth = deviceUtils.dimensions.width;
@@ -17,7 +17,10 @@ const Header = styled.View`
 `;
 
 const HeaderBackground = styled(LinearGradient).attrs({
-  colors: [colors.white, colors.alpha(colors.white, 0)],
+  colors: [
+    colors_NOT_REACTIVE.white,
+    colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.white, 0),
+  ],
   end: { x: 0.5, y: 1 },
   locations: [0.55, 1],
   start: { x: 0.5, y: 0 },
@@ -28,7 +31,7 @@ const HeaderBackground = styled(LinearGradient).attrs({
 `;
 
 const HeaderTitle = styled(Text).attrs(({ color }) => ({
-  color: color || colors.blueGreyDark50,
+  color: color || colors_NOT_REACTIVE.blueGreyDark50,
   letterSpacing: 'roundedMedium',
   size: 'smedium',
   weight: 'heavy',

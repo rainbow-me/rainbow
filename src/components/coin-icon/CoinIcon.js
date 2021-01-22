@@ -6,7 +6,7 @@ import { useTheme } from '../../context/ThemeContext';
 import CoinIconFallback from './CoinIconFallback';
 import CoinIconIndicator from './CoinIconIndicator';
 import { useColorForAsset } from '@rainbow-me/hooks';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 import { getTokenMetadata, isETH, magicMemo } from '@rainbow-me/utils';
 
 export const CoinIconSize = 40;
@@ -39,7 +39,9 @@ const CoinIcon = ({
         fallbackRenderer={CoinIconFallback}
         forceFallback={forceFallback}
         shadowColor={
-          isDarkMode ? colors.shadow : tokenMetadata?.shadowColor || color
+          isDarkMode
+            ? colors_NOT_REACTIVE.shadow
+            : tokenMetadata?.shadowColor || color
         }
         size={size}
         symbol={symbol}

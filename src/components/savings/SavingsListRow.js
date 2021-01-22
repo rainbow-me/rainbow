@@ -23,15 +23,15 @@ import {
 import { useDimensions } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors, padding, position } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const MS_IN_1_DAY = 1000 * 60 * 60 * 24;
 const ANIMATE_NUMBER_INTERVAL = 60;
 
 const SavingsListRowShadows = [
-  [0, 10, 30, colors.shadow, 0.1],
-  [0, 5, 15, colors.shadow, 0.04],
+  [0, 10, 30, colors_NOT_REACTIVE.shadow, 0.1],
+  [0, 5, 15, colors_NOT_REACTIVE.shadow, 0.04],
 ];
 
 const NOOP = () => undefined;
@@ -42,7 +42,7 @@ const SavingsListRowGradient = React.memo(
   () => (
     <LinearGradient
       borderRadius={49}
-      colors={colors.gradients.savings}
+      colors={colors_NOT_REACTIVE.gradients.savings}
       end={{ x: 0.5, y: 1 }}
       pointerEvents="none"
       start={{ x: 0.5, y: 0 }}
@@ -54,7 +54,7 @@ const SavingsListRowGradient = React.memo(
 
 const SavingsListRowShadowStack = styled(ShadowStack).attrs(
   ({ deviceWidth }) => ({
-    backgroundColor: colors.white,
+    backgroundColor: colors_NOT_REACTIVE.white,
     borderRadius: 49,
     height: 49,
     shadows: SavingsListRowShadows,

@@ -23,7 +23,7 @@ import { Centered } from '../layout';
 import SavingsListHeader from '../savings/SavingsListHeader';
 import TokenFamilyHeader from '../token-family/TokenFamilyHeader';
 import { ImgixImage } from '@rainbow-me/images';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const dividerMargin = 10;
 const dividerHeight = DividerSize + dividerMargin * 2;
@@ -44,7 +44,7 @@ const SendAssetRecyclerListView = styled(RecyclerListView)`
 
 const SendAssetListDivider = () => (
   <Centered marginVertical={dividerMargin}>
-    <Divider color={colors.rowDividerLight} />
+    <Divider color={colors_NOT_REACTIVE.rowDividerLight} />
   </Centered>
 );
 

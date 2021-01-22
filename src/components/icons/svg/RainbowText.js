@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Path } from 'react-native-svg';
 import Svg from '../Svg';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const RainbowText = ({ color, ...props }) => (
   <Svg height="25" viewBox="0 0 125 25" width="125" {...props}>
@@ -21,7 +21,7 @@ RainbowText.propTypes = {
 };
 
 RainbowText.defaultProps = {
-  color: colors.black,
+  color: colors_NOT_REACTIVE.black,
 };
 
 export default RainbowText;

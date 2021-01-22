@@ -6,15 +6,15 @@ import ButtonPressAnimation, {
   ScaleButtonZoomableAndroid,
 } from '../animations/ButtonPressAnimation';
 import { Centered, InnerBorder } from '../layout';
-import { borders, colors, position } from '@rainbow-me/styles';
+import { borders, colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 export const FloatingActionButtonSize = 56;
 
 export const FloatingActionButtonShadow = [
-  [0, 2, 5, colors.dark, 0.2],
-  [0, 6, 10, colors.dark, 0.14],
-  [0, 1, 18, colors.dark, 0.12],
+  [0, 2, 5, colors_NOT_REACTIVE.dark, 0.2],
+  [0, 6, 10, colors_NOT_REACTIVE.dark, 0.14],
+  [0, 1, 18, colors_NOT_REACTIVE.dark, 0.12],
 ];
 
 const Content = styled(Centered)`
@@ -65,7 +65,10 @@ const FloatingActionButton = ({
     >
       <ShadowStack
         {...borders.buildCircleAsObject(size)}
-        backgroundColor={colors.alpha(backgroundColor, isDarkMode ? 0.8 : 0.5)}
+        backgroundColor={colors_NOT_REACTIVE.alpha(
+          backgroundColor,
+          isDarkMode ? 0.8 : 0.5
+        )}
         hideShadow={disabled}
         shadows={shadows}
       >
@@ -78,7 +81,11 @@ const FloatingActionButton = ({
           }}
           testID={testID}
         >
-          <Content backgroundColor={disabled ? colors.grey : backgroundColor}>
+          <Content
+            backgroundColor={
+              disabled ? colors_NOT_REACTIVE.grey : backgroundColor
+            }
+          >
             {typeof children === 'function' ? children({ size }) : children}
             {!disabled && <InnerBorder opacity={0.06} radius={size / 2} />}
           </Content>

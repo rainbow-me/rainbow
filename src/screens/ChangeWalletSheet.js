@@ -40,7 +40,7 @@ import {
   useWallets,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 import {
   abbreviations,
   deviceUtils,
@@ -82,14 +82,14 @@ const EditButton = styled(ButtonPressAnimation).attrs(({ editMode }) => ({
 
 const EditButtonLabel = styled(Text).attrs(({ editMode }) => ({
   align: 'right',
-  color: colors.appleBlue,
+  color: colors_NOT_REACTIVE.appleBlue,
   letterSpacing: 'roundedMedium',
   size: 'large',
   weight: editMode ? 'semibold' : 'medium',
 }))``;
 
 const Whitespace = styled.View`
-  background-color: ${colors.white};
+  background-color: ${colors_NOT_REACTIVE.white};
   bottom: -400px;
   height: 400px;
   position: absolute;
@@ -346,7 +346,11 @@ export default function ChangeWalletSheet() {
               if (args) {
                 setIsWalletLoading(WalletLoadingStates.CREATING_WALLET);
                 const name = get(args, 'name', '');
-                const color = get(args, 'color', colors.getRandomColor());
+                const color = get(
+                  args,
+                  'color',
+                  colors_NOT_REACTIVE.getRandomColor()
+                );
                 // Check if the selected wallet is the primary
                 let primaryWalletKey = selectedWallet.primary
                   ? selectedWallet.id
@@ -459,7 +463,10 @@ export default function ChangeWalletSheet() {
       <Column height={headerHeight} justify="space-between">
         <SheetTitle>Wallets</SheetTitle>
         {showDividers && (
-          <Divider color={colors.rowDividerExtraLight} inset={[0, 15]} />
+          <Divider
+            color={colors_NOT_REACTIVE.rowDividerExtraLight}
+            inset={[0, 15]}
+          />
         )}
       </Column>
       <EditButton editMode={editMode} onPress={() => setEditMode(e => !e)}>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Column, FlexItem, Row } from '../layout';
 import { Emoji, Text, TruncatedText } from '../text';
-import { colors, padding } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
 
 export default function WalletConnectExplainerItem({
   children,
@@ -20,7 +20,10 @@ export default function WalletConnectExplainerItem({
         </FlexItem>
         <FlexItem marginTop={4}>
           <Text
-            color={colors.alpha(colors.blueGreyDark, 0.45)}
+            color={colors_NOT_REACTIVE.alpha(
+              colors_NOT_REACTIVE.blueGreyDark,
+              0.45
+            )}
             lineHeight="loose"
             size="smedium"
           >

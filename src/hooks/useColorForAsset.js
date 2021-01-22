@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import useImageMetadata from './useImageMetadata';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 import {
   getTokenMetadata,
   getUrlForTrustIconFallback,
@@ -20,8 +20,11 @@ export default function useColorForAsset(asset, fallbackColor) {
   const colorDerivedFromAddress = useMemo(
     () =>
       isETH(address)
-        ? colors.dark
-        : pseudoRandomArrayItemFromString(address, colors.avatarColor),
+        ? colors_NOT_REACTIVE.dark
+        : pseudoRandomArrayItemFromString(
+            address,
+            colors_NOT_REACTIVE.avatarColor
+          ),
     [address]
   );
 

@@ -2,28 +2,28 @@ import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import { Centered } from '../layout';
 import { ImgixImage } from '@rainbow-me/images';
-import { borders, colors } from '@rainbow-me/styles';
+import { borders, colors_NOT_REACTIVE } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const buildSmallShadows = color => [
-  [0, 3, 5, colors.shadow, 0.14],
-  [0, 6, 10, colors.avatarColor[color] || color, 0.2],
+  [0, 3, 5, colors_NOT_REACTIVE.shadow, 0.14],
+  [0, 6, 10, colors_NOT_REACTIVE.avatarColor[color] || color, 0.2],
 ];
 
 const sizeConfigs = {
   large: {
     dimensions: 65,
     shadow: [
-      [0, 6, 10, colors.shadow, 0.12],
-      [0, 2, 5, colors.shadow, 0.08],
+      [0, 6, 10, colors_NOT_REACTIVE.shadow, 0.12],
+      [0, 2, 5, colors_NOT_REACTIVE.shadow, 0.08],
     ],
     textSize: 'bigger',
   },
   medium: {
     dimensions: 40,
     shadow: [
-      [0, 4, 6, colors.shadow, 0.04],
-      [0, 1, 3, colors.shadow, 0.08],
+      [0, 4, 6, colors_NOT_REACTIVE.shadow, 0.04],
+      [0, 1, 3, colors_NOT_REACTIVE.shadow, 0.08],
     ],
     textSize: 'larger',
   },
@@ -42,7 +42,8 @@ const ImageAvatar = ({ image, size = 'medium', ...props }) => {
   const { dimensions, shadow } = sizeConfigs[size];
 
   const shadows = useMemo(
-    () => (size === 'small' ? buildSmallShadows(colors.shadow) : shadow),
+    () =>
+      size === 'small' ? buildSmallShadows(colors_NOT_REACTIVE.shadow) : shadow,
     [shadow, size]
   );
 
@@ -50,7 +51,7 @@ const ImageAvatar = ({ image, size = 'medium', ...props }) => {
     <ShadowStack
       {...props}
       {...borders.buildCircleAsObject(dimensions)}
-      backgroundColor={colors.white}
+      backgroundColor={colors_NOT_REACTIVE.white}
       shadows={shadows}
     >
       <Centered flex={1}>

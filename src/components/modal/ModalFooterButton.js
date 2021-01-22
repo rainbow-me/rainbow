@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import { colors, position } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
 
 const ButtonIcon = styled(Icon)`
   ${position.maxSize('100%')};
@@ -27,7 +27,7 @@ const IconContainer = styled(Centered).attrs({
 const ModalFooterButton = ({ icon, label, onPress }) => (
   <Container as={BorderlessButton} onPress={onPress}>
     <IconContainer>
-      <ButtonIcon color={colors.appleBlue} name={icon} />
+      <ButtonIcon color={colors_NOT_REACTIVE.appleBlue} name={icon} />
     </IconContainer>
     <Text color="appleBlue" size="large" weight="semibold">
       {label}

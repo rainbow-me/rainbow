@@ -5,7 +5,7 @@ import styled from 'styled-components/primitives';
 import { deviceUtils } from '../../utils';
 import { Centered, Column } from '../layout';
 import { Text } from '../text';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const verticalOffset = (deviceUtils.dimensions.height - 420) / 3;
 
@@ -27,7 +27,10 @@ const ActivityListEmptyState = ({ children, emoji, label }) => (
       <Centered>
         <Text
           align="center"
-          color={colors.alpha(colors.blueGreyDark, 0.35)}
+          color={colors_NOT_REACTIVE.alpha(
+            colors_NOT_REACTIVE.blueGreyDark,
+            0.35
+          )}
           letterSpacing="roundedMedium"
           lineHeight={24}
           size="lmedium"

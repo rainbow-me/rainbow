@@ -6,12 +6,12 @@ import { magicMemo } from '../../utils';
 import { Icon } from '../icons';
 import FloatingActionButton from './FloatingActionButton';
 import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
-const FabShadowDark = [[0, 10, 30, colors.shadow, 1]];
+const FabShadowDark = [[0, 10, 30, colors_NOT_REACTIVE.shadow, 1]];
 const FabShadowLight = [
-  [0, 10, 30, colors.shadow, 0.8],
-  [0, 5, 15, colors.paleBlue, 1],
+  [0, 10, 30, colors_NOT_REACTIVE.shadow, 0.8],
+  [0, 5, 15, colors_NOT_REACTIVE.paleBlue, 1],
 ];
 
 const SendFab = ({ disabled, isReadOnlyWallet, ...props }) => {
@@ -32,14 +32,14 @@ const SendFab = ({ disabled, isReadOnlyWallet, ...props }) => {
   return (
     <FloatingActionButton
       {...props}
-      backgroundColor={colors.paleBlue}
+      backgroundColor={colors_NOT_REACTIVE.paleBlue}
       disabled={disabled}
       onPress={handlePress}
       shadows={FabShadow}
       testID="send-fab"
     >
       <Icon
-        color={colors.whiteLabel}
+        color={colors_NOT_REACTIVE.whiteLabel}
         height={22}
         marginBottom={4}
         name="send"

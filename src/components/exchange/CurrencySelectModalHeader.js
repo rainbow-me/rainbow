@@ -7,7 +7,7 @@ import { BackButton } from '../header';
 import { Centered } from '../layout';
 import { TruncatedText } from '../text';
 import Routes from '@rainbow-me/routes';
-import { borders, colors, padding } from '@rainbow-me/styles';
+import { borders, colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
 
 const BackButtonWrapper = styled(Centered)`
   bottom: 0;
@@ -19,7 +19,7 @@ const BackButtonWrapper = styled(Centered)`
 export const CurrencySelectModalHeaderHeight = 59;
 const HeaderContainer = styled(Centered)`
   ${borders.buildRadius('top', 12)};
-  background-color: ${colors.white};
+  background-color: ${colors_NOT_REACTIVE.white};
   height: ${CurrencySelectModalHeaderHeight};
   width: 100%;
 `;

@@ -6,13 +6,18 @@ import CopyTooltip from '../copy-tooltip';
 import { Centered, ColumnWithMargins, Row, RowWithMargins } from '../layout';
 import { Text } from '../text';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
-import { colors, fonts, padding, position } from '@rainbow-me/styles';
+import {
+  colors_NOT_REACTIVE,
+  fonts,
+  padding,
+  position,
+} from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const CardBorderRadius = 25;
 
 const BackgroundGradient = styled(LinearGradient).attrs({
-  colors: colors.gradients.offWhite,
+  colors: colors_NOT_REACTIVE.gradients.offWhite,
   end: { x: 0.5, y: 1 },
   start: { x: 0.5, y: 0 },
 })`
@@ -24,8 +29,8 @@ const CardShadow = styled(ShadowStack).attrs({
   ...position.coverAsObject,
   borderRadius: CardBorderRadius,
   shadows: [
-    [0, 10, 30, colors.shadow, 0.1],
-    [0, 5, 15, colors.shadow, 0.04],
+    [0, 10, 30, colors_NOT_REACTIVE.shadow, 0.1],
+    [0, 5, 15, colors_NOT_REACTIVE.shadow, 0.04],
   ],
 })`
   elevation: 15;
@@ -67,7 +72,10 @@ function SeedWordGrid({ seed }) {
                 <GridItem justify="end" key={`grid_number_${number}`}>
                   <GridText
                     align="right"
-                    color={colors.alpha(colors.appleBlue, 0.6)}
+                    color={colors_NOT_REACTIVE.alpha(
+                      colors_NOT_REACTIVE.appleBlue,
+                      0.6
+                    )}
                   >
                     {number}
                   </GridText>

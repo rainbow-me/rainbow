@@ -8,7 +8,7 @@ import { Centered, ColumnWithMargins, Row, RowWithMargins } from '../layout';
 import { Emoji, Text } from '../text';
 import ApplePayButton from './ApplePayButton';
 import Routes from '@rainbow-me/routes';
-import { colors, position } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
 
 const AddCashFooter = ({ disabled, onDisabledPress, onSubmit, ...props }) => {
   const { isTallPhone, isTinyPhone } = useDimensions();
@@ -46,7 +46,10 @@ const AddCashFooter = ({ disabled, onDisabledPress, onSubmit, ...props }) => {
               <Emoji name="earth_americas" size="smedium" />
             </Centered>
             <Text
-              color={colors.alpha(colors.blueGreyDark, 0.5)}
+              color={colors_NOT_REACTIVE.alpha(
+                colors_NOT_REACTIVE.blueGreyDark,
+                0.5
+              )}
               lineHeight="normal"
               size="lmedium"
               weight="semibold"
@@ -56,7 +59,10 @@ const AddCashFooter = ({ disabled, onDisabledPress, onSubmit, ...props }) => {
             <Centered marginLeft={2} marginTop={0.5}>
               <Icon
                 {...position.sizeAsObject(18)}
-                color={colors.alpha(colors.blueGreyDark, 0.3)}
+                color={colors_NOT_REACTIVE.alpha(
+                  colors_NOT_REACTIVE.blueGreyDark,
+                  0.3
+                )}
                 name="info"
               />
             </Centered>

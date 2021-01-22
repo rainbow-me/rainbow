@@ -46,7 +46,7 @@ import {
   useUpdateAssetOnchainBalance,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
-import { borders, colors } from '@rainbow-me/styles';
+import { borders, colors_NOT_REACTIVE } from '@rainbow-me/styles';
 import { deviceUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
@@ -54,7 +54,7 @@ const sheetHeight = deviceUtils.dimensions.height - (android ? 30 : 10);
 const statusBarHeight = getStatusBarHeight(true);
 
 const Container = styled.View`
-  background-color: ${colors.transparent};
+  background-color: ${colors_NOT_REACTIVE.transparent};
   flex: 1;
   padding-top: ${isNativeStackAvailable ? 0 : statusBarHeight};
   width: 100%;
@@ -65,7 +65,7 @@ const SheetContainer = styled(Column).attrs({
   flex: 1,
 })`
   ${borders.buildRadius('top', isNativeStackAvailable ? 0 : 16)};
-  background-color: ${colors.white};
+  background-color: ${colors_NOT_REACTIVE.white};
   height: ${isNativeStackAvailable || android ? sheetHeight : '100%'};
   width: 100%;
 `;
@@ -73,7 +73,9 @@ const SheetContainer = styled(Column).attrs({
 const KeyboardSizeView = styled(KeyboardArea)`
   width: 100%;
   background-color: ${({ showAssetForm }) =>
-    showAssetForm ? colors.lighterGrey : colors.white};
+    showAssetForm
+      ? colors_NOT_REACTIVE.lighterGrey
+      : colors_NOT_REACTIVE.white};
 `;
 
 export default function SendSheet(props) {

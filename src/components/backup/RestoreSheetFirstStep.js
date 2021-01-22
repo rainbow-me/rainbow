@@ -10,7 +10,7 @@ import { Column, Row, RowWithMargins } from '../layout';
 import { GradientText, Text } from '../text';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import { useNavigation } from '@rainbow-me/navigation';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 import { deviceUtils } from '@rainbow-me/utils';
 
 const deviceWidth = deviceUtils.dimensions.width;
@@ -44,7 +44,7 @@ const RainbowText =
     ? Text
     : styled(GradientText).attrs({
         angle: false,
-        colors: colors.gradients.rainbow,
+        colors: colors_NOT_REACTIVE.gradients.rainbow,
         end: { x: 0, y: 0.5 },
         start: { x: 1, y: 0.5 },
         steps: [0, 0.774321, 1],
@@ -71,7 +71,7 @@ const Title = styled(Text).attrs({
 
 const DescriptionText = styled(Text).attrs({
   align: 'left',
-  color: colors.alpha(colors.blueGreyDark, 0.4),
+  color: colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.4),
   lineHeight: 22,
   size: 'smedium',
   weight: 'medium',
@@ -129,7 +129,10 @@ export default function RestoreSheetFirstStep({
               </DescriptionText>
             </Column>
           </SheetRow>
-          <Divider color={colors.rowDividerExtraLight} inset={[0, 30]} />
+          <Divider
+            color={colors_NOT_REACTIVE.rowDividerExtraLight}
+            inset={[0, 30]}
+          />
         </React.Fragment>
       )}
       <SheetRow
@@ -139,7 +142,7 @@ export default function RestoreSheetFirstStep({
         testID="restore-with-key-button"
       >
         <Column>
-          <TextIcon color={colors.purple}>􀑚</TextIcon>
+          <TextIcon color={colors_NOT_REACTIVE.purple}>􀑚</TextIcon>
           <TitleRow justify="space-between" width="100%">
             <Title>Restore with a recovery phrase or private key</Title>
             <CaretIcon />
@@ -149,7 +152,10 @@ export default function RestoreSheetFirstStep({
           </DescriptionText>
         </Column>
       </SheetRow>
-      <Divider color={colors.rowDividerExtraLight} inset={[0, 30]} />
+      <Divider
+        color={colors_NOT_REACTIVE.rowDividerExtraLight}
+        inset={[0, 30]}
+      />
 
       <SheetRow
         as={ButtonPressAnimation}
@@ -158,7 +164,7 @@ export default function RestoreSheetFirstStep({
         testID="watch-address-button"
       >
         <Column>
-          <TextIcon color={colors.mintDark}>􀒒</TextIcon>
+          <TextIcon color={colors_NOT_REACTIVE.mintDark}>􀒒</TextIcon>
           <TitleRow justify="space-between" width="100%">
             <Title>Watch an Ethereum address </Title>
             <CaretIcon />

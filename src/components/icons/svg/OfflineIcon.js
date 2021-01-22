@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Path } from 'react-native-svg';
 import Svg from '../Svg';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const OfflineIcon = ({ color, ...props }) => (
   <Svg height="15" viewBox="0 0 15 19" width="19" {...props}>
@@ -19,7 +19,7 @@ OfflineIcon.propTypes = {
 };
 
 OfflineIcon.defaultProps = {
-  color: colors.black,
+  color: colors_NOT_REACTIVE.black,
 };
 
 export default OfflineIcon;

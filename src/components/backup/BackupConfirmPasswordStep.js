@@ -25,12 +25,12 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors, margin, padding } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, margin, padding } from '@rainbow-me/styles';
 import logger from 'logger';
 
 const DescriptionText = styled(Text).attrs({
   align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.5),
+  color: colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.5),
   lineHeight: 'looser',
   size: 'large',
 })`

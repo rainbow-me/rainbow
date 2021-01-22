@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Circle, G, Path } from 'react-native-svg';
 import Svg from '../Svg';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const ClockIcon = ({ color, ...props }) => (
   <Svg viewBox="0 0 30 30" {...props}>
@@ -21,7 +21,7 @@ ClockIcon.propTypes = {
 };
 
 ClockIcon.defaultProps = {
-  color: colors.black,
+  color: colors_NOT_REACTIVE.black,
 };
 
 export default ClockIcon;

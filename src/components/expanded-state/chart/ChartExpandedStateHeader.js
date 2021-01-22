@@ -13,7 +13,7 @@ import {
 } from './chart-data-labels';
 import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
 import { useAccountSettings, useBooleanState } from '@rainbow-me/hooks';
-import { colors, padding } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
 
 const { call, cond, onChange, useCode } = Animated;
 
@@ -46,7 +46,7 @@ export default function ChartExpandedStateHeader({
   asset,
   changeDirection,
   changeRef,
-  color = colors.dark,
+  color = colors_NOT_REACTIVE.dark,
   dateRef,
   isPool,
   isScrubbing,
@@ -110,7 +110,12 @@ export default function ChartExpandedStateHeader({
           />
           <ChartHeaderSubtitle
             color={
-              isNoPriceData ? colors.alpha(colors.blueGreyDark, 0.8) : color
+              isNoPriceData
+                ? colors_NOT_REACTIVE.alpha(
+                    colors_NOT_REACTIVE.blueGreyDark,
+                    0.8
+                  )
+                : color
             }
             weight={isNoPriceData ? 'semibold' : 'bold'}
           >

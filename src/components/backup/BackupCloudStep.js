@@ -26,18 +26,18 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors, padding } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
 import logger from 'logger';
 
 const DescriptionText = styled(Text).attrs(({ isTinyPhone }) => ({
   align: 'center',
-  color: colors.blueGreyDark50,
+  color: colors_NOT_REACTIVE.blueGreyDark50,
   lineHeight: 'looser',
   size: isTinyPhone ? 'lmedium' : 'large',
 }))``;
 
 const ImportantText = styled(DescriptionText).attrs({
-  color: colors.blueGreyDark60,
+  color: colors_NOT_REACTIVE.blueGreyDark60,
   weight: 'medium',
 })``;
 
@@ -52,7 +52,7 @@ const Masthead = styled(Centered).attrs({
 const MastheadIcon = styled(GradientText).attrs({
   align: 'center',
   angle: false,
-  colors: colors.gradients.rainbow,
+  colors: colors_NOT_REACTIVE.gradients.rainbow,
   end: { x: 0, y: 0.5 },
   size: 43,
   start: { x: 1, y: 0.5 },

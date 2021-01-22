@@ -5,7 +5,7 @@ import { ButtonPressAnimation } from '../animations';
 import ImageAvatar from '../contacts/ImageAvatar';
 import { Flex, InnerBorder } from '../layout';
 import { Text } from '../text';
-import { colors, position } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const AvatarCircleSize = 65;
@@ -19,7 +19,7 @@ const AvatarCircleView = styled(Flex)`
 
 const FirstLetter = styled(Text).attrs({
   align: 'center',
-  color: colors.white,
+  color: colors_NOT_REACTIVE.white,
   letterSpacing: 2,
   lineHeight: android ? 68 : 66,
   size: ios ? 38 : 30,
@@ -38,12 +38,20 @@ export default function AvatarCircle({
   const shadows = useMemo(
     () => ({
       default: [
-        [0, 2, 5, colors.dark, 0.2],
-        [0, 6, 10, colors.alpha(colors.avatarColor[accountColor || 0], 0.6)],
+        [0, 2, 5, colors_NOT_REACTIVE.dark, 0.2],
+        [
+          0,
+          6,
+          10,
+          colors_NOT_REACTIVE.alpha(
+            colors_NOT_REACTIVE.avatarColor[accountColor || 0],
+            0.6
+          ),
+        ],
       ],
       overlay: [
-        [0, 6, 10, colors.black, 0.08],
-        [0, 2, 5, colors.black, 0.12],
+        [0, 6, 10, colors_NOT_REACTIVE.black, 0.08],
+        [0, 2, 5, colors_NOT_REACTIVE.black, 0.12],
       ],
     }),
     [accountColor]
@@ -60,7 +68,9 @@ export default function AvatarCircle({
     >
       <ShadowStack
         {...position.sizeAsObject(AvatarCircleSize)}
-        backgroundColor={overlayStyles ? 'rgb(51, 54, 59)' : colors.white}
+        backgroundColor={
+          overlayStyles ? 'rgb(51, 54, 59)' : colors_NOT_REACTIVE.white
+        }
         borderRadius={AvatarCircleSize}
         marginBottom={12}
         shadows={shadows[overlayStyles ? 'overlay' : 'default']}
@@ -72,7 +82,9 @@ export default function AvatarCircle({
         {image ? (
           <ImageAvatar image={image} size="large" />
         ) : (
-          <AvatarCircleView backgroundColor={colors.avatarColor[accountColor]}>
+          <AvatarCircleView
+            backgroundColor={colors_NOT_REACTIVE.avatarColor[accountColor]}
+          >
             <FirstLetter>{accountSymbol}</FirstLetter>
             {!overlayStyles && <InnerBorder opacity={0.02} radius={65} />}
           </AvatarCircleView>

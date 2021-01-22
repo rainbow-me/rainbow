@@ -5,12 +5,20 @@ import { useTheme } from '../../context/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder, RowWithMargins } from '../layout';
 import { Text } from '../text';
-import { colors, padding, position } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const shadowsFactory = darkMode => ({
-  default: [[0, 4, 12, darkMode ? colors.shadow : colors.appleBlue, 0.4]],
-  disabled: [[0, 4, 12, colors.lightGrey, darkMode ? 0 : 0.4]],
+  default: [
+    [
+      0,
+      4,
+      12,
+      darkMode ? colors_NOT_REACTIVE.shadow : colors_NOT_REACTIVE.appleBlue,
+      0.4,
+    ],
+  ],
+  disabled: [[0, 4, 12, colors_NOT_REACTIVE.lightGrey, darkMode ? 0 : 0.4]],
 });
 
 const shadowLight = shadowsFactory(false);
@@ -53,7 +61,11 @@ export default function MiniButton({
       <View style={{ borderRadius }}>
         <ShadowStack
           {...position.coverAsObject}
-          backgroundColor={disabled ? colors.lightGrey : colors.appleBlue}
+          backgroundColor={
+            disabled
+              ? colors_NOT_REACTIVE.lightGrey
+              : colors_NOT_REACTIVE.appleBlue
+          }
           borderRadius={borderRadius}
           height={height}
           shadows={disabled ? shadows.disabled : shadows.default}

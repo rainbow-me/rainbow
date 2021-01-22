@@ -15,7 +15,7 @@ import Spinner from '../../Spinner';
 import { Centered, InnerBorder } from '../../layout';
 import { Text } from '../../text';
 import HoldToAuthorizeButtonIcon from './HoldToAuthorizeButtonIcon';
-import { colors, padding } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const { divide, multiply, proc } = Animated;
@@ -27,19 +27,19 @@ const ButtonHeight = 59;
 const SmallButtonHeight = 46;
 
 const ButtonDisabledBgColor = {
-  dark: colors.darkGrey,
-  light: colors.lightGrey,
+  dark: colors_NOT_REACTIVE.darkGrey,
+  light: colors_NOT_REACTIVE.lightGrey,
 };
 
 const ButtonShadows = {
   default: [
-    [0, 3, 5, colors.shadow, 0.2],
-    [0, 6, 10, colors.shadow, 0.14],
-    [0, 1, 18, colors.shadow, 0.12],
+    [0, 3, 5, colors_NOT_REACTIVE.shadow, 0.2],
+    [0, 6, 10, colors_NOT_REACTIVE.shadow, 0.14],
+    [0, 1, 18, colors_NOT_REACTIVE.shadow, 0.12],
   ],
   disabled: [
-    [0, 2, 6, colors.shadow, 0.06],
-    [0, 3, 9, colors.shadow, 0.08],
+    [0, 2, 6, colors_NOT_REACTIVE.shadow, 0.06],
+    [0, 3, 9, colors_NOT_REACTIVE.shadow, 0.08],
   ],
 };
 
@@ -76,7 +76,7 @@ const calculateReverseDuration = proc(longPressProgress =>
 );
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs({
-  color: colors.whiteLabel,
+  color: colors_NOT_REACTIVE.whiteLabel,
   size: 31,
 })`
   left: 15;
@@ -103,7 +103,7 @@ class HoldToAuthorizeButton extends PureComponent {
   };
 
   static defaultProps = {
-    backgroundColor: colors.appleBlue,
+    backgroundColor: colors_NOT_REACTIVE.appleBlue,
     disabled: false,
     theme: 'light',
   };

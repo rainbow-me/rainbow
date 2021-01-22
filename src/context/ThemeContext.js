@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { getTheme, saveTheme } from '../handlers/localstorage/theme';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const THEMES = {
   DARK: 'dark',
@@ -8,7 +8,7 @@ const THEMES = {
 };
 
 export const ThemeContext = createContext({
-  colors: colors.lightModeThemeColors,
+  colors: colors_NOT_REACTIVE.lightModeThemeColors,
   isDarkMode: false,
   setTheme: () => {},
 });
@@ -38,8 +38,8 @@ export const MainThemeProvider = props => {
   const currentTheme = {
     // Chaning color schemes according to theme
     colors: isDarkMode
-      ? colors.darkModeThemeColors
-      : colors.lightModeThemeColors,
+      ? colors_NOT_REACTIVE.darkModeThemeColors
+      : colors_NOT_REACTIVE.lightModeThemeColors,
     isDarkMode,
     // Overrides the isDarkMode value will cause re-render inside the context.
     setTheme: scheme => setColorScheme(scheme),

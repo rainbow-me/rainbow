@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Path } from 'react-native-svg';
 import Svg from '../Svg';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const BackspaceIcon = ({ color, ...props }) => (
   <Svg height="34" viewBox="0 0 10 17" width="20" {...props}>
@@ -19,7 +19,7 @@ BackspaceIcon.propTypes = {
 };
 
 BackspaceIcon.defaultProps = {
-  color: colors.blueGreyDark,
+  color: colors_NOT_REACTIVE.blueGreyDark,
 };
 
 export default BackspaceIcon;

@@ -10,7 +10,7 @@ import { magicMemo } from '../../utils';
 import { interpolate } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import { colors, position } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
 
 const AnimatedText = Animated.createAnimatedComponent(Text);
 
@@ -33,8 +33,8 @@ const SheetSubtitleCyclerItem = ({ error, selected, subtitle }) => {
         align="center"
         color={mixColor(
           textColorAnimation,
-          colors.blueGreyDark50,
-          colors.brightRed
+          colors_NOT_REACTIVE.blueGreyDark50,
+          colors_NOT_REACTIVE.brightRed
         )}
         letterSpacing="uppercase"
         size="smedium"

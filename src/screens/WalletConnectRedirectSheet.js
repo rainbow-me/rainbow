@@ -6,11 +6,11 @@ import { Sheet } from '../components/sheet';
 import { Text } from '../components/text';
 import { useAppState } from '../hooks';
 import { useNavigation } from '../navigation/Navigation';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const BodyText = styled(Text).attrs({
   align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.6),
+  color: colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.6),
   lineHeight: 'loosest',
   size: 'big',
 })`

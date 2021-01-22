@@ -7,7 +7,7 @@ import { magicMemo } from '../../utils';
 import { interpolate } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import { borders, colors, position } from '@rainbow-me/styles';
+import { borders, colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
 
 const Container = styled(Animated.View)`
   ${position.centered};
@@ -30,7 +30,7 @@ const Circle = styled(Centered)`
         padding-right: 5.5;
         transform: translateX(${Math.floor(offset / 2)}px);
       `}
-  background-color: ${colors.appleBlue};
+  background-color: ${colors_NOT_REACTIVE.appleBlue};
   border-radius: 15;
   padding-bottom: 3;
   padding-top: 2;
@@ -73,7 +73,11 @@ const Badge = ({
       style={{ transform: [{ scale: animation, translateY }] }}
     >
       <Circle offset={offset} size={size} valueLength={valueLength}>
-        <Text color={colors.whiteLabel} size="smaller" weight="semibold">
+        <Text
+          color={colors_NOT_REACTIVE.whiteLabel}
+          size="smaller"
+          weight="semibold"
+        >
           {valueLength > maxLength ? `${'9'.repeat(maxLength)}+` : value}
         </Text>
       </Circle>

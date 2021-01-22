@@ -6,13 +6,13 @@ import { JellySelector, JellySelectorShadowIndicator } from '../jelly-selector';
 import { RowWithMargins } from '../layout';
 import { Text } from '../text';
 import { ETH_ADDRESS } from '@rainbow-me/references';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 import { getTokenMetadata } from '@rainbow-me/utils';
 
 const CurrencyItemHeight = 40;
 
 const CurrencyItemLabel = styled(Text).attrs({
-  color: colors.blueGreyDark,
+  color: colors_NOT_REACTIVE.blueGreyDark,
   letterSpacing: 'roundedMedium',
   size: 'larger',
   weight: 'semibold',
@@ -60,7 +60,9 @@ const AddCashSelector = ({
   return (
     <JellySelector
       backgroundColor={
-        isDarkMode ? colors.darkModeColors.darkModeDark : colors.white
+        isDarkMode
+          ? colors_NOT_REACTIVE.darkModeColors.darkModeDark
+          : colors_NOT_REACTIVE.white
       }
       defaultIndex={initialCurrencyIndex}
       disableSelection={isWalletEthZero}

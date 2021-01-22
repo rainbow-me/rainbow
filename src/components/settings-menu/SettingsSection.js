@@ -30,7 +30,6 @@ import darkModeIcon from '@rainbow-me/assets/settingsDarkmode.png';
 import darkModeIconDark from '@rainbow-me/assets/settingsDarkmodeDark.png';
 import NetworkIcon from '@rainbow-me/assets/settingsNetwork.png';
 import NetworkIconDark from '@rainbow-me/assets/settingsNetworkDark.png';
-import { darkMode } from '@rainbow-me/config/debug'; // TODO DARKMODE
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import {
@@ -40,7 +39,7 @@ import {
   useWallets,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
-import { colors, position } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
 import {
   AppleReviewAddress,
   REVIEW_DONE_KEY,
@@ -60,7 +59,13 @@ const CheckmarkIcon = styled(Icon).attrs({
   name: 'checkmarkCircled',
 })`
   box-shadow: 0px 4px 6px
-    ${colors.alpha(darkMode ? colors.shadow : colors.blueGreyDark50, 0.4)};
+    ${({ isDarkMode }) =>
+      colors_NOT_REACTIVE.alpha(
+        isDarkMode
+          ? colors_NOT_REACTIVE.shadow
+          : colors_NOT_REACTIVE.blueGreyDark50,
+        0.4
+      )};
 `;
 
 const contentContainerStyle = { flex: 1 };
@@ -89,10 +94,11 @@ const VersionStampContainer = styled(Column).attrs({
 `;
 
 const WarningIcon = styled(Icon).attrs({
-  color: colors.orangeLight,
+  color: colors_NOT_REACTIVE.orangeLight,
   name: 'warning',
 })`
-  box-shadow: 0px 4px 6px ${colors.alpha(colors.orangeLight, 0.4)};
+  box-shadow: 0px 4px 6px
+    ${colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.orangeLight, 0.4)};
   margin-top: 1;
 `;
 
@@ -186,7 +192,7 @@ export default function SettingsSection({
         {canBeBackedUp && (
           <ListItem
             icon={
-              <SettingIcon source={darkMode ? BackupIconDark : BackupIcon} />
+              <SettingIcon source={isDarkMode ? BackupIconDark : BackupIcon} />
             }
             label="Backup"
             onPress={onPressBackup}
@@ -196,7 +202,10 @@ export default function SettingsSection({
           >
             <ListItemArrowGroup>
               {areBackedUp ? (
-                <CheckmarkIcon color={backupStatusColor} />
+                <CheckmarkIcon
+                  color={backupStatusColor}
+                  isDarkMode={isDarkMode}
+                />
               ) : (
                 <WarningIcon />
               )}
@@ -205,7 +214,9 @@ export default function SettingsSection({
         )}
         <ListItem
           icon={
-            <SettingIcon source={darkMode ? CurrencyIconDark : CurrencyIcon} />
+            <SettingIcon
+              source={isDarkMode ? CurrencyIconDark : CurrencyIcon}
+            />
           }
           label="Currency"
           onPress={onPressCurrency}
@@ -215,7 +226,7 @@ export default function SettingsSection({
         </ListItem>
         <ListItem
           icon={
-            <SettingIcon source={darkMode ? NetworkIconDark : NetworkIcon} />
+            <SettingIcon source={isDarkMode ? NetworkIconDark : NetworkIcon} />
           }
           label="Network"
           onPress={onPressNetwork}
@@ -227,7 +238,9 @@ export default function SettingsSection({
         </ListItem>
         <ListItem
           icon={
-            <SettingIcon source={darkMode ? darkModeIconDark : darkModeIcon} />
+            <SettingIcon
+              source={isDarkMode ? darkModeIconDark : darkModeIcon}
+            />
           }
           label="Dark Mode"
           testID="darkmode-section"

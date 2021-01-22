@@ -3,7 +3,7 @@ import styled from 'styled-components/primitives';
 import { ButtonPressAnimation } from '../animations';
 import { Row } from '../layout';
 import { Text } from '../text';
-import { colors, padding } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
 
 const Container = styled(Row).attrs({
   align: 'center',
@@ -17,7 +17,9 @@ const WalletOption = ({ editMode, label, onPress }) => (
   <Container as={ButtonPressAnimation} disabled={editMode} onPress={onPress}>
     <Text
       color={
-        editMode ? colors.alpha(colors.blueGreyDark, 0.2) : colors.appleBlue
+        editMode
+          ? colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.2)
+          : colors_NOT_REACTIVE.appleBlue
       }
       letterSpacing="roundedMedium"
       size="lmedium"

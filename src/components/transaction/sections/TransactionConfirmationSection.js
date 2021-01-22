@@ -6,10 +6,10 @@ import { Centered, Column, RowWithMargins } from '../../layout';
 import { Text, TruncatedText } from '../../text';
 import TransactionSheet from '../TransactionSheet';
 import { formatFixedDecimals } from '@rainbow-me/helpers/utilities';
-import { colors, padding } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
 
 const Amount = styled(TruncatedText).attrs({
-  color: colors.dark,
+  color: colors_NOT_REACTIVE.dark,
   letterSpacing: 'roundedTight',
   size: 'larger',
   uppercase: true,
@@ -17,7 +17,7 @@ const Amount = styled(TruncatedText).attrs({
 })``;
 
 const AmountRow = styled(LinearGradient).attrs({
-  colors: colors.gradients.lighterGrey,
+  colors: colors_NOT_REACTIVE.gradients.lighterGrey,
   end: { x: 0, y: 0.5 },
   start: { x: 1, y: 0.5 },
 })`
@@ -30,7 +30,7 @@ const AmountRow = styled(LinearGradient).attrs({
 
 const NativeAmount = styled(Text).attrs({
   align: 'center',
-  color: colors.dark,
+  color: colors_NOT_REACTIVE.dark,
   letterSpacing: 'zero',
   size: 'headline',
   weight: 'heavy',

@@ -24,11 +24,11 @@ import {
   isDappAuthenticated,
 } from '@rainbow-me/helpers/dappNameHandler';
 import { useNavigation } from '@rainbow-me/navigation';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 const DappLogo = styled(RequestVendorLogoIcon).attrs({
-  backgroundColor: colors.transparent,
+  backgroundColor: colors_NOT_REACTIVE.transparent,
   borderRadius: 18,
   showLargeShadow: true,
   size: 60,
@@ -131,7 +131,10 @@ export default function WalletConnectApprovalSheet() {
           <Row>
             <Text
               align="center"
-              color={colors.alpha(colors.blueGreyDark, 0.6)}
+              color={colors_NOT_REACTIVE.alpha(
+                colors_NOT_REACTIVE.blueGreyDark,
+                0.6
+              )}
               lineHeight={29}
               size="big"
             >
@@ -147,19 +150,22 @@ export default function WalletConnectApprovalSheet() {
             {isAuthenticated ? `􀇻 ${formattedDappUrl}` : formattedDappUrl}
           </Text>
         </Row>
-        <Divider color={colors.rowDividerLight} inset={[0, 84]} />
+        <Divider color={colors_NOT_REACTIVE.rowDividerLight} inset={[0, 84]} />
       </Centered>
       <SheetActionButtonRow>
         <SheetActionButton
-          color={colors.white}
+          color={colors_NOT_REACTIVE.white}
           label="Cancel"
           onPress={handleCancel}
           size="big"
-          textColor={colors.alpha(colors.blueGreyDark, 0.8)}
+          textColor={colors_NOT_REACTIVE.alpha(
+            colors_NOT_REACTIVE.blueGreyDark,
+            0.8
+          )}
           weight="bold"
         />
         <SheetActionButton
-          color={colors.appleBlue}
+          color={colors_NOT_REACTIVE.appleBlue}
           label="Connect"
           onPress={handleConnect}
           size="big"

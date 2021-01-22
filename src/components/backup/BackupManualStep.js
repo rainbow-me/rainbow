@@ -14,7 +14,7 @@ import {
   useWallets,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import { colors, padding } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
 
 const Content = styled(Column).attrs({
   align: 'center',
@@ -42,7 +42,7 @@ const Masthead = styled(Column).attrs({
 
 const MastheadDescription = styled(Text).attrs({
   align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.6),
+  color: colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.6),
   lineHeight: 'looser',
   size: 'large',
 })`
@@ -118,7 +118,7 @@ export default function BackupManualStep() {
         {secretLoaded && (
           <View marginTop={30}>
             <SheetActionButton
-              color={colors.appleBlue}
+              color={colors_NOT_REACTIVE.appleBlue}
               fullWidth
               label={`􀁣 I’ve saved ${
                 type === WalletTypes.privateKey ? 'my key' : 'these words'

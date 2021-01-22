@@ -2,13 +2,13 @@ import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import styled from 'styled-components/primitives';
 import { TruncatedText } from './text';
-import { colors, padding } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
 
 const borderRadius = 10.5;
 
 const Gradient = styled(RadialGradient).attrs({
   center: [0, borderRadius],
-  colors: colors.gradients.lightGrey,
+  colors: colors_NOT_REACTIVE.gradients.lightGrey,
 })`
   ${padding(2, 6)};
   border-radius: ${borderRadius};
@@ -20,7 +20,7 @@ export default function Pill({ children, ...props }) {
     <Gradient {...props}>
       <TruncatedText
         align="center"
-        color={colors.alpha(colors.blueGreyDark, 0.5)}
+        color={colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.5)}
         letterSpacing="uppercase"
         size="smedium"
         weight="semibold"

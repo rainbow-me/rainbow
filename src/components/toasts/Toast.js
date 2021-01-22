@@ -8,7 +8,12 @@ import { Icon } from '../icons';
 import { RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';
 import { useDimensions } from '@rainbow-me/hooks';
-import { colors, padding, position, shadow } from '@rainbow-me/styles';
+import {
+  colors_NOT_REACTIVE,
+  padding,
+  position,
+  shadow,
+} from '@rainbow-me/styles';
 
 const springConfig = {
   damping: 14,
@@ -25,7 +30,7 @@ const Container = styled(RowWithMargins).attrs({
 })`
   ${padding(9, 10, 11, 10)};
   ${position.centered};
-  ${shadow.build(0, 6, 10, colors.shadow, 0.14)};
+  ${shadow.build(0, 6, 10, colors_NOT_REACTIVE.shadow, 0.14)};
   background-color: ${({ color }) => color};
   border-radius: 20;
   bottom: ${({ insets }) => (insets.bottom || 40) + 3};
@@ -45,14 +50,14 @@ export function ToastsContainer({ children }) {
 
 export default function Toast({
   children,
-  color = colors.dark,
+  color = colors_NOT_REACTIVE.dark,
   distance = 60,
   targetTranslate = 0,
   icon,
   isVisible,
   testID,
   text,
-  textColor = colors.white,
+  textColor = colors_NOT_REACTIVE.white,
   ...props
 }) {
   const { width: deviceWidth } = useDimensions();

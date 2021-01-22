@@ -1,10 +1,10 @@
 import React from 'react';
 import { Path } from 'react-native-svg';
 import Svg from '../Svg';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const ArrowIcon = (
-  { color = colors.black, height = 10, width = 10, ...props },
+  { color = colors_NOT_REACTIVE.black, height = 10, width = 10, ...props },
   ref
 ) => (
   <Svg height={height} ref={ref} width={width} {...props}>

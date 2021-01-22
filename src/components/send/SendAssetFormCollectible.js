@@ -6,7 +6,7 @@ import { useDimensions, useImageMetadata } from '../../hooks';
 import { OpacityToggler } from '../animations';
 import { Column, ColumnWithMargins } from '../layout';
 import { UniqueTokenCard } from '../unique-token';
-import { colors, padding, position } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, padding, position } from '@rainbow-me/styles';
 
 const defaultImageDimensions = { height: 512, width: 512 };
 
@@ -25,7 +25,7 @@ const Footer = styled(Column).attrs({ justify: 'end' })`
 `;
 
 const Gradient = styled(LinearGradient).attrs(({ isTallPhone }) => ({
-  colors: colors.gradients.sendBackground,
+  colors: colors_NOT_REACTIVE.gradients.sendBackground,
   end: { x: 0.5, y: isTallPhone ? 0.2 : 0.4 },
   pointerEvents: 'none',
   start: { x: 0.5, y: 0 },
@@ -46,7 +46,7 @@ const SendFormUniqueTokenCard = styled(UniqueTokenCard).attrs({
   enableHapticFeedback: false,
   resizeMode: 'contain',
   scaleTo: 1,
-  shadow: [0, 10, 25, colors.shadow, 0.4],
+  shadow: [0, 10, 25, colors_NOT_REACTIVE.shadow, 0.4],
 })`
   opacity: 1;
 `;

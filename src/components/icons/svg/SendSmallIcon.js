@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Path } from 'react-native-svg';
 import Svg from '../Svg';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const SendSmallIcon = ({ color, ...props }) => (
   <Svg height="10" viewBox="0 0 10 10" width="10" {...props}>
@@ -19,7 +19,7 @@ SendSmallIcon.propTypes = {
 };
 
 SendSmallIcon.defaultProps = {
-  color: colors.black,
+  color: colors_NOT_REACTIVE.black,
 };
 
 export default SendSmallIcon;

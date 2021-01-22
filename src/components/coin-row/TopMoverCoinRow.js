@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components/primitives';
-import { colors, fonts } from '../../styles';
+import { colors_NOT_REACTIVE, fonts } from '../../styles';
 import { magicMemo, measureText } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
@@ -63,7 +63,12 @@ const TopMoverCoinRow = ({ address, change, name, onPress, price, symbol }) => (
         />
       </Centered>
       <ColumnWithMargins margin={2}>
-        <TopMoverTitle color={colors.alpha(colors.blueGreyDark, 0.8)}>
+        <TopMoverTitle
+          color={colors_NOT_REACTIVE.alpha(
+            colors_NOT_REACTIVE.blueGreyDark,
+            0.8
+          )}
+        >
           {name}
         </TopMoverTitle>
         <BottomRowText>{price}</BottomRowText>
@@ -71,7 +76,11 @@ const TopMoverCoinRow = ({ address, change, name, onPress, price, symbol }) => (
       <ColumnWithMargins align="end" justify="end" margin={2}>
         <TopMoverTitle
           align="right"
-          color={parseFloat(change) > 0 ? colors.green : colors.red}
+          color={
+            parseFloat(change) > 0
+              ? colors_NOT_REACTIVE.green
+              : colors_NOT_REACTIVE.red
+          }
         >
           {change}
         </TopMoverTitle>

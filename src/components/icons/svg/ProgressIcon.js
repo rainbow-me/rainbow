@@ -4,7 +4,7 @@ import Animated from 'react-native-reanimated';
 import { G, Path } from 'react-native-svg';
 import { Centered } from '../../layout';
 import Svg from '../Svg';
-import { colors, position } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
 
 const AnimatedSvg = Animated.createAnimatedComponent(Svg);
 
@@ -113,9 +113,9 @@ ProgressIcon.propTypes = {
 };
 
 ProgressIcon.defaultProps = {
-  color: colors.alpha(colors.sendScreen.grey, 0.3),
+  color: colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.sendScreen.grey, 0.3),
   progress: 0,
-  progressColor: colors.whiteLabel,
+  progressColor: colors_NOT_REACTIVE.whiteLabel,
   size: 29,
   strokeWidth: 2,
 };

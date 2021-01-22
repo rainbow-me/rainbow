@@ -4,10 +4,10 @@ import { magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder } from '../layout';
 import UniqueTokenImage from './UniqueTokenImage';
-import { colors, shadow as shadowUtil } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, shadow as shadowUtil } from '@rainbow-me/styles';
 
 const UniqueTokenCardBorderRadius = 20;
-const UniqueTokenCardShadow = [0, 2, 6, colors.shadow, 0.08];
+const UniqueTokenCardShadow = [0, 2, 6, colors_NOT_REACTIVE.shadow, 0.08];
 
 const Container = styled.View`
   ${({ shadow }) => shadowUtil.build(...shadow)};
@@ -51,7 +51,7 @@ const UniqueTokenCard = ({
     >
       <Content {...props} height={height} style={style} width={width}>
         <UniqueTokenImage
-          backgroundColor={background || colors.lightestGrey}
+          backgroundColor={background || colors_NOT_REACTIVE.lightestGrey}
           imageUrl={image_preview_url}
           item={item}
           resizeMode={resizeMode}

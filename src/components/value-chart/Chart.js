@@ -20,7 +20,7 @@ import { ChartDot, ChartPath, useChartData } from '@rainbow-me/animated-charts';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
-import { colors, position } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
 
 export const { width: WIDTH } = Dimensions.get('window');
 
@@ -76,7 +76,10 @@ const Overlay = styled(Animated.View).attrs({
 })`
   ${position.cover};
   align-items: center;
-  background-color: ${colors.alpha(colors.white, 0.9)};
+  background-color: ${colors_NOT_REACTIVE.alpha(
+    colors_NOT_REACTIVE.white,
+    0.9
+  )};
   justify-content: center;
 `;
 
@@ -221,7 +224,7 @@ export default function ChartWrapper({
               strokeWidth={3.5}
               width={WIDTH}
             />
-            <Dot color={colors.alpha(color, 0.03)} size={65}>
+            <Dot color={colors_NOT_REACTIVE.alpha(color, 0.03)} size={65}>
               <InnerDot color={color} />
             </Dot>
             <Overlay style={overlayStyle}>

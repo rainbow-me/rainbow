@@ -3,7 +3,7 @@ import React from 'react';
 import { View } from 'react-native';
 import { Easing } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '../animations';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const ColorCircle = ({ backgroundColor, isSelected, onPressColor }) => (
   <View align="center" height={42} justify="center" width={39}>
@@ -23,7 +23,7 @@ const ColorCircle = ({ backgroundColor, isSelected, onPressColor }) => (
         borderRadius={15}
         height={24}
         isSelected={isSelected}
-        shadowColor={colors.black}
+        shadowColor={colors_NOT_REACTIVE.black}
         shadowOffset={{ height: 4, width: 0 }}
         shadowOpacity={0.2}
         shadowRadius={5}

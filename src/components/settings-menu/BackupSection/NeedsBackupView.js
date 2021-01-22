@@ -13,7 +13,7 @@ import { useWallets } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors, fonts, padding } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, fonts, padding } from '@rainbow-me/styles';
 
 const BackupButton = styled(RainbowButton).attrs({
   type: 'small',
@@ -31,7 +31,7 @@ const Content = styled(Centered).attrs({
 
 const DescriptionText = styled(Text).attrs({
   align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.5),
+  color: colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.5),
   lineHeight: 'loosest',
   size: 'large',
 })`
@@ -41,7 +41,7 @@ const DescriptionText = styled(Text).attrs({
 
 const Subtitle = styled(Text).attrs({
   align: 'center',
-  color: colors.orangeLight,
+  color: colors_NOT_REACTIVE.orangeLight,
   size: fonts.size.smedium,
   weight: fonts.weight.medium,
 })`
@@ -124,10 +124,13 @@ export default function NeedsBackupView() {
           />
           <SheetActionButton
             androidWidth={220}
-            color={colors.white}
+            color={colors_NOT_REACTIVE.white}
             label="🤓 Back up manually"
             onPress={onManualBackup}
-            textColor={colors.alpha(colors.blueGreyDark, 0.8)}
+            textColor={colors_NOT_REACTIVE.alpha(
+              colors_NOT_REACTIVE.blueGreyDark,
+              0.8
+            )}
           />
         </Column>
       </Content>
