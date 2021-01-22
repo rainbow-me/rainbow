@@ -734,7 +734,7 @@ const TransactionConfirmationScreen = () => {
   }
 
   if (isAndroidApprovalRequest) {
-    sheetHeight += 120;
+    sheetHeight += 140;
   }
 
   return (
@@ -805,7 +805,9 @@ const TransactionConfirmationScreen = () => {
                 {methodName || 'Placeholder'}
               </Text>
             </Centered>
-            <Divider color={colors.rowDividerLight} inset={[0, 143.5]} />
+            {(!keyboardVisible || ios) && (
+              <Divider color={colors.rowDividerLight} inset={[0, 143.5]} />
+            )}
             {renderTransactionSection()}
             {renderTransactionButtons()}
             <RowWithMargins css={padding(0, 24, 30)} margin={15}>
