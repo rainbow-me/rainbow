@@ -198,6 +198,10 @@ export default function SettingsModal() {
                 headerLeft: props => <BackButton {...props} textChevron />,
               }),
             }),
+            headerTitleStyle: {
+              ...settingsOptions.headerTitleStyle,
+              color: colors.dark,
+            },
           }}
         >
           <Stack.Screen

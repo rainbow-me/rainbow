@@ -2,12 +2,12 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { pure } from 'recompact';
 import Caret from '../../assets/family-dropdown-arrow.png';
+import { withThemeContext } from '../../context/ThemeContext';
 import { RowWithMargins } from '../layout';
 import { Text } from '../text';
 import { ImgixImage } from '@rainbow-me/images';
-import { colors } from '@rainbow-me/styles';
 
-const ListItemArrowGroup = ({ children }) => (
+const ListItemArrowGroup = ({ children, colors }) => (
   <RowWithMargins align="center" flex={1} justify="end" margin={7}>
     {typeof children === 'string' ? (
       <Text
@@ -36,4 +36,4 @@ ListItemArrowGroup.propTypes = {
   children: PropTypes.node,
 };
 
-export default pure(ListItemArrowGroup);
+export default pure(withThemeContext(ListItemArrowGroup));

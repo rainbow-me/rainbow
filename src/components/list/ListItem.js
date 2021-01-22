@@ -2,6 +2,7 @@ import { isString } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
+import { withThemeContext } from '../../context/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered, Row, RowWithMargins } from '../layout';
@@ -28,6 +29,7 @@ const propTypes = {
 };
 
 const enhance = compose(
+  withThemeContext,
   onlyUpdateForKeys(Object.keys(propTypes)),
   withHandlers({
     onPress: ({ onPress, value }) => () => {
@@ -48,6 +50,7 @@ const ListItem = enhance(
     label,
     onPress,
     testID,
+    colors,
     ...props
   }) => (
     <ButtonPressAnimation
@@ -71,7 +74,12 @@ const ListItem = enhance(
           margin={iconMargin}
         >
           {icon && <Centered>{renderIcon(icon)}</Centered>}
-          <TruncatedText flex={1} paddingRight={15} size="large">
+          <TruncatedText
+            color={colors.dark}
+            flex={1}
+            paddingRight={15}
+            size="large"
+          >
             {label}
           </TruncatedText>
         </RowWithMargins>

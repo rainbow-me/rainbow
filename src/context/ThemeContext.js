@@ -55,3 +55,13 @@ export const MainThemeProvider = props => {
 
 // Custom hook to get the theme object returns {isDarkMode, colors, setTheme}
 export const useTheme = () => useContext(ThemeContext);
+
+export function withThemeContext(Component) {
+  return function WrapperComponent(props) {
+    return (
+      <ThemeContext.Consumer>
+        {state => <Component {...props} {...state} />}
+      </ThemeContext.Consumer>
+    );
+  };
+}
