@@ -7,3 +7,4 @@ export {
   estimateWithdrawFromCompound,
   createWithdrawFromCompoundRap,
 } from './withdrawFromCompound';
+export { executeRap } from './common';
