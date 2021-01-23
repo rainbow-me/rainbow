@@ -57,7 +57,7 @@ export const estimateUnlockAndSwap = async ({
   return reduce(gasLimits, (acc, limit) => add(acc, limit), '0');
 };
 
-const createUnlockAndSwapRap = async ({
+export const createUnlockAndSwapRap = async ({
   callback,
   inputAmount,
   inputCurrency,
@@ -107,5 +107,3 @@ const createUnlockAndSwapRap = async ({
   dispatch(rapsAddOrUpdate(newRap.id, newRap));
   return newRap;
 };
-
-export default createUnlockAndSwapRap;

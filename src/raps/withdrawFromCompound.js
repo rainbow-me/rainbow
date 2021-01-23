@@ -6,7 +6,7 @@ import logger from 'logger';
 
 export const estimateWithdrawFromCompound = () => ethUnits.basic_withdrawal;
 
-const createWithdrawFromCompoundRap = ({
+export const createWithdrawFromCompoundRap = ({
   callback,
   inputAmount,
   inputCurrency,
@@ -37,5 +37,3 @@ const createWithdrawFromCompoundRap = ({
   logger.log('[withdraw rap] new rap!', newRap);
   return newRap;
 };
-
-export default createWithdrawFromCompoundRap;

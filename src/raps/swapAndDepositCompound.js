@@ -84,7 +84,7 @@ export const estimateSwapAndDepositCompound = async ({
   return reduce(gasLimits, (acc, limit) => add(acc, limit), '0');
 };
 
-const createSwapAndDepositCompoundRap = async ({
+export const createSwapAndDepositCompoundRap = async ({
   callback,
   inputAmount,
   inputCurrency,
@@ -179,5 +179,3 @@ const createSwapAndDepositCompoundRap = async ({
   logger.log('[swap and deposit] new rap!', newRap);
   return newRap;
 };
-
-export default createSwapAndDepositCompoundRap;
