@@ -3,10 +3,7 @@ import { captureException } from '@sentry/react-native';
 import { get, join, map } from 'lodash';
 import { rapsAddOrUpdate } from '../redux/raps';
 import store from '../redux/store';
-import depositCompound from './actions/depositCompound';
-import swap from './actions/swap';
-import unlock from './actions/unlock';
-import withdrawCompound from './actions/withdrawCompound';
+import { depositCompound, swap, unlock, withdrawCompound } from './actions';
 import logger from 'logger';
 
 const NOOP = () => undefined;

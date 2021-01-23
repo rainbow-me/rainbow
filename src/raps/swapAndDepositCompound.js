@@ -1,16 +1,20 @@
 import { concat, reduce } from 'lodash';
-import { estimateSwapGasLimit } from '../handlers/uniswap';
-import { add } from '../helpers/utilities';
-import { rapsAddOrUpdate } from '../redux/raps';
-import store from '../redux/store';
-import { ethUnits, savingsAssetsListByUnderlying } from '../references';
-import { UNISWAP_V2_ROUTER_ADDRESS } from '../references/uniswap';
-import { contractUtils } from '../utils';
-
-import { getDepositGasLimit } from './actions/depositCompound';
-import { isValidSwapInput } from './actions/swap';
-import { assetNeedsUnlocking } from './actions/unlock';
+import {
+  assetNeedsUnlocking,
+  getDepositGasLimit,
+  isValidSwapInput,
+} from './actions';
 import { createNewAction, createNewRap, RapActionTypes } from './common';
+import { estimateSwapGasLimit } from '@rainbow-me/handlers/uniswap';
+import { rapsAddOrUpdate } from '@rainbow-me/redux/raps';
+import store from '@rainbow-me/redux/store';
+import {
+  ethUnits,
+  savingsAssetsListByUnderlying,
+  UNISWAP_V2_ROUTER_ADDRESS,
+} from '@rainbow-me/references';
+import { add } from '@rainbow-me/utilities';
+import { contractUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 export const estimateSwapAndDepositCompound = async ({

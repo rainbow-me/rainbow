@@ -25,7 +25,7 @@ const NOOP = () => undefined;
 export const isValidSwapInput = ({ inputCurrency, outputCurrency }) =>
   !!inputCurrency && !!outputCurrency;
 
-export const findSwapOutputAmount = (receipt, accountAddress) => {
+const findSwapOutputAmount = (receipt, accountAddress) => {
   const { logs } = receipt;
   const transferLog = find(logs, log => {
     const { topics } = log;

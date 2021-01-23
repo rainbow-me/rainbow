@@ -1,7 +1,7 @@
-import { rapsAddOrUpdate } from '../redux/raps';
-import store from '../redux/store';
-import { ethUnits } from '../references';
 import { createNewAction, createNewRap, RapActionTypes } from './common';
+import { rapsAddOrUpdate } from '@rainbow-me/redux/raps';
+import store from '@rainbow-me/redux/store';
+import { ethUnits } from '@rainbow-me/references';
 import logger from 'logger';
 
 export const estimateWithdrawFromCompound = () => ethUnits.basic_withdrawal;
