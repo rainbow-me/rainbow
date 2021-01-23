@@ -119,6 +119,23 @@ const vendor = {
 const isColorLight = targetColor =>
   chroma(targetColor || base.white).luminance() > 0.5;
 
+const isColorDark = targetColor => {
+  //console.log('contrast: ', chroma.contrast(targetColor, darkModeColors.darkModeDark))
+  //console.log('luminance: ', chroma(targetColor || base.white).luminance());
+
+  return (
+    chroma.contrast(targetColor, darkModeColors.darkModeDark) < 1.5 ||
+    chroma(targetColor || base.white).luminance() < 0.11
+  );
+};
+
+const brighten = targetColor => {
+  const newnew = chroma(targetColor)
+    .brighten(2)
+    .hex();
+  return newnew;
+};
+
 const isHex = (color = '') => color.length >= 3 && color.charAt(0) === '#';
 const isRGB = (color = '') => toLower(color).substring(0, 3) === 'rgb';
 
@@ -203,9 +220,11 @@ const colors = {
   alpha: buildRgba,
   assetIcon,
   avatarColor,
+  brighten,
   getFallbackTextColor,
   getTextColorForBackground,
   gradients,
+  isColorDark,
   isColorLight,
   listHeaders,
   sendScreen,
