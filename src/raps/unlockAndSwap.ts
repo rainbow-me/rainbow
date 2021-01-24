@@ -77,7 +77,7 @@ export const createUnlockAndSwapRap = async ({
   tradeDetails,
 }: {
   callback: () => void;
-  inputAmount: string | null;
+  inputAmount: string;
   inputCurrency: Asset;
   outputCurrency: Asset;
   selectedGasPrice: SelectedGasPrice;
