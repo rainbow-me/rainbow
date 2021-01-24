@@ -8,6 +8,7 @@ import {
 } from 'react-native-gesture-handler';
 import Animated, { Easing, timing, Value } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
+import { useTheme } from '../../../context/ThemeContext';
 import BiometryTypes from '../../../helpers/biometryTypes';
 import { useBiometryType } from '../../../hooks';
 import { haptics } from '../../../utils';
@@ -75,10 +76,12 @@ const calculateReverseDuration = proc(longPressProgress =>
   multiply(divide(longPressProgress, 100), longPressProgressDurationMs)
 );
 
-const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs({
-  color: colors_NOT_REACTIVE.whiteLabel,
-  size: 31,
-})`
+const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
+  ({ theme: { colors } }) => ({
+    color: colors.whiteLabel,
+    size: 31,
+  })
+)`
   left: 15;
   position: absolute;
 `;
@@ -103,7 +106,6 @@ class HoldToAuthorizeButton extends PureComponent {
   };
 
   static defaultProps = {
-    backgroundColor: colors_NOT_REACTIVE.appleBlue,
     disabled: false,
     theme: 'light',
   };
@@ -191,6 +193,7 @@ class HoldToAuthorizeButton extends PureComponent {
     const {
       backgroundColor,
       biometryType,
+      colors,
       children,
       disabled,
       disabledBackgroundColor,
@@ -209,7 +212,7 @@ class HoldToAuthorizeButton extends PureComponent {
     const { isAuthorizing } = this.state;
     const androidWidth = Dimensions.get('window').width - 30;
 
-    let bgColor = backgroundColor;
+    let bgColor = backgroundColor || colors.appleBlue;
     if (disabled) {
       bgColor = disabledBackgroundColor || ButtonDisabledBgColor[theme];
     }
@@ -268,6 +271,7 @@ class HoldToAuthorizeButton extends PureComponent {
 
 const HoldToAuthorizeButtonWithBiometrics = ({ label, testID, ...props }) => {
   const biometryType = useBiometryType();
+  const { colors } = useTheme();
   const enableLongPress =
     biometryType === BiometryTypes.FaceID ||
     biometryType === BiometryTypes.Face ||
@@ -276,6 +280,7 @@ const HoldToAuthorizeButtonWithBiometrics = ({ label, testID, ...props }) => {
     <HoldToAuthorizeButton
       {...props}
       biometryType={biometryType}
+      colors={colors}
       enableLongPress={enableLongPress}
       label={enableLongPress ? label : label.replace('Hold', 'Tap')}
       testID={testID}

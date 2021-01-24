@@ -1,11 +1,11 @@
 import React from 'react';
 import styled from 'styled-components/primitives';
+import { useTheme } from '../../context/ThemeContext';
 import { Icon } from '../icons';
 import { RowWithMargins } from '../layout';
 import { Text } from '../text';
 import BiometryTypes from '@rainbow-me/helpers/biometryTypes';
 import { useBiometryType } from '@rainbow-me/hooks';
-import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const BiometryIcon = styled(Icon).attrs(({ biometryType, color }) => ({
   color,
@@ -25,12 +25,13 @@ const ButtonLabel = styled(Text).attrs(({ color }) => ({
 }))``;
 
 export default function BiometricButtonContent({
-  color = colors_NOT_REACTIVE.appleBlue,
+  color,
   showIcon,
   text,
   testID,
   ...props
 }) {
+  const { colors } = useTheme();
   const biometryType = useBiometryType();
   const showBiometryIcon =
     showIcon &&
@@ -47,7 +48,7 @@ export default function BiometricButtonContent({
       {!android && showBiometryIcon && (
         <BiometryIcon biometryType={biometryType} color={color} />
       )}
-      <ButtonLabel color={color} testID={testID}>
+      <ButtonLabel color={color || colors.appleBlue} testID={testID}>
         {showFaceIDCharacter && '􀎽 '}
         {text}
       </ButtonLabel>

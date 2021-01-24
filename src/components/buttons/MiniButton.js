@@ -45,7 +45,7 @@ export default function MiniButton({
   height,
   ...props
 }) {
-  const { isDarkMode } = useTheme();
+  const { isDarkMode, colors } = useTheme();
 
   const shadows = isDarkMode ? shadowsDark : shadowLight;
 
@@ -61,11 +61,7 @@ export default function MiniButton({
       <View style={{ borderRadius }}>
         <ShadowStack
           {...position.coverAsObject}
-          backgroundColor={
-            disabled
-              ? colors_NOT_REACTIVE.lightGrey
-              : colors_NOT_REACTIVE.appleBlue
-          }
+          backgroundColor={disabled ? colors.lightGrey : colors.appleBlue}
           borderRadius={borderRadius}
           height={height}
           shadows={disabled ? shadows.disabled : shadows.default}

@@ -7,7 +7,7 @@ import { Text } from '../text';
 import CaretImageSource from '@rainbow-me/assets/family-dropdown-arrow.png';
 import { useColorForAsset } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
-import { colors_NOT_REACTIVE, padding, position } from '@rainbow-me/styles';
+import { padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const TokenSelectionButtonHeight = 46;
@@ -22,11 +22,11 @@ const Content = styled(RowWithMargins).attrs({
   z-index: 1;
 `;
 
-const CaretIcon = styled(ImgixImage).attrs({
+const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
   resizeMode: ImgixImage.resizeMode.contain,
   source: CaretImageSource,
-  tintColor: colors_NOT_REACTIVE.whiteLabel,
-})`
+  tintColor: colors.whiteLabel,
+}))`
   height: 18;
   top: 0.5;
   width: 8;
@@ -39,19 +39,19 @@ export default function TokenSelectionButton({
   symbol,
   testID,
 }) {
-  const { isDarkMode } = useTheme();
+  const { isDarkMode, colors } = useTheme();
 
   const colorForAsset = useColorForAsset(
     { address },
-    address ? undefined : colors_NOT_REACTIVE.appleBlue
+    address ? undefined : colors.appleBlue
   );
 
   const shadowsForAsset = useMemo(
     () => [
-      [0, 10, 30, colors_NOT_REACTIVE.shadow, 0.2],
+      [0, 10, 30, colors.shadow, 0.2],
       [0, 5, 15, colorForAsset, isDarkMode ? 0 : 0.4],
     ],
-    [colorForAsset, isDarkMode]
+    [colorForAsset, colors.shadow, isDarkMode]
   );
 
   return (
@@ -59,9 +59,8 @@ export default function TokenSelectionButton({
       borderRadius={borderRadius}
       contentContainerStyle={{
         backgroundColor:
-          isDarkMode &&
-          (colorForAsset === colors_NOT_REACTIVE.dark || '#25292E')
-            ? colors_NOT_REACTIVE.darkModeColors.darkModeDark
+          isDarkMode && (colorForAsset === colors.dark || '#25292E')
+            ? colors.darkModeColors.darkModeDark
             : colorForAsset,
         borderRadius,
       }}
@@ -72,8 +71,8 @@ export default function TokenSelectionButton({
       <ShadowStack
         {...position.coverAsObject}
         backgroundColor={
-          isDarkMode && colorForAsset === colors_NOT_REACTIVE.dark
-            ? colors_NOT_REACTIVE.darkModeColors.darkModeDark
+          isDarkMode && colorForAsset === colors.dark
+            ? colors.darkModeColors.darkModeDark
             : colorForAsset
         }
         borderRadius={borderRadius}
@@ -83,7 +82,7 @@ export default function TokenSelectionButton({
       <Content>
         <Text
           align="center"
-          color={colors_NOT_REACTIVE.whiteLabel}
+          color={colors.whiteLabel}
           size="large"
           testID={testID + '-text'}
           weight="bold"

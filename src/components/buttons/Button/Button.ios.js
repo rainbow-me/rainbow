@@ -5,7 +5,7 @@ import { useTheme } from '../../../context/ThemeContext';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered, InnerBorder } from '../../layout';
 import { Text } from '../../text';
-import { colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 
 const ButtonSizeTypes = {
   default: {
@@ -23,22 +23,19 @@ const ButtonShapeTypes = {
   rounded: 'rounded',
 };
 
-const shadowStyles = isDarkMode => `
-  shadow-color: ${({ theme: { colors } }) =>
-    colors.alpha(
-      isDarkMode
-        ? colors_NOT_REACTIVE.shadow
-        : colors_NOT_REACTIVE.blueGreyDark,
-      0.5
-    )};
+const shadowStyles = (isDarkMode, colors) => `
+  shadow-color: ${colors.alpha(
+    isDarkMode ? colors.shadow : colors.blueGreyDark,
+    0.5
+  )};
   shadow-offset: 0px 4px;
   shadow-opacity: 0.2;
   shadow-radius: 6;
 `;
 
 const Container = styled(Centered)`
-  ${({ showShadow, isDarkMode }) =>
-    showShadow ? shadowStyles(isDarkMode) : ''}
+  ${({ showShadow, theme: { isDarkMode, colors } }) =>
+    showShadow ? shadowStyles(isDarkMode, colors) : ''}
   ${({ size }) => padding(...ButtonSizeTypes[size].padding)}
   background-color: ${({ backgroundColor }) => backgroundColor};
   border-radius: ${({ borderRadius }) => borderRadius};
@@ -49,12 +46,12 @@ const shouldRenderChildrenAsText = children =>
   isArray(children) ? isString(children[0]) : isString(children);
 
 export default function Button({
-  backgroundColor = colors_NOT_REACTIVE.grey,
+  backgroundColor,
   borderColor,
   borderOpacity,
   borderWidth,
   children,
-  color = colors_NOT_REACTIVE.whiteLabel,
+  color,
   containerStyles,
   disabled,
   onPress,
@@ -66,7 +63,7 @@ export default function Button({
   ...props
 }) {
   const borderRadius = type === 'rounded' ? 14 : 50;
-  const { isDarkMode } = useTheme();
+  const { colors } = useTheme();
 
   return (
     <ButtonPressAnimation
@@ -76,17 +73,16 @@ export default function Button({
     >
       <Container
         {...props}
-        backgroundColor={backgroundColor}
+        backgroundColor={backgroundColor || colors.grey}
         borderRadius={borderRadius}
         css={containerStyles}
-        isDarkMode={isDarkMode}
         showShadow={showShadow}
         size={size}
         style={style}
       >
         {shouldRenderChildrenAsText(children) ? (
           <Text
-            color={color}
+            color={color || colors.whiteLabel}
             size={ButtonSizeTypes[size].fontSize}
             weight="semibold"
             {...textProps}

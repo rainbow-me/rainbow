@@ -2,10 +2,11 @@ import { isArray, isString } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components/primitives';
+import { useTheme } from '../../../context/ThemeContext';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered, InnerBorder } from '../../layout';
 import { Text } from '../../text';
-import { colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 
 const ButtonSizeTypes = {
   default: {
@@ -61,6 +62,7 @@ const Button = ({
   ...props
 }) => {
   const borderRadius = type === 'rounded' ? 14 : 50;
+  const { colors } = useTheme();
 
   return (
     <ButtonPressAnimation
@@ -71,7 +73,7 @@ const Button = ({
     >
       <Container
         {...props}
-        backgroundColor={backgroundColor}
+        backgroundColor={backgroundColor || colors.grey}
         css={containerStyles}
         showShadow={showShadow}
         size={size}
@@ -80,7 +82,7 @@ const Button = ({
       >
         {shouldRenderChildrenAsText(children) ? (
           <Text
-            color={color}
+            color={color || colors.white}
             size={ButtonSizeTypes[size].fontSize}
             weight="semibold"
             {...textProps}
@@ -121,8 +123,6 @@ Button.propTypes = {
 };
 
 Button.defaultProps = {
-  backgroundColor: colors_NOT_REACTIVE.grey,
-  color: colors_NOT_REACTIVE.white,
   showShadow: true,
   size: 'default',
   type: ButtonShapeTypes.pill,
