@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components/primitives';
+import { ConfirmExchangeButton } from '../exchange';
 import { GasSpeedButton } from '../gas';
 import { Column, Row } from '../layout';
 import {
@@ -27,7 +28,7 @@ import {
   useKeyboardHeight,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import { margin, padding, position } from '@rainbow-me/styles';
+import { padding, position } from '@rainbow-me/styles';
 import { abbreviations } from '@rainbow-me/utils';
 
 const springConfig = {
@@ -47,10 +48,6 @@ const Footer = styled(Column).attrs({
   shrink: 0,
 })`
   ${padding(6, 0, 0)};
-`;
-
-const GasPositionContainer = styled(Row)`
-  ${margin(0, 5)};
 `;
 
 const Header = styled(Column).attrs({
@@ -86,7 +83,7 @@ function useSwapDetailsClipboardState() {
 }
 
 export default function SwapDetailsState({
-  renderConfirmButton,
+  confirmButtonProps,
   restoreFocusOnSwapModal,
 }) {
   const { setParams } = useNavigation();
@@ -175,8 +172,11 @@ export default function SwapDetailsState({
           onLayout={setContentHeight}
         />
         <Footer onLayout={setFooterHeight}>
-          {renderConfirmButton}
-          <GasPositionContainer>
+          <ConfirmExchangeButton
+            {...confirmButtonProps}
+            testID="swap-details-confirm"
+          />
+          <Row marginHorizontal={5}>
             <GasSpeedButton
               onCustomGasBlur={hideKeyboard}
               onCustomGasFocus={showKeyboard}
@@ -184,7 +184,7 @@ export default function SwapDetailsState({
               theme="light"
               type={ExchangeModalTypes.swap}
             />
-          </GasPositionContainer>
+          </Row>
         </Footer>
         <ToastPositionContainer>
           <CopyToast copiedText={copiedText} copyCount={copyCount} />

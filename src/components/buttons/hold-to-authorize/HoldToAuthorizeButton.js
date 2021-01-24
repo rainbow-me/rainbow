@@ -274,21 +274,29 @@ class HoldToAuthorizeButton extends PureComponent {
   }
 }
 
-const HoldToAuthorizeButtonWithBiometrics = ({ label, testID, ...props }) => {
+const HoldToAuthorizeButtonWithBiometrics = ({
+  disableLongPress,
+  label,
+  ...props
+}) => {
   const biometryType = useBiometryType();
   const deviceDimensions = useDimensions();
 
-  const enableLongPress =
+  const isLongPressAvailableForBiometryType =
     biometryType === BiometryTypes.FaceID ||
     biometryType === BiometryTypes.Face ||
     biometryType === BiometryTypes.none;
+
   return (
     <HoldToAuthorizeButton
       {...props}
       deviceDimensions={deviceDimensions}
-      enableLongPress={enableLongPress}
-      label={enableLongPress ? label : label.replace('Hold', 'Tap')}
-      testID={testID}
+      enableLongPress={!disableLongPress && isLongPressAvailableForBiometryType}
+      label={
+        isLongPressAvailableForBiometryType
+          ? label
+          : label.replace('Hold', 'Tap')
+      }
     />
   );
 };

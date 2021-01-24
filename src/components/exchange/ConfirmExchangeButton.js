@@ -22,7 +22,6 @@ const shadows = {
 };
 
 const ConfirmButton = styled(HoldToAuthorizeButton).attrs({
-  disabledBackgroundColor: colors.grey20,
   hideInnerBorder: true,
   parentHorizontalPadding: paddingHorizontal,
   theme: 'dark',
@@ -38,12 +37,11 @@ const Container = styled(Centered)`
 export default function ConfirmExchangeButton({
   asset,
   disabled,
-  isAuthorizing,
   isSufficientBalance,
   isSufficientLiquidity,
+  onPressViewDetails,
   onSubmit,
   slippage,
-  testID,
   type = ExchangeModalTypes.swap,
   ...props
 }) {
@@ -51,6 +49,14 @@ export default function ConfirmExchangeButton({
   const colorForAsset = useColorForAsset(asset);
   const { isSufficientGas } = useGas();
   const { isHighSlippage } = useSlippageDetails(slippage);
+
+  const shadowsForAsset = useMemo(
+    () => [
+      [0, 10, 30, colors.dark, 0.2],
+      [0, 5, 15, colorForAsset, 0.4],
+    ],
+    [colorForAsset]
+  );
 
   const isSwapDetailsRoute = routeName === Routes.SWAP_DETAILS_SHEET;
 
@@ -81,28 +87,19 @@ export default function ConfirmExchangeButton({
     !isSufficientGas ||
     !isSufficientLiquidity;
 
-  const showBiometryIcon =
-    !isDisabled && !isHighSlippage && !isSwapDetailsRoute;
-
-  const shadowsForAsset = useMemo(
-    () => [
-      [0, 10, 30, colors.dark, 0.2],
-      [0, 5, 15, colorForAsset, 0.4],
-    ],
-    [colorForAsset]
-  );
+  const shouldOpenSwapDetails = isHighSlippage && !isSwapDetailsRoute;
 
   return (
     <Container>
       <ConfirmButton
         backgroundColor={colorForAsset}
+        disableLongPress={shouldOpenSwapDetails}
         disabled={isDisabled}
         disabledBackgroundColor={
           isSwapDetailsRoute ? colors.blueGreyDark50 : colors.grey20
         }
-        isAuthorizing={isAuthorizing}
         label={label}
-        onLongPress={onSubmit}
+        onLongPress={shouldOpenSwapDetails ? onPressViewDetails : onSubmit}
         shadows={
           isSwapDetailsRoute
             ? isDisabled
@@ -110,8 +107,7 @@ export default function ConfirmExchangeButton({
               : shadowsForAsset
             : shadows.default
         }
-        showBiometryIcon={showBiometryIcon}
-        testID={testID}
+        showBiometryIcon={!isDisabled && !isHighSlippage}
         {...props}
       />
     </Container>

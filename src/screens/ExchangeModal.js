@@ -3,13 +3,13 @@ import React, {
   Fragment,
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from 'react';
 import { Keyboard } from 'react-native';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import styled from 'styled-components/primitives';
+import { useMemoOne } from 'use-memo-one';
 import { dismissingScreenListener } from '../../shim';
 import {
   ConfirmExchangeButton,
@@ -469,36 +469,31 @@ export default function ExchangeModal({
     navigate,
   ]);
 
-  const renderConfirmButton = useMemo(() => {
-    return (
-      <ConfirmExchangeButton
-        asset={outputCurrency}
-        disabled={!Number(inputAmountDisplay)}
-        isAuthorizing={isAuthorizing}
-        isDeposit={isDeposit}
-        isSufficientBalance={isSufficientBalance}
-        isSufficientLiquidity={isSufficientLiquidity}
-        onSubmit={handleSubmit}
-        slippage={slippage}
-        testID={testID + '-confirm'}
-        type={type}
-      />
-    );
-  }, [
-    handleSubmit,
-    inputAmountDisplay,
-    isAuthorizing,
-    isDeposit,
-    isSufficientBalance,
-    isSufficientLiquidity,
-    outputCurrency,
-    slippage,
-    testID,
-    type,
-  ]);
-
-  // logger.prettyLog('tradeDetails', tradeDetails);
-  // logger.prettyLog('extraTradeDetails', extraTradeDetails);
+  const confirmButtonProps = useMemoOne(
+    () => ({
+      asset: outputCurrency,
+      disabled: !Number(inputAmountDisplay),
+      isAuthorizing,
+      isDeposit,
+      isSufficientBalance,
+      isSufficientLiquidity,
+      onSubmit: handleSubmit,
+      slippage,
+      type,
+    }),
+    [
+      handleSubmit,
+      inputAmountDisplay,
+      isAuthorizing,
+      isDeposit,
+      isSufficientBalance,
+      isSufficientLiquidity,
+      outputCurrency,
+      slippage,
+      testID,
+      type,
+    ]
+  );
 
   const navigateToSwapDetailsModal = useCallback(() => {
     android && Keyboard.dismiss();
@@ -512,13 +507,13 @@ export default function ExchangeModal({
       setParams({ focused: false });
       navigate(Routes.SWAP_DETAILS_SHEET, {
         ...extraTradeDetails,
+        confirmButtonProps,
         inputAmount,
         inputAmountDisplay,
         inputCurrency,
         outputAmount,
         outputAmountDisplay,
         outputCurrency,
-        renderConfirmButton,
         restoreFocusOnSwapModal: () => {
           android &&
             (lastFocusedInputHandle.current = lastFocusedInputHandleTemporary);
@@ -540,6 +535,7 @@ export default function ExchangeModal({
       : Keyboard.addListener('keyboardDidHide', internalNavigate);
   }, [
     category,
+    confirmButtonProps,
     extraTradeDetails,
     inputAmount,
     inputAmountDisplay,
@@ -552,33 +548,22 @@ export default function ExchangeModal({
     outputAmountDisplay,
     outputCurrency,
     outputFieldRef,
-    renderConfirmButton,
     setParams,
     slippage,
     type,
   ]);
 
-  const showDetailsButton = useMemo(() => {
-    return (
-      !isSavings &&
-      inputCurrency?.symbol &&
-      outputCurrency?.symbol &&
-      areTradeDetailsValid &&
-      inputAmount > 0 &&
-      outputAmountDisplay
-    );
-  }, [
-    areTradeDetailsValid,
-    inputAmount,
-    inputCurrency,
-    isSavings,
-    outputAmountDisplay,
-    outputCurrency,
-  ]);
-
   const showConfirmButton = isSavings
     ? !!inputCurrency
     : !!inputCurrency && !!outputCurrency;
+
+  const showDetailsButton =
+    !isSavings &&
+    inputCurrency?.symbol &&
+    outputCurrency?.symbol &&
+    areTradeDetailsValid &&
+    inputAmount > 0 &&
+    outputAmountDisplay;
 
   return (
     <Wrapper>
@@ -606,7 +591,7 @@ export default function ExchangeModal({
               onPressSelectInputCurrency={navigateToSelectInputCurrency}
               setInputAmount={updateInputAmount}
               setNativeAmount={updateNativeAmount}
-              testID={testID + '-input'}
+              testID={`${testID}-input`}
             />
             {showOutputField && (
               <ExchangeOutputField
@@ -617,7 +602,7 @@ export default function ExchangeModal({
                 outputCurrencySymbol={outputCurrency?.symbol}
                 outputFieldRef={outputFieldRef}
                 setOutputAmount={updateOutputAmount}
-                testID={testID + '-output'}
+                testID={`${testID}-output`}
               />
             )}
           </FloatingPanel>
@@ -637,11 +622,17 @@ export default function ExchangeModal({
               slippage={slippage}
             />
           )}
-          {showConfirmButton && renderConfirmButton}
+          {showConfirmButton && (
+            <ConfirmExchangeButton
+              {...confirmButtonProps}
+              onPressViewDetails={navigateToSwapDetailsModal}
+              testID={`${testID}-confirm`}
+            />
+          )}
           <GasSpeedButton
             dontBlur
             onCustomGasBlur={handleCustomGasBlur}
-            testID={testID + '-gas'}
+            testID={`${testID}-gas`}
             type={type}
           />
         </ExchangeFloatingPanels>
