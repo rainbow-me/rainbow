@@ -4,6 +4,7 @@ import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { HeaderHeightWithStatusBar } from '../components/header';
 import { AvatarCircle } from '../components/profile';
 import { deviceUtils } from '../utils';
+import { darkMode } from '@rainbow-me/config/debug';
 import Routes from '@rainbow-me/routes';
 import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
@@ -300,7 +301,9 @@ export const emojiPreset = {
       <Animated.View
         pointerEvents="none"
         style={{
-          backgroundColor: 'rgb(51, 54, 59)',
+          backgroundColor: darkMode
+            ? colors_NOT_REACTIVE.offWhite
+            : 'rgb(51, 54, 59)',
           height: deviceUtils.dimensions.height + 50,
           opacity: backgroundOpacity,
           position: 'absolute',

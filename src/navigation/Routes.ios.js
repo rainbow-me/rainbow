@@ -213,7 +213,7 @@ const MainStack = isNativeStackAvailable
   : NativeStackFallbackNavigator;
 
 function NativeStackNavigator() {
-  const { isDarkMode } = useTheme();
+  const { colors, isDarkMode } = useTheme();
 
   return (
     <NativeStack.Navigator {...nativeStackConfig}>
@@ -222,7 +222,7 @@ function NativeStackNavigator() {
         component={ReceiveModal}
         name={Routes.RECEIVE_MODAL}
         options={{
-          backgroundColor: isDarkMode ? '#25292E' : '#3B3E43',
+          backgroundColor: isDarkMode ? colors.offWhite : '#3B3E43',
           backgroundOpacity: 1,
           customStack: true,
         }}

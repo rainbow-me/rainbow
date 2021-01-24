@@ -189,7 +189,7 @@ const getColorsByTheme = darkMode => {
       savings: ['#1F222A', '#1F222A'],
       searchBar: [buildRgba('#1F222A', 0.4), '#1F222A'],
       sendBackground: ['#12131A00', '#12131AFF'],
-      whiteButton: ['#242731', '#1F222A'],
+      whiteButton: ['#404656', buildRgba('#404656', 0.8)],
     };
 
     listHeaders = {

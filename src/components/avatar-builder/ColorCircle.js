@@ -7,6 +7,7 @@ import { ButtonPressAnimation } from '../animations';
 
 const ColorCircle = ({ backgroundColor, isSelected, onPressColor }) => {
   const { colors } = useTheme();
+
   return (
     <View align="center" height={42} justify="center" width={39}>
       <ButtonPressAnimation
@@ -25,7 +26,7 @@ const ColorCircle = ({ backgroundColor, isSelected, onPressColor }) => {
           borderRadius={15}
           height={24}
           isSelected={isSelected}
-          shadowColor={colors.black}
+          shadowColor={colors.shadowBlack}
           shadowOffset={{ height: 4, width: 0 }}
           shadowOpacity={0.2}
           shadowRadius={5}

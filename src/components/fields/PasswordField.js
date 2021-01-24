@@ -10,11 +10,15 @@ import { colors_NOT_REACTIVE, padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const FieldAccessoryBadgeSize = 22;
-const FieldAccessoryBadgeWrapper = styled(ShadowStack).attrs(({ color }) => ({
-  ...position.sizeAsObject(FieldAccessoryBadgeSize),
-  borderRadius: FieldAccessoryBadgeSize,
-  shadows: [[0, 4, 12, color, 0.4]],
-}))`
+const FieldAccessoryBadgeWrapper = styled(ShadowStack).attrs(
+  ({ theme: { colors, isDarkMode }, color }) => ({
+    ...position.sizeAsObject(FieldAccessoryBadgeSize),
+    borderRadius: FieldAccessoryBadgeSize,
+    shadows: [
+      [0, 4, 12, isDarkMode ? colors.shadow : color, isDarkMode ? 0.1 : 0.4],
+    ],
+  })
+)`
   margin-bottom: 12;
   position: absolute;
   right: 12;
@@ -29,34 +33,29 @@ const StyledTouchable = styled(TouchableWithoutFeedback)`
   ${android ? 'margin-top: -30;' : ''}
 `;
 
-const PasswordInput = styled(Input).attrs({
+const PasswordInput = styled(Input).attrs(({ theme: { colors } }) => ({
   autoCompleteType: 'password',
   blurOnSubmit: false,
   passwordRules: `minlength: ${cloudBackupPasswordMinLength};`,
-  placeholderTextColor: colors_NOT_REACTIVE.alpha(
-    colors_NOT_REACTIVE.blueGreyDark,
-    0.4
-  ),
+  placeholderTextColor: colors.alpha(colors.blueGreyDark, 0.4),
   secureTextEntry: true,
   selectTextOnFocus: true,
   size: 'large',
   type: 'password',
   weight: 'semibold',
-})`
+}))`
   ${padding(0, 40, 2.5, 19)};
   height: 100%;
 `;
 
 const ShadowContainer = styled(ShadowStack).attrs(
-  ({ deviceWidth, isDarkMode }) => ({
-    backgroundColor: isDarkMode
-      ? colors_NOT_REACTIVE.offWhite
-      : colors_NOT_REACTIVE.white,
+  ({ deviceWidth, theme: { colors, isDarkMode } }) => ({
+    backgroundColor: isDarkMode ? colors.offWhite : colors.white,
     borderRadius: 23,
     height: 46,
     shadows: [
-      [0, 5, 15, colors_NOT_REACTIVE.shadow, 0.06],
-      [0, 10, 30, colors_NOT_REACTIVE.shadow, 0.12],
+      [0, 5, 15, colors.shadow, 0.06],
+      [0, 10, 30, colors.shadow, 0.12],
     ],
     width: Math.max(deviceWidth - 130, 245),
   })

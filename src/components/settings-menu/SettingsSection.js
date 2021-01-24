@@ -26,8 +26,8 @@ import BackupIcon from '@rainbow-me/assets/settingsBackup.png';
 import BackupIconDark from '@rainbow-me/assets/settingsBackupDark.png';
 import CurrencyIcon from '@rainbow-me/assets/settingsCurrency.png';
 import CurrencyIconDark from '@rainbow-me/assets/settingsCurrencyDark.png';
-import darkModeIcon from '@rainbow-me/assets/settingsDarkMode.png';
-import darkModeIconDark from '@rainbow-me/assets/settingsDarkModeDark.png';
+import darkModeIcon from '@rainbow-me/assets/settingsDarkmode.png';
+import darkModeIconDark from '@rainbow-me/assets/settingsDarkmodeDark.png';
 import NetworkIcon from '@rainbow-me/assets/settingsNetwork.png';
 import NetworkIconDark from '@rainbow-me/assets/settingsNetworkDark.png';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
@@ -39,7 +39,7 @@ import {
   useWallets,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
-import { colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 import {
   AppleReviewAddress,
   REVIEW_DONE_KEY,
@@ -59,13 +59,8 @@ const CheckmarkIcon = styled(Icon).attrs({
   name: 'checkmarkCircled',
 })`
   box-shadow: 0px 4px 6px
-    ${({ isDarkMode }) =>
-      colors_NOT_REACTIVE.alpha(
-        isDarkMode
-          ? colors_NOT_REACTIVE.shadow
-          : colors_NOT_REACTIVE.blueGreyDark50,
-        0.4
-      )};
+    ${({ theme: { colors, isDarkMode } }) =>
+      colors.alpha(isDarkMode ? colors.shadow : colors.blueGreyDark50, 0.4)};
 `;
 
 const contentContainerStyle = { flex: 1 };
@@ -93,13 +88,13 @@ const VersionStampContainer = styled(Column).attrs({
   padding-bottom: 19;
 `;
 
-const WarningIcon = styled(Icon).attrs({
-  color: colors_NOT_REACTIVE.orangeLight,
+const WarningIcon = styled(Icon).attrs(({ theme: { colors } }) => ({
+  color: colors.orangeLight,
   name: 'warning',
-})`
+}))`
   box-shadow: 0px 4px 6px
-    ${({ theme: { colors } }) =>
-      colors.alpha(colors_NOT_REACTIVE.orangeLight, 0.4)};
+    ${({ theme: { colors, isDarkMode } }) =>
+      isDarkMode ? colors.shadow : colors.alpha(colors.orangeLight, 0.4)};
   margin-top: 1;
 `;
 
