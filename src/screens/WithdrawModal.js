@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import React from 'react';
 import ExchangeModal from './ExchangeModal';
-import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
+import { ExchangeModalTypes } from '@rainbow-me/helpers';
 import { useStatusBarManaging } from '@rainbow-me/navigation';
 import createWithdrawFromCompoundRap, {
   estimateWithdrawFromCompound,
@@ -14,13 +14,13 @@ export default function WithdrawModal(props) {
 
   return (
     <ExchangeModal
-      cTokenBalance={params?.cTokenBalance}
       createRap={createWithdrawFromCompoundRap}
+      cTokenBalance={params?.cTokenBalance}
       defaultInputAsset={params?.defaultInputAsset}
       estimateRap={estimateWithdrawFromCompound}
-      inputHeaderTitle={`Withdraw ${params?.defaultInputAsset?.symbol}`}
       showOutputField={false}
       supplyBalanceUnderlying={params?.supplyBalanceUnderlying}
+      title={`Withdraw ${params?.defaultInputAsset?.symbol}`}
       type={ExchangeModalTypes.withdrawal}
       underlyingPrice={params?.underlyingPrice}
       {...props}

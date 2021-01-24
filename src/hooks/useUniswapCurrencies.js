@@ -50,9 +50,9 @@ const createMissingAsset = (asset, underlyingPrice, priceOfEther) => {
 export default function useUniswapCurrencies({
   category,
   defaultInputAsset,
-  inputHeaderTitle,
   isDeposit,
   isWithdrawal,
+  title,
   type,
   underlyingPrice,
 }) {
@@ -270,9 +270,9 @@ export default function useUniswapCurrencies({
       delayNext();
       navigate(Routes.CURRENCY_SELECT_SCREEN, {
         category,
-        headerTitle: inputHeaderTitle,
         onSelectCurrency: updateInputCurrency,
         restoreFocusOnSwapModal: () => setParams({ focused: true }),
+        title,
         type: CurrencySelectionTypes.input,
       });
       blockInteractions();
@@ -281,9 +281,9 @@ export default function useUniswapCurrencies({
     blockInteractions,
     category,
     dangerouslyGetParent,
-    inputHeaderTitle,
     navigate,
     setParams,
+    title,
     updateInputCurrency,
   ]);
 
@@ -294,9 +294,9 @@ export default function useUniswapCurrencies({
       delayNext();
       navigate(Routes.CURRENCY_SELECT_SCREEN, {
         category,
-        headerTitle: 'Receive',
         onSelectCurrency: updateOutputCurrency,
         restoreFocusOnSwapModal: () => setParams({ focused: true }),
+        title: 'Receive',
         type: CurrencySelectionTypes.output,
       });
       blockInteractions();

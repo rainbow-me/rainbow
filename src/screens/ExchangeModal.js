@@ -17,6 +17,7 @@ import { interpolate } from '../components/animations';
 import {
   ConfirmExchangeButton,
   ExchangeDetailsRow,
+  ExchangeHeader,
   ExchangeInputField,
   ExchangeNotch,
   ExchangeOutputField,
@@ -24,13 +25,8 @@ import {
 import SwapInfo from '../components/exchange/SwapInfo';
 import { FloatingPanel, FloatingPanels } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
+import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
 import {
-  Centered,
-  Column,
-  KeyboardFixedOpenLayout,
-} from '../components/layout';
-import { SheetHandle } from '../components/sheet';
-import { Text } from '../components/text';
 import ExchangeModalCategoryTypes from '@rainbow-me/helpers/exchangeModalCategoryTypes';
 import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
 import isKeyboardOpen from '@rainbow-me/helpers/isKeyboardOpen';
@@ -52,9 +48,8 @@ import { useNavigation } from '@rainbow-me/navigation';
 import { executeRap } from '@rainbow-me/raps/common';
 import { ethUnits } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
-import { colors, padding, position } from '@rainbow-me/styles';
+import { colors, position } from '@rainbow-me/styles';
 import { backgroundTask, isETH, isNewValueForPath } from '@rainbow-me/utils';
-
 import logger from 'logger';
 
 const AnimatedFloatingPanels = Animated.createAnimatedComponent(FloatingPanels);
@@ -66,10 +61,10 @@ export default function ExchangeModal({
   defaultInputAsset,
   defaultOutputAsset,
   estimateRap,
-  inputHeaderTitle = 'Swap',
   showOutputField,
   supplyBalanceUnderlying,
   testID,
+  title = 'Swap',
   type,
   underlyingPrice,
 }) {
@@ -134,9 +129,9 @@ export default function ExchangeModal({
     category,
     defaultInputAsset,
     defaultOutputAsset,
-    inputHeaderTitle,
     isDeposit,
     isWithdrawal,
+    title,
     type,
     underlyingPrice,
   });
@@ -632,21 +627,7 @@ export default function ExchangeModal({
             testID={testID}
           >
             {showOutputField && <ExchangeNotch />}
-            <Column
-              align="center"
-              css={padding(6, 0)}
-              testID={testID + '-header'}
-            >
-              <SheetHandle marginBottom={6} />
-              <Text
-                align="center"
-                lineHeight="loose"
-                size="large"
-                weight="heavy"
-              >
-                {inputHeaderTitle}
-              </Text>
-            </Column>
+            <ExchangeHeader testID={testID} title={title} />
             <ExchangeInputField
               disableInputCurrencySelection={isWithdrawal}
               inputAmount={inputAmountDisplay}
