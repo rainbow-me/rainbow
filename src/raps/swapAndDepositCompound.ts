@@ -1,10 +1,17 @@
+import { Trade } from '@uniswap/sdk';
 import { concat, reduce } from 'lodash';
 import {
   assetNeedsUnlocking,
   getDepositGasLimit,
   isValidSwapInput,
 } from './actions';
-import { createNewAction, createNewRap, RapActionTypes } from './common';
+import {
+  createNewAction,
+  createNewRap,
+  RapAction,
+  RapActionTypes,
+} from './common';
+import { Asset, SelectedGasPrice } from '@rainbow-me/entities';
 import { estimateSwapGasLimit } from '@rainbow-me/handlers/uniswap';
 import { rapsAddOrUpdate } from '@rainbow-me/redux/raps';
 import store from '@rainbow-me/redux/store';
@@ -23,10 +30,16 @@ export const estimateSwapAndDepositCompound = async ({
   outputAmount,
   outputCurrency,
   tradeDetails,
+}: {
+  inputAmount: string | null;
+  inputCurrency: Asset;
+  outputAmount: string | null;
+  outputCurrency: Asset;
+  tradeDetails: Trade;
 }) => {
   const { accountAddress, chainId, network } = store.getState().settings;
   const requiresSwap = !!outputCurrency;
-  let gasLimits = [];
+  let gasLimits: (string | number)[] = [];
   if (requiresSwap) {
     const isValid = isValidSwapInput({
       inputCurrency,
@@ -59,7 +72,7 @@ export const estimateSwapAndDepositCompound = async ({
     gasLimits = concat(gasLimits, swapGasLimit);
     logger.log('[swap and deposit] making swap func');
   }
-  const tokenToDeposit = requiresSwap ? outputCurrency : inputCurrency;
+  const tokenToDeposit: Asset = requiresSwap ? outputCurrency : inputCurrency;
   const cTokenContract =
     savingsAssetsListByUnderlying[network][tokenToDeposit.address]
       .contractAddress;
@@ -96,12 +109,20 @@ export const createSwapAndDepositCompoundRap = async ({
   outputCurrency,
   selectedGasPrice,
   tradeDetails,
+}: {
+  callback: () => void;
+  inputAmount: string | null;
+  inputCurrency: Asset;
+  outputAmount: string | null;
+  outputCurrency: Asset;
+  selectedGasPrice: SelectedGasPrice;
+  tradeDetails: Trade;
 }) => {
   const { accountAddress, network } = store.getState().settings;
   const requiresSwap = !!outputCurrency;
   logger.log('[swap and deposit] currencies', inputCurrency, outputCurrency);
   logger.log('[swap and deposit] amounts', inputAmount, outputAmount);
-  let actions = [];
+  let actions: RapAction[] = [];
   if (requiresSwap) {
     logger.log(
       '[swap and deposit] inputCurr is not the same as the output currency'

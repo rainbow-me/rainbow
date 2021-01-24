@@ -22,7 +22,7 @@ export interface RapActionParameters {
   amount?: string | null;
   assetToUnlock?: Asset;
   contractAddress?: string;
-  inputAmount?: string;
+  inputAmount?: string | null;
   inputCurrency?: Asset;
   isMax?: boolean;
   network?: string; // Network;
@@ -51,7 +51,7 @@ export interface Rap {
   startedAt: string;
 }
 
-const NOOP = () => undefined;
+const NOOP = () => {};
 
 export const RapActionTypes = {
   depositCompound: 'depositCompound' as RapActionType,
