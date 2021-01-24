@@ -27,9 +27,18 @@ export interface RapActionParameters {
   isMax?: boolean;
   network?: string; // Network;
   outputCurrency?: Asset;
-  override?: string | null;
+  override?: string | null | void;
   selectedGasPrice?: SelectedGasPrice;
   tradeDetails?: Trade;
+}
+
+export interface DepositActionParameters {
+  accountAddress: string;
+  inputAmount: string;
+  inputCurrency: Asset;
+  network: string;
+  override?: string | null;
+  selectedGasPrice: SelectedGasPrice;
 }
 
 export interface UnlockActionParameters {
