@@ -1,4 +1,3 @@
-import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { get } from 'lodash';
 import React, {
@@ -10,20 +9,20 @@ import React, {
   useState,
 } from 'react';
 import { Keyboard } from 'react-native';
-import Animated, { Extrapolate } from 'react-native-reanimated';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
+import styled from 'styled-components/primitives';
 import { dismissingScreenListener } from '../../shim';
-import { interpolate } from '../components/animations';
 import {
   ConfirmExchangeButton,
   ExchangeDetailsRow,
+  ExchangeFloatingPanels,
   ExchangeHeader,
   ExchangeInputField,
   ExchangeNotch,
   ExchangeOutputField,
 } from '../components/exchange';
 import SwapInfo from '../components/exchange/SwapInfo';
-import { FloatingPanel, FloatingPanels } from '../components/floating-panels';
+import { FloatingPanel } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
 import {
@@ -52,8 +51,19 @@ import { colors, position } from '@rainbow-me/styles';
 import { backgroundTask, isETH, isNewValueForPath } from '@rainbow-me/utils';
 import logger from 'logger';
 
-const AnimatedFloatingPanels = Animated.createAnimatedComponent(FloatingPanels);
 const Wrapper = ios ? KeyboardFixedOpenLayout : Fragment;
+
+const InnerWrapper = styled(Centered).attrs({
+  direction: 'column',
+})`
+  ${ios
+    ? position.sizeAsObject('100%')
+    : `
+    height: 500;
+    top: 0;
+  `};
+  background-color: ${colors.transparent};
+`;
 
 export default function ExchangeModal({
   createRap,
@@ -74,9 +84,6 @@ export default function ExchangeModal({
     dangerouslyGetParent,
     addListener,
   } = useNavigation();
-  const {
-    params: { tabTransitionPosition },
-  } = useRoute();
 
   const isDeposit = type === ExchangeModalTypes.deposit;
   const isWithdrawal = type === ExchangeModalTypes.withdrawal;
@@ -580,46 +587,8 @@ export default function ExchangeModal({
 
   return (
     <Wrapper>
-      <Centered
-        {...(ios
-          ? position.sizeAsObject('100%')
-          : { style: { height: 500, top: 0 } })}
-        backgroundColor={colors.transparent}
-        direction="column"
-      >
-        <AnimatedFloatingPanels
-          margin={0}
-          paddingTop={24}
-          style={{
-            opacity: android
-              ? 1
-              : interpolate(tabTransitionPosition, {
-                  extrapolate: Extrapolate.CLAMP,
-                  inputRange: [0, 0, 1],
-                  outputRange: [1, 1, 0],
-                }),
-            transform: [
-              {
-                scale: android
-                  ? 1
-                  : interpolate(tabTransitionPosition, {
-                      extrapolate: Animated.Extrapolate.CLAMP,
-                      inputRange: [0, 0, 1],
-                      outputRange: [1, 1, 0.9],
-                    }),
-              },
-              {
-                translateX: android
-                  ? 0
-                  : interpolate(tabTransitionPosition, {
-                      extrapolate: Animated.Extrapolate.CLAMP,
-                      inputRange: [0, 0, 1],
-                      outputRange: [0, 0, -8],
-                    }),
-              },
-            ],
-          }}
-        >
+      <InnerWrapper>
+        <ExchangeFloatingPanels>
           <FloatingPanel
             overflow="visible"
             paddingBottom={showOutputField ? 0 : 26}
@@ -680,8 +649,8 @@ export default function ExchangeModal({
             testID={testID + '-gas'}
             type={type}
           />
-        </AnimatedFloatingPanels>
-      </Centered>
+        </ExchangeFloatingPanels>
+      </InnerWrapper>
     </Wrapper>
   );
 }
