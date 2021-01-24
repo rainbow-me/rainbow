@@ -72,8 +72,7 @@ export default function Toast({
     outputRange: [distance, targetTranslate],
   });
 
-  const currentColor =
-    color || isDarkMode ? colors.darkModeColors.darkModeDark : colors.dark;
+  const currentColor = color || isDarkMode ? colors.darkModeDark : colors.dark;
 
   return (
     <Animated.View style={{ opacity, transform: [{ translateY }] }}>

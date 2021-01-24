@@ -10,7 +10,7 @@ import RainbowButtonBackground from './RainbowButtonBackground';
 import RainbowButtonTypes from './RainbowButtonTypes';
 import { useDimensions } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
-import { colors_NOT_REACTIVE, position, shadow } from '@rainbow-me/styles';
+import { position, shadow } from '@rainbow-me/styles';
 import ShadowView from 'react-native-shadow-stack/ShadowView';
 
 const AddCashIcon = styled(ImgixImage).attrs({
@@ -38,20 +38,19 @@ const ButtonContent = styled(RowWithMargins).attrs({
   padding-bottom: 4;
 `;
 
-const ButtonLabel = styled(Text).attrs(({ disabled, type, isDarkMode }) => ({
-  align: type === RainbowButtonTypes.addCash ? 'left' : 'center',
-  color:
-    isDarkMode && disabled
-      ? colors_NOT_REACTIVE.white
-      : colors_NOT_REACTIVE.whiteLabel,
-  letterSpacing:
-    type === RainbowButtonTypes.addCash ? 'roundedTight' : 'rounded',
-  size: type === RainbowButtonTypes.small ? 'large' : 'larger',
-  weight: 'bold',
-}))``;
+const ButtonLabel = styled(Text).attrs(
+  ({ disabled, type, theme: { colors, isDarkMode } }) => ({
+    align: type === RainbowButtonTypes.addCash ? 'left' : 'center',
+    color: isDarkMode && disabled ? colors.white : colors.whiteLabel,
+    letterSpacing:
+      type === RainbowButtonTypes.addCash ? 'roundedTight' : 'rounded',
+    size: type === RainbowButtonTypes.small ? 'large' : 'larger',
+    weight: 'bold',
+  })
+)``;
 
 const OuterButton = styled.View`
-  ${shadow.build(0, 5, 15, colors_NOT_REACTIVE.shadow)};
+  ${({ theme: { colors } }) => shadow.build(0, 5, 15, colors.shadow)};
   background-color: ${({ theme: { colors } }) => colors.dark};
   border-radius: ${({ height, strokeWidth }) => height / 2 + strokeWidth};
   height: ${({ height }) => height};
@@ -61,7 +60,7 @@ const OuterButton = styled.View`
 `;
 
 const Shadow = styled(ShadowView)`
-  ${shadow.build(0, 10, 30, colors_NOT_REACTIVE.shadow, 1)};
+  ${({ theme: { colors } }) => shadow.build(0, 10, 30, colors.shadow, 1)};
   background-color: ${({ theme: { colors } }) => colors.white};
   border-radius: ${({ height, strokeWidth }) => height / 2 + strokeWidth};
   height: ${({ height }) => height};
