@@ -13,6 +13,7 @@ import { useMemoOne } from 'use-memo-one';
 import { dismissingScreenListener } from '../../shim';
 import {
   ConfirmExchangeButton,
+  DepositInfo,
   ExchangeDetailsRow,
   ExchangeFloatingPanels,
   ExchangeHeader,
@@ -20,7 +21,6 @@ import {
   ExchangeNotch,
   ExchangeOutputField,
 } from '../components/exchange';
-import SwapInfo from '../components/exchange/SwapInfo';
 import { FloatingPanel } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
@@ -607,10 +607,10 @@ export default function ExchangeModal({
             )}
           </FloatingPanel>
           {isDeposit && (
-            <SwapInfo
+            <DepositInfo
               amount={(inputAmount > 0 && outputAmountDisplay) || null}
               asset={outputCurrency}
-              testID="swap-info-button"
+              testID="deposit-info-button"
             />
           )}
           {!isDeposit && showConfirmButton && (

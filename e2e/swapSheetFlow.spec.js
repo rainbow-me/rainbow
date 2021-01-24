@@ -311,11 +311,11 @@ describe('Swap Sheet Interaction Flow', () => {
 
   it('Should show Hold to Swap Button & Swap Info Button on completion of all input fields', async () => {
     await Helpers.checkForElementByLabel('Hold to Swap');
-    await Helpers.checkIfVisible('swap-info-button');
+    await Helpers.checkIfVisible('deposit-info-button');
   });
 
   it('Should show Swap Details State on Swap Info Button press', async () => {
-    await Helpers.tap('swap-info-button');
+    await Helpers.tap('deposit-info-button');
     await Helpers.delay(1000);
     await Helpers.checkIfVisible('swap-details-state-container');
     await Helpers.swipe('swap-details-state-container', 'down', 'slow');

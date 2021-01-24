@@ -20,7 +20,7 @@ const Container = styled(RowWithMargins).attrs({
   width: 100%;
 `;
 
-export default function SwapInfo({ asset, amount }) {
+export default function DepositInfo({ asset, amount }) {
   const isVisible = !!(asset && amount);
 
   const prevAmountRef = useRef();
@@ -74,14 +74,14 @@ export default function SwapInfo({ asset, amount }) {
           },
         ],
       }}
-      testID="swap-info"
+      testID="deposit-info"
     >
       <Container>
         <CoinIcon
           address={asset?.address}
           size={20}
           symbol={asset?.symbol}
-          testID="swap-info-container"
+          testID="deposit-info-container"
         />
         <Centered>
           <Text color="grey" size="smedium" weight="medium">
