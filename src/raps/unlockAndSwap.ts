@@ -1,6 +1,13 @@
+import { Trade } from '@uniswap/sdk';
 import { concat, reduce } from 'lodash';
 import { assetNeedsUnlocking, isValidSwapInput } from './actions';
-import { createNewAction, createNewRap, RapActionTypes } from './common';
+import {
+  createNewAction,
+  createNewRap,
+  RapAction,
+  RapActionTypes,
+} from './common';
+import { Asset, SelectedGasPrice } from '@rainbow-me/entities';
 import { estimateSwapGasLimit } from '@rainbow-me/handlers/uniswap';
 import { rapsAddOrUpdate } from '@rainbow-me/redux/raps';
 import store from '@rainbow-me/redux/store';
@@ -14,9 +21,15 @@ export const estimateUnlockAndSwap = async ({
   outputAmount,
   outputCurrency,
   tradeDetails,
+}: {
+  inputAmount: string | null;
+  inputCurrency: Asset;
+  outputAmount: string | null;
+  outputCurrency: Asset;
+  tradeDetails: Trade;
 }) => {
-  if (!inputAmount) inputAmount = 1;
-  if (!outputAmount) outputAmount = 1;
+  if (!inputAmount) inputAmount = '1';
+  if (!outputAmount) outputAmount = '1';
 
   const isValid = isValidSwapInput({
     inputCurrency,
@@ -27,7 +40,7 @@ export const estimateUnlockAndSwap = async ({
 
   const { accountAddress, chainId } = store.getState().settings;
 
-  let gasLimits = [];
+  let gasLimits: (string | number)[] = [];
   const swapAssetNeedsUnlocking = await assetNeedsUnlocking(
     accountAddress,
     inputAmount,
@@ -62,11 +75,18 @@ export const createUnlockAndSwapRap = async ({
   outputCurrency,
   selectedGasPrice,
   tradeDetails,
+}: {
+  callback: () => void;
+  inputAmount: string | null;
+  inputCurrency: Asset;
+  outputCurrency: Asset;
+  selectedGasPrice: SelectedGasPrice;
+  tradeDetails: Trade;
 }) => {
   // create unlock rap
   const { accountAddress } = store.getState().settings;
 
-  let actions = [];
+  let actions: RapAction[] = [];
 
   const swapAssetNeedsUnlocking = await assetNeedsUnlocking(
     accountAddress,
