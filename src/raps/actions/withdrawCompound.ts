@@ -1,28 +1,35 @@
 import { Contract } from '@ethersproject/contracts';
+import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
 import { get } from 'lodash';
-import { toHex } from '../../handlers/web3';
-import ProtocolTypes from '../../helpers/protocolTypes';
-import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
-import TransactionTypes from '../../helpers/transactionTypes';
-import { convertAmountToRawAmount, isZero } from '../../helpers/utilities';
-import { dataAddNewTransaction } from '../../redux/data';
-import { rapsAddOrUpdate } from '../../redux/raps';
-import store from '../../redux/store';
+import { Rap, RapActionParameters, WithdrawActionParameters } from '../common';
+import { toHex } from '@rainbow-me/handlers/web3';
+import ProtocolTypes from '@rainbow-me/helpers/protocolTypes';
+import TransactionStatusTypes from '@rainbow-me/helpers/transactionStatusTypes';
+import TransactionTypes from '@rainbow-me/helpers/transactionTypes';
+import { dataAddNewTransaction } from '@rainbow-me/redux/data';
+import { rapsAddOrUpdate } from '@rainbow-me/redux/raps';
+import store from '@rainbow-me/redux/store';
 import {
   compoundCERC20ABI,
   compoundCETHABI,
   ethUnits,
   savingsAssetsListByUnderlying,
-} from '../../references';
-import { gasUtils } from '../../utils';
+} from '@rainbow-me/references';
+import { convertAmountToRawAmount, isZero } from '@rainbow-me/utilities';
+import { gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const NOOP = () => undefined;
 
 const CTOKEN_DECIMALS = 8;
 
-const withdrawCompound = async (wallet, currentRap, index, parameters) => {
+const withdrawCompound = async (
+  wallet: Wallet,
+  currentRap: Rap,
+  index: number,
+  parameters: RapActionParameters
+): Promise<null> => {
   logger.log('[withdraw]');
   const {
     accountAddress,
@@ -31,11 +38,11 @@ const withdrawCompound = async (wallet, currentRap, index, parameters) => {
     isMax,
     network,
     selectedGasPrice,
-  } = parameters;
+  } = parameters as WithdrawActionParameters;
   const { dispatch } = store;
   const { gasPrices } = store.getState().gas;
   const rawInputAmount = convertAmountToRawAmount(
-    inputAmount,
+    inputAmount as string,
     isMax ? CTOKEN_DECIMALS : inputCurrency.decimals
   );
   logger.log('[withdraw] is max', isMax);
@@ -49,7 +56,7 @@ const withdrawCompound = async (wallet, currentRap, index, parameters) => {
 
   logger.log('[withdraw] gas price', gasPrice);
   const cTokenContract =
-    savingsAssetsListByUnderlying[network][inputCurrency.address]
+    savingsAssetsListByUnderlying[network as string][inputCurrency.address]
       .contractAddress;
 
   const compound = new Contract(
@@ -111,7 +118,7 @@ const withdrawCompound = async (wallet, currentRap, index, parameters) => {
     logger.log('[withdraw] waiting for the withdraw to go thru');
     const receipt = await wallet.provider.waitForTransaction(withdraw.hash);
     logger.log('[withdraw] withdrawal completed! Receipt:', receipt);
-    if (!isZero(receipt.status)) {
+    if (receipt.status && !isZero(receipt.status)) {
       currentRap.actions[index].transaction.confirmed = true;
       logger.log('[withdraw] updated txn confirmed to true');
       dispatch(rapsAddOrUpdate(currentRap.id, currentRap));

@@ -41,6 +41,15 @@ export interface UnlockActionParameters {
   selectedGasPrice: SelectedGasPrice;
 }
 
+export interface WithdrawActionParameters {
+  accountAddress: string;
+  inputAmount: string;
+  inputCurrency: Asset;
+  isMax: boolean;
+  network: string;
+  selectedGasPrice: SelectedGasPrice;
+}
+
 export interface RapActionTransaction {
   confirmed: boolean | null;
   hash: string | null;
