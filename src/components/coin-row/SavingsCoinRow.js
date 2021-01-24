@@ -1,4 +1,5 @@
 import React, { Fragment } from 'react';
+import { useTheme } from '../../context/ThemeContext';
 import { calculateAPY } from '../../helpers/savings';
 import { convertAmountToBalanceDisplay } from '../../helpers/utilities';
 import { ButtonPressAnimation } from '../animations';
@@ -8,13 +9,13 @@ import { Text } from '../text';
 import BalanceText from './BalanceText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
-import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 export const SavingsCoinRowHeight = 64;
 
 const BottomRow = ({ lifetimeSupplyInterestAccrued, supplyRate, symbol }) => {
   const apy = calculateAPY(supplyRate);
   const apyTruncated = parseFloat(apy).toFixed(2);
+  const { colors } = useTheme();
 
   return (
     <Fragment>
@@ -23,7 +24,7 @@ const BottomRow = ({ lifetimeSupplyInterestAccrued, supplyRate, symbol }) => {
         <Column flex={1}>
           <Text
             align="right"
-            color={colors_NOT_REACTIVE.green}
+            color={colors.green}
             flex={1}
             size="smedium"
             weight="semibold"

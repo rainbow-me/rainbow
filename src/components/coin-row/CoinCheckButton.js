@@ -1,18 +1,11 @@
 import React from 'react';
 import styled from 'styled-components/primitives';
-import { useTheme } from '../../context/ThemeContext';
 import { magicMemo } from '../../utils';
 import { ButtonPressAnimation, OpacityToggler } from '../animations';
 import { CoinIconSize } from '../coin-icon';
 import { Icon } from '../icons';
 import { Row } from '../layout';
-import {
-  borders,
-  colors_NOT_REACTIVE,
-  padding,
-  position,
-  shadow,
-} from '@rainbow-me/styles';
+import { borders, padding, position, shadow } from '@rainbow-me/styles';
 
 const Container = styled.View`
   ${position.size(CoinIconSize)};
@@ -30,7 +23,7 @@ const Content = styled(Row).attrs(({ isAbsolute }) => ({
 const CircleOutline = styled.View`
   ${borders.buildCircle(22)}
   border-color: ${({ theme: { colors } }) =>
-    colors.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.12)};
+    colors.alpha(colors.blueGreyDark, 0.12)};
   border-width: 1.5;
   position: absolute;
 `;
@@ -38,19 +31,12 @@ const CircleOutline = styled.View`
 const CheckmarkBackground = styled.View`
   ${borders.buildCircle(22)}
   ${padding(4.5)}
-  ${({ isDarkMode }) =>
-    shadow.build(
-      0,
-      4,
-      12,
-      isDarkMode ? colors_NOT_REACTIVE.shadow : colors_NOT_REACTIVE.appleBlue,
-      0.4
-    )}
+  ${({ theme: { isDarkMode, colors } }) =>
+    shadow.build(0, 4, 12, isDarkMode ? colors.shadow : colors.appleBlue, 0.4)}
   background-color: ${({ theme: { colors } }) => colors.appleBlue};
 `;
 
 const CoinCheckButton = ({ isAbsolute, onPress, toggle, ...props }) => {
-  const { isDarkMode } = useTheme();
   return (
     <Container {...props} isAbsolute={isAbsolute}>
       <Content
@@ -61,7 +47,7 @@ const CoinCheckButton = ({ isAbsolute, onPress, toggle, ...props }) => {
       >
         <CircleOutline />
         <OpacityToggler friction={20} isVisible={!toggle} tension={1000}>
-          <CheckmarkBackground isDarkMode={isDarkMode}>
+          <CheckmarkBackground>
             <Icon color="white" name="checkmark" />
           </CheckmarkBackground>
         </OpacityToggler>

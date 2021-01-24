@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import styled from 'styled-components/primitives';
+import { useTheme } from '../../context/ThemeContext';
 import { initials } from '../../utils';
 import { Centered } from '../layout';
 import { Text } from '../text';
@@ -23,7 +24,7 @@ const Content = styled(Centered)`
 `;
 
 export default function RequestVendorLogoIcon({
-  backgroundColor = colors_NOT_REACTIVE.dark,
+  backgroundColor,
   borderRadius = RVLIBorderRadius,
   dappName,
   imageUrl,
@@ -33,14 +34,15 @@ export default function RequestVendorLogoIcon({
   ...props
 }) {
   const [error, setError] = useState(null);
+  const { colors } = useTheme();
 
   // When dapps have no icon the bgColor provided to us is transparent.
   // Having a transparent background breaks our UI, so we instead show a background
   // color of white.
   const bgColor =
     backgroundColor === 'transparent'
-      ? colors_NOT_REACTIVE.white
-      : backgroundColor;
+      ? colors.white
+      : backgroundColor || colors.dark;
 
   const imageSource = useMemo(
     () => ({
@@ -55,7 +57,7 @@ export default function RequestVendorLogoIcon({
     <ShadowStack
       {...props}
       {...position.sizeAsObject(size)}
-      backgroundColor={colors_NOT_REACTIVE.white}
+      backgroundColor={colors.white}
       borderRadius={borderRadius}
       shadows={RVLIShadows[showLargeShadow ? 'large' : 'default']}
     >
@@ -69,7 +71,7 @@ export default function RequestVendorLogoIcon({
         ) : (
           <Text
             align="center"
-            color={colors_NOT_REACTIVE.getFallbackTextColor(bgColor)}
+            color={colors.getFallbackTextColor(bgColor)}
             size="smedium"
             weight="semibold"
           >

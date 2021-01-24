@@ -1,6 +1,7 @@
 import { compact, get, toLower } from 'lodash';
 import React, { useCallback } from 'react';
 import { css } from 'styled-components/primitives';
+import { useTheme } from '../../context/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIconSize } from '../coin-icon';
 import { FlexItem, Row, RowWithMargins } from '../layout';
@@ -20,7 +21,6 @@ import { isENSAddressFormat } from '@rainbow-me/helpers/validators';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 import {
   abbreviations,
   ethereumUtils,
@@ -32,6 +32,7 @@ const containerStyles = css`
 `;
 
 const BottomRow = ({ description, native, status, type }) => {
+  const { colors } = useTheme();
   const isFailed = status === TransactionStatusTypes.failed;
   const isReceived =
     status === TransactionStatusTypes.received ||
@@ -43,21 +44,14 @@ const BottomRow = ({ description, native, status, type }) => {
     status === TransactionStatusTypes.received &&
     type === TransactionTypes.trade;
 
-  let coinNameColor = colors_NOT_REACTIVE.dark;
-  if (isOutgoingSwap)
-    coinNameColor = colors_NOT_REACTIVE.alpha(
-      colors_NOT_REACTIVE.blueGreyDark,
-      0.5
-    );
+  let coinNameColor = colors.dark;
+  if (isOutgoingSwap) coinNameColor = colors.alpha(colors.blueGreyDark, 0.5);
 
-  let balanceTextColor = colors_NOT_REACTIVE.alpha(
-    colors_NOT_REACTIVE.blueGreyDark,
-    0.5
-  );
-  if (isReceived) balanceTextColor = colors_NOT_REACTIVE.green;
-  if (isSent) balanceTextColor = colors_NOT_REACTIVE.dark;
-  if (isIncomingSwap) balanceTextColor = colors_NOT_REACTIVE.swapPurple;
-  if (isOutgoingSwap) balanceTextColor = colors_NOT_REACTIVE.dark;
+  let balanceTextColor = colors.alpha(colors.blueGreyDark, 0.5);
+  if (isReceived) balanceTextColor = colors.green;
+  if (isSent) balanceTextColor = colors.dark;
+  if (isIncomingSwap) balanceTextColor = colors.swapPurple;
+  if (isOutgoingSwap) balanceTextColor = colors.dark;
 
   const nativeDisplay = get(native, 'display');
   const balanceText = nativeDisplay
@@ -92,6 +86,7 @@ export default function TransactionCoinRow({ item, ...props }) {
   const { contact } = item;
   const { accountAddress } = useAccountSettings();
   const { navigate } = useNavigation();
+  const { colors } = useTheme();
 
   const onPressTransaction = useCallback(async () => {
     const { hash, from, minedAt, pending, to, status, type } = item;
@@ -123,7 +118,7 @@ export default function TransactionCoinRow({ item, ...props }) {
       headerInfo.address = isENSAddressFormat(contactAddress)
         ? contactAddress
         : abbreviations.address(contactAddress, 4, 10);
-      contactColor = colors_NOT_REACTIVE.getRandomColor();
+      contactColor = colors.getRandomColor();
     }
 
     if (hash) {

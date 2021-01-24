@@ -6,7 +6,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { CoinRowHeight } from './CoinRow';
-import { colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
 const FavoriteButtonPadding = 19;
@@ -22,26 +22,28 @@ const FavoriteButton = styled(Centered)`
   width: 68px;
 `;
 
-const Circle = styled(RadialGradient).attrs(({ isFavorited, darkMode }) => ({
-  center: [0, 15],
-  colors: isFavorited
-    ? [
-        colors_NOT_REACTIVE.alpha('#FFB200', darkMode ? 0.15 : 0),
-        colors_NOT_REACTIVE.alpha('#FFB200', darkMode ? 0.05 : 0.2),
-      ]
-    : colors_NOT_REACTIVE.gradients.favoriteCircle,
-}))`
+const Circle = styled(RadialGradient).attrs(
+  ({ isFavorited, theme: { colors, isDarkMode } }) => ({
+    center: [0, 15],
+    colors: isFavorited
+      ? [
+          colors.alpha('#FFB200', isDarkMode ? 0.15 : 0),
+          colors.alpha('#FFB200', isDarkMode ? 0.05 : 0.2),
+        ]
+      : colors.gradients.favoriteCircle,
+  })
+)`
   border-radius: 15px;
   height: 30px;
   overflow: hidden;
   width: 30px;
 `;
 
-const StarIcon = styled(Text).attrs(({ isFavorited }) => ({
+const StarIcon = styled(Text).attrs(({ isFavorited, theme: { colors } }) => ({
   align: 'center',
   color: isFavorited
-    ? colors_NOT_REACTIVE.yellowFavorite
-    : colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.2),
+    ? colors.yellowFavorite
+    : colors.alpha(colors.blueGreyDark, 0.2),
   letterSpacing: 'zero',
   size: 'smaller',
   weight: 'heavy',
