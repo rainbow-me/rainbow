@@ -13,7 +13,7 @@ import { ShimmerAnimation } from '../../animations';
 import { Centered, InnerBorder } from '../../layout';
 import BiometricButtonContent from '../BiometricButtonContent';
 import HoldToAuthorizeButtonIcon from './HoldToAuthorizeButtonIcon';
-import BiometryTypes from '@rainbow-me/helpers/biometryTypes';
+import { BiometryTypes } from '@rainbow-me/helpers';
 import { useBiometryType, useDimensions } from '@rainbow-me/hooks';
 import { colors, padding, position } from '@rainbow-me/styles';
 import { haptics } from '@rainbow-me/utils';
@@ -253,11 +253,10 @@ class HoldToAuthorizeButton extends PureComponent {
                     )}
                     {android && isAuthorizing && <LoadingSpinner />}
                     <Label
+                      label={isAuthorizing ? 'Authorizing' : label}
                       showIcon={showBiometryIcon && !isAuthorizing}
                       smallButton={smallButton}
-                    >
-                      {isAuthorizing ? 'Authorizing' : label}
-                    </Label>
+                    />
                   </Fragment>
                 )}
                 <ShimmerAnimation

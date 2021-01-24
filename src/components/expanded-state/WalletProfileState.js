@@ -156,11 +156,10 @@ export default function WalletProfileState({
       <ColumnWithDividers dividerRenderer={WalletProfileDivider} width="100%">
         <WalletProfileButton onPress={handleSubmit}>
           <BiometricButtonContent
+            label={isNewProfile ? `${actionType} Wallet` : 'Done'}
             showIcon={actionType === 'Create'}
             testID="wallet-info-submit-button"
-          >
-            {isNewProfile ? `${actionType} Wallet` : 'Done'}
-          </BiometricButtonContent>
+          />
         </WalletProfileButton>
         <WalletProfileButton onPress={handleCancel}>
           <WalletProfileButtonText

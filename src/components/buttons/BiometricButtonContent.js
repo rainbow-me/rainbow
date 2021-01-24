@@ -1,34 +1,56 @@
-import React, { Fragment } from 'react';
-import { BiometryIcon } from '../icons';
-import { Nbsp, Text } from '../text';
+import React from 'react';
+import styled from 'styled-components/primitives';
+import { Text } from '../text';
+import { BiometryTypes } from '@rainbow-me/helpers';
+import { useBiometryType } from '@rainbow-me/hooks';
 import { colors, fonts } from '@rainbow-me/styles';
 
+const { Face, FaceID, Fingerprint, none, passcode, TouchID } = BiometryTypes;
+
+const Label = styled(Text).attrs(
+  ({
+    color = colors.appleBlue,
+    size = fonts.size.larger,
+    weight = fonts.weight.semibold,
+  }) => ({
+    align: 'center',
+    color,
+    letterSpacing: 'rounded',
+    size,
+    weight,
+  })
+)``;
+
+function useBiometryIconString(showIcon) {
+  const biometryType = useBiometryType();
+
+  const isFace = biometryType === Face || biometryType === FaceID;
+  const isPasscode = biometryType === passcode;
+  const isTouch = biometryType === Fingerprint || biometryType === TouchID;
+
+  const biometryIconString = isFace
+    ? '􀎽'
+    : isTouch
+    ? '􀟒'
+    : isPasscode
+    ? '􀒲'
+    : '';
+
+  return !biometryType || biometryType === none || !showIcon
+    ? ''
+    : `${biometryIconString} `;
+}
+
 export default function BiometricButtonContent({
-  children,
-  color = colors.appleBlue,
+  label,
   showIcon = true,
-  size = fonts.size.larger,
   testID,
-  weight = fonts.weight.semibold,
   ...props
 }) {
+  const biometryIcon = useBiometryIconString(!android && showIcon);
   return (
-    <Text
-      align="center"
-      color={color}
-      letterSpacing="rounded"
-      size={size}
-      testID={testID}
-      weight={weight}
-      {...props}
-    >
-      {!android && showIcon && (
-        <Fragment>
-          <BiometryIcon />
-          <Nbsp />
-        </Fragment>
-      )}
-      {children}
-    </Text>
+    <Label testID={testID} {...props}>
+      {`${biometryIcon}${label}`}
+    </Label>
   );
 }
