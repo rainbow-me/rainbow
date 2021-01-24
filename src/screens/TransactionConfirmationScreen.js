@@ -29,6 +29,7 @@ import {
   SheetActionButton,
   SheetActionButtonRow,
   SheetHandleFixedToTop,
+  SheetKeyboardAnimation,
   SlackSheet,
 } from '../components/sheet';
 import { Text } from '../components/text';
@@ -38,7 +39,6 @@ import {
   TransactionConfirmationSection,
 } from '../components/transaction';
 import { estimateGas, toHex } from '@rainbow-me/handlers/web3';
-import { isReanimatedAvailable } from '@rainbow-me/helpers';
 import { isDappAuthenticated } from '@rainbow-me/helpers/dappNameHandler';
 import {
   convertAmountToNativeDisplay,
@@ -51,6 +51,7 @@ import {
   useAccountAssets,
   useAccountProfile,
   useAccountSettings,
+  useBooleanState,
   useDimensions,
   useGas,
   useKeyboardHeight,
@@ -126,10 +127,10 @@ const WalletText = styled(Text).attrs(({ balanceTooLow }) => ({
 
 const NOOP = () => undefined;
 
-const TransactionConfirmationScreen = () => {
+export default function TransactionConfirmationScreen() {
   const { allAssets } = useAccountAssets();
   const [isAuthorizing, setIsAuthorizing] = useState(false);
-  const [keyboardVisible, setKeyboardVisible] = useState(false);
+  const [isKeyboardVisible, showKeyboard, hideKeyboard] = useBooleanState();
   const [methodName, setMethodName] = useState(null);
   const calculatingGasLimit = useRef(false);
   const [isBalanceEnough, setIsBalanceEnough] = useState(true);
@@ -647,32 +648,14 @@ const TransactionConfirmationScreen = () => {
     );
   }, [isMessageRequest, method, nativeCurrency, request]);
 
-  const handleCustomGasFocus = useCallback(() => {
-    setKeyboardVisible(true);
-  }, []);
-  const handleCustomGasBlur = useCallback(() => {
-    setKeyboardVisible(false);
-  }, []);
-
   const offset = useSharedValue(0);
   const sheetOpacity = useSharedValue(1);
-  const animatedContainerStyles = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateY: offset.value }],
-    };
-  });
-  const animatedSheetStyles = useAnimatedStyle(() => {
-    return {
-      opacity: sheetOpacity.value,
-    };
-  });
-
-  const fallbackStyles = {
-    marginBottom: keyboardVisible ? keyboardHeight : 0,
-  };
+  const animatedSheetStyles = useAnimatedStyle(() => ({
+    opacity: sheetOpacity.value,
+  }));
 
   useEffect(() => {
-    if (keyboardVisible) {
+    if (isKeyboardVisible) {
       offset.value = withSpring(
         -keyboardHeight + safeAreaInsetValues.bottom,
         springConfig
@@ -682,7 +665,7 @@ const TransactionConfirmationScreen = () => {
       offset.value = withSpring(0, springConfig);
       sheetOpacity.value = withSpring(1, springConfig);
     }
-  }, [keyboardHeight, keyboardVisible, offset, sheetOpacity]);
+  }, [isKeyboardVisible, keyboardHeight, offset, sheetOpacity]);
 
   const amount = get(request, 'value', '0.00');
 
@@ -713,8 +696,10 @@ const TransactionConfirmationScreen = () => {
   }
 
   return (
-    <AnimatedContainer
-      style={isReanimatedAvailable ? animatedContainerStyles : fallbackStyles}
+    <SheetKeyboardAnimation
+      as={AnimatedContainer}
+      isKeyboardVisible={isKeyboardVisible}
+      translateY={offset}
     >
       <SlackSheet
         backgroundColor={colors.transparent}
@@ -817,16 +802,14 @@ const TransactionConfirmationScreen = () => {
           {!isMessageRequest && (
             <GasSpeedButtonContainer>
               <GasSpeedButton
-                onCustomGasBlur={handleCustomGasBlur}
-                onCustomGasFocus={handleCustomGasFocus}
+                onCustomGasBlur={hideKeyboard}
+                onCustomGasFocus={showKeyboard}
                 type="transaction"
               />
             </GasSpeedButtonContainer>
           )}
         </Column>
       </SlackSheet>
-    </AnimatedContainer>
+    </SheetKeyboardAnimation>
   );
-};
-
-export default TransactionConfirmationScreen;
+}

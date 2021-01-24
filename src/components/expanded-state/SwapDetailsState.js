@@ -1,14 +1,16 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
+import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
+import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components/primitives';
 import { GasSpeedButton } from '../gas';
 import { Column, Row } from '../layout';
-import { SheetHandleFixedToTopHeight, SheetTitle, SlackSheet } from '../sheet';
+import {
+  SheetHandleFixedToTopHeight,
+  SheetKeyboardAnimation,
+  SheetTitle,
+  SlackSheet,
+} from '../sheet';
 import { CopyToast, ToastPositionContainer } from '../toasts';
 import {
   SwapDetailsContent,
@@ -17,12 +19,16 @@ import {
   SwapDetailsMastheadHeight,
   SwapDetailsSlippageMessage,
 } from './swap-details';
-import { isReanimatedAvailable } from '@rainbow-me/helpers';
-import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
-import { useDimensions, useHeight, useKeyboardHeight } from '@rainbow-me/hooks';
+import { ExchangeModalTypes } from '@rainbow-me/helpers';
+import {
+  useBooleanState,
+  useDimensions,
+  useHeight,
+  useKeyboardHeight,
+} from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import { margin, padding } from '@rainbow-me/styles';
-import { abbreviations, safeAreaInsetValues } from '@rainbow-me/utils';
+import { margin, padding, position } from '@rainbow-me/styles';
+import { abbreviations } from '@rainbow-me/utils';
 
 const springConfig = {
   damping: 500,
@@ -31,8 +37,7 @@ const springConfig = {
 };
 
 const AnimatedContainer = styled(Animated.View)`
-  height: 100%;
-  width: 100%;
+  ${position.size('100%')};
 `;
 
 const Footer = styled(Column).attrs({
@@ -86,11 +91,10 @@ export default function SwapDetailsState({
 }) {
   const { setParams } = useNavigation();
   const { params: { longFormHeight } = {} } = useRoute();
-  useEffect(() => () => restoreFocusOnSwapModal(), [restoreFocusOnSwapModal]);
-  useAndroidDisableGesturesOnFocus();
   const { height: deviceHeight } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
-  const [keyboardVisible, setKeyboardVisible] = useState(false);
+  const [isKeyboardVisible, showKeyboard, hideKeyboard] = useBooleanState();
+  const insets = useSafeArea();
 
   const {
     copiedText,
@@ -104,16 +108,10 @@ export default function SwapDetailsState({
     SwapDetailsContentMinHeight
   );
 
-  const keyboardOffset =
-    keyboardHeight + safeAreaInsetValues.bottom + (android ? 50 : 10);
+  useEffect(() => () => restoreFocusOnSwapModal(), [restoreFocusOnSwapModal]);
+  useAndroidDisableGesturesOnFocus();
 
-  const sheetHeightWithKeyboard =
-    SheetHandleFixedToTopHeight +
-    SwapDetailsMastheadHeight +
-    contentHeight +
-    footerHeight +
-    keyboardHeight -
-    23;
+  const keyboardOffset = keyboardHeight + insets.bottom + (android ? 50 : 10);
 
   const sheetHeightWithoutKeyboard =
     SheetHandleFixedToTopHeight +
@@ -122,34 +120,22 @@ export default function SwapDetailsState({
     slippageMessageHeight +
     footerHeight;
 
+  const sheetHeightWithKeyboard =
+    sheetHeightWithoutKeyboard + keyboardHeight - 23;
+
   const additionalScrollForKeyboard =
     sheetHeightWithoutKeyboard + keyboardOffset >
-    deviceHeight - safeAreaInsetValues.top + safeAreaInsetValues.bottom
+    deviceHeight - insets.top + insets.bottom
       ? deviceHeight -
-        safeAreaInsetValues.top +
-        safeAreaInsetValues.bottom -
+        insets.top +
+        insets.bottom -
         (sheetHeightWithoutKeyboard + keyboardOffset)
       : 0;
 
-  const handleCustomGasFocus = useCallback(() => {
-    setKeyboardVisible(true);
-  }, []);
-  const handleCustomGasBlur = useCallback(() => {
-    setKeyboardVisible(false);
-  }, []);
-
   const contentScroll = useSharedValue(0);
-  const animatedContainerStyles = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateY: contentScroll.value }],
-    };
-  });
-  const fallbackStyles = {
-    marginBottom: keyboardVisible ? keyboardHeight : 0,
-  };
 
   useEffect(() => {
-    if (keyboardVisible) {
+    if (isKeyboardVisible) {
       contentScroll.value = withSpring(
         additionalScrollForKeyboard,
         springConfig
@@ -162,15 +148,17 @@ export default function SwapDetailsState({
   }, [
     additionalScrollForKeyboard,
     contentScroll,
-    keyboardVisible,
+    isKeyboardVisible,
     sheetHeightWithKeyboard,
     sheetHeightWithoutKeyboard,
     setParams,
   ]);
 
   return (
-    <AnimatedContainer
-      style={isReanimatedAvailable ? animatedContainerStyles : fallbackStyles}
+    <SheetKeyboardAnimation
+      as={AnimatedContainer}
+      isKeyboardVisible={isKeyboardVisible}
+      translateY={contentScroll}
     >
       <SlackSheet
         additionalTopPadding={android}
@@ -190,8 +178,8 @@ export default function SwapDetailsState({
           {renderConfirmButton}
           <GasPositionContainer>
             <GasSpeedButton
-              onCustomGasBlur={handleCustomGasBlur}
-              onCustomGasFocus={handleCustomGasFocus}
+              onCustomGasBlur={hideKeyboard}
+              onCustomGasFocus={showKeyboard}
               testID="swap-details-gas"
               theme="light"
               type={ExchangeModalTypes.swap}
@@ -202,6 +190,6 @@ export default function SwapDetailsState({
           <CopyToast copiedText={copiedText} copyCount={copyCount} />
         </ToastPositionContainer>
       </SlackSheet>
-    </AnimatedContainer>
+    </SheetKeyboardAnimation>
   );
 }
