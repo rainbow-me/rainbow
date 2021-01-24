@@ -1,5 +1,5 @@
 import { Trade } from '@uniswap/sdk';
-import { get, isEmpty } from 'lodash';
+import { isEmpty } from 'lodash';
 import { RefObject, useCallback, useEffect, useMemo, useState } from 'react';
 import { TextInput } from 'react-native';
 import { calculateTradeDetails } from '../handlers/uniswap';
@@ -23,8 +23,7 @@ export default function useUniswapMarketDetails({
   inputAsExactAmount,
   inputCurrency,
   inputFieldRef,
-  isDeposit,
-  isWithdrawal,
+  isSavings,
   maxInputBalance,
   nativeCurrency,
   outputAmount,
@@ -42,8 +41,7 @@ export default function useUniswapMarketDetails({
   inputAsExactAmount: boolean;
   inputCurrency: Asset;
   inputFieldRef: RefObject<TextInput>;
-  isDeposit: boolean;
-  isWithdrawal: boolean;
+  isSavings: boolean;
   maxInputBalance: string;
   nativeCurrency: string;
   outputAmount: string;
@@ -77,27 +75,26 @@ export default function useUniswapMarketDetails({
     inputCurrency,
     outputCurrency
   );
-  const swapNotNeeded = useMemo(() => {
-    return (
-      (isDeposit || isWithdrawal) &&
-      get(inputCurrency, 'address') === defaultInputAddress
-    );
-  }, [defaultInputAddress, inputCurrency, isDeposit, isWithdrawal]);
-  const isMissingCurrency = !inputCurrency || !outputCurrency;
+
+  const swapNotNeeded = useMemo(
+    () => isSavings && inputCurrency?.address === defaultInputAddress,
+    [defaultInputAddress, inputCurrency, isSavings]
+  );
 
   const isMissingAmounts =
     (isEmpty(inputAmount) || isZero(inputAmount)) &&
     (isEmpty(outputAmount) || isZero(outputAmount));
+
+  const isMissingCurrency = !inputCurrency || !outputCurrency;
 
   const updateTradeDetails = useCallback(() => {
     let updatedInputAmount = inputAmount;
     let updatedInputAsExactAmount = inputAsExactAmount;
 
     if (isMissingAmounts) {
-      const inputNativePrice = get(inputCurrency, 'native.price.amount', null);
       updatedInputAmount = convertAmountFromNativeValue(
         DEFAULT_NATIVE_INPUT_AMOUNT,
-        inputNativePrice,
+        inputCurrency?.native?.price?.amount || null,
         inputCurrency.decimals
       );
       updatedInputAsExactAmount = true;
@@ -141,7 +138,7 @@ export default function useUniswapMarketDetails({
 
         const updatedInputAmountDisplay = updatePrecisionToDisplay(
           rawUpdatedInputAmount,
-          get(inputCurrency, 'price.value'),
+          inputCurrency?.price?.value,
           true
         );
         updateInputAmount(

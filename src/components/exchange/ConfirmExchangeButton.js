@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import styled from 'styled-components/primitives';
 import { HoldToAuthorizeButton } from '../buttons';
 import { Centered } from '../layout';
-import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
+import { ExchangeModalTypes } from '@rainbow-me/helpers';
 import {
   useColorForAsset,
   useGas,

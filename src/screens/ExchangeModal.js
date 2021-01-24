@@ -1,5 +1,4 @@
 import analytics from '@segment/analytics-react-native';
-import { get } from 'lodash';
 import React, {
   Fragment,
   useCallback,
@@ -26,9 +25,10 @@ import { FloatingPanel } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
 import {
-import ExchangeModalCategoryTypes from '@rainbow-me/helpers/exchangeModalCategoryTypes';
-import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
-import isKeyboardOpen from '@rainbow-me/helpers/isKeyboardOpen';
+  ExchangeModalCategoryTypes,
+  ExchangeModalTypes,
+  isKeyboardOpen,
+} from '@rainbow-me/helpers';
 import {
   useAccountSettings,
   useBlockPolling,
@@ -87,10 +87,12 @@ export default function ExchangeModal({
 
   const isDeposit = type === ExchangeModalTypes.deposit;
   const isWithdrawal = type === ExchangeModalTypes.withdrawal;
+
   const category =
     isDeposit || isWithdrawal
       ? ExchangeModalCategoryTypes.savings
       : ExchangeModalCategoryTypes.swap;
+  const isSavings = category === ExchangeModalCategoryTypes.savings;
 
   const defaultGasLimit = isDeposit
     ? ethUnits.basic_deposit
@@ -216,8 +218,7 @@ export default function ExchangeModal({
     inputAsExactAmount,
     inputCurrency,
     inputFieldRef,
-    isDeposit,
-    isWithdrawal,
+    isSavings,
     maxInputBalance,
     nativeCurrency,
     outputAmount,
@@ -293,11 +294,9 @@ export default function ExchangeModal({
 
   // Recalculate max input balance when gas price changes if input currency is ETH
   useEffect(() => {
-    if (
-      isETH(inputCurrency?.address) &&
-      get(prevSelectedGasPrice, 'txFee.value.amount', 0) !==
-        get(selectedGasPrice, 'txFee.value.amount', 0)
-    ) {
+    const prevGas = prevSelectedGasPrice?.txFee?.value?.amount || 0;
+    const currentGas = selectedGasPrice?.txFee?.value?.amount || 0;
+    if (isETH(inputCurrency?.address) && prevGas !== currentGas) {
       updateMaxInputBalance(inputCurrency);
     }
   }, [
@@ -383,7 +382,7 @@ export default function ExchangeModal({
     }
     analytics.track('Selected max balance', {
       category,
-      defaultInputAsset: get(defaultInputAsset, 'symbol', ''),
+      defaultInputAsset: defaultInputAsset?.symbol || '',
       type,
       value: Number(maxBalance.toString()),
     });
@@ -402,12 +401,12 @@ export default function ExchangeModal({
     backgroundTask.execute(async () => {
       analytics.track(`Submitted ${type}`, {
         category,
-        defaultInputAsset: get(defaultInputAsset, 'symbol', ''),
+        defaultInputAsset: defaultInputAsset?.symbol || '',
         isSlippageWarningVisible,
-        name: get(outputCurrency, 'name', ''),
+        name: outputCurrency?.name || '',
         slippage,
-        symbol: get(outputCurrency, 'symbol', ''),
-        tokenAddress: get(outputCurrency, 'address', ''),
+        symbol: outputCurrency?.symbol || '',
+        tokenAddress: outputCurrency?.address || '',
         type,
       });
 
@@ -440,7 +439,7 @@ export default function ExchangeModal({
         logger.log('[exchange - handle submit] executed rap!');
         analytics.track(`Completed ${type}`, {
           category,
-          defaultInputAsset: get(defaultInputAsset, 'symbol', ''),
+          defaultInputAsset: defaultInputAsset?.symbol || '',
           type,
         });
       } catch (error) {
@@ -516,11 +515,9 @@ export default function ExchangeModal({
         inputAmount,
         inputAmountDisplay,
         inputCurrency,
-        inputCurrencySymbol: get(inputCurrency, 'symbol'),
         outputAmount,
         outputAmountDisplay,
         outputCurrency,
-        outputCurrencySymbol: get(outputCurrency, 'symbol'),
         renderConfirmButton,
         restoreFocusOnSwapModal: () => {
           android &&
@@ -532,9 +529,9 @@ export default function ExchangeModal({
       });
       analytics.track('Opened Swap Details modal', {
         category,
-        name: get(outputCurrency, 'name', ''),
-        symbol: get(outputCurrency, 'symbol', ''),
-        tokenAddress: get(outputCurrency, 'address', ''),
+        name: outputCurrency?.name || '',
+        symbol: outputCurrency?.symbol || '',
+        tokenAddress: outputCurrency?.address || '',
         type,
       });
     };
@@ -563,9 +560,9 @@ export default function ExchangeModal({
 
   const showDetailsButton = useMemo(() => {
     return (
-      !(isDeposit || isWithdrawal) &&
-      get(inputCurrency, 'symbol') &&
-      get(outputCurrency, 'symbol') &&
+      !isSavings &&
+      inputCurrency?.symbol &&
+      outputCurrency?.symbol &&
       areTradeDetailsValid &&
       inputAmount > 0 &&
       outputAmountDisplay
@@ -574,16 +571,14 @@ export default function ExchangeModal({
     areTradeDetailsValid,
     inputAmount,
     inputCurrency,
-    isDeposit,
-    isWithdrawal,
+    isSavings,
     outputAmountDisplay,
     outputCurrency,
   ]);
 
-  const showConfirmButton =
-    isDeposit || isWithdrawal
-      ? !!inputCurrency
-      : !!inputCurrency && !!outputCurrency;
+  const showConfirmButton = isSavings
+    ? !!inputCurrency
+    : !!inputCurrency && !!outputCurrency;
 
   return (
     <Wrapper>
@@ -600,8 +595,8 @@ export default function ExchangeModal({
             <ExchangeInputField
               disableInputCurrencySelection={isWithdrawal}
               inputAmount={inputAmountDisplay}
-              inputCurrencyAddress={get(inputCurrency, 'address', null)}
-              inputCurrencySymbol={get(inputCurrency, 'symbol', null)}
+              inputCurrencyAddress={inputCurrency?.address}
+              inputCurrencySymbol={inputCurrency?.symbol}
               inputFieldRef={inputFieldRef}
               nativeAmount={nativeAmount}
               nativeCurrency={nativeCurrency}
@@ -618,8 +613,8 @@ export default function ExchangeModal({
                 onFocus={handleFocus}
                 onPressSelectOutputCurrency={navigateToSelectOutputCurrency}
                 outputAmount={outputAmountDisplay}
-                outputCurrencyAddress={get(outputCurrency, 'address', null)}
-                outputCurrencySymbol={get(outputCurrency, 'symbol', null)}
+                outputCurrencyAddress={outputCurrency?.address}
+                outputCurrencySymbol={outputCurrency?.symbol}
                 outputFieldRef={outputFieldRef}
                 setOutputAmount={updateOutputAmount}
                 testID={testID + '-output'}

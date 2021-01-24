@@ -11,7 +11,7 @@ import { delayNext } from './useMagicAutofocus';
 import usePrevious from './usePrevious';
 import useUniswapAssetsInWallet from './useUniswapAssetsInWallet';
 import useUniswapCalls from './useUniswapCalls';
-import CurrencySelectionTypes from '@rainbow-me/helpers/currencySelectionTypes';
+import { CurrencySelectionTypes } from '@rainbow-me/helpers';
 import { multiply } from '@rainbow-me/helpers/utilities';
 import { useNavigation } from '@rainbow-me/navigation';
 import {
