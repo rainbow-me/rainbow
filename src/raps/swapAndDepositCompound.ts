@@ -31,7 +31,7 @@ export const estimateSwapAndDepositCompound = async ({
   outputCurrency,
   tradeDetails,
 }: {
-  inputAmount: string | null;
+  inputAmount: string;
   inputCurrency: Asset;
   outputAmount: string | null;
   outputCurrency: Asset;
@@ -111,7 +111,7 @@ export const createSwapAndDepositCompoundRap = async ({
   tradeDetails,
 }: {
   callback: () => void;
-  inputAmount: string | null;
+  inputAmount: string;
   inputCurrency: Asset;
   outputAmount: string | null;
   outputCurrency: Asset;
@@ -168,7 +168,7 @@ export const createSwapAndDepositCompoundRap = async ({
   // create unlock token on Compound rap
   const depositAssetNeedsUnlocking = await assetNeedsUnlocking(
     accountAddress,
-    requiresSwap ? outputAmount : inputAmount,
+    requiresSwap ? (outputAmount as string) : inputAmount,
     tokenToDeposit,
     cTokenContract
   );

@@ -1,31 +1,46 @@
+import { TransactionReceipt } from '@ethersproject/abstract-provider';
+import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
 import { find, get, toLower } from 'lodash';
-import { estimateSwapGasLimit, executeSwap } from '../../handlers/uniswap';
-import ProtocolTypes from '../../helpers/protocolTypes';
-import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
-import TransactionTypes from '../../helpers/transactionTypes';
+import { Rap, RapActionParameters, SwapActionParameters } from '../common';
+import { Asset } from '@rainbow-me/entities';
+import {
+  estimateSwapGasLimit,
+  executeSwap,
+} from '@rainbow-me/handlers/uniswap';
+import ProtocolTypes from '@rainbow-me/helpers/protocolTypes';
+import TransactionStatusTypes from '@rainbow-me/helpers/transactionStatusTypes';
+import TransactionTypes from '@rainbow-me/helpers/transactionTypes';
+import { dataAddNewTransaction } from '@rainbow-me/redux/data';
+import { rapsAddOrUpdate } from '@rainbow-me/redux/raps';
+import store from '@rainbow-me/redux/store';
+import {
+  TRANSFER_EVENT_KECCAK,
+  TRANSFER_EVENT_TOPIC_LENGTH,
+} from '@rainbow-me/references';
 import {
   convertHexToString,
   convertRawAmountToDecimalFormat,
   greaterThan,
   isZero,
-} from '../../helpers/utilities';
-import { dataAddNewTransaction } from '../../redux/data';
-import { rapsAddOrUpdate } from '../../redux/raps';
-import store from '../../redux/store';
-import {
-  TRANSFER_EVENT_KECCAK,
-  TRANSFER_EVENT_TOPIC_LENGTH,
-} from '../../references';
-import { ethereumUtils, gasUtils } from '../../utils';
+} from '@rainbow-me/utilities';
+import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const NOOP = () => undefined;
 
-export const isValidSwapInput = ({ inputCurrency, outputCurrency }) =>
-  !!inputCurrency && !!outputCurrency;
+export const isValidSwapInput = ({
+  inputCurrency,
+  outputCurrency,
+}: {
+  inputCurrency: Asset | null;
+  outputCurrency: Asset | null;
+}) => !!inputCurrency && !!outputCurrency;
 
-const findSwapOutputAmount = (receipt, accountAddress) => {
+const findSwapOutputAmount = (
+  receipt: TransactionReceipt,
+  accountAddress: string
+): string | null => {
   const { logs } = receipt;
   const transferLog = find(logs, log => {
     const { topics } = log;
@@ -48,7 +63,12 @@ const findSwapOutputAmount = (receipt, accountAddress) => {
   return convertHexToString(data);
 };
 
-const swap = async (wallet, currentRap, index, parameters) => {
+const swap = async (
+  wallet: Wallet,
+  currentRap: Rap,
+  index: number,
+  parameters: RapActionParameters
+): Promise<string | null> => {
   logger.log('[swap] swap on uniswap!');
   const {
     accountAddress,
@@ -57,7 +77,7 @@ const swap = async (wallet, currentRap, index, parameters) => {
     outputCurrency,
     selectedGasPrice,
     tradeDetails,
-  } = parameters;
+  } = parameters as SwapActionParameters;
   const { dispatch } = store;
   const { chainId } = store.getState().settings;
   const { gasPrices } = store.getState().gas;
@@ -93,6 +113,10 @@ const swap = async (wallet, currentRap, index, parameters) => {
     logger.sentry('error executing estimateSwapGasLimit');
     captureException(e);
     throw e;
+  }
+
+  if (!methodName) {
+    throw new Error('Error executing swap action - no method name found');
   }
 
   let swap;
@@ -146,12 +170,13 @@ const swap = async (wallet, currentRap, index, parameters) => {
     logger.log('[swap] waiting for the swap to go thru');
     const receipt = await wallet.provider.waitForTransaction(swap.hash);
     logger.log('[swap] receipt:', receipt);
-    if (!isZero(receipt.status)) {
+    if (receipt.status && !isZero(receipt.status)) {
       currentRap.actions[index].transaction.confirmed = true;
       dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
       const rawReceivedAmount = findSwapOutputAmount(receipt, accountAddress);
       logger.log('[swap] raw received amount', rawReceivedAmount);
       logger.log('[swap] updated raps');
+      if (!rawReceivedAmount) return null;
       const convertedOutput = convertRawAmountToDecimalFormat(
         rawReceivedAmount,
         outputCurrency.decimals

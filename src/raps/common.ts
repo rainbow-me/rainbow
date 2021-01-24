@@ -41,6 +41,15 @@ export interface UnlockActionParameters {
   selectedGasPrice: SelectedGasPrice;
 }
 
+export interface SwapActionParameters {
+  accountAddress: string;
+  inputAmount: string;
+  inputCurrency: Asset;
+  outputCurrency: Asset;
+  selectedGasPrice: SelectedGasPrice;
+  tradeDetails: Trade;
+}
+
 export interface WithdrawActionParameters {
   accountAddress: string;
   inputAmount: string;
