@@ -1,11 +1,10 @@
 import React from 'react';
-import { Keyboard, StatusBar } from 'react-native';
+import { Keyboard } from 'react-native';
 import styled from 'styled-components/primitives';
 import { Icon } from '../components/icons';
 import { SheetHandleFixedToTopHeight } from '../components/sheet';
 import colors from '../context/currentColors';
-import { onDidPop, onWillPop } from './Navigation';
-import { appearListener } from './nativeStackHelpers';
+import { onWillPop } from './Navigation';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import { fonts } from '@rainbow-me/styles';
 import { deviceUtils, safeAreaInsetValues } from '@rainbow-me/utils';
@@ -29,34 +28,6 @@ const buildCoolModalConfig = params => ({
   single: params.single,
   topOffset: params.topOffset || sharedCoolModalTopOffset,
 });
-
-export const nativeStackConfig = {
-  mode: 'modal',
-  screenOptions: {
-    contentStyle: {
-      backgroundColor: 'transparent',
-    },
-    onAppear: () => {
-      appearListener.current && appearListener.current();
-    },
-    onDismissed: onDidPop,
-    onTouchTop: ({ nativeEvent: { dismissing } }) => {
-      if (dismissing) {
-        Keyboard.dismiss();
-      } else {
-        appearListener.current && appearListener.current();
-      }
-    },
-    onWillDismiss: () => {
-      onWillPop();
-      StatusBar.setBarStyle('dark-content');
-    },
-    showDragIndicator: false,
-    springDamping: 0.8,
-    stackPresentation: 'modal',
-    transitionDuration: 0.35,
-  },
-};
 
 const backupSheetSizes = {
   long:

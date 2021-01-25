@@ -345,6 +345,7 @@ export default function TransactionList({
   const isAvatarPickerAvailable = useExperimentalFlag(AVATAR_PICKER);
 
   const safeAccountImage = useSafeImageUri(accountImage);
+  const { isDarkMode } = useTheme();
 
   return (
     <Container>
@@ -355,6 +356,7 @@ export default function TransactionList({
         accountName={accountSymbol}
         addCashAvailable={addCashAvailable}
         as={NativeTransactionListView}
+        darkMode={isDarkMode}
         data={data}
         isAvatarPickerAvailable={isAvatarPickerAvailable}
         isLoading={loading}

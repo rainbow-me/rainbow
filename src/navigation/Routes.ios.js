@@ -29,7 +29,6 @@ import {
   backupSheetConfig,
   defaultScreenStackOptions,
   expandedAssetSheetConfig,
-  nativeStackConfig,
   nativeStackDefaultConfig,
   nativeStackDefaultConfigWithoutStatusBar,
   restoreSheetConfig,
@@ -44,6 +43,7 @@ import {
   overlayExpandedPreset,
   sheetPreset,
 } from './effects';
+import { nativeStackConfig } from './nativeStackConfig';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';

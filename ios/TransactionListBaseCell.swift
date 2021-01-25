@@ -60,7 +60,7 @@ class TransactionListBaseCell : UITableViewCell {
     animateTapEnd()
   }
   
-  func generateTextImage(_ text: String, textColor: UIColor = UIColor.white, backgroundColor: UIColor = UIColor.RainbowTheme.Transactions.blueGreyDark) -> UIImage? {
+  func generateTextImage(_ text: String, textColor: UIColor = UIColor.RainbowTheme.Transactions.white, backgroundColor: UIColor = UIColor.RainbowTheme.Transactions.blueGreyDark) -> UIImage? {
     let frame = CGRect(x: 0, y: 0, width: 120, height: 120)
     
     var fallbackFontSize = 11 * 3

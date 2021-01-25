@@ -26,7 +26,7 @@ export const ThemeContext = createContext({
 export const MainThemeProvider = props => {
   const [colorScheme, setColorScheme] = useState();
   useEffect(() => {
-    setTimeout(() => NativeModules.RNThemeModule?.setMode(colorScheme), 20);
+    setTimeout(() => NativeModules.RNThemeModule?.setMode(colorScheme), 400);
   }, [colorScheme]);
 
   const [isDarkMode, setIsDarkMode] = useState(colorScheme === THEMES.DARK);

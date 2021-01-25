@@ -42,6 +42,22 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
       }
     }
   }
+  
+  @objc var darkMode: Bool = false {
+    didSet {
+      if(darkMode != oldValue){
+        UIColor.RainbowTheme.isDarkMode = darkMode
+        tableView.backgroundColor = UIColor.RainbowTheme.Transactions.white
+        header.backgroundColor = UIColor.RainbowTheme.Transactions.white
+        self.backgroundColor = UIColor.RainbowTheme.Transactions.white
+        header.accountView.layer.sublayers?.last?.shadowColor = UIColor.RainbowTheme.TransactionsLight.dark.cgColor
+        headerSeparator.backgroundColor = UIColor.RainbowTheme.Transactions.rowDividerLight
+        self.layoutIfNeeded()
+        tableView.reloadData()
+      }
+    }
+  }
+  
   @objc var scaleTo: CGFloat = 0.97
   @objc var transformOrigin: CGPoint = CGPoint(x: 0.5, y: 0.5)
   @objc var enableHapticFeedback: Bool = true
@@ -204,6 +220,9 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     tableView.register(UINib(nibName: "TransactionListLoadingViewCell", bundle: nil), forCellReuseIdentifier: "TransactionListLoadingViewCell")
     tableView.canCancelContentTouches = true
     tableView.scrollIndicatorInsets.bottom = 0.0000000001
+    tableView.backgroundColor = UIColor.RainbowTheme.Transactions.white
+    header.backgroundColor = UIColor.RainbowTheme.Transactions.white
+    self.backgroundColor = UIColor.RainbowTheme.Transactions.white
     
     // Enable avatars
     header.avatarView.isHidden = true
@@ -326,7 +345,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     label.font = UIFont(name: "SFRounded-Bold", size: 20)
     label.textColor = UIColor.RainbowTheme.Transactions.dark
     label.addCharacterSpacing()
-    view.backgroundColor = .white
+    view.backgroundColor = UIColor.RainbowTheme.Transactions.white
     view.addSubview(label)
     
     return view
@@ -354,7 +373,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   }
   
   func numberOfSections(in tableView: UITableView) -> Int {
-    if(isLoading){
+    if (isLoading){
       return 1
     }
     return sections.count
