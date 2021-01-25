@@ -2,8 +2,7 @@ import React from 'react';
 import { Path } from 'react-native-svg';
 import Svg from '../Svg';
 
-const ArrowCircledIcon = ({ color, ...props }, ref) => {
-  const { colors } = useTheme();
+const ArrowCircledIcon = ({ color, colors, ...props }, ref) => {
   return (
     <Svg height="15" ref={ref} viewBox="0 0 14 15" width="14" {...props}>
       <Path

@@ -5,21 +5,19 @@ import { magicMemo } from '../../utils';
 import { Centered } from '../layout';
 import { Monospace } from '../text';
 import { ImageWithCachedMetadata, ImgixImage } from '@rainbow-me/images';
-import { colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 
-const FallbackTextColorVariants = darkMode => ({
+const FallbackTextColorVariants = (darkMode, colors) => ({
   dark: darkMode
-    ? colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.white, 0.25)
-    : colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.5),
-  light: darkMode
-    ? colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.25)
-    : colors_NOT_REACTIVE.white,
+    ? colors.alpha(colors.white, 0.25)
+    : colors.alpha(colors.blueGreyDark, 0.5),
+  light: darkMode ? colors.alpha(colors.blueGreyDark, 0.25) : colors.white,
 });
 
-const getFallbackTextColor = (bg, darkMode) =>
-  colors_NOT_REACTIVE.getTextColorForBackground(
+const getFallbackTextColor = (bg, darkMode, colors) =>
+  colors.getTextColorForBackground(
     bg,
-    FallbackTextColorVariants(darkMode)
+    FallbackTextColorVariants(darkMode, colors)
   );
 
 const UniqueTokenImage = ({
@@ -30,7 +28,7 @@ const UniqueTokenImage = ({
 }) => {
   const [error, setError] = useState(null);
   const handleError = useCallback(error => setError(error), [setError]);
-  const { isDarkMode } = useTheme();
+  const { isDarkMode, colors } = useTheme();
 
   return (
     <Centered backgroundColor={backgroundColor} style={position.coverAsObject}>
@@ -44,7 +42,7 @@ const UniqueTokenImage = ({
       ) : (
         <Monospace
           align="center"
-          color={getFallbackTextColor(backgroundColor, isDarkMode)}
+          color={getFallbackTextColor(backgroundColor, isDarkMode, colors)}
           lineHeight="looser"
           size="smedium"
         >

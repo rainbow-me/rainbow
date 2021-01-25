@@ -3,8 +3,7 @@ import React from 'react';
 import { Path } from 'react-native-svg';
 import Svg from '../Svg';
 
-const WarningIcon = ({ color, ...props }) => {
-  const { colors } = useTheme();
+const WarningIcon = ({ color, colors, ...props }) => {
   return (
     <Svg height="21" viewBox="0 0 22 21" width="22" {...props}>
       <Path

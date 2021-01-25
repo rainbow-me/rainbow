@@ -2,8 +2,10 @@ import React from 'react';
 import { Path } from 'react-native-svg';
 import Svg from '../Svg';
 
-const ArrowIcon = ({ color, height = 10, width = 10, ...props }, ref) => {
-  const { colors } = useTheme();
+const ArrowIcon = (
+  { color, height = 10, width = 10, colors, ...props },
+  ref
+) => {
   return (
     <Svg height={height} ref={ref} width={width} {...props}>
       <Path

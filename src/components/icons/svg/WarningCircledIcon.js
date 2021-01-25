@@ -3,12 +3,11 @@ import React from 'react';
 import { View } from 'react-native';
 import { Path } from 'react-native-svg';
 import Svg from '../Svg';
-import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
-const WarningCircledIcon = ({ color, ...props }) => (
+const WarningCircledIcon = ({ color, colors, ...props }) => (
   <View
     style={{
-      backgroundColor: color,
+      backgroundColor: color || colors.yellowOrange,
       borderRadius: 22,
       height: 22,
       width: 22,
@@ -26,10 +25,6 @@ const WarningCircledIcon = ({ color, ...props }) => (
 
 WarningCircledIcon.propTypes = {
   color: PropTypes.string,
-};
-
-WarningCircledIcon.defaultProps = {
-  color: colors_NOT_REACTIVE.yellowOrange,
 };
 
 export default WarningCircledIcon;
