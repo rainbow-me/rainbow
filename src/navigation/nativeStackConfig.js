@@ -1,4 +1,5 @@
 import { Keyboard, StatusBar } from 'react-native';
+import currentColors from '../context/currentColors';
 import { onDidPop, onWillPop } from './Navigation';
 import { appearListener } from './nativeStackHelpers';
 
@@ -21,7 +22,9 @@ export const nativeStackConfig = {
     },
     onWillDismiss: () => {
       onWillPop();
-      StatusBar.setBarStyle('dark-content');
+      if (currentColors.theme === 'light') {
+        StatusBar.setBarStyle('dark-content');
+      }
     },
     showDragIndicator: false,
     springDamping: 0.8,

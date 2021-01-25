@@ -5,7 +5,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { NativeModules } from 'react-native';
+import { NativeModules, StatusBar } from 'react-native';
 import { ThemeProvider as ThemeProviderNative } from 'styled-components/native';
 import { ThemeProvider } from 'styled-components/primitives';
 import { getTheme, saveTheme } from '../handlers/localstorage/theme';
@@ -35,6 +35,11 @@ export const MainThemeProvider = props => {
   useEffect(() => {
     const loadUserPref = async () => {
       const userPref = (await getTheme()) || THEMES.LIGHT;
+      StatusBar.setBarStyle(
+        userPref === THEMES.DARK ? 'light-content' : 'dark-content',
+        true
+      );
+      currentColors.theme = userPref;
       currentColors.themedColors =
         userPref === THEMES.DARK
           ? colors_NOT_REACTIVE.darkModeThemeColors
@@ -61,6 +66,11 @@ export const MainThemeProvider = props => {
       isDarkMode,
       // Overrides the isDarkMode value will cause re-render inside the context.
       setTheme: scheme => {
+        currentColors.theme = scheme;
+        StatusBar.setBarStyle(
+          scheme === THEMES.DARK ? 'light-content' : 'dark-content',
+          true
+        );
         currentColors.themedColors =
           scheme === THEMES.DARK
             ? colors_NOT_REACTIVE.darkModeThemeColors

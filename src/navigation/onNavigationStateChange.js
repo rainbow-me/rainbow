@@ -3,7 +3,7 @@ import { get } from 'lodash';
 import { StatusBar } from 'react-native';
 // eslint-disable-next-line import/default
 import AndroidKeyboardAdjust from 'react-native-android-keyboard-adjust';
-import { darkMode } from '../config/debug';
+import currentColors from '../context/currentColors';
 import { sentryUtils } from '../utils';
 import Routes from './routesNames';
 import { Navigation } from './index';
@@ -39,7 +39,7 @@ export function onNavigationStateChange(currentState) {
   const prevRouteName = memRouteName;
   memRouteName = routeName;
 
-  if (darkMode) {
+  if (currentColors.theme === 'dark') {
     StatusBar.setBarStyle('light-content');
   } else {
     if (ios) {
