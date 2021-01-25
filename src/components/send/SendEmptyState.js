@@ -53,6 +53,7 @@ const SendEmptyState = () => {
       width={91}
     />
   );
+  const { colors } = useTheme();
 
   if (android) {
     return <View style={{ alignItems: 'center', flex: 1 }}>{icon}</View>;
@@ -60,7 +61,7 @@ const SendEmptyState = () => {
 
   return (
     <Centered
-      backgroundColor={colors_NOT_REACTIVE.white}
+      backgroundColor={colors.white}
       flex={1}
       justify="space-between"
       paddingBottom={sheetVerticalOffset + 19}

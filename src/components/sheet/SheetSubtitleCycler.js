@@ -27,7 +27,7 @@ const SheetSubtitleCyclerItem = ({ error, selected, subtitle }) => {
     ease,
   });
 
-  const { style } = useTheme();
+  const { colors } = useTheme();
 
   return (
     <Animated.View {...position.coverAsObject} style={{ opacity }}>
@@ -35,8 +35,8 @@ const SheetSubtitleCyclerItem = ({ error, selected, subtitle }) => {
         align="center"
         color={mixColor(
           textColorAnimation,
-          style.blueGreyDark50,
-          style.brightRed
+          colors.blueGreyDark50,
+          colors.brightRed
         )}
         letterSpacing="uppercase"
         size="smedium"

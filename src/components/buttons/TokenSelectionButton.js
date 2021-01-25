@@ -60,7 +60,7 @@ export default function TokenSelectionButton({
       contentContainerStyle={{
         backgroundColor:
           isDarkMode && (colorForAsset === colors.dark || '#25292E')
-            ? colors.darkModeColors.darkModeDark
+            ? colors.darkModeDark
             : colorForAsset,
         borderRadius,
       }}
@@ -72,7 +72,7 @@ export default function TokenSelectionButton({
         {...position.coverAsObject}
         backgroundColor={
           isDarkMode && colorForAsset === colors.dark
-            ? colors.darkModeColors.darkModeDark
+            ? colors.darkModeDark
             : colorForAsset
         }
         borderRadius={borderRadius}
