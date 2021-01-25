@@ -3,10 +3,10 @@ import isNativeStackAvailable from '../../../helpers/isNativeStackAvailable';
 import { useExpandedStateNavigation } from '../../../hooks';
 import SheetActionButton from './SheetActionButton';
 import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 export default function SendActionButton({
-  color = colors.paleBlue,
+  color = colors_NOT_REACTIVE.paleBlue,
   ...props
 }) {
   const navigate = useExpandedStateNavigation();

@@ -13,7 +13,7 @@ import useAccountSettings from '../hooks/useAccountSettings';
 import { useNavigation } from '../navigation/Navigation';
 import { walletsSetSelected, walletsUpdate } from '../redux/wallets';
 import { deviceUtils } from '../utils';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const AvatarCircleHeight = 65;
 const AvatarCircleMarginTop = 2;
@@ -21,11 +21,11 @@ const AvatarBuilderTopPoint =
   HeaderHeightWithStatusBar + AvatarCircleHeight + AvatarCircleMarginTop;
 
 const Container = styled(Column)`
-  background-color: ${colors.transparent};
+  background-color: ${({ theme: { colors } }) => colors.transparent};
 `;
 
 const SheetContainer = styled(Column)`
-  background-color: ${colors.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
   border-radius: 20px;
   height: 420px;
   overflow: hidden;
@@ -50,7 +50,7 @@ const AvatarBuilder = ({ route: { params } }) => {
   const { goBack } = useNavigation();
   const { accountAddress } = useAccountSettings();
   const [currentAccountColor, setCurrentAccountColor] = useState(
-    colors.avatarColor[params.initialAccountColor]
+    colors_NOT_REACTIVE.avatarColor[params.initialAccountColor]
   );
   const dispatch = useDispatch();
 
@@ -58,7 +58,7 @@ const AvatarBuilder = ({ route: { params } }) => {
     saveInfo(`${event} ${params.initialAccountName}`);
   };
 
-  const avatarColors = colors.avatarColor.map((color, index) => (
+  const avatarColors = colors_NOT_REACTIVE.avatarColor.map((color, index) => (
     <ColorCircle
       backgroundColor={color}
       isSelected={index - 4 === 0}

@@ -23,7 +23,7 @@ import { useHeight, useWalletConnectConnections } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { scrollPosition } from '@rainbow-me/navigation/ScrollPagerWrapper';
 import Routes from '@rainbow-me/routes';
-import { colors, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 
 const { call, greaterThan, onChange } = Animated;
 
@@ -85,6 +85,8 @@ export default function QRScannerScreen() {
   useEffect(() => {
     isFocusedAndroid && !initializeCamera && setInitializeCamera(true);
   }, [initializeCamera, isFocusedAndroid]);
+
+  const { colors } = useTheme();
 
   return (
     <View>

@@ -23,7 +23,12 @@ import { Input } from '../inputs';
 import { Column, Row } from '../layout';
 import { AnimatedNumber, Text } from '../text';
 import GasSpeedLabelPager from './GasSpeedLabelPager';
-import { colors, fonts, fontWithWidth, margin } from '@rainbow-me/styles';
+import {
+  colors_NOT_REACTIVE,
+  fonts,
+  fontWithWidth,
+  margin,
+} from '@rainbow-me/styles';
 
 const { GasSpeedOrder, CUSTOM, FAST, SLOW } = gasUtils;
 
@@ -42,7 +47,7 @@ const Label = styled(Text).attrs({
 })``;
 
 const ButtonLabel = styled(BorderlessButton).attrs({
-  color: colors.appleBlue,
+  color: colors_NOT_REACTIVE.appleBlue,
   hitSlop: 40,
   opacity: 1,
   size: 'smedium',
@@ -54,8 +59,8 @@ const ButtonLabel = styled(BorderlessButton).attrs({
 const GasInput = styled(Input).attrs(({ theme }) => ({
   color:
     theme === 'dark'
-      ? colors.whiteLabel
-      : colors.alpha(colors.blueGreyDark, 0.8),
+      ? colors_NOT_REACTIVE.whiteLabel
+      : colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.8),
   height: 58,
   keyboardAppearance: 'dark',
   keyboardType: 'numeric',
@@ -64,8 +69,11 @@ const GasInput = styled(Input).attrs(({ theme }) => ({
   multiline: false,
   placeholderTextColor:
     theme === 'dark'
-      ? colors.alpha(colors.darkModeColors.blueGreyDark, 0.3)
-      : colors.alpha(colors.blueGreyDark, 0.3),
+      ? colors_NOT_REACTIVE.alpha(
+          colors_NOT_REACTIVE.darkModeColors.blueGreyDark,
+          0.3
+        )
+      : colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.3),
   size: 'lmedium',
   testID: 'custom-gas-input',
 }))`
@@ -75,7 +83,7 @@ const GasInput = styled(Input).attrs(({ theme }) => ({
 
 const LittleBorderlessButton = ({ onPress, children, testID }) => (
   <ButtonLabel onPress={onPress} testID={testID} width={120}>
-    <Text color={colors.appleBlue} size="smedium" weight="bold">
+    <Text color={colors_NOT_REACTIVE.appleBlue} size="smedium" weight="bold">
       {children}
     </Text>
   </ButtonLabel>
@@ -86,8 +94,11 @@ const BottomRightLabel = ({ formatter, theme }) => (
     align="right"
     color={
       theme === 'dark'
-        ? colors.alpha(colors.darkModeColors.blueGreyDark, 0.6)
-        : colors.alpha(colors.blueGreyDark, 0.6)
+        ? colors_NOT_REACTIVE.alpha(
+            colors_NOT_REACTIVE.darkModeColors.blueGreyDark,
+            0.6
+          )
+        : colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.6)
     }
   >
     {formatter()}
@@ -224,8 +235,8 @@ const GasSpeedButton = ({
       <Text
         color={
           theme === 'dark'
-            ? colors.whiteLabel
-            : colors.alpha(colors.blueGreyDark, 0.8)
+            ? colors_NOT_REACTIVE.whiteLabel
+            : colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.8)
         }
         letterSpacing="roundedTight"
         size="lmedium"
@@ -447,11 +458,20 @@ const GasSpeedButton = ({
                   color={
                     customGasPriceInput
                       ? theme === 'dark'
-                        ? colors.whiteLabel
-                        : colors.alpha(colors.blueGreyDark, 0.8)
+                        ? colors_NOT_REACTIVE.whiteLabel
+                        : colors_NOT_REACTIVE.alpha(
+                            colors_NOT_REACTIVE.blueGreyDark,
+                            0.8
+                          )
                       : theme === 'dark'
-                      ? colors.alpha(colors.darkModeColors.blueGreyDark, 0.3)
-                      : colors.alpha(colors.blueGreyDark, 0.3)
+                      ? colors_NOT_REACTIVE.alpha(
+                          colors_NOT_REACTIVE.darkModeColors.blueGreyDark,
+                          0.3
+                        )
+                      : colors_NOT_REACTIVE.alpha(
+                          colors_NOT_REACTIVE.blueGreyDark,
+                          0.3
+                        )
                   }
                   size="lmedium"
                   weight="bold"
@@ -469,8 +489,14 @@ const GasSpeedButton = ({
             <Label
               color={
                 theme === 'dark'
-                  ? colors.alpha(colors.darkModeColors.blueGreyDark, 0.6)
-                  : colors.alpha(colors.blueGreyDark, 0.6)
+                  ? colors_NOT_REACTIVE.alpha(
+                      colors_NOT_REACTIVE.darkModeColors.blueGreyDark,
+                      0.6
+                    )
+                  : colors_NOT_REACTIVE.alpha(
+                      colors_NOT_REACTIVE.blueGreyDark,
+                      0.6
+                    )
               }
               height={10}
             >

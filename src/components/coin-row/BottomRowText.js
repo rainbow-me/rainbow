@@ -1,13 +1,13 @@
 import styled from 'styled-components/primitives';
+import { withThemeContext } from '../../context/ThemeContext';
 import { TruncatedText } from '../text';
-import { colors } from '@rainbow-me/styles';
 
-const BottomRowText = styled(TruncatedText).attrs(
-  ({ align = 'left', color = colors.alpha(colors.blueGreyDark, 0.5) }) => ({
+const BottomRowText = withThemeContext(
+  styled(TruncatedText).attrs(({ align = 'left', color, colors }) => ({
     align,
-    color,
+    color: color ? color : colors.alpha(colors.blueGreyDark, 0.5),
     size: 'smedium',
-  })
-)``;
+  }))``
+);
 
 export default BottomRowText;

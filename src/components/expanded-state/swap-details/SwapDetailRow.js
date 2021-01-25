@@ -2,7 +2,7 @@ import React from 'react';
 import { magicMemo } from '../../../utils';
 import { Row } from '../../layout';
 import { Text } from '../../text';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const DetailsRow = ({ label, value, ...props }) => (
   <Row {...props} align="center" justify="space-between">
@@ -11,7 +11,7 @@ const DetailsRow = ({ label, value, ...props }) => (
     </Text>
     <Text
       align="right"
-      color={colors.alpha(colors.dark, 0.6)}
+      color={colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.dark, 0.6)}
       letterSpacing="roundedTight"
       size="lmedium"
     >

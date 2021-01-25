@@ -12,33 +12,35 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
+import { useTheme } from '../../context/ThemeContext';
 import { Button } from '../buttons';
 import { ExchangeInput } from '../exchange';
 import { ColumnWithMargins, Row } from '../layout';
-import { darkMode } from '@rainbow-me/config/debug';
 import { useDimensions } from '@rainbow-me/hooks';
-import { colors, position } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
 
 const Underline = styled.View`
   ${position.cover};
-  background-color: ${colors.blueGreyDark};
+  background-color: ${({ theme: { colors } }) => colors.blueGreyDark};
   opacity: 0.2;
 `;
 
 const UnderlineAnimated = styled(Animated.View)`
   ${position.cover};
-  background-color: ${colors.sendScreen.brightBlue};
+  background-color: ${({ theme: { colors } }) => colors.sendScreen.brightBlue};
   left: -100%;
 `;
 
-const UnderlineInput = styled(ExchangeInput).attrs(({ isTinyPhone }) => ({
-  color: colors.dark,
-  disableTabularNums: true,
-  keyboardAppearance: darkMode ? 'dark' : 'light',
-  letterSpacing: 'roundedTightest',
-  size: isTinyPhone || android ? 'bigger' : 'h3',
-  weight: 'medium',
-}))`
+const UnderlineInput = styled(ExchangeInput).attrs(
+  ({ isTinyPhone, isDarkMode }) => ({
+    color: colors_NOT_REACTIVE.dark,
+    disableTabularNums: true,
+    keyboardAppearance: isDarkMode ? 'dark' : 'light',
+    letterSpacing: 'roundedTightest',
+    size: isTinyPhone || android ? 'bigger' : 'h3',
+    weight: 'medium',
+  })
+)`
   padding-right: 8;
   ${android ? 'height: 40;' : ''}
   ${android ? 'padding-bottom: 0;' : ''}
@@ -152,11 +154,14 @@ const UnderlineField = (
     };
   });
 
+  const { isDarkMode } = useTheme();
+
   return (
     <ColumnWithMargins flex={1} margin={8} {...props}>
       <Row align="center" justify="space-between">
         <UnderlineInput
           autoFocus={autoFocus}
+          isDarkMode={isDarkMode}
           isTinyPhone={isTinyPhone}
           keyboardType={keyboardType}
           mask={mask}
@@ -171,7 +176,7 @@ const UnderlineField = (
         />
         {buttonText && isFocused && (
           <Button
-            backgroundColor={colors.sendScreen.brightBlue}
+            backgroundColor={colors_NOT_REACTIVE.sendScreen.brightBlue}
             onPress={handleButtonPress}
             size="small"
             type="pill"

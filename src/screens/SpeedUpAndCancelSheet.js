@@ -44,7 +44,7 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { ethUnits } from '@rainbow-me/references';
-import { colors, position } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
 import logger from 'logger';
 
 const isReanimatedAvailable = !(
@@ -72,7 +72,7 @@ const CenteredSheet = styled(Centered)`
 `;
 
 const ExtendedSheetBackground = styled.View`
-  background-color: ${colors.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
   height: 1000;
   position: absolute;
   bottom: -800;
@@ -412,7 +412,7 @@ export default function SpeedUpAndCancelSheet() {
     >
       <ExtendedSheetBackground />
       <SlackSheet
-        backgroundColor={colors.transparent}
+        backgroundColor={colors_NOT_REACTIVE.transparent}
         borderRadius={0}
         height={sheetHeight}
         hideHandle
@@ -420,7 +420,7 @@ export default function SpeedUpAndCancelSheet() {
       >
         <Column>
           <AnimatedSheet
-            backgroundColor={colors.white}
+            backgroundColor={colors_NOT_REACTIVE.white}
             borderRadius={39}
             direction="column"
             marginTop={marginTop}
@@ -437,7 +437,7 @@ export default function SpeedUpAndCancelSheet() {
               <Column marginBottom={12}>
                 <Text
                   align="center"
-                  color={colors.dark}
+                  color={colors_NOT_REACTIVE.dark}
                   size="big"
                   weight="bold"
                 >
@@ -447,7 +447,10 @@ export default function SpeedUpAndCancelSheet() {
               <Column marginBottom={30} maxWidth={375} paddingHorizontal={42}>
                 <Text
                   align="center"
-                  color={colors.alpha(colors.blueGreyDark, 0.5)}
+                  color={colors_NOT_REACTIVE.alpha(
+                    colors_NOT_REACTIVE.blueGreyDark,
+                    0.5
+                  )}
                   lineHeight="looser"
                   size="large"
                   weight="regular"
@@ -457,7 +460,7 @@ export default function SpeedUpAndCancelSheet() {
               </Column>
               <Centered marginBottom={24}>
                 <Divider
-                  color={colors.rowDividerExtraLight}
+                  color={colors_NOT_REACTIVE.rowDividerExtraLight}
                   inset={[0, 143.5]}
                 />
               </Centered>
@@ -465,7 +468,7 @@ export default function SpeedUpAndCancelSheet() {
                 <Column>
                   <SheetActionButtonRow ignorePaddingBottom ignorePaddingTop>
                     <SheetActionButton
-                      color={colors.red}
+                      color={colors_NOT_REACTIVE.red}
                       fullWidth
                       label="􀎽 Attempt Cancellation"
                       onPress={handleCancellation}
@@ -475,12 +478,15 @@ export default function SpeedUpAndCancelSheet() {
                   </SheetActionButtonRow>
                   <SheetActionButtonRow ignorePaddingBottom>
                     <SheetActionButton
-                      color={colors.white}
+                      color={colors_NOT_REACTIVE.white}
                       fullWidth
                       label="Close"
                       onPress={goBack}
                       size="big"
-                      textColor={colors.alpha(colors.blueGreyDark, 0.8)}
+                      textColor={colors_NOT_REACTIVE.alpha(
+                        colors_NOT_REACTIVE.blueGreyDark,
+                        0.8
+                      )}
                       weight="bold"
                     />
                   </SheetActionButtonRow>
@@ -489,15 +495,18 @@ export default function SpeedUpAndCancelSheet() {
               {type === SPEED_UP && (
                 <SheetActionButtonRow ignorePaddingBottom ignorePaddingTop>
                   <SheetActionButton
-                    color={colors.white}
+                    color={colors_NOT_REACTIVE.white}
                     label="Cancel"
                     onPress={goBack}
                     size="big"
-                    textColor={colors.alpha(colors.blueGreyDark, 0.8)}
+                    textColor={colors_NOT_REACTIVE.alpha(
+                      colors_NOT_REACTIVE.blueGreyDark,
+                      0.8
+                    )}
                     weight="bold"
                   />
                   <SheetActionButton
-                    color={colors.appleBlue}
+                    color={colors_NOT_REACTIVE.appleBlue}
                     label="􀎽 Confirm"
                     onPress={handleSpeedUp}
                     size="big"

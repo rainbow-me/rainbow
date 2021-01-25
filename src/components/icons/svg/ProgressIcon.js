@@ -4,7 +4,7 @@ import Animated from 'react-native-reanimated';
 import { G, Path } from 'react-native-svg';
 import { Centered } from '../../layout';
 import Svg from '../Svg';
-import { colors, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 
 const AnimatedSvg = Animated.createAnimatedComponent(Svg);
 
@@ -66,13 +66,16 @@ function circlePath(center, radius, startAngle, endAngle) {
 }
 
 const ProgressIcon = ({
-  color,
+  color: givenColor,
   progress,
-  progressColor,
+  progressColor: givenProgressColor,
   size,
   strokeWidth,
   ...props
 }) => {
+  const { colors } = useTheme();
+  const progressColor = givenProgressColor || colors.whiteLabel;
+  const color = givenColor || colors.alpha(colors.sendScreen.grey, 0.3);
   const radius = size / 2;
   const center = radius + 2;
   const viewBoxSize = size + strokeWidth * 2;
@@ -113,9 +116,7 @@ ProgressIcon.propTypes = {
 };
 
 ProgressIcon.defaultProps = {
-  color: colors.alpha(colors.sendScreen.grey, 0.3),
   progress: 0,
-  progressColor: colors.whiteLabel,
   size: 29,
   strokeWidth: 2,
 };

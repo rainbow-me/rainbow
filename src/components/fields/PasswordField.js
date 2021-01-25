@@ -1,20 +1,24 @@
 import React, { useCallback } from 'react';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import styled from 'styled-components';
+import { useTheme } from '../../context/ThemeContext';
 import { Icon } from '../icons';
 import { Input } from '../inputs';
-import { darkMode } from '@rainbow-me/config/debug';
 import { cloudBackupPasswordMinLength } from '@rainbow-me/handlers/cloudBackup';
 import { useDimensions } from '@rainbow-me/hooks';
-import { colors, padding, position } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const FieldAccessoryBadgeSize = 22;
-const FieldAccessoryBadgeWrapper = styled(ShadowStack).attrs(({ color }) => ({
-  ...position.sizeAsObject(FieldAccessoryBadgeSize),
-  borderRadius: FieldAccessoryBadgeSize,
-  shadows: [[0, 4, 12, darkMode ? colors.shadow : color, darkMode ? 0.1 : 0.4]],
-}))`
+const FieldAccessoryBadgeWrapper = styled(ShadowStack).attrs(
+  ({ theme: { colors, isDarkMode }, color }) => ({
+    ...position.sizeAsObject(FieldAccessoryBadgeSize),
+    borderRadius: FieldAccessoryBadgeSize,
+    shadows: [
+      [0, 4, 12, isDarkMode ? colors.shadow : color, isDarkMode ? 0.1 : 0.4],
+    ],
+  })
+)`
   margin-bottom: 12;
   position: absolute;
   right: 12;
@@ -29,7 +33,7 @@ const StyledTouchable = styled(TouchableWithoutFeedback)`
   ${android ? 'margin-top: -30;' : ''}
 `;
 
-const PasswordInput = styled(Input).attrs({
+const PasswordInput = styled(Input).attrs(({ theme: { colors } }) => ({
   autoCompleteType: 'password',
   blurOnSubmit: false,
   passwordRules: `minlength: ${cloudBackupPasswordMinLength};`,
@@ -39,21 +43,23 @@ const PasswordInput = styled(Input).attrs({
   size: 'large',
   type: 'password',
   weight: 'semibold',
-})`
+}))`
   ${padding(0, 40, 2.5, 19)};
   height: 100%;
 `;
 
-const ShadowContainer = styled(ShadowStack).attrs(({ deviceWidth }) => ({
-  backgroundColor: darkMode ? colors.offWhite : colors.white,
-  borderRadius: 23,
-  height: 46,
-  shadows: [
-    [0, 5, 15, colors.shadow, 0.06],
-    [0, 10, 30, colors.shadow, 0.12],
-  ],
-  width: Math.max(deviceWidth - 130, 245),
-}))`
+const ShadowContainer = styled(ShadowStack).attrs(
+  ({ deviceWidth, theme: { colors, isDarkMode } }) => ({
+    backgroundColor: isDarkMode ? colors.offWhite : colors.white,
+    borderRadius: 23,
+    height: 46,
+    shadows: [
+      [0, 5, 15, colors.shadow, 0.06],
+      [0, 10, 30, colors.shadow, 0.12],
+    ],
+    width: Math.max(deviceWidth - 130, 245),
+  })
+)`
   elevation: 15;
 `;
 
@@ -79,10 +85,15 @@ const PasswordField = (
 ) => {
   const { width: deviceWidth } = useDimensions();
   const handleFocus = useCallback(() => ref?.current?.focus?.(), [ref]);
+  const { isDarkMode } = useTheme();
 
   return (
     <StyledTouchable onPress={handleFocus}>
-      <ShadowContainer deviceWidth={deviceWidth} style={style}>
+      <ShadowContainer
+        deviceWidth={deviceWidth}
+        isDarkMode={isDarkMode}
+        style={style}
+      >
         <PasswordInput
           ref={ref}
           returnKeyType={returnKeyType}
@@ -91,11 +102,14 @@ const PasswordField = (
           {...props}
         />
         {isValid && (
-          <FieldAccessoryBadge color={colors.green} name="checkmarkCircled" />
+          <FieldAccessoryBadge
+            color={colors_NOT_REACTIVE.green}
+            name="checkmarkCircled"
+          />
         )}
         {isInvalid && (
           <FieldAccessoryBadge
-            color={colors.orangeLight}
+            color={colors_NOT_REACTIVE.orangeLight}
             name="warningCircled"
           />
         )}

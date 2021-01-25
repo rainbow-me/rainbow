@@ -37,7 +37,7 @@ import {
 import { delayNext } from '@rainbow-me/hooks/useMagicAutofocus';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import Routes from '@rainbow-me/routes';
-import { colors, position } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
 import { filterList } from '@rainbow-me/utils';
 
 const TabTransitionAnimation = styled(Animated.View)`
@@ -131,7 +131,7 @@ export default function CurrencySelectModal() {
         filteredList = [];
         filteredFavorite.length &&
           filteredList.push({
-            color: colors.yellowFavorite,
+            color: colors_NOT_REACTIVE.yellowFavorite,
             data: filteredFavorite,
             title: tokenSectionTypes.favoriteTokenSection,
           });
@@ -157,7 +157,7 @@ export default function CurrencySelectModal() {
       } else {
         filteredList = [
           {
-            color: colors.yellowFavorite,
+            color: colors_NOT_REACTIVE.yellowFavorite,
             data: favorites,
             title: tokenSectionTypes.favoriteTokenSection,
           },

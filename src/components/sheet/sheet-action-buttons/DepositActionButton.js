@@ -2,10 +2,14 @@ import analytics from '@segment/analytics-react-native';
 import React, { useCallback, useState } from 'react';
 import { ComingSoonFloatingEmojis } from '../../floating-emojis';
 import SheetActionButton from './SheetActionButton';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 import { neverRerender } from '@rainbow-me/utils';
 
-function DepositActionButton({ color = colors.dark, symbol, ...props }) {
+function DepositActionButton({
+  color = colors_NOT_REACTIVE.dark,
+  symbol,
+  ...props
+}) {
   const [didTrack, setDidTrack] = useState(false);
 
   const handlePress = useCallback(() => {

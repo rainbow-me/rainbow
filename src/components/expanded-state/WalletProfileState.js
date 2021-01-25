@@ -15,12 +15,17 @@ import {
 import { useAccountProfile } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors, margin, padding, position } from '@rainbow-me/styles';
+import {
+  colors_NOT_REACTIVE,
+  margin,
+  padding,
+  position,
+} from '@rainbow-me/styles';
 import { abbreviations } from '@rainbow-me/utils';
 
 const WalletProfileAddressText = styled(TruncatedAddress).attrs({
   align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.6),
+  color: colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.6),
   firstSectionLength: abbreviations.defaultNumCharsPerSection,
   size: 'lmedium',
   truncationLength: 4,
@@ -53,7 +58,7 @@ const ProfileImage = styled(ImageAvatar)`
 
 const WalletProfileDivider = styled(Divider).attrs({
   borderRadius: 1,
-  color: colors.rowDividerLight,
+  color: colors_NOT_REACTIVE.rowDividerLight,
   inset: false,
 })``;
 
@@ -76,7 +81,8 @@ export default function WalletProfileState({
   const { accountImage } = useAccountProfile();
 
   const [color, setColor] = useState(
-    (profile.color !== null && profile.color) || colors.getRandomColor()
+    (profile.color !== null && profile.color) ||
+      colors_NOT_REACTIVE.getRandomColor()
   );
 
   const [value, setValue] = useState(
@@ -139,7 +145,7 @@ export default function WalletProfileState({
           onSubmitEditing={handleSubmit}
           placeholder="Name your wallet"
           ref={inputRef}
-          selectionColor={colors.avatarColor[color]}
+          selectionColor={colors_NOT_REACTIVE.avatarColor[color]}
           testID="wallet-info-input"
           value={value}
         />
@@ -163,7 +169,10 @@ export default function WalletProfileState({
         </WalletProfileButton>
         <WalletProfileButton onPress={handleCancel}>
           <WalletProfileButtonText
-            color={colors.alpha(colors.blueGreyDark, 0.6)}
+            color={colors_NOT_REACTIVE.alpha(
+              colors_NOT_REACTIVE.blueGreyDark,
+              0.6
+            )}
             letterSpacing="roundedMedium"
             weight="medium"
           >

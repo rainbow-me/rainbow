@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { requireNativeComponent, StyleSheet } from 'react-native';
+import { useTheme } from '../../context/ThemeContext';
 import isRainbowTextAvailable from '../../helpers/isRainbowTextAvailable';
 import { formatSavingsAmount, isSymbolStablecoin } from '../../helpers/savings';
 import AndroidText from './AndroidAnimatedNumbers';
-import { darkMode } from '@rainbow-me/config/debug';
-import { colors, fonts } from '@rainbow-me/styles';
+import { fonts } from '@rainbow-me/styles';
 
 const sx = StyleSheet.create({
   animatedNumber: {
@@ -17,7 +17,6 @@ const sx = StyleSheet.create({
     top: 4,
   },
   text: {
-    color: colors.dark,
     flex: 1,
     fontFamily: fonts.family.SFProRounded,
     fontSize: parseFloat(fonts.size.lmedium),
@@ -42,6 +41,8 @@ const SavingsListRowAnimatedNumber = ({
     [symbol]
   );
 
+  const { isDarkMode: darkMode, colors } = useTheme();
+
   const TextComponent = isRainbowTextAvailable
     ? requireNativeComponent('RainbowText')
     : AndroidText;
@@ -64,6 +65,7 @@ const SavingsListRowAnimatedNumber = ({
       steps={steps}
       style={[
         sx.text,
+        { color: colors.dark },
         isRainbowTextAvailable ? sx.animatedNumber : null,
         android ? sx.animatedNumberAndroid : null,
       ]}

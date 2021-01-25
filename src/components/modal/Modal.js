@@ -2,10 +2,11 @@ import React from 'react';
 import { StatusBar } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import styled from 'styled-components/primitives';
+import { useTheme } from '../../context/ThemeContext';
 import { useDimensions } from '../../hooks';
 import TouchableBackdrop from '../TouchableBackdrop';
 import { Centered, Column } from '../layout';
-import { colors, padding, position } from '@rainbow-me/styles';
+import { padding, position } from '@rainbow-me/styles';
 
 const Container = styled(Centered).attrs(({ fixedToTop }) => ({
   direction: 'column',
@@ -13,14 +14,13 @@ const Container = styled(Centered).attrs(({ fixedToTop }) => ({
 }))`
   ${({ containerPadding }) => padding(containerPadding)};
   ${position.size('100%')};
-  shadow-color: ${colors.shadowBlack};
+  shadow-color: ${({ shadowColor }) => shadowColor};
   shadow-offset: 0px 10px;
   shadow-opacity: 0.5;
   shadow-radius: 25;
 `;
 
 const Content = styled(Column).attrs({ shrink: 0 })`
-  background-color: ${colors.white};
   border-radius: ${({ radius }) => radius};
   height: ${({ height }) => height};
   margin-top: ${({ fixedToTop }) => (fixedToTop ? 91 : 0)};
@@ -42,14 +42,20 @@ export default function Modal({
   ...props
 }) {
   const { height: deviceHeight } = useDimensions();
+  const { colors } = useTheme();
 
   return (
-    <Container containerPadding={containerPadding} fixedToTop={fixedToTop}>
+    <Container
+      containerPadding={containerPadding}
+      fixedToTop={fixedToTop}
+      shadowColor={colors.shadowBlack}
+    >
       {skipStatusBar || <StatusBar barStyle={statusBarStyle} />}
       {ios && <TouchableBackdrop onPress={onCloseModal} />}
       <Content
         fullScreenOnAndroid={fullScreenOnAndroid}
         {...props}
+        backgroundColor={colors.white}
         fixedToTop={fixedToTop}
         height={
           (fullScreenOnAndroid && android ? '100%' : height) ||

@@ -23,23 +23,18 @@ import {
 import { useDimensions } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors, padding, position } from '@rainbow-me/styles';
+import { padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const MS_IN_1_DAY = 1000 * 60 * 60 * 24;
 const ANIMATE_NUMBER_INTERVAL = 60;
-
-const SavingsListRowShadows = [
-  [0, 10, 30, colors.shadow, 0.1],
-  [0, 5, 15, colors.shadow, 0.04],
-];
 
 const NOOP = () => undefined;
 
 const neverRerender = () => true;
 // eslint-disable-next-line react/display-name
 const SavingsListRowGradient = React.memo(
-  () => (
+  ({ colors }) => (
     <LinearGradient
       borderRadius={49}
       colors={colors.gradients.savings}
@@ -53,11 +48,14 @@ const SavingsListRowGradient = React.memo(
 );
 
 const SavingsListRowShadowStack = styled(ShadowStack).attrs(
-  ({ deviceWidth }) => ({
+  ({ deviceWidth, theme: { colors } }) => ({
     backgroundColor: colors.white,
     borderRadius: 49,
     height: 49,
-    shadows: SavingsListRowShadows,
+    shadows: [
+      [0, 10, 30, colors.shadow, 0.1],
+      [0, 5, 15, colors.shadow, 0.04],
+    ],
     width: deviceWidth - 38,
   })
 )``;
@@ -151,6 +149,8 @@ const SavingsListRow = ({
 
   const displayValue = formatSavingsAmount(value);
 
+  const { colors } = useTheme();
+
   return !underlying || !underlying.address ? null : (
     <ButtonPressAnimation
       onPress={onButtonPress}
@@ -159,7 +159,7 @@ const SavingsListRow = ({
     >
       <Centered direction="column" marginBottom={15}>
         <SavingsListRowShadowStack deviceWidth={deviceWidth}>
-          <SavingsListRowGradient />
+          <SavingsListRowGradient colors={colors} />
           <Row
             align="center"
             css={padding(9, 10, 10, 11)}

@@ -1,20 +1,21 @@
 import React, { useMemo, useState } from 'react';
 import styled from 'styled-components/primitives';
+import { useTheme } from '../../context/ThemeContext';
 import { initials } from '../../utils';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { CoinIconSize } from './CoinIcon';
 import { ImgixImage } from '@rainbow-me/images';
-import { colors, position } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const RVLIBorderRadius = 16.25;
 const RVLIShadows = {
   default: [
-    [0, 4, 6, colors.shadow, 0.04],
-    [0, 1, 3, colors.shadow, 0.08],
+    [0, 4, 6, colors_NOT_REACTIVE.shadow, 0.04],
+    [0, 1, 3, colors_NOT_REACTIVE.shadow, 0.08],
   ],
-  large: [[0, 6, 10, colors.shadow, 0.14]],
+  large: [[0, 6, 10, colors_NOT_REACTIVE.shadow, 0.14]],
 };
 
 const Content = styled(Centered)`
@@ -23,7 +24,7 @@ const Content = styled(Centered)`
 `;
 
 export default function RequestVendorLogoIcon({
-  backgroundColor = colors.dark,
+  backgroundColor,
   borderRadius = RVLIBorderRadius,
   dappName,
   imageUrl,
@@ -33,12 +34,15 @@ export default function RequestVendorLogoIcon({
   ...props
 }) {
   const [error, setError] = useState(null);
+  const { colors } = useTheme();
 
   // When dapps have no icon the bgColor provided to us is transparent.
   // Having a transparent background breaks our UI, so we instead show a background
   // color of white.
   const bgColor =
-    backgroundColor === 'transparent' ? colors.white : backgroundColor;
+    backgroundColor === 'transparent'
+      ? colors.white
+      : backgroundColor || colors.dark;
 
   const imageSource = useMemo(
     () => ({

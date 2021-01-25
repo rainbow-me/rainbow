@@ -5,10 +5,10 @@ import { Button } from '../buttons';
 import { Icon } from '../icons';
 import { Row } from '../layout';
 import { Text as UnstyledText } from '../text';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const BackArrow = styled(Icon).attrs({
-  color: colors.appleBlue,
+  color: colors_NOT_REACTIVE.appleBlue,
   direction: 'left',
   name: 'caret',
 })`
@@ -21,7 +21,7 @@ const Container = styled(Row).attrs(({ side }) => ({
   justify: side === 'left' ? 'start' : 'end',
 }))`
   ${({ side }) => (side === 'left' ? 'left: 0;' : 'right: 0;')}
-  background-color: ${colors.transparent};
+  background-color: ${({ theme: { colors } }) => colors.transparent};
   bottom: 0;
   padding-left: ${({ side }) => (side === 'left' ? 15 : 48)};
   padding-right: ${({ side }) => (side === 'left' ? 48 : 15)};
@@ -30,7 +30,7 @@ const Container = styled(Row).attrs(({ side }) => ({
 
 const Text = styled(UnstyledText).attrs({
   align: 'center',
-  color: colors.appleBlue,
+  color: colors_NOT_REACTIVE.appleBlue,
   size: 'large',
   weight: 'medium',
 })`

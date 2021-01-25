@@ -8,6 +8,7 @@ import { Icon } from '../components/icons';
 import { Page } from '../components/layout';
 import { ProfileMasthead } from '../components/profile';
 import TransactionList from '../components/transaction-list/TransactionList';
+import { useTheme } from '../context/ThemeContext';
 import useNativeTransactionListAvailable from '../helpers/isNativeTransactionListAvailable';
 import NetworkTypes from '../helpers/networkTypes';
 import {
@@ -18,7 +19,7 @@ import {
 } from '../hooks';
 import { useNavigation } from '../navigation/Navigation';
 import Routes from '@rainbow-me/routes';
-import { colors, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 
 const ACTIVITY_LIST_INITIALIZATION_DELAY = 5000;
 
@@ -28,6 +29,7 @@ const ProfileScreenPage = styled(Page)`
 `;
 
 export default function ProfileScreen({ navigation }) {
+  const { colors } = useTheme();
   const [activityListInitialized, setActivityListInitialized] = useState(false);
   const isFocused = useIsFocused();
   const { navigate } = useNavigation();

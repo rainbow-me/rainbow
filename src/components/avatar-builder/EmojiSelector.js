@@ -30,12 +30,13 @@ import {
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import 'string.fromcodepoint';
 import EmojiTabBarShadow from '../../assets/emojiTabBarShadow.png';
+import { withThemeContext } from '../../context/ThemeContext';
 import { deviceUtils } from '../../utils';
 import { Categories } from './Categories';
 import TabBar from './TabBar';
 import { darkMode } from '@rainbow-me/config/debug';
 import { ImgixImage } from '@rainbow-me/images';
-import { colors, fonts, position } from '@rainbow-me/styles';
+import { fonts, position } from '@rainbow-me/styles';
 
 // TODO width attribute is temporary solution that will be removed as soon as I figure out why proper scaling does not work
 
@@ -58,7 +59,7 @@ let scrollPosition = new Value(0);
 let nextCategoryOffset = new Value(1);
 let blockCategories = true;
 
-export default class EmojiSelector extends PureComponent {
+class EmojiSelector extends PureComponent {
   constructor(args) {
     super(args);
     this.renderScrollView = this.renderScrollView.bind(this);
@@ -148,6 +149,7 @@ export default class EmojiSelector extends PureComponent {
         touchableNet,
       });
     }
+    const { colors } = this.props;
     return (
       <View>
         {categoryEmojis.map(({ rowContent, touchableNet }) => (
@@ -197,12 +199,23 @@ export default class EmojiSelector extends PureComponent {
   }
 
   renderListHeader = title => {
+    const { colors } = this.props;
     return (
       this.props.showSectionTitles && (
         <Animated.View
-          style={[styles.sectionHeaderWrap, { opacity: nextCategoryOffset }]}
+          style={[
+            styles.sectionHeaderWrap,
+            { backgroundColor: colors.white, opacity: nextCategoryOffset },
+          ]}
         >
-          <Text style={styles.sectionHeader}>{title}</Text>
+          <Text
+            style={[
+              styles.sectionHeader,
+              { color: colors.alpha(colors.blueGreyDark, 0.5) },
+            ]}
+          >
+            {title}
+          </Text>
         </Animated.View>
       )
     );
@@ -250,6 +263,8 @@ export default class EmojiSelector extends PureComponent {
   };
 
   renderItem = (type, item, index) => {
+    const { colors } = this.props;
+
     if (type === HEADER_ROW) {
       return this.renderListHeader(item.title);
     } else if (type === OVERLAY) {
@@ -269,37 +284,54 @@ export default class EmojiSelector extends PureComponent {
     return this.renderEmojis(item);
   };
 
-  renderStickyItem = (type, item, index) => (
-    <View style={styles.sectionStickyHeaderWrap}>
-      <Animated.View
-        style={{
-          opacity: scrollPosition,
-        }}
-      >
-        {ios ? (
-          <BlurView
-            blurAmount={10}
-            blurType="light"
-            style={[
-              styles.sectionStickyBlur,
-              {
-                width:
-                  (index - 1) / 2 <= categoryKeys.length - 1
-                    ? Categories[categoryKeys[(index - 1) / 2]].width
-                    : Categories[categoryKeys[categoryKeys.length - 1]].width,
-              },
-            ]}
-          >
-            <Text style={styles.sectionStickyHeader}>{item.title}</Text>
-          </BlurView>
-        ) : (
-          <View style={styles.sectionStickyBlur}>
-            <Text style={styles.sectionStickyHeader}>{item.title}</Text>
-          </View>
-        )}
-      </Animated.View>
-    </View>
-  );
+  renderStickyItem = (type, item, index) => {
+    const { colors } = this.props;
+    return (
+      <View style={styles.sectionStickyHeaderWrap}>
+        <Animated.View
+          style={{
+            opacity: scrollPosition,
+          }}
+        >
+          {ios ? (
+            <BlurView
+              blurAmount={10}
+              blurType="light"
+              style={[
+                styles.sectionStickyBlur,
+                {
+                  width:
+                    (index - 1) / 2 <= categoryKeys.length - 1
+                      ? Categories[categoryKeys[(index - 1) / 2]].width
+                      : Categories[categoryKeys[categoryKeys.length - 1]].width,
+                },
+              ]}
+            >
+              <Text
+                style={[
+                  styles.sectionStickyHeader,
+                  { backgroundColor: colors.alpha(colors.white, 0.7) },
+                ]}
+              >
+                {item.title}
+              </Text>
+            </BlurView>
+          ) : (
+            <View style={styles.sectionStickyBlur}>
+              <Text
+                style={[
+                  styles.sectionStickyHeader,
+                  { color: colors.alpha(colors.blueGreyDark, 0.5) },
+                ]}
+              >
+                {item.title}
+              </Text>
+            </View>
+          )}
+        </Animated.View>
+      </View>
+    );
+  };
 
   handleScroll = (event, offsetX, offsetY) => {
     if (!blockCategories) {
@@ -342,6 +374,7 @@ export default class EmojiSelector extends PureComponent {
   };
 
   prerenderEmojis(emojisRows) {
+    const { colors } = this.props;
     return (
       <View style={{ marginTop: 34 }}>
         {emojisRows.map(emojis => (
@@ -397,20 +430,36 @@ export default class EmojiSelector extends PureComponent {
       placeholder,
       showSearchBar,
       showTabs,
+      colors,
       ...other
     } = this.props;
 
     const { category, isReady, searchQuery } = this.state;
 
     const Searchbar = (
-      <View style={styles.searchbar_container}>
+      <View
+        style={[
+          styles.searchbar_container,
+          { backgroundColor: colors.alpha(colors.white, 0.75) },
+        ]}
+      >
         <TextInput
           autoCorrect={false}
           clearButtonMode="always"
           onChangeText={this.handleSearch}
           placeholder={placeholder}
           returnKeyType="done"
-          style={styles.search}
+          style={{
+            ...Platform.select({
+              ios: {
+                backgroundColor: colors.alpha(colors.white, 0.75),
+                borderRadius: 10,
+                height: 36,
+                paddingLeft: 8,
+              },
+            }),
+            margin: 8,
+          }}
           underlineColorAndroid={theme}
           value={searchQuery}
         />
@@ -426,8 +475,20 @@ export default class EmojiSelector extends PureComponent {
             {showSearchBar ? Searchbar : null}
             {!isReady ? (
               <View style={styles.loader} {...other}>
-                <View style={styles.sectionHeaderWrap}>
-                  <Text style={styles.sectionHeader}>Smileys & People</Text>
+                <View
+                  style={[
+                    styles.sectionHeaderWrap,
+                    { backgroundColor: colors.white },
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.sectionHeader,
+                      { color: colors.alpha(colors.blueGreyDark, 0.5) },
+                    ]}
+                  >
+                    Smileys & People
+                  </Text>
                 </View>
                 {null}
               </View>
@@ -558,24 +619,11 @@ const styles = StyleSheet.create({
   row: {
     alignItems: 'center',
   },
-  search: {
-    ...Platform.select({
-      ios: {
-        backgroundColor: colors.alpha(colors.white, 0.75),
-        borderRadius: 10,
-        height: 36,
-        paddingLeft: 8,
-      },
-    }),
-    margin: 8,
-  },
   searchbar_container: {
-    backgroundColor: colors.alpha(colors.white, 0.75),
     width: '100%',
     zIndex: 1,
   },
   sectionHeader: {
-    color: colors.alpha(colors.blueGreyDark, 0.5),
     fontFamily: fonts.family.SFProRounded,
     fontSize: parseFloat(fonts.size.small),
     fontWeight: fonts.weight.semibold,
@@ -588,7 +636,6 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   sectionHeaderWrap: {
-    backgroundColor: colors.white,
     marginRight: 10,
     paddingLeft: 10,
   },
@@ -597,8 +644,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   sectionStickyHeader: {
-    backgroundColor: colors.alpha(colors.white, 0.7),
-    color: colors.alpha(colors.blueGreyDark, 0.5),
     fontFamily: fonts.family.SFProRounded,
     fontSize: parseFloat(fonts.size.small),
     fontWeight: fonts.weight.semibold,
@@ -632,3 +677,5 @@ const styles = StyleSheet.create({
     width: 377,
   },
 });
+
+export default withThemeContext(EmojiSelector);

@@ -1,12 +1,12 @@
 import React, { useCallback } from 'react';
 import { Linking } from 'react-native';
 import styled from 'styled-components/primitives';
+import { useTheme } from '../context/ThemeContext';
 import { magicMemo } from '../utils';
 import { ButtonPressAnimation } from './animations';
 import { Icon } from './icons';
 import { RowWithMargins } from './layout';
 import { Text } from './text';
-import { colors } from '@rainbow-me/styles';
 
 const formatURLForDisplay = url => {
   const pretty = url.split('://')[1].replace('www.', '');
@@ -24,6 +24,7 @@ const Container = styled(RowWithMargins).attrs({
 
 const Link = ({ url }) => {
   const handlePress = useCallback(() => Linking.openURL(url), [url]);
+  const { colors } = useTheme();
 
   return (
     <ButtonPressAnimation

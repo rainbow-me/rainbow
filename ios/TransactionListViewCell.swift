@@ -81,7 +81,7 @@ class TransactionListViewCell: TransactionListBaseCell {
             self.coinImage.image = self.generateTextImage(transaction.symbol, backgroundColor: color)
           } else {
             self.coinImage.image = image
-            self.coinImage.layer.backgroundColor = UIColor.white.cgColor
+            self.coinImage.layer.backgroundColor = UIColor.RainbowTheme.Transactions.white.cgColor;
           }
           self.coinImage.layer.cornerRadius = self.coinImage.frame.width * 0.5
         }

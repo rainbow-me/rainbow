@@ -2,12 +2,12 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Centered, RowWithMargins } from '../layout';
 import { DollarFigure, Text } from '../text';
-import { colors, padding } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
 
 const SavingsSheetHeader = ({ balance, lifetimeAccruedInterest }) => (
   <Centered css={padding(17, 0, 8)} direction="column">
     <Text
-      color={colors.alpha(colors.blueGreyDark, 0.5)}
+      color={colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.5)}
       letterSpacing="uppercase"
       size="smedium"
       uppercase
@@ -19,7 +19,7 @@ const SavingsSheetHeader = ({ balance, lifetimeAccruedInterest }) => (
     <RowWithMargins align="center" margin={4} marginTop={1}>
       <Text
         align="center"
-        color={colors.green}
+        color={colors_NOT_REACTIVE.green}
         letterSpacing="roundedTight"
         lineHeight="loose"
         size="large"

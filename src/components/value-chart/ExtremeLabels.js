@@ -6,7 +6,7 @@ import { Text } from '../text';
 import { useChartData } from '@rainbow-me/animated-charts';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
-import { colors, fonts } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, fonts } from '@rainbow-me/styles';
 
 function trim(val) {
   return Math.min(Math.max(val, 0.05), 0.95);
@@ -76,7 +76,7 @@ export default function Labels({ color, width }) {
     <>
       {positionMin ? (
         <CenteredLabel
-          color={colors.alpha(color, 0.8)}
+          color={colors_NOT_REACTIVE.alpha(color, 0.8)}
           position={positionMin}
           style={{
             bottom: -20,
@@ -88,7 +88,7 @@ export default function Labels({ color, width }) {
       ) : null}
       {positionMax ? (
         <CenteredLabel
-          color={colors.alpha(color, 0.8)}
+          color={colors_NOT_REACTIVE.alpha(color, 0.8)}
           position={positionMax}
           style={{
             top: -20,

@@ -1,11 +1,11 @@
 import React, { useImperativeHandle, useState } from 'react';
 import styled from 'styled-components/primitives';
 import Text from './Text';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const Placeholder = styled(Text).attrs({
   align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.3),
+  color: colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.3),
   size: 'big',
   weight: 'semibold',
 })`

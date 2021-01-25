@@ -2,6 +2,7 @@ import React, { Fragment, useCallback } from 'react';
 import { Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
+import { useTheme } from '../../../context/ThemeContext';
 import { deleteAllBackups } from '../../../handlers/cloudBackup';
 import { walletsUpdate } from '../../../redux/wallets';
 import { cloudPlatform } from '../../../utils/platform';
@@ -13,37 +14,36 @@ import { Icon } from '../../icons';
 import { Centered, Column, ColumnWithMargins, Row } from '../../layout';
 import { Text, TruncatedAddress } from '../../text';
 import Caret from '@rainbow-me/assets/family-dropdown-arrow.png';
-import { darkMode } from '@rainbow-me/config/debug';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { useWallets } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
-import { colors, fonts, padding } from '@rainbow-me/styles';
+import { fonts, padding } from '@rainbow-me/styles';
 import { abbreviations, showActionSheetWithOptions } from '@rainbow-me/utils';
 
-const CaretIcon = styled(ImgixImage).attrs({
+const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
   source: Caret,
   tintColor: colors.alpha(colors.blueGreyDark, 0.6),
-})`
+}))`
   height: 18;
   margin-top: 15;
   width: 8;
 `;
 
-const Address = styled(TruncatedAddress).attrs({
+const Address = styled(TruncatedAddress).attrs(({ theme: { colors } }) => ({
   color: colors.dark,
   firstSectionLength: 6,
   size: fonts.size.lmedium,
   truncationLength: 4,
   weight: 'regular',
-})``;
+}))``;
 
-const AccountLabel = styled(Text).attrs({
+const AccountLabel = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.dark,
   size: fonts.size.lmedium,
   weight: 'regular',
-})``;
+}))``;
 
 const CheckmarkIcon = styled(Icon).attrs({
   name: 'checkmarkCircled',
@@ -53,26 +53,29 @@ const CheckmarkIcon = styled(Icon).attrs({
   margin-right: 7px;
 `;
 
-const GreenCheck = styled(CheckmarkIcon).attrs({
+const GreenCheck = styled(CheckmarkIcon).attrs(({ theme: { colors } }) => ({
   color: colors.green,
-})`
+}))`
   box-shadow: 0px 4px 6px
-    ${colors.alpha(darkMode ? colors.shadow : colors.green, 0.4)};
+    ${({ isDarkMode, theme: colors }) =>
+      colors.alpha(isDarkMode ? colors.shadow : colors.green, 0.4)};
 `;
 
-const GreyCheck = styled(CheckmarkIcon).attrs({
+const GreyCheck = styled(CheckmarkIcon).attrs(({ theme: { colors } }) => ({
   color: colors.blueGreyDark50,
-})`
+}))`
   box-shadow: 0px 4px 6px
-    ${colors.alpha(darkMode ? colors.shadow : colors.blueGreyDark50, 0.4)};
+    ${({ isDarkMode, theme: { colors } }) =>
+      colors.alpha(isDarkMode ? colors.shadow : colors.blueGreyDark50, 0.4)};
 `;
 
-const WarningIcon = styled(Icon).attrs({
+const WarningIcon = styled(Icon).attrs(({ theme: colors }) => ({
   color: colors.orangeLight,
   name: 'warning',
-})`
+}))`
   align-self: center;
-  box-shadow: 0px 4px 6px ${colors.alpha(colors.orangeLight, 0.4)};
+  box-shadow: 0px 4px 6px
+    ${({ theme: { colors } }) => colors.alpha(colors.orangeLight, 0.4)};
   margin-right: 7px;
 `;
 
@@ -84,6 +87,7 @@ const Footer = styled(Centered)`
 
 const WalletSelectionView = () => {
   const { navigate } = useNavigation();
+  const { isDarkMode } = useTheme();
   const dispatch = useDispatch();
   const { walletNames, wallets } = useWallets();
   const onPress = useCallback(
@@ -152,6 +156,8 @@ const WalletSelectionView = () => {
   }, [dispatch, wallets]);
 
   let cloudBackedUpWallets = 0;
+
+  const { colors } = useTheme();
 
   return (
     <Fragment>
@@ -230,9 +236,9 @@ const WalletSelectionView = () => {
                   <Row alignSelf="center" height={47} marginRight={18}>
                     {wallet.backedUp ? (
                       wallet.backupType === WalletBackupTypes.cloud ? (
-                        <GreenCheck />
+                        <GreenCheck isDarkMode={isDarkMode} />
                       ) : (
-                        <GreyCheck />
+                        <GreyCheck isDarkMode={isDarkMode} />
                       )
                     ) : wallet.imported ? (
                       <GreyCheck />

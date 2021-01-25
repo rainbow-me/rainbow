@@ -5,17 +5,17 @@ import Icon from '../icons/Icon';
 import { Row } from '../layout';
 import Text from '../text/Text';
 import HeaderButton from './HeaderButton';
-import { colors, fonts, fontWithWidth } from '@rainbow-me/styles';
+import { fonts, fontWithWidth } from '@rainbow-me/styles';
 
 const Container = styled(Row).attrs({ align: 'center' })`
   height: 44;
   width: ${({ textChevron }) => (textChevron ? 20 : 10)};
 `;
 
-const IconText = styled(Text).attrs({
+const IconText = styled(Text).attrs(({ theme: colors }) => ({
   color: colors.dark,
   size: 'big',
-})`
+}))`
   ${fontWithWidth(fonts.weight.bold)};
 `;
 

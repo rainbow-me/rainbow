@@ -17,7 +17,13 @@ import { Text } from '../text';
 import SecretDisplayCard from './SecretDisplayCard';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { useWallets } from '@rainbow-me/hooks';
-import { colors, margin, padding, position, shadow } from '@rainbow-me/styles';
+import {
+  colors_NOT_REACTIVE,
+  margin,
+  padding,
+  position,
+  shadow,
+} from '@rainbow-me/styles';
 import logger from 'logger';
 
 const AuthenticationText = styled(Text).attrs({
@@ -30,7 +36,7 @@ const AuthenticationText = styled(Text).attrs({
 `;
 
 const CopyButtonIcon = styled(Icon).attrs({
-  color: colors.appleBlue,
+  color: colors_NOT_REACTIVE.appleBlue,
   name: 'copy',
 })`
   ${position.size(16)};
@@ -42,12 +48,12 @@ const CopyButtonRow = styled(RowWithMargins).attrs({
   justify: 'start',
   margin: 6,
 })`
-  background-color: ${colors.transparent};
+  background-color: ${({ theme: { colors } }) => colors.transparent};
   height: 34;
 `;
 
 const CopyButtonText = styled(Text).attrs({
-  color: colors.appleBlue,
+  color: colors_NOT_REACTIVE.appleBlue,
   letterSpacing: 'roundedMedium',
   lineHeight: 19,
   size: 'large',
@@ -56,8 +62,8 @@ const CopyButtonText = styled(Text).attrs({
 
 const ToggleSecretButton = styled(Button)`
   ${margin(0, 20)};
-  ${shadow.build(0, 5, 15, colors.purple, 0.3)}
-  background-color: ${colors.appleBlue};
+  ${shadow.build(0, 5, 15, colors_NOT_REACTIVE.purple, 0.3)}
+  background-color: ${({ theme: { colors } }) => colors.appleBlue};
 `;
 
 const LoadingSpinner = android ? Spinner : ActivityIndicator;
@@ -126,7 +132,7 @@ export default function SecretDisplaySection({
               <SecretDisplayCard seed={seed} type={type} />
             </Fragment>
           ) : (
-            <LoadingSpinner color={colors.blueGreyDark50} />
+            <LoadingSpinner color={colors_NOT_REACTIVE.blueGreyDark50} />
           )}
         </Fragment>
       ) : (
@@ -136,7 +142,7 @@ export default function SecretDisplaySection({
           </AuthenticationText>
           <ToggleSecretButton onPress={loadSeed}>
             <BiometricButtonContent
-              color={colors.white}
+              color={colors_NOT_REACTIVE.white}
               showIcon={!seed}
               text={`Show Recovery ${upperFirst(typeLabel)}`}
             />

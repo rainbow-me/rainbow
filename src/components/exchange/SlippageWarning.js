@@ -7,7 +7,7 @@ import { convertBipsToPercentage } from '../../helpers/utilities';
 import { Icon } from '../icons';
 import { Row, RowWithMargins } from '../layout';
 import { AnimatedNumber as AnimatedNumberAndroid, Text } from '../text';
-import { colors, padding } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
 
 export const SlippageWarningThresholdInBips = 500;
 const SevereSlippageThresholdInBips = SlippageWarningThresholdInBips * 2;
@@ -37,7 +37,9 @@ const enhance = compose(
 
     return {
       isSevere,
-      severityColor: isSevere ? colors.red : colors.orangeLight,
+      severityColor: isSevere
+        ? colors_NOT_REACTIVE.red
+        : colors_NOT_REACTIVE.orangeLight,
       showWarning: slippage >= SlippageWarningThresholdInBips,
     };
   })

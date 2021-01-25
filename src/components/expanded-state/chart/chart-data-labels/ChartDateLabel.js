@@ -4,7 +4,7 @@ import { useAnimatedStyle } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
 import { useRatio } from './useRatio';
 import { ChartXLabel } from '@rainbow-me/animated-charts';
-import { colors, fonts, fontWithWidth } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, fonts, fontWithWidth } from '@rainbow-me/styles';
 
 const Label = styled(ChartXLabel)`
   ${fontWithWidth(fonts.weight.semibold)};
@@ -90,10 +90,10 @@ export default function ChartDateLabel({ chartTimeSharedValue }) {
     return {
       color:
         ratio.value === 1
-          ? colors.blueGreyDark
+          ? colors_NOT_REACTIVE.blueGreyDark
           : ratio.value < 1
-          ? colors.red
-          : colors.green,
+          ? colors_NOT_REACTIVE.red
+          : colors_NOT_REACTIVE.green,
     };
   });
 

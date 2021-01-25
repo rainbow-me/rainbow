@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
-import { borders, colors, position } from '../../styles';
+import { borders, colors_NOT_REACTIVE, position } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered, Row } from '../layout';
@@ -24,14 +24,14 @@ const Header = styled(Row).attrs({
 `;
 
 export const FloatingActionButtonShadow = [
-  [0, 2, 5, colors.dark, 0.2],
-  [0, 6, 10, colors.dark, 0.14],
-  [0, 1, 18, colors.dark, 0.12],
+  [0, 2, 5, colors_NOT_REACTIVE.dark, 0.2],
+  [0, 6, 10, colors_NOT_REACTIVE.dark, 0.14],
+  [0, 1, 18, colors_NOT_REACTIVE.dark, 0.12],
 ];
 
 const Content = styled(Centered)`
   ${position.cover};
-  background-color: ${colors.grey20};
+  background-color: ${({ theme: { colors } }) => colors.grey20};
 `;
 
 function Stack({ children, left, yPosition, onPress }) {
@@ -87,12 +87,22 @@ export default function DiscoverSheetHeader(props) {
         onPress={() => navigate(Routes.WALLET_SCREEN)}
         yPosition={yPosition}
       >
-        <Icon color={colors.black} direction="left" name="caret" {...props} />
-        <Icon color={colors.white} direction="left" name="caret" {...props} />
+        <Icon
+          color={colors_NOT_REACTIVE.black}
+          direction="left"
+          name="caret"
+          {...props}
+        />
+        <Icon
+          color={colors_NOT_REACTIVE.white}
+          direction="left"
+          name="caret"
+          {...props}
+        />
       </Stack>
       <Stack left={16.6} onPress={jumpToShort} yPosition={yPosition}>
-        <Icon color={colors.black} name="scanner" />
-        <Icon color={colors.white} name="scanner" />
+        <Icon color={colors_NOT_REACTIVE.black} name="scanner" />
+        <Icon color={colors_NOT_REACTIVE.white} name="scanner" />
       </Stack>
     </Header>
   );

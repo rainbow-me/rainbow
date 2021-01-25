@@ -7,7 +7,7 @@ import { Icon } from '../icons';
 import { Column } from '../layout';
 import { SheetHandle } from '../sheet';
 import { Text } from '../text';
-import { colors, padding, position } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, padding, position } from '@rainbow-me/styles';
 
 const SheetHandleMargin = 6;
 
@@ -32,7 +32,7 @@ const InfoButton = styled(ButtonPressAnimation).attrs({
 `;
 
 const InfoButtonIcon = styled(Icon).attrs({
-  color: colors.alpha(colors.blueGreyDark, 0.3),
+  color: colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.3),
   name: 'info',
 })`
   ${position.size(18)};

@@ -8,7 +8,7 @@ import { Text } from '../text';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import { useDimensions } from '@rainbow-me/hooks';
 import { supportedCountries } from '@rainbow-me/references/wyre';
-import { colors, padding } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
 import { neverRerender } from '@rainbow-me/utils';
 
 const Panel = styled(FloatingPanels)`
@@ -60,7 +60,10 @@ const SupportCountriesExpandedState = () => {
             <TitleText>Supported Countries</TitleText>
             <Text
               align="center"
-              color={colors.alpha(colors.blueGreyDark, 0.6)}
+              color={colors_NOT_REACTIVE.alpha(
+                colors_NOT_REACTIVE.blueGreyDark,
+                0.6
+              )}
               lineHeight={22}
               size="smedium"
             >

@@ -5,16 +5,16 @@ import Icon from '../icons/Icon';
 import { Centered } from '../layout';
 import HeaderButton from './HeaderButton';
 import Routes from '@rainbow-me/routes';
-import { borders, colors } from '@rainbow-me/styles';
+import { borders, colors_NOT_REACTIVE } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const CameraHeaderButtonShadows = [
-  [0, 3, 5, colors.shadow, 0.2],
-  [0, 6, 10, colors.shadow, 0.14],
+  [0, 3, 5, colors_NOT_REACTIVE.shadow, 0.2],
+  [0, 6, 10, colors_NOT_REACTIVE.shadow, 0.14],
 ];
 
 const CameraIcon = styled(Icon).attrs({
-  color: colors.whiteLabel,
+  color: colors_NOT_REACTIVE.whiteLabel,
   name: 'camera',
 })`
   margin-bottom: 1;
@@ -32,7 +32,7 @@ export default function CameraHeaderButton() {
     <HeaderButton onPress={onPress} testID="goToCamera" transformOrigin="right">
       <ShadowStack
         {...borders.buildCircleAsObject(34)}
-        backgroundColor={colors.paleBlue}
+        backgroundColor={colors_NOT_REACTIVE.paleBlue}
         shadows={CameraHeaderButtonShadows}
       >
         <Centered cover>

@@ -4,6 +4,7 @@ import Animated from 'react-native-reanimated';
 import { View } from 'react-primitives';
 import { connect } from 'react-redux';
 import styled from 'styled-components/primitives';
+import { useTheme, withThemeContext } from '../../context/ThemeContext';
 import { useCoinListEditedValue } from '../../hooks/useCoinListEdited';
 import { ButtonPressAnimation } from '../animations';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
@@ -19,7 +20,6 @@ import {
   pushSelectedCoin,
   removeSelectedCoin,
 } from '@rainbow-me/redux/editOptions';
-import { colors } from '@rainbow-me/styles';
 import { isNewValueForObjectPaths, isNewValueForPath } from '@rainbow-me/utils';
 
 const editTranslateOffsetInner = android ? -8 : 0;
@@ -34,11 +34,12 @@ const BalanceCoinRowCoinCheckButton = styled(CoinCheckButton).attrs({
   top: ${({ top }) => top};
 `;
 
-const PercentageText = styled(BottomRowText).attrs({
+const PercentageText = withThemeContext(styled(BottomRowText).attrs({
   align: 'right',
 })`
-  ${({ isPositive }) => (isPositive ? `color: ${colors.green};` : null)};
-`;
+  color: ${({ isPositive, colors }) =>
+    isPositive ? colors.green : colors.alpha(colors.blueGreyDark, 0.5)};
+`);
 
 const BottomRowContainer = ios
   ? Fragment
@@ -60,6 +61,7 @@ const PriceContainer = ios
     `;
 
 const BottomRow = ({ balance, native }) => {
+  const { colors } = useTheme();
   const percentChange = get(native, 'change');
   const percentageChangeDisplay = formatPercentageString(percentChange);
 
@@ -68,7 +70,9 @@ const BottomRow = ({ balance, native }) => {
   return (
     <BottomRowContainer>
       <FlexItem flex={1}>
-        <BottomRowText>{get(balance, 'display', '')}</BottomRowText>
+        <BottomRowText color={colors.alpha(colors.blueGreyDark, 0.5)}>
+          {get(balance, 'display', '')}
+        </BottomRowText>
       </FlexItem>
       <View>
         <PercentageText isPositive={isPositive}>
@@ -81,15 +85,16 @@ const BottomRow = ({ balance, native }) => {
 
 const TopRow = ({ name, native, nativeCurrencySymbol }) => {
   const nativeDisplay = get(native, 'balance.display');
+  const { colors } = useTheme();
 
   return (
     <TopRowContainer>
       <FlexItem flex={1}>
-        <CoinName>{name}</CoinName>
+        <CoinName color={colors.dark}>{name}</CoinName>
       </FlexItem>
       <PriceContainer>
         <BalanceText
-          color={nativeDisplay ? null : colors.blueGreyLight}
+          color={nativeDisplay ? colors.dark : colors.blueGreyLight}
           numberOfLines={1}
         >
           {nativeDisplay || `${nativeCurrencySymbol}0.00`}

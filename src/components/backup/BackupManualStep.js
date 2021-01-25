@@ -3,6 +3,7 @@ import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import styled from 'styled-components/primitives';
+import { useTheme } from '../../context/ThemeContext';
 import { Column } from '../layout';
 import { SecretDisplaySection } from '../secret-display';
 import { SheetActionButton } from '../sheet';
@@ -14,7 +15,7 @@ import {
   useWallets,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import { colors, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 
 const Content = styled(Column).attrs({
   align: 'center',
@@ -40,12 +41,12 @@ const Masthead = styled(Column).attrs({
   padding-top: 18;
 `;
 
-const MastheadDescription = styled(Text).attrs({
+const MastheadDescription = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
   color: colors.alpha(colors.blueGreyDark, 0.6),
   lineHeight: 'looser',
   size: 'large',
-})`
+}))`
   max-width: 291;
 `;
 
@@ -71,6 +72,7 @@ export default function BackupManualStep() {
   const { onManuallyBackupWalletId } = useWalletManualBackup();
   const { params } = useRoute();
   const walletId = params?.walletId || selectedWallet.id;
+  const { colors } = useTheme();
 
   const [type, setType] = useState(null);
   const [secretLoaded, setSecretLoaded] = useState(false);

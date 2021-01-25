@@ -5,8 +5,7 @@ import { ButtonPressAnimation, OpacityToggler } from '../animations';
 import { CoinIconSize } from '../coin-icon';
 import { Icon } from '../icons';
 import { Row } from '../layout';
-import { darkMode } from '@rainbow-me/config/debug';
-import { borders, colors, padding, position, shadow } from '@rainbow-me/styles';
+import { borders, padding, position, shadow } from '@rainbow-me/styles';
 
 const Container = styled.View`
   ${position.size(CoinIconSize)};
@@ -23,7 +22,8 @@ const Content = styled(Row).attrs(({ isAbsolute }) => ({
 
 const CircleOutline = styled.View`
   ${borders.buildCircle(22)}
-  border-color: ${colors.alpha(colors.blueGreyDark, 0.12)};
+  border-color: ${({ theme: { colors } }) =>
+    colors.alpha(colors.blueGreyDark, 0.12)};
   border-width: 1.5;
   position: absolute;
 `;
@@ -31,26 +31,29 @@ const CircleOutline = styled.View`
 const CheckmarkBackground = styled.View`
   ${borders.buildCircle(22)}
   ${padding(4.5)}
-  ${shadow.build(0, 4, 12, darkMode ? colors.shadow : colors.appleBlue, 0.4)}
-  background-color: ${colors.appleBlue};
+  ${({ theme: { isDarkMode, colors } }) =>
+    shadow.build(0, 4, 12, isDarkMode ? colors.shadow : colors.appleBlue, 0.4)}
+  background-color: ${({ theme: { colors } }) => colors.appleBlue};
 `;
 
-const CoinCheckButton = ({ isAbsolute, onPress, toggle, ...props }) => (
-  <Container {...props} isAbsolute={isAbsolute}>
-    <Content
-      as={ButtonPressAnimation}
-      isAbsolute={isAbsolute}
-      onPress={onPress}
-      opacityTouchable
-    >
-      <CircleOutline />
-      <OpacityToggler friction={20} isVisible={!toggle} tension={1000}>
-        <CheckmarkBackground>
-          <Icon color="white" name="checkmark" />
-        </CheckmarkBackground>
-      </OpacityToggler>
-    </Content>
-  </Container>
-);
+const CoinCheckButton = ({ isAbsolute, onPress, toggle, ...props }) => {
+  return (
+    <Container {...props} isAbsolute={isAbsolute}>
+      <Content
+        as={ButtonPressAnimation}
+        isAbsolute={isAbsolute}
+        onPress={onPress}
+        opacityTouchable
+      >
+        <CircleOutline />
+        <OpacityToggler friction={20} isVisible={!toggle} tension={1000}>
+          <CheckmarkBackground>
+            <Icon color="white" name="checkmark" />
+          </CheckmarkBackground>
+        </OpacityToggler>
+      </Content>
+    </Container>
+  );
+};
 
 export default magicMemo(CoinCheckButton, 'toggle');

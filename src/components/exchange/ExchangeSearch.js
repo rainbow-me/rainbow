@@ -14,7 +14,7 @@ import { ClearInputDecorator, Input } from '../inputs';
 import { Row } from '../layout';
 import { Text } from '../text';
 import { ImgixImage } from '@rainbow-me/images';
-import { colors, margin, padding } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, margin, padding } from '@rainbow-me/styles';
 import { deviceUtils } from '@rainbow-me/utils';
 
 export const ExchangeSearchHeight = 40;
@@ -23,7 +23,7 @@ const ExchangeSearchWidth = deviceUtils.dimensions.width - 30;
 const Container = styled(Row)`
   ${margin(0, 15, 8)};
   ${padding(0, 37, 0, 12)};
-  background-color: ${colors.transparent};
+  background-color: ${({ theme: { colors } }) => colors.transparent};
   border-radius: ${ExchangeSearchHeight / 2};
   height: ${ExchangeSearchHeight};
   overflow: hidden;
@@ -31,7 +31,7 @@ const Container = styled(Row)`
 
 const BackgroundGradient = styled(RadialGradient).attrs({
   center: [ExchangeSearchWidth, ExchangeSearchWidth / 2],
-  colors: colors.gradients.searchBar,
+  colors: colors_NOT_REACTIVE.gradients.searchBar,
 })`
   position: absolute;
   height: ${ExchangeSearchWidth};
@@ -41,7 +41,7 @@ const BackgroundGradient = styled(RadialGradient).attrs({
 `;
 
 const SearchIcon = styled(Text).attrs({
-  color: colors.alpha(colors.blueGreyDark, 0.5),
+  color: colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.5),
   size: 'large',
   weight: 'semibold',
 })``;
@@ -54,14 +54,17 @@ const SearchInput = styled(Input).attrs({
   autoCapitalize: 'words',
   blurOnSubmit: false,
   clearTextOnFocus: true,
-  color: colors.alpha(colors.blueGreyDark, 0.8),
+  color: colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.8),
   enablesReturnKeyAutomatically: true,
   keyboardAppearance: 'dark',
   keyboardType: 'ascii-capable',
   lineHeight: 'loose',
-  placeholderTextColor: colors.alpha(colors.blueGreyDark, 0.5),
+  placeholderTextColor: colors_NOT_REACTIVE.alpha(
+    colors_NOT_REACTIVE.blueGreyDark,
+    0.5
+  ),
   returnKeyType: 'search',
-  selectionColor: colors.appleBlue,
+  selectionColor: colors_NOT_REACTIVE.appleBlue,
   size: 'large',
   spellCheck: false,
   weight: 'semibold',
@@ -78,7 +81,7 @@ const SearchInput = styled(Input).attrs({
 const SearchSpinner = styled(ImgixImage).attrs({
   resizeMode: ImgixImage.resizeMode.contain,
   source: Spinner,
-  tintColor: colors.alpha(colors.blueGreyDark, 0.6),
+  tintColor: colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.6),
 })`
   height: 20;
   width: 20;

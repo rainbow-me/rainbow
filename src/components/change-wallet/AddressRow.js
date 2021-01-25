@@ -1,6 +1,7 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import { useTheme } from '../../context/ThemeContext';
 import { removeFirstEmojiFromString } from '../../helpers/emojiHandler';
 import { deviceUtils } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
@@ -11,14 +12,13 @@ import ImageAvatar from '../contacts/ImageAvatar';
 import { Icon } from '../icons';
 import { Centered, Column, ColumnWithMargins, Row } from '../layout';
 import { TruncatedAddress, TruncatedText } from '../text';
-import { colors, fonts, getFontSize } from '@rainbow-me/styles';
+import { fonts, getFontSize } from '@rainbow-me/styles';
 
 const maxAccountLabelWidth = deviceUtils.dimensions.width - 88;
 const NOOP = () => undefined;
 
 const sx = StyleSheet.create({
   accountLabel: {
-    color: colors.dark,
     fontFamily: fonts.family.SFProRounded,
     fontSize: getFontSize(fonts.size.lmedium),
     fontWeight: fonts.weight.medium,
@@ -31,7 +31,6 @@ const sx = StyleSheet.create({
     marginLeft: 19,
   },
   bottomRowText: {
-    color: colors.alpha(colors.blueGreyDark, 0.5),
     fontWeight: fonts.weight.medium,
     letterSpacing: fonts.letterSpacing.roundedMedium,
   },
@@ -39,7 +38,6 @@ const sx = StyleSheet.create({
     width: 60,
   },
   editIcon: {
-    color: colors.appleBlue,
     fontFamily: fonts.family.SFProRounded,
     fontSize: getFontSize(fonts.size.large),
     fontWeight: fonts.weight.medium,
@@ -53,7 +51,6 @@ const sx = StyleSheet.create({
     textAlign: 'center',
   },
   readOnlyText: {
-    color: colors.alpha(colors.blueGreyDark, 0.5),
     fontFamily: fonts.family.SFProRounded,
     fontWeight: fonts.weight.semibold,
     letterSpacing: fonts.letterSpacing.roundedTight,
@@ -73,27 +70,22 @@ const gradientProps = {
   style: sx.gradient,
 };
 
-const linearGradientProps = {
-  ...gradientProps,
-  colors: [
-    colors.alpha(colors.gradients.lightGrey[0], 0.6),
-    colors.gradients.lightGrey[1],
-  ],
-  end: { x: 1, y: 1 },
-  start: { x: 0, y: 0 },
+const OptionsIcon = ({ onPress }) => {
+  const { colors } = useTheme();
+  return (
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.9}>
+      <Centered height={40} width={60}>
+        {android ? (
+          <Icon circle color={colors.appleBlue} name="threeDots" tightDots />
+        ) : (
+          <Text color={colors.appleBlue} style={sx.editIcon}>
+            􀍡
+          </Text>
+        )}
+      </Centered>
+    </ButtonPressAnimation>
+  );
 };
-
-const OptionsIcon = ({ onPress }) => (
-  <ButtonPressAnimation onPress={onPress} scaleTo={0.9}>
-    <Centered height={40} width={60}>
-      {android ? (
-        <Icon circle color={colors.appleBlue} name="threeDots" tightDots />
-      ) : (
-        <Text style={sx.editIcon}>􀍡</Text>
-      )}
-    </Centered>
-  </ButtonPressAnimation>
-);
 
 export default function AddressRow({ data, editMode, onPress, onEditWallet }) {
   const {
@@ -109,6 +101,8 @@ export default function AddressRow({ data, editMode, onPress, onEditWallet }) {
     walletId,
   } = data;
 
+  const { colors } = useTheme();
+
   let cleanedUpBalance = balance;
   if (balance === '0.00') {
     cleanedUpBalance = '0';
@@ -122,6 +116,19 @@ export default function AddressRow({ data, editMode, onPress, onEditWallet }) {
   const onOptionsPress = useCallback(() => {
     onEditWallet(walletId, address, cleanedUpLabel);
   }, [address, cleanedUpLabel, onEditWallet, walletId]);
+
+  const linearGradientProps = useMemo(
+    () => ({
+      ...gradientProps,
+      colors: [
+        colors.alpha(colors.gradients.lightGrey[0], 0.6),
+        colors.gradients.lightGrey[1],
+      ],
+      end: { x: 1, y: 1 },
+      start: { x: 0, y: 0 },
+    }),
+    []
+  );
 
   return (
     <View style={sx.accountRow}>
@@ -149,12 +156,13 @@ export default function AddressRow({ data, editMode, onPress, onEditWallet }) {
             )}
             <ColumnWithMargins margin={3}>
               {cleanedUpLabel || ens ? (
-                <TruncatedText style={sx.accountLabel}>
+                <TruncatedText color={colors.dark} style={sx.accountLabel}>
                   {cleanedUpLabel || ens}
                 </TruncatedText>
               ) : (
                 <TruncatedAddress
                   address={address}
+                  color={colors.dark}
                   firstSectionLength={6}
                   size="smaller"
                   style={sx.accountLabel}
@@ -162,7 +170,10 @@ export default function AddressRow({ data, editMode, onPress, onEditWallet }) {
                   weight="medium"
                 />
               )}
-              <BottomRowText style={sx.bottomRowText}>
+              <BottomRowText
+                color={colors.alpha(colors.blueGreyDark, 0.5)}
+                style={sx.bottomRowText}
+              >
                 {cleanedUpBalance || 0} ETH
               </BottomRowText>
             </ColumnWithMargins>
@@ -173,7 +184,12 @@ export default function AddressRow({ data, editMode, onPress, onEditWallet }) {
                 {...linearGradientProps}
                 marginRight={editMode || isSelected ? -9 : 19}
               >
-                <Text style={sx.readOnlyText}>Watching</Text>
+                <Text
+                  color={colors.alpha(colors.blueGreyDark, 0.5)}
+                  style={sx.readOnlyText}
+                >
+                  Watching
+                </Text>
               </LinearGradient>
             )}
             {!editMode && isSelected && (

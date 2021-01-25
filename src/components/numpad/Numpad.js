@@ -5,9 +5,12 @@ import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
-const KeyColor = colors.alpha(colors.blueGreyDark, 0.8);
+const KeyColor = colors_NOT_REACTIVE.alpha(
+  colors_NOT_REACTIVE.blueGreyDark,
+  0.8
+);
 
 const KeyboardButtonContent = styled(Centered)`
   height: ${({ height }) => height};

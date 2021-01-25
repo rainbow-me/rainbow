@@ -14,13 +14,13 @@ import { CopyToast, ToastPositionContainer } from '../components/toasts';
 import { useAccountProfile } from '../hooks';
 import { useNavigation } from '../navigation/Navigation';
 import { abbreviations, deviceUtils } from '../utils';
-import { colors, padding, shadow } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, padding, shadow } from '@rainbow-me/styles';
 
 const QRCodeSize = ios ? 250 : Math.min(230, deviceUtils.dimensions.width - 20);
 
 const AddressText = styled(TruncatedAddress).attrs({
   align: 'center',
-  color: colors.whiteLabel,
+  color: colors_NOT_REACTIVE.whiteLabel,
   lineHeight: 'loosest',
   opacity: 0.6,
   size: 'large',
@@ -37,21 +37,21 @@ const Container = styled(Centered).attrs({
 `;
 
 const Handle = styled(SheetHandle).attrs({
-  color: colors.whiteLabel,
+  color: colors_NOT_REACTIVE.whiteLabel,
 })`
   margin-bottom: 19;
 `;
 
 const QRWrapper = styled(Column).attrs({ align: 'center' })`
   ${padding(24)};
-  ${shadow.build(0, 10, 50, colors.shadowBlack, 0.6)};
-  background-color: ${colors.whiteLabel};
+  ${shadow.build(0, 10, 50, colors_NOT_REACTIVE.shadowBlack, 0.6)};
+  background-color: ${({ theme: { colors } }) => colors.whiteLabel};
   border-radius: 39;
 `;
 
 const NameText = styled(Text).attrs({
   align: 'center',
-  color: colors.whiteLabel,
+  color: colors_NOT_REACTIVE.whiteLabel,
   letterSpacing: 'roundedMedium',
   size: 'bigger',
   weight: 'bold',

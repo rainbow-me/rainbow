@@ -31,7 +31,7 @@ import { useHideSplashScreen } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors, shadow } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, shadow } from '@rainbow-me/styles';
 import logger from 'logger';
 
 const {
@@ -61,7 +61,7 @@ const ButtonContent = styled(RowWithMargins).attrs({
 `;
 
 const ButtonLabel = styled(Text).attrs(
-  ({ textColor: color = colors.dark }) => ({
+  ({ textColor: color = colors_NOT_REACTIVE.dark }) => ({
     align: 'center',
     color,
     size: 'larger',
@@ -77,8 +77,8 @@ const ButtonEmoji = styled(Emoji).attrs({
 `;
 
 const DarkShadow = styled(Reanimated.View)`
-  ${shadow.build(0, 10, 30, colors.dark, 1)};
-  background-color: ${colors.white};
+  ${shadow.build(0, 10, 30, colors_NOT_REACTIVE.dark, 1)};
+  background-color: ${({ theme: { colors } }) => colors.white};
   border-radius: 30;
   height: 60;
   left: -3;
@@ -89,7 +89,7 @@ const DarkShadow = styled(Reanimated.View)`
 `;
 
 const Shadow = styled(Reanimated.View)`
-  ${shadow.build(0, 5, 15, colors.dark, 0.4)};
+  ${shadow.build(0, 5, 15, colors_NOT_REACTIVE.dark, 0.4)};
   border-radius: 30;
   height: 60;
   left: -3;
@@ -131,7 +131,7 @@ const RainbowButton = ({
 const Container = styled.View`
   ${StyleSheet.absoluteFillObject};
   align-items: center;
-  background-color: ${colors.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
   justify-content: center;
 `;
 
@@ -456,13 +456,13 @@ export default function WelcomeScreen() {
         shadowColor: color,
       },
       style: {
-        backgroundColor: colors.dark,
+        backgroundColor: colors_NOT_REACTIVE.dark,
         borderColor: backgroundColor,
         borderWidth: ios ? 0 : 3,
         width: 230 + (ios ? 0 : 6),
       },
       text: 'Get a new wallet',
-      textColor: colors.white,
+      textColor: colors_NOT_REACTIVE.white,
     };
   }, [rValue]);
 
@@ -483,11 +483,14 @@ export default function WelcomeScreen() {
         opacity: 0,
       },
       style: {
-        backgroundColor: colors.blueGreyDarkLight,
+        backgroundColor: colors_NOT_REACTIVE.blueGreyDarkLight,
         width: 248,
       },
       text: 'I already have one',
-      textColor: colors.alpha(colors.blueGreyDark, 0.8),
+      textColor: colors_NOT_REACTIVE.alpha(
+        colors_NOT_REACTIVE.blueGreyDark,
+        0.8
+      ),
     };
   }, [rValue]);
 

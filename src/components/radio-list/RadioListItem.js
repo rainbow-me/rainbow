@@ -2,27 +2,35 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { withHandlers } from 'recompact';
 import styled from 'styled-components';
+import { useTheme } from '../../context/ThemeContext';
 import Icon from '../icons/Icon';
 import { ListItem } from '../list';
-import { darkMode } from '@rainbow-me/config/debug';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const CheckmarkIcon = styled(Icon).attrs({
-  color: colors.appleBlue,
+  color: colors_NOT_REACTIVE.appleBlue,
   name: 'checkmarkCircled',
 })`
   box-shadow: 0px 4px 6px
-    ${colors.alpha(darkMode ? colors.shadow : colors.appleBlue, 0.4)};
+    ${({ isDarkMode }) =>
+      colors_NOT_REACTIVE.alpha(
+        isDarkMode ? colors_NOT_REACTIVE.shadow : colors_NOT_REACTIVE.appleBlue,
+        0.4
+      )};
   margin-bottom: 1px;
   position: absolute;
   right: 0;
 `;
 
-const RadioListItem = ({ disabled, onPress, selected, ...props }) => (
-  <ListItem onPress={onPress} opacity={disabled ? 0.42 : 1} {...props}>
-    {selected && <CheckmarkIcon />}
-  </ListItem>
-);
+const RadioListItem = ({ disabled, onPress, selected, ...props }) => {
+  const { isDarkMode } = useTheme();
+
+  return (
+    <ListItem onPress={onPress} opacity={disabled ? 0.42 : 1} {...props}>
+      {selected && <CheckmarkIcon isDarkMode={isDarkMode} />}
+    </ListItem>
+  );
+};
 
 RadioListItem.propTypes = {
   ...ListItem.propTypes,

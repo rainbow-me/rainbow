@@ -1,10 +1,17 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import React, { Fragment, useCallback, useMemo } from 'react';
-import { Linking, NativeModules, ScrollView, Share } from 'react-native';
+import {
+  Linking,
+  NativeModules,
+  ScrollView,
+  Share,
+  Switch,
+} from 'react-native';
 import styled from 'styled-components/primitives';
 import { REVIEW_ANDROID } from '../../config/experimental';
 import useExperimentalFlag from '../../config/experimentalHooks';
 //import { supportedLanguages } from '../../languages';
+import { useTheme } from '../../context/ThemeContext';
 import AppVersionStamp from '../AppVersionStamp';
 import { Icon } from '../icons';
 import { Column, ColumnWithDividers } from '../layout';
@@ -19,9 +26,10 @@ import BackupIcon from '@rainbow-me/assets/settingsBackup.png';
 import BackupIconDark from '@rainbow-me/assets/settingsBackupDark.png';
 import CurrencyIcon from '@rainbow-me/assets/settingsCurrency.png';
 import CurrencyIconDark from '@rainbow-me/assets/settingsCurrencyDark.png';
+import darkModeIcon from '@rainbow-me/assets/settingsDarkmode.png';
+import darkModeIconDark from '@rainbow-me/assets/settingsDarkmodeDark.png';
 import NetworkIcon from '@rainbow-me/assets/settingsNetwork.png';
 import NetworkIconDark from '@rainbow-me/assets/settingsNetworkDark.png';
-import { darkMode } from '@rainbow-me/config/debug';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import {
@@ -31,7 +39,7 @@ import {
   useWallets,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
-import { colors, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 import {
   AppleReviewAddress,
   REVIEW_DONE_KEY,
@@ -51,7 +59,8 @@ const CheckmarkIcon = styled(Icon).attrs({
   name: 'checkmarkCircled',
 })`
   box-shadow: 0px 4px 6px
-    ${colors.alpha(darkMode ? colors.shadow : colors.blueGreyDark50, 0.4)};
+    ${({ theme: { colors, isDarkMode } }) =>
+      colors.alpha(isDarkMode ? colors.shadow : colors.blueGreyDark50, 0.4)};
 `;
 
 const contentContainerStyle = { flex: 1 };
@@ -60,6 +69,7 @@ const Container = styled(ScrollView).attrs({
   scrollEventThrottle: 32,
 })`
   ${position.cover};
+  background-color: ${({ backgroundColor }) => backgroundColor};
 `;
 
 // ⚠️ Beware: magic numbers lol
@@ -78,12 +88,13 @@ const VersionStampContainer = styled(Column).attrs({
   padding-bottom: 19;
 `;
 
-const WarningIcon = styled(Icon).attrs({
+const WarningIcon = styled(Icon).attrs(({ theme: { colors } }) => ({
   color: colors.orangeLight,
   name: 'warning',
-})`
+}))`
   box-shadow: 0px 4px 6px
-    ${darkMode ? colors.shadow : colors.alpha(colors.orangeLight, 0.4)};
+    ${({ theme: { colors, isDarkMode } }) =>
+      isDarkMode ? colors.shadow : colors.alpha(colors.orangeLight, 0.4)};
   margin-top: 1;
 `;
 
@@ -122,10 +133,11 @@ export default function SettingsSection({
   onPressShowSecret,
 }) {
   const isReviewAvailable = useExperimentalFlag(REVIEW_ANDROID) || ios;
-
   const { wallets } = useWallets();
   const { /*language,*/ nativeCurrency, network } = useAccountSettings();
   const { isTinyPhone } = useDimensions();
+
+  const { colors, isDarkMode, setTheme } = useTheme();
 
   const onSendFeedback = useSendFeedback();
 
@@ -166,13 +178,17 @@ export default function SettingsSection({
     ? colors.green
     : colors.alpha(colors.blueGreyDark, 0.5);
 
+  const toggleDarkMode = useCallback(() => {
+    setTheme(isDarkMode ? 'light' : 'dark');
+  }, [isDarkMode, setTheme]);
+
   return (
-    <Container scrollEnabled={isTinyPhone}>
+    <Container backgroundColor={colors.white} scrollEnabled={isTinyPhone}>
       <ColumnWithDividers dividerRenderer={ListItemDivider} marginTop={7}>
         {canBeBackedUp && (
           <ListItem
             icon={
-              <SettingIcon source={darkMode ? BackupIconDark : BackupIcon} />
+              <SettingIcon source={isDarkMode ? BackupIconDark : BackupIcon} />
             }
             label="Backup"
             onPress={onPressBackup}
@@ -182,7 +198,10 @@ export default function SettingsSection({
           >
             <ListItemArrowGroup>
               {areBackedUp ? (
-                <CheckmarkIcon color={backupStatusColor} />
+                <CheckmarkIcon
+                  color={backupStatusColor}
+                  isDarkMode={isDarkMode}
+                />
               ) : (
                 <WarningIcon />
               )}
@@ -191,7 +210,9 @@ export default function SettingsSection({
         )}
         <ListItem
           icon={
-            <SettingIcon source={darkMode ? CurrencyIconDark : CurrencyIcon} />
+            <SettingIcon
+              source={isDarkMode ? CurrencyIconDark : CurrencyIcon}
+            />
           }
           label="Currency"
           onPress={onPressCurrency}
@@ -201,7 +222,7 @@ export default function SettingsSection({
         </ListItem>
         <ListItem
           icon={
-            <SettingIcon source={darkMode ? NetworkIconDark : NetworkIcon} />
+            <SettingIcon source={isDarkMode ? NetworkIconDark : NetworkIcon} />
           }
           label="Network"
           onPress={onPressNetwork}
@@ -211,7 +232,29 @@ export default function SettingsSection({
             {networkInfo?.[network]?.name}
           </ListItemArrowGroup>
         </ListItem>
-        {/*<ListItem*/}
+        <ListItem
+          icon={
+            <SettingIcon
+              source={isDarkMode ? darkModeIconDark : darkModeIcon}
+            />
+          }
+          label="Dark Mode"
+          scaleTo={1}
+          testID="darkmode-section"
+        >
+          <Column align="end" flex="1" justify="end">
+            <Switch
+              onValueChange={toggleDarkMode}
+              thumbColor={colors.whiteLabel}
+              trackColor={{
+                false: colors.alpha(colors.blueGreyDark, 0.12),
+                true: '#2CCC00',
+              }}
+              value={isDarkMode}
+            />
+          </Column>
+        </ListItem>
+        {/*<ListItem
         {/*  icon={*/}
         {/*    <SettingIcon source={darkMode ? LanguageIconDark : LanguageIcon} />*/}
         {/*  }*/}

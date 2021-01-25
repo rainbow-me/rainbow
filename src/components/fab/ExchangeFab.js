@@ -1,19 +1,18 @@
 import React, { useCallback } from 'react';
 import { Alert } from 'react-native';
+import { useTheme } from '../../context/ThemeContext';
 import { useNavigation } from '../../navigation/Navigation';
 import { magicMemo } from '../../utils';
 import { Icon } from '../icons';
 import FloatingActionButton from './FloatingActionButton';
-import { darkMode } from '@rainbow-me/config/debug';
 import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
-const FabShadow = darkMode
-  ? [[0, 10, 30, colors.shadow, 1]]
-  : [
-      [0, 10, 30, colors.shadow, 0.8],
-      [0, 5, 15, colors.swapPurple, 1],
-    ];
+const FabShadowDark = [[0, 10, 30, colors_NOT_REACTIVE.shadow, 1]];
+const FabShadowLight = [
+  [0, 10, 30, colors_NOT_REACTIVE.shadow, 0.8],
+  [0, 5, 15, colors_NOT_REACTIVE.swapPurple, 1],
+];
 
 const ExchangeFab = ({ disabled, isReadOnlyWallet, ...props }) => {
   const { navigate } = useNavigation();
@@ -26,17 +25,21 @@ const ExchangeFab = ({ disabled, isReadOnlyWallet, ...props }) => {
     }
   }, [navigate, isReadOnlyWallet]);
 
+  const { isDarkMode } = useTheme();
+
+  const FabShadow = isDarkMode ? FabShadowDark : FabShadowLight;
+
   return (
     <FloatingActionButton
       {...props}
-      backgroundColor={colors.swapPurple}
+      backgroundColor={colors_NOT_REACTIVE.swapPurple}
       disabled={disabled}
       onPress={handlePress}
       shadows={FabShadow}
       testID="exchange-fab"
     >
       <Icon
-        color={colors.whiteLabel}
+        color={colors_NOT_REACTIVE.whiteLabel}
         height={21}
         marginBottom={2}
         name="swap"

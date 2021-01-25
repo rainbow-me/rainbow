@@ -38,6 +38,7 @@ import {
   showNetworkRequests,
   showNetworkResponses,
 } from './config/debug';
+import { MainThemeProvider } from './context/ThemeContext';
 import { InitialRouteContext } from './context/initialRoute';
 import monitorNetwork from './debugging/network';
 import handleDeeplink from './handlers/deeplinks';
@@ -285,23 +286,25 @@ class App extends Component {
     Navigation.setTopLevelNavigator(navigatorRef);
 
   render = () => (
-    <RainbowContextWrapper>
-      <Portal>
-        <SafeAreaProvider>
-          <Provider store={store}>
-            <FlexItem>
-              {this.state.initialRoute && (
-                <InitialRouteContext.Provider value={this.state.initialRoute}>
-                  <RoutesComponent ref={this.handleNavigatorRef} />
-                  <PortalConsumer />
-                </InitialRouteContext.Provider>
-              )}
-              <OfflineToast />
-            </FlexItem>
-          </Provider>
-        </SafeAreaProvider>
-      </Portal>
-    </RainbowContextWrapper>
+    <MainThemeProvider>
+      <RainbowContextWrapper>
+        <Portal>
+          <SafeAreaProvider>
+            <Provider store={store}>
+              <FlexItem>
+                {this.state.initialRoute && (
+                  <InitialRouteContext.Provider value={this.state.initialRoute}>
+                    <RoutesComponent ref={this.handleNavigatorRef} />
+                    <PortalConsumer />
+                  </InitialRouteContext.Provider>
+                )}
+                <OfflineToast />
+              </FlexItem>
+            </Provider>
+          </SafeAreaProvider>
+        </Portal>
+      </RainbowContextWrapper>
+    </MainThemeProvider>
   );
 }
 

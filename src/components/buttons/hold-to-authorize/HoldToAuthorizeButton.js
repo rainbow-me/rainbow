@@ -8,6 +8,7 @@ import {
 } from 'react-native-gesture-handler';
 import Animated, { Easing, timing, Value } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
+import { useTheme } from '../../../context/ThemeContext';
 import BiometryTypes from '../../../helpers/biometryTypes';
 import { useBiometryType } from '../../../hooks';
 import { haptics } from '../../../utils';
@@ -15,7 +16,7 @@ import Spinner from '../../Spinner';
 import { Centered, InnerBorder } from '../../layout';
 import { Text } from '../../text';
 import HoldToAuthorizeButtonIcon from './HoldToAuthorizeButtonIcon';
-import { colors, padding } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const { divide, multiply, proc } = Animated;
@@ -27,19 +28,19 @@ const ButtonHeight = 59;
 const SmallButtonHeight = 46;
 
 const ButtonDisabledBgColor = {
-  dark: colors.darkGrey,
-  light: colors.lightGrey,
+  dark: colors_NOT_REACTIVE.darkGrey,
+  light: colors_NOT_REACTIVE.lightGrey,
 };
 
 const ButtonShadows = {
   default: [
-    [0, 3, 5, colors.shadow, 0.2],
-    [0, 6, 10, colors.shadow, 0.14],
-    [0, 1, 18, colors.shadow, 0.12],
+    [0, 3, 5, colors_NOT_REACTIVE.shadow, 0.2],
+    [0, 6, 10, colors_NOT_REACTIVE.shadow, 0.14],
+    [0, 1, 18, colors_NOT_REACTIVE.shadow, 0.12],
   ],
   disabled: [
-    [0, 2, 6, colors.shadow, 0.06],
-    [0, 3, 9, colors.shadow, 0.08],
+    [0, 2, 6, colors_NOT_REACTIVE.shadow, 0.06],
+    [0, 3, 9, colors_NOT_REACTIVE.shadow, 0.08],
   ],
 };
 
@@ -75,10 +76,12 @@ const calculateReverseDuration = proc(longPressProgress =>
   multiply(divide(longPressProgress, 100), longPressProgressDurationMs)
 );
 
-const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs({
-  color: colors.whiteLabel,
-  size: 31,
-})`
+const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
+  ({ theme: { colors } }) => ({
+    color: colors.whiteLabel,
+    size: 31,
+  })
+)`
   left: 15;
   position: absolute;
 `;
@@ -103,7 +106,6 @@ class HoldToAuthorizeButton extends PureComponent {
   };
 
   static defaultProps = {
-    backgroundColor: colors.appleBlue,
     disabled: false,
     theme: 'light',
   };
@@ -191,6 +193,7 @@ class HoldToAuthorizeButton extends PureComponent {
     const {
       backgroundColor,
       biometryType,
+      colors,
       children,
       disabled,
       disabledBackgroundColor,
@@ -209,7 +212,7 @@ class HoldToAuthorizeButton extends PureComponent {
     const { isAuthorizing } = this.state;
     const androidWidth = Dimensions.get('window').width - 30;
 
-    let bgColor = backgroundColor;
+    let bgColor = backgroundColor || colors.appleBlue;
     if (disabled) {
       bgColor = disabledBackgroundColor || ButtonDisabledBgColor[theme];
     }
@@ -268,6 +271,7 @@ class HoldToAuthorizeButton extends PureComponent {
 
 const HoldToAuthorizeButtonWithBiometrics = ({ label, testID, ...props }) => {
   const biometryType = useBiometryType();
+  const { colors } = useTheme();
   const enableLongPress =
     biometryType === BiometryTypes.FaceID ||
     biometryType === BiometryTypes.Face ||
@@ -276,6 +280,7 @@ const HoldToAuthorizeButtonWithBiometrics = ({ label, testID, ...props }) => {
     <HoldToAuthorizeButton
       {...props}
       biometryType={biometryType}
+      colors={colors}
       enableLongPress={enableLongPress}
       label={enableLongPress ? label : label.replace('Hold', 'Tap')}
       testID={testID}

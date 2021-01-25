@@ -2,7 +2,7 @@ import React from 'react';
 import Animated from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
 import { Column, Flex } from '../../components/layout';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const FilledValue = styled(Column)`
   width: 20;
@@ -16,7 +16,7 @@ const EmptyValue = styled(Column)`
   border-width: 3;
   width: 20;
   height: 20;
-  border-color: ${colors.appleBlue};
+  border-color: ${({ theme: { colors } }) => colors.appleBlue};
   border-radius: 20;
   margin-left: 10;
   margin-right: 10;
@@ -32,22 +32,22 @@ const PinValue = ({ translateX, value, ...props }) => {
         }}
       >
         {value && value.length ? (
-          <FilledValue backgroundColor={colors.appleBlue} />
+          <FilledValue backgroundColor={colors_NOT_REACTIVE.appleBlue} />
         ) : (
           <EmptyValue />
         )}
         {value && value.length > 1 ? (
-          <FilledValue backgroundColor={colors.appleBlue} />
+          <FilledValue backgroundColor={colors_NOT_REACTIVE.appleBlue} />
         ) : (
           <EmptyValue />
         )}
         {value && value.length > 2 ? (
-          <FilledValue backgroundColor={colors.appleBlue} />
+          <FilledValue backgroundColor={colors_NOT_REACTIVE.appleBlue} />
         ) : (
           <EmptyValue />
         )}
         {value && value.length > 3 ? (
-          <FilledValue backgroundColor={colors.appleBlue} />
+          <FilledValue backgroundColor={colors_NOT_REACTIVE.appleBlue} />
         ) : (
           <EmptyValue />
         )}

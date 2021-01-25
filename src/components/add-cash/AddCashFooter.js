@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
+import { useTheme } from '../../context/ThemeContext';
 import { useDimensions } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
 import { ButtonPressAnimation } from '../animations';
@@ -8,10 +9,11 @@ import { Centered, ColumnWithMargins, Row, RowWithMargins } from '../layout';
 import { Emoji, Text } from '../text';
 import ApplePayButton from './ApplePayButton';
 import Routes from '@rainbow-me/routes';
-import { colors, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 
 const AddCashFooter = ({ disabled, onDisabledPress, onSubmit, ...props }) => {
   const { isTallPhone, isTinyPhone } = useDimensions();
+  const { colors } = useTheme();
   const { navigate } = useNavigation();
   const onSupportedGeoPress = useCallback(() => {
     navigate(Routes.SUPPORTED_COUNTRIES_MODAL_SCREEN, {

@@ -11,7 +11,7 @@ import { SheetActionButton } from '../sheet';
 import { Br, GradientText, Text } from '../text';
 import { DAI_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
-import { colors, padding } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
 
 const APYHeadingText = styled(Text).attrs({
   size: 'big',
@@ -20,7 +20,7 @@ const APYHeadingText = styled(Text).attrs({
 
 const BodyText = styled(Text).attrs({
   align: 'center',
-  color: colors.blueGreyDark50,
+  color: colors_NOT_REACTIVE.blueGreyDark50,
   lineHeight: 'looser',
   size: 'large',
 })`
@@ -75,10 +75,10 @@ const SavingsSheetEmptyState = ({
         With digital dollars like Dai, saving <Br />
         earns you more than ever before
       </BodyText>
-      <Divider color={colors.rowDividerLight} inset={[0, 42]} />
+      <Divider color={colors_NOT_REACTIVE.rowDividerLight} inset={[0, 42]} />
       <ColumnWithMargins css={padding(19, 15)} margin={19} width="100%">
         <SheetActionButton
-          color={colors.swapPurple}
+          color={colors_NOT_REACTIVE.swapPurple}
           fullWidth
           label="􀁍 Deposit from Wallet"
           onPress={onDeposit}

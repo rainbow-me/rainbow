@@ -3,8 +3,9 @@ import Animated, { SpringUtils } from 'react-native-reanimated';
 import { bin, useSpringTransition } from 'react-native-redash';
 import styled from 'styled-components/primitives';
 import { useMemoOne } from 'use-memo-one';
+import { useTheme } from '../../context/ThemeContext';
 import { Row } from '../layout';
-import { borders, colors, position } from '@rainbow-me/styles';
+import { borders, position } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
 const { add, divide, multiply, sub } = Animated;
@@ -33,7 +34,7 @@ const Container = styled(Row)`
 `;
 
 const RoundButtonSizeToggler = ({
-  color = colors.blueGreyDarkLight,
+  color,
   endingWidth,
   isOpen,
   isAbsolute,
@@ -76,13 +77,17 @@ const RoundButtonSizeToggler = ({
     [contentScaleX]
   );
 
+  const { colors } = useTheme();
+
+  const colorToUse = color || colors.blueGreyDarkLight;
+
   return (
     <Container isAbsolute={isAbsolute}>
-      <Cap capDirection="left" color={color} />
+      <Cap capDirection="left" color={colorToUse} />
       <Center>
-        <AnimatedCenter color={color} style={centerStyle} />
+        <AnimatedCenter color={colorToUse} style={centerStyle} />
       </Center>
-      <Cap capDirection="right" color={color} style={rightCapStyle} />
+      <Cap capDirection="right" color={colorToUse} style={rightCapStyle} />
     </Container>
   );
 };
@@ -91,4 +96,5 @@ export default magicMemo(RoundButtonSizeToggler, [
   'endingWidth',
   'isOpen',
   'startingWidth',
+  'isDarkMode',
 ]);

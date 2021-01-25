@@ -9,7 +9,7 @@ import {
   JellySelectorColorIndicator,
   JellySelectorIndicator,
 } from './jelly-selector-indicator';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
 const springTo = (node, toValue) =>
@@ -35,7 +35,7 @@ function resetPositionCalculations() {
 
 const JellySelector = ({
   backgroundColor,
-  color = colors.dark,
+  color = colors_NOT_REACTIVE.dark,
   defaultIndex = 0,
   disableSelection,
   enableHapticFeedback,

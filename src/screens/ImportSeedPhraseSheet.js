@@ -47,7 +47,7 @@ import {
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import { sheetVerticalOffset } from '@rainbow-me/navigation/effects';
 import Routes from '@rainbow-me/routes';
-import { borders, colors, padding } from '@rainbow-me/styles';
+import { borders, colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
 import {
   deviceUtils,
   ethereumUtils,
@@ -65,7 +65,9 @@ const Container = styled.View`
     ? 0
     : sheetVerticalOffset};
   ${android ? `margin-top: ${sheetVerticalOffset};` : ''}
-  ${android ? `background-color: ${colors.transparent};` : ''}
+  ${android
+    ? `background-color: ${({ theme: { colors } }) => colors.transparent};`
+    : ''}
 `;
 
 const Footer = styled(Row).attrs({
@@ -96,7 +98,7 @@ const FooterButton = styled(MiniButton).attrs({
 })``;
 
 const KeyboardSizeView = styled(KeyboardArea)`
-  background-color: ${colors.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
 `;
 
 const SecretTextArea = styled(Input).attrs({
@@ -131,7 +133,7 @@ const Sheet = styled(Column).attrs({
 })`
   ${borders.buildRadius('top', isNativeStackAvailable ? 0 : 16)};
   ${padding(0, 15, sheetBottomPadding)};
-  background-color: ${colors.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
   z-index: 1;
 `;
 
@@ -377,12 +379,19 @@ export default function ImportSeedPhraseSheet() {
         </Text>
         <SecretTextAreaContainer>
           <SecretTextArea
-            color={isSecretValid ? colors.appleBlue : colors.dark}
+            color={
+              isSecretValid
+                ? colors_NOT_REACTIVE.appleBlue
+                : colors_NOT_REACTIVE.dark
+            }
             onChangeText={handleSetSeedPhrase}
             onFocus={handleFocus}
             onSubmitEditing={handlePressImportButton}
             placeholder="Seed phrase, private key, Ethereum address or ENS name"
-            placeholderTextColor={colors.alpha(colors.blueGreyDark, 0.3)}
+            placeholderTextColor={colors_NOT_REACTIVE.alpha(
+              colors_NOT_REACTIVE.blueGreyDark,
+              0.3
+            )}
             ref={inputRef}
             returnKeyType="done"
             size="large"

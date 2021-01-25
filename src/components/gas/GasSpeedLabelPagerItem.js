@@ -11,7 +11,6 @@ import styled from 'styled-components/primitives';
 import { Row } from '../layout';
 import { Text } from '../text';
 import GasSpeedEmoji from './GasSpeedEmoji';
-import { colors } from '@rainbow-me/styles';
 import { gasUtils } from '@rainbow-me/utils';
 
 const AnimatedRow = Animated.createAnimatedComponent(Row);
@@ -59,6 +58,8 @@ const GasSpeedLabelPagerItem = ({ label, selected, shouldAnimate, theme }) => {
       transform: [{ translateX: positionX.value }],
     };
   });
+
+  const { colors } = useTheme();
 
   const index = gasUtils.GasSpeedOrder.indexOf(label);
   const isFirst = index === 0;

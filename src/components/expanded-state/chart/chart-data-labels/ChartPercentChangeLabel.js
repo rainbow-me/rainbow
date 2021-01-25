@@ -9,7 +9,7 @@ import { RowWithMargins } from '../../../layout';
 import ChartChangeDirectionArrow from './ChartChangeDirectionArrow';
 import { useRatio } from './useRatio';
 import { useChartData } from '@rainbow-me/animated-charts';
-import { colors, fonts, fontWithWidth } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, fonts, fontWithWidth } from '@rainbow-me/styles';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
@@ -80,10 +80,10 @@ export default function ChartPercentChangeLabel() {
     return {
       color:
         ratio.value === 1
-          ? colors.blueGreyDark
+          ? colors_NOT_REACTIVE.blueGreyDark
           : ratio.value < 1
-          ? colors.red
-          : colors.green,
+          ? colors_NOT_REACTIVE.red
+          : colors_NOT_REACTIVE.green,
     };
   });
 

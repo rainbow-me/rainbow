@@ -1,13 +1,13 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components/primitives';
 import { magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder } from '../layout';
 import UniqueTokenImage from './UniqueTokenImage';
-import { colors, shadow as shadowUtil } from '@rainbow-me/styles';
+import { shadow as shadowUtil } from '@rainbow-me/styles';
 
 const UniqueTokenCardBorderRadius = 20;
-const UniqueTokenCardShadow = [0, 2, 6, colors.shadow, 0.08];
+const UniqueTokenCardShadowFactory = colors => [0, 2, 6, colors.shadow, 0.08];
 
 const Container = styled.View`
   ${({ shadow }) => shadowUtil.build(...shadow)};
@@ -29,7 +29,7 @@ const UniqueTokenCard = ({
   onPress,
   resizeMode,
   scaleTo = 0.96,
-  shadow = UniqueTokenCardShadow,
+  shadow,
   style,
   width,
   ...props
@@ -40,6 +40,12 @@ const UniqueTokenCard = ({
     }
   }, [item, onPress]);
 
+  const { colors } = useTheme();
+
+  const defaultShadow = useMemo(() => UniqueTokenCardShadowFactory(colors), [
+    colors,
+  ]);
+
   return (
     <Container
       as={ButtonPressAnimation}
@@ -47,7 +53,7 @@ const UniqueTokenCard = ({
       enableHapticFeedback={enableHapticFeedback}
       onPress={handlePress}
       scaleTo={scaleTo}
-      shadow={shadow}
+      shadow={shadow || defaultShadow}
     >
       <Content {...props} height={height} style={style} width={width}>
         <UniqueTokenImage

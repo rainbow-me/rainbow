@@ -17,11 +17,11 @@ import ShowSecretView from '../components/settings-menu/BackupSection/ShowSecret
 import WalletSelectionView from '../components/settings-menu/BackupSection/WalletSelectionView';
 import DevSection from '../components/settings-menu/DevSection';
 import { Text } from '../components/text';
+import { useTheme } from '../context/ThemeContext';
 import WalletTypes from '../helpers/walletTypes';
 import { useDimensions, useWallets } from '../hooks';
 import { settingsOptions } from '../navigation/config';
 import { useNavigation } from '@rainbow-me/navigation';
-import { colors } from '@rainbow-me/styles';
 
 function cardStyleInterpolator({
   current,
@@ -101,6 +101,8 @@ const Container = styled.View`
 const Stack = createStackNavigator();
 
 const SettingsTitle = ({ children }) => {
+  const { colors } = useTheme();
+
   return (
     <Text
       align="center"
@@ -119,6 +121,7 @@ export default function SettingsModal() {
   const { wallets, selectedWallet } = useWallets();
   const { params } = useRoute();
   const { isTinyPhone } = useDimensions();
+  const { colors } = useTheme();
 
   const getRealRoute = useCallback(
     key => {
@@ -195,6 +198,10 @@ export default function SettingsModal() {
                 headerLeft: props => <BackButton {...props} textChevron />,
               }),
             }),
+            headerTitleStyle: {
+              ...settingsOptions.headerTitleStyle,
+              color: colors.dark,
+            },
           }}
         >
           <Stack.Screen

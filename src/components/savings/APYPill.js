@@ -6,7 +6,7 @@ import RadialGradient from 'react-native-radial-gradient';
 import { Centered } from '../layout';
 
 import { GradientText, Text } from '../text';
-import { colors, position } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
 
 const sx = StyleSheet.create({
   container: {
@@ -41,8 +41,8 @@ const radialGradientProps = {
   ...gradientProps,
   center: [0, 1],
   colors: [
-    colors.alpha(gradientColors[0], 0.1),
-    colors.alpha(gradientColors[1], 0.08),
+    colors_NOT_REACTIVE.alpha(gradientColors[0], 0.1),
+    colors_NOT_REACTIVE.alpha(gradientColors[1], 0.08),
   ],
 };
 
@@ -53,7 +53,7 @@ const textProps = {
 };
 
 if (android) {
-  textProps.color = colors.green;
+  textProps.color = colors_NOT_REACTIVE.green;
 }
 
 const TextComponent = ios ? GradientText : Text;

@@ -2,15 +2,15 @@ import MaskedView from '@react-native-community/masked-view';
 import React from 'react';
 import styled from 'styled-components/primitives';
 import AddCashIconSource from '../../../assets/addCashIcon.png';
+import { useTheme } from '../../../context/ThemeContext';
 import { ButtonPressAnimation } from '../../animations';
 import { RowWithMargins } from '../../layout';
 import { Text } from '../../text';
 import RainbowButtonBackground from './RainbowButtonBackground';
 import RainbowButtonTypes from './RainbowButtonTypes';
-import { darkMode } from '@rainbow-me/config/debug';
 import { useDimensions } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
-import { colors, position, shadow } from '@rainbow-me/styles';
+import { position, shadow } from '@rainbow-me/styles';
 import ShadowView from 'react-native-shadow-stack/ShadowView';
 
 const AddCashIcon = styled(ImgixImage).attrs({
@@ -38,31 +38,34 @@ const ButtonContent = styled(RowWithMargins).attrs({
   padding-bottom: 4;
 `;
 
-const ButtonLabel = styled(Text).attrs(({ disabled, type }) => ({
-  align: type === RainbowButtonTypes.addCash ? 'left' : 'center',
-  color: darkMode && disabled ? colors.white : colors.whiteLabel,
-  letterSpacing:
-    type === RainbowButtonTypes.addCash ? 'roundedTight' : 'rounded',
-  size: type === RainbowButtonTypes.small ? 'large' : 'larger',
-  weight: 'bold',
-}))``;
+const ButtonLabel = styled(Text).attrs(
+  ({ disabled, type, theme: { colors, isDarkMode } }) => ({
+    align: type === RainbowButtonTypes.addCash ? 'left' : 'center',
+    color: isDarkMode && disabled ? colors.white : colors.whiteLabel,
+    letterSpacing:
+      type === RainbowButtonTypes.addCash ? 'roundedTight' : 'rounded',
+    size: type === RainbowButtonTypes.small ? 'large' : 'larger',
+    weight: 'bold',
+  })
+)``;
 
 const OuterButton = styled.View`
-  ${shadow.build(0, 5, 15, colors.shadow)};
-  background-color: ${colors.dark};
+  ${({ theme: { colors } }) => shadow.build(0, 5, 15, colors.shadow)};
+  background-color: ${({ theme: { colors } }) => colors.dark};
   border-radius: ${({ height, strokeWidth }) => height / 2 + strokeWidth};
   height: ${({ height }) => height};
-  shadow-opacity: ${({ disabled }) =>
-    darkMode && disabled ? 0 : darkMode ? 0.1 : 0.4};
+  shadow-opacity: ${({ disabled, isDarkMode }) =>
+    isDarkMode && disabled ? 0 : isDarkMode ? 0.1 : 0.4};
   width: ${({ width }) => width};
 `;
 
 const Shadow = styled(ShadowView)`
-  ${shadow.build(0, 10, 30, colors.shadow, 1)};
-  background-color: ${colors.white};
+  ${({ theme: { colors } }) => shadow.build(0, 10, 30, colors.shadow, 1)};
+  background-color: ${({ theme: { colors } }) => colors.white};
   border-radius: ${({ height, strokeWidth }) => height / 2 + strokeWidth};
   height: ${({ height }) => height};
-  opacity: ${({ disabled }) => (darkMode && disabled ? 0 : android ? 1 : 0.2)};
+  opacity: ${({ disabled, isDarkMode }) =>
+    isDarkMode && disabled ? 0 : android ? 1 : 0.2};
   position: absolute;
   width: ${({ width }) => width};
 `;
@@ -79,6 +82,8 @@ const RainbowButton = ({
   skipTopMargin = true,
   ...props
 }) => {
+  const { isDarkMode } = useTheme();
+
   const { width: deviceWidth } = useDimensions();
   const maxButtonWidth = deviceWidth - 30;
 
@@ -90,6 +95,7 @@ const RainbowButton = ({
     <OuterButton
       disabled={disabled}
       height={height}
+      isDarkMode={isDarkMode}
       strokeWidth={strokeWidth}
       width={width}
     />
@@ -107,6 +113,7 @@ const RainbowButton = ({
       <Shadow
         disabled={disabled}
         height={height}
+        isDarkMode={isDarkMode}
         strokeWidth={strokeWidth}
         width={width}
       />
@@ -125,7 +132,7 @@ const RainbowButton = ({
         />
         <ButtonContent type={type}>
           {type === RainbowButtonTypes.addCash && <AddCashIcon />}
-          <ButtonLabel disabled={disabled} type={type}>
+          <ButtonLabel disabled={disabled} isDarkMode={isDarkMode} type={type}>
             {type === RainbowButtonTypes.addCash ? 'Add Cash' : label}
           </ButtonLabel>
         </ButtonContent>

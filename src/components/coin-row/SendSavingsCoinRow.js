@@ -1,11 +1,12 @@
 import React from 'react';
 import { css } from 'styled-components/primitives';
+import { useTheme } from '../../context/ThemeContext';
 import { deviceUtils } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Text } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
-import { colors, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 
 const isTinyPhone = deviceUtils.dimensions.height <= 568;
 const selectedHeight = isTinyPhone ? 62 : 78;
@@ -26,11 +27,14 @@ const BottomRow = ({
   native: {
     balance: { display: balanceNativeValue },
   },
-}) => (
-  <Text color={colors.alpha(colors.blueGreyDark, 0.5)} size="smedium">
-    {balanceDisplay} ≈ {balanceNativeValue}
-  </Text>
-);
+}) => {
+  const { colors } = useTheme();
+  return (
+    <Text color={colors.alpha(colors.blueGreyDark, 0.5)} size="smedium">
+      {balanceDisplay} ≈ {balanceNativeValue}
+    </Text>
+  );
+};
 
 const TopRow = ({ name }) => <CoinName weight="regular">{name}</CoinName>;
 
