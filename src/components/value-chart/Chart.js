@@ -11,7 +11,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import styled from 'styled-components/native';
 import Spinner from '../../assets/chartSpinner.png';
-import { nativeStackConfig } from '../../navigation/config';
+import { nativeStackConfig } from '../../navigation/nativeStackConfig';
 import { ChartExpandedStateHeader } from '../expanded-state/chart';
 import { Column } from '../layout';
 import Labels from './ExtremeLabels';
