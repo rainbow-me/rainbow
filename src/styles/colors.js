@@ -1,7 +1,7 @@
 import chroma from 'chroma-js';
 import { toLower } from 'lodash';
 import PropTypes from 'prop-types';
-import { darkMode } from '../config/debug';
+import currentColors from '../context/currentColors';
 
 const buildRgba = (color, alpha = 1) => `rgba(${chroma(color).rgb()},${alpha})`;
 const darkModeColors = {
@@ -225,7 +225,7 @@ const getColorForString = (colorString = '', providedThemeColors = colors) => {
 
 const darkModeThemeColors = getColorsByTheme(true);
 const lightModeThemeColors = getColorsByTheme(false);
-const colors = darkMode ? darkModeThemeColors : lightModeThemeColors;
+const colors = currentColors.themedColors || lightModeThemeColors;
 const getRandomColor = () =>
   Math.floor(Math.random() * colors.avatarColor.length);
 

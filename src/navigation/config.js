@@ -3,10 +3,11 @@ import { Keyboard, StatusBar } from 'react-native';
 import styled from 'styled-components/primitives';
 import { Icon } from '../components/icons';
 import { SheetHandleFixedToTopHeight } from '../components/sheet';
+import colors from '../context/currentColors';
 import { onDidPop, onWillPop } from './Navigation';
 import { appearListener } from './nativeStackHelpers';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
-import { colors_NOT_REACTIVE, fonts } from '@rainbow-me/styles';
+import { fonts } from '@rainbow-me/styles';
 import { deviceUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 
 export const sharedCoolModalTopOffset = safeAreaInsetValues.top + 5;
@@ -139,7 +140,7 @@ export const restoreSheetConfig = {
 
     return buildCoolModalConfig({
       ...params,
-      backgroundColor: colors_NOT_REACTIVE.dark,
+      backgroundColor: colors.themedColors.dark,
       longFormHeight: heightForStep,
     });
   },
@@ -176,7 +177,7 @@ export const closeKeyboardOnClose = {
 
 export const nativeStackDefaultConfig = {
   allowsDragToDismiss: true,
-  backgroundColor: colors_NOT_REACTIVE.stackBackground,
+  backgroundColor: colors.themedColors.stackBackground,
   backgroundOpacity: 1,
   customStack: true,
   headerHeight: 0,
@@ -223,7 +224,7 @@ const transitionConfig = {
 };
 
 const BackArrow = styled(Icon).attrs({
-  color: colors_NOT_REACTIVE.appleBlue,
+  color: colors.themedColors.appleBlue,
   direction: 'left',
   name: 'caret',
 })`
@@ -247,7 +248,7 @@ const headerConfigOptions = {
     headerTitleAlign: 'center',
   }),
   headerTitleStyle: {
-    color: colors_NOT_REACTIVE.dark,
+    color: colors.themedColors.dark,
     fontFamily: fonts.family.SFProRounded,
     fontSize: parseFloat(fonts.size.large),
     fontWeight: fonts.weight.bold,
@@ -259,7 +260,7 @@ export const wyreWebviewOptions = {
   ...headerConfigOptions,
   headerStatusBarHeight: 24,
   headerStyle: {
-    backgroundColor: colors_NOT_REACTIVE.white,
+    backgroundColor: colors.themedColors.white,
     elevation: 24,
     shadowColor: 'transparent',
   },
@@ -270,7 +271,7 @@ export const settingsOptions = {
   ...headerConfigOptions,
   cardShadowEnabled: false,
   cardStyle: {
-    backgroundColor: colors_NOT_REACTIVE.white,
+    backgroundColor: colors.themedColors.white,
     overflow: 'visible',
   },
   gestureEnabled: true,

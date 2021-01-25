@@ -19,31 +19,31 @@ import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { useWallets } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
-import { colors_NOT_REACTIVE, fonts, padding } from '@rainbow-me/styles';
+import { fonts, padding } from '@rainbow-me/styles';
 import { abbreviations, showActionSheetWithOptions } from '@rainbow-me/utils';
 
-const CaretIcon = styled(ImgixImage).attrs({
+const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
   source: Caret,
-  tintColor: colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.6),
-})`
+  tintColor: colors.alpha(colors.blueGreyDark, 0.6),
+}))`
   height: 18;
   margin-top: 15;
   width: 8;
 `;
 
-const Address = styled(TruncatedAddress).attrs({
-  color: colors_NOT_REACTIVE.dark,
+const Address = styled(TruncatedAddress).attrs(({ theme: { colors } }) => ({
+  color: colors.dark,
   firstSectionLength: 6,
   size: fonts.size.lmedium,
   truncationLength: 4,
   weight: 'regular',
-})``;
+}))``;
 
-const AccountLabel = styled(Text).attrs({
-  color: colors_NOT_REACTIVE.dark,
+const AccountLabel = styled(Text).attrs(({ theme: { colors } }) => ({
+  color: colors.dark,
   size: fonts.size.lmedium,
   weight: 'regular',
-})``;
+}))``;
 
 const CheckmarkIcon = styled(Icon).attrs({
   name: 'checkmarkCircled',
@@ -53,38 +53,29 @@ const CheckmarkIcon = styled(Icon).attrs({
   margin-right: 7px;
 `;
 
-const GreenCheck = styled(CheckmarkIcon).attrs({
-  color: colors_NOT_REACTIVE.green,
-})`
+const GreenCheck = styled(CheckmarkIcon).attrs(({ theme: { colors } }) => ({
+  color: colors.green,
+}))`
   box-shadow: 0px 4px 6px
-    ${({ isDarkMode }) =>
-      colors_NOT_REACTIVE.alpha(
-        isDarkMode ? colors_NOT_REACTIVE.shadow : colors_NOT_REACTIVE.green,
-        0.4
-      )};
+    ${({ isDarkMode, theme: colors }) =>
+      colors.alpha(isDarkMode ? colors.shadow : colors.green, 0.4)};
 `;
 
-const GreyCheck = styled(CheckmarkIcon).attrs({
-  color: colors_NOT_REACTIVE.blueGreyDark50,
-})`
+const GreyCheck = styled(CheckmarkIcon).attrs(({ theme: { colors } }) => ({
+  color: colors.blueGreyDark50,
+}))`
   box-shadow: 0px 4px 6px
-    ${({ isDarkMode }) =>
-      colors_NOT_REACTIVE.alpha(
-        isDarkMode
-          ? colors_NOT_REACTIVE.shadow
-          : colors_NOT_REACTIVE.blueGreyDark50,
-        0.4
-      )};
+    ${({ isDarkMode, theme: { colors } }) =>
+      colors.alpha(isDarkMode ? colors.shadow : colors.blueGreyDark50, 0.4)};
 `;
 
-const WarningIcon = styled(Icon).attrs({
-  color: colors_NOT_REACTIVE.orangeLight,
+const WarningIcon = styled(Icon).attrs(({ theme: colors }) => ({
+  color: colors.orangeLight,
   name: 'warning',
-})`
+}))`
   align-self: center;
   box-shadow: 0px 4px 6px
-    ${({ theme: { colors } }) =>
-      colors.alpha(colors_NOT_REACTIVE.orangeLight, 0.4)};
+    ${({ theme: { colors } }) => colors.alpha(colors.orangeLight, 0.4)};
   margin-right: 7px;
 `;
 
@@ -166,6 +157,8 @@ const WalletSelectionView = () => {
 
   let cloudBackedUpWallets = 0;
 
+  const { colors } = useTheme();
+
   return (
     <Fragment>
       {Object.keys(wallets)
@@ -232,7 +225,7 @@ const WalletSelectionView = () => {
                         </BottomRowText>
                       ) : (
                         <BottomRowText
-                          color={colors_NOT_REACTIVE.orangeLight}
+                          color={colors.orangeLight}
                           weight={fonts.weight.medium}
                         >
                           Not backed up
@@ -257,10 +250,7 @@ const WalletSelectionView = () => {
                   </Row>
                 </Row>
               </ButtonPressAnimation>
-              <Divider
-                color={colors_NOT_REACTIVE.rowDividerFaint}
-                inset={[0, 15, 0]}
-              />
+              <Divider color={colors.rowDividerFaint} inset={[0, 15, 0]} />
             </Column>
           );
         })}
@@ -269,10 +259,7 @@ const WalletSelectionView = () => {
           <ButtonPressAnimation onPress={manageCloudBackups}>
             <Text
               align="center"
-              color={colors_NOT_REACTIVE.alpha(
-                colors_NOT_REACTIVE.blueGreyDark,
-                0.6
-              )}
+              color={colors.alpha(colors.blueGreyDark, 0.6)}
               letterSpacing="roundedMedium"
               size="lmedium"
               weight="semibold"

@@ -9,6 +9,7 @@ import { ThemeProvider as ThemeProviderNative } from 'styled-components/native';
 import { ThemeProvider } from 'styled-components/primitives';
 import { getTheme, saveTheme } from '../handlers/localstorage/theme';
 import colors_NOT_REACTIVE from '../styles/colors';
+import currentColors from './currentColors';
 
 const THEMES = {
   DARK: 'dark',
@@ -30,6 +31,10 @@ export const MainThemeProvider = props => {
   useEffect(() => {
     const loadUserPref = async () => {
       const userPref = (await getTheme()) || THEMES.LIGHT;
+      currentColors.themedColors =
+        userPref === THEMES.DARK
+          ? colors_NOT_REACTIVE.darkModeThemeColors
+          : colors_NOT_REACTIVE.lightModeThemeColors;
       setColorScheme(userPref);
     };
     loadUserPref();
@@ -51,7 +56,13 @@ export const MainThemeProvider = props => {
         : colors_NOT_REACTIVE.lightModeThemeColors,
       isDarkMode,
       // Overrides the isDarkMode value will cause re-render inside the context.
-      setTheme: scheme => setColorScheme(scheme),
+      setTheme: scheme => {
+        currentColors.themedColors =
+          scheme === THEMES.DARK
+            ? colors_NOT_REACTIVE.darkModeThemeColors
+            : colors_NOT_REACTIVE.lightModeThemeColors;
+        setColorScheme(scheme);
+      },
     }),
     [isDarkMode]
   );

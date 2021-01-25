@@ -15,7 +15,7 @@ import { useWallets } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors_NOT_REACTIVE, fonts, padding } from '@rainbow-me/styles';
+import { fonts, padding } from '@rainbow-me/styles';
 
 const BackupButton = styled(RainbowButton).attrs({
   type: 'small',
@@ -31,22 +31,22 @@ const Content = styled(Centered).attrs({
   flex: 1;
 `;
 
-const DescriptionText = styled(Text).attrs({
+const DescriptionText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.5),
+  color: colors.alpha(colors.blueGreyDark, 0.5),
   lineHeight: 'loosest',
   size: 'large',
-})`
+}))`
   margin-bottom: 42;
   padding-horizontal: 23;
 `;
 
-const Subtitle = styled(Text).attrs({
+const Subtitle = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors_NOT_REACTIVE.orangeLight,
+  color: colors.orangeLight,
   size: fonts.size.smedium,
   weight: fonts.weight.medium,
-})`
+}))`
   margin-top: -10;
 `;
 
@@ -107,6 +107,8 @@ export default function NeedsBackupView() {
     });
   }, [navigate, walletId]);
 
+  const { colors } = useTheme();
+
   return (
     <Fragment>
       <Subtitle>Not backed up</Subtitle>
@@ -126,13 +128,10 @@ export default function NeedsBackupView() {
           />
           <SheetActionButton
             androidWidth={220}
-            color={colors_NOT_REACTIVE.white}
+            color={colors.white}
             label="🤓 Back up manually"
             onPress={onManualBackup}
-            textColor={colors_NOT_REACTIVE.alpha(
-              colors_NOT_REACTIVE.blueGreyDark,
-              0.8
-            )}
+            textColor={colors.alpha(colors.blueGreyDark, 0.8)}
           />
         </Column>
       </Content>
