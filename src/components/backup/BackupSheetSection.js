@@ -70,7 +70,7 @@ export default function BackupSheetSection({
     <Fragment>
       <Masthead>
         <MastheadIcon />
-        <Text align="center" size="big" weight="bold">
+        <Text align="center" color={colors.dark} size="big" weight="bold">
           {titleText}
         </Text>
         <MastheadDescription>{descriptionText}</MastheadDescription>

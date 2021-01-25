@@ -216,11 +216,11 @@ const getColorsByTheme = darkMode => {
   };
 };
 
-const getColorForString = (colorString = '') => {
+const getColorForString = (colorString = '', providedThemeColors = colors) => {
   if (!colorString) return null;
 
   const isValidColorString = isHex(colorString) || isRGB(colorString);
-  return isValidColorString ? colorString : colors[colorString];
+  return isValidColorString ? colorString : providedThemeColors[colorString];
 };
 
 const darkModeThemeColors = getColorsByTheme(true);
