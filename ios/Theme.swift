@@ -15,14 +15,8 @@ extension UIColor {
       static var blueGreyDark: UIColor {
         return isDarkMode ? TransactionsDark.blueGreyDark : TransactionsLight.blueGreyDark
       }
-      static var blueGreyDark30: UIColor {
-        return isDarkMode ? TransactionsDark.blueGreyDark30 : TransactionsLight.blueGreyDark30
-      }
       static var blueGreyDark35: UIColor {
         return isDarkMode ? TransactionsDark.blueGreyDark35 : TransactionsLight.blueGreyDark35
-      }
-      static var blueGreyDark40: UIColor {
-        return isDarkMode ? TransactionsDark.blueGreyDark40 : TransactionsLight.blueGreyDark40
       }
       static var blueGreyDark50: UIColor {
         return isDarkMode ? TransactionsDark.blueGreyDark50 : TransactionsLight.blueGreyDark50
@@ -52,9 +46,7 @@ extension UIColor {
     struct TransactionsDark {
       static let appleBlue = UIColor(red: 0.05, green: 0.46, blue: 0.99, alpha: 1.00)
       static let blueGreyDark = UIColor(red: 0.88, green: 0.91, blue: 1.00, alpha: 1.00)
-      static let blueGreyDark30 = UIColor(red: 0.23, green: 0.24, blue: 0.27, alpha: 1.00) //FIXME
       static let blueGreyDark35 = UIColor(red: 0.47, green: 0.49, blue: 0.55, alpha: 1.00) // FIXME
-      static let blueGreyDark40 = UIColor(red: 0.47, green: 0.49, blue: 0.55, alpha: 1.00) // FIXME
       static let blueGreyDark50 = UIColor(red: 0.47, green: 0.49, blue: 0.55, alpha: 1.00)
       static let blueGreyDark70 = UIColor(red: 0.47, green: 0.49, blue: 0.55, alpha: 1.00) //FIXME
       static let dark = UIColor(red: 0.88, green: 0.91, blue: 1.00, alpha: 1.00)
@@ -67,9 +59,7 @@ extension UIColor {
     struct TransactionsLight {
       static let appleBlue = UIColor(red:0.05, green:0.46, blue:0.99, alpha:1.00)
       static let blueGreyDark = UIColor(red:0.24, green:0.26, blue:0.32, alpha:1.0)
-      static let blueGreyDark30 = UIColor(red:0.24, green:0.26, blue:0.32, alpha:0.3)
       static let blueGreyDark35 = UIColor(red:0.24, green:0.26, blue:0.32, alpha:0.35)
-      static let blueGreyDark40 = UIColor(red:0.24, green:0.26, blue:0.32, alpha:0.4)
       static let blueGreyDark50 = UIColor(red:0.24, green:0.26, blue:0.32, alpha:0.5)
       static let blueGreyDark70 = UIColor(red:0.24, green:0.26, blue:0.32, alpha:0.7)
       static let dark = UIColor(red:0.15, green:0.16, blue:0.18, alpha:1.0)

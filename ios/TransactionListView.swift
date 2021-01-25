@@ -52,6 +52,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
         self.backgroundColor = UIColor.RainbowTheme.Transactions.white
         header.accountView.layer.sublayers?.last?.shadowColor = UIColor.RainbowTheme.TransactionsLight.dark.cgColor
         headerSeparator.backgroundColor = UIColor.RainbowTheme.Transactions.rowDividerLight
+        header.accountAddress.textColor = UIColor.RainbowTheme.Transactions.dark
         self.layoutIfNeeded()
         tableView.reloadData()
       }
