@@ -8,7 +8,7 @@ import React, {
 import { ThemeProvider as ThemeProviderNative } from 'styled-components/native';
 import { ThemeProvider } from 'styled-components/primitives';
 import { getTheme, saveTheme } from '../handlers/localstorage/theme';
-import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
+import colors_NOT_REACTIVE from '../styles/colors';
 
 const THEMES = {
   DARK: 'dark',
