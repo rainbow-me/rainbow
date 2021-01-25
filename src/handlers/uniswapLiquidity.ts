@@ -4,7 +4,7 @@ import { ChainId, Pair, Token, WETH } from '@uniswap/sdk';
 import { fill, join } from 'lodash';
 import { addHexPrefix, web3Provider } from './web3';
 import { getQuote } from './zeroEx';
-import { ZeroExPayload } from '@rainbow-me/entities';
+import { TransactionParams, ZeroExPayload } from '@rainbow-me/entities';
 import {
   ETH_ADDRESS,
   WETH_ADDRESS,
@@ -31,8 +31,9 @@ export const depositToPool = async (
   tokenB: Token,
   chainId: ChainId,
   fromAmount: string,
-  network: string
-): Promise<string | null> => {
+  network: string,
+  transactionParams: TransactionParams
+) => {
   const buyToken = determineBuyToken(tokenA, tokenB, chainId);
 
   const firstSwapDetails = await getQuote(
@@ -46,27 +47,38 @@ export const depositToPool = async (
 
   const pairAddress = Pair.getAddress(tokenA, tokenB);
   const minPoolTokens = '1';
-  const lpPurchased = await executeDepositZap(
-    fromTokenAddress,
-    fromAmount,
-    pairAddress,
-    firstSwapDetails,
-    minPoolTokens
-  );
-  return lpPurchased;
+  try {
+    const result = executeDepositZap(
+      fromTokenAddress,
+      fromAmount,
+      pairAddress,
+      firstSwapDetails,
+      minPoolTokens,
+      transactionParams
+    );
+    return result;
+  } catch (error) {
+    logger.log('Error depositing ETH to zap', error);
+    return null;
+  }
 };
 
-export const executeDepositZap = async (
+export const executeDepositZap = (
   fromTokenAddress: string,
   fromAmount: string,
   pairAddress: string,
   firstSwapDetails: ZeroExPayload,
-  minPoolTokens: string
+  minPoolTokens: string,
+  transactionParams: TransactionParams
 ) => {
   const fromAddress =
     fromTokenAddress === ETH_ADDRESS ? ZERO_ADDRESS : fromTokenAddress;
   const sellTokenAmount = fromTokenAddress === ETH_ADDRESS ? '0' : fromAmount;
   const ethValue = fromTokenAddress === ETH_ADDRESS ? fromAmount : '0';
+  const _transactionParams = {
+    ...transactionParams,
+    value: ethValue,
+  };
 
   const { swapTarget, allowanceTarget, swapPayload } = firstSwapDetails;
   const rawSwapPayload = ethereumUtils.removeHexPrefix(swapPayload);
@@ -88,19 +100,14 @@ export const executeDepositZap = async (
   const swapDataBytes = arrayify(addHexPrefix(swapData));
 
   const zapInContract = new Contract(ZapInAddress, ZAP_IN_ABI, web3Provider);
-  try {
-    const lpTokensBought = await zapInContract.callStatic.ZapIn(
-      fromAddress,
-      pairAddress,
-      sellTokenAmount,
-      minPoolTokens,
-      allowanceTarget,
-      swapTarget,
-      swapDataBytes,
-      { value: ethValue }
-    );
-    return lpTokensBought.toString();
-  } catch (error) {
-    logger.log('Error depositing ETH to zap', error);
-  }
+  return zapInContract.callStatic.ZapIn(
+    fromAddress,
+    pairAddress,
+    sellTokenAmount,
+    minPoolTokens,
+    allowanceTarget,
+    swapTarget,
+    swapDataBytes,
+    _transactionParams
+  );
 };
