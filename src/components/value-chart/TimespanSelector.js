@@ -4,22 +4,22 @@ import { JellySelector } from '../jelly-selector';
 import { Centered, Row } from '../layout';
 import { Text } from '../text';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
-import { colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 
 const Container = styled(Centered)`
   padding-top: 30;
   width: 100%;
 `;
 
-const TimespanItemLabel = styled(Text).attrs(({ color, isSelected }) => ({
-  align: 'center',
-  color: isSelected
-    ? color
-    : colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.4),
-  letterSpacing: 'roundedTighter',
-  size: 'smedium',
-  weight: 'bold',
-}))`
+const TimespanItemLabel = styled(Text).attrs(
+  ({ color, isSelected, theme: { colors } }) => ({
+    align: 'center',
+    color: isSelected ? color : colors.alpha(colors.blueGreyDark, 0.4),
+    letterSpacing: 'roundedTighter',
+    size: 'smedium',
+    weight: 'bold',
+  })
+)`
   ${padding(0, 9)};
 `;
 
@@ -40,13 +40,14 @@ const TimespanItem = ({ color, isSelected, item, ...props }) => (
 );
 
 const TimespanSelector = ({
-  color = colors_NOT_REACTIVE.dark,
+  color,
   defaultIndex = 0,
   reloadChart,
   showMonth,
   showYear,
   timespans,
 }) => {
+  const { colors } = useTheme();
   const filteredTimespans = useMemo(() => {
     return timespans.filter(
       t =>
@@ -57,8 +58,8 @@ const TimespanSelector = ({
   return (
     <Container>
       <JellySelector
-        backgroundColor={colors_NOT_REACTIVE.alpha(color, 0.06)}
-        color={color}
+        backgroundColor={colors.alpha(color || colors.dark, 0.06)}
+        color={color || colors.dark}
         defaultIndex={defaultIndex}
         enableHapticFeedback
         height={32}
