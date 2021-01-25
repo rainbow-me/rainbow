@@ -2,7 +2,7 @@ import { Logger } from '@ethersproject/logger';
 import { Wallet } from '@ethersproject/wallet';
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
-import { Trade } from '@uniswap/sdk';
+import { ChainId, Trade } from '@uniswap/sdk';
 import { join, map } from 'lodash';
 import { depositCompound, swap, unlock, withdrawCompound } from './actions';
 import {
@@ -29,6 +29,7 @@ export enum RapActionType {
 export interface RapActionParameters {
   amount?: string | null;
   assetToUnlock?: Asset;
+  chainId?: ChainId;
   contractAddress?: string;
   inputAmount?: string | null;
   outputAmount?: string | null;
