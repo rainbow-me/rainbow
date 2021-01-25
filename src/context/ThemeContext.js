@@ -5,6 +5,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import { NativeModules } from 'react-native';
 import { ThemeProvider as ThemeProviderNative } from 'styled-components/native';
 import { ThemeProvider } from 'styled-components/primitives';
 import { getTheme, saveTheme } from '../handlers/localstorage/theme';
@@ -24,6 +25,9 @@ export const ThemeContext = createContext({
 
 export const MainThemeProvider = props => {
   const [colorScheme, setColorScheme] = useState();
+  useEffect(() => {
+    setTimeout(() => NativeModules.RNThemeModule?.setMode(colorScheme), 20);
+  }, [colorScheme]);
 
   const [isDarkMode, setIsDarkMode] = useState(colorScheme === THEMES.DARK);
 
