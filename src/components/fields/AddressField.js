@@ -7,7 +7,6 @@ import { Input } from '../inputs';
 import { Row } from '../layout';
 import { Label } from '../text';
 import { useClipboard } from '@rainbow-me/hooks';
-import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 import { abbreviations, addressUtils } from '@rainbow-me/utils';
 
 const AddressInput = styled(Input).attrs({
@@ -46,6 +45,7 @@ const AddressField = (
   { address, autoFocus, name, onChange, onFocus, testID, ...props },
   ref
 ) => {
+  const { colors } = useTheme();
   const { clipboard, setClipboard } = useClipboard();
   const [inputValue, setInputValue] = useState('');
   const [isValid, setIsValid] = useState(false);
@@ -82,11 +82,7 @@ const AddressField = (
       <AddressInput
         {...props}
         autoFocus={autoFocus}
-        color={
-          isValid
-            ? colors_NOT_REACTIVE.appleBlue
-            : colors_NOT_REACTIVE.blueGreyDark
-        }
+        color={isValid ? colors.appleBlue : colors.blueGreyDark}
         onBlur={expandAbbreviatedClipboard}
         onChange={handleChange}
         onChangeText={setInputValue}

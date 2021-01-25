@@ -9,7 +9,7 @@ import { Row, RowWithMargins } from '../layout';
 import { Emoji, Text, TruncatedText } from '../text';
 import TokenFamilyHeaderIcon from './TokenFamilyHeaderIcon';
 import { ImgixImage } from '@rainbow-me/images';
-import { colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 
 const AnimatedImgixImage = Animated.createAnimatedComponent(ImgixImage);
 
@@ -34,11 +34,13 @@ const ChildrenAmountText = styled(Text).attrs({
   margin-bottom: 1;
 `;
 
-const RotatingArrowIcon = styled(AnimatedImgixImage).attrs({
-  resizeMode: ImgixImage.resizeMode.contain,
-  source: CaretImageSource,
-  tintColor: colors_NOT_REACTIVE.dark,
-})`
+const RotatingArrowIcon = styled(AnimatedImgixImage).attrs(
+  ({ theme: { colors } }) => ({
+    resizeMode: ImgixImage.resizeMode.contain,
+    source: CaretImageSource,
+    tintColor: colors.dark,
+  })
+)`
   height: 18;
   margin-bottom: 1;
   right: 5;

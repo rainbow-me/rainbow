@@ -2,11 +2,7 @@ import React from 'react';
 import { TextInput as TextInputPrimitive } from 'react-native';
 import styled from 'styled-components/primitives';
 import { useTheme } from '../../context/ThemeContext';
-import { buildTextStyles, colors_NOT_REACTIVE } from '@rainbow-me/styles';
-
-const defaultSelectionColor = ios
-  ? colors_NOT_REACTIVE.appleBlue
-  : colors_NOT_REACTIVE.appleBlueTransparent;
+import { buildTextStyles } from '@rainbow-me/styles';
 
 const TextInput = styled(TextInputPrimitive)`
   /* our Input uses same styling system as our <Text /> component */
@@ -20,8 +16,8 @@ const Input = (
     autoCorrect = false,
     keyboardAppearance,
     keyboardType,
-    placeholderTextColor = colors_NOT_REACTIVE.placeholder,
-    selectionColor = defaultSelectionColor,
+    placeholderTextColor,
+    selectionColor,
     spellCheck = true,
     testID,
     textContentType = 'none',
@@ -29,7 +25,13 @@ const Input = (
   },
   ref
 ) => {
-  const { isDarkMode } = useTheme();
+  const { isDarkMode, colors } = useTheme();
+
+  const defaultSelectionColor = ios
+    ? colors.appleBlue
+    : colors.appleBlueTransparent;
+
+  const defaultPlaceholderTextColor = colors.placeholder;
 
   return (
     <TextInput
@@ -39,9 +41,9 @@ const Input = (
       autoCorrect={autoCorrect}
       keyboardAppearance={isDarkMode ? 'dark' : keyboardAppearance}
       keyboardType={keyboardType}
-      placeholderTextColor={placeholderTextColor}
+      placeholderTextColor={placeholderTextColor || defaultPlaceholderTextColor}
       ref={ref}
-      selectionColor={selectionColor}
+      selectionColor={selectionColor || defaultSelectionColor}
       spellCheck={spellCheck}
       testID={testID}
       textContentType={textContentType}

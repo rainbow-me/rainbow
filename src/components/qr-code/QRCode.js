@@ -4,7 +4,6 @@ import Svg, { Circle, ClipPath, Defs, G, Image, Rect } from 'react-native-svg';
 import RainbowLogo from '../../assets/rainbow-og.png';
 import useSafeImageUri from '../../hooks/useSafeImageUri';
 import { magicMemo } from '../../utils';
-import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const generateMatrix = (value, errorCorrectionLevel) => {
   const arr = Array.prototype.slice.call(
@@ -24,12 +23,14 @@ const generateMatrix = (value, errorCorrectionLevel) => {
 const QRCode = ({
   ecl = 'M',
   logo = RainbowLogo,
-  logoBackgroundColor = colors_NOT_REACTIVE.transparent,
+  logoBackgroundColor: givenLogoBackgroundColor,
   logoMargin = -5,
   logoSize = 84,
   size = 150,
   value = 'QR Code',
 }) => {
+  const { colors } = useTheme();
+  const logoBackgroundColor = givenLogoBackgroundColor || colors.transparent;
   const href = useSafeImageUri(logo);
   const dots = useMemo(() => {
     const dots = [];

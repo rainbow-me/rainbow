@@ -6,7 +6,6 @@ import { useAccountSettings, useInternetStatus } from '../../hooks';
 import { Icon } from '../icons';
 import { Nbsp, Text } from '../text';
 import Toast from './Toast';
-import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const TestnetToast = () => {
   const isConnected = useInternetStatus();
@@ -30,10 +29,12 @@ const TestnetToast = () => {
     }
   }, [name, network, providerUrl, isConnected]);
 
+  const { colors } = useTheme();
+
   return (
     <Toast isVisible={visible} testID={`testnet-toast-${networkName}`}>
       <Icon color={color} marginHorizontal={5} marginTop={5} name="dot" />
-      <Text color={colors_NOT_REACTIVE.white} size="smedium" weight="semibold">
+      <Text color={colors.white} size="smedium" weight="semibold">
         <Nbsp /> {networkName} <Nbsp />
       </Text>
     </Toast>

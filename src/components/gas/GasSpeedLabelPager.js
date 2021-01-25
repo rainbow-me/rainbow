@@ -1,26 +1,25 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components/primitives';
 import { Row } from '../layout';
 import GasSpeedLabelPagerItem, {
   GasSpeedLabelPagerItemHeight,
 } from './GasSpeedLabelPagerItem';
-import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 import { gasUtils, magicMemo } from '@rainbow-me/utils';
 
-const speedColors = {
+const speedColorsFactory = colors => ({
   dark: [
-    colors_NOT_REACTIVE.whiteLabel,
-    colors_NOT_REACTIVE.whiteLabel,
-    colors_NOT_REACTIVE.whiteLabel,
-    colors_NOT_REACTIVE.appleBlue,
+    colors.whiteLabel,
+    colors.whiteLabel,
+    colors.whiteLabel,
+    colors.appleBlue,
   ],
   light: [
-    colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.8),
-    colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.8),
-    colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.8),
-    colors_NOT_REACTIVE.appleBlue,
+    colors.alpha(colors.blueGreyDark, 0.8),
+    colors.alpha(colors.blueGreyDark, 0.8),
+    colors.alpha(colors.blueGreyDark, 0.8),
+    colors.appleBlue,
   ],
-};
+});
 
 const PagerItem = styled(Row)`
   border-radius: 2px;
@@ -39,6 +38,8 @@ const GasSpeedLabelPager = ({
 }) => {
   const [touched, setTouched] = useState(false);
   useEffect(() => setTouched(true), [label]);
+  const { colors } = useTheme();
+  const speedColors = useMemo(() => speedColorsFactory(colors), [colors]);
 
   return (
     <Row align="center" height={GasSpeedLabelPagerItemHeight} justify="end">
@@ -49,17 +50,14 @@ const GasSpeedLabelPager = ({
               backgroundColor={
                 speed === label
                   ? label === 'custom'
-                    ? colors_NOT_REACTIVE.appleBlue
+                    ? speedColors.appleBlue
                     : speedColors[theme][i]
                   : theme === 'dark'
-                  ? colors_NOT_REACTIVE.alpha(
-                      colors_NOT_REACTIVE.darkModeColors.blueGreyDark,
+                  ? speedColors.alpha(
+                      speedColors.darkModeColors.blueGreyDark,
                       0.3
                     )
-                  : colors_NOT_REACTIVE.alpha(
-                      colors_NOT_REACTIVE.blueGreyDark,
-                      0.3
-                    )
+                  : speedColors.alpha(speedColors.blueGreyDark, 0.3)
               }
               key={`pager-${speed}-${i}`}
               selected={speed === label}

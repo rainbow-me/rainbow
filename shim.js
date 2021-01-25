@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import ReactNative from 'react-native';
 import Animated from 'react-native-reanimated';
 import Storage from 'react-native-storage';
+import { useTheme } from './src/context/ThemeContext';
 import logger from 'logger';
 
 ReactNative.Platform.OS === 'ios' &&
@@ -37,6 +38,8 @@ if (
     unregisterEventHandler() {},
   };
 }
+
+global.useTheme = useTheme;
 
 global.storage = storage;
 

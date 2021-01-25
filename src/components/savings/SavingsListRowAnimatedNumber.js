@@ -5,7 +5,7 @@ import { useTheme } from '../../context/ThemeContext';
 import isRainbowTextAvailable from '../../helpers/isRainbowTextAvailable';
 import { formatSavingsAmount, isSymbolStablecoin } from '../../helpers/savings';
 import AndroidText from './AndroidAnimatedNumbers';
-import { colors_NOT_REACTIVE, fonts } from '@rainbow-me/styles';
+import { fonts } from '@rainbow-me/styles';
 
 const sx = StyleSheet.create({
   animatedNumber: {
@@ -17,7 +17,6 @@ const sx = StyleSheet.create({
     top: 4,
   },
   text: {
-    color: colors_NOT_REACTIVE.dark,
     flex: 1,
     fontFamily: fonts.family.SFProRounded,
     fontSize: parseFloat(fonts.size.lmedium),
@@ -42,7 +41,7 @@ const SavingsListRowAnimatedNumber = ({
     [symbol]
   );
 
-  const { isDarkMode: darkMode } = useTheme();
+  const { isDarkMode: darkMode, colors } = useTheme();
 
   const TextComponent = isRainbowTextAvailable
     ? requireNativeComponent('RainbowText')
@@ -51,7 +50,7 @@ const SavingsListRowAnimatedNumber = ({
   return (
     <TextComponent
       animationConfig={{
-        color: colors_NOT_REACTIVE.green, // HEX
+        color: colors.green, // HEX
         darkMode,
         decimals: 10,
         duration: 800, // in intervals
@@ -66,6 +65,7 @@ const SavingsListRowAnimatedNumber = ({
       steps={steps}
       style={[
         sx.text,
+        { color: colors.dark },
         isRainbowTextAvailable ? sx.animatedNumber : null,
         android ? sx.animatedNumberAndroid : null,
       ]}
