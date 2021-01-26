@@ -11,7 +11,7 @@ import {
   isDappAuthenticated,
 } from '@rainbow-me/helpers/dappNameHandler';
 import { useWalletConnectConnections } from '@rainbow-me/hooks';
-import { colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 
 const ContainerPadding = 15;
 const VendorLogoIconSize = 50;
@@ -22,6 +22,8 @@ export default function WalletConnectListItem({ dappIcon, dappName, dappUrl }) {
   const {
     walletConnectDisconnectAllByDappName,
   } = useWalletConnectConnections();
+
+  const { colors } = useTheme();
 
   const isAuthenticated = useMemo(() => {
     return isDappAuthenticated(dappUrl);
@@ -56,7 +58,7 @@ export default function WalletConnectListItem({ dappIcon, dappName, dappUrl }) {
         flex={1}
       >
         <RequestVendorLogoIcon
-          backgroundColor={colors_NOT_REACTIVE.white}
+          backgroundColor={colors.white}
           dappName={dappName}
           imageUrl={overrideLogo || dappIcon}
           size={VendorLogoIconSize}
@@ -73,7 +75,7 @@ export default function WalletConnectListItem({ dappIcon, dappName, dappUrl }) {
             {isAuthenticated && (
               <Text
                 align="center"
-                color={colors_NOT_REACTIVE.appleBlue}
+                color={colors.appleBlue}
                 letterSpacing="roundedMedium"
                 size="lmedium"
                 weight="bold"
@@ -84,10 +86,7 @@ export default function WalletConnectListItem({ dappIcon, dappName, dappUrl }) {
           </Row>
 
           <TruncatedText
-            color={colors_NOT_REACTIVE.alpha(
-              colors_NOT_REACTIVE.blueGreyDark,
-              0.6
-            )}
+            color={colors.alpha(colors.blueGreyDark, 0.6)}
             size="smedium"
             weight="medium"
           >

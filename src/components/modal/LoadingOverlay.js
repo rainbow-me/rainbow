@@ -7,7 +7,7 @@ import Spinner from '../Spinner';
 import TouchableBackdrop from '../TouchableBackdrop';
 import { Centered, Column } from '../layout';
 import { Text } from '../text';
-import { colors_NOT_REACTIVE, padding, position } from '@rainbow-me/styles';
+import { padding, position } from '@rainbow-me/styles';
 import { neverRerender } from '@rainbow-me/utils';
 
 const Container = styled(Centered).attrs({
@@ -22,7 +22,7 @@ const Container = styled(Centered).attrs({
 const Overlay = styled(Centered)`
   ${padding(19, 19, 22)};
   background-color: ${({ theme: { colors } }) =>
-    colors.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.15)};
+    colors.alpha(colors.blueGreyDark, 0.15)};
   border-radius: ${20};
   overflow: hidden;
 `;
@@ -35,24 +35,24 @@ const OverlayBlur = styled(BlurView).attrs(({ isDarkMode }) => ({
   z-index: 1;
 `;
 
-const Title = styled(Text).attrs({
-  color: colors_NOT_REACTIVE.blueGreyDark,
+const Title = styled(Text).attrs(({ theme: { colors } }) => ({
+  color: colors.blueGreyDark,
   lineHeight: ios ? 'none' : '24px',
   size: 'large',
   weight: 'semibold',
-})`
+}))`
   margin-left: 8;
 `;
 
 const LoadingOverlay = ({ title, ...props }) => {
-  const { isDarkMode } = useTheme();
+  const { colors, isDarkMode } = useTheme();
 
   return (
     <Container {...props} as={android ? Column : TouchableBackdrop} disabled>
       <Overlay>
         <Centered zIndex={2}>
           {android ? (
-            <Spinner color={colors_NOT_REACTIVE.blueGreyDark} />
+            <Spinner color={colors.blueGreyDark} />
           ) : (
             <ActivityIndicator />
           )}
