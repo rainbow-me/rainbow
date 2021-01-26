@@ -22,6 +22,7 @@ const SumValueText = styled(Text).attrs({
   size: 'large',
 })`
   margin-bottom: 1;
+  color: ${({ theme: { colors } }) => colors.dark};
 `;
 
 const ListHeaderEmoji = styled(Emoji).attrs({ size: 'medium' })`
