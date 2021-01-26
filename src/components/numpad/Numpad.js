@@ -1,16 +1,12 @@
 import React, { useCallback } from 'react';
+
 import styled from 'styled-components/primitives';
+import { useTheme } from '../../context/ThemeContext';
 import { useDimensions } from '../../hooks';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';
-import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
-
-const KeyColor = colors_NOT_REACTIVE.alpha(
-  colors_NOT_REACTIVE.blueGreyDark,
-  0.8
-);
 
 const KeyboardButtonContent = styled(Centered)`
   height: ${({ height }) => height};
@@ -45,6 +41,9 @@ const KeyboardButton = ({ children, ...props }) => {
 };
 
 const Numpad = ({ decimal = true, onPress, width }) => {
+  const { colors } = useTheme();
+  const keyColor = colors.alpha(colors.blueGreyDark, 0.8);
+
   const renderCell = useCallback(
     symbol => (
       <KeyboardButton
@@ -52,12 +51,12 @@ const Numpad = ({ decimal = true, onPress, width }) => {
         onPress={() => onPress(symbol.toString())}
         testID={`numpad-button-${symbol}`}
       >
-        <Text align="center" color={KeyColor} size={44} weight="bold">
+        <Text align="center" color={keyColor} size={44} weight="bold">
           {symbol}
         </Text>
       </KeyboardButton>
     ),
-    [onPress]
+    [keyColor, onPress]
   );
 
   const renderRow = useCallback(
@@ -74,7 +73,7 @@ const Numpad = ({ decimal = true, onPress, width }) => {
         {decimal ? renderCell('.') : <Column width={80} />}
         {renderCell(0)}
         <KeyboardButton onPress={() => onPress('back')}>
-          <Icon align="center" color={KeyColor} name="backspace" width={40} />
+          <Icon align="center" color={keyColor} name="backspace" width={40} />
         </KeyboardButton>
       </KeyboardRow>
     </Centered>

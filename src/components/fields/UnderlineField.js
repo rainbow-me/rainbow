@@ -12,12 +12,12 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
-import { useTheme } from '../../context/ThemeContext';
+import { useTheme, withThemeContext } from '../../context/ThemeContext';
 import { Button } from '../buttons';
 import { ExchangeInput } from '../exchange';
 import { ColumnWithMargins, Row } from '../layout';
 import { useDimensions } from '@rainbow-me/hooks';
-import { colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 
 const Underline = styled.View`
   ${position.cover};
@@ -31,9 +31,9 @@ const UnderlineAnimated = styled(Animated.View)`
   left: -100%;
 `;
 
-const UnderlineInput = styled(ExchangeInput).attrs(
-  ({ isTinyPhone, isDarkMode }) => ({
-    color: colors_NOT_REACTIVE.dark,
+const UnderlineInput = withThemeContext(styled(ExchangeInput).attrs(
+  ({ isTinyPhone, isDarkMode, colors }) => ({
+    color: colors.dark,
     disableTabularNums: true,
     keyboardAppearance: isDarkMode ? 'dark' : 'light',
     letterSpacing: 'roundedTightest',
@@ -45,7 +45,7 @@ const UnderlineInput = styled(ExchangeInput).attrs(
   ${android ? 'height: 40;' : ''}
   ${android ? 'padding-bottom: 0;' : ''}
   ${android ? 'padding-top: 0;' : ''}
-`;
+`);
 
 const UnderlineContainer = styled(Row)`
   border-radius: 1px;
@@ -154,7 +154,7 @@ const UnderlineField = (
     };
   });
 
-  const { isDarkMode } = useTheme();
+  const { colors, isDarkMode } = useTheme();
 
   return (
     <ColumnWithMargins flex={1} margin={8} {...props}>
@@ -176,7 +176,7 @@ const UnderlineField = (
         />
         {buttonText && isFocused && (
           <Button
-            backgroundColor={colors_NOT_REACTIVE.sendScreen.brightBlue}
+            backgroundColor={colors.sendScreen.brightBlue}
             onPress={handleButtonPress}
             size="small"
             type="pill"

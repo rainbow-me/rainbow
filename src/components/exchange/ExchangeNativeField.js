@@ -8,8 +8,8 @@ import { useColorForAsset } from '@rainbow-me/hooks';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 import { fonts } from '@rainbow-me/styles';
 
-const CurrencySymbol = styled(Text).attrs(({ height, theme: { colors } }) => ({
-  color: colors.dark,
+const CurrencySymbol = styled(Text).attrs(({ height, color }) => ({
+  color: color,
   letterSpacing: 'roundedTight',
   lineHeight: height,
   size: 'larger',

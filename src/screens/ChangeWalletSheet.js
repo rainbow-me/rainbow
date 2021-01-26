@@ -17,6 +17,7 @@ import WalletList from '../components/change-wallet/WalletList';
 import { Column } from '../components/layout';
 import { Sheet, SheetTitle } from '../components/sheet';
 import { Text } from '../components/text';
+import { withThemeContext } from '../context/ThemeContext';
 import { backupUserDataIntoCloud } from '../handlers/cloudBackup';
 import { removeWalletData } from '../handlers/localstorage/removeWallet';
 import showWalletErrorAlert from '../helpers/support';
@@ -80,13 +81,15 @@ const EditButton = styled(ButtonPressAnimation).attrs(({ editMode }) => ({
   `}
 `;
 
-const EditButtonLabel = styled(Text).attrs(({ editMode }) => ({
-  align: 'right',
-  color: colors_NOT_REACTIVE.appleBlue,
-  letterSpacing: 'roundedMedium',
-  size: 'large',
-  weight: editMode ? 'semibold' : 'medium',
-}))``;
+const EditButtonLabel = withThemeContext(
+  styled(Text).attrs(({ colors, editMode }) => ({
+    align: 'right',
+    color: colors.appleBlue,
+    letterSpacing: 'roundedMedium',
+    size: 'large',
+    weight: editMode ? 'semibold' : 'medium',
+  }))``
+);
 
 const Whitespace = styled.View`
   background-color: ${({ theme: { colors } }) => colors.white};

@@ -38,6 +38,7 @@ const sx = StyleSheet.create({
     width: 60,
   },
   editIcon: {
+    color: '#0E76FD',
     fontFamily: fonts.family.SFProRounded,
     fontSize: getFontSize(fonts.size.large),
     fontWeight: fonts.weight.medium,
@@ -78,9 +79,7 @@ const OptionsIcon = ({ onPress }) => {
         {android ? (
           <Icon circle color={colors.appleBlue} name="threeDots" tightDots />
         ) : (
-          <Text color={colors.appleBlue} style={sx.editIcon}>
-            􀍡
-          </Text>
+          <Text style={sx.editIcon}>􀍡</Text>
         )}
       </Centered>
     </ButtonPressAnimation>

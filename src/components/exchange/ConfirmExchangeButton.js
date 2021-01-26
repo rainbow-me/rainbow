@@ -3,13 +3,6 @@ import { useTheme } from '../../context/ThemeContext';
 import ExchangeModalTypes from '../../helpers/exchangeModalTypes';
 import { HoldToAuthorizeButton } from '../buttons';
 import { SlippageWarningThresholdInBips } from './SlippageWarning';
-import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
-
-const ConfirmExchangeButtonShadows = [
-  [0, 3, 5, colors_NOT_REACTIVE.shadowBlack, 0.2],
-  [0, 6, 10, colors_NOT_REACTIVE.shadowBlack, 0.14],
-  [0, 1, 18, colors_NOT_REACTIVE.shadowBlack, 0.12],
-];
 
 const ConfirmExchangeButton = ({
   disabled,
@@ -23,6 +16,13 @@ const ConfirmExchangeButton = ({
   type,
   ...props
 }) => {
+  const { colors } = useTheme();
+  const ConfirmExchangeButtonShadows = [
+    [0, 3, 5, colors.shadowBlack, 0.2],
+    [0, 6, 10, colors.shadowBlack, 0.14],
+    [0, 1, 18, colors.shadowBlack, 0.12],
+  ];
+
   let label =
     type === ExchangeModalTypes.deposit
       ? 'Hold to Deposit'
@@ -41,8 +41,6 @@ const ConfirmExchangeButton = ({
     label = 'Enter an Amount';
   }
 
-  const { isDarkMode } = useTheme();
-
   const isDisabled =
     disabled ||
     !isSufficientBalance ||
@@ -52,11 +50,7 @@ const ConfirmExchangeButton = ({
   return (
     <HoldToAuthorizeButton
       disabled={isDisabled}
-      disabledBackgroundColor={
-        isDarkMode
-          ? colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.04)
-          : colors_NOT_REACTIVE.grey20
-      }
+      disabledBackgroundColor={colors.alpha(colors.blueGreyDark, 0.04)}
       flex={1}
       hideInnerBorder
       isAuthorizing={isAuthorizing}

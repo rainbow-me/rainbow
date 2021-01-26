@@ -33,6 +33,7 @@ const Placeholder = styled(Row)`
 `;
 
 const PlaceholderText = styled(Label)`
+  color: ${({ theme: { colors } }) => colors.dark};
   opacity: 0.45;
 `;
 

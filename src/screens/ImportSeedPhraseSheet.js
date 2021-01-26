@@ -23,6 +23,7 @@ import {
   InvalidPasteToast,
   ToastPositionContainer,
 } from '../components/toasts';
+import { useTheme } from '../context/ThemeContext';
 import { web3Provider } from '@rainbow-me/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import {
@@ -47,7 +48,7 @@ import {
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import { sheetVerticalOffset } from '@rainbow-me/navigation/effects';
 import Routes from '@rainbow-me/routes';
-import { borders, colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
+import { borders, padding } from '@rainbow-me/styles';
 import {
   deviceUtils,
   ethereumUtils,
@@ -368,7 +369,7 @@ export default function ImportSeedPhraseSheet() {
       isImporting ? walletLoadingStates.IMPORTING_WALLET : null
     );
   }, [isImporting, setIsWalletLoading]);
-
+  const { colors } = useTheme();
   return (
     <Container testID="import-sheet">
       <StatusBar barStyle="light-content" />
@@ -379,19 +380,12 @@ export default function ImportSeedPhraseSheet() {
         </Text>
         <SecretTextAreaContainer>
           <SecretTextArea
-            color={
-              isSecretValid
-                ? colors_NOT_REACTIVE.appleBlue
-                : colors_NOT_REACTIVE.dark
-            }
+            color={isSecretValid ? colors.appleBlue : colors.dark}
             onChangeText={handleSetSeedPhrase}
             onFocus={handleFocus}
             onSubmitEditing={handlePressImportButton}
             placeholder="Seed phrase, private key, Ethereum address or ENS name"
-            placeholderTextColor={colors_NOT_REACTIVE.alpha(
-              colors_NOT_REACTIVE.blueGreyDark,
-              0.3
-            )}
+            placeholderTextColor={colors.alpha(colors.blueGreyDark, 0.3)}
             ref={inputRef}
             returnKeyType="done"
             size="large"

@@ -1,6 +1,7 @@
 import { get, isEmpty, isNumber, toLower } from 'lodash';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import styled from 'styled-components/primitives';
+import { useTheme } from '../../context/ThemeContext';
 import { useNavigation } from '../../navigation/Navigation';
 import Divider from '../Divider';
 import { AddContactButton, PasteAddressButton } from '../buttons';
@@ -27,6 +28,7 @@ const AddressInputContainer = styled(Row).attrs({ align: 'center' })`
 `;
 
 const AddressFieldLabel = styled(Label)`
+  color: ${({ theme: { colors } }) => colors.dark};
   margin-right: 6;
   opacity: 0.45;
 `;
@@ -130,6 +132,7 @@ export default function SendHeader({
   ]);
 
   const isPreExistingContact = (contact?.nickname?.length || 0) > 0;
+  const { colors } = useTheme();
 
   return (
     <Fragment>
@@ -157,7 +160,7 @@ export default function SendHeader({
         )}
         {!isValidAddress && <PasteAddressButton onPress={onPressPaste} />}
       </AddressInputContainer>
-      <Divider color={colors_NOT_REACTIVE.rowDivider} flex={0} inset={false} />
+      <Divider color={colors.rowDivider} flex={0} inset={false} />
     </Fragment>
   );
 }

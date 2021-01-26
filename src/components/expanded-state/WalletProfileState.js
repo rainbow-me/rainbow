@@ -1,5 +1,6 @@
 import React, { useCallback, useRef, useState } from 'react';
 import styled from 'styled-components/primitives';
+import { useTheme, withThemeContext } from '../../context/ThemeContext';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { BiometricButtonContent } from '../buttons';
@@ -12,6 +13,7 @@ import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
 } from '@rainbow-me/helpers/emojiHandler';
+
 import { useAccountProfile } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
@@ -23,17 +25,19 @@ import {
 } from '@rainbow-me/styles';
 import { abbreviations } from '@rainbow-me/utils';
 
-const WalletProfileAddressText = styled(TruncatedAddress).attrs({
+const WalletProfileAddressText = withThemeContext(styled(
+  TruncatedAddress
+).attrs(({ colors }) => ({
   align: 'center',
-  color: colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.6),
+  color: colors.alpha(colors.blueGreyDark, 0.6),
   firstSectionLength: abbreviations.defaultNumCharsPerSection,
   size: 'lmedium',
   truncationLength: 4,
   weight: 'medium',
-})`
+}))`
   ${margin(9, 0, 5)};
   width: 100%;
-`;
+`);
 
 const Spacer = styled.View`
   height: 19;
@@ -56,11 +60,13 @@ const ProfileImage = styled(ImageAvatar)`
   margin-bottom: 15;
 `;
 
-const WalletProfileDivider = styled(Divider).attrs({
-  borderRadius: 1,
-  color: colors_NOT_REACTIVE.rowDividerLight,
-  inset: false,
-})``;
+const WalletProfileDivider = withThemeContext(
+  styled(Divider).attrs(({ colors }) => ({
+    borderRadius: 1,
+    color: colors.rowDividerLight,
+    inset: false,
+  }))``
+);
 
 const WalletProfileModal = styled(ProfileModal).attrs({
   dividerRenderer: WalletProfileDivider,
@@ -80,6 +86,7 @@ export default function WalletProfileState({
   const { goBack, navigate } = useNavigation();
   const { accountImage } = useAccountProfile();
 
+  const { colors } = useTheme();
   const [color, setColor] = useState(
     (profile.color !== null && profile.color) ||
       colors_NOT_REACTIVE.getRandomColor()
@@ -145,7 +152,7 @@ export default function WalletProfileState({
           onSubmitEditing={handleSubmit}
           placeholder="Name your wallet"
           ref={inputRef}
-          selectionColor={colors_NOT_REACTIVE.avatarColor[color]}
+          selectionColor={colors.avatarColor[color]}
           testID="wallet-info-input"
           value={value}
         />
@@ -169,10 +176,7 @@ export default function WalletProfileState({
         </WalletProfileButton>
         <WalletProfileButton onPress={handleCancel}>
           <WalletProfileButtonText
-            color={colors_NOT_REACTIVE.alpha(
-              colors_NOT_REACTIVE.blueGreyDark,
-              0.6
-            )}
+            color={colors.alpha(colors.blueGreyDark, 0.6)}
             letterSpacing="roundedMedium"
             weight="medium"
           >
