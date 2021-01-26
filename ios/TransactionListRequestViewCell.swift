@@ -39,6 +39,11 @@ class TransactionListRequestViewCell: TransactionListBaseCell {
     timer?.invalidate()
   }
   
+  override func layoutSubviews() {
+    self.backgroundColor = UIColor.RainbowTheme.Transactions.white
+    super.layoutSubviews()
+  }
+  
   func set(request: TransactionRequest) {
     let expirationTime = request.requestedAt.addingTimeInterval(timeout)
     
