@@ -49,7 +49,7 @@ import {
   selectedWalletKey,
 } from '../utils/keychainConstants';
 import * as keychain from './keychain';
-import { colors } from '@rainbow-me/styles';
+import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 import logger from 'logger';
 const encryptor = new AesEncryptor();
 
@@ -641,7 +641,7 @@ export const createWallet = async (
     addresses.push({
       address: walletAddress,
       avatar: null,
-      color: color !== null ? color : colors.getRandomColor(),
+      color: color !== null ? color : colors_NOT_REACTIVE.getRandomColor(),
       index: 0,
       label: name || '',
       visible: true,
@@ -689,7 +689,7 @@ export const createWallet = async (
 
         // Remove any discovered wallets if they already exist
         // and copy over label and color if account was visible
-        let color = colors.getRandomColor();
+        let color = colors_NOT_REACTIVE.getRandomColor();
         let label = '';
 
         if (discoveredAccount && discoveredWalletId) {
