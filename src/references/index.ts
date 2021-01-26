@@ -1,6 +1,6 @@
 import { mapKeys, mapValues } from 'lodash';
 import savingAssets from './compound/saving-assets.json';
-import { Asset } from '@rainbow-me/entities';
+import { Asset, SavingsAsset } from '@rainbow-me/entities';
 
 export {
   CURATED_UNISWAP_TOKENS,
@@ -87,14 +87,15 @@ export const DefaultUniswapFavorites = {
 
 export const savingsAssetsList = savingAssets;
 
-export const savingsAssetsListByUnderlying = mapValues(
-  savingAssets,
-  (assetsByNetwork: Record<string, Asset>) =>
-    mapKeys(
-      mapValues(assetsByNetwork, (assetByContract, contractAddress) => ({
-        ...assetByContract,
-        contractAddress,
-      })),
-      value => value.address
-    )
+export const savingsAssetsListByUnderlying: Record<
+  string,
+  Record<string, SavingsAsset>
+> = mapValues(savingAssets, (assetsByNetwork: Record<string, Asset>) =>
+  mapKeys(
+    mapValues(assetsByNetwork, (assetByContract, contractAddress) => ({
+      ...assetByContract,
+      contractAddress,
+    })),
+    value => value.address
+  )
 );

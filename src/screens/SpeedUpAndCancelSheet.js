@@ -22,7 +22,6 @@ import {
   SlackSheet,
 } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
-import { executeRap } from '../raps/common';
 import { getTransaction, toHex } from '@rainbow-me/handlers/web3';
 import TransactionStatusTypes from '@rainbow-me/helpers/transactionStatusTypes';
 import TransactionTypes from '@rainbow-me/helpers/transactionTypes';
@@ -35,6 +34,7 @@ import {
 import { loadWallet, sendTransaction } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
 import { getTitle, gweiToWei, weiToGwei } from '@rainbow-me/parsers';
+import { executeRap } from '@rainbow-me/raps';
 
 import { dataUpdateTransaction } from '@rainbow-me/redux/data';
 import { explorerInit } from '@rainbow-me/redux/explorer';

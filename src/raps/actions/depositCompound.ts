@@ -1,31 +1,39 @@
 import { Contract } from '@ethersproject/contracts';
+import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
 import { get } from 'lodash';
-import { toHex } from '../../handlers/web3';
-import ProtocolTypes from '../../helpers/protocolTypes';
-import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
-import TransactionTypes from '../../helpers/transactionTypes';
-import { convertAmountToRawAmount, isZero } from '../../helpers/utilities';
-import { dataAddNewTransaction } from '../../redux/data';
-import { rapsAddOrUpdate } from '../../redux/raps';
-import store from '../../redux/store';
+import { DepositActionParameters, Rap, RapActionParameters } from '../common';
+import { Asset } from '@rainbow-me/entities';
+import { toHex } from '@rainbow-me/handlers/web3';
+import ProtocolTypes from '@rainbow-me/helpers/protocolTypes';
+import TransactionStatusTypes from '@rainbow-me/helpers/transactionStatusTypes';
+import TransactionTypes from '@rainbow-me/helpers/transactionTypes';
+import { dataAddNewTransaction } from '@rainbow-me/redux/data';
+import { rapsAddOrUpdate } from '@rainbow-me/redux/raps';
+import store from '@rainbow-me/redux/store';
 import {
   compoundCERC20ABI,
   compoundCETHABI,
   ethUnits,
   savingsAssetsListByUnderlying,
-} from '../../references';
-import { gasUtils } from '../../utils';
+} from '@rainbow-me/references';
+import { convertAmountToRawAmount, isZero } from '@rainbow-me/utilities';
+import { gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const NOOP = () => undefined;
 
-export const getDepositGasLimit = inputCurrency =>
+export const getDepositGasLimit = (inputCurrency: Asset) =>
   inputCurrency.address === 'eth'
     ? ethUnits.basic_deposit_eth
     : ethUnits.basic_deposit;
 
-const depositCompound = async (wallet, currentRap, index, parameters) => {
+const depositCompound = async (
+  wallet: Wallet,
+  currentRap: Rap,
+  index: number,
+  parameters: RapActionParameters
+): Promise<null> => {
   logger.log('[deposit]');
   const {
     accountAddress,
@@ -34,7 +42,7 @@ const depositCompound = async (wallet, currentRap, index, parameters) => {
     network,
     override,
     selectedGasPrice,
-  } = parameters;
+  } = parameters as DepositActionParameters;
   const { dispatch } = store;
   const { gasPrices } = store.getState().gas;
   const _inputAmount = override || inputAmount;
@@ -107,7 +115,7 @@ const depositCompound = async (wallet, currentRap, index, parameters) => {
     logger.log('[deposit] waiting for the deposit to go thru', deposit.hash);
     const receipt = await wallet.provider.waitForTransaction(deposit.hash);
     logger.log('[deposit] receipt:', receipt);
-    if (!isZero(receipt.status)) {
+    if (receipt.status && !isZero(receipt.status)) {
       currentRap.actions[index].transaction.confirmed = true;
       dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
       logger.log('[deposit] updated raps');
