@@ -30,24 +30,27 @@ const Container = styled(Column)`
 `;
 
 const FloatingPanel = ({
-  color = colors_NOT_REACTIVE.white,
+  color,
   height = 'auto',
   hideShadow = true,
   overflow = 'hidden',
   radius = FloatingPanelBorderRadius,
   testID,
   ...props
-}) => (
-  <Container
-    {...props}
-    color={color}
-    hideShadow={hideShadow}
-    minHeight={height}
-    overflow={overflow}
-    radius={radius}
-    testID={testID + '-container'}
-  />
-);
+}) => {
+  const { colors } = useTheme();
+  return (
+    <Container
+      {...props}
+      color={color || colors.white}
+      hideShadow={hideShadow}
+      minHeight={height}
+      overflow={overflow}
+      radius={radius}
+      testID={testID + '-container'}
+    />
+  );
+};
 
 FloatingPanel.propTypes = {
   color: PropTypes.string,

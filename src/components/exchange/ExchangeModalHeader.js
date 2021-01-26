@@ -7,7 +7,7 @@ import { Icon } from '../icons';
 import { Column } from '../layout';
 import { SheetHandle } from '../sheet';
 import { Text } from '../text';
-import { colors_NOT_REACTIVE, padding, position } from '@rainbow-me/styles';
+import { padding, position } from '@rainbow-me/styles';
 
 const SheetHandleMargin = 6;
 
@@ -31,10 +31,10 @@ const InfoButton = styled(ButtonPressAnimation).attrs({
   margin-top: ${SheetHandleMargin + 4};
 `;
 
-const InfoButtonIcon = styled(Icon).attrs({
-  color: colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.3),
+const InfoButtonIcon = styled(Icon).attrs(({ theme: { colors } }) => ({
+  color: colors.alpha(colors.blueGreyDark, 0.3),
   name: 'info',
-})`
+}))`
   ${position.size(18)};
 `;
 
@@ -54,7 +54,7 @@ const ExchangeModalHeader = ({
 }) => {
   const transitionRef = useRef();
   const prevShowDetailsButton = usePrevious(showDetailsButton);
-
+  const { colors } = useTheme();
   useEffect(() => {
     if (showDetailsButton !== prevShowDetailsButton) {
       transitionRef.current?.animateNextTransition();
@@ -64,7 +64,13 @@ const ExchangeModalHeader = ({
   return (
     <Column align="center" css={padding(6, 0)} testID={testID}>
       <SheetHandle marginBottom={SheetHandleMargin} />
-      <Text align="center" lineHeight="loose" size="large" weight="heavy">
+      <Text
+        align="center"
+        color={colors.dark}
+        lineHeight="loose"
+        size="large"
+        weight="heavy"
+      >
         {title}
       </Text>
       <InfoButtonTransition ref={transitionRef} transition={transition}>
