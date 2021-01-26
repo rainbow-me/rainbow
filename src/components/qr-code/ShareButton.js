@@ -1,27 +1,18 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Share } from 'react-native';
 import styled from 'styled-components/primitives';
 import { useTheme } from '../../context/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { Centered, InnerBorder } from '../layout';
 import { Text } from '../text';
-import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
-const shadowsFactory = darkMode => [
-  [0, 10, 30, colors_NOT_REACTIVE.shadow, 0.2],
-  [0, 5, 15, colors_NOT_REACTIVE.shadow, darkMode ? 0 : 0.4],
-];
-
-const shadowsDark = shadowsFactory(true);
-const shadowsLight = shadowsFactory(false);
-
-const Label = styled(Text).attrs({
+const Label = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors_NOT_REACTIVE.whiteLabel,
+  color: colors.white,
   size: 'larger',
   weight: 'bold',
-})`
+}))`
   margin-bottom: 4;
 `;
 
@@ -33,8 +24,15 @@ export default function ShareButton({ accountAddress, ...props }) {
     });
   }, [accountAddress]);
 
-  const { isDarkMode } = useTheme();
-  const shadows = isDarkMode ? shadowsDark : shadowsLight;
+  const { isDarkMode, colors } = useTheme();
+
+  const shadows = useMemo(
+    () => [
+      [0, 10, 30, colors.shadow, 0.2],
+      [0, 5, 15, colors.shadow, isDarkMode ? 0 : 0.4],
+    ],
+    [isDarkMode, colors]
+  );
 
   return (
     <ButtonPressAnimation
@@ -44,9 +42,7 @@ export default function ShareButton({ accountAddress, ...props }) {
       {...props}
     >
       <ShadowStack
-        backgroundColor={
-          isDarkMode ? colors_NOT_REACTIVE.white : colors_NOT_REACTIVE.dark
-        }
+        backgroundColor={colors.dark}
         borderRadius={28}
         height={56}
         shadows={shadows}

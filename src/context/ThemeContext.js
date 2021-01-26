@@ -5,7 +5,8 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { NativeModules, StatusBar } from 'react-native';
+import { LayoutAnimation, NativeModules, StatusBar } from 'react-native';
+
 import { ThemeProvider as ThemeProviderNative } from 'styled-components/native';
 import { ThemeProvider } from 'styled-components/primitives';
 import { getTheme, saveTheme } from '../handlers/localstorage/theme';
@@ -76,6 +77,9 @@ export const MainThemeProvider = props => {
             ? colors_NOT_REACTIVE.darkModeThemeColors
             : colors_NOT_REACTIVE.lightModeThemeColors;
         setColorScheme(scheme);
+        LayoutAnimation.configureNext(
+          LayoutAnimation.create(1000, 'easeInEaseOut', 'opacity')
+        );
       },
     }),
     [isDarkMode]

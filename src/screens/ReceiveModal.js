@@ -18,14 +18,14 @@ import { colors_NOT_REACTIVE, padding, shadow } from '@rainbow-me/styles';
 
 const QRCodeSize = ios ? 250 : Math.min(230, deviceUtils.dimensions.width - 20);
 
-const AddressText = styled(TruncatedAddress).attrs({
+const AddressText = styled(TruncatedAddress).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors_NOT_REACTIVE.whiteLabel,
+  color: colors.whiteLabel,
   lineHeight: 'loosest',
   opacity: 0.6,
   size: 'large',
   weight: 'semibold',
-})`
+}))`
   width: 100%;
 `;
 
@@ -44,7 +44,8 @@ const Handle = styled(SheetHandle).attrs({
 
 const QRWrapper = styled(Column).attrs({ align: 'center' })`
   ${padding(24)};
-  ${shadow.build(0, 10, 50, colors_NOT_REACTIVE.shadowBlack, 0.6)};
+  ${({ theme: { colors } }) =>
+    shadow.build(0, 10, 50, colors.shadowBlack, 0.6)};
   background-color: ${({ theme: { colors } }) => colors.whiteLabel};
   border-radius: 39;
 `;
