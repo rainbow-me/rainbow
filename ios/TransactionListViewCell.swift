@@ -54,6 +54,7 @@ class TransactionListViewCell: TransactionListBaseCell {
     transactionType.text = transaction.title
     coinName.text = transaction.transactionDescription
     nativeDisplay.text = transaction.nativeDisplay
+    balanceDisplay.textColor = UIColor.RainbowTheme.Transactions.blueGreyDark50
     balanceDisplay.text = transaction.balanceDisplay
 
     balanceDisplay.addCharacterSpacing()
