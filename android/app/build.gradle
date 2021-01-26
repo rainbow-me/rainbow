@@ -225,6 +225,12 @@ android {
             keyAlias 'rainbow-alias'
             keyPassword pass
         }
+        bitrise {
+            storeFile file('../keystores/rainbow-key.keystore')
+            storePassword System.getenv("BITRISEIO_ANDROID_KEYSTORE_PASSWORD")
+            keyAlias 'rainbow-alias'
+            keyPassword System.getenv("BITRISEIO_ANDROID_KEYSTORE_PRIVATE_KEY_PASSWORD")
+    }
     }
 
     buildTypes {
@@ -237,6 +243,15 @@ android {
             signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+        }
+    }
+
+    flavorDimensions "environment"
+    productFlavors {
+        bitrise {
+            dimension "environment"
+            signingConfig signingConfigs.bitrise
+
         }
     }
 
