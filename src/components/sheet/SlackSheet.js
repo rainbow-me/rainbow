@@ -1,5 +1,5 @@
 // FIXME unify with iOS
-import React, { Fragment, useMemo } from 'react';
+import React, { Fragment, useEffect, useMemo, useRef } from 'react';
 import { Pressable, StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useSafeArea } from 'react-native-safe-area-context';
@@ -82,6 +82,7 @@ export default function SlackSheet({
   hideHandle = false,
   renderHeader,
   scrollEnabled = true,
+  discoverSheet,
   ...props
 }) {
   const yPosition = useReanimatedValue(0);
@@ -100,6 +101,8 @@ export default function SlackSheet({
     [bottomInset]
   );
 
+  const sheet = useRef();
+
   const scrollIndicatorInsets = useMemo(
     () => ({
       bottom: bottomInset,
@@ -107,7 +110,20 @@ export default function SlackSheet({
     }),
     [borderRadius, bottomInset]
   );
+
+  // In discover sheet we need to set it additionally
+  useEffect(
+    () => {
+      discoverSheet &&
+        ios &&
+        sheet.current.setNativeProps({ scrollIndicatorInsets });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+
   const bg = backgroundColor || colors.white;
+
   return (
     <Fragment>
       {android ? (
@@ -135,6 +151,7 @@ export default function SlackSheet({
             contentHeight={contentHeight}
             deviceHeight={deviceHeight}
             directionalLockEnabled
+            ref={sheet}
             scrollEnabled={scrollEnabled}
             scrollIndicatorInsets={scrollIndicatorInsets}
             y={yPosition}

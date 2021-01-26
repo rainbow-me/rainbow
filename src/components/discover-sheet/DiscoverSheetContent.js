@@ -25,7 +25,11 @@ const HeaderTitle = styled(Text).attrs({
 
 export default function DiscoverSheetContent() {
   return (
-    <SlackSheet contentOffset={position.current} renderHeader={renderHeader}>
+    <SlackSheet
+      contentOffset={position.current}
+      discoverSheet
+      renderHeader={renderHeader}
+    >
       <HeaderTitle>Discover</HeaderTitle>
       <ColumnWithMargins flex={1} margin={42}>
         <SearchHeader />

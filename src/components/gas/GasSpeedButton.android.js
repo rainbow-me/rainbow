@@ -10,10 +10,6 @@ import { Keyboard, LayoutAnimation } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import styled from 'styled-components/primitives';
-import ExchangeModalTypes from '../../helpers/exchangeModalTypes';
-import { useAccountSettings, useGas } from '../../hooks';
-import { gweiToWei, weiToGwei } from '../../parsers/gas';
-import { gasUtils, magicMemo } from '../../utils';
 import { Alert } from '../alerts';
 import {
   ButtonPressAnimation,
@@ -23,12 +19,16 @@ import { Input } from '../inputs';
 import { Column, Row } from '../layout';
 import { AnimatedNumber, Text } from '../text';
 import GasSpeedLabelPager from './GasSpeedLabelPager';
+import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
+import { useAccountSettings, useGas } from '@rainbow-me/hooks';
+import { gweiToWei, weiToGwei } from '@rainbow-me/parsers';
 import {
   colors_NOT_REACTIVE,
   fonts,
   fontWithWidth,
   margin,
 } from '@rainbow-me/styles';
+import { gasUtils, magicMemo } from '@rainbow-me/utils';
 
 const { GasSpeedOrder, CUSTOM, FAST, SLOW } = gasUtils;
 

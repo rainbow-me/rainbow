@@ -703,6 +703,16 @@ const TransactionConfirmationScreen = () => {
 
   const amount = get(request, 'value', '0.00');
 
+  const isAndroidApprovalRequest = useMemo(
+    () =>
+      android &&
+      isTransactionDisplayType(method) &&
+      !!get(request, 'asset', false) &&
+      amount === 0 &&
+      isBalanceEnough,
+    [amount, isBalanceEnough, method, request]
+  );
+
   const ShortSheetHeight = 457 + safeAreaInsetValues.bottom;
   const TallSheetHeight = 604 + safeAreaInsetValues.bottom;
   const MessageSheetHeight =
@@ -712,7 +722,7 @@ const TransactionConfirmationScreen = () => {
   const balanceTooLow =
     isBalanceEnough === false && isSufficientGas !== undefined;
 
-  const sheetHeight =
+  let sheetHeight =
     (isMessageRequest
       ? MessageSheetHeight
       : (amount && amount !== '0.00') || !isBalanceEnough
@@ -727,6 +737,10 @@ const TransactionConfirmationScreen = () => {
 
   if (isTransactionDisplayType(method) && !get(request, 'asset', false)) {
     marginTop += 50;
+  }
+
+  if (isAndroidApprovalRequest) {
+    sheetHeight += 140;
   }
 
   return (
@@ -797,7 +811,9 @@ const TransactionConfirmationScreen = () => {
                 {methodName || 'Placeholder'}
               </Text>
             </Centered>
-            <Divider color={colors.rowDividerLight} inset={[0, 143.5]} />
+            {(!keyboardVisible || ios) && (
+              <Divider color={colors.rowDividerLight} inset={[0, 143.5]} />
+            )}
             {renderTransactionSection()}
             {renderTransactionButtons()}
             <RowWithMargins css={padding(0, 24, 30)} margin={15}>
