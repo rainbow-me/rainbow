@@ -87,7 +87,7 @@ function usePressHandler({
 
 const maybeProc = ios ? a => a : proc;
 
-const ButtonPressAnimationProc = maybeProc(function(
+const ButtonPressAnimationProc = maybeProc(function (
   animationState,
   durationVal,
   finished,
@@ -176,7 +176,7 @@ const ButtonPressAnimationProc = maybeProc(function(
   ]);
 });
 
-const ButtonPressAnimationHelperProc = maybeProc(function(
+const ButtonPressAnimationHelperProc = maybeProc(function (
   animationState,
   gestureState,
   prevGestureState,

@@ -16,10 +16,10 @@ export default (values, type, shouldReturnCss) => {
 
   return shouldReturnCss
     ? css`
-    ${type}${separator}bottom: ${coordinates.bottom};
-    ${type}${separator}left: ${coordinates.left};
-    ${type}${separator}right: ${coordinates.right};
-    ${type}${separator}top: ${coordinates.top};
-  `
+        ${type}${separator}bottom: ${coordinates.bottom};
+        ${type}${separator}left: ${coordinates.left};
+        ${type}${separator}right: ${coordinates.right};
+        ${type}${separator}top: ${coordinates.top};
+      `
     : coordinates;
 };

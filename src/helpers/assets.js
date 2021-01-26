@@ -262,7 +262,7 @@ export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
 
   rows = sortBy(rows, ['familyName']);
 
-  showcaseTokens.sort(function(a, b) {
+  showcaseTokens.sort(function (a, b) {
     return (
       selectedShowcaseTokens.indexOf(a.uniqueId) -
       selectedShowcaseTokens.indexOf(b.uniqueId)
