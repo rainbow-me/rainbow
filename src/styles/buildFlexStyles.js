@@ -31,7 +31,6 @@ const buildFlexStyles = css`
   justify-content: ${({ justify = 'start' }) =>
     getFlexStylesFromShorthand(justify)};
 
-
   /* Shorthand Shortcuts 💇‍♂️️ */
   ${({ centered }) => (centered ? position.centered : '')}
   ${({ cover }) => (cover ? position.cover : '')}
