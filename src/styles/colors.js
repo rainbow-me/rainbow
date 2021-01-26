@@ -168,6 +168,20 @@ const getColorsByTheme = darkMode => {
       light: colors.whiteLabel,
     });
 
+  const isColorDark = targetColor => {
+    return (
+      chroma.contrast(targetColor, darkModeColors.darkModeDark) < 1.5 ||
+      chroma(targetColor || base.white).luminance() < 0.11
+    );
+  };
+
+  const brighten = targetColor => {
+    const newnew = chroma(targetColor)
+      .brighten(2)
+      .hex();
+    return newnew;
+  };
+
   const transparent = {
     appleBlueTransparent: buildRgba(base.appleBlue, 0.2), // '50, 50, 93'
     purpleTransparent: buildRgba(base.purple, 0.7), // '50, 50, 93'
@@ -203,9 +217,11 @@ const getColorsByTheme = darkMode => {
     alpha: buildRgba,
     assetIcon,
     avatarColor,
+    brighten,
     getFallbackTextColor,
     getTextColorForBackground,
     gradients,
+    isColorDark,
     isColorLight,
     listHeaders,
     sendScreen,
