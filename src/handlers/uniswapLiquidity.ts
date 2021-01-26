@@ -32,7 +32,8 @@ export const depositToPool = async (
   chainId: ChainId,
   fromAmount: string,
   network: string,
-  transactionParams: TransactionParams
+  transactionParams: TransactionParams,
+  estimateGas = false
 ) => {
   const buyToken = determineBuyToken(tokenA, tokenB, chainId);
 
@@ -54,7 +55,8 @@ export const depositToPool = async (
       pairAddress,
       firstSwapDetails,
       minPoolTokens,
-      transactionParams
+      transactionParams,
+      estimateGas
     );
     return result;
   } catch (error) {
@@ -63,13 +65,14 @@ export const depositToPool = async (
   }
 };
 
-export const executeDepositZap = (
+const executeDepositZap = (
   fromTokenAddress: string,
   fromAmount: string,
   pairAddress: string,
   firstSwapDetails: ZeroExPayload,
   minPoolTokens: string,
-  transactionParams: TransactionParams
+  transactionParams: TransactionParams,
+  estimateGas = false
 ) => {
   const fromAddress =
     fromTokenAddress === ETH_ADDRESS ? ZERO_ADDRESS : fromTokenAddress;
@@ -100,14 +103,25 @@ export const executeDepositZap = (
   const swapDataBytes = arrayify(addHexPrefix(swapData));
 
   const zapInContract = new Contract(ZapInAddress, ZAP_IN_ABI, web3Provider);
-  return zapInContract.callStatic.ZapIn(
-    fromAddress,
-    pairAddress,
-    sellTokenAmount,
-    minPoolTokens,
-    allowanceTarget,
-    swapTarget,
-    swapDataBytes,
-    _transactionParams
-  );
+  return estimateGas
+    ? zapInContract.estimateGas.ZapIn(
+        fromAddress,
+        pairAddress,
+        sellTokenAmount,
+        minPoolTokens,
+        allowanceTarget,
+        swapTarget,
+        swapDataBytes,
+        _transactionParams
+      )
+    : zapInContract.callStatic.ZapIn(
+        fromAddress,
+        pairAddress,
+        sellTokenAmount,
+        minPoolTokens,
+        allowanceTarget,
+        swapTarget,
+        swapDataBytes,
+        _transactionParams
+      );
 };
