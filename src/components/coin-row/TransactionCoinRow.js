@@ -184,7 +184,7 @@ export default function TransactionCoinRow({ item, ...props }) {
         }
       );
     }
-  }, [accountAddress, contact, item, navigate]);
+  }, [accountAddress, colors, contact, item, navigate]);
 
   return (
     <ButtonPressAnimation onPress={onPressTransaction} scaleTo={0.96}>
