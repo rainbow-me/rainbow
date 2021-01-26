@@ -31,7 +31,7 @@ import { useHideSplashScreen } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors_NOT_REACTIVE, shadow } from '@rainbow-me/styles';
+import { shadow } from '@rainbow-me/styles';
 import logger from 'logger';
 
 const {
@@ -61,9 +61,9 @@ const ButtonContent = styled(RowWithMargins).attrs({
 `;
 
 const ButtonLabel = styled(Text).attrs(
-  ({ textColor: color = colors_NOT_REACTIVE.dark }) => ({
+  ({ textColor: color, theme: { colors } }) => ({
     align: 'center',
-    color,
+    color: color || colors.dark,
     size: 'larger',
     weight: 'bold',
   })
@@ -77,7 +77,7 @@ const ButtonEmoji = styled(Emoji).attrs({
 `;
 
 const DarkShadow = styled(Reanimated.View)`
-  ${shadow.build(0, 10, 30, colors_NOT_REACTIVE.dark, 1)};
+  ${({ theme: { colors } }) => shadow.build(0, 10, 30, colors.dark, 1)};
   background-color: ${({ theme: { colors } }) => colors.white};
   border-radius: 30;
   height: 60;
@@ -89,7 +89,7 @@ const DarkShadow = styled(Reanimated.View)`
 `;
 
 const Shadow = styled(Reanimated.View)`
-  ${shadow.build(0, 5, 15, colors_NOT_REACTIVE.dark, 0.4)};
+  ${({ theme: { colors } }) => shadow.build(0, 10, 30, colors.dark, 0.4)};
   border-radius: 30;
   height: 60;
   left: -3;
@@ -344,6 +344,7 @@ function colorAnimation(rValue, fromShadow) {
 }
 
 export default function WelcomeScreen() {
+  const { colors } = useTheme();
   const { replace, navigate } = useNavigation();
   const contentAnimation = useAnimatedValue(1);
   const hideSplashScreen = useHideSplashScreen();
@@ -456,13 +457,13 @@ export default function WelcomeScreen() {
         shadowColor: color,
       },
       style: {
-        backgroundColor: colors_NOT_REACTIVE.dark,
+        backgroundColor: colors.dark,
         borderColor: backgroundColor,
         borderWidth: ios ? 0 : 3,
         width: 230 + (ios ? 0 : 6),
       },
       text: 'Get a new wallet',
-      textColor: colors_NOT_REACTIVE.white,
+      textColor: colors.white,
     };
   }, [rValue]);
 
@@ -483,14 +484,11 @@ export default function WelcomeScreen() {
         opacity: 0,
       },
       style: {
-        backgroundColor: colors_NOT_REACTIVE.blueGreyDarkLight,
+        backgroundColor: colors.blueGreyDarkLight,
         width: 248,
       },
       text: 'I already have one',
-      textColor: colors_NOT_REACTIVE.alpha(
-        colors_NOT_REACTIVE.blueGreyDark,
-        0.8
-      ),
+      textColor: colors.alpha(colors.blueGreyDark, 0.8),
     };
   }, [rValue]);
 
@@ -513,9 +511,9 @@ export default function WelcomeScreen() {
 
       <ContentWrapper style={contentStyle}>
         {android && IS_TESTING === 'true' ? (
-          <RainbowText />
+          <RainbowText colors={colors} />
         ) : (
-          <MaskedView maskElement={<RainbowText />}>
+          <MaskedView maskElement={<RainbowText colors={colors} />}>
             <RainbowTextMask style={textStyle} />
           </MaskedView>
         )}

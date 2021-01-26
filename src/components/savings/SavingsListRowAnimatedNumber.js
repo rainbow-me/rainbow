@@ -60,6 +60,7 @@ const SavingsListRowAnimatedNumber = ({
         stepPerDay: Number(value) - Number(initialValue),
         symbol,
       }}
+      colors={colors}
       formatter={formatter}
       initialValue={Number(initialValue)}
       steps={steps}

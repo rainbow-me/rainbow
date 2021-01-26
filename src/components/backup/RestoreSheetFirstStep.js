@@ -111,12 +111,12 @@ export default function RestoreSheetFirstStep({
           <SheetRow as={ButtonPressAnimation} onPress={onCloudRestore}>
             <Column>
               <Row>
-                <RainbowText>
+                <RainbowText colors={colors}>
                   <TextIcon>􀌍</TextIcon>
                 </RainbowText>
               </Row>
               <TitleRow>
-                <RainbowText>
+                <RainbowText colors={colors}>
                   <Title>Restore from {cloudPlatform}</Title>
                 </RainbowText>
                 <CaretIcon />
