@@ -28,17 +28,35 @@ export default function useColorForAsset(asset, fallbackColor) {
     [address]
   );
 
+  const { isDarkMode, colors } = useTheme();
+
   return useMemo(() => {
-    if (color) return color;
-    if (tokenListColor) return tokenListColor;
-    if (imageColor) return imageColor;
-    if (fallbackColor) return fallbackColor;
-    return colorDerivedFromAddress;
+    let color2Return;
+    if (color) {
+      color2Return = color;
+    } else if (tokenListColor) {
+      color2Return = tokenListColor;
+    } else if (imageColor) {
+      color2Return = imageColor;
+    } else if (fallbackColor) {
+      color2Return = fallbackColor;
+    } else {
+      color2Return = colorDerivedFromAddress;
+    }
+    try {
+      return isDarkMode && colors.isColorDark(color2Return)
+        ? colors.brighten(color2Return)
+        : color2Return;
+    } catch (e) {
+      return color2Return;
+    }
   }, [
     color,
     colorDerivedFromAddress,
+    colors,
     fallbackColor,
     imageColor,
+    isDarkMode,
     tokenListColor,
   ]);
 }

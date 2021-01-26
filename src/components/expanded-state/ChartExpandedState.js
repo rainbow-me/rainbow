@@ -1,5 +1,5 @@
 import { find } from 'lodash';
-import React, { useMemo, useRef } from 'react';
+import React, { useRef } from 'react';
 import { useChartThrottledPoints, useUniswapAssetsInWallet } from '../../hooks';
 import {
   BuyActionButton,
@@ -18,7 +18,6 @@ import {
 import { Chart } from '../value-chart';
 import { ChartPathProvider } from '@rainbow-me/animated-charts';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
-import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 //add's StatusBar height to android
 const heightWithoutChart = 309 + (android && 24);
@@ -48,13 +47,6 @@ export default function ChartExpandedState({ asset }) {
     'uniqueId',
     asset.uniqueId,
   ]);
-  const colorWithDarkModeOverride = useMemo(
-    () =>
-      colors_NOT_REACTIVE.isColorDark(color)
-        ? colors_NOT_REACTIVE.brighten(color)
-        : color,
-    [color]
-  );
 
   const needsEth = asset.address === 'eth' && asset.balance.amount === '0';
 
@@ -79,7 +71,7 @@ export default function ChartExpandedState({ asset }) {
           asset={asset}
           chart={chart}
           chartType={chartType}
-          color={colorWithDarkModeOverride}
+          color={color}
           fetchingCharts={fetchingCharts}
           nativePoints={chart}
           showChart={showChart}
@@ -101,20 +93,14 @@ export default function ChartExpandedState({ asset }) {
       </TokenInfoSection>
       {needsEth ? (
         <SheetActionButtonRow>
-          <BuyActionButton color={colorWithDarkModeOverride} fullWidth />
+          <BuyActionButton color={color} fullWidth />
         </SheetActionButtonRow>
       ) : (
         <SheetActionButtonRow>
           {showSwapButton && (
-            <SwapActionButton
-              color={colorWithDarkModeOverride}
-              inputType={AssetInputTypes.in}
-            />
+            <SwapActionButton color={color} inputType={AssetInputTypes.in} />
           )}
-          <SendActionButton
-            color={colorWithDarkModeOverride}
-            fullWidth={!showSwapButton}
-          />
+          <SendActionButton color={color} fullWidth={!showSwapButton} />
         </SheetActionButtonRow>
       )}
     </SlackSheet>
