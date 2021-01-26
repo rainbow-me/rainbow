@@ -17,13 +17,7 @@ import { Text } from '../text';
 import SecretDisplayCard from './SecretDisplayCard';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { useWallets } from '@rainbow-me/hooks';
-import {
-  colors_NOT_REACTIVE,
-  margin,
-  padding,
-  position,
-  shadow,
-} from '@rainbow-me/styles';
+import { margin, padding, position, shadow } from '@rainbow-me/styles';
 import logger from 'logger';
 
 const AuthenticationText = styled(Text).attrs({
@@ -35,10 +29,10 @@ const AuthenticationText = styled(Text).attrs({
   ${padding(0, 60)};
 `;
 
-const CopyButtonIcon = styled(Icon).attrs({
-  color: colors_NOT_REACTIVE.appleBlue,
+const CopyButtonIcon = styled(Icon).attrs(({ theme: { colors } }) => ({
+  color: colors.appleBlue,
   name: 'copy',
-})`
+}))`
   ${position.size(16)};
   margin-top: 0.5;
 `;
@@ -52,17 +46,17 @@ const CopyButtonRow = styled(RowWithMargins).attrs({
   height: 34;
 `;
 
-const CopyButtonText = styled(Text).attrs({
-  color: colors_NOT_REACTIVE.appleBlue,
+const CopyButtonText = styled(Text).attrs(({ theme: { colors } }) => ({
+  color: colors.appleBlue,
   letterSpacing: 'roundedMedium',
   lineHeight: 19,
   size: 'large',
   weight: 'bold',
-})``;
+}))``;
 
 const ToggleSecretButton = styled(Button)`
   ${margin(0, 20)};
-  ${shadow.build(0, 5, 15, colors_NOT_REACTIVE.purple, 0.3)}
+  ${({ theme: { colors } }) => shadow.build(0, 5, 15, colors.purple, 0.3)}
   background-color: ${({ theme: { colors } }) => colors.appleBlue};
 `;
 
@@ -112,6 +106,7 @@ export default function SecretDisplaySection({
 
   const typeLabel = type === WalletTypes.privateKey ? 'key' : 'phrase';
 
+  const { colors } = useTheme();
   return (
     <ColumnWithMargins
       align="center"
@@ -132,7 +127,7 @@ export default function SecretDisplaySection({
               <SecretDisplayCard seed={seed} type={type} />
             </Fragment>
           ) : (
-            <LoadingSpinner color={colors_NOT_REACTIVE.blueGreyDark50} />
+            <LoadingSpinner color={colors.blueGreyDark50} />
           )}
         </Fragment>
       ) : (
@@ -142,7 +137,7 @@ export default function SecretDisplaySection({
           </AuthenticationText>
           <ToggleSecretButton onPress={loadSeed}>
             <BiometricButtonContent
-              color={colors_NOT_REACTIVE.white}
+              color={colors.white}
               showIcon={!seed}
               text={`Show Recovery ${upperFirst(typeLabel)}`}
             />

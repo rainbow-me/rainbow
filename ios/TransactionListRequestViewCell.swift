@@ -29,6 +29,7 @@ class TransactionListRequestViewCell: TransactionListBaseCell {
     super.awakeFromNib()
     addRequestShadowLayer(walletImage)
     requestIcon.frame = requestIcon.frame.offsetBy(dx: CGFloat(0), dy: CGFloat(-0.25))
+    self.backgroundColor = UIColor.RainbowTheme.Transactions.white
   }
   
   

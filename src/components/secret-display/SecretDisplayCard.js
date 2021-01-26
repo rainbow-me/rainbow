@@ -6,33 +6,30 @@ import CopyTooltip from '../copy-tooltip';
 import { Centered, ColumnWithMargins, Row, RowWithMargins } from '../layout';
 import { Text } from '../text';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
-import {
-  colors_NOT_REACTIVE,
-  fonts,
-  padding,
-  position,
-} from '@rainbow-me/styles';
+import { fonts, padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const CardBorderRadius = 25;
 
-const BackgroundGradient = styled(LinearGradient).attrs({
-  colors: colors_NOT_REACTIVE.gradients.offWhite,
-  end: { x: 0.5, y: 1 },
-  start: { x: 0.5, y: 0 },
-})`
+const BackgroundGradient = styled(LinearGradient).attrs(
+  ({ theme: colors }) => ({
+    colors: colors.gradients.offWhite,
+    end: { x: 0.5, y: 1 },
+    start: { x: 0.5, y: 0 },
+  })
+)`
   ${position.cover};
   border-radius: ${CardBorderRadius};
 `;
 
-const CardShadow = styled(ShadowStack).attrs({
+const CardShadow = styled(ShadowStack).attrs(({ theme: { colors } }) => ({
   ...position.coverAsObject,
   borderRadius: CardBorderRadius,
   shadows: [
-    [0, 10, 30, colors_NOT_REACTIVE.shadow, 0.1],
-    [0, 5, 15, colors_NOT_REACTIVE.shadow, 0.04],
+    [0, 10, 30, colors.shadow, 0.1],
+    [0, 5, 15, colors.shadow, 0.04],
   ],
-})`
+}))`
   elevation: 15;
 `;
 
@@ -61,6 +58,8 @@ function SeedWordGrid({ seed }) {
     return [words.slice(0, words.length / 2), words.slice(words.length / 2)];
   }, [seed]);
 
+  const { colors } = useTheme();
+
   return (
     <RowWithMargins margin={24}>
       {columns.map((wordColumn, colIndex) => (
@@ -72,10 +71,7 @@ function SeedWordGrid({ seed }) {
                 <GridItem justify="end" key={`grid_number_${number}`}>
                   <GridText
                     align="right"
-                    color={colors_NOT_REACTIVE.alpha(
-                      colors_NOT_REACTIVE.appleBlue,
-                      0.6
-                    )}
+                    color={colors.alpha(colors.appleBlue, 0.6)}
                   >
                     {number}
                   </GridText>
