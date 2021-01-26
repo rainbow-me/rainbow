@@ -8,7 +8,7 @@ import Pill from '../../Pill';
 import { ContextCircleButton } from '../../context-menu';
 import { ColumnWithMargins, FlexItem, Row, RowWithMargins } from '../../layout';
 import { Text } from '../../text';
-import { colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 
 const contextButtonOptions = [
   'Share',
@@ -50,12 +50,14 @@ const UniqueTokenExpandedStateHeader = ({ asset }) => {
     [asset]
   );
 
+  const { colors } = useTheme();
+
   return (
     <Container>
       <HeadingColumn>
         <RowWithMargins align="center" margin={3}>
           <Text
-            color={colors_NOT_REACTIVE.blueGreyDark50}
+            color={colors.blueGreyDark50}
             letterSpacing="uppercase"
             size="smedium"
             uppercase
@@ -66,7 +68,12 @@ const UniqueTokenExpandedStateHeader = ({ asset }) => {
           <Pill maxWidth={150}>#{asset.id}</Pill>
         </RowWithMargins>
         <FlexItem flex={1}>
-          <Text letterSpacing="roundedMedium" size="big" weight="bold">
+          <Text
+            color={colors.dark}
+            letterSpacing="roundedMedium"
+            size="big"
+            weight="bold"
+          >
             {buildUniqueTokenName(asset)}
           </Text>
         </FlexItem>

@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components/primitives';
 import { ColumnWithMargins } from '../layout';
 import { Text } from '../text';
-import { colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 
 const Container = styled(ColumnWithMargins).attrs({
   margin: 12,
@@ -11,17 +11,20 @@ const Container = styled(ColumnWithMargins).attrs({
 `;
 
 export default function ExpandedStateSection({ children, title, ...props }) {
+  const { colors } = useTheme();
   return (
     <Container {...props}>
-      <Text letterSpacing="roundedTight" size="larger" weight="bold">
+      <Text
+        color={colors.dark}
+        letterSpacing="roundedTight"
+        size="larger"
+        weight="bold"
+      >
         {title}
       </Text>
       {typeof children === 'string' ? (
         <Text
-          color={colors_NOT_REACTIVE.alpha(
-            colors_NOT_REACTIVE.blueGreyDark,
-            0.5
-          )}
+          color={colors.alpha(colors.blueGreyDark, 0.5)}
           lineHeight="paragraphSmall"
           size="lmedium"
         >

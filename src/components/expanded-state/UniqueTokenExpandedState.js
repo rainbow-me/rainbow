@@ -17,7 +17,6 @@ import {
   UniqueTokenExpandedStateImage,
 } from './unique-token';
 import { useDimensions, useShowcaseTokens } from '@rainbow-me/hooks';
-import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
 const UniqueTokenExpandedState = ({ asset }) => {
@@ -53,6 +52,7 @@ const UniqueTokenExpandedState = ({ asset }) => {
   }, [addShowcaseToken, isShowcaseAsset, removeShowcaseToken, uniqueId]);
 
   const { height: screenHeight } = useDimensions();
+  const { colors, isDarkMode } = useTheme();
 
   return (
     <Fragment>
@@ -67,7 +67,7 @@ const UniqueTokenExpandedState = ({ asset }) => {
         <UniqueTokenExpandedStateImage asset={asset} />
         <SheetActionButtonRow>
           <SheetActionButton
-            color={colors_NOT_REACTIVE.dark}
+            color={isDarkMode ? colors.darkGrey : colors.dark}
             label={isShowcaseAsset ? '􀁏 Showcase' : '􀁍 Showcase'}
             onPress={handlePressShowcase}
             weight="bold"
@@ -90,10 +90,7 @@ const UniqueTokenExpandedState = ({ asset }) => {
             <ExpandedStateSection title={`About ${familyName}`}>
               <Column>
                 <Text
-                  color={colors_NOT_REACTIVE.alpha(
-                    colors_NOT_REACTIVE.blueGreyDark,
-                    0.5
-                  )}
+                  color={colors.alpha(colors.blueGreyDark, 0.5)}
                   lineHeight="paragraphSmall"
                   size="lmedium"
                 >
