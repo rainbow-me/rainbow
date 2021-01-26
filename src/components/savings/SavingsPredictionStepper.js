@@ -83,6 +83,7 @@ const SavingsPredictionStepper = ({ asset, balance, interestRate }) => {
     },
     [decimals, symbol, nativeCurrency]
   );
+  const { colors } = useTheme();
 
   return (
     <ButtonPressAnimation
@@ -94,7 +95,7 @@ const SavingsPredictionStepper = ({ asset, balance, interestRate }) => {
       <Row align="center" css={padding(15, 19, 19)}>
         <RowWithMargins align="center" margin={5}>
           <CrystalBallEmoji />
-          <Text size="lmedium">
+          <Text color={colors.dark} size="lmedium">
             {`Est. ${Object.keys(steps)[step]} Earnings`}
           </Text>
         </RowWithMargins>

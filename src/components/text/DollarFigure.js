@@ -4,21 +4,23 @@ import styled from 'styled-components/primitives';
 import { Row } from '../layout';
 import Text from './Text';
 
-const Cents = styled(Text).attrs({
+const Cents = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'right',
+  color: colors.dark,
   letterSpacing: 'roundedTightest',
   size: 'large',
   weight: 'heavy',
-})`
+}))`
   top: 7;
 `;
 
 const DollarFigure = ({ value, decimals = 2 }) => {
   const [dollars, cents = '00'] = value.split('.');
   const formattedCents = cents.substr(0, decimals);
+  const { colors } = useTheme();
   return (
     <Row>
-      <Text letterSpacing="zero" size="h1" weight="heavy">
+      <Text color={colors.dark} letterSpacing="zero" size="h1" weight="heavy">
         {dollars}
       </Text>
       <Cents>{`.${formattedCents}`}</Cents>
