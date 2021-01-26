@@ -8,10 +8,12 @@ import FloatingActionButton from './FloatingActionButton';
 import Routes from '@rainbow-me/routes';
 import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
-const FabShadowDark = [[0, 10, 30, colors_NOT_REACTIVE.shadow, 1]];
+const FabShadowDark = [
+  [0, 10, 30, colors_NOT_REACTIVE.lightModeThemeColors.shadow, 1],
+];
 const FabShadowLight = [
-  [0, 10, 30, colors_NOT_REACTIVE.shadow, 0.8],
-  [0, 5, 15, colors_NOT_REACTIVE.swapPurple, 1],
+  [0, 10, 30, colors_NOT_REACTIVE.lightModeThemeColors.shadow, 0.8],
+  [0, 5, 15, colors_NOT_REACTIVE.lightModeThemeColors.swapPurple, 1],
 ];
 
 const ExchangeFab = ({ disabled, isReadOnlyWallet, ...props }) => {

@@ -13,16 +13,18 @@ import CopyTooltip from '../copy-tooltip';
 import { Centered } from '../layout';
 import { Text, TruncatedAddress } from '../text';
 import { ProfileAvatarButton, ProfileModal, ProfileNameInput } from './profile';
-import { colors_NOT_REACTIVE, margin, padding } from '@rainbow-me/styles';
+import { margin, padding } from '@rainbow-me/styles';
 
-const AddressAbbreviation = styled(TruncatedAddress).attrs({
-  align: 'center',
-  color: colors_NOT_REACTIVE.blueGreyDark,
-  firstSectionLength: abbreviations.defaultNumCharsPerSection,
-  size: 'lmedium',
-  truncationLength: 4,
-  weight: 'regular',
-})`
+const AddressAbbreviation = styled(TruncatedAddress).attrs(
+  ({ theme: { colors } }) => ({
+    align: 'center',
+    color: colors.blueGreyDark,
+    firstSectionLength: abbreviations.defaultNumCharsPerSection,
+    size: 'lmedium',
+    truncationLength: 4,
+    weight: 'regular',
+  })
+)`
   ${margin(9, 0, 5)};
   opacity: 0.6;
   width: 100%;
@@ -32,13 +34,8 @@ const Spacer = styled.View`
   height: 19;
 `;
 
-const SubmitButton = styled(Button).attrs(({ value, isDarkMode }) => ({
-  backgroundColor:
-    value.length > 0
-      ? colors_NOT_REACTIVE.appleBlue
-      : isDarkMode
-      ? colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.2)
-      : undefined,
+const SubmitButton = styled(Button).attrs(({ value, theme: { colors } }) => ({
+  backgroundColor: value.length > 0 ? colors.appleBlue : undefined,
   disabled: !value.length > 0,
   showShadow: true,
   size: 'small',
@@ -94,7 +91,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
     inputRef,
   ]);
 
-  const { isDarkMode } = useTheme();
+  const { isDarkMode, colors } = useTheme();
 
   return (
     <ProfileModal onPressBackdrop={handleAddContact}>
@@ -113,7 +110,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
           onSubmitEditing={handleAddContact}
           placeholder="Name"
           ref={inputRef}
-          selectionColor={colors_NOT_REACTIVE.avatarColor[color]}
+          selectionColor={colors.avatarColor[color]}
           testID="contact-profile-name-input"
           value={value}
         />
@@ -149,15 +146,12 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
           }
         >
           <Centered
-            backgroundColor={colors_NOT_REACTIVE.white}
+            backgroundColor={colors.white}
             css={padding(8, 9)}
             testID="contact-profile-cancel-button"
           >
             <Text
-              color={colors_NOT_REACTIVE.alpha(
-                colors_NOT_REACTIVE.blueGreyDark,
-                0.4
-              )}
+              color={colors.alpha(colors.blueGreyDark, 0.4)}
               size="lmedium"
               weight="regular"
             >

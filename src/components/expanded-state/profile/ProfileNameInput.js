@@ -9,6 +9,7 @@ const NameInput = styled(Input).attrs({
   align: 'center',
   autoCapitalize: 'words',
   autoFocus: true,
+  color: 'dark',
   letterSpacing: 'roundedTight',
   returnKeyType: 'done',
   size: 'big',
