@@ -101,7 +101,7 @@ export default function AddressRow({ data, editMode, onPress, onEditWallet }) {
     walletId,
   } = data;
 
-  const { colors } = useTheme();
+  const { colors, isDarkMode } = useTheme();
 
   let cleanedUpBalance = balance;
   if (balance === '0.00') {
@@ -120,14 +120,16 @@ export default function AddressRow({ data, editMode, onPress, onEditWallet }) {
   const linearGradientProps = useMemo(
     () => ({
       ...gradientProps,
-      colors: [
-        colors.alpha(colors.gradients.lightGrey[0], 0.6),
-        colors.gradients.lightGrey[1],
-      ],
+      colors: isDarkMode
+        ? [colors.trueWhite, colors.lightestGrey]
+        : [
+            colors.alpha(colors.gradients.lightGrey[0], 0.6),
+            colors.gradients.lightGrey[1],
+          ],
       end: { x: 1, y: 1 },
       start: { x: 0, y: 0 },
     }),
-    [colors]
+    [colors, isDarkMode]
   );
 
   return (
@@ -185,7 +187,7 @@ export default function AddressRow({ data, editMode, onPress, onEditWallet }) {
                 marginRight={editMode || isSelected ? -9 : 19}
               >
                 <Text
-                  color={colors.alpha(colors.blueGreyDark, 0.5)}
+                  color={colors.alpha(colors.blueGreyDark, 0)}
                   style={sx.readOnlyText}
                 >
                   Watching
