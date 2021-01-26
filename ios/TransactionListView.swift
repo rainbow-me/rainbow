@@ -49,11 +49,12 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
         UIColor.RainbowTheme.isDarkMode = darkMode
         tableView.backgroundColor = UIColor.RainbowTheme.Transactions.white
         header.backgroundColor = UIColor.RainbowTheme.Transactions.white
-        self.backgroundColor = UIColor.RainbowTheme.Transactions.white
+        backgroundColor = UIColor.RainbowTheme.Transactions.white
         header.accountView.layer.sublayers?.last?.shadowColor = UIColor.RainbowTheme.TransactionsLight.dark.cgColor
         headerSeparator.backgroundColor = UIColor.RainbowTheme.Transactions.rowDividerLight
         header.accountAddress.textColor = UIColor.RainbowTheme.Transactions.dark
-        self.layoutIfNeeded()
+        header.accountDropdown.tintColor = UIColor.RainbowTheme.Transactions.dark;
+        layoutIfNeeded()
         tableView.reloadData()
       }
     }
@@ -274,11 +275,12 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     header.addCash.addTarget(self, action: #selector(onPressOutAddCash(_:)), for: .touchUpOutside)
     
     
-    let dropdownImage = UIImage(named: "caret-down")
+    let dropdownImage = UIImage(named: "caret-down")?.withRenderingMode(.alwaysTemplate)
     header.accountDropdown.contentMode = UIView.ContentMode.scaleAspectFit
     header.accountDropdown.frame.size.width = 21
     header.accountDropdown.frame.size.height = 9
     header.accountDropdown.image = dropdownImage
+    header.accountDropdown.tintColor = UIColor.RainbowTheme.Transactions.dark;
     
     header.copyAddress.titleLabel?.addCharacterSpacing(kernValue: 0.5)
     header.receive.titleLabel?.addCharacterSpacing(kernValue: 0.5)
