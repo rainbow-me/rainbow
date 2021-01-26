@@ -251,7 +251,7 @@ extension UITableView {
         gradient.startPoint = CGPoint(x: 1, y: 0.5)
         gradient.endPoint = CGPoint(x: 2, y: yRadius)
         gradientContainer.addSublayer(gradient)
-        
+        self.layer.sublayers?.forEach { $0.removeFromSuperlayer() }
         self.layer.addSublayer(gradientContainer)
         
         if enableShadows {
