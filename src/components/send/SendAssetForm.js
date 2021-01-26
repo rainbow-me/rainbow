@@ -73,10 +73,12 @@ export default function SendAssetForm({
     ? SendSavingsCoinRow
     : SendCoinRow;
 
+  const { colors } = useTheme();
+
   return (
     <Container>
       <ShadowStack
-        backgroundColor={colors_NOT_REACTIVE.white}
+        backgroundColor={colors.white}
         borderRadius={0}
         height={SendCoinRow.selectedHeight}
         shadows={AssetRowShadow}
