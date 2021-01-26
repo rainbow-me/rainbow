@@ -4,7 +4,13 @@ import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import { ChainId, Trade } from '@uniswap/sdk';
 import { join, map } from 'lodash';
-import { depositCompound, swap, unlock, withdrawCompound } from './actions';
+import {
+  depositCompound,
+  depositUniswap,
+  swap,
+  unlock,
+  withdrawCompound,
+} from './actions';
 import {
   createSwapAndDepositCompoundRap,
   estimateSwapAndDepositCompound,
@@ -21,9 +27,11 @@ import logger from 'logger';
 
 export enum RapActionType {
   depositCompound = 'depositCompound',
+  depositUniswap = 'depositUniswap',
   swap = 'swap',
   unlock = 'unlock',
   withdrawCompound = 'withdrawCompound',
+  withdrawUniswap = 'withdrawUniswap',
 }
 
 export interface RapActionParameters {
@@ -75,9 +83,11 @@ const NOOP = () => null;
 
 export const RapActionTypes = {
   depositCompound: 'depositCompound' as RapActionType,
+  depositUniswap: 'depositUniswap' as RapActionType,
   swap: 'swap' as RapActionType,
   unlock: 'unlock' as RapActionType,
   withdrawCompound: 'withdrawCompound' as RapActionType,
+  withdrawUniswap: 'withdrawUniswap' as RapActionType,
 };
 
 const createRapByType = (
@@ -118,6 +128,8 @@ const findActionByType = (type: RapActionType) => {
       return swap;
     case RapActionTypes.depositCompound:
       return depositCompound;
+    case RapActionTypes.depositUniswap:
+      return depositUniswap;
     case RapActionTypes.withdrawCompound:
       return withdrawCompound;
     default:
