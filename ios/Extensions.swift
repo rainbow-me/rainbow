@@ -277,7 +277,7 @@ extension UITableView {
             
             let shadow = CAShapeLayer()
             let shadowRect = UIBezierPath(roundedRect: bounds, cornerRadius: bounds.size.height / 2)
-            shadow.shadowColor = UIColor.RainbowTheme.Transactions.dark.cgColor
+            shadow.shadowColor = UIColor.RainbowTheme.Transactions.shadow.cgColor
             shadow.shadowOffset = CGSize(width: 0, height: 10)
             shadow.shadowOpacity = 0.2
             shadow.shadowPath = shadowRect.cgPath

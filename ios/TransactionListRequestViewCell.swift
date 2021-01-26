@@ -79,13 +79,13 @@ class TransactionListRequestViewCell: TransactionListBaseCell {
       let url = URL(string: request.imageUrl!)
       self.walletInternalImage.sd_setImage(with: url) { (image, error, cache, urls) in
         if (error != nil) {
-          self.walletInternalImage.image = self.generateTextImage(String(initials), textColor: UIColor.RainbowTheme.Transactions.white, backgroundColor: UIColor.RainbowTheme.Transactions.blueGreyDark)
+          self.walletInternalImage.image = self.generateTextImage(String(initials), textColor: UIColor.RainbowTheme.Transactions.coinTextColor, backgroundColor: UIColor.RainbowTheme.Transactions.blueGreyDark)
         } else {
           self.walletInternalImage.image = image
         }
       }
     } else {
-      self.walletInternalImage.image = self.generateTextImage(String(initials), textColor: UIColor.RainbowTheme.Transactions.white, backgroundColor: UIColor.RainbowTheme.Transactions.blueGreyDark)
+      self.walletInternalImage.image = self.generateTextImage(String(initials), textColor: UIColor.RainbowTheme.Transactions.coinTextColor, backgroundColor: UIColor.RainbowTheme.Transactions.blueGreyDark)
     }
     
     

@@ -297,7 +297,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     shadowLayer.shadowRadius = 5
     shadowLayer.zPosition = -1
 
-    secondShadowLayer.shadowColor = UIColor.RainbowTheme.Transactions.dark.cgColor
+    secondShadowLayer.shadowColor = UIColor.RainbowTheme.Transactions.shadow.cgColor
     secondShadowLayer.shadowOffset = CGSize(width: 0, height: 2)
     secondShadowLayer.shadowOpacity = 0.2
     secondShadowLayer.shadowPath = circle.cgPath

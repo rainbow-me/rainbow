@@ -19,7 +19,7 @@ class TransactionListBaseCell : UITableViewCell {
     let radius = view.frame.width / 2.0
     let circle = UIBezierPath(arcCenter: view.center, radius: radius, startAngle: 0, endAngle: 2 * CGFloat.pi, clockwise: true)
     
-    shadowLayer.shadowColor = UIColor.RainbowTheme.Transactions.dark.cgColor
+    shadowLayer.shadowColor = UIColor.RainbowTheme.Transactions.shadow.cgColor
     shadowLayer.shadowOffset = CGSize(width: 0, height: 4)
     // TODO: once we have token color, increase shadowOpacity to 0.3
     shadowLayer.shadowOpacity = 0.15
@@ -35,7 +35,7 @@ class TransactionListBaseCell : UITableViewCell {
     let rect = CGRect(x: view.frame.minX, y: view.frame.minY, width: 40, height: 40)
     let roundedRect = UIBezierPath(roundedRect: rect, cornerRadius: 12)
     
-    shadowLayer.shadowColor = UIColor.RainbowTheme.Transactions.dark.cgColor
+    shadowLayer.shadowColor = UIColor.RainbowTheme.Transactions.shadow.cgColor
     shadowLayer.shadowOffset = CGSize(width: 0, height: 4)
     shadowLayer.shadowOpacity = 0.15
     shadowLayer.shadowPath = roundedRect.cgPath
@@ -60,7 +60,7 @@ class TransactionListBaseCell : UITableViewCell {
     animateTapEnd()
   }
   
-  func generateTextImage(_ text: String, textColor: UIColor = UIColor.RainbowTheme.Transactions.white, backgroundColor: UIColor = UIColor.RainbowTheme.Transactions.blueGreyDark) -> UIImage? {
+  func generateTextImage(_ text: String, textColor: UIColor = UIColor.RainbowTheme.Transactions.coinTextColor, backgroundColor: UIColor = UIColor.RainbowTheme.Transactions.blueGreyDark) -> UIImage? {
     let frame = CGRect(x: 0, y: 0, width: 120, height: 120)
     
     var fallbackFontSize = 11 * 3
