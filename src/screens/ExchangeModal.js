@@ -31,7 +31,6 @@ import ExchangeModalTypes from '../helpers/exchangeModalTypes';
 import isKeyboardOpen from '../helpers/isKeyboardOpen';
 import { loadWallet } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
-import { executeRap } from '../raps/common';
 import { multicallClearState } from '../redux/multicall';
 import ethUnits from '../references/ethereum-units.json';
 import {
@@ -46,6 +45,7 @@ import {
   useUniswapCurrencies,
   useUniswapMarketDetails,
 } from '@rainbow-me/hooks';
+import { executeRap } from '@rainbow-me/raps';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
 import { backgroundTask, isNewValueForPath } from '@rainbow-me/utils';

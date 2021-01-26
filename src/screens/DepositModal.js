@@ -3,10 +3,11 @@ import React from 'react';
 import ExchangeModalTypes from '../helpers/exchangeModalTypes';
 import { ExchangeNavigatorFactory } from '../navigation/ExchangeModalNavigator';
 import useStatusBarManaging from '../navigation/useStatusBarManaging';
-import createSwapAndDepositCompoundRap, {
-  estimateSwapAndDepositCompound,
-} from '../raps/swapAndDepositCompound';
 import ExchangeModal from './ExchangeModal';
+import {
+  createSwapAndDepositCompoundRap,
+  estimateSwapAndDepositCompound,
+} from '@rainbow-me/raps';
 
 const DepositModal = ({ navigation, ...props }) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks

@@ -16,7 +16,7 @@ const Label = withThemeContext(styled(ChartYLabel)`
   font-size: ${fonts.size.big};
   letter-spacing: ${fonts.letterSpacing.roundedTight};
   ${android &&
-    `margin-top: -8;
+  `margin-top: -8;
      margin-bottom: -16;`}
 `);
 
@@ -39,21 +39,12 @@ export function formatNative(value, priceSharedValue, nativeSelected) {
   }
   const decimals =
     Number(value) < 1
-      ? Math.min(
-          8,
-          value
-            .toString()
-            .slice(2)
-            .slice('')
-            .search(/[^0]/g) + 3
-        )
+      ? Math.min(8, value.toString().slice(2).slice('').search(/[^0]/g) + 3)
       : 2;
 
-  let res = `${Number(value)
-    .toFixed(decimals)
-    .toLocaleString('en-US', {
-      currency: 'USD',
-    })}`;
+  let res = `${Number(value).toFixed(decimals).toLocaleString('en-US', {
+    currency: 'USD',
+  })}`;
   res =
     nativeSelected?.alignment === 'left'
       ? `${nativeSelected?.symbol}${res}`

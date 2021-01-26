@@ -494,14 +494,15 @@ class RecyclerAssetList extends Component {
         ) {
           const safeIndex = i;
           const safeCollectibles = collectibles;
-          const familyIndex = findIndex(this.state.dataProvider._data, function(
-            data
-          ) {
-            return (
-              data.item?.familyName ===
-              safeCollectibles.data[safeIndex].familyName
-            );
-          });
+          const familyIndex = findIndex(
+            this.state.dataProvider._data,
+            function (data) {
+              return (
+                data.item?.familyName ===
+                safeCollectibles.data[safeIndex].familyName
+              );
+            }
+          );
 
           const focusedFamilyItem = this.state.dataProvider._data[familyIndex]
             .item;
@@ -567,11 +568,12 @@ class RecyclerAssetList extends Component {
         prevCollectibles.data[0]?.childrenAmount ||
         prevCollectibles.data[0]?.familyName !== 'Showcase')
     ) {
-      const familyIndex = findIndex(this.state.dataProvider._data, function(
-        data
-      ) {
-        return data.item?.familyName === 'Showcase';
-      });
+      const familyIndex = findIndex(
+        this.state.dataProvider._data,
+        function (data) {
+          return data.item?.familyName === 'Showcase';
+        }
+      );
 
       const startOfDesiredComponent =
         this.rlv.getLayout(familyIndex).y - AssetListHeaderHeight;

@@ -63,7 +63,7 @@ const SHORTEN_PROP_TYPES_ERROR = true;
 if (SHORTEN_PROP_TYPES_ERROR) {
   const oldConsoleError = console.error; // eslint-disable-line no-console
   // eslint-disable-next-line no-console
-  console.error = function() {
+  console.error = function () {
     if (
       typeof arguments[0] === 'string' &&
       arguments[0].startsWith('Warning: Failed prop type')
@@ -110,7 +110,7 @@ if (!ReactNative.InteractionManager._shimmed) {
   const oldCreateInteractionHandle =
     ReactNative.InteractionManager.createInteractionHandle;
 
-  ReactNative.InteractionManager.createInteractionHandle = function(
+  ReactNative.InteractionManager.createInteractionHandle = function (
     finishAutomatically = true
   ) {
     const handle = oldCreateInteractionHandle();
@@ -138,7 +138,7 @@ const description = Object.getOwnPropertyDescriptor(
 
 if (!description.writable) {
   Object.defineProperty(ReactNative, 'requireNativeComponent', {
-    value: (function() {
+    value: (function () {
       const cache = {};
       const _requireNativeComponent = ReactNative.requireNativeComponent;
 

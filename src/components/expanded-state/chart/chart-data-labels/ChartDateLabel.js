@@ -13,7 +13,7 @@ const Label = styled(ChartXLabel)`
   letter-spacing: ${fonts.letterSpacing.roundedMedium};
   text-align: right;
   ${android &&
-    `overflow: hidden;
+  `overflow: hidden;
      margin-vertical: -20;`}
 `;
 
