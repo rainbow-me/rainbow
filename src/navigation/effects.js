@@ -76,7 +76,7 @@ export const speedUpAndCancelStyleInterpolator = ({
 
   return {
     cardStyle: {
-      shadowColor: colors.shadowBlack,
+      shadowColor: colors.themedColors.shadowBlack,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.6,
       shadowRadius: 25,
@@ -104,7 +104,7 @@ const exchangeStyleInterpolator = ({
 
   return {
     cardStyle: {
-      shadowColor: colors.shadowBlack,
+      shadowColor: colors.themedColors.shadowBlack,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.6,
       shadowRadius: 25,
@@ -132,7 +132,7 @@ const expandStyleInterpolator = targetOpacity => ({
 
   return {
     cardStyle: {
-      shadowColor: colors.shadow,
+      shadowColor: colors.themedColors.shadow,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.5,
       shadowRadius: 25,
@@ -162,14 +162,14 @@ const savingsStyleInterpolator = ({
 
   return {
     cardStyle: {
-      shadowColor: colors.shadow,
+      shadowColor: colors.themedColors.shadow,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.6,
       shadowRadius: 25,
       transform: [{ translateY }],
     },
     overlayStyle: {
-      backgroundColor: colors.shadow,
+      backgroundColor: colors.themedColors.shadow,
       opacity: backgroundOpacity,
     },
   };
@@ -192,7 +192,7 @@ const sheetStyleInterpolator = (targetOpacity = 1) => ({
 
   return {
     cardStyle: {
-      shadowColor: colors.shadowBlack,
+      shadowColor: colors.themedColors.shadowBlack,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.6,
       shadowRadius: 25,
@@ -228,7 +228,7 @@ const swapDetailInterpolator = ({
 
   return {
     cardStyle: {
-      shadowColor: colors.shadow,
+      shadowColor: colors.themedColors.shadow,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.5,
       shadowRadius: 25,
@@ -302,7 +302,9 @@ export const emojiPreset = {
         pointerEvents="none"
         style={{
           backgroundColor:
-            colors.theme === 'dark' ? colors.offWhite : 'rgb(51, 54, 59)',
+            colors.theme === 'dark'
+              ? colors.themedColors.offWhite
+              : 'rgb(51, 54, 59)',
           height: deviceUtils.dimensions.height + 50,
           opacity: backgroundOpacity,
           position: 'absolute',
