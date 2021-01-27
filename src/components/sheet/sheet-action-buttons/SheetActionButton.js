@@ -113,9 +113,7 @@ const SheetActionButton = ({
       >
         <ShadowStack
           {...position.coverAsObject}
-          backgroundColor={
-            isDarkMode && color === colors.dark ? colors.darkModeDark : color
-          }
+          backgroundColor={color}
           borderRadius={borderRadius}
           height={size === 'big' ? 56 : 46}
           shadows={shadowsForButtonColor}
