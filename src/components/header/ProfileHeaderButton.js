@@ -7,7 +7,6 @@ import ImageAvatar from '../contacts/ImageAvatar';
 import { Centered } from '../layout';
 import HeaderButton from './HeaderButton';
 import Routes from '@rainbow-me/routes';
-import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 export default function ProfileHeaderButton() {
   const { navigate } = useNavigation();
@@ -22,6 +21,8 @@ export default function ProfileHeaderButton() {
     navigate,
   ]);
 
+  const { colors } = useTheme();
+
   return (
     <HeaderButton
       onLongPress={onLongPress}
@@ -34,9 +35,7 @@ export default function ProfileHeaderButton() {
           <ImageAvatar image={accountImage} size="small" />
         ) : (
           <ContactAvatar
-            color={
-              isNaN(accountColor) ? colors_NOT_REACTIVE.skeleton : accountColor
-            }
+            color={isNaN(accountColor) ? colors.skeleton : accountColor}
             size="small"
             value={accountSymbol}
           />

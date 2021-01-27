@@ -42,7 +42,6 @@ import {
   useWallets,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
-import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 import {
   abbreviations,
   deviceUtils,
@@ -119,6 +118,7 @@ export default function ChangeWalletSheet() {
     wallets,
   } = useWallets();
   const [editMode, setEditMode] = useState(false);
+  const { colors } = useTheme();
 
   const { goBack, navigate, replace } = useNavigation();
   const dispatch = useDispatch();
@@ -463,10 +463,7 @@ export default function ChangeWalletSheet() {
       <Column height={headerHeight} justify="space-between">
         <SheetTitle>Wallets</SheetTitle>
         {showDividers && (
-          <Divider
-            color={colors_NOT_REACTIVE.rowDividerExtraLight}
-            inset={[0, 15]}
-          />
+          <Divider color={colors.rowDividerExtraLight} inset={[0, 15]} />
         )}
       </Column>
       <EditButton editMode={editMode} onPress={() => setEditMode(e => !e)}>

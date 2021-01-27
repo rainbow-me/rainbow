@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useMemo } from 'react';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import styled from 'styled-components/primitives';
 import AssetTypes from '../../helpers/assetTypes';
@@ -10,13 +10,13 @@ import { Icon } from '../icons';
 import { Column } from '../layout';
 import SendAssetFormCollectible from './SendAssetFormCollectible';
 import SendAssetFormToken from './SendAssetFormToken';
-import { colors_NOT_REACTIVE, padding, position } from '@rainbow-me/styles';
+import { padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
-const AssetRowShadow = [
-  [0, 1, 0, colors_NOT_REACTIVE.shadow, 0.01],
-  [0, 4, 12, colors_NOT_REACTIVE.shadow, 0.04],
-  [0, 8, 23, colors_NOT_REACTIVE.shadow, 0.05],
+const AssetRowShadow = colors => [
+  [0, 1, 0, colors.shadow, 0.01],
+  [0, 4, 12, colors.shadow, 0.04],
+  [0, 8, 23, colors.shadow, 0.05],
 ];
 
 const Container = styled(Column)`
@@ -74,6 +74,7 @@ export default function SendAssetForm({
     : SendCoinRow;
 
   const { colors } = useTheme();
+  const shadows = useMemo(() => AssetRowShadow(colors), [colors]);
 
   return (
     <Container>
@@ -81,7 +82,7 @@ export default function SendAssetForm({
         backgroundColor={colors.white}
         borderRadius={0}
         height={SendCoinRow.selectedHeight}
-        shadows={AssetRowShadow}
+        shadows={shadows}
         width={deviceWidth}
       >
         <AssetRowElement
