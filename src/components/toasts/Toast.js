@@ -87,13 +87,13 @@ export default function Toast({
           <Fragment>
             {icon && (
               <Icon
-                color={textColor || colors.white}
+                color={textColor || colors.whiteLabel}
                 marginTop={3}
                 name={icon}
               />
             )}
             <TruncatedText
-              color={textColor || colors.white}
+              color={textColor || colors.whiteLabel}
               size="smedium"
               weight="bold"
             >
