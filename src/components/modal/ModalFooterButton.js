@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import { colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 
 const ButtonIcon = styled(Icon)`
   ${position.maxSize('100%')};
@@ -24,15 +24,18 @@ const IconContainer = styled(Centered).attrs({
   ${position.size(18)};
 `;
 
-const ModalFooterButton = ({ icon, label, onPress }) => (
-  <Container as={BorderlessButton} onPress={onPress}>
-    <IconContainer>
-      <ButtonIcon color={colors_NOT_REACTIVE.appleBlue} name={icon} />
-    </IconContainer>
-    <Text color="appleBlue" size="large" weight="semibold">
-      {label}
-    </Text>
-  </Container>
-);
+const ModalFooterButton = ({ icon, label, onPress }) => {
+  const { colors } = useTheme();
+  return (
+    <Container as={BorderlessButton} onPress={onPress}>
+      <IconContainer>
+        <ButtonIcon color={colors.appleBlue} name={icon} />
+      </IconContainer>
+      <Text color="appleBlue" size="large" weight="semibold">
+        {label}
+      </Text>
+    </Container>
+  );
+};
 
 export default React.memo(ModalFooterButton);

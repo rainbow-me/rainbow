@@ -5,7 +5,7 @@ import { magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import { colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 
 const Button = styled(Centered).attrs({
   scaleTo: 0.8,
@@ -21,13 +21,13 @@ const Container = styled.View`
   top: 0;
 `;
 
-const TextIcon = styled(Text).attrs({
+const TextIcon = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.3),
+  color: colors.alpha(colors.blueGreyDark, 0.3),
   letterSpacing: 'zero',
   size: 'large',
   weight: 'bold',
-})``;
+}))``;
 
 const duration = 100;
 const transition = (

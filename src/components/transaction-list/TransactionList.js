@@ -28,7 +28,6 @@ import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import { removeRequest } from '@rainbow-me/redux/requests';
 import { walletsSetSelected, walletsUpdate } from '@rainbow-me/redux/wallets';
 import Routes from '@rainbow-me/routes';
-import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 import {
   abbreviations,
   ethereumUtils,
@@ -346,13 +345,13 @@ export default function TransactionList({
   const isAvatarPickerAvailable = useExperimentalFlag(AVATAR_PICKER);
 
   const safeAccountImage = useSafeImageUri(accountImage);
-  const { isDarkMode } = useTheme();
+  const { isDarkMode, colors } = useTheme();
 
   return (
     <Container>
       <Container
         accountAddress={accountName}
-        accountColor={colors_NOT_REACTIVE.avatarColor[accountColor]}
+        accountColor={colors.avatarColor[accountColor]}
         accountImage={safeAccountImage}
         accountName={accountSymbol}
         addCashAvailable={addCashAvailable}

@@ -37,7 +37,7 @@ import {
 import { delayNext } from '@rainbow-me/hooks/useMagicAutofocus';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import Routes from '@rainbow-me/routes';
-import { colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 import { filterList } from '@rainbow-me/utils';
 
 const TabTransitionAnimation = styled(Animated.View)`
@@ -89,6 +89,7 @@ export default function CurrencySelectModal() {
     searchQuery,
   ]);
 
+  const { colors } = useTheme();
   const {
     curatedNotFavorited,
     favorites,
@@ -131,7 +132,7 @@ export default function CurrencySelectModal() {
         filteredList = [];
         filteredFavorite.length &&
           filteredList.push({
-            color: colors_NOT_REACTIVE.yellowFavorite,
+            color: colors.yellowFavorite,
             data: filteredFavorite,
             title: tokenSectionTypes.favoriteTokenSection,
           });
@@ -157,7 +158,7 @@ export default function CurrencySelectModal() {
       } else {
         filteredList = [
           {
-            color: colors_NOT_REACTIVE.yellowFavorite,
+            color: colors.yellowFavorite,
             data: favorites,
             title: tokenSectionTypes.favoriteTokenSection,
           },
@@ -172,6 +173,7 @@ export default function CurrencySelectModal() {
     setIsSearching(false);
     return filteredList;
   }, [
+    colors,
     curatedNotFavorited,
     favorites,
     globalVerifiedHighLiquidityAssets,

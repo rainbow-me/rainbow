@@ -14,7 +14,7 @@ import { ButtonPressAnimation } from '../animations';
 import { Row, RowWithMargins } from '../layout';
 import { AnimatedNumber, Emoji, Text } from '../text';
 import { useAccountSettings } from '@rainbow-me/hooks';
-import { colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 
 const CrystalBallEmoji = styled(Emoji).attrs({
   name: 'crystal_ball',
@@ -23,12 +23,14 @@ const CrystalBallEmoji = styled(Emoji).attrs({
   margin-bottom: 0.5;
 `;
 
-const PredictionNumber = styled(AnimatedNumber).attrs({
-  color: colors_NOT_REACTIVE.swapPurple,
-  letterSpacing: 'roundedTight',
-  size: 'lmedium',
-  weight: 'semibold',
-})`
+const PredictionNumber = styled(AnimatedNumber).attrs(
+  ({ theme: { colors } }) => ({
+    color: colors.swapPurple,
+    letterSpacing: 'roundedTight',
+    size: 'lmedium',
+    weight: 'semibold',
+  })
+)`
   flex-grow: 1;
 `;
 

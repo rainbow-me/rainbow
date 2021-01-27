@@ -13,7 +13,6 @@ import useAccountSettings from '../hooks/useAccountSettings';
 import { useNavigation } from '../navigation/Navigation';
 import { walletsSetSelected, walletsUpdate } from '../redux/wallets';
 import { deviceUtils } from '../utils';
-import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const AvatarCircleHeight = 65;
 const AvatarCircleMarginTop = 2;
@@ -49,8 +48,9 @@ const AvatarBuilder = ({ route: { params } }) => {
   const [translateX] = useValues((params.initialAccountColor - 4) * 39);
   const { goBack } = useNavigation();
   const { accountAddress } = useAccountSettings();
+  const { colors } = useTheme();
   const [currentAccountColor, setCurrentAccountColor] = useState(
-    colors_NOT_REACTIVE.avatarColor[params.initialAccountColor]
+    colors.avatarColor[params.initialAccountColor]
   );
   const dispatch = useDispatch();
 
@@ -58,7 +58,7 @@ const AvatarBuilder = ({ route: { params } }) => {
     saveInfo(`${event} ${params.initialAccountName}`);
   };
 
-  const avatarColors = colors_NOT_REACTIVE.avatarColor.map((color, index) => (
+  const avatarColors = colors.avatarColor.map((color, index) => (
     <ColorCircle
       backgroundColor={color}
       isSelected={index - 4 === 0}

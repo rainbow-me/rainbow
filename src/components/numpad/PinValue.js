@@ -2,7 +2,6 @@ import React from 'react';
 import Animated from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
 import { Column, Flex } from '../../components/layout';
-import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const FilledValue = styled(Column)`
   width: 20;
@@ -23,6 +22,7 @@ const EmptyValue = styled(Column)`
 `;
 
 const PinValue = ({ translateX, value, ...props }) => {
+  const { colors } = useTheme();
   return (
     <Flex {...props}>
       <Animated.View
@@ -32,22 +32,22 @@ const PinValue = ({ translateX, value, ...props }) => {
         }}
       >
         {value && value.length ? (
-          <FilledValue backgroundColor={colors_NOT_REACTIVE.appleBlue} />
+          <FilledValue backgroundColor={colors.appleBlue} />
         ) : (
           <EmptyValue />
         )}
         {value && value.length > 1 ? (
-          <FilledValue backgroundColor={colors_NOT_REACTIVE.appleBlue} />
+          <FilledValue backgroundColor={colors.appleBlue} />
         ) : (
           <EmptyValue />
         )}
         {value && value.length > 2 ? (
-          <FilledValue backgroundColor={colors_NOT_REACTIVE.appleBlue} />
+          <FilledValue backgroundColor={colors.appleBlue} />
         ) : (
           <EmptyValue />
         )}
         {value && value.length > 3 ? (
-          <FilledValue backgroundColor={colors_NOT_REACTIVE.appleBlue} />
+          <FilledValue backgroundColor={colors.appleBlue} />
         ) : (
           <EmptyValue />
         )}

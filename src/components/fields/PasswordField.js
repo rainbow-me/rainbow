@@ -6,7 +6,7 @@ import { Icon } from '../icons';
 import { Input } from '../inputs';
 import { cloudBackupPasswordMinLength } from '@rainbow-me/handlers/cloudBackup';
 import { useDimensions } from '@rainbow-me/hooks';
-import { colors_NOT_REACTIVE, padding, position } from '@rainbow-me/styles';
+import { padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const FieldAccessoryBadgeSize = 22;
@@ -85,7 +85,7 @@ const PasswordField = (
 ) => {
   const { width: deviceWidth } = useDimensions();
   const handleFocus = useCallback(() => ref?.current?.focus?.(), [ref]);
-  const { isDarkMode } = useTheme();
+  const { isDarkMode, colors } = useTheme();
 
   return (
     <StyledTouchable onPress={handleFocus}>
@@ -102,14 +102,11 @@ const PasswordField = (
           {...props}
         />
         {isValid && (
-          <FieldAccessoryBadge
-            color={colors_NOT_REACTIVE.green}
-            name="checkmarkCircled"
-          />
+          <FieldAccessoryBadge color={colors.green} name="checkmarkCircled" />
         )}
         {isInvalid && (
           <FieldAccessoryBadge
-            color={colors_NOT_REACTIVE.orangeLight}
+            color={colors.orangeLight}
             name="warningCircled"
           />
         )}

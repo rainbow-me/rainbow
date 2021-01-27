@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react';
 import { ButtonPressAnimation } from '../../animations';
 import { ContactAvatar } from '../../contacts';
-import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const ProfileAvatarButton = ({
   color,
@@ -11,12 +10,10 @@ const ProfileAvatarButton = ({
   value,
   radiusAndroid,
 }) => {
+  const { colors } = useTheme();
   const handleChangeColor = useCallback(
-    () =>
-      setColor?.(
-        prevColor => (prevColor + 1) % colors_NOT_REACTIVE.avatarColor.length
-      ),
-    [setColor]
+    () => setColor?.(prevColor => (prevColor + 1) % colors.avatarColor.length),
+    [setColor, colors]
   );
 
   return (
