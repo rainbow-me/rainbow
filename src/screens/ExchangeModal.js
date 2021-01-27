@@ -38,6 +38,7 @@ import {
   useSwapInputOutputTokens,
   useSwapInputRefs,
   useSwapInputs,
+  useSwapInputValues,
   useUniswapCurrencies,
   useUniswapMarketDetails,
 } from '@rainbow-me/hooks';
@@ -140,15 +141,6 @@ export default function ExchangeModal({
   } = useSwapInputRefs();
 
   const {
-    inputAmount,
-    inputAmountDisplay,
-    inputAsExactAmount,
-    isMax,
-    isSufficientBalance,
-    nativeAmount,
-    outputAmount,
-    outputAmountDisplay,
-    setIsSufficientBalance,
     updateInputAmount,
     updateNativeAmount,
     updateOutputAmount,
@@ -160,6 +152,16 @@ export default function ExchangeModal({
     supplyBalanceUnderlying,
     type,
   });
+
+  const {
+    inputAmount,
+    inputAmountDisplay,
+    isSufficientBalance,
+    nativeAmount,
+    isMax,
+    outputAmount,
+    outputAmountDisplay,
+  } = useSwapInputValues();
 
   const isDismissing = useRef(false);
   useEffect(() => {
@@ -192,16 +194,12 @@ export default function ExchangeModal({
   const { isSufficientLiquidity, tradeDetails } = useUniswapMarketDetails({
     defaultInputAddress,
     extraTradeDetails,
-    inputAmount,
-    inputAsExactAmount,
     inputFieldRef,
     isDeposit,
     isWithdrawal,
     maxInputBalance,
     nativeCurrency,
-    outputAmount,
     outputFieldRef,
-    setIsSufficientBalance,
     setSlippage,
     updateExtraTradeDetails,
     updateInputAmount,
