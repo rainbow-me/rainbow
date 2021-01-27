@@ -450,8 +450,6 @@ export default function ExchangeModal({
       setParams({ focused: false });
       navigate(Routes.SWAP_DETAILS_SCREEN, {
         ...extraTradeDetails,
-        inputCurrencySymbol: get(inputCurrency, 'symbol'),
-        outputCurrencySymbol: get(outputCurrency, 'symbol'),
         restoreFocusOnSwapModal: () => {
           android &&
             (lastFocusedInputHandle.current = lastFocusedInputHandleTemporary);
@@ -471,7 +469,6 @@ export default function ExchangeModal({
       : Keyboard.addListener('keyboardDidHide', internalNavigate);
   }, [
     extraTradeDetails,
-    inputCurrency,
     inputFieldRef,
     lastFocusedInputHandle,
     nativeFieldRef,

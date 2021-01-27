@@ -7,6 +7,7 @@ import { FloatingEmojisTapper } from '../floating-emojis';
 import { AssetPanel, FloatingPanels } from '../floating-panels';
 import { ColumnWithMargins, KeyboardFixedOpenLayout } from '../layout';
 import { SwapDetailRow, SwapDetailsFooter } from './swap-details';
+import { useSwapInputOutputTokens } from '@rainbow-me/hooks';
 
 const FloatingEmojisOpacity = swapDetailsTransitionPosition.interpolate({
   inputRange: [0.93, 1],
@@ -14,15 +15,17 @@ const FloatingEmojisOpacity = swapDetailsTransitionPosition.interpolate({
 });
 
 const SwapDetailsState = ({
-  inputCurrencySymbol,
   inputExecutionRate,
   inputNativePrice,
-  outputCurrencySymbol,
   outputExecutionRate,
   outputNativePrice,
   restoreFocusOnSwapModal,
 }) => {
   const { goBack } = useNavigation();
+  const { inputCurrency, outputCurrency } = useSwapInputOutputTokens();
+  const inputCurrencySymbol = inputCurrency?.symbol;
+  const outputCurrencySymbol = outputCurrency?.symbol;
+
   useEffect(() => () => restoreFocusOnSwapModal(), [restoreFocusOnSwapModal]);
   const {
     params: { toggleGestureEnabled },
