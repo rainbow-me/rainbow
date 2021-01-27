@@ -56,7 +56,7 @@ export default function BackupSheetSection({
   titleText,
   type,
 }) {
-  const { colors } = useTheme();
+  const { colors, isDarkMode } = useTheme();
   useEffect(() => {
     analytics.track('BackupSheet shown', {
       category: 'backup',
@@ -84,7 +84,7 @@ export default function BackupSheetSection({
         />
         <SheetActionButton
           androidWidth={maxButtonWidth}
-          color={colors.white}
+          color={isDarkMode ? colors.trueBlack : colors.white}
           label={secondaryLabel}
           onPress={onSecondaryAction}
           size="big"
