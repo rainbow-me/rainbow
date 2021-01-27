@@ -6,7 +6,6 @@ import { AvatarCircle } from '../components/profile';
 import colors from '../context/currentColors';
 import { lightModeThemeColors } from '../styles/colors';
 import { deviceUtils } from '../utils';
-import { darkMode } from '@rainbow-me/config/debug';
 import Routes from '@rainbow-me/routes';
 
 const statusBarHeight = getStatusBarHeight(true);
@@ -302,7 +301,8 @@ export const emojiPreset = {
       <Animated.View
         pointerEvents="none"
         style={{
-          backgroundColor: darkMode ? colors.offWhite : 'rgb(51, 54, 59)',
+          backgroundColor:
+            colors.theme === 'dark' ? colors.offWhite : 'rgb(51, 54, 59)',
           height: deviceUtils.dimensions.height + 50,
           opacity: backgroundOpacity,
           position: 'absolute',

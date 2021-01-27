@@ -34,7 +34,6 @@ import { withThemeContext } from '../../context/ThemeContext';
 import { deviceUtils } from '../../utils';
 import { Categories } from './Categories';
 import TabBar from './TabBar';
-import { darkMode } from '@rainbow-me/config/debug';
 import { ImgixImage } from '@rainbow-me/images';
 import { fonts, position } from '@rainbow-me/styles';
 
@@ -431,6 +430,7 @@ class EmojiSelector extends PureComponent {
       showSearchBar,
       showTabs,
       colors,
+      isDarkMode,
       ...other
     } = this.props;
 
@@ -518,7 +518,12 @@ class EmojiSelector extends PureComponent {
         </TapGestureHandler>
         {showTabs ? (
           <View style={styles.tabBar}>
-            <View style={styles.tabBarShadowImage}>
+            <View
+              style={[
+                styles.tabBarShadowImage,
+                { opacity: isDarkMode ? 0.3 : 0.6 },
+              ]}
+            >
               <ImgixImage
                 pointerEvents="none"
                 source={EmojiTabBarShadow}
@@ -537,7 +542,7 @@ class EmojiSelector extends PureComponent {
                 colors={[
                   colors.white,
                   colors.white,
-                  darkMode ? colors.white : '#F0F5FA',
+                  isDarkMode ? colors.white : '#F0F5FA',
                 ]}
                 end={{ x: 0.5, y: 1 }}
                 overflow="hidden"
@@ -671,7 +676,6 @@ const styles = StyleSheet.create({
   tabBarShadowImage: {
     height: 138,
     left: -50.5,
-    opacity: darkMode ? 0.3 : 0.6,
     position: 'absolute',
     top: -46,
     width: 377,
