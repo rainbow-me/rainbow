@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { useDimensions } from '../../hooks';
 import { ButtonPressAnimation } from '../animations';

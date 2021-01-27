@@ -1,6 +1,6 @@
 import React from 'react';
 import { TextInput as TextInputPrimitive } from 'react-native';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { buildTextStyles } from '@rainbow-me/styles';
 

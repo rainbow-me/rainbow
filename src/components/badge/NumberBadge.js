@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Animated, { SpringUtils } from 'react-native-reanimated';
 import { useSpringTransition } from 'react-native-redash';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { useTimeout } from '../../hooks';
 import { magicMemo } from '../../utils';

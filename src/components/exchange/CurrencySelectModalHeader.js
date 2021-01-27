@@ -1,6 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import React, { useCallback } from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { delayNext } from '../../hooks/useMagicAutofocus';
 import { useNavigation } from '../../navigation/Navigation';
 import { BackButton } from '../header';

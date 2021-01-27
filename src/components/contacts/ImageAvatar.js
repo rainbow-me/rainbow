@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { Centered } from '../layout';
 import { ImgixImage } from '@rainbow-me/images';
 import { borders } from '@rainbow-me/styles';

@@ -3,7 +3,7 @@ import React, { useCallback, useMemo, useRef } from 'react';
 import DeviceInfo from 'react-native-device-info';
 import { FlatList } from 'react-native-gesture-handler';
 import { useSafeArea } from 'react-native-safe-area-context';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { FlyInAnimation } from '../animations';
 import { SwipeableContactRow } from '../contacts';
 import { SheetHandleFixedToTopHeight } from '../sheet';

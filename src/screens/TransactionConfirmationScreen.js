@@ -23,7 +23,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { useDispatch, useSelector } from 'react-redux';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import URL from 'url-parse';
 import Divider from '../components/Divider';
 import { RequestVendorLogoIcon } from '../components/coin-icon';

@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { fonts } from '../../styles';
 import { magicMemo, measureText } from '../../utils';

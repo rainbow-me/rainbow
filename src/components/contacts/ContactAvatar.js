@@ -33,7 +33,7 @@ const buildShadows = (color, size, darkMode, colors) => {
       ],
     ];
   } else {
-    return sizeConfigs[size]['shadow'];
+    return sizeConfigs(colors)[size]['shadow'];
   }
 };
 

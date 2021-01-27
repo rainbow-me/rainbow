@@ -2,7 +2,7 @@ import { captureMessage } from '@sentry/react-native';
 import { get } from 'lodash';
 import React, { Fragment, useCallback } from 'react';
 import { Linking } from 'react-native';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { useTheme, withThemeContext } from '../context/ThemeContext';
 import networkInfo from '../helpers/networkInfo';
 import networkTypes from '../helpers/networkTypes';

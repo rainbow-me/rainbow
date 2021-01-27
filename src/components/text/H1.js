@@ -1,4 +1,4 @@
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { withThemeContext } from '../../context/ThemeContext';
 import Text from './Text';
 

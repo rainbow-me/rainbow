@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
 import { compose, onlyUpdateForKeys, shouldUpdate, withProps } from 'recompact';
-import { css } from 'styled-components/primitives';
+import { css } from 'styled-components';
 import { useTheme, withThemeContext } from '../../context/ThemeContext';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
 import { deviceUtils } from '../../utils';

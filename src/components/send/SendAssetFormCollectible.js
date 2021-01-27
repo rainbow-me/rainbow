@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { useDimensions, useImageMetadata } from '../../hooks';
 import { OpacityToggler } from '../animations';
 import { Column, ColumnWithMargins } from '../layout';

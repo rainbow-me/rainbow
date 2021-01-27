@@ -2,7 +2,7 @@ import { useIsFocused } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import Animated, { useCode } from 'react-native-reanimated';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { BubbleSheet } from '../components/bubble-sheet';
 import { DiscoverSheet } from '../components/discover-sheet';
 import { BackButton, Header, HeaderHeight } from '../components/header';

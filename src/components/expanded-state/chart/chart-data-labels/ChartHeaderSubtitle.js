@@ -1,4 +1,4 @@
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { TruncatedText } from '../../../text';
 
 const ChartHeaderSubtitle = styled(TruncatedText).attrs(

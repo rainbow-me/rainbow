@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { RNCamera } from 'react-native-camera';
 import { useIsEmulator } from 'react-native-device-info';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { Centered } from '../layout';
 import { ErrorText } from '../text';
 import QRCodeScannerCrosshair from './QRCodeScannerCrosshair';

@@ -1,7 +1,7 @@
 import { get } from 'lodash';
 import React from 'react';
 import { PixelRatio, Text } from 'react-native';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { withThemeContext } from '../../../../context/ThemeContext';
 import { Row } from '../../../layout';
 import ChartHeaderTitle from './ChartHeaderTitle';

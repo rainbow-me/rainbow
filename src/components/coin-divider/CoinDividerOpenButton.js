@@ -1,6 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import Caret from '../../assets/family-dropdown-arrow.png';
 import { useTheme, withThemeContext } from '../../context/ThemeContext';
 import {

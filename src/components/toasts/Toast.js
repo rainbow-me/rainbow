@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import Animated from 'react-native-reanimated';
 import { useSpringTransition } from 'react-native-redash';
 import { useSafeArea } from 'react-native-safe-area-context';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { interpolate } from '../animations';
 import { Icon } from '../icons';

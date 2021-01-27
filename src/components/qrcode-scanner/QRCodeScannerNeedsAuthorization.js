@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { Linking } from 'react-native';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { darkModeThemeColors } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';

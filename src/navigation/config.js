@@ -1,6 +1,6 @@
 import React from 'react';
 import { Keyboard } from 'react-native';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { Icon } from '../components/icons';
 import { SheetHandleFixedToTopHeight } from '../components/sheet';
 import colors from '../context/currentColors';

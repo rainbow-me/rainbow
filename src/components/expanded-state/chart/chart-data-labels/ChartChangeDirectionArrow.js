@@ -4,7 +4,7 @@ import Animated, {
   useAnimatedStyle,
   useDerivedValue,
 } from 'react-native-reanimated';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { Icon } from '../../../icons';
 import { useRatio } from './useRatio';
 

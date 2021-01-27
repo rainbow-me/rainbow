@@ -1,6 +1,6 @@
 import React, { useCallback, useRef, useState } from 'react';
 import { Keyboard } from 'react-native';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { useAccountSettings, useContacts } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';

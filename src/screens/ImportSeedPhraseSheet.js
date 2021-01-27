@@ -11,7 +11,7 @@ import React, {
 import { Alert, InteractionManager, StatusBar } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import { KeyboardArea } from 'react-native-keyboard-area';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import ActivityIndicator from '../components/ActivityIndicator';
 import Spinner from '../components/Spinner';
 import { MiniButton } from '../components/buttons';

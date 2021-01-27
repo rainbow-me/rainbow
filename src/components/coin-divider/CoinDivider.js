@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from 'react';
 import { LayoutAnimation, View } from 'react-native';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { withThemeContext } from '../../context/ThemeContext';
 import EditOptions from '../../helpers/editOptionTypes';
 import {

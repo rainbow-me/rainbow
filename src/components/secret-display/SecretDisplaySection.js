@@ -2,7 +2,7 @@ import { useRoute } from '@react-navigation/native';
 import { captureException } from '@sentry/react-native';
 import { upperFirst } from 'lodash';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import {
   identifyWalletType,
   loadSeedPhraseAndMigrateIfNeeded,

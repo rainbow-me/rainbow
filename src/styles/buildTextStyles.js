@@ -1,5 +1,5 @@
 import { get, isNil } from 'lodash';
-import { css } from 'styled-components/primitives';
+import { css } from 'styled-components';
 import colors from './colors';
 import fonts from './fonts';
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { Centered } from '../layout';
 import Icon from './Icon';
 import BiometryTypes from '@rainbow-me/helpers/biometryTypes';

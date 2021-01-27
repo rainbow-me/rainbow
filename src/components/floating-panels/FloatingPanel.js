@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { Column } from '../layout';
 import { shadow } from '@rainbow-me/styles';
 

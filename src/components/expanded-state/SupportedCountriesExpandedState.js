@@ -1,6 +1,6 @@
 import { values } from 'lodash';
 import React from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { FloatingEmojisTapper } from '../floating-emojis';
 import { AssetPanel, FloatingPanels } from '../floating-panels';
 import { Centered } from '../layout';

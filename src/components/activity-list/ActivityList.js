@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { SectionList } from 'react-native';
 import { mapProps } from 'recompact';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import networkTypes from '../../helpers/networkTypes';
 import ActivityIndicator from '../ActivityIndicator';

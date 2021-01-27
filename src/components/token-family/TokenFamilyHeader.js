@@ -1,7 +1,7 @@
 import React from 'react';
 import Animated, { Easing } from 'react-native-reanimated';
 import { toRad, useTimingTransition } from 'react-native-redash';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
 import { withThemeContext } from '../../context/ThemeContext';
 import { ButtonPressAnimation, interpolate } from '../animations';

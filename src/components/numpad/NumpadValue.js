@@ -2,7 +2,7 @@ import MaskedView from '@react-native-community/masked-view';
 import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import Animated from 'react-native-reanimated';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { useDimensions } from '../../hooks';
 import { Text } from '../text';
 

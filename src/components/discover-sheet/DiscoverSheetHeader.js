@@ -1,7 +1,7 @@
 import React, { useContext, useMemo } from 'react';
 import { View } from 'react-native';
 import Animated from 'react-native-reanimated';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { borders, position } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';

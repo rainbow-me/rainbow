@@ -1,4 +1,4 @@
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { Text } from '../text';
 
 const BalanceText = styled(Text).attrs(({ color, theme: { colors } }) => ({

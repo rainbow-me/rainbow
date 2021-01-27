@@ -1,7 +1,7 @@
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { Linking, Share } from 'react-native';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { buildUniqueTokenName } from '../../../helpers/assets';
 import { magicMemo } from '../../../utils';
 import Pill from '../../Pill';

@@ -1,4 +1,4 @@
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { TruncatedText } from '../text';
 
 const CoinName = styled(TruncatedText).attrs(

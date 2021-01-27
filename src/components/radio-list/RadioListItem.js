@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { withHandlers } from 'recompact';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import Icon from '../icons/Icon';
 import { ListItem } from '../list';
 

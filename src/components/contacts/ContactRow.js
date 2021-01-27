@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { withThemeContext } from '../../context/ThemeContext';
 import { removeFirstEmojiFromString } from '../../helpers/emojiHandler';
 import { useDimensions } from '../../hooks';

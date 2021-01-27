@@ -10,7 +10,7 @@ import React, {
 import { LayoutAnimation } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { Alert } from '../alerts';
 import { ButtonPressAnimation } from '../animations';
 import { Input } from '../inputs';

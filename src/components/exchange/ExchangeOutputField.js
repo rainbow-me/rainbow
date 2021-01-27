@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { Row } from '../layout';
 import ExchangeField from './ExchangeField';
 

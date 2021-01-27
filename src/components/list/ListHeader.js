@@ -1,6 +1,6 @@
 import React, { createElement, Fragment } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { withThemeContext } from '../../context/ThemeContext';
 import { useDimensions } from '../../hooks';
 import Divider from '../Divider';

@@ -10,7 +10,7 @@ import Animated, {
   Value,
 } from 'react-native-reanimated';
 import { withProps } from 'recompact';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { withThemeContext } from '../../context/ThemeContext';
 import { deviceUtils } from '../../utils';
 import { interpolate } from '../animations';

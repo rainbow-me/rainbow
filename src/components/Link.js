@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { Linking } from 'react-native';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { useTheme } from '../context/ThemeContext';
 import { magicMemo } from '../utils';
 import { ButtonPressAnimation } from './animations';

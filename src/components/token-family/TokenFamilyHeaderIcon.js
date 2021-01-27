@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { FallbackIcon } from 'react-coin-icon';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { initials } from '../../utils';
 import { Emoji } from '../text';
 import { ImageWithCachedMetadata } from '@rainbow-me/images';

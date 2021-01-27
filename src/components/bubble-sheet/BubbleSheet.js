@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSafeArea } from 'react-native-safe-area-context';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { Column } from '../layout';
 import { shadow } from '@rainbow-me/styles';
 

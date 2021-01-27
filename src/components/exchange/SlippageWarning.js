@@ -2,7 +2,7 @@ import AnimateNumber from '@bankify/react-native-animate-number';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { compose, onlyUpdateForKeys, withProps } from 'recompact';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { withThemeContext } from '../../context/ThemeContext';
 import { convertBipsToPercentage } from '../../helpers/utilities';
 import { Icon } from '../icons';

@@ -11,7 +11,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { useTheme, withThemeContext } from '../../context/ThemeContext';
 import { Button } from '../buttons';
 import { ExchangeInput } from '../exchange';

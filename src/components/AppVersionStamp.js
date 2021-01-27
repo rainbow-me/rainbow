@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { Alert } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { Text } from './text';
 import { useAppVersion, useTimeout, useWalletsDebug } from '@rainbow-me/hooks';
 

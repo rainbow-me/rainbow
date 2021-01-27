@@ -7,7 +7,7 @@ import {
   Share,
   Switch,
 } from 'react-native';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { REVIEW_ANDROID } from '../../config/experimental';
 import useExperimentalFlag from '../../config/experimentalHooks';
 //import { supportedLanguages } from '../../languages';

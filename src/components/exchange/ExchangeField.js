@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { TokenSelectionButton } from '../buttons';
 import { CoinIcon, CoinIconSize } from '../coin-icon';
 import { Row, RowWithMargins } from '../layout';

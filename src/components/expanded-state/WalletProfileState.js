@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useState } from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { useTheme, withThemeContext } from '../../context/ThemeContext';
 import { getRandomColor } from '../../styles/colors';
 import Divider from '../Divider';

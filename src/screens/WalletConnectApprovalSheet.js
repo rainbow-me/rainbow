@@ -8,7 +8,7 @@ import React, {
   useState,
 } from 'react';
 import { InteractionManager } from 'react-native';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import Divider from '../components/Divider';
 import { Alert } from '../components/alerts';
 import { RequestVendorLogoIcon } from '../components/coin-icon';

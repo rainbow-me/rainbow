@@ -5,7 +5,7 @@ import {
   useSpringTransition,
   useTimingTransition,
 } from 'react-native-redash';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { interpolate } from '../animations';
 import { CoinIcon } from '../coin-icon';
 import { Centered, RowWithMargins } from '../layout';

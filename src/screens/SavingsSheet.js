@@ -3,7 +3,7 @@ import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
 import { Alert, StatusBar } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import Divider from '../components/Divider';
 import { SavingsCoinRow } from '../components/coin-row';
 import {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { BaseButton } from 'react-native-gesture-handler';
 import RadialGradient from 'react-native-radial-gradient';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { Centered } from '../layout';
 import { Text } from '../text';

@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { useNavigation } from '../../navigation/Navigation';
 import { Row, RowWithMargins } from '../layout';
 import { Emoji, Text } from '../text';

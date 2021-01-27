@@ -2,7 +2,7 @@ import { toLower } from 'lodash';
 import React, { useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import { CopyFloatingEmojis } from '../components/floating-emojis';
 import { Centered, Column, ColumnWithMargins } from '../components/layout';

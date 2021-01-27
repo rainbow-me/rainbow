@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder } from '../layout';

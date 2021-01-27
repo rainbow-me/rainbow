@@ -1,6 +1,6 @@
 import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { useTheme } from '../context/ThemeContext';
 import { TruncatedText } from './text';
 import { padding } from '@rainbow-me/styles';

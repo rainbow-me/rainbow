@@ -1,6 +1,6 @@
 import { compact, get, toLower } from 'lodash';
 import React, { useCallback } from 'react';
-import { css } from 'styled-components/primitives';
+import { css } from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIconSize } from '../coin-icon';

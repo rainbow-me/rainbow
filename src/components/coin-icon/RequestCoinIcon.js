@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { CircularProgress } from 'react-native-circular-progress';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import RequestVendorLogoIcon from './RequestVendorLogoIcon';
 

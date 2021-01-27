@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, InteractionManager, Keyboard } from 'react-native';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { isSamsungGalaxy } from '../../helpers/samsung';
 import {
   fetchBackupPassword,

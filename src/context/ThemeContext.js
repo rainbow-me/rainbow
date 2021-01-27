@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import { LayoutAnimation, NativeModules, StatusBar } from 'react-native';
 
-import { ThemeProvider } from 'styled-components/primitives';
+import { ThemeProvider } from 'styled-components';
 import { getTheme, saveTheme } from '../handlers/localstorage/theme';
 import { darkModeThemeColors, lightModeThemeColors } from '../styles/colors';
 import currentColors from './currentColors';

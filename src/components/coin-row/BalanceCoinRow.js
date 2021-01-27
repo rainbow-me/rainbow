@@ -3,7 +3,7 @@ import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import Animated from 'react-native-reanimated';
 import { View } from 'react-primitives';
 import { connect } from 'react-redux';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { useTheme, withThemeContext } from '../../context/ThemeContext';
 import { useCoinListEditedValue } from '../../hooks/useCoinListEdited';
 import { ButtonPressAnimation } from '../animations';

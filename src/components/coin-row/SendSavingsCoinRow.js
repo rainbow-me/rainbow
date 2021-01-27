@@ -1,5 +1,5 @@
 import React from 'react';
-import { css } from 'styled-components/primitives';
+import { css } from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { deviceUtils } from '../../utils';
 import { ButtonPressAnimation } from '../animations';

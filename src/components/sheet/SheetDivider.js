@@ -1,4 +1,4 @@
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { neverRerender } from '../../utils';
 import Divider from '../Divider';
 

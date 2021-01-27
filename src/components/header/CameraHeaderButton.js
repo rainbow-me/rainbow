@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { useNavigation } from '../../navigation/Navigation';
 import Icon from '../icons/Icon';
 import { Centered } from '../layout';

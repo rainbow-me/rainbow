@@ -1,4 +1,4 @@
-import { css } from 'styled-components/primitives';
+import { css } from 'styled-components';
 import position from './position';
 
 export const getFlexStylesFromShorthand = style =>

@@ -1,6 +1,6 @@
 import { get } from 'lodash';
 import React, { useCallback, useMemo, useState } from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { formatNative } from '../expanded-state/chart/chart-data-labels/ChartPriceLabel';
 import { Text } from '../text';
 import { useChartData } from '@rainbow-me/animated-charts';

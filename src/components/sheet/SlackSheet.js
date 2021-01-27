@@ -3,7 +3,7 @@ import React, { Fragment, useEffect, useMemo, useRef } from 'react';
 import { Pressable, StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useSafeArea } from 'react-native-safe-area-context';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { Centered } from '../layout';
 import { useReanimatedValue } from '../list/MarqueeList';

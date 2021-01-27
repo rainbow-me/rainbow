@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import LinearGradient from 'react-native-linear-gradient';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import {
   SavingsSheetEmptyHeight,
   SavingsSheetHeight,
@@ -24,6 +24,7 @@ import { useDimensions } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { padding, position } from '@rainbow-me/styles';
+import { magicMemo } from '@rainbow-me/utils';
 import ShadowStack from 'react-native-shadow-stack';
 
 const MS_IN_1_DAY = 1000 * 60 * 60 * 24;
@@ -31,9 +32,7 @@ const ANIMATE_NUMBER_INTERVAL = 60;
 
 const NOOP = () => undefined;
 
-const neverRerender = () => true;
-// eslint-disable-next-line react/display-name
-const SavingsListRowGradient = React.memo(
+const SavingsListRowGradient = magicMemo(
   ({ colors }) => (
     <LinearGradient
       borderRadius={49}
@@ -44,7 +43,7 @@ const SavingsListRowGradient = React.memo(
       style={position.coverAsObject}
     />
   ),
-  neverRerender
+  'colors'
 );
 
 const SavingsListRowShadowStack = styled(ShadowStack).attrs(

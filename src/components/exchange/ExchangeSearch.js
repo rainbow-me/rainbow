@@ -8,7 +8,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import Spinner from '../../assets/chartSpinner.png';
 import { withThemeContext } from '../../context/ThemeContext';
 import { ClearInputDecorator, Input } from '../inputs';

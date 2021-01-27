@@ -7,7 +7,7 @@ import {
   RecyclerListView,
 } from 'recyclerlistview';
 
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { buildCoinsList } from '../../helpers/assets';
 import networkTypes from '../../helpers/networkTypes';
 import { deviceUtils } from '../../utils';

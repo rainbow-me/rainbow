@@ -1,7 +1,7 @@
 import React from 'react';
 import Animated, { SpringUtils } from 'react-native-reanimated';
 import { bin, useSpringTransition } from 'react-native-redash';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { useMemoOne } from 'use-memo-one';
 import { useTheme } from '../../context/ThemeContext';
 import { Row } from '../layout';

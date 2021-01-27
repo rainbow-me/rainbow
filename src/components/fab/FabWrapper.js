@@ -1,5 +1,5 @@
 import React, { createElement } from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { safeAreaInsetValues } from '../../utils';
 import { FlexItem, RowWithMargins } from '../layout';
 import ExchangeFab from './ExchangeFab';

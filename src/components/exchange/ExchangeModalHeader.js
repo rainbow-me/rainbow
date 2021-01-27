@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { usePrevious } from '../../hooks';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';

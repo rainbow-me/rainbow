@@ -1,6 +1,6 @@
 import React from 'react';
 import Animated from 'react-native-reanimated';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { Column, Flex } from '../../components/layout';
 
 const FilledValue = styled(Column)`

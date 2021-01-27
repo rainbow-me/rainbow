@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { LayoutAnimation } from 'react-native';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { useTheme, withThemeContext } from '../../context/ThemeContext';
 import { magicMemo } from '../../utils';
 import { ButtonPressAnimation, OpacityToggler } from '../animations';

@@ -1,6 +1,6 @@
 import { get } from 'lodash';
 import React from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { Button } from '../buttons';
 import { Row } from '../layout';
 import { Text } from '../text';

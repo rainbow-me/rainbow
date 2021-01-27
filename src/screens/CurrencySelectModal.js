@@ -13,7 +13,7 @@ import React, {
 import { StatusBar } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import Animated, { Extrapolate } from 'react-native-reanimated';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import GestureBlocker from '../components/GestureBlocker';
 import { interpolate } from '../components/animations';
 import {

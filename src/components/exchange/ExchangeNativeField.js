@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { Row } from '../layout';
 import { Text } from '../text';
 import ExchangeInput from './ExchangeInput';

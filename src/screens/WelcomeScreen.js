@@ -9,7 +9,7 @@ import Reanimated, {
   timing,
 } from 'react-native-reanimated';
 import { useValue } from 'react-native-redash';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { useMemoOne } from 'use-memo-one';
 import RainbowGreyNeon from '../assets/rainbows/greyneon.png';
 import RainbowLight from '../assets/rainbows/light.png';

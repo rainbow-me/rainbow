@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { JellySelector } from '../jelly-selector';
 import { Centered, Row } from '../layout';
 import { Text } from '../text';

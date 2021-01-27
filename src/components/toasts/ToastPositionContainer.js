@@ -1,4 +1,4 @@
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { Column } from '../layout';
 
 const ToastPositionContainerHeight = 40;
