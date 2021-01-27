@@ -26,12 +26,8 @@ import SwapInfo from '../components/exchange/SwapInfo';
 import { FloatingPanel, FloatingPanels } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
-import ExchangeModalTypes from '../helpers/exchangeModalTypes';
-import isKeyboardOpen from '../helpers/isKeyboardOpen';
-import { loadWallet } from '../model/wallet';
-import { useNavigation } from '../navigation/Navigation';
-import { multicallClearState } from '../redux/multicall';
-import ethUnits from '../references/ethereum-units.json';
+import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
+import isKeyboardOpen from '@rainbow-me/helpers/isKeyboardOpen';
 import {
   useAccountSettings,
   useBlockPolling,
@@ -39,16 +35,21 @@ import {
   useMaxInputBalance,
   usePrevious,
   useSwapDetails,
+  useSwapInputOutputTokens,
   useSwapInputRefs,
   useSwapInputs,
   useUniswapCurrencies,
   useUniswapMarketDetails,
 } from '@rainbow-me/hooks';
+import { loadWallet } from '@rainbow-me/model/wallet';
+import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import { executeRap } from '@rainbow-me/raps';
+import { multicallClearState } from '@rainbow-me/redux/multicall';
+import { swapClearState } from '@rainbow-me/redux/swap';
+import { ethUnits } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { colors, position } from '@rainbow-me/styles';
 import { backgroundTask, isNewValueForPath } from '@rainbow-me/utils';
-
 import logger from 'logger';
 
 const AnimatedFloatingPanels = Animated.createAnimatedComponent(FloatingPanels);
@@ -86,6 +87,7 @@ export default function ExchangeModal({
     : ethUnits.basic_swap;
 
   const dispatch = useDispatch();
+
   const {
     isSufficientGas,
     selectedGasPrice,
@@ -115,10 +117,8 @@ export default function ExchangeModal({
 
   const {
     defaultInputAddress,
-    inputCurrency,
     navigateToSelectInputCurrency,
     navigateToSelectOutputCurrency,
-    outputCurrency,
     previousInputCurrency,
   } = useUniswapCurrencies({
     defaultInputAsset,
@@ -129,16 +129,15 @@ export default function ExchangeModal({
     underlyingPrice,
   });
 
+  const { inputCurrency, outputCurrency } = useSwapInputOutputTokens();
+
   const {
     handleFocus,
     inputFieldRef,
     lastFocusedInputHandle,
     nativeFieldRef,
     outputFieldRef,
-  } = useSwapInputRefs({
-    inputCurrency,
-    outputCurrency,
-  });
+  } = useSwapInputRefs();
 
   const {
     inputAmount,
@@ -155,7 +154,6 @@ export default function ExchangeModal({
     updateOutputAmount,
   } = useSwapInputs({
     defaultInputAsset,
-    inputCurrency,
     isWithdrawal,
     maxInputBalance,
     nativeFieldRef,
@@ -196,14 +194,12 @@ export default function ExchangeModal({
     extraTradeDetails,
     inputAmount,
     inputAsExactAmount,
-    inputCurrency,
     inputFieldRef,
     isDeposit,
     isWithdrawal,
     maxInputBalance,
     nativeCurrency,
     outputAmount,
-    outputCurrency,
     outputFieldRef,
     setIsSufficientBalance,
     setSlippage,
@@ -246,6 +242,7 @@ export default function ExchangeModal({
   useEffect(() => {
     return () => {
       dispatch(multicallClearState());
+      dispatch(swapClearState());
     };
   }, [dispatch]);
 
