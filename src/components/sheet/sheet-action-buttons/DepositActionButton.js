@@ -5,8 +5,8 @@ import SheetActionButton from './SheetActionButton';
 import { neverRerender } from '@rainbow-me/utils';
 
 function DepositActionButton({ color: givenColor, symbol, ...props }) {
-  const { colors } = useTheme();
-  const color = givenColor || colors.dark;
+  const { colors, isDarkMode } = useTheme();
+  const color = givenColor || (isDarkMode ? colors.darkModeDark : colors.dark);
   const [didTrack, setDidTrack] = useState(false);
 
   const handlePress = useCallback(() => {

@@ -5,7 +5,7 @@ import { ComingSoonFloatingEmojis } from '../../floating-emojis';
 import SheetActionButton from './SheetActionButton';
 
 function WithdrawActionButton({ color: givenColor, symbol, ...props }) {
-  const { colors } = useTheme();
+  const { colors, isDarkMode } = useTheme();
   const color = givenColor || colors.white;
   const [didTrack, setDidTrack] = useState(false);
 
@@ -26,7 +26,7 @@ function WithdrawActionButton({ color: givenColor, symbol, ...props }) {
         color={color}
         label="􀁏 Withdraw"
         onPress={handlePress}
-        textColor={colors.dark}
+        textColor={isDarkMode ? colors.whiteLabel : colors.dark}
       />
     </ComingSoonFloatingEmojis>
   );
