@@ -16,7 +16,7 @@ import Spinner from '../../Spinner';
 import { Centered, InnerBorder } from '../../layout';
 import { Text } from '../../text';
 import HoldToAuthorizeButtonIcon from './HoldToAuthorizeButtonIcon';
-import { colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const { divide, multiply, proc } = Animated;
@@ -27,22 +27,22 @@ const ButtonBorderRadius = 30;
 const ButtonHeight = 59;
 const SmallButtonHeight = 46;
 
-const ButtonDisabledBgColor = {
-  dark: colors_NOT_REACTIVE.darkGrey,
-  light: colors_NOT_REACTIVE.lightGrey,
-};
+const ButtonDisabledBgColor = colors => ({
+  dark: colors.darkGrey,
+  light: colors.lightGrey,
+});
 
-const ButtonShadows = {
+const ButtonShadows = colors => ({
   default: [
-    [0, 3, 5, colors_NOT_REACTIVE.shadow, 0.2],
-    [0, 6, 10, colors_NOT_REACTIVE.shadow, 0.14],
-    [0, 1, 18, colors_NOT_REACTIVE.shadow, 0.12],
+    [0, 3, 5, colors.shadow, 0.2],
+    [0, 6, 10, colors.shadow, 0.14],
+    [0, 1, 18, colors.shadow, 0.12],
   ],
   disabled: [
-    [0, 2, 6, colors_NOT_REACTIVE.shadow, 0.06],
-    [0, 3, 9, colors_NOT_REACTIVE.shadow, 0.08],
+    [0, 2, 6, colors.shadow, 0.06],
+    [0, 3, 9, colors.shadow, 0.08],
   ],
-};
+});
 
 const buttonScaleDurationMs = 150;
 const longPressProgressDurationMs = 500; // @christian approves
@@ -214,7 +214,7 @@ class HoldToAuthorizeButton extends PureComponent {
 
     let bgColor = backgroundColor || colors.appleBlue;
     if (disabled) {
-      bgColor = disabledBackgroundColor || ButtonDisabledBgColor[theme];
+      bgColor = disabledBackgroundColor || ButtonDisabledBgColor(colors)[theme];
     }
 
     return (
@@ -234,7 +234,8 @@ class HoldToAuthorizeButton extends PureComponent {
               borderRadius={ButtonBorderRadius}
               height={smallButton ? SmallButtonHeight : ButtonHeight}
               shadows={
-                shadows || ButtonShadows[disabled ? 'disabled' : 'default']
+                shadows ||
+                ButtonShadows(colors)[disabled ? 'disabled' : 'default']
               }
               width={ios ? '100%' : androidWidth}
             >

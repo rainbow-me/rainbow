@@ -4,19 +4,20 @@ import { View } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
 import styled from 'styled-components/primitives';
 import { useTheme } from '../../../context/ThemeContext';
+import { darkModeThemeColors } from '../../../styles/colors';
 import RainbowButtonTypes from './RainbowButtonTypes';
-import { colors_NOT_REACTIVE, margin } from '@rainbow-me/styles';
+import { margin } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
 const RainbowGradientColorsFactory = darkMode => ({
   inner: {
     addCash: ['#FFB114', '#FF54BB', '#00F0FF'],
-    default: colors_NOT_REACTIVE.gradients.rainbow,
+    default: darkModeThemeColors.gradients.rainbow,
     disabled: darkMode
       ? [
-          colors_NOT_REACTIVE.blueGreyDark20,
-          colors_NOT_REACTIVE.blueGreyDark20,
-          colors_NOT_REACTIVE.blueGreyDark20,
+          darkModeThemeColors.blueGreyDark20,
+          darkModeThemeColors.blueGreyDark20,
+          darkModeThemeColors.blueGreyDark20,
         ]
       : ['#B0B3B9', '#B0B3B9', '#B0B3B9'],
   },
@@ -25,9 +26,9 @@ const RainbowGradientColorsFactory = darkMode => ({
     default: ['#F5AA13', '#F551B4', '#799DD5'],
     disabled: darkMode
       ? [
-          colors_NOT_REACTIVE.blueGreyDark20,
-          colors_NOT_REACTIVE.blueGreyDark20,
-          colors_NOT_REACTIVE.blueGreyDark20,
+          darkModeThemeColors.blueGreyDark20,
+          darkModeThemeColors.blueGreyDark20,
+          darkModeThemeColors.blueGreyDark20,
         ]
       : ['#A5A8AE', '#A5A8AE', '#A5A8AE'],
   },

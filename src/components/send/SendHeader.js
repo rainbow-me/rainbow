@@ -12,7 +12,7 @@ import { SheetHandle as SheetHandleAndroid } from '../sheet';
 import { Label } from '../text';
 import { useClipboard, useDimensions } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
-import { colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 import { showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const AddressInputContainer = styled(Row).attrs({ align: 'center' })`
@@ -37,11 +37,11 @@ const SheetHandle = android
   ? styled(SheetHandleAndroid)`
       margin-top: 6;
     `
-  : styled(Icon).attrs({
-      color: colors_NOT_REACTIVE.sendScreen.grey,
+  : styled(Icon).attrs(({ theme: { colors } }) => ({
+      color: colors.sendScreen.grey,
       name: 'handle',
       testID: 'sheet-handle',
-    })`
+    }))`
       height: 11;
       margin-top: 13;
     `;
@@ -67,6 +67,7 @@ export default function SendHeader({
   const { setClipboard } = useClipboard();
   const { isSmallPhone } = useDimensions();
   const { navigate } = useNavigation();
+  const { colors } = useTheme();
 
   const contact = useMemo(() => {
     return get(contacts, `${[toLower(recipient)]}`, DefaultContactItem);
@@ -75,7 +76,7 @@ export default function SendHeader({
   const handleNavigateToContact = useCallback(() => {
     let color = get(contact, 'color');
     if (!isNumber(color)) {
-      color = colors_NOT_REACTIVE.getRandomColor();
+      color = colors.getRandomColor();
     }
 
     navigate(Routes.MODAL_SCREEN, {
@@ -132,7 +133,6 @@ export default function SendHeader({
   ]);
 
   const isPreExistingContact = (contact?.nickname?.length || 0) > 0;
-  const { colors } = useTheme();
 
   return (
     <Fragment>

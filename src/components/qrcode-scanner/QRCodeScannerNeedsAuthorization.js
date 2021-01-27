@@ -1,16 +1,12 @@
 import React, { useCallback } from 'react';
 import { Linking } from 'react-native';
 import styled from 'styled-components/primitives';
+import { darkModeThemeColors } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import {
-  colors_NOT_REACTIVE,
-  margin,
-  padding,
-  position,
-} from '@rainbow-me/styles';
+import { margin, padding, position } from '@rainbow-me/styles';
 
 const Button = styled(ButtonPressAnimation).attrs({
   scaleTo: 1.1,
@@ -19,12 +15,12 @@ const Button = styled(ButtonPressAnimation).attrs({
   margin-top: 22;
 `;
 
-const ButtonLabel = styled(Text).attrs({
+const ButtonLabel = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors_NOT_REACTIVE.mintDark,
+  color: colors.mintDark,
   size: 'large',
   weight: 'semibold',
-})``;
+}))``;
 
 const Container = styled(Centered).attrs({
   direction: 'column',
@@ -34,30 +30,27 @@ const Container = styled(Centered).attrs({
   background-color: ${({ theme: { colors } }) => colors.black};
 `;
 
-const QRIcon = styled(Icon).attrs({
-  color: colors_NOT_REACTIVE.mintDark,
+const QRIcon = styled(Icon).attrs(({ theme: { colors } }) => ({
+  color: colors.mintDark,
   name: 'camera',
   outerOpacity: 0.5,
-})`
+}))`
   ${position.size(43)};
 `;
 
-const Subtitle = styled(Text).attrs({
+const Subtitle = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors_NOT_REACTIVE.alpha(
-    colors_NOT_REACTIVE.darkModeColors.blueGreyDark,
-    0.6
-  ),
+  color: colors.alpha(darkModeThemeColors.blueGreyDark, 0.6),
   size: 'smedium',
   weight: 'semibold',
-})``;
+}))``;
 
-const Title = styled(Text).attrs({
+const Title = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors_NOT_REACTIVE.white,
+  color: colors.white,
   size: 'larger',
   weight: 'bold',
-})`
+}))`
   ${margin(20.5, 0, 8)};
 `;
 

@@ -2,14 +2,14 @@ import React from 'react';
 import { Icon } from '../icons';
 import { RowWithMargins } from '../layout';
 import Monospace from './Monospace';
-import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
-export default function ErrorText({ color = colors_NOT_REACTIVE.red, error }) {
+export default function ErrorText({ color, error }) {
+  const { colors } = useTheme();
   return (
     <RowWithMargins align="center" margin={9}>
-      <Icon color={color} name="warning" />
+      <Icon color={color || colors.red} name="warning" />
       <Monospace
-        color={color}
+        color={color || colors.red}
         lineHeight="looser"
         size="lmedium"
         weight="medium"

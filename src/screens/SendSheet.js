@@ -46,7 +46,7 @@ import {
   useUpdateAssetOnchainBalance,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
-import { borders, colors_NOT_REACTIVE } from '@rainbow-me/styles';
+import { borders } from '@rainbow-me/styles';
 import { deviceUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
@@ -72,10 +72,8 @@ const SheetContainer = styled(Column).attrs({
 
 const KeyboardSizeView = styled(KeyboardArea)`
   width: 100%;
-  background-color: ${({ showAssetForm }) =>
-    showAssetForm
-      ? colors_NOT_REACTIVE.lighterGrey
-      : colors_NOT_REACTIVE.white};
+  background-color: ${({ showAssetForm, theme: { colors } }) =>
+    showAssetForm ? colors.lighterGrey : colors.white};
 `;
 
 export default function SendSheet(props) {

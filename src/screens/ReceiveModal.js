@@ -14,7 +14,7 @@ import { CopyToast, ToastPositionContainer } from '../components/toasts';
 import { useAccountProfile } from '../hooks';
 import { useNavigation } from '../navigation/Navigation';
 import { abbreviations, deviceUtils } from '../utils';
-import { colors_NOT_REACTIVE, padding, shadow } from '@rainbow-me/styles';
+import { padding, shadow } from '@rainbow-me/styles';
 
 const QRCodeSize = ios ? 250 : Math.min(230, deviceUtils.dimensions.width - 20);
 
@@ -36,9 +36,9 @@ const Container = styled(Centered).attrs({
   flex: 1;
 `;
 
-const Handle = styled(SheetHandle).attrs({
-  color: colors_NOT_REACTIVE.whiteLabel,
-})`
+const Handle = styled(SheetHandle).attrs(({ theme: { colors } }) => ({
+  color: colors.whiteLabel,
+}))`
   margin-bottom: 19;
 `;
 
@@ -50,13 +50,13 @@ const QRWrapper = styled(Column).attrs({ align: 'center' })`
   border-radius: 39;
 `;
 
-const NameText = styled(Text).attrs({
+const NameText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors_NOT_REACTIVE.whiteLabel,
+  color: colors.whiteLabel,
   letterSpacing: 'roundedMedium',
   size: 'bigger',
   weight: 'bold',
-})``;
+}))``;
 
 const accountAddressSelector = state => state.settings.accountAddress;
 const lowercaseAccountAddressSelector = createSelector(
