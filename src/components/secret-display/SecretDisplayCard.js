@@ -22,15 +22,17 @@ const BackgroundGradient = styled(LinearGradient).attrs(
   border-radius: ${CardBorderRadius};
 `;
 
-const CardShadow = styled(ShadowStack).attrs(({ theme: { colors } }) => ({
-  ...position.coverAsObject,
-  backgroundColor: colors.white,
-  borderRadius: CardBorderRadius,
-  shadows: [
-    [0, 10, 30, colors.shadow, 0.1],
-    [0, 5, 15, colors.shadow, 0.04],
-  ],
-}))`
+const CardShadow = styled(ShadowStack).attrs(
+  ({ theme: { colors, isDarkMode } }) => ({
+    ...position.coverAsObject,
+    backgroundColor: isDarkMode ? colors.offWhite80 : colors.white,
+    borderRadius: CardBorderRadius,
+    shadows: [
+      [0, 10, 30, colors.shadow, 0.1],
+      [0, 5, 15, colors.shadow, 0.04],
+    ],
+  })
+)`
   elevation: 15;
 `;
 
