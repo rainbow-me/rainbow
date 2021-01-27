@@ -1,14 +1,14 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder, RowWithMargins } from '../layout';
 import { Text } from '../text';
-import { colors_NOT_REACTIVE, position, shadow } from '@rainbow-me/styles';
+import { position, shadow } from '@rainbow-me/styles';
 
 const ButtonBorderRadius = 15;
 
-const sxFactory = darkMode =>
+const sxFactory = (darkMode, colors) =>
   StyleSheet.create({
     // eslint-disable-next-line react-native/no-unused-styles
     button: {
@@ -17,10 +17,10 @@ const sxFactory = darkMode =>
         0,
         4,
         6,
-        darkMode ? colors_NOT_REACTIVE.shadow : colors_NOT_REACTIVE.swapPurple,
+        darkMode ? colors.shadow : colors.swapPurple,
         darkMode ? 0.15 : 0.4
       ),
-      backgroundColor: colors_NOT_REACTIVE.swapPurple,
+      backgroundColor: colors.swapPurple,
       borderRadius: ButtonBorderRadius,
       height: 30,
       paddingBottom: 1,
@@ -29,18 +29,15 @@ const sxFactory = darkMode =>
     },
   });
 
-const sxDark = sxFactory(true);
-const sxLight = sxFactory(false);
-
 const SavingsListRowEmptyState = ({ onPress }) => {
-  const { isDarkMode } = useTheme();
+  const { isDarkMode, colors } = useTheme();
 
-  const sx = isDarkMode ? sxDark : sxLight;
+  const sx = useMemo(() => sxFactory(isDarkMode, colors), [isDarkMode, colors]);
 
   return (
     <RowWithMargins align="center" margin={8} paddingLeft={4}>
       <Text
-        color={colors_NOT_REACTIVE.blueGreyDark}
+        color={colors.blueGreyDark}
         letterSpacing="roundedTightest"
         opacity={0.5}
         size="lmedium"
@@ -51,7 +48,7 @@ const SavingsListRowEmptyState = ({ onPress }) => {
       <ButtonPressAnimation onPress={onPress} scaleTo={0.92} style={sx.button}>
         <Text
           align="center"
-          color={colors_NOT_REACTIVE.whiteLabel}
+          color={colors.whiteLabel}
           letterSpacing="roundedTight"
           size="lmedium"
           weight="semibold"
