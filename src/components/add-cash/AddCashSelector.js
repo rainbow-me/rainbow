@@ -14,7 +14,7 @@ const CurrencyItemLabel = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.blueGreyDark,
   letterSpacing: 'roundedMedium',
   size: 'larger',
-  weight: 'semibold',
+  weight: 'bold',
 }))`
   opacity: ${({ isSelected, theme: { isDarkMode } }) =>
     isSelected ? (isDarkMode ? 1 : 0.8) : 0.5};
