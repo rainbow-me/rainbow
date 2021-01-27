@@ -67,7 +67,7 @@ const UniqueTokenExpandedState = ({ asset }) => {
         <UniqueTokenExpandedStateImage asset={asset} />
         <SheetActionButtonRow>
           <SheetActionButton
-            color={isDarkMode ? colors.darkGrey : colors.dark}
+            color={isDarkMode ? colors.darkModeDark : colors.dark}
             label={isShowcaseAsset ? '􀁏 Showcase' : '􀁍 Showcase'}
             onPress={handlePressShowcase}
             weight="bold"
