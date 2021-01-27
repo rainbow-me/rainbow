@@ -10,7 +10,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import RNRestart from 'react-native-restart';
-import styled from 'styled-components/native';
+import styled from 'styled-components/primitives';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 

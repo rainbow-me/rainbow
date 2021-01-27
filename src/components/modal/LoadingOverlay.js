@@ -1,6 +1,6 @@
 import { BlurView } from '@react-native-community/blur';
 import React from 'react';
-import styled from 'styled-components/native';
+import styled from 'styled-components/primitives';
 import { useTheme } from '../../context/ThemeContext';
 import ActivityIndicator from '../ActivityIndicator';
 import Spinner from '../Spinner';

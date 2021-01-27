@@ -7,7 +7,6 @@ import React, {
 } from 'react';
 import { LayoutAnimation, NativeModules, StatusBar } from 'react-native';
 
-import { ThemeProvider as ThemeProviderNative } from 'styled-components/native';
 import { ThemeProvider } from 'styled-components/primitives';
 import { getTheme, saveTheme } from '../handlers/localstorage/theme';
 import { darkModeThemeColors, lightModeThemeColors } from '../styles/colors';
@@ -83,11 +82,9 @@ export const MainThemeProvider = props => {
 
   return (
     <ThemeProvider theme={currentTheme}>
-      <ThemeProviderNative theme={currentTheme}>
-        <ThemeContext.Provider value={currentTheme}>
-          {props.children}
-        </ThemeContext.Provider>
-      </ThemeProviderNative>
+      <ThemeContext.Provider value={currentTheme}>
+        {props.children}
+      </ThemeContext.Provider>
     </ThemeProvider>
   );
 };

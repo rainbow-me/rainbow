@@ -10,7 +10,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components/native';
+import styled from 'styled-components/primitives';
 import Divider from '../components/Divider';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, Column, Row } from '../components/layout';
