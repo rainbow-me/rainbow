@@ -57,8 +57,8 @@ export default function RainbowContextWrapper({ children }) {
   return (
     <RainbowContext.Provider value={initialValue}>
       {children}
-      {showReloadButton && <DevButton initialDisplacement={200} />}
-      {showSwitchModeButton && (
+      {showReloadButton && __DEV__ && <DevButton initialDisplacement={200} />}
+      {showSwitchModeButton && __DEV__ && (
         <DevButton
           color={colors.dark}
           onPress={() => setTheme(isDarkMode ? 'light' : 'dark')}
