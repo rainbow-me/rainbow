@@ -11,7 +11,6 @@ import Animated, {
 } from 'react-native-reanimated';
 import RNRestart from 'react-native-restart';
 import styled from 'styled-components/native';
-import colors_NOT_REACTIVE from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 
@@ -35,11 +34,13 @@ const Wrapper = styled(Animated.View)`
 `;
 
 export default function DevButton({
-  color = colors_NOT_REACTIVE.purpleDark,
+  color: givenColor,
   onPress = () => RNRestart.Restart(),
   children = <Icon color="white" name="warning" size="lmedium" />,
   initialDisplacement = 100,
 }) {
+  const { colors } = useTheme();
+  const color = givenColor || colors.purpleDark;
   const { width } = useWindowDimensions();
   const x = useSharedValue(2);
   const y = useSharedValue(initialDisplacement);

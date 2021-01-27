@@ -7,7 +7,6 @@ import Spinner from '../components/Spinner';
 import { Centered, FlexItem } from '../components/layout';
 import { reserveWyreOrder } from '../handlers/wyre';
 import { useAccountSettings } from '../hooks';
-import { colors_NOT_REACTIVE } from '../styles';
 
 const Container = styled(FlexItem)`
   background-color: ${({ theme: { colors } }) => colors.white};
@@ -42,6 +41,8 @@ export default function WyreWebview() {
 
   const defaultInputWidth = params.amount?.toString().length > 2 ? 180 : 140;
 
+  const { colors } = useTheme();
+
   return (
     <Container>
       {url ? (
@@ -58,7 +59,7 @@ export default function WyreWebview() {
         />
       ) : (
         <Centered flex={1}>
-          <Spinner color={colors_NOT_REACTIVE.appleBlue} size={30} />
+          <Spinner color={colors.appleBlue} size={30} />
         </Centered>
       )}
     </Container>

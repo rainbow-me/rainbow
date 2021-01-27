@@ -16,7 +16,7 @@ import { useDimensions, useShakeAnimation } from '../hooks';
 import { useBlockBackButton } from '../hooks/useBlockBackButton';
 import { useNavigation } from '../navigation/Navigation';
 import { ImgixImage } from '@rainbow-me/images';
-import { colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 
 const Logo = styled(ImgixImage).attrs({
   source: RainbowLogo,
@@ -184,9 +184,11 @@ const PinAuthenticationScreen = () => {
     [actionType, attemptsLeft, goBack, initialPin, onShake, params]
   );
 
+  const { colors } = useTheme();
+
   return (
     <Column
-      backgroundColor={colors_NOT_REACTIVE.white}
+      backgroundColor={colors.white}
       flex={1}
       testID="pin-authentication-screen"
     >

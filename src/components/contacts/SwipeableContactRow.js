@@ -9,7 +9,7 @@ import { Text } from '../text';
 import ContactRow from './ContactRow';
 import showDeleteContactActionSheet from './showDeleteContactActionSheet';
 import { ImgixImage } from '@rainbow-me/images';
-import { colors_NOT_REACTIVE, margin, position } from '@rainbow-me/styles';
+import { margin, position } from '@rainbow-me/styles';
 
 const AnimatedCentered = Animated.createAnimatedComponent(Centered);
 
@@ -19,6 +19,8 @@ const RightAction = ({ onPress, progress, text, x }) => {
     inputRange: [0, 1],
     outputRange: [x, 0],
   });
+
+  const { colors } = useTheme();
 
   return (
     <AnimatedCentered
@@ -35,10 +37,7 @@ const RightAction = ({ onPress, progress, text, x }) => {
         />
         <Text
           align="center"
-          color={colors_NOT_REACTIVE.alpha(
-            colors_NOT_REACTIVE.blueGreyDark,
-            0.4
-          )}
+          color={colors.alpha(colors.blueGreyDark, 0.4)}
           letterSpacing="roundedTight"
           size="smaller"
           weight="medium"
