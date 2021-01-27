@@ -2,10 +2,11 @@ import React from 'react';
 import { View } from 'react-native';
 import styled from 'styled-components/primitives';
 import { useTheme } from '../../context/ThemeContext';
+import { darkModeThemeColors, lightModeThemeColors } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder, RowWithMargins } from '../layout';
 import { Text } from '../text';
-import { colors_NOT_REACTIVE, padding, position } from '@rainbow-me/styles';
+import { padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const shadowsFactory = darkMode => ({
@@ -14,11 +15,19 @@ const shadowsFactory = darkMode => ({
       0,
       4,
       12,
-      darkMode ? colors_NOT_REACTIVE.shadow : colors_NOT_REACTIVE.appleBlue,
+      darkMode ? darkModeThemeColors.shadow : lightModeThemeColors.appleBlue,
       0.4,
     ],
   ],
-  disabled: [[0, 4, 12, colors_NOT_REACTIVE.lightGrey, darkMode ? 0 : 0.4]],
+  disabled: [
+    [
+      0,
+      4,
+      12,
+      darkMode ? darkModeThemeColors.lightGrey : lightModeThemeColors.lightGrey,
+      darkMode ? 0 : 0.4,
+    ],
+  ],
 });
 
 const shadowLight = shadowsFactory(false);

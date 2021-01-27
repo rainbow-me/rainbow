@@ -237,7 +237,7 @@ const getColorForString = (colorString = '', providedThemeColors = colors) => {
 export const darkModeThemeColors = getColorsByTheme(true);
 export const lightModeThemeColors = getColorsByTheme(false);
 const colors = currentColors.themedColors || lightModeThemeColors;
-const getRandomColor = () =>
+export const getRandomColor = () =>
   Math.floor(Math.random() * colors.avatarColor.length);
 
 export default {

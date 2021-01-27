@@ -1,6 +1,7 @@
 import { toUpper } from 'lodash';
 import React, { useMemo } from 'react';
 import { useTheme } from '../../context/ThemeContext';
+import { darkModeThemeColors } from '../../styles/colors';
 import { getFirstGrapheme } from '../../utils';
 import { Centered } from '../layout';
 import { Text } from '../text';
@@ -16,8 +17,8 @@ const buildShadows = (color, size, darkMode) => {
         6,
         10,
         darkMode
-          ? colors_NOT_REACTIVE.shadow
-          : colors_NOT_REACTIVE.avatarColor[color] || color,
+          ? darkModeThemeColors.shadow
+          : darkModeThemeColors.avatarColor[color] || color,
         0.2,
       ],
     ];

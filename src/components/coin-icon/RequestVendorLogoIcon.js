@@ -6,17 +6,17 @@ import { Centered } from '../layout';
 import { Text } from '../text';
 import { CoinIconSize } from './CoinIcon';
 import { ImgixImage } from '@rainbow-me/images';
-import { colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const RVLIBorderRadius = 16.25;
-const RVLIShadows = {
+const RVLIShadows = colors => ({
   default: [
-    [0, 4, 6, colors_NOT_REACTIVE.shadow, 0.04],
-    [0, 1, 3, colors_NOT_REACTIVE.shadow, 0.08],
+    [0, 4, 6, colors.shadow, 0.04],
+    [0, 1, 3, colors.shadow, 0.08],
   ],
-  large: [[0, 6, 10, colors_NOT_REACTIVE.shadow, 0.14]],
-};
+  large: [[0, 6, 10, colors.shadow, 0.14]],
+});
 
 const Content = styled(Centered)`
   ${({ size }) => position.size(size)};
@@ -59,7 +59,7 @@ export default function RequestVendorLogoIcon({
       {...position.sizeAsObject(size)}
       backgroundColor={colors.white}
       borderRadius={borderRadius}
-      shadows={RVLIShadows[showLargeShadow ? 'large' : 'default']}
+      shadows={RVLIShadows(colors)[showLargeShadow ? 'large' : 'default']}
     >
       <Content color={bgColor} size={size}>
         {imageUrl && !error ? (

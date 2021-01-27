@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
@@ -23,10 +23,10 @@ const Header = styled(Row).attrs({
   z-index: 10;
 `;
 
-export const FloatingActionButtonShadow = [
-  [0, 2, 5, colors_NOT_REACTIVE.dark, 0.2],
-  [0, 6, 10, colors_NOT_REACTIVE.dark, 0.14],
-  [0, 1, 18, colors_NOT_REACTIVE.dark, 0.12],
+export const FloatingActionButtonShadow = colors => [
+  [0, 2, 5, colors.dark, 0.2],
+  [0, 6, 10, colors.dark, 0.14],
+  [0, 1, 18, colors.dark, 0.12],
 ];
 
 const Content = styled(Centered)`
@@ -35,6 +35,8 @@ const Content = styled(Centered)`
 `;
 
 function Stack({ children, left, yPosition, onPress }) {
+  const { colors } = useTheme();
+  const shadows = useMemo(() => FloatingActionButtonShadow(colors), [colors]);
   return (
     <>
       <ButtonPressAnimation
@@ -52,7 +54,7 @@ function Stack({ children, left, yPosition, onPress }) {
           <ShadowStack
             style={{ left: 8, position: 'absolute', top: 8 }}
             {...borders.buildCircleAsObject(40)}
-            shadows={FloatingActionButtonShadow}
+            shadows={shadows}
           >
             <Content />
           </ShadowStack>
