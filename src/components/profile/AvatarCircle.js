@@ -20,7 +20,7 @@ const AvatarCircleView = styled(Flex)`
 
 const FirstLetter = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors.white,
+  color: colors.whiteLabel,
   letterSpacing: 2,
   lineHeight: android ? 68 : 66,
   size: ios ? 38 : 30,
