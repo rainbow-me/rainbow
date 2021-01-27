@@ -4,12 +4,12 @@ import styled from 'styled-components/primitives';
 import { initials } from '../../utils';
 import { Emoji } from '../text';
 import { ImageWithCachedMetadata } from '@rainbow-me/images';
-import { borders, colors_NOT_REACTIVE } from '@rainbow-me/styles';
+import { borders } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
-const shadows = [
-  [0, 4, android ? 1 : 6, colors_NOT_REACTIVE.shadow, 0.04],
-  [0, 1, 3, colors_NOT_REACTIVE.shadow, 0.08],
+const shadowsFactory = colors => [
+  [0, 4, android ? 1 : 6, colors.shadow, 0.04],
+  [0, 1, 3, colors.shadow, 0.08],
 ];
 
 const TrophyEmoji = styled(Emoji).attrs({
@@ -28,17 +28,20 @@ const TokenFamilyHeaderIcon = ({
   isCoinRow,
   style,
 }) => {
+  const { colors } = useTheme();
   const circleStyle = useMemo(
     () => borders.buildCircleAsObject(isCoinRow ? 40 : 32),
     [isCoinRow]
   );
+
+  const shadows = useMemo(() => shadowsFactory(colors), [colors]);
 
   return familyName === 'Showcase' ? (
     <TrophyEmoji />
   ) : (
     <ShadowStack
       {...circleStyle}
-      backgroundColor={colors_NOT_REACTIVE.white}
+      backgroundColor={colors.white}
       shadows={shadows}
       style={style}
     >

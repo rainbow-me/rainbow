@@ -3,12 +3,12 @@ import PropTypes from 'prop-types';
 import React, { Fragment, useRef, useState } from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import Tooltips from 'react-native-tooltips';
-import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const CopyTooltip = ({ children, textToCopy, tooltipText }) => {
   const [visible, setVisible] = useState(false);
   const parent = useRef();
   const target = useRef();
+  const { colors } = useTheme();
 
   return (
     <Fragment>
@@ -34,9 +34,9 @@ const CopyTooltip = ({ children, textToCopy, tooltipText }) => {
         shadow={false}
         target={target.current}
         text={tooltipText}
-        textColor={colors_NOT_REACTIVE.white}
+        textColor={colors.white}
         textSize={14}
-        tintColor={colors_NOT_REACTIVE.blueGreyDark}
+        tintColor={colors.blueGreyDark}
         visible={visible}
       />
     </Fragment>

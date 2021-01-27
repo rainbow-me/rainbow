@@ -3,11 +3,12 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { compose, onlyUpdateForKeys, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
+import { withThemeContext } from '../../context/ThemeContext';
 import { convertBipsToPercentage } from '../../helpers/utilities';
 import { Icon } from '../icons';
 import { Row, RowWithMargins } from '../layout';
 import { AnimatedNumber as AnimatedNumberAndroid, Text } from '../text';
-import { colors_NOT_REACTIVE, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 
 export const SlippageWarningThresholdInBips = 500;
 const SevereSlippageThresholdInBips = SlippageWarningThresholdInBips * 2;
@@ -31,15 +32,14 @@ const renderSlippageText = displayValue => (
 );
 
 const enhance = compose(
+  withThemeContext,
   onlyUpdateForKeys(['slippage']),
-  withProps(({ slippage }) => {
+  withProps(({ slippage, colors }) => {
     const isSevere = slippage >= SevereSlippageThresholdInBips;
 
     return {
       isSevere,
-      severityColor: isSevere
-        ? colors_NOT_REACTIVE.red
-        : colors_NOT_REACTIVE.orangeLight,
+      severityColor: isSevere ? colors.red : colors.orangeLight,
       showWarning: slippage >= SlippageWarningThresholdInBips,
     };
   })

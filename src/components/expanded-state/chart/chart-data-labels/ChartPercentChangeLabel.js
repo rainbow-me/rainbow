@@ -9,7 +9,7 @@ import { RowWithMargins } from '../../../layout';
 import ChartChangeDirectionArrow from './ChartChangeDirectionArrow';
 import { useRatio } from './useRatio';
 import { useChartData } from '@rainbow-me/animated-charts';
-import { colors_NOT_REACTIVE, fonts, fontWithWidth } from '@rainbow-me/styles';
+import { fonts, fontWithWidth } from '@rainbow-me/styles';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
@@ -24,6 +24,7 @@ const PercentLabel = styled(AnimatedTextInput)`
 
 export default function ChartPercentChangeLabel() {
   const { originalY, data } = useChartData();
+  const { colors } = useTheme();
 
   const firstValue = useSharedValue(data?.points?.[0]?.y);
   const lastValue = useSharedValue(data?.points?.[data.points.length - 1]?.y);
@@ -80,12 +81,12 @@ export default function ChartPercentChangeLabel() {
     return {
       color:
         ratio.value === 1
-          ? colors_NOT_REACTIVE.blueGreyDark
+          ? colors.blueGreyDark
           : ratio.value < 1
-          ? colors_NOT_REACTIVE.red
-          : colors_NOT_REACTIVE.green,
+          ? colors.red
+          : colors.green,
     };
-  });
+  }, [colors]);
 
   return (
     <RowWithMargins align="center" margin={4}>

@@ -3,13 +3,10 @@ import React, { useCallback, useState } from 'react';
 import { neverRerender } from '../../../utils';
 import { ComingSoonFloatingEmojis } from '../../floating-emojis';
 import SheetActionButton from './SheetActionButton';
-import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
-function WithdrawActionButton({
-  color = colors_NOT_REACTIVE.white,
-  symbol,
-  ...props
-}) {
+function WithdrawActionButton({ color: givenColor, symbol, ...props }) {
+  const { colors } = useTheme();
+  const color = givenColor || colors.white;
   const [didTrack, setDidTrack] = useState(false);
 
   const handlePress = useCallback(() => {
@@ -29,7 +26,7 @@ function WithdrawActionButton({
         color={color}
         label="􀁏 Withdraw"
         onPress={handlePress}
-        textColor={colors_NOT_REACTIVE.dark}
+        textColor={colors.dark}
       />
     </ComingSoonFloatingEmojis>
   );

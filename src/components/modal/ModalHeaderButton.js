@@ -5,13 +5,12 @@ import { Button } from '../buttons';
 import { Icon } from '../icons';
 import { Row } from '../layout';
 import { Text as UnstyledText } from '../text';
-import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
-const BackArrow = styled(Icon).attrs({
-  color: colors_NOT_REACTIVE.appleBlue,
+const BackArrow = styled(Icon).attrs(({ theme: { colors } }) => ({
+  color: colors.appleBlue,
   direction: 'left',
   name: 'caret',
-})`
+}))`
   height: 16;
   margin-top: ${android ? 6 : 0};
 `;
@@ -28,12 +27,12 @@ const Container = styled(Row).attrs(({ side }) => ({
   z-index: 2;
 `;
 
-const Text = styled(UnstyledText).attrs({
+const Text = styled(UnstyledText).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors_NOT_REACTIVE.appleBlue,
+  color: colors.appleBlue,
   size: 'large',
   weight: 'medium',
-})`
+}))`
   margin-left: ${({ side }) => (side === 'left' ? 4 : 0)};
 `;
 

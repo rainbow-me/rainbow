@@ -22,12 +22,7 @@ import GasSpeedLabelPager from './GasSpeedLabelPager';
 import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
 import { useAccountSettings, useGas } from '@rainbow-me/hooks';
 import { gweiToWei, weiToGwei } from '@rainbow-me/parsers';
-import {
-  colors_NOT_REACTIVE,
-  fonts,
-  fontWithWidth,
-  margin,
-} from '@rainbow-me/styles';
+import { fonts, fontWithWidth, margin } from '@rainbow-me/styles';
 import { gasUtils, magicMemo } from '@rainbow-me/utils';
 
 const { GasSpeedOrder, CUSTOM, FAST, SLOW } = gasUtils;
@@ -46,64 +41,66 @@ const Label = styled(Text).attrs({
   weight: 'semibold',
 })``;
 
-const ButtonLabel = styled(BorderlessButton).attrs({
-  color: colors_NOT_REACTIVE.appleBlue,
+const ButtonLabel = styled(BorderlessButton).attrs(({ theme: { colors } }) => ({
+  color: colors.appleBlue,
   hitSlop: 40,
   opacity: 1,
   size: 'smedium',
   weight: 'bold',
-})`
+}))`
   padding-bottom: 10;
 `;
 
-const GasInput = styled(Input).attrs(({ theme }) => ({
-  color:
-    theme === 'dark'
-      ? colors_NOT_REACTIVE.whiteLabel
-      : colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.8),
-  height: 58,
-  keyboardAppearance: 'dark',
-  keyboardType: 'numeric',
-  letterSpacing: 'roundedMedium',
-  maxLength: 5,
-  multiline: false,
-  placeholderTextColor:
-    theme === 'dark'
-      ? colors_NOT_REACTIVE.alpha(
-          colors_NOT_REACTIVE.darkModeColors.blueGreyDark,
-          0.3
-        )
-      : colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.3),
-  size: 'lmedium',
-  testID: 'custom-gas-input',
-}))`
+const GasInput = styled(Input).attrs(
+  ({ gasTheme: theme, theme: { colors } }) => ({
+    color:
+      theme === 'dark'
+        ? colors.whiteLabel
+        : colors.alpha(colors.blueGreyDark, 0.8),
+    height: 58,
+    keyboardAppearance: 'dark',
+    keyboardType: 'numeric',
+    letterSpacing: 'roundedMedium',
+    maxLength: 5,
+    multiline: false,
+    placeholderTextColor:
+      theme === 'dark'
+        ? colors.alpha(colors.darkModeColors.blueGreyDark, 0.3)
+        : colors.alpha(colors.blueGreyDark, 0.3),
+    size: 'lmedium',
+    testID: 'custom-gas-input',
+  })
+)`
   ${fontWithWidth(fonts.weight.bold)};
   ${margin(-13, 0)}
 `;
 
-const LittleBorderlessButton = ({ onPress, children, testID }) => (
-  <ButtonLabel onPress={onPress} testID={testID} width={120}>
-    <Text color={colors_NOT_REACTIVE.appleBlue} size="smedium" weight="bold">
-      {children}
-    </Text>
-  </ButtonLabel>
-);
+const LittleBorderlessButton = ({ onPress, children, testID }) => {
+  const { colors } = useTheme();
+  return (
+    <ButtonLabel onPress={onPress} testID={testID} width={120}>
+      <Text color={colors.appleBlue} size="smedium" weight="bold">
+        {children}
+      </Text>
+    </ButtonLabel>
+  );
+};
 
-const BottomRightLabel = ({ formatter, theme }) => (
-  <Label
-    align="right"
-    color={
-      theme === 'dark'
-        ? colors_NOT_REACTIVE.alpha(
-            colors_NOT_REACTIVE.darkModeColors.blueGreyDark,
-            0.6
-          )
-        : colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.6)
-    }
-  >
-    {formatter()}
-  </Label>
-);
+const BottomRightLabel = ({ formatter, theme }) => {
+  const { colors } = useTheme();
+  return (
+    <Label
+      align="right"
+      color={
+        theme === 'dark'
+          ? colors.alpha(colors.darkModeColors.blueGreyDark, 0.6)
+          : colors.alpha(colors.blueGreyDark, 0.6)
+      }
+    >
+      {formatter()}
+    </Label>
+  );
+};
 
 const formatGasPrice = (gasPrice, nativeCurrency) => {
   return nativeCurrency === 'ETH'
@@ -138,6 +135,7 @@ const GasSpeedButton = ({
   options = null,
   minGasPrice = null,
 }) => {
+  const { colors } = useTheme();
   const inputRef = useRef(null);
   const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
   const {
@@ -235,8 +233,8 @@ const GasSpeedButton = ({
       <Text
         color={
           theme === 'dark'
-            ? colors_NOT_REACTIVE.whiteLabel
-            : colors_NOT_REACTIVE.alpha(colors_NOT_REACTIVE.blueGreyDark, 0.8)
+            ? colors.whiteLabel
+            : colors.alpha(colors.blueGreyDark, 0.8)
         }
         letterSpacing="roundedTight"
         size="lmedium"
@@ -446,11 +444,12 @@ const GasSpeedButton = ({
             <BorderlessButton onPress={focusOnInput}>
               <Row>
                 <GasInput
+                  gasTheme={theme}
                   onBlur={handleCustomGasBlur}
                   onChangeText={handleCustomGasChange}
                   onFocus={handleCustomGasFocus}
-                  onSubmitEditing={handleInputButtonManager}
-                  placeholder={`${defaultCustomGasPrice} `} // see PR #1385
+                  onSubmitEditing={handleInputButtonManager} // see PR #1385
+                  placeholder={`${defaultCustomGasPrice} `}
                   ref={inputRef}
                   value={customGasPriceInput}
                 />
@@ -458,20 +457,11 @@ const GasSpeedButton = ({
                   color={
                     customGasPriceInput
                       ? theme === 'dark'
-                        ? colors_NOT_REACTIVE.whiteLabel
-                        : colors_NOT_REACTIVE.alpha(
-                            colors_NOT_REACTIVE.blueGreyDark,
-                            0.8
-                          )
+                        ? colors.whiteLabel
+                        : colors.alpha(colors.blueGreyDark, 0.8)
                       : theme === 'dark'
-                      ? colors_NOT_REACTIVE.alpha(
-                          colors_NOT_REACTIVE.darkModeColors.blueGreyDark,
-                          0.3
-                        )
-                      : colors_NOT_REACTIVE.alpha(
-                          colors_NOT_REACTIVE.blueGreyDark,
-                          0.3
-                        )
+                      ? colors.alpha(colors.darkModeColors.blueGreyDark, 0.3)
+                      : colors.alpha(colors.blueGreyDark, 0.3)
                   }
                   size="lmedium"
                   weight="bold"
@@ -489,14 +479,8 @@ const GasSpeedButton = ({
             <Label
               color={
                 theme === 'dark'
-                  ? colors_NOT_REACTIVE.alpha(
-                      colors_NOT_REACTIVE.darkModeColors.blueGreyDark,
-                      0.6
-                    )
-                  : colors_NOT_REACTIVE.alpha(
-                      colors_NOT_REACTIVE.blueGreyDark,
-                      0.6
-                    )
+                  ? colors.alpha(colors.darkModeColors.blueGreyDark, 0.6)
+                  : colors.alpha(colors.blueGreyDark, 0.6)
               }
               height={10}
             >

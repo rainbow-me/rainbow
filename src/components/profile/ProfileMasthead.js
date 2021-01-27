@@ -26,7 +26,6 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 import { abbreviations, showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const dropdownArrowWidth = 21;
@@ -75,9 +74,11 @@ const DropdownArrow = styled(Centered)`
   width: ${dropdownArrowWidth};
 `;
 
-const ProfileMastheadDivider = styled(Divider).attrs({
-  color: colors_NOT_REACTIVE.rowDividerLight,
-})`
+const ProfileMastheadDivider = styled(Divider).attrs(
+  ({ theme: { colors } }) => ({
+    color: colors.rowDividerLight,
+  })
+)`
   bottom: 0;
   position: absolute;
 `;
@@ -237,6 +238,7 @@ export default function ProfileMasthead({
     Clipboard.setString(accountAddress);
   }, [accountAddress, isDamaged]);
 
+  const { colors } = useTheme();
   return (
     <Column
       align="center"
@@ -256,11 +258,7 @@ export default function ProfileMasthead({
         <Row>
           <AccountName deviceWidth={deviceWidth}>{accountName}</AccountName>
           <DropdownArrow>
-            <Icon
-              color={colors_NOT_REACTIVE.dark}
-              direction="down"
-              name="caret"
-            />
+            <Icon color={colors.dark} direction="down" name="caret" />
           </DropdownArrow>
         </Row>
       </ButtonPressAnimation>

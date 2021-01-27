@@ -6,12 +6,10 @@ import showWalletErrorAlert from '@rainbow-me/helpers/support';
 import { useExpandedStateNavigation, useWallets } from '@rainbow-me/hooks';
 
 import Routes from '@rainbow-me/routes';
-import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
-export default function BuyActionButton({
-  color = colors_NOT_REACTIVE.paleBlue,
-  ...props
-}) {
+export default function BuyActionButton({ color: givenColor, ...props }) {
+  const { colors } = useTheme();
+  const color = givenColor || colors.paleBlue;
   const navigate = useExpandedStateNavigation();
   const { isDamaged } = useWallets();
 

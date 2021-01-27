@@ -9,19 +9,19 @@ import SearchHeader from './SearchHeader';
 import Strategies from './StrategiesSection';
 import TopMoversSection from './TopMoversSection';
 import UniswapPools from './UniswapPoolsSection';
-import { colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 
 const renderHeader = yPosition => <DiscoverSheetHeader yPosition={yPosition} />;
 
-const HeaderTitle = styled(Text).attrs({
+const HeaderTitle = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors_NOT_REACTIVE.blueGreyDark,
+  color: colors.blueGreyDark,
   letterSpacing: 'roundedMedium',
   lineHeight: 'loose',
   opacity: 0.8,
   size: 'large',
   weight: 'bold',
-})``;
+}))``;
 
 export default function DiscoverSheetContent() {
   return (
