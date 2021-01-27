@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components/primitives';
 import { useTheme } from '../../context/ThemeContext';
 import { magicMemo } from '../../utils';
@@ -6,15 +6,15 @@ import ButtonPressAnimation, {
   ScaleButtonZoomableAndroid,
 } from '../animations/ButtonPressAnimation';
 import { Centered, InnerBorder } from '../layout';
-import { borders, colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
+import { borders, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 export const FloatingActionButtonSize = 56;
 
-export const FloatingActionButtonShadow = [
-  [0, 2, 5, colors_NOT_REACTIVE.dark, 0.2],
-  [0, 6, 10, colors_NOT_REACTIVE.dark, 0.14],
-  [0, 1, 18, colors_NOT_REACTIVE.dark, 0.12],
+export const FloatingActionButtonShadow = colors => [
+  [0, 2, 5, colors.dark, 0.2],
+  [0, 6, 10, colors.dark, 0.14],
+  [0, 1, 18, colors.dark, 0.12],
 ];
 
 const Content = styled(Centered)`
@@ -31,12 +31,16 @@ const FloatingActionButton = ({
   onPress,
   onPressIn,
   scaleTo = 0.86,
-  shadows = FloatingActionButtonShadow,
+  shadows: givenShadows,
   size = FloatingActionButtonSize,
   testID,
   ...props
 }) => {
-  const { isDarkMode } = useTheme();
+  const { isDarkMode, colors } = useTheme();
+  const shadows = useMemo(
+    () => givenShadows || FloatingActionButtonShadow(colors),
+    [givenShadows, colors]
+  );
 
   const handlePress = useCallback(
     event => {
@@ -65,10 +69,7 @@ const FloatingActionButton = ({
     >
       <ShadowStack
         {...borders.buildCircleAsObject(size)}
-        backgroundColor={colors_NOT_REACTIVE.alpha(
-          backgroundColor,
-          isDarkMode ? 0.8 : 0.5
-        )}
+        backgroundColor={colors.alpha(backgroundColor, isDarkMode ? 0.8 : 0.5)}
         hideShadow={disabled}
         shadows={shadows}
       >
@@ -81,11 +82,7 @@ const FloatingActionButton = ({
           }}
           testID={testID}
         >
-          <Content
-            backgroundColor={
-              disabled ? colors_NOT_REACTIVE.grey : backgroundColor
-            }
-          >
+          <Content backgroundColor={disabled ? colors.grey : backgroundColor}>
             {typeof children === 'function' ? children({ size }) : children}
             {!disabled && <InnerBorder opacity={0.06} radius={size / 2} />}
           </Content>
@@ -99,4 +96,6 @@ export default magicMemo(FloatingActionButton, [
   'disabled',
   'onPress',
   'scaleTo',
+  'shadows',
+  'backgroundColor',
 ]);
