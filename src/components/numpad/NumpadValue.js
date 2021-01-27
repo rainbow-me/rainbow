@@ -5,7 +5,6 @@ import Animated from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
 import { useDimensions } from '../../hooks';
 import { Text } from '../text';
-import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const FontSizeMultiple = 0.24;
 const HeightMultiple = 0.288;
@@ -29,9 +28,9 @@ const TextMask = styled(Animated.View)`
   width: 200%;
 `;
 
-const ValueText = styled(Text).attrs(({ width }) => ({
+const ValueText = styled(Text).attrs(({ width, theme: { colors } }) => ({
   align: 'center',
-  color: colors_NOT_REACTIVE.white,
+  color: colors.white,
   letterSpacing: 'roundedTightest',
   lineHeight: Math.round(width * HeightMultiple),
   size: Math.round(width * FontSizeMultiple),

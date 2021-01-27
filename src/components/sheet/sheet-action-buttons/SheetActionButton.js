@@ -52,7 +52,7 @@ const WhiteButtonGradient = React.memo(
 const SheetActionButton = ({
   androidWidth,
   borderRadius = 56,
-  color = colors_NOT_REACTIVE.appleBlue,
+  color: givenColor,
   disabled,
   elevation = 24,
   emoji,
@@ -63,25 +63,27 @@ const SheetActionButton = ({
   label,
   size,
   testID,
-  textColor = colors_NOT_REACTIVE.whiteLabel,
+  textColor: givenTextColor,
   weight = 'semibold',
   ...props
 }) => {
+  const { isDarkMode, colors } = useTheme();
+  const color = givenColor || colors.appleBlue;
+  const textColor = givenTextColor || colors.whiteLabel;
   const { width: deviceWidth } = useDimensions();
-  const { isDarkMode } = useTheme();
   const shadowsForButtonColor = useMemo(() => {
-    const isWhite = color === colors_NOT_REACTIVE.white;
+    const isWhite = color === colors.white;
 
     if (disabled || isTransparent) {
-      return [[0, 0, 0, colors_NOT_REACTIVE.transparent, 0]];
+      return [[0, 0, 0, colors.transparent, 0]];
     } else
       return [
-        [0, 10, 30, colors_NOT_REACTIVE.shadow, isWhite ? 0.12 : 0.2],
+        [0, 10, 30, colors.shadow, isWhite ? 0.12 : 0.2],
         [
           0,
           5,
           15,
-          isDarkMode || isWhite ? colors_NOT_REACTIVE.shadow : color,
+          isDarkMode || isWhite ? colors.shadow : color,
           isWhite ? 0.08 : 0.4,
         ],
       ];
@@ -112,17 +114,15 @@ const SheetActionButton = ({
         <ShadowStack
           {...position.coverAsObject}
           backgroundColor={
-            isDarkMode && color === colors_NOT_REACTIVE.dark
-              ? colors_NOT_REACTIVE.darkModeColors.darkModeDark
-              : color
+            isDarkMode && color === colors.dark ? colors.darkModeDark : color
           }
           borderRadius={borderRadius}
           height={size === 'big' ? 56 : 46}
           shadows={shadowsForButtonColor}
           {...((android || fullWidth) && { width: androidButtonWidth })}
         >
-          {color === colors_NOT_REACTIVE.white && <WhiteButtonGradient />}
-          {color !== colors_NOT_REACTIVE.white && !isTransparent && (
+          {color === colors.white && <WhiteButtonGradient />}
+          {color !== colors.white && !isTransparent && (
             <InnerBorder
               color={disabled ? textColor : null}
               opacity={disabled ? 0.02 : null}
