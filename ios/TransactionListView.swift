@@ -54,6 +54,9 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
         headerSeparator.backgroundColor = UIColor.RainbowTheme.Transactions.rowDividerLight
         header.accountAddress.textColor = UIColor.RainbowTheme.Transactions.dark
         header.accountDropdown.tintColor = UIColor.RainbowTheme.Transactions.dark;
+        if accountImage != nil {
+          shadowLayer.shadowColor = darkMode ? UIColor.black.cgColor : UIColor.gray.cgColor
+        }
         layoutIfNeeded()
         tableView.reloadData()
       }
@@ -90,7 +93,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
       
       header.accountImage.alpha = 1.0
       header.accountImage.image = image
-      shadowLayer.shadowColor = UIColor.gray.cgColor
+      shadowLayer.shadowColor = darkMode ? UIColor.black.cgColor : UIColor.gray.cgColor
     } else {
       header.accountImage.alpha = 0.0
     }

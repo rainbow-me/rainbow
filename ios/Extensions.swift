@@ -259,7 +259,7 @@ extension UITableView {
             let gradientShadowFrame = CGRect(x: bounds.size.width / 2, y: bounds.size.width - bounds.size.height / 2, width: bounds.size.width, height: bounds.size.height)
             let gradientShadowRect = UIBezierPath(roundedRect: gradientShadowFrame, cornerRadius: bounds.size.height / 2)
             gradientShadowMask.shadowOffset = CGSize(width: 0, height: 5)
-            gradientShadowMask.shadowOpacity = 0.4
+            gradientShadowMask.shadowOpacity = UIColor.RainbowTheme.isDarkMode ? 0.0 : 0.4
             gradientShadowMask.shadowPath = gradientShadowRect.cgPath
             gradientShadowMask.shadowRadius = 7.5
             
