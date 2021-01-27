@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "android": "adb uninstall me.rainbow || true && react-native run-android",
-    "android:apk": "cd android && ./gradlew assembleRelease && (adb uninstall me.rainbow || true) && adb install app/build/outputs/apk/release/app-release.apk",
-    "android:bundle": "./scripts/check-env.sh && cd android && ./gradlew bundleRelease && open app/build/outputs/bundle/release/",
+    "android:apk": "cd android && ./gradlew assembleLocalRelease && (adb uninstall me.rainbow || true) && adb install app/build/outputs/apk/local/release/app-release.apk",
+    "android:bundle": "./scripts/check-env.sh && cd android && ./gradlew bundleLocalRelease && open app/build/outputs/bundle/local/release/",
     "detox:android": "detox build -c android.emu.debug && detox test -R 1 -c android.emu.debug --loglevel verbose",
     "detox:android:release": "detox build -c android.emu.release && detox test -R 1 -c android.emu.release",
     "detox:ios": "detox build -c ios.sim.debug && detox test -R 1 -c ios.sim.debug",
@@ -310,8 +310,8 @@
         "name": "Pixel_3_API_29"
       },
       "android.emu.release": {
-        "binaryPath": "./android/app/build/outputs/apk/release/app-release.apk",
-        "build": "cd ./android && ./gradlew assembleRelease assembleAndroidTest -DtestBuildType=release&& cd ..",
+        "binaryPath": "./android/app/build/outputs/apk/local/release/app--local-release.apk",
+        "build": "cd ./android && ./gradlew assembleLocalRelease assembleAndroidTest -DtestBuildType=release&& cd ..",
         "type": "android.emulator",
         "name": "Pixel_3_API_29"
       },
