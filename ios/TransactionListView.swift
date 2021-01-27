@@ -42,7 +42,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
       }
     }
   }
-  
+
   @objc var darkMode: Bool = false {
     didSet {
       if(darkMode != oldValue){
@@ -50,10 +50,16 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
         tableView.backgroundColor = UIColor.RainbowTheme.Transactions.white
         header.backgroundColor = UIColor.RainbowTheme.Transactions.white
         backgroundColor = UIColor.RainbowTheme.Transactions.white
-        header.accountView.layer.sublayers?.last?.shadowColor = UIColor.RainbowTheme.TransactionsLight.dark.cgColor
+        header.accountView.layer.sublayers?.last?.shadowColor = darkMode ? UIColor.black.cgColor : accountColor?.cgColor
         headerSeparator.backgroundColor = UIColor.RainbowTheme.Transactions.rowDividerLight
         header.accountAddress.textColor = UIColor.RainbowTheme.Transactions.dark
         header.accountDropdown.tintColor = UIColor.RainbowTheme.Transactions.dark;
+        shadowLayer.shadowColor = darkMode ? UIColor.black.cgColor : accountColor?.cgColor
+
+        if accountColor != nil {
+          shadowLayer.shadowColor = darkMode ? UIColor.black.cgColor : accountColor?.cgColor
+        }
+
         if accountImage != nil {
           shadowLayer.shadowColor = darkMode ? UIColor.black.cgColor : UIColor.gray.cgColor
         }
@@ -62,7 +68,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
       }
     }
   }
-  
+
   @objc var scaleTo: CGFloat = 0.97
   @objc var transformOrigin: CGPoint = CGPoint(x: 0.5, y: 0.5)
   @objc var enableHapticFeedback: Bool = true
@@ -90,7 +96,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
       let imageData:NSData = NSData(contentsOf: url)!
 
       let image = UIImage(data: imageData as Data)
-      
+
       header.accountImage.alpha = 1.0
       header.accountImage.image = image
       shadowLayer.shadowColor = darkMode ? UIColor.black.cgColor : UIColor.gray.cgColor
@@ -102,7 +108,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   @objc var accountColor: UIColor? = nil {
     didSet {
       header.accountBackground.backgroundColor = accountColor
-      shadowLayer.shadowColor = accountColor?.cgColor
+      shadowLayer.shadowColor = darkMode ? UIColor.black.cgColor : accountColor?.cgColor
     }
   }
   @objc var accountName: String? = nil {
@@ -115,26 +121,26 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
       let transactions = data.value(forKey: "transactions") as! [Transaction]
       let requests = data.value(forKey: "requests") as! [TransactionRequest]
       var items = [TransactionViewModelProtocol]()
-      
+
       if !requests.isEmpty {
         let item = TransactionViewModelTransactionRequestItem(requests: requests)
         items.append(item)
         self.tableView.isScrollEnabled = true
         self.tableView.restore()
       }
-      
+
       if !transactions.isEmpty {
         let item = TransactionViewModelTransactionItem(transactions: transactions)
         items.append(item)
         self.tableView.isScrollEnabled = true
         self.tableView.restore()
       }
-      
+
       else {
         self.tableView.isScrollEnabled = false
         self.tableView.showEmptyState("No transactions yet")
       }
-      
+
       sections = items.flatMap { $0.sections }
       tableView.reloadData()
     }
@@ -149,25 +155,25 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
       }
     }
   }
-  
+
   @objc func onPressInAvatar(_ sender: UIButton) {
     header.accountView.animateTapStart(scale: 0.9)
   }
   @objc func onPressOutAvatar(_ sender: UIButton) {
     header.accountView.animateTapEnd(useHaptic: "selection")
   }
-  
+
   @objc func onPressInAccountAddress(_ sender: UIButton) {
     header.accountNameView.animateTapStart(scale: 0.9)
   }
   @objc func onPressOutAccountAddress(_ sender: UIButton) {
     header.accountNameView.animateTapEnd(useHaptic: "selection")
   }
-  
+
   @objc func onAccountAddressPressed(_ sender: UIButton) {
       self.onAccountNamePress([:]);
   }
-  
+
   @objc func onCopyAddressPressed(_ sender: UIButton) {
     let rect = sender.convert(sender.frame, to: self)
     self.onCopyAddressPress([
@@ -177,7 +183,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
       "height": sender.frame.height
     ])
   }
-  
+
   @objc func onPressInCopyAddress(_ sender: UIButton) {
     header.copyAddress.animateTapStart(scale: 0.86)
   }
@@ -194,7 +200,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   @objc func onPressOutReceive(_ sender: UIButton) {
     header.receive.animateTapEnd(useHaptic: "selection")
   }
-  
+
   @objc func onAddCashPressed(_ sender: UIButton) {
     self.onAddCashPress([:])
   }
@@ -204,17 +210,17 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   @objc func onPressOutAddCash(_ sender: UIButton) {
     header.addCash.animateTapEnd(useHaptic: "selection")
   }
-  
+
   var sections: [TransactionSectionProtocol] = [TransactionSectionProtocol]()
-  
+
   let tableView = TransitionListTableView()
   let header: TransactionListViewHeader = TransactionListViewHeader.fromNib()
   let headerSeparator = UIView()
   let shadowLayer = CAShapeLayer()
-  
+
   override init(frame: CGRect) {
     super.init(frame: frame)
-    
+
     tableView.dataSource = self
     tableView.delegate = self
     tableView.rowHeight = 70
@@ -228,11 +234,11 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     tableView.backgroundColor = UIColor.RainbowTheme.Transactions.white
     header.backgroundColor = UIColor.RainbowTheme.Transactions.white
     self.backgroundColor = UIColor.RainbowTheme.Transactions.white
-    
+
     // Enable avatars
     header.avatarView.isHidden = true
     header.accountView.isHidden = false
-    
+
     header.addSubview(headerSeparator)
     if(isAvatarPickerAvailable){
       header.accountView.addTarget(self, action: #selector(onAvatarPressed(_:)), for: .touchUpInside)
@@ -252,7 +258,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     header.accountButton.addTarget(self, action: #selector(onPressOutAccountAddress(_:)), for: .touchDragOutside)
     header.accountButton.addTarget(self, action: #selector(onPressOutAccountAddress(_:)), for: .touchCancel)
     header.accountButton.addTarget(self, action: #selector(onPressOutAccountAddress(_:)), for: .touchUpOutside)
-    
+
     header.copyAddress.addTarget(self, action: #selector(onCopyAddressPressed(_:)), for: .touchUpInside)
     header.copyAddress.addTarget(self, action: #selector(onPressInCopyAddress(_:)), for: .touchDown)
     header.copyAddress.addTarget(self, action: #selector(onPressInCopyAddress(_:)), for: .touchDragInside)
@@ -260,7 +266,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     header.copyAddress.addTarget(self, action: #selector(onPressOutCopyAddress(_:)), for: .touchDragOutside)
     header.copyAddress.addTarget(self, action: #selector(onPressOutCopyAddress(_:)), for: .touchCancel)
     header.copyAddress.addTarget(self, action: #selector(onPressOutCopyAddress(_:)), for: .touchUpOutside)
-    
+
     header.receive.addTarget(self, action: #selector(onReceivePressed(_:)), for: .touchUpInside)
     header.receive.addTarget(self, action: #selector(onPressInReceive(_:)), for: .touchDown)
     header.receive.addTarget(self, action: #selector(onPressInReceive(_:)), for: .touchDragInside)
@@ -268,7 +274,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     header.receive.addTarget(self, action: #selector(onPressOutReceive(_:)), for: .touchDragOutside)
     header.receive.addTarget(self, action: #selector(onPressOutReceive(_:)), for: .touchCancel)
     header.receive.addTarget(self, action: #selector(onPressOutReceive(_:)), for: .touchUpOutside)
-    
+
     header.addCash.addTarget(self, action: #selector(onAddCashPressed(_:)), for: .touchUpInside)
     header.addCash.addTarget(self, action: #selector(onPressInAddCash(_:)), for: .touchDown)
     header.addCash.addTarget(self, action: #selector(onPressInAddCash(_:)), for: .touchDragInside)
@@ -276,20 +282,20 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     header.addCash.addTarget(self, action: #selector(onPressOutAddCash(_:)), for: .touchDragOutside)
     header.addCash.addTarget(self, action: #selector(onPressOutAddCash(_:)), for: .touchCancel)
     header.addCash.addTarget(self, action: #selector(onPressOutAddCash(_:)), for: .touchUpOutside)
-    
-    
+
+
     let dropdownImage = UIImage(named: "caret-down")?.withRenderingMode(.alwaysTemplate)
     header.accountDropdown.contentMode = UIView.ContentMode.scaleAspectFit
     header.accountDropdown.frame.size.width = 21
     header.accountDropdown.frame.size.height = 9
     header.accountDropdown.image = dropdownImage
     header.accountDropdown.tintColor = UIColor.RainbowTheme.Transactions.dark;
-    
+
     header.copyAddress.titleLabel?.addCharacterSpacing(kernValue: 0.5)
     header.receive.titleLabel?.addCharacterSpacing(kernValue: 0.5)
     header.addCashLabel.titleLabel?.textAlignment = .center
     header.addCashLabel.titleLabel?.addCharacterSpacing(kernValue: 0.4)
-    
+
     let secondShadowLayer = CAShapeLayer()
     let radius = header.accountBackground.frame.width / 2.0
     let circle = UIBezierPath(arcCenter: header.accountBackground.center, radius: radius, startAngle: 0, endAngle: 2 * CGFloat.pi, clockwise: true)
@@ -309,19 +315,19 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
 
     header.accountView.layer.addSublayer(shadowLayer)
     header.accountView.layer.addSublayer(secondShadowLayer)
-    
+
     header.accountImage.layer.cornerRadius = header.accountBackground.frame.width / 2.0
     header.accountImage.clipsToBounds = true
-    
+
     headerSeparator.backgroundColor = UIColor.RainbowTheme.Transactions.rowDividerLight
     tableView.tableHeaderView = header
     addSubview(tableView)
   }
-  
+
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
-  
+
   /// React Native is known to re-render only first-level subviews. Since our tableView is a custom view that we add as a second-level subview, we need to relayout it manually
   override func layoutSubviews() {
     tableView.frame = self.bounds
@@ -329,44 +335,44 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     headerSeparator.frame = CGRect(x: 19, y: header.frame.size.height - 2, width: tableView.bounds.width - 19, height: 2)
     headerSeparator.roundLeftCorners()
   }
-  
+
   func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
     if(isLoading){
       return 0;
     }
     return 57
   }
-  
+
   func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
     let view = UIView(frame: CGRect(x: 0, y: 0, width: frame.width, height: 40))
     let label = UILabel(frame: CGRect(x: 19, y: 19, width: view.frame.width, height: view.frame.height))
-    
+
     if sections.count == 0 {
       return nil
     }
-    
+
     let section = sections[section]
-    
+
     label.text = section.title
     label.font = UIFont(name: "SFRounded-Bold", size: 20)
     label.textColor = UIColor.RainbowTheme.Transactions.dark
     label.addCharacterSpacing()
     view.backgroundColor = UIColor.RainbowTheme.Transactions.white
     view.addSubview(label)
-    
+
     return view
   }
-  
+
   func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-    
+
     if(isLoading){
       return UIScreen.main.bounds.height - header.frame.size.height;
     }
     let item = sections[indexPath.section]
-    
+
     if item.type == .transactions {
       let section = sections[indexPath.section]
-      
+
       if section.data.indices.contains(indexPath.row + 1) {
         let nextTransaction = section.data[indexPath.row + 1] as! Transaction
         if nextTransaction.isSwapped() {
@@ -374,29 +380,29 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
         }
       }
     }
-    
+
     return 70.0
   }
-  
+
   func numberOfSections(in tableView: UITableView) -> Int {
     if (isLoading){
       return 1
     }
     return sections.count
   }
-  
+
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    
+
     if(isLoading){
       return 1
     }
-    
+
     if sections.count == 0 {
       return 0
     }
     return sections[section].data.count
   }
-  
+
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     if(isLoading){
       let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionListLoadingViewCell", for: indexPath) as! TransactionListLoadingViewCell
@@ -404,11 +410,11 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
 
     }
     let item = sections[indexPath.section]
-    
+
     if item.type == .transactions {
       let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionListViewCell", for: indexPath) as! TransactionListViewCell
       let transaction = sections[indexPath.section].data[indexPath.row] as! Transaction
-      
+
       cell.onItemPress = onTransactionPress
       cell.layer.anchorPoint = transformOrigin
       cell.row = transaction.originalIndex.intValue
@@ -416,12 +422,12 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
       cell.set(transaction: transaction)
       cell.backgroundColor = .clear
       cell.selectionStyle = .none
-      
+
       return cell;
     } else {
       let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionListRequestViewCell", for: indexPath) as! TransactionListRequestViewCell
       let request = sections[indexPath.section].data[indexPath.row] as! TransactionRequest
-      
+
       cell.onItemPress = onRequestPress
       cell.layer.anchorPoint = transformOrigin
       cell.onRequestExpire = onRequestExpire
@@ -429,7 +435,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
       cell.scaleTo = scaleTo
       cell.set(request: request)
       cell.selectionStyle = .none
-      
+
       return cell;
     }
   }
