@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/primitives';
 import { useTheme } from '../../context/ThemeContext';
 import { Centered, Row } from '../layout';
 import { TruncatedText } from '../text';

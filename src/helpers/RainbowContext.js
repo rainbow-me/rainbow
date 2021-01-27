@@ -63,7 +63,7 @@ export default function RainbowContextWrapper({ children }) {
           color={colors.dark}
           onPress={() => setTheme(isDarkMode ? 'light' : 'dark')}
         >
-          <Emoji>🌚</Emoji>
+          <Emoji>{isDarkMode ? '🌞' : '🌚'}</Emoji>
         </DevButton>
       )}
     </RainbowContext.Provider>

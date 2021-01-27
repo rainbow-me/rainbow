@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Children, Fragment } from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/primitives';
 import Divider from '../Divider';
 import { Row } from '../layout';
 

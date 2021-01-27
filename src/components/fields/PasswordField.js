@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import styled from 'styled-components';
+import styled from 'styled-components/primitives';
 import { useTheme } from '../../context/ThemeContext';
 import { Icon } from '../icons';
 import { Input } from '../inputs';

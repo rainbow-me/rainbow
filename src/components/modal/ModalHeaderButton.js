@@ -1,6 +1,6 @@
 import React from 'react';
 import { BorderlessButton } from 'react-native-gesture-handler';
-import styled from 'styled-components';
+import styled from 'styled-components/primitives';
 import { Button } from '../buttons';
 import { Icon } from '../icons';
 import { Row } from '../layout';
