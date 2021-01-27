@@ -23,10 +23,10 @@ const ButtonShapeTypes = {
   rounded: 'rounded',
 };
 
-const shadowStyles = (isDarkMode, colors) => `
+const shadowStyles = (colors, disabled, isDarkMode) => `
   shadow-color: ${colors.alpha(
     isDarkMode ? colors.shadow : colors.blueGreyDark,
-    0.5
+    isDarkMode && disabled ? 0.2 : 0.5
   )};
   shadow-offset: 0px 4px;
   shadow-opacity: 0.2;
@@ -34,8 +34,8 @@ const shadowStyles = (isDarkMode, colors) => `
 `;
 
 const Container = styled(Centered)`
-  ${({ showShadow, theme: { isDarkMode, colors } }) =>
-    showShadow ? shadowStyles(isDarkMode, colors) : ''}
+  ${({ disabled, showShadow, theme: { colors, isDarkMode } }) =>
+    showShadow ? shadowStyles(colors, disabled, isDarkMode) : ''}
   ${({ size }) => padding(...ButtonSizeTypes[size].padding)}
   background-color: ${({ backgroundColor }) => backgroundColor};
   border-radius: ${({ borderRadius }) => borderRadius};
@@ -63,7 +63,7 @@ export default function Button({
   ...props
 }) {
   const borderRadius = type === 'rounded' ? 14 : 50;
-  const { colors } = useTheme();
+  const { colors, isDarkMode } = useTheme();
 
   return (
     <ButtonPressAnimation
@@ -73,9 +73,12 @@ export default function Button({
     >
       <Container
         {...props}
-        backgroundColor={backgroundColor || colors.grey}
+        backgroundColor={
+          backgroundColor || (isDarkMode ? colors.offWhite : colors.grey)
+        }
         borderRadius={borderRadius}
         css={containerStyles}
+        disabled={disabled}
         showShadow={showShadow}
         size={size}
         style={style}

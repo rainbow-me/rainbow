@@ -24,16 +24,19 @@ const ButtonShapeTypes = {
   rounded: 'rounded',
 };
 
-const shadowStyles = `
-  shadow-color: ${({ theme: { colors } }) =>
-    colors.alpha(colors.blueGreyDark, 0.5)};
+const shadowStyles = (colors, disabled, isDarkMode) => `
+  shadow-color: ${colors.alpha(
+    isDarkMode ? colors.shadow : colors.blueGreyDark,
+    isDarkMode && disabled ? 0.2 : 0.5
+  )};
   shadow-offset: 0px 4px;
   shadow-opacity: 0.2;
   shadow-radius: 6;
 `;
 
 const Container = styled(Centered)`
-  ${({ showShadow }) => (showShadow ? shadowStyles : '')}
+  ${({ disabled, showShadow, theme: { colors, isDarkMode } }) =>
+    showShadow ? shadowStyles(colors, disabled, isDarkMode) : ''}
   ${({ size }) => padding(...ButtonSizeTypes[size].padding)}
   background-color: ${({ backgroundColor }) => backgroundColor};
   border-radius: ${({ type }) => (type === 'rounded' ? 14 : 50)};
@@ -62,7 +65,7 @@ const Button = ({
   ...props
 }) => {
   const borderRadius = type === 'rounded' ? 14 : 50;
-  const { colors } = useTheme();
+  const { colors, isDarkMode } = useTheme();
 
   return (
     <ButtonPressAnimation
@@ -73,8 +76,11 @@ const Button = ({
     >
       <Container
         {...props}
-        backgroundColor={backgroundColor || colors.grey}
+        backgroundColor={
+          backgroundColor || (isDarkMode ? colors.offWhite : colors.grey)
+        }
         css={containerStyles}
+        disabled={disabled}
         showShadow={showShadow}
         size={size}
         style={style}
@@ -82,7 +88,7 @@ const Button = ({
       >
         {shouldRenderChildrenAsText(children) ? (
           <Text
-            color={color || colors.white}
+            color={color || colors.whiteLabel}
             size={ButtonSizeTypes[size].fontSize}
             weight="semibold"
             {...textProps}

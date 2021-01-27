@@ -34,7 +34,7 @@ const Spacer = styled.View`
   height: 19;
 `;
 
-const SubmitButton = styled(Button).attrs(({ value, theme: { colors } }) => ({
+const SubmitButton = styled(Button).attrs(({ theme: { colors }, value }) => ({
   backgroundColor: value.length > 0 ? colors.appleBlue : undefined,
   disabled: !value.length > 0,
   showShadow: true,
