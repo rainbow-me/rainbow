@@ -9,7 +9,7 @@ import { Centered, InnerBorder, RowWithMargins } from '../../layout';
 import { Emoji, Text } from '../../text';
 import { containsEmoji } from '@rainbow-me/helpers/strings';
 import { useDimensions } from '@rainbow-me/hooks';
-import { colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const addChartsStyling = isCharts =>
@@ -35,10 +35,10 @@ const Content = styled(RowWithMargins).attrs({
 const neverRerender = () => true;
 // eslint-disable-next-line react/display-name
 const WhiteButtonGradient = React.memo(
-  () => (
+  ({ colors }) => (
     <LinearGradient
       borderRadius={49}
-      colors={colors_NOT_REACTIVE.gradients.whiteButton}
+      colors={colors.gradients.whiteButton}
       end={{ x: 0.5, y: 1 }}
       opacity={0.5}
       pointerEvents="none"
@@ -87,7 +87,15 @@ const SheetActionButton = ({
           isWhite ? 0.08 : 0.4,
         ],
       ];
-  }, [color, disabled, isTransparent, isDarkMode]);
+  }, [
+    color,
+    colors.shadow,
+    colors.transparent,
+    colors.white,
+    disabled,
+    isTransparent,
+    isDarkMode,
+  ]);
 
   const androidButtonWidth =
     androidWidth || (fullWidth ? deviceWidth - 38 : (deviceWidth - 53) / 2);
@@ -121,7 +129,7 @@ const SheetActionButton = ({
           shadows={shadowsForButtonColor}
           {...((android || fullWidth) && { width: androidButtonWidth })}
         >
-          {color === colors.white && <WhiteButtonGradient />}
+          {color === colors.white && <WhiteButtonGradient colors={colors} />}
           {color !== colors.white && !isTransparent && (
             <InnerBorder
               color={disabled ? textColor : null}
