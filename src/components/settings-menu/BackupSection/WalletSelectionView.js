@@ -57,7 +57,7 @@ const GreenCheck = styled(CheckmarkIcon).attrs(({ theme: { colors } }) => ({
   color: colors.green,
 }))`
   box-shadow: 0px 4px 6px
-    ${({ isDarkMode, theme: { colors } }) =>
+    ${({ theme: { colors, isDarkMode } }) =>
       colors.alpha(isDarkMode ? colors.shadow : colors.green, 0.4)};
 `;
 
@@ -65,7 +65,7 @@ const GreyCheck = styled(CheckmarkIcon).attrs(({ theme: { colors } }) => ({
   color: colors.blueGreyDark50,
 }))`
   box-shadow: 0px 4px 6px
-    ${({ isDarkMode, theme: { colors } }) =>
+    ${({ theme: { colors, isDarkMode } }) =>
       colors.alpha(isDarkMode ? colors.shadow : colors.blueGreyDark50, 0.4)};
 `;
 
@@ -75,7 +75,8 @@ const WarningIcon = styled(Icon).attrs(({ theme: { colors } }) => ({
 }))`
   align-self: center;
   box-shadow: 0px 4px 6px
-    ${({ theme: { colors } }) => colors.alpha(colors.orangeLight, 0.4)};
+    ${({ theme: { colors, isDarkMode } }) =>
+      colors.alpha(isDarkMode ? colors.shadow : colors.orangeLight, 0.4)};
   margin-right: 7px;
 `;
 
