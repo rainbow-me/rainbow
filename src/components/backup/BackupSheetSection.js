@@ -8,6 +8,7 @@ import { Column, ColumnWithMargins } from '../layout';
 import { SheetActionButton } from '../sheet';
 import { Text } from '../text';
 import BackupIcon from '@rainbow-me/assets/backupIcon.png';
+import BackupIconDark from '@rainbow-me/assets/backupIconDark.png';
 import { ImgixImage } from '@rainbow-me/images';
 import { padding } from '@rainbow-me/styles';
 import { deviceUtils } from '@rainbow-me/utils';
@@ -38,7 +39,6 @@ const MastheadDescription = styled(Text).attrs(({ theme: { colors } }) => ({
 
 const MastheadIcon = styled(ImgixImage).attrs({
   resizeMode: ImgixImage.resizeMode.contain,
-  source: BackupIcon,
 })`
   height: 74;
   margin-bottom: -1;
@@ -69,7 +69,7 @@ export default function BackupSheetSection({
   return (
     <Fragment>
       <Masthead>
-        <MastheadIcon />
+        <MastheadIcon source={isDarkMode ? BackupIconDark : BackupIcon} />
         <Text align="center" color={colors.dark} size="big" weight="bold">
           {titleText}
         </Text>
@@ -84,7 +84,7 @@ export default function BackupSheetSection({
         />
         <SheetActionButton
           androidWidth={maxButtonWidth}
-          color={isDarkMode ? colors.trueBlack : colors.white}
+          color={colors.white}
           label={secondaryLabel}
           onPress={onSecondaryAction}
           size="big"
