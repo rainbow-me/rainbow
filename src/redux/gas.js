@@ -306,7 +306,6 @@ const INITIAL_STATE = {
   selectedGasPrice: {},
   selectedGasPriceOption: NORMAL,
   txFees: {},
-  useShortGasFormat: true,
 };
 
 export default (state = INITIAL_STATE, action) => {

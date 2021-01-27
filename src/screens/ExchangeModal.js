@@ -78,7 +78,6 @@ export default function ExchangeModal({
 
   const isDeposit = type === ExchangeModalTypes.deposit;
   const isWithdrawal = type === ExchangeModalTypes.withdrawal;
-  const category = isDeposit || isWithdrawal ? 'savings' : 'swap';
 
   const defaultGasLimit = isDeposit
     ? ethUnits.basic_deposit
@@ -122,7 +121,6 @@ export default function ExchangeModal({
     outputCurrency,
     previousInputCurrency,
   } = useUniswapCurrencies({
-    category,
     defaultInputAsset,
     inputHeaderTitle,
     isDeposit,
@@ -158,7 +156,6 @@ export default function ExchangeModal({
   } = useSwapInputs({
     defaultInputAsset,
     inputCurrency,
-    isDeposit,
     isWithdrawal,
     maxInputBalance,
     nativeFieldRef,
@@ -300,13 +297,7 @@ export default function ExchangeModal({
 
   // Liten to gas prices, Uniswap reserves updates
   useEffect(() => {
-    updateDefaultGasLimit(
-      isDeposit
-        ? ethUnits.basic_deposit
-        : isWithdrawal
-        ? ethUnits.basic_withdrawal
-        : ethUnits.basic_swap
-    );
+    updateDefaultGasLimit(defaultGasLimit);
     startPollingGasPrices();
     initWeb3Listener();
     return () => {
@@ -314,9 +305,8 @@ export default function ExchangeModal({
       stopWeb3Listener();
     };
   }, [
+    defaultGasLimit,
     initWeb3Listener,
-    isDeposit,
-    isWithdrawal,
     startPollingGasPrices,
     stopPollingGasPrices,
     stopWeb3Listener,
@@ -348,7 +338,6 @@ export default function ExchangeModal({
   useEffect(() => {
     if (isSlippageWarningVisible && !prevIsSlippageWarningVisible) {
       analytics.track('Showing high slippage warning in Swap', {
-        category,
         name: outputCurrency.name,
         slippage,
         symbol: outputCurrency.symbol,
@@ -357,7 +346,6 @@ export default function ExchangeModal({
       });
     }
   }, [
-    category,
     isSlippageWarningVisible,
     outputCurrency,
     prevIsSlippageWarningVisible,
@@ -371,14 +359,12 @@ export default function ExchangeModal({
       maxBalance = supplyBalanceUnderlying;
     }
     analytics.track('Selected max balance', {
-      category,
       defaultInputAsset: get(defaultInputAsset, 'symbol', ''),
       type,
       value: Number(maxBalance.toString()),
     });
     return updateInputAmount(maxBalance, maxBalance, true, true);
   }, [
-    category,
     defaultInputAsset,
     isWithdrawal,
     maxInputBalance,
@@ -390,7 +376,6 @@ export default function ExchangeModal({
   const handleSubmit = useCallback(() => {
     backgroundTask.execute(async () => {
       analytics.track(`Submitted ${type}`, {
-        category,
         defaultInputAsset: get(defaultInputAsset, 'symbol', ''),
         isSlippageWarningVisible,
         name: get(outputCurrency, 'name', ''),
@@ -428,7 +413,6 @@ export default function ExchangeModal({
         await executeRap(wallet, rap);
         logger.log('[exchange - handle submit] executed rap!');
         analytics.track(`Completed ${type}`, {
-          category,
           defaultInputAsset: get(defaultInputAsset, 'symbol', ''),
           type,
         });
@@ -441,7 +425,6 @@ export default function ExchangeModal({
     });
   }, [
     type,
-    category,
     defaultInputAsset,
     isSlippageWarningVisible,
     outputCurrency,
@@ -481,8 +464,6 @@ export default function ExchangeModal({
         type: 'swap_details',
       });
       analytics.track('Opened Swap Details modal', {
-        category,
-
         name: get(outputCurrency, 'name', ''),
         symbol: get(outputCurrency, 'symbol', ''),
         tokenAddress: get(outputCurrency, 'address', ''),
@@ -493,7 +474,6 @@ export default function ExchangeModal({
       ? internalNavigate()
       : Keyboard.addListener('keyboardDidHide', internalNavigate);
   }, [
-    category,
     extraTradeDetails,
     inputCurrency,
     inputFieldRef,

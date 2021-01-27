@@ -48,7 +48,6 @@ const createMissingAsset = (asset, underlyingPrice, priceOfEther) => {
 };
 
 export default function useUniswapCurrencies({
-  category,
   defaultInputAsset,
   inputHeaderTitle,
   isDeposit,
@@ -188,7 +187,6 @@ export default function useUniswapCurrencies({
       }
 
       analytics.track('Switched input asset', {
-        category,
         defaultInputAsset: get(defaultInputAsset, 'symbol', ''),
         from: get(previousInputCurrency, 'symbol', ''),
         label: get(newInputCurrency, 'symbol', ''),
@@ -196,7 +194,6 @@ export default function useUniswapCurrencies({
       });
     },
     [
-      category,
       defaultChosenInputItem,
       defaultInputAddress,
       defaultInputAsset,
@@ -245,7 +242,6 @@ export default function useUniswapCurrencies({
       }
 
       analytics.track('Switched output asset', {
-        category,
         defaultInputAsset: get(defaultInputAsset, 'symbol', ''),
         from: get(previousOutputCurrency, 'symbol', ''),
         label: get(newOutputCurrency, 'symbol', ''),
@@ -253,7 +249,6 @@ export default function useUniswapCurrencies({
       });
     },
     [
-      category,
       defaultInputAsset,
       inputCurrency,
       previousOutputCurrency,
@@ -269,7 +264,6 @@ export default function useUniswapCurrencies({
       setParams({ focused: false });
       delayNext();
       navigate(Routes.CURRENCY_SELECT_SCREEN, {
-        category,
         headerTitle: inputHeaderTitle,
         onSelectCurrency: updateInputCurrency,
         restoreFocusOnSwapModal: () => setParams({ focused: true }),
@@ -279,7 +273,6 @@ export default function useUniswapCurrencies({
     });
   }, [
     blockInteractions,
-    category,
     dangerouslyGetParent,
     inputHeaderTitle,
     navigate,
@@ -293,7 +286,6 @@ export default function useUniswapCurrencies({
       dangerouslyGetParent().dangerouslyGetState().index = 0;
       delayNext();
       navigate(Routes.CURRENCY_SELECT_SCREEN, {
-        category,
         headerTitle: 'Receive',
         onSelectCurrency: updateOutputCurrency,
         restoreFocusOnSwapModal: () => setParams({ focused: true }),
@@ -303,7 +295,6 @@ export default function useUniswapCurrencies({
     });
   }, [
     blockInteractions,
-    category,
     dangerouslyGetParent,
     navigate,
     setParams,
