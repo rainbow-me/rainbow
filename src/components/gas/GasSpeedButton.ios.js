@@ -11,6 +11,7 @@ import { LayoutAnimation } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import styled from 'styled-components';
+import { darkModeThemeColors } from '../../styles/colors';
 import { Alert } from '../alerts';
 import { ButtonPressAnimation } from '../animations';
 import { Input } from '../inputs';
@@ -67,7 +68,7 @@ const BottomRightLabel = ({ formatter, theme }) => {
       align="right"
       color={
         theme === 'dark'
-          ? colors.alpha(colors.darkModeColors.blueGreyDark, 0.6)
+          ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)
           : colors.alpha(colors.blueGreyDark, 0.6)
       }
     >
@@ -417,7 +418,7 @@ const GasSpeedButton = ({
                 placeholder={`${defaultCustomGasPrice}`}
                 placeholderTextColor={
                   theme === 'dark'
-                    ? colors.alpha(colors.darkModeColors.blueGreyDark, 0.3)
+                    ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.3)
                     : colors.alpha(colors.blueGreyDark, 0.3)
                 }
                 ref={inputRef}
@@ -433,7 +434,7 @@ const GasSpeedButton = ({
                       ? colors.whiteLabel
                       : colors.alpha(colors.blueGreyDark, 0.8)
                     : theme === 'dark'
-                    ? colors.alpha(colors.darkModeColors.blueGreyDark, 0.3)
+                    ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.3)
                     : colors.alpha(colors.blueGreyDark, 0.3)
                 }
                 size="lmedium"
@@ -458,7 +459,7 @@ const GasSpeedButton = ({
           <Label
             color={
               theme === 'dark'
-                ? colors.alpha(colors.darkModeColors.blueGreyDark, 0.6)
+                ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)
                 : colors.alpha(colors.blueGreyDark, 0.6)
             }
           >

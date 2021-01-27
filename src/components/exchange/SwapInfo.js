@@ -6,6 +6,7 @@ import {
   useTimingTransition,
 } from 'react-native-redash';
 import styled from 'styled-components';
+import { darkModeThemeColors } from '../../styles/colors';
 import { interpolate } from '../animations';
 import { CoinIcon } from '../coin-icon';
 import { Centered, RowWithMargins } from '../layout';
@@ -87,7 +88,7 @@ export default function SwapInfo({ asset, amount }) {
         />
         <Centered>
           <Text
-            color={colors.alpha(colors.darkModeColors.blueGreyDark, 0.6)}
+            color={colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)}
             size="smedium"
             weight="semibold"
           >
