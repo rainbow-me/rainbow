@@ -3,10 +3,10 @@ import { get, isEmpty } from 'lodash';
 import { RefObject, useCallback, useEffect, useMemo, useState } from 'react';
 import { TextInput } from 'react-native';
 import useAccountSettings from './useAccountSettings';
+import useSwapDetails from './useSwapDetails';
 import useSwapInputOutputTokens from './useSwapInputOutputTokens';
 import useSwapInputValues from './useSwapInputValues';
 import useUniswapPairs from './useUniswapPairs';
-import { Asset } from '@rainbow-me/entities';
 import { calculateTradeDetails } from '@rainbow-me/handlers/uniswap';
 import {
   convertAmountFromNativeValue,
@@ -20,33 +20,22 @@ const DEFAULT_NATIVE_INPUT_AMOUNT = 50;
 
 export default function useUniswapMarketDetails({
   defaultInputAddress,
-  extraTradeDetails,
   inputFieldRef,
   isDeposit,
   isWithdrawal,
   maxInputBalance,
-  nativeCurrency,
   outputFieldRef,
   setSlippage,
-  updateExtraTradeDetails,
   updateInputAmount,
   updateOutputAmount,
 }: {
   defaultInputAddress: string;
-  extraTradeDetails: { outputPriceValue: string };
   inputFieldRef: RefObject<TextInput>;
   isDeposit: boolean;
   isWithdrawal: boolean;
   maxInputBalance: string;
-  nativeCurrency: string;
   outputFieldRef: RefObject<TextInput>;
   setSlippage: (slippage: number) => void;
-  updateExtraTradeDetails: (extraTradeDetails: {
-    inputCurrency: Asset;
-    nativeCurrency: string;
-    outputCurrency: Asset;
-    tradeDetails: Trade | null;
-  }) => void;
   updateInputAmount: (
     newInputAmount: string | undefined,
     newAmountDisplay: string | undefined,
@@ -66,10 +55,11 @@ export default function useUniswapMarketDetails({
     outputAmount,
     swapUpdateIsSufficientBalance,
   } = useSwapInputValues();
+  const { extraTradeDetails, updateExtraTradeDetails } = useSwapDetails();
 
   const [isSufficientLiquidity, setIsSufficientLiquidity] = useState(true);
   const [tradeDetails, setTradeDetails] = useState<Trade | null>(null);
-  const { chainId } = useAccountSettings();
+  const { chainId, nativeCurrency } = useAccountSettings();
 
   const { allPairs, doneLoadingResults } = useUniswapPairs();
   const swapNotNeeded = useMemo(() => {
@@ -165,9 +155,7 @@ export default function useUniswapMarketDetails({
       logger.log('calculate OUTPUT given INPUT change');
       if (
         (isInputEmpty || isInputZero) &&
-        outputFieldRef &&
-        outputFieldRef.current &&
-        !outputFieldRef.current.isFocused()
+        !outputFieldRef?.current?.isFocused()
       ) {
         updateOutputAmount(null, null, true);
       } else {
@@ -222,12 +210,7 @@ export default function useUniswapMarketDetails({
       }
 
       // update input amount given output amount changes
-      if (
-        !inputAsExactAmount &&
-        inputFieldRef &&
-        inputFieldRef.current &&
-        !inputFieldRef.current.isFocused()
-      ) {
+      if (!inputAsExactAmount && !inputFieldRef?.current?.isFocused()) {
         calculateInputGivenOutputChange({
           isOutputEmpty,
           isOutputZero,

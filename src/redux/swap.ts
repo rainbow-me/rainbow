@@ -7,7 +7,16 @@ export interface SwapAmount {
   value: string | null;
 }
 
+interface ExtraTradeDetails {
+  inputExecutionRate: string;
+  inputNativePrice: string;
+  outputExecutionRate: string;
+  outputNativePrice: string;
+  outputPriceValue: string;
+}
+
 interface SwapState {
+  extraTradeDetails: ExtraTradeDetails | {};
   inputCurrency: Asset | null;
   inputAsExactAmount: boolean;
   inputAmount: SwapAmount | null;
@@ -22,6 +31,7 @@ interface SwapState {
 const SWAP_UPDATE_IS_MAX = 'swap/SWAP_UPDATE_IS_MAX';
 const SWAP_UPDATE_IS_SUFFICIENT_BALANCE =
   'swap/SWAP_UPDATE_IS_SUFFICIENT_BALANCE';
+const SWAP_UPDATE_EXTRA_TRADE_DETAILS = 'swap/SWAP_UPDATE_EXTRA_TRADE_DETAILS';
 const SWAP_UPDATE_NATIVE_AMOUNT = 'swap/SWAP_UPDATE_NATIVE_AMOUNT';
 const SWAP_UPDATE_INPUT_AMOUNT = 'swap/SWAP_UPDATE_INPUT_AMOUNT';
 const SWAP_UPDATE_OUTPUT_AMOUNT = 'swap/SWAP_UPDATE_OUTPUT_AMOUNT';
@@ -30,6 +40,12 @@ const SWAP_UPDATE_OUTPUT_CURRENCY = 'swap/SWAP_UPDATE_OUTPUT_CURRENCY';
 const SWAP_CLEAR_STATE = 'swap/SWAP_CLEAR_STATE';
 
 // -- Actions ---------------------------------------- //
+export const updateSwapExtraDetails = (extraDetails: ExtraTradeDetails) => (
+  dispatch: AppDispatch
+) => {
+  dispatch({ payload: extraDetails, type: SWAP_UPDATE_EXTRA_TRADE_DETAILS });
+};
+
 export const updateIsMax = (isMax: boolean) => (dispatch: AppDispatch) => {
   dispatch({ payload: isMax, type: SWAP_UPDATE_IS_MAX });
 };
@@ -97,6 +113,7 @@ export const swapClearState = () => (dispatch: AppDispatch) => {
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE: SwapState = {
+  extraTradeDetails: {},
   inputAmount: null,
   inputAsExactAmount: true,
   inputCurrency: null,
@@ -113,6 +130,11 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
       return {
         ...state,
         isMax: action.payload,
+      };
+    case SWAP_UPDATE_EXTRA_TRADE_DETAILS:
+      return {
+        ...state,
+        extraTradeDetails: action.payload,
       };
     case SWAP_UPDATE_IS_SUFFICIENT_BALANCE:
       return {

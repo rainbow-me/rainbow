@@ -1,15 +1,19 @@
 import { get } from 'lodash';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import useAccountAssets from './useAccountAssets';
+import { updateSwapExtraDetails } from '@rainbow-me/redux/swap';
 import {
   convertAmountToNativeDisplay,
   multiply,
   updatePrecisionToDisplay,
-} from '../helpers/utilities';
-import { ethereumUtils } from '../utils';
-import useAccountAssets from './useAccountAssets';
+} from '@rainbow-me/utilities';
+import { ethereumUtils } from '@rainbow-me/utils';
 
 export default function useSwapDetails() {
-  const [extraTradeDetails, setExtraTradeDetails] = useState({});
+  const dispatch = useDispatch();
+  const extraTradeDetails = useSelector(state => state.swap.extraTradeDetails);
+
   const { allAssets } = useAccountAssets();
 
   const updateExtraTradeDetails = useCallback(
@@ -73,15 +77,17 @@ export default function useSwapDetails() {
           : '-';
       }
 
-      setExtraTradeDetails({
-        inputExecutionRate,
-        inputNativePrice,
-        outputExecutionRate,
-        outputNativePrice,
-        outputPriceValue,
-      });
+      dispatch(
+        updateSwapExtraDetails({
+          inputExecutionRate,
+          inputNativePrice,
+          outputExecutionRate,
+          outputNativePrice,
+          outputPriceValue,
+        })
+      );
     },
-    [allAssets]
+    [allAssets, dispatch]
   );
 
   const areTradeDetailsValid = useMemo(() => {

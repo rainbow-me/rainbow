@@ -103,11 +103,7 @@ export default function ExchangeModal({
   const prevSelectedGasPrice = usePrevious(selectedGasPrice);
   const { maxInputBalance, updateMaxInputBalance } = useMaxInputBalance();
 
-  const {
-    areTradeDetailsValid,
-    extraTradeDetails,
-    updateExtraTradeDetails,
-  } = useSwapDetails();
+  const { areTradeDetailsValid } = useSwapDetails();
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const [slippage, setSlippage] = useState(null);
@@ -194,15 +190,12 @@ export default function ExchangeModal({
   // Calculate market details
   const { isSufficientLiquidity, tradeDetails } = useUniswapMarketDetails({
     defaultInputAddress,
-    extraTradeDetails,
     inputFieldRef,
     isDeposit,
     isWithdrawal,
     maxInputBalance,
-    nativeCurrency,
     outputFieldRef,
     setSlippage,
-    updateExtraTradeDetails,
     updateInputAmount,
     updateOutputAmount,
   });
@@ -278,7 +271,7 @@ export default function ExchangeModal({
   // Recalculate max input balance when gas price changes if input currency is ETH
   useEffect(() => {
     if (
-      get(inputCurrency, 'address') === 'eth' &&
+      inputCurrency?.address === 'eth' &&
       get(prevSelectedGasPrice, 'txFee.value.amount', 0) !==
         get(selectedGasPrice, 'txFee.value.amount', 0)
     ) {
@@ -355,7 +348,7 @@ export default function ExchangeModal({
       maxBalance = supplyBalanceUnderlying;
     }
     analytics.track('Selected max balance', {
-      defaultInputAsset: get(defaultInputAsset, 'symbol', ''),
+      defaultInputAsset: defaultInputAsset?.symbol,
       type,
       value: Number(maxBalance.toString()),
     });
@@ -372,12 +365,12 @@ export default function ExchangeModal({
   const handleSubmit = useCallback(() => {
     backgroundTask.execute(async () => {
       analytics.track(`Submitted ${type}`, {
-        defaultInputAsset: get(defaultInputAsset, 'symbol', ''),
+        defaultInputAsset: defaultInputAsset?.symbol,
         isSlippageWarningVisible,
-        name: get(outputCurrency, 'name', ''),
+        name: outputCurrency?.name,
         slippage,
-        symbol: get(outputCurrency, 'symbol', ''),
-        tokenAddress: get(outputCurrency, 'address', ''),
+        symbol: outputCurrency?.symbol,
+        tokenAddress: outputCurrency?.address,
         type,
       });
 
@@ -409,7 +402,7 @@ export default function ExchangeModal({
         await executeRap(wallet, rap);
         logger.log('[exchange - handle submit] executed rap!');
         analytics.track(`Completed ${type}`, {
-          defaultInputAsset: get(defaultInputAsset, 'symbol', ''),
+          defaultInputAsset: defaultInputAsset?.symbol,
           type,
         });
       } catch (error) {
@@ -449,7 +442,6 @@ export default function ExchangeModal({
       android && Keyboard.removeListener('keyboardDidHide', internalNavigate);
       setParams({ focused: false });
       navigate(Routes.SWAP_DETAILS_SCREEN, {
-        ...extraTradeDetails,
         restoreFocusOnSwapModal: () => {
           android &&
             (lastFocusedInputHandle.current = lastFocusedInputHandleTemporary);
@@ -458,9 +450,9 @@ export default function ExchangeModal({
         type: 'swap_details',
       });
       analytics.track('Opened Swap Details modal', {
-        name: get(outputCurrency, 'name', ''),
-        symbol: get(outputCurrency, 'symbol', ''),
-        tokenAddress: get(outputCurrency, 'address', ''),
+        name: outputCurrency?.name,
+        symbol: outputCurrency?.symbol,
+        tokenAddress: outputCurrency?.address,
         type,
       });
     };
@@ -468,7 +460,6 @@ export default function ExchangeModal({
       ? internalNavigate()
       : Keyboard.addListener('keyboardDidHide', internalNavigate);
   }, [
-    extraTradeDetails,
     inputFieldRef,
     lastFocusedInputHandle,
     nativeFieldRef,
@@ -482,8 +473,8 @@ export default function ExchangeModal({
   const showDetailsButton = useMemo(() => {
     return (
       !(isDeposit || isWithdrawal) &&
-      get(inputCurrency, 'symbol') &&
-      get(outputCurrency, 'symbol') &&
+      inputCurrency?.symbol &&
+      outputCurrency?.symbol &&
       areTradeDetailsValid
     );
   }, [
@@ -559,8 +550,8 @@ export default function ExchangeModal({
             <ExchangeInputField
               disableInputCurrencySelection={isWithdrawal}
               inputAmount={inputAmountDisplay}
-              inputCurrencyAddress={get(inputCurrency, 'address', null)}
-              inputCurrencySymbol={get(inputCurrency, 'symbol', null)}
+              inputCurrencyAddress={inputCurrency?.address}
+              inputCurrencySymbol={inputCurrency?.symbol}
               inputFieldRef={inputFieldRef}
               nativeAmount={nativeAmount}
               nativeCurrency={nativeCurrency}
@@ -577,8 +568,8 @@ export default function ExchangeModal({
                 onFocus={handleFocus}
                 onPressSelectOutputCurrency={navigateToSelectOutputCurrency}
                 outputAmount={outputAmountDisplay}
-                outputCurrencyAddress={get(outputCurrency, 'address', null)}
-                outputCurrencySymbol={get(outputCurrency, 'symbol', null)}
+                outputCurrencyAddress={outputCurrency?.address}
+                outputCurrencySymbol={outputCurrency?.symbol}
                 outputFieldRef={outputFieldRef}
                 setOutputAmount={updateOutputAmount}
                 testID={testID + '-output'}

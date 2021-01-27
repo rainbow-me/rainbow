@@ -7,20 +7,21 @@ import { FloatingEmojisTapper } from '../floating-emojis';
 import { AssetPanel, FloatingPanels } from '../floating-panels';
 import { ColumnWithMargins, KeyboardFixedOpenLayout } from '../layout';
 import { SwapDetailRow, SwapDetailsFooter } from './swap-details';
-import { useSwapInputOutputTokens } from '@rainbow-me/hooks';
+import { useSwapDetails, useSwapInputOutputTokens } from '@rainbow-me/hooks';
 
 const FloatingEmojisOpacity = swapDetailsTransitionPosition.interpolate({
   inputRange: [0.93, 1],
   outputRange: [0, 1],
 });
 
-const SwapDetailsState = ({
-  inputExecutionRate,
-  inputNativePrice,
-  outputExecutionRate,
-  outputNativePrice,
-  restoreFocusOnSwapModal,
-}) => {
+const SwapDetailsState = ({ restoreFocusOnSwapModal }) => {
+  const { extraTradeDetails } = useSwapDetails();
+  const {
+    inputExecutionRate,
+    inputNativePrice,
+    outputExecutionRate,
+    outputNativePrice,
+  } = extraTradeDetails;
   const { goBack } = useNavigation();
   const { inputCurrency, outputCurrency } = useSwapInputOutputTokens();
   const inputCurrencySymbol = inputCurrency?.symbol;
