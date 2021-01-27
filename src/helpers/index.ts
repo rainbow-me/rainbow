@@ -1,6 +1,5 @@
 export { default as BiometryTypes } from './biometryTypes';
 export { default as CurrencySelectionTypes } from './currencySelectionTypes';
-export { default as ExchangeModalCategoryTypes } from './exchangeModalCategoryTypes';
 export { default as ExchangeModalTypes } from './exchangeModalTypes';
 export { default as isKeyboardOpen } from './isKeyboardOpen';
 export { default as isReanimatedAvailable } from './isReanimatedAvailable';

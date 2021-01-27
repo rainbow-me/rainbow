@@ -24,11 +24,7 @@ import {
 import { FloatingPanel } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
-import {
-  ExchangeModalCategoryTypes,
-  ExchangeModalTypes,
-  isKeyboardOpen,
-} from '@rainbow-me/helpers';
+import { ExchangeModalTypes, isKeyboardOpen } from '@rainbow-me/helpers';
 import {
   useAccountSettings,
   useBlockPolling,
@@ -89,12 +85,7 @@ export default function ExchangeModal({
 
   const isDeposit = type === ExchangeModalTypes.deposit;
   const isWithdrawal = type === ExchangeModalTypes.withdrawal;
-
-  const category =
-    isDeposit || isWithdrawal
-      ? ExchangeModalCategoryTypes.savings
-      : ExchangeModalCategoryTypes.swap;
-  const isSavings = category === ExchangeModalCategoryTypes.savings;
+  const isSavings = isDeposit || isWithdrawal;
 
   const defaultGasLimit = isDeposit
     ? ethUnits.basic_deposit
@@ -160,7 +151,6 @@ export default function ExchangeModal({
     updateNativeAmount,
     updateOutputAmount,
   } = useSwapInputs({
-    category,
     defaultInputAsset,
     defaultOutputAsset,
     extraTradeDetails,
@@ -384,14 +374,12 @@ export default function ExchangeModal({
       maxBalance = supplyBalanceUnderlying;
     }
     analytics.track('Selected max balance', {
-      category,
       defaultInputAsset: defaultInputAsset?.symbol || '',
       type,
       value: Number(maxBalance.toString()),
     });
     return updateInputAmount(maxBalance, maxBalance, true, true);
   }, [
-    category,
     defaultInputAsset,
     isWithdrawal,
     maxInputBalance,
@@ -403,7 +391,6 @@ export default function ExchangeModal({
   const handleSubmit = useCallback(() => {
     backgroundTask.execute(async () => {
       analytics.track(`Submitted ${type}`, {
-        category,
         defaultInputAsset: defaultInputAsset?.symbol || '',
         isSlippageWarningVisible,
         name: outputCurrency?.name || '',
@@ -441,7 +428,6 @@ export default function ExchangeModal({
         await executeRap(wallet, rap);
         logger.log('[exchange - handle submit] executed rap!');
         analytics.track(`Completed ${type}`, {
-          category,
           defaultInputAsset: defaultInputAsset?.symbol || '',
           type,
         });
@@ -453,7 +439,6 @@ export default function ExchangeModal({
       }
     });
   }, [
-    category,
     createRap,
     cTokenBalance,
     defaultInputAsset,
@@ -526,10 +511,9 @@ export default function ExchangeModal({
         type: 'swap_details',
       });
       analytics.track('Opened Swap Details modal', {
-        category,
-        name: outputCurrency?.name || '',
-        symbol: outputCurrency?.symbol || '',
-        tokenAddress: outputCurrency?.address || '',
+        name: outputCurrency?.name ?? '',
+        symbol: outputCurrency?.symbol ?? '',
+        tokenAddress: outputCurrency?.address ?? '',
         type,
       });
     };
@@ -537,7 +521,6 @@ export default function ExchangeModal({
       ? internalNavigate()
       : Keyboard.addListener('keyboardDidHide', internalNavigate);
   }, [
-    category,
     confirmButtonProps,
     extraTradeDetails,
     inputAmount,
