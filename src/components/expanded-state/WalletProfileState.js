@@ -1,6 +1,7 @@
 import React, { useCallback, useRef, useState } from 'react';
 import styled from 'styled-components/primitives';
 import { useTheme, withThemeContext } from '../../context/ThemeContext';
+import { getRandomColor } from '../../styles/colors';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { BiometricButtonContent } from '../buttons';
@@ -17,12 +18,7 @@ import {
 import { useAccountProfile } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import {
-  colors_NOT_REACTIVE,
-  margin,
-  padding,
-  position,
-} from '@rainbow-me/styles';
+import { margin, padding, position } from '@rainbow-me/styles';
 import { abbreviations } from '@rainbow-me/utils';
 
 const WalletProfileAddressText = withThemeContext(styled(
@@ -88,8 +84,7 @@ export default function WalletProfileState({
 
   const { colors } = useTheme();
   const [color, setColor] = useState(
-    (profile.color !== null && profile.color) ||
-      colors_NOT_REACTIVE.getRandomColor()
+    (profile.color !== null && profile.color) || getRandomColor()
   );
 
   const [value, setValue] = useState(

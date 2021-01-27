@@ -3,7 +3,7 @@ import { InteractionManager } from 'react-native';
 import TextInputMask from 'react-native-text-input-mask';
 import styled from 'styled-components/primitives';
 import { Text } from '../text';
-import { buildTextStyles, colors_NOT_REACTIVE } from '@rainbow-me/styles';
+import { buildTextStyles } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
 const AndroidMaskWrapper = styled.View`
@@ -27,7 +27,7 @@ const Input = styled(TextInputMask).attrs({
 const ExchangeInput = (
   {
     androidMaskMaxLength = 8,
-    color = colors_NOT_REACTIVE.dark,
+    color: givenColor,
     editable,
     keyboardAppearance = 'dark',
     letterSpacing = 'roundedTightest',
@@ -37,11 +37,8 @@ const ExchangeInput = (
     onChangeText,
     onFocus,
     placeholder = '0',
-    placeholderTextColor = colors_NOT_REACTIVE.alpha(
-      colors_NOT_REACTIVE.blueGreyDark,
-      0.3
-    ),
-    selectionColor = color,
+    placeholderTextColor: givenPlaceholderTextColor,
+    selectionColor: givenSelectionColor,
     size = 'h2',
     testID,
     useCustomAndroidMask = false,
@@ -51,6 +48,11 @@ const ExchangeInput = (
   },
   ref
 ) => {
+  const { colors } = useTheme();
+  const color = givenColor || colors.dark;
+  const placeholderTextColor =
+    givenPlaceholderTextColor || colors.alpha(colors.blueGreyDark, 0.3);
+  const selectionColor = givenSelectionColor || color;
   const [isFocused, setIsFocused] = useState(false);
   const [isTouched, setIsTouched] = useState(false);
 

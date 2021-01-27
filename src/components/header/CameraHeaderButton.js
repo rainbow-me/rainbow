@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components/primitives';
 import { useNavigation } from '../../navigation/Navigation';
 import Icon from '../icons/Icon';
@@ -8,15 +8,15 @@ import Routes from '@rainbow-me/routes';
 import { borders, colors_NOT_REACTIVE } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
-const CameraHeaderButtonShadows = [
-  [0, 3, 5, colors_NOT_REACTIVE.shadow, 0.2],
-  [0, 6, 10, colors_NOT_REACTIVE.shadow, 0.14],
+const CameraHeaderButtonShadows = colors => [
+  [0, 3, 5, colors.shadow, 0.2],
+  [0, 6, 10, colors.shadow, 0.14],
 ];
 
-const CameraIcon = styled(Icon).attrs({
-  color: colors_NOT_REACTIVE.whiteLabel,
+const CameraIcon = styled(Icon).attrs(({ theme: { colors } }) => ({
+  color: colors.whiteLabel,
   name: 'camera',
-})`
+}))`
   margin-bottom: 1;
   max-width: 18;
 `;
@@ -28,12 +28,16 @@ export default function CameraHeaderButton() {
     navigate,
   ]);
 
+  const { colors } = useTheme();
+
+  const shadows = useMemo(() => CameraHeaderButtonShadows(colors), [colors]);
+
   return (
     <HeaderButton onPress={onPress} testID="goToCamera" transformOrigin="right">
       <ShadowStack
         {...borders.buildCircleAsObject(34)}
         backgroundColor={colors_NOT_REACTIVE.paleBlue}
-        shadows={CameraHeaderButtonShadows}
+        shadows={shadows}
       >
         <Centered cover>
           <CameraIcon />

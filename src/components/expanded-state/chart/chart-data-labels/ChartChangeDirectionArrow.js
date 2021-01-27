@@ -7,7 +7,6 @@ import Animated, {
 import styled from 'styled-components/primitives';
 import { Icon } from '../../../icons';
 import { useRatio } from './useRatio';
-import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 const AnimatedMaskedView = Animated.createAnimatedComponent(MaskedView);
 
@@ -19,15 +18,15 @@ const ArrowIcon = styled(Icon).attrs({
 export default function ChartChangeDirectionArrow() {
   const ratio = useRatio('ChartChangeDirectionArrowRatio');
 
+  const { colors } = useTheme();
   const arrowColor = useDerivedValue(
     () =>
       ratio.value === 1
-        ? colors_NOT_REACTIVE.blueGreyDark
+        ? colors.blueGreyDark
         : ratio.value < 1
-        ? colors_NOT_REACTIVE.red
-        : colors_NOT_REACTIVE.green,
-    [],
-    'ChartChangeDirectionArrowRatioColor'
+        ? colors.red
+        : colors.green,
+    [colors]
   );
   const arrowWrapperStyle = useAnimatedStyle(() => {
     return {

@@ -6,6 +6,7 @@ import { requireNativeComponent } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components/primitives';
+import { getRandomColor } from '../../styles/colors';
 import { FloatingEmojis } from '../floating-emojis';
 import useExperimentalFlag, {
   AVATAR_PICKER,
@@ -233,7 +234,7 @@ export default function TransactionList({
         headerInfo.address = isENSAddressFormat(contactAddress)
           ? contactAddress
           : abbreviations.address(contactAddress, 4, 10);
-        contactColor = colors_NOT_REACTIVE.getRandomColor();
+        contactColor = getRandomColor();
       }
 
       const isOutgoing = toLower(from) === toLower(accountAddress);
