@@ -87,15 +87,7 @@ const SheetActionButton = ({
           isWhite ? 0.08 : 0.4,
         ],
       ];
-  }, [
-    color,
-    colors.shadow,
-    colors.transparent,
-    colors.white,
-    disabled,
-    isTransparent,
-    isDarkMode,
-  ]);
+  }, [color, colors, disabled, isTransparent, isDarkMode]);
 
   const androidButtonWidth =
     androidWidth || (fullWidth ? deviceWidth - 38 : (deviceWidth - 53) / 2);

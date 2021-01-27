@@ -42,7 +42,7 @@ import { updateGasPriceForSpeed } from '@rainbow-me/redux/gas';
 import { rapsAddOrUpdate } from '@rainbow-me/redux/raps';
 import store from '@rainbow-me/redux/store';
 import { ethUnits } from '@rainbow-me/references';
-import { colors_NOT_REACTIVE, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 import { deviceUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 
 import logger from 'logger';
@@ -406,13 +406,15 @@ export default function SpeedUpAndCancelSheet() {
     ? deviceHeight - sheetHeight + (type === CANCEL_TX ? 290 : 340)
     : null;
 
+  const { colors, isDarkMode } = useTheme();
+
   return (
     <AnimatedContainer
       style={isReanimatedAvailable ? animatedContainerStyles : fallbackStyles}
     >
       <ExtendedSheetBackground />
       <SlackSheet
-        backgroundColor={colors_NOT_REACTIVE.transparent}
+        backgroundColor={colors.transparent}
         borderRadius={0}
         height={sheetHeight}
         hideHandle
@@ -420,7 +422,7 @@ export default function SpeedUpAndCancelSheet() {
       >
         <Column>
           <AnimatedSheet
-            backgroundColor={colors_NOT_REACTIVE.white}
+            backgroundColor={colors.white}
             borderRadius={39}
             direction="column"
             marginTop={marginTop}
@@ -437,7 +439,7 @@ export default function SpeedUpAndCancelSheet() {
               <Column marginBottom={12}>
                 <Text
                   align="center"
-                  color={colors_NOT_REACTIVE.dark}
+                  color={colors.dark}
                   size="big"
                   weight="bold"
                 >
@@ -447,10 +449,7 @@ export default function SpeedUpAndCancelSheet() {
               <Column marginBottom={30} maxWidth={375} paddingHorizontal={42}>
                 <Text
                   align="center"
-                  color={colors_NOT_REACTIVE.alpha(
-                    colors_NOT_REACTIVE.blueGreyDark,
-                    0.5
-                  )}
+                  color={colors.alpha(colors.blueGreyDark, 0.5)}
                   lineHeight="looser"
                   size="large"
                   weight="regular"
@@ -460,7 +459,7 @@ export default function SpeedUpAndCancelSheet() {
               </Column>
               <Centered marginBottom={24}>
                 <Divider
-                  color={colors_NOT_REACTIVE.rowDividerExtraLight}
+                  color={colors.rowDividerExtraLight}
                   inset={[0, 143.5]}
                 />
               </Centered>
@@ -468,7 +467,7 @@ export default function SpeedUpAndCancelSheet() {
                 <Column>
                   <SheetActionButtonRow ignorePaddingBottom ignorePaddingTop>
                     <SheetActionButton
-                      color={colors_NOT_REACTIVE.red}
+                      color={colors.red}
                       fullWidth
                       label="􀎽 Attempt Cancellation"
                       onPress={handleCancellation}
@@ -478,15 +477,12 @@ export default function SpeedUpAndCancelSheet() {
                   </SheetActionButtonRow>
                   <SheetActionButtonRow ignorePaddingBottom>
                     <SheetActionButton
-                      color={colors_NOT_REACTIVE.white}
+                      color={colors.white}
                       fullWidth
                       label="Close"
                       onPress={goBack}
                       size="big"
-                      textColor={colors_NOT_REACTIVE.alpha(
-                        colors_NOT_REACTIVE.blueGreyDark,
-                        0.8
-                      )}
+                      textColor={colors.alpha(colors.blueGreyDark, 0.8)}
                       weight="bold"
                     />
                   </SheetActionButtonRow>
@@ -495,18 +491,15 @@ export default function SpeedUpAndCancelSheet() {
               {type === SPEED_UP && (
                 <SheetActionButtonRow ignorePaddingBottom ignorePaddingTop>
                   <SheetActionButton
-                    color={colors_NOT_REACTIVE.white}
+                    color={colors.white}
                     label="Cancel"
                     onPress={goBack}
                     size="big"
-                    textColor={colors_NOT_REACTIVE.alpha(
-                      colors_NOT_REACTIVE.blueGreyDark,
-                      0.8
-                    )}
+                    textColor={colors.alpha(colors.blueGreyDark, 0.8)}
                     weight="bold"
                   />
                   <SheetActionButton
-                    color={colors_NOT_REACTIVE.appleBlue}
+                    color={colors.appleBlue}
                     label="􀎽 Confirm"
                     onPress={handleSpeedUp}
                     size="big"
@@ -520,7 +513,7 @@ export default function SpeedUpAndCancelSheet() {
                   onCustomGasBlur={handleCustomGasBlur}
                   onCustomGasFocus={handleCustomGasFocus}
                   options={['fast', 'custom']}
-                  theme="light"
+                  theme={isDarkMode ? 'dark' : 'light'}
                   type="transaction"
                 />
               </GasSpeedButtonContainer>

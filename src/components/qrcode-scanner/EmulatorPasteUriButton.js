@@ -3,11 +3,11 @@ import { useIsEmulator } from 'react-native-device-info';
 import { Prompt } from '../alerts';
 import { Button } from '../buttons';
 import { useWalletConnectConnections } from '@rainbow-me/hooks';
-import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 export default function EmulatorPasteUriButton() {
   const { result: isEmulator } = useIsEmulator();
   const { walletConnectOnSessionRequest } = useWalletConnectConnections();
+  const { colors } = useTheme();
 
   const handlePastedUri = useCallback(
     async uri => walletConnectOnSessionRequest(uri),
@@ -25,8 +25,8 @@ export default function EmulatorPasteUriButton() {
 
   return isEmulator ? (
     <Button
-      backgroundColor={colors_NOT_REACTIVE.white}
-      color={colors_NOT_REACTIVE.sendScreen.brightBlue}
+      backgroundColor={colors.white}
+      color={colors.sendScreen.brightBlue}
       onPress={handlePressPasteSessionUri}
       size="small"
       type="pill"

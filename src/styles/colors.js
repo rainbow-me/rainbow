@@ -234,8 +234,8 @@ const getColorForString = (colorString = '', providedThemeColors = colors) => {
   return isValidColorString ? colorString : providedThemeColors[colorString];
 };
 
-const darkModeThemeColors = getColorsByTheme(true);
-const lightModeThemeColors = getColorsByTheme(false);
+export const darkModeThemeColors = getColorsByTheme(true);
+export const lightModeThemeColors = getColorsByTheme(false);
 const colors = currentColors.themedColors || lightModeThemeColors;
 const getRandomColor = () =>
   Math.floor(Math.random() * colors.avatarColor.length);

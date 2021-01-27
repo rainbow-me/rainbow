@@ -10,7 +10,7 @@ import { LayoutAnimation, NativeModules, StatusBar } from 'react-native';
 import { ThemeProvider as ThemeProviderNative } from 'styled-components/native';
 import { ThemeProvider } from 'styled-components/primitives';
 import { getTheme, saveTheme } from '../handlers/localstorage/theme';
-import colors_NOT_REACTIVE from '../styles/colors';
+import { darkModeThemeColors, lightModeThemeColors } from '../styles/colors';
 import currentColors from './currentColors';
 
 const THEMES = {
@@ -19,7 +19,7 @@ const THEMES = {
 };
 
 export const ThemeContext = createContext({
-  colors: colors_NOT_REACTIVE.lightModeThemeColors,
+  colors: lightModeThemeColors,
   isDarkMode: false,
   setTheme: () => {},
 });
@@ -42,9 +42,7 @@ export const MainThemeProvider = props => {
       );
       currentColors.theme = userPref;
       currentColors.themedColors =
-        userPref === THEMES.DARK
-          ? colors_NOT_REACTIVE.darkModeThemeColors
-          : colors_NOT_REACTIVE.lightModeThemeColors;
+        userPref === THEMES.DARK ? darkModeThemeColors : lightModeThemeColors;
       setColorScheme(userPref);
     };
     loadUserPref();
@@ -61,10 +59,10 @@ export const MainThemeProvider = props => {
   const currentTheme = useMemo(
     () => ({
       // Chaning color schemes according to theme
-      colors: isDarkMode
-        ? colors_NOT_REACTIVE.darkModeThemeColors
-        : colors_NOT_REACTIVE.lightModeThemeColors,
+      colors: isDarkMode ? darkModeThemeColors : lightModeThemeColors,
+      darkScheme: darkModeThemeColors,
       isDarkMode,
+      lightScheme: lightModeThemeColors,
       // Overrides the isDarkMode value will cause re-render inside the context.
       setTheme: scheme => {
         currentColors.theme = scheme;
@@ -73,9 +71,7 @@ export const MainThemeProvider = props => {
           true
         );
         currentColors.themedColors =
-          scheme === THEMES.DARK
-            ? colors_NOT_REACTIVE.darkModeThemeColors
-            : colors_NOT_REACTIVE.lightModeThemeColors;
+          scheme === THEMES.DARK ? darkModeThemeColors : lightModeThemeColors;
         setColorScheme(scheme);
         LayoutAnimation.configureNext(
           LayoutAnimation.create(1000, 'easeInEaseOut', 'opacity')

@@ -250,7 +250,6 @@ export default function SettingsModal() {
             component={SettingsBackupView}
             name="SettingsBackupView"
             options={({ route }) => ({
-              cardStyle: { backgroundColor: colors.white },
               cardStyleInterpolator,
               title: route.params?.title || 'Backup',
             })}
@@ -259,7 +258,6 @@ export default function SettingsModal() {
             component={ShowSecretView}
             name="ShowSecretView"
             options={({ route }) => ({
-              cardStyle: { backgroundColor: colors.white },
               cardStyleInterpolator,
               title: route.params?.title || 'Backup',
             })}

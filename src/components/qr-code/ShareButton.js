@@ -9,7 +9,7 @@ import ShadowStack from 'react-native-shadow-stack';
 
 const Label = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors.white,
+  color: colors.whiteLabel,
   size: 'larger',
   weight: 'bold',
 }))`
@@ -42,7 +42,7 @@ export default function ShareButton({ accountAddress, ...props }) {
       {...props}
     >
       <ShadowStack
-        backgroundColor={colors.dark}
+        backgroundColor={isDarkMode ? colors.white : colors.dark}
         borderRadius={28}
         height={56}
         shadows={shadows}

@@ -18,6 +18,7 @@ const Camera = styled(RNCamera)`
 
 const CameraWrapper = styled(Centered)`
   ${position.size('100%')};
+  background-color: ${({ theme: { colors } }) => colors.white};
 `;
 
 const Container = styled(Centered).attrs({
