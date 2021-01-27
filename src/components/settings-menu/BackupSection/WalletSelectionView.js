@@ -88,7 +88,7 @@ const Footer = styled(Centered)`
 
 const WalletSelectionView = () => {
   const { navigate } = useNavigation();
-  const { isDarkMode } = useTheme();
+  const { colors, isDarkMode } = useTheme();
   const dispatch = useDispatch();
   const { walletNames, wallets } = useWallets();
   const onPress = useCallback(
@@ -157,8 +157,6 @@ const WalletSelectionView = () => {
   }, [dispatch, wallets]);
 
   let cloudBackedUpWallets = 0;
-
-  const { colors } = useTheme();
 
   return (
     <Fragment>
