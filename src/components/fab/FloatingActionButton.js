@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components/primitives';
 import { useTheme } from '../../context/ThemeContext';
+import { darkModeThemeColors } from '../../styles/colors';
 import { magicMemo } from '../../utils';
 import ButtonPressAnimation, {
   ScaleButtonZoomableAndroid,
@@ -16,6 +17,8 @@ export const FloatingActionButtonShadow = colors => [
   [0, 6, 10, colors.dark, 0.14],
   [0, 1, 18, colors.dark, 0.12],
 ];
+
+const DarkModeShadow = [[0, 10, 30, darkModeThemeColors.shadow, 1]];
 
 const Content = styled(Centered)`
   ${position.cover};
@@ -71,7 +74,7 @@ const FloatingActionButton = ({
         {...borders.buildCircleAsObject(size)}
         backgroundColor={colors.alpha(backgroundColor, isDarkMode ? 0.8 : 0.5)}
         hideShadow={disabled}
-        shadows={shadows}
+        shadows={isDarkMode ? DarkModeShadow : shadows}
       >
         <ButtonPressAnimation
           disabled={disabled || ios}
