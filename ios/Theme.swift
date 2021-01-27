@@ -62,7 +62,7 @@ extension UIColor {
       static let rowDivider = UIColor(red: 0.24, green: 0.26, blue: 0.32, alpha: 0.07)
       static let rowDividerLight = UIColor(red: 0.24, green: 0.26, blue: 0.32, alpha: 0.01)
       static let swapPurple = UIColor(red:0.34, green:0.36, blue:1.00, alpha:1.0)
-      static let white = UIColor(red: 0.07, green: 0.07, blue: 0.10, alpha: 1.00)
+      static let white = UIColor(red: 0.071, green: 0.075, blue: 0.102, alpha: 1.00)
     }
     struct TransactionsLight {
       static let appleBlue = UIColor(red:0.05, green:0.46, blue:0.99, alpha:1.00)
