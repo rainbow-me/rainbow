@@ -310,16 +310,16 @@
         "name": "Pixel_3_API_29"
       },
       "android.emu.release": {
-        "binaryPath": "./android/app/build/outputs/apk/local/release/app--local-release.apk",
+        "binaryPath": "./android/app/build/outputs/apk/local/release/app-local-release.apk",
         "build": "cd ./android && ./gradlew assembleLocalRelease assembleAndroidTest -DtestBuildType=release&& cd ..",
         "type": "android.emulator",
         "name": "Pixel_3_API_29"
       },
-      "android.emu.bitrise.release": {
+      "android.emu.release.bitrise": {
         "binaryPath": "./android/app/build/outputs/apk/bitrise/release/app-bitrise-release.apk",
-        "build": "cd ./android && ./gradlew -q assembleBitriseRelease assembleAndroidTest -DtestBuildType=release && cd ..",
-        "type": "android.attached",
-        "name": "emulator-5554"
+        "build": "cd ./android && ./gradlew -q assembleBitriseRelease assembleBitriseAndroidTest -DtestBuildType=release && cd ..",
+        "type": "android.emulator",
+        "name": "Pixel_3_API_29"
       }
     },
     "runner-config": "e2e/config.json",
