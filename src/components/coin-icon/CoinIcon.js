@@ -53,4 +53,5 @@ export default magicMemo(CoinIcon, [
   'isPinned',
   'size',
   'symbol',
+  'shadowColor',
 ]);
