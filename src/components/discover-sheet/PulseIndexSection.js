@@ -1,19 +1,16 @@
 import React, { useMemo } from 'react';
+import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
 import { useAccountSettings } from '@rainbow-me/hooks';
-import { colors } from '@rainbow-me/styles';
+import { colors, position } from '@rainbow-me/styles';
 import { handleSignificantDecimals } from '@rainbow-me/utilities';
 import ShadowStack from 'react-native-shadow-stack';
 
-export const PulseIndexShadow = [
-  [0, 2, 5, colors.orange, 0.2],
-  [0, 6, 10, colors.orange, 0.14],
-  [0, 1, 18, colors.orange, 0.12],
-];
+export const PulseIndexShadow = [[0, 8, 24, '#8E62E9', 0.35]];
 
 const formatItem = ({ address, name, price, symbol }, nativeCurrencySymbol) => {
   const change = `${parseFloat((price.relative_change_24h || 0).toFixed(2))}%`;
@@ -50,11 +47,20 @@ export default function PulseIndex() {
   return (
     <ButtonPressAnimation onPress={() => null}>
       <ShadowStack
-        backgroundColor="#9B74EC"
+        backgroundColor={colors.dpiPurple}
         borderRadius={24}
         shadows={PulseIndexShadow}
         style={{ height: 80, margin: 12, width: '100%' }}
       >
+        <LinearGradient
+          borderRadius={24}
+          colors={[colors.dpiPurple, '#8150E6']}
+          end={{ x: 1, y: 0.5 }}
+          overflow="hidden"
+          pointerEvents="none"
+          start={{ x: 0, y: 0.5 }}
+          style={position.coverAsObject}
+        />
         <Row>
           <Column margin={15}>
             <CoinIcon {...item} />
@@ -97,7 +103,7 @@ export default function PulseIndex() {
         <Column flex={1} justify="start">
           <Text
             align="left"
-            color="#9B74EC"
+            color={colors.dpiPurple}
             numberOfLines={1}
             size="lmedium"
             weight="semibold"
