@@ -169,7 +169,7 @@ const SavingsSheet = () => {
             />
             <SheetActionButtonRow>
               <SheetActionButton
-                color={isDarkMode ? colors.darkGrey : colors.dark}
+                color={isDarkMode ? colors.darkModeDark : colors.dark}
                 label="􀁏 Withdraw"
                 onPress={onWithdraw}
                 radiusAndroid={24}
