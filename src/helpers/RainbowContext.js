@@ -12,7 +12,6 @@ import Emoji from '../components/text/Emoji';
 import { showReloadButton, showSwitchModeButton } from '../config/debug';
 import { defaultConfig } from '../config/experimental';
 import { useTheme } from '../context/ThemeContext';
-import { colors_NOT_REACTIVE } from '@rainbow-me/styles';
 
 export const RainbowContext = createContext({});
 
@@ -53,7 +52,7 @@ export default function RainbowContextWrapper({ children }) {
     [config, globalState, setConfigWithStorage, setGlobalState]
   );
 
-  const { isDarkMode, setTheme } = useTheme();
+  const { isDarkMode, setTheme, colors } = useTheme();
 
   return (
     <RainbowContext.Provider value={initialValue}>
@@ -61,7 +60,7 @@ export default function RainbowContextWrapper({ children }) {
       {showReloadButton && <DevButton initialDisplacement={200} />}
       {showSwitchModeButton && (
         <DevButton
-          color={colors_NOT_REACTIVE.dark}
+          color={colors.dark}
           onPress={() => setTheme(isDarkMode ? 'light' : 'dark')}
         >
           <Emoji>🌚</Emoji>

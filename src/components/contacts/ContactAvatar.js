@@ -5,13 +5,13 @@ import { darkModeThemeColors } from '../../styles/colors';
 import { getFirstGrapheme } from '../../utils';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import { borders, colors_NOT_REACTIVE } from '@rainbow-me/styles';
+import { borders } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
-const buildShadows = (color, size, darkMode) => {
+const buildShadows = (color, size, darkMode, colors) => {
   if (size === 'small' || size === 'smaller') {
     return [
-      [0, 3, 5, colors_NOT_REACTIVE.shadow, 0.14],
+      [0, 3, 5, colors.shadow, 0.14],
       [
         0,
         6,
@@ -28,9 +28,7 @@ const buildShadows = (color, size, darkMode) => {
         0,
         4,
         android ? 5 : 12,
-        darkMode
-          ? colors_NOT_REACTIVE.shadow
-          : colors_NOT_REACTIVE.avatarColor[color] || color,
+        darkMode ? colors.shadow : colors.avatarColor[color] || color,
         0.4,
       ],
     ];
@@ -39,20 +37,20 @@ const buildShadows = (color, size, darkMode) => {
   }
 };
 
-const sizeConfigs = {
+const sizeConfigs = colors => ({
   large: {
     dimensions: 65,
     shadow: [
-      [0, 6, 10, colors_NOT_REACTIVE.shadow, 0.12],
-      [0, 2, 5, colors_NOT_REACTIVE.shadow, 0.08],
+      [0, 6, 10, colors.shadow, 0.12],
+      [0, 2, 5, colors.shadow, 0.08],
     ],
     textSize: 'bigger',
   },
   medium: {
     dimensions: 40,
     shadow: [
-      [0, 4, 6, colors_NOT_REACTIVE.shadow, 0.04],
-      [0, 1, 3, colors_NOT_REACTIVE.shadow, 0.08],
+      [0, 4, 6, colors.shadow, 0.04],
+      [0, 1, 3, colors.shadow, 0.08],
     ],
     textSize: 'larger',
   },
@@ -68,29 +66,34 @@ const sizeConfigs = {
     dimensions: 36,
     textSize: 'large',
   },
-};
+});
 
 const ContactAvatar = ({ color, size = 'medium', value, ...props }) => {
-  const { dimensions, textSize } = sizeConfigs[size];
+  const { colors } = useTheme();
+  const { dimensions, textSize } = useMemo(() => sizeConfigs(colors)[size], [
+    colors,
+    size,
+  ]);
   const { isDarkMode } = useTheme();
 
-  const shadows = useMemo(() => buildShadows(color, size, isDarkMode), [
+  const shadows = useMemo(() => buildShadows(color, size, isDarkMode, colors), [
     color,
     size,
     isDarkMode,
+    colors,
   ]);
 
   return (
     <ShadowStack
       {...props}
       {...borders.buildCircleAsObject(dimensions)}
-      backgroundColor={colors_NOT_REACTIVE.avatarColor[color] || color}
+      backgroundColor={colors.avatarColor[color] || color}
       shadows={shadows}
     >
       <Centered flex={1}>
         <Text
           align="center"
-          color={colors_NOT_REACTIVE.whiteLabel}
+          color={colors.whiteLabel}
           letterSpacing="zero"
           size={textSize}
           weight="bold"

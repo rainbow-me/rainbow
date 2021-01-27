@@ -2,7 +2,7 @@ import React, { useContext, useMemo } from 'react';
 import { View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
-import { borders, colors_NOT_REACTIVE, position } from '../../styles';
+import { borders, position } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered, Row } from '../layout';
@@ -82,6 +82,7 @@ export default function DiscoverSheetHeader(props) {
   const { navigate } = useNavigation();
   const { jumpToShort } = useContext(DiscoverSheetContext);
   const { yPosition } = props;
+  const { colors } = useTheme();
   return (
     <Header {...props} pointerEvents="box-none">
       <Stack
@@ -89,22 +90,12 @@ export default function DiscoverSheetHeader(props) {
         onPress={() => navigate(Routes.WALLET_SCREEN)}
         yPosition={yPosition}
       >
-        <Icon
-          color={colors_NOT_REACTIVE.black}
-          direction="left"
-          name="caret"
-          {...props}
-        />
-        <Icon
-          color={colors_NOT_REACTIVE.white}
-          direction="left"
-          name="caret"
-          {...props}
-        />
+        <Icon color={colors.black} direction="left" name="caret" {...props} />
+        <Icon color={colors.white} direction="left" name="caret" {...props} />
       </Stack>
       <Stack left={16.6} onPress={jumpToShort} yPosition={yPosition}>
-        <Icon color={colors_NOT_REACTIVE.black} name="scanner" />
-        <Icon color={colors_NOT_REACTIVE.white} name="scanner" />
+        <Icon color={colors.black} name="scanner" />
+        <Icon color={colors.white} name="scanner" />
       </Stack>
     </Header>
   );
