@@ -57,7 +57,7 @@ const GreenCheck = styled(CheckmarkIcon).attrs(({ theme: { colors } }) => ({
   color: colors.green,
 }))`
   box-shadow: 0px 4px 6px
-    ${({ isDarkMode, theme: colors }) =>
+    ${({ isDarkMode, theme: { colors } }) =>
       colors.alpha(isDarkMode ? colors.shadow : colors.green, 0.4)};
 `;
 
@@ -69,7 +69,7 @@ const GreyCheck = styled(CheckmarkIcon).attrs(({ theme: { colors } }) => ({
       colors.alpha(isDarkMode ? colors.shadow : colors.blueGreyDark50, 0.4)};
 `;
 
-const WarningIcon = styled(Icon).attrs(({ theme: colors }) => ({
+const WarningIcon = styled(Icon).attrs(({ theme: { colors } }) => ({
   color: colors.orangeLight,
   name: 'warning',
 }))`

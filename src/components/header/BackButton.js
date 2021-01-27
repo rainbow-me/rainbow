@@ -12,7 +12,7 @@ const Container = styled(Row).attrs({ align: 'center' })`
   width: ${({ textChevron }) => (textChevron ? 20 : 10)};
 `;
 
-const IconText = styled(Text).attrs(({ theme: colors }) => ({
+const IconText = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.dark,
   size: 'big',
 }))`
