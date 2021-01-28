@@ -226,11 +226,8 @@ android {
             keyPassword pass
         }
         bitrise {
-            println 'testing'
-            println System.getenv("BITRISEIO_ANDROID_KEYSTORE_PASSWORD")
-
             storeFile file('../keystores/rainbow-key.keystore')
-            storePassword System.getenv("BITRISEIO_ANDROID_KEYSTORE_PRIVATE_KEY_PASSWORD")
+            storePassword System.getenv("BITRISEIO_ANDROID_KEYSTORE_PASSWORD")
             keyAlias 'rainbow-alias'
             keyPassword System.getenv("BITRISEIO_ANDROID_KEYSTORE_PRIVATE_KEY_PASSWORD")
     }

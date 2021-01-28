@@ -319,7 +319,7 @@
         "binaryPath": "./android/app/build/outputs/apk/bitrise/release/app-bitrise-release.apk",
         "build": "cd ./android && ./gradlew -q assembleBitriseRelease assembleBitriseAndroidTest -DtestBuildType=release && cd ..",
         "type": "android.emulator",
-        "name": "Pixel_3_API_29"
+        "name": "emulator-5554"
       }
     },
     "runner-config": "e2e/config.json",
