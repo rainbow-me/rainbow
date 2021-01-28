@@ -1,5 +1,11 @@
 import AsyncStorage from '@react-native-community/async-storage';
-import React, { Fragment, useCallback, useMemo } from 'react';
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
   Linking,
   NativeModules,
@@ -178,9 +184,12 @@ export default function SettingsSection({
     ? colors.green
     : colors.alpha(colors.blueGreyDark, 0.5);
 
-  const toggleDarkMode = useCallback(() => {
-    setTheme(isDarkMode ? 'light' : 'dark');
-  }, [isDarkMode, setTheme]);
+  const [preDarkMode, setPreDarkMode] = useState(isDarkMode);
+
+  useEffect(() => setTheme(preDarkMode ? 'dark' : 'light'), [
+    setTheme,
+    preDarkMode,
+  ]);
 
   return (
     <Container backgroundColor={colors.white} scrollEnabled={isTinyPhone}>
@@ -233,7 +242,7 @@ export default function SettingsSection({
           </ListItemArrowGroup>
         </ListItem>
         <ListItem
-          disabled
+          disabled={android}
           icon={
             <SettingIcon
               source={isDarkMode ? DarkModeIconDark : DarkModeIcon}
@@ -245,13 +254,13 @@ export default function SettingsSection({
         >
           <Column align="end" flex="1" justify="end">
             <Switch
-              onValueChange={toggleDarkMode}
+              onValueChange={setPreDarkMode}
               thumbColor={colors.whiteLabel}
               trackColor={{
                 false: colors.alpha(colors.blueGreyDark, 0.12),
                 true: '#2CCC00',
               }}
-              value={isDarkMode}
+              value={preDarkMode}
             />
           </Column>
         </ListItem>
