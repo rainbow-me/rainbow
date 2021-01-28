@@ -84,10 +84,10 @@ export default function TopMoversSection() {
 
       <Column>
         {gainerItems?.length !== 0 && (
-          <MarqueeList items={gainerItems} speed={300} />
+          <MarqueeList items={gainerItems} speed={666} />
         )}
         {loserItems?.length !== 0 && (
-          <MarqueeList items={loserItems} speed={-300} />
+          <MarqueeList items={loserItems} speed={-666} />
         )}
       </Column>
 

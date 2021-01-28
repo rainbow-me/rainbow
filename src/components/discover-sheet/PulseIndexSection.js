@@ -63,83 +63,100 @@ export default function PulseIndex() {
   if (!item) return null;
 
   return (
-    <ButtonPressAnimation onPress={handlePress}>
-      <ShadowStack
-        backgroundColor={colors.dpiPurple}
-        borderRadius={24}
-        shadows={PulseIndexShadow}
-        style={{ height: 80, margin: 12, width: '100%' }}
-      >
-        <LinearGradient
+    <>
+      <ButtonPressAnimation onPress={handlePress} scaleTo={0.9}>
+        <ShadowStack
+          backgroundColor={colors.dpiPurple}
           borderRadius={24}
-          colors={[colors.dpiPurple, '#8150E6']}
-          end={{ x: 1, y: 0.5 }}
-          overflow="hidden"
-          pointerEvents="none"
-          start={{ x: 0, y: 0.5 }}
-          style={position.coverAsObject}
-        />
-        <Row>
-          <Column margin={15}>
-            <CoinIcon {...item} />
-          </Column>
-          <Column margin={15} marginLeft={0}>
-            <Text
-              color={colors.white}
-              letterSpacing="roundedMedium"
-              lineHeight="paragraphSmall"
-              size="larger"
-              weight="bold"
-            >
-              {item.name}
-            </Text>
-            <Text
-              color={colors.alpha(colors.white, 0.6)}
-              letterSpacing="roundedMedium"
-              lineHeight="paragraphSmall"
-              size="lmedium"
-              weight="semibold"
-            >
-              All the top DeFi tokens in one
-            </Text>
-          </Column>
-          <Column align="end" flex={1} margin={15}>
-            <Text
-              align="right"
-              color={colors.white}
-              letterSpacing="roundedMedium"
-              lineHeight="paragraphSmall"
-              size="larger"
-              weight="bold"
-            >
-              􀯼
-            </Text>
-          </Column>
-        </Row>
-      </ShadowStack>
-      <Row margin={28} marginTop={0}>
+          shadows={PulseIndexShadow}
+          style={{
+            height: 70,
+            marginHorizontal: 19,
+            marginTop: 20,
+            width: '100%',
+          }}
+        >
+          <LinearGradient
+            borderRadius={24}
+            colors={[colors.dpiPurple, '#8150E6']}
+            end={{ x: 1, y: 0.5 }}
+            overflow="hidden"
+            pointerEvents="none"
+            start={{ x: 0, y: 0.5 }}
+            style={position.coverAsObject}
+          />
+          <Row>
+            <Column margin={15} marginRight={10}>
+              <CoinIcon {...item} />
+            </Column>
+            <Column marginLeft={0} marginTop={13.5}>
+              <Text color={colors.white} size="large" weight="heavy">
+                {item.name}
+              </Text>
+              <Text
+                color={colors.alpha(colors.white, 0.6)}
+                size="lmedium"
+                weight="semibold"
+              >
+                All the top DeFi tokens in one
+              </Text>
+            </Column>
+            <Column align="end" flex={1} margin={15} marginTop={13.5}>
+              <Text
+                align="right"
+                color={colors.white}
+                letterSpacing="zero"
+                size="large"
+                weight="heavy"
+              >
+                􀯼
+              </Text>
+            </Column>
+          </Row>
+        </ShadowStack>
+      </ButtonPressAnimation>
+      <Row marginHorizontal={34} marginTop={8}>
         <Column flex={1} justify="start">
           <Text
-            align="left"
             color={colors.dpiPurple}
+            letterSpacing="roundedMedium"
             numberOfLines={1}
-            size="lmedium"
+            size="smedium"
             weight="semibold"
           >
-            Trading at {item.price}
+            Trading at{' '}
+            <Text
+              color={colors.dpiPurple}
+              letterSpacing="roundedTight"
+              numberOfLines={1}
+              size="smedium"
+              weight="bold"
+            >
+              {item.price}
+            </Text>
           </Text>
         </Column>
         <Column flex={1} justify="end">
           <Text
             align="right"
             color={item.isPositive ? colors.green : colors.red}
-            size="lmedium"
+            letterSpacing="roundedMedium"
+            size="smedium"
             weight="semibold"
           >
-            {item.isPositive ? `↑` : `↓`} {item.change} today
+            <Text
+              align="right"
+              color={item.isPositive ? colors.green : colors.red}
+              letterSpacing="roundedTight"
+              size="smedium"
+              weight="bold"
+            >
+              {item.isPositive ? `↑` : `↓`} {item.change}
+            </Text>{' '}
+            today
           </Text>
         </Column>
       </Row>
-    </ButtonPressAnimation>
+    </>
   );
 }
