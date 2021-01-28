@@ -3,9 +3,12 @@ import {
   getLocalRequests,
   removeLocalRequest,
   saveLocalRequests,
-} from '../handlers/localstorage/walletconnectRequests';
-import { dappLogoOverride, dappNameOverride } from '../helpers/dappNameHandler';
-import { getRequestDisplayDetails } from '../parsers/requests';
+} from '@rainbow-me/handlers/localstorage/walletconnectRequests';
+import {
+  dappLogoOverride,
+  dappNameOverride,
+} from '@rainbow-me/helpers/dappNameHandler';
+import { getRequestDisplayDetails } from '@rainbow-me/parsers';
 import logger from 'logger';
 
 // -- Constants --------------------------------------- //

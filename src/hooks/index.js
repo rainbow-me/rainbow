@@ -64,6 +64,7 @@ export { default as useShowcaseTokens } from './useShowcaseTokens';
 export { default as useSwapDetails } from './useSwapDetails';
 export { default as useSwapInputRefs } from './useSwapInputRefs';
 export { default as useSwapInputs } from './useSwapInputs';
+export { default as useSwapInputOutputTokens } from './useSwapInputOutputTokens';
 export { default as useTimeout } from './useTimeout';
 export { default as useTopMovers } from './useTopMovers';
 export { default as useTransactionConfirmation } from './useTransactionConfirmation';

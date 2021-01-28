@@ -3,20 +3,13 @@ import { compact } from 'lodash';
 import { useMemo } from 'react';
 import useMulticall from './useMulticall';
 import useUniswapCalls from './useUniswapCalls';
-import { Asset } from '@rainbow-me/entities';
 import {
   PAIR_GET_RESERVES_FRAGMENT,
   PAIR_INTERFACE,
 } from '@rainbow-me/references';
 
-export default function useUniswapPairs(
-  inputCurrency: Asset,
-  outputCurrency: Asset
-) {
-  const { allPairCombinations, calls } = useUniswapCalls(
-    inputCurrency,
-    outputCurrency
-  );
+export default function useUniswapPairs() {
+  const { allPairCombinations, calls } = useUniswapCalls();
 
   const { multicallResults } = useMulticall(
     calls,

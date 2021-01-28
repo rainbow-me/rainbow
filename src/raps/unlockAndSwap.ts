@@ -1,14 +1,19 @@
+import { Trade } from '@uniswap/sdk';
 import { concat, reduce } from 'lodash';
-import { estimateSwapGasLimit } from '../handlers/uniswap';
-import { add } from '../helpers/utilities';
-import { rapsAddOrUpdate } from '../redux/raps';
-import store from '../redux/store';
-import { ethUnits } from '../references';
-import { UNISWAP_V2_ROUTER_ADDRESS } from '../references/uniswap';
-import { contractUtils } from '../utils';
-import { isValidSwapInput } from './actions/swap';
-import { assetNeedsUnlocking } from './actions/unlock';
-import { createNewAction, createNewRap, RapActionTypes } from './common';
+import { assetNeedsUnlocking, isValidSwapInput } from './actions';
+import {
+  createNewAction,
+  createNewRap,
+  RapAction,
+  RapActionTypes,
+} from './common';
+import { Asset, SelectedGasPrice } from '@rainbow-me/entities';
+import { estimateSwapGasLimit } from '@rainbow-me/handlers/uniswap';
+import { rapsAddOrUpdate } from '@rainbow-me/redux/raps';
+import store from '@rainbow-me/redux/store';
+import { ethUnits, UNISWAP_V2_ROUTER_ADDRESS } from '@rainbow-me/references';
+import { add } from '@rainbow-me/utilities';
+import { contractUtils } from '@rainbow-me/utils';
 
 export const estimateUnlockAndSwap = async ({
   inputAmount,
@@ -16,9 +21,15 @@ export const estimateUnlockAndSwap = async ({
   outputAmount,
   outputCurrency,
   tradeDetails,
+}: {
+  inputAmount: string | null;
+  inputCurrency: Asset;
+  outputAmount: string | null;
+  outputCurrency: Asset;
+  tradeDetails: Trade;
 }) => {
-  if (!inputAmount) inputAmount = 1;
-  if (!outputAmount) outputAmount = 1;
+  if (!inputAmount) inputAmount = '1';
+  if (!outputAmount) outputAmount = '1';
 
   const isValid = isValidSwapInput({
     inputCurrency,
@@ -29,7 +40,7 @@ export const estimateUnlockAndSwap = async ({
 
   const { accountAddress, chainId } = store.getState().settings;
 
-  let gasLimits = [];
+  let gasLimits: (string | number)[] = [];
   const swapAssetNeedsUnlocking = await assetNeedsUnlocking(
     accountAddress,
     inputAmount,
@@ -57,18 +68,25 @@ export const estimateUnlockAndSwap = async ({
   return reduce(gasLimits, (acc, limit) => add(acc, limit), '0');
 };
 
-const createUnlockAndSwapRap = async ({
+export const createUnlockAndSwapRap = async ({
   callback,
   inputAmount,
   inputCurrency,
   outputCurrency,
   selectedGasPrice,
   tradeDetails,
+}: {
+  callback: () => void;
+  inputAmount: string;
+  inputCurrency: Asset;
+  outputCurrency: Asset;
+  selectedGasPrice: SelectedGasPrice;
+  tradeDetails: Trade;
 }) => {
   // create unlock rap
   const { accountAddress } = store.getState().settings;
 
-  let actions = [];
+  let actions: RapAction[] = [];
 
   const swapAssetNeedsUnlocking = await assetNeedsUnlocking(
     accountAddress,
@@ -107,5 +125,3 @@ const createUnlockAndSwapRap = async ({
   dispatch(rapsAddOrUpdate(newRap.id, newRap));
   return newRap;
 };
-
-export default createUnlockAndSwapRap;

@@ -283,8 +283,7 @@ export const estimateGasLimit = async ({
       ? convertAmountToRawAmount(amount, asset.decimals)
       : estimateAssetBalancePortion(asset);
   const value = _amount.toString();
-  let _recipient = await resolveNameOrAddress(recipient);
-  _recipient = _recipient || '0x737e583620f4ac1842d4e354789ca0c5e0651fbb';
+  const _recipient = await resolveNameOrAddress(recipient);
   let estimateGasData = {
     data: '0x',
     from: address,

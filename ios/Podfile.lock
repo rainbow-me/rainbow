@@ -169,6 +169,8 @@ PODS:
   - pop (1.0.12)
   - PromisesObjC (1.2.11)
   - Protobuf (3.13.0)
+  - Rainbow-Internals (0.1.0):
+    - React-Core
   - RCTRequired (0.63.3)
   - RCTTypeSafety (0.63.3):
     - FBLazyVector (= 0.63.3)
@@ -362,8 +364,8 @@ PODS:
     - React-Core
   - react-native-randombytes (3.5.3):
     - React
-  - react-native-restart (0.0.17):
-    - React
+  - react-native-restart (0.0.20):
+    - React-Core
   - react-native-safe-area-context (0.5.0):
     - React
   - react-native-splash-screen (3.2.0):
@@ -604,6 +606,7 @@ DEPENDENCIES:
   - PanModal (from `https://github.com/osdnk/PanModal`, commit `42c1ac03b79d1333ff06c4234aba2e3e47a32c99`)
   - Permission-Camera (from `../node_modules/react-native-permissions/ios/Camera.podspec`)
   - Permission-FaceID (from `../node_modules/react-native-permissions/ios/FaceID.podspec`)
+  - Rainbow-Internals (from `./Internals`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
   - RCTTypeSafety (from `../node_modules/react-native/Libraries/TypeSafety`)
   - React (from `../node_modules/react-native/`)
@@ -747,6 +750,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-permissions/ios/Camera.podspec"
   Permission-FaceID:
     :path: "../node_modules/react-native-permissions/ios/FaceID.podspec"
+  Rainbow-Internals:
+    :path: "./Internals"
   RCTRequired:
     :path: "../node_modules/react-native/Libraries/RCTRequired"
   RCTTypeSafety:
@@ -940,6 +945,7 @@ SPEC CHECKSUMS:
   pop: d582054913807fd11fd50bfe6a539d91c7e1a55a
   PromisesObjC: 8c196f5a328c2cba3e74624585467a557dcb482f
   Protobuf: 3dac39b34a08151c6d949560efe3f86134a3f748
+  Rainbow-Internals: 6e69837f173f2017e4fff07e64d77d429e5a958c
   RCTRequired: 48884c74035a0b5b76dbb7a998bd93bcfc5f2047
   RCTTypeSafety: edf4b618033c2f1c5b7bc3d90d8e085ed95ba2ab
   React: f36e90f3ceb976546e97df3403e37d226f79d0e3
@@ -960,7 +966,7 @@ SPEC CHECKSUMS:
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
   react-native-netinfo: 250dc0ca126512f618a8a2ca6a936577e1f66586
   react-native-randombytes: 3638d24759d67c68f6ccba60c52a7a8a8faa6a23
-  react-native-restart: d19a0f8d053d065fe64cd2baebb6487111c77149
+  react-native-restart: a01029aadfe8e71f9e8205fdb17da2f0a4472d50
   react-native-safe-area-context: 13004a45f3021328fdd9ee1f987c3131fb65928d
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
   react-native-text-input-mask: 07227297075f9653315f43b0424d596423a01736
@@ -1021,6 +1027,6 @@ SPEC CHECKSUMS:
   Yoga: 7d13633d129fd179e01b8953d38d47be90db185a
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 6ae0fcefeb571a4c38322e49aa844d4e05b043ed
+PODFILE CHECKSUM: 412313ac47634ca15faa48e68aadac98633cc980
 
 COCOAPODS: 1.9.1
