@@ -13,12 +13,7 @@ import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 
 const formatPercentageString = percentString =>
-  percentString
-    ? percentString
-        .toString()
-        .split('-')
-        .join('- ')
-    : '-';
+  percentString ? percentString.toString().split('-').join('- ') : '-';
 
 const PercentageText = styled(BottomRowText).attrs({
   align: 'right',

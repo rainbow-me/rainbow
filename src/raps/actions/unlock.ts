@@ -1,23 +1,31 @@
 import { MaxUint256 } from '@ethersproject/constants';
+import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
 import { get, isNull, toLower } from 'lodash';
 import { alwaysRequireApprove } from '../../config/debug';
-import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
-import TransactionTypes from '../../helpers/transactionTypes';
+import { Rap, RapActionParameters, UnlockActionParameters } from '../common';
+import { Asset } from '@rainbow-me/entities';
+import TransactionStatusTypes from '@rainbow-me/helpers/transactionStatusTypes';
+import TransactionTypes from '@rainbow-me/helpers/transactionTypes';
+import { dataAddNewTransaction } from '@rainbow-me/redux/data';
+import { rapsAddOrUpdate } from '@rainbow-me/redux/raps';
+import store from '@rainbow-me/redux/store';
 import {
   convertAmountToRawAmount,
   greaterThan,
   isZero,
-} from '../../helpers/utilities';
-import { dataAddNewTransaction } from '../../redux/data';
-import { rapsAddOrUpdate } from '../../redux/raps';
-import store from '../../redux/store';
-import { AllowancesCache, contractUtils, gasUtils } from '../../utils';
+} from '@rainbow-me/utilities';
+import { AllowancesCache, contractUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const NOOP = () => undefined;
 
-const unlock = async (wallet, currentRap, index, parameters) => {
+const unlock = async (
+  wallet: Wallet,
+  currentRap: Rap,
+  index: number,
+  parameters: RapActionParameters
+): Promise<string> => {
   const { dispatch } = store;
   const {
     accountAddress,
@@ -26,7 +34,7 @@ const unlock = async (wallet, currentRap, index, parameters) => {
     contractAddress,
     override,
     selectedGasPrice,
-  } = parameters;
+  } = parameters as UnlockActionParameters;
   const _amount = override || amount;
   logger.log(
     '[unlock] begin unlock rap for',
@@ -124,7 +132,7 @@ const unlock = async (wallet, currentRap, index, parameters) => {
   logger.log('[unlock] WAITING TO BE MINED...');
   try {
     const receipt = await wallet.provider.waitForTransaction(approval.hash);
-    if (!isZero(receipt.status)) {
+    if (receipt.status && !isZero(receipt.status)) {
       // update rap for confirmed status
       currentRap.actions[index].transaction.confirmed = true;
       dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
@@ -144,10 +152,10 @@ const unlock = async (wallet, currentRap, index, parameters) => {
 };
 
 export const assetNeedsUnlocking = async (
-  accountAddress,
-  amount,
-  assetToUnlock,
-  contractAddress
+  accountAddress: string,
+  amount: string,
+  assetToUnlock: Asset,
+  contractAddress: string
 ) => {
   const { address } = assetToUnlock;
   logger.log('checking asset needs unlocking');

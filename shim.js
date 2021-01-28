@@ -1,11 +1,15 @@
 import 'react-native-get-random-values';
 import '@ethersproject/shims';
 import AsyncStorage from '@react-native-community/async-storage';
+import { enableES5 } from 'immer';
 // eslint-disable-next-line import/default
 import ReactNative from 'react-native';
 import Animated from 'react-native-reanimated';
 import Storage from 'react-native-storage';
 import logger from 'logger';
+
+//Can remove when we update hermes after they enable Proxy support
+ReactNative.Platform.OS === 'android' && enableES5();
 
 ReactNative.Platform.OS === 'ios' &&
   Animated.addWhitelistedNativeProps({ d: true });
@@ -59,7 +63,7 @@ const SHORTEN_PROP_TYPES_ERROR = true;
 if (SHORTEN_PROP_TYPES_ERROR) {
   const oldConsoleError = console.error; // eslint-disable-line no-console
   // eslint-disable-next-line no-console
-  console.error = function() {
+  console.error = function () {
     if (
       typeof arguments[0] === 'string' &&
       arguments[0].startsWith('Warning: Failed prop type')
@@ -106,7 +110,7 @@ if (!ReactNative.InteractionManager._shimmed) {
   const oldCreateInteractionHandle =
     ReactNative.InteractionManager.createInteractionHandle;
 
-  ReactNative.InteractionManager.createInteractionHandle = function(
+  ReactNative.InteractionManager.createInteractionHandle = function (
     finishAutomatically = true
   ) {
     const handle = oldCreateInteractionHandle();
@@ -134,7 +138,7 @@ const description = Object.getOwnPropertyDescriptor(
 
 if (!description.writable) {
   Object.defineProperty(ReactNative, 'requireNativeComponent', {
-    value: (function() {
+    value: (function () {
       const cache = {};
       const _requireNativeComponent = ReactNative.requireNativeComponent;
 

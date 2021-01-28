@@ -5,6 +5,10 @@ export interface Asset {
   symbol: string;
 }
 
+export interface SavingsAsset extends Asset {
+  contractAddress: string;
+}
+
 export interface ParsedAddressAsset {
   address: string;
   balance?: {

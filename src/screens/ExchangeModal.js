@@ -26,13 +26,8 @@ import SwapInfo from '../components/exchange/SwapInfo';
 import { FloatingPanel, FloatingPanels } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
-import ExchangeModalTypes from '../helpers/exchangeModalTypes';
-import isKeyboardOpen from '../helpers/isKeyboardOpen';
-import { loadWallet } from '../model/wallet';
-import { useNavigation } from '../navigation/Navigation';
-import { executeRap } from '../raps/common';
-import { multicallClearState } from '../redux/multicall';
-import ethUnits from '../references/ethereum-units.json';
+import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
+import isKeyboardOpen from '@rainbow-me/helpers/isKeyboardOpen';
 import {
   useAccountSettings,
   useBlockPolling,
@@ -40,15 +35,22 @@ import {
   useMaxInputBalance,
   usePrevious,
   useSwapDetails,
+  useSwapInputOutputTokens,
   useSwapInputRefs,
   useSwapInputs,
+  useSwapInputValues,
   useUniswapCurrencies,
   useUniswapMarketDetails,
 } from '@rainbow-me/hooks';
+import { loadWallet } from '@rainbow-me/model/wallet';
+import { useNavigation } from '@rainbow-me/navigation/Navigation';
+import { executeRap } from '@rainbow-me/raps';
+import { multicallClearState } from '@rainbow-me/redux/multicall';
+import { swapClearState } from '@rainbow-me/redux/swap';
+import { ethUnits } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { colors, position } from '@rainbow-me/styles';
 import { backgroundTask, isNewValueForPath } from '@rainbow-me/utils';
-
 import logger from 'logger';
 
 const AnimatedFloatingPanels = Animated.createAnimatedComponent(FloatingPanels);
@@ -78,7 +80,6 @@ export default function ExchangeModal({
 
   const isDeposit = type === ExchangeModalTypes.deposit;
   const isWithdrawal = type === ExchangeModalTypes.withdrawal;
-  const category = isDeposit || isWithdrawal ? 'savings' : 'swap';
 
   const defaultGasLimit = isDeposit
     ? ethUnits.basic_deposit
@@ -87,6 +88,7 @@ export default function ExchangeModal({
     : ethUnits.basic_swap;
 
   const dispatch = useDispatch();
+
   const {
     isSufficientGas,
     selectedGasPrice,
@@ -116,13 +118,10 @@ export default function ExchangeModal({
 
   const {
     defaultInputAddress,
-    inputCurrency,
     navigateToSelectInputCurrency,
     navigateToSelectOutputCurrency,
-    outputCurrency,
     previousInputCurrency,
   } = useUniswapCurrencies({
-    category,
     defaultInputAsset,
     inputHeaderTitle,
     isDeposit,
@@ -131,40 +130,38 @@ export default function ExchangeModal({
     underlyingPrice,
   });
 
+  const { inputCurrency, outputCurrency } = useSwapInputOutputTokens();
+
   const {
     handleFocus,
     inputFieldRef,
     lastFocusedInputHandle,
     nativeFieldRef,
     outputFieldRef,
-  } = useSwapInputRefs({
-    inputCurrency,
-    outputCurrency,
-  });
+  } = useSwapInputRefs();
 
   const {
-    inputAmount,
-    inputAmountDisplay,
-    inputAsExactAmount,
-    isMax,
-    isSufficientBalance,
-    nativeAmount,
-    outputAmount,
-    outputAmountDisplay,
-    setIsSufficientBalance,
     updateInputAmount,
     updateNativeAmount,
     updateOutputAmount,
   } = useSwapInputs({
     defaultInputAsset,
-    inputCurrency,
-    isDeposit,
     isWithdrawal,
     maxInputBalance,
     nativeFieldRef,
     supplyBalanceUnderlying,
     type,
   });
+
+  const {
+    inputAmount,
+    inputAmountDisplay,
+    isSufficientBalance,
+    nativeAmount,
+    isMax,
+    outputAmount,
+    outputAmountDisplay,
+  } = useSwapInputValues();
 
   const isDismissing = useRef(false);
   useEffect(() => {
@@ -197,18 +194,12 @@ export default function ExchangeModal({
   const { isSufficientLiquidity, tradeDetails } = useUniswapMarketDetails({
     defaultInputAddress,
     extraTradeDetails,
-    inputAmount,
-    inputAsExactAmount,
-    inputCurrency,
     inputFieldRef,
     isDeposit,
     isWithdrawal,
     maxInputBalance,
     nativeCurrency,
-    outputAmount,
-    outputCurrency,
     outputFieldRef,
-    setIsSufficientBalance,
     setSlippage,
     updateExtraTradeDetails,
     updateInputAmount,
@@ -249,6 +240,7 @@ export default function ExchangeModal({
   useEffect(() => {
     return () => {
       dispatch(multicallClearState());
+      dispatch(swapClearState());
     };
   }, [dispatch]);
 
@@ -300,13 +292,7 @@ export default function ExchangeModal({
 
   // Liten to gas prices, Uniswap reserves updates
   useEffect(() => {
-    updateDefaultGasLimit(
-      isDeposit
-        ? ethUnits.basic_deposit
-        : isWithdrawal
-        ? ethUnits.basic_withdrawal
-        : ethUnits.basic_swap
-    );
+    updateDefaultGasLimit(defaultGasLimit);
     startPollingGasPrices();
     initWeb3Listener();
     return () => {
@@ -314,9 +300,8 @@ export default function ExchangeModal({
       stopWeb3Listener();
     };
   }, [
+    defaultGasLimit,
     initWeb3Listener,
-    isDeposit,
-    isWithdrawal,
     startPollingGasPrices,
     stopPollingGasPrices,
     stopWeb3Listener,
@@ -348,7 +333,6 @@ export default function ExchangeModal({
   useEffect(() => {
     if (isSlippageWarningVisible && !prevIsSlippageWarningVisible) {
       analytics.track('Showing high slippage warning in Swap', {
-        category,
         name: outputCurrency.name,
         slippage,
         symbol: outputCurrency.symbol,
@@ -357,7 +341,6 @@ export default function ExchangeModal({
       });
     }
   }, [
-    category,
     isSlippageWarningVisible,
     outputCurrency,
     prevIsSlippageWarningVisible,
@@ -371,14 +354,12 @@ export default function ExchangeModal({
       maxBalance = supplyBalanceUnderlying;
     }
     analytics.track('Selected max balance', {
-      category,
       defaultInputAsset: get(defaultInputAsset, 'symbol', ''),
       type,
       value: Number(maxBalance.toString()),
     });
     return updateInputAmount(maxBalance, maxBalance, true, true);
   }, [
-    category,
     defaultInputAsset,
     isWithdrawal,
     maxInputBalance,
@@ -390,7 +371,6 @@ export default function ExchangeModal({
   const handleSubmit = useCallback(() => {
     backgroundTask.execute(async () => {
       analytics.track(`Submitted ${type}`, {
-        category,
         defaultInputAsset: get(defaultInputAsset, 'symbol', ''),
         isSlippageWarningVisible,
         name: get(outputCurrency, 'name', ''),
@@ -428,7 +408,6 @@ export default function ExchangeModal({
         await executeRap(wallet, rap);
         logger.log('[exchange - handle submit] executed rap!');
         analytics.track(`Completed ${type}`, {
-          category,
           defaultInputAsset: get(defaultInputAsset, 'symbol', ''),
           type,
         });
@@ -441,7 +420,6 @@ export default function ExchangeModal({
     });
   }, [
     type,
-    category,
     defaultInputAsset,
     isSlippageWarningVisible,
     outputCurrency,
@@ -481,8 +459,6 @@ export default function ExchangeModal({
         type: 'swap_details',
       });
       analytics.track('Opened Swap Details modal', {
-        category,
-
         name: get(outputCurrency, 'name', ''),
         symbol: get(outputCurrency, 'symbol', ''),
         tokenAddress: get(outputCurrency, 'address', ''),
@@ -493,7 +469,6 @@ export default function ExchangeModal({
       ? internalNavigate()
       : Keyboard.addListener('keyboardDidHide', internalNavigate);
   }, [
-    category,
     extraTradeDetails,
     inputCurrency,
     inputFieldRef,

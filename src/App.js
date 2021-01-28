@@ -248,8 +248,9 @@ class App extends Component {
         throw new Error(`Expected number usage, encountered ${usage}.`);
       }
       logger.log(
-        `[Imgix]: Cached signature buffer is at ${size}/${capacity} (${usage *
-          100}%) on application background.`
+        `[Imgix]: Cached signature buffer is at ${size}/${capacity} (${
+          usage * 100
+        }%) on application background.`
       );
     } catch (e) {
       logger.log(

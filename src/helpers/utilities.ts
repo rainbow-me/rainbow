@@ -207,11 +207,7 @@ export const handleSignificantDecimals = (
   buffer: number = 3
 ): string => {
   if (lessThan(new BigNumber(value).abs(), 1)) {
-    decimals =
-      new BigNumber(value)
-        .toFixed()
-        .slice(2)
-        .search(/[^0]/g) + buffer;
+    decimals = new BigNumber(value).toFixed().slice(2).search(/[^0]/g) + buffer;
     decimals = Math.min(decimals, 8);
   } else {
     decimals = Math.min(decimals, buffer);

@@ -410,10 +410,9 @@ export const executeSwap = async ({
   return exchange[methodName](...updatedMethodArgs, transactionParams);
 };
 
-export const getAllTokens = async (): Promise<Record<
-  string,
-  UniswapSubgraphAsset
->> => {
+export const getAllTokens = async (): Promise<
+  Record<string, UniswapSubgraphAsset>
+> => {
   let allTokens: Record<string, UniswapSubgraphAsset> = {};
   let data: RawUniswapSubgraphAsset[] = [];
   try {
