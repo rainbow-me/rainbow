@@ -97,7 +97,7 @@ export const parseTxFees = (gasPrices, priceUnit, gasLimit, nativeCurrency) => {
   return zipObject(GasSpeedOrder, txFees);
 };
 
-export const getTxFee = (gasPrice, gasLimit, priceUnit, nativeCurrency) => {
+const getTxFee = (gasPrice, gasLimit, priceUnit, nativeCurrency) => {
   const amount = multiply(gasPrice, gasLimit);
   return {
     native: {

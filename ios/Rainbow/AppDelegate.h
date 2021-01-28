@@ -5,6 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+
+#import <Foundation/Foundation.h>
+#import <Rainbow-Internals/Internals.h>
+
 #import <React/RCTBridgeDelegate.h>
 #import <Firebase.h>
 #import <UIKit/UIKit.h>

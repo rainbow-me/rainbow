@@ -1,4 +1,4 @@
-import React, { Fragment, useMemo } from 'react';
+import React, { Fragment, useEffect, useMemo, useRef } from 'react';
 import { Pressable, StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import Animated, {
   useAnimatedScrollHandler,
@@ -85,6 +85,7 @@ export default function SlackSheet({
   hideHandle = false,
   renderHeader,
   scrollEnabled = true,
+  discoverSheet,
   limitScrollViewContent,
   ...props
 }) {
@@ -104,12 +105,25 @@ export default function SlackSheet({
     [bottomInset]
   );
 
+  const sheet = useRef();
+
   const scrollIndicatorInsets = useMemo(
     () => ({
       bottom: bottomInset,
       top: borderRadius + SheetHandleFixedToTopHeight,
     }),
     [borderRadius, bottomInset]
+  );
+
+  // In discover sheet we need to set it additionally
+  useEffect(
+    () => {
+      discoverSheet &&
+        ios &&
+        sheet.current.setNativeProps({ scrollIndicatorInsets });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
   );
 
   const scrollHandler = useAnimatedScrollHandler(event => {
@@ -148,6 +162,7 @@ export default function SlackSheet({
             directionalLockEnabled
             limitScrollViewContent={limitScrollViewContent}
             onScroll={scrollHandler}
+            ref={sheet}
             scrollEnabled={scrollEnabled}
             scrollIndicatorInsets={scrollIndicatorInsets}
           >

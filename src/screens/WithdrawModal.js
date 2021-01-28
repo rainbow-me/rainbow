@@ -1,10 +1,11 @@
 import React from 'react';
 import ExchangeModalTypes from '../helpers/exchangeModalTypes';
 import useStatusBarManaging from '../navigation/useStatusBarManaging';
-import createWithdrawFromCompoundRap, {
-  estimateWithdrawFromCompound,
-} from '../raps/withdrawFromCompound';
 import ExchangeModal from './ExchangeModal';
+import {
+  createWithdrawFromCompoundRap,
+  estimateWithdrawFromCompound,
+} from '@rainbow-me/raps';
 
 const WithdrawModal = ({ route, navigation, ...props }) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
