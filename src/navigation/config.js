@@ -111,7 +111,7 @@ export const restoreSheetConfig = {
 
     return buildCoolModalConfig({
       ...params,
-      backgroundColor: colors.dark,
+      backgroundColor: colors.themedColors.dark,
       longFormHeight: heightForStep,
     });
   },
@@ -148,7 +148,7 @@ export const closeKeyboardOnClose = {
 
 export const nativeStackDefaultConfig = {
   allowsDragToDismiss: true,
-  backgroundColor: colors.stackBackground,
+  backgroundColor: colors.themedColors.stackBackground,
   backgroundOpacity: 1,
   customStack: true,
   headerHeight: 0,
@@ -219,7 +219,7 @@ const headerConfigOptions = {
     headerTitleAlign: 'center',
   }),
   headerTitleStyle: {
-    color: colors.dark,
+    color: colors.themedColors.dark,
     fontFamily: fonts.family.SFProRounded,
     fontSize: parseFloat(fonts.size.large),
     fontWeight: fonts.weight.bold,
@@ -231,7 +231,7 @@ export const wyreWebviewOptions = {
   ...headerConfigOptions,
   headerStatusBarHeight: 24,
   headerStyle: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.themedColors.white,
     elevation: 24,
     shadowColor: 'transparent',
   },
@@ -242,7 +242,7 @@ export const settingsOptions = {
   ...headerConfigOptions,
   cardShadowEnabled: false,
   cardStyle: {
-    backgroundColor: colors.themedColors.white,
+    backgroundColor: undefined,
     overflow: 'visible',
   },
   gestureEnabled: true,
