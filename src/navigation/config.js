@@ -242,7 +242,7 @@ export const settingsOptions = {
   ...headerConfigOptions,
   cardShadowEnabled: false,
   cardStyle: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.themedColors.white,
     overflow: 'visible',
   },
   gestureEnabled: true,
