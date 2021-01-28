@@ -7,6 +7,7 @@ import TouchableBackdrop from '../components/TouchableBackdrop';
 import {
   ChartExpandedState,
   LiquidityPoolExpandedState,
+  TokenIndexExpandedState,
   UniqueTokenExpandedState,
 } from '../components/expanded-state';
 import { Centered } from '../components/layout';
@@ -16,6 +17,7 @@ import { position } from '@rainbow-me/styles';
 
 const ScreenTypes = {
   token: ChartExpandedState,
+  token_index: TokenIndexExpandedState,
   unique_token: UniqueTokenExpandedState,
   uniswap: LiquidityPoolExpandedState,
 };

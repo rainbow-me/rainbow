@@ -17,3 +17,4 @@ export {
   measureTopMoverCoinRow,
 } from './TopMoverCoinRow';
 export { default as TransactionCoinRow } from './TransactionCoinRow';
+export { default as UnderlyingAssetCoinRow } from './UnderlyingAssetCoinRow';

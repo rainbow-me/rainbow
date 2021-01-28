@@ -1,19 +1,26 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
+import { DPI_ADDRESS } from '../../references/indexes';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
+import { initialChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
 import { useAccountSettings } from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
+import Routes from '@rainbow-me/routes';
 import { colors, position } from '@rainbow-me/styles';
 import { handleSignificantDecimals } from '@rainbow-me/utilities';
+import { ethereumUtils } from '@rainbow-me/utils';
 import ShadowStack from 'react-native-shadow-stack';
 
 export const PulseIndexShadow = [[0, 8, 24, '#8E62E9', 0.35]];
 
 const formatItem = ({ address, name, price, symbol }, nativeCurrencySymbol) => {
-  const change = `${parseFloat((price.relative_change_24h || 0).toFixed(2))}%`;
+  const change = `${parseFloat(
+    (price.relative_change_24h || 0).toFixed(2)
+  )}%`.replace('-', '');
 
   const value = `${nativeCurrencySymbol}${handleSignificantDecimals(
     price.value,
@@ -31,21 +38,32 @@ const formatItem = ({ address, name, price, symbol }, nativeCurrencySymbol) => {
 };
 
 export default function PulseIndex() {
+  const { navigate } = useNavigation();
   const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
     genericAssets,
   }));
 
   const { nativeCurrencySymbol } = useAccountSettings();
   const item = useMemo(() => {
-    const asset = genericAssets['0x1494ca1f11d487c2bbe4543e90080aeba4ba3c2b'];
+    const asset = genericAssets[DPI_ADDRESS];
     if (!asset) return null;
     return formatItem(asset, nativeCurrencySymbol);
   }, [genericAssets, nativeCurrencySymbol]);
 
+  const handlePress = useCallback(() => {
+    const asset = ethereumUtils.formatGenericAsset(genericAssets[DPI_ADDRESS]);
+
+    navigate(ios ? Routes.EXPANDED_ASSET_SHEET : Routes.EXPANDED_ASSET_SCREEN, {
+      asset,
+      longFormHeight: initialChartExpandedStateSheetHeight,
+      type: 'token_index',
+    });
+  }, [genericAssets, navigate]);
+
   if (!item) return null;
 
   return (
-    <ButtonPressAnimation onPress={() => null}>
+    <ButtonPressAnimation onPress={handlePress}>
       <ShadowStack
         backgroundColor={colors.dpiPurple}
         borderRadius={24}
