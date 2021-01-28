@@ -57,9 +57,10 @@ function ListFooterComponent({ label, onPress }) {
       ) : (
         <Text
           align="center"
-          color={colors.grey}
+          color={colors.alpha(colors.blueGreyDark, 0.3)}
           lineHeight="loose"
-          size="small"
+          size="smedium"
+          weight="bold"
         >
           {label}
         </Text>
