@@ -57,7 +57,7 @@ extension UIColor {
       static let blueGreyDark70 = UIColor(red: 0.47, green: 0.49, blue: 0.55, alpha: 1.00) //FIXME
       static let coinTextColor = UIColor.white
       static let dark = UIColor(red: 0.88, green: 0.91, blue: 1.00, alpha: 1.00)
-      static let shadow = UIColor(red:0.15, green:0.16, blue:0.18, alpha:1.0)
+      static let shadow = UIColor.black
       static let green = UIColor(red: 0.00, green: 0.82, blue: 0.27, alpha: 1.00)
       static let rowDivider = UIColor(red: 0.24, green: 0.26, blue: 0.32, alpha: 0.07)
       static let rowDividerLight = UIColor(red: 0.24, green: 0.26, blue: 0.32, alpha: 0.01)
