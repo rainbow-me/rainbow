@@ -214,7 +214,11 @@ export default function TokenIndexExpandedState({ asset }) {
                     height={30}
                     marginLeft={10}
                   >
-                    <Column height={16} width={item.percentageAllocation * 2.5}>
+                    <Column
+                      height={16}
+                      marginTop={3}
+                      width={item.percentageAllocation * 2}
+                    >
                       <ShadowStack
                         backgroundColor={colors.dpiPurple}
                         borderRadius={10}
