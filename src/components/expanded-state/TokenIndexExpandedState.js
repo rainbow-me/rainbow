@@ -148,7 +148,7 @@ export default function TokenIndexExpandedState({ asset }) {
       <SlackSheet
         additionalTopPadding={android}
         contentHeight={TokenIndexExpandedStateSheetHeight}
-        scrollEnabled={false}
+        scrollEnabled
       >
         <ChartPathProvider data={throttledData}>
           <Chart
@@ -200,7 +200,7 @@ export default function TokenIndexExpandedState({ asset }) {
                 <UnderlyingAssetCoinRow {...item} />
               </Column>
               <Column aling="end">
-                <Row key={`allocation-${item.symbol}`} marginBottom={10.5}>
+                <Row key={`allocation-${item.symbol}`}>
                   <Text
                     align="right"
                     color={colors.alpha(colors.blueGreyDark, 0.5)}
