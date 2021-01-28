@@ -60,22 +60,24 @@ const Divider = ({
   horizontal = true,
   inset = [0, 0, 0, 19],
   size = DividerSize,
-  colors,
   ...props
-}) => (
-  <Container
-    {...props}
-    backgroundColor={backgroundColor}
-    horizontal={horizontal}
-    size={size}
-  >
-    <BorderLine
+}) => {
+  const { colors } = useTheme();
+  return (
+    <Container
       {...props}
-      color={color || colors.rowDivider}
+      backgroundColor={backgroundColor}
       horizontal={horizontal}
-      inset={inset}
-    />
-  </Container>
-);
+      size={size}
+    >
+      <BorderLine
+        {...props}
+        color={color || colors.rowDivider}
+        horizontal={horizontal}
+        inset={inset}
+      />
+    </Container>
+  );
+};
 
-export default magicMemo(withThemeContext(Divider), ['color', 'inset']);
+export default magicMemo(Divider, ['color', 'inset']);

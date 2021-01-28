@@ -3,14 +3,14 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Linking } from 'react-native';
 import { compose, pure, withHandlers } from 'recompact';
+import { withThemeContext } from '../../context/ThemeContext';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { Centered, Row } from '../layout';
 import { Text } from '../text';
 import { padding } from '@rainbow-me/styles';
 
-const WalletConnectLearnMoreButton = ({ onPressLearnMore }) => {
-  const { colors } = useTheme();
+const WalletConnectLearnMoreButton = ({ onPressLearnMore, colors }) => {
   return (
     <Row align="start">
       <ButtonPressAnimation
@@ -43,6 +43,7 @@ const openWalletConnectWebsite = () =>
 
 export default compose(
   pure,
+  withThemeContext,
   withHandlers({
     onPressLearnMore: () => debounce(openWalletConnectWebsite, 200),
   })
