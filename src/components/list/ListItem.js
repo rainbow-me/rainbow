@@ -52,10 +52,12 @@ const ListItem = enhance(
     onPress,
     scaleTo = 0.975,
     testID,
+    disabled,
     ...props
   }) => (
     <ButtonPressAnimation
       activeOpacity={activeOpacity}
+      disabled={disabled}
       enableHapticFeedback={false}
       onPress={onPress}
       scaleTo={scaleTo}

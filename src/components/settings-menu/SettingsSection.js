@@ -233,6 +233,7 @@ export default function SettingsSection({
           </ListItemArrowGroup>
         </ListItem>
         <ListItem
+          disabled
           icon={
             <SettingIcon
               source={isDarkMode ? DarkModeIconDark : DarkModeIcon}
