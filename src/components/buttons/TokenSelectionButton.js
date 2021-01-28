@@ -58,10 +58,7 @@ export default function TokenSelectionButton({
     <ButtonPressAnimation
       borderRadius={borderRadius}
       contentContainerStyle={{
-        backgroundColor:
-          isDarkMode && (colorForAsset === colors.dark || '#25292E')
-            ? colors.darkModeDark
-            : colorForAsset,
+        backgroundColor: colorForAsset,
         borderRadius,
       }}
       onPress={onPress}
@@ -70,11 +67,7 @@ export default function TokenSelectionButton({
     >
       <ShadowStack
         {...position.coverAsObject}
-        backgroundColor={
-          isDarkMode && colorForAsset === colors.dark
-            ? colors.darkModeDark
-            : colorForAsset
-        }
+        backgroundColor={colorForAsset}
         borderRadius={borderRadius}
         elevation={TokenSelectionButtonElevation}
         shadows={shadowsForAsset}

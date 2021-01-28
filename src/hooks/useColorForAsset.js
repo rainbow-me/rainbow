@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { lightModeThemeColors } from '../styles/colors';
 import useImageMetadata from './useImageMetadata';
 import {
   getTokenMetadata,
@@ -21,9 +22,11 @@ export default function useColorForAsset(asset, fallbackColor) {
   const colorDerivedFromAddress = useMemo(
     () =>
       isETH(address)
-        ? colors.dark
+        ? isDarkMode
+          ? colors.brighten(lightModeThemeColors.dark)
+          : colors.dark
         : pseudoRandomArrayItemFromString(address, colors.avatarColor),
-    [address, colors]
+    [address, colors, isDarkMode]
   );
 
   return useMemo(() => {

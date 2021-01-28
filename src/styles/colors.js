@@ -171,12 +171,13 @@ const getColorsByTheme = darkMode => {
 
   const isColorDark = targetColor => {
     return (
-      chroma.contrast(targetColor, darkModeColors.darkModeDark) < 1.5 ||
+      chroma.contrast(targetColor, darkModeColors.white) < 1.5 ||
       chroma(targetColor || base.white).luminance() < 0.11
     );
   };
 
-  const brighten = targetColor => chroma(targetColor).brighten(2).hex();
+  const brighten = targetColor =>
+    chroma(targetColor).brighten(2).saturate(0.3).hex();
 
   const transparent = {
     appleBlueTransparent: buildRgba(base.appleBlue, 0.2), // '50, 50, 93'
