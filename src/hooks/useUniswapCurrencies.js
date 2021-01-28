@@ -15,7 +15,7 @@ import useSwapInputOutputTokens from './useSwapInputOutputTokens';
 import useUniswapAssetsInWallet from './useUniswapAssetsInWallet';
 import useUniswapCalls from './useUniswapCalls';
 import CurrencySelectionTypes from '@rainbow-me/helpers/currencySelectionTypes';
-import { multiply } from '@rainbow-me/helpers/utilities';
+import { multiply } from '@rainbow-me/utilities';
 import {
   multicallAddListeners,
   multicallUpdateOutdatedListeners,

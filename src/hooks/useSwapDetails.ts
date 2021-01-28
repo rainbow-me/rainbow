@@ -1,7 +1,9 @@
-import { get } from 'lodash';
+import { Trade } from '@uniswap/sdk';
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import useAccountAssets from './useAccountAssets';
+import { UniswapCurrency } from '@rainbow-me/entities';
+import { AppState } from '@rainbow-me/redux/store';
 import { updateSwapExtraDetails } from '@rainbow-me/redux/swap';
 import {
   convertAmountToNativeDisplay,
@@ -12,12 +14,24 @@ import { ethereumUtils } from '@rainbow-me/utils';
 
 export default function useSwapDetails() {
   const dispatch = useDispatch();
-  const extraTradeDetails = useSelector(state => state.swap.extraTradeDetails);
+  const extraTradeDetails = useSelector(
+    (state: AppState) => state.swap.extraTradeDetails
+  );
 
   const { allAssets } = useAccountAssets();
 
   const updateExtraTradeDetails = useCallback(
-    ({ inputCurrency, nativeCurrency, outputCurrency, tradeDetails }) => {
+    ({
+      inputCurrency,
+      nativeCurrency,
+      outputCurrency,
+      tradeDetails,
+    }: {
+      inputCurrency: UniswapCurrency;
+      nativeCurrency: string;
+      outputCurrency: UniswapCurrency;
+      tradeDetails: Trade;
+    }) => {
       let inputExecutionRate = '';
       let inputNativePrice = '';
       let outputExecutionRate = '';
@@ -27,7 +41,7 @@ export default function useSwapDetails() {
       let inputPriceValue = null;
 
       if (inputCurrency) {
-        inputPriceValue = get(inputCurrency, 'native.price.amount', null);
+        inputPriceValue = inputCurrency?.native?.price?.amount;
 
         inputExecutionRate = tradeDetails?.executionPrice?.toSignificant();
 
@@ -47,13 +61,9 @@ export default function useSwapDetails() {
           outputCurrency.address
         );
 
-        outputPriceValue = get(
-          outputCurrencyInWallet,
-          'native.price.amount',
-          null
-        );
+        outputPriceValue = outputCurrencyInWallet?.native?.price?.amount;
 
-        if (tradeDetails.executionPrice.equalTo(0)) {
+        if (tradeDetails.executionPrice.equalTo('0')) {
           outputExecutionRate = '0';
         } else {
           outputExecutionRate = tradeDetails?.executionPrice
