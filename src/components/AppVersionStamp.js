@@ -7,9 +7,9 @@ import { useAppVersion, useTimeout, useWalletsDebug } from '@rainbow-me/hooks';
 
 const DEBUG_TAP_COUNT = 15;
 
-const StampText = styled(Text).attrs(({ theme: { colors, isDarkMode } }) => ({
+const StampText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors.alpha(colors.blueGreyDark, isDarkMode ? 0.4 : 0.2),
+  color: colors.alpha(colors.blueGreyDark, 0.2),
   lineHeight: 'normal',
   size: 'smedium',
   weight: 'bold',

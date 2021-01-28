@@ -1,5 +1,5 @@
-import React, { Fragment, useCallback } from 'react';
-import { Alert } from 'react-native';
+import React, { useCallback } from 'react';
+import { Alert, ScrollView } from 'react-native';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { useTheme } from '../../../context/ThemeContext';
@@ -83,7 +83,7 @@ const WarningIcon = styled(Icon).attrs(({ theme: { colors } }) => ({
 const Footer = styled(Centered)`
   flex: 1;
   align-items: flex-end;
-  ${padding(0, 15, 42)};
+  ${padding(19, 15, 30)};
 `;
 
 const WalletSelectionView = () => {
@@ -159,7 +159,7 @@ const WalletSelectionView = () => {
   let cloudBackedUpWallets = 0;
 
   return (
-    <Fragment>
+    <ScrollView>
       {Object.keys(wallets)
         .filter(key => wallets[key].type !== WalletTypes.readOnly)
         .map(key => {
@@ -268,7 +268,7 @@ const WalletSelectionView = () => {
           </ButtonPressAnimation>
         </Footer>
       )}
-    </Fragment>
+    </ScrollView>
   );
 };
 
