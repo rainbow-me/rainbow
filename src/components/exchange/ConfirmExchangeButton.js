@@ -1,4 +1,5 @@
 import { useRoute } from '@react-navigation/native';
+import makeColorMoreChill from 'make-color-more-chill';
 import React, { useMemo } from 'react';
 import styled from 'styled-components/primitives';
 import { HoldToAuthorizeButton } from '../buttons';
@@ -45,20 +46,27 @@ export default function ConfirmExchangeButton({
   type = ExchangeModalTypes.swap,
   ...props
 }) {
-  const { name: routeName } = useRoute();
-  const colorForAsset = useColorForAsset(asset);
   const { isSufficientGas } = useGas();
+  const { name: routeName } = useRoute();
   const { isHighSlippage } = useSlippageDetails(slippage);
 
-  const shadowsForAsset = useMemo(
-    () => [
-      [0, 10, 30, colors.dark, 0.2],
-      [0, 5, 15, colorForAsset, 0.4],
-    ],
-    [colorForAsset]
-  );
-
   const isSwapDetailsRoute = routeName === Routes.SWAP_DETAILS_SHEET;
+  const shouldOpenSwapDetails = isHighSlippage && !isSwapDetailsRoute;
+
+  const colorForAsset = useColorForAsset(asset);
+  const { buttonColor, shadowsForAsset } = useMemo(() => {
+    const color = isSwapDetailsRoute
+      ? colorForAsset
+      : makeColorMoreChill(colorForAsset, colors.dark);
+
+    return {
+      buttonColor: color,
+      shadowsForAsset: [
+        [0, 10, 30, colors.dark, 0.2],
+        [0, 5, 15, color, 0.4],
+      ],
+    };
+  }, [colorForAsset, isSwapDetailsRoute]);
 
   let label = '';
   if (type === ExchangeModalTypes.deposit) {
@@ -87,12 +95,10 @@ export default function ConfirmExchangeButton({
     !isSufficientGas ||
     !isSufficientLiquidity;
 
-  const shouldOpenSwapDetails = isHighSlippage && !isSwapDetailsRoute;
-
   return (
     <Container>
       <ConfirmButton
-        backgroundColor={colorForAsset}
+        backgroundColor={buttonColor}
         disableLongPress={shouldOpenSwapDetails}
         disabled={isDisabled}
         disabledBackgroundColor={
