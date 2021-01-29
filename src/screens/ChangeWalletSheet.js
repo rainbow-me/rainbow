@@ -23,8 +23,7 @@ import showWalletErrorAlert from '../helpers/support';
 import WalletLoadingStates from '../helpers/walletLoadingStates';
 import WalletTypes from '../helpers/walletTypes';
 import { useWalletsWithBalancesAndNames } from '../hooks/useWalletsWithBalancesAndNames';
-import { wipeKeychain } from '../model/keychain';
-import { createWallet } from '../model/wallet';
+import { cleanUpWalletKeys, createWallet } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import {
   addressSetSelected,
@@ -287,7 +286,7 @@ export default function ChangeWalletSheet() {
                   ReactNativeHapticFeedback.trigger('notificationSuccess');
 
                   if (!isLastAvailableWallet) {
-                    await wipeKeychain();
+                    await cleanUpWalletKeys();
                     goBack();
                     replace(Routes.WELCOME_SCREEN);
                   } else {
