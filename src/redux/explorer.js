@@ -13,6 +13,7 @@ import {
   fallbackExplorerClearState,
   fallbackExplorerInit,
 } from './fallbackExplorer';
+import { updateTopMovers } from './topMovers';
 import { disableCharts, forceFallbackProvider } from '@rainbow-me/config/debug';
 import NetworkTypes from '@rainbow-me/helpers/networkTypes';
 import logger from 'logger';
@@ -44,6 +45,9 @@ const messages = {
     APPENDED: 'appended chart points',
     CHANGED: 'changed chart points',
     RECEIVED: 'received assets charts',
+  },
+  ASSET_INFO: {
+    RECEIVED: 'received assets info',
   },
   ASSETS: {
     CHANGED: 'changed assets prices',
@@ -77,7 +81,7 @@ const addressSubscription = (address, currency, action = 'subscribe') => [
   },
 ];
 
-const assetsSubscription = (pairs, currency, action = 'subscribe') => {
+const assetPricesSubscription = (pairs, currency, action = 'subscribe') => {
   const assetCodes = concat(keys(pairs), 'eth');
   return [
     action,
@@ -90,6 +94,22 @@ const assetsSubscription = (pairs, currency, action = 'subscribe') => {
     },
   ];
 };
+
+const assetInfoRequest = (currency, order = 'desc') => [
+  'get',
+  {
+    payload: {
+      currency: toLower(currency),
+      limit: 12,
+      offset: 0,
+      order_by: {
+        'relative_changes.1d': order,
+      },
+      search_query: '#Token is:verified',
+    },
+    scope: ['info'],
+  },
+];
 
 const chartsRetrieval = (assetCodes, currency, chartType, action = 'get') => [
   action,
@@ -119,7 +139,7 @@ const explorerUnsubscribe = () => (dispatch, getState) => {
   }
   if (!isNil(assetsSocket)) {
     assetsSocket.emit(
-      ...assetsSubscription(pairs, nativeCurrency, 'unsubscribe')
+      ...assetPricesSubscription(pairs, nativeCurrency, 'unsubscribe')
     );
     assetsSocket.close();
   }
@@ -200,6 +220,7 @@ export const explorerInit = () => async (dispatch, getState) => {
 
   newAssetsSocket.on(messages.CONNECT, () => {
     dispatch(emitAssetRequest(keys(pairs)));
+    dispatch(emitAssetInfoRequest());
   });
 
   if (network === NetworkTypes.mainnet) {
@@ -242,12 +263,19 @@ export const emitAssetRequest = assetAddress => (dispatch, getState) => {
 
   if (newAssetsCodes.length > 0) {
     assetsSocket.emit(
-      ...assetsSubscription(
+      ...assetPricesSubscription(
         toAssetSubscriptionPayload(newAssetsCodes),
         nativeCurrency
       )
     );
   }
+};
+
+export const emitAssetInfoRequest = () => (dispatch, getState) => {
+  const { nativeCurrency } = getState().settings;
+  const { assetsSocket } = getState().explorer;
+  assetsSocket.emit(...assetInfoRequest(nativeCurrency));
+  assetsSocket.emit(...assetInfoRequest(nativeCurrency, 'asc'));
 };
 
 export const emitChartsRequest = (
@@ -275,6 +303,10 @@ export const emitChartsRequest = (
 };
 
 const listenOnAssetMessages = socket => dispatch => {
+  socket.on(messages.ASSET_INFO.RECEIVED, message => {
+    dispatch(updateTopMovers(message));
+  });
+
   socket.on(messages.ASSETS.RECEIVED, message => {
     dispatch(assetPricesReceived(message));
   });

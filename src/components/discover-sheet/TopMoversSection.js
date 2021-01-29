@@ -47,14 +47,14 @@ export default function TopMoversSection() {
   );
 
   const formatItems = useCallback(
-    ({ address, name, percent_change_24h, price, symbol }) => ({
+    ({ address, name, price: { relative_change_24h, value }, symbol }) => ({
       address,
-      change: `${percent_change_24h > 0 ? '+' : ''}${parseFloat(
-        (percent_change_24h || 0).toFixed(2)
+      change: `${relative_change_24h > 0 ? '+' : ''}${parseFloat(
+        (relative_change_24h || 0).toFixed(2)
       )}%`,
       name,
       onPress: handlePress,
-      price: `${nativeCurrencySymbol}${handleSignificantDecimals(price, 2)} `,
+      price: `${nativeCurrencySymbol}${handleSignificantDecimals(value, 2)} `,
       symbol,
       // We’re truncating the coin name manually so the width of the text can be measured accurately
       truncatedName: `${
