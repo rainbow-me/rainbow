@@ -5,7 +5,8 @@ import {
   saveTopLosers,
 } from '../handlers/localstorage/topMovers';
 import { emitChartsRequest } from './explorer';
-import { AppDispatch } from './store';
+import { AppDispatch, AppGetState } from './store';
+import { parseAssetsNative } from '@rainbow-me/parsers';
 
 interface ZerionAsset {
   asset_code: string;
@@ -89,16 +90,20 @@ export const topMoversLoadState = () => async (dispatch: AppDispatch) => {
 };
 
 export const updateTopMovers = (message: ZerionAssetInfoResponse) => (
-  dispatch: AppDispatch
+  dispatch: AppDispatch,
+  getState: AppGetState
 ) => {
+  const { nativeCurrency } = getState().settings;
   const orderByDirection = message.meta.order_by['relative_changes.1d'];
-  const info: TopMover[] = map(message.payload.info, ({ asset }) => {
+  const assets = map(message.payload.info, ({ asset }) => {
     const item = pick(asset, ['decimals', 'name', 'price', 'symbol']);
     return {
       address: asset.asset_code,
       ...item,
     };
   });
+  const info = parseAssetsNative(assets, nativeCurrency);
+
   const assetCodes = map(info, asset => asset.address);
   dispatch(emitChartsRequest(assetCodes));
 

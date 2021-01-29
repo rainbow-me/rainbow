@@ -34,11 +34,13 @@ const PADDING_BETWEEN_ITEMS = 26;
 
 export const measureTopMoverCoinRow = async ({
   change,
-  price,
+  native,
   truncatedName,
 }) => {
   const { width: nameWidth } = await measureTopRowText(truncatedName);
-  const { width: priceWidth } = await measureBottomRowText(price);
+  const { width: priceWidth } = await measureBottomRowText(
+    native?.price?.display || ''
+  );
   const { width: changeWidth } = await measureBottomRowText(change);
 
   const textWidth = Math.max(nameWidth, priceWidth + changeWidth);
@@ -51,18 +53,20 @@ export const measureTopMoverCoinRow = async ({
   );
 };
 
-const TopMoverCoinRow = ({
-  address,
-  change,
-  name,
-  onPress,
-  price,
-  symbol,
-  truncatedName,
-}) => {
+const TopMoverCoinRow = asset => {
+  const {
+    address,
+    change,
+    onPress,
+    native: {
+      price: { display },
+    },
+    symbol,
+    truncatedName,
+  } = asset;
   const handlePress = useCallback(() => {
-    onPress?.({ address, change, name, price, symbol });
-  }, [address, change, name, onPress, price, symbol]);
+    onPress?.(asset);
+  }, [asset, onPress]);
 
   return (
     <ButtonPressAnimation
@@ -87,7 +91,7 @@ const TopMoverCoinRow = ({
         <ColumnWithMargins margin={2}>
           <TopMoverTitle>{truncatedName}</TopMoverTitle>
           <BottomRowText weight="medium">
-            {price}
+            {display}
             <BottomRowText
               color={parseFloat(change) > 0 ? colors.green : colors.red}
               weight="medium"
@@ -101,4 +105,4 @@ const TopMoverCoinRow = ({
   );
 };
 
-export default magicMemo(TopMoverCoinRow, ['change', 'name', 'price']);
+export default magicMemo(TopMoverCoinRow, ['change', 'name', 'native']);
