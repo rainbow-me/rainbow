@@ -45,6 +45,7 @@ import {
   useTransactionConfirmation,
   useUpdateAssetOnchainBalance,
 } from '@rainbow-me/hooks';
+import { ETH_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { borders, colors } from '@rainbow-me/styles';
 import { deviceUtils, gasUtils } from '@rainbow-me/utils';
@@ -169,7 +170,7 @@ export default function SendSheet(props) {
   // Recalculate balance when gas price changes
   useEffect(() => {
     if (
-      selected?.address === 'eth' &&
+      selected?.address === ETH_ADDRESS &&
       get(prevSelectedGasPrice, 'txFee.value.amount', 0) !==
         get(selectedGasPrice, 'txFee.value.amount', 0)
     ) {
@@ -302,7 +303,7 @@ export default function SendSheet(props) {
     let submitSuccess = false;
     let updatedGasLimit = null;
     // Attempt to update gas limit before sending ERC20 / ERC721
-    if (selected?.address !== 'eth') {
+    if (selected?.address !== ETH_ADDRESS) {
       try {
         updatedGasLimit = await estimateGasLimit({
           address: accountAddress,
