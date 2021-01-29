@@ -130,7 +130,9 @@ export default function TransactionList({
 
       const avatarActionSheetOptions = [
         'Choose from Library',
-        ...(isAvatarEmojiPickerEnabled ? ['Pick an Emoji'] : []),
+        ...(isAvatarEmojiPickerEnabled && !accountImage
+          ? ['Pick an Emoji']
+          : []),
         ...(accountImage ? ['Remove Photo'] : []),
         'Cancel', // <-- cancelButtonIndex
       ];
@@ -149,13 +151,16 @@ export default function TransactionList({
               cropperCircleOverlay: true,
               cropping: true,
             }).then(processPhoto);
-          } else if (buttonIndex === 1 && isAvatarEmojiPickerEnabled) {
-            navigate(Routes.AVATAR_BUILDER, {
-              initialAccountColor: accountColor,
-              initialAccountName: accountName,
-            });
-          } else if (buttonIndex === 2 && accountImage) {
-            onRemovePhoto();
+          } else if (buttonIndex === 1) {
+            if (isAvatarEmojiPickerEnabled && !accountImage) {
+              navigate(Routes.AVATAR_BUILDER, {
+                initialAccountColor: accountColor,
+                initialAccountName: accountName,
+              });
+            }
+            if (accountImage) {
+              onRemovePhoto();
+            }
           }
         }
       );
