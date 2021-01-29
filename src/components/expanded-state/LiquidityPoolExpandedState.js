@@ -1,5 +1,6 @@
 import { map } from 'lodash';
 import React from 'react';
+import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import {
   DepositActionButton,
   SheetActionButtonRow,
@@ -18,11 +19,10 @@ import { ChartPathProvider } from '@rainbow-me/animated-charts';
 import { useChartThrottledPoints } from '@rainbow-me/hooks';
 import { magicMemo } from '@rainbow-me/utils';
 
-const heightWithoutChart = 373 + (android && 80);
-const heightWithChart = heightWithoutChart + 292;
+const heightWithoutChart = 373 - (android ? getSoftMenuBarHeight() : 0);
+const heightWithChart = heightWithoutChart + 297;
 
-export const initialLiquidityPoolExpandedStateSheetHeight =
-  heightWithChart + (android && 40);
+export const initialLiquidityPoolExpandedStateSheetHeight = heightWithChart;
 
 const LiquidityPoolExpandedState = ({ asset }) => {
   const { tokenNames, tokens, totalNativeDisplay, type, uniBalance } = asset;
@@ -47,7 +47,7 @@ const LiquidityPoolExpandedState = ({ asset }) => {
   });
 
   const liquidityPoolExpandedStateSheetHeight =
-    (ios || showChart ? heightWithChart : heightWithoutChart) + (android && 40);
+    (ios || showChart ? heightWithChart : heightWithoutChart) + (android && 24);
 
   return (
     <SlackSheet

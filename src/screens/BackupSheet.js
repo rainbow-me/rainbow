@@ -3,6 +3,7 @@ import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { InteractionManager, StatusBar } from 'react-native';
+import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { DelayedAlert } from '../components/alerts';
 import {
   BackupCloudStep,
@@ -182,9 +183,14 @@ export default function BackupSheet() {
     step,
   ]);
 
-  let sheetHeight = android && !nativeScreen ? AndroidHeight : longFormHeight;
+  let sheetHeight =
+    android && !nativeScreen
+      ? AndroidHeight
+      : longFormHeight + getSoftMenuBarHeight();
   let wrapperHeight =
-    deviceHeight + (android && !nativeScreen ? AndroidHeight : longFormHeight);
+    deviceHeight +
+    (android && !nativeScreen ? AndroidHeight : longFormHeight) +
+    getSoftMenuBarHeight();
 
   // This sheet is a bit taller due to an extra line of text
   if (android && step === WalletBackupStepTypes.existing_user) {
