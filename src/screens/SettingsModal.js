@@ -3,7 +3,6 @@ import { createStackNavigator } from '@react-navigation/stack';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { Animated, InteractionManager, View } from 'react-native';
 import styled from 'styled-components';
-import BackButton from '../components/header/BackButton';
 import { Modal } from '../components/modal';
 import ModalHeaderButton from '../components/modal/ModalHeaderButton';
 import {
@@ -16,7 +15,6 @@ import SettingsBackupView from '../components/settings-menu/BackupSection/Settin
 import ShowSecretView from '../components/settings-menu/BackupSection/ShowSecretView';
 import WalletSelectionView from '../components/settings-menu/BackupSection/WalletSelectionView';
 import DevSection from '../components/settings-menu/DevSection';
-import { Text } from '../components/text';
 import { useTheme } from '../context/ThemeContext';
 import WalletTypes from '../helpers/walletTypes';
 import { useDimensions, useWallets } from '../hooks';
@@ -90,31 +88,12 @@ const SettingsPages = {
   },
 };
 
-const EmptyButtonPlaceholder = styled.View`
-  flex: 1;
-`;
 const Container = styled.View`
   flex: 1;
   overflow: hidden;
 `;
 
 const Stack = createStackNavigator();
-
-const SettingsTitle = ({ children }) => {
-  const { colors } = useTheme();
-
-  return (
-    <Text
-      align="center"
-      color={colors.dark}
-      letterSpacing="roundedMedium"
-      size="large"
-      weight="bold"
-    >
-      {children}
-    </Text>
-  );
-};
 
 export default function SettingsModal() {
   const { goBack, navigate } = useNavigation();
@@ -189,20 +168,6 @@ export default function SettingsModal() {
           screenOptions={{
             ...memoSettingsOptions,
             headerRight: renderHeaderRight,
-            ...(android && {
-              // eslint-disable-next-line react/display-name
-              headerRight: () => <EmptyButtonPlaceholder />,
-              // eslint-disable-next-line react/display-name
-              headerTitle: props => <SettingsTitle {...props} />,
-              ...(android && {
-                // eslint-disable-next-line react/display-name
-                headerLeft: props => <BackButton {...props} textChevron />,
-              }),
-            }),
-            headerTitleStyle: {
-              ...memoSettingsOptions.headerTitleStyle,
-              color: colors.dark,
-            },
           }}
         >
           <Stack.Screen
