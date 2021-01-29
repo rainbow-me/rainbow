@@ -23,7 +23,7 @@ import GasSpeedLabelPager from './GasSpeedLabelPager';
 import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
 import { useAccountSettings, useGas } from '@rainbow-me/hooks';
 import { gweiToWei, weiToGwei } from '@rainbow-me/parsers';
-import { fonts, fontWithWidth, margin } from '@rainbow-me/styles';
+import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
 import { gasUtils, magicMemo } from '@rainbow-me/utils';
 
 const { GasSpeedOrder, CUSTOM, FAST, SLOW } = gasUtils;
@@ -33,8 +33,9 @@ const Container = styled(Row).attrs({
   opacityTouchable: true,
   pointerEvents: 'auto',
 })`
-  ${margin(10, 18, 10, 15)}
-  width: 350;
+  ${padding(15, 19, 0)};
+  height: 76;
+  width: 100%;
 `;
 
 const Label = styled(Text).attrs({
@@ -248,7 +249,7 @@ const GasSpeedButton = ({
           : animatedNumber}
       </Text>
     ),
-    [gasPricesAvailable, isSufficientGas, theme, txFees]
+    [colors, gasPricesAvailable, isSufficientGas, theme, txFees]
   );
 
   const handlePress = useCallback(() => {

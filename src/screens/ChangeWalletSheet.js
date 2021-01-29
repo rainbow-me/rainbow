@@ -1,5 +1,5 @@
 import { captureException } from '@sentry/react-native';
-import { get } from 'lodash';
+import { get, toLower } from 'lodash';
 import React, {
   useCallback,
   useEffect,
@@ -24,8 +24,7 @@ import showWalletErrorAlert from '../helpers/support';
 import WalletLoadingStates from '../helpers/walletLoadingStates';
 import WalletTypes from '../helpers/walletTypes';
 import { useWalletsWithBalancesAndNames } from '../hooks/useWalletsWithBalancesAndNames';
-import { wipeKeychain } from '../model/keychain';
-import { createWallet } from '../model/wallet';
+import { cleanUpWalletKeys, createWallet } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import {
   addressSetSelected,
@@ -173,15 +172,17 @@ export default function ChangeWalletSheet() {
 
   const deleteWallet = useCallback(
     async (walletId, address) => {
-      const newWallets = { ...wallets };
-      // Mark it as hidden
-      newWallets[walletId].addresses.some((account, index) => {
-        if (account.address === address) {
-          newWallets[walletId].addresses[index].visible = false;
-          return true;
-        }
-        return false;
-      });
+      const newWallets = {
+        ...wallets,
+        [walletId]: {
+          ...wallets[walletId],
+          addresses: wallets[walletId].addresses.map(account =>
+            toLower(account.address) === toLower(address)
+              ? { ...account, visible: false }
+              : account
+          ),
+        },
+      };
       // If there are no visible wallets
       // then delete the wallet
       const visibleAddresses = newWallets[walletId].addresses.filter(
@@ -189,8 +190,10 @@ export default function ChangeWalletSheet() {
       );
       if (visibleAddresses.length === 0) {
         delete newWallets[walletId];
+        await dispatch(walletsUpdate({ ...newWallets, [walletId]: undefined }));
+      } else {
+        await dispatch(walletsUpdate(newWallets));
       }
-      await dispatch(walletsUpdate(newWallets));
       removeWalletData(address);
     },
     [dispatch, wallets]
@@ -291,7 +294,7 @@ export default function ChangeWalletSheet() {
                   ReactNativeHapticFeedback.trigger('notificationSuccess');
 
                   if (!isLastAvailableWallet) {
-                    await wipeKeychain();
+                    await cleanUpWalletKeys();
                     goBack();
                     replace(Routes.WELCOME_SCREEN);
                   } else {

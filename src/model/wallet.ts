@@ -45,6 +45,7 @@ import {
   addressKey,
   allWalletsKey,
   oldSeedPhraseMigratedKey,
+  pinKey,
   privateKeyKey,
   seedPhraseKey,
   selectedWalletKey,
@@ -1118,6 +1119,33 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
     logger.sentry('Error while migrating secrets');
     captureException(e);
     return null;
+  }
+};
+
+export const cleanUpWalletKeys = async (): Promise<boolean> => {
+  const keys = [
+    addressKey,
+    allWalletsKey,
+    oldSeedPhraseMigratedKey,
+    pinKey,
+    selectedWalletKey,
+  ];
+
+  try {
+    await Promise.all(
+      keys.map(key => {
+        try {
+          keychain.remove(key);
+        } catch (e) {
+          // key might not exists
+          logger.log('failure to delete key', key);
+        }
+        return true;
+      })
+    );
+    return true;
+  } catch (e) {
+    return false;
   }
 };
 

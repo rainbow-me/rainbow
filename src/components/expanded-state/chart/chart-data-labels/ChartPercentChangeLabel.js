@@ -15,11 +15,12 @@ const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
 const PercentLabel = styled(AnimatedTextInput)`
   ${fontWithWidth(fonts.weight.bold)};
+  background-color: ${({ theme: { colors } }) => colors.transparent};
   font-size: ${fonts.size.big};
   font-variant: tabular-nums;
   letter-spacing: ${fonts.letterSpacing.roundedTightest};
   text-align: right;
-  margin-vertical: ${android ? -8 : 0};
+  ${android && `margin-vertical: -20px;`}
 `;
 
 export default function ChartPercentChangeLabel() {
