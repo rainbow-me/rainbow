@@ -10,6 +10,11 @@ import CoinName from './CoinName';
 
 const TopMoverCoinIconSize = 36;
 const TopMoverCoinRowMargin = 8;
+const TopMoverPriceMargin = 5;
+
+const Spacer = styled.View`
+  width: ${TopMoverPriceMargin};
+`;
 
 const TopMoverTitle = styled(CoinName).attrs({
   color: colors.alpha(colors.blueGreyDark, 0.8),
@@ -43,7 +48,10 @@ export const measureTopMoverCoinRow = async ({
   );
   const { width: changeWidth } = await measureBottomRowText(change);
 
-  const textWidth = Math.max(nameWidth, priceWidth + changeWidth);
+  const textWidth = Math.max(
+    nameWidth,
+    priceWidth + changeWidth + TopMoverPriceMargin
+  );
 
   return (
     PADDING_BETWEEN_ITEMS +
@@ -92,6 +100,7 @@ const TopMoverCoinRow = asset => {
           <TopMoverTitle>{truncatedName}</TopMoverTitle>
           <BottomRowText weight="medium">
             {display}
+            <Spacer />
             <BottomRowText
               color={parseFloat(change) > 0 ? colors.green : colors.red}
               weight="medium"
