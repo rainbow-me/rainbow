@@ -1,5 +1,5 @@
 import { captureException } from '@sentry/react-native';
-import { get } from 'lodash';
+import { get, toLower } from 'lodash';
 import React, {
   useCallback,
   useEffect,
@@ -174,7 +174,7 @@ export default function ChangeWalletSheet() {
         [walletId]: {
           ...wallets[walletId],
           addresses: wallets[walletId].addresses.map(account =>
-            account.address === address
+            toLower(account.address) === toLower(address)
               ? { ...account, visible: false }
               : account
           ),
