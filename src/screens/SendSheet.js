@@ -300,12 +300,33 @@ export default function SendSheet(props) {
     }
 
     let submitSuccess = false;
+    let updatedGasLimit = null;
+    // Attempt to update gas limit before sending ERC20 / ERC721
+    if (selected?.address !== 'eth') {
+      try {
+        updatedGasLimit = await estimateGasLimit({
+          address: accountAddress,
+          amount: amountDetails.assetAmount,
+          asset: selected,
+          recipient,
+        });
+        logger.log(
+          'GAS LIMIT UPDATED!',
+          'BEFORE',
+          gasLimit,
+          'AFTER',
+          updatedGasLimit
+        );
+        updateTxFee(updatedGasLimit);
+        // eslint-disable-next-line no-empty
+      } catch (e) {}
+    }
 
     const txDetails = {
       amount: amountDetails.assetAmount,
       asset: selected,
       from: accountAddress,
-      gasLimit,
+      gasLimit: updatedGasLimit || gasLimit,
       gasPrice: get(selectedGasPrice, 'value.amount'),
       nonce: null,
       to: recipient,
@@ -344,6 +365,7 @@ export default function SendSheet(props) {
     recipient,
     selected,
     selectedGasPrice,
+    updateTxFee,
   ]);
 
   const submitTransaction = useCallback(async () => {
