@@ -676,11 +676,15 @@ class RecyclerAssetList extends Component {
   checkEditStickyHeader(offsetY) {
     const offsetHeight =
       CoinRowHeight * (this.coinDividerIndex - 1) + firstCoinRowMarginTop;
-    if (this.props.isCoinListEdited && offsetY > offsetHeight) {
+    if (
+      !this.state.showCoinListEditor &&
+      this.props.isCoinListEdited &&
+      offsetY > offsetHeight
+    ) {
       this.setState({ showCoinListEditor: true });
     } else if (
       (offsetY < offsetHeight || !this.props.isCoinListEdited) &&
-      this.state.showCoinListEditor === true
+      !!this.state.showCoinListEditor
     ) {
       this.setState({ showCoinListEditor: false });
     }
@@ -820,22 +824,24 @@ class RecyclerAssetList extends Component {
     );
   };
 
-  stickyRowRenderer = (_, data) => (
-    <Fragment>
-      <AssetListHeader {...data} isSticky />
-      {this.state.showCoinListEditor ? (
-        <CoinDivider
-          assetsAmount={this.renderList.length}
-          balancesSum={0}
-          isSticky
-          nativeCurrency={this.props.nativeCurrency}
-          onEndEdit={() => {
-            this.setState({ showCoinListEditor: false });
-          }}
-        />
-      ) : null}
-    </Fragment>
-  );
+  stickyRowRenderer = (_, data) => {
+    return (
+      <Fragment key={data.title}>
+        <AssetListHeader {...data} isSticky />
+        {this.state.showCoinListEditor ? (
+          <CoinDivider
+            assetsAmount={this.renderList.length}
+            balancesSum={0}
+            isSticky
+            nativeCurrency={this.props.nativeCurrency}
+            onEndEdit={() => {
+              this.setState({ showCoinListEditor: false });
+            }}
+          />
+        ) : null}
+      </Fragment>
+    );
+  };
 
   static DEFAULT_STICKY_HEADER_INDICES = [0];
 
