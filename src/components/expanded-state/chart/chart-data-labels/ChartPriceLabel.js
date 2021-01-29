@@ -25,12 +25,20 @@ const Label = withThemeContext(styled(ChartYLabel)`
      `}
 `);
 
-const AndroidCurrencySymbolLabel = styled(Label)`
+const AndroidCurrencySymbolLabel = withThemeContext(styled(Label)`
+  color: ${({ colors }) => colors.dark};
+  ${fontWithWidth(fonts.weight.heavy)};
+  font-size: ${fonts.size.big};
+  letter-spacing: ${fonts.letterSpacing.roundedTight};
+  ${android &&
+  `margin-top: -30;
+     margin-bottom: -30;
+     `}
   height: 69;
   left: 5.5;
   margin-right: 3;
   top: ${PixelRatio.get() <= 2.625 ? 22 : 23};
-`;
+`);
 
 export function formatNative(value, priceSharedValue, nativeSelected) {
   'worklet';
