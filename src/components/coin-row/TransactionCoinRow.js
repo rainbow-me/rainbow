@@ -2,6 +2,7 @@ import { compact, get, toLower } from 'lodash';
 import React, { useCallback } from 'react';
 import { css } from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
+import { getRandomColor } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIconSize } from '../coin-icon';
 import { FlexItem, Row, RowWithMargins } from '../layout';
@@ -86,7 +87,6 @@ export default function TransactionCoinRow({ item, ...props }) {
   const { contact } = item;
   const { accountAddress } = useAccountSettings();
   const { navigate } = useNavigation();
-  const { colors } = useTheme();
 
   const onPressTransaction = useCallback(async () => {
     const { hash, from, minedAt, pending, to, status, type } = item;
@@ -118,7 +118,7 @@ export default function TransactionCoinRow({ item, ...props }) {
       headerInfo.address = isENSAddressFormat(contactAddress)
         ? contactAddress
         : abbreviations.address(contactAddress, 4, 10);
-      contactColor = colors.getRandomColor();
+      contactColor = getRandomColor();
     }
 
     if (hash) {
@@ -184,7 +184,7 @@ export default function TransactionCoinRow({ item, ...props }) {
         }
       );
     }
-  }, [accountAddress, colors, contact, item, navigate]);
+  }, [accountAddress, contact, item, navigate]);
 
   return (
     <ButtonPressAnimation onPress={onPressTransaction} scaleTo={0.96}>
