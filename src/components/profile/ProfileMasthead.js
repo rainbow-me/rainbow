@@ -1,5 +1,6 @@
 import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
+import { toLower } from 'lodash';
 import React, { useCallback, useRef } from 'react';
 import ImagePicker from 'react-native-image-crop-picker';
 import { useDispatch } from 'react-redux';
@@ -112,7 +113,7 @@ export default function ProfileMasthead({
       [selectedWallet.id]: {
         ...wallets[selectedWallet.id],
         addresses: wallets[selectedWallet.id].addresses.map(account =>
-          account.address === accountAddress
+          toLower(account.address) === toLower(accountAddress)
             ? { ...account, image: null }
             : account
         ),
@@ -135,7 +136,7 @@ export default function ProfileMasthead({
               [selectedWallet.id]: {
                 ...wallets[selectedWallet.id],
                 addresses: wallets[selectedWallet.id].addresses.map(account =>
-                  account.address === accountAddress
+                  toLower(account.address) === toLower(accountAddress)
                     ? {
                         ...account,
                         image: `~${image?.path.slice(stringIndex)}`,

@@ -102,7 +102,7 @@ export default function TransactionList({
       [selectedWallet.id]: {
         ...wallets[selectedWallet.id],
         addresses: wallets[selectedWallet.id].addresses.map(account =>
-          account.address === accountAddress
+          toLower(account.address) === toLower(accountAddress)
             ? { ...account, image: null }
             : account
         ),
@@ -122,7 +122,7 @@ export default function TransactionList({
           [selectedWallet.id]: {
             ...wallets[selectedWallet.id],
             addresses: wallets[selectedWallet.id].addresses.map(account =>
-              account.address === accountAddress
+              toLower(account.address) === toLower(accountAddress)
                 ? { ...account, image: `~${image?.path.slice(stringIndex)}` }
                 : account
             ),
