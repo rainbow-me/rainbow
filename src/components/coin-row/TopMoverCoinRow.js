@@ -39,7 +39,7 @@ export const measureTopMoverCoinRow = async ({
 }) => {
   const { width: nameWidth } = await measureTopRowText(truncatedName);
   const { width: priceWidth } = await measureBottomRowText(
-    native?.price?.display || ''
+    native?.price?.display ?? ''
   );
   const { width: changeWidth } = await measureBottomRowText(change);
 
