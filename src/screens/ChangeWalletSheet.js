@@ -169,15 +169,17 @@ export default function ChangeWalletSheet() {
 
   const deleteWallet = useCallback(
     async (walletId, address) => {
-      const newWallets = { ...wallets };
-      // Mark it as hidden
-      newWallets[walletId].addresses.some((account, index) => {
-        if (account.address === address) {
-          newWallets[walletId].addresses[index].visible = false;
-          return true;
-        }
-        return false;
-      });
+      const newWallets = {
+        ...wallets,
+        [walletId]: {
+          ...wallets[walletId],
+          addresses: wallets[walletId].addresses.map(account =>
+            account.address === address
+              ? { ...account, visible: false }
+              : account
+          ),
+        },
+      };
       // If there are no visible wallets
       // then delete the wallet
       const visibleAddresses = newWallets[walletId].addresses.filter(
@@ -185,8 +187,10 @@ export default function ChangeWalletSheet() {
       );
       if (visibleAddresses.length === 0) {
         delete newWallets[walletId];
+        await dispatch(walletsUpdate({ ...newWallets, [walletId]: undefined }));
+      } else {
+        await dispatch(walletsUpdate(newWallets));
       }
-      await dispatch(walletsUpdate(newWallets));
       removeWalletData(address);
     },
     [dispatch, wallets]
