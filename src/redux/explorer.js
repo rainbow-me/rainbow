@@ -25,8 +25,11 @@ const EXPLORER_ENABLE_FALLBACK = 'explorer/EXPLORER_ENABLE_FALLBACK';
 const EXPLORER_DISABLE_FALLBACK = 'explorer/EXPLORER_DISABLE_FALLBACK';
 const EXPLORER_SET_FALLBACK_HANDLER = 'explorer/EXPLORER_SET_FALLBACK_HANDLER';
 
+let assetInfoHandle = null;
+
 const TRANSACTIONS_LIMIT = 1000;
 const ZERION_ASSETS_TIMEOUT = 15000; // 15 seconds
+const ASSET_INFO_TIMEOUT = 10 * 60 * 1000; // 10 minutes
 
 const messages = {
   ADDRESS_ASSETS: {
@@ -272,10 +275,16 @@ export const emitAssetRequest = assetAddress => (dispatch, getState) => {
 };
 
 export const emitAssetInfoRequest = () => (dispatch, getState) => {
+  assetInfoHandle && clearTimeout(assetInfoHandle);
+
   const { nativeCurrency } = getState().settings;
   const { assetsSocket } = getState().explorer;
   assetsSocket.emit(...assetInfoRequest(nativeCurrency));
   assetsSocket.emit(...assetInfoRequest(nativeCurrency, 'asc'));
+
+  assetInfoHandle = setTimeout(() => {
+    dispatch(emitAssetInfoRequest());
+  }, ASSET_INFO_TIMEOUT);
 };
 
 export const emitChartsRequest = (
