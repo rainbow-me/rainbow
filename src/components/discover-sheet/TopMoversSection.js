@@ -1,10 +1,10 @@
 import React, { useCallback, useMemo } from 'react';
-import { useTopMovers } from '@rainbow-me/hooks';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
 import { Column, Flex } from '../layout';
 import { MarqueeList } from '../list';
 import { Text } from '../text';
 import EdgeFade from './EdgeFade';
+import { useTopMovers } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 
