@@ -73,12 +73,7 @@ const UniqueTokenCard = ({
         />
         {is3dAsset && (
           <Emblems>
-            <AxisIcon
-              fill={colors.pinkLight}
-              size={16}
-              stroke={colors.pinkLight}
-              strokeWidth={0}
-            />
+            <AxisIcon size={25} />
           </Emblems>
         )}
         {borderEnabled && (

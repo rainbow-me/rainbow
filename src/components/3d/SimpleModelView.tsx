@@ -73,8 +73,7 @@ export default function ModelViewer({
         payload: payload,
       }));
     }
-    var modelViewer = document.querySelector("model-viewer");
-    modelViewer.addEventListener("progress", function (e) {
+    document.querySelector("model-viewer").addEventListener("progress", function (e) {
       shouldPostMessage("progress", e.detail.totalProgress);
     });
   </script>
