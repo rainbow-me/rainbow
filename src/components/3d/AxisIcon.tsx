@@ -1,5 +1,6 @@
 import * as React from 'react';
 import Svg, { LinearGradient, Path, Stop } from 'react-native-svg';
+import { colors } from '@rainbow-me/styles';
 
 export type AxisIconProps = {
   readonly size: number;
@@ -9,16 +10,16 @@ export default function AxisIcon({ size }: AxisIconProps): JSX.Element {
   return (
     <Svg height={size} viewBox="0 0 512 512" width={size} x="0" y="0">
       <LinearGradient
-        gradientTransform="matrix(1 0 0 -1 2.862200e-004 514.0033)"
+        gradientTransform="matrix(1 0 0 -1 0 512)"
         gradientUnits="userSpaceOnUse"
         id="gradient"
-        x1="-2.862184e-004"
-        x2="511.997"
-        y1="258.0016"
-        y2="258.0016"
+        x1="0"
+        x2="512"
+        y1="250"
+        y2="250"
       >
-        <Stop offset="0" stopColor="#80D8FF" />
-        <Stop offset="1" stopColor="#EA80FC" />
+        <Stop offset="0" stopColor={colors.flamingo} />
+        <Stop offset="1" stopColor={colors.neonSkyblue} />
       </LinearGradient>
       <Path
         d="M495.545,478.132l-112.371,20.216c-10.85,1.956-21.266-5.253-23.225-16.143

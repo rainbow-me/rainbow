@@ -2,6 +2,7 @@ import * as React from 'react';
 import {
   ActivityIndicator,
   Animated,
+  PanResponder,
   StyleSheet,
   View,
   ViewStyle,
@@ -65,7 +66,7 @@ export default function ModelViewer({
 <body>
   <model-viewer src="${uri}" alt="${
         alt || ''
-      }" auto-rotate camera-controls></model-viewer>
+      }" auto-rotate camera-controls autoplay shadow-intensity="1"></model-viewer>
   <script type="text/javascript">
     function shouldPostMessage(type, payload) {
       window.ReactNativeWebView.postMessage(JSON.stringify({
@@ -91,8 +92,16 @@ export default function ModelViewer({
       useNativeDriver: true,
     }).start();
   }, [loaded, opacity]);
+  const { panHandlers } = React.useMemo(
+    () =>
+      PanResponder.create({
+        onPanResponderTerminationRequest: () => !loaded,
+        onStartShouldSetPanResponderCapture: () => loaded,
+      }),
+    [loaded]
+  );
   return (
-    <View style={style}>
+    <View style={style} {...panHandlers}>
       <WebView
         cacheEnabled
         onMessage={onMessage}

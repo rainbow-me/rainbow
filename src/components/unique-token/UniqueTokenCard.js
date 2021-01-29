@@ -73,7 +73,7 @@ const UniqueTokenCard = ({
         />
         {is3dAsset && (
           <Emblems>
-            <AxisIcon size={25} />
+            <AxisIcon size={height * 0.12} />
           </Emblems>
         )}
         {borderEnabled && (
