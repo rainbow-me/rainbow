@@ -16,7 +16,7 @@ import {
 } from '../../redux/fallbackExplorer';
 import { DefaultTokenLists } from '../../references';
 import Spinner from '../Spinner';
-import ButtonPressAnimation from '../animations/ButtonPressAnimation/ButtonPressAnimation.ios';
+import { ButtonPressAnimation } from '../animations';
 import { ListCoinRow } from '../coin-row';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
 import { Centered, Column, Flex, Row } from '../layout';

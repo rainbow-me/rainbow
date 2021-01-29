@@ -52,7 +52,7 @@ export default function PulseIndex() {
   const handlePress = useCallback(() => {
     const asset = ethereumUtils.formatGenericAsset(genericAssets[DPI_ADDRESS]);
 
-    navigate(ios ? Routes.EXPANDED_ASSET_SHEET : Routes.EXPANDED_ASSET_SCREEN, {
+    navigate(ios ? Routes.TOKEN_INDEX_SHEET : Routes.TOKEN_INDEX_SCREEN, {
       asset,
       type: 'token_index',
     });

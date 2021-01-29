@@ -1,9 +1,11 @@
 import { sortBy, toLower } from 'lodash';
-import React, { Fragment, useMemo, useRef } from 'react';
+import React, { Fragment, useCallback, useMemo, useRef } from 'react';
 import { Dimensions } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
+import { ButtonPressAnimation } from '../animations';
 import { UnderlyingAssetCoinRow } from '../coin-row';
+import { initialChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
 import { Column, Row } from '../layout';
 import {
   BuyActionButton,
@@ -22,6 +24,8 @@ import {
   useDimensions,
   useDPI,
 } from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
+import Routes from '@rainbow-me/routes';
 import { colors, position } from '@rainbow-me/styles';
 import {
   convertRawAmountToNativeDisplay,
@@ -73,6 +77,7 @@ const formatGenericAsset = asset => {
 };
 
 export default function TokenIndexExpandedState({ asset }) {
+  const { navigate } = useNavigation();
   const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
     genericAssets,
   }));
@@ -143,6 +148,20 @@ export default function TokenIndexExpandedState({ asset }) {
   }
   const { height: screenHeight } = useDimensions();
 
+  const handlePress = useCallback(
+    item => {
+      navigate(
+        ios ? Routes.EXPANDED_ASSET_SHEET : Routes.EXPANDED_ASSET_SCREEN,
+        {
+          asset: item,
+          longFormHeight: initialChartExpandedStateSheetHeight,
+          type: 'token',
+        }
+      );
+    },
+    [navigate]
+  );
+
   return (
     <Fragment>
       <SlackSheet
@@ -197,7 +216,11 @@ export default function TokenIndexExpandedState({ asset }) {
         </Row>
         <Column margin={19}>
           {underlying.map(item => (
-            <Row key={`dpi-${item?.address}`}>
+            <Row
+              as={ButtonPressAnimation}
+              key={`dpi-${item?.address}`}
+              onPress={() => handlePress(item)}
+            >
               <Column align="start" flex={1}>
                 <UnderlyingAssetCoinRow {...item} />
               </Column>

@@ -123,6 +123,11 @@ function MainNavigator() {
         options={expandedPreset}
       />
       <Stack.Screen
+        component={ExpandedAssetSheet}
+        name={Routes.TOKEN_INDEX_SHEET}
+        options={expandedPreset}
+      />
+      <Stack.Screen
         component={ChangeWalletSheet}
         name={Routes.CHANGE_WALLET_SHEET}
         options={expandedPreset}
@@ -236,6 +241,11 @@ function MainOuterNavigator() {
       <OuterStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SCREEN}
+        options={sheetPreset}
+      />
+      <OuterStack.Screen
+        component={ExpandedAssetSheet}
+        name={Routes.TOKEN_INDEX_SCREEN}
         options={sheetPreset}
       />
       <OuterStack.Screen
