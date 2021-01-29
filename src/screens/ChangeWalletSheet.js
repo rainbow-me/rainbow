@@ -186,7 +186,7 @@ export default function ChangeWalletSheet() {
       );
       if (visibleAddresses.length === 0) {
         delete newWallets[walletId];
-        await dispatch(walletsUpdate({ ...newWallets, [walletId]: undefined }));
+        await dispatch(walletsUpdate({ ...newWallets }));
       } else {
         await dispatch(walletsUpdate(newWallets));
       }
