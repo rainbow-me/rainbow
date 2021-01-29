@@ -1,7 +1,13 @@
 import { findIndex, get, has, isNil } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component, Fragment } from 'react';
-import { LayoutAnimation, RefreshControl, View } from 'react-native';
+import isEqual from 'react-fast-compare';
+import {
+  LayoutAnimation,
+  RefreshControl,
+  StyleSheet,
+  View,
+} from 'react-native';
 import { connect } from 'react-redux';
 import {
   BaseItemAnimator,
@@ -24,6 +30,13 @@ import { colors } from '@rainbow-me/styles';
 const NOOP = () => undefined;
 let globalDeviceDimensions = 0;
 
+const styles = StyleSheet.create({
+  scrollView: {
+    backgroundColor: colors.white,
+    flex: 1,
+    minHeight: 1,
+  },
+});
 class LayoutItemAnimator extends BaseItemAnimator {
   constructor(rlv, paddingBottom) {
     super();
@@ -160,6 +173,76 @@ const hasRowChanged = (r1, r2) => {
     smallBalancedChanged
   );
 };
+
+// eslint-disable-next-line react/display-name
+const CachedRecyclerListView = React.forwardRef(
+  (
+    {
+      dataProvider,
+      sectionsIndices,
+      externalScrollView,
+      itemAnimator,
+      layoutProvider,
+      onScroll,
+      renderAheadOffset,
+      rowRenderer,
+      hideHeader,
+      handleRefresh,
+      isRefreshing,
+      fetchData,
+    },
+    ref
+  ) => {
+    const extendedState = React.useMemo(
+      () => ({
+        sectionsIndices,
+      }),
+      [sectionsIndices]
+    );
+    const scrollIndicatorInsets = React.useMemo(
+      () => ({
+        bottom: safeAreaInsetValues.bottom,
+        top: hideHeader ? 0 : AssetListHeaderHeight,
+      }),
+      [hideHeader]
+    );
+    const renderRefreshControl = React.useCallback(
+      () => (
+        <RefreshControl
+          onRefresh={handleRefresh}
+          refreshing={isRefreshing}
+          style={ios ? {} : { top: 20 }}
+          tintColor={colors.alpha(colors.blueGreyDark, 0.4)}
+        />
+      ),
+      [handleRefresh, isRefreshing]
+    );
+    const scrollViewProps = React.useMemo(
+      () => ({
+        refreshControl: fetchData && renderRefreshControl(),
+      }),
+      [fetchData, renderRefreshControl]
+    );
+    return (
+      <RecyclerListView
+        dataProvider={dataProvider}
+        extendedState={extendedState}
+        externalScrollView={externalScrollView}
+        itemAnimator={itemAnimator}
+        layoutProvider={layoutProvider}
+        onScroll={onScroll}
+        ref={ref}
+        renderAheadOffset={renderAheadOffset}
+        rowRenderer={rowRenderer}
+        scrollIndicatorInsets={scrollIndicatorInsets}
+        scrollViewProps={scrollViewProps}
+        style={styles.scrollView}
+      />
+    );
+  }
+);
+
+const MemoizedRecyclerListView = React.memo(CachedRecyclerListView, isEqual);
 
 class RecyclerAssetList extends Component {
   static propTypes = {
@@ -461,9 +544,7 @@ class RecyclerAssetList extends Component {
     const { openFamilyTabs, nativeCurrency, sections } = this.props;
 
     if (nativeCurrency !== prevProps.nativeCurrency) {
-      setTimeout(() => {
-        this.rlv && this.rlv.scrollToTop(false);
-      }, 200);
+      requestAnimationFrame(() => !!this.rlv && this.rlv.scrollToTop(true));
     }
 
     let collectibles = {};
@@ -555,9 +636,7 @@ class RecyclerAssetList extends Component {
       (!this.props.isCoinListEdited ||
         (!prevProps.isCoinListEdited && this.props.isCoinListEdited))
     ) {
-      setTimeout(() => {
-        this.rlv && this.rlv.scrollToEnd({ animated: true });
-      }, 10);
+      requestAnimationFrame(() => !!this.rlv && this.rlv.scrollToEnd(true));
     }
 
     // Auto-scroll to showcase family if something was added/removed 👇
@@ -608,9 +687,9 @@ class RecyclerAssetList extends Component {
   }
 
   scrollToOffset(position, animated) {
-    setTimeout(() => {
-      this.rlv && this.rlv.scrollToOffset(0, position, animated);
-    }, 5);
+    requestAnimationFrame(() => {
+      !!this.rlv && this.rlv.scrollToOffset(0, position, animated);
+    });
   }
 
   getStableId = index => {
@@ -669,22 +748,15 @@ class RecyclerAssetList extends Component {
   }
 
   handleRefresh = () => {
-    if (this.state.isRefreshing) return;
-
-    this.setState({ isRefreshing: true }, () => {
-      this.props
-        .fetchData()
-        .then(() => {
-          if (!this.isCancelled) {
-            this.setState({ isRefreshing: false });
-          }
-        })
-        .catch(() => {
-          if (!this.isCancelled) {
-            this.setState({ isRefreshing: false });
-          }
-        });
-    });
+    !this.state.isRefreshing &&
+      (async () => {
+        this.setState({ isRefreshing: true });
+        try {
+          await this.fetchData();
+        } finally {
+          !this.isCancelled && this.setState({ isRefreshing: false });
+        }
+      })();
   };
 
   handleScroll = (_nativeEventObject, _, offsetY) => {
@@ -692,17 +764,6 @@ class RecyclerAssetList extends Component {
       this.checkEditStickyHeader(offsetY);
     }
   };
-
-  renderRefreshControl() {
-    return (
-      <RefreshControl
-        onRefresh={this.handleRefresh}
-        refreshing={this.state.isRefreshing}
-        style={ios ? {} : { top: 20 }}
-        tintColor={colors.alpha(colors.blueGreyDark, 0.4)}
-      />
-    );
-  }
 
   rowRenderer = (type, data, index) => {
     if (isNil(data) || isNil(index)) {
@@ -715,43 +776,48 @@ class RecyclerAssetList extends Component {
       return null;
     }
 
-    if (type.index === ViewTypes.HEADER.index) {
-      return ViewTypes.HEADER.renderComponent({
-        data,
-        isCoinListEdited,
-      });
-    } else if (type.index === ViewTypes.COIN_ROW.index) {
-      return ViewTypes.COIN_ROW.renderComponent({
-        data,
-        type,
-      });
-    } else if (type.index === ViewTypes.COIN_DIVIDER.index) {
-      return ViewTypes.COIN_DIVIDER.renderComponent({
-        data,
-        isCoinListEdited,
-        nativeCurrency,
-      });
-    } else if (type.index === ViewTypes.COIN_SMALL_BALANCES.index) {
-      return ViewTypes.COIN_SMALL_BALANCES.renderComponent({
-        data,
-        smallBalancedChanged,
-      });
-    } else if (type.index === ViewTypes.COIN_SAVINGS.index) {
-      return ViewTypes.COIN_SAVINGS.renderComponent({
-        data,
-      });
-    } else if (type.index === ViewTypes.POOLS.index) {
-      return ViewTypes.POOLS.renderComponent({
-        data,
-      });
-    } else if (type.index === ViewTypes.UNIQUE_TOKEN_ROW.index) {
-      return ViewTypes.UNIQUE_TOKEN_ROW.renderComponent({
-        data,
-        index,
-        sections,
-        type,
-      });
-    }
+    const shouldRenderItem = () => {
+      if (type.index === ViewTypes.HEADER.index) {
+        return ViewTypes.HEADER.renderComponent({
+          data,
+          isCoinListEdited,
+        });
+      } else if (type.index === ViewTypes.COIN_ROW.index) {
+        return ViewTypes.COIN_ROW.renderComponent({
+          data,
+          type,
+        });
+      } else if (type.index === ViewTypes.COIN_DIVIDER.index) {
+        return ViewTypes.COIN_DIVIDER.renderComponent({
+          data,
+          isCoinListEdited,
+          nativeCurrency,
+        });
+      } else if (type.index === ViewTypes.COIN_SMALL_BALANCES.index) {
+        return ViewTypes.COIN_SMALL_BALANCES.renderComponent({
+          data,
+          smallBalancedChanged,
+        });
+      } else if (type.index === ViewTypes.COIN_SAVINGS.index) {
+        return ViewTypes.COIN_SAVINGS.renderComponent({
+          data,
+        });
+      } else if (type.index === ViewTypes.POOLS.index) {
+        return ViewTypes.POOLS.renderComponent({
+          data,
+        });
+      } else if (type.index === ViewTypes.UNIQUE_TOKEN_ROW.index) {
+        return ViewTypes.UNIQUE_TOKEN_ROW.renderComponent({
+          data,
+          index,
+          sections,
+          type,
+        });
+      }
+    };
+    return (
+      <React.Fragment key={`k${index}`}>{shouldRenderItem()}</React.Fragment>
+    );
   };
 
   stickyRowRenderer = (_, data) => (
@@ -771,6 +837,8 @@ class RecyclerAssetList extends Component {
     </Fragment>
   );
 
+  static DEFAULT_STICKY_HEADER_INDICES = [0];
+
   render() {
     const {
       externalScrollView,
@@ -784,7 +852,6 @@ class RecyclerAssetList extends Component {
       sectionsIndices,
       stickyComponentsIndices,
     } = this.state;
-
     return (
       <View
         backgroundColor={colors.white}
@@ -794,30 +861,26 @@ class RecyclerAssetList extends Component {
       >
         <StickyContainer
           overrideRowRenderer={this.stickyRowRenderer}
-          stickyHeaderIndices={isCoinListEdited ? [0] : stickyComponentsIndices}
+          stickyHeaderIndices={
+            isCoinListEdited
+              ? RecyclerAssetList.DEFAULT_STICKY_HEADER_INDICES
+              : stickyComponentsIndices
+          }
         >
-          <RecyclerListView
+          <MemoizedRecyclerListView
             dataProvider={dataProvider}
-            extendedState={{ sectionsIndices }}
             externalScrollView={externalScrollView}
+            fetchData={fetchData}
+            handleRefresh={this.handleRefresh}
+            hideHeader={hideHeader}
+            isRefreshing={this.state.isRefreshing}
             itemAnimator={this.animator}
             layoutProvider={this.layoutProvider}
             onScroll={this.handleScroll}
             ref={this.handleListRef}
             renderAheadOffset={renderAheadOffset}
             rowRenderer={this.rowRenderer}
-            scrollIndicatorInsets={{
-              bottom: safeAreaInsetValues.bottom,
-              top: hideHeader ? 0 : AssetListHeaderHeight,
-            }}
-            scrollViewProps={{
-              refreshControl: fetchData && this.renderRefreshControl(),
-            }}
-            style={{
-              backgroundColor: colors.white,
-              flex: 1,
-              minHeight: 1,
-            }}
+            sectionsIndices={sectionsIndices}
           />
         </StickyContainer>
       </View>
