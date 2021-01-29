@@ -555,7 +555,9 @@ export default function SendSheet(props) {
             }
           />
         )}
-        {android ? <KeyboardSizeView showAssetForm={showAssetForm} /> : null}
+        {android && showAssetForm ? (
+          <KeyboardSizeView showAssetForm={showAssetForm} />
+        ) : null}
       </SheetContainer>
     </Container>
   );

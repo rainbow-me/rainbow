@@ -120,7 +120,7 @@ export default function SendContactList({
       >
         <InvalidPasteToast />
       </ToastPositionContainer>
-      <KeyboardArea insets={insets} keyboardHeight={keyboardHeight} />
+      {ios && <KeyboardArea insets={insets} keyboardHeight={keyboardHeight} />}
     </FlyInAnimation>
   );
 }
