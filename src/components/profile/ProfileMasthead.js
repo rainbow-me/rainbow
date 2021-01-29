@@ -179,6 +179,7 @@ export default function ProfileMasthead({
       recyclerListRef?.getCurrentScrollOffset() > 0 ? 200 : 1
     );
   }, [
+    accountAddress,
     accountColor,
     accountImage,
     accountName,

@@ -19,7 +19,7 @@ const Label = styled(ChartYLabel)`
   font-size: ${fonts.size.big};
   letter-spacing: ${fonts.letterSpacing.roundedTight};
   ${android &&
-    `margin-top: -30;
+  `margin-top: -30;
      margin-bottom: -30;
      `}
 `;
@@ -46,10 +46,9 @@ export function formatNative(value, priceSharedValue, nativeSelected) {
       ? Math.min(8, value.toString().slice(2).slice('').search(/[^0]/g) + 3)
       : 2;
 
-      let res = `${Number(value).toFixed(decimals).toLocaleString('en-US', {
-
-      currency: 'USD',
-    })}`;
+  let res = `${Number(value).toFixed(decimals).toLocaleString('en-US', {
+    currency: 'USD',
+  })}`;
   res =
     nativeSelected?.alignment === 'left'
       ? `${nativeSelected?.symbol}${res}`

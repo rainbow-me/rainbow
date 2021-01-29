@@ -166,6 +166,7 @@ export default function TransactionList({
       });
     }
   }, [
+    accountAddress,
     accountColor,
     accountImage,
     accountName,
