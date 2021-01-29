@@ -7,6 +7,7 @@ import React, {
   useState,
 } from 'react';
 import {
+  Image,
   Linking,
   NativeModules,
   ScrollView,
@@ -44,7 +45,6 @@ import {
   useSendFeedback,
   useWallets,
 } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
 import { position } from '@rainbow-me/styles';
 import {
   AppleReviewAddress,
@@ -79,7 +79,7 @@ const Container = styled(ScrollView).attrs({
 `;
 
 // ⚠️ Beware: magic numbers lol
-const SettingIcon = styled(ImgixImage)`
+const SettingIcon = styled(Image)`
   ${position.size(60)};
   margin-left: -16;
   margin-right: -11;

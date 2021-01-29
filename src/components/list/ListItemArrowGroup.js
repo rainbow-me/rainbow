@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { Image } from 'react-native';
 import { pure } from 'recompact';
 import Caret from '../../assets/family-dropdown-arrow.png';
 import { withThemeContext } from '../../context/ThemeContext';
 import { RowWithMargins } from '../layout';
 import { Text } from '../text';
-import { ImgixImage } from '@rainbow-me/images';
 
 const ListItemArrowGroup = ({ children, colors }) => (
   <RowWithMargins align="center" flex={1} justify="end" margin={7}>
@@ -20,14 +20,14 @@ const ListItemArrowGroup = ({ children, colors }) => (
     ) : (
       children
     )}
-    <ImgixImage
+    <Image
       source={Caret}
       style={{
         height: 18,
         marginTop: 0.5,
+        tintColor: colors.alpha(colors.blueGreyDark, 0.6),
         width: 8,
       }}
-      tintColor={colors.alpha(colors.blueGreyDark, 0.6)}
     />
   </RowWithMargins>
 );
