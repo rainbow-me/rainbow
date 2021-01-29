@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { useTopMovers } from '../../hooks';
+import { useTopMovers } from '@rainbow-me/hooks';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
 import { Column, Flex } from '../layout';
 import { MarqueeList } from '../list';
