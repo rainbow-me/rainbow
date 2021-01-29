@@ -310,13 +310,10 @@ export default function SendSheet(props) {
           asset: selected,
           recipient,
         });
-        logger.log(
-          'GAS LIMIT UPDATED!',
-          'BEFORE',
-          gasLimit,
-          'AFTER',
-          updatedGasLimit
-        );
+        logger.log('gasLimit updated before sending', {
+          after: updatedGasLimit,
+          before: gasLimit,
+        });
         updateTxFee(updatedGasLimit);
         // eslint-disable-next-line no-empty
       } catch (e) {}
