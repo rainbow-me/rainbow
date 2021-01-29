@@ -310,23 +310,14 @@ export default function useUniswapCurrencies({
     updateOutputCurrency,
   ]);
 
-  const onFlipCurrencies = useCallback(() => {
-    updateInputCurrency(outputCurrency, false);
-    updateOutputCurrency(inputCurrency, false);
-  }, [
-    inputCurrency,
-    outputCurrency,
-    updateInputCurrency,
-    updateOutputCurrency,
-  ]);
-
   return {
     defaultInputAddress,
     inputCurrency,
     navigateToSelectInputCurrency,
     navigateToSelectOutputCurrency,
-    onFlipCurrencies,
     outputCurrency,
     previousInputCurrency,
+    updateInputCurrency,
+    updateOutputCurrency,
   };
 }

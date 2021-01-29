@@ -131,9 +131,10 @@ export default function ExchangeModal({
     inputCurrency,
     navigateToSelectInputCurrency,
     navigateToSelectOutputCurrency,
-    onFlipCurrencies,
     outputCurrency,
     previousInputCurrency,
+    updateInputCurrency,
+    updateOutputCurrency,
   } = useUniswapCurrencies({
     category,
     defaultInputAsset,
@@ -182,6 +183,39 @@ export default function ExchangeModal({
     supplyBalanceUnderlying,
     type,
   });
+
+  const clearForm = useCallback(() => {
+    logger.log('[exchange] - clear form');
+    inputFieldRef?.current?.clear();
+    nativeFieldRef?.current?.clear();
+    outputFieldRef?.current?.clear();
+    updateInputAmount();
+    updateMaxInputBalance();
+  }, [
+    inputFieldRef,
+    nativeFieldRef,
+    outputFieldRef,
+    updateInputAmount,
+    updateMaxInputBalance,
+  ]);
+
+  const prevOutputAmount = usePrevious(outputAmount);
+  const onFlipCurrencies = useCallback(() => {
+    clearForm();
+    updateMaxInputBalance(outputCurrency);
+    updateInputCurrency(outputCurrency, false);
+    updateOutputCurrency(inputCurrency, false);
+    updateInputAmount(prevOutputAmount, prevOutputAmount, true);
+  }, [
+    clearForm,
+    inputCurrency,
+    outputCurrency,
+    prevOutputAmount,
+    updateInputAmount,
+    updateInputCurrency,
+    updateMaxInputBalance,
+    updateOutputCurrency,
+  ]);
 
   const isDismissing = useRef(false);
   useEffect(() => {
@@ -268,21 +302,6 @@ export default function ExchangeModal({
       updateTxFee(defaultGasLimit);
     }, 1000);
   }, [defaultGasLimit, updateTxFee]);
-
-  const clearForm = useCallback(() => {
-    logger.log('[exchange] - clear form');
-    inputFieldRef?.current?.clear();
-    nativeFieldRef?.current?.clear();
-    outputFieldRef?.current?.clear();
-    updateInputAmount();
-    updateMaxInputBalance();
-  }, [
-    inputFieldRef,
-    nativeFieldRef,
-    outputFieldRef,
-    updateInputAmount,
-    updateMaxInputBalance,
-  ]);
 
   // Clear form and reset max input balance on new input currency
   useEffect(() => {
