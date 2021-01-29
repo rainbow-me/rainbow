@@ -18,7 +18,7 @@ const UnderlyingAssetCoinRow = ({
   symbol,
 }) => {
   const handlePress = useCallback(() => {
-    onPress?.({ address, change, name, price, symbol });
+    onPress({ address, change, name, price, symbol });
   }, [address, change, name, onPress, price, symbol]);
 
   return (
