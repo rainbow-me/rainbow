@@ -1,6 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { Animated, InteractionManager, View } from 'react-native';
 import styled from 'styled-components';
 import BackButton from '../components/header/BackButton';
@@ -174,6 +174,7 @@ export default function SettingsModal() {
     }
   }, [getRealRoute, navigate, params]);
 
+  const memoSettingsOptions = useMemo(() => settingsOptions(colors), [colors]);
   return (
     <Modal
       minHeight={isTinyPhone ? 500 : 600}
@@ -186,7 +187,7 @@ export default function SettingsModal() {
       <Container>
         <Stack.Navigator
           screenOptions={{
-            ...settingsOptions,
+            ...memoSettingsOptions,
             headerRight: renderHeaderRight,
             ...(android && {
               // eslint-disable-next-line react/display-name
@@ -199,7 +200,7 @@ export default function SettingsModal() {
               }),
             }),
             headerTitleStyle: {
-              ...settingsOptions.headerTitleStyle,
+              ...memoSettingsOptions.headerTitleStyle,
               color: colors.dark,
             },
           }}

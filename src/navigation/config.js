@@ -238,11 +238,11 @@ export const wyreWebviewOptions = {
   title: 'Add Cash',
 };
 
-export const settingsOptions = {
+export const settingsOptions = colors => ({
   ...headerConfigOptions,
   cardShadowEnabled: false,
   cardStyle: {
-    backgroundColor: undefined,
+    backgroundColor: colors.white,
     overflow: 'visible',
   },
   gestureEnabled: true,
@@ -266,4 +266,4 @@ export const settingsOptions = {
       config: transitionConfig,
     },
   },
-};
+});
