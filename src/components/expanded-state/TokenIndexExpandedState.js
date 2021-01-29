@@ -19,6 +19,7 @@ import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 import {
   useAccountSettings,
   useChartThrottledPoints,
+  useDimensions,
   useDPI,
 } from '@rainbow-me/hooks';
 import { colors, position } from '@rainbow-me/styles';
@@ -140,14 +141,15 @@ export default function TokenIndexExpandedState({ asset }) {
   if (duration.current === 0) {
     duration.current = 300;
   }
-  const TokenIndexExpandedStateSheetHeight =
-    (ios || showChart ? heightWithChart : heightWithoutChart) + (android && 40);
+  const { height: screenHeight } = useDimensions();
 
   return (
     <Fragment>
       <SlackSheet
-        additionalTopPadding={android}
-        contentHeight={TokenIndexExpandedStateSheetHeight}
+        bottomInset={42}
+        {...(ios
+          ? { height: '100%' }
+          : { additionalTopPadding: true, contentHeight: screenHeight - 80 })}
         scrollEnabled
       >
         <ChartPathProvider data={throttledData}>

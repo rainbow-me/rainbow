@@ -4,7 +4,6 @@ import { useSelector } from 'react-redux';
 import { DPI_ADDRESS } from '../../references/indexes';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
-import { initialChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
 import { useAccountSettings } from '@rainbow-me/hooks';
@@ -55,7 +54,6 @@ export default function PulseIndex() {
 
     navigate(ios ? Routes.EXPANDED_ASSET_SHEET : Routes.EXPANDED_ASSET_SCREEN, {
       asset,
-      longFormHeight: initialChartExpandedStateSheetHeight,
       type: 'token_index',
     });
   }, [genericAssets, navigate]);
