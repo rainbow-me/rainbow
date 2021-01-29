@@ -8,8 +8,12 @@ export type use3dResult = {
 export default function use3d(): use3dResult {
   const is3dUri = React.useCallback((uri: string) => {
     try {
-      const { href, pathname } = parse(uri || '');
-      return href === uri && pathname.toLowerCase().endsWith('.glb');
+      const { href, pathname, protocol } = parse(uri || '');
+      return (
+        href === uri &&
+        pathname.toLowerCase().endsWith('.glb') &&
+        protocol === 'https:'
+      );
     } catch (e) {
       return false;
     }
