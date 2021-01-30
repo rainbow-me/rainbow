@@ -25,8 +25,9 @@ import {
 import networkTypes from './networkTypes';
 import { add, convertAmountToNativeDisplay, multiply } from './utilities';
 import { ImgixImage } from '@rainbow-me/images';
+import { ETH_ICON_URL } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
-import { ETH_ICON_URL, ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils } from '@rainbow-me/utils';
 
 const allAssetsSelector = state => state.allAssets;
 const allAssetsCountSelector = state => state.allAssetsCount;
