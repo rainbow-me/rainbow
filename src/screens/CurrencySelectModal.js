@@ -13,7 +13,7 @@ import React, {
 import { StatusBar } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import Animated, { Extrapolate } from 'react-native-reanimated';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import GestureBlocker from '../components/GestureBlocker';
 import { interpolate } from '../components/animations';
 import {
@@ -37,7 +37,7 @@ import {
 import { delayNext } from '@rainbow-me/hooks/useMagicAutofocus';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import Routes from '@rainbow-me/routes';
-import { colors, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 import { filterList } from '@rainbow-me/utils';
 
 const TabTransitionAnimation = styled(Animated.View)`
@@ -88,6 +88,7 @@ export default function CurrencySelectModal() {
     searchQuery,
   ]);
 
+  const { colors } = useTheme();
   const {
     curatedNotFavorited,
     favorites,
@@ -171,6 +172,7 @@ export default function CurrencySelectModal() {
     setIsSearching(false);
     return filteredList;
   }, [
+    colors,
     curatedNotFavorited,
     favorites,
     globalVerifiedHighLiquidityAssets,

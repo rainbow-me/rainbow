@@ -4,7 +4,7 @@ import { toLower } from 'lodash';
 import React, { useCallback, useRef } from 'react';
 import ImagePicker from 'react-native-image-crop-picker';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { walletsSetSelected, walletsUpdate } from '../../redux/wallets';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
@@ -26,7 +26,6 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
 import { abbreviations, showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const dropdownArrowWidth = 21;
@@ -75,9 +74,11 @@ const DropdownArrow = styled(Centered)`
   width: ${dropdownArrowWidth};
 `;
 
-const ProfileMastheadDivider = styled(Divider).attrs({
-  color: colors.rowDividerLight,
-})`
+const ProfileMastheadDivider = styled(Divider).attrs(
+  ({ theme: { colors } }) => ({
+    color: colors.rowDividerLight,
+  })
+)`
   bottom: 0;
   position: absolute;
 `;
@@ -250,6 +251,7 @@ export default function ProfileMasthead({
     Clipboard.setString(accountAddress);
   }, [accountAddress, isDamaged]);
 
+  const { colors } = useTheme();
   return (
     <Column
       align="center"

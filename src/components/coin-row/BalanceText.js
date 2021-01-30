@@ -1,10 +1,9 @@
-import styled from 'styled-components/primitives';
-import { colors } from '../../styles';
+import styled from 'styled-components';
 import { Text } from '../text';
 
-const BalanceText = styled(Text).attrs(({ color = colors.dark }) => ({
+const BalanceText = styled(Text).attrs(({ color, theme: { colors } }) => ({
   align: 'right',
-  color,
+  color: color || colors.dark,
   size: 'lmedium',
 }))``;
 

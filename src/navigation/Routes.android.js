@@ -1,6 +1,6 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import React, { useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { InitialRouteContext } from '../context/initialRoute';
 import AddCashSheet from '../screens/AddCashSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
@@ -91,10 +91,14 @@ function ImportSeedPhraseFlowNavigator() {
 }
 
 function AddCashFlowNavigator() {
+  const { colors } = useTheme();
+  const themedWyreWebviewOptions = useMemo(() => wyreWebviewOptions(colors), [
+    colors,
+  ]);
   return (
     <Stack.Navigator
       initialRouteName={Routes.WYRE_WEBVIEW}
-      screenOptions={wyreWebviewOptions}
+      screenOptions={themedWyreWebviewOptions}
     >
       <Stack.Screen component={WyreWebview} name={Routes.WYRE_WEBVIEW} />
     </Stack.Navigator>

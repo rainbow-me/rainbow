@@ -1,24 +1,24 @@
 import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { Icon } from '../icons';
 import ContextMenu from './ContextMenu';
-import { borders, colors, position } from '@rainbow-me/styles';
+import { borders, position } from '@rainbow-me/styles';
 
-const CircleButton = styled(RadialGradient).attrs({
+const CircleButton = styled(RadialGradient).attrs(({ theme: { colors } }) => ({
   center: [0, 20],
   colors: colors.gradients.lightGrey,
-})`
+}))`
   ${borders.buildCircle(40)};
   ${position.centered};
   overflow: hidden;
 `;
 
-const ContextIcon = styled(Icon).attrs({
+const ContextIcon = styled(Icon).attrs(({ theme: { colors } }) => ({
   color: colors.alpha(colors.blueGreyDark, 0.4),
   name: 'threeDots',
   tightDots: true,
-})`
+}))`
   height: 5;
 `;
 

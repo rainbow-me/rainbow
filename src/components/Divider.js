@@ -1,8 +1,9 @@
 import { constant, isNil, isNumber, times } from 'lodash';
 import React from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
+import { withThemeContext } from '../context/ThemeContext';
 import { magicMemo } from '../utils';
-import { borders, colors, position } from '@rainbow-me/styles';
+import { borders, position } from '@rainbow-me/styles';
 
 export const DividerSize = 2;
 
@@ -45,34 +46,38 @@ const BorderLine = styled.View`
   }}
 `;
 
-const Container = styled.View`
-  background-color: ${({ backgroundColor }) => backgroundColor || colors.white};
+const Container = withThemeContext(styled.View`
+  background-color: ${({ backgroundColor, colors }) =>
+    backgroundColor || colors.white};
   flex-shrink: 0;
   height: ${({ horizontal, size }) => (horizontal ? size : '100%')};
   width: ${({ horizontal, size }) => (horizontal ? '100%' : size)};
-`;
+`);
 
 const Divider = ({
   backgroundColor,
-  color = colors.rowDivider,
+  color,
   horizontal = true,
   inset = [0, 0, 0, 19],
   size = DividerSize,
   ...props
-}) => (
-  <Container
-    {...props}
-    backgroundColor={backgroundColor}
-    horizontal={horizontal}
-    size={size}
-  >
-    <BorderLine
+}) => {
+  const { colors } = useTheme();
+  return (
+    <Container
       {...props}
-      color={color}
+      backgroundColor={backgroundColor}
       horizontal={horizontal}
-      inset={inset}
-    />
-  </Container>
-);
+      size={size}
+    >
+      <BorderLine
+        {...props}
+        color={color || colors.rowDivider}
+        horizontal={horizontal}
+        inset={inset}
+      />
+    </Container>
+  );
+};
 
 export default magicMemo(Divider, ['color', 'inset']);

@@ -4,7 +4,6 @@ import { Transition, Transitioning } from 'react-native-reanimated';
 import { sheetVerticalOffset } from '../../navigation/effects';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
-import { colors } from '@rainbow-me/styles';
 
 const duration = 200;
 const transition = (
@@ -40,6 +39,8 @@ const SendEmptyState = () => {
   if (ref.current && ios) {
     ref.current.animateNextTransition();
   }
+
+  const { colors } = useTheme();
 
   const icon = (
     <Icon

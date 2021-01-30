@@ -16,7 +16,8 @@
     "IS_DEV": true,
     "ios": true,
     "android": true,
-    "akd": true
+    "akd": true,
+    "useTheme": true
   },
   "rules": {
     "no-console": 2,

@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { useFrameDelayedValue, useOpenSmallBalances } from '../../hooks';
 import { OpacityToggler } from '../animations';
 import { CoinRowHeight } from '../coin-row';

@@ -83,7 +83,7 @@ import {
   useWallets,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import { colors, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 import logger from 'logger';
 
 const isReanimatedAvailable = !(
@@ -97,12 +97,14 @@ const springConfig = {
   stiffness: 1000,
 };
 
-const DappLogo = styled(RequestVendorLogoIcon).attrs({
-  backgroundColor: colors.transparent,
-  borderRadius: 16,
-  showLargeShadow: true,
-  size: 50,
-})`
+const DappLogo = styled(RequestVendorLogoIcon).attrs(
+  ({ theme: { colors } }) => ({
+    backgroundColor: colors.transparent,
+    borderRadius: 16,
+    showLargeShadow: true,
+    size: 50,
+  })
+)`
   margin-bottom: 14;
 `;
 
@@ -118,26 +120,29 @@ const GasSpeedButtonContainer = styled(Column)`
   margin-bottom: 19px;
 `;
 
-const WalletLabel = styled(Text).attrs({
+const WalletLabel = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.alpha(colors.blueGreyDark, 0.5),
   letterSpacing: 'roundedMedium',
   size: 'smedium',
   weight: 'semibold',
-})`
+}))`
   margin-bottom: 3;
 `;
 
-const WalletText = styled(Text).attrs(({ balanceTooLow }) => ({
-  color: balanceTooLow
-    ? colors.avatarColor[7]
-    : colors.alpha(colors.blueGreyDark, 0.8),
-  size: 'larger',
-  weight: balanceTooLow ? 'bold' : 'semibold',
-}))``;
+const WalletText = styled(Text).attrs(
+  ({ balanceTooLow, theme: { colors } }) => ({
+    color: balanceTooLow
+      ? colors.avatarColor[7]
+      : colors.alpha(colors.blueGreyDark, 0.8),
+    size: 'larger',
+    weight: balanceTooLow ? 'bold' : 'semibold',
+  })
+)``;
 
 const NOOP = () => undefined;
 
 const TransactionConfirmationScreen = () => {
+  const { colors } = useTheme();
   const { allAssets } = useAccountAssets();
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const [keyboardVisible, setKeyboardVisible] = useState(false);
@@ -612,6 +617,7 @@ const TransactionConfirmationScreen = () => {
       </SheetActionButtonRow>
     );
   }, [
+    colors,
     isBalanceEnough,
     isMessageRequest,
     isSufficientGas,

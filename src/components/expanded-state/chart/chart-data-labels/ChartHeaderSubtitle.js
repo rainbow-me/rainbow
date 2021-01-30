@@ -1,9 +1,9 @@
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { TruncatedText } from '../../../text';
-import { colors } from '@rainbow-me/styles';
 
 const ChartHeaderSubtitle = styled(TruncatedText).attrs(
   ({
+    theme: { colors },
     color = colors.alpha(colors.blueGreyDark, 0.8),
     letterSpacing = 'roundedMedium',
     weight = 'bold',

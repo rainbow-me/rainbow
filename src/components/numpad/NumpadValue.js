@@ -2,10 +2,9 @@ import MaskedView from '@react-native-community/masked-view';
 import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import Animated from 'react-native-reanimated';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { useDimensions } from '../../hooks';
 import { Text } from '../text';
-import { colors } from '@rainbow-me/styles';
 
 const FontSizeMultiple = 0.24;
 const HeightMultiple = 0.288;
@@ -29,7 +28,7 @@ const TextMask = styled(Animated.View)`
   width: 200%;
 `;
 
-const ValueText = styled(Text).attrs(({ width }) => ({
+const ValueText = styled(Text).attrs(({ width, theme: { colors } }) => ({
   align: 'center',
   color: colors.white,
   letterSpacing: 'roundedTightest',

@@ -14,8 +14,8 @@ import {
 import store from '../redux/store';
 
 import { walletsSetSelected, walletsUpdate } from '../redux/wallets';
+import { getRandomColor } from '../styles/colors';
 import { hasKey } from './keychain';
-import { colors } from '@rainbow-me/styles';
 import logger from 'logger';
 
 export default async function runMigrations() {
@@ -61,7 +61,7 @@ export default async function runMigrations() {
             {
               address,
               avatar: null,
-              color: colors.getRandomColor(),
+              color: getRandomColor(),
               index: 0,
               label: '',
               visible: true,

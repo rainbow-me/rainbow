@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
 import Animated, { useSharedValue } from 'react-native-reanimated';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { useCallbackOne } from 'use-memo-one';
 import { CoinIconGroup } from '../../coin-icon';
 import { Column, ColumnWithMargins, Row, RowWithMargins } from '../../layout';
@@ -13,7 +13,7 @@ import {
 } from './chart-data-labels';
 import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
 import { useAccountSettings, useBooleanState } from '@rainbow-me/hooks';
-import { colors, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 
 const { call, cond, onChange, useCode } = Animated;
 
@@ -47,7 +47,7 @@ export default function ChartExpandedStateHeader({
   asset,
   changeDirection,
   changeRef,
-  color = colors.dark,
+  color: givenColors,
   dateRef,
   isPool,
   isScrubbing,
@@ -57,6 +57,8 @@ export default function ChartExpandedStateHeader({
   chartTimeSharedValue,
   showChart,
 }) {
+  const { colors } = useTheme();
+  const color = givenColors || colors.dark;
   const tokens = useMemo(() => {
     return isPool ? asset.tokens : [asset];
   }, [asset, isPool]);

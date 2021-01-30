@@ -1,11 +1,10 @@
 import React from 'react';
-import styled from 'styled-components/primitives';
-import { colors } from '@rainbow-me/styles';
+import styled from 'styled-components';
 
 const ListFooterHeight = 27;
 
 const Spacer = styled.View`
-  background-color: ${colors.transparent};
+  background-color: ${({ theme: { colors } }) => colors.transparent};
   height: ${({ height }) => height || ListFooterHeight};
   width: 100%;
 `;

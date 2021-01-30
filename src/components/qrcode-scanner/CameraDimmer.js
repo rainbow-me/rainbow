@@ -8,7 +8,7 @@ import Animated, {
   set,
   sub,
 } from 'react-native-reanimated';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { useMemoOne } from 'use-memo-one';
 import { scrollPosition } from '../../navigation/ScrollPagerWrapper';
 import { useReanimatedValue } from '../list/MarqueeList';

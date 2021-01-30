@@ -1,10 +1,11 @@
 import React, { useMemo } from 'react';
 import { FallbackIcon } from 'react-coin-icon';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
+import { useTheme } from '../../context/ThemeContext';
 import { Centered } from '../layout';
 import { useBooleanState, useColorForAsset } from '@rainbow-me/hooks';
 import { ImageWithCachedMetadata } from '@rainbow-me/images';
-import { borders, colors, fonts, position, shadow } from '@rainbow-me/styles';
+import { borders, fonts, position, shadow } from '@rainbow-me/styles';
 import { getUrlForTrustIconFallback, magicMemo } from '@rainbow-me/utils';
 
 const fallbackTextStyles = {
@@ -24,7 +25,7 @@ const FallbackImage = styled(ImageWithCachedMetadata)`
     shadowRadius: radius,
     showImage,
   }) => shadow.build(x, y, radius * 2, color, showImage ? opacity : 0)};
-  background-color: ${({ showImage }) =>
+  background-color: ${({ showImage, theme: { colors } }) =>
     showImage ? colors.white : colors.transparent};
   border-radius: ${({ size }) => size / 2};
   overflow: visible;
@@ -38,6 +39,7 @@ function WrappedFallbackImage({
   size,
   ...props
 }) {
+  const { colors } = useTheme();
   return (
     <Centered
       {...props}
