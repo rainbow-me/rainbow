@@ -3,10 +3,10 @@ import analytics from '@segment/analytics-react-native';
 import { toLower } from 'lodash';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { requireNativeComponent } from 'react-native';
-import ImagePicker from 'react-native-image-crop-picker';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components/primitives';
 import { FloatingEmojis } from '../floating-emojis';
+import useOnAvatarPress from '../profile/useOnAvatarPress';
 import useExperimentalFlag, {
   AVATAR_PICKER,
 } from '@rainbow-me/config/experimentalHooks';
@@ -25,7 +25,6 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import { removeRequest } from '@rainbow-me/redux/requests';
-import { walletsSetSelected, walletsUpdate } from '@rainbow-me/redux/wallets';
 import Routes from '@rainbow-me/routes';
 import { colors } from '@rainbow-me/styles';
 import {
@@ -35,9 +34,6 @@ import {
 } from '@rainbow-me/utils';
 
 const NativeTransactionListView = requireNativeComponent('TransactionListView');
-
-const isAvatarEmojiPickerEnabled = true;
-const isAvatarImagePickerEnabled = true;
 
 const Container = styled.View`
   flex: 1;
@@ -67,7 +63,7 @@ export default function TransactionList({
   requests,
   transactions,
 }) {
-  const { wallets, selectedWallet, isDamaged } = useWallets();
+  const { isDamaged } = useWallets();
   const [tapTarget, setTapTarget] = useState([0, 0, 0, 0]);
   const onNewEmoji = useRef();
   const setOnNewEmoji = useCallback(
@@ -96,91 +92,7 @@ export default function TransactionList({
     });
   }, [navigate, isDamaged]);
 
-  const onRemovePhoto = useCallback(async () => {
-    const newWallets = {
-      ...wallets,
-      [selectedWallet.id]: {
-        ...wallets[selectedWallet.id],
-        addresses: wallets[selectedWallet.id].addresses.map(account =>
-          toLower(account.address) === toLower(accountAddress)
-            ? { ...account, image: null }
-            : account
-        ),
-      },
-    };
-
-    dispatch(walletsSetSelected(newWallets[selectedWallet.id]));
-    await dispatch(walletsUpdate(newWallets));
-  }, [dispatch, selectedWallet, accountAddress, wallets]);
-
-  const onAvatarPress = useCallback(() => {
-    if (isAvatarImagePickerEnabled) {
-      const processPhoto = image => {
-        const stringIndex = image?.path.indexOf('/tmp');
-        const newWallets = {
-          ...wallets,
-          [selectedWallet.id]: {
-            ...wallets[selectedWallet.id],
-            addresses: wallets[selectedWallet.id].addresses.map(account =>
-              toLower(account.address) === toLower(accountAddress)
-                ? { ...account, image: `~${image?.path.slice(stringIndex)}` }
-                : account
-            ),
-          },
-        };
-
-        dispatch(walletsSetSelected(newWallets[selectedWallet.id]));
-        dispatch(walletsUpdate(newWallets));
-      };
-
-      const avatarActionSheetOptions = [
-        'Choose from Library',
-        ...(isAvatarEmojiPickerEnabled ? ['Pick an Emoji'] : []),
-        ...(accountImage ? ['Remove Photo'] : []),
-        'Cancel', // <-- cancelButtonIndex
-      ];
-
-      showActionSheetWithOptions(
-        {
-          cancelButtonIndex: avatarActionSheetOptions.length - 1,
-          destructiveButtonIndex: accountImage
-            ? avatarActionSheetOptions.length - 2
-            : undefined,
-          options: avatarActionSheetOptions,
-        },
-        async buttonIndex => {
-          if (buttonIndex === 0) {
-            ImagePicker.openPicker({
-              cropperCircleOverlay: true,
-              cropping: true,
-            }).then(processPhoto);
-          } else if (buttonIndex === 1 && isAvatarEmojiPickerEnabled) {
-            navigate(Routes.AVATAR_BUILDER, {
-              initialAccountColor: accountColor,
-              initialAccountName: accountName,
-            });
-          } else if (buttonIndex === 2 && accountImage) {
-            onRemovePhoto();
-          }
-        }
-      );
-    } else if (isAvatarEmojiPickerEnabled) {
-      navigate(Routes.AVATAR_BUILDER, {
-        initialAccountColor: accountColor,
-        initialAccountName: accountName,
-      });
-    }
-  }, [
-    accountAddress,
-    accountColor,
-    accountImage,
-    accountName,
-    dispatch,
-    navigate,
-    onRemovePhoto,
-    selectedWallet.id,
-    wallets,
-  ]);
+  const onAvatarPress = useOnAvatarPress();
 
   const onReceivePress = useCallback(() => {
     if (isDamaged) {
