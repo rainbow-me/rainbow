@@ -18,12 +18,6 @@ import {
 
 export const amountOfShowedCoins = 5;
 
-export const buildAssetHeaderUniqueIdentifier = ({
-  title,
-  totalItems,
-  totalValue,
-}) => compact([title, totalItems, totalValue]).join('_');
-
 export const buildAssetUniqueIdentifier = item => {
   const balance = get(item, 'balance.amount', '');
   const nativePrice = get(item, 'native.price.display', '');
