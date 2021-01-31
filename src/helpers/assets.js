@@ -16,7 +16,7 @@ import {
   supportedNativeCurrencies,
 } from '@rainbow-me/references';
 
-export const amountOfShowedCoins = 5;
+const amountOfShowedCoins = 5;
 
 export const buildAssetUniqueIdentifier = item => {
   const balance = get(item, 'balance.amount', '');
