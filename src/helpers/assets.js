@@ -137,15 +137,18 @@ export const buildCoinsList = (
     }
   });
 
+  // decide which assets to show above or below the coin divider
   const nonHidden = concat(pinnedAssets, standardAssets, smallAssets);
   const dividerIndex = Math.max(pinnedAssets.length, COINS_TO_SHOW);
   const assetsAboveDivider = slice(nonHidden, 0, dividerIndex);
   let assetsBelowDivider = slice(nonHidden, dividerIndex);
 
+  // calculate small balance and overall totals
   const smallBalancesValue = getTotal(assetsBelowDivider);
   const bigBalancesValue = getTotal(assetsAboveDivider);
   const totalBalancesValue = add(bigBalancesValue, smallBalancesValue);
 
+  // include hidden assets if in edit mode
   if (isCoinListEdited) {
     assetsBelowDivider = concat(assetsBelowDivider, hiddenAssets);
   }
