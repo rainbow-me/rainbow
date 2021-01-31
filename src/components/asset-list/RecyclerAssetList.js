@@ -759,7 +759,6 @@ class RecyclerAssetList extends Component {
       <AssetListHeader {...data} isSticky />
       {this.state.showCoinListEditor ? (
         <CoinDivider
-          assetsAmount={this.renderList.length}
           balancesSum={0}
           isSticky
           nativeCurrency={this.props.nativeCurrency}

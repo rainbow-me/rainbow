@@ -196,7 +196,6 @@ export const buildCoinsList = (
 
   if (smallBalances.assets.length > 0 || isCoinListEdited) {
     allAssets.push({
-      assetsAmount: smallBalances.assets.length,
       coinDivider: true,
       value: smallBalancesValue,
     });
