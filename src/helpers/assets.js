@@ -194,13 +194,7 @@ export const buildCoinsList = (
       .concat(smallBalances.assets);
   }
 
-  if (
-    smallBalances.assets.length > 0 ||
-    (hiddenAssets.length > 0 && assetsLength > amountOfShowedCoins) ||
-    (pinnedAssetsLength === allAssetsLength &&
-      allAssetsLength > amountOfShowedCoins) ||
-    isCoinListEdited
-  ) {
+  if (smallBalances.assets.length > 0 || isCoinListEdited) {
     allAssets.push({
       assetsAmount: smallBalances.assets.length,
       coinDivider: true,

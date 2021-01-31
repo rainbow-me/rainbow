@@ -2,17 +2,17 @@ import React, { useCallback, useEffect } from 'react';
 import { LayoutAnimation, View } from 'react-native';
 import styled from 'styled-components';
 import { withThemeContext } from '../../context/ThemeContext';
-import EditOptions from '../../helpers/editOptionTypes';
+import { Row, RowWithMargins } from '../layout';
+import CoinDividerAssetsValue from './CoinDividerAssetsValue';
+import CoinDividerEditButton from './CoinDividerEditButton';
+import CoinDividerOpenButton from './CoinDividerOpenButton';
+import EditOptions from '@rainbow-me/helpers/editOptionTypes';
 import {
   useCoinListEdited,
   useCoinListEditOptions,
   useDimensions,
   useOpenSmallBalances,
-} from '../../hooks';
-import { Row, RowWithMargins } from '../layout';
-import CoinDividerAssetsValue from './CoinDividerAssetsValue';
-import CoinDividerEditButton from './CoinDividerEditButton';
-import CoinDividerOpenButton from './CoinDividerOpenButton';
+} from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
 
 export const CoinDividerHeight = 30;
@@ -122,12 +122,16 @@ export default function CoinDivider({
         />
         <EditButtonWrapper
           pointerEvents={
-            isSmallBalancesOpen || assetsAmount === 0 ? 'auto' : 'none'
+            isCoinListEdited || isSmallBalancesOpen || assetsAmount === 0
+              ? 'auto'
+              : 'none'
           }
         >
           <CoinDividerEditButton
             isActive={isCoinListEdited}
-            isVisible={isSmallBalancesOpen || assetsAmount === 0}
+            isVisible={
+              isCoinListEdited || isSmallBalancesOpen || assetsAmount === 0
+            }
             onPress={handlePressEdit}
             text={isCoinListEdited ? 'Done' : 'Edit'}
             textOpacityAlwaysOn
