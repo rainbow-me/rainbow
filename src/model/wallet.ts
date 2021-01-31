@@ -39,17 +39,18 @@ import WalletLoadingStates from '../helpers/walletLoadingStates';
 import { EthereumWalletType } from '../helpers/walletTypes';
 import store from '../redux/store';
 import { setIsWalletLoading } from '../redux/wallets';
+import { getRandomColor } from '../styles/colors';
 import { ethereumUtils } from '../utils';
 import {
   addressKey,
   allWalletsKey,
   oldSeedPhraseMigratedKey,
+  pinKey,
   privateKeyKey,
   seedPhraseKey,
   selectedWalletKey,
 } from '../utils/keychainConstants';
 import * as keychain from './keychain';
-import { colors } from '@rainbow-me/styles';
 import logger from 'logger';
 const encryptor = new AesEncryptor();
 
@@ -641,7 +642,7 @@ export const createWallet = async (
     addresses.push({
       address: walletAddress,
       avatar: null,
-      color: color !== null ? color : colors.getRandomColor(),
+      color: color !== null ? color : getRandomColor(),
       index: 0,
       label: name || '',
       visible: true,
@@ -689,7 +690,7 @@ export const createWallet = async (
 
         // Remove any discovered wallets if they already exist
         // and copy over label and color if account was visible
-        let color = colors.getRandomColor();
+        let color = getRandomColor();
         let label = '';
 
         if (discoveredAccount && discoveredWalletId) {
@@ -1118,6 +1119,33 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
     logger.sentry('Error while migrating secrets');
     captureException(e);
     return null;
+  }
+};
+
+export const cleanUpWalletKeys = async (): Promise<boolean> => {
+  const keys = [
+    addressKey,
+    allWalletsKey,
+    oldSeedPhraseMigratedKey,
+    pinKey,
+    selectedWalletKey,
+  ];
+
+  try {
+    await Promise.all(
+      keys.map(key => {
+        try {
+          keychain.remove(key);
+        } catch (e) {
+          // key might not exists
+          logger.log('failure to delete key', key);
+        }
+        return true;
+      })
+    );
+    return true;
+  } catch (e) {
+    return false;
   }
 };
 

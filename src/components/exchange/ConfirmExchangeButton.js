@@ -4,6 +4,7 @@ import React, { useMemo } from 'react';
 import styled from 'styled-components/primitives';
 import { HoldToAuthorizeButton } from '../buttons';
 import { Centered } from '../layout';
+import { useTheme } from '@rainbow-me/context';
 import { ExchangeModalTypes } from '@rainbow-me/helpers';
 import {
   useColorForAsset,
@@ -11,16 +12,9 @@ import {
   useSlippageDetails,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
-import { colors, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 
 const paddingHorizontal = 19;
-const shadows = {
-  default: [[0, 10, 30, colors.black, 0.4]],
-  disabled: [
-    [0, 10, 30, colors.dark, 0.2],
-    [0, 5, 15, colors.blueGreyDark50, 0.4],
-  ],
-};
 
 const ConfirmButton = styled(HoldToAuthorizeButton).attrs({
   hideInnerBorder: true,
@@ -53,6 +47,19 @@ export default function ConfirmExchangeButton({
   const isSwapDetailsRoute = routeName === Routes.SWAP_DETAILS_SHEET;
   const shouldOpenSwapDetails = isHighSlippage && !isSwapDetailsRoute;
 
+  const { colors } = useTheme();
+
+  const shadows = useMemo(
+    () => ({
+      default: [[0, 10, 30, colors.black, 0.4]],
+      disabled: [
+        [0, 10, 30, colors.dark, 0.2],
+        [0, 5, 15, colors.blueGreyDark50, 0.4],
+      ],
+    }),
+    [colors]
+  );
+
   const colorForAsset = useColorForAsset(asset);
   const { buttonColor, shadowsForAsset } = useMemo(() => {
     const color = isSwapDetailsRoute
@@ -66,7 +73,7 @@ export default function ConfirmExchangeButton({
         [0, 5, 15, color, 0.4],
       ],
     };
-  }, [colorForAsset, isSwapDetailsRoute]);
+  }, [colors, colorForAsset, isSwapDetailsRoute]);
 
   let label = '';
   if (type === ExchangeModalTypes.deposit) {
@@ -102,7 +109,9 @@ export default function ConfirmExchangeButton({
         disableLongPress={shouldOpenSwapDetails}
         disabled={isDisabled}
         disabledBackgroundColor={
-          isSwapDetailsRoute ? colors.blueGreyDark50 : colors.grey20
+          isSwapDetailsRoute
+            ? colors.blueGreyDark50
+            : colors.alpha(colors.blueGreyDark, 0.04)
         }
         label={label}
         onLongPress={shouldOpenSwapDetails ? onPressViewDetails : onSubmit}

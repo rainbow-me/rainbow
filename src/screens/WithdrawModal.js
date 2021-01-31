@@ -3,9 +3,10 @@ import React from 'react';
 import ExchangeModal from './ExchangeModal';
 import { ExchangeModalTypes } from '@rainbow-me/helpers';
 import { useStatusBarManaging } from '@rainbow-me/navigation';
-import createWithdrawFromCompoundRap, {
+import {
+  createWithdrawFromCompoundRap,
   estimateWithdrawFromCompound,
-} from '@rainbow-me/raps/withdrawFromCompound';
+} from '@rainbow-me/raps';
 
 export default function WithdrawModal(props) {
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -14,8 +15,8 @@ export default function WithdrawModal(props) {
 
   return (
     <ExchangeModal
-      createRap={createWithdrawFromCompoundRap}
       cTokenBalance={params?.cTokenBalance}
+      createRap={createWithdrawFromCompoundRap}
       defaultInputAsset={params?.defaultInputAsset}
       estimateRap={estimateWithdrawFromCompound}
       showOutputField={false}

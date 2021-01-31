@@ -1,14 +1,15 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { Row } from '../layout';
 import { Text } from '../text';
 import ExchangeInput from './ExchangeInput';
 import { useColorForAsset } from '@rainbow-me/hooks';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
-import { colors, fonts } from '@rainbow-me/styles';
+import { fonts } from '@rainbow-me/styles';
 
-const CurrencySymbol = styled(Text).attrs(({ height }) => ({
+const CurrencySymbol = styled(Text).attrs(({ height, color }) => ({
+  color: color,
   letterSpacing: 'roundedTight',
   lineHeight: height,
   size: 'larger',
@@ -56,6 +57,7 @@ const ExchangeNativeField = (
     },
     [onFocus]
   );
+  const { colors } = useTheme();
 
   const nativeAmountColor = useMemo(() => {
     const nativeAmountExists =
@@ -65,7 +67,7 @@ const ExchangeNativeField = (
     const opacity = isFocused ? 1 : nativeAmountExists ? 0.5 : 0.3;
 
     return colors.alpha(color, opacity);
-  }, [isFocused, nativeAmount]);
+  }, [colors, isFocused, nativeAmount]);
 
   return (
     <TouchableWithoutFeedback onPress={handleFocusNativeField}>

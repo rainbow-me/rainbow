@@ -4,6 +4,7 @@ import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
 import { Alert, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
+import { useTheme } from '../../../context/ThemeContext';
 import { deleteAllBackups } from '../../../handlers/cloudBackup';
 import { walletsUpdate } from '../../../redux/wallets';
 import { cloudPlatform } from '../../../utils/platform';
@@ -18,7 +19,7 @@ import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { useWalletCloudBackup, useWallets } from '@rainbow-me/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors, fonts, padding, position, shadow } from '@rainbow-me/styles';
+import { fonts, padding, position, shadow } from '@rainbow-me/styles';
 import { showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const WalletBackupStatus = {
@@ -28,7 +29,8 @@ const WalletBackupStatus = {
 };
 
 const CheckmarkIconContainer = styled(View)`
-  ${({ color }) => shadow.build(0, 4, 6, color, 0.4)};
+  ${({ color, isDarkMode, theme: { colors } }) =>
+    shadow.build(0, 4, 6, isDarkMode ? colors.shadow : color, 0.4)};
   ${position.size(50)};
   background-color: ${({ color }) => color};
   border-radius: 25;
@@ -36,15 +38,15 @@ const CheckmarkIconContainer = styled(View)`
   padding-top: ${ios ? 13 : 7};
 `;
 
-const CheckmarkIconText = styled(Text).attrs({
+const CheckmarkIconText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors.white,
+  color: colors.whiteLabel,
   size: 'larger',
   weight: 'bold',
-})``;
+}))``;
 
-const CheckmarkIcon = ({ color }) => (
-  <CheckmarkIconContainer color={color}>
+const CheckmarkIcon = ({ color, isDarkMode }) => (
+  <CheckmarkIconContainer color={color} isDarkMode={isDarkMode}>
     <CheckmarkIconText>􀆅</CheckmarkIconText>
   </CheckmarkIconContainer>
 );
@@ -56,12 +58,12 @@ const Content = styled(Centered).attrs({
   flex: 1;
 `;
 
-const DescriptionText = styled(Text).attrs({
+const DescriptionText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
   color: colors.alpha(colors.blueGreyDark, 0.5),
   lineHeight: 'loosest',
   size: 'large',
-})`
+}))`
   margin-bottom: 42;
   padding-horizontal: 23;
 `;
@@ -70,12 +72,12 @@ const Footer = styled(Centered)`
   ${padding(0, 15, 42)};
 `;
 
-const Subtitle = styled(Text).attrs({
+const Subtitle = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
   color: colors.alpha(colors.blueGreyDark, 0.5),
   size: fonts.size.smedium,
   weight: fonts.weight.medium,
-})`
+}))`
   margin-top: -10;
 `;
 
@@ -221,15 +223,19 @@ export default function AlreadyBackedUpView() {
     });
   }, [navigate, walletId, wallets]);
 
+  const { colors } = useTheme();
+
   const checkmarkColor =
     walletStatus === WalletBackupStatus.CLOUD_BACKUP
       ? colors.green
-      : colors.blueGreyDark50;
+      : colors.alpha(colors.blueGreyDark, 0.5);
 
   const hasMultipleWallets =
     Object.keys(wallets).filter(
       key => wallets[key].type !== WalletTypes.readOnly
     ).length > 1;
+
+  const { isDarkMode } = useTheme();
 
   return (
     <Fragment>
@@ -241,7 +247,7 @@ export default function AlreadyBackedUpView() {
       </Subtitle>
       <Content>
         <Centered direction="column">
-          <CheckmarkIcon color={checkmarkColor} />
+          <CheckmarkIcon color={checkmarkColor} isDarkMode={isDarkMode} />
           <Title>
             {(walletStatus === WalletBackupStatus.IMPORTED &&
               `Your wallet was imported`) ||

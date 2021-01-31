@@ -13,7 +13,7 @@ import React, {
 import { StatusBar } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import Animated, { Extrapolate } from 'react-native-reanimated';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import GestureBlocker from '../components/GestureBlocker';
 import { interpolate } from '../components/animations';
 import {
@@ -36,7 +36,7 @@ import {
 import { delayNext } from '@rainbow-me/hooks/useMagicAutofocus';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import Routes from '@rainbow-me/routes';
-import { colors, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 import { filterList } from '@rainbow-me/utils';
 
 const TabTransitionAnimation = styled(Animated.View)`
@@ -67,7 +67,6 @@ export default function CurrencySelectModal() {
   const { navigate, dangerouslyGetState } = useNavigation();
   const {
     params: {
-      category,
       onSelectCurrency,
       restoreFocusOnSwapModal,
       setPointerEvents,
@@ -88,6 +87,7 @@ export default function CurrencySelectModal() {
     searchQuery,
   ]);
 
+  const { colors } = useTheme();
   const {
     curatedNotFavorited,
     favorites,
@@ -171,6 +171,7 @@ export default function CurrencySelectModal() {
     setIsSearching(false);
     return filteredList;
   }, [
+    colors,
     curatedNotFavorited,
     favorites,
     globalVerifiedHighLiquidityAssets,
@@ -200,7 +201,6 @@ export default function CurrencySelectModal() {
         [asset.address]: isFavorited,
       }));
       analytics.track('Toggled an asset as Favorited', {
-        category,
         isFavorited,
         name: asset.name,
         symbol: asset.symbol,
@@ -208,7 +208,7 @@ export default function CurrencySelectModal() {
         type,
       });
     },
-    [category, type]
+    [type]
   );
 
   const handleSelectAsset = useCallback(
@@ -217,7 +217,6 @@ export default function CurrencySelectModal() {
       onSelectCurrency(item);
       if (searchQueryForSearch) {
         analytics.track('Selected a search result in Swap', {
-          category,
           name: item.name,
           searchQueryForSearch,
           symbol: item.symbol,
@@ -235,7 +234,6 @@ export default function CurrencySelectModal() {
       searchQueryForSearch,
       dangerouslyGetState,
       navigate,
-      category,
       type,
     ]
   );

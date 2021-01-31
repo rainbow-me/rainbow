@@ -6,7 +6,7 @@ import {
   RecyclerListView,
 } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
-import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
+import styled from 'styled-components';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import { buildTransactionUniqueIdentifier } from '../../helpers/transactions';
 import {

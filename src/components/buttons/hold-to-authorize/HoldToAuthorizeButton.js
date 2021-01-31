@@ -7,15 +7,16 @@ import {
   TapGestureHandler,
 } from 'react-native-gesture-handler';
 import Animated, { Easing, timing, Value } from 'react-native-reanimated';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import Spinner from '../../Spinner';
 import { ShimmerAnimation } from '../../animations';
 import { Centered, InnerBorder } from '../../layout';
 import BiometricButtonContent from '../BiometricButtonContent';
 import HoldToAuthorizeButtonIcon from './HoldToAuthorizeButtonIcon';
+import { useTheme } from '@rainbow-me/context';
 import { BiometryTypes } from '@rainbow-me/helpers';
 import { useBiometryType, useDimensions } from '@rainbow-me/hooks';
-import { colors, padding, position } from '@rainbow-me/styles';
+import { padding, position } from '@rainbow-me/styles';
 import { haptics } from '@rainbow-me/utils';
 import ShadowStack from 'react-native-shadow-stack';
 
@@ -26,22 +27,22 @@ const { ACTIVE, BEGAN, END, FAILED } = State;
 const ButtonHeight = 56;
 const SmallButtonHeight = 46;
 
-const ButtonDisabledBgColor = {
+const ButtonDisabledBgColor = colors => ({
   dark: colors.darkGrey,
   light: colors.lightGrey,
-};
+});
 
-const ButtonShadows = {
+const ButtonShadows = colors => ({
   default: [
-    [0, 3, 5, colors.dark, 0.2],
-    [0, 6, 10, colors.dark, 0.14],
-    [0, 1, 18, colors.dark, 0.12],
+    [0, 3, 5, colors.shadow, 0.2],
+    [0, 6, 10, colors.shadow, 0.14],
+    [0, 1, 18, colors.shadow, 0.12],
   ],
   disabled: [
-    [0, 2, 6, colors.dark, 0.06],
-    [0, 3, 9, colors.dark, 0.08],
+    [0, 2, 6, colors.shadow, 0.06],
+    [0, 3, 9, colors.shadow, 0.08],
   ],
-};
+});
 
 const buttonScaleDurationMs = 150;
 const longPressProgressDurationMs = 500; // 👸 christian approves
@@ -57,20 +58,24 @@ const Content = styled(Centered).attrs({
   width: 100%;
 `;
 
-const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs({
-  color: colors.white,
-  size: 31,
-})`
-  left: 15;
-  position: absolute;
+const Label = styled(BiometricButtonContent).attrs(
+  ({ smallButton, theme: { colors } }) => ({
+    color: colors.whiteLabel,
+    size: smallButton ? 'large' : 'larger',
+    weight: 'heavy',
+  })
+)`
+  bottom: 2;
 `;
 
-const Label = styled(BiometricButtonContent).attrs(({ smallButton }) => ({
-  color: 'white',
-  size: smallButton ? 'large' : 'larger',
-  weight: 'heavy',
-}))`
-  bottom: 2;
+const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
+  ({ theme: { colors } }) => ({
+    color: colors.whiteLabel,
+    size: 31,
+  })
+)`
+  left: 15;
+  position: absolute;
 `;
 
 const animate = (value, { duration = buttonScaleDurationMs, toValue }) =>
@@ -105,7 +110,6 @@ class HoldToAuthorizeButton extends PureComponent {
   };
 
   static defaultProps = {
-    backgroundColor: colors.appleBlue,
     disabled: false,
     theme: 'light',
   };
@@ -192,6 +196,7 @@ class HoldToAuthorizeButton extends PureComponent {
   render() {
     const {
       backgroundColor,
+      colors,
       children,
       deviceDimensions,
       disabled,
@@ -211,9 +216,9 @@ class HoldToAuthorizeButton extends PureComponent {
 
     const isAuthorizing = this.props.isAuthorizing || this.state.isAuthorizing;
 
-    let bgColor = backgroundColor;
+    let bgColor = backgroundColor || colors.appleBlue;
     if (disabled) {
-      bgColor = disabledBackgroundColor || ButtonDisabledBgColor[theme];
+      bgColor = disabledBackgroundColor || ButtonDisabledBgColor(colors)[theme];
     }
     const height = smallButton ? SmallButtonHeight : ButtonHeight;
     const width = deviceDimensions.width - parentHorizontalPadding * 2;
@@ -235,7 +240,8 @@ class HoldToAuthorizeButton extends PureComponent {
               borderRadius={height}
               height={height}
               shadows={
-                shadows || ButtonShadows[disabled ? 'disabled' : 'default']
+                shadows ||
+                ButtonShadows(colors)[disabled ? 'disabled' : 'default']
               }
               width={width}
             >
@@ -280,6 +286,7 @@ const HoldToAuthorizeButtonWithBiometrics = ({
   ...props
 }) => {
   const biometryType = useBiometryType();
+  const { colors } = useTheme();
   const deviceDimensions = useDimensions();
 
   const isLongPressAvailableForBiometryType =
@@ -290,6 +297,7 @@ const HoldToAuthorizeButtonWithBiometrics = ({
   return (
     <HoldToAuthorizeButton
       {...props}
+      colors={colors}
       deviceDimensions={deviceDimensions}
       enableLongPress={!disableLongPress && isLongPressAvailableForBiometryType}
       label={

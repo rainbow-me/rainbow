@@ -5,7 +5,8 @@ import {
   useSpringTransition,
   useTimingTransition,
 } from 'react-native-redash';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
+import { darkModeThemeColors } from '../../styles/colors';
 import { interpolate } from '../animations';
 import { CoinIcon } from '../coin-icon';
 import { Centered, RowWithMargins } from '../layout';
@@ -50,6 +51,8 @@ export default function DepositInfo({ asset, amount }) {
     duration: 100,
   });
 
+  const { colors } = useTheme();
+
   return (
     <Animated.View
       style={{
@@ -84,10 +87,14 @@ export default function DepositInfo({ asset, amount }) {
           testID="deposit-info-container"
         />
         <Centered>
-          <Text color="grey" size="smedium" weight="medium">
+          <Text
+            color={colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)}
+            size="smedium"
+            weight="semibold"
+          >
             Swapping for{' '}
           </Text>
-          <Text color="white" size="smedium" weight="semibold">
+          <Text color="whiteLabel" size="smedium" weight="bold">
             {`${amountToDisplay} ${asset?.symbol || ''}`}
           </Text>
         </Centered>

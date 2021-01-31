@@ -3,12 +3,12 @@ import PropTypes from 'prop-types';
 import React, { Fragment, useRef, useState } from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import Tooltips from 'react-native-tooltips';
-import { colors } from '@rainbow-me/styles';
 
 const CopyTooltip = ({ children, textToCopy, tooltipText }) => {
   const [visible, setVisible] = useState(false);
   const parent = useRef();
   const target = useRef();
+  const { colors } = useTheme();
 
   return (
     <Fragment>

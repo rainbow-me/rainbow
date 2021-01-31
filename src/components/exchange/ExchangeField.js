@@ -1,21 +1,21 @@
 import React, { useCallback, useEffect } from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { TokenSelectionButton } from '../buttons';
 import { CoinIcon, CoinIconSize } from '../coin-icon';
 import { Row, RowWithMargins } from '../layout';
 import { EnDash } from '../text';
 import ExchangeInput from './ExchangeInput';
 import { useColorForAsset } from '@rainbow-me/hooks';
-import { borders, colors } from '@rainbow-me/styles';
+import { borders } from '@rainbow-me/styles';
 
 const ExchangeFieldHeight = android ? 64 : 38;
 const ExchangeFieldPadding = android ? 15 : 19;
-const skeletonColor = colors.alpha(colors.blueGreyDark, 0.1);
 
 const CoinIconSkeleton = styled.View`
   ${borders.buildCircle(CoinIconSize)};
-  background-color: ${skeletonColor};
+  background-color: ${({ theme: { colors } }) =>
+    colors.alpha(colors.blueGreyDark, 0.1)};
 `;
 
 const Container = styled(Row).attrs({
@@ -62,6 +62,7 @@ const ExchangeField = (
 ) => {
   const colorForAsset = useColorForAsset({ address });
   const handleFocusField = useCallback(() => ref?.current?.focus(), [ref]);
+  const { colors } = useTheme();
   useEffect(() => {
     autoFocus && handleFocusField();
   }, [autoFocus, handleFocusField]);
@@ -81,7 +82,9 @@ const ExchangeField = (
             onChangeText={setAmount}
             onFocus={onFocus}
             placeholder={symbol ? '0' : EnDash.unicode}
-            placeholderTextColor={symbol ? undefined : skeletonColor}
+            placeholderTextColor={
+              symbol ? undefined : colors.alpha(colors.blueGreyDark, 0.1)
+            }
             ref={ref}
             testID={amount ? `${testID}-${amount}` : testID}
             useCustomAndroidMask={useCustomAndroidMask}

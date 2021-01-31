@@ -68,7 +68,7 @@ import {
 } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
 import { walletConnectRemovePendingRedirect } from '@rainbow-me/redux/walletconnect';
-import { colors, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 import { ethereumUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 import { methodRegistryLookupAndParse } from '@rainbow-me/utils/methodRegistry';
 import {
@@ -89,12 +89,14 @@ const springConfig = {
   stiffness: 1000,
 };
 
-const DappLogo = styled(RequestVendorLogoIcon).attrs({
-  backgroundColor: colors.transparent,
-  borderRadius: 16,
-  showLargeShadow: true,
-  size: 50,
-})`
+const DappLogo = styled(RequestVendorLogoIcon).attrs(
+  ({ theme: { colors } }) => ({
+    backgroundColor: colors.transparent,
+    borderRadius: 16,
+    showLargeShadow: true,
+    size: 50,
+  })
+)`
   margin-bottom: 14;
 `;
 
@@ -110,24 +112,29 @@ const GasSpeedButtonContainer = styled(Column)`
   margin-bottom: 19px;
 `;
 
-const WalletLabel = styled(Text).attrs({
+const WalletLabel = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.alpha(colors.blueGreyDark, 0.5),
   letterSpacing: 'roundedMedium',
   size: 'smedium',
   weight: 'semibold',
-})`
+}))`
   margin-bottom: 3;
 `;
 
-const WalletText = styled(Text).attrs(({ balanceTooLow }) => ({
-  color: balanceTooLow ? colors.avatarColor[7] : colors.blueGreyDark80,
-  size: 'larger',
-  weight: balanceTooLow ? 'bold' : 'semibold',
-}))``;
+const WalletText = styled(Text).attrs(
+  ({ balanceTooLow, theme: { colors } }) => ({
+    color: balanceTooLow
+      ? colors.avatarColor[7]
+      : colors.alpha(colors.blueGreyDark, 0.8),
+    size: 'larger',
+    weight: balanceTooLow ? 'bold' : 'semibold',
+  })
+)``;
 
 const NOOP = () => undefined;
 
 export default function TransactionConfirmationScreen() {
+  const { colors } = useTheme();
   const { allAssets } = useAccountAssets();
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const [isKeyboardVisible, showKeyboard, hideKeyboard] = useBooleanState();
@@ -602,6 +609,7 @@ export default function TransactionConfirmationScreen() {
       </SheetActionButtonRow>
     );
   }, [
+    colors,
     isBalanceEnough,
     isMessageRequest,
     isSufficientGas,
@@ -669,6 +677,16 @@ export default function TransactionConfirmationScreen() {
 
   const amount = get(request, 'value', '0.00');
 
+  const isAndroidApprovalRequest = useMemo(
+    () =>
+      android &&
+      isTransactionDisplayType(method) &&
+      !!get(request, 'asset', false) &&
+      amount === 0 &&
+      isBalanceEnough,
+    [amount, isBalanceEnough, method, request]
+  );
+
   const ShortSheetHeight = 457 + safeAreaInsetValues.bottom;
   const TallSheetHeight = 604 + safeAreaInsetValues.bottom;
   const MessageSheetHeight =
@@ -678,7 +696,7 @@ export default function TransactionConfirmationScreen() {
   const balanceTooLow =
     isBalanceEnough === false && isSufficientGas !== undefined;
 
-  const sheetHeight =
+  let sheetHeight =
     (isMessageRequest
       ? MessageSheetHeight
       : (amount && amount !== '0.00') || !isBalanceEnough
@@ -693,6 +711,10 @@ export default function TransactionConfirmationScreen() {
 
   if (isTransactionDisplayType(method) && !get(request, 'asset', false)) {
     marginTop += 50;
+  }
+
+  if (isAndroidApprovalRequest) {
+    sheetHeight += 140;
   }
 
   return (
@@ -765,7 +787,9 @@ export default function TransactionConfirmationScreen() {
                 {methodName || 'Placeholder'}
               </Text>
             </Centered>
-            <Divider color={colors.rowDividerLight} inset={[0, 143.5]} />
+            {(!isKeyboardVisible || ios) && (
+              <Divider color={colors.rowDividerLight} inset={[0, 143.5]} />
+            )}
             {renderTransactionSection()}
             {renderTransactionButtons()}
             <RowWithMargins css={padding(0, 24, 30)} margin={15}>

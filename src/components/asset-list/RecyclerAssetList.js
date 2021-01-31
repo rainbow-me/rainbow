@@ -10,6 +10,7 @@ import {
   RecyclerListView,
 } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
+import { withThemeContext } from '../../context/ThemeContext';
 import {
   deviceUtils,
   isNewValueForPath,
@@ -19,7 +20,6 @@ import { CoinDivider } from '../coin-divider';
 import { CoinRowHeight } from '../coin-row';
 import AssetListHeader, { AssetListHeaderHeight } from './AssetListHeader';
 import { firstCoinRowMarginTop, ViewTypes } from './RecyclerViewTypes';
-import { colors } from '@rainbow-me/styles';
 
 const NOOP = () => undefined;
 let globalDeviceDimensions = 0;
@@ -197,7 +197,6 @@ class RecyclerAssetList extends Component {
 
   constructor(props) {
     super(props);
-
     this.state = {
       dataProvider: new DataProvider(hasRowChanged, this.getStableId),
       isRefreshing: false,
@@ -692,6 +691,7 @@ class RecyclerAssetList extends Component {
   };
 
   renderRefreshControl() {
+    const { colors } = this.props;
     return (
       <RefreshControl
         onRefresh={this.handleRefresh}
@@ -783,6 +783,8 @@ class RecyclerAssetList extends Component {
       stickyComponentsIndices,
     } = this.state;
 
+    const { colors } = this.props;
+
     return (
       <View
         backgroundColor={colors.white}
@@ -838,4 +840,4 @@ export default connect(
     openSavings,
     openSmallBalances,
   })
-)(RecyclerAssetList);
+)(withThemeContext(RecyclerAssetList));

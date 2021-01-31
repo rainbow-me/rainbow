@@ -8,12 +8,13 @@ import { Centered, Column } from '../../layout';
 import { SheetActionButton } from '../../sheet';
 import { Text } from '../../text';
 import BackupIcon from '@rainbow-me/assets/backupIcon.png';
+import BackupIconDark from '@rainbow-me/assets/backupIconDark.png';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import { useWallets } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors, fonts, padding } from '@rainbow-me/styles';
+import { fonts, padding } from '@rainbow-me/styles';
 
 const BackupButton = styled(RainbowButton).attrs({
   type: 'small',
@@ -29,22 +30,22 @@ const Content = styled(Centered).attrs({
   flex: 1;
 `;
 
-const DescriptionText = styled(Text).attrs({
+const DescriptionText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
   color: colors.alpha(colors.blueGreyDark, 0.5),
   lineHeight: 'loosest',
   size: 'large',
-})`
+}))`
   margin-bottom: 42;
   padding-horizontal: 23;
 `;
 
-const Subtitle = styled(Text).attrs({
+const Subtitle = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
   color: colors.orangeLight,
   size: fonts.size.smedium,
   weight: fonts.weight.medium,
-})`
+}))`
   margin-top: -10;
 `;
 
@@ -59,7 +60,6 @@ const Title = styled(Text).attrs({
 
 const TopIcon = styled(ImgixImage).attrs({
   resizeMode: ImgixImage.resizeMode.contain,
-  source: BackupIcon,
 })`
   height: 74;
   width: 75;
@@ -105,12 +105,14 @@ export default function NeedsBackupView() {
     });
   }, [navigate, walletId]);
 
+  const { colors, isDarkMode } = useTheme();
+
   return (
     <Fragment>
       <Subtitle>Not backed up</Subtitle>
       <Content>
         <Column align="center">
-          <TopIcon />
+          <TopIcon source={isDarkMode ? BackupIconDark : BackupIcon} />
           <Title>Back up your wallet </Title>
           <DescriptionText>
             Don&apos;t risk your money! Back up your wallet so you can recover

@@ -6,9 +6,10 @@ import {
   ExchangeNavigatorFactory,
   useStatusBarManaging,
 } from '@rainbow-me/navigation';
-import createSwapAndDepositCompoundRap, {
+import {
+  createSwapAndDepositCompoundRap,
   estimateSwapAndDepositCompound,
-} from '@rainbow-me/raps/swapAndDepositCompound';
+} from '@rainbow-me/raps';
 
 const DepositModal = props => {
   // eslint-disable-next-line react-hooks/rules-of-hooks

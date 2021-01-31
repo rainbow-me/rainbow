@@ -2,9 +2,10 @@ import { useRoute } from '@react-navigation/native';
 import React from 'react';
 import ExchangeModal from './ExchangeModal';
 import { ExchangeModalTypes } from '@rainbow-me/helpers';
-import createUnlockAndSwapRap, {
+import {
+  createUnlockAndSwapRap,
   estimateUnlockAndSwap,
-} from '@rainbow-me/raps/unlockAndSwap';
+} from '@rainbow-me/raps';
 
 const SwapModal = (props, ref) => {
   const { params = {} } = useRoute();

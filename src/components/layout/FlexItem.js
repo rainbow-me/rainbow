@@ -1,5 +1,5 @@
 import { isUndefined } from 'lodash';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 
 const FlexItem = styled.View`
   flex: ${({ flex, grow, shrink }) =>

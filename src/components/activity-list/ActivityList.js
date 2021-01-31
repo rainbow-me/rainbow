@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { SectionList } from 'react-native';
 import { mapProps } from 'recompact';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
+import { useTheme } from '../../context/ThemeContext';
 import networkTypes from '../../helpers/networkTypes';
 import ActivityIndicator from '../ActivityIndicator';
 import Spinner from '../Spinner';
@@ -11,7 +12,6 @@ import Text from '../text/Text';
 import ActivityListEmptyState from './ActivityListEmptyState';
 import ActivityListHeader from './ActivityListHeader';
 import RecyclerActivityList from './RecyclerActivityList';
-import { colors } from '@rainbow-me/styles';
 
 const getItemLayout = (data, index) => ({
   index,
@@ -39,6 +39,7 @@ const FooterWrapper = styled(ButtonPressAnimation)`
 
 function ListFooterComponent({ label, onPress }) {
   const [isLoading, setIsLoading] = useState(false);
+  const { colors } = useTheme();
 
   useEffect(() => {
     if (isLoading) {
@@ -56,9 +57,10 @@ function ListFooterComponent({ label, onPress }) {
       ) : (
         <Text
           align="center"
-          color={colors.grey}
+          color={colors.alpha(colors.blueGreyDark, 0.3)}
           lineHeight="loose"
-          size="small"
+          size="smedium"
+          weight="bold"
         >
           {label}
         </Text>

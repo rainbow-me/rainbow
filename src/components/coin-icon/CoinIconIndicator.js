@@ -1,13 +1,13 @@
 import React from 'react';
 import Animated from 'react-native-reanimated';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { useCoinListEditedValue } from '../../hooks/useCoinListEdited';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
-import { borders, colors, shadow } from '@rainbow-me/styles';
+import { borders, shadow } from '@rainbow-me/styles';
 
-const IndicatorIcon = styled(Icon).attrs(({ isPinned }) => ({
-  color: colors.white,
+const IndicatorIcon = styled(Icon).attrs(({ isPinned, theme: { colors } }) => ({
+  color: colors.whiteLabel,
   name: isPinned ? 'pin' : 'hidden',
 }))`
   height: ${({ isPinned }) => (isPinned ? 13 : 10)};
@@ -17,8 +17,15 @@ const IndicatorIcon = styled(Icon).attrs(({ isPinned }) => ({
 
 const IndicatorIconContainer = styled(Centered)`
   ${borders.buildCircle(20)};
-  ${shadow.build(0, 4, 12, colors.blueGreyDark, 0.4)}
-  background-color: ${colors.blueGreyDark50};
+  ${({ theme: { isDarkMode, colors } }) =>
+    shadow.build(
+      0,
+      4,
+      12,
+      isDarkMode ? colors.shadow : colors.blueGreyDark,
+      0.4
+    )}
+  background-color: ${({ theme: { colors } }) => colors.blueGreyDark50};
   bottom: 3;
   left: 10;
   position: absolute;

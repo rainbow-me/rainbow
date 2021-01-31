@@ -1,6 +1,6 @@
 import React from 'react';
 import Animated from 'react-native-reanimated';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { useMemoOne } from 'use-memo-one';
 import { interpolate, ScaleInAnimation } from '../../animations';
 import { Icon } from '../../icons';
@@ -16,6 +16,8 @@ const Container = styled(Centered)`
 `;
 
 export default function HoldToAuthorizeButtonIcon({ animatedValue }) {
+  const { colors } = useTheme();
+
   const animation = useMemoOne(() => {
     return cond(
       greaterThan(animatedValue, 0),
@@ -31,7 +33,11 @@ export default function HoldToAuthorizeButtonIcon({ animatedValue }) {
   return (
     <Container>
       <ScaleInAnimation scaleTo={0.001} value={animation}>
-        <Icon name="progress" progress={animatedValue} />
+        <Icon
+          color={colors.whiteLabel}
+          name="progress"
+          progress={animatedValue}
+        />
       </ScaleInAnimation>
     </Container>
   );

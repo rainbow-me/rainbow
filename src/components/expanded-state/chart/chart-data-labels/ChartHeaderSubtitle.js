@@ -1,10 +1,10 @@
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { TruncatedText } from '../../../text';
-import { colors } from '@rainbow-me/styles';
 
 const ChartHeaderSubtitle = styled(TruncatedText).attrs(
   ({
-    color = colors.blueGreyDark80,
+    theme: { colors },
+    color = colors.alpha(colors.blueGreyDark, 0.8),
     letterSpacing = 'roundedMedium',
     weight = 'bold',
   }) => ({
@@ -14,8 +14,9 @@ const ChartHeaderSubtitle = styled(TruncatedText).attrs(
     weight,
   })
 )`
-  margin-left: ${android ? 6 : 0};
-  ${android ? 'height: 38' : ''};
+  ${android &&
+    `margin-vertical: -10px
+    margin-left: 9`}
 `;
 
 export default ChartHeaderSubtitle;

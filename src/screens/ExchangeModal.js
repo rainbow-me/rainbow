@@ -37,8 +37,10 @@ import {
   usePrevious,
   useSlippageDetails,
   useSwapDetails,
+  useSwapInputOutputTokens,
   useSwapInputRefs,
   useSwapInputs,
+  useSwapInputValues,
   useUniswapCurrencies,
   useUniswapMarketDetails,
 } from '@rainbow-me/hooks';
@@ -47,7 +49,7 @@ import { useNavigation } from '@rainbow-me/navigation';
 import { executeRap } from '@rainbow-me/raps/common';
 import { ethUnits } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
-import { colors, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 import { backgroundTask, isETH, isNewValueForPath } from '@rainbow-me/utils';
 import logger from 'logger';
 
@@ -62,7 +64,7 @@ const InnerWrapper = styled(Centered).attrs({
     height: 500;
     top: 0;
   `};
-  background-color: ${colors.transparent};
+  background-color: ${({ theme: { colors } }) => colors.transparent};
 `;
 
 export default function ExchangeModal({
@@ -128,15 +130,12 @@ export default function ExchangeModal({
 
   const {
     defaultInputAddress,
-    inputCurrency,
     navigateToSelectInputCurrency,
     navigateToSelectOutputCurrency,
-    outputCurrency,
     previousInputCurrency,
     updateInputCurrency,
     updateOutputCurrency,
   } = useUniswapCurrencies({
-    category,
     defaultInputAsset,
     defaultOutputAsset,
     isDeposit,
@@ -146,27 +145,17 @@ export default function ExchangeModal({
     underlyingPrice,
   });
 
+  const { inputCurrency, outputCurrency } = useSwapInputOutputTokens();
+
   const {
     handleFocus,
     inputFieldRef,
     lastFocusedInputHandle,
     nativeFieldRef,
     outputFieldRef,
-  } = useSwapInputRefs({
-    inputCurrency,
-    outputCurrency,
-  });
+  } = useSwapInputRefs();
 
   const {
-    inputAmount,
-    inputAmountDisplay,
-    inputAsExactAmount,
-    isMax,
-    isSufficientBalance,
-    nativeAmount,
-    outputAmount,
-    outputAmountDisplay,
-    setIsSufficientBalance,
     updateInputAmount,
     updateNativeAmount,
     updateOutputAmount,
@@ -183,6 +172,16 @@ export default function ExchangeModal({
     supplyBalanceUnderlying,
     type,
   });
+
+  const {
+    inputAmount,
+    inputAmountDisplay,
+    isSufficientBalance,
+    nativeAmount,
+    isMax,
+    outputAmount,
+    outputAmountDisplay,
+  } = useSwapInputValues();
 
   const clearForm = useCallback(() => {
     logger.log('[exchange] - clear form');
@@ -248,17 +247,11 @@ export default function ExchangeModal({
   const { isSufficientLiquidity, tradeDetails } = useUniswapMarketDetails({
     defaultInputAddress,
     extraTradeDetails,
-    inputAmount,
-    inputAsExactAmount,
-    inputCurrency,
     inputFieldRef,
     isSavings,
     maxInputBalance,
     nativeCurrency,
-    outputAmount,
-    outputCurrency,
     outputFieldRef,
-    setIsSufficientBalance,
     setSlippage,
     updateExtraTradeDetails,
     updateInputAmount,
@@ -327,13 +320,7 @@ export default function ExchangeModal({
 
   // Liten to gas prices, Uniswap reserves updates
   useEffect(() => {
-    updateDefaultGasLimit(
-      isDeposit
-        ? ethUnits.basic_deposit
-        : isWithdrawal
-        ? ethUnits.basic_withdrawal
-        : ethUnits.basic_swap
-    );
+    updateDefaultGasLimit(defaultGasLimit);
     startPollingGasPrices();
     initWeb3Listener();
     return () => {
@@ -341,9 +328,8 @@ export default function ExchangeModal({
       stopWeb3Listener();
     };
   }, [
+    defaultGasLimit,
     initWeb3Listener,
-    isDeposit,
-    isWithdrawal,
     startPollingGasPrices,
     stopPollingGasPrices,
     stopWeb3Listener,
@@ -377,7 +363,6 @@ export default function ExchangeModal({
   useEffect(() => {
     if (isSlippageWarningVisible && !prevIsSlippageWarningVisible) {
       analytics.track('Showing high slippage warning in Swap', {
-        category,
         name: outputCurrency.name,
         slippage,
         symbol: outputCurrency.symbol,
@@ -386,7 +371,6 @@ export default function ExchangeModal({
       });
     }
   }, [
-    category,
     isSlippageWarningVisible,
     outputCurrency,
     prevIsSlippageWarningVisible,
@@ -469,23 +453,23 @@ export default function ExchangeModal({
       }
     });
   }, [
-    type,
     category,
-    defaultInputAsset,
-    isSlippageWarningVisible,
-    outputCurrency,
-    slippage,
     createRap,
-    isWithdrawal,
-    isMax,
     cTokenBalance,
+    defaultInputAsset,
     inputAmount,
     inputCurrency,
-    outputAmount,
-    selectedGasPrice,
-    tradeDetails,
-    setParams,
+    isMax,
+    isSlippageWarningVisible,
+    isWithdrawal,
     navigate,
+    outputAmount,
+    outputCurrency,
+    selectedGasPrice,
+    setParams,
+    slippage,
+    tradeDetails,
+    type,
   ]);
 
   const confirmButtonProps = useMemoOne(

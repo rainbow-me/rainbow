@@ -1,14 +1,14 @@
-import React, { useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { View } from 'react-native';
 import Animated from 'react-native-reanimated';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered, Row } from '../layout';
 import DiscoverSheetContext from './DiscoverSheetContext';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { borders, colors, position } from '@rainbow-me/styles';
+import { borders, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const Header = styled(Row).attrs({
@@ -23,7 +23,7 @@ const Header = styled(Row).attrs({
   z-index: 10;
 `;
 
-export const FloatingActionButtonShadow = [
+export const FloatingActionButtonShadow = colors => [
   [0, 2, 5, colors.dark, 0.2],
   [0, 6, 10, colors.dark, 0.14],
   [0, 1, 18, colors.dark, 0.12],
@@ -31,10 +31,12 @@ export const FloatingActionButtonShadow = [
 
 const Content = styled(Centered)`
   ${position.cover};
-  background-color: ${colors.grey20};
+  background-color: ${({ theme: { colors } }) => colors.grey20};
 `;
 
 function Stack({ children, left, yPosition, onPress }) {
+  const { colors } = useTheme();
+  const shadows = useMemo(() => FloatingActionButtonShadow(colors), [colors]);
   return (
     <>
       <ButtonPressAnimation
@@ -52,7 +54,7 @@ function Stack({ children, left, yPosition, onPress }) {
           <ShadowStack
             style={{ left: 8, position: 'absolute', top: 8 }}
             {...borders.buildCircleAsObject(40)}
-            shadows={FloatingActionButtonShadow}
+            shadows={shadows}
           >
             <Content />
           </ShadowStack>
@@ -80,6 +82,7 @@ export default function DiscoverSheetHeader(props) {
   const { navigate } = useNavigation();
   const { jumpToShort } = useContext(DiscoverSheetContext);
   const { yPosition } = props;
+  const { colors } = useTheme();
   return (
     <Header {...props} pointerEvents="box-none">
       <Stack

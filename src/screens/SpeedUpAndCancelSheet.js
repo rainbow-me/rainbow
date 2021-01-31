@@ -6,7 +6,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, InteractionManager } from 'react-native';
 import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components/native';
+import styled from 'styled-components';
 import Divider from '../components/Divider';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, Column, Row } from '../components/layout';
@@ -18,7 +18,6 @@ import {
   SlackSheet,
 } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
-import { executeRap } from '../raps/common';
 import { getTransaction, toHex } from '@rainbow-me/handlers/web3';
 import TransactionStatusTypes from '@rainbow-me/helpers/transactionStatusTypes';
 import TransactionTypes from '@rainbow-me/helpers/transactionTypes';
@@ -32,13 +31,14 @@ import {
 import { loadWallet, sendTransaction } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
 import { getTitle, gweiToWei, weiToGwei } from '@rainbow-me/parsers';
+import { executeRap } from '@rainbow-me/raps';
 import { dataUpdateTransaction } from '@rainbow-me/redux/data';
 import { explorerInit } from '@rainbow-me/redux/explorer';
 import { updateGasPriceForSpeed } from '@rainbow-me/redux/gas';
 import { rapsAddOrUpdate } from '@rainbow-me/redux/raps';
 import store from '@rainbow-me/redux/store';
 import { ethUnits } from '@rainbow-me/references';
-import { colors, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 import { deviceUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 import logger from 'logger';
 
@@ -62,7 +62,7 @@ const CenteredSheet = styled(Centered)`
 `;
 
 const ExtendedSheetBackground = styled.View`
-  background-color: ${colors.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
   height: 1000;
   position: absolute;
   bottom: -800;
@@ -380,6 +380,8 @@ export default function SpeedUpAndCancelSheet() {
     ? deviceHeight - sheetHeight + (type === CANCEL_TX ? 290 : 340)
     : null;
 
+  const { colors, isDarkMode } = useTheme();
+
   return (
     <SheetKeyboardAnimation
       as={AnimatedContainer}
@@ -453,7 +455,7 @@ export default function SpeedUpAndCancelSheet() {
                     <SheetActionButton
                       color={colors.white}
                       fullWidth
-                      label="Cancel"
+                      label="Close"
                       onPress={goBack}
                       size="big"
                       textColor={colors.blueGreyDark80}
@@ -487,7 +489,7 @@ export default function SpeedUpAndCancelSheet() {
                   onCustomGasBlur={hideKeyboard}
                   onCustomGasFocus={showKeyboard}
                   options={['fast', 'custom']}
-                  theme="light"
+                  theme={isDarkMode ? 'dark' : 'light'}
                   type="transaction"
                 />
               </GasSpeedButtonContainer>
