@@ -1,5 +1,13 @@
 import lang from 'i18n-js';
-import { compact, flattenDeep, get, groupBy, map, property } from 'lodash';
+import {
+  compact,
+  find,
+  flattenDeep,
+  get,
+  groupBy,
+  map,
+  property,
+} from 'lodash';
 import React from 'react';
 import { LayoutAnimation } from 'react-native';
 import { compose, withHandlers } from 'recompact';
@@ -208,15 +216,8 @@ const coinEditContextMenu = (
   allAssetsCount,
   totalValue
 ) => {
-  const noSmallBalances =
-    !balanceSectionData.length ||
-    !(
-      balanceSectionData[balanceSectionData.length - 1]
-        .smallBalancesContainer ||
-      (balanceSectionData.length > 1 &&
-        balanceSectionData[balanceSectionData.length - 2]
-          .smallBalancesContainer)
-    );
+  const noSmallBalances = !find(balanceSectionData, 'smallBalancesContainer');
+
   return {
     contextMenuOptions:
       allAssets.length > 0 && noSmallBalances
