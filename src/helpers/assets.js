@@ -7,6 +7,7 @@ import {
   get,
   groupBy,
   includes,
+  isEmpty,
   reduce,
   slice,
   sortBy,
@@ -138,10 +139,19 @@ export const buildCoinsList = (
   });
 
   // decide which assets to show above or below the coin divider
-  const nonHidden = concat(pinnedAssets, standardAssets, smallAssets);
+  const nonHidden = concat(pinnedAssets, standardAssets);
   const dividerIndex = Math.max(pinnedAssets.length, COINS_TO_SHOW);
-  const assetsAboveDivider = slice(nonHidden, 0, dividerIndex);
-  let assetsBelowDivider = slice(nonHidden, dividerIndex);
+
+  let assetsAboveDivider = slice(nonHidden, 0, dividerIndex);
+  let assetsBelowDivider = [];
+
+  if (isEmpty(assetsAboveDivider)) {
+    assetsAboveDivider = slice(smallAssets, 0, COINS_TO_SHOW);
+    assetsBelowDivider = slice(smallAssets, COINS_TO_SHOW);
+  } else {
+    const remainderBelowDivider = slice(nonHidden, dividerIndex);
+    assetsBelowDivider = concat(remainderBelowDivider, smallAssets);
+  }
 
   // calculate small balance and overall totals
   const smallBalancesValue = getTotal(assetsBelowDivider);
