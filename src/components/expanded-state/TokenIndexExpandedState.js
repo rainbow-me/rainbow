@@ -93,9 +93,9 @@ export default function TokenIndexExpandedState({ asset }) {
     );
 
     const underlyingAssets = dpi?.underlying.map(asset => {
-      const assetWithPrice = formatGenericAsset(
-        genericAssets[toLower(asset?.address)]
-      );
+      const genericAsset = genericAssets[toLower(asset?.address)];
+      if (!genericAsset) return null;
+      const assetWithPrice = formatGenericAsset(genericAsset);
 
       const {
         display: pricePerUnitFormatted,
@@ -103,7 +103,7 @@ export default function TokenIndexExpandedState({ asset }) {
       } = convertRawAmountToNativeDisplay(
         asset.amount,
         asset.decimals,
-        assetWithPrice.price.value,
+        assetWithPrice?.price?.value || 0,
         nativeCurrency
       );
 
@@ -118,7 +118,10 @@ export default function TokenIndexExpandedState({ asset }) {
         pricePerUnitFormatted,
       };
     });
-    return sortBy(underlyingAssets, 'percentageAllocation').reverse();
+    return sortBy(
+      underlyingAssets.filter(asset => asset !== null),
+      'percentageAllocation'
+    ).reverse();
   }, [dpi, genericAssets, nativeCurrency, nativeCurrencySymbol]);
 
   // If we don't have a balance for this asset

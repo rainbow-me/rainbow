@@ -3,12 +3,13 @@ import { Contract } from '@ethersproject/contracts';
 import { isEmpty, map } from 'lodash';
 import { useCallback } from 'react';
 import { queryCache, useQuery } from 'react-query';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   DEFI_PULSE_FROM_STORAGE,
   saveDefiPulse,
 } from '../handlers/localstorage/defiPulse';
 import { web3Provider } from '../handlers/web3';
+import { emitAssetRequest } from '../redux/explorer';
 import { AppState } from '../redux/store';
 import { IndexToken } from '@rainbow-me/entities';
 import {
@@ -40,6 +41,7 @@ const getTokenData = (token: Token): IndexToken => {
 };
 
 export default function useDPI() {
+  const dispatch = useDispatch();
   const { genericAssets } = useSelector(
     ({ data: { genericAssets } }: AppState) => ({
       genericAssets,
@@ -56,15 +58,18 @@ export default function useDPI() {
       TOKENSETS_V2,
       DPI_ADDRESS
     );
-
     const defiPulseData = {
       base: getTokenData(result.base),
       underlying: map(result.underlying, token => getTokenData(token)),
     };
+    const underlyingAddresses = defiPulseData.underlying.map(
+      token => token.address
+    );
+    dispatch(emitAssetRequest(underlyingAddresses));
 
     saveDefiPulse(defiPulseData);
     return defiPulseData;
-  }, []);
+  }, [dispatch]);
 
   const { data } = useQuery(
     !isEmpty(genericAssets) && ['defiPulse'],
