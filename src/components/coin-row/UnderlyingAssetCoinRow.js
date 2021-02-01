@@ -1,6 +1,5 @@
-import React, { useCallback } from 'react';
+import React, { Fragment } from 'react';
 import { magicMemo } from '../../utils';
-import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
 import { Centered, Row } from '../layout';
 import { Text } from '../text';
@@ -12,17 +11,11 @@ const UnderlyingAssetCoinRow = ({
   change,
   isPositive,
   name,
-  onPress,
-  price,
   symbol,
 }) => {
   const { colors } = useTheme();
-  const handlePress = useCallback(() => {
-    onPress({ address, change, name, price, symbol });
-  }, [address, change, name, onPress, price, symbol]);
-
   return (
-    <ButtonPressAnimation onPress={handlePress}>
+    <Fragment>
       <Row marginBottom={19}>
         <Centered marginRight={6}>
           <CoinIcon
@@ -40,7 +33,7 @@ const UnderlyingAssetCoinRow = ({
           </Text>
         </Row>
       </Row>
-    </ButtonPressAnimation>
+    </Fragment>
   );
 };
 
