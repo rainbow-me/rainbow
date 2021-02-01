@@ -1,8 +1,7 @@
 import analytics from '@segment/analytics-react-native';
 import { get } from 'lodash';
-import { RefObject, useCallback } from 'react';
+import { RefObject, useCallback, useState } from 'react';
 import { TextInput } from 'react-native';
-import { useDispatch } from 'react-redux';
 import {
   convertAmountFromNativeValue,
   convertAmountToNativeAmount,
@@ -12,13 +11,6 @@ import {
   updatePrecisionToDisplay,
 } from '../helpers/utilities';
 import useSwapInputOutputTokens from './useSwapInputOutputTokens';
-import {
-  updateIsMax,
-  updateIsSufficientBalance,
-  updateSwapInputAmount,
-  updateSwapNativeAmount,
-  updateSwapOutputAmount,
-} from '@rainbow-me/redux/swap';
 import logger from 'logger';
 
 export default function useSwapInputs({
@@ -36,8 +28,19 @@ export default function useSwapInputs({
   supplyBalanceUnderlying: string;
   type: string;
 }) {
-  const dispatch = useDispatch();
   const { inputCurrency } = useSwapInputOutputTokens();
+  const [isMax, setIsMax] = useState(false);
+  const [inputAmount, setInputAmount] = useState<string | null>(null);
+  const [inputAmountDisplay, setInputAmountDisplay] = useState<string | null>(
+    null
+  );
+  const [inputAsExactAmount, setInputAsExactAmount] = useState(true);
+  const [isSufficientBalance, setIsSufficientBalance] = useState(true);
+  const [nativeAmount, setNativeAmount] = useState<string | null>(null);
+  const [outputAmount, setOutputAmount] = useState<string | null>(null);
+  const [outputAmountDisplay, setOutputAmountDisplay] = useState<string | null>(
+    null
+  );
 
   const updateInputAmount = useCallback(
     (
@@ -46,11 +49,10 @@ export default function useSwapInputs({
       newInputAsExactAmount = true,
       newIsMax = false
     ) => {
-      const display = newAmountDisplay || newInputAmount;
-      dispatch(
-        updateSwapInputAmount(newInputAmount, display, newInputAsExactAmount)
-      );
-      dispatch(updateIsMax(!!newInputAmount && newIsMax));
+      setInputAmount(newInputAmount);
+      setInputAsExactAmount(newInputAsExactAmount);
+      setInputAmountDisplay(newAmountDisplay || newInputAmount);
+      setIsMax(!!newInputAmount && newIsMax);
 
       if (!nativeFieldRef?.current?.isFocused() || newIsMax) {
         let newNativeAmount = null;
@@ -68,7 +70,7 @@ export default function useSwapInputs({
             newNativePrice
           );
         }
-        dispatch(updateSwapNativeAmount(newNativeAmount));
+        setNativeAmount(newNativeAmount);
 
         if (inputCurrency) {
           const newIsSufficientBalance =
@@ -77,7 +79,7 @@ export default function useSwapInputs({
               ? greaterThanOrEqualTo(supplyBalanceUnderlying, newInputAmount)
               : greaterThanOrEqualTo(maxInputBalance, newInputAmount));
 
-          dispatch(updateIsSufficientBalance(newIsSufficientBalance));
+          setIsSufficientBalance(newIsSufficientBalance);
         }
       }
 
@@ -91,7 +93,6 @@ export default function useSwapInputs({
     },
     [
       defaultInputAsset,
-      dispatch,
       inputCurrency,
       isWithdrawal,
       maxInputBalance,
@@ -111,9 +112,9 @@ export default function useSwapInputs({
       let inputAmountDisplay = null;
 
       const isNativeZero = isZero(nativeAmount);
-      dispatch(updateSwapNativeAmount(nativeAmount));
+      setNativeAmount(nativeAmount);
 
-      dispatch(updateIsMax(false));
+      setIsMax(false);
 
       if (nativeAmount && !isNativeZero) {
         const nativePrice = get(inputCurrency, 'native.price.amount', null);
@@ -129,17 +130,18 @@ export default function useSwapInputs({
         );
       }
 
-      dispatch(updateSwapInputAmount(inputAmount, inputAmountDisplay, true));
+      setInputAsExactAmount(true);
+      setInputAmount(inputAmount);
+      setInputAmountDisplay(inputAmountDisplay);
     },
-    [dispatch, inputCurrency]
+    [inputCurrency]
   );
 
   const updateOutputAmount = useCallback(
     (newOutputAmount, newAmountDisplay, newInputAsExactAmount = false) => {
-      const display = newAmountDisplay || newOutputAmount;
-      dispatch(
-        updateSwapOutputAmount(newOutputAmount, display, newInputAsExactAmount)
-      );
+      setInputAsExactAmount(newInputAsExactAmount);
+      setOutputAmount(newOutputAmount);
+      setOutputAmountDisplay(newAmountDisplay || newOutputAmount);
       if (newAmountDisplay) {
         analytics.track('Updated output amount', {
           defaultInputAsset: get(defaultInputAsset, 'symbol', ''),
@@ -148,10 +150,19 @@ export default function useSwapInputs({
         });
       }
     },
-    [defaultInputAsset, dispatch, type]
+    [defaultInputAsset, type]
   );
 
   return {
+    inputAmount,
+    inputAmountDisplay,
+    inputAsExactAmount,
+    isMax,
+    isSufficientBalance,
+    nativeAmount,
+    outputAmount,
+    outputAmountDisplay,
+    setIsSufficientBalance,
     updateInputAmount,
     updateNativeAmount,
     updateOutputAmount,
