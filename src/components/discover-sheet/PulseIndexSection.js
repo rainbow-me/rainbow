@@ -9,7 +9,7 @@ import { Text } from '../text';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 import { handleSignificantDecimals } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
 import ShadowStack from 'react-native-shadow-stack';
@@ -58,6 +58,8 @@ export default function PulseIndex() {
     });
   }, [genericAssets, navigate]);
 
+  const { isDarkMode, colors } = useTheme();
+
   if (!item) return null;
 
   return (
@@ -88,11 +90,18 @@ export default function PulseIndex() {
               <CoinIcon {...item} />
             </Column>
             <Column marginLeft={0} marginTop={13.5}>
-              <Text color={colors.white} size="large" weight="heavy">
+              <Text
+                color={isDarkMode ? colors.black : colors.white}
+                size="large"
+                weight="heavy"
+              >
                 {item.name}
               </Text>
               <Text
-                color={colors.alpha(colors.white, 0.6)}
+                color={colors.alpha(
+                  isDarkMode ? colors.black : colors.white,
+                  0.6
+                )}
                 size="lmedium"
                 weight="semibold"
               >
@@ -102,7 +111,7 @@ export default function PulseIndex() {
             <Column align="end" flex={1} margin={15} marginTop={13.5}>
               <Text
                 align="right"
-                color={colors.white}
+                color={isDarkMode ? colors.black : colors.white}
                 letterSpacing="zero"
                 size="large"
                 weight="heavy"

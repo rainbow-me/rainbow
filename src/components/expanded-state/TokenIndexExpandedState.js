@@ -26,7 +26,7 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 import {
   convertRawAmountToNativeDisplay,
   divide,
@@ -77,6 +77,7 @@ const formatGenericAsset = asset => {
 };
 
 export default function TokenIndexExpandedState({ asset }) {
+  const { colors } = useTheme();
   const { navigate } = useNavigation();
   const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
     genericAssets,

@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react';
-import { colors } from '../../styles';
 import { magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
@@ -17,6 +16,7 @@ const UnderlyingAssetCoinRow = ({
   price,
   symbol,
 }) => {
+  const { colors } = useTheme();
   const handlePress = useCallback(() => {
     onPress({ address, change, name, price, symbol });
   }, [address, change, name, onPress, price, symbol]);
