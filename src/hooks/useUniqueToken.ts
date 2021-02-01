@@ -1,25 +1,36 @@
 import * as React from 'react';
 
-import use3d from './use3d';
+import isSupportedUriExtension from '../helpers/isSupportedUriExtension';
+
+const SUPPORTED_3D_EXTENSIONS = Object.freeze(['.glb']) as readonly string[];
+const SUPPORTED_VIDEO_EXTENSIONS = Object.freeze(['.mp4']) as readonly string[];
 
 export type useUniqueTokenResult = {
   readonly supports3d: boolean;
+  readonly supportsVideo: boolean;
 };
 
 const fallbackResult: useUniqueTokenResult = Object.freeze({
   supports3d: false,
+  supportsVideo: false,
 });
 
 export default function useUniqueToken(
   maybeUniqueToken: Record<string, any>
 ): useUniqueTokenResult {
-  const { is3dUri } = use3d();
   return React.useMemo((): useUniqueTokenResult => {
     if (typeof maybeUniqueToken === 'object' && !!maybeUniqueToken) {
       const { animation_url } = maybeUniqueToken;
-      const supports3d = is3dUri(animation_url);
-      return Object.freeze({ supports3d });
+      const supports3d = isSupportedUriExtension(
+        animation_url,
+        SUPPORTED_3D_EXTENSIONS
+      );
+      const supportsVideo = isSupportedUriExtension(
+        animation_url,
+        SUPPORTED_VIDEO_EXTENSIONS
+      );
+      return Object.freeze({ supports3d, supportsVideo });
     }
     return fallbackResult;
-  }, [maybeUniqueToken, is3dUri]);
+  }, [maybeUniqueToken]);
 }

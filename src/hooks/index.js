@@ -43,6 +43,7 @@ export { default as useLoadGlobalData } from './useLoadGlobalData';
 export { default as useMagicAutofocus } from './useMagicAutofocus';
 export { default as useMaxInputBalance } from './useMaxInputBalance';
 export { default as useMulticall } from './useMulticall';
+export { default as useUniqueToken } from './useUniqueToken';
 export { default as useOpenInvestmentCards } from './useOpenInvestmentCards';
 export { default as useOpenSavings } from './useOpenSavings';
 export { default as useOpenSmallBalances } from './useOpenSmallBalances';

@@ -67,11 +67,11 @@ export default function ModelViewer({
   <script nomodule src="https://unpkg.com/@google/model-viewer@0.6.0/dist/model-viewer-legacy.js"></script>
   <title>GLBModelViewer</title>
   <style>
-  * { margin:0; padding:0; }
-  html { height: 100%; width: 100%; }
-  body { height: 100%; width: 100%; }
-  model-viewer { width: 100%; height: 100% }
-</style>
+    * { margin:0; padding:0; }
+    html { height: 100%; width: 100%; }
+    body { height: 100%; width: 100%; }
+    model-viewer { width: 100%; height: 100% }
+  </style>
 </head>
 <body>
   <model-viewer src=${JSON.stringify(uri)} alt=${JSON.stringify(

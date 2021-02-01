@@ -20,9 +20,9 @@ export default function isSupportedUriExtension(
             pathname.toLowerCase().endsWith(ext.toLowerCase()))
         );
       },
-      protocol === 'https:'
+      false
     );
-    return href === uri && supported;
+    return href === uri && supported && protocol === 'https:';
   } catch (e) {
     return false;
   }

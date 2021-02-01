@@ -1,12 +1,16 @@
 import React from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import styled from 'styled-components';
-import { useDimensions, useImageMetadata } from '../../../hooks';
-import useUniqueToken from '../../../hooks/useUniqueToken';
+import {
+  useDimensions,
+  useImageMetadata,
+  useUniqueToken,
+} from '../../../hooks';
 import { magicMemo } from '../../../utils';
 import { SimpleModelView } from '../../3d';
 import { Centered } from '../../layout';
 import { UniqueTokenImage } from '../../unique-token';
+import { SimpleVideo } from '../../video';
 import { margin, padding, position } from '@rainbow-me/styles';
 
 const paddingHorizontal = 19;
@@ -53,7 +57,7 @@ const UniqueTokenExpandedStateImage = ({ asset }) => {
   const containerHeight =
     heightForDeviceSize > maxImageHeight ? maxImageWidth : heightForDeviceSize;
 
-  const { supports3d } = useUniqueToken(asset);
+  const { supports3d, supportsVideo } = useUniqueToken(asset);
 
   // When rendering a 3D asset, the we'll default to rendering a loading icon.
   // We don't need to do this for image content.
@@ -63,7 +67,13 @@ const UniqueTokenExpandedStateImage = ({ asset }) => {
     <Container height={containerHeight}>
       <ImageWrapper isImageHuge={heightForDeviceSize > maxImageHeight}>
         <View style={StyleSheet.absoluteFill}>
-          {supports3d ? (
+          {supportsVideo ? (
+            <SimpleVideo
+              posterUri={imageUrl}
+              style={StyleSheet.absoluteFill}
+              uri={asset.animation_url}
+            />
+          ) : supports3d ? (
             <ModelView
               fallbackUri={imageUrl}
               loading={loading}
