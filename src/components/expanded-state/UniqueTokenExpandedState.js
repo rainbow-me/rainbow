@@ -13,8 +13,8 @@ import { ShowcaseToast, ToastPositionContainer } from '../toasts';
 import { UniqueTokenAttributes } from '../unique-token';
 import ExpandedStateSection from './ExpandedStateSection';
 import {
+  UniqueTokenExpandedStateContent,
   UniqueTokenExpandedStateHeader,
-  UniqueTokenExpandedStateImage,
 } from './unique-token';
 import { useDimensions, useShowcaseTokens } from '@rainbow-me/hooks';
 import { magicMemo } from '@rainbow-me/utils';
@@ -64,7 +64,7 @@ const UniqueTokenExpandedState = ({ asset }) => {
         scrollEnabled
       >
         <UniqueTokenExpandedStateHeader asset={asset} />
-        <UniqueTokenExpandedStateImage asset={asset} />
+        <UniqueTokenExpandedStateContent asset={asset} />
         <SheetActionButtonRow>
           <SheetActionButton
             color={isDarkMode ? colors.darkModeDark : colors.dark}

@@ -1,4 +1,5 @@
 import React from 'react';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import styled from 'styled-components';
 import { useDimensions, useImageMetadata } from '../../../hooks';
 import useUniqueToken from '../../../hooks/useUniqueToken';
@@ -27,6 +28,16 @@ const ModelView = styled(SimpleModelView)`
   ${position.size('100%')};
 `;
 
+const LoadingWrapper = styled(View)`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  padding-bottom: 10;
+  padding-right: 10;
+  align-items: flex-end;
+  justify-content: flex-end;
+`;
+
 const UniqueTokenExpandedStateImage = ({ asset }) => {
   const { width: deviceWidth } = useDimensions();
 
@@ -43,19 +54,36 @@ const UniqueTokenExpandedStateImage = ({ asset }) => {
     heightForDeviceSize > maxImageHeight ? maxImageWidth : heightForDeviceSize;
 
   const { supports3d } = useUniqueToken(asset);
+
+  // When rendering a 3D asset, the we'll default to rendering a loading icon.
+  // We don't need to do this for image content.
+  const [loading, setLoading] = React.useState(supports3d);
+
   return (
     <Container height={containerHeight}>
       <ImageWrapper isImageHuge={heightForDeviceSize > maxImageHeight}>
-        {supports3d ? (
-          <ModelView fallbackUri={imageUrl} uri={asset.animation_url} />
-        ) : (
-          <UniqueTokenImage
-            backgroundColor={asset.background}
-            imageUrl={imageUrl}
-            item={asset}
-            resizeMode="contain"
-          />
-        )}
+        <View style={StyleSheet.absoluteFill}>
+          {supports3d ? (
+            <ModelView
+              fallbackUri={imageUrl}
+              loading={loading}
+              setLoading={setLoading}
+              uri={asset.animation_url}
+            />
+          ) : (
+            <UniqueTokenImage
+              backgroundColor={asset.background}
+              imageUrl={imageUrl}
+              item={asset}
+              resizeMode="contain"
+            />
+          )}
+          {!!loading && (
+            <LoadingWrapper>
+              <ActivityIndicator />
+            </LoadingWrapper>
+          )}
+        </View>
       </ImageWrapper>
     </Container>
   );

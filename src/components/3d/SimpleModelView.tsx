@@ -1,6 +1,5 @@
 import * as React from 'react';
 import {
-  ActivityIndicator,
   Animated,
   PanResponder,
   StyleSheet,
@@ -11,6 +10,8 @@ import { WebView } from 'react-native-webview';
 import { ImgixImage } from '@rainbow-me/images';
 
 export type ModelViewerProps = {
+  readonly setLoading: (loading: boolean) => void;
+  readonly loading: boolean;
   readonly style?: ViewStyle;
   readonly uri?: string;
   readonly alt?: string;
@@ -27,6 +28,8 @@ const styles = StyleSheet.create({
 });
 
 export default function ModelViewer({
+  loading,
+  setLoading,
   style,
   uri,
   alt,
@@ -97,26 +100,29 @@ export default function ModelViewer({
     }),
     [alt, uri]
   );
-  const loaded = React.useMemo(() => !!visibility && progress === 1, [
+  const didLoadModel = React.useMemo(() => !!visibility && progress === 1, [
     progress,
     visibility,
   ]);
   React.useEffect(() => {
+    setLoading(!didLoadModel);
+  }, [didLoadModel, setLoading]);
+  React.useEffect(() => {
     Animated.sequence([
       Animated.timing(opacity, {
         duration: 120,
-        toValue: loaded ? 0 : 1,
+        toValue: loading ? 1 : 0,
         useNativeDriver: true,
       }),
     ]).start();
-  }, [loaded, opacity]);
+  }, [loading, opacity]);
   const { panHandlers } = React.useMemo(
     () =>
       PanResponder.create({
-        onPanResponderTerminationRequest: () => !loaded,
-        onStartShouldSetPanResponderCapture: () => loaded,
+        onPanResponderTerminationRequest: () => loading,
+        onStartShouldSetPanResponderCapture: () => !loading,
       }),
-    [loaded]
+    [loading]
   );
   return (
     <View style={style} {...panHandlers}>
@@ -128,11 +134,10 @@ export default function ModelViewer({
         style={styles.flex}
       />
       <Animated.View
-        pointerEvents={loaded ? 'none' : 'auto'}
+        pointerEvents={loading ? 'none' : 'auto'}
         style={[StyleSheet.absoluteFill, styles.bottomRight, { opacity }]}
       >
         <ImgixImage source={fallbackSource} style={StyleSheet.absoluteFill} />
-        <ActivityIndicator />
       </Animated.View>
     </View>
   );
