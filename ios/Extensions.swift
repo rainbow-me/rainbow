@@ -251,7 +251,7 @@ extension UITableView {
         gradient.startPoint = CGPoint(x: 1, y: 0.5)
         gradient.endPoint = CGPoint(x: 2, y: yRadius)
         gradientContainer.addSublayer(gradient)
-        
+        self.layer.sublayers?.forEach { $0.removeFromSuperlayer() }
         self.layer.addSublayer(gradientContainer)
         
         if enableShadows {
@@ -259,7 +259,7 @@ extension UITableView {
             let gradientShadowFrame = CGRect(x: bounds.size.width / 2, y: bounds.size.width - bounds.size.height / 2, width: bounds.size.width, height: bounds.size.height)
             let gradientShadowRect = UIBezierPath(roundedRect: gradientShadowFrame, cornerRadius: bounds.size.height / 2)
             gradientShadowMask.shadowOffset = CGSize(width: 0, height: 5)
-            gradientShadowMask.shadowOpacity = 0.4
+            gradientShadowMask.shadowOpacity = UIColor.RainbowTheme.isDarkMode ? 0.0 : 0.4
             gradientShadowMask.shadowPath = gradientShadowRect.cgPath
             gradientShadowMask.shadowRadius = 7.5
             
@@ -277,7 +277,7 @@ extension UITableView {
             
             let shadow = CAShapeLayer()
             let shadowRect = UIBezierPath(roundedRect: bounds, cornerRadius: bounds.size.height / 2)
-            shadow.shadowColor = UIColor.RainbowTheme.Transactions.dark.cgColor
+            shadow.shadowColor = UIColor.RainbowTheme.Transactions.shadow.cgColor
             shadow.shadowOffset = CGSize(width: 0, height: 10)
             shadow.shadowOpacity = 0.2
             shadow.shadowPath = shadowRect.cgPath

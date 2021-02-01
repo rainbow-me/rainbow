@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components/primitives';
 import use3d from '../../hooks/use3d';
 import { magicMemo } from '../../utils';
@@ -6,10 +6,10 @@ import { AxisIcon } from '../3d';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder } from '../layout';
 import UniqueTokenImage from './UniqueTokenImage';
-import { colors, position, shadow as shadowUtil } from '@rainbow-me/styles';
+import { position, shadow as shadowUtil } from '@rainbow-me/styles';
 
 const UniqueTokenCardBorderRadius = 20;
-const UniqueTokenCardShadow = [0, 2, 6, colors.dark, 0.08];
+const UniqueTokenCardShadowFactory = colors => [0, 2, 6, colors.shadow, 0.08];
 
 const Container = styled.View`
   ${({ shadow }) => shadowUtil.build(...shadow)};
@@ -41,7 +41,7 @@ const UniqueTokenCard = ({
   onPress,
   resizeMode,
   scaleTo = 0.96,
-  shadow = UniqueTokenCardShadow,
+  shadow,
   style,
   width,
   ...props
@@ -54,6 +54,11 @@ const UniqueTokenCard = ({
 
   const { is3dUri } = use3d();
   const is3dAsset = is3dUri(animation_url);
+  const { colors } = useTheme();
+
+  const defaultShadow = useMemo(() => UniqueTokenCardShadowFactory(colors), [
+    colors,
+  ]);
 
   return (
     <Container
@@ -62,7 +67,7 @@ const UniqueTokenCard = ({
       enableHapticFeedback={enableHapticFeedback}
       onPress={handlePress}
       scaleTo={scaleTo}
-      shadow={shadow}
+      shadow={shadow || defaultShadow}
     >
       <Content {...props} height={height} style={style} width={width}>
         <UniqueTokenImage

@@ -9,9 +9,9 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import styled from 'styled-components/native';
+import styled from 'styled-components';
 import Spinner from '../../assets/chartSpinner.png';
-import { nativeStackConfig } from '../../navigation/config';
+import { nativeStackConfig } from '../../navigation/nativeStackConfig';
 import { ChartExpandedStateHeader } from '../expanded-state/chart';
 import { Column } from '../layout';
 import Labels from './ExtremeLabels';
@@ -20,7 +20,7 @@ import { ChartDot, ChartPath, useChartData } from '@rainbow-me/animated-charts';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
-import { colors, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 
 export const { width: WIDTH } = Dimensions.get('window');
 
@@ -53,7 +53,6 @@ const Container = styled(Column)`
 `;
 
 const InnerDot = styled.View`
-  width: 10px;
   height: 10px;
   border-radius: 5px;
   background-color: ${({ color }) => color};
@@ -61,12 +60,13 @@ const InnerDot = styled.View`
   shadow-offset: 0 3px;
   shadow-opacity: 0.6;
   shadow-radius: 4.5px;
+  width: 10px;
 `;
 
 const Dot = styled(ChartDot)`
-  justify-content: center;
   align-items: center;
   background-color: ${({ color }) => color};
+  justify-content: center;
 `;
 
 const HEIGHT = 146.5;
@@ -76,7 +76,8 @@ const Overlay = styled(Animated.View).attrs({
 })`
   ${position.cover};
   align-items: center;
-  background-color: ${colors.alpha(colors.white, 0.9)};
+  background-color: ${({ theme: { colors } }) =>
+    colors.alpha(colors.white, 0.9)};
   justify-content: center;
 `;
 
@@ -123,6 +124,7 @@ export default function ChartWrapper({
   const spinnerRotation = useSharedValue(0);
   const spinnerScale = useSharedValue(0);
   const chartTimeSharedValue = useSharedValue('');
+  const { colors } = useTheme();
 
   const { setOptions } = useNavigation();
   useEffect(

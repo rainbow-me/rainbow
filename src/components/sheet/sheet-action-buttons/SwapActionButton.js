@@ -2,13 +2,14 @@ import React, { useCallback } from 'react';
 import { useExpandedStateNavigation } from '../../../hooks';
 import SheetActionButton from './SheetActionButton';
 import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
 
 export default function SwapActionButton({
-  color = colors.swapPurple,
+  color: givenColor,
   inputType,
   ...props
 }) {
+  const { colors } = useTheme();
+  const color = givenColor || colors.swapPurple;
   const navigate = useExpandedStateNavigation(inputType);
   const handlePress = useCallback(
     () =>

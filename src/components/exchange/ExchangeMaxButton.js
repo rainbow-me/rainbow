@@ -1,10 +1,10 @@
 import React from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
 import { Row } from '../layout';
 import { Text } from '../text';
 import { useColorForAsset } from '@rainbow-me/hooks';
-import { colors, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 
 const Container = styled(ButtonPressAnimation)`
   margin-right: 4;
@@ -32,7 +32,7 @@ export default function ExchangeMaxButton({
   testID,
 }) {
   const colorForAsset = useColorForAsset({ address });
-
+  const { colors } = useTheme();
   return (
     <Container disabled={disabled} onPress={onPress} testID={testID}>
       <MaxButtonContent>

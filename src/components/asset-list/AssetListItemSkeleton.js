@@ -10,12 +10,13 @@ import Animated, {
   Value,
 } from 'react-native-reanimated';
 import { withProps } from 'recompact';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
+import { withThemeContext } from '../../context/ThemeContext';
 import { deviceUtils } from '../../utils';
 import { interpolate } from '../animations';
 import { CoinRowHeight } from '../coin-row';
 import { ColumnWithMargins, Row, RowWithMargins } from '../layout';
-import { colors, padding, position } from '@rainbow-me/styles';
+import { padding, position } from '@rainbow-me/styles';
 
 const { block, cond, set, startClock, stopClock } = Animated;
 
@@ -30,7 +31,7 @@ const Container = styled.View`
 
 const FakeAvatar = styled.View`
   ${position.size(40)};
-  background-color: ${colors.skeleton};
+  background-color: ${({ theme: { colors } }) => colors.skeleton};
   border-radius: 20;
 `;
 
@@ -44,7 +45,7 @@ const FakeRow = withProps({
 })(Row);
 
 const FakeText = styled.View`
-  background-color: ${colors.skeleton};
+  background-color: ${({ theme: { colors } }) => colors.skeleton};
   border-radius: 5;
   height: 10;
 `;
@@ -56,10 +57,10 @@ const Wrapper = styled(RowWithMargins).attrs({
 })`
   ${padding(9, 19, 10, 19)};
   ${position.size('100%')};
-  background-color: ${colors.transparent};
+  background-color: ${({ theme: { colors } }) => colors.transparent};
 `;
 
-export default class AssetListItemSkeleton extends PureComponent {
+class AssetListItemSkeleton extends PureComponent {
   static propTypes = {
     animated: PropTypes.bool,
     descendingOpacity: PropTypes.bool,
@@ -104,6 +105,7 @@ export default class AssetListItemSkeleton extends PureComponent {
   animation = this.props.animated && ios ? this.startShimmerLoop() : () => null;
 
   renderShimmer() {
+    const { colors } = this.props;
     const gradientColors = [
       colors.skeleton,
       colors.shimmer,
@@ -136,7 +138,7 @@ export default class AssetListItemSkeleton extends PureComponent {
   }
 
   render() {
-    const { animated, descendingOpacity, index } = this.props;
+    const { animated, descendingOpacity, index, colors } = this.props;
 
     const skeletonElement = (
       <Wrapper index={index}>
@@ -171,3 +173,5 @@ export default class AssetListItemSkeleton extends PureComponent {
     );
   }
 }
+
+export default withThemeContext(AssetListItemSkeleton);

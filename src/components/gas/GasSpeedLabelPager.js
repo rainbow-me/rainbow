@@ -1,21 +1,25 @@
-import React, { useEffect, useState } from 'react';
-import styled from 'styled-components/primitives';
+import React, { useEffect, useMemo, useState } from 'react';
+import styled from 'styled-components';
 import { Row } from '../layout';
 import GasSpeedLabelPagerItem, {
   GasSpeedLabelPagerItemHeight,
 } from './GasSpeedLabelPagerItem';
-import { colors } from '@rainbow-me/styles';
 import { gasUtils, magicMemo } from '@rainbow-me/utils';
 
-const speedColors = {
-  dark: [colors.white, colors.white, colors.white, colors.appleBlue],
+const speedColorsFactory = colors => ({
+  dark: [
+    colors.whiteLabel,
+    colors.whiteLabel,
+    colors.whiteLabel,
+    colors.appleBlue,
+  ],
   light: [
     colors.alpha(colors.blueGreyDark, 0.8),
     colors.alpha(colors.blueGreyDark, 0.8),
     colors.alpha(colors.blueGreyDark, 0.8),
     colors.appleBlue,
   ],
-};
+});
 
 const PagerItem = styled(Row)`
   border-radius: 2px;
@@ -34,6 +38,8 @@ const GasSpeedLabelPager = ({
 }) => {
   const [touched, setTouched] = useState(false);
   useEffect(() => setTouched(true), [label]);
+  const { colors } = useTheme();
+  const speedColors = useMemo(() => speedColorsFactory(colors), [colors]);
 
   return (
     <Row align="center" height={GasSpeedLabelPagerItemHeight} justify="end">
@@ -47,7 +53,7 @@ const GasSpeedLabelPager = ({
                     ? colors.appleBlue
                     : speedColors[theme][i]
                   : theme === 'dark'
-                  ? colors.alpha(colors.darkModeColors.blueGreyDark, 0.3)
+                  ? colors.alpha(colors.blueGreyDark, 0.3)
                   : colors.alpha(colors.blueGreyDark, 0.3)
               }
               key={`pager-${speed}-${i}`}

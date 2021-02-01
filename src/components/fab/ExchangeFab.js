@@ -1,19 +1,21 @@
 import React, { useCallback } from 'react';
 import { Alert } from 'react-native';
+import { useTheme } from '../../context/ThemeContext';
 import { useNavigation } from '../../navigation/Navigation';
+import { lightModeThemeColors } from '../../styles/colors';
 import { magicMemo } from '../../utils';
 import { Icon } from '../icons';
 import FloatingActionButton from './FloatingActionButton';
 import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
 
 const FabShadow = [
-  [0, 10, 30, colors.dark, 0.4],
-  [0, 5, 15, colors.swapPurple, 0.5],
+  [0, 10, 30, lightModeThemeColors.shadow, 0.8],
+  [0, 5, 15, lightModeThemeColors.swapPurple, 1],
 ];
 
 const ExchangeFab = ({ disabled, isReadOnlyWallet, ...props }) => {
   const { navigate } = useNavigation();
+  const { colors } = useTheme();
 
   const handlePress = useCallback(() => {
     if (!isReadOnlyWallet) {
@@ -32,7 +34,13 @@ const ExchangeFab = ({ disabled, isReadOnlyWallet, ...props }) => {
       shadows={FabShadow}
       testID="exchange-fab"
     >
-      <Icon height={21} marginBottom={2} name="swap" width={26} />
+      <Icon
+        color={colors.whiteLabel}
+        height={21}
+        marginBottom={2}
+        name="swap"
+        width={26}
+      />
     </FloatingActionButton>
   );
 };

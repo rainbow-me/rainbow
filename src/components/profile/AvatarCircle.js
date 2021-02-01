@@ -1,11 +1,12 @@
 import React, { useMemo } from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
+import { useTheme } from '../../context/ThemeContext';
 import { useAccountProfile } from '../../hooks';
 import { ButtonPressAnimation } from '../animations';
 import ImageAvatar from '../contacts/ImageAvatar';
 import { Flex, InnerBorder } from '../layout';
 import { Text } from '../text';
-import { colors, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const AvatarCircleSize = 65;
@@ -17,14 +18,14 @@ const AvatarCircleView = styled(Flex)`
   align-items: ${ios ? 'flex-start' : 'center'};
 `;
 
-const FirstLetter = styled(Text).attrs({
+const FirstLetter = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors.white,
+  color: colors.whiteLabel,
   letterSpacing: 2,
   lineHeight: android ? 68 : 66,
   size: ios ? 38 : 30,
   weight: 'semibold',
-})`
+}))`
   width: ${android ? 66 : 67};
 `;
 
@@ -34,19 +35,27 @@ export default function AvatarCircle({
   overlayStyles,
   image,
 }) {
+  const { colors, isDarkMode } = useTheme();
   const { accountColor, accountSymbol } = useAccountProfile();
   const shadows = useMemo(
     () => ({
       default: [
-        [0, 2, 5, colors.dark, 0.2],
-        [0, 6, 10, colors.alpha(colors.avatarColor[accountColor || 0], 0.6)],
+        [0, 2, 5, isDarkMode ? colors.trueBlack : colors.dark, 0.2],
+        [
+          0,
+          6,
+          10,
+          isDarkMode
+            ? colors.trueBlack
+            : colors.alpha(colors.avatarColor[accountColor || 0], 0.6),
+        ],
       ],
       overlay: [
-        [0, 6, 10, colors.black, 0.08],
-        [0, 2, 5, colors.black, 0.12],
+        [0, 6, 10, isDarkMode ? colors.trueBlack : colors.shadowBlack, 0.08],
+        [0, 2, 5, isDarkMode ? colors.trueBlack : colors.shadowBlack, 0.12],
       ],
     }),
-    [accountColor]
+    [accountColor, colors, isDarkMode]
   );
 
   return (

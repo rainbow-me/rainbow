@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIconSize, RequestVendorLogoIcon } from '../coin-icon';
 import CoinName from './CoinName';

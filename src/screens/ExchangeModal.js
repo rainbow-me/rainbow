@@ -19,6 +19,7 @@ import {
   ConfirmExchangeButton,
   ExchangeInputField,
   ExchangeModalHeader,
+  ExchangeNotch,
   ExchangeOutputField,
   SlippageWarning,
 } from '../components/exchange';
@@ -49,7 +50,7 @@ import { multicallClearState } from '@rainbow-me/redux/multicall';
 import { swapClearState } from '@rainbow-me/redux/swap';
 import { ethUnits } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
-import { colors, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 import { backgroundTask, isNewValueForPath } from '@rainbow-me/utils';
 import logger from 'logger';
 
@@ -501,6 +502,8 @@ export default function ExchangeModal({
       ? !!inputCurrency
       : !!inputCurrency && !!outputCurrency;
 
+  const { colors } = useTheme();
+
   return (
     <Wrapper>
       <Centered
@@ -555,6 +558,7 @@ export default function ExchangeModal({
               testID={testID + '-header'}
               title={inputHeaderTitle}
             />
+            {showOutputField && <ExchangeNotch />}
             <ExchangeInputField
               disableInputCurrencySelection={isWithdrawal}
               inputAmount={inputAmountDisplay}

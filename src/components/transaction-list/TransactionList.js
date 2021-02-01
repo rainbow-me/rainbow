@@ -1,11 +1,12 @@
 import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
-import { find, toLower } from 'lodash';
+import { toLower } from 'lodash';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { requireNativeComponent } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
+import { getRandomColor } from '../../styles/colors';
 import { FloatingEmojis } from '../floating-emojis';
 import useExperimentalFlag, {
   AVATAR_PICKER,
@@ -27,7 +28,6 @@ import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import { removeRequest } from '@rainbow-me/redux/requests';
 import { walletsSetSelected, walletsUpdate } from '@rainbow-me/redux/wallets';
 import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
 import {
   abbreviations,
   ethereumUtils,
@@ -97,16 +97,19 @@ export default function TransactionList({
   }, [navigate, isDamaged]);
 
   const onRemovePhoto = useCallback(async () => {
-    // all this code is weak but lets ship it
-    const newWallets = { ...wallets };
-    const newWallet = newWallets[selectedWallet.id];
-    const account = find(newWallet.addresses, ['address', accountAddress]);
+    const newWallets = {
+      ...wallets,
+      [selectedWallet.id]: {
+        ...wallets[selectedWallet.id],
+        addresses: wallets[selectedWallet.id].addresses.map(account =>
+          toLower(account.address) === toLower(accountAddress)
+            ? { ...account, image: null }
+            : account
+        ),
+      },
+    };
 
-    // remove zee photo
-    account.image = null;
-    newWallet.addresses[account.index] = account;
-
-    dispatch(walletsSetSelected(newWallet));
+    dispatch(walletsSetSelected(newWallets[selectedWallet.id]));
     await dispatch(walletsUpdate(newWallets));
   }, [dispatch, selectedWallet, accountAddress, wallets]);
 
@@ -114,17 +117,19 @@ export default function TransactionList({
     if (isAvatarImagePickerEnabled) {
       const processPhoto = image => {
         const stringIndex = image?.path.indexOf('/tmp');
-        const newWallets = { ...wallets };
-        const walletId = selectedWallet.id;
+        const newWallets = {
+          ...wallets,
+          [selectedWallet.id]: {
+            ...wallets[selectedWallet.id],
+            addresses: wallets[selectedWallet.id].addresses.map(account =>
+              toLower(account.address) === toLower(accountAddress)
+                ? { ...account, image: `~${image?.path.slice(stringIndex)}` }
+                : account
+            ),
+          },
+        };
 
-        newWallets[walletId].addresses.some((account, index) => {
-          newWallets[walletId].addresses[index].image = `~${image?.path.slice(
-            stringIndex
-          )}`;
-
-          dispatch(walletsSetSelected(newWallets[walletId]));
-          return true;
-        });
+        dispatch(walletsSetSelected(newWallets[selectedWallet.id]));
         dispatch(walletsUpdate(newWallets));
       };
 
@@ -166,6 +171,7 @@ export default function TransactionList({
       });
     }
   }, [
+    accountAddress,
     accountColor,
     accountImage,
     accountName,
@@ -233,7 +239,7 @@ export default function TransactionList({
         headerInfo.address = isENSAddressFormat(contactAddress)
           ? contactAddress
           : abbreviations.address(contactAddress, 4, 10);
-        contactColor = colors.getRandomColor();
+        contactColor = getRandomColor();
       }
 
       const isOutgoing = toLower(from) === toLower(accountAddress);
@@ -345,6 +351,7 @@ export default function TransactionList({
   const isAvatarPickerAvailable = useExperimentalFlag(AVATAR_PICKER);
 
   const safeAccountImage = useSafeImageUri(accountImage);
+  const { isDarkMode, colors } = useTheme();
 
   return (
     <Container>
@@ -355,6 +362,7 @@ export default function TransactionList({
         accountName={accountSymbol}
         addCashAvailable={addCashAvailable}
         as={NativeTransactionListView}
+        darkMode={isDarkMode}
         data={data}
         isAvatarPickerAvailable={isAvatarPickerAvailable}
         isLoading={loading}

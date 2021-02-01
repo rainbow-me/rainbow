@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Animated from 'react-native-reanimated';
 import { useValues } from 'react-native-redash';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import ColorCircle from '../components/avatar-builder/ColorCircle';
 import EmojiSelector from '../components/avatar-builder/EmojiSelector';
@@ -13,7 +13,6 @@ import useAccountSettings from '../hooks/useAccountSettings';
 import { useNavigation } from '../navigation/Navigation';
 import { walletsSetSelected, walletsUpdate } from '../redux/wallets';
 import { deviceUtils } from '../utils';
-import { colors } from '@rainbow-me/styles';
 
 const AvatarCircleHeight = 65;
 const AvatarCircleMarginTop = 2;
@@ -21,11 +20,11 @@ const AvatarBuilderTopPoint =
   HeaderHeightWithStatusBar + AvatarCircleHeight + AvatarCircleMarginTop;
 
 const Container = styled(Column)`
-  background-color: ${colors.transparent};
+  background-color: ${({ theme: { colors } }) => colors.transparent};
 `;
 
 const SheetContainer = styled(Column)`
-  background-color: ${colors.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
   border-radius: 20px;
   height: 420px;
   overflow: hidden;
@@ -49,6 +48,7 @@ const AvatarBuilder = ({ route: { params } }) => {
   const [translateX] = useValues((params.initialAccountColor - 4) * 39);
   const { goBack } = useNavigation();
   const { accountAddress } = useAccountSettings();
+  const { colors } = useTheme();
   const [currentAccountColor, setCurrentAccountColor] = useState(
     colors.avatarColor[params.initialAccountColor]
   );

@@ -1,21 +1,18 @@
 import React from 'react';
 import { View } from 'react-native';
 import { useAnimatedStyle } from 'react-native-reanimated';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { useRatio } from './useRatio';
 import { ChartXLabel } from '@rainbow-me/animated-charts';
-import { colors, fonts, fontWithWidth } from '@rainbow-me/styles';
+import { fonts, fontWithWidth } from '@rainbow-me/styles';
 
 const Label = styled(ChartXLabel)`
   ${fontWithWidth(fonts.weight.semibold)};
-  background-color: white;
   font-size: ${fonts.size.larger};
   font-variant: tabular-nums;
   letter-spacing: ${fonts.letterSpacing.roundedMedium};
   text-align: right;
-  ${android &&
-  `overflow: hidden;
-     margin-vertical: -20;`}
+  ${android && `margin-vertical: -20px`}
 `;
 
 const MONTHS = [
@@ -86,6 +83,7 @@ function formatDatetime(value, chartTimeSharedValue) {
 
 export default function ChartDateLabel({ chartTimeSharedValue }) {
   const ratio = useRatio('ChartDataLabel');
+  const { colors } = useTheme();
 
   const textStyle = useAnimatedStyle(() => {
     return {
@@ -96,7 +94,7 @@ export default function ChartDateLabel({ chartTimeSharedValue }) {
           ? colors.red
           : colors.green,
     };
-  });
+  }, [colors]);
 
   return (
     <View style={{ overflow: 'hidden' }}>

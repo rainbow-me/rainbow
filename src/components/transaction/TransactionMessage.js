@@ -1,11 +1,10 @@
 import React from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
-import { pure } from 'recompact';
 import styled from 'styled-components';
 import { SIGN_TYPED_DATA } from '../../utils/signingMethods';
 import { Row } from '../layout';
 import { Text } from '../text';
-import { colors, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 import { deviceUtils } from '@rainbow-me/utils';
 
 const deviceWidth = deviceUtils.dimensions.width;
@@ -17,7 +16,8 @@ const Container = styled(Row)`
 `;
 const MessageWrapper = styled(ScrollView)`
   ${padding(12, 15)}
-  border-color: ${colors.alpha(colors.blueGreyDark, 0.08)};
+  border-color: ${({ theme: { colors } }) =>
+    colors.alpha(colors.blueGreyDark, 0.08)};
   border-radius: 20;
   border-width: 1;
   margin-bottom: 14;
@@ -25,6 +25,7 @@ const MessageWrapper = styled(ScrollView)`
 `;
 
 const TransactionMessage = ({ maxHeight = 150, message, method }) => {
+  const { colors } = useTheme();
   let msg = message;
   let maximumHeight = maxHeight;
   let minimumHeight = 150;
@@ -49,4 +50,4 @@ const TransactionMessage = ({ maxHeight = 150, message, method }) => {
   );
 };
 
-export default pure(TransactionMessage);
+export default TransactionMessage;

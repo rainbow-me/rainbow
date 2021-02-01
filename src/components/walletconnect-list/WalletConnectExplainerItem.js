@@ -1,7 +1,7 @@
 import React from 'react';
 import { Column, FlexItem, Row } from '../layout';
 import { Emoji, Text, TruncatedText } from '../text';
-import { colors, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 
 export default function WalletConnectExplainerItem({
   children,
@@ -9,6 +9,7 @@ export default function WalletConnectExplainerItem({
   emoji,
   title,
 }) {
+  const { colors } = useTheme();
   return (
     <Row align="start" css={padding(0, 36, 0, 0)}>
       <Emoji size="bmedium">{emoji}</Emoji>

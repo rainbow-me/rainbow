@@ -3,12 +3,12 @@ import React from 'react';
 import { Text, TruncatedAddress } from '../../text';
 import TransactionRow from '../TransactionRow';
 import TransactionSheet from '../TransactionSheet';
-import { colors } from '@rainbow-me/styles';
 
 export default function DefaultTransactionConfirmationSection({
   address,
   value = '0',
 }) {
+  const { colors } = useTheme();
   return (
     <TransactionSheet>
       <TransactionRow title={lang.t('wallet.action.to')}>

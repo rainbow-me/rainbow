@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { useDimensions, useImageMetadata } from '../../../hooks';
 import use3d from '../../../hooks/use3d';
 import { magicMemo } from '../../../utils';

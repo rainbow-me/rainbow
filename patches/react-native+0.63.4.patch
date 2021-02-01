@@ -29,6 +29,18 @@ index 4c154db..89051c8 100644
        'setImmediate',
      );
      immediates.push(id);
+diff --git a/node_modules/react-native/React/CoreModules/RCTLogBox.mm b/node_modules/react-native/React/CoreModules/RCTLogBox.mm
+index 2ef88f1..9d628ed 100644
+--- a/node_modules/react-native/React/CoreModules/RCTLogBox.mm
++++ b/node_modules/react-native/React/CoreModules/RCTLogBox.mm
+@@ -114,6 +114,7 @@ + (BOOL)requiresMainQueueSetup
+       if (!strongSelf) {
+         return;
+       }
++      strongSelf->_view.hidden = YES;
+       strongSelf->_view = nil;
+     });
+   }
 diff --git a/node_modules/react-native/React/CxxBridge/RCTCxxBridge.mm b/node_modules/react-native/React/CxxBridge/RCTCxxBridge.mm
 index d8938d7..32a7265 100644
 --- a/node_modules/react-native/React/CxxBridge/RCTCxxBridge.mm

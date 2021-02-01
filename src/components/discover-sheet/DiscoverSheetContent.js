@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { ColumnWithMargins } from '../layout';
 import { SlackSheet } from '../sheet';
 import { Text } from '../text';
@@ -9,11 +9,11 @@ import SearchHeader from './SearchHeader';
 import Strategies from './StrategiesSection';
 import TopMoversSection from './TopMoversSection';
 import UniswapPools from './UniswapPoolsSection';
-import { colors, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 
 const renderHeader = yPosition => <DiscoverSheetHeader yPosition={yPosition} />;
 
-const HeaderTitle = styled(Text).attrs({
+const HeaderTitle = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
   color: colors.blueGreyDark,
   letterSpacing: 'roundedMedium',
@@ -21,7 +21,7 @@ const HeaderTitle = styled(Text).attrs({
   opacity: 0.8,
   size: 'large',
   weight: 'bold',
-})``;
+}))``;
 
 export default function DiscoverSheetContent() {
   return (
