@@ -2,7 +2,7 @@ import { useIsFocused } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import Animated, { useCode } from 'react-native-reanimated';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { BubbleSheet } from '../components/bubble-sheet';
 import { DiscoverSheet } from '../components/discover-sheet';
 import { BackButton, Header, HeaderHeight } from '../components/header';
@@ -23,7 +23,7 @@ import { useHeight, useWalletConnectConnections } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { scrollPosition } from '@rainbow-me/navigation/ScrollPagerWrapper';
 import Routes from '@rainbow-me/routes';
-import { colors, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 
 const { call, greaterThan, onChange } = Animated;
 
@@ -86,6 +86,8 @@ export default function QRScannerScreen() {
     isFocusedAndroid && !initializeCamera && setInitializeCamera(true);
   }, [initializeCamera, isFocusedAndroid]);
 
+  const { colors } = useTheme();
+
   return (
     <View>
       {discoverSheetAvailable && ios ? <DiscoverSheet /> : null}
@@ -115,7 +117,7 @@ export default function QRScannerScreen() {
         )}
         <ScannerHeader>
           <BackButton
-            color={colors.white}
+            color={colors.whiteLabel}
             direction="left"
             onPress={handlePressBackButton}
             testID="goToBalancesFromScanner"

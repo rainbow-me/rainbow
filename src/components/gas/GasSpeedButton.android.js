@@ -9,7 +9,8 @@ import React, {
 import { Keyboard, LayoutAnimation } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
+import { darkModeThemeColors } from '../../styles/colors';
 import { Alert } from '../alerts';
 import {
   ButtonPressAnimation,
@@ -22,13 +23,7 @@ import GasSpeedLabelPager from './GasSpeedLabelPager';
 import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
 import { useAccountSettings, useGas } from '@rainbow-me/hooks';
 import { gweiToWei, weiToGwei } from '@rainbow-me/parsers';
-import {
-  colors,
-  fonts,
-  fontWithWidth,
-  margin,
-  padding,
-} from '@rainbow-me/styles';
+import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
 import { gasUtils, magicMemo } from '@rainbow-me/utils';
 
 const { GasSpeedOrder, CUSTOM, FAST, SLOW } = gasUtils;
@@ -48,56 +43,66 @@ const Label = styled(Text).attrs({
   weight: 'semibold',
 })``;
 
-const ButtonLabel = styled(BorderlessButton).attrs({
+const ButtonLabel = styled(BorderlessButton).attrs(({ theme: { colors } }) => ({
   color: colors.appleBlue,
   hitSlop: 40,
   opacity: 1,
   size: 'smedium',
   weight: 'bold',
-})`
+}))`
   padding-bottom: 10;
 `;
 
-const GasInput = styled(Input).attrs(({ theme }) => ({
-  color:
-    theme === 'dark' ? colors.white : colors.alpha(colors.blueGreyDark, 0.8),
-  height: 58,
-  keyboardAppearance: 'dark',
-  keyboardType: 'numeric',
-  letterSpacing: 'roundedMedium',
-  maxLength: 5,
-  multiline: false,
-  placeholderTextColor:
-    theme === 'dark'
-      ? colors.alpha(colors.darkModeColors.blueGreyDark, 0.3)
-      : colors.alpha(colors.blueGreyDark, 0.3),
-  size: 'lmedium',
-  testID: 'custom-gas-input',
-}))`
+const GasInput = styled(Input).attrs(
+  ({ gasTheme: theme, theme: { colors } }) => ({
+    color:
+      theme === 'dark'
+        ? colors.whiteLabel
+        : colors.alpha(colors.blueGreyDark, 0.8),
+    height: 58,
+    keyboardAppearance: 'dark',
+    keyboardType: 'numeric',
+    letterSpacing: 'roundedMedium',
+    maxLength: 5,
+    multiline: false,
+    placeholderTextColor:
+      theme === 'dark'
+        ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.3)
+        : colors.alpha(colors.blueGreyDark, 0.3),
+    size: 'lmedium',
+    testID: 'custom-gas-input',
+  })
+)`
   ${fontWithWidth(fonts.weight.bold)};
   ${margin(-13, 0)}
 `;
 
-const LittleBorderlessButton = ({ onPress, children, testID }) => (
-  <ButtonLabel onPress={onPress} testID={testID} width={120}>
-    <Text color={colors.appleBlue} size="smedium" weight="bold">
-      {children}
-    </Text>
-  </ButtonLabel>
-);
+const LittleBorderlessButton = ({ onPress, children, testID }) => {
+  const { colors } = useTheme();
+  return (
+    <ButtonLabel onPress={onPress} testID={testID} width={120}>
+      <Text color={colors.appleBlue} size="smedium" weight="bold">
+        {children}
+      </Text>
+    </ButtonLabel>
+  );
+};
 
-const BottomRightLabel = ({ formatter, theme }) => (
-  <Label
-    align="right"
-    color={
-      theme === 'dark'
-        ? colors.alpha(colors.darkModeColors.blueGreyDark, 0.6)
-        : colors.alpha(colors.blueGreyDark, 0.6)
-    }
-  >
-    {formatter()}
-  </Label>
-);
+const BottomRightLabel = ({ formatter, theme }) => {
+  const { colors } = useTheme();
+  return (
+    <Label
+      align="right"
+      color={
+        theme === 'dark'
+          ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)
+          : colors.alpha(colors.blueGreyDark, 0.6)
+      }
+    >
+      {formatter()}
+    </Label>
+  );
+};
 
 const formatGasPrice = (gasPrice, nativeCurrency) => {
   return nativeCurrency === 'ETH'
@@ -132,6 +137,7 @@ const GasSpeedButton = ({
   options = null,
   minGasPrice = null,
 }) => {
+  const { colors } = useTheme();
   const inputRef = useRef(null);
   const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
   const {
@@ -229,7 +235,7 @@ const GasSpeedButton = ({
       <Text
         color={
           theme === 'dark'
-            ? colors.white
+            ? colors.whiteLabel
             : colors.alpha(colors.blueGreyDark, 0.8)
         }
         letterSpacing="roundedTight"
@@ -243,7 +249,7 @@ const GasSpeedButton = ({
           : animatedNumber}
       </Text>
     ),
-    [gasPricesAvailable, isSufficientGas, theme, txFees]
+    [colors, gasPricesAvailable, isSufficientGas, theme, txFees]
   );
 
   const handlePress = useCallback(() => {
@@ -440,11 +446,12 @@ const GasSpeedButton = ({
             <BorderlessButton onPress={focusOnInput}>
               <Row>
                 <GasInput
+                  gasTheme={theme}
                   onBlur={handleCustomGasBlur}
                   onChangeText={handleCustomGasChange}
                   onFocus={handleCustomGasFocus}
-                  onSubmitEditing={handleInputButtonManager}
-                  placeholder={`${defaultCustomGasPrice} `} // see PR #1385
+                  onSubmitEditing={handleInputButtonManager} // see PR #1385
+                  placeholder={`${defaultCustomGasPrice} `}
                   ref={inputRef}
                   value={customGasPriceInput}
                 />
@@ -452,10 +459,10 @@ const GasSpeedButton = ({
                   color={
                     customGasPriceInput
                       ? theme === 'dark'
-                        ? colors.white
+                        ? colors.whiteLabel
                         : colors.alpha(colors.blueGreyDark, 0.8)
                       : theme === 'dark'
-                      ? colors.alpha(colors.darkModeColors.blueGreyDark, 0.3)
+                      ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.3)
                       : colors.alpha(colors.blueGreyDark, 0.3)
                   }
                   size="lmedium"
@@ -474,7 +481,7 @@ const GasSpeedButton = ({
             <Label
               color={
                 theme === 'dark'
-                  ? colors.alpha(colors.darkModeColors.blueGreyDark, 0.6)
+                  ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)
                   : colors.alpha(colors.blueGreyDark, 0.6)
               }
               height={10}

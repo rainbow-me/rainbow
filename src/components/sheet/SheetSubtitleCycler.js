@@ -10,7 +10,7 @@ import { magicMemo } from '../../utils';
 import { interpolate } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import { colors, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 
 const AnimatedText = Animated.createAnimatedComponent(Text);
 
@@ -26,6 +26,8 @@ const SheetSubtitleCyclerItem = ({ error, selected, subtitle }) => {
     duration: error ? 50 : 200,
     ease,
   });
+
+  const { colors } = useTheme();
 
   return (
     <Animated.View {...position.coverAsObject} style={{ opacity }}>

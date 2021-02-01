@@ -39,6 +39,7 @@ import WalletLoadingStates from '../helpers/walletLoadingStates';
 import { EthereumWalletType } from '../helpers/walletTypes';
 import store from '../redux/store';
 import { setIsWalletLoading } from '../redux/wallets';
+import { getRandomColor } from '../styles/colors';
 import { ethereumUtils } from '../utils';
 import {
   addressKey,
@@ -50,7 +51,6 @@ import {
   selectedWalletKey,
 } from '../utils/keychainConstants';
 import * as keychain from './keychain';
-import { colors } from '@rainbow-me/styles';
 import logger from 'logger';
 const encryptor = new AesEncryptor();
 
@@ -642,7 +642,7 @@ export const createWallet = async (
     addresses.push({
       address: walletAddress,
       avatar: null,
-      color: color !== null ? color : colors.getRandomColor(),
+      color: color !== null ? color : getRandomColor(),
       index: 0,
       label: name || '',
       visible: true,
@@ -690,7 +690,7 @@ export const createWallet = async (
 
         // Remove any discovered wallets if they already exist
         // and copy over label and color if account was visible
-        let color = colors.getRandomColor();
+        let color = getRandomColor();
         let label = '';
 
         if (discoveredAccount && discoveredWalletId) {

@@ -26,20 +26,24 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 import logger from 'logger';
 
-const DescriptionText = styled(Text).attrs(({ isTinyPhone }) => ({
-  align: 'center',
-  color: colors.blueGreyDark50,
-  lineHeight: 'looser',
-  size: isTinyPhone ? 'lmedium' : 'large',
-}))``;
+const DescriptionText = styled(Text).attrs(
+  ({ isTinyPhone, theme: { colors } }) => ({
+    align: 'center',
+    color: colors.blueGreyDark50,
+    lineHeight: 'looser',
+    size: isTinyPhone ? 'lmedium' : 'large',
+  })
+)``;
 
-const ImportantText = styled(DescriptionText).attrs({
-  color: colors.blueGreyDark60,
-  weight: 'medium',
-})``;
+const ImportantText = styled(DescriptionText).attrs(
+  ({ theme: { colors } }) => ({
+    color: colors.blueGreyDark60,
+    weight: 'medium',
+  })
+)``;
 
 const Masthead = styled(Centered).attrs({
   direction: 'column',
@@ -49,7 +53,7 @@ const Masthead = styled(Centered).attrs({
   flex-shrink: 0;
 `;
 
-const MastheadIcon = styled(GradientText).attrs({
+const MastheadIcon = styled(GradientText).attrs(({ theme: { colors } }) => ({
   align: 'center',
   angle: false,
   colors: colors.gradients.rainbow,
@@ -58,7 +62,7 @@ const MastheadIcon = styled(GradientText).attrs({
   start: { x: 1, y: 0.5 },
   steps: [0, 0.774321, 1],
   weight: 'medium',
-})``;
+}))``;
 
 const Title = styled(Text).attrs(({ isTinyPhone }) => ({
   size: isTinyPhone ? 'large' : 'big',

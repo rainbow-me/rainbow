@@ -1,8 +1,8 @@
 import React from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { ColumnWithMargins } from '../layout';
 import { Text } from '../text';
-import { colors, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 
 const Container = styled(ColumnWithMargins).attrs({
   margin: 12,
@@ -11,9 +11,15 @@ const Container = styled(ColumnWithMargins).attrs({
 `;
 
 export default function ExpandedStateSection({ children, title, ...props }) {
+  const { colors } = useTheme();
   return (
     <Container {...props}>
-      <Text letterSpacing="roundedTight" size="larger" weight="bold">
+      <Text
+        color={colors.dark}
+        letterSpacing="roundedTight"
+        size="larger"
+        weight="bold"
+      >
         {title}
       </Text>
       {typeof children === 'string' ? (

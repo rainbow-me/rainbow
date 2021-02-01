@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import styled, { css } from 'styled-components/primitives';
+import styled, { css } from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIconSize } from '../coin-icon';
 import { FloatingEmojis } from '../floating-emojis';

@@ -1,4 +1,4 @@
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { ColumnWithMargins } from '../layout';
 import { padding } from '@rainbow-me/styles';
 

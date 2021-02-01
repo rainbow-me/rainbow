@@ -2,7 +2,7 @@ import { useRoute } from '@react-navigation/native';
 import React, { createElement } from 'react';
 import { StatusBar } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import {
   ChartExpandedState,
@@ -10,6 +10,7 @@ import {
   UniqueTokenExpandedState,
 } from '../components/expanded-state';
 import { Centered } from '../components/layout';
+import { useTheme } from '../context/ThemeContext';
 import { useAsset, useDimensions } from '../hooks';
 import { useNavigation } from '../navigation/Navigation';
 import { position } from '@rainbow-me/styles';
@@ -33,6 +34,7 @@ export default function ExpandedAssetSheet(props) {
   const insets = useSafeArea();
   const { goBack } = useNavigation();
   const { params } = useRoute();
+  const { isDarkMode } = useTheme();
 
   const selectedAsset = useAsset(params.asset);
 
@@ -42,7 +44,7 @@ export default function ExpandedAssetSheet(props) {
       height={params.longFormHeight}
       insets={insets}
     >
-      {ios && <StatusBar barStyle="light-content" />}
+      {ios && !isDarkMode && <StatusBar barStyle="light-content" />}
       {ios && <TouchableBackdrop onPress={goBack} />}
       {createElement(ScreenTypes[params.type], {
         asset: selectedAsset,

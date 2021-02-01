@@ -1,22 +1,23 @@
 import React from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
+import { useTheme } from '../../context/ThemeContext';
 import { CoinIcon } from '../coin-icon';
 import { JellySelector, JellySelectorShadowIndicator } from '../jelly-selector';
 import { RowWithMargins } from '../layout';
 import { Text } from '../text';
 import { ETH_ADDRESS } from '@rainbow-me/references';
-import { colors } from '@rainbow-me/styles';
 import { getTokenMetadata } from '@rainbow-me/utils';
 
 const CurrencyItemHeight = 40;
 
-const CurrencyItemLabel = styled(Text).attrs({
+const CurrencyItemLabel = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.blueGreyDark,
   letterSpacing: 'roundedMedium',
   size: 'larger',
-  weight: 'semibold',
-})`
-  opacity: ${({ isSelected }) => (isSelected ? 0.8 : 0.6)};
+  weight: 'bold',
+}))`
+  opacity: ${({ isSelected, theme: { isDarkMode } }) =>
+    isSelected ? (isDarkMode ? 1 : 0.8) : 0.5};
   padding-bottom: 1.5;
 `;
 
@@ -50,18 +51,22 @@ const AddCashSelector = ({
   initialCurrencyIndex,
   isWalletEthZero,
   onSelect,
-}) => (
-  <JellySelector
-    defaultIndex={initialCurrencyIndex}
-    disableSelection={isWalletEthZero}
-    height={CurrencyItemHeight}
-    items={currencies}
-    onSelect={onSelect}
-    renderIndicator={JellySelectorShadowIndicator}
-    renderItem={CurrencyItem(isWalletEthZero)}
-    renderRow={CurrencyItemRow}
-  />
-);
+}) => {
+  const { isDarkMode, colors } = useTheme();
+  return (
+    <JellySelector
+      backgroundColor={isDarkMode ? colors.darkModeDark : colors.white}
+      defaultIndex={initialCurrencyIndex}
+      disableSelection={isWalletEthZero}
+      height={CurrencyItemHeight}
+      items={currencies}
+      onSelect={onSelect}
+      renderIndicator={JellySelectorShadowIndicator}
+      renderItem={CurrencyItem(isWalletEthZero)}
+      renderRow={CurrencyItemRow}
+    />
+  );
+};
 
 const neverRerender = () => true;
 export default React.memo(AddCashSelector, neverRerender);

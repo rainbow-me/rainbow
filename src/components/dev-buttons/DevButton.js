@@ -10,8 +10,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import RNRestart from 'react-native-restart';
-import styled from 'styled-components/native';
-import colors from '../../styles/colors';
+import styled from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 
@@ -21,7 +20,7 @@ const Button = styled(ButtonPressAnimation)`
   height: 70;
   justify-content: center;
   align-items: center;
-  background-color: ${colors.purpleDark};
+  background-color: ${({ color }) => color};
   shadow-opacity: 0.2;
   shadow-radius: 6;
 `;
@@ -34,10 +33,17 @@ const Wrapper = styled(Animated.View)`
   position: absolute;
 `;
 
-export default function DevButton() {
+export default function DevButton({
+  color: givenColor,
+  onPress = () => RNRestart.Restart(),
+  children = <Icon color="white" name="warning" size="lmedium" />,
+  initialDisplacement = 100,
+}) {
+  const { colors } = useTheme();
+  const color = givenColor || colors.purpleDark;
   const { width } = useWindowDimensions();
   const x = useSharedValue(2);
-  const y = useSharedValue(100);
+  const y = useSharedValue(initialDisplacement);
   const gestureHandler = useAnimatedGestureHandler({
     onActive: (event, ctx) => {
       x.value = ctx.startX + event.translationX;
@@ -66,8 +72,8 @@ export default function DevButton() {
       onHandlerStateChange={gestureHandler}
     >
       <Wrapper style={style}>
-        <Button onPress={() => RNRestart.Restart()}>
-          <Icon color="white" name="warning" size="lmedium" />
+        <Button color={color} onPress={onPress}>
+          {children}
         </Button>
       </Wrapper>
     </PanGestureHandler>

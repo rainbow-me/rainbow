@@ -1,13 +1,13 @@
 import { useRoute } from '@react-navigation/native';
 import React, { useCallback } from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { delayNext } from '../../hooks/useMagicAutofocus';
 import { useNavigation } from '../../navigation/Navigation';
 import { BackButton } from '../header';
 import { Centered } from '../layout';
 import { TruncatedText } from '../text';
 import Routes from '@rainbow-me/routes';
-import { borders, colors, padding } from '@rainbow-me/styles';
+import { borders, padding } from '@rainbow-me/styles';
 
 const BackButtonWrapper = styled(Centered)`
   bottom: 0;
@@ -19,7 +19,7 @@ const BackButtonWrapper = styled(Centered)`
 export const CurrencySelectModalHeaderHeight = 59;
 const HeaderContainer = styled(Centered)`
   ${borders.buildRadius('top', 12)};
-  background-color: ${colors.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
   height: ${CurrencySelectModalHeaderHeight};
   width: 100%;
 `;

@@ -1,20 +1,21 @@
 import { get } from 'lodash';
 import React from 'react';
 import { PixelRatio, Text } from 'react-native';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
+import { withThemeContext } from '../../../../context/ThemeContext';
 import { Row } from '../../../layout';
 import ChartHeaderTitle from './ChartHeaderTitle';
 import { ChartYLabel } from '@rainbow-me/animated-charts';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
-import { colors, fonts, fontWithWidth } from '@rainbow-me/styles';
+import { fonts, fontWithWidth } from '@rainbow-me/styles';
 
 const ChartPriceRow = styled(Row)`
   width: 55%;
 `;
 
-const Label = styled(ChartYLabel)`
-  color: ${colors.dark};
+const Label = withThemeContext(styled(ChartYLabel)`
+  color: ${({ colors }) => colors.dark};
   ${fontWithWidth(fonts.weight.heavy)};
   font-size: ${fonts.size.big};
   letter-spacing: ${fonts.letterSpacing.roundedTight};
@@ -22,14 +23,22 @@ const Label = styled(ChartYLabel)`
   `margin-top: -30;
      margin-bottom: -30;
      `}
-`;
+`);
 
-const AndroidCurrencySymbolLabel = styled(Label)`
+const AndroidCurrencySymbolLabel = withThemeContext(styled(Label)`
+  color: ${({ colors }) => colors.dark};
+  ${fontWithWidth(fonts.weight.heavy)};
+  font-size: ${fonts.size.big};
+  letter-spacing: ${fonts.letterSpacing.roundedTight};
+  ${android &&
+  `margin-top: -30;
+     margin-bottom: -30;
+     `}
   height: 69;
   left: 5.5;
   margin-right: 3;
   top: ${PixelRatio.get() <= 2.625 ? 22 : 23};
-`;
+`);
 
 export function formatNative(value, priceSharedValue, nativeSelected) {
   'worklet';

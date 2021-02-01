@@ -1,29 +1,30 @@
 import { get } from 'lodash';
 import React from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { Button } from '../buttons';
 import { Row } from '../layout';
 import { Text } from '../text';
-import { colors } from '@rainbow-me/styles';
 
-const FeeButton = styled(Button).attrs({
+const FeeButton = styled(Button).attrs(({ theme: { colors } }) => ({
   backgroundColor: colors.white,
   borderColor: colors.dark,
   borderWidth: 1,
   opacity: 1,
   showShadow: false,
   size: 'small',
-  textProps: { color: colors.alpha(colors.blueGreyDark, 0.6) },
+  textProps: {
+    color: colors.alpha(colors.blueGreyDark, 0.6),
+  },
   type: 'pill',
-})``;
+}))``;
 
-const TimeButton = styled(Button).attrs({
+const TimeButton = styled(Button).attrs(({ theme: { colors } }) => ({
   backgroundColor: colors.blueGreyDark,
   borderWidth: 1,
   scaleTo: 0.96,
   size: 'small',
   type: 'pill',
-})``;
+}))``;
 
 export default function SendTransactionSpeed({
   gasPrice,
@@ -36,6 +37,8 @@ export default function SendTransactionSpeed({
     `${nativeCurrencySymbol}0.00`
   );
   const time = get(gasPrice, 'estimatedTime.display', '');
+
+  const { colors } = useTheme();
 
   return (
     <Row justify="space-between">

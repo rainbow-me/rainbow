@@ -1,11 +1,12 @@
 import { isArray, isString } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
+import { useTheme } from '../../../context/ThemeContext';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered, InnerBorder } from '../../layout';
 import { Text } from '../../text';
-import { colors, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 
 const ButtonSizeTypes = {
   default: {
@@ -23,15 +24,19 @@ const ButtonShapeTypes = {
   rounded: 'rounded',
 };
 
-const shadowStyles = `
-  shadow-color: ${colors.alpha(colors.blueGreyDark, 0.5)};
+const shadowStyles = (colors, disabled, isDarkMode) => `
+  shadow-color: ${colors.alpha(
+    isDarkMode ? colors.shadow : colors.blueGreyDark,
+    isDarkMode && disabled ? 0.2 : 0.5
+  )};
   shadow-offset: 0px 4px;
   shadow-opacity: 0.2;
   shadow-radius: 6;
 `;
 
 const Container = styled(Centered)`
-  ${({ showShadow }) => (showShadow ? shadowStyles : '')}
+  ${({ disabled, showShadow, theme: { colors, isDarkMode } }) =>
+    showShadow ? shadowStyles(colors, disabled, isDarkMode) : ''}
   ${({ size }) => padding(...ButtonSizeTypes[size].padding)}
   background-color: ${({ backgroundColor }) => backgroundColor};
   border-radius: ${({ type }) => (type === 'rounded' ? 14 : 50)};
@@ -60,6 +65,7 @@ const Button = ({
   ...props
 }) => {
   const borderRadius = type === 'rounded' ? 14 : 50;
+  const { colors, isDarkMode } = useTheme();
 
   return (
     <ButtonPressAnimation
@@ -70,8 +76,11 @@ const Button = ({
     >
       <Container
         {...props}
-        backgroundColor={backgroundColor}
+        backgroundColor={
+          backgroundColor || (isDarkMode ? colors.offWhite : colors.grey)
+        }
         css={containerStyles}
+        disabled={disabled}
         showShadow={showShadow}
         size={size}
         style={style}
@@ -79,7 +88,7 @@ const Button = ({
       >
         {shouldRenderChildrenAsText(children) ? (
           <Text
-            color={color}
+            color={color || colors.whiteLabel}
             size={ButtonSizeTypes[size].fontSize}
             weight="semibold"
             {...textProps}
@@ -120,8 +129,6 @@ Button.propTypes = {
 };
 
 Button.defaultProps = {
-  backgroundColor: colors.grey,
-  color: colors.white,
   showShadow: true,
   size: 'default',
   type: ButtonShapeTypes.pill,

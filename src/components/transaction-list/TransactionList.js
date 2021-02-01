@@ -4,7 +4,8 @@ import { toLower } from 'lodash';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { requireNativeComponent } from 'react-native';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
+import { getRandomColor } from '../../styles/colors';
 import { FloatingEmojis } from '../floating-emojis';
 import useOnAvatarPress from '../profile/useOnAvatarPress';
 import useExperimentalFlag, {
@@ -26,7 +27,6 @@ import {
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import { removeRequest } from '@rainbow-me/redux/requests';
 import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
 import {
   abbreviations,
   ethereumUtils,
@@ -151,7 +151,7 @@ export default function TransactionList({
         headerInfo.address = isENSAddressFormat(contactAddress)
           ? contactAddress
           : abbreviations.address(contactAddress, 4, 10);
-        contactColor = colors.getRandomColor();
+        contactColor = getRandomColor();
       }
 
       const isOutgoing = toLower(from) === toLower(accountAddress);
@@ -263,6 +263,7 @@ export default function TransactionList({
   const isAvatarPickerAvailable = useExperimentalFlag(AVATAR_PICKER);
 
   const safeAccountImage = useSafeImageUri(accountImage);
+  const { isDarkMode, colors } = useTheme();
 
   return (
     <Container>
@@ -273,6 +274,7 @@ export default function TransactionList({
         accountName={accountSymbol}
         addCashAvailable={addCashAvailable}
         as={NativeTransactionListView}
+        darkMode={isDarkMode}
         data={data}
         isAvatarPickerAvailable={isAvatarPickerAvailable}
         isLoading={loading}

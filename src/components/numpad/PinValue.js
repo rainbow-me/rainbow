@@ -1,8 +1,7 @@
 import React from 'react';
 import Animated from 'react-native-reanimated';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { Column, Flex } from '../../components/layout';
-import { colors } from '@rainbow-me/styles';
 
 const FilledValue = styled(Column)`
   width: 20;
@@ -16,13 +15,14 @@ const EmptyValue = styled(Column)`
   border-width: 3;
   width: 20;
   height: 20;
-  border-color: ${colors.appleBlue};
+  border-color: ${({ theme: { colors } }) => colors.appleBlue};
   border-radius: 20;
   margin-left: 10;
   margin-right: 10;
 `;
 
 const PinValue = ({ translateX, value, ...props }) => {
+  const { colors } = useTheme();
   return (
     <Flex {...props}>
       <Animated.View
