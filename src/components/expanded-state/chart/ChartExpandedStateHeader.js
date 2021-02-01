@@ -132,6 +132,7 @@ export default function ChartExpandedStateHeader({
               color={
                 isNoPriceData ? colors.alpha(colors.blueGreyDark, 0.8) : color
               }
+              style={{ width: '67%' }}
               weight={isNoPriceData ? 'semibold' : 'bold'}
             >
               {titleOrNoPriceData}
