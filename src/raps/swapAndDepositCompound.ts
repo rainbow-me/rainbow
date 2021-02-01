@@ -35,7 +35,7 @@ export const estimateSwapAndDepositCompound = async (
   const requiresSwap = !!outputCurrency;
   let gasLimits: (string | number)[] = [];
   if (requiresSwap) {
-    if (!inputCurrency) return ethUnits.basic_deposit;
+    if (!inputCurrency) return ethUnits.basic_deposit_compound;
 
     const swapAssetNeedsUnlocking = await assetNeedsUnlocking(
       accountAddress,
@@ -68,7 +68,7 @@ export const estimateSwapAndDepositCompound = async (
       .contractAddress;
   const amountToDeposit = requiresSwap ? outputAmount : inputAmount;
 
-  if (!amountToDeposit) return ethUnits.basic_deposit;
+  if (!amountToDeposit) return ethUnits.basic_deposit_compound;
 
   const depositAssetNeedsUnlocking = await assetNeedsUnlocking(
     accountAddress,

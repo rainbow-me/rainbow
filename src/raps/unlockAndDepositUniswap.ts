@@ -12,7 +12,7 @@ import store from '@rainbow-me/redux/store';
 import { ethUnits, ZapInAddress } from '@rainbow-me/references';
 import { add } from '@rainbow-me/utilities';
 
-export const estimateDepositUniswapLP = async ({
+export const estimateDepositUniswap = async ({
   inputAmount,
   inputCurrency,
   outputAmount,
@@ -62,7 +62,7 @@ export const estimateDepositUniswapLP = async ({
   return reduce(gasLimits, (acc, limit) => add(acc, limit), '0');
 };
 
-const createDepositUniswapLPRap = async ({
+export const createDepositUniswapRap = async ({
   depositToken,
   inputAmount,
   inputCurrency,
@@ -127,5 +127,3 @@ const createDepositUniswapLPRap = async ({
   // create the overall rap
   return createNewRap(actions);
 };
-
-export default createDepositUniswapLPRap;

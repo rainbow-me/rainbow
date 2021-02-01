@@ -6,7 +6,8 @@ import {
 } from './common';
 import { ethUnits } from '@rainbow-me/references';
 
-export const estimateWithdrawFromCompound = () => ethUnits.basic_withdrawal;
+export const estimateWithdrawFromCompound = () =>
+  ethUnits.basic_withdraw_compound;
 
 export const createWithdrawFromCompoundRap = (
   swapParameters: SwapActionParameters

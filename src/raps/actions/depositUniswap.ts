@@ -3,7 +3,6 @@ import { captureException } from '@sentry/react-native';
 import { Token } from '@uniswap/sdk';
 import { get } from 'lodash';
 import { Rap, RapActionParameters } from '../common';
-import { Asset } from '@rainbow-me/entities';
 import { depositToPool } from '@rainbow-me/handlers/uniswapLiquidity';
 import { toHex } from '@rainbow-me/handlers/web3';
 import ProtocolTypes from '@rainbow-me/helpers/protocolTypes';
@@ -16,15 +15,10 @@ import { convertAmountToRawAmount, isZero } from '@rainbow-me/utilities';
 import { gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
-const NOOP = () => undefined;
-
 const actionName = '[deposit uniswap]';
 
 // TODO JIN - fix this
-export const getDepositUniswapGasLimit = (inputCurrency: Asset) =>
-  inputCurrency.address === 'eth'
-    ? ethUnits.basic_deposit_eth
-    : ethUnits.basic_deposit;
+export const getDepositUniswapGasLimit = () => ethUnits.basic_deposit_uniswap;
 
 const depositUniswap = async (
   wallet: Wallet,
@@ -61,7 +55,7 @@ const depositUniswap = async (
   logger.log(`${actionName} gas price`, gasPrice);
 
   const transactionParams = {
-    gasLimit: getDepositUniswapGasLimit(inputCurrency),
+    gasLimit: getDepositUniswapGasLimit(),
     gasPrice: toHex(gasPrice),
   };
 
