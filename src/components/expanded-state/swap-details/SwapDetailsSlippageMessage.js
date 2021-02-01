@@ -1,4 +1,3 @@
-import { useRoute } from '@react-navigation/native';
 import React from 'react';
 import styled from 'styled-components';
 import Divider from '../../Divider';
@@ -27,12 +26,9 @@ const Message = styled(Text).attrs(({ theme: { colors } }) => ({
 }))``;
 
 export default function SwapDetailsSlippageMessage(props) {
-  const {
-    params: { slippage },
-  } = useRoute();
   const { colors } = useTheme();
 
-  const { color, isHighSlippage } = useSlippageDetails(slippage);
+  const { color, isHighSlippage } = useSlippageDetails();
 
   return isHighSlippage ? (
     <Column align="center" {...props}>

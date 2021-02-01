@@ -1,4 +1,3 @@
-import { useRoute } from '@react-navigation/native';
 import React from 'react';
 import styled from 'styled-components';
 import { ColumnWithMargins } from '../../layout';
@@ -9,7 +8,10 @@ import SwapDetailsRow, {
   SwapDetailsValue,
 } from './SwapDetailsRow';
 import SwapDetailsUniswapRow from './SwapDetailsUniswapRow';
-import { useSlippageDetails } from '@rainbow-me/hooks';
+import {
+  useSlippageDetails,
+  useSwapInputOutputTokens,
+} from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
 import { isETH } from '@rainbow-me/utils';
 
@@ -28,15 +30,13 @@ export default function SwapDetailsContent({
   onCopySwapDetailsText,
   ...props
 }) {
-  const {
-    params: { inputCurrency, outputCurrency, slippage },
-  } = useRoute();
+  const { inputCurrency, outputCurrency } = useSwapInputOutputTokens();
 
   const {
     color: slippageColor,
     isHighSlippage,
     percentDisplay,
-  } = useSlippageDetails(slippage);
+  } = useSlippageDetails();
 
   return (
     <Container
