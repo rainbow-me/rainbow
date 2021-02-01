@@ -1,12 +1,13 @@
 import * as React from 'react';
 import Svg, { LinearGradient, Path, Stop } from 'react-native-svg';
-import { colors } from '@rainbow-me/styles';
+import { useTheme } from '../../context/ThemeContext';
 
 export type AxisIconProps = {
   readonly size: number;
 };
 
 export default function AxisIcon({ size }: AxisIconProps): JSX.Element {
+  const { colors } = useTheme();
   return (
     <Svg height={size} viewBox="0 0 512 512" width={size} x="0" y="0">
       <LinearGradient
