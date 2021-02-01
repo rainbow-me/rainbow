@@ -120,7 +120,7 @@ export default function useWalletsDebug() {
       data: JSON.stringify(keysOnly(allKeys), null, 2),
       status,
     };
-  }, [dispatch, initializeWallet, selectedWallet, wallets]);
+  }, [colors, dispatch, initializeWallet, selectedWallet, wallets]);
 
   return debug;
 }
