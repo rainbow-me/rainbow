@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useDimensions, useImageMetadata } from '../../../hooks';
-import use3d from '../../../hooks/use3d';
+import useUniqueToken from '../../../hooks/useUniqueToken';
 import { magicMemo } from '../../../utils';
 import { SimpleModelView } from '../../3d';
 import { Centered } from '../../layout';
@@ -42,15 +42,12 @@ const UniqueTokenExpandedStateImage = ({ asset }) => {
   const containerHeight =
     heightForDeviceSize > maxImageHeight ? maxImageWidth : heightForDeviceSize;
 
-  const { animation_url: animationUrl } = asset;
-
-  const { is3dUri } = use3d();
-
+  const { supports3d } = useUniqueToken(asset);
   return (
     <Container height={containerHeight}>
       <ImageWrapper isImageHuge={heightForDeviceSize > maxImageHeight}>
-        {is3dUri(animationUrl) ? (
-          <ModelView fallbackUri={imageUrl} uri={animationUrl} />
+        {supports3d ? (
+          <ModelView fallbackUri={imageUrl} uri={asset.animation_url} />
         ) : (
           <UniqueTokenImage
             backgroundColor={asset.background}
