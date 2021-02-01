@@ -4,6 +4,10 @@ export {
 } from './swapAndDepositCompound';
 export { createUnlockAndSwapRap, estimateUnlockAndSwap } from './unlockAndSwap';
 export {
+  createDepositUniswapRap,
+  estimateDepositUniswap,
+} from './unlockAndDepositUniswap';
+export {
   estimateWithdrawFromCompound,
   createWithdrawFromCompoundRap,
 } from './withdrawFromCompound';

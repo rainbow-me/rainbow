@@ -25,8 +25,8 @@ import logger from 'logger';
 
 export const getDepositGasLimit = (tokenToDeposit: Asset) =>
   tokenToDeposit.address === ETH_ADDRESS
-    ? ethUnits.basic_deposit_eth
-    : ethUnits.basic_deposit;
+    ? ethUnits.basic_deposit_compound_eth
+    : ethUnits.basic_deposit_compound;
 
 const actionName = 'depositCompound';
 
