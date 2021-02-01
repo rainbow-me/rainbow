@@ -3,16 +3,17 @@ import { filter, flatMap, map, toLower, uniqBy } from 'lodash';
 import { useMemo } from 'react';
 import { getTokenForCurrency } from '../handlers/uniswap';
 import useAccountSettings from './useAccountSettings';
-import useSwapInputOutputTokens from './useSwapInputOutputTokens';
-
+import { Asset } from '@rainbow-me/entities';
 import {
   PAIR_GET_RESERVES_CALL_DATA,
   UNISWAP_V2_BASES,
 } from '@rainbow-me/references';
 
-export default function useUniswapCalls() {
+export default function useUniswapCalls(
+  inputCurrency: Asset | null,
+  outputCurrency: Asset | null
+) {
   const { chainId } = useAccountSettings();
-  const { inputCurrency, outputCurrency } = useSwapInputOutputTokens();
 
   const inputToken: Token | null = useMemo(() => {
     if (!inputCurrency) return null;

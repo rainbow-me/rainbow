@@ -1,7 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import { get } from 'lodash';
-import { RefObject, useCallback, useState } from 'react';
-import { TextInput } from 'react-native';
+import { useCallback, useState } from 'react';
 import {
   convertAmountFromNativeValue,
   convertAmountToNativeAmount,
@@ -10,37 +9,26 @@ import {
   isZero,
   updatePrecisionToDisplay,
 } from '../helpers/utilities';
-import useSwapInputOutputTokens from './useSwapInputOutputTokens';
 import logger from 'logger';
 
 export default function useSwapInputs({
   defaultInputAsset,
+  inputCurrency,
+  isDeposit,
   isWithdrawal,
   maxInputBalance,
   nativeFieldRef,
   supplyBalanceUnderlying,
   type,
-}: {
-  defaultInputAsset: string;
-  isWithdrawal: boolean;
-  maxInputBalance: string;
-  nativeFieldRef: RefObject<TextInput>;
-  supplyBalanceUnderlying: string;
-  type: string;
 }) {
-  const { inputCurrency } = useSwapInputOutputTokens();
   const [isMax, setIsMax] = useState(false);
-  const [inputAmount, setInputAmount] = useState<string | null>(null);
-  const [inputAmountDisplay, setInputAmountDisplay] = useState<string | null>(
-    null
-  );
+  const [inputAmount, setInputAmount] = useState(null);
+  const [inputAmountDisplay, setInputAmountDisplay] = useState(null);
   const [inputAsExactAmount, setInputAsExactAmount] = useState(true);
   const [isSufficientBalance, setIsSufficientBalance] = useState(true);
-  const [nativeAmount, setNativeAmount] = useState<string | null>(null);
-  const [outputAmount, setOutputAmount] = useState<string | null>(null);
-  const [outputAmountDisplay, setOutputAmountDisplay] = useState<string | null>(
-    null
-  );
+  const [nativeAmount, setNativeAmount] = useState(null);
+  const [outputAmount, setOutputAmount] = useState(null);
+  const [outputAmountDisplay, setOutputAmountDisplay] = useState(null);
 
   const updateInputAmount = useCallback(
     (
@@ -54,7 +42,12 @@ export default function useSwapInputs({
       setInputAmountDisplay(newAmountDisplay || newInputAmount);
       setIsMax(!!newInputAmount && newIsMax);
 
-      if (!nativeFieldRef?.current?.isFocused() || newIsMax) {
+      if (
+        (nativeFieldRef &&
+          nativeFieldRef.current &&
+          !nativeFieldRef.current.isFocused()) ||
+        newIsMax
+      ) {
         let newNativeAmount = null;
 
         const isInputZero = isZero(newInputAmount);
@@ -85,6 +78,7 @@ export default function useSwapInputs({
 
       if (newAmountDisplay) {
         analytics.track('Updated input amount', {
+          category: isDeposit ? 'savings' : 'swap',
           defaultInputAsset: get(defaultInputAsset, 'symbol', ''),
           type,
           value: convertStringToNumber(newAmountDisplay),
@@ -94,6 +88,7 @@ export default function useSwapInputs({
     [
       defaultInputAsset,
       inputCurrency,
+      isDeposit,
       isWithdrawal,
       maxInputBalance,
       nativeFieldRef,
@@ -144,13 +139,14 @@ export default function useSwapInputs({
       setOutputAmountDisplay(newAmountDisplay || newOutputAmount);
       if (newAmountDisplay) {
         analytics.track('Updated output amount', {
+          category: isWithdrawal || isDeposit ? 'savings' : 'swap',
           defaultInputAsset: get(defaultInputAsset, 'symbol', ''),
           type,
           value: convertStringToNumber(newAmountDisplay),
         });
       }
     },
-    [defaultInputAsset, type]
+    [defaultInputAsset, isDeposit, isWithdrawal, type]
   );
 
   return {

@@ -68,6 +68,7 @@ export default function CurrencySelectModal() {
   const { navigate, dangerouslyGetState } = useNavigation();
   const {
     params: {
+      category,
       onSelectCurrency,
       restoreFocusOnSwapModal,
       setPointerEvents,
@@ -202,6 +203,7 @@ export default function CurrencySelectModal() {
         [asset.address]: isFavorited,
       }));
       analytics.track('Toggled an asset as Favorited', {
+        category,
         isFavorited,
         name: asset.name,
         symbol: asset.symbol,
@@ -209,7 +211,7 @@ export default function CurrencySelectModal() {
         type,
       });
     },
-    [type]
+    [category, type]
   );
 
   const handleSelectAsset = useCallback(
@@ -218,6 +220,7 @@ export default function CurrencySelectModal() {
       onSelectCurrency(item);
       if (searchQueryForSearch) {
         analytics.track('Selected a search result in Swap', {
+          category,
           name: item.name,
           searchQueryForSearch,
           symbol: item.symbol,
@@ -235,6 +238,7 @@ export default function CurrencySelectModal() {
       searchQueryForSearch,
       dangerouslyGetState,
       navigate,
+      category,
       type,
     ]
   );

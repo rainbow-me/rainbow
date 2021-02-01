@@ -11,7 +11,6 @@ import {
 } from '../helpers/utilities';
 import { logger } from '../utils';
 import useAccountSettings from './useAccountSettings';
-import useSwapInputOutputTokens from './useSwapInputOutputTokens';
 import useUniswapPairs from './useUniswapPairs';
 import { Asset } from '@rainbow-me/entities';
 
@@ -22,12 +21,14 @@ export default function useUniswapMarketDetails({
   extraTradeDetails,
   inputAmount,
   inputAsExactAmount,
+  inputCurrency,
   inputFieldRef,
   isDeposit,
   isWithdrawal,
   maxInputBalance,
   nativeCurrency,
   outputAmount,
+  outputCurrency,
   outputFieldRef,
   setIsSufficientBalance,
   setSlippage,
@@ -39,12 +40,14 @@ export default function useUniswapMarketDetails({
   extraTradeDetails: { outputPriceValue: string };
   inputAmount: string;
   inputAsExactAmount: boolean;
+  inputCurrency: Asset;
   inputFieldRef: RefObject<TextInput>;
   isDeposit: boolean;
   isWithdrawal: boolean;
   maxInputBalance: string;
   nativeCurrency: string;
   outputAmount: string;
+  outputCurrency: Asset;
   outputFieldRef: RefObject<TextInput>;
   setIsSufficientBalance: (isSufficientBalance: boolean) => void;
   setSlippage: (slippage: number) => void;
@@ -66,13 +69,14 @@ export default function useUniswapMarketDetails({
     newInputAsExactAmount?: boolean
   ) => void;
 }) {
-  const { inputCurrency, outputCurrency } = useSwapInputOutputTokens();
-
   const [isSufficientLiquidity, setIsSufficientLiquidity] = useState(true);
   const [tradeDetails, setTradeDetails] = useState<Trade | null>(null);
   const { chainId } = useAccountSettings();
 
-  const { allPairs, doneLoadingResults } = useUniswapPairs();
+  const { allPairs, doneLoadingResults } = useUniswapPairs(
+    inputCurrency,
+    outputCurrency
+  );
   const swapNotNeeded = useMemo(() => {
     return (
       (isDeposit || isWithdrawal) &&

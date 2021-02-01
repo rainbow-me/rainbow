@@ -20,7 +20,6 @@ import raps from './raps';
 import requests from './requests';
 import settings from './settings';
 import showcaseTokens from './showcaseTokens';
-import swap from './swap';
 import uniqueTokens from './uniqueTokens';
 import uniswap from './uniswap';
 import uniswapLiquidity from './uniswapLiquidity';
@@ -47,7 +46,6 @@ export default combineReducers({
   requests,
   settings,
   showcaseTokens,
-  swap,
   uniqueTokens,
   uniswap,
   uniswapLiquidity,
