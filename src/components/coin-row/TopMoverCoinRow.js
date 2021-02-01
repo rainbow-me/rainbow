@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
-import styled from 'styled-components/primitives';
-import { colors, fonts } from '../../styles';
+import styled from 'styled-components';
+import { useTheme } from '../../context/ThemeContext';
+import { fonts } from '../../styles';
 import { magicMemo, measureText } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
@@ -16,11 +17,11 @@ const Spacer = styled.View`
   width: ${TopMoverPriceMargin};
 `;
 
-const TopMoverTitle = styled(CoinName).attrs({
+const TopMoverTitle = styled(CoinName).attrs(({ theme: { colors } }) => ({
   color: colors.alpha(colors.blueGreyDark, 0.8),
   paddingRight: 0,
   weight: 'semibold',
-})``;
+}))``;
 
 export const measureBottomRowText = text =>
   measureText(text, {
@@ -75,6 +76,7 @@ const TopMoverCoinRow = asset => {
   const handlePress = useCallback(() => {
     onPress?.(asset);
   }, [asset, onPress]);
+  const { colors } = useTheme();
 
   return (
     <ButtonPressAnimation

@@ -3,6 +3,7 @@ import { forEach } from 'lodash';
 import React, { useCallback } from 'react';
 import { Alert, InteractionManager, StatusBar } from 'react-native';
 import RNCloudFs from 'react-native-cloud-fs';
+import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import RestoreCloudStep from '../components/backup/RestoreCloudStep';
 import RestoreSheetFirstStep from '../components/backup/RestoreSheetFirstStep';
 import { Column } from '../components/layout';
@@ -86,9 +87,7 @@ export default function RestoreSheet() {
   }, [goBack, navigate]);
 
   const wrapperHeight =
-    deviceHeight +
-    longFormHeight +
-    (android ? StatusBar.currentHeight * 1.5 : 0);
+    deviceHeight + longFormHeight + (android ? getSoftMenuBarHeight() : 0);
 
   return (
     <Column height={wrapperHeight}>

@@ -4,10 +4,9 @@ import Animated, {
   useAnimatedStyle,
   useDerivedValue,
 } from 'react-native-reanimated';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { Icon } from '../../../icons';
 import { useRatio } from './useRatio';
-import { colors } from '@rainbow-me/styles';
 
 const AnimatedMaskedView = Animated.createAnimatedComponent(MaskedView);
 
@@ -19,6 +18,7 @@ const ArrowIcon = styled(Icon).attrs({
 export default function ChartChangeDirectionArrow() {
   const ratio = useRatio('ChartChangeDirectionArrowRatio');
 
+  const { colors } = useTheme();
   const arrowColor = useDerivedValue(
     () =>
       ratio.value === 1
@@ -26,8 +26,7 @@ export default function ChartChangeDirectionArrow() {
         : ratio.value < 1
         ? colors.red
         : colors.green,
-    [],
-    'ChartChangeDirectionArrowRatioColor'
+    [colors]
   );
   const arrowWrapperStyle = useAnimatedStyle(() => {
     return {

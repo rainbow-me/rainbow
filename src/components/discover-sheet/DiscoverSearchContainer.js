@@ -9,7 +9,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
 import { ExchangeSearch } from '../exchange';
 import { Column, Row } from '../layout';
@@ -20,19 +20,17 @@ import {
   useUniswapAssets,
 } from '@rainbow-me/hooks';
 
-import { colors } from '@rainbow-me/styles';
-
 const CancelButton = styled(ButtonPressAnimation)`
   margin-top: 27;
 `;
 
-const CancelText = styled(Text).attrs({
+const CancelText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'right',
   color: colors.appleBlue,
   letterSpacing: 'roundedMedium',
   size: 'large',
   weight: 'semibold',
-})`
+}))`
   margin-left: -3;
   margin-right: 15;
 `;

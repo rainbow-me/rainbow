@@ -8,7 +8,7 @@ import React, {
 } from 'react';
 import { FlatList } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import styled from 'styled-components/native';
+import styled from 'styled-components';
 import { emitAssetRequest } from '../../redux/explorer';
 import {
   COINGECKO_TRENDING_ENDPOINT,
@@ -30,7 +30,6 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 const fetchTrendingAddresses = async () => {
@@ -54,7 +53,7 @@ const ListButton = styled(ButtonPressAnimation).attrs({
   scaleTo: 0.96,
 })`
   margin-right: 16px;
-  ${({ selected }) =>
+  ${({ selected, theme: { colors } }) =>
     selected
       ? `
         background-color: ${colors.alpha(colors.blueGreyDark, 0.06)};
@@ -95,6 +94,7 @@ export default function ListSection() {
   const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
     genericAssets,
   }));
+  const { colors } = useTheme();
   const listData = useMemo(() => DefaultTokenLists[network], [network]);
 
   const trendingListHandler = useRef(null);
@@ -218,7 +218,7 @@ export default function ListSection() {
         </Row>
       </ListButton>
     ),
-    [handleSwitchList, selectedList]
+    [colors, handleSwitchList, selectedList]
   );
 
   return (

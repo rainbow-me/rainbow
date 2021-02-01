@@ -19,6 +19,7 @@ import {
   ConfirmExchangeButton,
   ExchangeInputField,
   ExchangeModalHeader,
+  ExchangeNotch,
   ExchangeOutputField,
   SlippageWarning,
 } from '../components/exchange';
@@ -38,6 +39,7 @@ import {
   useSwapInputOutputTokens,
   useSwapInputRefs,
   useSwapInputs,
+  useSwapInputValues,
   useUniswapCurrencies,
   useUniswapMarketDetails,
 } from '@rainbow-me/hooks';
@@ -48,7 +50,7 @@ import { multicallClearState } from '@rainbow-me/redux/multicall';
 import { swapClearState } from '@rainbow-me/redux/swap';
 import { ethUnits } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
-import { colors, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 import { backgroundTask, isNewValueForPath } from '@rainbow-me/utils';
 import logger from 'logger';
 
@@ -142,15 +144,6 @@ export default function ExchangeModal({
   } = useSwapInputRefs();
 
   const {
-    inputAmount,
-    inputAmountDisplay,
-    inputAsExactAmount,
-    isMax,
-    isSufficientBalance,
-    nativeAmount,
-    outputAmount,
-    outputAmountDisplay,
-    setIsSufficientBalance,
     updateInputAmount,
     updateNativeAmount,
     updateOutputAmount,
@@ -162,6 +155,16 @@ export default function ExchangeModal({
     supplyBalanceUnderlying,
     type,
   });
+
+  const {
+    inputAmount,
+    inputAmountDisplay,
+    isSufficientBalance,
+    nativeAmount,
+    isMax,
+    outputAmount,
+    outputAmountDisplay,
+  } = useSwapInputValues();
 
   const isDismissing = useRef(false);
   useEffect(() => {
@@ -194,16 +197,12 @@ export default function ExchangeModal({
   const { isSufficientLiquidity, tradeDetails } = useUniswapMarketDetails({
     defaultInputAddress,
     extraTradeDetails,
-    inputAmount,
-    inputAsExactAmount,
     inputFieldRef,
     isDeposit,
     isWithdrawal,
     maxInputBalance,
     nativeCurrency,
-    outputAmount,
     outputFieldRef,
-    setIsSufficientBalance,
     setSlippage,
     updateExtraTradeDetails,
     updateInputAmount,
@@ -505,6 +504,8 @@ export default function ExchangeModal({
       ? !!inputCurrency
       : !!inputCurrency && !!outputCurrency;
 
+  const { colors } = useTheme();
+
   return (
     <Wrapper>
       <Centered
@@ -559,6 +560,7 @@ export default function ExchangeModal({
               testID={testID + '-header'}
               title={inputHeaderTitle}
             />
+            {showOutputField && <ExchangeNotch />}
             <ExchangeInputField
               disableInputCurrencySelection={isWithdrawal}
               inputAmount={inputAmountDisplay}

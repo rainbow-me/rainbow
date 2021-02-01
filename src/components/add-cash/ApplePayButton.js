@@ -1,12 +1,13 @@
 import PropTypes from 'prop-types';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import Animated, { Easing } from 'react-native-reanimated';
 import { mixColor, useTimingTransition } from 'react-native-redash';
-
+import { useTheme } from '../../context/ThemeContext';
+import { darkModeThemeColors, lightModeThemeColors } from '../../styles/colors';
 import { ButtonPressAnimation, interpolate } from '../animations';
 import { Icon } from '../icons';
 import { Centered, InnerBorder } from '../layout';
-import { colors, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const AnimatedCenter = Animated.createAnimatedComponent(Centered);
@@ -18,28 +19,33 @@ const ApplePayButtonDimensions = {
   width: '100%',
 };
 
-const ApplePayButtonShadows = {
-  default: [
-    [0, 10, 30, colors.dark, 0.2],
-    [0, 5, 15, colors.dark, 0.4],
-  ],
-  disabled: [
-    [0, 10, 30, colors.dark, 0.2],
-    [0, 5, 15, colors.blueGreyDark50, 0.4],
-  ],
-};
-
-const ApplePayButtonShadowElement = ({ opacity, type }) => (
+const ApplePayButtonShadowElement = ({ backgroundColor, opacity, shadow }) => (
   <AnimatedShadowStack
     {...position.coverAsObject}
     {...ApplePayButtonDimensions}
+    backgroundColor={backgroundColor}
     borderRadius={ApplePayButtonBorderRadius}
-    shadows={ApplePayButtonShadows[type]}
+    shadows={shadow}
     style={{ opacity }}
   />
 );
 
 const ApplePayButton = ({ disabled, onDisabledPress, onSubmit }) => {
+  const { isDarkMode: darkMode, colors } = useTheme();
+
+  const ApplePayButtonShadows = useMemo(() => {
+    if (disabled) {
+      return [
+        [0, 10, 30, colors.shadow, 0.2],
+        [0, 5, 15, colors.blueGreyDark50, darkMode ? 0 : 0.4],
+      ];
+    } else
+      return [
+        [0, 10, 30, colors.shadow, 0.2],
+        [0, 5, 15, colors.shadow, 0.4],
+      ];
+  }, [colors.blueGreyDark50, colors.shadow, disabled, darkMode]);
+
   const disabledAnimation = useTimingTransition(!disabled, {
     duration: 66,
     ease: Easing.out(Easing.ease),
@@ -47,8 +53,10 @@ const ApplePayButton = ({ disabled, onDisabledPress, onSubmit }) => {
 
   const backgroundColor = mixColor(
     disabledAnimation,
-    colors.blueGreyDark50,
-    colors.dark
+    darkMode
+      ? colors.alpha(darkModeThemeColors.grey20, 0.3)
+      : lightModeThemeColors.blueGreyDark50,
+    darkMode ? darkModeThemeColors.darkModeDark : lightModeThemeColors.dark
   );
 
   const defaultShadowOpacity = interpolate(disabledAnimation, {
@@ -76,12 +84,14 @@ const ApplePayButton = ({ disabled, onDisabledPress, onSubmit }) => {
       <Centered {...position.sizeAsObject('100%')}>
         <Centered {...position.sizeAsObject('100%')}>
           <ApplePayButtonShadowElement
+            backgroundColor={colors.white}
             opacity={disabledShadowOpacity}
-            type="disabled"
+            shadow={ApplePayButtonShadows}
           />
           <ApplePayButtonShadowElement
+            backgroundColor={colors.white}
             opacity={defaultShadowOpacity}
-            type="default"
+            shadow={ApplePayButtonShadows}
           />
         </Centered>
         <AnimatedCenter
@@ -93,7 +103,11 @@ const ApplePayButton = ({ disabled, onDisabledPress, onSubmit }) => {
         >
           <Centered {...position.sizeAsObject('100%')}>
             <Icon
-              color={colors.white}
+              color={
+                darkMode && disabled
+                  ? colors.alpha(colors.blueGreyDark, 0.4)
+                  : colors.whiteLabel
+              }
               flex={1}
               marginBottom={2}
               name="applePay"

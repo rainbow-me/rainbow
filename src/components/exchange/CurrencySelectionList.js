@@ -1,7 +1,7 @@
 import { get } from 'lodash';
 import React, { useEffect, useRef } from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { usePrevious } from '../../hooks';
 import { magicMemo } from '../../utils';
 import { EmptyAssetList } from '../asset-list';
@@ -10,13 +10,13 @@ import { NoResults } from '../list';
 import { CurrencySelectModalHeaderHeight } from './CurrencySelectModalHeader';
 import ExchangeAssetList from './ExchangeAssetList';
 import { ExchangeSearchHeight } from './ExchangeSearch';
-import { colors, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 
 const EmptyCurrencySelectionList = styled(EmptyAssetList).attrs({
   pointerEvents: 'none',
 })`
   ${position.cover};
-  background-color: ${colors.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
 `;
 
 const NoCurrencyResults = styled(NoResults)`

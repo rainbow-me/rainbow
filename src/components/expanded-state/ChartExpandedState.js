@@ -1,5 +1,6 @@
 import { find } from 'lodash';
 import React, { Fragment, useRef } from 'react';
+import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useSelector } from 'react-redux';
 import { Column } from '../layout';
 import {
@@ -25,11 +26,10 @@ import {
 } from '@rainbow-me/hooks';
 
 // add status bar height for Android
-const heightWithoutChart = 309 + (android && 24);
-const heightWithChart = heightWithoutChart + 297;
+const heightWithoutChart = 309 - (android ? getSoftMenuBarHeight() : 0);
+const heightWithChart = heightWithoutChart + 310;
 
-export const initialChartExpandedStateSheetHeight =
-  heightWithChart + (android && 40);
+export const initialChartExpandedStateSheetHeight = heightWithChart;
 
 const formatGenericAsset = asset => {
   if (asset?.price?.value) {
@@ -82,7 +82,7 @@ export default function ChartExpandedState({ asset }) {
     duration.current = 300;
   }
   const ChartExpandedStateSheetHeight =
-    (ios || showChart ? heightWithChart : heightWithoutChart) + (android && 40);
+    ios || showChart ? heightWithChart : heightWithoutChart;
 
   return (
     <Fragment>

@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import React, { createElement } from 'react';
 import { useSafeArea } from 'react-native-safe-area-context';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import {
   ContactProfileState,

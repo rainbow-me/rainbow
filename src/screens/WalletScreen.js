@@ -5,7 +5,7 @@ import { StatusBar } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useValue } from 'react-native-redash';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { OpacityToggler } from '../components/animations';
 import { AssetList } from '../components/asset-list';
 import { ExchangeFab, FabWrapper, SendFab } from '../components/fab';

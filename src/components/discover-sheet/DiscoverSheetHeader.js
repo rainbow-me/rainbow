@@ -1,5 +1,11 @@
 import { useRoute } from '@react-navigation/native';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import Animated, {
   newInterpolate,
   useAnimatedStyle,
@@ -7,8 +13,8 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-import styled from 'styled-components/primitives';
-import { borders, colors, position } from '../../styles';
+import styled from 'styled-components';
+import { borders, position } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
@@ -35,7 +41,7 @@ const Header = styled.View`
   z-index: 10;
 `;
 
-export const FloatingActionButtonShadow = [
+export const FloatingActionButtonShadow = colors => [
   [0, 10, 30, colors.dark, 0.5],
   [0, 5, 15, colors.dark, 1],
 ];
@@ -44,7 +50,7 @@ const BackgroundFill = styled(Centered).attrs({
   ...borders.buildCircleAsObject(43),
 })`
   ${position.cover};
-  background-color: ${colors.dark};
+  background-color: ${({ theme: { colors } }) => colors.dark};
   left: 8;
   top: 8;
 `;
@@ -58,6 +64,8 @@ function Stack({
   translateX,
   wrapperOpacity,
 }) {
+  const { colors } = useTheme();
+  const shadows = useMemo(() => FloatingActionButtonShadow(colors), [colors]);
   const isVisible = useDerivedValue(() => {
     const value = stackOpacity.value;
     return withSpring(value, springConfig);
@@ -102,7 +110,7 @@ function Stack({
           <ShadowStack
             {...borders.buildCircleAsObject(43)}
             backgroundColor={colors.dark}
-            shadows={FloatingActionButtonShadow}
+            shadows={shadows}
             style={{ left: 8, opacity: 0.4, position: 'absolute', top: 8 }}
           />
           <BackgroundFill />
@@ -170,6 +178,8 @@ export default function DiscoverSheetHeader(props) {
   const animatedWrapperROpacity = useDerivedValue(() =>
     withSpring(buttonOpacity.value, springConfig)
   );
+
+  const { colors } = useTheme();
 
   return (
     <Header {...props} pointerEvents="box-none">

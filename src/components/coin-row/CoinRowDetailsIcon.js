@@ -1,9 +1,9 @@
 import React from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { Centered, Column } from '../layout';
 import { Text } from '../text';
 import { CoinRowHeight } from './CoinRow';
-import { colors, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 
 const AddButtonPadding = 19;
 
@@ -18,13 +18,13 @@ const AddButton = styled(Centered)`
   width: 68px;
 `;
 
-const Icon = styled(Text).attrs({
+const Icon = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
   color: colors.alpha(colors.blueGreyDark, 0.2),
   letterSpacing: 'zero',
   size: 'larger',
   weight: 'normal',
-})`
+}))`
   height: 100%;
   line-height: 28px;
   width: 100%;

@@ -11,7 +11,7 @@ import React, {
 import { Alert, InteractionManager, StatusBar } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import { KeyboardArea } from 'react-native-keyboard-area';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import ActivityIndicator from '../components/ActivityIndicator';
 import Spinner from '../components/Spinner';
 import { MiniButton } from '../components/buttons';
@@ -23,6 +23,7 @@ import {
   InvalidPasteToast,
   ToastPositionContainer,
 } from '../components/toasts';
+import { useTheme } from '../context/ThemeContext';
 import { web3Provider } from '@rainbow-me/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import {
@@ -47,7 +48,7 @@ import {
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import { sheetVerticalOffset } from '@rainbow-me/navigation/effects';
 import Routes from '@rainbow-me/routes';
-import { borders, colors, padding } from '@rainbow-me/styles';
+import { borders, padding } from '@rainbow-me/styles';
 import {
   deviceUtils,
   ethereumUtils,
@@ -65,7 +66,9 @@ const Container = styled.View`
     ? 0
     : sheetVerticalOffset};
   ${android ? `margin-top: ${sheetVerticalOffset};` : ''}
-  ${android ? `background-color: ${colors.transparent};` : ''}
+  ${android
+    ? `background-color: ${({ theme: { colors } }) => colors.transparent};`
+    : ''}
 `;
 
 const Footer = styled(Row).attrs({
@@ -96,7 +99,7 @@ const FooterButton = styled(MiniButton).attrs({
 })``;
 
 const KeyboardSizeView = styled(KeyboardArea)`
-  background-color: ${colors.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
 `;
 
 const SecretTextArea = styled(Input).attrs({
@@ -131,7 +134,7 @@ const Sheet = styled(Column).attrs({
 })`
   ${borders.buildRadius('top', isNativeStackAvailable ? 0 : 16)};
   ${padding(0, 15, sheetBottomPadding)};
-  background-color: ${colors.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
   z-index: 1;
 `;
 
@@ -366,7 +369,7 @@ export default function ImportSeedPhraseSheet() {
       isImporting ? walletLoadingStates.IMPORTING_WALLET : null
     );
   }, [isImporting, setIsWalletLoading]);
-
+  const { colors } = useTheme();
   return (
     <Container testID="import-sheet">
       <StatusBar barStyle="light-content" />
@@ -382,6 +385,7 @@ export default function ImportSeedPhraseSheet() {
             onFocus={handleFocus}
             onSubmitEditing={handlePressImportButton}
             placeholder="Seed phrase, private key, Ethereum address or ENS name"
+            placeholderTextColor={colors.alpha(colors.blueGreyDark, 0.3)}
             ref={inputRef}
             returnKeyType="done"
             size="large"
@@ -402,13 +406,13 @@ export default function ImportSeedPhraseSheet() {
                 {busy ? (
                   <LoadingSpinner />
                 ) : (
-                  <Text align="center" color="white" weight="bold">
+                  <Text align="center" color="whiteLabel" weight="bold">
                     􀂍{' '}
                   </Text>
                 )}
                 <Text
                   align="center"
-                  color="white"
+                  color="whiteLabel"
                   testID="import-sheet-button-label"
                   weight="bold"
                 >
@@ -424,7 +428,7 @@ export default function ImportSeedPhraseSheet() {
             >
               <Text
                 align="center"
-                color="white"
+                color="whiteLabel"
                 testID="import-sheet-button-label"
                 weight="bold"
               >

@@ -1,33 +1,38 @@
 import { times } from 'lodash';
 import React, { useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import CopyTooltip from '../copy-tooltip';
 import { Centered, ColumnWithMargins, Row, RowWithMargins } from '../layout';
 import { Text } from '../text';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
-import { colors, fonts, padding, position } from '@rainbow-me/styles';
+import { fonts, padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const CardBorderRadius = 25;
 
-const BackgroundGradient = styled(LinearGradient).attrs({
-  colors: colors.gradients.offWhite,
-  end: { x: 0.5, y: 1 },
-  start: { x: 0.5, y: 0 },
-})`
+const BackgroundGradient = styled(LinearGradient).attrs(
+  ({ theme: { colors } }) => ({
+    colors: colors.gradients.offWhite,
+    end: { x: 0.5, y: 1 },
+    start: { x: 0.5, y: 0 },
+  })
+)`
   ${position.cover};
   border-radius: ${CardBorderRadius};
 `;
 
-const CardShadow = styled(ShadowStack).attrs({
-  ...position.coverAsObject,
-  borderRadius: CardBorderRadius,
-  shadows: [
-    [0, 10, 30, colors.dark, 0.1],
-    [0, 5, 15, colors.dark, 0.04],
-  ],
-})`
+const CardShadow = styled(ShadowStack).attrs(
+  ({ theme: { colors, isDarkMode } }) => ({
+    ...position.coverAsObject,
+    backgroundColor: isDarkMode ? colors.offWhite80 : colors.white,
+    borderRadius: CardBorderRadius,
+    shadows: [
+      [0, 10, 30, colors.shadow, 0.1],
+      [0, 5, 15, colors.shadow, 0.04],
+    ],
+  })
+)`
   elevation: 15;
 `;
 
@@ -55,6 +60,8 @@ function SeedWordGrid({ seed }) {
     const words = seed.split(' ');
     return [words.slice(0, words.length / 2), words.slice(words.length / 2)];
   }, [seed]);
+
+  const { colors } = useTheme();
 
   return (
     <RowWithMargins margin={24}>

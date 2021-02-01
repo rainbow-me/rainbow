@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect } from 'react';
 import { LayoutAnimation, View } from 'react-native';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
+import { withThemeContext } from '../../context/ThemeContext';
 import EditOptions from '../../helpers/editOptionTypes';
 import {
   useCoinListEdited,
@@ -12,20 +13,20 @@ import { Row, RowWithMargins } from '../layout';
 import CoinDividerAssetsValue from './CoinDividerAssetsValue';
 import CoinDividerEditButton from './CoinDividerEditButton';
 import CoinDividerOpenButton from './CoinDividerOpenButton';
-import { colors, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 
 export const CoinDividerHeight = 30;
 
-const Container = styled(Row).attrs({
+const Container = withThemeContext(styled(Row).attrs({
   align: 'center',
   justify: 'space-between',
 })`
   ${padding(5, 19, 6)};
-  background-color: ${({ isSticky }) =>
+  background-color: ${({ isSticky, colors }) =>
     isSticky ? colors.white : colors.transparent};
   height: ${CoinDividerHeight + 11};
   width: ${({ deviceWidth }) => deviceWidth};
-`;
+`);
 
 const CoinDividerButtonRow = styled(RowWithMargins).attrs(
   ({ isCoinListEdited }) => ({
