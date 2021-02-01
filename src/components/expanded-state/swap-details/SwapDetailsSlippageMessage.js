@@ -1,11 +1,11 @@
 import { useRoute } from '@react-navigation/native';
 import React from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import Divider from '../../Divider';
 import { Centered, Column, ColumnWithMargins, Row } from '../../layout';
 import { Emoji, Text } from '../../text';
 import { useSlippageDetails } from '@rainbow-me/hooks';
-import { colors, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 
 const Container = styled(ColumnWithMargins).attrs({
   margin: 8,
@@ -18,18 +18,19 @@ const Heading = styled(Text).attrs(({ weight = 'bold' }) => ({
   weight,
 }))``;
 
-const Message = styled(Text).attrs({
+const Message = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
   color: colors.blueGreyDark50,
   lineHeight: 22,
   size: 'smedium',
   weight: 'semibold',
-})``;
+}))``;
 
 export default function SwapDetailsSlippageMessage(props) {
   const {
     params: { slippage },
   } = useRoute();
+  const { colors } = useTheme();
 
   const { color, isHighSlippage } = useSlippageDetails(slippage);
 

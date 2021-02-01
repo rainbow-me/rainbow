@@ -7,7 +7,6 @@ import { ButtonPressAnimation, interpolate } from '../../animations';
 import { TruncatedAddress } from '../../text';
 import SwapDetailsRow, { SwapDetailsValue } from './SwapDetailsRow';
 import { useClipboard, useColorForAsset } from '@rainbow-me/hooks';
-import { colors } from '@rainbow-me/styles';
 import { abbreviations, ethereumUtils } from '@rainbow-me/utils';
 
 const AnimatedTruncatedAddress = Animated.createAnimatedComponent(
@@ -44,6 +43,7 @@ function SwapDetailsContractRowContent({
   scaleTo = 1.06,
   ...props
 }) {
+  const { colors } = useTheme();
   const colorForAsset = useColorForAsset(asset);
   const animation = useTimingTransition(menuVisible, { duration: 150 });
   const { addressColor, scale } = useMemoOne(

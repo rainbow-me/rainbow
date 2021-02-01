@@ -11,8 +11,9 @@ const showDeleteContactActionSheet = ({
     {
       cancelButtonIndex: 1,
       destructiveButtonIndex: 0,
-      message: `Are you sure you want to delete "${nickname ||
-        address}" from your contacts?`,
+      message: `Are you sure you want to delete "${
+        nickname || address
+      }" from your contacts?`,
       options: ['Delete Contact', 'Cancel'],
     },
     async buttonIndex => {

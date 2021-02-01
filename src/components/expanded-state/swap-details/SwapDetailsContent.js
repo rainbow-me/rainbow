@@ -1,6 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import React from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { ColumnWithMargins } from '../../layout';
 import SwapDetailsContractRow from './SwapDetailsContractRow';
 import SwapDetailsPriceRow from './SwapDetailsPriceRow';

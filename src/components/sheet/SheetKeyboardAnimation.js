@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { isReanimatedAvailable } from '@rainbow-me/helpers';
 import { useKeyboardHeight } from '@rainbow-me/hooks';
 

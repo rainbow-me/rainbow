@@ -15,7 +15,7 @@ const ChartHeaderSubtitle = styled(TruncatedText).attrs(
   })
 )`
   ${android &&
-    `margin-vertical: -10px
+  `margin-vertical: -10px
     margin-left: 9`}
 `;
 

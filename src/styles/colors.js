@@ -180,10 +180,7 @@ const getColorsByTheme = darkMode => {
   };
 
   const brighten = targetColor =>
-    chroma(targetColor)
-      .brighten(2)
-      .saturate(0.3)
-      .hex();
+    chroma(targetColor).brighten(2).saturate(0.3).hex();
 
   const transparent = {
     appleBlueTransparent: buildRgba(base.appleBlue, 0.2), // '50, 50, 93'

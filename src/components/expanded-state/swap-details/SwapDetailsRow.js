@@ -1,8 +1,7 @@
 import React from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { Centered } from '../../layout';
 import { Nbsp, Text, TruncatedText } from '../../text';
-import { colors } from '@rainbow-me/styles';
 
 export const SwapDetailsRowHeight = 17;
 
@@ -11,13 +10,15 @@ const SwapDetailsText = styled(Text).attrs({
   size: 'smedium',
 })``;
 
-export const SwapDetailsLabel = styled(SwapDetailsText).attrs({
-  color: colors.blueGreyDark50,
-  weight: 'semibold',
-})``;
+export const SwapDetailsLabel = styled(SwapDetailsText).attrs(
+  ({ theme: { colors } }) => ({
+    color: colors.blueGreyDark50,
+    weight: 'semibold',
+  })
+)``;
 
 export const SwapDetailsValue = styled(SwapDetailsText).attrs(
-  ({ color = colors.blueGreyDark80 }) => ({
+  ({ theme: { colors }, color = colors.blueGreyDark80 }) => ({
     color,
     weight: 'bold',
   })

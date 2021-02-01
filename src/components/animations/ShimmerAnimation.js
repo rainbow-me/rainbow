@@ -7,8 +7,8 @@ import Animated, {
   withRepeat,
   withTiming,
 } from 'react-native-reanimated';
-import styled from 'styled-components/primitives';
-import { colors, position } from '@rainbow-me/styles';
+import styled from 'styled-components';
+import { position } from '@rainbow-me/styles';
 
 const timingConfig = {
   duration: 2500,
@@ -26,6 +26,7 @@ const ColorGradient = styled(AnimatedLinearGradient).attrs({
 export default function ShimmerAnimation({ color, enabled = true, width = 0 }) {
   const opacity = useSharedValue(1);
   const positionX = useSharedValue(-width * 1.5);
+  const { colors } = useTheme();
 
   const gradientColors = useMemo(
     () => [
@@ -33,7 +34,7 @@ export default function ShimmerAnimation({ color, enabled = true, width = 0 }) {
       colors.alpha(colors.white, 0.2),
       colors.alpha(color, 0),
     ],
-    [color]
+    [color, colors]
   );
 
   useEffect(() => {

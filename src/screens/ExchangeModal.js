@@ -8,7 +8,7 @@ import React, {
 } from 'react';
 import { Keyboard } from 'react-native';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { useMemoOne } from 'use-memo-one';
 import { dismissingScreenListener } from '../../shim';
 import {

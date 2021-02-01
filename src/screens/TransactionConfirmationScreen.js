@@ -762,19 +762,21 @@ export default function TransactionConfirmationScreen() {
               >
                 {isAuthenticated ? dappName : formattedDappUrl}
               </Text>
-              {//We only show the checkmark
-              // if it's on the override list (dappNameHandler.js)
-              isAuthenticated && (
-                <Text
-                  align="center"
-                  color={colors.appleBlue}
-                  letterSpacing="roundedMedium"
-                  size="large"
-                  weight="bold"
-                >
-                  {' 􀇻'}
-                </Text>
-              )}
+              {
+                //We only show the checkmark
+                // if it's on the override list (dappNameHandler.js)
+                isAuthenticated && (
+                  <Text
+                    align="center"
+                    color={colors.appleBlue}
+                    letterSpacing="roundedMedium"
+                    size="large"
+                    weight="bold"
+                  >
+                    {' 􀇻'}
+                  </Text>
+                )
+              }
             </Row>
             <Centered marginBottom={24} paddingHorizontal={24}>
               <Text

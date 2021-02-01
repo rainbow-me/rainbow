@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import React from 'react';
 import Animated, { Extrapolate } from 'react-native-reanimated';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { useCallbackOne, useMemoOne } from 'use-memo-one';
 import { interpolate } from '../animations';
 import { FloatingPanels } from '../floating-panels';

@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { CoinIcon } from '../../coin-icon';
 import { Centered, ColumnWithMargins, Row } from '../../layout';
 import { Text, TruncatedText } from '../../text';
@@ -13,16 +13,16 @@ import {
   useColorForAsset,
   useSlippageDetails,
 } from '@rainbow-me/hooks';
-import { colors, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 
 export const CurrencyTileHeight = 143;
 
-const AmountText = styled(Text).attrs({
+const AmountText = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.blueGreyDark80,
   letterSpacing: 'roundedTight',
   size: 'smedium',
   weight: 'semibold',
-})``;
+}))``;
 
 const Container = styled(Centered).attrs({
   direction: 'column',
@@ -33,10 +33,13 @@ const Container = styled(Centered).attrs({
   overflow: hidden;
 `;
 
-const Gradient = styled(RadialGradient).attrs(({ color, type }) => ({
-  center: type === 'input' ? [0, 0] : [CurrencyTileHeight, CurrencyTileHeight],
-  colors: [colors.alpha(color, 0.04), colors.alpha(color, 0)],
-}))`
+const Gradient = styled(RadialGradient).attrs(
+  ({ theme: { colors }, color, type }) => ({
+    center:
+      type === 'input' ? [0, 0] : [CurrencyTileHeight, CurrencyTileHeight],
+    colors: [colors.alpha(color, 0.04), colors.alpha(color, 0)],
+  })
+)`
   ${position.cover};
 `;
 

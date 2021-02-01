@@ -5,7 +5,7 @@ import { ButtonPressAnimation } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { useSlippageDetails } from '@rainbow-me/hooks';
-import { colors, padding, position } from '@rainbow-me/styles';
+import { padding, position } from '@rainbow-me/styles';
 
 const AnimatedButtonPressAnimation = Animated.createAnimatedComponent(
   ButtonPressAnimation
@@ -18,12 +18,14 @@ const Container = styled(Centered).attrs({
   width: 100%;
 `;
 
-const Label = styled(Text).attrs(({ color = colors.white, letterSpacing }) => ({
-  color,
-  letterSpacing,
-  size: 'large',
-  weight: 'bold',
-}))``;
+const Label = styled(Text).attrs(
+  ({ theme: { colors }, color = colors.white, letterSpacing }) => ({
+    color,
+    letterSpacing,
+    size: 'large',
+    weight: 'bold',
+  })
+)``;
 
 export default function SlippageWarning({ onPress, slippage, ...props }) {
   const { color } = useSlippageDetails(slippage);

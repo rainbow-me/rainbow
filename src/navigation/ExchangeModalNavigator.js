@@ -4,7 +4,7 @@ import { useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Keyboard } from 'react-native';
 import { useValue } from 'react-native-redash';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { useMemoOne } from 'use-memo-one';
 import { FlexItem } from '../components/layout';
 import CurrencySelectModal from '../screens/CurrencySelectModal';
@@ -19,7 +19,7 @@ import {
 } from './config';
 import Routes from './routesNames';
 import { useDimensions } from '@rainbow-me/hooks';
-import { colors, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 import createNativeStackNavigator from 'react-native-cool-modals/createNativeStackNavigator';
 
 // const Stack = createStackNavigator();
@@ -30,7 +30,7 @@ const GestureBlocker = styled.View.attrs({
   pointerEvents: 'none',
 })`
   ${position.size('100%')};
-  background-color: ${colors.transparent};
+  background-color: ${({ theme: { colors } }) => colors.transparent};
   position: absolute;
 `;
 

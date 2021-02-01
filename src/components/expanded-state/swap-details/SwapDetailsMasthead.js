@@ -1,10 +1,10 @@
 import { useRoute } from '@react-navigation/native';
 import React from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { Icon } from '../../icons';
 import { RowWithMargins } from '../../layout';
 import CurrencyTile, { CurrencyTileHeight } from './CurrencyTile';
-import { colors, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 
 const containerPaddingTop = 34;
 export const SwapDetailsMastheadHeight =
@@ -30,6 +30,8 @@ export default function SwapDetailsMasthead(props) {
       slippage,
     },
   } = useRoute();
+
+  const { colors } = useTheme();
 
   return (
     <Container {...props}>

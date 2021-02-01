@@ -1,14 +1,16 @@
 import React from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
 import { Text } from '../text';
-import { colors, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 
-const ExchangeDetailsButtonLabel = styled(Text).attrs({
-  color: colors.white,
-  size: 'large',
-  weight: 'bold',
-})`
+const ExchangeDetailsButtonLabel = styled(Text).attrs(
+  ({ theme: { colors } }) => ({
+    color: colors.white,
+    size: 'large',
+    weight: 'bold',
+  })
+)`
   ${padding(9)};
 `;
 

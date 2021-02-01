@@ -3,7 +3,6 @@ import React, { useMemo } from 'react';
 import { ButtonPressAnimation } from '../../animations';
 import SwapDetailsRow, { SwapDetailsValue } from './SwapDetailsRow';
 import { useStepper } from '@rainbow-me/hooks';
-import { colors } from '@rainbow-me/styles';
 
 export default function SwapDetailsPriceRow(props) {
   const {
@@ -24,6 +23,7 @@ export default function SwapDetailsPriceRow(props) {
   );
 
   const [step, nextStep] = useStepper(steps.length);
+  const { colors } = useTheme();
 
   return (
     <ButtonPressAnimation {...props} onPress={nextStep} scaleTo={1.06}>

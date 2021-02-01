@@ -36,9 +36,7 @@ export async function typeText(elementId, text, focus = true) {
 
 export async function typeNumbers(elementId, text, submitLabel) {
   await element(by.id(elementId)).replaceText(text.replace('\n', ''));
-  return element(by.label(submitLabel))
-    .atIndex(0)
-    .tap();
+  return element(by.label(submitLabel)).atIndex(0).tap();
 }
 
 export async function typeTextAndHideKeyboard(elementId, text) {
@@ -71,9 +69,7 @@ export function tapAlertWithButton(text, index) {
       .tap();
   }
 
-  return element(by.label(text))
-    .atIndex(0)
-    .tap();
+  return element(by.label(text)).atIndex(0).tap();
 }
 
 export async function swipe(

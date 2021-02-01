@@ -1,18 +1,20 @@
 import { constant, times } from 'lodash';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import Animated from 'react-native-reanimated';
 import { mixColor, useTimingTransition } from 'react-native-redash';
 import { useMemoOne } from 'use-memo-one';
 import { FloatingEmojisTapper } from '../../floating-emojis';
 import SwapDetailsRow, { SwapDetailsValue } from './SwapDetailsRow';
 import { useBooleanState, usePrevious, useStepper } from '@rainbow-me/hooks';
-import { colors } from '@rainbow-me/styles';
 
 const AnimatedSwapDetailsValue = Animated.createAnimatedComponent(
   SwapDetailsValue
 );
 
-const animationColors = [colors.blueGreyDark80, colors.uniswapPink];
+const animationColorsFactory = colors => [
+  colors.blueGreyDark80,
+  colors.uniswapPink,
+];
 const labels = [...times(8, constant('Uniswap v2')), 'that unicorn one'];
 const emojis = [
   ...times(5, constant('unicorn')),
@@ -26,6 +28,10 @@ function useUniswapLabelEasterEgg() {
   const prevShouldAnimate = usePrevious(shouldAnimate);
   const [step, nextStep, setStep] = useStepper(labels.length);
   const val = useTimingTransition(shouldAnimate, { duration: 250 });
+  const { colors } = useTheme();
+  const animationColors = useMemo(() => animationColorsFactory(colors), [
+    colors,
+  ]);
   const color = useMemoOne(() => mixColor(val, ...animationColors), [val]);
   const startAnimation = useCallback(() => {
     setShouldAnimate();
