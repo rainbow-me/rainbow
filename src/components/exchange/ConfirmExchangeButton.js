@@ -6,7 +6,7 @@ import { darkModeThemeColors } from '../../styles/colors';
 import { HoldToAuthorizeButton } from '../buttons';
 import { Centered } from '../layout';
 import { useTheme } from '@rainbow-me/context';
-import { ExchangeModalTypes } from '@rainbow-me/helpers';
+import { ExchangeModalTypes } from '@rainbow-me/entities';
 import {
   useColorForAsset,
   useGas,
@@ -31,16 +31,15 @@ const Container = styled(Centered)`
   ${padding(5, paddingHorizontal, 0)};
   width: 100%;
 `;
-
 const getLabel = type => {
   switch (type) {
-    case ExchangeModalTypes.addLiquidity:
+    case ExchangeModalTypes.depositUniswap:
       return 'Add Liquidity';
-    case ExchangeModalTypes.deposit:
+    case ExchangeModalTypes.depositCompound:
       return 'Hold to Deposit';
-    case ExchangeModalTypes.removeLiquidity:
+    case ExchangeModalTypes.withdrawUniswap:
       return 'Remove Liquidity';
-    case ExchangeModalTypes.withdrawal:
+    case ExchangeModalTypes.withdrawCompound:
       return 'Hold to Withdraw ';
     default:
       return 'Hold to Swap';

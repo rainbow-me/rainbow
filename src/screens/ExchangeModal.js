@@ -27,7 +27,8 @@ import {
 import { FloatingPanel } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
-import { ExchangeModalTypes, isKeyboardOpen } from '@rainbow-me/helpers';
+import { ExchangeModalTypes } from '@rainbow-me/entities';
+import { isKeyboardOpen } from '@rainbow-me/helpers';
 import {
   useAccountSettings,
   useBlockPolling,
@@ -91,14 +92,14 @@ const getShowOutputField = type => {
 
 const getDefaultGasLimit = type => {
   switch (type) {
-    case ExchangeModalTypes.deposit:
-      return ethUnits.basic_deposit;
-    case ExchangeModalTypes.withdrawal:
-      return ethUnits.basic_withdrawal;
-    case ExchangeModalTypes.addLiquidity:
-      return ethUnits.basic_uniswap_add_liquidity;
-    case ExchangeModalTypes.removeLiquidity:
-      return ethUnits.basic_uniswap_remove_liquidity;
+    case ExchangeModalTypes.depositCompound:
+      return ethUnits.basic_deposit_compound;
+    case ExchangeModalTypes.withdrawCompound:
+      return ethUnits.basic_withdraw_compound;
+    case ExchangeModalTypes.depositUniswap:
+      return ethUnits.basic_deposit_uniswap;
+    case ExchangeModalTypes.withdrawUniswap:
+      return ethUnits.basic_withdraw_uniswap;
     default:
       return ethUnits.basic_swap;
   }
@@ -127,8 +128,8 @@ export default function ExchangeModal({
     addListener,
   } = useNavigation();
 
-  const isDeposit = type === ExchangeModalTypes.deposit;
-  const isWithdrawal = type === ExchangeModalTypes.withdrawal;
+  const isDeposit = type === ExchangeModalTypes.depositCompound;
+  const isWithdrawal = type === ExchangeModalTypes.withdrawCompound;
   const isSavings = isDeposit || isWithdrawal;
 
   const defaultGasLimit = getDefaultGasLimit(type);

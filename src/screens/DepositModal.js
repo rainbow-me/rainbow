@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import React from 'react';
 import ExchangeModal from './ExchangeModal';
-import { ExchangeModalTypes } from '@rainbow-me/helpers';
+import { ExchangeModalTypes } from '@rainbow-me/entities';
 import {
   ExchangeNavigatorFactory,
   useStatusBarManaging,
@@ -15,7 +15,7 @@ const DepositModal = props => {
   return (
     <ExchangeModal
       defaultInputAsset={params?.defaultInputAsset}
-      type={ExchangeModalTypes.deposit}
+      type={ExchangeModalTypes.depositCompound}
       {...props}
     />
   );

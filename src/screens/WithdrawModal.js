@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import React from 'react';
 import ExchangeModal from './ExchangeModal';
-import { ExchangeModalTypes } from '@rainbow-me/helpers';
+import { ExchangeModalTypes } from '@rainbow-me/entities';
 import { useStatusBarManaging } from '@rainbow-me/navigation';
 
 export default function WithdrawModal(props) {
@@ -17,9 +17,8 @@ export default function WithdrawModal(props) {
   return (
     <ExchangeModal
       defaultInputAsset={params?.defaultInputAsset}
-      type={ExchangeModalTypes.withdrawal}
+      type={ExchangeModalTypes.withdrawCompound}
       typeSpecificParams={typeSpecificParams}
-      {...props}
     />
   );
 }

@@ -18,7 +18,7 @@ import { Input } from '../inputs';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
 import GasSpeedLabelPager from './GasSpeedLabelPager';
-import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
+import { ExchangeModalTypes } from '@rainbow-me/entities';
 import { useAccountSettings, useGas } from '@rainbow-me/hooks';
 import { gweiToWei, weiToGwei } from '@rainbow-me/parsers';
 import { padding } from '@rainbow-me/styles';
@@ -85,11 +85,11 @@ const formatGasPrice = (gasPrice, nativeCurrency) => {
 
 const getActionLabel = type => {
   switch (type) {
-    case ExchangeModalTypes.addLiquidity:
-    case ExchangeModalTypes.deposit:
+    case ExchangeModalTypes.depositCompound:
+    case ExchangeModalTypes.depositUniswap:
       return 'Deposits in';
-    case ExchangeModalTypes.removeLiquidity:
-    case ExchangeModalTypes.withdrawal:
+    case ExchangeModalTypes.withdrawCompound:
+    case ExchangeModalTypes.withdrawUniswap:
       return 'Withdraws in';
     case 'transaction':
       return 'Confirms in';
