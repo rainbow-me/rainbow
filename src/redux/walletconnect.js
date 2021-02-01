@@ -24,6 +24,7 @@ import { getFCMToken } from '../model/firebase';
 import { Navigation } from '../navigation';
 import { isSigningMethod } from '../utils/signingMethods';
 import { addRequestToApprove } from './requests';
+import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 
@@ -214,7 +215,7 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
       const { selected } = getState().wallets;
       const selectedWallet = selected || {};
       const isReadOnlyWallet = selectedWallet.type === WalletTypes.readOnly;
-      if (isReadOnlyWallet) {
+      if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
         Alert.alert(`You need to import the wallet in order to do this`);
         walletConnector.rejectRequest({
           error: { message: 'JSON RPC method not supported' },
