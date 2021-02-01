@@ -29,6 +29,7 @@ export default function ModelViewer({
   fallbackUri,
 }: ModelViewerProps): JSX.Element {
   const opacity = React.useMemo(() => new Animated.Value(1), []);
+  const [visibility, setVisibility] = React.useState<boolean>(false);
   const [progress, setProgress] = React.useState<number>(0);
   const originWhiteList = React.useMemo(() => ['*'], []);
   const onMessage = React.useCallback(
@@ -36,9 +37,11 @@ export default function ModelViewer({
       const { type, payload } = JSON.parse(data);
       if (type === 'progress') {
         setProgress(payload as number);
+      } else if (type === 'model-visibility') {
+        setVisibility(payload as boolean);
       }
     },
-    [setProgress]
+    [setProgress, setVisibility]
   );
   const fallbackSource = React.useMemo(
     () => ({
@@ -64,9 +67,11 @@ export default function ModelViewer({
 </style>
 </head>
 <body>
-  <model-viewer src="${uri}" alt="${
-        alt || ''
-      }" auto-rotate camera-controls autoplay shadow-intensity="1"></model-viewer>
+  <model-viewer src=${JSON.stringify(uri)} alt=${JSON.stringify(
+        typeof alt === 'string' ? alt : ''
+      )} auto-rotate camera-controls autoplay shadow-intensity="1">
+    <div slot="progress-bar"></div>
+  </model-viewer>
   <script type="text/javascript">
     function shouldPostMessage(type, payload) {
       window.ReactNativeWebView.postMessage(JSON.stringify({
@@ -74,8 +79,12 @@ export default function ModelViewer({
         payload: payload,
       }));
     }
-    document.querySelector("model-viewer").addEventListener("progress", function (e) {
+    var modelViewer = document.querySelector("model-viewer");
+    modelViewer.addEventListener("progress", function (e) {
       shouldPostMessage("progress", e.detail.totalProgress);
+    });
+    modelViewer.addEventListener("model-visibility", function (e) {
+      shouldPostMessage("model-visibility", !!e.detail.visible);
     });
   </script>
 </body>
@@ -84,13 +93,18 @@ export default function ModelViewer({
     }),
     [alt, uri]
   );
-  const loaded = React.useMemo(() => progress === 1, [progress]);
+  const loaded = React.useMemo(() => !!visibility && progress === 1, [
+    progress,
+    visibility,
+  ]);
   React.useEffect(() => {
-    Animated.timing(opacity, {
-      duration: 120,
-      toValue: loaded ? 0 : 1,
-      useNativeDriver: true,
-    }).start();
+    Animated.sequence([
+      Animated.timing(opacity, {
+        duration: 120,
+        toValue: loaded ? 0 : 1,
+        useNativeDriver: true,
+      }),
+    ]).start();
   }, [loaded, opacity]);
   const { panHandlers } = React.useMemo(
     () =>
