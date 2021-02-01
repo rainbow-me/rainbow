@@ -18,7 +18,11 @@ export type ModelViewerProps = {
 };
 
 const styles = StyleSheet.create({
-  bottomRight: { alignItems: 'flex-end', justifyContent: 'flex-end' },
+  bottomRight: {
+    alignItems: 'flex-end',
+    justifyContent: 'flex-end',
+    padding: 10,
+  },
   flex: { flex: 1 },
 });
 
