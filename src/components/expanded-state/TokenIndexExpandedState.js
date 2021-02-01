@@ -169,7 +169,6 @@ export default function TokenIndexExpandedState({ asset }) {
         {...(ios
           ? { height: '100%' }
           : { additionalTopPadding: true, contentHeight: screenHeight - 80 })}
-        scrollEnabled
       >
         <ChartPathProvider data={throttledData}>
           <Chart
