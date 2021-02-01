@@ -3,7 +3,7 @@ import { toLower } from 'lodash';
 import React, { useCallback } from 'react';
 import { StatusBar } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
-import styled from 'styled-components/native';
+import styled from 'styled-components';
 import Divider from '../components/Divider';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import { ButtonPressAnimation } from '../components/animations';
@@ -22,7 +22,7 @@ import {
   useUserLists,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import { colors, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 import { haptics } from '@rainbow-me/utils';
 
 const Container = styled(Centered).attrs({
@@ -34,7 +34,8 @@ const Container = styled(Centered).attrs({
 `;
 
 const RemoveButton = styled(ButtonPressAnimation)`
-  background-color: ${colors.alpha(colors.red, 0.06)};
+  background-color: ${({ theme: { colors } }) =>
+    colors.alpha(colors.red, 0.06)};
   border-radius: 15;
   height: 30;
   padding-left: 6;
@@ -85,6 +86,8 @@ export default function AddTokenSheet() {
     },
     [favorites, item.address, lists]
   );
+
+  const { colors } = useTheme();
 
   return (
     <Container deviceHeight={deviceHeight} height={sheetHeight} insets={insets}>

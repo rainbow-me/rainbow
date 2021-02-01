@@ -1,9 +1,8 @@
 import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import styled from 'styled-components/primitives';
-import { colors } from '@rainbow-me/styles';
+import styled from 'styled-components';
 
-const LeftFade = styled(LinearGradient).attrs({
+const LeftFade = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
   colors: [
     colors.white,
     colors.alpha(colors.white, 0.738),
@@ -37,14 +36,14 @@ const LeftFade = styled(LinearGradient).attrs({
   ],
   pointerEvents: 'none',
   start: { x: 0, y: 0.5 },
-})`
+}))`
   height: 100%;
   left: 0;
   position: absolute;
   width: 19px;
 `;
 
-const RightFade = styled(LinearGradient).attrs({
+const RightFade = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
   colors: [
     colors.white,
     colors.alpha(colors.white, 0.738),
@@ -78,7 +77,7 @@ const RightFade = styled(LinearGradient).attrs({
   ],
   pointerEvents: 'none',
   start: { x: 1, y: 0.5 },
-})`
+}))`
   height: 100%;
   position: absolute;
   right: 0;

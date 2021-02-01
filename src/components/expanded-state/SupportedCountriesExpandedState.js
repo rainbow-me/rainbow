@@ -1,6 +1,6 @@
 import { values } from 'lodash';
 import React from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { FloatingEmojisTapper } from '../floating-emojis';
 import { AssetPanel, FloatingPanels } from '../floating-panels';
 import { Centered } from '../layout';
@@ -8,7 +8,7 @@ import { Text } from '../text';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import { useDimensions } from '@rainbow-me/hooks';
 import { supportedCountries } from '@rainbow-me/references/wyre';
-import { colors, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 import { neverRerender } from '@rainbow-me/utils';
 
 const Panel = styled(FloatingPanels)`
@@ -42,6 +42,8 @@ const emojiArray = values(supportedCountries).map(c => c.emojiName);
 
 const SupportCountriesExpandedState = () => {
   const deviceDimensions = useDimensions();
+
+  const { colors } = useTheme();
 
   return (
     <Panel deviceDimensions={deviceDimensions}>

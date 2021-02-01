@@ -5,14 +5,15 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import { useSafeArea } from 'react-native-safe-area-context';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
+import { useTheme } from '../../context/ThemeContext';
 import { Centered } from '../layout';
 import SheetHandleFixedToTop, {
   SheetHandleFixedToTopHeight,
 } from './SheetHandleFixedToTop';
 import { useDimensions } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import { colors, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 
 const { event } = Animated;
 
@@ -30,7 +31,7 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
             ? deviceHeight - contentHeight
             : 0
         };`};
-  ${android ? 'border-radius: 20;' : ''}
+  ${android ? 'border-top-left-radius: 20; border-top-right-radius: 20;' : ''}
   background-color: ${({ backgroundColor }) => backgroundColor};
   bottom: 0;
   left: 0;
@@ -77,7 +78,7 @@ const Whitespace = styled.View`
 
 export default function SlackSheet({
   additionalTopPadding = false,
-  backgroundColor = colors.white,
+  backgroundColor,
   borderRadius = 30,
   children,
   contentHeight,
@@ -97,7 +98,7 @@ export default function SlackSheet({
     () => (insets.bottom || scrollEnabled ? 42 : 30),
     [insets.bottom, scrollEnabled]
   );
-
+  const { colors } = useTheme();
   const contentContainerStyle = useMemo(
     () => ({
       paddingBottom: bottomInset,
@@ -130,6 +131,8 @@ export default function SlackSheet({
     yPosition.value = event.contentOffset.y;
   });
 
+  const bg = backgroundColor || colors.white;
+
   return (
     <Fragment>
       {android ? (
@@ -137,25 +140,22 @@ export default function SlackSheet({
       ) : null}
       <Container
         additionalTopPadding={additionalTopPadding}
-        backgroundColor={backgroundColor}
+        backgroundColor={bg}
         contentHeight={contentHeight}
         deferredHeight={deferredHeight}
         deviceHeight={deviceHeight}
         {...props}
       >
         {android && (
-          <AndroidBackground
-            as={TouchableWithoutFeedback}
-            backgroundColor={backgroundColor}
-          >
-            <AndroidBackground backgroundColor={backgroundColor} />
+          <AndroidBackground as={TouchableWithoutFeedback} backgroundColor={bg}>
+            <AndroidBackground backgroundColor={bg} />
           </AndroidBackground>
         )}
         {!hideHandle && <SheetHandleFixedToTop showBlur={scrollEnabled} />}
-        <ContentWrapper backgroundColor={backgroundColor}>
+        <ContentWrapper backgroundColor={bg}>
           {renderHeader?.(yPosition)}
           <Content
-            backgroundColor={backgroundColor}
+            backgroundColor={bg}
             contentContainerStyle={scrollEnabled && contentContainerStyle}
             contentHeight={contentHeight}
             deviceHeight={deviceHeight}
@@ -168,10 +168,7 @@ export default function SlackSheet({
           >
             {children}
             {!scrollEnabled && (
-              <Whitespace
-                backgroundColor={backgroundColor}
-                deviceHeight={deviceHeight}
-              />
+              <Whitespace backgroundColor={bg} deviceHeight={deviceHeight} />
             )}
           </Content>
         </ContentWrapper>

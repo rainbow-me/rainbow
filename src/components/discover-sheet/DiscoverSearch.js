@@ -31,7 +31,6 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
 import { filterList } from '@rainbow-me/utils';
 
 const headerlessSection = data => [{ data, title: '' }];
@@ -81,6 +80,7 @@ export default function DiscoverSearch({ onScrollTop }) {
     loadingAllTokens,
   } = useUniswapAssets();
   const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
+  const { colors } = useTheme();
 
   const currencyList = useMemo(() => {
     let filteredList = [];
@@ -162,6 +162,7 @@ export default function DiscoverSearch({ onScrollTop }) {
     globalVerifiedHighLiquidityAssets,
     globalHighLiquidityAssets,
     globalLowLiquidityAssets,
+    colors.yellowFavorite,
     curatedNotFavorited,
   ]);
 

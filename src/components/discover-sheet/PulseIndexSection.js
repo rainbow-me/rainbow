@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { Fragment, useCallback, useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
 import { DPI_ADDRESS } from '../../references/indexes';
@@ -61,7 +61,7 @@ export default function PulseIndex() {
   if (!item) return null;
 
   return (
-    <>
+    <Fragment>
       <ButtonPressAnimation onPress={handlePress} scaleTo={0.9}>
         <ShadowStack
           backgroundColor={colors.dpiPurple}
@@ -155,6 +155,6 @@ export default function PulseIndex() {
           </Text>
         </Column>
       </Row>
-    </>
+    </Fragment>
   );
 }

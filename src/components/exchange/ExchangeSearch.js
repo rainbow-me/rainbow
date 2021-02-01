@@ -8,14 +8,16 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import Spinner from '../../assets/chartSpinner.png';
+import { withThemeContext } from '../../context/ThemeContext';
 import DiscoverSheetContext from '../discover-sheet/DiscoverSheetContext';
 import { ClearInputDecorator, Input } from '../inputs';
+
 import { Row } from '../layout';
 import { Text } from '../text';
 import { ImgixImage } from '@rainbow-me/images';
-import { colors, margin, padding } from '@rainbow-me/styles';
+import { margin, padding } from '@rainbow-me/styles';
 import { deviceUtils } from '@rainbow-me/utils';
 
 export const ExchangeSearchHeight = 40;
@@ -24,34 +26,38 @@ const ExchangeSearchWidth = deviceUtils.dimensions.width - 30;
 const Container = styled(Row)`
   ${margin(0, 15, 8)};
   ${padding(0, 37, 0, 12)};
-  background-color: ${colors.transparent};
+  background-color: ${({ theme: { colors } }) => colors.white};
   border-radius: ${ExchangeSearchHeight / 2};
   height: ${ExchangeSearchHeight};
   overflow: hidden;
 `;
 
-const BackgroundGradient = styled(RadialGradient).attrs({
-  center: [ExchangeSearchWidth, ExchangeSearchWidth / 2],
-  colors: ['#FCFDFE', '#F0F2F5'],
-})`
+const BackgroundGradient = withThemeContext(styled(RadialGradient).attrs(
+  ({ colors }) => ({
+    center: [ExchangeSearchWidth, ExchangeSearchWidth / 2],
+    colors: colors.gradients.searchBar,
+  })
+)`
   position: absolute;
   height: ${ExchangeSearchWidth};
   top: ${-(ExchangeSearchWidth - ExchangeSearchHeight) / 2};
   transform: scaleY(${ExchangeSearchHeight / ExchangeSearchWidth});
   width: ${ExchangeSearchWidth};
-`;
+`);
 
-const SearchIcon = styled(Text).attrs({
-  color: colors.alpha(colors.blueGreyDark, 0.5),
-  size: 'large',
-  weight: 'semibold',
-})``;
+const SearchIcon = withThemeContext(
+  styled(Text).attrs(({ colors }) => ({
+    color: colors.alpha(colors.blueGreyDark, 0.5),
+    size: 'large',
+    weight: 'semibold',
+  }))``
+);
 
 const SearchIconWrapper = styled(Animated.View)`
   margin-top: ${android ? '5' : '8'};
 `;
 
-const SearchInput = styled(Input).attrs({
+const SearchInput = withThemeContext(styled(Input).attrs(({ colors }) => ({
   autoCapitalize: 'words',
   blurOnSubmit: false,
   clearTextOnFocus: true,
@@ -65,7 +71,7 @@ const SearchInput = styled(Input).attrs({
   size: 'large',
   spellCheck: false,
   weight: 'semibold',
-})`
+}))`
   ${android
     ? `margin-top: -6;
   margin-bottom: -10;`
@@ -76,16 +82,18 @@ const SearchInput = styled(Input).attrs({
   height: ${ios ? 39 : 56};
   margin-bottom: 1;
   margin-left: 3;
-`;
+`);
 
-const SearchSpinner = styled(ImgixImage).attrs({
-  resizeMode: ImgixImage.resizeMode.contain,
-  source: Spinner,
-  tintColor: colors.alpha(colors.blueGreyDark, 0.6),
-})`
+const SearchSpinner = withThemeContext(styled(ImgixImage).attrs(
+  ({ colors }) => ({
+    resizeMode: ImgixImage.resizeMode.contain,
+    source: Spinner,
+    tintColor: colors.alpha(colors.blueGreyDark, 0.6),
+  })
+)`
   height: 20;
   width: 20;
-`;
+`);
 
 const SearchSpinnerWrapper = styled(Animated.View)`
   height: 20;

@@ -1,6 +1,6 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useMemo } from 'react';
 import { KeyboardArea } from 'react-native-keyboard-area';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import AssetTypes from '../../helpers/assetTypes';
 import { useAsset, useDimensions } from '../../hooks';
 import { SendCoinRow } from '../coin-row';
@@ -10,18 +10,18 @@ import { Icon } from '../icons';
 import { Column } from '../layout';
 import SendAssetFormCollectible from './SendAssetFormCollectible';
 import SendAssetFormToken from './SendAssetFormToken';
-import { colors, padding, position } from '@rainbow-me/styles';
+import { padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
-const AssetRowShadow = [
-  [0, 1, 0, colors.dark, 0.01],
-  [0, 4, 12, colors.dark, 0.04],
-  [0, 8, 23, colors.dark, 0.05],
+const AssetRowShadow = colors => [
+  [0, 1, 0, colors.shadow, 0.01],
+  [0, 4, 12, colors.shadow, 0.04],
+  [0, 8, 23, colors.shadow, 0.05],
 ];
 
 const Container = styled(Column)`
   ${position.size('100%')};
-  background-color: ${colors.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
   flex: 1;
   overflow: hidden;
 `;
@@ -36,14 +36,14 @@ const FormContainer = styled(Column).attrs({
       : isTinyPhone
       ? padding(6, 15, 0)
       : padding(19, 15)};
-  background-color: ${colors.lighterGrey};
+  background-color: ${({ theme: { colors } }) => colors.lighterGrey};
   flex: 1;
   margin-bottom: ${android ? 0 : ({ isTinyPhone }) => (isTinyPhone ? -19 : 0)};
   width: 100%;
 `;
 
 const KeyboardSizeView = styled(KeyboardArea)`
-  background-color: ${colors.lighterGrey};
+  background-color: ${({ theme: { colors } }) => colors.lighterGrey};
 `;
 
 export default function SendAssetForm({
@@ -73,13 +73,16 @@ export default function SendAssetForm({
     ? SendSavingsCoinRow
     : SendCoinRow;
 
+  const { colors } = useTheme();
+  const shadows = useMemo(() => AssetRowShadow(colors), [colors]);
+
   return (
     <Container>
       <ShadowStack
         backgroundColor={colors.white}
         borderRadius={0}
         height={SendCoinRow.selectedHeight}
-        shadows={AssetRowShadow}
+        shadows={shadows}
         width={deviceWidth}
       >
         <AssetRowElement

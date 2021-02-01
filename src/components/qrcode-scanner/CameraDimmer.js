@@ -11,7 +11,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { useMemoOne } from 'use-memo-one';
 import useExperimentalFlag, {
   DISCOVER_SHEET,

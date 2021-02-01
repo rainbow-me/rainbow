@@ -7,7 +7,7 @@ import { InteractionManager, Keyboard, StatusBar } from 'react-native';
 import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { dismissingScreenListener } from '../../shim';
 import { Column } from '../components/layout';
 import {
@@ -45,8 +45,9 @@ import {
   useTransactionConfirmation,
   useUpdateAssetOnchainBalance,
 } from '@rainbow-me/hooks';
+import { ETH_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
-import { borders, colors } from '@rainbow-me/styles';
+import { borders } from '@rainbow-me/styles';
 import { deviceUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
@@ -54,7 +55,7 @@ const sheetHeight = deviceUtils.dimensions.height - (android ? 30 : 10);
 const statusBarHeight = getStatusBarHeight(true);
 
 const Container = styled.View`
-  background-color: ${colors.transparent};
+  background-color: ${({ theme: { colors } }) => colors.transparent};
   flex: 1;
   padding-top: ${isNativeStackAvailable ? 0 : statusBarHeight};
   width: 100%;
@@ -65,14 +66,14 @@ const SheetContainer = styled(Column).attrs({
   flex: 1,
 })`
   ${borders.buildRadius('top', isNativeStackAvailable ? 0 : 16)};
-  background-color: ${colors.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
   height: ${isNativeStackAvailable || android ? sheetHeight : '100%'};
   width: 100%;
 `;
 
 const KeyboardSizeView = styled(KeyboardArea)`
   width: 100%;
-  background-color: ${({ showAssetForm }) =>
+  background-color: ${({ showAssetForm, theme: { colors } }) =>
     showAssetForm ? colors.lighterGrey : colors.white};
 `;
 
@@ -169,7 +170,7 @@ export default function SendSheet(props) {
   // Recalculate balance when gas price changes
   useEffect(() => {
     if (
-      selected?.address === 'eth' &&
+      selected?.address === ETH_ADDRESS &&
       get(prevSelectedGasPrice, 'txFee.value.amount', 0) !==
         get(selectedGasPrice, 'txFee.value.amount', 0)
     ) {
@@ -300,12 +301,30 @@ export default function SendSheet(props) {
     }
 
     let submitSuccess = false;
+    let updatedGasLimit = null;
+    // Attempt to update gas limit before sending ERC20 / ERC721
+    if (selected?.address !== ETH_ADDRESS) {
+      try {
+        updatedGasLimit = await estimateGasLimit({
+          address: accountAddress,
+          amount: amountDetails.assetAmount,
+          asset: selected,
+          recipient,
+        });
+        logger.log('gasLimit updated before sending', {
+          after: updatedGasLimit,
+          before: gasLimit,
+        });
+        updateTxFee(updatedGasLimit);
+        // eslint-disable-next-line no-empty
+      } catch (e) {}
+    }
 
     const txDetails = {
       amount: amountDetails.assetAmount,
       asset: selected,
       from: accountAddress,
-      gasLimit,
+      gasLimit: updatedGasLimit || gasLimit,
       gasPrice: get(selectedGasPrice, 'value.amount'),
       nonce: null,
       to: recipient,
@@ -344,6 +363,7 @@ export default function SendSheet(props) {
     recipient,
     selected,
     selectedGasPrice,
+    updateTxFee,
   ]);
 
   const submitTransaction = useCallback(async () => {
@@ -535,7 +555,9 @@ export default function SendSheet(props) {
             }
           />
         )}
-        {android ? <KeyboardSizeView showAssetForm={showAssetForm} /> : null}
+        {android && showAssetForm ? (
+          <KeyboardSizeView showAssetForm={showAssetForm} />
+        ) : null}
       </SheetContainer>
     </Container>
   );

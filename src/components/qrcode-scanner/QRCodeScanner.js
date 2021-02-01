@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { RNCamera } from 'react-native-camera';
 import { useIsEmulator } from 'react-native-device-info';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { Centered } from '../layout';
 import { ErrorText } from '../text';
 import QRCodeScannerCrosshair from './QRCodeScannerCrosshair';
@@ -9,7 +9,7 @@ import QRCodeScannerNeedsAuthorization from './QRCodeScannerNeedsAuthorization';
 import SimulatorFakeCameraImageSource from '@rainbow-me/assets/simulator-fake-camera-image.jpg';
 import { useBooleanState, useScanner } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
-import { colors, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 
 const Camera = styled(RNCamera)`
   ${position.cover};
@@ -18,13 +18,14 @@ const Camera = styled(RNCamera)`
 
 const CameraWrapper = styled(Centered)`
   ${position.size('100%')};
+  background-color: ${({ theme: { colors } }) => colors.trueBlack};
 `;
 
 const Container = styled(Centered).attrs({
   direction: 'column',
 })`
   ${position.cover};
-  background-color: ${colors.black};
+  background-color: ${({ theme: { colors } }) => colors.black};
 `;
 
 const ContentOverlay = styled(Centered)`
@@ -56,7 +57,9 @@ export default function QRCodeScanner({
   const cameraRef = useRef();
 
   const onCrossMagicBorder = useCallback(
-    ({ below }) => setCameraEnabled(below),
+    below => {
+      setCameraEnabled(below);
+    },
     [setCameraEnabled]
   );
   useEffect(

@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { KeyboardAvoidingView } from 'react-native';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import { useSafeArea } from 'react-native-safe-area-context';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { useDimensions, useKeyboardHeight } from '../../hooks';
 import Centered from './Centered';
 import { position } from '@rainbow-me/styles';

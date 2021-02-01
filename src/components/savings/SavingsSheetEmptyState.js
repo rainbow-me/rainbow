@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { Alert } from 'react-native';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { calculateAPY } from '../../helpers/savings';
 import { useNavigation } from '../../navigation/Navigation';
 import { magicMemo } from '../../utils';
@@ -11,19 +11,20 @@ import { SheetActionButton } from '../sheet';
 import { Br, GradientText, Text } from '../text';
 import { DAI_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
-import { colors, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 
-const APYHeadingText = styled(Text).attrs({
+const APYHeadingText = styled(Text).attrs(({ theme: { colors } }) => ({
+  color: colors.dark,
   size: 'big',
   weight: 'bold',
-})``;
+}))``;
 
-const BodyText = styled(Text).attrs({
+const BodyText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
   color: colors.blueGreyDark50,
   lineHeight: 'looser',
   size: 'large',
-})`
+}))`
   padding-bottom: 30;
 `;
 
@@ -62,6 +63,8 @@ const SavingsSheetEmptyState = ({
       Alert.alert(`You need to import the wallet in order to do this`);
     }
   }, [isReadOnlyWallet, navigate, underlying]);
+
+  const { colors } = useTheme();
 
   return (
     <Centered direction="column" paddingTop={9}>

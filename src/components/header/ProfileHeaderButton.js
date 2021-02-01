@@ -7,7 +7,6 @@ import ImageAvatar from '../contacts/ImageAvatar';
 import { Centered } from '../layout';
 import HeaderButton from './HeaderButton';
 import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
 
 export default function ProfileHeaderButton() {
   const { navigate } = useNavigation();
@@ -21,6 +20,8 @@ export default function ProfileHeaderButton() {
   const onLongPress = useCallback(() => navigate(Routes.CHANGE_WALLET_SHEET), [
     navigate,
   ]);
+
+  const { colors } = useTheme();
 
   return (
     <HeaderButton

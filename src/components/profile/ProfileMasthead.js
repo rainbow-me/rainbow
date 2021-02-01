@@ -1,10 +1,10 @@
 import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
-import { find } from 'lodash';
+import { toLower } from 'lodash';
 import React, { useCallback, useRef } from 'react';
 import ImagePicker from 'react-native-image-crop-picker';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { walletsSetSelected, walletsUpdate } from '../../redux/wallets';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
@@ -26,7 +26,6 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
 import { abbreviations, showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const dropdownArrowWidth = 21;
@@ -75,9 +74,11 @@ const DropdownArrow = styled(Centered)`
   width: ${dropdownArrowWidth};
 `;
 
-const ProfileMastheadDivider = styled(Divider).attrs({
-  color: colors.rowDividerLight,
-})`
+const ProfileMastheadDivider = styled(Divider).attrs(
+  ({ theme: { colors } }) => ({
+    color: colors.rowDividerLight,
+  })
+)`
   bottom: 0;
   position: absolute;
 `;
@@ -108,14 +109,19 @@ export default function ProfileMasthead({
   const isAvatarImagePickerEnabled = true;
 
   const onRemovePhoto = useCallback(async () => {
-    const newWallets = { ...wallets };
-    const newWallet = newWallets[selectedWallet.id];
-    const account = find(newWallet.addresses, ['address', accountAddress]);
+    const newWallets = {
+      ...wallets,
+      [selectedWallet.id]: {
+        ...wallets[selectedWallet.id],
+        addresses: wallets[selectedWallet.id].addresses.map(account =>
+          toLower(account.address) === toLower(accountAddress)
+            ? { ...account, image: null }
+            : account
+        ),
+      },
+    };
 
-    account.image = null;
-    newWallet.addresses[account.index] = account;
-
-    dispatch(walletsSetSelected(newWallet));
+    dispatch(walletsSetSelected(newWallets[selectedWallet.id]));
     await dispatch(walletsUpdate(newWallets));
   }, [dispatch, selectedWallet, accountAddress, wallets]);
 
@@ -126,15 +132,22 @@ export default function ProfileMasthead({
         if (isAvatarImagePickerEnabled) {
           const processPhoto = image => {
             const stringIndex = image?.path.indexOf('/tmp');
-            const newWallets = { ...wallets };
-            const walletId = selectedWallet.id;
-            newWallets[walletId].addresses.some((account, index) => {
-              newWallets[walletId].addresses[index].image = ios
-                ? `~${image?.path.slice(stringIndex)}`
-                : image?.path;
-              dispatch(walletsSetSelected(newWallets[walletId]));
-              return true;
-            });
+            const newWallets = {
+              ...wallets,
+              [selectedWallet.id]: {
+                ...wallets[selectedWallet.id],
+                addresses: wallets[selectedWallet.id].addresses.map(account =>
+                  toLower(account.address) === toLower(accountAddress)
+                    ? {
+                        ...account,
+                        image: `~${image?.path.slice(stringIndex)}`,
+                      }
+                    : account
+                ),
+              },
+            };
+
+            dispatch(walletsSetSelected(newWallets[selectedWallet.id]));
             dispatch(walletsUpdate(newWallets));
           };
 
@@ -179,6 +192,7 @@ export default function ProfileMasthead({
       recyclerListRef?.getCurrentScrollOffset() > 0 ? 200 : 1
     );
   }, [
+    accountAddress,
     accountColor,
     accountImage,
     accountName,
@@ -237,6 +251,7 @@ export default function ProfileMasthead({
     Clipboard.setString(accountAddress);
   }, [accountAddress, isDamaged]);
 
+  const { colors } = useTheme();
   return (
     <Column
       align="center"

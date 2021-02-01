@@ -1,6 +1,8 @@
 import { compact, get, toLower } from 'lodash';
 import React, { useCallback } from 'react';
-import { css } from 'styled-components/primitives';
+import { css } from 'styled-components';
+import { useTheme } from '../../context/ThemeContext';
+import { getRandomColor } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIconSize } from '../coin-icon';
 import { FlexItem, Row, RowWithMargins } from '../layout';
@@ -20,7 +22,6 @@ import { isENSAddressFormat } from '@rainbow-me/helpers/validators';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
 import {
   abbreviations,
   ethereumUtils,
@@ -32,6 +33,7 @@ const containerStyles = css`
 `;
 
 const BottomRow = ({ description, native, status, type }) => {
+  const { colors } = useTheme();
   const isFailed = status === TransactionStatusTypes.failed;
   const isReceived =
     status === TransactionStatusTypes.received ||
@@ -116,7 +118,7 @@ export default function TransactionCoinRow({ item, ...props }) {
       headerInfo.address = isENSAddressFormat(contactAddress)
         ? contactAddress
         : abbreviations.address(contactAddress, 4, 10);
-      contactColor = colors.getRandomColor();
+      contactColor = getRandomColor();
     }
 
     if (hash) {

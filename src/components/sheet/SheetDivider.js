@@ -1,11 +1,10 @@
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { neverRerender } from '../../utils';
 import Divider from '../Divider';
-import { colors } from '@rainbow-me/styles';
 
-const SheetDivider = styled(Divider).attrs({
+const SheetDivider = styled(Divider).attrs(({ theme: { colors } }) => ({
   color: colors.rowDividerExtraLight,
-})`
+}))`
   z-index: 1;
 `;
 

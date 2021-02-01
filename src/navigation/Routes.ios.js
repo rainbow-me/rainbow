@@ -3,6 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { omit } from 'lodash';
 import React, { useContext } from 'react';
 import { StatusBar } from 'react-native';
+import { useTheme } from '../context/ThemeContext';
 import { InitialRouteContext } from '../context/initialRoute';
 import AddCashSheet from '../screens/AddCashSheet';
 import AddTokenSheet from '../screens/AddTokenSheet';
@@ -30,7 +31,6 @@ import {
   backupSheetConfig,
   defaultScreenStackOptions,
   expandedAssetSheetConfig,
-  nativeStackConfig,
   nativeStackDefaultConfig,
   nativeStackDefaultConfigWithoutStatusBar,
   restoreSheetConfig,
@@ -45,6 +45,7 @@ import {
   overlayExpandedPreset,
   sheetPreset,
 } from './effects';
+import { nativeStackConfig } from './nativeStackConfig';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
@@ -214,6 +215,8 @@ const MainStack = isNativeStackAvailable
   : NativeStackFallbackNavigator;
 
 function NativeStackNavigator() {
+  const { colors, isDarkMode } = useTheme();
+
   return (
     <NativeStack.Navigator {...nativeStackConfig}>
       <NativeStack.Screen component={MainStack} name={Routes.STACK} />
@@ -221,7 +224,7 @@ function NativeStackNavigator() {
         component={ReceiveModal}
         name={Routes.RECEIVE_MODAL}
         options={{
-          backgroundColor: '#3B3E43',
+          backgroundColor: isDarkMode ? colors.offWhite : '#3B3E43',
           backgroundOpacity: 1,
           customStack: true,
         }}
