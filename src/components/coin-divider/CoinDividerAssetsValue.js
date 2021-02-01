@@ -20,12 +20,11 @@ const ValueText = withThemeContext(styled(Text).attrs(({ colors }) => ({
 `);
 
 const CoinDividerAssetsValue = ({
-  assetsAmount,
   balancesSum,
   nativeCurrency,
   openSmallBalances,
 }) => (
-  <Container isVisible={openSmallBalances || assetsAmount === 0}>
+  <Container isVisible={openSmallBalances}>
     <ValueText>
       {convertAmountToNativeDisplay(balancesSum, nativeCurrency)}
     </ValueText>
