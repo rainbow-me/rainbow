@@ -25,7 +25,6 @@ export default function useUniswapMarketDetails({
   isWithdrawal,
   maxInputBalance,
   outputFieldRef,
-  setSlippage,
   updateInputAmount,
   updateOutputAmount,
 }: {
@@ -35,7 +34,6 @@ export default function useUniswapMarketDetails({
   isWithdrawal: boolean;
   maxInputBalance: string;
   outputFieldRef: RefObject<TextInput>;
-  setSlippage: (slippage: number) => void;
   updateInputAmount: (
     newInputAmount: string | undefined,
     newAmountDisplay: string | undefined,
@@ -55,7 +53,11 @@ export default function useUniswapMarketDetails({
     outputAmount,
     swapUpdateIsSufficientBalance,
   } = useSwapInputValues();
-  const { extraTradeDetails, updateExtraTradeDetails } = useSwapDetails();
+  const {
+    extraTradeDetails,
+    updateExtraTradeDetails,
+    updateSlippage,
+  } = useSwapDetails();
 
   const [isSufficientLiquidity, setIsSufficientLiquidity] = useState(true);
   const [tradeDetails, setTradeDetails] = useState<Trade | null>(null);
@@ -261,21 +263,17 @@ export default function useUniswapMarketDetails({
   useEffect(() => {
     // update slippage
     if (swapNotNeeded || isMissingCurrency) return;
-    if (isMissingAmounts) {
-      setSlippage(0);
-      return;
-    }
-    const priceImpact = tradeDetails?.priceImpact
-      ? tradeDetails?.priceImpact?.toFixed(2).toString()
-      : 0;
-    const slippage = Number(priceImpact) * 100;
-    setSlippage(slippage);
+    updateSlippage(
+      tradeDetails?.priceImpact && !isMissingAmounts
+        ? Number(tradeDetails?.priceImpact?.toFixed(2).toString()) * 100
+        : 0
+    );
   }, [
     isMissingAmounts,
     isMissingCurrency,
-    setSlippage,
     swapNotNeeded,
     tradeDetails,
+    updateSlippage,
   ]);
 
   return {

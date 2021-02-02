@@ -1,5 +1,5 @@
 import { AnyAction } from 'redux';
-import { Asset } from '@rainbow-me/entities';
+import { Asset, Numberish } from '@rainbow-me/entities';
 import { AppDispatch } from '@rainbow-me/redux/store';
 
 export interface SwapAmount {
@@ -23,7 +23,7 @@ interface SwapState {
   isMax: boolean;
   isSufficientBalance: boolean;
   nativeAmount: string | null;
-  slippage: string | null;
+  slippage: Numberish | null;
   outputAmount: SwapAmount | null;
   outputCurrency: Asset | null;
 }
@@ -52,7 +52,9 @@ export const updateIsMax = (isMax: boolean) => (dispatch: AppDispatch) => {
   dispatch({ payload: isMax, type: SWAP_UPDATE_IS_MAX });
 };
 
-export const updateSlippage = (slippage: string) => (dispatch: AppDispatch) => {
+export const updateSlippage = (slippage: Numberish) => (
+  dispatch: AppDispatch
+) => {
   dispatch({ payload: slippage, type: SWAP_UPDATE_SLIPPAGE });
 };
 
