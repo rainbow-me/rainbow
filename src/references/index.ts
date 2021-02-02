@@ -25,6 +25,8 @@ export { default as supportedNativeCurrencies } from './native-currencies.json';
 export { default as shitcoins } from './shitcoins.json';
 export { default as DefaultTokenLists } from './default-token-lists.json';
 
+export const ETH_ICON_URL = 'https://s3.amazonaws.com/token-icons/eth.png';
+
 export const ETH_ADDRESS = 'eth';
 export const WETH_ADDRESS = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
 export const CDAI_CONTRACT = '0x5d3a536e4d6dbd6114cc1ead35777bab948e3643';

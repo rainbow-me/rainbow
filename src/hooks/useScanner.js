@@ -10,6 +10,7 @@ import { useNavigation } from '../navigation/Navigation';
 import usePrevious from './usePrevious';
 import useWalletConnectConnections from './useWalletConnectConnections';
 import useWallets from './useWallets';
+import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
 import Routes from '@rainbow-me/routes';
 import { addressUtils, haptics } from '@rainbow-me/utils';
 import logger from 'logger';
@@ -78,7 +79,7 @@ export default function useScanner(enabled) {
 
   const handleScanAddress = useCallback(
     address => {
-      if (isReadOnlyWallet) {
+      if (isReadOnlyWallet && !enableActionsOnReadOnlyWallet) {
         NativeAlert.alert(`You need to import the wallet in order to do this`);
         return null;
       }

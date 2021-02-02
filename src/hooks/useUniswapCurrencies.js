@@ -2,7 +2,7 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { find, get, isEmpty } from 'lodash';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo } from 'react';
 import { InteractionManager } from 'react-native';
 import { useDispatch } from 'react-redux';
 
@@ -121,7 +121,7 @@ export default function useUniswapCurrencies({
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     dispatch(updateSwapInputCurrency(defaultInputItemInWallet));
     dispatch(updateSwapOutputCurrency(defaultOutputItem));
   }, [defaultInputItemInWallet, dispatch, defaultOutputItem]);
