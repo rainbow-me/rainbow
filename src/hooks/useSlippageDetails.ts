@@ -1,10 +1,13 @@
 import { useMemo } from 'react';
-import { convertBipsToPercentage } from '../helpers/utilities';
+import useSwapDetails from './useSwapDetails';
+import { useTheme } from '@rainbow-me/context';
+import { convertBipsToPercentage } from '@rainbow-me/utilities';
 
 const SlippageWarningThresholdInBips = 500;
 const SevereSlippageThresholdInBips = SlippageWarningThresholdInBips * 2;
 
-export default function useSlippageDetails(slippage) {
+export default function useSlippageDetails() {
+  const { slippage } = useSwapDetails();
   const { colors } = useTheme();
 
   const isHighSlippage = slippage >= SlippageWarningThresholdInBips;

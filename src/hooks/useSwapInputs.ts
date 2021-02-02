@@ -3,6 +3,7 @@ import { RefObject, useCallback, useEffect, useMemo } from 'react';
 import { TextInput } from 'react-native';
 import { useDispatch } from 'react-redux';
 import usePrevious from './usePrevious';
+import useSwapDetails from './useSwapDetails';
 import useSwapInputOutputTokens from './useSwapInputOutputTokens';
 import useSwapInputValues from './useSwapInputValues';
 import { Asset } from '@rainbow-me/entities';
@@ -23,10 +24,6 @@ import {
 } from '@rainbow-me/redux/swap';
 import logger from 'logger';
 
-interface ExtraTradeDetails {
-  inputPriceValue?: string;
-}
-
 interface UniswapAsset extends Asset {
   native?: {
     price?: {
@@ -37,7 +34,6 @@ interface UniswapAsset extends Asset {
 
 export default function useSwapInputs({
   defaultInputAsset,
-  extraTradeDetails,
   isWithdrawal,
   maxInputBalance,
   nativeFieldRef,
@@ -45,7 +41,6 @@ export default function useSwapInputs({
   type,
 }: {
   defaultInputAsset: Asset;
-  extraTradeDetails: ExtraTradeDetails;
   isWithdrawal: boolean;
   maxInputBalance: string;
   nativeFieldRef: RefObject<TextInput>;
@@ -53,6 +48,7 @@ export default function useSwapInputs({
   type: string;
 }) {
   const dispatch = useDispatch();
+  const { extraTradeDetails } = useSwapDetails();
   const { inputAmount } = useSwapInputValues();
   const {
     inputCurrency,

@@ -107,7 +107,6 @@ export default function ExchangeModal({
 
   const {
     areTradeDetailsValid,
-    extraTradeDetails,
     slippage,
     tradeDetails,
   } = useSwapDetails();
@@ -153,7 +152,6 @@ export default function ExchangeModal({
   } = useSwapInputs({
     defaultInputAsset,
     defaultOutputAsset,
-    extraTradeDetails,
     inputCurrency,
     isWithdrawal,
     maxInputBalance,
@@ -490,20 +488,12 @@ export default function ExchangeModal({
       android && Keyboard.removeListener('keyboardDidHide', internalNavigate);
       setParams({ focused: false });
       navigate(Routes.SWAP_DETAILS_SHEET, {
-        ...extraTradeDetails,
         confirmButtonProps,
-        inputAmount,
-        inputAmountDisplay,
-        inputCurrency,
-        outputAmount,
-        outputAmountDisplay,
-        outputCurrency,
         restoreFocusOnSwapModal: () => {
           android &&
             (lastFocusedInputHandle.current = lastFocusedInputHandleTemporary);
           setParams({ focused: true });
         },
-        slippage,
         type: 'swap_details',
       });
       analytics.track('Opened Swap Details modal', {
@@ -518,20 +508,13 @@ export default function ExchangeModal({
       : Keyboard.addListener('keyboardDidHide', internalNavigate);
   }, [
     confirmButtonProps,
-    extraTradeDetails,
-    inputAmount,
-    inputAmountDisplay,
-    inputCurrency,
     inputFieldRef,
     lastFocusedInputHandle,
     nativeFieldRef,
     navigate,
-    outputAmount,
-    outputAmountDisplay,
     outputCurrency,
     outputFieldRef,
     setParams,
-    slippage,
     type,
   ]);
 

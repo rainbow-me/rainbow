@@ -1,9 +1,13 @@
-import { useRoute } from '@react-navigation/native';
 import React from 'react';
 import styled from 'styled-components';
 import { Icon } from '../../icons';
 import { RowWithMargins } from '../../layout';
 import CurrencyTile, { CurrencyTileHeight } from './CurrencyTile';
+import {
+  useSwapDetails,
+  useSwapInputOutputTokens,
+  useSwapInputValues,
+} from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
 
 const containerPaddingTop = 34;
@@ -19,17 +23,9 @@ const Container = styled(RowWithMargins).attrs({
 `;
 
 export default function SwapDetailsMasthead(props) {
-  const {
-    params: {
-      inputAmount,
-      inputCurrency,
-      inputPriceValue,
-      outputAmount,
-      outputCurrency,
-      outputPriceValue,
-      slippage,
-    },
-  } = useRoute();
+  const { inputCurrency, outputCurrency } = useSwapInputOutputTokens();
+  const { inputAmount, outputAmount } = useSwapInputValues();
+  const { inputPriceValue, outputPriceValue, slippage } = useSwapDetails();
 
   const { colors } = useTheme();
 
