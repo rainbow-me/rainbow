@@ -2,7 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import styled from 'styled-components';
 import Caret from '../../assets/family-dropdown-arrow.png';
-import { useTheme, withThemeContext } from '../../context/ThemeContext';
+import { useTheme } from '../../context/ThemeContext';
 import {
   ButtonPressAnimation,
   OpacityToggler,
@@ -23,13 +23,13 @@ const CaretContainer = styled.View`
   padding-bottom: 1;
 `;
 
-const CaretIcon = withThemeContext(styled(ImgixImage).attrs(({ colors }) => ({
+const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
   source: Caret,
   tintColor: colors.blueGreyDark,
 }))`
   height: 18;
   width: 8;
-`);
+`;
 
 const ContainerButton = styled(ButtonPressAnimation).attrs(
   ({ isSmallBalancesOpen, isSendSheet }) => ({
