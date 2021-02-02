@@ -23,6 +23,7 @@ interface SwapState {
   isMax: boolean;
   isSufficientBalance: boolean;
   nativeAmount: string | null;
+  slippage: string | null;
   outputAmount: SwapAmount | null;
   outputCurrency: Asset | null;
 }
@@ -31,6 +32,7 @@ interface SwapState {
 const SWAP_UPDATE_IS_MAX = 'swap/SWAP_UPDATE_IS_MAX';
 const SWAP_UPDATE_IS_SUFFICIENT_BALANCE =
   'swap/SWAP_UPDATE_IS_SUFFICIENT_BALANCE';
+const SWAP_UPDATE_SLIPPAGE = 'swap/SWAP_UPDATE_SLIPPAGE';
 const SWAP_UPDATE_EXTRA_TRADE_DETAILS = 'swap/SWAP_UPDATE_EXTRA_TRADE_DETAILS';
 const SWAP_UPDATE_NATIVE_AMOUNT = 'swap/SWAP_UPDATE_NATIVE_AMOUNT';
 const SWAP_UPDATE_INPUT_AMOUNT = 'swap/SWAP_UPDATE_INPUT_AMOUNT';
@@ -48,6 +50,10 @@ export const updateSwapExtraDetails = (extraDetails: ExtraTradeDetails) => (
 
 export const updateIsMax = (isMax: boolean) => (dispatch: AppDispatch) => {
   dispatch({ payload: isMax, type: SWAP_UPDATE_IS_MAX });
+};
+
+export const updateSlippage = (slippage: string) => (dispatch: AppDispatch) => {
+  dispatch({ payload: slippage, type: SWAP_UPDATE_SLIPPAGE });
 };
 
 export const updateIsSufficientBalance = (isSufficientBalance: boolean) => (
@@ -122,6 +128,7 @@ const INITIAL_STATE: SwapState = {
   nativeAmount: null,
   outputAmount: null,
   outputCurrency: null,
+  slippage: null,
 };
 
 export default (state = INITIAL_STATE, action: AnyAction) => {
@@ -130,6 +137,11 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
       return {
         ...state,
         isMax: action.payload,
+      };
+    case SWAP_UPDATE_SLIPPAGE:
+      return {
+        ...state,
+        slippage: action.payload,
       };
     case SWAP_UPDATE_EXTRA_TRADE_DETAILS:
       return {
