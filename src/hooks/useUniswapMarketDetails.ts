@@ -2,6 +2,7 @@ import { isEmpty } from 'lodash';
 import { RefObject, useCallback, useEffect, useMemo, useState } from 'react';
 import { TextInput } from 'react-native';
 import useAccountSettings from './useAccountSettings';
+import useSlippageDetails from './useSlippageDetails';
 import useSwapDetails from './useSwapDetails';
 import useSwapInputOutputTokens from './useSwapInputOutputTokens';
 import useSwapInputValues from './useSwapInputValues';
@@ -55,8 +56,8 @@ export default function useUniswapMarketDetails({
     tradeDetails,
     updateExtraTradeDetails,
     updateTradeDetails: updateSwapTradeDetails,
-    updateSlippage,
   } = useSwapDetails();
+  const { updateSlippage } = useSlippageDetails();
 
   const [isSufficientLiquidity, setIsSufficientLiquidity] = useState(true);
   const { chainId } = useAccountSettings();

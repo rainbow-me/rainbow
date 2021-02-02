@@ -1,3 +1,4 @@
+import analytics from '@segment/analytics-react-native';
 import React, { useEffect } from 'react';
 import Animated, {
   NewEasing,
@@ -9,6 +10,12 @@ import styled from 'styled-components';
 import { Centered, Row } from '../layout';
 import ExchangeDetailsButton from './ExchangeDetailsButton';
 import SlippageWarning from './SlippageWarning';
+import {
+  usePrevious,
+  useSlippageDetails,
+  useSwapInputOutputTokens,
+  useSwapInputValues,
+} from '@rainbow-me/hooks';
 import { padding, position } from '@rainbow-me/styles';
 
 const defaultSlippageScale = 1.15;
@@ -36,16 +43,17 @@ const AnimatedExchangeDetailsButtonRow = Animated.createAnimatedComponent(
 );
 
 export default function ExchangeDetailsRow({
-  isSlippageWarningVisible,
   onFlipCurrencies,
   onPressViewDetails,
   showDetailsButton,
-  slippage,
+  type,
   ...props
 }) {
   const detailsRowOpacity = useSharedValue(1);
   const slippageOpacity = useSharedValue(0);
   const slippageScale = useSharedValue(defaultSlippageScale);
+  const { outputCurrency } = useSwapInputOutputTokens();
+  const { slippage } = useSlippageDetails();
 
   const detailsRowStyles = useAnimatedStyle(() => ({
     opacity: detailsRowOpacity.value,
@@ -55,6 +63,34 @@ export default function ExchangeDetailsRow({
     opacity: slippageOpacity.value,
     transform: [{ scale: slippageScale.value }],
   }));
+
+  const { isHighSlippage } = useSlippageDetails();
+  const {
+    inputAmount,
+    isSufficientBalance,
+    outputAmount,
+  } = useSwapInputValues();
+
+  const isSlippageWarningVisible =
+    isSufficientBalance && !!inputAmount && !!outputAmount && isHighSlippage;
+  const prevIsSlippageWarningVisible = usePrevious(isSlippageWarningVisible);
+  useEffect(() => {
+    if (isSlippageWarningVisible && !prevIsSlippageWarningVisible) {
+      analytics.track('Showing high slippage warning in Swap', {
+        name: outputCurrency.name,
+        slippage,
+        symbol: outputCurrency.symbol,
+        tokenAddress: outputCurrency.address,
+        type,
+      });
+    }
+  }, [
+    isSlippageWarningVisible,
+    outputCurrency,
+    prevIsSlippageWarningVisible,
+    slippage,
+    type,
+  ]);
 
   useEffect(() => {
     if (isSlippageWarningVisible) {

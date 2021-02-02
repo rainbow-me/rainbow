@@ -30,7 +30,7 @@ export interface ParsedAddressAsset {
   uniqueId: string;
 }
 
-export interface UniswapCurrency extends Asset {
+export interface UniswapCurrency extends ParsedAddressAsset {
   native?: {
     price?: {
       amount?: string;

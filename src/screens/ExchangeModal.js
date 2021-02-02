@@ -107,9 +107,9 @@ export default function ExchangeModal({
 
   const {
     areTradeDetailsValid,
-    slippage,
     tradeDetails,
   } = useSwapDetails();
+  const { isHighSlippage, slippage } = useSlippageDetails();
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
 
@@ -336,29 +336,6 @@ export default function ExchangeModal({
     updateInputAmount,
   ]);
 
-  const { isHighSlippage } = useSlippageDetails();
-
-  const isSlippageWarningVisible =
-    isSufficientBalance && !!inputAmount && !!outputAmount && isHighSlippage;
-  const prevIsSlippageWarningVisible = usePrevious(isSlippageWarningVisible);
-  useEffect(() => {
-    if (isSlippageWarningVisible && !prevIsSlippageWarningVisible) {
-      analytics.track('Showing high slippage warning in Swap', {
-        name: outputCurrency.name,
-        slippage,
-        symbol: outputCurrency.symbol,
-        tokenAddress: outputCurrency.address,
-        type,
-      });
-    }
-  }, [
-    isSlippageWarningVisible,
-    outputCurrency,
-    prevIsSlippageWarningVisible,
-    slippage,
-    type,
-  ]);
-
   const handlePressMaxBalance = useCallback(async () => {
     let maxBalance = maxInputBalance;
     if (isWithdrawal) {
@@ -382,9 +359,9 @@ export default function ExchangeModal({
   const handleSubmit = useCallback(() => {
     backgroundTask.execute(async () => {
       analytics.track(`Submitted ${type}`, {
-        defaultInputAsset: defaultInputAsset?.symbol || '',
-        isSlippageWarningVisible,
-        name: outputCurrency?.name || '',
+        defaultInputAsset: defaultInputAsset?.symbol ?? '',
+        isHighSlippage,
+        name: outputCurrency?.name ?? '',
         slippage,
         symbol: outputCurrency?.symbol || '',
         tokenAddress: outputCurrency?.address || '',
@@ -436,7 +413,7 @@ export default function ExchangeModal({
     inputAmount,
     inputCurrency,
     isMax,
-    isSlippageWarningVisible,
+    isHighSlippage,
     isWithdrawal,
     navigate,
     outputAmount,
@@ -456,7 +433,6 @@ export default function ExchangeModal({
       isSufficientBalance,
       isSufficientLiquidity,
       onSubmit: handleSubmit,
-      slippage,
       type,
     }),
     [
@@ -466,7 +442,6 @@ export default function ExchangeModal({
       isDeposit,
       isSufficientBalance,
       isSufficientLiquidity,
-      slippage,
       testID,
       type,
     ]
@@ -575,11 +550,11 @@ export default function ExchangeModal({
           )}
           {!isDeposit && showConfirmButton && (
             <ExchangeDetailsRow
-              isSlippageWarningVisible={isSlippageWarningVisible}
               onFlipCurrencies={onFlipCurrencies}
               onPressViewDetails={navigateToSwapDetailsModal}
               showDetailsButton={showDetailsButton}
               slippage={slippage}
+              type={type}
             />
           )}
           {showConfirmButton && (
