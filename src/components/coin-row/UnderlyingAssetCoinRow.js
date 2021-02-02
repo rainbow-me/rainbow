@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { magicMemo } from '../../utils';
 import { CoinIcon } from '../coin-icon';
 import { Centered, Row } from '../layout';
@@ -14,33 +14,34 @@ const UnderlyingAssetCoinRow = ({
   symbol,
 }) => {
   const { colors } = useTheme();
-
   return (
-    <Row marginBottom={19}>
-      <Centered marginRight={6}>
-        <CoinIcon
-          address={address}
-          size={UnderlyingCoinIconSize}
-          symbol={symbol}
-        />
-      </Centered>
-      <Row>
-        <Text
-          color={colors.alpha(colors.blueGreyDark, 0.7)}
-          size="large"
-          weight="medium"
-        >
-          {name}{' '}
+    <Fragment>
+      <Row marginBottom={19}>
+        <Centered marginRight={6}>
+          <CoinIcon
+            address={address}
+            size={UnderlyingCoinIconSize}
+            symbol={symbol}
+          />
+        </Centered>
+        <Row>
           <Text
-            color={isPositive ? colors.green : colors.brightRed}
-            letterSpacing="roundedTight"
-            size="smedium"
+            color={colors.alpha(colors.blueGreyDark, 0.7)}
+            size="large"
+            weight="medium"
           >
-            {isPositive ? `↑` : `↓`} {change}
+            {name}{' '}
+            <Text
+              color={isPositive ? colors.green : colors.brightRed}
+              letterSpacing="roundedTight"
+              size="smedium"
+            >
+              {isPositive ? `↑` : `↓`} {change}
+            </Text>
           </Text>
-        </Text>
+        </Row>
       </Row>
-    </Row>
+    </Fragment>
   );
 };
 
