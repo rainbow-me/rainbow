@@ -4,10 +4,11 @@
  */
 
 export const disableCharts = false;
+export const enableActionsOnReadOnlyWallet = false;
 export const forceFallbackProvider = false;
 export const alwaysRequireApprove = false;
 export const showReloadButton = false;
-export const showSwitchModeButton = true;
+export const showSwitchModeButton = false;
 export const parseAllTxnsOnReceive = false;
 export const reactNativeDisableYellowBox = true;
 export const showNetworkRequests = false;
