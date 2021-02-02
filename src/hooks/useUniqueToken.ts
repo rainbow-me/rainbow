@@ -1,17 +1,17 @@
 import * as React from 'react';
 
 import isSupportedUriExtension from '../helpers/isSupportedUriExtension';
-
-const SUPPORTED_3D_EXTENSIONS = Object.freeze(['.glb']) as readonly string[];
-const SUPPORTED_VIDEO_EXTENSIONS = Object.freeze(['.mp4']) as readonly string[];
+import supportedUriExtensions from '../helpers/supportedUriExtensions';
 
 export type useUniqueTokenResult = {
   readonly supports3d: boolean;
+  readonly supportsAudio: boolean;
   readonly supportsVideo: boolean;
 };
 
 const fallbackResult: useUniqueTokenResult = Object.freeze({
   supports3d: false,
+  supportsAudio: false,
   supportsVideo: false,
 });
 
@@ -23,13 +23,17 @@ export default function useUniqueToken(
       const { animation_url } = maybeUniqueToken;
       const supports3d = isSupportedUriExtension(
         animation_url,
-        SUPPORTED_3D_EXTENSIONS
+        supportedUriExtensions.SUPPORTED_3D_EXTENSIONS
+      );
+      const supportsAudio = isSupportedUriExtension(
+        animation_url,
+        supportedUriExtensions.SUPPORTED_AUDIO_EXTENSIONS
       );
       const supportsVideo = isSupportedUriExtension(
         animation_url,
-        SUPPORTED_VIDEO_EXTENSIONS
+        supportedUriExtensions.SUPPORTED_VIDEO_EXTENSIONS
       );
-      return Object.freeze({ supports3d, supportsVideo });
+      return Object.freeze({ supports3d, supportsAudio, supportsVideo });
     }
     return fallbackResult;
   }, [maybeUniqueToken]);

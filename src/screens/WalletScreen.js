@@ -8,7 +8,12 @@ import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { OpacityToggler } from '../components/animations';
 import { AssetList } from '../components/asset-list';
-import { ExchangeFab, FabWrapper, SendFab } from '../components/fab';
+import {
+  EphemeralAudioPlayerFab,
+  ExchangeFab,
+  FabWrapper,
+  SendFab,
+} from '../components/fab';
 import {
   CameraHeaderButton,
   DiscoverHeaderButton,
@@ -88,8 +93,8 @@ export default function WalletScreen() {
   const fabs = useMemo(
     () =>
       get(networkInfo[network], 'exchange_enabled')
-        ? [ExchangeFab, SendFab]
-        : [SendFab],
+        ? [EphemeralAudioPlayerFab, ExchangeFab, SendFab]
+        : [EphemeralAudioPlayerFab, SendFab],
     [network]
   );
 

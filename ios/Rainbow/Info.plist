@@ -80,9 +80,9 @@
 	<string>Rainbow</string>
 	<key>NSMotionUsageDescription</key>
 	<string>Rainbow</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Rainbow</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Rainbow</string>
+	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Rainbow</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Rainbow</string>
@@ -92,10 +92,10 @@
 		<dict>
 			<key>NSUbiquitousContainerIsDocumentScopePublic</key>
 			<true/>
-			<key>NSUbiquitousContainerSupportedFolderLevels</key>
-			<string>One</string>
 			<key>NSUbiquitousContainerName</key>
 			<string>me.rainbow</string>
+			<key>NSUbiquitousContainerSupportedFolderLevels</key>
+			<string>One</string>
 		</dict>
 	</dict>
 	<key>UIAppFonts</key>
@@ -111,6 +111,7 @@
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>
+		<string>audio</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>

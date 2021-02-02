@@ -17,6 +17,7 @@
 #import <RNCPushNotificationIOS.h>
 #import <Sentry/Sentry.h>
 #import "RNSplashScreen.h"
+#import <AVFoundation/AVFoundation.h>
 
 #if DEBUG
 #import <FlipperKit/FlipperClient.h>
@@ -116,6 +117,11 @@ RCT_EXPORT_METHOD(hideAnimated) {
 
   // Splashscreen - react-native-splash-screen
   [RNSplashScreen showSplash:@"LaunchScreen" inRootView:rootView];
+  
+  // Allow sound to be played in the background.
+  [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient error:nil];
+  [[AVAudioSession sharedInstance] setActive:true error:nil];
+  
   return YES;
 }
 

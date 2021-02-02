@@ -31,6 +31,7 @@ import VersionNumber from 'react-native-version-number';
 import { connect, Provider } from 'react-redux';
 import { compose, withProps } from 'recompact';
 import PortalConsumer from './components/PortalConsumer';
+import { AudioManager } from './components/audio';
 import { FlexItem } from './components/layout';
 import { OfflineToast } from './components/toasts';
 import {
@@ -292,6 +293,7 @@ class App extends Component {
         <Portal>
           <SafeAreaProvider>
             <Provider store={store}>
+              <AudioManager />
               <FlexItem>
                 {this.state.initialRoute && (
                   <InitialRouteContext.Provider value={this.state.initialRoute}>

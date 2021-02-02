@@ -16,8 +16,13 @@ import {
   UniqueTokenExpandedStateContent,
   UniqueTokenExpandedStateHeader,
 } from './unique-token';
-import { useDimensions, useShowcaseTokens } from '@rainbow-me/hooks';
-import { magicMemo } from '@rainbow-me/utils';
+import {
+  useAudio,
+  useDimensions,
+  useShowcaseTokens,
+  useUniqueToken,
+} from '@rainbow-me/hooks';
+import { logger, magicMemo } from '@rainbow-me/utils';
 
 const UniqueTokenExpandedState = ({ asset }) => {
   const {
@@ -54,6 +59,25 @@ const UniqueTokenExpandedState = ({ asset }) => {
   const { height: screenHeight } = useDimensions();
   const { colors, isDarkMode } = useTheme();
 
+  const { supportsAudio } = useUniqueToken(asset);
+  const { playAsset, currentlyPlayingAsset, stopPlayingAsset } = useAudio();
+
+  const assetIsPlayingAudio =
+    !!currentlyPlayingAsset &&
+    currentlyPlayingAsset.uniqueId === asset.uniqueId;
+
+  // TODO: if playing etc
+  const handlePressAudio = React.useCallback(async () => {
+    try {
+      if (assetIsPlayingAudio) {
+        return stopPlayingAsset();
+      }
+      return playAsset(asset);
+    } catch (e) {
+      logger.error(e);
+    }
+  }, [asset, playAsset, assetIsPlayingAudio, stopPlayingAsset]);
+
   return (
     <Fragment>
       <SlackSheet
@@ -65,6 +89,21 @@ const UniqueTokenExpandedState = ({ asset }) => {
       >
         <UniqueTokenExpandedStateHeader asset={asset} />
         <UniqueTokenExpandedStateContent asset={asset} />
+        {!!supportsAudio && (
+          <SheetActionButtonRow ignorePaddingBottom>
+            {/* SF Pro Rounded (Bold) @ https://mathew-kurian.github.io/CharacterMap */}
+            <SheetActionButton
+              color={colors.orangeLight}
+              label={
+                assetIsPlayingAudio
+                  ? `${String.fromCharCode(56256, 56956)} Stop`
+                  : `${String.fromCharCode(56256, 56981)} Play`
+              }
+              onPress={handlePressAudio}
+              weight="bold"
+            />
+          </SheetActionButtonRow>
+        )}
         <SheetActionButtonRow>
           <SheetActionButton
             color={isDarkMode ? colors.darkModeDark : colors.dark}
