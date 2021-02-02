@@ -60,14 +60,13 @@ export default function CurrencyTile({
   amount,
   asset,
   priceValue,
-  slippage,
   type = 'input',
   ...props
 }) {
   const { address, symbol } = asset;
   const { nativeCurrency } = useAccountSettings();
   const colorForAsset = useColorForAsset(asset);
-  const { color: slippageColor, isHighSlippage } = useSlippageDetails(slippage);
+  const { color: slippageColor, isHighSlippage } = useSlippageDetails();
 
   const { amountDisplay, priceDisplay } = useMemo(() => {
     const data = [amount, priceValue || 0];

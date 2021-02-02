@@ -10,6 +10,7 @@ import {
   useColorForAsset,
   useGas,
   useSlippageDetails,
+  useSwapInputOutputTokens,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
@@ -30,19 +31,18 @@ const Container = styled(Centered)`
 `;
 
 export default function ConfirmExchangeButton({
-  asset,
   disabled,
   isSufficientBalance,
   isSufficientLiquidity,
   onPressViewDetails,
   onSubmit,
-  slippage,
   type = ExchangeModalTypes.swap,
   ...props
 }) {
+  const { outputCurrency: asset } = useSwapInputOutputTokens();
   const { isSufficientGas } = useGas();
   const { name: routeName } = useRoute();
-  const { isHighSlippage } = useSlippageDetails(slippage);
+  const { isHighSlippage } = useSlippageDetails();
 
   const isSwapDetailsRoute = routeName === Routes.SWAP_DETAILS_SHEET;
   const shouldOpenSwapDetails = isHighSlippage && !isSwapDetailsRoute;

@@ -151,12 +151,9 @@ export default function ExchangeModal({
     updateOutputAmount,
   } = useSwapInputs({
     defaultInputAsset,
-    defaultOutputAsset,
-    inputCurrency,
     isWithdrawal,
     maxInputBalance,
     nativeFieldRef,
-    outputCurrency,
     supplyBalanceUnderlying,
     type,
   });
@@ -339,7 +336,7 @@ export default function ExchangeModal({
     updateInputAmount,
   ]);
 
-  const { isHighSlippage } = useSlippageDetails(slippage);
+  const { isHighSlippage } = useSlippageDetails();
 
   const isSlippageWarningVisible =
     isSufficientBalance && !!inputAmount && !!outputAmount && isHighSlippage;
@@ -453,7 +450,6 @@ export default function ExchangeModal({
 
   const confirmButtonProps = useMemoOne(
     () => ({
-      asset: outputCurrency,
       disabled: !Number(inputAmountDisplay),
       isAuthorizing,
       isDeposit,
@@ -470,7 +466,6 @@ export default function ExchangeModal({
       isDeposit,
       isSufficientBalance,
       isSufficientLiquidity,
-      outputCurrency,
       slippage,
       testID,
       type,

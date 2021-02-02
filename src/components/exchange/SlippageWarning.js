@@ -27,8 +27,8 @@ const Label = styled(Text).attrs(
   })
 )``;
 
-export default function SlippageWarning({ onPress, slippage, ...props }) {
-  const { color } = useSlippageDetails(slippage);
+export default function SlippageWarning({ onPress, ...props }) {
+  const { color } = useSlippageDetails();
 
   return (
     <AnimatedButtonPressAnimation

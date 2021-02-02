@@ -25,7 +25,7 @@ const Container = styled(RowWithMargins).attrs({
 export default function SwapDetailsMasthead(props) {
   const { inputCurrency, outputCurrency } = useSwapInputOutputTokens();
   const { inputAmount, outputAmount } = useSwapInputValues();
-  const { inputPriceValue, outputPriceValue, slippage } = useSwapDetails();
+  const { inputPriceValue, outputPriceValue } = useSwapDetails();
 
   const { colors } = useTheme();
 
@@ -42,7 +42,6 @@ export default function SwapDetailsMasthead(props) {
         amount={outputAmount}
         asset={outputCurrency}
         priceValue={outputPriceValue}
-        slippage={slippage}
         type="output"
       />
     </Container>
