@@ -11,7 +11,6 @@ import Animated, {
 import styled from 'styled-components';
 import Spinner from '../../assets/chartSpinner.png';
 import { ClearInputDecorator, Input } from '../inputs';
-
 import { Row } from '../layout';
 import { Text } from '../text';
 import { ImgixImage } from '@rainbow-me/images';
@@ -24,7 +23,7 @@ const ExchangeSearchWidth = deviceUtils.dimensions.width - 30;
 const Container = styled(Row)`
   ${margin(0, 15, 8)};
   ${padding(0, 37, 0, 12)};
-  background-color: ${({ theme: { colors } }) => colors.white};
+  background-color: ${({ theme: { colors } }) => colors.transparent};
   border-radius: ${ExchangeSearchHeight / 2};
   height: ${ExchangeSearchHeight};
   overflow: hidden;
@@ -78,7 +77,7 @@ const SearchInput = styled(Input).attrs(({ theme: { colors } }) => ({
   margin-left: 4;
 `;
 
-const SearchSpinner = styled(ImgixImage).attrs(({ colors }) => ({
+const SearchSpinner = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
   resizeMode: ImgixImage.resizeMode.contain,
   source: Spinner,
   tintColor: colors.alpha(colors.blueGreyDark, 0.6),
