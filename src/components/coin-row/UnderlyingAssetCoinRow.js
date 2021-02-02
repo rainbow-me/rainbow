@@ -1,10 +1,10 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import { magicMemo } from '../../utils';
 import { CoinIcon } from '../coin-icon';
 import { Centered, Row } from '../layout';
 import { Text } from '../text';
 
-const TopMoverCoinIconSize = 20;
+const UnderlyingCoinIconSize = 20;
 
 const UnderlyingAssetCoinRow = ({
   address,
@@ -14,26 +14,33 @@ const UnderlyingAssetCoinRow = ({
   symbol,
 }) => {
   const { colors } = useTheme();
+
   return (
-    <Fragment>
-      <Row marginBottom={19}>
-        <Centered marginRight={6}>
-          <CoinIcon
-            address={address}
-            size={TopMoverCoinIconSize}
-            symbol={symbol}
-          />
-        </Centered>
-        <Row>
-          <Text color={colors.alpha(colors.blueGreyDark, 0.8)} size="large">
-            {name}{' '}
-            <Text color={isPositive ? colors.green : colors.red} size="lmedium">
-              {isPositive ? `↑` : `↓`} {change}
-            </Text>
+    <Row marginBottom={19}>
+      <Centered marginRight={6}>
+        <CoinIcon
+          address={address}
+          size={UnderlyingCoinIconSize}
+          symbol={symbol}
+        />
+      </Centered>
+      <Row>
+        <Text
+          color={colors.alpha(colors.blueGreyDark, 0.7)}
+          size="large"
+          weight="medium"
+        >
+          {name}{' '}
+          <Text
+            color={isPositive ? colors.green : colors.brightRed}
+            letterSpacing="roundedTight"
+            size="smedium"
+          >
+            {isPositive ? `↑` : `↓`} {change}
           </Text>
-        </Row>
+        </Text>
       </Row>
-    </Fragment>
+    </Row>
   );
 };
 

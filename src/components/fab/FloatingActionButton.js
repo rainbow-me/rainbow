@@ -13,9 +13,9 @@ import ShadowStack from 'react-native-shadow-stack';
 export const FloatingActionButtonSize = 56;
 
 export const FloatingActionButtonShadow = colors => [
-  [0, 2, 5, colors.dark, 0.2],
-  [0, 6, 10, colors.dark, 0.14],
-  [0, 1, 18, colors.dark, 0.12],
+  [0, 2, 5, colors.shadow, 0.2],
+  [0, 6, 10, colors.shadow, 0.14],
+  [0, 1, 18, colors.shadow, 0.12],
 ];
 
 const DarkModeShadow = [[0, 10, 30, darkModeThemeColors.shadow, 1]];

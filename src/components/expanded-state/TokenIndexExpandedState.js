@@ -77,7 +77,7 @@ const formatGenericAsset = asset => {
 };
 
 export default function TokenIndexExpandedState({ asset }) {
-  const { colors } = useTheme();
+  const { colors, isDarkMode } = useTheme();
   const { navigate } = useNavigation();
   const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
     genericAssets,
@@ -205,24 +205,34 @@ export default function TokenIndexExpandedState({ asset }) {
             </Column>
           </SheetActionButtonRow>
         )}
-        <Row margin={19} marginBottom={0}>
+        <Row marginHorizontal={19} marginTop={6}>
           <Column align="start" flex={1}>
-            <Text color={colors.alpha(colors.blueGreyDark, 0.5)}>
+            <Text
+              color={colors.alpha(colors.blueGreyDark, 0.5)}
+              letterSpacing="roundedMedium"
+              weight="semibold"
+            >
               Underlying Assets
             </Text>
           </Column>
           <Column align="end" flex={1}>
-            <Text align="right" color={colors.alpha(colors.blueGreyDark, 0.5)}>
+            <Text
+              align="right"
+              color={colors.alpha(colors.blueGreyDark, 0.5)}
+              letterSpacing="roundedMedium"
+              weight="semibold"
+            >
               Makeup of 1 {assetWithPrice.symbol}
             </Text>
           </Column>
         </Row>
-        <Column margin={19}>
+        <Column marginHorizontal={19} marginTop={12}>
           {underlying.map(item => (
             <Row
               as={ButtonPressAnimation}
               key={`dpi-${item?.address}`}
               onPress={() => handlePress(item)}
+              scaleTo={0.95}
             >
               <Column align="start" flex={1}>
                 <UnderlyingAssetCoinRow {...item} />
@@ -231,8 +241,10 @@ export default function TokenIndexExpandedState({ asset }) {
                 <Row key={`allocation-${item.symbol}`}>
                   <Text
                     align="right"
-                    color={colors.alpha(colors.blueGreyDark, 0.5)}
+                    color={colors.alpha(colors.blueGreyDark, 0.7)}
+                    letterSpacing="roundedTight"
                     size="large"
+                    weight="medium"
                   >
                     {item.pricePerUnitFormatted}
                   </Text>
@@ -240,7 +252,7 @@ export default function TokenIndexExpandedState({ asset }) {
                     align="end"
                     backgroundColor={colors.white}
                     height={30}
-                    marginLeft={10}
+                    marginLeft={6}
                   >
                     <Column
                       height={16}
@@ -248,17 +260,30 @@ export default function TokenIndexExpandedState({ asset }) {
                       width={item.percentageAllocation * 2}
                     >
                       <ShadowStack
-                        backgroundColor={colors.dpiPurple}
-                        borderRadius={10}
-                        shadows={[[0, 3, 9, item.color, 0.35]]}
+                        backgroundColor={item.color}
+                        borderRadius={8}
+                        shadows={[
+                          [
+                            0,
+                            3,
+                            9,
+                            isDarkMode ? colors.shadow : item.color,
+                            0.2,
+                          ],
+                        ]}
                         style={{
                           height: 16,
                           width: '100%',
                         }}
                       >
                         <LinearGradient
-                          borderRadius={15}
-                          colors={[colors.alpha(item.color, 0.7), item.color]}
+                          colors={[
+                            colors.alpha(
+                              colors.whiteLabel,
+                              isDarkMode ? 0.2 : 0.3
+                            ),
+                            colors.alpha(colors.whiteLabel, 0),
+                          ]}
                           end={{ x: 1, y: 0.5 }}
                           overflow="hidden"
                           pointerEvents="none"
