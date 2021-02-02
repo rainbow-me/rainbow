@@ -31,7 +31,7 @@ const Content = styled(Row).attrs({
   justify: 'space-between',
 })`
   ${padding(0, 19, 2)};
-  background-color: ${({ isSticky, colors }) =>
+  background-color: ${({ isSticky, theme: { colors } }) =>
     isSticky ? colors.white : colors.transparent};
   height: ${ListHeaderHeight};
   width: 100%;
