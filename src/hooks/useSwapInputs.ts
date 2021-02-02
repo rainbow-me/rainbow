@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux';
 import usePrevious from './usePrevious';
 import useSwapInputOutputTokens from './useSwapInputOutputTokens';
 import useSwapInputValues from './useSwapInputValues';
+import { Asset } from '@rainbow-me/entities';
 import {
   convertAmountFromNativeValue,
   convertAmountToNativeAmount,
@@ -22,8 +23,19 @@ import {
 } from '@rainbow-me/redux/swap';
 import logger from 'logger';
 
+interface ExtraTradeDetails {
+  inputPriceValue?: string;
+}
+
+interface UniswapAsset extends Asset {
+  native?: {
+    price?: {
+      amount: string;
+    };
+  };
+}
+
 export default function useSwapInputs({
-  category,
   defaultInputAsset,
   extraTradeDetails,
   isWithdrawal,
@@ -32,7 +44,8 @@ export default function useSwapInputs({
   supplyBalanceUnderlying,
   type,
 }: {
-  defaultInputAsset: string;
+  defaultInputAsset: Asset;
+  extraTradeDetails: ExtraTradeDetails;
   isWithdrawal: boolean;
   maxInputBalance: string;
   nativeFieldRef: RefObject<TextInput>;
@@ -41,7 +54,9 @@ export default function useSwapInputs({
 }) {
   const dispatch = useDispatch();
   const { inputAmount } = useSwapInputValues();
-  const { inputCurrency } = useSwapInputOutputTokens();
+  const {
+    inputCurrency,
+  }: { inputCurrency: UniswapAsset } = useSwapInputOutputTokens();
 
   const inputPriceValue = useMemo(
     () =>
@@ -58,7 +73,7 @@ export default function useSwapInputs({
       if (!nativeFieldRef?.current?.isFocused?.()) {
         dispatch(
           updateSwapNativeAmount(
-            amount && !isZero(amount)
+            amount && inputPriceValue && !isZero(amount)
               ? convertAmountToNativeAmount(amount, inputPriceValue)
               : null
           )
@@ -72,7 +87,11 @@ export default function useSwapInputs({
     // When the user has selected an input currency which we do not have price data for,
     // we need to forcibly sync the "nativeAmount" input because the derived
     // `extraTradeDetails?.inputPriceValue` price will be inaccurate for the first render.
-    if (!isZero(inputAmount) && inputPriceValue !== prevInputPriceValue) {
+    if (
+      inputAmount &&
+      !isZero(inputAmount) &&
+      inputPriceValue !== prevInputPriceValue
+    ) {
       forceUpdateNativeAmount(inputAmount);
     }
   }, [
@@ -111,7 +130,6 @@ export default function useSwapInputs({
 
       if (newAmountDisplay) {
         analytics.track('Updated input amount', {
-          category,
           defaultInputAsset: defaultInputAsset?.symbol,
           type,
           value: convertStringToNumber(newAmountDisplay),
@@ -119,7 +137,6 @@ export default function useSwapInputs({
       }
     },
     [
-      category,
       defaultInputAsset,
       dispatch,
       forceUpdateNativeAmount,
@@ -144,7 +161,7 @@ export default function useSwapInputs({
       dispatch(updateSwapNativeAmount(nativeAmount));
       dispatch(updateIsMax(false));
 
-      if (nativeAmount && !isZero(nativeAmount)) {
+      if (nativeAmount && inputPriceValue && !isZero(nativeAmount)) {
         inputAmount = convertAmountFromNativeValue(
           nativeAmount,
           inputPriceValue,
@@ -170,14 +187,13 @@ export default function useSwapInputs({
       );
       if (newAmountDisplay) {
         analytics.track('Updated output amount', {
-          category,
           defaultInputAsset: defaultInputAsset?.symbol,
           type,
           value: convertStringToNumber(newAmountDisplay),
         });
       }
     },
-    [category, defaultInputAsset, dispatch, type]
+    [defaultInputAsset, dispatch, type]
   );
 
   return {
