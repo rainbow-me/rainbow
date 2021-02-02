@@ -2,17 +2,17 @@ import React, { useCallback, useEffect } from 'react';
 import { LayoutAnimation, View } from 'react-native';
 import styled from 'styled-components';
 import { withThemeContext } from '../../context/ThemeContext';
-import EditOptions from '../../helpers/editOptionTypes';
+import { Row, RowWithMargins } from '../layout';
+import CoinDividerAssetsValue from './CoinDividerAssetsValue';
+import CoinDividerEditButton from './CoinDividerEditButton';
+import CoinDividerOpenButton from './CoinDividerOpenButton';
+import EditOptions from '@rainbow-me/helpers/editOptionTypes';
 import {
   useCoinListEdited,
   useCoinListEditOptions,
   useDimensions,
   useOpenSmallBalances,
-} from '../../hooks';
-import { Row, RowWithMargins } from '../layout';
-import CoinDividerAssetsValue from './CoinDividerAssetsValue';
-import CoinDividerEditButton from './CoinDividerEditButton';
-import CoinDividerOpenButton from './CoinDividerOpenButton';
+} from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
 
 export const CoinDividerHeight = 30;
@@ -45,7 +45,6 @@ const EditButtonWrapper = styled(Row).attrs({
 `;
 
 export default function CoinDivider({
-  assetsAmount,
   balancesSum,
   isSticky,
   nativeCurrency,
@@ -84,15 +83,11 @@ export default function CoinDivider({
   return (
     <Container deviceWidth={deviceWidth} isSticky={isSticky}>
       <Row>
-        <View
-          pointerEvents={
-            isCoinListEdited || assetsAmount === 0 ? 'none' : 'auto'
-          }
-        >
+        <View pointerEvents={isCoinListEdited ? 'none' : 'auto'}>
           <CoinDividerOpenButton
             coinDividerHeight={CoinDividerHeight}
             isSmallBalancesOpen={isSmallBalancesOpen}
-            isVisible={isCoinListEdited || assetsAmount === 0}
+            isVisible={isCoinListEdited}
             onPress={toggleOpenSmallBalances}
           />
         </View>
@@ -115,19 +110,18 @@ export default function CoinDivider({
       </Row>
       <Row justify="end">
         <CoinDividerAssetsValue
-          assetsAmount={assetsAmount}
           balancesSum={balancesSum}
           nativeCurrency={nativeCurrency}
           openSmallBalances={isSmallBalancesOpen}
         />
         <EditButtonWrapper
           pointerEvents={
-            isSmallBalancesOpen || assetsAmount === 0 ? 'auto' : 'none'
+            isCoinListEdited || isSmallBalancesOpen ? 'auto' : 'none'
           }
         >
           <CoinDividerEditButton
             isActive={isCoinListEdited}
-            isVisible={isSmallBalancesOpen || assetsAmount === 0}
+            isVisible={isCoinListEdited || isSmallBalancesOpen}
             onPress={handlePressEdit}
             text={isCoinListEdited ? 'Done' : 'Edit'}
             textOpacityAlwaysOn
