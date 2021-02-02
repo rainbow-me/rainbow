@@ -45,10 +45,9 @@ export default function useSwapDetails() {
 
         inputExecutionRate = tradeDetails?.executionPrice?.toSignificant();
 
-        inputExecutionRate = updatePrecisionToDisplay(
-          inputExecutionRate,
-          inputPriceValue
-        );
+        inputExecutionRate = inputPriceValue
+          ? updatePrecisionToDisplay(inputExecutionRate, inputPriceValue)
+          : '0';
 
         inputNativePrice = inputPriceValue
           ? convertAmountToNativeDisplay(inputPriceValue, nativeCurrency)
