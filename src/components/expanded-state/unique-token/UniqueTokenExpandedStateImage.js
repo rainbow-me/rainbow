@@ -24,7 +24,7 @@ const ImageWrapper = styled(Centered)`
 const UniqueTokenExpandedStateImage = ({ asset }) => {
   const { width: deviceWidth } = useDimensions();
 
-  const imageUrl = asset.image_preview_url;
+  const imageUrl = asset.image_url;
   const { dimensions: imageDimensions } = useImageMetadata(imageUrl);
 
   const maxImageWidth = deviceWidth - paddingHorizontal * 2;
