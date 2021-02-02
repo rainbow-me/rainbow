@@ -45,6 +45,8 @@ export default function AudioManager({ category }) {
             if (soundInStateOnceFinishedPlaying === soundToPlay) {
               // Cancel the state in redux.
               stopPlayingAsset();
+              // Clear the sound from memory.
+              soundToPlay.release();
               // Also cancel the redux action.
               return null;
             }
@@ -64,6 +66,7 @@ export default function AudioManager({ category }) {
       setCurrentSound(maybeCurrentSound => {
         if (maybeCurrentSound) {
           maybeCurrentSound.stop();
+          maybeCurrentSound.release();
         }
         if (nextSoundToPlay) {
           shouldPlaySound(nextSoundToPlay);
