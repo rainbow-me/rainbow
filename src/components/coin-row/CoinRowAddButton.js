@@ -21,10 +21,10 @@ const AddButton = styled(Centered)`
   width: 68px;
 `;
 
-const Circle = styled(RadialGradient).attrs({
+const Circle = styled(RadialGradient).attrs(({ theme: { colors } }) => ({
   center: [0, 15],
-  colors: ['#FFFFFF', '#F2F4F7'],
-})`
+  colors: colors.gradients.lightestGrey,
+}))`
   border-radius: 15px;
   height: 30px;
   overflow: hidden;

@@ -18,6 +18,7 @@ const CoinIcon = ({
   address = 'eth',
   isHidden,
   isPinned,
+  shadowColor,
   size = CoinIconSize,
   symbol = '',
   ...props
@@ -38,7 +39,8 @@ const CoinIcon = ({
         fallbackRenderer={CoinIconFallback}
         forceFallback={forceFallback}
         shadowColor={
-          isDarkMode ? colors.shadow : tokenMetadata?.shadowColor || color
+          shadowColor ||
+          (isDarkMode ? colors.shadow : tokenMetadata?.shadowColor || color)
         }
         size={size}
         symbol={symbol}

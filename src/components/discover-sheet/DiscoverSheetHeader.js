@@ -42,15 +42,16 @@ const Header = styled.View`
 `;
 
 export const FloatingActionButtonShadow = colors => [
-  [0, 10, 30, colors.dark, 0.5],
-  [0, 5, 15, colors.dark, 1],
+  [0, 10, 30, colors.shadow, 0.5],
+  [0, 5, 15, colors.shadow, 1],
 ];
 
 const BackgroundFill = styled(Centered).attrs({
   ...borders.buildCircleAsObject(43),
 })`
   ${position.cover};
-  background-color: ${({ theme: { colors } }) => colors.dark};
+  background-color: ${({ theme: { colors, isDarkMode } }) =>
+    isDarkMode ? colors.offWhite : colors.dark};
   left: 8;
   top: 8;
 `;
@@ -64,7 +65,7 @@ function Stack({
   translateX,
   wrapperOpacity,
 }) {
-  const { colors } = useTheme();
+  const { colors, isDarkMode } = useTheme();
   const shadows = useMemo(() => FloatingActionButtonShadow(colors), [colors]);
   const isVisible = useDerivedValue(() => {
     const value = stackOpacity.value;
@@ -109,7 +110,7 @@ function Stack({
         >
           <ShadowStack
             {...borders.buildCircleAsObject(43)}
-            backgroundColor={colors.dark}
+            backgroundColor={isDarkMode ? colors.offWhite : colors.dark}
             shadows={shadows}
             style={{ left: 8, opacity: 0.4, position: 'absolute', top: 8 }}
           />

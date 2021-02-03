@@ -14,8 +14,6 @@ import { handleSignificantDecimals } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
 import ShadowStack from 'react-native-shadow-stack';
 
-export const PulseIndexShadow = [[0, 8, 24, '#8E62E9', 0.35]];
-
 const formatItem = ({ address, name, price, symbol }, nativeCurrencySymbol) => {
   const change = `${parseFloat(
     (price.relative_change_24h || 0).toFixed(2)
@@ -58,7 +56,12 @@ export default function PulseIndex() {
     });
   }, [genericAssets, navigate]);
 
-  const { isDarkMode, colors } = useTheme();
+  const { colors, isDarkMode } = useTheme();
+
+  const CardShadow = useMemo(
+    () => [[0, 8, 24, isDarkMode ? colors.shadow : colors.dpiMid, 0.35]],
+    [colors.dpiMid, colors.shadow, isDarkMode]
+  );
 
   if (!item) return null;
 
@@ -66,9 +69,9 @@ export default function PulseIndex() {
     <Fragment>
       <ButtonPressAnimation onPress={handlePress} scaleTo={0.9}>
         <ShadowStack
-          backgroundColor={colors.dpiPurple}
+          backgroundColor={colors.white}
           borderRadius={24}
-          shadows={PulseIndexShadow}
+          shadows={CardShadow}
           style={{
             height: 70,
             marginHorizontal: 19,
@@ -77,8 +80,7 @@ export default function PulseIndex() {
           }}
         >
           <LinearGradient
-            borderRadius={24}
-            colors={[colors.dpiPurple, '#8150E6']}
+            colors={[colors.dpiLight, colors.dpiDark]}
             end={{ x: 1, y: 0.5 }}
             overflow="hidden"
             pointerEvents="none"
@@ -87,21 +89,14 @@ export default function PulseIndex() {
           />
           <Row>
             <Column margin={15} marginRight={10}>
-              <CoinIcon {...item} />
+              <CoinIcon shadowColor={colors.dpiDark} {...item} />
             </Column>
             <Column marginLeft={0} marginTop={13.5}>
-              <Text
-                color={isDarkMode ? colors.black : colors.white}
-                size="large"
-                weight="heavy"
-              >
+              <Text color={colors.whiteLabel} size="large" weight="heavy">
                 {item.name}
               </Text>
               <Text
-                color={colors.alpha(
-                  isDarkMode ? colors.black : colors.white,
-                  0.6
-                )}
+                color={colors.alpha(colors.whiteLabel, 0.6)}
                 size="lmedium"
                 weight="semibold"
               >
@@ -111,7 +106,7 @@ export default function PulseIndex() {
             <Column align="end" flex={1} margin={15} marginTop={13.5}>
               <Text
                 align="right"
-                color={isDarkMode ? colors.black : colors.white}
+                color={colors.whiteLabel}
                 letterSpacing="zero"
                 size="large"
                 weight="heavy"
@@ -125,7 +120,7 @@ export default function PulseIndex() {
       <Row marginHorizontal={34} marginTop={8}>
         <Column flex={1} justify="start">
           <Text
-            color={colors.dpiPurple}
+            color={colors.dpiLight}
             letterSpacing="roundedMedium"
             numberOfLines={1}
             size="smedium"
@@ -133,7 +128,7 @@ export default function PulseIndex() {
           >
             Trading at{' '}
             <Text
-              color={colors.dpiPurple}
+              color={colors.dpiLight}
               letterSpacing="roundedTight"
               numberOfLines={1}
               size="smedium"
