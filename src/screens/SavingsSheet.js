@@ -22,6 +22,7 @@ import {
   SheetActionButtonRow,
   SlackSheet,
 } from '../components/sheet';
+import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
 import { isSymbolStablecoin } from '@rainbow-me/helpers/savings';
 import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
 import {
@@ -98,7 +99,7 @@ const SavingsSheet = () => {
   }, []);
 
   const onWithdraw = useCallback(() => {
-    if (!isReadOnlyWallet) {
+    if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
       navigate(Routes.SAVINGS_WITHDRAW_MODAL, {
         cTokenBalance,
         defaultInputAsset: underlying,
@@ -123,7 +124,7 @@ const SavingsSheet = () => {
   ]);
 
   const onDeposit = useCallback(() => {
-    if (!isReadOnlyWallet) {
+    if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
       navigate(Routes.SAVINGS_DEPOSIT_MODAL, {
         params: {
           params: {

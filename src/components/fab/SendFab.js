@@ -6,6 +6,7 @@ import { lightModeThemeColors } from '../../styles/colors';
 import { magicMemo } from '../../utils';
 import { Icon } from '../icons';
 import FloatingActionButton from './FloatingActionButton';
+import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
 import Routes from '@rainbow-me/routes';
 
 const FabShadow = [
@@ -18,7 +19,7 @@ const SendFab = ({ disabled, isReadOnlyWallet, ...props }) => {
   const { colors } = useTheme();
 
   const handlePress = useCallback(() => {
-    if (!isReadOnlyWallet) {
+    if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
       navigate(Routes.SEND_FLOW);
     } else {
       Alert.alert(`You need to import the wallet in order to do this`);

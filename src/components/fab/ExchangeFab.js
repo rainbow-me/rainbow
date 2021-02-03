@@ -3,10 +3,11 @@ import { Alert } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
 import { useNavigation } from '../../navigation/Navigation';
 import { lightModeThemeColors } from '../../styles/colors';
-import { magicMemo } from '../../utils';
 import { Icon } from '../icons';
 import FloatingActionButton from './FloatingActionButton';
+import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
 import Routes from '@rainbow-me/routes';
+import { magicMemo } from '@rainbow-me/utils';
 
 const FabShadow = [
   [0, 10, 30, lightModeThemeColors.shadow, 0.8],
@@ -18,7 +19,7 @@ const ExchangeFab = ({ disabled, isReadOnlyWallet, ...props }) => {
   const { colors } = useTheme();
 
   const handlePress = useCallback(() => {
-    if (!isReadOnlyWallet) {
+    if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
       navigate(Routes.EXCHANGE_MODAL);
     } else {
       Alert.alert(`You need to import the wallet in order to do this`);

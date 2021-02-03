@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import { withThemeContext } from '../../context/ThemeContext';
 import { convertAmountToNativeDisplay } from '../../helpers/utilities';
 import { OpacityToggler } from '../animations';
 import { Text } from '../text';
@@ -11,21 +10,20 @@ const Container = styled(OpacityToggler)`
   height: 30;
 `;
 
-const ValueText = withThemeContext(styled(Text).attrs(({ colors }) => ({
+const ValueText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'right',
   color: colors.alpha(colors.blueGreyDark, 0.6),
   size: 'lmedium',
 }))`
   padding-bottom: 1;
-`);
+`;
 
 const CoinDividerAssetsValue = ({
-  assetsAmount,
   balancesSum,
   nativeCurrency,
   openSmallBalances,
 }) => (
-  <Container isVisible={openSmallBalances || assetsAmount === 0}>
+  <Container isVisible={openSmallBalances}>
     <ValueText>
       {convertAmountToNativeDisplay(balancesSum, nativeCurrency)}
     </ValueText>

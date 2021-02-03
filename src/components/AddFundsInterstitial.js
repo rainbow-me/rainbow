@@ -3,7 +3,7 @@ import { get } from 'lodash';
 import React, { Fragment, useCallback } from 'react';
 import { Linking } from 'react-native';
 import styled from 'styled-components';
-import { useTheme, withThemeContext } from '../context/ThemeContext';
+import { useTheme } from '../context/ThemeContext';
 import networkInfo from '../helpers/networkInfo';
 import networkTypes from '../helpers/networkTypes';
 import showWalletErrorAlert from '../helpers/support';
@@ -26,36 +26,34 @@ const ButtonContainer = styled(Centered).attrs({ direction: 'column' })`
   width: ${ButtonContainerWidth};
 `;
 
-const InterstitialButton = withThemeContext(styled(ButtonPressAnimation).attrs(
-  ({ colors }) => ({
+const InterstitialButton = styled(ButtonPressAnimation).attrs(
+  ({ theme: { colors } }) => ({
     backgroundColor: colors.alpha(colors.blueGreyDark, 0.06),
     borderRadius: 23,
   })
 )`
   ${padding(11, 15, 14)};
-`);
+`;
 
 const InterstitialButtonRow = styled(Row)`
   margin-bottom: ${({ isSmallPhone }) => (isSmallPhone ? 19 : 42)};
 `;
 
-const InterstitialDivider = withThemeContext(styled(Divider).attrs(
-  ({ colors }) => ({
-    color: colors.rowDividerExtraLight,
-    inset: [0, 0, 0, 0],
-  })
-)`
+const InterstitialDivider = styled(Divider).attrs(({ theme: { colors } }) => ({
+  color: colors.rowDividerExtraLight,
+  inset: [0, 0, 0, 0],
+}))`
   border-radius: 1;
-`);
+`;
 
-const CopyAddressButton = withThemeContext(styled(ButtonPressAnimation).attrs(
-  ({ colors }) => ({
+const CopyAddressButton = styled(ButtonPressAnimation).attrs(
+  ({ theme: { colors } }) => ({
     backgroundColor: colors.alpha(colors.appleBlue, 0.06),
     borderRadius: 23,
   })
 )`
   ${padding(10.5, 15, 14.5)};
-`);
+`;
 
 const AmountBPA = styled(ButtonPressAnimation)`
   border-radius: 25px;
@@ -68,7 +66,7 @@ const Container = styled(Centered)`
   top: 50%;
 `;
 
-const Paragraph = withThemeContext(styled(Text).attrs(({ colors }) => ({
+const Paragraph = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
   color: colors.alpha(colors.blueGreyDark, 0.4),
   letterSpacing: 'roundedMedium',
@@ -78,9 +76,9 @@ const Paragraph = withThemeContext(styled(Text).attrs(({ colors }) => ({
 }))`
   margin-bottom: 24;
   margin-top: 19;
-`);
+`;
 
-const Title = withThemeContext(styled(Text).attrs(({ colors }) => ({
+const Title = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
   color: colors.dark,
   lineHeight: 32,
@@ -88,13 +86,13 @@ const Title = withThemeContext(styled(Text).attrs(({ colors }) => ({
   weight: 'heavy',
 }))`
   margin-horizontal: 27;
-`);
+`;
 
-const Subtitle = withThemeContext(styled(Title).attrs(({ colors }) => ({
+const Subtitle = styled(Title).attrs(({ theme: { colors } }) => ({
   color: colors.dark,
 }))`
   margin-top: ${({ isSmallPhone }) => (isSmallPhone ? 19 : 42)};
-`);
+`;
 
 const AmountText = styled(Text).attrs(({ children }) => ({
   align: 'center',

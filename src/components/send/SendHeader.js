@@ -87,7 +87,7 @@ export default function SendHeader({
       onRefocusInput,
       type: 'contact_profile',
     });
-  }, [contact, navigate, onRefocusInput, recipient]);
+  }, [colors, contact, navigate, onRefocusInput, recipient]);
 
   const handleOpenContactActionSheet = useCallback(async () => {
     return showActionSheetWithOptions(

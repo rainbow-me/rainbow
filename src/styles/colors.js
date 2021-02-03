@@ -242,6 +242,8 @@ const colors = currentColors.themedColors || lightModeThemeColors;
 export const getRandomColor = () =>
   Math.floor(Math.random() * colors.avatarColor.length);
 
+currentColors.themedColors = lightModeThemeColors;
+
 export default {
   ...colors,
   darkModeColors,
