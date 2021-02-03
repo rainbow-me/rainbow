@@ -19,6 +19,7 @@ import { Chart } from '../value-chart';
 import { ChartPathProvider } from '@rainbow-me/animated-charts';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 import {
+  useAccountAssets,
   useAccountSettings,
   useChartThrottledPoints,
   useDimensions,
@@ -33,6 +34,7 @@ import {
   handleSignificantDecimals,
   multiply,
 } from '@rainbow-me/utilities';
+import { ethereumUtils } from '@rainbow-me/utils';
 import ShadowStack from 'react-native-shadow-stack';
 
 const formatItem = (
@@ -78,6 +80,7 @@ const formatGenericAsset = asset => {
 
 export default function TokenIndexExpandedState({ asset }) {
   const { colors } = useTheme();
+  const { allAssets } = useAccountAssets();
   const { navigate } = useNavigation();
   const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
     genericAssets,
@@ -154,16 +157,20 @@ export default function TokenIndexExpandedState({ asset }) {
 
   const handlePress = useCallback(
     item => {
+      const asset =
+        ethereumUtils.getAsset(allAssets, toLower(item.address)) ||
+        ethereumUtils.formatGenericAsset(genericAssets[toLower(item.address)]);
+
       navigate(
         ios ? Routes.EXPANDED_ASSET_SHEET : Routes.EXPANDED_ASSET_SCREEN,
         {
-          asset: item,
+          asset,
           longFormHeight: initialChartExpandedStateSheetHeight,
           type: 'token',
         }
       );
     },
-    [navigate]
+    [allAssets, genericAssets, navigate]
   );
 
   return (
