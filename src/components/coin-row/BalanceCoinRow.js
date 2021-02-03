@@ -4,7 +4,7 @@ import Animated from 'react-native-reanimated';
 import { View } from 'react-primitives';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
-import { useTheme, withThemeContext } from '../../context/ThemeContext';
+import { useTheme } from '../../context/ThemeContext';
 import { useCoinListEditedValue } from '../../hooks/useCoinListEdited';
 import { ButtonPressAnimation } from '../animations';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
@@ -34,12 +34,12 @@ const BalanceCoinRowCoinCheckButton = styled(CoinCheckButton).attrs({
   top: ${({ top }) => top};
 `;
 
-const PercentageText = withThemeContext(styled(BottomRowText).attrs({
+const PercentageText = styled(BottomRowText).attrs({
   align: 'right',
 })`
-  color: ${({ isPositive, colors }) =>
+  color: ${({ isPositive, theme: { colors } }) =>
     isPositive ? colors.green : colors.alpha(colors.blueGreyDark, 0.5)};
-`);
+`;
 
 const BottomRowContainer = ios
   ? Fragment
