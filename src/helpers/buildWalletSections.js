@@ -10,13 +10,13 @@ import {
 } from 'lodash';
 import React from 'react';
 import { LayoutAnimation } from 'react-native';
-import { compose, withHandlers } from 'recompact';
 import { createSelector } from 'reselect';
 import { AssetListItemSkeleton } from '../components/asset-list';
 import { BalanceCoinRow } from '../components/coin-row';
 import { UniswapInvestmentRow } from '../components/investment-cards';
 import { CollectibleTokenFamily } from '../components/token-family';
 import { withNavigation } from '../navigation/Navigation';
+import { compose, withHandlers } from '../utils/recompactAdapters';
 import { buildCoinsList, buildUniqueTokenList } from './assets';
 import networkTypes from './networkTypes';
 import { add, convertAmountToNativeDisplay, multiply } from './utilities';

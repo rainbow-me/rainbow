@@ -9,7 +9,6 @@ import Animated, {
   timing,
   Value,
 } from 'react-native-reanimated';
-import { withProps } from 'recompact';
 import styled from 'styled-components';
 import { withThemeContext } from '../../context/ThemeContext';
 import { deviceUtils } from '../../utils';
@@ -35,7 +34,7 @@ const FakeAvatar = styled.View`
   border-radius: 20;
 `;
 
-const FakeRow = withProps({
+const FakeRow = styled(Row).attrs({
   align: 'flex-end',
   flex: 0,
   height: 10,
