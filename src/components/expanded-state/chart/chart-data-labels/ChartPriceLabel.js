@@ -19,10 +19,11 @@ const Label = styled(ChartYLabel)`
   ${android &&
   `margin-top: -30;
      margin-bottom: -30;
+     width: 150px;
      `}
 `;
 
-const AndroidCurrencySymbolLabel = styled(Label)`
+const AndroidCurrencySymbolLabel = styled(ChartYLabel)`
   color: ${({ theme: { colors } }) => colors.dark};
   ${fontWithWidth(fonts.weight.heavy)};
   font-size: ${fonts.size.big};
