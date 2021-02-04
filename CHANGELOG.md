@@ -12,6 +12,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.2.49](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.48)
+### Added
+* Dark Mode
+* High Quality NFT Images
+
+### Changed
+* Improved Gas Estimation 
+* Wallet Deletion Fixes
+* Avatar Fixes
+
 ## [1.2.48](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.48)
 ### Changed
 * UI Bug Fixes
