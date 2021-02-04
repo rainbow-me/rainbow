@@ -6,6 +6,7 @@ import { enableES5 } from 'immer';
 import ReactNative from 'react-native';
 import Animated from 'react-native-reanimated';
 import Storage from 'react-native-storage';
+import globalVariables from './globalVariables';
 import logger from 'logger';
 
 //Can remove when we update hermes after they enable Proxy support
@@ -44,19 +45,14 @@ if (
 
 global.storage = storage;
 
-Object.defineProperty(global, 'android', {
-  get: () => ReactNative.Platform.OS === 'android',
-  set: () => {
-    throw new Error('Trying to override internal Rainbow var');
-  },
-});
-
-Object.defineProperty(global, 'ios', {
-  get: () => ReactNative.Platform.OS === 'ios',
-  set: () => {
-    throw new Error('Trying to override internal Rainbow var');
-  },
-});
+for (let variable of Object.entries(globalVariables)) {
+  Object.defineProperty(global, variable[0], {
+    get: () => variable[1],
+    set: () => {
+      throw new Error('Trying to override internal Rainbow var');
+    },
+  });
+}
 
 const SHORTEN_PROP_TYPES_ERROR = true;
 
