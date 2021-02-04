@@ -1,3 +1,4 @@
+import { endsWith } from 'lodash';
 import React from 'react';
 import styled from 'styled-components';
 import { useDimensions, useImageMetadata } from '../../../hooks';
@@ -24,7 +25,9 @@ const ImageWrapper = styled(Centered)`
 const UniqueTokenExpandedStateImage = ({ asset }) => {
   const { width: deviceWidth } = useDimensions();
 
-  const imageUrl = asset.image_preview_url;
+  const isSVG = endsWith(asset.image_url, '.svg');
+  const imageUrl = isSVG ? asset.image_preview_url : asset.image_url;
+
   const { dimensions: imageDimensions } = useImageMetadata(imageUrl);
 
   const maxImageWidth = deviceWidth - paddingHorizontal * 2;
