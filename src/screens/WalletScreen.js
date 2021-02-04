@@ -28,6 +28,7 @@ import networkInfo from '../helpers/networkInfo';
 import {
   useAccountEmptyState,
   useAccountSettings,
+  useAudio,
   useCoinListEdited,
   useInitializeWallet,
   useRefreshAccountData,
@@ -69,6 +70,7 @@ export default function WalletScreen() {
     shouldRefetchSavings,
   } = useWalletSectionsData();
   const dispatch = useDispatch();
+  const { playlist } = useAudio();
 
   useEffect(() => {
     const fetchAndResetFetchSavings = async () => {
@@ -88,14 +90,18 @@ export default function WalletScreen() {
     }
   }, [initializeWallet, initialized, params]);
 
+  const hasAudioContent = !!playlist.length;
+
   // Show the exchange fab only for supported networks
   // (mainnet & rinkeby)
   const fabs = useMemo(
     () =>
-      get(networkInfo[network], 'exchange_enabled')
-        ? [EphemeralAudioPlayerFab, ExchangeFab, SendFab]
-        : [EphemeralAudioPlayerFab, SendFab],
-    [network]
+      [
+        !!hasAudioContent && EphemeralAudioPlayerFab,
+        !!get(networkInfo[network], 'exchange_enabled') && ExchangeFab,
+        SendFab,
+      ].filter(e => !!e),
+    [network, hasAudioContent]
   );
 
   const isCoinListEditedValue = useCoinListEditedValue();

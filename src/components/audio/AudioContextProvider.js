@@ -1,16 +1,51 @@
 import * as React from 'react';
+import isEqual from 'react-fast-compare';
 import Sound from 'react-native-sound';
-import { useAudio } from '@rainbow-me/hooks';
+import { useDispatch, useSelector } from 'react-redux';
+import AudioContext from '../../context/AudioContext';
+import isSupportedUriExtension from '../../helpers/isSupportedUriExtension';
+import supportedUriExtensions from '../../helpers/supportedUriExtensions';
+import { setCurrentPlayingAsset } from '../../redux/audio';
+import { useAccountAssets, useAudio } from '@rainbow-me/hooks';
 import logger from 'logger';
 
-export default function AudioManager({ category }) {
+export default function AudioContextProvider({ category, children }) {
   React.useEffect(() => {
     Sound.setCategory('Playback');
   }, [category]);
 
-  // eslint-disable-next-line no-unused-vars
+  const { collectibles } = useAccountAssets();
+
+  const playlist = React.useMemo(() => {
+    return collectibles.filter(({ animation_url }) =>
+      isSupportedUriExtension(
+        animation_url,
+        supportedUriExtensions.SUPPORTED_AUDIO_EXTENSIONS
+      )
+    );
+  }, [collectibles]);
+
   const [currentSound, setCurrentSound] = React.useState(null);
-  const { currentlyPlayingAsset, stopPlayingAsset } = useAudio();
+
+  const dispatch = useDispatch();
+  const { currentlyPlayingAsset } = useSelector(
+    ({ audio: { currentlyPlayingAsset } }) => ({
+      currentlyPlayingAsset,
+    }),
+    isEqual
+  );
+
+  const playAsset = React.useCallback(
+    asset => dispatch(setCurrentPlayingAsset(asset)),
+    [dispatch]
+  );
+
+  const stopPlayingAsset = React.useCallback(
+    () => dispatch(setCurrentPlayingAsset(null)),
+    [dispatch]
+  );
+
+  const isPlayingAsset = !!currentlyPlayingAsset;
 
   const shouldLoadSoundByUri = React.useCallback(async uri => {
     const sound = await new Promise((resolve, reject) => {
@@ -111,5 +146,31 @@ export default function AudioManager({ category }) {
     setNextSoundAndDestroyLastIfExists,
     shouldPlayNextAsset,
   ]);
-  return null;
+
+  const parentValue = useAudio();
+
+  const value = React.useMemo(
+    () => ({
+      ...parentValue,
+      currentlyPlayingAsset,
+      currentSound,
+      isPlayingAsset,
+      playAsset,
+      playlist,
+      stopPlayingAsset,
+    }),
+    [
+      currentlyPlayingAsset,
+      currentSound,
+      isPlayingAsset,
+      playAsset,
+      stopPlayingAsset,
+      parentValue,
+      playlist,
+    ]
+  );
+
+  return (
+    <AudioContext.Provider value={value}>{children}</AudioContext.Provider>
+  );
 }

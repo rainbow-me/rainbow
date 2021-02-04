@@ -1,19 +1,25 @@
 import * as React from 'react';
 import { Animated, StyleSheet } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
+import { useNavigation } from '../../navigation/Navigation';
 import { lightModeThemeColors } from '../../styles/colors';
 import { magicMemo } from '../../utils';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import { CurrentSoundTimestampSpan } from '../audio';
 import { Icon } from '../icons';
 import { Bold, Text } from '../text';
 import FloatingActionButton, {
   FloatingActionButtonSize,
 } from './FloatingActionButton';
-import { useAudio } from '@rainbow-me/hooks';
+import { useAudio, useWallets } from '@rainbow-me/hooks';
+import Routes from '@rainbow-me/routes';
 
 const FabShadow = [
   [0, 10, 30, lightModeThemeColors.shadow, 0.8],
   [0, 5, 15, lightModeThemeColors.orangeLight, 1],
 ];
+
+const paddingRight = 10;
 
 export type EphemeralAudioPlayerFabProps = {
   readonly disabled: boolean;
@@ -46,10 +52,12 @@ function EphemeralAudioPlayerFab({
   remainingSpace,
   ...props
 }: EphemeralAudioPlayerFabProps): JSX.Element {
-  const { colors } = useTheme();
+  const { colors, isDarkMode } = useTheme();
   const [open, setOpen] = React.useState(false);
-  const { isPlayingAsset, currentlyPlayingAsset } = useAudio();
+  const { isPlayingAsset, currentlyPlayingAsset, playlist } = useAudio();
   const progress = React.useMemo(() => new Animated.Value(0), []);
+  const { isReadOnlyWallet } = useWallets();
+  const { navigate } = useNavigation();
 
   React.useEffect(() => {
     // If the user plays an asset and we weren't before, we should automatically open.
@@ -59,6 +67,18 @@ function EphemeralAudioPlayerFab({
   const handlePress = React.useCallback(() => {
     setOpen(isCurrentlyOpen => !isCurrentlyOpen);
   }, [setOpen]);
+  const handleAudioTitlePress = React.useCallback(() => {
+    if (currentlyPlayingAsset) {
+      navigate(
+        ios ? Routes.EXPANDED_ASSET_SHEET : Routes.EXPANDED_ASSET_SCREEN,
+        {
+          asset: currentlyPlayingAsset,
+          isReadOnlyWallet,
+          type: 'unique_token',
+        }
+      );
+    }
+  }, [currentlyPlayingAsset, navigate, isReadOnlyWallet]);
 
   // translation
   React.useEffect(() => {
@@ -73,19 +93,39 @@ function EphemeralAudioPlayerFab({
     remainingSpace,
   ]);
 
+  const currentPlayingAssetTitle = React.useMemo(() => {
+    if (!!currentlyPlayingAsset && typeof currentlyPlayingAsset === 'object') {
+      // @ts-ignore
+      const { name, asset_contract } = currentlyPlayingAsset;
+      if (!!asset_contract && typeof asset_contract === 'object') {
+        const { name: assetContractName } = asset_contract;
+        if (typeof assetContractName === 'string') {
+          return `${name} // ${assetContractName}`;
+        }
+      }
+      return `${name}`;
+    }
+    return '';
+  }, [currentlyPlayingAsset]);
+
+  const currentPlayingAssetDetailsColor = isDarkMode
+    ? colors.black
+    : colors.lightGrey;
   return (
     <Animated.View pointerEvents="box-none" {...props} style={containerStyle}>
       {/* Overflow Container */}
       <Animated.View
+        pointerEvents="box-none"
         style={[
           styles.absolute,
           styles.overflowContainer,
           styles.noOverflow,
-          { width: remainingSpace - 15 },
+          { width: remainingSpace - paddingRight },
         ]}
       >
         {/* Animated Background */}
         <Animated.View
+          pointerEvents={open ? 'auto' : 'none'}
           style={[
             styles.absolute,
             styles.background,
@@ -98,31 +138,47 @@ function EphemeralAudioPlayerFab({
                 {
                   translateX: Animated.multiply(
                     Animated.subtract(1, progress),
-                    remainingSpace - (FloatingActionButtonSize + 15)
+                    remainingSpace - (FloatingActionButtonSize + paddingRight)
                   ),
                 },
               ],
-              width: remainingSpace - 15,
+              width: remainingSpace - paddingRight,
             },
           ]}
         >
-          {!!currentlyPlayingAsset && (
+          {currentlyPlayingAsset ? (
             <>
-              <Bold
-                children={currentlyPlayingAsset.name}
-                numberOfLines={1}
-                style={{ color: colors.orangeLight }}
-              />
+              <ButtonPressAnimation
+                disabled={disabled}
+                onPress={handleAudioTitlePress}
+                opacity={isDarkMode && disabled ? 0.6 : 1}
+                scaleTo={0.95}
+                {...props}
+              >
+                <Bold
+                  children={currentPlayingAssetTitle}
+                  numberOfLines={1}
+                  style={{ color: colors.orangeLight }}
+                />
+              </ButtonPressAnimation>
               <Text
-                children="01:03"
                 numberOfLines={1}
-                style={{ color: colors.lightGrey }}
-              />
+                style={{ color: currentPlayingAssetDetailsColor }}
+              >
+                <CurrentSoundTimestampSpan />
+              </Text>
             </>
+          ) : (
+            <Bold
+              children={`${playlist.length} tracks`}
+              numberOfLines={1}
+              style={{ color: colors.orangeLight }}
+            />
           )}
         </Animated.View>
       </Animated.View>
       <Animated.View
+        pointerEvents="box-none"
         style={[
           styles.absolute,
           {
@@ -130,7 +186,7 @@ function EphemeralAudioPlayerFab({
               {
                 translateX: Animated.multiply(
                   Animated.subtract(1, progress),
-                  remainingSpace - (FloatingActionButtonSize + 15)
+                  remainingSpace - (FloatingActionButtonSize + paddingRight)
                 ),
               },
             ],

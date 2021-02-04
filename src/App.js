@@ -31,7 +31,7 @@ import VersionNumber from 'react-native-version-number';
 import { connect, Provider } from 'react-redux';
 import { compose, withProps } from 'recompact';
 import PortalConsumer from './components/PortalConsumer';
-import { AudioManager } from './components/audio';
+import { AudioContextProvider } from './components/audio';
 import { FlexItem } from './components/layout';
 import { OfflineToast } from './components/toasts';
 import {
@@ -293,16 +293,19 @@ class App extends Component {
         <Portal>
           <SafeAreaProvider>
             <Provider store={store}>
-              <AudioManager />
-              <FlexItem>
-                {this.state.initialRoute && (
-                  <InitialRouteContext.Provider value={this.state.initialRoute}>
-                    <RoutesComponent ref={this.handleNavigatorRef} />
-                    <PortalConsumer />
-                  </InitialRouteContext.Provider>
-                )}
-                <OfflineToast />
-              </FlexItem>
+              <AudioContextProvider>
+                <FlexItem>
+                  {this.state.initialRoute && (
+                    <InitialRouteContext.Provider
+                      value={this.state.initialRoute}
+                    >
+                      <RoutesComponent ref={this.handleNavigatorRef} />
+                      <PortalConsumer />
+                    </InitialRouteContext.Provider>
+                  )}
+                  <OfflineToast />
+                </FlexItem>
+              </AudioContextProvider>
             </Provider>
           </SafeAreaProvider>
         </Portal>

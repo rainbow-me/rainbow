@@ -53,7 +53,7 @@ export default function FabWrapper({
     <FlexItem>
       {children}
       {!disabled && (
-        <FabWrapperRow isEditMode={isCoinListEdited}>
+        <FabWrapperRow isEditMode={isCoinListEdited} pointerEvents="box-none">
           {fabs.map(renderFab)}
         </FabWrapperRow>
       )}
