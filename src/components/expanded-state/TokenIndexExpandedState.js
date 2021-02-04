@@ -233,7 +233,7 @@ export default function TokenIndexExpandedState({ asset }) {
             </Text>
           </Column>
         </Row>
-        <Column marginHorizontal={19} marginTop={12}>
+        <Column marginBottom={40} marginHorizontal={19} marginTop={12}>
           {underlying.map(item => (
             <Row
               as={ButtonPressAnimation}
