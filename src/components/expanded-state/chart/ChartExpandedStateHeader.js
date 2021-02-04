@@ -130,14 +130,13 @@ export default function ChartExpandedStateHeader({
         <RowWithMargins
           height={30}
           justify="space-between"
-          marginHorizontal={1}
+          marginHorizontal={android ? 0 : 1}
           marginVertical={android ? 4 : 1}
         >
           <ChartHeaderSubtitle
             color={
               isNoPriceData ? colors.alpha(colors.blueGreyDark, 0.8) : color
             }
-            style={{ flex: 2 }}
             weight={isNoPriceData ? 'semibold' : 'bold'}
           >
             {titleOrNoPriceData}
@@ -146,7 +145,6 @@ export default function ChartExpandedStateHeader({
             <ChartDateLabel
               chartTimeSharedValue={chartTimeSharedValue}
               dateRef={dateRef}
-              style={{ flex: 1 }}
             />
           )}
         </RowWithMargins>
