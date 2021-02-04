@@ -4,7 +4,6 @@ import { Image } from 'react-native';
 import Caret from '../../assets/family-dropdown-arrow.png';
 import { RowWithMargins } from '../layout';
 import { Text } from '../text';
-import { magicMemo } from '@rainbow-me/utils';
 
 const ListItemArrowGroup = ({ children }) => {
   const { colors } = useTheme();
@@ -38,4 +37,4 @@ ListItemArrowGroup.propTypes = {
   children: PropTypes.node,
 };
 
-export default magicMemo(ListItemArrowGroup);
+export default React.memo(ListItemArrowGroup);
