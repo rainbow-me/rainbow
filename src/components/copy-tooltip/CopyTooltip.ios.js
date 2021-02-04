@@ -14,7 +14,7 @@ function CopyTooltip({ textToCopy, activeOpacity, tooltipText, ...props }) {
       {...props}
       actions={[{ onPress: handleCopy, text: tooltipText }]}
       activeOpacity={activeOpacity}
-      onPress={ref.current.showMenu}
+      onPress={() => ref.current.showMenu()}
       ref={ref}
       underlayColor={colors.transparent}
     />
