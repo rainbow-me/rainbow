@@ -14,6 +14,7 @@ import { walletsLoadState } from '../redux/wallets';
 import useAccountSettings from './useAccountSettings';
 import useHideSplashScreen from './useHideSplashScreen';
 import useInitializeAccountData from './useInitializeAccountData';
+import useInitializeDiscoverData from './useInitializeDiscoverData';
 import useLoadAccountData from './useLoadAccountData';
 import useLoadGlobalData from './useLoadGlobalData';
 import useResetAccountState from './useResetAccountState';
@@ -25,6 +26,7 @@ export default function useInitializeWallet() {
   const loadAccountData = useLoadAccountData();
   const loadGlobalData = useLoadGlobalData();
   const initializeAccountData = useInitializeAccountData();
+  const initializeDiscoverData = useInitializeDiscoverData();
 
   const { network } = useAccountSettings();
   const hideSplashScreen = useHideSplashScreen();
@@ -36,7 +38,8 @@ export default function useInitializeWallet() {
       name = null,
       shouldRunMigrations = false,
       overwrite = false,
-      checkedWallet = null
+      checkedWallet = null,
+      switching
     ) => {
       try {
         logger.sentry('Start wallet setup');
@@ -110,6 +113,10 @@ export default function useInitializeWallet() {
           dispatch(appStateUpdate({ walletReady: true }));
         }
 
+        if (!switching) {
+          initializeDiscoverData();
+        }
+
         logger.sentry('💰 Wallet initialized');
         return walletAddress;
       } catch (error) {
@@ -127,6 +134,7 @@ export default function useInitializeWallet() {
       dispatch,
       hideSplashScreen,
       initializeAccountData,
+      initializeDiscoverData,
       loadGlobalData,
       loadAccountData,
       network,
