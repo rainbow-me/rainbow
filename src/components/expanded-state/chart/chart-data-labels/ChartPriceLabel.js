@@ -9,9 +9,7 @@ import { useAccountSettings } from '@rainbow-me/hooks';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 import { fonts, fontWithWidth } from '@rainbow-me/styles';
 
-const ChartPriceRow = styled(Row)`
-  width: 55%;
-`;
+const ChartPriceRow = styled(Row)``;
 
 const Label = styled(ChartYLabel)`
   color: ${({ theme: { colors } }) => colors.dark};
@@ -100,9 +98,6 @@ export default function ChartPriceLabel({
             return formatted.replace(/[^\d.,-]/g, '');
           }
           return formatted;
-        }}
-        style={{
-          width: android ? '67%' : '75%',
         }}
       />
     </ChartPriceRow>
