@@ -28,6 +28,7 @@ export default function useLoadGlobalData() {
     const p4 = loadWalletBalanceNamesToCache();
     const p5 = dispatch(imageMetadataCacheLoadState());
     const p6 = dispatch(keyboardHeightsLoadState());
+
     promises.push(p1, p2, p3, p4, p5, p6);
 
     return promiseUtils.PromiseAllWithFails(promises);

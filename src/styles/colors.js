@@ -12,6 +12,7 @@ const darkModeColors = {
   blueGreyDark50: '#797D8B',
   blueGreyDarker: '#000000',
   blueGreyDarkLight: '#1E2027',
+  brightRed: '#FF5252',
   dark: '#E0E8FF',
   darkGrey: '#333333',
   darkModeDark: '#404656',
@@ -33,15 +34,12 @@ const darkModeColors = {
   shimmer: '#1F2229',
   skeleton: '#191B21',
   stackBackground: '#000000',
-  trueBlack: '#000000',
-  trueWhite: '#FFFFFF',
   white: '#12131A',
   whiteLabel: '#FFFFFF',
 };
 
 const isHex = (color = '') => color.length >= 3 && color.charAt(0) === '#';
 const isRGB = (color = '') => toLower(color).substring(0, 3) === 'rgb';
-
 const getColorsByTheme = darkMode => {
   let base = {
     appleBlue: '#0E76FD', // '14, 118, 253'
@@ -55,6 +53,9 @@ const getColorsByTheme = darkMode => {
     chartGreen: '#66D28F', // '102, 210, 143'
     dark: '#25292E', // '37, 41, 46'
     darkGrey: '#71778A', // '113, 119, 138'
+    dpiDark: '#8150E6', // '129, 80, 230'
+    dpiLight: '#9B74EC', // '155, 116, 236'
+    dpiMid: '#8E62E9', // '142, 98, 233'
     flamingo: '#E540F1', // '229, 64, 241'
     green: '#2CCC00', // '58, 166, 134'
     grey: '#A9ADB9', // '169, 173, 185'
@@ -87,6 +88,7 @@ const getColorsByTheme = darkMode => {
     stackBackground: '#0A0A0A', // '10, 10, 10'
     swapPurple: '#575CFF', // '87, 92, 255'
     transparent: 'transparent',
+    trueBlack: '#000000', // '0, 0, 0'
     white: '#FFFFFF', // '255, 255, 255'
     whiteLabel: '#FFFFFF', // '255, 255, 255'
     yellow: '#FFD657', // '255, 214, 87'
@@ -114,7 +116,6 @@ const getColorsByTheme = darkMode => {
   };
 
   let gradients = {
-    favoriteCircle: ['#FFFFFF', '#F2F4F7'],
     lighterGrey: [buildRgba('#ECF1F5', 0.15), buildRgba('#DFE4EB', 0.5)],
     lightestGrey: ['#FFFFFF', '#F2F4F7'],
     lightGrey: [buildRgba('#ECF1F5', 0.5), buildRgba('#DFE4EB', 0.5)],
@@ -193,8 +194,8 @@ const getColorsByTheme = darkMode => {
     };
 
     gradients = {
-      favoriteCircle: [buildRgba('#1F222A', 0.8), buildRgba('#1F222A', 0.3)],
       lighterGrey: [buildRgba('#1F222A', 0.8), buildRgba('#1F222A', 0.6)],
+      lightestGrey: [buildRgba('#1F222A', 0.8), buildRgba('#1F222A', 0.3)],
       lightGrey: ['#1F222A', buildRgba('#1F222A', 0.8)],
       offWhite: ['#1F222A', '#1F222A'],
       rainbow: ['#FFB114', '#FF54BB', '#7EA4DE'],

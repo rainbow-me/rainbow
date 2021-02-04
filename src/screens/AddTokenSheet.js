@@ -117,7 +117,7 @@ export default function AddTokenSheet() {
           <Column marginBottom={24}>
             <Text
               align="center"
-              color={colors.blueGreyDarker}
+              color={colors.dark}
               letterSpacing="roundedMedium"
               size="larger"
               weight="heavy"

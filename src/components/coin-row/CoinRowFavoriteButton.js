@@ -30,7 +30,7 @@ const Circle = styled(RadialGradient).attrs(
           colors.alpha('#FFB200', isDarkMode ? 0.15 : 0),
           colors.alpha('#FFB200', isDarkMode ? 0.05 : 0.2),
         ]
-      : colors.gradients.favoriteCircle,
+      : colors.gradients.lightestGrey,
   })
 )`
   border-radius: 15px;

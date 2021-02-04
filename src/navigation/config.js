@@ -12,7 +12,7 @@ import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import { fonts } from '@rainbow-me/styles';
 import { deviceUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 
-export const sharedCoolModalTopOffset = safeAreaInsetValues.top + 5;
+export const sharedCoolModalTopOffset = safeAreaInsetValues.top;
 
 const buildCoolModalConfig = params => ({
   allowsDragToDismiss: true,

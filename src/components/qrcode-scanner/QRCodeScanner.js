@@ -64,7 +64,7 @@ export default function QRCodeScanner({
     [setCameraEnabled]
   );
   useEffect(
-    () => dsRef.current.addOnCrossMagicBorderListener(onCrossMagicBorder),
+    () => dsRef.current?.addOnCrossMagicBorderListener(onCrossMagicBorder),
     [dsRef, onCrossMagicBorder]
   );
   useEffect(() => {

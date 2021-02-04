@@ -743,6 +743,7 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         ...INITIAL_STATE,
+        genericAssets: state.genericAssets,
       };
     default:
       return state;
