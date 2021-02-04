@@ -34,7 +34,7 @@ const formatItem = ({ address, name, price, symbol }, nativeCurrencySymbol) => {
   };
 };
 
-export default function PulseIndex() {
+const PulseIndex = () => {
   const { navigate } = useNavigation();
   const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
     genericAssets,
@@ -161,4 +161,6 @@ export default function PulseIndex() {
       </Row>
     </Fragment>
   );
-}
+};
+
+export default React.memo(PulseIndex);
