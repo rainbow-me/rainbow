@@ -90,7 +90,7 @@ platform :ios do
     pilot(
       app_identifier: "me.rainbow",
       skip_waiting_for_build_processing: true,
-      api_key: api_key
+      # api_key: api_key
     )
   end
 end
