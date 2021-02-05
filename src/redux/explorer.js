@@ -288,6 +288,8 @@ export const emitAssetInfoRequest = () => (dispatch, getState) => {
   }, ASSET_INFO_TIMEOUT);
 };
 
+const chartsListened = {};
+
 export const emitChartsRequest = (
   assetAddress,
   chartType = DEFAULT_CHART_TYPE
@@ -307,9 +309,14 @@ export const emitChartsRequest = (
 
     assetCodes = concat(assetAddresses, lpTokenAddresses, DPI_ADDRESS);
   }
-  assetsSocket?.emit?.(
-    ...chartsRetrieval(assetCodes, nativeCurrency, chartType)
-  );
+
+  const newAssetsCodes = assetCodes.filter(code => !chartsListened[code]);
+  newAssetsCodes.forEach(code => (chartsListened[code] = true));
+  if (newAssetsCodes.length > 0) {
+    assetsSocket.emit(
+      ...chartsRetrieval(newAssetsCodes, nativeCurrency, chartType)
+    );
+  }
 };
 
 const listenOnAssetMessages = socket => dispatch => {
