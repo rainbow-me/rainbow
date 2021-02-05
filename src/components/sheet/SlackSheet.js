@@ -15,8 +15,6 @@ import { useDimensions } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { position } from '@rainbow-me/styles';
 
-const { event } = Animated;
-
 const AndroidBackground = styled.View`
   ${position.cover};
   background-color: ${({ backgroundColor }) => backgroundColor};
@@ -41,19 +39,10 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
 `;
 
 const Content = styled(Animated.ScrollView).attrs(
-  ({ limitScrollViewContent, y }) => ({
+  ({ limitScrollViewContent }) => ({
     contentContainerStyle: limitScrollViewContent ? { height: '100%' } : {},
     directionalLockEnabled: true,
     keyboardShouldPersistTaps: 'always',
-    onScroll: event([
-      {
-        nativeEvent: {
-          contentOffset: {
-            y,
-          },
-        },
-      },
-    ]),
     scrollEventThrottle: 16,
   })
 )`
