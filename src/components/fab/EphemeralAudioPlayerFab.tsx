@@ -24,11 +24,6 @@ const UNICODE_SYMBOL_PAUSE = String.fromCharCode(56256, 56966);
 const UNICODE_SYMBOL_PLAY = String.fromCharCode(56256, 56964);
 const UNICODE_SYMBOL_SKIP = String.fromCharCode(56256, 56972);
 
-// Someday?
-// const UNICODE_SYMBOL_REPEAT = String.fromCharCode(56256, 56990);
-// const UNICODE_SYMBOL_REPEAT_ONCE = String.fromCharCode(56256, 56991);
-// const UNICODE_SYMBOL_SHUFFLE = String.fromCharCode(56256, 56989);
-
 export type EphemeralAudioPlayerFabProps = {
   readonly disabled: boolean;
   readonly isReadOnlyWallet: boolean;

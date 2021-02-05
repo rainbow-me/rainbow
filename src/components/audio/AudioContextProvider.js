@@ -6,7 +6,7 @@ import { useDebounce, useDebouncedCallback } from 'use-debounce';
 import AudioContext from '../../context/AudioContext';
 import isSupportedUriExtension from '../../helpers/isSupportedUriExtension';
 import supportedUriExtensions from '../../helpers/supportedUriExtensions';
-import { setCurrentPlayingAsset } from '../../redux/audio';
+import { setAutoplay, setCurrentPlayingAsset } from '../../redux/audio';
 import { useAccountAssets, useAudio } from '@rainbow-me/hooks';
 import logger from 'logger';
 
@@ -29,8 +29,9 @@ export default function AudioContextProvider({ category, children }) {
   const [currentSound, setCurrentSound] = React.useState(null);
 
   const dispatch = useDispatch();
-  const { currentlyPlayingAsset } = useSelector(
-    ({ audio: { currentlyPlayingAsset } }) => ({
+  const { currentlyPlayingAsset, autoplay } = useSelector(
+    ({ audio: { currentlyPlayingAsset, autoplay } }) => ({
+      autoplay,
       currentlyPlayingAsset,
     }),
     isEqual
@@ -95,6 +96,11 @@ export default function AudioContextProvider({ category, children }) {
     return sound;
   }, []);
 
+  const shouldAutoplayNext = React.useCallback(() => {
+    const nextAsset = pickNextAsset();
+    return dispatch(setCurrentPlayingAsset(nextAsset));
+  }, [pickNextAsset, dispatch]);
+
   const shouldPlaySound = React.useCallback(
     async soundToPlay => {
       if (!soundToPlay || typeof soundToPlay !== 'object') {
@@ -118,7 +124,11 @@ export default function AudioContextProvider({ category, children }) {
               stopPlayingAsset();
               // Clear the sound from memory.
               soundToPlay.release();
-              // Also cancel the redux action.
+              if (autoplay) {
+                shouldAutoplayNext();
+                return soundInStateOnceFinishedPlaying;
+              }
+              // Clear the sound in state.
               return null;
             }
             return soundInStateOnceFinishedPlaying;
@@ -129,7 +139,7 @@ export default function AudioContextProvider({ category, children }) {
         });
       });
     },
-    [setCurrentSound, stopPlayingAsset]
+    [setCurrentSound, stopPlayingAsset, shouldAutoplayNext, autoplay]
   );
 
   const setNextSoundAndDestroyLastIfExists = React.useCallback(
@@ -221,6 +231,10 @@ export default function AudioContextProvider({ category, children }) {
     setNextSoundAndDestroyLastIfExists,
   ]);
 
+  const toggleAutoplay = React.useCallback(() => {
+    return dispatch(setAutoplay(!autoplay));
+  }, [autoplay, dispatch]);
+
   const parentValue = useAudio();
 
   const [debouncedPaused] = useDebounce(
@@ -231,6 +245,7 @@ export default function AudioContextProvider({ category, children }) {
   const value = React.useMemo(
     () => ({
       ...parentValue,
+      autoplay,
       currentlyPlayingAsset,
       currentSound,
       isPlayingAsset,
@@ -240,8 +255,10 @@ export default function AudioContextProvider({ category, children }) {
       playAsset,
       playlist,
       stopPlayingAsset,
+      toggleAutoplay,
     }),
     [
+      autoplay,
       currentlyPlayingAsset,
       currentSound,
       isPlayingAsset,
@@ -252,6 +269,7 @@ export default function AudioContextProvider({ category, children }) {
       pickRandomAsset,
       parentValue,
       playlist,
+      toggleAutoplay,
     ]
   );
 

@@ -7,6 +7,7 @@ const defaultErrorThunk = () => async () => {
 };
 
 const defaultValue = Object.freeze({
+  autoplay: false,
   currentlyPlayingAsset: null,
   currentSound: null,
   isPlayingAsset: false,
@@ -16,6 +17,7 @@ const defaultValue = Object.freeze({
   playAsset: defaultErrorThunk(),
   playlist: [],
   stopPlayingAsset: defaultErrorThunk(),
+  toggleAutoplay: defaultErrorThunk(),
 });
 
 export default React.createContext(defaultValue);

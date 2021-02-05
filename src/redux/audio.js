@@ -5,14 +5,23 @@ import supportedUriExtensions from '../helpers/supportedUriExtensions';
 const AUDIO_RECEIVE_CURRENT_PLAYING_ASSET =
   'audio/AUDIO_RECEIVE_CURRENT_PLAYING_ASSET';
 
+const AUDIO_RECEIVE_AUTOPLAY = 'audio/AUDIO_RECEIVE_AUTOPLAY';
+
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
+  autoplay: true,
   currentlyPlayingAsset: null,
 };
 
+// -- Actions ----------------------------------------- //
 const receiveCurrentPlayingAsset = payload => ({
   payload,
   type: AUDIO_RECEIVE_CURRENT_PLAYING_ASSET,
+});
+
+const receiveAutoplay = payload => ({
+  payload,
+  type: AUDIO_RECEIVE_AUTOPLAY,
 });
 
 export const setCurrentPlayingAsset = asset => async dispatch => {
@@ -47,10 +56,16 @@ export const setCurrentPlayingAsset = asset => async dispatch => {
   return dispatch(receiveCurrentPlayingAsset(asset));
 };
 
+export const setAutoplay = autoplay => async dispatch => {
+  return dispatch(receiveAutoplay(!!autoplay));
+};
+
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case AUDIO_RECEIVE_CURRENT_PLAYING_ASSET:
       return { ...state, currentlyPlayingAsset: action.payload };
+    case AUDIO_RECEIVE_AUTOPLAY:
+      return { ...state, autoplay: action.payload };
     default:
       return state;
   }
