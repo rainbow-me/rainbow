@@ -24,6 +24,9 @@ import {
 } from '@rainbow-me/hooks';
 import { logger, magicMemo } from '@rainbow-me/utils';
 
+const UNICODE_SYMBOL_PAUSE = String.fromCharCode(56256, 56984);
+const UNICODE_SYMBOL_PLAY = String.fromCharCode(56256, 56982);
+
 const UniqueTokenExpandedState = ({ asset }) => {
   const {
     asset_contract: {
@@ -60,7 +63,12 @@ const UniqueTokenExpandedState = ({ asset }) => {
   const { colors, isDarkMode } = useTheme();
 
   const { supportsAudio } = useUniqueToken(asset);
-  const { playAsset, currentlyPlayingAsset, stopPlayingAsset } = useAudio();
+  const {
+    playAsset,
+    currentlyPlayingAsset,
+    isPlayingAssetPaused,
+    currentSound,
+  } = useAudio();
 
   const assetIsPlayingAudio =
     !!currentlyPlayingAsset &&
@@ -70,13 +78,21 @@ const UniqueTokenExpandedState = ({ asset }) => {
   const handlePressAudio = React.useCallback(async () => {
     try {
       if (assetIsPlayingAudio) {
-        return stopPlayingAsset();
+        const shouldPause = () => currentSound.pause();
+        const shouldPlay = () => currentSound.play();
+        return isPlayingAssetPaused ? shouldPlay() : shouldPause();
       }
       return playAsset(asset);
     } catch (e) {
       logger.error(e);
     }
-  }, [asset, playAsset, assetIsPlayingAudio, stopPlayingAsset]);
+  }, [
+    asset,
+    currentSound,
+    playAsset,
+    assetIsPlayingAudio,
+    isPlayingAssetPaused,
+  ]);
 
   return (
     <Fragment>
@@ -95,9 +111,9 @@ const UniqueTokenExpandedState = ({ asset }) => {
             <SheetActionButton
               color={colors.orangeLight}
               label={
-                assetIsPlayingAudio
-                  ? `${String.fromCharCode(56256, 56956)} Stop`
-                  : `${String.fromCharCode(56256, 56981)} Play`
+                assetIsPlayingAudio && !isPlayingAssetPaused
+                  ? `${UNICODE_SYMBOL_PAUSE} Pause`
+                  : `${UNICODE_SYMBOL_PLAY} Play`
               }
               onPress={handlePressAudio}
               weight="bold"

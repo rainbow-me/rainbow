@@ -1,11 +1,10 @@
 import * as React from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
+import { Animated, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
 import { useNavigation } from '../../navigation/Navigation';
 import { lightModeThemeColors } from '../../styles/colors';
 import { magicMemo } from '../../utils';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
-import { CurrentSoundTimestampSpan } from '../audio';
 import { Icon } from '../icons';
 import { Bold, Text } from '../text';
 import FloatingActionButton, {
@@ -20,6 +19,15 @@ const FabShadow = [
 ];
 
 const paddingRight = 10;
+
+const UNICODE_SYMBOL_PAUSE = String.fromCharCode(56256, 56966);
+const UNICODE_SYMBOL_PLAY = String.fromCharCode(56256, 56964);
+const UNICODE_SYMBOL_SKIP = String.fromCharCode(56256, 56972);
+
+// Someday?
+// const UNICODE_SYMBOL_REPEAT = String.fromCharCode(56256, 56990);
+// const UNICODE_SYMBOL_REPEAT_ONCE = String.fromCharCode(56256, 56991);
+// const UNICODE_SYMBOL_SHUFFLE = String.fromCharCode(56256, 56989);
 
 export type EphemeralAudioPlayerFabProps = {
   readonly disabled: boolean;
@@ -59,7 +67,15 @@ function EphemeralAudioPlayerFab({
 }: EphemeralAudioPlayerFabProps): JSX.Element {
   const { colors, isDarkMode } = useTheme();
   const [open, setOpen] = React.useState(false);
-  const { isPlayingAsset, currentlyPlayingAsset, playlist } = useAudio();
+  const {
+    currentSound,
+    isPlayingAsset,
+    isPlayingAssetPaused,
+    currentlyPlayingAsset,
+    pickRandomAsset,
+    pickNextAsset,
+    playAsset,
+  } = useAudio();
   const progress = React.useMemo(() => new Animated.Value(0), []);
   const { isReadOnlyWallet } = useWallets();
   const { navigate } = useNavigation();
@@ -85,6 +101,8 @@ function EphemeralAudioPlayerFab({
     }
   }, [currentlyPlayingAsset, navigate, isReadOnlyWallet]);
 
+  const shouldShowPauseIcon = !!isPlayingAsset && !isPlayingAssetPaused;
+
   // translation
   React.useEffect(() => {
     Animated.timing(progress, {
@@ -101,21 +119,15 @@ function EphemeralAudioPlayerFab({
   const currentPlayingAssetTitle = React.useMemo(() => {
     if (!!currentlyPlayingAsset && typeof currentlyPlayingAsset === 'object') {
       // @ts-ignore
-      const { name, asset_contract } = currentlyPlayingAsset;
-      if (!!asset_contract && typeof asset_contract === 'object') {
-        const { name: assetContractName } = asset_contract;
-        if (typeof assetContractName === 'string') {
-          return `${name} // ${assetContractName}`;
-        }
-      }
+      const { name } = currentlyPlayingAsset;
       return `${name}`;
     }
     return '';
   }, [currentlyPlayingAsset]);
 
   const currentPlayingAssetDetailsColor = isDarkMode
-    ? colors.black
-    : colors.lightGrey;
+    ? colors.orangeLight
+    : colors.orangeLight;
 
   const currentPlayingAssetDetailsStyle = React.useMemo(
     () => ({
@@ -123,6 +135,28 @@ function EphemeralAudioPlayerFab({
     }),
     [currentPlayingAssetDetailsColor]
   );
+  const handleOnPressToggleAudio = React.useCallback(async () => {
+    if (isPlayingAsset && currentSound) {
+      // @ts-ignore
+      const shouldPause = () => currentSound.pause();
+      // @ts-ignore
+      const shouldPlay = () => currentSound.play();
+      return isPlayingAssetPaused ? shouldPlay() : shouldPause();
+    }
+    const randomAsset = pickRandomAsset();
+    // @ts-ignore
+    return playAsset(randomAsset);
+  }, [
+    currentSound,
+    isPlayingAsset,
+    isPlayingAssetPaused,
+    playAsset,
+    pickRandomAsset,
+  ]);
+  const handleOnPressSkip = React.useCallback(async () => {
+    // @ts-ignore
+    return playAsset(pickNextAsset());
+  }, [playAsset, pickNextAsset]);
   return (
     <Animated.View pointerEvents="box-none" {...props} style={containerStyle}>
       {/* Overflow Container */}
@@ -167,27 +201,29 @@ function EphemeralAudioPlayerFab({
           >
             <Bold
               children={
-                currentlyPlayingAsset
-                  ? currentPlayingAssetTitle
-                  : 'Ethereum Playlist'
+                currentlyPlayingAsset ? currentPlayingAssetTitle : 'My Playlist'
               }
               numberOfLines={1}
               style={{ color: colors.orangeLight }}
             />
           </ButtonPressAnimation>
           <View style={styles.currentPlayingAssetDetails}>
-            <Text numberOfLines={1} style={currentPlayingAssetDetailsStyle}>
-              {isPlayingAsset ? 'playing' : 'not playing'}{' '}
-            </Text>
-            <Text numberOfLines={1} style={currentPlayingAssetDetailsStyle}>
-              <>
-                {currentlyPlayingAsset ? (
-                  <CurrentSoundTimestampSpan />
-                ) : (
-                  `${playlist.length} tracks`
-                )}
-              </>
-            </Text>
+            <TouchableOpacity onPress={handleOnPressToggleAudio}>
+              <Text style={currentPlayingAssetDetailsStyle}>
+                {shouldShowPauseIcon
+                  ? UNICODE_SYMBOL_PAUSE
+                  : UNICODE_SYMBOL_PLAY}
+                {'  '}
+              </Text>
+            </TouchableOpacity>
+            {!!currentlyPlayingAsset && (
+              <TouchableOpacity onPress={handleOnPressSkip}>
+                <Text style={currentPlayingAssetDetailsStyle}>
+                  {UNICODE_SYMBOL_SKIP}
+                  {'  '}
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
         </Animated.View>
       </Animated.View>

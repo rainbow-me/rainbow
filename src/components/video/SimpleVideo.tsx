@@ -42,7 +42,7 @@ export default function SimpleVideo({
       <Video
         controls
         paused
-        poster={posterUri}
+        poster={false && posterUri}
         ref={ref}
         source={source}
         style={StyleSheet.absoluteFill}

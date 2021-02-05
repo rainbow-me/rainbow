@@ -2,6 +2,7 @@ import * as React from 'react';
 import isEqual from 'react-fast-compare';
 import Sound from 'react-native-sound';
 import { useDispatch, useSelector } from 'react-redux';
+import { useDebounce, useDebouncedCallback } from 'use-debounce';
 import AudioContext from '../../context/AudioContext';
 import isSupportedUriExtension from '../../helpers/isSupportedUriExtension';
 import supportedUriExtensions from '../../helpers/supportedUriExtensions';
@@ -35,9 +36,26 @@ export default function AudioContextProvider({ category, children }) {
     isEqual
   );
 
+  const pickRandomAsset = React.useCallback(() => {
+    const choices = playlist.filter(e => e !== currentlyPlayingAsset);
+    const { length: numberToChoose } = choices;
+    return numberToChoose > 0
+      ? choices[Math.floor(Math.random() * choices.length)]
+      : playlist[0];
+  }, [playlist, currentlyPlayingAsset]);
+  const pickNextAsset = React.useCallback(() => {
+    const nextIndex =
+      (playlist.indexOf(currentlyPlayingAsset) + 1) % playlist.length || 0;
+    return playlist[nextIndex];
+  }, [playlist, currentlyPlayingAsset]);
+
   const playAsset = React.useCallback(
-    asset => dispatch(setCurrentPlayingAsset(asset)),
-    [dispatch]
+    asset => {
+      // Suppress the current sound before playing the next one.
+      !!currentSound && currentSound.setVolume(0);
+      return dispatch(setCurrentPlayingAsset(asset));
+    },
+    [dispatch, currentSound]
   );
 
   const stopPlayingAsset = React.useCallback(
@@ -46,6 +64,24 @@ export default function AudioContextProvider({ category, children }) {
   );
 
   const isPlayingAsset = !!currentlyPlayingAsset;
+
+  const [isPlayingAssetPaused, setIsPlayingAssetPaused] = React.useState(false);
+
+  React.useEffect(() => {
+    const i = setInterval(() => {
+      const nextIsPlayingAssetPaused =
+        !!currentSound && currentlyPlayingAsset && !currentSound._playing;
+      if (nextIsPlayingAssetPaused !== isPlayingAssetPaused) {
+        setIsPlayingAssetPaused(nextIsPlayingAssetPaused);
+      }
+    }, 10);
+    return () => clearInterval(i);
+  }, [
+    currentSound,
+    setIsPlayingAssetPaused,
+    currentlyPlayingAsset,
+    isPlayingAssetPaused,
+  ]);
 
   const shouldLoadSoundByUri = React.useCallback(async uri => {
     const sound = await new Promise((resolve, reject) => {
@@ -99,12 +135,12 @@ export default function AudioContextProvider({ category, children }) {
   const setNextSoundAndDestroyLastIfExists = React.useCallback(
     nextSoundToPlay => {
       setCurrentSound(maybeCurrentSound => {
+        if (nextSoundToPlay) {
+          shouldPlaySound(nextSoundToPlay);
+        }
         if (maybeCurrentSound) {
           maybeCurrentSound.stop();
           maybeCurrentSound.release();
-        }
-        if (nextSoundToPlay) {
-          shouldPlaySound(nextSoundToPlay);
         }
         return nextSoundToPlay;
       });
@@ -135,19 +171,62 @@ export default function AudioContextProvider({ category, children }) {
     [shouldLoadSoundByUri, setNextSoundAndDestroyLastIfExists]
   );
 
+  // Manages the transition between songs. 🎵
+  // This is computationally expensive to call, so we must
+  // account for the user aggressively selecting tracks.
+  const { callback: debouncedShouldPlayNext } = useDebouncedCallback(
+    async (
+      currentlyPlayingAsset,
+      shouldPlayNextAsset,
+      setNextSoundAndDestroyLastIfExists,
+      setLoadingNextAsset
+    ) => {
+      if (currentlyPlayingAsset) {
+        await shouldPlayNextAsset(currentlyPlayingAsset);
+      } else {
+        await setNextSoundAndDestroyLastIfExists(null);
+      }
+      setLoadingNextAsset(false);
+    },
+    500
+  );
+
+  const [loadingNextAsset, setLoadingNextAsset] = React.useState(false);
+
+  // redux_sync
   React.useEffect(() => {
-    if (currentlyPlayingAsset) {
-      shouldPlayNextAsset(currentlyPlayingAsset);
-    } else {
-      setNextSoundAndDestroyLastIfExists(null);
-    }
+    (async () => {
+      try {
+        setLoadingNextAsset(true);
+        setCurrentSound(maybeCurrentSound => {
+          !!maybeCurrentSound && maybeCurrentSound.stop();
+          return maybeCurrentSound;
+        });
+        debouncedShouldPlayNext(
+          currentlyPlayingAsset,
+          shouldPlayNextAsset,
+          setNextSoundAndDestroyLastIfExists,
+          setLoadingNextAsset
+        );
+      } catch (e) {
+        logger.error(e);
+      }
+    })();
   }, [
+    setCurrentSound,
+    setLoadingNextAsset,
+    debouncedShouldPlayNext,
     currentlyPlayingAsset,
-    setNextSoundAndDestroyLastIfExists,
     shouldPlayNextAsset,
+    setNextSoundAndDestroyLastIfExists,
   ]);
 
   const parentValue = useAudio();
+
+  const [debouncedPaused] = useDebounce(
+    isPlayingAssetPaused && !loadingNextAsset && !!currentlyPlayingAsset,
+    45
+  );
 
   const value = React.useMemo(
     () => ({
@@ -155,6 +234,9 @@ export default function AudioContextProvider({ category, children }) {
       currentlyPlayingAsset,
       currentSound,
       isPlayingAsset,
+      isPlayingAssetPaused: debouncedPaused,
+      pickNextAsset,
+      pickRandomAsset,
       playAsset,
       playlist,
       stopPlayingAsset,
@@ -163,8 +245,11 @@ export default function AudioContextProvider({ category, children }) {
       currentlyPlayingAsset,
       currentSound,
       isPlayingAsset,
+      debouncedPaused,
       playAsset,
       stopPlayingAsset,
+      pickNextAsset,
+      pickRandomAsset,
       parentValue,
       playlist,
     ]

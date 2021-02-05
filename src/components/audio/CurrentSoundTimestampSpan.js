@@ -36,13 +36,16 @@ export default function CurrentSoundTimestampSpan() {
     [setChildren, shouldFormatTimestamp]
   );
 
-  const { currentSound } = useAudio();
+  const { currentSound, isPlayingAsset, isPlayingAssetPaused } = useAudio();
 
   React.useEffect(() => {
     /* nyquist sampling */
-    const i = setInterval(() => onUpdateInterval(currentSound), 500);
+    const i = setInterval(
+      () => onUpdateInterval(!!isPlayingAsset && currentSound),
+      500
+    );
     return () => clearInterval(i);
-  }, [currentSound, onUpdateInterval]);
+  }, [currentSound, isPlayingAsset, isPlayingAssetPaused, onUpdateInterval]);
 
   return <>{children}</>;
 }
