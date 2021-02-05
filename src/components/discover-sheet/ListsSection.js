@@ -9,7 +9,7 @@ import React, {
 import { FlatList } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { emitAssetRequest } from '../../redux/explorer';
+import { emitAssetRequest, emitChartsRequest } from '../../redux/explorer';
 import {
   COINGECKO_TRENDING_ENDPOINT,
   fetchCoingeckoIds,
@@ -97,12 +97,26 @@ export default function ListSection() {
   const { colors } = useTheme();
   const listData = useMemo(() => DefaultTokenLists[network], [network]);
 
+  const addressSocket = useSelector(
+    ({ explorer: { addressSocket } }) => addressSocket
+  );
+  useEffect(() => {
+    if (addressSocket !== null) {
+      Object.values(listData).forEach(({ tokens }) => {
+        dispatch(emitAssetRequest(tokens));
+        dispatch(emitChartsRequest(tokens));
+      });
+    }
+  }, [addressSocket, dispatch, listData]);
+
   const trendingListHandler = useRef(null);
 
   const updateTrendingList = useCallback(async () => {
     const tokens = await fetchTrendingAddresses();
     clearList('trending');
+
     dispatch(emitAssetRequest(tokens));
+    dispatch(emitChartsRequest(tokens));
     tokens.forEach(address => {
       updateList(address, 'trending', true);
     });
