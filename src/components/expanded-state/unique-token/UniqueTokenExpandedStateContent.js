@@ -1,6 +1,7 @@
 import React from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import styled from 'styled-components';
+import isSupportedUriExtension from '../../../helpers/isSupportedUriExtension';
 import {
   useDimensions,
   useImageMetadata,
@@ -45,7 +46,8 @@ const LoadingWrapper = styled(View)`
 const UniqueTokenExpandedStateImage = ({ asset }) => {
   const { width: deviceWidth } = useDimensions();
 
-  const imageUrl = asset.image_preview_url;
+  const isSVG = isSupportedUriExtension(asset.image_url, ['.svg']);
+  const imageUrl = isSVG ? asset.image_preview_url : asset.image_url;
   const { dimensions: imageDimensions } = useImageMetadata(imageUrl);
 
   const maxImageWidth = deviceWidth - paddingHorizontal * 2;

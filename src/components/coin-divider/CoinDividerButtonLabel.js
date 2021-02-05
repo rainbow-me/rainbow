@@ -1,11 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
-import { withThemeContext } from '../../context/ThemeContext';
 import { magicMemo } from '../../utils';
 import { OpacityToggler } from '../animations';
 import { Text } from '../text';
 
-const LabelText = withThemeContext(styled(Text).attrs(({ colors }) => ({
+const LabelText = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.alpha(colors.blueGreyDark, 0.6),
   letterSpacing: 'roundedTight',
   size: 'lmedium',
@@ -13,7 +12,7 @@ const LabelText = withThemeContext(styled(Text).attrs(({ colors }) => ({
 }))`
   position: absolute;
   top: ${android ? -15.25 : -10.25};
-`);
+`;
 
 const CoinDividerButtonLabel = ({ isVisible, label }) => (
   <OpacityToggler isVisible={isVisible}>

@@ -29,7 +29,6 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import VersionNumber from 'react-native-version-number';
 import { connect, Provider } from 'react-redux';
-import { compose, withProps } from 'recompact';
 import PortalConsumer from './components/PortalConsumer';
 import { AudioContextProvider } from './components/audio';
 import { FlexItem } from './components/layout';
@@ -314,16 +313,16 @@ class App extends Component {
   );
 }
 
-const AppWithRedux = compose(
-  withProps({ store }),
-  connect(({ appState: { walletReady } }) => ({ walletReady }), {
+const AppWithRedux = connect(
+  ({ appState: { walletReady } }) => ({ walletReady }),
+  {
     requestsForTopic,
-  })
+  }
 )(App);
 
 const AppWithCodePush = CodePush({
   checkFrequency: CodePush.CheckFrequency.ON_APP_RESUME,
   installMode: CodePush.InstallMode.ON_NEXT_RESUME,
-})(AppWithRedux);
+})(() => <AppWithRedux store={store} />);
 
 AppRegistry.registerComponent('Rainbow', () => AppWithCodePush);

@@ -12,7 +12,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import styled from 'styled-components';
-import { useTheme, withThemeContext } from '../../context/ThemeContext';
+import { useTheme } from '../../context/ThemeContext';
 import { Button } from '../buttons';
 import { ExchangeInput } from '../exchange';
 import { ColumnWithMargins, Row } from '../layout';
@@ -31,8 +31,8 @@ const UnderlineAnimated = styled(Animated.View)`
   left: -100%;
 `;
 
-const UnderlineInput = withThemeContext(styled(ExchangeInput).attrs(
-  ({ isTinyPhone, isDarkMode, colors }) => ({
+const UnderlineInput = styled(ExchangeInput).attrs(
+  ({ isTinyPhone, theme: { isDarkMode, colors } }) => ({
     color: colors.dark,
     disableTabularNums: true,
     keyboardAppearance: isDarkMode ? 'dark' : 'light',
@@ -45,7 +45,7 @@ const UnderlineInput = withThemeContext(styled(ExchangeInput).attrs(
   ${android ? 'height: 40;' : ''}
   ${android ? 'padding-bottom: 0;' : ''}
   ${android ? 'padding-top: 0;' : ''}
-`);
+`;
 
 const UnderlineContainer = styled(Row)`
   border-radius: 1px;
