@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
-import { WebView } from 'react-native-webview';
+// @ts-ignore
+import Video from 'react-native-video';
+import logger from 'logger';
 
 export type SimpleVideoProps = {
   readonly style?: ViewStyle;
@@ -17,42 +19,33 @@ export default function SimpleVideo({
   uri,
   posterUri,
 }: SimpleVideoProps): JSX.Element {
-  const source = React.useMemo(
-    () => ({
-      html: `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta http-equiv="x-ua-compatible" content="ie=edge, chrome=1" />
-  <title>Render a Video Inline</title>
-  <style>
-    * { margin:0; padding:0; }
-    html { height: 100%; width: 100%; }
-    body { height: 100%; width: 100%; }
-    video { height: 100%; width: 100%; outline: none !important; }
-  </style>
-</head>
-<body>
-<video controls preload="auto" poster=${JSON.stringify(
-        typeof posterUri === 'string' ? posterUri : ''
-      )}>
-  <source src=${JSON.stringify(uri)} type="video/mp4">
-</video>
-</body>
-</html>
-    `.trim(),
-    }),
-    [uri, posterUri]
-  );
-  const originWhiteList = React.useMemo(() => ['*'], []);
+  const ref = React.useRef<Video>();
+  const source = React.useMemo(() => ({ uri }), [uri]);
+
+  // XXX: Force the player to quit when unmounted. (iOS)
+  React.useEffect(() => {
+    const { current } = ref;
+    return () => {
+      try {
+        !!current &&
+          (() => {
+            current.setNativeProps({ paused: true });
+          })();
+      } catch (e) {
+        logger.error(e);
+      }
+    };
+  }, [ref]);
   return (
-    <View style={style}>
-      <WebView
-        cacheEnabled
-        originWhitelist={originWhiteList}
+    <View style={[styles.flex, StyleSheet.flatten(style)]}>
+      <View style={[StyleSheet.absoluteFill, { backgroundColor: 'black' }]} />
+      <Video
+        controls
+        paused
+        poster={posterUri}
+        ref={ref}
         source={source}
-        style={[styles.flex]}
+        style={StyleSheet.absoluteFill}
       />
     </View>
   );

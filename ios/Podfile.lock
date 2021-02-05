@@ -378,6 +378,11 @@ PODS:
     - React
   - react-native-version-number (0.3.6):
     - React
+  - react-native-video (5.1.1):
+    - React-Core
+    - react-native-video/Video (= 5.1.1)
+  - react-native-video/Video (5.1.1):
+    - React-Core
   - react-native-viewpager (4.1.0):
     - React
   - react-native-webview (10.10.0):
@@ -640,6 +645,7 @@ DEPENDENCIES:
   - react-native-text-input-mask (from `../node_modules/react-native-text-input-mask`)
   - react-native-udp (from `../node_modules/react-native-udp`)
   - react-native-version-number (from `../node_modules/react-native-version-number`)
+  - react-native-video (from `../node_modules/react-native-video`)
   - "react-native-viewpager (from `../node_modules/@react-native-community/viewpager`)"
   - react-native-webview (from `../node_modules/react-native-webview`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
@@ -810,6 +816,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-udp"
   react-native-version-number:
     :path: "../node_modules/react-native-version-number"
+  react-native-video:
+    :path: "../node_modules/react-native-video"
   react-native-viewpager:
     :path: "../node_modules/@react-native-community/viewpager"
   react-native-webview:
@@ -980,6 +988,7 @@ SPEC CHECKSUMS:
   react-native-text-input-mask: 07227297075f9653315f43b0424d596423a01736
   react-native-udp: 96a517e5a121cfe69f4b05eeeafefe00c623debf
   react-native-version-number: b415bbec6a13f2df62bf978e85bc0d699462f37f
+  react-native-video: 0bb76b6d6b77da3009611586c7dbf817b947f30e
   react-native-viewpager: 6f8c102e8081d70259252b254143b4193a9fb4cb
   react-native-webview: 73e409ecc987c189772bda27ba7f0e2f3dcd2e81
   React-RCTActionSheet: 53ea72699698b0b47a6421cb1c8b4ab215a774aa

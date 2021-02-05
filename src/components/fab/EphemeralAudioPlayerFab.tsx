@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Animated, StyleSheet } from 'react-native';
+import { Animated, StyleSheet, View } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
 import { useNavigation } from '../../navigation/Navigation';
 import { lightModeThemeColors } from '../../styles/colors';
@@ -36,6 +36,11 @@ const styles = StyleSheet.create({
     paddingLeft: FloatingActionButtonSize + 5,
     paddingRight: 5,
     paddingVertical: 5,
+  },
+  currentPlayingAssetDetails: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    width: '100%',
   },
   details: {
     justifyContent: 'center',
@@ -111,6 +116,13 @@ function EphemeralAudioPlayerFab({
   const currentPlayingAssetDetailsColor = isDarkMode
     ? colors.black
     : colors.lightGrey;
+
+  const currentPlayingAssetDetailsStyle = React.useMemo(
+    () => ({
+      color: currentPlayingAssetDetailsColor,
+    }),
+    [currentPlayingAssetDetailsColor]
+  );
   return (
     <Animated.View pointerEvents="box-none" {...props} style={containerStyle}>
       {/* Overflow Container */}
@@ -146,35 +158,37 @@ function EphemeralAudioPlayerFab({
             },
           ]}
         >
-          {currentlyPlayingAsset ? (
-            <>
-              <ButtonPressAnimation
-                disabled={disabled}
-                onPress={handleAudioTitlePress}
-                opacity={isDarkMode && disabled ? 0.6 : 1}
-                scaleTo={0.95}
-                {...props}
-              >
-                <Bold
-                  children={currentPlayingAssetTitle}
-                  numberOfLines={1}
-                  style={{ color: colors.orangeLight }}
-                />
-              </ButtonPressAnimation>
-              <Text
-                numberOfLines={1}
-                style={{ color: currentPlayingAssetDetailsColor }}
-              >
-                <CurrentSoundTimestampSpan />
-              </Text>
-            </>
-          ) : (
+          <ButtonPressAnimation
+            disabled={disabled || !currentlyPlayingAsset}
+            onPress={handleAudioTitlePress}
+            opacity={isDarkMode && disabled ? 0.6 : 1}
+            scaleTo={0.95}
+            {...props}
+          >
             <Bold
-              children={`${playlist.length} tracks`}
+              children={
+                currentlyPlayingAsset
+                  ? currentPlayingAssetTitle
+                  : 'Ethereum Playlist'
+              }
               numberOfLines={1}
               style={{ color: colors.orangeLight }}
             />
-          )}
+          </ButtonPressAnimation>
+          <View style={styles.currentPlayingAssetDetails}>
+            <Text numberOfLines={1} style={currentPlayingAssetDetailsStyle}>
+              {isPlayingAsset ? 'playing' : 'not playing'}{' '}
+            </Text>
+            <Text numberOfLines={1} style={currentPlayingAssetDetailsStyle}>
+              <>
+                {currentlyPlayingAsset ? (
+                  <CurrentSoundTimestampSpan />
+                ) : (
+                  `${playlist.length} tracks`
+                )}
+              </>
+            </Text>
+          </View>
         </Animated.View>
       </Animated.View>
       <Animated.View
