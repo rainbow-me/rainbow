@@ -3,7 +3,6 @@ import Animated, { Easing } from 'react-native-reanimated';
 import { toRad, useTimingTransition } from 'react-native-redash';
 import styled from 'styled-components';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
-import { withThemeContext } from '../../context/ThemeContext';
 import { ButtonPressAnimation, interpolate } from '../animations';
 import { Row, RowWithMargins } from '../layout';
 import { Emoji, Text, TruncatedText } from '../text';
@@ -16,15 +15,15 @@ const AnimatedImgixImage = Animated.createAnimatedComponent(ImgixImage);
 export const TokenFamilyHeaderAnimationDuration = 200;
 export const TokenFamilyHeaderHeight = 50;
 
-const Content = withThemeContext(styled(Row).attrs({
+const Content = styled(Row).attrs({
   align: 'center',
   justify: 'space-between',
 })`
   ${({ isCoinRow }) => padding(0, isCoinRow ? 16 : 19)};
-  background-color: ${({ colors }) => colors.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
   height: ${TokenFamilyHeaderHeight};
   width: 100%;
-`);
+`;
 
 const ChildrenAmountText = styled(Text).attrs({
   align: 'right',

@@ -1,5 +1,13 @@
 import lang from 'i18n-js';
-import { compact, flattenDeep, get, groupBy, map, property } from 'lodash';
+import {
+  compact,
+  find,
+  flattenDeep,
+  get,
+  groupBy,
+  map,
+  property,
+} from 'lodash';
 import React from 'react';
 import { LayoutAnimation } from 'react-native';
 import { compose, withHandlers } from 'recompact';
@@ -8,25 +16,17 @@ import { AssetListItemSkeleton } from '../components/asset-list';
 import { BalanceCoinRow } from '../components/coin-row';
 import { UniswapInvestmentRow } from '../components/investment-cards';
 import { CollectibleTokenFamily } from '../components/token-family';
-import EditOptions from '../helpers/editOptionTypes';
 import { withNavigation } from '../navigation/Navigation';
-import {
-  setHiddenCoins,
-  setIsCoinListEdited,
-  setPinnedCoins,
-} from '../redux/editOptions';
-import { setOpenSmallBalances } from '../redux/openStateSettings';
-import store from '../redux/store';
-import {
-  amountOfShowedCoins,
-  buildCoinsList,
-  buildUniqueTokenList,
-} from './assets';
+import { buildCoinsList, buildUniqueTokenList } from './assets';
 import networkTypes from './networkTypes';
 import { add, convertAmountToNativeDisplay, multiply } from './utilities';
 import { ImgixImage } from '@rainbow-me/images';
+import { setIsCoinListEdited } from '@rainbow-me/redux/editOptions';
+import { setOpenSmallBalances } from '@rainbow-me/redux/openStateSettings';
+import store from '@rainbow-me/redux/store';
+import { ETH_ICON_URL } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
-import { ETH_ICON_URL, ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils } from '@rainbow-me/utils';
 
 const allAssetsSelector = state => state.allAssets;
 const allAssetsCountSelector = state => state.allAssetsCount;
@@ -216,52 +216,23 @@ const coinEditContextMenu = (
   allAssetsCount,
   totalValue
 ) => {
-  const noSmallBalances =
-    !balanceSectionData.length ||
-    !(
-      balanceSectionData[balanceSectionData.length - 1]
-        .smallBalancesContainer ||
-      (balanceSectionData.length > 1 &&
-        balanceSectionData[balanceSectionData.length - 2]
-          .smallBalancesContainer)
-    );
+  const noSmallBalances = !find(balanceSectionData, 'smallBalancesContainer');
+
   return {
     contextMenuOptions:
-      allAssets.length <= amountOfShowedCoins &&
-      allAssets.length > 0 &&
-      noSmallBalances
+      allAssets.length > 0 && noSmallBalances
         ? {
             cancelButtonIndex: 0,
             dynamicOptions: () => {
-              return isCoinListEdited && currentAction !== EditOptions.none
-                ? [
-                    'Cancel',
-                    currentAction !== EditOptions.unpin ? 'Pin' : 'Unpin',
-                    currentAction !== EditOptions.unhide ? 'Hide' : 'Unhide',
-                    'Finish',
-                  ]
-                : ['Cancel', isCoinListEdited ? 'Finish' : 'Edit'];
+              return ['Cancel', 'Edit'];
             },
             onPressActionSheet: async index => {
-              if (isCoinListEdited && currentAction !== EditOptions.none) {
-                if (index === 3) {
-                  store.dispatch(setIsCoinListEdited(!isCoinListEdited));
-                } else if (index === 1) {
-                  store.dispatch(setPinnedCoins());
-                } else if (index === 2) {
-                  store.dispatch(setHiddenCoins());
-                  store.dispatch(setOpenSmallBalances(true));
-                }
+              if (index === 1) {
+                store.dispatch(setIsCoinListEdited(!isCoinListEdited));
+                store.dispatch(setOpenSmallBalances(true));
                 LayoutAnimation.configureNext(
                   LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
                 );
-              } else {
-                if (index === 1) {
-                  store.dispatch(setIsCoinListEdited(!isCoinListEdited));
-                  LayoutAnimation.configureNext(
-                    LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
-                  );
-                }
               }
             },
           }

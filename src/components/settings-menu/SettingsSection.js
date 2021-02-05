@@ -253,15 +253,7 @@ export default function SettingsSection({
           testID="darkmode-section"
         >
           <Column align="end" flex="1" justify="end">
-            <Switch
-              onValueChange={setPreDarkMode}
-              thumbColor={colors.whiteLabel}
-              trackColor={{
-                false: colors.alpha(colors.blueGreyDark, 0.12),
-                true: '#2CCC00',
-              }}
-              value={preDarkMode}
-            />
+            <Switch onValueChange={setPreDarkMode} value={preDarkMode} />
           </Column>
         </ListItem>
         {/*<ListItem
