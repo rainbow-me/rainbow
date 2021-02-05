@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import React, { Fragment, useEffect, useMemo, useRef } from 'react';
 import { StyleSheet } from 'react-native';
 import { Transition, Transitioning } from 'react-native-reanimated';
-import { withProps } from 'recompact';
+import styled from 'styled-components';
 import jumpingDaiAnimation from '../../assets/lottie/jumping-dai.json';
 import jumpingEthAnimation from '../../assets/lottie/jumping-eth.json';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
@@ -24,12 +24,12 @@ import SupportButton from './SupportButton';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
 
-const StatusMessageText = withProps({
+const StatusMessageText = styled(Text).attrs({
   align: 'center',
   lineHeight: 30,
   size: 23,
   weight: 'bold',
-})(Text);
+})``;
 
 const sx = StyleSheet.create({
   container: {

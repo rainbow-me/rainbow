@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { SectionList } from 'react-native';
-import { mapProps } from 'recompact';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import networkTypes from '../../helpers/networkTypes';
@@ -73,8 +72,8 @@ const ActivityList = ({
   hasPendingTransaction,
   header,
   nativeCurrency,
-  pendingTransactionsCount,
   sections,
+  requests,
   transactionsCount,
   addCashAvailable,
   isEmpty,
@@ -85,6 +84,15 @@ const ActivityList = ({
   nextPage,
   remainingItemsLabel,
 }) => {
+  const pendingTransactionsCount = useMemo(() => {
+    let currentPendingTransactionsCount = 0;
+    const pendingTxSection = sections[requests?.length ? 1 : 0];
+
+    if (pendingTxSection && pendingTxSection.title === 'Pending') {
+      currentPendingTransactionsCount = pendingTxSection.data.length;
+    }
+    return currentPendingTransactionsCount;
+  }, [sections, requests]);
   return network === networkTypes.mainnet || sections.length ? (
     recyclerListView ? (
       <RecyclerActivityList
@@ -133,18 +141,4 @@ const ActivityList = ({
   );
 };
 
-export default mapProps(({ nativeCurrency, requests, sections, ...props }) => {
-  let pendingTransactionsCount = 0;
-  const pendingTxSection = sections[requests?.length ? 1 : 0];
-
-  if (pendingTxSection && pendingTxSection.title === 'Pending') {
-    pendingTransactionsCount = pendingTxSection.data.length;
-  }
-
-  return {
-    ...props,
-    nativeCurrency,
-    pendingTransactionsCount,
-    sections,
-  };
-})(ActivityList);
+export default ActivityList;
