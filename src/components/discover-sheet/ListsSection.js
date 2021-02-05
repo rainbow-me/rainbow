@@ -101,12 +101,12 @@ export default function ListSection() {
     ({ explorer: { addressSocket } }) => addressSocket
   );
   useEffect(() => {
-    Object.values(listData).forEach(({ tokens }) => {
-      if (addressSocket !== null) {
+    if (addressSocket !== null) {
+      Object.values(listData).forEach(({ tokens }) => {
         dispatch(emitAssetRequest(tokens));
         dispatch(emitChartsRequest(tokens));
-      }
-    });
+      });
+    }
   }, [addressSocket, dispatch, listData]);
 
   const trendingListHandler = useRef(null);
