@@ -12,7 +12,6 @@ import { useTheme } from './src/context/ThemeContext';
 import magicMemo from '@rainbow-me/utils/magicMemo';
 
 export default {
-  __DEV__: true,
   android: Platform.OS === 'android',
   ios: Platform.OS === 'ios',
   IS_DEV:

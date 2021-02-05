@@ -11,7 +11,10 @@ const globalVars = parse(babelParse(data, { sourceType: "module" }))
   .declaration
   .properties
   .map(e => e.key.name)
-  .reduce((acc, variable) => { acc[variable] = true; return acc; }, {})
+  .reduce((acc, variable) => { acc[variable] = true; return acc; }, {
+    __DEV__: true,
+  })
+
 
 
 module.exports = {
