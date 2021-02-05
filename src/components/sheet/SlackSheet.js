@@ -148,7 +148,6 @@ export default function SlackSheet({
             contentContainerStyle={scrollEnabled && contentContainerStyle}
             contentHeight={contentHeight}
             deviceHeight={deviceHeight}
-            directionalLockEnabled
             limitScrollViewContent={limitScrollViewContent}
             onScroll={scrollHandler}
             ref={sheet}
