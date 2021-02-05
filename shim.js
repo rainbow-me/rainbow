@@ -20,8 +20,7 @@ if (typeof atob === 'undefined') {
   };
 }
 
-
-//Can remove when we update hermes after they enable Proxy support
+// Can remove when we update hermes after they enable Proxy support
 ReactNative.Platform.OS === 'android' && enableES5();
 
 ReactNative.Platform.OS === 'ios' &&
@@ -58,6 +57,7 @@ if (
 global.storage = storage;
 
 // shimming for reanimated need to happen before importing globalVariables.js
+// eslint-disable-next-line import/no-commonjs
 for (let variable of Object.entries(require('./globalVariables').default)) {
   Object.defineProperty(global, variable[0], {
     get: () => variable[1],
