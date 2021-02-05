@@ -6,8 +6,20 @@ import { enableES5 } from 'immer';
 import ReactNative from 'react-native';
 import Animated from 'react-native-reanimated';
 import Storage from 'react-native-storage';
-import globalVariables from './globalVariables';
 import logger from 'logger';
+
+if (typeof btoa === 'undefined') {
+  global.btoa = function (str) {
+    return new Buffer(str, 'binary').toString('base64');
+  };
+}
+
+if (typeof atob === 'undefined') {
+  global.atob = function (b64Encoded) {
+    return new Buffer(b64Encoded, 'base64').toString('binary');
+  };
+}
+
 
 //Can remove when we update hermes after they enable Proxy support
 ReactNative.Platform.OS === 'android' && enableES5();
@@ -45,7 +57,8 @@ if (
 
 global.storage = storage;
 
-for (let variable of Object.entries(globalVariables)) {
+// shimming for reanimated need to happen before importing globalVariables.js
+for (let variable of Object.entries(require('./globalVariables').default)) {
   Object.defineProperty(global, variable[0], {
     get: () => variable[1],
     set: () => {
