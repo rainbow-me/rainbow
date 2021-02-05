@@ -39,6 +39,9 @@ export default function ChartPercentChangeLabel() {
               data?.points?.[0]?.y) *
               100 -
             100;
+          if (isNaN(value)) {
+            return '';
+          }
           return (
             (android ? '' : value > 0 ? '↑' : value < 0 ? '↓' : '') +
             ' ' +
