@@ -87,6 +87,8 @@ export default function ChartExpandedStateHeader({
 
   const titleOrNoPriceData = isNoPriceData ? noPriceData : title;
 
+  const showPriceChange = !isNoPriceData && showChart && !isNaN(latestChange);
+
   return (
     <Container showChart={showChart}>
       <Row
@@ -115,39 +117,41 @@ export default function ChartExpandedStateHeader({
             priceSharedValue={priceSharedValue}
             tabularNums={tabularNums}
           />
-          <ChartPercentChangeLabel
-            changeDirection={changeDirection}
-            changeRef={changeRef}
-            color={
-              isNoPriceData ? colors.alpha(colors.blueGreyDark, 0.8) : color
-            }
-            isScrubbing={isScrubbing}
-            latestChange={latestChange}
-            tabularNums={tabularNums}
-          />
-        </RowWithMargins>
-        {!isNoPriceData && showChart && !isNaN(latestChange) && (
-          <RowWithMargins
-            height={30}
-            justify="space-between"
-            marginHorizontal={1}
-            marginVertical={android ? 4 : 1}
-          >
-            <ChartHeaderSubtitle
+          {showPriceChange && (
+            <ChartPercentChangeLabel
+              changeDirection={changeDirection}
+              changeRef={changeRef}
               color={
                 isNoPriceData ? colors.alpha(colors.blueGreyDark, 0.8) : color
               }
-              style={{ flex: 1 }}
-              weight={isNoPriceData ? 'semibold' : 'bold'}
-            >
-              {titleOrNoPriceData}
-            </ChartHeaderSubtitle>
+              isScrubbing={isScrubbing}
+              latestChange={latestChange}
+              tabularNums={tabularNums}
+            />
+          )}
+        </RowWithMargins>
+
+        <RowWithMargins
+          height={30}
+          justify="space-between"
+          marginHorizontal={android ? 0 : 1}
+          marginVertical={android ? 4 : 1}
+        >
+          <ChartHeaderSubtitle
+            color={
+              isNoPriceData ? colors.alpha(colors.blueGreyDark, 0.8) : color
+            }
+            weight={isNoPriceData ? 'semibold' : 'bold'}
+          >
+            {titleOrNoPriceData}
+          </ChartHeaderSubtitle>
+          {showPriceChange && (
             <ChartDateLabel
               chartTimeSharedValue={chartTimeSharedValue}
               dateRef={dateRef}
             />
-          </RowWithMargins>
-        )}
+          )}
+        </RowWithMargins>
       </Column>
     </Container>
   );
