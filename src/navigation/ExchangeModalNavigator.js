@@ -15,7 +15,7 @@ import ScrollPagerWrapper from './ScrollPagerWrapper';
 import {
   exchangeTabNavigatorConfig,
   expandedAssetSheetConfig,
-  nativeStackConfig,
+  nativeStackDefaultConfig,
 } from './config';
 import Routes from './routesNames';
 import { useDimensions } from '@rainbow-me/hooks';
@@ -59,11 +59,15 @@ function useStateCallback(initialState) {
 export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
   function MainExchangeNavigator() {
     const { params } = useRoute();
+    const { colors } = useTheme();
 
     return (
       <NativeStack.Navigator
         initialRouteName={Routes.MAIN_EXCHANGE_SCREEN}
-        {...nativeStackConfig}
+        screenOptions={{
+          ...nativeStackDefaultConfig,
+          contentStyle: { backgroundColor: colors.transparent },
+        }}
       >
         <NativeStack.Screen
           component={SwapModal}
