@@ -1,8 +1,5 @@
 import { isString } from 'lodash';
-import PropTypes from 'prop-types';
-import React from 'react';
-import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
-import { withThemeContext } from '../../context/ThemeContext';
+import React, { useCallback } from 'react';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered, Row, RowWithMargins } from '../layout';
@@ -18,43 +15,26 @@ const renderIcon = icon =>
     icon
   );
 
-const propTypes = {
-  activeOpacity: PropTypes.number,
-  children: PropTypes.node,
-  icon: PropTypes.node,
-  iconMargin: PropTypes.number,
-  justify: PropTypes.bool,
-  label: PropTypes.string.isRequired,
-  onPress: PropTypes.func,
-};
-
-const enhance = compose(
-  withThemeContext,
-  onlyUpdateForKeys(Object.keys(propTypes)),
-  withHandlers({
-    onPress: ({ onPress, value }) => () => {
-      if (onPress) {
-        onPress(value);
-      }
-    },
-  })
-);
-
-const ListItem = enhance(
-  ({
-    activeOpacity,
-    colors,
-    children,
-    justify,
-    icon,
-    iconMargin,
-    label,
-    onPress,
-    scaleTo = 0.975,
-    testID,
-    disabled,
-    ...props
-  }) => (
+const ListItem = ({
+  activeOpacity,
+  children,
+  justify,
+  icon,
+  iconMargin,
+  label,
+  scaleTo = 0.975,
+  testID,
+  disabled,
+  ...props
+}) => {
+  const onPress = useCallback(() => {
+    if (props.onPress) {
+      props.onPress(props.value);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.onPress, props.value]);
+  const { colors } = useTheme();
+  return (
     <ButtonPressAnimation
       activeOpacity={activeOpacity}
       disabled={disabled}
@@ -89,10 +69,8 @@ const ListItem = enhance(
         {children && <Centered flex={1}>{children}</Centered>}
       </Row>
     </ButtonPressAnimation>
-  )
-);
-
-ListItem.propTypes = propTypes;
+  );
+};
 
 ListItem.height = ListItemHeight;
 
