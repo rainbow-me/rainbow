@@ -54,8 +54,8 @@ export default function TokenSelectionButton({
 
   const shadowsForAsset = useMemo(
     () => [
-      [0, -10, 30, colors.shadow, 0.2],
-      [0, -5, 15, colorForAssetReactive, isDarkMode ? 0 : 0.4],
+      [0, 10, 30, colors.shadow, 0.2],
+      [0, 5, 15, colorForAssetReactive, isDarkMode ? 0 : 0.4],
     ],
     [colorForAssetReactive, colors.shadow, isDarkMode]
   );

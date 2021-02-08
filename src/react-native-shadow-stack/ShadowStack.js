@@ -1,10 +1,6 @@
 import React, { useCallback } from 'react';
-import { StyleSheet, View } from 'react-native';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
+import { StyleSheet } from 'react-native';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import ShadowItem from './ShadowItem';
 
 const ShadowStack = React.forwardRef(
@@ -24,8 +20,6 @@ const ShadowStack = React.forwardRef(
     },
     ref
   ) => {
-    const ss = useSharedValue('red');
-
     const renderItem = useCallback(
       (shadow, index) => (
         <ShadowItem
@@ -50,12 +44,10 @@ const ShadowStack = React.forwardRef(
       ]
     );
 
-    console.log('vv', typeof backgroundColor === 'function', backgroundColor);
-
     const topStyle =
       typeof backgroundColor === 'function' || backgroundColor.value
-        ? useAnimatedStyle(() => {
-            console.log(backgroundColor, backgroundColor.value);
+        ? // eslint-disable-next-line react-hooks/rules-of-hooks
+          useAnimatedStyle(() => {
             return {
               backgroundColor: backgroundColor.value,
             };

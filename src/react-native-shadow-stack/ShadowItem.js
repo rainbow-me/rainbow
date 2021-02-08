@@ -30,10 +30,6 @@ const ShadowItem = ({
   shadowProps,
   elevation,
 }) => {
-  console.log(
-    'Shadow',
-    typeof backgroundColor === 'function' || !!backgroundColor.value
-  );
   const topStyle =
     typeof backgroundColor === 'function' || backgroundColor.value
       ? useAnimatedStyle(() => {
