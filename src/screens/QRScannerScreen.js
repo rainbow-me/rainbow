@@ -141,7 +141,12 @@ export default function QRScannerScreen() {
           </ScannerHeader>
         </ScannerContainer>
       </View>
-      <FabWrapper fabs={[SearchFab]} />
+      <FabWrapper
+        fabs={[SearchFab]}
+        onPress={() => {
+          dsRef.current.setIsSearchModeEnabled(true);
+        }}
+      />
     </>
   );
 }
