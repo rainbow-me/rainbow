@@ -1,26 +1,16 @@
+import { toUpper } from 'lodash';
 import React, { Fragment, useCallback } from 'react';
 import { View } from 'react-native';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
-import { convertAmountToPercentageDisplay } from '../../helpers/utilities';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText, CoinRow } from '../coin-row';
-import BalanceText from '../coin-row/BalanceText';
 import CoinName from '../coin-row/CoinName';
 import { initialLiquidityPoolExpandedStateSheetHeight } from '../expanded-state/LiquidityPoolExpandedState';
 import { FlexItem, Row } from '../layout';
+import { Text } from '../text';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-
-const formatPercentageString = percentString =>
-  percentString ? percentString.toString().split('-').join('- ') : '-';
-
-const PercentageText = styled(BottomRowText).attrs({
-  align: 'right',
-})`
-  color: ${({ isPositive, theme: { colors } }) =>
-    isPositive ? colors.green : colors.alpha(colors.blueGreyDark, 0.5)};
-`;
 
 const Content = styled(ButtonPressAnimation)`
   top: 0;
@@ -45,42 +35,50 @@ const PriceContainer = ios
       margin-bottom: 3;
     `;
 
-const BottomRow = ({ price, type, uniBalance }) => {
-  const relativeChange = price?.relative_change_24h;
-  const percentageChangeDisplay = relativeChange
-    ? formatPercentageString(convertAmountToPercentageDisplay(relativeChange))
-    : '-';
-  const isPositive =
-    relativeChange && percentageChangeDisplay.charAt(0) !== '-';
+const PoolValue = styled(Row)`
+  background-color: ${({ theme: { colors } }) =>
+    `${colors.alpha(colors.appleBlue, 0.06)}`};
+  border-radius: 12px;
+  height: 30px;
+  padding-horizontal: 8px;
+  padding-top: ${ios ? 3 : 2}px;
+`;
 
-  const tokenType = type === 'uniswap' ? 'UNI-V1' : 'UNI-V2';
-  const balanceLabel = `${uniBalance} ${tokenType}`;
+const formatAttribute = (type, value) => {
+  if (type === 'anualized_fees') {
+    return `$${value}`;
+  }
+  return value;
+};
 
+const BottomRow = ({ symbol }) => {
   return (
     <BottomRowContainer>
       <FlexItem flex={1}>
-        <BottomRowText>{balanceLabel}</BottomRowText>
+        <BottomRowText>{toUpper(symbol)}</BottomRowText>
       </FlexItem>
-      <View>
-        <PercentageText isPositive={isPositive}>
-          {percentageChangeDisplay}
-        </PercentageText>
-      </View>
     </BottomRowContainer>
   );
 };
 
-const TopRow = ({ tokenNames, totalNativeDisplay }) => {
+const TopRow = item => {
   const { colors } = useTheme();
   return (
     <TopRowContainer>
       <FlexItem flex={1}>
-        <CoinName color={colors.dark}>{tokenNames}</CoinName>
+        <CoinName color={colors.dark}>{item.tokenNames}</CoinName>
       </FlexItem>
       <PriceContainer>
-        <BalanceText color={colors.blueGreyLight} numberOfLines={1}>
-          {totalNativeDisplay}
-        </BalanceText>
+        <PoolValue>
+          <Text
+            color={colors.appleBlue}
+            lineHeight="paragraphSmall"
+            size="lmedium"
+            weight="bold"
+          >
+            {formatAttribute(item.attribute, item[item.attribute])}
+          </Text>
+        </PoolValue>
       </PriceContainer>
     </TopRowContainer>
   );
