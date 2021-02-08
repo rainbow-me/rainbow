@@ -1,6 +1,6 @@
 import React, { useCallback, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { useTheme, withThemeContext } from '../../context/ThemeContext';
+import { useTheme } from '../../context/ThemeContext';
 import { getRandomColor } from '../../styles/colors';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
@@ -21,19 +21,19 @@ import Routes from '@rainbow-me/routes';
 import { margin, padding, position } from '@rainbow-me/styles';
 import { abbreviations } from '@rainbow-me/utils';
 
-const WalletProfileAddressText = withThemeContext(styled(
-  TruncatedAddress
-).attrs(({ colors }) => ({
-  align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.6),
-  firstSectionLength: abbreviations.defaultNumCharsPerSection,
-  size: 'lmedium',
-  truncationLength: 4,
-  weight: 'medium',
-}))`
+const WalletProfileAddressText = styled(TruncatedAddress).attrs(
+  ({ theme: { colors } }) => ({
+    align: 'center',
+    color: colors.alpha(colors.blueGreyDark, 0.6),
+    firstSectionLength: abbreviations.defaultNumCharsPerSection,
+    size: 'lmedium',
+    truncationLength: 4,
+    weight: 'medium',
+  })
+)`
   ${margin(9, 0, 5)};
   width: 100%;
-`);
+`;
 
 const Spacer = styled.View`
   height: 19;
@@ -56,14 +56,11 @@ const ProfileImage = styled(ImageAvatar)`
   margin-bottom: 15;
 `;
 
-const WalletProfileDivider = withThemeContext(
-  styled(Divider).attrs(({ colors }) => ({
-    borderRadius: 1,
-    color: colors.rowDividerLight,
-    inset: false,
-  }))``
-);
-
+const WalletProfileDivider = styled(Divider).attrs(({ theme: { colors } }) => ({
+  borderRadius: 1,
+  color: colors.rowDividerLight,
+  inset: false,
+}))``;
 const WalletProfileModal = styled(ProfileModal).attrs({
   dividerRenderer: WalletProfileDivider,
 })`

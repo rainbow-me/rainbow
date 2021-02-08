@@ -180,8 +180,8 @@ export default function BackupConfirmPasswordStep() {
         )}
         <Title>Enter backup password</Title>
         <DescriptionText>
-          To add your wallet to the {cloudPlatform} backup, enter the backup
-          password
+          To add this wallet to your {cloudPlatform} backup, enter your existing
+          backup password
         </DescriptionText>
       </Masthead>
       <Column align="center" flex={1}>

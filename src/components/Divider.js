@@ -1,7 +1,6 @@
 import { constant, isNil, isNumber, times } from 'lodash';
 import React from 'react';
 import styled from 'styled-components';
-import { withThemeContext } from '../context/ThemeContext';
 import { magicMemo } from '../utils';
 import { borders, position } from '@rainbow-me/styles';
 
@@ -46,13 +45,13 @@ const BorderLine = styled.View`
   }}
 `;
 
-const Container = withThemeContext(styled.View`
-  background-color: ${({ backgroundColor, colors }) =>
+const Container = styled.View`
+  background-color: ${({ backgroundColor, theme: { colors } }) =>
     backgroundColor || colors.white};
   flex-shrink: 0;
   height: ${({ horizontal, size }) => (horizontal ? size : '100%')};
   width: ${({ horizontal, size }) => (horizontal ? '100%' : size)};
-`);
+`;
 
 const Divider = ({
   backgroundColor,

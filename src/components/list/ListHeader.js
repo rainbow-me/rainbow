@@ -1,7 +1,6 @@
 import React, { createElement, Fragment } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components';
-import { withThemeContext } from '../../context/ThemeContext';
 import { useDimensions } from '../../hooks';
 import Divider from '../Divider';
 import { ContextMenu } from '../context-menu';
@@ -12,8 +11,8 @@ import { padding, position } from '@rainbow-me/styles';
 
 export const ListHeaderHeight = 44;
 
-const BackgroundGradient = withThemeContext(styled(LinearGradient).attrs(
-  ({ colors }) => ({
+const BackgroundGradient = styled(LinearGradient).attrs(
+  ({ theme: { colors } }) => ({
     colors: [
       colors.listHeaders.firstGradient,
       colors.listHeaders.secondGradient,
@@ -25,25 +24,25 @@ const BackgroundGradient = withThemeContext(styled(LinearGradient).attrs(
   })
 )`
   ${position.cover};
-`);
+`;
 
-const Content = withThemeContext(styled(Row).attrs({
+const Content = styled(Row).attrs({
   align: 'center',
   justify: 'space-between',
 })`
   ${padding(0, 19, 2)};
-  background-color: ${({ isSticky, colors }) =>
+  background-color: ${({ isSticky, theme: { colors } }) =>
     isSticky ? colors.white : colors.transparent};
   height: ${ListHeaderHeight};
   width: 100%;
-`);
+`;
 
-const StickyBackgroundBlocker = withThemeContext(styled.View`
-  background-color: ${({ colors }) => colors.white};
+const StickyBackgroundBlocker = styled.View`
+  background-color: ${({ theme: { colors } }) => colors.white};
   height: ${({ isEditMode }) => (isEditMode ? ListHeaderHeight : 0)};
   top: ${({ isEditMode }) => (isEditMode ? -40 : 0)};
   width: ${({ deviceDimensions }) => deviceDimensions.width};
-`);
+`;
 
 export default function ListHeader({
   children,

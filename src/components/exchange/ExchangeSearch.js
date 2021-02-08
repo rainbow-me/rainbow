@@ -10,9 +10,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import styled from 'styled-components';
 import Spinner from '../../assets/chartSpinner.png';
-import { withThemeContext } from '../../context/ThemeContext';
 import { ClearInputDecorator, Input } from '../inputs';
-
 import { Row } from '../layout';
 import { Text } from '../text';
 import { ImgixImage } from '@rainbow-me/images';
@@ -25,14 +23,14 @@ const ExchangeSearchWidth = deviceUtils.dimensions.width - 30;
 const Container = styled(Row)`
   ${margin(0, 15, 8)};
   ${padding(0, 37, 0, 12)};
-  background-color: ${({ theme: { colors } }) => colors.white};
+  background-color: ${({ theme: { colors } }) => colors.transparent};
   border-radius: ${ExchangeSearchHeight / 2};
   height: ${ExchangeSearchHeight};
   overflow: hidden;
 `;
 
-const BackgroundGradient = withThemeContext(styled(RadialGradient).attrs(
-  ({ colors }) => ({
+const BackgroundGradient = styled(RadialGradient).attrs(
+  ({ theme: { colors } }) => ({
     center: [ExchangeSearchWidth, ExchangeSearchWidth / 2],
     colors: colors.gradients.searchBar,
   })
@@ -42,21 +40,19 @@ const BackgroundGradient = withThemeContext(styled(RadialGradient).attrs(
   top: ${-(ExchangeSearchWidth - ExchangeSearchHeight) / 2};
   transform: scaleY(${ExchangeSearchHeight / ExchangeSearchWidth});
   width: ${ExchangeSearchWidth};
-`);
+`;
 
-const SearchIcon = withThemeContext(
-  styled(Text).attrs(({ colors }) => ({
-    color: colors.alpha(colors.blueGreyDark, 0.5),
-    size: 'large',
-    weight: 'semibold',
-  }))``
-);
+const SearchIcon = styled(Text).attrs(({ theme: { colors } }) => ({
+  color: colors.alpha(colors.blueGreyDark, 0.5),
+  size: 'large',
+  weight: 'semibold',
+}))``;
 
 const SearchIconWrapper = styled(Animated.View)`
   margin-top: ${android ? '5' : '9'};
 `;
 
-const SearchInput = withThemeContext(styled(Input).attrs(({ colors }) => ({
+const SearchInput = styled(Input).attrs(({ theme: { colors } }) => ({
   autoCapitalize: 'words',
   blurOnSubmit: false,
   clearTextOnFocus: true,
@@ -79,18 +75,16 @@ const SearchInput = withThemeContext(styled(Input).attrs(({ colors }) => ({
     : ''}
   flex: 1;
   margin-left: 4;
-`);
+`;
 
-const SearchSpinner = withThemeContext(styled(ImgixImage).attrs(
-  ({ colors }) => ({
-    resizeMode: ImgixImage.resizeMode.contain,
-    source: Spinner,
-    tintColor: colors.alpha(colors.blueGreyDark, 0.6),
-  })
-)`
+const SearchSpinner = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
+  resizeMode: ImgixImage.resizeMode.contain,
+  source: Spinner,
+  tintColor: colors.alpha(colors.blueGreyDark, 0.6),
+}))`
   height: 20;
   width: 20;
-`);
+`;
 
 const SearchSpinnerWrapper = styled(Animated.View)`
   height: 20;
