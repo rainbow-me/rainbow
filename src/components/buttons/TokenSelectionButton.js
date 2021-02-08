@@ -43,22 +43,28 @@ export default function TokenSelectionButton({
 
   const colorForAsset = useColorForAsset(
     { address },
+    address ? undefined : colors.appleBlue,
+    true
+  );
+
+  const colorForAssetReactive = useColorForAsset(
+    { address },
     address ? undefined : colors.appleBlue
   );
 
   const shadowsForAsset = useMemo(
     () => [
-      [0, 10, 30, colors.shadow, 0.2],
-      [0, 5, 15, colorForAsset, isDarkMode ? 0 : 0.4],
+      [0, -10, 30, colors.shadow, 0.2],
+      [0, -5, 15, colorForAssetReactive, isDarkMode ? 0 : 0.4],
     ],
-    [colorForAsset, colors.shadow, isDarkMode]
+    [colorForAssetReactive, colors.shadow, isDarkMode]
   );
 
   return (
     <ButtonPressAnimation
       borderRadius={borderRadius}
       contentContainerStyle={{
-        backgroundColor: colorForAsset,
+        backgroundColor: colorForAssetReactive,
         borderRadius,
       }}
       onPress={onPress}
@@ -68,6 +74,7 @@ export default function TokenSelectionButton({
       <ShadowStack
         {...position.coverAsObject}
         backgroundColor={colorForAsset}
+        backgroundColorShadow={colorForAssetReactive}
         borderRadius={borderRadius}
         elevation={TokenSelectionButtonElevation}
         shadows={shadowsForAsset}

@@ -1,11 +1,17 @@
 import React, { useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import ShadowItem from './ShadowItem';
 
 const ShadowStack = React.forwardRef(
   (
     {
       backgroundColor,
+      backgroundColorShadow = backgroundColor,
       borderRadius,
       children,
       elevation = 0,
@@ -18,10 +24,12 @@ const ShadowStack = React.forwardRef(
     },
     ref
   ) => {
+    const ss = useSharedValue('red');
+
     const renderItem = useCallback(
       (shadow, index) => (
         <ShadowItem
-          backgroundColor={backgroundColor}
+          backgroundColor={backgroundColorShadow}
           borderRadius={borderRadius}
           elevation={elevation}
           height={height}
@@ -32,11 +40,30 @@ const ShadowStack = React.forwardRef(
           zIndex={index + 2}
         />
       ),
-      [backgroundColor, borderRadius, elevation, height, hideShadow, width]
+      [
+        backgroundColorShadow,
+        borderRadius,
+        elevation,
+        height,
+        hideShadow,
+        width,
+      ]
     );
 
+    console.log('vv', typeof backgroundColor === 'function', backgroundColor);
+
+    const topStyle =
+      typeof backgroundColor === 'function' || backgroundColor.value
+        ? useAnimatedStyle(() => {
+            console.log(backgroundColor, backgroundColor.value);
+            return {
+              backgroundColor: backgroundColor.value,
+            };
+          })
+        : { backgroundColor };
+
     return (
-      <View
+      <Animated.View
         {...props}
         backgroundColor="transparent"
         borderRadius={borderRadius}
@@ -47,7 +74,7 @@ const ShadowStack = React.forwardRef(
         zIndex={1}
       >
         {ios && shadows?.map(renderItem)}
-        <View
+        <Animated.View
           {...props}
           borderRadius={borderRadius}
           elevation={shadows.reduce(
@@ -56,13 +83,13 @@ const ShadowStack = React.forwardRef(
           )}
           height={height}
           overflow="hidden"
-          style={[StyleSheet.absoluteFill, { backgroundColor }]}
+          style={[StyleSheet.absoluteFill, topStyle]}
           width={ios ? width : width || 0}
           zIndex={shadows?.length + 2 || 0}
         >
           {children}
-        </View>
-      </View>
+        </Animated.View>
+      </Animated.View>
     );
   }
 );

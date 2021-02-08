@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
+import { useAnimatedStyle } from 'react-native-reanimated';
 import ShadowView from './ShadowView';
 
 const buildShadow = (
@@ -29,6 +30,18 @@ const ShadowItem = ({
   shadowProps,
   elevation,
 }) => {
+  console.log(
+    'Shadow',
+    typeof backgroundColor === 'function' || !!backgroundColor.value
+  );
+  const topStyle =
+    typeof backgroundColor === 'function' || backgroundColor.value
+      ? useAnimatedStyle(() => {
+          return {
+            backgroundColor: backgroundColor.value || '#ffffff',
+          };
+        })
+      : { backgroundColor };
   return (
     <ShadowView
       elevation={elevation}
@@ -36,7 +49,6 @@ const ShadowItem = ({
       style={[
         StyleSheet.absoluteFill,
         {
-          backgroundColor: backgroundColor || '#ffffff',
           borderRadius,
           elevation,
           height,
@@ -45,6 +57,7 @@ const ShadowItem = ({
           zIndex,
           ...buildShadow(...shadow),
         },
+        topStyle,
       ]}
     />
   );

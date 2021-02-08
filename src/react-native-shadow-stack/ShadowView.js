@@ -1,12 +1,13 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+import Animated from 'react-native-reanimated';
 
 const ShadowView = props => {
   if (ios || props.elevation > 0) {
-    return <View {...props} />;
+    return <Animated.View {...props} />;
   }
   return (
-    <View
+    <Animated.View
       {...props}
       elevation={Math.min(StyleSheet.flatten(props.style).shadowRadius, 5)}
     />
