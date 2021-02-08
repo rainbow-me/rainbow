@@ -6,6 +6,7 @@ import { enableES5 } from 'immer';
 import ReactNative from 'react-native';
 import Animated from 'react-native-reanimated';
 import Storage from 'react-native-storage';
+import { debugLayoutAnimations } from './src/config/debug';
 import logger from 'logger';
 
 //Can remove when we update hermes after they enable Proxy support
@@ -104,6 +105,19 @@ const isDev = typeof __DEV__ === 'boolean' && __DEV__;
 process.env.NODE_ENV = isDev ? 'development' : 'production';
 if (typeof localStorage !== 'undefined') {
   localStorage.debug = isDev ? '*' : '';
+}
+
+const oldConfigureNext = ReactNative.LayoutAnimation.configureNext;
+
+if (
+  !ReactNative.LayoutAnimation.configureNext.__shimmed &&
+  debugLayoutAnimations
+) {
+  ReactNative.LayoutAnimation.configureNext = (...args) => {
+    logger.sentry('LayoutAnimation.configureNext', args);
+    oldConfigureNext(...args);
+  };
+  ReactNative.LayoutAnimation.configureNext.__shimmed = true;
 }
 
 if (!ReactNative.InteractionManager._shimmed) {
