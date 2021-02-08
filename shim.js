@@ -62,7 +62,7 @@ for (let variable of Object.entries(require('./globalVariables').default)) {
   Object.defineProperty(global, variable[0], {
     get: () => variable[1],
     set: () => {
-      throw new Error('Trying to override internal Rainbow var');
+      logger.sentry(`Trying to override internal Rainbow var ${variable[0]}`)
     },
   });
 }
