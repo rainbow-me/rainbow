@@ -7,7 +7,7 @@ import { Text } from '../text';
 import { padding } from '@rainbow-me/styles';
 
 const WalletConnectLearnMoreButton = () => {
-  const openWalletConnectWebsite = useCallback(async () => {
+  const openWalletConnectWebsite = useCallback(() => {
     Linking.openURL('https://walletconnect.org/');
   }, []);
 
