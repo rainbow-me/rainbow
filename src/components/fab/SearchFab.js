@@ -19,7 +19,7 @@ const SearchFab = ({ disabled, ...props }) => {
       backgroundColor={isDarkMode ? colors.darkModeDark : colors.dark}
       disabled={disabled}
       shadows={FabShadow}
-      testID="send-fab"
+      testID="search-fab"
     >
       <Text
         align="center"
