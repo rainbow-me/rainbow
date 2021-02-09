@@ -1,5 +1,12 @@
 import { sortBy, toLower } from 'lodash';
-import React, { Fragment, useCallback, useMemo, useRef } from 'react';
+import React, {
+  Fragment,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+} from 'react';
 import { Dimensions } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
@@ -35,6 +42,7 @@ import {
   multiply,
 } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
+import { ModalContext } from 'react-native-cool-modals/NativeStackView';
 import ShadowStack from 'react-native-shadow-stack';
 
 const formatItem = (
@@ -126,6 +134,15 @@ export default function TokenIndexExpandedState({ asset }) {
       'percentageAllocation'
     ).reverse();
   }, [dpi, genericAssets, nativeCurrency, nativeCurrencySymbol]);
+
+  const hasUnderlying = underlying.length !== 0;
+  const { layout } = useContext(ModalContext) || {};
+
+  useEffect(() => {
+    if (hasUnderlying) {
+      layout?.();
+    }
+  }, [hasUnderlying, layout]);
 
   // If we don't have a balance for this asset
   // It's a generic asset

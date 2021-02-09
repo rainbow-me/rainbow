@@ -66,6 +66,10 @@
   
 }
 
+- (void) layout {
+  [(PanModalViewController*) [_controller parentVC] panModalSetNeedsLayoutUpdateWrapper];
+}
+
 - (void)jumpTo:(nonnull NSNumber*)point {
   [(PanModalViewController*) [_controller parentVC] jumpToLong:point];
 }
@@ -418,6 +422,18 @@ RCT_EXPORT_METHOD(jumpTo:(nonnull NSNumber*)point tag:(nonnull NSNumber*) reactT
       return;
     }
     [(RNCMScreenView *) view jumpTo:point];
+  }];
+  
+}
+
+RCT_EXPORT_METHOD(layout:(nonnull NSNumber*) reactTag) {
+  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *,UIView *> *viewRegistry) {
+    UIView *view = viewRegistry[reactTag];
+    if (!view || ![view isKindOfClass:[RNCMScreenView class]]) {
+      RCTLogError(@"Cannot find RNCMScreenView with tag #%@", reactTag);
+      return;
+    }
+    [(RNCMScreenView *) view layout];
   }];
   
 }

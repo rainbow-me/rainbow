@@ -57,6 +57,12 @@ function ScreenView({ colors, descriptors, navigation, route, state }) {
           NativeModules.RNCMScreenManager.jumpTo(false, screen);
         }
       },
+      layout: () => {
+        const screen = findNodeHandle(ref.current);
+        if (screen) {
+          NativeModules.RNCMScreenManager.layout(screen);
+        }
+      },
     }),
     []
   );
