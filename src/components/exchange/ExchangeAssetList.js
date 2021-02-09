@@ -1,4 +1,9 @@
-import React, { useCallback, useRef } from 'react';
+import React, {
+  forwardRef,
+  useCallback,
+  useImperativeHandle,
+  useRef,
+} from 'react';
 import { Alert } from 'react-native';
 import { SectionList } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
@@ -90,16 +95,20 @@ const ExchangeAssetSectionList = styled(SectionList).attrs({
   height: 100%;
 `;
 
-const ExchangeAssetList = ({
-  itemProps,
-  items,
-  onLayout,
-  query,
-  onScrollTop,
-  testID,
-  keyboardDismissMode = 'none',
-}) => {
+const ExchangeAssetList = (
+  {
+    itemProps,
+    items,
+    onLayout,
+    query,
+    onScrollTop,
+    testID,
+    keyboardDismissMode = 'none',
+  },
+  ref
+) => {
   const sectionListRef = useRef();
+  useImperativeHandle(ref, () => sectionListRef.current);
   const prevQuery = usePrevious(query);
 
   // Scroll to top once the query is cleared
@@ -158,7 +167,7 @@ const ExchangeAssetList = ({
         contentOffset: { y },
       },
     }) => {
-      if (targetY === 0 || targetY === undefined || y === 0) {
+      if (targetY === 0 || (targetY === undefined && y === 0)) {
         onScrollTop?.();
       }
     },
@@ -180,4 +189,4 @@ const ExchangeAssetList = ({
   );
 };
 
-export default magicMemo(ExchangeAssetList, ['items', 'query']);
+export default magicMemo(forwardRef(ExchangeAssetList), ['items', 'query']);
