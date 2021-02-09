@@ -77,6 +77,7 @@ export default function SlackSheet({
   scrollEnabled = true,
   discoverSheet,
   limitScrollViewContent,
+  onContentSizeChange,
   ...props
 }) {
   const yPosition = useSharedValue(0);
@@ -149,6 +150,7 @@ export default function SlackSheet({
             contentHeight={contentHeight}
             deviceHeight={deviceHeight}
             limitScrollViewContent={limitScrollViewContent}
+            onContentSizeChange={onContentSizeChange}
             onScroll={scrollHandler}
             ref={sheet}
             scrollEnabled={scrollEnabled}
