@@ -6,7 +6,7 @@ import React, {
   useMemo,
   useRef,
 } from 'react';
-import { FlatList } from 'react-native';
+import { FlatList, LayoutAnimation } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { emitAssetRequest, emitChartsRequest } from '../../redux/explorer';
@@ -129,6 +129,9 @@ export default function ListSection() {
 
   const handleSwitchList = useCallback(
     (id, index) => {
+      LayoutAnimation.configureNext(
+        LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
+      );
       setSelectedList(id);
       listRef.current?.scrollToIndex({
         animated: true,
