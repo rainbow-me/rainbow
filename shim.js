@@ -6,9 +6,22 @@ import { enableES5 } from 'immer';
 import ReactNative from 'react-native';
 import Animated from 'react-native-reanimated';
 import Storage from 'react-native-storage';
+import { debugLayoutAnimations } from './src/config/debug';
 import logger from 'logger';
 
-//Can remove when we update hermes after they enable Proxy support
+if (typeof btoa === 'undefined') {
+  global.btoa = function (str) {
+    return new Buffer(str, 'binary').toString('base64');
+  };
+}
+
+if (typeof atob === 'undefined') {
+  global.atob = function (b64Encoded) {
+    return new Buffer(b64Encoded, 'base64').toString('binary');
+  };
+}
+
+// Can remove when we update hermes after they enable Proxy support
 ReactNative.Platform.OS === 'android' && enableES5();
 
 ReactNative.Platform.OS === 'ios' &&
@@ -48,19 +61,16 @@ if (
 
 global.storage = storage;
 
-Object.defineProperty(global, 'android', {
-  get: () => ReactNative.Platform.OS === 'android',
-  set: () => {
-    throw new Error('Trying to override internal Rainbow var');
-  },
-});
-
-Object.defineProperty(global, 'ios', {
-  get: () => ReactNative.Platform.OS === 'ios',
-  set: () => {
-    throw new Error('Trying to override internal Rainbow var');
-  },
-});
+// shimming for reanimated need to happen before importing globalVariables.js
+// eslint-disable-next-line import/no-commonjs
+for (let variable of Object.entries(require('./globalVariables').default)) {
+  Object.defineProperty(global, variable[0], {
+    get: () => variable[1],
+    set: () => {
+      logger.sentry(`Trying to override internal Rainbow var ${variable[0]}`);
+    },
+  });
+}
 
 const SHORTEN_PROP_TYPES_ERROR = true;
 
@@ -108,6 +118,19 @@ const isDev = typeof __DEV__ === 'boolean' && __DEV__;
 process.env.NODE_ENV = isDev ? 'development' : 'production';
 if (typeof localStorage !== 'undefined') {
   localStorage.debug = isDev ? '*' : '';
+}
+
+const oldConfigureNext = ReactNative.LayoutAnimation.configureNext;
+
+if (
+  !ReactNative.LayoutAnimation.configureNext.__shimmed &&
+  debugLayoutAnimations
+) {
+  ReactNative.LayoutAnimation.configureNext = (...args) => {
+    logger.sentry('LayoutAnimation.configureNext', args);
+    oldConfigureNext(...args);
+  };
+  ReactNative.LayoutAnimation.configureNext.__shimmed = true;
 }
 
 if (!ReactNative.InteractionManager._shimmed) {

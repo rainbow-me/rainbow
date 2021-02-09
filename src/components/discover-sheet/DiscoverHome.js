@@ -3,7 +3,7 @@ import Lists from './ListsSection';
 import PulseIndex from './PulseIndexSection';
 // import Strategies from './StrategiesSection';
 import TopMoversSection from './TopMoversSection';
-// import UniswapPools from './UniswapPoolsSection';
+import UniswapPools from './UniswapPoolsSection';
 
 export default function DiscoverHome() {
   return (
@@ -11,8 +11,8 @@ export default function DiscoverHome() {
       <TopMoversSection />
       <Lists />
       <PulseIndex />
-      {/* <Strategies />
-      <UniswapPools /> */}
+      {/* <Strategies /> */}
+      <UniswapPools />
     </React.Fragment>
   );
 }

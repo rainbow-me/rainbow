@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.2.50",
+  "version": "1.2.51",
   "private": true,
   "scripts": {
     "android": "adb uninstall me.rainbow || true && react-native run-android",
@@ -38,7 +38,7 @@
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
-      "eslint --ext '.js,.jsx,.ts,.tsx' -c .eslintrc.json",
+      "eslint --ext '.js,.jsx,.ts,.tsx' -c .eslintrc.js",
       "stylelint"
     ]
   },
@@ -235,6 +235,7 @@
     "@types/react-native": "^0.63.4",
     "@types/react-test-renderer": "^16.9.3",
     "@types/url-parse": "^1.4.3",
+    "ast-parser": "^0.0.5",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "^10.1.0",
     "babel-jest": "^26.1.0",

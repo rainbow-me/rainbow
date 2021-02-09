@@ -62,12 +62,12 @@ const ExchangeCoinRow = ({
   const [localFavorite, setLocalFavorite] = useState(!!item.favorite);
 
   const handlePress = useCallback(() => {
-    if (isVerified) {
+    if (isVerified || showBalance) {
       onPress(item);
     } else {
       onUnverifiedTokenPress(item);
     }
-  }, [isVerified, item, onPress, onUnverifiedTokenPress]);
+  }, [isVerified, item, onPress, onUnverifiedTokenPress, showBalance]);
 
   return (
     <>
