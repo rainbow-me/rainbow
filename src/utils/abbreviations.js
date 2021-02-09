@@ -1,4 +1,7 @@
-import { isENSAddressFormat } from '../helpers/validators';
+import {
+  isENSAddressFormat,
+  isUnstoppableAddressFormat,
+} from '../helpers/validators';
 import deviceUtils from './deviceUtils';
 
 const defaultNumCharsPerSection = deviceUtils.isNarrowPhone ? 8 : 10;
@@ -21,7 +24,7 @@ export function formatAddressForDisplay(
   truncationLength = 4,
   firstSectionLength = 10
 ) {
-  return isENSAddressFormat(text)
+  return isENSAddressFormat(text) || isUnstoppableAddressFormat(text)
     ? text
     : address(text, truncationLength, firstSectionLength);
 }
