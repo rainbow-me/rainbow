@@ -131,6 +131,12 @@ function DiscoverSheetIOS(_, forwardedRef) {
           NativeModules.ModalView.jumpTo(false, screen);
         }
       },
+      layoutScrollView() {
+        const screen = findNodeHandle(ref.current);
+        if (screen) {
+          NativeModules.ModalView.layout(screen);
+        }
+      },
       ...headerButtonsHandlers,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -164,6 +170,7 @@ function DiscoverSheetIOS(_, forwardedRef) {
       >
         <SlackSheet
           limitScrollViewContent={headerButtonsHandlers.isSearchModeEnabled}
+          onContentSizeChange={value.layoutScrollView}
           renderHeader={renderHeader}
           scrollEnabled={!headerButtonsHandlers.isSearchModeEnabled}
         >
