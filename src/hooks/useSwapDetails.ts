@@ -1,7 +1,8 @@
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import useAccountAssets from './useAccountAssets';
-import { Numberish, UniswapCurrency } from '@rainbow-me/entities';
+import useAccountSettings from './useAccountSettings';
+import useSwapInputOutputTokens from './useSwapInputOutputTokens';
 import { AppState } from '@rainbow-me/redux/store';
 import {
   updateSwapExtraDetails,
@@ -20,12 +21,14 @@ export default function useSwapDetails() {
   const tradeDetails = useSelector(
     (state: AppState) => state.swap.tradeDetails
   );
+  const { inputCurrency, outputCurrency } = useSwapInputOutputTokens();
   const extraTradeDetails = useSelector(
     (state: AppState) => state.swap.extraTradeDetails
   );
   const slippage = useSelector((state: AppState) => state.swap.slippage);
 
   const { allAssets } = useAccountAssets();
+  const { nativeCurrency } = useAccountSettings();
 
   const updateTradeDetails = useCallback(
     newTradeDetails => {
@@ -34,85 +37,78 @@ export default function useSwapDetails() {
     [dispatch]
   );
 
+  const updateExtraTradeDetails = useCallback(() => {
+    let inputExecutionRate = '';
+    let inputNativePrice = '';
+    let outputExecutionRate = '';
+    let outputNativePrice = '';
+    let outputPriceValue = '';
 
-  const updateExtraTradeDetails = useCallback(
-    ({
-      inputCurrency,
-      nativeCurrency,
-      outputCurrency,
-      tradeDetails,
-    }: {
-      inputCurrency: UniswapCurrency;
-      nativeCurrency: string;
-      outputCurrency: UniswapCurrency;
-      tradeDetails: Trade;
-    }) => {
-      let inputExecutionRate = '';
-      let inputNativePrice = '';
-      let outputExecutionRate = '';
-      let outputNativePrice = '';
-      let outputPriceValue = '';
+    let inputPriceValue = null;
 
-      let inputPriceValue = null;
+    if (inputCurrency) {
+      inputPriceValue = inputCurrency?.native?.price?.amount;
 
-      if (inputCurrency) {
-        inputPriceValue = inputCurrency?.native?.price?.amount;
+      inputExecutionRate = tradeDetails?.executionPrice?.toSignificant();
 
-        inputExecutionRate = tradeDetails?.executionPrice?.toSignificant();
+      inputExecutionRate = inputPriceValue
+        ? updatePrecisionToDisplay(inputExecutionRate, inputPriceValue)
+        : '0';
 
-        inputExecutionRate = inputPriceValue
-          ? updatePrecisionToDisplay(inputExecutionRate, inputPriceValue)
-          : '0';
+      inputNativePrice = inputPriceValue
+        ? convertAmountToNativeDisplay(inputPriceValue, nativeCurrency)
+        : '-';
+    }
 
-        inputNativePrice = inputPriceValue
-          ? convertAmountToNativeDisplay(inputPriceValue, nativeCurrency)
-          : '-';
-      }
-
-      if (outputCurrency) {
-        const outputCurrencyInWallet = ethereumUtils.getAsset(
-          allAssets,
-          outputCurrency.address
-        );
-
-        outputPriceValue = outputCurrencyInWallet?.native?.price?.amount;
-
-        if (tradeDetails.executionPrice.equalTo('0')) {
-          outputExecutionRate = '0';
-        } else {
-          outputExecutionRate = tradeDetails?.executionPrice
-            ?.invert()
-            ?.toSignificant();
-        }
-
-        // If the output currency was not found in wallet and the input currency has a price
-        // Calculate the output currency price based off of the input currency price
-        if (!outputPriceValue && inputPriceValue) {
-          outputPriceValue = multiply(inputPriceValue, outputExecutionRate);
-        }
-
-        outputExecutionRate = updatePrecisionToDisplay(
-          outputExecutionRate,
-          outputPriceValue
-        );
-
-        outputNativePrice = outputPriceValue
-          ? convertAmountToNativeDisplay(outputPriceValue, nativeCurrency)
-          : '-';
-      }
-
-      dispatch(
-        updateSwapExtraDetails({
-          inputExecutionRate,
-          inputNativePrice,
-          outputExecutionRate,
-          outputNativePrice,
-          outputPriceValue,
-        })
+    if (outputCurrency) {
+      const outputCurrencyInWallet = ethereumUtils.getAsset(
+        allAssets,
+        outputCurrency.address
       );
-    },
-    [allAssets, dispatch]
-  );
+
+      outputPriceValue = outputCurrencyInWallet?.native?.price?.amount;
+
+      if (tradeDetails.executionPrice.equalTo('0')) {
+        outputExecutionRate = '0';
+      } else {
+        outputExecutionRate = tradeDetails?.executionPrice
+          ?.invert()
+          ?.toSignificant();
+      }
+
+      // If the output currency was not found in wallet and the input currency has a price
+      // Calculate the output currency price based off of the input currency price
+      if (!outputPriceValue && inputPriceValue) {
+        outputPriceValue = multiply(inputPriceValue, outputExecutionRate);
+      }
+
+      outputExecutionRate = updatePrecisionToDisplay(
+        outputExecutionRate,
+        outputPriceValue
+      );
+
+      outputNativePrice = outputPriceValue
+        ? convertAmountToNativeDisplay(outputPriceValue, nativeCurrency)
+        : '-';
+    }
+
+    dispatch(
+      updateSwapExtraDetails({
+        inputExecutionRate,
+        inputNativePrice,
+        outputExecutionRate,
+        outputNativePrice,
+        outputPriceValue,
+      })
+    );
+  }, [
+    allAssets,
+    dispatch,
+    inputCurrency,
+    nativeCurrency,
+    outputCurrency,
+    tradeDetails,
+  ]);
 
   const areTradeDetailsValid = useMemo(() => {
     const {
@@ -130,12 +126,12 @@ export default function useSwapDetails() {
     );
   }, [extraTradeDetails]);
 
-  const updateSlippage = useCallback(
-    (slippage: Numberish) => {
-      dispatch(updateSwapSlippage(slippage));
-    },
-    [dispatch]
-  );
+  const updateSlippage = useCallback(() => {
+    const slippage = tradeDetails?.priceImpact
+      ? Number(tradeDetails?.priceImpact?.toFixed(2).toString()) * 100
+      : 0;
+    dispatch(updateSwapSlippage(slippage));
+  }, [dispatch, tradeDetails]);
 
   return {
     areTradeDetailsValid: !!areTradeDetailsValid,

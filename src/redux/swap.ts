@@ -1,6 +1,6 @@
 import { Trade } from '@uniswap/sdk';
 import { AnyAction } from 'redux';
-import { Asset, Numberish } from '@rainbow-me/entities';
+import { Numberish, UniswapCurrency } from '@rainbow-me/entities';
 import { AppDispatch } from '@rainbow-me/redux/store';
 
 export interface SwapAmount {
@@ -18,7 +18,7 @@ interface ExtraTradeDetails {
 
 interface SwapState {
   extraTradeDetails: ExtraTradeDetails | {};
-  inputCurrency: Asset | null;
+  inputCurrency: UniswapCurrency | null;
   inputAsExactAmount: boolean;
   inputAmount: SwapAmount | null;
   isMax: boolean;
@@ -27,7 +27,7 @@ interface SwapState {
   slippage: Numberish | null;
   tradeDetails: Trade | null;
   outputAmount: SwapAmount | null;
-  outputCurrency: Asset | null;
+  outputCurrency: UniswapCurrency | null;
 }
 
 // -- Constants --------------------------------------- //
@@ -112,15 +112,15 @@ export const updateSwapOutputAmount = (
   });
 };
 
-export const updateSwapInputCurrency = (newInputCurrency: Asset) => (
+export const updateSwapInputCurrency = (newInputCurrency: UniswapCurrency) => (
   dispatch: AppDispatch
 ) => {
   dispatch({ payload: newInputCurrency, type: SWAP_UPDATE_INPUT_CURRENCY });
 };
 
-export const updateSwapOutputCurrency = (newOutputCurrency: Asset) => (
-  dispatch: AppDispatch
-) => {
+export const updateSwapOutputCurrency = (
+  newOutputCurrency: UniswapCurrency
+) => (dispatch: AppDispatch) => {
   dispatch({ payload: newOutputCurrency, type: SWAP_UPDATE_OUTPUT_CURRENCY });
 };
 

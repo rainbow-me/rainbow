@@ -61,7 +61,7 @@ export default function useUniswapMarketDetails({
   } = useSwapDetails();
 
   const [isSufficientLiquidity, setIsSufficientLiquidity] = useState(true);
-  const { chainId, nativeCurrency } = useAccountSettings();
+  const { chainId } = useAccountSettings();
 
   const { allPairs, doneLoadingResults } = useUniswapPairs();
   const swapNotNeeded = useMemo(() => {
@@ -245,37 +245,14 @@ export default function useUniswapMarketDetails({
 
   useEffect(() => {
     if (swapNotNeeded || isMissingCurrency || !tradeDetails) return;
-    updateExtraTradeDetails({
-      inputCurrency,
-      nativeCurrency,
-      outputCurrency,
-      tradeDetails,
-    });
-  }, [
-    inputCurrency,
-    isMissingCurrency,
-    nativeCurrency,
-    outputCurrency,
-    swapNotNeeded,
-    tradeDetails,
-    updateExtraTradeDetails,
-  ]);
+    updateExtraTradeDetails();
+  }, [isMissingCurrency, swapNotNeeded, tradeDetails, updateExtraTradeDetails]);
 
   useEffect(() => {
     // update slippage
     if (swapNotNeeded || isMissingCurrency) return;
-    updateSlippage(
-      tradeDetails?.priceImpact && !isMissingAmounts
-        ? Number(tradeDetails?.priceImpact?.toFixed(2).toString()) * 100
-        : 0
-    );
-  }, [
-    isMissingAmounts,
-    isMissingCurrency,
-    swapNotNeeded,
-    tradeDetails,
-    updateSlippage,
-  ]);
+    updateSlippage();
+  }, [isMissingCurrency, swapNotNeeded, updateSlippage]);
 
   return {
     isSufficientLiquidity,
