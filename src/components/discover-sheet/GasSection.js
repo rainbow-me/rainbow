@@ -277,7 +277,7 @@ function PriceBox({
   );
 }
 
-export default function UniswapPools() {
+export default function GasSection() {
   const [percentilesVisible, setPercentilesVisible] = useState(false);
   const { gasPrices, startPollingGasPrices, stopPollingGasPrices } = useGas();
   useEffect(() => {
@@ -325,7 +325,9 @@ export default function UniswapPools() {
         <ButtonPressAnimation onPress={toggleChart}>
           <Text marginLeft={10} size="larger" weight="bold">
             Percentiles {percentilesVisible ? '' : '􀯼'}
-            {percentilesVisible && <Icon color={colors.black} name="close" />}
+            {percentilesVisible && (
+              <Icon color={colors.black} name="close" top="-4" />
+            )}
           </Text>
         </ButtonPressAnimation>
       </Row>
