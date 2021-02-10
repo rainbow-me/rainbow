@@ -87,7 +87,7 @@ const DiscoverSheetAndroid = (_, forwardedRef) => {
   return (
     <DiscoverSheetContext.Provider value={value}>
       <BottomSheet
-        activeOffsetY={[-0.5, 0.5]}
+        activeOffsetY={[-3, 3]}
         animatedPosition={sheetPosition}
         animationDuration={300}
         failOffsetX={[-10, 10]}
