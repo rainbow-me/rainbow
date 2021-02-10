@@ -1,4 +1,3 @@
-import { Trade } from '@uniswap/sdk';
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import useAccountAssets from './useAccountAssets';
@@ -7,6 +6,7 @@ import { AppState } from '@rainbow-me/redux/store';
 import {
   updateSwapExtraDetails,
   updateSlippage as updateSwapSlippage,
+  updateSwapTradeDetails,
 } from '@rainbow-me/redux/swap';
 import {
   convertAmountToNativeDisplay,
@@ -17,12 +17,23 @@ import { ethereumUtils } from '@rainbow-me/utils';
 
 export default function useSwapDetails() {
   const dispatch = useDispatch();
+  const tradeDetails = useSelector(
+    (state: AppState) => state.swap.tradeDetails
+  );
   const extraTradeDetails = useSelector(
     (state: AppState) => state.swap.extraTradeDetails
   );
   const slippage = useSelector((state: AppState) => state.swap.slippage);
 
   const { allAssets } = useAccountAssets();
+
+  const updateTradeDetails = useCallback(
+    newTradeDetails => {
+      dispatch(updateSwapTradeDetails(newTradeDetails));
+    },
+    [dispatch]
+  );
+
 
   const updateExtraTradeDetails = useCallback(
     ({
@@ -130,7 +141,9 @@ export default function useSwapDetails() {
     areTradeDetailsValid: !!areTradeDetailsValid,
     extraTradeDetails,
     slippage,
+    tradeDetails,
     updateExtraTradeDetails,
     updateSlippage,
+    updateTradeDetails,
   };
 }

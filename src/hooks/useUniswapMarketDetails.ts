@@ -1,4 +1,3 @@
-import { Trade } from '@uniswap/sdk';
 import { get, isEmpty } from 'lodash';
 import { RefObject, useCallback, useEffect, useMemo, useState } from 'react';
 import { TextInput } from 'react-native';
@@ -55,12 +54,13 @@ export default function useUniswapMarketDetails({
   } = useSwapInputValues();
   const {
     extraTradeDetails,
+    tradeDetails,
     updateExtraTradeDetails,
+    updateTradeDetails: updateSwapTradeDetails,
     updateSlippage,
   } = useSwapDetails();
 
   const [isSufficientLiquidity, setIsSufficientLiquidity] = useState(true);
-  const [tradeDetails, setTradeDetails] = useState<Trade | null>(null);
   const { chainId, nativeCurrency } = useAccountSettings();
 
   const { allPairs, doneLoadingResults } = useUniswapPairs();
@@ -103,7 +103,7 @@ export default function useUniswapMarketDetails({
     const hasInsufficientLiquidity =
       doneLoadingResults && (isEmpty(allPairs) || !newTradeDetails);
     setIsSufficientLiquidity(!hasInsufficientLiquidity);
-    setTradeDetails(newTradeDetails);
+    updateSwapTradeDetails(newTradeDetails);
   }, [
     doneLoadingResults,
     allPairs,
@@ -114,6 +114,7 @@ export default function useUniswapMarketDetails({
     isMissingAmounts,
     outputAmount,
     outputCurrency,
+    updateSwapTradeDetails,
   ]);
 
   const calculateInputGivenOutputChange = useCallback(
@@ -278,6 +279,5 @@ export default function useUniswapMarketDetails({
 
   return {
     isSufficientLiquidity,
-    tradeDetails,
   };
 }

@@ -1,3 +1,4 @@
+import { Trade } from '@uniswap/sdk';
 import { AnyAction } from 'redux';
 import { Asset, Numberish } from '@rainbow-me/entities';
 import { AppDispatch } from '@rainbow-me/redux/store';
@@ -24,6 +25,7 @@ interface SwapState {
   isSufficientBalance: boolean;
   nativeAmount: string | null;
   slippage: Numberish | null;
+  tradeDetails: Trade | null;
   outputAmount: SwapAmount | null;
   outputCurrency: Asset | null;
 }
@@ -34,6 +36,7 @@ const SWAP_UPDATE_IS_SUFFICIENT_BALANCE =
   'swap/SWAP_UPDATE_IS_SUFFICIENT_BALANCE';
 const SWAP_UPDATE_SLIPPAGE = 'swap/SWAP_UPDATE_SLIPPAGE';
 const SWAP_UPDATE_EXTRA_TRADE_DETAILS = 'swap/SWAP_UPDATE_EXTRA_TRADE_DETAILS';
+const SWAP_UPDATE_TRADE_DETAILS = 'swap/SWAP_UPDATE_TRADE_DETAILS';
 const SWAP_UPDATE_NATIVE_AMOUNT = 'swap/SWAP_UPDATE_NATIVE_AMOUNT';
 const SWAP_UPDATE_INPUT_AMOUNT = 'swap/SWAP_UPDATE_INPUT_AMOUNT';
 const SWAP_UPDATE_OUTPUT_AMOUNT = 'swap/SWAP_UPDATE_OUTPUT_AMOUNT';
@@ -46,6 +49,12 @@ export const updateSwapExtraDetails = (extraDetails: ExtraTradeDetails) => (
   dispatch: AppDispatch
 ) => {
   dispatch({ payload: extraDetails, type: SWAP_UPDATE_EXTRA_TRADE_DETAILS });
+};
+
+export const updateSwapTradeDetails = (tradeDetails: Trade) => (
+  dispatch: AppDispatch
+) => {
+  dispatch({ payload: tradeDetails, type: SWAP_UPDATE_TRADE_DETAILS });
 };
 
 export const updateIsMax = (isMax: boolean) => (dispatch: AppDispatch) => {
@@ -131,6 +140,7 @@ const INITIAL_STATE: SwapState = {
   outputAmount: null,
   outputCurrency: null,
   slippage: null,
+  tradeDetails: null,
 };
 
 export default (state = INITIAL_STATE, action: AnyAction) => {
@@ -149,6 +159,11 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
       return {
         ...state,
         extraTradeDetails: action.payload,
+      };
+    case SWAP_UPDATE_TRADE_DETAILS:
+      return {
+        ...state,
+        tradeDetails: action.payload,
       };
     case SWAP_UPDATE_IS_SUFFICIENT_BALANCE:
       return {
