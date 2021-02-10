@@ -50,8 +50,7 @@ const BackgroundFill = styled(Centered).attrs({
   ...borders.buildCircleAsObject(43),
 })`
   ${position.cover};
-  background-color: ${({ theme: { colors, isDarkMode } }) =>
-    isDarkMode ? colors.offWhite : colors.dark};
+  background-color: ${({ theme: { colors } }) => colors.dark};
   left: 8;
   top: 8;
 `;
