@@ -2,6 +2,7 @@ import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import { get, isEmpty } from 'lodash';
 import {
+  amberdataGetPercentiles,
   etherscanGetGasEstimates,
   etherscanGetGasPrices,
   ethGasStationGetGasPrices,
@@ -131,9 +132,22 @@ export const gasPricesStartPolling = () => async (dispatch, getState) => {
           gasPrices[CUSTOM] = existingGasPrice[CUSTOM];
         }
 
+        const {
+          data: { payload },
+        } = await amberdataGetPercentiles();
+
+        const percentiles = Object.entries(payload).reduce(
+          (acc, [key, value]) => {
+            acc[key.replace('percentile_', '')] = value / 1000000000;
+            return acc;
+          },
+          {}
+        );
+
         dispatch({
           payload: {
             gasPrices,
+            percentiles,
           },
           type: GAS_PRICES_SUCCESS,
         });
@@ -326,6 +340,7 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         gasPrices: action.payload.gasPrices,
+        percentiles: action.payload.percentiles,
       };
     case GAS_PRICES_FAILURE:
       return {

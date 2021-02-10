@@ -1,5 +1,6 @@
 import axios from 'axios';
 import {
+  AMBERDATA_API_KEY,
   ETH_GAS_STATION_API_KEY,
   ETHERSCAN_API_KEY,
 } from 'react-native-dotenv';
@@ -40,6 +41,21 @@ const etherscanAPI = axios.create({
   },
   timeout: 30000, // 30 secs
 });
+
+// available only on mainnet
+const amberdataAPI = axios.create({
+  baseURL: 'https://web3api.io/api/v2',
+  headers: {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+    'x-amberdata-blockchain-id': 'ethereum-mainnet',
+    'x-api-key': AMBERDATA_API_KEY,
+  },
+  timeout: 30000, // 30 secs
+});
+
+export const amberdataGetPercentiles = () =>
+  amberdataAPI.get(`/transactions/gas/percentiles`);
 
 /**
  * @desc get ethereum gas prices from Etherscan

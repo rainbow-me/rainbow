@@ -21,11 +21,13 @@ export default function useGas() {
         selectedGasPrice,
         selectedGasPriceOption,
         txFees,
+        percentiles,
       },
     }) => ({
       gasLimit,
       gasPrices,
       isSufficientGas,
+      percentiles,
       selectedGasPrice,
       selectedGasPriceOption,
       txFees,

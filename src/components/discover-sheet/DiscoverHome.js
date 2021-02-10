@@ -1,4 +1,5 @@
 import React from 'react';
+import GasSection from './GasSection';
 import Lists from './ListsSection';
 import PulseIndex from './PulseIndexSection';
 // import Strategies from './StrategiesSection';
@@ -12,6 +13,7 @@ export default function DiscoverHome() {
       <Lists />
       <PulseIndex />
       {/* <Strategies /> */}
+      <GasSection />
       <UniswapPools />
     </React.Fragment>
   );
