@@ -175,7 +175,7 @@ export default function DiscoverSheetHeader(props) {
       withSpring(isSearchModeEnabled ? 0 : buttonOpacity.value, springConfig),
     [isSearchModeEnabled]
   );
-  const animatedWrapperROpacity = useDerivedValue(() =>
+  const animatedWrapperOpacity = useDerivedValue(() =>
     withSpring(buttonOpacity.value, springConfig)
   );
 
@@ -209,7 +209,7 @@ export default function DiscoverSheetHeader(props) {
         }}
         stackOpacity={stackOpacity}
         translateX={translateXRightButton}
-        wrapperOpacity={animatedWrapperROpacity}
+        wrapperOpacity={animatedWrapperOpacity}
       >
         <Icon
           bottom={1}
