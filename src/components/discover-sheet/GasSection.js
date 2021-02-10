@@ -1,5 +1,11 @@
-import React, { useContext, useEffect, useMemo } from 'react';
-import { Dimensions, TextInput, View } from 'react-native';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import { Dimensions, LayoutAnimation, TextInput, View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useDerivedValue,
@@ -9,6 +15,7 @@ import ChartContext from '../../react-native-animated-charts/src/helpers/ChartCo
 import { ButtonPressAnimation } from '../animations';
 import FloatingEmojis from '../floating-emojis/FloatingEmojis';
 import FloatingEmojisTapHandler from '../floating-emojis/FloatingEmojisTapHandler';
+import { Icon } from '../icons';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
 import {
@@ -166,23 +173,33 @@ function Chart() {
   const { percentiles } = useGas();
   const percentilesPoints = useMemo(() => {
     return percentiles
-      ? monotoneCubicInterpolation({
-          data: Object.entries(percentiles)
-            .reduce((acc, [key, value]) => {
-              if (key !== '100') {
-                acc.push({ x: Number(key), y: value });
-              }
-              return acc;
-            }, [])
-            .sort((a, b) => a.x - b.x),
-          range: 40,
-        })
+      ? Object.entries(percentiles)
+          .reduce((acc, [key, value]) => {
+            if (key !== '100') {
+              acc.push({ x: Number(key), y: value });
+            }
+            return acc;
+          }, [])
+          .sort((a, b) => a.x - b.x)
       : [];
   }, [percentiles]);
+
+  const smoothPercentilesPoints = useMemo(
+    () =>
+      monotoneCubicInterpolation({
+        data: percentilesPoints,
+        range: 40,
+      }),
+    []
+  );
   return (
     <View>
       <ChartPathProvider
-        data={{ points: percentilesPoints, smoothingStrategy: 'bezier' }}
+        data={{
+          nativePoints: percentilesPoints,
+          points: smoothPercentilesPoints,
+          smoothingStrategy: 'bezier',
+        }}
       >
         <StyledLabel />
         <ChartPath
@@ -261,15 +278,24 @@ function PriceBox({
 }
 
 export default function UniswapPools() {
+  const [percentilesVisible, setPercentilesVisible] = useState(false);
   const { gasPrices, startPollingGasPrices, stopPollingGasPrices } = useGas();
   useEffect(() => {
     startPollingGasPrices();
     return stopPollingGasPrices;
   }, [startPollingGasPrices, stopPollingGasPrices]);
 
+  const toggleChart = useCallback(() => {
+    LayoutAnimation.configureNext(
+      LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
+    );
+    setPercentilesVisible(prev => !prev);
+  });
+
   const ethPriceUnit = ethereumUtils.getEthPriceUnit();
 
   const { nativeCurrency } = useAccountSettings();
+  const { colors } = useTheme();
 
   const {
     fast: nativeFast,
@@ -295,7 +321,15 @@ export default function UniswapPools() {
         <NormalPriceBox {...normal} fee={nativeNormal} />
         <FastPriceBox {...fast} fee={nativeFast} />
       </Row>
-      <Chart />
+      <Row marginBottom={10} paddingHorizontal={32}>
+        <ButtonPressAnimation onPress={toggleChart}>
+          <Text marginLeft={10} size="larger" weight="bold">
+            Percentiles {percentilesVisible ? '' : '􀯼'}
+            {percentilesVisible && <Icon color={colors.black} name="close" />}
+          </Text>
+        </ButtonPressAnimation>
+      </Row>
+      {percentilesVisible && <Chart />}
     </Column>
   ) : null;
 }
