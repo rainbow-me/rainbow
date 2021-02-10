@@ -1,8 +1,7 @@
 import { BottomSheetHandleProps } from '@gorhom/bottom-sheet';
 import React from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
-
-import { SheetHandleFixedToTop } from '../sheet';
+import { SheetHandleFixedToTop } from '../../sheet';
 
 interface HandleProps extends BottomSheetHandleProps {
   style?: StyleProp<ViewStyle>;
