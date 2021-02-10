@@ -12,6 +12,7 @@ import styled from 'styled-components';
 import { useMemoOne } from 'use-memo-one';
 import { dismissingScreenListener } from '../../shim';
 import {
+  AnimatedExchangeFloatingPanels,
   ConfirmExchangeButton,
   DepositInfo,
   ExchangeDetailsRow,
@@ -48,6 +49,10 @@ import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
 import { backgroundTask, isETH, isNewValueForPath } from '@rainbow-me/utils';
 import logger from 'logger';
+
+const FloatingPanels = ios
+  ? AnimatedExchangeFloatingPanels
+  : ExchangeFloatingPanels;
 
 const Wrapper = ios ? KeyboardFixedOpenLayout : Fragment;
 
@@ -498,7 +503,7 @@ export default function ExchangeModal({
   return (
     <Wrapper>
       <InnerWrapper>
-        <ExchangeFloatingPanels>
+        <FloatingPanels>
           <FloatingPanel
             overflow="visible"
             paddingBottom={showOutputField ? 0 : 26}
@@ -564,7 +569,7 @@ export default function ExchangeModal({
             testID={`${testID}-gas`}
             type={type}
           />
-        </ExchangeFloatingPanels>
+        </FloatingPanels>
       </InnerWrapper>
     </Wrapper>
   );
