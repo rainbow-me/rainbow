@@ -23,6 +23,8 @@ import { SlackSheet } from '../sheet';
 import DiscoverSheetContent from './DiscoverSheetContent';
 import DiscoverSheetContext from './DiscoverSheetContext';
 import DiscoverSheetHeader from './DiscoverSheetHeader';
+import CustomBackground from './androidCustomComponents/customBackground';
+import CustomHandle from './androidCustomComponents/customHandle';
 
 const renderHeader = yPosition => <DiscoverSheetHeader yPosition={yPosition} />;
 
@@ -90,7 +92,9 @@ const DiscoverSheetAndroid = (_, forwardedRef) => {
         activeOffsetY={[-3, 3]}
         animatedPosition={sheetPosition}
         animationDuration={300}
+        backgroundComponent={CustomBackground}
         failOffsetX={[-10, 10]}
+        handleComponent={CustomHandle}
         index={1}
         ref={bottomSheetModalRef}
         snapPoints={snapPoints}
