@@ -95,7 +95,7 @@ const AddressField = (
       {!inputValue && (
         <Placeholder>
           <TouchableWithoutFeedback onPress={ref?.current?.focus}>
-            <PlaceholderText>Domain or Address (0x...)</PlaceholderText>
+            <PlaceholderText>ENS or Address (0x...)</PlaceholderText>
           </TouchableWithoutFeedback>
         </Placeholder>
       )}
