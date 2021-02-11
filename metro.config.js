@@ -20,6 +20,7 @@ module.exports = {
     babelTransformerPath: require.resolve('./metro.transform.js'),
     getTransformOptions: async () => ({
       transform: {
+        allowOptionalDependencies: false,
         experimentalImportSupport: true,
         inlineRequires: false,
       },
