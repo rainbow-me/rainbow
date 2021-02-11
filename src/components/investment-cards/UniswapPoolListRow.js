@@ -37,14 +37,18 @@ const PriceContainer = ios
       margin-bottom: 3;
     `;
 
-const PoolValue = styled(Row)`
-  background-color: ${({ theme: { colors } }) =>
-    `${colors.alpha(colors.appleBlue, 0.06)}`};
+const PoolValueWrapper = styled(Row)`
   border-radius: 12px;
   height: 30px;
   padding-horizontal: 8px;
   padding-top: ${ios ? 3 : 2}px;
 `;
+
+const PoolValueText = styled(Text).attrs({
+  lineHeight: 'paragraphSmall',
+  size: 'lmedium',
+  weight: 'bold',
+})``;
 
 const bigNumberFormat = (num, nativeCurrency) => {
   let ret;
@@ -66,13 +70,46 @@ const bigNumberFormat = (num, nativeCurrency) => {
   return ret;
 };
 
-const formatAttribute = (type, value, nativeCurrency) => {
+const renderPoolValue = (type, value, nativeCurrency, colors) => {
+  let formattedValue = value;
+  let color = colors.appleBlue;
   if (type === 'anualized_fees') {
-    return `${value}`;
-  } else if (type === 'liquidity') {
-    return bigNumberFormat(value, nativeCurrency);
+    let percent = parseFloat(value);
+    if (!percent || percent === 0) {
+      formattedValue = '0%';
+    }
+
+    if (percent < 0.0001 && percent > 0) {
+      formattedValue = '< 0.0001%';
+    }
+
+    if (percent < 0 && percent > -0.0001) {
+      formattedValue = '< 0.0001%';
+    }
+
+    let fixedPercent = percent.toFixed(2);
+    if (fixedPercent === '0.00') {
+      formattedValue = '0%';
+    }
+    if (fixedPercent > 0) {
+      color = colors.green;
+      if (fixedPercent > 100) {
+        formattedValue = `+${percent?.toFixed(0).toLocaleString()}%`;
+      } else {
+        formattedValue = `+${fixedPercent}%`;
+      }
+    } else {
+      formattedValue = `${fixedPercent}%`;
+      color = colors.red;
+    }
+  } else if (type === 'liquidity' || type === 'oneDayVolumeUSD') {
+    formattedValue = bigNumberFormat(value, nativeCurrency);
   }
-  return value;
+  return (
+    <PoolValueWrapper backgroundColor={colors.alpha(color, 0.06)}>
+      <PoolValueText color={color}>{formattedValue}</PoolValueText>
+    </PoolValueWrapper>
+  );
 };
 
 const BottomRow = ({ symbol }) => {
@@ -94,20 +131,12 @@ const TopRow = item => {
         <CoinName color={colors.dark}>{item.tokenNames}</CoinName>
       </FlexItem>
       <PriceContainer>
-        <PoolValue>
-          <Text
-            color={colors.appleBlue}
-            lineHeight="paragraphSmall"
-            size="lmedium"
-            weight="bold"
-          >
-            {formatAttribute(
-              item.attribute,
-              item[item.attribute],
-              nativeCurrency
-            )}
-          </Text>
-        </PoolValue>
+        {renderPoolValue(
+          item.attribute,
+          item[item.attribute],
+          nativeCurrency,
+          colors
+        )}
       </PriceContainer>
     </TopRowContainer>
   );

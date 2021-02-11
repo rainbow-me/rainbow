@@ -1,6 +1,6 @@
 import { useQuery } from '@apollo/client';
 import { getUnixTime, startOfMinute, sub } from 'date-fns';
-import { toLower, uniq } from 'lodash';
+import { sortBy, toLower, uniq } from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { blockClient, uniswapClient } from '@rainbow-me/apollo/client';
@@ -21,6 +21,11 @@ import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const UNISWAP_QUERY_INTERVAL = 1000 * 60 * 5; // 5 minutes
+
+export const SORT_DIRECTION = {
+  ASC: 'asc',
+  DESC: 'desc',
+};
 
 async function splitQuery(query, localClient, vars, list, skipCount = 100) {
   let fetchedData = {};
@@ -90,17 +95,15 @@ export async function getBlocksFromTimestamps(timestamps, skipCount = 500) {
 const getTimestampsForChanges = () => {
   const t1 = getUnixTime(startOfMinute(sub(Date.now(), { days: 1 })));
   const t2 = getUnixTime(startOfMinute(sub(Date.now(), { days: 2 })));
-  const tWeek = getUnixTime(startOfMinute(sub(Date.now(), { week: 1 })));
-  return [t1, t2, tWeek];
+  return [t1, t2];
 };
 
 async function getBulkPairData(pairList, ethPrice, genericAssets) {
-  const [t1, t2, tWeek] = getTimestampsForChanges();
-  let [
-    { number: b1 },
-    { number: b2 },
-    { number: bWeek },
-  ] = await getBlocksFromTimestamps([t1, t2, tWeek]);
+  const [t1, t2] = getTimestampsForChanges();
+  let [{ number: b1 }, { number: b2 }] = await getBlocksFromTimestamps([
+    t1,
+    t2,
+  ]);
 
   try {
     let current = await uniswapClient.query({
@@ -111,8 +114,8 @@ async function getBulkPairData(pairList, ethPrice, genericAssets) {
       },
     });
 
-    let [oneDayResult, twoDayResult, oneWeekResult] = await Promise.all(
-      [b1, b2, bWeek].map(async block => {
+    let [oneDayResult, twoDayResult] = await Promise.all(
+      [b1, b2].map(async block => {
         let result = uniswapClient.query({
           fetchPolicy: 'cache-first',
           query: UNISWAP_PAIRS_HISTORICAL_BULK_QUERY(block, pairList),
@@ -126,10 +129,6 @@ async function getBulkPairData(pairList, ethPrice, genericAssets) {
     }, {});
 
     let twoDayData = twoDayResult?.data?.pairs.reduce((obj, cur) => {
-      return { ...obj, [cur.id]: cur };
-    }, {});
-
-    let oneWeekData = oneWeekResult?.data?.pairs.reduce((obj, cur) => {
       return { ...obj, [cur.id]: cur };
     }, {});
 
@@ -153,19 +152,10 @@ async function getBulkPairData(pairList, ethPrice, genericAssets) {
             });
             twoDayHistory = newData.data.pairs[0];
           }
-          let oneWeekHistory = oneWeekData?.[pair.id];
-          if (!oneWeekHistory) {
-            let newData = await uniswapClient.query({
-              fetchPolicy: 'cache-first',
-              query: UNISWAP_PAIR_DATA_QUERY(pair.id, bWeek),
-            });
-            oneWeekHistory = newData.data.pairs[0];
-          }
           data = parseData(
             data,
             oneDayHistory,
             twoDayHistory,
-            oneWeekHistory,
             ethPrice,
             b1,
             genericAssets
@@ -183,83 +173,71 @@ function parseData(
   data,
   oneDayData,
   twoDayData,
-  oneWeekData,
   ethPrice,
   oneDayBlock,
   genericAssets
 ) {
+  const newData = { ...data };
   // get volume changes
   const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
-    data?.volumeUSD,
+    newData?.volumeUSD,
     oneDayData?.volumeUSD ? oneDayData.volumeUSD : 0,
     twoDayData?.volumeUSD ? twoDayData.volumeUSD : 0
   );
   const [oneDayVolumeUntracked, volumeChangeUntracked] = get2DayPercentChange(
-    data?.untrackedVolumeUSD,
+    newData?.untrackedVolumeUSD,
     oneDayData?.untrackedVolumeUSD
       ? parseFloat(oneDayData?.untrackedVolumeUSD)
       : 0,
     twoDayData?.untrackedVolumeUSD ? twoDayData?.untrackedVolumeUSD : 0
   );
 
-  const oneWeekVolumeUSD = parseFloat(
-    oneWeekData ? data?.volumeUSD - oneWeekData?.volumeUSD : data.volumeUSD
-  );
-
-  const oneWeekVolumeUntracked = parseFloat(
-    oneWeekData
-      ? data?.untrackedVolumeUSD - oneWeekData?.untrackedVolumeUSD
-      : data.untrackedVolumeUSD
-  );
-
   // set volume properties
-  data.oneDayVolumeUSD = parseFloat(oneDayVolumeUSD);
-  data.oneWeekVolumeUSD = oneWeekVolumeUSD;
-  data.volumeChangeUSD = volumeChangeUSD;
-  data.oneDayVolumeUntracked = oneDayVolumeUntracked;
-  data.oneWeekVolumeUntracked = oneWeekVolumeUntracked;
-  data.volumeChangeUntracked = volumeChangeUntracked;
+  newData.oneDayVolumeUSD = parseFloat(oneDayVolumeUSD);
+  newData.volumeChangeUSD = volumeChangeUSD;
+  newData.oneDayVolumeUntracked = oneDayVolumeUntracked;
+  newData.volumeChangeUntracked = volumeChangeUntracked;
 
   // set liquidity properties
-  data.trackedReserveUSD = data.trackedReserveETH * ethPrice;
-  data.liquidityChangeUSD = getPercentChange(
-    data.reserveUSD,
+  newData.trackedReserveUSD = newData.trackedReserveETH * ethPrice;
+  newData.liquidityChangeUSD = getPercentChange(
+    newData.reserveUSD,
     oneDayData?.reserveUSD
   );
 
-  // format if pair hasnt existed for a day or a week
-  if (!oneDayData && data && data.createdAtBlockNumber > oneDayBlock) {
-    data.oneDayVolumeUSD = parseFloat(data.volumeUSD);
+  // format if pair hasnt existed for a day
+  if (!oneDayData && data && newData.createdAtBlockNumber > oneDayBlock) {
+    newData.oneDayVolumeUSD = parseFloat(newData.volumeUSD);
   }
   if (!oneDayData && data) {
-    data.oneDayVolumeUSD = parseFloat(data.volumeUSD);
-  }
-  if (!oneWeekData && data) {
-    data.oneWeekVolumeUSD = parseFloat(data.volumeUSD);
+    newData.oneDayVolumeUSD = parseFloat(newData.volumeUSD);
   }
 
+  newData.anualized_fees =
+    (newData.oneDayVolumeUSD * 0.003 * 365 * 100) / newData.trackedReserveUSD;
+
   let token0 =
-    (toLower(data.token0.id) === WETH_ADDRESS
+    (toLower(newData.token0.id) === WETH_ADDRESS
       ? genericAssets['eth']
-      : genericAssets[toLower(data.token0.id)]) || data.token0;
+      : genericAssets[toLower(newData.token0.id)]) || newData.token0;
   let token1 =
-    toLower(data.token1.id) === WETH_ADDRESS
+    toLower(newData.token1.id) === WETH_ADDRESS
       ? genericAssets['eth']
-      : genericAssets[toLower(data.token0.id)] || data.token1;
+      : genericAssets[toLower(newData.token1.id)] || newData.token1;
   const tokens = [token0, token1];
 
   return {
-    ...data,
-    address: data.id,
-    liquidity: Number(Number(data.reserveUSD).toFixed(2)),
+    ...newData,
+    address: newData.id,
+    liquidity: Number(Number(newData.reserveUSD).toFixed(2)),
     symbol: 'UNI-V2',
-    tokenNames: `${data.token0.symbol}-${data.token1.symbol}`.replace(
+    tokenNames: `${newData.token0.symbol}-${newData.token1.symbol}`.replace(
       'WETH',
       'ETH'
     ),
     tokens,
     type: 'uniswap-v2',
-    uniqueId: data.id,
+    uniqueId: newData.id,
   };
 }
 
@@ -305,7 +283,7 @@ export const getPercentChange = (valueNow, value24HoursAgo) => {
   return adjustedPercentChange;
 };
 
-export default function useUniswapPools() {
+export default function useUniswapPools(sortField, sortDirection) {
   const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
     genericAssets,
   }));
@@ -344,34 +322,48 @@ export default function useUniswapPools() {
         genericAssets
       );
       setPairs(topPairs);
-      const tmpAllTokens = [];
-      topPairs.forEach(pair => {
-        tmpAllTokens.push(toLower(pair.token0.id));
-        tmpAllTokens.push(toLower(pair.token1.id));
-      });
-      const allTokens = uniq(tmpAllTokens);
-      dispatch(emitAssetRequest(allTokens));
-      logger.log('🦄🦄🦄 GUCCI');
     } catch (e) {
-      logger.log('🦄🦄🦄 FUCK', e);
+      logger.log('🦄🦄🦄 error getting pairs data', e);
     }
-  }, [dispatch, genericAssets, ids]);
+  }, [genericAssets, ids]);
 
   useEffect(() => {
-    if (ids) {
+    if (ids && !pairs) {
       fetchPairsData();
     }
-    if (error) {
-      logger.log('🦄🦄🦄 GOT OG ERROR', error);
+  }, [
+    assetsSocket,
+    data,
+    dispatch,
+    error,
+    fetchPairsData,
+    ids,
+    loading,
+    pairs,
+  ]);
+
+  const top40PairsSorted = useMemo(() => {
+    if (!pairs) return null;
+    let sortedPairs = sortBy(pairs, sortField);
+    if (sortDirection === SORT_DIRECTION.DESC) {
+      sortedPairs = sortedPairs.reverse();
     }
-    if (loading) {
-      logger.log('🦄🦄🦄 GOT OG LOADING', loading);
-    }
-  }, [assetsSocket, data, dispatch, error, fetchPairsData, ids, loading]);
+
+    // top 40
+    sortedPairs = sortedPairs.slice(0, 39);
+
+    const tmpAllTokens = [];
+    sortedPairs.forEach(pair => {
+      tmpAllTokens.push(toLower(pair.token0.id));
+      tmpAllTokens.push(toLower(pair.token1.id));
+    });
+    const allTokens = uniq(tmpAllTokens);
+    dispatch(emitAssetRequest(allTokens));
+    return sortedPairs;
+  }, [dispatch, pairs, sortDirection, sortField]);
 
   return {
     error,
-    loading,
-    pairs,
+    pairs: top40PairsSorted,
   };
 }
