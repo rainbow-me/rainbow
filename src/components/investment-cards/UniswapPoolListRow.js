@@ -3,12 +3,14 @@ import React, { Fragment, useCallback } from 'react';
 import { View } from 'react-native';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
+import { convertAmountToNativeDisplay } from '../../helpers/utilities';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText, CoinRow } from '../coin-row';
 import CoinName from '../coin-row/CoinName';
 import { initialLiquidityPoolExpandedStateSheetHeight } from '../expanded-state/LiquidityPoolExpandedState';
 import { FlexItem, Row } from '../layout';
 import { Text } from '../text';
+import { useAccountSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 
@@ -44,9 +46,31 @@ const PoolValue = styled(Row)`
   padding-top: ${ios ? 3 : 2}px;
 `;
 
-const formatAttribute = (type, value) => {
+const bigNumberFormat = (num, nativeCurrency) => {
+  let ret;
+  if (num > 1000000000) {
+    ret = `${convertAmountToNativeDisplay(
+      (num / 1000000000).toString(),
+      nativeCurrency
+    )} b`;
+  } else if (num > 1000000) {
+    ret = `${convertAmountToNativeDisplay(
+      (num / 1000000).toString(),
+      nativeCurrency
+    )} m`;
+  } else {
+    ret = convertAmountToNativeDisplay(num.toString(), nativeCurrency);
+    num.toFixed(2);
+  }
+
+  return ret;
+};
+
+const formatAttribute = (type, value, nativeCurrency) => {
   if (type === 'anualized_fees') {
-    return `$${value}`;
+    return `${value}`;
+  } else if (type === 'liquidity') {
+    return bigNumberFormat(value, nativeCurrency);
   }
   return value;
 };
@@ -63,6 +87,7 @@ const BottomRow = ({ symbol }) => {
 
 const TopRow = item => {
   const { colors } = useTheme();
+  const { nativeCurrency } = useAccountSettings();
   return (
     <TopRowContainer>
       <FlexItem flex={1}>
@@ -76,7 +101,11 @@ const TopRow = item => {
             size="lmedium"
             weight="bold"
           >
-            {formatAttribute(item.attribute, item[item.attribute])}
+            {formatAttribute(
+              item.attribute,
+              item[item.attribute],
+              nativeCurrency
+            )}
           </Text>
         </PoolValue>
       </PriceContainer>
