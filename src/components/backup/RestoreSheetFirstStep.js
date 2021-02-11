@@ -164,9 +164,7 @@ export default function RestoreSheetFirstStep({
             <Title>Watch an Ethereum address </Title>
             <CaretIcon />
           </TitleRow>
-          <DescriptionText>
-            Watch a public address, ENS name, or Unstoppable name
-          </DescriptionText>
+          <DescriptionText>Watch a public address or ENS name</DescriptionText>
         </Column>
       </SheetRow>
     </Container>
