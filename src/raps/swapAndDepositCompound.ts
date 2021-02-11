@@ -1,4 +1,3 @@
-import { Trade } from '@uniswap/sdk';
 import { concat, reduce } from 'lodash';
 import {
   assetNeedsUnlocking,
@@ -11,9 +10,8 @@ import {
   RapAction,
   RapActionTypes,
 } from './common';
-import { Asset, SelectedGasPrice } from '@rainbow-me/entities';
+import { Asset } from '@rainbow-me/entities';
 import { estimateSwapGasLimit } from '@rainbow-me/handlers/uniswap';
-import { rapsAddOrUpdate } from '@rainbow-me/redux/raps';
 import store from '@rainbow-me/redux/store';
 import {
   ethUnits,
@@ -24,19 +22,14 @@ import { add } from '@rainbow-me/utilities';
 import { contractUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
-export const estimateSwapAndDepositCompound = async ({
-  inputAmount,
-  inputCurrency,
-  outputAmount,
-  outputCurrency,
-  tradeDetails,
-}: {
-  inputAmount: string;
-  inputCurrency: Asset;
-  outputAmount: string | null;
-  outputCurrency: Asset;
-  tradeDetails: Trade;
-}) => {
+export const estimateSwapAndDepositCompound = async () => {
+  const {
+    inputAmount,
+    inputCurrency,
+    outputAmount,
+    outputCurrency,
+    tradeDetails,
+  } = store.getState().swap;
   const { accountAddress, chainId, network } = store.getState().settings;
   const requiresSwap = !!outputCurrency;
   let gasLimits: (string | number)[] = [];
@@ -101,23 +94,15 @@ export const estimateSwapAndDepositCompound = async ({
   return reduce(gasLimits, (acc, limit) => add(acc, limit), '0');
 };
 
-export const createSwapAndDepositCompoundRap = async ({
-  callback,
-  inputAmount,
-  inputCurrency,
-  outputAmount,
-  outputCurrency,
-  selectedGasPrice,
-  tradeDetails,
-}: {
-  callback: () => void;
-  inputAmount: string;
-  inputCurrency: Asset;
-  outputAmount: string | null;
-  outputCurrency: Asset;
-  selectedGasPrice: SelectedGasPrice;
-  tradeDetails: Trade;
-}) => {
+export const createSwapAndDepositCompoundRap = async () => {
+  const {
+    inputAmount,
+    inputCurrency,
+    outputAmount,
+    outputCurrency,
+    tradeDetails,
+  } = store.getState().swap;
+  const { selectedGasPrice } = store.getState().gas;
   const { accountAddress, network } = store.getState().settings;
   const requiresSwap = !!outputCurrency;
   logger.log('[swap and deposit] currencies', inputCurrency, outputCurrency);
@@ -196,11 +181,6 @@ export const createSwapAndDepositCompoundRap = async ({
   actions = concat(actions, deposit);
 
   // create the overall rap
-  const newRap = createNewRap(actions, callback);
-
-  // update the rap store
-  const { dispatch } = store;
-  dispatch(rapsAddOrUpdate(newRap.id, newRap));
-  logger.log('[swap and deposit] new rap!', newRap);
+  const newRap = createNewRap(actions);
   return newRap;
 };

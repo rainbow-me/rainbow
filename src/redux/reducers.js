@@ -16,7 +16,6 @@ import openStateSettings, {
   openSavingsReducer,
   openSmallBalancesReducer,
 } from './openStateSettings';
-import raps from './raps';
 import requests from './requests';
 import settings from './settings';
 import showcaseTokens from './showcaseTokens';
@@ -43,7 +42,6 @@ export default combineReducers({
   openSavings: openSavingsReducer,
   openSmallBalances: openSmallBalancesReducer,
   openStateSettings,
-  raps,
   requests,
   settings,
   showcaseTokens,

@@ -117,6 +117,7 @@ export default function ExchangeModal({
 
   const { initWeb3Listener, stopWeb3Listener } = useBlockPolling();
   const { nativeCurrency } = useAccountSettings();
+
   const [isAuthorizing, setIsAuthorizing] = useState(false);
 
   useAndroidBackHandler(() => {
@@ -203,13 +204,7 @@ export default function ExchangeModal({
 
   const updateGasLimit = useCallback(async () => {
     try {
-      const gasLimit = await estimateRap({
-        inputAmount,
-        inputCurrency,
-        outputAmount,
-        outputCurrency,
-        tradeDetails,
-      });
+      const gasLimit = await estimateRap();
       if (inputCurrency && outputCurrency) {
         updateTxFee(gasLimit);
       }
@@ -219,11 +214,8 @@ export default function ExchangeModal({
   }, [
     defaultGasLimit,
     estimateRap,
-    inputAmount,
     inputCurrency,
-    outputAmount,
     outputCurrency,
-    tradeDetails,
     updateTxFee,
   ]);
 
@@ -287,18 +279,10 @@ export default function ExchangeModal({
           setParams({ focused: false });
           navigate(Routes.PROFILE_SCREEN);
         };
-        const rap = await createRap({
-          callback,
-          inputAmount: isWithdrawal && isMax ? cTokenBalance : inputAmount,
-          inputCurrency,
-          isMax,
-          outputAmount,
-          outputCurrency,
-          selectedGasPrice,
-          tradeDetails,
-        });
+        const rap = await createRap();
         logger.log('[exchange - handle submit] rap', rap);
         await executeRap(wallet, rap);
+        callback();
         logger.log('[exchange - handle submit] executed rap!');
         analytics.track(`Completed ${type}`, {
           defaultInputAsset: defaultInputAsset?.symbol || '',
@@ -313,18 +297,11 @@ export default function ExchangeModal({
     });
   }, [
     createRap,
-    cTokenBalance,
     defaultInputAsset,
-    inputAmount,
-    inputCurrency,
-    isMax,
     isHighPriceImpact,
-    isWithdrawal,
     navigate,
-    outputAmount,
     outputCurrency,
     priceImpactPercentDisplay,
-    selectedGasPrice,
     setParams,
     tradeDetails,
     type,

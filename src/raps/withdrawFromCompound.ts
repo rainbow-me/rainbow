@@ -1,26 +1,14 @@
 import { createNewAction, createNewRap, RapActionTypes } from './common';
-import { Asset, SelectedGasPrice } from '@rainbow-me/entities';
-import { rapsAddOrUpdate } from '@rainbow-me/redux/raps';
 import store from '@rainbow-me/redux/store';
 import { ethUnits } from '@rainbow-me/references';
 import logger from 'logger';
 
 export const estimateWithdrawFromCompound = () => ethUnits.basic_withdrawal;
 
-export const createWithdrawFromCompoundRap = ({
-  callback,
-  inputAmount,
-  inputCurrency,
-  isMax,
-  selectedGasPrice,
-}: {
-  callback: () => void;
-  inputAmount: string | null;
-  inputCurrency: Asset;
-  isMax: boolean;
-  selectedGasPrice: SelectedGasPrice;
-}) => {
+export const createWithdrawFromCompoundRap = () => {
+  const { inputAmount, inputCurrency, isMax } = store.getState().swap;
   logger.log('[withdraw rap] withdraw', inputCurrency);
+  const { selectedGasPrice } = store.getState().gas;
   const { accountAddress, network } = store.getState().settings;
 
   // create a withdraw rap
@@ -36,11 +24,6 @@ export const createWithdrawFromCompoundRap = ({
   const actions = [withdraw];
 
   // create the overall rap
-  const newRap = createNewRap(actions, callback);
-
-  // update the rap store
-  const { dispatch } = store;
-  dispatch(rapsAddOrUpdate(newRap.id, newRap));
-  logger.log('[withdraw rap] new rap!', newRap);
+  const newRap = createNewRap(actions);
   return newRap;
 };

@@ -2,9 +2,7 @@ import { Wallet } from '@ethersproject/wallet';
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import { Trade } from '@uniswap/sdk';
-import { get, join, map } from 'lodash';
-import { rapsAddOrUpdate } from '../redux/raps';
-import store from '../redux/store';
+import { join, map } from 'lodash';
 import { depositCompound, swap, unlock, withdrawCompound } from './actions';
 import { Asset, SelectedGasPrice } from '@rainbow-me/entities';
 
@@ -27,7 +25,6 @@ export interface RapActionParameters {
   isMax?: boolean;
   network?: string; // Network;
   outputCurrency?: Asset;
-  override?: string | null | void;
   selectedGasPrice?: SelectedGasPrice;
   tradeDetails?: Trade;
 }
@@ -37,7 +34,6 @@ export interface DepositActionParameters {
   inputAmount: string;
   inputCurrency: Asset;
   network: string;
-  override?: string | null;
   selectedGasPrice: SelectedGasPrice;
 }
 
@@ -46,7 +42,6 @@ export interface UnlockActionParameters {
   amount: string;
   assetToUnlock: Asset;
   contractAddress: string;
-  override?: string | null;
   selectedGasPrice: SelectedGasPrice;
 }
 
@@ -81,7 +76,6 @@ export interface RapAction {
 
 export interface Rap {
   actions: RapAction[];
-  callback: () => void;
   completedAt: string | null;
   id: string;
   startedAt: string;
@@ -116,12 +110,6 @@ const getRapFullName = (actions: RapAction[]) => {
   return join(actionTypes, ' + ');
 };
 
-const defaultPreviousAction = {
-  transaction: {
-    confirmed: true,
-  },
-};
-
 export const executeRap = async (wallet: Wallet, rap: Rap) => {
   const { actions } = rap;
   const rapName = getRapFullName(actions);
@@ -134,48 +122,14 @@ export const executeRap = async (wallet: Wallet, rap: Rap) => {
   logger.log('[common - executing rap]: actions', actions);
   for (let index = 0; index < actions.length; index++) {
     logger.log('[1 INNER] index', index);
-    const previousAction = index ? actions[index - 1] : defaultPreviousAction;
-    logger.log('[2 INNER] previous action', previousAction);
-    const previousActionWasSuccess = get(
-      previousAction,
-      'transaction.confirmed',
-      false
-    );
-    logger.log(
-      '[3 INNER] previous action was successful',
-      previousActionWasSuccess
-    );
-    if (!previousActionWasSuccess) break;
-
     const action = actions[index];
-    const currentActionHasBeenCompleted = get(
-      action,
-      'transaction.confirmed',
-      false
-    );
-
-    // If the action is complete, skip it (we're resuming a rap!)
-    if (currentActionHasBeenCompleted) {
-      logger.log(
-        '[3.5 INNER] ignoring current action because it was completed!'
-      );
-      continue;
-    }
-
     const { parameters, type } = action;
     const actionPromise = findActionByType(type);
-    logger.log('[4 INNER] executing type', type);
+    logger.log('[2 INNER] executing type', type);
     try {
-      const output = await actionPromise(wallet, rap, index, parameters);
-      logger.log('[5 INNER] action output', output);
-      const nextAction = index < actions.length - 1 ? actions[index + 1] : null;
-      logger.log('[6 INNER] next action', nextAction);
-      if (nextAction) {
-        logger.log('[7 INNER] updating params override');
-        nextAction.parameters.override = output;
-      }
+      await actionPromise(wallet, rap, index, parameters);
     } catch (error) {
-      logger.sentry('[5 INNER] error running action');
+      logger.sentry('[3 INNER] error running action');
       captureException(error);
       analytics.track('Rap failed', {
         category: 'raps',
@@ -193,20 +147,14 @@ export const executeRap = async (wallet: Wallet, rap: Rap) => {
   logger.log('[common - executing rap] finished execute rap function');
 };
 
-export const createNewRap = (actions: RapAction[], callback = NOOP) => {
-  const { dispatch } = store;
+export const createNewRap = (actions: RapAction[]) => {
   const now = Date.now();
-  const currentRap = {
+  return {
     actions,
-    callback,
     completedAt: null,
     id: `rap_${now}`,
     startedAt: now,
   };
-
-  logger.log('[common] Creating a new rap', currentRap);
-  dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
-  return currentRap;
 };
 
 export const createNewAction = (

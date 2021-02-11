@@ -8,41 +8,32 @@ import { Asset } from '@rainbow-me/entities';
 import TransactionStatusTypes from '@rainbow-me/helpers/transactionStatusTypes';
 import TransactionTypes from '@rainbow-me/helpers/transactionTypes';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
-import { rapsAddOrUpdate } from '@rainbow-me/redux/raps';
 import store from '@rainbow-me/redux/store';
-import {
-  convertAmountToRawAmount,
-  greaterThan,
-  isZero,
-} from '@rainbow-me/utilities';
+import { convertAmountToRawAmount, greaterThan } from '@rainbow-me/utilities';
 import { AllowancesCache, contractUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
-
-const NOOP = () => undefined;
 
 const unlock = async (
   wallet: Wallet,
   currentRap: Rap,
   index: number,
   parameters: RapActionParameters
-): Promise<string> => {
+): Promise<null> => {
   const { dispatch } = store;
   const {
     accountAddress,
     amount,
     assetToUnlock,
     contractAddress,
-    override,
     selectedGasPrice,
   } = parameters as UnlockActionParameters;
-  const _amount = override || amount;
   logger.log(
     '[unlock] begin unlock rap for',
     assetToUnlock,
     'on',
     contractAddress
   );
-  logger.log('[unlock]', amount, override, _amount);
+  logger.log('[unlock]', amount);
 
   const { gasPrices } = store.getState().gas;
 
@@ -104,7 +95,6 @@ const unlock = async (
   // update rap for hash
   currentRap.actions[index].transaction.hash = approval.hash;
   logger.log('[unlock] adding a new txn for the approval', approval.hash);
-  dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
 
   logger.log('[unlock] add a new txn');
   await dispatch(
@@ -124,31 +114,9 @@ const unlock = async (
       wallet.address
     )
   );
-  logger.log('[unlock] calling callback');
-  currentRap.callback();
-  currentRap.callback = NOOP;
 
   logger.log('[unlock] APPROVAL SUBMITTED, HASH', approval.hash);
-  logger.log('[unlock] WAITING TO BE MINED...');
-  try {
-    const receipt = await wallet.provider.waitForTransaction(approval.hash);
-    if (receipt.status && !isZero(receipt.status)) {
-      // update rap for confirmed status
-      currentRap.actions[index].transaction.confirmed = true;
-      dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
-      logger.log('[unlock] APPROVED');
-    } else {
-      logger.log('[unlock] error waiting for approval');
-      currentRap.actions[index].transaction.confirmed = false;
-      dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
-    }
-  } catch (error) {
-    logger.log('[unlock] approval status not success', error);
-    currentRap.actions[index].transaction.confirmed = false;
-    dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
-  }
-  logger.log('[unlock] completed', currentRap, approval);
-  return _amount;
+  return null;
 };
 
 export const assetNeedsUnlocking = async (

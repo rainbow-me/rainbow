@@ -9,7 +9,6 @@ import ProtocolTypes from '@rainbow-me/helpers/protocolTypes';
 import TransactionStatusTypes from '@rainbow-me/helpers/transactionStatusTypes';
 import TransactionTypes from '@rainbow-me/helpers/transactionTypes';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
-import { rapsAddOrUpdate } from '@rainbow-me/redux/raps';
 import store from '@rainbow-me/redux/store';
 import {
   compoundCERC20ABI,
@@ -17,11 +16,9 @@ import {
   ethUnits,
   savingsAssetsListByUnderlying,
 } from '@rainbow-me/references';
-import { convertAmountToRawAmount, isZero } from '@rainbow-me/utilities';
+import { convertAmountToRawAmount } from '@rainbow-me/utilities';
 import { gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
-
-const NOOP = () => undefined;
 
 export const getDepositGasLimit = (inputCurrency: Asset) =>
   inputCurrency.address === 'eth'
@@ -40,15 +37,13 @@ const depositCompound = async (
     inputAmount,
     inputCurrency,
     network,
-    override,
     selectedGasPrice,
   } = parameters as DepositActionParameters;
   const { dispatch } = store;
   const { gasPrices } = store.getState().gas;
-  const _inputAmount = override || inputAmount;
-  logger.log('[deposit]', inputAmount, override, _inputAmount);
+  logger.log('[deposit]', inputAmount);
   const rawInputAmount = convertAmountToRawAmount(
-    _inputAmount,
+    inputAmount,
     inputCurrency.decimals
   );
   logger.log('[deposit] raw input amount', rawInputAmount);
@@ -90,7 +85,7 @@ const depositCompound = async (
   currentRap.actions[index].transaction.hash = deposit.hash;
 
   const newTransaction = {
-    amount: _inputAmount,
+    amount: inputAmount,
     asset: inputCurrency,
     from: accountAddress,
     gasLimit: transactionParams.gasLimit,
@@ -105,31 +100,9 @@ const depositCompound = async (
   logger.log('[deposit] adding new txn', newTransaction);
   // Disable the txn watcher because Compound can silently fail
   await dispatch(dataAddNewTransaction(newTransaction, accountAddress, true));
-  logger.log('[deposit] calling the callback');
-  currentRap.callback();
-  currentRap.callback = NOOP;
 
-  // wait for it to complete
   currentRap.actions[index].transaction.hash = deposit.hash;
-  try {
-    logger.log('[deposit] waiting for the deposit to go thru', deposit.hash);
-    const receipt = await wallet.provider.waitForTransaction(deposit.hash);
-    logger.log('[deposit] receipt:', receipt);
-    if (receipt.status && !isZero(receipt.status)) {
-      currentRap.actions[index].transaction.confirmed = true;
-      dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
-      logger.log('[deposit] updated raps');
-    } else {
-      logger.log('[deposit] status not success');
-      currentRap.actions[index].transaction.confirmed = false;
-      dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
-    }
-  } catch (error) {
-    logger.log('[deposit] error waiting for deposit', error);
-    currentRap.actions[index].transaction.confirmed = false;
-    dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
-  }
-  logger.log('[deposit] completed');
+  logger.log('[deposit] rap complete');
   return null;
 };
 
