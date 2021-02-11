@@ -1,6 +1,6 @@
 /* eslint-disable sort-keys */
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { FlatList } from 'react-native';
+import { FlatList, LayoutAnimation } from 'react-native';
 import styled from 'styled-components';
 import ActivityIndicator from '../ActivityIndicator';
 import { ButtonPressAnimation } from '../animations';
@@ -200,6 +200,9 @@ export default function UniswapPools() {
   const [sortCriteria, setSortCriteria] = useState('desc');
   const handleSwitchList = useCallback(
     (id, index) => {
+      LayoutAnimation.configureNext(
+        LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
+      );
       if (id === selectedList) {
         setSortCriteria(sortCriteria === 'desc' ? 'asc' : 'desc');
       } else {

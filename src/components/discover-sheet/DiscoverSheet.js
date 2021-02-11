@@ -87,7 +87,7 @@ const DiscoverSheetAndroid = (_, forwardedRef) => {
   return (
     <DiscoverSheetContext.Provider value={value}>
       <BottomSheet
-        activeOffsetY={[-0.5, 0.5]}
+        activeOffsetY={[-3, 3]}
         animatedPosition={sheetPosition}
         animationDuration={300}
         failOffsetX={[-10, 10]}
@@ -131,6 +131,12 @@ function DiscoverSheetIOS(_, forwardedRef) {
           NativeModules.ModalView.jumpTo(false, screen);
         }
       },
+      layoutScrollView() {
+        const screen = findNodeHandle(ref.current);
+        if (screen) {
+          NativeModules.ModalView.layout(screen);
+        }
+      },
       ...headerButtonsHandlers,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -164,6 +170,7 @@ function DiscoverSheetIOS(_, forwardedRef) {
       >
         <SlackSheet
           limitScrollViewContent={headerButtonsHandlers.isSearchModeEnabled}
+          onContentSizeChange={value.layoutScrollView}
           renderHeader={renderHeader}
           scrollEnabled={!headerButtonsHandlers.isSearchModeEnabled}
         >
