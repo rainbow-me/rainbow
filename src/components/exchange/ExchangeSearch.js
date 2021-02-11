@@ -53,21 +53,23 @@ const SearchIconWrapper = styled(Animated.View)`
   margin-top: ${android ? '5' : '8'};
 `;
 
-const SearchInput = styled(Input).attrs(({ theme: { colors } }) => ({
-  autoCapitalize: 'words',
-  blurOnSubmit: false,
-  clearTextOnFocus: true,
-  color: colors.alpha(colors.blueGreyDark, 0.8),
-  enablesReturnKeyAutomatically: true,
-  keyboardAppearance: 'dark',
-  keyboardType: 'ascii-capable',
-  placeholderTextColor: colors.alpha(colors.blueGreyDark, 0.5),
-  returnKeyType: 'search',
-  selectionColor: colors.appleBlue,
-  size: 'large',
-  spellCheck: false,
-  weight: 'semibold',
-}))`
+const SearchInput = styled(Input).attrs(
+  ({ theme: { colors }, isSearchModeEnabled }) => ({
+    autoCapitalize: 'words',
+    blurOnSubmit: false,
+    clearTextOnFocus: true,
+    color: colors.alpha(colors.blueGreyDark, 0.8),
+    enablesReturnKeyAutomatically: true,
+    keyboardAppearance: 'dark',
+    keyboardType: 'ascii-capable',
+    placeholderTextColor: colors.alpha(colors.blueGreyDark, 0.5),
+    returnKeyType: 'search',
+    selectionColor: isSearchModeEnabled ? colors.appleBlue : colors.transparent,
+    size: 'large',
+    spellCheck: false,
+    weight: 'semibold',
+  })
+)`
   ${android
     ? `margin-top: -6;
   margin-bottom: -10;`
