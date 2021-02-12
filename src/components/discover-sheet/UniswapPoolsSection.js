@@ -140,7 +140,7 @@ export default function UniswapPools() {
           height={22}
           imageStyle={{ width: 15, height: 17.5 }}
           marginRight={7}
-          marginTop={2}
+          marginTop={android ? 8 : 2}
           width={22}
         />
         <Text marginLeft={10} size="larger" weight="bold">

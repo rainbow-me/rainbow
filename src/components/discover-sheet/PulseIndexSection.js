@@ -1,4 +1,5 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
+import { View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
 import { DPI_ADDRESS } from '../../references/indexes';
@@ -76,7 +77,16 @@ const PulseIndex = () => {
             height: 70,
             marginHorizontal: 19,
             marginTop: 20,
-            width: '100%',
+            position: 'absolute',
+          }}
+        />
+        <View
+          style={{
+            borderRadius: 24,
+            height: 70,
+            marginHorizontal: 19,
+            marginTop: 20,
+            overflow: 'hidden',
           }}
         >
           <LinearGradient
@@ -91,13 +101,14 @@ const PulseIndex = () => {
             <Column margin={15} marginRight={10}>
               <CoinIcon shadowColor={colors.dpiDark} {...item} />
             </Column>
-            <Column marginLeft={0} marginTop={13.5}>
+            <Column marginLeft={0} marginTop={ios ? 13.5 : 10}>
               <Text color={colors.whiteLabel} size="large" weight="heavy">
                 {item.name}
               </Text>
               <Text
                 color={colors.alpha(colors.whiteLabel, 0.6)}
                 size="lmedium"
+                style={ios ? {} : { marginTop: -10 }}
                 weight="semibold"
               >
                 All the top DeFi tokens in one
@@ -115,7 +126,7 @@ const PulseIndex = () => {
               </Text>
             </Column>
           </Row>
-        </ShadowStack>
+        </View>
       </ButtonPressAnimation>
       <Row marginHorizontal={34} marginTop={8}>
         <Column flex={1} justify="start">

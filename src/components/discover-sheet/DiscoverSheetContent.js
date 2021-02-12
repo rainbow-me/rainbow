@@ -36,10 +36,11 @@ function Switcher({ showSearch, children }) {
 export default function DiscoverSheetContent() {
   const [showSearch, setShowSearch] = useState(false);
   const ref = useRef();
+
   return (
     <>
-      <HeaderTitle>{showSearch ? 'Search' : 'Discover'}</HeaderTitle>
       {android && <Spacer />}
+      <HeaderTitle>{showSearch ? 'Search' : 'Discover'}</HeaderTitle>
       <ColumnWithMargins flex={1} margin={42}>
         <DiscoverSearchContainer
           ref={ref}

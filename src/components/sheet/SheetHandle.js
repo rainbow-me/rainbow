@@ -5,7 +5,8 @@ import styled from 'styled-components';
 
 export const HandleHeight = 5;
 
-const defaultColor = colors => colors.alpha(colors.blueGreyDark, 0.3);
+const defaultColor = colors =>
+  colors.alpha(colors.blueGreyDark, android ? 0.7 : 0.3);
 
 const Handle = styled.View.attrs({
   blurAmount: 20,
