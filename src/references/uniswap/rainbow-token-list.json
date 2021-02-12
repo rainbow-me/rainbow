@@ -14773,7 +14773,10 @@
       "chainId": 1,
       "decimals": 18,
       "name": "NFTX",
-      "symbol": "NFTX"
+      "symbol": "NFTX",
+      "extensions": {
+        "isVerified": true
+      }
     },
     {
       "address": "0x1cBb83EbcD552D5EBf8131eF8c9CD9d9BAB342bC",
