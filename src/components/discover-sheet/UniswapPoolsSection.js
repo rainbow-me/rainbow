@@ -1,4 +1,5 @@
 /* eslint-disable sort-keys */
+import { sortBy } from 'lodash';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { FlatList, LayoutAnimation } from 'react-native';
 import styled from 'styled-components';
@@ -117,19 +118,18 @@ export default function UniswapPools() {
   const pairRows = useMemo(() => {
     if (!pairs) return [];
 
-    // let sortedPairs = sortBy(pairs, selectedList);
-    // if (sortDirection === 'desc') {
-    //   sortedPairs = sortedPairs.reverse();
-    // }
+    let sortedPairs = sortBy(pairs, selectedList);
+    if (sortDirection === 'desc') {
+      sortedPairs = sortedPairs.reverse();
+    }
 
-    return pairs.map(item => {
-      ///console.log(JSON.stringify(item, null, 2));
-      return renderUniswapPoolListRow({
+    return sortedPairs.map(item =>
+      renderUniswapPoolListRow({
         ...item,
         attribute: selectedList,
         sort: sortDirection,
-      });
-    });
+      })
+    );
   }, [pairs, selectedList, sortDirection]);
 
   return (

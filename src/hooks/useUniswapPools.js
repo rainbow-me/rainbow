@@ -439,7 +439,8 @@ export default function useUniswapPools(sortField, sortDirection) {
       tmpAllTokens.push(toLower(pair.token1.id));
     });
     const allTokens = uniq(tmpAllTokens);
-    dispatch(emitAssetRequest(allTokens));
+    const allLPTokens = sortedPairs.map(({ id }) => id);
+    dispatch(emitAssetRequest(allTokens.concat(allLPTokens)));
     return sortedPairs;
   }, [dispatch, pairs, sortDirection, sortField]);
 

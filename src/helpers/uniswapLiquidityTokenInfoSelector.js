@@ -14,7 +14,7 @@ const nativeCurrencySelector = state => state.settings.nativeCurrency;
 const uniswapLiquidityTokenInfoSelector = state =>
   state.uniswapLiquidity.uniswapLiquidityTokenInfo;
 
-const transformPool = (liquidityPool, nativeCurrency) => {
+export const transformPool = (liquidityPool, nativeCurrency) => {
   if (isEmpty(liquidityPool)) {
     return null;
   }
@@ -82,6 +82,7 @@ const buildUniswapCards = (
   }
 
   return {
+    transformPool,
     uniswap: orderedUniswapPools,
     uniswapTotal,
   };

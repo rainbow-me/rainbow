@@ -1,5 +1,5 @@
 import { map } from 'lodash';
-import React from 'react';
+import React, { Fragment } from 'react';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import {
   DepositActionButton,
@@ -47,7 +47,9 @@ const LiquidityPoolExpandedState = ({ asset }) => {
   });
 
   const liquidityPoolExpandedStateSheetHeight =
-    (ios || showChart ? heightWithChart : heightWithoutChart) + (android && 24);
+    (ios || showChart ? heightWithChart : heightWithoutChart) +
+    (android && 24) +
+    (uniBalance ? 0 : -130);
 
   return (
     <SlackSheet
@@ -69,30 +71,40 @@ const LiquidityPoolExpandedState = ({ asset }) => {
           throttledData={throttledData}
         />
       </ChartPathProvider>
-      <SheetDivider />
-      <TokenInfoSection>
-        <TokenInfoRow>
-          {map(tokens, tokenAsset => (
-            <TokenInfoItem
-              asset={tokenAsset}
-              key={`tokeninfo-${tokenAsset.symbol}`}
-              title={`${tokenAsset.symbol} balance`}
-            >
-              <TokenInfoBalanceValue />
-            </TokenInfoItem>
-          ))}
-        </TokenInfoRow>
-        <TokenInfoRow>
-          <TokenInfoItem title="Pool shares">{uniBalanceLabel}</TokenInfoItem>
-          <TokenInfoItem title="Total value" weight="bold">
-            {totalNativeDisplay}
-          </TokenInfoItem>
-        </TokenInfoRow>
-      </TokenInfoSection>
-      <SheetActionButtonRow>
-        <WithdrawActionButton symbol={tokenNames} weight="bold" />
-        <DepositActionButton symbol={tokenNames} weight="bold" />
-      </SheetActionButtonRow>
+      {uniBalance ? (
+        <Fragment>
+          <SheetDivider />
+          <TokenInfoSection>
+            <TokenInfoRow>
+              {map(tokens, tokenAsset => (
+                <TokenInfoItem
+                  asset={tokenAsset}
+                  key={`tokeninfo-${tokenAsset.symbol}`}
+                  title={`${tokenAsset.symbol} balance`}
+                >
+                  <TokenInfoBalanceValue />
+                </TokenInfoItem>
+              ))}
+            </TokenInfoRow>
+            <TokenInfoRow>
+              <TokenInfoItem title="Pool shares">
+                {uniBalanceLabel}
+              </TokenInfoItem>
+              <TokenInfoItem title="Total value" weight="bold">
+                {totalNativeDisplay}
+              </TokenInfoItem>
+            </TokenInfoRow>
+          </TokenInfoSection>
+          <SheetActionButtonRow>
+            <WithdrawActionButton symbol={tokenNames} weight="bold" />
+            <DepositActionButton symbol={tokenNames} weight="bold" />
+          </SheetActionButtonRow>
+        </Fragment>
+      ) : (
+        <SheetActionButtonRow>
+          <DepositActionButton symbol={tokenNames} weight="bold" />
+        </SheetActionButtonRow>
+      )}
     </SlackSheet>
   );
 };

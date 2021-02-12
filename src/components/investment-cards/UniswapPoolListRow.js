@@ -1,6 +1,7 @@
 import { toUpper } from 'lodash';
 import React, { Fragment, useCallback } from 'react';
 import { View } from 'react-native';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { convertAmountToNativeDisplay } from '../../helpers/utilities';
@@ -10,8 +11,10 @@ import CoinName from '../coin-row/CoinName';
 import { initialLiquidityPoolExpandedStateSheetHeight } from '../expanded-state/LiquidityPoolExpandedState';
 import { FlexItem, Row } from '../layout';
 import { Text } from '../text';
+import { readableUniswapSelector } from '@rainbow-me/helpers/uniswapLiquidityTokenInfoSelector';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
+import { parseAssetsNative } from '@rainbow-me/parsers';
 import Routes from '@rainbow-me/routes';
 
 const Content = styled(ButtonPressAnimation)`
@@ -145,15 +148,28 @@ const TopRow = item => {
 
 export default function UniswapPoolListRow({ assetType, item, ...props }) {
   const { navigate } = useNavigation();
+  const { nativeCurrency } = useAccountSettings();
+  const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
+    genericAssets,
+  }));
+  const { uniswap } = useSelector(readableUniswapSelector);
 
   const handleOpenExpandedState = useCallback(() => {
+    let poolAsset = uniswap.find(pool => pool.address === item.address);
+    if (!poolAsset) {
+      const genericPoolAsset = genericAssets[item.address];
+      poolAsset = parseAssetsNative(
+        [{ ...item, ...genericPoolAsset }],
+        nativeCurrency
+      )[0];
+    }
     navigate(Routes.EXPANDED_ASSET_SHEET, {
-      asset: item,
+      asset: poolAsset,
       cornerRadius: 10,
       longFormHeight: initialLiquidityPoolExpandedStateSheetHeight,
       type: assetType,
     });
-  }, [assetType, item, navigate]);
+  }, [assetType, genericAssets, item, nativeCurrency, navigate, uniswap]);
 
   return (
     <Content onPress={handleOpenExpandedState} scaleTo={0.96}>
