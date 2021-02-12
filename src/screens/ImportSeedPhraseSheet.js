@@ -243,14 +243,21 @@ export default function ImportSeedPhraseSheet() {
       }
       // Look up ENS for 0x address
     } else if (isUnstoppableAddressFormat(input)) {
-      const address = await resolveUnstoppableDomain(input);
-      if (!address) {
-        Alert.alert('This is not a valid Unstoppable name');
+      try {
+        const address = await resolveUnstoppableDomain(input);
+        if (!address) {
+          Alert.alert('This is not a valid Unstoppable name');
+          return;
+        }
+        setResolvedAddress(address);
+        name = input;
+        showWalletProfileModal(name);
+      } catch (e) {
+        Alert.alert(
+          'Sorry, we cannot add this Unstoppable name at this time. Please try again later!'
+        );
         return;
       }
-      setResolvedAddress(address);
-      name = input;
-      showWalletProfileModal(name);
     } else if (isValidAddress(input)) {
       const ens = await web3Provider.lookupAddress(input);
       if (ens && ens !== input) {
