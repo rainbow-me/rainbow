@@ -48,7 +48,7 @@ const listData = [
     name: 'Anualized Fees',
   },
   {
-    id: '30d_profit',
+    id: 'profit30d',
     name: '30d profit',
   },
   { id: 'oneDayVolumeUSD', name: '24h volume' },
@@ -123,7 +123,7 @@ export default function UniswapPools() {
     // }
 
     return pairs.map(item => {
-      //console.log(JSON.stringify(item, null, 2));
+      ///console.log(JSON.stringify(item, null, 2));
       return renderUniswapPoolListRow({
         ...item,
         attribute: selectedList,

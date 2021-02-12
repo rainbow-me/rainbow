@@ -73,7 +73,8 @@ const bigNumberFormat = (num, nativeCurrency) => {
 const renderPoolValue = (type, value, nativeCurrency, colors) => {
   let formattedValue = value;
   let color = colors.appleBlue;
-  if (type === 'anualized_fees') {
+
+  if (type === 'anualized_fees' || type === 'profit30d') {
     let percent = parseFloat(value);
     if (!percent || percent === 0) {
       formattedValue = '0%';

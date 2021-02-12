@@ -105,6 +105,11 @@ export const UNISWAP_PAIRS_HISTORICAL_BULK_QUERY = (block, pairs) => {
       reserveUSD
       trackedReserveETH
       volumeUSD
+      reserve0
+      reserve1
+      totalSupply
+      token0 { derivedETH }
+      token1 { derivedETH }
       untrackedVolumeUSD
     }
   }

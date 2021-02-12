@@ -1,6 +1,6 @@
 import { useQuery } from '@apollo/client';
 import { getUnixTime, startOfMinute, sub } from 'date-fns';
-import { sortBy, toLower, uniq } from 'lodash';
+import { get, sortBy, toLower, uniq } from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { blockClient, uniswapClient } from '@rainbow-me/apollo/client';
@@ -15,8 +15,9 @@ import {
 //   getUniswapPools,
 //   saveUniswapPools,
 // } from '@rainbow-me/handlers/localstorage/uniswapPools';
+import ChartTypes from '@rainbow-me/helpers/chartTypes';
 import { emitAssetRequest } from '@rainbow-me/redux/explorer';
-import { WETH_ADDRESS } from '@rainbow-me/references';
+import { ETH_ADDRESS, WETH_ADDRESS } from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
@@ -95,15 +96,22 @@ export async function getBlocksFromTimestamps(timestamps, skipCount = 500) {
 const getTimestampsForChanges = () => {
   const t1 = getUnixTime(startOfMinute(sub(Date.now(), { days: 1 })));
   const t2 = getUnixTime(startOfMinute(sub(Date.now(), { days: 2 })));
-  return [t1, t2];
+  const t3 = getUnixTime(startOfMinute(sub(Date.now(), { months: 1 })));
+  return [t1, t2, t3];
 };
 
-async function getBulkPairData(pairList, ethPrice, genericAssets) {
-  const [t1, t2] = getTimestampsForChanges();
-  let [{ number: b1 }, { number: b2 }] = await getBlocksFromTimestamps([
-    t1,
-    t2,
-  ]);
+async function getBulkPairData(
+  pairList,
+  ethPrice,
+  ethPriceOneMonthAgo,
+  genericAssets
+) {
+  const [t1, t2, t3] = getTimestampsForChanges();
+  let [
+    { number: b1 },
+    { number: b2 },
+    { number: b3 },
+  ] = await getBlocksFromTimestamps([t1, t2, t3]);
 
   try {
     let current = await uniswapClient.query({
@@ -114,8 +122,8 @@ async function getBulkPairData(pairList, ethPrice, genericAssets) {
       },
     });
 
-    let [oneDayResult, twoDayResult] = await Promise.all(
-      [b1, b2].map(async block => {
+    let [oneDayResult, twoDayResult, oneMonthResult] = await Promise.all(
+      [b1, b2, b3].map(async block => {
         let result = uniswapClient.query({
           fetchPolicy: 'cache-first',
           query: UNISWAP_PAIRS_HISTORICAL_BULK_QUERY(block, pairList),
@@ -129,6 +137,10 @@ async function getBulkPairData(pairList, ethPrice, genericAssets) {
     }, {});
 
     let twoDayData = twoDayResult?.data?.pairs.reduce((obj, cur) => {
+      return { ...obj, [cur.id]: cur };
+    }, {});
+
+    let oneMonthData = oneMonthResult?.data?.pairs.reduce((obj, cur) => {
       return { ...obj, [cur.id]: cur };
     }, {});
 
@@ -152,11 +164,21 @@ async function getBulkPairData(pairList, ethPrice, genericAssets) {
             });
             twoDayHistory = newData.data.pairs[0];
           }
+          let oneMonthHistory = oneMonthData?.[pair.id];
+          if (!oneMonthHistory) {
+            let newData = await uniswapClient.query({
+              fetchPolicy: 'cache-first',
+              query: UNISWAP_PAIR_DATA_QUERY(pair.id, b2),
+            });
+            oneMonthHistory = newData.data.pairs[0];
+          }
           data = parseData(
             data,
             oneDayHistory,
             twoDayHistory,
+            oneMonthHistory,
             ethPrice,
+            ethPriceOneMonthAgo,
             b1,
             genericAssets
           );
@@ -173,7 +195,9 @@ function parseData(
   data,
   oneDayData,
   twoDayData,
+  oneMonthData,
   ethPrice,
+  ethPriceOneMonthAgo,
   oneDayBlock,
   genericAssets
 ) {
@@ -190,6 +214,13 @@ function parseData(
       ? parseFloat(oneDayData?.untrackedVolumeUSD)
       : 0,
     twoDayData?.untrackedVolumeUSD ? twoDayData?.untrackedVolumeUSD : 0
+  );
+
+  newData.profit30d = calculateProfit30d(
+    data,
+    oneMonthData,
+    ethPrice,
+    ethPriceOneMonthAgo
   );
 
   // set volume properties
@@ -267,6 +298,46 @@ export const get2DayPercentChange = (
   return [currentChange, adjustedPercentChange];
 };
 
+export const calculateProfit30d = (
+  data,
+  valueOneMonthAgo,
+  ethPriceNow,
+  ethPriceOneMonthAgo
+) => {
+  const now = calculateLPTokenPrice(data, ethPriceNow);
+
+  const oneMonthAgo = calculateLPTokenPrice(
+    valueOneMonthAgo,
+    ethPriceOneMonthAgo
+  );
+
+  const percentageChange = getPercentChange(now, oneMonthAgo);
+  return Number(percentageChange.toFixed(2));
+};
+
+export const calculateLPTokenPrice = (data, ethPrice) => {
+  const {
+    reserve0,
+    reserve1,
+    totalSupply,
+    token0: { derivedETH: token0DerivedEth },
+    token1: { derivedETH: token1DerivedEth },
+  } = data;
+
+  const tokenPerShare = 100 / totalSupply;
+
+  const reserve0USD =
+    Number(reserve0) * (Number(token0DerivedEth) * Number(ethPrice));
+  const reserve1USD =
+    Number(reserve1) * (Number(token1DerivedEth) * Number(ethPrice));
+
+  const token0LiquidityPrice = (reserve0USD * tokenPerShare) / 100;
+  const token1LiquidityPrice = (reserve1USD * tokenPerShare) / 100;
+  const lpTokenPrice = token0LiquidityPrice + token1LiquidityPrice;
+
+  return lpTokenPrice;
+};
+
 /**
  * get standard percent change between two values
  * @param {*} valueNow
@@ -284,6 +355,15 @@ export const getPercentChange = (valueNow, value24HoursAgo) => {
 };
 
 export default function useUniswapPools(sortField, sortDirection) {
+  const { charts } = useSelector(({ charts: { charts } }) => ({
+    charts,
+  }));
+
+  const ethereumPriceOneMonthAgo = useMemo(
+    () => get(charts, `[${ETH_ADDRESS}][${ChartTypes.month}][0][1]`, 0),
+    [charts]
+  );
+
   const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
     genericAssets,
   }));
@@ -319,13 +399,14 @@ export default function useUniswapPools(sortField, sortDirection) {
       let topPairs = await getBulkPairData(
         ids,
         Number(priceOfEther),
+        Number(ethereumPriceOneMonthAgo),
         genericAssets
       );
       setPairs(topPairs);
     } catch (e) {
       logger.log('🦄🦄🦄 error getting pairs data', e);
     }
-  }, [genericAssets, ids]);
+  }, [ethereumPriceOneMonthAgo, genericAssets, ids]);
 
   useEffect(() => {
     if (ids && !pairs) {
@@ -350,7 +431,7 @@ export default function useUniswapPools(sortField, sortDirection) {
     }
 
     // top 40
-    sortedPairs = sortedPairs.slice(0, 39);
+    sortedPairs = sortedPairs.slice(0, 19);
 
     const tmpAllTokens = [];
     sortedPairs.forEach(pair => {
