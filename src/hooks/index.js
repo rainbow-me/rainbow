@@ -78,7 +78,7 @@ export { default as useUniswapCalls } from './useUniswapCalls';
 export { default as useUniswapCurrencies } from './useUniswapCurrencies';
 export { default as useUniswapMarketDetails } from './useUniswapMarketDetails';
 export { default as useUpdateAssetOnchainBalance } from './useUpdateAssetOnchainBalance';
-export { default as useUniswapPairs } from './useUniswapPairs';
+export { default as useUniswapPools } from './useUniswapPools';
 export { default as useUserLists } from './useUserLists';
 export { default as useWalletBalances } from './useWalletBalances';
 export { default as useWalletCloudBackup } from './useWalletCloudBackup';
