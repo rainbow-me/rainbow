@@ -18,6 +18,7 @@ import {
 } from '../helpers/utilities';
 import smartContractMethods from '../references/smartcontract-methods.json';
 import { ethereumUtils } from '../utils';
+import logger from 'logger';
 
 const infuraProjectId = __DEV__ ? INFURA_PROJECT_ID_DEV : INFURA_PROJECT_ID;
 const infuraUrl = `https://network.infura.io/v3/${infuraProjectId}`;
@@ -153,7 +154,7 @@ export const getTxDetails = async transaction => {
   return tx;
 };
 
-export const resolveUnstoppableDomain = domain => {
+export const resolveUnstoppableDomain = async domain => {
   const resolution = new UnstoppableResolution({
     blockchain: {
       cns: {
@@ -163,7 +164,13 @@ export const resolveUnstoppableDomain = domain => {
     },
   });
 
-  return resolution.addr(domain, 'ETH');
+  const res = resolution
+    .addr(domain, 'ETH')
+    .then(address => {
+      return address;
+    })
+    .catch(logger.error);
+  return res;
 };
 
 const resolveNameOrAddress = async nameOrAddress => {
