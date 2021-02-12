@@ -20,9 +20,9 @@ import { Chart } from '../value-chart';
 import { ChartPathProvider } from '@rainbow-me/animated-charts';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 
-//add's StatusBar height to android
-const heightWithoutChart = 309 - (android ? getSoftMenuBarHeight() : 0);
-const heightWithChart = heightWithoutChart + 310;
+const baseHeight = 309 + (android && 20 - getSoftMenuBarHeight());
+const heightWithoutChart = baseHeight + (android && 30);
+const heightWithChart = baseHeight + 310;
 
 export const initialChartExpandedStateSheetHeight = heightWithChart;
 
