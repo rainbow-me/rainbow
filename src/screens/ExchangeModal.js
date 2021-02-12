@@ -103,7 +103,7 @@ export default function ExchangeModal({
   const prevSelectedGasPrice = usePrevious(selectedGasPrice);
   const { maxInputBalance, updateMaxInputBalance } = useMaxInputBalance();
 
-  const { areTradeDetailsValid, slippage } = useSwapDetails();
+  const { areTradeDetailsValid, slippage, tradeDetails } = useSwapDetails();
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
 
@@ -187,7 +187,7 @@ export default function ExchangeModal({
   }, [lastFocusedInputHandle]);
 
   // Calculate market details
-  const { isSufficientLiquidity, tradeDetails } = useUniswapMarketDetails({
+  const { isSufficientLiquidity } = useUniswapMarketDetails({
     defaultInputAddress,
     inputFieldRef,
     isDeposit,
