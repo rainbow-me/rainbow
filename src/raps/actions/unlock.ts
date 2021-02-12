@@ -186,9 +186,9 @@ export const assetNeedsUnlocking = async (
   }
 
   const rawAmount = convertAmountToRawAmount(amount, assetToUnlock.decimals);
-  const assetNeedsUnlocking = !greaterThan(allowance, rawAmount);
-  logger.log('asset needs unlocking?', assetNeedsUnlocking);
-  return assetNeedsUnlocking;
+  const needsUnlocking = !greaterThan(allowance, rawAmount);
+  logger.log('asset needs unlocking?', needsUnlocking);
+  return needsUnlocking;
 };
 
 export default unlock;

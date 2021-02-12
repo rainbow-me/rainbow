@@ -103,10 +103,9 @@ export default function ExchangeModal({
   const prevSelectedGasPrice = usePrevious(selectedGasPrice);
   const { maxInputBalance, updateMaxInputBalance } = useMaxInputBalance();
 
-  const { areTradeDetailsValid } = useSwapDetails();
+  const { areTradeDetailsValid, slippage, tradeDetails } = useSwapDetails();
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
-  const [slippage, setSlippage] = useState(null);
 
   useAndroidBackHandler(() => {
     navigate(Routes.WALLET_SCREEN);
@@ -188,14 +187,13 @@ export default function ExchangeModal({
   }, [lastFocusedInputHandle]);
 
   // Calculate market details
-  const { isSufficientLiquidity, tradeDetails } = useUniswapMarketDetails({
+  const { isSufficientLiquidity } = useUniswapMarketDetails({
     defaultInputAddress,
     inputFieldRef,
     isDeposit,
     isWithdrawal,
     maxInputBalance,
     outputFieldRef,
-    setSlippage,
     updateInputAmount,
     updateOutputAmount,
   });
