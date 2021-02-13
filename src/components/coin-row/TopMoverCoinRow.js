@@ -74,6 +74,8 @@ const TopMoverCoinRow = asset => {
     },
     symbol,
     truncatedName,
+    onPressCancel,
+    onPressStart,
   } = asset;
   const handlePress = useCallback(() => {
     onPress?.(asset);
@@ -82,14 +84,17 @@ const TopMoverCoinRow = asset => {
 
   return (
     <ButtonPressAnimation
-      // we observe that while integrating with
-      // gesture handler event gets always cancelled on iOS
-      // Therefore, in this case under given condition
-      // onPress should be called
       onCancel={({ nativeEvent: { state, close } }) =>
         state === 5 && close && handlePress()
       }
       onPress={handlePress}
+      onPressCancel={onPressCancel}
+      // we observe that while integrating with
+      // gesture handler event gets always cancelled on iOS
+      // Therefore, in this case under given condition
+      // onPress should be called
+      onPressStart={onPressStart}
+      reanimatedButton={android}
       scaleTo={0.925}
     >
       <RowWithMargins margin={TopMoverCoinRowMargin}>
