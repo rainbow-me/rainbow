@@ -42,16 +42,15 @@ const Header = styled.View`
 `;
 
 export const FloatingActionButtonShadow = colors => [
-  [0, 10, 30, colors.shadow, 0.5],
-  [0, 5, 15, colors.shadow, 1],
+  [0, 10, android ? 0 : 30, colors.shadow, 0.5],
+  [0, 5, android ? 0 : 15, colors.shadow, 1],
 ];
 
 const BackgroundFill = styled(Centered).attrs({
   ...borders.buildCircleAsObject(43),
 })`
   ${position.cover};
-  background-color: ${({ theme: { colors, isDarkMode } }) =>
-    isDarkMode ? colors.offWhite : colors.dark};
+  background-color: ${({ theme: { colors } }) => colors.dark};
   left: 8;
   top: 8;
 `;
@@ -176,7 +175,7 @@ export default function DiscoverSheetHeader(props) {
       withSpring(isSearchModeEnabled ? 0 : buttonOpacity.value, springConfig),
     [isSearchModeEnabled]
   );
-  const animatedWrapperROpacity = useDerivedValue(() =>
+  const animatedWrapperOpacity = useDerivedValue(() =>
     withSpring(buttonOpacity.value, springConfig)
   );
 
@@ -210,7 +209,7 @@ export default function DiscoverSheetHeader(props) {
         }}
         stackOpacity={stackOpacity}
         translateX={translateXRightButton}
-        wrapperOpacity={animatedWrapperROpacity}
+        wrapperOpacity={animatedWrapperOpacity}
       >
         <Icon
           bottom={1}

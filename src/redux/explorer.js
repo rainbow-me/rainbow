@@ -15,6 +15,7 @@ import {
 } from './fallbackExplorer';
 import { updateTopMovers } from './topMovers';
 import { disableCharts, forceFallbackProvider } from '@rainbow-me/config/debug';
+import ChartTypes from '@rainbow-me/helpers/chartTypes';
 import NetworkTypes from '@rainbow-me/helpers/networkTypes';
 import { DPI_ADDRESS, ETH_ADDRESS } from '@rainbow-me/references';
 import logger from 'logger';
@@ -362,7 +363,9 @@ const listenOnAddressMessages = socket => dispatch => {
   socket.on(messages.ADDRESS_ASSETS.RECEIVED, message => {
     dispatch(addressAssetsReceived(message));
     if (!disableCharts) {
-      dispatch(emitChartsRequest());
+      //dispatch(emitChartsRequest());
+      // We need this for Uniswap Pools profit calculation
+      dispatch(emitChartsRequest(ETH_ADDRESS, ChartTypes.month));
     }
     if (isValidAssetsResponseFromZerion(message)) {
       logger.log(

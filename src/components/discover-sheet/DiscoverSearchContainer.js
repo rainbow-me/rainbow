@@ -31,6 +31,7 @@ const CancelText = styled(Text).attrs(({ theme: { colors } }) => ({
   size: 'large',
   weight: 'semibold',
 }))`
+  ${ios ? '' : 'margin-top: -5;'}
   margin-left: -3;
   margin-right: 15;
 `;
@@ -40,11 +41,7 @@ export default forwardRef(function DiscoverSearchContainer(
   ref
 ) {
   const searchInputRef = useRef();
-  useImperativeHandle(ref, () => ({
-    focus: () => {
-      searchInputRef.current.focus();
-    },
-  }));
+  useImperativeHandle(ref, () => searchInputRef.current);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const upperContext = useContext(DiscoverSheetContext);

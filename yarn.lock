@@ -1609,21 +1609,21 @@
     "@ethersproject/properties" "^5.0.3"
     "@ethersproject/strings" "^5.0.4"
 
-"@gorhom/bottom-sheet@3.0.2-alpha.3":
-  version "3.0.2-alpha.3"
-  resolved "https://registry.yarnpkg.com/@gorhom/bottom-sheet/-/bottom-sheet-3.0.2-alpha.3.tgz#2c9892a895a6da2708bf4ef551dc995f979f52dc"
-  integrity sha512-SVNHsfK0PkUEB7njY5YiOS7el1teqplvNDGrnhyzD75Prs59Gt+cbbiNAY9wO/OWw7LaaF3xGTDgftq6hZuFVg==
+"@gorhom/bottom-sheet@3.3.1":
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/@gorhom/bottom-sheet/-/bottom-sheet-3.3.1.tgz#54ca63c96093f8951416e6c1b32fcac07ea8fe54"
+  integrity sha512-A0DKmapIuwZO0o12Zhv0jpFn8QzM+Zu/DYIRTXvhfn6BTB3Z6syfMzVe2IptPwFsFFGeMk81aaQG89VgqMv4bA==
   dependencies:
-    "@gorhom/portal" "^0.1.4"
+    "@gorhom/portal" "^0.2.0"
     invariant "^2.2.4"
     lodash.isequal "^4.5.0"
     nanoid "^3.1.20"
-    react-native-redash "^16.0.4"
+    react-native-redash "^16.0.6"
 
-"@gorhom/portal@^0.1.4":
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/@gorhom/portal/-/portal-0.1.4.tgz#ef9e50d4b6c98ebe606a16d22d6cb58d661421b4"
-  integrity sha512-iU3D0i9NureT5ULTvD8moF2FWyFvVGcr/ahcRMDzBblUO1AwwixZRZ+Lf3d6uk0w4ujOQZ7+Az+uUnI+AsXXBw==
+"@gorhom/portal@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@gorhom/portal/-/portal-0.2.0.tgz#65423726b1352e2b9e3c3b8da83a58e4dff48ce6"
+  integrity sha512-PoYYSliPCl624ORih+zyI1pVbH2Y2Mj+EY6nXeAIi2r1LGv10hItZLzdgnbPPfQ0neikTDYArlOzuB5zKIex5w==
   dependencies:
     lodash.isequal "^4.5.0"
     nanoid "^3.1.20"
@@ -11440,10 +11440,10 @@ react-native-randombytes@^3.5.3:
     buffer "^4.9.1"
     sjcl "^1.0.3"
 
-react-native-reanimated@^2.0.0-rc.0:
-  version "2.0.0-rc.0"
-  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-2.0.0-rc.0.tgz#7a1b0bfd48e3de9dfa985a524463b6a216531358"
-  integrity sha512-v+SMpeSxQ8kO116B5q3/D6VlFSot4eIRASw0nxxU+6zh9wb4W8shMyQi7/ag/gt246FvjBZOPwxsBS2iTcw8Zg==
+react-native-reanimated@^2.0.0-rc.3:
+  version "2.0.0-rc.3"
+  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-2.0.0-rc.3.tgz#7c9e0228ccab0e40831c1c80eb23cf834f6d5707"
+  integrity sha512-tjFGraTI1mnwQ9TspNpxs1oVqi1OImEAvKhRwBYvZoVuIS+VPQuMfB+DdohQIDe+hxzbfvoZMXe+A3TzJuSM0g==
   dependencies:
     "@babel/plugin-transform-object-assign" "^7.10.4"
     fbjs "^3.0.0"
@@ -11458,7 +11458,7 @@ react-native-redash@14.2.2:
     normalize-svg-path "^1.0.1"
     parse-svg-path "^0.1.2"
 
-react-native-redash@^16.0.4:
+react-native-redash@^16.0.6:
   version "16.0.8"
   resolved "https://registry.yarnpkg.com/react-native-redash/-/react-native-redash-16.0.8.tgz#734b016f17dc747560891502b6c5db5e04a17850"
   integrity sha512-2Opu4ls31HRGQnz11iq4cnJhCz0GnasnnZgihAlCsVFc9ofa9+47hbc1xo/WkN0OZ5X5KKo869soyfYQgIxy+w==
@@ -11580,10 +11580,10 @@ react-native-version-number@^0.3.6:
   resolved "https://registry.yarnpkg.com/react-native-version-number/-/react-native-version-number-0.3.6.tgz#dd8b1435fc217df0a166d7e4a61fdc993f3e7437"
   integrity sha512-TdyXiK90NiwmSbmAUlUBOV6WI1QGoqtvZZzI5zQY4fKl67B3ZrZn/h+Wy/OYIKKFMfePSiyfeIs8LtHGOZ/NgA==
 
-react-native-webview@^10.10.0:
-  version "10.10.0"
-  resolved "https://registry.yarnpkg.com/react-native-webview/-/react-native-webview-10.10.0.tgz#285703c35eac1eac5b4446df2cba8a146d3c8548"
-  integrity sha512-T0AnZ0LVhaFBqZpl5attDDYo83zqdFRsFVINbrgHaIm6w5r0d/QK/dJRgXRNyFhn1fSONhe0ejdcnCYCT73B6g==
+react-native-webview@^11.0.0:
+  version "11.2.3"
+  resolved "https://registry.yarnpkg.com/react-native-webview/-/react-native-webview-11.2.3.tgz#1b82685ab60645d4161f2e25e98286493cdffa5d"
+  integrity sha512-r/K+Lf/O5aij72gRndMX2qsyQ/WLtDPiO75SS57y6JjqSKxedGASVL9Jwl1TM7fCXqUq8dgiwik/LuBHbJXAEg==
   dependencies:
     escape-string-regexp "2.0.0"
     invariant "2.2.4"

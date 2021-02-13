@@ -85,6 +85,7 @@ export default forwardRef(function SlackSheet(
     scrollEnabled = true,
     discoverSheet,
     limitScrollViewContent,
+    onContentSizeChange,
     ...props
   },
   ref
@@ -161,6 +162,7 @@ export default forwardRef(function SlackSheet(
             contentHeight={contentHeight}
             deviceHeight={deviceHeight}
             limitScrollViewContent={limitScrollViewContent}
+            onContentSizeChange={onContentSizeChange}
             onScroll={scrollHandler}
             ref={sheet}
             scrollEnabled={scrollEnabled}

@@ -2,7 +2,6 @@ import { find } from 'lodash';
 import React, { Fragment, useRef } from 'react';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useSelector } from 'react-redux';
-import { Column } from '../layout';
 import {
   BuyActionButton,
   SendActionButton,
@@ -132,14 +131,13 @@ export default function ChartExpandedState({ asset }) {
             {asset?.balance ? (
               <SendActionButton color={color} fullWidth={!showSwapButton} />
             ) : (
-              <Column marginTop={5}>
-                <SwapActionButton
-                  color={color}
-                  inputType={AssetInputTypes.out}
-                  label={`􀖅 Get ${asset?.symbol}`}
-                  weight="heavy"
-                />
-              </Column>
+              <SwapActionButton
+                color={color}
+                fullWidth={!showSwapButton}
+                inputType={AssetInputTypes.out}
+                label={`􀖅 Get ${asset?.symbol}`}
+                weight="heavy"
+              />
             )}
           </SheetActionButtonRow>
         )}

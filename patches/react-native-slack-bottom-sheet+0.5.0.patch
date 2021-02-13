@@ -1,10 +1,10 @@
 diff --git a/node_modules/react-native-slack-bottom-sheet/ios/SlackBottomSheet.m b/node_modules/react-native-slack-bottom-sheet/ios/SlackBottomSheet.m
-index 637f112..c5803b5 100644
+index 637f112..3374bd0 100644
 --- a/node_modules/react-native-slack-bottom-sheet/ios/SlackBottomSheet.m
 +++ b/node_modules/react-native-slack-bottom-sheet/ios/SlackBottomSheet.m
 @@ -39,6 +39,7 @@ - (void)layoutSubviews {
  @end
- 
+
  @interface InvisibleView: RCTView
 +- (void)jumpTo:(NSNumber*)longForm;
  @property (nonatomic, nonnull) NSNumber *topOffset;
@@ -24,33 +24,40 @@ index 637f112..c5803b5 100644
  @property (nonatomic, copy, nullable) RCTBubblingEventBlock onDidDismiss;
 +@property (nonatomic, copy, nullable) RCTBubblingEventBlock onCrossMagicBorder;
  @end
- 
+
  @implementation InvisibleView {
 @@ -109,6 +112,7 @@ - (instancetype)initWithBridge:(RCTBridge *)bridge {
      _modalPresented = false;
      _scrollsToTop = false;
      _isHiding = true;
 +    _gestureEnabled = true;
- 
+
    }
    return self;
-@@ -121,6 +125,12 @@ -(void) setScrollsToTopOnTapStatusBar:(BOOL) scrollsToTop {
+@@ -121,6 +125,19 @@ -(void) setScrollsToTopOnTapStatusBar:(BOOL) scrollsToTop {
    }
  }
- 
+
 +-(void)jumpTo:(NSNumber*)longForm {
 +  if (_contoller != nil) {
 +    [_contoller performSelector:NSSelectorFromString(@"jumpToLong:") withObject:longForm];
 +  }
 +}
 +
++
++-(void)layout {
++  if (_contoller != nil) {
++    [_contoller performSelector:NSSelectorFromString(@"panModalSetNeedsLayoutUpdateWrapper")];
++  }
++}
++
  -(void)reactSetFrame:(CGRect)frame {
    // shrug
  }
-@@ -147,6 +157,18 @@ - (void)callDidDismiss {
+@@ -147,6 +164,18 @@ - (void)callDidDismiss {
    _onDidDismiss(@{});
  }
- 
+
 +- (void)setGestureEnabled:(BOOL)gestureEnabled {
 +  [_contoller.view.superview.superview.gestureRecognizers[0] setEnabled:gestureEnabled];
 +}
@@ -66,7 +73,7 @@ index 637f112..c5803b5 100644
  - (void)callWillTransitionLong {
    _onWillTransition(@{@"type": @"long"});
  }
-@@ -182,7 +204,7 @@ - (void)setVisible:(BOOL)visible {
+@@ -182,7 +211,7 @@ - (void)setVisible:(BOOL)visible {
        self->_modalPresented = YES;
      });
    } else {
@@ -75,10 +82,10 @@ index 637f112..c5803b5 100644
        if (!self->_modalPresented) {
          return;
        }
-@@ -193,12 +215,17 @@ - (void)setVisible:(BOOL)visible {
+@@ -193,12 +222,17 @@ - (void)setVisible:(BOOL)visible {
        self.transitionDuration = [[NSNumber alloc] initWithDouble: 0];
        UIViewController *rootViewController = [UIApplication sharedApplication].delegate.window.rootViewController;
- 
+
 -      [[rootViewController presentedViewController] dismissViewControllerAnimated:!self->_isHiding completion:^{
 +      [[rootViewController presentedViewController] dismissViewControllerAnimated:NO completion:^{
 +        if (self.onDidDismiss) {
@@ -94,17 +101,17 @@ index 637f112..c5803b5 100644
 +    //});
    }
  }
- 
-@@ -213,7 +240,7 @@ - (void)addSubview:(UIView *)view {
- 
+
+@@ -213,7 +247,7 @@ - (void)addSubview:(UIView *)view {
+
  @end
- 
+
 -@interface ModalViewManager : RCTViewManager
 +@interface ModalViewManager : RCTViewManager<RCTBridgeModule>
  @end
- 
+
  @implementation ModalViewManager
-@@ -234,12 +261,14 @@ @implementation ModalViewManager
+@@ -234,12 +268,14 @@ @implementation ModalViewManager
  RCT_EXPORT_VIEW_PROPERTY(allowsDragToDismiss, BOOL)
  RCT_EXPORT_VIEW_PROPERTY(isUserInteractionEnabled, BOOL)
  RCT_EXPORT_VIEW_PROPERTY(blocksBackgroundTouches, BOOL)
@@ -119,16 +126,24 @@ index 637f112..c5803b5 100644
  RCT_EXPORT_VIEW_PROPERTY(presentGlobally, BOOL)
  RCT_EXPORT_VIEW_PROPERTY(interactsWithOuterScrollView, BOOL)
  RCT_EXPORT_VIEW_PROPERTY(scrollsToTopOnTapStatusBar, BOOL)
-@@ -247,6 +276,15 @@ @implementation ModalViewManager
+@@ -247,6 +283,23 @@ @implementation ModalViewManager
  RCT_EXPORT_VIEW_PROPERTY(unmountAnimation, BOOL)
  RCT_EXPORT_VIEW_PROPERTY(visible, BOOL)
- 
+
 +RCT_EXPORT_METHOD(jumpTo:(nonnull NSNumber*)point tag:(nonnull NSNumber*) reactTag) {
 +  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *,UIView *> *viewRegistry) {
 +    InvisibleView *view = (InvisibleView *)viewRegistry[reactTag];
 +    [view jumpTo:point];
 +  }];
-+  
++
++}
++
++RCT_EXPORT_METHOD(layout:(nonnull NSNumber*) reactTag) {
++  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *,UIView *> *viewRegistry) {
++    InvisibleView *view = (InvisibleView *)viewRegistry[reactTag];
++    [view layout];
++  }];
++
 +}
 +
 +
@@ -136,21 +151,21 @@ index 637f112..c5803b5 100644
    return [[InvisibleView alloc] initWithBridge:self.bridge];
  }
 diff --git a/node_modules/react-native-slack-bottom-sheet/ios/UIViewController+PanModalPresenter.swift b/node_modules/react-native-slack-bottom-sheet/ios/UIViewController+PanModalPresenter.swift
-index b688639..ea4f82f 100644
+index b688639..14af71f 100644
 --- a/node_modules/react-native-slack-bottom-sheet/ios/UIViewController+PanModalPresenter.swift
 +++ b/node_modules/react-native-slack-bottom-sheet/ios/UIViewController+PanModalPresenter.swift
 @@ -1,6 +1,7 @@
  import UIKit
- 
+
  import PanModal
 +import React
- 
+
  class BetterGestureRecognizerDelegateAdapter: NSObject, UIGestureRecognizerDelegate {
    var grd: UIGestureRecognizerDelegate
 @@ -29,6 +30,8 @@ class BetterGestureRecognizerDelegateAdapter: NSObject, UIGestureRecognizerDeleg
    }
  }
- 
+
 +var moved = false
 +
  class PossiblyTouchesPassableUIView: UIView {
@@ -179,11 +194,11 @@ index b688639..ea4f82f 100644
      }
      let gr: UIGestureRecognizer = self.gestureRecognizers![0]
 @@ -97,6 +105,18 @@ class PanModalViewController: UIViewController, PanModalPresentable {
-     
+
    }
-   
+
 +  var observation: NSKeyValueObservation?
-+  
++
 +  @objc func jumpTo(long: NSNumber) {
 +    self.panModalSetNeedsLayoutUpdate()
 +    if (long.boolValue) {
@@ -193,50 +208,52 @@ index b688639..ea4f82f 100644
 +    }
 +    self.panModalSetNeedsLayoutUpdate()
 +  }
-+  
++
    var config: NSObject?
    var scrollView: UIScrollView?
    convenience init(config: NSObject) {
-@@ -104,6 +124,12 @@ class PanModalViewController: UIViewController, PanModalPresentable {
+@@ -104,6 +124,14 @@ class PanModalViewController: UIViewController, PanModalPresentable {
      self.config = config
    }
- 
+
 +  override func viewDidLoad() {
 +    super.viewDidLoad()
 +    hack()
-+
-+    print("SDF")
 +  }
- 
++
++  @objc func panModalSetNeedsLayoutUpdateWrapper() {
++    panModalSetNeedsLayoutUpdate()
++  }
+
    override var preferredStatusBarStyle: UIStatusBarStyle {
      return .lightContent
-@@ -203,6 +229,25 @@ class PanModalViewController: UIViewController, PanModalPresentable {
+@@ -203,6 +231,25 @@ class PanModalViewController: UIViewController, PanModalPresentable {
      return self.config?.value(forKey: "isHapticFeedbackEnabled") as! Bool  }
- 
+
    var shouldRoundTopCorners: Bool {
 +    hack()
 +    return self.config?.value(forKey: "shouldRoundTopCorners") as! Bool
 +  }
-+  
++
 +  override func viewDidLayoutSubviews() {
 +    hack()
 +  }
-+  
++
 +  func updatePostion(position: CGFloat, newPostion: CGFloat) {
 +    if (position < 80.0 && newPostion >= 80.0) {
 +      self.config?.performSelector(inBackground: Selector.init(("callOnCrossMagicBoderFromBottom")), with: nil)
 +    }
-+    
++
 +    if (position >= 80.0 && newPostion < 80.0) {
 +      self.config?.performSelector(inBackground: Selector.init(("callOnCrossMagicBoderFromTop")), with: nil)
 +    }
 +  }
-+ 
++
 +  public func hack() {
      let pview = view.superview!.superview!
      if !(pview is PossiblyTouchesPassableUIView) {
        let oldClass: AnyClass = type(of: pview)
-@@ -211,8 +256,10 @@ class PanModalViewController: UIViewController, PanModalPresentable {
+@@ -211,8 +258,10 @@ class PanModalViewController: UIViewController, PanModalPresentable {
        (pview as! PossiblyTouchesPassableUIView).topLayoutGuideLength = self.topLayoutGuide.length
        (pview as! PossiblyTouchesPassableUIView).oldClass = oldClass
        (pview as! PossiblyTouchesPassableUIView).justModifiedClass = NSNumber.init(value: true)
@@ -246,11 +263,11 @@ index b688639..ea4f82f 100644
      }
 -    return self.config?.value(forKey: "shouldRoundTopCorners") as! Bool
    }
- 
+
    var showDragIndicator: Bool {
-@@ -264,13 +311,19 @@ class PanModalViewController: UIViewController, PanModalPresentable {
- 
- 
+@@ -264,13 +313,19 @@ class PanModalViewController: UIViewController, PanModalPresentable {
+
+
  extension UIViewController {
 -  @objc public func presentPanModal(view: UIView, config: UIView) -> UIViewController {
 -

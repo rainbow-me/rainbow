@@ -1,6 +1,13 @@
 import { sortBy, toLower } from 'lodash';
-import React, { Fragment, useCallback, useMemo, useRef } from 'react';
-import { Dimensions } from 'react-native';
+import React, {
+  Fragment,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+} from 'react';
+import { Dimensions, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
 import { ButtonPressAnimation } from '../animations';
@@ -35,6 +42,7 @@ import {
   multiply,
 } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
+import { ModalContext } from 'react-native-cool-modals/NativeStackView';
 import ShadowStack from 'react-native-shadow-stack';
 
 const formatItem = (
@@ -127,6 +135,15 @@ export default function TokenIndexExpandedState({ asset }) {
     ).reverse();
   }, [dpi, genericAssets, nativeCurrency, nativeCurrencySymbol]);
 
+  const hasUnderlying = underlying.length !== 0;
+  const { layout } = useContext(ModalContext) || {};
+
+  useEffect(() => {
+    if (hasUnderlying) {
+      layout?.();
+    }
+  }, [hasUnderlying, layout]);
+
   // If we don't have a balance for this asset
   // It's a generic asset
   const assetWithPrice = formatGenericAsset(genericAssets[asset?.address]);
@@ -205,6 +222,7 @@ export default function TokenIndexExpandedState({ asset }) {
             <Column marginTop={5}>
               <SwapActionButton
                 color={color}
+                fullWidth
                 inputType={AssetInputTypes.out}
                 label={`􀖅 Get ${asset?.symbol}`}
                 weight="heavy"
@@ -263,7 +281,7 @@ export default function TokenIndexExpandedState({ asset }) {
                   >
                     <Column
                       height={16}
-                      marginTop={3}
+                      marginTop={android ? 8 : 3}
                       width={item.percentageAllocation * 2}
                     >
                       <ShadowStack
@@ -280,16 +298,22 @@ export default function TokenIndexExpandedState({ asset }) {
                         ]}
                         style={{
                           height: 16,
+                          position: 'absolute',
+                          width: '100%',
+                        }}
+                      />
+                      <View
+                        style={{
+                          borderRadius: 8,
+                          height: 16,
+                          overflow: 'hidden',
                           width: '100%',
                         }}
                       >
                         <LinearGradient
                           colors={[
-                            colors.alpha(
-                              colors.whiteLabel,
-                              isDarkMode ? 0.2 : 0.3
-                            ),
-                            colors.alpha(colors.whiteLabel, 0),
+                            colors.alpha(item.color, isDarkMode ? 1 : 0.5),
+                            colors.alpha(item.color, isDarkMode ? 0.5 : 1),
                           ]}
                           end={{ x: 1, y: 0.5 }}
                           overflow="hidden"
@@ -297,7 +321,7 @@ export default function TokenIndexExpandedState({ asset }) {
                           start={{ x: 0, y: 0.5 }}
                           style={position.coverAsObject}
                         />
-                      </ShadowStack>
+                      </View>
                     </Column>
                   </Column>
                 </Row>

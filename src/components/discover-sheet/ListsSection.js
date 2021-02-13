@@ -6,7 +6,7 @@ import React, {
   useMemo,
   useRef,
 } from 'react';
-import { FlatList } from 'react-native';
+import { FlatList, LayoutAnimation } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { emitAssetRequest, emitChartsRequest } from '../../redux/explorer';
@@ -75,6 +75,18 @@ const ListName = styled(Text)`
 // Update trending lists every 5 minutes
 const TRENDING_LIST_UPDATE_INTERVAL = 5 * 60 * 1000;
 
+const layouts = [
+  { length: 110, offset: 0 },
+  { length: 89, offset: 110 },
+  { length: 120, offset: 200 },
+  { length: 81, offset: 320 },
+  { length: 92, offset: 400 },
+];
+const getItemLayout = (_, index) => ({
+  index,
+  ...layouts[index],
+});
+
 export default function ListSection() {
   const dispatch = useDispatch();
   const { network } = useAccountSettings();
@@ -129,6 +141,9 @@ export default function ListSection() {
 
   const handleSwitchList = useCallback(
     (id, index) => {
+      LayoutAnimation.configureNext(
+        LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
+      );
       setSelectedList(id);
       listRef.current?.scrollToIndex({
         animated: true,
@@ -256,6 +271,7 @@ export default function ListSection() {
                 paddingTop: 10,
               }}
               data={listData}
+              getItemLayout={getItemLayout}
               horizontal
               keyExtractor={item => item.id}
               ref={listRef}
