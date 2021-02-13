@@ -63,6 +63,8 @@ export default forwardRef(function DiscoverSearchContainer(
     [setIsSearchModeEnabled, setShowSearch, setViewPagerSwipeEnabled]
   );
 
+  upperContext.onFabSearch.current = setIsInputFocused;
+
   useEffect(() => {
     if (!isSearchModeEnabled) {
       setSearchQuery('');
