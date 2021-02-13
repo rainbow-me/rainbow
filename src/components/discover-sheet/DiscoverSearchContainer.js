@@ -82,6 +82,7 @@ export default forwardRef(function DiscoverSearchContainer(
       <Row>
         <Column flex={1} marginTop={19}>
           <ExchangeSearch
+            clearTextOnFocus={false}
             isFetching={loadingAllTokens}
             isSearching={isSearching}
             onBlur={() => setIsInputFocused(false)}
