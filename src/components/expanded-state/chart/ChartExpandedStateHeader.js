@@ -134,7 +134,7 @@ export default function ChartExpandedStateHeader({
         <RowWithMargins
           height={30}
           justify="space-between"
-          marginHorizontal={android ? 0 : 1}
+          marginHorizontal={android ? (isNoPriceData ? -7 : 0) : 1}
           marginVertical={android ? 4 : 1}
         >
           <ChartHeaderSubtitle

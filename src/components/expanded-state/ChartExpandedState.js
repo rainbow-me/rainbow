@@ -1,5 +1,5 @@
 import { find } from 'lodash';
-import React, { Fragment, useRef } from 'react';
+import React, { useRef } from 'react';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useSelector } from 'react-redux';
 import {
@@ -24,9 +24,9 @@ import {
   useUniswapAssetsInWallet,
 } from '@rainbow-me/hooks';
 
-// add status bar height for Android
-const heightWithoutChart = 309 - (android ? getSoftMenuBarHeight() : 0);
-const heightWithChart = heightWithoutChart + 310;
+const baseHeight = 309 + (android && 20 - getSoftMenuBarHeight());
+const heightWithoutChart = baseHeight + (android && 30);
+const heightWithChart = baseHeight + 310;
 
 export const initialChartExpandedStateSheetHeight = heightWithChart;
 
@@ -84,64 +84,62 @@ export default function ChartExpandedState({ asset }) {
     ios || showChart ? heightWithChart : heightWithoutChart;
 
   return (
-    <Fragment>
-      <SlackSheet
-        additionalTopPadding={android}
-        contentHeight={ChartExpandedStateSheetHeight}
-        scrollEnabled={false}
-      >
-        <ChartPathProvider data={throttledData}>
-          <Chart
-            {...chartData}
-            {...initialChartDataLabels}
-            asset={assetWithPrice}
-            chart={chart}
-            chartType={chartType}
-            color={color}
-            fetchingCharts={fetchingCharts}
-            nativePoints={chart}
-            showChart={showChart}
-            throttledData={throttledData}
-          />
-        </ChartPathProvider>
-        <SheetDivider />
-        {asset?.balance && (
-          <TokenInfoSection>
-            <TokenInfoRow>
-              <TokenInfoItem asset={asset} title="Balance">
-                <TokenInfoBalanceValue />
+    <SlackSheet
+      additionalTopPadding={android}
+      contentHeight={ChartExpandedStateSheetHeight}
+      scrollEnabled={false}
+    >
+      <ChartPathProvider data={throttledData}>
+        <Chart
+          {...chartData}
+          {...initialChartDataLabels}
+          asset={assetWithPrice}
+          chart={chart}
+          chartType={chartType}
+          color={color}
+          fetchingCharts={fetchingCharts}
+          nativePoints={chart}
+          showChart={showChart}
+          throttledData={throttledData}
+        />
+      </ChartPathProvider>
+      <SheetDivider />
+      {asset?.balance && (
+        <TokenInfoSection>
+          <TokenInfoRow>
+            <TokenInfoItem asset={asset} title="Balance">
+              <TokenInfoBalanceValue />
+            </TokenInfoItem>
+            {asset?.native?.price.display && (
+              <TokenInfoItem title="Value" weight="bold">
+                {asset?.native?.balance.display}
               </TokenInfoItem>
-              {asset?.native?.price.display && (
-                <TokenInfoItem title="Value" weight="bold">
-                  {asset?.native?.balance.display}
-                </TokenInfoItem>
-              )}
-            </TokenInfoRow>
-          </TokenInfoSection>
-        )}
-        {needsEth ? (
-          <SheetActionButtonRow>
-            <BuyActionButton color={color} fullWidth />
-          </SheetActionButtonRow>
-        ) : (
-          <SheetActionButtonRow>
-            {showSwapButton && (
-              <SwapActionButton color={color} inputType={AssetInputTypes.in} />
             )}
-            {asset?.balance ? (
-              <SendActionButton color={color} fullWidth={!showSwapButton} />
-            ) : (
-              <SwapActionButton
-                color={color}
-                fullWidth={!showSwapButton}
-                inputType={AssetInputTypes.out}
-                label={`􀖅 Get ${asset?.symbol}`}
-                weight="heavy"
-              />
-            )}
-          </SheetActionButtonRow>
-        )}
-      </SlackSheet>
-    </Fragment>
+          </TokenInfoRow>
+        </TokenInfoSection>
+      )}
+      {needsEth ? (
+        <SheetActionButtonRow>
+          <BuyActionButton color={color} fullWidth />
+        </SheetActionButtonRow>
+      ) : (
+        <SheetActionButtonRow>
+          {showSwapButton && (
+            <SwapActionButton color={color} inputType={AssetInputTypes.in} />
+          )}
+          {asset?.balance ? (
+            <SendActionButton color={color} fullWidth={!showSwapButton} />
+          ) : (
+            <SwapActionButton
+              color={color}
+              fullWidth={!showSwapButton}
+              inputType={AssetInputTypes.out}
+              label={`􀖅 Get ${asset?.symbol}`}
+              weight="heavy"
+            />
+          )}
+        </SheetActionButtonRow>
+      )}
+    </SlackSheet>
   );
 }
