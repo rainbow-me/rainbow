@@ -4,8 +4,7 @@ import React, {
   useImperativeHandle,
   useRef,
 } from 'react';
-import { Alert } from 'react-native';
-import { SectionList } from 'react-native-gesture-handler';
+import { Alert, SectionList } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components';
 import { usePrevious } from '../../hooks';
