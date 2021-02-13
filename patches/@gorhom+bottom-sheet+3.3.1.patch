@@ -1,5 +1,5 @@
 diff --git a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/BottomSheet.tsx b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/BottomSheet.tsx
-index 96de0dd..5342e69 100644
+index 757f3ac..08e787a 100644
 --- a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/BottomSheet.tsx
 +++ b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/BottomSheet.tsx
 @@ -18,7 +18,7 @@ import Animated, {
@@ -12,23 +12,22 @@ index 96de0dd..5342e69 100644
    runOnUI,
    useWorkletCallback,
 diff --git a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/constants.ts b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/constants.ts
-index b8fe21e..e286d8d 100644
+index db85178..ac4f657 100644
 --- a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/constants.ts
 +++ b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/constants.ts
 @@ -1,5 +1,5 @@
  import { Platform } from 'react-native';
 -import Animated, { Easing } from 'react-native-reanimated';
 +import Animated, { NewEasing as Easing } from 'react-native-reanimated';
+ import { exp } from '../../utilities/easingExp';
  
- const DEFAULT_ANIMATION_EASING: Animated.EasingFunction = Easing.out(
-   Easing.cubic
+ const DEFAULT_ANIMATION_EASING: Animated.EasingFunction = Easing.out(exp);
 diff --git a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheetBackdrop/BottomSheetBackdrop.tsx b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheetBackdrop/BottomSheetBackdrop.tsx
-index 636e5f2..b8ddfbe 100644
+index bc12211..02c06a7 100644
 --- a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheetBackdrop/BottomSheetBackdrop.tsx
 +++ b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheetBackdrop/BottomSheetBackdrop.tsx
-@@ -1,7 +1,7 @@
- import React, { memo, useCallback, useMemo, useRef } from 'react';
- import { TouchableWithoutFeedback } from 'react-native';
+@@ -1,6 +1,6 @@
+ import React, { memo, useMemo } from 'react';
  import Animated, {
 -  interpolate,
 +  newInterpolate as interpolate,

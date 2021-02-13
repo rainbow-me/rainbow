@@ -8,7 +8,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { findNodeHandle, NativeModules, View } from 'react-native';
+import { findNodeHandle, NativeModules } from 'react-native';
 import {
   runOnJS,
   useAnimatedReaction,
@@ -16,9 +16,10 @@ import {
   useSharedValue,
 } from 'react-native-reanimated';
 import { useSafeArea } from 'react-native-safe-area-context';
+
 // eslint-disable-next-line import/no-unresolved
 import SlackBottomSheet from 'react-native-slack-bottom-sheet';
-import deviceUtils from '../../utils/deviceUtils';
+import styled from 'styled-components';
 import { SlackSheet } from '../sheet';
 import DiscoverSheetContent from './DiscoverSheetContent';
 import DiscoverSheetContext from './DiscoverSheetContext';
@@ -33,7 +34,15 @@ function useAreHeaderButtonVisible() {
   return [{ isSearchModeEnabled, setIsSearchModeEnabled }, isSearchModeEnabled];
 }
 
-const snapPoints = ['25%', deviceUtils.dimensions.height - 100];
+const snapPoints = ['25%', '90%'];
+
+const AndroidWrapper = styled.View.attrs({
+  pointerEvents: 'box-none',
+})`
+  width: 100%;
+  position: absolute;
+  height: 100%;
+`;
 
 const DiscoverSheetAndroid = (_, forwardedRef) => {
   const [headerButtonsHandlers, deps] = useAreHeaderButtonVisible();
@@ -86,27 +95,37 @@ const DiscoverSheetAndroid = (_, forwardedRef) => {
     [notifyListeners]
   );
 
+  const { top: safeArea } = useSafeArea();
+
   return (
-    <DiscoverSheetContext.Provider value={value}>
-      <BottomSheet
-        activeOffsetY={[-3, 3]}
-        animatedPosition={sheetPosition}
-        animationDuration={300}
-        backgroundComponent={CustomBackground}
-        failOffsetX={[-10, 10]}
-        handleComponent={CustomHandle}
-        index={1}
-        ref={bottomSheetModalRef}
-        snapPoints={snapPoints}
-      >
-        <DiscoverSheetHeader yPosition={yPosition} />
-        <BottomSheetScrollView onScroll={scrollHandler}>
-          <DiscoverSheetContent />
-          {/* placeholder for now */}
-          <View style={{ backgroundColor: 'red', height: 400, width: 100 }} />
-        </BottomSheetScrollView>
-      </BottomSheet>
-    </DiscoverSheetContext.Provider>
+    <AndroidWrapper
+      style={{
+        transform: [{ translateY: safeArea * 2 }],
+      }}
+    >
+      <DiscoverSheetContext.Provider value={value}>
+        <BottomSheet
+          activeOffsetY={[-3, 3]}
+          animatedPosition={sheetPosition}
+          animationDuration={300}
+          backgroundComponent={CustomBackground}
+          failOffsetX={[-10, 10]}
+          handleComponent={CustomHandle}
+          index={1}
+          ref={bottomSheetModalRef}
+          snapPoints={snapPoints}
+          style={{
+            borderRadius: 20,
+            overflow: 'hidden',
+          }}
+        >
+          <DiscoverSheetHeader yPosition={yPosition} />
+          <BottomSheetScrollView onScroll={scrollHandler}>
+            <DiscoverSheetContent />
+          </BottomSheetScrollView>
+        </BottomSheet>
+      </DiscoverSheetContext.Provider>
+    </AndroidWrapper>
   );
 };
 
