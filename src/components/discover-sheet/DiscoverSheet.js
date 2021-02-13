@@ -3,6 +3,7 @@ import { useIsFocused } from '@react-navigation/native';
 import React, {
   forwardRef,
   useCallback,
+  useEffect,
   useImperativeHandle,
   useMemo,
   useRef,
@@ -132,6 +133,7 @@ const DiscoverSheetAndroid = (_, forwardedRef) => {
 function DiscoverSheetIOS(_, forwardedRef) {
   const insets = useSafeArea();
   const isFocused = useIsFocused();
+  const sheet = useRef();
   const ref = useRef();
   const listeners = useRef([]);
   const [headerButtonsHandlers, deps] = useAreHeaderButtonVisible();
@@ -168,6 +170,10 @@ function DiscoverSheetIOS(_, forwardedRef) {
 
   useImperativeHandle(forwardedRef, () => value);
 
+  useEffect(() => {
+    sheet.current.scrollTo({ x: 0, y: 0 });
+  }, [headerButtonsHandlers.isSearchModeEnabled]);
+
   // noinspection JSConstructorReturnsPrimitive
   return (
     <DiscoverSheetContext.Provider value={value}>
@@ -194,6 +200,7 @@ function DiscoverSheetIOS(_, forwardedRef) {
         <SlackSheet
           limitScrollViewContent={headerButtonsHandlers.isSearchModeEnabled}
           onContentSizeChange={value.layoutScrollView}
+          ref={sheet}
           renderHeader={renderHeader}
           scrollEnabled={!headerButtonsHandlers.isSearchModeEnabled}
         >

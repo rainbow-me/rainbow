@@ -1,4 +1,11 @@
-import React, { Fragment, useEffect, useMemo, useRef } from 'react';
+import React, {
+  forwardRef,
+  Fragment,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+} from 'react';
 import { Pressable, StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import Animated, {
   useAnimatedScrollHandler,
@@ -65,21 +72,24 @@ const Whitespace = styled.View`
   z-index: -1;
 `;
 
-export default function SlackSheet({
-  additionalTopPadding = false,
-  backgroundColor,
-  borderRadius = 30,
-  children,
-  contentHeight,
-  deferredHeight = false,
-  hideHandle = false,
-  renderHeader,
-  scrollEnabled = true,
-  discoverSheet,
-  limitScrollViewContent,
-  onContentSizeChange,
-  ...props
-}) {
+export default forwardRef(function SlackSheet(
+  {
+    additionalTopPadding = false,
+    backgroundColor,
+    borderRadius = 30,
+    children,
+    contentHeight,
+    deferredHeight = false,
+    hideHandle = false,
+    renderHeader,
+    scrollEnabled = true,
+    discoverSheet,
+    limitScrollViewContent,
+    onContentSizeChange,
+    ...props
+  },
+  ref
+) {
   const yPosition = useSharedValue(0);
   const { height: deviceHeight } = useDimensions();
   const { goBack } = useNavigation();
@@ -97,6 +107,8 @@ export default function SlackSheet({
   );
 
   const sheet = useRef();
+
+  useImperativeHandle(ref, () => sheet.current);
 
   const scrollIndicatorInsets = useMemo(
     () => ({
@@ -165,4 +177,4 @@ export default function SlackSheet({
       </Container>
     </Fragment>
   );
-}
+});

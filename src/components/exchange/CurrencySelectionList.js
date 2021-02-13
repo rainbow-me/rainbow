@@ -1,5 +1,5 @@
 import { get } from 'lodash';
-import React, { useEffect, useRef } from 'react';
+import React, { forwardRef, useEffect, useRef } from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import styled from 'styled-components';
 import { usePrevious } from '../../hooks';
@@ -31,16 +31,19 @@ const skeletonTransition = (
   </Transition.Sequence>
 );
 
-const CurrencySelectionList = ({
-  itemProps,
-  listItems,
-  loading,
-  showList,
-  testID,
-  query,
-  onScrollTop,
-  keyboardDismissMode,
-}) => {
+const CurrencySelectionList = (
+  {
+    itemProps,
+    listItems,
+    loading,
+    showList,
+    testID,
+    query,
+    onScrollTop,
+    keyboardDismissMode,
+  },
+  ref
+) => {
   const skeletonTransitionRef = useRef();
   const showNoResults = get(listItems, '[0].data', []).length === 0;
   const showSkeleton = showNoResults && loading;
@@ -70,6 +73,7 @@ const CurrencySelectionList = ({
               keyboardDismissMode={keyboardDismissMode}
               onScrollTop={onScrollTop}
               query={query}
+              ref={ref}
               testID={testID}
             />
           )}
@@ -80,4 +84,7 @@ const CurrencySelectionList = ({
   );
 };
 
-export default magicMemo(CurrencySelectionList, ['listItems', 'showList']);
+export default magicMemo(forwardRef(CurrencySelectionList), [
+  'listItems',
+  'showList',
+]);

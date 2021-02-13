@@ -5,6 +5,7 @@ import Animated, { useCode, useSharedValue } from 'react-native-reanimated';
 import styled from 'styled-components';
 import { BubbleSheet } from '../components/bubble-sheet';
 import { DiscoverSheet } from '../components/discover-sheet';
+import { FabWrapper, SearchFab } from '../components/fab';
 import { BackButton, Header, HeaderHeight } from '../components/header';
 import { Centered } from '../components/layout';
 import {
@@ -100,44 +101,52 @@ export default function QRScannerScreen() {
   const { colors } = useTheme();
 
   return (
-    <View>
-      {discoverSheetAvailable && ios ? <DiscoverSheet ref={dsRef} /> : null}
-      <ScannerContainer>
-        <Background />
-        <CameraDimmer cameraDim={cameraDim}>
-          {initializeCamera && (
-            <QRCodeScanner
-              cameraDim={cameraDim}
-              contentPositionBottom={sheetHeight}
-              contentPositionTop={HeaderHeight}
-              dsRef={dsRef}
-              enableCamera={ios ? isFocusedIOS : isFocusedAndroid}
-            />
-          )}
-        </CameraDimmer>
-        {discoverSheetAvailable ? (
-          android ? (
-            <DiscoverSheet ref={dsRef} />
-          ) : null
-        ) : (
-          <BubbleSheet onLayout={onSheetLayout}>
-            {walletConnectorsCount ? (
-              <WalletConnectList items={walletConnectorsByDappName} />
-            ) : (
-              <WalletConnectExplainer />
+    <>
+      <View>
+        {discoverSheetAvailable && ios ? <DiscoverSheet ref={dsRef} /> : null}
+        <ScannerContainer>
+          <Background />
+          <CameraDimmer cameraDim={cameraDim}>
+            {initializeCamera && (
+              <QRCodeScanner
+                cameraDim={cameraDim}
+                contentPositionBottom={sheetHeight}
+                contentPositionTop={HeaderHeight}
+                dsRef={dsRef}
+                enableCamera={ios ? isFocusedIOS : isFocusedAndroid}
+              />
             )}
-          </BubbleSheet>
-        )}
-        <ScannerHeader>
-          <BackButton
-            color={colors.whiteLabel}
-            direction="left"
-            onPress={handlePressBackButton}
-            testID="goToBalancesFromScanner"
-          />
-          <EmulatorPasteUriButton />
-        </ScannerHeader>
-      </ScannerContainer>
-    </View>
+          </CameraDimmer>
+          {discoverSheetAvailable ? (
+            android ? (
+              <DiscoverSheet ref={dsRef} />
+            ) : null
+          ) : (
+            <BubbleSheet onLayout={onSheetLayout}>
+              {walletConnectorsCount ? (
+                <WalletConnectList items={walletConnectorsByDappName} />
+              ) : (
+                <WalletConnectExplainer />
+              )}
+            </BubbleSheet>
+          )}
+          <ScannerHeader>
+            <BackButton
+              color={colors.whiteLabel}
+              direction="left"
+              onPress={handlePressBackButton}
+              testID="goToBalancesFromScanner"
+            />
+            <EmulatorPasteUriButton />
+          </ScannerHeader>
+        </ScannerContainer>
+      </View>
+      <FabWrapper
+        fabs={[SearchFab]}
+        onPress={() => {
+          dsRef.current.setIsSearchModeEnabled(true);
+        }}
+      />
+    </>
   );
 }

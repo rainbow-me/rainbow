@@ -69,6 +69,8 @@ export default forwardRef(function DiscoverSearchContainer(
       setIsSearching(false);
       searchInputRef.current?.blur();
       setIsInputFocused(false);
+    } else if (!searchInputRef.current.isFocused()) {
+      searchInputRef.current?.focus();
     }
   }, [isSearchModeEnabled, setIsInputFocused]);
 

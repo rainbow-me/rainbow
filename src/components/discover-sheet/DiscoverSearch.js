@@ -5,6 +5,7 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { IS_TESTING } from 'react-native-dotenv';
@@ -67,7 +68,9 @@ export default function DiscoverSearch({ onScrollTop }) {
     listOpacity.value = withTiming(1, timingConfig);
   }, [listOpacity]);
 
-  const { setIsSearching, searchQuery } = useContext(DiscoverSheetContext);
+  const { setIsSearching, searchQuery, isSearchModeEnabled } = useContext(
+    DiscoverSheetContext
+  );
   const [searchQueryForSearch, setSearchQueryForSearch] = useState('');
   const type = CurrencySelectionTypes.output;
   const dispatch = useDispatch();
@@ -213,6 +216,17 @@ export default function DiscoverSearch({ onScrollTop }) {
     [handleActionAsset, handlePress]
   );
 
+  const ref = useRef();
+  useEffect(() => {
+    ref.current?.scrollToLocation({
+      animated: false,
+      itemIndex: 0,
+      sectionIndex: 0,
+      viewOffset: 0,
+      viewPosition: 0,
+    });
+  }, [isSearchModeEnabled]);
+
   return (
     <Animated.View
       style={[
@@ -228,6 +242,7 @@ export default function DiscoverSearch({ onScrollTop }) {
           loading={loadingAllTokens}
           onScrollTop={onScrollTop}
           query={searchQueryForSearch}
+          ref={ref}
           showList
           testID="discover-currency-select-list"
           type={type}
