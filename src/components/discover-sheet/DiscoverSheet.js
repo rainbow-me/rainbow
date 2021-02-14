@@ -50,6 +50,7 @@ const DiscoverSheetAndroid = (_, forwardedRef) => {
 
   const listeners = useRef([]);
   const bottomSheetModalRef = useRef(null);
+  const onFabSearch = useRef(null);
 
   const value = useMemo(
     () => ({
@@ -64,6 +65,7 @@ const DiscoverSheetAndroid = (_, forwardedRef) => {
       jumpToShort() {
         bottomSheetModalRef.current.collapse();
       },
+      onFabSearch,
       ...headerButtonsHandlers,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -136,6 +138,7 @@ function DiscoverSheetIOS(_, forwardedRef) {
   const sheet = useRef();
   const ref = useRef();
   const listeners = useRef([]);
+  const onFabSearch = useRef(null);
   const [headerButtonsHandlers, deps] = useAreHeaderButtonVisible();
   const value = useMemo(
     () => ({
@@ -162,6 +165,7 @@ function DiscoverSheetIOS(_, forwardedRef) {
           NativeModules.ModalView.layout(screen);
         }
       },
+      onFabSearch,
       ...headerButtonsHandlers,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
