@@ -54,10 +54,10 @@ const SearchIconWrapper = styled(Animated.View)`
 `;
 
 const SearchInput = styled(Input).attrs(
-  ({ theme: { colors }, isSearchModeEnabled }) => ({
+  ({ theme: { colors }, isSearchModeEnabled, clearTextOnFocus }) => ({
     autoCapitalize: 'words',
     blurOnSubmit: false,
-    clearTextOnFocus: true,
+    clearTextOnFocus,
     color: colors.alpha(colors.blueGreyDark, 0.8),
     enablesReturnKeyAutomatically: true,
     keyboardAppearance: 'dark',
@@ -117,6 +117,7 @@ const ExchangeSearch = (
     searchQuery,
     testID,
     placeholderText = 'Search Uniswap',
+    clearTextOnFocus = true,
   },
   ref
 ) => {
@@ -185,6 +186,7 @@ const ExchangeSearch = (
         <SearchSpinner />
       </SearchSpinnerWrapper>
       <SearchInput
+        clearTextOnFocus={clearTextOnFocus}
         isSearchModeEnabled={isSearchModeEnabled}
         onChangeText={onChangeText}
         onFocus={onFocus}
