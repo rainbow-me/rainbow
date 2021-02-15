@@ -23,17 +23,16 @@ diff --git a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheetBackdro
 index bc12211..02c06a7 100644
 --- a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheetBackdrop/BottomSheetBackdrop.tsx
 +++ b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheetBackdrop/BottomSheetBackdrop.tsx
-@@ -1,6 +1,6 @@
- import React, { memo, useMemo } from 'react';
-  import Animated, {
-  and,
-  call,
-  cond,
-  eq,
-  Extrapolate,
+@@ +1,6 @@
+import React, { memo, useMemo } from 'react';
+import Animated, {
+and,
+call,
+cond,
+eq,
+Extrapolate,
 +  newInterpolate as interpolate,
-
-  neq,
-  not,
-  set,
+neq,
+not,
+set,
 } from 'react-native-reanimated';
