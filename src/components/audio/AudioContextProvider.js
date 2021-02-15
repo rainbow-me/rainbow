@@ -1,5 +1,6 @@
 import * as React from 'react';
 import isEqual from 'react-fast-compare';
+import { Animated } from 'react-native';
 import Sound from 'react-native-sound';
 import { useDispatch, useSelector } from 'react-redux';
 import { useDebounce, useDebouncedCallback } from 'use-debounce';
@@ -15,16 +16,30 @@ export default function AudioContextProvider({ category, children }) {
     Sound.setCategory('Playback');
   }, [category]);
 
-  const { collectibles } = useAccountAssets();
+  const buildPlaylistFromCollectibles = React.useCallback(
+    collectibles =>
+      collectibles.filter(({ animation_url }) =>
+        isSupportedUriExtension(
+          animation_url,
+          supportedUriExtensions.SUPPORTED_AUDIO_EXTENSIONS
+        )
+      ),
+    []
+  );
 
-  const playlist = React.useMemo(() => {
-    return collectibles.filter(({ animation_url }) =>
-      isSupportedUriExtension(
-        animation_url,
-        supportedUriExtensions.SUPPORTED_AUDIO_EXTENSIONS
-      )
-    );
-  }, [collectibles]);
+  const { collectibles } = useAccountAssets();
+  const [playlist, setPlaylist] = React.useState(() =>
+    buildPlaylistFromCollectibles(collectibles)
+  );
+
+  // Deeply-memoized playlist management. (Avoid reallocation of playlists
+  // when the content is effectively identical.)
+  React.useEffect(() => {
+    const maybeNextPlaylist = buildPlaylistFromCollectibles(collectibles);
+    if (!isEqual(playlist, maybeNextPlaylist)) {
+      setPlaylist(maybeNextPlaylist);
+    }
+  }, [buildPlaylistFromCollectibles, collectibles, setPlaylist, playlist]);
 
   const [currentSound, setCurrentSound] = React.useState(null);
 
@@ -95,6 +110,76 @@ export default function AudioContextProvider({ category, children }) {
     });
     return sound;
   }, []);
+
+  const shouldFadeOut = React.useCallback(async nextSound => {
+    if (!nextSound) {
+      return;
+    } else if (typeof nextSound.getVolume !== 'function') {
+      logger.error(
+        new Error(
+          `Expected function getVolume(), encountered ${typeof nextSound.getVolume}.`
+        )
+      );
+      return;
+    }
+
+    const currentVolume = nextSound.getVolume();
+    if (typeof currentVolume !== 'number') {
+      logger.error(
+        new Error(
+          `Expected number currentVolume, encountered ${typeof currentVolume}.`
+        )
+      );
+      return;
+    }
+
+    /* fade out volume */
+    const volume = new Animated.Value(nextSound.getVolume());
+    volume.addListener(({ value }) => nextSound.setVolume(value));
+
+    return new Promise(resolve =>
+      Animated.timing(volume, {
+        duration: 3000,
+        toValue: 0,
+        useNativeDriver: false,
+      }).start(resolve)
+    );
+  }, []);
+
+  // Whilst we're playing, if the playlist (a list of the user's purchased Sound NFTs)
+  // changes, check to see if the sound is still available. If it's not, the sound should
+  // be dismissed.
+  const isCurrentPlayingAssetWithinWallet = React.useMemo(() => {
+    if (currentlyPlayingAsset && typeof currentlyPlayingAsset === 'object') {
+      const { uniqueId } = currentlyPlayingAsset;
+      if (typeof uniqueId === 'string') {
+        return playlist.some(
+          ({ uniqueId: currentUniqueId }) => currentUniqueId === uniqueId
+        );
+      }
+    }
+    return (
+      !!currentlyPlayingAsset && playlist.indexOf(currentlyPlayingAsset) >= 0
+    );
+  }, [currentlyPlayingAsset, playlist]);
+
+  // Manage fade out when a sound should stop playing.
+  React.useEffect(() => {
+    if (
+      currentlyPlayingAsset &&
+      currentSound &&
+      !isCurrentPlayingAssetWithinWallet
+    ) {
+      // Wait for UI to settle before executing fade.
+      setTimeout(() => shouldFadeOut(currentSound).then(stopPlayingAsset), 120);
+    }
+  }, [
+    currentlyPlayingAsset,
+    stopPlayingAsset,
+    currentSound,
+    shouldFadeOut,
+    isCurrentPlayingAssetWithinWallet,
+  ]);
 
   const shouldAutoplayNext = React.useCallback(() => {
     const nextAsset = pickNextAsset();
@@ -205,24 +290,26 @@ export default function AudioContextProvider({ category, children }) {
 
   // redux_sync
   React.useEffect(() => {
-    (async () => {
-      try {
-        setLoadingNextAsset(true);
-        setCurrentSound(maybeCurrentSound => {
-          !!maybeCurrentSound && maybeCurrentSound.stop();
-          return maybeCurrentSound;
-        });
-        debouncedShouldPlayNext(
-          currentlyPlayingAsset,
-          shouldPlayNextAsset,
-          setNextSoundAndDestroyLastIfExists,
-          setLoadingNextAsset
-        );
-      } catch (e) {
-        logger.error(e);
-      }
-    })();
+    !!isCurrentPlayingAssetWithinWallet &&
+      (async () => {
+        try {
+          setLoadingNextAsset(true);
+          setCurrentSound(maybeCurrentSound => {
+            !!maybeCurrentSound && maybeCurrentSound.stop();
+            return maybeCurrentSound;
+          });
+          debouncedShouldPlayNext(
+            currentlyPlayingAsset,
+            shouldPlayNextAsset,
+            setNextSoundAndDestroyLastIfExists,
+            setLoadingNextAsset
+          );
+        } catch (e) {
+          logger.error(e);
+        }
+      })();
   }, [
+    isCurrentPlayingAssetWithinWallet,
     setCurrentSound,
     setLoadingNextAsset,
     debouncedShouldPlayNext,
