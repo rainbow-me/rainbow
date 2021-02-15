@@ -67,11 +67,13 @@ export default function AudioContextProvider({ category, children }) {
 
   const playAsset = React.useCallback(
     asset => {
-      // Suppress the current sound before playing the next one.
-      !!currentSound && currentSound.setVolume(0);
+      setCurrentSound(maybeCurrentSound => {
+        !!maybeCurrentSound && maybeCurrentSound.setVolume(0);
+        return maybeCurrentSound;
+      });
       return dispatch(setCurrentPlayingAsset(asset));
     },
-    [dispatch, currentSound]
+    [dispatch, setCurrentSound]
   );
 
   const stopPlayingAsset = React.useCallback(
@@ -111,7 +113,7 @@ export default function AudioContextProvider({ category, children }) {
     return sound;
   }, []);
 
-  const fadeTo = React.useCallback(async (nextSound, toValue) => {
+  const fadeTo = React.useCallback(async (nextSound, toValue = 0) => {
     if (!nextSound) {
       return;
     } else if (typeof nextSound.getVolume !== 'function') {
@@ -290,24 +292,23 @@ export default function AudioContextProvider({ category, children }) {
 
   // redux_sync
   React.useEffect(() => {
-    !!isCurrentPlayingAssetWithinWallet &&
-      (async () => {
-        try {
-          setLoadingNextAsset(true);
-          setCurrentSound(maybeCurrentSound => {
-            !!maybeCurrentSound && maybeCurrentSound.stop();
-            return maybeCurrentSound;
-          });
-          debouncedShouldPlayNext(
-            currentlyPlayingAsset,
-            shouldPlayNextAsset,
-            setNextSoundAndDestroyLastIfExists,
-            setLoadingNextAsset
-          );
-        } catch (e) {
-          logger.error(e);
-        }
-      })();
+    (async () => {
+      try {
+        setLoadingNextAsset(true);
+        setCurrentSound(maybeCurrentSound => {
+          !!maybeCurrentSound && maybeCurrentSound.stop();
+          return maybeCurrentSound;
+        });
+        debouncedShouldPlayNext(
+          currentlyPlayingAsset,
+          shouldPlayNextAsset,
+          setNextSoundAndDestroyLastIfExists,
+          setLoadingNextAsset
+        );
+      } catch (e) {
+        logger.error(e);
+      }
+    })();
   }, [
     isCurrentPlayingAssetWithinWallet,
     setCurrentSound,

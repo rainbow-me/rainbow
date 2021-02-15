@@ -9,7 +9,7 @@ const AUDIO_RECEIVE_AUTOPLAY = 'audio/AUDIO_RECEIVE_AUTOPLAY';
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
-  autoplay: true,
+  autoplay: false,
   currentlyPlayingAsset: null,
 };
 

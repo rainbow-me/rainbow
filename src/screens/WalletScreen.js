@@ -97,7 +97,10 @@ export default function WalletScreen() {
   const fabs = useMemo(
     () =>
       [
-        !!hasAudioContent && EphemeralAudioPlayerFab,
+        // @christian
+        // Pending design clarification of EphemeralAudioPlayerFab.
+        // Note, depends on initializing Redux audio.autoplay to true.
+        false && !!hasAudioContent && EphemeralAudioPlayerFab,
         !!get(networkInfo[network], 'exchange_enabled') && ExchangeFab,
         SendFab,
       ].filter(e => !!e),

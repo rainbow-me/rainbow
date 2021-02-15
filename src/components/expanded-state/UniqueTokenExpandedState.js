@@ -24,6 +24,7 @@ import {
 } from '@rainbow-me/hooks';
 import { logger, magicMemo } from '@rainbow-me/utils';
 
+/* SF Pro Rounded (Bold) @ https://mathew-kurian.github.io/CharacterMap */
 const UNICODE_SYMBOL_PAUSE = String.fromCharCode(56256, 56984);
 const UNICODE_SYMBOL_PLAY = String.fromCharCode(56256, 56982);
 
@@ -67,7 +68,9 @@ const UniqueTokenExpandedState = ({ asset }) => {
     playAsset,
     currentlyPlayingAsset,
     isPlayingAssetPaused,
+    fadeTo,
     currentSound,
+    stopPlayingAsset,
   } = useAudio();
 
   const assetIsPlayingAudio =
@@ -94,6 +97,16 @@ const UniqueTokenExpandedState = ({ asset }) => {
     isPlayingAssetPaused,
   ]);
 
+  // @christian: Disable sound controls temporarily.
+  React.useEffect(() => {
+    playAsset(asset);
+  }, [playAsset, asset, stopPlayingAsset]);
+  React.useEffect(() => {
+    return () => {
+      !!currentSound && fadeTo(currentSound, 0).then(stopPlayingAsset);
+    };
+  }, [currentSound, stopPlayingAsset, fadeTo]);
+
   return (
     <Fragment>
       <SlackSheet
@@ -105,9 +118,9 @@ const UniqueTokenExpandedState = ({ asset }) => {
       >
         <UniqueTokenExpandedStateHeader asset={asset} />
         <UniqueTokenExpandedStateContent asset={asset} />
-        {!!supportsAudio && (
+        {/* @christian: Disable audio player pending design refactor. */}
+        {false && !!supportsAudio && (
           <SheetActionButtonRow ignorePaddingBottom>
-            {/* SF Pro Rounded (Bold) @ https://mathew-kurian.github.io/CharacterMap */}
             <SheetActionButton
               color={colors.orangeLight}
               label={
