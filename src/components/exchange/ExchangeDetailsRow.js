@@ -53,7 +53,7 @@ export default function ExchangeDetailsRow({
   const slippageOpacity = useSharedValue(0);
   const slippageScale = useSharedValue(defaultSlippageScale);
   const { outputCurrency } = useSwapInputOutputTokens();
-  const { slippage } = useSlippageDetails();
+  const { isHighSlippage, slippage } = useSlippageDetails();
 
   const detailsRowStyles = useAnimatedStyle(() => ({
     opacity: detailsRowOpacity.value,
@@ -64,7 +64,6 @@ export default function ExchangeDetailsRow({
     transform: [{ scale: slippageScale.value }],
   }));
 
-  const { isHighSlippage } = useSlippageDetails();
   const {
     inputAmount,
     isSufficientBalance,
