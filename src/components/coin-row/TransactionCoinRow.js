@@ -18,7 +18,10 @@ import {
   getHumanReadableDate,
   hasAddableContact,
 } from '@rainbow-me/helpers/transactions';
-import { isENSAddressFormat } from '@rainbow-me/helpers/validators';
+import {
+  isENSAddressFormat,
+  isUnstoppableAddressFormat,
+} from '@rainbow-me/helpers/validators';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
@@ -115,9 +118,11 @@ export default function TransactionCoinRow({ item, ...props }) {
       headerInfo.address = contact.nickname;
       contactColor = contact.color;
     } else {
-      headerInfo.address = isENSAddressFormat(contactAddress)
-        ? contactAddress
-        : abbreviations.address(contactAddress, 4, 10);
+      headerInfo.address =
+        isENSAddressFormat(contactAddress) ||
+        isUnstoppableAddressFormat(contactAddress)
+          ? contactAddress
+          : abbreviations.address(contactAddress, 4, 10);
       contactColor = getRandomColor();
     }
 
