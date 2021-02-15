@@ -62,7 +62,7 @@ export default function SimpleVideo({
         poster={false && posterUri}
         ref={ref}
         repeat
-        resizeMode="contain"
+        resizeMode="cover"
         source={source}
         style={StyleSheet.absoluteFill}
       />
