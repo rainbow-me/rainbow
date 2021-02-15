@@ -97,7 +97,7 @@ export function navigate(oldNavigate, ...args) {
   }
 }
 
-function getActiveRoute() {
+export function getActiveRoute() {
   return TopLevelNavigationRef?.getCurrentRoute();
 }
 
