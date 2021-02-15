@@ -44,9 +44,11 @@ export default function ChartExpandedState({ asset }) {
   const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
     genericAssets,
   }));
+
   // If we don't have a balance for this asset
   // It's a generic asset
-  const assetWithPrice = asset?.balance
+  const hasBalance = asset?.balance;
+  const assetWithPrice = hasBalance
     ? asset
     : genericAssets[asset?.address]
     ? formatGenericAsset(genericAssets[asset?.address])
@@ -63,8 +65,8 @@ export default function ChartExpandedState({ asset }) {
     throttledData,
   } = useChartThrottledPoints({
     asset: assetWithPrice,
-    heightWithChart: heightWithChart - (!asset?.balance && 68),
-    heightWithoutChart: heightWithoutChart - (!asset?.balance && 68),
+    heightWithChart: heightWithChart - (!hasBalance && 68),
+    heightWithoutChart: heightWithoutChart - (!hasBalance && 68),
   });
 
   const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
@@ -80,8 +82,13 @@ export default function ChartExpandedState({ asset }) {
   if (duration.current === 0) {
     duration.current = 300;
   }
-  const ChartExpandedStateSheetHeight =
+
+  let ChartExpandedStateSheetHeight =
     ios || showChart ? heightWithChart : heightWithoutChart;
+
+  if (android && !hasBalance) {
+    ChartExpandedStateSheetHeight -= 68;
+  }
 
   return (
     <SlackSheet
@@ -104,7 +111,7 @@ export default function ChartExpandedState({ asset }) {
         />
       </ChartPathProvider>
       <SheetDivider />
-      {asset?.balance && (
+      {hasBalance && (
         <TokenInfoSection>
           <TokenInfoRow>
             <TokenInfoItem asset={asset} title="Balance">
@@ -127,7 +134,7 @@ export default function ChartExpandedState({ asset }) {
           {showSwapButton && (
             <SwapActionButton color={color} inputType={AssetInputTypes.in} />
           )}
-          {asset?.balance ? (
+          {hasBalance ? (
             <SendActionButton color={color} fullWidth={!showSwapButton} />
           ) : (
             <SwapActionButton

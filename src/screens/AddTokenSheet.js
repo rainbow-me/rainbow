@@ -2,6 +2,7 @@ import { useRoute } from '@react-navigation/native';
 import { toLower } from 'lodash';
 import React, { useCallback } from 'react';
 import { StatusBar } from 'react-native';
+import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components';
 import Divider from '../components/Divider';
@@ -34,15 +35,13 @@ const Container = styled(Centered).attrs({
 `;
 
 const RemoveButton = styled(ButtonPressAnimation)`
+  justify-content: center;
   background-color: ${({ theme: { colors } }) =>
     colors.alpha(colors.red, 0.06)};
   border-radius: 15;
   height: 30;
-  padding-left: 6;
-  padding-right: 10;
-  padding-top: 5;
-  margin-left: 8;
-  top: -2;
+  padding-horizontal: 8;
+  margin-left: 6;
 `;
 
 const ListButton = styled(ButtonPressAnimation)`
@@ -53,13 +52,13 @@ const ListButton = styled(ButtonPressAnimation)`
 const ListEmoji = styled(Emoji).attrs({
   size: 'large',
 })`
-  margin-top: 1;
+  margin-top: ${android ? -4 : 1};
   margin-right: 6;
 `;
 
 const WRITEABLE_LISTS = ['watchlist', 'favorites'];
 
-export const sheetHeight = android ? 410 : 394;
+export const sheetHeight = android ? 470 - getSoftMenuBarHeight() : 394;
 
 export default function AddTokenSheet() {
   const { goBack } = useNavigation();
@@ -148,9 +147,9 @@ export default function AddTokenSheet() {
                   <ListButton
                     alreadyAdded={alreadyAdded}
                     key={`list-${list.id}`}
-                    onPress={handleAdd}
+                    onPress={alreadyAdded ? handleRemove : handleAdd}
                   >
-                    <Row>
+                    <Row align="center">
                       <ListEmoji name={list.emoji} />
                       <Text
                         color={
@@ -166,7 +165,6 @@ export default function AddTokenSheet() {
                       {alreadyAdded && (
                         <RemoveButton onPress={handleRemove}>
                           <Text
-                            align="center"
                             color={colors.red}
                             letterSpacing="roundedTight"
                             size="lmedium"

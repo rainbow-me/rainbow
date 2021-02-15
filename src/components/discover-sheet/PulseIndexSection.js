@@ -101,7 +101,7 @@ const PulseIndex = () => {
             <Column margin={15} marginRight={10}>
               <CoinIcon shadowColor={colors.dpiDark} {...item} />
             </Column>
-            <Column marginLeft={0} marginTop={ios ? 13.5 : 10}>
+            <Column marginLeft={0} marginTop={ios ? 13.5 : 6}>
               <Text color={colors.whiteLabel} size="large" weight="heavy">
                 {item.name}
               </Text>
@@ -114,7 +114,7 @@ const PulseIndex = () => {
                 All the top DeFi tokens in one
               </Text>
             </Column>
-            <Column align="end" flex={1} margin={15} marginTop={13.5}>
+            <Column align="end" flex={1} margin={15} marginTop={ios ? 13.5 : 6}>
               <Text
                 align="right"
                 color={colors.whiteLabel}
@@ -128,8 +128,13 @@ const PulseIndex = () => {
           </Row>
         </View>
       </ButtonPressAnimation>
-      <Row marginHorizontal={34} marginTop={8}>
-        <Column flex={1} justify="start">
+      <ButtonPressAnimation onPress={handlePress} scaleTo={0.9}>
+        <Row
+          flex={1}
+          justify="space-between"
+          marginHorizontal={34}
+          marginTop={android ? 4 : 8}
+        >
           <Text
             color={colors.dpiLight}
             letterSpacing="roundedMedium"
@@ -148,8 +153,6 @@ const PulseIndex = () => {
               {item.price}
             </Text>
           </Text>
-        </Column>
-        <Column flex={1} justify="end">
           <Text
             align="right"
             color={item.isPositive ? colors.green : colors.red}
@@ -168,8 +171,8 @@ const PulseIndex = () => {
             </Text>{' '}
             today
           </Text>
-        </Column>
-      </Row>
+        </Row>
+      </ButtonPressAnimation>
     </Fragment>
   );
 };
