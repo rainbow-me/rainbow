@@ -102,7 +102,7 @@ const LiquidityPoolExpandedState = ({ asset }) => {
         </Fragment>
       ) : (
         <SheetActionButtonRow>
-          <DepositActionButton symbol={tokenNames} weight="bold" />
+          <DepositActionButton fullWidth symbol={tokenNames} weight="bold" />
         </SheetActionButtonRow>
       )}
     </SlackSheet>
