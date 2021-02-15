@@ -1,4 +1,4 @@
-import { map } from 'lodash';
+import { map, toLower } from 'lodash';
 import React, { Fragment } from 'react';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import {
@@ -16,6 +16,7 @@ import {
 } from '../token-info';
 import { Chart } from '../value-chart';
 import { ChartPathProvider } from '@rainbow-me/animated-charts';
+import { toChecksumAddress } from '@rainbow-me/handlers/web3';
 import { useChartThrottledPoints } from '@rainbow-me/hooks';
 import { magicMemo } from '@rainbow-me/utils';
 
@@ -23,6 +24,13 @@ const heightWithoutChart = 373 - (android ? getSoftMenuBarHeight() : 0);
 const heightWithChart = heightWithoutChart + 297;
 
 export const initialLiquidityPoolExpandedStateSheetHeight = heightWithChart;
+
+const formatTokenAddress = address => {
+  if (!address || toLower(address) === 'eth') {
+    return 'ETH';
+  }
+  return toChecksumAddress(address);
+};
 
 const LiquidityPoolExpandedState = ({ asset }) => {
   const { tokenNames, tokens, totalNativeDisplay, type, uniBalance } = asset;
@@ -50,6 +58,10 @@ const LiquidityPoolExpandedState = ({ asset }) => {
     (ios || showChart ? heightWithChart : heightWithoutChart) +
     (android && 24) +
     (uniBalance ? 0 : -130);
+
+  const tokenAddresses = useMemo(() => {
+    return tokens.map(token => formatTokenAddress(token.address));
+  }, [tokens]);
 
   return (
     <SlackSheet
@@ -96,8 +108,18 @@ const LiquidityPoolExpandedState = ({ asset }) => {
             </TokenInfoRow>
           </TokenInfoSection>
           <SheetActionButtonRow>
-            <WithdrawActionButton symbol={tokenNames} weight="bold" />
-            <DepositActionButton symbol={tokenNames} weight="bold" />
+            <WithdrawActionButton
+              symbol={tokenNames}
+              token1Address={tokenAddresses[0]}
+              token2Address={tokenAddresses[1]}
+              weight="bold"
+            />
+            <DepositActionButton
+              symbol={tokenNames}
+              token1Address={tokenAddresses[0]}
+              token2Address={tokenAddresses[1]}
+              weight="bold"
+            />
           </SheetActionButtonRow>
         </Fragment>
       ) : (
