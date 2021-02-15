@@ -28,7 +28,7 @@ const Message = styled(Text).attrs(({ theme: { colors } }) => ({
 export default function SwapDetailsSlippageMessage(props) {
   const { colors } = useTheme();
 
-  const { color, isHighSlippage } = useSlippageDetails();
+  const { color, isHighSlippage, slippageNativeAmount } = useSlippageDetails();
 
   return isHighSlippage ? (
     <Column align="center" {...props}>
@@ -36,7 +36,7 @@ export default function SwapDetailsSlippageMessage(props) {
         <Row align="center">
           <Heading color={color}>{`Losing `}</Heading>
           <Heading color={color} letterSpacing="roundedTight" weight="heavy">
-            $TODO
+            {slippageNativeAmount}
           </Heading>
           <Heading color={color}>{` to slippage `}</Heading>
           <Emoji size="larger">🥵</Emoji>

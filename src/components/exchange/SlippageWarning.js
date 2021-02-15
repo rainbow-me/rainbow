@@ -28,7 +28,7 @@ const Label = styled(Text).attrs(
 )``;
 
 export default function SlippageWarning({ onPress, ...props }) {
-  const { color } = useSlippageDetails();
+  const { color, slippageNativeAmount } = useSlippageDetails();
 
   return (
     <AnimatedButtonPressAnimation
@@ -42,7 +42,7 @@ export default function SlippageWarning({ onPress, ...props }) {
         <Label>Small Market</Label>
         <Label color={color}>{` • Losing `}</Label>
         <Label color={color} letterSpacing="roundedTight">
-          $TODO
+          {slippageNativeAmount}
         </Label>
       </Container>
     </AnimatedButtonPressAnimation>
