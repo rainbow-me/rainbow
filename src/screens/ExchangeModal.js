@@ -107,9 +107,9 @@ export default function ExchangeModal({
 
   const {
     areTradeDetailsValid,
-    tradeDetails,
+    tradeDetails, // TODO JIN - raps
   } = useSwapDetails();
-  const { isHighSlippage, slippage } = useSlippageDetails();
+  const { isHighSlippage, slippage } = useSlippageDetails(); // TODO JIN
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
 
@@ -553,7 +553,6 @@ export default function ExchangeModal({
               onFlipCurrencies={onFlipCurrencies}
               onPressViewDetails={navigateToSwapDetailsModal}
               showDetailsButton={showDetailsButton}
-              slippage={slippage}
               type={type}
             />
           )}
