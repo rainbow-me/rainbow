@@ -55,29 +55,25 @@ export default function ChartPercentChangeLabel() {
     lastValue.value = data?.points?.[data.points.length - 1]?.y;
   }, [data, firstValue, lastValue]);
 
-  const textProps = useAnimatedStyle(
-    () => {
-      return {
-        text:
-          firstValue.value === Number(firstValue.value) && firstValue.value
-            ? (() => {
-                const value =
-                  ((originalY.value || lastValue.value) / firstValue.value) *
-                    100 -
-                  100;
-                return (
-                  (android ? '' : value > 0 ? '↑' : value < 0 ? '↓' : '') +
-                  ' ' +
-                  Math.abs(value).toFixed(2) +
-                  '%'
-                );
-              })()
-            : '',
-      };
-    },
-    [],
-    'ChartPercentChangeLabelTextProps'
-  );
+  const textProps = useAnimatedStyle(() => {
+    return {
+      text:
+        firstValue.value === Number(firstValue.value) && firstValue.value
+          ? (() => {
+              const value =
+                ((originalY.value || lastValue.value) / firstValue.value) *
+                  100 -
+                100;
+              return (
+                (android ? '' : value > 0 ? '↑' : value < 0 ? '↓' : '') +
+                ' ' +
+                Math.abs(value).toFixed(2) +
+                '%'
+              );
+            })()
+          : '',
+    };
+  }, []);
 
   const ratio = useRatio();
 
