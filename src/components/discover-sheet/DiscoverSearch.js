@@ -53,7 +53,7 @@ const searchCurrencyList = (searchList, query) => {
 
 const timingConfig = { duration: 700 };
 
-export default function DiscoverSearch({ onScrollTop }) {
+export default function DiscoverSearch() {
   const { navigate } = useNavigation();
   const listOpacity = useSharedValue(0);
   const { allAssets } = useAccountAssets();
@@ -240,7 +240,6 @@ export default function DiscoverSearch({ onScrollTop }) {
           keyboardDismissMode="on-drag"
           listItems={currencyList}
           loading={loadingAllTokens}
-          onScrollTop={onScrollTop}
           query={searchQueryForSearch}
           ref={ref}
           showList

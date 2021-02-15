@@ -39,7 +39,6 @@ const CurrencySelectionList = (
     showList,
     testID,
     query,
-    onScrollTop,
     keyboardDismissMode,
   },
   ref
@@ -71,7 +70,6 @@ const CurrencySelectionList = (
               itemProps={itemProps}
               items={listItems}
               keyboardDismissMode={keyboardDismissMode}
-              onScrollTop={onScrollTop}
               query={query}
               ref={ref}
               testID={testID}

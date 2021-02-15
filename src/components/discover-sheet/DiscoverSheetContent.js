@@ -48,7 +48,7 @@ export default function DiscoverSheetContent() {
           showSearch={showSearch}
         >
           <Switcher showSearch={showSearch}>
-            <DiscoverSearch onScrollTop={() => ref.current?.focus()} />
+            <DiscoverSearch />
             <DiscoverHome />
           </Switcher>
         </DiscoverSearchContainer>
