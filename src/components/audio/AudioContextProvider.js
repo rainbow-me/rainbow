@@ -111,7 +111,7 @@ export default function AudioContextProvider({ category, children }) {
     return sound;
   }, []);
 
-  const shouldFadeOut = React.useCallback(async nextSound => {
+  const fadeTo = React.useCallback(async (nextSound, toValue) => {
     if (!nextSound) {
       return;
     } else if (typeof nextSound.getVolume !== 'function') {
@@ -139,9 +139,9 @@ export default function AudioContextProvider({ category, children }) {
 
     return new Promise(resolve =>
       Animated.timing(volume, {
-        duration: 3000,
-        toValue: 0,
-        useNativeDriver: false,
+        duration: 1500,
+        toValue,
+        useNativeDriver: true,
       }).start(resolve)
     );
   }, []);
@@ -171,13 +171,13 @@ export default function AudioContextProvider({ category, children }) {
       !isCurrentPlayingAssetWithinWallet
     ) {
       // Wait for UI to settle before executing fade.
-      setTimeout(() => shouldFadeOut(currentSound).then(stopPlayingAsset), 120);
+      setTimeout(() => fadeTo(currentSound, 0).then(stopPlayingAsset), 120);
     }
   }, [
     currentlyPlayingAsset,
     stopPlayingAsset,
     currentSound,
-    shouldFadeOut,
+    fadeTo,
     isCurrentPlayingAssetWithinWallet,
   ]);
 
@@ -335,6 +335,7 @@ export default function AudioContextProvider({ category, children }) {
       autoplay,
       currentlyPlayingAsset,
       currentSound,
+      fadeTo,
       isPlayingAsset,
       isPlayingAssetPaused: debouncedPaused,
       pickNextAsset,
@@ -357,6 +358,7 @@ export default function AudioContextProvider({ category, children }) {
       parentValue,
       playlist,
       toggleAutoplay,
+      fadeTo,
     ]
   );
 

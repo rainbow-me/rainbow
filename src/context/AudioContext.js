@@ -10,6 +10,7 @@ const defaultValue = Object.freeze({
   autoplay: false,
   currentlyPlayingAsset: null,
   currentSound: null,
+  fadeTo: defaultErrorThunk(),
   isPlayingAsset: false,
   isPlayingAssetPaused: false,
   pickNextAsset: defaultErrorThunk(),

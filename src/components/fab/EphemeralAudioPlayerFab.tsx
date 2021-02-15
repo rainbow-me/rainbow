@@ -199,7 +199,10 @@ function EphemeralAudioPlayerFab({
                 currentlyPlayingAsset ? currentPlayingAssetTitle : 'My Playlist'
               }
               numberOfLines={1}
-              style={{ color: colors.orangeLight }}
+              style={{
+                color: colors.orangeLight,
+                height: 25,
+              }}
             />
           </ButtonPressAnimation>
           <View style={styles.currentPlayingAssetDetails}>
