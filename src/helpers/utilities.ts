@@ -86,8 +86,8 @@ export const countDecimalPlaces = (value: BigNumberish): number =>
  * @return {String}   updated amount
  */
 export const updatePrecisionToDisplay = (
-  amount: BigNumberish,
-  nativePrice: BigNumberish,
+  amount: BigNumberish | null,
+  nativePrice?: BigNumberish | null,
   roundUp: boolean = false
 ): string => {
   if (!amount) return '0';

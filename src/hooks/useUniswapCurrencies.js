@@ -13,7 +13,6 @@ import useSwapInputOutputTokens from './useSwapInputOutputTokens';
 import useUniswapAssetsInWallet from './useUniswapAssetsInWallet';
 import useUniswapCalls from './useUniswapCalls';
 import { CurrencySelectionTypes } from '@rainbow-me/helpers';
-import { multiply } from '@rainbow-me/helpers/utilities';
 import { useNavigation } from '@rainbow-me/navigation';
 import {
   multicallAddListeners,
@@ -24,6 +23,7 @@ import {
   updateSwapOutputCurrency,
 } from '@rainbow-me/redux/swap';
 import Routes from '@rainbow-me/routes';
+import { multiply } from '@rainbow-me/utilities';
 import { ethereumUtils, isNewValueForPath } from '@rainbow-me/utils';
 import logger from 'logger';
 

@@ -30,6 +30,17 @@ export interface ParsedAddressAsset {
   uniqueId: string;
 }
 
+export interface UniswapCurrency extends Asset {
+  native?: {
+    price?: {
+      amount?: string;
+    };
+  };
+  price?: {
+    value?: string;
+  };
+}
+
 export interface RainbowToken extends Asset {
   color?: string;
   favorite?: boolean;

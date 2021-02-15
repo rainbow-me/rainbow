@@ -108,11 +108,11 @@ export default function ExchangeModal({
   const {
     areTradeDetailsValid,
     extraTradeDetails,
-    updateExtraTradeDetails,
+    slippage,
+    tradeDetails,
   } = useSwapDetails();
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
-  const [slippage, setSlippage] = useState(null);
 
   useAndroidBackHandler(() => {
     navigate(Routes.WALLET_SCREEN);
@@ -234,16 +234,12 @@ export default function ExchangeModal({
   }, [lastFocusedInputHandle]);
 
   // Calculate market details
-  const { isSufficientLiquidity, tradeDetails } = useUniswapMarketDetails({
+  const { isSufficientLiquidity } = useUniswapMarketDetails({
     defaultInputAddress,
-    extraTradeDetails,
     inputFieldRef,
     isSavings,
     maxInputBalance,
-    nativeCurrency,
     outputFieldRef,
-    setSlippage,
-    updateExtraTradeDetails,
     updateInputAmount,
     updateOutputAmount,
   });

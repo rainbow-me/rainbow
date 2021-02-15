@@ -1,5 +1,6 @@
+import { Trade } from '@uniswap/sdk';
 import { AnyAction } from 'redux';
-import { Asset } from '@rainbow-me/entities';
+import { Numberish, UniswapCurrency } from '@rainbow-me/entities';
 import { AppDispatch } from '@rainbow-me/redux/store';
 
 export interface SwapAmount {
@@ -7,21 +8,36 @@ export interface SwapAmount {
   value: string | null;
 }
 
+interface ExtraTradeDetails {
+  inputExecutionRate: string;
+  inputNativePrice: string;
+  inputPriceValue: string;
+  outputExecutionRate: string;
+  outputNativePrice: string;
+  outputPriceValue: string;
+}
+
 interface SwapState {
-  inputCurrency: Asset | null;
+  extraTradeDetails: ExtraTradeDetails | {};
+  inputCurrency: UniswapCurrency | null;
   inputAsExactAmount: boolean;
   inputAmount: SwapAmount | null;
   isMax: boolean;
   isSufficientBalance: boolean;
   nativeAmount: string | null;
+  slippage: Numberish | null;
+  tradeDetails: Trade | null;
   outputAmount: SwapAmount | null;
-  outputCurrency: Asset | null;
+  outputCurrency: UniswapCurrency | null;
 }
 
 // -- Constants --------------------------------------- //
 const SWAP_UPDATE_IS_MAX = 'swap/SWAP_UPDATE_IS_MAX';
 const SWAP_UPDATE_IS_SUFFICIENT_BALANCE =
   'swap/SWAP_UPDATE_IS_SUFFICIENT_BALANCE';
+const SWAP_UPDATE_SLIPPAGE = 'swap/SWAP_UPDATE_SLIPPAGE';
+const SWAP_UPDATE_EXTRA_TRADE_DETAILS = 'swap/SWAP_UPDATE_EXTRA_TRADE_DETAILS';
+const SWAP_UPDATE_TRADE_DETAILS = 'swap/SWAP_UPDATE_TRADE_DETAILS';
 const SWAP_UPDATE_NATIVE_AMOUNT = 'swap/SWAP_UPDATE_NATIVE_AMOUNT';
 const SWAP_UPDATE_INPUT_AMOUNT = 'swap/SWAP_UPDATE_INPUT_AMOUNT';
 const SWAP_UPDATE_OUTPUT_AMOUNT = 'swap/SWAP_UPDATE_OUTPUT_AMOUNT';
@@ -30,8 +46,26 @@ const SWAP_UPDATE_OUTPUT_CURRENCY = 'swap/SWAP_UPDATE_OUTPUT_CURRENCY';
 const SWAP_CLEAR_STATE = 'swap/SWAP_CLEAR_STATE';
 
 // -- Actions ---------------------------------------- //
+export const updateSwapExtraDetails = (extraDetails: ExtraTradeDetails) => (
+  dispatch: AppDispatch
+) => {
+  dispatch({ payload: extraDetails, type: SWAP_UPDATE_EXTRA_TRADE_DETAILS });
+};
+
+export const updateSwapTradeDetails = (tradeDetails: Trade) => (
+  dispatch: AppDispatch
+) => {
+  dispatch({ payload: tradeDetails, type: SWAP_UPDATE_TRADE_DETAILS });
+};
+
 export const updateIsMax = (isMax: boolean) => (dispatch: AppDispatch) => {
   dispatch({ payload: isMax, type: SWAP_UPDATE_IS_MAX });
+};
+
+export const updateSlippage = (slippage: Numberish) => (
+  dispatch: AppDispatch
+) => {
+  dispatch({ payload: slippage, type: SWAP_UPDATE_SLIPPAGE });
 };
 
 export const updateIsSufficientBalance = (isSufficientBalance: boolean) => (
@@ -79,15 +113,15 @@ export const updateSwapOutputAmount = (
   });
 };
 
-export const updateSwapInputCurrency = (newInputCurrency: Asset) => (
+export const updateSwapInputCurrency = (newInputCurrency: UniswapCurrency) => (
   dispatch: AppDispatch
 ) => {
   dispatch({ payload: newInputCurrency, type: SWAP_UPDATE_INPUT_CURRENCY });
 };
 
-export const updateSwapOutputCurrency = (newOutputCurrency: Asset) => (
-  dispatch: AppDispatch
-) => {
+export const updateSwapOutputCurrency = (
+  newOutputCurrency: UniswapCurrency
+) => (dispatch: AppDispatch) => {
   dispatch({ payload: newOutputCurrency, type: SWAP_UPDATE_OUTPUT_CURRENCY });
 };
 
@@ -97,6 +131,7 @@ export const swapClearState = () => (dispatch: AppDispatch) => {
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE: SwapState = {
+  extraTradeDetails: {},
   inputAmount: null,
   inputAsExactAmount: true,
   inputCurrency: null,
@@ -105,6 +140,8 @@ const INITIAL_STATE: SwapState = {
   nativeAmount: null,
   outputAmount: null,
   outputCurrency: null,
+  slippage: null,
+  tradeDetails: null,
 };
 
 export default (state = INITIAL_STATE, action: AnyAction) => {
@@ -113,6 +150,21 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
       return {
         ...state,
         isMax: action.payload,
+      };
+    case SWAP_UPDATE_SLIPPAGE:
+      return {
+        ...state,
+        slippage: action.payload,
+      };
+    case SWAP_UPDATE_EXTRA_TRADE_DETAILS:
+      return {
+        ...state,
+        extraTradeDetails: action.payload,
+      };
+    case SWAP_UPDATE_TRADE_DETAILS:
+      return {
+        ...state,
+        tradeDetails: action.payload,
       };
     case SWAP_UPDATE_IS_SUFFICIENT_BALANCE:
       return {
