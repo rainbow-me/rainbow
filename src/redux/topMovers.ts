@@ -108,17 +108,31 @@ export const updateTopMovers = (message: ZerionAssetInfoResponse) => (
   dispatch(emitChartsRequest(assetCodes));
 
   if (orderByDirection === 'asc') {
+    // If it's less than 5 better not to show anything lol
+    const fixedLoosers = info
+      .filter(
+        ({ price: { relative_change_24h } }) =>
+          typeof relative_change_24h === 'number' && relative_change_24h < 0
+      )
+      .filter((_, __, arr) => arr.length > 4);
+
     dispatch({
-      payload: info,
+      payload: fixedLoosers,
       type: TOP_MOVERS_UPDATE_LOSERS,
     });
-    saveTopLosers(info);
+    saveTopLosers(fixedLoosers);
   } else {
+    const fixedGainers = info
+      .filter(
+        ({ price: { relative_change_24h } }) =>
+          typeof relative_change_24h === 'number' && relative_change_24h < 0
+      )
+      .filter((_, __, arr) => arr.length > 4);
     dispatch({
-      payload: info,
+      payload: fixedGainers,
       type: TOP_MOVERS_UPDATE_GAINERS,
     });
-    saveTopGainers(info);
+    saveTopGainers(fixedGainers);
   }
 };
 
