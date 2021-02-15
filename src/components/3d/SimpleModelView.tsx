@@ -134,7 +134,7 @@ export default function ModelViewer({
         style={styles.flex}
       />
       <Animated.View
-        pointerEvents={loading ? 'none' : 'auto'}
+        pointerEvents={loading ? 'auto' : 'none'}
         style={[StyleSheet.absoluteFill, styles.bottomRight, { opacity }]}
       >
         <ImgixImage source={fallbackSource} style={StyleSheet.absoluteFill} />
