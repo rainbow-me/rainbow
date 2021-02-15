@@ -89,6 +89,8 @@ export const topMoversLoadState = () => async (dispatch: AppDispatch) => {
   }
 };
 
+const MIN_MOVERS = 5;
+
 export const updateTopMovers = (message: ZerionAssetInfoResponse) => (
   dispatch: AppDispatch,
   getState: AppGetState
@@ -109,30 +111,30 @@ export const updateTopMovers = (message: ZerionAssetInfoResponse) => (
 
   if (orderByDirection === 'asc') {
     // If it's less than 5 better not to show anything lol
-    const fixedLoosers = info
-      .filter(
-        ({ price: { relative_change_24h } }) =>
-          typeof relative_change_24h === 'number' && relative_change_24h < 0
-      )
-      .filter((_, __, arr) => arr.length > 4);
+    const fixedLosers = info.filter(
+      ({ price: { relative_change_24h } }) =>
+        typeof relative_change_24h === 'number' && relative_change_24h < 0
+    );
 
-    dispatch({
-      payload: fixedLoosers,
-      type: TOP_MOVERS_UPDATE_LOSERS,
-    });
-    saveTopLosers(fixedLoosers);
+    if (fixedLosers.length >= MIN_MOVERS) {
+      dispatch({
+        payload: fixedLosers,
+        type: TOP_MOVERS_UPDATE_LOSERS,
+      });
+      saveTopLosers(fixedLosers);
+    }
   } else {
-    const fixedGainers = info
-      .filter(
-        ({ price: { relative_change_24h } }) =>
-          typeof relative_change_24h === 'number' && relative_change_24h < 0
-      )
-      .filter((_, __, arr) => arr.length > 4);
-    dispatch({
-      payload: fixedGainers,
-      type: TOP_MOVERS_UPDATE_GAINERS,
-    });
-    saveTopGainers(fixedGainers);
+    const fixedGainers = info.filter(
+      ({ price: { relative_change_24h } }) =>
+        typeof relative_change_24h === 'number' && relative_change_24h < 0
+    );
+    if (fixedGainers.length >= MIN_MOVERS) {
+      dispatch({
+        payload: fixedGainers,
+        type: TOP_MOVERS_UPDATE_GAINERS,
+      });
+      saveTopGainers(fixedGainers);
+    }
   }
 };
 
