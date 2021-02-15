@@ -26,7 +26,7 @@ import {
   convertAmountFromNativeValue,
   formatInputDecimals,
 } from '../helpers/utilities';
-import { checkIsValidAddressOrENS } from '../helpers/validators';
+import { checkIsValidAddressOrDomain } from '../helpers/validators';
 import { sendTransaction } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import {
@@ -453,7 +453,7 @@ export default function SendSheet(props) {
   }, [recipient, recipientOverride]);
 
   const checkAddress = useCallback(async () => {
-    const validAddress = await checkIsValidAddressOrENS(recipient);
+    const validAddress = await checkIsValidAddressOrDomain(recipient);
     setIsValidAddress(validAddress);
   }, [recipient]);
 
