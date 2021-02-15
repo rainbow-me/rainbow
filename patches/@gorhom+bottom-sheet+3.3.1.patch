@@ -17,22 +17,20 @@ index db85178..ac4f657 100644
 +++ b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/constants.ts
 @@ -1,5 +1,5 @@
  import { Platform } from 'react-native';
--import Animated from 'react-native-reanimated';
+-import Animated, { Easing } from 'react-native-reanimated';
 +import Animated, { NewEasing as Easing } from 'react-native-reanimated';
+ import { exp } from '../../utilities/easingExp';
+ 
+ const DEFAULT_ANIMATION_EASING: Animated.EasingFunction = Easing.out(exp);
 diff --git a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheetBackdrop/BottomSheetBackdrop.tsx b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheetBackdrop/BottomSheetBackdrop.tsx
 index bc12211..02c06a7 100644
 --- a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheetBackdrop/BottomSheetBackdrop.tsx
 +++ b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheetBackdrop/BottomSheetBackdrop.tsx
-@@ +1,6 @@
-import React, { memo, useMemo } from 'react';
-import Animated, {
-and,
-call,
-cond,
-eq,
-Extrapolate,
+@@ -1,6 +1,6 @@
+ import React, { memo, useMemo } from 'react';
+ import Animated, {
+-  interpolate,
 +  newInterpolate as interpolate,
-neq,
-not,
-set,
-} from 'react-native-reanimated';
+   Extrapolate,
+   useAnimatedStyle,
+   useAnimatedProps,
