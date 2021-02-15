@@ -106,6 +106,7 @@ export default forwardRef(function DiscoverSearchContainer(
             onBlur={() => setIsInputFocused(false)}
             onChangeText={setSearchQuery}
             onFocus={() => {
+              upperContext.jumpToLong?.();
               onTapSearch();
               setIsInputFocused(true);
             }}
