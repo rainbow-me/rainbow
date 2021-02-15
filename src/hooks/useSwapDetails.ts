@@ -1,3 +1,4 @@
+import { Trade } from '@uniswap/sdk';
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import useAccountAssets from './useAccountAssets';
@@ -29,7 +30,7 @@ export default function useSwapDetails() {
   const { nativeCurrency } = useAccountSettings();
 
   const updateTradeDetails = useCallback(
-    newTradeDetails => {
+    (newTradeDetails: Trade) => {
       dispatch(updateSwapTradeDetails(newTradeDetails));
     },
     [dispatch]

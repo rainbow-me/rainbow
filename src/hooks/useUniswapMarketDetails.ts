@@ -2,7 +2,6 @@ import { isEmpty } from 'lodash';
 import { RefObject, useCallback, useEffect, useMemo, useState } from 'react';
 import { TextInput } from 'react-native';
 import useAccountSettings from './useAccountSettings';
-import useSlippageDetails from './useSlippageDetails';
 import useSwapDetails from './useSwapDetails';
 import useSwapInputOutputTokens from './useSwapInputOutputTokens';
 import useSwapInputValues from './useSwapInputValues';
@@ -57,7 +56,6 @@ export default function useUniswapMarketDetails({
     updateExtraTradeDetails,
     updateTradeDetails: updateSwapTradeDetails,
   } = useSwapDetails();
-  const { updateSlippage } = useSlippageDetails();
 
   const [isSufficientLiquidity, setIsSufficientLiquidity] = useState(true);
   const { chainId } = useAccountSettings();
@@ -100,7 +98,9 @@ export default function useUniswapMarketDetails({
     const hasInsufficientLiquidity =
       doneLoadingResults && (isEmpty(allPairs) || !newTradeDetails);
     setIsSufficientLiquidity(!hasInsufficientLiquidity);
-    updateSwapTradeDetails(newTradeDetails);
+    if (newTradeDetails) {
+      updateSwapTradeDetails(newTradeDetails);
+    }
   }, [
     doneLoadingResults,
     allPairs,
@@ -244,12 +244,6 @@ export default function useUniswapMarketDetails({
     if (swapNotNeeded || isMissingCurrency || !tradeDetails) return;
     updateExtraTradeDetails();
   }, [isMissingCurrency, swapNotNeeded, tradeDetails, updateExtraTradeDetails]);
-
-  useEffect(() => {
-    // update slippage
-    if (swapNotNeeded || isMissingCurrency) return;
-    updateSlippage();
-  }, [isMissingCurrency, swapNotNeeded, updateSlippage]);
 
   return {
     isSufficientLiquidity,
