@@ -1,5 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
+import { captureMessage } from '@sentry/react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Keyboard } from 'react-native';
@@ -17,6 +18,7 @@ import {
   cloudBackupPasswordMinLength,
   isCloudBackupPasswordValid,
 } from '@rainbow-me/handlers/cloudBackup';
+import showWalletErrorAlert from '@rainbow-me/helpers/support';
 import {
   useDimensions,
   useMagicAutofocus,
@@ -76,9 +78,10 @@ const samsungGalaxy = (android && isSamsungGalaxy()) || false;
 export default function BackupCloudStep() {
   const { isTallPhone, isTinyPhone } = useDimensions();
   const currentlyFocusedInput = useRef();
+  const { goBack } = useNavigation();
   const { params } = useRoute();
   const walletCloudBackup = useWalletCloudBackup();
-  const { selectedWallet, setIsWalletLoading } = useWallets();
+  const { selectedWallet, setIsWalletLoading, isDamaged } = useWallets();
   const [validPassword, setValidPassword] = useState(false);
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(true);
@@ -95,18 +98,22 @@ export default function BackupCloudStep() {
     };
     Keyboard.addListener('keyboardDidShow', keyboardDidShow);
     Keyboard.addListener('keyboardDidHide', keyboardDidHide);
+    if (isDamaged) {
+      showWalletErrorAlert();
+      captureMessage('Damaged wallet preventing cloud backup');
+      goBack();
+    }
     return () => {
       Keyboard.removeListener('keyboardDidShow', keyboardDidShow);
       Keyboard.removeListener('keyboardDidHide', keyboardDidHide);
     };
-  }, []);
+  }, [goBack, isDamaged]);
 
   const isSettingsRoute = useRouteExistsInNavigationState(
     Routes.SETTINGS_MODAL
   );
 
   const walletId = params?.walletId || selectedWallet.id;
-  const { goBack } = useNavigation();
 
   const [label, setLabel] = useState(
     !validPassword ? `􀙶 Add to ${cloudPlatform} Backup` : '􀎽 Confirm Backup'
