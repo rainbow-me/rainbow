@@ -5,7 +5,12 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { LayoutAnimation, NativeModules, StatusBar } from 'react-native';
+import {
+  LayoutAnimation,
+  NativeModules,
+  StatusBar,
+  useColorScheme,
+} from 'react-native';
 import { useDarkMode } from 'react-native-dark-mode';
 import { ThemeProvider } from 'styled-components';
 import { getTheme, saveTheme } from '../handlers/localstorage/theme';
@@ -26,7 +31,10 @@ export const ThemeContext = createContext({
 
 export const MainThemeProvider = props => {
   const [colorScheme, setColorScheme] = useState();
-  const isSystemDarkMode = useDarkMode();
+  // looks like one works on Android and another one on iOS. good.
+  const isSystemDarkModeIOS = useDarkMode();
+  const isSystemDarkModeAndroid = useColorScheme() === 'dark';
+  const isSystemDarkMode = ios ? isSystemDarkModeIOS : isSystemDarkModeAndroid;
 
   const colorSchemeSystemAdjusted =
     colorScheme === THEMES.SYSTEM

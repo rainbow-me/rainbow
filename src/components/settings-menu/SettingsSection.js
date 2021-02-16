@@ -236,7 +236,6 @@ export default function SettingsSection({
           </ListItemArrowGroup>
         </ListItem>
         <ListItem
-          disabled={android}
           icon={
             <SettingIcon
               source={isDarkMode ? DarkModeIconDark : DarkModeIcon}
