@@ -47,7 +47,10 @@ export default function ChartPercentChangeLabel() {
           return (
             (android ? '' : value > 0 ? '↑' : value < 0 ? '↓' : '') +
             ' ' +
-            Math.abs(value).toFixed(2) +
+            Math.abs(value).toLocaleString(undefined, {
+              maximumFractionDigits: 2,
+              minimumFractionDigits: 2,
+            }) +
             '%'
           );
         })();
@@ -69,7 +72,10 @@ export default function ChartPercentChangeLabel() {
               return (
                 (android ? '' : value > 0 ? '↑' : value < 0 ? '↓' : '') +
                 ' ' +
-                Math.abs(value).toFixed(2) +
+                Math.abs(value).toLocaleString(undefined, {
+                  maximumFractionDigits: 2,
+                  minimumFractionDigits: 2,
+                }) +
                 '%'
               );
             })()
