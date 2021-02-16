@@ -241,7 +241,7 @@ export default function SettingsSection({
               source={isDarkMode ? DarkModeIconDark : DarkModeIcon}
             />
           }
-          label="Colors Theme"
+          label="Theme"
           onPress={toggleTheme}
           testID="darkmode-section"
         >
