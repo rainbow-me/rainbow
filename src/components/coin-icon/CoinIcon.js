@@ -12,7 +12,6 @@ export const CoinIconSize = 40;
 
 const StyledCoinIcon = styled(ReactCoinIcon)`
   opacity: ${({ isHidden }) => (isHidden ? 0.4 : 1)};
-  overflow: hidden;
 `;
 
 const CoinIcon = ({

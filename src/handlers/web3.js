@@ -5,6 +5,7 @@ import { isValidMnemonic as ethersIsValidMnemonic } from '@ethersproject/hdnode'
 
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { parseEther } from '@ethersproject/units';
+import UnstoppableResolution from '@unstoppabledomains/resolution';
 import { get, replace, startsWith } from 'lodash';
 import { INFURA_PROJECT_ID, INFURA_PROJECT_ID_DEV } from 'react-native-dotenv';
 import AssetTypes from '../helpers/assetTypes';
@@ -17,6 +18,7 @@ import {
 } from '../helpers/utilities';
 import smartContractMethods from '../references/smartcontract-methods.json';
 import { ethereumUtils } from '../utils';
+import logger from 'logger';
 
 const infuraProjectId = __DEV__ ? INFURA_PROJECT_ID_DEV : INFURA_PROJECT_ID;
 const infuraUrl = `https://network.infura.io/v3/${infuraProjectId}`;
@@ -152,8 +154,30 @@ export const getTxDetails = async transaction => {
   return tx;
 };
 
+export const resolveUnstoppableDomain = async domain => {
+  const resolution = new UnstoppableResolution({
+    blockchain: {
+      cns: {
+        network: 'mainnet',
+        url: replace(infuraUrl, 'network', NetworkTypes.mainnet),
+      },
+    },
+  });
+
+  const res = resolution
+    .addr(domain, 'ETH')
+    .then(address => {
+      return address;
+    })
+    .catch(logger.error);
+  return res;
+};
+
 const resolveNameOrAddress = async nameOrAddress => {
   if (!isHexString(nameOrAddress)) {
+    if (/^([\w-]+\.)+(crypto)$/.test(nameOrAddress)) {
+      return resolveUnstoppableDomain(nameOrAddress);
+    }
     return web3Provider.resolveName(nameOrAddress);
   }
   return nameOrAddress;
