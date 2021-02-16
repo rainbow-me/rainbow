@@ -11,6 +11,8 @@ import { useRatio } from './useRatio';
 import { useChartData } from '@rainbow-me/animated-charts';
 import { fonts, fontWithWidth } from '@rainbow-me/styles';
 
+Animated.addWhitelistedNativeProps({ color: true });
+
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
 const PercentLabel = styled(AnimatedTextInput)`
