@@ -18,6 +18,7 @@ export default function TopMoversSection() {
         ios ? Routes.EXPANDED_ASSET_SHEET : Routes.EXPANDED_ASSET_SCREEN,
         {
           asset,
+          fromDiscover: true,
           longFormHeight: initialChartExpandedStateSheetHeight,
           type: 'token',
         }

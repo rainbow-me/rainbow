@@ -39,12 +39,17 @@ export function onNavigationStateChange(currentState) {
   const prevRouteName = memRouteName;
   memRouteName = routeName;
 
-  if ([prevRouteName, routeName].includes(Routes.QR_SCANNER_SCREEN)) {
-    StatusBar.setBarStyle(
-      routeName === Routes.QR_SCANNER_SCREEN ? 'light-content' : 'dark-content',
-      true
-    );
+  if (routeName === Routes.QR_SCANNER_SCREEN) {
+    StatusBar.setBarStyle('light-content', true);
   }
+
+  if (
+    prevRouteName === Routes.QR_SCANNER_SCREEN &&
+    routeName === Routes.WALLET_SCREEN
+  ) {
+    StatusBar.setBarStyle('dark-content', true);
+  }
+
   if (currentColors.theme === 'dark') {
     StatusBar.setBarStyle('light-content');
   } else {

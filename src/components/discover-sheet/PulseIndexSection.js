@@ -53,6 +53,7 @@ const PulseIndex = () => {
 
     navigate(ios ? Routes.TOKEN_INDEX_SHEET : Routes.TOKEN_INDEX_SCREEN, {
       asset,
+      fromDiscover: true,
       type: 'token_index',
     });
   }, [genericAssets, navigate]);
