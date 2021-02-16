@@ -101,7 +101,7 @@ const ExchangeAssetList = (
   ref
 ) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const { sectionListRef = useRef() } = useContext(DiscoverSheetContext);
+  const { sectionListRef = useRef() } = useContext(DiscoverSheetContext) || {};
   useImperativeHandle(ref, () => sectionListRef.current);
   const prevQuery = usePrevious(query);
 
