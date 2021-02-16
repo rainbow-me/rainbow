@@ -1,5 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
+import { captureMessage } from '@sentry/react-native';
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { InteractionManager, StatusBar } from 'react-native';
@@ -14,6 +15,7 @@ import {
 import { Column } from '../components/layout';
 import { SlackSheet } from '../components/sheet';
 import { cloudPlatform } from '../utils/platform';
+import showWalletErrorAlert from '@rainbow-me/helpers/support';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import {
   useDimensions,
@@ -29,7 +31,7 @@ const onError = error => DelayedAlert({ title: error }, 500);
 const AndroidHeight = 400;
 
 export default function BackupSheet() {
-  const { selectedWallet } = useWallets();
+  const { selectedWallet, isDamaged } = useWallets();
   const { height: deviceHeight } = useDimensions();
   const { goBack, navigate, setParams } = useNavigation();
   const walletCloudBackup = useWalletCloudBackup();
@@ -90,6 +92,13 @@ export default function BackupSheet() {
   }, [goBack, isSettingsRoute]);
 
   const onIcloudBackup = useCallback(() => {
+    if (isDamaged) {
+      showWalletErrorAlert();
+      captureMessage('Damaged wallet preventing cloud backup');
+      goBack();
+      return;
+    }
+
     walletCloudBackup({
       handleNoLatestBackup,
       handlePasswordNotFound,
@@ -98,11 +107,13 @@ export default function BackupSheet() {
       walletId,
     });
   }, [
+    isDamaged,
     walletCloudBackup,
-    walletId,
     handleNoLatestBackup,
     handlePasswordNotFound,
     onSuccess,
+    walletId,
+    goBack,
   ]);
 
   const onManualBackup = useCallback(() => {
