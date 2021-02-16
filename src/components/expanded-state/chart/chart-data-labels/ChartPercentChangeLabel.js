@@ -25,6 +25,20 @@ const PercentLabel = styled(AnimatedTextInput)`
   ${android && `margin-vertical: -19px;`}
 `;
 
+function formatNumber(num) {
+  'worklet';
+  const first = num.split('.');
+  const digits = first[0].split('').reverse();
+  const newDigits = [];
+  for (let i = 0; i < digits.length; i++) {
+    newDigits.push(digits[i]);
+    if ((i + 1) % 3 === 0 && i !== digits.length - 1) {
+      newDigits.push(',');
+    }
+  }
+  return newDigits.reverse().join('') + '.' + first[1];
+}
+
 export default function ChartPercentChangeLabel() {
   const { originalY, data } = useChartData();
   const { colors } = useTheme();
@@ -47,10 +61,7 @@ export default function ChartPercentChangeLabel() {
           return (
             (android ? '' : value > 0 ? '↑' : value < 0 ? '↓' : '') +
             ' ' +
-            Math.abs(value).toLocaleString(undefined, {
-              maximumFractionDigits: 2,
-              minimumFractionDigits: 2,
-            }) +
+            formatNumber(Math.abs(value).toFixed(2)) +
             '%'
           );
         })();
@@ -72,11 +83,7 @@ export default function ChartPercentChangeLabel() {
               return (
                 (android ? '' : value > 0 ? '↑' : value < 0 ? '↓' : '') +
                 ' ' +
-                Math.abs(value).toLocaleString(undefined, {
-                  maximumFractionDigits: 2,
-                  minimumFractionDigits: 2,
-                }) +
-                '%'
+                formatNumber(Math.abs(value).toFixed(2))
               );
             })()
           : '',
