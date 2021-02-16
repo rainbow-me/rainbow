@@ -41,8 +41,6 @@ export const MainThemeProvider = props => {
     );
   }, [colorSchemeSystemAdjusted]);
 
-  //const [isDarkMode, setIsDarkMode] = useState(colorScheme === THEMES.DARK);
-  //const isDarkMode = useDarkMode();
   // Override default with user preferences
   useEffect(() => {
     const loadUserPref = async () => {
