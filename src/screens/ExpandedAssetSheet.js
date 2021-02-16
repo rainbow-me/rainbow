@@ -46,7 +46,9 @@ export default function ExpandedAssetSheet(props) {
       height={params.longFormHeight}
       insets={insets}
     >
-      {ios && !isDarkMode && <StatusBar barStyle="light-content" />}
+      {ios && !isDarkMode && !params.fromDiscover && (
+        <StatusBar barStyle="light-content" />
+      )}
       {ios && <TouchableBackdrop onPress={goBack} />}
       {createElement(ScreenTypes[params.type], {
         asset: selectedAsset,
