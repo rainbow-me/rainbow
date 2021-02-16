@@ -380,7 +380,7 @@ PODS:
     - React
   - react-native-viewpager (4.1.0):
     - React
-  - react-native-webview (10.10.0):
+  - react-native-webview (11.2.3):
     - React-Core
   - React-RCTActionSheet (0.63.3):
     - React-Core/RCTActionSheetHeaders (= 0.63.3)
@@ -442,6 +442,8 @@ PODS:
     - React-Core (= 0.63.3)
     - React-cxxreact (= 0.63.3)
     - React-jsi (= 0.63.3)
+  - ReactNativeDarkMode (0.2.2):
+    - React
   - ReactNativePayments (1.1.5):
     - React
   - reactnativeslackbottomsheet (0.5.0):
@@ -647,6 +649,7 @@ DEPENDENCIES:
   - React-RCTText (from `../node_modules/react-native/Libraries/Text`)
   - React-RCTVibration (from `../node_modules/react-native/Libraries/Vibration`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
+  - ReactNativeDarkMode (from `../node_modules/react-native-dark-mode`)
   - "ReactNativePayments (from `../node_modules/@rainbow-me/react-native-payments/lib/ios`)"
   - reactnativeslackbottomsheet (from `../node_modules/react-native-slack-bottom-sheet`)
   - "RNAnalytics (from `../node_modules/@segment/analytics-react-native`)"
@@ -828,6 +831,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/Libraries/Vibration"
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
+  ReactNativeDarkMode:
+    :path: "../node_modules/react-native-dark-mode"
   ReactNativePayments:
     :path: "../node_modules/@rainbow-me/react-native-payments/lib/ios"
   reactnativeslackbottomsheet:
@@ -973,7 +978,7 @@ SPEC CHECKSUMS:
   react-native-udp: 96a517e5a121cfe69f4b05eeeafefe00c623debf
   react-native-version-number: b415bbec6a13f2df62bf978e85bc0d699462f37f
   react-native-viewpager: 6f8c102e8081d70259252b254143b4193a9fb4cb
-  react-native-webview: 73e409ecc987c189772bda27ba7f0e2f3dcd2e81
+  react-native-webview: 6520e3e7b4933de76b95ef542c8d7115cf45b68e
   React-RCTActionSheet: 53ea72699698b0b47a6421cb1c8b4ab215a774aa
   React-RCTAnimation: 1befece0b5183c22ae01b966f5583f42e69a83c2
   React-RCTBlob: 0b284339cbe4b15705a05e2313a51c6d8b51fa40
@@ -984,6 +989,7 @@ SPEC CHECKSUMS:
   React-RCTText: 65a6de06a7389098ce24340d1d3556015c38f746
   React-RCTVibration: 8e9fb25724a0805107fc1acc9075e26f814df454
   ReactCommon: 4167844018c9ed375cc01a843e9ee564399e53c3
+  ReactNativeDarkMode: 0178ffca3b10f6a7c9f49d6f9810232b328fa949
   ReactNativePayments: 40a266450628c05db440fe219b631210e4358a49
   reactnativeslackbottomsheet: d44b4c59c1e69c045983044d2f361d256d3ddb98
   RNAnalytics: 589e1b1072d9df2646899627e4582d20c3255127
