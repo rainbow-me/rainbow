@@ -126,7 +126,7 @@ export const updateTopMovers = (message: ZerionAssetInfoResponse) => (
   } else {
     const fixedGainers = info.filter(
       ({ price: { relative_change_24h } }) =>
-        typeof relative_change_24h === 'number' && relative_change_24h < 0
+        typeof relative_change_24h === 'number' && relative_change_24h > 0
     );
     if (fixedGainers.length >= MIN_MOVERS) {
       dispatch({
