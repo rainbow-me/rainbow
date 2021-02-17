@@ -4,7 +4,17 @@ import { captureException } from '@sentry/react-native';
 import { Trade } from '@uniswap/sdk';
 import { join, map } from 'lodash';
 import { depositCompound, swap, unlock, withdrawCompound } from './actions';
+import {
+  createSwapAndDepositCompoundRap,
+  estimateSwapAndDepositCompound,
+} from './swapAndDepositCompound';
+import { createUnlockAndSwapRap, estimateUnlockAndSwap } from './unlockAndSwap';
+import {
+  createWithdrawFromCompoundRap,
+  estimateWithdrawFromCompound,
+} from './withdrawFromCompound';
 import { Asset, SelectedGasPrice } from '@rainbow-me/entities';
+import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
 
 import logger from 'logger';
 
@@ -78,7 +88,7 @@ export interface Rap {
   actions: RapAction[];
   completedAt: string | null;
   id: string;
-  startedAt: string;
+  startedAt: number;
 }
 
 const NOOP = () => {};
@@ -88,6 +98,30 @@ export const RapActionTypes = {
   swap: 'swap' as RapActionType,
   unlock: 'unlock' as RapActionType,
   withdrawCompound: 'withdrawCompound' as RapActionType,
+};
+
+const createRapByType = (type: string) => {
+  switch (type) {
+    case ExchangeModalTypes.deposit:
+      return createSwapAndDepositCompoundRap();
+    case ExchangeModalTypes.withdrawal:
+      return createWithdrawFromCompoundRap();
+    default:
+      return createUnlockAndSwapRap();
+  }
+};
+
+export const findRapEstimationByType = (type: string) => {
+  switch (type) {
+    case ExchangeModalTypes.deposit:
+      return estimateSwapAndDepositCompound;
+    case ExchangeModalTypes.swap:
+      return estimateUnlockAndSwap;
+    case ExchangeModalTypes.withdrawal:
+      return estimateWithdrawFromCompound;
+    default:
+      return NOOP;
+  }
 };
 
 const findActionByType = (type: RapActionType) => {
@@ -110,7 +144,8 @@ const getRapFullName = (actions: RapAction[]) => {
   return join(actionTypes, ' + ');
 };
 
-export const executeRap = async (wallet: Wallet, rap: Rap) => {
+export const executeRap = async (wallet: Wallet, type: string) => {
+  const rap: Rap = await createRapByType(type);
   const { actions } = rap;
   const rapName = getRapFullName(actions);
 
