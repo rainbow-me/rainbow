@@ -20,7 +20,7 @@ import { toChecksumAddress } from '@rainbow-me/handlers/web3';
 import { useChartThrottledPoints } from '@rainbow-me/hooks';
 import { magicMemo } from '@rainbow-me/utils';
 
-const heightWithoutChart = 373 - (android ? getSoftMenuBarHeight() : 0);
+const heightWithoutChart = 373 + (android ? 20 - getSoftMenuBarHeight() : 0);
 const heightWithChart = heightWithoutChart + 297;
 
 export const initialLiquidityPoolExpandedStateSheetHeight = heightWithChart;

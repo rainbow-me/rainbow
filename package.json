@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.2.51",
+  "version": "1.2.52",
   "private": true,
   "scripts": {
     "android": "adb uninstall me.rainbow || true && react-native run-android",
@@ -156,7 +156,7 @@
     "react-native-device-info": "5.3.1",
     "react-native-dotenv": "^2.4.2",
     "react-native-dynamic": "^1.0.0",
-    "react-native-extra-dimensions-android": "^1.2.5",
+    "react-native-extra-dimensions-android": "1.2.2",
     "react-native-fast-image": "^8.1.5",
     "react-native-fs": "^2.16.6",
     "react-native-gesture-handler": "1.7.0",
