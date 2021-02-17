@@ -12,12 +12,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
-## [1.2.50](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.48)
+## [1.2.51](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.51)
+### Added
+* System support for Dark Mode
+* Unstoppable Domains Support
+
+## [1.2.50](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.50)
 ### Added
 * Dark Mode Support for iOS 12
 
 
-## [1.2.49](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.48)
+## [1.2.49](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.49)
 ### Added
 * Dark Mode
 * High Quality NFT Images
