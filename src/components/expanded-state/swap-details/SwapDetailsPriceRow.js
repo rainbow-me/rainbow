@@ -8,7 +8,8 @@ import {
 } from '@rainbow-me/hooks';
 
 export default function SwapDetailsPriceRow(props) {
-  const { inputExecutionRate, outputExecutionRate } = useSwapDetails();
+  const { extraTradeDetails } = useSwapDetails();
+  const { inputExecutionRate, outputExecutionRate } = extraTradeDetails;
 
   const { inputCurrency, outputCurrency } = useSwapInputOutputTokens();
 
