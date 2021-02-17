@@ -6,7 +6,13 @@ import {
   useNavigationBuilder,
 } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import { Dimensions, Platform, StyleSheet, View } from 'react-native';
+import {
+  Dimensions,
+  Platform,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
 
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 
@@ -67,6 +73,15 @@ function Route({ descriptor: { options, render }, onDismiss, removing }) {
       ref={ref}
       snapPoints={enhancedSpanPoints}
     >
+      <TouchableWithoutFeedback onPress={() => ref.current.close()}>
+        <View
+          style={{
+            height: '100%',
+            position: 'absolute',
+            width: '100%',
+          }}
+        />
+      </TouchableWithoutFeedback>
       <View
         style={{
           bottom: 0,
