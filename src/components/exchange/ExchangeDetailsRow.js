@@ -9,16 +9,16 @@ import Animated, {
 import styled from 'styled-components';
 import { Centered, Row } from '../layout';
 import ExchangeDetailsButton from './ExchangeDetailsButton';
-import SlippageWarning from './SlippageWarning';
+import PriceImpactWarning from './PriceImpactWarning';
 import {
   usePrevious,
-  useSlippageDetails,
+  usePriceImpactDetails,
   useSwapInputOutputTokens,
   useSwapInputValues,
 } from '@rainbow-me/hooks';
 import { padding, position } from '@rainbow-me/styles';
 
-const defaultSlippageScale = 1.15;
+const defaultPriceImpactScale = 1.15;
 const timingConfig = {
   duration: 200,
   easing: NewEasing.bezier(0.76, 0, 0.24, 1),
@@ -50,18 +50,18 @@ export default function ExchangeDetailsRow({
   ...props
 }) {
   const detailsRowOpacity = useSharedValue(1);
-  const slippageOpacity = useSharedValue(0);
-  const slippageScale = useSharedValue(defaultSlippageScale);
+  const priceImpactOpacity = useSharedValue(0);
+  const priceImpactScale = useSharedValue(defaultPriceImpactScale);
   const { outputCurrency } = useSwapInputOutputTokens();
-  const { isHighSlippage, slippage } = useSlippageDetails();
+  const { isHighPriceImpact, percentDisplay } = usePriceImpactDetails();
 
   const detailsRowStyles = useAnimatedStyle(() => ({
     opacity: detailsRowOpacity.value,
   }));
 
-  const slippageStyles = useAnimatedStyle(() => ({
-    opacity: slippageOpacity.value,
-    transform: [{ scale: slippageScale.value }],
+  const priceImpactStyles = useAnimatedStyle(() => ({
+    opacity: priceImpactOpacity.value,
+    transform: [{ scale: priceImpactScale.value }],
   }));
 
   const {
@@ -70,54 +70,58 @@ export default function ExchangeDetailsRow({
     outputAmount,
   } = useSwapInputValues();
 
-  const isSlippageWarningVisible =
-    isSufficientBalance && !!inputAmount && !!outputAmount && isHighSlippage;
-  const prevIsSlippageWarningVisible = usePrevious(isSlippageWarningVisible);
+  const isPriceImpactWarningVisible =
+    isSufficientBalance && !!inputAmount && !!outputAmount && isHighPriceImpact;
+  const prevIsPriceImpactWarningVisible = usePrevious(
+    isPriceImpactWarningVisible
+  );
   useEffect(() => {
-    if (isSlippageWarningVisible && !prevIsSlippageWarningVisible) {
-      analytics.track('Showing high slippage warning in Swap', {
+    if (isPriceImpactWarningVisible && !prevIsPriceImpactWarningVisible) {
+      analytics.track('Showing high price impact warning in Swap', {
         name: outputCurrency.name,
-        slippage,
+        priceImpact: percentDisplay,
         symbol: outputCurrency.symbol,
         tokenAddress: outputCurrency.address,
         type,
       });
     }
   }, [
-    isSlippageWarningVisible,
+    isPriceImpactWarningVisible,
     outputCurrency,
-    prevIsSlippageWarningVisible,
-    slippage,
+    prevIsPriceImpactWarningVisible,
+    percentDisplay,
     type,
   ]);
 
   useEffect(() => {
-    if (isSlippageWarningVisible) {
+    if (isPriceImpactWarningVisible) {
       detailsRowOpacity.value = withTiming(0, timingConfig);
-      slippageOpacity.value = withTiming(1, timingConfig);
-      slippageScale.value = withTiming(1, timingConfig);
+      priceImpactOpacity.value = withTiming(1, timingConfig);
+      priceImpactScale.value = withTiming(1, timingConfig);
     } else {
       detailsRowOpacity.value = withTiming(1, timingConfig);
-      slippageOpacity.value = withTiming(0, timingConfig);
-      slippageScale.value = withTiming(defaultSlippageScale, timingConfig);
+      priceImpactOpacity.value = withTiming(0, timingConfig);
+      priceImpactScale.value = withTiming(
+        defaultPriceImpactScale,
+        timingConfig
+      );
     }
   }, [
     detailsRowOpacity,
-    isSlippageWarningVisible,
-    slippageOpacity,
-    slippageScale,
+    isPriceImpactWarningVisible,
+    priceImpactOpacity,
+    priceImpactScale,
   ]);
 
   return (
     <Container {...props}>
-      <SlippageWarning
+      <PriceImpactWarning
         onPress={onPressViewDetails}
-        pointerEvents={isSlippageWarningVisible ? 'auto' : 'none'}
-        slippage={slippage}
-        style={slippageStyles}
+        pointerEvents={isPriceImpactWarningVisible ? 'auto' : 'none'}
+        style={priceImpactStyles}
       />
       <AnimatedExchangeDetailsButtonRow
-        pointerEvents={isSlippageWarningVisible ? 'none' : 'auto'}
+        pointerEvents={isPriceImpactWarningVisible ? 'none' : 'auto'}
         style={detailsRowStyles}
       >
         <ExchangeDetailsButton onPress={onFlipCurrencies}>

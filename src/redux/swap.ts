@@ -24,6 +24,8 @@ interface SwapState {
   inputAmount: SwapAmount | null;
   isMax: boolean;
   isSufficientBalance: boolean;
+  maximumAmountIn?: string;
+  minimumAmountOut?: string;
   nativeAmount: string | null;
   slippage: Numberish | null;
   tradeDetails: Trade | null;
@@ -54,10 +56,18 @@ export const updateSwapExtraDetails = (extraDetails: ExtraTradeDetails) => (
 export const updateSwapTradeDetails = (tradeDetails: Trade) => (
   dispatch: AppDispatch
 ) => {
-  const slippage = Number(tradeDetails.priceImpact.toFixed(2).toString()) * 100;
+  const priceImpact = tradeDetails.priceImpact;
+  const minimumAmountOut = tradeDetails.minimumAmountOut(priceImpact).toExact();
+  const maximumAmountIn = tradeDetails.maximumAmountIn(priceImpact).toExact();
+  const slippage = Number(priceImpact.toFixed(2).toString()) * 100;
 
   dispatch({
-    payload: { slippage, tradeDetails },
+    payload: {
+      maximumAmountIn,
+      minimumAmountOut,
+      slippage,
+      tradeDetails,
+    },
     type: SWAP_UPDATE_TRADE_DETAILS,
   });
 };
@@ -157,6 +167,8 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
     case SWAP_UPDATE_TRADE_DETAILS:
       return {
         ...state,
+        maximumAmountIn: action.payload.maximumAmountIn,
+        minimumAmountOut: action.payload.minimumAmountOut,
         slippage: action.payload.slippage,
         tradeDetails: action.payload.tradeDetails,
       };

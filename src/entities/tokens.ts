@@ -36,9 +36,6 @@ export interface UniswapCurrency extends ParsedAddressAsset {
       amount?: string;
     };
   };
-  price?: {
-    value?: string;
-  };
 }
 
 export interface RainbowToken extends Asset {

@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import Divider from '../../Divider';
 import { Centered, Column, ColumnWithMargins, Row } from '../../layout';
 import { Emoji, Text } from '../../text';
-import { useSlippageDetails } from '@rainbow-me/hooks';
+import { usePriceImpactDetails } from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
 
 const Container = styled(ColumnWithMargins).attrs({
@@ -28,15 +28,19 @@ const Message = styled(Text).attrs(({ theme: { colors } }) => ({
 export default function SwapDetailsSlippageMessage(props) {
   const { colors } = useTheme();
 
-  const { color, isHighSlippage, slippageNativeAmount } = useSlippageDetails();
+  const {
+    color,
+    isHighPriceImpact,
+    priceImpactNativeAmount,
+  } = usePriceImpactDetails();
 
-  return isHighSlippage ? (
+  return isHighPriceImpact ? (
     <Column align="center" {...props}>
       <Container>
         <Row align="center">
           <Heading color={color}>{`Losing `}</Heading>
           <Heading color={color} letterSpacing="roundedTight" weight="heavy">
-            {slippageNativeAmount}
+            {priceImpactNativeAmount}
           </Heading>
           <Heading color={color}>{` to slippage `}</Heading>
           <Emoji size="larger">🥵</Emoji>

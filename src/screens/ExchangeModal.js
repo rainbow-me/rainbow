@@ -31,7 +31,7 @@ import {
   useGas,
   useMaxInputBalance,
   usePrevious,
-  useSlippageDetails,
+  usePriceImpactDetails,
   useSwapDetails,
   useSwapInputOutputTokens,
   useSwapInputRefs,
@@ -109,7 +109,7 @@ export default function ExchangeModal({
     areTradeDetailsValid,
     tradeDetails, // TODO JIN - raps
   } = useSwapDetails();
-  const { isHighSlippage, slippage } = useSlippageDetails(); // TODO JIN
+  const { isHighPriceImpact, percentDisplay } = usePriceImpactDetails();
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
 
@@ -360,9 +360,9 @@ export default function ExchangeModal({
     backgroundTask.execute(async () => {
       analytics.track(`Submitted ${type}`, {
         defaultInputAsset: defaultInputAsset?.symbol ?? '',
-        isHighSlippage,
+        isHighPriceImpact,
         name: outputCurrency?.name ?? '',
-        slippage,
+        priceImpact: percentDisplay,
         symbol: outputCurrency?.symbol || '',
         tokenAddress: outputCurrency?.address || '',
         type,
@@ -413,14 +413,14 @@ export default function ExchangeModal({
     inputAmount,
     inputCurrency,
     isMax,
-    isHighSlippage,
+    isHighPriceImpact,
     isWithdrawal,
     navigate,
     outputAmount,
     outputCurrency,
+    percentDisplay,
     selectedGasPrice,
     setParams,
-    slippage,
     tradeDetails,
     type,
   ]);

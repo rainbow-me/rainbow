@@ -11,7 +11,7 @@ import {
 import {
   useAccountSettings,
   useColorForAsset,
-  useSlippageDetails,
+  usePriceImpactDetails,
 } from '@rainbow-me/hooks';
 import { position } from '@rainbow-me/styles';
 
@@ -66,7 +66,10 @@ export default function CurrencyTile({
   const { address, symbol } = asset;
   const { nativeCurrency } = useAccountSettings();
   const colorForAsset = useColorForAsset(asset);
-  const { color: slippageColor, isHighSlippage } = useSlippageDetails();
+  const {
+    color: priceImpactColor,
+    isHighPriceImpact,
+  } = usePriceImpactDetails();
 
   const { amountDisplay, priceDisplay } = useMemo(() => {
     const data = [amount, priceValue || 0];
@@ -87,8 +90,8 @@ export default function CurrencyTile({
         <ColumnWithMargins centered margin={4} paddingHorizontal={8}>
           <NativePriceText>
             {priceDisplay}
-            {isHighSlippage && (
-              <NativePriceText color={slippageColor}>{` 􀇿`}</NativePriceText>
+            {isHighPriceImpact && (
+              <NativePriceText color={priceImpactColor}>{` 􀇿`}</NativePriceText>
             )}
           </NativePriceText>
           <Row align="center">

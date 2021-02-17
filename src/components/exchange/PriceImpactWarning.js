@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import { useSlippageDetails } from '@rainbow-me/hooks';
+import { usePriceImpactDetails } from '@rainbow-me/hooks';
 import { padding, position } from '@rainbow-me/styles';
 
 const AnimatedButtonPressAnimation = Animated.createAnimatedComponent(
@@ -27,8 +27,8 @@ const Label = styled(Text).attrs(
   })
 )``;
 
-export default function SlippageWarning({ onPress, ...props }) {
-  const { color, slippageNativeAmount } = useSlippageDetails();
+export default function PriceImpactWarning({ onPress, ...props }) {
+  const { color, priceImpactNativeAmount } = usePriceImpactDetails();
 
   return (
     <AnimatedButtonPressAnimation
@@ -42,7 +42,7 @@ export default function SlippageWarning({ onPress, ...props }) {
         <Label>Small Market</Label>
         <Label color={color}>{` • Losing `}</Label>
         <Label color={color} letterSpacing="roundedTight">
-          {slippageNativeAmount}
+          {priceImpactNativeAmount}
         </Label>
       </Container>
     </AnimatedButtonPressAnimation>

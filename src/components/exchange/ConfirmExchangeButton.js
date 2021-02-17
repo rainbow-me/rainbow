@@ -9,7 +9,7 @@ import { ExchangeModalTypes } from '@rainbow-me/helpers';
 import {
   useColorForAsset,
   useGas,
-  useSlippageDetails,
+  usePriceImpactDetails,
   useSwapInputOutputTokens,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
@@ -42,10 +42,10 @@ export default function ConfirmExchangeButton({
   const { outputCurrency: asset } = useSwapInputOutputTokens();
   const { isSufficientGas } = useGas();
   const { name: routeName } = useRoute();
-  const { isHighSlippage } = useSlippageDetails();
+  const { isHighPriceImpact } = usePriceImpactDetails();
 
   const isSwapDetailsRoute = routeName === Routes.SWAP_DETAILS_SHEET;
-  const shouldOpenSwapDetails = isHighSlippage && !isSwapDetailsRoute;
+  const shouldOpenSwapDetails = isHighPriceImpact && !isSwapDetailsRoute;
 
   const { colors } = useTheme();
 
@@ -90,7 +90,7 @@ export default function ConfirmExchangeButton({
     label = 'Insufficient Liquidity';
   } else if (!isSufficientGas) {
     label = 'Insufficient ETH';
-  } else if (isHighSlippage) {
+  } else if (isHighPriceImpact) {
     label = isSwapDetailsRoute ? 'Swap Anyway' : '􀕹 View Details';
   } else if (disabled) {
     label = 'Enter an Amount';
@@ -122,7 +122,7 @@ export default function ConfirmExchangeButton({
               : shadowsForAsset
             : shadows.default
         }
-        showBiometryIcon={!isDisabled && !isHighSlippage}
+        showBiometryIcon={!isDisabled && !isHighPriceImpact}
         {...props}
       />
     </Container>
