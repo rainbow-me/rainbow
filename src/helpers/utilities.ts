@@ -163,6 +163,18 @@ export const divide = (
   return new BigNumber(numberOne).dividedBy(numberTwo).toFixed();
 };
 
+export const fraction = (
+  target: BigNumberish,
+  numerator: BigNumberish,
+  denominator: BigNumberish
+): string => {
+  if (!(target || numerator || denominator)) return '0';
+  return new BigNumber(target)
+    .times(numerator)
+    .dividedBy(denominator)
+    .toFixed(0);
+};
+
 /**
  * @desc convert to asset amount units from native price value units
  * @param  {String}   value
