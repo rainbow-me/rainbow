@@ -418,13 +418,14 @@ const TransactionConfirmationScreen = () => {
     }
 
     try {
-      // Estimate the tx with gas limit padding before sending
       logger.log('⛽ gas suggested by dapp', {
         gas: convertHexToString(gas),
         gasLimitFromPayload: convertHexToString(gasLimitFromPayload),
       });
 
+      // Estimate the tx with gas limit padding before sending
       const rawGasLimit = await estimateGasWithPadding(txPayload);
+
       // If the estimation with padding is higher or gas limit was missing,
       // let's use the higher value
       if (
