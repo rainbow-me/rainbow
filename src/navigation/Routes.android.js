@@ -187,16 +187,6 @@ function MainNavigator() {
         options={sheetPreset}
       />
       <Stack.Screen
-        component={SavingsSheet}
-        name={Routes.SAVINGS_SHEET}
-        options={bottomSheetPreset}
-      />
-      <Stack.Screen
-        component={AddTokenSheet}
-        name={Routes.ADD_TOKEN_SHEET}
-        options={bottomSheetPreset}
-      />
-      <Stack.Screen
         component={WithdrawModal}
         name={Routes.SAVINGS_WITHDRAW_MODAL}
         options={exchangePreset}
@@ -278,6 +268,24 @@ function BSNavigator() {
         name={Routes.SETTINGS_MODAL}
         options={{
           backgroundColor: 'black',
+          targetOpacity: 0.5,
+        }}
+      />
+      <BSStack.Screen
+        component={AddTokenSheet}
+        name={Routes.ADD_TOKEN_SHEET}
+        options={{
+          backgroundColor: 'black',
+          height: 450,
+          targetOpacity: 0.5,
+        }}
+      />
+      <BSStack.Screen
+        component={SavingsSheet}
+        name={Routes.SAVINGS_SHEET}
+        options={{
+          backgroundColor: 'black',
+          height: 420,
           targetOpacity: 0.5,
         }}
       />
