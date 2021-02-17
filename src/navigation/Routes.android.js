@@ -247,7 +247,7 @@ function MainOuterNavigator() {
         name={Routes.EXPANDED_ASSET_SCREEN}
         options={{
           backgroundColor: 'black',
-          snapPoints: [600],
+          height: 600,
           targetOpacity: 0.5,
         }}
       />

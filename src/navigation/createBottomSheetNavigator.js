@@ -5,15 +5,10 @@ import {
   StackRouter,
   useNavigationBuilder,
 } from '@react-navigation/native';
-
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import { Dimensions, Platform, StyleSheet, View } from 'react-native';
 
-import { Dimensions, Platform, StyleSheet } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
-
-// type Props = DefaultNavigatorOptions<StackNavigationOptions> &
-//     StackRouterOptions &
-//     StackNavigationConfig;
 
 function backgroundComponentFactory({ backgroundColor, targetOpacity }) {
   return function BackgroundComponent({ animatedIndex, animatedPosition }) {
@@ -26,7 +21,6 @@ function backgroundComponentFactory({ backgroundColor, targetOpacity }) {
     );
     return (
       <Animated.View
-        pointerEvents="none"
         style={[{ backgroundColor }, StyleSheet.absoluteFillObject, style]}
       />
     );
@@ -49,6 +43,7 @@ function Route({ descriptor: { options, render }, onDismiss, removing }) {
   const {
     backgroundColor = 'black',
     targetOpacity = 1,
+    height = '100%',
     snapPoints = ['100%'],
   } = options || {};
 
@@ -72,7 +67,16 @@ function Route({ descriptor: { options, render }, onDismiss, removing }) {
       ref={ref}
       snapPoints={enhancedSpanPoints}
     >
-      {render()}
+      <View
+        style={{
+          bottom: 0,
+          height,
+          position: 'absolute',
+          width: '100%',
+        }}
+      >
+        {render()}
+      </View>
     </BottomSheet>
   );
 }
