@@ -118,7 +118,9 @@ export default function UniswapPools() {
   const pairRows = useMemo(() => {
     if (!pairs) return [];
 
-    let sortedPairs = sortBy(pairs, selectedList);
+    let sortedPairs = sortBy(pairs, selectedList).filter(
+      pair => selectedList !== 'profit30d' || pair.profit30d !== undefined
+    );
     if (sortDirection === 'desc') {
       sortedPairs = sortedPairs.reverse();
     }
