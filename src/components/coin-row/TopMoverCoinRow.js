@@ -87,8 +87,10 @@ const TopMoverCoinRow = asset => {
     <ButtonPressAnimation
       hapticType="notificationWarning"
       onCancel={({ nativeEvent: { state, close } }) => {
-        state === 5 && close && handlePress();
-        ReactNativeHapticFeedback.trigger('selection');
+        if (state === 5 && close) {
+          ReactNativeHapticFeedback.trigger('selection');
+          handlePress();
+        }
       }}
       onPress={handlePress}
       onPressCancel={onPressCancel}
