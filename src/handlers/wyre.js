@@ -256,7 +256,7 @@ export const getOrderId = async (
       `${baseUrl}/v3/apple-pay/process/partner`,
       data,
       {
-        validateStatus: function(status) {
+        validateStatus: function (status) {
           // do not throw error so we can get
           // exception ID and message from response
           return status >= 200;

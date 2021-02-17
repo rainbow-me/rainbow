@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { LayoutAnimation } from 'react-native';
 
-export default function(value) {
+export default function (value) {
   const [delayedValue, setValue] = useState(value);
 
   useEffect(() => {

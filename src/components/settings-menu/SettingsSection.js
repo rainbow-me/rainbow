@@ -1,10 +1,11 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import React, { Fragment, useCallback, useMemo } from 'react';
-import { Linking, NativeModules, ScrollView, Share } from 'react-native';
-import styled from 'styled-components/primitives';
+import { Image, Linking, NativeModules, ScrollView, Share } from 'react-native';
+import styled from 'styled-components';
 import { REVIEW_ANDROID } from '../../config/experimental';
 import useExperimentalFlag from '../../config/experimentalHooks';
 //import { supportedLanguages } from '../../languages';
+import { THEMES, useTheme } from '../../context/ThemeContext';
 import AppVersionStamp from '../AppVersionStamp';
 import { Icon } from '../icons';
 import { Column, ColumnWithDividers } from '../layout';
@@ -14,10 +15,15 @@ import {
   ListItemArrowGroup,
   ListItemDivider,
 } from '../list';
-import { Emoji } from '../text';
+import { Emoji, Text } from '../text';
 import BackupIcon from '@rainbow-me/assets/settingsBackup.png';
+import BackupIconDark from '@rainbow-me/assets/settingsBackupDark.png';
 import CurrencyIcon from '@rainbow-me/assets/settingsCurrency.png';
+import CurrencyIconDark from '@rainbow-me/assets/settingsCurrencyDark.png';
+import DarkModeIcon from '@rainbow-me/assets/settingsDarkMode.png';
+import DarkModeIconDark from '@rainbow-me/assets/settingsDarkModeDark.png';
 import NetworkIcon from '@rainbow-me/assets/settingsNetwork.png';
+import NetworkIconDark from '@rainbow-me/assets/settingsNetworkDark.png';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import {
@@ -26,8 +32,7 @@ import {
   useSendFeedback,
   useWallets,
 } from '@rainbow-me/hooks';
-import { ImgixImage } from '@rainbow-me/images';
-import { colors, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 import {
   AppleReviewAddress,
   REVIEW_DONE_KEY,
@@ -46,7 +51,9 @@ export const SettingsExternalURLs = {
 const CheckmarkIcon = styled(Icon).attrs({
   name: 'checkmarkCircled',
 })`
-  box-shadow: 0px 4px 6px ${colors.alpha(colors.blueGreyDark50, 0.4)};
+  box-shadow: 0px 4px 6px
+    ${({ theme: { colors, isDarkMode } }) =>
+      colors.alpha(isDarkMode ? colors.shadow : colors.blueGreyDark50, 0.4)};
 `;
 
 const contentContainerStyle = { flex: 1 };
@@ -55,10 +62,11 @@ const Container = styled(ScrollView).attrs({
   scrollEventThrottle: 32,
 })`
   ${position.cover};
+  background-color: ${({ backgroundColor }) => backgroundColor};
 `;
 
 // ⚠️ Beware: magic numbers lol
-const SettingIcon = styled(ImgixImage)`
+const SettingIcon = styled(Image)`
   ${position.size(60)};
   margin-left: -16;
   margin-right: -11;
@@ -73,13 +81,19 @@ const VersionStampContainer = styled(Column).attrs({
   padding-bottom: 19;
 `;
 
-const WarningIcon = styled(Icon).attrs({
+const WarningIcon = styled(Icon).attrs(({ theme: { colors } }) => ({
   color: colors.orangeLight,
   name: 'warning',
-})`
-  box-shadow: 0px 4px 6px ${colors.alpha(colors.orangeLight, 0.4)};
+}))`
+  box-shadow: 0px 4px 6px
+    ${({ theme: { colors, isDarkMode } }) =>
+      isDarkMode ? colors.shadow : colors.alpha(colors.orangeLight, 0.4)};
   margin-top: 1;
 `;
+
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
 
 const checkAllWallets = wallets => {
   if (!wallets) return false;
@@ -116,10 +130,11 @@ export default function SettingsSection({
   onPressShowSecret,
 }) {
   const isReviewAvailable = useExperimentalFlag(REVIEW_ANDROID) || ios;
-
   const { wallets } = useWallets();
   const { /*language,*/ nativeCurrency, network } = useAccountSettings();
   const { isTinyPhone } = useDimensions();
+
+  const { colors, isDarkMode, setTheme, colorScheme } = useTheme();
 
   const onSendFeedback = useSendFeedback();
 
@@ -156,14 +171,28 @@ export default function SettingsSection({
     [wallets]
   );
 
-  const backupStatusColor = allBackedUp ? colors.green : colors.blueGreyDark50;
+  const backupStatusColor = allBackedUp
+    ? colors.green
+    : colors.alpha(colors.blueGreyDark, 0.5);
+
+  const toggleTheme = useCallback(() => {
+    if (colorScheme === THEMES.SYSTEM) {
+      setTheme(THEMES.LIGHT);
+    } else if (colorScheme === THEMES.LIGHT) {
+      setTheme(THEMES.DARK);
+    } else {
+      setTheme(THEMES.SYSTEM);
+    }
+  }, [setTheme, colorScheme]);
 
   return (
-    <Container scrollEnabled={isTinyPhone}>
+    <Container backgroundColor={colors.white} scrollEnabled={isTinyPhone}>
       <ColumnWithDividers dividerRenderer={ListItemDivider} marginTop={7}>
         {canBeBackedUp && (
           <ListItem
-            icon={<SettingIcon source={BackupIcon} />}
+            icon={
+              <SettingIcon source={isDarkMode ? BackupIconDark : BackupIcon} />
+            }
             label="Backup"
             onPress={onPressBackup}
             onPressIcloudBackup={onPressIcloudBackup}
@@ -172,7 +201,10 @@ export default function SettingsSection({
           >
             <ListItemArrowGroup>
               {areBackedUp ? (
-                <CheckmarkIcon color={backupStatusColor} />
+                <CheckmarkIcon
+                  color={backupStatusColor}
+                  isDarkMode={isDarkMode}
+                />
               ) : (
                 <WarningIcon />
               )}
@@ -180,7 +212,11 @@ export default function SettingsSection({
           </ListItem>
         )}
         <ListItem
-          icon={<SettingIcon source={CurrencyIcon} />}
+          icon={
+            <SettingIcon
+              source={isDarkMode ? CurrencyIconDark : CurrencyIcon}
+            />
+          }
           label="Currency"
           onPress={onPressCurrency}
           testID="currency-section"
@@ -188,7 +224,9 @@ export default function SettingsSection({
           <ListItemArrowGroup>{nativeCurrency || ''}</ListItemArrowGroup>
         </ListItem>
         <ListItem
-          icon={<SettingIcon source={NetworkIcon} />}
+          icon={
+            <SettingIcon source={isDarkMode ? NetworkIconDark : NetworkIcon} />
+          }
           label="Network"
           onPress={onPressNetwork}
           testID="network-section"
@@ -197,8 +235,30 @@ export default function SettingsSection({
             {networkInfo?.[network]?.name}
           </ListItemArrowGroup>
         </ListItem>
-        {/*<ListItem*/}
-        {/*  icon={<SettingIcon source={LanguageIcon} />}*/}
+        <ListItem
+          icon={
+            <SettingIcon
+              source={isDarkMode ? DarkModeIconDark : DarkModeIcon}
+            />
+          }
+          label="Theme"
+          onPress={toggleTheme}
+          testID="darkmode-section"
+        >
+          <Column align="end" flex="1" justify="end">
+            <Text
+              color={colors.alpha(colors.blueGreyDark, 0.6)}
+              size="large"
+              weight="medium"
+            >
+              {capitalizeFirstLetter(colorScheme)}
+            </Text>
+          </Column>
+        </ListItem>
+        {/*<ListItem
+        {/*  icon={*/}
+        {/*    <SettingIcon source={darkMode ? LanguageIconDark : LanguageIcon} />*/}
+        {/*  }*/}
         {/*  label="Language"*/}
         {/*  onPress={onPressLanguage}*/}
         {/*>*/}

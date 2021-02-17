@@ -7,20 +7,19 @@ import {
   get,
   groupBy,
   includes,
+  isEmpty,
+  reduce,
+  slice,
   sortBy,
 } from 'lodash';
-import { add, convertAmountToNativeDisplay } from './utilities';
+import { add, convertAmountToNativeDisplay, greaterThan } from './utilities';
 import store from '@rainbow-me/redux/store';
-import { supportedNativeCurrencies } from '@rainbow-me/references';
-import { ETH_ICON_URL } from '@rainbow-me/utils';
+import {
+  ETH_ICON_URL,
+  supportedNativeCurrencies,
+} from '@rainbow-me/references';
 
-export const amountOfShowedCoins = 5;
-
-export const buildAssetHeaderUniqueIdentifier = ({
-  title,
-  totalItems,
-  totalValue,
-}) => compact([title, totalItems, totalValue]).join('_');
+const COINS_TO_SHOW = 5;
 
 export const buildAssetUniqueIdentifier = item => {
   const balance = get(item, 'balance.amount', '');
@@ -81,6 +80,16 @@ const addEthPlaceholder = (
   return assets;
 };
 
+const getTotal = assets =>
+  reduce(
+    assets,
+    (acc, asset) => {
+      const balance = asset?.native?.balance?.amount ?? 0;
+      return add(acc, balance);
+    },
+    0
+  );
+
 export const buildCoinsList = (
   assetsOriginal,
   nativeCurrency,
@@ -91,12 +100,8 @@ export const buildCoinsList = (
 ) => {
   let standardAssets = [],
     pinnedAssets = [],
+    smallAssets = [],
     hiddenAssets = [];
-
-  const smallBalances = {
-    assets: [],
-    smallBalancesContainer: true,
-  };
 
   const assets = addEthPlaceholder(
     assetsOriginal,
@@ -105,15 +110,7 @@ export const buildCoinsList = (
     nativeCurrency
   );
 
-  const assetsLength = assets.length;
-
-  let totalBalancesValue = 0;
-  let smallBalancesValue = 0;
-
-  const isShortList = assetsLength <= amountOfShowedCoins;
-
-  let hasStandard = false;
-
+  // separate into standard, pinned, small balances, hidden assets
   forEach(assets, asset => {
     if (hiddenCoins && hiddenCoins.includes(asset.uniqueId)) {
       hiddenAssets.push({
@@ -123,10 +120,6 @@ export const buildCoinsList = (
         ...asset,
       });
     } else if (pinnedCoins.includes(asset.uniqueId)) {
-      totalBalancesValue = add(
-        totalBalancesValue,
-        get(asset, 'native.balance.amount', 0)
-      );
       pinnedAssets.push({
         isCoin: true,
         isPinned: true,
@@ -134,83 +127,53 @@ export const buildCoinsList = (
         ...asset,
       });
     } else if (
-      (standardAssets.length + pinnedCoins.length < amountOfShowedCoins &&
-        asset.native?.balance.amount >
-          supportedNativeCurrencies[nativeCurrency].smallThreshold) ||
-      isShortList
+      greaterThan(
+        asset.native?.balance?.amount,
+        supportedNativeCurrencies[nativeCurrency].smallThreshold
+      )
     ) {
-      hasStandard = true;
-      totalBalancesValue = add(
-        totalBalancesValue,
-        get(asset, 'native.balance.amount', 0)
-      );
       standardAssets.push({ isCoin: true, isSmall: false, ...asset });
     } else {
-      //if only dust assets we want to show the top 5 in standard
-      if (
-        (!hasStandard &&
-          standardAssets.length + pinnedCoins.length < amountOfShowedCoins) ||
-        (hasStandard &&
-          standardAssets.length + pinnedCoins.length < amountOfShowedCoins &&
-          asset.address === 'eth')
-      ) {
-        totalBalancesValue = add(
-          totalBalancesValue,
-          get(asset, 'native.balance.amount', 0)
-        );
-        standardAssets.push({ isCoin: true, isSmall: false, ...asset });
-      } else {
-        //if standard assets exist, partiton normally
-        smallBalancesValue = add(
-          smallBalancesValue,
-          get(asset, 'native.balance.amount', 0)
-        );
-        smallBalances.assets.push({ isCoin: true, isSmall: true, ...asset });
-      }
+      smallAssets.push({ isCoin: true, isSmall: true, ...asset });
     }
   });
 
-  totalBalancesValue = add(totalBalancesValue, smallBalancesValue);
+  // decide which assets to show above or below the coin divider
+  const nonHidden = concat(pinnedAssets, standardAssets);
+  const dividerIndex = Math.max(pinnedAssets.length, COINS_TO_SHOW);
+
+  let assetsAboveDivider = slice(nonHidden, 0, dividerIndex);
+  let assetsBelowDivider = [];
+
+  if (isEmpty(assetsAboveDivider)) {
+    assetsAboveDivider = slice(smallAssets, 0, COINS_TO_SHOW);
+    assetsBelowDivider = slice(smallAssets, COINS_TO_SHOW);
+  } else {
+    const remainderBelowDivider = slice(nonHidden, dividerIndex);
+    assetsBelowDivider = concat(remainderBelowDivider, smallAssets);
+  }
+
+  // calculate small balance and overall totals
+  const smallBalancesValue = getTotal(assetsBelowDivider);
+  const bigBalancesValue = getTotal(assetsAboveDivider);
+  const totalBalancesValue = add(bigBalancesValue, smallBalancesValue);
+
+  // include hidden assets if in edit mode
   if (isCoinListEdited) {
-    if (assetsLength <= amountOfShowedCoins) {
-      standardAssets = standardAssets.concat(hiddenAssets);
-    } else {
-      smallBalances.assets = smallBalances.assets.concat(hiddenAssets);
-    }
+    assetsBelowDivider = concat(assetsBelowDivider, hiddenAssets);
   }
 
-  const allAssets = pinnedAssets.concat(standardAssets);
-  const allAssetsLength = allAssets.length;
-  const pinnedAssetsLength = pinnedAssets.length;
-  if (
-    amountOfShowedCoins > pinnedAssetsLength &&
-    allAssetsLength > amountOfShowedCoins
-  ) {
-    smallBalances.assets = allAssets
-      .splice(amountOfShowedCoins)
-      .concat(smallBalances.assets);
-  } else if (
-    amountOfShowedCoins <= pinnedAssetsLength &&
-    allAssetsLength >= pinnedAssetsLength
-  ) {
-    smallBalances.assets = allAssets
-      .splice(pinnedAssetsLength)
-      .concat(smallBalances.assets);
-  }
+  const allAssets = assetsAboveDivider;
 
-  if (
-    smallBalances.assets.length > 0 ||
-    (hiddenAssets.length > 0 && assetsLength > amountOfShowedCoins) ||
-    (pinnedAssetsLength === allAssetsLength &&
-      allAssetsLength > amountOfShowedCoins) ||
-    isCoinListEdited
-  ) {
+  if (assetsBelowDivider.length > 0 || isCoinListEdited) {
     allAssets.push({
-      assetsAmount: smallBalances.assets.length,
       coinDivider: true,
       value: smallBalancesValue,
     });
-    allAssets.push(smallBalances);
+    allAssets.push({
+      assets: assetsBelowDivider,
+      smallBalancesContainer: true,
+    });
   }
 
   return { assets: allAssets, totalBalancesValue };
@@ -262,7 +225,7 @@ export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
 
   rows = sortBy(rows, ['familyName']);
 
-  showcaseTokens.sort(function(a, b) {
+  showcaseTokens.sort(function (a, b) {
     return (
       selectedShowcaseTokens.indexOf(a.uniqueId) -
       selectedShowcaseTokens.indexOf(b.uniqueId)

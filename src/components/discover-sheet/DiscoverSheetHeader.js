@@ -1,5 +1,11 @@
 import { useRoute } from '@react-navigation/native';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import Animated, {
   newInterpolate,
   useAnimatedStyle,
@@ -7,8 +13,8 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-import styled from 'styled-components/primitives';
-import { borders, colors, position } from '../../styles';
+import styled from 'styled-components';
+import { borders, position } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
@@ -35,16 +41,16 @@ const Header = styled.View`
   z-index: 10;
 `;
 
-export const FloatingActionButtonShadow = [
-  [0, 10, 30, colors.dark, 0.5],
-  [0, 5, 15, colors.dark, 1],
+export const FloatingActionButtonShadow = colors => [
+  [0, 10, android ? 0 : 30, colors.shadow, 0.5],
+  [0, 5, android ? 0 : 15, colors.shadow, 1],
 ];
 
 const BackgroundFill = styled(Centered).attrs({
   ...borders.buildCircleAsObject(43),
 })`
   ${position.cover};
-  background-color: ${colors.dark};
+  background-color: ${({ theme: { colors } }) => colors.dark};
   left: 8;
   top: 8;
 `;
@@ -58,6 +64,8 @@ function Stack({
   translateX,
   wrapperOpacity,
 }) {
+  const { colors, isDarkMode } = useTheme();
+  const shadows = useMemo(() => FloatingActionButtonShadow(colors), [colors]);
   const isVisible = useDerivedValue(() => {
     const value = stackOpacity.value;
     return withSpring(value, springConfig);
@@ -101,8 +109,8 @@ function Stack({
         >
           <ShadowStack
             {...borders.buildCircleAsObject(43)}
-            backgroundColor={colors.dark}
-            shadows={FloatingActionButtonShadow}
+            backgroundColor={isDarkMode ? colors.offWhite : colors.dark}
+            shadows={shadows}
             style={{ left: 8, opacity: 0.4, position: 'absolute', top: 8 }}
           />
           <BackgroundFill />
@@ -167,9 +175,11 @@ export default function DiscoverSheetHeader(props) {
       withSpring(isSearchModeEnabled ? 0 : buttonOpacity.value, springConfig),
     [isSearchModeEnabled]
   );
-  const animatedWrapperROpacity = useDerivedValue(() =>
+  const animatedWrapperOpacity = useDerivedValue(() =>
     withSpring(buttonOpacity.value, springConfig)
   );
+
+  const { colors } = useTheme();
 
   return (
     <Header {...props} pointerEvents="box-none">
@@ -199,7 +209,7 @@ export default function DiscoverSheetHeader(props) {
         }}
         stackOpacity={stackOpacity}
         translateX={translateXRightButton}
-        wrapperOpacity={animatedWrapperROpacity}
+        wrapperOpacity={animatedWrapperOpacity}
       >
         <Icon
           bottom={1}

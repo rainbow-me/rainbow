@@ -1,26 +1,28 @@
 import React, { createElement, Fragment } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { useDimensions } from '../../hooks';
 import Divider from '../Divider';
 import { ContextMenu } from '../context-menu';
 import { Row } from '../layout';
 import SavingsListHeader from '../savings/SavingsListHeader';
 import { H1 } from '../text';
-import { colors, padding, position } from '@rainbow-me/styles';
+import { padding, position } from '@rainbow-me/styles';
 
 export const ListHeaderHeight = 44;
 
-const BackgroundGradient = styled(LinearGradient).attrs({
-  colors: [
-    colors.listHeaders.firstGradient,
-    colors.listHeaders.secondGradient,
-    colors.listHeaders.thirdGradient,
-  ],
-  end: { x: 0, y: 0 },
-  pointerEvents: 'none',
-  start: { x: 0, y: 0.5 },
-})`
+const BackgroundGradient = styled(LinearGradient).attrs(
+  ({ theme: { colors } }) => ({
+    colors: [
+      colors.listHeaders.firstGradient,
+      colors.listHeaders.secondGradient,
+      colors.listHeaders.thirdGradient,
+    ],
+    end: { x: 0, y: 0 },
+    pointerEvents: 'none',
+    start: { x: 0, y: 0.5 },
+  })
+)`
   ${position.cover};
 `;
 
@@ -29,14 +31,14 @@ const Content = styled(Row).attrs({
   justify: 'space-between',
 })`
   ${padding(0, 19, 2)};
-  background-color: ${({ isSticky }) =>
+  background-color: ${({ isSticky, theme: { colors } }) =>
     isSticky ? colors.white : colors.transparent};
   height: ${ListHeaderHeight};
   width: 100%;
 `;
 
 const StickyBackgroundBlocker = styled.View`
-  background-color: ${colors.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
   height: ${({ isEditMode }) => (isEditMode ? ListHeaderHeight : 0)};
   top: ${({ isEditMode }) => (isEditMode ? -40 : 0)};
   width: ${({ deviceDimensions }) => deviceDimensions.width};

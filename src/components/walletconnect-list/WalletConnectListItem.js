@@ -11,7 +11,7 @@ import {
   isDappAuthenticated,
 } from '@rainbow-me/helpers/dappNameHandler';
 import { useWalletConnectConnections } from '@rainbow-me/hooks';
-import { colors, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 
 const ContainerPadding = 15;
 const VendorLogoIconSize = 50;
@@ -22,6 +22,8 @@ export default function WalletConnectListItem({ dappIcon, dappName, dappUrl }) {
   const {
     walletConnectDisconnectAllByDappName,
   } = useWalletConnectConnections();
+
+  const { colors } = useTheme();
 
   const isAuthenticated = useMemo(() => {
     return isDappAuthenticated(dappUrl);

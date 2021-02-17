@@ -1,7 +1,7 @@
 import { find } from 'lodash';
-import React, { Fragment, useRef } from 'react';
+import React, { useRef } from 'react';
+import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useSelector } from 'react-redux';
-import { Column } from '../layout';
 import {
   BuyActionButton,
   SendActionButton,
@@ -24,12 +24,11 @@ import {
   useUniswapAssetsInWallet,
 } from '@rainbow-me/hooks';
 
-// add status bar height for Android
-const heightWithoutChart = 309 + (android && 24);
-const heightWithChart = heightWithoutChart + 297;
+const baseHeight = 309 + (android && 20 - getSoftMenuBarHeight());
+const heightWithoutChart = baseHeight + (android && 30);
+const heightWithChart = baseHeight + 310;
 
-export const initialChartExpandedStateSheetHeight =
-  heightWithChart + (android && 40);
+export const initialChartExpandedStateSheetHeight = heightWithChart;
 
 const formatGenericAsset = asset => {
   if (asset?.price?.value) {
@@ -45,9 +44,11 @@ export default function ChartExpandedState({ asset }) {
   const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
     genericAssets,
   }));
+
   // If we don't have a balance for this asset
   // It's a generic asset
-  const assetWithPrice = asset?.balance
+  const hasBalance = asset?.balance;
+  const assetWithPrice = hasBalance
     ? asset
     : genericAssets[asset?.address]
     ? formatGenericAsset(genericAssets[asset?.address])
@@ -64,8 +65,8 @@ export default function ChartExpandedState({ asset }) {
     throttledData,
   } = useChartThrottledPoints({
     asset: assetWithPrice,
-    heightWithChart: heightWithChart - (!asset?.balance && 68),
-    heightWithoutChart: heightWithoutChart - (!asset?.balance && 68),
+    heightWithChart: heightWithChart - (!hasBalance && 68),
+    heightWithoutChart: heightWithoutChart - (!hasBalance && 68),
   });
 
   const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
@@ -81,69 +82,71 @@ export default function ChartExpandedState({ asset }) {
   if (duration.current === 0) {
     duration.current = 300;
   }
-  const ChartExpandedStateSheetHeight =
-    (ios || showChart ? heightWithChart : heightWithoutChart) + (android && 40);
+
+  let ChartExpandedStateSheetHeight =
+    ios || showChart ? heightWithChart : heightWithoutChart;
+
+  if (android && !hasBalance) {
+    ChartExpandedStateSheetHeight -= 68;
+  }
 
   return (
-    <Fragment>
-      <SlackSheet
-        additionalTopPadding={android}
-        contentHeight={ChartExpandedStateSheetHeight}
-        scrollEnabled={false}
-      >
-        <ChartPathProvider data={throttledData}>
-          <Chart
-            {...chartData}
-            {...initialChartDataLabels}
-            asset={assetWithPrice}
-            chart={chart}
-            chartType={chartType}
-            color={color}
-            fetchingCharts={fetchingCharts}
-            nativePoints={chart}
-            showChart={showChart}
-            throttledData={throttledData}
-          />
-        </ChartPathProvider>
-        <SheetDivider />
-        {asset?.balance && (
-          <TokenInfoSection>
-            <TokenInfoRow>
-              <TokenInfoItem asset={asset} title="Balance">
-                <TokenInfoBalanceValue />
+    <SlackSheet
+      additionalTopPadding={android}
+      contentHeight={ChartExpandedStateSheetHeight}
+      scrollEnabled={false}
+    >
+      <ChartPathProvider data={throttledData}>
+        <Chart
+          {...chartData}
+          {...initialChartDataLabels}
+          asset={assetWithPrice}
+          chart={chart}
+          chartType={chartType}
+          color={color}
+          fetchingCharts={fetchingCharts}
+          nativePoints={chart}
+          showChart={showChart}
+          throttledData={throttledData}
+        />
+      </ChartPathProvider>
+      <SheetDivider />
+      {hasBalance && (
+        <TokenInfoSection>
+          <TokenInfoRow>
+            <TokenInfoItem asset={asset} title="Balance">
+              <TokenInfoBalanceValue />
+            </TokenInfoItem>
+            {asset?.native?.price.display && (
+              <TokenInfoItem title="Value" weight="bold">
+                {asset?.native?.balance.display}
               </TokenInfoItem>
-              {asset?.native?.price.display && (
-                <TokenInfoItem title="Value" weight="bold">
-                  {asset?.native?.balance.display}
-                </TokenInfoItem>
-              )}
-            </TokenInfoRow>
-          </TokenInfoSection>
-        )}
-        {needsEth ? (
-          <SheetActionButtonRow>
-            <BuyActionButton color={color} fullWidth />
-          </SheetActionButtonRow>
-        ) : (
-          <SheetActionButtonRow>
-            {showSwapButton && (
-              <SwapActionButton color={color} inputType={AssetInputTypes.in} />
             )}
-            {asset?.balance ? (
-              <SendActionButton color={color} fullWidth={!showSwapButton} />
-            ) : (
-              <Column marginTop={5}>
-                <SwapActionButton
-                  color={color}
-                  inputType={AssetInputTypes.out}
-                  label={`􀖅 Get ${asset?.symbol}`}
-                  weight="heavy"
-                />
-              </Column>
-            )}
-          </SheetActionButtonRow>
-        )}
-      </SlackSheet>
-    </Fragment>
+          </TokenInfoRow>
+        </TokenInfoSection>
+      )}
+      {needsEth ? (
+        <SheetActionButtonRow>
+          <BuyActionButton color={color} fullWidth />
+        </SheetActionButtonRow>
+      ) : (
+        <SheetActionButtonRow>
+          {showSwapButton && (
+            <SwapActionButton color={color} inputType={AssetInputTypes.in} />
+          )}
+          {hasBalance ? (
+            <SendActionButton color={color} fullWidth={!showSwapButton} />
+          ) : (
+            <SwapActionButton
+              color={color}
+              fullWidth={!showSwapButton}
+              inputType={AssetInputTypes.out}
+              label={`􀖅 Get ${asset?.symbol}`}
+              weight="heavy"
+            />
+          )}
+        </SheetActionButtonRow>
+      )}
+    </SlackSheet>
   );
 }

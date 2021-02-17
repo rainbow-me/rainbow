@@ -79,7 +79,10 @@
       "chainId": 1,
       "decimals": 18,
       "name": "1inch",
-      "symbol": "1INCH"
+      "symbol": "1INCH",
+      "extensions": {
+        "isVerified": true
+      }
     },
     {
       "address": "0xf0Bc1ae4eF7ffb126A8347D06Ac6f8AdD770e1CE",
@@ -998,7 +1001,10 @@
       "chainId": 1,
       "decimals": 18,
       "name": "Alpha Finance",
-      "symbol": "ALPHA"
+      "symbol": "ALPHA",
+      "extensions": {
+        "isVerified": true
+      }
     },
     {
       "address": "0x638AC149eA8EF9a1286C41B977017AA7359E6Cfa",
@@ -2224,7 +2230,10 @@
       "chainId": 1,
       "decimals": 18,
       "name": "Badger DAO",
-      "symbol": "BADGER"
+      "symbol": "BADGER",
+      "extensions": {
+        "isVerified": true
+      }
     },
     {
       "address": "0x6BFfa07a1B0ceBC474cE6833eAf2bE6326252449",
@@ -10159,7 +10168,11 @@
       "chainId": 1,
       "decimals": 18,
       "name": "The Graph",
-      "symbol": "GRT"
+      "symbol": "GRT",
+      "extensions": {
+        "isRainbowCurated": true,
+        "isVerified": true
+      }
     },
     {
       "address": "0xb83Cd8d39462B761bb0092437d38b37812dd80A2",
@@ -14194,7 +14207,10 @@
       "chainId": 1,
       "decimals": 18,
       "name": "88mph",
-      "symbol": "MPH"
+      "symbol": "MPH",
+      "extensions": {
+        "isVerified": true
+      }
     },
     {
       "address": "0x96c645D3D3706f793Ef52C19bBACe441900eD47D",
@@ -14757,7 +14773,10 @@
       "chainId": 1,
       "decimals": 18,
       "name": "NFTX",
-      "symbol": "NFTX"
+      "symbol": "NFTX",
+      "extensions": {
+        "isVerified": true
+      }
     },
     {
       "address": "0x1cBb83EbcD552D5EBf8131eF8c9CD9d9BAB342bC",
@@ -17709,8 +17728,11 @@
       "address": "0xD291E7a03283640FDc51b121aC401383A46cC623",
       "chainId": 1,
       "decimals": 18,
-      "name": "Rari Governance Tok",
-      "symbol": "RGT"
+      "name": "Rari Governance Token",
+      "symbol": "RGT",
+      "extensions": {
+        "isVerified": true
+      }
     },
     {
       "address": "0x47C0aD2aE6c0Ed4bcf7bc5b380D7205E89436e84",

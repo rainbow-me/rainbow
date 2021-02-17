@@ -9,7 +9,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
 import { ExchangeSearch } from '../exchange';
 import { Column, Row } from '../layout';
@@ -20,19 +20,18 @@ import {
   useUniswapAssets,
 } from '@rainbow-me/hooks';
 
-import { colors } from '@rainbow-me/styles';
-
 const CancelButton = styled(ButtonPressAnimation)`
   margin-top: 27;
 `;
 
-const CancelText = styled(Text).attrs({
+const CancelText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'right',
   color: colors.appleBlue,
   letterSpacing: 'roundedMedium',
   size: 'large',
   weight: 'semibold',
-})`
+}))`
+  ${ios ? '' : 'margin-top: -5;'}
   margin-left: -3;
   margin-right: 15;
 `;
@@ -42,11 +41,8 @@ export default forwardRef(function DiscoverSearchContainer(
   ref
 ) {
   const searchInputRef = useRef();
-  useImperativeHandle(ref, () => ({
-    focus: () => {
-      searchInputRef.current.focus();
-    },
-  }));
+  const sectionListRef = useRef();
+  useImperativeHandle(ref, () => searchInputRef.current);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const upperContext = useContext(DiscoverSheetContext);
@@ -56,8 +52,8 @@ export default forwardRef(function DiscoverSearchContainer(
   } = useRoute();
 
   const contextValue = useMemo(
-    () => ({ ...upperContext, searchQuery, setIsSearching }),
-    [searchQuery, upperContext, setIsSearching]
+    () => ({ ...upperContext, searchQuery, sectionListRef, setIsSearching }),
+    [searchQuery, upperContext, setIsSearching, sectionListRef]
   );
   const setIsInputFocused = useCallback(
     value => {
@@ -68,12 +64,31 @@ export default forwardRef(function DiscoverSearchContainer(
     [setIsSearchModeEnabled, setShowSearch, setViewPagerSwipeEnabled]
   );
 
+  const onTapSearch = useCallback(() => {
+    if (isSearchModeEnabled) {
+      sectionListRef.current.scrollToLocation({
+        animated: true,
+        itemIndex: 0,
+        sectionIndex: 0,
+        viewOffset: 0,
+        viewPosition: 0,
+      });
+      searchInputRef.current.focus();
+    } else {
+      setIsInputFocused(true);
+    }
+  }, [isSearchModeEnabled, setIsInputFocused]);
+
+  upperContext.onFabSearch.current = onTapSearch;
+
   useEffect(() => {
     if (!isSearchModeEnabled) {
       setSearchQuery('');
       setIsSearching(false);
       searchInputRef.current?.blur();
       setIsInputFocused(false);
+    } else if (!searchInputRef.current.isFocused()) {
+      searchInputRef.current?.focus();
     }
   }, [isSearchModeEnabled, setIsInputFocused]);
 
@@ -85,12 +100,14 @@ export default forwardRef(function DiscoverSearchContainer(
       <Row>
         <Column flex={1} marginTop={19}>
           <ExchangeSearch
+            clearTextOnFocus={false}
             isFetching={loadingAllTokens}
             isSearching={isSearching}
             onBlur={() => setIsInputFocused(false)}
             onChangeText={setSearchQuery}
             onFocus={() => {
               upperContext.jumpToLong?.();
+              onTapSearch();
               setIsInputFocused(true);
             }}
             placeholderText="Search all of Ethereum"

@@ -16,7 +16,7 @@ export default function TokenInfoItem({
     <ColumnWithMargins
       flex={asset ? 1 : 0}
       justify={align === 'left' ? 'start' : 'end'}
-      margin={3}
+      margin={android ? -6 : 3}
       {...props}
     >
       <TokenInfoHeading align={align}>{title}</TokenInfoHeading>

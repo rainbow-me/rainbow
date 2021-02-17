@@ -1,7 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { RNCamera } from 'react-native-camera';
 import { useIsEmulator } from 'react-native-device-info';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { Centered } from '../layout';
 import { ErrorText } from '../text';
 import QRCodeScannerCrosshair from './QRCodeScannerCrosshair';
@@ -9,7 +9,7 @@ import QRCodeScannerNeedsAuthorization from './QRCodeScannerNeedsAuthorization';
 import SimulatorFakeCameraImageSource from '@rainbow-me/assets/simulator-fake-camera-image.jpg';
 import { useBooleanState, useScanner } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
-import { colors, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 
 const Camera = styled(RNCamera)`
   ${position.cover};
@@ -18,13 +18,15 @@ const Camera = styled(RNCamera)`
 
 const CameraWrapper = styled(Centered)`
   ${position.size('100%')};
+  background-color: ${({ theme: { colors } }) =>
+    colors.trueBlack || colors.black};
 `;
 
 const Container = styled(Centered).attrs({
   direction: 'column',
 })`
   ${position.cover};
-  background-color: ${colors.black};
+  background-color: ${({ theme: { colors } }) => colors.black};
 `;
 
 const ContentOverlay = styled(Centered)`
@@ -43,32 +45,44 @@ const EmulatorCameraFallback = styled(ImgixImage).attrs({
 export default function QRCodeScanner({
   contentPositionBottom,
   contentPositionTop,
-  enableCamera,
+  dsRef,
 }) {
+  const [cameraEnabled, setCameraEnabled] = useState(false);
   const [error, showError] = useBooleanState();
   const [isInitialized, setInitialized] = useBooleanState();
   const { result: isEmulator } = useIsEmulator();
-  const { isCameraAuthorized, onScan } = useScanner(enableCamera);
+  const { isCameraAuthorized, onScan } = useScanner(cameraEnabled);
 
   const showErrorMessage = error && !isInitialized;
   const showCrosshair = !error && !showErrorMessage;
   const cameraRef = useRef();
+
+  const onCrossMagicBorder = useCallback(
+    below => {
+      setCameraEnabled(below);
+    },
+    [setCameraEnabled]
+  );
+  useEffect(
+    () => dsRef.current?.addOnCrossMagicBorderListener(onCrossMagicBorder),
+    [dsRef, onCrossMagicBorder]
+  );
   useEffect(() => {
     if (ios || !isInitialized) {
       return;
     }
-    if (enableCamera) {
+    if (cameraEnabled) {
       cameraRef.current?.resumePreview?.();
     } else {
       cameraRef.current?.pausePreview?.();
     }
-  }, [enableCamera, isInitialized]);
+  }, [cameraEnabled, isInitialized]);
 
   return (
     <Container>
       <CameraWrapper>
-        {enableCamera && isEmulator && <EmulatorCameraFallback />}
-        {(enableCamera || android) && !isEmulator && (
+        {cameraEnabled && isEmulator && <EmulatorCameraFallback />}
+        {(cameraEnabled || android) && !isEmulator && (
           <Camera
             captureAudio={false}
             notAuthorizedView={QRCodeScannerNeedsAuthorization}

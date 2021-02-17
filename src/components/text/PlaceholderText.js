@@ -1,14 +1,13 @@
 import React, { useImperativeHandle, useState } from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import Text from './Text';
-import { colors } from '@rainbow-me/styles';
 
-const Placeholder = styled(Text).attrs({
+const Placeholder = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
   color: colors.alpha(colors.blueGreyDark, 0.3),
   size: 'big',
   weight: 'semibold',
-})`
+}))`
   margin-bottom: ${android ? -48 : -27};
   width: 100%;
 `;

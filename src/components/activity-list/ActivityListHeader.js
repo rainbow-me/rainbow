@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { magicMemo } from '../../utils';
 import { ListHeader } from '../list';
 import { Text } from '../text';

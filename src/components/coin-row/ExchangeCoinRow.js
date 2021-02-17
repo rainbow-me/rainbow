@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import styled, { css } from 'styled-components/primitives';
+import styled, { css } from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIconSize } from '../coin-icon';
 import { FloatingEmojis } from '../floating-emojis';
@@ -62,12 +62,12 @@ const ExchangeCoinRow = ({
   const [localFavorite, setLocalFavorite] = useState(!!item.favorite);
 
   const handlePress = useCallback(() => {
-    if (isVerified) {
+    if (isVerified || showBalance) {
       onPress(item);
     } else {
       onUnverifiedTokenPress(item);
     }
-  }, [isVerified, item, onPress, onUnverifiedTokenPress]);
+  }, [isVerified, item, onPress, onUnverifiedTokenPress, showBalance]);
 
   return (
     <>

@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { Centered } from '../layout';
 import SheetHandle, { HandleHeight } from './SheetHandle';
 import { padding } from '@rainbow-me/styles';

@@ -3,12 +3,13 @@ import { useIsFocused } from '@react-navigation/native';
 import React, {
   forwardRef,
   useCallback,
+  useEffect,
   useImperativeHandle,
   useMemo,
   useRef,
   useState,
 } from 'react';
-import { findNodeHandle, NativeModules, View } from 'react-native';
+import { findNodeHandle, NativeModules } from 'react-native';
 import {
   runOnJS,
   useAnimatedReaction,
@@ -16,13 +17,16 @@ import {
   useSharedValue,
 } from 'react-native-reanimated';
 import { useSafeArea } from 'react-native-safe-area-context';
+
 // eslint-disable-next-line import/no-unresolved
 import SlackBottomSheet from 'react-native-slack-bottom-sheet';
-import deviceUtils from '../../utils/deviceUtils';
+import styled from 'styled-components';
 import { SlackSheet } from '../sheet';
 import DiscoverSheetContent from './DiscoverSheetContent';
 import DiscoverSheetContext from './DiscoverSheetContext';
 import DiscoverSheetHeader from './DiscoverSheetHeader';
+import CustomBackground from './androidCustomComponents/customBackground';
+import CustomHandle from './androidCustomComponents/customHandle';
 
 const renderHeader = yPosition => <DiscoverSheetHeader yPosition={yPosition} />;
 
@@ -31,13 +35,22 @@ function useAreHeaderButtonVisible() {
   return [{ isSearchModeEnabled, setIsSearchModeEnabled }, isSearchModeEnabled];
 }
 
-const snapPoints = ['25%', deviceUtils.dimensions.height - 100];
+const snapPoints = ['25%', '90%'];
+
+const AndroidWrapper = styled.View.attrs({
+  pointerEvents: 'box-none',
+})`
+  width: 100%;
+  position: absolute;
+  height: 100%;
+`;
 
 const DiscoverSheetAndroid = (_, forwardedRef) => {
   const [headerButtonsHandlers, deps] = useAreHeaderButtonVisible();
 
   const listeners = useRef([]);
   const bottomSheetModalRef = useRef(null);
+  const onFabSearch = useRef(null);
 
   const value = useMemo(
     () => ({
@@ -52,6 +65,7 @@ const DiscoverSheetAndroid = (_, forwardedRef) => {
       jumpToShort() {
         bottomSheetModalRef.current.collapse();
       },
+      onFabSearch,
       ...headerButtonsHandlers,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -84,33 +98,47 @@ const DiscoverSheetAndroid = (_, forwardedRef) => {
     [notifyListeners]
   );
 
+  const { top: safeArea } = useSafeArea();
+
   return (
-    <DiscoverSheetContext.Provider value={value}>
-      <BottomSheet
-        activeOffsetY={[-0.5, 0.5]}
-        animatedPosition={sheetPosition}
-        animationDuration={300}
-        failOffsetX={[-10, 10]}
-        index={1}
-        ref={bottomSheetModalRef}
-        snapPoints={snapPoints}
-      >
-        <DiscoverSheetHeader yPosition={yPosition} />
-        <BottomSheetScrollView onScroll={scrollHandler}>
-          <DiscoverSheetContent />
-          {/* placeholder for now */}
-          <View style={{ backgroundColor: 'red', height: 400, width: 100 }} />
-        </BottomSheetScrollView>
-      </BottomSheet>
-    </DiscoverSheetContext.Provider>
+    <AndroidWrapper
+      style={{
+        transform: [{ translateY: safeArea * 2 }],
+      }}
+    >
+      <DiscoverSheetContext.Provider value={value}>
+        <BottomSheet
+          activeOffsetY={[-3, 3]}
+          animatedPosition={sheetPosition}
+          animationDuration={300}
+          backgroundComponent={CustomBackground}
+          failOffsetX={[-10, 10]}
+          handleComponent={CustomHandle}
+          index={1}
+          ref={bottomSheetModalRef}
+          snapPoints={snapPoints}
+          style={{
+            borderRadius: 20,
+            overflow: 'hidden',
+          }}
+        >
+          <DiscoverSheetHeader yPosition={yPosition} />
+          <BottomSheetScrollView onScroll={scrollHandler}>
+            <DiscoverSheetContent />
+          </BottomSheetScrollView>
+        </BottomSheet>
+      </DiscoverSheetContext.Provider>
+    </AndroidWrapper>
   );
 };
 
 function DiscoverSheetIOS(_, forwardedRef) {
   const insets = useSafeArea();
   const isFocused = useIsFocused();
+  const sheet = useRef();
   const ref = useRef();
   const listeners = useRef([]);
+  const onFabSearch = useRef(null);
   const [headerButtonsHandlers, deps] = useAreHeaderButtonVisible();
   const value = useMemo(
     () => ({
@@ -131,6 +159,13 @@ function DiscoverSheetIOS(_, forwardedRef) {
           NativeModules.ModalView.jumpTo(false, screen);
         }
       },
+      layoutScrollView() {
+        const screen = findNodeHandle(ref.current);
+        if (screen) {
+          NativeModules.ModalView.layout(screen);
+        }
+      },
+      onFabSearch,
       ...headerButtonsHandlers,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -138,6 +173,10 @@ function DiscoverSheetIOS(_, forwardedRef) {
   );
 
   useImperativeHandle(forwardedRef, () => value);
+
+  useEffect(() => {
+    sheet.current.scrollTo({ x: 0, y: 0 });
+  }, [headerButtonsHandlers.isSearchModeEnabled]);
 
   // noinspection JSConstructorReturnsPrimitive
   return (
@@ -164,6 +203,8 @@ function DiscoverSheetIOS(_, forwardedRef) {
       >
         <SlackSheet
           limitScrollViewContent={headerButtonsHandlers.isSearchModeEnabled}
+          onContentSizeChange={value.layoutScrollView}
+          ref={sheet}
           renderHeader={renderHeader}
           scrollEnabled={!headerButtonsHandlers.isSearchModeEnabled}
         >

@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import Text from './Text';
 import { buildTextStyles } from '@rainbow-me/styles';
 

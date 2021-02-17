@@ -10,16 +10,16 @@ import {
   RecyclerListView,
 } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
-import {
-  deviceUtils,
-  isNewValueForPath,
-  safeAreaInsetValues,
-} from '../../utils';
+import { withThemeContext } from '../../context/ThemeContext';
 import { CoinDivider } from '../coin-divider';
 import { CoinRowHeight } from '../coin-row';
 import AssetListHeader, { AssetListHeaderHeight } from './AssetListHeader';
 import { firstCoinRowMarginTop, ViewTypes } from './RecyclerViewTypes';
-import { colors } from '@rainbow-me/styles';
+import {
+  deviceUtils,
+  isNewValueForPath,
+  safeAreaInsetValues,
+} from '@rainbow-me/utils';
 
 const NOOP = () => undefined;
 let globalDeviceDimensions = 0;
@@ -197,7 +197,6 @@ class RecyclerAssetList extends Component {
 
   constructor(props) {
     super(props);
-
     this.state = {
       dataProvider: new DataProvider(hasRowChanged, this.getStableId),
       isRefreshing: false,
@@ -495,14 +494,15 @@ class RecyclerAssetList extends Component {
         ) {
           const safeIndex = i;
           const safeCollectibles = collectibles;
-          const familyIndex = findIndex(this.state.dataProvider._data, function(
-            data
-          ) {
-            return (
-              data.item?.familyName ===
-              safeCollectibles.data[safeIndex].familyName
-            );
-          });
+          const familyIndex = findIndex(
+            this.state.dataProvider._data,
+            function (data) {
+              return (
+                data.item?.familyName ===
+                safeCollectibles.data[safeIndex].familyName
+              );
+            }
+          );
 
           const focusedFamilyItem = this.state.dataProvider._data[familyIndex]
             .item;
@@ -568,11 +568,12 @@ class RecyclerAssetList extends Component {
         prevCollectibles.data[0]?.childrenAmount ||
         prevCollectibles.data[0]?.familyName !== 'Showcase')
     ) {
-      const familyIndex = findIndex(this.state.dataProvider._data, function(
-        data
-      ) {
-        return data.item?.familyName === 'Showcase';
-      });
+      const familyIndex = findIndex(
+        this.state.dataProvider._data,
+        function (data) {
+          return data.item?.familyName === 'Showcase';
+        }
+      );
 
       const startOfDesiredComponent =
         this.rlv.getLayout(familyIndex).y - AssetListHeaderHeight;
@@ -632,7 +633,7 @@ class RecyclerAssetList extends Component {
     }
 
     if (row.item && row.item.smallBalancesContainer) {
-      return `balance_${row.item.stableId}`;
+      return `smallBalancesContainer`;
     }
 
     if (row.item && row.item.coinDivider) {
@@ -692,6 +693,7 @@ class RecyclerAssetList extends Component {
   };
 
   renderRefreshControl() {
+    const { colors } = this.props;
     return (
       <RefreshControl
         onRefresh={this.handleRefresh}
@@ -757,7 +759,6 @@ class RecyclerAssetList extends Component {
       <AssetListHeader {...data} isSticky />
       {this.state.showCoinListEditor ? (
         <CoinDivider
-          assetsAmount={this.renderList.length}
           balancesSum={0}
           isSticky
           nativeCurrency={this.props.nativeCurrency}
@@ -782,6 +783,8 @@ class RecyclerAssetList extends Component {
       sectionsIndices,
       stickyComponentsIndices,
     } = this.state;
+
+    const { colors } = this.props;
 
     return (
       <View
@@ -838,4 +841,4 @@ export default connect(
     openSavings,
     openSmallBalances,
   })
-)(RecyclerAssetList);
+)(withThemeContext(RecyclerAssetList));

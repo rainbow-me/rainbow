@@ -13,8 +13,7 @@ export default function ChartPathProvider({ data: providedData, children }) {
         { scale: values.dotScale.value },
       ],
     }),
-    [],
-    'dotStyle'
+    []
   );
   const [contextReanimatedValue, setContextValue] = useState({});
   const contextValue = useMemo(

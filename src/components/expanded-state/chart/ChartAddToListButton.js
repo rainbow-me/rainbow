@@ -1,12 +1,12 @@
 import React, { Fragment, useCallback } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered } from '../../layout';
 import { Text } from '../../text';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
 const AddToListButtonPadding = 19;
@@ -18,23 +18,23 @@ const AddToListButton = styled(Centered)`
   margin-right: 10px;
 `;
 
-const Circle = styled(RadialGradient).attrs({
+const Circle = styled(RadialGradient).attrs(({ theme: { colors } }) => ({
   center: [0, 20],
   colors: colors.gradients.lightestGrey,
-})`
+}))`
   border-radius: 20px;
   height: 40px;
   overflow: hidden;
   width: 40px;
 `;
 
-const PlusIcon = styled(Text).attrs({
+const PlusIcon = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
   color: colors.alpha(colors.blueGreyDark, 0.4),
   letterSpacing: 'zero',
   size: 'large',
   weight: 'bold',
-})`
+}))`
   height: 100%;
   line-height: 39px;
   width: 100%;

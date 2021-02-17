@@ -1,18 +1,19 @@
 import { VibrancyView } from '@react-native-community/blur';
 import React from 'react';
 import { View } from 'react-native';
-import styled from 'styled-components/primitives';
-import { colors } from '@rainbow-me/styles';
+import styled from 'styled-components';
 
 export const HandleHeight = 5;
 
-const defaultColor = colors.alpha(colors.blueGreyDark, 0.3);
+const defaultColor = colors =>
+  colors.alpha(colors.blueGreyDark, android ? 0.7 : 0.3);
 
 const Handle = styled.View.attrs({
   blurAmount: 20,
   blurType: 'light',
 })`
-  background-color: ${({ color = defaultColor }) => color};
+  background-color: ${({ color, theme: { colors } }) =>
+    color || defaultColor(colors)};
   border-radius: 3;
   height: ${HandleHeight};
   overflow: hidden;

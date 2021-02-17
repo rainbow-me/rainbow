@@ -1,13 +1,18 @@
-import React, { useCallback, useRef } from 'react';
-import { Alert } from 'react-native';
-import { SectionList } from 'react-native-gesture-handler';
+import React, {
+  forwardRef,
+  useCallback,
+  useContext,
+  useImperativeHandle,
+  useRef,
+} from 'react';
+import { Alert, SectionList } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { usePrevious } from '../../hooks';
 import { CoinRowHeight, ExchangeCoinRow } from '../coin-row';
+import DiscoverSheetContext from '../discover-sheet/DiscoverSheetContext';
 import { GradientText, Text } from '../text';
-
-import { colors, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 import { deviceUtils, magicMemo } from '@rainbow-me/utils';
 
 const deviceWidth = deviceUtils.dimensions.width;
@@ -17,18 +22,20 @@ const Header = styled.View`
   position: relative;
 `;
 
-const HeaderBackground = styled(LinearGradient).attrs({
-  colors: [colors.white, colors.alpha(colors.white, 0)],
-  end: { x: 0.5, y: 1 },
-  locations: [0.55, 1],
-  start: { x: 0.5, y: 0 },
-})`
+const HeaderBackground = styled(LinearGradient).attrs(
+  ({ theme: { colors } }) => ({
+    colors: [colors.white, colors.alpha(colors.white, 0)],
+    end: { x: 0.5, y: 1 },
+    locations: [0.55, 1],
+    start: { x: 0.5, y: 0 },
+  })
+)`
   height: 40px;
   position: absolute;
   width: ${deviceWidth};
 `;
 
-const HeaderTitle = styled(Text).attrs(({ color }) => ({
+const HeaderTitle = styled(Text).attrs(({ color, theme: { colors } }) => ({
   color: color || colors.blueGreyDark50,
   letterSpacing: 'roundedMedium',
   size: 'smedium',
@@ -89,16 +96,13 @@ const ExchangeAssetSectionList = styled(SectionList).attrs({
   height: 100%;
 `;
 
-const ExchangeAssetList = ({
-  itemProps,
-  items,
-  onLayout,
-  query,
-  onScrollTop,
-  testID,
-  keyboardDismissMode = 'none',
-}) => {
-  const sectionListRef = useRef();
+const ExchangeAssetList = (
+  { itemProps, items, onLayout, query, testID, keyboardDismissMode = 'none' },
+  ref
+) => {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const { sectionListRef = useRef() } = useContext(DiscoverSheetContext) || {};
+  useImperativeHandle(ref, () => sectionListRef.current);
   const prevQuery = usePrevious(query);
 
   // Scroll to top once the query is cleared
@@ -150,27 +154,10 @@ const ExchangeAssetList = ({
     []
   );
 
-  const onScrollEnd = useCallback(
-    ({
-      nativeEvent: {
-        targetContentOffset: { y: targetY } = {},
-        contentOffset: { y },
-      },
-    }) => {
-      if (targetY === 0 || targetY === undefined || y === 0) {
-        onScrollTop?.();
-      }
-    },
-    [onScrollTop]
-  );
-
   return (
     <ExchangeAssetSectionList
       keyboardDismissMode={keyboardDismissMode}
       onLayout={onLayout}
-      onMomentumScrollEnd={onScrollEnd}
-      onScrollEndDrag={onScrollEnd}
-      onScrollToTop={onScrollTop}
       ref={sectionListRef}
       renderItem={renderItemCallback}
       renderSectionHeader={ExchangeAssetSectionListHeader}
@@ -179,4 +166,4 @@ const ExchangeAssetList = ({
   );
 };
 
-export default magicMemo(ExchangeAssetList, ['items', 'query']);
+export default magicMemo(forwardRef(ExchangeAssetList), ['items', 'query']);

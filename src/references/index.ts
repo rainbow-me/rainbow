@@ -1,7 +1,19 @@
 import { mapKeys, mapValues } from 'lodash';
-import savingAssets from './compound/saving-assets.json';
-import { Asset } from '@rainbow-me/entities';
+import { savingsAssets } from './compound';
+import { Asset, SavingsAsset } from '@rainbow-me/entities';
 
+export { default as chains } from './chains.json';
+export { compoundCERC20ABI, compoundCETHABI } from './compound';
+export {
+  defiSdkAdapterRegistryABI,
+  DEFI_SDK_ADAPTER_REGISTRY_ADDRESS,
+} from './defisdk';
+export { default as emojis } from './emojis.json';
+export { default as erc20ABI } from './erc20-abi.json';
+export { default as ethUnits } from './ethereum-units.json';
+export { DPI_ADDRESS } from './indexes';
+export { default as supportedNativeCurrencies } from './native-currencies.json';
+export { default as shitcoins } from './shitcoins.json';
 export {
   CURATED_UNISWAP_TOKENS,
   PAIR_GET_RESERVES_CALL_DATA,
@@ -10,19 +22,14 @@ export {
   RAINBOW_TOKEN_LIST,
   TOKEN_SAFE_LIST,
   UNISWAP_TESTNET_TOKEN_LIST,
+  UNISWAP_V1_EXCHANGE_ABI,
   UNISWAP_V2_BASES,
   UNISWAP_V2_ROUTER_ABI,
   UNISWAP_V2_ROUTER_ADDRESS,
 } from './uniswap';
-export { default as chains } from './chains.json';
-export { default as compoundCERC20ABI } from './compound/compound-cerc20-abi.json';
-export { default as compoundCETHABI } from './compound/compound-ceth-abi.json';
-export { default as emojis } from './emojis.json';
-export { default as erc20ABI } from './erc20-abi.json';
-export { default as ethUnits } from './ethereum-units.json';
-export { default as supportedNativeCurrencies } from './native-currencies.json';
-export { default as shitcoins } from './shitcoins.json';
 export { default as DefaultTokenLists } from './default-token-lists.json';
+
+export const ETH_ICON_URL = 'https://s3.amazonaws.com/token-icons/eth.png';
 
 export const ETH_ADDRESS = 'eth';
 export const WETH_ADDRESS = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
@@ -85,16 +92,17 @@ export const DefaultUniswapFavorites = {
   ],
 };
 
-export const savingsAssetsList = savingAssets;
+export const savingsAssetsList = savingsAssets;
 
-export const savingsAssetsListByUnderlying = mapValues(
-  savingAssets,
-  (assetsByNetwork: Record<string, Asset>) =>
-    mapKeys(
-      mapValues(assetsByNetwork, (assetByContract, contractAddress) => ({
-        ...assetByContract,
-        contractAddress,
-      })),
-      value => value.address
-    )
+export const savingsAssetsListByUnderlying: Record<
+  string,
+  Record<string, SavingsAsset>
+> = mapValues(savingsAssets, (assetsByNetwork: Record<string, Asset>) =>
+  mapKeys(
+    mapValues(assetsByNetwork, (assetByContract, contractAddress) => ({
+      ...assetByContract,
+      contractAddress,
+    })),
+    value => value.address
+  )
 );

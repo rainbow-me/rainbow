@@ -1,14 +1,14 @@
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { Linking, Share } from 'react-native';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { buildUniqueTokenName } from '../../../helpers/assets';
 import { magicMemo } from '../../../utils';
 import Pill from '../../Pill';
 import { ContextCircleButton } from '../../context-menu';
 import { ColumnWithMargins, FlexItem, Row, RowWithMargins } from '../../layout';
 import { Text } from '../../text';
-import { colors, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 
 const contextButtonOptions = [
   'Share',
@@ -50,6 +50,8 @@ const UniqueTokenExpandedStateHeader = ({ asset }) => {
     [asset]
   );
 
+  const { colors } = useTheme();
+
   return (
     <Container>
       <HeadingColumn>
@@ -66,7 +68,12 @@ const UniqueTokenExpandedStateHeader = ({ asset }) => {
           <Pill maxWidth={150}>#{asset.id}</Pill>
         </RowWithMargins>
         <FlexItem flex={1}>
-          <Text letterSpacing="roundedMedium" size="big" weight="bold">
+          <Text
+            color={colors.dark}
+            letterSpacing="roundedMedium"
+            size="big"
+            weight="bold"
+          >
             {buildUniqueTokenName(asset)}
           </Text>
         </FlexItem>

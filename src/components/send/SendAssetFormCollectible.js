@@ -1,12 +1,12 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { useDimensions, useImageMetadata } from '../../hooks';
 import { OpacityToggler } from '../animations';
 import { Column, ColumnWithMargins } from '../layout';
 import { UniqueTokenCard } from '../unique-token';
-import { colors, padding, position } from '@rainbow-me/styles';
+import { padding, position } from '@rainbow-me/styles';
 
 const defaultImageDimensions = { height: 512, width: 512 };
 
@@ -24,12 +24,14 @@ const Footer = styled(Column).attrs({ justify: 'end' })`
   width: 100%;
 `;
 
-const Gradient = styled(LinearGradient).attrs(({ isTallPhone }) => ({
-  colors: ['#FAFAFA00', '#FAFAFAFF'],
-  end: { x: 0.5, y: isTallPhone ? 0.2 : 0.4 },
-  pointerEvents: 'none',
-  start: { x: 0.5, y: 0 },
-}))`
+const Gradient = styled(LinearGradient).attrs(
+  ({ isTallPhone, theme: { colors } }) => ({
+    colors: colors.gradients.sendBackground,
+    end: { x: 0.5, y: isTallPhone ? 0.2 : 0.4 },
+    pointerEvents: 'none',
+    start: { x: 0.5, y: 0 },
+  })
+)`
   ${position.cover};
   border-radius: 19;
   overflow: hidden;
@@ -41,13 +43,15 @@ const GradientToggler = styled(OpacityToggler).attrs({
   ${position.cover};
 `;
 
-const SendFormUniqueTokenCard = styled(UniqueTokenCard).attrs({
-  borderEnabled: false,
-  enableHapticFeedback: false,
-  resizeMode: 'contain',
-  scaleTo: 1,
-  shadow: [0, 10, 25, colors.dark, 0.4],
-})`
+const SendFormUniqueTokenCard = styled(UniqueTokenCard).attrs(
+  ({ theme: { colors } }) => ({
+    borderEnabled: false,
+    enableHapticFeedback: false,
+    resizeMode: 'contain',
+    scaleTo: 1,
+    shadow: [0, 10, 25, colors.shadow, 0.4],
+  })
+)`
   opacity: 1;
 `;
 

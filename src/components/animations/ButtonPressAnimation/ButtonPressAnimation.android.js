@@ -55,11 +55,18 @@ export const ScaleButtonZoomable = ({ children, style }) => {
   );
 };
 
-const useLongPress = ({ onPress, onLongPress, minLongPressDuration }) => {
+const useLongPress = ({
+  onPress,
+  onLongPress,
+  minLongPressDuration,
+  onPressStart,
+  onPressCancel,
+}) => {
   const longPressTimer = useRef(null);
   const isPressEventLegal = useRef(false);
 
   const handleStartPress = () => {
+    onPressStart?.();
     if (longPressTimer.current == null) {
       longPressTimer.current = setTimeout(() => {
         longPressTimer.current = null;
@@ -78,6 +85,7 @@ const useLongPress = ({ onPress, onLongPress, minLongPressDuration }) => {
   };
 
   const handleCancel = () => {
+    onPressCancel?.();
     clearTimeout(longPressTimer.current);
     isPressEventLegal.current = false;
   };
@@ -99,6 +107,8 @@ const ScaleButton = ({
   minLongPressDuration,
   overflowMargin,
   wrapperStyle,
+  onPressStart,
+  onPressCancel,
 }) => {
   const scale = useSharedValue(1);
   const hasScaledDown = useSharedValue(0);
@@ -129,6 +139,8 @@ const ScaleButton = ({
     minLongPressDuration,
     onLongPress,
     onPress,
+    onPressCancel,
+    onPressStart,
   });
 
   const gestureHandler = useAnimatedGestureHandler({
@@ -266,6 +278,7 @@ export default function ButtonPressAnimation({
   reanimatedButton,
   transformOrigin,
   skipTopMargin,
+  onPressCancel,
 }) {
   const normalizedTransformOrigin = useMemo(
     () => normalizeTransformOrigin(transformOrigin),
@@ -288,6 +301,7 @@ export default function ButtonPressAnimation({
       minLongPressDuration={minLongPressDuration}
       onLongPress={onLongPress}
       onPress={onPress}
+      onPressCancel={onPressCancel}
       onPressStart={onPressStart}
       overflowMargin={overflowMargin}
       scaleTo={scaleTo}

@@ -11,7 +11,7 @@ import React, {
 import { Alert, InteractionManager, StatusBar } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import { KeyboardArea } from 'react-native-keyboard-area';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import ActivityIndicator from '../components/ActivityIndicator';
 import Spinner from '../components/Spinner';
 import { MiniButton } from '../components/buttons';
@@ -23,10 +23,15 @@ import {
   InvalidPasteToast,
   ToastPositionContainer,
 } from '../components/toasts';
-import { web3Provider } from '@rainbow-me/handlers/web3';
+import { useTheme } from '../context/ThemeContext';
+import {
+  resolveUnstoppableDomain,
+  web3Provider,
+} from '@rainbow-me/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import {
   isENSAddressFormat,
+  isUnstoppableAddressFormat,
   isValidWallet,
 } from '@rainbow-me/helpers/validators';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
@@ -47,7 +52,7 @@ import {
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import { sheetVerticalOffset } from '@rainbow-me/navigation/effects';
 import Routes from '@rainbow-me/routes';
-import { borders, colors, padding } from '@rainbow-me/styles';
+import { borders, padding } from '@rainbow-me/styles';
 import {
   deviceUtils,
   ethereumUtils,
@@ -65,7 +70,9 @@ const Container = styled.View`
     ? 0
     : sheetVerticalOffset};
   ${android ? `margin-top: ${sheetVerticalOffset};` : ''}
-  ${android ? `background-color: ${colors.transparent};` : ''}
+  ${android
+    ? `background-color: ${({ theme: { colors } }) => colors.transparent};`
+    : ''}
 `;
 
 const Footer = styled(Row).attrs({
@@ -96,7 +103,7 @@ const FooterButton = styled(MiniButton).attrs({
 })``;
 
 const KeyboardSizeView = styled(KeyboardArea)`
-  background-color: ${colors.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
 `;
 
 const SecretTextArea = styled(Input).attrs({
@@ -109,7 +116,7 @@ const SecretTextArea = styled(Input).attrs({
   lineHeight: 'looser',
   multiline: true,
   numberOfLines: 3,
-  placeholder: 'Seed phrase, private key, Ethereum address or ENS name',
+  placeholder: 'Seed phrase, private key, Ethereum address, or ENS name',
   returnKeyType: 'done',
   size: 'large',
   spellCheck: false,
@@ -131,7 +138,7 @@ const Sheet = styled(Column).attrs({
 })`
   ${borders.buildRadius('top', isNativeStackAvailable ? 0 : 16)};
   ${padding(0, 15, sheetBottomPadding)};
-  background-color: ${colors.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
   z-index: 1;
 `;
 
@@ -235,6 +242,22 @@ export default function ImportSeedPhraseSheet() {
         return;
       }
       // Look up ENS for 0x address
+    } else if (isUnstoppableAddressFormat(input)) {
+      try {
+        const address = await resolveUnstoppableDomain(input);
+        if (!address) {
+          Alert.alert('This is not a valid Unstoppable name');
+          return;
+        }
+        setResolvedAddress(address);
+        name = input;
+        showWalletProfileModal(name);
+      } catch (e) {
+        Alert.alert(
+          'Sorry, we cannot add this Unstoppable name at this time. Please try again later!'
+        );
+        return;
+      }
     } else if (isValidAddress(input)) {
       const ens = await web3Provider.lookupAddress(input);
       if (ens && ens !== input) {
@@ -311,7 +334,13 @@ export default function ImportSeedPhraseSheet() {
 
                 setTimeout(() => {
                   // If it's not read only, show the backup sheet
-                  if (!(isENSAddressFormat(input) || isValidAddress(input))) {
+                  if (
+                    !(
+                      isENSAddressFormat(input) ||
+                      isUnstoppableAddressFormat(input) ||
+                      isValidAddress(input)
+                    )
+                  ) {
                     IS_TESTING !== 'true' &&
                       Navigation.handleAction(Routes.BACKUP_SHEET, {
                         single: true,
@@ -366,7 +395,7 @@ export default function ImportSeedPhraseSheet() {
       isImporting ? walletLoadingStates.IMPORTING_WALLET : null
     );
   }, [isImporting, setIsWalletLoading]);
-
+  const { colors } = useTheme();
   return (
     <Container testID="import-sheet">
       <StatusBar barStyle="light-content" />
@@ -381,7 +410,8 @@ export default function ImportSeedPhraseSheet() {
             onChangeText={handleSetSeedPhrase}
             onFocus={handleFocus}
             onSubmitEditing={handlePressImportButton}
-            placeholder="Seed phrase, private key, Ethereum address or ENS name"
+            placeholder="Seed phrase, private key, Ethereum address or ENS name"
+            placeholderTextColor={colors.alpha(colors.blueGreyDark, 0.3)}
             ref={inputRef}
             returnKeyType="done"
             size="large"
@@ -402,13 +432,13 @@ export default function ImportSeedPhraseSheet() {
                 {busy ? (
                   <LoadingSpinner />
                 ) : (
-                  <Text align="center" color="white" weight="bold">
+                  <Text align="center" color="whiteLabel" weight="bold">
                     􀂍{' '}
                   </Text>
                 )}
                 <Text
                   align="center"
-                  color="white"
+                  color="whiteLabel"
                   testID="import-sheet-button-label"
                   weight="bold"
                 >
@@ -424,7 +454,7 @@ export default function ImportSeedPhraseSheet() {
             >
               <Text
                 align="center"
-                color="white"
+                color="whiteLabel"
                 testID="import-sheet-button-label"
                 weight="bold"
               >

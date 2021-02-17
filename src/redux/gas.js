@@ -6,16 +6,16 @@ import {
   etherscanGetGasPrices,
   ethGasStationGetGasPrices,
   getEstimatedTimeForGasPrice,
-} from '../handlers/gasPrices';
-import { fromWei, greaterThanOrEqualTo } from '../helpers/utilities';
+} from '@rainbow-me/handlers/gasPrices';
 import {
   defaultGasPriceFormat,
   getFallbackGasPrices,
   parseGasPrices,
   parseTxFees,
-} from '../parsers/gas';
-import ethUnits from '../references/ethereum-units.json';
-import { ethereumUtils, gasUtils } from '../utils';
+} from '@rainbow-me/parsers';
+import { ethUnits } from '@rainbow-me/references';
+import { fromWei, greaterThanOrEqualTo } from '@rainbow-me/utilities';
+import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const { CUSTOM, NORMAL } = gasUtils;
@@ -306,7 +306,6 @@ const INITIAL_STATE = {
   selectedGasPrice: {},
   selectedGasPriceOption: NORMAL,
   txFees: {},
-  useShortGasFormat: true,
 };
 
 export default (state = INITIAL_STATE, action) => {

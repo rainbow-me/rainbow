@@ -1,7 +1,5 @@
 import { isString } from 'lodash';
-import PropTypes from 'prop-types';
-import React from 'react';
-import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
+import React, { useCallback } from 'react';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered, Row, RowWithMargins } from '../layout';
@@ -17,44 +15,32 @@ const renderIcon = icon =>
     icon
   );
 
-const propTypes = {
-  activeOpacity: PropTypes.number,
-  children: PropTypes.node,
-  icon: PropTypes.node,
-  iconMargin: PropTypes.number,
-  justify: PropTypes.bool,
-  label: PropTypes.string.isRequired,
-  onPress: PropTypes.func,
-};
-
-const enhance = compose(
-  onlyUpdateForKeys(Object.keys(propTypes)),
-  withHandlers({
-    onPress: ({ onPress, value }) => () => {
-      if (onPress) {
-        onPress(value);
-      }
-    },
-  })
-);
-
-const ListItem = enhance(
-  ({
-    activeOpacity,
-    children,
-    justify,
-    icon,
-    iconMargin,
-    label,
-    onPress,
-    testID,
-    ...props
-  }) => (
+const ListItem = ({
+  activeOpacity,
+  children,
+  justify,
+  icon,
+  iconMargin,
+  label,
+  scaleTo = 0.975,
+  testID,
+  disabled,
+  ...props
+}) => {
+  const onPress = useCallback(() => {
+    if (props.onPress) {
+      props.onPress(props.value);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.onPress, props.value]);
+  const { colors } = useTheme();
+  return (
     <ButtonPressAnimation
       activeOpacity={activeOpacity}
+      disabled={disabled}
       enableHapticFeedback={false}
       onPress={onPress}
-      scaleTo={0.975}
+      scaleTo={scaleTo}
       testID={testID}
     >
       <Row
@@ -71,17 +57,20 @@ const ListItem = enhance(
           margin={iconMargin}
         >
           {icon && <Centered>{renderIcon(icon)}</Centered>}
-          <TruncatedText flex={1} paddingRight={15} size="large">
+          <TruncatedText
+            color={colors.dark}
+            flex={1}
+            paddingRight={15}
+            size="large"
+          >
             {label}
           </TruncatedText>
         </RowWithMargins>
         {children && <Centered flex={1}>{children}</Centered>}
       </Row>
     </ButtonPressAnimation>
-  )
-);
-
-ListItem.propTypes = propTypes;
+  );
+};
 
 ListItem.height = ListItemHeight;
 

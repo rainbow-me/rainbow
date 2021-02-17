@@ -1,14 +1,16 @@
 import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useEffect } from 'react';
 import styled from 'styled-components';
+import { useTheme } from '../../context/ThemeContext';
 import Divider from '../Divider';
 import { RainbowButton } from '../buttons';
 import { Column, ColumnWithMargins } from '../layout';
 import { SheetActionButton } from '../sheet';
 import { Text } from '../text';
 import BackupIcon from '@rainbow-me/assets/backupIcon.png';
+import BackupIconDark from '@rainbow-me/assets/backupIconDark.png';
 import { ImgixImage } from '@rainbow-me/images';
-import { colors, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 import { deviceUtils } from '@rainbow-me/utils';
 
 const Footer = styled(ColumnWithMargins).attrs({
@@ -26,18 +28,17 @@ const Masthead = styled(Column).attrs({
   padding-top: 8;
 `;
 
-const MastheadDescription = styled(Text).attrs({
+const MastheadDescription = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
   color: colors.blueGreyDark50,
   lineHeight: 'looser',
   size: 'large',
-})`
+}))`
   ${padding(12, 42, 30)};
 `;
 
 const MastheadIcon = styled(ImgixImage).attrs({
   resizeMode: ImgixImage.resizeMode.contain,
-  source: BackupIcon,
 })`
   height: 74;
   margin-bottom: -1;
@@ -55,6 +56,7 @@ export default function BackupSheetSection({
   titleText,
   type,
 }) {
+  const { colors, isDarkMode } = useTheme();
   useEffect(() => {
     analytics.track('BackupSheet shown', {
       category: 'backup',
@@ -67,8 +69,8 @@ export default function BackupSheetSection({
   return (
     <Fragment>
       <Masthead>
-        <MastheadIcon />
-        <Text align="center" size="big" weight="bold">
+        <MastheadIcon source={isDarkMode ? BackupIconDark : BackupIcon} />
+        <Text align="center" color={colors.dark} size="big" weight="bold">
           {titleText}
         </Text>
         <MastheadDescription>{descriptionText}</MastheadDescription>

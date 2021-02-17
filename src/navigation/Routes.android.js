@@ -1,6 +1,6 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import React, { useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { InitialRouteContext } from '../context/initialRoute';
 import AddCashSheet from '../screens/AddCashSheet';
 import AddTokenSheet from '../screens/AddTokenSheet';
@@ -93,10 +93,14 @@ function ImportSeedPhraseFlowNavigator() {
 }
 
 function AddCashFlowNavigator() {
+  const { colors } = useTheme();
+  const themedWyreWebviewOptions = useMemo(() => wyreWebviewOptions(colors), [
+    colors,
+  ]);
   return (
     <Stack.Navigator
       initialRouteName={Routes.WYRE_WEBVIEW}
-      screenOptions={wyreWebviewOptions}
+      screenOptions={themedWyreWebviewOptions}
     >
       <Stack.Screen component={WyreWebview} name={Routes.WYRE_WEBVIEW} />
     </Stack.Navigator>
@@ -121,6 +125,11 @@ function MainNavigator() {
       <Stack.Screen
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SHEET}
+        options={expandedPreset}
+      />
+      <Stack.Screen
+        component={ExpandedAssetSheet}
+        name={Routes.TOKEN_INDEX_SHEET}
         options={expandedPreset}
       />
       <Stack.Screen
@@ -237,6 +246,11 @@ function MainOuterNavigator() {
       <OuterStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SCREEN}
+        options={sheetPreset}
+      />
+      <OuterStack.Screen
+        component={ExpandedAssetSheet}
+        name={Routes.TOKEN_INDEX_SCREEN}
         options={sheetPreset}
       />
       <OuterStack.Screen

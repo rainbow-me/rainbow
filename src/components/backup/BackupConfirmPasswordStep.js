@@ -25,15 +25,15 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors, margin, padding } from '@rainbow-me/styles';
+import { margin, padding } from '@rainbow-me/styles';
 import logger from 'logger';
 
-const DescriptionText = styled(Text).attrs({
+const DescriptionText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
   color: colors.alpha(colors.blueGreyDark, 0.5),
   lineHeight: 'looser',
   size: 'large',
-})`
+}))`
   ${padding(0, 50)};
 `;
 
@@ -180,8 +180,8 @@ export default function BackupConfirmPasswordStep() {
         )}
         <Title>Enter backup password</Title>
         <DescriptionText>
-          To add your wallet to the {cloudPlatform} backup, enter the backup
-          password
+          To add this wallet to your {cloudPlatform} backup, enter your existing
+          backup password
         </DescriptionText>
       </Masthead>
       <Column align="center" flex={1}>

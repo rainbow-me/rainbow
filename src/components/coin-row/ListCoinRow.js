@@ -1,13 +1,13 @@
 import { get } from 'lodash';
 import React, { Fragment, useCallback } from 'react';
-import styled, { css } from 'styled-components/primitives';
+import styled, { css } from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIconSize } from '../coin-icon';
 import { Centered, FlexItem, Row } from '../layout';
 import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
-import { colors, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 import { neverRerender } from '@rainbow-me/utils';
 
 const CoinRowPaddingTop = 9.5;
@@ -16,7 +16,8 @@ const CoinRowPaddingBottom = 9.5;
 const PercentageText = styled(BottomRowText).attrs({
   align: 'left',
 })`
-  ${({ isPositive }) => (isPositive ? `color: ${colors.green};` : null)};
+  ${({ isPositive, theme: { colors } }) =>
+    isPositive ? `color: ${colors.green};` : null};
 `;
 
 const BottomRowContainer = ios

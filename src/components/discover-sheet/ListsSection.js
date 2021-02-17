@@ -5,19 +5,18 @@ import React, {
   useEffect,
   useMemo,
   useRef,
-  useState,
 } from 'react';
-import { ScrollView } from 'react-native';
+import { FlatList, LayoutAnimation } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import styled from 'styled-components/native';
-import { emitAssetRequest } from '../../redux/explorer';
+import styled from 'styled-components';
+import { emitAssetRequest, emitChartsRequest } from '../../redux/explorer';
 import {
   COINGECKO_TRENDING_ENDPOINT,
   fetchCoingeckoIds,
 } from '../../redux/fallbackExplorer';
 import { DefaultTokenLists } from '../../references';
 import Spinner from '../Spinner';
-import ButtonPressAnimation from '../animations/ButtonPressAnimation/ButtonPressAnimation.ios';
+import { ButtonPressAnimation } from '../animations';
 import { ListCoinRow } from '../coin-row';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
 import { Centered, Column, Flex, Row } from '../layout';
@@ -31,7 +30,6 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 const fetchTrendingAddresses = async () => {
@@ -55,7 +53,7 @@ const ListButton = styled(ButtonPressAnimation).attrs({
   scaleTo: 0.96,
 })`
   margin-right: 16px;
-  ${({ selected }) =>
+  ${({ selected, theme: { colors } }) =>
     selected
       ? `
         background-color: ${colors.alpha(colors.blueGreyDark, 0.06)};
@@ -74,27 +72,63 @@ const ListName = styled(Text)`
   margin-top: ${ios ? -4.5 : 0}px;
 `;
 
-const DEFAULT_LIST = 'favorites';
-
 // Update trending lists every 5 minutes
 const TRENDING_LIST_UPDATE_INTERVAL = 5 * 60 * 1000;
+
+const layouts = [
+  { length: 110, offset: 0 },
+  { length: 89, offset: 110 },
+  { length: 120, offset: 200 },
+  { length: 81, offset: 320 },
+  { length: 92, offset: 400 },
+];
+const getItemLayout = (_, index) => ({
+  index,
+  ...layouts[index],
+});
 
 export default function ListSection() {
   const dispatch = useDispatch();
   const { network } = useAccountSettings();
   const { navigate } = useNavigation();
-  const [selectedList, setSelectedList] = useState(DEFAULT_LIST);
-  const { favorites, lists, updateList, ready, clearList } = useUserLists();
+  const {
+    favorites,
+    lists,
+    updateList,
+    ready,
+    selectedList,
+    setSelectedList,
+    clearList,
+  } = useUserLists();
+  const listRef = useRef(null);
+  const initialized = useRef(false);
   const { allAssets } = useAccountAssets();
   const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
     genericAssets,
   }));
+  const { colors } = useTheme();
+  const listData = useMemo(() => DefaultTokenLists[network], [network]);
+
+  const addressSocket = useSelector(
+    ({ explorer: { addressSocket } }) => addressSocket
+  );
+  useEffect(() => {
+    if (addressSocket !== null) {
+      Object.values(listData).forEach(({ tokens }) => {
+        dispatch(emitAssetRequest(tokens));
+        dispatch(emitChartsRequest(tokens));
+      });
+    }
+  }, [addressSocket, dispatch, listData]);
+
   const trendingListHandler = useRef(null);
 
   const updateTrendingList = useCallback(async () => {
     const tokens = await fetchTrendingAddresses();
     clearList('trending');
+
     dispatch(emitAssetRequest(tokens));
+    dispatch(emitChartsRequest(tokens));
     tokens.forEach(address => {
       updateList(address, 'trending', true);
     });
@@ -105,12 +139,46 @@ export default function ListSection() {
     );
   }, [clearList, dispatch, updateList]);
 
+  const handleSwitchList = useCallback(
+    (id, index) => {
+      LayoutAnimation.configureNext(
+        LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
+      );
+      setSelectedList(id);
+      listRef.current?.scrollToIndex({
+        animated: true,
+        index,
+        viewPosition: 0.5,
+      });
+    },
+    [setSelectedList]
+  );
+
   useEffect(() => {
-    ready && updateTrendingList();
+    if (ready && !initialized.current) {
+      ready && updateTrendingList();
+      lists.forEach((list, index) => {
+        if (list.id === selectedList) {
+          setTimeout(() => {
+            handleSwitchList(list.id, index);
+          }, 300);
+        }
+      });
+      initialized.current = true;
+    }
     return () => {
       clearTimeout(trendingListHandler.current);
     };
-  }, [ready, clearList, dispatch, updateList, updateTrendingList]);
+  }, [
+    ready,
+    clearList,
+    dispatch,
+    updateList,
+    updateTrendingList,
+    lists,
+    selectedList,
+    handleSwitchList,
+  ]);
 
   const listItems = useMemo(() => {
     if (selectedList === 'favorites') {
@@ -133,16 +201,13 @@ export default function ListSection() {
     }
   }, [allAssets, favorites, genericAssets, lists, selectedList]);
 
-  const handleSwitchList = useCallback(id => {
-    setSelectedList(id);
-  }, []);
-
   const handlePress = useCallback(
     item => {
       navigate(
         ios ? Routes.EXPANDED_ASSET_SHEET : Routes.EXPANDED_ASSET_SCREEN,
         {
           asset: item,
+          fromDiscover: true,
           longFormHeight: initialChartExpandedStateSheetHeight,
           type: 'token',
         }
@@ -159,6 +224,33 @@ export default function ListSection() {
     []
   );
 
+  const renderItem = useCallback(
+    ({ item: list, index }) => (
+      <ListButton
+        key={`list-${list.id}`}
+        onPress={() => handleSwitchList(list.id, index)}
+        selected={selectedList === list.id}
+      >
+        <Row>
+          <Emoji name={list.emoji} size="small" />
+          <ListName
+            color={
+              selectedList === list.id
+                ? colors.alpha(colors.blueGreyDark, 0.8)
+                : colors.alpha(colors.blueGreyDark, 0.5)
+            }
+            lineHeight="paragraphSmall"
+            size="lmedium"
+            weight="bold"
+          >
+            {list.name}
+          </ListName>
+        </Row>
+      </ListButton>
+    ),
+    [colors, handleSwitchList, selectedList]
+  );
+
   return (
     <Column>
       <Flex paddingHorizontal={19}>
@@ -173,51 +265,34 @@ export default function ListSection() {
       ) : (
         <Fragment>
           <Column>
-            <ScrollView
+            <FlatList
               contentContainerStyle={{
                 paddingBottom: 6,
                 paddingHorizontal: 19,
                 paddingTop: 10,
               }}
+              data={listData}
+              getItemLayout={getItemLayout}
               horizontal
+              keyExtractor={item => item.id}
+              ref={listRef}
+              renderItem={renderItem}
               showsHorizontalScrollIndicator={false}
-            >
-              {DefaultTokenLists[network].map(list => (
-                <ListButton
-                  key={`list-${list.id}`}
-                  onPress={() => handleSwitchList(list.id)}
-                  selected={selectedList === list.id}
-                >
-                  <Row>
-                    <Emoji name={list.emoji} size="small" />
-                    <ListName
-                      color={
-                        selectedList === list.id
-                          ? colors.alpha(colors.blueGreyDark, 0.8)
-                          : colors.alpha(colors.blueGreyDark, 0.5)
-                      }
-                      lineHeight="paragraphSmall"
-                      size="lmedium"
-                      weight="bold"
-                    >
-                      {list.name}
-                    </ListName>
-                  </Row>
-                </ListButton>
-              ))}
-            </ScrollView>
+            />
             <EdgeFade />
           </Column>
           <Column>
             {listItems?.length ? (
-              listItems.map(item => (
-                <ListCoinRow
-                  {...itemProps}
-                  item={item}
-                  key={`${selectedList}-list-item-${item.address}`}
-                  onPress={() => handlePress(item)}
-                />
-              ))
+              listItems
+                .filter(item => !!item.symbol)
+                .map(item => (
+                  <ListCoinRow
+                    {...itemProps}
+                    item={item}
+                    key={`${selectedList}-list-item-${item.address}`}
+                    onPress={() => handlePress(item)}
+                  />
+                ))
             ) : (
               <Centered marginVertical={30}>
                 <Text

@@ -1,6 +1,17 @@
 #!/bin/bash
-
 set -eo pipefail
+
+if [ -n "$RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK" ]; then
+  eval $RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK;
+  echo "✅ executed ios prebuild hook"
+fi
+
+# Ignore any potential tracked changes to mutable development files.
+git update-index --assume-unchanged "ios/Internals/ios/Internals.h"
+git update-index --assume-unchanged "ios/Internals/ios/Internals.m"
+git update-index --assume-unchanged "ios/Internals/ios/Internals.swift"
+git update-index --assume-unchanged "ios/Internals/ios/Internals-Bridging-Header.h"
+git update-index --assume-unchanged "ios/Extras.json"
 
 # Specifying ONLY the node packages that we need to install via browserify
 # (because those aren't available in react native) and some of our deps require them.
@@ -28,3 +39,10 @@ fi
 patch-package
 echo "✅ All patches applied"
 
+DEBUGFILE=src/config/debug.js
+if test -f "$DEBUGFILE"; then
+    echo "$DEBUGFILE exists."
+else
+    echo "$DEBUGFILE does not exist. You use default debug settings."
+    cp src/config/defaultDebug.js $DEBUGFILE
+fi

@@ -5,6 +5,7 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { IS_TESTING } from 'react-native-dotenv';
@@ -31,7 +32,6 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
 import { filterList } from '@rainbow-me/utils';
 
 const headerlessSection = data => [{ data, title: '' }];
@@ -53,7 +53,7 @@ const searchCurrencyList = (searchList, query) => {
 
 const timingConfig = { duration: 700 };
 
-export default function DiscoverSearch({ onScrollTop }) {
+export default function DiscoverSearch() {
   const { navigate } = useNavigation();
   const listOpacity = useSharedValue(0);
   const { allAssets } = useAccountAssets();
@@ -68,7 +68,9 @@ export default function DiscoverSearch({ onScrollTop }) {
     listOpacity.value = withTiming(1, timingConfig);
   }, [listOpacity]);
 
-  const { setIsSearching, searchQuery } = useContext(DiscoverSheetContext);
+  const { setIsSearching, searchQuery, isSearchModeEnabled } = useContext(
+    DiscoverSheetContext
+  );
   const [searchQueryForSearch, setSearchQueryForSearch] = useState('');
   const type = CurrencySelectionTypes.output;
   const dispatch = useDispatch();
@@ -81,6 +83,7 @@ export default function DiscoverSearch({ onScrollTop }) {
     loadingAllTokens,
   } = useUniswapAssets();
   const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
+  const { colors } = useTheme();
 
   const currencyList = useMemo(() => {
     let filteredList = [];
@@ -162,6 +165,7 @@ export default function DiscoverSearch({ onScrollTop }) {
     globalVerifiedHighLiquidityAssets,
     globalHighLiquidityAssets,
     globalLowLiquidityAssets,
+    colors.yellowFavorite,
     curatedNotFavorited,
   ]);
 
@@ -212,6 +216,17 @@ export default function DiscoverSearch({ onScrollTop }) {
     [handleActionAsset, handlePress]
   );
 
+  const ref = useRef();
+  useEffect(() => {
+    ref.current?.scrollToLocation({
+      animated: false,
+      itemIndex: 0,
+      sectionIndex: 0,
+      viewOffset: 0,
+      viewPosition: 0,
+    });
+  }, [isSearchModeEnabled]);
+
   return (
     <Animated.View
       style={[
@@ -225,8 +240,8 @@ export default function DiscoverSearch({ onScrollTop }) {
           keyboardDismissMode="on-drag"
           listItems={currencyList}
           loading={loadingAllTokens}
-          onScrollTop={onScrollTop}
           query={searchQueryForSearch}
+          ref={ref}
           showList
           testID="discover-currency-select-list"
           type={type}
