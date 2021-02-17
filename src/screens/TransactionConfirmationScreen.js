@@ -436,10 +436,7 @@ const TransactionConfirmationScreen = () => {
         (isNil(gas) && isNil(gasLimitFromPayload)) ||
         (!isNil(gas) && greaterThan(rawGasLimit, convertHexToString(gas))) ||
         (!isNil(gasLimitFromPayload) &&
-          greaterThanOrEqualTo(
-            rawGasLimit,
-            convertHexToString(gasLimitFromPayload)
-          ))
+          greaterThan(rawGasLimit, convertHexToString(gasLimitFromPayload)))
       ) {
         logger.log('⛽ using padded estimation!', rawGasLimit.toString());
         gas = toHex(rawGasLimit);
