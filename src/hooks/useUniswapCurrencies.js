@@ -2,7 +2,7 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { find, get, isEmpty } from 'lodash';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo } from 'react';
 import { InteractionManager } from 'react-native';
 import { useDispatch } from 'react-redux';
 
@@ -15,7 +15,6 @@ import useSwapInputOutputTokens from './useSwapInputOutputTokens';
 import useUniswapAssetsInWallet from './useUniswapAssetsInWallet';
 import useUniswapCalls from './useUniswapCalls';
 import CurrencySelectionTypes from '@rainbow-me/helpers/currencySelectionTypes';
-import { multiply } from '@rainbow-me/helpers/utilities';
 import {
   multicallAddListeners,
   multicallUpdateOutdatedListeners,
@@ -25,6 +24,7 @@ import {
   updateSwapOutputCurrency,
 } from '@rainbow-me/redux/swap';
 import Routes from '@rainbow-me/routes';
+import { multiply } from '@rainbow-me/utilities';
 import { ethereumUtils, isNewValueForPath } from '@rainbow-me/utils';
 import logger from 'logger';
 
@@ -120,7 +120,7 @@ export default function useUniswapCurrencies({
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     dispatch(updateSwapInputCurrency(defaultInputItemInWallet));
     dispatch(updateSwapOutputCurrency(defaultOutputItem));
   }, [defaultInputItemInWallet, dispatch, defaultOutputItem]);

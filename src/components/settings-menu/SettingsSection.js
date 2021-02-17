@@ -1,24 +1,11 @@
 import AsyncStorage from '@react-native-community/async-storage';
-import React, {
-  Fragment,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
-import {
-  Image,
-  Linking,
-  NativeModules,
-  ScrollView,
-  Share,
-  Switch,
-} from 'react-native';
+import React, { Fragment, useCallback, useMemo } from 'react';
+import { Image, Linking, NativeModules, ScrollView, Share } from 'react-native';
 import styled from 'styled-components';
 import { REVIEW_ANDROID } from '../../config/experimental';
 import useExperimentalFlag from '../../config/experimentalHooks';
 //import { supportedLanguages } from '../../languages';
-import { useTheme } from '../../context/ThemeContext';
+import { THEMES, useTheme } from '../../context/ThemeContext';
 import AppVersionStamp from '../AppVersionStamp';
 import { Icon } from '../icons';
 import { Column, ColumnWithDividers } from '../layout';
@@ -28,7 +15,7 @@ import {
   ListItemArrowGroup,
   ListItemDivider,
 } from '../list';
-import { Emoji } from '../text';
+import { Emoji, Text } from '../text';
 import BackupIcon from '@rainbow-me/assets/settingsBackup.png';
 import BackupIconDark from '@rainbow-me/assets/settingsBackupDark.png';
 import CurrencyIcon from '@rainbow-me/assets/settingsCurrency.png';
@@ -104,6 +91,10 @@ const WarningIcon = styled(Icon).attrs(({ theme: { colors } }) => ({
   margin-top: 1;
 `;
 
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 const checkAllWallets = wallets => {
   if (!wallets) return false;
   let areBackedUp = true;
@@ -143,7 +134,7 @@ export default function SettingsSection({
   const { /*language,*/ nativeCurrency, network } = useAccountSettings();
   const { isTinyPhone } = useDimensions();
 
-  const { colors, isDarkMode, setTheme } = useTheme();
+  const { colors, isDarkMode, setTheme, colorScheme } = useTheme();
 
   const onSendFeedback = useSendFeedback();
 
@@ -184,12 +175,15 @@ export default function SettingsSection({
     ? colors.green
     : colors.alpha(colors.blueGreyDark, 0.5);
 
-  const [preDarkMode, setPreDarkMode] = useState(isDarkMode);
-
-  useEffect(() => setTheme(preDarkMode ? 'dark' : 'light'), [
-    setTheme,
-    preDarkMode,
-  ]);
+  const toggleTheme = useCallback(() => {
+    if (colorScheme === THEMES.SYSTEM) {
+      setTheme(THEMES.LIGHT);
+    } else if (colorScheme === THEMES.LIGHT) {
+      setTheme(THEMES.DARK);
+    } else {
+      setTheme(THEMES.SYSTEM);
+    }
+  }, [setTheme, colorScheme]);
 
   return (
     <Container backgroundColor={colors.white} scrollEnabled={isTinyPhone}>
@@ -242,26 +236,23 @@ export default function SettingsSection({
           </ListItemArrowGroup>
         </ListItem>
         <ListItem
-          disabled={android}
           icon={
             <SettingIcon
               source={isDarkMode ? DarkModeIconDark : DarkModeIcon}
             />
           }
-          label="Dark Mode"
-          scaleTo={1}
+          label="Theme"
+          onPress={toggleTheme}
           testID="darkmode-section"
         >
           <Column align="end" flex="1" justify="end">
-            <Switch
-              onValueChange={setPreDarkMode}
-              thumbColor={colors.whiteLabel}
-              trackColor={{
-                false: colors.alpha(colors.blueGreyDark, 0.12),
-                true: '#2CCC00',
-              }}
-              value={preDarkMode}
-            />
+            <Text
+              color={colors.alpha(colors.blueGreyDark, 0.6)}
+              size="large"
+              weight="medium"
+            >
+              {capitalizeFirstLetter(colorScheme)}
+            </Text>
           </Column>
         </ListItem>
         {/*<ListItem

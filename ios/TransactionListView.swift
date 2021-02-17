@@ -92,14 +92,12 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
    didSet {
     if (accountImage != nil) {
       let url = URL.init(fileURLWithPath: accountImage!.expandingTildeInPath)
-
-      let imageData:NSData = NSData(contentsOf: url)!
-
-      let image = UIImage(data: imageData as Data)
-
-      header.accountImage.alpha = 1.0
-      header.accountImage.image = image
-      shadowLayer.shadowColor = darkMode ? UIColor.black.cgColor : UIColor.gray.cgColor
+      if let imageData:NSData = NSData(contentsOf: url) {
+        let image = UIImage(data: imageData as Data)
+        header.accountImage.alpha = 1.0
+        header.accountImage.image = image
+        shadowLayer.shadowColor = darkMode ? UIColor.black.cgColor : UIColor.gray.cgColor
+      }
     } else {
       header.accountImage.alpha = 0.0
     }

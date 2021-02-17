@@ -11,15 +11,15 @@ import {
 } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import { withThemeContext } from '../../context/ThemeContext';
-import {
-  deviceUtils,
-  isNewValueForPath,
-  safeAreaInsetValues,
-} from '../../utils';
 import { CoinDivider } from '../coin-divider';
 import { CoinRowHeight } from '../coin-row';
 import AssetListHeader, { AssetListHeaderHeight } from './AssetListHeader';
 import { firstCoinRowMarginTop, ViewTypes } from './RecyclerViewTypes';
+import {
+  deviceUtils,
+  isNewValueForPath,
+  safeAreaInsetValues,
+} from '@rainbow-me/utils';
 
 const NOOP = () => undefined;
 let globalDeviceDimensions = 0;
@@ -633,7 +633,7 @@ class RecyclerAssetList extends Component {
     }
 
     if (row.item && row.item.smallBalancesContainer) {
-      return `balance_${row.item.stableId}`;
+      return `smallBalancesContainer`;
     }
 
     if (row.item && row.item.coinDivider) {
@@ -759,7 +759,6 @@ class RecyclerAssetList extends Component {
       <AssetListHeader {...data} isSticky />
       {this.state.showCoinListEditor ? (
         <CoinDivider
-          assetsAmount={this.renderList.length}
           balancesSum={0}
           isSticky
           nativeCurrency={this.props.nativeCurrency}

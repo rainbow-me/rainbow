@@ -1,21 +1,22 @@
-import { debounce } from 'lodash';
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Linking } from 'react-native';
-import { compose, pure, withHandlers } from 'recompact';
-import { withThemeContext } from '../../context/ThemeContext';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { Centered, Row } from '../layout';
 import { Text } from '../text';
 import { padding } from '@rainbow-me/styles';
 
-const WalletConnectLearnMoreButton = ({ onPressLearnMore, colors }) => {
+const WalletConnectLearnMoreButton = () => {
+  const openWalletConnectWebsite = useCallback(() => {
+    Linking.openURL('https://walletconnect.org/');
+  }, []);
+
+  const { colors } = useTheme();
   return (
     <Row align="start">
       <ButtonPressAnimation
         activeOpacity={0.5}
-        onPress={onPressLearnMore}
+        onPress={openWalletConnectWebsite}
         scaleTo={0.96}
       >
         <Centered direction="column">
@@ -34,17 +35,4 @@ const WalletConnectLearnMoreButton = ({ onPressLearnMore, colors }) => {
   );
 };
 
-WalletConnectLearnMoreButton.propTypes = {
-  onPressLearnMore: PropTypes.func,
-};
-
-const openWalletConnectWebsite = () =>
-  Linking.openURL('https://walletconnect.org/');
-
-export default compose(
-  pure,
-  withThemeContext,
-  withHandlers({
-    onPressLearnMore: () => debounce(openWalletConnectWebsite, 200),
-  })
-)(WalletConnectLearnMoreButton);
+export default WalletConnectLearnMoreButton;

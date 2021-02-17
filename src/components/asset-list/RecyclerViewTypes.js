@@ -78,7 +78,6 @@ export const ViewTypes = {
       const { item = {} } = data;
       return (
         <CoinDivider
-          assetsAmount={item.assetsAmount}
           balancesSum={item.value}
           isCoinListEdited={isCoinListEdited}
           nativeCurrency={nativeCurrency}

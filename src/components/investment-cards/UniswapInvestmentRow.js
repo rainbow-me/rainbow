@@ -1,7 +1,7 @@
 import React, { Fragment, useCallback } from 'react';
 import { View } from 'react-native';
 import styled from 'styled-components';
-import { useTheme, withThemeContext } from '../../context/ThemeContext';
+import { useTheme } from '../../context/ThemeContext';
 import { convertAmountToPercentageDisplay } from '../../helpers/utilities';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText, CoinRow } from '../coin-row';
@@ -15,12 +15,12 @@ import Routes from '@rainbow-me/routes';
 const formatPercentageString = percentString =>
   percentString ? percentString.toString().split('-').join('- ') : '-';
 
-const PercentageText = withThemeContext(styled(BottomRowText).attrs({
+const PercentageText = styled(BottomRowText).attrs({
   align: 'right',
 })`
-  color: ${({ isPositive, colors }) =>
+  color: ${({ isPositive, theme: { colors } }) =>
     isPositive ? colors.green : colors.alpha(colors.blueGreyDark, 0.5)};
-`);
+`;
 
 const Content = styled(ButtonPressAnimation)`
   top: 0;

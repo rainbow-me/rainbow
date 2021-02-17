@@ -9,6 +9,7 @@ import { CoinIcon } from '../coin-icon';
 import { Centered, ColumnWithMargins } from '../layout';
 import { SheetActionButton } from '../sheet';
 import { Br, GradientText, Text } from '../text';
+import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
 import { DAI_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
@@ -49,7 +50,7 @@ const SavingsSheetEmptyState = ({
   ]);
 
   const onDeposit = useCallback(() => {
-    if (!isReadOnlyWallet) {
+    if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
       navigate(Routes.SAVINGS_DEPOSIT_MODAL, {
         params: {
           params: {

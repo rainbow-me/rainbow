@@ -16,6 +16,10 @@ const DisplayDappNames = Object.freeze({
     name: 'Aave',
     uri: buildAssetUrl('aave.com'),
   },
+  'badger.finance': {
+    name: 'Badger DAO',
+    uri: null,
+  },
   'balancer.exchange': {
     name: 'Balancer',
     uri: null,
@@ -40,9 +44,17 @@ const DisplayDappNames = Object.freeze({
     name: 'dYdX',
     uri: buildAssetUrl('dydx.exchange'),
   },
+  'ens.domains': {
+    name: 'ENS App',
+    uri: null,
+  },
   'furucombo.app': {
     name: 'Furucombo',
     uri: buildAssetUrl('furucombo.app'),
+  },
+  'gnosis-safe.io': {
+    name: 'Gnosis Safe Multisig',
+    uri: null,
   },
   'instadapp.io': {
     name: 'Instadapp',
@@ -84,9 +96,9 @@ const DisplayDappNames = Object.freeze({
     name: 'Rarible',
     uri: buildAssetUrl('rarible.com'),
   },
-  'sushiswapclassic.org': {
+  'sushiswap.fi': {
     name: 'SushiSwap',
-    uri: buildAssetUrl('sushiswapclassic.org'),
+    uri: null,
   },
   'swerve.fi': {
     name: 'Swerve',
@@ -102,6 +114,10 @@ const DisplayDappNames = Object.freeze({
   },
   'umaproject.org': {
     name: 'UMA',
+    uri: null,
+  },
+  'unisocks.exchange': {
+    name: 'Unisocks Exchange',
     uri: null,
   },
   'uniswap.org': {
@@ -126,6 +142,10 @@ const DisplayDappNames = Object.freeze({
   },
   'zerion.io': {
     name: 'Zerion',
+    uri: null,
+  },
+  'zora.co': {
+    name: 'Zora',
     uri: null,
   },
 });

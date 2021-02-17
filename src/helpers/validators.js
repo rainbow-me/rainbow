@@ -2,6 +2,7 @@ import { isValidAddress } from 'ethereumjs-util';
 import {
   isHexStringIgnorePrefix,
   isValidMnemonic,
+  resolveUnstoppableDomain,
   web3Provider,
 } from '@rainbow-me/handlers/web3';
 import { sanitizeSeedPhrase } from '@rainbow-me/utils';
@@ -31,12 +32,16 @@ export const isENSAddressFormat = address => {
   return true;
 };
 
+export const isUnstoppableAddressFormat = address => {
+  return /^([\w-]+\.)+(crypto)$/.test(address);
+};
+
 /**
- * @desc validate ethereum address or ENS name
- * @param  {String} address or ENS
+ * @desc validate ethereum address, ENS, or Unstoppable name
+ * @param  {String} address, ENS, or Unstoppable
  * @return {Boolean}
  */
-export const checkIsValidAddressOrENS = async address => {
+export const checkIsValidAddressOrDomain = async address => {
   if (isENSAddressFormat(address)) {
     try {
       const resolvedAddress = await web3Provider.resolveName(address);
@@ -44,6 +49,10 @@ export const checkIsValidAddressOrENS = async address => {
     } catch (error) {
       return false;
     }
+  }
+  if (isUnstoppableAddressFormat(address)) {
+    const resolvedAddress = await resolveUnstoppableDomain(address);
+    return !!resolvedAddress;
   }
   return isValidAddress(address);
 };
@@ -80,7 +89,7 @@ export const isValidSeed = seed =>
 
 /**
  * @desc validates the input required to create a new wallet
- * @param  {String} seed, mnemonic, private key, address or ENS name
+ * @param  {String} seed, mnemonic, private key, address, ENS name, or Unstoppable name
  * @return {Boolean}
  */
 export const isValidWallet = seed =>
@@ -88,4 +97,5 @@ export const isValidWallet = seed =>
   (isValidPrivateKey(seed) ||
     isValidSeedPhrase(seed) ||
     isValidAddress(seed) ||
+    isUnstoppableAddressFormat(seed) ||
     isENSAddressFormat(seed));
