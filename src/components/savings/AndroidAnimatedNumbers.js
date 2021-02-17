@@ -1,14 +1,15 @@
 import React, { useEffect, useRef } from 'react';
 import { findNodeHandle, NativeModules, TextInput } from 'react-native';
-import styled from 'styled-components/native';
+import styled from 'styled-components';
+import { useTheme } from '../../context/ThemeContext';
 import { isSymbolStablecoin } from '../../helpers/savings';
-import { colors, fonts, fontWithWidth } from '@rainbow-me/styles';
+import { fonts, fontWithWidth } from '@rainbow-me/styles';
 
 const TextChunk = styled(TextInput).attrs({
   editable: false,
 })`
   ${fontWithWidth(fonts.weight.bold)};
-  color: ${colors.dark};
+  color: ${({ theme: { colors } }) => colors.dark};
   font-variant: tabular-nums;
   font-size: ${parseFloat(fonts.size.lmedium)};
   text-align: left;
@@ -34,15 +35,18 @@ function formatter(symbol, val) {
 
 export default function AndroidText({ style, animationConfig }) {
   const isStable = isSymbolStablecoin(animationConfig.symbol);
+  const { isDarkMode } = useTheme();
+
   const ref = useRef();
   useEffect(() => {
     const screen = findNodeHandle(ref.current.getNativeRef());
     NativeModules.RNTextAnimator.animate(screen, {
       ...animationConfig,
+      darkMode: isDarkMode,
       isStable,
     });
     return () => NativeModules.RNTextAnimator.stop(screen);
-  }, [animationConfig, isStable]);
+  }, [animationConfig, isStable, isDarkMode]);
 
   return (
     <Row style={style}>

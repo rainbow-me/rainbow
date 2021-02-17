@@ -26,7 +26,6 @@ import {
 } from '../utils/keychainConstants';
 import useInitializeWallet from './useInitializeWallet';
 import useWallets from './useWallets';
-import { colors } from '@rainbow-me/styles';
 import logger from 'logger';
 
 const keysOnly = keysWithValues => map(keysWithValues, item => item?.username);
@@ -35,6 +34,7 @@ export default function useWalletsDebug() {
   const { selectedWallet, wallets } = useWallets();
   const initializeWallet = useInitializeWallet();
   const dispatch = useDispatch();
+  const { colors } = useTheme();
 
   const debug = useCallback(async () => {
     const isIncomplete = isEmpty(selectedWallet) || !wallets;
@@ -120,7 +120,7 @@ export default function useWalletsDebug() {
       data: JSON.stringify(keysOnly(allKeys), null, 2),
       status,
     };
-  }, [dispatch, initializeWallet, selectedWallet, wallets]);
+  }, [colors, dispatch, initializeWallet, selectedWallet, wallets]);
 
   return debug;
 }

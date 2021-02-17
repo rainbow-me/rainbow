@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { Column, ColumnWithMargins } from '../layout';
 import SendAssetFormField from './SendAssetFormField';
 import { useDimensions } from '@rainbow-me/hooks';

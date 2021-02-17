@@ -1,7 +1,7 @@
 import React from 'react';
 import Animated, { Easing } from 'react-native-reanimated';
 import { useTimingTransition } from 'react-native-redash';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { interpolate } from './procs';
 
 const AnimatedContainer = styled(Animated.View)`

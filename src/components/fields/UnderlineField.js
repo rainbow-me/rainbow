@@ -11,33 +11,36 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
+import { useTheme } from '../../context/ThemeContext';
 import { Button } from '../buttons';
 import { ExchangeInput } from '../exchange';
 import { ColumnWithMargins, Row } from '../layout';
 import { useDimensions } from '@rainbow-me/hooks';
-import { colors, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 
 const Underline = styled.View`
   ${position.cover};
-  background-color: ${colors.blueGreyDark};
+  background-color: ${({ theme: { colors } }) => colors.blueGreyDark};
   opacity: 0.2;
 `;
 
 const UnderlineAnimated = styled(Animated.View)`
   ${position.cover};
-  background-color: ${colors.sendScreen.brightBlue};
+  background-color: ${({ theme: { colors } }) => colors.sendScreen.brightBlue};
   left: -100%;
 `;
 
-const UnderlineInput = styled(ExchangeInput).attrs(({ isTinyPhone }) => ({
-  color: colors.dark,
-  disableTabularNums: true,
-  keyboardAppearance: 'light',
-  letterSpacing: 'roundedTightest',
-  size: isTinyPhone || android ? 'bigger' : 'h3',
-  weight: 'medium',
-}))`
+const UnderlineInput = styled(ExchangeInput).attrs(
+  ({ isTinyPhone, theme: { isDarkMode, colors } }) => ({
+    color: colors.dark,
+    disableTabularNums: true,
+    keyboardAppearance: isDarkMode ? 'dark' : 'light',
+    letterSpacing: 'roundedTightest',
+    size: isTinyPhone || android ? 'bigger' : 'h3',
+    weight: 'medium',
+  })
+)`
   padding-right: 8;
   ${android ? 'height: 40;' : ''}
   ${android ? 'padding-bottom: 0;' : ''}
@@ -151,11 +154,14 @@ const UnderlineField = (
     };
   });
 
+  const { colors, isDarkMode } = useTheme();
+
   return (
     <ColumnWithMargins flex={1} margin={8} {...props}>
       <Row align="center" justify="space-between">
         <UnderlineInput
           autoFocus={autoFocus}
+          isDarkMode={isDarkMode}
           isTinyPhone={isTinyPhone}
           keyboardType={keyboardType}
           mask={mask}

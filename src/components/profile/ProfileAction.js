@@ -1,24 +1,24 @@
 import React from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { RowWithMargins } from '../layout';
 import { Text } from '../text';
-import { colors, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 
 const Container = styled(RowWithMargins).attrs({
   align: 'center',
   justify: 'start',
   margin: 6,
 })`
-  background-color: ${colors.transparent};
+  background-color: ${({ theme: { colors } }) => colors.transparent};
   height: 34;
   padding-bottom: 2;
 `;
 
-const ProfileActionIcon = styled(Icon).attrs({
+const ProfileActionIcon = styled(Icon).attrs(({ theme: { colors } }) => ({
   color: colors.appleBlue,
-})`
+}))`
   ${({ iconSize }) => position.size(iconSize)};
   margin-top: 0.5;
 `;

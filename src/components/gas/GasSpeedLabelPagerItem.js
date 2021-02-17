@@ -7,11 +7,10 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { Row } from '../layout';
 import { Text } from '../text';
 import GasSpeedEmoji from './GasSpeedEmoji';
-import { colors } from '@rainbow-me/styles';
 import { gasUtils } from '@rainbow-me/utils';
 
 const AnimatedRow = Animated.createAnimatedComponent(Row);
@@ -60,6 +59,8 @@ const GasSpeedLabelPagerItem = ({ label, selected, shouldAnimate, theme }) => {
     };
   });
 
+  const { colors } = useTheme();
+
   const index = gasUtils.GasSpeedOrder.indexOf(label);
   const isFirst = index === 0;
   const isLast = index === gasUtils.GasSpeedOrder.length - 1;
@@ -89,7 +90,7 @@ const GasSpeedLabelPagerItem = ({ label, selected, shouldAnimate, theme }) => {
         <GasSpeedLabel
           color={
             theme !== 'light'
-              ? colors.white
+              ? colors.whiteLabel
               : colors.alpha(colors.blueGreyDark, 0.8)
           }
         >

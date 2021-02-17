@@ -6,7 +6,6 @@ import { useAccountSettings, useInternetStatus } from '../../hooks';
 import { Icon } from '../icons';
 import { Nbsp, Text } from '../text';
 import Toast from './Toast';
-import { colors } from '@rainbow-me/styles';
 
 const TestnetToast = () => {
   const isConnected = useInternetStatus();
@@ -29,6 +28,8 @@ const TestnetToast = () => {
       setNetworkName(name + (isConnected ? '' : ' (offline)'));
     }
   }, [name, network, providerUrl, isConnected]);
+
+  const { colors } = useTheme();
 
   return (
     <Toast isVisible={visible} testID={`testnet-toast-${networkName}`}>

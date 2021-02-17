@@ -1,29 +1,41 @@
 import { get } from 'lodash';
 import React from 'react';
 import { PixelRatio, Text } from 'react-native';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { Row } from '../../../layout';
 import ChartHeaderTitle from './ChartHeaderTitle';
 import { ChartYLabel } from '@rainbow-me/animated-charts';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
-import { colors, fonts, fontWithWidth } from '@rainbow-me/styles';
+import { fonts, fontWithWidth } from '@rainbow-me/styles';
+
+const ChartPriceRow = styled(Row)``;
 
 const Label = styled(ChartYLabel)`
-  color: ${colors.dark};
+  color: ${({ theme: { colors } }) => colors.dark};
   ${fontWithWidth(fonts.weight.heavy)};
   font-size: ${fonts.size.big};
   letter-spacing: ${fonts.letterSpacing.roundedTight};
   ${android &&
-  `margin-top: -8;
-     margin-bottom: -16;`}
+  `margin-top: -30;
+     margin-bottom: -30;
+     width: 150px;
+     `}
 `;
 
-const AndroidCurrencySymbolLabel = styled(Label)`
+const AndroidCurrencySymbolLabel = styled(ChartYLabel)`
+  color: ${({ theme: { colors } }) => colors.dark};
+  ${fontWithWidth(fonts.weight.heavy)};
+  font-size: ${fonts.size.big};
+  letter-spacing: ${fonts.letterSpacing.roundedTight};
+  ${android &&
+  `margin-top: -30;
+     margin-bottom: -30;
+     `}
   height: 69;
   left: 5.5;
   margin-right: 3;
-  top: ${PixelRatio.get() <= 2.625 ? 10 : 12};
+  top: ${PixelRatio.get() <= 2.625 ? 22 : 23};
 `;
 
 export function formatNative(value, priceSharedValue, nativeSelected) {
@@ -65,7 +77,7 @@ export default function ChartPriceLabel({
   return isNoPriceData ? (
     <ChartHeaderTitle>{defaultValue}</ChartHeaderTitle>
   ) : (
-    <Row>
+    <ChartPriceRow>
       {android && (
         <AndroidCurrencySymbolLabel
           as={Text}
@@ -88,10 +100,7 @@ export default function ChartPriceLabel({
           }
           return formatted;
         }}
-        style={{
-          width: '100%',
-        }}
       />
-    </Row>
+    </ChartPriceRow>
   );
 }

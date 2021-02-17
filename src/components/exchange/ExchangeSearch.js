@@ -8,13 +8,13 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import Spinner from '../../assets/chartSpinner.png';
 import { ClearInputDecorator, Input } from '../inputs';
 import { Row } from '../layout';
 import { Text } from '../text';
 import { ImgixImage } from '@rainbow-me/images';
-import { colors, margin, padding } from '@rainbow-me/styles';
+import { margin, padding } from '@rainbow-me/styles';
 import { deviceUtils } from '@rainbow-me/utils';
 
 export const ExchangeSearchHeight = 40;
@@ -23,16 +23,18 @@ const ExchangeSearchWidth = deviceUtils.dimensions.width - 30;
 const Container = styled(Row)`
   ${margin(0, 15, 8)};
   ${padding(0, 37, 0, 12)};
-  background-color: ${colors.transparent};
+  background-color: ${({ theme: { colors } }) => colors.transparent};
   border-radius: ${ExchangeSearchHeight / 2};
   height: ${ExchangeSearchHeight};
   overflow: hidden;
 `;
 
-const BackgroundGradient = styled(RadialGradient).attrs({
-  center: [ExchangeSearchWidth, ExchangeSearchWidth / 2],
-  colors: ['#FCFDFE', '#F0F2F5'],
-})`
+const BackgroundGradient = styled(RadialGradient).attrs(
+  ({ theme: { colors } }) => ({
+    center: [ExchangeSearchWidth, ExchangeSearchWidth / 2],
+    colors: colors.gradients.searchBar,
+  })
+)`
   position: absolute;
   height: ${ExchangeSearchWidth};
   top: ${-(ExchangeSearchWidth - ExchangeSearchHeight) / 2};
@@ -40,17 +42,17 @@ const BackgroundGradient = styled(RadialGradient).attrs({
   width: ${ExchangeSearchWidth};
 `;
 
-const SearchIcon = styled(Text).attrs({
+const SearchIcon = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.alpha(colors.blueGreyDark, 0.5),
   size: 'large',
   weight: 'semibold',
-})``;
+}))``;
 
 const SearchIconWrapper = styled(Animated.View)`
   margin-top: ${android ? '5' : '9'};
 `;
 
-const SearchInput = styled(Input).attrs({
+const SearchInput = styled(Input).attrs(({ theme: { colors } }) => ({
   autoCapitalize: 'words',
   blurOnSubmit: false,
   clearTextOnFocus: true,
@@ -65,7 +67,7 @@ const SearchInput = styled(Input).attrs({
   size: 'large',
   spellCheck: false,
   weight: 'semibold',
-})`
+}))`
   ${android
     ? `margin-top: -6;
   margin-bottom: -10;
@@ -75,11 +77,11 @@ const SearchInput = styled(Input).attrs({
   margin-left: 4;
 `;
 
-const SearchSpinner = styled(ImgixImage).attrs({
+const SearchSpinner = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
   resizeMode: ImgixImage.resizeMode.contain,
   source: Spinner,
   tintColor: colors.alpha(colors.blueGreyDark, 0.6),
-})`
+}))`
   height: 20;
   width: 20;
 `;

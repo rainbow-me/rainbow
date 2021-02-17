@@ -1,12 +1,11 @@
 import { times } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { useTimeout } from '../../hooks';
 import TokenFamilyHeader, {
   TokenFamilyHeaderAnimationDuration,
 } from './TokenFamilyHeader';
-import { colors } from '@rainbow-me/styles';
 
 export const TokenFamilyWrapPaddingTop = 6;
 
@@ -20,7 +19,7 @@ const transition = (
 );
 
 const Container = styled.View`
-  background-color: ${colors.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
   overflow: hidden;
   padding-top: ${({ isFirst }) => (isFirst ? TokenFamilyWrapPaddingTop : 0)};
 `;

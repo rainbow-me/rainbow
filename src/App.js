@@ -29,7 +29,6 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import VersionNumber from 'react-native-version-number';
 import { connect, Provider } from 'react-redux';
-import { compose, withProps } from 'recompact';
 import PortalConsumer from './components/PortalConsumer';
 import { FlexItem } from './components/layout';
 import { OfflineToast } from './components/toasts';
@@ -38,6 +37,7 @@ import {
   showNetworkRequests,
   showNetworkResponses,
 } from './config/debug';
+import { MainThemeProvider } from './context/ThemeContext';
 import { InitialRouteContext } from './context/initialRoute';
 import monitorNetwork from './debugging/network';
 import handleDeeplink from './handlers/deeplinks';
@@ -286,36 +286,38 @@ class App extends Component {
     Navigation.setTopLevelNavigator(navigatorRef);
 
   render = () => (
-    <RainbowContextWrapper>
-      <Portal>
-        <SafeAreaProvider>
-          <Provider store={store}>
-            <FlexItem>
-              {this.state.initialRoute && (
-                <InitialRouteContext.Provider value={this.state.initialRoute}>
-                  <RoutesComponent ref={this.handleNavigatorRef} />
-                  <PortalConsumer />
-                </InitialRouteContext.Provider>
-              )}
-              <OfflineToast />
-            </FlexItem>
-          </Provider>
-        </SafeAreaProvider>
-      </Portal>
-    </RainbowContextWrapper>
+    <MainThemeProvider>
+      <RainbowContextWrapper>
+        <Portal>
+          <SafeAreaProvider>
+            <Provider store={store}>
+              <FlexItem>
+                {this.state.initialRoute && (
+                  <InitialRouteContext.Provider value={this.state.initialRoute}>
+                    <RoutesComponent ref={this.handleNavigatorRef} />
+                    <PortalConsumer />
+                  </InitialRouteContext.Provider>
+                )}
+                <OfflineToast />
+              </FlexItem>
+            </Provider>
+          </SafeAreaProvider>
+        </Portal>
+      </RainbowContextWrapper>
+    </MainThemeProvider>
   );
 }
 
-const AppWithRedux = compose(
-  withProps({ store }),
-  connect(({ appState: { walletReady } }) => ({ walletReady }), {
+const AppWithRedux = connect(
+  ({ appState: { walletReady } }) => ({ walletReady }),
+  {
     requestsForTopic,
-  })
+  }
 )(App);
 
 const AppWithCodePush = CodePush({
   checkFrequency: CodePush.CheckFrequency.ON_APP_RESUME,
   installMode: CodePush.InstallMode.ON_NEXT_RESUME,
-})(AppWithRedux);
+})(() => <AppWithRedux store={store} />);
 
 AppRegistry.registerComponent('Rainbow', () => AppWithCodePush);

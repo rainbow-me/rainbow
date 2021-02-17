@@ -1,8 +1,7 @@
 import React from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { Flex } from '../layout';
 import { Text } from '../text';
-import { colors } from '@rainbow-me/styles';
 
 const SearchHeaderWrapper = styled(Flex).attrs({
   align: 'center',
@@ -11,10 +10,11 @@ const SearchHeaderWrapper = styled(Flex).attrs({
   padding: 6,
 })`
   border-radius: 12;
-  background-color: ${colors.lightestGrey};
+  background-color: ${({ theme: { colors } }) => colors.lightestGrey};
 `;
 
 export default function SearchHeader() {
+  const { colors } = useTheme();
   return (
     <SearchHeaderWrapper
       height={32}

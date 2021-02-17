@@ -3,12 +3,10 @@ import isNativeStackAvailable from '../../../helpers/isNativeStackAvailable';
 import { useExpandedStateNavigation } from '../../../hooks';
 import SheetActionButton from './SheetActionButton';
 import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
 
-export default function SendActionButton({
-  color = colors.paleBlue,
-  ...props
-}) {
+export default function SendActionButton({ color: givenColor, ...props }) {
+  const { colors } = useTheme();
+  const color = givenColor || colors.paleBlue;
   const navigate = useExpandedStateNavigation();
   const handlePress = useCallback(
     () =>
