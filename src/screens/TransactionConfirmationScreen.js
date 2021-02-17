@@ -42,7 +42,6 @@ import {
   MessageSigningSection,
   TransactionConfirmationSection,
 } from '../components/transaction';
-import { estimateGas, estimateGasWithPadding, toHex } from '../handlers/web3';
 import { isDappAuthenticated } from '../helpers/dappNameHandler';
 import {
   convertAmountToNativeDisplay,
@@ -72,6 +71,11 @@ import {
   SIGN,
   SIGN_TYPED_DATA,
 } from '../utils/signingMethods';
+import {
+  estimateGas,
+  estimateGasWithPadding,
+  toHex,
+} from '@rainbow-me/handlers/web3';
 import {
   useAccountAssets,
   useAccountProfile,

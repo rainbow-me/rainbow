@@ -168,7 +168,7 @@ export const fraction = (
   numerator: BigNumberish,
   denominator: BigNumberish
 ): string => {
-  if (!(target || numerator || denominator)) return '0';
+  if (!target || !numerator || !denominator) return '0';
   return new BigNumber(target)
     .times(numerator)
     .dividedBy(denominator)
