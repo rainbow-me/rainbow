@@ -139,7 +139,10 @@ export const estimateGasWithPadding = async (
     const estimatedGas = await web3Provider.estimateGas(txPayloadToEstimate);
 
     const lastBlockGasLimit = addBuffer(gasLimit.toString(), 0.9);
-    const paddedGas = addBuffer(estimatedGas.toString(), paddingFactor);
+    const paddedGas = addBuffer(
+      estimatedGas.toString(),
+      paddingFactor.toString()
+    );
     logger.log('⛽ GAS CALCULATIONS!', {
       estimatedGas: estimatedGas.toString(),
       gasLimit: gasLimit.toString(),
@@ -148,16 +151,19 @@ export const estimateGasWithPadding = async (
     });
     // If the safe estimation is above the last block gas limit, use it
     if (greaterThan(estimatedGas, lastBlockGasLimit)) {
-      logger.log('⛽ USING orginal gas estimation', estimatedGas.toString());
+      logger.log(
+        '⛽ returning orginal gas estimation',
+        estimatedGas.toString()
+      );
       return estimatedGas.toString();
     }
     // If the estimation is below the last block gas limit, use the padded estimate
     if (greaterThan(lastBlockGasLimit, paddedGas)) {
-      logger.log('⛽ USING padded gas estimation', paddedGas);
+      logger.log('⛽ returning padded gas estimation', paddedGas);
       return paddedGas;
     }
     // otherwise default to the last block gas limit
-    logger.log('⛽ USING last block gas limit', lastBlockGasLimit);
+    logger.log('⛽ returning last block gas limit', lastBlockGasLimit);
     return lastBlockGasLimit;
   } catch (error) {
     logger.error('Error calculating gas limit with padding', error);

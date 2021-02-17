@@ -48,6 +48,7 @@ import {
   convertAmountToNativeDisplay,
   convertHexToString,
   fromWei,
+  greaterThan,
   greaterThanOrEqualTo,
   multiply,
 } from '../helpers/utilities';
@@ -416,14 +417,30 @@ const TransactionConfirmationScreen = () => {
       gasPrice = toHex(rawGasPrice);
     }
 
-    if (isNil(gas) && isNil(gasLimitFromPayload)) {
-      try {
-        // Estimate the tx with gas limit padding before sending
-        const rawGasLimit = await estimateGasWithPadding(txPayload);
+    try {
+      // Estimate the tx with gas limit padding before sending
+      logger.log('⛽ gas suggested by dapp', {
+        gas: convertHexToString(gas),
+        gasLimitFromPayload: convertHexToString(gasLimitFromPayload),
+      });
+
+      const rawGasLimit = await estimateGasWithPadding(txPayload);
+      // If the estimation with padding is higher or gas limit was missing,
+      // let's use the higher value
+      if (
+        (isNil(gas) && isNil(gasLimitFromPayload)) ||
+        (!isNil(gas) && greaterThan(rawGasLimit, convertHexToString(gas))) ||
+        (!isNil(gasLimitFromPayload) &&
+          greaterThanOrEqualTo(
+            rawGasLimit,
+            convertHexToString(gasLimitFromPayload)
+          ))
+      ) {
+        logger.log('⛽ using padded estimation!', rawGasLimit.toString());
         gas = toHex(rawGasLimit);
-      } catch (error) {
-        logger.log('error estimating gas', error);
       }
+    } catch (error) {
+      logger.log('⛽ error estimating gas', error);
     }
 
     const calculatedGasLimit = gas || gasLimitFromPayload || gasLimit;
