@@ -143,9 +143,7 @@ export default function QRScannerScreen() {
       </View>
       <FabWrapper
         fabs={[SearchFab]}
-        onPress={() => {
-          dsRef.current.onFabSearch.current?.(true);
-        }}
+        onPress={dsRef.current?.onFabSearch?.current}
       />
     </>
   );

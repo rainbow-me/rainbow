@@ -1,6 +1,7 @@
 import React, {
   forwardRef,
   useCallback,
+  useContext,
   useImperativeHandle,
   useRef,
 } from 'react';
@@ -9,6 +10,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components';
 import { usePrevious } from '../../hooks';
 import { CoinRowHeight, ExchangeCoinRow } from '../coin-row';
+import DiscoverSheetContext from '../discover-sheet/DiscoverSheetContext';
 import { GradientText, Text } from '../text';
 import { padding } from '@rainbow-me/styles';
 import { deviceUtils, magicMemo } from '@rainbow-me/utils';
@@ -95,18 +97,11 @@ const ExchangeAssetSectionList = styled(SectionList).attrs({
 `;
 
 const ExchangeAssetList = (
-  {
-    itemProps,
-    items,
-    onLayout,
-    query,
-    onScrollTop,
-    testID,
-    keyboardDismissMode = 'none',
-  },
+  { itemProps, items, onLayout, query, testID, keyboardDismissMode = 'none' },
   ref
 ) => {
-  const sectionListRef = useRef();
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const { sectionListRef = useRef() } = useContext(DiscoverSheetContext) || {};
   useImperativeHandle(ref, () => sectionListRef.current);
   const prevQuery = usePrevious(query);
 
@@ -159,27 +154,10 @@ const ExchangeAssetList = (
     []
   );
 
-  const onScrollEnd = useCallback(
-    ({
-      nativeEvent: {
-        targetContentOffset: { y: targetY } = {},
-        contentOffset: { y },
-      },
-    }) => {
-      if (targetY === 0 || (targetY === undefined && y === 0)) {
-        onScrollTop?.();
-      }
-    },
-    [onScrollTop]
-  );
-
   return (
     <ExchangeAssetSectionList
       keyboardDismissMode={keyboardDismissMode}
       onLayout={onLayout}
-      onMomentumScrollEnd={onScrollEnd}
-      onScrollEndDrag={onScrollEnd}
-      onScrollToTop={onScrollTop}
       ref={sectionListRef}
       renderItem={renderItemCallback}
       renderSectionHeader={ExchangeAssetSectionListHeader}

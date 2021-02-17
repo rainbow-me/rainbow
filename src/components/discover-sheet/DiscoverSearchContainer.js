@@ -41,6 +41,7 @@ export default forwardRef(function DiscoverSearchContainer(
   ref
 ) {
   const searchInputRef = useRef();
+  const sectionListRef = useRef();
   useImperativeHandle(ref, () => searchInputRef.current);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
@@ -51,8 +52,8 @@ export default forwardRef(function DiscoverSearchContainer(
   } = useRoute();
 
   const contextValue = useMemo(
-    () => ({ ...upperContext, searchQuery, setIsSearching }),
-    [searchQuery, upperContext, setIsSearching]
+    () => ({ ...upperContext, searchQuery, sectionListRef, setIsSearching }),
+    [searchQuery, upperContext, setIsSearching, sectionListRef]
   );
   const setIsInputFocused = useCallback(
     value => {
@@ -63,7 +64,22 @@ export default forwardRef(function DiscoverSearchContainer(
     [setIsSearchModeEnabled, setShowSearch, setViewPagerSwipeEnabled]
   );
 
-  upperContext.onFabSearch.current = setIsInputFocused;
+  const onTapSearch = useCallback(() => {
+    if (isSearchModeEnabled) {
+      sectionListRef.current.scrollToLocation({
+        animated: true,
+        itemIndex: 0,
+        sectionIndex: 0,
+        viewOffset: 0,
+        viewPosition: 0,
+      });
+      searchInputRef.current.focus();
+    } else {
+      setIsInputFocused(true);
+    }
+  }, [isSearchModeEnabled, setIsInputFocused]);
+
+  upperContext.onFabSearch.current = onTapSearch;
 
   useEffect(() => {
     if (!isSearchModeEnabled) {
@@ -91,6 +107,7 @@ export default forwardRef(function DiscoverSearchContainer(
             onChangeText={setSearchQuery}
             onFocus={() => {
               upperContext.jumpToLong?.();
+              onTapSearch();
               setIsInputFocused(true);
             }}
             placeholderText="Search all of Ethereum"
