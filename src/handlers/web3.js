@@ -122,7 +122,7 @@ export const estimateGasWithPadding = async (
     const { to, data } = txPayloadToEstimate;
     // 1 - Check if the receiver is a contract
     const code = to ? await web3Provider.getCode(to) : undefined;
-    // 2 - if it's not a contract or it doesn't have any data use the default gas limit
+    // 2 - if it's not a contract AND it doesn't have any data use the default gas limit
     if (!to || (to && !data && (!code || code === '0x'))) {
       logger.log(
         '⛽ Skipping estimates, using default',
