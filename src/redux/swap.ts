@@ -1,6 +1,6 @@
 import { Trade } from '@uniswap/sdk';
 import { AnyAction } from 'redux';
-import { Numberish, UniswapCurrency } from '@rainbow-me/entities';
+import { UniswapCurrency } from '@rainbow-me/entities';
 import { AppDispatch } from '@rainbow-me/redux/store';
 
 export interface SwapAmount {
@@ -27,7 +27,6 @@ interface SwapState {
   maximumAmountIn?: string;
   minimumAmountOut?: string;
   nativeAmount: string | null;
-  slippage: Numberish | null;
   tradeDetails: Trade | null;
   outputAmount: SwapAmount | null;
   outputCurrency: UniswapCurrency | null;
@@ -56,18 +55,8 @@ export const updateSwapExtraDetails = (extraDetails: ExtraTradeDetails) => (
 export const updateSwapTradeDetails = (tradeDetails: Trade) => (
   dispatch: AppDispatch
 ) => {
-  const priceImpact = tradeDetails.priceImpact;
-  const minimumAmountOut = tradeDetails.minimumAmountOut(priceImpact).toExact();
-  const maximumAmountIn = tradeDetails.maximumAmountIn(priceImpact).toExact();
-  const slippage = Number(priceImpact.toFixed(2).toString()) * 100;
-
   dispatch({
-    payload: {
-      maximumAmountIn,
-      minimumAmountOut,
-      slippage,
-      tradeDetails,
-    },
+    payload: tradeDetails,
     type: SWAP_UPDATE_TRADE_DETAILS,
   });
 };
@@ -148,7 +137,6 @@ const INITIAL_STATE: SwapState = {
   nativeAmount: null,
   outputAmount: null,
   outputCurrency: null,
-  slippage: null,
   tradeDetails: null,
 };
 
@@ -167,10 +155,7 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
     case SWAP_UPDATE_TRADE_DETAILS:
       return {
         ...state,
-        maximumAmountIn: action.payload.maximumAmountIn,
-        minimumAmountOut: action.payload.minimumAmountOut,
-        slippage: action.payload.slippage,
-        tradeDetails: action.payload.tradeDetails,
+        tradeDetails: action.payload,
       };
     case SWAP_UPDATE_IS_SUFFICIENT_BALANCE:
       return {

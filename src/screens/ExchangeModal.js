@@ -105,10 +105,7 @@ export default function ExchangeModal({
   const { nativeCurrency } = useAccountSettings();
   const { maxInputBalance, updateMaxInputBalance } = useMaxInputBalance();
 
-  const {
-    areTradeDetailsValid,
-    tradeDetails, // TODO JIN - raps
-  } = useSwapDetails();
+  const { areTradeDetailsValid, tradeDetails } = useSwapDetails();
   const { isHighPriceImpact, percentDisplay } = usePriceImpactDetails();
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);

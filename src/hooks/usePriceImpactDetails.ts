@@ -1,28 +1,62 @@
+import { Fraction, Percent, Trade } from '@uniswap/sdk';
 import { useSelector } from 'react-redux';
+import useAccountSettings from './useAccountSettings';
 import { useTheme } from '@rainbow-me/context';
 import { AppState } from '@rainbow-me/redux/store';
-import { convertBipsToPercentage } from '@rainbow-me/utilities';
+import {
+  convertAmountAndPriceToNativeDisplay,
+  divide,
+  subtract,
+} from '@rainbow-me/utilities';
 
-const SlippageWarningThresholdInBips = 500;
-const SevereSlippageThresholdInBips = SlippageWarningThresholdInBips * 2;
+const PriceImpactWarningThreshold = new Fraction('5', '100');
+const SeverePriceImpactThreshold = new Fraction('10', '100');
 
-export default function useSlippageDetails() {
+export default function usePriceImpactDetails() {
+  const { nativeCurrency } = useAccountSettings();
   const { colors } = useTheme();
-  const slippage = useSelector((state: AppState) => state.swap.slippage);
+  const extraTradeDetails = useSelector(
+    (state: AppState) => state.swap.extraTradeDetails
+  );
+  const outputAmount = useSelector(
+    (state: AppState) => state.swap.outputAmount?.value ?? 0
+  );
+  const tradeDetails: Trade = useSelector(
+    (state: AppState) => state.swap.tradeDetails
+  );
 
-  const isHighSlippage = slippage >= SlippageWarningThresholdInBips;
-  const isSevereSlippage = slippage > SevereSlippageThresholdInBips;
+  const priceImpact: Percent = tradeDetails?.priceImpact;
 
-  const color = isSevereSlippage
+  const isHighPriceImpact =
+    priceImpact?.greaterThan(PriceImpactWarningThreshold) ?? false;
+
+  const isSeverePriceImpact =
+    priceImpact?.greaterThan(SeverePriceImpactThreshold) ?? false;
+
+  const color = isSeverePriceImpact
     ? colors.red
-    : isHighSlippage
+    : isHighPriceImpact
     ? colors.orange
     : colors.green;
 
+  const { outputPriceValue } = extraTradeDetails;
+  const originalOutputAmount = divide(
+    outputAmount,
+    subtract(1, divide(priceImpact?.toSignificant() ?? 0, 100))
+  );
+  const outputAmountDifference = subtract(originalOutputAmount, outputAmount);
+  const {
+    display: priceImpactNativeAmount,
+  } = convertAmountAndPriceToNativeDisplay(
+    outputAmountDifference,
+    outputPriceValue,
+    nativeCurrency
+  );
+
   return {
     color,
-    isHighSlippage,
-    percentDisplay: convertBipsToPercentage(slippage, 2),
-    slippage,
+    isHighPriceImpact,
+    percentDisplay: priceImpact?.toFixed(),
+    priceImpactNativeAmount,
   };
 }
