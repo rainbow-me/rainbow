@@ -49,7 +49,8 @@ import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
 
 const Stack = createStackNavigator();
-const OuterStack = createBottomSheetNavigator();
+const OuterStack = createStackNavigator();
+const BSStack = createBottomSheetNavigator();
 
 function SendFlowNavigator() {
   return (
@@ -243,28 +244,6 @@ function MainOuterNavigator() {
         name={Routes.MAIN_NAVIGATOR}
       />
       <OuterStack.Screen
-        component={ExpandedAssetSheet}
-        name={Routes.EXPANDED_ASSET_SCREEN}
-        options={{
-          backgroundColor: 'black',
-          height: 600,
-          targetOpacity: 0.5,
-        }}
-      />
-      <OuterStack.Screen
-        component={ExpandedAssetSheet}
-        name={Routes.TOKEN_INDEX_SCREEN}
-        options={sheetPreset}
-      />
-      <OuterStack.Screen
-        component={SettingsModal}
-        name={Routes.SETTINGS_MODAL}
-        options={{
-          backgroundColor: 'black',
-          targetOpacity: 0.5,
-        }}
-      />
-      <OuterStack.Screen
         component={PinAuthenticationScreen}
         name={Routes.PIN_AUTHENTICATION_SCREEN}
         options={{ ...sheetPreset, gestureEnabled: false }}
@@ -274,18 +253,45 @@ function MainOuterNavigator() {
         name={Routes.BACKUP_SCREEN}
         options={sheetPreset}
       />
-      <OuterStack.Screen
+    </OuterStack.Navigator>
+  );
+}
+
+function BSNavigator() {
+  return (
+    <BSStack.Navigator>
+      <BSStack.Screen
+        component={MainOuterNavigator}
+        name={Routes.MAIN_NAVIGATOR_WRAPPER}
+      />
+      <BSStack.Screen
+        component={ExpandedAssetSheet}
+        name={Routes.EXPANDED_ASSET_SCREEN}
+        options={{
+          backgroundColor: 'black',
+          height: 600,
+          targetOpacity: 0.5,
+        }}
+      />
+      <BSStack.Screen
+        component={SettingsModal}
+        name={Routes.SETTINGS_MODAL}
+        options={{
+          backgroundColor: 'black',
+          targetOpacity: 0.5,
+        }}
+      />
+      <BSStack.Screen
         component={SendFlowNavigator}
         name={Routes.SEND_SHEET_NAVIGATOR}
-        options={sheetPresetWithSmallGestureResponseDistance}
       />
-    </OuterStack.Navigator>
+    </BSStack.Navigator>
   );
 }
 
 const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
   <NavigationContainer onStateChange={onNavigationStateChange} ref={ref}>
-    <MainOuterNavigator />
+    <BSNavigator />
   </NavigationContainer>
 ));
 
