@@ -11839,10 +11839,10 @@ react-native-dynamic@^1.0.0:
     "@types/react-native" ">=0.62.0"
     toolkit.ts "^0.0.2"
 
-react-native-extra-dimensions-android@^1.2.5:
-  version "1.2.5"
-  resolved "https://registry.yarnpkg.com/react-native-extra-dimensions-android/-/react-native-extra-dimensions-android-1.2.5.tgz#8ade91029aaac7519bf305116d39019e618a60f0"
-  integrity sha512-eorFo9X1vEqAWUkgcZ300yKBG1wtgNeE7tdWAH2CE+P50FGTniJg5Sr6l1iPWG8ZskQOuF+KeiSTFlDa4vLfMw==
+react-native-extra-dimensions-android@1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/react-native-extra-dimensions-android/-/react-native-extra-dimensions-android-1.2.2.tgz#04e311bc27f66ec5b15e8a719abba462a2d71e58"
+  integrity sha512-jaUocof8h0aeH+jQWz7uPLMO143EzaptRuPhNCTqCCfVU4Szi+RmDpF17mOLSgruTyJXF7sOBTYrJZj8dDwOHw==
 
 react-native-fast-image@^8.1.5:
   version "8.3.2"
