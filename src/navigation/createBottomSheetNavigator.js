@@ -5,17 +5,35 @@ import {
   StackRouter,
   useNavigationBuilder,
 } from '@react-navigation/native';
-import * as React from 'react';
-import { useCallback, useEffect, useRef } from 'react';
-import { Dimensions, Platform } from 'react-native';
+
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+
+import { Dimensions, Platform, StyleSheet } from 'react-native';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 
 // type Props = DefaultNavigatorOptions<StackNavigationOptions> &
 //     StackRouterOptions &
 //     StackNavigationConfig;
 
-const snapPoints = [-100, '100%'];
+function backgroundComponentFactory({ backgroundColor, targetOpacity }) {
+  return function BackgroundComponent({ animatedIndex, animatedPosition }) {
+    const style = useAnimatedStyle(
+      () => ({
+        opacity: animatedIndex.value * targetOpacity,
+        transform: [{ translateY: -animatedPosition.value }],
+      }),
+      [targetOpacity]
+    );
+    return (
+      <Animated.View
+        pointerEvents="none"
+        style={[{ backgroundColor }, StyleSheet.absoluteFillObject, style]}
+      />
+    );
+  };
+}
 
-function Route({ descriptor, onDismiss, removing }) {
+function Route({ descriptor: { options, render }, onDismiss, removing }) {
   const ref = useRef();
   useEffect(() => {
     removing && ref.current.close();
@@ -28,18 +46,33 @@ function Route({ descriptor, onDismiss, removing }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const {
+    backgroundColor = 'black',
+    targetOpacity = 1,
+    snapPoints = ['100%'],
+  } = options || {};
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const enhancedSpanPoints = useMemo(() => [0, ...snapPoints], [...snapPoints]);
+  const BackgroundComponent = useMemo(
+    () => backgroundComponentFactory({ backgroundColor, targetOpacity }),
+    [targetOpacity, backgroundColor]
+  );
+
   return (
     <BottomSheet
       animateOnMount
       animationDuration={250}
+      backgroundComponent={BackgroundComponent}
       containerHeight={Dimensions.get('screen').height}
+      handleComponent={() => null}
       index={1}
       onAnimate={onAnimate}
       onDismiss={onDismiss}
       ref={ref}
-      snapPoints={snapPoints}
+      snapPoints={enhancedSpanPoints}
     >
-      {descriptor.render()}
+      {render()}
     </BottomSheet>
   );
 }

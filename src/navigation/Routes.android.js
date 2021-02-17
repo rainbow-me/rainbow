@@ -39,7 +39,6 @@ import {
   exchangePreset,
   expandedPreset,
   overlayExpandedPreset,
-  settingsPreset,
   sheetPreset,
   sheetPresetWithSmallGestureResponseDistance,
   speedUpAndCancelStyleInterpolator,
@@ -246,6 +245,11 @@ function MainOuterNavigator() {
       <OuterStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SCREEN}
+        options={{
+          backgroundColor: 'black',
+          snapPoints: [600],
+          targetOpacity: 0.5,
+        }}
       />
       <OuterStack.Screen
         component={ExpandedAssetSheet}
@@ -255,7 +259,10 @@ function MainOuterNavigator() {
       <OuterStack.Screen
         component={SettingsModal}
         name={Routes.SETTINGS_MODAL}
-        options={settingsPreset}
+        options={{
+          backgroundColor: 'black',
+          targetOpacity: 0.5,
+        }}
       />
       <OuterStack.Screen
         component={PinAuthenticationScreen}
