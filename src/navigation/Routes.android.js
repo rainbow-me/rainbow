@@ -133,11 +133,6 @@ function MainNavigator() {
         options={expandedPreset}
       />
       <Stack.Screen
-        component={ChangeWalletSheet}
-        name={Routes.CHANGE_WALLET_SHEET}
-        options={expandedPreset}
-      />
-      <Stack.Screen
         component={TransactionConfirmationScreen}
         name={Routes.CONFIRM_REQUEST}
         options={exchangePreset}
@@ -160,11 +155,6 @@ function MainNavigator() {
         {...closeKeyboardOnClose}
         name={Routes.MODAL_SCREEN}
         options={overlayExpandedPreset}
-      />
-      <Stack.Screen
-        component={ReceiveModal}
-        name={Routes.RECEIVE_MODAL}
-        options={expandedPreset}
       />
       <Stack.Screen
         component={WalletConnectApprovalSheet}
@@ -287,6 +277,23 @@ function BSNavigator() {
           backgroundColor: 'black',
           height: 420,
           targetOpacity: 0.5,
+        }}
+      />
+      <BSStack.Screen
+        component={ChangeWalletSheet}
+        name={Routes.CHANGE_WALLET_SHEET}
+        options={{
+          backgroundColor: 'black',
+          height: 650,
+          targetOpacity: 0.6,
+        }}
+      />
+      <BSStack.Screen
+        component={ReceiveModal}
+        name={Routes.RECEIVE_MODAL}
+        options={{
+          backgroundColor: 'black',
+          targetOpacity: 0.7,
         }}
       />
       <BSStack.Screen
