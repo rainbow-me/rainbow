@@ -246,7 +246,6 @@ function MainOuterNavigator() {
       <OuterStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SCREEN}
-        options={sheetPreset}
       />
       <OuterStack.Screen
         component={ExpandedAssetSheet}

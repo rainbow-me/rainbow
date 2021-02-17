@@ -7,13 +7,13 @@ import {
 } from '@react-navigation/native';
 import * as React from 'react';
 import { useCallback, useEffect, useRef } from 'react';
-import { Platform } from 'react-native';
+import { Dimensions, Platform } from 'react-native';
 
 // type Props = DefaultNavigatorOptions<StackNavigationOptions> &
 //     StackRouterOptions &
 //     StackNavigationConfig;
 
-const snapPoints = [100, '100%'];
+const snapPoints = [-100, '100%'];
 
 function Route({ descriptor, onDismiss, removing }) {
   const ref = useRef();
@@ -22,7 +22,7 @@ function Route({ descriptor, onDismiss, removing }) {
   }, [removing]);
 
   const onAnimate = useCallback((prev, curr) => {
-    if (prev === 1 && curr === -1) {
+    if (prev === 1 && curr === 0) {
       onDismiss();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -32,11 +32,11 @@ function Route({ descriptor, onDismiss, removing }) {
     <BottomSheet
       animateOnMount
       animationDuration={250}
+      containerHeight={Dimensions.get('screen').height}
       index={1}
       onAnimate={onAnimate}
       onDismiss={onDismiss}
       ref={ref}
-      shandleHeight={0}
       snapPoints={snapPoints}
     >
       {descriptor.render()}
@@ -76,20 +76,17 @@ function StackView({ descriptors, state, navigation }) {
               descriptor={descriptorsCache.current[key]}
               key={key}
               onDismiss={() => {
-                setTimeout(() => {
-                  console.log('onDismiss');
-                  !removingKeys.current[key] &&
-                    navigation?.dispatch?.({
-                      ...StackActions.pop(),
-                      source: key,
-                      target: state.key,
-                    });
-                  descriptorsCache.current[key] = undefined;
-                  removingKeys.current[key] = undefined;
-                  setKeys(routesKeys =>
-                    routesKeys.filter(routeKey => routeKey !== key)
-                  );
-                }, 500);
+                !removingKeys.current[key] &&
+                  navigation?.dispatch?.({
+                    ...StackActions.pop(),
+                    source: key,
+                    target: state.key,
+                  });
+                descriptorsCache.current[key] = undefined;
+                removingKeys.current[key] = undefined;
+                setKeys(routesKeys =>
+                  routesKeys.filter(routeKey => routeKey !== key)
+                );
               }}
               removing={removingKeys.current[key]}
             />
@@ -106,16 +103,16 @@ function StackNavigator({
   ...rest
 }) {
   const defaultOptions = {
-    gestureEnabled: true,
     animationEnabled:
       Platform.OS !== 'web' &&
       Platform.OS !== 'windows' &&
       Platform.OS !== 'macos',
+    gestureEnabled: true,
   };
 
   const { state, descriptors, navigation } = useNavigationBuilder(StackRouter, {
-    initialRouteName,
     children,
+    initialRouteName,
     screenOptions:
       typeof screenOptions === 'function'
         ? (...args) => ({
