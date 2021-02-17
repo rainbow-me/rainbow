@@ -306,6 +306,9 @@ export const calculateProfit30d = (
 ) => {
   const now = calculateLPTokenPrice(data, ethPriceNow);
 
+  if (valueOneMonthAgo === undefined) {
+    return undefined;
+  }
   const oneMonthAgo = calculateLPTokenPrice(
     valueOneMonthAgo,
     ethPriceOneMonthAgo
