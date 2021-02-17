@@ -42,7 +42,7 @@ import {
   MessageSigningSection,
   TransactionConfirmationSection,
 } from '../components/transaction';
-import { estimateGas, toHex } from '../handlers/web3';
+import { estimateGas, estimateGasWithPadding, toHex } from '../handlers/web3';
 import { isDappAuthenticated } from '../helpers/dappNameHandler';
 import {
   convertAmountToNativeDisplay,
@@ -418,7 +418,8 @@ const TransactionConfirmationScreen = () => {
 
     if (isNil(gas) && isNil(gasLimitFromPayload)) {
       try {
-        const rawGasLimit = await estimateGas(txPayload);
+        // Estimate the tx with gas limit padding before sending
+        const rawGasLimit = await estimateGasWithPadding(txPayload);
         gas = toHex(rawGasLimit);
       } catch (error) {
         logger.log('error estimating gas', error);
