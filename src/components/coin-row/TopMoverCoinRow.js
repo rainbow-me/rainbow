@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { fonts } from '../../styles';
@@ -84,9 +85,13 @@ const TopMoverCoinRow = asset => {
 
   return (
     <ButtonPressAnimation
-      onCancel={({ nativeEvent: { state, close } }) =>
-        state === 5 && close && handlePress()
-      }
+      hapticType="notificationWarning"
+      onCancel={({ nativeEvent: { state, close } }) => {
+        if (state === 5 && close) {
+          ReactNativeHapticFeedback.trigger('selection');
+          handlePress();
+        }
+      }}
       onPress={handlePress}
       onPressCancel={onPressCancel}
       // we observe that while integrating with
