@@ -305,12 +305,16 @@ export default function SendSheet(props) {
     // Attempt to update gas limit before sending ERC20 / ERC721
     if (selected?.address !== ETH_ADDRESS) {
       try {
-        updatedGasLimit = await estimateGasLimit({
-          address: accountAddress,
-          amount: amountDetails.assetAmount,
-          asset: selected,
-          recipient,
-        });
+        // Estimate the tx with gas limit padding before sending
+        updatedGasLimit = await estimateGasLimit(
+          {
+            address: accountAddress,
+            amount: amountDetails.assetAmount,
+            asset: selected,
+            recipient,
+          },
+          true
+        );
         logger.log('gasLimit updated before sending', {
           after: updatedGasLimit,
           before: gasLimit,
