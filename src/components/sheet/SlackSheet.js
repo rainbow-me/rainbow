@@ -1,3 +1,4 @@
+import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import React, {
   forwardRef,
   Fragment,
@@ -45,7 +46,7 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
   right: 0;
 `;
 
-const Content = styled(Animated.ScrollView).attrs(
+const Content = styled(ios ? Animated.ScrollView : BottomSheetScrollView).attrs(
   ({ limitScrollViewContent }) => ({
     contentContainerStyle: limitScrollViewContent ? { height: '100%' } : {},
     directionalLockEnabled: true,

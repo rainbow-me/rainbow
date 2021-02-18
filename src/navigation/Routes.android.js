@@ -128,11 +128,6 @@ function MainNavigator() {
         options={expandedPreset}
       />
       <Stack.Screen
-        component={ExpandedAssetSheet}
-        name={Routes.TOKEN_INDEX_SHEET}
-        options={expandedPreset}
-      />
-      <Stack.Screen
         component={TransactionConfirmationScreen}
         name={Routes.CONFIRM_REQUEST}
         options={exchangePreset}
@@ -249,7 +244,7 @@ function BSNavigator() {
         name={Routes.EXPANDED_ASSET_SCREEN}
         options={{
           backgroundColor: 'black',
-          height: 600,
+          height: 500,
           targetOpacity: 0.5,
         }}
       />
@@ -293,6 +288,15 @@ function BSNavigator() {
         name={Routes.RECEIVE_MODAL}
         options={{
           backgroundColor: 'black',
+          targetOpacity: 0.7,
+        }}
+      />
+      <BSStack.Screen
+        component={ExpandedAssetSheet}
+        name={Routes.TOKEN_INDEX_SHEET}
+        options={{
+          backgroundColor: 'black',
+          height: 400,
           targetOpacity: 0.7,
         }}
       />

@@ -27,6 +27,7 @@ const Container = styled(Centered).attrs({
   direction: 'column',
 })`
   ${position.cover};
+  bottom: ${ios ? 0 : -8};
   ${({ deviceHeight, height }) =>
     height ? `height: ${height + deviceHeight}` : null};
 `;

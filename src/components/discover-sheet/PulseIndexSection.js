@@ -51,7 +51,7 @@ const PulseIndex = () => {
   const handlePress = useCallback(() => {
     const asset = ethereumUtils.formatGenericAsset(genericAssets[DPI_ADDRESS]);
 
-    navigate(ios ? Routes.TOKEN_INDEX_SHEET : Routes.TOKEN_INDEX_SCREEN, {
+    navigate(Routes.TOKEN_INDEX_SHEET, {
       asset,
       fromDiscover: true,
       type: 'token_index',
