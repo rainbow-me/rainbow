@@ -1,6 +1,6 @@
 import { Trade } from '@uniswap/sdk';
 import { AnyAction } from 'redux';
-import { Numberish, UniswapCurrency } from '@rainbow-me/entities';
+import { UniswapCurrency } from '@rainbow-me/entities';
 import { AppDispatch } from '@rainbow-me/redux/store';
 
 export interface SwapAmount {
@@ -24,8 +24,9 @@ interface SwapState {
   inputAmount: SwapAmount | null;
   isMax: boolean;
   isSufficientBalance: boolean;
+  maximumAmountIn?: string;
+  minimumAmountOut?: string;
   nativeAmount: string | null;
-  slippage: Numberish | null;
   tradeDetails: Trade | null;
   outputAmount: SwapAmount | null;
   outputCurrency: UniswapCurrency | null;
@@ -35,7 +36,6 @@ interface SwapState {
 const SWAP_UPDATE_IS_MAX = 'swap/SWAP_UPDATE_IS_MAX';
 const SWAP_UPDATE_IS_SUFFICIENT_BALANCE =
   'swap/SWAP_UPDATE_IS_SUFFICIENT_BALANCE';
-const SWAP_UPDATE_SLIPPAGE = 'swap/SWAP_UPDATE_SLIPPAGE';
 const SWAP_UPDATE_EXTRA_TRADE_DETAILS = 'swap/SWAP_UPDATE_EXTRA_TRADE_DETAILS';
 const SWAP_UPDATE_TRADE_DETAILS = 'swap/SWAP_UPDATE_TRADE_DETAILS';
 const SWAP_UPDATE_NATIVE_AMOUNT = 'swap/SWAP_UPDATE_NATIVE_AMOUNT';
@@ -55,17 +55,14 @@ export const updateSwapExtraDetails = (extraDetails: ExtraTradeDetails) => (
 export const updateSwapTradeDetails = (tradeDetails: Trade) => (
   dispatch: AppDispatch
 ) => {
-  dispatch({ payload: tradeDetails, type: SWAP_UPDATE_TRADE_DETAILS });
+  dispatch({
+    payload: tradeDetails,
+    type: SWAP_UPDATE_TRADE_DETAILS,
+  });
 };
 
 export const updateIsMax = (isMax: boolean) => (dispatch: AppDispatch) => {
   dispatch({ payload: isMax, type: SWAP_UPDATE_IS_MAX });
-};
-
-export const updateSlippage = (slippage: Numberish) => (
-  dispatch: AppDispatch
-) => {
-  dispatch({ payload: slippage, type: SWAP_UPDATE_SLIPPAGE });
 };
 
 export const updateIsSufficientBalance = (isSufficientBalance: boolean) => (
@@ -140,7 +137,6 @@ const INITIAL_STATE: SwapState = {
   nativeAmount: null,
   outputAmount: null,
   outputCurrency: null,
-  slippage: null,
   tradeDetails: null,
 };
 
@@ -150,11 +146,6 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
       return {
         ...state,
         isMax: action.payload,
-      };
-    case SWAP_UPDATE_SLIPPAGE:
-      return {
-        ...state,
-        slippage: action.payload,
       };
     case SWAP_UPDATE_EXTRA_TRADE_DETAILS:
       return {

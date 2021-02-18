@@ -1,3 +1,4 @@
+import { Trade } from '@uniswap/sdk';
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import useAccountAssets from './useAccountAssets';
@@ -6,7 +7,6 @@ import useSwapInputOutputTokens from './useSwapInputOutputTokens';
 import { AppState } from '@rainbow-me/redux/store';
 import {
   updateSwapExtraDetails,
-  updateSlippage as updateSwapSlippage,
   updateSwapTradeDetails,
 } from '@rainbow-me/redux/swap';
 import {
@@ -25,13 +25,12 @@ export default function useSwapDetails() {
   const extraTradeDetails = useSelector(
     (state: AppState) => state.swap.extraTradeDetails
   );
-  const slippage = useSelector((state: AppState) => state.swap.slippage);
 
   const { allAssets } = useAccountAssets();
   const { nativeCurrency } = useAccountSettings();
 
   const updateTradeDetails = useCallback(
-    newTradeDetails => {
+    (newTradeDetails: Trade) => {
       dispatch(updateSwapTradeDetails(newTradeDetails));
     },
     [dispatch]
@@ -128,20 +127,11 @@ export default function useSwapDetails() {
     [extraTradeDetails]
   );
 
-  const updateSlippage = useCallback(() => {
-    const slippage = tradeDetails?.priceImpact
-      ? Number(tradeDetails?.priceImpact?.toFixed(2).toString()) * 100
-      : 0;
-    dispatch(updateSwapSlippage(slippage));
-  }, [dispatch, tradeDetails]);
-
   return {
     areTradeDetailsValid,
     extraTradeDetails,
-    slippage,
     tradeDetails,
     updateExtraTradeDetails,
-    updateSlippage,
     updateTradeDetails,
   };
 }

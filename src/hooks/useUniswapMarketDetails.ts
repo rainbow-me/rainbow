@@ -55,7 +55,6 @@ export default function useUniswapMarketDetails({
     tradeDetails,
     updateExtraTradeDetails,
     updateTradeDetails: updateSwapTradeDetails,
-    updateSlippage,
   } = useSwapDetails();
 
   const [isSufficientLiquidity, setIsSufficientLiquidity] = useState(true);
@@ -99,7 +98,9 @@ export default function useUniswapMarketDetails({
     const hasInsufficientLiquidity =
       doneLoadingResults && (isEmpty(allPairs) || !newTradeDetails);
     setIsSufficientLiquidity(!hasInsufficientLiquidity);
-    updateSwapTradeDetails(newTradeDetails);
+    if (newTradeDetails) {
+      updateSwapTradeDetails(newTradeDetails);
+    }
   }, [
     doneLoadingResults,
     allPairs,
@@ -243,12 +244,6 @@ export default function useUniswapMarketDetails({
     if (swapNotNeeded || isMissingCurrency || !tradeDetails) return;
     updateExtraTradeDetails();
   }, [isMissingCurrency, swapNotNeeded, tradeDetails, updateExtraTradeDetails]);
-
-  useEffect(() => {
-    // update slippage
-    if (swapNotNeeded || isMissingCurrency) return;
-    updateSlippage();
-  }, [isMissingCurrency, swapNotNeeded, updateSlippage]);
 
   return {
     isSufficientLiquidity,

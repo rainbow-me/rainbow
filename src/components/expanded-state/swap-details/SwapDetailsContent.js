@@ -1,4 +1,3 @@
-import { useRoute } from '@react-navigation/native';
 import React from 'react';
 import styled from 'styled-components';
 import { ColumnWithMargins } from '../../layout';
@@ -9,7 +8,10 @@ import SwapDetailsRow, {
   SwapDetailsValue,
 } from './SwapDetailsRow';
 import SwapDetailsUniswapRow from './SwapDetailsUniswapRow';
-import { useSlippageDetails } from '@rainbow-me/hooks';
+import {
+  usePriceImpactDetails,
+  useSwapInputOutputTokens,
+} from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
 import { isETH } from '@rainbow-me/utils';
 
@@ -21,31 +23,29 @@ const Container = styled(ColumnWithMargins).attrs({
   flex: 1,
   margin: contentRowMargin,
 })`
-  ${({ isHighSlippage }) => padding(isHighSlippage ? 24 : 30, 19, 30)};
+  ${({ isHighPriceImpact }) => padding(isHighPriceImpact ? 24 : 30, 19, 30)};
 `;
 
 export default function SwapDetailsContent({
   onCopySwapDetailsText,
   ...props
 }) {
-  const {
-    params: { inputCurrency, outputCurrency, slippage },
-  } = useRoute();
+  const { inputCurrency, outputCurrency } = useSwapInputOutputTokens();
 
   const {
-    color: slippageColor,
-    isHighSlippage,
+    color: priceImpactColor,
+    isHighPriceImpact,
     percentDisplay,
-  } = useSlippageDetails(slippage);
+  } = usePriceImpactDetails();
 
   return (
     <Container
-      isHighSlippage={isHighSlippage}
+      isHighPriceImpact={isHighPriceImpact}
       testID="swap-details-state"
       {...props}
     >
       <SwapDetailsRow label="Price impact">
-        <SwapDetailsValue color={slippageColor} letterSpacing="roundedTight">
+        <SwapDetailsValue color={priceImpactColor} letterSpacing="roundedTight">
           {`${percentDisplay}%`}
         </SwapDetailsValue>
       </SwapDetailsRow>

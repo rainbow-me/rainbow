@@ -1,10 +1,9 @@
-import { useRoute } from '@react-navigation/native';
 import React from 'react';
 import styled from 'styled-components';
 import Divider from '../../Divider';
 import { Centered, Column, ColumnWithMargins, Row } from '../../layout';
 import { Emoji, Text } from '../../text';
-import { useSlippageDetails } from '@rainbow-me/hooks';
+import { usePriceImpactDetails } from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
 
 const Container = styled(ColumnWithMargins).attrs({
@@ -27,22 +26,22 @@ const Message = styled(Text).attrs(({ theme: { colors } }) => ({
 }))``;
 
 export default function SwapDetailsSlippageMessage(props) {
-  const {
-    params: { slippage },
-  } = useRoute();
   const { colors } = useTheme();
 
-  const { color, isHighSlippage } = useSlippageDetails(slippage);
+  const {
+    color,
+    isHighPriceImpact,
+    priceImpactNativeAmount,
+  } = usePriceImpactDetails();
 
-  return isHighSlippage ? (
+  return isHighPriceImpact ? (
     <Column align="center" {...props}>
       <Container>
         <Row align="center">
           <Heading color={color}>{`Losing `}</Heading>
           <Heading color={color} letterSpacing="roundedTight" weight="heavy">
-            $TODO
+            {priceImpactNativeAmount}
           </Heading>
-          <Heading color={color}>{` to slippage `}</Heading>
           <Emoji size="larger">🥵</Emoji>
         </Row>
         <Message>

@@ -31,7 +31,7 @@ import {
   useGas,
   useMaxInputBalance,
   usePrevious,
-  useSlippageDetails,
+  usePriceImpactDetails,
   useSwapDetails,
   useSwapInputOutputTokens,
   useSwapInputRefs,
@@ -105,12 +105,8 @@ export default function ExchangeModal({
   const { nativeCurrency } = useAccountSettings();
   const { maxInputBalance, updateMaxInputBalance } = useMaxInputBalance();
 
-  const {
-    areTradeDetailsValid,
-    extraTradeDetails,
-    slippage,
-    tradeDetails,
-  } = useSwapDetails();
+  const { areTradeDetailsValid, tradeDetails } = useSwapDetails();
+  const { isHighPriceImpact, percentDisplay } = usePriceImpactDetails();
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
 
@@ -151,16 +147,10 @@ export default function ExchangeModal({
     updateNativeAmount,
     updateOutputAmount,
   } = useSwapInputs({
-    defaultInputAsset,
-    defaultOutputAsset,
-    extraTradeDetails,
-    inputCurrency,
     isWithdrawal,
     maxInputBalance,
     nativeFieldRef,
-    outputCurrency,
     supplyBalanceUnderlying,
-    type,
   });
 
   const {
@@ -341,29 +331,6 @@ export default function ExchangeModal({
     updateInputAmount,
   ]);
 
-  const { isHighSlippage } = useSlippageDetails(slippage);
-
-  const isSlippageWarningVisible =
-    isSufficientBalance && !!inputAmount && !!outputAmount && isHighSlippage;
-  const prevIsSlippageWarningVisible = usePrevious(isSlippageWarningVisible);
-  useEffect(() => {
-    if (isSlippageWarningVisible && !prevIsSlippageWarningVisible) {
-      analytics.track('Showing high slippage warning in Swap', {
-        name: outputCurrency.name,
-        slippage,
-        symbol: outputCurrency.symbol,
-        tokenAddress: outputCurrency.address,
-        type,
-      });
-    }
-  }, [
-    isSlippageWarningVisible,
-    outputCurrency,
-    prevIsSlippageWarningVisible,
-    slippage,
-    type,
-  ]);
-
   const handlePressMaxBalance = useCallback(async () => {
     let maxBalance = maxInputBalance;
     if (isWithdrawal) {
@@ -387,10 +354,10 @@ export default function ExchangeModal({
   const handleSubmit = useCallback(() => {
     backgroundTask.execute(async () => {
       analytics.track(`Submitted ${type}`, {
-        defaultInputAsset: defaultInputAsset?.symbol || '',
-        isSlippageWarningVisible,
-        name: outputCurrency?.name || '',
-        slippage,
+        defaultInputAsset: defaultInputAsset?.symbol ?? '',
+        isHighPriceImpact,
+        name: outputCurrency?.name ?? '',
+        priceImpact: percentDisplay,
         symbol: outputCurrency?.symbol || '',
         tokenAddress: outputCurrency?.address || '',
         type,
@@ -441,28 +408,26 @@ export default function ExchangeModal({
     inputAmount,
     inputCurrency,
     isMax,
-    isSlippageWarningVisible,
+    isHighPriceImpact,
     isWithdrawal,
     navigate,
     outputAmount,
     outputCurrency,
+    percentDisplay,
     selectedGasPrice,
     setParams,
-    slippage,
     tradeDetails,
     type,
   ]);
 
   const confirmButtonProps = useMemoOne(
     () => ({
-      asset: outputCurrency,
       disabled: !Number(inputAmountDisplay),
       isAuthorizing,
       isDeposit,
       isSufficientBalance,
       isSufficientLiquidity,
       onSubmit: handleSubmit,
-      slippage,
       type,
     }),
     [
@@ -472,8 +437,6 @@ export default function ExchangeModal({
       isDeposit,
       isSufficientBalance,
       isSufficientLiquidity,
-      outputCurrency,
-      slippage,
       testID,
       type,
     ]
@@ -490,20 +453,12 @@ export default function ExchangeModal({
       android && Keyboard.removeListener('keyboardDidHide', internalNavigate);
       setParams({ focused: false });
       navigate(Routes.SWAP_DETAILS_SHEET, {
-        ...extraTradeDetails,
         confirmButtonProps,
-        inputAmount,
-        inputAmountDisplay,
-        inputCurrency,
-        outputAmount,
-        outputAmountDisplay,
-        outputCurrency,
         restoreFocusOnSwapModal: () => {
           android &&
             (lastFocusedInputHandle.current = lastFocusedInputHandleTemporary);
           setParams({ focused: true });
         },
-        slippage,
         type: 'swap_details',
       });
       analytics.track('Opened Swap Details modal', {
@@ -518,20 +473,13 @@ export default function ExchangeModal({
       : Keyboard.addListener('keyboardDidHide', internalNavigate);
   }, [
     confirmButtonProps,
-    extraTradeDetails,
-    inputAmount,
-    inputAmountDisplay,
-    inputCurrency,
     inputFieldRef,
     lastFocusedInputHandle,
     nativeFieldRef,
     navigate,
-    outputAmount,
-    outputAmountDisplay,
     outputCurrency,
     outputFieldRef,
     setParams,
-    slippage,
     type,
   ]);
 
@@ -597,11 +545,10 @@ export default function ExchangeModal({
           )}
           {!isDeposit && showConfirmButton && (
             <ExchangeDetailsRow
-              isSlippageWarningVisible={isSlippageWarningVisible}
               onFlipCurrencies={onFlipCurrencies}
               onPressViewDetails={navigateToSwapDetailsModal}
               showDetailsButton={showDetailsButton}
-              slippage={slippage}
+              type={type}
             />
           )}
           {showConfirmButton && (

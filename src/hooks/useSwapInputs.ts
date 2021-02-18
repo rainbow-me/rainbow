@@ -1,15 +1,14 @@
-import analytics from '@segment/analytics-react-native';
 import { RefObject, useCallback, useEffect, useMemo } from 'react';
 import { TextInput } from 'react-native';
 import { useDispatch } from 'react-redux';
 import usePrevious from './usePrevious';
+import useSwapDetails from './useSwapDetails';
 import useSwapInputOutputTokens from './useSwapInputOutputTokens';
 import useSwapInputValues from './useSwapInputValues';
-import { Asset } from '@rainbow-me/entities';
+import { UniswapCurrency } from '@rainbow-me/entities';
 import {
   convertAmountFromNativeValue,
   convertAmountToNativeAmount,
-  convertStringToNumber,
   greaterThanOrEqualTo,
   isZero,
   updatePrecisionToDisplay,
@@ -23,40 +22,23 @@ import {
 } from '@rainbow-me/redux/swap';
 import logger from 'logger';
 
-interface ExtraTradeDetails {
-  inputPriceValue?: string;
-}
-
-interface UniswapAsset extends Asset {
-  native?: {
-    price?: {
-      amount: string;
-    };
-  };
-}
-
 export default function useSwapInputs({
-  defaultInputAsset,
-  extraTradeDetails,
   isWithdrawal,
   maxInputBalance,
   nativeFieldRef,
   supplyBalanceUnderlying,
-  type,
 }: {
-  defaultInputAsset: Asset;
-  extraTradeDetails: ExtraTradeDetails;
   isWithdrawal: boolean;
   maxInputBalance: string;
   nativeFieldRef: RefObject<TextInput>;
   supplyBalanceUnderlying: string;
-  type: string;
 }) {
   const dispatch = useDispatch();
+  const { extraTradeDetails } = useSwapDetails();
   const { inputAmount } = useSwapInputValues();
   const {
     inputCurrency,
-  }: { inputCurrency: UniswapAsset } = useSwapInputOutputTokens();
+  }: { inputCurrency: UniswapCurrency } = useSwapInputOutputTokens();
 
   const inputPriceValue = useMemo(
     () =>
@@ -127,17 +109,8 @@ export default function useSwapInputs({
           dispatch(updateIsSufficientBalance(newIsSufficientBalance));
         }
       }
-
-      if (newAmountDisplay) {
-        analytics.track('Updated input amount', {
-          defaultInputAsset: defaultInputAsset?.symbol,
-          type,
-          value: convertStringToNumber(newAmountDisplay),
-        });
-      }
     },
     [
-      defaultInputAsset,
       dispatch,
       forceUpdateNativeAmount,
       inputCurrency,
@@ -145,7 +118,6 @@ export default function useSwapInputs({
       maxInputBalance,
       nativeFieldRef,
       supplyBalanceUnderlying,
-      type,
     ]
   );
 
@@ -185,15 +157,8 @@ export default function useSwapInputs({
       dispatch(
         updateSwapOutputAmount(newOutputAmount, display, newInputAsExactAmount)
       );
-      if (newAmountDisplay) {
-        analytics.track('Updated output amount', {
-          defaultInputAsset: defaultInputAsset?.symbol,
-          type,
-          value: convertStringToNumber(newAmountDisplay),
-        });
-      }
     },
-    [defaultInputAsset, dispatch, type]
+    [dispatch]
   );
 
   return {
