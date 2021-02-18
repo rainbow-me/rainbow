@@ -1,4 +1,4 @@
-import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { BottomSheetScrollView, useBottomSheet } from '@gorhom/bottom-sheet';
 import React, {
   forwardRef,
   Fragment,
@@ -46,7 +46,7 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
   right: 0;
 `;
 
-const Content = styled(ios ? Animated.ScrollView : BottomSheetScrollView).attrs(
+const Content = styled(Animated.ScrollView).attrs(
   ({ limitScrollViewContent }) => ({
     contentContainerStyle: limitScrollViewContent ? { height: '100%' } : {},
     directionalLockEnabled: true,
@@ -112,6 +112,8 @@ export default forwardRef(function SlackSheet(
 
   useImperativeHandle(ref, () => sheet.current);
 
+  const isInsideBottomSheet = !!useBottomSheet();
+
   const scrollIndicatorInsets = useMemo(
     () => ({
       bottom: bottomInset,
@@ -159,6 +161,7 @@ export default forwardRef(function SlackSheet(
         <ContentWrapper backgroundColor={bg}>
           {renderHeader?.(yPosition)}
           <Content
+            {...(isInsideBottomSheet && { as: BottomSheetScrollView })}
             backgroundColor={bg}
             contentContainerStyle={scrollEnabled && contentContainerStyle}
             contentHeight={contentHeight}

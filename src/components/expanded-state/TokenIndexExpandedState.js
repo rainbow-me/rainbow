@@ -195,7 +195,7 @@ export default function TokenIndexExpandedState({ asset }) {
       <SlackSheet
         bottomInset={42}
         {...(ios
-          ? { height: '100%' }
+          ? { height: '110%' }
           : { additionalTopPadding: true, contentHeight: screenHeight - 80 })}
       >
         <ChartPathProvider data={throttledData}>
