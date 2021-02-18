@@ -977,7 +977,7 @@ SPEC CHECKSUMS:
   react-native-text-input-mask: 07227297075f9653315f43b0424d596423a01736
   react-native-udp: 96a517e5a121cfe69f4b05eeeafefe00c623debf
   react-native-version-number: b415bbec6a13f2df62bf978e85bc0d699462f37f
-  react-native-viewpager: 6520e3e7b4933de76b95ef542c8d7115cf45b68e
+  react-native-viewpager: 7238df0b6b9ee5a50f882750269f3c76639b195f
   react-native-webview: 6520e3e7b4933de76b95ef542c8d7115cf45b68e
   React-RCTActionSheet: 53ea72699698b0b47a6421cb1c8b4ab215a774aa
   React-RCTAnimation: 1befece0b5183c22ae01b966f5583f42e69a83c2
@@ -1035,4 +1035,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 412313ac47634ca15faa48e68aadac98633cc980
 
-COCOAPODS: 1.10.0
+COCOAPODS: 1.9.1
