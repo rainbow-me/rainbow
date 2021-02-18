@@ -181,9 +181,9 @@ export default function ExchangeModal({
   const onFlipCurrencies = useCallback(() => {
     clearForm();
     updateMaxInputBalance(outputCurrency);
-    updateInputCurrency(outputCurrency, false);
-    updateOutputCurrency(inputCurrency, false);
     updateInputAmount(prevOutputAmount, prevOutputAmount, true);
+    updateInputCurrency(outputCurrency);
+    updateOutputCurrency(inputCurrency);
   }, [
     clearForm,
     inputCurrency,

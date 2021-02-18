@@ -115,14 +115,14 @@ export const resetSwapAmounts = () => (dispatch: AppDispatch) => {
   dispatch({ type: SWAP_RESET_AMOUNTS });
 };
 
-export const updateSwapInputCurrency = (newInputCurrency: UniswapCurrency) => (
-  dispatch: AppDispatch
-) => {
+export const updateSwapInputCurrency = (
+  newInputCurrency: UniswapCurrency | null
+) => (dispatch: AppDispatch) => {
   dispatch({ payload: newInputCurrency, type: SWAP_UPDATE_INPUT_CURRENCY });
 };
 
 export const updateSwapOutputCurrency = (
-  newOutputCurrency: UniswapCurrency
+  newOutputCurrency: UniswapCurrency | null
 ) => (dispatch: AppDispatch) => {
   dispatch({ payload: newOutputCurrency, type: SWAP_UPDATE_OUTPUT_CURRENCY });
 };
