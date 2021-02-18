@@ -37,7 +37,6 @@ import {
   bottomSheetPreset,
   emojiPreset,
   exchangePreset,
-  expandedPreset,
   overlayExpandedPreset,
   sheetPreset,
   sheetPresetWithSmallGestureResponseDistance,
@@ -121,11 +120,6 @@ function MainNavigator() {
         component={AvatarBuilder}
         name={Routes.AVATAR_BUILDER}
         options={emojiPreset}
-      />
-      <Stack.Screen
-        component={ExpandedAssetSheet}
-        name={Routes.EXPANDED_ASSET_SHEET}
-        options={expandedPreset}
       />
       <Stack.Screen
         component={TransactionConfirmationScreen}
@@ -303,6 +297,15 @@ function BSNavigator() {
       <BSStack.Screen
         component={SendFlowNavigator}
         name={Routes.SEND_SHEET_NAVIGATOR}
+      />
+      <BSStack.Screen
+        component={ExpandedAssetSheet}
+        name={Routes.EXPANDED_ASSET_SHEET}
+        options={{
+          backgroundColor: 'black',
+          height: 600,
+          targetOpacity: 0.7,
+        }}
       />
     </BSStack.Navigator>
   );
