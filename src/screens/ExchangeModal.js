@@ -147,12 +147,10 @@ export default function ExchangeModal({
     updateNativeAmount,
     updateOutputAmount,
   } = useSwapInputs({
-    defaultInputAsset,
     isWithdrawal,
     maxInputBalance,
     nativeFieldRef,
     supplyBalanceUnderlying,
-    type,
   });
 
   const {
