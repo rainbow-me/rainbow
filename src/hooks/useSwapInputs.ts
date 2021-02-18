@@ -14,6 +14,7 @@ import {
   updatePrecisionToDisplay,
 } from '@rainbow-me/helpers/utilities';
 import {
+  resetSwapAmounts,
   updateIsMax,
   updateIsSufficientBalance,
   updateSwapInputAmount,
@@ -161,7 +162,12 @@ export default function useSwapInputs({
     [dispatch]
   );
 
+  const resetAmounts = useCallback(() => {
+    dispatch(resetSwapAmounts());
+  }, [dispatch]);
+
   return {
+    resetAmounts,
     updateInputAmount,
     updateNativeAmount,
     updateOutputAmount,

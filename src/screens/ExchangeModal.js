@@ -140,6 +140,7 @@ export default function ExchangeModal({
   const { inputCurrency, outputCurrency } = useSwapInputOutputTokens();
 
   const {
+    clearAllInputRefs,
     handleFocus,
     inputFieldRef,
     lastFocusedInputHandle,
@@ -148,6 +149,7 @@ export default function ExchangeModal({
   } = useSwapInputRefs();
 
   const {
+    resetAmounts,
     updateInputAmount,
     updateNativeAmount,
     updateOutputAmount,
@@ -170,18 +172,10 @@ export default function ExchangeModal({
 
   const clearForm = useCallback(() => {
     logger.log('[exchange] - clear form');
-    inputFieldRef?.current?.clear();
-    nativeFieldRef?.current?.clear();
-    outputFieldRef?.current?.clear();
-    updateInputAmount();
+    clearAllInputRefs();
+    resetAmounts();
     updateMaxInputBalance();
-  }, [
-    inputFieldRef,
-    nativeFieldRef,
-    outputFieldRef,
-    updateInputAmount,
-    updateMaxInputBalance,
-  ]);
+  }, [clearAllInputRefs, resetAmounts, updateMaxInputBalance]);
 
   const prevOutputAmount = usePrevious(outputAmount);
   const onFlipCurrencies = useCallback(() => {

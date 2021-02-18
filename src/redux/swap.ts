@@ -43,6 +43,7 @@ const SWAP_UPDATE_INPUT_AMOUNT = 'swap/SWAP_UPDATE_INPUT_AMOUNT';
 const SWAP_UPDATE_OUTPUT_AMOUNT = 'swap/SWAP_UPDATE_OUTPUT_AMOUNT';
 const SWAP_UPDATE_INPUT_CURRENCY = 'swap/SWAP_UPDATE_INPUT_CURRENCY';
 const SWAP_UPDATE_OUTPUT_CURRENCY = 'swap/SWAP_UPDATE_OUTPUT_CURRENCY';
+const SWAP_RESET_AMOUNTS = 'swap/SWAP_RESET_AMOUNTS';
 const SWAP_CLEAR_STATE = 'swap/SWAP_CLEAR_STATE';
 
 // -- Actions ---------------------------------------- //
@@ -108,6 +109,10 @@ export const updateSwapOutputAmount = (
     payload: { inputAsExactAmount, outputAmount },
     type: SWAP_UPDATE_OUTPUT_AMOUNT,
   });
+};
+
+export const resetSwapAmounts = () => (dispatch: AppDispatch) => {
+  dispatch({ type: SWAP_RESET_AMOUNTS });
 };
 
 export const updateSwapInputCurrency = (newInputCurrency: UniswapCurrency) => (
@@ -188,6 +193,14 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
       return {
         ...state,
         inputCurrency: action.payload,
+      };
+    case SWAP_RESET_AMOUNTS:
+      return {
+        ...state,
+        inputAmount: null,
+        isMax: false,
+        nativeAmount: null,
+        outputAmount: null,
       };
     case SWAP_CLEAR_STATE:
       return {
