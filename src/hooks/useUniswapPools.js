@@ -390,10 +390,10 @@ export default function useUniswapPools(sortField, sortDirection) {
   });
 
   useEffect(() => {
-    if (!ids && idsData?.pairs) {
+    if (idsData?.pairs) {
       setIds(idsData.pairs.map(item => item.id));
     }
-  }, [ids, idsData]);
+  }, [idsData]);
 
   const fetchPairsData = useCallback(async () => {
     // get data for every pair in list
