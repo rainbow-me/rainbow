@@ -42,7 +42,6 @@ export default function SwapDetailsSlippageMessage(props) {
           <Heading color={color} letterSpacing="roundedTight" weight="heavy">
             {priceImpactNativeAmount}
           </Heading>
-          <Heading color={color}>{` to slippage `}</Heading>
           <Emoji size="larger">🥵</Emoji>
         </Row>
         <Message>
