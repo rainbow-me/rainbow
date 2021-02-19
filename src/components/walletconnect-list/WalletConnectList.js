@@ -6,6 +6,7 @@ import { FlexItem } from '../layout';
 import WalletConnectListItem, {
   WalletConnectListItemHeight,
 } from './WalletConnectListItem';
+import { useWalletConnectConnections } from '@rainbow-me/hooks';
 
 const scrollIndicatorInset = BubbleSheetBorderRadius - 8;
 const scrollIndicatorInsets = {
@@ -17,11 +18,13 @@ const keyExtractor = item => item.dappUrl;
 
 const renderItem = ({ item }) => <WalletConnectListItem {...item} />;
 
-export default function WalletConnectList({ items = [], onLayout, ...props }) {
+export default function WalletConnectList({ onLayout, ...props }) {
+  const { walletConnectorsByDappName } = useWalletConnectConnections();
   const insets = useSafeArea();
   const maxListItemsForDeviceSize = insets.bottom ? 4 : 3;
+  const { walletConnectorsCount } = useWalletConnectConnections();
 
-  return (
+  return walletConnectorsCount === 0 ? null : (
     <FlexItem
       borderRadius={30}
       maxHeight={WalletConnectListItemHeight * maxListItemsForDeviceSize}
@@ -31,7 +34,7 @@ export default function WalletConnectList({ items = [], onLayout, ...props }) {
       <FlatList
         {...props}
         alwaysBounceVertical={false}
-        data={items}
+        data={walletConnectorsByDappName}
         keyExtractor={keyExtractor}
         onLayout={onLayout}
         removeClippedSubviews

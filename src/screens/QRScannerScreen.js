@@ -73,10 +73,7 @@ export default function QRScannerScreen() {
   const [sheetHeight, onSheetLayout] = useHeight(240);
   const [initializeCamera, setInitializeCamera] = useState(ios ? true : false);
   const { navigate } = useNavigation();
-  const {
-    walletConnectorsByDappName,
-    walletConnectorsCount,
-  } = useWalletConnectConnections();
+  const { walletConnectorsCount } = useWalletConnectConnections();
 
   const cameraDim = useSharedValue(0);
   const dsRef = useRef();
@@ -124,7 +121,7 @@ export default function QRScannerScreen() {
           ) : (
             <BubbleSheet onLayout={onSheetLayout}>
               {walletConnectorsCount ? (
-                <WalletConnectList items={walletConnectorsByDappName} />
+                <WalletConnectList />
               ) : (
                 <WalletConnectExplainer />
               )}
