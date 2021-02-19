@@ -60,7 +60,7 @@ export const UNISWAP_ALL_TOKENS = gql`
     tokens(
       first: $first
       skip: $skip
-      orderBy: totalLiquidity
+      orderBy: tradeVolumeUSD
       orderDirection: desc
       where: { id_not_in: $excluded, totalLiquidity_gt: 0 }
     ) {
