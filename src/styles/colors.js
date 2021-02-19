@@ -9,6 +9,7 @@ const darkModeColors = {
   black: '#FFFFFF',
   blueGreyDark: '#E0E8FF',
   blueGreyDark20: '#3A3D45',
+  blueGreyDark30: '#50535E',
   blueGreyDark50: '#797D8B',
   blueGreyDarker: '#000000',
   blueGreyDarkLight: '#1E2027',
@@ -45,8 +46,10 @@ const getColorsByTheme = darkMode => {
     appleBlue: '#0E76FD', // '14, 118, 253'
     black: '#000000', // '0, 0, 0'
     blueGreyDark: '#3C4252', // '60, 66, 82'
+    blueGreyDark30: '#C5C6CB', // this color is blueGreyDark at 30% over white
     blueGreyDark50: '#9DA0A8', // this color is blueGreyDark at 50% over white
     blueGreyDark60: '#898D97', // this color is blueGreyDark at 60% over white
+    blueGreyDark80: '#636875', // this color is blueGreyDark at 80% over white
     blueGreyDarker: '#0F0F11', // '15, 15, 17'
     blueGreyDarkLight: '#F3F4F5', // '243, 244, 245'
     brightRed: '#FF7171', // '255, 113, 113'
