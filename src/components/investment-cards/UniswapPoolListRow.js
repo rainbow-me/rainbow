@@ -1,5 +1,5 @@
 import { toUpper } from 'lodash';
-import React, { Fragment, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { View } from 'react-native';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -17,21 +17,15 @@ import { useNavigation } from '@rainbow-me/navigation';
 import { parseAssetsNative } from '@rainbow-me/parsers';
 import Routes from '@rainbow-me/routes';
 
-const Content = styled(ButtonPressAnimation)`
-  top: 0;
+const BottomRowContainer = styled(Row)`
+  margin-bottom: 10;
+  margin-top: -7.75;
 `;
 
-const BottomRowContainer = ios
-  ? Fragment
-  : styled(Row).attrs({ marginBottom: 10, marginTop: -10 })``;
-
-const TopRowContainer = ios
-  ? Fragment
-  : styled(Row).attrs({
-      align: 'flex-start',
-      justify: 'flex-start',
-      marginTop: 0,
-    })``;
+const TopRowContainer = styled(Row).attrs({
+  align: 'flex-start',
+  justify: 'flex-start',
+})``;
 
 const PriceContainer = ios
   ? View
@@ -41,13 +35,15 @@ const PriceContainer = ios
     `;
 
 const PoolValueWrapper = styled(Row)`
-  border-radius: 12px;
+  border-radius: 15px;
   height: 30px;
-  padding-horizontal: 8px;
-  padding-top: ${ios ? 3 : 2}px;
+  padding-horizontal: 9px;
+  padding-top: 2px;
 `;
 
 const PoolValueText = styled(Text).attrs({
+  align: 'center',
+  letterSpacing: 'roundedTight',
   lineHeight: 'paragraphSmall',
   size: 'lmedium',
   weight: 'bold',
@@ -64,7 +60,7 @@ const bigNumberFormat = (num, nativeCurrency) => {
     ret = `${convertAmountToNativeDisplay(
       (num / 1000000).toString(),
       nativeCurrency
-    )} m`;
+    )}m`;
   } else {
     ret = convertAmountToNativeDisplay(num.toString(), nativeCurrency);
     num.toFixed(2);
@@ -77,7 +73,7 @@ const renderPoolValue = (type, value, nativeCurrency, colors) => {
   let formattedValue = value;
   let color = colors.appleBlue;
 
-  if (type === 'anualized_fees' || type === 'profit30d') {
+  if (type === 'annualized_fees' || type === 'profit30d') {
     let percent = parseFloat(value);
     if (!percent || percent === 0) {
       formattedValue = '0%';
@@ -132,7 +128,7 @@ const TopRow = item => {
   return (
     <TopRowContainer>
       <FlexItem flex={1}>
-        <CoinName color={colors.dark}>{item.tokenNames}</CoinName>
+        <CoinName>{item.tokenNames}</CoinName>
       </FlexItem>
       <PriceContainer>
         {renderPoolValue(
@@ -165,7 +161,6 @@ export default function UniswapPoolListRow({ assetType, item, ...props }) {
     }
     navigate(Routes.EXPANDED_ASSET_SHEET, {
       asset: poolAsset,
-      cornerRadius: 10,
       fromDiscover: true,
       longFormHeight: initialLiquidityPoolExpandedStateSheetHeight,
       type: assetType,
@@ -173,7 +168,7 @@ export default function UniswapPoolListRow({ assetType, item, ...props }) {
   }, [assetType, genericAssets, item, nativeCurrency, navigate, uniswap]);
 
   return (
-    <Content onPress={handleOpenExpandedState} scaleTo={0.96}>
+    <ButtonPressAnimation onPress={handleOpenExpandedState} scaleTo={0.96}>
       <CoinRow
         bottomRowRender={BottomRow}
         isPool
@@ -182,6 +177,6 @@ export default function UniswapPoolListRow({ assetType, item, ...props }) {
         {...item}
         {...props}
       />
-    </Content>
+    </ButtonPressAnimation>
   );
 }
