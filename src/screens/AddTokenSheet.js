@@ -35,13 +35,15 @@ const Container = styled(Centered).attrs({
 `;
 
 const RemoveButton = styled(ButtonPressAnimation)`
-  justify-content: center;
   background-color: ${({ theme: { colors } }) =>
     colors.alpha(colors.red, 0.06)};
   border-radius: 15;
   height: 30;
-  padding-horizontal: 8;
-  margin-left: 6;
+  padding-left: 6;
+  padding-right: 10;
+  padding-top: 5;
+  margin-left: 8;
+  top: -2;
 `;
 
 const ListButton = styled(ButtonPressAnimation)`
@@ -149,7 +151,7 @@ export default function AddTokenSheet() {
                     key={`list-${list.id}`}
                     onPress={alreadyAdded ? handleRemove : handleAdd}
                   >
-                    <Row align="center">
+                    <Row>
                       <ListEmoji name={list.emoji} />
                       <Text
                         color={
@@ -165,6 +167,7 @@ export default function AddTokenSheet() {
                       {alreadyAdded && (
                         <RemoveButton onPress={handleRemove}>
                           <Text
+                            align="center"
                             color={colors.red}
                             letterSpacing="roundedTight"
                             size="lmedium"
