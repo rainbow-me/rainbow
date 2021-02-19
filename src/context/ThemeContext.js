@@ -5,16 +5,22 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { LayoutAnimation, NativeModules, StatusBar } from 'react-native';
-
+import {
+  LayoutAnimation,
+  NativeModules,
+  StatusBar,
+  useColorScheme,
+} from 'react-native';
+import { useDarkMode } from 'react-native-dark-mode';
 import { ThemeProvider } from 'styled-components';
 import { getTheme, saveTheme } from '../handlers/localstorage/theme';
 import { darkModeThemeColors, lightModeThemeColors } from '../styles/colors';
 import currentColors from './currentColors';
 
-const THEMES = {
+export const THEMES = {
   DARK: 'dark',
   LIGHT: 'light',
+  SYSTEM: 'system',
 };
 
 export const ThemeContext = createContext({
@@ -25,59 +31,94 @@ export const ThemeContext = createContext({
 
 export const MainThemeProvider = props => {
   const [colorScheme, setColorScheme] = useState();
-  useEffect(() => {
-    setTimeout(() => NativeModules.RNThemeModule?.setMode(colorScheme), 400);
-  }, [colorScheme]);
+  // looks like one works on Android and another one on iOS. good.
+  const isSystemDarkModeIOS = useDarkMode();
+  const isSystemDarkModeAndroid = useColorScheme() === 'dark';
+  const isSystemDarkMode = ios ? isSystemDarkModeIOS : isSystemDarkModeAndroid;
 
-  const [isDarkMode, setIsDarkMode] = useState(colorScheme === THEMES.DARK);
+  const colorSchemeSystemAdjusted =
+    colorScheme === THEMES.SYSTEM
+      ? isSystemDarkMode
+        ? 'dark'
+        : 'light'
+      : colorScheme;
+  useEffect(() => {
+    setTimeout(
+      () => NativeModules.RNThemeModule?.setMode(colorSchemeSystemAdjusted),
+      400
+    );
+  }, [colorSchemeSystemAdjusted]);
 
   // Override default with user preferences
   useEffect(() => {
     const loadUserPref = async () => {
       const userPref = (await getTheme()) || THEMES.LIGHT;
+      const userPrefSystemAdjusted =
+        userPref === THEMES.SYSTEM
+          ? isSystemDarkMode
+            ? 'dark'
+            : 'light'
+          : userPref;
       StatusBar.setBarStyle(
-        userPref === THEMES.DARK ? 'light-content' : 'dark-content',
+        userPrefSystemAdjusted === THEMES.DARK
+          ? 'light-content'
+          : 'dark-content',
         true
       );
-      currentColors.theme = userPref;
+      currentColors.theme = userPrefSystemAdjusted;
       currentColors.themedColors =
-        userPref === THEMES.DARK ? darkModeThemeColors : lightModeThemeColors;
+        userPrefSystemAdjusted === THEMES.DARK
+          ? darkModeThemeColors
+          : lightModeThemeColors;
       setColorScheme(userPref);
     };
     loadUserPref();
-  }, []);
+  }, [isSystemDarkMode]);
 
   // Listening to changes of device appearance while in run-time
   useEffect(() => {
     if (colorScheme) {
-      setIsDarkMode(colorScheme === THEMES.DARK);
+      //setIsDarkMode(colorScheme === THEMES.DARK);
       saveTheme(colorScheme);
     }
   }, [colorScheme]);
 
   const currentTheme = useMemo(
     () => ({
-      // Chaning color schemes according to theme
-      colors: isDarkMode ? darkModeThemeColors : lightModeThemeColors,
+      colors:
+        colorSchemeSystemAdjusted === 'dark'
+          ? darkModeThemeColors
+          : lightModeThemeColors,
+      colorScheme,
       darkScheme: darkModeThemeColors,
-      isDarkMode,
+      isDarkMode: colorSchemeSystemAdjusted === 'dark',
       lightScheme: lightModeThemeColors,
       // Overrides the isDarkMode value will cause re-render inside the context.
       setTheme: scheme => {
-        currentColors.theme = scheme;
+        const schemeSystemAdjusted =
+          scheme === THEMES.SYSTEM
+            ? isSystemDarkMode
+              ? 'dark'
+              : 'light'
+            : scheme;
+        currentColors.theme = schemeSystemAdjusted;
         StatusBar.setBarStyle(
-          scheme === THEMES.DARK ? 'light-content' : 'dark-content',
+          schemeSystemAdjusted === THEMES.DARK
+            ? 'light-content'
+            : 'dark-content',
           true
         );
         currentColors.themedColors =
-          scheme === THEMES.DARK ? darkModeThemeColors : lightModeThemeColors;
+          schemeSystemAdjusted === THEMES.DARK
+            ? darkModeThemeColors
+            : lightModeThemeColors;
         setColorScheme(scheme);
         LayoutAnimation.configureNext(
           LayoutAnimation.create(1000, 'easeInEaseOut', 'opacity')
         );
       },
     }),
-    [isDarkMode]
+    [colorScheme, colorSchemeSystemAdjusted, isSystemDarkMode]
   );
 
   return (
