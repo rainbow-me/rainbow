@@ -165,7 +165,6 @@ export default function UniswapPoolListRow({ assetType, item, ...props }) {
     }
     navigate(Routes.EXPANDED_ASSET_SHEET, {
       asset: poolAsset,
-      cornerRadius: 10,
       fromDiscover: true,
       longFormHeight: initialLiquidityPoolExpandedStateSheetHeight,
       type: assetType,
