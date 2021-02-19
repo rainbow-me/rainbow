@@ -41,7 +41,7 @@ const DiscoverButtonContent = styled(RowWithMargins).attrs({
 
 export default function DiscoverHeaderButton() {
   const { navigate } = useNavigation();
-  const { colors } = useTheme();
+  const { colors, isDarkMode } = useTheme();
 
   const onPress = useCallback(() => navigate(Routes.QR_SCANNER_SCREEN), [
     navigate,
@@ -71,7 +71,7 @@ export default function DiscoverHeaderButton() {
             🪐
           </Emoji>
           <Text
-            color={colors.alpha(colors.blueGreyDark, 0.6)}
+            color={colors.alpha(colors.blueGreyDark, isDarkMode ? 1 : 0.8)}
             letterSpacing="roundedTight"
             size="large"
             weight="bold"
