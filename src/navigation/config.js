@@ -17,9 +17,9 @@ export const sharedCoolModalTopOffset = safeAreaInsetValues.top;
 const buildCoolModalConfig = params => ({
   allowsDragToDismiss: true,
   allowsTapToDismiss: true,
-  backgroundOpacity: 0.7,
+  backgroundOpacity: params.backgroundOpacity || 0.7,
   blocksBackgroundTouches: true,
-  cornerRadius: params.longFormHeight ? 39 : 30,
+  cornerRadius: params.cornerRadius || (params.longFormHeight ? 39 : 30),
   customStack: true,
   gestureEnabled: true,
   headerHeight: params.headerHeight || 25,

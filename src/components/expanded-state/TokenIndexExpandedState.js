@@ -7,7 +7,6 @@ import React, {
   useMemo,
   useRef,
 } from 'react';
-import { Dimensions, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
 import { ButtonPressAnimation } from '../animations';
@@ -68,13 +67,6 @@ const formatItem = (
     symbol,
   };
 };
-
-// add status bar height for Android
-const heightWithoutChart = 309 + (android && 24);
-const heightWithChart = Dimensions.get('window').height - 80;
-
-export const initialTokenIndexExpandedStateSheetHeight =
-  heightWithChart + (android && 40);
 
 const formatGenericAsset = asset => {
   if (asset?.price?.value) {
@@ -159,8 +151,6 @@ export default function TokenIndexExpandedState({ asset }) {
     throttledData,
   } = useChartThrottledPoints({
     asset: assetWithPrice,
-    heightWithChart: heightWithChart - (!asset?.balance && 68),
-    heightWithoutChart: heightWithoutChart - (!asset?.balance && 68),
   });
 
   const needsEth = asset?.address === 'eth' && asset?.balance?.amount === '0';
@@ -251,7 +241,7 @@ export default function TokenIndexExpandedState({ asset }) {
             </Text>
           </Column>
         </Row>
-        <Column marginBottom={40} marginHorizontal={19} marginTop={12}>
+        <Column marginBottom={55} marginHorizontal={19} marginTop={12}>
           {underlying.map(item => (
             <Row
               as={ButtonPressAnimation}
@@ -298,22 +288,16 @@ export default function TokenIndexExpandedState({ asset }) {
                         ]}
                         style={{
                           height: 16,
-                          position: 'absolute',
-                          width: '100%',
-                        }}
-                      />
-                      <View
-                        style={{
-                          borderRadius: 8,
-                          height: 16,
-                          overflow: 'hidden',
                           width: '100%',
                         }}
                       >
                         <LinearGradient
                           colors={[
-                            colors.alpha(item.color, isDarkMode ? 1 : 0.5),
-                            colors.alpha(item.color, isDarkMode ? 0.5 : 1),
+                            colors.alpha(
+                              colors.whiteLabel,
+                              isDarkMode ? 0.2 : 0.3
+                            ),
+                            colors.alpha(colors.whiteLabel, 0),
                           ]}
                           end={{ x: 1, y: 0.5 }}
                           overflow="hidden"
@@ -321,7 +305,7 @@ export default function TokenIndexExpandedState({ asset }) {
                           start={{ x: 0, y: 0.5 }}
                           style={position.coverAsObject}
                         />
-                      </View>
+                      </ShadowStack>
                     </Column>
                   </Column>
                 </Row>

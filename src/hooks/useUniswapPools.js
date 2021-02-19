@@ -244,7 +244,7 @@ function parseData(
     newData.oneDayVolumeUSD = parseFloat(newData.volumeUSD);
   }
 
-  newData.anualized_fees =
+  newData.annualized_fees =
     (newData.oneDayVolumeUSD * 0.003 * 365 * 100) / newData.trackedReserveUSD;
 
   let token0 =

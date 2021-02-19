@@ -12,7 +12,7 @@ function WithdrawActionButton({
   ...props
 }) {
   const { colors, isDarkMode } = useTheme();
-  const color = givenColor || colors.white;
+  const color = givenColor || (isDarkMode ? colors.darkModeDark : colors.dark);
   const [didTrack, setDidTrack] = useState(false);
 
   const handlePress = useCallback(() => {

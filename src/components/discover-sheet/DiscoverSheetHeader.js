@@ -25,10 +25,9 @@ import Routes from '@rainbow-me/routes';
 import ShadowStack from 'react-native-shadow-stack';
 
 const springConfig = {
-  damping: 20,
+  damping: 28,
   mass: 1,
-  overshootClamping: true,
-  stiffness: 400,
+  stiffness: 420,
 };
 
 const Header = styled.View`
@@ -50,7 +49,8 @@ const BackgroundFill = styled(Centered).attrs({
   ...borders.buildCircleAsObject(43),
 })`
   ${position.cover};
-  background-color: ${({ theme: { colors } }) => colors.dark};
+  background-color: ${({ theme: { colors, isDarkMode } }) =>
+    isDarkMode ? colors.darkModeDark : colors.blueGreyDark};
   left: 8;
   top: 8;
 `;
@@ -197,7 +197,12 @@ export default function DiscoverSheetHeader(props) {
           name="caret"
           {...props}
         />
-        <Icon color={colors.white} direction="left" name="caret" {...props} />
+        <Icon
+          color={colors.whiteLabel}
+          direction="left"
+          name="caret"
+          {...props}
+        />
       </Stack>
       <Stack
         disabled={!buttonsEnabled}
@@ -216,7 +221,7 @@ export default function DiscoverSheetHeader(props) {
           color={colors.alpha(colors.blueGreyDark, 0.8)}
           name="scanner"
         />
-        <Icon bottom={1} color={colors.white} name="scanner" />
+        <Icon bottom={1} color={colors.whiteLabel} name="scanner" />
       </Stack>
     </Header>
   );

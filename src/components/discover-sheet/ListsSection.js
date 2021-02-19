@@ -20,7 +20,6 @@ import { ButtonPressAnimation } from '../animations';
 import { ListCoinRow } from '../coin-row';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
 import { Centered, Column, Flex, Row } from '../layout';
-
 import { Emoji, Text } from '../text';
 import EdgeFade from './EdgeFade';
 import {
@@ -259,8 +258,8 @@ export default function ListSection() {
         </Text>
       </Flex>
       {!ready ? (
-        <Centered marginTop={100}>
-          <Spinner color={colors.appleBlue} size={30} />
+        <Centered marginBottom={40} marginTop={50}>
+          <Spinner color={colors.alpha(colors.blueGreyDark, 0.5)} size={25} />
         </Centered>
       ) : (
         <Fragment>
@@ -294,10 +293,11 @@ export default function ListSection() {
                   />
                 ))
             ) : (
-              <Centered marginVertical={30}>
+              <Centered marginVertical={42}>
                 <Text
-                  color={colors.alpha(colors.blueGreyDark, 0.5)}
+                  color={colors.alpha(colors.blueGreyDark, 0.3)}
                   size="large"
+                  weight="semibold"
                 >
                   This list is empty!
                 </Text>

@@ -18,13 +18,11 @@ const Spacer = styled.View`
   width: ${TopMoverPriceMargin};
 `;
 
-const TopMoverTitle = styled(CoinName).attrs(
-  ({ theme: { colors, isDarkMode } }) => ({
-    color: colors.alpha(colors.blueGreyDark, 0.8),
-    paddingRight: 0,
-    weight: isDarkMode ? 'medium' : 'semibold',
-  })
-)``;
+const TopMoverTitle = styled(CoinName).attrs(({ theme: { colors } }) => ({
+  color: colors.alpha(colors.blueGreyDark, 0.8),
+  paddingRight: 0,
+  weight: 'semibold',
+}))``;
 
 export const measureBottomRowText = text =>
   measureText(text, {

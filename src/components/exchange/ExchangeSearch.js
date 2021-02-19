@@ -23,7 +23,8 @@ const ExchangeSearchWidth = deviceUtils.dimensions.width - 30;
 
 const Container = styled(Row)`
   ${margin(0, 15, 8)};
-  ${padding(0, 37, 0, 12)};
+  ${({ isSearchModeEnabled }) =>
+    isSearchModeEnabled ? padding(0, 37, 0, 12) : padding(0)};
   background-color: ${({ theme: { colors } }) => colors.transparent};
   border-radius: ${ExchangeSearchHeight / 2};
   height: ${ExchangeSearchHeight};
@@ -36,8 +37,8 @@ const BackgroundGradient = styled(RadialGradient).attrs(
     colors: colors.gradients.searchBar,
   })
 )`
-  position: absolute;
   height: ${ExchangeSearchWidth};
+  position: absolute;
   top: ${-(ExchangeSearchWidth - ExchangeSearchHeight) / 2};
   transform: scaleY(${ExchangeSearchHeight / ExchangeSearchWidth});
   width: ${ExchangeSearchWidth};
@@ -77,9 +78,9 @@ const SearchInput = styled(Input).attrs(
   flex: 1;
   text-align: ${({ isSearchModeEnabled }) =>
     isSearchModeEnabled ? 'left' : 'center'};
-  height: ${ios ? 39 : 56};
+  height: ${ios ? 38 : 56};
   margin-bottom: 1;
-  margin-left: 3;
+  margin-left: ${({ isSearchModeEnabled }) => (isSearchModeEnabled ? 3 : 0)};
 `;
 
 const SearchSpinner = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
@@ -177,14 +178,18 @@ const ExchangeSearch = (
   );
 
   return (
-    <Container>
+    <Container isSearchModeEnabled={isSearchModeEnabled}>
       <BackgroundGradient />
-      <SearchIconWrapper style={searchIconStyle}>
-        <SearchIcon>􀊫</SearchIcon>
-      </SearchIconWrapper>
-      <SearchSpinnerWrapper style={spinnerStyle}>
-        <SearchSpinner />
-      </SearchSpinnerWrapper>
+      {isSearchModeEnabled && (
+        <>
+          <SearchIconWrapper style={searchIconStyle}>
+            <SearchIcon>􀊫</SearchIcon>
+          </SearchIconWrapper>
+          <SearchSpinnerWrapper style={spinnerStyle}>
+            <SearchSpinner />
+          </SearchSpinnerWrapper>
+        </>
+      )}
       <SearchInput
         clearTextOnFocus={clearTextOnFocus}
         isSearchModeEnabled={isSearchModeEnabled}

@@ -16,8 +16,6 @@ import {
   useAnimatedScrollHandler,
   useSharedValue,
 } from 'react-native-reanimated';
-import { useSafeArea } from 'react-native-safe-area-context';
-
 // eslint-disable-next-line import/no-unresolved
 import SlackBottomSheet from 'react-native-slack-bottom-sheet';
 import styled from 'styled-components';
@@ -27,6 +25,7 @@ import DiscoverSheetContext from './DiscoverSheetContext';
 import DiscoverSheetHeader from './DiscoverSheetHeader';
 import CustomBackground from './androidCustomComponents/customBackground';
 import CustomHandle from './androidCustomComponents/customHandle';
+import { safeAreaInsetValues } from '@rainbow-me/utils';
 
 const renderHeader = yPosition => <DiscoverSheetHeader yPosition={yPosition} />;
 
@@ -98,12 +97,10 @@ const DiscoverSheetAndroid = (_, forwardedRef) => {
     [notifyListeners]
   );
 
-  const { top: safeArea } = useSafeArea();
-
   return (
     <AndroidWrapper
       style={{
-        transform: [{ translateY: safeArea * 2 }],
+        transform: [{ translateY: safeAreaInsetValues.top * 2 }],
       }}
     >
       <DiscoverSheetContext.Provider value={value}>
@@ -133,7 +130,6 @@ const DiscoverSheetAndroid = (_, forwardedRef) => {
 };
 
 function DiscoverSheetIOS(_, forwardedRef) {
-  const insets = useSafeArea();
   const isFocused = useIsFocused();
   const sheet = useRef();
   const ref = useRef();
@@ -198,7 +194,7 @@ function DiscoverSheetIOS(_, forwardedRef) {
         ref={ref}
         scrollsToTopOnTapStatusBar={isFocused}
         showDragIndicator={false}
-        topOffset={insets.top}
+        topOffset={safeAreaInsetValues.top}
         unmountAnimation={false}
       >
         <SlackSheet
@@ -207,6 +203,7 @@ function DiscoverSheetIOS(_, forwardedRef) {
           ref={sheet}
           renderHeader={renderHeader}
           scrollEnabled={!headerButtonsHandlers.isSearchModeEnabled}
+          showBlur
         >
           <DiscoverSheetContent />
         </SlackSheet>

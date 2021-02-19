@@ -1,4 +1,3 @@
-/* eslint-disable sort-keys */
 import { sortBy } from 'lodash';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { FlatList, LayoutAnimation } from 'react-native';
@@ -45,8 +44,8 @@ const listData = [
     name: 'Liquidity',
   },
   {
-    id: 'anualized_fees',
-    name: 'Anualized Fees',
+    id: 'annualized_fees',
+    name: 'Annualized fees',
   },
   {
     id: 'profit30d',
@@ -57,7 +56,7 @@ const listData = [
 
 export default function UniswapPools() {
   const listRef = useRef(null);
-  const { colors } = useTheme();
+  const { colors, isDarkMode } = useTheme();
   const [selectedList, setSelectedList] = useState(listData[0].id);
   const [sortDirection, setSortDirection] = useState(SORT_DIRECTION.DESC);
   const { pairs, error } = useUniswapPools(selectedList, sortDirection);
@@ -95,7 +94,7 @@ export default function UniswapPools() {
           <ListName
             color={
               selectedList === list.id
-                ? colors.alpha(colors.appleBlue, 0.8)
+                ? colors.appleBlue
                 : colors.alpha(colors.blueGreyDark, 0.5)
             }
             lineHeight="paragraphSmall"
@@ -135,17 +134,26 @@ export default function UniswapPools() {
   }, [pairs, selectedList, sortDirection]);
 
   return (
-    <Column marginTop={20}>
-      <Row marginBottom={10} paddingHorizontal={22}>
+    <Column marginTop={32}>
+      <Row marginBottom={12} paddingHorizontal={19}>
         <UniswapLogo
-          borderRadius={7.5}
+          borderRadius={8}
           height={22}
-          imageStyle={{ width: 15, height: 17.5 }}
+          imageStyle={{
+            height: 18,
+            marginBottom: 2.5,
+            marginRight: 1,
+            width: 16,
+          }}
           marginRight={7}
-          marginTop={android ? 8 : 2}
+          marginTop={android ? 8 : 1}
+          shadowBlur={4.5}
+          shadowColor={isDarkMode ? colors.shadow : colors.purpleUniswap}
+          shadowOffset={{ height: 3, width: 0 }}
+          shadowOpacity={0.2}
           width={22}
         />
-        <Text marginLeft={10} size="larger" weight="bold">
+        <Text size="larger" weight="heavy">
           Uniswap Pools
         </Text>
       </Row>
@@ -153,9 +161,8 @@ export default function UniswapPools() {
         <Column>
           <FlatList
             contentContainerStyle={{
-              paddingBottom: 19,
+              paddingBottom: 10,
               paddingHorizontal: 19,
-              paddingTop: 0,
             }}
             data={listData}
             horizontal
