@@ -6,6 +6,7 @@ import Sound from 'react-native-sound';
 import Video from 'react-native-video';
 import { useTheme } from '../../context/ThemeContext';
 import { useAudio } from '@rainbow-me/hooks';
+import { ImgixImage } from '@rainbow-me/images';
 import logger from 'logger';
 
 export type SimpleVideoProps = {
@@ -80,22 +81,21 @@ export default function SimpleVideo({
       <Video
         controls
         onLoad={onLoad}
-        poster={false && posterUri}
         ref={ref}
         repeat
         resizeMode="cover"
         source={source}
         style={StyleSheet.absoluteFill}
       />
-      <View
+      <Animated.View
         pointerEvents={loading ? 'auto' : 'none'}
-        style={StyleSheet.absoluteFill}
+        style={[StyleSheet.absoluteFill, { opacity }]}
       >
-        <Animated.Image
+        <ImgixImage
           source={{ uri: posterUri }}
-          style={[StyleSheet.absoluteFill, { opacity }]}
+          style={StyleSheet.absoluteFill}
         />
-      </View>
+      </Animated.View>
     </View>
   );
 }
