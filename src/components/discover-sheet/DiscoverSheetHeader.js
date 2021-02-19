@@ -25,10 +25,9 @@ import Routes from '@rainbow-me/routes';
 import ShadowStack from 'react-native-shadow-stack';
 
 const springConfig = {
-  damping: 20,
+  damping: 28,
   mass: 1,
-  overshootClamping: true,
-  stiffness: 400,
+  stiffness: 420,
 };
 
 const Header = styled.View`
