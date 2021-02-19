@@ -67,9 +67,6 @@ enum SwapType {
 
 const UniswapPageSize = 1000;
 
-const DefaultMaxSlippageInBips = 200;
-const SlippageBufferInBips = 100;
-
 // default allowed slippage, in bips
 const INITIAL_ALLOWED_SLIPPAGE = 50;
 // 20 minutes, denominated in seconds
@@ -347,20 +344,13 @@ const getContractExecutionDetails = ({
   providerOrSigner: Provider | Signer;
   tradeDetails: Trade;
 }) => {
-  const priceImpact = tradeDetails?.priceImpact?.toFixed(2).toString();
-  const slippage = Number(priceImpact) * 100;
-  const maxSlippage = Math.max(
-    slippage + SlippageBufferInBips,
-    DefaultMaxSlippageInBips
-  );
   const { methodArguments, methodNames, value } = getExecutionDetails(
     accountAddress,
     chainId,
     inputCurrency,
     outputCurrency,
     tradeDetails,
-    providerOrSigner,
-    maxSlippage
+    providerOrSigner
   );
 
   const exchange = new Contract(
