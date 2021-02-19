@@ -49,7 +49,9 @@ const swapInputValuesSelector = createSelector(
   withSwapInputValues
 );
 
-export default function useSwapInputValues() {
+export default function useSwapInputValues({
+  skipClearing,
+}: { skipClearing?: boolean } = {}) {
   const dispatch = useDispatch();
   const inputValues = useSelector(swapInputValuesSelector);
   const swapUpdateIsSufficientBalance = useCallback(
@@ -60,9 +62,9 @@ export default function useSwapInputValues() {
   );
   useEffect(() => {
     return () => {
-      dispatch(swapClearState());
+      !skipClearing && dispatch(swapClearState());
     };
-  }, [dispatch]);
+  }, [dispatch, skipClearing]);
   return {
     ...inputValues,
     swapUpdateIsSufficientBalance,

@@ -24,7 +24,9 @@ const Container = styled(RowWithMargins).attrs({
 
 export default function SwapDetailsMasthead(props) {
   const { inputCurrency, outputCurrency } = useSwapInputOutputTokens();
-  const { inputAmount, outputAmount } = useSwapInputValues();
+  const { inputAmount, outputAmount } = useSwapInputValues({
+    skipClearing: true,
+  });
   const {
     extraTradeDetails: { inputPriceValue, outputPriceValue },
   } = useSwapDetails();

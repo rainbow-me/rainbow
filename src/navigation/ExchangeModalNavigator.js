@@ -8,15 +8,10 @@ import styled from 'styled-components';
 import { useMemoOne } from 'use-memo-one';
 import { FlexItem } from '../components/layout';
 import CurrencySelectModal from '../screens/CurrencySelectModal';
-import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import SwapModalScreen from '../screens/SwapModal';
 import { useNavigation } from './Navigation';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
-import {
-  exchangeTabNavigatorConfig,
-  expandedAssetSheetConfig,
-  nativeStackDefaultConfig,
-} from './config';
+import { exchangeTabNavigatorConfig, nativeStackDefaultConfig } from './config';
 import Routes from './routesNames';
 import { useDimensions } from '@rainbow-me/hooks';
 import { position } from '@rainbow-me/styles';
@@ -73,12 +68,6 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
           component={SwapModal}
           initialParams={params}
           name={Routes.MAIN_EXCHANGE_SCREEN}
-        />
-        <NativeStack.Screen
-          component={ExpandedAssetSheet}
-          initialParams={params}
-          name={Routes.SWAP_DETAILS_SHEET}
-          {...expandedAssetSheetConfig}
         />
       </NativeStack.Navigator>
     );
