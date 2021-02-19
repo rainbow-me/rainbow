@@ -43,7 +43,7 @@ export default function SimpleVideo({
 
   React.useEffect(() => {
     Animated.timing(opacity, {
-      duration: 350,
+      duration: 1000,
       toValue: loading ? 1 : 0,
       useNativeDriver: true,
     }).start();
