@@ -140,6 +140,10 @@ PODS:
     - GoogleUtilities/Logger
   - JWT (3.0.0-beta.12):
     - Base64 (~> 1.1.2)
+  - KTVCocoaHTTPServer (1.0.0):
+    - CocoaAsyncSocket
+  - KTVHTTPCache (2.0.1):
+    - KTVCocoaHTTPServer
   - libwebp (1.1.0):
     - libwebp/demux (= 1.1.0)
     - libwebp/mux (= 1.1.0)
@@ -381,6 +385,9 @@ PODS:
   - react-native-video (5.1.1):
     - React-Core
     - react-native-video/Video (= 5.1.1)
+  - react-native-video-cache (2.0.5):
+    - KTVHTTPCache (~> 2.0.0)
+    - React
   - react-native-video/Video (5.1.1):
     - React-Core
   - react-native-viewpager (4.1.0):
@@ -646,6 +653,7 @@ DEPENDENCIES:
   - react-native-udp (from `../node_modules/react-native-udp`)
   - react-native-version-number (from `../node_modules/react-native-version-number`)
   - react-native-video (from `../node_modules/react-native-video`)
+  - react-native-video-cache (from `../node_modules/react-native-video-cache`)
   - "react-native-viewpager (from `../node_modules/@react-native-community/viewpager`)"
   - react-native-webview (from `../node_modules/react-native-webview`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
@@ -721,6 +729,8 @@ SPEC REPOS:
     - GoogleDataTransport
     - GoogleUtilities
     - JWT
+    - KTVCocoaHTTPServer
+    - KTVHTTPCache
     - libwebp
     - nanopb
     - OpenSSL-Universal
@@ -818,6 +828,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-version-number"
   react-native-video:
     :path: "../node_modules/react-native-video"
+  react-native-video-cache:
+    :path: "../node_modules/react-native-video-cache"
   react-native-viewpager:
     :path: "../node_modules/@react-native-community/viewpager"
   react-native-webview:
@@ -950,6 +962,8 @@ SPEC CHECKSUMS:
   GoogleDataTransport: 672fb0ce96fe7f7f31d43672fca62ad2c9c86f7b
   GoogleUtilities: 7f2f5a07f888cdb145101d6042bc4422f57e70b3
   JWT: 9b5c05abbcc1a0e69c3c91e1655b3387fc7e581d
+  KTVCocoaHTTPServer: df8d7b861e603ff8037e9b2138aca2563a6b768d
+  KTVHTTPCache: 588c3eb16f6bd1e6fde1e230dabfb7bd4e490a4d
   libwebp: 946cb3063cea9236285f7e9a8505d806d30e07f3
   lottie-ios: 496ac5cea1bbf1a7bd1f1f472f3232eb1b8d744b
   lottie-react-native: a664f59f1f298c2696dd0ae07b15cbdfc433cb02
@@ -989,6 +1003,7 @@ SPEC CHECKSUMS:
   react-native-udp: 96a517e5a121cfe69f4b05eeeafefe00c623debf
   react-native-version-number: b415bbec6a13f2df62bf978e85bc0d699462f37f
   react-native-video: 0bb76b6d6b77da3009611586c7dbf817b947f30e
+  react-native-video-cache: 0f8b1b2195f234eabd507cfebdd91c2e82695008
   react-native-viewpager: 6f8c102e8081d70259252b254143b4193a9fb4cb
   react-native-webview: 6520e3e7b4933de76b95ef542c8d7115cf45b68e
   React-RCTActionSheet: 53ea72699698b0b47a6421cb1c8b4ab215a774aa

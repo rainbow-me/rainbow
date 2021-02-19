@@ -4,6 +4,7 @@ import { Animated, StyleSheet, View, ViewStyle } from 'react-native';
 import Sound from 'react-native-sound';
 // @ts-ignore
 import Video from 'react-native-video';
+import convertToProxyURL from 'react-native-video-cache';
 import { useTheme } from '../../context/ThemeContext';
 import { useAudio } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
@@ -31,7 +32,12 @@ export default function SimpleVideo({
   const { colors } = useTheme();
   const { white } = colors;
   const ref = React.useRef<Video>();
-  const source = React.useMemo(() => ({ uri }), [uri]);
+  const source = React.useMemo(
+    () => ({
+      uri: convertToProxyURL(uri),
+    }),
+    [uri]
+  );
   const { currentSound, isPlayingAsset, fadeTo } = useAudio();
   const [opacity] = React.useState<Animated.Value>(
     () => new Animated.Value(loading ? 1 : 0)
