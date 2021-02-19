@@ -1,11 +1,5 @@
 { "mainnet": [
   {
-    "emoji": "star",
-    "id": "favorites",
-    "name": "Favorites",
-    "tokens": []
-  },
-  {
     "emoji": "fire",
     "id": "trending",
     "name": "Trending",
@@ -15,6 +9,12 @@
     "emoji": "television",
     "id": "watchlist",
     "name": "Watchlist",
+    "tokens": []
+  },
+  {
+    "emoji": "star",
+    "id": "favorites",
+    "name": "Favorites",
     "tokens": []
   },
   {

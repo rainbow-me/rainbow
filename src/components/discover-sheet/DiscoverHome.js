@@ -10,8 +10,8 @@ export default function DiscoverHome() {
   return (
     <React.Fragment>
       <TopMoversSection />
-      <Lists />
       <PulseIndex />
+      <Lists />
       {/* <Strategies /> */}
       <UniswapPools />
       <BottomSpacer />
