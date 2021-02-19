@@ -61,9 +61,8 @@ const UniqueTokenExpandedStateImage = ({ asset }) => {
 
   const { supports3d, supportsVideo } = useUniqueToken(asset);
 
-  // When rendering a 3D asset, the we'll default to rendering a loading icon.
-  // We don't need to do this for image content.
-  const [loading, setLoading] = React.useState(supports3d);
+  // When rendering a 3D/Video assets, we'll default to rendering a loading icon.
+  const [loading, setLoading] = React.useState(supports3d || supportsVideo);
 
   return (
     <Container height={containerHeight}>
@@ -71,7 +70,9 @@ const UniqueTokenExpandedStateImage = ({ asset }) => {
         <View style={StyleSheet.absoluteFill}>
           {supportsVideo ? (
             <SimpleVideo
+              loading={loading}
               posterUri={imageUrl}
+              setLoading={setLoading}
               style={StyleSheet.absoluteFill}
               uri={asset.animation_url}
             />

@@ -1,8 +1,10 @@
 import * as React from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
+import { Animated, StyleSheet, View, ViewStyle } from 'react-native';
 // @ts-ignore
 import Sound from 'react-native-sound';
+// @ts-ignore
 import Video from 'react-native-video';
+import { useTheme } from '../../context/ThemeContext';
 import { useAudio } from '@rainbow-me/hooks';
 import logger from 'logger';
 
@@ -10,6 +12,8 @@ export type SimpleVideoProps = {
   readonly style?: ViewStyle;
   readonly uri: string;
   readonly posterUri?: string;
+  readonly loading: boolean;
+  readonly setLoading: (isLoading: boolean) => void;
 };
 
 const styles = StyleSheet.create({
@@ -20,14 +24,29 @@ export default function SimpleVideo({
   style,
   uri,
   posterUri,
+  loading,
+  setLoading,
 }: SimpleVideoProps): JSX.Element {
+  const { colors } = useTheme();
+  const { white } = colors;
   const ref = React.useRef<Video>();
   const source = React.useMemo(() => ({ uri }), [uri]);
   const { currentSound, isPlayingAsset, fadeTo } = useAudio();
+  const [opacity] = React.useState<Animated.Value>(
+    () => new Animated.Value(loading ? 1 : 0)
+  );
 
   const [soundOnMount] = React.useState<Sound | null>(
     isPlayingAsset && currentSound ? currentSound : null
   );
+
+  React.useEffect(() => {
+    Animated.timing(opacity, {
+      duration: 350,
+      toValue: loading ? 1 : 0,
+      useNativeDriver: true,
+    }).start();
+  }, [opacity, loading]);
 
   // XXX: Force the player to quit when unmounted. (iOS)
   React.useEffect(() => {
@@ -54,11 +73,13 @@ export default function SimpleVideo({
       }
     };
   }, [ref, soundOnMount, fadeTo]);
+  const onLoad = React.useCallback(() => setLoading(false), [setLoading]);
   return (
     <View style={[styles.flex, StyleSheet.flatten(style)]}>
-      <View style={[StyleSheet.absoluteFill, { backgroundColor: 'black' }]} />
+      <View style={[StyleSheet.absoluteFill, { backgroundColor: white }]} />
       <Video
-        controls={false}
+        controls
+        onLoad={onLoad}
         poster={false && posterUri}
         ref={ref}
         repeat
@@ -66,6 +87,15 @@ export default function SimpleVideo({
         source={source}
         style={StyleSheet.absoluteFill}
       />
+      <View
+        pointerEvents={loading ? 'auto' : 'none'}
+        style={StyleSheet.absoluteFill}
+      >
+        <Animated.Image
+          source={{ uri: posterUri }}
+          style={[StyleSheet.absoluteFill, { opacity }]}
+        />
+      </View>
     </View>
   );
 }
