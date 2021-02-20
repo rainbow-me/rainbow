@@ -134,7 +134,7 @@ export default function TokenIndexExpandedState({ asset }) {
   // It's a generic asset
   const assetWithPrice = ethereumUtils.formatGenericAsset(
     genericAssets[asset?.address],
-    nativeCurrencySymbol
+    nativeCurrency
   );
 
   const {
@@ -163,7 +163,10 @@ export default function TokenIndexExpandedState({ asset }) {
     item => {
       const asset =
         ethereumUtils.getAsset(allAssets, toLower(item.address)) ||
-        ethereumUtils.formatGenericAsset(genericAssets[toLower(item.address)]);
+        ethereumUtils.formatGenericAsset(
+          genericAssets[toLower(item.address)],
+          nativeCurrency
+        );
 
       navigate(
         ios ? Routes.EXPANDED_ASSET_SHEET : Routes.EXPANDED_ASSET_SCREEN,
@@ -174,7 +177,7 @@ export default function TokenIndexExpandedState({ asset }) {
         }
       );
     },
-    [allAssets, genericAssets, navigate]
+    [allAssets, genericAssets, nativeCurrency, navigate]
   );
 
   return (
