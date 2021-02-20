@@ -26,7 +26,7 @@ import {
   convertAmountFromNativeValue,
   formatInputDecimals,
 } from '../helpers/utilities';
-import { checkIsValidAddressOrENS } from '../helpers/validators';
+import { checkIsValidAddressOrDomain } from '../helpers/validators';
 import { sendTransaction } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import {
@@ -305,12 +305,16 @@ export default function SendSheet(props) {
     // Attempt to update gas limit before sending ERC20 / ERC721
     if (selected?.address !== ETH_ADDRESS) {
       try {
-        updatedGasLimit = await estimateGasLimit({
-          address: accountAddress,
-          amount: amountDetails.assetAmount,
-          asset: selected,
-          recipient,
-        });
+        // Estimate the tx with gas limit padding before sending
+        updatedGasLimit = await estimateGasLimit(
+          {
+            address: accountAddress,
+            amount: amountDetails.assetAmount,
+            asset: selected,
+            recipient,
+          },
+          true
+        );
         logger.log('gasLimit updated before sending', {
           after: updatedGasLimit,
           before: gasLimit,
@@ -453,7 +457,7 @@ export default function SendSheet(props) {
   }, [recipient, recipientOverride]);
 
   const checkAddress = useCallback(async () => {
-    const validAddress = await checkIsValidAddressOrENS(recipient);
+    const validAddress = await checkIsValidAddressOrDomain(recipient);
     setIsValidAddress(validAddress);
   }, [recipient]);
 

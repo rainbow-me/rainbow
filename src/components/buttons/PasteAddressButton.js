@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Text } from '../text';
 import MiniButton from './MiniButton';
-import { checkIsValidAddressOrENS } from '@rainbow-me/helpers/validators';
+import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
 import { useClipboard, useInvalidPaste } from '@rainbow-me/hooks';
 import { deviceUtils } from '@rainbow-me/utils';
 
@@ -17,7 +17,7 @@ export default function PasteAddressButton({ onPress }) {
 
   useEffect(() => {
     async function validate() {
-      const isValidAddress = await checkIsValidAddressOrENS(clipboard);
+      const isValidAddress = await checkIsValidAddressOrDomain(clipboard);
       setIsValid(isValidAddress);
     }
 
@@ -30,7 +30,7 @@ export default function PasteAddressButton({ onPress }) {
     if (!enablePaste) return;
 
     getClipboard(async clipboardData => {
-      const isValidAddress = await checkIsValidAddressOrENS(clipboardData);
+      const isValidAddress = await checkIsValidAddressOrDomain(clipboardData);
 
       if (isValidAddress) {
         return onPress?.(clipboardData);

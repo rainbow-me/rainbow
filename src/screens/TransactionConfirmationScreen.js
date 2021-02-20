@@ -38,15 +38,12 @@ import {
   MessageSigningSection,
   TransactionConfirmationSection,
 } from '../components/transaction';
-import { estimateGas, toHex } from '@rainbow-me/handlers/web3';
-import { isDappAuthenticated } from '@rainbow-me/helpers/dappNameHandler';
 import {
-  convertAmountToNativeDisplay,
-  convertHexToString,
-  fromWei,
-  greaterThanOrEqualTo,
-  multiply,
-} from '@rainbow-me/helpers/utilities';
+  estimateGas,
+  estimateGasWithPadding,
+  toHex,
+} from '@rainbow-me/handlers/web3';
+import { isDappAuthenticated } from '@rainbow-me/helpers/dappNameHandler';
 import {
   useAccountAssets,
   useAccountProfile,
@@ -69,6 +66,14 @@ import {
 import { useNavigation } from '@rainbow-me/navigation';
 import { walletConnectRemovePendingRedirect } from '@rainbow-me/redux/walletconnect';
 import { padding } from '@rainbow-me/styles';
+import {
+  convertAmountToNativeDisplay,
+  convertHexToString,
+  fromWei,
+  greaterThan,
+  greaterThanOrEqualTo,
+  multiply,
+} from '@rainbow-me/utilities';
 import { ethereumUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 import { methodRegistryLookupAndParse } from '@rainbow-me/utils/methodRegistry';
 import {
@@ -408,13 +413,28 @@ export default function TransactionConfirmationScreen() {
       gasPrice = toHex(rawGasPrice);
     }
 
-    if (isNil(gas) && isNil(gasLimitFromPayload)) {
-      try {
-        const rawGasLimit = await estimateGas(txPayload);
+    try {
+      logger.log('⛽ gas suggested by dapp', {
+        gas: convertHexToString(gas),
+        gasLimitFromPayload: convertHexToString(gasLimitFromPayload),
+      });
+
+      // Estimate the tx with gas limit padding before sending
+      const rawGasLimit = await estimateGasWithPadding(txPayload);
+
+      // If the estimation with padding is higher or gas limit was missing,
+      // let's use the higher value
+      if (
+        (isNil(gas) && isNil(gasLimitFromPayload)) ||
+        (!isNil(gas) && greaterThan(rawGasLimit, convertHexToString(gas))) ||
+        (!isNil(gasLimitFromPayload) &&
+          greaterThan(rawGasLimit, convertHexToString(gasLimitFromPayload)))
+      ) {
+        logger.log('⛽ using padded estimation!', rawGasLimit.toString());
         gas = toHex(rawGasLimit);
-      } catch (error) {
-        logger.log('error estimating gas', error);
       }
+    } catch (error) {
+      logger.log('⛽ error estimating gas', error);
     }
 
     const calculatedGasLimit = gas || gasLimitFromPayload || gasLimit;

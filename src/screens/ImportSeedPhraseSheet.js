@@ -24,10 +24,14 @@ import {
   ToastPositionContainer,
 } from '../components/toasts';
 import { useTheme } from '../context/ThemeContext';
-import { web3Provider } from '@rainbow-me/handlers/web3';
+import {
+  resolveUnstoppableDomain,
+  web3Provider,
+} from '@rainbow-me/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import {
   isENSAddressFormat,
+  isUnstoppableAddressFormat,
   isValidWallet,
 } from '@rainbow-me/helpers/validators';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
@@ -112,7 +116,7 @@ const SecretTextArea = styled(Input).attrs({
   lineHeight: 'looser',
   multiline: true,
   numberOfLines: 3,
-  placeholder: 'Seed phrase, private key, Ethereum address or ENS name',
+  placeholder: 'Seed phrase, private key, Ethereum address, or ENS name',
   returnKeyType: 'done',
   size: 'large',
   spellCheck: false,
@@ -238,6 +242,22 @@ export default function ImportSeedPhraseSheet() {
         return;
       }
       // Look up ENS for 0x address
+    } else if (isUnstoppableAddressFormat(input)) {
+      try {
+        const address = await resolveUnstoppableDomain(input);
+        if (!address) {
+          Alert.alert('This is not a valid Unstoppable name');
+          return;
+        }
+        setResolvedAddress(address);
+        name = input;
+        showWalletProfileModal(name);
+      } catch (e) {
+        Alert.alert(
+          'Sorry, we cannot add this Unstoppable name at this time. Please try again later!'
+        );
+        return;
+      }
     } else if (isValidAddress(input)) {
       const ens = await web3Provider.lookupAddress(input);
       if (ens && ens !== input) {
@@ -314,7 +334,13 @@ export default function ImportSeedPhraseSheet() {
 
                 setTimeout(() => {
                   // If it's not read only, show the backup sheet
-                  if (!(isENSAddressFormat(input) || isValidAddress(input))) {
+                  if (
+                    !(
+                      isENSAddressFormat(input) ||
+                      isUnstoppableAddressFormat(input) ||
+                      isValidAddress(input)
+                    )
+                  ) {
                     IS_TESTING !== 'true' &&
                       Navigation.handleAction(Routes.BACKUP_SHEET, {
                         single: true,
@@ -384,7 +410,7 @@ export default function ImportSeedPhraseSheet() {
             onChangeText={handleSetSeedPhrase}
             onFocus={handleFocus}
             onSubmitEditing={handlePressImportButton}
-            placeholder="Seed phrase, private key, Ethereum address or ENS name"
+            placeholder="Seed phrase, private key, Ethereum address or ENS name"
             placeholderTextColor={colors.alpha(colors.blueGreyDark, 0.3)}
             ref={inputRef}
             returnKeyType="done"

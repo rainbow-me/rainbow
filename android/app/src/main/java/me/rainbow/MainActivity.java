@@ -1,4 +1,5 @@
 package me.rainbow;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
@@ -40,6 +41,12 @@ public class MainActivity extends ReactActivity {
       if (!RNBackHandlerPackage.sBlockBack) {
           super.onBackPressed();
       }
+  }
+
+  @Override
+  public void onConfigurationChanged(Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+    getReactInstanceManager().onConfigurationChanged(this, newConfig);
   }
 
   @Override
