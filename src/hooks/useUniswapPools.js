@@ -416,7 +416,7 @@ export default function useUniswapPools(sortField, sortDirection) {
     }
 
     // top 40
-    sortedPairs = sortedPairs.slice(0, 19);
+    sortedPairs = sortedPairs.slice(0, 39);
     const tmpAllTokens = [];
     // Override with tokens from generic assets
     sortedPairs = sortedPairs.map(pair => {
