@@ -2413,17 +2413,6 @@
     progress "^2.0.3"
     proxy-from-env "^1.1.0"
 
-"@sentry/cli@^1.60.1":
-  version "1.60.1"
-  resolved "https://registry.yarnpkg.com/@sentry/cli/-/cli-1.60.1.tgz#ec42f84f44e329f6d1da77051afe15284352e06c"
-  integrity sha512-pShmK+V4jWxSsdM2LPZm5nyaG8sS5m1ukSZiJdmE0jpj4G4aXM4B1pRovv9ePSkoJdAGnpesX+A/zEvISa8FOw==
-  dependencies:
-    https-proxy-agent "^5.0.0"
-    mkdirp "^0.5.5"
-    node-fetch "^2.6.0"
-    progress "^2.0.3"
-    proxy-from-env "^1.1.0"
-
 "@sentry/core@5.27.4":
   version "5.27.4"
   resolved "https://registry.yarnpkg.com/@sentry/core/-/core-5.27.4.tgz#4155ee09ee4deed7364918094bf81654dcf681c0"
