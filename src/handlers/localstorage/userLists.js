@@ -5,7 +5,7 @@ const USER_LISTS = 'userLists';
 const USER_LISTS_SELECTED_LIST = 'userListsSelectedList';
 
 export const getUserLists = network =>
-  getGlobal(USER_LISTS, DefaultTokenLists[network], []);
+  getGlobal(USER_LISTS, DefaultTokenLists[network]);
 
 export const saveUserLists = lists => saveGlobal(USER_LISTS, lists);
 

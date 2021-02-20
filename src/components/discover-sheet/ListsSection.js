@@ -195,6 +195,7 @@ export default function ListSection() {
       if (!currentList) {
         return [];
       }
+
       return currentList.tokens.map(
         address =>
           ethereumUtils.getAsset(allAssets, toLower(address)) ||

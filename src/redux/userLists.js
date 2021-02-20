@@ -123,6 +123,10 @@ export const userListsUpdateList = (assetAddress, listId, add = true) => (
       ? uniq(concat(normalizedListTokens, address))
       : without(normalizedListTokens, address);
 
+    if (add) {
+      dispatch(emitAssetRequest([assetAddress]));
+    }
+
     // update the list
     const newList = { ...allNewLists[listIndex] };
     newList.tokens = updatedListTokens;
