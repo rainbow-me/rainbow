@@ -1,6 +1,6 @@
 import { useIsFocused } from '@react-navigation/native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import Animated, { useCode, useSharedValue } from 'react-native-reanimated';
 import styled from 'styled-components';
 import { BubbleSheet } from '../components/bubble-sheet';
@@ -13,7 +13,6 @@ import {
   EmulatorPasteUriButton,
   QRCodeScanner,
 } from '../components/qrcode-scanner';
-import ConnectedDapps from '../components/qrcode-scanner/connectedDapps';
 import {
   WalletConnectExplainer,
   WalletConnectList,
@@ -74,10 +73,7 @@ export default function QRScannerScreen() {
   const [sheetHeight, onSheetLayout] = useHeight(240);
   const [initializeCamera, setInitializeCamera] = useState(ios ? true : false);
   const { navigate } = useNavigation();
-  const {
-    walletConnectorsByDappName,
-    walletConnectorsCount,
-  } = useWalletConnectConnections();
+  const { walletConnectorsCount } = useWalletConnectConnections();
 
   const cameraDim = useSharedValue(0);
   const dsRef = useRef();
@@ -125,7 +121,7 @@ export default function QRScannerScreen() {
           ) : (
             <BubbleSheet onLayout={onSheetLayout}>
               {walletConnectorsCount ? (
-                <WalletConnectList items={walletConnectorsByDappName} />
+                <WalletConnectList />
               ) : (
                 <WalletConnectExplainer />
               )}
