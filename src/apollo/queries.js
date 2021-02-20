@@ -175,13 +175,13 @@ export const UNISWAP_PRICES_QUERY = gql`
 `;
 
 export const UNISWAP_ALL_TOKENS = gql`
-  query tokens($first: Int!, $skip: Int!) {
+  query tokens($excluded: [String]!, $first: Int!, $skip: Int!) {
     tokens(
       first: $first
       skip: $skip
-      orderBy: totalLiquidity
+      orderBy: tradeVolumeUSD
       orderDirection: desc
-      where: { totalLiquidity_gt: 0 }
+      where: { id_not_in: $excluded, totalLiquidity_gt: 0 }
     ) {
       id
       derivedETH
