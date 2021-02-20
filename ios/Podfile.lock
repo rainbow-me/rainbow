@@ -1,5 +1,5 @@
 PODS:
-  - Analytics (4.1.2)
+  - Analytics (4.0.5)
   - Base64 (1.1.2)
   - boost-for-react-native (1.63.0)
   - Branch (0.35.0)
@@ -913,7 +913,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/osdnk/PanModal
 
 SPEC CHECKSUMS:
-  Analytics: 177da2c597aba83a6882b706ca6e0a071fd7cd26
+  Analytics: 4bcf052c91e1f3339219e83d6a036fb2bd7c218d
   Base64: cecfb41a004124895a7bcee567a89bae5a89d49b
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   Branch: 9a37f707974a128c37829033c49018b79c7e7a2d
