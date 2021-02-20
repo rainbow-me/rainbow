@@ -1,6 +1,6 @@
 import { useIsFocused } from '@react-navigation/native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Animated, { useCode, useSharedValue } from 'react-native-reanimated';
 import styled from 'styled-components';
 import { BubbleSheet } from '../components/bubble-sheet';
@@ -13,6 +13,7 @@ import {
   EmulatorPasteUriButton,
   QRCodeScanner,
 } from '../components/qrcode-scanner';
+import ConnectedDapps from '../components/qrcode-scanner/connectedDapps';
 import {
   WalletConnectExplainer,
   WalletConnectList,
@@ -102,7 +103,7 @@ export default function QRScannerScreen() {
 
   return (
     <>
-      <View>
+      <View pointerEvents="box-none">
         {discoverSheetAvailable && ios ? <DiscoverSheet ref={dsRef} /> : null}
         <ScannerContainer>
           <Background />
