@@ -1,5 +1,6 @@
 import { Trade } from '@uniswap/sdk';
 import { AnyAction } from 'redux';
+import { fetchAssetPrices } from './explorer';
 import { UniswapCurrency } from '@rainbow-me/entities';
 import { AppDispatch } from '@rainbow-me/redux/store';
 
@@ -119,12 +120,18 @@ export const updateSwapInputCurrency = (
   newInputCurrency: UniswapCurrency | null
 ) => (dispatch: AppDispatch) => {
   dispatch({ payload: newInputCurrency, type: SWAP_UPDATE_INPUT_CURRENCY });
+  if (newInputCurrency) {
+    dispatch(fetchAssetPrices(newInputCurrency.address));
+  }
 };
 
 export const updateSwapOutputCurrency = (
   newOutputCurrency: UniswapCurrency | null
 ) => (dispatch: AppDispatch) => {
   dispatch({ payload: newOutputCurrency, type: SWAP_UPDATE_OUTPUT_CURRENCY });
+  if (newOutputCurrency) {
+    dispatch(fetchAssetPrices(newOutputCurrency.address));
+  }
 };
 
 export const swapClearState = () => (dispatch: AppDispatch) => {
