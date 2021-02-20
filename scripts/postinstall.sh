@@ -46,3 +46,8 @@ else
     echo "$DEBUGFILE does not exist. You use default debug settings."
     cp src/config/defaultDebug.js $DEBUGFILE
 fi
+
+if ! command -v sentry-cli &> /dev/null
+then
+    brew install getsentry/tools/sentry-cli
+fi
