@@ -193,6 +193,7 @@ function DiscoverSheetIOS(_, forwardedRef) {
         presentGlobally={false}
         ref={ref}
         scrollsToTopOnTapStatusBar={isFocused}
+        shortFormHeight={260}
         showDragIndicator={false}
         topOffset={safeAreaInsetValues.top}
         unmountAnimation={false}
