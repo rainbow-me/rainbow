@@ -49,8 +49,9 @@ const getAssetPrice = (address = ETH_ADDRESS) => {
 
 const getEthPriceUnit = () => getAssetPrice();
 
-const getBalanceAmount = async (selectedGasPrice, selected) => {
-  let amount = getAssetPrice(selected?.address);
+const getBalanceAmount = (selectedGasPrice, selected) => {
+  const { assets } = store.getState().data;
+  let amount = getAsset(assets, selected?.address)?.balance?.amount || 0;
   if (selected?.address === ETH_ADDRESS) {
     if (!isEmpty(selectedGasPrice)) {
       const txFeeRaw = selectedGasPrice?.txFee?.value?.amount;
