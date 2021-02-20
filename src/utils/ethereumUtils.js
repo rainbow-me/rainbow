@@ -49,10 +49,10 @@ const getAssetPrice = (address = ETH_ADDRESS) => {
 
 const getEthPriceUnit = () => getAssetPrice();
 
-const getBalanceAmount = (selectedGasPrice, selected) => {
+const getBalanceAmount = (selectedGasPrice, address) => {
   const { assets } = store.getState().data;
-  let amount = getAsset(assets, selected?.address)?.balance?.amount || 0;
-  if (selected?.address === ETH_ADDRESS) {
+  let amount = getAsset(assets, address)?.balance?.amount || 0;
+  if (address === ETH_ADDRESS) {
     if (!isEmpty(selectedGasPrice)) {
       const txFeeRaw = selectedGasPrice?.txFee?.value?.amount;
       const txFeeAmount = fromWei(txFeeRaw);
@@ -66,7 +66,7 @@ const getBalanceAmount = (selectedGasPrice, selected) => {
 const getHash = txn => txn.hash.split('-').shift();
 
 export const checkWalletEthZero = assets => {
-  const ethAsset = find(assets, asset => asset.address === 'eth');
+  const ethAsset = find(assets, asset => asset.address === ETH_ADDRESS);
   let amount = ethAsset?.balance?.amount ?? 0;
   return isZero(amount);
 };
