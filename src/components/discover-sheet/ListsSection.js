@@ -88,7 +88,7 @@ const getItemLayout = (_, index) => ({
 
 export default function ListSection() {
   const dispatch = useDispatch();
-  const { network } = useAccountSettings();
+  const { network, nativeCurrency } = useAccountSettings();
   const { navigate } = useNavigation();
   const {
     favorites,
@@ -184,7 +184,10 @@ export default function ListSection() {
       return favorites.map(
         item =>
           ethereumUtils.getAsset(allAssets, toLower(item.address)) ||
-          ethereumUtils.formatGenericAsset(genericAssets[toLower(item.address)])
+          ethereumUtils.formatGenericAsset(
+            genericAssets[toLower(item.address)],
+            nativeCurrency
+          )
       );
     } else {
       if (!lists?.length) return [];
@@ -195,10 +198,20 @@ export default function ListSection() {
       return currentList.tokens.map(
         address =>
           ethereumUtils.getAsset(allAssets, toLower(address)) ||
-          ethereumUtils.formatGenericAsset(genericAssets[toLower(address)])
+          ethereumUtils.formatGenericAsset(
+            genericAssets[toLower(address)],
+            nativeCurrency
+          )
       );
     }
-  }, [allAssets, favorites, genericAssets, lists, selectedList]);
+  }, [
+    allAssets,
+    favorites,
+    genericAssets,
+    lists,
+    nativeCurrency,
+    selectedList,
+  ]);
 
   const handlePress = useCallback(
     item => {

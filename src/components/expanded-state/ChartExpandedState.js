@@ -20,9 +20,11 @@ import { Chart } from '../value-chart';
 import { ChartPathProvider } from '@rainbow-me/animated-charts';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 import {
+  useAccountSettings,
   useChartThrottledPoints,
   useUniswapAssetsInWallet,
 } from '@rainbow-me/hooks';
+import { ethereumUtils } from '@rainbow-me/utils';
 
 const baseHeight = 309 + (android && 20 - getSoftMenuBarHeight());
 const heightWithoutChart = baseHeight + (android && 30);
@@ -30,20 +32,11 @@ const heightWithChart = baseHeight + 310;
 
 export const initialChartExpandedStateSheetHeight = heightWithChart;
 
-const formatGenericAsset = asset => {
-  if (asset?.price?.value) {
-    return {
-      ...asset,
-      native: { price: { amount: asset?.price?.value } },
-    };
-  }
-  return asset;
-};
-
 export default function ChartExpandedState({ asset }) {
   const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
     genericAssets,
   }));
+  const { nativeCurrency } = useAccountSettings();
 
   // If we don't have a balance for this asset
   // It's a generic asset
@@ -51,7 +44,10 @@ export default function ChartExpandedState({ asset }) {
   const assetWithPrice = hasBalance
     ? asset
     : genericAssets[asset?.address]
-    ? formatGenericAsset(genericAssets[asset?.address])
+    ? ethereumUtils.formatGenericAsset(
+        genericAssets[asset?.address],
+        nativeCurrency
+      )
     : asset;
 
   const {

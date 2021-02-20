@@ -40,7 +40,7 @@ const PulseIndex = () => {
     genericAssets,
   }));
 
-  const { nativeCurrencySymbol } = useAccountSettings();
+  const { nativeCurrency, nativeCurrencySymbol } = useAccountSettings();
   const item = useMemo(() => {
     const asset = genericAssets[DPI_ADDRESS];
     if (!asset) return null;
@@ -48,7 +48,10 @@ const PulseIndex = () => {
   }, [genericAssets, nativeCurrencySymbol]);
 
   const handlePress = useCallback(() => {
-    const asset = ethereumUtils.formatGenericAsset(genericAssets[DPI_ADDRESS]);
+    const asset = ethereumUtils.formatGenericAsset(
+      genericAssets[DPI_ADDRESS],
+      nativeCurrency
+    );
 
     navigate(ios ? Routes.TOKEN_INDEX_SHEET : Routes.TOKEN_INDEX_SCREEN, {
       asset,
@@ -57,7 +60,7 @@ const PulseIndex = () => {
       fromDiscover: true,
       type: 'token_index',
     });
-  }, [genericAssets, navigate]);
+  }, [genericAssets, nativeCurrency, navigate]);
 
   const { colors, isDarkMode } = useTheme();
 

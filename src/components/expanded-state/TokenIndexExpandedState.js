@@ -68,16 +68,6 @@ const formatItem = (
   };
 };
 
-const formatGenericAsset = asset => {
-  if (asset?.price?.value) {
-    return {
-      ...asset,
-      native: { price: { amount: asset?.price?.value } },
-    };
-  }
-  return asset;
-};
-
 export default function TokenIndexExpandedState({ asset }) {
   const { colors, isDarkMode } = useTheme();
   const { allAssets } = useAccountAssets();
@@ -91,14 +81,18 @@ export default function TokenIndexExpandedState({ asset }) {
 
   const underlying = useMemo(() => {
     if (!dpi) return [];
-    const baseAsset = formatGenericAsset(
-      genericAssets[toLower(dpi?.base?.address)]
+    const baseAsset = ethereumUtils.formatGenericAsset(
+      genericAssets[toLower(dpi?.base?.address)],
+      nativeCurrency
     );
 
     const underlyingAssets = dpi?.underlying.map(asset => {
       const genericAsset = genericAssets[toLower(asset?.address)];
       if (!genericAsset) return null;
-      const assetWithPrice = formatGenericAsset(genericAsset);
+      const assetWithPrice = ethereumUtils.formatGenericAsset(
+        genericAsset,
+        nativeCurrency
+      );
 
       const {
         display: pricePerUnitFormatted,
@@ -138,7 +132,10 @@ export default function TokenIndexExpandedState({ asset }) {
 
   // If we don't have a balance for this asset
   // It's a generic asset
-  const assetWithPrice = formatGenericAsset(genericAssets[asset?.address]);
+  const assetWithPrice = ethereumUtils.formatGenericAsset(
+    genericAssets[asset?.address],
+    nativeCurrencySymbol
+  );
 
   const {
     chart,

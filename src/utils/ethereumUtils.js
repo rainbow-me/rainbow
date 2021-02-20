@@ -22,6 +22,7 @@ import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import URL from 'url-parse';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
+  convertAmountAndPriceToNativeDisplay,
   convertAmountToPercentageDisplay,
   fromWei,
   greaterThan,
@@ -64,7 +65,7 @@ const getHash = txn => txn.hash.split('-').shift();
 const getAsset = (assets, address = 'eth') =>
   find(assets, matchesProperty('address', toLower(address)));
 
-const formatGenericAsset = asset => {
+const formatGenericAsset = (asset, nativeCurrency) => {
   return {
     ...asset,
     native: {
@@ -73,6 +74,11 @@ const formatGenericAsset = asset => {
             `${asset?.price?.relative_change_24h}`
           )
         : '',
+      price: convertAmountAndPriceToNativeDisplay(
+        1,
+        asset?.price?.value,
+        nativeCurrency
+      ),
     },
   };
 };

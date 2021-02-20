@@ -7,8 +7,9 @@ import { Centered, FlexItem, Row } from '../layout';
 import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
+import { useAccountSettings } from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
-import { neverRerender } from '@rainbow-me/utils';
+import { ethereumUtils, neverRerender } from '@rainbow-me/utils';
 
 const CoinRowPaddingTop = 9;
 const CoinRowPaddingBottom = 10;
@@ -55,8 +56,12 @@ const TopRow = ({ name, showBalance }) => {
 };
 
 const ListCoinRow = ({ item, onPress }) => {
+  const { nativeCurrency } = useAccountSettings();
   const handlePress = useCallback(() => onPress(item), [item, onPress]);
-
+  const formattedItem = useMemo(() => {
+    if (item?.native?.price) return item;
+    return ethereumUtils.formatGenericAsset(item, nativeCurrency);
+  }, [item, nativeCurrency]);
   return (
     <>
       <ButtonPressAnimation
@@ -66,7 +71,7 @@ const ListCoinRow = ({ item, onPress }) => {
         throttle
       >
         <CoinRow
-          {...item}
+          {...formattedItem}
           bottomRowRender={BottomRow}
           containerStyles={css(
             padding(CoinRowPaddingTop, 38, CoinRowPaddingBottom, 15)
