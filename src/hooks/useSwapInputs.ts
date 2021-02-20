@@ -6,8 +6,7 @@ import { UniswapCurrency } from '@rainbow-me/entities';
 import { AppState } from '@rainbow-me/redux/store';
 import {
   resetSwapAmounts,
-  updateIsMax,
-  updateIsSufficientBalance,
+  updateIsMax as swapUpdateIsMax,
   updateSwapInputAmount,
   updateSwapNativeAmount,
   updateSwapOutputAmount,
@@ -15,22 +14,15 @@ import {
 import {
   convertAmountFromNativeValue,
   convertAmountToNativeAmount,
-  greaterThanOrEqualTo,
   isZero,
   updatePrecisionToDisplay,
 } from '@rainbow-me/utilities';
 import logger from 'logger';
 
 export default function useSwapInputs({
-  isWithdrawal,
-  maxInputBalance,
   nativeFieldRef,
-  supplyBalanceUnderlying,
 }: {
-  isWithdrawal: boolean;
-  maxInputBalance: string;
   nativeFieldRef: RefObject<TextInput>;
-  supplyBalanceUnderlying: string;
 }) {
   const dispatch = useDispatch();
   const genericAssets = useSelector(
@@ -45,18 +37,16 @@ export default function useSwapInputs({
       newInputAmount,
       newAmountDisplay,
       newInputAsExactAmount = true,
-      newIsMax = false,
       newInputCurrency = null
     ) => {
       const display = newAmountDisplay || newInputAmount;
       dispatch(
         updateSwapInputAmount(newInputAmount, display, newInputAsExactAmount)
       );
-      dispatch(updateIsMax(!!newInputAmount && newIsMax));
 
       const inputCurrencyAddress =
         newInputCurrency?.address ?? inputCurrency?.address;
-      if (newIsMax || !nativeFieldRef?.current?.isFocused?.()) {
+      if (!nativeFieldRef?.current?.isFocused?.()) {
         const inputPriceValue =
           genericAssets[inputCurrencyAddress]?.price?.value || 0;
         dispatch(
@@ -66,27 +56,9 @@ export default function useSwapInputs({
               : null
           )
         );
-
-        if (newInputCurrency || inputCurrency) {
-          const newIsSufficientBalance =
-            !newInputAmount ||
-            (isWithdrawal
-              ? greaterThanOrEqualTo(supplyBalanceUnderlying, newInputAmount)
-              : greaterThanOrEqualTo(maxInputBalance, newInputAmount));
-
-          dispatch(updateIsSufficientBalance(newIsSufficientBalance));
-        }
       }
     },
-    [
-      dispatch,
-      genericAssets,
-      inputCurrency,
-      isWithdrawal,
-      maxInputBalance,
-      nativeFieldRef,
-      supplyBalanceUnderlying,
-    ]
+    [dispatch, genericAssets, inputCurrency, nativeFieldRef]
   );
 
   const updateNativeAmount = useCallback(
@@ -99,7 +71,6 @@ export default function useSwapInputs({
       let inputAmountDisplay = null;
 
       dispatch(updateSwapNativeAmount(nativeAmount));
-      dispatch(updateIsMax(false));
 
       const inputPriceValue =
         genericAssets[inputCurrency.address]?.price?.value || 0;
@@ -136,9 +107,15 @@ export default function useSwapInputs({
     dispatch(resetSwapAmounts());
   }, [dispatch]);
 
+  const updateIsMax = useCallback(
+    newIsMax => dispatch(swapUpdateIsMax(newIsMax)),
+    [dispatch]
+  );
+
   return {
     resetAmounts,
     updateInputAmount,
+    updateIsMax,
     updateNativeAmount,
     updateOutputAmount,
   };

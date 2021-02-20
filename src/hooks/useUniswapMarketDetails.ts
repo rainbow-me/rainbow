@@ -8,7 +8,6 @@ import useUniswapPairs from './useUniswapPairs';
 import { calculateTradeDetails } from '@rainbow-me/handlers/uniswap';
 import {
   convertAmountFromNativeValue,
-  greaterThanOrEqualTo,
   isZero,
   updatePrecisionToDisplay,
 } from '@rainbow-me/utilities';
@@ -19,13 +18,11 @@ const DEFAULT_NATIVE_INPUT_AMOUNT = 50;
 export default function useUniswapMarketDetails({
   defaultInputAddress,
   isSavings,
-  maxInputBalance,
   updateInputAmount,
   updateOutputAmount,
 }: {
   defaultInputAddress: string;
   isSavings: boolean;
-  maxInputBalance: string;
   updateInputAmount: (
     newInputAmount: string | null,
     newAmountDisplay: string | null,
@@ -43,7 +40,6 @@ export default function useUniswapMarketDetails({
     inputAmount,
     inputAsExactAmount,
     outputAmount,
-    swapUpdateIsSufficientBalance,
   } = useSwapInputValues();
   const {
     extraTradeDetails,
@@ -113,7 +109,6 @@ export default function useUniswapMarketDetails({
     ({ isOutputEmpty, isOutputZero }) => {
       if (isOutputEmpty || isOutputZero) {
         updateInputAmount(null, null, false);
-        swapUpdateIsSufficientBalance(true);
       } else {
         if (!tradeDetails) return;
         const rawUpdatedInputAmount = tradeDetails?.inputAmount?.toExact();
@@ -128,21 +123,9 @@ export default function useUniswapMarketDetails({
           updatedInputAmountDisplay,
           inputAsExactAmount
         );
-
-        const isSufficientAmountToTrade =
-          !rawUpdatedInputAmount ||
-          greaterThanOrEqualTo(maxInputBalance, rawUpdatedInputAmount);
-        swapUpdateIsSufficientBalance(isSufficientAmountToTrade);
       }
     },
-    [
-      inputAsExactAmount,
-      inputCurrency,
-      maxInputBalance,
-      swapUpdateIsSufficientBalance,
-      tradeDetails,
-      updateInputAmount,
-    ]
+    [inputAsExactAmount, inputCurrency, tradeDetails, updateInputAmount]
   );
 
   const calculateOutputGivenInputChange = useCallback(
@@ -175,11 +158,6 @@ export default function useUniswapMarketDetails({
     try {
       if (isMissingAmounts) return;
 
-      const newIsSufficientBalance =
-        !inputAmount || greaterThanOrEqualTo(maxInputBalance, inputAmount);
-
-      swapUpdateIsSufficientBalance(newIsSufficientBalance);
-
       const isInputEmpty = !inputAmount;
       const isOutputEmpty = !outputAmount;
 
@@ -207,9 +185,7 @@ export default function useUniswapMarketDetails({
     inputAmount,
     inputAsExactAmount,
     isMissingAmounts,
-    maxInputBalance,
     outputAmount,
-    swapUpdateIsSufficientBalance,
   ]);
 
   useEffect(() => {

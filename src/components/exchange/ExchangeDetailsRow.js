@@ -15,6 +15,7 @@ import {
   usePriceImpactDetails,
   useSwapInputOutputTokens,
   useSwapInputValues,
+  useSwapIsSufficientBalance,
 } from '@rainbow-me/hooks';
 import { padding, position } from '@rainbow-me/styles';
 
@@ -64,11 +65,9 @@ export default function ExchangeDetailsRow({
     transform: [{ scale: priceImpactScale.value }],
   }));
 
-  const {
-    inputAmount,
-    isSufficientBalance,
-    outputAmount,
-  } = useSwapInputValues();
+  const { inputAmount, outputAmount } = useSwapInputValues();
+
+  const { isSufficientBalance } = useSwapIsSufficientBalance();
 
   const isPriceImpactWarningVisible =
     isSufficientBalance && !!inputAmount && !!outputAmount && isHighPriceImpact;
