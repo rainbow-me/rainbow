@@ -1,30 +1,36 @@
+import { toLower } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
 import { Column, Flex } from '../layout';
 import { MarqueeList } from '../list';
 import { Text } from '../text';
 import EdgeFade from './EdgeFade';
-import { useTopMovers } from '@rainbow-me/hooks';
+import { useAccountAssets, useTopMovers } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import { ethereumUtils } from '@rainbow-me/utils';
 
 export default function TopMoversSection() {
   const { gainers = [], losers = [] } = useTopMovers() || {};
   const { navigate } = useNavigation();
+  const { allAssets } = useAccountAssets();
 
   const handlePress = useCallback(
     asset => {
+      const assetFormatted =
+        ethereumUtils.getAsset(allAssets, toLower(asset.address)) || asset;
+
       navigate(
         ios ? Routes.EXPANDED_ASSET_SHEET : Routes.EXPANDED_ASSET_SCREEN,
         {
-          asset,
+          asset: assetFormatted,
           fromDiscover: true,
           longFormHeight: initialChartExpandedStateSheetHeight,
           type: 'token',
         }
       );
     },
-    [navigate]
+    [allAssets, navigate]
   );
 
   const formatItems = useCallback(
