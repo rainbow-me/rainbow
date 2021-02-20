@@ -17,10 +17,10 @@ import {
 import { Chart } from '../value-chart';
 import { ChartPathProvider } from '@rainbow-me/animated-charts';
 import { toChecksumAddress } from '@rainbow-me/handlers/web3';
-import { useChartThrottledPoints } from '@rainbow-me/hooks';
+import { useChartThrottledPoints, useDimensions } from '@rainbow-me/hooks';
 import { magicMemo } from '@rainbow-me/utils';
 
-const heightWithoutChart = 373 + (android ? 20 - getSoftMenuBarHeight() : 0);
+const heightWithoutChart = 373 + (android ? 20 - getSoftMenuBarHeight() : -153);
 const heightWithChart = heightWithoutChart + 297;
 
 export const initialLiquidityPoolExpandedStateSheetHeight = heightWithChart;
@@ -62,11 +62,16 @@ const LiquidityPoolExpandedState = ({ asset }) => {
   const tokenAddresses = useMemo(() => {
     return tokens.map(token => formatTokenAddress(token.address));
   }, [tokens]);
+  const { height: screenHeight } = useDimensions();
 
   return (
     <SlackSheet
       additionalTopPadding={android}
       contentHeight={liquidityPoolExpandedStateSheetHeight}
+      {...(ios
+        ? { height: '100%' }
+        : { additionalTopPadding: true, contentHeight: screenHeight - 80 })}
+      scrollEnabled
     >
       <ChartPathProvider data={throttledData}>
         <Chart
