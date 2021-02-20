@@ -377,19 +377,19 @@
   "lavamoat": {
     "allowScripts": {
       "Rainbow": false,
-      "@sentry/cli": true,
-      "detox": true,
-      "dtrace-provider": true,
-      "keccak": true,
-      "secp256k1": true,
-      "husky": true,
-      "core-js": true,
-      "fsevents": true,
-      "react-native-storage": true,
-      "react-query": true,
-      "@scarf/scarf": true,
+      "@sentry/cli": false,
+      "@scarf/scarf": false,
       "@lavamoat/preinstall-always-fail": false,
-      "scrypt": false
+      "core-js": false,
+      "detox": false,
+      "dtrace-provider": false,
+      "fsevents": false,
+      "husky": false,
+      "keccak": false,
+      "react-native-storage": false,
+      "react-query": false,
+      "scrypt": false,
+      "secp256k1": false
     }
   }
 }
