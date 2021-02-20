@@ -31,7 +31,6 @@ import {
   useBlockPolling,
   useGas,
   useMaxInputBalance,
-  usePrevious,
   usePriceImpactDetails,
   useSwapDetails,
   useSwapInputOutputTokens,
@@ -47,7 +46,7 @@ import { executeRap } from '@rainbow-me/raps/common';
 import { ethUnits } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
-import { backgroundTask, isETH, isNewValueForPath } from '@rainbow-me/utils';
+import { backgroundTask, isETH } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const FloatingPanels = ios
@@ -122,11 +121,9 @@ export default function ExchangeModal({
 
   const {
     defaultInputAddress,
+    flipCurrencies,
     navigateToSelectInputCurrency,
     navigateToSelectOutputCurrency,
-    previousInputCurrency,
-    updateInputCurrency,
-    updateOutputCurrency,
   } = useUniswapCurrencies({
     defaultInputAsset,
     defaultOutputAsset,
@@ -174,25 +171,23 @@ export default function ExchangeModal({
     logger.log('[exchange] - clear form');
     clearAllInputRefs();
     resetAmounts();
-    updateMaxInputBalance();
-  }, [clearAllInputRefs, resetAmounts, updateMaxInputBalance]);
+  }, [clearAllInputRefs, resetAmounts]);
 
-  const prevOutputAmount = usePrevious(outputAmount);
   const onFlipCurrencies = useCallback(() => {
-    clearForm();
-    updateMaxInputBalance(outputCurrency);
-    updateInputAmount(prevOutputAmount, prevOutputAmount, true);
-    updateInputCurrency(outputCurrency);
-    updateOutputCurrency(inputCurrency);
+    flipCurrencies();
+    if (outputFieldRef?.current?.isFocused()) {
+      updateInputAmount(outputAmount, null, true, false, outputCurrency);
+    } else {
+      updateOutputAmount(inputAmount);
+    }
   }, [
-    clearForm,
-    inputCurrency,
+    flipCurrencies,
+    inputAmount,
+    outputAmount,
     outputCurrency,
-    prevOutputAmount,
+    outputFieldRef,
     updateInputAmount,
-    updateInputCurrency,
-    updateMaxInputBalance,
-    updateOutputCurrency,
+    updateOutputAmount,
   ]);
 
   const isDismissing = useRef(false);
@@ -225,10 +220,8 @@ export default function ExchangeModal({
   // Calculate market details
   const { isSufficientLiquidity } = useUniswapMarketDetails({
     defaultInputAddress,
-    inputFieldRef,
     isSavings,
     maxInputBalance,
-    outputFieldRef,
     updateInputAmount,
     updateOutputAmount,
   });
@@ -271,13 +264,10 @@ export default function ExchangeModal({
     }, 1000);
   }, [defaultGasLimit, updateTxFee]);
 
-  // Clear form and reset max input balance on new input currency
+  // Reset max input balance on new input currency
   useEffect(() => {
-    if (isNewValueForPath(inputCurrency, previousInputCurrency, 'address')) {
-      clearForm();
-      updateMaxInputBalance(inputCurrency);
-    }
-  }, [clearForm, inputCurrency, previousInputCurrency, updateMaxInputBalance]);
+    updateMaxInputBalance(inputCurrency);
+  }, [inputCurrency, updateMaxInputBalance]);
 
   // Recalculate max input balance when gas price changes if input currency is ETH
   useEffect(() => {

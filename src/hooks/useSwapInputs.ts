@@ -45,7 +45,8 @@ export default function useSwapInputs({
       newInputAmount,
       newAmountDisplay,
       newInputAsExactAmount = true,
-      newIsMax = false
+      newIsMax = false,
+      newInputCurrency = null
     ) => {
       const display = newAmountDisplay || newInputAmount;
       dispatch(
@@ -53,9 +54,11 @@ export default function useSwapInputs({
       );
       dispatch(updateIsMax(!!newInputAmount && newIsMax));
 
+      const inputCurrencyAddress =
+        newInputCurrency?.address ?? inputCurrency?.address;
       if (newIsMax || !nativeFieldRef?.current?.isFocused?.()) {
         const inputPriceValue =
-          genericAssets[inputCurrency?.address]?.price?.value || 0;
+          genericAssets[inputCurrencyAddress]?.price?.value || 0;
         dispatch(
           updateSwapNativeAmount(
             newInputAmount && inputPriceValue && !isZero(newInputAmount)
@@ -64,7 +67,7 @@ export default function useSwapInputs({
           )
         );
 
-        if (inputCurrency) {
+        if (newInputCurrency || inputCurrency) {
           const newIsSufficientBalance =
             !newInputAmount ||
             (isWithdrawal

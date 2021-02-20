@@ -1,13 +1,12 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
-import { get, isEmpty } from 'lodash';
+import { isEmpty } from 'lodash';
 import { useCallback, useEffect, useLayoutEffect, useMemo } from 'react';
 import { InteractionManager } from 'react-native';
 import { useDispatch } from 'react-redux';
 import useAccountAssets from './useAccountAssets';
 import useAccountSettings from './useAccountSettings';
 import { delayNext } from './useMagicAutofocus';
-import usePrevious from './usePrevious';
 import useSwapInputOutputTokens from './useSwapInputOutputTokens';
 import useUniswapCalls from './useUniswapCalls';
 import { CurrencySelectionTypes } from '@rainbow-me/helpers';
@@ -17,6 +16,7 @@ import {
   multicallUpdateOutdatedListeners,
 } from '@rainbow-me/redux/multicall';
 import {
+  flipSwapCurrencies,
   updateSwapInputCurrency,
   updateSwapOutputCurrency,
 } from '@rainbow-me/redux/swap';
@@ -66,7 +66,7 @@ export default function useUniswapCurrencies({
     params: { blockInteractions },
   } = useRoute();
 
-  const defaultInputAddress = get(defaultInputAsset, 'address');
+  const defaultInputAddress = defaultInputAsset?.address;
   const {
     defaultChosenInputItem,
     defaultInputItemInWallet,
@@ -106,7 +106,7 @@ export default function useUniswapCurrencies({
     // set the output
     if (
       isDeposit &&
-      get(defaultInputItemInWallet, 'address') !== defaultInputAddress
+      defaultInputItemInWallet?.address !== defaultInputAddress
     ) {
       defaultOutputItem = defaultChosenInputItem;
     }
@@ -126,35 +126,20 @@ export default function useUniswapCurrencies({
 
   const { calls } = useUniswapCalls();
 
-  const previousInputCurrency = usePrevious(inputCurrency);
-  const previousOutputCurrency = usePrevious(outputCurrency);
-
   useEffect(() => {
     if (!inputCurrency || !outputCurrency || isEmpty(calls)) return;
-    if (
-      isSameAsset(inputCurrency, previousInputCurrency) &&
-      isSameAsset(outputCurrency, previousOutputCurrency)
-    )
-      return;
-
     dispatch(multicallAddListeners({ calls, chainId }));
     dispatch(multicallUpdateOutdatedListeners());
-  }, [
-    calls,
-    chainId,
-    dispatch,
-    inputCurrency,
-    outputCurrency,
-    previousInputCurrency,
-    previousOutputCurrency,
-  ]);
+  }, [calls, chainId, dispatch, inputCurrency, outputCurrency]);
+
+  const flipCurrencies = useCallback(() => {
+    dispatch(flipSwapCurrencies());
+  }, [dispatch]);
 
   const updateInputCurrency = useCallback(
     newInputCurrency => {
       logger.log('[update input curr] new input curr', newInputCurrency);
-      logger.log('[update input curr] prev input curr', previousInputCurrency);
-
-      dispatch(updateSwapInputCurrency(newInputCurrency));
+      logger.log('[update input curr] prev input curr', inputCurrency);
 
       if (isSameAsset(newInputCurrency, outputCurrency)) {
         logger.log(
@@ -163,14 +148,13 @@ export default function useUniswapCurrencies({
         if (isDeposit || isWithdrawal) {
           dispatch(updateSwapOutputCurrency(null));
         } else {
-          dispatch(updateSwapOutputCurrency(previousInputCurrency));
+          dispatch(flipSwapCurrencies());
         }
+      } else {
+        dispatch(updateSwapInputCurrency(newInputCurrency));
       }
 
-      if (
-        isDeposit &&
-        get(newInputCurrency, 'address') !== defaultInputAddress
-      ) {
+      if (isDeposit && newInputCurrency?.address !== defaultInputAddress) {
         logger.log(
           '[update input curr] new deposit output for deposit',
           defaultChosenInputItem
@@ -179,9 +163,9 @@ export default function useUniswapCurrencies({
       }
 
       analytics.track('Switched input asset', {
-        defaultInputAsset: get(defaultInputAsset, 'symbol', ''),
-        from: get(previousInputCurrency, 'symbol', ''),
-        label: get(newInputCurrency, 'symbol', ''),
+        defaultInputAsset: defaultInputAsset?.symbol,
+        from: inputCurrency?.symbol,
+        label: newInputCurrency?.symbol,
         type,
       });
     },
@@ -190,10 +174,10 @@ export default function useUniswapCurrencies({
       defaultInputAddress,
       defaultInputAsset,
       dispatch,
+      inputCurrency,
       isDeposit,
       isWithdrawal,
       outputCurrency,
-      previousInputCurrency,
       type,
     ]
   );
@@ -201,33 +185,26 @@ export default function useUniswapCurrencies({
   const updateOutputCurrency = useCallback(
     newOutputCurrency => {
       logger.log('[update output curr] new output curr', newOutputCurrency);
-      logger.log(
-        '[update output curr] input currency at the moment',
-        inputCurrency
-      );
 
-      dispatch(updateSwapOutputCurrency(newOutputCurrency));
-
-      logger.log(
-        '[update output curr] prev output curr',
-        previousOutputCurrency
-      );
+      logger.log('[update output curr] prev output curr', outputCurrency);
 
       if (isSameAsset(inputCurrency, newOutputCurrency)) {
         logger.log(
           '[update output curr] updating input curr with prev output curr'
         );
-        dispatch(updateSwapInputCurrency(previousOutputCurrency));
+        dispatch(flipSwapCurrencies());
+      } else {
+        dispatch(updateSwapOutputCurrency(newOutputCurrency));
       }
 
       analytics.track('Switched output asset', {
-        defaultInputAsset: get(defaultInputAsset, 'symbol', ''),
-        from: get(previousOutputCurrency, 'symbol', ''),
-        label: get(newOutputCurrency, 'symbol', ''),
+        defaultInputAsset: defaultInputAsset?.symbol,
+        from: outputCurrency?.symbol,
+        label: newOutputCurrency?.symbol,
         type,
       });
     },
-    [defaultInputAsset, dispatch, inputCurrency, previousOutputCurrency, type]
+    [defaultInputAsset, dispatch, inputCurrency, outputCurrency, type]
   );
 
   const navigateToSelectInputCurrency = useCallback(() => {
@@ -275,9 +252,9 @@ export default function useUniswapCurrencies({
 
   return {
     defaultInputAddress,
+    flipCurrencies,
     navigateToSelectInputCurrency,
     navigateToSelectOutputCurrency,
-    previousInputCurrency,
     updateInputCurrency,
     updateOutputCurrency,
   };

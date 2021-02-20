@@ -10,7 +10,6 @@ import {
 import { hdkey } from 'ethereumjs-wallet';
 import {
   find,
-  get,
   isEmpty,
   isString,
   matchesProperty,
@@ -34,22 +33,27 @@ import {
   WalletLibraryType,
 } from '@rainbow-me/model/wallet';
 import store from '@rainbow-me/redux/store';
-import { chains } from '@rainbow-me/references';
+import { chains, ETH_ADDRESS } from '@rainbow-me/references';
 import logger from 'logger';
 
 const { RNBip39 } = NativeModules;
 
-const getEthPriceUnit = () => {
+const getAsset = (assets, address = 'eth') =>
+  find(assets, matchesProperty('address', toLower(address)));
+
+const getAssetPrice = (address = ETH_ADDRESS) => {
   const { assets, genericAssets } = store.getState().data;
-  const genericEthPrice = genericAssets?.eth?.price?.value;
-  return genericEthPrice || getAsset(assets)?.price?.value || 0;
+  const genericPrice = genericAssets[address]?.price?.value;
+  return genericPrice || getAsset(assets, address)?.price?.value || 0;
 };
 
+const getEthPriceUnit = () => getAssetPrice();
+
 const getBalanceAmount = async (selectedGasPrice, selected) => {
-  let amount = get(selected, 'balance.amount', 0);
-  if (get(selected, 'address') === 'eth') {
+  let amount = getAssetPrice(selected?.address);
+  if (selected?.address === ETH_ADDRESS) {
     if (!isEmpty(selectedGasPrice)) {
-      const txFeeRaw = get(selectedGasPrice, 'txFee.value.amount');
+      const txFeeRaw = selectedGasPrice?.txFee?.value?.amount;
       const txFeeAmount = fromWei(txFeeRaw);
       const remaining = subtract(amount, txFeeAmount);
       amount = greaterThan(remaining, 0) ? remaining : '0';
@@ -60,12 +64,9 @@ const getBalanceAmount = async (selectedGasPrice, selected) => {
 
 const getHash = txn => txn.hash.split('-').shift();
 
-const getAsset = (assets, address = 'eth') =>
-  find(assets, matchesProperty('address', toLower(address)));
-
 export const checkWalletEthZero = assets => {
   const ethAsset = find(assets, asset => asset.address === 'eth');
-  let amount = get(ethAsset, 'balance.amount', 0);
+  let amount = ethAsset?.balance?.amount ?? 0;
   return isZero(amount);
 };
 
@@ -107,7 +108,7 @@ const getDataString = (func, arrVals) => {
  */
 const getNetworkFromChainId = chainId => {
   const networkData = find(chains, ['chain_id', chainId]);
-  return get(networkData, 'network', networkTypes.mainnet);
+  return networkData?.network ?? networkTypes.mainnet;
 };
 
 /**
@@ -116,7 +117,7 @@ const getNetworkFromChainId = chainId => {
  */
 const getChainIdFromNetwork = network => {
   const chainData = find(chains, ['network', network]);
-  return get(chainData, 'chain_id', 1);
+  return chainData?.chain_id ?? 1;
 };
 
 /**

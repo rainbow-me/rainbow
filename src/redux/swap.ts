@@ -2,7 +2,7 @@ import { Trade } from '@uniswap/sdk';
 import { AnyAction } from 'redux';
 import { fetchAssetPrices } from './explorer';
 import { UniswapCurrency } from '@rainbow-me/entities';
-import { AppDispatch } from '@rainbow-me/redux/store';
+import { AppDispatch, AppGetState } from '@rainbow-me/redux/store';
 
 export interface SwapAmount {
   display: string | null;
@@ -44,6 +44,7 @@ const SWAP_UPDATE_INPUT_AMOUNT = 'swap/SWAP_UPDATE_INPUT_AMOUNT';
 const SWAP_UPDATE_OUTPUT_AMOUNT = 'swap/SWAP_UPDATE_OUTPUT_AMOUNT';
 const SWAP_UPDATE_INPUT_CURRENCY = 'swap/SWAP_UPDATE_INPUT_CURRENCY';
 const SWAP_UPDATE_OUTPUT_CURRENCY = 'swap/SWAP_UPDATE_OUTPUT_CURRENCY';
+const SWAP_FLIP_CURRENCIES = 'swap/SWAP_FLIP_CURRENCIES';
 const SWAP_RESET_AMOUNTS = 'swap/SWAP_RESET_AMOUNTS';
 const SWAP_CLEAR_STATE = 'swap/SWAP_CLEAR_STATE';
 
@@ -134,6 +135,20 @@ export const updateSwapOutputCurrency = (
   }
 };
 
+export const flipSwapCurrencies = () => (
+  dispatch: AppDispatch,
+  getState: AppGetState
+) => {
+  const { inputCurrency, outputCurrency } = getState().swap;
+  dispatch({
+    payload: {
+      newInputCurrency: outputCurrency,
+      newOutputCurrency: inputCurrency,
+    },
+    type: SWAP_FLIP_CURRENCIES,
+  });
+};
+
 export const swapClearState = () => (dispatch: AppDispatch) => {
   dispatch({ type: SWAP_CLEAR_STATE });
 };
@@ -200,6 +215,12 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
       return {
         ...state,
         inputCurrency: action.payload,
+      };
+    case SWAP_FLIP_CURRENCIES:
+      return {
+        ...state,
+        inputCurrency: action.payload.newInputCurrency,
+        outputCurrency: action.payload.newOutputCurrency,
       };
     case SWAP_RESET_AMOUNTS:
       return {

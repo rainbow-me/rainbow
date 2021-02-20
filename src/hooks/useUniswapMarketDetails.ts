@@ -1,6 +1,5 @@
 import { isEmpty } from 'lodash';
-import { RefObject, useCallback, useEffect, useMemo, useState } from 'react';
-import { TextInput } from 'react-native';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import useAccountSettings from './useAccountSettings';
 import useSwapDetails from './useSwapDetails';
 import useSwapInputOutputTokens from './useSwapInputOutputTokens';
@@ -19,21 +18,17 @@ const DEFAULT_NATIVE_INPUT_AMOUNT = 50;
 
 export default function useUniswapMarketDetails({
   defaultInputAddress,
-  inputFieldRef,
   isSavings,
   maxInputBalance,
-  outputFieldRef,
   updateInputAmount,
   updateOutputAmount,
 }: {
   defaultInputAddress: string;
-  inputFieldRef: RefObject<TextInput>;
   isSavings: boolean;
   maxInputBalance: string;
-  outputFieldRef: RefObject<TextInput>;
   updateInputAmount: (
-    newInputAmount: string | undefined,
-    newAmountDisplay: string | undefined,
+    newInputAmount: string | null,
+    newAmountDisplay: string | null,
     newInputAsExactAmount?: boolean,
     newIsMax?: boolean
   ) => void;
@@ -117,7 +112,7 @@ export default function useUniswapMarketDetails({
   const calculateInputGivenOutputChange = useCallback(
     ({ isOutputEmpty, isOutputZero }) => {
       if (isOutputEmpty || isOutputZero) {
-        updateInputAmount(undefined, undefined, false);
+        updateInputAmount(null, null, false);
         swapUpdateIsSufficientBalance(true);
       } else {
         if (!tradeDetails) return;
@@ -153,10 +148,7 @@ export default function useUniswapMarketDetails({
   const calculateOutputGivenInputChange = useCallback(
     ({ isInputEmpty, isInputZero }) => {
       logger.log('calculate OUTPUT given INPUT change');
-      if (
-        (isInputEmpty || isInputZero) &&
-        !outputFieldRef?.current?.isFocused()
-      ) {
+      if (isInputEmpty || isInputZero) {
         updateOutputAmount(null, null, true);
       } else {
         if (!tradeDetails) return;
@@ -176,13 +168,7 @@ export default function useUniswapMarketDetails({
         }
       }
     },
-    [
-      extraTradeDetails,
-      inputAsExactAmount,
-      outputFieldRef,
-      tradeDetails,
-      updateOutputAmount,
-    ]
+    [extraTradeDetails, inputAsExactAmount, tradeDetails, updateOutputAmount]
   );
 
   const updateInputOutputAmounts = useCallback(() => {
@@ -206,10 +192,7 @@ export default function useUniswapMarketDetails({
           isInputEmpty,
           isInputZero,
         });
-      }
-
-      // update input amount given output amount changes
-      if (!inputAsExactAmount && !inputFieldRef?.current?.isFocused()) {
+      } else {
         calculateInputGivenOutputChange({
           isOutputEmpty,
           isOutputZero,
@@ -223,7 +206,6 @@ export default function useUniswapMarketDetails({
     calculateOutputGivenInputChange,
     inputAmount,
     inputAsExactAmount,
-    inputFieldRef,
     isMissingAmounts,
     maxInputBalance,
     outputAmount,
