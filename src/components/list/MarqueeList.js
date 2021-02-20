@@ -43,7 +43,7 @@ const SingleElement = ({
         translateX:
           ((((transX.value + offset + width) % sumWidth) + sumWidth) %
             sumWidth) -
-          width,
+            width || 0,
       },
     ],
   }));
