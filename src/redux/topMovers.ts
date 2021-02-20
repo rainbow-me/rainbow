@@ -1,4 +1,4 @@
-import { map, pick } from 'lodash';
+import { map } from 'lodash';
 import {
   getTopMovers,
   saveTopGainers,
@@ -6,7 +6,7 @@ import {
 } from '../handlers/localstorage/topMovers';
 import { emitChartsRequest } from './explorer';
 import { AppDispatch, AppGetState } from './store';
-import { parseAssetsNative } from '@rainbow-me/parsers';
+import { parseAsset, parseAssetsNative } from '@rainbow-me/parsers';
 
 interface ZerionAsset {
   asset_code: string;
@@ -98,11 +98,7 @@ export const updateTopMovers = (message: ZerionAssetInfoResponse) => (
   const { nativeCurrency } = getState().settings;
   const orderByDirection = message.meta.order_by['relative_changes.1d'];
   const assets = map(message.payload.info, ({ asset }) => {
-    const item = pick(asset, ['decimals', 'name', 'price', 'symbol']);
-    return {
-      address: asset.asset_code,
-      ...item,
-    };
+    return parseAsset(asset);
   });
   const info = parseAssetsNative(assets, nativeCurrency);
 
