@@ -12,6 +12,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.2.52](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.52)
+
+### Changed
+* Improved Gas Estimation 
+* Added Rainbow Curated List to Search Results
+* Default Slippage for Uniswap
+
+
 ## [1.2.51](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.51)
 ### Added
 * System support for Dark Mode
