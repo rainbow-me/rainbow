@@ -100,12 +100,7 @@ const getTimestampsForChanges = () => {
   return [t1, t2, t3];
 };
 
-async function getBulkPairData(
-  pairList,
-  ethPrice,
-  ethPriceOneMonthAgo,
-  genericAssets
-) {
+async function getBulkPairData(pairList, ethPrice, ethPriceOneMonthAgo) {
   const [t1, t2, t3] = getTimestampsForChanges();
   let [
     { number: b1 },
@@ -179,8 +174,7 @@ async function getBulkPairData(
             oneMonthHistory,
             ethPrice,
             ethPriceOneMonthAgo,
-            b1,
-            genericAssets
+            b1
           );
           return data;
         })
@@ -198,8 +192,7 @@ function parseData(
   oneMonthData,
   ethPrice,
   ethPriceOneMonthAgo,
-  oneDayBlock,
-  genericAssets
+  oneDayBlock
 ) {
   const newData = { ...data };
   // get volume changes
@@ -247,16 +240,6 @@ function parseData(
   newData.annualized_fees =
     (newData.oneDayVolumeUSD * 0.003 * 365 * 100) / newData.trackedReserveUSD;
 
-  let token0 =
-    (toLower(newData.token0.id) === WETH_ADDRESS
-      ? genericAssets['eth']
-      : genericAssets[toLower(newData.token0.id)]) || newData.token0;
-  let token1 =
-    toLower(newData.token1.id) === WETH_ADDRESS
-      ? genericAssets['eth']
-      : genericAssets[toLower(newData.token1.id)] || newData.token1;
-  const tokens = [token0, token1];
-
   return {
     ...newData,
     address: newData.id,
@@ -266,7 +249,6 @@ function parseData(
       'WETH',
       'ETH'
     ),
-    tokens,
     type: 'uniswap-v2',
     uniqueId: newData.id,
   };
@@ -435,17 +417,32 @@ export default function useUniswapPools(sortField, sortDirection) {
 
     // top 40
     sortedPairs = sortedPairs.slice(0, 19);
-
     const tmpAllTokens = [];
-    sortedPairs.forEach(pair => {
+    // Override with tokens from generic assets
+    sortedPairs = sortedPairs.map(pair => {
+      const token0 = (toLower(pair.token0.id) === WETH_ADDRESS
+        ? genericAssets['eth']
+        : genericAssets[toLower(pair.token0.id)]) || {
+        ...pair.token0,
+        address: pair.token0.id,
+      };
+      const token1 =
+        toLower(pair.token1.id) === WETH_ADDRESS
+          ? genericAssets['eth']
+          : genericAssets[toLower(pair.token1.id)] || {
+              ...pair.token1,
+              address: pair.token1.id,
+            };
+      pair.tokens = [token0, token1];
       tmpAllTokens.push(toLower(pair.token0.id));
       tmpAllTokens.push(toLower(pair.token1.id));
+      return pair;
     });
     const allTokens = uniq(tmpAllTokens);
     const allLPTokens = sortedPairs.map(({ id }) => id);
     dispatch(emitAssetRequest(allTokens.concat(allLPTokens)));
     return sortedPairs;
-  }, [dispatch, pairs, sortDirection, sortField]);
+  }, [dispatch, genericAssets, pairs, sortDirection, sortField]);
 
   return {
     error,
