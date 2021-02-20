@@ -3,6 +3,7 @@
   "version": "1.2.53-1",
   "private": true,
   "scripts": {
+    "setup": "yarn install && yarn allow-scripts",
     "android": "adb uninstall me.rainbow || true && react-native run-android",
     "android:apk": "cd android && ./gradlew assembleRelease && (adb uninstall me.rainbow || true) && adb install app/build/outputs/apk/release/app-release.apk",
     "android:bundle": "./scripts/check-env.sh && cd android && ./gradlew bundleRelease && open app/build/outputs/bundle/release/",
@@ -10,10 +11,10 @@
     "detox:android:release": "detox build -c android.emu.release && detox test -R 1 -c android.emu.release",
     "detox:ios": "detox build -c ios.sim.debug && detox test -R 1 -c ios.sim.debug",
     "detox:ios:release": "detox build -c ios.sim.release && detox test -R 1 -c ios.sim.release",
-    "fast": "yarn && yarn install-pods-fast",
+    "fast": "yarn setup && yarn install-pods-fast",
     "ganache": "source .env && ganache-cli --f https://mainnet.infura.io/v3/${INFURA_PROJECT_ID_DEV} -p 7545 -i 1 -b 10",
-    "install-all": "yarn && yarn install-pods",
-    "install-all-no-flipper": "yarn && yarn install-pods-no-flipper",
+    "install-all": "yarn setup && yarn install-pods",
+    "install-all-no-flipper": "yarn setup && yarn install-pods-no-flipper",
     "install-bundle": "cd ios && bundle install && cd ..",
     "install-pods": "cd ios && bundle exec pod install --repo-update && cd ..",
     "install-pods-fast": "cd ios && bundle exec pod install && cd ..",
@@ -43,6 +44,7 @@
     ]
   },
   "dependencies": {
+    "@lavamoat/preinstall-always-fail": "^1.0.0",
     "@apollo/client": "^3.0.0-beta.34",
     "@bankify/react-native-animate-number": "^0.2.1",
     "@ethersproject/abi": "^5.0.9",
@@ -226,6 +228,7 @@
     "zxcvbn": "^4.4.2"
   },
   "devDependencies": {
+    "@lavamoat/allow-scripts": "^1.0.3",
     "@babel/core": "^7.10.4",
     "@babel/plugin-transform-react-inline-elements": "^7.9.0",
     "@babel/plugin-transform-runtime": "^7.9.0",
@@ -275,7 +278,7 @@
     "**/minimist": "1.2.3",
     "**/resolve": "1.8.1",
     "**/semver": "7.3.2",
-    "**/yargs-parser": "18.1.3",
+    "**/yargs-parser": "20.2.5",
     "**/@hapi/hoek": "8.5.1"
   },
   "jest": {
@@ -370,5 +373,23 @@
     "tty": "tty-browserify",
     "vm": "vm-browserify",
     "tls": false
+  },
+  "lavamoat": {
+    "allowScripts": {
+      "Rainbow": false,
+      "@sentry/cli": true,
+      "detox": true,
+      "dtrace-provider": true,
+      "keccak": true,
+      "secp256k1": true,
+      "husky": true,
+      "core-js": true,
+      "fsevents": true,
+      "react-native-storage": true,
+      "react-query": true,
+      "@scarf/scarf": true,
+      "@lavamoat/preinstall-always-fail": false,
+      "scrypt": false
+    }
   }
 }
