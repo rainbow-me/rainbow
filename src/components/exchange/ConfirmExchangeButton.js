@@ -11,6 +11,7 @@ import {
   useGas,
   usePriceImpactDetails,
   useSwapInputOutputTokens,
+  useSwapIsSufficientBalance,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
@@ -32,13 +33,13 @@ const Container = styled(Centered)`
 
 export default function ConfirmExchangeButton({
   disabled,
-  isSufficientBalance,
   isSufficientLiquidity,
   onPressViewDetails,
   onSubmit,
   type = ExchangeModalTypes.swap,
   ...props
 }) {
+  const { isSufficientBalance } = useSwapIsSufficientBalance();
   const { outputCurrency: asset } = useSwapInputOutputTokens();
   const { isSufficientGas } = useGas();
   const { name: routeName } = useRoute();

@@ -8,11 +8,11 @@ export default function useMaxInputBalance() {
   const { selectedGasPrice } = useGas();
 
   const updateMaxInputBalance = useCallback(
-    async inputCurrency => {
+    inputCurrency => {
       // Update current balance
-      const newInputBalance = await ethereumUtils.getBalanceAmount(
+      const newInputBalance = ethereumUtils.getBalanceAmount(
         selectedGasPrice,
-        inputCurrency
+        inputCurrency?.address
       );
       setMaxInputBalance(newInputBalance);
       return newInputBalance;

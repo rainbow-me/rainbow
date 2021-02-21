@@ -45,18 +45,19 @@ export default function useGas() {
   );
 
   const updateDefaultGasLimit = useCallback(
-    data => dispatch(gasUpdateDefaultGasLimit(data)),
+    defaultGasLimit => dispatch(gasUpdateDefaultGasLimit(defaultGasLimit)),
     [dispatch]
   );
 
   const updateGasPriceOption = useCallback(
-    data => dispatch(gasUpdateGasPriceOption(data)),
+    option => dispatch(gasUpdateGasPriceOption(option)),
     [dispatch]
   );
 
   const updateTxFee = useCallback(
-    (data, overrideGasOption) =>
-      dispatch(gasUpdateTxFee(data, overrideGasOption)),
+    (newGasLimit, overrideGasOption) => {
+      dispatch(gasUpdateTxFee(newGasLimit, overrideGasOption));
+    },
     [dispatch]
   );
   const updateCustomValues = useCallback(
