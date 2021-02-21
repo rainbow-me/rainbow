@@ -126,7 +126,7 @@ export default forwardRef(function DiscoverSearchContainer(
             setIsInputFocused(false);
           }}
         >
-          {delayedShowSearch && <CancelText>Cancel</CancelText>}
+          {delayedShowSearch && <CancelText>Done</CancelText>}
         </CancelButton>
       </Row>
       <DiscoverSheetContext.Provider value={contextValue}>
