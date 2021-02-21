@@ -1,4 +1,3 @@
-import { useRoute } from '@react-navigation/native';
 import React, {
   useCallback,
   useContext,
@@ -143,10 +142,6 @@ export default function DiscoverSheetHeader(props) {
     Math.round(newInterpolate(yPosition.value, [50, 51], [0, 1], 'clamp'))
   );
 
-  const {
-    params: { setSwipeEnabled: setViewPagerSwipeEnabled },
-  } = useRoute();
-
   const translateXLeftButton = useDerivedValue(() =>
     withSpring(stackOpacity.value * 5, springConfig)
   );
@@ -175,11 +170,20 @@ export default function DiscoverSheetHeader(props) {
       withSpring(isSearchModeEnabled ? 0 : buttonOpacity.value, springConfig),
     [isSearchModeEnabled]
   );
-  const animatedWrapperOpacity = useDerivedValue(() =>
-    withSpring(buttonOpacity.value, springConfig)
+  const animatedWrapperOpacity = useDerivedValue(
+    () =>
+      withSpring(isSearchModeEnabled ? 0 : buttonOpacity.value, springConfig),
+    [isSearchModeEnabled]
   );
 
   const { colors } = useTheme();
+
+  const handleScannerPress = useCallback(() => {
+    if (!isSearchModeEnabled) {
+      setIsSearchModeEnabled?.(false);
+      jumpToShort?.();
+    }
+  }, [isSearchModeEnabled, jumpToShort, setIsSearchModeEnabled]);
 
   return (
     <Header {...props} pointerEvents="box-none">
@@ -207,11 +211,7 @@ export default function DiscoverSheetHeader(props) {
       <Stack
         disabled={!buttonsEnabled}
         left={18.5}
-        onPress={() => {
-          setIsSearchModeEnabled?.(false);
-          setViewPagerSwipeEnabled?.(true);
-          jumpToShort?.();
-        }}
+        onPress={handleScannerPress}
         stackOpacity={stackOpacity}
         translateX={translateXRightButton}
         wrapperOpacity={animatedWrapperOpacity}
