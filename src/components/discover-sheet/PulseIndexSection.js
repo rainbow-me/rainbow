@@ -93,7 +93,7 @@ const PulseIndex = () => {
           />
           <Row>
             <Column margin={15} marginRight={10}>
-              <CoinIcon shadowColor={colors.dpiDark} {...item} />
+              <CoinIcon forcedShadowColor={colors.dpiDark} {...item} />
             </Column>
             <Column marginLeft={0} marginTop={ios ? 13.5 : 6}>
               <Text color={colors.whiteLabel} size="large" weight="heavy">
