@@ -255,7 +255,7 @@
     "eslint": "^6.8.0",
     "eslint-config-satya164": "^3.1.6",
     "eslint-import-resolver-babel-module": "^5.1.2",
-    "ganache-cli": "6.10.1",
+    "ganache-cli": "6.12.2",
     "graphql": "^15.3.0",
     "jest": "^26.1.0",
     "jest-circus": "^26.1.0",
