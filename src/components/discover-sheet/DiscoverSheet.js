@@ -50,7 +50,6 @@ const DiscoverSheetAndroid = (_, forwardedRef) => {
   const listeners = useRef([]);
   const bottomSheetModalRef = useRef(null);
   const onFabSearch = useRef(null);
-  const sectionListRef = useRef();
   const sheet = useRef();
 
   const value = useMemo(
@@ -68,7 +67,6 @@ const DiscoverSheetAndroid = (_, forwardedRef) => {
         bottomSheetModalRef.current.collapse();
       },
       onFabSearch,
-      sectionListRef,
       ...headerButtonsHandlers,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
