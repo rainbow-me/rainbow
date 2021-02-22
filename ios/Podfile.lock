@@ -374,7 +374,6 @@ PODS:
     - React
     - RNInputMask
   - react-native-udp (2.7.0):
-    - CocoaAsyncSocket
     - React
   - react-native-version-number (0.3.6):
     - React
@@ -565,7 +564,6 @@ PODS:
     - React
   - SSZipArchive (2.2.3)
   - TcpSockets (3.3.2):
-    - CocoaAsyncSocket
     - React
   - TOCropViewController (2.5.5)
   - ToolTipMenu (5.2.1):
@@ -975,7 +973,7 @@ SPEC CHECKSUMS:
   react-native-safe-area-context: 13004a45f3021328fdd9ee1f987c3131fb65928d
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
   react-native-text-input-mask: 07227297075f9653315f43b0424d596423a01736
-  react-native-udp: 96a517e5a121cfe69f4b05eeeafefe00c623debf
+  react-native-udp: ff9d13e523f2b58e6bc5d4d32321ac60671b5dc9
   react-native-version-number: b415bbec6a13f2df62bf978e85bc0d699462f37f
   react-native-viewpager: 7238df0b6b9ee5a50f882750269f3c76639b195f
   react-native-webview: 6520e3e7b4933de76b95ef542c8d7115cf45b68e
@@ -1027,7 +1025,7 @@ SPEC CHECKSUMS:
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86
   SRSRadialGradient: 7f9c92f2b31576ab80f059378ef2817404cd0575
   SSZipArchive: 62d4947b08730e4cda640473b0066d209ff033c9
-  TcpSockets: bd31674146c0931a064fc254a59812dfd1a73ae0
+  TcpSockets: 14306fb79f9750ea7d2ddd02d8bed182abb01797
   TOCropViewController: da59f531f8ac8a94ef6d6c0fc34009350f9e8bfe
   ToolTipMenu: 8ac61aded0fbc4acfe7e84a7d0c9479d15a9a382
   Yoga: 7d13633d129fd179e01b8953d38d47be90db185a
@@ -1035,4 +1033,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 412313ac47634ca15faa48e68aadac98633cc980
 
-COCOAPODS: 1.10.0
+COCOAPODS: 1.9.1
