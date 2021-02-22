@@ -325,6 +325,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.SWAP_DETAILS_SHEET}
+        {...expandedAssetSheetConfig}
       />
       {isNativeStackAvailable ? (
         <>
