@@ -216,10 +216,10 @@ class HoldToAuthorizeButton extends PureComponent {
 
     const isAuthorizing = this.props.isAuthorizing || this.state.isAuthorizing;
 
-    let bgColor = backgroundColor || colors.appleBlue;
-    if (disabled) {
-      bgColor = disabledBackgroundColor || ButtonDisabledBgColor(colors)[theme];
-    }
+    const bgColor = disabled
+      ? disabledBackgroundColor || ButtonDisabledBgColor(colors)[theme]
+      : backgroundColor || colors.appleBlue;
+
     const height = smallButton ? SmallButtonHeight : ButtonHeight;
     const width = deviceDimensions.width - parentHorizontalPadding * 2;
 

@@ -48,7 +48,7 @@ export default function ConfirmExchangeButton({
   const isSwapDetailsRoute = routeName === Routes.SWAP_DETAILS_SHEET;
   const shouldOpenSwapDetails = isHighPriceImpact && !isSwapDetailsRoute;
 
-  const { colors } = useTheme();
+  const { colors, darkScheme } = useTheme();
 
   const shadows = useMemo(
     () => ({
@@ -112,7 +112,7 @@ export default function ConfirmExchangeButton({
         disabledBackgroundColor={
           isSwapDetailsRoute
             ? colors.blueGreyDark50
-            : colors.alpha(colors.blueGreyDark, 0.04)
+            : colors.alpha(darkScheme.blueGreyDark, 0.04)
         }
         label={label}
         onLongPress={shouldOpenSwapDetails ? onPressViewDetails : onSubmit}
