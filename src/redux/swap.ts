@@ -4,6 +4,11 @@ import { fetchAssetPrices } from './explorer';
 import { UniswapCurrency } from '@rainbow-me/entities';
 import { ExchangeModalTypes } from '@rainbow-me/helpers';
 import { AppDispatch, AppGetState } from '@rainbow-me/redux/store';
+import {
+  convertAmountFromNativeValue,
+  convertAmountToNativeAmount,
+  updatePrecisionToDisplay,
+} from '@rainbow-me/utilities';
 
 export interface SwapAmount {
   display: string | null;
@@ -41,11 +46,11 @@ interface SwapState {
 }
 
 // -- Constants --------------------------------------- //
-const SWAP_UPDATE_IS_MAX = 'swap/SWAP_UPDATE_IS_MAX';
 const SWAP_UPDATE_EXTRA_TRADE_DETAILS = 'swap/SWAP_UPDATE_EXTRA_TRADE_DETAILS';
 const SWAP_UPDATE_TRADE_DETAILS = 'swap/SWAP_UPDATE_TRADE_DETAILS';
 const SWAP_UPDATE_NATIVE_AMOUNT = 'swap/SWAP_UPDATE_NATIVE_AMOUNT';
 const SWAP_UPDATE_INPUT_AMOUNT = 'swap/SWAP_UPDATE_INPUT_AMOUNT';
+const SWAP_UPDATE_INPUT_VALUES = 'swap/SWAP_UPDATE_INPUT_VALUES';
 const SWAP_UPDATE_OUTPUT_AMOUNT = 'swap/SWAP_UPDATE_OUTPUT_AMOUNT';
 const SWAP_UPDATE_INPUT_CURRENCY = 'swap/SWAP_UPDATE_INPUT_CURRENCY';
 const SWAP_UPDATE_OUTPUT_CURRENCY = 'swap/SWAP_UPDATE_OUTPUT_CURRENCY';
@@ -83,8 +88,61 @@ export const updateSwapTradeDetails = (tradeDetails: Trade) => (
   });
 };
 
-export const updateIsMax = (isMax: boolean) => (dispatch: AppDispatch) => {
-  dispatch({ payload: isMax, type: SWAP_UPDATE_IS_MAX });
+export const updateSwapInputValues = (value: string | null, isMax = false) => (
+  dispatch: AppDispatch,
+  getState: AppGetState
+) => {
+  const { genericAssets } = getState().data;
+  const { inputCurrency } = getState().swap;
+  const inputAmount: SwapAmount = {
+    display: value,
+    value,
+  };
+  const inputPriceValue =
+    genericAssets[inputCurrency?.address]?.price?.value || 0;
+  const nativeAmount = value
+    ? convertAmountToNativeAmount(value, inputPriceValue)
+    : null;
+
+  dispatch({
+    payload: { inputAmount, isMax, nativeAmount },
+    type: SWAP_UPDATE_INPUT_VALUES,
+  });
+};
+
+export const updateSwapInputValuesViaNative = (value: string | null) => (
+  dispatch: AppDispatch,
+  getState: AppGetState
+) => {
+  const { genericAssets } = getState().data;
+  const { inputCurrency } = getState().swap;
+
+  const inputPriceValue =
+    genericAssets[inputCurrency?.address]?.price?.value || 0;
+
+  const inputAmountValue = value
+    ? convertAmountFromNativeValue(
+        value,
+        inputPriceValue,
+        inputCurrency.decimals
+      )
+    : null;
+
+  const inputAmountDisplay = updatePrecisionToDisplay(
+    inputAmountValue,
+    inputPriceValue,
+    true
+  );
+
+  const inputAmount: SwapAmount = {
+    display: inputAmountDisplay,
+    value: inputAmountValue,
+  };
+
+  dispatch({
+    payload: { inputAmount, nativeAmount: value },
+    type: SWAP_UPDATE_INPUT_VALUES,
+  });
 };
 
 export const updateSwapInputAmount = (
@@ -110,11 +168,11 @@ export const updateSwapNativeAmount = (value: string | null) => (
 
 export const updateSwapOutputAmount = (
   value: string | null,
-  display: string | null,
-  inputAsExactAmount = false
+  display?: string | null,
+  inputAsExactAmount: boolean = false
 ) => (dispatch: AppDispatch) => {
   const outputAmount: SwapAmount = {
-    display,
+    display: display || value,
     value,
   };
   dispatch({
@@ -145,11 +203,16 @@ export const updateSwapOutputCurrency = (
   }
 };
 
-export const flipSwapCurrencies = () => (
+export const flipSwapCurrencies = (useOutputAmount: boolean) => (
   dispatch: AppDispatch,
   getState: AppGetState
 ) => {
-  const { inputCurrency, outputCurrency } = getState().swap;
+  const {
+    inputAmount,
+    inputCurrency,
+    outputAmount,
+    outputCurrency,
+  } = getState().swap;
   dispatch({
     payload: {
       newInputCurrency: outputCurrency,
@@ -157,6 +220,12 @@ export const flipSwapCurrencies = () => (
     },
     type: SWAP_FLIP_CURRENCIES,
   });
+
+  if (useOutputAmount) {
+    dispatch(updateSwapInputValues(outputAmount?.value));
+  } else {
+    dispatch(updateSwapOutputAmount(inputAmount?.value));
+  }
 };
 
 export const swapClearState = () => (dispatch: AppDispatch) => {
@@ -186,11 +255,6 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
         type: action.payload.type,
         typeSpecificParameters: action.payload.typeSpecificParameters,
       };
-    case SWAP_UPDATE_IS_MAX:
-      return {
-        ...state,
-        isMax: action.payload,
-      };
     case SWAP_UPDATE_EXTRA_TRADE_DETAILS:
       return {
         ...state,
@@ -205,6 +269,14 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
       return {
         ...state,
         nativeAmount: action.payload,
+      };
+    case SWAP_UPDATE_INPUT_VALUES:
+      return {
+        ...state,
+        inputAmount: action.payload.inputAmount,
+        inputAsExactAmount: true,
+        isMax: action.payload.isMax,
+        nativeAmount: action.payload.nativeAmount,
       };
     case SWAP_UPDATE_INPUT_AMOUNT:
       return {

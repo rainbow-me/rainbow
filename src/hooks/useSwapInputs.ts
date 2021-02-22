@@ -6,8 +6,9 @@ import { UniswapCurrency } from '@rainbow-me/entities';
 import { AppState } from '@rainbow-me/redux/store';
 import {
   resetSwapAmounts,
-  updateIsMax as swapUpdateIsMax,
   updateSwapInputAmount,
+  updateSwapInputValues,
+  updateSwapInputValuesViaNative,
   updateSwapNativeAmount,
   updateSwapOutputAmount,
 } from '@rainbow-me/redux/swap';
@@ -103,19 +104,29 @@ export default function useSwapInputs({
     [dispatch]
   );
 
+  const updateInputValues = useCallback(
+    (value, isMax = false) => {
+      dispatch(updateSwapInputValues(value, isMax));
+    },
+    [dispatch]
+  );
+
+  const updateInputValuesViaNative = useCallback(
+    value => {
+      dispatch(updateSwapInputValuesViaNative(value));
+    },
+    [dispatch]
+  );
+
   const resetAmounts = useCallback(() => {
     dispatch(resetSwapAmounts());
   }, [dispatch]);
 
-  const updateIsMax = useCallback(
-    newIsMax => dispatch(swapUpdateIsMax(newIsMax)),
-    [dispatch]
-  );
-
   return {
     resetAmounts,
     updateInputAmount,
-    updateIsMax,
+    updateInputValues,
+    updateInputValuesViaNative,
     updateNativeAmount,
     updateOutputAmount,
   };

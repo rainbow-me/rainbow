@@ -164,9 +164,9 @@ export default function ExchangeModal({
   const {
     resetAmounts,
     updateInputAmount,
-    updateIsMax,
-    updateNativeAmount,
     updateOutputAmount,
+    updateInputValues,
+    updateInputValuesViaNative,
   } = useSwapInputs({
     nativeFieldRef,
   });
@@ -187,21 +187,9 @@ export default function ExchangeModal({
   }, [clearAllInputRefs, resetAmounts]);
 
   const onFlipCurrencies = useCallback(() => {
-    flipCurrencies();
-    if (outputFieldRef?.current?.isFocused()) {
-      updateInputAmount(outputAmount, null, true, outputCurrency);
-    } else {
-      updateOutputAmount(inputAmount);
-    }
-  }, [
-    flipCurrencies,
-    inputAmount,
-    outputAmount,
-    outputCurrency,
-    outputFieldRef,
-    updateInputAmount,
-    updateOutputAmount,
-  ]);
+    const useOutputAmount = outputFieldRef?.current?.isFocused();
+    flipCurrencies(useOutputAmount);
+  }, [flipCurrencies, outputFieldRef]);
 
   const isDismissing = useRef(false);
   useEffect(() => {
@@ -300,7 +288,7 @@ export default function ExchangeModal({
     const prevGas = prevSelectedGasPrice?.txFee?.value?.amount || 0;
     const currentGas = selectedGasPrice?.txFee?.value?.amount || 0;
     if (prevGas !== currentGas) {
-      updateInputAmount(maxInputBalance);
+      updateInputValues(maxInputBalance, true);
     }
   }, [
     isMax,
@@ -308,13 +296,12 @@ export default function ExchangeModal({
     maxInputBalance,
     prevSelectedGasPrice,
     selectedGasPrice,
-    updateInputAmount,
+    updateInputValues,
   ]);
 
   const handlePressMaxBalance = useCallback(async () => {
-    updateIsMax(true);
-    updateInputAmount(maxInputBalance);
-  }, [maxInputBalance, updateInputAmount, updateIsMax]);
+    updateInputValues(maxInputBalance, true);
+  }, [maxInputBalance, updateInputValues]);
 
   const handleSubmit = useCallback(() => {
     backgroundTask.execute(async () => {
@@ -482,8 +469,8 @@ export default function ExchangeModal({
               onFocus={handleFocus}
               onPressMaxBalance={handlePressMaxBalance}
               onPressSelectInputCurrency={navigateToSelectInputCurrency}
-              setInputAmount={updateInputAmount}
-              setNativeAmount={updateNativeAmount}
+              setInputAmount={updateInputValues}
+              setNativeAmount={updateInputValuesViaNative}
               testID={`${testID}-input`}
             />
             {showOutputField && (
