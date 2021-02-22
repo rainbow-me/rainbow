@@ -44,7 +44,6 @@
     ]
   },
   "dependencies": {
-    "@lavamoat/preinstall-always-fail": "^1.0.0",
     "@apollo/client": "^3.0.0-beta.34",
     "@bankify/react-native-animate-number": "^0.2.1",
     "@ethersproject/abi": "^5.0.9",
@@ -64,6 +63,7 @@
     "@ethersproject/transactions": "^5.0.8",
     "@ethersproject/units": "^5.0.8",
     "@ethersproject/wallet": "^5.0.9",
+    "@lavamoat/preinstall-always-fail": "^1.0.0",
     "@rainbow-me/react-native-animated-number": "^0.0.2",
     "@rainbow-me/react-native-payments": "1.1.5",
     "@react-native-community/async-storage": "^1.11.0",
@@ -228,18 +228,19 @@
     "zxcvbn": "^4.4.2"
   },
   "devDependencies": {
-    "@lavamoat/allow-scripts": "^1.0.3",
     "@babel/core": "^7.10.4",
     "@babel/plugin-transform-react-inline-elements": "^7.9.0",
     "@babel/plugin-transform-runtime": "^7.9.0",
     "@babel/preset-env": "^7.10.4",
     "@babel/runtime": "^7.7.2",
+    "@lavamoat/allow-scripts": "^1.0.3",
     "@types/jest": "^26.0.9",
     "@types/react": "^16.9.44",
     "@types/react-native": "^0.63.4",
     "@types/react-test-renderer": "^16.9.3",
     "@types/url-parse": "^1.4.3",
     "ast-parser": "^0.0.5",
+    "audit-ci": "^3.1.1",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "^10.1.0",
     "babel-jest": "^26.1.0",
