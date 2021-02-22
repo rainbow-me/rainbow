@@ -7,7 +7,6 @@ import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { getRandomColor } from '../../styles/colors';
 import { FloatingEmojis } from '../floating-emojis';
-import useOnAvatarPress from '../profile/useOnAvatarPress';
 import useExperimentalFlag, {
   AVATAR_PICKER,
 } from '@rainbow-me/config/experimentalHooks';
@@ -24,6 +23,7 @@ import {
 } from '@rainbow-me/helpers/validators';
 import {
   useAccountProfile,
+  useOnAvatarPress,
   useSafeImageUri,
   useWallets,
 } from '@rainbow-me/hooks';

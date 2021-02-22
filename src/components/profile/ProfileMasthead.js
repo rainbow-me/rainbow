@@ -11,7 +11,6 @@ import { Centered, Column, Row, RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';
 import AvatarCircle from './AvatarCircle';
 import ProfileAction from './ProfileAction';
-import useOnAvatarPress from './useOnAvatarPress';
 import useExperimentalFlag, {
   AVATAR_PICKER,
 } from '@rainbow-me/config/experimentalHooks';
@@ -19,6 +18,7 @@ import showWalletErrorAlert from '@rainbow-me/helpers/support';
 import {
   useAccountProfile,
   useDimensions,
+  useOnAvatarPress,
   useWallets,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
