@@ -14,6 +14,7 @@ git update-index --assume-unchanged "ios/Internals/ios/Internals.m"
 git update-index --assume-unchanged "ios/Internals/ios/Internals.swift"
 git update-index --assume-unchanged "ios/Internals/ios/Internals-Bridging-Header.h"
 git update-index --assume-unchanged "ios/Extras.json"
+git update-index --assume-unchanged "ios/AppDelegate.pch"
 
 # Specifying ONLY the node packages that we need to install via browserify
 # (because those aren't available in react native) and some of our deps require them.
