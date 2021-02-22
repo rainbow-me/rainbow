@@ -3,11 +3,13 @@ import React, {
   Fragment,
   useCallback,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
 } from 'react';
 import { Keyboard } from 'react-native';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { useMemoOne } from 'use-memo-one';
 import { dismissingScreenListener } from '../../shim';
@@ -30,24 +32,24 @@ import {
   useAccountSettings,
   useBlockPolling,
   useGas,
-  useMaxInputBalance,
-  usePrevious,
   usePriceImpactDetails,
   useSwapDetails,
   useSwapInputOutputTokens,
   useSwapInputRefs,
   useSwapInputs,
   useSwapInputValues,
+  useSwapIsSufficientBalance,
   useUniswapCurrencies,
   useUniswapMarketDetails,
 } from '@rainbow-me/hooks';
 import { loadWallet } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
 import { executeRap } from '@rainbow-me/raps/common';
+import { updateSwapTypeDetails } from '@rainbow-me/redux/swap';
 import { ethUnits } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
-import { backgroundTask, isETH, isNewValueForPath } from '@rainbow-me/utils';
+import { backgroundTask, isETH } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const FloatingPanels = ios
@@ -81,6 +83,17 @@ export default function ExchangeModal({
   type,
   underlyingPrice,
 }) {
+  const dispatch = useDispatch();
+
+  useLayoutEffect(() => {
+    const typeSpecificParameters = {
+      cTokenBalance,
+      supplyBalanceUnderlying,
+      underlyingPrice,
+    };
+    dispatch(updateSwapTypeDetails(type, typeSpecificParameters));
+  }, [cTokenBalance, dispatch, supplyBalanceUnderlying, type, underlyingPrice]);
+
   const {
     navigate,
     setParams,
@@ -106,9 +119,11 @@ export default function ExchangeModal({
     updateDefaultGasLimit,
     updateTxFee,
   } = useGas();
+
+  const { maxInputBalance } = useSwapIsSufficientBalance();
+
   const { initWeb3Listener, stopWeb3Listener } = useBlockPolling();
   const { nativeCurrency } = useAccountSettings();
-  const { maxInputBalance, updateMaxInputBalance } = useMaxInputBalance();
 
   const { areTradeDetailsValid, tradeDetails } = useSwapDetails();
   const { isHighPriceImpact, percentDisplay } = usePriceImpactDetails();
@@ -122,11 +137,9 @@ export default function ExchangeModal({
 
   const {
     defaultInputAddress,
+    flipCurrencies,
     navigateToSelectInputCurrency,
     navigateToSelectOutputCurrency,
-    previousInputCurrency,
-    updateInputCurrency,
-    updateOutputCurrency,
   } = useUniswapCurrencies({
     defaultInputAsset,
     defaultOutputAsset,
@@ -140,6 +153,7 @@ export default function ExchangeModal({
   const { inputCurrency, outputCurrency } = useSwapInputOutputTokens();
 
   const {
+    clearAllInputRefs,
     handleFocus,
     inputFieldRef,
     lastFocusedInputHandle,
@@ -148,20 +162,18 @@ export default function ExchangeModal({
   } = useSwapInputRefs();
 
   const {
+    resetAmounts,
     updateInputAmount,
+    updateIsMax,
     updateNativeAmount,
     updateOutputAmount,
   } = useSwapInputs({
-    isWithdrawal,
-    maxInputBalance,
     nativeFieldRef,
-    supplyBalanceUnderlying,
   });
 
   const {
     inputAmount,
     inputAmountDisplay,
-    isSufficientBalance,
     nativeAmount,
     isMax,
     outputAmount,
@@ -170,35 +182,25 @@ export default function ExchangeModal({
 
   const clearForm = useCallback(() => {
     logger.log('[exchange] - clear form');
-    inputFieldRef?.current?.clear();
-    nativeFieldRef?.current?.clear();
-    outputFieldRef?.current?.clear();
-    updateInputAmount();
-    updateMaxInputBalance();
+    clearAllInputRefs();
+    resetAmounts();
+  }, [clearAllInputRefs, resetAmounts]);
+
+  const onFlipCurrencies = useCallback(() => {
+    flipCurrencies();
+    if (outputFieldRef?.current?.isFocused()) {
+      updateInputAmount(outputAmount, null, true, outputCurrency);
+    } else {
+      updateOutputAmount(inputAmount);
+    }
   }, [
-    inputFieldRef,
-    nativeFieldRef,
+    flipCurrencies,
+    inputAmount,
+    outputAmount,
+    outputCurrency,
     outputFieldRef,
     updateInputAmount,
-    updateMaxInputBalance,
-  ]);
-
-  const prevOutputAmount = usePrevious(outputAmount);
-  const onFlipCurrencies = useCallback(() => {
-    clearForm();
-    updateMaxInputBalance(outputCurrency);
-    updateInputCurrency(outputCurrency, false);
-    updateOutputCurrency(inputCurrency, false);
-    updateInputAmount(prevOutputAmount, prevOutputAmount, true);
-  }, [
-    clearForm,
-    inputCurrency,
-    outputCurrency,
-    prevOutputAmount,
-    updateInputAmount,
-    updateInputCurrency,
-    updateMaxInputBalance,
-    updateOutputCurrency,
+    updateOutputAmount,
   ]);
 
   const isDismissing = useRef(false);
@@ -231,10 +233,7 @@ export default function ExchangeModal({
   // Calculate market details
   const { isSufficientLiquidity } = useUniswapMarketDetails({
     defaultInputAddress,
-    inputFieldRef,
     isSavings,
-    maxInputBalance,
-    outputFieldRef,
     updateInputAmount,
     updateOutputAmount,
   });
@@ -277,28 +276,6 @@ export default function ExchangeModal({
     }, 1000);
   }, [defaultGasLimit, updateTxFee]);
 
-  // Clear form and reset max input balance on new input currency
-  useEffect(() => {
-    if (isNewValueForPath(inputCurrency, previousInputCurrency, 'address')) {
-      clearForm();
-      updateMaxInputBalance(inputCurrency);
-    }
-  }, [clearForm, inputCurrency, previousInputCurrency, updateMaxInputBalance]);
-
-  // Recalculate max input balance when gas price changes if input currency is ETH
-  useEffect(() => {
-    const prevGas = prevSelectedGasPrice?.txFee?.value?.amount || 0;
-    const currentGas = selectedGasPrice?.txFee?.value?.amount || 0;
-    if (isETH(inputCurrency?.address) && prevGas !== currentGas) {
-      updateMaxInputBalance(inputCurrency);
-    }
-  }, [
-    inputCurrency,
-    prevSelectedGasPrice,
-    selectedGasPrice,
-    updateMaxInputBalance,
-  ]);
-
   // Liten to gas prices, Uniswap reserves updates
   useEffect(() => {
     updateDefaultGasLimit(defaultGasLimit);
@@ -317,44 +294,27 @@ export default function ExchangeModal({
     updateDefaultGasLimit,
   ]);
 
-  // Update input amount when max is set and the max input balance changed
+  // Update input balance when gas price changes if max and input currency is ETH
   useEffect(() => {
-    if (isMax) {
-      let maxBalance = maxInputBalance;
-      inputFieldRef?.current?.blur();
-      if (isWithdrawal) {
-        maxBalance = supplyBalanceUnderlying;
-      }
-      updateInputAmount(maxBalance, maxBalance, true, true);
+    if (!(isMax && isETH(inputCurrency?.address))) return;
+    const prevGas = prevSelectedGasPrice?.txFee?.value?.amount || 0;
+    const currentGas = selectedGasPrice?.txFee?.value?.amount || 0;
+    if (prevGas !== currentGas) {
+      updateInputAmount(maxInputBalance);
     }
   }, [
-    inputFieldRef,
     isMax,
-    isWithdrawal,
+    inputCurrency?.address,
     maxInputBalance,
-    supplyBalanceUnderlying,
+    prevSelectedGasPrice,
+    selectedGasPrice,
     updateInputAmount,
   ]);
 
   const handlePressMaxBalance = useCallback(async () => {
-    let maxBalance = maxInputBalance;
-    if (isWithdrawal) {
-      maxBalance = supplyBalanceUnderlying;
-    }
-    analytics.track('Selected max balance', {
-      defaultInputAsset: defaultInputAsset?.symbol || '',
-      type,
-      value: Number(maxBalance.toString()),
-    });
-    return updateInputAmount(maxBalance, maxBalance, true, true);
-  }, [
-    defaultInputAsset,
-    isWithdrawal,
-    maxInputBalance,
-    supplyBalanceUnderlying,
-    type,
-    updateInputAmount,
-  ]);
+    updateIsMax(true);
+    updateInputAmount(maxInputBalance);
+  }, [maxInputBalance, updateInputAmount, updateIsMax]);
 
   const handleSubmit = useCallback(() => {
     backgroundTask.execute(async () => {
@@ -430,7 +390,6 @@ export default function ExchangeModal({
       disabled: !Number(inputAmountDisplay),
       isAuthorizing,
       isDeposit,
-      isSufficientBalance,
       isSufficientLiquidity,
       onSubmit: handleSubmit,
       type,
@@ -440,7 +399,6 @@ export default function ExchangeModal({
       inputAmountDisplay,
       isAuthorizing,
       isDeposit,
-      isSufficientBalance,
       isSufficientLiquidity,
       testID,
       type,

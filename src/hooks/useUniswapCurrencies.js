@@ -1,16 +1,13 @@
-/* eslint-disable no-use-before-define */
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
-import { find, get, isEmpty } from 'lodash';
+import { isEmpty } from 'lodash';
 import { useCallback, useEffect, useLayoutEffect, useMemo } from 'react';
 import { InteractionManager } from 'react-native';
 import { useDispatch } from 'react-redux';
 import useAccountAssets from './useAccountAssets';
 import useAccountSettings from './useAccountSettings';
 import { delayNext } from './useMagicAutofocus';
-import usePrevious from './usePrevious';
 import useSwapInputOutputTokens from './useSwapInputOutputTokens';
-import useUniswapAssetsInWallet from './useUniswapAssetsInWallet';
 import useUniswapCalls from './useUniswapCalls';
 import { CurrencySelectionTypes } from '@rainbow-me/helpers';
 import { useNavigation } from '@rainbow-me/navigation';
@@ -19,6 +16,7 @@ import {
   multicallUpdateOutdatedListeners,
 } from '@rainbow-me/redux/multicall';
 import {
+  flipSwapCurrencies,
   updateSwapInputCurrency,
   updateSwapOutputCurrency,
 } from '@rainbow-me/redux/swap';
@@ -68,7 +66,7 @@ export default function useUniswapCurrencies({
     params: { blockInteractions },
   } = useRoute();
 
-  const defaultInputAddress = get(defaultInputAsset, 'address');
+  const defaultInputAddress = defaultInputAsset?.address;
   const {
     defaultChosenInputItem,
     defaultInputItemInWallet,
@@ -108,7 +106,7 @@ export default function useUniswapCurrencies({
     // set the output
     if (
       isDeposit &&
-      get(defaultInputItemInWallet, 'address') !== defaultInputAddress
+      defaultInputItemInWallet?.address !== defaultInputAddress
     ) {
       defaultOutputItem = defaultChosenInputItem;
     }
@@ -128,69 +126,46 @@ export default function useUniswapCurrencies({
 
   const { calls } = useUniswapCalls();
 
-  const previousInputCurrency = usePrevious(inputCurrency);
-  const previousOutputCurrency = usePrevious(outputCurrency);
-
-  const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
-
   useEffect(() => {
     if (!inputCurrency || !outputCurrency || isEmpty(calls)) return;
-    if (
-      isSameAsset(inputCurrency, previousInputCurrency) &&
-      isSameAsset(outputCurrency, previousOutputCurrency)
-    )
-      return;
-
     dispatch(multicallAddListeners({ calls, chainId }));
     dispatch(multicallUpdateOutdatedListeners());
-  }, [
-    calls,
-    chainId,
-    dispatch,
-    inputCurrency,
-    outputCurrency,
-    previousInputCurrency,
-    previousOutputCurrency,
-  ]);
+  }, [calls, chainId, dispatch, inputCurrency, outputCurrency]);
+
+  const flipCurrencies = useCallback(() => {
+    dispatch(flipSwapCurrencies());
+  }, [dispatch]);
 
   const updateInputCurrency = useCallback(
-    (newInputCurrency, userSelected = true) => {
-      logger.log(
-        '[update input curr] new input curr, user selected?',
-        newInputCurrency,
-        userSelected
-      );
+    newInputCurrency => {
+      logger.log('[update input curr] new input curr', newInputCurrency);
+      logger.log('[update input curr] prev input curr', inputCurrency);
 
-      logger.log('[update input curr] prev input curr', previousInputCurrency);
-
-      dispatch(updateSwapInputCurrency(newInputCurrency));
-
-      if (userSelected && isSameAsset(newInputCurrency, outputCurrency)) {
+      if (isSameAsset(newInputCurrency, outputCurrency)) {
         logger.log(
           '[update input curr] setting output curr to prev input curr'
         );
         if (isDeposit || isWithdrawal) {
-          updateOutputCurrency(null, false);
+          dispatch(updateSwapOutputCurrency(null));
         } else {
-          updateOutputCurrency(previousInputCurrency, false);
+          dispatch(flipSwapCurrencies());
         }
+      } else {
+        dispatch(updateSwapInputCurrency(newInputCurrency));
       }
 
-      if (
-        isDeposit &&
-        get(newInputCurrency, 'address') !== defaultInputAddress
-      ) {
+      if (isDeposit && newInputCurrency?.address !== defaultInputAddress) {
         logger.log(
           '[update input curr] new deposit output for deposit',
           defaultChosenInputItem
         );
-        updateOutputCurrency(defaultChosenInputItem, false);
+        dispatch(updateSwapOutputCurrency(defaultChosenInputItem));
       }
 
       analytics.track('Switched input asset', {
-        defaultInputAsset: get(defaultInputAsset, 'symbol', ''),
-        from: get(previousInputCurrency, 'symbol', ''),
-        label: get(newInputCurrency, 'symbol', ''),
+        defaultInputAsset: defaultInputAsset?.symbol,
+        from: inputCurrency?.symbol,
+        label: newInputCurrency?.symbol,
         type,
       });
     },
@@ -199,66 +174,37 @@ export default function useUniswapCurrencies({
       defaultInputAddress,
       defaultInputAsset,
       dispatch,
+      inputCurrency,
       isDeposit,
       isWithdrawal,
       outputCurrency,
-      previousInputCurrency,
       type,
-      updateOutputCurrency,
     ]
   );
 
   const updateOutputCurrency = useCallback(
-    (newOutputCurrency, userSelected = true) => {
-      logger.log(
-        '[update output curr] new output curr, user selected?',
-        newOutputCurrency,
-        userSelected
-      );
-      logger.log(
-        '[update output curr] input currency at the moment',
-        inputCurrency
-      );
+    newOutputCurrency => {
+      logger.log('[update output curr] new output curr', newOutputCurrency);
 
-      dispatch(updateSwapOutputCurrency(newOutputCurrency));
+      logger.log('[update output curr] prev output curr', outputCurrency);
 
-      logger.log(
-        '[update output curr] prev output curr',
-        previousOutputCurrency
-      );
-      const existsInWallet = find(
-        uniswapAssetsInWallet,
-        asset =>
-          get(asset, 'address') === get(previousOutputCurrency, 'address')
-      );
-      if (userSelected && isSameAsset(inputCurrency, newOutputCurrency)) {
-        if (existsInWallet) {
-          logger.log(
-            '[update output curr] updating input curr with prev output curr'
-          );
-          updateInputCurrency(existsInWallet, false);
-        } else {
-          logger.log('[update output curr] updating input curr with nothing');
-          updateInputCurrency(null, false);
-        }
+      if (isSameAsset(inputCurrency, newOutputCurrency)) {
+        logger.log(
+          '[update output curr] updating input curr with prev output curr'
+        );
+        dispatch(flipSwapCurrencies());
+      } else {
+        dispatch(updateSwapOutputCurrency(newOutputCurrency));
       }
 
       analytics.track('Switched output asset', {
-        defaultInputAsset: get(defaultInputAsset, 'symbol', ''),
-        from: get(previousOutputCurrency, 'symbol', ''),
-        label: get(newOutputCurrency, 'symbol', ''),
+        defaultInputAsset: defaultInputAsset?.symbol,
+        from: outputCurrency?.symbol,
+        label: newOutputCurrency?.symbol,
         type,
       });
     },
-    [
-      defaultInputAsset,
-      dispatch,
-      inputCurrency,
-      previousOutputCurrency,
-      type,
-      uniswapAssetsInWallet,
-      updateInputCurrency,
-    ]
+    [defaultInputAsset, dispatch, inputCurrency, outputCurrency, type]
   );
 
   const navigateToSelectInputCurrency = useCallback(() => {
@@ -306,9 +252,9 @@ export default function useUniswapCurrencies({
 
   return {
     defaultInputAddress,
+    flipCurrencies,
     navigateToSelectInputCurrency,
     navigateToSelectOutputCurrency,
-    previousInputCurrency,
     updateInputCurrency,
     updateOutputCurrency,
   };

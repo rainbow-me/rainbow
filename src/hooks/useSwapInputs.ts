@@ -1,124 +1,64 @@
-import { RefObject, useCallback, useEffect, useMemo } from 'react';
+import { RefObject, useCallback } from 'react';
 import { TextInput } from 'react-native';
-import { useDispatch } from 'react-redux';
-import usePrevious from './usePrevious';
-import useSwapDetails from './useSwapDetails';
+import { useDispatch, useSelector } from 'react-redux';
 import useSwapInputOutputTokens from './useSwapInputOutputTokens';
-import useSwapInputValues from './useSwapInputValues';
 import { UniswapCurrency } from '@rainbow-me/entities';
+import { AppState } from '@rainbow-me/redux/store';
 import {
-  convertAmountFromNativeValue,
-  convertAmountToNativeAmount,
-  greaterThanOrEqualTo,
-  isZero,
-  updatePrecisionToDisplay,
-} from '@rainbow-me/helpers/utilities';
-import {
-  updateIsMax,
-  updateIsSufficientBalance,
+  resetSwapAmounts,
+  updateIsMax as swapUpdateIsMax,
   updateSwapInputAmount,
   updateSwapNativeAmount,
   updateSwapOutputAmount,
 } from '@rainbow-me/redux/swap';
+import {
+  convertAmountFromNativeValue,
+  convertAmountToNativeAmount,
+  isZero,
+  updatePrecisionToDisplay,
+} from '@rainbow-me/utilities';
 import logger from 'logger';
 
 export default function useSwapInputs({
-  isWithdrawal,
-  maxInputBalance,
   nativeFieldRef,
-  supplyBalanceUnderlying,
 }: {
-  isWithdrawal: boolean;
-  maxInputBalance: string;
   nativeFieldRef: RefObject<TextInput>;
-  supplyBalanceUnderlying: string;
 }) {
   const dispatch = useDispatch();
-  const { extraTradeDetails } = useSwapDetails();
-  const { inputAmount } = useSwapInputValues();
+  const genericAssets = useSelector(
+    (state: AppState) => state.data.genericAssets
+  );
   const {
     inputCurrency,
   }: { inputCurrency: UniswapCurrency } = useSwapInputOutputTokens();
-
-  const inputPriceValue = useMemo(
-    () =>
-      // If the input currency's price is unknown, fall back to using
-      // the price we derive from the output currency's price + inputExecutionRate
-      inputCurrency?.native?.price?.amount ||
-      extraTradeDetails?.inputPriceValue,
-    [extraTradeDetails, inputCurrency]
-  );
-  const prevInputPriceValue = usePrevious(inputPriceValue);
-
-  const forceUpdateNativeAmount = useCallback(
-    amount => {
-      if (!nativeFieldRef?.current?.isFocused?.()) {
-        dispatch(
-          updateSwapNativeAmount(
-            amount && inputPriceValue && !isZero(amount)
-              ? convertAmountToNativeAmount(amount, inputPriceValue)
-              : null
-          )
-        );
-      }
-    },
-    [dispatch, inputPriceValue, nativeFieldRef]
-  );
-
-  useEffect(() => {
-    // When the user has selected an input currency which we do not have price data for,
-    // we need to forcibly sync the "nativeAmount" input because the derived
-    // `extraTradeDetails?.inputPriceValue` price will be inaccurate for the first render.
-    if (
-      inputAmount &&
-      !isZero(inputAmount) &&
-      inputPriceValue !== prevInputPriceValue
-    ) {
-      forceUpdateNativeAmount(inputAmount);
-    }
-  }, [
-    forceUpdateNativeAmount,
-    inputAmount,
-    inputPriceValue,
-    prevInputPriceValue,
-  ]);
 
   const updateInputAmount = useCallback(
     (
       newInputAmount,
       newAmountDisplay,
       newInputAsExactAmount = true,
-      newIsMax = false
+      newInputCurrency = null
     ) => {
       const display = newAmountDisplay || newInputAmount;
       dispatch(
         updateSwapInputAmount(newInputAmount, display, newInputAsExactAmount)
       );
-      dispatch(updateIsMax(!!newInputAmount && newIsMax));
 
-      if (newIsMax || !nativeFieldRef?.current?.isFocused?.()) {
-        forceUpdateNativeAmount(newInputAmount);
-
-        if (inputCurrency) {
-          const newIsSufficientBalance =
-            !newInputAmount ||
-            (isWithdrawal
-              ? greaterThanOrEqualTo(supplyBalanceUnderlying, newInputAmount)
-              : greaterThanOrEqualTo(maxInputBalance, newInputAmount));
-
-          dispatch(updateIsSufficientBalance(newIsSufficientBalance));
-        }
+      const inputCurrencyAddress =
+        newInputCurrency?.address ?? inputCurrency?.address;
+      if (!nativeFieldRef?.current?.isFocused?.()) {
+        const inputPriceValue =
+          genericAssets[inputCurrencyAddress]?.price?.value || 0;
+        dispatch(
+          updateSwapNativeAmount(
+            newInputAmount && inputPriceValue && !isZero(newInputAmount)
+              ? convertAmountToNativeAmount(newInputAmount, inputPriceValue)
+              : null
+          )
+        );
       }
     },
-    [
-      dispatch,
-      forceUpdateNativeAmount,
-      inputCurrency,
-      isWithdrawal,
-      maxInputBalance,
-      nativeFieldRef,
-      supplyBalanceUnderlying,
-    ]
+    [dispatch, genericAssets, inputCurrency, nativeFieldRef]
   );
 
   const updateNativeAmount = useCallback(
@@ -131,7 +71,9 @@ export default function useSwapInputs({
       let inputAmountDisplay = null;
 
       dispatch(updateSwapNativeAmount(nativeAmount));
-      dispatch(updateIsMax(false));
+
+      const inputPriceValue =
+        genericAssets[inputCurrency.address]?.price?.value || 0;
 
       if (nativeAmount && inputPriceValue && !isZero(nativeAmount)) {
         inputAmount = convertAmountFromNativeValue(
@@ -148,7 +90,7 @@ export default function useSwapInputs({
 
       dispatch(updateSwapInputAmount(inputAmount, inputAmountDisplay, true));
     },
-    [dispatch, inputCurrency, inputPriceValue]
+    [dispatch, genericAssets, inputCurrency]
   );
 
   const updateOutputAmount = useCallback(
@@ -161,8 +103,19 @@ export default function useSwapInputs({
     [dispatch]
   );
 
+  const resetAmounts = useCallback(() => {
+    dispatch(resetSwapAmounts());
+  }, [dispatch]);
+
+  const updateIsMax = useCallback(
+    newIsMax => dispatch(swapUpdateIsMax(newIsMax)),
+    [dispatch]
+  );
+
   return {
+    resetAmounts,
     updateInputAmount,
+    updateIsMax,
     updateNativeAmount,
     updateOutputAmount,
   };
