@@ -46,3 +46,17 @@ else
     echo "$DEBUGFILE does not exist. You use default debug settings."
     cp src/config/defaultDebug.js $DEBUGFILE
 fi
+
+# Remove the incomplete installation 
+# of sentry-cli from node_modules
+rm -rf node_modules/.bin/sentry-cli
+
+if ! command -v sentry-cli &> /dev/null
+then
+  echo "Installing sentry-cli..."
+  brew install getsentry/tools/sentry-cli
+else
+  which sentry-cli
+  sentry-cli --version
+  echo "sentry-cli is already installed. Skipping" 
+fi

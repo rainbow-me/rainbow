@@ -42,12 +42,12 @@ import {
   MessageSigningSection,
   TransactionConfirmationSection,
 } from '../components/transaction';
-import { estimateGas, toHex } from '../handlers/web3';
 import { isDappAuthenticated } from '../helpers/dappNameHandler';
 import {
   convertAmountToNativeDisplay,
   convertHexToString,
   fromWei,
+  greaterThan,
   greaterThanOrEqualTo,
   multiply,
 } from '../helpers/utilities';
@@ -71,6 +71,11 @@ import {
   SIGN,
   SIGN_TYPED_DATA,
 } from '../utils/signingMethods';
+import {
+  estimateGas,
+  estimateGasWithPadding,
+  toHex,
+} from '@rainbow-me/handlers/web3';
 import {
   useAccountAssets,
   useAccountProfile,
@@ -416,13 +421,28 @@ const TransactionConfirmationScreen = () => {
       gasPrice = toHex(rawGasPrice);
     }
 
-    if (isNil(gas) && isNil(gasLimitFromPayload)) {
-      try {
-        const rawGasLimit = await estimateGas(txPayload);
+    try {
+      logger.log('⛽ gas suggested by dapp', {
+        gas: convertHexToString(gas),
+        gasLimitFromPayload: convertHexToString(gasLimitFromPayload),
+      });
+
+      // Estimate the tx with gas limit padding before sending
+      const rawGasLimit = await estimateGasWithPadding(txPayload);
+
+      // If the estimation with padding is higher or gas limit was missing,
+      // let's use the higher value
+      if (
+        (isNil(gas) && isNil(gasLimitFromPayload)) ||
+        (!isNil(gas) && greaterThan(rawGasLimit, convertHexToString(gas))) ||
+        (!isNil(gasLimitFromPayload) &&
+          greaterThan(rawGasLimit, convertHexToString(gasLimitFromPayload)))
+      ) {
+        logger.log('⛽ using padded estimation!', rawGasLimit.toString());
         gas = toHex(rawGasLimit);
-      } catch (error) {
-        logger.log('error estimating gas', error);
       }
+    } catch (error) {
+      logger.log('⛽ error estimating gas', error);
     }
 
     const calculatedGasLimit = gas || gasLimitFromPayload || gasLimit;

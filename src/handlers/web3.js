@@ -11,13 +11,17 @@ import { INFURA_PROJECT_ID, INFURA_PROJECT_ID_DEV } from 'react-native-dotenv';
 import AssetTypes from '../helpers/assetTypes';
 import NetworkTypes from '../helpers/networkTypes';
 import {
+  addBuffer,
   convertAmountToRawAmount,
   convertStringToHex,
+  fraction,
+  greaterThan,
   handleSignificantDecimals,
   multiply,
 } from '../helpers/utilities';
 import smartContractMethods from '../references/smartcontract-methods.json';
 import { ethereumUtils } from '../utils';
+import { ethUnits } from '@rainbow-me/references';
 import logger from 'logger';
 
 const infuraProjectId = __DEV__ ? INFURA_PROJECT_ID_DEV : INFURA_PROJECT_ID;
@@ -104,6 +108,65 @@ export const estimateGas = async estimateGasData => {
     const gasLimit = await web3Provider.estimateGas(estimateGasData);
     return gasLimit.toString();
   } catch (error) {
+    return null;
+  }
+};
+
+export const estimateGasWithPadding = async (
+  txPayload,
+  paddingFactor = 1.1
+) => {
+  try {
+    const txPayloadToEstimate = { ...txPayload };
+    const { gasLimit } = await web3Provider.getBlock();
+    const { to, data } = txPayloadToEstimate;
+    // 1 - Check if the receiver is a contract
+    const code = to ? await web3Provider.getCode(to) : undefined;
+    // 2 - if it's not a contract AND it doesn't have any data use the default gas limit
+    if (!to || (to && !data && (!code || code === '0x'))) {
+      logger.log(
+        '⛽ Skipping estimates, using default',
+        ethUnits.basic_tx.toString()
+      );
+      return ethUnits.basic_tx.toString();
+    }
+    logger.log('⛽ Calculating safer gas limit for last block');
+    // 3 - If it is a contract, call the RPC method `estimateGas` with a safe value
+    const saferGasLimit = fraction(gasLimit.toString(), 19, 20);
+    logger.log('⛽ safer gas limit for last block is', saferGasLimit);
+
+    txPayloadToEstimate.gas = toHex(saferGasLimit);
+    const estimatedGas = await web3Provider.estimateGas(txPayloadToEstimate);
+
+    const lastBlockGasLimit = addBuffer(gasLimit.toString(), 0.9);
+    const paddedGas = addBuffer(
+      estimatedGas.toString(),
+      paddingFactor.toString()
+    );
+    logger.log('⛽ GAS CALCULATIONS!', {
+      estimatedGas: estimatedGas.toString(),
+      gasLimit: gasLimit.toString(),
+      lastBlockGasLimit: lastBlockGasLimit,
+      paddedGas: paddedGas,
+    });
+    // If the safe estimation is above the last block gas limit, use it
+    if (greaterThan(estimatedGas, lastBlockGasLimit)) {
+      logger.log(
+        '⛽ returning orginal gas estimation',
+        estimatedGas.toString()
+      );
+      return estimatedGas.toString();
+    }
+    // If the estimation is below the last block gas limit, use the padded estimate
+    if (greaterThan(lastBlockGasLimit, paddedGas)) {
+      logger.log('⛽ returning padded gas estimation', paddedGas);
+      return paddedGas;
+    }
+    // otherwise default to the last block gas limit
+    logger.log('⛽ returning last block gas limit', lastBlockGasLimit);
+    return lastBlockGasLimit;
+  } catch (error) {
+    logger.error('Error calculating gas limit with padding', error);
     return null;
   }
 };
@@ -296,12 +359,10 @@ export const getDataForNftTransfer = (from, to, asset) => {
  * @param {Object} [{selected, address, recipient, amount, gasPrice}]
  * @return {String}
  */
-export const estimateGasLimit = async ({
-  asset,
-  address,
-  recipient,
-  amount,
-}) => {
+export const estimateGasLimit = async (
+  { asset, address, recipient, amount },
+  addPadding = false
+) => {
   const _amount =
     amount && Number(amount)
       ? convertAmountToRawAmount(amount, asset.decimals)
@@ -331,5 +392,9 @@ export const estimateGasLimit = async ({
       value: '0x0',
     };
   }
-  return estimateGas(estimateGasData);
+  if (addPadding) {
+    return estimateGasWithPadding(estimateGasData);
+  } else {
+    return estimateGas(estimateGasData);
+  }
 };
