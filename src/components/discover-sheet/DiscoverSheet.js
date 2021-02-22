@@ -25,7 +25,7 @@ import DiscoverSheetContext from './DiscoverSheetContext';
 import DiscoverSheetHeader from './DiscoverSheetHeader';
 import CustomBackground from './androidCustomComponents/customBackground';
 import CustomHandle from './androidCustomComponents/customHandle';
-import { safeAreaInsetValues } from '@rainbow-me/utils';
+import { deviceUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 
 const renderHeader = yPosition => <DiscoverSheetHeader yPosition={yPosition} />;
 
@@ -40,8 +40,8 @@ const AndroidWrapper = styled.View.attrs({
   pointerEvents: 'box-none',
 })`
   width: 100%;
+  height: ${deviceUtils.dimensions.height};
   position: absolute;
-  height: 100%;
 `;
 
 const DiscoverSheetAndroid = (_, forwardedRef) => {
@@ -102,7 +102,7 @@ const DiscoverSheetAndroid = (_, forwardedRef) => {
   return (
     <AndroidWrapper
       style={{
-        transform: [{ translateY: safeAreaInsetValues.top * 2 }],
+        bottom: -24,
       }}
     >
       <DiscoverSheetContext.Provider value={value}>
