@@ -1,6 +1,8 @@
 #!/bin/bash
 set -eo pipefail
 
+source .env
+
 if [ -n "$RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK" ]; then
   eval $RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK;
   echo "✅ executed ios prebuild hook"
