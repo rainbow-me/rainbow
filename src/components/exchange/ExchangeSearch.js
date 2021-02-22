@@ -152,30 +152,22 @@ const ExchangeSearch = (
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFetching, isSearching, searchQuery]);
 
-  const searchIconStyle = useAnimatedStyle(
-    () => {
-      return {
-        opacity: 1 - spinnerScale.value,
-        transform: [{ scale: 1 - spinnerScale.value }],
-      };
-    },
-    undefined,
-    'searchIconStyle'
-  );
+  const searchIconStyle = useAnimatedStyle(() => {
+    return {
+      opacity: 1 - spinnerScale.value,
+      transform: [{ scale: 1 - spinnerScale.value }],
+    };
+  });
 
-  const spinnerStyle = useAnimatedStyle(
-    () => {
-      return {
-        opacity: spinnerScale.value,
-        transform: [
-          { rotate: `${spinnerRotation.value}deg` },
-          { scale: spinnerScale.value },
-        ],
-      };
-    },
-    undefined,
-    'spinnerStyle'
-  );
+  const spinnerStyle = useAnimatedStyle(() => {
+    return {
+      opacity: spinnerScale.value,
+      transform: [
+        { rotate: `${spinnerRotation.value}deg` },
+        { scale: spinnerScale.value },
+      ],
+    };
+  });
 
   return (
     <Container isSearchModeEnabled={isSearchModeEnabled}>
