@@ -58,7 +58,7 @@ export default () => {
 
     const avatarActionSheetOptions = [
       'Choose from Library',
-      'Pick an Emoji',
+      ...(!accountImage ? ['Pick an Emoji'] : []),
       ...(accountImage ? ['Remove Photo'] : []),
       ...(ios ? ['Cancel'] : []),
     ];
@@ -78,12 +78,15 @@ export default () => {
             cropping: true,
           }).then(processPhoto);
         } else if (buttonIndex === 1) {
-          navigate(Routes.AVATAR_BUILDER, {
-            initialAccountColor: accountColor,
-            initialAccountName: accountName,
-          });
-        } else if (buttonIndex === 2 && accountImage) {
-          onRemovePhoto();
+          if (!accountImage) {
+            navigate(Routes.AVATAR_BUILDER, {
+              initialAccountColor: accountColor,
+              initialAccountName: accountName,
+            });
+          }
+          if (accountImage) {
+            onRemovePhoto();
+          }
         }
       }
     );
