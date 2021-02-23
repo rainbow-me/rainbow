@@ -1,4 +1,7 @@
-const SUPPORTED_3D_EXTENSIONS = Object.freeze(['.glb']) as readonly string[];
+const SUPPORTED_3D_EXTENSIONS = Object.freeze([
+  '.glb',
+  '.usdz',
+]) as readonly string[];
 
 const SUPPORTED_AUDIO_EXTENSIONS = Object.freeze(['.mp3']) as readonly string[];
 
