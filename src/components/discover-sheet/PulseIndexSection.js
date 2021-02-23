@@ -1,9 +1,7 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
-import { View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
 import { DPI_ADDRESS } from '../../references/indexes';
-import font from '../../styles/fonts';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
 import { Column, Row } from '../layout';
@@ -11,7 +9,7 @@ import { Text } from '../text';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { fontWithWidth, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 import { handleSignificantDecimals } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
 import ShadowStack from 'react-native-shadow-stack';
@@ -76,38 +74,24 @@ const PulseIndex = () => {
   return (
     <Fragment>
       <ButtonPressAnimation onPress={handlePress} scaleTo={0.9}>
-        <View
+        <ShadowStack
+          backgroundColor={colors.white}
+          borderRadius={24}
+          shadows={CardShadow}
           style={{
             height: 70,
             marginHorizontal: 19,
           }}
         >
-          <ShadowStack
-            backgroundColor={colors.white}
-            borderRadius={24}
-            shadows={CardShadow}
-            style={{
-              height: 70,
-            }}
-          />
-
           <LinearGradient
             colors={[colors.dpiLight, colors.dpiDark]}
             end={{ x: 1, y: 0.5 }}
             overflow="hidden"
             pointerEvents="none"
             start={{ x: 0, y: 0.5 }}
-            style={[
-              position.coverAsObject,
-              {
-                borderRadius: 24,
-                height: 70,
-                position: 'absolute',
-                zIndex: 1,
-              },
-            ]}
+            style={position.coverAsObject}
           />
-          <Row position="absolute" zIndex={1}>
+          <Row>
             <Column margin={15} marginRight={10}>
               <CoinIcon forcedShadowColor={colors.dpiDark} {...item} />
             </Column>
@@ -136,19 +120,17 @@ const PulseIndex = () => {
               </Text>
             </Column>
           </Row>
-        </View>
+        </ShadowStack>
       </ButtonPressAnimation>
       <Row
         as={ButtonPressAnimation}
         flex={1}
         justify="space-between"
         marginBottom={30}
+        marginHorizontal={34}
         marginTop={android ? 4 : 8}
         onPress={handlePress}
         scaleTo={0.92}
-        style={{
-          marginHorizontal: 34,
-        }}
       >
         <Text
           color={colors.dpiLight}
@@ -171,19 +153,19 @@ const PulseIndex = () => {
         <Text
           align="right"
           color={item.isPositive ? colors.green : colors.red}
-          numberOfLines={1}
-          {...fontWithWidth(font.weight.semibold)}
+          letterSpacing="roundedMedium"
           size="smedium"
           weight="semibold"
         >
-          {item.isPositive ? `↑` : `↓`} {item.change}
           <Text
             align="right"
             color={item.isPositive ? colors.green : colors.red}
             letterSpacing="roundedTight"
             size="smedium"
             weight="bold"
-          />{' '}
+          >
+            {item.isPositive ? `↑` : `↓`} {item.change}
+          </Text>{' '}
           today
         </Text>
       </Row>

@@ -7,7 +7,7 @@ import { Text } from '../text';
 import { useDimensions } from '@rainbow-me/hooks';
 import { position } from '@rainbow-me/styles';
 
-const CrossHairAspectRatio = 230 / 375;
+const CrossHairAspectRatio = 259 / 375;
 
 const Container = styled(Centered)`
   ${({ size }) => position.size(size)};

@@ -4,7 +4,6 @@ import { useIsEmulator } from 'react-native-device-info';
 import styled from 'styled-components';
 import { Centered } from '../layout';
 import { ErrorText } from '../text';
-import ConnectedDapps from './ConnectedDapps';
 import QRCodeScannerCrosshair from './QRCodeScannerCrosshair';
 import QRCodeScannerNeedsAuthorization from './QRCodeScannerNeedsAuthorization';
 import SimulatorFakeCameraImageSource from '@rainbow-me/assets/simulator-fake-camera-image.jpg';
@@ -32,8 +31,7 @@ const Container = styled(Centered).attrs({
 
 const ContentOverlay = styled(Centered)`
   ${position.cover};
-  bottom: 230;
-  flex-direction: column;
+  bottom: ${({ contentPositionBottom }) => contentPositionBottom || 0};
   top: ${({ contentPositionTop }) => contentPositionTop || 0};
 `;
 
@@ -44,7 +42,11 @@ const EmulatorCameraFallback = styled(ImgixImage).attrs({
   ${position.size('100%')};
 `;
 
-export default function QRCodeScanner({ contentPositionTop, dsRef }) {
+export default function QRCodeScanner({
+  contentPositionBottom,
+  contentPositionTop,
+  dsRef,
+}) {
   const [cameraEnabled, setCameraEnabled] = useState(false);
   const [error, showError] = useBooleanState();
   const [isInitialized, setInitialized] = useBooleanState();
@@ -93,10 +95,12 @@ export default function QRCodeScanner({ contentPositionTop, dsRef }) {
         )}
       </CameraWrapper>
       {isCameraAuthorized ? (
-        <ContentOverlay contentPositionTop={contentPositionTop}>
+        <ContentOverlay
+          contentPositionBottom={contentPositionBottom}
+          contentPositionTop={contentPositionTop}
+        >
           {showErrorMessage && <ErrorText error="Error mounting camera" />}
           {showCrosshair && <QRCodeScannerCrosshair />}
-          <ConnectedDapps />
         </ContentOverlay>
       ) : (
         <QRCodeScannerNeedsAuthorization />
