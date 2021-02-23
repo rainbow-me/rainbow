@@ -39,6 +39,6 @@ module.exports = {
     blacklistRE,
   },
   transformer: createTransformer({
-    applyMetroTransform: !!CI,
+    applyMetroTransform: CI === 'true',
   }),
 };
