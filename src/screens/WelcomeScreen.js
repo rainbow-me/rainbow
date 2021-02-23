@@ -264,6 +264,7 @@ const traversedRainbows = rainbows.map(
 
 const RainbowImage = styled(ImgixImage)`
   height: ${INITIAL_SIZE};
+  position: absolute;
   width: ${INITIAL_SIZE};
 `;
 
