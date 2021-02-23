@@ -20,12 +20,13 @@ import { uniswapClient } from '../apollo/client';
 import { UNISWAP_ALL_TOKENS } from '../apollo/queries';
 import { loadWallet } from '../model/wallet';
 import { toHex, web3Provider } from './web3';
-import {
-  Asset,
-  RawUniswapSubgraphAsset,
-  UniswapSubgraphAsset,
-} from '@rainbow-me/entities';
+import { Asset } from '@rainbow-me/entities';
 import { Network } from '@rainbow-me/networkTypes';
+import store from '@rainbow-me/redux/store';
+import {
+  uniswapLoadedAllTokens,
+  uniswapUpdateTokens,
+} from '@rainbow-me/redux/uniswap';
 import {
   ETH_ADDRESS,
   ethUnits,
@@ -38,8 +39,6 @@ import {
   convertAmountToRawAmount,
   convertNumberToString,
 } from '@rainbow-me/utilities';
-import { checkTokenIsScam, getTokenMetadata } from '@rainbow-me/utils';
-
 import logger from 'logger';
 
 enum Field {
@@ -398,11 +397,8 @@ export const executeSwap = async ({
   return exchange[methodName](...updatedMethodArgs, transactionParams);
 };
 
-export const getAllTokens = async (): Promise<
-  Record<string, UniswapSubgraphAsset>
-> => {
-  let allTokens: Record<string, UniswapSubgraphAsset> = {};
-  let data: RawUniswapSubgraphAsset[] = [];
+export const getAllTokens = async () => {
+  const { dispatch } = store;
   try {
     let dataEnd = false;
     let lastId = '';
@@ -418,38 +414,15 @@ export const getAllTokens = async (): Promise<
       const resultTokens = result?.data?.tokens || [];
       const lastItem = resultTokens[resultTokens.length - 1];
       lastId = lastItem?.id ?? '';
-      data = data.concat(resultTokens);
+      dispatch(uniswapUpdateTokens(resultTokens));
       if (resultTokens.length < UniswapPageSize) {
+        dispatch(uniswapLoadedAllTokens());
         dataEnd = true;
       }
     }
   } catch (err) {
     logger.log('error: ', err);
   }
-
-  data.forEach(token => {
-    const tokenAddress = toLower(token.id);
-    const metadata = getTokenMetadata(tokenAddress);
-
-    // if unverified AND name/symbol match a curated token, skip
-    if (!metadata?.isVerified && checkTokenIsScam(token.name, token.symbol)) {
-      return;
-    }
-
-    const tokenInfo = {
-      address: tokenAddress,
-      decimals: Number(token.decimals),
-      derivedETH: token.derivedETH,
-      name: token.name,
-      symbol: token.symbol,
-      totalLiquidity: token.totalLiquidity,
-      uniqueId: tokenAddress,
-      ...metadata,
-    };
-    allTokens[tokenAddress] = tokenInfo;
-  });
-
-  return allTokens;
 };
 
 export const calculateTradeDetails = (

@@ -6,6 +6,4 @@ export type {
   ParsedAddressAsset,
   RainbowToken,
   UniswapCurrency,
-  UniswapSubgraphAsset,
-  RawUniswapSubgraphAsset,
 } from './tokens';
