@@ -15,15 +15,7 @@ import {
   TradeType,
   WETH,
 } from '@uniswap/sdk';
-import {
-  filter,
-  get,
-  isEmpty,
-  keys,
-  mapKeys,
-  mapValues,
-  toLower,
-} from 'lodash';
+import { get, isEmpty, mapKeys, mapValues, toLower } from 'lodash';
 import { uniswapClient } from '../apollo/client';
 import { UNISWAP_ALL_TOKENS } from '../apollo/queries';
 import { loadWallet } from '../model/wallet';
@@ -35,7 +27,6 @@ import {
 } from '@rainbow-me/entities';
 import { Network } from '@rainbow-me/networkTypes';
 import {
-  CURATED_UNISWAP_TOKENS,
   ETH_ADDRESS,
   ethUnits,
   UNISWAP_TESTNET_TOKEN_LIST,
@@ -407,8 +398,6 @@ export const executeSwap = async ({
   return exchange[methodName](...updatedMethodArgs, transactionParams);
 };
 
-const excluded = filter(keys(CURATED_UNISWAP_TOKENS), x => x !== ETH_ADDRESS);
-
 export const getAllTokens = async (): Promise<
   Record<string, UniswapSubgraphAsset>
 > => {
@@ -416,19 +405,20 @@ export const getAllTokens = async (): Promise<
   let data: RawUniswapSubgraphAsset[] = [];
   try {
     let dataEnd = false;
-    let skip = 0;
+    let lastId = '';
+
     while (!dataEnd) {
       let result = await uniswapClient.query({
         query: UNISWAP_ALL_TOKENS,
         variables: {
-          excluded,
           first: UniswapPageSize,
-          skip: skip,
+          lastId,
         },
       });
       const resultTokens = result?.data?.tokens || [];
+      const lastItem = resultTokens[resultTokens.length - 1];
+      lastId = lastItem?.id ?? '';
       data = data.concat(resultTokens);
-      skip = skip + UniswapPageSize;
       if (resultTokens.length < UniswapPageSize) {
         dataEnd = true;
       }
