@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Animated, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Animated, TouchableOpacity } from 'react-native';
+import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { useNavigation } from '../../navigation/Navigation';
 import { lightModeThemeColors } from '../../styles/colors';
@@ -20,6 +21,35 @@ const FabShadow = [
 
 const paddingRight = 10;
 
+const StyledOverflowContainer = styled(Animated.View)`
+  position: absolute;
+  overflow: hidden;
+  border-radius: ${FloatingActionButtonSize * 0.5};
+  height: ${FloatingActionButtonSize};
+`;
+
+const StyledBackgroundContainer = styled(Animated.View)`
+  position: absolute;
+  border-bottom-left-radius: ${FloatingActionButtonSize * 0.5};
+  border-top-left-radius: ${FloatingActionButtonSize * 0.5};
+  height: ${FloatingActionButtonSize};
+  padding-left: ${FloatingActionButtonSize + paddingRight * 0.5};
+  padding-right: ${paddingRight * 0.5};
+  padding-vertical: ${paddingRight * 0.5};
+  overflow: hidden;
+  justify-content: center;
+`;
+
+const StyledFloatingActionButtonContainer = styled(Animated.View)`
+  position: absolute;
+`;
+
+const StyledCurrentPlayingAssetDetails = styled(Text)`
+  align-items: center;
+  flex-direction: row;
+  width: 100%;
+`;
+
 const UNICODE_SYMBOL_PAUSE = String.fromCharCode(56256, 56966);
 const UNICODE_SYMBOL_PLAY = String.fromCharCode(56256, 56964);
 const UNICODE_SYMBOL_SKIP = String.fromCharCode(56256, 56972);
@@ -29,31 +59,6 @@ export type EphemeralAudioPlayerFabProps = {
   readonly isReadOnlyWallet: boolean;
   readonly remainingSpace: number;
 };
-
-const styles = StyleSheet.create({
-  absolute: { position: 'absolute' },
-  background: {
-    borderBottomLeftRadius: FloatingActionButtonSize * 0.5,
-    borderTopLeftRadius: FloatingActionButtonSize * 0.5,
-    height: FloatingActionButtonSize,
-    paddingLeft: FloatingActionButtonSize + 5,
-    paddingRight: 5,
-    paddingVertical: 5,
-  },
-  currentPlayingAssetDetails: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    width: '100%',
-  },
-  details: {
-    justifyContent: 'center',
-  },
-  noOverflow: { overflow: 'hidden' },
-  overflowContainer: {
-    borderRadius: FloatingActionButtonSize * 0.5,
-    height: FloatingActionButtonSize,
-  },
-});
 
 function EphemeralAudioPlayerFab({
   disabled,
@@ -155,37 +160,26 @@ function EphemeralAudioPlayerFab({
   return (
     <Animated.View pointerEvents="box-none" {...props} style={containerStyle}>
       {/* Overflow Container */}
-      <Animated.View
+      <StyledOverflowContainer
         pointerEvents="box-none"
-        style={[
-          styles.absolute,
-          styles.overflowContainer,
-          styles.noOverflow,
-          { width: remainingSpace - paddingRight },
-        ]}
+        style={{ width: remainingSpace - paddingRight }}
       >
         {/* Animated Background */}
-        <Animated.View
+        <StyledBackgroundContainer
           pointerEvents={open ? 'auto' : 'none'}
-          style={[
-            styles.absolute,
-            styles.background,
-            styles.noOverflow,
-            styles.details,
-            {
-              backgroundColor: colors.white,
-              borderRadius: FloatingActionButtonSize * 0.5,
-              transform: [
-                {
-                  translateX: Animated.multiply(
-                    Animated.subtract(1, progress),
-                    remainingSpace - (FloatingActionButtonSize + paddingRight)
-                  ),
-                },
-              ],
-              width: remainingSpace - paddingRight,
-            },
-          ]}
+          style={{
+            backgroundColor: colors.white,
+            borderRadius: FloatingActionButtonSize * 0.5,
+            transform: [
+              {
+                translateX: Animated.multiply(
+                  Animated.subtract(1, progress),
+                  remainingSpace - (FloatingActionButtonSize + paddingRight)
+                ),
+              },
+            ],
+            width: remainingSpace - paddingRight,
+          }}
         >
           <ButtonPressAnimation
             disabled={disabled || !currentlyPlayingAsset}
@@ -205,7 +199,7 @@ function EphemeralAudioPlayerFab({
               }}
             />
           </ButtonPressAnimation>
-          <View style={styles.currentPlayingAssetDetails}>
+          <StyledCurrentPlayingAssetDetails>
             <TouchableOpacity onPress={handleOnPressToggleAudio}>
               <Text style={currentPlayingAssetDetailsStyle}>
                 {shouldShowPauseIcon
@@ -222,24 +216,21 @@ function EphemeralAudioPlayerFab({
                 </Text>
               </TouchableOpacity>
             )}
-          </View>
-        </Animated.View>
-      </Animated.View>
-      <Animated.View
+          </StyledCurrentPlayingAssetDetails>
+        </StyledBackgroundContainer>
+      </StyledOverflowContainer>
+      <StyledFloatingActionButtonContainer
         pointerEvents="box-none"
-        style={[
-          styles.absolute,
-          {
-            transform: [
-              {
-                translateX: Animated.multiply(
-                  Animated.subtract(1, progress),
-                  remainingSpace - (FloatingActionButtonSize + paddingRight)
-                ),
-              },
-            ],
-          },
-        ]}
+        style={{
+          transform: [
+            {
+              translateX: Animated.multiply(
+                Animated.subtract(1, progress),
+                remainingSpace - (FloatingActionButtonSize + paddingRight)
+              ),
+            },
+          ],
+        }}
       >
         <FloatingActionButton
           backgroundColor={colors.orangeLight}
@@ -256,7 +247,7 @@ function EphemeralAudioPlayerFab({
             width={26}
           />
         </FloatingActionButton>
-      </Animated.View>
+      </StyledFloatingActionButtonContainer>
     </Animated.View>
   );
 }

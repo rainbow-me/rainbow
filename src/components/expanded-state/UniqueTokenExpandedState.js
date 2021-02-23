@@ -1,4 +1,5 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
+import { EXPERIMENTAL_AUDIO_PLAYER } from 'react-native-dotenv';
 import Link from '../Link';
 import { Column, ColumnWithDividers } from '../layout';
 import {
@@ -97,10 +98,10 @@ const UniqueTokenExpandedState = ({ asset }) => {
     isPlayingAssetPaused,
   ]);
 
-  // @christian: Disable sound controls temporarily.
   React.useEffect(() => {
-    playAsset(asset);
+    EXPERIMENTAL_AUDIO_PLAYER !== 'true' && playAsset(asset);
   }, [playAsset, asset, stopPlayingAsset]);
+
   React.useEffect(() => {
     return () => {
       !!currentSound && fadeTo(currentSound, 0).then(stopPlayingAsset);
@@ -118,8 +119,7 @@ const UniqueTokenExpandedState = ({ asset }) => {
       >
         <UniqueTokenExpandedStateHeader asset={asset} />
         <UniqueTokenExpandedStateContent asset={asset} />
-        {/* @christian: Disable audio player pending design refactor. */}
-        {false && !!supportsAudio && (
+        {EXPERIMENTAL_AUDIO_PLAYER === 'true' && !!supportsAudio && (
           <SheetActionButtonRow ignorePaddingBottom>
             <SheetActionButton
               color={colors.orangeLight}

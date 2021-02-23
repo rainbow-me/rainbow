@@ -2,6 +2,7 @@ import { useRoute } from '@react-navigation/core';
 import { get } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { StatusBar } from 'react-native';
+import { EXPERIMENTAL_AUDIO_PLAYER } from 'react-native-dotenv';
 import Animated from 'react-native-reanimated';
 import { useValue } from 'react-native-redash';
 import { useDispatch } from 'react-redux';
@@ -97,10 +98,9 @@ export default function WalletScreen() {
   const fabs = useMemo(
     () =>
       [
-        // @christian
-        // Pending design clarification of EphemeralAudioPlayerFab.
-        // Note, depends on initializing Redux audio.autoplay to true.
-        false && !!hasAudioContent && EphemeralAudioPlayerFab,
+        EXPERIMENTAL_AUDIO_PLAYER === 'true' &&
+          !!hasAudioContent &&
+          EphemeralAudioPlayerFab,
         !!get(networkInfo[network], 'exchange_enabled') && ExchangeFab,
         SendFab,
       ].filter(e => !!e),
