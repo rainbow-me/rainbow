@@ -290,6 +290,7 @@ export default function ListSection() {
               keyExtractor={item => item.id}
               ref={listRef}
               renderItem={renderItem}
+              scrollsToTop={false}
               showsHorizontalScrollIndicator={false}
             />
             <EdgeFade />

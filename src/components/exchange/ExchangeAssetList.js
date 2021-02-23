@@ -1,3 +1,4 @@
+import { useIsFocused } from '@react-navigation/native';
 import React, {
   forwardRef,
   useCallback,
@@ -154,6 +155,8 @@ const ExchangeAssetList = (
     []
   );
 
+  const isFocused = useIsFocused();
+
   return (
     <ExchangeAssetSectionList
       keyboardDismissMode={keyboardDismissMode}
@@ -161,6 +164,7 @@ const ExchangeAssetList = (
       ref={sectionListRef}
       renderItem={renderItemCallback}
       renderSectionHeader={ExchangeAssetSectionListHeader}
+      scrollsToTop={isFocused}
       sections={items.map(createItem)}
     />
   );
