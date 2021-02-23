@@ -1,3 +1,5 @@
+require('dotenv/config');
+
 // eslint-disable-next-line import/no-extraneous-dependencies
 const blacklist = require('metro-config/src/defaults/blacklist');
 
@@ -12,17 +14,31 @@ const blacklistRE = blacklist([
   /patches\/reanimated\/.*/,
 ]);
 
-module.exports = {
-  resolver: {
-    blacklistRE,
-  },
-  transformer: {
-    babelTransformerPath: require.resolve('./metro.transform.js'),
+const createTransformer = ({ applyMetroTransform }) => {
+  const common = {
     getTransformOptions: async () => ({
       transform: {
         experimentalImportSupport: true,
         inlineRequires: true,
       },
     }),
+  };
+  if (applyMetroTransform) {
+    return {
+      ...common,
+      babelTransformerPath: require.resolve('./metro.transform.js'),
+    };
+  }
+  return common;
+};
+
+const { CI } = process.env;
+
+module.exports = {
+  resolver: {
+    blacklistRE,
   },
+  transformer: createTransformer({
+    applyMetroTransform: !!CI,
+  }),
 };
