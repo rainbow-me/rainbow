@@ -66,7 +66,7 @@ function DiscoverSheet(_, forwardedRef) {
   useImperativeHandle(forwardedRef, () => value);
 
   useEffect(() => {
-    sheet.current.scrollTo({ x: 0, y: 0 });
+    sheet.current.scrollTo({ animated: false, x: 0, y: 0 });
   }, [headerButtonsHandlers.isSearchModeEnabled]);
 
   // noinspection JSConstructorReturnsPrimitive
@@ -88,7 +88,7 @@ function DiscoverSheet(_, forwardedRef) {
         presentGlobally={false}
         ref={ref}
         scrollsToTopOnTapStatusBar={isFocused}
-        shortFormHeight={260}
+        shortFormHeight={245}
         showDragIndicator={false}
         topOffset={safeAreaInsetValues.top}
         unmountAnimation={false}
