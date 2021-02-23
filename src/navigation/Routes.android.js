@@ -25,6 +25,7 @@ import WelcomeScreen from '../screens/WelcomeScreen';
 import WithdrawModal from '../screens/WithdrawModal';
 import WyreWebview from '../screens/WyreWebview';
 import { SwipeNavigator } from './SwipeNavigator';
+import { createBottomSheetNavigator } from './bottom-sheet';
 import {
   closeKeyboardOnClose,
   defaultScreenStackOptions,
@@ -32,7 +33,6 @@ import {
   stackNavigationConfig,
   wyreWebviewOptions,
 } from './config';
-import createBottomSheetNavigator from './createBottomSheetNavigator';
 import {
   bottomSheetPreset,
   emojiPreset,
