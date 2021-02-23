@@ -7,6 +7,16 @@ describe('New Wallet flow', () => {
     await Helpers.checkIfVisible('welcome-screen');
   });
 
+  it('show applied Alert on pressing neon rainbow', async () => {
+    await Helpers.tap('rainbowButton1');
+    await Helpers.delay(3000);
+    await Helpers.checkIfElementByTextIsVisible('APPLIED');
+    await Helpers.delay(1000);
+    await Helpers.tapAlertWithButton('OK');
+
+    await Helpers.checkIfVisible('wallet-screen');
+  });
+
   it('go to the wallet screen after pressing "Get a new wallet" button', async () => {
     await Helpers.tap('new-wallet-button');
     if (device.getPlatform() === 'android') {
