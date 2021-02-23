@@ -11,6 +11,7 @@ import type {
   // eslint-disable-next-line import/no-unresolved
 } from '../types';
 import BottomSheetRoute from './BottomSheetRoute';
+import { useForceUpdate } from '@rainbow-me/hooks';
 
 type Props = BottomSheetNavigationConfig & {
   state: StackNavigationState;
@@ -19,6 +20,10 @@ type Props = BottomSheetNavigationConfig & {
 };
 
 const BottomSheetView = ({ descriptors, state, navigation }: Props) => {
+  //#region hooks
+  const forceUpdate = useForceUpdate();
+  //#endregion
+
   //#region variables
   const descriptorsCache = useRef<BottomSheetDescriptorMap>({});
   const [firstKey, ...restKeys] = useMemo(
@@ -44,14 +49,24 @@ const BottomSheetView = ({ descriptors, state, navigation }: Props) => {
   //#endregion
 
   //#region callbacks
-  const handleOnDismiss = useCallback((key: string) => {
+  const handleOnDismiss = useCallback((key: string, removed: boolean) => {
     // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     delete descriptorsCache.current[key];
-    navigation?.dispatch?.({
-      ...StackActions.pop(),
-      source: key,
-      target: state.key,
-    });
+
+    /**
+     * if sheet was dismissed by navigation state, we only force re-render the view.
+     * but if it was dismissed by user interaction, we dispatch pop action to navigation state.
+     */
+    if (removed) {
+      forceUpdate();
+    } else {
+      navigation?.dispatch?.({
+        ...StackActions.pop(),
+        source: key,
+        target: state.key,
+      });
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   //#endregion

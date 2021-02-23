@@ -11,7 +11,7 @@ interface Props {
   routeKey: string;
   descriptor: BottomSheetDescriptor;
   removing?: boolean;
-  onDismiss: (key: string) => void;
+  onDismiss: (key: string, removed: boolean) => void;
 }
 
 const BottomSheetRoute = ({
@@ -22,6 +22,8 @@ const BottomSheetRoute = ({
 }: Props) => {
   //#region refs
   const ref = useRef<BottomSheet>(null);
+  const removingRef = useRef(false);
+  removingRef.current = removing;
   //#endregion
 
   const {
@@ -45,7 +47,7 @@ const BottomSheetRoute = ({
   //#region callbacks
   const handleOnChange = useCallback((index: number) => {
     if (index === 0) {
-      onDismiss(routeKey);
+      onDismiss(routeKey, removingRef.current);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -64,7 +66,6 @@ const BottomSheetRoute = ({
     (props: BottomSheetBackdropProps) => (
       <BottomSheetBackdrop
         appearsOnIndex={1}
-        closeOnPress
         disappearsOnIndex={0}
         opacity={backdropOpacity}
         style={backdropStyle}
