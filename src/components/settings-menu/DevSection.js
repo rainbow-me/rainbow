@@ -50,12 +50,10 @@ const DevSection = () => {
       const request = await fetch(
         'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest'
       );
-      return request.json();
-    } catch (response) {
-      Alert.alert(
-        'Status',
-        response?.status?.timestamp ? 'NOT APPLIED' : 'APPLIED'
-      );
+      const response = request.json();
+      Alert.alert('Status', 'NOT APPLIED');
+    } catch (e) {
+      Alert.alert('Status', 'APPLIED');
     }
   }, []);
 
@@ -101,9 +99,9 @@ const DevSection = () => {
         testID="ganache-section"
       />
       <ListItem
-        label="‍🏖️ Confirm Sandbox"
+        label="‍🏖️ Alert"
         onPress={connectToSandbox}
-        testID="sandbox-section"
+        testID="alert-section"
       />
       <ListFooter />
 
