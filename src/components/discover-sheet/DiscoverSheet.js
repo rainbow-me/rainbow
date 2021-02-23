@@ -174,7 +174,7 @@ function DiscoverSheetIOS(_, forwardedRef) {
   useImperativeHandle(forwardedRef, () => value);
 
   useEffect(() => {
-    sheet.current.scrollTo({ x: 0, y: 0 });
+    sheet.current.scrollTo({ animated: false, x: 0, y: 0 });
   }, [headerButtonsHandlers.isSearchModeEnabled]);
 
   // noinspection JSConstructorReturnsPrimitive
