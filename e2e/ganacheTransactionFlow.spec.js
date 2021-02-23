@@ -73,6 +73,16 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.checkIfVisible('developer-settings-modal');
   });
 
+  it('Should show Sandbox alert after pressing Connect To Ganache', async () => {
+    await Helpers.tap('sandbox-section');
+    await Helpers.delay(5000);
+    await Helpers.checkIfElementByTextIsVisible('APPLIED');
+    await Helpers.delay(1000);
+    await Helpers.tapAlertWithButton('OK');
+    await Helpers.checkIfVisible('developer-settings-modal');
+    await Helpers.delay(2000);
+  });
+
   it('Should show Ganache Toast after pressing Connect To Ganache', async () => {
     await Helpers.tap('ganache-section');
     await Helpers.delay(10000);

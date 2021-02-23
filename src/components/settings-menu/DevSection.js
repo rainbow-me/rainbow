@@ -45,6 +45,20 @@ const DevSection = () => {
     navigate(Routes.PROFILE_SCREEN);
   }, [navigate]);
 
+  const connectToSandbox = useCallback(async () => {
+    try {
+      const request = await fetch(
+        'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest'
+      );
+      return request.json();
+    } catch (response) {
+      Alert.alert(
+        'Status',
+        response?.status?.timestamp ? 'NOT APPLIED' : 'APPLIED'
+      );
+    }
+  }, []);
+
   const removeBackups = async () => {
     const newWallets = { ...wallets };
     Object.keys(newWallets).forEach(key => {
@@ -85,6 +99,11 @@ const DevSection = () => {
         label="‍👾 Connect to ganache"
         onPress={connectToGanache}
         testID="ganache-section"
+      />
+      <ListItem
+        label="‍🏖️ Confirm Sandbox"
+        onPress={connectToSandbox}
+        testID="sandbox-section"
       />
       <ListFooter />
 

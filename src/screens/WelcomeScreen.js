@@ -1,6 +1,6 @@
 import MaskedView from '@react-native-community/masked-view';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, Animated, Easing, StyleSheet } from 'react-native';
+import { Animated, Easing, StyleSheet } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import Reanimated, {
   Clock,
@@ -31,7 +31,7 @@ import { useHideSplashScreen } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { position, shadow } from '@rainbow-me/styles';
+import { shadow } from '@rainbow-me/styles';
 import logger from 'logger';
 
 const {
@@ -49,12 +49,6 @@ const {
 
 const ButtonContainer = styled(Reanimated.View)`
   border-radius: ${({ height }) => height / 2};
-`;
-
-const RainbowImageButton = styled(ButtonPressAnimation)`
-  ${position.centered};
-  position: absolute;
-  height: 0;
 `;
 
 const ButtonContent = styled(RowWithMargins).attrs({
@@ -503,38 +497,15 @@ export default function WelcomeScreen() {
     };
   }, [rValue]);
 
-  const handleRainbowPress = useCallback(async id => {
-    if (id === 1 && IS_TESTING === 'true') {
-      try {
-        const request = await fetch(
-          'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest'
-        );
-        return request.json();
-      } catch (response) {
-        Alert.alert(
-          'Status',
-          response?.status?.timestamp ? 'NOT APPLIED' : 'APPLIED'
-        );
-      }
-    }
-  }, []);
-
   return (
     <Container testID="welcome-screen">
       {traversedRainbows.map(({ source, style, id }) => (
-        <RainbowImageButton
-          key={`rainbowButton${id}`}
-          onPress={() => handleRainbowPress(id)}
-          scaleTo={0.95}
-          testID={`rainbowButton${id}`}
-        >
-          <RainbowImage
-            Component={Animated.Image}
-            key={`rainbow${id}`}
-            source={source}
-            style={style}
-          />
-        </RainbowImageButton>
+        <RainbowImage
+          Component={Animated.Image}
+          key={`rainbow${id}`}
+          source={source}
+          style={style}
+        />
       ))}
 
       <ContentWrapper style={contentStyle}>
