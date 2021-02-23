@@ -137,7 +137,7 @@
     "qrcode": "^1.4.4",
     "qs": "^6.9.4",
     "querystring-es3": "^0.2.1",
-    "rainbow-token-list": "rainbow-me/token-lists#092bd84fac3b2032b94f05a1a49899252e5eb923",
+    "rainbow-token-list": "^1.2.1",
     "react": "16.11.0",
     "react-coin-icon": "^0.1.36",
     "react-fast-compare": "^2.0.4",
