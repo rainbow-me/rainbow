@@ -7,7 +7,9 @@ import {
   ViewStyle,
 } from 'react-native';
 import { WebView } from 'react-native-webview';
+import styled from 'styled-components';
 import { ImgixImage } from '@rainbow-me/images';
+import { padding, position } from '@rainbow-me/styles';
 
 export type ModelViewerProps = {
   readonly setLoading: (loading: boolean) => void;
@@ -18,14 +20,17 @@ export type ModelViewerProps = {
   readonly fallbackUri?: string;
 };
 
-const styles = StyleSheet.create({
-  bottomRight: {
-    alignItems: 'flex-end',
-    justifyContent: 'flex-end',
-    padding: 10,
-  },
-  flex: { flex: 1 },
-});
+const StyledWebView = styled(WebView)`
+  ${position.size('100%')};
+`;
+
+const ProgressIndicatorContainer = styled(Animated.View)`
+  ${position.size('100%')};
+  position: absolute;
+  align-items: flex-end;
+  justify-content: flex-end;
+  ${padding(10)};
+`;
 
 export default function ModelViewer({
   loading,
@@ -126,19 +131,18 @@ export default function ModelViewer({
   );
   return (
     <View style={style} {...panHandlers}>
-      <WebView
+      <StyledWebView
         cacheEnabled
         onMessage={onMessage}
         originWhitelist={originWhiteList}
         source={source}
-        style={styles.flex}
       />
-      <Animated.View
+      <ProgressIndicatorContainer
         pointerEvents={loading ? 'auto' : 'none'}
-        style={[StyleSheet.absoluteFill, styles.bottomRight, { opacity }]}
+        style={{ opacity }}
       >
         <ImgixImage source={fallbackSource} style={StyleSheet.absoluteFill} />
-      </Animated.View>
+      </ProgressIndicatorContainer>
     </View>
   );
 }
