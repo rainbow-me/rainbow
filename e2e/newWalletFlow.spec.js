@@ -13,7 +13,6 @@ describe('New Wallet flow', () => {
     await Helpers.checkIfElementByTextIsVisible('APPLIED');
     await Helpers.delay(1000);
     await Helpers.tapAlertWithButton('OK');
-
     await Helpers.checkIfVisible('wallet-screen');
   });
 
