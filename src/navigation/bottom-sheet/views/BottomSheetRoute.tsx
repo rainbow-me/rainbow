@@ -3,6 +3,7 @@ import BottomSheet, {
   BottomSheetBackdropProps,
 } from '@gorhom/bottom-sheet';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import { View } from 'react-native';
 import { CONTAINER_HEIGHT } from '../constants';
 // eslint-disable-next-line import/no-unresolved
 import type { BottomSheetDescriptor } from '../types';
@@ -31,9 +32,10 @@ const BottomSheetRoute = ({
     snapPoints = ['100%'],
     backdropColor = 'black',
     backdropOpacity = 0.5,
-    // height = '100%',
+    height = '100%',
   } = options || {};
 
+  const screenContainerStyle = useMemo(() => ({ height }), [height]);
   const backdropStyle = useMemo(
     () => ({
       backgroundColor: backdropColor,
@@ -81,14 +83,15 @@ const BottomSheetRoute = ({
       animationDuration={500}
       backdropComponent={renderBackdropComponent}
       backgroundComponent={null}
-      children={render}
       containerHeight={CONTAINER_HEIGHT}
       handleComponent={null}
       index={index}
       onChange={handleOnChange}
       ref={ref}
       snapPoints={enhancedSpanPoints}
-    />
+    >
+      <View style={screenContainerStyle}>{render()}</View>
+    </BottomSheet>
   );
 };
 
