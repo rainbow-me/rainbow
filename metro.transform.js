@@ -16,6 +16,9 @@ module.exports.transform = function applyRainbowTransform({
           'react-native-sound': {},
           'react-native-video': {},
         },
+        madge: {
+          tsConfig: require.resolve('./tsconfig.json'),
+        },
       },
     },
   });
