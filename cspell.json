@@ -15,6 +15,7 @@
         "stylelint",
         "Swipeable",
         "untrusted",
+        "usdz",
         "walletconnect"
     ]
 }
