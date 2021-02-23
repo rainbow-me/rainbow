@@ -5,9 +5,11 @@ import Sound from 'react-native-sound';
 // @ts-ignore
 import Video from 'react-native-video';
 import convertToProxyURL from 'react-native-video-cache';
+import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { useAudio } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
+import { position } from '@rainbow-me/styles';
 import logger from 'logger';
 
 export type SimpleVideoProps = {
@@ -17,6 +19,27 @@ export type SimpleVideoProps = {
   readonly loading: boolean;
   readonly setLoading: (isLoading: boolean) => void;
 };
+
+const absoluteFill = `
+  position: absolute;
+  ${position.size('100%')}
+`;
+
+const StyledBackground = styled(View)`
+  ${absoluteFill}
+`;
+
+const StyledVideo = styled(Video)`
+  ${absoluteFill}
+`;
+
+const StyledPosterContainer = styled(Animated.View)`
+  ${absoluteFill}
+`;
+
+const StyledImgixImage = styled(ImgixImage)`
+  ${position.size('100%')}
+`;
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
@@ -83,25 +106,21 @@ export default function SimpleVideo({
   const onLoad = React.useCallback(() => setLoading(false), [setLoading]);
   return (
     <View style={[styles.flex, StyleSheet.flatten(style)]}>
-      <View style={[StyleSheet.absoluteFill, { backgroundColor: white }]} />
-      <Video
+      <StyledBackground style={{ backgroundColor: white }} />
+      <StyledVideo
         controls
         onLoad={onLoad}
         ref={ref}
         repeat
         resizeMode="cover"
         source={source}
-        style={StyleSheet.absoluteFill}
       />
-      <Animated.View
+      <StyledPosterContainer
         pointerEvents={loading ? 'auto' : 'none'}
-        style={[StyleSheet.absoluteFill, { opacity }]}
+        style={{ opacity }}
       >
-        <ImgixImage
-          source={{ uri: posterUri }}
-          style={StyleSheet.absoluteFill}
-        />
-      </Animated.View>
+        <StyledImgixImage source={{ uri: posterUri }} />
+      </StyledPosterContainer>
     </View>
   );
 }
