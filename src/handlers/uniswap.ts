@@ -474,6 +474,8 @@ export const calculateTradeDetails = (
   if (!inputCurrency || !outputCurrency || isEmpty(pairs)) {
     return null;
   }
+  if (exactInput && !inputAmount) return null;
+  if (!exactInput && !outputAmount) return null;
 
   const inputToken = getTokenForCurrency(inputCurrency, chainId);
   const outputToken = getTokenForCurrency(outputCurrency, chainId);

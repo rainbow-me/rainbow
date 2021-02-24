@@ -30,7 +30,7 @@ export default function useSwapDetails() {
   const { nativeCurrency } = useAccountSettings();
 
   const updateTradeDetails = useCallback(
-    (newTradeDetails: Trade) => {
+    (newTradeDetails: Trade | null) => {
       dispatch(updateSwapTradeDetails(newTradeDetails));
     },
     [dispatch]

@@ -79,7 +79,7 @@ export const updateSwapExtraDetails = (extraDetails: ExtraTradeDetails) => (
   dispatch({ payload: extraDetails, type: SWAP_UPDATE_EXTRA_TRADE_DETAILS });
 };
 
-export const updateSwapTradeDetails = (tradeDetails: Trade) => (
+export const updateSwapTradeDetails = (tradeDetails: Trade | null) => (
   dispatch: AppDispatch,
   getState: AppGetState
 ) => {
@@ -95,14 +95,13 @@ export const getNativeAmount = (value: string | null) => (
   dispatch: AppDispatch,
   getState: AppGetState
 ) => {
+  if (!value) return null;
   const { genericAssets } = getState().data;
   const { inputCurrency } = getState().swap;
-  const inputPriceValue =
-    genericAssets[inputCurrency?.address]?.price?.value || 0;
-  const nativeAmount = value
+  const inputPriceValue = genericAssets[inputCurrency?.address]?.price?.value;
+  return inputPriceValue
     ? convertAmountToNativeAmount(value, inputPriceValue)
     : null;
-  return nativeAmount;
 };
 
 export const updateSwapInputAmount = (value: string | null, isMax = false) => (
@@ -128,7 +127,9 @@ const updateSwapInputGivenOutput = (tradeDetails: Trade | null) => (
   const { inputCurrency } = getState().swap;
   const value = tradeDetails?.inputAmount?.toExact() ?? null;
   const priceValue = genericAssets[inputCurrency?.address]?.price?.value;
-  const display = updatePrecisionToDisplay(value, priceValue, true);
+  const display = value
+    ? updatePrecisionToDisplay(value, priceValue, true)
+    : null;
   const inputAmount: SwapAmount = {
     display: display ?? value,
     value,
@@ -147,22 +148,21 @@ export const updateSwapNativeAmount = (value: string | null) => (
   const { genericAssets } = getState().data;
   const { inputCurrency } = getState().swap;
 
-  const inputPriceValue =
-    genericAssets[inputCurrency?.address]?.price?.value || 0;
+  const inputPriceValue = genericAssets[inputCurrency?.address]?.price?.value;
 
-  const inputAmountValue = value
-    ? convertAmountFromNativeValue(
-        value,
-        inputPriceValue,
-        inputCurrency.decimals
-      )
-    : null;
+  const inputAmountValue =
+    value && inputPriceValue
+      ? convertAmountFromNativeValue(
+          value,
+          inputPriceValue,
+          inputCurrency.decimals
+        )
+      : null;
 
-  const inputAmountDisplay = updatePrecisionToDisplay(
-    inputAmountValue,
-    inputPriceValue,
-    true
-  );
+  const inputAmountDisplay =
+    value && inputPriceValue
+      ? updatePrecisionToDisplay(inputAmountValue, inputPriceValue, true)
+      : null;
 
   const inputAmount: SwapAmount = {
     display: inputAmountDisplay,
@@ -196,7 +196,7 @@ const updateSwapOutputGivenInput = (tradeDetails: Trade | null) => (
   const { outputCurrency } = getState().swap;
   const value = tradeDetails?.outputAmount?.toExact() || null;
   const priceValue = genericAssets[outputCurrency?.address]?.price?.value;
-  const display = updatePrecisionToDisplay(value, priceValue);
+  const display = value ? updatePrecisionToDisplay(value, priceValue) : null;
   const outputAmount: SwapAmount = {
     display: display ?? value,
     value,
