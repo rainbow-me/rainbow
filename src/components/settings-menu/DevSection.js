@@ -50,6 +50,7 @@ const DevSection = () => {
       const request = await fetch(
         'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest'
       );
+      // eslint-disable-next-line no-unused-vars
       const response = request.json();
       Alert.alert('Status', 'NOT APPLIED');
     } catch (e) {
