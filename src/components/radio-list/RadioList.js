@@ -1,7 +1,14 @@
+import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { PropTypes } from 'prop-types';
 import React, { createElement, PureComponent } from 'react';
-import { List } from '../list';
+import { ListItem, ListItemDivider } from '../list';
 import RadioListItem from './RadioListItem';
+
+const getListItemLayout = (data, index) => ({
+  index,
+  length: ListItem.height,
+  offset: ListItem.height * index,
+});
 
 export default class RadioList extends PureComponent {
   static propTypes = {
@@ -37,5 +44,14 @@ export default class RadioList extends PureComponent {
       selected: item.forceSelected || item.value === this.state.selected,
     });
 
-  render = () => <List {...this.props} renderItem={this.renderItem} />;
+  render = () => (
+    <BottomSheetFlatList
+      {...this.props}
+      ItemSeparatorComponent={ListItemDivider}
+      data={this.props.items}
+      getItemLayout={this.props.getItemLayout ?? getListItemLayout}
+      removeClippedSubviews
+      renderItem={this.renderItem}
+    />
+  );
 }
