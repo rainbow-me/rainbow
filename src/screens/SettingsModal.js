@@ -2,7 +2,6 @@ import { useRoute } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { Animated, InteractionManager, View } from 'react-native';
-import styled from 'styled-components';
 import { Modal } from '../components/modal';
 import ModalHeaderButton from '../components/modal/ModalHeaderButton';
 import {
@@ -88,11 +87,6 @@ const SettingsPages = {
   },
 };
 
-const Container = styled.View`
-  flex: 1;
-  overflow: hidden;
-`;
-
 const Stack = createStackNavigator();
 
 export default function SettingsModal() {
@@ -163,73 +157,71 @@ export default function SettingsModal() {
       skipStatusBar={android}
       testID="settings-modal"
     >
-      <Container>
-        <Stack.Navigator
-          screenOptions={{
-            ...memoSettingsOptions,
-            headerRight: renderHeaderRight,
+      <Stack.Navigator
+        screenOptions={{
+          ...memoSettingsOptions,
+          headerRight: renderHeaderRight,
+        }}
+      >
+        <Stack.Screen
+          name="SettingsSection"
+          options={{
+            title: 'Settings',
           }}
         >
-          <Stack.Screen
-            name="SettingsSection"
-            options={{
-              title: 'Settings',
-            }}
-          >
-            {() => (
-              <SettingsSection
-                onCloseModal={goBack}
-                onPressBackup={onPressSection(SettingsPages.backup)}
-                onPressCurrency={onPressSection(SettingsPages.currency)}
-                onPressDev={onPressSection(SettingsPages.dev)}
-                onPressLanguage={onPressSection(SettingsPages.language)}
-                onPressNetwork={onPressSection(SettingsPages.network)}
-              />
-            )}
-          </Stack.Screen>
-          {Object.values(SettingsPages).map(
-            ({ component, title, key }) =>
-              component && (
-                <Stack.Screen
-                  component={component}
-                  key={key}
-                  name={key}
-                  options={{
-                    cardStyleInterpolator,
-                    title,
-                  }}
-                  title={title}
-                />
-              )
+          {() => (
+            <SettingsSection
+              onCloseModal={goBack}
+              onPressBackup={onPressSection(SettingsPages.backup)}
+              onPressCurrency={onPressSection(SettingsPages.currency)}
+              onPressDev={onPressSection(SettingsPages.dev)}
+              onPressLanguage={onPressSection(SettingsPages.language)}
+              onPressNetwork={onPressSection(SettingsPages.network)}
+            />
           )}
+        </Stack.Screen>
+        {Object.values(SettingsPages).map(
+          ({ component, title, key }) =>
+            component && (
+              <Stack.Screen
+                component={component}
+                key={key}
+                name={key}
+                options={{
+                  cardStyleInterpolator,
+                  title,
+                }}
+                title={title}
+              />
+            )
+        )}
 
-          <Stack.Screen
-            component={WalletSelectionView}
-            name="WalletSelectionView"
-            options={{
-              cardStyle: { backgroundColor: colors.white, marginTop: 6 },
-              cardStyleInterpolator,
-              title: 'Backup',
-            }}
-          />
-          <Stack.Screen
-            component={SettingsBackupView}
-            name="SettingsBackupView"
-            options={({ route }) => ({
-              cardStyleInterpolator,
-              title: route.params?.title || 'Backup',
-            })}
-          />
-          <Stack.Screen
-            component={ShowSecretView}
-            name="ShowSecretView"
-            options={({ route }) => ({
-              cardStyleInterpolator,
-              title: route.params?.title || 'Backup',
-            })}
-          />
-        </Stack.Navigator>
-      </Container>
+        <Stack.Screen
+          component={WalletSelectionView}
+          name="WalletSelectionView"
+          options={{
+            cardStyle: { backgroundColor: colors.white, marginTop: 6 },
+            cardStyleInterpolator,
+            title: 'Backup',
+          }}
+        />
+        <Stack.Screen
+          component={SettingsBackupView}
+          name="SettingsBackupView"
+          options={({ route }) => ({
+            cardStyleInterpolator,
+            title: route.params?.title || 'Backup',
+          })}
+        />
+        <Stack.Screen
+          component={ShowSecretView}
+          name="ShowSecretView"
+          options={({ route }) => ({
+            cardStyleInterpolator,
+            title: route.params?.title || 'Backup',
+          })}
+        />
+      </Stack.Navigator>
     </Modal>
   );
 }

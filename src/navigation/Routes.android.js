@@ -25,6 +25,7 @@ import WelcomeScreen from '../screens/WelcomeScreen';
 import WithdrawModal from '../screens/WithdrawModal';
 import WyreWebview from '../screens/WyreWebview';
 import { SwipeNavigator } from './SwipeNavigator';
+import { createBottomSheetNavigator } from './bottom-sheet';
 import {
   closeKeyboardOnClose,
   defaultScreenStackOptions,
@@ -32,7 +33,6 @@ import {
   stackNavigationConfig,
   wyreWebviewOptions,
 } from './config';
-import createBottomSheetNavigator from './createBottomSheetNavigator';
 import {
   bottomSheetPreset,
   emojiPreset,
@@ -237,61 +237,61 @@ function BSNavigator() {
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SCREEN}
         options={{
-          backgroundColor: 'black',
+          backdropColor: 'black',
+          backdropOpacity: 0.5,
           height: 500,
-          targetOpacity: 0.5,
         }}
       />
       <BSStack.Screen
         component={SettingsModal}
         name={Routes.SETTINGS_MODAL}
         options={{
-          backgroundColor: 'black',
-          targetOpacity: 0.5,
+          backdropColor: 'black',
+          backdropOpacity: 0.5,
         }}
       />
       <BSStack.Screen
         component={AddTokenSheet}
         name={Routes.ADD_TOKEN_SHEET}
         options={{
-          backgroundColor: 'black',
+          backdropColor: 'black',
+          backdropOpacity: 0.5,
           height: 450,
-          targetOpacity: 0.5,
         }}
       />
       <BSStack.Screen
         component={SavingsSheet}
         name={Routes.SAVINGS_SHEET}
         options={{
-          backgroundColor: 'black',
+          backdropColor: 'black',
+          backdropOpacity: 0.5,
           height: 420,
-          targetOpacity: 0.5,
         }}
       />
       <BSStack.Screen
         component={ChangeWalletSheet}
         name={Routes.CHANGE_WALLET_SHEET}
         options={{
-          backgroundColor: 'black',
+          backdropColor: 'black',
+          backdropOpacity: 0.6,
           height: 650,
-          targetOpacity: 0.6,
         }}
       />
       <BSStack.Screen
         component={ReceiveModal}
         name={Routes.RECEIVE_MODAL}
         options={{
-          backgroundColor: 'black',
-          targetOpacity: 0.7,
+          backdropColor: 'black',
+          backdropOpacity: 0.7,
         }}
       />
       <BSStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.TOKEN_INDEX_SHEET}
         options={{
-          backgroundColor: 'black',
+          backdropColor: 'black',
+          backdropOpacity: 0.7,
           height: 400,
-          targetOpacity: 0.7,
         }}
       />
       <BSStack.Screen
@@ -302,9 +302,9 @@ function BSNavigator() {
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SHEET}
         options={{
-          backgroundColor: 'black',
+          backdropColor: 'black',
+          backdropOpacity: 0.7,
           height: 600,
-          targetOpacity: 0.7,
         }}
       />
     </BSStack.Navigator>

@@ -11,6 +11,7 @@ import { padding, position } from '@rainbow-me/styles';
 const Container = styled(Centered).attrs(({ fixedToTop }) => ({
   direction: 'column',
   justify: fixedToTop ? 'start' : 'center',
+  pointerEvents: 'box-none',
 }))`
   ${({ containerPadding }) => padding(containerPadding)};
   ${position.size('100%')};
@@ -51,7 +52,7 @@ export default function Modal({
       shadowColor={colors.shadowBlack}
     >
       {skipStatusBar || <StatusBar barStyle={statusBarStyle} />}
-      {ios && <TouchableBackdrop onPress={onCloseModal} />}
+      <TouchableBackdrop onPress={onCloseModal} />
       <Content
         fullScreenOnAndroid={fullScreenOnAndroid}
         {...props}
