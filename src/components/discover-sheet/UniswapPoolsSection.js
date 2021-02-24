@@ -73,6 +73,8 @@ export default function UniswapPools() {
         );
       } else {
         setSelectedList(id);
+        sortDirection === SORT_DIRECTION.ASC &&
+          setSortDirection(SORT_DIRECTION.DESC);
         listRef.current?.scrollToIndex({
           animated: true,
           index,
