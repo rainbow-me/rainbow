@@ -67,7 +67,7 @@ export default function ExchangeDetailsRow({
 
   const { inputAmount, outputAmount } = useSwapInputValues();
 
-  const { isSufficientBalance } = useSwapIsSufficientBalance();
+  const isSufficientBalance = useSwapIsSufficientBalance();
 
   const isPriceImpactWarningVisible =
     isSufficientBalance && !!inputAmount && !!outputAmount && isHighPriceImpact;

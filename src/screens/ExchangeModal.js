@@ -38,7 +38,6 @@ import {
   useSwapInputRefs,
   useSwapInputs,
   useSwapInputValues,
-  useSwapIsSufficientBalance,
   useUniswapCurrencies,
   useUniswapMarketDetails,
 } from '@rainbow-me/hooks';
@@ -49,7 +48,7 @@ import { updateSwapTypeDetails } from '@rainbow-me/redux/swap';
 import { ethUnits } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
-import { backgroundTask, isETH } from '@rainbow-me/utils';
+import { backgroundTask } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const FloatingPanels = ios
@@ -112,15 +111,12 @@ export default function ExchangeModal({
     : ethUnits.basic_swap;
 
   const {
-    prevSelectedGasPrice,
     selectedGasPrice,
     startPollingGasPrices,
     stopPollingGasPrices,
     updateDefaultGasLimit,
     updateTxFee,
   } = useGas();
-
-  const { maxInputBalance } = useSwapIsSufficientBalance();
 
   const { initWeb3Listener, stopWeb3Listener } = useBlockPolling();
   const { nativeCurrency } = useAccountSettings();
@@ -164,6 +160,7 @@ export default function ExchangeModal({
   const {
     resetAmounts,
     updateInputAmount,
+    updateMaxInputAmount,
     updateNativeAmount,
     updateOutputAmount,
   } = useSwapInputs();
@@ -277,26 +274,9 @@ export default function ExchangeModal({
     updateDefaultGasLimit,
   ]);
 
-  // Update input balance when gas price changes if max and input currency is ETH
-  useEffect(() => {
-    if (!(isMax && isETH(inputCurrency?.address))) return;
-    const prevGas = prevSelectedGasPrice?.txFee?.value?.amount || 0;
-    const currentGas = selectedGasPrice?.txFee?.value?.amount || 0;
-    if (prevGas !== currentGas) {
-      updateInputAmount(maxInputBalance, true);
-    }
-  }, [
-    isMax,
-    inputCurrency?.address,
-    maxInputBalance,
-    prevSelectedGasPrice,
-    selectedGasPrice,
-    updateInputAmount,
-  ]);
-
   const handlePressMaxBalance = useCallback(async () => {
-    updateInputAmount(maxInputBalance, true);
-  }, [maxInputBalance, updateInputAmount]);
+    updateMaxInputAmount();
+  }, [updateMaxInputAmount]);
 
   const handleSubmit = useCallback(() => {
     backgroundTask.execute(async () => {

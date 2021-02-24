@@ -39,7 +39,7 @@ export default function ConfirmExchangeButton({
   type = ExchangeModalTypes.swap,
   ...props
 }) {
-  const { isSufficientBalance } = useSwapIsSufficientBalance();
+  const isSufficientBalance = useSwapIsSufficientBalance();
   const { outputCurrency: asset } = useSwapInputOutputTokens();
   const { isSufficientGas } = useGas();
   const { name: routeName } = useRoute();

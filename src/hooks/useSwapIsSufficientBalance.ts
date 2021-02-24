@@ -9,9 +9,7 @@ export default function useSwapIsSufficientBalance() {
   const inputCurrencyAddress = useSelector(
     (state: AppState) => state.swap.inputCurrency?.address
   );
-  const selectedGasPrice = useSelector(
-    (state: AppState) => state.gas.selectedGasPrice
-  );
+  const assets = useSelector((state: AppState) => state.data.assets);
   const inputAmount = useSelector(
     (state: AppState) => state.swap.inputAmount?.value
   );
@@ -20,25 +18,19 @@ export default function useSwapIsSufficientBalance() {
     (state: AppState) => state.swap.typeSpecificParameters?.supplyBalanceUnderlying
   );
 
-  const maxInputBalance = useMemo(() => {
-    return ethereumUtils.getBalanceAmount(
-      selectedGasPrice,
-      inputCurrencyAddress
-    );
-  }, [selectedGasPrice, inputCurrencyAddress]);
-
   const isSufficientBalance = useMemo(() => {
     if (!inputAmount) return true;
+
+    const maxInputBalance =
+      ethereumUtils.getAsset(assets, inputCurrencyAddress)?.balance?.amount ??
+      0;
 
     const isWithdrawal = type === ExchangeModalTypes.withdrawal;
 
     return isWithdrawal
       ? greaterThanOrEqualTo(supplyBalanceUnderlying, inputAmount)
       : greaterThanOrEqualTo(maxInputBalance, inputAmount);
-  }, [inputAmount, maxInputBalance, supplyBalanceUnderlying, type]);
+  }, [assets, inputAmount, inputCurrencyAddress, supplyBalanceUnderlying, type]);
 
-  return {
-    isSufficientBalance,
-    maxInputBalance,
-  };
+  return isSufficientBalance;
 }
