@@ -112,8 +112,9 @@ const Container = styled(Column)`
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const AnimatedSheet = Animated.createAnimatedComponent(Centered);
 
-const GasSpeedButtonContainer = styled(Column)`
-  justify-content: flex-start;
+const GasSpeedButtonContainer = styled(Column).attrs({
+  justify: 'start',
+})`
   margin-bottom: 19px;
 `;
 

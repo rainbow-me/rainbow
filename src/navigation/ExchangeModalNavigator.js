@@ -1,6 +1,6 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { useRoute } from '@react-navigation/native';
-// import { createStackNavigator } from '@react-navigation/stack';
+import { createStackNavigator } from '@react-navigation/stack';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Keyboard } from 'react-native';
 import { useValue } from 'react-native-redash';
@@ -8,18 +8,18 @@ import styled from 'styled-components';
 import { useMemoOne } from 'use-memo-one';
 import { FlexItem } from '../components/layout';
 import CurrencySelectModal from '../screens/CurrencySelectModal';
+import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import SwapModalScreen from '../screens/SwapModal';
 import { useNavigation } from './Navigation';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
-import { exchangeTabNavigatorConfig, nativeStackDefaultConfig } from './config';
+import { exchangeTabNavigatorConfig, stackNavigationConfig } from './config';
+import { exchangeModalPreset, swapDetailsPreset } from './effects';
 import Routes from './routesNames';
 import { useDimensions } from '@rainbow-me/hooks';
 import { position } from '@rainbow-me/styles';
-import createNativeStackNavigator from 'react-native-cool-modals/createNativeStackNavigator';
 
-// const Stack = createStackNavigator();
+const Stack = createStackNavigator();
 const Tabs = createMaterialTopTabNavigator();
-const NativeStack = createNativeStackNavigator();
 
 const GestureBlocker = styled.View.attrs({
   pointerEvents: 'none',
@@ -57,19 +57,25 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
     const { colors } = useTheme();
 
     return (
-      <NativeStack.Navigator
+      <Stack.Navigator
+        {...stackNavigationConfig}
         initialRouteName={Routes.MAIN_EXCHANGE_SCREEN}
-        screenOptions={{
-          ...nativeStackDefaultConfig,
-          contentStyle: { backgroundColor: colors.transparent },
-        }}
+        screenOptions={exchangeModalPreset}
       >
-        <NativeStack.Screen
+        <Stack.Screen
           component={SwapModal}
           initialParams={params}
           name={Routes.MAIN_EXCHANGE_SCREEN}
         />
-      </NativeStack.Navigator>
+        {android && (
+          <Stack.Screen
+            component={ExpandedAssetSheet}
+            initialParams={params}
+            name={Routes.SWAP_DETAILS_SHEET}
+            options={swapDetailsPreset}
+          />
+        )}
+      </Stack.Navigator>
     );
   }
 

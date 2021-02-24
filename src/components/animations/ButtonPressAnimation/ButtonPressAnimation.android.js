@@ -1,4 +1,9 @@
-import React, { createContext, useContext, useMemo } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+} from 'react';
 import { processColor, requireNativeComponent, View } from 'react-native';
 import {
   createNativeWrapper,
@@ -13,6 +18,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import styled from 'styled-components';
 import { normalizeTransformOrigin } from './NativeButton';
 import { useLongPressEvents } from '@rainbow-me/hooks';
 
@@ -31,6 +37,10 @@ const AnimatedRawButton = createNativeWrapper(
 const OVERFLOW_MARGIN = 5;
 
 const ScaleButtonContext = createContext(null);
+
+const Content = styled.View`
+  overflow: visible;
+`;
 
 // I managed to implement partially overflow in scale button (up to 5px),
 // but overflow is not visible beyond small boundaries. Hence, to make it reactive to touches
@@ -57,14 +67,14 @@ export const ScaleButtonZoomable = ({ children, style }) => {
 };
 
 const ScaleButton = ({
-  duration,
-  scaleTo,
   children,
-  onPress,
-  onLongPress,
   contentContainerStyle,
+  duration,
   minLongPressDuration,
+  onLongPress,
+  onPress,
   overflowMargin,
+  scaleTo,
   wrapperStyle,
 }) => {
   const scale = useSharedValue(1);
@@ -146,25 +156,25 @@ const ScaleButton = ({
 const SimpleScaleButton = ({
   backgroundColor,
   borderRadius,
-  scaleTo,
   children,
-  onPress,
-  onLongPress,
   contentContainerStyle,
-  minLongPressDuration,
-  overflowMargin,
-  wrapperStyle,
   duration,
-  transformOrigin,
+  minLongPressDuration,
+  onLongPress,
+  onPress,
+  overflowMargin,
+  scaleTo,
   skipTopMargin,
+  transformOrigin,
+  wrapperStyle,
 }) => {
-  const onNativePress = ({ nativeEvent: { type } }) => {
+  const onNativePress = useCallback(({ nativeEvent: { type } }) => {
     if (type === 'longPress') {
       onLongPress?.();
     } else {
-      onPress();
+      onPress?.();
     }
-  };
+  }, [onLongPress, onPress]);
 
   return (
     <View
@@ -217,36 +227,33 @@ export default function ButtonPressAnimation({
   backgroundColor = 'transparent',
   borderRadius = 0,
   children,
+  contentContainerStyle,
   disabled,
   duration = 160,
+  hitSlop,
+  minLongPressDuration = 500,
   onLongPress,
   onPress,
   onPressStart,
-  style,
-  minLongPressDuration = 500,
-  testID,
-  scaleTo = 0.86,
-  contentContainerStyle,
   overflowMargin = OVERFLOW_MARGIN,
-  hitSlop,
-  wrapperStyle,
   reanimatedButton,
-  transformOrigin,
+  scaleTo = 0.86,
   skipTopMargin,
+  style,
+  testID,
+  transformOrigin,
+  wrapperStyle,
 }) {
   const normalizedTransformOrigin = useMemo(
     () => normalizeTransformOrigin(transformOrigin),
     [transformOrigin]
   );
 
-  if (disabled) {
-    return <View style={[style, { overflow: 'visible' }]}>{children}</View>;
-  }
-
-  const Button = reanimatedButton ? ScaleButton : SimpleScaleButton;
-
-  return (
-    <Button
+  const ButtonElement = reanimatedButton ? ScaleButton : SimpleScaleButton;
+  return disabled ? (
+    <Content style={style}>{children}</Content>
+  ) : (
+    <ButtonElement
       backgroundColor={backgroundColor}
       borderRadius={borderRadius}
       contentContainerStyle={contentContainerStyle}
@@ -263,9 +270,9 @@ export default function ButtonPressAnimation({
       transformOrigin={normalizedTransformOrigin}
       wrapperStyle={wrapperStyle}
     >
-      <View pointerEvents="box-only" style={[style, { overflow: 'visible' }]}>
+      <Content pointerEvents="box-only" style={style}>
         {children}
-      </View>
-    </Button>
+      </Content>
+    </ButtonElement>
   );
 }

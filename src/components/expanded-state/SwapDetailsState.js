@@ -88,7 +88,7 @@ export default function SwapDetailsState({
 }) {
   const { setParams } = useNavigation();
   const { params: { longFormHeight } = {} } = useRoute();
-  const { height: deviceHeight } = useDimensions();
+  const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
   const [isKeyboardVisible, showKeyboard, hideKeyboard] = useBooleanState();
   const insets = useSafeArea();
@@ -176,7 +176,7 @@ export default function SwapDetailsState({
             {...confirmButtonProps}
             testID="swap-details-confirm"
           />
-          <Row marginHorizontal={5}>
+          <Column justify="center" marginHorizontal={5} width={deviceWidth}>
             <GasSpeedButton
               onCustomGasBlur={hideKeyboard}
               onCustomGasFocus={showKeyboard}
@@ -184,7 +184,7 @@ export default function SwapDetailsState({
               theme="light"
               type={ExchangeModalTypes.swap}
             />
-          </Row>
+          </Column>
         </Footer>
         <ToastPositionContainer>
           <CopyToast copiedText={copiedText} copyCount={copyCount} />

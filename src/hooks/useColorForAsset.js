@@ -8,7 +8,7 @@ import {
   pseudoRandomArrayItemFromString,
 } from '@rainbow-me/utils';
 
-export default function useColorForAsset(asset, fallbackColor) {
+export default function useColorForAsset(asset = {}, fallbackColor) {
   const { address, color } = asset;
   const token = getTokenMetadata(address);
   const tokenListColor = token?.color;

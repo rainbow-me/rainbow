@@ -72,8 +72,9 @@ const ExtendedSheetBackground = styled.View`
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const AnimatedSheet = Animated.createAnimatedComponent(CenteredSheet);
 
-const GasSpeedButtonContainer = styled(Row)`
-  justify-content: center;
+const GasSpeedButtonContainer = styled(Row).attrs({
+  justify: 'center',
+})`
   margin-bottom: 19px;
   margin-top: 4px;
   width: ${deviceUtils.dimensions.width - 10};

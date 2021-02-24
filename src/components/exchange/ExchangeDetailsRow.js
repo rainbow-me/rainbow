@@ -56,11 +56,11 @@ export default function ExchangeDetailsRow({
   const { outputCurrency } = useSwapInputOutputTokens();
   const { isHighPriceImpact, percentDisplay } = usePriceImpactDetails();
 
-  const detailsRowStyles = useAnimatedStyle(() => ({
+  const detailsRowAnimatedStyle = useAnimatedStyle(() => ({
     opacity: detailsRowOpacity.value,
   }));
 
-  const priceImpactStyles = useAnimatedStyle(() => ({
+  const priceImpactAnimatedStyle = useAnimatedStyle(() => ({
     opacity: priceImpactOpacity.value,
     transform: [{ scale: priceImpactScale.value }],
   }));
@@ -117,11 +117,11 @@ export default function ExchangeDetailsRow({
       <PriceImpactWarning
         onPress={onPressViewDetails}
         pointerEvents={isPriceImpactWarningVisible ? 'auto' : 'none'}
-        style={priceImpactStyles}
+        style={priceImpactAnimatedStyle}
       />
       <AnimatedExchangeDetailsButtonRow
         pointerEvents={isPriceImpactWarningVisible ? 'none' : 'auto'}
-        style={detailsRowStyles}
+        style={detailsRowAnimatedStyle}
       >
         <ExchangeDetailsButton onPress={onFlipCurrencies}>
           􀄬 Flip

@@ -33,6 +33,8 @@ import {
 } from './config';
 import {
   bottomSheetPreset,
+  exchangeModalPreset,
+  swapDetailsPreset,
   emojiPreset,
   exchangePreset,
   expandedPreset,
@@ -218,6 +220,13 @@ function MainNavigator() {
     </Stack.Navigator>
   );
 }
+
+
+      // <Stack.Screen
+      //   component={ExpandedAssetSheet}
+      //   name={Routes.SWAP_DETAILS_SHEET}
+      //   options={swapDetailsPreset}
+      // />
 
 // FIXME do it in one navigator
 function MainOuterNavigator() {

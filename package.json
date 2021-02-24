@@ -254,7 +254,7 @@
     "babel-plugin-transform-remove-console": "^6.9.4",
     "detox": "^17.11.0",
     "dotenv": "^8.2.0",
-    "eslint": "^6.8.0",
+    "eslint": "^7.20.0",
     "eslint-config-satya164": "^3.1.6",
     "eslint-import-resolver-babel-module": "^5.1.2",
     "ganache-cli": "6.12.2",

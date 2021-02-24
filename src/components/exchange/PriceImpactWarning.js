@@ -7,10 +7,6 @@ import { Text } from '../text';
 import { usePriceImpactDetails } from '@rainbow-me/hooks';
 import { padding, position } from '@rainbow-me/styles';
 
-const AnimatedButtonPressAnimation = Animated.createAnimatedComponent(
-  ButtonPressAnimation
-);
-
 const Container = styled(Centered).attrs({
   shrink: 0,
 })`
@@ -27,24 +23,25 @@ const Label = styled(Text).attrs(
   })
 )``;
 
-export default function PriceImpactWarning({ onPress, ...props }) {
+export default function PriceImpactWarning({ onPress, style, ...props }) {
   const { color, priceImpactNativeAmount } = usePriceImpactDetails();
 
   return (
-    <AnimatedButtonPressAnimation
-      {...position.coverAsObject}
-      onPress={onPress}
-      scaleTo={1.06}
-      {...props}
-    >
-      <Container>
-        <Label color={color}>{`􀇿 `}</Label>
-        <Label>Small Market</Label>
-        <Label color={color}>{` • Losing `}</Label>
-        <Label color={color} letterSpacing="roundedTight">
-          {priceImpactNativeAmount}
-        </Label>
-      </Container>
-    </AnimatedButtonPressAnimation>
+    <Animated.View {...props} style={style}>
+      <ButtonPressAnimation
+        {...position.coverAsObject}
+        onPress={onPress}
+        scaleTo={1.06}
+      >
+        <Container>
+          <Label color={color}>{`􀇿 `}</Label>
+          <Label>Small Market</Label>
+          <Label color={color}>{` • Losing `}</Label>
+          <Label color={color} letterSpacing="roundedTight">
+            {priceImpactNativeAmount}
+          </Label>
+        </Container>
+      </ButtonPressAnimation>
+    </Animated.View>
   );
 }
