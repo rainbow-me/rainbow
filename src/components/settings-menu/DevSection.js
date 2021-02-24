@@ -45,7 +45,7 @@ const DevSection = () => {
     navigate(Routes.PROFILE_SCREEN);
   }, [navigate]);
 
-  const connectToSandbox = useCallback(async () => {
+  const checkAlert = useCallback(async () => {
     try {
       const request = await fetch(
         'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest'
@@ -98,11 +98,7 @@ const DevSection = () => {
         onPress={connectToGanache}
         testID="ganache-section"
       />
-      <ListItem
-        label="‍🏖️ Alert"
-        onPress={connectToSandbox}
-        testID="alert-section"
-      />
+      <ListItem label="‍🏖️ Alert" onPress={checkAlert} testID="alert-section" />
       <ListFooter />
 
       {Object.keys(config)
