@@ -47,11 +47,11 @@ interface SwapState {
 
 // -- Constants --------------------------------------- //
 const SWAP_UPDATE_EXTRA_TRADE_DETAILS = 'swap/SWAP_UPDATE_EXTRA_TRADE_DETAILS';
-const SWAP_UPDATE_TRADE_DETAILS = 'swap/SWAP_UPDATE_TRADE_DETAILS';
-const SWAP_UPDATE_NATIVE_AMOUNT = 'swap/SWAP_UPDATE_NATIVE_AMOUNT';
 const SWAP_UPDATE_INPUT_AMOUNT = 'swap/SWAP_UPDATE_INPUT_AMOUNT';
-const SWAP_UPDATE_INPUT_VALUES = 'swap/SWAP_UPDATE_INPUT_VALUES';
+const SWAP_UPDATE_NATIVE_AMOUNT = 'swap/SWAP_UPDATE_NATIVE_AMOUNT';
 const SWAP_UPDATE_OUTPUT_AMOUNT = 'swap/SWAP_UPDATE_OUTPUT_AMOUNT';
+const SWAP_UPDATE_INPUT_GIVEN_OUTPUT = 'swap/SWAP_UPDATE_INPUT_GIVEN_OUTPUT';
+const SWAP_UPDATE_OUTPUT_GIVEN_INPUT = 'swap/SWAP_UPDATE_OUTPUT_GIVEN_INPUT';
 const SWAP_UPDATE_INPUT_CURRENCY = 'swap/SWAP_UPDATE_INPUT_CURRENCY';
 const SWAP_UPDATE_OUTPUT_CURRENCY = 'swap/SWAP_UPDATE_OUTPUT_CURRENCY';
 const SWAP_FLIP_CURRENCIES = 'swap/SWAP_FLIP_CURRENCIES';
@@ -80,37 +80,67 @@ export const updateSwapExtraDetails = (extraDetails: ExtraTradeDetails) => (
 };
 
 export const updateSwapTradeDetails = (tradeDetails: Trade) => (
-  dispatch: AppDispatch
+  dispatch: AppDispatch,
+  getState: AppGetState
 ) => {
-  dispatch({
-    payload: tradeDetails,
-    type: SWAP_UPDATE_TRADE_DETAILS,
-  });
+  const { inputAsExactAmount } = getState().swap;
+  if (inputAsExactAmount) {
+    dispatch(updateSwapOutputGivenInput(tradeDetails));
+  } else {
+    dispatch(updateSwapInputGivenOutput(tradeDetails));
+  }
 };
 
-export const updateSwapInputValues = (value: string | null, isMax = false) => (
+export const getNativeAmount = (value: string | null) => (
   dispatch: AppDispatch,
   getState: AppGetState
 ) => {
   const { genericAssets } = getState().data;
   const { inputCurrency } = getState().swap;
-  const inputAmount: SwapAmount = {
-    display: value,
-    value,
-  };
   const inputPriceValue =
     genericAssets[inputCurrency?.address]?.price?.value || 0;
   const nativeAmount = value
     ? convertAmountToNativeAmount(value, inputPriceValue)
     : null;
+  return nativeAmount;
+};
+
+export const updateSwapInputAmount = (value: string | null, isMax = false) => (
+  dispatch: AppDispatch
+) => {
+  const inputAmount: SwapAmount = {
+    display: value,
+    value,
+  };
+  const nativeAmount = dispatch(getNativeAmount(value));
 
   dispatch({
     payload: { inputAmount, isMax, nativeAmount },
-    type: SWAP_UPDATE_INPUT_VALUES,
+    type: SWAP_UPDATE_INPUT_AMOUNT,
   });
 };
 
-export const updateSwapInputValuesViaNative = (value: string | null) => (
+const updateSwapInputGivenOutput = (tradeDetails: Trade | null) => (
+  dispatch: AppDispatch,
+  getState: AppGetState
+) => {
+  const { genericAssets } = getState().data;
+  const { inputCurrency } = getState().swap;
+  const value = tradeDetails?.inputAmount?.toExact() ?? null;
+  const priceValue = genericAssets[inputCurrency?.address]?.price?.value;
+  const display = updatePrecisionToDisplay(value, priceValue, true);
+  const inputAmount: SwapAmount = {
+    display: display ?? value,
+    value,
+  };
+  const nativeAmount = dispatch(getNativeAmount(value));
+  dispatch({
+    payload: { inputAmount, nativeAmount, tradeDetails },
+    type: SWAP_UPDATE_INPUT_GIVEN_OUTPUT,
+  });
+};
+
+export const updateSwapNativeAmount = (value: string | null) => (
   dispatch: AppDispatch,
   getState: AppGetState
 ) => {
@@ -141,43 +171,39 @@ export const updateSwapInputValuesViaNative = (value: string | null) => (
 
   dispatch({
     payload: { inputAmount, nativeAmount: value },
-    type: SWAP_UPDATE_INPUT_VALUES,
+    type: SWAP_UPDATE_NATIVE_AMOUNT,
   });
 };
 
-export const updateSwapInputAmount = (
-  value: string | null,
-  display: string | null,
-  inputAsExactAmount = true
-) => (dispatch: AppDispatch) => {
-  const inputAmount: SwapAmount = {
-    display,
-    value,
-  };
-  dispatch({
-    payload: { inputAmount, inputAsExactAmount },
-    type: SWAP_UPDATE_INPUT_AMOUNT,
-  });
-};
-
-export const updateSwapNativeAmount = (value: string | null) => (
+export const updateSwapOutputAmount = (value: string | null) => (
   dispatch: AppDispatch
 ) => {
-  dispatch({ payload: value, type: SWAP_UPDATE_NATIVE_AMOUNT });
-};
-
-export const updateSwapOutputAmount = (
-  value: string | null,
-  display?: string | null,
-  inputAsExactAmount: boolean = false
-) => (dispatch: AppDispatch) => {
   const outputAmount: SwapAmount = {
-    display: display || value,
+    display: value,
     value,
   };
   dispatch({
-    payload: { inputAsExactAmount, outputAmount },
+    payload: outputAmount,
     type: SWAP_UPDATE_OUTPUT_AMOUNT,
+  });
+};
+
+const updateSwapOutputGivenInput = (tradeDetails: Trade | null) => (
+  dispatch: AppDispatch,
+  getState: AppGetState
+) => {
+  const { genericAssets } = getState().data;
+  const { outputCurrency } = getState().swap;
+  const value = tradeDetails?.outputAmount?.toExact() || null;
+  const priceValue = genericAssets[outputCurrency?.address]?.price?.value;
+  const display = updatePrecisionToDisplay(value, priceValue);
+  const outputAmount: SwapAmount = {
+    display: display ?? value,
+    value,
+  };
+  dispatch({
+    payload: { outputAmount, tradeDetails },
+    type: SWAP_UPDATE_OUTPUT_GIVEN_INPUT,
   });
 };
 
@@ -222,7 +248,7 @@ export const flipSwapCurrencies = (useOutputAmount: boolean) => (
   });
 
   if (useOutputAmount) {
-    dispatch(updateSwapInputValues(outputAmount?.value));
+    dispatch(updateSwapInputAmount(outputAmount?.value));
   } else {
     dispatch(updateSwapOutputAmount(inputAmount?.value));
   }
@@ -260,17 +286,7 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
         ...state,
         extraTradeDetails: action.payload,
       };
-    case SWAP_UPDATE_TRADE_DETAILS:
-      return {
-        ...state,
-        tradeDetails: action.payload,
-      };
-    case SWAP_UPDATE_NATIVE_AMOUNT:
-      return {
-        ...state,
-        nativeAmount: action.payload,
-      };
-    case SWAP_UPDATE_INPUT_VALUES:
+    case SWAP_UPDATE_INPUT_AMOUNT:
       return {
         ...state,
         inputAmount: action.payload.inputAmount,
@@ -278,17 +294,33 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
         isMax: action.payload.isMax,
         nativeAmount: action.payload.nativeAmount,
       };
-    case SWAP_UPDATE_INPUT_AMOUNT:
+    case SWAP_UPDATE_INPUT_GIVEN_OUTPUT:
       return {
         ...state,
         inputAmount: action.payload.inputAmount,
-        inputAsExactAmount: action.payload.inputAsExactAmount,
+        nativeAmount: action.payload.nativeAmount,
+        tradeDetails: action.payload.tradeDetails,
+      };
+    case SWAP_UPDATE_NATIVE_AMOUNT:
+      return {
+        ...state,
+        inputAmount: action.payload.inputAmount,
+        inputAsExactAmount: true,
+        isMax: false,
+        nativeAmount: action.payload.nativeAmount,
       };
     case SWAP_UPDATE_OUTPUT_AMOUNT:
       return {
         ...state,
-        inputAsExactAmount: action.payload.inputAsExactAmount,
+        inputAsExactAmount: false,
+        isMax: false,
+        outputAmount: action.payload,
+      };
+    case SWAP_UPDATE_OUTPUT_GIVEN_INPUT:
+      return {
+        ...state,
         outputAmount: action.payload.outputAmount,
+        tradeDetails: action.payload.tradeDetails,
       };
     case SWAP_UPDATE_OUTPUT_CURRENCY:
       return {
@@ -299,6 +331,7 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
       return {
         ...state,
         inputCurrency: action.payload,
+        isMax: false,
       };
     case SWAP_FLIP_CURRENCIES:
       return {

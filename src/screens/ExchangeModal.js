@@ -164,12 +164,9 @@ export default function ExchangeModal({
   const {
     resetAmounts,
     updateInputAmount,
+    updateNativeAmount,
     updateOutputAmount,
-    updateInputValues,
-    updateInputValuesViaNative,
-  } = useSwapInputs({
-    nativeFieldRef,
-  });
+  } = useSwapInputs();
 
   const {
     inputAmount,
@@ -222,8 +219,6 @@ export default function ExchangeModal({
   const { isSufficientLiquidity } = useUniswapMarketDetails({
     defaultInputAddress,
     isSavings,
-    updateInputAmount,
-    updateOutputAmount,
   });
 
   const updateGasLimit = useCallback(async () => {
@@ -288,7 +283,7 @@ export default function ExchangeModal({
     const prevGas = prevSelectedGasPrice?.txFee?.value?.amount || 0;
     const currentGas = selectedGasPrice?.txFee?.value?.amount || 0;
     if (prevGas !== currentGas) {
-      updateInputValues(maxInputBalance, true);
+      updateInputAmount(maxInputBalance, true);
     }
   }, [
     isMax,
@@ -296,12 +291,12 @@ export default function ExchangeModal({
     maxInputBalance,
     prevSelectedGasPrice,
     selectedGasPrice,
-    updateInputValues,
+    updateInputAmount,
   ]);
 
   const handlePressMaxBalance = useCallback(async () => {
-    updateInputValues(maxInputBalance, true);
-  }, [maxInputBalance, updateInputValues]);
+    updateInputAmount(maxInputBalance, true);
+  }, [maxInputBalance, updateInputAmount]);
 
   const handleSubmit = useCallback(() => {
     backgroundTask.execute(async () => {
@@ -469,8 +464,8 @@ export default function ExchangeModal({
               onFocus={handleFocus}
               onPressMaxBalance={handlePressMaxBalance}
               onPressSelectInputCurrency={navigateToSelectInputCurrency}
-              setInputAmount={updateInputValues}
-              setNativeAmount={updateInputValuesViaNative}
+              setInputAmount={updateInputAmount}
+              setNativeAmount={updateNativeAmount}
               testID={`${testID}-input`}
             />
             {showOutputField && (
