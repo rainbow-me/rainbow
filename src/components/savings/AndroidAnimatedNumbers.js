@@ -33,6 +33,8 @@ function formatter(symbol, val) {
     : `${formatSavingsAmount(val)} ${symbol}`;
 }
 
+const { RNTextAnimator } = NativeModules;
+
 export default function AndroidText({ style, animationConfig }) {
   const isStable = isSymbolStablecoin(animationConfig.symbol);
   const { isDarkMode } = useTheme();
@@ -40,12 +42,12 @@ export default function AndroidText({ style, animationConfig }) {
   const ref = useRef();
   useEffect(() => {
     const screen = findNodeHandle(ref.current.getNativeRef());
-    NativeModules.RNTextAnimator.animate(screen, {
+    RNTextAnimator.animate(screen, {
       ...animationConfig,
       darkMode: isDarkMode,
       isStable,
     });
-    return () => NativeModules.RNTextAnimator.stop(screen);
+    return () => RNTextAnimator.stop(screen);
   }, [animationConfig, isStable, isDarkMode]);
 
   return (
