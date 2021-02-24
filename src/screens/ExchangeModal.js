@@ -213,7 +213,7 @@ export default function ExchangeModal({
   }, [lastFocusedInputHandle]);
 
   // Calculate market details
-  const { isSufficientLiquidity } = useUniswapMarketDetails({
+  useUniswapMarketDetails({
     defaultInputAddress,
     isSavings,
   });
@@ -352,19 +352,10 @@ export default function ExchangeModal({
       disabled: !Number(inputAmountDisplay),
       isAuthorizing,
       isDeposit,
-      isSufficientLiquidity,
       onSubmit: handleSubmit,
       type,
     }),
-    [
-      handleSubmit,
-      inputAmountDisplay,
-      isAuthorizing,
-      isDeposit,
-      isSufficientLiquidity,
-      testID,
-      type,
-    ]
+    [handleSubmit, inputAmountDisplay, isAuthorizing, isDeposit, testID, type]
   );
 
   const navigateToSwapDetailsModal = useCallback(() => {

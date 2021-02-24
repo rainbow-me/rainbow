@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import useAccountSettings from './useAccountSettings';
 import useSwapDetails from './useSwapDetails';
 import useSwapInputOutputTokens from './useSwapInputOutputTokens';
@@ -25,10 +25,9 @@ export default function useUniswapMarketDetails({
     updateTradeDetails: updateSwapTradeDetails,
   } = useSwapDetails();
 
-  const [isSufficientLiquidity, setIsSufficientLiquidity] = useState(true);
   const { chainId } = useAccountSettings();
 
-  const { allPairs, doneLoadingResults } = useUniswapPairs();
+  const { allPairs } = useUniswapPairs();
   const swapNotNeeded = useMemo(
     () => isSavings && inputCurrency?.address === defaultInputAddress,
     [defaultInputAddress, inputCurrency, isSavings]
@@ -50,11 +49,8 @@ export default function useUniswapMarketDetails({
       updatedInputAsExactAmount
     );
 
-    const hasInsufficientLiquidity = doneLoadingResults && !newTradeDetails;
-    setIsSufficientLiquidity(!hasInsufficientLiquidity);
     updateSwapTradeDetails(newTradeDetails);
   }, [
-    doneLoadingResults,
     allPairs,
     chainId,
     inputAmount,
@@ -74,8 +70,4 @@ export default function useUniswapMarketDetails({
     if (swapNotNeeded || isMissingCurrency || !tradeDetails) return;
     updateExtraTradeDetails();
   }, [isMissingCurrency, swapNotNeeded, tradeDetails, updateExtraTradeDetails]);
-
-  return {
-    isSufficientLiquidity,
-  };
 }
