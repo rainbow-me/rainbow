@@ -55,7 +55,15 @@ const BottomSheetRoute = ({
   //#endregion
 
   //#region styles
-  const screenContainerStyle = useMemo(() => ({ height }), [height]);
+  const screenContainerStyle = useMemo(
+    () => ({
+      bottom: 0,
+      height,
+      position: 'absolute',
+      width: '100%',
+    }),
+    [height]
+  );
   const backdropStyle = useMemo(
     () => ({
       backgroundColor: backdropColor,
