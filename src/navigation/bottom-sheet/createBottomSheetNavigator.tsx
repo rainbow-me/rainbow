@@ -16,7 +16,7 @@ import type {
   BottomSheetNavigationOptions,
   // eslint-disable-next-line import/no-unresolved
 } from './types';
-import BottomSheetView from './views/BottomSheetView';
+import BottomSheetNavigatorView from './views/BottomSheetNavigatorView';
 
 type Props = DefaultNavigatorOptions<BottomSheetNavigationOptions> &
   StackRouterOptions &
@@ -66,7 +66,7 @@ const BottomSheetNavigator = ({
 
   return (
     <NavigationHelpersContext.Provider value={navigation}>
-      <BottomSheetView
+      <BottomSheetNavigatorView
         {...rest}
         descriptors={descriptors}
         navigation={navigation}

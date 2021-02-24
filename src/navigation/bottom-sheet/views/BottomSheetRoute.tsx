@@ -5,6 +5,7 @@ import BottomSheet, {
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { View } from 'react-native';
 import { CONTAINER_HEIGHT } from '../constants';
+import { BottomSheetNavigatorContext } from '../contexts/internal';
 // eslint-disable-next-line import/no-unresolved
 import type { BottomSheetDescriptor } from '../types';
 
@@ -17,24 +18,37 @@ interface Props {
 
 const BottomSheetRoute = ({
   routeKey,
-  descriptor: { options, render },
+  descriptor: { options, render, navigation },
   onDismiss,
   removing = false,
 }: Props) => {
-  //#region refs
-  const ref = useRef<BottomSheet>(null);
-  const removingRef = useRef(false);
-  removingRef.current = removing;
-  //#endregion
-
+  //#region extract options
   const {
+    enableContentPanningGesture,
+    enableHandlePanningGesture,
     index = 1,
     snapPoints = ['100%'],
     backdropColor = 'black',
     backdropOpacity = 0.5,
     height = '100%',
   } = options || {};
+  //#endregion
 
+  //#region refs
+  const ref = useRef<BottomSheet>(null);
+
+  const removingRef = useRef(false);
+  removingRef.current = removing;
+
+  // const
+  //#endregion
+
+  //#region variables
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const enhancedSpanPoints = useMemo(() => [0, ...snapPoints], [...snapPoints]);
+  //#endregion
+
+  //#region styles
   const screenContainerStyle = useMemo(() => ({ height }), [height]);
   const backdropStyle = useMemo(
     () => ({
@@ -42,9 +56,46 @@ const BottomSheetRoute = ({
     }),
     [backdropColor]
   );
+  //#endregion
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const enhancedSpanPoints = useMemo(() => [0, ...snapPoints], [...snapPoints]);
+  //#region context methods
+  const handleSettingSnapPoints = useCallback(
+    (_snapPoints: (string | number)[]) => {
+      navigation.setOptions({ snapPoints: _snapPoints });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+
+  const handleSettingEnableContentPanningGesture = useCallback(
+    (value: boolean) => {
+      navigation.setOptions({ enableContentPanningGesture: value });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+
+  const handleSettingEnableHandlePanningGesture = useCallback(
+    (value: boolean) => {
+      navigation.setOptions({ enableHandlePanningGesture: value });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+
+  const contextVariables = useMemo(
+    () => ({
+      setEnableContentPanningGesture: handleSettingEnableContentPanningGesture,
+      setEnableHandlePanningGesture: handleSettingEnableHandlePanningGesture,
+      setSnapPoints: handleSettingSnapPoints,
+    }),
+    [
+      handleSettingEnableContentPanningGesture,
+      handleSettingEnableHandlePanningGesture,
+      handleSettingSnapPoints,
+    ]
+  );
+  //#endregion
 
   //#region callbacks
   const handleOnChange = useCallback((index: number) => {
@@ -78,20 +129,24 @@ const BottomSheetRoute = ({
   );
 
   return (
-    <BottomSheet
-      animateOnMount
-      animationDuration={500}
-      backdropComponent={renderBackdropComponent}
-      backgroundComponent={null}
-      containerHeight={CONTAINER_HEIGHT}
-      handleComponent={null}
-      index={index}
-      onChange={handleOnChange}
-      ref={ref}
-      snapPoints={enhancedSpanPoints}
-    >
-      <View style={screenContainerStyle}>{render()}</View>
-    </BottomSheet>
+    <BottomSheetNavigatorContext.Provider value={contextVariables}>
+      <BottomSheet
+        animateOnMount
+        animationDuration={500}
+        backdropComponent={renderBackdropComponent}
+        backgroundComponent={null}
+        containerHeight={CONTAINER_HEIGHT}
+        enableContentPanningGesture={enableContentPanningGesture}
+        enableHandlePanningGesture={enableHandlePanningGesture}
+        handleComponent={null}
+        index={index}
+        onChange={handleOnChange}
+        ref={ref}
+        snapPoints={enhancedSpanPoints}
+      >
+        <View style={screenContainerStyle}>{render()}</View>
+      </BottomSheet>
+    </BottomSheetNavigatorContext.Provider>
   );
 };
 

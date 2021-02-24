@@ -112,7 +112,12 @@ export type BottomSheetDescriptorMap = {
 export type BottomSheetNavigationOptions = Partial<
   Pick<
     BottomSheetProps,
-    'index' | 'snapPoints' | 'animationDuration' | 'animationEasing'
+    | 'index'
+    | 'snapPoints'
+    | 'animationDuration'
+    | 'animationEasing'
+    | 'enableContentPanningGesture'
+    | 'enableHandlePanningGesture'
   >
 > & {
   backdropOpacity?: number;

@@ -19,7 +19,11 @@ type Props = BottomSheetNavigationConfig & {
   descriptors: BottomSheetDescriptorMap;
 };
 
-const BottomSheetView = ({ descriptors, state, navigation }: Props) => {
+const BottomSheetNavigatorView = ({
+  descriptors,
+  state,
+  navigation,
+}: Props) => {
   //#region hooks
   const forceUpdate = useForceUpdate();
   //#endregion
@@ -87,4 +91,4 @@ const BottomSheetView = ({ descriptors, state, navigation }: Props) => {
   );
 };
 
-export default BottomSheetView;
+export default BottomSheetNavigatorView;
