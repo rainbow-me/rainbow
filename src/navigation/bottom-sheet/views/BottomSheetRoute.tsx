@@ -4,7 +4,13 @@ import BottomSheet, {
 } from '@gorhom/bottom-sheet';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { View } from 'react-native';
-import { CONTAINER_HEIGHT } from '../constants';
+import {
+  CONTAINER_HEIGHT,
+  DEFAULT_ANIMATION_DURATION,
+  DEFAULT_BACKDROP_COLOR,
+  DEFAULT_BACKDROP_OPACITY,
+  DEFAULT_HEIGHT,
+} from '../constants';
 import { BottomSheetNavigatorContext } from '../contexts/internal';
 // eslint-disable-next-line import/no-unresolved
 import type { BottomSheetDescriptor } from '../types';
@@ -28,9 +34,9 @@ const BottomSheetRoute = ({
     enableHandlePanningGesture,
     index = 1,
     snapPoints = ['100%'],
-    backdropColor = 'black',
-    backdropOpacity = 0.5,
-    height = '100%',
+    backdropColor = DEFAULT_BACKDROP_COLOR,
+    backdropOpacity = DEFAULT_BACKDROP_OPACITY,
+    height = DEFAULT_HEIGHT,
   } = options || {};
   //#endregion
 
@@ -132,7 +138,7 @@ const BottomSheetRoute = ({
     <BottomSheetNavigatorContext.Provider value={contextVariables}>
       <BottomSheet
         animateOnMount
-        animationDuration={500}
+        animationDuration={DEFAULT_ANIMATION_DURATION}
         backdropComponent={renderBackdropComponent}
         backgroundComponent={null}
         containerHeight={CONTAINER_HEIGHT}
