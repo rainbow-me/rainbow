@@ -12,7 +12,9 @@ export default function useSwapIsSufficientBalance() {
   const selectedGasPrice = useSelector(
     (state: AppState) => state.gas.selectedGasPrice
   );
-  const inputAmount = useSelector((state: AppState) => state.swap.inputAmount);
+  const inputAmount = useSelector(
+    (state: AppState) => state.swap.inputAmount?.value
+  );
   const type = useSelector((state: AppState) => state.swap.type);
   const supplyBalanceUnderlying = useSelector(
     (state: AppState) => state.swap.typeSpecificParameters?.supplyBalanceUnderlying
