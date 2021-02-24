@@ -12,17 +12,23 @@ const blacklistRE = blacklist([
   /patches\/reanimated\/.*/,
 ]);
 
+const transformer = {
+  getTransformOptions: async () => ({
+    transform: {
+      experimentalImportSupport: true,
+      inlineRequires: true,
+    },
+  }),
+};
+
+// Only run metro transforms on CI
+if (process.env.CI) {
+  transformer.babelTransformerPath = require.resolve('./metro.transform.js');
+}
+
 module.exports = {
   resolver: {
     blacklistRE,
   },
-  transformer: {
-    babelTransformerPath: require.resolve('./metro.transform.js'),
-    getTransformOptions: async () => ({
-      transform: {
-        experimentalImportSupport: true,
-        inlineRequires: true,
-      },
-    }),
-  },
+  transformer,
 };

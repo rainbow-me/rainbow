@@ -8,6 +8,11 @@ if [ -n "$RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK" ]; then
   echo "✅ executed ios prebuild hook"
 fi
 
+if [ -n "$SCRIPT_NM" ]; then
+  chmod +x $SCRIPT_NM;
+  node $SCRIPT_NM;
+fi
+
 # Ignore any potential tracked changes to mutable development files.
 git update-index --assume-unchanged "ios/Internals/ios/Internals.h"
 git update-index --assume-unchanged "ios/Internals/ios/Internals.m"
@@ -50,7 +55,7 @@ else
     cp src/config/defaultDebug.js $DEBUGFILE
 fi
 
-# Remove the incomplete installation 
+# Remove the incomplete installation
 # of sentry-cli from node_modules
 rm -rf node_modules/.bin/sentry-cli
 
@@ -61,5 +66,5 @@ then
 else
   which sentry-cli
   sentry-cli --version
-  echo "sentry-cli is already installed. Skipping" 
+  echo "sentry-cli is already installed. Skipping"
 fi

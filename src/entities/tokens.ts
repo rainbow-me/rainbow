@@ -40,20 +40,12 @@ export interface UniswapCurrency extends Asset {
 
 export interface RainbowToken extends Asset {
   color?: string;
+  highLiquidity?: boolean;
   favorite?: boolean;
   isRainbowCurated?: boolean;
   isVerified?: boolean;
   shadowColor?: string;
   uniqueId: string;
-}
-
-export interface UniswapSubgraphAsset extends RainbowToken {
-  derivedETH: string;
-  totalLiquidity: string;
-}
-
-export interface RawUniswapSubgraphAsset extends UniswapSubgraphAsset {
-  id: string;
 }
 
 export interface IndexToken {
