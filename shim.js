@@ -21,7 +21,7 @@ if (typeof atob === 'undefined') {
   };
 }
 
-// Can remove when we update hermes after they enable Proxy support
+// Can remove when we update hermes after they enable Proxy suppor
 ReactNative.Platform.OS === 'android' && enableES5();
 
 ReactNative.Platform.OS === 'ios' &&
