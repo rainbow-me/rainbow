@@ -1,4 +1,3 @@
-import { useRoute } from '@react-navigation/native';
 import React, {
   useCallback,
   useContext,
@@ -25,10 +24,9 @@ import Routes from '@rainbow-me/routes';
 import ShadowStack from 'react-native-shadow-stack';
 
 const springConfig = {
-  damping: 20,
+  damping: 28,
   mass: 1,
-  overshootClamping: true,
-  stiffness: 400,
+  stiffness: 420,
 };
 
 const Header = styled.View`
@@ -50,7 +48,8 @@ const BackgroundFill = styled(Centered).attrs({
   ...borders.buildCircleAsObject(43),
 })`
   ${position.cover};
-  background-color: ${({ theme: { colors } }) => colors.dark};
+  background-color: ${({ theme: { colors, isDarkMode } }) =>
+    isDarkMode ? colors.darkModeDark : colors.blueGreyDark};
   left: 8;
   top: 8;
 `;
@@ -143,10 +142,6 @@ export default function DiscoverSheetHeader(props) {
     Math.round(newInterpolate(yPosition.value, [50, 51], [0, 1], 'clamp'))
   );
 
-  const {
-    params: { setSwipeEnabled: setViewPagerSwipeEnabled },
-  } = useRoute();
-
   const translateXLeftButton = useDerivedValue(() =>
     withSpring(stackOpacity.value * 5, springConfig)
   );
@@ -175,11 +170,20 @@ export default function DiscoverSheetHeader(props) {
       withSpring(isSearchModeEnabled ? 0 : buttonOpacity.value, springConfig),
     [isSearchModeEnabled]
   );
-  const animatedWrapperOpacity = useDerivedValue(() =>
-    withSpring(buttonOpacity.value, springConfig)
+  const animatedWrapperOpacity = useDerivedValue(
+    () =>
+      withSpring(isSearchModeEnabled ? 0 : buttonOpacity.value, springConfig),
+    [isSearchModeEnabled]
   );
 
   const { colors } = useTheme();
+
+  const handleScannerPress = useCallback(() => {
+    if (!isSearchModeEnabled) {
+      setIsSearchModeEnabled?.(false);
+      jumpToShort?.();
+    }
+  }, [isSearchModeEnabled, jumpToShort, setIsSearchModeEnabled]);
 
   return (
     <Header {...props} pointerEvents="box-none">
@@ -197,16 +201,17 @@ export default function DiscoverSheetHeader(props) {
           name="caret"
           {...props}
         />
-        <Icon color={colors.white} direction="left" name="caret" {...props} />
+        <Icon
+          color={colors.whiteLabel}
+          direction="left"
+          name="caret"
+          {...props}
+        />
       </Stack>
       <Stack
         disabled={!buttonsEnabled}
         left={18.5}
-        onPress={() => {
-          setIsSearchModeEnabled?.(false);
-          setViewPagerSwipeEnabled?.(true);
-          jumpToShort?.();
-        }}
+        onPress={handleScannerPress}
         stackOpacity={stackOpacity}
         translateX={translateXRightButton}
         wrapperOpacity={animatedWrapperOpacity}
@@ -216,7 +221,7 @@ export default function DiscoverSheetHeader(props) {
           color={colors.alpha(colors.blueGreyDark, 0.8)}
           name="scanner"
         />
-        <Icon bottom={1} color={colors.white} name="scanner" />
+        <Icon bottom={1} color={colors.whiteLabel} name="scanner" />
       </Stack>
     </Header>
   );

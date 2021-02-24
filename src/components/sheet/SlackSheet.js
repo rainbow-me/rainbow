@@ -82,12 +82,13 @@ export default forwardRef(function SlackSheet(
     children,
     contentHeight,
     deferredHeight = false,
-    hideHandle = false,
-    renderHeader,
-    scrollEnabled = true,
     discoverSheet,
+    hideHandle = false,
     limitScrollViewContent,
     onContentSizeChange,
+    renderHeader,
+    scrollEnabled = true,
+    showBlur,
     ...props
   },
   ref
@@ -157,7 +158,9 @@ export default forwardRef(function SlackSheet(
             <AndroidBackground backgroundColor={bg} />
           </AndroidBackground>
         )}
-        {!hideHandle && <SheetHandleFixedToTop showBlur={scrollEnabled} />}
+        {!hideHandle && (
+          <SheetHandleFixedToTop showBlur={showBlur || scrollEnabled} />
+        )}
         <ContentWrapper backgroundColor={bg}>
           {renderHeader?.(yPosition)}
           <Content

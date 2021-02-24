@@ -7,7 +7,6 @@ import React, {
   useMemo,
   useRef,
 } from 'react';
-import { Dimensions, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
 import { ButtonPressAnimation } from '../animations';
@@ -69,23 +68,6 @@ const formatItem = (
   };
 };
 
-// add status bar height for Android
-const heightWithoutChart = 309 + (android && 24);
-const heightWithChart = Dimensions.get('window').height - 80;
-
-export const initialTokenIndexExpandedStateSheetHeight =
-  heightWithChart + (android && 40);
-
-const formatGenericAsset = asset => {
-  if (asset?.price?.value) {
-    return {
-      ...asset,
-      native: { price: { amount: asset?.price?.value } },
-    };
-  }
-  return asset;
-};
-
 export default function TokenIndexExpandedState({ asset }) {
   const { colors, isDarkMode } = useTheme();
   const { allAssets } = useAccountAssets();
@@ -99,14 +81,18 @@ export default function TokenIndexExpandedState({ asset }) {
 
   const underlying = useMemo(() => {
     if (!dpi) return [];
-    const baseAsset = formatGenericAsset(
-      genericAssets[toLower(dpi?.base?.address)]
+    const baseAsset = ethereumUtils.formatGenericAsset(
+      genericAssets[toLower(dpi?.base?.address)],
+      nativeCurrency
     );
 
     const underlyingAssets = dpi?.underlying.map(asset => {
       const genericAsset = genericAssets[toLower(asset?.address)];
       if (!genericAsset) return null;
-      const assetWithPrice = formatGenericAsset(genericAsset);
+      const assetWithPrice = ethereumUtils.formatGenericAsset(
+        genericAsset,
+        nativeCurrency
+      );
 
       const {
         display: pricePerUnitFormatted,
@@ -146,7 +132,10 @@ export default function TokenIndexExpandedState({ asset }) {
 
   // If we don't have a balance for this asset
   // It's a generic asset
-  const assetWithPrice = formatGenericAsset(genericAssets[asset?.address]);
+  const assetWithPrice = ethereumUtils.formatGenericAsset(
+    genericAssets[asset?.address],
+    nativeCurrency
+  );
 
   const {
     chart,
@@ -159,8 +148,6 @@ export default function TokenIndexExpandedState({ asset }) {
     throttledData,
   } = useChartThrottledPoints({
     asset: assetWithPrice,
-    heightWithChart: heightWithChart - (!asset?.balance && 68),
-    heightWithoutChart: heightWithoutChart - (!asset?.balance && 68),
   });
 
   const needsEth = asset?.address === 'eth' && asset?.balance?.amount === '0';
@@ -176,7 +163,10 @@ export default function TokenIndexExpandedState({ asset }) {
     item => {
       const asset =
         ethereumUtils.getAsset(allAssets, toLower(item.address)) ||
-        ethereumUtils.formatGenericAsset(genericAssets[toLower(item.address)]);
+        ethereumUtils.formatGenericAsset(
+          genericAssets[toLower(item.address)],
+          nativeCurrency
+        );
 
       navigate(
         ios ? Routes.EXPANDED_ASSET_SHEET : Routes.EXPANDED_ASSET_SCREEN,
@@ -187,7 +177,7 @@ export default function TokenIndexExpandedState({ asset }) {
         }
       );
     },
-    [allAssets, genericAssets, navigate]
+    [allAssets, genericAssets, nativeCurrency, navigate]
   );
 
   return (
@@ -251,7 +241,7 @@ export default function TokenIndexExpandedState({ asset }) {
             </Text>
           </Column>
         </Row>
-        <Column marginBottom={40} marginHorizontal={19} marginTop={12}>
+        <Column marginBottom={55} marginHorizontal={19} marginTop={12}>
           {underlying.map(item => (
             <Row
               as={ButtonPressAnimation}
@@ -298,22 +288,16 @@ export default function TokenIndexExpandedState({ asset }) {
                         ]}
                         style={{
                           height: 16,
-                          position: 'absolute',
-                          width: '100%',
-                        }}
-                      />
-                      <View
-                        style={{
-                          borderRadius: 8,
-                          height: 16,
-                          overflow: 'hidden',
                           width: '100%',
                         }}
                       >
                         <LinearGradient
                           colors={[
-                            colors.alpha(item.color, isDarkMode ? 1 : 0.5),
-                            colors.alpha(item.color, isDarkMode ? 0.5 : 1),
+                            colors.alpha(
+                              colors.whiteLabel,
+                              isDarkMode ? 0.2 : 0.3
+                            ),
+                            colors.alpha(colors.whiteLabel, 0),
                           ]}
                           end={{ x: 1, y: 0.5 }}
                           overflow="hidden"
@@ -321,7 +305,7 @@ export default function TokenIndexExpandedState({ asset }) {
                           start={{ x: 0, y: 0.5 }}
                           style={position.coverAsObject}
                         />
-                      </View>
+                      </ShadowStack>
                     </Column>
                   </Column>
                 </Row>

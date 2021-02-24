@@ -153,7 +153,9 @@ export default function ProfileMasthead({
 
           const avatarActionSheetOptions = [
             'Choose from Library',
-            ...(isAvatarPickerAvailable ? ['Pick an Emoji'] : []),
+            ...(isAvatarEmojiPickerEnabled && !accountImage
+              ? ['Pick an Emoji']
+              : []),
             ...(accountImage ? ['Remove Photo'] : []),
             ...(ios ? ['Cancel'] : []),
           ];
@@ -172,13 +174,16 @@ export default function ProfileMasthead({
                   cropperCircleOverlay: true,
                   cropping: true,
                 }).then(processPhoto);
-              } else if (buttonIndex === 1 && isAvatarEmojiPickerEnabled) {
-                navigate(Routes.AVATAR_BUILDER, {
-                  initialAccountColor: accountColor,
-                  initialAccountName: accountName,
-                });
-              } else if (buttonIndex === 2 && accountImage) {
-                onRemovePhoto();
+              } else if (buttonIndex === 1) {
+                if (isAvatarEmojiPickerEnabled && !accountImage) {
+                  navigate(Routes.AVATAR_BUILDER, {
+                    initialAccountColor: accountColor,
+                    initialAccountName: accountName,
+                  });
+                }
+                if (accountImage) {
+                  onRemovePhoto();
+                }
               }
             }
           );

@@ -6,8 +6,8 @@ import { Text } from '../text';
 import FloatingActionButton from './FloatingActionButton';
 
 const FabShadow = [
-  [0, 10, 30, lightModeThemeColors.shadow, 0.8],
-  [0, 5, 15, lightModeThemeColors.shadow, 1],
+  [0, 10, 30, lightModeThemeColors.shadow, 0.6],
+  [0, 5, 15, lightModeThemeColors.blueGreyDark, 1],
 ];
 
 const SearchFab = ({ disabled, ...props }) => {
@@ -16,7 +16,7 @@ const SearchFab = ({ disabled, ...props }) => {
   return (
     <FloatingActionButton
       {...props}
-      backgroundColor={isDarkMode ? colors.darkModeDark : colors.dark}
+      backgroundColor={isDarkMode ? colors.darkModeDark : colors.blueGreyDark}
       disabled={disabled}
       shadows={FabShadow}
       testID="search-fab"

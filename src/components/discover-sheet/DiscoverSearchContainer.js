@@ -110,7 +110,11 @@ export default forwardRef(function DiscoverSearchContainer(
               onTapSearch();
               setIsInputFocused(true);
             }}
-            placeholderText="Search all of Ethereum"
+            placeholderText={
+              isSearchModeEnabled
+                ? 'Search all of Ethereum'
+                : '􀊫 Search all of Ethereum'
+            }
             ref={searchInputRef}
             searchQuery={searchQuery}
             testID="discover-search"
@@ -122,7 +126,7 @@ export default forwardRef(function DiscoverSearchContainer(
             setIsInputFocused(false);
           }}
         >
-          {delayedShowSearch && <CancelText>Cancel</CancelText>}
+          {delayedShowSearch && <CancelText>Done</CancelText>}
         </CancelButton>
       </Row>
       <DiscoverSheetContext.Provider value={contextValue}>

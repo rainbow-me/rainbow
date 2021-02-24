@@ -1,5 +1,4 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
-import { View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
 import { DPI_ADDRESS } from '../../references/indexes';
@@ -41,7 +40,7 @@ const PulseIndex = () => {
     genericAssets,
   }));
 
-  const { nativeCurrencySymbol } = useAccountSettings();
+  const { nativeCurrency, nativeCurrencySymbol } = useAccountSettings();
   const item = useMemo(() => {
     const asset = genericAssets[DPI_ADDRESS];
     if (!asset) return null;
@@ -49,14 +48,19 @@ const PulseIndex = () => {
   }, [genericAssets, nativeCurrencySymbol]);
 
   const handlePress = useCallback(() => {
-    const asset = ethereumUtils.formatGenericAsset(genericAssets[DPI_ADDRESS]);
+    const asset = ethereumUtils.formatGenericAsset(
+      genericAssets[DPI_ADDRESS],
+      nativeCurrency
+    );
 
     navigate(Routes.TOKEN_INDEX_SHEET, {
       asset,
+      backgroundOpacity: 1,
+      cornerRadius: 39,
       fromDiscover: true,
       type: 'token_index',
     });
-  }, [genericAssets, navigate]);
+  }, [genericAssets, nativeCurrency, navigate]);
 
   const { colors, isDarkMode } = useTheme();
 
@@ -77,17 +81,6 @@ const PulseIndex = () => {
           style={{
             height: 70,
             marginHorizontal: 19,
-            marginTop: 20,
-            position: 'absolute',
-          }}
-        />
-        <View
-          style={{
-            borderRadius: 24,
-            height: 70,
-            marginHorizontal: 19,
-            marginTop: 20,
-            overflow: 'hidden',
           }}
         >
           <LinearGradient
@@ -100,7 +93,7 @@ const PulseIndex = () => {
           />
           <Row>
             <Column margin={15} marginRight={10}>
-              <CoinIcon shadowColor={colors.dpiDark} {...item} />
+              <CoinIcon forcedShadowColor={colors.dpiDark} {...item} />
             </Column>
             <Column marginLeft={0} marginTop={ios ? 13.5 : 6}>
               <Text color={colors.whiteLabel} size="large" weight="heavy">
@@ -127,53 +120,55 @@ const PulseIndex = () => {
               </Text>
             </Column>
           </Row>
-        </View>
+        </ShadowStack>
       </ButtonPressAnimation>
-      <ButtonPressAnimation onPress={handlePress} scaleTo={0.9}>
-        <Row
-          flex={1}
-          justify="space-between"
-          marginHorizontal={34}
-          marginTop={android ? 4 : 8}
+      <Row
+        as={ButtonPressAnimation}
+        flex={1}
+        justify="space-between"
+        marginBottom={30}
+        marginHorizontal={34}
+        marginTop={android ? 4 : 8}
+        onPress={handlePress}
+        scaleTo={0.92}
+      >
+        <Text
+          color={colors.dpiLight}
+          letterSpacing="roundedMedium"
+          numberOfLines={1}
+          size="smedium"
+          weight="semibold"
         >
+          Trading at{' '}
           <Text
             color={colors.dpiLight}
-            letterSpacing="roundedMedium"
+            letterSpacing="roundedTight"
             numberOfLines={1}
             size="smedium"
-            weight="semibold"
+            weight="bold"
           >
-            Trading at{' '}
-            <Text
-              color={colors.dpiLight}
-              letterSpacing="roundedTight"
-              numberOfLines={1}
-              size="smedium"
-              weight="bold"
-            >
-              {item.price}
-            </Text>
+            {item.price}
           </Text>
+        </Text>
+        <Text
+          align="right"
+          color={item.isPositive ? colors.green : colors.red}
+          letterSpacing="roundedMedium"
+          size="smedium"
+          weight="semibold"
+        >
           <Text
             align="right"
             color={item.isPositive ? colors.green : colors.red}
-            letterSpacing="roundedMedium"
+            letterSpacing="roundedTight"
             size="smedium"
-            weight="semibold"
+            weight="bold"
           >
-            <Text
-              align="right"
-              color={item.isPositive ? colors.green : colors.red}
-              letterSpacing="roundedTight"
-              size="smedium"
-              weight="bold"
-            >
-              {item.isPositive ? `↑` : `↓`} {item.change}
-            </Text>{' '}
-            today
-          </Text>
-        </Row>
-      </ButtonPressAnimation>
+            {item.isPositive ? `↑` : `↓`} {item.change}
+          </Text>{' '}
+          today
+        </Text>
+      </Row>
     </Fragment>
   );
 };

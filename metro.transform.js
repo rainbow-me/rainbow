@@ -14,6 +14,9 @@ module.exports.transform = function applyRainbowTransform({
           '@react-native-community/clipboard': {},
           'react-native-keychain': {},
         },
+        madge: {
+          tsConfig: require.resolve('./tsconfig.json'),
+        },
       },
     },
   });

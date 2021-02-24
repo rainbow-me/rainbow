@@ -20,7 +20,6 @@ import { ButtonPressAnimation } from '../animations';
 import { ListCoinRow } from '../coin-row';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
 import { Centered, Column, Flex, Row } from '../layout';
-
 import { Emoji, Text } from '../text';
 import EdgeFade from './EdgeFade';
 import {
@@ -89,7 +88,7 @@ const getItemLayout = (_, index) => ({
 
 export default function ListSection() {
   const dispatch = useDispatch();
-  const { network } = useAccountSettings();
+  const { network, nativeCurrency } = useAccountSettings();
   const { navigate } = useNavigation();
   const {
     favorites,
@@ -185,7 +184,10 @@ export default function ListSection() {
       return favorites.map(
         item =>
           ethereumUtils.getAsset(allAssets, toLower(item.address)) ||
-          ethereumUtils.formatGenericAsset(genericAssets[toLower(item.address)])
+          ethereumUtils.formatGenericAsset(
+            genericAssets[toLower(item.address)],
+            nativeCurrency
+          )
       );
     } else {
       if (!lists?.length) return [];
@@ -193,13 +195,24 @@ export default function ListSection() {
       if (!currentList) {
         return [];
       }
+
       return currentList.tokens.map(
         address =>
           ethereumUtils.getAsset(allAssets, toLower(address)) ||
-          ethereumUtils.formatGenericAsset(genericAssets[toLower(address)])
+          ethereumUtils.formatGenericAsset(
+            genericAssets[toLower(address)],
+            nativeCurrency
+          )
       );
     }
-  }, [allAssets, favorites, genericAssets, lists, selectedList]);
+  }, [
+    allAssets,
+    favorites,
+    genericAssets,
+    lists,
+    nativeCurrency,
+    selectedList,
+  ]);
 
   const handlePress = useCallback(
     item => {
@@ -259,8 +272,8 @@ export default function ListSection() {
         </Text>
       </Flex>
       {!ready ? (
-        <Centered marginTop={100}>
-          <Spinner color={colors.appleBlue} size={30} />
+        <Centered marginBottom={40} marginTop={50}>
+          <Spinner color={colors.alpha(colors.blueGreyDark, 0.5)} size={25} />
         </Centered>
       ) : (
         <Fragment>
@@ -277,6 +290,7 @@ export default function ListSection() {
               keyExtractor={item => item.id}
               ref={listRef}
               renderItem={renderItem}
+              scrollsToTop={false}
               showsHorizontalScrollIndicator={false}
             />
             <EdgeFade />
@@ -294,10 +308,11 @@ export default function ListSection() {
                   />
                 ))
             ) : (
-              <Centered marginVertical={30}>
+              <Centered marginVertical={42}>
                 <Text
-                  color={colors.alpha(colors.blueGreyDark, 0.5)}
+                  color={colors.alpha(colors.blueGreyDark, 0.3)}
                   size="large"
+                  weight="semibold"
                 >
                   This list is empty!
                 </Text>

@@ -7,37 +7,37 @@ import { Centered, FlexItem, Row } from '../layout';
 import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
+import { useAccountSettings } from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
-import { neverRerender } from '@rainbow-me/utils';
+import { ethereumUtils, neverRerender } from '@rainbow-me/utils';
 
-const CoinRowPaddingTop = 9.5;
-const CoinRowPaddingBottom = 9.5;
+const CoinRowPaddingTop = 9;
+const CoinRowPaddingBottom = 10;
 
 const PercentageText = styled(BottomRowText).attrs({
-  align: 'left',
+  weight: 'medium',
 })`
   ${({ isPositive, theme: { colors } }) =>
-    isPositive ? `color: ${colors.green};` : null};
+    isPositive ? `color: ${colors.green};` : `color: ${colors.red}`};
 `;
 
 const BottomRowContainer = ios
   ? Fragment
   : styled(Row).attrs({ marginBottom: 10, marginTop: ios ? -10 : 0 })``;
 
-const formatPercentageString = percentString =>
-  percentString ? percentString.split('-').join('- ') : '-';
-
-const BottomRow = ({ native, symbol }) => {
+const BottomRow = ({ native }) => {
   const percentChange = get(native, 'change');
-  const percentageChangeDisplay = formatPercentageString(percentChange);
+  const isPositive = percentChange && percentChange.charAt(0) !== '-';
 
-  const isPositive = percentChange && percentageChangeDisplay.charAt(0) !== '-';
+  const formatPercentageString = percentString =>
+    isPositive ? '+' + percentString : percentString;
+  const percentageChangeDisplay = formatPercentageString(percentChange);
 
   return (
     <BottomRowContainer>
       <FlexItem flex={1}>
-        <BottomRowText>
-          {symbol}{' '}
+        <BottomRowText weight="medium">
+          {native?.price?.display}{' '}
           <PercentageText isPositive={isPositive}>
             {percentageChangeDisplay}
           </PercentageText>
@@ -47,15 +47,21 @@ const BottomRow = ({ native, symbol }) => {
   );
 };
 
-const TopRow = ({ name, showBalance }) => (
-  <Centered height={showBalance ? CoinIconSize : null}>
-    <CoinName>{name}</CoinName>
-  </Centered>
-);
+const TopRow = ({ name, showBalance }) => {
+  return (
+    <Centered height={showBalance ? CoinIconSize : null}>
+      <CoinName>{name}</CoinName>
+    </Centered>
+  );
+};
 
 const ListCoinRow = ({ item, onPress }) => {
+  const { nativeCurrency } = useAccountSettings();
   const handlePress = useCallback(() => onPress(item), [item, onPress]);
-
+  const formattedItem = useMemo(() => {
+    if (item?.native?.price) return item;
+    return ethereumUtils.formatGenericAsset(item, nativeCurrency);
+  }, [item, nativeCurrency]);
   return (
     <>
       <ButtonPressAnimation
@@ -65,7 +71,7 @@ const ListCoinRow = ({ item, onPress }) => {
         throttle
       >
         <CoinRow
-          {...item}
+          {...formattedItem}
           bottomRowRender={BottomRow}
           containerStyles={css(
             padding(CoinRowPaddingTop, 38, CoinRowPaddingBottom, 15)

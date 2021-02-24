@@ -83,7 +83,8 @@ export default function ChartPercentChangeLabel() {
               return (
                 (android ? '' : value > 0 ? '↑' : value < 0 ? '↓' : '') +
                 ' ' +
-                formatNumber(Math.abs(value).toFixed(2))
+                formatNumber(Math.abs(value).toFixed(2)) +
+                '%'
               );
             })()
           : '',
