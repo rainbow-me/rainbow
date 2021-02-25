@@ -33,11 +33,11 @@ import {
   useBlockPolling,
   useGas,
   usePriceImpactDetails,
+  useSwapCurrencyHandlers,
   useSwapDerivedOutputs,
   useSwapInputHandlers,
   useSwapInputOutputTokens,
   useSwapInputRefs,
-  useUniswapCurrencies,
 } from '@rainbow-me/hooks';
 import { loadWallet } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
@@ -136,7 +136,7 @@ export default function ExchangeModal({
     flipCurrencies,
     navigateToSelectInputCurrency,
     navigateToSelectOutputCurrency,
-  } = useUniswapCurrencies({
+  } = useSwapCurrencyHandlers({
     defaultInputAsset,
     defaultOutputAsset,
     isDeposit,
@@ -177,9 +177,8 @@ export default function ExchangeModal({
   }, [clearAllInputRefs, updateInputAmount]);
 
   const onFlipCurrencies = useCallback(() => {
-    const useOutputAmount = outputFieldRef?.current?.isFocused();
-    flipCurrencies(useOutputAmount);
-  }, [flipCurrencies, outputFieldRef]);
+    flipCurrencies();
+  }, [flipCurrencies]);
 
   const isDismissing = useRef(false);
   useEffect(() => {

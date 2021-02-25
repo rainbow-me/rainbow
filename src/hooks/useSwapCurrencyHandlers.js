@@ -50,7 +50,7 @@ const createMissingAsset = (asset, underlyingPrice, priceOfEther) => {
   };
 };
 
-export default function useUniswapCurrencies({
+export default function useSwapCurrencyHandlers({
   defaultInputAsset,
   isDeposit,
   isWithdrawal,
