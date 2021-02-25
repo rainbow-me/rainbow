@@ -42,6 +42,7 @@ import {
 import { loadWallet } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
 import { executeRap } from '@rainbow-me/raps/common';
+import { multicallClearState } from '@rainbow-me/redux/multicall';
 import {
   swapClearState,
   SwapModalField,
@@ -202,6 +203,7 @@ export default function ExchangeModal({
   useEffect(() => {
     return () => {
       dispatch(swapClearState());
+      dispatch(multicallClearState());
     };
   }, [dispatch]);
 
