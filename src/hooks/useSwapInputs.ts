@@ -15,6 +15,7 @@ const MIN_ETH = '0.01';
 
 export default function useSwapInputs() {
   const dispatch = useDispatch();
+  const isMax = useSelector((state: AppState) => state.swap.isMax);
   const assets = useSelector((state: AppState) => state.data.assets);
   const inputCurrencyAddress = useSelector(
     (state: AppState) => state.swap.inputCurrency?.address
@@ -57,6 +58,7 @@ export default function useSwapInputs() {
   );
 
   return {
+    isMax,
     resetAmounts,
     updateInputAmount,
     updateMaxInputAmount,

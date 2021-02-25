@@ -33,18 +33,18 @@ import {
   useBlockPolling,
   useGas,
   usePriceImpactDetails,
+  useSwapDerivedOutputs,
   useSwapDetails,
   useSwapInputOutputTokens,
   useSwapInputRefs,
   useSwapInputs,
-  useSwapInputValues,
   useUniswapCurrencies,
   useUniswapMarketDetails,
 } from '@rainbow-me/hooks';
 import { loadWallet } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
 import { executeRap } from '@rainbow-me/raps/common';
-import { updateSwapTypeDetails } from '@rainbow-me/redux/swap';
+import { SwapModalField, updateSwapTypeDetails } from '@rainbow-me/redux/swap';
 import { ethUnits } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
@@ -121,7 +121,7 @@ export default function ExchangeModal({
   const { initWeb3Listener, stopWeb3Listener } = useBlockPolling();
   const { nativeCurrency } = useAccountSettings();
 
-  const { areTradeDetailsValid, tradeDetails } = useSwapDetails();
+  const { areTradeDetailsValid } = useSwapDetails();
   const { isHighPriceImpact, percentDisplay } = usePriceImpactDetails();
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
@@ -158,6 +158,7 @@ export default function ExchangeModal({
   } = useSwapInputRefs();
 
   const {
+    isMax,
     resetAmounts,
     updateInputAmount,
     updateMaxInputAmount,
@@ -165,14 +166,10 @@ export default function ExchangeModal({
     updateOutputAmount,
   } = useSwapInputs();
 
-  const {
-    inputAmount,
-    inputAmountDisplay,
-    nativeAmount,
-    isMax,
-    outputAmount,
-    outputAmountDisplay,
-  } = useSwapInputValues();
+  const { derivedValues, tradeDetails } = useSwapDerivedOutputs();
+  const inputAmount = derivedValues[SwapModalField.input];
+  const nativeAmount = derivedValues[SwapModalField.native];
+  const outputAmount = derivedValues[SwapModalField.output];
 
   const clearForm = useCallback(() => {
     logger.log('[exchange] - clear form');
@@ -349,13 +346,13 @@ export default function ExchangeModal({
 
   const confirmButtonProps = useMemoOne(
     () => ({
-      disabled: !Number(inputAmountDisplay),
+      disabled: !Number(inputAmount),
       isAuthorizing,
       isDeposit,
       onSubmit: handleSubmit,
       type,
     }),
-    [handleSubmit, inputAmountDisplay, isAuthorizing, isDeposit, testID, type]
+    [handleSubmit, inputAmount, isAuthorizing, isDeposit, testID, type]
   );
 
   const navigateToSwapDetailsModal = useCallback(() => {
@@ -409,7 +406,7 @@ export default function ExchangeModal({
     outputCurrency?.symbol &&
     areTradeDetailsValid &&
     inputAmount > 0 &&
-    outputAmountDisplay;
+    outputAmount;
 
   return (
     <Wrapper>
@@ -425,7 +422,7 @@ export default function ExchangeModal({
             <ExchangeHeader testID={testID} title={title} />
             <ExchangeInputField
               disableInputCurrencySelection={isWithdrawal}
-              inputAmount={inputAmountDisplay}
+              inputAmount={inputAmount}
               inputCurrencyAddress={inputCurrency?.address}
               inputCurrencySymbol={inputCurrency?.symbol}
               inputFieldRef={inputFieldRef}
@@ -443,7 +440,7 @@ export default function ExchangeModal({
               <ExchangeOutputField
                 onFocus={handleFocus}
                 onPressSelectOutputCurrency={navigateToSelectOutputCurrency}
-                outputAmount={outputAmountDisplay}
+                outputAmount={outputAmount}
                 outputCurrencyAddress={outputCurrency?.address}
                 outputCurrencySymbol={outputCurrency?.symbol}
                 outputFieldRef={outputFieldRef}
@@ -454,7 +451,7 @@ export default function ExchangeModal({
           </FloatingPanel>
           {isDeposit && (
             <DepositInfo
-              amount={(inputAmount > 0 && outputAmountDisplay) || null}
+              amount={(inputAmount > 0 && outputAmount) || null}
               asset={outputCurrency}
               testID="deposit-info-button"
             />

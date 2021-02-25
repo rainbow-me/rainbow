@@ -70,6 +70,7 @@ export { default as useSwapInputValues } from './useSwapInputValues';
 export { default as useSwapInputOutputTokens } from './useSwapInputOutputTokens';
 export { default as useSwapIsSufficientBalance } from './useSwapIsSufficientBalance';
 export { default as useSwapIsSufficientLiquidity } from './useSwapIsSufficientLiquidity';
+export { default as useSwapDerivedOutputs } from './useSwapDerivedOutputs';
 export { default as useTimeout } from './useTimeout';
 export { default as useTopMovers } from './useTopMovers';
 export { default as useTransactionConfirmation } from './useTransactionConfirmation';
