@@ -146,7 +146,6 @@ export default function ExchangeModal({
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
   const {
-    clearAllInputRefs,
     handleFocus,
     inputFieldRef,
     lastFocusedInputHandle,
@@ -166,12 +165,6 @@ export default function ExchangeModal({
     derivedValues: { inputAmount, nativeAmount, outputAmount },
     tradeDetails,
   } = useSwapDerivedOutputs();
-
-  const clearForm = useCallback(() => {
-    logger.log('[exchange] - clear form');
-    clearAllInputRefs();
-    updateInputAmount(null);
-  }, [clearAllInputRefs, updateInputAmount]);
 
   const isDismissing = useRef(false);
   useEffect(() => {

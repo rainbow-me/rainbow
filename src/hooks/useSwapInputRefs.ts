@@ -41,14 +41,7 @@ export default function useSwapInputRefs() {
     true
   );
 
-  const clearAllInputRefs = useCallback(() => {
-    inputFieldRef?.current?.clear();
-    nativeFieldRef?.current?.clear();
-    outputFieldRef?.current?.clear();
-  }, []);
-
   return {
-    clearAllInputRefs,
     handleFocus,
     inputFieldRef,
     lastFocusedInputHandle,
