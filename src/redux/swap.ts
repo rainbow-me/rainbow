@@ -84,19 +84,27 @@ export const updateSwapOutputAmount = (value: string | null) => (
 
 export const updateSwapInputCurrency = (
   newInputCurrency: UniswapCurrency | null
-) => (dispatch: AppDispatch) => {
+) => (dispatch: AppDispatch, getState: AppGetState) => {
+  const { independentField } = getState().swap;
   dispatch({ payload: newInputCurrency, type: SWAP_UPDATE_INPUT_CURRENCY });
   if (newInputCurrency) {
     dispatch(fetchAssetPrices(newInputCurrency.address));
+  }
+  if (independentField === SwapModalField.input) {
+    dispatch(updateSwapInputAmount(null));
   }
 };
 
 export const updateSwapOutputCurrency = (
   newOutputCurrency: UniswapCurrency | null
-) => (dispatch: AppDispatch) => {
+) => (dispatch: AppDispatch, getState: AppGetState) => {
+  const { independentField } = getState().swap;
   dispatch({ payload: newOutputCurrency, type: SWAP_UPDATE_OUTPUT_CURRENCY });
   if (newOutputCurrency) {
     dispatch(fetchAssetPrices(newOutputCurrency.address));
+  }
+  if (independentField === SwapModalField.output) {
+    dispatch(updateSwapOutputAmount(null));
   }
 };
 
