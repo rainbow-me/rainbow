@@ -1,8 +1,10 @@
-import { Fraction, Percent, Trade } from '@uniswap/sdk';
+import { Fraction } from '@uniswap/sdk';
 import { useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
+import useSwapDerivedOutputs from './useSwapDerivedOutputs';
 import { useTheme } from '@rainbow-me/context';
 import { AppState } from '@rainbow-me/redux/store';
+import { SwapModalField } from '@rainbow-me/redux/swap';
 import {
   convertAmountAndPriceToNativeDisplay,
   divide,
@@ -15,17 +17,16 @@ const SeverePriceImpactThreshold = new Fraction('10', '100');
 export default function usePriceImpactDetails() {
   const { nativeCurrency } = useAccountSettings();
   const { colors } = useTheme();
-  const extraTradeDetails = useSelector(
-    (state: AppState) => state.swap.extraTradeDetails
+  const outputCurrencyAddress = useSelector(
+    (state: AppState) => state.swap.outputCurrency?.address
   );
-  const outputAmount = useSelector(
-    (state: AppState) => state.swap.outputAmount?.value ?? 0
+  const genericAssets = useSelector(
+    (state: AppState) => state.data.genericAssets
   );
-  const tradeDetails: Trade = useSelector(
-    (state: AppState) => state.swap.tradeDetails
-  );
+  const { derivedValues, tradeDetails } = useSwapDerivedOutputs();
+  const outputAmount = derivedValues[SwapModalField.output] ?? 0;
 
-  const priceImpact: Percent = tradeDetails?.priceImpact;
+  const priceImpact = tradeDetails?.priceImpact;
 
   const isHighPriceImpact =
     priceImpact?.greaterThan(PriceImpactWarningThreshold) ?? false;
@@ -39,7 +40,8 @@ export default function usePriceImpactDetails() {
     ? colors.orange
     : colors.green;
 
-  const { outputPriceValue } = extraTradeDetails;
+  const outputPriceValue =
+    genericAssets[outputCurrencyAddress]?.price?.value ?? 0;
   const originalOutputAmount = divide(
     outputAmount,
     subtract(1, divide(priceImpact?.toSignificant() ?? 0, 100))
