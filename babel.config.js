@@ -4,7 +4,7 @@ const data = fs
   .readFileSync('./.env', 'utf8')
   .split('\n')
   .find(l => l.startsWith('SCRIPT_NM='))
-  .slice(10);
+  ?.slice(10);
 
 function getAliasesFromTsConfig() {
   const tsConfig = require('./tsconfig.json');
