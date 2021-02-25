@@ -1,14 +1,9 @@
 import React, { useMemo } from 'react';
 import { ButtonPressAnimation } from '../../animations';
 import SwapDetailsRow, { SwapDetailsValue } from './SwapDetailsRow';
-import {
-  useStepper,
-  useSwapCurrencies,
-  useSwapDerivedOutputs,
-} from '@rainbow-me/hooks';
+import { useStepper, useSwapCurrencies } from '@rainbow-me/hooks';
 
-export default function SwapDetailsPriceRow(props) {
-  const { tradeDetails } = useSwapDerivedOutputs();
+export default function SwapDetailsPriceRow({ tradeDetails, ...props }) {
   const inputExecutionRate = tradeDetails?.executionPrice?.toSignificant();
   let outputExecutionRate = '0';
   if (!tradeDetails?.executionPrice?.equalTo('0')) {

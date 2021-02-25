@@ -5,7 +5,7 @@ import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components';
 import { ConfirmExchangeButton } from '../exchange';
 import { GasSpeedButton } from '../gas';
-import { Column, Row } from '../layout';
+import { Column } from '../layout';
 import {
   SheetHandleFixedToTopHeight,
   SheetKeyboardAnimation,
@@ -26,6 +26,8 @@ import {
   useDimensions,
   useHeight,
   useKeyboardHeight,
+  usePriceImpactDetails,
+  useSwapDerivedOutputs,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { padding, position } from '@rainbow-me/styles';
@@ -92,6 +94,17 @@ export default function SwapDetailsState({
   const keyboardHeight = useKeyboardHeight();
   const [isKeyboardVisible, showKeyboard, hideKeyboard] = useBooleanState();
   const insets = useSafeArea();
+
+  const {
+    derivedValues: { inputAmount, outputAmount },
+    tradeDetails,
+  } = useSwapDerivedOutputs();
+  const {
+    isHighPriceImpact,
+    priceImpactColor,
+    priceImpactNativeAmount,
+    priceImpactPercentDisplay,
+  } = usePriceImpactDetails(outputAmount, tradeDetails);
 
   const {
     copiedText,
@@ -165,11 +178,25 @@ export default function SwapDetailsState({
         <Header>
           <SheetTitle weight="heavy">Review</SheetTitle>
         </Header>
-        <SwapDetailsMasthead />
-        <SwapDetailsSlippageMessage onLayout={setSlippageMessageHeight} />
+        <SwapDetailsMasthead
+          inputAmount={inputAmount}
+          isHighPriceImpact={isHighPriceImpact}
+          outputAmount={outputAmount}
+          priceImpactColor={priceImpactColor}
+        />
+        <SwapDetailsSlippageMessage
+          isHighPriceImpact={isHighPriceImpact}
+          onLayout={setSlippageMessageHeight}
+          priceImpactColor={priceImpactColor}
+          priceImpactNativeAmount={priceImpactNativeAmount}
+        />
         <SwapDetailsContent
+          isHighPriceImpact={isHighPriceImpact}
           onCopySwapDetailsText={onCopySwapDetailsText}
           onLayout={setContentHeight}
+          priceImpactColor={priceImpactColor}
+          priceImpactPercentDisplay={priceImpactPercentDisplay}
+          tradeDetails={tradeDetails}
         />
         <Footer onLayout={setFooterHeight}>
           <ConfirmExchangeButton

@@ -119,9 +119,6 @@ export default function ExchangeModal({
 
   const { initWeb3Listener, stopWeb3Listener } = useBlockPolling();
   const { nativeCurrency } = useAccountSettings();
-
-  const { isHighPriceImpact, percentDisplay } = usePriceImpactDetails();
-
   const [isAuthorizing, setIsAuthorizing] = useState(false);
 
   useAndroidBackHandler(() => {
@@ -165,6 +162,13 @@ export default function ExchangeModal({
     derivedValues: { inputAmount, nativeAmount, outputAmount },
     tradeDetails,
   } = useSwapDerivedOutputs();
+
+  const {
+    isHighPriceImpact,
+    priceImpactColor,
+    priceImpactNativeAmount,
+    priceImpactPercentDisplay,
+  } = usePriceImpactDetails(outputAmount, tradeDetails);
 
   const isDismissing = useRef(false);
   useEffect(() => {
@@ -266,7 +270,7 @@ export default function ExchangeModal({
         defaultInputAsset: defaultInputAsset?.symbol ?? '',
         isHighPriceImpact,
         name: outputCurrency?.name ?? '',
-        priceImpact: percentDisplay,
+        priceImpact: priceImpactPercentDisplay,
         symbol: outputCurrency?.symbol || '',
         tokenAddress: outputCurrency?.address || '',
         type,
@@ -322,7 +326,7 @@ export default function ExchangeModal({
     navigate,
     outputAmount,
     outputCurrency,
-    percentDisplay,
+    priceImpactPercentDisplay,
     selectedGasPrice,
     setParams,
     tradeDetails,
@@ -332,12 +336,24 @@ export default function ExchangeModal({
   const confirmButtonProps = useMemoOne(
     () => ({
       disabled: !Number(inputAmount),
+      inputAmount,
       isAuthorizing,
       isDeposit,
+      isHighPriceImpact,
       onSubmit: handleSubmit,
+      tradeDetails,
       type,
     }),
-    [handleSubmit, inputAmount, isAuthorizing, isDeposit, testID, type]
+    [
+      handleSubmit,
+      inputAmount,
+      isAuthorizing,
+      isDeposit,
+      isHighPriceImpact,
+      testID,
+      tradeDetails,
+      type,
+    ]
   );
 
   const navigateToSwapDetailsModal = useCallback(() => {
@@ -443,9 +459,13 @@ export default function ExchangeModal({
           {!isDeposit && showConfirmButton && (
             <ExchangeDetailsRow
               inputAmount={inputAmount}
+              isHighPriceImpact={isHighPriceImpact}
               onFlipCurrencies={flipCurrencies}
               onPressViewDetails={navigateToSwapDetailsModal}
               outputAmount={outputAmount}
+              priceImpactColor={priceImpactColor}
+              priceImpactNativeAmount={priceImpactNativeAmount}
+              priceImpactPercentDisplay={priceImpactPercentDisplay}
               showDetailsButton={showDetailsButton}
               type={type}
             />

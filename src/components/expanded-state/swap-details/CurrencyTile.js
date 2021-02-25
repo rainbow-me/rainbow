@@ -9,11 +9,7 @@ import {
   convertAmountAndPriceToNativeDisplay,
   updatePrecisionToDisplay,
 } from '@rainbow-me/helpers/utilities';
-import {
-  useAccountSettings,
-  useColorForAsset,
-  usePriceImpactDetails,
-} from '@rainbow-me/hooks';
+import { useAccountSettings, useColorForAsset } from '@rainbow-me/hooks';
 import { position } from '@rainbow-me/styles';
 
 export const CurrencyTileHeight = 143;
@@ -60,6 +56,8 @@ const TruncatedAmountText = styled(AmountText).attrs({
 export default function CurrencyTile({
   amount,
   asset,
+  isHighPriceImpact,
+  priceImpactColor,
   type = 'input',
   ...props
 }) {
@@ -68,10 +66,6 @@ export default function CurrencyTile({
   const colorForAsset = useColorForAsset(asset);
   const { address, symbol } = asset;
   const priceValue = genericAssets[address]?.price?.value ?? 0;
-  const {
-    color: priceImpactColor,
-    isHighPriceImpact,
-  } = usePriceImpactDetails();
 
   const { amountDisplay, priceDisplay } = useMemo(() => {
     const data = [amount, priceValue];

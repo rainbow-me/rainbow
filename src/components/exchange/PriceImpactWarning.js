@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import { usePriceImpactDetails } from '@rainbow-me/hooks';
 import { padding, position } from '@rainbow-me/styles';
 
 const Container = styled(Centered).attrs({
@@ -23,9 +22,13 @@ const Label = styled(Text).attrs(
   })
 )``;
 
-export default function PriceImpactWarning({ onPress, style, ...props }) {
-  const { color, priceImpactNativeAmount } = usePriceImpactDetails();
-
+export default function PriceImpactWarning({
+  onPress,
+  priceImpactColor,
+  priceImpactNativeAmount,
+  style,
+  ...props
+}) {
   return (
     <Animated.View {...props} style={style}>
       <ButtonPressAnimation
@@ -34,10 +37,10 @@ export default function PriceImpactWarning({ onPress, style, ...props }) {
         scaleTo={1.06}
       >
         <Container>
-          <Label color={color}>{`􀇿 `}</Label>
+          <Label color={priceImpactColor}>{`􀇿 `}</Label>
           <Label>Small Market</Label>
-          <Label color={color}>{` • Losing `}</Label>
-          <Label color={color} letterSpacing="roundedTight">
+          <Label color={priceImpactColor}>{` • Losing `}</Label>
+          <Label color={priceImpactColor} letterSpacing="roundedTight">
             {priceImpactNativeAmount}
           </Label>
         </Container>
