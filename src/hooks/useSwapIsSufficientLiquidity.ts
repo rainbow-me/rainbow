@@ -1,11 +1,12 @@
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
+import useSwapDerivedOutputs from './useSwapDerivedOutputs';
 import { AppState } from '@rainbow-me/redux/store';
 import { greaterThan } from '@rainbow-me/utilities';
 
 export default function useSwapIsSufficientLiquidity() {
-  const inputAsExactAmount = useSelector(
-    (state: AppState) => state.swap.inputAsExactAmount
+  const independentValue = useSelector(
+    (state: AppState) => state.swap.independentValue
   );
   const inputCurrencyAddress = useSelector(
     (state: AppState) => state.swap.inputCurrency?.address
@@ -13,30 +14,18 @@ export default function useSwapIsSufficientLiquidity() {
   const outputCurrencyAddress = useSelector(
     (state: AppState) => state.swap.outputCurrency?.address
   );
-  const inputAmount = useSelector(
-    (state: AppState) => state.swap.inputAmount?.value
-  );
-  const outputAmount = useSelector(
-    (state: AppState) => state.swap.inputAmount?.value
-  );
-  const trade = useSelector((state: AppState) => state.swap.tradeDetails);
+  const { tradeDetails } = useSwapDerivedOutputs();
 
-  const isSufficientLiquidity = useMemo(() => {
-    const noRoute = !trade?.route;
-    const hasSpecifiedField = inputAsExactAmount
-      ? greaterThan(inputAmount, 0)
-      : greaterThan(outputAmount, 0);
+  return useMemo(() => {
+    const noRoute = !tradeDetails?.route;
+    const hasUserInput = greaterThan(independentValue, 0);
     const userHasSpecifiedInputOutput =
-      inputCurrencyAddress && outputCurrencyAddress && hasSpecifiedField;
+      inputCurrencyAddress && outputCurrencyAddress && hasUserInput;
     return !(noRoute && userHasSpecifiedInputOutput);
   }, [
-    inputAmount,
-    inputAsExactAmount,
+    independentValue,
     inputCurrencyAddress,
-    outputAmount,
     outputCurrencyAddress,
-    trade,
+    tradeDetails,
   ]);
-
-  return isSufficientLiquidity;
 }

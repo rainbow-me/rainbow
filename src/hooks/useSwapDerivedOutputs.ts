@@ -113,7 +113,9 @@ export default function useSwapDerivedOutputs() {
       tradeDetails = newTradeDetails;
       derivedValues[SwapModalField.output] = outputAmount;
     } else {
-      if (!outputToken) return;
+      if (!outputToken) {
+        return { derivedValues, tradeDetails };
+      }
       const outputRawAmount = convertAmountToRawAmount(
         convertNumberToString(independentValue || 0),
         outputToken.decimals
