@@ -15,22 +15,12 @@ export enum SwapModalField {
   output = 'output',
 }
 
-interface ExtraTradeDetails {
-  inputExecutionRate: string;
-  inputNativePrice: string;
-  inputPriceValue: string;
-  outputExecutionRate: string;
-  outputNativePrice: string;
-  outputPriceValue: string;
-}
-
 interface TypeSpecificParameters {
   cTokenBalance?: string;
   supplyBalanceUnderlying?: string;
 }
 
 interface SwapState {
-  extraTradeDetails: ExtraTradeDetails | {};
   inputCurrency: UniswapCurrency | null;
   independentField: SwapModalField;
   independentValue: string | null;
@@ -42,7 +32,6 @@ interface SwapState {
 }
 
 // -- Constants --------------------------------------- //
-const SWAP_UPDATE_EXTRA_TRADE_DETAILS = 'swap/SWAP_UPDATE_EXTRA_TRADE_DETAILS';
 const SWAP_UPDATE_INPUT_AMOUNT = 'swap/SWAP_UPDATE_INPUT_AMOUNT';
 const SWAP_UPDATE_NATIVE_AMOUNT = 'swap/SWAP_UPDATE_NATIVE_AMOUNT';
 const SWAP_UPDATE_OUTPUT_AMOUNT = 'swap/SWAP_UPDATE_OUTPUT_AMOUNT';
@@ -64,12 +53,6 @@ export const updateSwapTypeDetails = (
     },
     type: SWAP_UPDATE_TYPE_DETAILS,
   });
-};
-
-export const updateSwapExtraDetails = (extraDetails: ExtraTradeDetails) => (
-  dispatch: AppDispatch
-) => {
-  dispatch({ payload: extraDetails, type: SWAP_UPDATE_EXTRA_TRADE_DETAILS });
 };
 
 export const updateSwapInputAmount = (value: string | null, isMax = false) => (
@@ -143,7 +126,6 @@ export const swapClearState = () => (dispatch: AppDispatch) => {
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE: SwapState = {
-  extraTradeDetails: {},
   independentField: SwapModalField.input,
   independentValue: null,
   inputAsExactAmount: true,
@@ -161,11 +143,6 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
         ...state,
         type: action.payload.type,
         typeSpecificParameters: action.payload.typeSpecificParameters,
-      };
-    case SWAP_UPDATE_EXTRA_TRADE_DETAILS:
-      return {
-        ...state,
-        extraTradeDetails: action.payload,
       };
     case SWAP_UPDATE_INPUT_AMOUNT:
       return {
