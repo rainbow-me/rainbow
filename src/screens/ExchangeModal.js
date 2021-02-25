@@ -42,7 +42,11 @@ import {
 import { loadWallet } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
 import { executeRap } from '@rainbow-me/raps/common';
-import { SwapModalField, updateSwapTypeDetails } from '@rainbow-me/redux/swap';
+import {
+  swapClearState,
+  SwapModalField,
+  updateSwapTypeDetails,
+} from '@rainbow-me/redux/swap';
 import { ethUnits } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
@@ -199,6 +203,12 @@ export default function ExchangeModal({
       dismissingScreenListener.current = undefined;
     };
   }, [addListener, dangerouslyGetParent, lastFocusedInputHandle]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(swapClearState());
+    };
+  }, [dispatch]);
 
   const handleCustomGasBlur = useCallback(() => {
     lastFocusedInputHandle?.current?.focus();

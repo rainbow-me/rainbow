@@ -1,4 +1,5 @@
 import { Pair, Token, TokenAmount, Trade } from '@uniswap/sdk';
+import { isEmpty } from 'lodash';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
@@ -19,14 +20,14 @@ const getOutputAmount = (
   outputToken: Token | null,
   allPairs: Pair[] | null
 ) => {
-  if (!inputAmount || !outputToken || !allPairs) {
+  if (!inputAmount || !outputToken || !allPairs || isEmpty(allPairs)) {
     return {
       outputAmount: null,
       tradeDetails: null,
     };
   }
   const rawInputAmount = convertAmountToRawAmount(
-    convertNumberToString(inputAmount || 0),
+    convertNumberToString(inputAmount),
     inputToken.decimals
   );
   const amountIn = new TokenAmount(inputToken, rawInputAmount);
@@ -113,11 +114,11 @@ export default function useSwapDerivedOutputs() {
       tradeDetails = newTradeDetails;
       derivedValues[SwapModalField.output] = outputAmount;
     } else {
-      if (!outputToken) {
+      if (!outputToken || !inputToken || isEmpty(allPairs)) {
         return { derivedValues, tradeDetails };
       }
       const outputRawAmount = convertAmountToRawAmount(
-        convertNumberToString(independentValue || 0),
+        convertNumberToString(independentValue),
         outputToken.decimals
       );
       const amountOut = new TokenAmount(outputToken, outputRawAmount);
