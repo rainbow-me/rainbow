@@ -176,10 +176,6 @@ export default function ExchangeModal({
     updateInputAmount(null);
   }, [clearAllInputRefs, updateInputAmount]);
 
-  const onFlipCurrencies = useCallback(() => {
-    flipCurrencies();
-  }, [flipCurrencies]);
-
   const isDismissing = useRef(false);
   useEffect(() => {
     if (ios) {
@@ -456,7 +452,7 @@ export default function ExchangeModal({
           {!isDeposit && showConfirmButton && (
             <ExchangeDetailsRow
               inputAmount={inputAmount}
-              onFlipCurrencies={onFlipCurrencies}
+              onFlipCurrencies={flipCurrencies}
               onPressViewDetails={navigateToSwapDetailsModal}
               outputAmount={outputAmount}
               showDetailsButton={showDetailsButton}
