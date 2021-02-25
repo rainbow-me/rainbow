@@ -33,10 +33,10 @@ import {
   useBlockPolling,
   useGas,
   usePriceImpactDetails,
+  useSwapCurrencies,
   useSwapCurrencyHandlers,
   useSwapDerivedOutputs,
   useSwapInputHandlers,
-  useSwapInputOutputTokens,
   useSwapInputRefs,
 } from '@rainbow-me/hooks';
 import { loadWallet } from '@rainbow-me/model/wallet';
@@ -143,7 +143,7 @@ export default function ExchangeModal({
     underlyingPrice,
   });
 
-  const { inputCurrency, outputCurrency } = useSwapInputOutputTokens();
+  const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
   const {
     clearAllInputRefs,

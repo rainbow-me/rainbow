@@ -13,7 +13,7 @@ import PriceImpactWarning from './PriceImpactWarning';
 import {
   usePrevious,
   usePriceImpactDetails,
-  useSwapInputOutputTokens,
+  useSwapCurrencies,
   useSwapIsSufficientBalance,
 } from '@rainbow-me/hooks';
 import { padding, position } from '@rainbow-me/styles';
@@ -54,7 +54,7 @@ export default function ExchangeDetailsRow({
   const detailsRowOpacity = useSharedValue(1);
   const priceImpactOpacity = useSharedValue(0);
   const priceImpactScale = useSharedValue(defaultPriceImpactScale);
-  const { outputCurrency } = useSwapInputOutputTokens();
+  const { outputCurrency } = useSwapCurrencies();
   const { isHighPriceImpact, percentDisplay } = usePriceImpactDetails();
 
   const detailsRowAnimatedStyle = useAnimatedStyle(() => ({

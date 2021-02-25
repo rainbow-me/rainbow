@@ -10,8 +10,8 @@ import {
   useColorForAsset,
   useGas,
   usePriceImpactDetails,
+  useSwapCurrencies,
   useSwapDerivedOutputs,
-  useSwapInputOutputTokens,
   useSwapIsSufficientBalance,
   useSwapIsSufficientLiquidity,
 } from '@rainbow-me/hooks';
@@ -46,7 +46,7 @@ export default function ConfirmExchangeButton({
   } = useSwapDerivedOutputs();
   const isSufficientBalance = useSwapIsSufficientBalance(inputAmount);
   const isSufficientLiquidity = useSwapIsSufficientLiquidity(tradeDetails);
-  const { outputCurrency: asset } = useSwapInputOutputTokens();
+  const { outputCurrency: asset } = useSwapCurrencies();
   const { isSufficientGas } = useGas();
   const { name: routeName } = useRoute();
   const { isHighPriceImpact } = usePriceImpactDetails();

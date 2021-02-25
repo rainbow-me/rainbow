@@ -8,10 +8,7 @@ import SwapDetailsRow, {
   SwapDetailsValue,
 } from './SwapDetailsRow';
 import SwapDetailsUniswapRow from './SwapDetailsUniswapRow';
-import {
-  usePriceImpactDetails,
-  useSwapInputOutputTokens,
-} from '@rainbow-me/hooks';
+import { usePriceImpactDetails, useSwapCurrencies } from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
 import { isETH } from '@rainbow-me/utils';
 
@@ -30,7 +27,7 @@ export default function SwapDetailsContent({
   onCopySwapDetailsText,
   ...props
 }) {
-  const { inputCurrency, outputCurrency } = useSwapInputOutputTokens();
+  const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
   const {
     color: priceImpactColor,

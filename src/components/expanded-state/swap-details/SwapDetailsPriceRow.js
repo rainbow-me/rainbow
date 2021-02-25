@@ -3,8 +3,8 @@ import { ButtonPressAnimation } from '../../animations';
 import SwapDetailsRow, { SwapDetailsValue } from './SwapDetailsRow';
 import {
   useStepper,
+  useSwapCurrencies,
   useSwapDerivedOutputs,
-  useSwapInputOutputTokens,
 } from '@rainbow-me/hooks';
 
 export default function SwapDetailsPriceRow(props) {
@@ -17,7 +17,7 @@ export default function SwapDetailsPriceRow(props) {
       ?.toSignificant();
   }
 
-  const { inputCurrency, outputCurrency } = useSwapInputOutputTokens();
+  const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
   const steps = useMemo(
     () => [
