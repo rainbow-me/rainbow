@@ -57,6 +57,7 @@ export default function ChartExpandedStateHeader({
   priceRef,
   chartTimeSharedValue,
   showChart,
+  overrideValue = false,
 }) {
   const { colors } = useTheme();
   const color = givenColors || colors.dark;
@@ -126,6 +127,7 @@ export default function ChartExpandedStateHeader({
               }
               isScrubbing={isScrubbing}
               latestChange={latestChange}
+              overrideValue={overrideValue}
               tabularNums={tabularNums}
             />
           )}

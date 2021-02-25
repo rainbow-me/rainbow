@@ -39,7 +39,10 @@ function formatNumber(num) {
   return newDigits.reverse().join('') + '.' + first[1];
 }
 
-export default function ChartPercentChangeLabel() {
+export default function ChartPercentChangeLabel({
+  overrideValue = false,
+  latestChange,
+}) {
   const { originalY, data } = useChartData();
   const { colors } = useTheme();
 
@@ -50,11 +53,12 @@ export default function ChartPercentChangeLabel() {
     data?.points.length === 0
       ? ''
       : (() => {
-          const value =
-            ((data?.points?.[data.points.length - 1]?.y ?? 0) /
-              data?.points?.[0]?.y) *
-              100 -
-            100;
+          const value = overrideValue
+            ? latestChange
+            : ((data?.points?.[data.points.length - 1]?.y ?? 0) /
+                data?.points?.[0]?.y) *
+                100 -
+              100;
           if (isNaN(value)) {
             return '';
           }
@@ -76,10 +80,11 @@ export default function ChartPercentChangeLabel() {
       text:
         firstValue.value === Number(firstValue.value) && firstValue.value
           ? (() => {
-              const value =
-                ((originalY.value || lastValue.value) / firstValue.value) *
-                  100 -
-                100;
+              const value = overrideValue
+                ? latestChange
+                : ((originalY.value || lastValue.value) / firstValue.value) *
+                    100 -
+                  100;
               return (
                 (android ? '' : value > 0 ? '↑' : value < 0 ? '↓' : '') +
                 ' ' +
@@ -89,7 +94,7 @@ export default function ChartPercentChangeLabel() {
             })()
           : '',
     };
-  }, []);
+  }, [overrideValue, latestChange]);
 
   const ratio = useRatio();
 
