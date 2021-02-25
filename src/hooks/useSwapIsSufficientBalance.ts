@@ -5,14 +5,11 @@ import { AppState } from '@rainbow-me/redux/store';
 import { greaterThanOrEqualTo } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
 
-export default function useSwapIsSufficientBalance() {
+export default function useSwapIsSufficientBalance(inputAmount: string | null) {
   const inputCurrencyAddress = useSelector(
     (state: AppState) => state.swap.inputCurrency?.address
   );
   const assets = useSelector((state: AppState) => state.data.assets);
-  const inputAmount = useSelector(
-    (state: AppState) => state.swap.inputAmount?.value
-  );
   const type = useSelector((state: AppState) => state.swap.type);
   const supplyBalanceUnderlying = useSelector(
     (state: AppState) => state.swap.typeSpecificParameters?.supplyBalanceUnderlying

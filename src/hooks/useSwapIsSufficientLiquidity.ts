@@ -1,10 +1,12 @@
+import { Trade } from '@uniswap/sdk';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import useSwapDerivedOutputs from './useSwapDerivedOutputs';
 import { AppState } from '@rainbow-me/redux/store';
 import { greaterThan } from '@rainbow-me/utilities';
 
-export default function useSwapIsSufficientLiquidity() {
+export default function useSwapIsSufficientLiquidity(
+  tradeDetails: Trade | null
+) {
   const independentValue = useSelector(
     (state: AppState) => state.swap.independentValue
   );
@@ -14,7 +16,6 @@ export default function useSwapIsSufficientLiquidity() {
   const outputCurrencyAddress = useSelector(
     (state: AppState) => state.swap.outputCurrency?.address
   );
-  const { tradeDetails } = useSwapDerivedOutputs();
 
   return useMemo(() => {
     const noRoute = !tradeDetails?.route;

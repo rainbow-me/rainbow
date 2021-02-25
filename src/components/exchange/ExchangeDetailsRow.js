@@ -66,7 +66,7 @@ export default function ExchangeDetailsRow({
     transform: [{ scale: priceImpactScale.value }],
   }));
 
-  const isSufficientBalance = useSwapIsSufficientBalance();
+  const isSufficientBalance = useSwapIsSufficientBalance(inputAmount);
 
   const isPriceImpactWarningVisible =
     isSufficientBalance && !!inputAmount && !!outputAmount && isHighPriceImpact;
