@@ -7,7 +7,6 @@ import {
   useSwapDerivedOutputs,
   useSwapInputOutputTokens,
 } from '@rainbow-me/hooks';
-import { SwapModalField } from '@rainbow-me/redux/swap';
 import { padding } from '@rainbow-me/styles';
 
 const containerPaddingTop = 34;
@@ -24,9 +23,9 @@ const Container = styled(RowWithMargins).attrs({
 
 export default function SwapDetailsMasthead(props) {
   const { inputCurrency, outputCurrency } = useSwapInputOutputTokens();
-  const { derivedValues } = useSwapDerivedOutputs();
-  const inputAmount = derivedValues[SwapModalField.input];
-  const outputAmount = derivedValues[SwapModalField.output];
+  const {
+    derivedValues: { inputAmount, outputAmount },
+  } = useSwapDerivedOutputs();
   const { colors } = useTheme();
 
   return (

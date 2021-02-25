@@ -11,9 +11,9 @@ export interface SwapAmount {
 }
 
 export enum SwapModalField {
-  input = 'input',
-  native = 'native',
-  output = 'output',
+  input = 'inputAmount',
+  native = 'nativeAmount',
+  output = 'outputAmount',
 }
 
 interface TypeSpecificParameters {

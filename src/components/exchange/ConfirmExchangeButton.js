@@ -15,7 +15,6 @@ import {
   useSwapIsSufficientBalance,
   useSwapIsSufficientLiquidity,
 } from '@rainbow-me/hooks';
-import { SwapModalField } from '@rainbow-me/redux/swap';
 import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
 
@@ -41,8 +40,10 @@ export default function ConfirmExchangeButton({
   type = ExchangeModalTypes.swap,
   ...props
 }) {
-  const { derivedValues, tradeDetails } = useSwapDerivedOutputs();
-  const inputAmount = derivedValues[SwapModalField.input];
+  const {
+    derivedValues: { inputAmount },
+    tradeDetails,
+  } = useSwapDerivedOutputs();
   const isSufficientBalance = useSwapIsSufficientBalance(inputAmount);
   const isSufficientLiquidity = useSwapIsSufficientLiquidity(tradeDetails);
   const { outputCurrency: asset } = useSwapInputOutputTokens();

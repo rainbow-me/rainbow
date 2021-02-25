@@ -43,11 +43,7 @@ import { loadWallet } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
 import { executeRap } from '@rainbow-me/raps/common';
 import { multicallClearState } from '@rainbow-me/redux/multicall';
-import {
-  swapClearState,
-  SwapModalField,
-  updateSwapTypeDetails,
-} from '@rainbow-me/redux/swap';
+import { swapClearState, updateSwapTypeDetails } from '@rainbow-me/redux/swap';
 import { ethUnits } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
@@ -166,10 +162,10 @@ export default function ExchangeModal({
     updateOutputAmount,
   } = useSwapInputHandlers();
 
-  const { derivedValues, tradeDetails } = useSwapDerivedOutputs();
-  const inputAmount = derivedValues[SwapModalField.input];
-  const nativeAmount = derivedValues[SwapModalField.native];
-  const outputAmount = derivedValues[SwapModalField.output];
+  const {
+    derivedValues: { inputAmount, nativeAmount, outputAmount },
+    tradeDetails,
+  } = useSwapDerivedOutputs();
 
   const clearForm = useCallback(() => {
     logger.log('[exchange] - clear form');

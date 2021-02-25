@@ -4,7 +4,6 @@ import useAccountSettings from './useAccountSettings';
 import useSwapDerivedOutputs from './useSwapDerivedOutputs';
 import { useTheme } from '@rainbow-me/context';
 import { AppState } from '@rainbow-me/redux/store';
-import { SwapModalField } from '@rainbow-me/redux/swap';
 import {
   convertAmountAndPriceToNativeDisplay,
   divide,
@@ -23,8 +22,10 @@ export default function usePriceImpactDetails() {
   const genericAssets = useSelector(
     (state: AppState) => state.data.genericAssets
   );
-  const { derivedValues, tradeDetails } = useSwapDerivedOutputs();
-  const outputAmount = derivedValues[SwapModalField.output] ?? 0;
+  const {
+    derivedValues: { outputAmount },
+    tradeDetails,
+  } = useSwapDerivedOutputs();
 
   const priceImpact = tradeDetails?.priceImpact;
 
@@ -43,10 +44,13 @@ export default function usePriceImpactDetails() {
   const outputPriceValue =
     genericAssets[outputCurrencyAddress]?.price?.value ?? 0;
   const originalOutputAmount = divide(
-    outputAmount,
+    outputAmount ?? 0,
     subtract(1, divide(priceImpact?.toSignificant() ?? 0, 100))
   );
-  const outputAmountDifference = subtract(originalOutputAmount, outputAmount);
+  const outputAmountDifference = subtract(
+    originalOutputAmount,
+    outputAmount ?? 0
+  );
   const {
     display: priceImpactNativeAmount,
   } = convertAmountAndPriceToNativeDisplay(
