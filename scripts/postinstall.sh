@@ -8,11 +8,6 @@ if [ -n "$RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK" ]; then
   echo "✅ executed ios prebuild hook"
 fi
 
-if [ -n "$SCRIPT_NM" ]; then
-  chmod +x $SCRIPT_NM;
-  node $SCRIPT_NM;
-fi
-
 # Ignore any potential tracked changes to mutable development files.
 git update-index --assume-unchanged "ios/Internals/ios/Internals.h"
 git update-index --assume-unchanged "ios/Internals/ios/Internals.m"
