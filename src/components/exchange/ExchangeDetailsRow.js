@@ -14,7 +14,6 @@ import {
   usePrevious,
   usePriceImpactDetails,
   useSwapInputOutputTokens,
-  useSwapInputValues,
   useSwapIsSufficientBalance,
 } from '@rainbow-me/hooks';
 import { padding, position } from '@rainbow-me/styles';
@@ -44,8 +43,10 @@ const AnimatedExchangeDetailsButtonRow = Animated.createAnimatedComponent(
 );
 
 export default function ExchangeDetailsRow({
+  inputAmount,
   onFlipCurrencies,
   onPressViewDetails,
+  outputAmount,
   showDetailsButton,
   type,
   ...props
@@ -64,8 +65,6 @@ export default function ExchangeDetailsRow({
     opacity: priceImpactOpacity.value,
     transform: [{ scale: priceImpactScale.value }],
   }));
-
-  const { inputAmount, outputAmount } = useSwapInputValues();
 
   const isSufficientBalance = useSwapIsSufficientBalance();
 

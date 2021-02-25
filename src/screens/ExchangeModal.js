@@ -446,8 +446,10 @@ export default function ExchangeModal({
           )}
           {!isDeposit && showConfirmButton && (
             <ExchangeDetailsRow
+              inputAmount={inputAmount}
               onFlipCurrencies={onFlipCurrencies}
               onPressViewDetails={navigateToSwapDetailsModal}
+              outputAmount={outputAmount}
               showDetailsButton={showDetailsButton}
               type={type}
             />

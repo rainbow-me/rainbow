@@ -65,7 +65,6 @@ export { default as usePriceImpactDetails } from './usePriceImpactDetails';
 export { default as useStepper } from './useStepper';
 export { default as useSwapInputRefs } from './useSwapInputRefs';
 export { default as useSwapInputHandlers } from './useSwapInputHandlers';
-export { default as useSwapInputValues } from './useSwapInputValues';
 export { default as useSwapInputOutputTokens } from './useSwapInputOutputTokens';
 export { default as useSwapIsSufficientBalance } from './useSwapIsSufficientBalance';
 export { default as useSwapIsSufficientLiquidity } from './useSwapIsSufficientLiquidity';
