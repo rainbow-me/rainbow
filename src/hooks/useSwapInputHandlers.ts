@@ -2,7 +2,6 @@ import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '@rainbow-me/redux/store';
 import {
-  resetSwapAmounts,
   updateSwapInputAmount,
   updateSwapNativeAmount,
   updateSwapOutputAmount,
@@ -20,10 +19,6 @@ export default function useSwapInputs() {
   const inputCurrencyAddress = useSelector(
     (state: AppState) => state.swap.inputCurrency?.address
   );
-
-  const resetAmounts = useCallback(() => {
-    dispatch(resetSwapAmounts());
-  }, [dispatch]);
 
   const updateMaxInputAmount = useCallback(() => {
     let amount =
@@ -59,7 +54,6 @@ export default function useSwapInputs() {
 
   return {
     isMax,
-    resetAmounts,
     updateInputAmount,
     updateMaxInputAmount,
     updateNativeAmount,

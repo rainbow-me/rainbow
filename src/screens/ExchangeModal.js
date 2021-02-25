@@ -35,11 +35,10 @@ import {
   usePriceImpactDetails,
   useSwapDerivedOutputs,
   useSwapDetails,
+  useSwapInputHandlers,
   useSwapInputOutputTokens,
   useSwapInputRefs,
-  useSwapInputs,
   useUniswapCurrencies,
-  useUniswapMarketDetails,
 } from '@rainbow-me/hooks';
 import { loadWallet } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
@@ -132,7 +131,6 @@ export default function ExchangeModal({
   });
 
   const {
-    defaultInputAddress,
     flipCurrencies,
     navigateToSelectInputCurrency,
     navigateToSelectOutputCurrency,
@@ -159,12 +157,11 @@ export default function ExchangeModal({
 
   const {
     isMax,
-    resetAmounts,
     updateInputAmount,
     updateMaxInputAmount,
     updateNativeAmount,
     updateOutputAmount,
-  } = useSwapInputs();
+  } = useSwapInputHandlers();
 
   const { derivedValues, tradeDetails } = useSwapDerivedOutputs();
   const inputAmount = derivedValues[SwapModalField.input];
@@ -174,8 +171,8 @@ export default function ExchangeModal({
   const clearForm = useCallback(() => {
     logger.log('[exchange] - clear form');
     clearAllInputRefs();
-    resetAmounts();
-  }, [clearAllInputRefs, resetAmounts]);
+    updateInputAmount(null);
+  }, [clearAllInputRefs, updateInputAmount]);
 
   const onFlipCurrencies = useCallback(() => {
     const useOutputAmount = outputFieldRef?.current?.isFocused();
@@ -208,12 +205,6 @@ export default function ExchangeModal({
   const handleCustomGasBlur = useCallback(() => {
     lastFocusedInputHandle?.current?.focus();
   }, [lastFocusedInputHandle]);
-
-  // Calculate market details
-  useUniswapMarketDetails({
-    defaultInputAddress,
-    isSavings,
-  });
 
   const updateGasLimit = useCallback(async () => {
     try {
