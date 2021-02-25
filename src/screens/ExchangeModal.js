@@ -34,7 +34,6 @@ import {
   useGas,
   usePriceImpactDetails,
   useSwapDerivedOutputs,
-  useSwapDetails,
   useSwapInputHandlers,
   useSwapInputOutputTokens,
   useSwapInputRefs,
@@ -120,7 +119,6 @@ export default function ExchangeModal({
   const { initWeb3Listener, stopWeb3Listener } = useBlockPolling();
   const { nativeCurrency } = useAccountSettings();
 
-  const { areTradeDetailsValid } = useSwapDetails();
   const { isHighPriceImpact, percentDisplay } = usePriceImpactDetails();
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
@@ -393,10 +391,9 @@ export default function ExchangeModal({
 
   const showDetailsButton =
     !isSavings &&
-    inputCurrency?.symbol &&
-    outputCurrency?.symbol &&
-    areTradeDetailsValid &&
-    inputAmount > 0 &&
+    inputCurrency?.address &&
+    outputCurrency?.address &&
+    tradeDetails &&
     outputAmount;
 
   return (

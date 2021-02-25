@@ -3,14 +3,19 @@ import { ButtonPressAnimation } from '../../animations';
 import SwapDetailsRow, { SwapDetailsValue } from './SwapDetailsRow';
 import {
   useStepper,
-  useSwapDetails,
+  useSwapDerivedOutputs,
   useSwapInputOutputTokens,
 } from '@rainbow-me/hooks';
 
 export default function SwapDetailsPriceRow(props) {
-  const {
-    extraTradeDetails: { inputExecutionRate, outputExecutionRate },
-  } = useSwapDetails();
+  const { tradeDetails } = useSwapDerivedOutputs();
+  const inputExecutionRate = tradeDetails?.executionPrice?.toSignificant();
+  let outputExecutionRate = '0';
+  if (!tradeDetails?.executionPrice?.equalTo('0')) {
+    outputExecutionRate = tradeDetails?.executionPrice
+      ?.invert()
+      ?.toSignificant();
+  }
 
   const { inputCurrency, outputCurrency } = useSwapInputOutputTokens();
 
