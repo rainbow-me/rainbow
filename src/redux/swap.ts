@@ -24,7 +24,6 @@ interface SwapState {
   inputCurrency: UniswapCurrency | null;
   independentField: SwapModalField;
   independentValue: string | null;
-  inputAsExactAmount: boolean;
   isMax: boolean;
   type: string;
   typeSpecificParameters: TypeSpecificParameters | null;
@@ -128,7 +127,6 @@ export const swapClearState = () => (dispatch: AppDispatch) => {
 const INITIAL_STATE: SwapState = {
   independentField: SwapModalField.input,
   independentValue: null,
-  inputAsExactAmount: true,
   inputCurrency: null,
   isMax: false,
   outputCurrency: null,
@@ -149,7 +147,6 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
         ...state,
         independentField: SwapModalField.input,
         independentValue: action.payload.independentValue,
-        inputAsExactAmount: true,
         isMax: action.payload.isMax,
       };
     case SWAP_UPDATE_NATIVE_AMOUNT:
@@ -157,7 +154,6 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
         ...state,
         independentField: SwapModalField.native,
         independentValue: action.payload,
-        inputAsExactAmount: true,
         isMax: false,
       };
     case SWAP_UPDATE_OUTPUT_AMOUNT:
@@ -165,7 +161,6 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
         ...state,
         independentField: SwapModalField.output,
         independentValue: action.payload,
-        inputAsExactAmount: false,
         isMax: false,
       };
     case SWAP_UPDATE_OUTPUT_CURRENCY:
