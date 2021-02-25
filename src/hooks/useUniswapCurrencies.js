@@ -251,7 +251,6 @@ export default function useUniswapCurrencies({
   ]);
 
   return {
-    defaultInputAddress,
     flipCurrencies,
     navigateToSelectInputCurrency,
     navigateToSelectOutputCurrency,
