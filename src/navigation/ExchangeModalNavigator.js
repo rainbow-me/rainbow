@@ -54,7 +54,6 @@ function useStateCallback(initialState) {
 export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
   function MainExchangeNavigator() {
     const { params } = useRoute();
-    const { colors } = useTheme();
 
     return (
       <Stack.Navigator
