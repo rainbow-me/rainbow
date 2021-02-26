@@ -23,7 +23,6 @@ export default function WithdrawModal(props) {
       supplyBalanceUnderlying={params?.supplyBalanceUnderlying}
       title={`Withdraw ${params?.defaultInputAsset?.symbol}`}
       type={ExchangeModalTypes.withdrawal}
-      underlyingPrice={params?.underlyingPrice}
       {...props}
     />
   );

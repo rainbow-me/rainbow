@@ -43,7 +43,8 @@ export default function ConfirmExchangeButton({
 }) {
   const isSufficientBalance = useSwapIsSufficientBalance(inputAmount);
   const isSufficientLiquidity = useSwapIsSufficientLiquidity(tradeDetails);
-  const { outputCurrency: asset } = useSwapCurrencies();
+  const { inputCurrency, outputCurrency } = useSwapCurrencies();
+  const asset = outputCurrency ?? inputCurrency;
   const { isSufficientGas } = useGas();
   const { name: routeName } = useRoute();
 
