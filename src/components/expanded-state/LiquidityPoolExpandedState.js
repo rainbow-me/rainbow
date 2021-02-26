@@ -1,3 +1,4 @@
+import { useRoute } from '@react-navigation/core';
 import { map, toLower } from 'lodash';
 import React, { Fragment } from 'react';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
@@ -17,6 +18,7 @@ import {
 import { Chart } from '../value-chart';
 import { ChartPathProvider } from '@rainbow-me/animated-charts';
 import { toChecksumAddress } from '@rainbow-me/handlers/web3';
+import chartTypes from '@rainbow-me/helpers/chartTypes';
 import { useChartThrottledPoints } from '@rainbow-me/hooks';
 import { magicMemo } from '@rainbow-me/utils';
 
@@ -33,6 +35,7 @@ const formatTokenAddress = address => {
 };
 
 const LiquidityPoolExpandedState = ({ asset }) => {
+  const { params } = useRoute();
   const { tokenNames, tokens, totalNativeDisplay, type, uniBalance } = asset;
 
   const tokenType = type === 'uniswap' ? 'UNI-V1' : 'UNI-V2';
@@ -63,6 +66,15 @@ const LiquidityPoolExpandedState = ({ asset }) => {
     return tokens.map(token => formatTokenAddress(token.address));
   }, [tokens]);
 
+  const chartDataLabels = useMemo(() => {
+    if (chartType === chartTypes.month && params?.asset?.profit30d) {
+      let overrideChartDataLabels = { ...initialChartDataLabels };
+      overrideChartDataLabels.latestChange = params.asset.profit30d;
+      return overrideChartDataLabels;
+    }
+    return initialChartDataLabels;
+  }, [chartType, initialChartDataLabels, params?.asset?.profit30d]);
+
   return (
     <SlackSheet
       additionalTopPadding={android}
@@ -73,7 +85,7 @@ const LiquidityPoolExpandedState = ({ asset }) => {
       <ChartPathProvider data={throttledData}>
         <Chart
           {...chartData}
-          {...initialChartDataLabels}
+          {...chartDataLabels}
           asset={asset}
           chart={chart}
           chartType={chartType}
@@ -81,6 +93,7 @@ const LiquidityPoolExpandedState = ({ asset }) => {
           fetchingCharts={fetchingCharts}
           isPool
           nativePoints={chart}
+          overrideValue={chartType === chartTypes.month}
           showChart={showChart}
           throttledData={throttledData}
         />
