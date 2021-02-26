@@ -64,6 +64,8 @@ export default function useSwapDerivedOutputs(
     (state: AppState) => state.data.genericAssets
   );
 
+  const isFallback = useSelector((state: AppState) => state.swap.prevState)!;
+
   const inputPrice = genericAssets[inputCurrency?.address]?.price?.value;
 
   const { chainId } = useAccountSettings();
@@ -144,7 +146,7 @@ export default function useSwapDerivedOutputs(
 
       derivedValues[SwapModalField.native] = nativeValue;
     }
-    return { derivedValues, tradeDetails };
+    return { derivedValues, isFallback, tradeDetails };
   }, [
     allPairs,
     chainId,
@@ -152,6 +154,7 @@ export default function useSwapDerivedOutputs(
     independentValue,
     inputCurrency,
     inputPrice,
+    isFallback,
     outputCurrency,
   ]);
 }
