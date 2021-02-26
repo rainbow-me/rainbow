@@ -6,6 +6,7 @@ import { Emoji, Text } from '../../text';
 import { padding } from '@rainbow-me/styles';
 
 const Container = styled(ColumnWithMargins).attrs({
+  align: 'center',
   margin: 8,
 })`
   ${padding(30, 42, 24)};
