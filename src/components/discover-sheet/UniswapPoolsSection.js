@@ -51,7 +51,10 @@ const listData = [
     id: 'profit30d',
     name: '30d profit',
   },
-  { id: 'oneDayVolumeUSD', name: '24h volume' },
+  {
+    id: 'oneDayVolumeUSD',
+    name: '24h volume',
+  },
 ];
 
 export default function UniswapPools() {
@@ -73,6 +76,8 @@ export default function UniswapPools() {
         );
       } else {
         setSelectedList(id);
+        sortDirection === SORT_DIRECTION.ASC &&
+          setSortDirection(SORT_DIRECTION.DESC);
         listRef.current?.scrollToIndex({
           animated: true,
           index,
@@ -81,6 +86,28 @@ export default function UniswapPools() {
       }
     },
     [selectedList, sortDirection]
+  );
+
+  const getTitleColor = useCallback(
+    (selected, listId) => {
+      if (!selected) {
+        return colors.alpha(colors.blueGreyDark, 0.5);
+      }
+
+      switch (listId) {
+        case 'annualized_fees':
+          return colors.green;
+        case 'profit30d':
+          return sortDirection === SORT_DIRECTION.ASC
+            ? colors.red
+            : colors.green;
+        case 'oneDayVolumeUSD':
+          return colors.swapPurple;
+        default:
+          return colors.appleBlue;
+      }
+    },
+    [colors, sortDirection]
   );
 
   const renderItem = useCallback(
@@ -92,11 +119,7 @@ export default function UniswapPools() {
       >
         <Row>
           <ListName
-            color={
-              selectedList === list.id
-                ? colors.appleBlue
-                : colors.alpha(colors.blueGreyDark, 0.5)
-            }
+            color={getTitleColor(selectedList === list.id, list.id)}
             lineHeight="paragraphSmall"
             size="lmedium"
             weight="bold"
@@ -111,7 +134,7 @@ export default function UniswapPools() {
         </Row>
       </PoolListButton>
     ),
-    [colors, handleSwitchList, selectedList, sortDirection]
+    [getTitleColor, handleSwitchList, selectedList, sortDirection]
   );
 
   const pairRows = useMemo(() => {

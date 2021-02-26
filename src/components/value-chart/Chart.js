@@ -114,6 +114,7 @@ export default function ChartWrapper({
   showMonth,
   showYear,
   throttledData,
+  overrideValue = false,
   ...props
 }) {
   const timespanIndex = useMemo(() => ChartTimespans.indexOf(chartType), [
@@ -201,6 +202,7 @@ export default function ChartWrapper({
         chartTimeSharedValue={chartTimeSharedValue}
         color={color}
         isPool={isPool}
+        overrideValue={overrideValue}
         showChart={showChart}
       />
       <ChartContainer showChart={showChart}>
