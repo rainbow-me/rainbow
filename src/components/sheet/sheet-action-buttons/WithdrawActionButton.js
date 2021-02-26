@@ -35,7 +35,6 @@ function WithdrawActionButton({
       color={color}
       label="􀁏 Withdraw"
       onPress={handlePress}
-      textColor={isDarkMode ? colors.whiteLabel : colors.dark}
     />
   );
 }

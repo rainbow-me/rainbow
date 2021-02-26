@@ -65,7 +65,6 @@ const LiquidityPoolExpandedState = ({ asset }) => {
   const tokenAddresses = useMemo(() => {
     return tokens.map(token => formatTokenAddress(token.address));
   }, [tokens]);
-  const { height: screenHeight } = useDimensions();
 
   const chartDataLabels = useMemo(() => {
     if (chartType === chartTypes.month && params?.asset?.profit30d) {
@@ -80,9 +79,7 @@ const LiquidityPoolExpandedState = ({ asset }) => {
     <SlackSheet
       additionalTopPadding={android}
       contentHeight={liquidityPoolExpandedStateSheetHeight}
-      {...(ios
-        ? { height: '100%' }
-        : { additionalTopPadding: true, contentHeight: screenHeight - 80 })}
+      {...(ios && { height: '100%' })}
       scrollEnabled
     >
       <ChartPathProvider data={throttledData}>

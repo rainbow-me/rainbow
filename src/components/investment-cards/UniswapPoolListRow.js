@@ -47,7 +47,9 @@ const PoolValueText = styled(Text).attrs({
   lineHeight: 'paragraphSmall',
   size: 'lmedium',
   weight: 'bold',
-})``;
+})`
+  ${android && 'padding-top: 3px'}
+`;
 
 const bigNumberFormat = (num, nativeCurrency) => {
   let ret;
