@@ -21,21 +21,23 @@ interface TypeSpecificParameters {
   supplyBalanceUnderlying?: string;
 }
 
-interface SwapState {
+export interface SwapState {
   depositCurrency: UniswapCurrency | null;
-  inputCurrency: UniswapCurrency | null;
   independentField: SwapModalField;
   independentValue: string | null;
+  inputCurrency: UniswapCurrency | null;
   isMax: boolean;
+  outputCurrency: UniswapCurrency | null;
+  prevState: SwapState | null;
   type: string;
   typeSpecificParameters: TypeSpecificParameters | null;
-  outputCurrency: UniswapCurrency | null;
 }
 
 // -- Constants --------------------------------------- //
 const SWAP_UPDATE_DEPOSIT_CURRENCY = 'swap/SWAP_UPDATE_DEPOSIT_CURRENCY';
 const SWAP_UPDATE_INPUT_AMOUNT = 'swap/SWAP_UPDATE_INPUT_AMOUNT';
 const SWAP_UPDATE_NATIVE_AMOUNT = 'swap/SWAP_UPDATE_NATIVE_AMOUNT';
+const RESTORE_PREVIOUS_STATE = 'swap/RESTORE_PREVIOUS_STATE';
 const SWAP_UPDATE_OUTPUT_AMOUNT = 'swap/SWAP_UPDATE_OUTPUT_AMOUNT';
 const SWAP_UPDATE_INPUT_CURRENCY = 'swap/SWAP_UPDATE_INPUT_CURRENCY';
 const SWAP_UPDATE_OUTPUT_CURRENCY = 'swap/SWAP_UPDATE_OUTPUT_CURRENCY';
@@ -66,10 +68,12 @@ export const updateSwapInputAmount = (value: string | null, isMax = false) => (
   });
 };
 
-export const updateSwapNativeAmount = (value: string | null) => (
-  dispatch: AppDispatch
-) => {
+export const updateSwapNativeAmount = (
+  value: string | null,
+  isFallback: boolean = false
+) => (dispatch: AppDispatch) => {
   dispatch({
+    isFallback,
     payload: value,
     type: SWAP_UPDATE_NATIVE_AMOUNT,
   });
@@ -88,6 +92,10 @@ export const updateSwapDepositCurrency = (
   newDepositCurrency: UniswapCurrency | null
 ) => (dispatch: AppDispatch) => {
   dispatch({ payload: newDepositCurrency, type: SWAP_UPDATE_DEPOSIT_CURRENCY });
+};
+
+export const restorePreviousState = (dispatch: AppDispatch) => {
+  dispatch({ type: RESTORE_PREVIOUS_STATE });
 };
 
 export const updateSwapInputCurrency = (
@@ -181,11 +189,12 @@ export const swapClearState = () => (dispatch: AppDispatch) => {
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE: SwapState = {
   depositCurrency: null,
-  independentField: SwapModalField.input,
+  independentField: SwapModalField.native,
   independentValue: null,
   inputCurrency: null,
   isMax: false,
   outputCurrency: null,
+  prevState: null,
   type: ExchangeModalTypes.swap,
   typeSpecificParameters: null,
 };
@@ -211,6 +220,12 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
         independentField: SwapModalField.native,
         independentValue: action.payload,
         isMax: false,
+        ...(action.isFallback ? { prevState: state } : {}),
+      };
+    case RESTORE_PREVIOUS_STATE:
+      return {
+        ...(state.prevState || state),
+        prevState: null,
       };
     case SWAP_UPDATE_OUTPUT_AMOUNT:
       return {
