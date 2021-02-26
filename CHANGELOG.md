@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.2.53](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.53)
+
+### Changed
+* Improved Search Performance
+* Bug Fixes
+
 ## [1.2.52](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.52)
 
 ### Changed
