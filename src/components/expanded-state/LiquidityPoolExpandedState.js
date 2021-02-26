@@ -19,7 +19,7 @@ import { Chart } from '../value-chart';
 import { ChartPathProvider } from '@rainbow-me/animated-charts';
 import { toChecksumAddress } from '@rainbow-me/handlers/web3';
 import chartTypes from '@rainbow-me/helpers/chartTypes';
-import { useChartThrottledPoints, useDimensions } from '@rainbow-me/hooks';
+import { useChartThrottledPoints } from '@rainbow-me/hooks';
 import { magicMemo } from '@rainbow-me/utils';
 
 const heightWithoutChart = 373 + (android ? 20 - getSoftMenuBarHeight() : -153);
