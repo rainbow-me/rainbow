@@ -25,9 +25,9 @@ const Container = styled(ColumnWithMargins).attrs({
 
 export default function SwapDetailsContent({
   isHighPriceImpact,
+  onCopySwapDetailsText,
   priceImpactColor,
   priceImpactPercentDisplay,
-  onCopySwapDetailsText,
   tradeDetails,
   ...props
 }) {
