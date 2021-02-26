@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Icon } from '../../icons';
 import { RowWithMargins } from '../../layout';
 import CurrencyTile, { CurrencyTileHeight } from './CurrencyTile';
-import { useSwapCurrencies, useSwapDerivedOutputs } from '@rainbow-me/hooks';
+import { useSwapCurrencies } from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
 
 const containerPaddingTop = 34;
@@ -18,11 +18,14 @@ const Container = styled(RowWithMargins).attrs({
   width: 100%;
 `;
 
-export default function SwapDetailsMasthead(props) {
+export default function SwapDetailsMasthead({
+  inputAmount,
+  isHighPriceImpact,
+  outputAmount,
+  priceImpactColor,
+  ...props
+}) {
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
-  const {
-    derivedValues: { inputAmount, outputAmount },
-  } = useSwapDerivedOutputs();
   const { colors } = useTheme();
 
   return (
@@ -32,6 +35,8 @@ export default function SwapDetailsMasthead(props) {
       <CurrencyTile
         amount={outputAmount}
         asset={outputCurrency}
+        isHighPriceImpact={isHighPriceImpact}
+        priceImpactColor={priceImpactColor}
         type="output"
       />
     </Container>

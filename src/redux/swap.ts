@@ -22,6 +22,7 @@ interface TypeSpecificParameters {
 }
 
 interface SwapState {
+  depositCurrency: UniswapCurrency | null;
   inputCurrency: UniswapCurrency | null;
   independentField: SwapModalField;
   independentValue: string | null;
@@ -32,6 +33,7 @@ interface SwapState {
 }
 
 // -- Constants --------------------------------------- //
+const SWAP_UPDATE_DEPOSIT_CURRENCY = 'swap/SWAP_UPDATE_DEPOSIT_CURRENCY';
 const SWAP_UPDATE_INPUT_AMOUNT = 'swap/SWAP_UPDATE_INPUT_AMOUNT';
 const SWAP_UPDATE_NATIVE_AMOUNT = 'swap/SWAP_UPDATE_NATIVE_AMOUNT';
 const SWAP_UPDATE_OUTPUT_AMOUNT = 'swap/SWAP_UPDATE_OUTPUT_AMOUNT';
@@ -82,29 +84,59 @@ export const updateSwapOutputAmount = (value: string | null) => (
   });
 };
 
+export const updateSwapDepositCurrency = (
+  newDepositCurrency: UniswapCurrency | null
+) => (dispatch: AppDispatch) => {
+  dispatch({ payload: newDepositCurrency, type: SWAP_UPDATE_DEPOSIT_CURRENCY });
+};
+
 export const updateSwapInputCurrency = (
   newInputCurrency: UniswapCurrency | null
 ) => (dispatch: AppDispatch, getState: AppGetState) => {
-  const { independentField } = getState().swap;
-  dispatch({ payload: newInputCurrency, type: SWAP_UPDATE_INPUT_CURRENCY });
-  if (newInputCurrency) {
-    dispatch(fetchAssetPrices(newInputCurrency.address));
+  const {
+    depositCurrency,
+    independentField,
+    outputCurrency,
+    type,
+  } = getState().swap;
+  if (newInputCurrency?.address === outputCurrency?.address) {
+    if (type === ExchangeModalTypes.swap) {
+      dispatch(flipSwapCurrencies());
+    } else {
+      dispatch(updateSwapOutputCurrency(null));
+    }
+  } else {
+    dispatch({ payload: newInputCurrency, type: SWAP_UPDATE_INPUT_CURRENCY });
+    if (newInputCurrency) {
+      dispatch(fetchAssetPrices(newInputCurrency.address));
+    }
+    if (independentField === SwapModalField.input) {
+      dispatch(updateSwapInputAmount(null));
+    }
   }
-  if (independentField === SwapModalField.input) {
-    dispatch(updateSwapInputAmount(null));
+
+  if (
+    type === ExchangeModalTypes.deposit &&
+    newInputCurrency?.address !== depositCurrency?.address
+  ) {
+    dispatch(updateSwapOutputCurrency(depositCurrency));
   }
 };
 
 export const updateSwapOutputCurrency = (
   newOutputCurrency: UniswapCurrency | null
 ) => (dispatch: AppDispatch, getState: AppGetState) => {
-  const { independentField } = getState().swap;
-  dispatch({ payload: newOutputCurrency, type: SWAP_UPDATE_OUTPUT_CURRENCY });
-  if (newOutputCurrency) {
-    dispatch(fetchAssetPrices(newOutputCurrency.address));
-  }
-  if (independentField === SwapModalField.output) {
-    dispatch(updateSwapOutputAmount(null));
+  const { independentField, inputCurrency } = getState().swap;
+  if (newOutputCurrency?.address === inputCurrency?.address) {
+    dispatch(flipSwapCurrencies());
+  } else {
+    dispatch({ payload: newOutputCurrency, type: SWAP_UPDATE_OUTPUT_CURRENCY });
+    if (newOutputCurrency) {
+      dispatch(fetchAssetPrices(newOutputCurrency.address));
+    }
+    if (independentField === SwapModalField.output) {
+      dispatch(updateSwapOutputAmount(null));
+    }
   }
 };
 
@@ -148,6 +180,7 @@ export const swapClearState = () => (dispatch: AppDispatch) => {
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE: SwapState = {
+  depositCurrency: null,
   independentField: SwapModalField.input,
   independentValue: null,
   inputCurrency: null,
@@ -185,6 +218,11 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
         independentField: SwapModalField.output,
         independentValue: action.payload,
         isMax: false,
+      };
+    case SWAP_UPDATE_DEPOSIT_CURRENCY:
+      return {
+        ...state,
+        depositCurrency: action.payload,
       };
     case SWAP_UPDATE_OUTPUT_CURRENCY:
       return {

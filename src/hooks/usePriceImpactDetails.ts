@@ -1,7 +1,6 @@
-import { Fraction } from '@uniswap/sdk';
+import { Fraction, Trade } from '@uniswap/sdk';
 import { useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
-import useSwapDerivedOutputs from './useSwapDerivedOutputs';
 import { useTheme } from '@rainbow-me/context';
 import { AppState } from '@rainbow-me/redux/store';
 import {
@@ -13,7 +12,10 @@ import {
 const PriceImpactWarningThreshold = new Fraction('5', '100');
 const SeverePriceImpactThreshold = new Fraction('10', '100');
 
-export default function usePriceImpactDetails() {
+export default function usePriceImpactDetails(
+  outputAmount: string | null,
+  tradeDetails: Trade
+) {
   const { nativeCurrency } = useAccountSettings();
   const { colors } = useTheme();
   const outputCurrencyAddress = useSelector(
@@ -22,10 +24,6 @@ export default function usePriceImpactDetails() {
   const genericAssets = useSelector(
     (state: AppState) => state.data.genericAssets
   );
-  const {
-    derivedValues: { outputAmount },
-    tradeDetails,
-  } = useSwapDerivedOutputs();
 
   const priceImpact = tradeDetails?.priceImpact;
 
@@ -35,7 +33,7 @@ export default function usePriceImpactDetails() {
   const isSeverePriceImpact =
     priceImpact?.greaterThan(SeverePriceImpactThreshold) ?? false;
 
-  const color = isSeverePriceImpact
+  const priceImpactColor = isSeverePriceImpact
     ? colors.red
     : isHighPriceImpact
     ? colors.orange
@@ -60,9 +58,9 @@ export default function usePriceImpactDetails() {
   );
 
   return {
-    color,
     isHighPriceImpact,
-    percentDisplay: priceImpact?.toFixed(),
+    priceImpactColor,
     priceImpactNativeAmount,
+    priceImpactPercentDisplay: priceImpact?.toFixed(),
   };
 }

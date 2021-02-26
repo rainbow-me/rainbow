@@ -9,9 +9,7 @@ import { ExchangeModalTypes } from '@rainbow-me/helpers';
 import {
   useColorForAsset,
   useGas,
-  usePriceImpactDetails,
   useSwapCurrencies,
-  useSwapDerivedOutputs,
   useSwapIsSufficientBalance,
   useSwapIsSufficientLiquidity,
 } from '@rainbow-me/hooks';
@@ -35,21 +33,20 @@ const Container = styled(Centered)`
 
 export default function ConfirmExchangeButton({
   disabled,
+  inputAmount,
+  isHighPriceImpact,
   onPressViewDetails,
   onSubmit,
+  tradeDetails,
   type = ExchangeModalTypes.swap,
   ...props
 }) {
-  const {
-    derivedValues: { inputAmount },
-    tradeDetails,
-  } = useSwapDerivedOutputs();
   const isSufficientBalance = useSwapIsSufficientBalance(inputAmount);
   const isSufficientLiquidity = useSwapIsSufficientLiquidity(tradeDetails);
-  const { outputCurrency: asset } = useSwapCurrencies();
+  const { inputCurrency, outputCurrency } = useSwapCurrencies();
+  const asset = outputCurrency ?? inputCurrency;
   const { isSufficientGas } = useGas();
   const { name: routeName } = useRoute();
-  const { isHighPriceImpact } = usePriceImpactDetails();
 
   const isSwapDetailsRoute = routeName === Routes.SWAP_DETAILS_SHEET;
   const shouldOpenSwapDetails = isHighPriceImpact && !isSwapDetailsRoute;

@@ -12,7 +12,6 @@ import ExchangeDetailsButton from './ExchangeDetailsButton';
 import PriceImpactWarning from './PriceImpactWarning';
 import {
   usePrevious,
-  usePriceImpactDetails,
   useSwapCurrencies,
   useSwapIsSufficientBalance,
 } from '@rainbow-me/hooks';
@@ -44,9 +43,13 @@ const AnimatedExchangeDetailsButtonRow = Animated.createAnimatedComponent(
 
 export default function ExchangeDetailsRow({
   inputAmount,
+  isHighPriceImpact,
   onFlipCurrencies,
   onPressViewDetails,
   outputAmount,
+  priceImpactColor,
+  priceImpactNativeAmount,
+  priceImpactPercentDisplay,
   showDetailsButton,
   type,
   ...props
@@ -55,7 +58,6 @@ export default function ExchangeDetailsRow({
   const priceImpactOpacity = useSharedValue(0);
   const priceImpactScale = useSharedValue(defaultPriceImpactScale);
   const { outputCurrency } = useSwapCurrencies();
-  const { isHighPriceImpact, percentDisplay } = usePriceImpactDetails();
 
   const detailsRowAnimatedStyle = useAnimatedStyle(() => ({
     opacity: detailsRowOpacity.value,
@@ -77,7 +79,7 @@ export default function ExchangeDetailsRow({
     if (isPriceImpactWarningVisible && !prevIsPriceImpactWarningVisible) {
       analytics.track('Showing high price impact warning in Swap', {
         name: outputCurrency.name,
-        priceImpact: percentDisplay,
+        priceImpact: priceImpactPercentDisplay,
         symbol: outputCurrency.symbol,
         tokenAddress: outputCurrency.address,
         type,
@@ -87,7 +89,7 @@ export default function ExchangeDetailsRow({
     isPriceImpactWarningVisible,
     outputCurrency,
     prevIsPriceImpactWarningVisible,
-    percentDisplay,
+    priceImpactPercentDisplay,
     type,
   ]);
 
@@ -116,6 +118,8 @@ export default function ExchangeDetailsRow({
       <PriceImpactWarning
         onPress={onPressViewDetails}
         pointerEvents={isPriceImpactWarningVisible ? 'auto' : 'none'}
+        priceImpactColor={priceImpactColor}
+        priceImpactNativeAmount={priceImpactNativeAmount}
         style={priceImpactAnimatedStyle}
       />
       <AnimatedExchangeDetailsButtonRow

@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { ExchangeModalTypes } from '@rainbow-me/helpers';
 import { AppState } from '@rainbow-me/redux/store';
 import {
   updateSwapInputAmount,
@@ -15,21 +16,30 @@ const MIN_ETH = '0.01';
 export default function useSwapInputs() {
   const dispatch = useDispatch();
   const isMax = useSelector((state: AppState) => state.swap.isMax);
+  const type = useSelector((state: AppState) => state.swap.type);
+  const supplyBalanceUnderlying = useSelector(
+    (state: AppState) =>
+      state.swap.typeSpecificParameters?.supplyBalanceUnderlying
+  );
   const assets = useSelector((state: AppState) => state.data.assets);
   const inputCurrencyAddress = useSelector(
     (state: AppState) => state.swap.inputCurrency?.address
   );
 
   const updateMaxInputAmount = useCallback(() => {
-    let amount =
-      ethereumUtils.getAsset(assets, inputCurrencyAddress)?.balance?.amount ??
-      0;
-    if (inputCurrencyAddress === ETH_ADDRESS) {
-      const remaining = subtract(amount, MIN_ETH);
-      amount = greaterThan(remaining, 0) ? remaining : '0';
+    if (type === ExchangeModalTypes.withdrawal) {
+      dispatch(updateSwapInputAmount(supplyBalanceUnderlying, true));
+    } else {
+      let amount =
+        ethereumUtils.getAsset(assets, inputCurrencyAddress)?.balance?.amount ??
+        0;
+      if (inputCurrencyAddress === ETH_ADDRESS) {
+        const remaining = subtract(amount, MIN_ETH);
+        amount = greaterThan(remaining, 0) ? remaining : '0';
+      }
+      dispatch(updateSwapInputAmount(amount, true));
     }
-    dispatch(updateSwapInputAmount(amount, true));
-  }, [assets, dispatch, inputCurrencyAddress]);
+  }, [assets, dispatch, inputCurrencyAddress, supplyBalanceUnderlying, type]);
 
   const updateInputAmount = useCallback(
     value => {

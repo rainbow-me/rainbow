@@ -24,7 +24,6 @@ const DepositModal = props => {
       showOutputField={false}
       title="Deposit"
       type={ExchangeModalTypes.deposit}
-      underlyingPrice={params?.underlyingPrice}
       {...props}
     />
   );
