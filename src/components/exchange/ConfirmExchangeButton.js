@@ -14,7 +14,7 @@ import {
   useSwapIsSufficientLiquidity,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
-import { padding } from '@rainbow-me/styles';
+import { lightModeThemeColors, padding } from '@rainbow-me/styles';
 
 const paddingHorizontal = 19;
 
@@ -55,29 +55,58 @@ export default function ConfirmExchangeButton({
 
   const shadows = useMemo(
     () => ({
-      default: [[0, 10, 30, colors.black, 0.4]],
+      default: [
+        [
+          0,
+          10,
+          30,
+          (isSwapDetailsRoute ? colors : lightModeThemeColors).black,
+          0.4,
+        ],
+      ],
       disabled: [
-        [0, 10, 30, colors.dark, 0.2],
-        [0, 5, 15, colors.blueGreyDark50, 0.4],
+        [
+          0,
+          10,
+          30,
+          (isSwapDetailsRoute ? colors : lightModeThemeColors).dark,
+          0.2,
+        ],
+        [
+          0,
+          5,
+          15,
+          (isSwapDetailsRoute ? colors : lightModeThemeColors).blueGreyDark50,
+          0.4,
+        ],
       ],
     }),
-    [colors]
+    [colors, isSwapDetailsRoute]
   );
 
-  const colorForAsset = useColorForAsset(asset);
+  const colorForAsset = useColorForAsset(asset, undefined, true);
   const { buttonColor, shadowsForAsset } = useMemo(() => {
     const color = isSwapDetailsRoute
       ? colorForAsset
-      : makeColorMoreChill(colorForAsset, colors.dark);
+      : makeColorMoreChill(
+          colorForAsset,
+          (isSwapDetailsRoute ? colors : lightModeThemeColors).dark
+        );
 
     return {
       buttonColor: color,
       shadowsForAsset: [
-        [0, 10, 30, colors.dark, 0.2],
+        [
+          0,
+          10,
+          30,
+          (isSwapDetailsRoute ? colors : lightModeThemeColors).dark,
+          0.2,
+        ],
         [0, 5, 15, color, 0.4],
       ],
     };
-  }, [colors, colorForAsset, isSwapDetailsRoute]);
+  }, [colorForAsset, colors, isSwapDetailsRoute]);
 
   let label = '';
   if (type === ExchangeModalTypes.deposit) {
@@ -114,8 +143,8 @@ export default function ConfirmExchangeButton({
         disabled={isDisabled}
         disabledBackgroundColor={
           isSwapDetailsRoute
-            ? colors.blueGreyDark50
-            : colors.alpha(darkScheme.blueGreyDark, 0.04)
+            ? lightModeThemeColors.blueGreyDark50
+            : lightModeThemeColors.alpha(darkScheme.blueGreyDark, 0.04)
         }
         label={label}
         onLongPress={shouldOpenSwapDetails ? onPressViewDetails : onSubmit}
