@@ -29,6 +29,8 @@ export const ThemeContext = createContext({
   setTheme: () => {},
 });
 
+const { RNThemeModule } = NativeModules;
+
 export const MainThemeProvider = props => {
   const [colorScheme, setColorScheme] = useState();
   // looks like one works on Android and another one on iOS. good.
@@ -43,10 +45,7 @@ export const MainThemeProvider = props => {
         : 'light'
       : colorScheme;
   useEffect(() => {
-    setTimeout(
-      () => NativeModules.RNThemeModule?.setMode(colorSchemeSystemAdjusted),
-      400
-    );
+    setTimeout(() => RNThemeModule?.setMode(colorSchemeSystemAdjusted), 400);
   }, [colorSchemeSystemAdjusted]);
 
   // Override default with user preferences

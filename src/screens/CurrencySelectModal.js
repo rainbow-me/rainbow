@@ -93,7 +93,7 @@ export default function CurrencySelectModal() {
     favorites,
     globalHighLiquidityAssets,
     globalLowLiquidityAssets,
-    globalVerifiedHighLiquidityAssets,
+    globalVerifiedAssets,
     loadingAllTokens,
     updateFavorites,
   } = useUniswapAssets();
@@ -120,7 +120,7 @@ export default function CurrencySelectModal() {
         ] = map(
           [
             favorites,
-            globalVerifiedHighLiquidityAssets,
+            globalVerifiedAssets,
             globalHighLiquidityAssets,
             globalLowLiquidityAssets,
           ],
@@ -174,7 +174,7 @@ export default function CurrencySelectModal() {
     colors,
     curatedNotFavorited,
     favorites,
-    globalVerifiedHighLiquidityAssets,
+    globalVerifiedAssets,
     globalHighLiquidityAssets,
     globalLowLiquidityAssets,
     searchQueryForSearch,

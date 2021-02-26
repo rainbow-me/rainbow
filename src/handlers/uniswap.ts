@@ -13,19 +13,19 @@ import {
   TradeType,
   WETH,
 } from '@uniswap/sdk';
-import { filter, get, keys, mapKeys, mapValues, toLower } from 'lodash';
+import { get, mapKeys, mapValues, toLower } from 'lodash';
 import { uniswapClient } from '../apollo/client';
 import { UNISWAP_ALL_TOKENS } from '../apollo/queries';
 import { loadWallet } from '../model/wallet';
 import { toHex, web3Provider } from './web3';
-import {
-  Asset,
-  RawUniswapSubgraphAsset,
-  UniswapSubgraphAsset,
-} from '@rainbow-me/entities';
+import { Asset } from '@rainbow-me/entities';
 import { Network } from '@rainbow-me/networkTypes';
+import store from '@rainbow-me/redux/store';
 import {
-  CURATED_UNISWAP_TOKENS,
+  uniswapLoadedAllTokens,
+  uniswapUpdateTokens,
+} from '@rainbow-me/redux/uniswap';
+import {
   ETH_ADDRESS,
   ethUnits,
   UNISWAP_TESTNET_TOKEN_LIST,
@@ -33,8 +33,6 @@ import {
   UNISWAP_V2_ROUTER_ADDRESS,
 } from '@rainbow-me/references';
 import { addBuffer } from '@rainbow-me/utilities';
-import { checkTokenIsScam, getTokenMetadata } from '@rainbow-me/utils';
-
 import logger from 'logger';
 
 enum Field {
@@ -393,59 +391,32 @@ export const executeSwap = async ({
   return exchange[methodName](...updatedMethodArgs, transactionParams);
 };
 
-const excluded = filter(keys(CURATED_UNISWAP_TOKENS), x => x !== ETH_ADDRESS);
-
-export const getAllTokens = async (): Promise<
-  Record<string, UniswapSubgraphAsset>
-> => {
-  let allTokens: Record<string, UniswapSubgraphAsset> = {};
-  let data: RawUniswapSubgraphAsset[] = [];
+export const getAllTokens = async () => {
+  const { dispatch } = store;
   try {
     let dataEnd = false;
-    let skip = 0;
+    let lastId = '';
+
     while (!dataEnd) {
       let result = await uniswapClient.query({
         query: UNISWAP_ALL_TOKENS,
         variables: {
-          excluded,
           first: UniswapPageSize,
-          skip: skip,
+          lastId,
         },
       });
       const resultTokens = result?.data?.tokens || [];
-      data = data.concat(resultTokens);
-      skip = skip + UniswapPageSize;
+      const lastItem = resultTokens[resultTokens.length - 1];
+      lastId = lastItem?.id ?? '';
+      dispatch(uniswapUpdateTokens(resultTokens));
       if (resultTokens.length < UniswapPageSize) {
+        dispatch(uniswapLoadedAllTokens());
         dataEnd = true;
       }
     }
   } catch (err) {
     logger.log('error: ', err);
   }
-
-  data.forEach(token => {
-    const tokenAddress = toLower(token.id);
-    const metadata = getTokenMetadata(tokenAddress);
-
-    // if unverified AND name/symbol match a curated token, skip
-    if (!metadata?.isVerified && checkTokenIsScam(token.name, token.symbol)) {
-      return;
-    }
-
-    const tokenInfo = {
-      address: tokenAddress,
-      decimals: Number(token.decimals),
-      derivedETH: token.derivedETH,
-      name: token.name,
-      symbol: token.symbol,
-      totalLiquidity: token.totalLiquidity,
-      uniqueId: tokenAddress,
-      ...metadata,
-    };
-    allTokens[tokenAddress] = tokenInfo;
-  });
-
-  return allTokens;
 };
 
 export const getTokenForCurrency = (
