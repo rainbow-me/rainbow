@@ -6,7 +6,7 @@ import { Centered } from '../layout';
 import { Text } from '../text';
 import { padding, position } from '@rainbow-me/styles';
 
-const Container = styled(Centered).attrs({
+const Content = styled(Centered).attrs({
   shrink: 0,
 })`
   ${padding(19)};
@@ -30,20 +30,16 @@ export default function PriceImpactWarning({
   ...props
 }) {
   return (
-    <Animated.View {...props} style={style}>
-      <ButtonPressAnimation
-        {...position.coverAsObject}
-        onPress={onPress}
-        scaleTo={1.06}
-      >
-        <Container>
+    <Animated.View {...props} style={[style, position.coverAsObject]}>
+      <ButtonPressAnimation onPress={onPress} scaleTo={1.06}>
+        <Content>
           <Label color={priceImpactColor}>{`􀇿 `}</Label>
           <Label>Small Market</Label>
           <Label color={priceImpactColor}>{` • Losing `}</Label>
           <Label color={priceImpactColor} letterSpacing="roundedTight">
             {priceImpactNativeAmount}
           </Label>
-        </Container>
+        </Content>
       </ButtonPressAnimation>
     </Animated.View>
   );
