@@ -403,12 +403,15 @@ export default function ExchangeModal({
     confirmButtonProps,
     inputFieldRef,
     lastFocusedInputHandle,
+    nativeCurrency,
     nativeFieldRef,
     navigate,
     outputCurrency,
     outputFieldRef,
     setParams,
+    shouldDisplayRealData,
     type,
+    updateNativeAmount,
   ]);
 
   const showConfirmButton = isSavings
