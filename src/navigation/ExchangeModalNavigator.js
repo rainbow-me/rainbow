@@ -13,7 +13,7 @@ import SwapModalScreen from '../screens/SwapModal';
 import { useNavigation } from './Navigation';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
 import { exchangeTabNavigatorConfig, stackNavigationConfig } from './config';
-import { exchangeModalPreset, swapDetailsPreset } from './effects';
+import { exchangeModalPreset, expandedPreset } from './effects';
 import Routes from './routesNames';
 import { useDimensions } from '@rainbow-me/hooks';
 import { position } from '@rainbow-me/styles';
@@ -71,7 +71,7 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
             component={ExpandedAssetSheet}
             initialParams={params}
             name={Routes.SWAP_DETAILS_SHEET}
-            options={swapDetailsPreset}
+            options={expandedPreset}
           />
         )}
       </Stack.Navigator>

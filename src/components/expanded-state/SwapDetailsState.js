@@ -173,7 +173,7 @@ export default function SwapDetailsState({
       <SlackSheet
         additionalTopPadding={android}
         borderRadius={39}
-        contentHeight={longFormHeight}
+        contentHeight={ios ? longFormHeight : sheetHeightWithoutKeyboard}
       >
         <Header>
           <SheetTitle weight="heavy">Review</SheetTitle>

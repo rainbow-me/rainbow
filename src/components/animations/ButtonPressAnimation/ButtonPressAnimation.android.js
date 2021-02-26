@@ -1,9 +1,4 @@
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useMemo,
-} from 'react';
+import React, { createContext, useCallback, useContext, useMemo } from 'react';
 import { processColor, requireNativeComponent, View } from 'react-native';
 import {
   createNativeWrapper,
@@ -168,13 +163,16 @@ const SimpleScaleButton = ({
   transformOrigin,
   wrapperStyle,
 }) => {
-  const onNativePress = useCallback(({ nativeEvent: { type } }) => {
-    if (type === 'longPress') {
-      onLongPress?.();
-    } else {
-      onPress?.();
-    }
-  }, [onLongPress, onPress]);
+  const onNativePress = useCallback(
+    ({ nativeEvent: { type } }) => {
+      if (type === 'longPress') {
+        onLongPress?.();
+      } else {
+        onPress?.();
+      }
+    },
+    [onLongPress, onPress]
+  );
 
   return (
     <View

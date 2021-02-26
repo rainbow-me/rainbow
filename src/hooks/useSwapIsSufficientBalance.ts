@@ -12,7 +12,8 @@ export default function useSwapIsSufficientBalance(inputAmount: string | null) {
   const assets = useSelector((state: AppState) => state.data.assets);
   const type = useSelector((state: AppState) => state.swap.type);
   const supplyBalanceUnderlying = useSelector(
-    (state: AppState) => state.swap.typeSpecificParameters?.supplyBalanceUnderlying
+    (state: AppState) =>
+      state.swap.typeSpecificParameters?.supplyBalanceUnderlying
   );
 
   const isSufficientBalance = useMemo(() => {
@@ -27,7 +28,13 @@ export default function useSwapIsSufficientBalance(inputAmount: string | null) {
     return isWithdrawal
       ? greaterThanOrEqualTo(supplyBalanceUnderlying, inputAmount)
       : greaterThanOrEqualTo(maxInputBalance, inputAmount);
-  }, [assets, inputAmount, inputCurrencyAddress, supplyBalanceUnderlying, type]);
+  }, [
+    assets,
+    inputAmount,
+    inputCurrencyAddress,
+    supplyBalanceUnderlying,
+    type,
+  ]);
 
   return isSufficientBalance;
 }
