@@ -190,7 +190,7 @@ export const swapClearState = () => (dispatch: AppDispatch) => {
 const INITIAL_STATE: SwapState = {
   depositCurrency: null,
   independentField: SwapModalField.native,
-  independentValue: '100',
+  independentValue: null,
   inputCurrency: null,
   isMax: false,
   outputCurrency: null,
