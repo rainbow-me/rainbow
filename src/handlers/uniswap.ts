@@ -7,23 +7,13 @@ import { captureException } from '@sentry/react-native';
 import {
   ChainId,
   CurrencyAmount,
-  Pair,
   Percent,
   Token,
-  TokenAmount,
   Trade,
   TradeType,
   WETH,
 } from '@uniswap/sdk';
-import {
-  filter,
-  get,
-  isEmpty,
-  keys,
-  mapKeys,
-  mapValues,
-  toLower,
-} from 'lodash';
+import { filter, get, keys, mapKeys, mapValues, toLower } from 'lodash';
 import { uniswapClient } from '../apollo/client';
 import { UNISWAP_ALL_TOKENS } from '../apollo/queries';
 import { loadWallet } from '../model/wallet';
@@ -42,11 +32,7 @@ import {
   UNISWAP_V2_ROUTER_ABI,
   UNISWAP_V2_ROUTER_ADDRESS,
 } from '@rainbow-me/references';
-import {
-  addBuffer,
-  convertAmountToRawAmount,
-  convertNumberToString,
-} from '@rainbow-me/utilities';
+import { addBuffer } from '@rainbow-me/utilities';
 import { checkTokenIsScam, getTokenMetadata } from '@rainbow-me/utils';
 
 import logger from 'logger';
@@ -460,43 +446,6 @@ export const getAllTokens = async (): Promise<
   });
 
   return allTokens;
-};
-
-export const calculateTradeDetails = (
-  chainId: ChainId,
-  inputAmount: string | null,
-  outputAmount: string | null,
-  inputCurrency: Asset,
-  outputCurrency: Asset,
-  pairs: Pair[],
-  exactInput: boolean
-): Trade | null => {
-  if (!inputCurrency || !outputCurrency || isEmpty(pairs)) {
-    return null;
-  }
-
-  const inputToken = getTokenForCurrency(inputCurrency, chainId);
-  const outputToken = getTokenForCurrency(outputCurrency, chainId);
-  if (exactInput) {
-    const inputRawAmount = convertAmountToRawAmount(
-      convertNumberToString(inputAmount || 0),
-      inputToken.decimals
-    );
-
-    const amountIn = new TokenAmount(inputToken, inputRawAmount);
-    return Trade.bestTradeExactIn(pairs, amountIn, outputToken, {
-      maxNumResults: 1,
-    })[0];
-  } else {
-    const outputRawAmount = convertAmountToRawAmount(
-      convertNumberToString(outputAmount || 0),
-      outputToken.decimals
-    );
-    const amountOut = new TokenAmount(outputToken, outputRawAmount);
-    return Trade.bestTradeExactOut(pairs, inputToken, amountOut, {
-      maxNumResults: 1,
-    })[0];
-  }
 };
 
 export const getTokenForCurrency = (

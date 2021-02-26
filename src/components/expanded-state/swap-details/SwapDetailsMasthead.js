@@ -3,11 +3,7 @@ import styled from 'styled-components';
 import { Icon } from '../../icons';
 import { RowWithMargins } from '../../layout';
 import CurrencyTile, { CurrencyTileHeight } from './CurrencyTile';
-import {
-  useSwapDetails,
-  useSwapInputOutputTokens,
-  useSwapInputValues,
-} from '@rainbow-me/hooks';
+import { useSwapCurrencies, useSwapDerivedOutputs } from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
 
 const containerPaddingTop = 34;
@@ -23,29 +19,19 @@ const Container = styled(RowWithMargins).attrs({
 `;
 
 export default function SwapDetailsMasthead(props) {
-  const { inputCurrency, outputCurrency } = useSwapInputOutputTokens();
-  const { inputAmount, outputAmount } = useSwapInputValues({
-    skipClearing: true,
-  });
+  const { inputCurrency, outputCurrency } = useSwapCurrencies();
   const {
-    extraTradeDetails: { inputPriceValue, outputPriceValue },
-  } = useSwapDetails();
-
+    derivedValues: { inputAmount, outputAmount },
+  } = useSwapDerivedOutputs();
   const { colors } = useTheme();
 
   return (
     <Container {...props}>
-      <CurrencyTile
-        amount={inputAmount}
-        asset={inputCurrency}
-        priceValue={inputPriceValue}
-        type="input"
-      />
+      <CurrencyTile amount={inputAmount} asset={inputCurrency} type="input" />
       <Icon color={colors.dark} name="doubleChevron" />
       <CurrencyTile
         amount={outputAmount}
         asset={outputCurrency}
-        priceValue={outputPriceValue}
         type="output"
       />
     </Container>

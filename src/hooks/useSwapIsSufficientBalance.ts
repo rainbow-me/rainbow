@@ -5,38 +5,29 @@ import { AppState } from '@rainbow-me/redux/store';
 import { greaterThanOrEqualTo } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
 
-export default function useSwapIsSufficientBalance() {
+export default function useSwapIsSufficientBalance(inputAmount: string | null) {
   const inputCurrencyAddress = useSelector(
     (state: AppState) => state.swap.inputCurrency?.address
   );
-  const selectedGasPrice = useSelector(
-    (state: AppState) => state.gas.selectedGasPrice
-  );
-  const inputAmount = useSelector((state: AppState) => state.swap.inputAmount);
+  const assets = useSelector((state: AppState) => state.data.assets);
   const type = useSelector((state: AppState) => state.swap.type);
   const supplyBalanceUnderlying = useSelector(
     (state: AppState) => state.swap.typeSpecificParameters?.supplyBalanceUnderlying
   );
 
-  const maxInputBalance = useMemo(() => {
-    return ethereumUtils.getBalanceAmount(
-      selectedGasPrice,
-      inputCurrencyAddress
-    );
-  }, [selectedGasPrice, inputCurrencyAddress]);
-
   const isSufficientBalance = useMemo(() => {
     if (!inputAmount) return true;
+
+    const maxInputBalance =
+      ethereumUtils.getAsset(assets, inputCurrencyAddress)?.balance?.amount ??
+      0;
 
     const isWithdrawal = type === ExchangeModalTypes.withdrawal;
 
     return isWithdrawal
       ? greaterThanOrEqualTo(supplyBalanceUnderlying, inputAmount)
       : greaterThanOrEqualTo(maxInputBalance, inputAmount);
-  }, [inputAmount, maxInputBalance, supplyBalanceUnderlying, type]);
+  }, [assets, inputAmount, inputCurrencyAddress, supplyBalanceUnderlying, type]);
 
-  return {
-    isSufficientBalance,
-    maxInputBalance,
-  };
+  return isSufficientBalance;
 }

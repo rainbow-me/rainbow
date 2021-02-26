@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { CoinIcon } from '../../coin-icon';
 import { Centered, ColumnWithMargins, Row } from '../../layout';
@@ -59,20 +60,21 @@ const TruncatedAmountText = styled(AmountText).attrs({
 export default function CurrencyTile({
   amount,
   asset,
-  priceValue,
   type = 'input',
   ...props
 }) {
-  const { address, symbol } = asset;
+  const genericAssets = useSelector(state => state.data.genericAssets);
   const { nativeCurrency } = useAccountSettings();
   const colorForAsset = useColorForAsset(asset);
+  const { address, symbol } = asset;
+  const priceValue = genericAssets[address]?.price?.value ?? 0;
   const {
     color: priceImpactColor,
     isHighPriceImpact,
   } = usePriceImpactDetails();
 
   const { amountDisplay, priceDisplay } = useMemo(() => {
-    const data = [amount, priceValue || 0];
+    const data = [amount, priceValue];
     return {
       amountDisplay: updatePrecisionToDisplay(...data, true),
       priceDisplay: convertAmountAndPriceToNativeDisplay(

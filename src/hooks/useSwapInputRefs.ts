@@ -1,10 +1,10 @@
 import { useCallback, useRef } from 'react';
 import { TextInput } from 'react-native';
 import useMagicAutofocus from './useMagicAutofocus';
-import useSwapInputOutputTokens from './useSwapInputOutputTokens';
+import useSwapCurrencies from './useSwapCurrencies';
 
 export default function useSwapInputRefs() {
-  const { inputCurrency, outputCurrency } = useSwapInputOutputTokens();
+  const { inputCurrency, outputCurrency } = useSwapCurrencies();
   const inputFieldRef = useRef<TextInput>();
   const nativeFieldRef = useRef<TextInput>();
   const outputFieldRef = useRef<TextInput>();
@@ -41,14 +41,7 @@ export default function useSwapInputRefs() {
     true
   );
 
-  const clearAllInputRefs = useCallback(() => {
-    inputFieldRef?.current?.clear();
-    nativeFieldRef?.current?.clear();
-    outputFieldRef?.current?.clear();
-  }, []);
-
   return {
-    clearAllInputRefs,
     handleFocus,
     inputFieldRef,
     lastFocusedInputHandle,

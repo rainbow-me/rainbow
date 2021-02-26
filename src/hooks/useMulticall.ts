@@ -1,9 +1,9 @@
 import { FunctionFragment, Interface } from '@ethersproject/abi';
 import { ChainId } from '@uniswap/sdk';
 import { map } from 'lodash';
-import { useEffect, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Call, multicallClearState, toCallKey } from '../redux/multicall';
+import { useMemo } from 'react';
+import { useSelector } from 'react-redux';
+import { Call, toCallKey } from '../redux/multicall';
 import { AppState } from '../redux/store';
 
 const INVALID_RESULT = {
@@ -33,7 +33,6 @@ export default function useMulticall(
   contractInterface: Interface,
   fragment: FunctionFragment
 ) {
-  const dispatch = useDispatch();
   const { chainId, results } = useSelector(
     ({ multicall: { results }, settings: { chainId } }: AppState) => ({
       chainId,
@@ -76,12 +75,6 @@ export default function useMulticall(
       }),
     [callResults, contractInterface, fragment]
   );
-
-  useEffect(() => {
-    return () => {
-      dispatch(multicallClearState());
-    };
-  }, [dispatch]);
 
   return { multicallResults };
 }

@@ -13,8 +13,7 @@ import PriceImpactWarning from './PriceImpactWarning';
 import {
   usePrevious,
   usePriceImpactDetails,
-  useSwapInputOutputTokens,
-  useSwapInputValues,
+  useSwapCurrencies,
   useSwapIsSufficientBalance,
 } from '@rainbow-me/hooks';
 import { padding, position } from '@rainbow-me/styles';
@@ -44,8 +43,10 @@ const AnimatedExchangeDetailsButtonRow = Animated.createAnimatedComponent(
 );
 
 export default function ExchangeDetailsRow({
+  inputAmount,
   onFlipCurrencies,
   onPressViewDetails,
+  outputAmount,
   showDetailsButton,
   type,
   ...props
@@ -53,7 +54,7 @@ export default function ExchangeDetailsRow({
   const detailsRowOpacity = useSharedValue(1);
   const priceImpactOpacity = useSharedValue(0);
   const priceImpactScale = useSharedValue(defaultPriceImpactScale);
-  const { outputCurrency } = useSwapInputOutputTokens();
+  const { outputCurrency } = useSwapCurrencies();
   const { isHighPriceImpact, percentDisplay } = usePriceImpactDetails();
 
   const detailsRowAnimatedStyle = useAnimatedStyle(() => ({
@@ -65,9 +66,7 @@ export default function ExchangeDetailsRow({
     transform: [{ scale: priceImpactScale.value }],
   }));
 
-  const { inputAmount, outputAmount } = useSwapInputValues();
-
-  const { isSufficientBalance } = useSwapIsSufficientBalance();
+  const isSufficientBalance = useSwapIsSufficientBalance(inputAmount);
 
   const isPriceImpactWarningVisible =
     isSufficientBalance && !!inputAmount && !!outputAmount && isHighPriceImpact;

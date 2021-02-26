@@ -33,23 +33,21 @@ import {
   useBlockPolling,
   useGas,
   usePriceImpactDetails,
-  useSwapDetails,
-  useSwapInputOutputTokens,
+  useSwapCurrencies,
+  useSwapCurrencyHandlers,
+  useSwapDerivedOutputs,
+  useSwapInputHandlers,
   useSwapInputRefs,
-  useSwapInputs,
-  useSwapInputValues,
-  useSwapIsSufficientBalance,
-  useUniswapCurrencies,
-  useUniswapMarketDetails,
 } from '@rainbow-me/hooks';
 import { loadWallet } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
 import { executeRap } from '@rainbow-me/raps/common';
-import { updateSwapTypeDetails } from '@rainbow-me/redux/swap';
+import { multicallClearState } from '@rainbow-me/redux/multicall';
+import { swapClearState, updateSwapTypeDetails } from '@rainbow-me/redux/swap';
 import { ethUnits } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
-import { backgroundTask, isETH } from '@rainbow-me/utils';
+import { backgroundTask } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const FloatingPanels = ios
@@ -112,7 +110,6 @@ export default function ExchangeModal({
     : ethUnits.basic_swap;
 
   const {
-    prevSelectedGasPrice,
     selectedGasPrice,
     startPollingGasPrices,
     stopPollingGasPrices,
@@ -120,12 +117,9 @@ export default function ExchangeModal({
     updateTxFee,
   } = useGas();
 
-  const { maxInputBalance } = useSwapIsSufficientBalance();
-
   const { initWeb3Listener, stopWeb3Listener } = useBlockPolling();
   const { nativeCurrency } = useAccountSettings();
 
-  const { areTradeDetailsValid, tradeDetails } = useSwapDetails();
   const { isHighPriceImpact, percentDisplay } = usePriceImpactDetails();
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
@@ -136,11 +130,10 @@ export default function ExchangeModal({
   });
 
   const {
-    defaultInputAddress,
     flipCurrencies,
     navigateToSelectInputCurrency,
     navigateToSelectOutputCurrency,
-  } = useUniswapCurrencies({
+  } = useSwapCurrencyHandlers({
     defaultInputAsset,
     defaultOutputAsset,
     isDeposit,
@@ -150,10 +143,9 @@ export default function ExchangeModal({
     underlyingPrice,
   });
 
-  const { inputCurrency, outputCurrency } = useSwapInputOutputTokens();
+  const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
   const {
-    clearAllInputRefs,
     handleFocus,
     inputFieldRef,
     lastFocusedInputHandle,
@@ -162,46 +154,17 @@ export default function ExchangeModal({
   } = useSwapInputRefs();
 
   const {
-    resetAmounts,
+    isMax,
     updateInputAmount,
-    updateIsMax,
+    updateMaxInputAmount,
     updateNativeAmount,
     updateOutputAmount,
-  } = useSwapInputs({
-    nativeFieldRef,
-  });
+  } = useSwapInputHandlers();
 
   const {
-    inputAmount,
-    inputAmountDisplay,
-    nativeAmount,
-    isMax,
-    outputAmount,
-    outputAmountDisplay,
-  } = useSwapInputValues();
-
-  const clearForm = useCallback(() => {
-    logger.log('[exchange] - clear form');
-    clearAllInputRefs();
-    resetAmounts();
-  }, [clearAllInputRefs, resetAmounts]);
-
-  const onFlipCurrencies = useCallback(() => {
-    flipCurrencies();
-    if (outputFieldRef?.current?.isFocused()) {
-      updateInputAmount(outputAmount, null, true, outputCurrency);
-    } else {
-      updateOutputAmount(inputAmount);
-    }
-  }, [
-    flipCurrencies,
-    inputAmount,
-    outputAmount,
-    outputCurrency,
-    outputFieldRef,
-    updateInputAmount,
-    updateOutputAmount,
-  ]);
+    derivedValues: { inputAmount, nativeAmount, outputAmount },
+    tradeDetails,
+  } = useSwapDerivedOutputs();
 
   const isDismissing = useRef(false);
   useEffect(() => {
@@ -226,17 +189,16 @@ export default function ExchangeModal({
     };
   }, [addListener, dangerouslyGetParent, lastFocusedInputHandle]);
 
+  useEffect(() => {
+    return () => {
+      dispatch(swapClearState());
+      dispatch(multicallClearState());
+    };
+  }, [dispatch]);
+
   const handleCustomGasBlur = useCallback(() => {
     lastFocusedInputHandle?.current?.focus();
   }, [lastFocusedInputHandle]);
-
-  // Calculate market details
-  const { isSufficientLiquidity } = useUniswapMarketDetails({
-    defaultInputAddress,
-    isSavings,
-    updateInputAmount,
-    updateOutputAmount,
-  });
 
   const updateGasLimit = useCallback(async () => {
     try {
@@ -294,27 +256,9 @@ export default function ExchangeModal({
     updateDefaultGasLimit,
   ]);
 
-  // Update input balance when gas price changes if max and input currency is ETH
-  useEffect(() => {
-    if (!(isMax && isETH(inputCurrency?.address))) return;
-    const prevGas = prevSelectedGasPrice?.txFee?.value?.amount || 0;
-    const currentGas = selectedGasPrice?.txFee?.value?.amount || 0;
-    if (prevGas !== currentGas) {
-      updateInputAmount(maxInputBalance);
-    }
-  }, [
-    isMax,
-    inputCurrency?.address,
-    maxInputBalance,
-    prevSelectedGasPrice,
-    selectedGasPrice,
-    updateInputAmount,
-  ]);
-
   const handlePressMaxBalance = useCallback(async () => {
-    updateIsMax(true);
-    updateInputAmount(maxInputBalance);
-  }, [maxInputBalance, updateInputAmount, updateIsMax]);
+    updateMaxInputAmount();
+  }, [updateMaxInputAmount]);
 
   const handleSubmit = useCallback(() => {
     backgroundTask.execute(async () => {
@@ -387,22 +331,13 @@ export default function ExchangeModal({
 
   const confirmButtonProps = useMemoOne(
     () => ({
-      disabled: !Number(inputAmountDisplay),
+      disabled: !Number(inputAmount),
       isAuthorizing,
       isDeposit,
-      isSufficientLiquidity,
       onSubmit: handleSubmit,
       type,
     }),
-    [
-      handleSubmit,
-      inputAmountDisplay,
-      isAuthorizing,
-      isDeposit,
-      isSufficientLiquidity,
-      testID,
-      type,
-    ]
+    [handleSubmit, inputAmount, isAuthorizing, isDeposit, testID, type]
   );
 
   const navigateToSwapDetailsModal = useCallback(() => {
@@ -452,11 +387,10 @@ export default function ExchangeModal({
 
   const showDetailsButton =
     !isSavings &&
-    inputCurrency?.symbol &&
-    outputCurrency?.symbol &&
-    areTradeDetailsValid &&
-    inputAmount > 0 &&
-    outputAmountDisplay;
+    inputCurrency?.address &&
+    outputCurrency?.address &&
+    tradeDetails &&
+    outputAmount;
 
   return (
     <Wrapper>
@@ -472,7 +406,7 @@ export default function ExchangeModal({
             <ExchangeHeader testID={testID} title={title} />
             <ExchangeInputField
               disableInputCurrencySelection={isWithdrawal}
-              inputAmount={inputAmountDisplay}
+              inputAmount={inputAmount}
               inputCurrencyAddress={inputCurrency?.address}
               inputCurrencySymbol={inputCurrency?.symbol}
               inputFieldRef={inputFieldRef}
@@ -490,7 +424,7 @@ export default function ExchangeModal({
               <ExchangeOutputField
                 onFocus={handleFocus}
                 onPressSelectOutputCurrency={navigateToSelectOutputCurrency}
-                outputAmount={outputAmountDisplay}
+                outputAmount={outputAmount}
                 outputCurrencyAddress={outputCurrency?.address}
                 outputCurrencySymbol={outputCurrency?.symbol}
                 outputFieldRef={outputFieldRef}
@@ -501,15 +435,17 @@ export default function ExchangeModal({
           </FloatingPanel>
           {isDeposit && (
             <DepositInfo
-              amount={(inputAmount > 0 && outputAmountDisplay) || null}
+              amount={(inputAmount > 0 && outputAmount) || null}
               asset={outputCurrency}
               testID="deposit-info-button"
             />
           )}
           {!isDeposit && showConfirmButton && (
             <ExchangeDetailsRow
-              onFlipCurrencies={onFlipCurrencies}
+              inputAmount={inputAmount}
+              onFlipCurrencies={flipCurrencies}
               onPressViewDetails={navigateToSwapDetailsModal}
+              outputAmount={outputAmount}
               showDetailsButton={showDetailsButton}
               type={type}
             />

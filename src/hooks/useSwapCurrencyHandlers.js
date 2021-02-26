@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux';
 import useAccountAssets from './useAccountAssets';
 import useAccountSettings from './useAccountSettings';
 import { delayNext } from './useMagicAutofocus';
-import useSwapInputOutputTokens from './useSwapInputOutputTokens';
+import useSwapCurrencies from './useSwapCurrencies';
 import useUniswapCalls from './useUniswapCalls';
 import { CurrencySelectionTypes } from '@rainbow-me/helpers';
 import { useNavigation } from '@rainbow-me/navigation';
@@ -50,7 +50,7 @@ const createMissingAsset = (asset, underlyingPrice, priceOfEther) => {
   };
 };
 
-export default function useUniswapCurrencies({
+export default function useSwapCurrencyHandlers({
   defaultInputAsset,
   isDeposit,
   isWithdrawal,
@@ -122,7 +122,7 @@ export default function useUniswapCurrencies({
     dispatch(updateSwapOutputCurrency(defaultOutputItem));
   }, [defaultInputItemInWallet, dispatch, defaultOutputItem]);
 
-  const { inputCurrency, outputCurrency } = useSwapInputOutputTokens();
+  const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
   const { calls } = useUniswapCalls();
 
@@ -251,7 +251,6 @@ export default function useUniswapCurrencies({
   ]);
 
   return {
-    defaultInputAddress,
     flipCurrencies,
     navigateToSelectInputCurrency,
     navigateToSelectOutputCurrency,
