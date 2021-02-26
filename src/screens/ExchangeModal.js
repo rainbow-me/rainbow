@@ -79,7 +79,6 @@ export default function ExchangeModal({
   testID,
   title = 'Swap',
   type,
-  underlyingPrice,
 }) {
   const dispatch = useDispatch();
 
@@ -87,10 +86,9 @@ export default function ExchangeModal({
     const typeSpecificParameters = {
       cTokenBalance,
       supplyBalanceUnderlying,
-      underlyingPrice,
     };
     dispatch(updateSwapTypeDetails(type, typeSpecificParameters));
-  }, [cTokenBalance, dispatch, supplyBalanceUnderlying, type, underlyingPrice]);
+  }, [cTokenBalance, dispatch, supplyBalanceUnderlying, type]);
 
   const {
     navigate,
@@ -133,11 +131,8 @@ export default function ExchangeModal({
   } = useSwapCurrencyHandlers({
     defaultInputAsset,
     defaultOutputAsset,
-    isDeposit,
-    isWithdrawal,
     title,
     type,
-    underlyingPrice,
   });
 
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
@@ -456,7 +451,7 @@ export default function ExchangeModal({
               testID="deposit-info-button"
             />
           )}
-          {!isDeposit && showConfirmButton && (
+          {!isSavings && showConfirmButton && (
             <ExchangeDetailsRow
               inputAmount={inputAmount}
               isHighPriceImpact={isHighPriceImpact}
