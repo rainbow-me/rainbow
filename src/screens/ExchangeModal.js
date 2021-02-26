@@ -68,6 +68,9 @@ const InnerWrapper = styled(Centered).attrs({
   background-color: ${({ theme: { colors } }) => colors.transparent};
 `;
 
+const DEFUALT_DETAILS_INPUT = 100;
+const DEFUALT_DETAILS_INPUT_ETH = 0.1;
+
 export default function ExchangeModal({
   createRap,
   cTokenBalance,
@@ -156,7 +159,7 @@ export default function ExchangeModal({
   const {
     derivedValues: { inputAmount, nativeAmount, outputAmount },
     tradeDetails,
-  } = useSwapDerivedOutputs();
+  } = useSwapDerivedOutputs(true);
 
   const {
     isHighPriceImpact,
@@ -351,7 +354,22 @@ export default function ExchangeModal({
     ]
   );
 
+  const shouldDisplayRealData =
+    !isSavings &&
+    inputCurrency?.address &&
+    outputCurrency?.address &&
+    tradeDetails &&
+    outputAmount;
+
   const navigateToSwapDetailsModal = useCallback(() => {
+    if (!shouldDisplayRealData) {
+      updateNativeAmount(
+        nativeCurrency === 'ETH'
+          ? DEFUALT_DETAILS_INPUT_ETH
+          : DEFUALT_DETAILS_INPUT,
+        true
+      );
+    }
     android && Keyboard.dismiss();
     const lastFocusedInputHandleTemporary = lastFocusedInputHandle.current;
     android && (lastFocusedInputHandle.current = null);
@@ -395,13 +413,6 @@ export default function ExchangeModal({
   const showConfirmButton = isSavings
     ? !!inputCurrency
     : !!inputCurrency && !!outputCurrency;
-
-  const showDetailsButton =
-    !isSavings &&
-    inputCurrency?.address &&
-    outputCurrency?.address &&
-    tradeDetails &&
-    outputAmount;
 
   return (
     <Wrapper>
@@ -461,7 +472,6 @@ export default function ExchangeModal({
               priceImpactColor={priceImpactColor}
               priceImpactNativeAmount={priceImpactNativeAmount}
               priceImpactPercentDisplay={priceImpactPercentDisplay}
-              showDetailsButton={showDetailsButton}
               type={type}
             />
           )}

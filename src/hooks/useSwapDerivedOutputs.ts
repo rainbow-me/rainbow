@@ -41,18 +41,24 @@ const getOutputAmount = (
   };
 };
 
-export default function useSwapDerivedOutputs() {
+export default function useSwapDerivedOutputs(
+  usePrevStateIfPossible: boolean = false
+) {
+  const swapState = (state: AppState) => {
+    return (usePrevStateIfPossible && state.swap.prevState) || state.swap;
+  };
+
   const independentField = useSelector(
-    (state: AppState) => state.swap.independentField
+    (state: AppState) => swapState(state).independentField
   );
   const independentValue = useSelector(
-    (state: AppState) => state.swap.independentValue
+    (state: AppState) => swapState(state).independentValue
   );
   const inputCurrency = useSelector(
-    (state: AppState) => state.swap.inputCurrency
+    (state: AppState) => swapState(state).inputCurrency
   );
   const outputCurrency = useSelector(
-    (state: AppState) => state.swap.outputCurrency
+    (state: AppState) => swapState(state).outputCurrency
   );
   const genericAssets = useSelector(
     (state: AppState) => state.data.genericAssets
