@@ -23,14 +23,14 @@ interface TypeSpecificParameters {
 
 export interface SwapState {
   depositCurrency: UniswapCurrency | null;
-  inputCurrency: UniswapCurrency | null;
   independentField: SwapModalField;
   independentValue: string | null;
+  inputCurrency: UniswapCurrency | null;
   isMax: boolean;
-  type: string;
-  typeSpecificParameters: TypeSpecificParameters | null;
   outputCurrency: UniswapCurrency | null;
   prevState: SwapState | null;
+  type: string;
+  typeSpecificParameters: TypeSpecificParameters | null;
 }
 
 // -- Constants --------------------------------------- //
