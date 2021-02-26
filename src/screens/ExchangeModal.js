@@ -68,8 +68,8 @@ const InnerWrapper = styled(Centered).attrs({
   background-color: ${({ theme: { colors } }) => colors.transparent};
 `;
 
-const DEFUALT_DETAILS_INPUT = 100;
-const DEFUALT_DETAILS_INPUT_ETH = 0.1;
+const DEFAULT_DETAILS_INPUT = 100;
+const DEFAULT_DETAILS_INPUT_ETH = 0.1;
 
 export default function ExchangeModal({
   createRap,
@@ -363,10 +363,11 @@ export default function ExchangeModal({
 
   const navigateToSwapDetailsModal = useCallback(() => {
     if (!shouldDisplayRealData) {
+      // Updating temporarily to display something on the sheet
       updateNativeAmount(
         nativeCurrency === 'ETH'
-          ? DEFUALT_DETAILS_INPUT_ETH
-          : DEFUALT_DETAILS_INPUT,
+          ? DEFAULT_DETAILS_INPUT_ETH
+          : DEFAULT_DETAILS_INPUT,
         true
       );
     }
