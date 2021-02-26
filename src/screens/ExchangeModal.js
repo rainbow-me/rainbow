@@ -131,8 +131,6 @@ export default function ExchangeModal({
   } = useSwapCurrencyHandlers({
     defaultInputAsset,
     defaultOutputAsset,
-    isDeposit,
-    isWithdrawal,
     title,
     type,
   });
@@ -453,7 +451,7 @@ export default function ExchangeModal({
               testID="deposit-info-button"
             />
           )}
-          {!isDeposit && showConfirmButton && (
+          {!isSavings && showConfirmButton && (
             <ExchangeDetailsRow
               inputAmount={inputAmount}
               isHighPriceImpact={isHighPriceImpact}
