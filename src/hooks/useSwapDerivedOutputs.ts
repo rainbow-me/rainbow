@@ -41,30 +41,22 @@ const getOutputAmount = (
   };
 };
 
-export default function useSwapDerivedOutputs(
-  usePrevStateIfPossible: boolean = false
-) {
-  const swapState = (state: AppState) => {
-    return (usePrevStateIfPossible && state.swap.prevState) || state.swap;
-  };
-
+export default function useSwapDerivedOutputs() {
   const independentField = useSelector(
-    (state: AppState) => swapState(state).independentField
+    (state: AppState) => state.swap.independentField
   );
   const independentValue = useSelector(
-    (state: AppState) => swapState(state).independentValue
+    (state: AppState) => state.swap.independentValue
   );
   const inputCurrency = useSelector(
-    (state: AppState) => swapState(state).inputCurrency
+    (state: AppState) => state.swap.inputCurrency
   );
   const outputCurrency = useSelector(
-    (state: AppState) => swapState(state).outputCurrency
+    (state: AppState) => state.swap.outputCurrency
   );
   const genericAssets = useSelector(
     (state: AppState) => state.data.genericAssets
   );
-
-  const isFallback = useSelector((state: AppState) => state.swap.prevState)!;
 
   const inputPrice = genericAssets[inputCurrency?.address]?.price?.value;
 
@@ -146,7 +138,7 @@ export default function useSwapDerivedOutputs(
 
       derivedValues[SwapModalField.native] = nativeValue;
     }
-    return { derivedValues, isFallback, tradeDetails };
+    return { derivedValues, tradeDetails };
   }, [
     allPairs,
     chainId,
@@ -154,7 +146,6 @@ export default function useSwapDerivedOutputs(
     independentValue,
     inputCurrency,
     inputPrice,
-    isFallback,
     outputCurrency,
   ]);
 }
