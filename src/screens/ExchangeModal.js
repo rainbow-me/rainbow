@@ -68,9 +68,6 @@ const InnerWrapper = styled(Centered).attrs({
   background-color: ${({ theme: { colors } }) => colors.transparent};
 `;
 
-const DEFAULT_DETAILS_INPUT = 100;
-const DEFAULT_DETAILS_INPUT_ETH = 0.1;
-
 export default function ExchangeModal({
   createRap,
   cTokenBalance,
@@ -356,23 +353,7 @@ export default function ExchangeModal({
     ]
   );
 
-  const shouldDisplayRealData =
-    !isSavings &&
-    inputCurrency?.address &&
-    outputCurrency?.address &&
-    tradeDetails &&
-    outputAmount;
-
   const navigateToSwapDetailsModal = useCallback(() => {
-    if (!shouldDisplayRealData) {
-      // Updating temporarily to display something on the sheet
-      updateNativeAmount(
-        nativeCurrency === 'ETH'
-          ? DEFAULT_DETAILS_INPUT_ETH
-          : DEFAULT_DETAILS_INPUT,
-        true
-      );
-    }
     android && Keyboard.dismiss();
     const lastFocusedInputHandleTemporary = lastFocusedInputHandle.current;
     android && (lastFocusedInputHandle.current = null);
@@ -405,15 +386,12 @@ export default function ExchangeModal({
     confirmButtonProps,
     inputFieldRef,
     lastFocusedInputHandle,
-    nativeCurrency,
     nativeFieldRef,
     navigate,
     outputCurrency,
     outputFieldRef,
     setParams,
-    shouldDisplayRealData,
     type,
-    updateNativeAmount,
   ]);
 
   const showConfirmButton = isSavings
@@ -478,6 +456,7 @@ export default function ExchangeModal({
               priceImpactColor={priceImpactColor}
               priceImpactNativeAmount={priceImpactNativeAmount}
               priceImpactPercentDisplay={priceImpactPercentDisplay}
+              tradeDetails={tradeDetails}
               type={type}
             />
           )}

@@ -50,6 +50,7 @@ export default function ExchangeDetailsRow({
   priceImpactColor,
   priceImpactNativeAmount,
   priceImpactPercentDisplay,
+  tradeDetails,
   type,
   ...props
 }) {
@@ -128,7 +129,10 @@ export default function ExchangeDetailsRow({
         <ExchangeDetailsButton onPress={onFlipCurrencies}>
           􀄬 Flip
         </ExchangeDetailsButton>
-        <ExchangeDetailsButton onPress={onPressViewDetails}>
+        <ExchangeDetailsButton
+          disabled={!tradeDetails}
+          onPress={onPressViewDetails}
+        >
           􀕹 View Details
         </ExchangeDetailsButton>
       </AnimatedExchangeDetailsButtonRow>
