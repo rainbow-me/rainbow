@@ -35,6 +35,7 @@ export default function ConfirmExchangeButton({
   disabled,
   inputAmount,
   isHighPriceImpact,
+  isSavings,
   onPressViewDetails,
   onSubmit,
   tradeDetails,
@@ -49,7 +50,8 @@ export default function ConfirmExchangeButton({
   const { name: routeName } = useRoute();
 
   const isSwapDetailsRoute = routeName === Routes.SWAP_DETAILS_SHEET;
-  const shouldOpenSwapDetails = isHighPriceImpact && !isSwapDetailsRoute;
+  const shouldOpenSwapDetails =
+    tradeDetails && !isSavings && isHighPriceImpact && !isSwapDetailsRoute;
 
   const { colors, darkScheme } = useTheme();
 
