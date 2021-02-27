@@ -49,8 +49,8 @@ export default function useSwapInputs() {
   );
 
   const updateNativeAmount = useCallback(
-    (value, isFallback) => {
-      dispatch(updateSwapNativeAmount(value, isFallback));
+    value => {
+      dispatch(updateSwapNativeAmount(value));
     },
     [dispatch]
   );

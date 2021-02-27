@@ -2,7 +2,6 @@ import { useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
 import { useSafeArea } from 'react-native-safe-area-context';
-import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { ConfirmExchangeButton } from '../exchange';
 import { GasSpeedButton } from '../gas';
@@ -31,7 +30,6 @@ import {
   useSwapDerivedOutputs,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import { restorePreviousState } from '@rainbow-me/redux/swap';
 import { padding, position } from '@rainbow-me/styles';
 import { abbreviations } from '@rainbow-me/utils';
 
@@ -97,14 +95,9 @@ export default function SwapDetailsState({
   const [isKeyboardVisible, showKeyboard, hideKeyboard] = useBooleanState();
   const insets = useSafeArea();
 
-  const dispatch = useDispatch();
-
-  useEffect(() => () => dispatch(restorePreviousState), [dispatch]);
-
   const {
     derivedValues: { inputAmount, outputAmount },
     tradeDetails,
-    isFallback,
   } = useSwapDerivedOutputs();
   const {
     isHighPriceImpact,
@@ -205,23 +198,21 @@ export default function SwapDetailsState({
           priceImpactPercentDisplay={priceImpactPercentDisplay}
           tradeDetails={tradeDetails}
         />
-        {!isFallback && (
-          <Footer onLayout={setFooterHeight}>
-            <ConfirmExchangeButton
-              {...confirmButtonProps}
-              testID="swap-details-confirm"
+        <Footer onLayout={setFooterHeight}>
+          <ConfirmExchangeButton
+            {...confirmButtonProps}
+            testID="swap-details-confirm"
+          />
+          <Column justify="center" marginHorizontal={5} width={deviceWidth}>
+            <GasSpeedButton
+              onCustomGasBlur={hideKeyboard}
+              onCustomGasFocus={showKeyboard}
+              testID="swap-details-gas"
+              theme="light"
+              type={ExchangeModalTypes.swap}
             />
-            <Column justify="center" marginHorizontal={5} width={deviceWidth}>
-              <GasSpeedButton
-                onCustomGasBlur={hideKeyboard}
-                onCustomGasFocus={showKeyboard}
-                testID="swap-details-gas"
-                theme="light"
-                type={ExchangeModalTypes.swap}
-              />
-            </Column>
-          </Footer>
-        )}
+          </Column>
+        </Footer>
         <ToastPositionContainer>
           <CopyToast copiedText={copiedText} copyCount={copyCount} />
         </ToastPositionContainer>
