@@ -5757,14 +5757,6 @@ domutils@1.5.1:
     dom-serializer "0"
     domelementtype "1"
 
-domutils@1.5.1:
-  version "1.5.1"
-  resolved "https://registry.yarnpkg.com/domutils/-/domutils-1.5.1.tgz#dcd8488a26f563d61079e48c9f7b7e32373682cf"
-  integrity sha1-3NhIiib1Y9YQeeSMn3t+Mjc2gs8=
-  dependencies:
-    dom-serializer "0"
-    domelementtype "1"
-
 domutils@^1.5.1, domutils@^1.7.0:
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/domutils/-/domutils-1.7.0.tgz#56ea341e834e06e6748af7a1cb25da67ea9f8c2a"
@@ -9579,14 +9571,6 @@ make-color-more-chill@^0.2.0, make-color-more-chill@^0.2.1:
     chroma-js "^2.1.0"
     zod "^1.11.11"
 
-make-color-more-chill@^0.2.0:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/make-color-more-chill/-/make-color-more-chill-0.2.1.tgz#87d88d157c7042ee7b6db4c1b1248a6bc5c345ea"
-  integrity sha512-8ub4T8r1g+pcKtslbyszpY0TsIPQCuqVAhaR5/HLH2y1ZnXbqYmGuwqvWOTUuX6eRYOZhzwozz3WrdkMfxIGlA==
-  dependencies:
-    chroma-js "^2.1.0"
-    zod "^1.11.11"
-
 make-dir@^2.0.0, make-dir@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/make-dir/-/make-dir-2.1.0.tgz#5f0310e18b8be898cc07009295a30ae41e91e6f5"
@@ -12211,10 +12195,10 @@ react-native-webview@^11.0.0:
     escape-string-regexp "2.0.0"
     invariant "2.2.4"
 
-react-native@0.63.4:
-  version "0.63.4"
-  resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.63.4.tgz#2210fdd404c94a5fa6b423c6de86f8e48810ec36"
-  integrity sha512-I4kM8kYO2mWEYUFITMcpRulcy4/jd+j9T6PbIzR0FuMcz/xwd+JwHoLPa1HmCesvR1RDOw9o4D+OFLwuXXfmGw==
+react-native@0.63.3:
+  version "0.63.3"
+  resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.63.3.tgz#4a7f6540e049ff41810887bbd1125abc4672f3bf"
+  integrity sha512-71wq13uNo5W8QVQnFlnzZ3AD+XgUBYGhpsxysQFW/hJ8GAt/J5o+Bvhy81FXichp6IBDJDh/JgfHH2gNji8dFA==
   dependencies:
     "@babel/runtime" "^7.0.0"
     "@react-native-community/cli" "^4.10.0"
