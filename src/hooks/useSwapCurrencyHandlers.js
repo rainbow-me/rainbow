@@ -1,12 +1,13 @@
 import { useRoute } from '@react-navigation/native';
 import { isEmpty } from 'lodash';
 import { useCallback, useEffect, useLayoutEffect, useMemo } from 'react';
-import { InteractionManager } from 'react-native';
+import { InteractionManager, TextInput } from 'react-native';
 import { useDispatch } from 'react-redux';
 import useAccountAssets from './useAccountAssets';
 import useAccountSettings from './useAccountSettings';
 import { delayNext } from './useMagicAutofocus';
 import useSwapCurrencies from './useSwapCurrencies';
+import useTimeout from './useTimeout';
 import useUniswapCalls from './useUniswapCalls';
 import {
   CurrencySelectionTypes,
@@ -26,9 +27,13 @@ import {
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils } from '@rainbow-me/utils';
 
+const { currentlyFocusedInput, focusTextInput } = TextInput.State;
+
 export default function useSwapCurrencyHandlers({
   defaultInputAsset,
   defaultOutputAsset,
+  inputFieldRef,
+  outputFieldRef,
   title,
   type,
 }) {
@@ -94,9 +99,17 @@ export default function useSwapCurrencyHandlers({
     dispatch(multicallUpdateOutdatedListeners());
   }, [calls, chainId, dispatch, inputCurrency, outputCurrency]);
 
+  const [startFlipFocusTimeout] = useTimeout();
   const flipCurrencies = useCallback(() => {
     dispatch(flipSwapCurrencies());
-  }, [dispatch]);
+    startFlipFocusTimeout(() => {
+      if (inputFieldRef.current === currentlyFocusedInput()) {
+        focusTextInput(outputFieldRef.current);
+      } else if (outputFieldRef.current === currentlyFocusedInput()) {
+        focusTextInput(inputFieldRef.current);
+      }
+    }, 50);
+  }, [dispatch, inputFieldRef, outputFieldRef, startFlipFocusTimeout]);
 
   const updateInputCurrency = useCallback(
     newInputCurrency => {

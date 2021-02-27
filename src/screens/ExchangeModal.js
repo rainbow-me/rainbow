@@ -127,17 +127,6 @@ export default function ExchangeModal({
     return true;
   });
 
-  const {
-    flipCurrencies,
-    navigateToSelectInputCurrency,
-    navigateToSelectOutputCurrency,
-  } = useSwapCurrencyHandlers({
-    defaultInputAsset,
-    defaultOutputAsset,
-    title,
-    type,
-  });
-
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
   const {
@@ -155,6 +144,19 @@ export default function ExchangeModal({
     updateNativeAmount,
     updateOutputAmount,
   } = useSwapInputHandlers();
+
+  const {
+    flipCurrencies,
+    navigateToSelectInputCurrency,
+    navigateToSelectOutputCurrency,
+  } = useSwapCurrencyHandlers({
+    defaultInputAsset,
+    defaultOutputAsset,
+    inputFieldRef,
+    outputFieldRef,
+    title,
+    type,
+  });
 
   const {
     derivedValues: { inputAmount, nativeAmount, outputAmount },
