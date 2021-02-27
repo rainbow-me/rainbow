@@ -335,8 +335,8 @@ export default function ExchangeModal({
       disabled: !Number(inputAmount),
       inputAmount,
       isAuthorizing,
-      isDeposit,
       isHighPriceImpact,
+      isSavings,
       onSubmit: handleSubmit,
       tradeDetails,
       type,
@@ -345,7 +345,7 @@ export default function ExchangeModal({
       handleSubmit,
       inputAmount,
       isAuthorizing,
-      isDeposit,
+      isSavings,
       isHighPriceImpact,
       testID,
       tradeDetails,
@@ -397,13 +397,6 @@ export default function ExchangeModal({
   const showConfirmButton = isSavings
     ? !!inputCurrency
     : !!inputCurrency && !!outputCurrency;
-
-  const showDetailsButton =
-    !isSavings &&
-    inputCurrency?.address &&
-    outputCurrency?.address &&
-    tradeDetails &&
-    outputAmount;
 
   return (
     <Wrapper>
@@ -463,7 +456,7 @@ export default function ExchangeModal({
               priceImpactColor={priceImpactColor}
               priceImpactNativeAmount={priceImpactNativeAmount}
               priceImpactPercentDisplay={priceImpactPercentDisplay}
-              showDetailsButton={showDetailsButton}
+              showDetailsButton={!!tradeDetails}
               type={type}
             />
           )}
