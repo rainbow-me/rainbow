@@ -1,10 +1,10 @@
 const fs = require('fs');
 
-const data = fs
+const envLine = fs
   .readFileSync('./.env', 'utf8')
   .split('\n')
-  .find(l => l.startsWith('SCRIPT_NM='))
-  .slice(10);
+  .find(l => l.startsWith('SCRIPT_NM='));
+const data = envLine && envLine.slice(10);
 
 function getAliasesFromTsConfig() {
   const tsConfig = require('./tsconfig.json');
