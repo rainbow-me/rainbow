@@ -124,8 +124,6 @@ export default function ExchangeModal({
     return true;
   });
 
-  const { inputCurrency, outputCurrency } = useSwapCurrencies();
-
   const {
     handleFocus,
     inputFieldRef,
@@ -150,10 +148,13 @@ export default function ExchangeModal({
     defaultInputAsset,
     defaultOutputAsset,
     inputFieldRef,
+    nativeFieldRef,
     outputFieldRef,
     title,
     type,
   });
+
+  const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
   const {
     derivedValues: { inputAmount, nativeAmount, outputAmount },

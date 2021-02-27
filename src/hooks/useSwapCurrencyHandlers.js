@@ -33,6 +33,7 @@ export default function useSwapCurrencyHandlers({
   defaultInputAsset,
   defaultOutputAsset,
   inputFieldRef,
+  nativeFieldRef,
   outputFieldRef,
   title,
   type,
@@ -103,13 +104,22 @@ export default function useSwapCurrencyHandlers({
   const flipCurrencies = useCallback(() => {
     dispatch(flipSwapCurrencies());
     startFlipFocusTimeout(() => {
-      if (inputFieldRef.current === currentlyFocusedInput()) {
+      if (
+        inputFieldRef.current === currentlyFocusedInput() ||
+        nativeFieldRef.current === currentlyFocusedInput()
+      ) {
         focusTextInput(outputFieldRef.current);
       } else if (outputFieldRef.current === currentlyFocusedInput()) {
         focusTextInput(inputFieldRef.current);
       }
     }, 50);
-  }, [dispatch, inputFieldRef, outputFieldRef, startFlipFocusTimeout]);
+  }, [
+    dispatch,
+    inputFieldRef,
+    nativeFieldRef,
+    outputFieldRef,
+    startFlipFocusTimeout,
+  ]);
 
   const updateInputCurrency = useCallback(
     newInputCurrency => {
