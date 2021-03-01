@@ -79,7 +79,7 @@ export default function DiscoverSearch() {
     favorites,
     globalHighLiquidityAssets,
     globalLowLiquidityAssets,
-    globalVerifiedHighLiquidityAssets,
+    globalVerifiedAssets,
     loadingAllTokens,
   } = useUniswapAssets();
   const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
@@ -106,7 +106,7 @@ export default function DiscoverSearch() {
         ] = map(
           [
             favorites,
-            globalVerifiedHighLiquidityAssets,
+            globalVerifiedAssets,
             globalHighLiquidityAssets,
             globalLowLiquidityAssets,
           ],
@@ -162,7 +162,7 @@ export default function DiscoverSearch() {
     uniswapAssetsInWallet,
     searchQueryForSearch,
     favorites,
-    globalVerifiedHighLiquidityAssets,
+    globalVerifiedAssets,
     globalHighLiquidityAssets,
     globalLowLiquidityAssets,
     colors.yellowFavorite,
