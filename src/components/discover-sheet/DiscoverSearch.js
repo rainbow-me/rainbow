@@ -36,7 +36,7 @@ import { filterList } from '@rainbow-me/utils';
 
 const headerlessSection = data => [{ data, title: '' }];
 
-const searchCurrencyList = (searchList, query) => {
+const searchCurrencyList = (searchList = [], query) => {
   const isAddress = query.match(/^(0x)?[0-9a-fA-F]{40}$/);
 
   if (isAddress) {
