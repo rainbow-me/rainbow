@@ -15,10 +15,10 @@ const PoolListButton = styled(ButtonPressAnimation).attrs({
   scaleTo: 0.96,
 })`
   margin-right: 16px;
-  ${({ selected, theme: { colors } }) =>
+  ${({ selected, theme: { colors }, titleColor }) =>
     selected
       ? `
-        background-color: ${colors.alpha(colors.appleBlue, 0.06)};
+        background-color: ${colors.alpha(titleColor, 0.06)};
         border-radius: 12px;
         height: 30px;
         padding-horizontal: 8px;
@@ -116,6 +116,7 @@ export default function UniswapPools() {
         key={`list-${list.id}`}
         onPress={() => handleSwitchList(list.id, index)}
         selected={selectedList === list.id}
+        titleColor={getTitleColor(selectedList === list.id, list.id)}
       >
         <Row>
           <ListName
