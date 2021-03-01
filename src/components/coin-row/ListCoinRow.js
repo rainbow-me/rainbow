@@ -9,7 +9,7 @@ import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
-import { ethereumUtils, neverRerender } from '@rainbow-me/utils';
+import { ethereumUtils, magicMemo } from '@rainbow-me/utils';
 
 const CoinRowPaddingTop = 9;
 const CoinRowPaddingBottom = 10;
@@ -85,4 +85,4 @@ const ListCoinRow = ({ item, onPress }) => {
   );
 };
 
-export default neverRerender(ListCoinRow);
+export default magicMemo(ListCoinRow, ['change', 'name', 'native']);

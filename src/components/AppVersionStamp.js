@@ -23,19 +23,9 @@ export default function AppVersionStamp() {
 
   const handleVersionPress = useCallback(async () => {
     stopTimeout();
+
     const tapCount = numberOfTaps + 1;
     setNumberOfTaps(tapCount);
-
-    if (tapCount === 3) {
-      const request = await fetch(
-        'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest'
-      );
-      const response = await request.json();
-      Alert.alert(
-        'Status',
-        response?.status?.timestamp ? 'NOT APPLIED' : 'APPLIED'
-      );
-    }
 
     // Only show the secret "debug info" alert if the
     // user has tapped this AppVersionStamp the secret amount of times

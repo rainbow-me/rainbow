@@ -213,6 +213,11 @@ function MainOuterNavigator() {
         name={Routes.MAIN_NAVIGATOR}
       />
       <OuterStack.Screen
+        component={ExpandedAssetSheet}
+        name={Routes.TOKEN_INDEX_SCREEN}
+        options={sheetPresetWithSmallGestureResponseDistance}
+      />
+      <OuterStack.Screen
         component={PinAuthenticationScreen}
         name={Routes.PIN_AUTHENTICATION_SCREEN}
         options={{ ...sheetPreset, gestureEnabled: false }}

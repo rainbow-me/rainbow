@@ -1,3 +1,4 @@
+import { useRoute } from '@react-navigation/core';
 import { map, toLower } from 'lodash';
 import React, { Fragment } from 'react';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
@@ -17,10 +18,11 @@ import {
 import { Chart } from '../value-chart';
 import { ChartPathProvider } from '@rainbow-me/animated-charts';
 import { toChecksumAddress } from '@rainbow-me/handlers/web3';
-import { useChartThrottledPoints, useDimensions } from '@rainbow-me/hooks';
+import chartTypes from '@rainbow-me/helpers/chartTypes';
+import { useChartThrottledPoints } from '@rainbow-me/hooks';
 import { magicMemo } from '@rainbow-me/utils';
 
-const heightWithoutChart = 373 + (android ? 20 - getSoftMenuBarHeight() : -153);
+const heightWithoutChart = 373 + (android ? 20 - getSoftMenuBarHeight() : 0);
 const heightWithChart = heightWithoutChart + 297;
 
 export const initialLiquidityPoolExpandedStateSheetHeight = heightWithChart;
@@ -33,6 +35,7 @@ const formatTokenAddress = address => {
 };
 
 const LiquidityPoolExpandedState = ({ asset }) => {
+  const { params } = useRoute();
   const { tokenNames, tokens, totalNativeDisplay, type, uniBalance } = asset;
 
   const tokenType = type === 'uniswap' ? 'UNI-V1' : 'UNI-V2';
@@ -62,21 +65,27 @@ const LiquidityPoolExpandedState = ({ asset }) => {
   const tokenAddresses = useMemo(() => {
     return tokens.map(token => formatTokenAddress(token.address));
   }, [tokens]);
-  const { height: screenHeight } = useDimensions();
+
+  const chartDataLabels = useMemo(() => {
+    if (chartType === chartTypes.month && params?.asset?.profit30d) {
+      let overrideChartDataLabels = { ...initialChartDataLabels };
+      overrideChartDataLabels.latestChange = params.asset.profit30d;
+      return overrideChartDataLabels;
+    }
+    return initialChartDataLabels;
+  }, [chartType, initialChartDataLabels, params?.asset?.profit30d]);
 
   return (
     <SlackSheet
       additionalTopPadding={android}
       contentHeight={liquidityPoolExpandedStateSheetHeight}
-      {...(ios
-        ? { height: '100%' }
-        : { additionalTopPadding: true, contentHeight: screenHeight - 80 })}
+      {...(ios && { height: '100%' })}
       scrollEnabled
     >
       <ChartPathProvider data={throttledData}>
         <Chart
           {...chartData}
-          {...initialChartDataLabels}
+          {...chartDataLabels}
           asset={asset}
           chart={chart}
           chartType={chartType}
@@ -84,6 +93,7 @@ const LiquidityPoolExpandedState = ({ asset }) => {
           fetchingCharts={fetchingCharts}
           isPool
           nativePoints={chart}
+          overrideValue={chartType === chartTypes.month}
           showChart={showChart}
           throttledData={throttledData}
         />

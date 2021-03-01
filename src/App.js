@@ -99,6 +99,8 @@ CodePush.getUpdateMetadata(CodePush.UpdateState.RUNNING).then(update => {
 
 enableScreens();
 
+const { RNTestFlight } = NativeModules;
+
 class App extends Component {
   static propTypes = {
     requestsForTopic: PropTypes.func,
@@ -107,8 +109,8 @@ class App extends Component {
   state = { appState: AppState.currentState, initialRoute: null };
 
   async componentDidMount() {
-    if (!__DEV__ && NativeModules.RNTestFlight) {
-      const { isTestFlight } = NativeModules.RNTestFlight.getConstants();
+    if (!__DEV__ && RNTestFlight) {
+      const { isTestFlight } = RNTestFlight.getConstants();
       logger.sentry(`Test flight usage - ${isTestFlight}`);
     }
     this.identifyFlow();
