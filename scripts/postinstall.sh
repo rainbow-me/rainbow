@@ -1,8 +1,6 @@
 #!/bin/bash
 set -eo pipefail
 
-source .env
-
 if [ -n "$RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK" ]; then
   eval $RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK;
   echo "✅ executed ios prebuild hook"
@@ -14,7 +12,6 @@ git update-index --assume-unchanged "ios/Internals/ios/Internals.m"
 git update-index --assume-unchanged "ios/Internals/ios/Internals.swift"
 git update-index --assume-unchanged "ios/Internals/ios/Internals-Bridging-Header.h"
 git update-index --assume-unchanged "ios/Extras.json"
-git update-index --assume-unchanged "ios/AppDelegate.pch"
 
 # Specifying ONLY the node packages that we need to install via browserify
 # (because those aren't available in react native) and some of our deps require them.

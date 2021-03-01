@@ -22,7 +22,7 @@ import chartTypes from '@rainbow-me/helpers/chartTypes';
 import { useChartThrottledPoints } from '@rainbow-me/hooks';
 import { magicMemo } from '@rainbow-me/utils';
 
-const heightWithoutChart = 373 + (android ? 20 - getSoftMenuBarHeight() : -153);
+const heightWithoutChart = 373 + (android ? 20 - getSoftMenuBarHeight() : 0);
 const heightWithChart = heightWithoutChart + 297;
 
 export const initialLiquidityPoolExpandedStateSheetHeight = heightWithChart;

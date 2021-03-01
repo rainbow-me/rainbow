@@ -250,7 +250,7 @@ function MainOuterNavigator() {
       <OuterStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.TOKEN_INDEX_SCREEN}
-        options={sheetPreset}
+        options={sheetPresetWithSmallGestureResponseDistance}
       />
       <OuterStack.Screen
         component={SettingsModal}
