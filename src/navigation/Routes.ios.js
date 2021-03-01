@@ -10,6 +10,7 @@ import AddTokenSheet from '../screens/AddTokenSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import BackupSheet from '../screens/BackupSheet';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
+import ConnectedDappsSheet from '../screens/ConnectedDappsSheet';
 import DepositModal from '../screens/DepositModal';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
@@ -277,6 +278,18 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={ChangeWalletSheet}
         name={Routes.CHANGE_WALLET_SHEET}
+        options={{
+          allowsDragToDismiss: true,
+          backgroundColor: '#25292E',
+          backgroundOpacity: 0.7,
+          customStack: true,
+          springDamping: 1,
+          transitionDuration: 0.25,
+        }}
+      />
+      <NativeStack.Screen
+        component={ConnectedDappsSheet}
+        name={Routes.CONNECTED_DAPPS}
         options={{
           allowsDragToDismiss: true,
           backgroundColor: '#25292E',

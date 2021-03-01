@@ -10,6 +10,7 @@ const Routes = {
   CHANGE_WALLET_SHEET: 'ChangeWalletSheet',
   CHANGE_WALLET_SHEET_NAVIGATOR: 'ChangeWalletSheetNavigator',
   CONFIRM_REQUEST: 'ConfirmRequest',
+  CONNECTED_DAPPS: 'ConnectedDapps',
   CURRENCY_SELECT_SCREEN: 'CurrencySelectScreen',
   EXAMPLE_SCREEN: 'ExampleScreen',
   EXCHANGE_MODAL: 'ExchangeModal',

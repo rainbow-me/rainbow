@@ -46,7 +46,12 @@ export default forwardRef(function DiscoverSearchContainer(
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const upperContext = useContext(DiscoverSheetContext);
-  const { setIsSearchModeEnabled, isSearchModeEnabled } = upperContext;
+  const {
+    setIsSearchModeEnabled,
+    isSearchModeEnabled,
+    jumpToLong,
+    onFabSearch,
+  } = upperContext;
   const {
     params: { setSwipeEnabled: setViewPagerSwipeEnabled },
   } = useRoute();
@@ -58,10 +63,16 @@ export default forwardRef(function DiscoverSearchContainer(
   const setIsInputFocused = useCallback(
     value => {
       setShowSearch(value);
+      jumpToLong();
       setIsSearchModeEnabled(value);
       setViewPagerSwipeEnabled(!value);
     },
-    [setIsSearchModeEnabled, setShowSearch, setViewPagerSwipeEnabled]
+    [
+      setIsSearchModeEnabled,
+      setShowSearch,
+      setViewPagerSwipeEnabled,
+      jumpToLong,
+    ]
   );
 
   const onTapSearch = useCallback(() => {
@@ -79,7 +90,7 @@ export default forwardRef(function DiscoverSearchContainer(
     }
   }, [isSearchModeEnabled, setIsInputFocused]);
 
-  upperContext.onFabSearch.current = onTapSearch;
+  onFabSearch.current = onTapSearch;
 
   useEffect(() => {
     if (!isSearchModeEnabled) {
