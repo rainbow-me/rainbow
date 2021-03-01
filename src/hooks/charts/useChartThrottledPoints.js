@@ -11,6 +11,8 @@ import { useNavigation } from '@rainbow-me/navigation';
 
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
 
+export const UniBalanceHeightDifference = 150;
+
 const traverseData = (prev, data) => {
   if (!data || data.length === 0) {
     return prev;
@@ -63,6 +65,7 @@ export default function useChartThrottledPoints({
   heightWithChart,
   heightWithoutChart,
   isPool,
+  uniBalance = true,
 }) {
   let assetForColor = asset;
   if (isPool) {
@@ -107,7 +110,11 @@ export default function useChartThrottledPoints({
     [fetchingCharts, isFetchingInitially, throttledPoints]
   );
 
-  useJumpingForm(showChart, heightWithChart, heightWithoutChart);
+  useJumpingForm(
+    showChart,
+    heightWithChart - (uniBalance ? 0 : UniBalanceHeightDifference),
+    heightWithoutChart - (uniBalance ? 0 : UniBalanceHeightDifference)
+  );
 
   const [throttledData, setThrottledData] = useState({
     nativePoints: throttledPoints.nativePoints,

@@ -2,6 +2,7 @@ import { useRoute } from '@react-navigation/core';
 import { map, toLower } from 'lodash';
 import React, { Fragment } from 'react';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
+import { UniBalanceHeightDifference } from '../../hooks/charts/useChartThrottledPoints';
 import {
   DepositActionButton,
   SheetActionButtonRow,
@@ -55,12 +56,13 @@ const LiquidityPoolExpandedState = ({ asset }) => {
     heightWithChart,
     heightWithoutChart,
     isPool: true,
+    uniBalance: !!uniBalance,
   });
 
   const liquidityPoolExpandedStateSheetHeight =
     (ios || showChart ? heightWithChart : heightWithoutChart) +
-    (android && 24) +
-    (uniBalance ? 0 : -130);
+    (android && 44) -
+    (uniBalance ? 0 : UniBalanceHeightDifference);
 
   const tokenAddresses = useMemo(() => {
     return tokens.map(token => formatTokenAddress(token.address));
