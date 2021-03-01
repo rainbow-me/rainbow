@@ -35,14 +35,15 @@ const Container = styled(Centered).attrs({
 `;
 
 const RemoveButton = styled(ButtonPressAnimation)`
-  background-color: ${({ theme: { colors } }) => colors.alpha(colors.red, 0.06)};
+  background-color: ${({ theme: { colors } }) =>
+    colors.alpha(colors.red, 0.06)};
   border-radius: 15;
   height: 30;
   padding-left: 6;
   padding-right: 10;
   padding-top: 5;
   margin-left: 8;
-  top: 2;
+  top: ${android ? 0 : 2};
 `;
 
 const RemoveButtonContent = styled(Text).attrs(({ theme: { colors } }) => ({
@@ -55,7 +56,7 @@ const RemoveButtonContent = styled(Text).attrs(({ theme: { colors } }) => ({
 `;
 
 const ListButton = styled(ButtonPressAnimation)`
-  padding-bottom: ${({ alreadyAdded }) => ( 12)};
+  padding-bottom: 15;
   padding-top: 15;
 `;
 
@@ -68,7 +69,7 @@ const ListEmoji = styled(Emoji).attrs({
 
 const WRITEABLE_LISTS = ['watchlist', 'favorites'];
 
-export const sheetHeight = android ? 470 - getSoftMenuBarHeight() : 394;
+export const sheetHeight = android ? 490 - getSoftMenuBarHeight() : 394;
 
 export default function AddTokenSheet() {
   const { goBack } = useNavigation();
