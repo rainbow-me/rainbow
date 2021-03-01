@@ -1,4 +1,4 @@
-// FIXME unify with iOS
+import { BottomSheetScrollView, useBottomSheet } from '@gorhom/bottom-sheet';
 import React, { Fragment, useEffect, useMemo, useRef } from 'react';
 import { Pressable, StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import Animated from 'react-native-reanimated';
@@ -102,6 +102,7 @@ export default function SlackSheet({
   );
 
   const sheet = useRef();
+  const isInsideBottomSheet = !!useBottomSheet();
 
   const scrollIndicatorInsets = useMemo(
     () => ({
@@ -146,6 +147,7 @@ export default function SlackSheet({
         <ContentWrapper backgroundColor={bg}>
           {renderHeader?.(yPosition)}
           <Content
+            {...(isInsideBottomSheet && { as: BottomSheetScrollView })}
             backgroundColor={bg}
             contentContainerStyle={scrollEnabled && contentContainerStyle}
             contentHeight={contentHeight}

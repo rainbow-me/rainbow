@@ -85,4 +85,5 @@ export { default as useWalletsDebug } from './useWalletsDebug';
 export { default as useWalletSectionsData } from './useWalletSectionsData';
 export { default as useWalletsWithBalancesAndNames } from './useWalletsWithBalancesAndNames';
 export { default as useWyreApplePay } from './useWyreApplePay';
+export { default as useForceUpdate } from './useForceUpdate';
 export { default as useOnAvatarPress } from './useOnAvatarPress';
