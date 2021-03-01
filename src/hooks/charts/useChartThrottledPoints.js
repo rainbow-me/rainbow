@@ -63,6 +63,7 @@ export default function useChartThrottledPoints({
   heightWithChart,
   heightWithoutChart,
   isPool,
+  uniBalance = true,
 }) {
   let assetForColor = asset;
   if (isPool) {
@@ -107,7 +108,11 @@ export default function useChartThrottledPoints({
     [fetchingCharts, isFetchingInitially, throttledPoints]
   );
 
-  useJumpingForm(showChart, heightWithChart, heightWithoutChart);
+  useJumpingForm(
+    showChart,
+    heightWithChart + (uniBalance ? 0 : -150),
+    heightWithoutChart + (uniBalance ? 0 : -150)
+  );
 
   const [throttledData, setThrottledData] = useState({
     nativePoints: throttledPoints.nativePoints,
