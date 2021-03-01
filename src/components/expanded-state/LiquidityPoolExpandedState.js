@@ -61,7 +61,7 @@ const LiquidityPoolExpandedState = ({ asset }) => {
 
   const liquidityPoolExpandedStateSheetHeight =
     (ios || showChart ? heightWithChart : heightWithoutChart) +
-    (android && 24) -
+    (android && 44) -
     (uniBalance ? 0 : UniBalanceHeightDifference);
 
   const tokenAddresses = useMemo(() => {
