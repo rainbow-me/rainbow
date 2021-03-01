@@ -23,8 +23,8 @@ export default function ExchangeDetailsButton({
       {...props}
       disabled={disabled}
       onPress={onPress}
-      opacity={disabled ? 0.4 : 1}
       scaleTo={1.0666}
+      style={{ opacity: disabled ? 0.4 : 1 }}
     >
       <ExchangeDetailsButtonLabel>{children}</ExchangeDetailsButtonLabel>
     </ButtonPressAnimation>
