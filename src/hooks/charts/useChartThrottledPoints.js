@@ -9,6 +9,7 @@ import {
 } from '@rainbow-me/hooks';
 
 import { useNavigation } from '@rainbow-me/navigation';
+import { ETH_ADDRESS } from '@rainbow-me/references';
 
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
 
@@ -104,7 +105,7 @@ export default function useChartThrottledPoints({
   // Only show the chart if we have chart data, or if chart data is still loading
   const showChart = useMemo(
     () =>
-      (nativeCurrency !== 'ETH' || asset?.address !== 'eth') &&
+      (nativeCurrency !== 'ETH' || asset?.address !== ETH_ADDRESS) &&
       (throttledPoints?.points.length > 5 ||
         throttledPoints?.points.length > 5 ||
         (fetchingCharts && !isFetchingInitially)),
