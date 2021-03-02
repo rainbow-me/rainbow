@@ -152,7 +152,6 @@ const PulseIndex = () => {
       >
         <Text
           color={colors.dpiLight}
-          letterSpacing="roundedMedium"
           numberOfLines={1}
           size="smedium"
           weight="semibold"
@@ -160,7 +159,7 @@ const PulseIndex = () => {
           Trading at{' '}
           <Text
             color={colors.dpiLight}
-            letterSpacing="roundedTight"
+            letterSpacing="roundedMedium"
             numberOfLines={1}
             size="smedium"
             weight="bold"
@@ -171,6 +170,7 @@ const PulseIndex = () => {
         <Text
           align="right"
           color={item.isPositive ? colors.green : colors.red}
+          letterSpacing="roundedMedium"
           numberOfLines={1}
           {...fontWithWidth(font.weight.bold)}
           size="smedium"
@@ -180,7 +180,6 @@ const PulseIndex = () => {
           <Text
             align="right"
             color={item.isPositive ? colors.green : colors.red}
-            letterSpacing="roundedTight"
             size="smedium"
             weight="semibold"
           >
