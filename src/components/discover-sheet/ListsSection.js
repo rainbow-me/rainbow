@@ -1,4 +1,4 @@
-import { keys, toLower } from 'lodash';
+import { keys, times, toLower } from 'lodash';
 import React, {
   Fragment,
   useCallback,
@@ -15,8 +15,8 @@ import {
   fetchCoingeckoIds,
 } from '../../redux/fallbackExplorer';
 import { DefaultTokenLists } from '../../references';
-import Spinner from '../Spinner';
 import { ButtonPressAnimation } from '../animations';
+import { AssetListItemSkeleton } from '../asset-list';
 import { ListCoinRow } from '../coin-row';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
 import { Centered, Column, Flex, Row } from '../layout';
@@ -271,56 +271,59 @@ export default function ListSection() {
           Lists
         </Text>
       </Flex>
-      {!ready ? (
-        <Centered marginBottom={40} marginTop={50}>
-          <Spinner color={colors.alpha(colors.blueGreyDark, 0.5)} size={25} />
-        </Centered>
-      ) : (
-        <Fragment>
-          <Column>
-            <FlatList
-              contentContainerStyle={{
-                paddingBottom: 6,
-                paddingHorizontal: 19,
-                paddingTop: 10,
-              }}
-              data={listData}
-              getItemLayout={getItemLayout}
-              horizontal
-              keyExtractor={item => item.id}
-              ref={listRef}
-              renderItem={renderItem}
-              scrollsToTop={false}
-              showsHorizontalScrollIndicator={false}
-            />
-            <EdgeFade />
-          </Column>
-          <Column>
-            {listItems?.length ? (
-              listItems
-                .filter(item => !!item.symbol)
-                .map(item => (
-                  <ListCoinRow
-                    {...itemProps}
-                    item={item}
-                    key={`${selectedList}-list-item-${item.address}`}
-                    onPress={() => handlePress(item)}
-                  />
-                ))
-            ) : (
-              <Centered marginVertical={42}>
-                <Text
-                  color={colors.alpha(colors.blueGreyDark, 0.3)}
-                  size="large"
-                  weight="semibold"
-                >
-                  This list is empty!
-                </Text>
-              </Centered>
-            )}
-          </Column>
-        </Fragment>
-      )}
+
+      <Fragment>
+        <Column>
+          <FlatList
+            contentContainerStyle={{
+              paddingBottom: 6,
+              paddingHorizontal: 19,
+              paddingTop: 10,
+            }}
+            data={listData}
+            getItemLayout={getItemLayout}
+            horizontal
+            keyExtractor={item => item.id}
+            ref={listRef}
+            renderItem={renderItem}
+            scrollsToTop={false}
+            showsHorizontalScrollIndicator={false}
+          />
+          <EdgeFade />
+        </Column>
+        <Column>
+          {!ready ? (
+            times(2, index => (
+              <AssetListItemSkeleton
+                animated
+                descendingOpacity
+                key={`skeleton-pools-${index}`}
+              />
+            ))
+          ) : listItems?.length ? (
+            listItems
+              .filter(item => !!item.symbol)
+              .map(item => (
+                <ListCoinRow
+                  {...itemProps}
+                  item={item}
+                  key={`${selectedList}-list-item-${item.address}`}
+                  onPress={() => handlePress(item)}
+                />
+              ))
+          ) : (
+            <Centered marginVertical={42}>
+              <Text
+                color={colors.alpha(colors.blueGreyDark, 0.3)}
+                size="large"
+                weight="semibold"
+              >
+                This list is empty!
+              </Text>
+            </Centered>
+          )}
+        </Column>
+      </Fragment>
     </Column>
   );
 }

@@ -1,9 +1,10 @@
-import { sortBy } from 'lodash';
+import { sortBy, times } from 'lodash';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { FlatList, LayoutAnimation } from 'react-native';
 import styled from 'styled-components';
 import { SORT_DIRECTION } from '../../hooks/useUniswapPools';
 import { ButtonPressAnimation } from '../animations';
+import { AssetListItemSkeleton } from '../asset-list';
 import UniswapLogo from '../icons/UniswapLogo';
 import { UniswapPoolListRow } from '../investment-cards';
 import { Column, Row } from '../layout';
@@ -201,8 +202,16 @@ export default function UniswapPools() {
       </Column>
       {error ? (
         <Text>There was an error loading Uniswap pool data...</Text>
-      ) : (
+      ) : pairRows?.length > 0 ? (
         pairRows
+      ) : (
+        times(3, index => (
+          <AssetListItemSkeleton
+            animated
+            descendingOpacity
+            key={`skeleton-pools-${index}`}
+          />
+        ))
       )}
     </Column>
   );
