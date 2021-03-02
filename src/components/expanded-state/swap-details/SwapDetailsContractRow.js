@@ -111,7 +111,7 @@ export default function SwapDetailsContractRow({
           ),
         },
       ],
-      menuTitle: `${asset?.name} (${asset?.symbol}) token contract`,
+      menuTitle: `${asset?.name} (${asset?.symbol})`,
     }),
     [asset]
   );

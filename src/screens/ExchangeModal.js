@@ -336,7 +336,6 @@ export default function ExchangeModal({
       inputAmount,
       isAuthorizing,
       isHighPriceImpact,
-      isSavings,
       onSubmit: handleSubmit,
       tradeDetails,
       type,
@@ -345,7 +344,6 @@ export default function ExchangeModal({
       handleSubmit,
       inputAmount,
       isAuthorizing,
-      isSavings,
       isHighPriceImpact,
       testID,
       tradeDetails,
@@ -443,6 +441,7 @@ export default function ExchangeModal({
             <DepositInfo
               amount={(inputAmount > 0 && outputAmount) || null}
               asset={outputCurrency}
+              onPress={navigateToSwapDetailsModal}
               testID="deposit-info-button"
             />
           )}
