@@ -203,7 +203,11 @@ export default function SwapDetailsState({
             {...confirmButtonProps}
             testID="swap-details-confirm"
           />
-          <Column justify="center" marginHorizontal={5} width={deviceWidth}>
+          <Column
+            justify="center"
+            marginHorizontal={5}
+            width={deviceWidth - 10}
+          >
             <GasSpeedButton
               onCustomGasBlur={hideKeyboard}
               onCustomGasFocus={showKeyboard}
