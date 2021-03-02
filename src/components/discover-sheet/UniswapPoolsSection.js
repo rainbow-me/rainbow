@@ -66,9 +66,12 @@ export default function UniswapPools() {
   const { pairs, error } = useUniswapPools(selectedList, sortDirection);
   const handleSwitchList = useCallback(
     (id, index) => {
-      LayoutAnimation.configureNext(
-        LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
-      );
+      // This crashes the app on android
+      // that's why it's disabled...
+      ios &&
+        LayoutAnimation.configureNext(
+          LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
+        );
       if (id === selectedList) {
         setSortDirection(
           sortDirection === SORT_DIRECTION.DESC
