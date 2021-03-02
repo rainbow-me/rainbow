@@ -172,9 +172,9 @@ const PulseIndex = () => {
           align="right"
           color={item.isPositive ? colors.green : colors.red}
           numberOfLines={1}
-          {...fontWithWidth(font.weight.semibold)}
+          {...fontWithWidth(font.weight.bold)}
           size="smedium"
-          weight="semibold"
+          weight="bold"
         >
           {item.isPositive ? `↑` : `↓`} {item.change}
           <Text
@@ -182,9 +182,11 @@ const PulseIndex = () => {
             color={item.isPositive ? colors.green : colors.red}
             letterSpacing="roundedTight"
             size="smedium"
-            weight="bold"
-          />{' '}
-          today
+            weight="semibold"
+          >
+            {' '}
+            today
+          </Text>
         </Text>
       </Row>
     </Fragment>
