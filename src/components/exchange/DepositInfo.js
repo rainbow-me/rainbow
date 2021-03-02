@@ -79,14 +79,15 @@ export default function DepositInfo({ asset, amount, onPress }) {
       }}
       testID="deposit-info"
     >
-      <Container>
-        <CoinIcon
-          address={asset?.address}
-          size={20}
-          symbol={asset?.symbol}
-          testID="deposit-info-container"
-        />
-        <ButtonPressAnimation onPress={onPress} scaleTo={1.06}>
+      <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
+        <Container>
+          <CoinIcon
+            address={asset?.address}
+            size={20}
+            symbol={asset?.symbol}
+            testID="deposit-info-container"
+          />
+
           <Centered>
             <Text
               color={colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)}
@@ -99,8 +100,8 @@ export default function DepositInfo({ asset, amount, onPress }) {
               {`${amountToDisplay} ${asset?.symbol || ''}`}
             </Text>
           </Centered>
-        </ButtonPressAnimation>
-      </Container>
+        </Container>
+      </ButtonPressAnimation>
     </Animated.View>
   );
 }
