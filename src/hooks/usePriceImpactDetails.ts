@@ -8,6 +8,7 @@ import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToNativeAmount,
   convertAmountToNativeDisplay,
+  divide,
   multiply,
   subtract,
 } from '@rainbow-me/utilities';
@@ -52,6 +53,16 @@ export default function usePriceImpactDetails(
   const executionRate = tradeDetails?.executionPrice?.toSignificant();
 
   let inverseExecutionRate = null;
+
+  const originalOutputAmount = divide(
+    outputAmount ?? 0,
+    subtract(1, divide(priceImpact?.toSignificant() ?? 0, 100))
+  );
+
+  const realExecutionRate = inputAmount
+    ? divide(originalOutputAmount, inputAmount)
+    : 0;
+
   if (tradeDetails && !tradeDetails?.executionPrice?.equalTo('0')) {
     inverseExecutionRate = tradeDetails?.executionPrice
       ?.invert()
@@ -63,11 +74,10 @@ export default function usePriceImpactDetails(
   }
 
   if (!inputPriceValue && outputPriceValue && executionRate) {
-    inputPriceValue = multiply(outputPriceValue, executionRate);
+    inputPriceValue = multiply(outputPriceValue, realExecutionRate);
   }
 
   let priceImpactNativeAmount = null;
-
   if (inputAmount && inputPriceValue && outputPriceValue) {
     const nativeAmount = convertAmountToNativeAmount(
       inputAmount,
