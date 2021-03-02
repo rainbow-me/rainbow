@@ -38,9 +38,9 @@ async function splitQuery(query, localClient, vars, list, skipCount = 100) {
     if (skip + skipCount < list.length) {
       end = skip + skipCount;
     }
-    let sliced = list.slice(skip, end);
+    const sliced = list.slice(skip, end);
     try {
-      let result = await localClient.query({
+      const result = await localClient.query({
         fetchPolicy: 'cache-first',
         query: query(...vars, sliced),
       });
@@ -58,7 +58,7 @@ async function splitQuery(query, localClient, vars, list, skipCount = 100) {
         skip += skipCount;
       }
     } catch (e) {
-      logger.log('🦄🦄🦄 FUCK SPLIT QUERY', e);
+      logger.log('🦄 Pools split query error', e);
     }
   }
 
@@ -70,7 +70,7 @@ export async function getBlocksFromTimestamps(timestamps, skipCount = 500) {
     return [];
   }
 
-  let fetchedData = await splitQuery(
+  const fetchedData = await splitQuery(
     GET_BLOCKS_QUERY,
     blockClient,
     [],
@@ -78,9 +78,9 @@ export async function getBlocksFromTimestamps(timestamps, skipCount = 500) {
     skipCount
   );
 
-  let blocks = [];
+  const blocks = [];
   if (fetchedData) {
-    for (var t in fetchedData) {
+    for (let t in fetchedData) {
       if (fetchedData[t].length > 0) {
         blocks.push({
           number: fetchedData[t][0]['number'],
@@ -102,14 +102,14 @@ const getTimestampsForChanges = () => {
 
 async function getBulkPairData(pairList, ethPrice, ethPriceOneMonthAgo) {
   const [t1, t2, t3] = getTimestampsForChanges();
-  let [
+  const [
     { number: b1 },
     { number: b2 },
     { number: b3 },
   ] = await getBlocksFromTimestamps([t1, t2, t3]);
 
   try {
-    let current = await uniswapClient.query({
+    const current = await uniswapClient.query({
       fetchPolicy: 'cache-first',
       query: UNISWAP_PAIRS_BULK_QUERY,
       variables: {
@@ -117,7 +117,7 @@ async function getBulkPairData(pairList, ethPrice, ethPriceOneMonthAgo) {
       },
     });
 
-    let [oneDayResult, twoDayResult, oneMonthResult] = await Promise.all(
+    const [oneDayResult, twoDayResult, oneMonthResult] = await Promise.all(
       [b1, b2, b3].map(async block => {
         let result = uniswapClient.query({
           fetchPolicy: 'cache-first',
@@ -139,13 +139,13 @@ async function getBulkPairData(pairList, ethPrice, ethPriceOneMonthAgo) {
       return { ...obj, [cur.id]: cur };
     }, {});
 
-    let pairData = await Promise.all(
+    const pairData = await Promise.all(
       current &&
         current.data.pairs.map(async pair => {
           let data = pair;
           let oneDayHistory = oneDayData?.[pair.id];
           if (!oneDayHistory) {
-            let newData = await uniswapClient.query({
+            const newData = await uniswapClient.query({
               fetchPolicy: 'cache-first',
               query: UNISWAP_PAIR_DATA_QUERY(pair.id, b1),
             });
@@ -153,7 +153,7 @@ async function getBulkPairData(pairList, ethPrice, ethPriceOneMonthAgo) {
           }
           let twoDayHistory = twoDayData?.[pair.id];
           if (!twoDayHistory) {
-            let newData = await uniswapClient.query({
+            const newData = await uniswapClient.query({
               fetchPolicy: 'cache-first',
               query: UNISWAP_PAIR_DATA_QUERY(pair.id, b2),
             });
@@ -161,7 +161,7 @@ async function getBulkPairData(pairList, ethPrice, ethPriceOneMonthAgo) {
           }
           let oneMonthHistory = oneMonthData?.[pair.id];
           if (!oneMonthHistory) {
-            let newData = await uniswapClient.query({
+            const newData = await uniswapClient.query({
               fetchPolicy: 'cache-first',
               query: UNISWAP_PAIR_DATA_QUERY(pair.id, b2),
             });
@@ -236,7 +236,24 @@ function parseData(
   if (!oneDayData && data) {
     newData.oneDayVolumeUSD = parseFloat(newData.volumeUSD);
   }
-
+  // if (!newData.oneDayVolumeUSD || !newData.trackedReserveUSD) {
+  //   console.log(
+  //     '🦄🦄🦄 SOMETHING FUCKED UP',
+  //     `${newData.token0.symbol}-${newData.token1.symbol}`,
+  //     JSON.stringify(
+  //       {
+  //         'ethPrice': ethPrice,
+  //         'oneDayVolumeUSD': newData.oneDayVolumeUSD,
+  //         'trackedReserveUSD': newData.trackedReserveUSD,
+  //         'newData?.volumeUSD': newData?.volumeUSD,
+  //         'oneDayData?.volumeUSD': oneDayData?.volumeUSD,
+  //         'twoDayData?.volumeUSD': twoDayData?.volumeUSD,
+  //       },
+  //       null,
+  //       2
+  //     )
+  //   );
+  // }
   newData.annualized_fees =
     (newData.oneDayVolumeUSD * 0.003 * 365 * 100) / newData.trackedReserveUSD;
 
@@ -349,26 +366,26 @@ export default function useUniswapPools(sortField, sortDirection) {
     [charts]
   );
 
-  const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
-    genericAssets,
-  }));
+  const { genericAssets, assets } = useSelector(
+    ({ data: { assets, genericAssets } }) => ({
+      assets,
+      genericAssets,
+    })
+  );
+
+  const priceOfEther = useMemo(() => {
+    const genericEthPrice = genericAssets?.eth?.price?.value;
+    return genericEthPrice || ethereumUtils.getAsset(assets)?.price?.value || 0;
+  }, [assets, genericAssets]);
+
   const [ids, setIds] = useState();
   const [pairs, setPairs] = useState();
   const dispatch = useDispatch();
-  const { assetsSocket } = useSelector(({ data: { assetsSocket } }) => ({
-    assetsSocket,
-  }));
 
-  const { data: idsData } = useQuery(UNISWAP_PAIRS_ID_QUERY, {
+  const { data: idsData, error } = useQuery(UNISWAP_PAIRS_ID_QUERY, {
     client: uniswapClient,
     pollInterval: UNISWAP_QUERY_INTERVAL,
     variables: {},
-  });
-
-  const { data, error, loading } = useQuery(UNISWAP_PAIRS_ID_QUERY, {
-    client: uniswapClient,
-    skip: !ids,
-    variables: { allPairs: ids },
   });
 
   useEffect(() => {
@@ -379,9 +396,8 @@ export default function useUniswapPools(sortField, sortDirection) {
 
   const fetchPairsData = useCallback(async () => {
     // get data for every pair in list
-    const priceOfEther = ethereumUtils.getEthPriceUnit();
     try {
-      let topPairs = await getBulkPairData(
+      const topPairs = await getBulkPairData(
         ids,
         Number(priceOfEther),
         Number(ethereumPriceOneMonthAgo),
@@ -391,22 +407,13 @@ export default function useUniswapPools(sortField, sortDirection) {
     } catch (e) {
       logger.log('🦄🦄🦄 error getting pairs data', e);
     }
-  }, [ethereumPriceOneMonthAgo, genericAssets, ids]);
+  }, [ethereumPriceOneMonthAgo, genericAssets, ids, priceOfEther]);
 
   useEffect(() => {
-    if (ids && !pairs) {
+    if (ids && !pairs && priceOfEther > 0) {
       fetchPairsData();
     }
-  }, [
-    assetsSocket,
-    data,
-    dispatch,
-    error,
-    fetchPairsData,
-    ids,
-    loading,
-    pairs,
-  ]);
+  }, [fetchPairsData, ids, pairs, priceOfEther]);
 
   const top40PairsSorted = useMemo(() => {
     if (!pairs) return null;
