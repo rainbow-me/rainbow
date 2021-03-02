@@ -27,6 +27,7 @@ interface SwapState {
   independentField: SwapModalField;
   independentValue: string | null;
   isMax: boolean;
+  slippageInBips: number;
   type: string;
   typeSpecificParameters: TypeSpecificParameters | null;
   outputCurrency: UniswapCurrency | null;
@@ -34,6 +35,7 @@ interface SwapState {
 
 // -- Constants --------------------------------------- //
 const SWAP_UPDATE_DEPOSIT_CURRENCY = 'swap/SWAP_UPDATE_DEPOSIT_CURRENCY';
+const SWAP_UPDATE_SLIPPAGE = 'swap/SWAP_UPDATE_SLIPPAGE';
 const SWAP_UPDATE_INPUT_AMOUNT = 'swap/SWAP_UPDATE_INPUT_AMOUNT';
 const SWAP_UPDATE_NATIVE_AMOUNT = 'swap/SWAP_UPDATE_NATIVE_AMOUNT';
 const SWAP_UPDATE_OUTPUT_AMOUNT = 'swap/SWAP_UPDATE_OUTPUT_AMOUNT';
@@ -54,6 +56,15 @@ export const updateSwapTypeDetails = (
       typeSpecificParameters,
     },
     type: SWAP_UPDATE_TYPE_DETAILS,
+  });
+};
+
+export const updateSwapSlippage = (slippage: number) => (
+  dispatch: AppDispatch
+) => {
+  dispatch({
+    payload: slippage,
+    type: SWAP_UPDATE_SLIPPAGE,
   });
 };
 
@@ -186,6 +197,7 @@ const INITIAL_STATE: SwapState = {
   inputCurrency: null,
   isMax: false,
   outputCurrency: null,
+  slippageInBips: 50,
   type: ExchangeModalTypes.swap,
   typeSpecificParameters: null,
 };
@@ -197,6 +209,11 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
         ...state,
         type: action.payload.type,
         typeSpecificParameters: action.payload.typeSpecificParameters,
+      };
+    case SWAP_UPDATE_SLIPPAGE:
+      return {
+        ...state,
+        slippageInBips: action.payload,
       };
     case SWAP_UPDATE_INPUT_AMOUNT:
       return {
