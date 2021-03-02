@@ -4,8 +4,9 @@ import useAccountSettings from './useAccountSettings';
 import { useTheme } from '@rainbow-me/context';
 import { AppState } from '@rainbow-me/redux/store';
 import {
+  abs,
   convertAmountAndPriceToNativeDisplay,
-  divide,
+  convertAmountToNativeDisplay,
   subtract,
 } from '@rainbow-me/utilities';
 
@@ -13,6 +14,7 @@ const PriceImpactWarningThreshold = new Fraction('5', '100');
 const SeverePriceImpactThreshold = new Fraction('10', '100');
 
 export default function usePriceImpactDetails(
+  nativeAmount: string | null,
   outputAmount: string | null,
   tradeDetails: Trade
 ) {
@@ -41,19 +43,19 @@ export default function usePriceImpactDetails(
 
   const outputPriceValue =
     genericAssets[outputCurrencyAddress]?.price?.value ?? 0;
-  const originalOutputAmount = divide(
+
+  const outputNativeAmount = convertAmountAndPriceToNativeDisplay(
     outputAmount ?? 0,
-    subtract(1, divide(priceImpact?.toSignificant() ?? 0, 100))
-  );
-  const outputAmountDifference = subtract(
-    originalOutputAmount,
-    outputAmount ?? 0
-  );
-  const {
-    display: priceImpactNativeAmount,
-  } = convertAmountAndPriceToNativeDisplay(
-    outputAmountDifference,
     outputPriceValue,
+    nativeCurrency
+  ).amount;
+
+  const nativeAmountDifference = abs(
+    subtract(nativeAmount ?? 0, outputNativeAmount)
+  );
+
+  const priceImpactNativeAmount = convertAmountToNativeDisplay(
+    nativeAmountDifference,
     nativeCurrency
   );
 

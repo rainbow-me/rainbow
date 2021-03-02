@@ -96,7 +96,7 @@ export default function SwapDetailsState({
   const insets = useSafeArea();
 
   const {
-    derivedValues: { inputAmount, outputAmount },
+    derivedValues: { inputAmount, nativeAmount, outputAmount },
     tradeDetails,
   } = useSwapDerivedOutputs();
   const {
@@ -104,7 +104,7 @@ export default function SwapDetailsState({
     priceImpactColor,
     priceImpactNativeAmount,
     priceImpactPercentDisplay,
-  } = usePriceImpactDetails(outputAmount, tradeDetails);
+  } = usePriceImpactDetails(nativeAmount, outputAmount, tradeDetails);
 
   const {
     copiedText,
@@ -189,12 +189,14 @@ export default function SwapDetailsState({
           onLayout={setSlippageMessageHeight}
           priceImpactColor={priceImpactColor}
           priceImpactNativeAmount={priceImpactNativeAmount}
+          priceImpactPercentDisplay={priceImpactPercentDisplay}
         />
         <SwapDetailsContent
           isHighPriceImpact={isHighPriceImpact}
           onCopySwapDetailsText={onCopySwapDetailsText}
           onLayout={setContentHeight}
           priceImpactColor={priceImpactColor}
+          priceImpactNativeAmount={priceImpactNativeAmount}
           priceImpactPercentDisplay={priceImpactPercentDisplay}
           tradeDetails={tradeDetails}
         />

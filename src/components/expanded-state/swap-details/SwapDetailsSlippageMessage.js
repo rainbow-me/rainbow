@@ -29,20 +29,24 @@ export default function SwapDetailsSlippageMessage({
   isHighPriceImpact,
   priceImpactColor,
   priceImpactNativeAmount,
+  priceImpactPercentDisplay,
   ...props
 }) {
   const { colors } = useTheme();
+  const heading = priceImpactNativeAmount ? 'Losing ' : 'Price impact is ';
+  const headingValue =
+    priceImpactNativeAmount ?? `${priceImpactPercentDisplay}%`;
   return isHighPriceImpact ? (
     <Column align="center" {...props}>
       <Container>
         <Row align="center">
-          <Heading color={priceImpactColor}>{`Losing `}</Heading>
+          <Heading color={priceImpactColor}>{heading}</Heading>
           <Heading
             color={priceImpactColor}
             letterSpacing="roundedTight"
             weight="heavy"
           >
-            {priceImpactNativeAmount}
+            {headingValue}
           </Heading>
           <Emoji size="larger">🥵</Emoji>
         </Row>

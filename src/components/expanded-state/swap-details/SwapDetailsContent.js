@@ -27,6 +27,7 @@ export default function SwapDetailsContent({
   isHighPriceImpact,
   onCopySwapDetailsText,
   priceImpactColor,
+  priceImpactNativeAmount,
   priceImpactPercentDisplay,
   tradeDetails,
   ...props
@@ -42,11 +43,16 @@ export default function SwapDetailsContent({
       testID="swap-details-state"
       {...props}
     >
-      <SwapDetailsRow label="Price impact">
-        <SwapDetailsValue color={priceImpactColor} letterSpacing="roundedTight">
-          {`${priceImpactPercentDisplay}%`}
-        </SwapDetailsValue>
-      </SwapDetailsRow>
+      {(!isHighPriceImpact || priceImpactNativeAmount) && (
+        <SwapDetailsRow label="Price impact">
+          <SwapDetailsValue
+            color={priceImpactColor}
+            letterSpacing="roundedTight"
+          >
+            {`${priceImpactPercentDisplay}%`}
+          </SwapDetailsValue>
+        </SwapDetailsRow>
+      )}
       <SwapDetailsRow label={receivedSoldLabel}>
         <SwapDetailsValue letterSpacing="roundedTight">
           {amountReceivedSold}
