@@ -5,13 +5,14 @@ import styled from 'styled-components';
 import { CoinIcon } from '../../coin-icon';
 import { Centered, ColumnWithMargins, Row } from '../../layout';
 import { Text, TruncatedText } from '../../text';
+
 import {
   convertAmountAndPriceToNativeDisplay,
   updatePrecisionToDisplay,
 } from '@rainbow-me/helpers/utilities';
 import { useAccountSettings, useColorForAsset } from '@rainbow-me/hooks';
 import { SwapModalField } from '@rainbow-me/redux/swap';
-import { position } from '@rainbow-me/styles';
+import { fonts, fontWithWidth, position } from '@rainbow-me/styles';
 
 export const CurrencyTileHeight = 143;
 
@@ -45,7 +46,9 @@ const NativePriceText = styled(TruncatedText).attrs({
   letterSpacing: 'roundedTight',
   size: 'lmedium',
   weight: 'heavy',
-})``;
+})`
+  ${fontWithWidth(fonts.weight.heavy)};
+`;
 
 const TruncatedAmountText = styled(AmountText).attrs({
   as: TruncatedText,
