@@ -10,6 +10,7 @@ import {
   updatePrecisionToDisplay,
 } from '@rainbow-me/helpers/utilities';
 import { useAccountSettings, useColorForAsset } from '@rainbow-me/hooks';
+import { SwapModalField } from '@rainbow-me/redux/swap';
 import { position } from '@rainbow-me/styles';
 
 export const CurrencyTileHeight = 143;
@@ -58,17 +59,21 @@ export default function CurrencyTile({
   asset,
   isHighPriceImpact,
   priceImpactColor,
+  priceValue,
   type = 'input',
   ...props
 }) {
-  const genericAssets = useSelector(state => state.data.genericAssets);
+  const inputAsExact = useSelector(
+    state => state.swap.independentField !== SwapModalField.output
+  );
   const { nativeCurrency } = useAccountSettings();
   const colorForAsset = useColorForAsset(asset);
   const { address, symbol } = asset;
-  const priceValue = genericAssets[address]?.price?.value ?? 0;
+  const isOther =
+    (inputAsExact && type === 'output') || (!inputAsExact && type === 'input');
 
   const { amountDisplay, priceDisplay } = useMemo(() => {
-    const data = [amount, priceValue];
+    const data = [amount, priceValue ?? 0];
     return {
       amountDisplay: updatePrecisionToDisplay(...data, true),
       priceDisplay: convertAmountAndPriceToNativeDisplay(
@@ -92,7 +97,7 @@ export default function CurrencyTile({
           </NativePriceText>
           <Row align="center">
             <TruncatedAmountText>
-              {`${type === 'output' ? '~' : ''}${amountDisplay}`}
+              {`${isOther ? '~' : ''}${amountDisplay}`}
             </TruncatedAmountText>
             <AmountText>{` ${symbol}`}</AmountText>
           </Row>

@@ -100,11 +100,13 @@ export default function SwapDetailsState({
     tradeDetails,
   } = useSwapDerivedOutputs();
   const {
+    inputPriceValue,
     isHighPriceImpact,
+    outputPriceValue,
     priceImpactColor,
     priceImpactNativeAmount,
     priceImpactPercentDisplay,
-  } = usePriceImpactDetails(outputAmount, tradeDetails);
+  } = usePriceImpactDetails(inputAmount, outputAmount, tradeDetails);
 
   const {
     copiedText,
@@ -180,8 +182,10 @@ export default function SwapDetailsState({
         </Header>
         <SwapDetailsMasthead
           inputAmount={inputAmount}
+          inputPriceValue={inputPriceValue}
           isHighPriceImpact={isHighPriceImpact}
           outputAmount={outputAmount}
+          outputPriceValue={outputPriceValue}
           priceImpactColor={priceImpactColor}
         />
         <SwapDetailsSlippageMessage
@@ -189,12 +193,14 @@ export default function SwapDetailsState({
           onLayout={setSlippageMessageHeight}
           priceImpactColor={priceImpactColor}
           priceImpactNativeAmount={priceImpactNativeAmount}
+          priceImpactPercentDisplay={priceImpactPercentDisplay}
         />
         <SwapDetailsContent
           isHighPriceImpact={isHighPriceImpact}
           onCopySwapDetailsText={onCopySwapDetailsText}
           onLayout={setContentHeight}
           priceImpactColor={priceImpactColor}
+          priceImpactNativeAmount={priceImpactNativeAmount}
           priceImpactPercentDisplay={priceImpactPercentDisplay}
           tradeDetails={tradeDetails}
         />

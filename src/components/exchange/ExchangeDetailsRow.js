@@ -10,11 +10,7 @@ import styled from 'styled-components';
 import { Centered, Row } from '../layout';
 import ExchangeDetailsButton from './ExchangeDetailsButton';
 import PriceImpactWarning from './PriceImpactWarning';
-import {
-  usePrevious,
-  useSwapCurrencies,
-  useSwapIsSufficientBalance,
-} from '@rainbow-me/hooks';
+import { usePrevious, useSwapCurrencies } from '@rainbow-me/hooks';
 import { padding, position } from '@rainbow-me/styles';
 
 const defaultPriceImpactScale = 1.15;
@@ -68,10 +64,8 @@ export default function ExchangeDetailsRow({
     transform: [{ scale: priceImpactScale.value }],
   }));
 
-  const isSufficientBalance = useSwapIsSufficientBalance(inputAmount);
-
   const isPriceImpactWarningVisible =
-    isSufficientBalance && !!inputAmount && !!outputAmount && isHighPriceImpact;
+    !!inputAmount && !!outputAmount && isHighPriceImpact;
   const prevIsPriceImpactWarningVisible = usePrevious(
     isPriceImpactWarningVisible
   );
@@ -120,6 +114,7 @@ export default function ExchangeDetailsRow({
         pointerEvents={isPriceImpactWarningVisible ? 'auto' : 'none'}
         priceImpactColor={priceImpactColor}
         priceImpactNativeAmount={priceImpactNativeAmount}
+        priceImpactPercentDisplay={priceImpactPercentDisplay}
         style={priceImpactAnimatedStyle}
       />
       <AnimatedExchangeDetailsButtonRow
