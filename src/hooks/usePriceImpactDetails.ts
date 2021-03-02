@@ -6,7 +6,9 @@ import { AppState } from '@rainbow-me/redux/store';
 import {
   abs,
   convertAmountAndPriceToNativeDisplay,
+  convertAmountToNativeAmount,
   convertAmountToNativeDisplay,
+  multiply,
   subtract,
 } from '@rainbow-me/utilities';
 
@@ -14,12 +16,15 @@ const PriceImpactWarningThreshold = new Fraction('5', '100');
 const SeverePriceImpactThreshold = new Fraction('10', '100');
 
 export default function usePriceImpactDetails(
-  nativeAmount: string | null,
+  inputAmount: string | null,
   outputAmount: string | null,
-  tradeDetails: Trade
+  tradeDetails: Trade | null
 ) {
   const { nativeCurrency } = useAccountSettings();
   const { colors } = useTheme();
+  const inputCurrencyAddress = useSelector(
+    (state: AppState) => state.swap.inputCurrency?.address
+  );
   const outputCurrencyAddress = useSelector(
     (state: AppState) => state.swap.outputCurrency?.address
   );
@@ -41,23 +46,49 @@ export default function usePriceImpactDetails(
     ? colors.orange
     : colors.green;
 
-  const outputPriceValue =
-    genericAssets[outputCurrencyAddress]?.price?.value ?? 0;
+  let inputPriceValue = genericAssets[inputCurrencyAddress]?.price?.value;
+  let outputPriceValue = genericAssets[outputCurrencyAddress]?.price?.value;
 
-  const outputNativeAmount = convertAmountAndPriceToNativeDisplay(
-    outputAmount ?? 0,
-    outputPriceValue,
-    nativeCurrency
-  ).amount;
+  const executionRate = tradeDetails?.executionPrice?.toSignificant();
 
-  const nativeAmountDifference = abs(
-    subtract(nativeAmount ?? 0, outputNativeAmount)
-  );
+  let inverseExecutionRate = null;
+  if (tradeDetails && !tradeDetails?.executionPrice?.equalTo('0')) {
+    inverseExecutionRate = tradeDetails?.executionPrice
+      ?.invert()
+      ?.toSignificant();
+  }
 
-  const priceImpactNativeAmount = convertAmountToNativeDisplay(
-    nativeAmountDifference,
-    nativeCurrency
-  );
+  if (!outputPriceValue && inputPriceValue && inverseExecutionRate) {
+    outputPriceValue = multiply(inputPriceValue, inverseExecutionRate);
+  }
+
+  if (!inputPriceValue && outputPriceValue && executionRate) {
+    inputPriceValue = multiply(outputPriceValue, executionRate);
+  }
+
+  let priceImpactNativeAmount = null;
+
+  if (inputAmount && inputPriceValue && outputPriceValue) {
+    const nativeAmount = convertAmountToNativeAmount(
+      inputAmount,
+      inputPriceValue
+    );
+
+    const outputNativeAmount = convertAmountAndPriceToNativeDisplay(
+      outputAmount ?? 0,
+      outputPriceValue,
+      nativeCurrency
+    ).amount;
+
+    const nativeAmountDifference = abs(
+      subtract(nativeAmount ?? 0, outputNativeAmount)
+    );
+
+    priceImpactNativeAmount = convertAmountToNativeDisplay(
+      nativeAmountDifference,
+      nativeCurrency
+    );
+  }
 
   return {
     isHighPriceImpact,

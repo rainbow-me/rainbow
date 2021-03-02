@@ -96,7 +96,7 @@ export default function SwapDetailsState({
   const insets = useSafeArea();
 
   const {
-    derivedValues: { inputAmount, nativeAmount, outputAmount },
+    derivedValues: { inputAmount, outputAmount },
     tradeDetails,
   } = useSwapDerivedOutputs();
   const {
@@ -104,7 +104,7 @@ export default function SwapDetailsState({
     priceImpactColor,
     priceImpactNativeAmount,
     priceImpactPercentDisplay,
-  } = usePriceImpactDetails(nativeAmount, outputAmount, tradeDetails);
+  } = usePriceImpactDetails(inputAmount, outputAmount, tradeDetails);
 
   const {
     copiedText,

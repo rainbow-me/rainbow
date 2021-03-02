@@ -165,7 +165,7 @@ export default function ExchangeModal({
     priceImpactColor,
     priceImpactNativeAmount,
     priceImpactPercentDisplay,
-  } = usePriceImpactDetails(nativeAmount, outputAmount, tradeDetails);
+  } = usePriceImpactDetails(inputAmount, outputAmount, tradeDetails);
 
   const isDismissing = useRef(false);
   useEffect(() => {
