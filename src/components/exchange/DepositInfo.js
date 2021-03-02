@@ -7,7 +7,7 @@ import {
 } from 'react-native-redash';
 import styled from 'styled-components';
 import { darkModeThemeColors } from '../../styles/colors';
-import { interpolate } from '../animations';
+import { ButtonPressAnimation, interpolate } from '../animations';
 import { CoinIcon } from '../coin-icon';
 import { Centered, RowWithMargins } from '../layout';
 import { Text } from '../text';
@@ -21,7 +21,7 @@ const Container = styled(RowWithMargins).attrs({
   width: 100%;
 `;
 
-export default function DepositInfo({ asset, amount }) {
+export default function DepositInfo({ asset, amount, onPress }) {
   const isVisible = !!(asset && amount);
 
   const prevAmountRef = useRef();
@@ -86,18 +86,20 @@ export default function DepositInfo({ asset, amount }) {
           symbol={asset?.symbol}
           testID="deposit-info-container"
         />
-        <Centered>
-          <Text
-            color={colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)}
-            size="smedium"
-            weight="semibold"
-          >
-            Swapping for{' '}
-          </Text>
-          <Text color="whiteLabel" size="smedium" weight="bold">
-            {`${amountToDisplay} ${asset?.symbol || ''}`}
-          </Text>
-        </Centered>
+        <ButtonPressAnimation onPress={onPress} scaleTo={1.06}>
+          <Centered>
+            <Text
+              color={colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)}
+              size="smedium"
+              weight="semibold"
+            >
+              Swapping for{' '}
+            </Text>
+            <Text color="whiteLabel" size="smedium" weight="bold">
+              {`${amountToDisplay} ${asset?.symbol || ''}`}
+            </Text>
+          </Centered>
+        </ButtonPressAnimation>
       </Container>
     </Animated.View>
   );
