@@ -63,6 +63,7 @@ export { default as useShakeAnimation } from './useShakeAnimation';
 export { default as useShowcaseTokens } from './useShowcaseTokens';
 export { default as usePriceImpactDetails } from './usePriceImpactDetails';
 export { default as useStepper } from './useStepper';
+export { default as useSwapAdjustedAmounts } from './useSwapAdjustedAmounts';
 export { default as useSwapCurrencies } from './useSwapCurrencies';
 export { default as useSwapCurrencyHandlers } from './useSwapCurrencyHandlers';
 export { default as useSwapInputRefs } from './useSwapInputRefs';

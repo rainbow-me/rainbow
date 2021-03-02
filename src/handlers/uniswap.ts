@@ -35,7 +35,7 @@ import {
 import { addBuffer } from '@rainbow-me/utilities';
 import logger from 'logger';
 
-enum Field {
+export enum Field {
   INPUT = 'INPUT',
   OUTPUT = 'OUTPUT',
 }
@@ -183,7 +183,7 @@ const getSwapType = (
   }
 };
 
-const computeSlippageAdjustedAmounts = (
+export const computeSlippageAdjustedAmounts = (
   trade: Trade,
   allowedSlippage: string
 ): { [field in Field]: CurrencyAmount } => {

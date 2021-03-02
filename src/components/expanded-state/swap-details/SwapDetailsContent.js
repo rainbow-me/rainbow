@@ -8,7 +8,7 @@ import SwapDetailsRow, {
   SwapDetailsValue,
 } from './SwapDetailsRow';
 import SwapDetailsUniswapRow from './SwapDetailsUniswapRow';
-import { useSwapCurrencies } from '@rainbow-me/hooks';
+import { useSwapAdjustedAmounts, useSwapCurrencies } from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
 import { isETH } from '@rainbow-me/utils';
 
@@ -32,6 +32,9 @@ export default function SwapDetailsContent({
   ...props
 }) {
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
+  const { amountReceivedSold, receivedSoldLabel } = useSwapAdjustedAmounts(
+    tradeDetails
+  );
 
   return (
     <Container
@@ -42,6 +45,11 @@ export default function SwapDetailsContent({
       <SwapDetailsRow label="Price impact">
         <SwapDetailsValue color={priceImpactColor} letterSpacing="roundedTight">
           {`${priceImpactPercentDisplay}%`}
+        </SwapDetailsValue>
+      </SwapDetailsRow>
+      <SwapDetailsRow label={receivedSoldLabel}>
+        <SwapDetailsValue letterSpacing="roundedTight">
+          {amountReceivedSold}
         </SwapDetailsValue>
       </SwapDetailsRow>
       <SwapDetailsPriceRow tradeDetails={tradeDetails} />
