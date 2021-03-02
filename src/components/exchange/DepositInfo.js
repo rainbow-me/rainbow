@@ -17,7 +17,7 @@ const Container = styled(RowWithMargins).attrs({
   centered: true,
   margin: 5,
 })`
-  ${padding(19, 19, 2)};
+  ${padding(android ? 6 : 10, 10, 2)};
   width: 100%;
 `;
 
@@ -58,7 +58,7 @@ export default function DepositInfo({ asset, amount }) {
       style={{
         height: interpolate(animationHeight, {
           inputRange: [0, 1],
-          outputRange: [0, 35],
+          outputRange: [20, 35],
         }),
         opacity: interpolate(animation, {
           inputRange: [0, 1],
