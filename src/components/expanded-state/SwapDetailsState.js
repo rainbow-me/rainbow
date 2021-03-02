@@ -100,7 +100,9 @@ export default function SwapDetailsState({
     tradeDetails,
   } = useSwapDerivedOutputs();
   const {
+    inputPriceValue,
     isHighPriceImpact,
+    outputPriceValue,
     priceImpactColor,
     priceImpactNativeAmount,
     priceImpactPercentDisplay,
@@ -180,8 +182,10 @@ export default function SwapDetailsState({
         </Header>
         <SwapDetailsMasthead
           inputAmount={inputAmount}
+          inputPriceValue={inputPriceValue}
           isHighPriceImpact={isHighPriceImpact}
           outputAmount={outputAmount}
+          outputPriceValue={outputPriceValue}
           priceImpactColor={priceImpactColor}
         />
         <SwapDetailsSlippageMessage

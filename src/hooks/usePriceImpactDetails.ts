@@ -99,7 +99,9 @@ export default function usePriceImpactDetails(
   }
 
   return {
+    inputPriceValue,
     isHighPriceImpact,
+    outputPriceValue,
     priceImpactColor,
     priceImpactNativeAmount,
     priceImpactPercentDisplay: priceImpact?.toFixed(),

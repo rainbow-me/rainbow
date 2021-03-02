@@ -59,22 +59,21 @@ export default function CurrencyTile({
   asset,
   isHighPriceImpact,
   priceImpactColor,
+  priceValue,
   type = 'input',
   ...props
 }) {
-  const genericAssets = useSelector(state => state.data.genericAssets);
   const inputAsExact = useSelector(
     state => state.swap.independentField !== SwapModalField.output
   );
   const { nativeCurrency } = useAccountSettings();
   const colorForAsset = useColorForAsset(asset);
   const { address, symbol } = asset;
-  const priceValue = genericAssets[address]?.price?.value ?? 0;
   const isOther =
     (inputAsExact && type === 'output') || (!inputAsExact && type === 'input');
 
   const { amountDisplay, priceDisplay } = useMemo(() => {
-    const data = [amount, priceValue];
+    const data = [amount, priceValue ?? 0];
     return {
       amountDisplay: updatePrecisionToDisplay(...data, true),
       priceDisplay: convertAmountAndPriceToNativeDisplay(
