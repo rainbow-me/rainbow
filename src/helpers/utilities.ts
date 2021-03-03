@@ -4,6 +4,9 @@ import { supportedNativeCurrencies } from '@rainbow-me/references';
 
 type BigNumberish = number | string | BigNumber;
 
+export const abs = (value: BigNumberish): string =>
+  new BigNumber(value).abs().toFixed();
+
 export const subtract = (
   numberOne: BigNumberish,
   numberTwo: BigNumberish

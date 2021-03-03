@@ -14,7 +14,7 @@ const Content = styled(Centered).attrs({
 `;
 
 const Label = styled(Text).attrs(
-  ({ theme: { colors }, color = colors.white, letterSpacing }) => ({
+  ({ theme: { colors }, color = colors.blueGreyDark80, letterSpacing }) => ({
     color,
     letterSpacing,
     size: 'large',
@@ -26,18 +26,22 @@ export default function PriceImpactWarning({
   onPress,
   priceImpactColor,
   priceImpactNativeAmount,
+  priceImpactPercentDisplay,
   style,
   ...props
 }) {
+  const heading = priceImpactNativeAmount ? 'Losing' : 'Price impact';
+  const headingValue =
+    priceImpactNativeAmount ?? `${priceImpactPercentDisplay}%`;
   return (
     <Animated.View {...props} style={[style, position.coverAsObject]}>
       <ButtonPressAnimation onPress={onPress} scaleTo={1.06}>
         <Content>
           <Label color={priceImpactColor}>{`􀇿 `}</Label>
           <Label>Small Market</Label>
-          <Label color={priceImpactColor}>{` • Losing `}</Label>
+          <Label color={priceImpactColor}>{` • ${heading} `}</Label>
           <Label color={priceImpactColor} letterSpacing="roundedTight">
-            {priceImpactNativeAmount}
+            {headingValue}
           </Label>
         </Content>
       </ButtonPressAnimation>

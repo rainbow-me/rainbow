@@ -7,7 +7,11 @@ import { ButtonPressAnimation, interpolate } from '../../animations';
 import { TruncatedAddress } from '../../text';
 import SwapDetailsRow, { SwapDetailsValue } from './SwapDetailsRow';
 import { useClipboard, useColorForAsset } from '@rainbow-me/hooks';
-import { abbreviations, ethereumUtils } from '@rainbow-me/utils';
+import {
+  abbreviations,
+  ethereumUtils,
+  showActionSheetWithOptions,
+} from '@rainbow-me/utils';
 
 const AnimatedTruncatedAddress = Animated.createAnimatedComponent(
   TruncatedAddress
@@ -36,6 +40,12 @@ const ContractActions = {
     },
   },
 };
+
+const androidContractActions = [
+  'Copy Contract Address',
+  'View on Etherscan',
+  'Cancel',
+];
 
 function SwapDetailsContractRowContent({
   asset,
@@ -101,7 +111,7 @@ export default function SwapDetailsContractRow({
           ),
         },
       ],
-      menuTitle: `${asset?.name} (${asset?.symbol}) token contract`,
+      menuTitle: `${asset?.name} (${asset?.symbol})`,
     }),
     [asset]
   );
@@ -117,11 +127,31 @@ export default function SwapDetailsContractRow({
     [asset, handleCopyContractAddress]
   );
 
+  const onPressAndroid = useCallback(() => {
+    showActionSheetWithOptions(
+      {
+        cancelButtonIndex: 2,
+        options: androidContractActions,
+        showSeparators: true,
+        title: `${asset?.name} (${asset?.symbol}) token contract`,
+      },
+      idx => {
+        if (idx === 0) {
+          handleCopyContractAddress(asset?.address);
+        }
+        if (idx === 1) {
+          ethereumUtils.openTokenEtherscanURL(asset?.address);
+        }
+      }
+    );
+  }, [asset, handleCopyContractAddress]);
+
   return (
     <ContextMenuButton
       activeOpacity={1}
       isMenuPrimaryAction
       menuConfig={menuConfig}
+      {...(android ? { onPress: onPressAndroid } : {})}
       onPressMenuItem={handlePressMenuItem}
       useActionSheetFallback={false}
       {...props}

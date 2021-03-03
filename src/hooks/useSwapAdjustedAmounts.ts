@@ -18,13 +18,12 @@ export default function useSwapAdjustedAmounts(tradeDetails: Trade) {
   const outputCurrency = useSelector(
     (state: AppState) => state.swap.outputCurrency
   );
-  const independentField = useSelector(
-    (state: AppState) => state.swap.independentField
+  const inputAsExact = useSelector(
+    (state: AppState) => state.swap.independentField !== SwapModalField.output
   );
   const slippageInBips = useSelector(
     (state: AppState) => state.swap.slippageInBips
   );
-  const inputAsExact = independentField !== SwapModalField.output;
   const receivedSoldLabel = inputAsExact ? 'Minimum received' : 'Maximum sold';
   const adjustedAmounts = computeSlippageAdjustedAmounts(
     tradeDetails,
