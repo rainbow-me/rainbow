@@ -230,6 +230,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.10.4",
+    "@babel/parser": "^7.12.13",
     "@babel/plugin-transform-react-inline-elements": "^7.9.0",
     "@babel/plugin-transform-runtime": "^7.9.0",
     "@babel/preset-env": "^7.10.4",

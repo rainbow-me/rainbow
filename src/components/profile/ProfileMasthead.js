@@ -204,7 +204,6 @@ export default function ProfileMasthead({
     dispatch,
     isAvatarEmojiPickerEnabled,
     isAvatarImagePickerEnabled,
-    isAvatarPickerAvailable,
     navigate,
     onRemovePhoto,
     recyclerListRef,
