@@ -2,6 +2,7 @@ import { useRoute } from '@react-navigation/native';
 import makeColorMoreChill from 'make-color-more-chill';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
+import { darkModeThemeColors } from '../../styles/colors';
 import { HoldToAuthorizeButton } from '../buttons';
 import { Centered } from '../layout';
 import { useTheme } from '@rainbow-me/context';
@@ -52,7 +53,7 @@ export default function ConfirmExchangeButton({
   const shouldOpenSwapDetails =
     tradeDetails && isHighPriceImpact && !isSwapDetailsRoute;
 
-  const { colors, darkScheme } = useTheme();
+  const { colors, darkScheme, isDarkMode } = useTheme();
 
   const shadows = useMemo(
     () => ({
@@ -61,7 +62,7 @@ export default function ConfirmExchangeButton({
           0,
           10,
           30,
-          (isSwapDetailsRoute ? colors : lightModeThemeColors).black,
+          (isSwapDetailsRoute ? colors : darkModeThemeColors).white,
           0.4,
         ],
       ],
@@ -70,7 +71,7 @@ export default function ConfirmExchangeButton({
           0,
           10,
           30,
-          (isSwapDetailsRoute ? colors : lightModeThemeColors).dark,
+          (isSwapDetailsRoute ? colors : darkModeThemeColors).light,
           0.2,
         ],
         [
@@ -91,7 +92,7 @@ export default function ConfirmExchangeButton({
       ? colorForAsset
       : makeColorMoreChill(
           colorForAsset,
-          (isSwapDetailsRoute ? colors : lightModeThemeColors).dark
+          (isSwapDetailsRoute ? colors : darkModeThemeColors).light
         );
 
     return {
@@ -101,13 +102,13 @@ export default function ConfirmExchangeButton({
           0,
           10,
           30,
-          (isSwapDetailsRoute ? colors : lightModeThemeColors).dark,
+          (isSwapDetailsRoute ? colors : darkModeThemeColors).light,
           0.2,
         ],
-        [0, 5, 15, color, 0.4],
+        [0, 5, 15, isDarkMode ? colors.trueBlack : color, 0.4],
       ],
     };
-  }, [colorForAsset, colors, isSwapDetailsRoute]);
+  }, [isSwapDetailsRoute, colorForAsset, colors, isDarkMode]);
 
   let label = '';
   if (type === ExchangeModalTypes.deposit) {
