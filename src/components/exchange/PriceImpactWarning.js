@@ -35,7 +35,7 @@ export default function PriceImpactWarning({
     priceImpactNativeAmount ?? `${priceImpactPercentDisplay}%`;
   return (
     <Animated.View {...props} style={[style, position.coverAsObject]}>
-      <ButtonPressAnimation onPress={onPress} scaleTo={1.06}>
+      <ButtonPressAnimation onPress={onPress} scaleTo={0.94}>
         <Content>
           <Label color={priceImpactColor}>{`􀇿 `}</Label>
           <Label>Small Market</Label>
