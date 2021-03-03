@@ -41,7 +41,7 @@ If you are new to React Native, this is a helpful introduction: https://facebook
 
 7. Run `yarn start` to start the React Native Bundler.
 
-8. Open `rainbow-wallet/ios/RainbowWallet.xcworkspace` in XCode.
+8. Open `rainbow-wallet/ios/Rainbow.xcworkspace` in XCode.
 
 9. Run the project by clicking the play button.
 
