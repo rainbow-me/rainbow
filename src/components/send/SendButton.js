@@ -34,6 +34,7 @@ export default function SendButton({
       label={label}
       onLongPress={onLongPress}
       parentHorizontalPadding={15}
+      showBiometryIcon={!disabled}
       testID={testID}
     />
   );
