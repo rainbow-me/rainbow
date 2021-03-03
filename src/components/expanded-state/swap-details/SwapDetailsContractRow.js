@@ -133,7 +133,7 @@ export default function SwapDetailsContractRow({
         cancelButtonIndex: 2,
         options: androidContractActions,
         showSeparators: true,
-        title: `${asset?.name} (${asset?.symbol}) token contract`,
+        title: `${asset?.name} (${asset?.symbol})`,
       },
       idx => {
         if (idx === 0) {
