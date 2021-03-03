@@ -10,15 +10,11 @@ import { OpacityToggler } from '../components/animations';
 import { AssetList } from '../components/asset-list';
 import { ExchangeFab, FabWrapper, SendFab } from '../components/fab';
 import {
-  CameraHeaderButton,
   DiscoverHeaderButton,
   Header,
   ProfileHeaderButton,
 } from '../components/header';
 import { Page } from '../components/layout';
-import useExperimentalFlag, {
-  DISCOVER_SHEET,
-} from '../config/experimentalHooks';
 import networkInfo from '../helpers/networkInfo';
 import {
   useAccountEmptyState,
@@ -48,7 +44,6 @@ const WalletPage = styled(Page)`
 
 export default function WalletScreen() {
   const { params } = useRoute();
-  const discoverSheetAvailable = useExperimentalFlag(DISCOVER_SHEET);
   const [initialized, setInitialized] = useState(!!params?.initialized);
   const initializeWallet = useInitializeWallet();
   const refreshAccountData = useRefreshAccountData();
@@ -112,11 +107,7 @@ export default function WalletScreen() {
         <HeaderOpacityToggler isVisible={isCoinListEdited}>
           <Header justify="space-between">
             <ProfileHeaderButton />
-            {discoverSheetAvailable ? (
-              <DiscoverHeaderButton />
-            ) : (
-              <CameraHeaderButton />
-            )}
+            <DiscoverHeaderButton />
           </Header>
         </HeaderOpacityToggler>
         <AssetList
