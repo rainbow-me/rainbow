@@ -101,14 +101,14 @@ const getTimestampsForChanges = () => {
 };
 
 async function getBulkPairData(pairList, ethPrice, ethPriceOneMonthAgo) {
-  const [t1, t2, t3] = getTimestampsForChanges();
-  const [
-    { number: b1 },
-    { number: b2 },
-    { number: b3 },
-  ] = await getBlocksFromTimestamps([t1, t2, t3]);
-
   try {
+    const [t1, t2, t3] = getTimestampsForChanges();
+    const [
+      { number: b1 },
+      { number: b2 },
+      { number: b3 },
+    ] = await getBlocksFromTimestamps([t1, t2, t3]);
+
     const current = await uniswapClient.query({
       fetchPolicy: 'cache-first',
       query: UNISWAP_PAIRS_BULK_QUERY,
@@ -119,7 +119,7 @@ async function getBulkPairData(pairList, ethPrice, ethPriceOneMonthAgo) {
 
     const [oneDayResult, twoDayResult, oneMonthResult] = await Promise.all(
       [b1, b2, b3].map(async block => {
-        let result = uniswapClient.query({
+        const result = uniswapClient.query({
           fetchPolicy: 'cache-first',
           query: UNISWAP_PAIRS_HISTORICAL_BULK_QUERY(block, pairList),
         });
@@ -127,15 +127,15 @@ async function getBulkPairData(pairList, ethPrice, ethPriceOneMonthAgo) {
       })
     );
 
-    let oneDayData = oneDayResult?.data?.pairs.reduce((obj, cur) => {
+    const oneDayData = oneDayResult?.data?.pairs.reduce((obj, cur) => {
       return { ...obj, [cur.id]: cur };
     }, {});
 
-    let twoDayData = twoDayResult?.data?.pairs.reduce((obj, cur) => {
+    const twoDayData = twoDayResult?.data?.pairs.reduce((obj, cur) => {
       return { ...obj, [cur.id]: cur };
     }, {});
 
-    let oneMonthData = oneMonthResult?.data?.pairs.reduce((obj, cur) => {
+    const oneMonthData = oneMonthResult?.data?.pairs.reduce((obj, cur) => {
       return { ...obj, [cur.id]: cur };
     }, {});
 
@@ -163,7 +163,7 @@ async function getBulkPairData(pairList, ethPrice, ethPriceOneMonthAgo) {
           if (!oneMonthHistory) {
             const newData = await uniswapClient.query({
               fetchPolicy: 'cache-first',
-              query: UNISWAP_PAIR_DATA_QUERY(pair.id, b2),
+              query: UNISWAP_PAIR_DATA_QUERY(pair.id, b3),
             });
             oneMonthHistory = newData.data.pairs[0];
           }
@@ -181,7 +181,7 @@ async function getBulkPairData(pairList, ethPrice, ethPriceOneMonthAgo) {
     );
     return pairData;
   } catch (e) {
-    logger.log(e);
+    logger.log('🦄🦄🦄 error in getBulkPairData', e);
   }
 }
 
@@ -236,24 +236,29 @@ function parseData(
   if (!oneDayData && data) {
     newData.oneDayVolumeUSD = parseFloat(newData.volumeUSD);
   }
-  // if (!newData.oneDayVolumeUSD || !newData.trackedReserveUSD) {
-  //   console.log(
-  //     '🦄🦄🦄 SOMETHING FUCKED UP',
-  //     `${newData.token0.symbol}-${newData.token1.symbol}`,
-  //     JSON.stringify(
-  //       {
-  //         'ethPrice': ethPrice,
-  //         'oneDayVolumeUSD': newData.oneDayVolumeUSD,
-  //         'trackedReserveUSD': newData.trackedReserveUSD,
-  //         'newData?.volumeUSD': newData?.volumeUSD,
-  //         'oneDayData?.volumeUSD': oneDayData?.volumeUSD,
-  //         'twoDayData?.volumeUSD': twoDayData?.volumeUSD,
-  //       },
-  //       null,
-  //       2
-  //     )
-  //   );
-  // }
+  if (
+    (!newData.oneDayVolumeUSD || !newData.trackedReserveUSD) &&
+    `${newData.token0.symbol}-${newData.token1.symbol}` !== 'WETH-USD' &&
+    `${newData.token0.symbol}-${newData.token1.symbol}` !== 'HKMT-USDT'
+  ) {
+    logger.log(
+      '🦄🦄🦄 Error calculating annualized data for token',
+      `${newData.token0.symbol}-${newData.token1.symbol}`,
+      JSON.stringify(
+        {
+          'ethPrice': ethPrice,
+          'newData?.volumeUSD': newData?.volumeUSD,
+          'oneDayVolumeUSD': newData.oneDayVolumeUSD,
+          'trackedReserveUSD': newData.trackedReserveUSD,
+          // eslint-disable-next-line sort-keys
+          'oneDayData': oneDayData,
+          'twoDayData': twoDayData,
+        },
+        null,
+        2
+      )
+    );
+  }
   newData.annualized_fees =
     (newData.oneDayVolumeUSD * 0.003 * 365 * 100) / newData.trackedReserveUSD;
 
@@ -283,8 +288,8 @@ export const get2DayPercentChange = (
   value48HoursAgo
 ) => {
   // get volume info for both 24 hour periods
-  let currentChange = parseFloat(valueNow) - parseFloat(value24HoursAgo);
-  let previousChange =
+  const currentChange = parseFloat(valueNow) - parseFloat(value24HoursAgo);
+  const previousChange =
     parseFloat(value24HoursAgo) - parseFloat(value48HoursAgo);
 
   const adjustedPercentChange =
