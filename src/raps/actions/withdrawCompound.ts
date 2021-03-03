@@ -2,7 +2,7 @@ import { Contract } from '@ethersproject/contracts';
 import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
 import { get } from 'lodash';
-import { Rap, RapActionParameters, WithdrawActionParameters } from '../common';
+import { Rap, RapActionParameters, SwapActionParameters } from '../common';
 import { toHex } from '@rainbow-me/handlers/web3';
 import ProtocolTypes from '@rainbow-me/helpers/protocolTypes';
 import TransactionStatusTypes from '@rainbow-me/helpers/transactionStatusTypes';
@@ -28,16 +28,11 @@ const withdrawCompound = async (
   parameters: RapActionParameters
 ): Promise<null> => {
   logger.log('[withdraw]');
-  const {
-    accountAddress,
-    inputAmount,
-    inputCurrency,
-    isMax,
-    network,
-    selectedGasPrice,
-  } = parameters as WithdrawActionParameters;
+  const { inputAmount } = parameters as SwapActionParameters;
   const { dispatch } = store;
-  const { gasPrices } = store.getState().gas;
+  const { accountAddress, network } = store.getState().settings;
+  const { inputCurrency, isMax } = store.getState().swap;
+  const { gasPrices, selectedGasPrice } = store.getState().gas;
   const rawInputAmount = convertAmountToRawAmount(
     inputAmount as string,
     isMax ? CTOKEN_DECIMALS : inputCurrency.decimals

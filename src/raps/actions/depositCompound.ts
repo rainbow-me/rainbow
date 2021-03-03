@@ -2,7 +2,7 @@ import { Contract } from '@ethersproject/contracts';
 import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
 import { get } from 'lodash';
-import { DepositActionParameters, Rap, RapActionParameters } from '../common';
+import { Rap, RapActionParameters, SwapActionParameters } from '../common';
 import { Asset } from '@rainbow-me/entities';
 import { toHex } from '@rainbow-me/handlers/web3';
 import ProtocolTypes from '@rainbow-me/helpers/protocolTypes';
@@ -13,6 +13,7 @@ import store from '@rainbow-me/redux/store';
 import {
   compoundCERC20ABI,
   compoundCETHABI,
+  ETH_ADDRESS,
   ethUnits,
   savingsAssetsListByUnderlying,
 } from '@rainbow-me/references';
@@ -20,8 +21,8 @@ import { convertAmountToRawAmount } from '@rainbow-me/utilities';
 import { gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
-export const getDepositGasLimit = (inputCurrency: Asset) =>
-  inputCurrency.address === 'eth'
+export const getDepositGasLimit = (tokenToDeposit: Asset) =>
+  tokenToDeposit.address === ETH_ADDRESS
     ? ethUnits.basic_deposit_eth
     : ethUnits.basic_deposit;
 
@@ -32,19 +33,20 @@ const depositCompound = async (
   parameters: RapActionParameters
 ): Promise<null> => {
   logger.log('[deposit]');
-  const {
-    accountAddress,
-    inputAmount,
-    inputCurrency,
-    network,
-    selectedGasPrice,
-  } = parameters as DepositActionParameters;
   const { dispatch } = store;
-  const { gasPrices } = store.getState().gas;
-  logger.log('[deposit]', inputAmount);
+  const { inputAmount, outputAmount } = parameters as SwapActionParameters;
+  const { inputCurrency, outputCurrency } = store.getState().swap;
+  const requiresSwap = !!outputCurrency;
+
+  const amountToDeposit = requiresSwap ? outputAmount : inputAmount;
+  const tokenToDeposit = requiresSwap ? outputCurrency : inputCurrency;
+
+  const { accountAddress, network } = store.getState().settings;
+  const { gasPrices, selectedGasPrice } = store.getState().gas;
+  logger.log('[deposit]', amountToDeposit);
   const rawInputAmount = convertAmountToRawAmount(
-    inputAmount,
-    inputCurrency.decimals
+    amountToDeposit,
+    tokenToDeposit.decimals
   );
   logger.log('[deposit] raw input amount', rawInputAmount);
 
@@ -56,18 +58,20 @@ const depositCompound = async (
   logger.log('[deposit] gas price', gasPrice);
 
   const cTokenContract =
-    savingsAssetsListByUnderlying[network][inputCurrency.address]
+    savingsAssetsListByUnderlying[network][tokenToDeposit.address]
       .contractAddress;
   logger.log('ctokencontract', cTokenContract);
 
   const compound = new Contract(
     cTokenContract,
-    inputCurrency.address === 'eth' ? compoundCETHABI : compoundCERC20ABI,
+    tokenToDeposit.address === ETH_ADDRESS
+      ? compoundCETHABI
+      : compoundCERC20ABI,
     wallet
   );
 
   const transactionParams = {
-    gasLimit: getDepositGasLimit(inputCurrency),
+    gasLimit: getDepositGasLimit(tokenToDeposit),
     gasPrice: toHex(gasPrice) || undefined,
     value: toHex(0),
   };
@@ -85,8 +89,8 @@ const depositCompound = async (
   currentRap.actions[index].transaction.hash = deposit.hash;
 
   const newTransaction = {
-    amount: inputAmount,
-    asset: inputCurrency,
+    amount: amountToDeposit,
+    asset: tokenToDeposit,
     from: accountAddress,
     gasLimit: transactionParams.gasLimit,
     gasPrice: transactionParams.gasPrice,

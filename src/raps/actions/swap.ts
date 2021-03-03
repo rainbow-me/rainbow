@@ -31,17 +31,11 @@ const swap = async (
   parameters: RapActionParameters
 ): Promise<null> => {
   logger.log('[swap] swap on uniswap!');
-  const {
-    accountAddress,
-    inputAmount,
-    inputCurrency,
-    outputCurrency,
-    selectedGasPrice,
-    tradeDetails,
-  } = parameters as SwapActionParameters;
+  const { inputAmount, tradeDetails } = parameters as SwapActionParameters;
   const { dispatch } = store;
-  const { chainId } = store.getState().settings;
-  const { gasPrices } = store.getState().gas;
+  const { accountAddress, chainId } = store.getState().settings;
+  const { inputCurrency, outputCurrency } = store.getState().swap;
+  const { gasPrices, selectedGasPrice } = store.getState().gas;
   logger.log('[swap] calculating trade details');
 
   // Execute Swap

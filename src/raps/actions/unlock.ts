@@ -21,11 +21,9 @@ const unlock = async (
 ): Promise<null> => {
   const { dispatch } = store;
   const {
-    accountAddress,
     amount,
     assetToUnlock,
     contractAddress,
-    selectedGasPrice,
   } = parameters as UnlockActionParameters;
   logger.log(
     '[unlock] begin unlock rap for',
@@ -35,7 +33,8 @@ const unlock = async (
   );
   logger.log('[unlock]', amount);
 
-  const { gasPrices } = store.getState().gas;
+  const { accountAddress } = store.getState().settings;
+  const { gasPrices, selectedGasPrice } = store.getState().gas;
 
   const { address: assetAddress } = assetToUnlock;
 

@@ -41,7 +41,7 @@ import {
 } from '@rainbow-me/hooks';
 import { loadWallet } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
-import { executeRap, findRapEstimationByType } from '@rainbow-me/raps';
+import { executeRap, getRapEstimationByType } from '@rainbow-me/raps';
 import { multicallClearState } from '@rainbow-me/redux/multicall';
 import { swapClearState, updateSwapTypeDetails } from '@rainbow-me/redux/swap';
 import { ethUnits } from '@rainbow-me/references';
@@ -102,7 +102,6 @@ export default function ExchangeModal({
     dispatch(updateSwapTypeDetails(type, typeSpecificParams));
   }, [dispatch, type, typeSpecificParams]);
 
-  const { underlyingPrice } = typeSpecificParams;
   const title = getInputHeaderTitle(type, defaultInputAsset);
   const showOutputField = getShowOutputField(type);
 
@@ -116,10 +115,6 @@ export default function ExchangeModal({
   const isDeposit = type === ExchangeModalTypes.deposit;
   const isWithdrawal = type === ExchangeModalTypes.withdrawal;
   const isSavings = isDeposit || isWithdrawal;
-
-  const estimateRap = useMemo(() => {
-    return findRapEstimationByType(type);
-  }, [type]);
 
   const defaultGasLimit = isDeposit
     ? ethUnits.basic_deposit
@@ -222,8 +217,21 @@ export default function ExchangeModal({
 
   const updateGasLimit = useCallback(async () => {
     try {
-      const gasLimit = await estimateRap();
-      if (inputCurrency && outputCurrency) {
+      if (
+        ((type === ExchangeModalTypes.swap ||
+          type === ExchangeModalTypes.deposit) &&
+          !(inputCurrency && outputCurrency)) ||
+        type === ExchangeModalTypes.withdraw
+      ) {
+        return;
+      }
+      const swapParams = {
+        inputAmount,
+        outputAmount,
+        tradeDetails,
+      };
+      const gasLimit = await getRapEstimationByType(type, swapParams);
+      if (gasLimit) {
         updateTxFee(gasLimit);
       }
     } catch (error) {
@@ -231,9 +239,12 @@ export default function ExchangeModal({
     }
   }, [
     defaultGasLimit,
-    estimateRap,
+    inputAmount,
     inputCurrency,
+    outputAmount,
     outputCurrency,
+    tradeDetails,
+    type,
     updateTxFee,
   ]);
 
@@ -298,7 +309,12 @@ export default function ExchangeModal({
           navigate(Routes.PROFILE_SCREEN);
         };
         logger.log('[exchange - handle submit] rap');
-        await executeRap(wallet, type);
+        const swapParameters = {
+          inputAmount,
+          outputAmount,
+          tradeDetails,
+        };
+        await executeRap(wallet, type, swapParameters);
         callback();
         logger.log('[exchange - handle submit] executed rap!');
         analytics.track(`Completed ${type}`, {
@@ -314,11 +330,14 @@ export default function ExchangeModal({
     });
   }, [
     defaultInputAsset,
+    inputAmount,
     isHighPriceImpact,
     navigate,
+    outputAmount,
     outputCurrency,
     priceImpactPercentDisplay,
     setParams,
+    tradeDetails,
     type,
   ]);
 

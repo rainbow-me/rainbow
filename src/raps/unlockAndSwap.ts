@@ -5,6 +5,7 @@ import {
   createNewRap,
   RapAction,
   RapActionTypes,
+  SwapActionParameters,
 } from './common';
 import { estimateSwapGasLimit } from '@rainbow-me/handlers/uniswap';
 import store from '@rainbow-me/redux/store';
@@ -12,13 +13,11 @@ import { ethUnits, UNISWAP_V2_ROUTER_ADDRESS } from '@rainbow-me/references';
 import { add } from '@rainbow-me/utilities';
 import { contractUtils } from '@rainbow-me/utils';
 
-export const estimateUnlockAndSwap = async () => {
-  const {
-    inputAmount,
-    inputCurrency,
-    outputCurrency,
-    tradeDetails,
-  } = store.getState().swap;
+export const estimateUnlockAndSwap = async (
+  swapParameters: SwapActionParameters
+) => {
+  const { inputAmount, tradeDetails } = swapParameters;
+  const { inputCurrency, outputCurrency } = store.getState().swap;
 
   const isValid = isValidSwapInput({
     inputCurrency,
@@ -57,14 +56,11 @@ export const estimateUnlockAndSwap = async () => {
   return reduce(gasLimits, (acc, limit) => add(acc, limit), '0');
 };
 
-export const createUnlockAndSwapRap = async () => {
-  const {
-    inputAmount,
-    inputCurrency,
-    outputCurrency,
-    tradeDetails,
-  } = store.getState().swap;
-  const { selectedGasPrice } = store.getState().gas;
+export const createUnlockAndSwapRap = async (
+  swapParameters: SwapActionParameters
+) => {
+  const { inputAmount, tradeDetails } = swapParameters;
+  const { inputCurrency } = store.getState().swap;
 
   // create unlock rap
   const { accountAddress } = store.getState().settings;
@@ -80,22 +76,16 @@ export const createUnlockAndSwapRap = async () => {
 
   if (swapAssetNeedsUnlocking) {
     const unlock = createNewAction(RapActionTypes.unlock, {
-      accountAddress,
       amount: inputAmount,
       assetToUnlock: inputCurrency,
       contractAddress: UNISWAP_V2_ROUTER_ADDRESS,
-      selectedGasPrice,
     });
     actions = concat(actions, unlock);
   }
 
   // create a swap rap
   const swap = createNewAction(RapActionTypes.swap, {
-    accountAddress,
     inputAmount,
-    inputCurrency,
-    outputCurrency,
-    selectedGasPrice,
     tradeDetails,
   });
   actions = concat(actions, swap);
