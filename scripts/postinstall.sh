@@ -1,6 +1,7 @@
 #!/bin/bash
 set -eo pipefail
 
+source .env
 if [ -n "$RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK" ]; then
   eval $RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK;
   echo "✅ executed ios prebuild hook"
@@ -27,8 +28,6 @@ then
   cat .env | grep "BRANCH" | sed 's/=/ = /g' > ./ios/localrelease.xcconfig
   cat .env | grep "BRANCH" | sed 's/=/ = /g' > ./ios/staging.xcconfig
   echo "✅ .xcconfig files created"
-
-  source .env
   echo "✅ Android ENV vars exported"
 
 else
