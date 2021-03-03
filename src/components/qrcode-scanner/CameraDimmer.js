@@ -13,9 +13,6 @@ import Animated, {
 
 import styled from 'styled-components';
 import { useMemoOne } from 'use-memo-one';
-import useExperimentalFlag, {
-  DISCOVER_SHEET,
-} from '../../config/experimentalHooks';
 import { scrollPosition } from '../../navigation/ScrollPagerWrapper';
 import { useReanimatedValue } from '../list/MarqueeList';
 
@@ -27,8 +24,6 @@ const Dim = styled(Animated.View)`
 export default function CameraDimmer({ children, cameraDim = { value: 1 } }) {
   const prev = useReanimatedValue(0);
   const prevMem = useReanimatedValue(0);
-  const discoverSheetAvailable = useExperimentalFlag(DISCOVER_SHEET);
-
   const animatedV2Style = useAnimatedStyle(() => ({
     opacity: withTiming(cameraDim.value),
   }));
@@ -54,9 +49,7 @@ export default function CameraDimmer({ children, cameraDim = { value: 1 } }) {
   );
   return (
     <Dim style={style}>
-      <Dim style={[ios && discoverSheetAvailable ? animatedV2Style : null]}>
-        {children}
-      </Dim>
+      <Dim style={[ios ? animatedV2Style : null]}>{children}</Dim>
     </Dim>
   );
 }

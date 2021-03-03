@@ -1,5 +1,4 @@
 export { default as BackButton } from './BackButton';
-export { default as CameraHeaderButton } from './CameraHeaderButton';
 export { default as DiscoverHeaderButton } from './DiscoverHeaderButton';
 export {
   default as Header,

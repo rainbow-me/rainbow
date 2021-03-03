@@ -3,7 +3,6 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 import Animated, { useCode, useSharedValue } from 'react-native-reanimated';
 import styled from 'styled-components';
-import { BubbleSheet } from '../components/bubble-sheet';
 import { DiscoverSheet } from '../components/discover-sheet';
 import { FabWrapper, SearchFab } from '../components/fab';
 import { BackButton, Header, HeaderHeight } from '../components/header';
@@ -13,14 +12,6 @@ import {
   EmulatorPasteUriButton,
   QRCodeScanner,
 } from '../components/qrcode-scanner';
-import {
-  WalletConnectExplainer,
-  WalletConnectList,
-} from '../components/walletconnect-list';
-import useExperimentalFlag, {
-  DISCOVER_SHEET,
-} from '@rainbow-me/config/experimentalHooks';
-import { useHeight, useWalletConnectConnections } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { scrollPosition } from '@rainbow-me/navigation/ScrollPagerWrapper';
 import Routes from '@rainbow-me/routes';
@@ -67,13 +58,10 @@ function useFocusFromSwipe() {
 }
 
 export default function QRScannerScreen() {
-  const discoverSheetAvailable = useExperimentalFlag(DISCOVER_SHEET);
   const isFocusedIOS = useFocusFromSwipe();
   const isFocusedAndroid = useIsFocused();
-  const [sheetHeight, onSheetLayout] = useHeight(240);
   const [initializeCamera, setInitializeCamera] = useState(ios ? true : false);
   const { navigate } = useNavigation();
-  const { walletConnectorsCount } = useWalletConnectConnections();
 
   const cameraDim = useSharedValue(0);
   const dsRef = useRef();
@@ -100,33 +88,20 @@ export default function QRScannerScreen() {
   return (
     <>
       <View pointerEvents="box-none">
-        {discoverSheetAvailable && ios ? <DiscoverSheet ref={dsRef} /> : null}
+        {ios ? <DiscoverSheet ref={dsRef} /> : null}
         <ScannerContainer>
           <Background />
           <CameraDimmer cameraDim={cameraDim}>
             {initializeCamera && (
               <QRCodeScanner
                 cameraDim={cameraDim}
-                contentPositionBottom={sheetHeight}
                 contentPositionTop={HeaderHeight}
                 dsRef={dsRef}
                 enableCamera={ios ? isFocusedIOS : isFocusedAndroid}
               />
             )}
           </CameraDimmer>
-          {discoverSheetAvailable ? (
-            android ? (
-              <DiscoverSheet ref={dsRef} />
-            ) : null
-          ) : (
-            <BubbleSheet onLayout={onSheetLayout}>
-              {walletConnectorsCount ? (
-                <WalletConnectList />
-              ) : (
-                <WalletConnectExplainer />
-              )}
-            </BubbleSheet>
-          )}
+          {android ? <DiscoverSheet ref={dsRef} /> : null}
           <ScannerHeader>
             <BackButton
               color={colors.whiteLabel}
