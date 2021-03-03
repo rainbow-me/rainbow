@@ -63,7 +63,7 @@ export default forwardRef(function DiscoverSearchContainer(
   const setIsInputFocused = useCallback(
     value => {
       setShowSearch(value);
-      jumpToLong();
+      setTimeout(() => jumpToLong(), 10);
       setIsSearchModeEnabled(value);
       setViewPagerSwipeEnabled(!value);
     },
