@@ -48,7 +48,7 @@ export default function SwapDetailsSlippageMessage({
           >
             {headingValue}
           </Heading>
-          <Emoji size="larger">🥵</Emoji>
+          <Emoji size="larger"> 🥵</Emoji>
         </Row>
         <Message>
           This is a small market, so you’re getting a bad price. Try a smaller
