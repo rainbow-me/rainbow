@@ -30,7 +30,7 @@ class BSpline {
   seqAt(dim) {
     let points = this.points;
     let margin = this.degree + 1;
-    return function(n) {
+    return function (n) {
       if (n < margin) {
         return points[0][dim];
       } else if (points.length + margin <= n) {
