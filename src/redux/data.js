@@ -72,6 +72,8 @@ let pendingTransactionsHandle = null;
 let genericAssetsHandle = null;
 const TXN_WATCHER_MAX_TRIES = 60;
 const TXN_WATCHER_POLL_INTERVAL = 5000; // 5 seconds
+const GENERIC_ASSETS_REFRESH_INTERVAL = 60000; // 1 minute
+const GENERIC_ASSETS_FALLBACK_TIMEOUT = 10000; // 10 seconds
 
 export const COINGECKO_TRENDING_ENDPOINT =
   'https://api.coingecko.com/api/v3/search/trending';
@@ -143,10 +145,10 @@ export const dataLoadState = () => async (dispatch, getState) => {
   }
   genericAssetsHandle = setTimeout(() => {
     dispatch(genericAssetsFallback());
-  }, 5000);
+  }, GENERIC_ASSETS_FALLBACK_TIMEOUT);
 };
 
-const fetchAssetPrices = async (coingeckoIds, nativeCurrency) => {
+export const fetchAssetPrices = async (coingeckoIds, nativeCurrency) => {
   try {
     const url = `https://api.coingecko.com/api/v3/simple/price?ids=${coingeckoIds
       .filter(val => !!val)
@@ -257,6 +259,11 @@ const genericAssetsFallback = () => async (dispatch, getState) => {
       true
     )
   );
+
+  genericAssetsHandle = setTimeout(() => {
+    logger.log('updating generic assets via fallback');
+    dispatch(genericAssetsFallback());
+  }, GENERIC_ASSETS_REFRESH_INTERVAL);
 };
 
 const disableGenericAssetsFallbackIfNeeded = () => {

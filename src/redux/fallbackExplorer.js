@@ -10,7 +10,11 @@ import balanceCheckerContractAbi from '../references/balances-checker-abi.json';
 import coingeckoIdsFallback from '../references/coingecko/ids.json';
 import migratedTokens from '../references/migratedTokens.json';
 import testnetAssets from '../references/testnet-assets.json';
-import { addressAssetsReceived, COINGECKO_IDS_ENDPOINT } from './data';
+import {
+  addressAssetsReceived,
+  COINGECKO_IDS_ENDPOINT,
+  fetchAssetPrices,
+} from './data';
 import logger from 'logger';
 
 // -- Constants --------------------------------------- //
@@ -198,21 +202,6 @@ const getTokenTxDataFromEtherscan = async (
     return result;
   }
   return null;
-};
-
-const fetchAssetPrices = async (coingeckoIds, nativeCurrency) => {
-  try {
-    const url = `https://api.coingecko.com/api/v3/simple/price?ids=${coingeckoIds
-      .filter(val => !!val)
-      .sort()
-      .join(
-        ','
-      )}&vs_currencies=${nativeCurrency}&include_24hr_change=true&include_last_updated_at=true`;
-    const priceRequest = await fetch(url);
-    return priceRequest.json();
-  } catch (e) {
-    logger.log(`Error trying to fetch ${coingeckoIds} prices`, e);
-  }
 };
 
 const fetchAssetBalances = async (tokens, address, network) => {
