@@ -12,7 +12,7 @@ export default function useMaxInputBalance() {
       // Update current balance
       const newInputBalance = ethereumUtils.getBalanceAmount(
         selectedGasPrice,
-        inputCurrency?.address
+        inputCurrency
       );
       setMaxInputBalance(newInputBalance);
       return newInputBalance;
