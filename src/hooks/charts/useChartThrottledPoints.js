@@ -44,13 +44,15 @@ function useJumpingForm(isLong, heightWithChart, heightWithoutChart) {
 
   useEffect(() => {
     if (!isLong) {
-      setOptions({
-        longFormHeight: heightWithoutChart,
-      });
+      heightWithoutChart &&
+        setOptions({
+          longFormHeight: heightWithoutChart,
+        });
     } else {
-      setOptions({
-        longFormHeight: heightWithChart,
-      });
+      heightWithChart &&
+        setOptions({
+          longFormHeight: heightWithChart,
+        });
     }
   }, [
     heightWithChart,
