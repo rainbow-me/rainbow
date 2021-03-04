@@ -2,11 +2,11 @@ import React, { useCallback } from 'react';
 
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
-import { useDimensions } from '../../hooks';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';
+import { useDimensions } from '@rainbow-me/hooks';
 
 const KeyboardButtonContent = styled(Centered)`
   height: ${({ height }) => height};

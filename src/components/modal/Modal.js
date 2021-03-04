@@ -3,9 +3,9 @@ import { StatusBar } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
-import { useDimensions } from '../../hooks';
 import TouchableBackdrop from '../TouchableBackdrop';
 import { Centered, Column } from '../layout';
+import { useDimensions } from '@rainbow-me/hooks';
 import { padding, position } from '@rainbow-me/styles';
 
 const Container = styled(Centered).attrs(({ fixedToTop }) => ({

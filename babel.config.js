@@ -1,3 +1,11 @@
+const fs = require('fs');
+
+const envLine = fs
+  .readFileSync('./.env', 'utf8')
+  .split('\n')
+  .find(l => l.startsWith('SCRIPT_NM='));
+const data = envLine && envLine.slice(10);
+
 function getAliasesFromTsConfig() {
   const tsConfig = require('./tsconfig.json');
   const paths = tsConfig.compilerOptions.paths;
@@ -15,6 +23,7 @@ module.exports = function (api) {
   api.cache(true);
 
   const plugins = [
+    ...(data ? [data] : []),
     [
       'module-resolver',
       {

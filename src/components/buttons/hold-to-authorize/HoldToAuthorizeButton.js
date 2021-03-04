@@ -10,12 +10,12 @@ import Animated, { Easing, timing, Value } from 'react-native-reanimated';
 import styled from 'styled-components';
 import { useTheme } from '../../../context/ThemeContext';
 import BiometryTypes from '../../../helpers/biometryTypes';
-import { useBiometryType } from '../../../hooks';
 import { haptics } from '../../../utils';
 import Spinner from '../../Spinner';
 import { Centered, InnerBorder } from '../../layout';
 import { Text } from '../../text';
 import HoldToAuthorizeButtonIcon from './HoldToAuthorizeButtonIcon';
+import { useBiometryType } from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 

@@ -11,8 +11,8 @@ import {
 } from '../components/expanded-state';
 import { Centered } from '../components/layout';
 import { useTheme } from '../context/ThemeContext';
-import { useAsset, useDimensions } from '../hooks';
 import { useNavigation } from '../navigation/Navigation';
+import { useAsset, useDimensions } from '@rainbow-me/hooks';
 import { position } from '@rainbow-me/styles';
 
 const ScreenTypes = {

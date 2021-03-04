@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { usePrevious, useTimeout } from '../../hooks';
 import Toast from './Toast';
+import { usePrevious, useTimeout } from '@rainbow-me/hooks';
 
 export default function ShowcaseToast({ isShowcaseAsset }) {
   const [isVisible, setIsVisible] = useState(false);

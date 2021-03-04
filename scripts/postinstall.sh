@@ -1,7 +1,21 @@
 #!/bin/bash
 set -eo pipefail
 
-source .env
+if [ -e .env ]
+then
+  cat .env | grep "BRANCH" | sed 's/=/ = /g' > ./ios/debug.xcconfig
+  cat .env | grep "BRANCH" | sed 's/=/ = /g' > ./ios/release.xcconfig
+  cat .env | grep "BRANCH" | sed 's/=/ = /g' > ./ios/localrelease.xcconfig
+  cat .env | grep "BRANCH" | sed 's/=/ = /g' > ./ios/staging.xcconfig
+  echo "✅ .xcconfig files created"
+
+  source .env
+  echo "✅ Android ENV vars exported"
+
+else
+  echo "⚠️ .env file missing!! ⚠️"
+  echo "Please make sure the file exists and it's located in the root of the project"
+fi
 
 if [ -n "$RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK" ]; then
   eval $RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK;
@@ -23,22 +37,6 @@ git update-index --assume-unchanged "ios/AppDelegate.pch"
 rn-nodeify --install --hack 'crypto,buffer,react-native-randombytes,vm,stream,http,https,os,url,net,fs,process'
 echo "✅ rn-nodeify packages hacked succesfully"
 
-if [ -e .env ]
-then
-  cat .env | grep "BRANCH" | sed 's/=/ = /g' > ./ios/debug.xcconfig
-  cat .env | grep "BRANCH" | sed 's/=/ = /g' > ./ios/release.xcconfig
-  cat .env | grep "BRANCH" | sed 's/=/ = /g' > ./ios/localrelease.xcconfig
-  cat .env | grep "BRANCH" | sed 's/=/ = /g' > ./ios/staging.xcconfig
-  echo "✅ .xcconfig files created"
-
-  source .env
-  echo "✅ Android ENV vars exported"
-
-else
-  echo "⚠️ .env file missing!! ⚠️"
-  echo "Please make sure the file exists and it's located in the root of the project"
-fi
-
 patch-package
 echo "✅ All patches applied"
 
@@ -50,7 +48,7 @@ else
     cp src/config/defaultDebug.js $DEBUGFILE
 fi
 
-# Remove the incomplete installation 
+# Remove the incomplete installation
 # of sentry-cli from node_modules
 rm -rf node_modules/.bin/sentry-cli
 
@@ -61,5 +59,5 @@ then
 else
   which sentry-cli
   sentry-cli --version
-  echo "sentry-cli is already installed. Skipping" 
+  echo "sentry-cli is already installed. Skipping"
 fi

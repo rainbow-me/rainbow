@@ -1,12 +1,12 @@
 import React, { useEffect, useRef } from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import styled from 'styled-components';
-import { usePrevious } from '../../hooks';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Column } from '../layout';
 import { SheetHandle } from '../sheet';
 import { Text } from '../text';
+import { usePrevious } from '@rainbow-me/hooks';
 import { padding, position } from '@rainbow-me/styles';
 
 const SheetHandleMargin = 6;

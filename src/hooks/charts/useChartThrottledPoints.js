@@ -2,12 +2,14 @@ import { debounce } from 'lodash';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { monotoneCubicInterpolation } from '@rainbow-me/animated-charts';
 import {
+  useAccountSettings,
   useChartData,
   useChartDataLabels,
   useColorForAsset,
 } from '@rainbow-me/hooks';
 
 import { useNavigation } from '@rainbow-me/navigation';
+import { ETH_ADDRESS } from '@rainbow-me/references';
 
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
 
@@ -64,6 +66,8 @@ export default function useChartThrottledPoints({
   heightWithoutChart,
   isPool,
 }) {
+  const { nativeCurrency } = useAccountSettings();
+
   let assetForColor = asset;
   if (isPool) {
     assetForColor = asset?.tokens?.[0] || asset;
@@ -101,10 +105,17 @@ export default function useChartThrottledPoints({
   // Only show the chart if we have chart data, or if chart data is still loading
   const showChart = useMemo(
     () =>
-      throttledPoints?.points.length > 5 ||
-      throttledPoints?.points.length > 5 ||
-      (fetchingCharts && !isFetchingInitially),
-    [fetchingCharts, isFetchingInitially, throttledPoints]
+      (nativeCurrency !== 'ETH' || asset?.address !== ETH_ADDRESS) &&
+      (throttledPoints?.points.length > 5 ||
+        throttledPoints?.points.length > 5 ||
+        (fetchingCharts && !isFetchingInitially)),
+    [
+      asset?.address,
+      fetchingCharts,
+      isFetchingInitially,
+      nativeCurrency,
+      throttledPoints?.points.length,
+    ]
   );
 
   useJumpingForm(showChart, heightWithChart, heightWithoutChart);

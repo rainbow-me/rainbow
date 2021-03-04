@@ -1,9 +1,9 @@
 import { map } from 'lodash';
 import React, { Fragment } from 'react';
-import { useOpenInvestmentCards } from '../../hooks';
 import { OpacityToggler } from '../animations';
 import { UniswapInvestmentRow } from '../investment-cards';
 import SavingsListHeader from '../savings/SavingsListHeader';
+import { useOpenInvestmentCards } from '@rainbow-me/hooks';
 
 const renderInvestmentsListRow = item => (
   <UniswapInvestmentRow assetType="uniswap" item={item} key={item.uniqueId} />

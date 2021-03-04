@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useFrameDelayedValue, useOpenSmallBalances } from '../../hooks';
 import { OpacityToggler } from '../animations';
 import { CoinRowHeight } from '../coin-row';
+import { useFrameDelayedValue, useOpenSmallBalances } from '@rainbow-me/hooks';
 
 const Container = styled(OpacityToggler).attrs(({ isVisible }) => ({
   pointerEvents: isVisible ? 'none' : 'auto',

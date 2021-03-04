@@ -1,11 +1,11 @@
 import { useRoute } from '@react-navigation/native';
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
-import { delayNext } from '../../hooks/useMagicAutofocus';
 import { useNavigation } from '../../navigation/Navigation';
 import { BackButton } from '../header';
 import { Centered } from '../layout';
 import { TruncatedText } from '../text';
+import { delayNext } from '@rainbow-me/hooks/useMagicAutofocus';
 import Routes from '@rainbow-me/routes';
 import { borders, padding } from '@rainbow-me/styles';
 

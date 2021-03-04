@@ -7,7 +7,6 @@ import { useTheme } from '../context/ThemeContext';
 import networkInfo from '../helpers/networkInfo';
 import networkTypes from '../helpers/networkTypes';
 import showWalletErrorAlert from '../helpers/support';
-import { useAccountSettings, useDimensions, useWallets } from '../hooks';
 import { useNavigation } from '../navigation/Navigation';
 import { magicMemo } from '../utils';
 import Divider from './Divider';
@@ -15,6 +14,11 @@ import { ButtonPressAnimation, ScaleButtonZoomableAndroid } from './animations';
 import { Icon } from './icons';
 import { Centered, Row, RowWithMargins } from './layout';
 import { Text } from './text';
+import {
+  useAccountSettings,
+  useDimensions,
+  useWallets,
+} from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';

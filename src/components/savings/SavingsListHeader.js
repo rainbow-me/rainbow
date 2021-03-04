@@ -6,10 +6,10 @@ import styled from 'styled-components';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
 import { useTheme } from '../../context/ThemeContext';
 import { convertAmountToNativeDisplay } from '../../helpers/utilities';
-import { useAccountSettings } from '../../hooks';
 import { ButtonPressAnimation, interpolate } from '../animations';
 import { Row, RowWithMargins } from '../layout';
 import { Emoji, Text, TruncatedText } from '../text';
+import { useAccountSettings } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 
 const AnimatedImgixImage = Animated.createAnimatedComponent(ImgixImage);

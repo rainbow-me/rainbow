@@ -22,7 +22,6 @@ import { removeWalletData } from '../handlers/localstorage/removeWallet';
 import showWalletErrorAlert from '../helpers/support';
 import WalletLoadingStates from '../helpers/walletLoadingStates';
 import WalletTypes from '../helpers/walletTypes';
-import { useWalletsWithBalancesAndNames } from '../hooks/useWalletsWithBalancesAndNames';
 import { cleanUpWalletKeys, createWallet } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import {
@@ -39,6 +38,7 @@ import {
   useInitializeWallet,
   useWallets,
 } from '@rainbow-me/hooks';
+import { useWalletsWithBalancesAndNames } from '@rainbow-me/hooks/useWalletsWithBalancesAndNames';
 import Routes from '@rainbow-me/routes';
 import {
   abbreviations,

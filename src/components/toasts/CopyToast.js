@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { usePrevious, useTimeout } from '../../hooks';
 import { magicMemo } from '../../utils';
 import Toast from './Toast';
+import { usePrevious, useTimeout } from '@rainbow-me/hooks';
 
 const CopyToast = ({ copiedText, copyCount }) => {
   const [isVisible, setIsVisible] = useState(false);

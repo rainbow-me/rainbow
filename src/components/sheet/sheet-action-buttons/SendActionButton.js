@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import isNativeStackAvailable from '../../../helpers/isNativeStackAvailable';
-import { useExpandedStateNavigation } from '../../../hooks';
 import SheetActionButton from './SheetActionButton';
+import { useExpandedStateNavigation } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 
 export default function SendActionButton({ color: givenColor, ...props }) {

@@ -11,6 +11,8 @@ const sx = StyleSheet.create({
   },
 });
 
+const { RNCMScreenManager } = NativeModules;
+
 function ScreenView({ colors, descriptors, navigation, route, state }) {
   const { options, render: renderScene } = descriptors[route.key];
   const ref = useRef();
@@ -48,13 +50,19 @@ function ScreenView({ colors, descriptors, navigation, route, state }) {
       jumpToLong: () => {
         const screen = findNodeHandle(ref.current);
         if (screen) {
-          NativeModules.RNCMScreenManager.jumpTo(true, screen);
+          RNCMScreenManager.jumpTo(true, screen);
         }
       },
       jumpToShort: () => {
         const screen = findNodeHandle(ref.current);
         if (screen) {
-          NativeModules.RNCMScreenManager.jumpTo(false, screen);
+          RNCMScreenManager.jumpTo(false, screen);
+        }
+      },
+      layout: () => {
+        const screen = findNodeHandle(ref.current);
+        if (screen) {
+          RNCMScreenManager.layout(screen);
         }
       },
     }),
