@@ -12,7 +12,7 @@ const AnimatedSwapDetailsValue = Animated.createAnimatedComponent(
 );
 
 const animationColorsFactory = colors => [
-  colors.blueGreyDark80,
+  colors.alpha(colors.blueGreyDark, 0.8),
   colors.uniswapPink,
 ];
 const labels = [...times(8, constant('Uniswap v2')), 'that unicorn one'];

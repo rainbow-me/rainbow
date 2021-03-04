@@ -13,14 +13,14 @@ const SwapDetailsText = styled(Text).attrs({
 
 export const SwapDetailsLabel = styled(SwapDetailsText).attrs(
   ({ theme: { colors } }) => ({
-    color: colors.blueGreyDark50,
+    color: colors.alpha(colors.blueGreyDark, 0.5),
   })
 )`
   ${fontWithWidth(fonts.weight.semibold)};
 `;
 
 export const SwapDetailsValue = styled(SwapDetailsText).attrs(
-  ({ theme: { colors }, color = colors.blueGreyDark80 }) => ({
+  ({ theme: { colors }, color = colors.alpha(colors.blueGreyDark, 0.8) }) => ({
     color,
   })
 )`

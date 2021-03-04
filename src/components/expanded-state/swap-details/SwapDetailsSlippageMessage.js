@@ -19,7 +19,7 @@ const Heading = styled(Text).attrs(({ weight = 'bold' }) => ({
 
 const Message = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors.blueGreyDark50,
+  color: colors.alpha(colors.blueGreyDark, 0.5),
   lineHeight: 22,
   size: 'smedium',
   weight: 'semibold',

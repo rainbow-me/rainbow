@@ -31,7 +31,7 @@ export default function SwapDetailsPriceRow({ tradeDetails, ...props }) {
         <SwapDetailsValue letterSpacing="roundedTight">
           {steps[step]}
         </SwapDetailsValue>
-        <SwapDetailsValue color={colors.blueGreyDark50}>
+        <SwapDetailsValue color={colors.alpha(colors.blueGreyDark, 0.5)}>
           {` 􀅌`}
         </SwapDetailsValue>
       </SwapDetailsRow>

@@ -58,7 +58,11 @@ function SwapDetailsContractRowContent({
   const animation = useTimingTransition(menuVisible, { duration: 150 });
   const { addressColor, scale } = useMemoOne(
     () => ({
-      addressColor: mixColor(animation, colors.blueGreyDark80, colorForAsset),
+      addressColor: mixColor(
+        animation,
+        colors.alpha(colors.blueGreyDark, 0.8),
+        colorForAsset
+      ),
       scale: interpolate(animation, {
         inputRange: [0, 1],
         outputRange: [1, scaleTo],
@@ -77,7 +81,7 @@ function SwapDetailsContractRowContent({
             color={addressColor}
             firstSectionLength={6}
           />
-          <SwapDetailsValue color={colors.blueGreyDark50}>
+          <SwapDetailsValue color={colors.alpha(colors.blueGreyDark, 0.5)}>
             {` 􀁰`}
           </SwapDetailsValue>
         </SwapDetailsRow>

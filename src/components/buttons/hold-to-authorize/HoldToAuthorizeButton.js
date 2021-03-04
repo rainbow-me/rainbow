@@ -266,7 +266,7 @@ class HoldToAuthorizeButton extends PureComponent {
                   </Fragment>
                 )}
                 <ShimmerAnimation
-                  color={colors.white}
+                  color={colors.whiteLabel}
                   enabled={!disabled}
                   width={width}
                 />
