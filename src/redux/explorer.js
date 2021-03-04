@@ -266,7 +266,7 @@ export const emitAssetRequest = assetAddress => (dispatch, getState) => {
   newAssetsCodes.forEach(code => (TokensListenedCache[code] = true));
 
   if (newAssetsCodes.length > 0) {
-    assetsSocket.emit(
+    assetsSocket?.emit(
       ...assetPricesSubscription(
         toAssetSubscriptionPayload(newAssetsCodes),
         nativeCurrency
@@ -280,8 +280,8 @@ export const emitAssetInfoRequest = () => (dispatch, getState) => {
 
   const { nativeCurrency } = getState().settings;
   const { assetsSocket } = getState().explorer;
-  assetsSocket.emit(...assetInfoRequest(nativeCurrency));
-  assetsSocket.emit(...assetInfoRequest(nativeCurrency, 'asc'));
+  assetsSocket?.emit(...assetInfoRequest(nativeCurrency));
+  assetsSocket?.emit(...assetInfoRequest(nativeCurrency, 'asc'));
 
   assetInfoHandle = setTimeout(() => {
     dispatch(emitAssetInfoRequest());
@@ -308,7 +308,7 @@ export const emitChartsRequest = (
     assetCodes = concat(assetAddresses, lpTokenAddresses, DPI_ADDRESS);
   }
 
-  assetsSocket.emit(...chartsRetrieval(assetCodes, nativeCurrency, chartType));
+  assetsSocket?.emit(...chartsRetrieval(assetCodes, nativeCurrency, chartType));
 };
 
 const listenOnAssetMessages = socket => dispatch => {
@@ -317,11 +317,11 @@ const listenOnAssetMessages = socket => dispatch => {
   });
 
   socket.on(messages.ASSETS.RECEIVED, message => {
-    false && dispatch(assetPricesReceived(message, false));
+    dispatch(assetPricesReceived(message, false));
   });
 
   socket.on(messages.ASSETS.CHANGED, message => {
-    false && dispatch(assetPricesChanged(message));
+    dispatch(assetPricesChanged(message));
   });
 
   socket.on(messages.ASSET_CHARTS.RECEIVED, message => {
