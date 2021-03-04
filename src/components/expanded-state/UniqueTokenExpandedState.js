@@ -1,5 +1,4 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
-import { EXPERIMENTAL_AUDIO_PLAYER } from 'react-native-dotenv';
 import Link from '../Link';
 import { Column, ColumnWithDividers } from '../layout';
 import {
@@ -99,8 +98,8 @@ const UniqueTokenExpandedState = ({ asset }) => {
   ]);
 
   useEffect(() => {
-    EXPERIMENTAL_AUDIO_PLAYER !== 'true' && playAsset(asset);
-  }, [playAsset, asset, stopPlayingAsset]);
+    playAsset(asset);
+  }, [playAsset, asset]);
 
   useEffect(() => {
     return () => {
@@ -119,20 +118,6 @@ const UniqueTokenExpandedState = ({ asset }) => {
       >
         <UniqueTokenExpandedStateHeader asset={asset} />
         <UniqueTokenExpandedStateContent asset={asset} />
-        {EXPERIMENTAL_AUDIO_PLAYER === 'true' && !!supportsAudio && (
-          <SheetActionButtonRow ignorePaddingBottom>
-            <SheetActionButton
-              color={colors.orangeLight}
-              label={
-                assetIsPlayingAudio && !isPlayingAssetPaused
-                  ? `${UNICODE_SYMBOL_PAUSE} Pause`
-                  : `${UNICODE_SYMBOL_PLAY} Play`
-              }
-              onPress={handlePressAudio}
-              weight="bold"
-            />
-          </SheetActionButtonRow>
-        )}
         <SheetActionButtonRow>
           <SheetActionButton
             color={isDarkMode ? colors.darkModeDark : colors.dark}

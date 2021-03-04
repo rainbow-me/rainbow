@@ -2,19 +2,13 @@ import { useRoute } from '@react-navigation/core';
 import { get } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { StatusBar } from 'react-native';
-import { EXPERIMENTAL_AUDIO_PLAYER } from 'react-native-dotenv';
 import Animated from 'react-native-reanimated';
 import { useValue } from 'react-native-redash';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { OpacityToggler } from '../components/animations';
 import { AssetList } from '../components/asset-list';
-import {
-  EphemeralAudioPlayerFab,
-  ExchangeFab,
-  FabWrapper,
-  SendFab,
-} from '../components/fab';
+import { ExchangeFab, FabWrapper, SendFab } from '../components/fab';
 import {
   CameraHeaderButton,
   DiscoverHeaderButton,
@@ -30,7 +24,6 @@ import { updateRefetchSavings } from '../redux/data';
 import {
   useAccountEmptyState,
   useAccountSettings,
-  useAudio,
   useCoinListEdited,
   useInitializeWallet,
   useRefreshAccountData,
@@ -71,7 +64,6 @@ export default function WalletScreen() {
     shouldRefetchSavings,
   } = useWalletSectionsData();
   const dispatch = useDispatch();
-  const { playlist } = useAudio();
 
   useEffect(() => {
     const fetchAndResetFetchSavings = async () => {
@@ -91,20 +83,15 @@ export default function WalletScreen() {
     }
   }, [initializeWallet, initialized, params]);
 
-  const hasAudioContent = !!playlist.length;
-
   // Show the exchange fab only for supported networks
   // (mainnet & rinkeby)
   const fabs = useMemo(
     () =>
       [
-        EXPERIMENTAL_AUDIO_PLAYER === 'true' &&
-          !!hasAudioContent &&
-          EphemeralAudioPlayerFab,
         !!get(networkInfo[network], 'exchange_enabled') && ExchangeFab,
         SendFab,
       ].filter(e => !!e),
-    [network, hasAudioContent]
+    [network]
   );
 
   const isCoinListEditedValue = useCoinListEditedValue();
