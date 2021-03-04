@@ -49,7 +49,7 @@ const PulseIndex = () => {
   }));
 
   const chartPriceDataForDPI = useMemo(
-    () => get(charts, `[${DPI_ADDRESS}][${ChartTypes.day}][0][1]`, 0),
+    () => get(charts, `[${DPI_ADDRESS}][${ChartTypes.month}][0][1]`, 0),
     [charts]
   );
 

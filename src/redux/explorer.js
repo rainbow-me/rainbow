@@ -356,7 +356,7 @@ const listenOnAddressMessages = socket => dispatch => {
     if (!disableCharts) {
       //dispatch(emitChartsRequest());
       // We need this for Uniswap Pools profit calculation
-      dispatch(emitChartsRequest(ETH_ADDRESS, ChartTypes.month));
+      dispatch(emitChartsRequest([ETH_ADDRESS, DPI_ADDRESS], ChartTypes.month));
     }
     if (isValidAssetsResponseFromZerion(message)) {
       logger.log(
