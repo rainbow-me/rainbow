@@ -1,14 +1,13 @@
 import React from 'react';
 import { FlatList } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
-import { BubbleSheetBorderRadius } from '../bubble-sheet';
 import { FlexItem } from '../layout';
 import WalletConnectListItem, {
   WalletConnectListItemHeight,
 } from './WalletConnectListItem';
 import { useWalletConnectConnections } from '@rainbow-me/hooks';
 
-const scrollIndicatorInset = BubbleSheetBorderRadius - 8;
+const scrollIndicatorInset = 22;
 const scrollIndicatorInsets = {
   bottom: scrollIndicatorInset,
   top: scrollIndicatorInset,

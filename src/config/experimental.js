@@ -5,11 +5,9 @@
  */
 
 export const AVATAR_PICKER = 'avatarPicker';
-export const DISCOVER_SHEET = 'discoverSheet';
 export const REVIEW_ANDROID = 'reviewAndroid';
 
 export const defaultConfig = {
   [AVATAR_PICKER]: ios,
-  [DISCOVER_SHEET]: true,
   [REVIEW_ANDROID]: false,
 };

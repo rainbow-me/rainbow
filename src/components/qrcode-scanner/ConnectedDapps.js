@@ -10,11 +10,11 @@ import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 
 const Overlay = styled(Centered)`
-  top: 30;
-  width: 100%;
+  align-items: center;
   height: 100;
   justify-content: center;
-  align-items: center;
+  top: 30;
+  width: 100%;
 `;
 
 const OverlayBlur = styled(BlurView).attrs(({ isDarkMode }) => ({
@@ -22,10 +22,10 @@ const OverlayBlur = styled(BlurView).attrs(({ isDarkMode }) => ({
   blurType: isDarkMode ? 'light' : 'ultraThinMaterialDark',
   reducedTransparencyFallbackColor: 'black',
 }))`
-  width: 260;
-  height: 50;
-  border-radius: 25;
-  padding-top: 10;
+  border-radius: 23;
+  height: 46;
+  padding-horizontal: 15;
+  padding-top: 7;
 `;
 
 function ConnectedDapps() {
@@ -40,7 +40,12 @@ function ConnectedDapps() {
       >
         <View>
           <OverlayBlur>
-            <Text align="center" color="whiteLabel" size="large" weight="bold">
+            <Text
+              align="center"
+              color="whiteLabel"
+              size="lmedium"
+              weight="heavy"
+            >
               ️‍🌈 {walletConnectorsByDappName.length} app
               {walletConnectorsByDappName.length === 1 ? '' : 's'} connected 􀯼
             </Text>
