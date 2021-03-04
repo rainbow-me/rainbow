@@ -221,99 +221,103 @@ export default function TokenIndexExpandedState({ asset }) {
             </Column>
           </SheetActionButtonRow>
         )}
-        <Row marginHorizontal={19} marginTop={6}>
-          <Column align="start" flex={1}>
-            <Text
-              color={colors.alpha(colors.blueGreyDark, 0.5)}
-              letterSpacing="roundedMedium"
-              weight="semibold"
-            >
-              Underlying Assets
-            </Text>
-          </Column>
-          <Column align="end" flex={1}>
-            <Text
-              align="right"
-              color={colors.alpha(colors.blueGreyDark, 0.5)}
-              letterSpacing="roundedMedium"
-              weight="semibold"
-            >
-              Makeup of 1 {assetWithPrice.symbol}
-            </Text>
-          </Column>
-        </Row>
-        <Column marginBottom={55} marginHorizontal={19} marginTop={12}>
-          {underlying.map(item => (
-            <Row
-              as={ButtonPressAnimation}
-              key={`dpi-${item?.address}`}
-              onPress={() => handlePress(item)}
-              scaleTo={0.95}
-            >
+        {underlying && underlying.length && (
+          <Fragment>
+            <Row marginHorizontal={19} marginTop={6}>
               <Column align="start" flex={1}>
-                <UnderlyingAssetCoinRow {...item} />
+                <Text
+                  color={colors.alpha(colors.blueGreyDark, 0.5)}
+                  letterSpacing="roundedMedium"
+                  weight="semibold"
+                >
+                  Underlying Assets
+                </Text>
               </Column>
-              <Column aling="end">
-                <Row key={`allocation-${item.symbol}`}>
-                  <Text
-                    align="right"
-                    color={colors.alpha(colors.blueGreyDark, 0.7)}
-                    letterSpacing="roundedTight"
-                    size="large"
-                    weight="medium"
-                  >
-                    {item.pricePerUnitFormatted}
-                  </Text>
-                  <Column
-                    align="end"
-                    backgroundColor={colors.white}
-                    height={30}
-                    marginLeft={6}
-                  >
-                    <Column
-                      height={16}
-                      marginTop={android ? 8 : 3}
-                      width={item.percentageAllocation * 2}
-                    >
-                      <ShadowStack
-                        backgroundColor={item.color}
-                        borderRadius={8}
-                        shadows={[
-                          [
-                            0,
-                            3,
-                            9,
-                            isDarkMode ? colors.shadow : item.color,
-                            0.2,
-                          ],
-                        ]}
-                        style={{
-                          height: 16,
-                          width: '100%',
-                        }}
-                      >
-                        <LinearGradient
-                          colors={[
-                            colors.alpha(
-                              colors.whiteLabel,
-                              isDarkMode ? 0.2 : 0.3
-                            ),
-                            colors.alpha(colors.whiteLabel, 0),
-                          ]}
-                          end={{ x: 1, y: 0.5 }}
-                          overflow="hidden"
-                          pointerEvents="none"
-                          start={{ x: 0, y: 0.5 }}
-                          style={position.coverAsObject}
-                        />
-                      </ShadowStack>
-                    </Column>
-                  </Column>
-                </Row>
+              <Column align="end" flex={1}>
+                <Text
+                  align="right"
+                  color={colors.alpha(colors.blueGreyDark, 0.5)}
+                  letterSpacing="roundedMedium"
+                  weight="semibold"
+                >
+                  Makeup of 1 {assetWithPrice.symbol}
+                </Text>
               </Column>
             </Row>
-          ))}
-        </Column>
+            <Column marginBottom={55} marginHorizontal={19} marginTop={12}>
+              {underlying.map(item => (
+                <Row
+                  as={ButtonPressAnimation}
+                  key={`dpi-${item?.address}`}
+                  onPress={() => handlePress(item)}
+                  scaleTo={0.95}
+                >
+                  <Column align="start" flex={1}>
+                    <UnderlyingAssetCoinRow {...item} />
+                  </Column>
+                  <Column aling="end">
+                    <Row key={`allocation-${item.symbol}`}>
+                      <Text
+                        align="right"
+                        color={colors.alpha(colors.blueGreyDark, 0.7)}
+                        letterSpacing="roundedTight"
+                        size="large"
+                        weight="medium"
+                      >
+                        {item.pricePerUnitFormatted}
+                      </Text>
+                      <Column
+                        align="end"
+                        backgroundColor={colors.white}
+                        height={30}
+                        marginLeft={6}
+                      >
+                        <Column
+                          height={16}
+                          marginTop={android ? 8 : 3}
+                          width={item.percentageAllocation * 2}
+                        >
+                          <ShadowStack
+                            backgroundColor={item.color}
+                            borderRadius={8}
+                            shadows={[
+                              [
+                                0,
+                                3,
+                                9,
+                                isDarkMode ? colors.shadow : item.color,
+                                0.2,
+                              ],
+                            ]}
+                            style={{
+                              height: 16,
+                              width: '100%',
+                            }}
+                          >
+                            <LinearGradient
+                              colors={[
+                                colors.alpha(
+                                  colors.whiteLabel,
+                                  isDarkMode ? 0.2 : 0.3
+                                ),
+                                colors.alpha(colors.whiteLabel, 0),
+                              ]}
+                              end={{ x: 1, y: 0.5 }}
+                              overflow="hidden"
+                              pointerEvents="none"
+                              start={{ x: 0, y: 0.5 }}
+                              style={position.coverAsObject}
+                            />
+                          </ShadowStack>
+                        </Column>
+                      </Column>
+                    </Row>
+                  </Column>
+                </Row>
+              ))}
+            </Column>
+          </Fragment>
+        )}
       </SlackSheet>
     </Fragment>
   );

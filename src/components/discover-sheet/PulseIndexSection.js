@@ -1,3 +1,4 @@
+import { get } from 'lodash';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -8,6 +9,7 @@ import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
+import ChartTypes from '@rainbow-me/helpers/chartTypes';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
@@ -42,6 +44,15 @@ const PulseIndex = () => {
     genericAssets,
   }));
 
+  const { charts } = useSelector(({ charts: { charts } }) => ({
+    charts,
+  }));
+
+  const chartPriceDataForDPI = useMemo(
+    () => get(charts, `[${DPI_ADDRESS}][${ChartTypes.day}][0][1]`, 0),
+    [charts]
+  );
+
   const { nativeCurrency, nativeCurrencySymbol } = useAccountSettings();
   const item = useMemo(() => {
     const asset = genericAssets[DPI_ADDRESS];
@@ -72,6 +83,7 @@ const PulseIndex = () => {
   );
 
   if (!item) return null;
+  if (!chartPriceDataForDPI) return null;
 
   return (
     <Fragment>
