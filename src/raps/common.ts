@@ -59,9 +59,6 @@ export interface RapAction {
 
 export interface Rap {
   actions: RapAction[];
-  completedAt: string | null;
-  id: string;
-  startedAt: number;
 }
 
 const NOOP = () => {};
@@ -166,12 +163,8 @@ export const executeRap = async (
 };
 
 export const createNewRap = (actions: RapAction[]) => {
-  const now = Date.now();
   return {
     actions,
-    completedAt: null,
-    id: `rap_${now}`,
-    startedAt: now,
   };
 };
 

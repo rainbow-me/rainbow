@@ -99,8 +99,6 @@ const withdrawCompound = async (
   logger.log('[withdraw] adding new txn', newTransaction);
   // Disable the txn watcher because Compound can silently fail
   await dispatch(dataAddNewTransaction(newTransaction, accountAddress, true));
-
-  currentRap.actions[index].transaction.hash = withdraw.hash;
   logger.log('[withdraw] complete!');
   return null;
 };

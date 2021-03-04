@@ -86,7 +86,7 @@ const depositCompound = async (
     captureException(e);
     throw e;
   }
-  currentRap.actions[index].transaction.hash = deposit.hash;
+  currentRap.actions[index].transaction.hash = deposit?.hash;
 
   const newTransaction = {
     amount: amountToDeposit,
@@ -105,7 +105,6 @@ const depositCompound = async (
   // Disable the txn watcher because Compound can silently fail
   await dispatch(dataAddNewTransaction(newTransaction, accountAddress, true));
 
-  currentRap.actions[index].transaction.hash = deposit.hash;
   logger.log('[deposit] rap complete');
   return null;
 };
