@@ -6,7 +6,6 @@ import ApplePayIcon from './svg/ApplePayIcon';
 import ArrowBackIcon from './svg/ArrowBack';
 import ArrowCircledIcon from './svg/ArrowCircledIcon';
 import ArrowIcon from './svg/ArrowIcon';
-import AudioIcon from './svg/AudioIcon';
 import AvatarIcon from './svg/AvatarIcon';
 import BackspaceIcon from './svg/BackspaceIcon';
 import CameraIcon from './svg/CameraIcon';
@@ -68,7 +67,6 @@ const IconTypes = {
   arrow: ArrowIcon,
   arrowBack: ArrowBackIcon,
   arrowCircled: ArrowCircledIcon,
-  audio: AudioIcon,
   avatar: AvatarIcon,
   backspace: BackspaceIcon,
   camera: CameraIcon,

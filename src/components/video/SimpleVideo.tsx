@@ -6,7 +6,6 @@ import Sound from 'react-native-sound';
 import Video from 'react-native-video';
 import convertToProxyURL from 'react-native-video-cache';
 import styled from 'styled-components';
-import { useTheme } from '../../context/ThemeContext';
 import { useAudio } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { position } from '@rainbow-me/styles';
@@ -27,6 +26,7 @@ const absoluteFill = `
 
 const StyledBackground = styled(View)`
   ${absoluteFill}
+  background-color: ${({ theme: { colors } }) => colors.white};
 `;
 
 const StyledVideo = styled(Video)`
@@ -52,8 +52,6 @@ export default function SimpleVideo({
   loading,
   setLoading,
 }: SimpleVideoProps): JSX.Element {
-  const { colors } = useTheme();
-  const { white } = colors;
   const ref = React.useRef<Video>();
   const source = React.useMemo(
     () => ({
@@ -81,11 +79,10 @@ export default function SimpleVideo({
   // XXX: Force the player to quit when unmounted. (iOS)
   React.useEffect(() => {
     const { current } = ref;
-    !!soundOnMount &&
-      (async () => {
-        // @ts-ignore
-        fadeTo(soundOnMount, 0).then(() => soundOnMount.pause());
-      })();
+    if (soundOnMount) {
+      // @ts-ignore
+      fadeTo(soundOnMount, 0).then(() => soundOnMount.pause());
+    }
     return () => {
       try {
         !!current &&
@@ -103,13 +100,12 @@ export default function SimpleVideo({
       }
     };
   }, [ref, soundOnMount, fadeTo]);
-  const onLoad = React.useCallback(() => setLoading(false), [setLoading]);
   return (
     <View style={[styles.flex, StyleSheet.flatten(style)]}>
-      <StyledBackground style={{ backgroundColor: white }} />
+      <StyledBackground />
       <StyledVideo
         controls
-        onLoad={onLoad}
+        onLoad={() => setLoading(false)}
         ref={ref}
         repeat
         resizeMode="cover"
