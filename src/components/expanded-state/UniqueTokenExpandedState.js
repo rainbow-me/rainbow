@@ -16,17 +16,8 @@ import {
   UniqueTokenExpandedStateContent,
   UniqueTokenExpandedStateHeader,
 } from './unique-token';
-import {
-  useAudio,
-  useDimensions,
-  useShowcaseTokens,
-  useUniqueToken,
-} from '@rainbow-me/hooks';
-import { logger, magicMemo } from '@rainbow-me/utils';
-
-/* SF Pro Rounded (Bold) @ https://mathew-kurian.github.io/CharacterMap */
-const UNICODE_SYMBOL_PAUSE = String.fromCharCode(56256, 56984);
-const UNICODE_SYMBOL_PLAY = String.fromCharCode(56256, 56982);
+import { useAudio, useDimensions, useShowcaseTokens } from '@rainbow-me/hooks';
+import { magicMemo } from '@rainbow-me/utils';
 
 const UniqueTokenExpandedState = ({ asset }) => {
   const {
@@ -63,39 +54,7 @@ const UniqueTokenExpandedState = ({ asset }) => {
   const { height: screenHeight } = useDimensions();
   const { colors, isDarkMode } = useTheme();
 
-  const { supportsAudio } = useUniqueToken(asset);
-  const {
-    playAsset,
-    currentlyPlayingAsset,
-    isPlayingAssetPaused,
-    fadeTo,
-    currentSound,
-    stopPlayingAsset,
-  } = useAudio();
-
-  const assetIsPlayingAudio =
-    !!currentlyPlayingAsset &&
-    currentlyPlayingAsset.uniqueId === asset.uniqueId;
-
-  // TODO: if playing etc
-  const handlePressAudio = useCallback(async () => {
-    try {
-      if (assetIsPlayingAudio) {
-        return isPlayingAssetPaused
-          ? currentSound.play()
-          : currentSound.pause();
-      }
-      return playAsset(asset);
-    } catch (e) {
-      logger.error(e);
-    }
-  }, [
-    asset,
-    currentSound,
-    playAsset,
-    assetIsPlayingAudio,
-    isPlayingAssetPaused,
-  ]);
+  const { playAsset, fadeTo, currentSound, stopPlayingAsset } = useAudio();
 
   useEffect(() => {
     playAsset(asset);
