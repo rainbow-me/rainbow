@@ -25,9 +25,9 @@ import {
   UNISWAP_PRICES_QUERY,
 } from '../apollo/queries';
 import coingeckoIdsFallback from '../references/coingecko/ids.json';
-// eslint-disable-next-line import/no-cycle
+/* eslint-disable-next-line import/no-cycle */
 import { addCashUpdatePurchases } from './addCash';
-// eslint-disable-next-line import/no-cycle
+/* eslint-disable-next-line import/no-cycle */
 import { uniqueTokensRefreshState } from './uniqueTokens';
 import { uniswapUpdateLiquidityTokens } from './uniswapLiquidity';
 import {
