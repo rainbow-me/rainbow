@@ -17,8 +17,9 @@ const unlock = async (
   wallet: Wallet,
   currentRap: Rap,
   index: number,
-  parameters: RapActionParameters
-): Promise<null> => {
+  parameters: RapActionParameters,
+  baseNonce?: number
+): Promise<number | undefined> => {
   const { dispatch } = store;
   const {
     amount,
@@ -59,7 +60,7 @@ const unlock = async (
   try {
     logger.log('[swap] execute the swap');
     // unlocks should always use fast gas or custom (whatever is faster)
-    gasPrice = get(selectedGasPrice, 'value.amount');
+    gasPrice = selectedGasPrice?.value?.amount;
     const fastPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);
     if (greaterThan(fastPrice, gasPrice)) {
       gasPrice = fastPrice;
@@ -70,12 +71,14 @@ const unlock = async (
       contractAddress,
       gasLimit,
     });
+    const nonce = baseNonce ? baseNonce + index : null;
     const result = await contractUtils.approve(
       assetAddress,
       contractAddress,
       gasLimit,
       gasPrice,
-      wallet
+      wallet,
+      nonce
     );
     approval = result?.approval;
   } catch (e) {
@@ -92,8 +95,8 @@ const unlock = async (
   AllowancesCache.cache[cacheKey] = MaxUint256.toString();
 
   // update rap for hash
-  currentRap.actions[index].transaction.hash = approval.hash;
-  logger.log('[unlock] adding a new txn for the approval', approval.hash);
+  currentRap.actions[index].transaction.hash = approval?.hash;
+  logger.log('[unlock] adding a new txn for the approval', approval?.hash);
 
   logger.log('[unlock] add a new txn');
   await dispatch(
@@ -104,18 +107,18 @@ const unlock = async (
         from: wallet.address,
         gasLimit,
         gasPrice,
-        hash: approval.hash,
-        nonce: get(approval, 'nonce'),
+        hash: approval?.hash,
+        nonce: approval?.nonce,
         status: TransactionStatusTypes.approving,
-        to: get(approval, 'to'),
+        to: approval?.to,
         type: TransactionTypes.authorize,
       },
       wallet.address
     )
   );
 
-  logger.log('[unlock] APPROVAL SUBMITTED, HASH', approval.hash);
-  return null;
+  logger.log('[unlock] APPROVAL SUBMITTED, HASH', approval?.hash);
+  return approval?.nonce;
 };
 
 export const assetNeedsUnlocking = async (

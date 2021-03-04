@@ -30,8 +30,9 @@ const depositCompound = async (
   wallet: Wallet,
   currentRap: Rap,
   index: number,
-  parameters: RapActionParameters
-): Promise<null> => {
+  parameters: RapActionParameters,
+  baseNonce?: number
+): Promise<number | undefined> => {
   logger.log('[deposit]');
   const { dispatch } = store;
   const { inputAmount, outputAmount } = parameters as SwapActionParameters;
@@ -51,7 +52,7 @@ const depositCompound = async (
   logger.log('[deposit] raw input amount', rawInputAmount);
 
   logger.log('[deposit] execute the deposit');
-  let gasPrice = get(selectedGasPrice, 'value.amount');
+  let gasPrice = selectedGasPrice?.value?.amount;
   if (!gasPrice) {
     gasPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);
   }
@@ -73,6 +74,7 @@ const depositCompound = async (
   const transactionParams = {
     gasLimit: getDepositGasLimit(tokenToDeposit),
     gasPrice: toHex(gasPrice) || undefined,
+    nonce: baseNonce ? toHex(baseNonce + index) : undefined,
     value: toHex(0),
   };
 
@@ -94,11 +96,11 @@ const depositCompound = async (
     from: accountAddress,
     gasLimit: transactionParams.gasLimit,
     gasPrice: transactionParams.gasPrice,
-    hash: deposit.hash,
-    nonce: get(deposit, 'nonce'),
+    hash: deposit?.hash,
+    nonce: deposit?.nonce,
     protocol: ProtocolTypes.compound.name,
     status: TransactionStatusTypes.depositing,
-    to: get(deposit, 'to'),
+    to: deposit?.to,
     type: TransactionTypes.deposit,
   };
   logger.log('[deposit] adding new txn', newTransaction);
@@ -106,7 +108,7 @@ const depositCompound = async (
   await dispatch(dataAddNewTransaction(newTransaction, accountAddress, true));
 
   logger.log('[deposit] rap complete');
-  return null;
+  return deposit?.nonce;
 };
 
 export default depositCompound;

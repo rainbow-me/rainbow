@@ -357,6 +357,7 @@ export const executeSwap = async ({
   gasLimit,
   gasPrice,
   inputCurrency,
+  nonce,
   outputCurrency,
   methodName,
   tradeDetails,
@@ -367,6 +368,7 @@ export const executeSwap = async ({
   gasLimit: string | number;
   gasPrice: string;
   inputCurrency: Asset;
+  nonce?: number;
   outputCurrency: Asset;
   methodName: string;
   tradeDetails: Trade | null;
@@ -386,6 +388,7 @@ export const executeSwap = async ({
   const transactionParams = {
     gasLimit: toHex(gasLimit) || undefined,
     gasPrice: toHex(gasPrice) || undefined,
+    nonce: nonce ? toHex(nonce) : undefined,
     ...(value ? { value } : {}),
   };
   return exchange[methodName](...updatedMethodArgs, transactionParams);

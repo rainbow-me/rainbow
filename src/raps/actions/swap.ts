@@ -28,8 +28,9 @@ const swap = async (
   wallet: Wallet,
   currentRap: Rap,
   index: number,
-  parameters: RapActionParameters
-): Promise<null> => {
+  parameters: RapActionParameters,
+  baseNonce?: number
+): Promise<number | undefined> => {
   logger.log('[swap] swap on uniswap!');
   const { inputAmount, tradeDetails } = parameters as SwapActionParameters;
   const { dispatch } = store;
@@ -40,7 +41,7 @@ const swap = async (
 
   // Execute Swap
   logger.log('[swap] execute the swap');
-  let gasPrice = get(selectedGasPrice, 'value.amount');
+  let gasPrice = selectedGasPrice?.value?.amount;
   // if swap isn't the last action, use fast gas or custom (whatever is faster)
   if (currentRap.actions.length - 1 > index || !gasPrice) {
     const fastPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);
@@ -81,6 +82,7 @@ const swap = async (
       gasPrice,
       methodName,
     });
+    const nonce = baseNonce ? baseNonce + index : undefined;
     swap = await executeSwap({
       accountAddress,
       chainId,
@@ -88,6 +90,7 @@ const swap = async (
       gasPrice,
       inputCurrency,
       methodName,
+      nonce,
       outputCurrency,
       tradeDetails,
       wallet,
@@ -99,24 +102,24 @@ const swap = async (
   }
 
   logger.log('[swap] response', swap);
-  currentRap.actions[index].transaction.hash = swap.hash;
-  logger.log('[swap] adding a new swap txn to pending', swap.hash);
+  currentRap.actions[index].transaction.hash = swap?.hash;
+  logger.log('[swap] adding a new swap txn to pending', swap?.hash);
   const newTransaction = {
     amount: inputAmount,
     asset: inputCurrency,
     from: accountAddress,
     gasLimit,
     gasPrice,
-    hash: swap.hash,
-    nonce: get(swap, 'nonce'),
+    hash: swap?.hash,
+    nonce: swap?.nonce,
     protocol: ProtocolTypes.uniswap.name,
     status: TransactionStatusTypes.swapping,
-    to: get(swap, 'to'),
+    to: swap?.to,
     type: TransactionTypes.trade,
   };
   logger.log('[swap] adding new txn', newTransaction);
   await dispatch(dataAddNewTransaction(newTransaction, accountAddress, true));
-  return null;
+  return swap?.nonce;
 };
 
 export default swap;

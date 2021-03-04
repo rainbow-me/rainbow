@@ -47,7 +47,6 @@ export interface SwapActionParameters {
 }
 
 export interface RapActionTransaction {
-  confirmed: boolean | null;
   hash: string | null;
 }
 
@@ -61,7 +60,7 @@ export interface Rap {
   actions: RapAction[];
 }
 
-const NOOP = () => {};
+const NOOP = () => null;
 
 export const RapActionTypes = {
   depositCompound: 'depositCompound' as RapActionType,
@@ -120,6 +119,39 @@ const getRapFullName = (actions: RapAction[]) => {
   return join(actionTypes, ' + ');
 };
 
+const executeAction = async (
+  action: RapAction,
+  wallet: Wallet,
+  rap: Rap,
+  index: number,
+  rapName: string,
+  baseNonce?: number
+) => {
+  logger.log('[1 INNER] index', index);
+  const { parameters, type } = action;
+  const actionPromise = findActionByType(type);
+  logger.log('[2 INNER] executing type', type);
+  try {
+    const nonce = await actionPromise(
+      wallet,
+      rap,
+      index,
+      parameters,
+      baseNonce
+    );
+    return nonce;
+  } catch (error) {
+    logger.sentry('[3 INNER] error running action');
+    captureException(error);
+    analytics.track('Rap failed', {
+      category: 'raps',
+      failed_action: type,
+      label: rapName,
+    });
+    return null;
+  }
+};
+
 export const executeRap = async (
   wallet: Wallet,
   type: string,
@@ -135,23 +167,15 @@ export const executeRap = async (
   });
 
   logger.log('[common - executing rap]: actions', actions);
-  for (let index = 0; index < actions.length; index++) {
-    logger.log('[1 INNER] index', index);
-    const action = actions[index];
-    const { parameters, type } = action;
-    const actionPromise = findActionByType(type);
-    logger.log('[2 INNER] executing type', type);
-    try {
-      await actionPromise(wallet, rap, index, parameters);
-    } catch (error) {
-      logger.sentry('[3 INNER] error running action');
-      captureException(error);
-      analytics.track('Rap failed', {
-        category: 'raps',
-        failed_action: type,
-        label: rapName,
-      });
-      break;
+  let baseNonce = null;
+  if (actions.length) {
+    const firstAction = actions[0];
+    baseNonce = await executeAction(firstAction, wallet, rap, 0, rapName);
+    if (baseNonce) {
+      for (let index = 1; index < actions.length; index++) {
+        const action = actions[index];
+        await executeAction(action, wallet, rap, index, rapName, baseNonce);
+      }
     }
   }
 

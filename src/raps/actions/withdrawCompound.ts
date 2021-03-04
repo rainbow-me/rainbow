@@ -25,8 +25,9 @@ const withdrawCompound = async (
   wallet: Wallet,
   currentRap: Rap,
   index: number,
-  parameters: RapActionParameters
-): Promise<null> => {
+  parameters: RapActionParameters,
+  baseNonce?: number
+): Promise<number | undefined> => {
   logger.log('[withdraw]');
   const { inputAmount } = parameters as SwapActionParameters;
   const { dispatch } = store;
@@ -41,7 +42,7 @@ const withdrawCompound = async (
   logger.log('[withdraw] raw input amount', rawInputAmount);
 
   logger.log('[withdraw] execute the withdraw');
-  let gasPrice = get(selectedGasPrice, 'value.amount');
+  let gasPrice = selectedGasPrice?.value.amount;
   if (!gasPrice) {
     gasPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);
   }
@@ -60,6 +61,7 @@ const withdrawCompound = async (
   const transactionParams = {
     gasLimit: ethUnits.basic_withdrawal,
     gasPrice: toHex(gasPrice) || undefined,
+    nonce: baseNonce ? toHex(baseNonce + index) : undefined,
     value: toHex(0),
   };
 
@@ -80,7 +82,7 @@ const withdrawCompound = async (
     throw e;
   }
 
-  currentRap.actions[index].transaction.hash = withdraw.hash;
+  currentRap.actions[index].transaction.hash = withdraw?.hash;
 
   const newTransaction = {
     amount: inputAmount,
@@ -88,11 +90,11 @@ const withdrawCompound = async (
     from: accountAddress,
     gasLimit: transactionParams.gasLimit,
     gasPrice: transactionParams.gasPrice,
-    hash: withdraw.hash,
-    nonce: get(withdraw, 'nonce'),
+    hash: withdraw?.hash,
+    nonce: withdraw?.nonce,
     protocol: ProtocolTypes.compound.name,
     status: TransactionStatusTypes.withdrawing,
-    to: get(withdraw, 'to'),
+    to: withdraw?.to,
     type: TransactionTypes.withdraw,
   };
 
@@ -100,7 +102,7 @@ const withdrawCompound = async (
   // Disable the txn watcher because Compound can silently fail
   await dispatch(dataAddNewTransaction(newTransaction, accountAddress, true));
   logger.log('[withdraw] complete!');
-  return null;
+  return withdraw?.nonce;
 };
 
 export default withdrawCompound;

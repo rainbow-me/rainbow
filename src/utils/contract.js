@@ -31,7 +31,8 @@ const approve = async (
   spender,
   gasLimit,
   gasPrice,
-  wallet = null
+  wallet = null,
+  nonce = null
 ) => {
   const walletToUse = wallet || (await loadWallet());
   if (!walletToUse) return null;
@@ -39,6 +40,7 @@ const approve = async (
   const approval = await exchange.approve(spender, MaxUint256, {
     gasLimit: toHex(gasLimit) || undefined,
     gasPrice: toHex(gasPrice) || undefined,
+    nonce: nonce ? toHex(nonce) : undefined,
   });
   return {
     approval,
