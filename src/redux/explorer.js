@@ -18,6 +18,7 @@ import { disableCharts, forceFallbackProvider } from '@rainbow-me/config/debug';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
 import NetworkTypes from '@rainbow-me/helpers/networkTypes';
 import { DPI_ADDRESS, ETH_ADDRESS } from '@rainbow-me/references';
+import { TokensListenedCache } from '@rainbow-me/utils';
 import logger from 'logger';
 
 // -- Constants --------------------------------------- //
@@ -246,8 +247,6 @@ export const explorerInit = () => async (dispatch, getState) => {
   }
 };
 
-const tokensListened = {};
-
 const toAssetSubscriptionPayload = tokensArray => {
   const payload = {};
   tokensArray.forEach(address => (payload[address] = true));
@@ -262,9 +261,9 @@ export const emitAssetRequest = assetAddress => (dispatch, getState) => {
     ? assetAddress
     : [assetAddress];
 
-  const newAssetsCodes = assetCodes.filter(code => !tokensListened[code]);
+  const newAssetsCodes = assetCodes.filter(code => !TokensListenedCache[code]);
 
-  newAssetsCodes.forEach(code => (tokensListened[code] = true));
+  newAssetsCodes.forEach(code => (TokensListenedCache[code] = true));
 
   if (newAssetsCodes.length > 0) {
     assetsSocket.emit(
@@ -318,11 +317,11 @@ const listenOnAssetMessages = socket => dispatch => {
   });
 
   socket.on(messages.ASSETS.RECEIVED, message => {
-    dispatch(assetPricesReceived(message));
+    false && dispatch(assetPricesReceived(message, false));
   });
 
   socket.on(messages.ASSETS.CHANGED, message => {
-    dispatch(assetPricesChanged(message));
+    false && dispatch(assetPricesChanged(message));
   });
 
   socket.on(messages.ASSET_CHARTS.RECEIVED, message => {

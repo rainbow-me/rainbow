@@ -10,7 +10,7 @@ import balanceCheckerContractAbi from '../references/balances-checker-abi.json';
 import coingeckoIdsFallback from '../references/coingecko/ids.json';
 import migratedTokens from '../references/migratedTokens.json';
 import testnetAssets from '../references/testnet-assets.json';
-import { addressAssetsReceived } from './data';
+import { addressAssetsReceived, COINGECKO_IDS_ENDPOINT } from './data';
 import logger from 'logger';
 
 // -- Constants --------------------------------------- //
@@ -24,10 +24,7 @@ const FALLBACK_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER =
   'explorer/FALLBACK_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER';
 
 const ETH_ADDRESS = '0x0000000000000000000000000000000000000000';
-export const COINGECKO_TRENDING_ENDPOINT =
-  'https://api.coingecko.com/api/v3/search/trending';
-export const COINGECKO_IDS_ENDPOINT =
-  'https://api.coingecko.com/api/v3/coins/list?include_platform=true&asset_platform_id=ethereum';
+
 const UPDATE_BALANCE_AND_PRICE_FREQUENCY = 10000;
 const DISCOVER_NEW_ASSETS_FREQUENCY = 13000;
 
@@ -346,6 +343,7 @@ export const fallbackExplorerInit = () => async (dispatch, getState) => {
         payload: { assets },
       })
     );
+
     const fallbackExplorerBalancesHandle = setTimeout(
       fetchAssetsBalancesAndPrices,
       UPDATE_BALANCE_AND_PRICE_FREQUENCY

@@ -53,7 +53,7 @@ export const parseAsset = ({ asset_code: address, ...asset } = {}) => {
       ? asset.type
       : AssetTypes.token;
 
-  return {
+  const parsedAsset = {
     ...asset,
     ...metadata,
     address,
@@ -62,6 +62,8 @@ export const parseAsset = ({ asset_code: address, ...asset } = {}) => {
     type,
     uniqueId: address || name,
   };
+
+  return parsedAsset;
 };
 
 export const parseAssetsNativeWithTotals = (assets, nativeCurrency) => {

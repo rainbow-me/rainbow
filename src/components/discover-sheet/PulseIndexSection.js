@@ -18,18 +18,18 @@ import ShadowStack from 'react-native-shadow-stack';
 
 const formatItem = ({ address, name, price, symbol }, nativeCurrencySymbol) => {
   const change = `${parseFloat(
-    (price.relative_change_24h || 0).toFixed(2)
+    (price?.relative_change_24h || 0).toFixed(2)
   )}%`.replace('-', '');
 
   const value = `${nativeCurrencySymbol}${handleSignificantDecimals(
-    price.value,
+    price?.value,
     2
   )} `;
 
   return {
     address,
     change,
-    isPositive: price.relative_change_24h > 0,
+    isPositive: price?.relative_change_24h > 0,
     name,
     price: value,
     symbol,

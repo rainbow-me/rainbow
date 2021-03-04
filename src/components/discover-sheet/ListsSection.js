@@ -10,10 +10,7 @@ import { FlatList, LayoutAnimation } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { emitAssetRequest, emitChartsRequest } from '../../redux/explorer';
-import {
-  COINGECKO_TRENDING_ENDPOINT,
-  fetchCoingeckoIds,
-} from '../../redux/fallbackExplorer';
+import { fetchCoingeckoIds } from '../../redux/fallbackExplorer';
 import { DefaultTokenLists } from '../../references';
 import { ButtonPressAnimation } from '../animations';
 import { AssetListItemSkeleton } from '../asset-list';
@@ -28,6 +25,7 @@ import {
   useUserLists,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
+import { COINGECKO_TRENDING_ENDPOINT } from '@rainbow-me/redux/data';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils } from '@rainbow-me/utils';
 
