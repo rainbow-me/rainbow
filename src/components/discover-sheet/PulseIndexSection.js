@@ -87,7 +87,11 @@ const PulseIndex = () => {
 
   return (
     <Fragment>
-      <ButtonPressAnimation onPress={handlePress} scaleTo={0.9}>
+      <ButtonPressAnimation
+        onPress={handlePress}
+        overflowMargin={15}
+        scaleTo={0.9}
+      >
         <View
           style={{
             height: 70,
