@@ -56,7 +56,7 @@ import {
   parseNewTransaction,
   parseTransactions,
 } from '@rainbow-me/parsers';
-import { shitcoins } from '@rainbow-me/references';
+import { DPI_ADDRESS, shitcoins } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { delay, divide, isZero } from '@rainbow-me/utilities';
 import {
@@ -182,6 +182,13 @@ const genericAssetsFallback = () => async (dispatch, getState) => {
       decimals: 18,
       name: 'Ethereum',
       symbol: 'ETH',
+    },
+    {
+      asset_code: DPI_ADDRESS,
+      coingecko_id: 'defipulse-index',
+      decimals: 18,
+      name: 'DefiPulse Index',
+      symbol: 'DPI',
     },
   ];
 
