@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Animated,
   PanResponder,
@@ -40,11 +40,11 @@ export default function ModelViewer({
   alt,
   fallbackUri,
 }: ModelViewerProps): JSX.Element {
-  const opacity = React.useMemo(() => new Animated.Value(1), []);
-  const [visibility, setVisibility] = React.useState<boolean>(false);
-  const [progress, setProgress] = React.useState<number>(0);
-  const originWhiteList = React.useMemo(() => ['*'], []);
-  const onMessage = React.useCallback(
+  const opacity = useMemo(() => new Animated.Value(1), []);
+  const [visibility, setVisibility] = useState<boolean>(false);
+  const [progress, setProgress] = useState<number>(0);
+  const originWhiteList = useMemo(() => ['*'], []);
+  const onMessage = useCallback(
     ({ nativeEvent: { data } }) => {
       const { type, payload } = JSON.parse(data);
       if (type === 'progress') {
@@ -55,13 +55,7 @@ export default function ModelViewer({
     },
     [setProgress, setVisibility]
   );
-  const fallbackSource = React.useMemo(
-    () => ({
-      uri: fallbackUri,
-    }),
-    [fallbackUri]
-  );
-  const source = React.useMemo(
+  const source = useMemo(
     () => ({
       html: `
 <!DOCTYPE html>
@@ -105,14 +99,13 @@ export default function ModelViewer({
     }),
     [alt, uri]
   );
-  const didLoadModel = React.useMemo(() => !!visibility && progress === 1, [
-    progress,
-    visibility,
-  ]);
-  React.useEffect(() => {
+
+  const didLoadModel = !!visibility && progress === 1;
+  useEffect(() => {
     setLoading(!didLoadModel);
   }, [didLoadModel, setLoading]);
-  React.useEffect(() => {
+
+  useEffect(() => {
     Animated.sequence([
       Animated.timing(opacity, {
         duration: 120,
@@ -121,7 +114,7 @@ export default function ModelViewer({
       }),
     ]).start();
   }, [loading, opacity]);
-  const { panHandlers } = React.useMemo(
+  const { panHandlers } = useMemo(
     () =>
       PanResponder.create({
         onPanResponderTerminationRequest: () => loading,
@@ -141,7 +134,10 @@ export default function ModelViewer({
         pointerEvents={loading ? 'auto' : 'none'}
         style={{ opacity }}
       >
-        <ImgixImage source={fallbackSource} style={StyleSheet.absoluteFill} />
+        <ImgixImage
+          source={{ uri: fallbackUri }}
+          style={StyleSheet.absoluteFill}
+        />
       </ProgressIndicatorContainer>
     </View>
   );

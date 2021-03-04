@@ -1,22 +1,22 @@
-import * as React from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import isEqual from 'react-fast-compare';
 import { Animated } from 'react-native';
 import Sound from 'react-native-sound';
 import { useDispatch, useSelector } from 'react-redux';
 import { useDebounce, useDebouncedCallback } from 'use-debounce';
 import AudioContext from '../../context/AudioContext';
-import isSupportedUriExtension from '../../helpers/isSupportedUriExtension';
-import supportedUriExtensions from '../../helpers/supportedUriExtensions';
 import { setAutoplay, setCurrentPlayingAsset } from '../../redux/audio';
+import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
+import supportedUriExtensions from '@rainbow-me/helpers/supportedUriExtensions';
 import { useAccountAssets, useAudio } from '@rainbow-me/hooks';
 import logger from 'logger';
 
 export default function AudioContextProvider({ category, children }) {
-  React.useEffect(() => {
+  useEffect(() => {
     Sound.setCategory('Playback');
   }, [category]);
 
-  const buildPlaylistFromCollectibles = React.useCallback(
+  const buildPlaylistFromCollectibles = useCallback(
     collectibles =>
       collectibles.filter(({ animation_url }) =>
         isSupportedUriExtension(
@@ -41,7 +41,7 @@ export default function AudioContextProvider({ category, children }) {
     }
   }, [buildPlaylistFromCollectibles, collectibles, setPlaylist, playlist]);
 
-  const [currentSound, setCurrentSound] = React.useState(null);
+  const [currentSound, setCurrentSound] = useState(null);
 
   const dispatch = useDispatch();
   const { currentlyPlayingAsset, autoplay } = useSelector(
@@ -52,20 +52,20 @@ export default function AudioContextProvider({ category, children }) {
     isEqual
   );
 
-  const pickRandomAsset = React.useCallback(() => {
+  const pickRandomAsset = useCallback(() => {
     const choices = playlist.filter(e => e !== currentlyPlayingAsset);
     const { length: numberToChoose } = choices;
     return numberToChoose > 0
       ? choices[Math.floor(Math.random() * choices.length)]
       : playlist[0];
   }, [playlist, currentlyPlayingAsset]);
-  const pickNextAsset = React.useCallback(() => {
+  const pickNextAsset = useCallback(() => {
     const nextIndex =
       (playlist.indexOf(currentlyPlayingAsset) + 1) % playlist.length || 0;
     return playlist[nextIndex];
   }, [playlist, currentlyPlayingAsset]);
 
-  const playAsset = React.useCallback(
+  const playAsset = useCallback(
     asset => {
       setCurrentSound(maybeCurrentSound => {
         !!maybeCurrentSound && maybeCurrentSound.setVolume(0);
@@ -76,16 +76,16 @@ export default function AudioContextProvider({ category, children }) {
     [dispatch, setCurrentSound]
   );
 
-  const stopPlayingAsset = React.useCallback(
+  const stopPlayingAsset = useCallback(
     () => dispatch(setCurrentPlayingAsset(null)),
     [dispatch]
   );
 
   const isPlayingAsset = !!currentlyPlayingAsset;
 
-  const [isPlayingAssetPaused, setIsPlayingAssetPaused] = React.useState(false);
+  const [isPlayingAssetPaused, setIsPlayingAssetPaused] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const i = setInterval(() => {
       const nextIsPlayingAssetPaused =
         !!currentSound && currentlyPlayingAsset && !currentSound._playing;
@@ -101,7 +101,7 @@ export default function AudioContextProvider({ category, children }) {
     isPlayingAssetPaused,
   ]);
 
-  const shouldLoadSoundByUri = React.useCallback(async uri => {
+  const shouldLoadSoundByUri = useCallback(async uri => {
     const sound = await new Promise((resolve, reject) => {
       const loadedSound = new Sound(uri, null, err => {
         if (err) {
@@ -113,25 +113,8 @@ export default function AudioContextProvider({ category, children }) {
     return sound;
   }, []);
 
-  const fadeTo = React.useCallback(async (nextSound, toValue = 0) => {
+  const fadeTo = useCallback(async (nextSound, toValue = 0) => {
     if (!nextSound) {
-      return;
-    } else if (typeof nextSound.getVolume !== 'function') {
-      logger.error(
-        new Error(
-          `Expected function getVolume(), encountered ${typeof nextSound.getVolume}.`
-        )
-      );
-      return;
-    }
-
-    const currentVolume = nextSound.getVolume();
-    if (typeof currentVolume !== 'number') {
-      logger.error(
-        new Error(
-          `Expected number currentVolume, encountered ${typeof currentVolume}.`
-        )
-      );
       return;
     }
 
@@ -151,7 +134,7 @@ export default function AudioContextProvider({ category, children }) {
   // Whilst we're playing, if the playlist (a list of the user's purchased Sound NFTs)
   // changes, check to see if the sound is still available. If it's not, the sound should
   // be dismissed.
-  const isCurrentPlayingAssetWithinWallet = React.useMemo(() => {
+  const isCurrentPlayingAssetWithinWallet = useMemo(() => {
     if (currentlyPlayingAsset && typeof currentlyPlayingAsset === 'object') {
       const { uniqueId } = currentlyPlayingAsset;
       if (typeof uniqueId === 'string') {
@@ -166,7 +149,7 @@ export default function AudioContextProvider({ category, children }) {
   }, [currentlyPlayingAsset, playlist]);
 
   // Manage fade out when a sound should stop playing.
-  React.useEffect(() => {
+  useEffect(() => {
     if (
       currentlyPlayingAsset &&
       currentSound &&
@@ -183,21 +166,13 @@ export default function AudioContextProvider({ category, children }) {
     isCurrentPlayingAssetWithinWallet,
   ]);
 
-  const shouldAutoplayNext = React.useCallback(() => {
+  const shouldAutoplayNext = useCallback(() => {
     const nextAsset = pickNextAsset();
     return dispatch(setCurrentPlayingAsset(nextAsset));
   }, [pickNextAsset, dispatch]);
 
-  const shouldPlaySound = React.useCallback(
+  const shouldPlaySound = useCallback(
     async soundToPlay => {
-      if (!soundToPlay || typeof soundToPlay !== 'object') {
-        throw new Error(
-          `Expected object soundToPlay, encountered ${soundToPlay}.`
-        );
-      }
-      if (typeof soundToPlay.play !== 'function') {
-        throw new Error(`soundToPlay did not implement a play() method.`);
-      }
       return new Promise((resolve, reject) => {
         soundToPlay.play(didFinishSuccessfully => {
           if (!didFinishSuccessfully) {
@@ -229,7 +204,7 @@ export default function AudioContextProvider({ category, children }) {
     [setCurrentSound, stopPlayingAsset, shouldAutoplayNext, autoplay]
   );
 
-  const setNextSoundAndDestroyLastIfExists = React.useCallback(
+  const setNextSoundAndDestroyLastIfExists = useCallback(
     nextSoundToPlay => {
       setCurrentSound(maybeCurrentSound => {
         if (nextSoundToPlay) {
@@ -245,7 +220,7 @@ export default function AudioContextProvider({ category, children }) {
     [setCurrentSound, shouldPlaySound]
   );
 
-  const shouldPlayNextAsset = React.useCallback(
+  const shouldPlayNextAsset = useCallback(
     async nextAsset => {
       try {
         if (!nextAsset || typeof nextAsset !== 'object') {
@@ -288,27 +263,25 @@ export default function AudioContextProvider({ category, children }) {
     500
   );
 
-  const [loadingNextAsset, setLoadingNextAsset] = React.useState(false);
+  const [loadingNextAsset, setLoadingNextAsset] = useState(false);
 
   // redux_sync
-  React.useEffect(() => {
-    (async () => {
-      try {
-        setLoadingNextAsset(true);
-        setCurrentSound(maybeCurrentSound => {
-          !!maybeCurrentSound && maybeCurrentSound.stop();
-          return maybeCurrentSound;
-        });
-        debouncedShouldPlayNext(
-          currentlyPlayingAsset,
-          shouldPlayNextAsset,
-          setNextSoundAndDestroyLastIfExists,
-          setLoadingNextAsset
-        );
-      } catch (e) {
-        logger.error(e);
-      }
-    })();
+  useEffect(() => {
+    try {
+      setLoadingNextAsset(true);
+      setCurrentSound(maybeCurrentSound => {
+        !!maybeCurrentSound && maybeCurrentSound.stop();
+        return maybeCurrentSound;
+      });
+      debouncedShouldPlayNext(
+        currentlyPlayingAsset,
+        shouldPlayNextAsset,
+        setNextSoundAndDestroyLastIfExists,
+        setLoadingNextAsset
+      );
+    } catch (e) {
+      logger.error(e);
+    }
   }, [
     isCurrentPlayingAssetWithinWallet,
     setCurrentSound,
@@ -319,7 +292,7 @@ export default function AudioContextProvider({ category, children }) {
     setNextSoundAndDestroyLastIfExists,
   ]);
 
-  const toggleAutoplay = React.useCallback(() => {
+  const toggleAutoplay = useCallback(() => {
     return dispatch(setAutoplay(!autoplay));
   }, [autoplay, dispatch]);
 
@@ -330,7 +303,7 @@ export default function AudioContextProvider({ category, children }) {
     45
   );
 
-  const value = React.useMemo(
+  const value = useMemo(
     () => ({
       ...parentValue,
       autoplay,

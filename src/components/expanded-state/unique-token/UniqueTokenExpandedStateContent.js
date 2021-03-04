@@ -1,12 +1,12 @@
 import React from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import styled from 'styled-components';
-import isSupportedUriExtension from '../../../helpers/isSupportedUriExtension';
 import { magicMemo } from '../../../utils';
 import { SimpleModelView } from '../../3d';
 import { Centered } from '../../layout';
 import { UniqueTokenImage } from '../../unique-token';
 import { SimpleVideo } from '../../video';
+import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
 import {
   useDimensions,
   useImageMetadata,

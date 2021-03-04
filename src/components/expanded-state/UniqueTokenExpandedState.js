@@ -79,12 +79,12 @@ const UniqueTokenExpandedState = ({ asset }) => {
     currentlyPlayingAsset.uniqueId === asset.uniqueId;
 
   // TODO: if playing etc
-  const handlePressAudio = React.useCallback(async () => {
+  const handlePressAudio = useCallback(async () => {
     try {
       if (assetIsPlayingAudio) {
-        const shouldPause = () => currentSound.pause();
-        const shouldPlay = () => currentSound.play();
-        return isPlayingAssetPaused ? shouldPlay() : shouldPause();
+        return isPlayingAssetPaused
+          ? currentSound.play()
+          : currentSound.pause();
       }
       return playAsset(asset);
     } catch (e) {
@@ -98,11 +98,11 @@ const UniqueTokenExpandedState = ({ asset }) => {
     isPlayingAssetPaused,
   ]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     EXPERIMENTAL_AUDIO_PLAYER !== 'true' && playAsset(asset);
   }, [playAsset, asset, stopPlayingAsset]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     return () => {
       !!currentSound && fadeTo(currentSound, 0).then(stopPlayingAsset);
     };
