@@ -41,7 +41,7 @@ async function splitQuery(query, localClient, vars, list, skipCount = 100) {
     const sliced = list.slice(skip, end);
     try {
       const result = await localClient.query({
-        fetchPolicy: 'cache-first',
+        fetchPolicy: 'network-only',
         query: query(...vars, sliced),
       });
       fetchedData = {
@@ -146,7 +146,7 @@ async function getBulkPairData(pairList, ethPrice, ethPriceOneMonthAgo) {
           let oneDayHistory = oneDayData?.[pair.id];
           if (!oneDayHistory) {
             const newData = await uniswapClient.query({
-              fetchPolicy: 'cache-first',
+              fetchPolicy: 'network-only',
               query: UNISWAP_PAIR_DATA_QUERY(pair.id, b1),
             });
             oneDayHistory = newData.data.pairs[0];
@@ -154,7 +154,7 @@ async function getBulkPairData(pairList, ethPrice, ethPriceOneMonthAgo) {
           let twoDayHistory = twoDayData?.[pair.id];
           if (!twoDayHistory) {
             const newData = await uniswapClient.query({
-              fetchPolicy: 'cache-first',
+              fetchPolicy: 'network-only',
               query: UNISWAP_PAIR_DATA_QUERY(pair.id, b2),
             });
             twoDayHistory = newData.data.pairs[0];
@@ -162,11 +162,12 @@ async function getBulkPairData(pairList, ethPrice, ethPriceOneMonthAgo) {
           let oneMonthHistory = oneMonthData?.[pair.id];
           if (!oneMonthHistory) {
             const newData = await uniswapClient.query({
-              fetchPolicy: 'cache-first',
+              fetchPolicy: 'network-only',
               query: UNISWAP_PAIR_DATA_QUERY(pair.id, b3),
             });
             oneMonthHistory = newData.data.pairs[0];
           }
+
           data = parseData(
             data,
             oneDayHistory,
@@ -239,7 +240,8 @@ function parseData(
   if (
     (!newData.oneDayVolumeUSD || !newData.trackedReserveUSD) &&
     `${newData.token0.symbol}-${newData.token1.symbol}` !== 'WETH-USD' &&
-    `${newData.token0.symbol}-${newData.token1.symbol}` !== 'HKMT-USDT'
+    `${newData.token0.symbol}-${newData.token1.symbol}` !== 'HKMT-USDT' &&
+    `${newData.token0.symbol}-${newData.token1.symbol}` !== 'WETH-wPE'
   ) {
     logger.log(
       '🦄🦄🦄 Error calculating annualized data for token',
