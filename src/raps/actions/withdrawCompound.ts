@@ -9,6 +9,7 @@ import TransactionStatusTypes from '@rainbow-me/helpers/transactionStatusTypes';
 import TransactionTypes from '@rainbow-me/helpers/transactionTypes';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
 import store from '@rainbow-me/redux/store';
+import { TypeSpecificParameters } from '@rainbow-me/redux/swap';
 import {
   compoundCERC20ABI,
   compoundCETHABI,
@@ -16,7 +17,7 @@ import {
   ethUnits,
   savingsAssetsListByUnderlying,
 } from '@rainbow-me/references';
-import { convertAmountToRawAmount } from '@rainbow-me/utilities';
+import { convertAmountToRawAmount, isEqual } from '@rainbow-me/utilities';
 import { gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
@@ -33,15 +34,15 @@ const withdrawCompound = async (
   const { inputAmount } = parameters as SwapActionParameters;
   const { dispatch } = store;
   const { accountAddress, network } = store.getState().settings;
-  const {
-    inputCurrency,
-    isMax,
-    typeSpecificParameters,
-  } = store.getState().swap;
+  const { inputCurrency, typeSpecificParameters } = store.getState().swap;
   const { gasPrices, selectedGasPrice } = store.getState().gas;
 
-  const cTokenBalance = typeSpecificParameters?.cTokenBalance as string;
+  const {
+    cTokenBalance,
+    supplyBalanceUnderlying,
+  } = typeSpecificParameters as TypeSpecificParameters;
 
+  const isMax = isEqual(inputAmount, supplyBalanceUnderlying);
   const rawInputAmount = convertAmountToRawAmount(
     isMax ? cTokenBalance : inputAmount,
     isMax ? CTOKEN_DECIMALS : inputCurrency.decimals
