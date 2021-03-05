@@ -63,12 +63,12 @@ const findSwapOutputAmount = (
   return convertHexToString(data);
 };
 
-const swap = async (
+export default async function swap(
   wallet: Wallet,
   currentRap: Rap,
   index: number,
   parameters: RapActionParameters
-): Promise<string | null> => {
+): Promise<string | null> {
   logger.log('[swap] swap on uniswap!');
   const {
     accountAddress,
@@ -195,6 +195,4 @@ const swap = async (
     dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
     return null;
   }
-};
-
-export default swap;
+}

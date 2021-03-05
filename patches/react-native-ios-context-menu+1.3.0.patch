@@ -1,0 +1,33 @@
+diff --git a/node_modules/react-native-ios-context-menu/src/ContextMenuButton.ios.js b/node_modules/react-native-ios-context-menu/src/ContextMenuButton.ios.js
+index f972d19..c5257f2 100644
+--- a/node_modules/react-native-ios-context-menu/src/ContextMenuButton.ios.js
++++ b/node_modules/react-native-ios-context-menu/src/ContextMenuButton.ios.js
+@@ -1,6 +1,7 @@
+ import React from 'react';
+-import { StyleSheet, Platform, requireNativeComponent, UIManager, View, TouchableOpacity } from 'react-native';
++import { StyleSheet, Platform, requireNativeComponent, UIManager, View } from 'react-native';
+ import Proptypes from 'prop-types';
++import { TouchableOpacity } from 'react-native-gesture-handler'
+ 
+ import { ActionSheetFallback } from './functions/ActionSheetFallback';
+ import { ContextMenuView } from './ContextMenuView';
+@@ -193,7 +194,7 @@ export class ContextMenuButton extends React.PureComponent {
+   };
+ 
+   render(){
+-    const { useActionSheetFallback } = this.props;
++    const { useActionSheetFallback, isMenuPrimaryAction } = this.props;
+     const useContextMenu =
+       (isContextMenuViewSupported && !useActionSheetFallback);
+ 
+@@ -201,7 +202,9 @@ export class ContextMenuButton extends React.PureComponent {
+       useContextMenu? this._renderContextMenuView() :
+       useActionSheetFallback? (
+         <TouchableOpacity
+-          onLongPress={this._handleOnLongPress}
++          {...({
++            [isMenuPrimaryAction ? 'onPress' : 'onLongPress']:this._handleOnLongPress
++          })}
+           activeOpacity={0.8}
+           {...this.props}
+         >

@@ -347,6 +347,11 @@ function NativeStackNavigator() {
         name={Routes.SAVINGS_DEPOSIT_MODAL}
         options={nativeStackDefaultConfigWithoutStatusBar}
       />
+      <NativeStack.Screen
+        component={ExpandedAssetSheet}
+        name={Routes.SWAP_DETAILS_SHEET}
+        {...expandedAssetSheetConfig}
+      />
       {isNativeStackAvailable ? (
         <>
           <NativeStack.Screen

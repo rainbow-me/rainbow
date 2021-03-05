@@ -1,12 +1,11 @@
 import React, { useCallback } from 'react';
-
 import styled from 'styled-components';
-import { useTheme } from '../../context/ThemeContext';
-import { useDimensions } from '../../hooks';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';
+import { useTheme } from '@rainbow-me/context';
+import { useDimensions } from '@rainbow-me/hooks';
 
 const KeyboardButtonContent = styled(Centered)`
   height: ${({ height }) => height};
@@ -40,7 +39,7 @@ const KeyboardButton = ({ children, ...props }) => {
   );
 };
 
-const Numpad = ({ decimal = true, onPress, width }) => {
+export default function Numpad({ decimal = true, onPress, width }) {
   const { colors } = useTheme();
   const keyColor = colors.alpha(colors.blueGreyDark, 0.8);
 
@@ -78,6 +77,4 @@ const Numpad = ({ decimal = true, onPress, width }) => {
       </KeyboardRow>
     </Centered>
   );
-};
-
-export default Numpad;
+}

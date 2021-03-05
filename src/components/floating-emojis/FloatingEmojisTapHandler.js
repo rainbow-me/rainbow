@@ -5,22 +5,26 @@ import { position } from '@rainbow-me/styles';
 
 export default function FloatingEmojisTapHandler({
   children,
+  disabled = false,
   onNewEmoji,
+  onPress,
   ...props
 }) {
   const handleTap = useCallback(
     ({ nativeEvent: { state, x, y } }) => {
-      if (state === State.ACTIVE && onNewEmoji) {
-        onNewEmoji(x, y);
+      if (state === State.ACTIVE) {
+        onNewEmoji?.(x, y);
+        onPress?.();
       }
     },
-    [onNewEmoji]
+    [onNewEmoji, onPress]
   );
 
   return (
     <TapGestureHandler
       {...props}
       {...position.sizeAsObject('100%')}
+      enabled={!disabled}
       onHandlerStateChange={handleTap}
     >
       <Animated.View accessible>{children}</Animated.View>

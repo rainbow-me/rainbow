@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import currentColors from '../context/currentColors';
 
 const buildRgba = (color, alpha = 1) => `rgba(${chroma(color).rgb()},${alpha})`;
+
 const darkModeColors = {
   appleBlue: '#0E76FD',
   black: '#FFFFFF',
@@ -70,7 +71,7 @@ const getColorsByTheme = darkMode => {
     mintDark: '#00E0A9', // '0, 224, 169'
     neonSkyblue: '#34FFFF', // '52, 255, 255'
     offWhite: '#F8F9FA', // '248, 249, 250'
-    orange: '#FF9900', // '255, 153, 0'
+    orange: '#F46E38', // '244, 110, 56'
     orangeLight: '#FEBE44', // '254, 190, 68'
     paleBlue: '#579DFF', // 87, 157, 255
     pink: '#FF54BB', // 255, 84, 187
@@ -93,6 +94,7 @@ const getColorsByTheme = darkMode => {
     swapPurple: '#575CFF', // '87, 92, 255'
     transparent: 'transparent',
     trueBlack: '#000000', // '0, 0, 0'
+    uniswapPink: '#DC6BE5', // '229, 64, 241',
     white: '#FFFFFF', // '255, 255, 255'
     whiteLabel: '#FFFFFF', // '255, 255, 255'
     yellow: '#FFD657', // '255, 214, 87'
@@ -108,7 +110,7 @@ const getColorsByTheme = darkMode => {
     '#FFD963', // '255, 217, 99'
     '#B140FF', // '177, 64, 255'
     '#41EBC1', // '64, 235, 193'
-    '#F46E38', // '244, 110, 56'
+    base.orange,
     '#6D7E8F', // '109, 126, 143'
   ];
 

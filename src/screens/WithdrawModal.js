@@ -1,35 +1,29 @@
+import { useRoute } from '@react-navigation/native';
 import React from 'react';
-import ExchangeModalTypes from '../helpers/exchangeModalTypes';
-import useStatusBarManaging from '../navigation/useStatusBarManaging';
 import ExchangeModal from './ExchangeModal';
+import { ExchangeModalTypes } from '@rainbow-me/helpers';
+import { useStatusBarManaging } from '@rainbow-me/navigation';
 import {
   createWithdrawFromCompoundRap,
   estimateWithdrawFromCompound,
 } from '@rainbow-me/raps';
 
-const WithdrawModal = ({ route, navigation, ...props }) => {
+export default function WithdrawModal(props) {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   android && useStatusBarManaging();
-  const cTokenBalance = route.params?.cTokenBalance;
-  const defaultInputAsset = route.params?.defaultInputAsset;
-  const underlyingPrice = route.params?.underlyingPrice;
-  const supplyBalanceUnderlying = route.params?.supplyBalanceUnderlying;
+  const { params } = useRoute();
 
   return (
     <ExchangeModal
-      cTokenBalance={cTokenBalance}
+      cTokenBalance={params?.cTokenBalance}
       createRap={createWithdrawFromCompoundRap}
-      defaultInputAsset={defaultInputAsset}
+      defaultInputAsset={params?.defaultInputAsset}
       estimateRap={estimateWithdrawFromCompound}
-      inputHeaderTitle={`Withdraw ${defaultInputAsset.symbol}`}
-      navigation={navigation}
       showOutputField={false}
-      supplyBalanceUnderlying={supplyBalanceUnderlying}
+      supplyBalanceUnderlying={params?.supplyBalanceUnderlying}
+      title={`Withdraw ${params?.defaultInputAsset?.symbol}`}
       type={ExchangeModalTypes.withdrawal}
-      underlyingPrice={underlyingPrice}
       {...props}
     />
   );
-};
-
-export default WithdrawModal;
+}

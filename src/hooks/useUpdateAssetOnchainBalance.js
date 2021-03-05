@@ -9,7 +9,7 @@ export default function useUpdateAssetOnchainBalance() {
   const { allAssets } = useAccountAssets();
   const dispatch = useDispatch();
 
-  const useUpdateAssetOnchainBalance = useCallback(
+  const updateAssetOnchainBalance = useCallback(
     async (assetToUpdate, accountAddress, successCallback) => {
       const balance = await getOnchainAssetBalance(
         assetToUpdate,
@@ -35,5 +35,5 @@ export default function useUpdateAssetOnchainBalance() {
     },
     [allAssets, dispatch]
   );
-  return useUpdateAssetOnchainBalance;
+  return updateAssetOnchainBalance;
 }

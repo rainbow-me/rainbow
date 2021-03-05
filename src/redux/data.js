@@ -571,15 +571,16 @@ export const assetPricesReceived = (message, fromFallback = false) => (
   const assets = get(message, 'payload.prices', {});
 
   if (isEmpty(assets)) return;
+  const parsedAssets = mapValues(assets, asset => parseAsset(asset));
   const { genericAssets } = getState().data;
-  const parsedAssets = mapValues(assets, asset => {
-    return parseAsset(asset);
-  });
+
+  const updatedAssets = {
+    ...genericAssets,
+    ...parsedAssets,
+  };
+
   dispatch({
-    payload: {
-      ...genericAssets,
-      ...parsedAssets,
-    },
+    payload: updatedAssets,
     type: DATA_UPDATE_GENERIC_ASSETS,
   });
 };

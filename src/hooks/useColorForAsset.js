@@ -8,7 +8,11 @@ import {
   pseudoRandomArrayItemFromString,
 } from '@rainbow-me/utils';
 
-export default function useColorForAsset(asset, fallbackColor) {
+export default function useColorForAsset(
+  asset = {},
+  fallbackColor,
+  forceLightMode = false
+) {
   const { address, color } = asset;
   const token = getTokenMetadata(address);
   const tokenListColor = token?.color;
@@ -17,7 +21,8 @@ export default function useColorForAsset(asset, fallbackColor) {
     getUrlForTrustIconFallback(address)
   );
 
-  const { isDarkMode, colors } = useTheme();
+  const { isDarkMode: isDarkModeTheme, colors } = useTheme();
+  const isDarkMode = forceLightMode || isDarkModeTheme;
 
   const colorDerivedFromAddress = useMemo(
     () =>

@@ -6,17 +6,15 @@ import TouchableBackdrop from '../components/TouchableBackdrop';
 import {
   ContactProfileState,
   SupportedCountriesExpandedState,
-  SwapDetailsState,
   WalletProfileState,
 } from '../components/expanded-state';
 import { Centered } from '../components/layout';
-import { useNavigation } from '../navigation/Navigation';
+import { useNavigation } from '@rainbow-me/navigation';
 import { padding, position } from '@rainbow-me/styles';
 
 const ModalTypes = {
   contact_profile: ContactProfileState,
   supported_countries: SupportedCountriesExpandedState,
-  swap_details: SwapDetailsState,
   wallet_profile: WalletProfileState,
 };
 

@@ -24,8 +24,7 @@ import {
 import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
 import { addHexPrefix } from '@rainbow-me/handlers/web3';
-import CurrencySelectionTypes from '@rainbow-me/helpers/currencySelectionTypes';
-import tokenSectionTypes from '@rainbow-me/helpers/tokenSectionTypes';
+import { CurrencySelectionTypes, TokenSectionTypes } from '@rainbow-me/helpers';
 import {
   useInteraction,
   useMagicAutofocus,
@@ -133,37 +132,37 @@ export default function CurrencySelectModal() {
           filteredList.push({
             color: colors.yellowFavorite,
             data: filteredFavorite,
-            title: tokenSectionTypes.favoriteTokenSection,
+            title: TokenSectionTypes.favoriteTokenSection,
           });
 
         filteredVerified.length &&
           filteredList.push({
             data: filteredVerified,
-            title: tokenSectionTypes.verifiedTokenSection,
+            title: TokenSectionTypes.verifiedTokenSection,
             useGradientText: IS_TESTING === 'true' ? false : true,
           });
 
         filteredHighUnverified.length &&
           filteredList.push({
             data: filteredHighUnverified,
-            title: tokenSectionTypes.unverifiedTokenSection,
+            title: TokenSectionTypes.unverifiedTokenSection,
           });
 
         filteredLow.length &&
           filteredList.push({
             data: filteredLow,
-            title: tokenSectionTypes.lowLiquidityTokenSection,
+            title: TokenSectionTypes.lowLiquidityTokenSection,
           });
       } else {
         filteredList = [
           {
             color: colors.yellowFavorite,
             data: favorites,
-            title: tokenSectionTypes.favoriteTokenSection,
+            title: TokenSectionTypes.favoriteTokenSection,
           },
           {
             data: curatedNotFavorited,
-            title: tokenSectionTypes.verifiedTokenSection,
+            title: TokenSectionTypes.verifiedTokenSection,
             useGradientText: IS_TESTING === 'true' ? false : true,
           },
         ];

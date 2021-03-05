@@ -129,6 +129,23 @@ const chartsRetrieval = (assetCodes, currency, chartType, action = 'get') => [
   },
 ];
 
+export const fetchAssetPrices = assetAddress => (dispatch, getState) => {
+  const { assetsSocket } = getState().explorer;
+  const { nativeCurrency } = getState().settings;
+
+  const payload = [
+    'get',
+    {
+      payload: {
+        asset_codes: [assetAddress],
+        currency: toLower(nativeCurrency),
+      },
+      scope: ['prices'],
+    },
+  ];
+  assetsSocket.emit(...payload);
+};
+
 const explorerUnsubscribe = () => (dispatch, getState) => {
   const {
     addressSocket,

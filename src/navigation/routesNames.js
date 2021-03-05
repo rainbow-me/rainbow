@@ -40,7 +40,7 @@ const Routes = {
   SPEED_UP_AND_CANCEL_SHEET: 'SpeedUpAndCancelSheet',
   STACK: 'Stack',
   SUPPORTED_COUNTRIES_MODAL_SCREEN: 'SupportedCountriesModalScreen',
-  SWAP_DETAILS_SCREEN: 'SwapDetailsScreen',
+  SWAP_DETAILS_SHEET: 'SwapDetailsSheet',
   SWIPE_LAYOUT: 'SwipeLayout',
   TOKEN_INDEX_SCREEN: 'TokenIndexScreen',
   TOKEN_INDEX_SHEET: 'TokenIndexSheet',

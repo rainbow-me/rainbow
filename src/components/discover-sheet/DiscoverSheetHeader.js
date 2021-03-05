@@ -13,7 +13,6 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import styled from 'styled-components';
-import { borders, position } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
@@ -21,6 +20,7 @@ import DiscoverSheetContext from './DiscoverSheetContext';
 import { useDelayedValueWithLayoutAnimation } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import { borders, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const springConfig = {
