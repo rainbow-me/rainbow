@@ -1,9 +1,5 @@
 import { concat, reduce } from 'lodash';
-import {
-  assetNeedsUnlocking,
-  getDepositGasLimit,
-  isValidSwapInput,
-} from './actions';
+import { assetNeedsUnlocking, getDepositGasLimit } from './actions';
 import {
   createNewAction,
   createNewRap,
@@ -36,11 +32,7 @@ export const estimateSwapAndDepositCompound = async (
   const requiresSwap = !!outputCurrency;
   let gasLimits: (string | number)[] = [];
   if (requiresSwap) {
-    const isValid = isValidSwapInput({
-      inputCurrency,
-      outputCurrency,
-    });
-    if (!isValid) return ethUnits.basic_deposit;
+    if (!inputCurrency) return ethUnits.basic_deposit;
 
     const swapAssetNeedsUnlocking = await assetNeedsUnlocking(
       accountAddress,

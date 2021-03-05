@@ -2,7 +2,6 @@ import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
 import { get } from 'lodash';
 import { Rap, RapActionParameters, SwapActionParameters } from '../common';
-import { Asset } from '@rainbow-me/entities';
 import {
   estimateSwapGasLimit,
   executeSwap,
@@ -15,14 +14,6 @@ import store from '@rainbow-me/redux/store';
 import { greaterThan } from '@rainbow-me/utilities';
 import { gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
-
-export const isValidSwapInput = ({
-  inputCurrency,
-  outputCurrency,
-}: {
-  inputCurrency: Asset | null;
-  outputCurrency: Asset | null;
-}) => !!inputCurrency && !!outputCurrency;
 
 const swap = async (
   wallet: Wallet,

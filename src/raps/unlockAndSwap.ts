@@ -1,5 +1,5 @@
 import { concat, reduce } from 'lodash';
-import { assetNeedsUnlocking, isValidSwapInput } from './actions';
+import { assetNeedsUnlocking } from './actions';
 import {
   createNewAction,
   createNewRap,
@@ -23,12 +23,8 @@ export const estimateUnlockAndSwap = async (
     slippageInBips: slippage,
   } = store.getState().swap;
 
-  const isValid = isValidSwapInput({
-    inputCurrency,
-    outputCurrency,
-  });
-
-  if (!isValid || !inputAmount) return ethUnits.basic_swap;
+  if (!inputCurrency || !outputCurrency || !inputAmount)
+    return ethUnits.basic_swap;
 
   const { accountAddress, chainId } = store.getState().settings;
 
