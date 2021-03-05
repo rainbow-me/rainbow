@@ -12,6 +12,7 @@ import store from '@rainbow-me/redux/store';
 import {
   compoundCERC20ABI,
   compoundCETHABI,
+  ETH_ADDRESS,
   ethUnits,
   savingsAssetsListByUnderlying,
 } from '@rainbow-me/references';
@@ -32,10 +33,17 @@ const withdrawCompound = async (
   const { inputAmount } = parameters as SwapActionParameters;
   const { dispatch } = store;
   const { accountAddress, network } = store.getState().settings;
-  const { inputCurrency, isMax } = store.getState().swap;
+  const {
+    inputCurrency,
+    isMax,
+    typeSpecificParameters,
+  } = store.getState().swap;
   const { gasPrices, selectedGasPrice } = store.getState().gas;
+
+  const cTokenBalance = typeSpecificParameters?.cTokenBalance as string;
+
   const rawInputAmount = convertAmountToRawAmount(
-    inputAmount as string,
+    isMax ? cTokenBalance : inputAmount,
     isMax ? CTOKEN_DECIMALS : inputCurrency.decimals
   );
   logger.log('[withdraw] is max', isMax);
@@ -54,7 +62,7 @@ const withdrawCompound = async (
 
   const compound = new Contract(
     cTokenContract,
-    inputCurrency.address === 'eth' ? compoundCETHABI : compoundCERC20ABI,
+    inputCurrency.address === ETH_ADDRESS ? compoundCETHABI : compoundCERC20ABI,
     wallet
   );
 
