@@ -317,7 +317,7 @@ const listenOnAssetMessages = socket => dispatch => {
   });
 
   socket.on(messages.ASSETS.RECEIVED, message => {
-    dispatch(assetPricesReceived(message, false));
+    dispatch(assetPricesReceived(message));
   });
 
   socket.on(messages.ASSETS.CHANGED, message => {

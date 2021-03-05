@@ -44,9 +44,7 @@ const PulseIndex = () => {
     genericAssets,
   }));
 
-  const { charts } = useSelector(({ charts: { charts } }) => ({
-    charts,
-  }));
+  const charts = useSelector(({ charts: { charts } }) => charts);
 
   const chartPriceDataForDPI = useMemo(
     () => get(charts, `[${DPI_ADDRESS}][${ChartTypes.month}][0][1]`, 0),

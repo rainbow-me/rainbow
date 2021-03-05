@@ -25,9 +25,11 @@ import {
   useUserLists,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import { COINGECKO_TRENDING_ENDPOINT } from '@rainbow-me/redux/data';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils } from '@rainbow-me/utils';
+
+const COINGECKO_TRENDING_ENDPOINT =
+  'https://api.coingecko.com/api/v3/search/trending';
 
 const fetchTrendingAddresses = async () => {
   const trendingAddresses = [];

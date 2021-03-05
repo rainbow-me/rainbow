@@ -56,7 +56,12 @@ import {
   parseNewTransaction,
   parseTransactions,
 } from '@rainbow-me/parsers';
-import { DPI_ADDRESS, ETH_ADDRESS, shitcoins } from '@rainbow-me/references';
+import {
+  DPI_ADDRESS,
+  ETH_ADDRESS,
+  ETH_COINGECKO_ID,
+  shitcoins,
+} from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { delay, divide, isZero } from '@rainbow-me/utilities';
 import {
@@ -75,8 +80,6 @@ const TXN_WATCHER_POLL_INTERVAL = 5000; // 5 seconds
 const GENERIC_ASSETS_REFRESH_INTERVAL = 60000; // 1 minute
 const GENERIC_ASSETS_FALLBACK_TIMEOUT = 10000; // 10 seconds
 
-export const COINGECKO_TRENDING_ENDPOINT =
-  'https://api.coingecko.com/api/v3/search/trending';
 export const COINGECKO_IDS_ENDPOINT =
   'https://api.coingecko.com/api/v3/coins/list?include_platform=true&asset_platform_id=ethereum';
 
@@ -178,7 +181,7 @@ const genericAssetsFallback = () => async (dispatch, getState) => {
   const allAssets = [
     {
       asset_code: ETH_ADDRESS,
-      coingecko_id: 'ethereum',
+      coingecko_id: ETH_COINGECKO_ID,
       decimals: 18,
       name: 'Ethereum',
       symbol: 'ETH',
@@ -195,7 +198,7 @@ const genericAssetsFallback = () => async (dispatch, getState) => {
   keys(TokensListenedCache).forEach(address => {
     const coingeckoAsset = ids.find(
       ({ platforms: { ethereum: tokenAddress } }) =>
-        toLower(tokenAddress) === toLower(address)
+        toLower(tokenAddress) === address
     );
 
     if (coingeckoAsset) {
@@ -229,10 +232,10 @@ const genericAssetsFallback = () => async (dispatch, getState) => {
       prices = { ...prices, ...pricesForCurrentPage };
     }
   } catch (e) {
-    logger.log('FUCK', e);
+    logger.sentry('error loading generic asset prices from coingecko', e);
   }
 
-  if (prices) {
+  if (!isEmpty(prices)) {
     Object.keys(prices).forEach(key => {
       for (let i = 0; i < allAssetsUnique.length; i++) {
         if (toLower(allAssetsUnique[i].coingecko_id) === toLower(key)) {
