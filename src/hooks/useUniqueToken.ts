@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 
 import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
 import supportedUriExtensions from '@rainbow-me/helpers/supportedUriExtensions';
@@ -9,11 +9,11 @@ export type useUniqueTokenResult = {
   readonly supportsVideo: boolean;
 };
 
-const fallbackResult: useUniqueTokenResult = Object.freeze({
+const fallbackResult: useUniqueTokenResult = {
   supports3d: false,
   supportsAudio: false,
   supportsVideo: false,
-});
+};
 
 export default function useUniqueToken(
   maybeUniqueToken: Record<string, any>
@@ -33,7 +33,7 @@ export default function useUniqueToken(
         animation_url,
         supportedUriExtensions.SUPPORTED_VIDEO_EXTENSIONS
       );
-      return Object.freeze({ supports3d, supportsAudio, supportsVideo });
+      return { supports3d, supportsAudio, supportsVideo };
     }
     return fallbackResult;
   }, [maybeUniqueToken]);

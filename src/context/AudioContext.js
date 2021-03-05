@@ -1,10 +1,10 @@
-import * as React from 'react';
+import { createContext } from 'react';
 
 const defaultError = () => {
   throw new Error('Missing AudioContext.');
 };
 
-const defaultValue = Object.freeze({
+const defaultValue = {
   autoplay: false,
   currentlyPlayingAsset: null,
   currentSound: null,
@@ -17,6 +17,6 @@ const defaultValue = Object.freeze({
   playlist: [],
   stopPlayingAsset: defaultError,
   toggleAutoplay: defaultError,
-});
+};
 
-export default React.createContext(defaultValue);
+export default createContext(defaultValue);
