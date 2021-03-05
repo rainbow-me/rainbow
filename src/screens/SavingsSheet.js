@@ -55,7 +55,6 @@ const SavingsSheet = () => {
   const isEmpty = params['isEmpty'];
   const underlyingBalanceNativeValue = params['underlyingBalanceNativeValue'];
   const underlying = params['underlying'];
-  const underlyingPrice = params['underlyingPrice'];
   const lifetimeSupplyInterestAccrued = params['lifetimeSupplyInterestAccrued'];
   const lifetimeSupplyInterestAccruedNative =
     params['lifetimeSupplyInterestAccruedNative'];
@@ -104,7 +103,6 @@ const SavingsSheet = () => {
         cTokenBalance,
         defaultInputAsset: underlying,
         supplyBalanceUnderlying,
-        underlyingPrice,
       });
 
       analytics.track('Navigated to SavingsWithdrawModal', {
@@ -120,7 +118,6 @@ const SavingsSheet = () => {
     navigate,
     supplyBalanceUnderlying,
     underlying,
-    underlyingPrice,
   ]);
 
   const onDeposit = useCallback(() => {
@@ -129,7 +126,6 @@ const SavingsSheet = () => {
         params: {
           params: {
             defaultInputAsset: underlying,
-            underlyingPrice,
           },
           screen: Routes.MAIN_EXCHANGE_SCREEN,
         },
@@ -144,7 +140,7 @@ const SavingsSheet = () => {
     } else {
       Alert.alert(`You need to import the wallet in order to do this`);
     }
-  }, [isEmpty, isReadOnlyWallet, navigate, underlying, underlyingPrice]);
+  }, [isEmpty, isReadOnlyWallet, navigate, underlying]);
 
   return (
     <Container

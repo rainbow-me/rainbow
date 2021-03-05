@@ -1,20 +1,19 @@
-import PropTypes from 'prop-types';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import styled from 'styled-components';
-import {
-  calculateEarningsInDays,
-  isSymbolStablecoin,
-} from '../../helpers/savings';
-import {
-  convertAmountToNativeDisplay,
-  handleSignificantDecimals,
-} from '../../helpers/utilities';
-import { magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Row, RowWithMargins } from '../layout';
 import { AnimatedNumber, Emoji, Text } from '../text';
-import { useAccountSettings } from '@rainbow-me/hooks';
+import {
+  calculateEarningsInDays,
+  isSymbolStablecoin,
+} from '@rainbow-me/helpers/savings';
+import {
+  convertAmountToNativeDisplay,
+  handleSignificantDecimals,
+} from '@rainbow-me/helpers/utilities';
+import { useAccountSettings, useStepper } from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
+import { magicMemo } from '@rainbow-me/utils';
 
 const CrystalBallEmoji = styled(Emoji).attrs({
   name: 'crystal_ball',
@@ -59,12 +58,6 @@ const steps = {
   },
 };
 /* eslint-enable sort-keys */
-
-function useStepper(max, initial = 0) {
-  const [step, setStep] = useState(initial);
-  const nextStep = useCallback(() => setStep(p => (p + 1) % max), [max]);
-  return [step, nextStep];
-}
 
 const SavingsPredictionStepper = ({ asset, balance, interestRate }) => {
   const { nativeCurrency } = useAccountSettings();
@@ -113,15 +106,6 @@ const SavingsPredictionStepper = ({ asset, balance, interestRate }) => {
       </Row>
     </ButtonPressAnimation>
   );
-};
-
-SavingsPredictionStepper.propTypes = {
-  asset: PropTypes.shape({
-    decimals: PropTypes.number,
-    symbol: PropTypes.string,
-  }),
-  balance: PropTypes.string,
-  interestRate: PropTypes.string,
 };
 
 export default magicMemo(SavingsPredictionStepper, ['balance', 'interestRate']);

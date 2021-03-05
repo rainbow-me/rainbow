@@ -4,6 +4,9 @@ import { supportedNativeCurrencies } from '@rainbow-me/references';
 
 type BigNumberish = number | string | BigNumber;
 
+export const abs = (value: BigNumberish): string =>
+  new BigNumber(value).abs().toFixed();
+
 export const subtract = (
   numberOne: BigNumberish,
   numberTwo: BigNumberish
@@ -86,8 +89,8 @@ export const countDecimalPlaces = (value: BigNumberish): number =>
  * @return {String}   updated amount
  */
 export const updatePrecisionToDisplay = (
-  amount: BigNumberish,
-  nativePrice: BigNumberish,
+  amount: BigNumberish | null,
+  nativePrice?: BigNumberish | null,
   roundUp: boolean = false
 ): string => {
   if (!amount) return '0';
@@ -330,7 +333,7 @@ export const convertAmountToPercentageDisplay = (
 export const convertBipsToPercentage = (
   value: BigNumberish,
   decimals: number = 2
-): string => new BigNumber(value).shiftedBy(-2).toFixed(decimals);
+): string => new BigNumber(value || 0).shiftedBy(-2).toFixed(decimals);
 
 /**
  * @desc convert from amount value to display formatted string

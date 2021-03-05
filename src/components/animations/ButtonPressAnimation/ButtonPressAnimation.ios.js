@@ -379,13 +379,14 @@ function ButtonPressAnimationJS({
   );
 }
 
-const ButtonPressAnimation = props => {
+const ButtonPressAnimation = React.forwardRef((props, ref) => {
   const isNativeButtonAvailable = useNativeButtonAvailable();
   const Component = isNativeButtonAvailable
     ? NativeButton
     : ButtonPressAnimationJS;
-  return <Component {...props} />;
-};
+  return <Component {...props} ref={ref} />;
+});
+ButtonPressAnimation.displayName = 'ButtonPressAnimation';
 
 export default ButtonPressAnimation;
 

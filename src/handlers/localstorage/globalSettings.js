@@ -1,5 +1,5 @@
-import networkTypes from '../../helpers/networkTypes';
 import { getGlobal, saveGlobal } from './common';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
 
 const IMAGE_METADATA = 'imageMetadata';
 const KEYBOARD_HEIGHT = 'keyboardHeight';

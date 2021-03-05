@@ -138,8 +138,8 @@ export default function SecretDisplaySection({
           <ToggleSecretButton onPress={loadSeed}>
             <BiometricButtonContent
               color={colors.white}
+              label={`Show Recovery ${upperFirst(typeLabel)}`}
               showIcon={!seed}
-              text={`Show Recovery ${upperFirst(typeLabel)}`}
             />
           </ToggleSecretButton>
         </Fragment>

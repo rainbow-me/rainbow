@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import Text from './Text';
 
 const Smallcaps = styled(Text).attrs(({ theme: { colors } }) => ({
-  color: colors.alpha(colors.blueGreyDark, 0.8),
+  color: colors.blueGreyDark80,
   size: 'small',
   uppercase: true,
   weight: 'semibold',

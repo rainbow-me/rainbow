@@ -410,12 +410,19 @@ const get24HourPrice = async (address, yesterday) => {
   return get(result, 'data.tokenDayDatas[0]');
 };
 
-export const assetPricesReceived = message => dispatch => {
+export const assetPricesReceived = message => (dispatch, getState) => {
   const assets = get(message, 'payload.prices', {});
   if (isEmpty(assets)) return;
   const parsedAssets = mapValues(assets, asset => parseAsset(asset));
+  const { genericAssets } = getState().data;
+
+  const updatedAssets = {
+    ...genericAssets,
+    ...parsedAssets,
+  };
+
   dispatch({
-    payload: parsedAssets,
+    payload: updatedAssets,
     type: DATA_UPDATE_GENERIC_ASSETS,
   });
 };
