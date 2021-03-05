@@ -373,6 +373,8 @@ export default function useUniswapPools(sortField, sortDirection) {
     [charts]
   );
 
+  const is30DayEnabled = ethereumPriceOneMonthAgo > 0;
+
   const { genericAssets, assets } = useSelector(
     ({ data: { assets, genericAssets } }) => ({
       assets,
@@ -460,6 +462,7 @@ export default function useUniswapPools(sortField, sortDirection) {
 
   return {
     error,
+    is30DayEnabled,
     pairs: top40PairsSorted,
   };
 }

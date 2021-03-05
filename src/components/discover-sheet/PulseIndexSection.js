@@ -1,3 +1,4 @@
+import { get } from 'lodash';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -8,6 +9,7 @@ import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
+import ChartTypes from '@rainbow-me/helpers/chartTypes';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
@@ -18,18 +20,18 @@ import ShadowStack from 'react-native-shadow-stack';
 
 const formatItem = ({ address, name, price, symbol }, nativeCurrencySymbol) => {
   const change = `${parseFloat(
-    (price.relative_change_24h || 0).toFixed(2)
+    (price?.relative_change_24h || 0).toFixed(2)
   )}%`.replace('-', '');
 
   const value = `${nativeCurrencySymbol}${handleSignificantDecimals(
-    price.value,
+    price?.value,
     2
   )} `;
 
   return {
     address,
     change,
-    isPositive: price.relative_change_24h > 0,
+    isPositive: price?.relative_change_24h > 0,
     name,
     price: value,
     symbol,
@@ -41,6 +43,13 @@ const PulseIndex = () => {
   const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
     genericAssets,
   }));
+
+  const charts = useSelector(({ charts: { charts } }) => charts);
+
+  const chartPriceDataForDPI = useMemo(
+    () => get(charts, `[${DPI_ADDRESS}][${ChartTypes.month}][0][1]`, 0),
+    [charts]
+  );
 
   const { nativeCurrency, nativeCurrencySymbol } = useAccountSettings();
   const item = useMemo(() => {
@@ -72,6 +81,7 @@ const PulseIndex = () => {
   );
 
   if (!item) return null;
+  if (!chartPriceDataForDPI) return null;
 
   return (
     <Fragment>

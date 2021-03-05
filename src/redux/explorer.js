@@ -18,6 +18,7 @@ import { disableCharts, forceFallbackProvider } from '@rainbow-me/config/debug';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
 import NetworkTypes from '@rainbow-me/helpers/networkTypes';
 import { DPI_ADDRESS, ETH_ADDRESS } from '@rainbow-me/references';
+import { TokensListenedCache } from '@rainbow-me/utils';
 import logger from 'logger';
 
 // -- Constants --------------------------------------- //
@@ -246,8 +247,6 @@ export const explorerInit = () => async (dispatch, getState) => {
   }
 };
 
-const tokensListened = {};
-
 const toAssetSubscriptionPayload = tokensArray => {
   const payload = {};
   tokensArray.forEach(address => (payload[address] = true));
@@ -262,12 +261,12 @@ export const emitAssetRequest = assetAddress => (dispatch, getState) => {
     ? assetAddress
     : [assetAddress];
 
-  const newAssetsCodes = assetCodes.filter(code => !tokensListened[code]);
+  const newAssetsCodes = assetCodes.filter(code => !TokensListenedCache[code]);
 
-  newAssetsCodes.forEach(code => (tokensListened[code] = true));
+  newAssetsCodes.forEach(code => (TokensListenedCache[code] = true));
 
   if (newAssetsCodes.length > 0) {
-    assetsSocket.emit(
+    assetsSocket?.emit(
       ...assetPricesSubscription(
         toAssetSubscriptionPayload(newAssetsCodes),
         nativeCurrency
@@ -281,8 +280,8 @@ export const emitAssetInfoRequest = () => (dispatch, getState) => {
 
   const { nativeCurrency } = getState().settings;
   const { assetsSocket } = getState().explorer;
-  assetsSocket.emit(...assetInfoRequest(nativeCurrency));
-  assetsSocket.emit(...assetInfoRequest(nativeCurrency, 'asc'));
+  assetsSocket?.emit(...assetInfoRequest(nativeCurrency));
+  assetsSocket?.emit(...assetInfoRequest(nativeCurrency, 'asc'));
 
   assetInfoHandle = setTimeout(() => {
     dispatch(emitAssetInfoRequest());
@@ -309,7 +308,7 @@ export const emitChartsRequest = (
     assetCodes = concat(assetAddresses, lpTokenAddresses, DPI_ADDRESS);
   }
 
-  assetsSocket.emit(...chartsRetrieval(assetCodes, nativeCurrency, chartType));
+  assetsSocket?.emit(...chartsRetrieval(assetCodes, nativeCurrency, chartType));
 };
 
 const listenOnAssetMessages = socket => dispatch => {
@@ -357,7 +356,7 @@ const listenOnAddressMessages = socket => dispatch => {
     if (!disableCharts) {
       //dispatch(emitChartsRequest());
       // We need this for Uniswap Pools profit calculation
-      dispatch(emitChartsRequest(ETH_ADDRESS, ChartTypes.month));
+      dispatch(emitChartsRequest([ETH_ADDRESS, DPI_ADDRESS], ChartTypes.month));
     }
     if (isValidAssetsResponseFromZerion(message)) {
       logger.log(

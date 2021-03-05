@@ -63,7 +63,18 @@ export default function UniswapPools() {
   const { colors, isDarkMode } = useTheme();
   const [selectedList, setSelectedList] = useState(listData[0].id);
   const [sortDirection, setSortDirection] = useState(SORT_DIRECTION.DESC);
-  const { pairs, error } = useUniswapPools(selectedList, sortDirection);
+  const { pairs, error, is30DayEnabled } = useUniswapPools(
+    selectedList,
+    sortDirection
+  );
+
+  const listDataFiltered = useMemo(() => {
+    if (!is30DayEnabled) {
+      return listData.filter(item => item.id !== 'profit30d');
+    }
+    return listData;
+  }, [is30DayEnabled]);
+
   const handleSwitchList = useCallback(
     (id, index) => {
       // This crashes the app on android
@@ -191,7 +202,7 @@ export default function UniswapPools() {
               paddingBottom: 10,
               paddingHorizontal: 19,
             }}
-            data={listData}
+            data={listDataFiltered}
             horizontal
             keyExtractor={item => item.id}
             ref={listRef}

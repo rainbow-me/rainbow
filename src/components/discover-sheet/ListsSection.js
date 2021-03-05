@@ -10,10 +10,7 @@ import { FlatList, LayoutAnimation } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { emitAssetRequest, emitChartsRequest } from '../../redux/explorer';
-import {
-  COINGECKO_TRENDING_ENDPOINT,
-  fetchCoingeckoIds,
-} from '../../redux/fallbackExplorer';
+import { fetchCoingeckoIds } from '../../redux/fallbackExplorer';
 import { DefaultTokenLists } from '../../references';
 import { ButtonPressAnimation } from '../animations';
 import { AssetListItemSkeleton } from '../asset-list';
@@ -30,6 +27,9 @@ import {
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils } from '@rainbow-me/utils';
+
+const COINGECKO_TRENDING_ENDPOINT =
+  'https://api.coingecko.com/api/v3/search/trending';
 
 const fetchTrendingAddresses = async () => {
   const trendingAddresses = [];
