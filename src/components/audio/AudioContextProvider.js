@@ -28,13 +28,13 @@ export default function AudioContextProvider({ category, children }) {
   );
 
   const { collectibles } = useAccountAssets();
-  const [playlist, setPlaylist] = React.useState(() =>
+  const [playlist, setPlaylist] = useState(() =>
     buildPlaylistFromCollectibles(collectibles)
   );
 
   // Deeply-memoized playlist management. (Avoid reallocation of playlists
   // when the content is effectively identical.)
-  React.useEffect(() => {
+  useEffect(() => {
     const maybeNextPlaylist = buildPlaylistFromCollectibles(collectibles);
     if (!isEqual(playlist, maybeNextPlaylist)) {
       setPlaylist(maybeNextPlaylist);

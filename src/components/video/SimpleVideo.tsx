@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, StyleSheet, View, ViewStyle } from 'react-native';
 // @ts-ignore
 import Sound from 'react-native-sound';
@@ -52,23 +52,23 @@ export default function SimpleVideo({
   loading,
   setLoading,
 }: SimpleVideoProps): JSX.Element {
-  const ref = React.useRef<Video>();
-  const source = React.useMemo(
+  const ref = useRef<Video>();
+  const source = useMemo(
     () => ({
       uri: convertToProxyURL(uri),
     }),
     [uri]
   );
   const { currentSound, isPlayingAsset, fadeTo } = useAudio();
-  const [opacity] = React.useState<Animated.Value>(
+  const [opacity] = useState<Animated.Value>(
     () => new Animated.Value(loading ? 1 : 0)
   );
 
-  const [soundOnMount] = React.useState<Sound | null>(
+  const [soundOnMount] = useState<Sound | null>(
     isPlayingAsset && currentSound ? currentSound : null
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     Animated.timing(opacity, {
       duration: 1000,
       toValue: loading ? 1 : 0,
@@ -77,7 +77,7 @@ export default function SimpleVideo({
   }, [opacity, loading]);
 
   // XXX: Force the player to quit when unmounted. (iOS)
-  React.useEffect(() => {
+  useEffect(() => {
     const { current } = ref;
     if (soundOnMount) {
       // @ts-ignore
@@ -85,16 +85,14 @@ export default function SimpleVideo({
     }
     return () => {
       try {
-        !!current &&
-          (() => {
-            current.setNativeProps({ paused: true });
-          })();
-        !!soundOnMount &&
+        current?.setNativeProps({ paused: true });
+        if (soundOnMount) {
           requestAnimationFrame(() => {
             soundOnMount.play();
             // @ts-ignore
             fadeTo(soundOnMount, 1);
           });
+        }
       } catch (e) {
         logger.error(e);
       }
