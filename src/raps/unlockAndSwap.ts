@@ -17,7 +17,11 @@ export const estimateUnlockAndSwap = async (
   swapParameters: SwapActionParameters
 ) => {
   const { inputAmount, tradeDetails } = swapParameters;
-  const { inputCurrency, outputCurrency } = store.getState().swap;
+  const {
+    inputCurrency,
+    outputCurrency,
+    slippageInBips: slippage,
+  } = store.getState().swap;
 
   const isValid = isValidSwapInput({
     inputCurrency,
@@ -48,6 +52,7 @@ export const estimateUnlockAndSwap = async (
       chainId,
       inputCurrency,
       outputCurrency,
+      slippage,
       tradeDetails,
     });
     gasLimits = concat(gasLimits, swapGasLimit);

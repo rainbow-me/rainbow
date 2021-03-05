@@ -35,7 +35,11 @@ const swap = async (
   const { inputAmount, tradeDetails } = parameters as SwapActionParameters;
   const { dispatch } = store;
   const { accountAddress, chainId } = store.getState().settings;
-  const { inputCurrency, outputCurrency } = store.getState().swap;
+  const {
+    inputCurrency,
+    outputCurrency,
+    slippageInBips: slippage,
+  } = store.getState().swap;
   const { gasPrices, selectedGasPrice } = store.getState().gas;
   logger.log('[swap] calculating trade details');
 
@@ -61,6 +65,7 @@ const swap = async (
       chainId,
       inputCurrency,
       outputCurrency,
+      slippage,
       tradeDetails,
     });
     gasLimit = newGasLimit;
@@ -92,6 +97,7 @@ const swap = async (
       methodName,
       nonce,
       outputCurrency,
+      slippage,
       tradeDetails,
       wallet,
     });

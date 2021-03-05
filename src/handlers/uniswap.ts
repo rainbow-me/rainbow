@@ -51,8 +51,6 @@ enum SwapType {
 
 const UniswapPageSize = 1000;
 
-// default allowed slippage, in bips
-const INITIAL_ALLOWED_SLIPPAGE = 50;
 // 20 minutes, denominated in seconds
 const DEFAULT_DEADLINE_FROM_NOW = 60 * 20;
 
@@ -76,12 +74,14 @@ export const estimateSwapGasLimit = async ({
   chainId,
   inputCurrency,
   outputCurrency,
+  slippage,
   tradeDetails,
 }: {
   accountAddress: string;
   chainId: ChainId;
   inputCurrency: Asset;
   outputCurrency: Asset;
+  slippage: number;
   tradeDetails: Trade | null;
 }): Promise<{
   gasLimit: string | number;
@@ -106,6 +106,7 @@ export const estimateSwapGasLimit = async ({
       inputCurrency,
       outputCurrency,
       providerOrSigner: web3Provider,
+      slippage,
       tradeDetails,
     });
 
@@ -204,7 +205,7 @@ const getExecutionDetails = (
   outputCurrency: Asset,
   trade: Trade,
   providerOrSigner: Provider | Signer,
-  allowedSlippage: number = INITIAL_ALLOWED_SLIPPAGE, // in bips, optional
+  allowedSlippage: number,
   deadline: number = DEFAULT_DEADLINE_FROM_NOW // in seconds from now, optional
 ): {
   methodArguments: (string | string[] | number)[];
@@ -319,6 +320,7 @@ const getContractExecutionDetails = ({
   inputCurrency,
   outputCurrency,
   providerOrSigner,
+  slippage,
   tradeDetails,
 }: {
   accountAddress: string;
@@ -326,6 +328,7 @@ const getContractExecutionDetails = ({
   inputCurrency: Asset;
   outputCurrency: Asset;
   providerOrSigner: Provider | Signer;
+  slippage: number;
   tradeDetails: Trade;
 }) => {
   const { methodArguments, methodNames, value } = getExecutionDetails(
@@ -334,7 +337,8 @@ const getContractExecutionDetails = ({
     inputCurrency,
     outputCurrency,
     tradeDetails,
-    providerOrSigner
+    providerOrSigner,
+    slippage
   );
 
   const exchange = new Contract(
@@ -360,6 +364,7 @@ export const executeSwap = async ({
   nonce,
   outputCurrency,
   methodName,
+  slippage,
   tradeDetails,
   wallet,
 }: {
@@ -371,6 +376,7 @@ export const executeSwap = async ({
   nonce?: number;
   outputCurrency: Asset;
   methodName: string;
+  slippage: number;
   tradeDetails: Trade | null;
   wallet: Wallet | null;
 }) => {
@@ -382,6 +388,7 @@ export const executeSwap = async ({
     inputCurrency,
     outputCurrency,
     providerOrSigner: walletToUse,
+    slippage,
     tradeDetails,
   });
 
