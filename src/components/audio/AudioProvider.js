@@ -11,7 +11,7 @@ import supportedUriExtensions from '@rainbow-me/helpers/supportedUriExtensions';
 import { useAccountAssets, useAudio } from '@rainbow-me/hooks';
 import logger from 'logger';
 
-export default function AudioContextProvider({ category, children }) {
+export default function AudioProvider({ category, children }) {
   useEffect(() => {
     Sound.setCategory('Playback');
   }, [category]);

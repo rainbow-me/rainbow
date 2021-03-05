@@ -1,9 +1,7 @@
 import * as React from 'react';
 
 const defaultError = () => {
-  throw new Error(
-    "It looks like you've forgotten to declare an AudioContextProvider at the root of your application."
-  );
+  throw new Error('Missing AudioContext.');
 };
 
 const defaultValue = Object.freeze({

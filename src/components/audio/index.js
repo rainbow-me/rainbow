@@ -1,1 +1,1 @@
-export { default as AudioContextProvider } from './AudioContextProvider';
+export { default as AudioProvider } from './AudioProvider';

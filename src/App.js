@@ -30,7 +30,7 @@ import { enableScreens } from 'react-native-screens';
 import VersionNumber from 'react-native-version-number';
 import { connect, Provider } from 'react-redux';
 import PortalConsumer from './components/PortalConsumer';
-import { AudioContextProvider } from './components/audio';
+import { AudioProvider } from './components/audio';
 import { FlexItem } from './components/layout';
 import { OfflineToast } from './components/toasts';
 import {
@@ -294,7 +294,7 @@ class App extends Component {
         <Portal>
           <SafeAreaProvider>
             <Provider store={store}>
-              <AudioContextProvider>
+              <AudioProvider>
                 <FlexItem>
                   {this.state.initialRoute && (
                     <InitialRouteContext.Provider
@@ -306,7 +306,7 @@ class App extends Component {
                   )}
                   <OfflineToast />
                 </FlexItem>
-              </AudioContextProvider>
+              </AudioProvider>
             </Provider>
           </SafeAreaProvider>
         </Portal>
