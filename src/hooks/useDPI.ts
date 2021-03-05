@@ -42,10 +42,8 @@ const getTokenData = (token: Token): IndexToken => {
 
 export default function useDPI() {
   const dispatch = useDispatch();
-  const { genericAssets } = useSelector(
-    ({ data: { genericAssets } }: AppState) => ({
-      genericAssets,
-    })
+  const genericAssets = useSelector(
+    ({ data: { genericAssets } }: AppState) => genericAssets
   );
 
   const fetchDPIData = useCallback(async () => {

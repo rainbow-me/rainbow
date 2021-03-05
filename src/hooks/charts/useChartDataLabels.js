@@ -23,7 +23,7 @@ export default function useChartDataLabels({ asset, chartType, points }) {
     () =>
       !points || chartType === ChartTypes.day
         ? formatPercentChange(asset?.price?.relative_change_24h)
-        : getPercentChangeForPrice(points[0].y),
+        : getPercentChangeForPrice(points[0]?.y ?? 0),
     [asset, chartType, getPercentChangeForPrice, points]
   );
 

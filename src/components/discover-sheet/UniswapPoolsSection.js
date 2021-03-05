@@ -132,8 +132,8 @@ export default function UniswapPools() {
             {list.name}{' '}
             {selectedList === list.id
               ? sortDirection === 'desc'
-                ? '􀄩' //'􀄨'
-                : '􀄨' // '􀄨'
+                ? '􀄩'
+                : '􀄨'
               : ''}
           </ListName>
         </Row>
@@ -151,7 +151,6 @@ export default function UniswapPools() {
     if (sortDirection === 'desc') {
       sortedPairs = sortedPairs.reverse();
     }
-
     return sortedPairs.map(item =>
       renderUniswapPoolListRow({
         ...item,

@@ -33,8 +33,9 @@ export const chartsLoadState = () => async (dispatch, getState) => {
 export const chartsClearState = () => dispatch =>
   dispatch({ type: CHARTS_CLEAR_STATE });
 
-export const chartsUpdateChartType = chartType => dispatch =>
+export const chartsUpdateChartType = (chartType, dpi) => dispatch =>
   dispatch({
+    dpi,
     payload: chartType,
     type: CHARTS_UPDATE_CHART_TYPE,
   });
@@ -63,7 +64,9 @@ export const assetChartsReceived = message => (dispatch, getState) => {
 const INITIAL_STATE = {
   charts: {},
   chartType: DEFAULT_CHART_TYPE,
+  chartTypeDPI: DEFAULT_CHART_TYPE,
   fetchingCharts: false,
+  fetchingChartsDPI: false,
 };
 
 export default (state = INITIAL_STATE, action) => {
@@ -71,8 +74,8 @@ export default (state = INITIAL_STATE, action) => {
     case CHARTS_UPDATE_CHART_TYPE:
       return {
         ...state,
-        chartType: action.payload,
-        fetchingCharts: true,
+        [action.dpi ? 'chartTypeDPI' : 'chartType']: action.payload,
+        [action.dpi ? 'fetchingChartsDPI' : 'fetchingCharts']: true,
       };
     case CHARTS_LOAD_REQUEST:
       return {
@@ -84,17 +87,20 @@ export default (state = INITIAL_STATE, action) => {
         ...state,
         charts: action.payload,
         fetchingCharts: false,
+        fetchingChartsDPI: false,
       };
     case CHARTS_LOAD_FAILURE:
       return {
         ...state,
         fetchingCharts: false,
+        fetchingChartsDPI: false,
       };
     case CHARTS_UPDATE:
       return {
         ...state,
         charts: action.payload,
         fetchingCharts: false,
+        fetchingChartsDPI: false,
       };
     case CHARTS_CLEAR_STATE:
       return {
