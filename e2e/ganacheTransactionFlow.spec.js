@@ -149,7 +149,7 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.delay(10000);
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
-
+*/
   it('Should send ERC20 (cSAI)', async () => {
     await Helpers.delay(3000);
     await Helpers.tap('send-fab');
@@ -163,8 +163,9 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.tapAndLongPress('Hold to Send');
     await Helpers.delay(10000);
     await Helpers.swipe('profile-screen', 'left', 'slow');
-  });*/
+  });
 
+  /*
   it('Should show completed swap ETH -> ERC20 (DAI)', async () => {
     try {
       await Helpers.checkIfVisible('Swapped-Ethereum');
@@ -173,6 +174,7 @@ describe('Ganache Transaction Flow', () => {
     }
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
+  */
 
   it('Should send (Cryptokitties)', async () => {
     await Helpers.delay(3000);
