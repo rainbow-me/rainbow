@@ -56,7 +56,7 @@ import {
   parseNewTransaction,
   parseTransactions,
 } from '@rainbow-me/parsers';
-import { DPI_ADDRESS, shitcoins } from '@rainbow-me/references';
+import { DPI_ADDRESS, ETH_ADDRESS, shitcoins } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { delay, divide, isZero } from '@rainbow-me/utilities';
 import {
@@ -177,7 +177,7 @@ const genericAssetsFallback = () => async (dispatch, getState) => {
 
   const allAssets = [
     {
-      asset_code: 'eth',
+      asset_code: ETH_ADDRESS,
       coingecko_id: 'ethereum',
       decimals: 18,
       name: 'Ethereum',

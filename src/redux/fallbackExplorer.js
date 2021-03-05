@@ -15,6 +15,7 @@ import {
   COINGECKO_IDS_ENDPOINT,
   fetchAssetPrices,
 } from './data';
+import { ETH_ADDRESS, ETH_COINGECKO_ID } from '@rainbow-me/references';
 import logger from 'logger';
 
 // -- Constants --------------------------------------- //
@@ -27,7 +28,8 @@ const FALLBACK_EXPLORER_SET_HANDLERS =
 const FALLBACK_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER =
   'explorer/FALLBACK_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER';
 
-const ETH_ADDRESS = '0x0000000000000000000000000000000000000000';
+const ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT =
+  '0x0000000000000000000000000000000000000000';
 
 const UPDATE_BALANCE_AND_PRICE_FREQUENCY = 10000;
 const DISCOVER_NEW_ASSETS_FREQUENCY = 13000;
@@ -102,8 +104,8 @@ const findAssetsToWatch = async (address, latestTxBlockNumber, dispatch) => {
     ...tokensInWallet,
     {
       asset: {
-        asset_code: 'eth',
-        coingecko_id: 'ethereum',
+        asset_code: ETH_ADDRESS,
+        coingecko_id: ETH_COINGECKO_ID,
         decimals: 18,
         name: 'Ethereum',
         symbol: 'ETH',
@@ -297,7 +299,9 @@ export const fallbackExplorerInit = () => async (dispatch, getState) => {
     }
     const balances = await fetchAssetBalances(
       assets.map(({ asset: { asset_code } }) =>
-        asset_code === 'eth' ? ETH_ADDRESS : asset_code
+        asset_code === ETH_ADDRESS
+          ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
+          : asset_code
       ),
       accountAddress,
       network
@@ -310,7 +314,8 @@ export const fallbackExplorerInit = () => async (dispatch, getState) => {
         for (let i = 0; i < assets.length; i++) {
           if (
             assets[i].asset.asset_code.toLowerCase() === key.toLowerCase() ||
-            (assets[i].asset.asset_code === 'eth' && key === ETH_ADDRESS)
+            (assets[i].asset.asset_code === ETH_ADDRESS &&
+              key === ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT)
           ) {
             assets[i].quantity = balances[key];
             break;
