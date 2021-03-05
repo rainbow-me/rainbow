@@ -278,7 +278,6 @@ const genericAssetsFallback = () => async (dispatch, getState) => {
 
 const disableGenericAssetsFallbackIfNeeded = () => {
   if (genericAssetsHandle) {
-    logger.log('ZERION IS WORKING! DISABLING');
     clearTimeout(genericAssetsHandle);
   }
 };
