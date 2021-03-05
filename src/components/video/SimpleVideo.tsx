@@ -76,7 +76,7 @@ export default function SimpleVideo({
     }).start();
   }, [opacity, loading]);
 
-  // XXX: Force the player to quit when unmounted. (iOS)
+  // HACK: Force the player to quit when unmounted. (iOS)
   useEffect(() => {
     const { current } = ref;
     if (soundOnMount) {
