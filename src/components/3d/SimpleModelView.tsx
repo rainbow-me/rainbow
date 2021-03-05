@@ -32,6 +32,47 @@ const ProgressIndicatorContainer = styled(Animated.View)`
   ${padding(10)};
 `;
 
+const getSource = ({ alt, uri }: { alt: string; uri: string }) =>
+  `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <script type="module" src="https://unpkg.com/@google/model-viewer@0.6.0/dist/model-viewer.js"></script>
+  <script nomodule src="https://unpkg.com/@google/model-viewer@0.6.0/dist/model-viewer-legacy.js"></script>
+  <title>GLBModelViewer</title>
+  <style>
+    * { margin:0; padding:0; }
+    html { height: 100%; width: 100%; }
+    body { height: 100%; width: 100%; }
+    model-viewer { width: 100%; height: 100% }
+  </style>
+</head>
+<body>
+  <model-viewer src=${JSON.stringify(uri)} alt=${JSON.stringify(
+    typeof alt === 'string' ? alt : ''
+  )} auto-rotate camera-controls autoplay shadow-intensity="1">
+    <div slot="progress-bar"></div>
+  </model-viewer>
+  <script type="text/javascript">
+    function shouldPostMessage(type, payload) {
+      window.ReactNativeWebView.postMessage(JSON.stringify({
+        type: type,
+        payload: payload,
+      }));
+    }
+    var modelViewer = document.querySelector("model-viewer");
+    modelViewer.addEventListener("progress", function (e) {
+      shouldPostMessage("progress", e.detail.totalProgress);
+    });
+    modelViewer.addEventListener("model-visibility", function (e) {
+      shouldPostMessage("model-visibility", !!e.detail.visible);
+    });
+  </script>
+</body>
+</html>
+`.trim();
+
 export default function ModelViewer({
   loading,
   setLoading,
@@ -55,50 +96,7 @@ export default function ModelViewer({
     },
     [setProgress, setVisibility]
   );
-  const source = useMemo(
-    () => ({
-      html: `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <script type="module" src="https://unpkg.com/@google/model-viewer@0.6.0/dist/model-viewer.js"></script>
-  <script nomodule src="https://unpkg.com/@google/model-viewer@0.6.0/dist/model-viewer-legacy.js"></script>
-  <title>GLBModelViewer</title>
-  <style>
-    * { margin:0; padding:0; }
-    html { height: 100%; width: 100%; }
-    body { height: 100%; width: 100%; }
-    model-viewer { width: 100%; height: 100% }
-  </style>
-</head>
-<body>
-  <model-viewer src=${JSON.stringify(uri)} alt=${JSON.stringify(
-        typeof alt === 'string' ? alt : ''
-      )} auto-rotate camera-controls autoplay shadow-intensity="1">
-    <div slot="progress-bar"></div>
-  </model-viewer>
-  <script type="text/javascript">
-    function shouldPostMessage(type, payload) {
-      window.ReactNativeWebView.postMessage(JSON.stringify({
-        type: type,
-        payload: payload,
-      }));
-    }
-    var modelViewer = document.querySelector("model-viewer");
-    modelViewer.addEventListener("progress", function (e) {
-      shouldPostMessage("progress", e.detail.totalProgress);
-    });
-    modelViewer.addEventListener("model-visibility", function (e) {
-      shouldPostMessage("model-visibility", !!e.detail.visible);
-    });
-  </script>
-</body>
-</html>
-    `.trim(),
-    }),
-    [alt, uri]
-  );
+  const source = useMemo(() => ({ html: getSource({ alt, uri }) }), [alt, uri]);
 
   const didLoadModel = !!visibility && progress === 1;
   useEffect(() => {
