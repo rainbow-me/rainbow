@@ -302,7 +302,12 @@ export default function ListSection() {
             ))
           ) : listItems?.length ? (
             listItems
-              .filter(item => !!item.symbol)
+              .filter(item => {
+                if (item.symbol && Number(item.price?.value) > 0) {
+                  return true;
+                }
+                return false;
+              })
               .map(item => (
                 <ListCoinRow
                   {...itemProps}
