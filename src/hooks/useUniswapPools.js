@@ -110,7 +110,7 @@ async function getBulkPairData(pairList, ethPrice, ethPriceOneMonthAgo) {
     ] = await getBlocksFromTimestamps([t1, t2, t3]);
 
     const current = await uniswapClient.query({
-      fetchPolicy: 'cache-first',
+      fetchPolicy: 'network-only',
       query: UNISWAP_PAIRS_BULK_QUERY,
       variables: {
         allPairs: pairList,
@@ -120,7 +120,7 @@ async function getBulkPairData(pairList, ethPrice, ethPriceOneMonthAgo) {
     const [oneDayResult, twoDayResult, oneMonthResult] = await Promise.all(
       [b1, b2, b3].map(async block => {
         const result = uniswapClient.query({
-          fetchPolicy: 'cache-first',
+          fetchPolicy: 'network-only',
           query: UNISWAP_PAIRS_HISTORICAL_BULK_QUERY(block, pairList),
         });
         return result;
