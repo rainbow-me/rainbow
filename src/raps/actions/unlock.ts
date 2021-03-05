@@ -1,17 +1,76 @@
 import { MaxUint256 } from '@ethersproject/constants';
+import { Contract } from '@ethersproject/contracts';
 import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
 import { get, isNull, toLower } from 'lodash';
 import { alwaysRequireApprove } from '../../config/debug';
 import { Rap, RapActionParameters, UnlockActionParameters } from '../common';
 import { Asset } from '@rainbow-me/entities';
+import { toHex, web3Provider } from '@rainbow-me/handlers/web3';
 import TransactionStatusTypes from '@rainbow-me/helpers/transactionStatusTypes';
 import TransactionTypes from '@rainbow-me/helpers/transactionTypes';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
 import store from '@rainbow-me/redux/store';
+import { erc20ABI, ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
 import { convertAmountToRawAmount, greaterThan } from '@rainbow-me/utilities';
-import { AllowancesCache, contractUtils, gasUtils } from '@rainbow-me/utils';
+import { AllowancesCache, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
+
+export const estimateApprove = async (
+  owner: string,
+  tokenAddress: string,
+  spender: string
+): Promise<number | string> => {
+  try {
+    logger.sentry('exchange estimate approve', {
+      owner,
+      spender,
+      tokenAddress,
+    });
+    const exchange = new Contract(tokenAddress, erc20ABI, web3Provider);
+    const gasLimit = await exchange.estimateGas.approve(spender, MaxUint256, {
+      from: owner,
+    });
+    return gasLimit ? gasLimit.toString() : ethUnits.basic_approval;
+  } catch (error) {
+    logger.sentry('error estimateApproveWithExchange');
+    captureException(error);
+    return ethUnits.basic_approval;
+  }
+};
+
+const getRawAllowance = async (
+  owner: string,
+  token: Asset,
+  spender: string
+) => {
+  try {
+    const { address: tokenAddress } = token;
+    const tokenContract = new Contract(tokenAddress, erc20ABI, web3Provider);
+    const allowance = await tokenContract.allowance(owner, spender);
+    return allowance.toString();
+  } catch (error) {
+    logger.sentry('error getRawAllowance');
+    captureException(error);
+    return null;
+  }
+};
+
+const executeApprove = (
+  tokenAddress: string,
+  spender: string,
+  gasLimit: number | string,
+  gasPrice: string,
+  wallet: Wallet,
+  nonce: number | null = null
+) => {
+  const exchange = new Contract(tokenAddress, erc20ABI, wallet);
+  return exchange.approve(spender, MaxUint256, {
+    gasLimit: toHex(gasLimit) || undefined,
+    gasPrice: toHex(gasPrice) || undefined,
+    nonce: nonce ? toHex(nonce) : undefined,
+  });
+};
 
 const unlock = async (
   wallet: Wallet,
@@ -21,23 +80,15 @@ const unlock = async (
   baseNonce?: number
 ): Promise<number | undefined> => {
   const { dispatch } = store;
+  const { accountAddress } = store.getState().settings;
+  const { gasPrices, selectedGasPrice } = store.getState().gas;
   const {
-    amount,
     assetToUnlock,
     contractAddress,
   } = parameters as UnlockActionParameters;
-  logger.log(
-    '[unlock] begin unlock rap for',
-    assetToUnlock,
-    'on',
-    contractAddress
-  );
-  logger.log('[unlock]', amount);
-
-  const { accountAddress } = store.getState().settings;
-  const { gasPrices, selectedGasPrice } = store.getState().gas;
-
   const { address: assetAddress } = assetToUnlock;
+
+  logger.log('[unlock] unlock rap for', assetToUnlock);
 
   let gasLimit;
   try {
@@ -45,7 +96,7 @@ const unlock = async (
       assetAddress,
       contractAddress,
     });
-    gasLimit = await contractUtils.estimateApprove(
+    gasLimit = await estimateApprove(
       accountAddress,
       assetAddress,
       contractAddress
@@ -72,7 +123,7 @@ const unlock = async (
       gasLimit,
     });
     const nonce = baseNonce ? baseNonce + index : null;
-    const result = await contractUtils.approve(
+    approval = await executeApprove(
       assetAddress,
       contractAddress,
       gasLimit,
@@ -80,7 +131,6 @@ const unlock = async (
       wallet,
       nonce
     );
-    approval = result?.approval;
   } catch (e) {
     logger.sentry('Error approving');
     captureException(e);
@@ -96,7 +146,6 @@ const unlock = async (
 
   // update rap for hash
   currentRap.actions[index].transaction.hash = approval?.hash;
-  logger.log('[unlock] adding a new txn for the approval', approval?.hash);
 
   logger.log('[unlock] add a new txn');
   await dispatch(
@@ -127,13 +176,9 @@ export const assetNeedsUnlocking = async (
   assetToUnlock: Asset,
   contractAddress: string
 ) => {
-  const { address } = assetToUnlock;
   logger.log('checking asset needs unlocking');
-  const isInputEth = address === 'eth';
-  if (isInputEth) {
-    return false;
-  }
-
+  const { address } = assetToUnlock;
+  if (address === ETH_ADDRESS) return false;
   if (alwaysRequireApprove) return true;
 
   const cacheKey = toLower(`${accountAddress}|${address}|${contractAddress}`);
@@ -143,7 +188,7 @@ export const assetNeedsUnlocking = async (
   if (AllowancesCache.cache[cacheKey]) {
     allowance = AllowancesCache.cache[cacheKey];
   } else {
-    allowance = await contractUtils.getRawAllowance(
+    allowance = await getRawAllowance(
       accountAddress,
       assetToUnlock,
       contractAddress

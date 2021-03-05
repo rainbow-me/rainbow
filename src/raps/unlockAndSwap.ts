@@ -1,5 +1,5 @@
 import { concat, reduce } from 'lodash';
-import { assetNeedsUnlocking } from './actions';
+import { assetNeedsUnlocking, estimateApprove } from './actions';
 import {
   createNewAction,
   createNewRap,
@@ -11,7 +11,6 @@ import { estimateSwapGasLimit } from '@rainbow-me/handlers/uniswap';
 import store from '@rainbow-me/redux/store';
 import { ethUnits, UNISWAP_V2_ROUTER_ADDRESS } from '@rainbow-me/references';
 import { add } from '@rainbow-me/utilities';
-import { contractUtils } from '@rainbow-me/utils';
 
 export const estimateUnlockAndSwap = async (
   swapParameters: SwapActionParameters
@@ -36,7 +35,7 @@ export const estimateUnlockAndSwap = async (
     UNISWAP_V2_ROUTER_ADDRESS
   );
   if (swapAssetNeedsUnlocking) {
-    const unlockGasLimit = await contractUtils.estimateApprove(
+    const unlockGasLimit = await estimateApprove(
       accountAddress,
       inputCurrency.address,
       UNISWAP_V2_ROUTER_ADDRESS

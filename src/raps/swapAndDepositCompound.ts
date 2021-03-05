@@ -1,5 +1,9 @@
 import { concat, reduce } from 'lodash';
-import { assetNeedsUnlocking, getDepositGasLimit } from './actions';
+import {
+  assetNeedsUnlocking,
+  estimateApprove,
+  getDepositGasLimit,
+} from './actions';
 import {
   createNewAction,
   createNewRap,
@@ -16,7 +20,6 @@ import {
   UNISWAP_V2_ROUTER_ADDRESS,
 } from '@rainbow-me/references';
 import { add } from '@rainbow-me/utilities';
-import { contractUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 export const estimateSwapAndDepositCompound = async (
@@ -41,7 +44,7 @@ export const estimateSwapAndDepositCompound = async (
       UNISWAP_V2_ROUTER_ADDRESS
     );
     if (swapAssetNeedsUnlocking) {
-      const unlockGasLimit = await contractUtils.estimateApprove(
+      const unlockGasLimit = await estimateApprove(
         accountAddress,
         inputCurrency.address,
         UNISWAP_V2_ROUTER_ADDRESS
@@ -76,7 +79,7 @@ export const estimateSwapAndDepositCompound = async (
   );
 
   if (depositAssetNeedsUnlocking) {
-    const depositGasLimit = await contractUtils.estimateApprove(
+    const depositGasLimit = await estimateApprove(
       accountAddress,
       tokenToDeposit.address,
       cTokenContract
