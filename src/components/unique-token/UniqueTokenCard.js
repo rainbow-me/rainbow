@@ -25,7 +25,7 @@ const UniqueTokenCard = ({
   disabled,
   enableHapticFeedback = true,
   height,
-  item: uniqueToken,
+  item: { background, image_preview_url, ...item },
   onPress,
   resizeMode,
   scaleTo = 0.96,
@@ -34,7 +34,6 @@ const UniqueTokenCard = ({
   width,
   ...props
 }) => {
-  const { background, image_preview_url, ...item } = uniqueToken;
   const handlePress = useCallback(() => {
     if (onPress) {
       onPress(item);

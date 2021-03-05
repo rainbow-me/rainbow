@@ -1,4 +1,3 @@
-import { endsWith } from 'lodash';
 import parse from 'url-parse';
 
 // Defines whether a given uri corresponds to a set of possible file extensions.
@@ -18,7 +17,7 @@ export default function isSupportedUriExtension(
         return (
           maybeSupported ||
           (typeof ext === 'string' &&
-            endsWith(pathname.toLowerCase(), ext.toLowerCase()))
+            pathname.toLowerCase().endsWith(ext.toLowerCase()))
         );
       },
       false
