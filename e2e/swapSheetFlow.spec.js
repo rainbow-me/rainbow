@@ -310,15 +310,15 @@ describe('Swap Sheet Interaction Flow', () => {
   });
 
   it('Should show Hold to Swap Button & Swap Info Button on completion of all input fields', async () => {
-    await Helpers.checkForElementByLabel('Hold to Swap');
-    await Helpers.checkIfVisible('deposit-info-button');
+    await Helpers.checkIfVisible('Hold to Swap');
+    await Helpers.checkIfVisible('exchange-details-button');
   });
 
   it('Should show Swap Details State on Swap Info Button press', async () => {
-    await Helpers.tap('deposit-info-button');
+    await Helpers.tap('exchange-details-button');
     await Helpers.delay(1000);
-    await Helpers.checkIfVisible('swap-details-state-container');
-    await Helpers.swipe('swap-details-state-container', 'down', 'slow');
+    await Helpers.checkIfVisible('swap-details-state');
+    await Helpers.swipe('swap-details-state', 'down', 'slow');
   });
 
   it('Should show Insufficient Funds on input greater than balance', async () => {
@@ -358,8 +358,17 @@ describe('Swap Sheet Interaction Flow', () => {
   });
 
   it('Should prepend 0. to native input field on typing .', async () => {
-    await Helpers.typeText('exchange-modal-input-native', '.', false);
     await Helpers.delay(1000);
+    if (device.getPlatform() === 'android') {
+      await device.pressBack();
+    } else {
+      await Helpers.swipe('exchange-modal-header', 'down', 'slow');
+    }
+    await Helpers.delay(1000);
+    await Helpers.tap('exchange-fab');
+    await Helpers.delay(2000);
+    await Helpers.typeText('exchange-modal-input-native', '.', false);
+    await Helpers.delay(2000);
     await Helpers.checkIfVisible('exchange-modal-input-native-0.');
   });
 

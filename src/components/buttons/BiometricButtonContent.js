@@ -50,7 +50,7 @@ export default function BiometricButtonContent({
 }) {
   const biometryIcon = useBiometryIconString(!android && showIcon);
   return (
-    <Label testID={testID} {...props}>
+    <Label testID={testID || label} {...props}>
       {`${biometryIcon}${label}`}
     </Label>
   );

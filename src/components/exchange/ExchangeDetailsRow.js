@@ -121,12 +121,16 @@ export default function ExchangeDetailsRow({
         pointerEvents={isPriceImpactWarningVisible ? 'none' : 'auto'}
         style={detailsRowAnimatedStyle}
       >
-        <ExchangeDetailsButton onPress={onFlipCurrencies}>
+        <ExchangeDetailsButton
+          onPress={onFlipCurrencies}
+          testID="exchange-flip-button"
+        >
           􀄬 Flip
         </ExchangeDetailsButton>
         <ExchangeDetailsButton
           disabled={!showDetailsButton}
           onPress={onPressViewDetails}
+          testID="exchange-details-button"
         >
           􀕹 View Details
         </ExchangeDetailsButton>
