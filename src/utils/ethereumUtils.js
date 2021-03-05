@@ -49,10 +49,14 @@ const getAssetPrice = (address = ETH_ADDRESS) => {
 
 const getEthPriceUnit = () => getAssetPrice();
 
-const getBalanceAmount = (selectedGasPrice, address) => {
+const getBalanceAmount = (selectedGasPrice, selected) => {
   const { assets } = store.getState().data;
-  let amount = getAsset(assets, address)?.balance?.amount || 0;
-  if (address === ETH_ADDRESS) {
+  let amount =
+    selected?.balance?.amount ??
+    getAsset(assets, selected?.address)?.balance?.amount ??
+    0;
+
+  if (selected?.address === ETH_ADDRESS) {
     if (!isEmpty(selectedGasPrice)) {
       const txFeeRaw = selectedGasPrice?.txFee?.value?.amount;
       const txFeeAmount = fromWei(txFeeRaw);
