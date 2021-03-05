@@ -67,7 +67,6 @@ const SavingsListRow = ({
   supplyBalanceUnderlying,
   supplyRate,
   underlying,
-  underlyingPrice,
 }) => {
   const { width: deviceWidth } = useDimensions();
   const { navigate } = useNavigation();
@@ -93,7 +92,6 @@ const SavingsListRow = ({
       supplyRate,
       underlying,
       underlyingBalanceNativeValue,
-      underlyingPrice,
     });
 
     analytics.track('Opened Savings Sheet', {
@@ -110,7 +108,6 @@ const SavingsListRow = ({
     supplyBalanceUnderlying,
     supplyRate,
     underlying,
-    underlyingPrice,
   ]);
 
   useEffect(() => {

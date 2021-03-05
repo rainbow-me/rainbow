@@ -6,6 +6,8 @@ import FloatingEmojisTapHandler from './FloatingEmojisTapHandler';
 export default function FloatingEmojisTapper({
   activeScale = 1.01,
   children,
+  disabled,
+  onPress,
   radiusAndroid,
   ...props
 }) {
@@ -18,8 +20,13 @@ export default function FloatingEmojisTapper({
       {...props}
     >
       {({ onNewEmoji }) => (
-        <FloatingEmojisTapHandler onNewEmoji={onNewEmoji}>
+        <FloatingEmojisTapHandler
+          disabled={disabled}
+          onNewEmoji={onNewEmoji}
+          onPress={onPress}
+        >
           <ButtonPressAnimation
+            disabled={disabled}
             radiusAndroid={radiusAndroid}
             scaleTo={activeScale}
           >

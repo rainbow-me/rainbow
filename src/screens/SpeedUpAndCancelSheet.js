@@ -3,22 +3,18 @@ import { captureException } from '@sentry/react-native';
 import { BigNumber } from 'bignumber.js';
 import { get, isEmpty, keys } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, InteractionManager, TurboModuleRegistry } from 'react-native';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
+import { Alert, InteractionManager } from 'react-native';
+import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import Divider from '../components/Divider';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, Column, Row } from '../components/layout';
-
 import {
   SheetActionButton,
   SheetActionButtonRow,
   SheetHandleFixedToTop,
+  SheetKeyboardAnimation,
   SlackSheet,
 } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
@@ -27,6 +23,7 @@ import TransactionStatusTypes from '@rainbow-me/helpers/transactionStatusTypes';
 import TransactionTypes from '@rainbow-me/helpers/transactionTypes';
 import {
   useAccountSettings,
+  useBooleanState,
   useDimensions,
   useGas,
   useKeyboardHeight,
@@ -35,7 +32,6 @@ import { loadWallet, sendTransaction } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
 import { getTitle, gweiToWei, weiToGwei } from '@rainbow-me/parsers';
 import { executeRap } from '@rainbow-me/raps';
-
 import { dataUpdateTransaction } from '@rainbow-me/redux/data';
 import { explorerInit } from '@rainbow-me/redux/explorer';
 import { updateGasPriceForSpeed } from '@rainbow-me/redux/gas';
@@ -44,13 +40,7 @@ import store from '@rainbow-me/redux/store';
 import { ethUnits } from '@rainbow-me/references';
 import { position } from '@rainbow-me/styles';
 import { deviceUtils, safeAreaInsetValues } from '@rainbow-me/utils';
-
 import logger from 'logger';
-
-const isReanimatedAvailable = !(
-  !TurboModuleRegistry.get('NativeReanimated') &&
-  (!global.__reanimatedModuleProxy || global.__reanimatedModuleProxy.__shimmed)
-);
 
 const springConfig = {
   damping: 500,
@@ -82,8 +72,9 @@ const ExtendedSheetBackground = styled.View`
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const AnimatedSheet = Animated.createAnimatedComponent(CenteredSheet);
 
-const GasSpeedButtonContainer = styled(Row)`
-  justify-content: center;
+const GasSpeedButtonContainer = styled(Row).attrs({
+  justify: 'center',
+})`
   margin-bottom: 19px;
   margin-top: 4px;
   width: ${deviceUtils.dimensions.width - 10};
@@ -133,7 +124,7 @@ export default function SpeedUpAndCancelSheet() {
   const {
     params: { type, tx },
   } = useRoute();
-  const [keyboardVisible, setKeyboardVisible] = useState(false);
+  const [isKeyboardVisible, showKeyboard, hideKeyboard] = useBooleanState();
   const [minGasPrice, setMinGasPrice] = useState(
     calcMinGasPriceAllowed(tx.gasPrice)
   );
@@ -370,26 +361,10 @@ export default function SpeedUpAndCancelSheet() {
     }
   }, [dispatch, gasPrices, minGasPrice, tx, tx.gasLimit, type, updateTxFee]);
 
-  const handleCustomGasFocus = useCallback(() => {
-    setKeyboardVisible(true);
-  }, []);
-  const handleCustomGasBlur = useCallback(() => {
-    setKeyboardVisible(false);
-  }, []);
-
   const offset = useSharedValue(0);
-  const animatedContainerStyles = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateY: offset.value }],
-    };
-  });
-
-  const fallbackStyles = {
-    marginBottom: keyboardVisible ? keyboardHeight : 0,
-  };
 
   useEffect(() => {
-    if (keyboardVisible) {
+    if (isKeyboardVisible) {
       offset.value = withSpring(
         -keyboardHeight + safeAreaInsetValues.bottom - (android ? 50 : 10),
         springConfig
@@ -397,7 +372,7 @@ export default function SpeedUpAndCancelSheet() {
     } else {
       offset.value = withSpring(0, springConfig);
     }
-  }, [keyboardHeight, keyboardVisible, offset]);
+  }, [isKeyboardVisible, keyboardHeight, offset]);
   const sheetHeight = ios
     ? (type === CANCEL_TX ? 491 : 442) + safeAreaInsetValues.bottom
     : 850 + safeAreaInsetValues.bottom;
@@ -409,8 +384,10 @@ export default function SpeedUpAndCancelSheet() {
   const { colors, isDarkMode } = useTheme();
 
   return (
-    <AnimatedContainer
-      style={isReanimatedAvailable ? animatedContainerStyles : fallbackStyles}
+    <SheetKeyboardAnimation
+      as={AnimatedContainer}
+      isKeyboardVisible={isKeyboardVisible}
+      translateY={offset}
     >
       <ExtendedSheetBackground />
       <SlackSheet
@@ -449,7 +426,7 @@ export default function SpeedUpAndCancelSheet() {
               <Column marginBottom={30} maxWidth={375} paddingHorizontal={42}>
                 <Text
                   align="center"
-                  color={colors.alpha(colors.blueGreyDark, 0.5)}
+                  color={colors.blueGreyDark50}
                   lineHeight="looser"
                   size="large"
                   weight="regular"
@@ -482,7 +459,7 @@ export default function SpeedUpAndCancelSheet() {
                       label="Close"
                       onPress={goBack}
                       size="big"
-                      textColor={colors.alpha(colors.blueGreyDark, 0.8)}
+                      textColor={colors.blueGreyDark80}
                       weight="bold"
                     />
                   </SheetActionButtonRow>
@@ -495,7 +472,7 @@ export default function SpeedUpAndCancelSheet() {
                     label="Cancel"
                     onPress={goBack}
                     size="big"
-                    textColor={colors.alpha(colors.blueGreyDark, 0.8)}
+                    textColor={colors.blueGreyDark80}
                     weight="bold"
                   />
                   <SheetActionButton
@@ -510,8 +487,8 @@ export default function SpeedUpAndCancelSheet() {
               <GasSpeedButtonContainer>
                 <GasSpeedButton
                   minGasPrice={minGasPrice}
-                  onCustomGasBlur={handleCustomGasBlur}
-                  onCustomGasFocus={handleCustomGasFocus}
+                  onCustomGasBlur={hideKeyboard}
+                  onCustomGasFocus={showKeyboard}
                   options={['fast', 'custom']}
                   theme={isDarkMode ? 'dark' : 'light'}
                   type="transaction"
@@ -521,6 +498,6 @@ export default function SpeedUpAndCancelSheet() {
           </AnimatedSheet>
         </Column>
       </SlackSheet>
-    </AnimatedContainer>
+    </SheetKeyboardAnimation>
   );
 }

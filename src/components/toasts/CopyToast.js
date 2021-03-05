@@ -1,22 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { magicMemo } from '../../utils';
+import React, { useEffect } from 'react';
 import Toast from './Toast';
-import { usePrevious, useTimeout } from '@rainbow-me/hooks';
+import { useBooleanState, usePrevious } from '@rainbow-me/hooks';
+import { magicMemo } from '@rainbow-me/utils';
 
 const CopyToast = ({ copiedText, copyCount }) => {
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, showToast] = useBooleanState(false, 3000);
   const prevCopiedText = usePrevious(copiedText);
   const prevCopyCount = usePrevious(copyCount);
-  const [startTimeout, stopTimeout] = useTimeout();
 
   useEffect(() => {
     if (
       (copiedText !== prevCopiedText || copyCount !== prevCopyCount) &&
       copiedText !== undefined
     ) {
-      stopTimeout();
-      setIsVisible(true);
-      startTimeout(() => setIsVisible(false), 3000);
+      showToast();
     }
   }, [
     copiedText,
@@ -24,8 +21,7 @@ const CopyToast = ({ copiedText, copyCount }) => {
     isVisible,
     prevCopiedText,
     prevCopyCount,
-    startTimeout,
-    stopTimeout,
+    showToast,
   ]);
 
   return (

@@ -9,28 +9,24 @@ export interface SavingsAsset extends Asset {
   contractAddress: string;
 }
 
-export interface ParsedAddressAsset {
-  address: string;
+export interface ParsedAddressAsset extends Asset {
   balance?: {
     amount?: string;
     display?: string;
   };
   color?: string;
-  decimals: number;
   icon_url?: string;
   is_displayable?: boolean;
-  name: string;
   price?: {
     changed_at?: number;
     relative_change_24h?: number;
     value?: number;
   };
-  symbol: string;
   type?: string;
   uniqueId: string;
 }
 
-export interface UniswapCurrency extends Asset {
+export interface UniswapCurrency extends ParsedAddressAsset {
   native?: {
     price?: {
       amount?: string;

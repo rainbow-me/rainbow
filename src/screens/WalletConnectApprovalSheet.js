@@ -157,7 +157,7 @@ export default function WalletConnectApprovalSheet() {
           label="Cancel"
           onPress={handleCancel}
           size="big"
-          textColor={colors.alpha(colors.blueGreyDark, 0.8)}
+          textColor={colors.blueGreyDark80}
           weight="bold"
         />
         <SheetActionButton

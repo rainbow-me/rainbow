@@ -1,8 +1,7 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import { HoldToAuthorizeButton } from '../buttons';
 
-const SendButton = ({
+export default function SendButton({
   assetAmount,
   isAuthorizing,
   isSufficientBalance,
@@ -10,7 +9,7 @@ const SendButton = ({
   onLongPress,
   testID,
   ...props
-}) => {
+}) {
   const isZeroAssetAmount = Number(assetAmount) <= 0;
 
   let disabled = true;
@@ -34,17 +33,9 @@ const SendButton = ({
       isAuthorizing={isAuthorizing}
       label={label}
       onLongPress={onLongPress}
+      parentHorizontalPadding={15}
+      showBiometryIcon={!disabled}
       testID={testID}
     />
   );
-};
-
-SendButton.propTypes = {
-  assetAmount: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  isAuthorizing: PropTypes.bool,
-  isSufficientBalance: PropTypes.bool,
-  isSufficientGas: PropTypes.bool,
-  onLongPress: PropTypes.func,
-};
-
-export default React.memo(SendButton);
+}

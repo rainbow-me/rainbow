@@ -10,7 +10,6 @@ import { Keyboard, LayoutAnimation } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import styled from 'styled-components';
-import { darkModeThemeColors } from '../../styles/colors';
 import { Alert } from '../alerts';
 import {
   ButtonPressAnimation,
@@ -24,6 +23,7 @@ import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
 import { useAccountSettings, useGas } from '@rainbow-me/hooks';
 import { gweiToWei, weiToGwei } from '@rainbow-me/parsers';
 import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
+import { darkModeThemeColors } from '@rainbow-me/styles/colors';
 import { gasUtils, magicMemo } from '@rainbow-me/utils';
 
 const { GasSpeedOrder, CUSTOM, FAST, SLOW } = gasUtils;
