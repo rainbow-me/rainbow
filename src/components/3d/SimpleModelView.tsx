@@ -15,7 +15,7 @@ export type ModelViewerProps = {
   readonly setLoading: (loading: boolean) => void;
   readonly loading: boolean;
   readonly style?: ViewStyle;
-  readonly uri?: string;
+  readonly uri: string;
   readonly alt?: string;
   readonly fallbackUri?: string;
 };
@@ -32,7 +32,7 @@ const ProgressIndicatorContainer = styled(Animated.View)`
   ${padding(10)};
 `;
 
-const getSource = ({ alt, uri }: { alt: string; uri: string }) =>
+const getSource = ({ alt, uri }: { alt?: string; uri: string }) =>
   `
 <!DOCTYPE html>
 <html lang="en">
