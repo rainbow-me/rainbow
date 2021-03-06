@@ -23,6 +23,8 @@ import logger from 'logger';
 
 const CTOKEN_DECIMALS = 8;
 
+const actionName = 'withdrawCompound';
+
 const withdrawCompound = async (
   wallet: Wallet,
   currentRap: Rap,
@@ -30,7 +32,7 @@ const withdrawCompound = async (
   parameters: RapActionParameters,
   baseNonce?: number
 ): Promise<number | undefined> => {
-  logger.log('[withdraw] base nonce:', baseNonce, 'index:', index);
+  logger.log(`[${actionName}] base nonce`, baseNonce, 'index:', index);
   const { inputAmount } = parameters as SwapActionParameters;
   const { dispatch } = store;
   const { accountAddress, network } = store.getState().settings;
@@ -47,15 +49,15 @@ const withdrawCompound = async (
     isMax ? cTokenBalance : inputAmount,
     isMax ? CTOKEN_DECIMALS : inputCurrency.decimals
   );
-  logger.log('[withdraw] is max', isMax);
-  logger.log('[withdraw] raw input amount', rawInputAmount);
+  logger.log(`[${actionName}] is max`, isMax);
+  logger.log(`[${actionName}] raw input amount`, rawInputAmount);
 
   let gasPrice = selectedGasPrice?.value.amount;
   if (!gasPrice) {
     gasPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);
   }
 
-  logger.log('[withdraw] gas price', gasPrice);
+  logger.log(`[${actionName}] gas price`, gasPrice);
   const cTokenContract =
     savingsAssetsListByUnderlying[network as string][inputCurrency.address]
       .contractAddress;
@@ -75,22 +77,20 @@ const withdrawCompound = async (
 
   let withdraw = null;
   try {
-    logger.sentry('[withdraw] txn params', transactionParams);
+    logger.sentry(`[${actionName}] txn params`, transactionParams);
     withdraw = isMax
       ? await compound.redeem(rawInputAmount, transactionParams)
       : await compound.redeemUnderlying(rawInputAmount, transactionParams);
-    logger.sentry('[withdraw] redeemed - result', withdraw);
+    logger.sentry(`[${actionName}] response`, withdraw);
   } catch (e) {
     logger.sentry(
-      `error executing ${
+      `[${actionName}] error executing ${
         isMax ? 'compound.redeem' : 'compound.redeemUnderlying'
       }`
     );
     captureException(e);
     throw e;
   }
-
-  currentRap.actions[index].transaction.hash = withdraw?.hash;
 
   const newTransaction = {
     amount: inputAmount,
@@ -106,10 +106,9 @@ const withdrawCompound = async (
     type: TransactionTypes.withdraw,
   };
 
-  logger.log('[withdraw] adding new txn', newTransaction);
+  logger.log(`[${actionName}] adding new txn`, newTransaction);
   // Disable the txn watcher because Compound can silently fail
   await dispatch(dataAddNewTransaction(newTransaction, accountAddress, true));
-  logger.log('[withdraw] complete!');
   return withdraw?.nonce;
 };
 

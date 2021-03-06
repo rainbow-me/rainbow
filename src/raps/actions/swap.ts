@@ -15,6 +15,8 @@ import { greaterThan } from '@rainbow-me/utilities';
 import { gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
+const actionName = 'swap';
+
 const swap = async (
   wallet: Wallet,
   currentRap: Rap,
@@ -22,7 +24,7 @@ const swap = async (
   parameters: RapActionParameters,
   baseNonce?: number
 ): Promise<number | undefined> => {
-  logger.log('[swap] base nonce:', baseNonce, 'index:', index);
+  logger.log(`[${actionName}] base nonce`, baseNonce, 'index:', index);
   const requiresApprove = index > 0;
   const { inputAmount, tradeDetails } = parameters as SwapActionParameters;
   const { dispatch } = store;
@@ -45,7 +47,10 @@ const swap = async (
   let gasLimit, methodName;
   try {
     const routeDetails = tradeDetails?.route?.path;
-    logger.sentry('estimateSwapGasLimit', { accountAddress, routeDetails });
+    logger.sentry(`[${actionName}] estimate gas`, {
+      accountAddress,
+      routeDetails,
+    });
     const {
       gasLimit: newGasLimit,
       methodName: newMethodName,
@@ -61,18 +66,18 @@ const swap = async (
     gasLimit = newGasLimit;
     methodName = newMethodName;
   } catch (e) {
-    logger.sentry('error executing estimateSwapGasLimit');
+    logger.sentry(`[${actionName}] error estimateSwapGasLimit`);
     captureException(e);
     throw e;
   }
 
   if (!methodName) {
-    throw new Error('Error executing swap action - no method name found');
+    throw new Error(`[${actionName}] Error - no method name found`);
   }
 
   let swap;
   try {
-    logger.sentry('executing swap', {
+    logger.sentry(`[${actionName}] executing rap`, {
       gasLimit,
       gasPrice,
       methodName,
@@ -92,13 +97,13 @@ const swap = async (
       wallet,
     });
   } catch (e) {
-    logger.sentry('error executing swap');
+    logger.sentry(`[${actionName}] error executing rap`);
     captureException(e);
     throw e;
   }
 
-  logger.log('[swap] response', swap);
-  currentRap.actions[index].transaction.hash = swap?.hash;
+  logger.log(`[${actionName}] response`, swap);
+
   const newTransaction = {
     amount: inputAmount,
     asset: inputCurrency,
@@ -112,7 +117,7 @@ const swap = async (
     to: swap?.to,
     type: TransactionTypes.trade,
   };
-  logger.log('[swap] adding new txn', newTransaction);
+  logger.log(`[${actionName}] adding new txn`, newTransaction);
   await dispatch(dataAddNewTransaction(newTransaction, accountAddress, true));
   return swap?.nonce;
 };

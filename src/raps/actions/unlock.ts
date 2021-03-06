@@ -72,6 +72,8 @@ const executeApprove = (
   });
 };
 
+const actionName = 'unlock';
+
 const unlock = async (
   wallet: Wallet,
   currentRap: Rap,
@@ -79,7 +81,7 @@ const unlock = async (
   parameters: RapActionParameters,
   baseNonce?: number
 ): Promise<number | undefined> => {
-  logger.log('[unlock] base nonce', baseNonce, 'index:', index);
+  logger.log(`[${actionName}] base nonce`, baseNonce, 'index:', index);
   const { dispatch } = store;
   const { accountAddress } = store.getState().settings;
   const { gasPrices, selectedGasPrice } = store.getState().gas;
@@ -89,11 +91,11 @@ const unlock = async (
   } = parameters as UnlockActionParameters;
   const { address: assetAddress } = assetToUnlock;
 
-  logger.log('[unlock] unlock rap for', assetToUnlock);
+  logger.log(`[${actionName}] rap for`, assetToUnlock);
 
   let gasLimit;
   try {
-    logger.sentry('about to estimate approve', {
+    logger.sentry(`[${actionName}] estimate gas`, {
       assetAddress,
       contractAddress,
     });
@@ -103,21 +105,21 @@ const unlock = async (
       contractAddress
     );
   } catch (e) {
-    logger.sentry('Error estimating approve');
+    logger.sentry(`[${actionName}] Error estimating gas`);
     captureException(e);
     throw e;
   }
   let approval;
   let gasPrice;
   try {
-    // unlocks should always use fast gas or custom (whatever is faster)
+    // approvals should always use fast gas or custom (whatever is faster)
     gasPrice = selectedGasPrice?.value?.amount;
     const fastPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);
     if (greaterThan(fastPrice, gasPrice)) {
       gasPrice = fastPrice;
     }
 
-    logger.sentry('about to approve', {
+    logger.sentry(`[${actionName}] about to approve`, {
       assetAddress,
       contractAddress,
       gasLimit,
@@ -132,7 +134,7 @@ const unlock = async (
       nonce
     );
   } catch (e) {
-    logger.sentry('Error approving');
+    logger.sentry(`[${actionName}] Error approving`);
     captureException(e);
     throw e;
   }
@@ -144,28 +146,22 @@ const unlock = async (
   // Cache the approved value
   AllowancesCache.cache[cacheKey] = MaxUint256.toString();
 
-  // update rap for hash
-  currentRap.actions[index].transaction.hash = approval?.hash;
+  logger.log(`[${actionName}] response`, approval);
 
-  logger.log('[unlock] approval result', approval);
-  await dispatch(
-    dataAddNewTransaction(
-      {
-        amount: 0,
-        asset: assetToUnlock,
-        from: wallet.address,
-        gasLimit,
-        gasPrice,
-        hash: approval?.hash,
-        nonce: approval?.nonce,
-        status: TransactionStatusTypes.approving,
-        to: approval?.to,
-        type: TransactionTypes.authorize,
-      },
-      wallet.address
-    )
-  );
-
+  const newTransaction = {
+    amount: 0,
+    asset: assetToUnlock,
+    from: accountAddress,
+    gasLimit,
+    gasPrice,
+    hash: approval?.hash,
+    nonce: approval?.nonce,
+    status: TransactionStatusTypes.approving,
+    to: approval?.to,
+    type: TransactionTypes.authorize,
+  };
+  logger.log(`[${actionName}] adding new txn`, newTransaction);
+  await dispatch(dataAddNewTransaction(newTransaction, accountAddress));
   return approval?.nonce;
 };
 

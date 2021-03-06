@@ -26,6 +26,8 @@ export const getDepositGasLimit = (tokenToDeposit: Asset) =>
     ? ethUnits.basic_deposit_eth
     : ethUnits.basic_deposit;
 
+const actionName = 'depositCompound';
+
 const depositCompound = async (
   wallet: Wallet,
   currentRap: Rap,
@@ -33,7 +35,7 @@ const depositCompound = async (
   parameters: RapActionParameters,
   baseNonce?: number
 ): Promise<number | undefined> => {
-  logger.log('[deposit] base nonce:', baseNonce, 'index:', index);
+  logger.log(`[${actionName}] base nonce`, baseNonce, 'index:', index);
   const { dispatch } = store;
   const { inputAmount, outputAmount } = parameters as SwapActionParameters;
   const { inputCurrency, outputCurrency } = store.getState().swap;
@@ -44,23 +46,23 @@ const depositCompound = async (
 
   const { accountAddress, network } = store.getState().settings;
   const { gasPrices, selectedGasPrice } = store.getState().gas;
-  logger.log('[deposit] amount to deposit', amountToDeposit);
+  logger.log(`[${actionName}] amount`, amountToDeposit);
   const rawInputAmount = convertAmountToRawAmount(
     amountToDeposit,
     tokenToDeposit.decimals
   );
-  logger.log('[deposit] raw input amount', rawInputAmount);
+  logger.log(`[${actionName}] raw input amount`, rawInputAmount);
 
   let gasPrice = selectedGasPrice?.value?.amount;
   if (!gasPrice) {
     gasPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);
   }
-  logger.log('[deposit] gas price', gasPrice);
+  logger.log(`[${actionName}] gas price`, gasPrice);
 
   const cTokenContract =
     savingsAssetsListByUnderlying[network][tokenToDeposit.address]
       .contractAddress;
-  logger.log('ctokencontract', cTokenContract);
+  logger.log(`[${actionName}] ctokencontract`, cTokenContract);
 
   const compound = new Contract(
     cTokenContract,
@@ -79,15 +81,14 @@ const depositCompound = async (
 
   let deposit = null;
   try {
-    logger.sentry('[deposit] txn params', transactionParams);
+    logger.sentry(`[${actionName}] txn params`, transactionParams);
     deposit = await compound.mint(rawInputAmount, transactionParams);
-    logger.sentry('[deposit] minted - result', deposit);
+    logger.sentry(`[${actionName}] response`, deposit);
   } catch (e) {
-    logger.sentry('error executing compound.mint');
+    logger.sentry(`[${actionName}] error executing compound.mint`);
     captureException(e);
     throw e;
   }
-  currentRap.actions[index].transaction.hash = deposit?.hash;
 
   const newTransaction = {
     amount: amountToDeposit,
@@ -102,11 +103,9 @@ const depositCompound = async (
     to: deposit?.to,
     type: TransactionTypes.deposit,
   };
-  logger.log('[deposit] adding new txn', newTransaction);
+  logger.log(`[${actionName}] adding new txn`, newTransaction);
   // Disable the txn watcher because Compound can silently fail
   await dispatch(dataAddNewTransaction(newTransaction, accountAddress, true));
-
-  logger.log('[deposit] rap complete');
   return deposit?.nonce;
 };
 
