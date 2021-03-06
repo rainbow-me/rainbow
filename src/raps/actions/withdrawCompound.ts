@@ -30,7 +30,7 @@ const withdrawCompound = async (
   parameters: RapActionParameters,
   baseNonce?: number
 ): Promise<number | undefined> => {
-  logger.log('[withdraw]');
+  logger.log('[withdraw] base nonce:', baseNonce, 'index:', index);
   const { inputAmount } = parameters as SwapActionParameters;
   const { dispatch } = store;
   const { accountAddress, network } = store.getState().settings;
@@ -50,7 +50,6 @@ const withdrawCompound = async (
   logger.log('[withdraw] is max', isMax);
   logger.log('[withdraw] raw input amount', rawInputAmount);
 
-  logger.log('[withdraw] execute the withdraw');
   let gasPrice = selectedGasPrice?.value.amount;
   if (!gasPrice) {
     gasPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);

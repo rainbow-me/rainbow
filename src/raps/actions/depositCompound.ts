@@ -33,7 +33,7 @@ const depositCompound = async (
   parameters: RapActionParameters,
   baseNonce?: number
 ): Promise<number | undefined> => {
-  logger.log('[deposit]');
+  logger.log('[deposit] base nonce:', baseNonce, 'index:', index);
   const { dispatch } = store;
   const { inputAmount, outputAmount } = parameters as SwapActionParameters;
   const { inputCurrency, outputCurrency } = store.getState().swap;
@@ -44,14 +44,13 @@ const depositCompound = async (
 
   const { accountAddress, network } = store.getState().settings;
   const { gasPrices, selectedGasPrice } = store.getState().gas;
-  logger.log('[deposit]', amountToDeposit);
+  logger.log('[deposit] amount to deposit', amountToDeposit);
   const rawInputAmount = convertAmountToRawAmount(
     amountToDeposit,
     tokenToDeposit.decimals
   );
   logger.log('[deposit] raw input amount', rawInputAmount);
 
-  logger.log('[deposit] execute the deposit');
   let gasPrice = selectedGasPrice?.value?.amount;
   if (!gasPrice) {
     gasPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);

@@ -79,6 +79,7 @@ const unlock = async (
   parameters: RapActionParameters,
   baseNonce?: number
 ): Promise<number | undefined> => {
+  logger.log('[unlock] base nonce', baseNonce, 'index:', index);
   const { dispatch } = store;
   const { accountAddress } = store.getState().settings;
   const { gasPrices, selectedGasPrice } = store.getState().gas;
@@ -109,7 +110,6 @@ const unlock = async (
   let approval;
   let gasPrice;
   try {
-    logger.log('[swap] execute the swap');
     // unlocks should always use fast gas or custom (whatever is faster)
     gasPrice = selectedGasPrice?.value?.amount;
     const fastPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);
@@ -147,7 +147,7 @@ const unlock = async (
   // update rap for hash
   currentRap.actions[index].transaction.hash = approval?.hash;
 
-  logger.log('[unlock] add a new txn');
+  logger.log('[unlock] approval result', approval);
   await dispatch(
     dataAddNewTransaction(
       {
@@ -166,7 +166,6 @@ const unlock = async (
     )
   );
 
-  logger.log('[unlock] APPROVAL SUBMITTED, HASH', approval?.hash);
   return approval?.nonce;
 };
 

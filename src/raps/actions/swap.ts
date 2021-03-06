@@ -22,7 +22,7 @@ const swap = async (
   parameters: RapActionParameters,
   baseNonce?: number
 ): Promise<number | undefined> => {
-  logger.log('[swap] swap on uniswap!');
+  logger.log('[swap] base nonce:', baseNonce, 'index:', index);
   const { inputAmount, tradeDetails } = parameters as SwapActionParameters;
   const { dispatch } = store;
   const { accountAddress, chainId } = store.getState().settings;
@@ -32,10 +32,7 @@ const swap = async (
     slippageInBips: slippage,
   } = store.getState().swap;
   const { gasPrices, selectedGasPrice } = store.getState().gas;
-  logger.log('[swap] calculating trade details');
 
-  // Execute Swap
-  logger.log('[swap] execute the swap');
   let gasPrice = selectedGasPrice?.value?.amount;
   // if swap isn't the last action, use fast gas or custom (whatever is faster)
   if (currentRap.actions.length - 1 > index || !gasPrice) {
@@ -100,7 +97,6 @@ const swap = async (
 
   logger.log('[swap] response', swap);
   currentRap.actions[index].transaction.hash = swap?.hash;
-  logger.log('[swap] adding a new swap txn to pending', swap?.hash);
   const newTransaction = {
     amount: inputAmount,
     asset: inputCurrency,
