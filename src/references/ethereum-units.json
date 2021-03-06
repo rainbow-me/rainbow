@@ -3,6 +3,7 @@
   "basic_deposit": 420000,
   "basic_deposit_eth": 200000,
   "basic_swap": 160000,
+  "basic_swap_require_approval": 350000,
   "basic_tx": 21000,
   "basic_withdrawal": 550000,
   "noether": 0,

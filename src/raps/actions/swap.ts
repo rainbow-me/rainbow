@@ -11,6 +11,7 @@ import TransactionStatusTypes from '@rainbow-me/helpers/transactionStatusTypes';
 import TransactionTypes from '@rainbow-me/helpers/transactionTypes';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
 import store from '@rainbow-me/redux/store';
+import { ethUnits } from '@rainbow-me/references';
 import { greaterThan } from '@rainbow-me/utilities';
 import { gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
@@ -63,7 +64,9 @@ const swap = async (
       slippage,
       tradeDetails,
     });
-    gasLimit = newGasLimit;
+    gasLimit = requiresApprove
+      ? ethUnits.basic_swap_require_approval
+      : newGasLimit;
     methodName = newMethodName;
   } catch (e) {
     logger.sentry(`[${actionName}] error estimateSwapGasLimit`);
