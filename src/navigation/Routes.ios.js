@@ -23,6 +23,7 @@ import SendSheet from '../screens/SendSheet';
 import SettingsModal from '../screens/SettingsModal';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
+import UniswapDepositModal from '../screens/UniswapDepositModal';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
 import WelcomeScreen from '../screens/WelcomeScreen';
@@ -345,6 +346,11 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={CompoundDepositModal}
         name={Routes.SAVINGS_DEPOSIT_MODAL}
+        options={nativeStackDefaultConfigWithoutStatusBar}
+      />
+      <NativeStack.Screen
+        component={UniswapDepositModal}
+        name={Routes.UNISWAP_DEPOSIT_MODAL}
         options={nativeStackDefaultConfigWithoutStatusBar}
       />
       <NativeStack.Screen

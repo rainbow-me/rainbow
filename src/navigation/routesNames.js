@@ -44,6 +44,7 @@ const Routes = {
   SWIPE_LAYOUT: 'SwipeLayout',
   TOKEN_INDEX_SCREEN: 'TokenIndexScreen',
   TOKEN_INDEX_SHEET: 'TokenIndexSheet',
+  UNISWAP_DEPOSIT_MODAL: 'UniswapDepositModal',
   WALLET_CONNECT_APPROVAL_SHEET: 'WalletConnectApprovalSheet',
   WALLET_CONNECT_REDIRECT_SHEET: 'WalletConnectRedirectSheet',
   WALLET_SCREEN: 'WalletScreen',
@@ -63,6 +64,7 @@ export const NATIVE_ROUTES = [
   Routes.SAVINGS_SHEET,
   Routes.SAVINGS_WITHDRAW_MODAL,
   Routes.SAVINGS_DEPOSIT_MODAL,
+  Routes.UNISWAP_DEPOSIT_MODAL,
   ...(isNativeStackAvailable
     ? [
         Routes.SEND_SHEET_NAVIGATOR,
