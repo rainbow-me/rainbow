@@ -4,7 +4,7 @@ import ExchangeModal from './ExchangeModal';
 import { ExchangeModalTypes } from '@rainbow-me/entities';
 import { useStatusBarManaging } from '@rainbow-me/navigation';
 
-export default function WithdrawModal(props) {
+export default function CompoundWithdrawModal(props) {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   android && useStatusBarManaging();
   const { params } = useRoute();

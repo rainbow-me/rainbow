@@ -11,6 +11,7 @@ import AvatarBuilder from '../screens/AvatarBuilder';
 import BackupSheet from '../screens/BackupSheet';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
 import CompoundDepositModal from '../screens/CompoundDepositModal';
+import CompoundWithdrawModal from '../screens/CompoundWithdrawModal';
 import ConnectedDappsSheet from '../screens/ConnectedDappsSheet';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
@@ -25,7 +26,6 @@ import TransactionConfirmationScreen from '../screens/TransactionConfirmationScr
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
 import WelcomeScreen from '../screens/WelcomeScreen';
-import WithdrawModal from '../screens/WithdrawModal';
 import { SwipeNavigator } from './SwipeNavigator';
 import {
   addTokenSheetConfig,
@@ -338,7 +338,7 @@ function NativeStackNavigator() {
         }}
       />
       <NativeStack.Screen
-        component={WithdrawModal}
+        component={CompoundWithdrawModal}
         name={Routes.SAVINGS_WITHDRAW_MODAL}
         options={nativeStackDefaultConfigWithoutStatusBar}
       />
