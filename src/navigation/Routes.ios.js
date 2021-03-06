@@ -10,8 +10,8 @@ import AddTokenSheet from '../screens/AddTokenSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import BackupSheet from '../screens/BackupSheet';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
+import CompoundDepositModal from '../screens/CompoundDepositModal';
 import ConnectedDappsSheet from '../screens/ConnectedDappsSheet';
-import DepositModal from '../screens/DepositModal';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
 import ModalScreen from '../screens/ModalScreen';
@@ -343,7 +343,7 @@ function NativeStackNavigator() {
         options={nativeStackDefaultConfigWithoutStatusBar}
       />
       <NativeStack.Screen
-        component={DepositModal}
+        component={CompoundDepositModal}
         name={Routes.SAVINGS_DEPOSIT_MODAL}
         options={nativeStackDefaultConfigWithoutStatusBar}
       />
