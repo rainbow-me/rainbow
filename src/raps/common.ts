@@ -14,6 +14,10 @@ import {
   createSwapAndDepositCompoundRap,
   estimateSwapAndDepositCompound,
 } from './swapAndDepositCompound';
+import {
+  createDepositUniswapRap,
+  estimateDepositUniswap,
+} from './unlockAndDepositUniswap';
 import { createUnlockAndSwapRap, estimateUnlockAndSwap } from './unlockAndSwap';
 import {
   createWithdrawFromCompoundRap,
@@ -86,6 +90,8 @@ const createRapByType = (
   switch (type) {
     case ExchangeModalType.depositCompound:
       return createSwapAndDepositCompoundRap(swapParameters);
+    case ExchangeModalType.depositUniswap:
+      return createDepositUniswapRap(swapParameters);
     case ExchangeModalType.withdrawCompound:
       return createWithdrawFromCompoundRap(swapParameters);
     default:
@@ -100,6 +106,8 @@ export const getRapEstimationByType = (
   switch (type) {
     case ExchangeModalType.depositCompound:
       return estimateSwapAndDepositCompound(swapParameters);
+    case ExchangeModalType.depositUniswap:
+      return estimateDepositUniswap(swapParameters);
     case ExchangeModalType.swap:
       return estimateUnlockAndSwap(swapParameters);
     case ExchangeModalType.withdrawCompound:
