@@ -303,8 +303,8 @@ export default function ExchangeModal({
           return;
         }
 
-        setIsAuthorizing(false);
         const callback = () => {
+          setIsAuthorizing(false);
           setParams({ focused: false });
           navigate(Routes.PROFILE_SCREEN);
         };
@@ -314,8 +314,7 @@ export default function ExchangeModal({
           outputAmount,
           tradeDetails,
         };
-        await executeRap(wallet, type, swapParameters);
-        callback();
+        await executeRap(wallet, type, swapParameters, callback);
         logger.log('[exchange - handle submit] executed rap!');
         analytics.track(`Completed ${type}`, {
           defaultInputAsset: defaultInputAsset?.symbol || '',
