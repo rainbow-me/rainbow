@@ -97,11 +97,9 @@ export const createDepositUniswapRap = async ({
 
   if (depositAssetNeedsUnlocking) {
     const unlock = createNewAction(RapActionTypes.unlock, {
-      accountAddress,
       amount: inputAmount,
       assetToUnlock: inputCurrency,
       contractAddress: ZapInAddress,
-      selectedGasPrice,
     });
     actions = concat(actions, unlock);
   }

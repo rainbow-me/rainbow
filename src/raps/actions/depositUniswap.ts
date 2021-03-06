@@ -2,7 +2,7 @@ import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
 import { Token } from '@uniswap/sdk';
 import { get } from 'lodash';
-import { Rap, RapActionParameters } from '../common';
+import { Rap, RapActionParameters, SwapActionParameters } from '../common';
 import { depositToPool } from '@rainbow-me/handlers/uniswapLiquidity';
 import { toHex } from '@rainbow-me/handlers/web3';
 import ProtocolTypes from '@rainbow-me/helpers/protocolTypes';
@@ -11,7 +11,7 @@ import TransactionTypes from '@rainbow-me/helpers/transactionTypes';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
 import store from '@rainbow-me/redux/store';
 import { ethUnits } from '@rainbow-me/references';
-import { convertAmountToRawAmount, isZero } from '@rainbow-me/utilities';
+import { convertAmountToRawAmount } from '@rainbow-me/utilities';
 import { gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
@@ -24,21 +24,18 @@ const depositUniswap = async (
   wallet: Wallet,
   currentRap: Rap,
   index: number,
-  parameters: RapActionParameters
-): Promise<null> => {
+  parameters: RapActionParameters,
+  baseNonce?: number
+): Promise<number | undefined> => {
   logger.log(`${actionName}`);
-  const {
-    accountAddress,
-    chainId,
-    depositToken,
-    inputAmount,
-    inputCurrency,
-    outputCurrency,
-    network,
-    selectedGasPrice,
-  } = parameters;
+  logger.log(`${actionName} base nonce`, baseNonce, 'index:', index);
+  const { inputAmount } = parameters as SwapActionParameters;
   const { dispatch } = store;
-  const { gasPrices } = store.getState().gas;
+  const { inputCurrency, outputCurrency } = store.getState().swap;
+  // TODO JIN
+  const depositToken = inputCurrency;
+  const { accountAddress, chainId, network } = store.getState().settings;
+  const { gasPrices, selectedGasPrice } = store.getState().gas;
 
   logger.log(`${actionName}`, inputAmount);
   const rawInputAmount = convertAmountToRawAmount(
@@ -57,6 +54,7 @@ const depositUniswap = async (
   const transactionParams = {
     gasLimit: getDepositUniswapGasLimit(),
     gasPrice: toHex(gasPrice),
+    nonce: baseNonce ? toHex(baseNonce + index) : undefined,
   };
 
   let deposit = null;
@@ -72,13 +70,12 @@ const depositUniswap = async (
       transactionParams
     );
     // TODO JIN - how to get the txn itself, not the result?
-    logger.sentry(`${actionName} minted - result`, deposit);
+    logger.sentry(`${actionName} response`, deposit);
   } catch (e) {
     logger.sentry('error executing deposit to Uniswap LP');
     captureException(e);
     throw e;
   }
-  currentRap.actions[index].transaction.hash = deposit.hash;
 
   const newTransaction = {
     amount: inputAmount,
@@ -94,8 +91,7 @@ const depositUniswap = async (
     type: TransactionTypes.deposit, // TODO JIN - different type
   };
   logger.log(`${actionName} adding new txn`, newTransaction);
-  // Disable the txn watcher because Compound can silently fail
-  await dispatch(dataAddNewTransaction(newTransaction, accountAddress, true));
+  await dispatch(dataAddNewTransaction(newTransaction, accountAddress));
 
   return deposit?.nonce;
 };
