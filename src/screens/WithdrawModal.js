@@ -9,16 +9,21 @@ export default function WithdrawModal(props) {
   android && useStatusBarManaging();
   const { params } = useRoute();
 
+  const type = ExchangeModalTypes.withdrawCompound;
+
   const typeSpecificParams = {
-    cTokenBalance: params?.cTokenBalance,
-    supplyBalanceUnderlying: params?.supplyBalanceUnderlying,
+    [type]: {
+      cTokenBalance: params?.cTokenBalance,
+      supplyBalanceUnderlying: params?.supplyBalanceUnderlying,
+    },
   };
 
   return (
     <ExchangeModal
       defaultInputAsset={params?.defaultInputAsset}
-      type={ExchangeModalTypes.withdrawCompound}
+      type={type}
       typeSpecificParams={typeSpecificParams}
+      {...props}
     />
   );
 }

@@ -13,7 +13,8 @@ export default function useSwapIsSufficientBalance(inputAmount: string | null) {
   const type = useSelector((state: AppState) => state.swap.type);
   const supplyBalanceUnderlying = useSelector(
     (state: AppState) =>
-      state.swap.typeSpecificParameters?.supplyBalanceUnderlying
+      state.swap.typeSpecificParameters?.[ExchangeModalType.withdrawCompound]
+        ?.supplyBalanceUnderlying
   );
 
   const isSufficientBalance = useMemo(() => {

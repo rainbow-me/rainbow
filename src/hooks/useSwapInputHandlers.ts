@@ -18,7 +18,8 @@ export default function useSwapInputHandlers() {
   const type = useSelector((state: AppState) => state.swap.type);
   const supplyBalanceUnderlying = useSelector(
     (state: AppState) =>
-      state.swap.typeSpecificParameters?.supplyBalanceUnderlying
+      state.swap.typeSpecificParameters?.[ExchangeModalType.withdrawCompound]
+        ?.supplyBalanceUnderlying
   );
   const assets = useSelector((state: AppState) => state.data.assets);
   const inputCurrencyAddress = useSelector(
