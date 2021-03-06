@@ -173,11 +173,11 @@ export const executeRap = async (
     const firstAction = actions[0];
     baseNonce = await executeAction(firstAction, wallet, rap, 0, rapName);
     if (baseNonce) {
-      callback();
       for (let index = 1; index < actions.length; index++) {
         const action = actions[index];
         await executeAction(action, wallet, rap, index, rapName, baseNonce);
       }
+      callback();
     }
   }
 
