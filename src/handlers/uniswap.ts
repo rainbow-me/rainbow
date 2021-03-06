@@ -74,6 +74,7 @@ export const estimateSwapGasLimit = async ({
   chainId,
   inputCurrency,
   outputCurrency,
+  requiresApprove,
   slippage,
   tradeDetails,
 }: {
@@ -81,6 +82,7 @@ export const estimateSwapGasLimit = async ({
   chainId: ChainId;
   inputCurrency: Asset;
   outputCurrency: Asset;
+  requiresApprove?: boolean;
   slippage: number;
   tradeDetails: Trade | null;
 }): Promise<{
@@ -141,7 +143,10 @@ export const estimateSwapGasLimit = async ({
     // all estimations failed...
     if (indexOfSuccessfulEstimation === -1) {
       logger.sentry('all swap estimates failed in estimateSwapGasLimit');
-      return { gasLimit: ethUnits.basic_swap, methodName: null };
+      return {
+        gasLimit: ethUnits.basic_swap,
+        methodName: requiresApprove ? methodNames[0] : null,
+      };
     } else {
       methodName = methodNames[indexOfSuccessfulEstimation];
       const gasEstimate = gasEstimates[indexOfSuccessfulEstimation];

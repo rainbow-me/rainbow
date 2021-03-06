@@ -23,6 +23,7 @@ const swap = async (
   baseNonce?: number
 ): Promise<number | undefined> => {
   logger.log('[swap] base nonce:', baseNonce, 'index:', index);
+  const requiresApprove = index > 0;
   const { inputAmount, tradeDetails } = parameters as SwapActionParameters;
   const { dispatch } = store;
   const { accountAddress, chainId } = store.getState().settings;
@@ -53,6 +54,7 @@ const swap = async (
       chainId,
       inputCurrency,
       outputCurrency,
+      requiresApprove,
       slippage,
       tradeDetails,
     });
