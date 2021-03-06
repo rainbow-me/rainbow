@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { ExchangeModalTypes } from '@rainbow-me/helpers';
+import { ExchangeModalType } from '@rainbow-me/entities';
 import { AppState } from '@rainbow-me/redux/store';
 import { greaterThanOrEqualTo } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
@@ -23,7 +23,7 @@ export default function useSwapIsSufficientBalance(inputAmount: string | null) {
       ethereumUtils.getAsset(assets, inputCurrencyAddress)?.balance?.amount ??
       0;
 
-    const isWithdrawal = type === ExchangeModalTypes.withdrawal;
+    const isWithdrawal = type === ExchangeModalType.withdrawCompound;
 
     return isWithdrawal
       ? greaterThanOrEqualTo(supplyBalanceUnderlying, inputAmount)

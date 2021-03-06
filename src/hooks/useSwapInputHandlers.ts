@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { ExchangeModalTypes } from '@rainbow-me/helpers';
+import { ExchangeModalType } from '@rainbow-me/entities';
 import { AppState } from '@rainbow-me/redux/store';
 import {
   updateSwapInputAmount,
@@ -26,7 +26,7 @@ export default function useSwapInputHandlers() {
   );
 
   const updateMaxInputAmount = useCallback(() => {
-    if (type === ExchangeModalTypes.withdrawal) {
+    if (type === ExchangeModalType.withdrawCompound) {
       dispatch(updateSwapInputAmount(supplyBalanceUnderlying));
     } else {
       let amount =

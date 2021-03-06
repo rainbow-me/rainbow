@@ -20,7 +20,7 @@ import {
   SwapDetailsMastheadHeight,
   SwapDetailsSlippageMessage,
 } from './swap-details';
-import { ExchangeModalTypes } from '@rainbow-me/helpers';
+import { ExchangeModalTypes } from '@rainbow-me/entities';
 import {
   useBooleanState,
   useDimensions,
