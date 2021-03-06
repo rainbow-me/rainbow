@@ -7,7 +7,7 @@ import {
   useStatusBarManaging,
 } from '@rainbow-me/navigation';
 
-const DepositModal = props => {
+const CompoundDepositModal = props => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   android && useStatusBarManaging();
   const { params } = useRoute();
@@ -21,4 +21,4 @@ const DepositModal = props => {
   );
 };
 
-export default ExchangeNavigatorFactory(DepositModal);
+export default ExchangeNavigatorFactory(CompoundDepositModal);
