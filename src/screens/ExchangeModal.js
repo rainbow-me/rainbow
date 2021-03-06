@@ -71,10 +71,13 @@ const InnerWrapper = styled(Centered).attrs({
 
 const getInputHeaderTitle = (type, defaultInputAsset) => {
   switch (type) {
-    case ExchangeModalTypes.deposit:
+    case ExchangeModalTypes.depositCompound:
+    case ExchangeModalTypes.depositUniswap:
       return 'Deposit';
-    case ExchangeModalTypes.withdrawal:
+    case ExchangeModalTypes.withdrawCompound:
       return `Withdraw ${defaultInputAsset.symbol}`;
+    case ExchangeModalTypes.withdrawUniswap:
+      return 'Withdraw';
     default:
       return 'Swap';
   }
@@ -82,8 +85,10 @@ const getInputHeaderTitle = (type, defaultInputAsset) => {
 
 const getShowOutputField = type => {
   switch (type) {
-    case ExchangeModalTypes.deposit:
-    case ExchangeModalTypes.withdrawal:
+    case ExchangeModalTypes.depositCompound:
+    case ExchangeModalTypes.depositUniswap:
+    case ExchangeModalTypes.withdrawCompound:
+    case ExchangeModalTypes.withdrawUniswap:
       return false;
     default:
       return true;
@@ -232,9 +237,9 @@ export default function ExchangeModal({
     try {
       if (
         ((type === ExchangeModalTypes.swap ||
-          type === ExchangeModalTypes.deposit) &&
+          type === ExchangeModalTypes.depositCompound) &&
           !(inputCurrency && outputCurrency)) ||
-        type === ExchangeModalTypes.withdraw
+        type === ExchangeModalTypes.withdrawCompound
       ) {
         return;
       }

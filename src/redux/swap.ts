@@ -1,7 +1,6 @@
 import { AnyAction } from 'redux';
 import { fetchAssetPrices } from './explorer';
-import { UniswapCurrency } from '@rainbow-me/entities';
-import { ExchangeModalTypes } from '@rainbow-me/helpers';
+import { ExchangeModalType, UniswapCurrency } from '@rainbow-me/entities';
 import { AppDispatch, AppGetState } from '@rainbow-me/redux/store';
 import { convertAmountFromNativeValue } from '@rainbow-me/utilities';
 
@@ -27,7 +26,7 @@ interface SwapState {
   independentField: SwapModalField;
   independentValue: string | null;
   slippageInBips: number;
-  type: string;
+  type: ExchangeModalType;
   typeSpecificParameters?: TypeSpecificParameters | null;
   outputCurrency: UniswapCurrency | null;
 }
@@ -46,7 +45,7 @@ const SWAP_CLEAR_STATE = 'swap/SWAP_CLEAR_STATE';
 
 // -- Actions ---------------------------------------- //
 export const updateSwapTypeDetails = (
-  type: string,
+  type: ExchangeModalType,
   typeSpecificParameters?: TypeSpecificParameters | null
 ) => (dispatch: AppDispatch) => {
   dispatch({
@@ -110,7 +109,7 @@ export const updateSwapInputCurrency = (
     type,
   } = getState().swap;
   if (
-    type === ExchangeModalTypes.swap &&
+    type === ExchangeModalType.swap &&
     newInputCurrency?.address === outputCurrency?.address
   ) {
     dispatch(flipSwapCurrencies());
@@ -124,7 +123,7 @@ export const updateSwapInputCurrency = (
     }
   }
 
-  if (type === ExchangeModalTypes.deposit) {
+  if (type === ExchangeModalType.depositCompound) {
     if (newInputCurrency?.address === depositCurrency?.address) {
       dispatch(updateSwapOutputCurrency(null));
     } else {
@@ -198,7 +197,7 @@ const INITIAL_STATE: SwapState = {
   inputCurrency: null,
   outputCurrency: null,
   slippageInBips: 50,
-  type: ExchangeModalTypes.swap,
+  type: ExchangeModalType.swap,
   typeSpecificParameters: null,
 };
 

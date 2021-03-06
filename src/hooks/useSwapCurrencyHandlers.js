@@ -9,10 +9,8 @@ import { delayNext } from './useMagicAutofocus';
 import useSwapCurrencies from './useSwapCurrencies';
 import useTimeout from './useTimeout';
 import useUniswapCalls from './useUniswapCalls';
-import {
-  CurrencySelectionTypes,
-  ExchangeModalTypes,
-} from '@rainbow-me/helpers';
+import { ExchangeModalTypes } from '@rainbow-me/entities';
+import { CurrencySelectionTypes } from '@rainbow-me/helpers';
 import { useNavigation } from '@rainbow-me/navigation';
 import {
   multicallAddListeners,
@@ -46,13 +44,13 @@ export default function useSwapCurrencyHandlers({
   } = useRoute();
 
   const { defaultInputItemInWallet, defaultOutputItem } = useMemo(() => {
-    if (type === ExchangeModalTypes.withdrawal) {
+    if (type === ExchangeModalTypes.withdrawCompound) {
       return {
         defaultInputItemInWallet: defaultInputAsset,
         defaultOutputItem: null,
       };
     }
-    if (type === ExchangeModalTypes.deposit) {
+    if (type === ExchangeModalTypes.depositCompound) {
       // if the deposit asset exists in wallet, then set it as default input
       let defaultInputItemInWallet = ethereumUtils.getAsset(
         allAssets,

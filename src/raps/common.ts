@@ -19,8 +19,7 @@ import {
   createWithdrawFromCompoundRap,
   estimateWithdrawFromCompound,
 } from './withdrawFromCompound';
-import { Asset } from '@rainbow-me/entities';
-import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
+import { Asset, ExchangeModalType } from '@rainbow-me/entities';
 
 import logger from 'logger';
 
@@ -85,9 +84,9 @@ const createRapByType = (
   swapParameters: SwapActionParameters
 ) => {
   switch (type) {
-    case ExchangeModalTypes.deposit:
+    case ExchangeModalType.depositCompound:
       return createSwapAndDepositCompoundRap(swapParameters);
-    case ExchangeModalTypes.withdrawal:
+    case ExchangeModalType.withdrawCompound:
       return createWithdrawFromCompoundRap(swapParameters);
     default:
       return createUnlockAndSwapRap(swapParameters);
@@ -99,11 +98,11 @@ export const getRapEstimationByType = (
   swapParameters: SwapActionParameters
 ) => {
   switch (type) {
-    case ExchangeModalTypes.deposit:
+    case ExchangeModalType.depositCompound:
       return estimateSwapAndDepositCompound(swapParameters);
-    case ExchangeModalTypes.swap:
+    case ExchangeModalType.swap:
       return estimateUnlockAndSwap(swapParameters);
-    case ExchangeModalTypes.withdrawal:
+    case ExchangeModalType.withdrawCompound:
       return estimateWithdrawFromCompound();
     default:
       return null;
