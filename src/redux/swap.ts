@@ -1,3 +1,4 @@
+import { Pair } from '@uniswap/sdk';
 import { AnyAction } from 'redux';
 import { fetchAssetPrices } from './explorer';
 import { ExchangeModalType, UniswapCurrency } from '@rainbow-me/entities';
@@ -15,9 +16,18 @@ export enum SwapModalField {
   output = 'outputAmount',
 }
 
-export interface TypeSpecificParameters {
+export interface WithdrawCompoundParameters {
   cTokenBalance: string;
   supplyBalanceUnderlying: string;
+}
+
+export interface DepositUniswapParameters {
+  uniswapPair: Pair;
+}
+
+export interface TypeSpecificParameters {
+  [ExchangeModalType.depositUniswap]?: DepositUniswapParameters;
+  [ExchangeModalType.withdrawCompound]?: WithdrawCompoundParameters;
 }
 
 interface SwapState {

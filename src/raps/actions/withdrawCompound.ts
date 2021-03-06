@@ -4,6 +4,7 @@ import { captureException } from '@sentry/react-native';
 import { get } from 'lodash';
 import { Rap, RapActionParameters, SwapActionParameters } from '../common';
 import {
+  ExchangeModalType,
   ProtocolType,
   TransactionStatus,
   TransactionType,
@@ -11,7 +12,10 @@ import {
 import { toHex } from '@rainbow-me/handlers/web3';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
 import store from '@rainbow-me/redux/store';
-import { TypeSpecificParameters } from '@rainbow-me/redux/swap';
+import {
+  TypeSpecificParameters,
+  WithdrawCompoundParameters,
+} from '@rainbow-me/redux/swap';
 import {
   compoundCERC20ABI,
   compoundCETHABI,
@@ -42,9 +46,12 @@ const withdrawCompound = async (
   const { gasPrices, selectedGasPrice } = store.getState().gas;
 
   const {
+    [ExchangeModalType.withdrawCompound]: withdrawParams,
+  } = typeSpecificParameters as TypeSpecificParameters;
+  const {
     cTokenBalance,
     supplyBalanceUnderlying,
-  } = typeSpecificParameters as TypeSpecificParameters;
+  } = withdrawParams as WithdrawCompoundParameters;
 
   const isMax = isEqual(inputAmount, supplyBalanceUnderlying);
   const rawInputAmount = convertAmountToRawAmount(
