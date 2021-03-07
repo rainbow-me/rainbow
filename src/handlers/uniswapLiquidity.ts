@@ -27,14 +27,15 @@ const determineBuyToken = (
 
 export const depositToPool = async (
   fromTokenAddress: string,
-  tokenA: Token,
-  tokenB: Token,
+  pair: Pair,
   chainId: ChainId,
   fromAmount: string,
   network: string,
   transactionParams: TransactionParams,
   estimateGas = false
 ) => {
+  const tokenA = pair.token0;
+  const tokenB = pair.token1;
   const buyToken = determineBuyToken(tokenA, tokenB, chainId);
 
   const firstSwapDetails = await getQuote(
