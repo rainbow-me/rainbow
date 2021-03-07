@@ -2,7 +2,7 @@ import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
 import { get } from 'lodash';
 import { Rap, RapActionParameters, SwapActionParameters } from '../common';
-import { ExchangeModalType } from '@rainbow-me/entities';
+import { ExchangeModalType, TransactionParams } from '@rainbow-me/entities';
 import { depositToPool } from '@rainbow-me/handlers/uniswapLiquidity';
 import { toHex } from '@rainbow-me/handlers/web3';
 import ProtocolTypes from '@rainbow-me/helpers/protocolTypes';
@@ -21,31 +21,42 @@ import logger from 'logger';
 
 const actionName = '[deposit uniswap]';
 
-// TODO JIN - code reuse between this and execute
+const getDepositUniswap = (
+  inputAmount: string,
+  transactionParams: TransactionParams,
+  estimateGas = false
+) => {
+  const { inputCurrency, typeSpecificParameters } = store.getState().swap;
+  const {
+    [ExchangeModalType.depositUniswap]: depositParams,
+  } = typeSpecificParameters as TypeSpecificParameters;
+  const { uniswapPair } = depositParams as DepositUniswapParameters;
+  const { chainId, network } = store.getState().settings;
+
+  const rawInputAmount = convertAmountToRawAmount(
+    inputAmount,
+    inputCurrency.decimals
+  );
+  return depositToPool(
+    inputCurrency,
+    uniswapPair,
+    chainId,
+    rawInputAmount,
+    network,
+    transactionParams,
+    estimateGas
+  );
+};
+
 export const estimateDepositUniswap = async (inputAmount: string) => {
   try {
-    const { inputCurrency, typeSpecificParameters } = store.getState().swap;
-    const {
-      [ExchangeModalType.depositUniswap]: depositParams,
-    } = typeSpecificParameters as TypeSpecificParameters;
-    const { uniswapPair } = depositParams as DepositUniswapParameters;
-    const { chainId, network } = store.getState().settings;
-
-    const rawInputAmount = convertAmountToRawAmount(
-      inputAmount,
-      inputCurrency.decimals
-    );
     const transactionParams = {
       gasLimit: undefined,
       gasPrice: undefined,
       nonce: undefined,
     };
-    const gasLimit = await depositToPool(
-      inputCurrency,
-      uniswapPair,
-      chainId,
-      rawInputAmount,
-      network,
+    const gasLimit = await getDepositUniswap(
+      inputAmount,
       transactionParams,
       true
     );
@@ -65,21 +76,11 @@ const depositUniswap = async (
   logger.log(`${actionName} base nonce`, baseNonce, 'index:', index);
   const { inputAmount } = parameters as SwapActionParameters;
   const { dispatch } = store;
-  const { inputCurrency, typeSpecificParameters } = store.getState().swap;
-  const { accountAddress, chainId, network } = store.getState().settings;
+  const { inputCurrency } = store.getState().swap;
+  const { accountAddress } = store.getState().settings;
   const { gasPrices, selectedGasPrice } = store.getState().gas;
 
-  const {
-    [ExchangeModalType.depositUniswap]: depositParams,
-  } = typeSpecificParameters as TypeSpecificParameters;
-  const { uniswapPair } = depositParams as DepositUniswapParameters;
-
   logger.log(`${actionName}`, inputAmount);
-  const rawInputAmount = convertAmountToRawAmount(
-    inputAmount,
-    inputCurrency.decimals
-  );
-  logger.log(`${actionName} raw input amount`, rawInputAmount);
 
   let gasPrice = get(selectedGasPrice, 'value.amount');
   if (!gasPrice) {
@@ -98,14 +99,7 @@ const depositUniswap = async (
   let deposit = null;
   try {
     logger.sentry(`${actionName} txn params`, transactionParams);
-    deposit = await depositToPool(
-      inputCurrency,
-      uniswapPair,
-      chainId,
-      rawInputAmount,
-      network,
-      transactionParams
-    );
+    deposit = await getDepositUniswap(inputAmount, transactionParams);
     logger.sentry(`${actionName} response`, deposit);
   } catch (e) {
     logger.sentry(`${actionName} error executing deposit to Uniswap LP`);
