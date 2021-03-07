@@ -135,9 +135,7 @@ const LiquidityPoolExpandedState = ({ asset }) => {
               weight="bold"
             />
             <DepositActionButton
-              symbol={tokenNames}
-              token1Address={tokenAddresses[0]}
-              token2Address={tokenAddresses[1]}
+              asset={asset}
               weight="bold"
             />
           </SheetActionButtonRow>
@@ -145,10 +143,8 @@ const LiquidityPoolExpandedState = ({ asset }) => {
       ) : (
         <SheetActionButtonRow>
           <DepositActionButton
+            asset={asset}
             fullWidth
-            symbol={tokenNames}
-            token1Address={tokenAddresses[0]}
-            token2Address={tokenAddresses[1]}
             weight="bold"
           />
         </SheetActionButtonRow>
