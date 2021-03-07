@@ -133,10 +133,6 @@ export default function ExchangeModal({
     addListener,
   } = useNavigation();
 
-  const isDeposit = type === ExchangeModalTypes.depositCompound;
-  const isWithdrawal = type === ExchangeModalTypes.withdrawCompound;
-  const isSavings = isDeposit || isWithdrawal;
-
   const defaultGasLimit = getDefaultGasLimit(type);
 
   const {
@@ -427,9 +423,10 @@ export default function ExchangeModal({
     type,
   ]);
 
-  const showConfirmButton = isSavings
-    ? !!inputCurrency
-    : !!inputCurrency && !!outputCurrency;
+  const showConfirmButton =
+    type === ExchangeModalTypes.swap
+      ? !!inputCurrency && !!outputCurrency
+      : !!inputCurrency;
 
   return (
     <Wrapper>
@@ -444,7 +441,9 @@ export default function ExchangeModal({
             {showOutputField && <ExchangeNotch />}
             <ExchangeHeader testID={testID} title={title} />
             <ExchangeInputField
-              disableInputCurrencySelection={isWithdrawal}
+              disableInputCurrencySelection={
+                type === ExchangeModalTypes.withdrawCompound
+              }
               inputAmount={inputAmountDisplay}
               inputCurrencyAddress={inputCurrency?.address}
               inputCurrencySymbol={inputCurrency?.symbol}
@@ -472,7 +471,7 @@ export default function ExchangeModal({
               />
             )}
           </FloatingPanel>
-          {isDeposit && (
+          {type === ExchangeModalTypes.depositCompound && (
             <DepositInfo
               amount={(inputAmount > 0 && outputAmount) || null}
               asset={outputCurrency}
@@ -484,7 +483,7 @@ export default function ExchangeModal({
               testID="deposit-info-button"
             />
           )}
-          {!isSavings && showConfirmButton && (
+          {type === ExchangeModalTypes.swap && showConfirmButton && (
             <ExchangeDetailsRow
               isHighPriceImpact={isHighPriceImpact}
               onFlipCurrencies={flipCurrencies}
@@ -493,7 +492,6 @@ export default function ExchangeModal({
               priceImpactNativeAmount={priceImpactNativeAmount}
               priceImpactPercentDisplay={priceImpactPercentDisplay}
               showDetailsButton={!!tradeDetails}
-              type={type}
             />
           )}
           {showConfirmButton && (
