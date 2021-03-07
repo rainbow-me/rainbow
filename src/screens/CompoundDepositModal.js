@@ -12,10 +12,19 @@ const CompoundDepositModal = props => {
   android && useStatusBarManaging();
   const { params } = useRoute();
 
+  const type = ExchangeModalTypes.depositCompound;
+
+  const typeSpecificParams = {
+    [type]: {
+      depositCurrency: params?.defaultInputAsset,
+    },
+  };
+
   return (
     <ExchangeModal
       defaultInputAsset={params?.defaultInputAsset}
-      type={ExchangeModalTypes.depositCompound}
+      type={type}
+      typeSpecificParams={typeSpecificParams}
       {...props}
     />
   );
