@@ -84,7 +84,7 @@ export const RapActionTypes = {
 };
 
 const createRapByType = (
-  type: string,
+  type: ExchangeModalType,
   swapParameters: SwapActionParameters
 ) => {
   switch (type) {
@@ -100,7 +100,7 @@ const createRapByType = (
 };
 
 export const getRapEstimationByType = (
-  type: string,
+  type: ExchangeModalType,
   swapParameters: SwapActionParameters
 ) => {
   switch (type) {
@@ -174,7 +174,7 @@ const executeAction = async (
 
 export const executeRap = async (
   wallet: Wallet,
-  type: string,
+  type: ExchangeModalType,
   swapParameters: SwapActionParameters,
   callback: () => void
 ) => {

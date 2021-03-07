@@ -69,7 +69,10 @@ export default function useSwapCurrencyHandlers({
         defaultOutputItem,
       };
     }
-    if (type === ExchangeModalTypes.swap) {
+    if (
+      type === ExchangeModalTypes.swap ||
+      type === ExchangeModalTypes.depositUniswap
+    ) {
       return {
         defaultInputItemInWallet:
           defaultInputAsset ?? ethereumUtils.getAsset(allAssets),

@@ -45,7 +45,6 @@ export default function ExchangeDetailsRow({
   priceImpactNativeAmount,
   priceImpactPercentDisplay,
   showDetailsButton,
-  type,
   ...props
 }) {
   const detailsRowOpacity = useSharedValue(1);
@@ -71,7 +70,6 @@ export default function ExchangeDetailsRow({
         priceImpact: priceImpactPercentDisplay,
         symbol: outputCurrency.symbol,
         tokenAddress: outputCurrency.address,
-        type,
       });
     }
   }, [
@@ -79,7 +77,6 @@ export default function ExchangeDetailsRow({
     outputCurrency,
     prevIsHighPriceImpact,
     priceImpactPercentDisplay,
-    type,
   ]);
 
   useEffect(() => {
