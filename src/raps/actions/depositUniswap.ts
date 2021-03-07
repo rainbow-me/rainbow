@@ -21,9 +21,38 @@ import logger from 'logger';
 
 const actionName = '[deposit uniswap]';
 
-// TODO JIN - fix this
-export const estimateDepositUniswap = (inputAmount: string | null) => {
-  return ethUnits.basic_deposit_uniswap;
+// TODO JIN - code reuse between this and execute
+export const estimateDepositUniswap = async (inputAmount: string) => {
+  try {
+    const { inputCurrency, typeSpecificParameters } = store.getState().swap;
+    const {
+      [ExchangeModalType.depositUniswap]: depositParams,
+    } = typeSpecificParameters as TypeSpecificParameters;
+    const { uniswapPair } = depositParams as DepositUniswapParameters;
+    const { chainId, network } = store.getState().settings;
+
+    const rawInputAmount = convertAmountToRawAmount(
+      inputAmount,
+      inputCurrency.decimals
+    );
+    const transactionParams = {
+      gasLimit: undefined,
+      gasPrice: undefined,
+      nonce: undefined,
+    };
+    const gasLimit = await depositToPool(
+      inputCurrency,
+      uniswapPair,
+      chainId,
+      rawInputAmount,
+      network,
+      transactionParams,
+      true
+    );
+    return gasLimit ?? ethUnits.basic_deposit_uniswap;
+  } catch (error) {
+    return ethUnits.basic_deposit_uniswap;
+  }
 };
 
 const depositUniswap = async (
@@ -58,8 +87,10 @@ const depositUniswap = async (
   }
   logger.log(`${actionName} gas price`, gasPrice);
 
+  const gasLimit = await estimateDepositUniswap(inputAmount);
+
   const transactionParams = {
-    gasLimit: estimateDepositUniswap(),
+    gasLimit,
     gasPrice: toHex(gasPrice),
     nonce: baseNonce ? toHex(baseNonce + index) : undefined,
   };

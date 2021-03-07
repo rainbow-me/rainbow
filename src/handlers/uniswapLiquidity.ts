@@ -115,7 +115,7 @@ const executeDepositZap = (
         swapDataBytes,
         _transactionParams
       )
-    : zapInContract.callStatic.ZapIn(
+    : zapInContract.ZapIn(
         fromAddress,
         pairAddress,
         sellTokenAmount,
