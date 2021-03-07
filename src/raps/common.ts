@@ -17,7 +17,7 @@ import {
 } from './swapAndDepositCompound';
 import {
   createDepositUniswapRap,
-  estimateDepositUniswap,
+  estimateUnlockAndDepositUniswap,
 } from './unlockAndDepositUniswap';
 import { createUnlockAndSwapRap, estimateUnlockAndSwap } from './unlockAndSwap';
 import {
@@ -117,7 +117,7 @@ export const getRapEstimationByType = (
     case ExchangeModalType.depositCompound:
       return estimateSwapAndDepositCompound(swapParameters);
     case ExchangeModalType.depositUniswap:
-      return estimateDepositUniswap(swapParameters);
+      return estimateUnlockAndDepositUniswap(swapParameters);
     case ExchangeModalType.swap:
       return estimateUnlockAndSwap(swapParameters);
     case ExchangeModalType.withdrawCompound:

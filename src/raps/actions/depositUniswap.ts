@@ -22,7 +22,9 @@ import logger from 'logger';
 const actionName = '[deposit uniswap]';
 
 // TODO JIN - fix this
-export const getDepositUniswapGasLimit = () => ethUnits.basic_deposit_uniswap;
+export const estimateDepositUniswap = (inputAmount: string | null) => {
+  return ethUnits.basic_deposit_uniswap;
+};
 
 const depositUniswap = async (
   wallet: Wallet,
@@ -57,7 +59,7 @@ const depositUniswap = async (
   logger.log(`${actionName} gas price`, gasPrice);
 
   const transactionParams = {
-    gasLimit: getDepositUniswapGasLimit(),
+    gasLimit: estimateDepositUniswap(),
     gasPrice: toHex(gasPrice),
     nonce: baseNonce ? toHex(baseNonce + index) : undefined,
   };
