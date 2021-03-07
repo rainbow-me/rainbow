@@ -1,6 +1,9 @@
-import { ChainId } from '@uniswap/sdk';
 import { concat, reduce } from 'lodash';
-import { assetNeedsUnlocking, estimateApprove } from './actions';
+import {
+  assetNeedsUnlocking,
+  estimateApprove,
+  estimateDepositUniswap,
+} from './actions';
 import {
   createNewAction,
   createNewRap,
@@ -12,7 +15,7 @@ import store from '@rainbow-me/redux/store';
 import { ethUnits, ZapInAddress } from '@rainbow-me/references';
 import { add } from '@rainbow-me/utilities';
 
-export const estimateDepositUniswap = async (
+export const estimateUnlockAndDepositUniswap = async (
   swapParameters: SwapActionParameters
 ) => {
   const { inputAmount } = swapParameters;
@@ -22,10 +25,8 @@ export const estimateDepositUniswap = async (
 
   const {
     accountAddress,
-    chainId,
   }: {
     accountAddress: string;
-    chainId: ChainId;
   } = store.getState().settings;
 
   let gasLimits: (string | number)[] = [];
@@ -47,12 +48,7 @@ export const estimateDepositUniswap = async (
       ethUnits.basic_deposit_uniswap
     );
   } else {
-    // TODO JIN - not this
-    const { gasLimit: depositGasLimit } = await estimateDepositGasLimit({
-      accountAddress,
-      chainId,
-      inputCurrency,
-    });
+    const depositGasLimit = await estimateDepositUniswap(inputAmount);
     gasLimits = concat(gasLimits, depositGasLimit);
   }
 
