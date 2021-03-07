@@ -16,7 +16,7 @@ export const estimateDepositUniswap = async (
   swapParameters: SwapActionParameters
 ) => {
   const { inputAmount } = swapParameters;
-  const { inputCurrency, outputCurrency } = store.getState().swap;
+  const { inputCurrency } = store.getState().swap;
 
   if (!inputCurrency || !inputAmount) return ethUnits.basic_deposit_uniswap;
 
@@ -41,14 +41,17 @@ export const estimateDepositUniswap = async (
       inputCurrency.address,
       ZapInAddress
     );
-    gasLimits = concat(gasLimits, unlockGasLimit, ethUnits.basic_swap);
+    gasLimits = concat(
+      gasLimits,
+      unlockGasLimit,
+      ethUnits.basic_deposit_uniswap
+    );
   } else {
     // TODO JIN - not this
     const { gasLimit: depositGasLimit } = await estimateDepositGasLimit({
       accountAddress,
       chainId,
       inputCurrency,
-      outputCurrency,
     });
     gasLimits = concat(gasLimits, depositGasLimit);
   }
