@@ -21,17 +21,21 @@ export interface WithdrawCompoundParameters {
   supplyBalanceUnderlying: string;
 }
 
+export interface DepositCompoundParameters {
+  depositCurrency: UniswapCurrency;
+}
+
 export interface DepositUniswapParameters {
   uniswapPair: Pair;
 }
 
 export interface TypeSpecificParameters {
+  [ExchangeModalType.depositCompound]?: DepositCompoundParameters;
   [ExchangeModalType.depositUniswap]?: DepositUniswapParameters;
   [ExchangeModalType.withdrawCompound]?: WithdrawCompoundParameters;
 }
 
 interface SwapState {
-  depositCurrency: UniswapCurrency | null;
   inputCurrency: UniswapCurrency | null;
   independentField: SwapModalField;
   independentValue: string | null;
@@ -42,7 +46,6 @@ interface SwapState {
 }
 
 // -- Constants --------------------------------------- //
-const SWAP_UPDATE_DEPOSIT_CURRENCY = 'swap/SWAP_UPDATE_DEPOSIT_CURRENCY';
 const SWAP_UPDATE_SLIPPAGE = 'swap/SWAP_UPDATE_SLIPPAGE';
 const SWAP_UPDATE_INPUT_AMOUNT = 'swap/SWAP_UPDATE_INPUT_AMOUNT';
 const SWAP_UPDATE_NATIVE_AMOUNT = 'swap/SWAP_UPDATE_NATIVE_AMOUNT';
@@ -103,20 +106,14 @@ export const updateSwapOutputAmount = (value: string | null) => (
   });
 };
 
-export const updateSwapDepositCurrency = (
-  newDepositCurrency: UniswapCurrency | null
-) => (dispatch: AppDispatch) => {
-  dispatch({ payload: newDepositCurrency, type: SWAP_UPDATE_DEPOSIT_CURRENCY });
-};
-
 export const updateSwapInputCurrency = (
   newInputCurrency: UniswapCurrency | null
 ) => (dispatch: AppDispatch, getState: AppGetState) => {
   const {
-    depositCurrency,
     independentField,
     outputCurrency,
     type,
+    typeSpecificParameters,
   } = getState().swap;
   if (
     type === ExchangeModalType.swap &&
@@ -134,6 +131,9 @@ export const updateSwapInputCurrency = (
   }
 
   if (type === ExchangeModalType.depositCompound) {
+    const depositCurrency =
+      typeSpecificParameters?.[ExchangeModalType.depositCompound]
+        ?.depositCurrency;
     if (newInputCurrency?.address === depositCurrency?.address) {
       dispatch(updateSwapOutputCurrency(null));
     } else {
@@ -201,7 +201,6 @@ export const swapClearState = () => (dispatch: AppDispatch) => {
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE: SwapState = {
-  depositCurrency: null,
   independentField: SwapModalField.input,
   independentValue: null,
   inputCurrency: null,
@@ -241,11 +240,6 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
         ...state,
         independentField: SwapModalField.output,
         independentValue: action.payload,
-      };
-    case SWAP_UPDATE_DEPOSIT_CURRENCY:
-      return {
-        ...state,
-        depositCurrency: action.payload,
       };
     case SWAP_UPDATE_OUTPUT_CURRENCY:
       return {

@@ -20,7 +20,6 @@ import {
   SwapDetailsMastheadHeight,
   SwapDetailsSlippageMessage,
 } from './swap-details';
-import { ExchangeModalTypes } from '@rainbow-me/entities';
 import {
   useBooleanState,
   useDimensions,
@@ -222,7 +221,7 @@ export default function SwapDetailsState({
               onCustomGasFocus={showKeyboard}
               testID="swap-details-gas"
               theme="light"
-              type={ExchangeModalTypes.swap}
+              type={confirmButtonProps.type}
             />
           </Column>
         </Footer>

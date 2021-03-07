@@ -18,7 +18,6 @@ import {
 } from '@rainbow-me/redux/multicall';
 import {
   flipSwapCurrencies,
-  updateSwapDepositCurrency,
   updateSwapInputCurrency,
   updateSwapOutputCurrency,
 } from '@rainbow-me/redux/swap';
@@ -63,7 +62,6 @@ export default function useSwapCurrencyHandlers({
         defaultInputItemInWallet = ethereumUtils.getAsset(allAssets);
         defaultOutputItem = defaultInputAsset;
       }
-      dispatch(updateSwapDepositCurrency(defaultInputAsset));
       return {
         defaultInputItemInWallet,
         defaultOutputItem,
