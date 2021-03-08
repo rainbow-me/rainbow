@@ -104,7 +104,7 @@ const executeDepositZap = (
   const rawSwapData = `${offset}${dataLength}${rawSwapPayload}`;
   const remainingPaddingLength = 64 - (rawSwapData.length % 64);
   const remainingPadding =
-    remainingPaddingLength === 64
+    remainingPaddingLength !== 64
       ? join(fill(Array(remainingPaddingLength), '0'), '')
       : '';
   const swapData = `${rawSwapData}${remainingPadding}`;
