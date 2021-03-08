@@ -32,7 +32,7 @@ const getDepositUniswap = (
     [ExchangeModalType.depositUniswap]: depositParams,
   } = typeSpecificParameters as TypeSpecificParameters;
   const { uniswapPair } = depositParams as DepositUniswapParameters;
-  const { chainId, network } = store.getState().settings;
+  const { network } = store.getState().settings;
 
   const rawInputAmount = convertAmountToRawAmount(
     inputAmount,
@@ -41,7 +41,6 @@ const getDepositUniswap = (
   return depositToPool(
     inputCurrency.address,
     uniswapPair,
-    chainId,
     rawInputAmount,
     network,
     transactionParams,
