@@ -11,6 +11,7 @@ export type {
   RainbowToken,
   UniswapCurrency,
   ZerionAsset,
+  UniswapPair,
 } from './tokens';
 export type {
   NewTransaction,

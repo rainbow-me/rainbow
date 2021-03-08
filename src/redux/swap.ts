@@ -1,7 +1,10 @@
-import { Pair } from '@uniswap/sdk';
 import { AnyAction } from 'redux';
 import { fetchAssetPrices } from './explorer';
-import { ExchangeModalType, UniswapCurrency } from '@rainbow-me/entities';
+import {
+  ExchangeModalType,
+  UniswapCurrency,
+  UniswapPair,
+} from '@rainbow-me/entities';
 import { AppDispatch, AppGetState } from '@rainbow-me/redux/store';
 import { convertAmountFromNativeValue } from '@rainbow-me/utilities';
 
@@ -26,7 +29,7 @@ export interface DepositCompoundParameters {
 }
 
 export interface DepositUniswapParameters {
-  uniswapPair: Pair;
+  uniswapPair: UniswapPair;
 }
 
 export interface TypeSpecificParameters {
