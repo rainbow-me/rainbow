@@ -3,6 +3,7 @@ import BottomSheet, {
   BottomSheetBackdropProps,
 } from '@gorhom/bottom-sheet';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import type { ViewStyle } from 'react-native';
 import { View } from 'react-native';
 import {
   CONTAINER_HEIGHT,
@@ -55,7 +56,7 @@ const BottomSheetRoute = ({
   //#endregion
 
   //#region styles
-  const screenContainerStyle = useMemo(
+  const screenContainerStyle: ViewStyle = useMemo(
     () => ({
       bottom: 0,
       height,
@@ -64,6 +65,7 @@ const BottomSheetRoute = ({
     }),
     [height]
   );
+
   const backdropStyle = useMemo(
     () => ({
       backgroundColor: backdropColor,
