@@ -61,7 +61,6 @@ export const estimateSwapAndDepositCompound = async (
       tradeDetails,
     });
     gasLimits = concat(gasLimits, swapGasLimit);
-    logger.log('[swap and deposit] making swap func');
   }
   const tokenToDeposit: Asset = requiresSwap ? outputCurrency : inputCurrency;
   const cTokenContract =

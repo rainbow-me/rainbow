@@ -6,6 +6,12 @@
             "name": "Basic Attention Token",
             "symbol": "BAT"
         },
+        "0x70e36f6bf80a52b3b46b3af8e106cc0ed743e8e4": {
+            "address": "0xc00e94cb662c3520282e6f5717214004a7f26888",
+            "decimals": 18,
+            "name": "Compound",
+            "symbol": "COMP"
+        },
         "0x5d3a536e4d6dbd6114cc1ead35777bab948e3643": {
             "address": "0x6b175474e89094c44da98b954eedeac495271d0f",
             "decimals": 18,
@@ -29,6 +35,12 @@
             "decimals": 18,
             "name": "Sai",
             "symbol": "SAI"
+        },
+        "0xf650c3d88d12db855b8bf7d11be6c55a4e07dcc9": {
+            "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+            "decimals": 6,
+            "name": "Tether USD",
+            "symbol": "USDT"
         },
         "0x39aa39c021dfbae8fac545936693ac917d5e7563": {
             "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
