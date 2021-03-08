@@ -24,7 +24,8 @@ const actionName = '[deposit uniswap]';
 const getDepositUniswap = (
   inputAmount: string,
   transactionParams: TransactionParams,
-  estimateGas = false
+  estimateGas = false,
+  wallet: Wallet | null = null
 ) => {
   const { inputCurrency, typeSpecificParameters } = store.getState().swap;
   const {
@@ -38,13 +39,14 @@ const getDepositUniswap = (
     inputCurrency.decimals
   );
   return depositToPool(
-    inputCurrency,
+    inputCurrency.address,
     uniswapPair,
     chainId,
     rawInputAmount,
     network,
     transactionParams,
-    estimateGas
+    estimateGas,
+    wallet
   );
 };
 
@@ -99,7 +101,12 @@ const depositUniswap = async (
   let deposit = null;
   try {
     logger.sentry(`${actionName} txn params`, transactionParams);
-    deposit = await getDepositUniswap(inputAmount, transactionParams);
+    deposit = await getDepositUniswap(
+      inputAmount,
+      transactionParams,
+      false,
+      wallet
+    );
     logger.sentry(`${actionName} response`, deposit);
   } catch (e) {
     logger.sentry(`${actionName} error executing deposit to Uniswap LP`);
