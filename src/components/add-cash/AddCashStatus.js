@@ -12,7 +12,6 @@ import {
   ADD_CASH_STATUS_TYPES,
   WYRE_ORDER_STATUS_TYPES,
 } from '../../helpers/wyreStatusTypes';
-import { useDimensions, usePrevious, useTimeout } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
 import { getErrorOverride } from '../../references/wyre';
 import { CoinIcon } from '../coin-icon';
@@ -21,6 +20,7 @@ import { Centered } from '../layout';
 import { Br, Emoji, Text } from '../text';
 import NeedHelpButton from './NeedHelpButton';
 import SupportButton from './SupportButton';
+import { useDimensions, usePrevious, useTimeout } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
 

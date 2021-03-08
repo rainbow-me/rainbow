@@ -3,11 +3,11 @@ import Animated, { SpringUtils } from 'react-native-reanimated';
 import { useSpringTransition } from 'react-native-redash';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
-import { useTimeout } from '../../hooks';
 import { magicMemo } from '../../utils';
 import { interpolate } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
+import { useTimeout } from '@rainbow-me/hooks';
 import { borders, position } from '@rainbow-me/styles';
 
 const Container = styled(Animated.View)`

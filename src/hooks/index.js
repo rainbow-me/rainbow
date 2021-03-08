@@ -3,6 +3,7 @@ export {
   useChartDataLabels,
   useChartThrottledPoints,
 } from './charts';
+export { default as useAudio } from './useAudio';
 export { default as useAccountAssets } from './useAccountAssets';
 export { default as useFrameDelayedValue } from './useFrameDelayedValue';
 export { default as useAccountEmptyState } from './useAccountEmptyState';
@@ -44,6 +45,7 @@ export { default as useLongPressEvents } from './useLongPressEvents';
 export { default as useMagicAutofocus } from './useMagicAutofocus';
 export { default as useMaxInputBalance } from './useMaxInputBalance';
 export { default as useMulticall } from './useMulticall';
+export { default as useUniqueToken } from './useUniqueToken';
 export { default as useOpenInvestmentCards } from './useOpenInvestmentCards';
 export { default as useOpenSavings } from './useOpenSavings';
 export { default as useOpenSmallBalances } from './useOpenSmallBalances';

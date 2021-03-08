@@ -8,11 +8,11 @@ import ColorCircle from '../components/avatar-builder/ColorCircle';
 import EmojiSelector from '../components/avatar-builder/EmojiSelector';
 import { HeaderHeightWithStatusBar } from '../components/header';
 import { Column, Row } from '../components/layout';
-import { useWallets } from '../hooks';
-import useAccountSettings from '../hooks/useAccountSettings';
 import { useNavigation } from '../navigation/Navigation';
 import { walletsSetSelected, walletsUpdate } from '../redux/wallets';
 import { deviceUtils } from '../utils';
+import { useWallets } from '@rainbow-me/hooks';
+import useAccountSettings from '@rainbow-me/hooks/useAccountSettings';
 
 const AvatarCircleHeight = 65;
 const AvatarCircleMarginTop = 2;

@@ -1,13 +1,13 @@
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { useTheme } from '../../context/ThemeContext';
-import { useDimensions } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered, ColumnWithMargins, Row, RowWithMargins } from '../layout';
 import { Emoji, Text } from '../text';
 import ApplePayButton from './ApplePayButton';
+import { useDimensions } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
 

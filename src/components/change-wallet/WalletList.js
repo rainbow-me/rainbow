@@ -11,13 +11,13 @@ import { Transition, Transitioning } from 'react-native-reanimated';
 import styled from 'styled-components';
 import networkTypes from '../../helpers/networkTypes';
 import WalletTypes from '../../helpers/walletTypes';
-import { useAccountSettings } from '../../hooks';
 import { address } from '../../utils/abbreviations';
 import Divider from '../Divider';
 import { EmptyAssetList } from '../asset-list';
 import { Column } from '../layout';
 import AddressRow from './AddressRow';
 import WalletOption from './WalletOption';
+import { useAccountSettings } from '@rainbow-me/hooks';
 import { position } from '@rainbow-me/styles';
 
 const listTopPadding = 7.5;

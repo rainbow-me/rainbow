@@ -5,7 +5,6 @@ import { View } from 'react-primitives';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
-import { useCoinListEditedValue } from '../../hooks/useCoinListEdited';
 import { ButtonPressAnimation } from '../animations';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
 import { Column, FlexItem, Row } from '../layout';
@@ -16,6 +15,7 @@ import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import { buildAssetUniqueIdentifier } from '@rainbow-me/helpers/assets';
 import { useCoinListEdited } from '@rainbow-me/hooks';
+import { useCoinListEditedValue } from '@rainbow-me/hooks/useCoinListEdited';
 import {
   pushSelectedCoin,
   removeSelectedCoin,

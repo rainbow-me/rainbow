@@ -1,9 +1,9 @@
 import React, { useCallback, useMemo } from 'react';
 import { handleSignificantDecimals } from '../../helpers/utilities';
-import { useAccountSettings, useTopMovers } from '../../hooks';
 import { Column, ColumnWithMargins, Flex } from '../layout';
 import { MarqueeList } from '../list';
 import { Text } from '../text';
+import { useAccountSettings, useTopMovers } from '@rainbow-me/hooks';
 
 export default function TopMoversSection() {
   const { nativeCurrencySymbol } = useAccountSettings();

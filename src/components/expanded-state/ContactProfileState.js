@@ -2,7 +2,6 @@ import React, { useCallback, useRef, useState } from 'react';
 import { Keyboard } from 'react-native';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
-import { useAccountSettings, useContacts } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
 import { abbreviations, magicMemo } from '../../utils';
 import Divider from '../Divider';
@@ -13,6 +12,7 @@ import CopyTooltip from '../copy-tooltip';
 import { Centered } from '../layout';
 import { Text, TruncatedAddress } from '../text';
 import { ProfileAvatarButton, ProfileModal, ProfileNameInput } from './profile';
+import { useAccountSettings, useContacts } from '@rainbow-me/hooks';
 import { margin, padding } from '@rainbow-me/styles';
 
 const AddressAbbreviation = styled(TruncatedAddress).attrs(

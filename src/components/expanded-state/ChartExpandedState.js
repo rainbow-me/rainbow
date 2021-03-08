@@ -1,7 +1,6 @@
 import { find } from 'lodash';
 import React, { useRef } from 'react';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
-import { useChartThrottledPoints, useUniswapAssetsInWallet } from '../../hooks';
 import {
   BuyActionButton,
   SendActionButton,
@@ -19,6 +18,10 @@ import {
 import { Chart } from '../value-chart';
 import { ChartPathProvider } from '@rainbow-me/animated-charts';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
+import {
+  useChartThrottledPoints,
+  useUniswapAssetsInWallet,
+} from '@rainbow-me/hooks';
 
 const baseHeight = 309 + (android && 20 - getSoftMenuBarHeight());
 const heightWithoutChart = baseHeight + (android && 30);

@@ -12,9 +12,9 @@ import {
   saveAuthTimelock,
   savePinAuthAttemptsLeft,
 } from '../handlers/localstorage/globalSettings';
-import { useDimensions, useShakeAnimation } from '../hooks';
-import { useBlockBackButton } from '../hooks/useBlockBackButton';
 import { useNavigation } from '../navigation/Navigation';
+import { useDimensions, useShakeAnimation } from '@rainbow-me/hooks';
+import { useBlockBackButton } from '@rainbow-me/hooks/useBlockBackButton';
 import { ImgixImage } from '@rainbow-me/images';
 import { padding } from '@rainbow-me/styles';
 

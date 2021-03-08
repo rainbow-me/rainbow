@@ -2,13 +2,13 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import React from 'react';
 import { FlexItem } from '../components/layout';
 import { TestnetToast } from '../components/toasts';
-import { useAccountSettings, useCoinListEdited } from '../hooks';
 import ProfileScreen from '../screens/ProfileScreen';
 import QRScannerScreen from '../screens/QRScannerScreen';
 import WalletScreen from '../screens/WalletScreen';
 import { deviceUtils } from '../utils';
 import ScrollPagerWrapper, { scrollPosition } from './ScrollPagerWrapper';
 import Routes from './routesNames';
+import { useAccountSettings, useCoinListEdited } from '@rainbow-me/hooks';
 
 const Swipe = createMaterialTopTabNavigator();
 
