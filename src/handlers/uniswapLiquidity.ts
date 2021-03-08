@@ -19,9 +19,15 @@ import {
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
-const determineBuyToken = (pair: UniswapPair): string => {
+const determineBuyToken = (
+  fromTokenAddress: string,
+  pair: UniswapPair
+): string => {
   const tokenA = pair.tokens[0];
   const tokenB = pair.tokens[1];
+  const isFromETH = fromTokenAddress === ETH_ADDRESS;
+  if (!isFromETH && fromTokenAddress === tokenA.address) return tokenA.address;
+  if (!isFromETH && fromTokenAddress === tokenB.address) return tokenB.address;
   if (tokenA.address === ETH_ADDRESS || tokenB.address === ETH_ADDRESS)
     return WETH_ADDRESS;
   return tokenB.address;
@@ -36,7 +42,7 @@ export const depositToPool = async (
   estimateGas = false,
   wallet: Wallet | null = null
 ) => {
-  const buyToken = determineBuyToken(pair);
+  const buyToken = determineBuyToken(fromTokenAddress, pair);
 
   const firstSwapDetails = await getQuote(
     network,
