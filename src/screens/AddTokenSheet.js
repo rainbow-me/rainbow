@@ -43,24 +43,33 @@ const RemoveButton = styled(ButtonPressAnimation)`
   padding-right: 10;
   padding-top: 5;
   margin-left: 8;
-  top: -2;
+  top: ${android ? 0 : 2};
+`;
+
+const RemoveButtonContent = styled(Text).attrs(({ theme: { colors } }) => ({
+  color: colors.red,
+  letterSpacing: 'roundedTight',
+  size: 'lmedium',
+  weight: 'bold',
+}))`
+  ${android && 'margin-top: -5px'}
 `;
 
 const ListButton = styled(ButtonPressAnimation)`
-  padding-bottom: ${({ alreadyAdded }) => (alreadyAdded ? 9 : 15)};
+  padding-bottom: 15;
   padding-top: 15;
 `;
 
 const ListEmoji = styled(Emoji).attrs({
   size: 'large',
 })`
-  margin-top: ${android ? -4 : 1};
+  margin-top: ${android ? 4 : 1};
   margin-right: 6;
 `;
 
 const WRITEABLE_LISTS = ['watchlist', 'favorites'];
 
-export const sheetHeight = android ? 470 - getSoftMenuBarHeight() : 394;
+export const sheetHeight = android ? 490 - getSoftMenuBarHeight() : 394;
 
 export default function AddTokenSheet() {
   const { goBack } = useNavigation();
@@ -146,39 +155,32 @@ export default function AddTokenSheet() {
                   haptics.notificationSuccess();
                 };
                 return (
-                  <ListButton
-                    alreadyAdded={alreadyAdded}
-                    key={`list-${list.id}`}
-                    onPress={alreadyAdded ? handleRemove : handleAdd}
-                  >
-                    <Row>
-                      <ListEmoji name={list.emoji} />
-                      <Text
-                        color={
-                          alreadyAdded
-                            ? colors.alpha(colors.blueGreyDark, 0.6)
-                            : colors.appleBlue
-                        }
-                        size="larger"
-                        weight="bold"
-                      >
-                        {list.name}
-                      </Text>
-                      {alreadyAdded && (
-                        <RemoveButton onPress={handleRemove}>
-                          <Text
-                            align="center"
-                            color={colors.red}
-                            letterSpacing="roundedTight"
-                            size="lmedium"
-                            weight="bold"
-                          >
-                            􀈔 Remove
-                          </Text>
-                        </RemoveButton>
-                      )}
-                    </Row>
-                  </ListButton>
+                  <Row align="center" key={`list-${list.id}`}>
+                    <ListButton
+                      alreadyAdded={alreadyAdded}
+                      onPress={alreadyAdded ? handleRemove : handleAdd}
+                    >
+                      <Row>
+                        <ListEmoji name={list.emoji} />
+                        <Text
+                          color={
+                            alreadyAdded
+                              ? colors.alpha(colors.blueGreyDark, 0.6)
+                              : colors.appleBlue
+                          }
+                          size="larger"
+                          weight="bold"
+                        >
+                          {list.name}
+                        </Text>
+                      </Row>
+                    </ListButton>
+                    {alreadyAdded && (
+                      <RemoveButton onPress={handleRemove}>
+                        <RemoveButtonContent>􀈔 Remove</RemoveButtonContent>
+                      </RemoveButton>
+                    )}
+                  </Row>
                 );
               })}
           </Column>
