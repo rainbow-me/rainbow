@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Added
 * Swap Details Sheet
+* Flip button
 
 ### Changed
 * Fix Testnets
