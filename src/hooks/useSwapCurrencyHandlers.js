@@ -22,6 +22,7 @@ import {
   updateSwapOutputCurrency,
 } from '@rainbow-me/redux/swap';
 import Routes from '@rainbow-me/routes';
+import { greaterThan } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 const { currentlyFocusedInput, focusTextInput } = TextInput.State;
@@ -33,6 +34,7 @@ export default function useSwapCurrencyHandlers({
   outputFieldRef,
   title,
   type,
+  typeSpecificParams,
 }) {
   const dispatch = useDispatch();
   const { allAssets } = useAccountAssets();
@@ -67,10 +69,38 @@ export default function useSwapCurrencyHandlers({
         defaultOutputItem,
       };
     }
-    if (
-      type === ExchangeModalTypes.swap ||
-      type === ExchangeModalTypes.depositUniswap
-    ) {
+    if (type === ExchangeModalTypes.depositUniswap) {
+      const uniswapPair =
+        typeSpecificParams[ExchangeModalTypes.depositUniswap].uniswapPair;
+      let defaultInputItemInWallet = ethereumUtils.getAsset(allAssets);
+
+      let tokenA = ethereumUtils.getAsset(
+        allAssets,
+        uniswapPair.tokens[0].address
+      );
+      let tokenB = ethereumUtils.getAsset(
+        allAssets,
+        uniswapPair.tokens[1].address
+      );
+      if (tokenA && tokenB) {
+        defaultInputItemInWallet = greaterThan(
+          tokenA.balance.amount,
+          tokenB.balance.amount
+        )
+          ? tokenA
+          : tokenB;
+      } else if (tokenA) {
+        defaultInputItemInWallet = tokenA;
+      } else if (tokenB) {
+        defaultInputItemInWallet = tokenB;
+      }
+
+      return {
+        defaultInputItemInWallet,
+        defaultOutputItem: defaultOutputAsset ?? null,
+      };
+    }
+    if (type === ExchangeModalTypes.swap) {
       return {
         defaultInputItemInWallet:
           defaultInputAsset ?? ethereumUtils.getAsset(allAssets),

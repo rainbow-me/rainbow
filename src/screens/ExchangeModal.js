@@ -180,6 +180,7 @@ export default function ExchangeModal({
     outputFieldRef,
     title,
     type,
+    typeSpecificParams,
   });
 
   const {
