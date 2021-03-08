@@ -282,7 +282,7 @@
   "resolutions": {
     "**/node-fetch": "2.6.1",
     "**/bl": "2.2.1",
-    "**/elliptic": "6.5.3",
+    "**/elliptic": "6.5.4",
     "**/logkitty": "0.7.1",
     "**/minimist": "1.2.3",
     "**/resolve": "1.8.1",
