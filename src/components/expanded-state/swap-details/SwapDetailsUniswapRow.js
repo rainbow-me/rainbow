@@ -1,15 +1,10 @@
 import { constant, times } from 'lodash';
 import React, { useCallback, useEffect, useMemo } from 'react';
-import Animated from 'react-native-reanimated';
 import { mixColor, useTimingTransition } from 'react-native-redash';
 import { useMemoOne } from 'use-memo-one';
 import { FloatingEmojisTapper } from '../../floating-emojis';
 import SwapDetailsRow, { SwapDetailsValue } from './SwapDetailsRow';
 import { useBooleanState, usePrevious, useStepper } from '@rainbow-me/hooks';
-
-const AnimatedSwapDetailsValue = Animated.createAnimatedComponent(
-  SwapDetailsValue
-);
 
 const animationColorsFactory = colors => [
   colors.alpha(colors.blueGreyDark, 0.8),
@@ -67,9 +62,7 @@ export default function SwapDetailsUniswapRow(props) {
       {...props}
     >
       <SwapDetailsRow label="Swapping via">
-        <AnimatedSwapDetailsValue color={color}>
-          {label}
-        </AnimatedSwapDetailsValue>
+        <SwapDetailsValue color={color}>{label}</SwapDetailsValue>
       </SwapDetailsRow>
     </FloatingEmojisTapper>
   );

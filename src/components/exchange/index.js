@@ -1,4 +1,3 @@
-export { default as AnimatedExchangeFloatingPanels } from './AnimatedExchangeFloatingPanels';
 export { default as ConfirmExchangeButton } from './ConfirmExchangeButton';
 export { default as CurrencySelectionList } from './CurrencySelectionList';
 export { default as CurrencySelectModalHeader } from './CurrencySelectModalHeader';

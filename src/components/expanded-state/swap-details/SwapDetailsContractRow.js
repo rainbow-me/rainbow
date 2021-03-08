@@ -13,10 +13,6 @@ import {
   showActionSheetWithOptions,
 } from '@rainbow-me/utils';
 
-const AnimatedTruncatedAddress = Animated.createAnimatedComponent(
-  TruncatedAddress
-);
-
 const ContractActionsEnum = {
   copyAddress: 'copyAddress',
   etherscan: 'etherscan',
@@ -75,9 +71,8 @@ function SwapDetailsContractRowContent({
     <Animated.View style={{ transform: [{ scale }] }}>
       <ButtonPressAnimation scaleTo={scaleTo} {...props}>
         <SwapDetailsRow label={`${asset?.symbol} contract`}>
-          <SwapDetailsValue
+          <TruncatedAddress
             address={asset?.address}
-            as={AnimatedTruncatedAddress}
             color={addressColor}
             firstSectionLength={6}
           />

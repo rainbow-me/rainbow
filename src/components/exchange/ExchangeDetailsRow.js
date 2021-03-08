@@ -1,6 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import React, { useEffect } from 'react';
-import Animated, {
+import {
   NewEasing,
   useAnimatedStyle,
   useSharedValue,
@@ -33,10 +33,6 @@ const ExchangeDetailsButtonRow = styled(Row).attrs({
   width: 100%;
 `;
 
-const AnimatedExchangeDetailsButtonRow = Animated.createAnimatedComponent(
-  ExchangeDetailsButtonRow
-);
-
 export default function ExchangeDetailsRow({
   inputAmount,
   isHighPriceImpact,
@@ -54,10 +50,6 @@ export default function ExchangeDetailsRow({
   const priceImpactOpacity = useSharedValue(0);
   const priceImpactScale = useSharedValue(defaultPriceImpactScale);
   const { outputCurrency } = useSwapCurrencies();
-
-  const detailsRowAnimatedStyle = useAnimatedStyle(() => ({
-    opacity: detailsRowOpacity.value,
-  }));
 
   const priceImpactAnimatedStyle = useAnimatedStyle(() => ({
     opacity: priceImpactOpacity.value,
@@ -117,9 +109,8 @@ export default function ExchangeDetailsRow({
         priceImpactPercentDisplay={priceImpactPercentDisplay}
         style={priceImpactAnimatedStyle}
       />
-      <AnimatedExchangeDetailsButtonRow
+      <ExchangeDetailsButtonRow
         pointerEvents={isPriceImpactWarningVisible ? 'none' : 'auto'}
-        style={detailsRowAnimatedStyle}
       >
         <ExchangeDetailsButton
           onPress={onFlipCurrencies}
@@ -134,7 +125,7 @@ export default function ExchangeDetailsRow({
         >
           􀕹 View Details
         </ExchangeDetailsButton>
-      </AnimatedExchangeDetailsButtonRow>
+      </ExchangeDetailsButtonRow>
     </Container>
   );
 }
