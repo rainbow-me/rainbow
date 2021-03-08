@@ -1,8 +1,9 @@
 import { arrayify } from '@ethersproject/bytes';
 import { Contract } from '@ethersproject/contracts';
+import { Wallet } from '@ethersproject/wallet';
 import { ChainId, Pair, Token, WETH } from '@uniswap/sdk';
 import { fill, join } from 'lodash';
-import { addHexPrefix, web3Provider } from './web3';
+import { addHexPrefix, toHex, web3Provider } from './web3';
 import { getQuote } from './zeroEx';
 import { TransactionParams, ZeroExPayload } from '@rainbow-me/entities';
 import {
@@ -32,7 +33,8 @@ export const depositToPool = async (
   fromAmount: string,
   network: string,
   transactionParams: TransactionParams,
-  estimateGas = false
+  estimateGas = false,
+  wallet: Wallet | null = null
 ) => {
   const tokenA = pair.token0;
   const tokenB = pair.token1;
@@ -50,18 +52,19 @@ export const depositToPool = async (
   const pairAddress = Pair.getAddress(tokenA, tokenB);
   const minPoolTokens = '1';
   try {
-    const result = executeDepositZap(
+    const result = await executeDepositZap(
       fromTokenAddress,
       fromAmount,
       pairAddress,
       firstSwapDetails,
       minPoolTokens,
       transactionParams,
-      estimateGas
+      estimateGas,
+      wallet
     );
-    return result;
+    return estimateGas && result ? result.toString() : result;
   } catch (error) {
-    logger.log('Error depositing ETH to zap', error);
+    logger.log('Error depositing to Uniswap liquidity', error);
     return null;
   }
 };
@@ -73,7 +76,8 @@ const executeDepositZap = (
   firstSwapDetails: ZeroExPayload,
   minPoolTokens: string,
   transactionParams: TransactionParams,
-  estimateGas = false
+  estimateGas = false,
+  wallet: Wallet | null
 ) => {
   const fromAddress =
     fromTokenAddress === ETH_ADDRESS ? ZERO_ADDRESS : fromTokenAddress;
@@ -81,7 +85,7 @@ const executeDepositZap = (
   const ethValue = fromTokenAddress === ETH_ADDRESS ? fromAmount : '0';
   const _transactionParams = {
     ...transactionParams,
-    value: ethValue,
+    value: toHex(ethValue),
   };
 
   const { swapTarget, allowanceTarget, swapPayload } = firstSwapDetails;
@@ -103,7 +107,12 @@ const executeDepositZap = (
   const swapData = `${rawSwapData}${remainingPadding}`;
   const swapDataBytes = arrayify(addHexPrefix(swapData));
 
-  const zapInContract = new Contract(ZapInAddress, ZAP_IN_ABI, web3Provider);
+  const providerOrSigner = !estimateGas && wallet ? wallet: web3Provider;
+  const zapInContract = new Contract(
+    ZapInAddress,
+    ZAP_IN_ABI,
+    providerOrSigner
+  );
   return estimateGas
     ? zapInContract.estimateGas.ZapIn(
         fromAddress,
