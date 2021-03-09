@@ -61,7 +61,7 @@ export default class RecyclerAssetList extends Component {
       items: [],
       itemsCount: 0,
       sectionsIndices: [],
-      showCoinListEditor: false,
+      //showCoinListEditor: false,
       stickyComponentsIndices: [],
     };
 
@@ -459,12 +459,12 @@ export default class RecyclerAssetList extends Component {
     const offsetHeight =
       CoinRowHeight * (this.coinDividerIndex - 1) + firstCoinRowMarginTop;
     if (this.props.isCoinListEdited && offsetY > offsetHeight) {
-      this.setState({ showCoinListEditor: true });
+      this.props.setShowCoinListEditor(true);
     } else if (
-      (offsetY < offsetHeight || !this.props.isCoinListEdited) &&
-      this.state.showCoinListEditor === true
+      !!this.state.showCoinListEditor &&
+      (offsetY < offsetHeight || !this.props.isCoinListEdited)
     ) {
-      this.setState({ showCoinListEditor: false });
+      this.props.setShowCoinListEditor(false);
     }
   }
 
@@ -619,14 +619,12 @@ export default class RecyclerAssetList extends Component {
   stickyRowRenderer = (_, data) => (
     <Fragment>
       <AssetListHeader {...data} isSticky />
-      {this.state.showCoinListEditor ? (
+      {this.props.showCoinListEditor ? (
         <CoinDivider
           balancesSum={0}
           isSticky
           nativeCurrency={this.props.nativeCurrency}
-          onEndEdit={() => {
-            this.setState({ showCoinListEditor: false });
-          }}
+          onEndEdit={() => this.props.setShowCoinListEditor(false)}
         />
       ) : null}
     </Fragment>

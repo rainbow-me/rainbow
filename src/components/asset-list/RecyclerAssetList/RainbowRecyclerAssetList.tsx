@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { withThemeContext } from '../../../context/ThemeContext';
 
@@ -9,7 +9,14 @@ export type RainbowRecyclerAssetListProps = {};
 function RainbowRecyclerAssetList({
   ...extras
 }: RainbowRecyclerAssetListProps): JSX.Element {
-  return <OldAssetRecyclerList {...extras} />;
+  const [showCoinListEditor, setShowCoinListEditor] = useState<boolean>();
+  return (
+    <OldAssetRecyclerList
+      {...extras}
+      setShowCoinListEditor={setShowCoinListEditor}
+      showCoinListEditor={showCoinListEditor}
+    />
+  );
 }
 
 export default connect(
