@@ -94,7 +94,7 @@ export default function ChartDateLabel({ chartTimeSharedValue }) {
           ? colors.red
           : colors.green,
     };
-  }, [colors]);
+  });
 
   return (
     <View style={{ overflow: 'hidden' }}>
