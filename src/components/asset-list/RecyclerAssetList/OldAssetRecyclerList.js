@@ -1,11 +1,7 @@
 import { findIndex, get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import {
-  DataProvider,
-  LayoutProvider,
-  RecyclerListView,
-} from 'recyclerlistview';
+import { DataProvider, RecyclerListView } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import { AssetListHeaderHeight } from '../AssetListHeader';
 import { ViewTypes } from '../RecyclerViewTypes';
@@ -51,195 +47,6 @@ export default class RecyclerAssetList extends Component {
     this.state = {
       dataProvider: new DataProvider(hasRowChanged, this.getStableId),
     };
-
-    this.layoutProvider = new LayoutProvider(
-      index => {
-        // Main list logic 👇
-        // Every component to render properly should return object
-        // containing at least height and index
-
-        // Height should be calculated via calculateHeight func from ViewTypes object
-
-        // Index is type index not some single row index so should describe one kind of object
-
-        const { openFamilyTabs, openInvestmentCards, sections } = this.props;
-
-        const balancesIndex = findIndex(
-          sections,
-          ({ name }) => name === 'balances'
-        );
-        const collectiblesIndex = findIndex(
-          sections,
-          ({ name }) => name === 'collectibles'
-        );
-        const poolsIndex = findIndex(sections, ({ name }) => name === 'pools');
-
-        const { sectionsIndices } = this.props;
-        if (sectionsIndices.includes(index)) {
-          if (index === sectionsIndices[poolsIndex]) {
-            return {
-              height: ViewTypes.POOLS.calculateHeight({
-                amountOfRows: sections[poolsIndex].data.length,
-                isLast: true,
-                isOpen: openInvestmentCards,
-              }),
-              index: ViewTypes.POOLS.index,
-              visibleDuringCoinEdit: ViewTypes.POOLS.visibleDuringCoinEdit,
-            };
-          }
-          return {
-            height: ViewTypes.HEADER.calculateHeight({
-              hideHeader: this.props.hideHeader,
-            }),
-            index: ViewTypes.HEADER.index,
-            visibleDuringCoinEdit: ViewTypes.HEADER.visibleDuringCoinEdit,
-          };
-        }
-
-        if (index === this.props.itemsCount - 1) {
-          return {
-            height: ViewTypes.FOOTER.calculateHeight({
-              paddingBottom: this.props.paddingBottom
-                ? this.props.paddingBottom
-                : 0,
-            }),
-            index: ViewTypes.FOOTER.index,
-          };
-        }
-
-        if (
-          balancesIndex > -1 &&
-          (index <= sectionsIndices[collectiblesIndex] ||
-            collectiblesIndex < 0) &&
-          (index <= sectionsIndices[poolsIndex] || poolsIndex < 0)
-        ) {
-          const balanceItemsCount = get(
-            sections,
-            `[${balancesIndex}].data.length`,
-            0
-          );
-          const lastBalanceIndex =
-            sectionsIndices[balancesIndex] + balanceItemsCount;
-          if (index === lastBalanceIndex - 2) {
-            if (RecyclerAssetListSharedState.coinDividerIndex !== index) {
-              RecyclerAssetListSharedState.coinDividerIndex = index;
-              if (this.props.isCoinListEdited) {
-                RecyclerAssetListSharedState.rlv &&
-                  this.props.checkEditStickyHeader(
-                    RecyclerAssetListSharedState.rlv.getCurrentScrollOffset()
-                  );
-              }
-            }
-            if (
-              sections[balancesIndex].data[lastBalanceIndex - 2]
-                .smallBalancesContainer
-            ) {
-              return {
-                height: ViewTypes.COIN_DIVIDER.calculateHeight(),
-                index: ViewTypes.COIN_DIVIDER.index,
-                visibleDuringCoinEdit:
-                  ViewTypes.COIN_DIVIDER.visibleDuringCoinEdit,
-              };
-            }
-          }
-          if (index === lastBalanceIndex - 1) {
-            if (
-              sections[balancesIndex].data[lastBalanceIndex - 2] &&
-              sections[balancesIndex].data[lastBalanceIndex - 2]
-                .smallBalancesContainer
-            ) {
-              const smallBalancesIndex = index - 1;
-              return {
-                height: ViewTypes.COIN_SMALL_BALANCES.calculateHeight({
-                  isCoinListEdited: this.props.isCoinListEdited,
-                  isOpen: this.props.openSmallBalances,
-                  smallBalancesLength:
-                    sections[balancesIndex].data[smallBalancesIndex].assets
-                      .length,
-                }),
-                index: ViewTypes.COIN_SMALL_BALANCES.index,
-                visibleDuringCoinEdit:
-                  ViewTypes.COIN_SMALL_BALANCES.visibleDuringCoinEdit,
-              };
-            }
-          }
-          if (index === lastBalanceIndex) {
-            if (
-              sections[balancesIndex].data[lastBalanceIndex - 1]
-                .savingsContainer
-            ) {
-              return {
-                height: ViewTypes.COIN_SAVINGS.calculateHeight({
-                  amountOfRows:
-                    sections[balancesIndex].data[index - 1].assets?.length || 0,
-                  isLast: poolsIndex < 0,
-                  isOpen: this.props.openSavings,
-                }),
-                index: ViewTypes.COIN_SAVINGS.index,
-              };
-            }
-            this.lastAssetIndex = index;
-          }
-          const firstBalanceIndex = sectionsIndices[balancesIndex] + 1;
-          const isFirst =
-            index === firstBalanceIndex &&
-            !sections[balancesIndex].data[firstBalanceIndex - 1]
-              .smallBalancesContainer;
-
-          return {
-            height: ViewTypes.COIN_ROW.calculateHeight({
-              areSmallCollectibles: this.props.areSmallCollectibles,
-              isFirst,
-              isLast: index === lastBalanceIndex,
-            }),
-            index: ViewTypes.COIN_ROW.index,
-            isFirst,
-            visibleDuringCoinEdit: ViewTypes.COIN_ROW.visibleDuringCoinEdit,
-          };
-        }
-
-        if (collectiblesIndex > -1) {
-          if (index > sectionsIndices[collectiblesIndex]) {
-            const familyIndex = this.props.items[index].familySectionIndex;
-            const isFirst = index === sectionsIndices[collectiblesIndex] + 1;
-            const isHeader =
-              sections[collectiblesIndex].data[familyIndex].isHeader;
-            return {
-              height: ViewTypes.UNIQUE_TOKEN_ROW.calculateHeight({
-                amountOfRows: get(
-                  sections,
-                  `[${collectiblesIndex}].data[${familyIndex}].tokens`,
-                  []
-                ).length,
-                isFirst,
-                isHeader,
-                isOpen:
-                  openFamilyTabs[
-                    sections[collectiblesIndex].data[familyIndex].familyName
-                  ],
-              }),
-              index: ViewTypes.UNIQUE_TOKEN_ROW.index,
-              isFirst,
-              isHeader,
-            };
-          }
-        }
-
-        return {
-          height: ViewTypes.UNKNOWN.calculateHeight(),
-          index: ViewTypes.UNKNOWN.index,
-        };
-      },
-      (type, dim) => {
-        // Set height of element using object created above 👇
-        dim.width = deviceUtils.dimensions.width;
-        if (this.props.isCoinListEdited && !type.visibleDuringCoinEdit) {
-          dim.height = 0;
-        } else {
-          dim.height = type.height;
-        }
-      }
-    );
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -444,12 +251,13 @@ export default class RecyclerAssetList extends Component {
       hideHeader,
       renderAheadOffset,
       isCoinListEdited,
+      layoutProvider,
       sectionsIndices,
       stickyComponentsIndices,
+      colors,
+      onScroll,
     } = this.props;
     const { dataProvider } = this.state;
-
-    const { colors, onScroll } = this.props;
 
     return (
       <>
@@ -462,7 +270,7 @@ export default class RecyclerAssetList extends Component {
             extendedState={{ sectionsIndices }}
             externalScrollView={externalScrollView}
             itemAnimator={animator}
-            layoutProvider={this.layoutProvider}
+            layoutProvider={layoutProvider}
             onScroll={onScroll}
             ref={this.handleListRef}
             renderAheadOffset={renderAheadOffset}

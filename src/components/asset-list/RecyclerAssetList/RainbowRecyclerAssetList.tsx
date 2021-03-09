@@ -1,4 +1,4 @@
-import { get, isNil } from 'lodash';
+import { findIndex, get, isNil } from 'lodash';
 import React, { useCallback, useMemo, useState } from 'react';
 import {
   LayoutChangeEvent,
@@ -7,7 +7,7 @@ import {
   View,
 } from 'react-native';
 import { connect } from 'react-redux';
-import { DataProvider } from 'recyclerlistview';
+import { DataProvider, LayoutProvider } from 'recyclerlistview';
 import styled from 'styled-components';
 import { withThemeContext } from '../../../context/ThemeContext';
 import { CoinDivider } from '../../coin-divider';
@@ -52,7 +52,8 @@ export type RainbowRecyclerAssetListProps = {
     readonly renderItem: (item: any) => JSX.Element | null;
     readonly type: string;
   }[];
-  readonly paddingBottom: number;
+  readonly paddingBottom?: number;
+  readonly hideHeader: boolean;
 };
 
 function RainbowRecyclerAssetList({
@@ -61,8 +62,12 @@ function RainbowRecyclerAssetList({
   colors,
   nativeCurrency,
   sections,
+  openInvestmentCards,
   openFamilyTabs,
-  paddingBottom,
+  openSavings,
+  openSmallBalances,
+  paddingBottom = 0,
+  hideHeader,
   ...extras
 }: RainbowRecyclerAssetListProps): JSX.Element {
   const [showCoinListEditor, setShowCoinListEditor] = useState<boolean>(false);
@@ -271,6 +276,205 @@ function RainbowRecyclerAssetList({
     paddingBottom,
   ]);
 
+  const layoutProvider = useMemo(() => {
+    return new LayoutProvider(
+      (index: number) => {
+        // Main list logic 👇
+        // Every component to render properly should return object
+        // containing at least height and index
+
+        // Height should be calculated via calculateHeight func from ViewTypes object
+
+        // Index is type index not some single row index so should describe one kind of object
+
+        const balancesIndex = findIndex(
+          sections,
+          ({ name }) => name === 'balances'
+        );
+        const collectiblesIndex = findIndex(
+          sections,
+          ({ name }) => name === 'collectibles'
+        );
+        const poolsIndex = findIndex(sections, ({ name }) => name === 'pools');
+
+        if (sectionsIndices.includes(index)) {
+          if (index === sectionsIndices[poolsIndex]) {
+            return {
+              height: ViewTypes.POOLS.calculateHeight({
+                amountOfRows: sections[poolsIndex].data.length,
+                isLast: true,
+                isOpen: openInvestmentCards,
+              }),
+              index: ViewTypes.POOLS.index,
+              visibleDuringCoinEdit: ViewTypes.POOLS.visibleDuringCoinEdit,
+            };
+          }
+          return {
+            height: ViewTypes.HEADER.calculateHeight({
+              hideHeader,
+            }),
+            index: ViewTypes.HEADER.index,
+            visibleDuringCoinEdit: ViewTypes.HEADER.visibleDuringCoinEdit,
+          };
+        }
+
+        if (index === itemsCount - 1) {
+          return {
+            height: ViewTypes.FOOTER.calculateHeight({
+              paddingBottom,
+            }),
+            index: ViewTypes.FOOTER.index,
+          };
+        }
+
+        if (
+          balancesIndex > -1 &&
+          (index <= sectionsIndices[collectiblesIndex] ||
+            collectiblesIndex < 0) &&
+          (index <= sectionsIndices[poolsIndex] || poolsIndex < 0)
+        ) {
+          const balanceItemsCount = get(
+            sections,
+            `[${balancesIndex}].data.length`,
+            0
+          );
+          const lastBalanceIndex =
+            sectionsIndices[balancesIndex] + balanceItemsCount;
+          if (index === lastBalanceIndex - 2) {
+            if (RecyclerAssetListSharedState.coinDividerIndex !== index) {
+              RecyclerAssetListSharedState.coinDividerIndex = index;
+              if (isCoinListEdited) {
+                RecyclerAssetListSharedState.rlv &&
+                  checkEditStickyHeader(
+                    RecyclerAssetListSharedState.rlv.getCurrentScrollOffset()
+                  );
+              }
+            }
+            if (
+              sections[balancesIndex].data[lastBalanceIndex - 2]
+                .smallBalancesContainer
+            ) {
+              return {
+                height: ViewTypes.COIN_DIVIDER.calculateHeight(),
+                index: ViewTypes.COIN_DIVIDER.index,
+                visibleDuringCoinEdit:
+                  ViewTypes.COIN_DIVIDER.visibleDuringCoinEdit,
+              };
+            }
+          }
+          if (index === lastBalanceIndex - 1) {
+            if (
+              sections[balancesIndex].data[lastBalanceIndex - 2] &&
+              sections[balancesIndex].data[lastBalanceIndex - 2]
+                .smallBalancesContainer
+            ) {
+              const smallBalancesIndex = index - 1;
+              return {
+                height: ViewTypes.COIN_SMALL_BALANCES.calculateHeight({
+                  isCoinListEdited: isCoinListEdited,
+                  isOpen: openSmallBalances,
+                  smallBalancesLength:
+                    sections[balancesIndex].data[smallBalancesIndex].assets
+                      .length,
+                }),
+                index: ViewTypes.COIN_SMALL_BALANCES.index,
+                visibleDuringCoinEdit:
+                  ViewTypes.COIN_SMALL_BALANCES.visibleDuringCoinEdit,
+              };
+            }
+          }
+          if (index === lastBalanceIndex) {
+            if (
+              sections[balancesIndex].data[lastBalanceIndex - 1]
+                .savingsContainer
+            ) {
+              return {
+                height: ViewTypes.COIN_SAVINGS.calculateHeight({
+                  amountOfRows:
+                    sections[balancesIndex].data[index - 1].assets?.length || 0,
+                  isLast: poolsIndex < 0,
+                  isOpen: openSavings,
+                }),
+                index: ViewTypes.COIN_SAVINGS.index,
+              };
+            }
+          }
+          const firstBalanceIndex = sectionsIndices[balancesIndex] + 1;
+          const isFirst =
+            index === firstBalanceIndex &&
+            !sections[balancesIndex].data[firstBalanceIndex - 1]
+              .smallBalancesContainer;
+
+          return {
+            height: ViewTypes.COIN_ROW.calculateHeight({
+              areSmallCollectibles,
+              isFirst,
+              isLast: index === lastBalanceIndex,
+            }),
+            index: ViewTypes.COIN_ROW.index,
+            isFirst,
+            visibleDuringCoinEdit: ViewTypes.COIN_ROW.visibleDuringCoinEdit,
+          };
+        }
+
+        if (collectiblesIndex > -1) {
+          if (index > sectionsIndices[collectiblesIndex]) {
+            const familyIndex = items[index].familySectionIndex;
+            const isFirst = index === sectionsIndices[collectiblesIndex] + 1;
+            const isHeader =
+              sections[collectiblesIndex].data[familyIndex].isHeader;
+            return {
+              height: ViewTypes.UNIQUE_TOKEN_ROW.calculateHeight({
+                amountOfRows: get(
+                  sections,
+                  `[${collectiblesIndex}].data[${familyIndex}].tokens`,
+                  []
+                ).length,
+                isFirst,
+                isHeader,
+                isOpen:
+                  openFamilyTabs[
+                    sections[collectiblesIndex].data[familyIndex].familyName
+                  ],
+              }),
+              index: ViewTypes.UNIQUE_TOKEN_ROW.index,
+              isFirst,
+              isHeader,
+            };
+          }
+        }
+
+        return {
+          height: ViewTypes.UNKNOWN.calculateHeight(),
+          index: ViewTypes.UNKNOWN.index,
+        };
+      },
+      (type, dim) => {
+        // Set height of element using object created above 👇
+        dim.width = deviceUtils.dimensions.width;
+        if (isCoinListEdited && !type.visibleDuringCoinEdit) {
+          dim.height = 0;
+        } else {
+          dim.height = type.height;
+        }
+      }
+    );
+  }, [
+    areSmallCollectibles,
+    checkEditStickyHeader,
+    hideHeader,
+    isCoinListEdited,
+    items,
+    itemsCount,
+    openFamilyTabs,
+    openInvestmentCards,
+    openSavings,
+    openSmallBalances,
+    paddingBottom,
+    sections,
+    sectionsIndices,
+  ]);
+
   return (
     <StyledContainer onLayout={onLayout}>
       <OldAssetRecyclerList
@@ -279,12 +483,17 @@ function RainbowRecyclerAssetList({
         areSmallCollectibles={areSmallCollectibles}
         checkEditStickyHeader={checkEditStickyHeader}
         colors={colors}
+        hideHeader={hideHeader}
         isCoinListEdited={isCoinListEdited}
         items={items}
         itemsCount={itemsCount}
+        layoutProvider={layoutProvider}
         nativeCurrency={nativeCurrency}
         onScroll={onScroll}
         openFamilyTabs={openFamilyTabs}
+        openInvestmentCards={openInvestmentCards}
+        openSavings={openSavings}
+        openSmallBalances={openSmallBalances}
         paddingBottom={paddingBottom}
         renderRefreshControl={renderRefreshControl}
         rowRenderer={rowRenderer}
