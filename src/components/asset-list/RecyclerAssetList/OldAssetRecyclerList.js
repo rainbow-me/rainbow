@@ -294,7 +294,7 @@ export default class RecyclerAssetList extends Component {
           const safeIndex = i;
           const safeCollectibles = collectibles;
           const familyIndex = findIndex(
-            this.state.dataProvider._data,
+            this.state.dataProvider.getAllData(),
             function (data) {
               return (
                 data.item?.familyName ===
@@ -303,8 +303,9 @@ export default class RecyclerAssetList extends Component {
             }
           );
 
-          const focusedFamilyItem = this.state.dataProvider._data[familyIndex]
-            .item;
+          const focusedFamilyItem = this.state.dataProvider.getAllData()[
+            familyIndex
+          ].item;
           const focusedFamilyHeight = ViewTypes.UNIQUE_TOKEN_ROW.calculateHeight(
             {
               amountOfRows: Math.ceil(
@@ -372,7 +373,7 @@ export default class RecyclerAssetList extends Component {
         prevCollectibles.data[0]?.familyName !== 'Showcase')
     ) {
       const familyIndex = findIndex(
-        this.state.dataProvider._data,
+        this.state.dataProvider.getAllData(),
         function (data) {
           return data.item?.familyName === 'Showcase';
         }
@@ -400,7 +401,7 @@ export default class RecyclerAssetList extends Component {
 
   getStableId = index => {
     const { dataProvider } = this.state;
-    const row = get(dataProvider, `_data[${index}]`);
+    const row = get(dataProvider.getAllData(), index);
 
     if (row.item && row.item.familyName) {
       return `family_${row.item.familyName}_${row.item.familyId}`;
@@ -430,7 +431,7 @@ export default class RecyclerAssetList extends Component {
       return `savingsContainer`;
     }
 
-    if (index === dataProvider._data.length - 1) {
+    if (index === dataProvider.getAllData().length - 1) {
       return 'footer';
     }
 
