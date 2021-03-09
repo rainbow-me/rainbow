@@ -22,7 +22,7 @@ export default class LayoutItemAnimator extends BaseItemAnimator {
     const hasScrollOffset = !!rlv?.getCurrentScrollOffset;
     const hasContentDimension = !!rlv?.getContentDimension;
 
-    const x =
+    const shouldConfigureNext =
       hasScrollOffset &&
       hasContentDimension &&
       rlv.getContentDimension().height <
@@ -31,7 +31,7 @@ export default class LayoutItemAnimator extends BaseItemAnimator {
           this.paddingBottom &&
       rlv.getCurrentScrollOffset() > 0;
 
-    if (x) {
+    if (shouldConfigureNext) {
       LayoutAnimation.configureNext({
         duration: 250,
         update: {

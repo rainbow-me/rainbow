@@ -156,8 +156,6 @@ function RainbowRecyclerAssetList({
       if (isNil(data) || isNil(index)) {
         return null;
       }
-      //const { sections, isCoinListEdited, nativeCurrency } = this.props;
-
       if (isCoinListEdited && !(type.index < 4)) {
         return null;
       }
