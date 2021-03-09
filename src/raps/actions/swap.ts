@@ -2,11 +2,11 @@ import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
 import { get } from 'lodash';
 import { Rap, RapActionParameters, SwapActionParameters } from '../common';
+import { ProtocolType } from '@rainbow-me/entities';
 import {
   estimateSwapGasLimit,
   executeSwap,
 } from '@rainbow-me/handlers/uniswap';
-import ProtocolTypes from '@rainbow-me/helpers/protocolTypes';
 import TransactionStatusTypes from '@rainbow-me/helpers/transactionStatusTypes';
 import TransactionTypes from '@rainbow-me/helpers/transactionTypes';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
@@ -115,7 +115,7 @@ const swap = async (
     gasPrice,
     hash: swap?.hash,
     nonce: swap?.nonce,
-    protocol: ProtocolTypes.uniswap.name,
+    protocol: ProtocolType.uniswap,
     status: TransactionStatusTypes.swapping,
     to: swap?.to,
     type: TransactionTypes.trade,

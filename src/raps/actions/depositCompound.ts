@@ -3,9 +3,8 @@ import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
 import { get } from 'lodash';
 import { Rap, RapActionParameters, SwapActionParameters } from '../common';
-import { Asset } from '@rainbow-me/entities';
+import { Asset, ProtocolType } from '@rainbow-me/entities';
 import { toHex } from '@rainbow-me/handlers/web3';
-import ProtocolTypes from '@rainbow-me/helpers/protocolTypes';
 import TransactionStatusTypes from '@rainbow-me/helpers/transactionStatusTypes';
 import TransactionTypes from '@rainbow-me/helpers/transactionTypes';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
@@ -98,7 +97,7 @@ const depositCompound = async (
     gasPrice: transactionParams.gasPrice,
     hash: deposit?.hash,
     nonce: deposit?.nonce,
-    protocol: ProtocolTypes.compound.name,
+    protocol: ProtocolType.compound,
     status: TransactionStatusTypes.depositing,
     to: deposit?.to,
     type: TransactionTypes.deposit,
