@@ -16,7 +16,7 @@ import {
   UniqueTokenExpandedStateContent,
   UniqueTokenExpandedStateHeader,
 } from './unique-token';
-import { useAudio, useDimensions, useShowcaseTokens } from '@rainbow-me/hooks';
+import { useDimensions, useShowcaseTokens } from '@rainbow-me/hooks';
 import { magicMemo } from '@rainbow-me/utils';
 
 const UniqueTokenExpandedState = ({ asset }) => {
@@ -54,17 +54,18 @@ const UniqueTokenExpandedState = ({ asset }) => {
   const { height: screenHeight } = useDimensions();
   const { colors, isDarkMode } = useTheme();
 
-  const { playAsset, fadeTo, currentSound, stopPlayingAsset } = useAudio();
+  // MIGHT HAVE TO DELETE ALL THIS
+  // const { playAsset, fadeTo, currentSound, stopPlayingAsset } = useAudio();
 
-  useEffect(() => {
-    playAsset(asset);
-  }, [playAsset, asset]);
+  // useEffect(() => {
+  //   playAsset(asset);
+  // }, [playAsset, asset]);
 
-  useEffect(() => {
-    return () => {
-      !!currentSound && fadeTo(currentSound, 0).then(stopPlayingAsset);
-    };
-  }, [currentSound, stopPlayingAsset, fadeTo]);
+  // useEffect(() => {
+  //   return () => {
+  //     !!currentSound && fadeTo(currentSound, 0).then(stopPlayingAsset);
+  //   };
+  // }, [currentSound, stopPlayingAsset, fadeTo]);
 
   return (
     <Fragment>
