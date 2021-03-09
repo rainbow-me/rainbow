@@ -7,8 +7,7 @@ import {
   RecyclerListView,
 } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
-import { CoinDivider } from '../../coin-divider';
-import AssetListHeader, { AssetListHeaderHeight } from '../AssetListHeader';
+import { AssetListHeaderHeight } from '../AssetListHeader';
 import { ViewTypes } from '../RecyclerViewTypes';
 import LayoutItemAnimator from './LayoutItemAnimator';
 import RecyclerAssetListSharedState from './RecyclerAssetListSharedState';
@@ -20,7 +19,6 @@ let smallBalancesIndex = 0;
 export default class RecyclerAssetList extends Component {
   static propTypes = {
     externalScrollView: PropTypes.any,
-    fetchData: PropTypes.func,
     hideHeader: PropTypes.bool,
     nativeCurrency: PropTypes.string,
     openFamilyTabs: PropTypes.object,
@@ -558,20 +556,6 @@ export default class RecyclerAssetList extends Component {
     }
   };
 
-  stickyRowRenderer = (_, data) => (
-    <Fragment>
-      <AssetListHeader {...data} isSticky />
-      {this.props.showCoinListEditor ? (
-        <CoinDivider
-          balancesSum={0}
-          isSticky
-          nativeCurrency={this.props.nativeCurrency}
-          onEndEdit={() => this.props.setShowCoinListEditor(false)}
-        />
-      ) : null}
-    </Fragment>
-  );
-
   render() {
     const {
       externalScrollView,
@@ -590,7 +574,7 @@ export default class RecyclerAssetList extends Component {
     return (
       <>
         <StickyContainer
-          overrideRowRenderer={this.stickyRowRenderer}
+          overrideRowRenderer={this.props.stickyRowRenderer}
           stickyHeaderIndices={isCoinListEdited ? [0] : stickyComponentsIndices}
         >
           <RecyclerListView

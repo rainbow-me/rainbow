@@ -1,10 +1,16 @@
 import React, { useCallback, useState } from 'react';
-import { LayoutChangeEvent, RefreshControl, View } from 'react-native';
+import {
+  LayoutChangeEvent,
+  NativeSyntheticEvent,
+  RefreshControl,
+  View,
+} from 'react-native';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
 import { withThemeContext } from '../../../context/ThemeContext';
+import { CoinDivider } from '../../coin-divider';
 import { CoinRowHeight } from '../../coin-row';
-import { AssetListHeaderHeight } from '../AssetListHeader';
+import AssetListHeader, { AssetListHeaderHeight } from '../AssetListHeader';
 import { firstCoinRowMarginTop } from '../RecyclerViewTypes';
 
 import OldAssetRecyclerList from './OldAssetRecyclerList';
@@ -26,12 +32,14 @@ export type RainbowRecyclerAssetListProps = {
     readonly alpha: (color: string, alpha: number) => string;
     readonly blueGreyDark: string;
   };
+  readonly nativeCurrency: string;
 };
 
 function RainbowRecyclerAssetList({
   isCoinListEdited,
   fetchData,
   colors,
+  nativeCurrency,
   ...extras
 }: RainbowRecyclerAssetListProps): JSX.Element {
   const [showCoinListEditor, setShowCoinListEditor] = useState<boolean>(false);
@@ -88,6 +96,24 @@ function RainbowRecyclerAssetList({
       additionalPadding;
   }, []);
 
+  const stickyRowRenderer = React.useCallback(
+    // TODO: What does the data look like?
+    (e: NativeSyntheticEvent<unknown>, data: Record<string, any>) => (
+      <>
+        <AssetListHeader {...data} isSticky />
+        {showCoinListEditor ? (
+          <CoinDivider
+            balancesSum={0}
+            isSticky
+            nativeCurrency={nativeCurrency}
+            onEndEdit={() => setShowCoinListEditor(false)}
+          />
+        ) : null}
+      </>
+    ),
+    [showCoinListEditor, setShowCoinListEditor, nativeCurrency]
+  );
+
   return (
     <StyledContainer onLayout={onLayout}>
       <OldAssetRecyclerList
@@ -95,15 +121,18 @@ function RainbowRecyclerAssetList({
         checkEditStickyHeader={checkEditStickyHeader}
         colors={colors}
         isCoinListEdited={isCoinListEdited}
+        nativeCurrency={nativeCurrency}
         renderRefreshControl={renderRefreshControl}
         setShowCoinListEditor={setShowCoinListEditor}
         showCoinListEditor={showCoinListEditor}
+        stickyRowRenderer={stickyRowRenderer}
       />
     </StyledContainer>
   );
 }
 
 export default connect(
+  // TODO: We need to type Redux State.
   ({
     editOptions: { isCoinListEdited },
     openSavings,
