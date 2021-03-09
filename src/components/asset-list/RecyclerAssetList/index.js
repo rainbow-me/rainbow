@@ -10,11 +10,11 @@ import {
   RecyclerListView,
 } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
-import { withThemeContext } from '../../context/ThemeContext';
-import { CoinDivider } from '../coin-divider';
-import { CoinRowHeight } from '../coin-row';
-import AssetListHeader, { AssetListHeaderHeight } from './AssetListHeader';
-import { firstCoinRowMarginTop, ViewTypes } from './RecyclerViewTypes';
+import { withThemeContext } from '../../../context/ThemeContext';
+import { CoinDivider } from '../../coin-divider';
+import { CoinRowHeight } from '../../coin-row';
+import AssetListHeader, { AssetListHeaderHeight } from '../AssetListHeader';
+import { firstCoinRowMarginTop, ViewTypes } from '../RecyclerViewTypes';
 import {
   deviceUtils,
   isNewValueForPath,
