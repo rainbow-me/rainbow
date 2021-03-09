@@ -21,17 +21,17 @@ import {
   upperFirst,
 } from 'lodash';
 import { parseAllTxnsOnReceive } from '../config/debug';
-import { toChecksumAddress } from '../handlers/web3';
-import ProtocolTypes from '../helpers/protocolTypes';
-import DirectionTypes from '../helpers/transactionDirectionTypes';
-import TransactionStatusTypes from '../helpers/transactionStatusTypes';
-import TransactionTypes from '../helpers/transactionTypes';
+import { ProtocolType, ProtocolTypeNames } from '@rainbow-me/entities';
+import { toChecksumAddress } from '@rainbow-me/handlers/web3';
+import DirectionTypes from '@rainbow-me/helpers/transactionDirectionTypes';
+import TransactionStatusTypes from '@rainbow-me/helpers/transactionStatusTypes';
+import TransactionTypes from '@rainbow-me/helpers/transactionTypes';
 import {
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
-} from '../helpers/utilities';
-import { ETH_ADDRESS, savingsAssetsList } from '../references';
-import { ethereumUtils, getTokenMetadata } from '../utils';
+} from '@rainbow-me/helpers/utilities';
+import { ETH_ADDRESS, savingsAssetsList } from '@rainbow-me/references';
+import { ethereumUtils, getTokenMetadata } from '@rainbow-me/utils';
 
 const LAST_TXN_HASH_BUFFER = 20;
 
@@ -173,7 +173,7 @@ const parseTransaction = (
   // We are overriding to show the user a failure state if the action actually failed
   if (
     isEmpty(changes) &&
-    txn.protocol === ProtocolTypes.compound.name &&
+    txn.protocol === ProtocolType.compound &&
     (txn.type === TransactionTypes.deposit ||
       txn.type === TransactionTypes.withdraw)
   ) {
@@ -344,10 +344,10 @@ export const getTitle = ({ protocol, status, type }) => {
       status === TransactionStatusTypes.sent ||
       status === TransactionStatusTypes.received
     ) {
-      if (protocol === ProtocolTypes.compound.name) {
+      if (protocol === ProtocolType.compound) {
         return 'Savings';
       } else {
-        return get(ProtocolTypes, `${protocol}.displayName`);
+        return ProtocolTypeNames?.[protocol];
       }
     }
   }
@@ -398,7 +398,7 @@ export const getTransactionLabel = ({
     return TransactionStatusTypes.approving;
 
   if (pending && type === TransactionTypes.deposit) {
-    if (protocol === ProtocolTypes.compound.name) {
+    if (protocol === ProtocolType.compound) {
       return TransactionStatusTypes.depositing;
     } else {
       return TransactionStatusTypes.sending;
@@ -406,7 +406,7 @@ export const getTransactionLabel = ({
   }
 
   if (pending && type === TransactionTypes.withdraw) {
-    if (protocol === ProtocolTypes.compound.name) {
+    if (protocol === ProtocolType.compound) {
       return TransactionStatusTypes.withdrawing;
     } else {
       return TransactionStatusTypes.receiving;
@@ -428,7 +428,7 @@ export const getTransactionLabel = ({
     return TransactionStatusTypes.purchased;
 
   if (type === TransactionTypes.deposit) {
-    if (protocol === ProtocolTypes.compound.name) {
+    if (protocol === ProtocolType.compound) {
       return TransactionStatusTypes.deposited;
     } else {
       return TransactionStatusTypes.sent;
@@ -436,7 +436,7 @@ export const getTransactionLabel = ({
   }
 
   if (type === TransactionTypes.withdraw) {
-    if (protocol === ProtocolTypes.compound.name) {
+    if (protocol === ProtocolType.compound) {
       return TransactionStatusTypes.withdrew;
     } else {
       return TransactionStatusTypes.received;
