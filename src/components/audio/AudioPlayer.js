@@ -13,6 +13,8 @@ const StyledWebView = styled(WebView)`
   margin-top: ${android ? 30 : 50};
 `;
 
+const formatColor = color => color.replace('#', '');
+
 const buildPlayerUrl = options => {
   let qsArray = [];
   for (let p in options)
@@ -36,45 +38,34 @@ export default function WyreWebview({ uri }) {
     StatusBar.setBarStyle('dark-content', true);
   }, []);
 
-  const waveColor = isDarkMode
-    ? colors.darkModeDark.replace('#', '')
-    : colors.lightGrey.replace('#', '');
-  const progressColor = colors.black.replace('#', '');
-  const cursorColor = colors.black.replace('#', '');
-  const textColor = colors.black.replace('#', '');
-  const buttonColor = colors.black.replace('#', '');
-  const bgColor = colors.white.replace('#', '');
-  const buttonBackground = isDarkMode
-    ? colors.darkModeDark.replace('#', '')
-    : colors.lighterGrey.replace('#', '');
-  const barWidth = 4;
-  const waveformHeight = 220;
+  const playerUri = useMemo(() => {
+    const waveColor = isDarkMode
+      ? formatColor(colors.darkModeDark)
+      : formatColor(colors.lightGrey);
+    const progressColor = formatColor(colors.black);
+    const cursorColor = formatColor(colors.black);
+    const textColor = formatColor(colors.black);
+    const buttonColor = formatColor(colors.black);
+    const bgColor = formatColor(colors.white);
+    const buttonBackground = isDarkMode
+      ? formatColor(colors.darkModeDark)
+      : formatColor(colors.lighterGrey);
+    const barWidth = 4;
+    const waveformHeight = 220;
 
-  const playerUri = useMemo(
-    () =>
-      buildPlayerUrl({
-        barWidth,
-        bgColor,
-        buttonBackground,
-        buttonColor,
-        cursorColor,
-        progressColor,
-        textColor,
-        url: uri,
-        waveColor,
-        waveformHeight,
-      }),
-    [
+    return buildPlayerUrl({
+      barWidth,
       bgColor,
       buttonBackground,
       buttonColor,
       cursorColor,
       progressColor,
       textColor,
-      uri,
+      url: uri,
       waveColor,
-    ]
-  );
+      waveformHeight,
+    });
+  }, [colors, isDarkMode, uri]);
 
   useEffect(() => {
     setTimeout(
