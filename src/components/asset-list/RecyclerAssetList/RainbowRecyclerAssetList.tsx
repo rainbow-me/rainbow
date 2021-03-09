@@ -198,7 +198,13 @@ function RainbowRecyclerAssetList({
     [isCoinListEdited, nativeCurrency, sections]
   );
 
-  const xxx = useMemo(() => {
+  const {
+    areSmallCollectibles,
+    items,
+    itemsCount,
+    sectionsIndices,
+    stickyComponentsIndices,
+  } = useMemo(() => {
     const sectionsIndices: number[] = [];
     const stickyComponentsIndices: number[] = [];
     const items = sections.reduce((ctx: any[], section) => {
@@ -241,7 +247,11 @@ function RainbowRecyclerAssetList({
       return ctx;
     }, []);
     items.push({ item: { isLastPlaceholder: true }, renderItem: () => null });
+    const areSmallCollectibles = (c => c && get(c, 'type') === 'small')(
+      sections.find(e => e.collectibles)
+    );
     return {
+      areSmallCollectibles,
       items,
       itemsCount: items.length,
       sectionsIndices,
@@ -252,16 +262,8 @@ function RainbowRecyclerAssetList({
   // pass the dataprovider
   const shouldGetDerivedStateFromProps = useCallback((props, state) => {
     const { dataProvider } = state;
-    const areSmallCollectibles = (c => c && get(c, 'type') === 'small')(
-      props.sections.find(e => e.collectibles)
-    );
     return {
-      areSmallCollectibles,
       dataProvider: dataProvider.cloneWithRows(props.items),
-      // items,
-      // itemsCount: items.length,
-      // sectionsIndices,
-      // stickyComponentsIndices,
     };
   }, []);
 
@@ -274,9 +276,12 @@ function RainbowRecyclerAssetList({
       <OldAssetRecyclerList
         {...extras}
         animator={animator}
+        areSmallCollectibles={areSmallCollectibles}
         checkEditStickyHeader={checkEditStickyHeader}
         colors={colors}
         isCoinListEdited={isCoinListEdited}
+        items={items}
+        itemsCount={itemsCount}
         nativeCurrency={nativeCurrency}
         onScroll={onScroll}
         openFamilyTabs={openFamilyTabs}
@@ -284,11 +289,12 @@ function RainbowRecyclerAssetList({
         renderRefreshControl={renderRefreshControl}
         rowRenderer={rowRenderer}
         sections={sections}
+        sectionsIndices={sectionsIndices}
         setShowCoinListEditor={setShowCoinListEditor}
         shouldGetDerivedStateFromProps={shouldGetDerivedStateFromProps}
         showCoinListEditor={showCoinListEditor}
+        stickyComponentsIndices={stickyComponentsIndices}
         stickyRowRenderer={stickyRowRenderer}
-        {...xxx}
       />
     </StyledContainer>
   );

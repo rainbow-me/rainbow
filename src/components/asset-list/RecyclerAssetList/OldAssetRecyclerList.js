@@ -188,7 +188,7 @@ export default class RecyclerAssetList extends Component {
 
           return {
             height: ViewTypes.COIN_ROW.calculateHeight({
-              areSmallCollectibles: this.state.areSmallCollectibles,
+              areSmallCollectibles: this.props.areSmallCollectibles,
               isFirst,
               isLast: index === lastBalanceIndex,
             }),
