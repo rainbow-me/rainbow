@@ -50,10 +50,6 @@ export default class RecyclerAssetList extends Component {
     super(props);
     this.state = {
       dataProvider: new DataProvider(hasRowChanged, this.getStableId),
-      items: [],
-      itemsCount: 0,
-      sectionsIndices: [],
-      stickyComponentsIndices: [],
     };
 
     this.layoutProvider = new LayoutProvider(
@@ -78,7 +74,7 @@ export default class RecyclerAssetList extends Component {
         );
         const poolsIndex = findIndex(sections, ({ name }) => name === 'pools');
 
-        const { sectionsIndices } = this.state;
+        const { sectionsIndices } = this.props;
         if (sectionsIndices.includes(index)) {
           if (index === sectionsIndices[poolsIndex]) {
             return {
@@ -100,7 +96,7 @@ export default class RecyclerAssetList extends Component {
           };
         }
 
-        if (index === this.state.itemsCount - 1) {
+        if (index === this.props.itemsCount - 1) {
           return {
             height: ViewTypes.FOOTER.calculateHeight({
               paddingBottom: this.props.paddingBottom
@@ -204,7 +200,7 @@ export default class RecyclerAssetList extends Component {
 
         if (collectiblesIndex > -1) {
           if (index > sectionsIndices[collectiblesIndex]) {
-            const familyIndex = this.state.items[index].familySectionIndex;
+            const familyIndex = this.props.items[index].familySectionIndex;
             const isFirst = index === sectionsIndices[collectiblesIndex] + 1;
             const isHeader =
               sections[collectiblesIndex].data[familyIndex].isHeader;
@@ -448,12 +444,10 @@ export default class RecyclerAssetList extends Component {
       hideHeader,
       renderAheadOffset,
       isCoinListEdited,
-    } = this.props;
-    const {
-      dataProvider,
       sectionsIndices,
       stickyComponentsIndices,
-    } = this.state;
+    } = this.props;
+    const { dataProvider } = this.state;
 
     const { colors, onScroll } = this.props;
 

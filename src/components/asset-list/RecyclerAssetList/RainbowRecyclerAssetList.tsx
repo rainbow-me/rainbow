@@ -198,66 +198,72 @@ function RainbowRecyclerAssetList({
     [isCoinListEdited, nativeCurrency, sections]
   );
 
-  // pass the dataprovider
-  const shouldGetDerivedStateFromProps = useCallback(
-    (props, state) => {
-      const { dataProvider } = state;
-      const sectionsIndices: number[] = [];
-      const stickyComponentsIndices: number[] = [];
-      const items = sections.reduce((ctx: any[], section) => {
-        sectionsIndices.push(ctx.length);
-        if (section.pools) {
-          ctx = ctx.concat([
-            {
-              data: section.data,
-              pools: true,
-              ...section.header,
-            },
-          ]);
-        } else {
-          stickyComponentsIndices.push(ctx.length);
-          ctx = ctx.concat([
-            {
-              isHeader: true,
-              ...section.header,
-            },
-          ]);
-          if (section.collectibles) {
-            section.data.forEach((item, index) => {
-              if (item.isHeader || openFamilyTabs[item.familyName]) {
-                ctx.push({
-                  familySectionIndex: index,
-                  item: { ...item, ...section.perData },
-                  renderItem: section.renderItem, // 8% of CPU
-                });
-              }
-            });
-          } else {
-            ctx = ctx.concat(
-              section.data.map(item => ({
+  const xxx = useMemo(() => {
+    const sectionsIndices: number[] = [];
+    const stickyComponentsIndices: number[] = [];
+    const items = sections.reduce((ctx: any[], section) => {
+      sectionsIndices.push(ctx.length);
+      if (section.pools) {
+        ctx = ctx.concat([
+          {
+            data: section.data,
+            pools: true,
+            ...section.header,
+          },
+        ]);
+      } else {
+        stickyComponentsIndices.push(ctx.length);
+        ctx = ctx.concat([
+          {
+            isHeader: true,
+            ...section.header,
+          },
+        ]);
+        if (section.collectibles) {
+          section.data.forEach((item, index) => {
+            if (item.isHeader || openFamilyTabs[item.familyName]) {
+              ctx.push({
+                familySectionIndex: index,
                 item: { ...item, ...section.perData },
-                renderItem: section.renderItem, // 1% of CPU
-              }))
-            );
-          }
+                renderItem: section.renderItem, // 8% of CPU
+              });
+            }
+          });
+        } else {
+          ctx = ctx.concat(
+            section.data.map(item => ({
+              item: { ...item, ...section.perData },
+              renderItem: section.renderItem, // 1% of CPU
+            }))
+          );
         }
-        return ctx;
-      }, []);
-      items.push({ item: { isLastPlaceholder: true }, renderItem: () => null });
-      const areSmallCollectibles = (c => c && get(c, 'type') === 'small')(
-        sections.find(e => e.collectibles)
-      );
-      return {
-        areSmallCollectibles,
-        dataProvider: dataProvider.cloneWithRows(items),
-        items,
-        itemsCount: items.length,
-        sectionsIndices,
-        stickyComponentsIndices,
-      };
-    },
-    [openFamilyTabs, sections]
-  );
+      }
+      return ctx;
+    }, []);
+    items.push({ item: { isLastPlaceholder: true }, renderItem: () => null });
+    return {
+      items,
+      itemsCount: items.length,
+      sectionsIndices,
+      stickyComponentsIndices,
+    };
+  }, [openFamilyTabs, sections]);
+
+  // pass the dataprovider
+  const shouldGetDerivedStateFromProps = useCallback((props, state) => {
+    const { dataProvider } = state;
+    const areSmallCollectibles = (c => c && get(c, 'type') === 'small')(
+      props.sections.find(e => e.collectibles)
+    );
+    return {
+      areSmallCollectibles,
+      dataProvider: dataProvider.cloneWithRows(props.items),
+      // items,
+      // itemsCount: items.length,
+      // sectionsIndices,
+      // stickyComponentsIndices,
+    };
+  }, []);
 
   const animator = useMemo(() => new LayoutItemAnimator(paddingBottom), [
     paddingBottom,
@@ -282,6 +288,7 @@ function RainbowRecyclerAssetList({
         shouldGetDerivedStateFromProps={shouldGetDerivedStateFromProps}
         showCoinListEditor={showCoinListEditor}
         stickyRowRenderer={stickyRowRenderer}
+        {...xxx}
       />
     </StyledContainer>
   );
