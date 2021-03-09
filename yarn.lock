@@ -12174,11 +12174,6 @@ react-native-slack-bottom-sheet@osdnk/react-native-slack-bottom-sheet#hack:
   version "0.5.0"
   resolved "https://codeload.github.com/osdnk/react-native-slack-bottom-sheet/tar.gz/121f7d150785d8cd69256264745cd2887cb79747"
 
-react-native-sound@^0.11.0:
-  version "0.11.0"
-  resolved "https://registry.yarnpkg.com/react-native-sound/-/react-native-sound-0.11.0.tgz#ad60b55ba8c6dc89917f381ad3713f2738de530f"
-  integrity sha512-4bGAZfni6E2L695NQjOZwNLBQGXgBGYC4Sy+h99K5h0HqNZjCqR0+aLel+ezASxEJDpaH83gylNObXpiqJgdwg==
-
 react-native-splash-screen@^3.2.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/react-native-splash-screen/-/react-native-splash-screen-3.2.0.tgz#d47ec8557b1ba988ee3ea98d01463081b60fff45"
