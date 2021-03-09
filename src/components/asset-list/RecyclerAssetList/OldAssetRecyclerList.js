@@ -57,7 +57,6 @@ export default class RecyclerAssetList extends Component {
     super(props);
     this.state = {
       dataProvider: new DataProvider(hasRowChanged, this.getStableId),
-      isRefreshing: false,
       items: [],
       itemsCount: 0,
       sectionsIndices: [],
@@ -517,42 +516,11 @@ export default class RecyclerAssetList extends Component {
       additionalPadding;
   }
 
-  handleRefresh = () => {
-    if (this.state.isRefreshing) return;
-
-    this.setState({ isRefreshing: true }, () => {
-      this.props
-        .fetchData()
-        .then(() => {
-          if (!this.isCancelled) {
-            this.setState({ isRefreshing: false });
-          }
-        })
-        .catch(() => {
-          if (!this.isCancelled) {
-            this.setState({ isRefreshing: false });
-          }
-        });
-    });
-  };
-
   handleScroll = (_nativeEventObject, _, offsetY) => {
     if (this.props.isCoinListEdited) {
       this.props.checkEditStickyHeader(offsetY);
     }
   };
-
-  renderRefreshControl() {
-    const { colors } = this.props;
-    return (
-      <RefreshControl
-        onRefresh={this.handleRefresh}
-        refreshing={this.state.isRefreshing}
-        style={ios ? {} : { top: 20 }}
-        tintColor={colors.alpha(colors.blueGreyDark, 0.4)}
-      />
-    );
-  }
 
   rowRenderer = (type, data, index) => {
     if (isNil(data) || isNil(index)) {
@@ -660,7 +628,7 @@ export default class RecyclerAssetList extends Component {
               top: hideHeader ? 0 : AssetListHeaderHeight,
             }}
             scrollViewProps={{
-              refreshControl: fetchData && this.renderRefreshControl(),
+              refreshControl: this.props.renderRefreshControl(),
             }}
             style={{
               backgroundColor: colors.white,
