@@ -34,8 +34,21 @@ export type RainbowRecyclerAssetListProps = {
     readonly blueGreyDark: string;
   };
   readonly nativeCurrency: string;
-  // TODO: What is a section?
-  readonly sections: readonly any[];
+  readonly sections: readonly {
+    readonly balances: boolean;
+    readonly collectibles: boolean;
+    // TODO: What is a data?
+    readonly data: readonly any[];
+    readonly header: {
+      readonly title: string;
+      readonly totalItems: number;
+      readonly totalValue: string;
+    };
+    readonly perData: any;
+    readonly pools: boolean;
+    readonly renderItem: (item: any) => JSX.Element | null;
+    readonly type: string;
+  }[];
 };
 
 function RainbowRecyclerAssetList({
