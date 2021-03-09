@@ -1,12 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, StyleSheet, View, ViewStyle } from 'react-native';
 // @ts-ignore
-import Sound from 'react-native-sound';
-// @ts-ignore
 import Video from 'react-native-video';
 import convertToProxyURL from 'react-native-video-cache';
 import styled from 'styled-components';
-import { useAudio } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { position } from '@rainbow-me/styles';
 import logger from 'logger';
@@ -59,13 +56,8 @@ export default function SimpleVideo({
     }),
     [uri]
   );
-  const { currentSound, isPlayingAsset, fadeTo } = useAudio();
   const [opacity] = useState<Animated.Value>(
     () => new Animated.Value(loading ? 1 : 0)
-  );
-
-  const [soundOnMount] = useState<Sound | null>(
-    isPlayingAsset && currentSound ? currentSound : null
   );
 
   useEffect(() => {
@@ -79,25 +71,14 @@ export default function SimpleVideo({
   // HACK: Force the player to quit when unmounted. (iOS)
   useEffect(() => {
     const { current } = ref;
-    if (soundOnMount) {
-      // @ts-ignore
-      fadeTo(soundOnMount, 0).then(() => soundOnMount.pause());
-    }
     return () => {
       try {
         current?.setNativeProps({ paused: true });
-        if (soundOnMount) {
-          requestAnimationFrame(() => {
-            soundOnMount.play();
-            // @ts-ignore
-            fadeTo(soundOnMount, 1);
-          });
-        }
       } catch (e) {
         logger.error(e);
       }
     };
-  }, [ref, soundOnMount, fadeTo]);
+  }, [ref]);
   return (
     <View style={[styles.flex, StyleSheet.flatten(style)]}>
       <StyledBackground />

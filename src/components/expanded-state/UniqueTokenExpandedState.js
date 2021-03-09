@@ -54,19 +54,6 @@ const UniqueTokenExpandedState = ({ asset }) => {
   const { height: screenHeight } = useDimensions();
   const { colors, isDarkMode } = useTheme();
 
-  // MIGHT HAVE TO DELETE ALL THIS
-  // const { playAsset, fadeTo, currentSound, stopPlayingAsset } = useAudio();
-
-  // useEffect(() => {
-  //   playAsset(asset);
-  // }, [playAsset, asset]);
-
-  // useEffect(() => {
-  //   return () => {
-  //     !!currentSound && fadeTo(currentSound, 0).then(stopPlayingAsset);
-  //   };
-  // }, [currentSound, stopPlayingAsset, fadeTo]);
-
   return (
     <Fragment>
       <SlackSheet
