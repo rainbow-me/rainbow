@@ -3,13 +3,12 @@ import { captureException, captureMessage } from '@sentry/react-native';
 import { find, map, toLower } from 'lodash';
 /* eslint-disable-next-line import/no-cycle */
 import { dataAddNewTransaction } from './data';
-import { TransactionStatusTypes } from '@rainbow-me/entities';
+import { TransactionStatusTypes, TransactionTypes } from '@rainbow-me/entities';
 import {
   getPurchaseTransactions,
   savePurchaseTransactions,
 } from '@rainbow-me/handlers/localstorage/accountLocal';
 import { trackWyreOrder, trackWyreTransfer } from '@rainbow-me/handlers/wyre';
-import TransactionTypes from '@rainbow-me/helpers/transactionTypes';
 import { WYRE_ORDER_STATUS_TYPES } from '@rainbow-me/helpers/wyreStatusTypes';
 import { AddCashCurrencies, AddCashCurrencyInfo } from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';

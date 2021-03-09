@@ -34,6 +34,7 @@ import {
   AssetTypes,
   TransactionDirections,
   TransactionStatusTypes,
+  TransactionTypes,
 } from '@rainbow-me/entities';
 import {
   getAssetPricesFromUniswap,
@@ -45,7 +46,6 @@ import {
   saveLocalTransactions,
 } from '@rainbow-me/handlers/localstorage/accountLocal';
 import { getTransactionReceipt } from '@rainbow-me/handlers/web3';
-import TransactionTypes from '@rainbow-me/helpers/transactionTypes';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { Navigation } from '@rainbow-me/navigation';
 import { triggerOnSwipeLayout } from '@rainbow-me/navigation/onNavigationStateChange';

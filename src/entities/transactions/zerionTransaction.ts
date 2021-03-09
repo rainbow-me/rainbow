@@ -1,20 +1,7 @@
 import { ProtocolType } from '../protocolTypes';
 import { ZerionAsset } from '../tokens';
 import { TransactionDirection } from './transactionDirection';
-
-enum ZerionTransactionType {
-  authorize = 'authorize',
-  borrow = 'borrow',
-  cancel = 'cancel',
-  deployment = 'deployment',
-  deposit = 'deposit',
-  execution = 'execution',
-  receive = 'receive',
-  repay = 'repay',
-  send = 'send',
-  trade = 'trade',
-  withdraw = 'withdraw',
-}
+import { TransactionType } from './transactionType';
 
 enum ZerionTransactionStatus {
   confirmed = 'confirmed',
@@ -56,5 +43,5 @@ export interface ZerionTransaction {
   nonce: number | null;
   protocol: ProtocolType;
   status: ZerionTransactionStatus;
-  type: ZerionTransactionType;
+  type: TransactionType;
 }

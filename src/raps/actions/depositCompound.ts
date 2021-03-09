@@ -3,9 +3,13 @@ import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
 import { get } from 'lodash';
 import { Rap, RapActionParameters, SwapActionParameters } from '../common';
-import { Asset, ProtocolType, TransactionStatus } from '@rainbow-me/entities';
+import {
+  Asset,
+  ProtocolType,
+  TransactionStatus,
+  TransactionType,
+} from '@rainbow-me/entities';
 import { toHex } from '@rainbow-me/handlers/web3';
-import TransactionTypes from '@rainbow-me/helpers/transactionTypes';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
 import store from '@rainbow-me/redux/store';
 import {
@@ -99,7 +103,7 @@ const depositCompound = async (
     protocol: ProtocolType.compound,
     status: TransactionStatus.depositing,
     to: deposit?.to,
-    type: TransactionTypes.deposit,
+    type: TransactionType.deposit,
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
   // Disable the txn watcher because Compound can silently fail

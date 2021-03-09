@@ -11,9 +11,8 @@ import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
-import { TransactionStatusTypes } from '@rainbow-me/entities';
+import { TransactionStatusTypes, TransactionTypes } from '@rainbow-me/entities';
 import TransactionActions from '@rainbow-me/helpers/transactionActions';
-import TransactionTypes from '@rainbow-me/helpers/transactionTypes';
 import {
   getHumanReadableDate,
   hasAddableContact,

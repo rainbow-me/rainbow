@@ -2,12 +2,15 @@ import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
 import { get } from 'lodash';
 import { Rap, RapActionParameters, SwapActionParameters } from '../common';
-import { ProtocolType, TransactionStatus } from '@rainbow-me/entities';
+import {
+  ProtocolType,
+  TransactionStatus,
+  TransactionType,
+} from '@rainbow-me/entities';
 import {
   estimateSwapGasLimit,
   executeSwap,
 } from '@rainbow-me/handlers/uniswap';
-import TransactionTypes from '@rainbow-me/helpers/transactionTypes';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
 import store from '@rainbow-me/redux/store';
 import { ethUnits } from '@rainbow-me/references';
@@ -117,7 +120,7 @@ const swap = async (
     protocol: ProtocolType.uniswap,
     status: TransactionStatus.swapping,
     to: swap?.to,
-    type: TransactionTypes.trade,
+    type: TransactionType.trade,
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
   await dispatch(dataAddNewTransaction(newTransaction, accountAddress, true));

@@ -3,6 +3,10 @@ export {
   default as TransactionStatusTypes,
   TransactionStatus,
 } from './transactionStatus';
+export {
+  default as TransactionTypes,
+  TransactionType,
+} from './transactionType';
 export type {
   ZerionTransaction,
   ZerionTransactionChange,
