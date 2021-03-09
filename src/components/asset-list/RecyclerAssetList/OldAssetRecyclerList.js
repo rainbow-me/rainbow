@@ -198,12 +198,6 @@ export default class RecyclerAssetList extends Component {
     }
   }
 
-  layoutMeasurement = 0;
-
-  position = 0;
-
-  renderList = [];
-
   scrollToOffset(position, animated) {
     setTimeout(() => {
       RecyclerAssetListSharedState.rlv &&
