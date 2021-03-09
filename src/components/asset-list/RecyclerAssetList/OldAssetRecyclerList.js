@@ -3,11 +3,21 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { DataProvider, RecyclerListView } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
+import styled from 'styled-components';
 import { AssetListHeaderHeight } from '../AssetListHeader';
 import { ViewTypes } from '../RecyclerViewTypes';
 import RecyclerAssetListSharedState from './RecyclerAssetListSharedState';
 import hasRowChanged from './hasRowChanged';
-import { deviceUtils, safeAreaInsetValues } from '@rainbow-me/utils';
+import { deviceUtils } from '@rainbow-me/utils';
+
+const defaultIndices = [0];
+
+const StyledRecyclerListView = styled(RecyclerListView)`
+  background-color: ${({ theme: { colors } }) => colors.white};
+  display: flex;
+  flex: 1;
+  min-height: 1;
+`;
 
 export default class RecyclerAssetList extends Component {
   static propTypes = {
@@ -248,26 +258,27 @@ export default class RecyclerAssetList extends Component {
     const {
       animator,
       externalScrollView,
-      hideHeader,
       renderAheadOffset,
       isCoinListEdited,
       layoutProvider,
-      sectionsIndices,
       stickyComponentsIndices,
-      colors,
       onScroll,
+      scrollViewProps,
+      scrollIndicatorInsets,
+      extendedState,
     } = this.props;
     const { dataProvider } = this.state;
-
     return (
       <>
         <StickyContainer
           overrideRowRenderer={this.props.stickyRowRenderer}
-          stickyHeaderIndices={isCoinListEdited ? [0] : stickyComponentsIndices}
+          stickyHeaderIndices={
+            isCoinListEdited ? defaultIndices : stickyComponentsIndices
+          }
         >
-          <RecyclerListView
+          <StyledRecyclerListView
             dataProvider={dataProvider}
-            extendedState={{ sectionsIndices }}
+            extendedState={extendedState}
             externalScrollView={externalScrollView}
             itemAnimator={animator}
             layoutProvider={layoutProvider}
@@ -275,18 +286,8 @@ export default class RecyclerAssetList extends Component {
             ref={this.handleListRef}
             renderAheadOffset={renderAheadOffset}
             rowRenderer={this.props.rowRenderer}
-            scrollIndicatorInsets={{
-              bottom: safeAreaInsetValues.bottom,
-              top: hideHeader ? 0 : AssetListHeaderHeight,
-            }}
-            scrollViewProps={{
-              refreshControl: this.props.renderRefreshControl(),
-            }}
-            style={{
-              backgroundColor: colors.white,
-              flex: 1,
-              minHeight: 1,
-            }}
+            scrollIndicatorInsets={scrollIndicatorInsets}
+            scrollViewProps={scrollViewProps}
           />
         </StickyContainer>
       </>

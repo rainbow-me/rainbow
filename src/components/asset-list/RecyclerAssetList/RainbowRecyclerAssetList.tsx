@@ -7,7 +7,7 @@ import {
   View,
 } from 'react-native';
 import { connect } from 'react-redux';
-import { DataProvider, LayoutProvider } from 'recyclerlistview';
+import { LayoutProvider } from 'recyclerlistview';
 import styled from 'styled-components';
 import { withThemeContext } from '../../../context/ThemeContext';
 import { CoinDivider } from '../../coin-divider';
@@ -19,7 +19,7 @@ import LayoutItemAnimator from './LayoutItemAnimator';
 import OldAssetRecyclerList from './OldAssetRecyclerList';
 import RecyclerAssetListSharedState from './RecyclerAssetListSharedState';
 import hasRowChanged from './hasRowChanged';
-import { deviceUtils, logger } from '@rainbow-me/utils';
+import { deviceUtils, logger, safeAreaInsetValues } from '@rainbow-me/utils';
 
 const StyledContainer = styled(View)`
   display: flex;
@@ -475,6 +475,23 @@ function RainbowRecyclerAssetList({
     sectionsIndices,
   ]);
 
+  const scrollViewProps = useMemo(
+    () => ({
+      refreshControl: renderRefreshControl(),
+    }),
+    [renderRefreshControl]
+  );
+
+  const scrollIndicatorInsets = useMemo(
+    () => ({
+      bottom: safeAreaInsetValues.bottom,
+      top: hideHeader ? 0 : AssetListHeaderHeight,
+    }),
+    [hideHeader]
+  );
+
+  const extendedState = useMemo(() => ({ sectionsIndices }), [sectionsIndices]);
+
   return (
     <StyledContainer onLayout={onLayout}>
       <OldAssetRecyclerList
@@ -483,6 +500,7 @@ function RainbowRecyclerAssetList({
         areSmallCollectibles={areSmallCollectibles}
         checkEditStickyHeader={checkEditStickyHeader}
         colors={colors}
+        extendedState={extendedState}
         hideHeader={hideHeader}
         isCoinListEdited={isCoinListEdited}
         items={items}
@@ -497,6 +515,8 @@ function RainbowRecyclerAssetList({
         paddingBottom={paddingBottom}
         renderRefreshControl={renderRefreshControl}
         rowRenderer={rowRenderer}
+        scrollIndicatorInsets={scrollIndicatorInsets}
+        scrollViewProps={scrollViewProps}
         sections={sections}
         sectionsIndices={sectionsIndices}
         setShowCoinListEditor={setShowCoinListEditor}
