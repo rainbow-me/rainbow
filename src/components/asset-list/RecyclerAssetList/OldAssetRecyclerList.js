@@ -9,7 +9,6 @@ import {
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import { AssetListHeaderHeight } from '../AssetListHeader';
 import { ViewTypes } from '../RecyclerViewTypes';
-import LayoutItemAnimator from './LayoutItemAnimator';
 import RecyclerAssetListSharedState from './RecyclerAssetListSharedState';
 import hasRowChanged from './hasRowChanged';
 import { deviceUtils, safeAreaInsetValues } from '@rainbow-me/utils';
@@ -251,13 +250,6 @@ export default class RecyclerAssetList extends Component {
     return shouldGetDerivedStateFromProps(state.dataProvider);
   }
 
-  componentDidMount() {
-    this.animator = new LayoutItemAnimator(
-      RecyclerAssetListSharedState.rlv,
-      this.props.paddingBottom
-    );
-  }
-
   componentDidUpdate(prevProps) {
     const { openFamilyTabs, nativeCurrency, sections } = this.props;
 
@@ -451,6 +443,7 @@ export default class RecyclerAssetList extends Component {
 
   render() {
     const {
+      animator,
       externalScrollView,
       hideHeader,
       renderAheadOffset,
@@ -474,7 +467,7 @@ export default class RecyclerAssetList extends Component {
             dataProvider={dataProvider}
             extendedState={{ sectionsIndices }}
             externalScrollView={externalScrollView}
-            itemAnimator={this.animator}
+            itemAnimator={animator}
             layoutProvider={this.layoutProvider}
             onScroll={onScroll}
             ref={this.handleListRef}

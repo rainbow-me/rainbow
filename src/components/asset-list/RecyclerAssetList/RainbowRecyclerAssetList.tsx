@@ -1,5 +1,5 @@
 import { get, isNil } from 'lodash';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   LayoutChangeEvent,
   NativeSyntheticEvent,
@@ -15,6 +15,7 @@ import { CoinRowHeight } from '../../coin-row';
 import AssetListHeader, { AssetListHeaderHeight } from '../AssetListHeader';
 import { firstCoinRowMarginTop, ViewTypes } from '../RecyclerViewTypes';
 
+import LayoutItemAnimator from './LayoutItemAnimator';
 import OldAssetRecyclerList from './OldAssetRecyclerList';
 import RecyclerAssetListSharedState from './RecyclerAssetListSharedState';
 import hasRowChanged from './hasRowChanged';
@@ -51,6 +52,7 @@ export type RainbowRecyclerAssetListProps = {
     readonly renderItem: (item: any) => JSX.Element | null;
     readonly type: string;
   }[];
+  readonly paddingBottom: number;
 };
 
 function RainbowRecyclerAssetList({
@@ -60,6 +62,7 @@ function RainbowRecyclerAssetList({
   nativeCurrency,
   sections,
   openFamilyTabs,
+  paddingBottom,
   ...extras
 }: RainbowRecyclerAssetListProps): JSX.Element {
   const [showCoinListEditor, setShowCoinListEditor] = useState<boolean>(false);
@@ -255,29 +258,22 @@ function RainbowRecyclerAssetList({
     [openFamilyTabs, sections]
   );
 
-  //const [aggregateState, setAggregateState] = React.useState({
-  //  dataProvider: new DataProvider(hasRowChanged, this.getStableId),
-  //  items: [],
-  //  itemsCount: 0,
-  //  sectionsIndices: [],
-  //  stickyComponentsIndices: [],
-  //});
-
-  // derviedStateFromProps
-  // data provider
-  // stableId
-  // state
+  const animator = useMemo(() => new LayoutItemAnimator(paddingBottom), [
+    paddingBottom,
+  ]);
 
   return (
     <StyledContainer onLayout={onLayout}>
       <OldAssetRecyclerList
         {...extras}
+        animator={animator}
         checkEditStickyHeader={checkEditStickyHeader}
         colors={colors}
         isCoinListEdited={isCoinListEdited}
         nativeCurrency={nativeCurrency}
         onScroll={onScroll}
         openFamilyTabs={openFamilyTabs}
+        paddingBottom={paddingBottom}
         renderRefreshControl={renderRefreshControl}
         rowRenderer={rowRenderer}
         sections={sections}

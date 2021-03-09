@@ -1,25 +1,12 @@
 import { LayoutAnimation } from 'react-native';
-import { BaseItemAnimator, RecyclerListView } from 'recyclerlistview';
-import {
-  RecyclerListViewProps,
-  RecyclerListViewState,
-} from 'recyclerlistview/dist/reactnative/core/RecyclerListView';
+import { BaseItemAnimator } from 'recyclerlistview';
 import { ViewTypes } from '../RecyclerViewTypes';
 import RecyclerAssetListSharedState from './RecyclerAssetListSharedState';
 
 export default class LayoutItemAnimator extends BaseItemAnimator {
-  rlv: React.LegacyRef<
-    RecyclerListView<RecyclerListViewProps, RecyclerListViewState>
-  >;
   paddingBottom: number;
-  constructor(
-    rlv: React.LegacyRef<
-      RecyclerListView<RecyclerListViewProps, RecyclerListViewState>
-    >,
-    paddingBottom: number
-  ) {
+  constructor(paddingBottom: number) {
     super();
-    this.rlv = rlv;
     this.paddingBottom = ViewTypes.FOOTER.calculateHeight({
       paddingBottom: paddingBottom || 0,
     });
@@ -31,14 +18,20 @@ export default class LayoutItemAnimator extends BaseItemAnimator {
   animateWillUnmount = () => undefined;
 
   animateWillUpdate = () => {
-    if (
-      this.rlv &&
-      this.rlv.getContentDimension().height <
-        this.rlv.getCurrentScrollOffset() +
+    const { rlv } = RecyclerAssetListSharedState;
+    const hasScrollOffset = !!rlv?.getCurrentScrollOffset;
+    const hasContentDimension = !!rlv?.getContentDimension;
+
+    const x =
+      hasScrollOffset &&
+      hasContentDimension &&
+      rlv.getContentDimension().height <
+        rlv.getCurrentScrollOffset() +
           RecyclerAssetListSharedState.globalDeviceDimensions +
           this.paddingBottom &&
-      this.rlv.getCurrentScrollOffset() > 0
-    ) {
+      rlv.getCurrentScrollOffset() > 0;
+
+    if (x) {
       LayoutAnimation.configureNext({
         duration: 250,
         update: {
