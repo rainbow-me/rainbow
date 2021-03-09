@@ -6,6 +6,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Centered, Row } from '../layout';
 import ExchangeDetailsButton from './ExchangeDetailsButton';
@@ -54,6 +55,10 @@ export default function ExchangeDetailsRow({
   const priceImpactOpacity = useSharedValue(0);
   const priceImpactScale = useSharedValue(defaultPriceImpactScale);
   const { outputCurrency } = useSwapCurrencies();
+  const isOutputMissingInWallet = !useSelector(state => state.data.assets).find(
+    ({ address }) =>
+      address.toLowerCase() === outputCurrency.address.toLowerCase()
+  );
 
   const detailsRowAnimatedStyle = useAnimatedStyle(() => ({
     opacity: detailsRowOpacity.value,
@@ -122,6 +127,7 @@ export default function ExchangeDetailsRow({
         style={detailsRowAnimatedStyle}
       >
         <ExchangeDetailsButton
+          disabled={isOutputMissingInWallet}
           onPress={onFlipCurrencies}
           testID="exchange-flip-button"
         >
