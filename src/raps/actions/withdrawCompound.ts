@@ -3,9 +3,12 @@ import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
 import { get } from 'lodash';
 import { Rap, RapActionParameters, SwapActionParameters } from '../common';
-import { ProtocolType, TransactionStatus } from '@rainbow-me/entities';
+import {
+  ProtocolType,
+  TransactionStatus,
+  TransactionType,
+} from '@rainbow-me/entities';
 import { toHex } from '@rainbow-me/handlers/web3';
-import TransactionTypes from '@rainbow-me/helpers/transactionTypes';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
 import store from '@rainbow-me/redux/store';
 import { TypeSpecificParameters } from '@rainbow-me/redux/swap';
@@ -102,7 +105,7 @@ const withdrawCompound = async (
     protocol: ProtocolType.compound,
     status: TransactionStatus.withdrawing,
     to: withdraw?.to,
-    type: TransactionTypes.withdraw,
+    type: TransactionType.withdraw,
   };
 
   logger.log(`[${actionName}] adding new txn`, newTransaction);

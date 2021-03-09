@@ -21,4 +21,6 @@ export {
   TransactionDirections,
   TransactionStatus,
   TransactionStatusTypes,
+  TransactionType,
+  TransactionTypes,
 } from './transactions';

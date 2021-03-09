@@ -27,11 +27,11 @@ import {
   RainbowTransaction,
   TransactionDirection,
   TransactionStatusTypes,
+  TransactionType,
   ZerionTransaction,
   ZerionTransactionChange,
 } from '@rainbow-me/entities';
 import { toChecksumAddress } from '@rainbow-me/handlers/web3';
-import TransactionTypes from '@rainbow-me/helpers/transactionTypes';
 import {
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
@@ -185,8 +185,8 @@ const parseTransaction = (
   if (
     isEmpty(changes) &&
     txn.protocol === ProtocolType.compound &&
-    (txn.type === TransactionTypes.deposit ||
-      txn.type === TransactionTypes.withdraw)
+    (txn.type === TransactionType.deposit ||
+      txn.type === TransactionType.withdraw)
   ) {
     transaction.status = TransactionStatusTypes.failed;
     const asset = savingsAssetsList[network][toLower(transaction.to)];
@@ -206,7 +206,7 @@ const parseTransaction = (
   if (
     isEmpty(changes) &&
     txn.status === TransactionStatusTypes.failed &&
-    txn.type === TransactionTypes.execution &&
+    txn.type === TransactionType.execution &&
     txn.direction === 'out'
   ) {
     const assetInternalTransaction = {
@@ -223,7 +223,7 @@ const parseTransaction = (
     internalTransactions = [assetInternalTransaction];
   }
 
-  if (isEmpty(changes) && txn.type === TransactionTypes.authorize) {
+  if (isEmpty(changes) && txn.type === TransactionType.authorize) {
     const approveInternalTransaction = {
       address_from: transaction.from,
       address_to: transaction.to,
@@ -235,7 +235,7 @@ const parseTransaction = (
   // logic below: prevent sending a WalletConnect 0 amount to be ignored
   if (
     isEmpty(internalTransactions) &&
-    transaction.type === TransactionTypes.execution &&
+    transaction.type === TransactionType.execution &&
     txn.direction === TransactionDirection.self
   ) {
     const ethInternalTransaction = {
@@ -252,7 +252,7 @@ const parseTransaction = (
     internalTransactions = [ethInternalTransaction];
   }
 
-  if (transaction.type === TransactionTypes.trade) {
+  if (transaction.type === TransactionType.trade) {
     internalTransactions = transformTradeRefund(internalTransactions);
   }
   internalTransactions = internalTransactions.map((internalTxn, index) => {
@@ -276,7 +276,7 @@ const parseTransaction = (
     );
 
     if (includes(purchaseTransactions, toLower(transaction.hash))) {
-      transaction.type = TransactionTypes.purchase;
+      transaction.type = TransactionType.purchase;
     }
 
     const status = getTransactionLabel({
@@ -348,7 +348,7 @@ export const dedupePendingTransactions = (
 };
 
 export const getTitle = ({ protocol: ProtocolType, status, type }) => {
-  if (type === TransactionTypes.deposit || type === TransactionTypes.withdraw) {
+  if (type === TransactionType.deposit || type === TransactionType.withdraw) {
     if (
       status === TransactionStatusTypes.deposited ||
       status === TransactionStatusTypes.withdrew ||
@@ -367,12 +367,12 @@ export const getTitle = ({ protocol: ProtocolType, status, type }) => {
 
 export const getDescription = ({ name, status, type }) => {
   switch (type) {
-    case TransactionTypes.deposit:
+    case TransactionType.deposit:
       return status === TransactionStatusTypes.depositing ||
         status === TransactionStatusTypes.sending
         ? name
         : `Deposited ${name}`;
-    case TransactionTypes.withdraw:
+    case TransactionType.withdraw:
       return status === TransactionStatusTypes.withdrawing ||
         status === TransactionStatusTypes.receiving
         ? name
@@ -398,17 +398,17 @@ export const getTransactionLabel = ({
   if (status === TransactionStatusTypes.speeding_up)
     return TransactionStatusTypes.speeding_up;
 
-  if (pending && type === TransactionTypes.purchase)
+  if (pending && type === TransactionType.purchase)
     return TransactionStatusTypes.purchasing;
 
   const isFromAccount = direction === TransactionDirection.out;
   const isToAccount = direction === TransactionDirection.in;
   const isSelf = direction === TransactionDirection.self;
 
-  if (pending && type === TransactionTypes.authorize)
+  if (pending && type === TransactionType.authorize)
     return TransactionStatusTypes.approving;
 
-  if (pending && type === TransactionTypes.deposit) {
+  if (pending && type === TransactionType.deposit) {
     if (protocol === ProtocolType.compound) {
       return TransactionStatusTypes.depositing;
     } else {
@@ -416,7 +416,7 @@ export const getTransactionLabel = ({
     }
   }
 
-  if (pending && type === TransactionTypes.withdraw) {
+  if (pending && type === TransactionType.withdraw) {
     if (protocol === ProtocolType.compound) {
       return TransactionStatusTypes.withdrawing;
     } else {
@@ -430,15 +430,15 @@ export const getTransactionLabel = ({
   if (status === TransactionStatusTypes.failed)
     return TransactionStatusTypes.failed;
 
-  if (type === TransactionTypes.trade && isFromAccount)
+  if (type === TransactionType.trade && isFromAccount)
     return TransactionStatusTypes.swapped;
 
-  if (type === TransactionTypes.authorize)
+  if (type === TransactionType.authorize)
     return TransactionStatusTypes.approved;
-  if (type === TransactionTypes.purchase)
+  if (type === TransactionType.purchase)
     return TransactionStatusTypes.purchased;
 
-  if (type === TransactionTypes.deposit) {
+  if (type === TransactionType.deposit) {
     if (protocol === ProtocolType.compound) {
       return TransactionStatusTypes.deposited;
     } else {
@@ -446,7 +446,7 @@ export const getTransactionLabel = ({
     }
   }
 
-  if (type === TransactionTypes.withdraw) {
+  if (type === TransactionType.withdraw) {
     if (protocol === ProtocolType.compound) {
       return TransactionStatusTypes.withdrew;
     } else {
