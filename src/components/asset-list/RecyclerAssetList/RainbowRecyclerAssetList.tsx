@@ -1,4 +1,4 @@
-import { isNil } from 'lodash';
+import { get, isNil } from 'lodash';
 import React, { useCallback, useState } from 'react';
 import {
   LayoutChangeEvent,
@@ -7,6 +7,7 @@ import {
   View,
 } from 'react-native';
 import { connect } from 'react-redux';
+import { DataProvider } from 'recyclerlistview';
 import styled from 'styled-components';
 import { withThemeContext } from '../../../context/ThemeContext';
 import { CoinDivider } from '../../coin-divider';
@@ -16,6 +17,7 @@ import { firstCoinRowMarginTop, ViewTypes } from '../RecyclerViewTypes';
 
 import OldAssetRecyclerList from './OldAssetRecyclerList';
 import RecyclerAssetListSharedState from './RecyclerAssetListSharedState';
+import hasRowChanged from './hasRowChanged';
 import { deviceUtils, logger } from '@rainbow-me/utils';
 
 const StyledContainer = styled(View)`
@@ -57,6 +59,7 @@ function RainbowRecyclerAssetList({
   colors,
   nativeCurrency,
   sections,
+  openFamilyTabs,
   ...extras
 }: RainbowRecyclerAssetListProps): JSX.Element {
   const [showCoinListEditor, setShowCoinListEditor] = useState<boolean>(false);
@@ -192,6 +195,79 @@ function RainbowRecyclerAssetList({
     [isCoinListEdited, nativeCurrency, sections]
   );
 
+  // pass the dataprovider
+  const shouldGetDerivedStateFromProps = useCallback(
+    (dataProvider: DataProvider) => {
+      const sectionsIndices: number[] = [];
+      const stickyComponentsIndices: number[] = [];
+      const items = sections.reduce((ctx: any[], section) => {
+        sectionsIndices.push(ctx.length);
+        if (section.pools) {
+          ctx = ctx.concat([
+            {
+              data: section.data,
+              pools: true,
+              ...section.header,
+            },
+          ]);
+        } else {
+          stickyComponentsIndices.push(ctx.length);
+          ctx = ctx.concat([
+            {
+              isHeader: true,
+              ...section.header,
+            },
+          ]);
+          if (section.collectibles) {
+            section.data.forEach((item, index) => {
+              if (item.isHeader || openFamilyTabs[item.familyName]) {
+                ctx.push({
+                  familySectionIndex: index,
+                  item: { ...item, ...section.perData },
+                  renderItem: section.renderItem, // 8% of CPU
+                });
+              }
+            });
+          } else {
+            ctx = ctx.concat(
+              section.data.map(item => ({
+                item: { ...item, ...section.perData },
+                renderItem: section.renderItem, // 1% of CPU
+              }))
+            );
+          }
+        }
+        return ctx;
+      }, []);
+      items.push({ item: { isLastPlaceholder: true }, renderItem: () => null });
+      const areSmallCollectibles = (c => c && get(c, 'type') === 'small')(
+        sections.find(e => e.collectibles)
+      );
+      return {
+        areSmallCollectibles,
+        dataProvider: dataProvider.cloneWithRows(items),
+        items,
+        itemsCount: items.length,
+        sectionsIndices,
+        stickyComponentsIndices,
+      };
+    },
+    [openFamilyTabs, sections]
+  );
+
+  //const [aggregateState, setAggregateState] = React.useState({
+  //  dataProvider: new DataProvider(hasRowChanged, this.getStableId),
+  //  items: [],
+  //  itemsCount: 0,
+  //  sectionsIndices: [],
+  //  stickyComponentsIndices: [],
+  //});
+
+  // derviedStateFromProps
+  // data provider
+  // stableId
+  // state
+
   return (
     <StyledContainer onLayout={onLayout}>
       <OldAssetRecyclerList
@@ -201,10 +277,12 @@ function RainbowRecyclerAssetList({
         isCoinListEdited={isCoinListEdited}
         nativeCurrency={nativeCurrency}
         onScroll={onScroll}
+        openFamilyTabs={openFamilyTabs}
         renderRefreshControl={renderRefreshControl}
         rowRenderer={rowRenderer}
         sections={sections}
         setShowCoinListEditor={setShowCoinListEditor}
+        shouldGetDerivedStateFromProps={shouldGetDerivedStateFromProps}
         showCoinListEditor={showCoinListEditor}
         stickyRowRenderer={stickyRowRenderer}
       />

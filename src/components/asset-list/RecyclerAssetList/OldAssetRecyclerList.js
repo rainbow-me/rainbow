@@ -247,60 +247,8 @@ export default class RecyclerAssetList extends Component {
     );
   }
 
-  static getDerivedStateFromProps({ sections, openFamilyTabs }, state) {
-    const sectionsIndices = [];
-    const stickyComponentsIndices = [];
-    const items = sections.reduce((ctx, section) => {
-      sectionsIndices.push(ctx.length);
-      if (section.pools) {
-        ctx = ctx.concat([
-          {
-            data: section.data,
-            pools: true,
-            ...section.header,
-          },
-        ]);
-      } else {
-        stickyComponentsIndices.push(ctx.length);
-        ctx = ctx.concat([
-          {
-            isHeader: true,
-            ...section.header,
-          },
-        ]);
-        if (section.collectibles) {
-          section.data.forEach((item, index) => {
-            if (item.isHeader || openFamilyTabs[item.familyName]) {
-              ctx.push({
-                familySectionIndex: index,
-                item: { ...item, ...section.perData },
-                renderItem: section.renderItem, // 8% of CPU
-              });
-            }
-          });
-        } else {
-          ctx = ctx.concat(
-            section.data.map(item => ({
-              item: { ...item, ...section.perData },
-              renderItem: section.renderItem, // 1% of CPU
-            }))
-          );
-        }
-      }
-      return ctx;
-    }, []);
-    items.push({ item: { isLastPlaceholder: true }, renderItem: () => null });
-    const areSmallCollectibles = (c => c && get(c, 'type') === 'small')(
-      sections.find(e => e.collectibles)
-    );
-    return {
-      areSmallCollectibles,
-      dataProvider: state.dataProvider.cloneWithRows(items),
-      items,
-      itemsCount: items.length,
-      sectionsIndices,
-      stickyComponentsIndices,
-    };
+  static getDerivedStateFromProps({ shouldGetDerivedStateFromProps }, state) {
+    return shouldGetDerivedStateFromProps(state.dataProvider);
   }
 
   componentDidMount() {
