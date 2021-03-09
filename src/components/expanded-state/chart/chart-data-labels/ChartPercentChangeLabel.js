@@ -94,7 +94,7 @@ export default function ChartPercentChangeLabel({
             })()
           : '',
     };
-  }, [overrideValue, latestChange]);
+  });
 
   const ratio = useRatio();
 
@@ -107,7 +107,7 @@ export default function ChartPercentChangeLabel({
           ? colors.red
           : colors.green,
     };
-  }, [colors]);
+  });
 
   return (
     <RowWithMargins align="center" margin={4}>
