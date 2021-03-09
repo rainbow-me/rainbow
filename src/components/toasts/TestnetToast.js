@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { web3Provider } from '../../handlers/web3';
 import networkInfo from '../../helpers/networkInfo';
 import networkTypes from '../../helpers/networkTypes';
-import { useAccountSettings, useInternetStatus } from '../../hooks';
 import { Icon } from '../icons';
 import { Nbsp, Text } from '../text';
 import Toast from './Toast';
+import { useAccountSettings, useInternetStatus } from '@rainbow-me/hooks';
 
 const TestnetToast = () => {
   const isConnected = useInternetStatus();

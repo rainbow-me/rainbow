@@ -16,6 +16,7 @@ import {
 } from '../components/header';
 import { Page } from '../components/layout';
 import networkInfo from '../helpers/networkInfo';
+import { updateRefetchSavings } from '../redux/data';
 import {
   useAccountEmptyState,
   useAccountSettings,
@@ -24,9 +25,8 @@ import {
   useRefreshAccountData,
   useWallets,
   useWalletSectionsData,
-} from '../hooks';
-import { useCoinListEditedValue } from '../hooks/useCoinListEdited';
-import { updateRefetchSavings } from '../redux/data';
+} from '@rainbow-me/hooks';
+import { useCoinListEditedValue } from '@rainbow-me/hooks/useCoinListEdited';
 import { position } from '@rainbow-me/styles';
 
 const HeaderOpacityToggler = styled(OpacityToggler).attrs(({ isVisible }) => ({
@@ -82,9 +82,10 @@ export default function WalletScreen() {
   // (mainnet & rinkeby)
   const fabs = useMemo(
     () =>
-      get(networkInfo[network], 'exchange_enabled')
-        ? [ExchangeFab, SendFab]
-        : [SendFab],
+      [
+        !!get(networkInfo[network], 'exchange_enabled') && ExchangeFab,
+        SendFab,
+      ].filter(e => !!e),
     [network]
   );
 

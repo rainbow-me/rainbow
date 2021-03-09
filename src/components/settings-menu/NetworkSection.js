@@ -4,14 +4,14 @@ import React, { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
 import { useDispatch } from 'react-redux';
 import networkInfo from '../../helpers/networkInfo';
+import { settingsUpdateNetwork } from '../../redux/settings';
+import { RadioList, RadioListItem } from '../radio-list';
 import {
   useAccountSettings,
   useInitializeAccountData,
   useLoadAccountData,
   useResetAccountState,
-} from '../../hooks';
-import { settingsUpdateNetwork } from '../../redux/settings';
-import { RadioList, RadioListItem } from '../radio-list';
+} from '@rainbow-me/hooks';
 
 const networks = values(networkInfo);
 

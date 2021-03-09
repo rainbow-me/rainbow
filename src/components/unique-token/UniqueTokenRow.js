@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
-import { useWallets } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
 import { deviceUtils, magicMemo } from '../../utils';
 import { Row } from '../layout';
 import UniqueTokenCard from './UniqueTokenCard';
+import { useWallets } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { padding, position } from '@rainbow-me/styles';
 

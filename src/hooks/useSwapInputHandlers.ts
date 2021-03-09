@@ -13,9 +13,8 @@ import { ethereumUtils } from '@rainbow-me/utils';
 
 const MIN_ETH = '0.01';
 
-export default function useSwapInputs() {
+export default function useSwapInputHandlers() {
   const dispatch = useDispatch();
-  const isMax = useSelector((state: AppState) => state.swap.isMax);
   const type = useSelector((state: AppState) => state.swap.type);
   const supplyBalanceUnderlying = useSelector(
     (state: AppState) =>
@@ -28,7 +27,7 @@ export default function useSwapInputs() {
 
   const updateMaxInputAmount = useCallback(() => {
     if (type === ExchangeModalTypes.withdrawal) {
-      dispatch(updateSwapInputAmount(supplyBalanceUnderlying, true));
+      dispatch(updateSwapInputAmount(supplyBalanceUnderlying));
     } else {
       let amount =
         ethereumUtils.getAsset(assets, inputCurrencyAddress)?.balance?.amount ??
@@ -37,7 +36,7 @@ export default function useSwapInputs() {
         const remaining = subtract(amount, MIN_ETH);
         amount = greaterThan(remaining, 0) ? remaining : '0';
       }
-      dispatch(updateSwapInputAmount(amount, true));
+      dispatch(updateSwapInputAmount(amount));
     }
   }, [assets, dispatch, inputCurrencyAddress, supplyBalanceUnderlying, type]);
 
@@ -63,7 +62,6 @@ export default function useSwapInputs() {
   );
 
   return {
-    isMax,
     updateInputAmount,
     updateMaxInputAmount,
     updateNativeAmount,

@@ -1,3 +1,4 @@
+import { BottomSheetScrollView, useBottomSheet } from '@gorhom/bottom-sheet';
 import React, {
   forwardRef,
   Fragment,
@@ -108,6 +109,7 @@ export default forwardRef(function SlackSheet(
   );
 
   const sheet = useRef();
+  const isInsideBottomSheet = !!useBottomSheet();
 
   useImperativeHandle(ref, () => sheet.current);
 
@@ -160,6 +162,7 @@ export default forwardRef(function SlackSheet(
         <ContentWrapper backgroundColor={bg}>
           {renderHeader?.(yPosition)}
           <Content
+            {...(isInsideBottomSheet && { as: BottomSheetScrollView })}
             backgroundColor={bg}
             contentContainerStyle={scrollEnabled && contentContainerStyle}
             contentHeight={contentHeight}

@@ -13,10 +13,10 @@ import { ToastPositionContainer, ToggleStateToast } from '../toasts';
 import { UniqueTokenAttributes } from '../unique-token';
 import ExpandedStateSection from './ExpandedStateSection';
 import {
+  UniqueTokenExpandedStateContent,
   UniqueTokenExpandedStateHeader,
-  UniqueTokenExpandedStateImage,
 } from './unique-token';
-import { useDimensions, useShowcaseTokens } from '@rainbow-me/hooks';
+import { useAudio, useDimensions, useShowcaseTokens } from '@rainbow-me/hooks';
 import { magicMemo } from '@rainbow-me/utils';
 
 const UniqueTokenExpandedState = ({ asset }) => {
@@ -54,6 +54,18 @@ const UniqueTokenExpandedState = ({ asset }) => {
   const { height: screenHeight } = useDimensions();
   const { colors, isDarkMode } = useTheme();
 
+  const { playAsset, fadeTo, currentSound, stopPlayingAsset } = useAudio();
+
+  useEffect(() => {
+    playAsset(asset);
+  }, [playAsset, asset]);
+
+  useEffect(() => {
+    return () => {
+      !!currentSound && fadeTo(currentSound, 0).then(stopPlayingAsset);
+    };
+  }, [currentSound, stopPlayingAsset, fadeTo]);
+
   return (
     <Fragment>
       <SlackSheet
@@ -64,7 +76,7 @@ const UniqueTokenExpandedState = ({ asset }) => {
         scrollEnabled
       >
         <UniqueTokenExpandedStateHeader asset={asset} />
-        <UniqueTokenExpandedStateImage asset={asset} />
+        <UniqueTokenExpandedStateContent asset={asset} />
         <SheetActionButtonRow>
           <SheetActionButton
             color={isDarkMode ? colors.darkModeDark : colors.dark}

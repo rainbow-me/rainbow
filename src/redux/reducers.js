@@ -2,6 +2,7 @@ import { combineReducers } from 'redux';
 
 import addCash from './addCash';
 import appState from './appState';
+import audio from './audio';
 import charts from './charts';
 import contacts from './contacts';
 import data from './data';
@@ -16,7 +17,6 @@ import openStateSettings, {
   openSavingsReducer,
   openSmallBalancesReducer,
 } from './openStateSettings';
-import raps from './raps';
 import requests from './requests';
 import settings from './settings';
 import showcaseTokens from './showcaseTokens';
@@ -32,6 +32,7 @@ import wallets from './wallets';
 export default combineReducers({
   addCash,
   appState,
+  audio,
   charts,
   contacts,
   data,
@@ -45,7 +46,6 @@ export default combineReducers({
   openSavings: openSavingsReducer,
   openSmallBalances: openSmallBalancesReducer,
   openStateSettings,
-  raps,
   requests,
   settings,
   showcaseTokens,

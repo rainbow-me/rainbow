@@ -7,4 +7,4 @@ export {
   estimateWithdrawFromCompound,
   createWithdrawFromCompoundRap,
 } from './withdrawFromCompound';
-export { executeRap } from './common';
+export { executeRap, getRapEstimationByType } from './common';

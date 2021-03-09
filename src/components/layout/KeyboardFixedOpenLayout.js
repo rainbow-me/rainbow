@@ -3,8 +3,8 @@ import { KeyboardAvoidingView } from 'react-native';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components';
-import { useDimensions, useKeyboardHeight } from '../../hooks';
 import Centered from './Centered';
+import { useDimensions, useKeyboardHeight } from '@rainbow-me/hooks';
 import { position } from '@rainbow-me/styles';
 
 const Container = styled(Transitioning.View)`

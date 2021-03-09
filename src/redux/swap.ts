@@ -16,9 +16,9 @@ export enum SwapModalField {
   output = 'outputAmount',
 }
 
-interface TypeSpecificParameters {
-  cTokenBalance?: string;
-  supplyBalanceUnderlying?: string;
+export interface TypeSpecificParameters {
+  cTokenBalance: string;
+  supplyBalanceUnderlying: string;
 }
 
 interface SwapState {
@@ -26,10 +26,9 @@ interface SwapState {
   inputCurrency: UniswapCurrency | null;
   independentField: SwapModalField;
   independentValue: string | null;
-  isMax: boolean;
   slippageInBips: number;
   type: string;
-  typeSpecificParameters: TypeSpecificParameters | null;
+  typeSpecificParameters?: TypeSpecificParameters | null;
   outputCurrency: UniswapCurrency | null;
 }
 
@@ -48,7 +47,7 @@ const SWAP_CLEAR_STATE = 'swap/SWAP_CLEAR_STATE';
 // -- Actions ---------------------------------------- //
 export const updateSwapTypeDetails = (
   type: string,
-  typeSpecificParameters: TypeSpecificParameters
+  typeSpecificParameters?: TypeSpecificParameters | null
 ) => (dispatch: AppDispatch) => {
   dispatch({
     payload: {
@@ -68,11 +67,11 @@ export const updateSwapSlippage = (slippage: number) => (
   });
 };
 
-export const updateSwapInputAmount = (value: string | null, isMax = false) => (
+export const updateSwapInputAmount = (value: string | null) => (
   dispatch: AppDispatch
 ) => {
   dispatch({
-    payload: { independentValue: value, isMax },
+    payload: { independentValue: value },
     type: SWAP_UPDATE_INPUT_AMOUNT,
   });
 };
@@ -195,7 +194,6 @@ const INITIAL_STATE: SwapState = {
   independentField: SwapModalField.input,
   independentValue: null,
   inputCurrency: null,
-  isMax: false,
   outputCurrency: null,
   slippageInBips: 50,
   type: ExchangeModalTypes.swap,
@@ -220,21 +218,18 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
         ...state,
         independentField: SwapModalField.input,
         independentValue: action.payload.independentValue,
-        isMax: action.payload.isMax,
       };
     case SWAP_UPDATE_NATIVE_AMOUNT:
       return {
         ...state,
         independentField: SwapModalField.native,
         independentValue: action.payload,
-        isMax: false,
       };
     case SWAP_UPDATE_OUTPUT_AMOUNT:
       return {
         ...state,
         independentField: SwapModalField.output,
         independentValue: action.payload,
-        isMax: false,
       };
     case SWAP_UPDATE_DEPOSIT_CURRENCY:
       return {
@@ -250,7 +245,6 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
       return {
         ...state,
         inputCurrency: action.payload,
-        isMax: false,
       };
     case SWAP_FLIP_CURRENCIES:
       return {

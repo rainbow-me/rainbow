@@ -20,7 +20,7 @@ index db85178..ac4f657 100644
 -import Animated, { Easing } from 'react-native-reanimated';
 +import Animated, { NewEasing as Easing } from 'react-native-reanimated';
  import { exp } from '../../utilities/easingExp';
- 
+
  const DEFAULT_ANIMATION_EASING: Animated.EasingFunction = Easing.out(exp);
 diff --git a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheetBackdrop/BottomSheetBackdrop.tsx b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheetBackdrop/BottomSheetBackdrop.tsx
 index bc12211..02c06a7 100644

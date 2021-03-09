@@ -1,15 +1,21 @@
 {
     "version": "0.1",
     "words": [
+        "gltf",
         "gradlew",
         "Imgix",
         "Imgix's",
         "immer",
         "keychain",
         "mnemonist",
+        "Monospace",
+        "Multicall",
+        "nomodule",
+        "nyquist",
         "stylelint",
         "Swipeable",
         "untrusted",
+        "usdz",
         "walletconnect"
     ]
 }

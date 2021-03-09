@@ -6,11 +6,12 @@ import ExchangeFab from './ExchangeFab';
 import SendFab from './SendFab';
 
 export const FabWrapperBottomPosition = 21 + safeAreaInsetValues.bottom;
+export const FabWrapperItemMargin = 15;
 
 const FabWrapperRow = styled(RowWithMargins).attrs({ margin: 12 })`
   bottom: ${({ isEditMode }) => (isEditMode ? -60 : FabWrapperBottomPosition)};
   position: absolute;
-  right: 15;
+  right: ${FabWrapperItemMargin};
   z-index: 2;
 `;
 
@@ -22,18 +23,23 @@ export default function FabWrapper({
   isReadOnlyWallet,
   ...props
 }) {
+  const renderFab = React.useCallback(
+    (fab, index) => {
+      const id = `${index}`;
+      return createElement(fab, {
+        isReadOnlyWallet,
+        key: `fab-${id}`,
+        ...props,
+      });
+    },
+    [props, isReadOnlyWallet]
+  );
   return (
     <FlexItem>
       {children}
       {!disabled && (
-        <FabWrapperRow isEditMode={isCoinListEdited}>
-          {fabs.map((fab, id) =>
-            createElement(fab, {
-              isReadOnlyWallet,
-              key: `fab-${id}`,
-              ...props,
-            })
-          )}
+        <FabWrapperRow isEditMode={isCoinListEdited} pointerEvents="box-none">
+          {fabs.map(renderFab)}
         </FabWrapperRow>
       )}
     </FlexItem>
