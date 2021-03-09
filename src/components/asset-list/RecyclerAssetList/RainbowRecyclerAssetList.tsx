@@ -1,3 +1,4 @@
+import { isNil } from 'lodash';
 import React, { useCallback, useState } from 'react';
 import {
   LayoutChangeEvent,
@@ -11,7 +12,7 @@ import { withThemeContext } from '../../../context/ThemeContext';
 import { CoinDivider } from '../../coin-divider';
 import { CoinRowHeight } from '../../coin-row';
 import AssetListHeader, { AssetListHeaderHeight } from '../AssetListHeader';
-import { firstCoinRowMarginTop } from '../RecyclerViewTypes';
+import { firstCoinRowMarginTop, ViewTypes } from '../RecyclerViewTypes';
 
 import OldAssetRecyclerList from './OldAssetRecyclerList';
 import RecyclerAssetListSharedState from './RecyclerAssetListSharedState';
@@ -33,6 +34,8 @@ export type RainbowRecyclerAssetListProps = {
     readonly blueGreyDark: string;
   };
   readonly nativeCurrency: string;
+  // TODO: What is a section?
+  readonly sections: readonly any[];
 };
 
 function RainbowRecyclerAssetList({
@@ -40,6 +43,7 @@ function RainbowRecyclerAssetList({
   fetchData,
   colors,
   nativeCurrency,
+  sections,
   ...extras
 }: RainbowRecyclerAssetListProps): JSX.Element {
   const [showCoinListEditor, setShowCoinListEditor] = useState<boolean>(false);
@@ -114,6 +118,67 @@ function RainbowRecyclerAssetList({
     [showCoinListEditor, setShowCoinListEditor, nativeCurrency]
   );
 
+  const onScroll = useCallback(
+    (e: unknown, f: unknown, offsetY: number) => {
+      if (isCoinListEdited) {
+        checkEditStickyHeader(offsetY);
+      }
+    },
+    [isCoinListEdited, checkEditStickyHeader]
+  );
+
+  const rowRenderer = React.useCallback(
+    (type: any, data: any, index: number): JSX.Element | null => {
+      if (isNil(data) || isNil(index)) {
+        return null;
+      }
+      //const { sections, isCoinListEdited, nativeCurrency } = this.props;
+
+      if (isCoinListEdited && !(type.index < 4)) {
+        return null;
+      }
+
+      if (type.index === ViewTypes.HEADER.index) {
+        return ViewTypes.HEADER.renderComponent({
+          data,
+          isCoinListEdited,
+        });
+      } else if (type.index === ViewTypes.COIN_ROW.index) {
+        return ViewTypes.COIN_ROW.renderComponent({
+          data,
+          type,
+        });
+      } else if (type.index === ViewTypes.COIN_DIVIDER.index) {
+        return ViewTypes.COIN_DIVIDER.renderComponent({
+          data,
+          isCoinListEdited,
+          nativeCurrency,
+        });
+      } else if (type.index === ViewTypes.COIN_SMALL_BALANCES.index) {
+        return ViewTypes.COIN_SMALL_BALANCES.renderComponent({
+          data,
+          smallBalancedChanged:
+            RecyclerAssetListSharedState.smallBalancedChanged,
+        });
+      } else if (type.index === ViewTypes.COIN_SAVINGS.index) {
+        return ViewTypes.COIN_SAVINGS.renderComponent({
+          data,
+        });
+      } else if (type.index === ViewTypes.POOLS.index) {
+        return ViewTypes.POOLS.renderComponent({ data, isCoinListEdited });
+      } else if (type.index === ViewTypes.UNIQUE_TOKEN_ROW.index) {
+        return ViewTypes.UNIQUE_TOKEN_ROW.renderComponent({
+          data,
+          index,
+          sections,
+          type,
+        });
+      }
+      return null;
+    },
+    [isCoinListEdited, nativeCurrency, sections]
+  );
+
   return (
     <StyledContainer onLayout={onLayout}>
       <OldAssetRecyclerList
@@ -122,7 +187,10 @@ function RainbowRecyclerAssetList({
         colors={colors}
         isCoinListEdited={isCoinListEdited}
         nativeCurrency={nativeCurrency}
+        onScroll={onScroll}
         renderRefreshControl={renderRefreshControl}
+        rowRenderer={rowRenderer}
+        sections={sections}
         setShowCoinListEditor={setShowCoinListEditor}
         showCoinListEditor={showCoinListEditor}
         stickyRowRenderer={stickyRowRenderer}

@@ -1,4 +1,4 @@
-import { findIndex, get, isNil } from 'lodash';
+import { findIndex, get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component, Fragment } from 'react';
 import {
@@ -13,8 +13,6 @@ import LayoutItemAnimator from './LayoutItemAnimator';
 import RecyclerAssetListSharedState from './RecyclerAssetListSharedState';
 import hasRowChanged from './hasRowChanged';
 import { deviceUtils, safeAreaInsetValues } from '@rainbow-me/utils';
-
-let smallBalancesIndex = 0;
 
 export default class RecyclerAssetList extends Component {
   static propTypes = {
@@ -155,7 +153,7 @@ export default class RecyclerAssetList extends Component {
               sections[balancesIndex].data[lastBalanceIndex - 2]
                 .smallBalancesContainer
             ) {
-              smallBalancesIndex = index - 1;
+              const smallBalancesIndex = index - 1;
               return {
                 height: ViewTypes.COIN_SMALL_BALANCES.calculateHeight({
                   isCoinListEdited: this.props.isCoinListEdited,
@@ -307,7 +305,6 @@ export default class RecyclerAssetList extends Component {
 
   componentDidMount() {
     this.animator = new LayoutItemAnimator(this.rlv, this.props.paddingBottom);
-    this.isCancelled = false;
   }
 
   componentDidUpdate(prevProps) {
@@ -439,10 +436,6 @@ export default class RecyclerAssetList extends Component {
     }
   }
 
-  componentWillUnmount = () => {
-    this.isCancelled = true;
-  };
-
   rlv = React.createRef();
 
   layoutMeasurement = 0;
@@ -500,62 +493,6 @@ export default class RecyclerAssetList extends Component {
     this.rlv = ref;
   };
 
-  handleScroll = (_nativeEventObject, _, offsetY) => {
-    if (this.props.isCoinListEdited) {
-      this.props.checkEditStickyHeader(offsetY);
-    }
-  };
-
-  rowRenderer = (type, data, index) => {
-    if (isNil(data) || isNil(index)) {
-      return null;
-    }
-
-    const { sections, isCoinListEdited, nativeCurrency } = this.props;
-
-    if (isCoinListEdited && !(type.index < 4)) {
-      return null;
-    }
-
-    if (type.index === ViewTypes.HEADER.index) {
-      return ViewTypes.HEADER.renderComponent({
-        data,
-        isCoinListEdited,
-      });
-    } else if (type.index === ViewTypes.COIN_ROW.index) {
-      return ViewTypes.COIN_ROW.renderComponent({
-        data,
-        type,
-      });
-    } else if (type.index === ViewTypes.COIN_DIVIDER.index) {
-      return ViewTypes.COIN_DIVIDER.renderComponent({
-        data,
-        isCoinListEdited,
-        nativeCurrency,
-      });
-    } else if (type.index === ViewTypes.COIN_SMALL_BALANCES.index) {
-      return ViewTypes.COIN_SMALL_BALANCES.renderComponent({
-        data,
-        smallBalancedChanged: RecyclerAssetListSharedState.smallBalancedChanged,
-      });
-    } else if (type.index === ViewTypes.COIN_SAVINGS.index) {
-      return ViewTypes.COIN_SAVINGS.renderComponent({
-        data,
-      });
-    } else if (type.index === ViewTypes.POOLS.index) {
-      return ViewTypes.POOLS.renderComponent({
-        data,
-      });
-    } else if (type.index === ViewTypes.UNIQUE_TOKEN_ROW.index) {
-      return ViewTypes.UNIQUE_TOKEN_ROW.renderComponent({
-        data,
-        index,
-        sections,
-        type,
-      });
-    }
-  };
-
   render() {
     const {
       externalScrollView,
@@ -569,7 +506,7 @@ export default class RecyclerAssetList extends Component {
       stickyComponentsIndices,
     } = this.state;
 
-    const { colors } = this.props;
+    const { colors, onScroll } = this.props;
 
     return (
       <>
@@ -583,10 +520,10 @@ export default class RecyclerAssetList extends Component {
             externalScrollView={externalScrollView}
             itemAnimator={this.animator}
             layoutProvider={this.layoutProvider}
-            onScroll={this.handleScroll}
+            onScroll={onScroll}
             ref={this.handleListRef}
             renderAheadOffset={renderAheadOffset}
-            rowRenderer={this.rowRenderer}
+            rowRenderer={this.props.rowRenderer}
             scrollIndicatorInsets={{
               bottom: safeAreaInsetValues.bottom,
               top: hideHeader ? 0 : AssetListHeaderHeight,
