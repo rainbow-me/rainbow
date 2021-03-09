@@ -1,10 +1,9 @@
 import { findIndex, get, has, isNil } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component, Fragment } from 'react';
-import { LayoutAnimation, RefreshControl, View } from 'react-native';
+import { RefreshControl, View } from 'react-native';
 import { connect } from 'react-redux';
 import {
-  BaseItemAnimator,
   DataProvider,
   LayoutProvider,
   RecyclerListView,
@@ -15,56 +14,13 @@ import { CoinDivider } from '../../coin-divider';
 import { CoinRowHeight } from '../../coin-row';
 import AssetListHeader, { AssetListHeaderHeight } from '../AssetListHeader';
 import { firstCoinRowMarginTop, ViewTypes } from '../RecyclerViewTypes';
+import LayoutItemAnimator from './LayoutItemAnimator';
+import Shared from './Shared';
 import {
   deviceUtils,
   isNewValueForPath,
   safeAreaInsetValues,
 } from '@rainbow-me/utils';
-
-const NOOP = () => undefined;
-let globalDeviceDimensions = 0;
-
-class LayoutItemAnimator extends BaseItemAnimator {
-  constructor(rlv, paddingBottom) {
-    super();
-    this.rlv = rlv;
-    this.paddingBottom = ViewTypes.FOOTER.calculateHeight({
-      paddingBottom: paddingBottom || 0,
-    });
-  }
-
-  animateDidMount = NOOP;
-  animateShift = NOOP;
-  animateWillMount = NOOP;
-  animateWillUnmount = NOOP;
-  animateWillUpdate = () => {
-    if (
-      this.rlv &&
-      this.rlv.getContentDimension().height <
-        this.rlv.getCurrentScrollOffset() +
-          globalDeviceDimensions +
-          this.paddingBottom &&
-      this.rlv.getCurrentScrollOffset() > 0
-    ) {
-      LayoutAnimation.configureNext({
-        duration: 250,
-        update: {
-          delay: 10,
-          type: 'easeInEaseOut',
-        },
-      });
-    } else {
-      LayoutAnimation.configureNext({
-        duration: 200,
-        update: {
-          initialVelocity: 0,
-          springDamping: 1,
-          type: LayoutAnimation.Types.spring,
-        },
-      });
-    }
-  };
-}
 
 let smallBalancedChanged = false;
 let smallBalancesIndex = 0;
@@ -482,7 +438,7 @@ class RecyclerAssetList extends Component {
 
     const bottomHorizonOfScreen =
       ((this.rlv && this.rlv.getCurrentScrollOffset()) || 0) +
-      globalDeviceDimensions;
+      Shared.globalDeviceDimensions;
 
     // Auto-scroll to opened family logic 👇
     if (openFamilyTabs !== prevProps.openFamilyTabs && collectibles.data) {
@@ -520,7 +476,7 @@ class RecyclerAssetList extends Component {
           const startOfDesiredComponent =
             this.rlv.getLayout(familyIndex).y - AssetListHeaderHeight;
 
-          if (focusedFamilyHeight < globalDeviceDimensions) {
+          if (focusedFamilyHeight < Shared.globalDeviceDimensions) {
             const endOfDesiredComponent =
               startOfDesiredComponent +
               focusedFamilyHeight +
@@ -528,7 +484,7 @@ class RecyclerAssetList extends Component {
 
             if (endOfDesiredComponent > bottomHorizonOfScreen) {
               this.scrollToOffset(
-                endOfDesiredComponent - globalDeviceDimensions,
+                endOfDesiredComponent - Shared.globalDeviceDimensions,
                 true
               );
             }
@@ -660,7 +616,7 @@ class RecyclerAssetList extends Component {
     // used in LayoutItemAnimator and auto-scroll logic above 👇
     const topMargin = nativeEvent.layout.y;
     const additionalPadding = 10;
-    globalDeviceDimensions =
+    Shared.globalDeviceDimensions =
       deviceUtils.dimensions.height -
       topMargin -
       AssetListHeaderHeight -
