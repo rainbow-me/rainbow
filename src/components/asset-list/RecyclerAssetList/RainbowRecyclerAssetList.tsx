@@ -1,13 +1,22 @@
-import React, { useState } from 'react';
-import { RefreshControl } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { LayoutChangeEvent, RefreshControl, View } from 'react-native';
 import { connect } from 'react-redux';
+import styled from 'styled-components';
 import { withThemeContext } from '../../../context/ThemeContext';
 import { CoinRowHeight } from '../../coin-row';
+import { AssetListHeaderHeight } from '../AssetListHeader';
 import { firstCoinRowMarginTop } from '../RecyclerViewTypes';
 
 import OldAssetRecyclerList from './OldAssetRecyclerList';
 import RecyclerAssetListSharedState from './RecyclerAssetListSharedState';
-import { logger } from '@rainbow-me/utils';
+import { deviceUtils, logger } from '@rainbow-me/utils';
+
+const StyledContainer = styled(View)`
+  display: flex;
+  flex: 1;
+  background-color: ${({ theme: { colors } }) => colors.white};
+  overflow: hidden;
+`;
 
 export type RainbowRecyclerAssetListProps = {
   readonly isCoinListEdited: boolean;
@@ -26,8 +35,8 @@ function RainbowRecyclerAssetList({
   ...extras
 }: RainbowRecyclerAssetListProps): JSX.Element {
   const [showCoinListEditor, setShowCoinListEditor] = useState<boolean>(false);
-  const [isRefreshing, setIsRefreshing] = React.useState<boolean>(false);
-  const checkEditStickyHeader = React.useCallback(
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+  const checkEditStickyHeader = useCallback(
     (offsetY: number) => {
       const offsetHeight =
         CoinRowHeight * (RecyclerAssetListSharedState.coinDividerIndex - 1) +
@@ -43,7 +52,7 @@ function RainbowRecyclerAssetList({
     },
     [isCoinListEdited, setShowCoinListEditor, showCoinListEditor]
   );
-  const handleRefresh = React.useCallback(async () => {
+  const handleRefresh = useCallback(async () => {
     if (isRefreshing || !fetchData) {
       return;
     }
@@ -57,7 +66,7 @@ function RainbowRecyclerAssetList({
       setIsRefreshing(false);
     }
   }, [isRefreshing, setIsRefreshing, fetchData]);
-  const renderRefreshControl = React.useCallback(() => {
+  const renderRefreshControl = useCallback(() => {
     return (
       <RefreshControl
         onRefresh={handleRefresh}
@@ -67,16 +76,30 @@ function RainbowRecyclerAssetList({
       />
     );
   }, [handleRefresh, isRefreshing, colors]);
+  const onLayout = useCallback(({ nativeEvent }: LayoutChangeEvent) => {
+    // set globalDeviceDimensions
+    // used in LayoutItemAnimator and auto-scroll logic above 👇
+    const topMargin = nativeEvent.layout.y;
+    const additionalPadding = 10;
+    RecyclerAssetListSharedState.globalDeviceDimensions =
+      deviceUtils.dimensions.height -
+      topMargin -
+      AssetListHeaderHeight -
+      additionalPadding;
+  }, []);
+
   return (
-    <OldAssetRecyclerList
-      {...extras}
-      checkEditStickyHeader={checkEditStickyHeader}
-      colors={colors}
-      isCoinListEdited={isCoinListEdited}
-      renderRefreshControl={renderRefreshControl}
-      setShowCoinListEditor={setShowCoinListEditor}
-      showCoinListEditor={showCoinListEditor}
-    />
+    <StyledContainer onLayout={onLayout}>
+      <OldAssetRecyclerList
+        {...extras}
+        checkEditStickyHeader={checkEditStickyHeader}
+        colors={colors}
+        isCoinListEdited={isCoinListEdited}
+        renderRefreshControl={renderRefreshControl}
+        setShowCoinListEditor={setShowCoinListEditor}
+        showCoinListEditor={showCoinListEditor}
+      />
+    </StyledContainer>
   );
 }
 

@@ -1,7 +1,6 @@
 import { findIndex, get, isNil } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component, Fragment } from 'react';
-import { RefreshControl, View } from 'react-native';
 import {
   DataProvider,
   LayoutProvider,
@@ -9,9 +8,8 @@ import {
 } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import { CoinDivider } from '../../coin-divider';
-import { CoinRowHeight } from '../../coin-row';
 import AssetListHeader, { AssetListHeaderHeight } from '../AssetListHeader';
-import { firstCoinRowMarginTop, ViewTypes } from '../RecyclerViewTypes';
+import { ViewTypes } from '../RecyclerViewTypes';
 import LayoutItemAnimator from './LayoutItemAnimator';
 import RecyclerAssetListSharedState from './RecyclerAssetListSharedState';
 import hasRowChanged from './hasRowChanged';
@@ -504,18 +502,6 @@ export default class RecyclerAssetList extends Component {
     this.rlv = ref;
   };
 
-  handleOnLayout({ nativeEvent }) {
-    // set globalDeviceDimensions
-    // used in LayoutItemAnimator and auto-scroll logic above 👇
-    const topMargin = nativeEvent.layout.y;
-    const additionalPadding = 10;
-    RecyclerAssetListSharedState.globalDeviceDimensions =
-      deviceUtils.dimensions.height -
-      topMargin -
-      AssetListHeaderHeight -
-      additionalPadding;
-  }
-
   handleScroll = (_nativeEventObject, _, offsetY) => {
     if (this.props.isCoinListEdited) {
       this.props.checkEditStickyHeader(offsetY);
@@ -589,7 +575,6 @@ export default class RecyclerAssetList extends Component {
   render() {
     const {
       externalScrollView,
-      fetchData,
       hideHeader,
       renderAheadOffset,
       isCoinListEdited,
@@ -603,12 +588,7 @@ export default class RecyclerAssetList extends Component {
     const { colors } = this.props;
 
     return (
-      <View
-        backgroundColor={colors.white}
-        flex={1}
-        onLayout={this.handleOnLayout}
-        overflow="hidden"
-      >
+      <>
         <StickyContainer
           overrideRowRenderer={this.stickyRowRenderer}
           stickyHeaderIndices={isCoinListEdited ? [0] : stickyComponentsIndices}
@@ -637,7 +617,7 @@ export default class RecyclerAssetList extends Component {
             }}
           />
         </StickyContainer>
-      </View>
+      </>
     );
   }
 }
