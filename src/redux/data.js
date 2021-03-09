@@ -30,7 +30,7 @@ import { addCashUpdatePurchases } from './addCash';
 import { uniqueTokensRefreshState } from './uniqueTokens';
 /* eslint-disable-next-line import/no-cycle */
 import { uniswapUpdateLiquidityTokens } from './uniswapLiquidity';
-import { AssetTypes } from '@rainbow-me/entities';
+import { AssetTypes, TransactionDirections } from '@rainbow-me/entities';
 import {
   getAssetPricesFromUniswap,
   getAssets,
@@ -41,7 +41,6 @@ import {
   saveLocalTransactions,
 } from '@rainbow-me/handlers/localstorage/accountLocal';
 import { getTransactionReceipt } from '@rainbow-me/handlers/web3';
-import DirectionTypes from '@rainbow-me/helpers/transactionDirectionTypes';
 import TransactionStatusTypes from '@rainbow-me/helpers/transactionStatusTypes';
 import TransactionTypes from '@rainbow-me/helpers/transactionTypes';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
@@ -690,7 +689,9 @@ export const dataWatchPendingTransactions = (cb = null) => async (
           const isSelf = toLower(tx?.from) === toLower(tx?.to);
           if (!isZero(txObj.status)) {
             const newStatus = getTransactionLabel({
-              direction: isSelf ? DirectionTypes.self : DirectionTypes.out,
+              direction: isSelf
+                ? TransactionDirections.self
+                : TransactionDirections.out,
               pending: false,
               protocol: tx?.protocol,
               status:
