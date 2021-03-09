@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { StatusBar } from 'react-native';
+import { StatusBar, StyleSheet } from 'react-native';
 import { WebView } from 'react-native-webview';
 import styled from 'styled-components';
 import Spinner from '../Spinner';
@@ -10,17 +10,18 @@ const Container = styled(FlexItem)`
 `;
 const StyledWebView = styled(WebView)`
   background-color: ${({ theme: { colors } }) => colors.white};
-  margin-top: 50;
+  margin-top: ${android ? 30 : 50};
 `;
 export default function WyreWebview({ uri }) {
   const webviewRef = useRef();
+  const { colors, isDarkMode } = useTheme();
+  const [ready, setReady] = useState(false);
   useEffect(() => {
     StatusBar.setBackgroundColor('transparent', false);
     StatusBar.setTranslucent(true);
     StatusBar.setBarStyle('dark-content', true);
   }, []);
 
-  const { colors, isDarkMode } = useTheme();
   const waveColor = isDarkMode
     ? colors.darkModeDark.replace('#', '')
     : colors.lightGrey.replace('#', '');
@@ -40,6 +41,15 @@ export default function WyreWebview({ uri }) {
   )}`;
 
   useEffect(() => {
+    setTimeout(
+      () => {
+        setReady(true);
+      },
+      ios ? 1000 : 1500
+    );
+  }, []);
+
+  useEffect(() => {
     // Stop the sound when closing the sheet
     return () => {
       const js = `
@@ -54,16 +64,20 @@ export default function WyreWebview({ uri }) {
 
   return (
     <Container>
-      {uri ? (
-        <StyledWebView
-          injectedJavaScriptForMainFrameOnly={false}
-          ref={webviewRef}
-          source={{
-            uri: playerUri,
-          }}
-        />
-      ) : (
-        <Centered flex={1}>
+      <StyledWebView
+        ref={webviewRef}
+        scalesPageToFit
+        scrollEnabled={false}
+        source={{
+          uri: playerUri,
+        }}
+      />
+
+      {!ready && (
+        <Centered
+          flex={1}
+          style={[StyleSheet.absoluteFill, { backgroundColor: colors.white }]}
+        >
           <Spinner color={colors.appleBlue} size={30} />
         </Centered>
       )}
