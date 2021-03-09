@@ -12,6 +12,7 @@ import {
   convertAmountToNativeAmount,
   convertAmountToRawAmount,
   convertNumberToString,
+  isZero,
 } from '@rainbow-me/utilities';
 
 const getOutputAmount = (
@@ -117,24 +118,33 @@ export default function useSwapDerivedOutputs() {
       if (!outputToken || !inputToken || isEmpty(allPairs)) {
         return { derivedValues, tradeDetails };
       }
-      const outputRawAmount = convertAmountToRawAmount(
-        convertNumberToString(independentValue),
-        outputToken.decimals
-      );
-      const amountOut = new TokenAmount(outputToken, outputRawAmount);
-      tradeDetails = Trade.bestTradeExactOut(allPairs, inputToken, amountOut, {
-        maxNumResults: 1,
-      })[0];
+      derivedValues[SwapModalField.output] = independentValue;
+
+      if (!isZero(independentValue)) {
+        const outputRawAmount = convertAmountToRawAmount(
+          convertNumberToString(independentValue),
+          outputToken.decimals
+        );
+        const amountOut = new TokenAmount(outputToken, outputRawAmount);
+        tradeDetails = Trade.bestTradeExactOut(
+          allPairs,
+          inputToken,
+          amountOut,
+          {
+            maxNumResults: 1,
+          }
+        )[0];
+      }
 
       const inputAmountExact = tradeDetails?.inputAmount?.toExact() ?? null;
       const inputAmount = tradeDetails?.inputAmount?.toSignificant(6) ?? null;
 
       derivedValues[SwapModalField.input] = inputAmount;
-      derivedValues[SwapModalField.output] = independentValue;
 
-      const nativeValue = inputPrice
-        ? convertAmountToNativeAmount(inputAmountExact, inputPrice)
-        : null;
+      const nativeValue =
+        inputPrice && inputAmountExact
+          ? convertAmountToNativeAmount(inputAmountExact, inputPrice)
+          : null;
 
       derivedValues[SwapModalField.native] = nativeValue;
     }
