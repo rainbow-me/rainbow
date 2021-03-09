@@ -2,7 +2,7 @@ import { get, has } from 'lodash';
 import RecyclerAssetListSharedState from './RecyclerAssetListSharedState';
 import { isNewValueForPath } from '@rainbow-me/utils';
 
-export default function hasRowChanged(r1, r2): boolean {
+export default function hasRowChanged(r1: any, r2: any): boolean {
   const isNewTitle = isNewValueForPath(r1, r2, 'title');
   const isNewTotalItems = isNewValueForPath(r1, r2, 'totalItems');
   const isNewTotalValue = isNewValueForPath(r1, r2, 'totalValue');
