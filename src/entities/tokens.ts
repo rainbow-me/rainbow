@@ -1,8 +1,27 @@
+import { AssetType } from './assetTypes';
+
+interface ZerionAssetPrice {
+  value: number;
+  relative_change_24h: number | null;
+  changed_at: number;
+}
+
 export interface Asset {
   address: string;
   decimals: number;
   name: string;
   symbol: string;
+}
+
+export interface ZerionAsset {
+  asset_code: string;
+  name: string;
+  symbol: string;
+  decimals: number;
+  type: AssetType | null;
+  icon_url: string | null;
+  price: ZerionAssetPrice | null;
+  is_displayable: boolean;
 }
 
 export interface SavingsAsset extends Asset {

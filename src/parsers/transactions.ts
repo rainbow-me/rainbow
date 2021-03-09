@@ -21,9 +21,14 @@ import {
   upperFirst,
 } from 'lodash';
 import { parseAllTxnsOnReceive } from '../config/debug';
-import { ProtocolType, ProtocolTypeNames } from '@rainbow-me/entities';
+import {
+  ProtocolType,
+  ProtocolTypeNames,
+  RainbowTransaction,
+  TransactionDirection,
+  ZerionTransaction,
+} from '@rainbow-me/entities';
 import { toChecksumAddress } from '@rainbow-me/handlers/web3';
-import DirectionTypes from '@rainbow-me/helpers/transactionDirectionTypes';
 import TransactionStatusTypes from '@rainbow-me/helpers/transactionStatusTypes';
 import TransactionTypes from '@rainbow-me/helpers/transactionTypes';
 import {
@@ -35,7 +40,10 @@ import { ethereumUtils, getTokenMetadata } from '@rainbow-me/utils';
 
 const LAST_TXN_HASH_BUFFER = 20;
 
-const dataFromLastTxHash = (transactionData, transactions) => {
+const dataFromLastTxHash = (
+  transactionData: ZerionTransaction[],
+  transactions: RainbowTransaction[]
+) => {
   if (__DEV__ && parseAllTxnsOnReceive) return transactionData;
   const lastSuccessfulTxn = find(transactions, txn => txn.hash && !txn.pending);
   const lastTxHash = lastSuccessfulTxn ? lastSuccessfulTxn.hash : '';
@@ -51,12 +59,12 @@ const dataFromLastTxHash = (transactionData, transactions) => {
 };
 
 export const parseTransactions = (
-  transactionData,
-  accountAddress,
-  nativeCurrency,
-  existingTransactions,
+  transactionData: ZerionTransaction[],
+  accountAddress: string,
+  nativeCurrency: string,
+  existingTransactions: RainbowTransaction[],
   purchaseTransactions,
-  network,
+  network: string,
   appended = false
 ) => {
   const purchaseTransactionHashes = map(purchaseTransactions, txn =>
@@ -122,7 +130,7 @@ export const parseTransactions = (
 const transformTradeRefund = internalTransactions => {
   const [txnsOut, txnsIn] = partition(
     internalTransactions,
-    txn => txn.direction === DirectionTypes.out
+    txn => txn.direction === TransactionDirection.out
   );
   const isSuccessfulSwap =
     txnsOut.length === 1 && (txnsIn.length === 1 || txnsIn.length === 2);
@@ -225,7 +233,7 @@ const parseTransaction = (
   if (
     isEmpty(internalTransactions) &&
     transaction.type === TransactionTypes.execution &&
-    txn.direction === DirectionTypes.self
+    txn.direction === TransactionDirection.self
   ) {
     const ethInternalTransaction = {
       address_from: transaction.from,
@@ -390,9 +398,9 @@ export const getTransactionLabel = ({
   if (pending && type === TransactionTypes.purchase)
     return TransactionStatusTypes.purchasing;
 
-  const isFromAccount = direction === DirectionTypes.out;
-  const isToAccount = direction === DirectionTypes.in;
-  const isSelf = direction === DirectionTypes.self;
+  const isFromAccount = direction === TransactionDirection.out;
+  const isToAccount = direction === TransactionDirection.in;
+  const isSelf = direction === TransactionDirection.self;
 
   if (pending && type === TransactionTypes.authorize)
     return TransactionStatusTypes.approving;

@@ -9,4 +9,11 @@ export type {
   ParsedAddressAsset,
   RainbowToken,
   UniswapCurrency,
+  ZerionAsset,
 } from './tokens';
+export type {
+  RainbowTransaction,
+  TransactionDirection,
+  TransactionDirections,
+  ZerionTransaction,
+} from './transactions';
