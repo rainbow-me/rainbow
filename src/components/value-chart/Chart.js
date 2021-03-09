@@ -56,7 +56,8 @@ const InnerDot = styled.View`
   height: 10px;
   border-radius: 5px;
   background-color: ${({ color }) => color};
-  shadow-color: ${({ color }) => color};
+  shadow-color: ${({ color, theme: { colors, isDarkMode } }) =>
+    isDarkMode ? colors.shadow : color};
   shadow-offset: 0 3px;
   shadow-opacity: 0.6;
   shadow-radius: 4.5px;
