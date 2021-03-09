@@ -1,4 +1,4 @@
-import { findIndex, get, has, isNil } from 'lodash';
+import { findIndex, get, isNil } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component, Fragment } from 'react';
 import { RefreshControl, View } from 'react-native';
@@ -15,107 +15,11 @@ import { CoinRowHeight } from '../../coin-row';
 import AssetListHeader, { AssetListHeaderHeight } from '../AssetListHeader';
 import { firstCoinRowMarginTop, ViewTypes } from '../RecyclerViewTypes';
 import LayoutItemAnimator from './LayoutItemAnimator';
-import Shared from './Shared';
-import {
-  deviceUtils,
-  isNewValueForPath,
-  safeAreaInsetValues,
-} from '@rainbow-me/utils';
+import RecyclerAssetListSharedState from './RecyclerAssetListSharedState';
+import hasRowChanged from './hasRowChanged';
+import { deviceUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 
-let smallBalancedChanged = false;
 let smallBalancesIndex = 0;
-
-const hasRowChanged = (r1, r2) => {
-  const isNewTitle = isNewValueForPath(r1, r2, 'title');
-  const isNewTotalItems = isNewValueForPath(r1, r2, 'totalItems');
-  const isNewTotalValue = isNewValueForPath(r1, r2, 'totalValue');
-  const isNewAsset = isNewValueForPath(r1, r2, 'item.uniqueId');
-  const isNewTokenFamilyId = isNewValueForPath(r1, r2, 'item.familyId');
-  const isNewTokenFamilyName = isNewValueForPath(r1, r2, 'item.familyName');
-  const isNewTokenFamilySize = isNewValueForPath(r1, r2, 'item.childrenAmount');
-  const isNewUniswapPercentageOwned = isNewValueForPath(
-    r1,
-    r2,
-    'item.percentageOwned'
-  );
-  const isNewUniswapToken = isNewValueForPath(r1, r2, 'item.tokenSymbol');
-  const isPinned = isNewValueForPath(r1, r2, 'item.isPinned');
-  const isNewSmallBalancesRow = isNewValueForPath(
-    r1,
-    r2,
-    'item.smallBalancesContainer'
-  );
-
-  const isCollectiblesRow = has(r1, 'item.tokens') && has(r2, 'item.tokens');
-  let isNewAssetBalance = false;
-
-  let savingsSectionChanged = false;
-  if (r1?.item?.savingsContainer && r2?.item?.savingsContainer) {
-    if (r1.item.assets.length !== r2.item.assets.length) {
-      savingsSectionChanged = true;
-    } else if (r2.item.assets.length > 0) {
-      for (let i = 0; i < r2.item.assets.length; i++) {
-        if (r1.item.assets[i].supplyRate) {
-          if (r1.item.assets[i].supplyRate !== r2.item.assets[i].supplyRate) {
-            savingsSectionChanged = true;
-          }
-        } else if (r1.item.assets[i].supplyBalanceUnderlying) {
-          if (
-            r1.item.assets[i].supplyBalanceUnderlying !==
-            r2.item.assets[i].supplyBalanceUnderlying
-          ) {
-            savingsSectionChanged = true;
-          }
-        }
-      }
-    }
-  }
-
-  if (!isCollectiblesRow) {
-    isNewAssetBalance = isNewValueForPath(
-      r1,
-      r2,
-      'item.native.balance.display'
-    );
-  }
-
-  if (r1?.item?.smallBalancesContainer && r2?.item?.smallBalancesContainer) {
-    if (r1.item.assets.length !== r2.item.assets.length) {
-      smallBalancedChanged = true;
-    } else if (r2.item.assets.length > 0) {
-      for (let i = 0; i < r2.item.assets.length; i++) {
-        if (r1.item.assets[i].native && r2.item.assets[i].native) {
-          if (
-            get(r1.item.assets[i].native, 'balance.display', null) !==
-              get(r2.item.assets[i].native, 'balance.display', null) ||
-            r1.item.assets[i].isHidden !== r2.item.assets[i].isHidden
-          ) {
-            smallBalancedChanged = true;
-          }
-        } else if (r1.item.assets[i].isHidden !== r2.item.assets[i].isHidden) {
-          smallBalancedChanged = true;
-        }
-      }
-    }
-  }
-
-  return (
-    isNewAsset ||
-    isNewAssetBalance ||
-    isNewSmallBalancesRow ||
-    isNewTitle ||
-    isNewTokenFamilyId ||
-    isNewTokenFamilyName ||
-    isNewTokenFamilySize ||
-    isNewTotalItems ||
-    isNewTotalValue ||
-    isNewUniswapPercentageOwned ||
-    isNewUniswapToken ||
-    isPinned ||
-    savingsSectionChanged ||
-    smallBalancedChanged
-  );
-};
 
 class RecyclerAssetList extends Component {
   static propTypes = {
@@ -438,7 +342,7 @@ class RecyclerAssetList extends Component {
 
     const bottomHorizonOfScreen =
       ((this.rlv && this.rlv.getCurrentScrollOffset()) || 0) +
-      Shared.globalDeviceDimensions;
+      RecyclerAssetListSharedState.globalDeviceDimensions;
 
     // Auto-scroll to opened family logic 👇
     if (openFamilyTabs !== prevProps.openFamilyTabs && collectibles.data) {
@@ -476,7 +380,10 @@ class RecyclerAssetList extends Component {
           const startOfDesiredComponent =
             this.rlv.getLayout(familyIndex).y - AssetListHeaderHeight;
 
-          if (focusedFamilyHeight < Shared.globalDeviceDimensions) {
+          if (
+            focusedFamilyHeight <
+            RecyclerAssetListSharedState.globalDeviceDimensions
+          ) {
             const endOfDesiredComponent =
               startOfDesiredComponent +
               focusedFamilyHeight +
@@ -484,7 +391,8 @@ class RecyclerAssetList extends Component {
 
             if (endOfDesiredComponent > bottomHorizonOfScreen) {
               this.scrollToOffset(
-                endOfDesiredComponent - Shared.globalDeviceDimensions,
+                endOfDesiredComponent -
+                  RecyclerAssetListSharedState.globalDeviceDimensions,
                 true
               );
             }
@@ -616,7 +524,7 @@ class RecyclerAssetList extends Component {
     // used in LayoutItemAnimator and auto-scroll logic above 👇
     const topMargin = nativeEvent.layout.y;
     const additionalPadding = 10;
-    Shared.globalDeviceDimensions =
+    RecyclerAssetListSharedState.globalDeviceDimensions =
       deviceUtils.dimensions.height -
       topMargin -
       AssetListHeaderHeight -
@@ -690,7 +598,7 @@ class RecyclerAssetList extends Component {
     } else if (type.index === ViewTypes.COIN_SMALL_BALANCES.index) {
       return ViewTypes.COIN_SMALL_BALANCES.renderComponent({
         data,
-        smallBalancedChanged,
+        smallBalancedChanged: RecyclerAssetListSharedState.smallBalancedChanged,
       });
     } else if (type.index === ViewTypes.COIN_SAVINGS.index) {
       return ViewTypes.COIN_SAVINGS.renderComponent({

@@ -5,17 +5,15 @@ import {
   RecyclerListViewState,
 } from 'recyclerlistview/dist/reactnative/core/RecyclerListView';
 import { ViewTypes } from '../RecyclerViewTypes';
-import Shared from './Shared';
-
-const NOOP = () => undefined;
+import RecyclerAssetListSharedState from './RecyclerAssetListSharedState';
 
 export default class LayoutItemAnimator extends BaseItemAnimator {
-  rlv: React.RefObject<
+  rlv: React.LegacyRef<
     RecyclerListView<RecyclerListViewProps, RecyclerListViewState>
   >;
   paddingBottom: number;
   constructor(
-    rlv: React.RefObject<
+    rlv: React.LegacyRef<
       RecyclerListView<RecyclerListViewProps, RecyclerListViewState>
     >,
     paddingBottom: number
@@ -27,16 +25,17 @@ export default class LayoutItemAnimator extends BaseItemAnimator {
     });
   }
 
-  animateDidMount = NOOP;
-  animateShift = NOOP;
-  animateWillMount = NOOP;
-  animateWillUnmount = NOOP;
+  animateDidMount = () => undefined;
+  animateShift = () => false;
+  animateWillMount = () => undefined;
+  animateWillUnmount = () => undefined;
+
   animateWillUpdate = () => {
     if (
       this.rlv &&
       this.rlv.getContentDimension().height <
         this.rlv.getCurrentScrollOffset() +
-          Shared.globalDeviceDimensions +
+          RecyclerAssetListSharedState.globalDeviceDimensions +
           this.paddingBottom &&
       this.rlv.getCurrentScrollOffset() > 0
     ) {
