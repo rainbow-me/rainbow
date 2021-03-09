@@ -123,7 +123,7 @@ export default function SwapDetailsState({
   useEffect(() => () => restoreFocusOnSwapModal(), [restoreFocusOnSwapModal]);
   useAndroidDisableGesturesOnFocus();
 
-  const keyboardOffset = keyboardHeight + insets.bottom + (android ? 50 : 10);
+  const keyboardOffset = keyboardHeight + insets.bottom + 10;
 
   const sheetHeightWithoutKeyboard =
     SheetHandleFixedToTopHeight +
