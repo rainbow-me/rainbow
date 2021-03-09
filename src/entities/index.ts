@@ -13,7 +13,12 @@ export type {
 } from './tokens';
 export type {
   RainbowTransaction,
+  ZerionTransaction,
+  ZerionTransactionChange,
+} from './transactions';
+export {
   TransactionDirection,
   TransactionDirections,
-  ZerionTransaction,
+  TransactionStatus,
+  TransactionStatusTypes,
 } from './transactions';

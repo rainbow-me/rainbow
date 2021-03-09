@@ -26,10 +26,11 @@ import {
   ProtocolTypeNames,
   RainbowTransaction,
   TransactionDirection,
+  TransactionStatusTypes,
   ZerionTransaction,
+  ZerionTransactionChange,
 } from '@rainbow-me/entities';
 import { toChecksumAddress } from '@rainbow-me/handlers/web3';
-import TransactionStatusTypes from '@rainbow-me/helpers/transactionStatusTypes';
 import TransactionTypes from '@rainbow-me/helpers/transactionTypes';
 import {
   convertRawAmountToBalance,
@@ -43,10 +44,10 @@ const LAST_TXN_HASH_BUFFER = 20;
 const dataFromLastTxHash = (
   transactionData: ZerionTransaction[],
   transactions: RainbowTransaction[]
-) => {
+): ZerionTransaction[] => {
   if (__DEV__ && parseAllTxnsOnReceive) return transactionData;
   const lastSuccessfulTxn = find(transactions, txn => txn.hash && !txn.pending);
-  const lastTxHash = lastSuccessfulTxn ? lastSuccessfulTxn.hash : '';
+  const lastTxHash = lastSuccessfulTxn?.hash ?? '';
   if (lastTxHash) {
     const lastTxnHashIndex = findIndex(transactionData, txn =>
       lastTxHash.startsWith(txn.hash)
@@ -127,7 +128,9 @@ export const parseTransactions = (
   };
 };
 
-const transformTradeRefund = internalTransactions => {
+const transformTradeRefund = (
+  internalTransactions: ZerionTransactionChange
+) => {
   const [txnsOut, txnsIn] = partition(
     internalTransactions,
     txn => txn.direction === TransactionDirection.out
@@ -157,10 +160,10 @@ const transformTradeRefund = internalTransactions => {
 
 const parseTransaction = (
   txn,
-  accountAddress,
-  nativeCurrency,
+  accountAddress: string,
+  nativeCurrency: string,
   purchaseTransactions,
-  network
+  network: string
 ) => {
   const transaction = pick(txn, [
     'hash',
@@ -319,9 +322,9 @@ const parseTransaction = (
 };
 
 export const dedupePendingTransactions = (
-  accountAddress,
-  pendingTransactions,
-  parsedTransactions
+  accountAddress: string,
+  pendingTransactions: RainbowTransaction[],
+  parsedTransactions: RainbowTransaction[]
 ) => {
   let updatedPendingTransactions = pendingTransactions;
   if (pendingTransactions.length) {
@@ -344,7 +347,7 @@ export const dedupePendingTransactions = (
   return updatedPendingTransactions;
 };
 
-export const getTitle = ({ protocol, status, type }) => {
+export const getTitle = ({ protocol: ProtocolType, status, type }) => {
   if (type === TransactionTypes.deposit || type === TransactionTypes.withdraw) {
     if (
       status === TransactionStatusTypes.deposited ||

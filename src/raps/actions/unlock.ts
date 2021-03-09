@@ -5,9 +5,8 @@ import { captureException } from '@sentry/react-native';
 import { get, isNull, toLower } from 'lodash';
 import { alwaysRequireApprove } from '../../config/debug';
 import { Rap, RapActionParameters, UnlockActionParameters } from '../common';
-import { Asset } from '@rainbow-me/entities';
+import { Asset, TransactionStatus } from '@rainbow-me/entities';
 import { toHex, web3Provider } from '@rainbow-me/handlers/web3';
-import TransactionStatusTypes from '@rainbow-me/helpers/transactionStatusTypes';
 import TransactionTypes from '@rainbow-me/helpers/transactionTypes';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
 import store from '@rainbow-me/redux/store';
@@ -156,7 +155,7 @@ const unlock = async (
     gasPrice,
     hash: approval?.hash,
     nonce: approval?.nonce,
-    status: TransactionStatusTypes.approving,
+    status: TransactionStatus.approving,
     to: approval?.to,
     type: TransactionTypes.authorize,
   };

@@ -29,7 +29,11 @@ import { addCashUpdatePurchases } from './addCash';
 /* eslint-disable-next-line import/no-cycle */
 import { uniqueTokensRefreshState } from './uniqueTokens';
 import { uniswapUpdateLiquidityTokens } from './uniswapLiquidity';
-import { AssetTypes, TransactionDirections } from '@rainbow-me/entities';
+import {
+  AssetTypes,
+  TransactionDirections,
+  TransactionStatusTypes,
+} from '@rainbow-me/entities';
 import {
   getAssetPricesFromUniswap,
   getAssets,
@@ -40,7 +44,6 @@ import {
   saveLocalTransactions,
 } from '@rainbow-me/handlers/localstorage/accountLocal';
 import { getTransactionReceipt } from '@rainbow-me/handlers/web3';
-import TransactionStatusTypes from '@rainbow-me/helpers/transactionStatusTypes';
 import TransactionTypes from '@rainbow-me/helpers/transactionTypes';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { Navigation } from '@rainbow-me/navigation';

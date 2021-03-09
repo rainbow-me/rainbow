@@ -3,13 +3,13 @@ import { get, groupBy, isEmpty, map, toLower } from 'lodash';
 import { createElement } from 'react';
 import { createSelector } from 'reselect';
 import { RequestCoinRow, TransactionCoinRow } from '../components/coin-row';
-import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 import {
   thisMonthTimestamp,
   thisYearTimestamp,
   todayTimestamp,
   yesterdayTimestamp,
 } from './transactions';
+import { TransactionStatusTypes } from '@rainbow-me/entities';
 
 const contactsSelector = state => state.contacts;
 const requestsSelector = state => state.requests;

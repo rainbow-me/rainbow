@@ -22,15 +22,6 @@ enum ZerionTransactionStatus {
   pending = 'pending',
 }
 
-interface ZerionTransactionChange {
-  address_from: string;
-  address_to: string;
-  asset: ZerionAsset;
-  direction: TransactionDirection;
-  price: number | null;
-  value: number;
-}
-
 interface ZerionTransactionFee {
   price: number;
   value: number;
@@ -39,6 +30,15 @@ interface ZerionTransactionFee {
 interface ZerionTransactionMeta {
   action?: string | null;
   application?: string | null;
+}
+
+export interface ZerionTransactionChange {
+  address_from: string;
+  address_to: string;
+  asset: ZerionAsset;
+  direction: TransactionDirection;
+  price: number | null;
+  value: number;
 }
 
 export interface ZerionTransaction {
