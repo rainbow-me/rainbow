@@ -1,5 +1,5 @@
 import { filter, find, get, isNil, map, pick, uniq } from 'lodash';
-import AssetTypes from '../helpers/assetTypes';
+import { AssetTypes } from '@rainbow-me/entities';
 
 /**
  * @desc parse unique tokens from opensea

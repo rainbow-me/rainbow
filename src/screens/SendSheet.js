@@ -18,17 +18,13 @@ import {
   SendHeader,
   SendTransactionSpeed,
 } from '../components/send';
-import { createSignableTransaction, estimateGasLimit } from '../handlers/web3';
-import AssetTypes from '../helpers/assetTypes';
-import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
+import { AssetTypes } from '@rainbow-me/entities';
 import {
-  convertAmountAndPriceToNativeDisplay,
-  convertAmountFromNativeValue,
-  formatInputDecimals,
-} from '../helpers/utilities';
-import { checkIsValidAddressOrDomain } from '../helpers/validators';
-import { sendTransaction } from '../model/wallet';
-import { useNavigation } from '../navigation/Navigation';
+  createSignableTransaction,
+  estimateGasLimit,
+} from '@rainbow-me/handlers/web3';
+import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
+import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
 import {
   useAccountAssets,
   useAccountSettings,
@@ -45,9 +41,16 @@ import {
   useTransactionConfirmation,
   useUpdateAssetOnchainBalance,
 } from '@rainbow-me/hooks';
+import { sendTransaction } from '@rainbow-me/model/wallet';
+import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { borders } from '@rainbow-me/styles';
+import {
+  convertAmountAndPriceToNativeDisplay,
+  convertAmountFromNativeValue,
+  formatInputDecimals,
+} from '@rainbow-me/utilities';
 import { deviceUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 

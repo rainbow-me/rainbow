@@ -24,13 +24,13 @@ import {
   UNISWAP_24HOUR_PRICE_QUERY,
   UNISWAP_PRICES_QUERY,
 } from '../apollo/queries';
-import coingeckoIdsFallback from '../references/coingecko/ids.json';
 /* eslint-disable-next-line import/no-cycle */
 import { addCashUpdatePurchases } from './addCash';
 /* eslint-disable-next-line import/no-cycle */
 import { uniqueTokensRefreshState } from './uniqueTokens';
 /* eslint-disable-next-line import/no-cycle */
 import { uniswapUpdateLiquidityTokens } from './uniswapLiquidity';
+import { AssetTypes } from '@rainbow-me/entities';
 import {
   getAssetPricesFromUniswap,
   getAssets,
@@ -41,7 +41,6 @@ import {
   saveLocalTransactions,
 } from '@rainbow-me/handlers/localstorage/accountLocal';
 import { getTransactionReceipt } from '@rainbow-me/handlers/web3';
-import AssetTypes from '@rainbow-me/helpers/assetTypes';
 import DirectionTypes from '@rainbow-me/helpers/transactionDirectionTypes';
 import TransactionStatusTypes from '@rainbow-me/helpers/transactionStatusTypes';
 import TransactionTypes from '@rainbow-me/helpers/transactionTypes';
@@ -58,6 +57,7 @@ import {
   parseTransactions,
 } from '@rainbow-me/parsers';
 import {
+  coingeckoIdsFallback,
   DPI_ADDRESS,
   ETH_ADDRESS,
   ETH_COINGECKO_ID,
