@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
 import { get } from 'lodash';
-import TransactionStatusTypes from '../helpers/transactionStatusTypes';
-import TransactionTypes from '../helpers/transactionTypes';
+import { TransactionStatusTypes } from '@rainbow-me/entities';
+import TransactionTypes from '@rainbow-me/helpers/transactionTypes';
 
 export const buildTransactionUniqueIdentifier = ({ hash, displayDetails }) =>
   hash || get(displayDetails, 'timestampInMs');

@@ -7,13 +7,6 @@ import {
 } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import styled from 'styled-components';
-import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
-import { buildTransactionUniqueIdentifier } from '../../helpers/transactions';
-import {
-  deviceUtils,
-  isNewValueForPath,
-  safeAreaInsetValues,
-} from '../../utils';
 import {
   ContractInteractionCoinRow,
   RequestCoinRow,
@@ -24,6 +17,13 @@ import { ProfileMasthead } from '../profile';
 import ActivityListEmptyState from './ActivityListEmptyState';
 import ActivityListHeader from './ActivityListHeader';
 import LoadingState from './LoadingState';
+import { TransactionStatusTypes } from '@rainbow-me/entities';
+import { buildTransactionUniqueIdentifier } from '@rainbow-me/helpers/transactions';
+import {
+  deviceUtils,
+  isNewValueForPath,
+  safeAreaInsetValues,
+} from '@rainbow-me/utils';
 
 const ViewTypes = {
   COMPONENT_HEADER: 0,

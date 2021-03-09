@@ -6,19 +6,19 @@ import { Transition, Transitioning } from 'react-native-reanimated';
 import styled from 'styled-components';
 import jumpingDaiAnimation from '../../assets/lottie/jumping-dai.json';
 import jumpingEthAnimation from '../../assets/lottie/jumping-eth.json';
-import { useNavigation } from '../../navigation/Navigation';
 import { CoinIcon } from '../coin-icon';
 import { FloatingEmojisTapper } from '../floating-emojis';
 import { Centered, Row } from '../layout';
 import { Br, Emoji, Text } from '../text';
 import NeedHelpButton from './NeedHelpButton';
 import SupportButton from './SupportButton';
-import TransactionStatusTypes from '@rainbow-me/helpers/transactionStatusTypes';
+import { TransactionStatusTypes } from '@rainbow-me/entities';
 import {
   ADD_CASH_STATUS_TYPES,
   WYRE_ORDER_STATUS_TYPES,
 } from '@rainbow-me/helpers/wyreStatusTypes';
 import { useDimensions, usePrevious, useTimeout } from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import { ETH_ADDRESS, getWyreErrorOverride } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';

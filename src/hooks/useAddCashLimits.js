@@ -2,7 +2,7 @@ import { differenceInDays, differenceInYears } from 'date-fns';
 import { findIndex, sumBy, take } from 'lodash';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import TransactionStatusTypes from '../helpers/transactionStatusTypes';
+import { TransactionStatusTypes } from '@rainbow-me/entities';
 
 const DEFAULT_WEEKLY_LIMIT = 500;
 const DEFAULT_YEARLY_LIMIT = 5000;

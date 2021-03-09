@@ -1,11 +1,11 @@
 import { isHexString } from '@ethersproject/bytes';
 import { get, isNil, pick } from 'lodash';
-import TransactionStatusTypes from '../helpers/transactionStatusTypes';
+import { getDescription, getTitle } from './transactions';
+import { TransactionStatusTypes } from '@rainbow-me/entities';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToBalanceDisplay,
-} from '../helpers/utilities';
-import { getDescription, getTitle } from './transactions';
+} from '@rainbow-me/utilities';
 
 /**
  * @desc parse transactions from native prices
