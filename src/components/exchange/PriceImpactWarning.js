@@ -14,7 +14,11 @@ const Content = styled(Centered).attrs({
 `;
 
 const Label = styled(Text).attrs(
-  ({ theme: { colors }, color = colors.blueGreyDark80, letterSpacing }) => ({
+  ({
+    theme: { colors },
+    color = colors.alpha(colors.blueGreyDark, 0.8),
+    letterSpacing,
+  }) => ({
     color,
     letterSpacing,
     size: 'large',
@@ -38,7 +42,7 @@ export default function PriceImpactWarning({
       <ButtonPressAnimation onPress={onPress} scaleTo={0.94}>
         <Content>
           <Label color={priceImpactColor}>{`􀇿 `}</Label>
-          <Label>Small Market</Label>
+          <Label color="whiteLabel">Small Market</Label>
           <Label color={priceImpactColor}>{` • ${heading} `}</Label>
           <Label color={priceImpactColor} letterSpacing="roundedTight">
             {headingValue}
