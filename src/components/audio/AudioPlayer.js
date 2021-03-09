@@ -12,6 +12,20 @@ const StyledWebView = styled(WebView)`
   background-color: ${({ theme: { colors } }) => colors.white};
   margin-top: ${android ? 30 : 50};
 `;
+
+const buildPlayerUrl = options => {
+  let qsArray = [];
+  for (let p in options)
+    if (options.hasOwnProperty(p)) {
+      qsArray.push(
+        `${encodeURIComponent(p)}=${encodeURIComponent(options[p])}`
+      );
+    }
+  const qs = qsArray.join('&');
+  const base_url = `https://rainbow-me.github.io/rainbow-playa/index.html`;
+  return `${base_url}?${qs}`;
+};
+
 export default function WyreWebview({ uri }) {
   const webviewRef = useRef();
   const { colors, isDarkMode } = useTheme();
@@ -36,9 +50,31 @@ export default function WyreWebview({ uri }) {
   const barWidth = 4;
   const waveformHeight = 220;
 
-  const playerUri = `https://rainbow-me.github.io/rainbow-playa/index.html?bgColor=${bgColor}&waveColor=${waveColor}&progressColor=${progressColor}&cursorColor=${cursorColor}&buttonColor=${buttonColor}&buttonBackground=${buttonBackground}&textColor=${textColor}&barWidth=${barWidth}&waveformHeight=${waveformHeight}&url=${encodeURIComponent(
-    uri
-  )}`;
+  const playerUri = useMemo(
+    () =>
+      buildPlayerUrl({
+        barWidth,
+        bgColor,
+        buttonBackground,
+        buttonColor,
+        cursorColor,
+        progressColor,
+        textColor,
+        url: uri,
+        waveColor,
+        waveformHeight,
+      }),
+    [
+      bgColor,
+      buttonBackground,
+      buttonColor,
+      cursorColor,
+      progressColor,
+      textColor,
+      uri,
+      waveColor,
+    ]
+  );
 
   useEffect(() => {
     setTimeout(
