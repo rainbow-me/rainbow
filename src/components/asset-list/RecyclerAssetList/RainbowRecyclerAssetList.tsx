@@ -200,7 +200,8 @@ function RainbowRecyclerAssetList({
 
   // pass the dataprovider
   const shouldGetDerivedStateFromProps = useCallback(
-    (dataProvider: DataProvider) => {
+    (props, state) => {
+      const { dataProvider } = state;
       const sectionsIndices: number[] = [];
       const stickyComponentsIndices: number[] = [];
       const items = sections.reduce((ctx: any[], section) => {

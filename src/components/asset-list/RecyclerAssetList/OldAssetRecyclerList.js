@@ -246,8 +246,8 @@ export default class RecyclerAssetList extends Component {
     );
   }
 
-  static getDerivedStateFromProps({ shouldGetDerivedStateFromProps }, state) {
-    return shouldGetDerivedStateFromProps(state.dataProvider);
+  static getDerivedStateFromProps(props, state) {
+    return props.shouldGetDerivedStateFromProps(props, state);
   }
 
   componentDidUpdate(prevProps) {
