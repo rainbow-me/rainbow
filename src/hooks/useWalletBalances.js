@@ -2,15 +2,15 @@ import { Contract } from '@ethersproject/contracts';
 import { forEach, get, isEmpty, keys, values } from 'lodash';
 import { useCallback } from 'react';
 import { queryCache, useQuery } from 'react-query';
+import useAccountSettings from './useAccountSettings';
 import {
   saveWalletBalances,
   WALLET_BALANCES_FROM_STORAGE,
-} from '../handlers/localstorage/walletBalances';
-import { web3Provider } from '../handlers/web3';
-import networkInfo from '../helpers/networkInfo';
-import { fromWei, handleSignificantDecimals } from '../helpers/utilities';
-import balanceCheckerContractAbi from '../references/balances-checker-abi.json';
-import useAccountSettings from './useAccountSettings';
+} from '@rainbow-me/handlers/localstorage/walletBalances';
+import { web3Provider } from '@rainbow-me/handlers/web3';
+import networkInfo from '@rainbow-me/helpers/networkInfo';
+import { balanceCheckerContractAbi } from '@rainbow-me/references';
+import { fromWei, handleSignificantDecimals } from '@rainbow-me/utilities';
 import logger from 'logger';
 
 const ETH_ADDRESS = '0x0000000000000000000000000000000000000000';

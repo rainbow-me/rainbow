@@ -1,13 +1,13 @@
 import { get, isNil, map, toUpper } from 'lodash';
 import { dedupeUniqueTokens } from './uniqueTokens';
-import AssetTypes from '@rainbow-me/helpers/assetTypes';
+import { AssetTypes } from '@rainbow-me/entities';
 import {
   add,
   convertAmountAndPriceToNativeDisplay,
   convertAmountToNativeDisplay,
   convertAmountToPercentageDisplay,
   convertRawAmountToBalance,
-} from '@rainbow-me/helpers/utilities';
+} from '@rainbow-me/utilities';
 import { getTokenMetadata, isLowerCaseMatch } from '@rainbow-me/utils';
 
 /**

@@ -2,14 +2,14 @@ import { getAddress } from '@ethersproject/address';
 import { BigNumber } from '@ethersproject/bignumber';
 import { isHexString as isEthersHexString } from '@ethersproject/bytes';
 import { isValidMnemonic as ethersIsValidMnemonic } from '@ethersproject/hdnode';
-
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { parseEther } from '@ethersproject/units';
 import UnstoppableResolution from '@unstoppabledomains/resolution';
 import { get, replace, startsWith } from 'lodash';
 import { INFURA_PROJECT_ID, INFURA_PROJECT_ID_DEV } from 'react-native-dotenv';
-import AssetTypes from '../helpers/assetTypes';
-import NetworkTypes from '../helpers/networkTypes';
+import { AssetTypes } from '@rainbow-me/entities';
+import NetworkTypes from '@rainbow-me/helpers/networkTypes';
+import { ethUnits, smartContractMethods } from '@rainbow-me/references';
 import {
   addBuffer,
   convertAmountToRawAmount,
@@ -18,10 +18,8 @@ import {
   greaterThan,
   handleSignificantDecimals,
   multiply,
-} from '../helpers/utilities';
-import smartContractMethods from '../references/smartcontract-methods.json';
-import { ethereumUtils } from '../utils';
-import { ethUnits } from '@rainbow-me/references';
+} from '@rainbow-me/utilities';
+import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const infuraProjectId = __DEV__ ? INFURA_PROJECT_ID_DEV : INFURA_PROJECT_ID;

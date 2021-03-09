@@ -2,8 +2,11 @@ import { mapKeys, mapValues } from 'lodash';
 import { savingsAssets } from './compound';
 import { Asset, SavingsAsset } from '@rainbow-me/entities';
 
+export { default as balanceCheckerContractAbi } from './balances-checker-abi.json';
 export { default as chains } from './chains.json';
+export { default as coingeckoIdsFallback } from './coingecko/ids.json';
 export { compoundCERC20ABI, compoundCETHABI } from './compound';
+export { default as DefaultTokenLists } from './default-token-lists.json';
 export {
   defiSdkAdapterRegistryABI,
   DEFI_SDK_ADAPTER_REGISTRY_ADDRESS,
@@ -12,8 +15,11 @@ export { default as emojis } from './emojis.json';
 export { default as erc20ABI } from './erc20-abi.json';
 export { default as ethUnits } from './ethereum-units.json';
 export { DPI_ADDRESS } from './indexes';
+export { default as migratedTokens } from './migratedTokens.json';
 export { default as supportedNativeCurrencies } from './native-currencies.json';
 export { default as shitcoins } from './shitcoins.json';
+export { default as smartContractMethods } from './smartcontract-methods.json';
+export { default as testnetAssets } from './testnet-assets.json';
 export {
   CURATED_UNISWAP_TOKENS,
   PAIR_GET_RESERVES_CALL_DATA,
@@ -27,7 +33,6 @@ export {
   UNISWAP_V2_ROUTER_ABI,
   UNISWAP_V2_ROUTER_ADDRESS,
 } from './uniswap';
-export { default as DefaultTokenLists } from './default-token-lists.json';
 
 export const ETH_ICON_URL = 'https://s3.amazonaws.com/token-icons/eth.png';
 

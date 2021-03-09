@@ -2,7 +2,7 @@ import { find, matchesProperty } from 'lodash';
 import { useMemo } from 'react';
 import useAccountAssets from './useAccountAssets';
 import useUniswapAssetsInWallet from './useUniswapAssetsInWallet';
-import AssetTypes from '@rainbow-me/helpers/assetTypes';
+import { AssetTypes } from '@rainbow-me/entities';
 
 export default function useAsset(asset) {
   const { allAssets, collectibles } = useAccountAssets();
