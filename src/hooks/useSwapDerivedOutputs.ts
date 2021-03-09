@@ -21,7 +21,13 @@ const getOutputAmount = (
   outputToken: Token | null,
   allPairs: Pair[] | null
 ) => {
-  if (!inputAmount || !outputToken || !allPairs || isEmpty(allPairs)) {
+  if (
+    !inputAmount ||
+    isZero(inputAmount) ||
+    !outputToken ||
+    !allPairs ||
+    isEmpty(allPairs)
+  ) {
     return {
       outputAmount: null,
       tradeDetails: null,
@@ -83,9 +89,12 @@ export default function useSwapDerivedOutputs() {
 
     if (independentField === SwapModalField.input) {
       derivedValues[SwapModalField.input] = independentValue;
-      const nativeValue = inputPrice
-        ? convertAmountToNativeAmount(independentValue, inputPrice)
-        : null;
+
+      const nativeValue =
+        inputPrice && !isZero(independentValue)
+          ? convertAmountToNativeAmount(independentValue, inputPrice)
+          : null;
+
       derivedValues[SwapModalField.native] = nativeValue;
       const { outputAmount, tradeDetails: newTradeDetails } = getOutputAmount(
         independentValue,
@@ -97,7 +106,7 @@ export default function useSwapDerivedOutputs() {
       derivedValues[SwapModalField.output] = outputAmount;
     } else if (independentField === SwapModalField.native) {
       const inputAmountValue =
-        independentValue && inputPrice
+        independentValue && !isZero(independentValue) && inputPrice
           ? convertAmountFromNativeValue(
               independentValue,
               inputPrice,
