@@ -16,6 +16,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useMemoOne } from 'use-memo-one';
 import { measureTopMoverCoinRow, TopMoverCoinRow } from '../coin-row';
+import { withSpeed } from '@rainbow-me/utils';
 
 const DECCELERATION = 0.998;
 
@@ -52,6 +53,7 @@ const SingleElement = ({
       key={`${offset}-${index}`}
       style={[
         {
+          flexDirection: 'row',
           position: 'absolute',
         },
         style,
@@ -70,7 +72,7 @@ const SwipeableList = ({ components, speed }) => {
   const endPan = () => (isPanStarted.current = false);
 
   useEffect(() => {
-    swiping.value = withDecay({ deceleration: 1, velocity: speed });
+    swiping.value = withSpeed({ speed });
   }, [speed, swiping]);
 
   const onGestureEvent = useAnimatedGestureHandler({
@@ -87,7 +89,7 @@ const SwipeableList = ({ components, speed }) => {
         deceleration: DECCELERATION,
         velocity: event.velocityX,
       });
-      swiping.value = withDecay({ deceleration: 1, velocity: speed });
+      swiping.value = withSpeed({ speed });
     },
     onFail: () => {
       android && runOnJS(endPan)();
@@ -100,10 +102,7 @@ const SwipeableList = ({ components, speed }) => {
   const restoreAnimation = useCallback(() => {
     setTimeout(() => {
       if (!isPanStarted.current) {
-        swiping.value = withDecay({
-          deceleration: 1,
-          velocity: speed,
-        });
+        swiping.value = withSpeed({ speed });
       }
     }, 100);
   }, [speed, swiping]);
@@ -115,13 +114,13 @@ const SwipeableList = ({ components, speed }) => {
 
   const onTapGestureEvent = useAnimatedGestureHandler({
     onCancel: () => {
-      swiping.value = withDecay({ deceleration: 1, velocity: speed });
+      swiping.value = withSpeed({ speed });
     },
     onEnd: () => {
-      swiping.value = withDecay({ deceleration: 1, velocity: speed });
+      swiping.value = withSpeed({ speed });
     },
     onFail: () => {
-      swiping.value = withDecay({ deceleration: 1, velocity: speed });
+      swiping.value = withSpeed({ speed });
     },
     onStart: () => {
       cancelAnimation(transX);
@@ -133,6 +132,8 @@ const SwipeableList = ({ components, speed }) => {
     () => components.reduce((acc, { width }) => acc + width, 0),
     [components]
   );
+
+  const [first, second, third, ...rest] = components;
 
   const panRef = useRef();
   const lpRef = useRef();
@@ -172,21 +173,26 @@ const SwipeableList = ({ components, speed }) => {
                     flexDirection: 'row',
                   }}
                 >
-                  {components.map(({ view, offset, width }, index) => (
+                  {[[first, second, third], rest].map((components, index) => (
                     <SingleElement
                       index={index}
-                      key={`${offset}-${index}`}
-                      offset={offset}
+                      key={`${components[0].offset}-${index}`}
+                      offset={components[0].offset}
                       sumWidth={sumWidth}
                       transX={translate}
-                      width={width}
+                      width={components.reduce(
+                        (acc, { width }) => acc + width,
+                        0
+                      )}
                     >
-                      {ios
-                        ? view
-                        : view({
-                            onPressCancel: restoreAnimation,
-                            onPressStart: startAnimation,
-                          })}
+                      {components.map(({ view }) =>
+                        ios
+                          ? view
+                          : view({
+                              onPressCancel: restoreAnimation,
+                              onPressStart: startAnimation,
+                            })
+                      )}
                     </SingleElement>
                   ))}
                 </Animated.View>

@@ -100,7 +100,7 @@ const TopMoverCoinRow = asset => {
       reanimatedButton={android}
       scaleTo={0.925}
     >
-      <RowWithMargins margin={TopMoverCoinRowMargin}>
+      <RowWithMargins padding={TopMoverCoinRowMargin}>
         <Centered>
           <CoinIcon
             address={address}
