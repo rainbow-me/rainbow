@@ -129,9 +129,9 @@ export default class RecyclerAssetList extends Component {
             if (RecyclerAssetListSharedState.coinDividerIndex !== index) {
               RecyclerAssetListSharedState.coinDividerIndex = index;
               if (this.props.isCoinListEdited) {
-                this.rlv &&
+                RecyclerAssetListSharedState.rlv &&
                   this.props.checkEditStickyHeader(
-                    this.rlv.getCurrentScrollOffset()
+                    RecyclerAssetListSharedState.rlv.getCurrentScrollOffset()
                   );
               }
             }
@@ -252,7 +252,10 @@ export default class RecyclerAssetList extends Component {
   }
 
   componentDidMount() {
-    this.animator = new LayoutItemAnimator(this.rlv, this.props.paddingBottom);
+    this.animator = new LayoutItemAnimator(
+      RecyclerAssetListSharedState.rlv,
+      this.props.paddingBottom
+    );
   }
 
   componentDidUpdate(prevProps) {
@@ -260,7 +263,8 @@ export default class RecyclerAssetList extends Component {
 
     if (nativeCurrency !== prevProps.nativeCurrency) {
       setTimeout(() => {
-        this.rlv && this.rlv.scrollToTop(false);
+        RecyclerAssetListSharedState.rlv &&
+          RecyclerAssetListSharedState.rlv.scrollToTop(false);
       }, 200);
     }
 
@@ -280,8 +284,9 @@ export default class RecyclerAssetList extends Component {
     });
 
     const bottomHorizonOfScreen =
-      ((this.rlv && this.rlv.getCurrentScrollOffset()) || 0) +
-      RecyclerAssetListSharedState.globalDeviceDimensions;
+      ((RecyclerAssetListSharedState.rlv &&
+        RecyclerAssetListSharedState.rlv.getCurrentScrollOffset()) ||
+        0) + RecyclerAssetListSharedState.globalDeviceDimensions;
 
     // Auto-scroll to opened family logic 👇
     if (openFamilyTabs !== prevProps.openFamilyTabs && collectibles.data) {
@@ -318,7 +323,8 @@ export default class RecyclerAssetList extends Component {
           );
 
           const startOfDesiredComponent =
-            this.rlv.getLayout(familyIndex).y - AssetListHeaderHeight;
+            RecyclerAssetListSharedState.rlv.getLayout(familyIndex).y -
+            AssetListHeaderHeight;
 
           if (
             focusedFamilyHeight <
@@ -348,18 +354,19 @@ export default class RecyclerAssetList extends Component {
 
     // Auto-scroll to end of the list if something was closed/disappeared 👇
     if (
-      this.rlv &&
-      this.rlv.getContentDimension().height <
+      RecyclerAssetListSharedState.rlv &&
+      RecyclerAssetListSharedState.rlv.getContentDimension().height <
         bottomHorizonOfScreen +
           ViewTypes.FOOTER.calculateHeight({
             paddingBottom: this.props.paddingBottom || 0,
           }) &&
-      this.rlv.getCurrentScrollOffset() > 0 &&
+      RecyclerAssetListSharedState.rlv.getCurrentScrollOffset() > 0 &&
       (!this.props.isCoinListEdited ||
         (!prevProps.isCoinListEdited && this.props.isCoinListEdited))
     ) {
       setTimeout(() => {
-        this.rlv && this.rlv.scrollToEnd({ animated: true });
+        RecyclerAssetListSharedState.rlv &&
+          RecyclerAssetListSharedState.rlv.scrollToEnd({ animated: true });
       }, 10);
     }
 
@@ -380,12 +387,11 @@ export default class RecyclerAssetList extends Component {
       );
 
       const startOfDesiredComponent =
-        this.rlv.getLayout(familyIndex).y - AssetListHeaderHeight;
+        RecyclerAssetListSharedState.rlv.getLayout(familyIndex).y -
+        AssetListHeaderHeight;
       this.scrollToOffset(startOfDesiredComponent, true);
     }
   }
-
-  rlv = React.createRef();
 
   layoutMeasurement = 0;
 
@@ -395,7 +401,8 @@ export default class RecyclerAssetList extends Component {
 
   scrollToOffset(position, animated) {
     setTimeout(() => {
-      this.rlv && this.rlv.scrollToOffset(0, position, animated);
+      RecyclerAssetListSharedState.rlv &&
+        RecyclerAssetListSharedState.rlv.scrollToOffset(0, position, animated);
     }, 5);
   }
 
@@ -439,7 +446,7 @@ export default class RecyclerAssetList extends Component {
   };
 
   handleListRef = ref => {
-    this.rlv = ref;
+    RecyclerAssetListSharedState.rlv = ref;
   };
 
   render() {
