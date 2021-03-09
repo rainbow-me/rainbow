@@ -1,19 +1,18 @@
-import { Trade } from '@uniswap/sdk';
 import { concat, reduce } from 'lodash';
 import {
   assetNeedsUnlocking,
+  estimateApprove,
   getDepositGasLimit,
-  isValidSwapInput,
 } from './actions';
 import {
   createNewAction,
   createNewRap,
   RapAction,
   RapActionTypes,
+  SwapActionParameters,
 } from './common';
-import { Asset, SelectedGasPrice } from '@rainbow-me/entities';
+import { Asset } from '@rainbow-me/entities';
 import { estimateSwapGasLimit } from '@rainbow-me/handlers/uniswap';
-import { rapsAddOrUpdate } from '@rainbow-me/redux/raps';
 import store from '@rainbow-me/redux/store';
 import {
   ethUnits,
@@ -21,31 +20,22 @@ import {
   UNISWAP_V2_ROUTER_ADDRESS,
 } from '@rainbow-me/references';
 import { add } from '@rainbow-me/utilities';
-import { contractUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
-export const estimateSwapAndDepositCompound = async ({
-  inputAmount,
-  inputCurrency,
-  outputAmount,
-  outputCurrency,
-  tradeDetails,
-}: {
-  inputAmount: string;
-  inputCurrency: Asset;
-  outputAmount: string | null;
-  outputCurrency: Asset;
-  tradeDetails: Trade;
-}) => {
+export const estimateSwapAndDepositCompound = async (
+  swapParameters: SwapActionParameters
+) => {
+  const { inputAmount, outputAmount, tradeDetails } = swapParameters;
+  const {
+    inputCurrency,
+    outputCurrency,
+    slippageInBips: slippage,
+  } = store.getState().swap;
   const { accountAddress, chainId, network } = store.getState().settings;
   const requiresSwap = !!outputCurrency;
   let gasLimits: (string | number)[] = [];
   if (requiresSwap) {
-    const isValid = isValidSwapInput({
-      inputCurrency,
-      outputCurrency,
-    });
-    if (!isValid) return ethUnits.basic_deposit;
+    if (!inputCurrency) return ethUnits.basic_deposit;
 
     const swapAssetNeedsUnlocking = await assetNeedsUnlocking(
       accountAddress,
@@ -54,7 +44,7 @@ export const estimateSwapAndDepositCompound = async ({
       UNISWAP_V2_ROUTER_ADDRESS
     );
     if (swapAssetNeedsUnlocking) {
-      const unlockGasLimit = await contractUtils.estimateApprove(
+      const unlockGasLimit = await estimateApprove(
         accountAddress,
         inputCurrency.address,
         UNISWAP_V2_ROUTER_ADDRESS
@@ -67,10 +57,10 @@ export const estimateSwapAndDepositCompound = async ({
       chainId,
       inputCurrency,
       outputCurrency,
+      slippage,
       tradeDetails,
     });
     gasLimits = concat(gasLimits, swapGasLimit);
-    logger.log('[swap and deposit] making swap func');
   }
   const tokenToDeposit: Asset = requiresSwap ? outputCurrency : inputCurrency;
   const cTokenContract =
@@ -88,7 +78,7 @@ export const estimateSwapAndDepositCompound = async ({
   );
 
   if (depositAssetNeedsUnlocking) {
-    const depositGasLimit = await contractUtils.estimateApprove(
+    const depositGasLimit = await estimateApprove(
       accountAddress,
       tokenToDeposit.address,
       cTokenContract
@@ -101,23 +91,11 @@ export const estimateSwapAndDepositCompound = async ({
   return reduce(gasLimits, (acc, limit) => add(acc, limit), '0');
 };
 
-export const createSwapAndDepositCompoundRap = async ({
-  callback,
-  inputAmount,
-  inputCurrency,
-  outputAmount,
-  outputCurrency,
-  selectedGasPrice,
-  tradeDetails,
-}: {
-  callback: () => void;
-  inputAmount: string;
-  inputCurrency: Asset;
-  outputAmount: string | null;
-  outputCurrency: Asset;
-  selectedGasPrice: SelectedGasPrice;
-  tradeDetails: Trade;
-}) => {
+export const createSwapAndDepositCompoundRap = async (
+  swapParameters: SwapActionParameters
+) => {
+  const { inputAmount, outputAmount, tradeDetails } = swapParameters;
+  const { inputCurrency, outputCurrency } = store.getState().swap;
   const { accountAddress, network } = store.getState().settings;
   const requiresSwap = !!outputCurrency;
   logger.log('[swap and deposit] currencies', inputCurrency, outputCurrency);
@@ -136,11 +114,9 @@ export const createSwapAndDepositCompoundRap = async ({
     if (swapAssetNeedsUnlocking) {
       // create unlock for swap rap
       const unlock = createNewAction(RapActionTypes.unlock, {
-        accountAddress,
         amount: inputAmount,
         assetToUnlock: inputCurrency,
         contractAddress: UNISWAP_V2_ROUTER_ADDRESS,
-        selectedGasPrice,
       });
       actions = concat(actions, unlock);
       logger.log('[swap and deposit] making unlock for swap func');
@@ -148,11 +124,7 @@ export const createSwapAndDepositCompoundRap = async ({
 
     // create a swap rap
     const swap = createNewAction(RapActionTypes.swap, {
-      accountAddress,
       inputAmount,
-      inputCurrency,
-      outputCurrency,
-      selectedGasPrice,
       tradeDetails,
     });
     actions = concat(actions, swap);
@@ -175,11 +147,9 @@ export const createSwapAndDepositCompoundRap = async ({
   if (depositAssetNeedsUnlocking) {
     logger.log('[swap and deposit] making unlock token func');
     const unlockTokenToDeposit = createNewAction(RapActionTypes.unlock, {
-      accountAddress,
       amount: requiresSwap ? outputAmount : inputAmount,
       assetToUnlock: tokenToDeposit,
       contractAddress: cTokenContract,
-      selectedGasPrice,
     });
     actions = concat(actions, unlockTokenToDeposit);
   }
@@ -187,20 +157,12 @@ export const createSwapAndDepositCompoundRap = async ({
   // create a deposit rap
   logger.log('[swap and deposit] making deposit func');
   const deposit = createNewAction(RapActionTypes.depositCompound, {
-    accountAddress,
-    inputAmount: requiresSwap ? outputAmount : inputAmount,
-    inputCurrency: tokenToDeposit,
-    network,
-    selectedGasPrice,
+    inputAmount,
+    outputAmount,
   });
   actions = concat(actions, deposit);
 
   // create the overall rap
-  const newRap = createNewRap(actions, callback);
-
-  // update the rap store
-  const { dispatch } = store;
-  dispatch(rapsAddOrUpdate(newRap.id, newRap));
-  logger.log('[swap and deposit] new rap!', newRap);
+  const newRap = createNewRap(actions);
   return newRap;
 };

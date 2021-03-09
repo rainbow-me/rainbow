@@ -9,7 +9,6 @@ export { default as addressUtils } from './address';
 export { default as AllowancesCache } from './allowancesCache';
 export { default as backgroundTask } from './backgroundTask';
 export { default as checkTokenIsScam } from './checkTokenIsScam';
-export { default as contractUtils } from './contract';
 export { default as deviceUtils } from './deviceUtils';
 export { default as dimensionsPropType } from './dimensionsPropType';
 export { default as directionPropType } from './directionPropType';
