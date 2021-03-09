@@ -1,4 +1,11 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { partition } from 'lodash';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   LongPressGestureHandler,
   PanGestureHandler,
@@ -133,7 +140,10 @@ const SwipeableList = ({ components, speed }) => {
     [components]
   );
 
-  const [first, second, third, ...rest] = components;
+  const parts = useMemo(
+    () => partition(components, (_, i) => i * 2 < components.length),
+    [components]
+  );
 
   const panRef = useRef();
   const lpRef = useRef();
@@ -173,11 +183,11 @@ const SwipeableList = ({ components, speed }) => {
                     flexDirection: 'row',
                   }}
                 >
-                  {[[first, second, third], rest].map((components, index) => (
+                  {parts.map((components, index) => (
                     <SingleElement
                       index={index}
-                      key={`${components[0].offset}-${index}`}
-                      offset={components[0].offset}
+                      key={`${components[0]?.offset}-${index}`}
+                      offset={components[0]?.offset}
                       sumWidth={sumWidth}
                       transX={translate}
                       width={components.reduce(
