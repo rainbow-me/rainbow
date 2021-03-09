@@ -23,6 +23,23 @@ export default function hasRowChanged(r1: any, r2: any): boolean {
     'item.smallBalancesContainer'
   );
 
+  // Quickly return for simplistic comparisons.
+  if (
+    isNewTitle ||
+    isNewTotalItems ||
+    isNewTotalValue ||
+    isNewAsset ||
+    isNewTokenFamilyId ||
+    isNewTokenFamilyName ||
+    isNewTokenFamilySize ||
+    isNewUniswapPercentageOwned ||
+    isNewUniswapToken ||
+    isPinned ||
+    isNewSmallBalancesRow
+  ) {
+    return true;
+  }
+
   const isCollectiblesRow = has(r1, 'item.tokens') && has(r2, 'item.tokens');
   let isNewAssetBalance = false;
 
@@ -77,18 +94,7 @@ export default function hasRowChanged(r1: any, r2: any): boolean {
   }
 
   return (
-    isNewAsset ||
     isNewAssetBalance ||
-    isNewSmallBalancesRow ||
-    isNewTitle ||
-    isNewTokenFamilyId ||
-    isNewTokenFamilyName ||
-    isNewTokenFamilySize ||
-    isNewTotalItems ||
-    isNewTotalValue ||
-    isNewUniswapPercentageOwned ||
-    isNewUniswapToken ||
-    isPinned ||
     savingsSectionChanged ||
     RecyclerAssetListSharedState.smallBalancedChanged
   );

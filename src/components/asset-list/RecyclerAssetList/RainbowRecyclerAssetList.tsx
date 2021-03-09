@@ -24,7 +24,7 @@ import { deviceUtils, logger, safeAreaInsetValues } from '@rainbow-me/utils';
 const StyledContainer = styled(View)`
   display: flex;
   flex: 1;
-  background-color: ${({ theme: { colors } }) => colors.white};
+  background-color: ${({ theme: { colors } }) => colors.black};
   overflow: hidden;
 `;
 
