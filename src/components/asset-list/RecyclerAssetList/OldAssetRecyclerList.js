@@ -61,7 +61,6 @@ export default class RecyclerAssetList extends Component {
       items: [],
       itemsCount: 0,
       sectionsIndices: [],
-      //showCoinListEditor: false,
       stickyComponentsIndices: [],
     };
 
@@ -134,11 +133,13 @@ export default class RecyclerAssetList extends Component {
           const lastBalanceIndex =
             sectionsIndices[balancesIndex] + balanceItemsCount;
           if (index === lastBalanceIndex - 2) {
-            if (this.coinDividerIndex !== index) {
-              this.coinDividerIndex = index;
+            if (RecyclerAssetListSharedState.coinDividerIndex !== index) {
+              RecyclerAssetListSharedState.coinDividerIndex = index;
               if (this.props.isCoinListEdited) {
                 this.rlv &&
-                  this.checkEditStickyHeader(this.rlv.getCurrentScrollOffset());
+                  this.props.checkEditStickyHeader(
+                    this.rlv.getCurrentScrollOffset()
+                  );
               }
             }
             if (
@@ -455,19 +456,6 @@ export default class RecyclerAssetList extends Component {
 
   renderList = [];
 
-  checkEditStickyHeader(offsetY) {
-    const offsetHeight =
-      CoinRowHeight * (this.coinDividerIndex - 1) + firstCoinRowMarginTop;
-    if (this.props.isCoinListEdited && offsetY > offsetHeight) {
-      this.props.setShowCoinListEditor(true);
-    } else if (
-      !!this.state.showCoinListEditor &&
-      (offsetY < offsetHeight || !this.props.isCoinListEdited)
-    ) {
-      this.props.setShowCoinListEditor(false);
-    }
-  }
-
   scrollToOffset(position, animated) {
     setTimeout(() => {
       this.rlv && this.rlv.scrollToOffset(0, position, animated);
@@ -550,7 +538,7 @@ export default class RecyclerAssetList extends Component {
 
   handleScroll = (_nativeEventObject, _, offsetY) => {
     if (this.props.isCoinListEdited) {
-      this.checkEditStickyHeader(offsetY);
+      this.props.checkEditStickyHeader(offsetY);
     }
   };
 
