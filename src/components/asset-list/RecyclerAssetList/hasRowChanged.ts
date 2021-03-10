@@ -21,6 +21,10 @@ export default function hasRowChanged(r1: any, r2: any): boolean {
     r2,
     'item.smallBalancesContainer'
   );
+  const isCollectiblesRow = has(r1, 'item.tokens') && has(r2, 'item.tokens');
+  const isNewAssetBalance =
+    !isCollectiblesRow &&
+    isNewValueForPath(r1, r2, 'item.native.balance.display');
 
   // Quickly return for simplistic comparisons.
   if (
@@ -34,13 +38,11 @@ export default function hasRowChanged(r1: any, r2: any): boolean {
     isNewUniswapPercentageOwned ||
     isNewUniswapToken ||
     isPinned ||
-    isNewSmallBalancesRow
+    isNewSmallBalancesRow ||
+    isNewAssetBalance
   ) {
     return true;
   }
-
-  const isCollectiblesRow = has(r1, 'item.tokens') && has(r2, 'item.tokens');
-  let isNewAssetBalance = false;
 
   let savingsSectionChanged = false;
   if (r1?.item?.savingsContainer && r2?.item?.savingsContainer) {
@@ -68,15 +70,11 @@ export default function hasRowChanged(r1: any, r2: any): boolean {
     }
   }
 
-  if (!isCollectiblesRow) {
-    isNewAssetBalance = isNewValueForPath(
-      r1,
-      r2,
-      'item.native.balance.display'
-    );
+  if (savingsSectionChanged) {
+    return true;
   }
 
-  let smallBalancedChanged = false;
+  let smallBalancedChanged = savingsSectionChanged;
   if (r1?.item?.smallBalancesContainer && r2?.item?.smallBalancesContainer) {
     if (r1.item.assets.length !== r2.item.assets.length) {
       smallBalancedChanged = true;
@@ -97,5 +95,9 @@ export default function hasRowChanged(r1: any, r2: any): boolean {
     }
   }
 
-  return isNewAssetBalance || savingsSectionChanged || smallBalancedChanged;
+  if (smallBalancedChanged) {
+    return true;
+  }
+
+  return false;
 }

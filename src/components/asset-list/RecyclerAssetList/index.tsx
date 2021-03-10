@@ -6,12 +6,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import {
-  LayoutChangeEvent,
-  RefreshControl,
-  UIManager,
-  View,
-} from 'react-native';
+import { LayoutChangeEvent, RefreshControl, View } from 'react-native';
 import { connect } from 'react-redux';
 import {
   DataProvider,
@@ -35,8 +30,6 @@ import LayoutItemAnimator from './LayoutItemAnimator';
 import hasRowChanged from './hasRowChanged';
 import { usePrevious } from '@rainbow-me/hooks';
 import { deviceUtils, logger } from '@rainbow-me/utils';
-
-android && UIManager.setLayoutAnimationEnabledExperimental?.(true);
 
 const defaultIndices = [0];
 
