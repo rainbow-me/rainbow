@@ -67,10 +67,11 @@ export default class RecyclerAssetList extends Component {
     const { openFamilyTabs, nativeCurrency, sections } = this.props;
 
     if (nativeCurrency !== prevProps.nativeCurrency) {
-      setTimeout(() => {
-        RecyclerAssetListSharedState.rlv &&
-          RecyclerAssetListSharedState.rlv.scrollToTop(false);
-      }, 200);
+      requestAnimationFrame(
+        () =>
+          RecyclerAssetListSharedState.rlv &&
+          RecyclerAssetListSharedState.rlv.scrollToTop(false)
+      );
     }
 
     let collectibles = {};
@@ -169,10 +170,10 @@ export default class RecyclerAssetList extends Component {
       (!this.props.isCoinListEdited ||
         (!prevProps.isCoinListEdited && this.props.isCoinListEdited))
     ) {
-      setTimeout(() => {
+      requestAnimationFrame(() => {
         RecyclerAssetListSharedState.rlv &&
           RecyclerAssetListSharedState.rlv.scrollToEnd({ animated: true });
-      }, 10);
+      });
     }
 
     // Auto-scroll to showcase family if something was added/removed 👇
@@ -199,10 +200,11 @@ export default class RecyclerAssetList extends Component {
   }
 
   scrollToOffset(position, animated) {
-    setTimeout(() => {
-      RecyclerAssetListSharedState.rlv &&
-        RecyclerAssetListSharedState.rlv.scrollToOffset(0, position, animated);
-    }, 5);
+    requestAnimationFrame(
+      () =>
+        RecyclerAssetListSharedState.rlv &&
+        RecyclerAssetListSharedState.rlv.scrollToOffset(0, position, animated)
+    );
   }
 
 // TODO: Needs to be introduced.
@@ -262,11 +264,13 @@ export default class RecyclerAssetList extends Component {
       scrollIndicatorInsets,
       extendedState,
       dataProvider,
+      rowRenderer,
+      stickyRowRenderer,
     } = this.props;
     return (
       <>
         <StickyContainer
-          overrideRowRenderer={this.props.stickyRowRenderer}
+          overrideRowRenderer={stickyRowRenderer}
           stickyHeaderIndices={
             isCoinListEdited ? defaultIndices : stickyComponentsIndices
           }
@@ -280,7 +284,7 @@ export default class RecyclerAssetList extends Component {
             onScroll={onScroll}
             ref={this.handleListRef}
             renderAheadOffset={renderAheadOffset}
-            rowRenderer={this.props.rowRenderer}
+            rowRenderer={rowRenderer}
             scrollIndicatorInsets={scrollIndicatorInsets}
             scrollViewProps={scrollViewProps}
           />

@@ -262,14 +262,6 @@ function RainbowRecyclerAssetList({
     };
   }, [openFamilyTabs, sections]);
 
-  //// pass the dataprovider
-  //const shouldGetDerivedStateFromProps = useCallback((props, state) => {
-  //  const { dataProvider } = state;
-  //  return {
-  //    dataProvider: dataProvider.cloneWithRows(props.items),
-  //  };
-  //}, []);
-
   const animator = useMemo(() => new LayoutItemAnimator(paddingBottom), [
     paddingBottom,
   ]);
@@ -490,13 +482,10 @@ function RainbowRecyclerAssetList({
 
   const extendedState = useMemo(() => ({ sectionsIndices }), [sectionsIndices]);
 
-  const dataProvider = useMemo(
-    () => {
-      const nextDataProvider = new DataProvider(hasRowChanged);
-      return nextDataProvider.cloneWithRows(items);
-    },
-    [items],
-  );
+  const dataProvider = useMemo(() => {
+    const nextDataProvider = new DataProvider(hasRowChanged);
+    return nextDataProvider.cloneWithRows(items);
+  }, [items]);
 
   return (
     <StyledContainer onLayout={onLayout}>
@@ -506,6 +495,7 @@ function RainbowRecyclerAssetList({
         areSmallCollectibles={areSmallCollectibles}
         checkEditStickyHeader={checkEditStickyHeader}
         colors={colors}
+        dataProvider={dataProvider}
         extendedState={extendedState}
         hideHeader={hideHeader}
         isCoinListEdited={isCoinListEdited}
@@ -529,7 +519,6 @@ function RainbowRecyclerAssetList({
         showCoinListEditor={showCoinListEditor}
         stickyComponentsIndices={stickyComponentsIndices}
         stickyRowRenderer={stickyRowRenderer}
-        dataProvider={dataProvider}
       />
     </StyledContainer>
   );
