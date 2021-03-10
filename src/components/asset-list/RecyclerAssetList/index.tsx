@@ -16,7 +16,6 @@ import {
 
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import styled from 'styled-components';
-import { useDeepCompareMemo } from 'use-deep-compare';
 import { withThemeContext } from '../../../context/ThemeContext';
 import { CoinDivider } from '../../coin-divider';
 import { CoinRowHeight } from '../../coin-row';
@@ -141,7 +140,7 @@ function RecyclerAssetList({
 
   const stickyRowRenderer = React.useCallback(
     // TODO: What does the data look like?
-    (e: NativeSyntheticEvent<unknown>, data: Record<string, any>) => (
+    (e: NativeSyntheticEvent<unknown>, data: any) => (
       <>
         <AssetListHeader {...data} isSticky />
         {showCoinListEditor ? (
@@ -159,9 +158,7 @@ function RecyclerAssetList({
 
   const onScroll = useCallback(
     (e: unknown, f: unknown, offsetY: number) => {
-      if (isCoinListEdited) {
-        checkEditStickyHeader(offsetY);
-      }
+      isCoinListEdited && checkEditStickyHeader(offsetY);
     },
     [isCoinListEdited, checkEditStickyHeader]
   );
@@ -222,7 +219,7 @@ function RecyclerAssetList({
     itemsCount,
     sectionsIndices,
     stickyComponentsIndices,
-  } = useDeepCompareMemo(() => {
+  } = useMemo(() => {
     const sectionsIndices: number[] = [];
     const stickyComponentsIndices: number[] = [];
     const items = sections.reduce((ctx: any[], section) => {
@@ -281,7 +278,7 @@ function RecyclerAssetList({
     paddingBottom,
   ]);
 
-  const layoutProvider = useDeepCompareMemo(() => {
+  const layoutProvider = useMemo(() => {
     return new LayoutProvider(
       (index: number) => {
         // Main list logic 👇
@@ -546,9 +543,8 @@ function RecyclerAssetList({
     });
 
     const bottomHorizonOfScreen =
-      ((RecyclerAssetListSharedState.rlv &&
-        RecyclerAssetListSharedState.rlv.getCurrentScrollOffset()) ||
-        0) + RecyclerAssetListSharedState.globalDeviceDimensions;
+      (RecyclerAssetListSharedState.rlv?.getCurrentScrollOffset() || 0) +
+      RecyclerAssetListSharedState.globalDeviceDimensions;
 
     // Auto-scroll to opened family logic 👇
     if (nextOpenFamilyTabs !== lastOpenFamilyTabs && collectibles.data) {
@@ -623,10 +619,9 @@ function RecyclerAssetList({
       RecyclerAssetListSharedState.rlv.getCurrentScrollOffset() > 0 &&
       (!nextIsCoinListEdited || (!lastIsCoinListEdited && nextIsCoinListEdited))
     ) {
-      requestAnimationFrame(() => {
-        RecyclerAssetListSharedState.rlv &&
-          RecyclerAssetListSharedState.rlv.scrollToEnd({ animated: true });
-      });
+      requestAnimationFrame(() =>
+        RecyclerAssetListSharedState.rlv?.scrollToEnd(true)
+      );
     }
 
     // Auto-scroll to showcase family if something was added/removed 👇

@@ -5,8 +5,9 @@ import {
   RecyclerListViewState,
 } from 'recyclerlistview/dist/reactnative/core/RecyclerListView';
 
-export type RecyclerListViewRef = React.Ref<
-  RecyclerListView<RecyclerListViewProps, RecyclerListViewState>
+export type RecyclerListViewRef = RecyclerListView<
+  RecyclerListViewProps,
+  RecyclerListViewState
 >;
 
 export type Shared = {
@@ -20,7 +21,7 @@ export default ((): Shared => {
   let globalDeviceDimensions = 0;
   let smallBalancedChanged = false;
   let coinDividerIndex: number = -1;
-  let rlv = createRef() as RecyclerListViewRef;
+  let rlv = (createRef() as unknown) as RecyclerListViewRef;
 
   return {
     get coinDividerIndex(): number {
