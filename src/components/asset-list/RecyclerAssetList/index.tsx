@@ -4,6 +4,7 @@ import {
   LayoutChangeEvent,
   NativeSyntheticEvent,
   RefreshControl,
+  UIManager,
   View,
 } from 'react-native';
 import { connect } from 'react-redux';
@@ -15,6 +16,7 @@ import {
 
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import styled from 'styled-components';
+import { useDeepCompareMemo } from 'use-deep-compare';
 import { withThemeContext } from '../../../context/ThemeContext';
 import { CoinDivider } from '../../coin-divider';
 import { CoinRowHeight } from '../../coin-row';
@@ -26,6 +28,8 @@ import RecyclerAssetListSharedState from './RecyclerAssetListSharedState';
 import hasRowChanged from './hasRowChanged';
 import { usePrevious } from '@rainbow-me/hooks';
 import { deviceUtils, logger, safeAreaInsetValues } from '@rainbow-me/utils';
+
+UIManager.setLayoutAnimationEnabledExperimental?.(true);
 
 const defaultIndices = [0];
 
@@ -228,7 +232,7 @@ function RecyclerAssetList({
     itemsCount,
     sectionsIndices,
     stickyComponentsIndices,
-  } = useMemo(() => {
+  } = useDeepCompareMemo(() => {
     const sectionsIndices: number[] = [];
     const stickyComponentsIndices: number[] = [];
     const items = sections.reduce((ctx: any[], section) => {
