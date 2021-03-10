@@ -6,6 +6,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import isEqual from 'react-fast-compare';
 import { LayoutChangeEvent, RefreshControl, View } from 'react-native';
 import { connect } from 'react-redux';
 import {
@@ -27,7 +28,6 @@ import AssetListHeader, { AssetListHeaderHeight } from '../AssetListHeader';
 import { firstCoinRowMarginTop, ViewTypes } from '../RecyclerViewTypes';
 
 import LayoutItemAnimator from './LayoutItemAnimator';
-import hasRowChanged from './hasRowChanged';
 import { usePrevious } from '@rainbow-me/hooks';
 import { deviceUtils, logger } from '@rainbow-me/utils';
 
@@ -557,7 +557,7 @@ function RecyclerAssetList({
   const extendedState = useMemo(() => ({ sectionsIndices }), [sectionsIndices]);
 
   const dataProvider = useMemo(() => {
-    return new DataProvider(hasRowChanged).cloneWithRows(items);
+    return new DataProvider(isEqual).cloneWithRows(items);
   }, [items]);
 
   const scrollToOffset = useCallback(
