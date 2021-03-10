@@ -3,7 +3,7 @@
 //  Rainbow
 //
 //  Created by Bruno Andres Barbieri on 5/21/20.
-//  Copyright © 2020 Facebook. All rights reserved.
+//  Copyright © 2020 Rainbow.me the best company at the world. All rights reserved.
 //
 
 import Foundation
@@ -18,6 +18,7 @@ class TransactionListLoadingViewCell: UITableViewCell {
   override func awakeFromNib() {
     super.awakeFromNib()
     shimmeringView.backgroundColor = UIColor.RainbowTheme.Transactions.white;
+    self.backgroundColor = UIColor.RainbowTheme.Transactions.white;
     shimmeringView.contentView = skeletonView
     shimmeringView.isShimmering = true
     // settings
@@ -31,5 +32,6 @@ class TransactionListLoadingViewCell: UITableViewCell {
   
   override func layoutSubviews() {
     shimmeringView.backgroundColor = UIColor.RainbowTheme.Transactions.white;
+    self.backgroundColor = UIColor.RainbowTheme.Transactions.white;
   }
 }

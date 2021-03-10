@@ -59,7 +59,7 @@ const SearchInput = styled(Input).attrs(
     autoCapitalize: 'words',
     blurOnSubmit: false,
     clearTextOnFocus,
-    color: colors.blueGreyDark80,
+    color: colors.alpha(colors.blueGreyDark, 0.8),
     enablesReturnKeyAutomatically: true,
     keyboardAppearance: 'dark',
     keyboardType: 'ascii-capable',
