@@ -1,5 +1,11 @@
 import { findIndex, get, isNil } from 'lodash';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   LayoutChangeEvent,
   RefreshControl,
@@ -13,6 +19,10 @@ import {
   RecyclerListView,
 } from 'recyclerlistview';
 
+import {
+  RecyclerListViewProps,
+  RecyclerListViewState,
+} from 'recyclerlistview/dist/reactnative/core/RecyclerListView';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import styled from 'styled-components';
 import { withThemeContext } from '../../../context/ThemeContext';
@@ -22,7 +32,6 @@ import AssetListHeader, { AssetListHeaderHeight } from '../AssetListHeader';
 import { firstCoinRowMarginTop, ViewTypes } from '../RecyclerViewTypes';
 
 import LayoutItemAnimator from './LayoutItemAnimator';
-import RecyclerAssetListSharedState from './RecyclerAssetListSharedState';
 import hasRowChanged from './hasRowChanged';
 import { usePrevious } from '@rainbow-me/hooks';
 import { deviceUtils, logger } from '@rainbow-me/utils';
@@ -44,6 +53,27 @@ const StyledContainer = styled(View)`
   background-color: ${({ theme: { colors } }) => colors.black};
   overflow: hidden;
 `;
+
+type RecyclerListViewRef = RecyclerListView<
+  RecyclerListViewProps,
+  RecyclerListViewState
+>;
+
+function useRecyclerListViewRef(): {
+  readonly handleRef: (ref: RecyclerListViewRef) => void;
+  readonly ref: RecyclerListViewRef | undefined;
+} {
+  const ref = useRef<RecyclerListViewRef>();
+  const handleRef = React.useCallback(
+    (nextRef: RecyclerListViewRef): void => {
+      ref.current = nextRef;
+      return;
+    },
+    [ref]
+  );
+
+  return { handleRef, ref: ref.current };
+}
 
 export type RecyclerAssetListSection = {
   readonly name: string;
@@ -119,6 +149,7 @@ function RecyclerAssetList({
   renderAheadOffset = deviceUtils.dimensions.height,
   ...extras
 }: RecyclerAssetListProps): JSX.Element {
+  const { ref, handleRef } = useRecyclerListViewRef();
   const [globalDeviceDimensions, setGlobalDeviceDimensions] = useState<number>(
     0
   );
@@ -309,8 +340,8 @@ function RecyclerAssetList({
   }, [openFamilyTabs, sections]);
 
   const animator = useMemo(
-    () => new LayoutItemAnimator(paddingBottom, globalDeviceDimensions),
-    [globalDeviceDimensions, paddingBottom]
+    () => new LayoutItemAnimator(paddingBottom, globalDeviceDimensions, ref),
+    [globalDeviceDimensions, paddingBottom, ref]
   );
 
   const layoutProvider = useMemo(() => {
@@ -384,10 +415,7 @@ function RecyclerAssetList({
             if (coinDividerIndex !== index) {
               setCoinDividerIndex(index);
               if (isCoinListEdited) {
-                RecyclerAssetListSharedState.rlv &&
-                  checkEditStickyHeader(
-                    RecyclerAssetListSharedState.rlv.getCurrentScrollOffset()
-                  );
+                ref && checkEditStickyHeader(ref.getCurrentScrollOffset());
               }
             }
             if (
@@ -501,6 +529,7 @@ function RecyclerAssetList({
       }
     );
   }, [
+    ref,
     coinDividerIndex,
     setCoinDividerIndex,
     areSmallCollectibles,
@@ -540,16 +569,12 @@ function RecyclerAssetList({
 
   const scrollToOffset = useCallback(
     (offsetY: number, animated: boolean = false) =>
-      requestAnimationFrame(() =>
-        RecyclerAssetListSharedState.rlv?.scrollToOffset(0, offsetY, animated)
-      ),
-    []
+      requestAnimationFrame(() => ref?.scrollToOffset(0, offsetY, animated)),
+    [ref]
   );
   useEffect(() => {
-    requestAnimationFrame(() =>
-      RecyclerAssetListSharedState.rlv?.scrollToTop(false)
-    );
-  }, [nativeCurrency]);
+    requestAnimationFrame(() => ref?.scrollToTop(false));
+  }, [nativeCurrency, ref]);
 
   const lastSections = usePrevious(sections) || sections;
   const lastOpenFamilyTabs = usePrevious(openFamilyTabs) || openFamilyTabs;
@@ -573,8 +598,7 @@ function RecyclerAssetList({
     });
 
     const bottomHorizonOfScreen =
-      (RecyclerAssetListSharedState.rlv?.getCurrentScrollOffset() || 0) +
-      globalDeviceDimensions;
+      (ref?.getCurrentScrollOffset() || 0) + globalDeviceDimensions;
 
     // Auto-scroll to opened family logic 👇
     if (openFamilyTabs !== lastOpenFamilyTabs && collectibles.data) {
@@ -608,9 +632,7 @@ function RecyclerAssetList({
             }
           );
 
-          const layout = RecyclerAssetListSharedState.rlv?.getLayout(
-            familyIndex
-          );
+          const layout = ref?.getLayout(familyIndex);
           if (layout) {
             const startOfDesiredComponent = layout.y - AssetListHeaderHeight;
             if (focusedFamilyHeight < globalDeviceDimensions) {
@@ -636,18 +658,16 @@ function RecyclerAssetList({
 
     // Auto-scroll to end of the list if something was closed/disappeared 👇
     if (
-      RecyclerAssetListSharedState.rlv &&
-      RecyclerAssetListSharedState.rlv.getContentDimension().height <
+      ref &&
+      ref.getContentDimension().height <
         bottomHorizonOfScreen +
           ViewTypes.FOOTER.calculateHeight({
             paddingBottom: paddingBottom || 0,
           }) &&
-      RecyclerAssetListSharedState.rlv.getCurrentScrollOffset() > 0 &&
+      ref.getCurrentScrollOffset() > 0 &&
       (!isCoinListEdited || (!lastIsCoinListEdited && isCoinListEdited))
     ) {
-      requestAnimationFrame(() =>
-        RecyclerAssetListSharedState.rlv?.scrollToEnd(true)
-      );
+      requestAnimationFrame(() => ref?.scrollToEnd(true));
     }
 
     // Auto-scroll to showcase family if something was added/removed 👇
@@ -663,13 +683,14 @@ function RecyclerAssetList({
         return data.item?.familyName === 'Showcase';
       });
 
-      const layout = RecyclerAssetListSharedState.rlv?.getLayout(familyIndex);
+      const layout = ref?.getLayout(familyIndex);
       if (layout) {
         const { y: startOfDesiredComponent } = layout;
         scrollToOffset(startOfDesiredComponent - AssetListHeaderHeight, true);
       }
     }
   }, [
+    ref,
     globalDeviceDimensions,
     dataProvider,
     lastIsCoinListEdited,
@@ -681,10 +702,6 @@ function RecyclerAssetList({
     paddingBottom,
     scrollToOffset,
   ]);
-
-  const handleListRef = useCallback(ref => {
-    RecyclerAssetListSharedState.rlv = ref;
-  }, []);
 
   return (
     <StyledContainer onLayout={onLayout}>
@@ -701,7 +718,7 @@ function RecyclerAssetList({
           itemAnimator={animator}
           layoutProvider={layoutProvider}
           onScroll={onScroll}
-          ref={handleListRef}
+          ref={handleRef}
           renderAheadOffset={renderAheadOffset}
           rowRenderer={rowRenderer}
           scrollViewProps={scrollViewProps}
