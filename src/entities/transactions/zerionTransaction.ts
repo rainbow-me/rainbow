@@ -3,12 +3,6 @@ import { ZerionAsset } from '../tokens';
 import { TransactionDirection } from './transactionDirection';
 import { TransactionType } from './transactionType';
 
-enum ZerionTransactionStatus {
-  confirmed = 'confirmed',
-  failed = 'failed',
-  pending = 'pending',
-}
-
 interface ZerionTransactionFee {
   price: number;
   value: number;
@@ -17,15 +11,22 @@ interface ZerionTransactionFee {
 interface ZerionTransactionMeta {
   action?: string | null;
   application?: string | null;
+  asset?: ZerionAsset;
+}
+
+export enum ZerionTransactionStatus {
+  confirmed = 'confirmed',
+  failed = 'failed',
+  pending = 'pending',
 }
 
 export interface ZerionTransactionChange {
-  address_from: string;
-  address_to: string;
-  asset: ZerionAsset;
-  direction: TransactionDirection;
-  price: number | null;
-  value: number;
+  address_from: string | null;
+  address_to: string | null;
+  asset: ZerionAsset | null;
+  direction: TransactionDirection | null;
+  price?: number | null;
+  value?: number | null;
 }
 
 export interface ZerionTransaction {

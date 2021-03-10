@@ -23,4 +23,5 @@ export {
   TransactionStatusTypes,
   TransactionType,
   TransactionTypes,
+  ZerionTransactionStatus,
 } from './transactions';

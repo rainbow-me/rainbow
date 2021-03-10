@@ -11,6 +11,7 @@ export type {
   ZerionTransaction,
   ZerionTransactionChange,
 } from './zerionTransaction';
+export { ZerionTransactionStatus } from './zerionTransaction';
 export {
   default as TransactionDirections,
   TransactionDirection,

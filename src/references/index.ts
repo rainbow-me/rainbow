@@ -103,7 +103,10 @@ export const DefaultUniswapFavorites = {
   ],
 };
 
-export const savingsAssetsList = savingsAssets;
+export const savingsAssetsList: Record<
+  string,
+  Record<string, Asset>
+> = savingsAssets;
 
 export const savingsAssetsListByUnderlying: Record<
   string,

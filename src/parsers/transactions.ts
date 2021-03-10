@@ -11,7 +11,6 @@ import {
   map,
   orderBy,
   partition,
-  pick,
   reverse,
   slice,
   startsWith,
@@ -22,21 +21,23 @@ import {
 } from 'lodash';
 import { parseAllTxnsOnReceive } from '../config/debug';
 import {
+  AssetType,
   ProtocolType,
   ProtocolTypeNames,
   RainbowTransaction,
   TransactionDirection,
-  TransactionStatusTypes,
+  TransactionStatus,
   TransactionType,
   ZerionTransaction,
   ZerionTransactionChange,
+  ZerionTransactionStatus,
 } from '@rainbow-me/entities';
 import { toChecksumAddress } from '@rainbow-me/handlers/web3';
+import { ETH_ADDRESS, savingsAssetsList } from '@rainbow-me/references';
 import {
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
-} from '@rainbow-me/helpers/utilities';
-import { ETH_ADDRESS, savingsAssetsList } from '@rainbow-me/references';
+} from '@rainbow-me/utilities';
 import { ethereumUtils, getTokenMetadata } from '@rainbow-me/utils';
 
 const LAST_TXN_HASH_BUFFER = 20;
@@ -46,8 +47,11 @@ const dataFromLastTxHash = (
   transactions: RainbowTransaction[]
 ): ZerionTransaction[] => {
   if (__DEV__ && parseAllTxnsOnReceive) return transactionData;
-  const lastSuccessfulTxn = find(transactions, txn => txn.hash && !txn.pending);
-  const lastTxHash = lastSuccessfulTxn?.hash ?? '';
+  const lastSuccessfulTxn = find(
+    transactions,
+    txn => !!txn.hash && !txn.pending
+  );
+  const lastTxHash = lastSuccessfulTxn?.hash;
   if (lastTxHash) {
     const lastTxnHashIndex = findIndex(transactionData, txn =>
       lastTxHash.startsWith(txn.hash)
@@ -64,7 +68,7 @@ export const parseTransactions = (
   accountAddress: string,
   nativeCurrency: string,
   existingTransactions: RainbowTransaction[],
-  purchaseTransactions,
+  purchaseTransactions: RainbowTransaction[],
   network: string,
   appended = false
 ) => {
@@ -129,11 +133,11 @@ export const parseTransactions = (
 };
 
 const transformTradeRefund = (
-  internalTransactions: ZerionTransactionChange
+  internalTransactions: ZerionTransactionChange[]
 ) => {
   const [txnsOut, txnsIn] = partition(
     internalTransactions,
-    txn => txn.direction === TransactionDirection.out
+    txn => txn?.direction === TransactionDirection.out
   );
   const isSuccessfulSwap =
     txnsOut.length === 1 && (txnsIn.length === 1 || txnsIn.length === 2);
@@ -142,14 +146,14 @@ const transformTradeRefund = (
   const txnOut = txnsOut[0];
   const txnIn = find(
     txnsIn,
-    txn => txn.asset.asset_code !== txnOut.asset.asset_code
+    txn => txn?.asset?.asset_code !== txnOut?.asset?.asset_code
   );
   const refund = find(
     txnsIn,
-    txn => txn.asset.asset_code === txnOut.asset.asset_code
+    txn => txn?.asset?.asset_code === txnOut?.asset?.asset_code
   );
   let updatedOut = txnOut;
-  if (refund && txnOut) {
+  if (refund?.value && txnOut?.value) {
     updatedOut = {
       ...txnOut,
       value: txnOut.value - refund.value,
@@ -158,165 +162,220 @@ const transformTradeRefund = (
   return compact([updatedOut, txnIn]);
 };
 
-const parseTransaction = (
-  txn,
-  accountAddress: string,
-  nativeCurrency: string,
-  purchaseTransactions,
+const overrideFailedCompound = (
+  txn: ZerionTransaction,
   network: string
-) => {
-  const transaction = pick(txn, [
-    'hash',
-    'nonce',
-    'protocol',
-    'status',
-    'type',
-  ]);
-  transaction.from = txn.address_from;
-  transaction.minedAt = txn.mined_at;
-  transaction.pending = false;
-  transaction.to = txn.address_to;
-
-  const changes = get(txn, 'changes', []);
-  let internalTransactions = changes;
-
+): ZerionTransaction => {
   // Compound shows success status even when there are internal failures
   // We are overriding to show the user a failure state if the action actually failed
   if (
-    isEmpty(changes) &&
+    isEmpty(txn?.changes) &&
     txn.protocol === ProtocolType.compound &&
     (txn.type === TransactionType.deposit ||
       txn.type === TransactionType.withdraw)
   ) {
-    transaction.status = TransactionStatusTypes.failed;
-    const asset = savingsAssetsList[network][toLower(transaction.to)];
+    const newTxn = {
+      ...txn,
+    };
+    newTxn.status = ZerionTransactionStatus.failed;
+    const asset = savingsAssetsList[network][toLower(txn?.address_to ?? '')];
 
     const assetInternalTransaction = {
-      address_from: transaction.from,
-      address_to: transaction.to,
+      address_from: txn.address_from,
+      address_to: txn.address_to,
       asset: {
         asset_code: asset.address,
+        icon_url: null,
+        price: null,
+        type: AssetType.compound,
         ...asset,
       },
-      value: transaction.value,
+      direction: TransactionDirection.out,
+      value: 0,
     };
-    internalTransactions = [assetInternalTransaction];
+    newTxn.changes = [assetInternalTransaction];
+    return newTxn;
+  } else {
+    return txn;
   }
+};
 
+const overrideFailedExecution = (txn: ZerionTransaction): ZerionTransaction => {
   if (
-    isEmpty(changes) &&
-    txn.status === TransactionStatusTypes.failed &&
+    isEmpty(txn?.changes) &&
+    txn.status === ZerionTransactionStatus.failed &&
     txn.type === TransactionType.execution &&
-    txn.direction === 'out'
+    txn.direction === TransactionDirection.out
   ) {
+    const newTxn = {
+      ...txn,
+    };
     const assetInternalTransaction = {
-      address_from: transaction.from,
-      address_to: transaction.to,
+      address_from: txn.address_from,
+      address_to: txn.address_to,
       asset: {
         asset_code: ETH_ADDRESS,
         decimals: 18,
         name: 'Ethereum',
         symbol: 'ETH',
+        type: AssetType.eth,
       },
+      direction: TransactionDirection.out,
       value: 0,
     };
-    internalTransactions = [assetInternalTransaction];
+    newTxn.changes = [assetInternalTransaction];
+    return newTxn;
+  } else {
+    return txn;
   }
+};
 
-  if (isEmpty(changes) && txn.type === TransactionType.authorize) {
-    const approveInternalTransaction = {
-      address_from: transaction.from,
-      address_to: transaction.to,
-      asset: get(txn, 'meta.asset'),
+const overrideAuthorizations = (txn: ZerionTransaction): ZerionTransaction => {
+  if (isEmpty(txn?.changes) && txn.type === TransactionType.authorize) {
+    const newTxn = {
+      ...txn,
     };
-    internalTransactions = [approveInternalTransaction];
+    const approveInternalTransaction = {
+      address_from: txn.address_from,
+      address_to: txn.address_to,
+      asset: txn?.meta?.asset ?? null,
+      direction: TransactionDirection.out,
+    };
+    newTxn.changes = [approveInternalTransaction];
+    return newTxn;
+  } else {
+    return txn;
   }
+};
 
+const overrideSelfWalletConnect = (
+  txn: ZerionTransaction
+): ZerionTransaction => {
   // logic below: prevent sending a WalletConnect 0 amount to be ignored
   if (
-    isEmpty(internalTransactions) &&
-    transaction.type === TransactionType.execution &&
+    isEmpty(txn?.changes) &&
+    txn.type === TransactionType.execution &&
     txn.direction === TransactionDirection.self
   ) {
+    const newTxn = {
+      ...txn,
+    };
     const ethInternalTransaction = {
-      address_from: transaction.from,
-      address_to: transaction.to,
+      address_from: txn.address_from,
+      address_to: txn.address_to,
       asset: {
         asset_code: ETH_ADDRESS,
         decimals: 18,
         name: 'Ethereum',
         symbol: 'ETH',
+        type: AssetType.eth,
       },
+      direction: TransactionDirection.out,
       value: 0,
     };
-    internalTransactions = [ethInternalTransaction];
+    newTxn.changes = [ethInternalTransaction];
+    return newTxn;
+  } else {
+    return txn;
   }
+};
 
-  if (transaction.type === TransactionType.trade) {
-    internalTransactions = transformTradeRefund(internalTransactions);
-  }
-  internalTransactions = internalTransactions.map((internalTxn, index) => {
-    const address = toLower(get(internalTxn, 'asset.asset_code'));
-    const metadata = getTokenMetadata(address);
-    const updatedAsset = {
-      address,
-      decimals: get(internalTxn, 'asset.decimals'),
-      name: get(internalTxn, 'asset.name'),
-      symbol: toUpper(get(internalTxn, 'asset.symbol') || ''),
-      ...metadata,
-    };
-    const priceUnit =
-      internalTxn.price || get(internalTxn, 'asset.price.value') || 0;
-    const valueUnit = internalTxn.value || 0;
-    const nativeDisplay = convertRawAmountToNativeDisplay(
-      valueUnit,
-      updatedAsset.decimals,
-      priceUnit,
-      nativeCurrency
-    );
-
-    if (includes(purchaseTransactions, toLower(transaction.hash))) {
-      transaction.type = TransactionType.purchase;
-    }
-
-    const status = getTransactionLabel({
-      direction: internalTxn.direction || txn.direction,
-      pending: transaction.pending,
-      protocol: transaction.protocol,
-      status: transaction.status,
-      type: transaction.type,
-    });
-
-    const title = getTitle({
-      protocol: transaction.protocol,
-      status,
-      type: transaction.type,
-    });
-
-    const description = getDescription({
-      name: updatedAsset.name,
-      status,
-      type: transaction.type,
-    });
-
+const overrideTradeRefund = (txn: ZerionTransaction): ZerionTransaction => {
+  if (txn.type === TransactionType.trade) {
     return {
-      ...transaction,
-      address:
-        updatedAsset.address.toLowerCase() === 'eth'
-          ? updatedAsset.address.toLowerCase()
-          : toChecksumAddress(updatedAsset.address),
-      balance: convertRawAmountToBalance(valueUnit, updatedAsset),
-      description,
-      from: internalTxn.address_from,
-      hash: `${transaction.hash}-${index}`,
-      name: updatedAsset.name,
-      native: nativeDisplay,
-      status,
-      symbol: updatedAsset.symbol,
-      title,
-      to: internalTxn.address_to,
+      ...txn,
+      changes: transformTradeRefund(txn?.changes),
     };
-  });
+  } else {
+    return txn;
+  }
+};
+
+const parseTransaction = (
+  transaction: ZerionTransaction,
+  accountAddress: string,
+  nativeCurrency: string,
+  purchaseTransactionsHashes: string[],
+  network: string
+): RainbowTransaction[] => {
+  let txn = {
+    ...transaction,
+  };
+  txn = overrideFailedCompound(txn, network);
+  txn = overrideFailedExecution(txn);
+  txn = overrideAuthorizations(txn);
+  txn = overrideSelfWalletConnect(txn);
+  txn = overrideTradeRefund(txn);
+
+  const internalTransactions = map(
+    txn?.changes,
+    (internalTxn, index): RainbowTransaction => {
+      const address = toLower(internalTxn?.asset?.asset_code);
+      const metadata = getTokenMetadata(address);
+      const updatedAsset = {
+        address,
+        decimals: get(internalTxn, 'asset.decimals'),
+        name: get(internalTxn, 'asset.name'),
+        symbol: toUpper(get(internalTxn, 'asset.symbol') || ''),
+        ...metadata,
+      };
+      const priceUnit =
+        internalTxn.price || get(internalTxn, 'asset.price.value') || 0;
+      const valueUnit = internalTxn.value || 0;
+      const nativeDisplay = convertRawAmountToNativeDisplay(
+        valueUnit,
+        updatedAsset.decimals,
+        priceUnit,
+        nativeCurrency
+      );
+
+      if (includes(purchaseTransactionsHashes, toLower(txn.hash))) {
+        txn.type = TransactionType.purchase;
+      }
+
+      const status = getTransactionLabel({
+        direction: internalTxn.direction || txn.direction,
+        pending: false,
+        protocol: txn.protocol,
+        status: txn.status,
+        type: txn.type,
+      });
+
+      const title = getTitle({
+        protocol: txn.protocol,
+        status,
+        type: txn.type,
+      });
+
+      const description = getDescription({
+        name: updatedAsset.name,
+        status,
+        type: txn.type,
+      });
+
+      return {
+        address:
+          toLower(updatedAsset?.address) === ETH_ADDRESS
+            ? toLower(updatedAsset.address)
+            : toChecksumAddress(updatedAsset.address),
+        balance: convertRawAmountToBalance(valueUnit, updatedAsset),
+        description,
+        from: internalTxn.address_from ?? txn.address_from,
+        hash: `${txn.hash}-${index}`,
+        minedAt: txn.mined_at,
+        name: updatedAsset.name,
+        native: nativeDisplay,
+        nonce: txn.nonce,
+        pending: false,
+        protocol: txn.protocol,
+        status,
+        symbol: updatedAsset.symbol,
+        title,
+        to: internalTxn.address_to ?? txn.address_to,
+        type: txn.type,
+      };
+    }
+  );
 
   return reverse(internalTransactions);
 };
@@ -334,11 +393,14 @@ export const dedupePendingTransactions = (
         const matchingElement = find(
           parsedTransactions,
           txn =>
-            txn.hash &&
-            (startsWith(toLower(txn.hash), toLower(pendingTxn.hash)) ||
-              (toLower(txn.from) === toLower(accountAddress) &&
-                txn.nonce &&
-                txn.nonce >= pendingTxn.nonce))
+            (txn.hash &&
+              pendingTxn.hash &&
+              startsWith(toLower(txn.hash), toLower(pendingTxn.hash))) ||
+            (txn.from &&
+              txn.nonce &&
+              pendingTxn.nonce &&
+              toLower(txn.from) === toLower(accountAddress) &&
+              txn.nonce >= pendingTxn.nonce)
         );
         return !matchingElement;
       }
@@ -347,13 +409,21 @@ export const dedupePendingTransactions = (
   return updatedPendingTransactions;
 };
 
-export const getTitle = ({ protocol: ProtocolType, status, type }) => {
+export const getTitle = ({
+  protocol,
+  status,
+  type,
+}: {
+  protocol: ProtocolType;
+  status: TransactionStatus;
+  type: TransactionType;
+}) => {
   if (type === TransactionType.deposit || type === TransactionType.withdraw) {
     if (
-      status === TransactionStatusTypes.deposited ||
-      status === TransactionStatusTypes.withdrew ||
-      status === TransactionStatusTypes.sent ||
-      status === TransactionStatusTypes.received
+      status === TransactionStatus.deposited ||
+      status === TransactionStatus.withdrew ||
+      status === TransactionStatus.sent ||
+      status === TransactionStatus.received
     ) {
       if (protocol === ProtocolType.compound) {
         return 'Savings';
@@ -365,16 +435,24 @@ export const getTitle = ({ protocol: ProtocolType, status, type }) => {
   return upperFirst(status);
 };
 
-export const getDescription = ({ name, status, type }) => {
+export const getDescription = ({
+  name,
+  status,
+  type,
+}: {
+  name: string;
+  status: TransactionStatus;
+  type: TransactionType;
+}) => {
   switch (type) {
     case TransactionType.deposit:
-      return status === TransactionStatusTypes.depositing ||
-        status === TransactionStatusTypes.sending
+      return status === TransactionStatus.depositing ||
+        status === TransactionStatus.sending
         ? name
         : `Deposited ${name}`;
     case TransactionType.withdraw:
-      return status === TransactionStatusTypes.withdrawing ||
-        status === TransactionStatusTypes.receiving
+      return status === TransactionStatus.withdrawing ||
+        status === TransactionStatus.receiving
         ? name
         : `Withdrew ${name}`;
     default:
@@ -388,76 +466,79 @@ export const getTransactionLabel = ({
   protocol,
   status,
   type,
+}: {
+  direction: TransactionDirection | null;
+  pending: boolean;
+  protocol: ProtocolType;
+  status: ZerionTransactionStatus | TransactionStatus;
+  type: TransactionType;
 }) => {
-  if (status === TransactionStatusTypes.cancelling)
-    return TransactionStatusTypes.cancelling;
+  if (status === TransactionStatus.cancelling)
+    return TransactionStatus.cancelling;
 
-  if (status === TransactionStatusTypes.cancelled)
-    return TransactionStatusTypes.cancelled;
+  if (status === TransactionStatus.cancelled)
+    return TransactionStatus.cancelled;
 
-  if (status === TransactionStatusTypes.speeding_up)
-    return TransactionStatusTypes.speeding_up;
+  if (status === TransactionStatus.speeding_up)
+    return TransactionStatus.speeding_up;
 
   if (pending && type === TransactionType.purchase)
-    return TransactionStatusTypes.purchasing;
+    return TransactionStatus.purchasing;
 
   const isFromAccount = direction === TransactionDirection.out;
   const isToAccount = direction === TransactionDirection.in;
   const isSelf = direction === TransactionDirection.self;
 
   if (pending && type === TransactionType.authorize)
-    return TransactionStatusTypes.approving;
+    return TransactionStatus.approving;
 
   if (pending && type === TransactionType.deposit) {
     if (protocol === ProtocolType.compound) {
-      return TransactionStatusTypes.depositing;
+      return TransactionStatus.depositing;
     } else {
-      return TransactionStatusTypes.sending;
+      return TransactionStatus.sending;
     }
   }
 
   if (pending && type === TransactionType.withdraw) {
     if (protocol === ProtocolType.compound) {
-      return TransactionStatusTypes.withdrawing;
+      return TransactionStatus.withdrawing;
     } else {
-      return TransactionStatusTypes.receiving;
+      return TransactionStatus.receiving;
     }
   }
 
-  if (pending && isFromAccount) return TransactionStatusTypes.sending;
-  if (pending && isToAccount) return TransactionStatusTypes.receiving;
+  if (pending && isFromAccount) return TransactionStatus.sending;
+  if (pending && isToAccount) return TransactionStatus.receiving;
 
-  if (status === TransactionStatusTypes.failed)
-    return TransactionStatusTypes.failed;
+  if (status === TransactionStatus.failed) return TransactionStatus.failed;
 
   if (type === TransactionType.trade && isFromAccount)
-    return TransactionStatusTypes.swapped;
+    return TransactionStatus.swapped;
 
-  if (type === TransactionType.authorize)
-    return TransactionStatusTypes.approved;
-  if (type === TransactionType.purchase)
-    return TransactionStatusTypes.purchased;
+  if (type === TransactionType.authorize) return TransactionStatus.approved;
+  if (type === TransactionType.purchase) return TransactionStatus.purchased;
 
   if (type === TransactionType.deposit) {
     if (protocol === ProtocolType.compound) {
-      return TransactionStatusTypes.deposited;
+      return TransactionStatus.deposited;
     } else {
-      return TransactionStatusTypes.sent;
+      return TransactionStatus.sent;
     }
   }
 
   if (type === TransactionType.withdraw) {
     if (protocol === ProtocolType.compound) {
-      return TransactionStatusTypes.withdrew;
+      return TransactionStatus.withdrew;
     } else {
-      return TransactionStatusTypes.received;
+      return TransactionStatus.received;
     }
   }
 
-  if (isSelf) return TransactionStatusTypes.self;
+  if (isSelf) return TransactionStatus.self;
 
-  if (isFromAccount) return TransactionStatusTypes.sent;
-  if (isToAccount) return TransactionStatusTypes.received;
+  if (isFromAccount) return TransactionStatus.sent;
+  if (isToAccount) return TransactionStatus.received;
 
-  return TransactionStatusTypes.unknown;
+  return TransactionStatus.unknown;
 };

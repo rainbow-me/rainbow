@@ -19,9 +19,8 @@ export interface ZerionAsset {
   symbol: string;
   decimals: number;
   type: AssetType | null;
-  icon_url: string | null;
-  price: ZerionAssetPrice | null;
-  is_displayable: boolean;
+  icon_url?: string | null;
+  price?: ZerionAssetPrice | null;
 }
 
 export interface SavingsAsset extends Asset {
@@ -35,7 +34,6 @@ export interface ParsedAddressAsset extends Asset {
   };
   color?: string;
   icon_url?: string;
-  is_displayable?: boolean;
   price?: {
     changed_at?: number;
     relative_change_24h?: number;
