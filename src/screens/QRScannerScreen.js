@@ -62,16 +62,13 @@ export default function QRScannerScreen() {
   const isFocusedAndroid = useIsFocused();
   const [initializeCamera, setInitializeCamera] = useState(ios ? true : false);
   const { navigate } = useNavigation();
+  const [cameraVisible, setCameraVisible] = useState();
 
   const cameraDim = useSharedValue(0);
   const dsRef = useRef();
-  const onCrossMagicBorder = useCallback(
-    below => (cameraDim.value = below ? 1 : 0),
-    [cameraDim]
-  );
   useEffect(
-    () => dsRef.current?.addOnCrossMagicBorderListener(onCrossMagicBorder),
-    [onCrossMagicBorder]
+    () => dsRef.current?.addOnCrossMagicBorderListener(setCameraVisible),
+    []
   );
 
   const handlePressBackButton = useCallback(
@@ -91,7 +88,7 @@ export default function QRScannerScreen() {
         {ios ? <DiscoverSheet ref={dsRef} /> : null}
         <ScannerContainer>
           <Background />
-          <CameraDimmer cameraDim={cameraDim}>
+          <CameraDimmer cameraVisible={cameraVisible}>
             {initializeCamera && (
               <QRCodeScanner
                 cameraDim={cameraDim}
