@@ -52,7 +52,7 @@ export default class RecyclerAssetList extends Component {
   };
 
   componentDidUpdate(prevProps) {
-    const { openFamilyTabs, nativeCurrency, sections } = this.props;
+    const { openFamilyTabs, sections } = this.props;
 
     //if (nativeCurrency !== prevProps.nativeCurrency) {
     //  requestAnimationFrame(
@@ -130,14 +130,14 @@ export default class RecyclerAssetList extends Component {
               AssetListHeaderHeight;
 
             if (endOfDesiredComponent > bottomHorizonOfScreen) {
-              this.scrollToOffset(
+              this.props.scrollToOffset(
                 endOfDesiredComponent -
                   RecyclerAssetListSharedState.globalDeviceDimensions,
                 true
               );
             }
           } else {
-            this.scrollToOffset(startOfDesiredComponent, true);
+            this.props.scrollToOffset(startOfDesiredComponent, true);
           }
 
           break;
@@ -183,16 +183,8 @@ export default class RecyclerAssetList extends Component {
       const startOfDesiredComponent =
         RecyclerAssetListSharedState.rlv.getLayout(familyIndex).y -
         AssetListHeaderHeight;
-      this.scrollToOffset(startOfDesiredComponent, true);
+      this.props.scrollToOffset(startOfDesiredComponent, true);
     }
-  }
-
-  scrollToOffset(position, animated) {
-    requestAnimationFrame(
-      () =>
-        RecyclerAssetListSharedState.rlv &&
-        RecyclerAssetListSharedState.rlv.scrollToOffset(0, position, animated)
-    );
   }
 
 // TODO: Needs to be introduced.

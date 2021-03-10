@@ -486,7 +486,13 @@ function RainbowRecyclerAssetList({
     const nextDataProvider = new DataProvider(hasRowChanged);
     return nextDataProvider.cloneWithRows(items);
   }, [items]);
-
+  const scrollToOffset = useCallback(
+    (offsetY: number, animated: boolean = false) =>
+      requestAnimationFrame(() =>
+        RecyclerAssetListSharedState.rlv?.scrollToOffset(0, offsetY, animated)
+      ),
+    []
+  );
   useEffect(() => {
     requestAnimationFrame(() =>
       RecyclerAssetListSharedState.rlv?.scrollToTop(false)
@@ -518,6 +524,7 @@ function RainbowRecyclerAssetList({
         renderRefreshControl={renderRefreshControl}
         rowRenderer={rowRenderer}
         scrollIndicatorInsets={scrollIndicatorInsets}
+        scrollToOffset={scrollToOffset}
         scrollViewProps={scrollViewProps}
         sections={sections}
         sectionsIndices={sectionsIndices}
