@@ -1,13 +1,12 @@
-import { findIndex, get } from 'lodash';
+import { findIndex } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { DataProvider, RecyclerListView } from 'recyclerlistview';
+import { RecyclerListView } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import styled from 'styled-components';
 import { AssetListHeaderHeight } from '../AssetListHeader';
 import { ViewTypes } from '../RecyclerViewTypes';
 import RecyclerAssetListSharedState from './RecyclerAssetListSharedState';
-import hasRowChanged from './hasRowChanged';
 import { deviceUtils } from '@rainbow-me/utils';
 
 const defaultIndices = [0];
@@ -52,27 +51,16 @@ export default class RecyclerAssetList extends Component {
     renderAheadOffset: deviceUtils.dimensions.height,
   };
 
-  //constructor(props) {
-  //  super(props);
-  //  this.state = {
-  //    dataProvider: new DataProvider(hasRowChanged, this.getStableId),
-  //  };
-  //}
-
-  //static getDerivedStateFromProps(props, state) {
-  //  return props.shouldGetDerivedStateFromProps(props, state);
-  //}
-
   componentDidUpdate(prevProps) {
     const { openFamilyTabs, nativeCurrency, sections } = this.props;
 
-    if (nativeCurrency !== prevProps.nativeCurrency) {
-      requestAnimationFrame(
-        () =>
-          RecyclerAssetListSharedState.rlv &&
-          RecyclerAssetListSharedState.rlv.scrollToTop(false)
-      );
-    }
+    //if (nativeCurrency !== prevProps.nativeCurrency) {
+    //  requestAnimationFrame(
+    //    () =>
+    //      RecyclerAssetListSharedState.rlv &&
+    //      RecyclerAssetListSharedState.rlv.scrollToTop(false)
+    //  );
+    //}
 
     let collectibles = {};
     let prevCollectibles = {};

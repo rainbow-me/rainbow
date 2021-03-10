@@ -1,5 +1,5 @@
 import { findIndex, get, isNil } from 'lodash';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   LayoutChangeEvent,
   NativeSyntheticEvent,
@@ -486,6 +486,12 @@ function RainbowRecyclerAssetList({
     const nextDataProvider = new DataProvider(hasRowChanged);
     return nextDataProvider.cloneWithRows(items);
   }, [items]);
+
+  useEffect(() => {
+    requestAnimationFrame(() =>
+      RecyclerAssetListSharedState.rlv?.scrollToTop(false)
+    );
+  }, [nativeCurrency]);
 
   return (
     <StyledContainer onLayout={onLayout}>
