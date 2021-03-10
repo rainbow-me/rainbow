@@ -127,16 +127,6 @@ function RecyclerAssetList({
       setIsRefreshing(false);
     }
   }, [isRefreshing, setIsRefreshing, fetchData]);
-  const renderRefreshControl = useCallback(() => {
-    return (
-      <RefreshControl
-        onRefresh={handleRefresh}
-        refreshing={isRefreshing}
-        style={ios ? {} : { top: 20 }}
-        tintColor={colors.alpha(colors.blueGreyDark, 0.4)}
-      />
-    );
-  }, [handleRefresh, isRefreshing, colors]);
   const onLayout = useCallback(({ nativeEvent }: LayoutChangeEvent) => {
     // set globalDeviceDimensions
     // used in LayoutItemAnimator and auto-scroll logic above 👇
@@ -291,7 +281,7 @@ function RecyclerAssetList({
     paddingBottom,
   ]);
 
-  const layoutProvider = useMemo(() => {
+  const layoutProvider = useDeepCompareMemo(() => {
     return new LayoutProvider(
       (index: number) => {
         // Main list logic 👇
@@ -492,9 +482,16 @@ function RecyclerAssetList({
 
   const scrollViewProps = useMemo(
     () => ({
-      refreshControl: renderRefreshControl(),
+      refreshControl: (
+        <RefreshControl
+          onRefresh={handleRefresh}
+          refreshing={isRefreshing}
+          style={ios ? {} : { top: 20 }}
+          tintColor={colors.alpha(colors.blueGreyDark, 0.4)}
+        />
+      ),
     }),
-    [renderRefreshControl]
+    [handleRefresh, isRefreshing, colors]
   );
 
   const scrollIndicatorInsets = useMemo(
