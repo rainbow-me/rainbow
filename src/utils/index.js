@@ -44,3 +44,4 @@ export {
   removeLeadingZeros,
   sanitizeSeedPhrase,
 } from './formatters';
+export { default as withSpeed } from './withSpeed';

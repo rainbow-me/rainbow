@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import {
   LongPressGestureHandler,
   PanGestureHandler,
@@ -14,8 +14,8 @@ import Animated, {
   Value,
   withDecay,
 } from 'react-native-reanimated';
-import { useMemoOne } from 'use-memo-one';
-import { measureTopMoverCoinRow, TopMoverCoinRow } from '../coin-row';
+import { TopMoverCoinRow } from '../coin-row';
+import { withSpeed } from '@rainbow-me/utils';
 
 const DECCELERATION = 0.998;
 
@@ -29,29 +29,33 @@ export const useReanimatedValue = initialValue => {
   return value.current;
 };
 
+const SAFETY_MARGIN = 100;
+// beginning of the component should be within -100 and inf
 const SingleElement = ({
   transX,
-  offset,
-  width,
-  sumWidth = 0,
+  offset = { value: 0 },
+  sumWidth,
   children,
-  index,
+  onLayout,
 }) => {
-  const style = useAnimatedStyle(() => ({
-    transform: [
-      {
-        translateX:
-          ((((transX.value + offset + width) % sumWidth) + sumWidth) %
-            sumWidth) -
-            width || 0,
-      },
-    ],
-  }));
+  const style = useAnimatedStyle(() => {
+    const transWithinRange =
+      (((transX.value + SAFETY_MARGIN) % sumWidth.value) - sumWidth.value) %
+      sumWidth.value;
+    return {
+      transform: [
+        {
+          translateX: transWithinRange + offset.value - SAFETY_MARGIN,
+        },
+      ],
+    };
+  });
   return (
     <Animated.View
-      key={`${offset}-${index}`}
+      onLayout={onLayout}
       style={[
         {
+          flexDirection: 'row',
           position: 'absolute',
         },
         style,
@@ -65,12 +69,13 @@ const SingleElement = ({
 const SwipeableList = ({ components, speed }) => {
   const transX = useSharedValue(0);
   const swiping = useSharedValue(0);
+  const offset = useSharedValue(100000);
   const isPanStarted = useRef(false);
   const startPan = () => (isPanStarted.current = true);
   const endPan = () => (isPanStarted.current = false);
 
   useEffect(() => {
-    swiping.value = withDecay({ deceleration: 1, velocity: speed });
+    swiping.value = withSpeed({ speed });
   }, [speed, swiping]);
 
   const onGestureEvent = useAnimatedGestureHandler({
@@ -87,7 +92,7 @@ const SwipeableList = ({ components, speed }) => {
         deceleration: DECCELERATION,
         velocity: event.velocityX,
       });
-      swiping.value = withDecay({ deceleration: 1, velocity: speed });
+      swiping.value = withSpeed({ speed });
     },
     onFail: () => {
       android && runOnJS(endPan)();
@@ -100,10 +105,7 @@ const SwipeableList = ({ components, speed }) => {
   const restoreAnimation = useCallback(() => {
     setTimeout(() => {
       if (!isPanStarted.current) {
-        swiping.value = withDecay({
-          deceleration: 1,
-          velocity: speed,
-        });
+        swiping.value = withSpeed({ speed });
       }
     }, 100);
   }, [speed, swiping]);
@@ -115,24 +117,19 @@ const SwipeableList = ({ components, speed }) => {
 
   const onTapGestureEvent = useAnimatedGestureHandler({
     onCancel: () => {
-      swiping.value = withDecay({ deceleration: 1, velocity: speed });
+      swiping.value = withSpeed({ speed });
     },
     onEnd: () => {
-      swiping.value = withDecay({ deceleration: 1, velocity: speed });
+      swiping.value = withSpeed({ speed });
     },
     onFail: () => {
-      swiping.value = withDecay({ deceleration: 1, velocity: speed });
+      swiping.value = withSpeed({ speed });
     },
     onStart: () => {
       cancelAnimation(transX);
       cancelAnimation(swiping);
     },
   });
-
-  const sumWidth = useMemoOne(
-    () => components.reduce((acc, { width }) => acc + width, 0),
-    [components]
-  );
 
   const panRef = useRef();
   const lpRef = useRef();
@@ -172,23 +169,36 @@ const SwipeableList = ({ components, speed }) => {
                     flexDirection: 'row',
                   }}
                 >
-                  {components.map(({ view, offset, width }, index) => (
-                    <SingleElement
-                      index={index}
-                      key={`${offset}-${index}`}
-                      offset={offset}
-                      sumWidth={sumWidth}
-                      transX={translate}
-                      width={width}
-                    >
-                      {ios
+                  <SingleElement
+                    onLayout={e => {
+                      offset.value = e.nativeEvent.layout.width;
+                    }}
+                    sumWidth={offset}
+                    transX={translate}
+                  >
+                    {components.map(({ view }) =>
+                      ios
                         ? view
                         : view({
                             onPressCancel: restoreAnimation,
                             onPressStart: startAnimation,
-                          })}
-                    </SingleElement>
-                  ))}
+                          })
+                    )}
+                  </SingleElement>
+                  <SingleElement
+                    offset={offset}
+                    sumWidth={offset}
+                    transX={translate}
+                  >
+                    {components.map(({ view }) =>
+                      ios
+                        ? view
+                        : view({
+                            onPressCancel: restoreAnimation,
+                            onPressStart: startAnimation,
+                          })
+                    )}
+                  </SingleElement>
                 </Animated.View>
               </Animated.View>
             </PanGestureHandler>
@@ -200,17 +210,6 @@ const SwipeableList = ({ components, speed }) => {
 };
 
 const MarqueeList = ({ items = [], speed }) => {
-  const [itemWidths, setItemWidths] = useState(null);
-
-  const updateItemWidths = useCallback(async () => {
-    const widths = await Promise.all(items.map(measureTopMoverCoinRow));
-    setItemWidths(widths);
-  }, [items]);
-
-  useEffect(() => {
-    updateItemWidths();
-  }, [updateItemWidths]);
-
   const renderItemCallback = useCallback(
     ({ item, onPressCancel, onPressStart }) => (
       <TopMoverCoinRow
@@ -223,31 +222,14 @@ const MarqueeList = ({ items = [], speed }) => {
     []
   );
 
-  const offsets = useMemoOne(
-    () =>
-      itemWidths
-        ?.reduce(([first, ...tail], width) => [width + first, first, ...tail], [
-          0,
-        ])
-        .reverse(),
-    [itemWidths]
-  );
-
-  if (itemWidths === null) {
-    return null;
-  }
-
   return (
     <>
       <SwipeableList
-        components={items.map((item, idx) => ({
-          key: `item-${idx}`,
-          offset: offsets[idx],
+        components={items.map(item => ({
           view: ios
             ? renderItemCallback({ item })
             : ({ onPressCancel, onPressStart }) =>
                 renderItemCallback({ item, onPressCancel, onPressStart }),
-          width: itemWidths[idx],
         }))}
         speed={speed}
       />

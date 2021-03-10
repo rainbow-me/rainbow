@@ -89,7 +89,7 @@ export const topMoversLoadState = () => async (dispatch: AppDispatch) => {
   }
 };
 
-const MIN_MOVERS = 5;
+const MIN_MOVERS = 3;
 
 export const updateTopMovers = (message: ZerionAssetInfoResponse) => (
   dispatch: AppDispatch,
@@ -112,25 +112,24 @@ export const updateTopMovers = (message: ZerionAssetInfoResponse) => (
         typeof relative_change_24h === 'number' && relative_change_24h < 0
     );
 
-    if (fixedLosers.length >= MIN_MOVERS) {
-      dispatch({
-        payload: fixedLosers,
-        type: TOP_MOVERS_UPDATE_LOSERS,
-      });
-      saveTopLosers(fixedLosers);
-    }
+    const isEnoughTopLosers = fixedLosers.length >= MIN_MOVERS;
+    dispatch({
+      payload: isEnoughTopLosers ? fixedLosers : [],
+      type: TOP_MOVERS_UPDATE_LOSERS,
+    });
+    saveTopLosers(isEnoughTopLosers ? fixedLosers : []);
   } else {
     const fixedGainers = info.filter(
       ({ price: { relative_change_24h } }) =>
         typeof relative_change_24h === 'number' && relative_change_24h > 0
     );
-    if (fixedGainers.length >= MIN_MOVERS) {
-      dispatch({
-        payload: fixedGainers,
-        type: TOP_MOVERS_UPDATE_GAINERS,
-      });
-      saveTopGainers(fixedGainers);
-    }
+    const isEnoughTopGainers = fixedGainers.length >= MIN_MOVERS;
+
+    dispatch({
+      payload: isEnoughTopGainers ? fixedGainers : [],
+      type: TOP_MOVERS_UPDATE_GAINERS,
+    });
+    saveTopGainers(isEnoughTopGainers ? fixedGainers : []);
   }
 };
 
