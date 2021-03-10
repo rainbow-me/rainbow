@@ -7,7 +7,13 @@ import {
   View,
 } from 'react-native';
 import { connect } from 'react-redux';
-import { DataProvider, LayoutProvider } from 'recyclerlistview';
+import {
+  DataProvider,
+  LayoutProvider,
+  RecyclerListView,
+} from 'recyclerlistview';
+
+import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import styled from 'styled-components';
 import { withThemeContext } from '../../../context/ThemeContext';
 import { CoinDivider } from '../../coin-divider';
@@ -16,11 +22,19 @@ import AssetListHeader, { AssetListHeaderHeight } from '../AssetListHeader';
 import { firstCoinRowMarginTop, ViewTypes } from '../RecyclerViewTypes';
 
 import LayoutItemAnimator from './LayoutItemAnimator';
-import OldAssetRecyclerList from './OldAssetRecyclerList';
 import RecyclerAssetListSharedState from './RecyclerAssetListSharedState';
 import hasRowChanged from './hasRowChanged';
 import { usePrevious } from '@rainbow-me/hooks';
 import { deviceUtils, logger, safeAreaInsetValues } from '@rainbow-me/utils';
+
+const defaultIndices = [0];
+
+const StyledRecyclerListView = styled(RecyclerListView)`
+  background-color: ${({ theme: { colors } }) => colors.white};
+  display: flex;
+  flex: 1;
+  min-height: 1;
+`;
 
 const StyledContainer = styled(View)`
   display: flex;
@@ -55,6 +69,7 @@ export type RainbowRecyclerAssetListProps = {
   }[];
   readonly paddingBottom?: number;
   readonly hideHeader: boolean;
+  readonly renderAheadOffset?: number;
 };
 
 function RainbowRecyclerAssetList({
@@ -69,6 +84,7 @@ function RainbowRecyclerAssetList({
   openSmallBalances,
   paddingBottom = 0,
   hideHeader,
+  renderAheadOffset = deviceUtils.dimensions.height,
   ...extras
 }: RainbowRecyclerAssetListProps): JSX.Element {
   const [showCoinListEditor, setShowCoinListEditor] = useState<boolean>(false);
@@ -638,40 +654,32 @@ function RainbowRecyclerAssetList({
     scrollToOffset,
   ]);
 
+  const handleListRef = useCallback(ref => {
+    RecyclerAssetListSharedState.rlv = ref;
+  }, []);
+
   return (
     <StyledContainer onLayout={onLayout}>
-      <OldAssetRecyclerList
-        {...extras}
-        animator={animator}
-        areSmallCollectibles={areSmallCollectibles}
-        checkEditStickyHeader={checkEditStickyHeader}
-        colors={colors}
-        dataProvider={dataProvider}
-        extendedState={extendedState}
-        hideHeader={hideHeader}
-        isCoinListEdited={isCoinListEdited}
-        items={items}
-        itemsCount={itemsCount}
-        layoutProvider={layoutProvider}
-        nativeCurrency={nativeCurrency}
-        onScroll={onScroll}
-        openFamilyTabs={openFamilyTabs}
-        openInvestmentCards={openInvestmentCards}
-        openSavings={openSavings}
-        openSmallBalances={openSmallBalances}
-        paddingBottom={paddingBottom}
-        renderRefreshControl={renderRefreshControl}
-        rowRenderer={rowRenderer}
-        scrollIndicatorInsets={scrollIndicatorInsets}
-        scrollToOffset={scrollToOffset}
-        scrollViewProps={scrollViewProps}
-        sections={sections}
-        sectionsIndices={sectionsIndices}
-        setShowCoinListEditor={setShowCoinListEditor}
-        showCoinListEditor={showCoinListEditor}
-        stickyComponentsIndices={stickyComponentsIndices}
-        stickyRowRenderer={stickyRowRenderer}
-      />
+      <StickyContainer
+        overrideRowRenderer={stickyRowRenderer}
+        stickyHeaderIndices={
+          isCoinListEdited ? defaultIndices : stickyComponentsIndices
+        }
+      >
+        <StyledRecyclerListView
+          dataProvider={dataProvider}
+          extendedState={extendedState}
+          itemAnimator={animator}
+          layoutProvider={layoutProvider}
+          onScroll={onScroll}
+          ref={handleListRef}
+          renderAheadOffset={renderAheadOffset}
+          rowRenderer={rowRenderer}
+          scrollIndicatorInsets={scrollIndicatorInsets}
+          scrollViewProps={scrollViewProps}
+          {...extras}
+        />
+      </StickyContainer>
     </StyledContainer>
   );
 }
