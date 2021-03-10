@@ -1,5 +1,4 @@
 import { get, has } from 'lodash';
-import RecyclerAssetListSharedState from './RecyclerAssetListSharedState';
 import { isNewValueForPath } from '@rainbow-me/utils';
 
 export default function hasRowChanged(r1: any, r2: any): boolean {
@@ -77,35 +76,26 @@ export default function hasRowChanged(r1: any, r2: any): boolean {
     );
   }
 
-  RecyclerAssetListSharedState.smallBalancedChanged = false;
+  let smallBalancedChanged = false;
   if (r1?.item?.smallBalancesContainer && r2?.item?.smallBalancesContainer) {
     if (r1.item.assets.length !== r2.item.assets.length) {
-      RecyclerAssetListSharedState.smallBalancedChanged = true;
+      smallBalancedChanged = true;
     } else if (r2.item.assets.length > 0) {
-      for (
-        let i = 0;
-        i < r2.item.assets.length &&
-        !RecyclerAssetListSharedState.smallBalancedChanged;
-        i++
-      ) {
+      for (let i = 0; i < r2.item.assets.length && !smallBalancedChanged; i++) {
         if (r1.item.assets[i].native && r2.item.assets[i].native) {
           if (
             get(r1.item.assets[i].native, 'balance.display', null) !==
               get(r2.item.assets[i].native, 'balance.display', null) ||
             r1.item.assets[i].isHidden !== r2.item.assets[i].isHidden
           ) {
-            RecyclerAssetListSharedState.smallBalancedChanged = true;
+            smallBalancedChanged = true;
           }
         } else if (r1.item.assets[i].isHidden !== r2.item.assets[i].isHidden) {
-          RecyclerAssetListSharedState.smallBalancedChanged = true;
+          smallBalancedChanged = true;
         }
       }
     }
   }
 
-  return (
-    isNewAssetBalance ||
-    savingsSectionChanged ||
-    RecyclerAssetListSharedState.smallBalancedChanged
-  );
+  return isNewAssetBalance || savingsSectionChanged || smallBalancedChanged;
 }

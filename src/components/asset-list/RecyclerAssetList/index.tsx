@@ -227,8 +227,6 @@ function RecyclerAssetList({
       } else if (type.index === ViewTypes.COIN_SMALL_BALANCES.index) {
         return ViewTypes.COIN_SMALL_BALANCES.renderComponent({
           data,
-          smallBalancedChanged:
-            RecyclerAssetListSharedState.smallBalancedChanged,
         });
       } else if (type.index === ViewTypes.COIN_SAVINGS.index) {
         return ViewTypes.COIN_SAVINGS.renderComponent({
@@ -310,9 +308,10 @@ function RecyclerAssetList({
     };
   }, [openFamilyTabs, sections]);
 
-  const animator = useMemo(() => new LayoutItemAnimator(paddingBottom), [
-    paddingBottom,
-  ]);
+  const animator = useMemo(
+    () => new LayoutItemAnimator(paddingBottom, globalDeviceDimensions),
+    [globalDeviceDimensions, paddingBottom]
+  );
 
   const layoutProvider = useMemo(() => {
     return new LayoutProvider(
@@ -621,8 +620,7 @@ function RecyclerAssetList({
                 AssetListHeaderHeight;
               if (endOfDesiredComponent > bottomHorizonOfScreen) {
                 scrollToOffset(
-                  endOfDesiredComponent -
-                    RecyclerAssetListSharedState.globalDeviceDimensions,
+                  endOfDesiredComponent - globalDeviceDimensions,
                   true
                 );
               }

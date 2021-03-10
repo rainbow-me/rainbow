@@ -39,7 +39,7 @@ const extraSpaceForDropShadow = 19;
 const amountOfImagesWithForcedPrioritizeLoading = 9;
 const editModeAdditionalHeight = 100;
 
-let lastRenderList = [];
+//let lastRenderList = [];
 
 export const ViewTypes = {
   HEADER: {
@@ -95,29 +95,22 @@ export const ViewTypes = {
           (isCoinListEdited ? editModeAdditionalHeight : 0)
         : closedSmallBalancesAdditionalHeight,
     index: 3,
-    renderComponent: ({ data, smallBalancedChanged }) => {
+    renderComponent: ({ data }) => {
       const { item = {}, renderItem } = data;
-
-      if (
-        lastRenderList.length !== item.assets.length ||
-        smallBalancedChanged
-      ) {
-        smallBalancedChanged = false;
-        const renderList = [];
-        for (let i = 0; i < item.assets.length; i++) {
-          renderList.push(
-            renderItem({
-              item: {
-                ...item.assets[i],
-                isSmall: true,
-              },
-              key: `CoinSmallBalances${i}`,
-            })
-          );
-        }
-        lastRenderList = renderList;
+      const renderList = [];
+      for (let i = 0; i < item.assets.length; i++) {
+        renderList.push(
+          renderItem({
+            item: {
+              ...item.assets[i],
+              isSmall: true,
+            },
+            key: `CoinSmallBalances${i}`,
+          })
+        );
       }
-      return <SmallBalancesWrapper assets={lastRenderList} />;
+      // TODO: moize the renderList
+      return <SmallBalancesWrapper assets={renderList} />;
     },
     visibleDuringCoinEdit: true,
   },

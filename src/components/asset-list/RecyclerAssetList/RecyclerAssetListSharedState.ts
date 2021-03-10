@@ -11,12 +11,11 @@ export type RecyclerListViewRef = RecyclerListView<
 >;
 
 export type Shared = {
-  smallBalancedChanged: boolean;
+  //smallBalancedChanged: boolean;
   rlv: RecyclerListViewRef;
 };
 
 export default ((): Shared => {
-  let smallBalancedChanged = false;
   let rlv = (createRef() as unknown) as RecyclerListViewRef;
 
   return {
@@ -25,12 +24,6 @@ export default ((): Shared => {
     },
     set rlv(next: RecyclerListViewRef) {
       rlv = next;
-    },
-    get smallBalancedChanged(): boolean {
-      return smallBalancedChanged;
-    },
-    set smallBalancedChanged(nextSmallBalancedChanged: boolean) {
-      smallBalancedChanged = nextSmallBalancedChanged;
     },
   };
 })();

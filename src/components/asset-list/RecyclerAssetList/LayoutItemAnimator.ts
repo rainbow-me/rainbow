@@ -5,11 +5,13 @@ import RecyclerAssetListSharedState from './RecyclerAssetListSharedState';
 
 export default class LayoutItemAnimator extends BaseItemAnimator {
   paddingBottom: number;
-  constructor(paddingBottom: number) {
+  globalDeviceDimensions: number;
+  constructor(paddingBottom: number, globalDeviceDimensions: number) {
     super();
     this.paddingBottom = ViewTypes.FOOTER.calculateHeight({
       paddingBottom: paddingBottom || 0,
     });
+    this.globalDeviceDimensions = globalDeviceDimensions;
   }
 
   animateDidMount = () => undefined;
@@ -27,7 +29,7 @@ export default class LayoutItemAnimator extends BaseItemAnimator {
       hasContentDimension &&
       rlv.getContentDimension().height <
         rlv.getCurrentScrollOffset() +
-          RecyclerAssetListSharedState.globalDeviceDimensions +
+          this.globalDeviceDimensions +
           this.paddingBottom &&
       rlv.getCurrentScrollOffset() > 0;
 
