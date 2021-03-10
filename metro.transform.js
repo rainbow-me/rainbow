@@ -15,6 +15,7 @@ module.exports.transform = function applyRainbowTransform({
           '@react-native-community/clipboard': {},
           'react-native-keychain': {},
           'react-native-video': {},
+          'react-native-webview': {},
         },
         madge: {
           tsConfig: require.resolve('./tsconfig.json'),
