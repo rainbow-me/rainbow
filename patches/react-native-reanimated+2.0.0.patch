@@ -25,7 +25,7 @@ index e6e1541..943d1b6 100644
  export { default as onChange } from './onChange';
  export { default as useCode } from './useCode';
 diff --git a/node_modules/react-native-reanimated/src/reanimated2/Colors.js b/node_modules/react-native-reanimated/src/reanimated2/Colors.js
-index a75d2b2..b3a081d 100644
+index 2fa2578..a095883 100644
 --- a/node_modules/react-native-reanimated/src/reanimated2/Colors.js
 +++ b/node_modules/react-native-reanimated/src/reanimated2/Colors.js
 @@ -10,7 +10,7 @@
@@ -38,20 +38,19 @@ index a75d2b2..b3a081d 100644
  
  // var INTEGER = '[-+]?\\d+';
 diff --git a/node_modules/react-native-reanimated/src/reanimated2/Easing.js b/node_modules/react-native-reanimated/src/reanimated2/Easing.js
-index 48a3c76..0723069 100644
+index 730f366..c3890c1 100644
 --- a/node_modules/react-native-reanimated/src/reanimated2/Easing.js
 +++ b/node_modules/react-native-reanimated/src/reanimated2/Easing.js
-@@ -235,7 +235,7 @@ function inOut(easing) {
-   };
- }
+@@ -288,5 +288,5 @@ Object.keys(EasingObject).forEach((key) => {
+   EasingObject[key] = createChecker(EasingObject[key], key);
+ });
  
--export const Easing = {
-+export const NewEasing = {
-   linear,
-   ease,
-   quad,
+-export const Easing = EasingObject;
+-export default Easing;
++export const NewEasing = EasingObject;
++export default NewEasing;
 diff --git a/node_modules/react-native-reanimated/src/reanimated2/animations.js b/node_modules/react-native-reanimated/src/reanimated2/animations.js
-index c49cfb8..2303f2a 100644
+index 3fc07ea..221fee3 100644
 --- a/node_modules/react-native-reanimated/src/reanimated2/animations.js
 +++ b/node_modules/react-native-reanimated/src/reanimated2/animations.js
 @@ -1,5 +1,5 @@
@@ -71,10 +70,10 @@ index c49cfb8..2303f2a 100644
        animation.current = x;
        animation.velocity = v;
 diff --git a/node_modules/react-native-reanimated/src/reanimated2/interpolation.js b/node_modules/react-native-reanimated/src/reanimated2/interpolation.js
-index fc43c60..920eaa9 100644
+index 28a96f9..97a1144 100644
 --- a/node_modules/react-native-reanimated/src/reanimated2/interpolation.js
 +++ b/node_modules/react-native-reanimated/src/reanimated2/interpolation.js
-@@ -28,7 +28,7 @@ function internalInterpolate(x, l, r, ll, rr, type) {
+@@ -111,7 +111,7 @@ function internalInterpolate(x, l, r, ll, rr, type) {
    return val;
  }
  
@@ -82,4 +81,4 @@ index fc43c60..920eaa9 100644
 +export function newInterpolate(x, input, output, type) {
    'worklet';
    if (x && x.__nodeID) {
-     throw new Error(
+     console.warn(`interpolate() was renamed to interpolateNode() in Reanimated 2. Please use interpolateNode() instead`);

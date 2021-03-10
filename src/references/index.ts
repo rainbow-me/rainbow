@@ -42,11 +42,11 @@ export const TRANSFER_EVENT_KECCAK =
 export const AddCashCurrencies = {
   kovan: {
     DAI: '0xc4375b7de8af5a38a93548eb8453a498222c4ff2',
-    ETH: 'eth',
+    ETH: ETH_ADDRESS,
   },
   mainnet: {
-    DAI: '0x6b175474e89094c44da98b954eedeac495271d0f',
-    ETH: 'eth',
+    DAI: DAI_ADDRESS,
+    ETH: ETH_ADDRESS,
   },
 };
 
@@ -64,12 +64,12 @@ export const AddCashCurrencyInfo = {
     },
   },
   mainnet: {
-    '0x6b175474e89094c44da98b954eedeac495271d0f': {
+    [DAI_ADDRESS]: {
       decimals: 18,
       name: 'Dai',
       symbol: 'DAI',
     },
-    'eth': {
+    [ETH_ADDRESS]: {
       decimals: 18,
       name: 'Ethereum',
       symbol: 'ETH',
@@ -78,10 +78,10 @@ export const AddCashCurrencyInfo = {
 };
 
 export const DefaultUniswapFavorites = {
-  mainnet: ['eth', DAI_ADDRESS, WBTC_ADDRESS],
+  mainnet: [ETH_ADDRESS, DAI_ADDRESS, WBTC_ADDRESS, SOCKS_ADDRESS],
   rinkeby: [
     // Ethereum
-    'eth',
+    ETH_ADDRESS,
     // DAI
     '0x5592ec0cfb4dbc12d3ab100b257153436a1f0fea',
   ],

@@ -34,7 +34,7 @@ import logger from 'logger';
 const DescriptionText = styled(Text).attrs(
   ({ isTinyPhone, theme: { colors } }) => ({
     align: 'center',
-    color: colors.blueGreyDark50,
+    color: colors.alpha(colors.blueGreyDark, 0.5),
     lineHeight: 'looser',
     size: isTinyPhone ? 'lmedium' : 'large',
   })
@@ -42,7 +42,7 @@ const DescriptionText = styled(Text).attrs(
 
 const ImportantText = styled(DescriptionText).attrs(
   ({ theme: { colors } }) => ({
-    color: colors.blueGreyDark60,
+    color: colors.alpha(colors.blueGreyDark, 0.6),
     weight: 'medium',
   })
 )``;

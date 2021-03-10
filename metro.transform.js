@@ -14,8 +14,8 @@ module.exports.transform = function applyRainbowTransform({
         globalScopeFilter: {
           '@react-native-community/clipboard': {},
           'react-native-keychain': {},
-          'react-native-sound': {},
           'react-native-video': {},
+          'react-native-webview': {},
         },
         madge: {
           tsConfig: require.resolve('./tsconfig.json'),

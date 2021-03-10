@@ -17,7 +17,7 @@ import { fonts, fontWithWidth, position } from '@rainbow-me/styles';
 export const CurrencyTileHeight = 143;
 
 const AmountText = styled(Text).attrs(({ theme: { colors } }) => ({
-  color: colors.blueGreyDark80,
+  color: colors.alpha(colors.blueGreyDark, 0.8),
   letterSpacing: 'roundedTight',
   size: 'smedium',
   weight: 'semibold',

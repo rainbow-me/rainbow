@@ -19,14 +19,12 @@ export default function ChartChangeDirectionArrow() {
   const ratio = useRatio('ChartChangeDirectionArrowRatio');
 
   const { colors } = useTheme();
-  const arrowColor = useDerivedValue(
-    () =>
-      ratio.value === 1
-        ? colors.blueGreyDark
-        : ratio.value < 1
-        ? colors.red
-        : colors.green,
-    [colors]
+  const arrowColor = useDerivedValue(() =>
+    ratio.value === 1
+      ? colors.blueGreyDark
+      : ratio.value < 1
+      ? colors.red
+      : colors.green
   );
   const arrowWrapperStyle = useAnimatedStyle(() => {
     return {

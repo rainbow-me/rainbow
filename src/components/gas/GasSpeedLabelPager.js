@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
+import { darkModeThemeColors, lightModeThemeColors } from '../../styles/colors';
 import { Row } from '../layout';
 import GasSpeedLabelPagerItem, {
   GasSpeedLabelPagerItemHeight,
@@ -38,7 +39,7 @@ const GasSpeedLabelPager = ({
 }) => {
   const [touched, setTouched] = useState(false);
   useEffect(() => setTouched(true), [label]);
-  const { colors } = useTheme();
+  const { colors, isDarkMode } = useTheme();
   const speedColors = useMemo(() => speedColorsFactory(colors), [colors]);
 
   return (
@@ -52,9 +53,9 @@ const GasSpeedLabelPager = ({
                   ? label === 'custom'
                     ? colors.appleBlue
                     : speedColors[theme][i]
-                  : theme === 'dark'
-                  ? colors.alpha(colors.blueGreyDark, 0.3)
-                  : colors.alpha(colors.blueGreyDark, 0.3)
+                  : theme === 'dark' || isDarkMode
+                  ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.3)
+                  : colors.alpha(lightModeThemeColors.blueGreyDark, 0.3)
               }
               key={`pager-${speed}-${i}`}
               selected={speed === label}

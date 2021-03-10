@@ -268,7 +268,7 @@ export default function AlreadyBackedUpView() {
             color={colors.white}
             label="🗝 View recovery key"
             onPress={handleViewRecoveryPhrase}
-            textColor={colors.blueGreyDark80}
+            textColor={colors.alpha(colors.blueGreyDark, 0.8)}
           />
         </Column>
       </Content>

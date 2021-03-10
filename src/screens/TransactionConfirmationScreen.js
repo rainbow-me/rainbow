@@ -617,7 +617,7 @@ export default function TransactionConfirmationScreen() {
           label="Cancel"
           onPress={onCancel}
           size="big"
-          textColor={colors.blueGreyDark80}
+          textColor={colors.alpha(colors.blueGreyDark, 0.8)}
           weight="bold"
         />
         <SheetActionButton
@@ -776,7 +776,7 @@ export default function TransactionConfirmationScreen() {
             <Row marginBottom={5}>
               <Text
                 align="center"
-                color={colors.blueGreyDark80}
+                color={colors.alpha(colors.blueGreyDark, 0.8)}
                 letterSpacing="roundedMedium"
                 size="large"
                 weight="bold"

@@ -9,6 +9,7 @@ const darkModeColors = {
   appleBlue: '#0E76FD',
   black: '#FFFFFF',
   blueGreyDark: '#E0E8FF',
+  blueGreyDark04: '#222326',
   blueGreyDark20: '#3A3D45',
   blueGreyDark50: '#797D8B',
   blueGreyDarker: '#000000',
@@ -89,6 +90,7 @@ const getColorsByTheme = darkMode => {
     stackBackground: '#0A0A0A', // '10, 10, 10'
     swapPurple: '#575CFF', // '87, 92, 255'
     transparent: 'transparent',
+    trueBlack: '#000000', // '0, 0, 0'
     uniswapPink: '#DC6BE5', // '229, 64, 241',
     white: '#FFFFFF', // '255, 255, 255'
     whiteLabel: '#FFFFFF', // '255, 255, 255'

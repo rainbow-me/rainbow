@@ -53,32 +53,18 @@ export default function ConfirmExchangeButton({
   const shouldOpenSwapDetails =
     tradeDetails && isHighPriceImpact && !isSwapDetailsRoute;
 
-  const { colors, darkScheme, isDarkMode } = useTheme();
+  const { colors, isDarkMode } = useTheme();
 
   const shadows = useMemo(
     () => ({
-      default: [
-        [
-          0,
-          10,
-          30,
-          (isSwapDetailsRoute ? colors : darkModeThemeColors).white,
-          0.4,
-        ],
-      ],
+      default: [[0, 10, 30, darkModeThemeColors.shadow, 0.4]],
       disabled: [
-        [
-          0,
-          10,
-          30,
-          (isSwapDetailsRoute ? colors : darkModeThemeColors).light,
-          0.2,
-        ],
+        [0, 10, 30, colors.shadow, isDarkMode ? 0 : 0.2],
         [
           0,
           5,
           15,
-          (isSwapDetailsRoute ? colors : lightModeThemeColors).blueGreyDark50,
+          isDarkMode ? colors.shadow : lightModeThemeColors.blueGreyDark50,
           0.4,
         ],
       ],
@@ -98,13 +84,7 @@ export default function ConfirmExchangeButton({
     return {
       buttonColor: color,
       shadowsForAsset: [
-        [
-          0,
-          10,
-          30,
-          (isSwapDetailsRoute ? colors : darkModeThemeColors).light,
-          0.2,
-        ],
+        [0, 10, 30, colors.shadow, 0.2],
         [0, 5, 15, isDarkMode ? colors.trueBlack : color, 0.4],
       ],
     };
@@ -145,8 +125,10 @@ export default function ConfirmExchangeButton({
         disabled={isDisabled}
         disabledBackgroundColor={
           isSwapDetailsRoute
-            ? lightModeThemeColors.blueGreyDark50
-            : lightModeThemeColors.alpha(darkScheme.blueGreyDark, 0.04)
+            ? isDarkMode
+              ? darkModeThemeColors.blueGreyDark04
+              : lightModeThemeColors.blueGreyDark50
+            : darkModeThemeColors.blueGreyDark04
         }
         label={label}
         onLongPress={shouldOpenSwapDetails ? onPressViewDetails : onSubmit}
