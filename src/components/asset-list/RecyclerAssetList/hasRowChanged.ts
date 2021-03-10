@@ -48,7 +48,11 @@ export default function hasRowChanged(r1: any, r2: any): boolean {
     if (r1.item.assets.length !== r2.item.assets.length) {
       savingsSectionChanged = true;
     } else if (r2.item.assets.length > 0) {
-      for (let i = 0; i < r2.item.assets.length; i++) {
+      for (
+        let i = 0;
+        i < r2.item.assets.length && !savingsSectionChanged;
+        i++
+      ) {
         if (r1.item.assets[i].supplyRate) {
           if (r1.item.assets[i].supplyRate !== r2.item.assets[i].supplyRate) {
             savingsSectionChanged = true;
@@ -73,11 +77,17 @@ export default function hasRowChanged(r1: any, r2: any): boolean {
     );
   }
 
+  RecyclerAssetListSharedState.smallBalancedChanged = false;
   if (r1?.item?.smallBalancesContainer && r2?.item?.smallBalancesContainer) {
     if (r1.item.assets.length !== r2.item.assets.length) {
       RecyclerAssetListSharedState.smallBalancedChanged = true;
     } else if (r2.item.assets.length > 0) {
-      for (let i = 0; i < r2.item.assets.length; i++) {
+      for (
+        let i = 0;
+        i < r2.item.assets.length &&
+        !RecyclerAssetListSharedState.smallBalancedChanged;
+        i++
+      ) {
         if (r1.item.assets[i].native && r2.item.assets[i].native) {
           if (
             get(r1.item.assets[i].native, 'balance.display', null) !==
