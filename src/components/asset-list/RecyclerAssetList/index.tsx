@@ -576,30 +576,30 @@ function RecyclerAssetList({
             }
           );
 
-          const startOfDesiredComponent =
-            RecyclerAssetListSharedState.rlv.getLayout(familyIndex).y -
-            AssetListHeaderHeight;
-
-          if (
-            focusedFamilyHeight <
-            RecyclerAssetListSharedState.globalDeviceDimensions
-          ) {
-            const endOfDesiredComponent =
-              startOfDesiredComponent +
-              focusedFamilyHeight +
-              AssetListHeaderHeight;
-
-            if (endOfDesiredComponent > bottomHorizonOfScreen) {
-              scrollToOffset(
-                endOfDesiredComponent -
-                  RecyclerAssetListSharedState.globalDeviceDimensions,
-                true
-              );
+          const layout = RecyclerAssetListSharedState.rlv?.getLayout(
+            familyIndex
+          );
+          if (layout) {
+            const startOfDesiredComponent = layout.y - AssetListHeaderHeight;
+            if (
+              focusedFamilyHeight <
+              RecyclerAssetListSharedState.globalDeviceDimensions
+            ) {
+              const endOfDesiredComponent =
+                startOfDesiredComponent +
+                focusedFamilyHeight +
+                AssetListHeaderHeight;
+              if (endOfDesiredComponent > bottomHorizonOfScreen) {
+                scrollToOffset(
+                  endOfDesiredComponent -
+                    RecyclerAssetListSharedState.globalDeviceDimensions,
+                  true
+                );
+              }
+            } else {
+              scrollToOffset(startOfDesiredComponent, true);
             }
-          } else {
-            scrollToOffset(startOfDesiredComponent, true);
           }
-
           break;
         }
         i++;
@@ -635,10 +635,11 @@ function RecyclerAssetList({
         return data.item?.familyName === 'Showcase';
       });
 
-      const startOfDesiredComponent =
-        RecyclerAssetListSharedState.rlv.getLayout(familyIndex).y -
-        AssetListHeaderHeight;
-      scrollToOffset(startOfDesiredComponent, true);
+      const layout = RecyclerAssetListSharedState.rlv?.getLayout(familyIndex);
+      if (layout) {
+        const { y: startOfDesiredComponent } = layout;
+        scrollToOffset(startOfDesiredComponent - AssetListHeaderHeight, true);
+      }
     }
   }, [
     dataProvider,
