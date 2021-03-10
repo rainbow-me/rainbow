@@ -30,7 +30,7 @@ const Masthead = styled(Column).attrs({
 
 const MastheadDescription = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors.blueGreyDark50,
+  color: colors.alpha(colors.blueGreyDark, 0.5),
   lineHeight: 'looser',
   size: 'large',
 }))`
@@ -89,7 +89,7 @@ export default function BackupSheetSection({
           onPress={onSecondaryAction}
           size="big"
           testID={secondaryButtonTestId}
-          textColor={colors.blueGreyDark80}
+          textColor={colors.alpha(colors.blueGreyDark, 0.8)}
         />
       </Footer>
     </Fragment>

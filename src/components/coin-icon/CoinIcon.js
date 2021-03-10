@@ -38,6 +38,8 @@ const CoinIcon = ({
         color={color}
         fallbackRenderer={CoinIconFallback}
         forceFallback={forceFallback}
+        // force update on change symbol due to ImageCache strategy
+        key={symbol}
         shadowColor={
           forcedShadowColor ||
           (isDarkMode ? colors.shadow : tokenMetadata?.shadowColor || color)

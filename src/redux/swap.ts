@@ -173,11 +173,13 @@ export const flipSwapCurrencies = () => (
   } else if (independentField === SwapModalField.native) {
     const nativeAmount = independentValue;
     const inputPrice = genericAssets[inputCurrency?.address]?.price?.value ?? 0;
-    const inputAmount = convertAmountFromNativeValue(
-      nativeAmount,
-      inputPrice,
-      inputCurrency?.decimals
-    );
+    const inputAmount = nativeAmount
+      ? convertAmountFromNativeValue(
+          nativeAmount,
+          inputPrice,
+          inputCurrency?.decimals
+        )
+      : null;
     dispatch(updateSwapOutputAmount(inputAmount));
   } else {
     dispatch(updateSwapOutputAmount(independentValue));

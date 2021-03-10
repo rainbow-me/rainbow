@@ -3,6 +3,7 @@ import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import styled from 'styled-components';
 import { magicMemo } from '../../../utils';
 import { SimpleModelView } from '../../3d';
+import { AudioPlayer } from '../../audio';
 import { Centered } from '../../layout';
 import { UniqueTokenImage } from '../../unique-token';
 import { SimpleVideo } from '../../video';
@@ -59,7 +60,7 @@ const UniqueTokenExpandedStateImage = ({ asset }) => {
   const containerHeight =
     heightForDeviceSize > maxImageHeight ? maxImageWidth : heightForDeviceSize;
 
-  const { supports3d, supportsVideo } = useUniqueToken(asset);
+  const { supports3d, supportsVideo, supportsAudio } = useUniqueToken(asset);
 
   // When rendering a 3D/Video assets, we'll default to rendering a loading icon.
   const [loading, setLoading] = React.useState(supports3d || supportsVideo);
@@ -83,6 +84,8 @@ const UniqueTokenExpandedStateImage = ({ asset }) => {
               setLoading={setLoading}
               uri={asset.animation_url}
             />
+          ) : supportsAudio ? (
+            <AudioPlayer uri={asset.animation_url} />
           ) : (
             <UniqueTokenImage
               backgroundColor={asset.background}

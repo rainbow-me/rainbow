@@ -4,7 +4,6 @@ export {
   useChartThrottledPoints,
 } from './charts';
 export { default as useDelayedValueWithLayoutAnimation } from './useDelayedValueWithLayoutAnimation';
-export { default as useAudio } from './useAudio';
 export { default as useAccountAssets } from './useAccountAssets';
 export { default as useFrameDelayedValue } from './useFrameDelayedValue';
 export { default as useAccountEmptyState } from './useAccountEmptyState';

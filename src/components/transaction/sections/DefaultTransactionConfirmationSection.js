@@ -14,13 +14,17 @@ export default function DefaultTransactionConfirmationSection({
       <TransactionRow title={lang.t('wallet.action.to')}>
         <TruncatedAddress
           address={address}
-          color={colors.blueGreyDark60}
+          color={colors.alpha(colors.blueGreyDark, 0.6)}
           size="lmedium"
           truncationLength={15}
         />
       </TransactionRow>
       <TransactionRow title={lang.t('wallet.action.value')}>
-        <Text color={colors.blueGreyDark60} size="lmedium" uppercase>
+        <Text
+          color={colors.alpha(colors.blueGreyDark, 0.6)}
+          size="lmedium"
+          uppercase
+        >
           {value} ETH
         </Text>
       </TransactionRow>

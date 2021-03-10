@@ -31,7 +31,7 @@ const AddCashForm = ({
   const { isNarrowPhone, isSmallPhone, isTallPhone } = useDimensions();
   const [scaleAnim, setScaleAnim] = useState(1);
 
-  const initialCurrencyIndex = isWalletEthZero ? 1 : 0;
+  const initialCurrencyIndex = 1;
   const [currency, setCurrency] = useState(currencies[initialCurrencyIndex]);
   const [value, setValue] = useState(
     params?.amount ? params?.amount?.toString() : ''

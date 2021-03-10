@@ -9,6 +9,7 @@ const darkModeColors = {
   appleBlue: '#0E76FD',
   black: '#FFFFFF',
   blueGreyDark: '#E0E8FF',
+  blueGreyDark04: '#222326',
   blueGreyDark20: '#3A3D45',
   blueGreyDark30: '#50535E',
   blueGreyDark50: '#797D8B',

@@ -355,7 +355,7 @@ export default function SpeedUpAndCancelSheet() {
               <Column marginBottom={30} maxWidth={375} paddingHorizontal={42}>
                 <Text
                   align="center"
-                  color={colors.blueGreyDark50}
+                  color={colors.alpha(colors.blueGreyDark, 0.5)}
                   lineHeight="looser"
                   size="large"
                   weight="regular"
@@ -388,7 +388,7 @@ export default function SpeedUpAndCancelSheet() {
                       label="Close"
                       onPress={goBack}
                       size="big"
-                      textColor={colors.blueGreyDark80}
+                      textColor={colors.alpha(colors.blueGreyDark, 0.8)}
                       weight="bold"
                     />
                   </SheetActionButtonRow>
@@ -401,7 +401,7 @@ export default function SpeedUpAndCancelSheet() {
                     label="Cancel"
                     onPress={goBack}
                     size="big"
-                    textColor={colors.blueGreyDark80}
+                    textColor={colors.alpha(colors.blueGreyDark, 0.8)}
                     weight="bold"
                   />
                   <SheetActionButton

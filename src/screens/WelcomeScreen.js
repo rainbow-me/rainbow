@@ -488,7 +488,7 @@ export default function WelcomeScreen() {
         width: 248,
       },
       text: 'I already have one',
-      textColor: colors.blueGreyDark80,
+      textColor: colors.alpha(colors.blueGreyDark, 0.8),
     };
   }, [rValue]);
 

@@ -2,7 +2,6 @@ import { combineReducers } from 'redux';
 
 import addCash from './addCash';
 import appState from './appState';
-import audio from './audio';
 import charts from './charts';
 import contacts from './contacts';
 import data from './data';
@@ -32,7 +31,6 @@ import wallets from './wallets';
 export default combineReducers({
   addCash,
   appState,
-  audio,
   charts,
   contacts,
   data,
