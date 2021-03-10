@@ -43,7 +43,7 @@ const StyledContainer = styled(View)`
   overflow: hidden;
 `;
 
-export type RainbowRecyclerAssetListProps = {
+export type RecyclerAssetListProps = {
   readonly isCoinListEdited: boolean;
   readonly fetchData: () => Promise<unknown>;
   // TODO: This needs to be migrated into a global type.
@@ -70,9 +70,13 @@ export type RainbowRecyclerAssetListProps = {
   readonly paddingBottom?: number;
   readonly hideHeader: boolean;
   readonly renderAheadOffset?: number;
+  readonly openInvestmentCards: boolean;
+  readonly openFamilyTabs: boolean;
+  readonly openSavings: boolean;
+  readonly openSmallBalances: boolean;
 };
 
-function RainbowRecyclerAssetList({
+function RecyclerAssetList({
   isCoinListEdited,
   fetchData,
   colors,
@@ -86,7 +90,7 @@ function RainbowRecyclerAssetList({
   hideHeader,
   renderAheadOffset = deviceUtils.dimensions.height,
   ...extras
-}: RainbowRecyclerAssetListProps): JSX.Element {
+}: RecyclerAssetListProps): JSX.Element {
   const [showCoinListEditor, setShowCoinListEditor] = useState<boolean>(false);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const checkEditStickyHeader = useCallback(
@@ -700,4 +704,4 @@ export default connect(
     openSavings,
     openSmallBalances,
   })
-)(withThemeContext(RainbowRecyclerAssetList));
+)(withThemeContext(RecyclerAssetList));
