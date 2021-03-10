@@ -339,7 +339,6 @@ export const getPercentChange = (valueNow, value24HoursAgo) => {
       parseFloat(value24HoursAgo)) *
     100;
   if (isNaN(adjustedPercentChange) || !isFinite(adjustedPercentChange)) {
-    logger.log('');
     return 0;
   }
   return adjustedPercentChange;
