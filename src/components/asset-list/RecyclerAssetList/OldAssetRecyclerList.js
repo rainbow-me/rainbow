@@ -52,16 +52,16 @@ export default class RecyclerAssetList extends Component {
     renderAheadOffset: deviceUtils.dimensions.height,
   };
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      dataProvider: new DataProvider(hasRowChanged, this.getStableId),
-    };
-  }
+  //constructor(props) {
+  //  super(props);
+  //  this.state = {
+  //    dataProvider: new DataProvider(hasRowChanged, this.getStableId),
+  //  };
+  //}
 
-  static getDerivedStateFromProps(props, state) {
-    return props.shouldGetDerivedStateFromProps(props, state);
-  }
+  //static getDerivedStateFromProps(props, state) {
+  //  return props.shouldGetDerivedStateFromProps(props, state);
+  //}
 
   componentDidUpdate(prevProps) {
     const { openFamilyTabs, nativeCurrency, sections } = this.props;
@@ -104,7 +104,7 @@ export default class RecyclerAssetList extends Component {
           const safeIndex = i;
           const safeCollectibles = collectibles;
           const familyIndex = findIndex(
-            this.state.dataProvider.getAllData(),
+            this.props.dataProvider.getAllData(),
             function (data) {
               return (
                 data.item?.familyName ===
@@ -113,7 +113,7 @@ export default class RecyclerAssetList extends Component {
             }
           );
 
-          const focusedFamilyItem = this.state.dataProvider.getAllData()[
+          const focusedFamilyItem = this.props.dataProvider.getAllData()[
             familyIndex
           ].item;
           const focusedFamilyHeight = ViewTypes.UNIQUE_TOKEN_ROW.calculateHeight(
@@ -185,7 +185,7 @@ export default class RecyclerAssetList extends Component {
         prevCollectibles.data[0]?.familyName !== 'Showcase')
     ) {
       const familyIndex = findIndex(
-        this.state.dataProvider.getAllData(),
+        this.props.dataProvider.getAllData(),
         function (data) {
           return data.item?.familyName === 'Showcase';
         }
@@ -205,44 +205,45 @@ export default class RecyclerAssetList extends Component {
     }, 5);
   }
 
-  getStableId = index => {
-    const { dataProvider } = this.state;
-    const row = get(dataProvider.getAllData(), index);
-
-    if (row.item && row.item.familyName) {
-      return `family_${row.item.familyName}_${row.item.familyId}`;
-    }
-
-    if (row.isHeader && (!row.item || !row.item.familyName)) {
-      return `header_${row.title}`;
-    }
-
-    if (row.item && row.item.address) {
-      return `balance_${row.item.address}`;
-    }
-
-    if (row.item && row.item.uniqueId) {
-      return `pool_${row.item.uniqueId}`;
-    }
-
-    if (row.item && row.item.smallBalancesContainer) {
-      return `smallBalancesContainer`;
-    }
-
-    if (row.item && row.item.coinDivider) {
-      return `coinDivider`;
-    }
-
-    if (row.item && row.item.savingsContainer) {
-      return `savingsContainer`;
-    }
-
-    if (index === dataProvider.getAllData().length - 1) {
-      return 'footer';
-    }
-
-    return index;
-  };
+// TODO: Needs to be introduced.
+//  getStableId = index => {
+//    const { dataProvider } = this.state;
+//    const row = get(dataProvider.getAllData(), index);
+//
+//    if (row.item && row.item.familyName) {
+//      return `family_${row.item.familyName}_${row.item.familyId}`;
+//    }
+//
+//    if (row.isHeader && (!row.item || !row.item.familyName)) {
+//      return `header_${row.title}`;
+//    }
+//
+//    if (row.item && row.item.address) {
+//      return `balance_${row.item.address}`;
+//    }
+//
+//    if (row.item && row.item.uniqueId) {
+//      return `pool_${row.item.uniqueId}`;
+//    }
+//
+//    if (row.item && row.item.smallBalancesContainer) {
+//      return `smallBalancesContainer`;
+//    }
+//
+//    if (row.item && row.item.coinDivider) {
+//      return `coinDivider`;
+//    }
+//
+//    if (row.item && row.item.savingsContainer) {
+//      return `savingsContainer`;
+//    }
+//
+//    if (index === dataProvider.getAllData().length - 1) {
+//      return 'footer';
+//    }
+//
+//    return index;
+//  };
 
   handleListRef = ref => {
     RecyclerAssetListSharedState.rlv = ref;
@@ -260,8 +261,8 @@ export default class RecyclerAssetList extends Component {
       scrollViewProps,
       scrollIndicatorInsets,
       extendedState,
+      dataProvider,
     } = this.props;
-    const { dataProvider } = this.state;
     return (
       <>
         <StickyContainer
