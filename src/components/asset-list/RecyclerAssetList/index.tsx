@@ -25,7 +25,7 @@ import LayoutItemAnimator from './LayoutItemAnimator';
 import RecyclerAssetListSharedState from './RecyclerAssetListSharedState';
 import hasRowChanged from './hasRowChanged';
 import { usePrevious } from '@rainbow-me/hooks';
-import { deviceUtils, logger, safeAreaInsetValues } from '@rainbow-me/utils';
+import { deviceUtils, logger } from '@rainbow-me/utils';
 
 android && UIManager.setLayoutAnimationEnabledExperimental?.(true);
 
@@ -45,6 +45,44 @@ const StyledContainer = styled(View)`
   overflow: hidden;
 `;
 
+export type RecyclerAssetListSection = {
+  readonly name: string;
+  readonly balances: boolean;
+  readonly data: any[];
+  readonly collectibles: {
+    readonly data: readonly any[];
+  };
+  readonly header: {
+    readonly title: string;
+    readonly totalItems: number;
+    readonly totalValue: string;
+  };
+  readonly perData: any;
+  readonly pools: boolean;
+  readonly renderItem: (item: any) => JSX.Element | null;
+  readonly type: string;
+};
+
+// TODO: This should be global.
+export type RecyclerAssetListReduxProps = {
+  readonly editOptions: {
+    readonly isCoinListEdited: boolean;
+  };
+  readonly openSavings: boolean;
+  readonly openSmallBalances: boolean;
+  readonly openStateSettings: {
+    readonly openFamilyTabs: {
+      readonly [key: string]: boolean;
+    };
+    readonly openInvestmentCards: {
+      readonly [key: string]: boolean;
+    };
+  };
+  readonly settings: {
+    readonly nativeCurrency: string;
+  };
+};
+
 export type RecyclerAssetListProps = {
   readonly isCoinListEdited: boolean;
   readonly fetchData: () => Promise<unknown>;
@@ -54,21 +92,7 @@ export type RecyclerAssetListProps = {
     readonly blueGreyDark: string;
   };
   readonly nativeCurrency: string;
-  readonly sections: readonly {
-    readonly balances: boolean;
-    readonly collectibles: boolean;
-    // TODO: What is a data?
-    readonly data: readonly any[];
-    readonly header: {
-      readonly title: string;
-      readonly totalItems: number;
-      readonly totalValue: string;
-    };
-    readonly perData: any;
-    readonly pools: boolean;
-    readonly renderItem: (item: any) => JSX.Element | null;
-    readonly type: string;
-  }[];
+  readonly sections: readonly RecyclerAssetListSection[];
   readonly paddingBottom?: number;
   readonly hideHeader: boolean;
   readonly renderAheadOffset?: number;
@@ -280,6 +304,9 @@ function RecyclerAssetList({
 
   const layoutProvider = useMemo(() => {
     return new LayoutProvider(
+      // The LayoutProvider expects us to return ReactText, however internally
+      // we use custom layouts.
+      // @ts-ignore
       (index: number) => {
         // Main list logic 👇
         // Every component to render properly should return object
@@ -492,20 +519,12 @@ function RecyclerAssetList({
     [handleRefresh, isRefreshing, colors]
   );
 
-  const scrollIndicatorInsets = useMemo(
-    () => ({
-      bottom: safeAreaInsetValues.bottom,
-      top: hideHeader ? 0 : AssetListHeaderHeight,
-    }),
-    [hideHeader]
-  );
-
   const extendedState = useMemo(() => ({ sectionsIndices }), [sectionsIndices]);
 
   const dataProvider = useMemo(() => {
-    const nextDataProvider = new DataProvider(hasRowChanged);
-    return nextDataProvider.cloneWithRows(items);
+    return new DataProvider(hasRowChanged).cloneWithRows(items);
   }, [items]);
+
   const scrollToOffset = useCallback(
     (offsetY: number, animated: boolean = false) =>
       requestAnimationFrame(() =>
@@ -525,8 +544,8 @@ function RecyclerAssetList({
     usePrevious(isCoinListEdited) || isCoinListEdited;
 
   useEffect(() => {
-    let collectibles = {};
-    let prevCollectibles = {};
+    let collectibles: RecyclerAssetListSection = {} as RecyclerAssetListSection;
+    let prevCollectibles: RecyclerAssetListSection = {} as RecyclerAssetListSection;
 
     sections.forEach(section => {
       if (section.collectibles) {
@@ -665,6 +684,7 @@ function RecyclerAssetList({
           isCoinListEdited ? defaultIndices : stickyComponentsIndices
         }
       >
+        {/* @ts-ignore */}
         <StyledRecyclerListView
           dataProvider={dataProvider}
           extendedState={extendedState}
@@ -674,7 +694,6 @@ function RecyclerAssetList({
           ref={handleListRef}
           renderAheadOffset={renderAheadOffset}
           rowRenderer={rowRenderer}
-          scrollIndicatorInsets={scrollIndicatorInsets}
           scrollViewProps={scrollViewProps}
           {...extras}
         />
@@ -684,14 +703,13 @@ function RecyclerAssetList({
 }
 
 export default connect(
-  // TODO: We need to type Redux State.
   ({
     editOptions: { isCoinListEdited },
     openSavings,
     openSmallBalances,
     openStateSettings: { openFamilyTabs, openInvestmentCards },
     settings: { nativeCurrency },
-  }) => ({
+  }: RecyclerAssetListReduxProps) => ({
     isCoinListEdited,
     nativeCurrency,
     openFamilyTabs,
