@@ -119,6 +119,9 @@ function RecyclerAssetList({
   renderAheadOffset = deviceUtils.dimensions.height,
   ...extras
 }: RecyclerAssetListProps): JSX.Element {
+  const [globalDeviceDimensions, setGlobalDeviceDimensions] = useState<number>(
+    0
+  );
   const [showCoinListEditor, setShowCoinListEditor] = useState<boolean>(false);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const checkEditStickyHeader = useCallback(
@@ -150,17 +153,21 @@ function RecyclerAssetList({
       setIsRefreshing(false);
     }
   }, [isRefreshing, setIsRefreshing, fetchData]);
-  const onLayout = useCallback(({ nativeEvent }: LayoutChangeEvent) => {
-    // set globalDeviceDimensions
-    // used in LayoutItemAnimator and auto-scroll logic above 👇
-    const topMargin = nativeEvent.layout.y;
-    const additionalPadding = 10;
-    RecyclerAssetListSharedState.globalDeviceDimensions =
-      deviceUtils.dimensions.height -
-      topMargin -
-      AssetListHeaderHeight -
-      additionalPadding;
-  }, []);
+  const onLayout = useCallback(
+    ({ nativeEvent }: LayoutChangeEvent) => {
+      // set globalDeviceDimensions
+      // used in LayoutItemAnimator and auto-scroll logic above 👇
+      const topMargin = nativeEvent.layout.y;
+      const additionalPadding = 10;
+      setGlobalDeviceDimensions(
+        deviceUtils.dimensions.height -
+          topMargin -
+          AssetListHeaderHeight -
+          additionalPadding
+      );
+    },
+    [setGlobalDeviceDimensions]
+  );
 
   const stickyRowRenderer = React.useCallback(
     // TODO: What does the data look like?
@@ -305,7 +312,7 @@ function RecyclerAssetList({
   const layoutProvider = useMemo(() => {
     return new LayoutProvider(
       // The LayoutProvider expects us to return ReactText, however internally
-      // we use custom layouts.
+      // we use custom layout description objects, so we can ignore this error.
       // @ts-ignore
       (index: number) => {
         // Main list logic 👇
@@ -561,7 +568,7 @@ function RecyclerAssetList({
 
     const bottomHorizonOfScreen =
       (RecyclerAssetListSharedState.rlv?.getCurrentScrollOffset() || 0) +
-      RecyclerAssetListSharedState.globalDeviceDimensions;
+      globalDeviceDimensions;
 
     // Auto-scroll to opened family logic 👇
     if (openFamilyTabs !== lastOpenFamilyTabs && collectibles.data) {
@@ -600,18 +607,14 @@ function RecyclerAssetList({
           );
           if (layout) {
             const startOfDesiredComponent = layout.y - AssetListHeaderHeight;
-            if (
-              focusedFamilyHeight <
-              RecyclerAssetListSharedState.globalDeviceDimensions
-            ) {
+            if (focusedFamilyHeight < globalDeviceDimensions) {
               const endOfDesiredComponent =
                 startOfDesiredComponent +
                 focusedFamilyHeight +
                 AssetListHeaderHeight;
               if (endOfDesiredComponent > bottomHorizonOfScreen) {
                 scrollToOffset(
-                  endOfDesiredComponent -
-                    RecyclerAssetListSharedState.globalDeviceDimensions,
+                  endOfDesiredComponent - globalDeviceDimensions,
                   true
                 );
               }
@@ -661,6 +664,7 @@ function RecyclerAssetList({
       }
     }
   }, [
+    globalDeviceDimensions,
     dataProvider,
     lastIsCoinListEdited,
     lastOpenFamilyTabs,

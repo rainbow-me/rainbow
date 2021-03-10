@@ -11,14 +11,13 @@ export type RecyclerListViewRef = RecyclerListView<
 >;
 
 export type Shared = {
-  globalDeviceDimensions: number;
+  //globalDeviceDimensions: number;
   smallBalancedChanged: boolean;
   coinDividerIndex: number;
   rlv: RecyclerListViewRef;
 };
 
 export default ((): Shared => {
-  let globalDeviceDimensions = 0;
   let smallBalancedChanged = false;
   let coinDividerIndex: number = -1;
   let rlv = (createRef() as unknown) as RecyclerListViewRef;
@@ -29,12 +28,6 @@ export default ((): Shared => {
     },
     set coinDividerIndex(nextCoinDividerIndex: number) {
       coinDividerIndex = nextCoinDividerIndex;
-    },
-    get globalDeviceDimensions(): number {
-      return globalDeviceDimensions;
-    },
-    set globalDeviceDimensions(nextGlobalDeviceDimensions: number) {
-      globalDeviceDimensions = nextGlobalDeviceDimensions;
     },
     get rlv(): RecyclerListViewRef {
       return rlv;
