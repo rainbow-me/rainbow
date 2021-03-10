@@ -2,7 +2,6 @@ import { findIndex, get, isNil } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   LayoutChangeEvent,
-  NativeSyntheticEvent,
   RefreshControl,
   UIManager,
   View,
@@ -28,7 +27,7 @@ import hasRowChanged from './hasRowChanged';
 import { usePrevious } from '@rainbow-me/hooks';
 import { deviceUtils, logger, safeAreaInsetValues } from '@rainbow-me/utils';
 
-UIManager.setLayoutAnimationEnabledExperimental?.(true);
+android && UIManager.setLayoutAnimationEnabledExperimental?.(true);
 
 const defaultIndices = [0];
 
@@ -74,7 +73,9 @@ export type RecyclerAssetListProps = {
   readonly hideHeader: boolean;
   readonly renderAheadOffset?: number;
   readonly openInvestmentCards: boolean;
-  readonly openFamilyTabs: boolean;
+  readonly openFamilyTabs: {
+    readonly [key: string]: boolean;
+  };
   readonly openSavings: boolean;
   readonly openSmallBalances: boolean;
 };
@@ -122,7 +123,6 @@ function RecyclerAssetList({
     } catch (e) {
       logger.error(e);
     } finally {
-      // TODO: used to use this.isCancelled
       setIsRefreshing(false);
     }
   }, [isRefreshing, setIsRefreshing, fetchData]);
@@ -140,7 +140,7 @@ function RecyclerAssetList({
 
   const stickyRowRenderer = React.useCallback(
     // TODO: What does the data look like?
-    (e: NativeSyntheticEvent<unknown>, data: any) => (
+    (_type: string | number | undefined, data: any) => (
       <>
         <AssetListHeader {...data} isSticky />
         {showCoinListEditor ? (
@@ -452,13 +452,14 @@ function RecyclerAssetList({
         };
       },
       (type, dim) => {
+        const element = (type as unknown) as {
+          readonly height: number;
+          readonly visibleDuringCoinEdit: boolean;
+        };
+        const { visibleDuringCoinEdit, height } = element;
         // Set height of element using object created above 👇
         dim.width = deviceUtils.dimensions.width;
-        if (isCoinListEdited && !type.visibleDuringCoinEdit) {
-          dim.height = 0;
-        } else {
-          dim.height = type.height;
-        }
+        dim.height = isCoinListEdited && !visibleDuringCoinEdit ? 0 : height;
       }
     );
   }, [
@@ -518,11 +519,8 @@ function RecyclerAssetList({
     );
   }, [nativeCurrency]);
 
-  const nextSections = sections;
   const lastSections = usePrevious(sections) || sections;
-  const nextOpenFamilyTabs = openFamilyTabs;
   const lastOpenFamilyTabs = usePrevious(openFamilyTabs) || openFamilyTabs;
-  const nextIsCoinListEdited = isCoinListEdited;
   const lastIsCoinListEdited =
     usePrevious(isCoinListEdited) || isCoinListEdited;
 
@@ -530,7 +528,7 @@ function RecyclerAssetList({
     let collectibles = {};
     let prevCollectibles = {};
 
-    nextSections.forEach(section => {
+    sections.forEach(section => {
       if (section.collectibles) {
         collectibles = section;
       }
@@ -547,11 +545,11 @@ function RecyclerAssetList({
       RecyclerAssetListSharedState.globalDeviceDimensions;
 
     // Auto-scroll to opened family logic 👇
-    if (nextOpenFamilyTabs !== lastOpenFamilyTabs && collectibles.data) {
+    if (openFamilyTabs !== lastOpenFamilyTabs && collectibles.data) {
       let i = 0;
       while (i < collectibles.data.length) {
         if (
-          nextOpenFamilyTabs[collectibles.data[i].familyName] === true &&
+          openFamilyTabs[collectibles.data[i].familyName] === true &&
           !lastOpenFamilyTabs[collectibles.data[i].familyName]
         ) {
           const safeIndex = i;
@@ -617,7 +615,7 @@ function RecyclerAssetList({
             paddingBottom: paddingBottom || 0,
           }) &&
       RecyclerAssetListSharedState.rlv.getCurrentScrollOffset() > 0 &&
-      (!nextIsCoinListEdited || (!lastIsCoinListEdited && nextIsCoinListEdited))
+      (!isCoinListEdited || (!lastIsCoinListEdited && isCoinListEdited))
     ) {
       requestAnimationFrame(() =>
         RecyclerAssetListSharedState.rlv?.scrollToEnd(true)
@@ -647,9 +645,9 @@ function RecyclerAssetList({
     lastIsCoinListEdited,
     lastOpenFamilyTabs,
     lastSections,
-    nextIsCoinListEdited,
-    nextOpenFamilyTabs,
-    nextSections,
+    sections,
+    isCoinListEdited,
+    openFamilyTabs,
     paddingBottom,
     scrollToOffset,
   ]);

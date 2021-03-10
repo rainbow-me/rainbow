@@ -141,6 +141,7 @@ export const ViewTypes = {
         <SavingsListWrapper assets={item.assets} totalValue={item.totalValue} />
       );
     },
+    visibleDuringCoinEdit: false,
   },
 
   POOLS: {
@@ -159,6 +160,7 @@ export const ViewTypes = {
     renderComponent: ({ data, isCoinListEdited }) => {
       return <PoolsListWrapper {...data} isCoinListEdited={isCoinListEdited} />;
     },
+    visibleDuringCoinEdit: false,
   },
 
   UNIQUE_TOKEN_ROW: {
@@ -194,15 +196,18 @@ export const ViewTypes = {
         uniqueId: item.uniqueId,
       });
     },
+    visibleDuringCoinEdit: false,
   },
 
   FOOTER: {
     calculateHeight: ({ paddingBottom }) =>
       paddingBottom - FloatingActionButtonSize / 2,
     index: 7,
+    visibleDuringCoinEdit: false,
   },
   UNKNOWN: {
     calculateHeight: () => 0,
     index: 99,
+    visibleDuringCoinEdit: false,
   },
 };
