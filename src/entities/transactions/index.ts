@@ -1,4 +1,4 @@
-export type { RainbowTransaction } from './transaction';
+export type { NewTransaction, RainbowTransaction } from './transaction';
 export {
   default as TransactionStatusTypes,
   TransactionStatus,

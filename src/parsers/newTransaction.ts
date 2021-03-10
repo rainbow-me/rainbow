@@ -1,11 +1,14 @@
-import { isHexString } from '@ethersproject/bytes';
-import { get, isNil, pick } from 'lodash';
 import { getDescription, getTitle } from './transactions';
-import { TransactionStatusTypes } from '@rainbow-me/entities';
+import {
+  NewTransaction,
+  RainbowTransaction,
+  TransactionStatus,
+} from '@rainbow-me/entities';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToBalanceDisplay,
 } from '@rainbow-me/utilities';
+import { ethereumUtils } from '@rainbow-me/utils';
 
 /**
  * @desc parse transactions from native prices
@@ -14,71 +17,62 @@ import {
  * @return {String}
  */
 export const parseNewTransaction = async (
-  txDetails = null,
-  nativeCurrency = ''
-) => {
+  txDetails: NewTransaction,
+  nativeCurrency: string = ''
+): Promise<RainbowTransaction> => {
   let balance = null;
   const { amount } = txDetails;
-  if (amount) {
+  if (amount && txDetails.asset) {
     balance = {
       amount,
       display: convertAmountToBalanceDisplay(amount, txDetails.asset),
     };
   }
+
+  const assetPrice =
+    txDetails?.asset?.price?.value ??
+    ethereumUtils.getAssetPrice(txDetails?.asset?.address);
   const native = convertAmountAndPriceToNativeDisplay(
-    amount,
-    get(txDetails, 'asset.price.value', 0),
+    amount ?? 0,
+    assetPrice,
     nativeCurrency
   );
-  let tx = pick(txDetails, [
-    'dappName',
-    'from',
-    'nonce',
-    'to',
-    'sourceAmount',
-    'transferId',
-    'type',
-  ]);
   const hash = txDetails.hash ? `${txDetails.hash}-0` : null;
-  // Convert nonces from hex to int (some dapps use hex!)
-  const nonce = !isNil(tx.nonce)
-    ? isHexString(tx.nonce)
-      ? parseInt(tx.nonce, 16)
-      : tx.nonce
-    : '';
 
-  const status = txDetails?.status || TransactionStatusTypes.sending;
+  const status = txDetails?.status || TransactionStatus.sending;
 
   const title = getTitle({
-    protocol: txDetails?.protocol,
+    protocol: txDetails?.protocol ?? null,
     status,
     type: txDetails?.type,
   });
 
   const description = getDescription({
-    name: txDetails?.asset?.name,
+    name: txDetails?.asset?.name ?? null,
     status,
     type: txDetails?.type,
   });
 
-  tx = {
-    ...tx,
+  return {
     balance,
+    dappName: txDetails.dappName,
     description,
-    gasLimit: txDetails?.gasLimit,
-    gasPrice: txDetails?.gasPrice,
+    from: txDetails.from,
+    gasLimit: txDetails.gasLimit,
+    gasPrice: txDetails.gasPrice,
     hash,
     minedAt: null,
-    name: txDetails?.asset?.name,
+    name: txDetails?.asset?.name ?? null,
     native,
-    nonce,
+    nonce: txDetails.nonce,
     pending: true,
     protocol: txDetails?.protocol,
+    sourceAmount: txDetails.sourceAmount,
     status,
-    symbol: txDetails?.asset?.symbol,
+    symbol: txDetails?.asset?.symbol ?? null,
     title,
+    to: txDetails.to,
+    transferId: txDetails.transferId,
     type: txDetails?.type,
   };
-
-  return tx;
 };

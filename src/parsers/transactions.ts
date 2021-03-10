@@ -5,7 +5,6 @@ import {
   find,
   findIndex,
   flatten,
-  get,
   includes,
   isEmpty,
   map,
@@ -28,6 +27,7 @@ import {
   TransactionDirection,
   TransactionStatus,
   TransactionType,
+  ZerionAsset,
   ZerionTransaction,
   ZerionTransactionChange,
   ZerionTransactionStatus,
@@ -237,8 +237,9 @@ const overrideAuthorizations = (txn: ZerionTransaction): ZerionTransaction => {
   const approveInternalTransaction = {
     address_from: txn.address_from,
     address_to: txn.address_to,
-    asset: txn?.meta?.asset ?? null,
+    asset: txn?.meta?.asset as ZerionAsset,
     direction: TransactionDirection.out,
+    value: 0,
   };
   newTxn.changes = [approveInternalTransaction];
   return newTxn;
@@ -305,13 +306,13 @@ const parseTransaction = (
       const metadata = getTokenMetadata(address);
       const updatedAsset = {
         address,
-        decimals: get(internalTxn, 'asset.decimals'),
-        name: get(internalTxn, 'asset.name'),
-        symbol: toUpper(get(internalTxn, 'asset.symbol') || ''),
+        decimals: internalTxn?.asset?.decimals,
+        name: internalTxn?.asset?.name,
+        symbol: toUpper(internalTxn?.asset?.symbol ?? ''),
         ...metadata,
       };
       const priceUnit =
-        internalTxn.price || get(internalTxn, 'asset.price.value') || 0;
+        internalTxn.price ?? internalTxn?.asset?.price?.value ?? 0;
       const valueUnit = internalTxn.value || 0;
       const nativeDisplay = convertRawAmountToNativeDisplay(
         valueUnit,
@@ -405,11 +406,14 @@ export const getTitle = ({
   status,
   type,
 }: {
-  protocol: ProtocolType;
+  protocol: ProtocolType | null;
   status: TransactionStatus;
   type: TransactionType;
 }) => {
-  if (type === TransactionType.deposit || type === TransactionType.withdraw) {
+  if (
+    protocol &&
+    (type === TransactionType.deposit || type === TransactionType.withdraw)
+  ) {
     if (
       status === TransactionStatus.deposited ||
       status === TransactionStatus.withdrew ||
@@ -431,7 +435,7 @@ export const getDescription = ({
   status,
   type,
 }: {
-  name: string;
+  name: string | null;
   status: TransactionStatus;
   type: TransactionType;
 }) => {

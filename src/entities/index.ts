@@ -12,6 +12,7 @@ export type {
   ZerionAsset,
 } from './tokens';
 export type {
+  NewTransaction,
   RainbowTransaction,
   ZerionTransaction,
   ZerionTransactionChange,
