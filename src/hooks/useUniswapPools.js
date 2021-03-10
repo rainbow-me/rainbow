@@ -11,10 +11,6 @@ import {
   UNISWAP_PAIRS_HISTORICAL_BULK_QUERY,
   UNISWAP_PAIRS_ID_QUERY,
 } from '@rainbow-me/apollo/queries';
-// import {
-//   getUniswapPools,
-//   saveUniswapPools,
-// } from '@rainbow-me/handlers/localstorage/uniswapPools';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
 import { emitAssetRequest } from '@rainbow-me/redux/explorer';
 import { ETH_ADDRESS, WETH_ADDRESS } from '@rainbow-me/references';
@@ -237,30 +233,7 @@ function parseData(
   if (!oneDayData && data) {
     newData.oneDayVolumeUSD = parseFloat(newData.volumeUSD);
   }
-  if (
-    (!newData.oneDayVolumeUSD || !newData.trackedReserveUSD) &&
-    `${newData.token0.symbol}-${newData.token1.symbol}` !== 'WETH-USD' &&
-    `${newData.token0.symbol}-${newData.token1.symbol}` !== 'HKMT-USDT' &&
-    `${newData.token0.symbol}-${newData.token1.symbol}` !== 'WETH-wPE'
-  ) {
-    logger.log(
-      '🦄🦄🦄 Error calculating annualized data for token',
-      `${newData.token0.symbol}-${newData.token1.symbol}`,
-      JSON.stringify(
-        {
-          'ethPrice': ethPrice,
-          'newData?.volumeUSD': newData?.volumeUSD,
-          'oneDayVolumeUSD': newData.oneDayVolumeUSD,
-          'trackedReserveUSD': newData.trackedReserveUSD,
-          // eslint-disable-next-line sort-keys
-          'oneDayData': oneDayData,
-          'twoDayData': twoDayData,
-        },
-        null,
-        2
-      )
-    );
-  }
+
   newData.annualized_fees =
     (newData.oneDayVolumeUSD * 0.003 * 365 * 100) / newData.trackedReserveUSD;
 
@@ -311,8 +284,16 @@ export const calculateProfit30d = (
   ethPriceOneMonthAgo
 ) => {
   const now = calculateLPTokenPrice(data, ethPriceNow);
+  if (now === 0) {
+    logger.log('🦄🦄🦄 lpTokenPrice now is 0', data, ethPriceNow);
+  }
 
   if (valueOneMonthAgo === undefined) {
+    return undefined;
+  }
+
+  if (ethPriceOneMonthAgo === undefined) {
+    logger.log('🦄🦄🦄 ethPriceOneMonthAgo is missing.', ethPriceOneMonthAgo);
     return undefined;
   }
   const oneMonthAgo = calculateLPTokenPrice(
@@ -358,6 +339,7 @@ export const getPercentChange = (valueNow, value24HoursAgo) => {
       parseFloat(value24HoursAgo)) *
     100;
   if (isNaN(adjustedPercentChange) || !isFinite(adjustedPercentChange)) {
+    logger.log('');
     return 0;
   }
   return adjustedPercentChange;
@@ -419,10 +401,10 @@ export default function useUniswapPools(sortField, sortDirection) {
   }, [ethereumPriceOneMonthAgo, genericAssets, ids, priceOfEther]);
 
   useEffect(() => {
-    if (ids && !pairs && priceOfEther > 0) {
+    if (ids && !pairs && priceOfEther > 0 && ethereumPriceOneMonthAgo > 0) {
       fetchPairsData();
     }
-  }, [fetchPairsData, ids, pairs, priceOfEther]);
+  }, [fetchPairsData, ids, pairs, priceOfEther, ethereumPriceOneMonthAgo]);
 
   const top40PairsSorted = useMemo(() => {
     if (!pairs) return null;
