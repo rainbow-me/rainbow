@@ -1,5 +1,5 @@
 import produce from 'immer';
-import { concat, isEmpty, uniqBy } from 'lodash';
+import { concat, filter, isEmpty, uniqBy } from 'lodash';
 import {
   getLiquidity,
   getUniswapLiquidityInfo,
@@ -45,15 +45,18 @@ export const uniswapUpdateLiquidityTokens = (
   liquidityTokens,
   appendOrChange
 ) => (dispatch, getState) => {
-  if (isEmpty(liquidityTokens)) return;
+  if (appendOrChange && isEmpty(liquidityTokens)) return;
   let updatedLiquidityTokens = liquidityTokens;
   if (appendOrChange) {
     const {
       liquidityTokens: existingLiquidityTokens,
     } = getState().uniswapLiquidity;
-    updatedLiquidityTokens = uniqBy(
-      concat(updatedLiquidityTokens, existingLiquidityTokens),
-      token => token.address
+    updatedLiquidityTokens = filter(
+      uniqBy(
+        concat(updatedLiquidityTokens, existingLiquidityTokens),
+        token => token.address
+      ),
+      token => !!Number(token?.balance?.amount ?? 0)
     );
   }
   const { accountAddress, network } = getState().settings;
@@ -62,10 +65,10 @@ export const uniswapUpdateLiquidityTokens = (
     type: UNISWAP_UPDATE_LIQUIDITY_TOKENS,
   });
   saveLiquidity(updatedLiquidityTokens, accountAddress, network);
-  dispatch(uniswapUpdateLiquidityState());
+  dispatch(uniswapUpdateLiquidityInfo());
 };
 
-export const uniswapUpdateLiquidityState = () => async (dispatch, getState) => {
+export const uniswapUpdateLiquidityInfo = () => async (dispatch, getState) => {
   const {
     accountAddress,
     chainId,
