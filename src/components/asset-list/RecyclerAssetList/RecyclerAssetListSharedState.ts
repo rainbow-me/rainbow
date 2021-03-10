@@ -11,24 +11,15 @@ export type RecyclerListViewRef = RecyclerListView<
 >;
 
 export type Shared = {
-  //globalDeviceDimensions: number;
   smallBalancedChanged: boolean;
-  coinDividerIndex: number;
   rlv: RecyclerListViewRef;
 };
 
 export default ((): Shared => {
   let smallBalancedChanged = false;
-  let coinDividerIndex: number = -1;
   let rlv = (createRef() as unknown) as RecyclerListViewRef;
 
   return {
-    get coinDividerIndex(): number {
-      return coinDividerIndex;
-    },
-    set coinDividerIndex(nextCoinDividerIndex: number) {
-      coinDividerIndex = nextCoinDividerIndex;
-    },
     get rlv(): RecyclerListViewRef {
       return rlv;
     },

@@ -122,13 +122,13 @@ function RecyclerAssetList({
   const [globalDeviceDimensions, setGlobalDeviceDimensions] = useState<number>(
     0
   );
+  const [coinDividerIndex, setCoinDividerIndex] = useState<number>(-1);
   const [showCoinListEditor, setShowCoinListEditor] = useState<boolean>(false);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const checkEditStickyHeader = useCallback(
     (offsetY: number) => {
       const offsetHeight =
-        CoinRowHeight * (RecyclerAssetListSharedState.coinDividerIndex - 1) +
-        firstCoinRowMarginTop;
+        CoinRowHeight * (coinDividerIndex - 1) + firstCoinRowMarginTop;
       if (isCoinListEdited && offsetY > offsetHeight) {
         setShowCoinListEditor(true);
       } else if (
@@ -138,7 +138,12 @@ function RecyclerAssetList({
         setShowCoinListEditor(false);
       }
     },
-    [isCoinListEdited, setShowCoinListEditor, showCoinListEditor]
+    [
+      isCoinListEdited,
+      setShowCoinListEditor,
+      showCoinListEditor,
+      coinDividerIndex,
+    ]
   );
   const handleRefresh = useCallback(async () => {
     if (isRefreshing || !fetchData) {
@@ -377,8 +382,8 @@ function RecyclerAssetList({
           const lastBalanceIndex =
             sectionsIndices[balancesIndex] + balanceItemsCount;
           if (index === lastBalanceIndex - 2) {
-            if (RecyclerAssetListSharedState.coinDividerIndex !== index) {
-              RecyclerAssetListSharedState.coinDividerIndex = index;
+            if (coinDividerIndex !== index) {
+              setCoinDividerIndex(index);
               if (isCoinListEdited) {
                 RecyclerAssetListSharedState.rlv &&
                   checkEditStickyHeader(
@@ -497,6 +502,8 @@ function RecyclerAssetList({
       }
     );
   }, [
+    coinDividerIndex,
+    setCoinDividerIndex,
     areSmallCollectibles,
     checkEditStickyHeader,
     hideHeader,
@@ -614,7 +621,8 @@ function RecyclerAssetList({
                 AssetListHeaderHeight;
               if (endOfDesiredComponent > bottomHorizonOfScreen) {
                 scrollToOffset(
-                  endOfDesiredComponent - globalDeviceDimensions,
+                  endOfDesiredComponent -
+                    RecyclerAssetListSharedState.globalDeviceDimensions,
                   true
                 );
               }
