@@ -168,127 +168,118 @@ const overrideFailedCompound = (
 ): ZerionTransaction => {
   // Compound shows success status even when there are internal failures
   // We are overriding to show the user a failure state if the action actually failed
-  if (
+  const isFailedCompoundTxn =
     isEmpty(txn?.changes) &&
     txn.protocol === ProtocolType.compound &&
     (txn.type === TransactionType.deposit ||
-      txn.type === TransactionType.withdraw)
-  ) {
-    const newTxn = {
-      ...txn,
-    };
-    newTxn.status = ZerionTransactionStatus.failed;
-    const asset = savingsAssetsList[network][toLower(txn?.address_to ?? '')];
+      txn.type === TransactionType.withdraw);
+  if (!isFailedCompoundTxn) return txn;
 
-    const assetInternalTransaction = {
-      address_from: txn.address_from,
-      address_to: txn.address_to,
-      asset: {
-        asset_code: asset.address,
-        icon_url: null,
-        price: null,
-        type: AssetType.compound,
-        ...asset,
-      },
-      direction: TransactionDirection.out,
-      value: 0,
-    };
-    newTxn.changes = [assetInternalTransaction];
-    return newTxn;
-  } else {
-    return txn;
-  }
+  const newTxn = {
+    ...txn,
+  };
+  newTxn.status = ZerionTransactionStatus.failed;
+  const asset = savingsAssetsList[network][toLower(txn?.address_to ?? '')];
+
+  const assetInternalTransaction = {
+    address_from: txn.address_from,
+    address_to: txn.address_to,
+    asset: {
+      asset_code: asset.address,
+      icon_url: null,
+      price: null,
+      type: AssetType.compound,
+      ...asset,
+    },
+    direction: TransactionDirection.out,
+    value: 0,
+  };
+  newTxn.changes = [assetInternalTransaction];
+  return newTxn;
 };
 
 const overrideFailedExecution = (txn: ZerionTransaction): ZerionTransaction => {
-  if (
+  const isFailedExecution =
     isEmpty(txn?.changes) &&
     txn.status === ZerionTransactionStatus.failed &&
     txn.type === TransactionType.execution &&
-    txn.direction === TransactionDirection.out
-  ) {
-    const newTxn = {
-      ...txn,
-    };
-    const assetInternalTransaction = {
-      address_from: txn.address_from,
-      address_to: txn.address_to,
-      asset: {
-        asset_code: ETH_ADDRESS,
-        decimals: 18,
-        name: 'Ethereum',
-        symbol: 'ETH',
-        type: AssetType.eth,
-      },
-      direction: TransactionDirection.out,
-      value: 0,
-    };
-    newTxn.changes = [assetInternalTransaction];
-    return newTxn;
-  } else {
-    return txn;
-  }
+    txn.direction === TransactionDirection.out;
+  if (!isFailedExecution) return txn;
+
+  const newTxn = {
+    ...txn,
+  };
+  const assetInternalTransaction = {
+    address_from: txn.address_from,
+    address_to: txn.address_to,
+    asset: {
+      asset_code: ETH_ADDRESS,
+      decimals: 18,
+      name: 'Ethereum',
+      symbol: 'ETH',
+      type: AssetType.eth,
+    },
+    direction: TransactionDirection.out,
+    value: 0,
+  };
+  newTxn.changes = [assetInternalTransaction];
+  return newTxn;
 };
 
 const overrideAuthorizations = (txn: ZerionTransaction): ZerionTransaction => {
-  if (isEmpty(txn?.changes) && txn.type === TransactionType.authorize) {
-    const newTxn = {
-      ...txn,
-    };
-    const approveInternalTransaction = {
-      address_from: txn.address_from,
-      address_to: txn.address_to,
-      asset: txn?.meta?.asset ?? null,
-      direction: TransactionDirection.out,
-    };
-    newTxn.changes = [approveInternalTransaction];
-    return newTxn;
-  } else {
-    return txn;
-  }
+  const isEmptyAuth =
+    isEmpty(txn?.changes) && txn.type === TransactionType.authorize;
+  if (!isEmptyAuth) return txn;
+
+  const newTxn = {
+    ...txn,
+  };
+  const approveInternalTransaction = {
+    address_from: txn.address_from,
+    address_to: txn.address_to,
+    asset: txn?.meta?.asset ?? null,
+    direction: TransactionDirection.out,
+  };
+  newTxn.changes = [approveInternalTransaction];
+  return newTxn;
 };
 
 const overrideSelfWalletConnect = (
   txn: ZerionTransaction
 ): ZerionTransaction => {
   // logic below: prevent sending a WalletConnect 0 amount to be ignored
-  if (
+  const isSelfWalletConnect =
     isEmpty(txn?.changes) &&
     txn.type === TransactionType.execution &&
-    txn.direction === TransactionDirection.self
-  ) {
-    const newTxn = {
-      ...txn,
-    };
-    const ethInternalTransaction = {
-      address_from: txn.address_from,
-      address_to: txn.address_to,
-      asset: {
-        asset_code: ETH_ADDRESS,
-        decimals: 18,
-        name: 'Ethereum',
-        symbol: 'ETH',
-        type: AssetType.eth,
-      },
-      direction: TransactionDirection.out,
-      value: 0,
-    };
-    newTxn.changes = [ethInternalTransaction];
-    return newTxn;
-  } else {
-    return txn;
-  }
+    txn.direction === TransactionDirection.self;
+  if (!isSelfWalletConnect) return txn;
+
+  const newTxn = {
+    ...txn,
+  };
+  const ethInternalTransaction = {
+    address_from: txn.address_from,
+    address_to: txn.address_to,
+    asset: {
+      asset_code: ETH_ADDRESS,
+      decimals: 18,
+      name: 'Ethereum',
+      symbol: 'ETH',
+      type: AssetType.eth,
+    },
+    direction: TransactionDirection.out,
+    value: 0,
+  };
+  newTxn.changes = [ethInternalTransaction];
+  return newTxn;
 };
 
 const overrideTradeRefund = (txn: ZerionTransaction): ZerionTransaction => {
-  if (txn.type === TransactionType.trade) {
-    return {
-      ...txn,
-      changes: transformTradeRefund(txn?.changes),
-    };
-  } else {
-    return txn;
-  }
+  if (txn.type !== TransactionType.trade) return txn;
+  return {
+    ...txn,
+    changes: transformTradeRefund(txn?.changes),
+  };
 };
 
 const parseTransaction = (
