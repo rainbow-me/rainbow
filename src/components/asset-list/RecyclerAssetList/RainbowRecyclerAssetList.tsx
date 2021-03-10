@@ -7,7 +7,7 @@ import {
   View,
 } from 'react-native';
 import { connect } from 'react-redux';
-import { LayoutProvider } from 'recyclerlistview';
+import { DataProvider, LayoutProvider } from 'recyclerlistview';
 import styled from 'styled-components';
 import { withThemeContext } from '../../../context/ThemeContext';
 import { CoinDivider } from '../../coin-divider';
