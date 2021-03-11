@@ -112,7 +112,8 @@ export const parseTransactions = (
     ? find(parsedNewTransactions, txn => {
         return (
           !txn.protocol &&
-          (txn.type === 'send' || txn.type === 'receive') &&
+          (txn.type === TransactionType.send ||
+            txn.type === TransactionType.receive) &&
           txn.symbol !== 'ETH'
         );
       })
