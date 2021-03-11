@@ -75,17 +75,17 @@ const UniqueTokenExpandedStateImage = ({ asset }) => {
               posterUri={imageUrl}
               setLoading={setLoading}
               style={StyleSheet.absoluteFill}
-              uri={asset.animation_url}
+              uri={asset.animation_url || imageUrl}
             />
           ) : supports3d ? (
             <ModelView
               fallbackUri={imageUrl}
               loading={loading}
               setLoading={setLoading}
-              uri={asset.animation_url}
+              uri={asset.animation_url || imageUrl}
             />
           ) : supportsAudio ? (
-            <AudioPlayer uri={asset.animation_url} />
+            <AudioPlayer uri={asset.animation_url || imageUrl} />
           ) : (
             <UniqueTokenImage
               backgroundColor={asset.background}
