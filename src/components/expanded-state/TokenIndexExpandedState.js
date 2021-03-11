@@ -173,7 +173,6 @@ export default function TokenIndexExpandedState({ asset }) {
         ios ? Routes.EXPANDED_ASSET_SHEET : Routes.EXPANDED_ASSET_SCREEN,
         {
           asset,
-          backgroundOpacity: 1,
           longFormHeight: initialChartExpandedStateSheetHeight,
           type: 'token',
         }
