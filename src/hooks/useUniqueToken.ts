@@ -20,7 +20,8 @@ export default function useUniqueToken(
 ): useUniqueTokenResult {
   return React.useMemo((): useUniqueTokenResult => {
     if (typeof maybeUniqueToken === 'object' && !!maybeUniqueToken) {
-      const { animation_url } = maybeUniqueToken;
+      let { animation_url, image_url } = maybeUniqueToken;
+      animation_url = animation_url ? animation_url : image_url;
       const supports3d = isSupportedUriExtension(
         animation_url,
         supportedUriExtensions.SUPPORTED_3D_EXTENSIONS
