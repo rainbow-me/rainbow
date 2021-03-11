@@ -1,3 +1,27 @@
+diff --git a/node_modules/react-native-reanimated/ios/native/REAIOSScheduler.mm b/node_modules/react-native-reanimated/ios/native/REAIOSScheduler.mm
+index 541c4fa..4be2e7c 100644
+--- a/node_modules/react-native-reanimated/ios/native/REAIOSScheduler.mm
++++ b/node_modules/react-native-reanimated/ios/native/REAIOSScheduler.mm
+@@ -26,10 +26,15 @@
+   }
+   
+   __block std::weak_ptr<NativeReanimatedModule> blockModule = module;
+-  
+-  dispatch_async(dispatch_get_main_queue(), ^{
+-    if (blockModule.lock()) triggerUI();
+-  });
++  try {
++    dispatch_async(dispatch_get_main_queue(), ^{
++      try {
++        if (module.lock()) {
++          triggerUI();
++        }
++      } catch (const std::exception &ex) {}
++    });
++  } catch (const std::exception &ex) {}
+ }
+ 
+ REAIOSScheduler::~REAIOSScheduler(){
 diff --git a/node_modules/react-native-reanimated/src/Animated.js b/node_modules/react-native-reanimated/src/Animated.js
 index 523853a..d7813c3 100644
 --- a/node_modules/react-native-reanimated/src/Animated.js
