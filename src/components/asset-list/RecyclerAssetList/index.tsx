@@ -698,6 +698,7 @@ function RecyclerAssetList({
 
   return (
     <StyledContainer onLayout={onLayout}>
+      {/* @ts-ignore */}
       <StickyContainer
         overrideRowRenderer={stickyRowRenderer}
         stickyHeaderIndices={
