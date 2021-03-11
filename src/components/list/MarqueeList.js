@@ -66,7 +66,7 @@ const SingleElement = ({
   );
 };
 
-const SwipeableList = ({ components, speed }) => {
+const SwipeableList = ({ components, focused, speed }) => {
   const transX = useSharedValue(0);
   const swiping = useSharedValue(0);
   const offset = useSharedValue(100000);
@@ -77,6 +77,14 @@ const SwipeableList = ({ components, speed }) => {
   useEffect(() => {
     swiping.value = withSpeed({ speed });
   }, [speed, swiping]);
+
+  useEffect(() => {
+    if (focused) {
+      swiping.value = withSpeed({ speed });
+    } else {
+      swiping.value = withSpeed({ speed: 0 });
+    }
+  }, [focused, speed, swiping]);
 
   const onGestureEvent = useAnimatedGestureHandler({
     onActive: (event, ctx) => {
@@ -209,7 +217,7 @@ const SwipeableList = ({ components, speed }) => {
   );
 };
 
-const MarqueeList = ({ items = [], speed }) => {
+const MarqueeList = ({ focused, items = [], speed }) => {
   const renderItemCallback = useCallback(
     ({ item, onPressCancel, onPressStart }) => (
       <TopMoverCoinRow
@@ -231,6 +239,7 @@ const MarqueeList = ({ items = [], speed }) => {
             : ({ onPressCancel, onPressStart }) =>
                 renderItemCallback({ item, onPressCancel, onPressStart }),
         }))}
+        focused={focused}
         speed={speed}
       />
     </>

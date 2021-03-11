@@ -1,5 +1,6 @@
+import { useFocusEffect } from '@react-navigation/native';
 import { toLower } from 'lodash';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
 import { Column, Flex } from '../layout';
 import { MarqueeList } from '../list';
@@ -14,6 +15,16 @@ export default function TopMoversSection() {
   const { gainers = [], losers = [] } = useTopMovers() || {};
   const { navigate } = useNavigation();
   const { allAssets } = useAccountAssets();
+  const [focused, setFocused] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      setFocused(true);
+      return () => {
+        setFocused(false);
+      };
+    }, [])
+  );
 
   const handlePress = useCallback(
     asset => {
@@ -75,10 +86,10 @@ export default function TopMoversSection() {
 
       <Column>
         {gainerItems?.length !== 0 && (
-          <MarqueeList items={gainerItems} speed={40} />
+          <MarqueeList focused={focused} items={gainerItems} speed={40} />
         )}
         {loserItems?.length !== 0 && (
-          <MarqueeList items={loserItems} speed={-40} />
+          <MarqueeList focused={focused} items={loserItems} speed={-40} />
         )}
       </Column>
 
