@@ -4,7 +4,7 @@ import { TransactionStatus } from './transactionStatus';
 import { TransactionType } from './transactionType';
 
 export interface RainbowTransaction {
-  address?: string;
+  address: string;
   balance: {
     amount: string;
     display: string;

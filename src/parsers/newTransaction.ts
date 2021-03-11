@@ -3,7 +3,9 @@ import {
   NewTransaction,
   RainbowTransaction,
   TransactionStatus,
+  TransactionType,
 } from '@rainbow-me/entities';
+import { ETH_ADDRESS } from '@rainbow-me/references';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToBalanceDisplay,
@@ -45,16 +47,17 @@ export const parseNewTransaction = async (
   const title = getTitle({
     protocol: txDetails?.protocol ?? null,
     status,
-    type: txDetails?.type,
+    type,
   });
 
   const description = getDescription({
     name: txDetails?.asset?.name ?? null,
     status,
-    type: txDetails?.type,
+    type,
   });
 
   return {
+    address: txDetails?.asset?.address ?? ETH_ADDRESS,
     balance,
     dappName: txDetails.dappName,
     description,
