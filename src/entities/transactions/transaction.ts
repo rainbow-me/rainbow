@@ -34,7 +34,20 @@ export interface RainbowTransaction {
   type: TransactionType;
 }
 
-export interface NewTransaction extends RainbowTransaction {
+export interface NewTransaction {
   amount: string | null;
   asset: ParsedAddressAsset | null;
+  dappName?: string; // for walletconnect
+  from: string | null;
+  gasLimit?: string | null;
+  gasPrice?: string;
+  hash: string | null;
+  nonce: number | null;
+  protocol?: ProtocolType | null;
+  sourceAmount?: string; // for purchases
+  status?: TransactionStatus;
+  timestamp?: number; // for purchases
+  to: string | null;
+  transferId?: string; // for purchases
+  type?: TransactionType;
 }

@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { captureEvent, captureException } from '@sentry/react-native';
-import { get, isEmpty, isString, toLower } from 'lodash';
+import { isEmpty, isString, toLower } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { InteractionManager, Keyboard, StatusBar } from 'react-native';
 import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
@@ -174,8 +174,8 @@ export default function SendSheet(props) {
   useEffect(() => {
     if (
       selected?.address === ETH_ADDRESS &&
-      get(prevSelectedGasPrice, 'txFee.value.amount', 0) !==
-        get(selectedGasPrice, 'txFee.value.amount', 0)
+      (prevSelectedGasPrice?.txFee?.value?.amount ?? 0) !==
+        (selectedGasPrice?.txFee?.value?.amount ?? 0)
     ) {
       updateMaxInputBalance(selected);
     }
@@ -186,7 +186,7 @@ export default function SendSheet(props) {
       const _assetAmount = newAssetAmount.replace(/[^0-9.]/g, '');
       let _nativeAmount = '';
       if (_assetAmount.length) {
-        const priceUnit = get(selected, 'price.value', 0);
+        const priceUnit = selected?.price?.value ?? 0;
         const {
           amount: convertedNativeAmount,
         } = convertAmountAndPriceToNativeDisplay(
@@ -213,7 +213,7 @@ export default function SendSheet(props) {
   const sendUpdateSelected = useCallback(
     newSelected => {
       updateMaxInputBalance(newSelected);
-      if (get(newSelected, 'type') === AssetTypes.nft) {
+      if (newSelected?.type === AssetTypes.nft) {
         setAmountDetails({
           assetAmount: '1',
           isSufficientBalance: true,
@@ -221,7 +221,7 @@ export default function SendSheet(props) {
         });
         setSelected({
           ...newSelected,
-          symbol: get(newSelected, 'asset_contract.name'),
+          symbol: newSelected?.asset_contract?.name,
         });
       } else {
         setSelected(newSelected);
@@ -254,7 +254,7 @@ export default function SendSheet(props) {
       const _nativeAmount = newNativeAmount.replace(/[^0-9.]/g, '');
       let _assetAmount = '';
       if (_nativeAmount.length) {
-        const priceUnit = get(selected, 'price.value', 0);
+        const priceUnit = selected?.price?.value ?? 0;
         const convertedAssetAmount = convertAmountFromNativeValue(
           _nativeAmount,
           priceUnit,
@@ -332,7 +332,7 @@ export default function SendSheet(props) {
       asset: selected,
       from: accountAddress,
       gasLimit: updatedGasLimit || gasLimit,
-      gasPrice: get(selectedGasPrice, 'value.amount'),
+      gasPrice: selectedGasPrice?.value?.amount,
       nonce: null,
       to: recipient,
     };

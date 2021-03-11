@@ -39,7 +39,8 @@ export const parseNewTransaction = async (
   );
   const hash = txDetails.hash ? `${txDetails.hash}-0` : null;
 
-  const status = txDetails?.status || TransactionStatus.sending;
+  const status = txDetails?.status ?? TransactionStatus.sending;
+  const type = txDetails?.type ?? TransactionType.send;
 
   const title = getTitle({
     protocol: txDetails?.protocol ?? null,
@@ -73,6 +74,6 @@ export const parseNewTransaction = async (
     title,
     to: txDetails.to,
     transferId: txDetails.transferId,
-    type: txDetails?.type,
+    type,
   };
 };
