@@ -56,7 +56,7 @@ const StyledContainer = styled(View)`
 `;
 
 const StyledRefreshControl = styled(RefreshControl)`
-  ${ios ? '' : 'margin-top: 20;'}
+  ${ios ? '' : 'padding-top: 20;'}
 `;
 
 type RecyclerListViewRef = RecyclerListView<
@@ -552,8 +552,6 @@ function RecyclerAssetList({
           tintColor={colors.alpha(colors.blueGreyDark, 0.4)}
         />
       ),
-      // // https://reactnative.dev/docs/scrollview#scrolleventthrottle
-      // scrollEventThrottle: 30,
     }),
     [handleRefresh, isRefreshing, colors]
   );
