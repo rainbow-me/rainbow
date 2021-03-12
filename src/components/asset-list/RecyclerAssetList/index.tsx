@@ -12,6 +12,7 @@ import {
   PixelRatio,
   RefreshControl,
   ScrollViewProps,
+  StyleSheet,
   View,
 } from 'react-native';
 import { connect } from 'react-redux';
@@ -50,7 +51,7 @@ const StyledRecyclerListView = styled(RecyclerListView)`
 const StyledContainer = styled(View)`
   display: flex;
   flex: 1;
-  background-color: ${({ theme: { colors } }) => colors.black};
+  background-color: ${({ theme: { colors } }) => colors.white};
   overflow: hidden;
 `;
 
@@ -154,148 +155,11 @@ function RecyclerAssetList({
   ...extras
 }: RecyclerAssetListProps): JSX.Element {
   const { ref, handleRef } = useRecyclerListViewRef();
+  const stickyCoinDividerRef = React.useRef();
   const [globalDeviceDimensions, setGlobalDeviceDimensions] = useState<number>(
     0
   );
-  const [coinDividerIndex, setCoinDividerIndex] = useState<number>(-1);
-  const [showCoinListEditor, setShowCoinListEditor] = useState<boolean>(false);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
-
-  // HACK: Force synchronization of the StickyHeader on iOS when mounted.
-  React.useEffect(() => {
-    !!ref &&
-      ios &&
-      requestAnimationFrame(() => {
-        ref.scrollToOffset(0, 1 / PixelRatio.get(), false);
-      });
-  }, [ref]);
-  const checkEditStickyHeader = useCallback(
-    (offsetY: number) => {
-      const offsetHeight =
-        CoinRowHeight * (coinDividerIndex - 1) + firstCoinRowMarginTop;
-      if (!showCoinListEditor && isCoinListEdited && offsetY > offsetHeight) {
-        setShowCoinListEditor(true);
-      } else if (
-        showCoinListEditor &&
-        (offsetY < offsetHeight || !isCoinListEdited)
-      ) {
-        setShowCoinListEditor(false);
-      }
-    },
-    [
-      isCoinListEdited,
-      setShowCoinListEditor,
-      showCoinListEditor,
-      coinDividerIndex,
-    ]
-  );
-  const handleRefresh = useCallback(async () => {
-    if (isRefreshing || !fetchData) {
-      return;
-    }
-    try {
-      setIsRefreshing(true);
-      await fetchData();
-    } catch (e) {
-      logger.error(e);
-    } finally {
-      setIsRefreshing(false);
-    }
-  }, [isRefreshing, setIsRefreshing, fetchData]);
-  const onLayout = useCallback(
-    ({ nativeEvent }: LayoutChangeEvent) => {
-      // set globalDeviceDimensions
-      // used in LayoutItemAnimator and auto-scroll logic above 👇
-      const topMargin = nativeEvent.layout.y;
-      const additionalPadding = 10;
-      setGlobalDeviceDimensions(
-        deviceUtils.dimensions.height -
-          topMargin -
-          AssetListHeaderHeight -
-          additionalPadding
-      );
-    },
-    [setGlobalDeviceDimensions]
-  );
-
-  const shouldHideCoinListEditor = React.useCallback(
-    () => setShowCoinListEditor(false),
-    [setShowCoinListEditor]
-  );
-
-  const stickyRowRenderer = React.useCallback(
-    // TODO: What does the data look like?
-    (_type: string | number | undefined, data: any) => (
-      <React.Fragment key={`${_type}`}>
-        <AssetListHeader {...data} isSticky />
-        {!!showCoinListEditor && (
-          <CoinDivider
-            balancesSum={0}
-            isSticky
-            nativeCurrency={nativeCurrency}
-            onEndEdit={shouldHideCoinListEditor}
-          />
-        )}
-      </React.Fragment>
-    ),
-    [showCoinListEditor, shouldHideCoinListEditor, nativeCurrency]
-  );
-
-  const onScroll = useCallback(
-    (e: unknown, f: unknown, offsetY: number) => {
-      isCoinListEdited && checkEditStickyHeader(offsetY);
-    },
-    [isCoinListEdited, checkEditStickyHeader]
-  );
-
-  const rowRenderer = React.useCallback(
-    (type: any, data: any, index: number): JSX.Element | null => {
-      // Checks if value is *nullish*.
-      if (data == null || index == null) {
-        return null;
-      } else if (isCoinListEdited && !(type.index < 4)) {
-        return null;
-      }
-
-      if (type.index === ViewTypes.HEADER.index) {
-        return ViewTypes.HEADER.renderComponent({
-          data,
-          isCoinListEdited,
-        });
-      } else if (type.index === ViewTypes.COIN_ROW.index) {
-        return ViewTypes.COIN_ROW.renderComponent({
-          data,
-          type,
-        });
-      } else if (type.index === ViewTypes.COIN_DIVIDER.index) {
-        return ViewTypes.COIN_DIVIDER.renderComponent({
-          data,
-          isCoinListEdited,
-          nativeCurrency,
-        });
-      } else if (type.index === ViewTypes.COIN_SMALL_BALANCES.index) {
-        return ViewTypes.COIN_SMALL_BALANCES.renderComponent({
-          data,
-        });
-      } else if (type.index === ViewTypes.COIN_SAVINGS.index) {
-        return ViewTypes.COIN_SAVINGS.renderComponent({
-          data,
-        });
-      } else if (type.index === ViewTypes.POOLS.index) {
-        return ViewTypes.POOLS.renderComponent({ data, isCoinListEdited });
-      } else if (type.index === ViewTypes.UNIQUE_TOKEN_ROW.index) {
-        return ViewTypes.UNIQUE_TOKEN_ROW.renderComponent({
-          data,
-          index,
-          sections,
-          type,
-        });
-      }
-      return null;
-    },
-    [isCoinListEdited, nativeCurrency, sections]
-  );
-
   const {
     areSmallCollectibles,
     items,
@@ -356,6 +220,130 @@ function RecyclerAssetList({
       stickyComponentsIndices,
     };
   }, [openFamilyTabs, sections]);
+
+  // Defines the position of the coinDivider, if it exists.
+  const coinDividerIndex = useMemo<number>(() => {
+    const hasCoinDivider = items.some(({ item }) => item?.coinDivider);
+    if (hasCoinDivider) {
+      return findIndex(items, ({ item }) => item?.coinDivider);
+    }
+    return -1;
+  }, [items]);
+
+  // HACK: Force synchronization of the StickyHeader on iOS when mounted.
+  React.useEffect(() => {
+    !!ref &&
+      ios &&
+      requestAnimationFrame(() => {
+        ref.scrollToOffset(0, 1 / PixelRatio.get(), false);
+      });
+  }, [ref]);
+  const checkEditStickyHeader = useCallback(
+    (offsetY: number) => {
+      const offsetHeight =
+        CoinRowHeight * (coinDividerIndex - 1) + firstCoinRowMarginTop;
+      const shouldRenderSticky = isCoinListEdited && offsetY > offsetHeight;
+      stickyCoinDividerRef.current?.setNativeProps({
+        pointerEvents: shouldRenderSticky ? 'box-none' : 'none',
+        style: {
+          opacity: shouldRenderSticky ? 1 : 0,
+        },
+      });
+      return;
+    },
+    [stickyCoinDividerRef, coinDividerIndex, isCoinListEdited]
+  );
+  const handleRefresh = useCallback(async () => {
+    if (isRefreshing || !fetchData) {
+      return;
+    }
+    try {
+      setIsRefreshing(true);
+      await fetchData();
+    } catch (e) {
+      logger.error(e);
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, [isRefreshing, setIsRefreshing, fetchData]);
+  const onLayout = useCallback(
+    ({ nativeEvent }: LayoutChangeEvent) => {
+      // set globalDeviceDimensions
+      // used in LayoutItemAnimator and auto-scroll logic above 👇
+      const topMargin = nativeEvent.layout.y;
+      const additionalPadding = 10;
+      setGlobalDeviceDimensions(
+        deviceUtils.dimensions.height -
+          topMargin -
+          AssetListHeaderHeight -
+          additionalPadding
+      );
+    },
+    [setGlobalDeviceDimensions]
+  );
+
+  const stickyRowRenderer = React.useCallback(
+    // TODO: What does the data look like?
+    (_type: string | number | undefined, data: any) => {
+      return <AssetListHeader {...data} isSticky />;
+    },
+    []
+  );
+
+  const onScroll = useCallback(
+    (e: unknown, f: unknown, offsetY: number) => {
+      isCoinListEdited && checkEditStickyHeader(offsetY);
+    },
+    [isCoinListEdited, checkEditStickyHeader]
+  );
+
+  const rowRenderer = React.useCallback(
+    (type: any, data: any, index: number): JSX.Element | null => {
+      // Checks if value is *nullish*.
+      if (data == null || index == null) {
+        return null;
+      } else if (isCoinListEdited && !(type.index < 4)) {
+        return null;
+      }
+
+      if (type.index === ViewTypes.HEADER.index) {
+        return ViewTypes.HEADER.renderComponent({
+          data,
+          isCoinListEdited,
+        });
+      } else if (type.index === ViewTypes.COIN_ROW.index) {
+        return ViewTypes.COIN_ROW.renderComponent({
+          data,
+          type,
+        });
+      } else if (type.index === ViewTypes.COIN_DIVIDER.index) {
+        return ViewTypes.COIN_DIVIDER.renderComponent({
+          data,
+          isCoinListEdited,
+          nativeCurrency,
+        });
+      } else if (type.index === ViewTypes.COIN_SMALL_BALANCES.index) {
+        return ViewTypes.COIN_SMALL_BALANCES.renderComponent({
+          data,
+        });
+      } else if (type.index === ViewTypes.COIN_SAVINGS.index) {
+        return ViewTypes.COIN_SAVINGS.renderComponent({
+          data,
+        });
+      } else if (type.index === ViewTypes.POOLS.index) {
+        return ViewTypes.POOLS.renderComponent({ data, isCoinListEdited });
+      } else if (type.index === ViewTypes.UNIQUE_TOKEN_ROW.index) {
+        return ViewTypes.UNIQUE_TOKEN_ROW.renderComponent({
+          data,
+          index,
+          sections,
+          type,
+        });
+      }
+      return null;
+    },
+    [isCoinListEdited, nativeCurrency, sections]
+  );
 
   const animator = useMemo(
     () => new LayoutItemAnimator(paddingBottom, globalDeviceDimensions, ref),
@@ -430,12 +418,6 @@ function RecyclerAssetList({
           const lastBalanceIndex =
             sectionsIndices[balancesIndex] + balanceItemsCount;
           if (index === lastBalanceIndex - 2) {
-            if (coinDividerIndex !== index) {
-              setCoinDividerIndex(index);
-              if (isCoinListEdited) {
-                ref && checkEditStickyHeader(ref.getCurrentScrollOffset());
-              }
-            }
             if (
               sections[balancesIndex].data[lastBalanceIndex - 2]
                 .smallBalancesContainer
@@ -547,11 +529,7 @@ function RecyclerAssetList({
       }
     );
   }, [
-    ref,
-    coinDividerIndex,
-    setCoinDividerIndex,
     areSmallCollectibles,
-    checkEditStickyHeader,
     hideHeader,
     isCoinListEdited,
     items,
@@ -774,6 +752,24 @@ function RecyclerAssetList({
           </StickyContainer>
         </>
       )}
+      <View
+        pointerEvents="none"
+        ref={stickyCoinDividerRef}
+        style={[
+          StyleSheet.absoluteFill,
+          {
+            marginTop: AssetListHeaderHeight,
+            opacity: 0,
+          },
+        ]}
+      >
+        <CoinDivider
+          balancesSum={0}
+          isSticky
+          nativeCurrency={nativeCurrency}
+          onEndEdit={() => null}
+        />
+      </View>
     </StyledContainer>
   );
 }
