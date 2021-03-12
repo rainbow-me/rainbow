@@ -604,6 +604,7 @@ function RecyclerAssetList({
       } else if (index === items.length - 1) {
         return 'footer';
       }
+      return index;
     };
     return nextDataProvider;
   }, [items]);
