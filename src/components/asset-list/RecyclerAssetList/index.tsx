@@ -304,7 +304,7 @@ function RecyclerAssetList({
               ctx.push({
                 familySectionIndex: index,
                 item: { ...item, ...section.perData },
-                renderItem: section.renderItem, // 8% of CPU
+                renderItem: section.renderItem,
               });
             }
           });
@@ -312,7 +312,7 @@ function RecyclerAssetList({
           ctx = ctx.concat(
             section.data.map(item => ({
               item: { ...item, ...section.perData },
-              renderItem: section.renderItem, // 1% of CPU
+              renderItem: section.renderItem,
             }))
           );
         }

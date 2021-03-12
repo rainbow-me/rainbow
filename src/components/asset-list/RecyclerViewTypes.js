@@ -39,8 +39,6 @@ const extraSpaceForDropShadow = 19;
 const amountOfImagesWithForcedPrioritizeLoading = 9;
 const editModeAdditionalHeight = 100;
 
-//let lastRenderList = [];
-
 export const ViewTypes = {
   HEADER: {
     calculateHeight: ({ hideHeader }) =>
