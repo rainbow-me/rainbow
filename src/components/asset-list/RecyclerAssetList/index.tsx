@@ -583,7 +583,29 @@ function RecyclerAssetList({
   const extendedState = useMemo(() => ({ sectionsIndices }), [sectionsIndices]);
 
   const dataProvider = useMemo(() => {
-    return isEqualDataProvider.cloneWithRows(items);
+    const nextDataProvider = isEqualDataProvider.cloneWithRows(items);
+    // @ts-ignore
+    nextDataProvider.getStableId = (index: number) => {
+      const row = items[index];
+      if (row.item?.familyName) {
+        return `family_${row.item.familyName}_${row.item.familyId}`;
+      } else if (row.isHeader && (!row.item || !row.item.familyName)) {
+        return `header_${row.title}`;
+      } else if (row.item?.address) {
+        return `balance_${row.item.address}`;
+      } else if (row.item?.uniqueId) {
+        return `pool_${row.item.uniqueId}`;
+      } else if (row.item?.smallBalancesContainer) {
+        return `smallBalancesContainer`;
+      } else if (row.item?.coinDivider) {
+        return `coinDivider`;
+      } else if (row.item?.savingsContainer) {
+        return `savingsContainer`;
+      } else if (index === items.length - 1) {
+        return 'footer';
+      }
+    };
+    return nextDataProvider;
   }, [items]);
 
   const scrollToOffset = useCallback(
@@ -722,29 +744,35 @@ function RecyclerAssetList({
     scrollToOffset,
   ]);
 
+  const shouldRender = Array.isArray(items) && items.length > 3;
+
   return (
     <StyledContainer onLayout={onLayout}>
-      {/* @ts-ignore */}
-      <StickyContainer
-        overrideRowRenderer={stickyRowRenderer}
-        stickyHeaderIndices={
-          isCoinListEdited ? defaultIndices : stickyComponentsIndices
-        }
-      >
-        {/* @ts-ignore */}
-        <StyledRecyclerListView
-          dataProvider={dataProvider}
-          extendedState={extendedState}
-          itemAnimator={animator}
-          layoutProvider={layoutProvider}
-          onScroll={onScroll}
-          ref={handleRef}
-          renderAheadOffset={renderAheadOffset}
-          rowRenderer={rowRenderer}
-          scrollViewProps={scrollViewProps}
-          {...extras}
-        />
-      </StickyContainer>
+      {!!shouldRender && (
+        <>
+          {/* @ts-ignore */}
+          <StickyContainer
+            overrideRowRenderer={stickyRowRenderer}
+            stickyHeaderIndices={
+              isCoinListEdited ? defaultIndices : stickyComponentsIndices
+            }
+          >
+            {/* @ts-ignore */}
+            <StyledRecyclerListView
+              dataProvider={dataProvider}
+              extendedState={extendedState}
+              itemAnimator={animator}
+              layoutProvider={layoutProvider}
+              onScroll={onScroll}
+              ref={handleRef}
+              renderAheadOffset={renderAheadOffset}
+              rowRenderer={rowRenderer}
+              scrollViewProps={scrollViewProps}
+              {...extras}
+            />
+          </StickyContainer>
+        </>
+      )}
     </StyledContainer>
   );
 }
