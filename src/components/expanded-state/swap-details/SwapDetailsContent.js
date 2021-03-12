@@ -37,13 +37,17 @@ export default function SwapDetailsContent({
     tradeDetails
   );
 
+  const showPriceImpact =
+    (!isHighPriceImpact || priceImpactNativeAmount) &&
+    priceImpactPercentDisplay;
+
   return (
     <Container
       isHighPriceImpact={isHighPriceImpact}
       testID="swap-details-state"
       {...props}
     >
-      {(!isHighPriceImpact || priceImpactNativeAmount) && (
+      {showPriceImpact && (
         <SwapDetailsRow label="Price impact">
           <SwapDetailsValue
             color={priceImpactColor}

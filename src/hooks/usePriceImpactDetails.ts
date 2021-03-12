@@ -1,21 +1,22 @@
-import { Fraction, Trade } from '@uniswap/sdk';
+import { Trade } from '@uniswap/sdk';
 import { useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
 import { useTheme } from '@rainbow-me/context';
 import { AppState } from '@rainbow-me/redux/store';
 import {
-  abs,
   convertAmountAndPriceToNativeDisplay,
   convertAmountToNativeAmount,
   convertAmountToNativeDisplay,
   divide,
+  greaterThanOrEqualTo,
+  isPositive,
   isZero,
   multiply,
   subtract,
 } from '@rainbow-me/utilities';
 
-const PriceImpactWarningThreshold = new Fraction('5', '100');
-const SeverePriceImpactThreshold = new Fraction('10', '100');
+const PriceImpactWarningThreshold = 0.05;
+const SeverePriceImpactThreshold = 0.1;
 
 export default function usePriceImpactDetails(
   inputAmount: string | null,
@@ -35,18 +36,6 @@ export default function usePriceImpactDetails(
   );
 
   const priceImpact = tradeDetails?.priceImpact;
-
-  const isHighPriceImpact =
-    priceImpact?.greaterThan(PriceImpactWarningThreshold) ?? false;
-
-  const isSeverePriceImpact =
-    priceImpact?.greaterThan(SeverePriceImpactThreshold) ?? false;
-
-  const priceImpactColor = isSeverePriceImpact
-    ? colors.red
-    : isHighPriceImpact
-    ? colors.orange
-    : colors.green;
 
   let inputPriceValue = genericAssets[inputCurrencyAddress]?.price?.value;
   let outputPriceValue = genericAssets[outputCurrencyAddress]?.price?.value;
@@ -76,27 +65,45 @@ export default function usePriceImpactDetails(
   }
 
   let priceImpactNativeAmount = null;
-  if (inputAmount && inputPriceValue && outputPriceValue) {
-    const nativeAmount = convertAmountToNativeAmount(
+  let impact = null;
+  let priceImpactPercentDisplay = null;
+  if (inputAmount && outputAmount && inputPriceValue && outputPriceValue) {
+    const inputNativeAmount = convertAmountToNativeAmount(
       inputAmount,
       inputPriceValue
     );
 
     const outputNativeAmount = convertAmountAndPriceToNativeDisplay(
-      outputAmount ?? 0,
+      outputAmount,
       outputPriceValue,
       nativeCurrency
     ).amount;
 
-    const nativeAmountDifference = abs(
-      subtract(nativeAmount ?? 0, outputNativeAmount)
+    const nativeAmountDifference = subtract(
+      inputNativeAmount,
+      outputNativeAmount
     );
 
-    priceImpactNativeAmount = convertAmountToNativeDisplay(
-      nativeAmountDifference,
-      nativeCurrency
-    );
+    if (isPositive(nativeAmountDifference)) {
+      priceImpactPercentDisplay = priceImpact?.toFixed();
+      impact = divide(nativeAmountDifference, inputNativeAmount);
+      priceImpactNativeAmount = convertAmountToNativeDisplay(
+        nativeAmountDifference,
+        nativeCurrency
+      );
+    }
   }
+
+  const isHighPriceImpact =
+    !!impact && greaterThanOrEqualTo(impact, PriceImpactWarningThreshold);
+  const isSeverePriceImpact =
+    !!impact && greaterThanOrEqualTo(impact, SeverePriceImpactThreshold);
+
+  const priceImpactColor = isSeverePriceImpact
+    ? colors.red
+    : isHighPriceImpact
+    ? colors.orange
+    : colors.green;
 
   return {
     inputPriceValue,
@@ -104,6 +111,6 @@ export default function usePriceImpactDetails(
     outputPriceValue,
     priceImpactColor,
     priceImpactNativeAmount,
-    priceImpactPercentDisplay: priceImpact?.toFixed(),
+    priceImpactPercentDisplay,
   };
 }

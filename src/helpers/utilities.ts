@@ -7,6 +7,9 @@ type BigNumberish = number | string | BigNumber;
 export const abs = (value: BigNumberish): string =>
   new BigNumber(value).abs().toFixed();
 
+export const isPositive = (value: BigNumberish): boolean =>
+  new BigNumber(value).isPositive();
+
 export const subtract = (
   numberOne: BigNumberish,
   numberTwo: BigNumberish
