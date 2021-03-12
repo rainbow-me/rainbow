@@ -1,35 +1,12 @@
-diff --git a/node_modules/react-native-gesture-handler/GestureComponents.js b/node_modules/react-native-gesture-handler/GestureComponents.js
-index b7f2207..21eeddf 100644
---- a/node_modules/react-native-gesture-handler/GestureComponents.js
-+++ b/node_modules/react-native-gesture-handler/GestureComponents.js
-@@ -55,4 +55,17 @@ module.exports = {
-     }
-     return MEMOIZED.FlatList;
-   },
-+   get SectionList() {
-+    if (!MEMOIZED.SectionList) {
-+      const ScrollView = this.ScrollView;
-+      MEMOIZED.SectionList = React.forwardRef((props, ref) => (
-+        <ReactNative.SectionList
-+          ref={ref}
-+          {...props}
-+          renderScrollComponent={scrollProps => <ScrollView {...scrollProps} />}
-+        />
-+        ));
-+    }
-+    return MEMOIZED.SectionList;
-+    },
- };
-diff --git a/node_modules/react-native-gesture-handler/ios/Handlers/RNNativeViewHandler.m b/node_modules/react-native-gesture-handler/ios/Handlers/RNNativeViewHandler.m
-index 73022d7..49b8507 100644
---- a/node_modules/react-native-gesture-handler/ios/Handlers/RNNativeViewHandler.m
-+++ b/node_modules/react-native-gesture-handler/ios/Handlers/RNNativeViewHandler.m
-@@ -78,7 +78,7 @@ - (void)bindToView:(UIView *)view
-         // we expect for RCTScrollView component to contain a subclass of UIScrollview as the only
-         // subview
-         UIScrollView *scrollView = [view.subviews objectAtIndex:0];
--        scrollView.delaysContentTouches = YES;
-+        scrollView.delaysContentTouches = NO;
-     }
- }
+diff --git a/node_modules/react-native-gesture-handler/ios/RNGestureHandlerManager.h b/node_modules/react-native-gesture-handler/ios/RNGestureHandlerManager.h
+index a94a0fd..3c2c4a6 100644
+--- a/node_modules/react-native-gesture-handler/ios/RNGestureHandlerManager.h
++++ b/node_modules/react-native-gesture-handler/ios/RNGestureHandlerManager.h
+@@ -2,6 +2,7 @@
+ 
+ #import <React/RCTBridgeModule.h>
+ #import <React/RCTUIManager.h>
++#import <React/RCTEventDispatcher.h>
+ 
+ @interface RNGestureHandlerManager : NSObject
  

@@ -10,3 +10,27 @@ index ad743ff..6fa9572 100644
          final FragmentAdapter adapter = new FragmentAdapter((FragmentActivity) reactContext.getCurrentActivity());
          vp.setAdapter((FragmentStateAdapter) adapter);
          eventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+diff --git a/node_modules/@react-native-community/viewpager/ios/ReactNativePageView.h b/node_modules/@react-native-community/viewpager/ios/ReactNativePageView.h
+index 4378be8..07155c2 100644
+--- a/node_modules/@react-native-community/viewpager/ios/ReactNativePageView.h
++++ b/node_modules/@react-native-community/viewpager/ios/ReactNativePageView.h
+@@ -2,6 +2,7 @@
+ #import <React/RCTShadowView.h>
+ #import <React/UIView+React.h>
+ #import <UIKit/UIKit.h>
++#import <React/RCTEventDispatcher.h>
+ 
+ NS_ASSUME_NONNULL_BEGIN
+ 
+diff --git a/node_modules/@react-native-community/viewpager/ios/ReactNativePageView.m b/node_modules/@react-native-community/viewpager/ios/ReactNativePageView.m
+index 6685e46..78937eb 100644
+--- a/node_modules/@react-native-community/viewpager/ios/ReactNativePageView.m
++++ b/node_modules/@react-native-community/viewpager/ios/ReactNativePageView.m
+@@ -2,6 +2,7 @@
+ #import "ReactNativePageView.h"
+ #import "React/RCTLog.h"
+ #import <React/RCTViewManager.h>
++#import <React/RCTEventDispatcher.h>
+ 
+ #import "UIViewController+CreateExtension.h"
+ #import "RCTOnPageScrollEvent.h"
