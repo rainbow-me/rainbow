@@ -129,4 +129,8 @@ const TopMoverCoinRow = asset => {
   );
 };
 
-export default magicMemo(TopMoverCoinRow, ['change', 'name', 'native']);
+export default magicMemo(TopMoverCoinRow, [
+  'change',
+  'truncatedName',
+  'native',
+]);

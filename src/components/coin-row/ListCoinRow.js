@@ -63,25 +63,23 @@ const ListCoinRow = ({ item, onPress }) => {
     return ethereumUtils.formatGenericAsset(item, nativeCurrency);
   }, [item, nativeCurrency]);
   return (
-    <>
-      <ButtonPressAnimation
-        height={CoinIconSize + CoinRowPaddingTop + CoinRowPaddingBottom}
-        onPress={handlePress}
-        scaleTo={0.96}
-        throttle
-      >
-        <CoinRow
-          {...formattedItem}
-          bottomRowRender={BottomRow}
-          containerStyles={css(
-            padding(CoinRowPaddingTop, 38, CoinRowPaddingBottom, 15)
-          )}
-          showBalance={false}
-          testID="list-coin-row"
-          topRowRender={TopRow}
-        />
-      </ButtonPressAnimation>
-    </>
+    <ButtonPressAnimation
+      height={CoinIconSize + CoinRowPaddingTop + CoinRowPaddingBottom}
+      onPress={handlePress}
+      scaleTo={0.96}
+      throttle
+    >
+      <CoinRow
+        {...formattedItem}
+        bottomRowRender={BottomRow}
+        containerStyles={css(
+          padding(CoinRowPaddingTop, 38, CoinRowPaddingBottom, 15)
+        )}
+        showBalance={false}
+        testID="list-coin-row"
+        topRowRender={TopRow}
+      />
+    </ButtonPressAnimation>
   );
 };
 

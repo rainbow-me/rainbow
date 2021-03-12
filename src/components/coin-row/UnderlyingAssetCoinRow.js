@@ -44,4 +44,4 @@ const UnderlyingAssetCoinRow = ({
   );
 };
 
-export default magicMemo(UnderlyingAssetCoinRow, ['change', 'name', 'price']);
+export default magicMemo(UnderlyingAssetCoinRow, ['change', 'name']);
