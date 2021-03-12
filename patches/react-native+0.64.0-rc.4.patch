@@ -1,8 +1,8 @@
 diff --git a/node_modules/react-native/Libraries/Core/Timers/JSTimers.js b/node_modules/react-native/Libraries/Core/Timers/JSTimers.js
-index 4c154db..89051c8 100644
+index 9c5d2a0..799fc5c 100644
 --- a/node_modules/react-native/Libraries/Core/Timers/JSTimers.js
 +++ b/node_modules/react-native/Libraries/Core/Timers/JSTimers.js
-@@ -232,7 +232,7 @@ const JSTimers = {
+@@ -228,7 +228,7 @@ const JSTimers = {
        );
      }
      const id = _allocateCallback(
@@ -11,7 +11,7 @@ index 4c154db..89051c8 100644
        'setTimeout',
      );
      createTimer(id, duration || 0, Date.now(), /* recurring */ false);
-@@ -258,7 +258,7 @@ const JSTimers = {
+@@ -254,7 +254,7 @@ const JSTimers = {
        );
      }
      const id = _allocateCallback(
@@ -20,7 +20,7 @@ index 4c154db..89051c8 100644
        'setInterval',
      );
      createTimer(id, duration || 0, Date.now(), /* recurring */ true);
-@@ -271,7 +271,7 @@ const JSTimers = {
+@@ -267,7 +267,7 @@ const JSTimers = {
     */
    setImmediate: function(func: Function, ...args: any) {
      const id = _allocateCallback(
@@ -30,10 +30,10 @@ index 4c154db..89051c8 100644
      );
      immediates.push(id);
 diff --git a/node_modules/react-native/React/CoreModules/RCTLogBox.mm b/node_modules/react-native/React/CoreModules/RCTLogBox.mm
-index 2ef88f1..9d628ed 100644
+index 87c5a5b..131e585 100644
 --- a/node_modules/react-native/React/CoreModules/RCTLogBox.mm
 +++ b/node_modules/react-native/React/CoreModules/RCTLogBox.mm
-@@ -114,6 +114,7 @@ + (BOOL)requiresMainQueueSetup
+@@ -68,6 +68,7 @@ + (BOOL)requiresMainQueueSetup
        if (!strongSelf) {
          return;
        }
@@ -41,24 +41,11 @@ index 2ef88f1..9d628ed 100644
        strongSelf->_view = nil;
      });
    }
-diff --git a/node_modules/react-native/React/CxxBridge/RCTCxxBridge.mm b/node_modules/react-native/React/CxxBridge/RCTCxxBridge.mm
-index d8938d7..32a7265 100644
---- a/node_modules/react-native/React/CxxBridge/RCTCxxBridge.mm
-+++ b/node_modules/react-native/React/CxxBridge/RCTCxxBridge.mm
-@@ -462,7 +462,7 @@ - (id)moduleForName:(NSString *)moduleName
- 
- - (id)moduleForName:(NSString *)moduleName lazilyLoadIfNecessary:(BOOL)lazilyLoad
- {
--  if (RCTTurboModuleEnabled() && _turboModuleLookupDelegate) {
-+  if ((RCTTurboModuleEnabled() || [moduleName  isEqual: @"ReanimatedModule"]) && _turboModuleLookupDelegate) {
-     const char *moduleNameCStr = [moduleName UTF8String];
-     if (lazilyLoad || [_turboModuleLookupDelegate moduleIsInitialized:moduleNameCStr]) {
-       id<RCTTurboModule> module = [_turboModuleLookupDelegate moduleForName:moduleNameCStr warnOnLookupFailure:NO];
 diff --git a/node_modules/react-native/React/Views/RCTView.m b/node_modules/react-native/React/Views/RCTView.m
-index a5117be..59108bb 100644
+index 91e28ab..23704d8 100644
 --- a/node_modules/react-native/React/Views/RCTView.m
 +++ b/node_modules/react-native/React/Views/RCTView.m
-@@ -805,6 +805,11 @@ - (void)displayLayer:(CALayer *)layer
+@@ -810,6 +810,11 @@ - (void)displayLayer:(CALayer *)layer
      layer.contents = nil;
      layer.needsDisplayOnBoundsChange = NO;
      layer.mask = nil;
