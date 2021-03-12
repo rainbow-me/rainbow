@@ -1,4 +1,4 @@
-import { findIndex, get, isNil } from 'lodash';
+import { findIndex, get } from 'lodash';
 import React, {
   useCallback,
   useEffect,
@@ -9,6 +9,7 @@ import React, {
 import isEqual from 'react-fast-compare';
 import {
   LayoutChangeEvent,
+  PixelRatio,
   RefreshControl,
   ScrollViewProps,
   View,
@@ -159,6 +160,15 @@ function RecyclerAssetList({
   const [coinDividerIndex, setCoinDividerIndex] = useState<number>(-1);
   const [showCoinListEditor, setShowCoinListEditor] = useState<boolean>(false);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+
+  // HACK: Force synchronization of the StickyHeader on iOS when mounted.
+  React.useEffect(() => {
+    !!ref &&
+      ios &&
+      requestAnimationFrame(() => {
+        ref.scrollToOffset(0, 1 / PixelRatio.get(), false);
+      });
+  }, [ref]);
   const checkEditStickyHeader = useCallback(
     (offsetY: number) => {
       const offsetHeight =
@@ -218,14 +228,14 @@ function RecyclerAssetList({
     (_type: string | number | undefined, data: any) => (
       <React.Fragment key={`${_type}`}>
         <AssetListHeader {...data} isSticky />
-        {showCoinListEditor ? (
+        {!!showCoinListEditor && (
           <CoinDivider
             balancesSum={0}
             isSticky
             nativeCurrency={nativeCurrency}
             onEndEdit={shouldHideCoinListEditor}
           />
-        ) : null}
+        )}
       </React.Fragment>
     ),
     [showCoinListEditor, shouldHideCoinListEditor, nativeCurrency]
@@ -240,10 +250,10 @@ function RecyclerAssetList({
 
   const rowRenderer = React.useCallback(
     (type: any, data: any, index: number): JSX.Element | null => {
-      if (isNil(data) || isNil(index)) {
+      // Checks if value is *nullish*.
+      if (data == null || index == null) {
         return null;
-      }
-      if (isCoinListEdited && !(type.index < 4)) {
+      } else if (isCoinListEdited && !(type.index < 4)) {
         return null;
       }
 
@@ -564,8 +574,8 @@ function RecyclerAssetList({
           tintColor={colors.alpha(colors.blueGreyDark, 0.4)}
         />
       ),
-      // https://reactnative.dev/docs/scrollview#scrolleventthrottle
-      scrollEventThrottle: 30,
+      // // https://reactnative.dev/docs/scrollview#scrolleventthrottle
+      // scrollEventThrottle: 30,
     }),
     [handleRefresh, isRefreshing, colors]
   );
