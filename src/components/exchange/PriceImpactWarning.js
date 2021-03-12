@@ -35,8 +35,7 @@ export default function PriceImpactWarning({
   ...props
 }) {
   const heading = priceImpactNativeAmount ? 'Losing' : 'Price impact';
-  const headingValue =
-    priceImpactNativeAmount ?? `${priceImpactPercentDisplay}%`;
+  const headingValue = priceImpactNativeAmount ?? priceImpactPercentDisplay;
   return (
     <Animated.View {...props} style={[style, position.coverAsObject]}>
       <ButtonPressAnimation onPress={onPress} scaleTo={0.94}>

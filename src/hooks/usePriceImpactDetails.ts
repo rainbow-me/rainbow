@@ -7,6 +7,7 @@ import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToNativeAmount,
   convertAmountToNativeDisplay,
+  convertAmountToPercentageDisplayWithThreshold,
   divide,
   greaterThanOrEqualTo,
   isPositive,
@@ -85,8 +86,10 @@ export default function usePriceImpactDetails(
     );
 
     if (isPositive(nativeAmountDifference)) {
-      priceImpactPercentDisplay = priceImpact?.toFixed();
       impact = divide(nativeAmountDifference, inputNativeAmount);
+      priceImpactPercentDisplay = convertAmountToPercentageDisplayWithThreshold(
+        impact
+      );
       priceImpactNativeAmount = convertAmountToNativeDisplay(
         nativeAmountDifference,
         nativeCurrency

@@ -331,6 +331,23 @@ export const convertAmountToPercentageDisplay = (
 };
 
 /**
+ * @desc convert from amount to display formatted string
+ * with a threshold percent
+ */
+export const convertAmountToPercentageDisplayWithThreshold = (
+  value: BigNumberish,
+  decimals: number = 2,
+  threshold: string = '0.0001'
+): string => {
+  if (lessThan(value, threshold)) {
+    return '< 0.01%';
+  } else {
+    const display = new BigNumber(value).times(100).toFixed(decimals);
+    return `${display}%`;
+  }
+};
+
+/**
  * @desc convert from bips amount to percentage format
  */
 export const convertBipsToPercentage = (

@@ -53,7 +53,7 @@ export default function SwapDetailsContent({
             color={priceImpactColor}
             letterSpacing="roundedTight"
           >
-            {`${priceImpactPercentDisplay}%`}
+            {priceImpactPercentDisplay}
           </SwapDetailsValue>
         </SwapDetailsRow>
       )}
