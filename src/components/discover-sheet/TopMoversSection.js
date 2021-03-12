@@ -65,21 +65,20 @@ export default function TopMoversSection() {
 
   return (
     <Column marginBottom={15} marginTop={11}>
-      {gainerItems?.length > 0 ||
-        (loserItems?.length > 0 && (
-          <Flex marginBottom={12} paddingHorizontal={19}>
-            <Text size="larger" weight="heavy">
-              Top Movers
-            </Text>
-          </Flex>
-        ))}
+      {(gainerItems?.length > 0 || loserItems?.length > 0) && (
+        <Flex marginBottom={12} paddingHorizontal={19}>
+          <Text size="larger" weight="heavy">
+            Top Movers
+          </Text>
+        </Flex>
+      )}
 
       <Column>
         {gainerItems?.length !== 0 && (
-          <MarqueeList items={gainerItems} speed={60} />
+          <MarqueeList items={gainerItems} speed={40} />
         )}
         {loserItems?.length !== 0 && (
-          <MarqueeList items={loserItems} speed={-60} />
+          <MarqueeList items={loserItems} speed={-40} />
         )}
       </Column>
 
