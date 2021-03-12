@@ -7,7 +7,12 @@ import React, {
   useState,
 } from 'react';
 import isEqual from 'react-fast-compare';
-import { LayoutChangeEvent, RefreshControl, View } from 'react-native';
+import {
+  LayoutChangeEvent,
+  RefreshControl,
+  ScrollViewProps,
+  View,
+} from 'react-native';
 import { connect } from 'react-redux';
 import {
   DataProvider,
@@ -32,6 +37,7 @@ import { usePrevious } from '@rainbow-me/hooks';
 import { deviceUtils, logger } from '@rainbow-me/utils';
 
 const defaultIndices = [0];
+const isEqualDataProvider = new DataProvider(isEqual);
 
 const StyledRecyclerListView = styled(RecyclerListView)`
   background-color: ${({ theme: { colors } }) => colors.white};
@@ -45,6 +51,10 @@ const StyledContainer = styled(View)`
   flex: 1;
   background-color: ${({ theme: { colors } }) => colors.black};
   overflow: hidden;
+`;
+
+const StyledRefreshControl = styled(RefreshControl)`
+  ${ios ? '' : 'margin-top: 20;'}
 `;
 
 type RecyclerListViewRef = RecyclerListView<
@@ -153,10 +163,10 @@ function RecyclerAssetList({
     (offsetY: number) => {
       const offsetHeight =
         CoinRowHeight * (coinDividerIndex - 1) + firstCoinRowMarginTop;
-      if (isCoinListEdited && offsetY > offsetHeight) {
+      if (!showCoinListEditor && isCoinListEdited && offsetY > offsetHeight) {
         setShowCoinListEditor(true);
       } else if (
-        !!showCoinListEditor &&
+        showCoinListEditor &&
         (offsetY < offsetHeight || !isCoinListEdited)
       ) {
         setShowCoinListEditor(false);
@@ -198,22 +208,27 @@ function RecyclerAssetList({
     [setGlobalDeviceDimensions]
   );
 
+  const shouldHideCoinListEditor = React.useCallback(
+    () => setShowCoinListEditor(false),
+    [setShowCoinListEditor]
+  );
+
   const stickyRowRenderer = React.useCallback(
     // TODO: What does the data look like?
     (_type: string | number | undefined, data: any) => (
-      <>
+      <React.Fragment key={`${_type}`}>
         <AssetListHeader {...data} isSticky />
         {showCoinListEditor ? (
           <CoinDivider
             balancesSum={0}
             isSticky
             nativeCurrency={nativeCurrency}
-            onEndEdit={() => setShowCoinListEditor(false)}
+            onEndEdit={shouldHideCoinListEditor}
           />
         ) : null}
-      </>
+      </React.Fragment>
     ),
-    [showCoinListEditor, setShowCoinListEditor, nativeCurrency]
+    [showCoinListEditor, shouldHideCoinListEditor, nativeCurrency]
   );
 
   const onScroll = useCallback(
@@ -541,15 +556,16 @@ function RecyclerAssetList({
   ]);
 
   const scrollViewProps = useMemo(
-    () => ({
+    (): Partial<ScrollViewProps> => ({
       refreshControl: (
-        <RefreshControl
+        <StyledRefreshControl
           onRefresh={handleRefresh}
           refreshing={isRefreshing}
-          style={ios ? {} : { top: 20 }}
           tintColor={colors.alpha(colors.blueGreyDark, 0.4)}
         />
       ),
+      // https://reactnative.dev/docs/scrollview#scrolleventthrottle
+      scrollEventThrottle: 30,
     }),
     [handleRefresh, isRefreshing, colors]
   );
@@ -557,7 +573,7 @@ function RecyclerAssetList({
   const extendedState = useMemo(() => ({ sectionsIndices }), [sectionsIndices]);
 
   const dataProvider = useMemo(() => {
-    return new DataProvider(isEqual).cloneWithRows(items);
+    return isEqualDataProvider.cloneWithRows(items);
   }, [items]);
 
   const scrollToOffset = useCallback(

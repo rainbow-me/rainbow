@@ -12,6 +12,23 @@ type RecyclerListViewRef = RecyclerListView<
   RecyclerListViewState
 >;
 
+const easingAnimation = {
+  duration: 250,
+  update: {
+    delay: 10,
+    type: 'easeInEaseOut',
+  },
+};
+
+const springAnimation = {
+  duration: 200,
+  update: {
+    initialVelocity: 0,
+    springDamping: 1,
+    type: LayoutAnimation.Types.spring,
+  },
+};
+
 export default class LayoutItemAnimator extends BaseItemAnimator {
   paddingBottom: number;
   globalDeviceDimensions: number;
@@ -42,29 +59,16 @@ export default class LayoutItemAnimator extends BaseItemAnimator {
       hasScrollOffset &&
       hasContentDimension &&
       this.ref &&
+      this.ref.getCurrentScrollOffset() > 0 &&
       this.ref.getContentDimension().height <
         this.ref.getCurrentScrollOffset() +
           this.globalDeviceDimensions +
-          this.paddingBottom &&
-      this.ref.getCurrentScrollOffset() > 0;
+          this.paddingBottom;
 
     if (shouldConfigureNext) {
-      LayoutAnimation.configureNext({
-        duration: 250,
-        update: {
-          delay: 10,
-          type: 'easeInEaseOut',
-        },
-      });
+      LayoutAnimation.configureNext(easingAnimation);
     } else {
-      LayoutAnimation.configureNext({
-        duration: 200,
-        update: {
-          initialVelocity: 0,
-          springDamping: 1,
-          type: LayoutAnimation.Types.spring,
-        },
-      });
+      LayoutAnimation.configureNext(springAnimation);
     }
   };
 }
