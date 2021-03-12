@@ -44,8 +44,15 @@ const EmulatorCameraFallback = styled(ImgixImage).attrs({
   ${position.size('100%')};
 `;
 
-export default function QRCodeScanner({ contentPositionTop, dsRef }) {
-  const [cameraEnabled, setCameraEnabled] = useState(false);
+export default function QRCodeScanner({
+  contentPositionTop,
+  dsRef,
+  enableCamera: isEnabledByFocus,
+}) {
+  const [cameraEnabledByBottomSheetPosition, setCameraEnabled] = useState(
+    false
+  );
+  const cameraEnabled = isEnabledByFocus && cameraEnabledByBottomSheetPosition;
   const [error, showError] = useBooleanState();
   const [isInitialized, setInitialized] = useBooleanState();
   const { result: isEmulator } = useIsEmulator();
