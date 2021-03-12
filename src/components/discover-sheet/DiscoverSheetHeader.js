@@ -3,31 +3,26 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
-import Animated, {
-  newInterpolate,
-  useAnimatedStyle,
-  useDerivedValue,
+import { View } from 'react-native';
+import {
+  runOnJS,
+  Transition,
+  Transitioning,
+  useAnimatedReaction,
   useSharedValue,
-  withSpring,
 } from 'react-native-reanimated';
 import styled from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 import DiscoverSheetContext from './DiscoverSheetContext';
-import { useDelayedValueWithLayoutAnimation } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { borders, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
-
-const springConfig = {
-  damping: 28,
-  mass: 1,
-  stiffness: 420,
-};
 
 const Header = styled.View`
   flex-direction: row;
@@ -54,44 +49,34 @@ const BackgroundFill = styled(Centered).attrs({
   top: 8;
 `;
 
+const transition = (
+  <Transition.Together>
+    <Transition.In type="fade" />
+    <Transition.Out type="fade" />
+    <Transition.Change interpolation="easeInOut" />
+  </Transition.Together>
+);
+
+let key = 0;
+
+function TransitioningView(props) {
+  const ref = useRef();
+  return (
+    <Transitioning.View animateMount key={`tv${key++}`} ref={ref} {...props} />
+  );
+}
+
 function Stack({
   children,
   left,
-  stackOpacity,
   onPress,
   disabled,
-  translateX,
-  wrapperOpacity,
+  translateX = 0,
+  isAboveMagicBorder,
+  isWrapperVisible,
 }) {
   const { colors, isDarkMode } = useTheme();
   const shadows = useMemo(() => FloatingActionButtonShadow(colors), [colors]);
-  const isVisible = useDerivedValue(() => {
-    const value = stackOpacity.value;
-    return withSpring(value, springConfig);
-  });
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity: isVisible.value,
-  }));
-  const animatedStyleHide = useAnimatedStyle(() => ({
-    opacity: 1 - isVisible.value,
-  }));
-  const animatedWrapperStyle = useAnimatedStyle(() => ({
-    opacity: wrapperOpacity.value,
-    transform: [{ translateX: translateX.value }],
-  }));
-
-  const { isSearchModeEnabled } = useContext(DiscoverSheetContext);
-
-  const areButtonsVisible = useDelayedValueWithLayoutAnimation(
-    !disabled && !isSearchModeEnabled
-  );
-
-  const animatedStyleShadow = useAnimatedStyle(() => ({
-    opacity: isVisible.value,
-    ...(ios && {
-      transform: [{ scale: isVisible.value + (0.6 - isVisible.value * 0.6) }],
-    }),
-  }));
 
   return (
     <>
@@ -100,10 +85,11 @@ function Stack({
         onPress={onPress}
         style={{ height: 59, width: 59, zIndex: 10 }}
       >
-        <Animated.View
+        <TransitioningView
           height={59}
           position="absolute"
-          style={animatedStyleShadow}
+          style={{ opacity: isWrapperVisible ? 1 : 0 }}
+          transition={transition}
           width={59}
         >
           <ShadowStack
@@ -113,18 +99,34 @@ function Stack({
             style={{ left: 8, opacity: 0.4, position: 'absolute', top: 8 }}
           />
           <BackgroundFill />
-        </Animated.View>
-        <Animated.View
+        </TransitioningView>
+        <View
           style={[
-            { left, top: 19, zIndex: 10 },
-            ios ? animatedWrapperStyle : { opacity: areButtonsVisible ? 1 : 0 },
+            {
+              left,
+              opacity: isAboveMagicBorder ? 1 : 0,
+              top: 19,
+              zIndex: 10,
+            },
           ]}
         >
-          <Animated.View style={[animatedStyleHide, { position: 'absolute' }]}>
-            {children[0]}
-          </Animated.View>
-          <Animated.View style={animatedStyle}>{children[1]}</Animated.View>
-        </Animated.View>
+          <TransitioningView
+            style={{
+              transform: [{ translateX: isWrapperVisible ? translateX : 0 }],
+            }}
+          >
+            <View
+              style={{
+                position: 'absolute',
+              }}
+            >
+              {children[0]}
+            </View>
+            <View style={{ opacity: isWrapperVisible ? 1 : 0 }}>
+              {children[1]}
+            </View>
+          </TransitioningView>
+        </View>
       </ButtonPressAnimation>
     </>
   );
@@ -133,21 +135,21 @@ function Stack({
 export default function DiscoverSheetHeader(props) {
   const { navigate } = useNavigation();
   const [buttonsEnabled, setButtonsEnabled] = useState(true);
+  const [isScrollViewScrolled, setIsScrollViewScrolled] = useState(true);
   const buttonOpacity = useSharedValue(1);
   const { yPosition } = props;
   const { isSearchModeEnabled, setIsSearchModeEnabled } = useContext(
     DiscoverSheetContext
   );
-  const stackOpacity = useDerivedValue(() =>
-    Math.round(newInterpolate(yPosition.value, [50, 51], [0, 1], 'clamp'))
-  );
 
-  const translateXLeftButton = useDerivedValue(() =>
-    withSpring(stackOpacity.value * 5, springConfig)
-  );
-
-  const translateXRightButton = useDerivedValue(() =>
-    withSpring(0, springConfig)
+  useAnimatedReaction(
+    () => yPosition.value < 50,
+    (result, previous) => {
+      if (result !== previous) {
+        runOnJS(setIsScrollViewScrolled)(result);
+      }
+    },
+    [setIsScrollViewScrolled]
   );
 
   const { jumpToShort, addOnCrossMagicBorderListener } =
@@ -165,17 +167,6 @@ export default function DiscoverSheetHeader(props) {
     onCrossMagicBorder,
   ]);
 
-  const animatedWrapperLOpacity = useDerivedValue(
-    () =>
-      withSpring(isSearchModeEnabled ? 0 : buttonOpacity.value, springConfig),
-    [isSearchModeEnabled]
-  );
-  const animatedWrapperOpacity = useDerivedValue(
-    () =>
-      withSpring(isSearchModeEnabled ? 0 : buttonOpacity.value, springConfig),
-    [isSearchModeEnabled]
-  );
-
   const { colors } = useTheme();
 
   const handleScannerPress = useCallback(() => {
@@ -189,13 +180,14 @@ export default function DiscoverSheetHeader(props) {
     <Header {...props} pointerEvents="box-none">
       <Stack
         disabled={!buttonsEnabled}
+        isAboveMagicBorder={buttonsEnabled}
+        isWrapperVisible={isSearchModeEnabled || !isScrollViewScrolled}
         left={19}
         onPress={() => !isSearchModeEnabled && navigate(Routes.WALLET_SCREEN)}
-        stackOpacity={stackOpacity}
-        translateX={translateXLeftButton}
-        wrapperOpacity={animatedWrapperLOpacity}
+        translateX={5}
       >
         <Icon
+          bottom={1}
           color={colors.alpha(colors.blueGreyDark, 0.8)}
           direction="left"
           name="caret"
@@ -210,11 +202,10 @@ export default function DiscoverSheetHeader(props) {
       </Stack>
       <Stack
         disabled={!buttonsEnabled}
+        isAboveMagicBorder={buttonsEnabled}
+        isWrapperVisible={isSearchModeEnabled || !isScrollViewScrolled}
         left={18.5}
         onPress={handleScannerPress}
-        stackOpacity={stackOpacity}
-        translateX={translateXRightButton}
-        wrapperOpacity={animatedWrapperOpacity}
       >
         <Icon
           bottom={1}
