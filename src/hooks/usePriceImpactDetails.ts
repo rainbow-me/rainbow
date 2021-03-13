@@ -11,8 +11,6 @@ import {
   divide,
   greaterThanOrEqualTo,
   isPositive,
-  isZero,
-  multiply,
   subtract,
 } from '@rainbow-me/utilities';
 
@@ -36,64 +34,47 @@ export default function usePriceImpactDetails(
     (state: AppState) => state.data.genericAssets
   );
 
-  const priceImpact = tradeDetails?.priceImpact;
-
   let inputPriceValue = genericAssets[inputCurrencyAddress]?.price?.value;
   let outputPriceValue = genericAssets[outputCurrencyAddress]?.price?.value;
-
-  const executionRate = tradeDetails?.executionPrice?.toSignificant();
-
-  const originalOutputAmount = divide(
-    outputAmount ?? 0,
-    subtract(1, divide(priceImpact?.toSignificant() ?? 0, 100))
-  );
-
-  const realExecutionRate =
-    inputAmount && !isZero(inputAmount)
-      ? divide(originalOutputAmount, inputAmount)
-      : 0;
-  const realInverseExecutionRate =
-    inputAmount && originalOutputAmount && !isZero(originalOutputAmount)
-      ? divide(inputAmount, originalOutputAmount)
-      : 0;
-
-  if (!outputPriceValue && inputPriceValue && realInverseExecutionRate) {
-    outputPriceValue = multiply(inputPriceValue, realInverseExecutionRate);
-  }
-
-  if (!inputPriceValue && outputPriceValue && executionRate) {
-    inputPriceValue = multiply(outputPriceValue, realExecutionRate);
-  }
 
   let priceImpactNativeAmount = null;
   let impact = null;
   let priceImpactPercentDisplay = null;
-  if (inputAmount && outputAmount && inputPriceValue && outputPriceValue) {
-    const inputNativeAmount = convertAmountToNativeAmount(
-      inputAmount,
-      inputPriceValue
-    );
-
-    const outputNativeAmount = convertAmountAndPriceToNativeDisplay(
-      outputAmount,
-      outputPriceValue,
-      nativeCurrency
-    ).amount;
-
-    const nativeAmountDifference = subtract(
-      inputNativeAmount,
-      outputNativeAmount
-    );
-
-    if (isPositive(nativeAmountDifference)) {
-      impact = divide(nativeAmountDifference, inputNativeAmount);
-      priceImpactPercentDisplay = convertAmountToPercentageDisplayWithThreshold(
-        impact
+  if (inputAmount && outputAmount) {
+    if (inputPriceValue && outputPriceValue) {
+      const inputNativeAmount = convertAmountToNativeAmount(
+        inputAmount,
+        inputPriceValue
       );
-      priceImpactNativeAmount = convertAmountToNativeDisplay(
-        nativeAmountDifference,
+
+      const outputNativeAmount = convertAmountAndPriceToNativeDisplay(
+        outputAmount,
+        outputPriceValue,
         nativeCurrency
+      ).amount;
+
+      const nativeAmountDifference = subtract(
+        inputNativeAmount,
+        outputNativeAmount
       );
+
+      if (isPositive(nativeAmountDifference)) {
+        impact = divide(nativeAmountDifference, inputNativeAmount);
+        priceImpactPercentDisplay = convertAmountToPercentageDisplayWithThreshold(
+          impact
+        );
+        priceImpactNativeAmount = convertAmountToNativeDisplay(
+          nativeAmountDifference,
+          nativeCurrency
+        );
+      }
+    } else {
+      if (tradeDetails) {
+        impact = divide(tradeDetails.priceImpact.toFixed(), 100);
+        priceImpactPercentDisplay = convertAmountToPercentageDisplayWithThreshold(
+          impact
+        );
+      }
     }
   }
 
