@@ -457,11 +457,9 @@ export default function ExchangeModal({
           )}
           {!isSavings && showConfirmButton && (
             <ExchangeDetailsRow
-              inputAmount={inputAmount}
               isHighPriceImpact={isHighPriceImpact}
               onFlipCurrencies={flipCurrencies}
               onPressViewDetails={navigateToSwapDetailsModal}
-              outputAmount={outputAmount}
               priceImpactColor={priceImpactColor}
               priceImpactNativeAmount={priceImpactNativeAmount}
               priceImpactPercentDisplay={priceImpactPercentDisplay}
