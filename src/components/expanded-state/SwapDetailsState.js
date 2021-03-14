@@ -97,6 +97,7 @@ export default function SwapDetailsState({
 
   const {
     derivedValues: { inputAmount, outputAmount },
+    displayValues: { inputAmountDisplay, outputAmountDisplay },
     tradeDetails,
   } = useSwapDerivedOutputs();
   const {
@@ -182,9 +183,11 @@ export default function SwapDetailsState({
         </Header>
         <SwapDetailsMasthead
           inputAmount={inputAmount}
+          inputAmountDisplay={inputAmountDisplay}
           inputPriceValue={inputPriceValue}
           isHighPriceImpact={isHighPriceImpact}
           outputAmount={outputAmount}
+          outputAmountDisplay={outputAmountDisplay}
           outputPriceValue={outputPriceValue}
           priceImpactColor={priceImpactColor}
         />

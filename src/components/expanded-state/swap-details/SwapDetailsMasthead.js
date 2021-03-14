@@ -20,9 +20,11 @@ const Container = styled(RowWithMargins).attrs({
 
 export default function SwapDetailsMasthead({
   inputAmount,
+  inputAmountDisplay,
   inputPriceValue,
   isHighPriceImpact,
   outputAmount,
+  outputAmountDisplay,
   outputPriceValue,
   priceImpactColor,
   ...props
@@ -34,6 +36,7 @@ export default function SwapDetailsMasthead({
     <Container {...props}>
       <CurrencyTile
         amount={inputAmount}
+        amountDisplay={inputAmountDisplay}
         asset={inputCurrency}
         priceValue={inputPriceValue}
         type="input"
@@ -41,6 +44,7 @@ export default function SwapDetailsMasthead({
       <Icon color={colors.dark} name="doubleChevron" />
       <CurrencyTile
         amount={outputAmount}
+        amountDisplay={outputAmountDisplay}
         asset={outputCurrency}
         isHighPriceImpact={isHighPriceImpact}
         priceImpactColor={priceImpactColor}
