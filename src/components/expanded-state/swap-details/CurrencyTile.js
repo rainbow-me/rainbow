@@ -72,11 +72,13 @@ export default function CurrencyTile({
   const isOther =
     (inputAsExact && type === 'output') || (!inputAsExact && type === 'input');
 
-  const priceDisplay = convertAmountAndPriceToNativeDisplay(
-    amount,
-    priceValue ?? 0,
-    nativeCurrency
-  ).display;
+  const priceDisplay = priceValue
+    ? convertAmountAndPriceToNativeDisplay(
+        amount,
+        priceValue ?? 0,
+        nativeCurrency
+      ).display
+    : '-';
 
   return (
     <Container {...props}>
