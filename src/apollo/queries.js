@@ -12,7 +12,6 @@ export const UNISWAP_PAIR_DATA_QUERY = (pairAddress, block) => {
   const queryString = `
     fragment PairFields on Pair {
       id
-      txCount
       token0 {
         id
         symbol
@@ -32,12 +31,8 @@ export const UNISWAP_PAIR_DATA_QUERY = (pairAddress, block) => {
       reserveUSD
       totalSupply
       trackedReserveETH
-      reserveETH
       volumeUSD
       untrackedVolumeUSD
-      token0Price
-      token1Price
-      createdAtTimestamp
   }
   query pairs {
     pairs(${
@@ -54,7 +49,6 @@ export const UNISWAP_PAIR_DATA_QUERY = (pairAddress, block) => {
 export const UNISWAP_PAIRS_BULK_QUERY = gql`
   fragment PairFields on Pair {
     id
-    txCount
     token0 {
       id
       symbol
@@ -74,12 +68,8 @@ export const UNISWAP_PAIRS_BULK_QUERY = gql`
     reserveUSD
     totalSupply
     trackedReserveETH
-    reserveETH
     volumeUSD
     untrackedVolumeUSD
-    token0Price
-    token1Price
-    createdAtTimestamp
   }
   query pairs($allPairs: [Bytes]!) {
     pairs(
