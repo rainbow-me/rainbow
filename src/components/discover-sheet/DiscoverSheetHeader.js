@@ -1,18 +1,11 @@
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useContext, useEffect, useMemo } from 'react';
 import { View } from 'react-native';
-import {
-  runOnJS,
+import Animated, {
   Transition,
-  Transitioning,
-  useAnimatedReaction,
+  useAnimatedStyle,
+  useDerivedValue,
   useSharedValue,
+  withSpring,
 } from 'react-native-reanimated';
 import styled from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
@@ -57,20 +50,17 @@ const transition = (
   </Transition.Together>
 );
 
-let key = 0;
-
-function TransitioningView(props) {
-  const ref = useRef();
-  return (
-    <Transitioning.View animateMount key={`tv${key++}`} ref={ref} {...props} />
-  );
-}
+const ALMOST_ZERO = 0.001;
+const springConfig = {
+  damping: 28,
+  mass: 1,
+  stiffness: 420,
+};
 
 function Stack({
   children,
   left,
   onPress,
-  disabled,
   translateX = 0,
   isAboveMagicBorder,
   isWrapperVisible,
@@ -78,17 +68,48 @@ function Stack({
   const { colors, isDarkMode } = useTheme();
   const shadows = useMemo(() => FloatingActionButtonShadow(colors), [colors]);
 
+  const styles1 = useAnimatedStyle(() => ({
+    opacity: withSpring(isWrapperVisible.value ? 1 : ALMOST_ZERO, springConfig),
+  }));
+
+  const styles2 = useAnimatedStyle(() => ({
+    opacity: withSpring(
+      isAboveMagicBorder.value ? 1 : ALMOST_ZERO,
+      springConfig
+    ),
+  }));
+
+  const styles3 = useAnimatedStyle(() => ({
+    transform: [
+      {
+        translateX: withSpring(
+          isWrapperVisible.value ? translateX : 0,
+          springConfig
+        ),
+      },
+    ],
+  }));
+
+  const styles4 = useAnimatedStyle(() => ({
+    opacity: withSpring(isWrapperVisible.value ? 1 : ALMOST_ZERO, springConfig),
+  }));
+
+  const onPressWrapped = useCallback(() => {
+    if (isAboveMagicBorder.value) {
+      onPress();
+    }
+  }, [onPress]);
+
   return (
     <>
       <ButtonPressAnimation
-        disabled={disabled}
-        onPress={onPress}
+        onPress={onPressWrapped}
         style={{ height: 59, width: 59, zIndex: 10 }}
       >
-        <TransitioningView
+        <Animated.View
           height={59}
           position="absolute"
-          style={{ opacity: isWrapperVisible ? 1 : 0 }}
+          style={styles1}
           transition={transition}
           width={59}
         >
@@ -99,22 +120,18 @@ function Stack({
             style={{ left: 8, opacity: 0.4, position: 'absolute', top: 8 }}
           />
           <BackgroundFill />
-        </TransitioningView>
-        <View
+        </Animated.View>
+        <Animated.View
           style={[
+            styles2,
             {
               left,
-              opacity: isAboveMagicBorder ? 1 : 0,
               top: 19,
               zIndex: 10,
             },
           ]}
         >
-          <TransitioningView
-            style={{
-              transform: [{ translateX: isWrapperVisible ? translateX : 0 }],
-            }}
-          >
+          <Animated.View style={styles3}>
             <View
               style={{
                 position: 'absolute',
@@ -122,11 +139,9 @@ function Stack({
             >
               {children[0]}
             </View>
-            <View style={{ opacity: isWrapperVisible ? 1 : 0 }}>
-              {children[1]}
-            </View>
-          </TransitioningView>
-        </View>
+            <Animated.View style={styles4}>{children[1]}</Animated.View>
+          </Animated.View>
+        </Animated.View>
       </ButtonPressAnimation>
     </>
   );
@@ -134,22 +149,15 @@ function Stack({
 
 export default function DiscoverSheetHeader(props) {
   const { navigate } = useNavigation();
-  const [buttonsEnabled, setButtonsEnabled] = useState(true);
-  const [isScrollViewScrolled, setIsScrollViewScrolled] = useState(true);
-  const buttonOpacity = useSharedValue(1);
+  const buttonsEnabled = useSharedValue(true);
   const { yPosition } = props;
   const { isSearchModeEnabled, setIsSearchModeEnabled } = useContext(
     DiscoverSheetContext
   );
 
-  useAnimatedReaction(
-    () => yPosition.value < 50,
-    (result, previous) => {
-      if (result !== previous) {
-        runOnJS(setIsScrollViewScrolled)(result);
-      }
-    },
-    [setIsScrollViewScrolled]
+  const isWrapperVisible = useDerivedValue(
+    () => yPosition.value > 50 || isSearchModeEnabled,
+    [isSearchModeEnabled]
   );
 
   const { jumpToShort, addOnCrossMagicBorderListener } =
@@ -157,10 +165,9 @@ export default function DiscoverSheetHeader(props) {
 
   const onCrossMagicBorder = useCallback(
     below => {
-      buttonOpacity.value = below ? 0 : 1;
-      setButtonsEnabled(!below);
+      buttonsEnabled.value = !below;
     },
-    [buttonOpacity]
+    [buttonsEnabled]
   );
   useEffect(() => addOnCrossMagicBorderListener?.(onCrossMagicBorder), [
     addOnCrossMagicBorderListener,
@@ -179,9 +186,8 @@ export default function DiscoverSheetHeader(props) {
   return (
     <Header {...props} pointerEvents="box-none">
       <Stack
-        disabled={!buttonsEnabled}
         isAboveMagicBorder={buttonsEnabled}
-        isWrapperVisible={isSearchModeEnabled || !isScrollViewScrolled}
+        isWrapperVisible={isWrapperVisible}
         left={19}
         onPress={() => !isSearchModeEnabled && navigate(Routes.WALLET_SCREEN)}
         translateX={5}
@@ -201,9 +207,8 @@ export default function DiscoverSheetHeader(props) {
         />
       </Stack>
       <Stack
-        disabled={!buttonsEnabled}
         isAboveMagicBorder={buttonsEnabled}
-        isWrapperVisible={isSearchModeEnabled || !isScrollViewScrolled}
+        isWrapperVisible={isWrapperVisible}
         left={18.5}
         onPress={handleScannerPress}
       >
