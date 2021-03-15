@@ -82,10 +82,15 @@ export const UNISWAP_PAIRS_BULK_QUERY = gql`
   }
 `;
 
-export const UNISWAP_PAIRS_HISTORICAL_BULK_QUERY = () => {
-  const queryString = `
-  query pairs (block: Int!, pairs: [String]!) {
-    pairs(first: 200, where: {id_in: $pairs}, block: {number: $block}, orderBy: trackedReserveETH, orderDirection: desc) {
+export const UNISWAP_PAIRS_HISTORICAL_BULK_QUERY = gql`
+  query pairs($block: Int!, $pairs: [Bytes]!) {
+    pairs(
+      first: 200
+      where: { id_in: $pairs }
+      block: { number: $block }
+      orderBy: trackedReserveETH
+      orderDirection: desc
+    ) {
       id
       reserveUSD
       trackedReserveETH
@@ -93,16 +98,16 @@ export const UNISWAP_PAIRS_HISTORICAL_BULK_QUERY = () => {
       reserve0
       reserve1
       totalSupply
-      token0 { derivedETH }
-      token1 { derivedETH }
+      token0 {
+        derivedETH
+      }
+      token1 {
+        derivedETH
+      }
       untrackedVolumeUSD
     }
   }
-  `;
-  return gql`
-    ${queryString}
-  `;
-};
+`;
 
 export const COMPOUND_ACCOUNT_AND_MARKET_QUERY = gql`
   query account($id: ID!) {
