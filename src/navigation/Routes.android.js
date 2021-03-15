@@ -7,6 +7,7 @@ import AddTokenSheet from '../screens/AddTokenSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import BackupSheet from '../screens/BackupSheet';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
+import ConnectedDappsSheet from '../screens/ConnectedDappsSheet';
 import DepositModal from '../screens/DepositModal';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
@@ -134,6 +135,11 @@ function MainNavigator() {
       <Stack.Screen
         component={ChangeWalletSheet}
         name={Routes.CHANGE_WALLET_SHEET}
+        options={expandedPreset}
+      />
+      <Stack.Screen
+        component={ConnectedDappsSheet}
+        name={Routes.CONNECTED_DAPPS}
         options={expandedPreset}
       />
       <Stack.Screen

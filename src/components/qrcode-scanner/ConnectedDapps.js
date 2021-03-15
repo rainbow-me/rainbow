@@ -9,6 +9,10 @@ import { useWalletConnectConnections } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 
+const LabelText = styled(Text)`
+  margin-top: -3px;
+`;
+
 const Overlay = styled(Centered)`
   align-items: center;
   height: 100;
@@ -19,13 +23,13 @@ const Overlay = styled(Centered)`
 
 const OverlayBlur = styled(BlurView).attrs(({ isDarkMode }) => ({
   blurAmount: 100,
-  blurType: isDarkMode ? 'light' : 'ultraThinMaterialDark',
-  reducedTransparencyFallbackColor: 'black',
+  blurType: isDarkMode ? 'light' : android ? 'dark' : 'ultraThinMaterialDark',
 }))`
   border-radius: 23;
   height: 46;
   padding-horizontal: 15;
-  padding-top: 7;
+  z-index: 1;
+  justify-content: center;
 `;
 
 function ConnectedDapps() {
@@ -38,9 +42,21 @@ function ConnectedDapps() {
         onPress={() => navigate(Routes.CONNECTED_DAPPS)}
         scaleTo={0.9}
       >
-        <View>
+        <View
+          style={
+            android
+              ? {
+                  borderRadius: 24,
+                  height: 45,
+                  marginTop: 10,
+                  overflow: 'hidden',
+                  width: 250,
+                }
+              : null
+          }
+        >
           <OverlayBlur>
-            <Text
+            <LabelText
               align="center"
               color="whiteLabel"
               size="lmedium"
@@ -48,7 +64,7 @@ function ConnectedDapps() {
             >
               ️‍🌈 {walletConnectorsByDappName.length} app
               {walletConnectorsByDappName.length === 1 ? '' : 's'} connected 􀯼
-            </Text>
+            </LabelText>
           </OverlayBlur>
         </View>
       </ButtonPressAnimation>

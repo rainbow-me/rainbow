@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { RNCamera } from 'react-native-camera';
 import { useIsEmulator } from 'react-native-device-info';
 import styled from 'styled-components';
@@ -106,7 +112,12 @@ export default function QRCodeScanner({
           <ConnectedDapps />
         </ContentOverlay>
       ) : (
-        <QRCodeScannerNeedsAuthorization />
+        <Fragment>
+          <QRCodeScannerNeedsAuthorization />
+          <ContentOverlay contentPositionTop={contentPositionTop + 350}>
+            <ConnectedDapps />
+          </ContentOverlay>
+        </Fragment>
       )}
     </Container>
   );
