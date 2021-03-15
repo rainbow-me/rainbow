@@ -44,10 +44,6 @@ export interface RainbowToken extends Asset {
   uniqueId: string;
 }
 
-export interface IndexToken {
+export interface IndexToken extends Asset {
   amount: string;
-  address: string;
-  decimals: number;
-  name: string;
-  symbol: string;
 }
