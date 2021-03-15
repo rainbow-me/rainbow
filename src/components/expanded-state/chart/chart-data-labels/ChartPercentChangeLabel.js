@@ -73,18 +73,20 @@ export default function ChartPercentChangeLabel({
   useEffect(() => {
     firstValue.value = data?.points?.[0]?.y || 0;
     lastValue.value = data?.points?.[data.points.length - 1]?.y;
-  }, [data, firstValue, lastValue]);
+  }, [data, firstValue, lastValue, latestChange, overrideValue]);
 
   const textProps = useAnimatedStyle(() => {
     return {
       text:
         firstValue.value === Number(firstValue.value) && firstValue.value
           ? (() => {
-              const value = overrideValue
-                ? latestChange
-                : ((originalY.value || lastValue.value) / firstValue.value) *
-                    100 -
-                  100;
+              const value =
+                originalY?.value === lastValue?.value || !originalY?.value
+                  ? latestChange
+                  : ((originalY.value || lastValue.value) / firstValue.value) *
+                      100 -
+                    100;
+
               return (
                 (android ? '' : value > 0 ? '↑' : value < 0 ? '↓' : '') +
                 ' ' +
