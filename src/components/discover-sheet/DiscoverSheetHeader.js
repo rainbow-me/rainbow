@@ -96,6 +96,10 @@ function Stack({
     opacity: withSpring(isWrapperVisible.value ? 1 : ALMOST_ZERO, springConfig),
   }));
 
+  const styles5 = useAnimatedStyle(() => ({
+    opacity: withSpring(isWrapperVisible.value ? ALMOST_ZERO : 1, springConfig),
+  }));
+
   const onPressWrapped = useCallback(() => {
     if (isAboveMagicBorder.value) {
       onPress();
@@ -133,7 +137,9 @@ function Stack({
           ]}
         >
           <Animated.View style={styles3}>
-            <ChildWrapperView>{children[0]}</ChildWrapperView>
+            <ChildWrapperView>
+              <Animated.View style={styles5}>{children[0]}</Animated.View>
+            </ChildWrapperView>
             <Animated.View style={styles4}>{children[1]}</Animated.View>
           </Animated.View>
         </Animated.View>
@@ -190,7 +196,6 @@ export default function DiscoverSheetHeader(props) {
         translateX={5}
       >
         <Icon
-          bottom={1}
           color={colors.alpha(colors.blueGreyDark, 0.8)}
           direction="left"
           name="caret"
