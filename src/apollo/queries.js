@@ -92,15 +92,10 @@ export const UNISWAP_PAIRS_BULK_QUERY = gql`
   }
 `;
 
-export const UNISWAP_PAIRS_HISTORICAL_BULK_QUERY = (block, pairs) => {
-  let pairsString = `[`;
-  pairs.map(pair => {
-    return (pairsString += `"${pair}"`);
-  });
-  pairsString += ']';
-  let queryString = `
+export const UNISWAP_PAIRS_HISTORICAL_BULK_QUERY = block => {
+  const queryString = `
   query pairs {
-    pairs(first: 200, where: {id_in: ${pairsString}}, block: {number: ${block}}, orderBy: trackedReserveETH, orderDirection: desc) {
+    pairs(first: 200, where: {id_in: $pairs}, block: {number: ${block}}, orderBy: trackedReserveETH, orderDirection: desc) {
       id
       reserveUSD
       trackedReserveETH
