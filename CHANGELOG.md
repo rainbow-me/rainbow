@@ -12,6 +12,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.2.58](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.58)
+
+### Changed
+* Multimedia NFT Image Fallback
+* Reanimated Fix
+* UI Tweaks
+
 ## [1.2.57](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.57)
 
 ### Added
