@@ -2,7 +2,7 @@ import NetInfo from '@react-native-community/netinfo';
 import analytics from '@segment/analytics-react-native';
 import { isNil } from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
-import { useRefreshAccountData } from '@rainbow-me/hooks';
+import { useRefreshAccountData } from './useRefreshAccountData';
 
 export default function useInternetStatus() {
   const [isInternetReachable, setIsInternetReachable] = useState(true);
