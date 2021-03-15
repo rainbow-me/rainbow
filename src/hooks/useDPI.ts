@@ -4,10 +4,7 @@ import { isEmpty, map } from 'lodash';
 import { useCallback } from 'react';
 import { queryCache, useQuery } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  DEFI_PULSE_FROM_STORAGE,
-  saveDefiPulse,
-} from '../handlers/localstorage/defiPulse';
+import { DEFI_PULSE_FROM_STORAGE } from '../handlers/localstorage/defiPulse';
 import { web3Provider } from '../handlers/web3';
 import { emitAssetRequest } from '../redux/explorer';
 import { AppState } from '../redux/store';
@@ -64,8 +61,6 @@ export default function useDPI() {
       token => token.address
     );
     dispatch(emitAssetRequest(underlyingAddresses));
-
-    saveDefiPulse(defiPulseData);
     return defiPulseData;
   }, [dispatch]);
 
