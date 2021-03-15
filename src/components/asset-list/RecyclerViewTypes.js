@@ -39,8 +39,6 @@ const extraSpaceForDropShadow = 19;
 const amountOfImagesWithForcedPrioritizeLoading = 9;
 const editModeAdditionalHeight = 100;
 
-let lastRenderList = [];
-
 export const ViewTypes = {
   HEADER: {
     calculateHeight: ({ hideHeader }) =>
@@ -95,29 +93,22 @@ export const ViewTypes = {
           (isCoinListEdited ? editModeAdditionalHeight : 0)
         : closedSmallBalancesAdditionalHeight,
     index: 3,
-    renderComponent: ({ data, smallBalancedChanged }) => {
+    renderComponent: ({ data }) => {
       const { item = {}, renderItem } = data;
-
-      if (
-        lastRenderList.length !== item.assets.length ||
-        smallBalancedChanged
-      ) {
-        smallBalancedChanged = false;
-        const renderList = [];
-        for (let i = 0; i < item.assets.length; i++) {
-          renderList.push(
-            renderItem({
-              item: {
-                ...item.assets[i],
-                isSmall: true,
-              },
-              key: `CoinSmallBalances${i}`,
-            })
-          );
-        }
-        lastRenderList = renderList;
+      const renderList = [];
+      for (let i = 0; i < item.assets.length; i++) {
+        renderList.push(
+          renderItem({
+            item: {
+              ...item.assets[i],
+              isSmall: true,
+            },
+            key: `CoinSmallBalances${i}`,
+          })
+        );
       }
-      return <SmallBalancesWrapper assets={lastRenderList} />;
+      // TODO: moize the renderList
+      return <SmallBalancesWrapper assets={renderList} />;
     },
     visibleDuringCoinEdit: true,
   },
@@ -141,6 +132,7 @@ export const ViewTypes = {
         <SavingsListWrapper assets={item.assets} totalValue={item.totalValue} />
       );
     },
+    visibleDuringCoinEdit: false,
   },
 
   POOLS: {
@@ -159,6 +151,7 @@ export const ViewTypes = {
     renderComponent: ({ data, isCoinListEdited }) => {
       return <PoolsListWrapper {...data} isCoinListEdited={isCoinListEdited} />;
     },
+    visibleDuringCoinEdit: false,
   },
 
   UNIQUE_TOKEN_ROW: {
@@ -194,15 +187,18 @@ export const ViewTypes = {
         uniqueId: item.uniqueId,
       });
     },
+    visibleDuringCoinEdit: false,
   },
 
   FOOTER: {
     calculateHeight: ({ paddingBottom }) =>
       paddingBottom - FloatingActionButtonSize / 2,
     index: 7,
+    visibleDuringCoinEdit: false,
   },
   UNKNOWN: {
     calculateHeight: () => 0,
     index: 99,
+    visibleDuringCoinEdit: false,
   },
 };

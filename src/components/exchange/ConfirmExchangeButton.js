@@ -69,7 +69,7 @@ export default function ConfirmExchangeButton({
         ],
       ],
     }),
-    [colors, isSwapDetailsRoute]
+    [colors, isDarkMode]
   );
 
   const colorForAsset = useColorForAsset(asset, undefined, true);
