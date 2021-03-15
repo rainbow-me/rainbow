@@ -1,4 +1,4 @@
-import { DefaultTokenLists, DefaultUniswapFavorites } from '../../references';
+import { DefaultUniswapFavorites } from '../../references';
 import {
   getAccountLocal,
   getGlobal,
@@ -10,8 +10,6 @@ const ASSETS = 'uniswapassets';
 const LIQUIDITY = 'uniswapliquidity';
 const LIQUIDITY_INFO = 'uniswap';
 const UNISWAP_FAVORITES = 'uniswapFavorites';
-const UNISWAP_LISTS = 'uniswapLists';
-
 const uniswapLiquidityVersion = '0.2.0';
 const uniswapLiquidityInfoVersion = '0.2.1';
 
@@ -22,11 +20,6 @@ export const getUniswapFavorites = network =>
 
 export const saveUniswapFavorites = favorites =>
   saveGlobal(UNISWAP_FAVORITES, favorites);
-
-export const getUniswapLists = network =>
-  getGlobal(UNISWAP_LISTS, DefaultTokenLists[network]);
-
-export const saveUniswapLists = lists => saveGlobal(UNISWAP_LISTS, lists);
 
 export const getUniswapLiquidityInfo = (accountAddress, network) =>
   getAccountLocal(

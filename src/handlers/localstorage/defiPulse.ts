@@ -1,4 +1,4 @@
-import { getGlobal, saveGlobal } from './common';
+import { saveGlobal } from './common';
 import { IndexToken } from '@rainbow-me/entities';
 
 // Key used for loading the cache with data from storage
@@ -10,8 +10,6 @@ interface DpiResult {
   base: IndexToken;
   underlying: IndexToken[];
 }
-
-export const getDefiPulse = (): Promise<DpiResult> => getGlobal(DEFI_PULSE, []);
 
 export const saveDefiPulse = (defiPulseData: DpiResult) =>
   saveGlobal(DEFI_PULSE, defiPulseData);
