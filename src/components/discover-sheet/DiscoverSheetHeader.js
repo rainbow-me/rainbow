@@ -1,5 +1,4 @@
 import React, { useCallback, useContext, useEffect, useMemo } from 'react';
-import { View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useDerivedValue,
@@ -24,6 +23,10 @@ const Header = styled.View`
   top: -12;
   width: 100%;
   z-index: 10;
+`;
+
+const ChildWrapperView = styled.View`
+  position: absolute;
 `;
 
 export const FloatingActionButtonShadow = colors => [
@@ -130,13 +133,7 @@ function Stack({
           ]}
         >
           <Animated.View style={styles3}>
-            <View
-              style={{
-                position: 'absolute',
-              }}
-            >
-              {children[0]}
-            </View>
+            <ChildWrapperView>{children[0]}</ChildWrapperView>
             <Animated.View style={styles4}>{children[1]}</Animated.View>
           </Animated.View>
         </Animated.View>
