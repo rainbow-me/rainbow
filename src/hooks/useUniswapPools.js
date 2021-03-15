@@ -117,8 +117,9 @@ async function getBulkPairData(pairList, ethPrice, ethPriceOneMonthAgo) {
       [b1, b2, b3].map(async block => {
         const result = uniswapClient.query({
           fetchPolicy: 'network-only',
-          query: UNISWAP_PAIRS_HISTORICAL_BULK_QUERY(block),
+          query: UNISWAP_PAIRS_HISTORICAL_BULK_QUERY,
           variables: {
+            block,
             pairs: pairList,
           },
         });

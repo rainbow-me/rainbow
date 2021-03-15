@@ -82,10 +82,10 @@ export const UNISWAP_PAIRS_BULK_QUERY = gql`
   }
 `;
 
-export const UNISWAP_PAIRS_HISTORICAL_BULK_QUERY = block => {
+export const UNISWAP_PAIRS_HISTORICAL_BULK_QUERY = () => {
   const queryString = `
-  query pairs {
-    pairs(first: 200, where: {id_in: $pairs}, block: {number: ${block}}, orderBy: trackedReserveETH, orderDirection: desc) {
+  query pairs (block: Int!, pairs: [String]!) {
+    pairs(first: 200, where: {id_in: $pairs}, block: {number: $block}, orderBy: trackedReserveETH, orderDirection: desc) {
       id
       reserveUSD
       trackedReserveETH
