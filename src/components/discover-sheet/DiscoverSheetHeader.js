@@ -1,7 +1,6 @@
 import React, { useCallback, useContext, useEffect, useMemo } from 'react';
 import { View } from 'react-native';
 import Animated, {
-  Transition,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
@@ -42,14 +41,6 @@ const BackgroundFill = styled(Centered).attrs({
   top: 8;
 `;
 
-const transition = (
-  <Transition.Together>
-    <Transition.In type="fade" />
-    <Transition.Out type="fade" />
-    <Transition.Change interpolation="easeInOut" />
-  </Transition.Together>
-);
-
 const ALMOST_ZERO = 0.001;
 const springConfig = {
   damping: 28,
@@ -64,17 +55,25 @@ function Stack({
   translateX = 0,
   isAboveMagicBorder,
   isWrapperVisible,
+  isSearchModeEnabledValue,
 }) {
   const { colors, isDarkMode } = useTheme();
   const shadows = useMemo(() => FloatingActionButtonShadow(colors), [colors]);
 
   const styles1 = useAnimatedStyle(() => ({
-    opacity: withSpring(isWrapperVisible.value ? 1 : ALMOST_ZERO, springConfig),
+    opacity: withSpring(
+      isWrapperVisible.value && !isSearchModeEnabledValue.value
+        ? 1
+        : ALMOST_ZERO,
+      springConfig
+    ),
   }));
 
   const styles2 = useAnimatedStyle(() => ({
     opacity: withSpring(
-      isAboveMagicBorder.value ? 1 : ALMOST_ZERO,
+      isAboveMagicBorder.value && !isSearchModeEnabledValue.value
+        ? 1
+        : ALMOST_ZERO,
       springConfig
     ),
   }));
@@ -98,7 +97,7 @@ function Stack({
     if (isAboveMagicBorder.value) {
       onPress();
     }
-  }, [onPress]);
+  }, [isAboveMagicBorder, onPress]);
 
   return (
     <>
@@ -110,7 +109,6 @@ function Stack({
           height={59}
           position="absolute"
           style={styles1}
-          transition={transition}
           width={59}
         >
           <ShadowStack
@@ -155,10 +153,11 @@ export default function DiscoverSheetHeader(props) {
     DiscoverSheetContext
   );
 
-  const isWrapperVisible = useDerivedValue(
-    () => yPosition.value > 50 || isSearchModeEnabled,
-    [isSearchModeEnabled]
-  );
+  const isWrapperVisible = useDerivedValue(() => yPosition.value > 50);
+
+  const isSearchModeEnabledValue = useDerivedValue(() => isSearchModeEnabled, [
+    isSearchModeEnabled,
+  ]);
 
   const { jumpToShort, addOnCrossMagicBorderListener } =
     useContext(DiscoverSheetContext) || {};
@@ -187,6 +186,7 @@ export default function DiscoverSheetHeader(props) {
     <Header {...props} pointerEvents="box-none">
       <Stack
         isAboveMagicBorder={buttonsEnabled}
+        isSearchModeEnabledValue={isSearchModeEnabledValue}
         isWrapperVisible={isWrapperVisible}
         left={19}
         onPress={() => !isSearchModeEnabled && navigate(Routes.WALLET_SCREEN)}
@@ -208,6 +208,7 @@ export default function DiscoverSheetHeader(props) {
       </Stack>
       <Stack
         isAboveMagicBorder={buttonsEnabled}
+        isSearchModeEnabledValue={isSearchModeEnabledValue}
         isWrapperVisible={isWrapperVisible}
         left={18.5}
         onPress={handleScannerPress}
