@@ -1,12 +1,5 @@
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import React, { useCallback, useContext, useEffect, useMemo } from 'react';
 import Animated, {
-  newInterpolate,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
@@ -17,17 +10,10 @@ import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 import DiscoverSheetContext from './DiscoverSheetContext';
-import { useDelayedValueWithLayoutAnimation } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { borders, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
-
-const springConfig = {
-  damping: 28,
-  mass: 1,
-  stiffness: 420,
-};
 
 const Header = styled.View`
   flex-direction: row;
@@ -37,6 +23,10 @@ const Header = styled.View`
   top: -12;
   width: 100%;
   z-index: 10;
+`;
+
+const ChildWrapperView = styled.View`
+  position: absolute;
 `;
 
 export const FloatingActionButtonShadow = colors => [
@@ -54,56 +44,74 @@ const BackgroundFill = styled(Centered).attrs({
   top: 8;
 `;
 
+const ALMOST_ZERO = 0.001;
+const springConfig = {
+  damping: 28,
+  mass: 1,
+  stiffness: 420,
+};
+
 function Stack({
   children,
   left,
-  stackOpacity,
   onPress,
-  disabled,
-  translateX,
-  wrapperOpacity,
+  translateX = 0,
+  isAboveMagicBorder,
+  isWrapperVisible,
+  isSearchModeEnabledValue,
 }) {
   const { colors, isDarkMode } = useTheme();
   const shadows = useMemo(() => FloatingActionButtonShadow(colors), [colors]);
-  const isVisible = useDerivedValue(() => {
-    const value = stackOpacity.value;
-    return withSpring(value, springConfig);
-  });
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity: isVisible.value,
-  }));
-  const animatedStyleHide = useAnimatedStyle(() => ({
-    opacity: 1 - isVisible.value,
-  }));
-  const animatedWrapperStyle = useAnimatedStyle(() => ({
-    opacity: wrapperOpacity.value,
-    transform: [{ translateX: translateX.value }],
+
+  const styles1 = useAnimatedStyle(() => ({
+    opacity: withSpring(
+      isWrapperVisible.value && !isSearchModeEnabledValue.value
+        ? 1
+        : ALMOST_ZERO,
+      springConfig
+    ),
   }));
 
-  const { isSearchModeEnabled } = useContext(DiscoverSheetContext);
-
-  const areButtonsVisible = useDelayedValueWithLayoutAnimation(
-    !disabled && !isSearchModeEnabled
-  );
-
-  const animatedStyleShadow = useAnimatedStyle(() => ({
-    opacity: isVisible.value,
-    ...(ios && {
-      transform: [{ scale: isVisible.value + (0.6 - isVisible.value * 0.6) }],
-    }),
+  const styles2 = useAnimatedStyle(() => ({
+    opacity: withSpring(
+      isAboveMagicBorder.value && !isSearchModeEnabledValue.value
+        ? 1
+        : ALMOST_ZERO,
+      springConfig
+    ),
   }));
+
+  const styles3 = useAnimatedStyle(() => ({
+    transform: [
+      {
+        translateX: withSpring(
+          isWrapperVisible.value ? translateX : 0,
+          springConfig
+        ),
+      },
+    ],
+  }));
+
+  const styles4 = useAnimatedStyle(() => ({
+    opacity: withSpring(isWrapperVisible.value ? 1 : ALMOST_ZERO, springConfig),
+  }));
+
+  const onPressWrapped = useCallback(() => {
+    if (isAboveMagicBorder.value) {
+      onPress();
+    }
+  }, [isAboveMagicBorder, onPress]);
 
   return (
     <>
       <ButtonPressAnimation
-        disabled={disabled}
-        onPress={onPress}
+        onPress={onPressWrapped}
         style={{ height: 59, width: 59, zIndex: 10 }}
       >
         <Animated.View
           height={59}
           position="absolute"
-          style={animatedStyleShadow}
+          style={styles1}
           width={59}
         >
           <ShadowStack
@@ -116,14 +124,18 @@ function Stack({
         </Animated.View>
         <Animated.View
           style={[
-            { left, top: 19, zIndex: 10 },
-            ios ? animatedWrapperStyle : { opacity: areButtonsVisible ? 1 : 0 },
+            styles2,
+            {
+              left,
+              top: 19,
+              zIndex: 10,
+            },
           ]}
         >
-          <Animated.View style={[animatedStyleHide, { position: 'absolute' }]}>
-            {children[0]}
+          <Animated.View style={styles3}>
+            <ChildWrapperView>{children[0]}</ChildWrapperView>
+            <Animated.View style={styles4}>{children[1]}</Animated.View>
           </Animated.View>
-          <Animated.View style={animatedStyle}>{children[1]}</Animated.View>
         </Animated.View>
       </ButtonPressAnimation>
     </>
@@ -132,49 +144,31 @@ function Stack({
 
 export default function DiscoverSheetHeader(props) {
   const { navigate } = useNavigation();
-  const [buttonsEnabled, setButtonsEnabled] = useState(true);
-  const buttonOpacity = useSharedValue(1);
+  const buttonsEnabled = useSharedValue(true);
   const { yPosition } = props;
   const { isSearchModeEnabled, setIsSearchModeEnabled } = useContext(
     DiscoverSheetContext
   );
-  const stackOpacity = useDerivedValue(() =>
-    Math.round(newInterpolate(yPosition.value, [50, 51], [0, 1], 'clamp'))
-  );
 
-  const translateXLeftButton = useDerivedValue(() =>
-    withSpring(stackOpacity.value * 5, springConfig)
-  );
+  const isWrapperVisible = useDerivedValue(() => yPosition.value > 50);
 
-  const translateXRightButton = useDerivedValue(() =>
-    withSpring(0, springConfig)
-  );
+  const isSearchModeEnabledValue = useDerivedValue(() => isSearchModeEnabled, [
+    isSearchModeEnabled,
+  ]);
 
   const { jumpToShort, addOnCrossMagicBorderListener } =
     useContext(DiscoverSheetContext) || {};
 
   const onCrossMagicBorder = useCallback(
     below => {
-      buttonOpacity.value = below ? 0 : 1;
-      setButtonsEnabled(!below);
+      buttonsEnabled.value = !below;
     },
-    [buttonOpacity]
+    [buttonsEnabled]
   );
   useEffect(() => addOnCrossMagicBorderListener?.(onCrossMagicBorder), [
     addOnCrossMagicBorderListener,
     onCrossMagicBorder,
   ]);
-
-  const animatedWrapperLOpacity = useDerivedValue(
-    () =>
-      withSpring(isSearchModeEnabled ? 0 : buttonOpacity.value, springConfig),
-    [isSearchModeEnabled]
-  );
-  const animatedWrapperOpacity = useDerivedValue(
-    () =>
-      withSpring(isSearchModeEnabled ? 0 : buttonOpacity.value, springConfig),
-    [isSearchModeEnabled]
-  );
 
   const { colors } = useTheme();
 
@@ -188,14 +182,15 @@ export default function DiscoverSheetHeader(props) {
   return (
     <Header {...props} pointerEvents="box-none">
       <Stack
-        disabled={!buttonsEnabled}
+        isAboveMagicBorder={buttonsEnabled}
+        isSearchModeEnabledValue={isSearchModeEnabledValue}
+        isWrapperVisible={isWrapperVisible}
         left={19}
         onPress={() => !isSearchModeEnabled && navigate(Routes.WALLET_SCREEN)}
-        stackOpacity={stackOpacity}
-        translateX={translateXLeftButton}
-        wrapperOpacity={animatedWrapperLOpacity}
+        translateX={5}
       >
         <Icon
+          bottom={1}
           color={colors.alpha(colors.blueGreyDark, 0.8)}
           direction="left"
           name="caret"
@@ -209,12 +204,11 @@ export default function DiscoverSheetHeader(props) {
         />
       </Stack>
       <Stack
-        disabled={!buttonsEnabled}
+        isAboveMagicBorder={buttonsEnabled}
+        isSearchModeEnabledValue={isSearchModeEnabledValue}
+        isWrapperVisible={isWrapperVisible}
         left={18.5}
         onPress={handleScannerPress}
-        stackOpacity={stackOpacity}
-        translateX={translateXRightButton}
-        wrapperOpacity={animatedWrapperOpacity}
       >
         <Icon
           bottom={1}
