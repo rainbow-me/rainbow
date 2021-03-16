@@ -55,9 +55,6 @@ export const userListsLoadState = () => async (dispatch, getState) => {
   }
 };
 
-export const userListsResetState = () => dispatch =>
-  dispatch({ type: USER_LISTS_CLEAR_STATE });
-
 export const userListsSetSelectedList = (listId, save = true) => dispatch => {
   dispatch({
     payload: listId,
