@@ -18,6 +18,7 @@
 #import <Sentry/Sentry.h>
 #import "RNSplashScreen.h"
 #import <AVFoundation/AVFoundation.h>
+#import <mach/mach.h>
 
 #if DEBUG
 #import <FlipperKit/FlipperClient.h>
