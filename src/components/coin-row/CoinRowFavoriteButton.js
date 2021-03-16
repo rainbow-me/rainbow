@@ -30,7 +30,7 @@ const Circle = styled(RadialGradient).attrs(
           colors.alpha('#FFB200', isDarkMode ? 0.15 : 0),
           colors.alpha('#FFB200', isDarkMode ? 0.05 : 0.2),
         ]
-      : colors.gradients.favoriteCircle,
+      : colors.gradients.lightestGrey,
   })
 )`
   border-radius: 15px;
@@ -49,7 +49,7 @@ const StarIcon = styled(Text).attrs(({ isFavorited, theme: { colors } }) => ({
   weight: 'heavy',
 }))`
   height: 100%;
-  line-height: 28px;
+  line-height: 29px;
   width: 100%;
 `;
 

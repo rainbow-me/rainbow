@@ -13,6 +13,8 @@ import { ETH_ADDRESS } from '@rainbow-me/references';
 
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
 
+export const UniBalanceHeightDifference = 150;
+
 const traverseData = (prev, data) => {
   if (!data || data.length === 0) {
     return prev;
@@ -42,13 +44,20 @@ function useJumpingForm(isLong, heightWithChart, heightWithoutChart) {
 
   useEffect(() => {
     if (!isLong) {
-      setOptions({
-        longFormHeight: heightWithoutChart,
-      });
+      if (
+        typeof heightWithoutChart === 'number' &&
+        !isNaN(heightWithoutChart)
+      ) {
+        setOptions({
+          longFormHeight: heightWithoutChart,
+        });
+      }
     } else {
-      setOptions({
-        longFormHeight: heightWithChart,
-      });
+      if (typeof heightWithChart === 'number' && !isNaN(heightWithChart)) {
+        setOptions({
+          longFormHeight: heightWithChart,
+        });
+      }
     }
   }, [
     heightWithChart,
@@ -65,6 +74,8 @@ export default function useChartThrottledPoints({
   heightWithChart,
   heightWithoutChart,
   isPool,
+  uniBalance = true,
+  dpi,
 }) {
   const { nativeCurrency } = useAccountSettings();
 
@@ -78,7 +89,8 @@ export default function useChartThrottledPoints({
   const [isFetchingInitially, setIsFetchingInitially] = useState(true);
 
   const { chart, chartType, fetchingCharts, ...chartData } = useChartData(
-    asset
+    asset,
+    dpi
   );
 
   const [throttledPoints, setThrottledPoints] = useState(() =>
@@ -118,7 +130,11 @@ export default function useChartThrottledPoints({
     ]
   );
 
-  useJumpingForm(showChart, heightWithChart, heightWithoutChart);
+  useJumpingForm(
+    showChart,
+    heightWithChart - (uniBalance ? 0 : UniBalanceHeightDifference),
+    heightWithoutChart - (uniBalance ? 0 : UniBalanceHeightDifference)
+  );
 
   const [throttledData, setThrottledData] = useState({
     nativePoints: throttledPoints.nativePoints,

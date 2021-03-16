@@ -5,11 +5,11 @@ import styled from 'styled-components';
 
 export const HandleHeight = 5;
 
-const defaultColor = colors => colors.alpha(colors.blueGreyDark, 0.3);
+const defaultColor = colors =>
+  android ? colors.alpha(colors.blueGreyDark, 0.7) : colors.blueGreyDark30;
 
 const Handle = styled.View.attrs({
   blurAmount: 20,
-  blurType: 'light',
 })`
   background-color: ${({ color, theme: { colors } }) =>
     color || defaultColor(colors)};
@@ -21,10 +21,14 @@ const Handle = styled.View.attrs({
 `;
 
 export default function SheetHandle({ showBlur, ...props }) {
+  const { isDarkMode } = useTheme();
+
   return (
     <Handle
       {...props}
       as={showBlur && ios ? VibrancyView : View}
+      blurType={isDarkMode ? 'chromeMaterial' : 'light'}
+      isDarkMode={isDarkMode}
       showBlur={showBlur}
     />
   );

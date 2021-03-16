@@ -25,7 +25,24 @@ const PercentLabel = styled(AnimatedTextInput)`
   ${android && `margin-vertical: -19px;`}
 `;
 
-export default function ChartPercentChangeLabel() {
+function formatNumber(num) {
+  'worklet';
+  const first = num.split('.');
+  const digits = first[0].split('').reverse();
+  const newDigits = [];
+  for (let i = 0; i < digits.length; i++) {
+    newDigits.push(digits[i]);
+    if ((i + 1) % 3 === 0 && i !== digits.length - 1) {
+      newDigits.push(',');
+    }
+  }
+  return newDigits.reverse().join('') + '.' + first[1];
+}
+
+export default function ChartPercentChangeLabel({
+  overrideValue = false,
+  latestChange,
+}) {
   const { originalY, data } = useChartData();
   const { colors } = useTheme();
 
@@ -36,18 +53,19 @@ export default function ChartPercentChangeLabel() {
     data?.points.length === 0
       ? ''
       : (() => {
-          const value =
-            ((data?.points?.[data.points.length - 1]?.y ?? 0) /
-              data?.points?.[0]?.y) *
-              100 -
-            100;
+          const value = overrideValue
+            ? latestChange
+            : ((data?.points?.[data.points.length - 1]?.y ?? 0) /
+                data?.points?.[0]?.y) *
+                100 -
+              100;
           if (isNaN(value)) {
             return '';
           }
           return (
             (android ? '' : value > 0 ? '↑' : value < 0 ? '↓' : '') +
             ' ' +
-            Math.abs(value).toFixed(2) +
+            formatNumber(Math.abs(value).toFixed(2)) +
             '%'
           );
         })();
@@ -55,7 +73,7 @@ export default function ChartPercentChangeLabel() {
   useEffect(() => {
     firstValue.value = data?.points?.[0]?.y || 0;
     lastValue.value = data?.points?.[data.points.length - 1]?.y;
-  }, [data, firstValue, lastValue]);
+  }, [data, firstValue, lastValue, latestChange, overrideValue]);
 
   const textProps = useAnimatedStyle(() => {
     return {
@@ -63,13 +81,16 @@ export default function ChartPercentChangeLabel() {
         firstValue.value === Number(firstValue.value) && firstValue.value
           ? (() => {
               const value =
-                ((originalY.value || lastValue.value) / firstValue.value) *
-                  100 -
-                100;
+                originalY?.value === lastValue?.value || !originalY?.value
+                  ? latestChange
+                  : ((originalY.value || lastValue.value) / firstValue.value) *
+                      100 -
+                    100;
+
               return (
                 (android ? '' : value > 0 ? '↑' : value < 0 ? '↓' : '') +
                 ' ' +
-                Math.abs(value).toFixed(2) +
+                formatNumber(Math.abs(value).toFixed(2)) +
                 '%'
               );
             })()

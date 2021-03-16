@@ -1,43 +1,58 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
+import { View } from 'react-native';
 import styled from 'styled-components';
 import { ColumnWithMargins } from '../layout';
-import { SlackSheet } from '../sheet';
 import { Text } from '../text';
-import DiscoverSheetHeader from './DiscoverSheetHeader';
-import PulseIndex from './PulseIndexSection';
-import SearchHeader from './SearchHeader';
-import Strategies from './StrategiesSection';
-import TopMoversSection from './TopMoversSection';
-import UniswapPools from './UniswapPoolsSection';
-import { position } from '@rainbow-me/styles';
-
-const renderHeader = yPosition => <DiscoverSheetHeader yPosition={yPosition} />;
+import DiscoverHome from './DiscoverHome';
+import DiscoverSearch from './DiscoverSearch';
+import DiscoverSearchContainer from './DiscoverSearchContainer';
 
 const HeaderTitle = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors.blueGreyDark,
+  color: colors.alpha(colors.blueGreyDark, 0.8),
   letterSpacing: 'roundedMedium',
   lineHeight: 'loose',
-  opacity: 0.8,
   size: 'large',
-  weight: 'bold',
+  weight: 'heavy',
 }))``;
 
-export default function DiscoverSheetContent() {
+const Spacer = styled.View`
+  height: 16;
+`;
+
+function Switcher({ showSearch, children }) {
   return (
-    <SlackSheet
-      contentOffset={position.current}
-      discoverSheet
-      renderHeader={renderHeader}
-    >
-      <HeaderTitle>Discover</HeaderTitle>
+    <>
+      <View style={{ display: showSearch ? 'flex' : 'none' }}>
+        {children[0]}
+      </View>
+      <View style={{ display: showSearch ? 'none' : 'flex' }}>
+        {children[1]}
+      </View>
+    </>
+  );
+}
+
+export default function DiscoverSheetContent() {
+  const [showSearch, setShowSearch] = useState(false);
+  const ref = useRef();
+
+  return (
+    <>
+      {android && <Spacer />}
+      <HeaderTitle>{showSearch ? 'Search' : 'Discover'}</HeaderTitle>
       <ColumnWithMargins flex={1} margin={42}>
-        <SearchHeader />
-        <TopMoversSection />
-        <PulseIndex />
-        <Strategies />
-        <UniswapPools />
+        <DiscoverSearchContainer
+          ref={ref}
+          setShowSearch={setShowSearch}
+          showSearch={showSearch}
+        >
+          <Switcher showSearch={showSearch}>
+            <DiscoverSearch />
+            <DiscoverHome />
+          </Switcher>
+        </DiscoverSearchContainer>
       </ColumnWithMargins>
-    </SlackSheet>
+    </>
   );
 }

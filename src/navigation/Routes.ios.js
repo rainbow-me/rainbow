@@ -6,9 +6,11 @@ import { StatusBar } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
 import { InitialRouteContext } from '../context/initialRoute';
 import AddCashSheet from '../screens/AddCashSheet';
+import AddTokenSheet from '../screens/AddTokenSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import BackupSheet from '../screens/BackupSheet';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
+import ConnectedDappsSheet from '../screens/ConnectedDappsSheet';
 import DepositModal from '../screens/DepositModal';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
@@ -26,6 +28,7 @@ import WelcomeScreen from '../screens/WelcomeScreen';
 import WithdrawModal from '../screens/WithdrawModal';
 import { SwipeNavigator } from './SwipeNavigator';
 import {
+  addTokenSheetConfig,
   backupSheetConfig,
   defaultScreenStackOptions,
   expandedAssetSheetConfig,
@@ -250,6 +253,11 @@ function NativeStackNavigator() {
         {...expandedAssetSheetConfig}
       />
       <NativeStack.Screen
+        component={ExpandedAssetSheet}
+        name={Routes.TOKEN_INDEX_SHEET}
+        {...expandedAssetSheetConfig}
+      />
+      <NativeStack.Screen
         component={SpeedUpAndCancelSheet}
         name={Routes.SPEED_UP_AND_CANCEL_SHEET}
         options={{
@@ -263,8 +271,25 @@ function NativeStackNavigator() {
         }}
       />
       <NativeStack.Screen
+        component={AddTokenSheet}
+        name={Routes.ADD_TOKEN_SHEET}
+        {...addTokenSheetConfig}
+      />
+      <NativeStack.Screen
         component={ChangeWalletSheet}
         name={Routes.CHANGE_WALLET_SHEET}
+        options={{
+          allowsDragToDismiss: true,
+          backgroundColor: '#25292E',
+          backgroundOpacity: 0.7,
+          customStack: true,
+          springDamping: 1,
+          transitionDuration: 0.25,
+        }}
+      />
+      <NativeStack.Screen
+        component={ConnectedDappsSheet}
+        name={Routes.CONNECTED_DAPPS}
         options={{
           allowsDragToDismiss: true,
           backgroundColor: '#25292E',

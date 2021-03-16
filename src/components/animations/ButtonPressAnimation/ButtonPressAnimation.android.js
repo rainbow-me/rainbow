@@ -71,6 +71,8 @@ const ScaleButton = ({
   overflowMargin,
   scaleTo,
   wrapperStyle,
+  onPressStart,
+  onPressCancel,
 }) => {
   const scale = useSharedValue(1);
   const hasScaledDown = useSharedValue(0);
@@ -101,6 +103,8 @@ const ScaleButton = ({
     minLongPressDuration,
     onLongPress,
     onPress,
+    onPressCancel,
+    onPressStart,
   });
 
   const gestureHandler = useAnimatedGestureHandler({
@@ -241,6 +245,7 @@ export default function ButtonPressAnimation({
   testID,
   transformOrigin,
   wrapperStyle,
+  onPressCancel,
 }) {
   const normalizedTransformOrigin = useMemo(
     () => normalizeTransformOrigin(transformOrigin),
@@ -260,6 +265,7 @@ export default function ButtonPressAnimation({
       minLongPressDuration={minLongPressDuration}
       onLongPress={onLongPress}
       onPress={onPress}
+      onPressCancel={onPressCancel}
       onPressStart={onPressStart}
       overflowMargin={overflowMargin}
       scaleTo={scaleTo}

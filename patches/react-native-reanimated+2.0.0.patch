@@ -28,7 +28,7 @@ index 523853a..d7813c3 100644
 +++ b/node_modules/react-native-reanimated/src/Animated.js
 @@ -81,7 +81,7 @@ export * from './derived';
  export * from './reanimated2';
- 
+
  export {
 -  EasingNode,
 +  EasingNode as Easing,
@@ -53,13 +53,13 @@ index 2fa2578..a095883 100644
 --- a/node_modules/react-native-reanimated/src/reanimated2/Colors.js
 +++ b/node_modules/react-native-reanimated/src/reanimated2/Colors.js
 @@ -10,7 +10,7 @@
- 
+
  import { Platform } from 'react-native';
  import { makeRemote, makeShareable } from './core';
 -import { interpolate } from './interpolation';
 +import { newInterpolate as interpolate } from './interpolation';
  import { Extrapolate } from '../derived';
- 
+
  // var INTEGER = '[-+]?\\d+';
 diff --git a/node_modules/react-native-reanimated/src/reanimated2/Easing.js b/node_modules/react-native-reanimated/src/reanimated2/Easing.js
 index 730f366..c3890c1 100644
@@ -68,7 +68,7 @@ index 730f366..c3890c1 100644
 @@ -288,5 +288,5 @@ Object.keys(EasingObject).forEach((key) => {
    EasingObject[key] = createChecker(EasingObject[key], key);
  });
- 
+
 -export const Easing = EasingObject;
 -export default Easing;
 +export const NewEasing = EasingObject;
@@ -83,14 +83,14 @@ index 3fc07ea..221fee3 100644
 +import { NewEasing as Easing } from './Easing';
  import { isColor, convertToHSVA, toRGBA } from './Colors';
  import NativeReanimated from './NativeReanimated';
- 
+
 @@ -372,7 +372,7 @@ export function withDecay(userConfig, callback) {
- 
+
        const v0 = velocity / 1000;
        const v = v0 * kv * 1000;
 -      const x = current + v0 * kx;
 +      const x = current + v0 * (config.deceleration === 1 ? 1 : kx);
- 
+
        animation.current = x;
        animation.velocity = v;
 diff --git a/node_modules/react-native-reanimated/src/reanimated2/interpolation.js b/node_modules/react-native-reanimated/src/reanimated2/interpolation.js
@@ -100,7 +100,7 @@ index 28a96f9..97a1144 100644
 @@ -111,7 +111,7 @@ function internalInterpolate(x, l, r, ll, rr, type) {
    return val;
  }
- 
+
 -export function interpolate(x, input, output, type) {
 +export function newInterpolate(x, input, output, type) {
    'worklet';

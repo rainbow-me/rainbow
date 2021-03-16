@@ -43,3 +43,7 @@ export interface RainbowToken extends Asset {
   shadowColor?: string;
   uniqueId: string;
 }
+
+export interface IndexToken extends Asset {
+  amount: string;
+}

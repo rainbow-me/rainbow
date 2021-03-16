@@ -39,6 +39,17 @@ export function onNavigationStateChange(currentState) {
   const prevRouteName = memRouteName;
   memRouteName = routeName;
 
+  if (routeName === Routes.QR_SCANNER_SCREEN) {
+    StatusBar.setBarStyle('light-content', true);
+  }
+
+  if (
+    prevRouteName === Routes.QR_SCANNER_SCREEN &&
+    routeName === Routes.WALLET_SCREEN
+  ) {
+    StatusBar.setBarStyle('dark-content', true);
+  }
+
   if (currentColors.theme === 'dark') {
     StatusBar.setBarStyle('light-content');
   } else {
@@ -76,20 +87,13 @@ export function onNavigationStateChange(currentState) {
           routeName === Routes.MAIN_EXCHANGE_SCREEN ||
           routeName === Routes.SAVINGS_WITHDRAW_MODAL ||
           routeName === Routes.SEND_SHEET ||
-          routeName === Routes.SWAP_DETAILS_SHEET
+          routeName === Routes.SWAP_DETAILS_SCREEN ||
+          routeName === Routes.SWAP_DETAILS_SHEET ||
+          routeName === Routes.QR_SCANNER_SCREEN
         ) {
           AndroidKeyboardAdjust.setAdjustPan();
         } else {
           AndroidKeyboardAdjust.setAdjustResize();
-        }
-
-        if ([prevRouteName, routeName].includes(Routes.QR_SCANNER_SCREEN)) {
-          StatusBar.setBarStyle(
-            routeName === Routes.QR_SCANNER_SCREEN
-              ? 'light-content'
-              : 'dark-content',
-            true
-          );
         }
 
         if ([prevRouteName, routeName].includes(Routes.BACKUP_SHEET)) {

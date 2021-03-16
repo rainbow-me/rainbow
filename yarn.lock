@@ -2375,10 +2375,10 @@
   dependencies:
     invariant "^2.2.4"
 
-"@react-native-community/viewpager@4.1.0":
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/@react-native-community/viewpager/-/viewpager-4.1.0.tgz#b6908329a39e27e5cd3236540aadd65133420563"
-  integrity sha512-+YbmuKAL4ahc2D/u0ix+xMCgAN0KukUnc+uvlMD+NPn/zUdUposqF6dsZu1cRarBzKcswchlj3kAH8yN3bazxA==
+"@react-native-community/viewpager@5.0.5":
+  version "5.0.5"
+  resolved "https://registry.yarnpkg.com/@react-native-community/viewpager/-/viewpager-5.0.5.tgz#e9455535b4aaa77924fb7055be9c6d1c1cb3313a"
+  integrity sha512-COjm1qwfo4xqLzHbbP502h2vcCGPhaqPL6P30siZLGA5+VUjtOSkUla6IbYAmTJqYUvf6vPob/9yaIxko/QkPw==
 
 "@react-native-firebase/app@^8.4.2":
   version "8.4.5"

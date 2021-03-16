@@ -1,6 +1,7 @@
 import { find } from 'lodash';
 import React, { useRef } from 'react';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
+import { useSelector } from 'react-redux';
 import {
   BuyActionButton,
   SendActionButton,
@@ -19,9 +20,11 @@ import { Chart } from '../value-chart';
 import { ChartPathProvider } from '@rainbow-me/animated-charts';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 import {
+  useAccountSettings,
   useChartThrottledPoints,
   useUniswapAssetsInWallet,
 } from '@rainbow-me/hooks';
+import { ethereumUtils } from '@rainbow-me/utils';
 
 const baseHeight = 309 + (android && 20 - getSoftMenuBarHeight());
 const heightWithoutChart = baseHeight + (android && 30);
@@ -30,6 +33,23 @@ const heightWithChart = baseHeight + 310;
 export const initialChartExpandedStateSheetHeight = heightWithChart;
 
 export default function ChartExpandedState({ asset }) {
+  const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
+    genericAssets,
+  }));
+  const { nativeCurrency } = useAccountSettings();
+
+  // If we don't have a balance for this asset
+  // It's a generic asset
+  const hasBalance = asset?.balance;
+  const assetWithPrice = hasBalance
+    ? asset
+    : genericAssets[asset?.address]
+    ? ethereumUtils.formatGenericAsset(
+        genericAssets[asset?.address],
+        nativeCurrency
+      )
+    : asset;
+
   const {
     chart,
     chartData,
@@ -40,26 +60,31 @@ export default function ChartExpandedState({ asset }) {
     showChart,
     throttledData,
   } = useChartThrottledPoints({
-    asset,
-    heightWithChart,
-    heightWithoutChart,
+    asset: assetWithPrice,
+    heightWithChart: heightWithChart - (!hasBalance && 68),
+    heightWithoutChart: heightWithoutChart - (!hasBalance && 68),
   });
 
   const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
   const showSwapButton = find(uniswapAssetsInWallet, [
     'uniqueId',
-    asset.uniqueId,
+    asset?.uniqueId,
   ]);
 
-  const needsEth = asset.address === 'eth' && asset.balance.amount === '0';
+  const needsEth = asset?.address === 'eth' && asset?.balance?.amount === '0';
 
   const duration = useRef(0);
 
   if (duration.current === 0) {
     duration.current = 300;
   }
-  const ChartExpandedStateSheetHeight =
+
+  let ChartExpandedStateSheetHeight =
     ios || showChart ? heightWithChart : heightWithoutChart;
+
+  if (android && !hasBalance) {
+    ChartExpandedStateSheetHeight -= 68;
+  }
 
   return (
     <SlackSheet
@@ -71,7 +96,7 @@ export default function ChartExpandedState({ asset }) {
         <Chart
           {...chartData}
           {...initialChartDataLabels}
-          asset={asset}
+          asset={assetWithPrice}
           chart={chart}
           chartType={chartType}
           color={color}
@@ -82,18 +107,20 @@ export default function ChartExpandedState({ asset }) {
         />
       </ChartPathProvider>
       <SheetDivider />
-      <TokenInfoSection>
-        <TokenInfoRow>
-          <TokenInfoItem asset={asset} title="Balance">
-            <TokenInfoBalanceValue />
-          </TokenInfoItem>
-          {asset?.native?.price.display && (
-            <TokenInfoItem title="Value" weight="bold">
-              {asset?.native?.balance.display}
+      {hasBalance && (
+        <TokenInfoSection>
+          <TokenInfoRow>
+            <TokenInfoItem asset={asset} title="Balance">
+              <TokenInfoBalanceValue />
             </TokenInfoItem>
-          )}
-        </TokenInfoRow>
-      </TokenInfoSection>
+            {asset?.native?.price.display && (
+              <TokenInfoItem title="Value" weight="bold">
+                {asset?.native?.balance.display}
+              </TokenInfoItem>
+            )}
+          </TokenInfoRow>
+        </TokenInfoSection>
+      )}
       {needsEth ? (
         <SheetActionButtonRow>
           <BuyActionButton color={color} fullWidth />
@@ -103,7 +130,17 @@ export default function ChartExpandedState({ asset }) {
           {showSwapButton && (
             <SwapActionButton color={color} inputType={AssetInputTypes.in} />
           )}
-          <SendActionButton color={color} fullWidth={!showSwapButton} />
+          {hasBalance ? (
+            <SendActionButton color={color} fullWidth={!showSwapButton} />
+          ) : (
+            <SwapActionButton
+              color={color}
+              fullWidth={!showSwapButton}
+              inputType={AssetInputTypes.out}
+              label={`􀖅 Get ${asset?.symbol}`}
+              weight="heavy"
+            />
+          )}
         </SheetActionButtonRow>
       )}
     </SlackSheet>

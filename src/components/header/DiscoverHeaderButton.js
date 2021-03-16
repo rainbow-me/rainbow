@@ -10,8 +10,8 @@ import { padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const DiscoverButtonShadowsFactory = colors => [
-  [0, 7, 21, colors.dark, 0.06],
-  [0, 3.5, 10.5, colors.dark, 0.04],
+  [0, 7, 21, colors.shadow, 0.06],
+  [0, 3.5, 10.5, colors.shadow, 0.04],
 ];
 
 const BackgroundFill = styled.View`
@@ -41,7 +41,7 @@ const DiscoverButtonContent = styled(RowWithMargins).attrs({
 
 export default function DiscoverHeaderButton() {
   const { navigate } = useNavigation();
-  const { colors } = useTheme();
+  const { colors, isDarkMode } = useTheme();
 
   const onPress = useCallback(() => navigate(Routes.QR_SCANNER_SCREEN), [
     navigate,
@@ -62,6 +62,10 @@ export default function DiscoverHeaderButton() {
           backgroundColor={colors.white}
           borderRadius={50}
           shadows={shadows}
+          {...(android && {
+            height: 35,
+            width: 120,
+          })}
         >
           <BackgroundFill />
           <BackgroundGradient />
@@ -71,7 +75,7 @@ export default function DiscoverHeaderButton() {
             🪐
           </Emoji>
           <Text
-            color={colors.alpha(colors.blueGreyDark, 0.6)}
+            color={colors.alpha(colors.blueGreyDark, isDarkMode ? 1 : 0.8)}
             letterSpacing="roundedTight"
             size="large"
             weight="bold"

@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import React, { useCallback, useContext } from 'react';
 import { Alert, ScrollView } from 'react-native';
 import { GANACHE_URL_ANDROID, GANACHE_URL_IOS } from 'react-native-dotenv';
-import { Restart } from 'react-native-restart';
+import Restart from 'react-native-restart';
 import { ListFooter, ListItem } from '../list';
 import { RadioListItem } from '../radio-list';
 import { deleteAllBackups } from '@rainbow-me/handlers/cloudBackup';
@@ -88,7 +88,7 @@ const DevSection = () => {
         onPress={wipeKeychain}
         testID="reset-keychain-section"
       />
-      <ListItem label="🔄 Restart app" onPress={Restart} />
+      <ListItem label="🔄 Restart app" onPress={() => Restart.Restart()} />
       <ListItem label="🗑️ Remove all backups" onPress={removeBackups} />
       <ListItem
         label="🤷 Restore default experimental config"

@@ -1,20 +1,27 @@
 import { BottomSheetScrollView, useBottomSheet } from '@gorhom/bottom-sheet';
-import React, { Fragment, useEffect, useMemo, useRef } from 'react';
+import React, {
+  forwardRef,
+  Fragment,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+} from 'react';
 import { Pressable, StyleSheet, TouchableWithoutFeedback } from 'react-native';
-import Animated from 'react-native-reanimated';
+import Animated, {
+  useAnimatedScrollHandler,
+  useSharedValue,
+} from 'react-native-reanimated';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { Centered } from '../layout';
-import { useReanimatedValue } from '../list/MarqueeList';
 import SheetHandleFixedToTop, {
   SheetHandleFixedToTopHeight,
 } from './SheetHandleFixedToTop';
 import { useDimensions } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { position } from '@rainbow-me/styles';
-
-const { event } = Animated;
 
 const AndroidBackground = styled.View`
   ${position.cover};
@@ -39,20 +46,14 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
   right: 0;
 `;
 
-const Content = styled(Animated.ScrollView).attrs(({ y }) => ({
-  directionalLockEnabled: true,
-  keyboardShouldPersistTaps: 'always',
-  onScroll: event([
-    {
-      nativeEvent: {
-        contentOffset: {
-          y,
-        },
-      },
-    },
-  ]),
-  scrollEventThrottle: 16,
-}))`
+const Content = styled(Animated.ScrollView).attrs(
+  ({ limitScrollViewContent }) => ({
+    contentContainerStyle: limitScrollViewContent ? { height: '100%' } : {},
+    directionalLockEnabled: true,
+    keyboardShouldPersistTaps: 'always',
+    scrollEventThrottle: 16,
+  })
+)`
   background-color: ${({ backgroundColor }) => backgroundColor};
   ${({ contentHeight, deviceHeight }) =>
     contentHeight ? `height: ${deviceHeight + contentHeight}` : null};
@@ -72,20 +73,26 @@ const Whitespace = styled.View`
   z-index: -1;
 `;
 
-export default function SlackSheet({
-  additionalTopPadding = false,
-  backgroundColor,
-  borderRadius = 30,
-  children,
-  contentHeight,
-  deferredHeight = false,
-  hideHandle = false,
-  renderHeader,
-  scrollEnabled = true,
-  discoverSheet,
-  ...props
-}) {
-  const yPosition = useReanimatedValue(0);
+export default forwardRef(function SlackSheet(
+  {
+    additionalTopPadding = false,
+    backgroundColor,
+    borderRadius = 30,
+    children,
+    contentHeight,
+    deferredHeight = false,
+    discoverSheet,
+    hideHandle = false,
+    limitScrollViewContent,
+    onContentSizeChange,
+    renderHeader,
+    scrollEnabled = true,
+    showBlur,
+    ...props
+  },
+  ref
+) {
+  const yPosition = useSharedValue(0);
   const { height: deviceHeight } = useDimensions();
   const { goBack } = useNavigation();
   const insets = useSafeArea();
@@ -103,6 +110,8 @@ export default function SlackSheet({
 
   const sheet = useRef();
   const isInsideBottomSheet = !!useBottomSheet();
+
+  useImperativeHandle(ref, () => sheet.current);
 
   const scrollIndicatorInsets = useMemo(
     () => ({
@@ -122,6 +131,10 @@ export default function SlackSheet({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
+
+  const scrollHandler = useAnimatedScrollHandler(event => {
+    yPosition.value = event.contentOffset.y;
+  });
 
   const bg = backgroundColor || colors.white;
 
@@ -143,7 +156,9 @@ export default function SlackSheet({
             <AndroidBackground backgroundColor={bg} />
           </AndroidBackground>
         )}
-        {!hideHandle && <SheetHandleFixedToTop showBlur={scrollEnabled} />}
+        {!hideHandle && (
+          <SheetHandleFixedToTop showBlur={showBlur || scrollEnabled} />
+        )}
         <ContentWrapper backgroundColor={bg}>
           {renderHeader?.(yPosition)}
           <Content
@@ -152,11 +167,12 @@ export default function SlackSheet({
             contentContainerStyle={scrollEnabled && contentContainerStyle}
             contentHeight={contentHeight}
             deviceHeight={deviceHeight}
-            directionalLockEnabled
+            limitScrollViewContent={limitScrollViewContent}
+            onContentSizeChange={onContentSizeChange}
+            onScroll={scrollHandler}
             ref={sheet}
             scrollEnabled={scrollEnabled}
             scrollIndicatorInsets={scrollIndicatorInsets}
-            y={yPosition}
           >
             {children}
             {!scrollEnabled && (
@@ -167,4 +183,4 @@ export default function SlackSheet({
       </Container>
     </Fragment>
   );
-}
+});

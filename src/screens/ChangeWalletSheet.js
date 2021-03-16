@@ -123,7 +123,6 @@ export default function ChangeWalletSheet() {
   const initializeWallet = useInitializeWallet();
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
   const creatingWallet = useRef();
-
   const [currentAddress, setCurrentAddress] = useState(accountAddress);
   const [currentSelectedWallet, setCurrentSelectedWallet] = useState(
     selectedWallet
@@ -159,7 +158,7 @@ export default function ChangeWalletSheet() {
         const p2 = dispatch(addressSetSelected(address));
         await Promise.all([p1, p2]);
 
-        initializeWallet();
+        initializeWallet(null, null, null, false, false, null, true);
         !fromDeletion && goBack();
       } catch (e) {
         logger.log('error while switching account', e);

@@ -16,6 +16,7 @@ const StyledCoinIcon = styled(ReactCoinIcon)`
 
 const CoinIcon = ({
   address = 'eth',
+  forcedShadowColor,
   isHidden,
   isPinned,
   size = CoinIconSize,
@@ -40,7 +41,8 @@ const CoinIcon = ({
         // force update on change symbol due to ImageCache strategy
         key={symbol}
         shadowColor={
-          isDarkMode ? colors.shadow : tokenMetadata?.shadowColor || color
+          forcedShadowColor ||
+          (isDarkMode ? colors.shadow : tokenMetadata?.shadowColor || color)
         }
         size={size}
         symbol={symbol}

@@ -25,3 +25,11 @@ export const uniswapClient = new ApolloClient({
     uri: 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2',
   }),
 });
+
+export const blockClient = new ApolloClient({
+  cache: new InMemoryCache(),
+  defaultOptions,
+  link: new HttpLink({
+    uri: 'https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks',
+  }),
+});

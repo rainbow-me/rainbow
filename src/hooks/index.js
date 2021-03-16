@@ -3,6 +3,7 @@ export {
   useChartDataLabels,
   useChartThrottledPoints,
 } from './charts';
+export { default as useDelayedValueWithLayoutAnimation } from './useDelayedValueWithLayoutAnimation';
 export { default as useAccountAssets } from './useAccountAssets';
 export { default as useFrameDelayedValue } from './useFrameDelayedValue';
 export { default as useAccountEmptyState } from './useAccountEmptyState';
@@ -23,6 +24,7 @@ export { default as useCoinListEditOptions } from './useCoinListEditOptions';
 export { default as useColorForAsset } from './useColorForAsset';
 export { default as useContacts } from './useContacts';
 export { default as useDimensions } from './useDimensions';
+export { default as useDPI } from './useDPI';
 export { default as useEmailRainbow } from './useEmailRainbow';
 export { default as useExpandedStateNavigation } from './useExpandedStateNavigation';
 export { default as useGas } from './useGas';
@@ -30,6 +32,7 @@ export { default as useHeight } from './useHeight';
 export { default as useHideSplashScreen } from './useHideSplashScreen';
 export { default as useImageMetadata } from './useImageMetadata';
 export { default as useInitializeAccountData } from './useInitializeAccountData';
+export { default as useInitializeDiscoverData } from './useInitializeDiscoverData';
 export { default as useInitializeWallet } from './useInitializeWallet';
 export { default as useInteraction } from './useInteraction';
 export { default as useInternetStatus } from './useInternetStatus';
@@ -80,7 +83,8 @@ export { default as useUniswapAssets } from './useUniswapAssets';
 export { default as useUniswapAssetsInWallet } from './useUniswapAssetsInWallet';
 export { default as useUniswapCalls } from './useUniswapCalls';
 export { default as useUpdateAssetOnchainBalance } from './useUpdateAssetOnchainBalance';
-export { default as useUniswapPairs } from './useUniswapPairs';
+export { default as useUniswapPools } from './useUniswapPools';
+export { default as useUserLists } from './useUserLists';
 export { default as useWalletBalances } from './useWalletBalances';
 export { default as useWalletCloudBackup } from './useWalletCloudBackup';
 export { default as useWalletConnectConnections } from './useWalletConnectConnections';
