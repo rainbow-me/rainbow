@@ -1,7 +1,7 @@
 import { useIsFocused } from '@react-navigation/native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
-import Animated, { useCode, useSharedValue } from 'react-native-reanimated';
+import { useSharedValue } from 'react-native-reanimated';
 import styled from 'styled-components';
 import { DiscoverSheet } from '../components/discover-sheet';
 import { FabWrapper, SearchFab } from '../components/fab';
@@ -13,13 +13,8 @@ import {
   QRCodeScanner,
 } from '../components/qrcode-scanner';
 import { useNavigation } from '@rainbow-me/navigation';
-import { scrollPosition } from '@rainbow-me/navigation/ScrollPagerWrapper';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
-
-const { call, greaterThan, onChange } = Animated;
-
-const ENABLING_CAMERA_OFFSET = 1.01;
 
 const Background = styled.View`
   background-color: black;
@@ -42,23 +37,7 @@ const ScannerHeader = styled(Header).attrs({
   top: 0;
 `;
 
-function useFocusFromSwipe() {
-  const [isFocused, setIsFocused] = useState(false);
-  useCode(
-    () =>
-      onChange(
-        greaterThan(scrollPosition, ENABLING_CAMERA_OFFSET),
-        call([scrollPosition], ([pos]) =>
-          setIsFocused(pos > ENABLING_CAMERA_OFFSET)
-        )
-      ),
-    []
-  );
-  return isFocused;
-}
-
 export default function QRScannerScreen() {
-  const isFocusedIOS = useFocusFromSwipe();
   const isFocusedAndroid = useIsFocused();
   const [initializeCamera, setInitializeCamera] = useState(ios ? true : false);
   const { navigate } = useNavigation();
@@ -94,7 +73,7 @@ export default function QRScannerScreen() {
                 cameraDim={cameraDim}
                 contentPositionTop={HeaderHeight}
                 dsRef={dsRef}
-                enableCamera={ios ? isFocusedIOS : isFocusedAndroid}
+                enableCamera={cameraVisible}
               />
             )}
           </CameraDimmer>
