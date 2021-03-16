@@ -1,4 +1,4 @@
-import { keys, times, toLower } from 'lodash';
+import { findIndex, keys, times, toLower } from 'lodash';
 import React, {
   Fragment,
   useCallback,
@@ -154,13 +154,13 @@ export default function ListSection() {
   useEffect(() => {
     if (ready && !initialized.current) {
       ready && updateTrendingList();
-      lists.forEach((list, index) => {
-        if (list.id === selectedList) {
-          setTimeout(() => {
-            handleSwitchList(list.id, index);
-          }, 300);
-        }
-      });
+      const currentListIndex = findIndex(
+        lists,
+        list => list.id === selectedList
+      );
+      setTimeout(() => {
+        handleSwitchList(lists[currentListIndex].id, currentListIndex);
+      }, 300);
       initialized.current = true;
     }
     return () => {
@@ -178,8 +178,9 @@ export default function ListSection() {
   ]);
 
   const listItems = useMemo(() => {
+    let items = [];
     if (selectedList === 'favorites') {
-      return favorites.map(
+      items = favorites.map(
         item =>
           ethereumUtils.getAsset(allAssets, toLower(item.address)) ||
           ethereumUtils.formatGenericAsset(
@@ -194,7 +195,7 @@ export default function ListSection() {
         return [];
       }
 
-      return currentList.tokens.map(
+      items = currentList.tokens.map(
         address =>
           ethereumUtils.getAsset(allAssets, toLower(address)) ||
           ethereumUtils.formatGenericAsset(
@@ -203,6 +204,13 @@ export default function ListSection() {
           )
       );
     }
+
+    return items.filter(item => {
+      if (item.symbol && Number(item.price?.value) > 0) {
+        return true;
+      }
+      return false;
+    });
   }, [
     allAssets,
     favorites,
@@ -299,21 +307,14 @@ export default function ListSection() {
               />
             ))
           ) : listItems?.length ? (
-            listItems
-              .filter(item => {
-                if (item.symbol && Number(item.price?.value) > 0) {
-                  return true;
-                }
-                return false;
-              })
-              .map(item => (
-                <ListCoinRow
-                  {...itemProps}
-                  item={item}
-                  key={`${selectedList}-list-item-${item.address}`}
-                  onPress={() => handlePress(item)}
-                />
-              ))
+            listItems.map(item => (
+              <ListCoinRow
+                {...itemProps}
+                item={item}
+                key={`${selectedList}-list-item-${item.address}`}
+                onPress={() => handlePress(item)}
+              />
+            ))
           ) : (
             <Centered marginVertical={42}>
               <Text
