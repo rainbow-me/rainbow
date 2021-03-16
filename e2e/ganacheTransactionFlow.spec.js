@@ -158,7 +158,7 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.delay(3000);
     await Helpers.tap('send-savings-cSAI');
     await Helpers.delay(3000);
-    await Helpers.typeText('selected-asset-field-input', '1', true);
+    await Helpers.typeText('selected-asset-field-input', '2', true);
     await Helpers.delay(5000);
     await Helpers.tapAndLongPress('Hold to Send');
     await Helpers.delay(10000);
@@ -199,7 +199,7 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.delay(3000);
     await Helpers.tap('send-asset-BAT');
     await Helpers.delay(3000);
-    await Helpers.typeText('selected-asset-field-input', '2', true);
+    await Helpers.typeText('selected-asset-field-input', '1', true);
     await Helpers.delay(3000);
     await Helpers.tapAndLongPress('Hold to Send');
     await Helpers.delay(10000);
@@ -214,7 +214,7 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.delay(3000);
     await Helpers.tap('send-asset-ETH');
     await Helpers.delay(3000);
-    await Helpers.typeText('selected-asset-field-input', '.001', true);
+    await Helpers.typeText('selected-asset-field-input', '.002', true);
     await Helpers.delay(3000);
     await Helpers.tapAndLongPress('Hold to Send');
     await Helpers.delay(10000);
@@ -244,33 +244,35 @@ describe('Ganache Transaction Flow', () => {
   });*/
   it('Should show completed send ERC20 (cSAI)', async () => {
     try {
-      await Helpers.checkIfVisible('Sent-Compound SAI');
+      await Helpers.checkIfVisible('Sent-Compound SAI-2.00 cSAI');
     } catch (e) {
-      await Helpers.checkIfVisible('Sending-Compound SAI');
+      await Helpers.checkIfVisible('Sending-Compound SAI-2.00 cSAI');
     }
   });
 
   it('Should show completed send NFT (Cryptokitties)', async () => {
     try {
-      await Helpers.checkIfVisible('Sent-Arun Cattybinky');
+      await Helpers.checkIfVisible('Sent-Arun Cattybinky-1.00 CryptoKitties');
     } catch (e) {
-      await Helpers.checkIfVisible('Sending-Arun Cattybinky');
+      await Helpers.checkIfVisible(
+        'Sending-Arun Cattybinky-1.00 CryptoKitties'
+      );
     }
   });
 
   it('Should show completed send ERC20 (BAT)', async () => {
     try {
-      await Helpers.checkIfVisible('Sent-Basic Attention Token');
+      await Helpers.checkIfVisible('Sent-Basic Attention Token-1.00 BAT');
     } catch (e) {
-      await Helpers.checkIfVisible('Sending-Basic Attention Token');
+      await Helpers.checkIfVisible('Sending-Basic Attention Token-1.00 BAT');
     }
   });
 
   it('Should show completed send ETH', async () => {
     try {
-      await Helpers.checkIfVisible('Sent-Ethereum');
+      await Helpers.checkIfVisible('Sent-Ethereum-0.002 ETH');
     } catch (e) {
-      await Helpers.checkIfVisible('Sending-Ethereum');
+      await Helpers.checkIfVisible('Sending-Ethereum-0.002 ETH');
     }
   });
 
