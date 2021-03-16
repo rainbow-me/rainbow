@@ -1,5 +1,5 @@
 import produce from 'immer';
-import { concat, uniq, without } from 'lodash';
+import { concat, isArray, uniq, without } from 'lodash';
 import { InteractionManager } from 'react-native';
 import {
   getSelectedUserList,
@@ -116,8 +116,9 @@ export const userListsUpdateList = (assetAddress, listId, add = true) => (
     // add or remove
     const updatedListTokens = add
       ? uniq(concat(allNewLists[listIndex].tokens, assetAddress))
-      : without(allNewLists[listIndex].tokens, ...assetAddress);
-
+      : isArray(assetAddress)
+      ? without(allNewLists[listIndex].tokens, ...assetAddress)
+      : without(allNewLists[listIndex].tokens, assetAddress);
     if (add) {
       dispatch(emitAssetRequest(assetAddress));
     }
