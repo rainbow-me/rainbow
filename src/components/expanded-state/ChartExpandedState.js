@@ -83,7 +83,7 @@ export default function ChartExpandedState({ asset }) {
     ios || showChart ? heightWithChart : heightWithoutChart;
 
   if (android && !hasBalance) {
-    ChartExpandedStateSheetHeight -= 68;
+    ChartExpandedStateSheetHeight -= 60;
   }
 
   return (
