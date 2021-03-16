@@ -66,6 +66,7 @@ export const userListsSetSelectedList = (listId, save = true) => dispatch => {
     });
   }
 };
+
 export const userListsClearList = listId => (dispatch, getState) => {
   const { lists } = getState().userLists;
   const allNewLists = [...lists];
