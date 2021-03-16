@@ -2,9 +2,8 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
 import { isEmpty, map } from 'lodash';
 import { useCallback } from 'react';
-import { queryCache, useQuery } from 'react-query';
+import { useQuery } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
-import { DEFI_PULSE_FROM_STORAGE } from '../handlers/localstorage/defiPulse';
 import { web3Provider } from '../handlers/web3';
 import { emitAssetRequest } from '../redux/explorer';
 import { AppState } from '../redux/store';
@@ -69,5 +68,5 @@ export default function useDPI() {
     fetchDPIData
   );
 
-  return data || queryCache.getQueryData(DEFI_PULSE_FROM_STORAGE);
+  return data;
 }
