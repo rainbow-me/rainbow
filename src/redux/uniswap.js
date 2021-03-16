@@ -2,7 +2,6 @@ import produce from 'immer';
 import { concat, map, remove, toLower, uniq, without } from 'lodash';
 import {
   getUniswapFavorites,
-  getUniswapLists,
   saveUniswapFavorites,
 } from '@rainbow-me/handlers/localstorage/uniswap';
 import {
@@ -37,9 +36,8 @@ export const uniswapLoadState = () => async (dispatch, getState) => {
   try {
     const favorites = await getUniswapFavorites(network);
     remove(favorites, address => toLower(address) === toLower(SOCKS_ADDRESS));
-    const lists = await getUniswapLists(network);
     dispatch({
-      payload: { favorites, lists },
+      payload: { favorites },
       type: UNISWAP_LOAD_SUCCESS,
     });
   } catch (error) {
@@ -166,7 +164,6 @@ export default (state = INITIAL_UNISWAP_STATE, action) =>
         break;
       case UNISWAP_LOAD_SUCCESS:
         draft.favorites = action.payload.favorites;
-        draft.lists = action.payload.lists;
         draft.loadingUniswap = false;
         break;
       case UNISWAP_UPDATE_FAVORITES:
