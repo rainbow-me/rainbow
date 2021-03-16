@@ -29,6 +29,61 @@ index 9c5d2a0..799fc5c 100644
        'setImmediate',
      );
      immediates.push(id);
+diff --git a/node_modules/react-native/React/CoreModules/RCTAlertManager.mm b/node_modules/react-native/React/CoreModules/RCTAlertManager.mm
+index 425951e..d5416f1 100644
+--- a/node_modules/react-native/React/CoreModules/RCTAlertManager.mm
++++ b/node_modules/react-native/React/CoreModules/RCTAlertManager.mm
+@@ -100,9 +100,29 @@ - (void)invalidate
+     }
+   }
+
+-  RCTAlertController *alertController = [RCTAlertController alertControllerWithTitle:title
+-                                                                             message:nil
+-                                                                      preferredStyle:UIAlertControllerStyleAlert];
++  UIViewController *presentingController = RCTPresentedViewController();
++  if (presentingController == nil) {
++    RCTLogError(@"Tried to display alert view but there is no application window. args: %@", @{
++      @"title" : args.title() ?: [NSNull null],
++      @"message" : args.message() ?: [NSNull null],
++      @"buttons" : RCTConvertOptionalVecToArray(
++          args.buttons(),
++          ^id(id<NSObject> element) {
++            return element;
++          })
++          ?: [NSNull null],
++      @"type" : args.type() ?: [NSNull null],
++      @"defaultValue" : args.defaultValue() ?: [NSNull null],
++      @"cancelButtonKey" : args.cancelButtonKey() ?: [NSNull null],
++      @"destructiveButtonKey" : args.destructiveButtonKey() ?: [NSNull null],
++      @"keyboardType" : args.keyboardType() ?: [NSNull null],
++    });
++    return;
++  }
++
++  UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title
++                                                                           message:nil
++                                                                    preferredStyle:UIAlertControllerStyleAlert];
+   switch (type) {
+     case RCTAlertViewStylePlainTextInput: {
+       [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+@@ -151,7 +171,7 @@ - (void)invalidate
+     } else if ([buttonKey isEqualToString:destructiveButtonKey]) {
+       buttonStyle = UIAlertActionStyleDestructive;
+     }
+-    __weak RCTAlertController *weakAlertController = alertController;
++    __weak UIAlertController *weakAlertController = alertController;
+     [alertController
+         addAction:[UIAlertAction
+                       actionWithTitle:buttonTitle
+@@ -183,7 +203,7 @@ - (void)invalidate
+   [_alertControllers addObject:alertController];
+
+   dispatch_async(dispatch_get_main_queue(), ^{
+-    [alertController show:YES completion:nil];
++    [presentingController presentViewController:alertController animated:YES completion:nil];
+   });
+ }
+
 diff --git a/node_modules/react-native/React/CoreModules/RCTLogBox.mm b/node_modules/react-native/React/CoreModules/RCTLogBox.mm
 index 87c5a5b..131e585 100644
 --- a/node_modules/react-native/React/CoreModules/RCTLogBox.mm
@@ -56,4 +111,4 @@ index 91e28ab..23704d8 100644
 +    }
      return;
    }
- 
+
