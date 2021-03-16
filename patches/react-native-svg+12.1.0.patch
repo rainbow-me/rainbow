@@ -10,3 +10,14 @@ index e7b8bce..810da97 100644
              CGPathAddPath(path, &transform, [node markerPath]);
              node.dirty = false;
          }
+--- a/node_modules/react-native-svg/ios/RNSVGRenderable.m
++++ b/node_modules/react-native-svg/ios/RNSVGRenderable.m
+@@ -486,6 +486,8 @@
+     
+     CGContextAddPath(context, path);
+     CGContextDrawPath(context, mode);
++    CFAutorelease(path);
++
+ }
+ 
+ - (void)setHitArea:(CGPathRef)path
