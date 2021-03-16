@@ -10,7 +10,7 @@ import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 
 const LabelText = styled(Text)`
-  margin-top: -3px;
+  margin-top: ${android ? 0 : -3};
 `;
 
 const Overlay = styled(Centered)`
