@@ -70,7 +70,8 @@ export default function ProfileScreen({ navigation }) {
   }, [navigate]);
 
   const addCashSupportedNetworks =
-    network === NetworkTypes.kovan || network === NetworkTypes.mainnet;
+    (IS_DEV && network === NetworkTypes.kovan) ||
+    network === NetworkTypes.mainnet;
   const addCashAvailable =
     IS_TESTING === 'true' ? false : addCashSupportedNetworks;
 

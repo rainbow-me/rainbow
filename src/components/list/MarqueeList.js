@@ -117,23 +117,44 @@ const SwipeableList = ({ components, speed }) => {
 
   const onTapGestureEvent = useAnimatedGestureHandler({
     onCancel: () => {
-      swiping.value = withSpeed({ speed });
+      ios && (swiping.value = withSpeed({ speed }));
     },
     onEnd: () => {
       swiping.value = withSpeed({ speed });
     },
     onFail: () => {
-      swiping.value = withSpeed({ speed });
+      ios && (swiping.value = withSpeed({ speed }));
     },
     onStart: () => {
-      cancelAnimation(transX);
-      cancelAnimation(swiping);
+      if (ios) {
+        cancelAnimation(transX);
+        cancelAnimation(swiping);
+      }
+    },
+  });
+
+  const onLongGestureEvent = useAnimatedGestureHandler({
+    onEnd: () => {
+      android && (swiping.value = withSpeed({ speed }));
     },
   });
 
   const panRef = useRef();
   const lpRef = useRef();
   const tapRef = useRef();
+  const onHandlerStateChangeAndroid = useCallback(
+    event => {
+      if (event.nativeEvent.state === 3 || event.nativeEvent.state === 5) {
+        swiping.value = withSpeed({ speed });
+      }
+
+      if (event.nativeEvent.state === 2) {
+        cancelAnimation(transX);
+        cancelAnimation(swiping);
+      }
+    },
+    [speed, swiping, transX]
+  );
 
   const translate = useDerivedValue(() => swiping.value + transX.value, []);
 
@@ -141,17 +162,15 @@ const SwipeableList = ({ components, speed }) => {
     <LongPressGestureHandler
       maxDist={100000}
       maxPointers={1}
+      onGestureEvent={onLongGestureEvent}
+      onHandlerStateChange={onLongGestureEvent}
       ref={lpRef}
       simultaneousHandlers={[panRef, tapRef]}
     >
       <Animated.View>
         <TapGestureHandler
-          {...(ios
-            ? {
-                onGestureEvent: onTapGestureEvent,
-                onHandlerStateChange: onTapGestureEvent,
-              }
-            : {})}
+          onGestureEvent={onTapGestureEvent}
+          onHandlerStateChang={onTapGestureEvent}
           ref={tapRef}
           simultaneousHandlers={[panRef, lpRef]}
         >
@@ -159,7 +178,9 @@ const SwipeableList = ({ components, speed }) => {
             <PanGestureHandler
               activeOffsetX={[-6, 10]}
               onGestureEvent={onGestureEvent}
-              onHandlerStateChange={onGestureEvent}
+              {...(android && {
+                onHandlerStateChange: onHandlerStateChangeAndroid,
+              })}
               ref={panRef}
               simultaneousHandlers={[lpRef, tapRef]}
             >

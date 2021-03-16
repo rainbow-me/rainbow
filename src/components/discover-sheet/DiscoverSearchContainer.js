@@ -116,11 +116,7 @@ export default forwardRef(function DiscoverSearchContainer(
             isSearching={isSearching}
             onBlur={() => setIsInputFocused(false)}
             onChangeText={setSearchQuery}
-            onFocus={() => {
-              upperContext.jumpToLong?.();
-              onTapSearch();
-              setIsInputFocused(true);
-            }}
+            onFocus={onTapSearch}
             placeholderText={
               isSearchModeEnabled
                 ? 'Search all of Ethereum'

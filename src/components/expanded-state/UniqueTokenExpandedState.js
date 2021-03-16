@@ -77,7 +77,7 @@ const UniqueTokenExpandedState = ({ asset }) => {
         <SheetDivider />
         <ColumnWithDividers dividerRenderer={SheetDivider}>
           {!!description && (
-            <ExpandedStateSection title="Bio">
+            <ExpandedStateSection title="Description">
               {description}
             </ExpandedStateSection>
           )}
