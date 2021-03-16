@@ -37,7 +37,7 @@ export const uniswapLoadState = () => async (dispatch, getState) => {
     const favorites = await getUniswapFavorites(network);
     remove(favorites, address => toLower(address) === toLower(SOCKS_ADDRESS));
     dispatch({
-      payload: { favorites },
+      payload: favorites,
       type: UNISWAP_LOAD_SUCCESS,
     });
   } catch (error) {
@@ -162,7 +162,7 @@ export default (state = INITIAL_UNISWAP_STATE, action) =>
         draft.pairs = action.payload;
         break;
       case UNISWAP_LOAD_SUCCESS:
-        draft.favorites = action.payload.favorites;
+        draft.favorites = action.payload;
         draft.loadingUniswap = false;
         break;
       case UNISWAP_UPDATE_FAVORITES:
