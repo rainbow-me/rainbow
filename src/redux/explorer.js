@@ -87,8 +87,12 @@ const addressSubscription = (address, currency, action = 'subscribe') => [
   },
 ];
 
-const assetPricesSubscription = (pairs, currency, action = 'subscribe') => {
-  const assetCodes = concat(keys(pairs), ETH_ADDRESS, DPI_ADDRESS);
+const assetPricesSubscription = (
+  tokenAddresses,
+  currency,
+  action = 'subscribe'
+) => {
+  const assetCodes = concat(tokenAddresses, ETH_ADDRESS, DPI_ADDRESS);
   return [
     action,
     {
@@ -162,7 +166,7 @@ const explorerUnsubscribe = () => (dispatch, getState) => {
   }
   if (!isNil(assetsSocket)) {
     assetsSocket.emit(
-      ...assetPricesSubscription(pairs, nativeCurrency, 'unsubscribe')
+      ...assetPricesSubscription(keys(pairs), nativeCurrency, 'unsubscribe')
     );
     assetsSocket.close();
   }
@@ -264,12 +268,6 @@ export const explorerInit = () => async (dispatch, getState) => {
   }
 };
 
-const toAssetSubscriptionPayload = tokensArray => {
-  const payload = {};
-  tokensArray.forEach(address => (payload[address] = true));
-  return payload;
-};
-
 export const emitAssetRequest = assetAddress => (dispatch, getState) => {
   const { nativeCurrency } = getState().settings;
   const { assetsSocket } = getState().explorer;
@@ -284,10 +282,7 @@ export const emitAssetRequest = assetAddress => (dispatch, getState) => {
 
   if (newAssetsCodes.length > 0) {
     assetsSocket?.emit(
-      ...assetPricesSubscription(
-        toAssetSubscriptionPayload(newAssetsCodes),
-        nativeCurrency
-      )
+      ...assetPricesSubscription(newAssetsCodes, nativeCurrency)
     );
   }
 };
@@ -371,7 +366,6 @@ const listenOnAddressMessages = socket => dispatch => {
   socket.on(messages.ADDRESS_ASSETS.RECEIVED, message => {
     dispatch(addressAssetsReceived(message));
     if (!disableCharts) {
-      //dispatch(emitChartsRequest());
       // We need this for Uniswap Pools profit calculation
       dispatch(emitChartsRequest([ETH_ADDRESS, DPI_ADDRESS], ChartTypes.month));
     }
