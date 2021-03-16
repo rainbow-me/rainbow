@@ -26,7 +26,7 @@ function useAreHeaderButtonVisible() {
   return [{ isSearchModeEnabled, setIsSearchModeEnabled }, isSearchModeEnabled];
 }
 
-const snapPoints = ['25%', '90%'];
+const snapPoints = ['35%', '100%'];
 
 const AndroidWrapper = styled.View.attrs({
   pointerEvents: 'box-none',

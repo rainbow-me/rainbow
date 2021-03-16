@@ -78,15 +78,17 @@ export default function QRScannerScreen() {
             )}
           </CameraDimmer>
           {android ? <DiscoverSheet ref={dsRef} /> : null}
-          <ScannerHeader>
-            <BackButton
-              color={colors.whiteLabel}
-              direction="left"
-              onPress={handlePressBackButton}
-              testID="goToBalancesFromScanner"
-            />
-            <EmulatorPasteUriButton />
-          </ScannerHeader>
+          {cameraVisible && (
+            <ScannerHeader>
+              <BackButton
+                color={colors.whiteLabel}
+                direction="left"
+                onPress={handlePressBackButton}
+                testID="goToBalancesFromScanner"
+              />
+              <EmulatorPasteUriButton />
+            </ScannerHeader>
+          )}
         </ScannerContainer>
       </View>
       <FabWrapper
