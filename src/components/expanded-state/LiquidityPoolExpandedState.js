@@ -21,6 +21,7 @@ import { ChartPathProvider } from '@rainbow-me/animated-charts';
 import { toChecksumAddress } from '@rainbow-me/handlers/web3';
 import chartTypes from '@rainbow-me/helpers/chartTypes';
 import { useChartThrottledPoints } from '@rainbow-me/hooks';
+import { ETH_ADDRESS } from '@rainbow-me/references';
 import { magicMemo } from '@rainbow-me/utils';
 
 const heightWithoutChart = 373 + (android ? 20 - getSoftMenuBarHeight() : 0);
@@ -29,7 +30,7 @@ const heightWithChart = heightWithoutChart + 297;
 export const initialLiquidityPoolExpandedStateSheetHeight = heightWithChart;
 
 const formatTokenAddress = address => {
-  if (!address || toLower(address) === 'eth') {
+  if (!address || toLower(address) === ETH_ADDRESS) {
     return 'ETH';
   }
   return toChecksumAddress(address);
