@@ -123,13 +123,12 @@ export const uniswapUpdateFavorites = (assetAddress, add = true) => (
   dispatch,
   getState
 ) => {
-  const address = toLower(assetAddress);
   const { favorites } = getState().uniswap;
   const normalizedFavorites = map(favorites, toLower);
 
   const updatedFavorites = add
-    ? uniq(concat(normalizedFavorites, address))
-    : without(normalizedFavorites, address);
+    ? uniq(concat(normalizedFavorites, assetAddress))
+    : without(normalizedFavorites, assetAddress);
   dispatch({
     payload: updatedFavorites,
     type: UNISWAP_UPDATE_FAVORITES,

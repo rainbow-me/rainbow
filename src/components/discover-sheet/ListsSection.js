@@ -40,7 +40,7 @@ const fetchTrendingAddresses = async () => {
     const idsToLookUp = trending.coins.map(coin => coin.item.id);
     keys(coingeckoIds).forEach(address => {
       if (idsToLookUp.indexOf(coingeckoIds[address]) !== -1) {
-        trendingAddresses.push(address);
+        trendingAddresses.push(toLower(address));
       }
     });
     // eslint-disable-next-line no-empty
@@ -108,17 +108,17 @@ export default function ListSection() {
   const { colors } = useTheme();
   const listData = useMemo(() => DefaultTokenLists[network], [network]);
 
-  const addressSocket = useSelector(
-    ({ explorer: { addressSocket } }) => addressSocket
+  const assetsSocket = useSelector(
+    ({ explorer: { assetsSocket } }) => assetsSocket
   );
   useEffect(() => {
-    if (addressSocket !== null) {
+    if (assetsSocket !== null) {
       Object.values(listData).forEach(({ tokens }) => {
         dispatch(emitAssetRequest(tokens));
         dispatch(emitChartsRequest(tokens));
       });
     }
-  }, [addressSocket, dispatch, listData]);
+  }, [assetsSocket, dispatch, listData]);
 
   const trendingListHandler = useRef(null);
 
@@ -128,9 +128,7 @@ export default function ListSection() {
 
     dispatch(emitAssetRequest(tokens));
     dispatch(emitChartsRequest(tokens));
-    tokens.forEach(address => {
-      updateList(address, 'trending', true);
-    });
+    updateList(tokens, 'trending', true);
 
     trendingListHandler.current = setTimeout(
       () => updateTrendingList(),
