@@ -65,8 +65,8 @@ class TransactionListViewCell: TransactionListBaseCell {
     setIcon(transaction)
 
     transactionType.isAccessibilityElement = true;
-    if transaction.title != nil && transaction.transactionDescription != nil {
-      transactionType.accessibilityIdentifier = "\(transaction.title!)-\(transaction.transactionDescription!)";
+    if transaction.title != nil && transaction.transactionDescription != nil && transaction.balanceDisplay != nil {
+      transactionType.accessibilityIdentifier = "\(transaction.title!)-\(transaction.transactionDescription!)-\(transaction.balanceDisplay!)"
     }
 
     
