@@ -205,12 +205,7 @@ export default function ListSection() {
       );
     }
 
-    return items.filter(item => {
-      if (item.symbol && Number(item.price?.value) > 0) {
-        return true;
-      }
-      return false;
-    });
+    return items.filter(item => item.symbol && Number(item.price?.value) > 0);
   }, [
     allAssets,
     favorites,
