@@ -1,5 +1,5 @@
 import produce from 'immer';
-import { concat, map, toLower, uniq, without } from 'lodash';
+import { concat, toLower, uniq, without } from 'lodash';
 import { InteractionManager } from 'react-native';
 import {
   getSelectedUserList,
@@ -113,16 +113,14 @@ export const userListsUpdateList = (assetAddress, listId, add = true) => (
       }
       return false;
     });
-    // Normalize the list
-    const normalizedListTokens = map(allNewLists[listIndex].tokens, toLower);
 
     // add or remove
     const updatedListTokens = add
-      ? uniq(concat(normalizedListTokens, address))
-      : without(normalizedListTokens, address);
+      ? uniq(concat(allNewLists[listIndex].tokens, address))
+      : without(allNewLists[listIndex].tokens, address);
 
     if (add) {
-      dispatch(emitAssetRequest([assetAddress]));
+      dispatch(emitAssetRequest(assetAddress));
     }
 
     // update the list
