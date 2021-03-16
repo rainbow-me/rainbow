@@ -33,6 +33,7 @@ import {
   useDPI,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
+import { ETH_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
 import {
@@ -152,7 +153,8 @@ export default function TokenIndexExpandedState({ asset }) {
     dpi: true,
   });
 
-  const needsEth = asset?.address === 'eth' && asset?.balance?.amount === '0';
+  const needsEth =
+    asset?.address === ETH_ADDRESS && asset?.balance?.amount === '0';
 
   const duration = useRef(0);
 
