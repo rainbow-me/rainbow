@@ -46,9 +46,10 @@ const PulseIndex = () => {
 
   const charts = useSelector(({ charts: { charts } }) => charts);
 
-  const chartPriceDataForDPI = useMemo(
-    () => get(charts, `[${DPI_ADDRESS}][${ChartTypes.month}][0][1]`, 0),
-    [charts]
+  const chartPriceDataForDPI = get(
+    charts,
+    `[${DPI_ADDRESS}][${ChartTypes.month}][0][1]`,
+    0
   );
 
   const { nativeCurrency, nativeCurrencySymbol } = useAccountSettings();
