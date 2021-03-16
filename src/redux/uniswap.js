@@ -128,7 +128,7 @@ export const uniswapUpdateFavorites = (assetAddress, add = true) => (
 
   const updatedFavorites = add
     ? uniq(concat(normalizedFavorites, assetAddress))
-    : without(normalizedFavorites, assetAddress);
+    : without(normalizedFavorites, ...assetAddress);
   dispatch({
     payload: updatedFavorites,
     type: UNISWAP_UPDATE_FAVORITES,

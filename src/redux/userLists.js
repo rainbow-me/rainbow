@@ -116,7 +116,7 @@ export const userListsUpdateList = (assetAddress, listId, add = true) => (
     // add or remove
     const updatedListTokens = add
       ? uniq(concat(allNewLists[listIndex].tokens, assetAddress))
-      : without(allNewLists[listIndex].tokens, assetAddress);
+      : without(allNewLists[listIndex].tokens, ...assetAddress);
 
     if (add) {
       dispatch(emitAssetRequest(assetAddress));
