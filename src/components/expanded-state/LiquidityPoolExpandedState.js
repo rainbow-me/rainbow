@@ -134,19 +134,12 @@ const LiquidityPoolExpandedState = ({ asset }) => {
               token2Address={tokenAddresses[1]}
               weight="bold"
             />
-            <DepositActionButton
-              asset={asset}
-              weight="bold"
-            />
+            <DepositActionButton asset={asset} weight="bold" />
           </SheetActionButtonRow>
         </Fragment>
       ) : (
         <SheetActionButtonRow>
-          <DepositActionButton
-            asset={asset}
-            fullWidth
-            weight="bold"
-          />
+          <DepositActionButton asset={asset} fullWidth weight="bold" />
         </SheetActionButtonRow>
       )}
     </SlackSheet>
