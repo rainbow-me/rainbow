@@ -27,7 +27,7 @@ export default function SwapDetailsPriceRow({ tradeDetails, ...props }) {
 
   return (
     <ButtonPressAnimation {...props} onPress={nextStep} scaleTo={1.06}>
-      <SwapDetailsRow label="Exchange rate">
+      <SwapDetailsRow label="Rate">
         <SwapDetailsValue letterSpacing="roundedTight">
           {steps[step]}
         </SwapDetailsValue>
