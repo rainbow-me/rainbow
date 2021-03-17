@@ -13,12 +13,19 @@ import {
   convertAmountToRawAmount,
   convertNumberToString,
   isZero,
+  updatePrecisionToDisplay,
 } from '@rainbow-me/utilities';
+
+enum DisplayValue {
+  input = 'inputAmountDisplay',
+  output = 'outputAmountDisplay',
+}
 
 const getOutputAmount = (
   inputAmount: string | null,
   inputToken: Token,
   outputToken: Token | null,
+  outputPrice: string | null,
   allPairs: Pair[] | null
 ) => {
   if (
@@ -30,6 +37,7 @@ const getOutputAmount = (
   ) {
     return {
       outputAmount: null,
+      outputAmountDisplay: null,
       tradeDetails: null,
     };
   }
@@ -41,9 +49,16 @@ const getOutputAmount = (
   const tradeDetails = Trade.bestTradeExactIn(allPairs, amountIn, outputToken, {
     maxNumResults: 1,
   })[0];
-  const outputAmount = tradeDetails?.outputAmount?.toSignificant(6) ?? null;
+  const outputAmount = tradeDetails?.outputAmount?.toFixed() ?? null;
+  const outputAmountDisplay =
+    outputAmount && outputPrice
+      ? updatePrecisionToDisplay(outputAmount, outputPrice)
+      : outputAmount
+      ? tradeDetails?.outputAmount?.toSignificant(6)
+      : null;
   return {
     outputAmount,
+    outputAmountDisplay,
     tradeDetails,
   };
 };
@@ -66,6 +81,7 @@ export default function useSwapDerivedOutputs() {
   );
 
   const inputPrice = genericAssets[inputCurrency?.address]?.price?.value;
+  const outputPrice = genericAssets[outputCurrency?.address]?.price?.value;
 
   const { chainId } = useAccountSettings();
   const { allPairs } = useUniswapPairs();
@@ -78,8 +94,13 @@ export default function useSwapDerivedOutputs() {
       [SwapModalField.output]: null,
     };
 
+    const displayValues: { [key in DisplayValue]: string | null } = {
+      [DisplayValue.input]: null,
+      [DisplayValue.output]: null,
+    };
+
     if (!independentValue || !inputCurrency) {
-      return { derivedValues, tradeDetails };
+      return { derivedValues, displayValues, tradeDetails };
     }
 
     const inputToken = getTokenForCurrency(inputCurrency, chainId);
@@ -89,6 +110,7 @@ export default function useSwapDerivedOutputs() {
 
     if (independentField === SwapModalField.input) {
       derivedValues[SwapModalField.input] = independentValue;
+      displayValues[DisplayValue.input] = independentValue;
 
       const nativeValue =
         inputPrice && !isZero(independentValue)
@@ -96,16 +118,22 @@ export default function useSwapDerivedOutputs() {
           : null;
 
       derivedValues[SwapModalField.native] = nativeValue;
-      const { outputAmount, tradeDetails: newTradeDetails } = getOutputAmount(
+      const {
+        outputAmount,
+        outputAmountDisplay,
+        tradeDetails: newTradeDetails,
+      } = getOutputAmount(
         independentValue,
         inputToken,
         outputToken,
+        outputPrice,
         allPairs
       );
       tradeDetails = newTradeDetails;
       derivedValues[SwapModalField.output] = outputAmount;
+      displayValues[DisplayValue.output] = outputAmountDisplay;
     } else if (independentField === SwapModalField.native) {
-      const inputAmountValue =
+      const inputAmount =
         independentValue && !isZero(independentValue) && inputPrice
           ? convertAmountFromNativeValue(
               independentValue,
@@ -114,20 +142,32 @@ export default function useSwapDerivedOutputs() {
             )
           : null;
       derivedValues[SwapModalField.native] = independentValue;
-      derivedValues[SwapModalField.input] = inputAmountValue;
-      const { outputAmount, tradeDetails: newTradeDetails } = getOutputAmount(
-        inputAmountValue,
+      derivedValues[SwapModalField.input] = inputAmount;
+      const inputAmountDisplay =
+        inputAmount && inputPrice
+          ? updatePrecisionToDisplay(inputAmount, inputPrice, true)
+          : inputAmount;
+      displayValues[DisplayValue.input] = inputAmountDisplay;
+      const {
+        outputAmount,
+        outputAmountDisplay,
+        tradeDetails: newTradeDetails,
+      } = getOutputAmount(
+        inputAmount,
         inputToken,
         outputToken,
+        outputPrice,
         allPairs
       );
       tradeDetails = newTradeDetails;
       derivedValues[SwapModalField.output] = outputAmount;
+      displayValues[DisplayValue.output] = outputAmountDisplay;
     } else {
       if (!outputToken || !inputToken || isEmpty(allPairs)) {
-        return { derivedValues, tradeDetails };
+        return { derivedValues, displayValues, tradeDetails };
       }
       derivedValues[SwapModalField.output] = independentValue;
+      displayValues[DisplayValue.output] = independentValue;
 
       if (!isZero(independentValue)) {
         const outputRawAmount = convertAmountToRawAmount(
@@ -149,6 +189,11 @@ export default function useSwapDerivedOutputs() {
       const inputAmount = tradeDetails?.inputAmount?.toSignificant(6) ?? null;
 
       derivedValues[SwapModalField.input] = inputAmount;
+      const inputAmountDisplay =
+        inputAmount && inputPrice
+          ? updatePrecisionToDisplay(inputAmount, inputPrice, true)
+          : inputAmount;
+      displayValues[DisplayValue.input] = inputAmountDisplay;
 
       const nativeValue =
         inputPrice && inputAmountExact
@@ -157,7 +202,7 @@ export default function useSwapDerivedOutputs() {
 
       derivedValues[SwapModalField.native] = nativeValue;
     }
-    return { derivedValues, tradeDetails };
+    return { derivedValues, displayValues, tradeDetails };
   }, [
     allPairs,
     chainId,
@@ -166,5 +211,6 @@ export default function useSwapDerivedOutputs() {
     inputCurrency,
     inputPrice,
     outputCurrency,
+    outputPrice,
   ]);
 }

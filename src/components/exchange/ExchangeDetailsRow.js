@@ -38,11 +38,9 @@ const AnimatedExchangeDetailsButtonRow = Animated.createAnimatedComponent(
 );
 
 export default function ExchangeDetailsRow({
-  inputAmount,
   isHighPriceImpact,
   onFlipCurrencies,
   onPressViewDetails,
-  outputAmount,
   priceImpactColor,
   priceImpactNativeAmount,
   priceImpactPercentDisplay,
@@ -64,13 +62,10 @@ export default function ExchangeDetailsRow({
     transform: [{ scale: priceImpactScale.value }],
   }));
 
-  const isPriceImpactWarningVisible =
-    !!inputAmount && !!outputAmount && isHighPriceImpact;
-  const prevIsPriceImpactWarningVisible = usePrevious(
-    isPriceImpactWarningVisible
-  );
+  const prevIsHighPriceImpact = usePrevious(isHighPriceImpact);
+
   useEffect(() => {
-    if (isPriceImpactWarningVisible && !prevIsPriceImpactWarningVisible) {
+    if (isHighPriceImpact && !prevIsHighPriceImpact) {
       analytics.track('Showing high price impact warning in Swap', {
         name: outputCurrency.name,
         priceImpact: priceImpactPercentDisplay,
@@ -80,15 +75,15 @@ export default function ExchangeDetailsRow({
       });
     }
   }, [
-    isPriceImpactWarningVisible,
+    isHighPriceImpact,
     outputCurrency,
-    prevIsPriceImpactWarningVisible,
+    prevIsHighPriceImpact,
     priceImpactPercentDisplay,
     type,
   ]);
 
   useEffect(() => {
-    if (isPriceImpactWarningVisible) {
+    if (isHighPriceImpact) {
       detailsRowOpacity.value = withTiming(0, timingConfig);
       priceImpactOpacity.value = withTiming(1, timingConfig);
       priceImpactScale.value = withTiming(1, timingConfig);
@@ -102,7 +97,7 @@ export default function ExchangeDetailsRow({
     }
   }, [
     detailsRowOpacity,
-    isPriceImpactWarningVisible,
+    isHighPriceImpact,
     priceImpactOpacity,
     priceImpactScale,
   ]);
@@ -110,15 +105,16 @@ export default function ExchangeDetailsRow({
   return (
     <Container {...props}>
       <PriceImpactWarning
+        isHighPriceImpact={isHighPriceImpact}
         onPress={onPressViewDetails}
-        pointerEvents={isPriceImpactWarningVisible ? 'auto' : 'none'}
+        pointerEvents={isHighPriceImpact ? 'auto' : 'none'}
         priceImpactColor={priceImpactColor}
         priceImpactNativeAmount={priceImpactNativeAmount}
         priceImpactPercentDisplay={priceImpactPercentDisplay}
         style={priceImpactAnimatedStyle}
       />
       <AnimatedExchangeDetailsButtonRow
-        pointerEvents={isPriceImpactWarningVisible ? 'none' : 'auto'}
+        pointerEvents={isHighPriceImpact ? 'none' : 'auto'}
         style={detailsRowAnimatedStyle}
       >
         <ExchangeDetailsButton

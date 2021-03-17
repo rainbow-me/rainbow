@@ -1,18 +1,14 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { CoinIcon } from '../../coin-icon';
 import { Centered, ColumnWithMargins, Row } from '../../layout';
 import { Text, TruncatedText } from '../../text';
-
-import {
-  convertAmountAndPriceToNativeDisplay,
-  updatePrecisionToDisplay,
-} from '@rainbow-me/helpers/utilities';
 import { useAccountSettings, useColorForAsset } from '@rainbow-me/hooks';
 import { SwapModalField } from '@rainbow-me/redux/swap';
 import { fonts, fontWithWidth, position } from '@rainbow-me/styles';
+import { convertAmountAndPriceToNativeDisplay } from '@rainbow-me/utilities';
 
 export const CurrencyTileHeight = 143;
 
@@ -59,6 +55,7 @@ const TruncatedAmountText = styled(AmountText).attrs({
 
 export default function CurrencyTile({
   amount,
+  amountDisplay,
   asset,
   isHighPriceImpact,
   priceImpactColor,
@@ -75,16 +72,13 @@ export default function CurrencyTile({
   const isOther =
     (inputAsExact && type === 'output') || (!inputAsExact && type === 'input');
 
-  const { amountDisplay, priceDisplay } = useMemo(() => {
-    const data = [amount, priceValue ?? 0];
-    return {
-      amountDisplay: updatePrecisionToDisplay(...data, true),
-      priceDisplay: convertAmountAndPriceToNativeDisplay(
-        ...data,
+  const priceDisplay = priceValue
+    ? convertAmountAndPriceToNativeDisplay(
+        amount,
+        priceValue ?? 0,
         nativeCurrency
-      ).display,
-    };
-  }, [amount, nativeCurrency, priceValue]);
+      ).display
+    : '-';
 
   return (
     <Container {...props}>
