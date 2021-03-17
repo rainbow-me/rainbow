@@ -156,7 +156,6 @@ export default function useChartThrottledPoints({
   }, [throttledPoints, fetchingCharts, debouncedSetThrottledData]);
 
   return {
-    chart,
     chartData,
     chartType,
     color,

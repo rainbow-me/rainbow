@@ -51,7 +51,6 @@ export default function ChartExpandedState({ asset }) {
     : asset;
 
   const {
-    chart,
     chartData,
     chartType,
     color,
@@ -97,11 +96,9 @@ export default function ChartExpandedState({ asset }) {
           {...chartData}
           {...initialChartDataLabels}
           asset={assetWithPrice}
-          chart={chart}
           chartType={chartType}
           color={color}
           fetchingCharts={fetchingCharts}
-          nativePoints={chart}
           showChart={showChart}
           throttledData={throttledData}
         />

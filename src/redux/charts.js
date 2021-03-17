@@ -57,16 +57,14 @@ export const assetChartsReceived = message => async (dispatch, getState) => {
   }));
 
   const simplifiedNewCharts = {};
-  const promises = [];
   for (const entry of Object.entries(newChartData)) {
     const simplifyEntry = {};
+    saveAccountChartsPerAddress(entry[1], entry[0]);
     for (const key of Object.keys(entry[1])) {
       simplifyEntry[key] = true;
     }
     simplifiedNewCharts[entry[0]] = simplifyEntry;
-    promises.push(saveAccountChartsPerAddress(entry[1], entry[0]));
   }
-  await Promise.all(promises);
 
   const updatedCharts = {
     ...existingCharts,
