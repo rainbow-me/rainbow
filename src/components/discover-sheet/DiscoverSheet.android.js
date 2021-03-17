@@ -7,6 +7,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import {
   runOnJS,
   useAnimatedReaction,
@@ -26,7 +27,10 @@ function useAreHeaderButtonVisible() {
   return [{ isSearchModeEnabled, setIsSearchModeEnabled }, isSearchModeEnabled];
 }
 
-const snapPoints = ['35%', '100%'];
+const snapPoints = [
+  280,
+  deviceUtils.dimensions.height + getSoftMenuBarHeight(),
+];
 
 const AndroidWrapper = styled.View.attrs({
   pointerEvents: 'box-none',
