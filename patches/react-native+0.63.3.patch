@@ -42,10 +42,26 @@ index 2ef88f1..9d628ed 100644
      });
    }
 diff --git a/node_modules/react-native/React/CxxBridge/RCTCxxBridge.mm b/node_modules/react-native/React/CxxBridge/RCTCxxBridge.mm
-index d8938d7..32a7265 100644
+index d8938d7..6c693ad 100644
 --- a/node_modules/react-native/React/CxxBridge/RCTCxxBridge.mm
 +++ b/node_modules/react-native/React/CxxBridge/RCTCxxBridge.mm
-@@ -462,7 +462,7 @@ - (id)moduleForName:(NSString *)moduleName
+@@ -272,9 +272,12 @@ + (void)runRunLoop
+ 
+ - (void)_tryAndHandleError:(dispatch_block_t)block
+ {
+-  NSError *error = tryAndReturnError(block);
+-  if (error) {
+-    [self handleError:error];
++  BOOL isBridgeInvalidating = [[self valueForKey:@"didInvalidate"] boolValue];
++  if (!isBridgeInvalidating) {
++    NSError *error = tryAndReturnError(block);
++    if (error) {
++      [self handleError:error];
++    }
+   }
+ }
+ 
+@@ -462,7 +465,7 @@ - (id)moduleForName:(NSString *)moduleName
  
  - (id)moduleForName:(NSString *)moduleName lazilyLoadIfNecessary:(BOOL)lazilyLoad
  {
