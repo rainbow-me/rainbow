@@ -5,7 +5,7 @@ import { useSharedValue } from 'react-native-reanimated';
 import styled from 'styled-components';
 import { DiscoverSheet } from '../components/discover-sheet';
 import { FabWrapper, SearchFab } from '../components/fab';
-import { BackButton, Header, HeaderHeight } from '../components/header';
+import { BackButton, Header } from '../components/header';
 import { Centered } from '../components/layout';
 import {
   CameraDimmer,
@@ -69,26 +69,27 @@ export default function QRScannerScreen() {
           <Background />
           <CameraDimmer cameraVisible={cameraVisible}>
             {initializeCamera && (
-              <QRCodeScanner
-                cameraDim={cameraDim}
-                contentPositionTop={HeaderHeight}
-                dsRef={dsRef}
-                enableCamera={cameraVisible}
-              />
+              <View>
+                <ScannerHeader>
+                  <BackButton
+                    color={colors.whiteLabel}
+                    direction="left"
+                    onPress={handlePressBackButton}
+                    testID="goToBalancesFromScanner"
+                  />
+                  <EmulatorPasteUriButton />
+                </ScannerHeader>
+                <QRCodeScanner
+                  cameraDim={cameraDim}
+                  contentPositionTop={300}
+                  dsRef={dsRef}
+                  enableCamera={cameraVisible}
+                />
+              </View>
             )}
           </CameraDimmer>
+
           {android ? <DiscoverSheet ref={dsRef} /> : null}
-          {cameraVisible && (
-            <ScannerHeader>
-              <BackButton
-                color={colors.whiteLabel}
-                direction="left"
-                onPress={handlePressBackButton}
-                testID="goToBalancesFromScanner"
-              />
-              <EmulatorPasteUriButton />
-            </ScannerHeader>
-          )}
         </ScannerContainer>
       </View>
       <FabWrapper
