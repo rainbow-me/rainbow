@@ -1,9 +1,10 @@
-import { get, mapValues, reverse } from 'lodash';
+import { get, isEmpty, mapValues, reverse } from 'lodash';
 import {
   getAccountCharts,
   saveAccountCharts,
 } from '../handlers/localstorage/accountLocal';
 import ChartTypes from '../helpers/chartTypes';
+import { saveAccountChartsPerAddress } from '@rainbow-me/handlers/localstorage/charts';
 
 // -- Constants --------------------------------------- //
 const CHARTS_UPDATE_CHART_TYPE = 'charts/CHARTS_UPDATE_CHART_TYPE';
@@ -40,18 +41,36 @@ export const chartsUpdateChartType = (chartType, dpi) => dispatch =>
     type: CHARTS_UPDATE_CHART_TYPE,
   });
 
-export const assetChartsReceived = message => (dispatch, getState) => {
+const formatChartData = chart => {
+  if (!chart || isEmpty(chart)) return null;
+  return chart.map(([x, y]) => ({ x, y }));
+};
+
+export const assetChartsReceived = message => async (dispatch, getState) => {
   const chartType = get(message, 'meta.charts_type');
   const { accountAddress, network } = getState().settings;
   const { charts: existingCharts } = getState().charts;
   const assetCharts = get(message, 'payload.charts', {});
   const newChartData = mapValues(assetCharts, (chartData, address) => ({
     ...existingCharts[address],
-    [chartType]: reverse(chartData),
+    [chartType]: formatChartData(reverse(chartData)),
   }));
+
+  const simplifiedNewCharts = {};
+  const promises = [];
+  for (const entry of Object.entries(newChartData)) {
+    const simplifyEntry = {};
+    for (const key of Object.keys(entry[1])) {
+      simplifyEntry[key] = true;
+    }
+    simplifiedNewCharts[entry[0]] = simplifyEntry;
+    promises.push(saveAccountChartsPerAddress(entry[1], entry[0]));
+  }
+  await Promise.all(promises);
+
   const updatedCharts = {
     ...existingCharts,
-    ...newChartData,
+    ...simplifiedNewCharts,
   };
   saveAccountCharts(updatedCharts, accountAddress, network);
   dispatch({

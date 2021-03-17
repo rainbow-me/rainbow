@@ -1,4 +1,3 @@
-import { isEmpty } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import isEqual from 'react-fast-compare';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,11 +8,10 @@ import { chartsUpdateChartType, DEFAULT_CHART_TYPE } from '../../redux/charts';
 import { emitChartsRequest } from '../../redux/explorer';
 import { daysFromTheFirstTx } from '../../utils/ethereumUtils';
 import useAsset from '../useAsset';
+import useQuickEffect from '../useQuickEffect.';
+import { getAccountChartsPerAddress } from '@rainbow-me/handlers/localstorage/charts';
 
-const formatChartData = chart => {
-  if (!chart || isEmpty(chart)) return null;
-  return chart.map(([x, y]) => ({ x, y }));
-};
+const NOT_LOADED = 'notLoaded';
 
 const chartSelector = createSelector(
   ({
@@ -44,7 +42,7 @@ const chartSelector = createSelector(
       ...charts?.[address],
     };
     return {
-      chart: formatChartData(chartsForAsset?.[dpi ? chartTypeDPI : chartType]),
+      chart: chartsForAsset?.[dpi ? chartTypeDPI : chartType],
       chartsForAsset,
       chartType,
       chartTypeDPI,
@@ -106,20 +104,35 @@ export default function useChartData(asset, dpi) {
     dpi,
   ]);
 
+  const [storageCharts, setStorageCharts] = useState();
+  useQuickEffect(() => {
+    async function updateCharts() {
+      if (chart) {
+        setStorageCharts(NOT_LOADED);
+        const charts = await getAccountChartsPerAddress(address);
+        setStorageCharts(charts[dpi ? chartTypeDPI : chartType]);
+      }
+    }
+    updateCharts();
+  }, [chartTypeDPI, chartType, chart, address, dpi]);
+
   // add current price at the very end
   const filteredData = useMemo(() => {
+    if (storageCharts === NOT_LOADED) {
+      return null;
+    }
     const now = Math.floor(Date.now() / 1000);
-    return chart
+    return storageCharts
       ?.filter(({ x }) => x <= now)
-      .slice(0, chart.length - 1)
+      .slice(0, storageCharts.length - 1)
       .concat({ x: now, y: price });
-  }, [chart, price]);
+  }, [storageCharts, price]);
 
   return {
     chart: filteredData,
     charts: chartsForAsset,
     chartType,
-    fetchingCharts,
+    fetchingCharts: fetchingCharts || storageCharts === NOT_LOADED,
     showMonth: daysFromFirstTx > 7,
     showYear: daysFromFirstTx > 30,
     updateChartType,
