@@ -233,19 +233,12 @@ const LiquidityPoolExpandedState = () => {
                 weight="bold"
               />
             )}
-            <DepositActionButton
-              asset={asset}
-              weight="bold"
-            />
+            <DepositActionButton asset={asset} weight="bold" />
           </SheetActionButtonRow>
         </Fragment>
       ) : (
         <SheetActionButtonRow>
-          <DepositActionButton
-            asset={asset}
-            fullWidth
-            weight="heavy"
-          />
+          <DepositActionButton asset={asset} fullWidth weight="heavy" />
         </SheetActionButtonRow>
       )}
       <CarouselWrapper>
