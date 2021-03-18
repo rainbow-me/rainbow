@@ -398,13 +398,11 @@ export default function useUniswapPools(sortField, sortDirection) {
   const fetchPairsData = useCallback(async () => {
     // get data for every pair in list
     try {
-      logger.log('🦄 about to call getBulkPairData');
       const topPairs = await getBulkPairData(
         idsData.pairs.map(item => item.id),
         Number(priceOfEther),
         Number(ethereumPriceOneMonthAgo)
       );
-      logger.log('🦄 HOOK getBulkPairData');
       setPairs(topPairs);
     } catch (e) {
       logger.log('🦄🦄🦄 error getting pairs data', e);
@@ -413,14 +411,12 @@ export default function useUniswapPools(sortField, sortDirection) {
 
   useEffect(() => {
     if (idsData?.pairs && priceOfEther > 0 && ethereumPriceOneMonthAgo > 0) {
-      logger.log('🦄 HOOK fetchPairsData');
       fetchPairsData();
     }
   }, [fetchPairsData, priceOfEther, ethereumPriceOneMonthAgo, idsData?.pairs]);
 
   const top40PairsSorted = useMemo(() => {
     if (!pairs) return null;
-    logger.log('🦄🦄🦄 top 40 pairs code');
     let sortedPairs = sortBy(pairs, sortField);
     if (sortDirection === SORT_DIRECTION.DESC) {
       sortedPairs = sortedPairs.reverse();

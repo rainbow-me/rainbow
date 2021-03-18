@@ -84,8 +84,8 @@ export default function UniswapPools() {
 
   const handleSwitchList = useCallback(
     (id, index) => {
-      // // This crashes the app on android
-      // // that's why it's disabled...
+      // This crashes the app on android
+      // that's why it's disabled...
       ios &&
         LayoutAnimation.configureNext(
           LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
