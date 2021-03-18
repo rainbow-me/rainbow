@@ -87,7 +87,7 @@ export default function RestoreSheet() {
   }, [goBack, navigate]);
 
   const wrapperHeight =
-    deviceHeight + longFormHeight + (android ? getSoftMenuBarHeight() : 0);
+    deviceHeight + longFormHeight + (android ? getSoftMenuBarHeight() / 2 : 0);
 
   return (
     <Column height={wrapperHeight}>

@@ -68,6 +68,17 @@ export default function QRScannerScreen() {
         <ScannerContainer>
           <Background />
           <CameraDimmer cameraVisible={cameraVisible}>
+            {android && (
+              <ScannerHeader>
+                <BackButton
+                  color={colors.whiteLabel}
+                  direction="left"
+                  onPress={handlePressBackButton}
+                  testID="goToBalancesFromScanner"
+                />
+                <EmulatorPasteUriButton />
+              </ScannerHeader>
+            )}
             {initializeCamera && (
               <QRCodeScanner
                 cameraDim={cameraDim}
@@ -77,16 +88,19 @@ export default function QRScannerScreen() {
               />
             )}
           </CameraDimmer>
-          {android ? <DiscoverSheet ref={dsRef} /> : null}
-          <ScannerHeader>
-            <BackButton
-              color={colors.whiteLabel}
-              direction="left"
-              onPress={handlePressBackButton}
-              testID="goToBalancesFromScanner"
-            />
-            <EmulatorPasteUriButton />
-          </ScannerHeader>
+          {android ? (
+            <DiscoverSheet ref={dsRef} />
+          ) : (
+            <ScannerHeader>
+              <BackButton
+                color={colors.whiteLabel}
+                direction="left"
+                onPress={handlePressBackButton}
+                testID="goToBalancesFromScanner"
+              />
+              <EmulatorPasteUriButton />
+            </ScannerHeader>
+          )}
         </ScannerContainer>
       </View>
       <FabWrapper
