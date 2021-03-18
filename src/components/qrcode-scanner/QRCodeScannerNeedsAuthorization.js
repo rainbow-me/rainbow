@@ -25,9 +25,9 @@ const ButtonLabel = styled(Text).attrs(({ theme: { colors } }) => ({
 const Container = styled(Centered).attrs({
   direction: 'column',
 })`
-  ${padding(30, 50, 60, 30)};
+  ${padding(20, 50, 60, 50)};
   ${position.cover};
-  background-color: ${({ theme: { colors } }) => colors.black};
+  background-color: ${({ theme: { colors } }) => colors.trueBlack};
 `;
 
 const QRIcon = styled(Icon).attrs(({ theme: { colors } }) => ({
@@ -47,7 +47,7 @@ const Subtitle = styled(Text).attrs(({ theme: { colors } }) => ({
 
 const Title = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors.white,
+  color: colors.whiteLabel,
   size: 'larger',
   weight: 'bold',
 }))`
