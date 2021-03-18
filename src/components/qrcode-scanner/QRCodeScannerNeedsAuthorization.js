@@ -47,7 +47,7 @@ const Subtitle = styled(Text).attrs(({ theme: { colors } }) => ({
 
 const Title = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors.trueWhite,
+  color: colors.whiteLabel,
   size: 'larger',
   weight: 'bold',
 }))`
