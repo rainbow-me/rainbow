@@ -127,19 +127,20 @@ const BottomRow = ({ symbol }) => {
 const TopRow = item => {
   const { colors } = useTheme();
   const { nativeCurrency } = useAccountSettings();
+  const poolValue = useMemo(() => {
+    return renderPoolValue(
+      item.attribute,
+      item[item.attribute],
+      nativeCurrency,
+      colors
+    );
+  }, [colors, item, nativeCurrency]);
   return (
     <TopRowContainer>
       <FlexItem flex={1}>
         <CoinName>{item.tokenNames}</CoinName>
       </FlexItem>
-      <PriceContainer>
-        {renderPoolValue(
-          item.attribute,
-          item[item.attribute],
-          nativeCurrency,
-          colors
-        )}
-      </PriceContainer>
+      <PriceContainer>{poolValue}</PriceContainer>
     </TopRowContainer>
   );
 };
