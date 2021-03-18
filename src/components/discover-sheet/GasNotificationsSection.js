@@ -3,7 +3,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Switch } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components';
-
 import { Column, Row } from '../layout';
 import { Emoji, Text } from '../text';
 import { getLocal, saveLocal } from '@rainbow-me/handlers/localstorage/common';
@@ -102,7 +101,6 @@ const GasNotification = () => {
   return (
     <Wrapper>
       <Shadow shadows={CardShadow} />
-
       <Gradient />
       <Row
         flex={1}
