@@ -97,6 +97,7 @@ function DiscoverSheet(_, forwardedRef) {
           limitScrollViewContent={headerButtonsHandlers.isSearchModeEnabled}
           onContentSizeChange={value.layoutScrollView}
           ref={sheet}
+          removeClippedSubviews
           renderHeader={renderHeader}
           scrollEnabled={!headerButtonsHandlers.isSearchModeEnabled}
           showBlur
