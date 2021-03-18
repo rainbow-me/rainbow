@@ -1,7 +1,9 @@
 import messaging from '@react-native-firebase/messaging';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Switch, View } from 'react-native';
+import { Switch } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import styled from 'styled-components';
+
 import { Column, Row } from '../layout';
 import { Emoji, Text } from '../text';
 import { getLocal, saveLocal } from '@rainbow-me/handlers/localstorage/common';
@@ -12,6 +14,33 @@ import { position } from '@rainbow-me/styles';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 import ShadowStack from 'react-native-shadow-stack';
+
+const Wrapper = styled.View`
+  height: 70;
+  margin-bottom: 20;
+  margin-horizontal: 19;
+`;
+
+const Gradient = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
+  colors: [colors.gasLeft, colors.gasRight],
+  end: { x: 1, y: 0.5 },
+  overflow: 'hidden',
+  pointerEvents: 'none',
+  start: { x: 0, y: 0.5 },
+}))`
+  ${position.coverAsObject}
+  border-radius: 35;
+  height: 70;
+  position: absolute;
+  z-index: 1;
+`;
+
+const Shadow = styled(ShadowStack).attrs(({ theme: { colors } }) => ({
+  backgroundColor: colors.white,
+  borderRadius: 35,
+}))`
+  height: 70;
+`;
 
 const TOPIC = 'GAS_FEE';
 const TOPIC_DEV = 'GAS_FEE_DEV';
@@ -71,38 +100,10 @@ const GasNotification = () => {
   }, []);
 
   return (
-    <View
-      style={{
-        height: 70,
-        marginBottom: 20,
-        marginHorizontal: 19,
-      }}
-    >
-      <ShadowStack
-        backgroundColor={colors.white}
-        borderRadius={35}
-        shadows={CardShadow}
-        style={{
-          height: 70,
-        }}
-      />
+    <Wrapper>
+      <Shadow shadows={CardShadow} />
 
-      <LinearGradient
-        colors={[colors.gasLeft, colors.gasRight]}
-        end={{ x: 1, y: 0.5 }}
-        overflow="hidden"
-        pointerEvents="none"
-        start={{ x: 0, y: 0.5 }}
-        style={[
-          position.coverAsObject,
-          {
-            borderRadius: 35,
-            height: 70,
-            position: 'absolute',
-            zIndex: 1,
-          },
-        ]}
-      />
+      <Gradient />
       <Row
         flex={1}
         justifyContent="space=between"
@@ -137,7 +138,7 @@ const GasNotification = () => {
           <Switch onValueChange={toggleSwitch} value={isSubscribed} />
         </Column>
       </Row>
-    </View>
+    </Wrapper>
   );
 };
 
