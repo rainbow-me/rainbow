@@ -5,7 +5,7 @@ import { useSharedValue } from 'react-native-reanimated';
 import styled from 'styled-components';
 import { DiscoverSheet } from '../components/discover-sheet';
 import { FabWrapper, SearchFab } from '../components/fab';
-import { BackButton, Header } from '../components/header';
+import { BackButton, Header, HeaderHeight } from '../components/header';
 import { Centered } from '../components/layout';
 import {
   CameraDimmer,
@@ -68,28 +68,39 @@ export default function QRScannerScreen() {
         <ScannerContainer>
           <Background />
           <CameraDimmer cameraVisible={cameraVisible}>
-            {initializeCamera && (
-              <View>
-                <ScannerHeader>
-                  <BackButton
-                    color={colors.whiteLabel}
-                    direction="left"
-                    onPress={handlePressBackButton}
-                    testID="goToBalancesFromScanner"
-                  />
-                  <EmulatorPasteUriButton />
-                </ScannerHeader>
-                <QRCodeScanner
-                  cameraDim={cameraDim}
-                  contentPositionTop={300}
-                  dsRef={dsRef}
-                  enableCamera={cameraVisible}
+            {android && (
+              <ScannerHeader>
+                <BackButton
+                  color={colors.whiteLabel}
+                  direction="left"
+                  onPress={handlePressBackButton}
+                  testID="goToBalancesFromScanner"
                 />
-              </View>
+                <EmulatorPasteUriButton />
+              </ScannerHeader>
+            )}
+            {initializeCamera && (
+              <QRCodeScanner
+                cameraDim={cameraDim}
+                contentPositionTop={HeaderHeight}
+                dsRef={dsRef}
+                enableCamera={cameraVisible}
+              />
             )}
           </CameraDimmer>
-
-          {android ? <DiscoverSheet ref={dsRef} /> : null}
+          {android ? (
+            <DiscoverSheet ref={dsRef} />
+          ) : (
+            <ScannerHeader>
+              <BackButton
+                color={colors.whiteLabel}
+                direction="left"
+                onPress={handlePressBackButton}
+                testID="goToBalancesFromScanner"
+              />
+              <EmulatorPasteUriButton />
+            </ScannerHeader>
+          )}
         </ScannerContainer>
       </View>
       <FabWrapper
