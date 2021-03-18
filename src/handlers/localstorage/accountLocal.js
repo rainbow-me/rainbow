@@ -12,7 +12,6 @@ const ACCOUNT_INFO = 'accountInfo';
 const ACCOUNT_EMPTY = 'accountEmpty';
 const ASSET_PRICES_FROM_UNISWAP = 'assetPricesFromUniswap';
 const ASSETS = 'assets';
-const ACCOUNT_CHARTS = 'accountCharts';
 const OPEN_FAMILIES = 'openFamilies';
 const OPEN_INVESTMENT_CARDS = 'openInvestmentCards';
 const PURCHASE_TRANSACTIONS = 'purchaseTransactions';
@@ -29,7 +28,6 @@ export const accountLocalKeys = [
   ACCOUNT_INFO,
   ASSET_PRICES_FROM_UNISWAP,
   ASSETS,
-  ACCOUNT_CHARTS,
   OPEN_FAMILIES,
   OPEN_INVESTMENT_CARDS,
   PURCHASE_TRANSACTIONS,
@@ -176,24 +174,6 @@ export const savePurchaseTransactions = (
     network,
     purchaseTransactionsVersion
   );
-
-/**
- * @desc get charts
- * @param  {String}   [address]
- * @param  {String}   [network]
- * @return {Object}
- */
-export const getAccountCharts = (accountAddress, network) =>
-  getAccountLocal(ACCOUNT_CHARTS, accountAddress, network, {});
-
-/**
- * @desc save charts data
- * @param  {Object}   [charts]
- * @param  {String}   [address]
- * @param  {String}   [network]
- */
-export const saveAccountCharts = (charts, accountAddress, network) =>
-  saveAccountLocal(ACCOUNT_CHARTS, charts, accountAddress, network);
 
 /**
  * @desc get transactions
