@@ -1,4 +1,4 @@
-import { concat, get, isNil, keys, map, toLower } from 'lodash';
+import { concat, get, isNil, keys, toLower } from 'lodash';
 import { DATA_API_KEY, DATA_ORIGIN } from 'react-native-dotenv';
 import io from 'socket.io-client';
 import { assetChartsReceived, DEFAULT_CHART_TYPE } from './charts';
@@ -248,6 +248,10 @@ export const explorerInit = () => async (dispatch, getState) => {
   newAssetsSocket.on(messages.CONNECT, () => {
     dispatch(emitAssetRequest(keys(pairs)));
     dispatch(emitAssetInfoRequest());
+    if (!disableCharts) {
+      // We need this for Uniswap Pools profit calculation
+      dispatch(emitChartsRequest([ETH_ADDRESS, DPI_ADDRESS], ChartTypes.month));
+    }
   });
 
   if (network === NetworkTypes.mainnet) {
@@ -306,20 +310,9 @@ export const emitChartsRequest = (
 ) => (dispatch, getState) => {
   const { nativeCurrency } = getState().settings;
   const { assetsSocket } = getState().explorer;
-
-  let assetCodes;
-  if (assetAddress) {
-    assetCodes = Array.isArray(assetAddress) ? assetAddress : [assetAddress];
-  } else {
-    const { assets } = getState().data;
-    const assetAddresses = map(assets, 'address');
-
-    const { liquidityTokens } = getState().uniswapLiquidity;
-    const lpTokenAddresses = map(liquidityTokens, token => token.address);
-
-    assetCodes = concat(assetAddresses, lpTokenAddresses, DPI_ADDRESS);
-  }
-
+  const assetCodes = Array.isArray(assetAddress)
+    ? assetAddress
+    : [assetAddress];
   assetsSocket?.emit(...chartsRetrieval(assetCodes, nativeCurrency, chartType));
 };
 
@@ -365,10 +358,6 @@ const listenOnAddressMessages = socket => dispatch => {
 
   socket.on(messages.ADDRESS_ASSETS.RECEIVED, message => {
     dispatch(addressAssetsReceived(message));
-    if (!disableCharts) {
-      // We need this for Uniswap Pools profit calculation
-      dispatch(emitChartsRequest([ETH_ADDRESS, DPI_ADDRESS], ChartTypes.month));
-    }
     if (isValidAssetsResponseFromZerion(message)) {
       logger.log(
         '😬 Cancelling fallback data provider listener. Zerion is good!'
