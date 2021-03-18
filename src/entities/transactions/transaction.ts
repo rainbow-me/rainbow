@@ -1,5 +1,6 @@
 import { ProtocolType } from '../protocolTypes';
 import { ParsedAddressAsset } from '../tokens';
+import { EthereumAddress } from '../wallet';
 import { TransactionStatus } from './transactionStatus';
 import { TransactionType } from './transactionType';
 
@@ -11,7 +12,7 @@ export interface RainbowTransaction {
   } | null;
   dappName?: string; // for walletconnect
   description: string | null;
-  from: string | null;
+  from: EthereumAddress | null;
   gasLimit?: string | null;
   gasPrice?: string;
   hash: string | null;
@@ -29,7 +30,7 @@ export interface RainbowTransaction {
   symbol: string | null;
   timestamp?: number; // for purchases
   title: string;
-  to: string | null;
+  to: EthereumAddress | null;
   transferId?: string; // for purchases
   type: TransactionType;
 }
@@ -38,7 +39,7 @@ export interface NewTransaction {
   amount: string | null;
   asset: ParsedAddressAsset | null;
   dappName?: string; // for walletconnect
-  from: string | null;
+  from: EthereumAddress | null;
   gasLimit?: string | null;
   gasPrice?: string;
   hash: string | null;
@@ -47,7 +48,7 @@ export interface NewTransaction {
   sourceAmount?: string; // for purchases
   status?: TransactionStatus;
   timestamp?: number; // for purchases
-  to: string | null;
+  to: EthereumAddress | null;
   transferId?: string; // for purchases
   type?: TransactionType;
 }
