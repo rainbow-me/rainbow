@@ -21,26 +21,7 @@ import lang from 'i18n-js';
 import { find, findKey, forEach, get, isEmpty } from 'lodash';
 import { Alert } from 'react-native';
 import { ACCESSIBLE, getSupportedBiometryType } from 'react-native-keychain';
-import AesEncryptor from '../handlers/aesEncryption';
-import {
-  authenticateWithPIN,
-  getExistingPIN,
-} from '../handlers/authentication';
-import { saveAccountEmptyState } from '../handlers/localstorage/accountLocal';
-import {
-  addHexPrefix,
-  isHexString,
-  isHexStringIgnorePrefix,
-  isValidMnemonic,
-  web3Provider,
-} from '../handlers/web3';
-import showWalletErrorAlert from '../helpers/support';
-import WalletLoadingStates from '../helpers/walletLoadingStates';
-import { EthereumWalletType } from '../helpers/walletTypes';
-import store from '../redux/store';
-import { setIsWalletLoading } from '../redux/wallets';
 import { getRandomColor } from '../styles/colors';
-import { ethereumUtils } from '../utils';
 import {
   addressKey,
   allWalletsKey,
@@ -51,10 +32,29 @@ import {
   selectedWalletKey,
 } from '../utils/keychainConstants';
 import * as keychain from './keychain';
+import { EthereumAddress } from '@rainbow-me/entities';
+import AesEncryptor from '@rainbow-me/handlers/aesEncryption';
+import {
+  authenticateWithPIN,
+  getExistingPIN,
+} from '@rainbow-me/handlers/authentication';
+import { saveAccountEmptyState } from '@rainbow-me/handlers/localstorage/accountLocal';
+import {
+  addHexPrefix,
+  isHexString,
+  isHexStringIgnorePrefix,
+  isValidMnemonic,
+  web3Provider,
+} from '@rainbow-me/handlers/web3';
+import showWalletErrorAlert from '@rainbow-me/helpers/support';
+import WalletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
+import { EthereumWalletType } from '@rainbow-me/helpers/walletTypes';
+import store from '@rainbow-me/redux/store';
+import { setIsWalletLoading } from '@rainbow-me/redux/wallets';
+import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 const encryptor = new AesEncryptor();
 
-type EthereumAddress = string;
 type EthereumPrivateKey = string;
 type EthereumMnemonic = string;
 type EthereumSeed = string;

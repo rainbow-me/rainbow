@@ -12,6 +12,7 @@ export type {
   ZerionAsset,
 } from './tokens';
 export type {
+  NewTransaction,
   RainbowTransaction,
   ZerionTransaction,
   ZerionTransactionChange,
@@ -25,3 +26,4 @@ export {
   TransactionTypes,
   ZerionTransactionStatus,
 } from './transactions';
+export type { EthereumAddress } from './wallet';

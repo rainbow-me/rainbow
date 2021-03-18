@@ -23,10 +23,10 @@ export enum ZerionTransactionStatus {
 export interface ZerionTransactionChange {
   address_from: string | null;
   address_to: string | null;
-  asset: ZerionAsset | null;
-  direction: TransactionDirection | null;
+  asset: ZerionAsset;
+  direction: TransactionDirection;
   price?: number | null;
-  value?: number | null;
+  value: number;
 }
 
 export interface ZerionTransaction {
