@@ -21,6 +21,7 @@ import {
 import { parseAllTxnsOnReceive } from '../config/debug';
 import {
   AssetType,
+  EthereumAddress,
   ProtocolType,
   ProtocolTypeNames,
   RainbowTransaction,
@@ -65,7 +66,7 @@ const dataFromLastTxHash = (
 
 export const parseTransactions = (
   transactionData: ZerionTransaction[],
-  accountAddress: string,
+  accountAddress: EthereumAddress,
   nativeCurrency: string,
   existingTransactions: RainbowTransaction[],
   purchaseTransactions: RainbowTransaction[],
@@ -286,7 +287,7 @@ const overrideTradeRefund = (txn: ZerionTransaction): ZerionTransaction => {
 
 const parseTransaction = (
   transaction: ZerionTransaction,
-  accountAddress: string,
+  accountAddress: EthereumAddress,
   nativeCurrency: string,
   purchaseTransactionsHashes: string[],
   network: string
@@ -374,7 +375,7 @@ const parseTransaction = (
 };
 
 export const dedupePendingTransactions = (
-  accountAddress: string,
+  accountAddress: EthereumAddress,
   pendingTransactions: RainbowTransaction[],
   parsedTransactions: RainbowTransaction[]
 ) => {
