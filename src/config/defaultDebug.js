@@ -4,6 +4,7 @@
  */
 
 export const disableCharts = false;
+export const disableLowFee = true;
 export const enableActionsOnReadOnlyWallet = false;
 export const debugLayoutAnimations = false;
 export const forceFallbackProvider = false;

@@ -1,5 +1,7 @@
 import React from 'react';
+import { disableLowFee } from '../../config/debug';
 import BottomSpacer from './BottomSpacer';
+import GasNotificationsSection from './GasNotificationsSection';
 import Lists from './ListsSection';
 import PulseIndex from './PulseIndexSection';
 // import Strategies from './StrategiesSection';
@@ -13,6 +15,7 @@ export default function DiscoverHome() {
     <React.Fragment>
       <TopMoversSection />
       <PulseIndex />
+      {!disableLowFee && <GasNotificationsSection />}
       <Lists />
       {/* <Strategies /> */}
       {accountAddress ? <UniswapPools /> : null}
