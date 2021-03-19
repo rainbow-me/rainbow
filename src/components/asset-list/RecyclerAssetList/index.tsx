@@ -746,9 +746,12 @@ function RecyclerAssetList({
 export default connect(
   ({
     editOptions: { isCoinListEdited },
-    openSavings,
-    openSmallBalances,
-    openStateSettings: { openFamilyTabs, openInvestmentCards },
+    openStateSettings: {
+      openFamilyTabs,
+      openInvestmentCards,
+      openSavings,
+      openSmallBalances,
+    },
     settings: { nativeCurrency },
   }: RecyclerAssetListReduxProps) => ({
     isCoinListEdited,

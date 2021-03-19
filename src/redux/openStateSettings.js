@@ -3,11 +3,9 @@ import {
   getOpenFamilies,
   getOpenInvestmentCards,
   getSavingsToggle,
-  getSmallBalanceToggle,
   saveOpenFamilies,
   saveOpenInvestmentCards,
   saveSavingsToggle,
-  saveSmallBalanceToggle,
 } from '../handlers/localstorage/accountLocal';
 
 // -- Constants ------------------------------------------------------------- //
@@ -26,22 +24,17 @@ const SET_OPEN_INVESTMENT_CARDS = 'openStateSettings/SET_OPEN_INVESTMENT_CARDS';
 export const openStateSettingsLoadState = () => async (dispatch, getState) => {
   try {
     const { accountAddress, network } = getState().settings;
-    const openSavings = await getSavingsToggle(accountAddress, network);
-    const openSmallBalances = await getSmallBalanceToggle(
-      accountAddress,
-      network
-    );
     const openInvestmentCards = await getOpenInvestmentCards(
       accountAddress,
       network
     );
     const openFamilyTabs = await getOpenFamilies(accountAddress, network);
+    const openSavings = await getSavingsToggle(accountAddress, network);
     dispatch({
       payload: {
         openFamilyTabs,
         openInvestmentCards,
         openSavings,
-        openSmallBalances,
       },
       type: OPEN_STATE_SETTINGS_LOAD_SUCCESS,
     });
@@ -59,14 +52,11 @@ export const setOpenSavings = payload => (dispatch, getState) => {
   });
 };
 
-export const setOpenSmallBalances = payload => (dispatch, getState) => {
-  const { accountAddress, network } = getState().settings;
-  saveSmallBalanceToggle(payload, accountAddress, network);
+export const setOpenSmallBalances = payload => dispatch =>
   dispatch({
     payload,
     type: SET_OPEN_SMALL_BALANCES,
   });
-};
 
 export const pushOpenFamilyTab = payload => dispatch =>
   dispatch({
@@ -106,6 +96,8 @@ export const resetOpenStateSettings = () => dispatch =>
 export const INITIAL_STATE = {
   openFamilyTabs: {},
   openInvestmentCards: {},
+  openSavings: false,
+  openSmallBalances: false,
 };
 
 export default (state = INITIAL_STATE, action) =>
@@ -113,31 +105,18 @@ export default (state = INITIAL_STATE, action) =>
     if (action.type === OPEN_STATE_SETTINGS_LOAD_SUCCESS) {
       draft.openFamilyTabs = action.payload.openFamilyTabs;
       draft.openInvestmentCards = action.payload.openInvestmentCards;
+      draft.openSavings = action.payload.openSavings;
     } else if (action.type === SET_OPEN_FAMILY_TABS) {
       draft.openFamilyTabs = action.payload;
     } else if (action.type === PUSH_OPEN_FAMILY_TAB) {
       draft.openFamilyTabs = action.payload;
     } else if (action.type === SET_OPEN_INVESTMENT_CARDS) {
       draft.openInvestmentCards = action.payload;
+    } else if (action.type === SET_OPEN_SAVINGS) {
+      draft.openSavings = action.payload;
+    } else if (action.type === SET_OPEN_SMALL_BALANCES) {
+      draft.openSmallBalances = action.payload;
     } else if (action.type === CLEAR_OPEN_STATE_SETTINGS) {
       return INITIAL_STATE;
     }
   });
-
-export const openSmallBalancesReducer = (state = false, action) => {
-  switch (action.type) {
-    case SET_OPEN_SMALL_BALANCES:
-      return action.payload;
-    default:
-      return state;
-  }
-};
-
-export const openSavingsReducer = (state = false, action) => {
-  switch (action.type) {
-    case SET_OPEN_SAVINGS:
-      return action.payload;
-    default:
-      return state;
-  }
-};
