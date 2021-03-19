@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { LayoutAnimation, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
@@ -52,6 +52,7 @@ export default function CoinDivider({
   onEndEdit,
 }) {
   const dispatch = useDispatch();
+  const [fetchedCharts, setFetchedCharts] = useState(false);
   const { width: deviceWidth } = useDimensions();
 
   const {
@@ -70,11 +71,12 @@ export default function CoinDivider({
   } = useOpenSmallBalances();
 
   const toggleSmallBalances = useCallback(() => {
-    if (!isSmallBalancesOpen) {
+    if (!isSmallBalancesOpen && !fetchedCharts) {
       dispatch(emitChartsRequest());
+      setFetchedCharts(true);
     }
     toggleOpenSmallBalances();
-  }, [dispatch, isSmallBalancesOpen, toggleOpenSmallBalances]);
+  }, [dispatch, fetchedCharts, isSmallBalancesOpen, toggleOpenSmallBalances]);
 
   const handlePressEdit = useCallback(() => {
     if (isCoinListEdited && onEndEdit) {
