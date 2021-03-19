@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect } from 'react';
 import { LayoutAnimation, View } from 'react-native';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { Row, RowWithMargins } from '../layout';
 import CoinDividerAssetsValue from './CoinDividerAssetsValue';
@@ -12,6 +13,7 @@ import {
   useDimensions,
   useOpenSmallBalances,
 } from '@rainbow-me/hooks';
+import { emitChartsRequest } from '@rainbow-me/redux/explorer';
 import { padding } from '@rainbow-me/styles';
 
 export const CoinDividerHeight = 30;
@@ -49,6 +51,7 @@ export default function CoinDivider({
   nativeCurrency,
   onEndEdit,
 }) {
+  const dispatch = useDispatch();
   const { width: deviceWidth } = useDimensions();
 
   const {
@@ -65,6 +68,13 @@ export default function CoinDivider({
     isSmallBalancesOpen,
     toggleOpenSmallBalances,
   } = useOpenSmallBalances();
+
+  const toggleSmallBalances = useCallback(() => {
+    if (!isSmallBalancesOpen) {
+      dispatch(emitChartsRequest());
+    }
+    toggleOpenSmallBalances();
+  }, [dispatch, isSmallBalancesOpen, toggleOpenSmallBalances]);
 
   const handlePressEdit = useCallback(() => {
     if (isCoinListEdited && onEndEdit) {
@@ -87,7 +97,7 @@ export default function CoinDivider({
             coinDividerHeight={CoinDividerHeight}
             isSmallBalancesOpen={isSmallBalancesOpen}
             isVisible={isCoinListEdited}
-            onPress={toggleOpenSmallBalances}
+            onPress={toggleSmallBalances}
           />
         </View>
         <CoinDividerButtonRow isCoinListEdited={isCoinListEdited}>

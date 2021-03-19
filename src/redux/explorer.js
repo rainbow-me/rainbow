@@ -1,7 +1,8 @@
-import { concat, get, isNil, keys, toLower } from 'lodash';
+import { concat, get, isNil, keys, map, toLower } from 'lodash';
 import { DATA_API_KEY, DATA_ORIGIN } from 'react-native-dotenv';
 import io from 'socket.io-client';
 import { assetChartsReceived, DEFAULT_CHART_TYPE } from './charts';
+/* eslint-disable-next-line import/no-cycle */
 import {
   addressAssetsReceived,
   assetPricesChanged,
@@ -9,6 +10,7 @@ import {
   transactionsReceived,
   transactionsRemoved,
 } from './data';
+/* eslint-disable-next-line import/no-cycle */
 import {
   fallbackExplorerClearState,
   fallbackExplorerInit,
@@ -305,14 +307,17 @@ export const emitAssetInfoRequest = () => (dispatch, getState) => {
 };
 
 export const emitChartsRequest = (
-  assetAddress,
+  assetAddress = null,
   chartType = DEFAULT_CHART_TYPE
 ) => (dispatch, getState) => {
   const { nativeCurrency } = getState().settings;
   const { assetsSocket } = getState().explorer;
+  const { assets } = getState().data;
   const assetCodes = Array.isArray(assetAddress)
     ? assetAddress
-    : [assetAddress];
+    : assetAddress
+    ? [assetAddress]
+    : map(assets, 'address');
   assetsSocket?.emit(...chartsRetrieval(assetCodes, nativeCurrency, chartType));
 };
 
