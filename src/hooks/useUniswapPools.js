@@ -1,6 +1,6 @@
 import { useQuery } from '@apollo/client';
 import { getUnixTime, startOfMinute, sub } from 'date-fns';
-import { get, sortBy, toLower } from 'lodash';
+import { get, pick, sortBy, toLower } from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { blockClient, uniswapClient } from '@rainbow-me/apollo/client';
@@ -38,7 +38,7 @@ async function splitQuery(query, localClient, vars, list, skipCount = 100) {
     const sliced = list.slice(skip, end);
     try {
       const result = await localClient.query({
-        fetchPolicy: 'no-cache',
+        fetchPolicy: 'network-only',
         query: query(...vars, sliced),
       });
       fetchedData = {
@@ -243,10 +243,14 @@ function parseData(
     (newData.oneDayVolumeUSD * 0.003 * 365 * 100) / newData.trackedReserveUSD;
 
   return {
-    ...newData,
     address: newData.id,
+    annualized_fees: newData.annualized_fees,
     liquidity: Number(Number(newData.reserveUSD).toFixed(2)),
+    oneDayVolumeUSD: newData.oneDayVolumeUSD,
+    profit30d: newData.profit30d,
     symbol: 'UNI-V2',
+    token0: pick(newData.token0, ['id', 'name', 'symbol']),
+    token1: pick(newData.token1, ['id', 'name', 'symbol']),
     tokenNames: `${newData.token0.symbol}-${newData.token1.symbol}`.replace(
       'WETH',
       'ETH'
@@ -443,7 +447,17 @@ export default function useUniswapPools(sortField, sortDirection) {
       pair.tokens = [token0, token1];
       tmpAllTokens.push(toLower(pair.tokens[0].id));
       tmpAllTokens.push(toLower(pair.tokens[1].id));
-      return pair;
+      return pick(pair, [
+        'address',
+        'annualized_fees',
+        'liquidity',
+        'oneDayVolumeUSD',
+        'profit30d',
+        'symbol',
+        'tokens',
+        'tokenNames',
+        'type',
+      ]);
     });
 
     const allLPTokens = sortedPairs.map(({ address }) => address);
