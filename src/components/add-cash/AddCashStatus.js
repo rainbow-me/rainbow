@@ -122,7 +122,9 @@ const AddCashFailed = ({ error, orderId, resetAddCashForm }) => {
         <NeedHelpButton
           marginLeft={10}
           marginTop={24}
-          subject={`Purchase Failed - Order ${orderId}`}
+          subject={
+            orderId ? `Purchase Failed - Order ${orderId}` : 'Purchase Failed'
+          }
         />
       </Row>
     </Content>
