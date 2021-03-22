@@ -219,7 +219,8 @@ function RecyclerAssetList({
       sectionsIndices,
       stickyComponentsIndices,
     };
-  }, [openFamilyTabs, sections]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [openFamilyTabs, sections[0]?.data.length]);
 
   // Defines the position of the coinDivider, if it exists.
   const coinDividerIndex = useMemo<number>(() => {
@@ -528,6 +529,7 @@ function RecyclerAssetList({
         dim.height = isCoinListEdited && !visibleDuringCoinEdit ? 0 : height;
       }
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     areSmallCollectibles,
     hideHeader,
@@ -539,7 +541,6 @@ function RecyclerAssetList({
     openSavings,
     openSmallBalances,
     paddingBottom,
-    sections,
     sectionsIndices,
   ]);
 
@@ -691,7 +692,7 @@ function RecyclerAssetList({
     lastIsCoinListEdited,
     lastOpenFamilyTabs,
     lastSections,
-    sections,
+    //sections,
     isCoinListEdited,
     openFamilyTabs,
     paddingBottom,
