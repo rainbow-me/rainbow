@@ -1,4 +1,4 @@
-import { concat, get, isNil, keys, map, toLower } from 'lodash';
+import { concat, isEmpty, isNil, keys, map, toLower } from 'lodash';
 import { DATA_API_KEY, DATA_ORIGIN } from 'react-native-dotenv';
 import io from 'socket.io-client';
 import { assetChartsReceived, DEFAULT_CHART_TYPE } from './charts';
@@ -318,7 +318,11 @@ export const emitChartsRequest = (
     : assetAddress
     ? [assetAddress]
     : map(assets, 'address');
-  assetsSocket?.emit(...chartsRetrieval(assetCodes, nativeCurrency, chartType));
+  if (!isEmpty(assetCodes)) {
+    assetsSocket?.emit(
+      ...chartsRetrieval(assetCodes, nativeCurrency, chartType)
+    );
+  }
 };
 
 const listenOnAssetMessages = socket => dispatch => {
@@ -335,29 +339,29 @@ const listenOnAssetMessages = socket => dispatch => {
   });
 
   socket.on(messages.ASSET_CHARTS.RECEIVED, message => {
-    //logger.log('charts received', get(message, 'payload.charts', {}));
+    // logger.log('charts received', message?.payload?.charts);
     dispatch(assetChartsReceived(message));
   });
 };
 
 const listenOnAddressMessages = socket => dispatch => {
   socket.on(messages.ADDRESS_TRANSACTIONS.RECEIVED, message => {
-    // logger.log('txns received', get(message, 'payload.transactions', []));
+    // logger.log('txns received', message?.payload?.transactions);
     dispatch(transactionsReceived(message));
   });
 
   socket.on(messages.ADDRESS_TRANSACTIONS.APPENDED, message => {
-    logger.log('txns appended', get(message, 'payload.transactions', []));
+    logger.log('txns appended', message?.payload?.transactions);
     dispatch(transactionsReceived(message, true));
   });
 
   socket.on(messages.ADDRESS_TRANSACTIONS.CHANGED, message => {
-    logger.log('txns changed', get(message, 'payload.transactions', []));
+    logger.log('txns changed', message?.payload?.transactions);
     dispatch(transactionsReceived(message, true));
   });
 
   socket.on(messages.ADDRESS_TRANSACTIONS.REMOVED, message => {
-    logger.log('txns removed', get(message, 'payload.transactions', []));
+    logger.log('txns removed', message?.payload?.transactions);
     dispatch(transactionsRemoved(message));
   });
 
