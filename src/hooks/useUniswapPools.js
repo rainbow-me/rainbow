@@ -150,7 +150,7 @@ async function getBulkPairData(pairList, ethPrice, ethPriceOneMonthAgo) {
               fetchPolicy: 'no-cache',
               query: UNISWAP_PAIR_DATA_QUERY(pair.id, b1),
             });
-            oneDayHistory = newData.data.pairs[0];
+            oneDayHistory = newData?.data?.pairs[0];
           }
           let twoDayHistory = twoDayData?.[pair.id];
           if (!twoDayHistory) {
@@ -158,7 +158,7 @@ async function getBulkPairData(pairList, ethPrice, ethPriceOneMonthAgo) {
               fetchPolicy: 'no-cache',
               query: UNISWAP_PAIR_DATA_QUERY(pair.id, b2),
             });
-            twoDayHistory = newData.data.pairs[0];
+            twoDayHistory = newData?.data?.pairs[0];
           }
           let oneMonthHistory = oneMonthData?.[pair.id];
           if (!oneMonthHistory) {
@@ -166,7 +166,7 @@ async function getBulkPairData(pairList, ethPrice, ethPriceOneMonthAgo) {
               fetchPolicy: 'no-cache',
               query: UNISWAP_PAIR_DATA_QUERY(pair.id, b3),
             });
-            oneMonthHistory = newData.data.pairs[0];
+            oneMonthHistory = newData?.data?.pairs[0];
           }
 
           data = parseData(
