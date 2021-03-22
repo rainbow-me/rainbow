@@ -3,9 +3,11 @@ import { createStackNavigator } from '@react-navigation/stack';
 import React, { useContext, useMemo } from 'react';
 import { InitialRouteContext } from '../context/initialRoute';
 import AddCashSheet from '../screens/AddCashSheet';
+import AddTokenSheet from '../screens/AddTokenSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import BackupSheet from '../screens/BackupSheet';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
+import ConnectedDappsSheet from '../screens/ConnectedDappsSheet';
 import DepositModal from '../screens/DepositModal';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
@@ -126,8 +128,18 @@ function MainNavigator() {
         options={expandedPreset}
       />
       <Stack.Screen
+        component={ExpandedAssetSheet}
+        name={Routes.TOKEN_INDEX_SHEET}
+        options={expandedPreset}
+      />
+      <Stack.Screen
         component={ChangeWalletSheet}
         name={Routes.CHANGE_WALLET_SHEET}
+        options={expandedPreset}
+      />
+      <Stack.Screen
+        component={ConnectedDappsSheet}
+        name={Routes.CONNECTED_DAPPS}
         options={expandedPreset}
       />
       <Stack.Screen
@@ -185,6 +197,11 @@ function MainNavigator() {
         options={bottomSheetPreset}
       />
       <Stack.Screen
+        component={AddTokenSheet}
+        name={Routes.ADD_TOKEN_SHEET}
+        options={bottomSheetPreset}
+      />
+      <Stack.Screen
         component={WithdrawModal}
         name={Routes.SAVINGS_WITHDRAW_MODAL}
         options={exchangePreset}
@@ -235,6 +252,11 @@ function MainOuterNavigator() {
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SCREEN}
         options={sheetPreset}
+      />
+      <OuterStack.Screen
+        component={ExpandedAssetSheet}
+        name={Routes.TOKEN_INDEX_SCREEN}
+        options={sheetPresetWithSmallGestureResponseDistance}
       />
       <OuterStack.Screen
         component={SettingsModal}

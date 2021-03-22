@@ -90,7 +90,7 @@ const TopRow = ({ name, native, nativeCurrencySymbol }) => {
   return (
     <TopRowContainer>
       <FlexItem flex={1}>
-        <CoinName color={colors.dark}>{name}</CoinName>
+        <CoinName>{name}</CoinName>
       </FlexItem>
       <PriceContainer>
         <BalanceText

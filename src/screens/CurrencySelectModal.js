@@ -240,7 +240,7 @@ export default function CurrencySelectModal() {
 
   const itemProps = useMemo(
     () => ({
-      onFavoriteAsset: handleFavoriteAsset,
+      onActionAsset: handleFavoriteAsset,
       onPress: handleSelectAsset,
       showBalance: type === CurrencySelectionTypes.input,
       showFavoriteButton: type === CurrencySelectionTypes.output,

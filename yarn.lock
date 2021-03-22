@@ -2375,10 +2375,10 @@
   dependencies:
     invariant "^2.2.4"
 
-"@react-native-community/viewpager@4.1.0":
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/@react-native-community/viewpager/-/viewpager-4.1.0.tgz#b6908329a39e27e5cd3236540aadd65133420563"
-  integrity sha512-+YbmuKAL4ahc2D/u0ix+xMCgAN0KukUnc+uvlMD+NPn/zUdUposqF6dsZu1cRarBzKcswchlj3kAH8yN3bazxA==
+"@react-native-community/viewpager@5.0.5":
+  version "5.0.5"
+  resolved "https://registry.yarnpkg.com/@react-native-community/viewpager/-/viewpager-5.0.5.tgz#e9455535b4aaa77924fb7055be9c6d1c1cb3313a"
+  integrity sha512-COjm1qwfo4xqLzHbbP502h2vcCGPhaqPL6P30siZLGA5+VUjtOSkUla6IbYAmTJqYUvf6vPob/9yaIxko/QkPw==
 
 "@react-native-firebase/app@^8.4.2":
   version "8.4.5"
@@ -11843,10 +11843,10 @@ rc@^1.2.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-react-coin-icon@^0.1.37:
-  version "0.1.37"
-  resolved "https://registry.yarnpkg.com/react-coin-icon/-/react-coin-icon-0.1.37.tgz#79af2930f213ef0ecf1e5f7e87876b26237950a8"
-  integrity sha512-0vcoOg6ertpbxEPAtVeGp6s+nGOf8taqoS6NhU4H4+w3mJ1cINi4wngrqqgeg/w3lGDmmNaXoiPqjHI6Yhrg/Q==
+react-coin-icon@^0.1.38:
+  version "0.1.38"
+  resolved "https://registry.yarnpkg.com/react-coin-icon/-/react-coin-icon-0.1.38.tgz#4e6bc92faa7793ca923fb4acb8b6f3f3d984aa79"
+  integrity sha512-Y65h4KNCV72a8d2JrgTmqUhx+qYO9g57ApD5TR77ii5Ca3q+CEM5j3txpfBRPKI4DwLRKkeGrgUm65RmCr9K6A==
   dependencies:
     "@svgr/cli" "^4.3.0"
     react-primitives "^0.8.1"
@@ -12110,9 +12110,9 @@ react-native-qrcode-svg@mikedemarais/react-native-qrcode-svg#c0302a698ea4fa0bb9b
     prop-types "^15.5.10"
     qrcode "^1.2.0"
 
-react-native-radial-gradient@rainbow-me/react-native-radial-gradient#d0cf5e6dd3cd069c499d4169f418b98f28a747fe:
-  version "1.0.7"
-  resolved "https://codeload.github.com/rainbow-me/react-native-radial-gradient/tar.gz/d0cf5e6dd3cd069c499d4169f418b98f28a747fe"
+react-native-radial-gradient@rainbow-me/react-native-radial-gradient#1266cd8f6ac3321bcf27357f8771bd088f9f27ef:
+  version "1.0.9"
+  resolved "https://codeload.github.com/rainbow-me/react-native-radial-gradient/tar.gz/1266cd8f6ac3321bcf27357f8771bd088f9f27ef"
 
 react-native-randombytes@^3.5.3:
   version "3.5.3"

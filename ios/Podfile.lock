@@ -392,7 +392,7 @@ PODS:
     - React
   - react-native-video/Video (5.1.1):
     - React-Core
-  - react-native-viewpager (4.1.0):
+  - react-native-viewpager (5.0.5):
     - React
   - react-native-webview (11.2.3):
     - React-Core
@@ -575,7 +575,7 @@ PODS:
   - SexyTooltip (1.2.7):
     - pop (~> 1.0)
   - Shimmer (1.0.2)
-  - SRSRadialGradient (1.0.7):
+  - SRSRadialGradient (1.0.9):
     - React
   - SSZipArchive (2.2.3)
   - TcpSockets (3.3.2):
@@ -619,7 +619,7 @@ DEPENDENCIES:
   - libwebp
   - lottie-ios (from `../node_modules/lottie-ios`)
   - lottie-react-native (from `../node_modules/lottie-react-native`)
-  - PanModal (from `https://github.com/osdnk/PanModal`, commit `67557e18491ddfd2e2d1af0f36efb8f0202589f7`)
+  - PanModal (from `https://github.com/osdnk/PanModal`, commit `42c1ac03b79d1333ff06c4234aba2e3e47a32c99`)
   - Permission-Camera (from `../node_modules/react-native-permissions/ios/Camera.podspec`)
   - Permission-FaceID (from `../node_modules/react-native-permissions/ios/FaceID.podspec`)
   - Rainbow-Internals (from `./Internals`)
@@ -766,7 +766,7 @@ EXTERNAL SOURCES:
   lottie-react-native:
     :path: "../node_modules/lottie-react-native"
   PanModal:
-    :commit: 67557e18491ddfd2e2d1af0f36efb8f0202589f7
+    :commit: 42c1ac03b79d1333ff06c4234aba2e3e47a32c99
     :git: https://github.com/osdnk/PanModal
   Permission-Camera:
     :path: "../node_modules/react-native-permissions/ios/Camera.podspec"
@@ -929,7 +929,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   PanModal:
-    :commit: 67557e18491ddfd2e2d1af0f36efb8f0202589f7
+    :commit: 42c1ac03b79d1333ff06c4234aba2e3e47a32c99
     :git: https://github.com/osdnk/PanModal
 
 SPEC CHECKSUMS:
@@ -1007,7 +1007,7 @@ SPEC CHECKSUMS:
   react-native-version-number: b415bbec6a13f2df62bf978e85bc0d699462f37f
   react-native-video: 0bb76b6d6b77da3009611586c7dbf817b947f30e
   react-native-video-cache: 0f8b1b2195f234eabd507cfebdd91c2e82695008
-  react-native-viewpager: 6f8c102e8081d70259252b254143b4193a9fb4cb
+  react-native-viewpager: 7238df0b6b9ee5a50f882750269f3c76639b195f
   react-native-webview: 6520e3e7b4933de76b95ef542c8d7115cf45b68e
   React-RCTActionSheet: 53ea72699698b0b47a6421cb1c8b4ab215a774aa
   React-RCTAnimation: 1befece0b5183c22ae01b966f5583f42e69a83c2
@@ -1055,7 +1055,7 @@ SPEC CHECKSUMS:
   Sentry: 388c9dc093b2fd3a264466a5c5b21e25959610a9
   SexyTooltip: e243da5a858c7160141cf35786a4033669d1efca
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86
-  SRSRadialGradient: 7f9c92f2b31576ab80f059378ef2817404cd0575
+  SRSRadialGradient: a372b4b3bc65a2f3b1a16b906485cff204e1db3e
   SSZipArchive: 62d4947b08730e4cda640473b0066d209ff033c9
   TcpSockets: bd31674146c0931a064fc254a59812dfd1a73ae0
   TOCropViewController: da59f531f8ac8a94ef6d6c0fc34009350f9e8bfe
@@ -1063,6 +1063,6 @@ SPEC CHECKSUMS:
   Yoga: 7d13633d129fd179e01b8953d38d47be90db185a
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 05e9306ad3122d59e620bfaa48069a823cc90577
+PODFILE CHECKSUM: 412313ac47634ca15faa48e68aadac98633cc980
 
 COCOAPODS: 1.10.0

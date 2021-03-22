@@ -178,16 +178,19 @@ export default function ChartPathProvider({
     providedData = rawData,
   } = useContext(ChartContext) || generateValues();
 
-  const prevData = useSharedValue(valuesStore.current.prevData);
-  const currData = useSharedValue(valuesStore.current.currData);
-  const curroriginalData = useSharedValue(valuesStore.current.curroriginalData);
+  const prevData = useSharedValue(valuesStore.current.prevData, 'prevData');
+  const currData = useSharedValue(valuesStore.current.currData, 'currData');
+  const curroriginalData = useSharedValue(
+    valuesStore.current.curroriginalData,
+    'curroriginalData'
+  );
   const hitSlopValue = useSharedValue(hitSlop);
   const hapticsEnabledValue = useSharedValue(hapticsEnabled);
   const [extremes, setExtremes] = useState({});
-  const isAnimationInProgress = useSharedValue(false);
+  const isAnimationInProgress = useSharedValue(false, 'isAnimationInProgress');
 
   const [data, setData] = useState(providedData);
-  const dataQueue = useSharedValue(valuesStore.current.dataQueue);
+  const dataQueue = useSharedValue(valuesStore.current.dataQueue, 'dataQueue');
   useEffect(() => {
     if (isAnimationInProgress.value) {
       dataQueue.value.push(providedData);
@@ -248,7 +251,7 @@ export default function ChartPathProvider({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
-  const isStarted = useSharedValue(false);
+  const isStarted = useSharedValue(false, 'isStarted');
 
   const onLongPressGestureEvent = useAnimatedGestureHandler({
     onActive: event => {
@@ -441,14 +444,17 @@ export default function ChartPathProvider({
   });
 
   // @ts-ignore
-  const dotStyle = useAnimatedStyle(() => ({
-    opacity: dotScale.value,
-    transform: [
-      { translateX: positionX.value },
-      { translateY: positionY.value + 10 }, // TODO temporary fix for clipped chart
-      { scale: dotScale.value },
-    ],
-  }));
+  const dotStyle = useAnimatedStyle(
+    () => ({
+      opacity: dotScale.value,
+      transform: [
+        { translateX: positionX.value },
+        { translateY: positionY.value + 10 }, // TODO temporary fix for clipped chart
+        { scale: dotScale.value },
+      ],
+    }),
+    []
+  );
 
   return (
     <ChartPath
@@ -626,13 +632,13 @@ function ChartPath({
       };
     }
     return props;
-  });
+  }, []);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
       opacity: pathOpacity.value * (1 - selectedOpacity) + selectedOpacity,
     };
-  });
+  }, undefined);
 
   return (
     <InternalContext.Provider

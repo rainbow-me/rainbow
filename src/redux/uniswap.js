@@ -1,5 +1,5 @@
 import produce from 'immer';
-import { concat, map, remove, toLower, uniq, without } from 'lodash';
+import { concat, isArray, map, remove, toLower, uniq, without } from 'lodash';
 import {
   getUniswapFavorites,
   saveUniswapFavorites,
@@ -29,7 +29,6 @@ const UNISWAP_LOADED_ALL_TOKENS = 'uniswap/UNISWAP_LOADED_ALL_TOKENS';
 
 const UNISWAP_UPDATE_FAVORITES = 'uniswap/UNISWAP_UPDATE_FAVORITES';
 const UNISWAP_CLEAR_STATE = 'uniswap/UNISWAP_CLEAR_STATE';
-
 // -- Actions --------------------------------------------------------------- //
 export const uniswapLoadState = () => async (dispatch, getState) => {
   const { network } = getState().settings;
@@ -124,13 +123,14 @@ export const uniswapUpdateFavorites = (assetAddress, add = true) => (
   dispatch,
   getState
 ) => {
-  const address = toLower(assetAddress);
   const { favorites } = getState().uniswap;
   const normalizedFavorites = map(favorites, toLower);
 
   const updatedFavorites = add
-    ? uniq(concat(normalizedFavorites, address))
-    : without(normalizedFavorites, address);
+    ? uniq(concat(normalizedFavorites, assetAddress))
+    : isArray(assetAddress)
+    ? without(normalizedFavorites, ...assetAddress)
+    : without(normalizedFavorites, assetAddress);
   dispatch({
     payload: updatedFavorites,
     type: UNISWAP_UPDATE_FAVORITES,

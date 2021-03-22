@@ -235,19 +235,19 @@ const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
             </Title>
             <Row justify="space-between" marginVertical={30}>
               <AmountButton
-                amount={50}
-                backgroundColor={colors.swapPurple}
-                color={colors.neonSkyblue}
-                onPress={handlePressAmount}
-              />
-              <AmountButton
                 amount={100}
                 backgroundColor={colors.swapPurple}
                 color={colors.neonSkyblue}
                 onPress={handlePressAmount}
               />
               <AmountButton
-                amount={250}
+                amount={200}
+                backgroundColor={colors.swapPurple}
+                color={colors.neonSkyblue}
+                onPress={handlePressAmount}
+              />
+              <AmountButton
+                amount={300}
                 backgroundColor={colors.purpleDark}
                 color={colors.pinkLight}
                 onPress={handlePressAmount}

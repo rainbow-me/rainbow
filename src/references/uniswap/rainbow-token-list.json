@@ -21564,6 +21564,7 @@
       "name": "Sushi",
       "symbol": "SUSHI",
       "extensions": {
+        "color": "#5350A9",
         "isVerified": true
       }
     },

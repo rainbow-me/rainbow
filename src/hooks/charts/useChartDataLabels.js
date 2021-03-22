@@ -8,7 +8,7 @@ const formatPercentChange = (change = 0) => toFixedDecimals(change, 2);
 export default function useChartDataLabels({ asset, chartType, points }) {
   const changeDirection = useValue(1);
 
-  const latestPrice = asset?.native?.price.amount;
+  const latestPrice = asset?.native?.price?.amount;
 
   const getPercentChangeForPrice = useCallback(
     startPrice => {
@@ -23,7 +23,7 @@ export default function useChartDataLabels({ asset, chartType, points }) {
     () =>
       !points || chartType === ChartTypes.day
         ? formatPercentChange(asset?.price?.relative_change_24h)
-        : getPercentChangeForPrice(points[0].y),
+        : getPercentChangeForPrice(points[0]?.y ?? 0),
     [asset, chartType, getPercentChangeForPrice, points]
   );
 

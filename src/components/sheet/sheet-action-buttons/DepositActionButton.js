@@ -1,10 +1,16 @@
 import analytics from '@segment/analytics-react-native';
 import React, { useCallback, useState } from 'react';
-import { ComingSoonFloatingEmojis } from '../../floating-emojis';
+import { Linking } from 'react-native';
 import SheetActionButton from './SheetActionButton';
 import { neverRerender } from '@rainbow-me/utils';
 
-function DepositActionButton({ color: givenColor, symbol, ...props }) {
+function DepositActionButton({
+  color: givenColor,
+  symbol,
+  token1Address,
+  token2Address,
+  ...props
+}) {
   const { colors, isDarkMode } = useTheme();
   const color = givenColor || (isDarkMode ? colors.darkModeDark : colors.dark);
   const [didTrack, setDidTrack] = useState(false);
@@ -17,17 +23,18 @@ function DepositActionButton({ color: givenColor, symbol, ...props }) {
       });
       setDidTrack(true);
     }
-  }, [didTrack, symbol]);
+    Linking.openURL(
+      `https://app.uniswap.org/#/add/${token1Address}/${token2Address}`
+    );
+  }, [didTrack, symbol, token1Address, token2Address]);
 
   return (
-    <ComingSoonFloatingEmojis>
-      <SheetActionButton
-        {...props}
-        color={color}
-        label="􀁍 Deposit"
-        onPress={handlePress}
-      />
-    </ComingSoonFloatingEmojis>
+    <SheetActionButton
+      {...props}
+      color={color}
+      label="􀁍 Deposit"
+      onPress={handlePress}
+    />
   );
 }
 

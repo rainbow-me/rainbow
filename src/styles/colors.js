@@ -11,9 +11,11 @@ const darkModeColors = {
   blueGreyDark: '#E0E8FF',
   blueGreyDark04: '#222326',
   blueGreyDark20: '#3A3D45',
+  blueGreyDark30: '#50535E',
   blueGreyDark50: '#797D8B',
   blueGreyDarker: '#000000',
   blueGreyDarkLight: '#1E2027',
+  brightRed: '#FF5252',
   dark: '#E0E8FF',
   darkGrey: '#333333',
   darkModeDark: '#404656',
@@ -35,20 +37,18 @@ const darkModeColors = {
   shimmer: '#1F2229',
   skeleton: '#191B21',
   stackBackground: '#000000',
-  trueBlack: '#000000',
-  trueWhite: '#FFFFFF',
   white: '#12131A',
   whiteLabel: '#FFFFFF',
 };
 
 const isHex = (color = '') => color.length >= 3 && color.charAt(0) === '#';
 const isRGB = (color = '') => toLower(color).substring(0, 3) === 'rgb';
-
 const getColorsByTheme = darkMode => {
   let base = {
     appleBlue: '#0E76FD', // '14, 118, 253'
     black: '#000000', // '0, 0, 0'
     blueGreyDark: '#3C4252', // '60, 66, 82'
+    blueGreyDark30: '#C5C6CB', // this color is blueGreyDark at 30% over white
     blueGreyDark50: '#9DA0A8', // this color is blueGreyDark at 50% over white
     blueGreyDark60: '#898D97', // this color is blueGreyDark at 60% over white
     blueGreyDark80: '#636875', // this color is blueGreyDark at 80% over white
@@ -58,6 +58,9 @@ const getColorsByTheme = darkMode => {
     chartGreen: '#66D28F', // '102, 210, 143'
     dark: '#25292E', // '37, 41, 46'
     darkGrey: '#71778A', // '113, 119, 138'
+    dpiDark: '#8150E6', // '129, 80, 230'
+    dpiLight: '#9B74EC', // '155, 116, 236'
+    dpiMid: '#8E62E9', // '142, 98, 233'
     flamingo: '#E540F1', // '229, 64, 241'
     green: '#2CCC00', // '58, 166, 134'
     grey: '#A9ADB9', // '169, 173, 185'
@@ -77,6 +80,7 @@ const getColorsByTheme = darkMode => {
     purple: '#735CFF', // '115, 92, 255'
     purpleDark: '#6F00A3', // '111, 0, 163'
     purpleLight: '#FFD9FE', // '255, 217, 254'
+    purpleUniswap: '#FF007A', // '255,0,122'
     red: '#FF494A', // '255, 73, 74'
     rowDivider: 'rgba(60, 66, 82, 0.03)', // '60, 66, 82, 0.03'
     rowDividerExtraLight: 'rgba(60, 66, 82, 0.015)', // '60, 66, 82, 0.015'
@@ -119,8 +123,8 @@ const getColorsByTheme = darkMode => {
   };
 
   let gradients = {
-    favoriteCircle: ['#FFFFFF', '#F2F4F7'],
     lighterGrey: [buildRgba('#ECF1F5', 0.15), buildRgba('#DFE4EB', 0.5)],
+    lightestGrey: ['#FFFFFF', '#F2F4F7'],
     lightGrey: [buildRgba('#ECF1F5', 0.5), buildRgba('#DFE4EB', 0.5)],
     offWhite: [base.white, base.offWhite],
     rainbow: ['#FFB114', '#FF54BB', '#7EA4DE'],
@@ -197,8 +201,8 @@ const getColorsByTheme = darkMode => {
     };
 
     gradients = {
-      favoriteCircle: [buildRgba('#1F222A', 0.8), buildRgba('#1F222A', 0.3)],
       lighterGrey: [buildRgba('#1F222A', 0.8), buildRgba('#1F222A', 0.6)],
+      lightestGrey: [buildRgba('#1F222A', 0.8), buildRgba('#1F222A', 0.3)],
       lightGrey: ['#1F222A', buildRgba('#1F222A', 0.8)],
       offWhite: ['#1F222A', '#1F222A'],
       rainbow: ['#FFB114', '#FF54BB', '#7EA4DE'],

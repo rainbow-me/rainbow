@@ -8,19 +8,25 @@ import Animated, {
   set,
   sub,
 } from 'react-native-reanimated';
+
 import styled from 'styled-components';
 import { useMemoOne } from 'use-memo-one';
 import { scrollPosition } from '../../navigation/ScrollPagerWrapper';
 import { useReanimatedValue } from '../list/MarqueeList';
+import { useDelayedValueWithLayoutAnimation } from '@rainbow-me/hooks';
 
 const Dim = styled(Animated.View)`
   flex: 1;
   width: 100%;
 `;
 
-export default function CameraDimmer({ children }) {
+export default function CameraDimmer({ children, cameraVisible }) {
   const prev = useReanimatedValue(0);
   const prevMem = useReanimatedValue(0);
+
+  const delayedCameraVisible = useDelayedValueWithLayoutAnimation(
+    cameraVisible
+  );
 
   const style = useMemoOne(
     () => ({
@@ -41,5 +47,9 @@ export default function CameraDimmer({ children }) {
     }),
     []
   );
-  return <Dim style={style}>{children}</Dim>;
+  return (
+    <Dim style={style}>
+      <Dim style={{ opacity: delayedCameraVisible ? 1 : 0 }}>{children}</Dim>
+    </Dim>
+  );
 }

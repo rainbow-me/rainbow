@@ -92,7 +92,6 @@ export default function UniswapInvestmentRow({ assetType, item, ...props }) {
   const handleOpenExpandedState = useCallback(() => {
     navigate(Routes.EXPANDED_ASSET_SHEET, {
       asset: item,
-      cornerRadius: 10,
       longFormHeight: initialLiquidityPoolExpandedStateSheetHeight,
       type: assetType,
     });

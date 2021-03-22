@@ -1,6 +1,6 @@
 import { Keyboard, StatusBar } from 'react-native';
 import currentColors from '../context/currentColors';
-import { onDidPop, onWillPop } from './Navigation';
+import { getActiveRoute, onDidPop, onWillPop } from './Navigation';
 import { appearListener } from './nativeStackHelpers';
 
 export const nativeStackConfig = {
@@ -22,7 +22,10 @@ export const nativeStackConfig = {
     },
     onWillDismiss: () => {
       onWillPop();
-      if (currentColors.theme === 'light') {
+      if (
+        currentColors.theme === 'light' &&
+        !getActiveRoute()?.params?.fromDiscover
+      ) {
         StatusBar.setBarStyle('dark-content');
       }
     },

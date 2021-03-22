@@ -47,7 +47,7 @@ function WrappedFallbackImage({
       {...borders.buildCircleAsObject(size)}
       backgroundColor={colors.alpha(color || colors.dark, shadowOpacity || 0.3)}
       elevation={showImage ? elevation : 0}
-      opacity={showImage ? 1 : 0}
+      style={{ overflow: 'hidden' }}
     >
       <FallbackImage
         {...props}

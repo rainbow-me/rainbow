@@ -9,7 +9,7 @@ export type ImgixImageProps = FastImageProps & {
 
 // Here we're emulating the pattern used in react-native-fast-image:
 // https://github.com/DylanVann/react-native-fast-image/blob/0439f7190f141e51a391c84890cdd8a7067c6ad3/src/index.tsx#L146
-type HiddenImgixImageProps = { forwardedRef: React.Ref<any> };
+type HiddenImgixImageProps = { forwardedRef: React.Ref<any>; size?: Number };
 type MergedImgixImageProps = ImgixImageProps & HiddenImgixImageProps;
 
 // ImgixImage must be a class Component to support Animated.createAnimatedComponent.
@@ -23,17 +23,35 @@ class ImgixImage extends React.PureComponent<
     this.state = {
       source:
         !!source && typeof source === 'object'
-          ? maybeSignSource(source)
+          ? maybeSignSource(
+              source,
+              props.size
+                ? {
+                    h: props.size,
+                    w: props.size,
+                  }
+                : {}
+            )
           : source,
     };
   }
   componentDidUpdate(prevProps: ImgixImageProps) {
     const { source: prevSource } = prevProps;
-    const { source } = this.props;
+    const { source, size } = this.props;
     if (prevSource !== source) {
       // If the source has changed and looks signable, attempt to sign it.
       if (!!source && typeof source === 'object') {
-        Object.assign(this.state, { source: maybeSignSource(source) });
+        Object.assign(this.state, {
+          source: maybeSignSource(
+            source,
+            size
+              ? {
+                  h: size,
+                  w: size,
+                }
+              : {}
+          ),
+        });
       } else {
         // Else propagate the source as normal.
         Object.assign(this.state, { source });
@@ -50,9 +68,21 @@ class ImgixImage extends React.PureComponent<
   }
 }
 
-const preload = (sources: Source[]): void => {
+const preload = (sources: Source[], size?: Number): void => {
   if (sources.length) {
-    return FastImage.preload(sources.map(source => maybeSignSource(source)));
+    return FastImage.preload(
+      sources.map(source =>
+        maybeSignSource(
+          source,
+          size
+            ? {
+                h: size,
+                w: size,
+              }
+            : {}
+        )
+      )
+    );
   }
   return;
 };

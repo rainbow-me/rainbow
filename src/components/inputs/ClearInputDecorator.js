@@ -23,11 +23,13 @@ const Container = styled.View`
 
 const TextIcon = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.3),
+  color: colors.alpha(colors.blueGreyDark, 0.4),
   letterSpacing: 'zero',
   size: 'large',
   weight: 'bold',
-}))``;
+}))`
+  margin-bottom: 0.5px;
+`;
 
 const duration = 100;
 const transition = (

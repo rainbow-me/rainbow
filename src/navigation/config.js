@@ -12,14 +12,14 @@ import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import { fonts } from '@rainbow-me/styles';
 import { deviceUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 
-export const sharedCoolModalTopOffset = safeAreaInsetValues.top + 5;
+export const sharedCoolModalTopOffset = safeAreaInsetValues.top;
 
 const buildCoolModalConfig = params => ({
   allowsDragToDismiss: true,
   allowsTapToDismiss: true,
-  backgroundOpacity: 0.7,
+  backgroundOpacity: params.backgroundOpacity || 0.7,
   blocksBackgroundTouches: true,
-  cornerRadius: params.longFormHeight ? 39 : 30,
+  cornerRadius: params.cornerRadius || (params.longFormHeight ? 39 : 30),
   customStack: true,
   gestureEnabled: true,
   headerHeight: params.headerHeight || 25,
@@ -71,6 +71,15 @@ export const backupSheetConfig = {
       longFormHeight: heightForStep,
     });
   },
+};
+
+export const addTokenSheetConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      longFormHeight: 394,
+    }),
+  }),
 };
 
 export const expandedAssetSheetConfig = {

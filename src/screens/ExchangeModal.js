@@ -171,6 +171,7 @@ export default function ExchangeModal({
 
   const {
     derivedValues: { inputAmount, nativeAmount, outputAmount },
+    displayValues: { inputAmountDisplay, outputAmountDisplay },
     tradeDetails,
   } = useSwapDerivedOutputs();
 
@@ -420,7 +421,7 @@ export default function ExchangeModal({
             <ExchangeHeader testID={testID} title={title} />
             <ExchangeInputField
               disableInputCurrencySelection={isWithdrawal}
-              inputAmount={inputAmount}
+              inputAmount={inputAmountDisplay}
               inputCurrencyAddress={inputCurrency?.address}
               inputCurrencySymbol={inputCurrency?.symbol}
               inputFieldRef={inputFieldRef}
@@ -438,7 +439,7 @@ export default function ExchangeModal({
               <ExchangeOutputField
                 onFocus={handleFocus}
                 onPressSelectOutputCurrency={navigateToSelectOutputCurrency}
-                outputAmount={outputAmount}
+                outputAmount={outputAmountDisplay}
                 outputCurrencyAddress={outputCurrency?.address}
                 outputCurrencySymbol={outputCurrency?.symbol}
                 outputFieldRef={outputFieldRef}
@@ -457,11 +458,9 @@ export default function ExchangeModal({
           )}
           {!isSavings && showConfirmButton && (
             <ExchangeDetailsRow
-              inputAmount={inputAmount}
               isHighPriceImpact={isHighPriceImpact}
               onFlipCurrencies={flipCurrencies}
               onPressViewDetails={navigateToSwapDetailsModal}
-              outputAmount={outputAmount}
               priceImpactColor={priceImpactColor}
               priceImpactNativeAmount={priceImpactNativeAmount}
               priceImpactPercentDisplay={priceImpactPercentDisplay}

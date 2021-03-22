@@ -123,7 +123,7 @@ export default class SendAssetList extends React.Component {
       });
     });
 
-    ImgixImage.preload(imageTokens);
+    ImgixImage.preload(imageTokens, 45);
 
     this._layoutProvider = new LayoutProvider(
       i => {

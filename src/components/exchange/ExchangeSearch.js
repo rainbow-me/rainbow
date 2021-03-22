@@ -1,5 +1,5 @@
 import { isEmpty } from 'lodash';
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useContext, useEffect, useRef } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import Animated, {
   NewEasing,
@@ -10,6 +10,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import styled from 'styled-components';
 import Spinner from '../../assets/chartSpinner.png';
+import DiscoverSheetContext from '../discover-sheet/DiscoverSheetContext';
 import { ClearInputDecorator, Input } from '../inputs';
 import { Row } from '../layout';
 import { Text } from '../text';
@@ -22,7 +23,8 @@ const ExchangeSearchWidth = deviceUtils.dimensions.width - 30;
 
 const Container = styled(Row)`
   ${margin(0, 15, 8)};
-  ${padding(0, 37, 0, 12)};
+  ${({ isSearchModeEnabled }) =>
+    isSearchModeEnabled ? padding(0, 37, 0, 12) : padding(0)};
   background-color: ${({ theme: { colors } }) => colors.transparent};
   border-radius: ${ExchangeSearchHeight / 2};
   height: ${ExchangeSearchHeight};
@@ -35,8 +37,8 @@ const BackgroundGradient = styled(RadialGradient).attrs(
     colors: colors.gradients.searchBar,
   })
 )`
-  position: absolute;
   height: ${ExchangeSearchWidth};
+  position: absolute;
   top: ${-(ExchangeSearchWidth - ExchangeSearchHeight) / 2};
   transform: scaleY(${ExchangeSearchHeight / ExchangeSearchWidth});
   width: ${ExchangeSearchWidth};
@@ -49,32 +51,37 @@ const SearchIcon = styled(Text).attrs(({ theme: { colors } }) => ({
 }))``;
 
 const SearchIconWrapper = styled(Animated.View)`
-  margin-top: ${android ? '5' : '9'};
+  margin-top: ${android ? '5' : '8'};
 `;
 
-const SearchInput = styled(Input).attrs(({ theme: { colors } }) => ({
-  autoCapitalize: 'words',
-  blurOnSubmit: false,
-  clearTextOnFocus: true,
-  color: colors.alpha(colors.blueGreyDark, 0.8),
-  enablesReturnKeyAutomatically: true,
-  keyboardAppearance: 'dark',
-  keyboardType: 'ascii-capable',
-  lineHeight: 'loose',
-  placeholderTextColor: colors.alpha(colors.blueGreyDark, 0.5),
-  returnKeyType: 'search',
-  selectionColor: colors.appleBlue,
-  size: 'large',
-  spellCheck: false,
-  weight: 'semibold',
-}))`
+const SearchInput = styled(Input).attrs(
+  ({ theme: { colors }, isSearchModeEnabled, clearTextOnFocus }) => ({
+    autoCapitalize: 'words',
+    blurOnSubmit: false,
+    clearTextOnFocus,
+    color: colors.alpha(colors.blueGreyDark, 0.8),
+    enablesReturnKeyAutomatically: true,
+    keyboardAppearance: 'dark',
+    keyboardType: 'ascii-capable',
+    lineHeight: 'loose',
+    placeholderTextColor: colors.alpha(colors.blueGreyDark, 0.5),
+    returnKeyType: 'search',
+    selectionColor: isSearchModeEnabled ? colors.appleBlue : colors.transparent,
+    size: 'large',
+    spellCheck: false,
+    weight: 'semibold',
+  })
+)`
   ${android
     ? `margin-top: -6;
-  margin-bottom: -10;
-  height: 56;`
+  margin-bottom: -10;`
     : ''}
   flex: 1;
-  margin-left: 4;
+  text-align: ${({ isSearchModeEnabled }) =>
+    isSearchModeEnabled ? 'left' : 'center'};
+  height: ${ios ? 38 : 56};
+  margin-bottom: 1;
+  margin-left: ${({ isSearchModeEnabled }) => (isSearchModeEnabled ? 3 : 0)};
 `;
 
 const SearchSpinner = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
@@ -104,7 +111,16 @@ const timingConfig = {
 };
 
 const ExchangeSearch = (
-  { isFetching, isSearching, onChangeText, onFocus, searchQuery, testID },
+  {
+    isFetching,
+    isSearching,
+    onChangeText,
+    onFocus,
+    searchQuery,
+    testID,
+    placeholderText = 'Search Uniswap',
+    clearTextOnFocus = true,
+  },
   ref
 ) => {
   const handleClearInput = useCallback(() => {
@@ -114,6 +130,7 @@ const ExchangeSearch = (
 
   const spinnerRotation = useSharedValue(0);
   const spinnerScale = useSharedValue(0);
+  const { isSearchModeEnabled = true } = useContext(DiscoverSheetContext) || {};
 
   const spinnerTimeout = useRef();
   useEffect(() => {
@@ -154,18 +171,24 @@ const ExchangeSearch = (
   });
 
   return (
-    <Container>
+    <Container isSearchModeEnabled={isSearchModeEnabled}>
       <BackgroundGradient />
-      <SearchIconWrapper style={searchIconStyle}>
-        <SearchIcon>􀊫</SearchIcon>
-      </SearchIconWrapper>
-      <SearchSpinnerWrapper style={spinnerStyle}>
-        <SearchSpinner />
-      </SearchSpinnerWrapper>
+      {isSearchModeEnabled && (
+        <>
+          <SearchIconWrapper style={searchIconStyle}>
+            <SearchIcon>􀊫</SearchIcon>
+          </SearchIconWrapper>
+          <SearchSpinnerWrapper style={spinnerStyle}>
+            <SearchSpinner />
+          </SearchSpinnerWrapper>
+        </>
+      )}
       <SearchInput
+        clearTextOnFocus={clearTextOnFocus}
+        isSearchModeEnabled={isSearchModeEnabled}
         onChangeText={onChangeText}
         onFocus={onFocus}
-        placeholder="Search Uniswap"
+        placeholder={placeholderText}
         ref={ref}
         testID={testID + '-input'}
         value={searchQuery}

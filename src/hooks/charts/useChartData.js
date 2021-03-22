@@ -16,38 +16,68 @@ const formatChartData = chart => {
 };
 
 const chartSelector = createSelector(
-  ({ charts: { charts, chartType, fetchingCharts } }) => ({
+  ({
+    charts: {
+      charts,
+      chartType,
+      chartTypeDPI,
+      fetchingCharts,
+      fetchingChartsDPI,
+    },
+  }) => ({
     charts,
     chartType,
+    chartTypeDPI,
     fetchingCharts,
+    fetchingChartsDPI,
   }),
   (_, address) => address,
-  (state, address) => {
-    const { charts, chartType, fetchingCharts } = state;
+  (state, { address, dpi }) => {
+    const {
+      charts,
+      chartType,
+      chartTypeDPI,
+      fetchingCharts,
+      fetchingChartsDPI,
+    } = state;
     const chartsForAsset = {
       ...charts?.[address],
     };
-
     return {
-      chart: formatChartData(chartsForAsset?.[chartType]),
+      chart: formatChartData(chartsForAsset?.[dpi ? chartTypeDPI : chartType]),
       chartsForAsset,
       chartType,
+      chartTypeDPI,
       fetchingCharts,
+      fetchingChartsDPI,
     };
   }
 );
 
-export default function useChartData(asset) {
+export default function useChartData(asset, dpi) {
   const [daysFromFirstTx, setDaysFromFirstTx] = useState(1000);
   const dispatch = useDispatch();
   const { address, price: priceObject } = useAsset(asset);
 
   const { value: price } = priceObject || {};
 
-  const { chart, chartsForAsset, chartType, fetchingCharts } = useSelector(
-    useCallbackOne(state => chartSelector(state, address), [address]),
+  const {
+    chart,
+    chartsForAsset,
+    chartTypeDPI,
+    chartType: chartTypeRest,
+    fetchingChartsDPI,
+    fetchingCharts: fetchingChartsRest,
+  } = useSelector(
+    useCallbackOne(state => chartSelector(state, { address, dpi }), [
+      address,
+      dpi,
+    ]),
     isEqual
   );
+
+  const chartType = dpi ? chartTypeDPI : chartTypeRest;
+  const fetchingCharts = dpi ? fetchingChartsDPI : fetchingChartsRest;
 
   useEffect(() => {
     async function fetchDays() {
@@ -66,12 +96,15 @@ export default function useChartData(asset) {
   }, [address, chartType, dispatch]);
 
   const updateChartType = useCallback(
-    type => dispatch(chartsUpdateChartType(type)),
-    [dispatch]
+    type => dispatch(chartsUpdateChartType(type, dpi)),
+    [dispatch, dpi]
   );
 
   // Reset chart timeframe on unmount.
-  useEffect(() => () => updateChartType(DEFAULT_CHART_TYPE), [updateChartType]);
+  useEffect(() => () => updateChartType(DEFAULT_CHART_TYPE, dpi), [
+    updateChartType,
+    dpi,
+  ]);
 
   // add current price at the very end
   const filteredData = useMemo(() => {
