@@ -692,7 +692,7 @@ function RecyclerAssetList({
     lastIsCoinListEdited,
     lastOpenFamilyTabs,
     lastSections,
-    //sections,
+    sections,
     isCoinListEdited,
     openFamilyTabs,
     paddingBottom,
