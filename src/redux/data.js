@@ -483,7 +483,7 @@ const subscribeToMissingPrices = addresses => (dispatch, getState) => {
     uniswapPricesQuery.refetch({ addresses });
   } else {
     const newQuery = uniswapClient.watchQuery({
-      fetchPolicy: 'network-only',
+      fetchPolicy: 'no-cache',
       pollInterval: 15000, // 15 seconds
       query: UNISWAP_PRICES_QUERY,
       variables: {
@@ -554,7 +554,7 @@ const get24HourPrice = async (address, yesterday) => {
     query: UNISWAP_24HOUR_PRICE_QUERY,
     variables: {
       address,
-      fetchPolicy: 'network-only',
+      fetchPolicy: 'no-cache',
       timestamp: yesterday,
     },
   });

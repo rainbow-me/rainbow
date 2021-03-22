@@ -118,7 +118,11 @@ const DiscoverSheet = (_, forwardedRef) => {
           }}
         >
           <DiscoverSheetHeader yPosition={yPosition} />
-          <BottomSheetScrollView onScroll={scrollHandler} ref={sheet}>
+          <BottomSheetScrollView
+            onScroll={scrollHandler}
+            ref={sheet}
+            removeClippedSubviews
+          >
             <DiscoverSheetContent />
           </BottomSheetScrollView>
         </BottomSheet>

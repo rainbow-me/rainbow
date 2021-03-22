@@ -1,4 +1,4 @@
-import { sortBy, times } from 'lodash';
+import { times } from 'lodash';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { FlatList, LayoutAnimation } from 'react-native';
 import styled from 'styled-components';
@@ -11,6 +11,13 @@ import { Column, Row } from '../layout';
 import { Text } from '../text';
 import EdgeFade from './EdgeFade';
 import { useUniswapPools } from '@rainbow-me/hooks';
+
+const ITEM_HEIGHT = 60;
+const getItemLayout = (_, index) => ({
+  index,
+  length: ITEM_HEIGHT,
+  offset: ITEM_HEIGHT * index,
+});
 
 const PoolListButton = styled(ButtonPressAnimation).attrs({
   scaleTo: 0.96,
@@ -35,10 +42,6 @@ const ListName = styled(Text)`
   margin-top: ${ios ? -4.5 : 0}px;
 `;
 
-const renderUniswapPoolListRow = item => (
-  <UniswapPoolListRow assetType="uniswap" item={item} key={item.uniqueId} />
-);
-
 const listData = [
   {
     id: 'liquidity',
@@ -57,6 +60,10 @@ const listData = [
     name: '24h volume',
   },
 ];
+
+const renderUniswapPoolListRow = ({ item }) => (
+  <UniswapPoolListRow assetType="uniswap" item={item} />
+);
 
 export default function UniswapPools() {
   const listRef = useRef(null);
@@ -125,7 +132,7 @@ export default function UniswapPools() {
     [colors, sortDirection]
   );
 
-  const renderItem = useCallback(
+  const renderTypeItem = useCallback(
     ({ item: list, index }) => (
       <PoolListButton
         key={`list-${list.id}`}
@@ -153,23 +160,29 @@ export default function UniswapPools() {
     [getTitleColor, handleSwitchList, selectedList, sortDirection]
   );
 
-  const pairRows = useMemo(() => {
+  const allPairs = useMemo(() => {
     if (!pairs) return [];
 
-    let sortedPairs = sortBy(pairs, selectedList).filter(
-      pair => selectedList !== 'profit30d' || pair.profit30d !== undefined
-    );
-    if (sortDirection === 'desc') {
-      sortedPairs = sortedPairs.reverse();
-    }
-    return sortedPairs.map(item =>
-      renderUniswapPoolListRow({
+    const sortedPairs = pairs
+      .filter(pair => {
+        if (pair[selectedList] === 0) return false;
+        if (pair[selectedList] <= 0.005 && pair[selectedList] > 0) return false;
+        return selectedList !== 'profit30d' || pair.profit30d !== undefined;
+      })
+      .map(item => ({
         ...item,
         attribute: selectedList,
-        sort: sortDirection,
-      })
-    );
-  }, [pairs, selectedList, sortDirection]);
+      }));
+
+    return sortedPairs;
+  }, [pairs, selectedList]);
+
+  const pairsSorted = useMemo(() => {
+    if (sortDirection === SORT_DIRECTION.ASC) {
+      allPairs.sort((a, b) => a[selectedList] - b[selectedList]);
+    }
+    return allPairs;
+  }, [allPairs, selectedList, sortDirection]);
 
   return (
     <Column marginTop={32}>
@@ -206,7 +219,7 @@ export default function UniswapPools() {
             horizontal
             keyExtractor={item => item.id}
             ref={listRef}
-            renderItem={renderItem}
+            renderItem={renderTypeItem}
             scrollsToTop={false}
             showsHorizontalScrollIndicator={false}
           />
@@ -215,8 +228,15 @@ export default function UniswapPools() {
       </Column>
       {error ? (
         <Text>There was an error loading Uniswap pool data...</Text>
-      ) : pairRows?.length > 0 ? (
-        pairRows
+      ) : pairsSorted?.length > 0 ? (
+        <FlatList
+          data={pairsSorted}
+          getItemLayout={getItemLayout}
+          keyExtractor={item => item.address}
+          removeClippedSubviews
+          renderItem={renderUniswapPoolListRow}
+          windowSize={11}
+        />
       ) : (
         times(3, index => (
           <AssetListItemSkeleton
