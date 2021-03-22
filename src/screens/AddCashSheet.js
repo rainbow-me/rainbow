@@ -71,6 +71,7 @@ export default function AddCashSheet() {
     isPaymentComplete,
     onPurchase,
     orderCurrency,
+    orderId,
     orderStatus,
     resetAddCashForm,
     transferStatus,
@@ -117,6 +118,7 @@ export default function AddCashSheet() {
             <AddCashStatus
               error={error}
               orderCurrency={orderCurrency}
+              orderId={orderId}
               orderStatus={orderStatus}
               resetAddCashForm={resetAddCashForm}
               transferStatus={transferStatus}

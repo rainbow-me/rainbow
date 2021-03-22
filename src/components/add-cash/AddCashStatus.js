@@ -19,9 +19,16 @@ import {
   WYRE_ORDER_STATUS_TYPES,
 } from '@rainbow-me/helpers/wyreStatusTypes';
 import { useDimensions, usePrevious, useTimeout } from '@rainbow-me/hooks';
-import { getWyreErrorOverride } from '@rainbow-me/references';
+import { ETH_ADDRESS, getWyreErrorOverride } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
+
+const OrderIdText = styled(Text).attrs({
+  align: 'center',
+  lineHeight: 20,
+  size: 18,
+  weight: 'bold',
+})``;
 
 const StatusMessageText = styled(Text).attrs({
   align: 'center',
@@ -84,7 +91,7 @@ const Content = props => {
   );
 };
 
-const AddCashFailed = ({ error, resetAddCashForm }) => {
+const AddCashFailed = ({ error, orderId, resetAddCashForm }) => {
   const { errorMessage, tryAgain } = error;
   return (
     <Content>
@@ -99,6 +106,12 @@ const AddCashFailed = ({ error, resetAddCashForm }) => {
           You were not charged.
         </StatusMessageText>
       )}
+      {orderId && (
+        <OrderIdText>
+          <Br />
+          Order ID: {orderId}
+        </OrderIdText>
+      )}
       {tryAgain ? (
         <SupportButton
           label="Try again"
@@ -106,7 +119,10 @@ const AddCashFailed = ({ error, resetAddCashForm }) => {
           onPress={resetAddCashForm}
         />
       ) : (
-        <NeedHelpButton marginTop={24} subject="Purchase Failed" />
+        <NeedHelpButton
+          marginTop={24}
+          subject={`Purchase Failed - Order ${orderId}`}
+        />
       )}
     </Content>
   );
@@ -129,7 +145,7 @@ const AddCashPending = ({ currency }) => (
           autoPlay
           loop
           source={
-            currency === 'eth' ? jumpingEthAnimation : jumpingDaiAnimation
+            currency === ETH_ADDRESS ? jumpingEthAnimation : jumpingDaiAnimation
           }
           style={{ height: 263 }}
         />
@@ -164,6 +180,7 @@ const AddCashSuccess = ({ currency }) => {
 const AddCashStatus = ({
   error,
   orderCurrency,
+  orderId,
   orderStatus,
   resetAddCashForm,
   transferStatus,
@@ -211,6 +228,7 @@ const AddCashStatus = ({
       {status === ADD_CASH_STATUS_TYPES.failed ? (
         <AddCashFailed
           error={updatedError}
+          orderId={orderId}
           resetAddCashForm={resetAddCashForm}
         />
       ) : (
