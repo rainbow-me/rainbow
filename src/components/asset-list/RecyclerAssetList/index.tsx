@@ -112,6 +112,12 @@ export type RecyclerAssetListReduxProps = {
     readonly openInvestmentCards: {
       readonly [key: string]: boolean;
     };
+    readonly openSavings: {
+      readonly [key: string]: boolean;
+    };
+    readonly openSmallBalances: {
+      readonly [key: string]: boolean;
+    };
   };
   readonly settings: {
     readonly nativeCurrency: string;
