@@ -9,7 +9,7 @@ import jumpingEthAnimation from '../../assets/lottie/jumping-eth.json';
 import { useNavigation } from '../../navigation/Navigation';
 import { CoinIcon } from '../coin-icon';
 import { FloatingEmojisTapper } from '../floating-emojis';
-import { Centered } from '../layout';
+import { Centered, Row } from '../layout';
 import { Br, Emoji, Text } from '../text';
 import NeedHelpButton from './NeedHelpButton';
 import SupportButton from './SupportButton';
@@ -92,7 +92,7 @@ const Content = props => {
 };
 
 const AddCashFailed = ({ error, orderId, resetAddCashForm }) => {
-  const { errorMessage, tryAgain } = error;
+  const { errorMessage } = error;
   return (
     <Content>
       <Centered height={85}>
@@ -112,18 +112,19 @@ const AddCashFailed = ({ error, orderId, resetAddCashForm }) => {
           Order ID: {orderId}
         </OrderIdText>
       )}
-      {tryAgain ? (
+      <Row>
         <SupportButton
           label="Try again"
           marginTop={24}
           onPress={resetAddCashForm}
         />
-      ) : (
+
         <NeedHelpButton
+          marginLeft={10}
           marginTop={24}
           subject={`Purchase Failed - Order ${orderId}`}
         />
-      )}
+      </Row>
     </Content>
   );
 };
