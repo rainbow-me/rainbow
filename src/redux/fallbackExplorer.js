@@ -10,6 +10,7 @@ import balanceCheckerContractAbi from '../references/balances-checker-abi.json';
 import coingeckoIdsFallback from '../references/coingecko/ids.json';
 import migratedTokens from '../references/migratedTokens.json';
 import testnetAssets from '../references/testnet-assets.json';
+/* eslint-disable-next-line import/no-cycle */
 import {
   addressAssetsReceived,
   COINGECKO_IDS_ENDPOINT,
