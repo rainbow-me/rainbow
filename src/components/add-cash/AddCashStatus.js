@@ -1,26 +1,25 @@
 import { isEmpty, toLower } from 'lodash';
 import LottieView from 'lottie-react-native';
-import PropTypes from 'prop-types';
 import React, { Fragment, useEffect, useMemo, useRef } from 'react';
 import { StyleSheet } from 'react-native';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import styled from 'styled-components';
 import jumpingDaiAnimation from '../../assets/lottie/jumping-dai.json';
 import jumpingEthAnimation from '../../assets/lottie/jumping-eth.json';
-import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
-import {
-  ADD_CASH_STATUS_TYPES,
-  WYRE_ORDER_STATUS_TYPES,
-} from '../../helpers/wyreStatusTypes';
 import { useNavigation } from '../../navigation/Navigation';
-import { getErrorOverride } from '../../references/wyre';
 import { CoinIcon } from '../coin-icon';
 import { FloatingEmojisTapper } from '../floating-emojis';
 import { Centered } from '../layout';
 import { Br, Emoji, Text } from '../text';
 import NeedHelpButton from './NeedHelpButton';
 import SupportButton from './SupportButton';
+import TransactionStatusTypes from '@rainbow-me/helpers/transactionStatusTypes';
+import {
+  ADD_CASH_STATUS_TYPES,
+  WYRE_ORDER_STATUS_TYPES,
+} from '@rainbow-me/helpers/wyreStatusTypes';
 import { useDimensions, usePrevious, useTimeout } from '@rainbow-me/hooks';
+import { getWyreErrorOverride } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
 
@@ -204,7 +203,7 @@ const AddCashStatus = ({
   const currency = toLower(orderCurrency || 'ETH');
 
   const updatedError = useMemo(() => {
-    return getErrorOverride(error);
+    return getWyreErrorOverride(error);
   }, [error]);
 
   return (
@@ -231,14 +230,6 @@ const AddCashStatus = ({
       )}
     </Transitioning.View>
   );
-};
-
-AddCashStatus.propTypes = {
-  error: PropTypes.object,
-  orderCurrency: PropTypes.string.isRequired,
-  orderStatus: PropTypes.string,
-  resetAddCashForm: PropTypes.func,
-  transferStatus: PropTypes.string,
 };
 
 export default React.memo(AddCashStatus);

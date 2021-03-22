@@ -1,10 +1,10 @@
 import { get, keys, upperFirst } from 'lodash';
 import { orderExceptions } from './orderExceptions';
-import { supportedCountries } from './supportedCountries';
+import { wyreSupportedCountries } from './supportedCountries';
 
-const WYRE_SUPPORTED_COUNTRIES_ISO = keys(supportedCountries);
+const WYRE_SUPPORTED_COUNTRIES_ISO = keys(wyreSupportedCountries);
 
-const getErrorOverride = error => {
+const getWyreErrorOverride = error => {
   const { errorCategory, errorCode, errorMessage } = error;
   const errorMessageDetails = get(orderExceptions, [
     `${errorCategory}`,
@@ -25,4 +25,8 @@ const getErrorOverride = error => {
   };
 };
 
-export { getErrorOverride, supportedCountries, WYRE_SUPPORTED_COUNTRIES_ISO };
+export {
+  getWyreErrorOverride,
+  wyreSupportedCountries,
+  WYRE_SUPPORTED_COUNTRIES_ISO,
+};
