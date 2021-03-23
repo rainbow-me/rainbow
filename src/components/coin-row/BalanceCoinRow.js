@@ -219,7 +219,10 @@ const arePropsEqual = (prev, next) => {
 const MemoizedBalanceCoinRow = React.memo(BalanceCoinRow, arePropsEqual);
 
 export default connect(
-  ({ editOptions: { recentlyPinnedCount }, openSmallBalances }) => ({
+  ({
+    editOptions: { recentlyPinnedCount },
+    openStateSettings: { openSmallBalances },
+  }) => ({
     openSmallBalances,
     recentlyPinnedCount,
   }),

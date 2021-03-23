@@ -1,12 +1,14 @@
 import produce from 'immer';
-import { concat, filter, isEmpty, uniqBy } from 'lodash';
+import { concat, filter, isEmpty, map, uniqBy } from 'lodash';
+/* eslint-disable-next-line import/no-cycle */
+import { emitChartsRequest } from './explorer';
 import {
   getLiquidity,
   getUniswapLiquidityInfo,
   saveLiquidity,
   saveLiquidityInfo,
-} from '../handlers/localstorage/uniswap';
-import { getLiquidityInfo } from '../handlers/uniswapLiquidity';
+} from '@rainbow-me/handlers/localstorage/uniswap';
+import { getLiquidityInfo } from '@rainbow-me/handlers/uniswapLiquidity';
 
 // -- Constants ------------------------------------------------------------- //
 const UNISWAP_UPDATE_LIQUIDITY_TOKEN_INFO =
@@ -58,6 +60,9 @@ export const uniswapUpdateLiquidityTokens = (
       ),
       token => !!Number(token?.balance?.amount ?? 0)
     );
+  } else {
+    const assetCodes = map(liquidityTokens, token => token.address);
+    dispatch(emitChartsRequest(assetCodes));
   }
   const { accountAddress, network } = getState().settings;
   dispatch({

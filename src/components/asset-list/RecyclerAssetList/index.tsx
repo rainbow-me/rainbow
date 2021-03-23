@@ -112,6 +112,12 @@ export type RecyclerAssetListReduxProps = {
     readonly openInvestmentCards: {
       readonly [key: string]: boolean;
     };
+    readonly openSavings: {
+      readonly [key: string]: boolean;
+    };
+    readonly openSmallBalances: {
+      readonly [key: string]: boolean;
+    };
   };
   readonly settings: {
     readonly nativeCurrency: string;
@@ -746,9 +752,12 @@ function RecyclerAssetList({
 export default connect(
   ({
     editOptions: { isCoinListEdited },
-    openSavings,
-    openSmallBalances,
-    openStateSettings: { openFamilyTabs, openInvestmentCards },
+    openStateSettings: {
+      openFamilyTabs,
+      openInvestmentCards,
+      openSavings,
+      openSmallBalances,
+    },
     settings: { nativeCurrency },
   }: RecyclerAssetListReduxProps) => ({
     isCoinListEdited,
