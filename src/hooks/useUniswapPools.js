@@ -12,13 +12,16 @@ import {
   UNISWAP_PAIRS_ID_QUERY,
 } from '@rainbow-me/apollo/queries';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
-import { emitAssetRequest } from '@rainbow-me/redux/explorer';
+import {
+  emitAssetRequest,
+  emitChartsRequest,
+} from '@rainbow-me/redux/explorer';
 import { ETH_ADDRESS, WETH_ADDRESS } from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const UNISWAP_QUERY_INTERVAL = 1000 * 60 * 5; // 5 minutes
-const AMOUNT_OF_PAIRS_TO_DISPLAY = 40;
+const AMOUNT_OF_PAIRS_TO_DISPLAY = 30;
 
 export const SORT_DIRECTION = {
   ASC: 'asc',
@@ -462,6 +465,7 @@ export default function useUniswapPools(sortField, sortDirection) {
 
     const allLPTokens = sortedPairs.map(({ address }) => address);
     dispatch(emitAssetRequest(allLPTokens));
+    dispatch(emitChartsRequest(allLPTokens));
     return sortedPairs;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, pairs, sortDirection, sortField]);
