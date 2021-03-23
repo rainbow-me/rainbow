@@ -1,4 +1,4 @@
-import { concat, isEmpty, isNil, keys, map, toLower } from 'lodash';
+import { concat, isEmpty, isNil, keys, toLower } from 'lodash';
 import { DATA_API_KEY, DATA_ORIGIN } from 'react-native-dotenv';
 import io from 'socket.io-client';
 import { assetChartsReceived, DEFAULT_CHART_TYPE } from './charts';
@@ -307,17 +307,14 @@ export const emitAssetInfoRequest = () => (dispatch, getState) => {
 };
 
 export const emitChartsRequest = (
-  assetAddress = null,
+  assetAddress,
   chartType = DEFAULT_CHART_TYPE
 ) => (dispatch, getState) => {
   const { nativeCurrency } = getState().settings;
   const { assetsSocket } = getState().explorer;
-  const { assets } = getState().data;
   const assetCodes = Array.isArray(assetAddress)
     ? assetAddress
-    : assetAddress
-    ? [assetAddress]
-    : map(assets, 'address');
+    : [assetAddress];
   if (!isEmpty(assetCodes)) {
     assetsSocket?.emit(
       ...chartsRetrieval(assetCodes, nativeCurrency, chartType)
