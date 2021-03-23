@@ -4,6 +4,7 @@ ios/GoogleService-Info.plist
 # OSX
 #
 ios/ReaHeader.h
+ios/AppDelegate.pch
 .DS_Store
 ios/Pods/
 ios/*dSYM.zip
@@ -32,6 +33,7 @@ DerivedData
 *.xcuserstate
 project.xcworkspace
 ios/main.jsbundle.map
+src/config/debug.js
 
 # Android/IntelliJ
 #
@@ -75,3 +77,11 @@ e2e/logs/*/*.xml
 
 # android playstore credentials
 pc-api-8090318172169087080-31-b8ee34328314.json
+
+# ios internal files (any additional files will be ignored)
+ios/Internals
+ios/Extras.json
+
+# Rainbow scripts
+rainbow-scripts
+

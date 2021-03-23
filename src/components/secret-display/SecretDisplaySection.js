@@ -2,7 +2,7 @@ import { useRoute } from '@react-navigation/native';
 import { captureException } from '@sentry/react-native';
 import { upperFirst } from 'lodash';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import {
   identifyWalletType,
   loadSeedPhraseAndMigrateIfNeeded,
@@ -17,7 +17,7 @@ import { Text } from '../text';
 import SecretDisplayCard from './SecretDisplayCard';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { useWallets } from '@rainbow-me/hooks';
-import { colors, margin, padding, position, shadow } from '@rainbow-me/styles';
+import { margin, padding, position, shadow } from '@rainbow-me/styles';
 import logger from 'logger';
 
 const AuthenticationText = styled(Text).attrs({
@@ -29,10 +29,10 @@ const AuthenticationText = styled(Text).attrs({
   ${padding(0, 60)};
 `;
 
-const CopyButtonIcon = styled(Icon).attrs({
+const CopyButtonIcon = styled(Icon).attrs(({ theme: { colors } }) => ({
   color: colors.appleBlue,
   name: 'copy',
-})`
+}))`
   ${position.size(16)};
   margin-top: 0.5;
 `;
@@ -42,22 +42,22 @@ const CopyButtonRow = styled(RowWithMargins).attrs({
   justify: 'start',
   margin: 6,
 })`
-  background-color: ${colors.transparent};
+  background-color: ${({ theme: { colors } }) => colors.transparent};
   height: 34;
 `;
 
-const CopyButtonText = styled(Text).attrs({
+const CopyButtonText = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.appleBlue,
   letterSpacing: 'roundedMedium',
   lineHeight: 19,
   size: 'large',
   weight: 'bold',
-})``;
+}))``;
 
 const ToggleSecretButton = styled(Button)`
   ${margin(0, 20)};
-  ${shadow.build(0, 5, 15, colors.purple, 0.3)}
-  background-color: ${colors.appleBlue};
+  ${({ theme: { colors } }) => shadow.build(0, 5, 15, colors.purple, 0.3)}
+  background-color: ${({ theme: { colors } }) => colors.appleBlue};
 `;
 
 const LoadingSpinner = android ? Spinner : ActivityIndicator;
@@ -106,6 +106,7 @@ export default function SecretDisplaySection({
 
   const typeLabel = type === WalletTypes.privateKey ? 'key' : 'phrase';
 
+  const { colors } = useTheme();
   return (
     <ColumnWithMargins
       align="center"
@@ -137,8 +138,8 @@ export default function SecretDisplaySection({
           <ToggleSecretButton onPress={loadSeed}>
             <BiometricButtonContent
               color={colors.white}
+              label={`Show Recovery ${upperFirst(typeLabel)}`}
               showIcon={!seed}
-              text={`Show Recovery ${upperFirst(typeLabel)}`}
             />
           </ToggleSecretButton>
         </Fragment>

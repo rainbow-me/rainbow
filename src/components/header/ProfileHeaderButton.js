@@ -1,13 +1,12 @@
 import React, { useCallback } from 'react';
-import { useAccountProfile, useRequests } from '../../hooks';
 import { useNavigation } from '../../navigation/Navigation';
 import { NumberBadge } from '../badge';
 import { ContactAvatar } from '../contacts';
 import ImageAvatar from '../contacts/ImageAvatar';
 import { Centered } from '../layout';
 import HeaderButton from './HeaderButton';
+import { useAccountProfile, useRequests } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
 
 export default function ProfileHeaderButton() {
   const { navigate } = useNavigation();
@@ -21,6 +20,8 @@ export default function ProfileHeaderButton() {
   const onLongPress = useCallback(() => navigate(Routes.CHANGE_WALLET_SHEET), [
     navigate,
   ]);
+
+  const { colors } = useTheme();
 
   return (
     <HeaderButton

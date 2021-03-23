@@ -5,7 +5,9 @@ import { setOpenSavings } from '../redux/openStateSettings';
 export default function useOpenSavings() {
   const dispatch = useDispatch();
 
-  const isSavingsOpen = useSelector(({ openSavings }) => openSavings);
+  const isSavingsOpen = useSelector(
+    ({ openStateSettings: { openSavings } }) => openSavings
+  );
 
   const toggleOpenSavings = useCallback(
     () => dispatch(setOpenSavings(!isSavingsOpen)),

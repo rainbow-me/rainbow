@@ -1,11 +1,7 @@
 import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
-import { find } from 'lodash';
 import React, { useCallback, useRef } from 'react';
-import ImagePicker from 'react-native-image-crop-picker';
-import { useDispatch } from 'react-redux';
-import styled from 'styled-components/primitives';
-import { walletsSetSelected, walletsUpdate } from '../../redux/wallets';
+import styled from 'styled-components';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { RainbowButton } from '../buttons';
@@ -22,12 +18,12 @@ import showWalletErrorAlert from '@rainbow-me/helpers/support';
 import {
   useAccountProfile,
   useDimensions,
+  useOnAvatarPress,
   useWallets,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
-import { abbreviations, showActionSheetWithOptions } from '@rainbow-me/utils';
+import { abbreviations } from '@rainbow-me/utils';
 
 const dropdownArrowWidth = 21;
 
@@ -75,9 +71,11 @@ const DropdownArrow = styled(Centered)`
   width: ${dropdownArrowWidth};
 `;
 
-const ProfileMastheadDivider = styled(Divider).attrs({
-  color: colors.rowDividerLight,
-})`
+const ProfileMastheadDivider = styled(Divider).attrs(
+  ({ theme: { colors } }) => ({
+    color: colors.rowDividerLight,
+  })
+)`
   bottom: 0;
   position: absolute;
 `;
@@ -87,14 +85,13 @@ export default function ProfileMasthead({
   recyclerListRef,
   showBottomDivider = true,
 }) {
-  const { wallets, selectedWallet, isDamaged } = useWallets();
+  const { isDamaged } = useWallets();
   const onNewEmoji = useRef();
   const setOnNewEmoji = useCallback(
     newOnNewEmoji => (onNewEmoji.current = newOnNewEmoji),
     []
   );
   const { width: deviceWidth } = useDimensions();
-  const dispatch = useDispatch();
   const { navigate } = useNavigation();
   const {
     accountAddress,
@@ -104,94 +101,16 @@ export default function ProfileMasthead({
     accountImage,
   } = useAccountProfile();
   const isAvatarPickerAvailable = useExperimentalFlag(AVATAR_PICKER);
-  const isAvatarEmojiPickerEnabled = true;
-  const isAvatarImagePickerEnabled = true;
 
-  const onRemovePhoto = useCallback(async () => {
-    const newWallets = { ...wallets };
-    const newWallet = newWallets[selectedWallet.id];
-    const account = find(newWallet.addresses, ['address', accountAddress]);
-
-    account.image = null;
-    newWallet.addresses[account.index] = account;
-
-    dispatch(walletsSetSelected(newWallet));
-    await dispatch(walletsUpdate(newWallets));
-  }, [dispatch, selectedWallet, accountAddress, wallets]);
+  const onAvatarPress = useOnAvatarPress();
 
   const handlePressAvatar = useCallback(() => {
     recyclerListRef?.scrollToTop(true);
     setTimeout(
-      () => {
-        if (isAvatarImagePickerEnabled) {
-          const processPhoto = image => {
-            const stringIndex = image?.path.indexOf('/tmp');
-            const newWallets = { ...wallets };
-            const walletId = selectedWallet.id;
-            newWallets[walletId].addresses.some((account, index) => {
-              newWallets[walletId].addresses[index].image = ios
-                ? `~${image?.path.slice(stringIndex)}`
-                : image?.path;
-              dispatch(walletsSetSelected(newWallets[walletId]));
-              return true;
-            });
-            dispatch(walletsUpdate(newWallets));
-          };
-
-          const avatarActionSheetOptions = [
-            'Choose from Library',
-            ...(isAvatarPickerAvailable ? ['Pick an Emoji'] : []),
-            ...(accountImage ? ['Remove Photo'] : []),
-            ...(ios ? ['Cancel'] : []),
-          ];
-
-          showActionSheetWithOptions(
-            {
-              cancelButtonIndex: avatarActionSheetOptions.length - 1,
-              destructiveButtonIndex: accountImage
-                ? avatarActionSheetOptions.length - 2
-                : undefined,
-              options: avatarActionSheetOptions,
-            },
-            async buttonIndex => {
-              if (buttonIndex === 0) {
-                ImagePicker.openPicker({
-                  cropperCircleOverlay: true,
-                  cropping: true,
-                }).then(processPhoto);
-              } else if (buttonIndex === 1 && isAvatarEmojiPickerEnabled) {
-                navigate(Routes.AVATAR_BUILDER, {
-                  initialAccountColor: accountColor,
-                  initialAccountName: accountName,
-                });
-              } else if (buttonIndex === 2 && accountImage) {
-                onRemovePhoto();
-              }
-            }
-          );
-        } else if (isAvatarEmojiPickerEnabled) {
-          navigate(Routes.AVATAR_BUILDER, {
-            initialAccountColor: accountColor,
-            initialAccountName: accountName,
-          });
-        }
-      },
+      onAvatarPress,
       recyclerListRef?.getCurrentScrollOffset() > 0 ? 200 : 1
     );
-  }, [
-    accountColor,
-    accountImage,
-    accountName,
-    dispatch,
-    isAvatarEmojiPickerEnabled,
-    isAvatarImagePickerEnabled,
-    isAvatarPickerAvailable,
-    navigate,
-    onRemovePhoto,
-    recyclerListRef,
-    selectedWallet.id,
-    wallets,
-  ]);
+  }, [onAvatarPress, recyclerListRef]);
 
   const handlePressReceive = useCallback(() => {
     if (isDamaged) {
@@ -237,6 +156,7 @@ export default function ProfileMasthead({
     Clipboard.setString(accountAddress);
   }, [accountAddress, isDamaged]);
 
+  const { colors } = useTheme();
   return (
     <Column
       align="center"

@@ -1,22 +1,24 @@
 import React from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { removeFirstEmojiFromString } from '../../helpers/emojiHandler';
-import { useDimensions } from '../../hooks';
 import { abbreviations, magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Column, RowWithMargins } from '../layout';
 import { TruncatedAddress, TruncatedText } from '../text';
 import ContactAvatar from './ContactAvatar';
-import { colors, margin } from '@rainbow-me/styles';
+import { useDimensions } from '@rainbow-me/hooks';
+import { margin } from '@rainbow-me/styles';
 
-const ContactAddress = styled(TruncatedAddress).attrs({
-  align: 'left',
-  color: colors.alpha(colors.blueGreyDark, 0.4),
-  firstSectionLength: abbreviations.defaultNumCharsPerSection,
-  size: 'smedium',
-  truncationLength: 4,
-  weight: 'regular',
-})`
+const ContactAddress = styled(TruncatedAddress).attrs(
+  ({ theme: { colors } }) => ({
+    align: 'left',
+    color: colors.alpha(colors.blueGreyDark, 0.4),
+    firstSectionLength: abbreviations.defaultNumCharsPerSection,
+    size: 'smedium',
+    truncationLength: 4,
+    weight: 'regular',
+  })
+)`
   width: 100%;
 `;
 

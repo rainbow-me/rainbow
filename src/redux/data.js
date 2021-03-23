@@ -7,6 +7,7 @@ import {
   isEmpty,
   isNil,
   keyBy,
+  keys,
   map,
   mapKeys,
   mapValues,
@@ -14,6 +15,7 @@ import {
   property,
   remove,
   toLower,
+  toUpper,
   uniqBy,
   values,
 } from 'lodash';
@@ -22,6 +24,13 @@ import {
   UNISWAP_24HOUR_PRICE_QUERY,
   UNISWAP_PRICES_QUERY,
 } from '../apollo/queries';
+import coingeckoIdsFallback from '../references/coingecko/ids.json';
+/* eslint-disable-next-line import/no-cycle */
+import { addCashUpdatePurchases } from './addCash';
+/* eslint-disable-next-line import/no-cycle */
+import { uniqueTokensRefreshState } from './uniqueTokens';
+/* eslint-disable-next-line import/no-cycle */
+import { uniswapUpdateLiquidityTokens } from './uniswapLiquidity';
 import {
   getAssetPricesFromUniswap,
   getAssets,
@@ -30,40 +39,50 @@ import {
   saveAssetPricesFromUniswap,
   saveAssets,
   saveLocalTransactions,
-} from '../handlers/localstorage/accountLocal';
-import { getTransactionReceipt } from '../handlers/web3';
-import AssetTypes from '../helpers/assetTypes';
-import DirectionTypes from '../helpers/transactionDirectionTypes';
-import TransactionStatusTypes from '../helpers/transactionStatusTypes';
-import TransactionTypes from '../helpers/transactionTypes';
-import { divide, isZero } from '../helpers/utilities';
-import WalletTypes from '../helpers/walletTypes';
-import { Navigation } from '../navigation';
-import { triggerOnSwipeLayout } from '../navigation/onNavigationStateChange';
-import { parseAccountAssets, parseAsset } from '../parsers/accounts';
-import { parseNewTransaction } from '../parsers/newTransaction';
+} from '@rainbow-me/handlers/localstorage/accountLocal';
+import { getTransactionReceipt } from '@rainbow-me/handlers/web3';
+import AssetTypes from '@rainbow-me/helpers/assetTypes';
+import DirectionTypes from '@rainbow-me/helpers/transactionDirectionTypes';
+import TransactionStatusTypes from '@rainbow-me/helpers/transactionStatusTypes';
+import TransactionTypes from '@rainbow-me/helpers/transactionTypes';
+import WalletTypes from '@rainbow-me/helpers/walletTypes';
+import { Navigation } from '@rainbow-me/navigation';
+import { triggerOnSwipeLayout } from '@rainbow-me/navigation/onNavigationStateChange';
+import networkTypes from '@rainbow-me/networkTypes';
 import {
   getTitle,
   getTransactionLabel,
+  parseAccountAssets,
+  parseAsset,
+  parseNewTransaction,
   parseTransactions,
-} from '../parsers/transactions';
-import { shitcoins } from '../references';
-import { ethereumUtils, isLowerCaseMatch } from '../utils';
-
-/* eslint-disable-next-line import/no-cycle */
-import { addCashUpdatePurchases } from './addCash';
-/* eslint-disable-next-line import/no-cycle */
-import { uniqueTokensRefreshState } from './uniqueTokens';
-import { uniswapUpdateLiquidityTokens } from './uniswapLiquidity';
-import networkTypes from '@rainbow-me/networkTypes';
+} from '@rainbow-me/parsers';
+import {
+  DPI_ADDRESS,
+  ETH_ADDRESS,
+  ETH_COINGECKO_ID,
+  shitcoins,
+} from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
+import { delay, divide, isZero } from '@rainbow-me/utilities';
+import {
+  ethereumUtils,
+  isLowerCaseMatch,
+  TokensListenedCache,
+} from '@rainbow-me/utils';
 import logger from 'logger';
 
 const BACKUP_SHEET_DELAY_MS = 3000;
 
 let pendingTransactionsHandle = null;
+let genericAssetsHandle = null;
 const TXN_WATCHER_MAX_TRIES = 60;
 const TXN_WATCHER_POLL_INTERVAL = 5000; // 5 seconds
+const GENERIC_ASSETS_REFRESH_INTERVAL = 60000; // 1 minute
+const GENERIC_ASSETS_FALLBACK_TIMEOUT = 10000; // 10 seconds
+
+export const COINGECKO_IDS_ENDPOINT =
+  'https://api.coingecko.com/api/v3/coins/list?include_platform=true&asset_platform_id=ethereum';
 
 // -- Constants --------------------------------------- //
 
@@ -127,6 +146,140 @@ export const dataLoadState = () => async (dispatch, getState) => {
     });
   } catch (error) {
     dispatch({ type: DATA_LOAD_TRANSACTIONS_FAILURE });
+  }
+  genericAssetsHandle = setTimeout(() => {
+    dispatch(genericAssetsFallback());
+  }, GENERIC_ASSETS_FALLBACK_TIMEOUT);
+};
+
+export const fetchAssetPrices = async (coingeckoIds, nativeCurrency) => {
+  try {
+    const url = `https://api.coingecko.com/api/v3/simple/price?ids=${coingeckoIds
+      .filter(val => !!val)
+      .sort()
+      .join(
+        ','
+      )}&vs_currencies=${nativeCurrency}&include_24hr_change=true&include_last_updated_at=true`;
+    const priceRequest = await fetch(url);
+    return priceRequest.json();
+  } catch (e) {
+    logger.log(`Error trying to fetch ${coingeckoIds} prices`, e);
+  }
+};
+
+const genericAssetsFallback = () => async (dispatch, getState) => {
+  logger.log('ZERION IS DOWN! ENABLING GENERIC ASSETS FALLBACK');
+  const { nativeCurrency } = getState().settings;
+  const formattedNativeCurrency = toLower(nativeCurrency);
+  let ids;
+  try {
+    const request = await fetch(COINGECKO_IDS_ENDPOINT);
+    ids = await request.json();
+  } catch (e) {
+    ids = coingeckoIdsFallback;
+  }
+
+  const allAssets = [
+    {
+      asset_code: ETH_ADDRESS,
+      coingecko_id: ETH_COINGECKO_ID,
+      decimals: 18,
+      name: 'Ethereum',
+      symbol: 'ETH',
+    },
+    {
+      asset_code: DPI_ADDRESS,
+      coingecko_id: 'defipulse-index',
+      decimals: 18,
+      name: 'DefiPulse Index',
+      symbol: 'DPI',
+    },
+  ];
+
+  keys(TokensListenedCache).forEach(address => {
+    const coingeckoAsset = ids.find(
+      ({ platforms: { ethereum: tokenAddress } }) =>
+        toLower(tokenAddress) === address
+    );
+
+    if (coingeckoAsset) {
+      allAssets.push({
+        asset_code: address,
+        coingecko_id: coingeckoAsset.id,
+        name: coingeckoAsset.name,
+        symbol: toUpper(coingeckoAsset.symbol),
+      });
+    }
+  });
+
+  const allAssetsUnique = uniqBy(allAssets, token => token.asset_code);
+
+  let prices = {};
+  const pricePageSize = 80;
+  const pages = Math.ceil(allAssetsUnique.length / pricePageSize);
+  try {
+    for (let currentPage = 0; currentPage < pages; currentPage++) {
+      const from = currentPage * pricePageSize;
+      const to = from + pricePageSize;
+      const currentPageIds = allAssetsUnique
+        .slice(from, to)
+        .map(({ coingecko_id }) => coingecko_id);
+
+      const pricesForCurrentPage = await fetchAssetPrices(
+        currentPageIds,
+        formattedNativeCurrency
+      );
+      await delay(1000);
+      prices = { ...prices, ...pricesForCurrentPage };
+    }
+  } catch (e) {
+    logger.sentry('error loading generic asset prices from coingecko', e);
+  }
+
+  if (!isEmpty(prices)) {
+    Object.keys(prices).forEach(key => {
+      for (let i = 0; i < allAssetsUnique.length; i++) {
+        if (toLower(allAssetsUnique[i].coingecko_id) === toLower(key)) {
+          allAssetsUnique[i].price = {
+            changed_at: prices[key].last_updated_at,
+            relative_change_24h:
+              prices[key][`${formattedNativeCurrency}_24h_change`],
+            value: prices[key][`${formattedNativeCurrency}`],
+          };
+          break;
+        }
+      }
+    });
+  }
+
+  const allPrices = {};
+
+  allAssetsUnique.forEach(asset => {
+    allPrices[asset.asset_code] = asset;
+  });
+
+  dispatch(
+    assetPricesReceived(
+      {
+        meta: {
+          currency: 'usd',
+          status: 'ok',
+        },
+        payload: { prices: allPrices },
+      },
+      true
+    )
+  );
+
+  genericAssetsHandle = setTimeout(() => {
+    logger.log('updating generic assets via fallback');
+    dispatch(genericAssetsFallback());
+  }, GENERIC_ASSETS_REFRESH_INTERVAL);
+};
+
+const disableGenericAssetsFallbackIfNeeded = () => {
+  if (genericAssetsHandle) {
+    clearTimeout(genericAssetsHandle);
   }
 };
 
@@ -257,7 +410,6 @@ export const addressAssetsReceived = (
 ) => (dispatch, getState) => {
   const isValidMeta = dispatch(checkMeta(message));
   if (!isValidMeta) return;
-
   const { accountAddress, network } = getState().settings;
   const { uniqueTokens } = getState().uniqueTokens;
   const payload = values(get(message, 'payload.assets', {}));
@@ -327,12 +479,12 @@ export const addressAssetsReceived = (
 
 const subscribeToMissingPrices = addresses => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
-  const { genericAssets, uniswapPricesQuery } = getState().data;
+  const { uniswapPricesQuery } = getState().data;
   if (uniswapPricesQuery) {
     uniswapPricesQuery.refetch({ addresses });
   } else {
     const newQuery = uniswapClient.watchQuery({
-      fetchPolicy: 'network-only',
+      fetchPolicy: 'no-cache',
       pollInterval: 15000, // 15 seconds
       query: UNISWAP_PRICES_QUERY,
       variables: {
@@ -343,7 +495,7 @@ const subscribeToMissingPrices = addresses => (dispatch, getState) => {
     const newSubscription = newQuery.subscribe({
       next: async ({ data }) => {
         if (data && data.tokens) {
-          const nativePriceOfEth = ethereumUtils.getEthPriceUnit(genericAssets);
+          const nativePriceOfEth = ethereumUtils.getEthPriceUnit();
           const tokenAddresses = map(data.tokens, property('id'));
 
           const yesterday = getUnixTime(subDays(new Date(), 1));
@@ -403,19 +555,33 @@ const get24HourPrice = async (address, yesterday) => {
     query: UNISWAP_24HOUR_PRICE_QUERY,
     variables: {
       address,
-      fetchPolicy: 'network-only',
+      fetchPolicy: 'no-cache',
       timestamp: yesterday,
     },
   });
   return get(result, 'data.tokenDayDatas[0]');
 };
 
-export const assetPricesReceived = message => dispatch => {
+export const assetPricesReceived = (message, fromFallback = false) => (
+  dispatch,
+  getState
+) => {
+  if (!fromFallback) {
+    disableGenericAssetsFallbackIfNeeded();
+  }
   const assets = get(message, 'payload.prices', {});
+
   if (isEmpty(assets)) return;
   const parsedAssets = mapValues(assets, asset => parseAsset(asset));
+  const { genericAssets } = getState().data;
+
+  const updatedAssets = {
+    ...genericAssets,
+    ...parsedAssets,
+  };
+
   dispatch({
-    payload: parsedAssets,
+    payload: updatedAssets,
     type: DATA_UPDATE_GENERIC_ASSETS,
   });
 };
@@ -737,6 +903,7 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         ...INITIAL_STATE,
+        genericAssets: state.genericAssets,
       };
     default:
       return state;

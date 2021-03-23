@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { StatusBar } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { useSafeArea } from 'react-native-safe-area-context';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { AddCashForm, AddCashStatus } from '../components/add-cash';
 import { Column, ColumnWithMargins, FlexItem } from '../components/layout';
 import {
@@ -10,16 +10,17 @@ import {
   SheetSubtitleCycler,
   SheetTitle,
 } from '../components/sheet';
+import { useTheme } from '../context/ThemeContext';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
+import { deviceUtils } from '../utils';
 import {
   useAddCashLimits,
   useDimensions,
   useShakeAnimation,
   useTimeout,
   useWyreApplePay,
-} from '../hooks';
-import { deviceUtils } from '../utils';
-import { borders, colors } from '@rainbow-me/styles';
+} from '@rainbow-me/hooks';
+import { borders } from '@rainbow-me/styles';
 
 const deviceHeight = deviceUtils.dimensions.height;
 const statusBarHeight = getStatusBarHeight(true);
@@ -30,7 +31,7 @@ const sheetHeight =
 
 const SheetContainer = styled(Column)`
   ${borders.buildRadius('top', isNativeStackAvailable ? 0 : 16)};
-  background-color: ${colors.white};
+  background-color: ${({ colors }) => colors.white};
   height: ${isNativeStackAvailable ? deviceHeight : sheetHeight};
   top: ${isNativeStackAvailable ? 0 : statusBarHeight};
   width: 100%;
@@ -39,6 +40,7 @@ const SheetContainer = styled(Column)`
 const SubtitleInterval = 3000;
 
 export default function AddCashSheet() {
+  const { colors } = useTheme();
   const { isNarrowPhone } = useDimensions();
   const insets = useSafeArea();
 
@@ -69,6 +71,7 @@ export default function AddCashSheet() {
     isPaymentComplete,
     onPurchase,
     orderCurrency,
+    orderId,
     orderStatus,
     resetAddCashForm,
     transferStatus,
@@ -84,7 +87,7 @@ export default function AddCashSheet() {
   );
 
   return (
-    <SheetContainer>
+    <SheetContainer colors={colors}>
       <StatusBar barStyle="light-content" />
       <Column
         align="center"
@@ -115,6 +118,7 @@ export default function AddCashSheet() {
             <AddCashStatus
               error={error}
               orderCurrency={orderCurrency}
+              orderId={orderId}
               orderStatus={orderStatus}
               resetAddCashForm={resetAddCashForm}
               transferStatus={transferStatus}

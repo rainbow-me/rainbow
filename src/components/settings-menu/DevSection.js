@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import React, { useCallback, useContext } from 'react';
 import { Alert, ScrollView } from 'react-native';
 import { GANACHE_URL_ANDROID, GANACHE_URL_IOS } from 'react-native-dotenv';
-import { Restart } from 'react-native-restart';
+import Restart from 'react-native-restart';
 import { ListFooter, ListItem } from '../list';
 import { RadioListItem } from '../radio-list';
 import { deleteAllBackups } from '@rainbow-me/handlers/cloudBackup';
@@ -45,6 +45,19 @@ const DevSection = () => {
     navigate(Routes.PROFILE_SCREEN);
   }, [navigate]);
 
+  const checkAlert = useCallback(async () => {
+    try {
+      const request = await fetch(
+        'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest'
+      );
+      // eslint-disable-next-line no-unused-vars
+      const response = request.json();
+      Alert.alert('Status', 'NOT APPLIED');
+    } catch (e) {
+      Alert.alert('Status', 'APPLIED');
+    }
+  }, []);
+
   const removeBackups = async () => {
     const newWallets = { ...wallets };
     Object.keys(newWallets).forEach(key => {
@@ -75,7 +88,7 @@ const DevSection = () => {
         onPress={wipeKeychain}
         testID="reset-keychain-section"
       />
-      <ListItem label="🔄 Restart app" onPress={Restart} />
+      <ListItem label="🔄 Restart app" onPress={() => Restart.Restart()} />
       <ListItem label="🗑️ Remove all backups" onPress={removeBackups} />
       <ListItem
         label="🤷 Restore default experimental config"
@@ -86,6 +99,7 @@ const DevSection = () => {
         onPress={connectToGanache}
         testID="ganache-section"
       />
+      <ListItem label="‍🏖️ Alert" onPress={checkAlert} testID="alert-section" />
       <ListFooter />
 
       {Object.keys(config)

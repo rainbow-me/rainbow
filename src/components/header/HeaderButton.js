@@ -1,4 +1,4 @@
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
 import { padding } from '@rainbow-me/styles';
 

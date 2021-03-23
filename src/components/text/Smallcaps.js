@@ -1,12 +1,11 @@
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import Text from './Text';
-import { colors } from '@rainbow-me/styles';
 
-const Smallcaps = styled(Text).attrs({
+const Smallcaps = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.alpha(colors.blueGreyDark, 0.8),
   size: 'small',
   uppercase: true,
   weight: 'semibold',
-})``;
+}))``;
 
 export default Smallcaps;

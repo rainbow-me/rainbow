@@ -7,7 +7,11 @@ import React, {
   useState,
 } from 'react';
 import { useSharedValue } from 'react-native-reanimated';
+import DevButton from '../components/dev-buttons/DevButton';
+import Emoji from '../components/text/Emoji';
+import { showReloadButton, showSwitchModeButton } from '../config/debug';
 import { defaultConfig } from '../config/experimental';
+import { useTheme } from '../context/ThemeContext';
 
 export const RainbowContext = createContext({});
 
@@ -48,9 +52,20 @@ export default function RainbowContextWrapper({ children }) {
     [config, globalState, setConfigWithStorage, setGlobalState]
   );
 
+  const { isDarkMode, setTheme, colors } = useTheme();
+
   return (
     <RainbowContext.Provider value={initialValue}>
       {children}
+      {showReloadButton && __DEV__ && <DevButton initialDisplacement={200} />}
+      {showSwitchModeButton && __DEV__ && (
+        <DevButton
+          color={colors.dark}
+          onPress={() => setTheme(isDarkMode ? 'light' : 'dark')}
+        >
+          <Emoji>{isDarkMode ? '🌞' : '🌚'}</Emoji>
+        </DevButton>
+      )}
     </RainbowContext.Provider>
   );
 }

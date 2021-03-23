@@ -3,7 +3,7 @@ import { concat, without } from 'lodash';
 import {
   getShowcaseTokens,
   saveShowcaseTokens,
-} from '../handlers/localstorage/accountLocal';
+} from '@rainbow-me/handlers/localstorage/accountLocal';
 
 // -- Constants --------------------------------------- //
 const SHOWCASE_TOKENS_LOAD_SUCCESS =
@@ -17,9 +17,9 @@ const REMOVE_SHOWCASE_TOKEN = 'showcaseTokens/REMOVE_SHOWCASE_TOKEN';
 export const showcaseTokensLoadState = () => async (dispatch, getState) => {
   try {
     const { accountAddress, network } = getState().settings;
-    const openSavings = await getShowcaseTokens(accountAddress, network);
+    const showcaseTokens = await getShowcaseTokens(accountAddress, network);
     dispatch({
-      payload: openSavings,
+      payload: showcaseTokens,
       type: SHOWCASE_TOKENS_LOAD_SUCCESS,
     });
   } catch (error) {

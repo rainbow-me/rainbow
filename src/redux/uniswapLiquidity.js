@@ -1,12 +1,14 @@
 import produce from 'immer';
-import { concat, isEmpty, uniqBy } from 'lodash';
+import { concat, filter, isEmpty, map, uniqBy } from 'lodash';
+/* eslint-disable-next-line import/no-cycle */
+import { emitChartsRequest } from './explorer';
 import {
   getLiquidity,
   getUniswapLiquidityInfo,
   saveLiquidity,
   saveLiquidityInfo,
-} from '../handlers/localstorage/uniswap';
-import { getLiquidityInfo } from '../handlers/uniswapLiquidity';
+} from '@rainbow-me/handlers/localstorage/uniswap';
+import { getLiquidityInfo } from '@rainbow-me/handlers/uniswapLiquidity';
 
 // -- Constants ------------------------------------------------------------- //
 const UNISWAP_UPDATE_LIQUIDITY_TOKEN_INFO =
@@ -45,16 +47,22 @@ export const uniswapUpdateLiquidityTokens = (
   liquidityTokens,
   appendOrChange
 ) => (dispatch, getState) => {
-  if (isEmpty(liquidityTokens)) return;
+  if (appendOrChange && isEmpty(liquidityTokens)) return;
   let updatedLiquidityTokens = liquidityTokens;
   if (appendOrChange) {
     const {
       liquidityTokens: existingLiquidityTokens,
     } = getState().uniswapLiquidity;
-    updatedLiquidityTokens = uniqBy(
-      concat(updatedLiquidityTokens, existingLiquidityTokens),
-      token => token.address
+    updatedLiquidityTokens = filter(
+      uniqBy(
+        concat(updatedLiquidityTokens, existingLiquidityTokens),
+        token => token.address
+      ),
+      token => !!Number(token?.balance?.amount ?? 0)
     );
+  } else {
+    const assetCodes = map(liquidityTokens, token => token.address);
+    dispatch(emitChartsRequest(assetCodes));
   }
   const { accountAddress, network } = getState().settings;
   dispatch({
@@ -62,10 +70,10 @@ export const uniswapUpdateLiquidityTokens = (
     type: UNISWAP_UPDATE_LIQUIDITY_TOKENS,
   });
   saveLiquidity(updatedLiquidityTokens, accountAddress, network);
-  dispatch(uniswapUpdateLiquidityState());
+  dispatch(uniswapUpdateLiquidityInfo());
 };
 
-export const uniswapUpdateLiquidityState = () => async (dispatch, getState) => {
+export const uniswapUpdateLiquidityInfo = () => async (dispatch, getState) => {
   const {
     accountAddress,
     chainId,

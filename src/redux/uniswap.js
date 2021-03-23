@@ -1,5 +1,5 @@
 import produce from 'immer';
-import { concat, map, remove, toLower, uniq, without } from 'lodash';
+import { concat, isArray, map, remove, toLower, uniq, without } from 'lodash';
 import {
   getUniswapFavorites,
   saveUniswapFavorites,
@@ -12,8 +12,11 @@ import networkTypes from '@rainbow-me/networkTypes';
 import {
   CURATED_UNISWAP_TOKENS,
   DefaultUniswapFavorites,
+  RAINBOW_TOKEN_LIST,
   SOCKS_ADDRESS,
 } from '@rainbow-me/references';
+import { greaterThanOrEqualTo, multiply } from '@rainbow-me/utilities';
+import { checkTokenIsScam, getTokenMetadata } from '@rainbow-me/utils';
 
 // -- Constants ------------------------------------------------------------- //
 const UNISWAP_LOAD_REQUEST = 'uniswap/UNISWAP_LOAD_REQUEST';
@@ -22,10 +25,10 @@ const UNISWAP_LOAD_FAILURE = 'uniswap/UNISWAP_LOAD_FAILURE';
 
 const UNISWAP_UPDATE_PAIRS = 'uniswap/UNISWAP_UPDATE_PAIRS';
 const UNISWAP_UPDATE_ALL_TOKENS = 'uniswap/UNISWAP_UPDATE_ALL_TOKENS';
+const UNISWAP_LOADED_ALL_TOKENS = 'uniswap/UNISWAP_LOADED_ALL_TOKENS';
 
 const UNISWAP_UPDATE_FAVORITES = 'uniswap/UNISWAP_UPDATE_FAVORITES';
 const UNISWAP_CLEAR_STATE = 'uniswap/UNISWAP_CLEAR_STATE';
-
 // -- Actions --------------------------------------------------------------- //
 export const uniswapLoadState = () => async (dispatch, getState) => {
   const { network } = getState().settings;
@@ -44,20 +47,62 @@ export const uniswapLoadState = () => async (dispatch, getState) => {
 
 export const uniswapGetAllExchanges = () => async (dispatch, getState) => {
   const { network } = getState().settings;
-  try {
-    const allTokens =
-      network === networkTypes.mainnet ? await getAllTokens() : {};
-    dispatch({
-      payload: allTokens,
-      type: UNISWAP_UPDATE_ALL_TOKENS,
-    });
-  } catch (error) {
-    dispatch({
-      payload: {},
-      type: UNISWAP_UPDATE_ALL_TOKENS,
-    });
+  if (network === networkTypes.mainnet) {
+    getAllTokens();
   }
 };
+
+const parseTokens = tokens => {
+  let parsedTokens = {};
+  tokens.forEach(token => {
+    const tokenAddress = toLower(token.id);
+    const metadata = getTokenMetadata(tokenAddress);
+    if (token.totalLiquidity === '0') return;
+
+    // if unverified AND name/symbol match a curated token, skip
+    if (!metadata?.isVerified && checkTokenIsScam(token.name, token.symbol)) {
+      return;
+    }
+
+    const highLiquidity =
+      token.derivedETH &&
+      greaterThanOrEqualTo(
+        multiply(token.derivedETH, token.totalLiquidity),
+        0.5
+      );
+
+    const tokenInfo = {
+      address: tokenAddress,
+      decimals: Number(token.decimals),
+      highLiquidity,
+      name: token.name,
+      symbol: token.symbol,
+      uniqueId: tokenAddress,
+      ...metadata,
+    };
+    parsedTokens[tokenAddress] = tokenInfo;
+  });
+  return parsedTokens;
+};
+
+export const uniswapUpdateTokens = tokens => (dispatch, getState) => {
+  const { allTokens } = getState().uniswap;
+  const parsedTokens = parseTokens(tokens);
+
+  const updatedTokens = {
+    ...allTokens,
+    ...parsedTokens,
+  };
+  dispatch({
+    payload: updatedTokens,
+    type: UNISWAP_UPDATE_ALL_TOKENS,
+  });
+};
+
+export const uniswapLoadedAllTokens = () => dispatch =>
+  dispatch({
+    type: UNISWAP_LOADED_ALL_TOKENS,
+  });
 
 export const uniswapPairsInit = () => (dispatch, getState) => {
   const { network } = getState().settings;
@@ -78,13 +123,14 @@ export const uniswapUpdateFavorites = (assetAddress, add = true) => (
   dispatch,
   getState
 ) => {
-  const address = toLower(assetAddress);
   const { favorites } = getState().uniswap;
   const normalizedFavorites = map(favorites, toLower);
 
   const updatedFavorites = add
-    ? uniq(concat(normalizedFavorites, address))
-    : without(normalizedFavorites, address);
+    ? uniq(concat(normalizedFavorites, assetAddress))
+    : isArray(assetAddress)
+    ? without(normalizedFavorites, ...assetAddress)
+    : without(normalizedFavorites, assetAddress);
   dispatch({
     payload: updatedFavorites,
     type: UNISWAP_UPDATE_FAVORITES,
@@ -94,7 +140,7 @@ export const uniswapUpdateFavorites = (assetAddress, add = true) => (
 
 // -- Reducer --------------------------------------------------------------- //
 export const INITIAL_UNISWAP_STATE = {
-  allTokens: {},
+  allTokens: RAINBOW_TOKEN_LIST,
   favorites: DefaultUniswapFavorites['mainnet'],
   fetchingUniswap: false,
   loadingAllTokens: true,
@@ -110,6 +156,8 @@ export default (state = INITIAL_UNISWAP_STATE, action) =>
         break;
       case UNISWAP_UPDATE_ALL_TOKENS:
         draft.allTokens = action.payload;
+        break;
+      case UNISWAP_LOADED_ALL_TOKENS:
         draft.loadingAllTokens = false;
         break;
       case UNISWAP_UPDATE_PAIRS:

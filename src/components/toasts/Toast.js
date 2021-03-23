@@ -2,13 +2,14 @@ import React, { Fragment } from 'react';
 import Animated from 'react-native-reanimated';
 import { useSpringTransition } from 'react-native-redash';
 import { useSafeArea } from 'react-native-safe-area-context';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
+import { useTheme } from '../../context/ThemeContext';
 import { interpolate } from '../animations';
 import { Icon } from '../icons';
 import { RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';
 import { useDimensions } from '@rainbow-me/hooks';
-import { colors, padding, position, shadow } from '@rainbow-me/styles';
+import { padding, position, shadow } from '@rainbow-me/styles';
 
 const springConfig = {
   damping: 14,
@@ -25,7 +26,7 @@ const Container = styled(RowWithMargins).attrs({
 })`
   ${padding(9, 10, 11, 10)};
   ${position.centered};
-  ${shadow.build(0, 6, 10, colors.dark, 0.14)};
+  ${({ theme: { colors } }) => shadow.build(0, 6, 10, colors.shadow, 0.14)};
   background-color: ${({ color }) => color};
   border-radius: 20;
   bottom: ${({ insets }) => (insets.bottom || 40) + 3};
@@ -45,16 +46,17 @@ export function ToastsContainer({ children }) {
 
 export default function Toast({
   children,
-  color = colors.dark,
+  color,
   distance = 60,
   targetTranslate = 0,
   icon,
   isVisible,
   testID,
   text,
-  textColor = colors.white,
+  textColor,
   ...props
 }) {
+  const { colors, isDarkMode } = useTheme();
   const { width: deviceWidth } = useDimensions();
   const insets = useSafeArea();
 
@@ -70,10 +72,12 @@ export default function Toast({
     outputRange: [distance, targetTranslate],
   });
 
+  const currentColor = color || isDarkMode ? colors.darkModeDark : colors.dark;
+
   return (
     <Animated.View style={{ opacity, transform: [{ translateY }] }}>
       <Container
-        color={color}
+        color={currentColor}
         deviceWidth={deviceWidth}
         insets={insets}
         testID={testID}
@@ -81,8 +85,18 @@ export default function Toast({
       >
         {children || (
           <Fragment>
-            {icon && <Icon color={textColor} marginTop={3} name={icon} />}
-            <TruncatedText color={textColor} size="smedium" weight="semibold">
+            {icon && (
+              <Icon
+                color={textColor || colors.whiteLabel}
+                marginTop={3}
+                name={icon}
+              />
+            )}
+            <TruncatedText
+              color={textColor || colors.whiteLabel}
+              size="smedium"
+              weight="bold"
+            >
               {text}
             </TruncatedText>
           </Fragment>

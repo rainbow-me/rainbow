@@ -1,56 +1,57 @@
 import React from 'react';
-import styled from 'styled-components/primitives';
-import { Icon } from '../icons';
-import { RowWithMargins } from '../layout';
+import styled from 'styled-components';
 import { Text } from '../text';
-import BiometryTypes from '@rainbow-me/helpers/biometryTypes';
+import { BiometryTypes } from '@rainbow-me/helpers';
 import { useBiometryType } from '@rainbow-me/hooks';
-import { colors } from '@rainbow-me/styles';
+import { fonts } from '@rainbow-me/styles';
 
-const BiometryIcon = styled(Icon).attrs(({ biometryType, color }) => ({
-  color,
-  name: biometryType.toLowerCase(),
-  size: biometryType === BiometryTypes.passcode ? 19 : 20,
-}))`
-  margin-bottom: ${({ biometryType }) =>
-    biometryType === BiometryTypes.passcode ? 1.5 : 0};
-`;
+const { Face, FaceID, Fingerprint, none, passcode, TouchID } = BiometryTypes;
 
-const ButtonLabel = styled(Text).attrs(({ color }) => ({
-  align: 'center',
-  color,
-  letterSpacing: 'rounded',
-  size: 'larger',
-  weight: 'semibold',
-}))``;
+const Label = styled(Text).attrs(
+  ({
+    color,
+    size = fonts.size.larger,
+    theme: { colors },
+    weight = fonts.weight.semibold,
+  }) => ({
+    align: 'center',
+    color: color || colors.appleBlue,
+    letterSpacing: 'rounded',
+    size,
+    weight,
+  })
+)``;
+
+function useBiometryIconString(showIcon) {
+  const biometryType = useBiometryType();
+
+  const isFace = biometryType === Face || biometryType === FaceID;
+  const isPasscode = biometryType === passcode;
+  const isTouch = biometryType === Fingerprint || biometryType === TouchID;
+
+  const biometryIconString = isFace
+    ? '􀎽'
+    : isTouch
+    ? '􀟒'
+    : isPasscode
+    ? '􀒲'
+    : '';
+
+  return !biometryType || biometryType === none || !showIcon
+    ? ''
+    : `${biometryIconString} `;
+}
 
 export default function BiometricButtonContent({
-  color = colors.appleBlue,
-  showIcon,
-  text,
+  label,
+  showIcon = true,
   testID,
   ...props
 }) {
-  const biometryType = useBiometryType();
-  const showBiometryIcon =
-    showIcon &&
-    (biometryType === BiometryTypes.passcode ||
-      biometryType === BiometryTypes.TouchID ||
-      biometryType === BiometryTypes.Fingerprint);
-  const showFaceIDCharacter =
-    showIcon &&
-    (biometryType === BiometryTypes.FaceID ||
-      biometryType === BiometryTypes.Face);
-
+  const biometryIcon = useBiometryIconString(!android && showIcon);
   return (
-    <RowWithMargins centered margin={7} {...props}>
-      {!android && showBiometryIcon && (
-        <BiometryIcon biometryType={biometryType} color={color} />
-      )}
-      <ButtonLabel color={color} testID={testID}>
-        {showFaceIDCharacter && '􀎽 '}
-        {text}
-      </ButtonLabel>
-    </RowWithMargins>
+    <Label testID={testID || label} {...props}>
+      {`${biometryIcon}${label}`}
+    </Label>
   );
 }

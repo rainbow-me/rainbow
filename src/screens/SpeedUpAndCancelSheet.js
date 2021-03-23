@@ -1,56 +1,43 @@
 import { useRoute } from '@react-navigation/native';
 import { captureException } from '@sentry/react-native';
 import { BigNumber } from 'bignumber.js';
-import { get, isEmpty, keys } from 'lodash';
+import { get, isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, InteractionManager, TurboModuleRegistry } from 'react-native';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
+import { Alert, InteractionManager } from 'react-native';
+import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components/native';
+import styled from 'styled-components';
 import Divider from '../components/Divider';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, Column, Row } from '../components/layout';
-
 import {
   SheetActionButton,
   SheetActionButtonRow,
   SheetHandleFixedToTop,
+  SheetKeyboardAnimation,
   SlackSheet,
 } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
-import { getTransaction, toHex } from '../handlers/web3';
-import TransactionStatusTypes from '../helpers/transactionStatusTypes';
-import TransactionTypes from '../helpers/transactionTypes';
-import { loadWallet, sendTransaction } from '../model/wallet';
-import { gweiToWei, weiToGwei } from '../parsers/gas';
-import { getTitle } from '../parsers/transactions';
-import { executeRap } from '../raps/common';
-import { dataUpdateTransaction } from '../redux/data';
-import { explorerInit } from '../redux/explorer';
-import { updateGasPriceForSpeed } from '../redux/gas';
-import { rapsAddOrUpdate } from '../redux/raps';
-import store from '../redux/store';
-import { safeAreaInsetValues } from '../utils';
-import deviceUtils from '../utils/deviceUtils';
+import { getTransaction, toHex } from '@rainbow-me/handlers/web3';
+import TransactionStatusTypes from '@rainbow-me/helpers/transactionStatusTypes';
+import TransactionTypes from '@rainbow-me/helpers/transactionTypes';
 import {
   useAccountSettings,
+  useBooleanState,
   useDimensions,
   useGas,
   useKeyboardHeight,
 } from '@rainbow-me/hooks';
+import { loadWallet, sendTransaction } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
+import { getTitle, gweiToWei, weiToGwei } from '@rainbow-me/parsers';
+import { dataUpdateTransaction } from '@rainbow-me/redux/data';
+import { explorerInit } from '@rainbow-me/redux/explorer';
+import { updateGasPriceForSpeed } from '@rainbow-me/redux/gas';
 import { ethUnits } from '@rainbow-me/references';
-import { colors, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
+import { deviceUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 import logger from 'logger';
-
-const isReanimatedAvailable = !(
-  !TurboModuleRegistry.get('NativeReanimated') &&
-  (!global.__reanimatedModuleProxy || global.__reanimatedModuleProxy.__shimmed)
-);
 
 const springConfig = {
   damping: 500,
@@ -72,7 +59,7 @@ const CenteredSheet = styled(Centered)`
 `;
 
 const ExtendedSheetBackground = styled.View`
-  background-color: ${colors.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
   height: 1000;
   position: absolute;
   bottom: -800;
@@ -82,8 +69,9 @@ const ExtendedSheetBackground = styled.View`
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const AnimatedSheet = Animated.createAnimatedComponent(CenteredSheet);
 
-const GasSpeedButtonContainer = styled(Row)`
-  justify-content: center;
+const GasSpeedButtonContainer = styled(Row).attrs({
+  justify: 'center',
+})`
   margin-bottom: 19px;
   margin-top: 4px;
   width: ${deviceUtils.dimensions.width - 10};
@@ -133,7 +121,7 @@ export default function SpeedUpAndCancelSheet() {
   const {
     params: { type, tx },
   } = useRoute();
-  const [keyboardVisible, setKeyboardVisible] = useState(false);
+  const [isKeyboardVisible, showKeyboard, hideKeyboard] = useBooleanState();
   const [minGasPrice, setMinGasPrice] = useState(
     calcMinGasPriceAllowed(tx.gasPrice)
   );
@@ -163,33 +151,6 @@ export default function SpeedUpAndCancelSheet() {
         }, 5000);
         return;
       }
-    },
-    [dispatch]
-  );
-
-  const replaceRapActionTx = useCallback(
-    (originalHash, newTxData) => {
-      // 1 - Find the rap based on the orignal tx hash
-      let currentRap;
-      const { raps } = store.getState().raps;
-      keys(raps).forEach(rapId => {
-        const rap = raps[rapId];
-        rap.actions.forEach((action, index) => {
-          if (action.transaction?.hash === originalHash) {
-            // 2 - Set the new tx hash on the rap
-            if (!action.transaction?.confirmed) {
-              rap.actions[index].transaction = {
-                ...rap.actions[index].transaction,
-                ...newTxData,
-              };
-              // 3 - Update the rap on redux with the new tx hash
-              dispatch(rapsAddOrUpdate(rap.id, rap));
-              currentRap = rap;
-            }
-          }
-        });
-      });
-      return currentRap;
     },
     [dispatch]
   );
@@ -258,54 +219,13 @@ export default function SpeedUpAndCancelSheet() {
       }
       updatedTx.status = TransactionStatusTypes.speeding_up;
       updatedTx.title = getTitle(updatedTx);
-      const originalHashNormalized = originalHash.split('-')[0];
-      replaceRapActionTx(originalHashNormalized, { hash });
-
-      dispatch(
-        dataUpdateTransaction(
-          originalHash,
-          updatedTx,
-          true,
-          async transaction => {
-            const hashNormalized = transaction.hash.split('-')[0];
-            // The tx was confirmed
-            const currentRap = replaceRapActionTx(hashNormalized, {
-              confirmed: true,
-            });
-
-            // If there's a rap, we need to resume the execution
-            if (currentRap && existingWallet) {
-              logger.log('Resuming rap', currentRap);
-              try {
-                await executeRap(existingWallet, currentRap);
-              } catch (e) {
-                logger.log('Error resuming rap', e);
-              } finally {
-                existingWallet = null;
-              }
-            }
-            logger.log('reloading transactions');
-            reloadTransactions(transaction);
-          }
-        )
-      );
+      dispatch(dataUpdateTransaction(originalHash, updatedTx, true));
     } catch (e) {
       logger.log('Error submitting speed up tx', e);
     } finally {
       goBack();
     }
-  }, [
-    data,
-    dispatch,
-    gasLimit,
-    getNewGasPrice,
-    goBack,
-    nonce,
-    reloadTransactions,
-    replaceRapActionTx,
-    tx,
-    value,
-  ]);
+  }, [data, dispatch, gasLimit, getNewGasPrice, goBack, nonce, tx, value]);
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(async () => {
@@ -370,26 +290,10 @@ export default function SpeedUpAndCancelSheet() {
     }
   }, [dispatch, gasPrices, minGasPrice, tx, tx.gasLimit, type, updateTxFee]);
 
-  const handleCustomGasFocus = useCallback(() => {
-    setKeyboardVisible(true);
-  }, []);
-  const handleCustomGasBlur = useCallback(() => {
-    setKeyboardVisible(false);
-  }, []);
-
   const offset = useSharedValue(0);
-  const animatedContainerStyles = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateY: offset.value }],
-    };
-  });
-
-  const fallbackStyles = {
-    marginBottom: keyboardVisible ? keyboardHeight : 0,
-  };
 
   useEffect(() => {
-    if (keyboardVisible) {
+    if (isKeyboardVisible) {
       offset.value = withSpring(
         -keyboardHeight + safeAreaInsetValues.bottom - (android ? 50 : 10),
         springConfig
@@ -397,7 +301,7 @@ export default function SpeedUpAndCancelSheet() {
     } else {
       offset.value = withSpring(0, springConfig);
     }
-  }, [keyboardHeight, keyboardVisible, offset]);
+  }, [isKeyboardVisible, keyboardHeight, offset]);
   const sheetHeight = ios
     ? (type === CANCEL_TX ? 491 : 442) + safeAreaInsetValues.bottom
     : 850 + safeAreaInsetValues.bottom;
@@ -406,9 +310,13 @@ export default function SpeedUpAndCancelSheet() {
     ? deviceHeight - sheetHeight + (type === CANCEL_TX ? 290 : 340)
     : null;
 
+  const { colors, isDarkMode } = useTheme();
+
   return (
-    <AnimatedContainer
-      style={isReanimatedAvailable ? animatedContainerStyles : fallbackStyles}
+    <SheetKeyboardAnimation
+      as={AnimatedContainer}
+      isKeyboardVisible={isKeyboardVisible}
+      translateY={offset}
     >
       <ExtendedSheetBackground />
       <SlackSheet
@@ -477,7 +385,7 @@ export default function SpeedUpAndCancelSheet() {
                     <SheetActionButton
                       color={colors.white}
                       fullWidth
-                      label="Cancel"
+                      label="Close"
                       onPress={goBack}
                       size="big"
                       textColor={colors.alpha(colors.blueGreyDark, 0.8)}
@@ -508,10 +416,10 @@ export default function SpeedUpAndCancelSheet() {
               <GasSpeedButtonContainer>
                 <GasSpeedButton
                   minGasPrice={minGasPrice}
-                  onCustomGasBlur={handleCustomGasBlur}
-                  onCustomGasFocus={handleCustomGasFocus}
+                  onCustomGasBlur={hideKeyboard}
+                  onCustomGasFocus={showKeyboard}
                   options={['fast', 'custom']}
-                  theme="light"
+                  theme={isDarkMode ? 'dark' : 'light'}
                   type="transaction"
                 />
               </GasSpeedButtonContainer>
@@ -519,6 +427,6 @@ export default function SpeedUpAndCancelSheet() {
           </AnimatedSheet>
         </Column>
       </SlackSheet>
-    </AnimatedContainer>
+    </SheetKeyboardAnimation>
   );
 }

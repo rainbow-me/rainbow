@@ -26,7 +26,7 @@ platform :ios do
 
     release_version = "me.rainbow-#{version_from_plist}"
 
-    dist = (latest_testflight_build_number(version: get_version_number(target: "Rainbow")) + 2).to_s
+    dist = (latest_testflight_build_number(version: get_version_number(target: "Rainbow")) + 1).to_s
 
     sentry_create_release(
       finalize: true, # Whether to finalize the release. If not provided or false, the release can be finalized using the sentry_finalize_release action
@@ -50,7 +50,7 @@ platform :ios do
   desc "Submit a new Beta build to Apple TestFlight"
   lane :beta do
     increment_build_number({
-      build_number: latest_testflight_build_number(version: get_version_number(target: "Rainbow")) + 2
+      build_number: latest_testflight_build_number(version: get_version_number(target: "Rainbow")) + 1
     })
 
     update_info_plist(
@@ -78,9 +78,19 @@ platform :ios do
       configuration: "Release",
       export_method: "app-store",
     )
+
+    # api_key = app_store_connect_api_key(
+    #   key_id: "B6RRSJG6H6",
+    #   issuer_id: "95830311-9e99-47b0-95ac-d628a3e4215e",
+    #   key_filepath: "fastlane/AuthKey_B6RRSJG6H6.p8",
+    #   duration: 1200, # optional
+    #   in_house: false, # optional but may be required if using match/sigh
+    # )
+
     pilot(
       app_identifier: "me.rainbow",
-      skip_waiting_for_build_processing: true
+      skip_waiting_for_build_processing: true,
+      # api_key: api_key
     )
   end
 end

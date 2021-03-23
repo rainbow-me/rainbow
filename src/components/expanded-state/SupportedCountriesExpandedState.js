@@ -1,14 +1,14 @@
 import { values } from 'lodash';
 import React from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { FloatingEmojisTapper } from '../floating-emojis';
 import { AssetPanel, FloatingPanels } from '../floating-panels';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import { useDimensions } from '@rainbow-me/hooks';
-import { supportedCountries } from '@rainbow-me/references/wyre';
-import { colors, padding } from '@rainbow-me/styles';
+import { wyreSupportedCountries } from '@rainbow-me/references';
+import { padding } from '@rainbow-me/styles';
 import { neverRerender } from '@rainbow-me/utils';
 
 const Panel = styled(FloatingPanels)`
@@ -32,16 +32,18 @@ const TitleText = styled(Text).attrs({
   margin-bottom: 10;
 `;
 
-const countries = values(supportedCountries).map(c =>
+const countries = values(wyreSupportedCountries).map(c =>
   c.name === 'United States'
     ? 'United\xa0States (except CT, HI, NC, NH, NY, VA, VT)'
     : c.name.replace(/ /g, '\xa0')
 );
 const countriesList = `${countries.join(', ')}`;
-const emojiArray = values(supportedCountries).map(c => c.emojiName);
+const emojiArray = values(wyreSupportedCountries).map(c => c.emojiName);
 
 const SupportCountriesExpandedState = () => {
   const deviceDimensions = useDimensions();
+
+  const { colors } = useTheme();
 
   return (
     <Panel deviceDimensions={deviceDimensions}>

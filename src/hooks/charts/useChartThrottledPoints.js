@@ -2,14 +2,18 @@ import { debounce } from 'lodash';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { monotoneCubicInterpolation } from '@rainbow-me/animated-charts';
 import {
+  useAccountSettings,
   useChartData,
   useChartDataLabels,
   useColorForAsset,
 } from '@rainbow-me/hooks';
 
 import { useNavigation } from '@rainbow-me/navigation';
+import { ETH_ADDRESS } from '@rainbow-me/references';
 
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
+
+export const UniBalanceHeightDifference = 150;
 
 const traverseData = (prev, data) => {
   if (!data || data.length === 0) {
@@ -40,13 +44,20 @@ function useJumpingForm(isLong, heightWithChart, heightWithoutChart) {
 
   useEffect(() => {
     if (!isLong) {
-      setOptions({
-        longFormHeight: heightWithoutChart,
-      });
+      if (
+        typeof heightWithoutChart === 'number' &&
+        !isNaN(heightWithoutChart)
+      ) {
+        setOptions({
+          longFormHeight: heightWithoutChart,
+        });
+      }
     } else {
-      setOptions({
-        longFormHeight: heightWithChart,
-      });
+      if (typeof heightWithChart === 'number' && !isNaN(heightWithChart)) {
+        setOptions({
+          longFormHeight: heightWithChart,
+        });
+      }
     }
   }, [
     heightWithChart,
@@ -63,7 +74,11 @@ export default function useChartThrottledPoints({
   heightWithChart,
   heightWithoutChart,
   isPool,
+  uniBalance = true,
+  dpi,
 }) {
+  const { nativeCurrency } = useAccountSettings();
+
   let assetForColor = asset;
   if (isPool) {
     assetForColor = asset?.tokens?.[0] || asset;
@@ -74,7 +89,8 @@ export default function useChartThrottledPoints({
   const [isFetchingInitially, setIsFetchingInitially] = useState(true);
 
   const { chart, chartType, fetchingCharts, ...chartData } = useChartData(
-    asset
+    asset,
+    dpi
   );
 
   const [throttledPoints, setThrottledPoints] = useState(() =>
@@ -101,13 +117,24 @@ export default function useChartThrottledPoints({
   // Only show the chart if we have chart data, or if chart data is still loading
   const showChart = useMemo(
     () =>
-      throttledPoints?.points.length > 5 ||
-      throttledPoints?.points.length > 5 ||
-      (fetchingCharts && !isFetchingInitially),
-    [fetchingCharts, isFetchingInitially, throttledPoints]
+      (nativeCurrency !== 'ETH' || asset?.address !== ETH_ADDRESS) &&
+      (throttledPoints?.points.length > 5 ||
+        throttledPoints?.points.length > 5 ||
+        (fetchingCharts && !isFetchingInitially)),
+    [
+      asset?.address,
+      fetchingCharts,
+      isFetchingInitially,
+      nativeCurrency,
+      throttledPoints?.points.length,
+    ]
   );
 
-  useJumpingForm(showChart, heightWithChart, heightWithoutChart);
+  useJumpingForm(
+    showChart,
+    heightWithChart - (uniBalance ? 0 : UniBalanceHeightDifference),
+    heightWithoutChart - (uniBalance ? 0 : UniBalanceHeightDifference)
+  );
 
   const [throttledData, setThrottledData] = useState({
     nativePoints: throttledPoints.nativePoints,

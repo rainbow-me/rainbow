@@ -10,12 +10,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import {
-  Alert,
-  InteractionManager,
-  TurboModuleRegistry,
-  Vibration,
-} from 'react-native';
+import { Alert, InteractionManager, Vibration } from 'react-native';
 import { isEmulatorSync } from 'react-native-device-info';
 import Animated, {
   useAnimatedStyle,
@@ -34,6 +29,7 @@ import {
   SheetActionButton,
   SheetActionButtonRow,
   SheetHandleFixedToTop,
+  SheetKeyboardAnimation,
   SlackSheet,
 } from '../components/sheet';
 import { Text } from '../components/text';
@@ -42,24 +38,44 @@ import {
   MessageSigningSection,
   TransactionConfirmationSection,
 } from '../components/transaction';
-import { estimateGas, toHex } from '../handlers/web3';
-import { isDappAuthenticated } from '../helpers/dappNameHandler';
 import {
-  convertAmountToNativeDisplay,
-  convertHexToString,
-  fromWei,
-  greaterThanOrEqualTo,
-} from '../helpers/utilities';
+  estimateGas,
+  estimateGasWithPadding,
+  toHex,
+} from '@rainbow-me/handlers/web3';
+import { isDappAuthenticated } from '@rainbow-me/helpers/dappNameHandler';
+import {
+  useAccountAssets,
+  useAccountProfile,
+  useAccountSettings,
+  useBooleanState,
+  useDimensions,
+  useGas,
+  useKeyboardHeight,
+  useTransactionConfirmation,
+  useWalletBalances,
+  useWallets,
+} from '@rainbow-me/hooks';
 import {
   sendTransaction,
   signMessage,
   signPersonalMessage,
   signTransaction,
   signTypedDataMessage,
-} from '../model/wallet';
-import { walletConnectRemovePendingRedirect } from '../redux/walletconnect';
-import { ethereumUtils, safeAreaInsetValues } from '../utils';
-import { methodRegistryLookupAndParse } from '../utils/methodRegistry';
+} from '@rainbow-me/model/wallet';
+import { useNavigation } from '@rainbow-me/navigation';
+import { walletConnectRemovePendingRedirect } from '@rainbow-me/redux/walletconnect';
+import { padding } from '@rainbow-me/styles';
+import {
+  convertAmountToNativeDisplay,
+  convertHexToString,
+  fromWei,
+  greaterThan,
+  greaterThanOrEqualTo,
+  multiply,
+} from '@rainbow-me/utilities';
+import { ethereumUtils, safeAreaInsetValues } from '@rainbow-me/utils';
+import { methodRegistryLookupAndParse } from '@rainbow-me/utils/methodRegistry';
 import {
   isMessageDisplayType,
   isSignFirstParamType,
@@ -69,26 +85,8 @@ import {
   SEND_TRANSACTION,
   SIGN,
   SIGN_TYPED_DATA,
-} from '../utils/signingMethods';
-import {
-  useAccountAssets,
-  useAccountProfile,
-  useAccountSettings,
-  useDimensions,
-  useGas,
-  useKeyboardHeight,
-  useTransactionConfirmation,
-  useWalletBalances,
-  useWallets,
-} from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
-import { colors, padding } from '@rainbow-me/styles';
+} from '@rainbow-me/utils/signingMethods';
 import logger from 'logger';
-
-const isReanimatedAvailable = !(
-  !TurboModuleRegistry.get('NativeReanimated') &&
-  (!global.__reanimatedModuleProxy || global.__reanimatedModuleProxy.__shimmed)
-);
 
 const springConfig = {
   damping: 500,
@@ -96,12 +94,14 @@ const springConfig = {
   stiffness: 1000,
 };
 
-const DappLogo = styled(RequestVendorLogoIcon).attrs({
-  backgroundColor: colors.transparent,
-  borderRadius: 16,
-  showLargeShadow: true,
-  size: 50,
-})`
+const DappLogo = styled(RequestVendorLogoIcon).attrs(
+  ({ theme: { colors } }) => ({
+    backgroundColor: colors.transparent,
+    borderRadius: 16,
+    showLargeShadow: true,
+    size: 50,
+  })
+)`
   margin-bottom: 14;
 `;
 
@@ -112,37 +112,38 @@ const Container = styled(Column)`
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const AnimatedSheet = Animated.createAnimatedComponent(Centered);
 
-const GasSpeedButtonContainer = styled(Column)`
-  justify-content: flex-start;
+const GasSpeedButtonContainer = styled(Column).attrs({
+  justify: 'start',
+})`
   margin-bottom: 19px;
 `;
 
-const WalletLabel = styled(Text).attrs({
+const WalletLabel = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.alpha(colors.blueGreyDark, 0.5),
   letterSpacing: 'roundedMedium',
   size: 'smedium',
   weight: 'semibold',
-})`
+}))`
   margin-bottom: 3;
 `;
 
-const WalletText = styled(Text).attrs(({ balanceTooLow }) => ({
-  color: balanceTooLow
-    ? colors.avatarColor[7]
-    : colors.alpha(colors.blueGreyDark, 0.8),
-  size: 'larger',
-  weight: balanceTooLow ? 'bold' : 'semibold',
-}))``;
+const WalletText = styled(Text).attrs(
+  ({ balanceTooLow, theme: { colors } }) => ({
+    color: balanceTooLow
+      ? colors.avatarColor[7]
+      : colors.alpha(colors.blueGreyDark, 0.8),
+    size: 'larger',
+    weight: balanceTooLow ? 'bold' : 'semibold',
+  })
+)``;
 
 const NOOP = () => undefined;
 
-const TransactionConfirmationScreen = () => {
+export default function TransactionConfirmationScreen() {
+  const { colors } = useTheme();
   const { allAssets } = useAccountAssets();
-  const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
-    genericAssets,
-  }));
   const [isAuthorizing, setIsAuthorizing] = useState(false);
-  const [keyboardVisible, setKeyboardVisible] = useState(false);
+  const [isKeyboardVisible, showKeyboard, hideKeyboard] = useBooleanState();
   const [methodName, setMethodName] = useState(null);
   const calculatingGasLimit = useRef(false);
   const [isBalanceEnough, setIsBalanceEnough] = useState(true);
@@ -413,13 +414,28 @@ const TransactionConfirmationScreen = () => {
       gasPrice = toHex(rawGasPrice);
     }
 
-    if (isNil(gas) && isNil(gasLimitFromPayload)) {
-      try {
-        const rawGasLimit = await estimateGas(txPayload);
+    try {
+      logger.log('⛽ gas suggested by dapp', {
+        gas: convertHexToString(gas),
+        gasLimitFromPayload: convertHexToString(gasLimitFromPayload),
+      });
+
+      // Estimate the tx with gas limit padding before sending
+      const rawGasLimit = await estimateGasWithPadding(txPayload);
+
+      // If the estimation with padding is higher or gas limit was missing,
+      // let's use the higher value
+      if (
+        (isNil(gas) && isNil(gasLimitFromPayload)) ||
+        (!isNil(gas) && greaterThan(rawGasLimit, convertHexToString(gas))) ||
+        (!isNil(gasLimitFromPayload) &&
+          greaterThan(rawGasLimit, convertHexToString(gasLimitFromPayload)))
+      ) {
+        logger.log('⛽ using padded estimation!', rawGasLimit.toString());
         gas = toHex(rawGasLimit);
-      } catch (error) {
-        logger.log('error estimating gas', error);
       }
+    } catch (error) {
+      logger.log('⛽ error estimating gas', error);
     }
 
     const calculatedGasLimit = gas || gasLimitFromPayload || gasLimit;
@@ -473,7 +489,7 @@ const TransactionConfirmationScreen = () => {
       analytics.track('Approved WalletConnect transaction request');
       if (requestId) {
         dispatch(removeRequest(requestId));
-        await dispatch(walletConnectSendStatus(peerId, requestId, result));
+        await dispatch(walletConnectSendStatus(peerId, requestId, result.hash));
       }
       closeScreen(false);
     } else {
@@ -614,6 +630,7 @@ const TransactionConfirmationScreen = () => {
       </SheetActionButtonRow>
     );
   }, [
+    colors,
     isBalanceEnough,
     isMessageRequest,
     isSufficientGas,
@@ -631,9 +648,9 @@ const TransactionConfirmationScreen = () => {
     }
 
     if (isTransactionDisplayType(method) && get(request, 'asset')) {
-      const ethAsset = ethereumUtils.getAsset(genericAssets);
+      const priceOfEther = ethereumUtils.getEthPriceUnit();
       const amount = get(request, 'value', '0.00');
-      const nativeAmount = Number(ethAsset.price.value) * Number(amount);
+      const nativeAmount = multiply(priceOfEther, amount);
       const nativeAmountDisplay = convertAmountToNativeDisplay(
         nativeAmount,
         nativeCurrency
@@ -658,34 +675,16 @@ const TransactionConfirmationScreen = () => {
         value={request?.value}
       />
     );
-  }, [genericAssets, isMessageRequest, method, nativeCurrency, request]);
-
-  const handleCustomGasFocus = useCallback(() => {
-    setKeyboardVisible(true);
-  }, []);
-  const handleCustomGasBlur = useCallback(() => {
-    setKeyboardVisible(false);
-  }, []);
+  }, [isMessageRequest, method, nativeCurrency, request]);
 
   const offset = useSharedValue(0);
   const sheetOpacity = useSharedValue(1);
-  const animatedContainerStyles = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateY: offset.value }],
-    };
-  });
-  const animatedSheetStyles = useAnimatedStyle(() => {
-    return {
-      opacity: sheetOpacity.value,
-    };
-  });
-
-  const fallbackStyles = {
-    marginBottom: keyboardVisible ? keyboardHeight : 0,
-  };
+  const animatedSheetStyles = useAnimatedStyle(() => ({
+    opacity: sheetOpacity.value,
+  }));
 
   useEffect(() => {
-    if (keyboardVisible) {
+    if (isKeyboardVisible) {
       offset.value = withSpring(
         -keyboardHeight + safeAreaInsetValues.bottom,
         springConfig
@@ -695,9 +694,19 @@ const TransactionConfirmationScreen = () => {
       offset.value = withSpring(0, springConfig);
       sheetOpacity.value = withSpring(1, springConfig);
     }
-  }, [keyboardHeight, keyboardVisible, offset, sheetOpacity]);
+  }, [isKeyboardVisible, keyboardHeight, offset, sheetOpacity]);
 
   const amount = get(request, 'value', '0.00');
+
+  const isAndroidApprovalRequest = useMemo(
+    () =>
+      android &&
+      isTransactionDisplayType(method) &&
+      !!get(request, 'asset', false) &&
+      amount === 0 &&
+      isBalanceEnough,
+    [amount, isBalanceEnough, method, request]
+  );
 
   const ShortSheetHeight = 457 + safeAreaInsetValues.bottom;
   const TallSheetHeight = 604 + safeAreaInsetValues.bottom;
@@ -708,7 +717,7 @@ const TransactionConfirmationScreen = () => {
   const balanceTooLow =
     isBalanceEnough === false && isSufficientGas !== undefined;
 
-  const sheetHeight =
+  let sheetHeight =
     (isMessageRequest
       ? MessageSheetHeight
       : (amount && amount !== '0.00') || !isBalanceEnough
@@ -725,9 +734,15 @@ const TransactionConfirmationScreen = () => {
     marginTop += 50;
   }
 
+  if (isAndroidApprovalRequest) {
+    sheetHeight += 140;
+  }
+
   return (
-    <AnimatedContainer
-      style={isReanimatedAvailable ? animatedContainerStyles : fallbackStyles}
+    <SheetKeyboardAnimation
+      as={AnimatedContainer}
+      isKeyboardVisible={isKeyboardVisible}
+      translateY={offset}
     >
       <SlackSheet
         backgroundColor={colors.transparent}
@@ -768,19 +783,21 @@ const TransactionConfirmationScreen = () => {
               >
                 {isAuthenticated ? dappName : formattedDappUrl}
               </Text>
-              {//We only show the checkmark
-              // if it's on the override list (dappNameHandler.js)
-              isAuthenticated && (
-                <Text
-                  align="center"
-                  color={colors.appleBlue}
-                  letterSpacing="roundedMedium"
-                  size="large"
-                  weight="bold"
-                >
-                  {' 􀇻'}
-                </Text>
-              )}
+              {
+                //We only show the checkmark
+                // if it's on the override list (dappNameHandler.js)
+                isAuthenticated && (
+                  <Text
+                    align="center"
+                    color={colors.appleBlue}
+                    letterSpacing="roundedMedium"
+                    size="large"
+                    weight="bold"
+                  >
+                    {' 􀇻'}
+                  </Text>
+                )
+              }
             </Row>
             <Centered marginBottom={24} paddingHorizontal={24}>
               <Text
@@ -793,7 +810,9 @@ const TransactionConfirmationScreen = () => {
                 {methodName || 'Placeholder'}
               </Text>
             </Centered>
-            <Divider color={colors.rowDividerLight} inset={[0, 143.5]} />
+            {(!isKeyboardVisible || ios) && (
+              <Divider color={colors.rowDividerLight} inset={[0, 143.5]} />
+            )}
             {renderTransactionSection()}
             {renderTransactionButtons()}
             <RowWithMargins css={padding(0, 24, 30)} margin={15}>
@@ -830,16 +849,14 @@ const TransactionConfirmationScreen = () => {
           {!isMessageRequest && (
             <GasSpeedButtonContainer>
               <GasSpeedButton
-                onCustomGasBlur={handleCustomGasBlur}
-                onCustomGasFocus={handleCustomGasFocus}
+                onCustomGasBlur={hideKeyboard}
+                onCustomGasFocus={showKeyboard}
                 type="transaction"
               />
             </GasSpeedButtonContainer>
           )}
         </Column>
       </SlackSheet>
-    </AnimatedContainer>
+    </SheetKeyboardAnimation>
   );
-};
-
-export default TransactionConfirmationScreen;
+}

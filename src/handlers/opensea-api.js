@@ -1,6 +1,6 @@
 import axios from 'axios';
-import NetworkTypes from '../helpers/networkTypes';
-import { parseAccountUniqueTokens } from '../parsers/uniqueTokens';
+import NetworkTypes from '@rainbow-me/networkTypes';
+import { parseAccountUniqueTokens } from '@rainbow-me/parsers';
 import logger from 'logger';
 
 export const UNIQUE_TOKENS_LIMIT_PER_PAGE = 50;

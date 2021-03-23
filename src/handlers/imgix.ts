@@ -1,5 +1,6 @@
 import ImgixClient from 'imgix-core-js';
 import LRUCache from 'mnemonist/lru-cache';
+import { PixelRatio } from 'react-native';
 import {
   IMGIX_DOMAIN as domain,
   IMGIX_TOKEN as secureURLToken,
@@ -41,16 +42,32 @@ const staticImgixClient = shouldCreateImgixClient();
 const capacity = 256;
 export const staticSignatureLRU = new LRUCache<string, string>(capacity);
 
-const shouldSignUri = (externalImageUri: string): string | undefined => {
+interface ImgOptions {
+  w?: number;
+  h?: number;
+}
+
+const shouldSignUri = (
+  externalImageUri: string,
+  options?: ImgOptions
+): string | undefined => {
   try {
     // We'll only attempt to sign if there's an available client. A client
     // will not exist if the .env hasn't been configured correctly.
     if (staticImgixClient) {
       // Attempt to sign the image.
+      let updatedOptions = {};
+      if (options?.w && options?.h) {
+        updatedOptions = {
+          h: PixelRatio.getPixelSizeForLayoutSize(options.h),
+          w: PixelRatio.getPixelSizeForLayoutSize(options.w),
+        };
+      }
       const signedExternalImageUri = staticImgixClient.buildURL(
         externalImageUri,
-        {}
+        updatedOptions
       );
+
       // Check that the URL was signed as expected.
       if (typeof signedExternalImageUri === 'string') {
         // Buffer the signature into the LRU for future use.
@@ -91,7 +108,8 @@ const isPossibleToSignUri = (externalImageUri: string | undefined): boolean => {
 };
 
 export const maybeSignUri = (
-  externalImageUri: string | undefined
+  externalImageUri: string | undefined,
+  options?: {}
 ): string | undefined => {
   // If the image has already been signed, return this quickly.
   if (
@@ -105,17 +123,17 @@ export const maybeSignUri = (
     !!externalImageUri.length &&
     isPossibleToSignUri(externalImageUri)
   ) {
-    return shouldSignUri(externalImageUri);
+    return shouldSignUri(externalImageUri, options);
   }
   return externalImageUri;
 };
 
-export const maybeSignSource = (source: Source): Source => {
+export const maybeSignSource = (source: Source, options?: {}): Source => {
   if (!!source && typeof source === 'object') {
     const { uri: externalImageUri, ...extras } = source;
     return {
       ...extras,
-      uri: maybeSignUri(externalImageUri),
+      uri: maybeSignUri(externalImageUri, options),
     };
   }
   return source;

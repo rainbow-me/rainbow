@@ -229,7 +229,7 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   }
 
   var shortFormHeight: PanModalHeight {
-    let height: CGFloat = CGFloat(truncating: self.config!.shortFormHeight)
+    let height: CGFloat = CGFloat(truncating: self.config?.shortFormHeight ?? 0.0)
     return isShortFormEnabled ? .contentHeight(height) : longFormHeight
   }
 

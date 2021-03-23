@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import Animated, { SpringUtils } from 'react-native-reanimated';
 import { useSpringTransition } from 'react-native-redash';
-import styled from 'styled-components/primitives';
-import { useTimeout } from '../../hooks';
+import styled from 'styled-components';
+import { useTheme } from '../../context/ThemeContext';
 import { magicMemo } from '../../utils';
 import { interpolate } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import { borders, colors, position } from '@rainbow-me/styles';
+import { useTimeout } from '@rainbow-me/hooks';
+import { borders, position } from '@rainbow-me/styles';
 
 const Container = styled(Animated.View)`
   ${position.centered};
@@ -30,7 +31,7 @@ const Circle = styled(Centered)`
         padding-right: 5.5;
         transform: translateX(${Math.floor(offset / 2)}px);
       `}
-  background-color: ${colors.appleBlue};
+  background-color: ${({ theme: { colors } }) => colors.appleBlue};
   border-radius: 15;
   padding-bottom: 3;
   padding-top: 2;
@@ -53,6 +54,7 @@ const Badge = ({
 }) => {
   const [delayedIsVisible, setDelayedIsVisible] = useState(isVisible);
   const [startDelayTimeout] = useTimeout();
+  const { colors } = useTheme();
 
   startDelayTimeout(() => setDelayedIsVisible(isVisible), delay);
 
@@ -73,7 +75,7 @@ const Badge = ({
       style={{ transform: [{ scale: animation, translateY }] }}
     >
       <Circle offset={offset} size={size} valueLength={valueLength}>
-        <Text color="white" size="smaller" weight="semibold">
+        <Text color={colors.whiteLabel} size="smaller" weight="semibold">
           {valueLength > maxLength ? `${'9'.repeat(maxLength)}+` : value}
         </Text>
       </Circle>

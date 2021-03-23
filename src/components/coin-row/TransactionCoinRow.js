@@ -1,17 +1,8 @@
 import { compact, get, toLower } from 'lodash';
 import React, { useCallback } from 'react';
-import { Linking } from 'react-native';
-import { css } from 'styled-components/primitives';
-import TransactionActions from '../../helpers/transactionActions';
-import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
-import TransactionTypes from '../../helpers/transactionTypes';
-import {
-  getHumanReadableDate,
-  hasAddableContact,
-} from '../../helpers/transactions';
-import { isENSAddressFormat } from '../../helpers/validators';
-import { useAccountSettings } from '../../hooks';
-import { useNavigation } from '../../navigation/Navigation';
+import { css } from 'styled-components';
+import { useTheme } from '../../context/ThemeContext';
+import { getRandomColor } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIconSize } from '../coin-icon';
 import { FlexItem, Row, RowWithMargins } from '../layout';
@@ -20,8 +11,20 @@ import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
+import TransactionActions from '@rainbow-me/helpers/transactionActions';
+import TransactionStatusTypes from '@rainbow-me/helpers/transactionStatusTypes';
+import TransactionTypes from '@rainbow-me/helpers/transactionTypes';
+import {
+  getHumanReadableDate,
+  hasAddableContact,
+} from '@rainbow-me/helpers/transactions';
+import {
+  isENSAddressFormat,
+  isUnstoppableAddressFormat,
+} from '@rainbow-me/helpers/validators';
+import { useAccountSettings } from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
 import {
   abbreviations,
   ethereumUtils,
@@ -33,6 +36,7 @@ const containerStyles = css`
 `;
 
 const BottomRow = ({ description, native, status, type }) => {
+  const { colors } = useTheme();
   const isFailed = status === TransactionStatusTypes.failed;
   const isReceived =
     status === TransactionStatusTypes.received ||
@@ -84,7 +88,7 @@ const TopRow = ({ balance, pending, status, title }) => (
 
 export default function TransactionCoinRow({ item, ...props }) {
   const { contact } = item;
-  const { network, accountAddress } = useAccountSettings();
+  const { accountAddress } = useAccountSettings();
   const { navigate } = useNavigation();
 
   const onPressTransaction = useCallback(async () => {
@@ -114,10 +118,12 @@ export default function TransactionCoinRow({ item, ...props }) {
       headerInfo.address = contact.nickname;
       contactColor = contact.color;
     } else {
-      headerInfo.address = isENSAddressFormat(contactAddress)
-        ? contactAddress
-        : abbreviations.address(contactAddress, 4, 10);
-      contactColor = colors.getRandomColor();
+      headerInfo.address =
+        isENSAddressFormat(contactAddress) ||
+        isUnstoppableAddressFormat(contactAddress)
+          ? contactAddress
+          : abbreviations.address(contactAddress, 4, 10);
+      contactColor = getRandomColor();
     }
 
     if (hash) {
@@ -175,11 +181,7 @@ export default function TransactionCoinRow({ item, ...props }) {
               });
               break;
             case TransactionActions.viewOnEtherscan: {
-              const normalizedHash = hash.replace(/-.*/g, '');
-              const etherscanHost = ethereumUtils.getEtherscanHostFromNetwork(
-                network
-              );
-              Linking.openURL(`https://${etherscanHost}/tx/${normalizedHash}`);
+              ethereumUtils.openTransactionEtherscanURL(hash);
               break;
             }
             default:
@@ -187,7 +189,7 @@ export default function TransactionCoinRow({ item, ...props }) {
         }
       );
     }
-  }, [accountAddress, contact, item, navigate, network]);
+  }, [accountAddress, contact, item, navigate]);
 
   return (
     <ButtonPressAnimation onPress={onPressTransaction} scaleTo={0.96}>

@@ -6,16 +6,16 @@ import {
   etherscanGetGasPrices,
   ethGasStationGetGasPrices,
   getEstimatedTimeForGasPrice,
-} from '../handlers/gasPrices';
-import { fromWei, greaterThanOrEqualTo } from '../helpers/utilities';
+} from '@rainbow-me/handlers/gasPrices';
 import {
   defaultGasPriceFormat,
   getFallbackGasPrices,
   parseGasPrices,
   parseTxFees,
-} from '../parsers/gas';
-import ethUnits from '../references/ethereum-units.json';
-import { ethereumUtils, gasUtils } from '../utils';
+} from '@rainbow-me/parsers';
+import { ethUnits } from '@rainbow-me/references';
+import { fromWei, greaterThanOrEqualTo } from '@rainbow-me/utilities';
+import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const { CUSTOM, NORMAL } = gasUtils;
@@ -34,11 +34,10 @@ const GAS_UPDATE_GAS_PRICE_OPTION = 'gas/GAS_UPDATE_GAS_PRICE_OPTION';
 let gasPricesHandle = null;
 
 const getDefaultTxFees = () => (dispatch, getState) => {
-  const { genericAssets } = getState().data;
   const { defaultGasLimit } = getState().gas;
   const { nativeCurrency } = getState().settings;
   const fallbackGasPrices = getFallbackGasPrices();
-  const ethPriceUnit = ethereumUtils.getEthPriceUnit(genericAssets);
+  const ethPriceUnit = ethereumUtils.getEthPriceUnit();
   const txFees = parseTxFees(
     fallbackGasPrices,
     ethPriceUnit,
@@ -228,9 +227,9 @@ export const gasUpdateTxFee = (gasLimit, overrideGasOption) => (
   const _gasLimit = gasLimit || defaultGasLimit;
   const _selectedGasPriceOption = overrideGasOption || selectedGasPriceOption;
   if (isEmpty(gasPrices)) return;
-  const { assets, genericAssets } = getState().data;
+  const { assets } = getState().data;
   const { nativeCurrency } = getState().settings;
-  const ethPriceUnit = ethereumUtils.getEthPriceUnit(genericAssets);
+  const ethPriceUnit = ethereumUtils.getEthPriceUnit();
   const txFees = parseTxFees(
     gasPrices,
     ethPriceUnit,
@@ -307,7 +306,6 @@ const INITIAL_STATE = {
   selectedGasPrice: {},
   selectedGasPriceOption: NORMAL,
   txFees: {},
-  useShortGasFormat: true,
 };
 
 export default (state = INITIAL_STATE, action) => {

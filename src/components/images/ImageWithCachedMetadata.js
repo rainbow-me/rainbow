@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
-import { useImageMetadata } from '../../hooks';
 import ImgixImage from './ImgixImage';
+import { useImageMetadata } from '@rainbow-me/hooks';
 
 const ImageWithCachedMetadata = (
   { cache = ImgixImage.cacheControl.web, imageUrl, onLoad, ...props },

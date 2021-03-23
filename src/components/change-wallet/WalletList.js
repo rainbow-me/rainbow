@@ -8,17 +8,17 @@ import React, {
 } from 'react';
 import { FlatList } from 'react-native-gesture-handler';
 import { Transition, Transitioning } from 'react-native-reanimated';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import networkTypes from '../../helpers/networkTypes';
 import WalletTypes from '../../helpers/walletTypes';
-import { useAccountSettings } from '../../hooks';
 import { address } from '../../utils/abbreviations';
 import Divider from '../Divider';
 import { EmptyAssetList } from '../asset-list';
 import { Column } from '../layout';
 import AddressRow from './AddressRow';
 import WalletOption from './WalletOption';
-import { colors, position } from '@rainbow-me/styles';
+import { useAccountSettings } from '@rainbow-me/hooks';
+import { position } from '@rainbow-me/styles';
 
 const listTopPadding = 7.5;
 const rowHeight = 59;
@@ -57,7 +57,7 @@ const EmptyWalletList = styled(EmptyAssetList).attrs({
   pointerEvents: 'none',
 })`
   ${position.cover};
-  background-color: ${colors.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
   padding-top: ${listTopPadding};
 `;
 
@@ -74,10 +74,10 @@ const WalletFlatList = styled(FlatList).attrs(({ showDividers }) => ({
   min-height: 1;
 `;
 
-const WalletListDivider = styled(Divider).attrs({
+const WalletListDivider = styled(Divider).attrs(({ theme: { colors } }) => ({
   color: colors.rowDividerExtraLight,
   inset: [0, 15],
-})`
+}))`
   margin-bottom: 1;
   margin-top: -1;
 `;

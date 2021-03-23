@@ -1,5 +1,4 @@
 import 'react-native-gesture-handler';
-import './global';
 import './shim';
 
 import lang from 'i18n-js';

@@ -11,6 +11,7 @@
 @interface RCT_EXTERN_MODULE(ButtonManager, RCTViewManager)
 
 RCT_EXPORT_VIEW_PROPERTY(onPress, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onCancel, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onPressStart, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onLongPress, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(disabled, BOOL)

@@ -1,18 +1,18 @@
 import { captureException } from '@sentry/react-native';
 import { concat, isEmpty, without } from 'lodash';
+/* eslint-disable-next-line import/no-cycle */
+import { dataUpdateAssets } from './data';
 import {
   getUniqueTokens,
   saveUniqueTokens,
-} from '../handlers/localstorage/accountLocal';
+} from '@rainbow-me/handlers/localstorage/accountLocal';
 import {
   apiGetAccountUniqueTokens,
   UNIQUE_TOKENS_LIMIT_PER_PAGE,
   UNIQUE_TOKENS_LIMIT_TOTAL,
-} from '../handlers/opensea-api';
-import NetworkTypes from '../helpers/networkTypes';
-import { dedupeAssetsWithFamilies, getFamilies } from '../parsers/uniqueTokens';
-/* eslint-disable-next-line import/no-cycle */
-import { dataUpdateAssets } from './data';
+} from '@rainbow-me/handlers/opensea-api';
+import NetworkTypes from '@rainbow-me/networkTypes';
+import { dedupeAssetsWithFamilies, getFamilies } from '@rainbow-me/parsers';
 
 // -- Constants ------------------------------------------------------------- //
 const UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_REQUEST =

@@ -1,18 +1,20 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useSafeArea } from 'react-native-safe-area-context';
-import { useDimensions } from '../../hooks';
+import { useTheme } from '../../context/ThemeContext';
 import { useNavigation } from '../../navigation/Navigation';
 
 import TouchableBackdrop from '../TouchableBackdrop';
 import { Centered, Column } from '../layout';
 import SheetHandle from './SheetHandle';
-import { borders, colors } from '@rainbow-me/styles';
+import { useDimensions } from '@rainbow-me/hooks';
+import { borders } from '@rainbow-me/styles';
 
 const Sheet = ({ borderRadius, children, hideHandle }) => {
   const { width } = useDimensions();
   const { goBack } = useNavigation();
   const insets = useSafeArea();
+  const { colors } = useTheme();
 
   return (
     <Column height="100%" justify="end" width={width}>

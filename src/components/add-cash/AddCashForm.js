@@ -3,13 +3,13 @@ import analytics from '@segment/analytics-react-native';
 import { isEmpty } from 'lodash';
 import React, { Fragment, useCallback, useState } from 'react';
 import { Clock } from 'react-native-reanimated';
-import { useDimensions, useIsWalletEthZero } from '../../hooks';
 import { Alert } from '../alerts';
 import { runSpring } from '../animations';
 import { Centered, ColumnWithMargins } from '../layout';
 import { Numpad, NumpadValue } from '../numpad';
 import AddCashFooter from './AddCashFooter';
 import AddCashSelector from './AddCashSelector';
+import { useDimensions, useIsWalletEthZero } from '@rainbow-me/hooks';
 import { DAI_ADDRESS, ETH_ADDRESS } from '@rainbow-me/references';
 import { padding } from '@rainbow-me/styles';
 
@@ -31,7 +31,7 @@ const AddCashForm = ({
   const { isNarrowPhone, isSmallPhone, isTallPhone } = useDimensions();
   const [scaleAnim, setScaleAnim] = useState(1);
 
-  const initialCurrencyIndex = isWalletEthZero ? 1 : 0;
+  const initialCurrencyIndex = 1;
   const [currency, setCurrency] = useState(currencies[initialCurrencyIndex]);
   const [value, setValue] = useState(
     params?.amount ? params?.amount?.toString() : ''

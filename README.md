@@ -9,7 +9,7 @@
 ## Requirements
 
 * A computer running macOS.
-* NVM installed or Node.js 12: https://github.com/creationix/nvm
+* NVM installed or Node.js 14: https://github.com/creationix/nvm
 * Install CocoaPods by running `sudo gem install cocoapods`
 * Install Watchman `brew install watchman`
 * Install the latest version of XCode: https://developer.apple.com/xcode/
@@ -20,7 +20,7 @@ If you are new to React Native, this is a helpful introduction: https://facebook
 
 1. Clone the GitHub repository to your machine.
 
-2. Run `nvm use 12` to use set the version of node for this project.
+2. Run `nvm use 14` to use set the version of node for this project.
 
 3. Set up your .env file, use our env.example as a guide.
 
@@ -33,7 +33,7 @@ If you are new to React Native, this is a helpful introduction: https://facebook
     * ETH Gas Station: https://docs.ethgasstation.info/
     * Imgix: https://www.imgix.com/
 
-4. Run `yarn` to get all of the packages required.
+4. Run `yarn setup` to get all of the packages required.
 
 5. Run `yarn install-bundle`.
 
@@ -41,7 +41,7 @@ If you are new to React Native, this is a helpful introduction: https://facebook
 
 7. Run `yarn start` to start the React Native Bundler.
 
-8. Open `rainbow-wallet/ios/RainbowWallet.xcworkspace` in XCode.
+8. Open `rainbow-wallet/ios/Rainbow.xcworkspace` in XCode.
 
 9. Run the project by clicking the play button.
 

@@ -1,22 +1,25 @@
 import React, { useCallback } from 'react';
 import { Alert } from 'react-native';
+import { useTheme } from '../../context/ThemeContext';
 import { useNavigation } from '../../navigation/Navigation';
+import { lightModeThemeColors } from '../../styles/colors';
 import { magicMemo } from '../../utils';
 import { Icon } from '../icons';
 import FloatingActionButton from './FloatingActionButton';
+import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
 import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
 
 const FabShadow = [
-  [0, 10, 30, colors.dark, 0.4],
-  [0, 5, 15, colors.paleBlue, 0.5],
+  [0, 10, 30, lightModeThemeColors.shadow, 0.8],
+  [0, 5, 15, lightModeThemeColors.paleBlue, 1],
 ];
 
 const SendFab = ({ disabled, isReadOnlyWallet, ...props }) => {
   const { navigate } = useNavigation();
+  const { colors } = useTheme();
 
   const handlePress = useCallback(() => {
-    if (!isReadOnlyWallet) {
+    if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
       navigate(Routes.SEND_FLOW);
     } else {
       Alert.alert(`You need to import the wallet in order to do this`);
@@ -32,7 +35,13 @@ const SendFab = ({ disabled, isReadOnlyWallet, ...props }) => {
       shadows={FabShadow}
       testID="send-fab"
     >
-      <Icon height={22} marginBottom={4} name="send" width={23} />
+      <Icon
+        color={colors.whiteLabel}
+        height={22}
+        marginBottom={4}
+        name="send"
+        width={23}
+      />
     </FloatingActionButton>
   );
 };

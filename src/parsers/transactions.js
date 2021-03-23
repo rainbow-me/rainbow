@@ -30,7 +30,7 @@ import {
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
 } from '../helpers/utilities';
-import { savingsAssetsList } from '../references';
+import { ETH_ADDRESS, savingsAssetsList } from '../references';
 import { ethereumUtils, getTokenMetadata } from '../utils';
 
 const LAST_TXN_HASH_BUFFER = 20;
@@ -202,7 +202,7 @@ const parseTransaction = (
       address_from: transaction.from,
       address_to: transaction.to,
       asset: {
-        asset_code: 'eth',
+        asset_code: ETH_ADDRESS,
         decimals: 18,
         name: 'Ethereum',
         symbol: 'ETH',
@@ -231,7 +231,7 @@ const parseTransaction = (
       address_from: transaction.from,
       address_to: transaction.to,
       asset: {
-        asset_code: 'eth',
+        asset_code: ETH_ADDRESS,
         decimals: 18,
         name: 'Ethereum',
         symbol: 'ETH',

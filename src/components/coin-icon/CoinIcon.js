@@ -1,7 +1,8 @@
 import { isNil } from 'lodash';
 import React, { Fragment } from 'react';
 import ReactCoinIcon from 'react-coin-icon';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
+import { useTheme } from '../../context/ThemeContext';
 import CoinIconFallback from './CoinIconFallback';
 import CoinIconIndicator from './CoinIconIndicator';
 import { useColorForAsset } from '@rainbow-me/hooks';
@@ -15,6 +16,7 @@ const StyledCoinIcon = styled(ReactCoinIcon)`
 
 const CoinIcon = ({
   address = 'eth',
+  forcedShadowColor,
   isHidden,
   isPinned,
   size = CoinIconSize,
@@ -23,6 +25,7 @@ const CoinIcon = ({
 }) => {
   const tokenMetadata = getTokenMetadata(address);
   const color = useColorForAsset({ address });
+  const { colors, isDarkMode } = useTheme();
 
   const forceFallback = !isETH(address) && isNil(tokenMetadata);
 
@@ -35,7 +38,12 @@ const CoinIcon = ({
         color={color}
         fallbackRenderer={CoinIconFallback}
         forceFallback={forceFallback}
-        shadowColor={tokenMetadata?.shadowColor || color}
+        // force update on change symbol due to ImageCache strategy
+        key={symbol}
+        shadowColor={
+          forcedShadowColor ||
+          (isDarkMode ? colors.shadow : tokenMetadata?.shadowColor || color)
+        }
         size={size}
         symbol={symbol}
       />
@@ -49,4 +57,5 @@ export default magicMemo(CoinIcon, [
   'isPinned',
   'size',
   'symbol',
+  'shadowColor',
 ]);

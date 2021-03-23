@@ -80,9 +80,9 @@
 	<string>Rainbow</string>
 	<key>NSMotionUsageDescription</key>
 	<string>Rainbow</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Rainbow</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Rainbow</string>
+	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Rainbow</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Rainbow</string>
@@ -92,10 +92,10 @@
 		<dict>
 			<key>NSUbiquitousContainerIsDocumentScopePublic</key>
 			<true/>
-			<key>NSUbiquitousContainerSupportedFolderLevels</key>
-			<string>One</string>
 			<key>NSUbiquitousContainerName</key>
 			<string>me.rainbow</string>
+			<key>NSUbiquitousContainerSupportedFolderLevels</key>
+			<string>One</string>
 		</dict>
 	</dict>
 	<key>UIAppFonts</key>
@@ -126,8 +126,6 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
-	<key>UIUserInterfaceStyle</key>
-	<string>Light</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 	<key>branch_app_domain</key>

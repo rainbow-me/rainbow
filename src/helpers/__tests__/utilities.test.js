@@ -55,6 +55,11 @@ it('convertBipsToPercentage, 10 bips to 1 decimal', () => {
   expect(result).toBe('0.1');
 });
 
+it('convertBipsToPercentage, returns 0 when given nullish value', () => {
+  const result = convertBipsToPercentage(null, 1);
+  expect(result).toBe('0');
+});
+
 it('convertBipsToPercentage', () => {
   const result = convertBipsToPercentage('12.34567', 2);
   expect(result).toBe('0.12');

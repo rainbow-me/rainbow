@@ -12,11 +12,9 @@ const ACCOUNT_INFO = 'accountInfo';
 const ACCOUNT_EMPTY = 'accountEmpty';
 const ASSET_PRICES_FROM_UNISWAP = 'assetPricesFromUniswap';
 const ASSETS = 'assets';
-const ACCOUNT_CHARTS = 'accountCharts';
 const OPEN_FAMILIES = 'openFamilies';
 const OPEN_INVESTMENT_CARDS = 'openInvestmentCards';
 const PURCHASE_TRANSACTIONS = 'purchaseTransactions';
-const SMALL_BALANCE_TOGGLE = 'smallBalanceToggle';
 const SAVINGS = 'savings';
 const SAVINGS_TOGGLE = 'savingsToggle';
 const SHOWCASE_TOKENS = 'showcaseTokens';
@@ -29,11 +27,9 @@ export const accountLocalKeys = [
   ACCOUNT_INFO,
   ASSET_PRICES_FROM_UNISWAP,
   ASSETS,
-  ACCOUNT_CHARTS,
   OPEN_FAMILIES,
   OPEN_INVESTMENT_CARDS,
   PURCHASE_TRANSACTIONS,
-  SMALL_BALANCE_TOGGLE,
   SAVINGS,
   SAVINGS_TOGGLE,
   SHOWCASE_TOKENS,
@@ -178,24 +174,6 @@ export const savePurchaseTransactions = (
   );
 
 /**
- * @desc get charts
- * @param  {String}   [address]
- * @param  {String}   [network]
- * @return {Object}
- */
-export const getAccountCharts = (accountAddress, network) =>
-  getAccountLocal(ACCOUNT_CHARTS, accountAddress, network, {});
-
-/**
- * @desc save charts data
- * @param  {Object}   [charts]
- * @param  {String}   [address]
- * @param  {String}   [network]
- */
-export const saveAccountCharts = (charts, accountAddress, network) =>
-  saveAccountLocal(ACCOUNT_CHARTS, charts, accountAddress, network);
-
-/**
  * @desc get transactions
  * @param  {String}   [address]
  * @param  {String}   [network]
@@ -253,33 +231,6 @@ export const saveUniqueTokens = (uniqueTokens, accountAddress, network) =>
     accountAddress,
     network,
     uniqueTokensVersion
-  );
-
-/**
- * @desc get open small balances
- * @param  {String}   [address]
- * @param  {String}   [network]
- * @return {Object}
- */
-export const getSmallBalanceToggle = (accountAddress, network) =>
-  getAccountLocal(SMALL_BALANCE_TOGGLE, accountAddress, network, false);
-
-/**
- * @desc save small balance toggle
- * @param  {String}   [address]
- * @param  {Boolean}    [small balance toggle]
- * @param  {String}   [network]
- */
-export const saveSmallBalanceToggle = (
-  openSmallBalances,
-  accountAddress,
-  network
-) =>
-  saveAccountLocal(
-    SMALL_BALANCE_TOGGLE,
-    openSmallBalances,
-    accountAddress,
-    network
   );
 
 /**

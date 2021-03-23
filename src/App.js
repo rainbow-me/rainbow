@@ -29,7 +29,6 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import VersionNumber from 'react-native-version-number';
 import { connect, Provider } from 'react-redux';
-import { compose, withProps } from 'recompact';
 import PortalConsumer from './components/PortalConsumer';
 import { FlexItem } from './components/layout';
 import { OfflineToast } from './components/toasts';
@@ -38,6 +37,7 @@ import {
   showNetworkRequests,
   showNetworkResponses,
 } from './config/debug';
+import { MainThemeProvider } from './context/ThemeContext';
 import { InitialRouteContext } from './context/initialRoute';
 import monitorNetwork from './debugging/network';
 import handleDeeplink from './handlers/deeplinks';
@@ -47,7 +47,6 @@ import {
   runWalletBackupStatusChecks,
 } from './handlers/walletReadyEvents';
 import RainbowContextWrapper from './helpers/RainbowContext';
-import { withAccountSettings, withAppState } from './hoc';
 import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import * as keychain from './model/keychain';
 import { loadAddress } from './model/wallet';
@@ -100,6 +99,8 @@ CodePush.getUpdateMetadata(CodePush.UpdateState.RUNNING).then(update => {
 
 enableScreens();
 
+const { RNTestFlight } = NativeModules;
+
 class App extends Component {
   static propTypes = {
     requestsForTopic: PropTypes.func,
@@ -108,8 +109,8 @@ class App extends Component {
   state = { appState: AppState.currentState, initialRoute: null };
 
   async componentDidMount() {
-    if (!__DEV__ && NativeModules.RNTestFlight) {
-      const { isTestFlight } = NativeModules.RNTestFlight.getConstants();
+    if (!__DEV__ && RNTestFlight) {
+      const { isTestFlight } = RNTestFlight.getConstants();
       logger.sentry(`Test flight usage - ${isTestFlight}`);
     }
     this.identifyFlow();
@@ -249,8 +250,9 @@ class App extends Component {
         throw new Error(`Expected number usage, encountered ${usage}.`);
       }
       logger.log(
-        `[Imgix]: Cached signature buffer is at ${size}/${capacity} (${usage *
-          100}%) on application background.`
+        `[Imgix]: Cached signature buffer is at ${size}/${capacity} (${
+          usage * 100
+        }%) on application background.`
       );
     } catch (e) {
       logger.log(
@@ -286,38 +288,38 @@ class App extends Component {
     Navigation.setTopLevelNavigator(navigatorRef);
 
   render = () => (
-    <RainbowContextWrapper>
-      <Portal>
-        <SafeAreaProvider>
-          <Provider store={store}>
-            <FlexItem>
-              {this.state.initialRoute && (
-                <InitialRouteContext.Provider value={this.state.initialRoute}>
-                  <RoutesComponent ref={this.handleNavigatorRef} />
-                  <PortalConsumer />
-                </InitialRouteContext.Provider>
-              )}
-              <OfflineToast />
-            </FlexItem>
-          </Provider>
-        </SafeAreaProvider>
-      </Portal>
-    </RainbowContextWrapper>
+    <MainThemeProvider>
+      <RainbowContextWrapper>
+        <Portal>
+          <SafeAreaProvider>
+            <Provider store={store}>
+              <FlexItem>
+                {this.state.initialRoute && (
+                  <InitialRouteContext.Provider value={this.state.initialRoute}>
+                    <RoutesComponent ref={this.handleNavigatorRef} />
+                    <PortalConsumer />
+                  </InitialRouteContext.Provider>
+                )}
+                <OfflineToast />
+              </FlexItem>
+            </Provider>
+          </SafeAreaProvider>
+        </Portal>
+      </RainbowContextWrapper>
+    </MainThemeProvider>
   );
 }
 
-const AppWithRedux = compose(
-  withProps({ store }),
-  withAccountSettings,
-  withAppState,
-  connect(null, {
+const AppWithRedux = connect(
+  ({ appState: { walletReady } }) => ({ walletReady }),
+  {
     requestsForTopic,
-  })
+  }
 )(App);
 
 const AppWithCodePush = CodePush({
   checkFrequency: CodePush.CheckFrequency.ON_APP_RESUME,
   installMode: CodePush.InstallMode.ON_NEXT_RESUME,
-})(AppWithRedux);
+})(() => <AppWithRedux store={store} />);
 
 AppRegistry.registerComponent('Rainbow', () => AppWithCodePush);

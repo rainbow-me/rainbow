@@ -2,23 +2,32 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import { useRoute } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Keyboard, View } from 'react-native';
+import { Keyboard } from 'react-native';
 import { useValue } from 'react-native-redash';
+import styled from 'styled-components';
 import { useMemoOne } from 'use-memo-one';
+import { FlexItem } from '../components/layout';
 import CurrencySelectModal from '../screens/CurrencySelectModal';
-import ModalScreen from '../screens/ModalScreen';
+import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import SwapModalScreen from '../screens/SwapModal';
-import { deviceUtils } from '../utils';
 import { useNavigation } from './Navigation';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
 import { exchangeTabNavigatorConfig, stackNavigationConfig } from './config';
-import { exchangeModalPreset, swapDetailsPreset } from './effects';
+import { exchangeModalPreset, expandedPreset } from './effects';
 import Routes from './routesNames';
-
-const { width } = deviceUtils.dimensions;
+import { useDimensions } from '@rainbow-me/hooks';
+import { position } from '@rainbow-me/styles';
 
 const Stack = createStackNavigator();
 const Tabs = createMaterialTopTabNavigator();
+
+const GestureBlocker = styled.View.attrs({
+  pointerEvents: 'none',
+})`
+  ${position.size('100%')};
+  background-color: ${({ theme: { colors } }) => colors.transparent};
+  position: absolute;
+`;
 
 function useStateCallback(initialState) {
   const [state, setState] = useState(initialState);
@@ -57,17 +66,20 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
           initialParams={params}
           name={Routes.MAIN_EXCHANGE_SCREEN}
         />
-        <Stack.Screen
-          component={ModalScreen}
-          initialParams={params}
-          name={Routes.SWAP_DETAILS_SCREEN}
-          options={swapDetailsPreset}
-        />
+        {android && (
+          <Stack.Screen
+            component={ExpandedAssetSheet}
+            initialParams={params}
+            name={Routes.SWAP_DETAILS_SHEET}
+            options={expandedPreset}
+          />
+        )}
       </Stack.Navigator>
     );
   }
 
   return function ExchangeModalNavigator() {
+    const { width } = useDimensions();
     const { setOptions } = useNavigation();
     const pointerEvents = useRef('auto');
     const ref = useRef();
@@ -118,6 +130,7 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
         enableInteractionsAfterOpeningKeyboard,
         setPointerEvents,
         setSwipeEnabled,
+        width,
       ]
     );
 
@@ -145,6 +158,7 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
         enableInteractionsAfterOpeningKeyboard,
         setPointerEvents,
         setSwipeEnabled,
+        width,
       ]
     );
 
@@ -167,7 +181,13 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
           setSwipeEnabled={setSwipeEnabled}
         />
       ),
-      [onMomentumScrollEnd, onSwipeEnd, setPointerEvents, setSwipeEnabled]
+      [
+        onMomentumScrollEnd,
+        onSwipeEnd,
+        setPointerEvents,
+        setSwipeEnabled,
+        width,
+      ]
     );
 
     const toggleGestureEnabled = useCallback(
@@ -185,20 +205,20 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
         toggleGestureEnabled,
       }),
       [
+        blockInteractions,
+        setPointerEvents,
         tabTransitionPosition,
         toggleGestureEnabled,
-        setPointerEvents,
-        blockInteractions,
       ]
     );
 
     return (
-      <View style={{ flex: 1 }}>
+      <FlexItem>
         <Tabs.Navigator
-          swipeEnabled={swipeEnabled}
-          {...exchangeTabNavigatorConfig}
           pager={renderPager}
           position={tabTransitionPosition}
+          swipeEnabled={swipeEnabled}
+          {...exchangeTabNavigatorConfig}
         >
           <Tabs.Screen
             component={MainExchangeNavigator}
@@ -211,19 +231,8 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
             name={Routes.CURRENCY_SELECT_SCREEN}
           />
         </Tabs.Navigator>
-        {ios && (
-          <View
-            pointerEvents="none"
-            ref={ref}
-            style={{
-              backgroundColor: 'transparent',
-              height: '100%',
-              position: 'absolute',
-              width: '100%',
-            }}
-          />
-        )}
-      </View>
+        {ios && <GestureBlocker ref={ref} />}
+      </FlexItem>
     );
   };
 }

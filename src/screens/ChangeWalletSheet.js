@@ -1,5 +1,5 @@
 import { captureException } from '@sentry/react-native';
-import { get } from 'lodash';
+import { get, toLower } from 'lodash';
 import React, {
   useCallback,
   useEffect,
@@ -22,9 +22,7 @@ import { removeWalletData } from '../handlers/localstorage/removeWallet';
 import showWalletErrorAlert from '../helpers/support';
 import WalletLoadingStates from '../helpers/walletLoadingStates';
 import WalletTypes from '../helpers/walletTypes';
-import { useWalletsWithBalancesAndNames } from '../hooks/useWalletsWithBalancesAndNames';
-import { wipeKeychain } from '../model/keychain';
-import { createWallet } from '../model/wallet';
+import { cleanUpWalletKeys, createWallet } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import {
   addressSetSelected,
@@ -33,14 +31,15 @@ import {
   walletsSetSelected,
   walletsUpdate,
 } from '../redux/wallets';
+import { getRandomColor } from '../styles/colors';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import {
   useAccountSettings,
   useInitializeWallet,
   useWallets,
 } from '@rainbow-me/hooks';
+import { useWalletsWithBalancesAndNames } from '@rainbow-me/hooks/useWalletsWithBalancesAndNames';
 import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
 import {
   abbreviations,
   deviceUtils,
@@ -80,16 +79,17 @@ const EditButton = styled(ButtonPressAnimation).attrs(({ editMode }) => ({
   `}
 `;
 
-const EditButtonLabel = styled(Text).attrs(({ editMode }) => ({
-  align: 'right',
-  color: colors.appleBlue,
-  letterSpacing: 'roundedMedium',
-  size: 'large',
-  weight: editMode ? 'semibold' : 'medium',
-}))``;
-
+const EditButtonLabel = styled(Text).attrs(
+  ({ theme: { colors }, editMode }) => ({
+    align: 'right',
+    color: colors.appleBlue,
+    letterSpacing: 'roundedMedium',
+    size: 'large',
+    weight: editMode ? 'semibold' : 'medium',
+  })
+)``;
 const Whitespace = styled.View`
-  background-color: ${colors.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
   bottom: -400px;
   height: 400px;
   position: absolute;
@@ -115,6 +115,7 @@ export default function ChangeWalletSheet() {
     wallets,
   } = useWallets();
   const [editMode, setEditMode] = useState(false);
+  const { colors } = useTheme();
 
   const { goBack, navigate, replace } = useNavigation();
   const dispatch = useDispatch();
@@ -122,7 +123,6 @@ export default function ChangeWalletSheet() {
   const initializeWallet = useInitializeWallet();
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
   const creatingWallet = useRef();
-
   const [currentAddress, setCurrentAddress] = useState(accountAddress);
   const [currentSelectedWallet, setCurrentSelectedWallet] = useState(
     selectedWallet
@@ -158,7 +158,7 @@ export default function ChangeWalletSheet() {
         const p2 = dispatch(addressSetSelected(address));
         await Promise.all([p1, p2]);
 
-        initializeWallet();
+        initializeWallet(null, null, null, false, false, null, true);
         !fromDeletion && goBack();
       } catch (e) {
         logger.log('error while switching account', e);
@@ -169,15 +169,17 @@ export default function ChangeWalletSheet() {
 
   const deleteWallet = useCallback(
     async (walletId, address) => {
-      const newWallets = { ...wallets };
-      // Mark it as hidden
-      newWallets[walletId].addresses.some((account, index) => {
-        if (account.address === address) {
-          newWallets[walletId].addresses[index].visible = false;
-          return true;
-        }
-        return false;
-      });
+      const newWallets = {
+        ...wallets,
+        [walletId]: {
+          ...wallets[walletId],
+          addresses: wallets[walletId].addresses.map(account =>
+            toLower(account.address) === toLower(address)
+              ? { ...account, visible: false }
+              : account
+          ),
+        },
+      };
       // If there are no visible wallets
       // then delete the wallet
       const visibleAddresses = newWallets[walletId].addresses.filter(
@@ -185,8 +187,10 @@ export default function ChangeWalletSheet() {
       );
       if (visibleAddresses.length === 0) {
         delete newWallets[walletId];
+        await dispatch(walletsUpdate(newWallets));
+      } else {
+        await dispatch(walletsUpdate(newWallets));
       }
-      await dispatch(walletsUpdate(newWallets));
       removeWalletData(address);
     },
     [dispatch, wallets]
@@ -287,7 +291,7 @@ export default function ChangeWalletSheet() {
                   ReactNativeHapticFeedback.trigger('notificationSuccess');
 
                   if (!isLastAvailableWallet) {
-                    await wipeKeychain();
+                    await cleanUpWalletKeys();
                     goBack();
                     replace(Routes.WELCOME_SCREEN);
                   } else {
@@ -346,7 +350,7 @@ export default function ChangeWalletSheet() {
               if (args) {
                 setIsWalletLoading(WalletLoadingStates.CREATING_WALLET);
                 const name = get(args, 'name', '');
-                const color = get(args, 'color', colors.getRandomColor());
+                const color = get(args, 'color', getRandomColor());
                 // Check if the selected wallet is the primary
                 let primaryWalletKey = selectedWallet.primary
                   ? selectedWallet.id

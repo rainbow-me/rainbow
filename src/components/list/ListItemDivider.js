@@ -1,12 +1,14 @@
 import { PropTypes } from 'prop-types';
-import React from 'react';
-import { withNeverRerender } from '../../hoc';
+import styled from 'styled-components';
 import Divider from '../Divider';
-import { colors } from '@rainbow-me/styles';
+import { neverRerender } from '@rainbow-me/utils';
 
-const ListItemDivider = ({ inset }) => (
-  <Divider color={colors.alpha(colors.blueGreyDark, 0.01)} inset={[0, inset]} />
-);
+const ListItemDivider = styled(Divider).attrs(
+  ({ inset, theme: { colors } }) => ({
+    color: colors.rowDividerFaint,
+    inset: [0, inset],
+  })
+)``;
 
 ListItemDivider.propTypes = {
   inset: PropTypes.number,
@@ -16,4 +18,4 @@ ListItemDivider.defaultProps = {
   inset: 16,
 };
 
-export default withNeverRerender(ListItemDivider);
+export default neverRerender(ListItemDivider);

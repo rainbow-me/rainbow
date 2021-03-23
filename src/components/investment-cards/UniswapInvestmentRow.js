@@ -1,6 +1,7 @@
 import React, { Fragment, useCallback } from 'react';
 import { View } from 'react-native';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
+import { useTheme } from '../../context/ThemeContext';
 import { convertAmountToPercentageDisplay } from '../../helpers/utilities';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText, CoinRow } from '../coin-row';
@@ -10,20 +11,15 @@ import { initialLiquidityPoolExpandedStateSheetHeight } from '../expanded-state/
 import { FlexItem, Row } from '../layout';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
 
 const formatPercentageString = percentString =>
-  percentString
-    ? percentString
-        .toString()
-        .split('-')
-        .join('- ')
-    : '-';
+  percentString ? percentString.toString().split('-').join('- ') : '-';
 
 const PercentageText = styled(BottomRowText).attrs({
   align: 'right',
 })`
-  ${({ isPositive }) => (isPositive ? `color: ${colors.green};` : null)};
+  color: ${({ isPositive, theme: { colors } }) =>
+    isPositive ? colors.green : colors.alpha(colors.blueGreyDark, 0.5)};
 `;
 
 const Content = styled(ButtonPressAnimation)`
@@ -75,13 +71,16 @@ const BottomRow = ({ price, type, uniBalance }) => {
 };
 
 const TopRow = ({ tokenNames, totalNativeDisplay }) => {
+  const { colors } = useTheme();
   return (
     <TopRowContainer>
       <FlexItem flex={1}>
-        <CoinName>{tokenNames}</CoinName>
+        <CoinName color={colors.dark}>{tokenNames}</CoinName>
       </FlexItem>
       <PriceContainer>
-        <BalanceText numberOfLines={1}>{totalNativeDisplay}</BalanceText>
+        <BalanceText color={colors.blueGreyLight} numberOfLines={1}>
+          {totalNativeDisplay}
+        </BalanceText>
       </PriceContainer>
     </TopRowContainer>
   );
@@ -93,7 +92,6 @@ export default function UniswapInvestmentRow({ assetType, item, ...props }) {
   const handleOpenExpandedState = useCallback(() => {
     navigate(Routes.EXPANDED_ASSET_SHEET, {
       asset: item,
-      cornerRadius: 10,
       longFormHeight: initialLiquidityPoolExpandedStateSheetHeight,
       type: assetType,
     });

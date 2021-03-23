@@ -1,11 +1,28 @@
 import 'react-native-get-random-values';
 import '@ethersproject/shims';
 import AsyncStorage from '@react-native-community/async-storage';
+import { enableES5 } from 'immer';
 // eslint-disable-next-line import/default
 import ReactNative from 'react-native';
 import Animated from 'react-native-reanimated';
 import Storage from 'react-native-storage';
+import { debugLayoutAnimations } from './src/config/debug';
 import logger from 'logger';
+
+if (typeof btoa === 'undefined') {
+  global.btoa = function (str) {
+    return new Buffer(str, 'binary').toString('base64');
+  };
+}
+
+if (typeof atob === 'undefined') {
+  global.atob = function (b64Encoded) {
+    return new Buffer(b64Encoded, 'base64').toString('binary');
+  };
+}
+
+// Can remove when we update hermes after they enable Proxy support
+ReactNative.Platform.OS === 'android' && enableES5();
 
 ReactNative.Platform.OS === 'ios' &&
   Animated.addWhitelistedNativeProps({ d: true });
@@ -16,6 +33,10 @@ const storage = new Storage({
   size: 10000,
   storageBackend: AsyncStorage,
 });
+
+if (ReactNative.Platform.OS === 'android') {
+  ReactNative.UIManager.setLayoutAnimationEnabledExperimental?.(true);
+}
 
 if (
   !global.__reanimatedModuleProxy &&
@@ -40,26 +61,23 @@ if (
 
 global.storage = storage;
 
-Object.defineProperty(global, 'android', {
-  get: () => ReactNative.Platform.OS === 'android',
-  set: () => {
-    throw new Error('Trying to override internal Rainbow var');
-  },
-});
-
-Object.defineProperty(global, 'ios', {
-  get: () => ReactNative.Platform.OS === 'ios',
-  set: () => {
-    throw new Error('Trying to override internal Rainbow var');
-  },
-});
+// shimming for reanimated need to happen before importing globalVariables.js
+// eslint-disable-next-line import/no-commonjs
+for (let variable of Object.entries(require('./globalVariables').default)) {
+  Object.defineProperty(global, variable[0], {
+    get: () => variable[1],
+    set: () => {
+      logger.sentry(`Trying to override internal Rainbow var ${variable[0]}`);
+    },
+  });
+}
 
 const SHORTEN_PROP_TYPES_ERROR = true;
 
 if (SHORTEN_PROP_TYPES_ERROR) {
   const oldConsoleError = console.error; // eslint-disable-line no-console
   // eslint-disable-next-line no-console
-  console.error = function() {
+  console.error = function () {
     if (
       typeof arguments[0] === 'string' &&
       arguments[0].startsWith('Warning: Failed prop type')
@@ -102,11 +120,24 @@ if (typeof localStorage !== 'undefined') {
   localStorage.debug = isDev ? '*' : '';
 }
 
+const oldConfigureNext = ReactNative.LayoutAnimation.configureNext;
+
+if (
+  !ReactNative.LayoutAnimation.configureNext.__shimmed &&
+  debugLayoutAnimations
+) {
+  ReactNative.LayoutAnimation.configureNext = (...args) => {
+    logger.sentry('LayoutAnimation.configureNext', args);
+    oldConfigureNext(...args);
+  };
+  ReactNative.LayoutAnimation.configureNext.__shimmed = true;
+}
+
 if (!ReactNative.InteractionManager._shimmed) {
   const oldCreateInteractionHandle =
     ReactNative.InteractionManager.createInteractionHandle;
 
-  ReactNative.InteractionManager.createInteractionHandle = function(
+  ReactNative.InteractionManager.createInteractionHandle = function (
     finishAutomatically = true
   ) {
     const handle = oldCreateInteractionHandle();
@@ -134,7 +165,7 @@ const description = Object.getOwnPropertyDescriptor(
 
 if (!description.writable) {
   Object.defineProperty(ReactNative, 'requireNativeComponent', {
-    value: (function() {
+    value: (function () {
       const cache = {};
       const _requireNativeComponent = ReactNative.requireNativeComponent;
 

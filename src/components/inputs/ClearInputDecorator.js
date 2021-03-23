@@ -1,11 +1,11 @@
 import React, { useEffect, useRef } from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import { colors, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 
 const Button = styled(Centered).attrs({
   scaleTo: 0.8,
@@ -21,13 +21,15 @@ const Container = styled.View`
   top: 0;
 `;
 
-const TextIcon = styled(Text).attrs({
+const TextIcon = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.3),
+  color: colors.alpha(colors.blueGreyDark, 0.4),
   letterSpacing: 'zero',
   size: 'large',
   weight: 'bold',
-})``;
+}))`
+  margin-bottom: 0.5px;
+`;
 
 const duration = 100;
 const transition = (

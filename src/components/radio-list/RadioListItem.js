@@ -1,39 +1,32 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import { withHandlers } from 'recompact';
+import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import Icon from '../icons/Icon';
 import { ListItem } from '../list';
-import { colors } from '@rainbow-me/styles';
 
-const CheckmarkIcon = styled(Icon).attrs({
+const CheckmarkIcon = styled(Icon).attrs(({ theme: { colors } }) => ({
   color: colors.appleBlue,
   name: 'checkmarkCircled',
-})`
-  box-shadow: 0px 4px 6px ${colors.alpha(colors.appleBlue, 0.4)};
+}))`
+  box-shadow: 0px 4px 6px
+    ${({ theme: { colors, isDarkMode } }) =>
+      colors.alpha(isDarkMode ? colors.shadow : colors.appleBlue, 0.4)};
   margin-bottom: 1px;
   position: absolute;
   right: 0;
 `;
 
-const RadioListItem = ({ disabled, onPress, selected, ...props }) => (
-  <ListItem onPress={onPress} opacity={disabled ? 0.42 : 1} {...props}>
-    {selected && <CheckmarkIcon />}
-  </ListItem>
-);
-
-RadioListItem.propTypes = {
-  ...ListItem.propTypes,
-  disabled: PropTypes.bool,
-  onPress: PropTypes.func.isRequired,
-  selected: PropTypes.bool,
-  value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+const RadioListItem = ({ disabled, selected, ...props }) => {
+  const onPress = useCallback(() => {
+    if (props.onPress && !props.disabled) {
+      props.onPress(props.value);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.value, props.onPress, disabled]);
+  return (
+    <ListItem onPress={onPress} opacity={disabled ? 0.42 : 1} {...props}>
+      {selected && <CheckmarkIcon />}
+    </ListItem>
+  );
 };
 
-export default withHandlers({
-  onPress: ({ disabled, onPress, value }) => () => {
-    if (onPress && !disabled) {
-      onPress(value);
-    }
-  },
-})(RadioListItem);
+export default RadioListItem;

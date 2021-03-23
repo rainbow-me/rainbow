@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { useEmailRainbow } from '../../hooks';
 import SupportButton from './SupportButton';
+import { useEmailRainbow } from '@rainbow-me/hooks';
 
 const NeedHelpButton = ({ label, subject, ...props }) => {
   const onEmailRainbow = useEmailRainbow({ subject });
@@ -14,7 +14,7 @@ NeedHelpButton.propTypes = {
 };
 
 NeedHelpButton.defaultProps = {
-  label: 'Need help?',
+  label: 'Get Support',
   subject: 'support',
 };
 

@@ -1,6 +1,8 @@
-import React from 'react';
-import styled from 'styled-components/primitives';
-import { colors, fonts } from '../../styles';
+import React, { useCallback } from 'react';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import styled from 'styled-components';
+import { useTheme } from '../../context/ThemeContext';
+import { fonts } from '../../styles';
 import { magicMemo, measureText } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
@@ -10,15 +12,22 @@ import CoinName from './CoinName';
 
 const TopMoverCoinIconSize = 36;
 const TopMoverCoinRowMargin = 8;
+const TopMoverPriceMargin = 5;
 
-const TopMoverTitle = styled(CoinName).attrs({
+const Spacer = styled.View`
+  width: ${TopMoverPriceMargin};
+`;
+
+const TopMoverTitle = styled(CoinName).attrs(({ theme: { colors } }) => ({
+  color: colors.alpha(colors.blueGreyDark, 0.8),
   paddingRight: 0,
   weight: 'semibold',
-})``;
+}))``;
 
 export const measureBottomRowText = text =>
   measureText(text, {
     fontSize: parseFloat(fonts.size.smedium),
+    fontWeight: fonts.weight.medium,
   });
 
 export const measureTopRowText = text =>
@@ -28,57 +37,100 @@ export const measureTopRowText = text =>
     letterSpacing: fonts.letterSpacing.roundedMedium,
   });
 
-const PADDING_BETWEEN_ITEMS = 20;
+const PADDING_BETWEEN_ITEMS = 26;
 
 export const measureTopMoverCoinRow = async ({
   change,
-  name,
-  price,
-  symbol,
+  native,
+  truncatedName,
 }) => {
-  const { width: changeWidth } = await measureTopRowText(change);
-  const { width: nameWidth } = await measureTopRowText(name);
-  const { width: priceWidth } = await measureBottomRowText(price);
-  const { width: symbolWidth } = await measureBottomRowText(symbol);
+  const { width: nameWidth } = await measureTopRowText(truncatedName);
+  const { width: priceWidth } = await measureBottomRowText(
+    native?.price?.display ?? ''
+  );
+  const { width: changeWidth } = await measureBottomRowText(change);
 
-  const leftWidth = Math.max(nameWidth, priceWidth);
-  const rightWidth = Math.max(changeWidth, symbolWidth);
+  const textWidth = Math.max(
+    nameWidth,
+    priceWidth + changeWidth + TopMoverPriceMargin
+  );
 
   return (
     PADDING_BETWEEN_ITEMS +
-    [TopMoverCoinIconSize, leftWidth, rightWidth].reduce(
+    [TopMoverCoinIconSize, textWidth].reduce(
       (acc, val) => acc + val + TopMoverCoinRowMargin
     )
   );
 };
 
-const TopMoverCoinRow = ({ address, change, name, onPress, price, symbol }) => (
-  <ButtonPressAnimation onPress={onPress} scaleTo={1.02}>
-    <RowWithMargins margin={TopMoverCoinRowMargin}>
-      <Centered>
-        <CoinIcon
-          address={address}
-          size={TopMoverCoinIconSize}
-          symbol={symbol}
-        />
-      </Centered>
-      <ColumnWithMargins margin={2}>
-        <TopMoverTitle color={colors.alpha(colors.blueGreyDark, 0.8)}>
-          {name}
-        </TopMoverTitle>
-        <BottomRowText>{price}</BottomRowText>
-      </ColumnWithMargins>
-      <ColumnWithMargins align="end" justify="end" margin={2}>
-        <TopMoverTitle
-          align="right"
-          color={parseFloat(change) > 0 ? colors.green : colors.red}
-        >
-          {change}
-        </TopMoverTitle>
-        <BottomRowText align="right">{symbol}</BottomRowText>
-      </ColumnWithMargins>
-    </RowWithMargins>
-  </ButtonPressAnimation>
-);
+const TopMoverCoinRow = asset => {
+  const {
+    address,
+    change,
+    onPress,
+    native: {
+      price: { display },
+    },
+    symbol,
+    truncatedName,
+    onPressCancel,
+    onPressStart,
+  } = asset;
+  const handlePress = useCallback(() => {
+    onPress?.(asset);
+  }, [asset, onPress]);
+  const { colors } = useTheme();
 
-export default magicMemo(TopMoverCoinRow, ['change', 'name', 'price']);
+  return (
+    <ButtonPressAnimation
+      hapticType="notificationWarning"
+      onCancel={({ nativeEvent: { state, close } }) => {
+        if (state === 5 && close) {
+          ReactNativeHapticFeedback.trigger('selection');
+          handlePress();
+        }
+      }}
+      onPress={handlePress}
+      onPressCancel={onPressCancel}
+      // we observe that while integrating with
+      // gesture handler event gets always cancelled on iOS
+      // Therefore, in this case under given condition
+      // onPress should be called
+      onPressStart={onPressStart}
+      reanimatedButton={android}
+      scaleTo={0.925}
+    >
+      <RowWithMargins
+        margin={TopMoverCoinRowMargin}
+        paddingHorizontal={PADDING_BETWEEN_ITEMS / 2}
+      >
+        <Centered>
+          <CoinIcon
+            address={address}
+            size={TopMoverCoinIconSize}
+            symbol={symbol}
+          />
+        </Centered>
+        <ColumnWithMargins margin={2}>
+          <TopMoverTitle>{truncatedName}</TopMoverTitle>
+          <BottomRowText weight="medium">
+            {display}
+            <Spacer />
+            <BottomRowText
+              color={parseFloat(change) > 0 ? colors.green : colors.red}
+              weight="medium"
+            >
+              {change}
+            </BottomRowText>
+          </BottomRowText>
+        </ColumnWithMargins>
+      </RowWithMargins>
+    </ButtonPressAnimation>
+  );
+};
+
+export default magicMemo(TopMoverCoinRow, [
+  'change',
+  'truncatedName',
+  'native',
+]);

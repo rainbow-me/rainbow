@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
-import React, { Fragment } from 'react';
-import { compose, onlyUpdateForKeys, shouldUpdate, withProps } from 'recompact';
-import { css } from 'styled-components/primitives';
+import React, { Fragment, useMemo } from 'react';
+import { css } from 'styled-components';
+import { useTheme } from '../../context/ThemeContext';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
-import { deviceUtils } from '../../utils';
+import { deviceUtils, magicMemo } from '../../utils';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { RequestVendorLogoIcon } from '../coin-icon';
@@ -11,7 +11,7 @@ import { Centered, InnerBorder } from '../layout';
 import { TruncatedText } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
-import { colors, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 
 const dividerHeight = 22;
 const isTinyPhone = deviceUtils.dimensions.height <= 568;
@@ -22,11 +22,17 @@ const selectedStyles = css`
   height: ${selectedHeight};
 `;
 
-const BottomRow = ({ subtitle }) => (
-  <TruncatedText color={colors.alpha(colors.blueGreyDark, 0.5)} size="smedium">
-    {subtitle}
-  </TruncatedText>
-);
+const BottomRow = ({ subtitle }) => {
+  const { colors } = useTheme();
+  return (
+    <TruncatedText
+      color={colors.alpha(colors.blueGreyDark, 0.5)}
+      size="smedium"
+    >
+      {subtitle}
+    </TruncatedText>
+  );
+};
 
 const TopRow = ({ id, name, selected }) => (
   <CoinName
@@ -37,31 +43,30 @@ const TopRow = ({ id, name, selected }) => (
   </CoinName>
 );
 
-const enhanceUniqueTokenCoinIcon = onlyUpdateForKeys([
-  'background',
-  'image_thumbnail_url',
-]);
-
-const UniqueTokenCoinIcon = enhanceUniqueTokenCoinIcon(
+const UniqueTokenCoinIcon = magicMemo(
   ({
     asset_contract: { name },
     background,
     image_thumbnail_url,
     shouldPrioritizeImageLoading,
     ...props
-  }) => (
-    <Centered>
-      <RequestVendorLogoIcon
-        backgroundColor={background || colors.lightestGrey}
-        borderRadius={8}
-        dappName={name}
-        imageUrl={image_thumbnail_url}
-        shouldPrioritizeImageLoading={shouldPrioritizeImageLoading}
-        {...props}
-      />
-      <InnerBorder opacity={0.04} radius={8} zIndex={2} />
-    </Centered>
-  )
+  }) => {
+    const { colors } = useTheme();
+    return (
+      <Centered>
+        <RequestVendorLogoIcon
+          backgroundColor={background || colors.lightestGrey}
+          borderRadius={8}
+          dappName={name}
+          imageUrl={image_thumbnail_url}
+          shouldPrioritizeImageLoading={shouldPrioritizeImageLoading}
+          {...props}
+        />
+        <InnerBorder opacity={0.04} radius={8} zIndex={2} />
+      </Centered>
+    );
+  },
+  ['background', 'image_thumbnail_url']
 );
 
 UniqueTokenCoinIcon.propTypes = {
@@ -71,45 +76,47 @@ UniqueTokenCoinIcon.propTypes = {
   shouldPrioritizeImageLoading: PropTypes.bool,
 };
 
-const buildSubtitleForUniqueToken = ({ item }) => ({
-  subtitle: item.name
-    ? `${item.asset_contract.name} #${item.id}`
-    : item.asset_contract.name,
-});
+const arePropsEqual = (props, nextProps) =>
+  buildAssetUniqueIdentifier(props.item) !==
+  buildAssetUniqueIdentifier(nextProps.item);
 
-const enhance = compose(
-  withProps(buildSubtitleForUniqueToken),
-  shouldUpdate((props, nextProps) => {
-    const itemIdentifier = buildAssetUniqueIdentifier(props.item);
-    const nextItemIdentifier = buildAssetUniqueIdentifier(nextProps.item);
+// eslint-disable-next-line react/display-name
+const CollectiblesSendRow = React.memo(
+  ({ item, isFirstRow, onPress, selected, testID, ...props }) => {
+    const { colors } = useTheme();
+    const subtitle = useMemo(
+      () =>
+        item.name
+          ? `${item.asset_contract.name} #${item.id}`
+          : item.asset_contract.name,
 
-    return itemIdentifier !== nextItemIdentifier;
-  })
-);
+      [item.asset_contract.name, item.id, item.name]
+    );
 
-const CollectiblesSendRow = enhance(
-  ({ item, isFirstRow, onPress, selected, subtitle, testID, ...props }) => (
-    <Fragment>
-      {isFirstRow && (
-        <Centered height={dividerHeight}>
-          <Divider color={colors.rowDividerLight} />
-        </Centered>
-      )}
-      <ButtonPressAnimation onPress={onPress} scaleTo={0.98}>
-        <CoinRow
-          {...props}
-          {...item}
-          bottomRowRender={BottomRow}
-          coinIconRender={UniqueTokenCoinIcon}
-          containerStyles={selected ? selectedStyles : null}
-          selected={selected}
-          subtitle={subtitle}
-          testID={testID + item.name}
-          topRowRender={TopRow}
-        />
-      </ButtonPressAnimation>
-    </Fragment>
-  )
+    return (
+      <Fragment>
+        {isFirstRow && (
+          <Centered height={dividerHeight}>
+            <Divider color={colors.rowDividerLight} />
+          </Centered>
+        )}
+        <ButtonPressAnimation onPress={onPress} scaleTo={0.98}>
+          <CoinRow
+            {...props}
+            {...item}
+            bottomRowRender={BottomRow}
+            coinIconRender={UniqueTokenCoinIcon}
+            containerStyles={selected ? selectedStyles : null}
+            selected={selected}
+            subtitle={subtitle}
+            testID={testID + item.name}
+            topRowRender={TopRow}
+          />
+        </ButtonPressAnimation>
+      </Fragment>
+    );
+  },
+  arePropsEqual
 );
 
 CollectiblesSendRow.propTypes = {

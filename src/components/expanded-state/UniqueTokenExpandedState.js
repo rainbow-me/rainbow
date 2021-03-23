@@ -9,15 +9,14 @@ import {
   SlackSheet,
 } from '../sheet';
 import { Text } from '../text';
-import { ShowcaseToast, ToastPositionContainer } from '../toasts';
+import { ToastPositionContainer, ToggleStateToast } from '../toasts';
 import { UniqueTokenAttributes } from '../unique-token';
 import ExpandedStateSection from './ExpandedStateSection';
 import {
+  UniqueTokenExpandedStateContent,
   UniqueTokenExpandedStateHeader,
-  UniqueTokenExpandedStateImage,
 } from './unique-token';
 import { useDimensions, useShowcaseTokens } from '@rainbow-me/hooks';
-import { colors } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
 const UniqueTokenExpandedState = ({ asset }) => {
@@ -53,6 +52,7 @@ const UniqueTokenExpandedState = ({ asset }) => {
   }, [addShowcaseToken, isShowcaseAsset, removeShowcaseToken, uniqueId]);
 
   const { height: screenHeight } = useDimensions();
+  const { colors, isDarkMode } = useTheme();
 
   return (
     <Fragment>
@@ -64,10 +64,10 @@ const UniqueTokenExpandedState = ({ asset }) => {
         scrollEnabled
       >
         <UniqueTokenExpandedStateHeader asset={asset} />
-        <UniqueTokenExpandedStateImage asset={asset} />
+        <UniqueTokenExpandedStateContent asset={asset} />
         <SheetActionButtonRow>
           <SheetActionButton
-            color={colors.dark}
+            color={isDarkMode ? colors.darkModeDark : colors.dark}
             label={isShowcaseAsset ? '􀁏 Showcase' : '􀁍 Showcase'}
             onPress={handlePressShowcase}
             weight="bold"
@@ -77,7 +77,7 @@ const UniqueTokenExpandedState = ({ asset }) => {
         <SheetDivider />
         <ColumnWithDividers dividerRenderer={SheetDivider}>
           {!!description && (
-            <ExpandedStateSection title="Bio">
+            <ExpandedStateSection title="Description">
               {description}
             </ExpandedStateSection>
           )}
@@ -103,7 +103,11 @@ const UniqueTokenExpandedState = ({ asset }) => {
         </ColumnWithDividers>
       </SlackSheet>
       <ToastPositionContainer>
-        <ShowcaseToast isShowcaseAsset={isShowcaseAsset} />
+        <ToggleStateToast
+          addCopy="Added to showcase"
+          isAdded={isShowcaseAsset}
+          removeCopy="Removed from showcase"
+        />
       </ToastPositionContainer>
     </Fragment>
   );

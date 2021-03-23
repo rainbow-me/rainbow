@@ -1,76 +1,148 @@
-import React, { useContext } from 'react';
-import { View } from 'react-native';
-import Animated from 'react-native-reanimated';
-import styled from 'styled-components/primitives';
-import { borders, colors, position } from '../../styles';
+import React, { useCallback, useContext, useEffect, useMemo } from 'react';
+import Animated, {
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
+import styled from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
-import { Centered, Row } from '../layout';
+import { Centered } from '../layout';
 import DiscoverSheetContext from './DiscoverSheetContext';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import { borders, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
-const Header = styled(Row).attrs({
-  align: 'center',
-  justify: 'space-between',
-  position: 'absolute',
-})`
-  height: 42;
+const Header = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
   margin-vertical: 12;
+  position: absolute;
   top: -12;
   width: 100%;
   z-index: 10;
 `;
 
-export const FloatingActionButtonShadow = [
-  [0, 2, 5, colors.dark, 0.2],
-  [0, 6, 10, colors.dark, 0.14],
-  [0, 1, 18, colors.dark, 0.12],
-];
-
-const Content = styled(Centered)`
-  ${position.cover};
-  background-color: ${colors.grey20};
+const ChildWrapperView = styled.View`
+  position: absolute;
 `;
 
-function Stack({ children, left, yPosition, onPress }) {
+export const FloatingActionButtonShadow = colors => [
+  [0, 10, android ? 0 : 30, colors.shadow, 0.5],
+  [0, 5, android ? 0 : 15, colors.shadow, 1],
+];
+
+const BackgroundFill = styled(Centered).attrs({
+  ...borders.buildCircleAsObject(43),
+})`
+  ${position.cover};
+  background-color: ${({ theme: { colors, isDarkMode } }) =>
+    isDarkMode ? colors.darkModeDark : colors.blueGreyDark};
+  left: 8;
+  top: 8;
+`;
+
+const ALMOST_ZERO = 0.001;
+const springConfig = {
+  damping: 28,
+  mass: 1,
+  stiffness: 420,
+};
+
+function Stack({
+  children,
+  left,
+  onPress,
+  translateX = 0,
+  isAboveMagicBorder,
+  isWrapperVisible,
+  isSearchModeEnabledValue,
+}) {
+  const { colors, isDarkMode } = useTheme();
+  const shadows = useMemo(() => FloatingActionButtonShadow(colors), [colors]);
+
+  const styles1 = useAnimatedStyle(() => ({
+    opacity: withSpring(
+      isWrapperVisible.value && !isSearchModeEnabledValue.value
+        ? 1
+        : ALMOST_ZERO,
+      springConfig
+    ),
+  }));
+
+  const styles2 = useAnimatedStyle(() => ({
+    opacity: withSpring(
+      isAboveMagicBorder.value && !isSearchModeEnabledValue.value
+        ? 1
+        : ALMOST_ZERO,
+      springConfig
+    ),
+  }));
+
+  const styles3 = useAnimatedStyle(() => ({
+    transform: [
+      {
+        translateX: withSpring(
+          isWrapperVisible.value ? translateX : 0,
+          springConfig
+        ),
+      },
+    ],
+  }));
+
+  const styles4 = useAnimatedStyle(() => ({
+    opacity: withSpring(isWrapperVisible.value ? 1 : ALMOST_ZERO, springConfig),
+  }));
+
+  const styles5 = useAnimatedStyle(() => ({
+    opacity: withSpring(isWrapperVisible.value ? ALMOST_ZERO : 1, springConfig),
+  }));
+
+  const onPressWrapped = useCallback(() => {
+    if (isAboveMagicBorder.value) {
+      onPress();
+    }
+  }, [isAboveMagicBorder, onPress]);
+
   return (
     <>
       <ButtonPressAnimation
-        onPress={onPress}
-        style={{ height: 45, width: 58, zIndex: 10 }}
+        onPress={onPressWrapped}
+        style={{ height: 59, width: 59, zIndex: 10 }}
       >
         <Animated.View
-          style={{
-            opacity: yPosition.interpolate({
-              inputRange: [0, 30],
-              outputRange: [0, 1],
-            }),
-          }}
+          height={59}
+          position="absolute"
+          style={styles1}
+          width={59}
         >
           <ShadowStack
-            style={{ left: 8, position: 'absolute', top: 8 }}
-            {...borders.buildCircleAsObject(40)}
-            shadows={FloatingActionButtonShadow}
-          >
-            <Content />
-          </ShadowStack>
+            {...borders.buildCircleAsObject(43)}
+            backgroundColor={isDarkMode ? colors.offWhite : colors.dark}
+            shadows={shadows}
+            style={{ left: 8, opacity: 0.4, position: 'absolute', top: 8 }}
+          />
+          <BackgroundFill />
         </Animated.View>
-        <View style={{ left, top: 17, zIndex: 10 }}>
-          <View style={{ position: 'absolute' }}>{children[0]}</View>
-
-          <Animated.View
-            style={{
-              opacity: yPosition.interpolate({
-                inputRange: [0, 30],
-                outputRange: [0, 1],
-              }),
-            }}
-          >
-            {children[1]}
+        <Animated.View
+          style={[
+            styles2,
+            {
+              left,
+              top: 19,
+              zIndex: 10,
+            },
+          ]}
+        >
+          <Animated.View style={styles3}>
+            <ChildWrapperView>
+              <Animated.View style={styles5}>{children[0]}</Animated.View>
+            </ChildWrapperView>
+            <Animated.View style={styles4}>{children[1]}</Animated.View>
           </Animated.View>
-        </View>
+        </Animated.View>
       </ButtonPressAnimation>
     </>
   );
@@ -78,21 +150,77 @@ function Stack({ children, left, yPosition, onPress }) {
 
 export default function DiscoverSheetHeader(props) {
   const { navigate } = useNavigation();
-  const { jumpToShort } = useContext(DiscoverSheetContext);
+  const buttonsEnabled = useSharedValue(true);
   const { yPosition } = props;
+  const { isSearchModeEnabled, setIsSearchModeEnabled } = useContext(
+    DiscoverSheetContext
+  );
+
+  const isWrapperVisible = useDerivedValue(() => yPosition.value > 50);
+
+  const isSearchModeEnabledValue = useDerivedValue(() => isSearchModeEnabled, [
+    isSearchModeEnabled,
+  ]);
+
+  const { jumpToShort, addOnCrossMagicBorderListener } =
+    useContext(DiscoverSheetContext) || {};
+
+  const onCrossMagicBorder = useCallback(
+    below => {
+      buttonsEnabled.value = !below;
+    },
+    [buttonsEnabled]
+  );
+  useEffect(() => addOnCrossMagicBorderListener?.(onCrossMagicBorder), [
+    addOnCrossMagicBorderListener,
+    onCrossMagicBorder,
+  ]);
+
+  const { colors } = useTheme();
+
+  const handleScannerPress = useCallback(() => {
+    if (!isSearchModeEnabled) {
+      setIsSearchModeEnabled?.(false);
+      jumpToShort?.();
+    }
+  }, [isSearchModeEnabled, jumpToShort, setIsSearchModeEnabled]);
+
   return (
     <Header {...props} pointerEvents="box-none">
       <Stack
-        left={20}
-        onPress={() => navigate(Routes.WALLET_SCREEN)}
-        yPosition={yPosition}
+        isAboveMagicBorder={buttonsEnabled}
+        isSearchModeEnabledValue={isSearchModeEnabledValue}
+        isWrapperVisible={isWrapperVisible}
+        left={19}
+        onPress={() => !isSearchModeEnabled && navigate(Routes.WALLET_SCREEN)}
+        translateX={5}
       >
-        <Icon color={colors.black} direction="left" name="caret" {...props} />
-        <Icon color={colors.white} direction="left" name="caret" {...props} />
+        <Icon
+          color={colors.alpha(colors.blueGreyDark, 0.8)}
+          direction="left"
+          name="caret"
+          {...props}
+        />
+        <Icon
+          color={colors.whiteLabel}
+          direction="left"
+          name="caret"
+          {...props}
+        />
       </Stack>
-      <Stack left={16.6} onPress={jumpToShort} yPosition={yPosition}>
-        <Icon color={colors.black} name="scanner" />
-        <Icon color={colors.white} name="scanner" />
+      <Stack
+        isAboveMagicBorder={buttonsEnabled}
+        isSearchModeEnabledValue={isSearchModeEnabledValue}
+        isWrapperVisible={isWrapperVisible}
+        left={18.5}
+        onPress={handleScannerPress}
+      >
+        <Icon
+          bottom={1}
+          color={colors.alpha(colors.blueGreyDark, 0.8)}
+          name="scanner"
+        />
+        <Icon bottom={1} color={colors.whiteLabel} name="scanner" />
       </Stack>
     </Header>
   );

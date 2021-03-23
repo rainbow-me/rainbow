@@ -1,14 +1,15 @@
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
+import { useTheme } from '../../../context/ThemeContext';
 import { ButtonPressAnimation } from '../../animations';
 import { Icon } from '../../icons';
 import { Centered, InnerBorder, RowWithMargins } from '../../layout';
 import { Emoji, Text } from '../../text';
 import { containsEmoji } from '@rainbow-me/helpers/strings';
 import { useDimensions } from '@rainbow-me/hooks';
-import { colors, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const addChartsStyling = isCharts =>
@@ -34,10 +35,10 @@ const Content = styled(RowWithMargins).attrs({
 const neverRerender = () => true;
 // eslint-disable-next-line react/display-name
 const WhiteButtonGradient = React.memo(
-  () => (
+  ({ colors }) => (
     <LinearGradient
       borderRadius={49}
-      colors={['#FFFFFF', '#F7F9FA']}
+      colors={colors.gradients.whiteButton}
       end={{ x: 0.5, y: 1 }}
       opacity={0.5}
       pointerEvents="none"
@@ -51,7 +52,7 @@ const WhiteButtonGradient = React.memo(
 const SheetActionButton = ({
   androidWidth,
   borderRadius = 56,
-  color = colors.appleBlue,
+  color: givenColor,
   disabled,
   elevation = 24,
   emoji,
@@ -62,10 +63,13 @@ const SheetActionButton = ({
   label,
   size,
   testID,
-  textColor = colors.white,
+  textColor: givenTextColor,
   weight = 'semibold',
   ...props
 }) => {
+  const { isDarkMode, colors } = useTheme();
+  const color = givenColor || colors.appleBlue;
+  const textColor = givenTextColor || colors.whiteLabel;
   const { width: deviceWidth } = useDimensions();
   const shadowsForButtonColor = useMemo(() => {
     const isWhite = color === colors.white;
@@ -74,10 +78,16 @@ const SheetActionButton = ({
       return [[0, 0, 0, colors.transparent, 0]];
     } else
       return [
-        [0, 10, 30, colors.dark, isWhite ? 0.12 : 0.2],
-        [0, 5, 15, isWhite ? colors.dark : color, isWhite ? 0.08 : 0.4],
+        [0, 10, 30, colors.shadow, isWhite ? 0.12 : 0.2],
+        [
+          0,
+          5,
+          15,
+          isDarkMode || isWhite ? colors.shadow : color,
+          isWhite ? 0.08 : 0.4,
+        ],
       ];
-  }, [color, disabled, isTransparent]);
+  }, [color, colors, disabled, isTransparent, isDarkMode]);
 
   const androidButtonWidth =
     androidWidth || (fullWidth ? deviceWidth - 38 : (deviceWidth - 53) / 2);
@@ -109,7 +119,7 @@ const SheetActionButton = ({
           shadows={shadowsForButtonColor}
           {...((android || fullWidth) && { width: androidButtonWidth })}
         >
-          {color === colors.white && <WhiteButtonGradient />}
+          {color === colors.white && <WhiteButtonGradient colors={colors} />}
           {color !== colors.white && !isTransparent && (
             <InnerBorder
               color={disabled ? textColor : null}

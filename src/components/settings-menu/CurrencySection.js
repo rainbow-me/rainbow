@@ -1,12 +1,10 @@
 import analytics from '@segment/analytics-react-native';
 import { isNil } from 'lodash';
-import PropTypes from 'prop-types';
-import React from 'react';
-import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
-import { withAccountSettings } from '../../hoc';
+import React, { useCallback } from 'react';
 import { CoinIcon } from '../coin-icon';
 import { RadioList, RadioListItem } from '../radio-list';
 import { Emoji } from '../text';
+import { useAccountSettings } from '@rainbow-me/hooks';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 
 const currencyListItems = Object.values(supportedNativeCurrencies).map(
@@ -34,35 +32,27 @@ const CurrencyListItem = ({ currency, emojiName, label, ...item }) => (
   />
 );
 
-CurrencyListItem.propTypes = {
-  currency: PropTypes.string,
-  emojiName: PropTypes.string,
-  label: PropTypes.string,
-};
+const CurrencySection = () => {
+  const { nativeCurrency, settingsChangeNativeCurrency } = useAccountSettings();
 
-const CurrencySection = ({ nativeCurrency, onSelectCurrency }) => (
-  <RadioList
-    extraData={nativeCurrency}
-    items={currencyListItems}
-    marginTop={7}
-    onChange={onSelectCurrency}
-    renderItem={CurrencyListItem}
-    value={nativeCurrency}
-  />
-);
-
-CurrencySection.propTypes = {
-  nativeCurrency: PropTypes.oneOf(Object.keys(supportedNativeCurrencies)),
-  onSelectCurrency: PropTypes.func.isRequired,
-};
-
-export default compose(
-  withAccountSettings,
-  withHandlers({
-    onSelectCurrency: ({ settingsChangeNativeCurrency }) => currency => {
+  const onSelectCurrency = useCallback(
+    currency => {
       settingsChangeNativeCurrency(currency);
       analytics.track('Changed native currency', { currency });
     },
-  }),
-  onlyUpdateForKeys(['nativeCurrency'])
-)(CurrencySection);
+    [settingsChangeNativeCurrency]
+  );
+
+  return (
+    <RadioList
+      extraData={nativeCurrency}
+      items={currencyListItems}
+      marginTop={7}
+      onChange={onSelectCurrency}
+      renderItem={CurrencyListItem}
+      value={nativeCurrency}
+    />
+  );
+};
+
+export default CurrencySection;

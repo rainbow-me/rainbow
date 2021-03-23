@@ -1,20 +1,19 @@
-import PropTypes from 'prop-types';
-import React, { useCallback, useState } from 'react';
-import styled from 'styled-components/primitives';
-import {
-  calculateEarningsInDays,
-  isSymbolStablecoin,
-} from '../../helpers/savings';
-import {
-  convertAmountToNativeDisplay,
-  handleSignificantDecimals,
-} from '../../helpers/utilities';
-import { magicMemo } from '../../utils';
+import React, { useCallback } from 'react';
+import styled from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
 import { Row, RowWithMargins } from '../layout';
 import { AnimatedNumber, Emoji, Text } from '../text';
-import { useAccountSettings } from '@rainbow-me/hooks';
-import { colors, padding } from '@rainbow-me/styles';
+import {
+  calculateEarningsInDays,
+  isSymbolStablecoin,
+} from '@rainbow-me/helpers/savings';
+import {
+  convertAmountToNativeDisplay,
+  handleSignificantDecimals,
+} from '@rainbow-me/helpers/utilities';
+import { useAccountSettings, useStepper } from '@rainbow-me/hooks';
+import { padding } from '@rainbow-me/styles';
+import { magicMemo } from '@rainbow-me/utils';
 
 const CrystalBallEmoji = styled(Emoji).attrs({
   name: 'crystal_ball',
@@ -23,12 +22,14 @@ const CrystalBallEmoji = styled(Emoji).attrs({
   margin-bottom: 0.5;
 `;
 
-const PredictionNumber = styled(AnimatedNumber).attrs({
-  color: colors.swapPurple,
-  letterSpacing: 'roundedTight',
-  size: 'lmedium',
-  weight: 'semibold',
-})`
+const PredictionNumber = styled(AnimatedNumber).attrs(
+  ({ theme: { colors } }) => ({
+    color: colors.swapPurple,
+    letterSpacing: 'roundedTight',
+    size: 'lmedium',
+    weight: 'semibold',
+  })
+)`
   flex-grow: 1;
 `;
 
@@ -58,12 +59,6 @@ const steps = {
 };
 /* eslint-enable sort-keys */
 
-function useStepper(max, initial = 0) {
-  const [step, setStep] = useState(initial);
-  const nextStep = useCallback(() => setStep(p => (p + 1) % max), [max]);
-  return [step, nextStep];
-}
-
 const SavingsPredictionStepper = ({ asset, balance, interestRate }) => {
   const { nativeCurrency } = useAccountSettings();
   const [step, nextStep] = useStepper(Object.keys(steps).length, 1);
@@ -83,6 +78,7 @@ const SavingsPredictionStepper = ({ asset, balance, interestRate }) => {
     },
     [decimals, symbol, nativeCurrency]
   );
+  const { colors } = useTheme();
 
   return (
     <ButtonPressAnimation
@@ -94,7 +90,7 @@ const SavingsPredictionStepper = ({ asset, balance, interestRate }) => {
       <Row align="center" css={padding(15, 19, 19)}>
         <RowWithMargins align="center" margin={5}>
           <CrystalBallEmoji />
-          <Text size="lmedium">
+          <Text color={colors.dark} size="lmedium">
             {`Est. ${Object.keys(steps)[step]} Earnings`}
           </Text>
         </RowWithMargins>
@@ -110,15 +106,6 @@ const SavingsPredictionStepper = ({ asset, balance, interestRate }) => {
       </Row>
     </ButtonPressAnimation>
   );
-};
-
-SavingsPredictionStepper.propTypes = {
-  asset: PropTypes.shape({
-    decimals: PropTypes.number,
-    symbol: PropTypes.string,
-  }),
-  balance: PropTypes.string,
-  interestRate: PropTypes.string,
 };
 
 export default magicMemo(SavingsPredictionStepper, ['balance', 'interestRate']);
