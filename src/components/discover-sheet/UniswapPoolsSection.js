@@ -7,10 +7,11 @@ import { ButtonPressAnimation } from '../animations';
 import { AssetListItemSkeleton } from '../asset-list';
 import UniswapLogo from '../icons/UniswapLogo';
 import { UniswapPoolListRow } from '../investment-cards';
-import { Column, Row } from '../layout';
+import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';
 import EdgeFade from './EdgeFade';
-import { useUniswapPools } from '@rainbow-me/hooks';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
+import { useAccountSettings, useUniswapPools } from '@rainbow-me/hooks';
 
 const ITEM_HEIGHT = 60;
 const getItemLayout = (_, index) => ({
@@ -18,6 +19,18 @@ const getItemLayout = (_, index) => ({
   length: ITEM_HEIGHT,
   offset: ITEM_HEIGHT * index,
 });
+
+const ErrorMessage = ({ colors, children }) => (
+  <Centered marginVertical={50}>
+    <Text
+      color={colors.alpha(colors.blueGreyDark, 0.3)}
+      size="large"
+      weight="semibold"
+    >
+      {children}
+    </Text>
+  </Centered>
+);
 
 const PoolListButton = styled(ButtonPressAnimation).attrs({
   scaleTo: 0.96,
@@ -68,6 +81,7 @@ const renderUniswapPoolListRow = ({ item }) => (
 export default function UniswapPools() {
   const listRef = useRef(null);
   const { colors, isDarkMode } = useTheme();
+  const { network } = useAccountSettings();
   const [selectedList, setSelectedList] = useState(listData[0].id);
   const [sortDirection, setSortDirection] = useState(SORT_DIRECTION.DESC);
   const { pairs, error, is30DayEnabled } = useUniswapPools(
@@ -227,7 +241,13 @@ export default function UniswapPools() {
         </Column>
       </Column>
       {error ? (
-        <Text>There was an error loading Uniswap pool data...</Text>
+        <ErrorMessage colors={colors}>
+          There was an error loading Uniswap pool data...
+        </ErrorMessage>
+      ) : network !== networkTypes.mainnet ? (
+        <ErrorMessage colors={colors}>
+          Pools are disabled on Testnets
+        </ErrorMessage>
       ) : pairsSorted?.length > 0 ? (
         <FlatList
           data={pairsSorted}
