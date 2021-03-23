@@ -182,10 +182,10 @@ export default function ListSection() {
   ]);
 
   const listItems = useMemo(() => {
-    let items = [];
     if (network !== networkTypes.mainnet) {
-      return items;
+      return [];
     }
+    let items = [];
     if (selectedList === 'favorites') {
       items = favorites.map(
         item =>
