@@ -14,7 +14,7 @@ NeedHelpButton.propTypes = {
 };
 
 NeedHelpButton.defaultProps = {
-  label: 'Need help?',
+  label: 'Get Support',
   subject: 'support',
 };
 

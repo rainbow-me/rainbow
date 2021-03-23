@@ -1,28 +1,34 @@
 import { isEmpty, toLower } from 'lodash';
 import LottieView from 'lottie-react-native';
-import PropTypes from 'prop-types';
 import React, { Fragment, useEffect, useMemo, useRef } from 'react';
 import { StyleSheet } from 'react-native';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import styled from 'styled-components';
 import jumpingDaiAnimation from '../../assets/lottie/jumping-dai.json';
 import jumpingEthAnimation from '../../assets/lottie/jumping-eth.json';
-import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
-import {
-  ADD_CASH_STATUS_TYPES,
-  WYRE_ORDER_STATUS_TYPES,
-} from '../../helpers/wyreStatusTypes';
 import { useNavigation } from '../../navigation/Navigation';
-import { getErrorOverride } from '../../references/wyre';
 import { CoinIcon } from '../coin-icon';
 import { FloatingEmojisTapper } from '../floating-emojis';
-import { Centered } from '../layout';
+import { Centered, Row } from '../layout';
 import { Br, Emoji, Text } from '../text';
 import NeedHelpButton from './NeedHelpButton';
 import SupportButton from './SupportButton';
+import TransactionStatusTypes from '@rainbow-me/helpers/transactionStatusTypes';
+import {
+  ADD_CASH_STATUS_TYPES,
+  WYRE_ORDER_STATUS_TYPES,
+} from '@rainbow-me/helpers/wyreStatusTypes';
 import { useDimensions, usePrevious, useTimeout } from '@rainbow-me/hooks';
+import { ETH_ADDRESS, getWyreErrorOverride } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
+
+const OrderIdText = styled(Text).attrs({
+  align: 'center',
+  lineHeight: 20,
+  size: 18,
+  weight: 'bold',
+})``;
 
 const StatusMessageText = styled(Text).attrs({
   align: 'center',
@@ -85,8 +91,8 @@ const Content = props => {
   );
 };
 
-const AddCashFailed = ({ error, resetAddCashForm }) => {
-  const { errorMessage, tryAgain } = error;
+const AddCashFailed = ({ error, orderId, resetAddCashForm }) => {
+  const { errorMessage } = error;
   return (
     <Content>
       <Centered height={85}>
@@ -100,15 +106,27 @@ const AddCashFailed = ({ error, resetAddCashForm }) => {
           You were not charged.
         </StatusMessageText>
       )}
-      {tryAgain ? (
+      {orderId && (
+        <OrderIdText>
+          <Br />
+          Order ID: {orderId}
+        </OrderIdText>
+      )}
+      <Row>
         <SupportButton
           label="Try again"
           marginTop={24}
           onPress={resetAddCashForm}
         />
-      ) : (
-        <NeedHelpButton marginTop={24} subject="Purchase Failed" />
-      )}
+
+        <NeedHelpButton
+          marginLeft={10}
+          marginTop={24}
+          subject={
+            orderId ? `Purchase Failed - Order ${orderId}` : 'Purchase Failed'
+          }
+        />
+      </Row>
     </Content>
   );
 };
@@ -130,7 +148,7 @@ const AddCashPending = ({ currency }) => (
           autoPlay
           loop
           source={
-            currency === 'eth' ? jumpingEthAnimation : jumpingDaiAnimation
+            currency === ETH_ADDRESS ? jumpingEthAnimation : jumpingDaiAnimation
           }
           style={{ height: 263 }}
         />
@@ -165,6 +183,7 @@ const AddCashSuccess = ({ currency }) => {
 const AddCashStatus = ({
   error,
   orderCurrency,
+  orderId,
   orderStatus,
   resetAddCashForm,
   transferStatus,
@@ -204,7 +223,7 @@ const AddCashStatus = ({
   const currency = toLower(orderCurrency || 'ETH');
 
   const updatedError = useMemo(() => {
-    return getErrorOverride(error);
+    return getWyreErrorOverride(error);
   }, [error]);
 
   return (
@@ -212,6 +231,7 @@ const AddCashStatus = ({
       {status === ADD_CASH_STATUS_TYPES.failed ? (
         <AddCashFailed
           error={updatedError}
+          orderId={orderId}
           resetAddCashForm={resetAddCashForm}
         />
       ) : (
@@ -231,14 +251,6 @@ const AddCashStatus = ({
       )}
     </Transitioning.View>
   );
-};
-
-AddCashStatus.propTypes = {
-  error: PropTypes.object,
-  orderCurrency: PropTypes.string.isRequired,
-  orderStatus: PropTypes.string,
-  resetAddCashForm: PropTypes.func,
-  transferStatus: PropTypes.string,
 };
 
 export default React.memo(AddCashStatus);
