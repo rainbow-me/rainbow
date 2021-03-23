@@ -88,7 +88,7 @@ export default function ConfirmExchangeButton({
         [0, 5, 15, isDarkMode ? colors.trueBlack : color, 0.4],
       ],
     };
-  }, [isSwapDetailsRoute, colorForAsset, colors, isDarkMode]);
+  }, [colorForAsset, colors, isDarkMode, isSwapDetailsRoute]);
 
   let label = '';
   if (type === ExchangeModalTypes.deposit) {
