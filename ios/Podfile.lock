@@ -463,9 +463,9 @@ PODS:
   - reactnativeslackbottomsheet (0.5.0):
     - PanModal
     - React
-  - RNAnalytics (1.3.1):
-    - Analytics (~> 4.0)
-    - React
+  - RNAnalytics (1.4.3):
+    - Analytics
+    - React-Core
   - RNCAsyncStorage (1.12.1):
     - React-Core
   - RNCClipboard (1.2.3):
@@ -1022,7 +1022,7 @@ SPEC CHECKSUMS:
   ReactNativeDarkMode: 0178ffca3b10f6a7c9f49d6f9810232b328fa949
   ReactNativePayments: 40a266450628c05db440fe219b631210e4358a49
   reactnativeslackbottomsheet: d44b4c59c1e69c045983044d2f361d256d3ddb98
-  RNAnalytics: 589e1b1072d9df2646899627e4582d20c3255127
+  RNAnalytics: 43a09152058061b4096eb6cb806093e7b772b1e5
   RNCAsyncStorage: b03032fdbdb725bea0bd9e5ec5a7272865ae7398
   RNCClipboard: 48eaf27bea3de7c9a265529725434268d47a2ee9
   RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
