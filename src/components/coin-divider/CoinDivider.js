@@ -73,13 +73,12 @@ export default function CoinDivider({
     toggleOpenSmallBalances,
   } = useOpenSmallBalances();
 
-  const toggleSmallBalances = useCallback(() => {
-    if (!isSmallBalancesOpen && !fetchedCharts) {
+  useEffect(() => {
+    if (isSmallBalancesOpen && !fetchedCharts) {
       const assetCodes = map(assets, 'address');
       dispatch(emitChartsRequest(assetCodes));
       setFetchedCharts(true);
     }
-    toggleOpenSmallBalances();
   }, [
     assets,
     dispatch,
@@ -109,7 +108,7 @@ export default function CoinDivider({
             coinDividerHeight={CoinDividerHeight}
             isSmallBalancesOpen={isSmallBalancesOpen}
             isVisible={isCoinListEdited}
-            onPress={toggleSmallBalances}
+            onPress={toggleOpenSmallBalances}
           />
         </View>
         <CoinDividerButtonRow isCoinListEdited={isCoinListEdited}>
