@@ -1,7 +1,8 @@
-import { concat, get, isNil, keys, map, toLower } from 'lodash';
+import { concat, isEmpty, isNil, keys, toLower } from 'lodash';
 import { DATA_API_KEY, DATA_ORIGIN } from 'react-native-dotenv';
 import io from 'socket.io-client';
 import { assetChartsReceived, DEFAULT_CHART_TYPE } from './charts';
+/* eslint-disable-next-line import/no-cycle */
 import {
   addressAssetsReceived,
   assetPricesChanged,
@@ -9,6 +10,7 @@ import {
   transactionsReceived,
   transactionsRemoved,
 } from './data';
+/* eslint-disable-next-line import/no-cycle */
 import {
   fallbackExplorerClearState,
   fallbackExplorerInit,
@@ -248,6 +250,10 @@ export const explorerInit = () => async (dispatch, getState) => {
   newAssetsSocket.on(messages.CONNECT, () => {
     dispatch(emitAssetRequest(keys(pairs)));
     dispatch(emitAssetInfoRequest());
+    if (!disableCharts) {
+      // We need this for Uniswap Pools profit calculation
+      dispatch(emitChartsRequest([ETH_ADDRESS, DPI_ADDRESS], ChartTypes.month));
+    }
   });
 
   if (network === NetworkTypes.mainnet) {
@@ -306,21 +312,14 @@ export const emitChartsRequest = (
 ) => (dispatch, getState) => {
   const { nativeCurrency } = getState().settings;
   const { assetsSocket } = getState().explorer;
-
-  let assetCodes;
-  if (assetAddress) {
-    assetCodes = Array.isArray(assetAddress) ? assetAddress : [assetAddress];
-  } else {
-    const { assets } = getState().data;
-    const assetAddresses = map(assets, 'address');
-
-    const { liquidityTokens } = getState().uniswapLiquidity;
-    const lpTokenAddresses = map(liquidityTokens, token => token.address);
-
-    assetCodes = concat(assetAddresses, lpTokenAddresses, DPI_ADDRESS);
+  const assetCodes = Array.isArray(assetAddress)
+    ? assetAddress
+    : [assetAddress];
+  if (!isEmpty(assetCodes)) {
+    assetsSocket?.emit(
+      ...chartsRetrieval(assetCodes, nativeCurrency, chartType)
+    );
   }
-
-  assetsSocket?.emit(...chartsRetrieval(assetCodes, nativeCurrency, chartType));
 };
 
 const listenOnAssetMessages = socket => dispatch => {
@@ -337,38 +336,34 @@ const listenOnAssetMessages = socket => dispatch => {
   });
 
   socket.on(messages.ASSET_CHARTS.RECEIVED, message => {
-    //logger.log('charts received', get(message, 'payload.charts', {}));
+    // logger.log('charts received', message?.payload?.charts);
     dispatch(assetChartsReceived(message));
   });
 };
 
 const listenOnAddressMessages = socket => dispatch => {
   socket.on(messages.ADDRESS_TRANSACTIONS.RECEIVED, message => {
-    // logger.log('txns received', get(message, 'payload.transactions', []));
+    // logger.log('txns received', message?.payload?.transactions);
     dispatch(transactionsReceived(message));
   });
 
   socket.on(messages.ADDRESS_TRANSACTIONS.APPENDED, message => {
-    logger.log('txns appended', get(message, 'payload.transactions', []));
+    logger.log('txns appended', message?.payload?.transactions);
     dispatch(transactionsReceived(message, true));
   });
 
   socket.on(messages.ADDRESS_TRANSACTIONS.CHANGED, message => {
-    logger.log('txns changed', get(message, 'payload.transactions', []));
+    logger.log('txns changed', message?.payload?.transactions);
     dispatch(transactionsReceived(message, true));
   });
 
   socket.on(messages.ADDRESS_TRANSACTIONS.REMOVED, message => {
-    logger.log('txns removed', get(message, 'payload.transactions', []));
+    logger.log('txns removed', message?.payload?.transactions);
     dispatch(transactionsRemoved(message));
   });
 
   socket.on(messages.ADDRESS_ASSETS.RECEIVED, message => {
     dispatch(addressAssetsReceived(message));
-    if (!disableCharts) {
-      // We need this for Uniswap Pools profit calculation
-      dispatch(emitChartsRequest([ETH_ADDRESS, DPI_ADDRESS], ChartTypes.month));
-    }
     if (isValidAssetsResponseFromZerion(message)) {
       logger.log(
         '😬 Cancelling fallback data provider listener. Zerion is good!'

@@ -29,6 +29,7 @@ import coingeckoIdsFallback from '../references/coingecko/ids.json';
 import { addCashUpdatePurchases } from './addCash';
 /* eslint-disable-next-line import/no-cycle */
 import { uniqueTokensRefreshState } from './uniqueTokens';
+/* eslint-disable-next-line import/no-cycle */
 import { uniswapUpdateLiquidityTokens } from './uniswapLiquidity';
 import {
   getAssetPricesFromUniswap,
