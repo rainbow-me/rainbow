@@ -111,8 +111,7 @@ export default function WalletScreen() {
 
   return (
     <WalletPage testID="wallet-screen">
-      <StatusBar barStyle="dark-content" />
-
+      {ios && <StatusBar barStyle="dark-content" />}
       {/* Line below appears to be needed for having scrollViewTracker persistent while
       reattaching of react subviews */}
       <Animated.View style={{ opacity: isCoinListEditedValue }} />
