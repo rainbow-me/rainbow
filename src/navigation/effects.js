@@ -380,6 +380,11 @@ export const sheetPresetWithSmallGestureResponseDistance = navigation => ({
   gestureResponseDistance: smallGestureResponseDistance,
 });
 
+export const expandedPresetWithSmallGestureResponseDistance = {
+  ...expandedPreset,
+  gestureResponseDistance: smallGestureResponseDistance,
+};
+
 export const sheetPreset = ({ route }) => {
   const shouldUseNonTransparentOverlay =
     route.params?.type === 'token' ||
