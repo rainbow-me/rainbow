@@ -32,6 +32,7 @@ const ScannerContainer = styled(Centered).attrs({
 
 const ScannerHeader = styled(Header).attrs({
   justify: 'space-between',
+  testID: 'scanner-header',
 })`
   position: absolute;
   top: 0;
@@ -68,7 +69,7 @@ export default function QRScannerScreen() {
         <ScannerContainer>
           <Background />
           <CameraDimmer cameraVisible={cameraVisible}>
-            {initializeCamera && (
+            {initializeCamera && false && (
               <QRCodeScanner
                 cameraDim={cameraDim}
                 contentPositionTop={HeaderHeight}

@@ -65,7 +65,7 @@ export default function TopMoversSection() {
   ]);
 
   return (
-    <Column marginBottom={15} marginTop={11}>
+    <Column marginBottom={15} marginTop={11} testID="top-movers-section">
       {(gainerItems?.length > 0 || loserItems?.length > 0) && (
         <Flex marginBottom={12} paddingHorizontal={19}>
           <Text size="larger" weight="heavy">

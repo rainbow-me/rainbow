@@ -60,8 +60,6 @@ describe('Discover Sheet Flow', () => {
     await Helpers.delay(1000);
     await Helpers.swipe('discover-header', 'down');
     await Helpers.delay(1000);
-    await Helpers.tapAlertWithButton('OK');
-    await Helpers.delay(1000);
     await Helpers.checkIfVisible('scanner-header');
     await Helpers.checkIfNotVisible('pools-section');
   });
@@ -69,8 +67,10 @@ describe('Discover Sheet Flow', () => {
   it('Should open Discover Search on pressing search fab', async () => {
     await Helpers.delay(1000);
     await Helpers.tap('search-fab');
+    await Helpers.swipe('discover-header', 'up');
+
     await Helpers.delay(2000);
-    await Helpers.checkIfVisible('done-button-text');
+    await Helpers.checkIfVisible('done-button');
   });
   /*
   it('Should navigate to Discover screen after Dsicover Button', async () => {
@@ -129,4 +129,8 @@ describe('Discover Sheet Flow', () => {
     await Helpers.delay(1000);
   });
   */
+  afterAll(async () => {
+    // Reset the app state
+    await device.clearKeychain();
+  });
 });
