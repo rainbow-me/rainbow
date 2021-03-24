@@ -88,7 +88,7 @@ const TopRow = ({ balance, pending, status, title }) => (
 
 export default function TransactionCoinRow({ item, ...props }) {
   const { contact } = item;
-  const { accountAddress } = useAccountSettings();
+  const { accountAddress, network } = useAccountSettings();
   const { navigate } = useNavigation();
 
   const onPressTransaction = useCallback(async () => {
@@ -181,7 +181,7 @@ export default function TransactionCoinRow({ item, ...props }) {
               });
               break;
             case TransactionActions.viewOnEtherscan: {
-              ethereumUtils.openTransactionEtherscanURL(hash);
+              ethereumUtils.openTransactionInBlockExplorer(hash, network);
               break;
             }
             default:
@@ -189,7 +189,7 @@ export default function TransactionCoinRow({ item, ...props }) {
         }
       );
     }
-  }, [accountAddress, contact, item, navigate]);
+  }, [accountAddress, contact, item, navigate, network]);
 
   return (
     <ButtonPressAnimation onPress={onPressTransaction} scaleTo={0.96}>

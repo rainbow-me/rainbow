@@ -23,6 +23,7 @@ import {
 } from '@rainbow-me/helpers/validators';
 import {
   useAccountProfile,
+  useAccountSettings,
   useOnAvatarPress,
   useSafeImageUri,
   useWallets,
@@ -66,6 +67,7 @@ export default function TransactionList({
   requests,
   transactions,
 }) {
+  const { network } = useAccountSettings();
   const { isDamaged } = useWallets();
   const [tapTarget, setTapTarget] = useState([0, 0, 0, 0]);
   const onNewEmoji = useRef();
@@ -219,7 +221,7 @@ export default function TransactionList({
                 });
                 break;
               case TransactionActions.viewOnEtherscan: {
-                ethereumUtils.openTransactionEtherscanURL(hash);
+                ethereumUtils.openTransactionInBlockExplorer(hash, network);
                 break;
               }
               default:
@@ -228,7 +230,7 @@ export default function TransactionList({
         );
       }
     },
-    [accountAddress, contacts, navigate, transactions]
+    [accountAddress, contacts, navigate, network, transactions]
   );
 
   const onCopyAddressPress = useCallback(

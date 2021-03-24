@@ -29,6 +29,7 @@ import {
 import { checkIsValidAddressOrDomain } from '../helpers/validators';
 import { sendTransaction } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
+import NetworkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   useAccountAssets,
   useAccountSettings,
@@ -324,12 +325,17 @@ export default function SendSheet(props) {
       } catch (e) {}
     }
 
+    const gasPriceToUse =
+      network === NetworkTypes.kovanovm
+        ? 0
+        : get(selectedGasPrice, 'value.amount');
+
     const txDetails = {
       amount: amountDetails.assetAmount,
       asset: selected,
       from: accountAddress,
       gasLimit: updatedGasLimit || gasLimit,
-      gasPrice: get(selectedGasPrice, 'value.amount'),
+      gasPrice: gasPriceToUse,
       nonce: null,
       to: recipient,
     };
@@ -364,6 +370,7 @@ export default function SendSheet(props) {
     isAuthorizing,
     isSufficientGas,
     isValidAddress,
+    network,
     recipient,
     selected,
     selectedGasPrice,

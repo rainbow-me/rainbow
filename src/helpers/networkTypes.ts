@@ -2,6 +2,7 @@ export enum Network {
   goerli = 'goerli',
   kovan = 'kovan',
   mainnet = 'mainnet',
+  kovanovm = 'kovanovm',
   rinkeby = 'rinkeby',
   ropsten = 'ropsten',
 }
@@ -11,6 +12,7 @@ export enum Network {
 export default {
   goerli: 'goerli' as Network,
   kovan: 'kovan' as Network,
+  kovanovm: 'kovanovm' as Network,
   mainnet: 'mainnet' as Network,
   rinkeby: 'rinkeby' as Network,
   ropsten: 'ropsten' as Network,

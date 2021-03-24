@@ -150,5 +150,39 @@
         },
         "quantity": 0
       }
+    ],
+    "kovanovm": [
+      {
+        "asset": {
+          "asset_code": "0x4200000000000000000000000000000000000006",
+          "coingecko_id": "ethereum",
+          "decimals": 18,
+          "icon_url": "https://s3.amazonaws.com/icons.assets/ETH.png",
+          "name": "Ether",
+          "price": {
+            "changed_at": 1582568575,
+            "relative_change_24h": -4.586615622469276,
+            "value": 259.2
+          },
+          "symbol": "ETH"
+        },
+        "quantity": 0
+      },
+      {
+        "asset": {
+          "asset_code": "0x782e1ec5F7381269b2e5DC4eD58648C60161539b",
+          "coingecko_id": "dai",
+          "decimals": 18,
+          "icon_url": "https://s3.amazonaws.com/icons.assets/DAI_mcd.png",
+          "name": "TestnetDai",
+          "price": {
+            "changed_at": 1582562452,
+            "relative_change_24h": 0.8470466197462612,
+            "value": 1
+          },
+          "symbol": "DAI"
+        },
+        "quantity": 0
+      }
     ]
 }

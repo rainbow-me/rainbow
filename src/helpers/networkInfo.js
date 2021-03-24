@@ -51,6 +51,16 @@ const networkInfo = {
     name: 'Goerli',
     value: networkTypes.goerli,
   },
+  [`${networkTypes.kovanovm}`]: {
+    balance_checker_contract_address:
+      '0x8583d862c067624178dca3e2ee172878f1d1eaa8',
+    color: '#ff0000',
+    disabled: false,
+    exchange_enabled: false,
+    faucet_url: `https://faucet.kovan.network/`,
+    name: 'Optimism (Kovan)',
+    value: networkTypes.kovanovm,
+  },
 };
 
 export default networkInfo;

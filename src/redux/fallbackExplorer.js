@@ -4,8 +4,9 @@ import { get, toLower, uniqBy } from 'lodash';
 import { web3Provider } from '../handlers/web3';
 import AssetTypes from '../helpers/assetTypes';
 import networkInfo from '../helpers/networkInfo';
-import networkTypes from '../helpers/networkTypes';
+import NetworkTypes from '../helpers/networkTypes';
 import { delay } from '../helpers/utilities';
+import balanceCheckerContractAbiOVM from '../references/balances-checker-abi-ovm.json';
 import balanceCheckerContractAbi from '../references/balances-checker-abi.json';
 import coingeckoIdsFallback from '../references/coingecko/ids.json';
 import migratedTokens from '../references/migratedTokens.json';
@@ -208,14 +209,18 @@ const getTokenTxDataFromEtherscan = async (
 };
 
 const fetchAssetBalances = async (tokens, address, network) => {
+  const abi =
+    network === NetworkTypes.kovanovm
+      ? balanceCheckerContractAbiOVM
+      : balanceCheckerContractAbi;
+
   const balanceCheckerContract = new Contract(
     get(networkInfo[network], 'balance_checker_contract_address'),
-    balanceCheckerContractAbi,
+    abi,
     web3Provider
   );
   try {
     const values = await balanceCheckerContract.balances([address], tokens);
-
     const balances = {};
     [address].forEach((addr, addrIdx) => {
       balances[addr] = {};
@@ -243,7 +248,7 @@ export const fallbackExplorerInit = () => async (dispatch, getState) => {
   // 1 - Coingecko ids
   // 2 - All tokens list
   // 3 - Etherscan token transfer transactions
-  if (networkTypes.mainnet === network) {
+  if (NetworkTypes.mainnet === network) {
     const newMainnetAssets = await findAssetsToWatch(
       accountAddress,
       latestTxBlockNumber,
@@ -263,7 +268,7 @@ export const fallbackExplorerInit = () => async (dispatch, getState) => {
     const { network } = getState().settings;
     const { mainnetAssets } = getState().fallbackExplorer;
     const assets =
-      network === networkTypes.mainnet ? mainnetAssets : testnetAssets[network];
+      network === NetworkTypes.mainnet ? mainnetAssets : testnetAssets[network];
     if (!assets || !assets.length) {
       const fallbackExplorerBalancesHandle = setTimeout(
         fetchAssetsBalancesAndPrices,
@@ -344,7 +349,7 @@ export const fallbackExplorerInit = () => async (dispatch, getState) => {
       UPDATE_BALANCE_AND_PRICE_FREQUENCY
     );
     let fallbackExplorerAssetsHandle = null;
-    if (networkTypes.mainnet === network) {
+    if (NetworkTypes.mainnet === network) {
       fallbackExplorerAssetsHandle = setTimeout(
         () => dispatch(findNewAssetsToWatch(accountAddress)),
         DISCOVER_NEW_ASSETS_FREQUENCY

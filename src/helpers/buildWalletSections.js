@@ -84,6 +84,8 @@ const filterWalletSections = sections =>
 
 const addEth = section => {
   const assets = store.getState().data.genericAssets;
+  const { network } = store.getState().settings;
+  if (network === networkTypes.kovanovm) return section;
 
   if (assets.eth) {
     const { relative_change_24h, value } = assets.eth.price;
@@ -259,13 +261,15 @@ const withBalanceSection = (
   currentAction,
   uniswapTotal
 ) => {
+  const addEthPlaceholder = network !== networkTypes.kovanovm;
+
   const { assets, totalBalancesValue } = buildCoinsList(
     allAssets,
     nativeCurrency,
     isCoinListEdited,
     pinnedCoins,
     hiddenCoins,
-    true
+    addEthPlaceholder
   );
   let balanceSectionData = [...assets];
 

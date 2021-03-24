@@ -19,6 +19,7 @@ import {
 import { Linking, NativeModules } from 'react-native';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import URL from 'url-parse';
+import { OPTIMISIM_KOVAN_RPC_ENDPOINT } from '@rainbow-me/handlers/web3';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   convertAmountAndPriceToNativeDisplay,
@@ -295,10 +296,17 @@ function openTokenEtherscanURL(address) {
   Linking.openURL(`https://${etherscanHost}/token/${address}`);
 }
 
-function openTransactionEtherscanURL(hash) {
+function openTransactionInBlockExplorer(hash, network) {
+  const normalizedHash = hash.replace(/-.*/g, '');
+  if (network && network === networkTypes.kovanovm) {
+    Linking.openURL(
+      `https://expedition.dev/block/${normalizedHash}?rpcUrl=${encodeURIComponent(
+        OPTIMISIM_KOVAN_RPC_ENDPOINT
+      )}`
+    );
+  }
   if (!isString(hash)) return;
   const etherscanHost = getEtherscanHostForNetwork();
-  const normalizedHash = hash.replace(/-.*/g, '');
   Linking.openURL(`https://${etherscanHost}/tx/${normalizedHash}`);
 }
 
@@ -318,7 +326,7 @@ export default {
   hasPreviousTransactions,
   isEthAddress,
   openTokenEtherscanURL,
-  openTransactionEtherscanURL,
+  openTransactionInBlockExplorer,
   padLeft,
   removeHexPrefix,
 };

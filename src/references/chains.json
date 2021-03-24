@@ -38,5 +38,13 @@
     "network": "goerli",
     "chain_id": 5,
     "network_id": 5
+  },
+  {
+    "name": "Optimism (Kovan)",
+    "short_name": "okov",
+    "chain": "ETH",
+    "network": "kovanovm",
+    "chain_id": 10,
+    "network_id": 10
   }
 ]
