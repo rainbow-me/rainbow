@@ -9,6 +9,7 @@ import CoinDividerEditButton from './CoinDividerEditButton';
 import CoinDividerOpenButton from './CoinDividerOpenButton';
 import EditOptions from '@rainbow-me/helpers/editOptionTypes';
 import {
+  useAccountSettings,
   useCoinListEdited,
   useCoinListEditOptions,
   useDimensions,
@@ -46,12 +47,8 @@ const EditButtonWrapper = styled(Row).attrs({
   right: 0;
 `;
 
-export default function CoinDivider({
-  balancesSum,
-  isSticky,
-  nativeCurrency,
-  onEndEdit,
-}) {
+export default function CoinDivider({ balancesSum, isSticky, onEndEdit }) {
+  const { nativeCurrency } = useAccountSettings();
   const dispatch = useDispatch();
   const assets = useSelector(({ data: { assets } }) => assets);
 

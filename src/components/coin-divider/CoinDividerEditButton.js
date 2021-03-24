@@ -57,7 +57,7 @@ const CoinDividerEditButton = ({
       >
         <ButtonContent isActive={isActive} style={style}>
           <Text
-            align="center"
+            align={ios ? 'center' : 'left'}
             color={
               isActive
                 ? colors.whiteLabel
@@ -65,6 +65,7 @@ const CoinDividerEditButton = ({
             }
             letterSpacing="roundedTight"
             opacity={textOpacityAlwaysOn || isActive ? 1 : 0.3333333333}
+            {...(android && { style: { width: isActive ? 40 : 30 } })}
             size="lmedium"
             weight="bold"
           >

@@ -72,15 +72,9 @@ export const ViewTypes = {
   COIN_DIVIDER: {
     calculateHeight: () => CoinDividerHeight,
     index: 2,
-    renderComponent: ({ data, isCoinListEdited, nativeCurrency }) => {
+    renderComponent: ({ data }) => {
       const { item = {} } = data;
-      return (
-        <CoinDivider
-          balancesSum={item.value}
-          isCoinListEdited={isCoinListEdited}
-          nativeCurrency={nativeCurrency}
-        />
-      );
+      return <CoinDivider balancesSum={item.value} />;
     },
     visibleDuringCoinEdit: true,
   },
