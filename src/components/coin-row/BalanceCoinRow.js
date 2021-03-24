@@ -182,7 +182,7 @@ const BalanceCoinRow = ({
       <Animated.View
         style={{
           marginLeft: Animated.multiply(
-            -editTranslateOffset,
+            -editTranslateOffset * 1.5,
             Animated.sub(1, isCoinListEditedValue)
           ),
           position: 'absolute',
