@@ -452,7 +452,11 @@ export default function ExchangeModal({
             <DepositInfo
               amount={(inputAmount > 0 && outputAmount) || null}
               asset={outputCurrency}
+              isHighPriceImpact={isHighPriceImpact}
               onPress={navigateToSwapDetailsModal}
+              priceImpactColor={priceImpactColor}
+              priceImpactNativeAmount={priceImpactNativeAmount}
+              priceImpactPercentDisplay={priceImpactPercentDisplay}
               testID="deposit-info-button"
             />
           )}

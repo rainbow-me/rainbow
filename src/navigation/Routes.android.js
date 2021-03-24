@@ -38,6 +38,7 @@ import {
   emojiPreset,
   exchangePreset,
   expandedPreset,
+  expandedPresetWithSmallGestureResponseDistance,
   overlayExpandedPreset,
   settingsPreset,
   sheetPreset,
@@ -256,7 +257,7 @@ function MainOuterNavigator() {
       <OuterStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.TOKEN_INDEX_SCREEN}
-        options={sheetPresetWithSmallGestureResponseDistance}
+        options={expandedPresetWithSmallGestureResponseDistance}
       />
       <OuterStack.Screen
         component={SettingsModal}

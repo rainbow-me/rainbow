@@ -19,6 +19,7 @@ import { initialChartExpandedStateSheetHeight } from '../expanded-state/ChartExp
 import { Centered, Column, Flex, Row } from '../layout';
 import { Emoji, Text } from '../text';
 import EdgeFade from './EdgeFade';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   useAccountAssets,
   useAccountSettings,
@@ -158,9 +159,11 @@ export default function ListSection() {
         lists,
         list => list.id === selectedList
       );
-      setTimeout(() => {
-        handleSwitchList(lists[currentListIndex].id, currentListIndex);
-      }, 300);
+      if (listData?.length > 0) {
+        setTimeout(() => {
+          handleSwitchList(lists[currentListIndex].id, currentListIndex);
+        }, 300);
+      }
       initialized.current = true;
     }
     return () => {
@@ -175,9 +178,13 @@ export default function ListSection() {
     lists,
     selectedList,
     handleSwitchList,
+    listData?.length,
   ]);
 
   const listItems = useMemo(() => {
+    if (network !== networkTypes.mainnet) {
+      return [];
+    }
     let items = [];
     if (selectedList === 'favorites') {
       items = favorites.map(

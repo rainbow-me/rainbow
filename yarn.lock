@@ -2479,10 +2479,10 @@
   resolved "https://registry.yarnpkg.com/@scarf/scarf/-/scarf-1.1.0.tgz#b84b4a91cd938a688d36245b7a7db6fbc476a499"
   integrity sha512-b2iE8kjjzzUo2WZ0xuE2N77kfnTds7ClrDxcz3Atz7h2XrNVoAPUoT75i7CY0st5x++70V91Y+c6RpBX9MX7Jg==
 
-"@segment/analytics-react-native@^1.3.1":
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/@segment/analytics-react-native/-/analytics-react-native-1.3.1.tgz#155945e97898a1ddb507067e68ac9419424d963b"
-  integrity sha512-8tEmQPA1WfqHJBCaCtXyTxpLe3vtBP7BSqrx9PN65q4VE/ZS+kvetSkeexNMDWYqEomzSEZlnqutH56Uu0w2OQ==
+"@segment/analytics-react-native@^1.4.1":
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/@segment/analytics-react-native/-/analytics-react-native-1.4.3.tgz#82e9f3cb52c0ad4c61e1035dc20201cf0ccb5f81"
+  integrity sha512-pVFId6wonpU72COAhIwnUsrWVX/IDHqE6d4mSWRts0z+xoqFOHGh1TqXFGjnCEi3R0i0DtsN1dnWok8IhKew+A==
 
 "@sentry/browser@5.27.4":
   version "5.27.4"
@@ -11861,10 +11861,10 @@ rc@^1.2.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-react-coin-icon@^0.1.38:
-  version "0.1.38"
-  resolved "https://registry.yarnpkg.com/react-coin-icon/-/react-coin-icon-0.1.38.tgz#4e6bc92faa7793ca923fb4acb8b6f3f3d984aa79"
-  integrity sha512-Y65h4KNCV72a8d2JrgTmqUhx+qYO9g57ApD5TR77ii5Ca3q+CEM5j3txpfBRPKI4DwLRKkeGrgUm65RmCr9K6A==
+react-coin-icon@0.1.37:
+  version "0.1.37"
+  resolved "https://registry.yarnpkg.com/react-coin-icon/-/react-coin-icon-0.1.37.tgz#79af2930f213ef0ecf1e5f7e87876b26237950a8"
+  integrity sha512-0vcoOg6ertpbxEPAtVeGp6s+nGOf8taqoS6NhU4H4+w3mJ1cINi4wngrqqgeg/w3lGDmmNaXoiPqjHI6Yhrg/Q==
   dependencies:
     "@svgr/cli" "^4.3.0"
     react-primitives "^0.8.1"

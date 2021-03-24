@@ -127,6 +127,7 @@ export type RecyclerAssetListReduxProps = {
 export type RecyclerAssetListProps = {
   readonly isCoinListEdited: boolean;
   readonly fetchData: () => Promise<unknown>;
+  readonly setIsBlockingUpdate: (isBlockingUpdate: boolean) => void;
   // TODO: This needs to be migrated into a global type.
   readonly colors: {
     readonly alpha: (color: string, alpha: number) => string;
@@ -135,6 +136,7 @@ export type RecyclerAssetListProps = {
   readonly nativeCurrency: string;
   readonly sections: readonly RecyclerAssetListSection[];
   readonly paddingBottom?: number;
+  readonly isBlockingUpdate: boolean;
   readonly hideHeader: boolean;
   readonly renderAheadOffset?: number;
   readonly openInvestmentCards: boolean;
@@ -158,6 +160,7 @@ function RecyclerAssetList({
   paddingBottom = 0,
   hideHeader,
   renderAheadOffset = deviceUtils.dimensions.height,
+  setIsBlockingUpdate,
   ...extras
 }: RecyclerAssetListProps): JSX.Element {
   const { ref, handleRef } = useRecyclerListViewRef();
@@ -265,13 +268,15 @@ function RecyclerAssetList({
     }
     try {
       setIsRefreshing(true);
+      setIsBlockingUpdate(true);
       await fetchData();
     } catch (e) {
       logger.error(e);
     } finally {
+      setTimeout(() => setIsBlockingUpdate(false), 200);
       setIsRefreshing(false);
     }
-  }, [isRefreshing, setIsRefreshing, fetchData]);
+  }, [isRefreshing, fetchData, setIsBlockingUpdate]);
   const onLayout = useCallback(
     ({ nativeEvent }: LayoutChangeEvent) => {
       // set globalDeviceDimensions
@@ -765,4 +770,8 @@ export default connect(
     openSavings,
     openSmallBalances,
   })
-)(withThemeContext(RecyclerAssetList));
+)(
+  withThemeContext(
+    React.memo(RecyclerAssetList, (_, curr) => curr.isBlockingUpdate)
+  )
+);

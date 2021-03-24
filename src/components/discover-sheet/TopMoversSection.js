@@ -1,20 +1,38 @@
 import { toLower } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
-import { Column, Flex } from '../layout';
+import { Centered, Column, Flex } from '../layout';
 import { MarqueeList } from '../list';
 import { Text } from '../text';
 import EdgeFade from './EdgeFade';
-import { useAccountAssets, useTopMovers } from '@rainbow-me/hooks';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
+import {
+  useAccountAssets,
+  useAccountSettings,
+  useTopMovers,
+} from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils } from '@rainbow-me/utils';
+
+const ErrorMessage = ({ colors, children }) => (
+  <Centered marginVertical={50}>
+    <Text
+      color={colors.alpha(colors.blueGreyDark, 0.3)}
+      size="large"
+      weight="semibold"
+    >
+      {children}
+    </Text>
+  </Centered>
+);
 
 export default function TopMoversSection() {
   const { gainers = [], losers = [] } = useTopMovers() || {};
   const { navigate } = useNavigation();
   const { allAssets } = useAccountAssets();
-
+  const { network } = useAccountSettings();
+  const { colors } = useTheme();
   const handlePress = useCallback(
     asset => {
       const assetFormatted =
@@ -73,14 +91,20 @@ export default function TopMoversSection() {
         </Flex>
       )}
 
-      <Column>
-        {gainerItems?.length !== 0 && (
-          <MarqueeList items={gainerItems} speed={40} />
-        )}
-        {loserItems?.length !== 0 && (
-          <MarqueeList items={loserItems} speed={-40} />
-        )}
-      </Column>
+      {network !== networkTypes.mainnet ? (
+        <ErrorMessage colors={colors}>
+          Top movers are disabled on Testnets
+        </ErrorMessage>
+      ) : (
+        <Column>
+          {gainerItems?.length !== 0 && (
+            <MarqueeList items={gainerItems} speed={40} />
+          )}
+          {loserItems?.length !== 0 && (
+            <MarqueeList items={loserItems} speed={-40} />
+          )}
+        </Column>
+      )}
 
       <EdgeFade />
     </Column>
