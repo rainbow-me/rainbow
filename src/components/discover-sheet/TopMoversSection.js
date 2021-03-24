@@ -1,5 +1,6 @@
 import { toLower } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
+import { IS_TESTING } from 'react-native-dotenv';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
 import { Column, Flex } from '../layout';
 import { MarqueeList } from '../list';
@@ -75,10 +76,16 @@ export default function TopMoversSection() {
 
       <Column>
         {gainerItems?.length !== 0 && (
-          <MarqueeList items={gainerItems} speed={40} />
+          <MarqueeList
+            items={gainerItems}
+            speed={IS_TESTING !== 'true' ? 40 : 0}
+          />
         )}
         {loserItems?.length !== 0 && (
-          <MarqueeList items={loserItems} speed={-40} />
+          <MarqueeList
+            items={loserItems}
+            speed={IS_TESTING !== 'true' ? -40 : 0}
+          />
         )}
       </Column>
 

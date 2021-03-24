@@ -265,7 +265,7 @@ export default function ListSection() {
   );
 
   return (
-    <Column>
+    <Column testID="lists-section">
       <Flex paddingHorizontal={19}>
         <Text size="larger" weight="heavy">
           Lists

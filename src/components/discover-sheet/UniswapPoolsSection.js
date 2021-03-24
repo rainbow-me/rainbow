@@ -173,7 +173,7 @@ export default function UniswapPools() {
 
   return (
     <Column marginTop={32}>
-      <Row marginBottom={12} paddingHorizontal={19}>
+      <Row marginBottom={12} paddingHorizontal={19} testID="pools-section">
         <UniswapLogo
           borderRadius={8}
           height={22}
