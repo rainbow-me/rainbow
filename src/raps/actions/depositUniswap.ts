@@ -2,12 +2,14 @@ import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
 import { get } from 'lodash';
 import { Rap, RapActionParameters, SwapActionParameters } from '../common';
-import { ExchangeModalType, TransactionParams } from '@rainbow-me/entities';
+import {
+  ExchangeModalType,
+  ProtocolType,
+  TransactionStatus,
+  TransactionType,
+} from '@rainbow-me/entities';
 import { depositToPool } from '@rainbow-me/handlers/uniswapLiquidity';
 import { toHex } from '@rainbow-me/handlers/web3';
-import ProtocolTypes from '@rainbow-me/helpers/protocolTypes';
-import TransactionStatusTypes from '@rainbow-me/helpers/transactionStatusTypes';
-import TransactionTypes from '@rainbow-me/helpers/transactionTypes';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
 import store from '@rainbow-me/redux/store';
 import {
@@ -18,6 +20,12 @@ import { ethUnits } from '@rainbow-me/references';
 import { convertAmountToRawAmount } from '@rainbow-me/utilities';
 import { gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
+
+interface TransactionParams {
+  gasLimit?: number;
+  gasPrice?: string;
+  nonce?: string;
+}
 
 const actionName = '[deposit uniswap]';
 
@@ -121,10 +129,10 @@ const depositUniswap = async (
     gasPrice: transactionParams.gasPrice,
     hash: deposit?.hash,
     nonce: deposit?.nonce,
-    protocol: ProtocolTypes.uniswap.name, // TODO JIN - should uniswap deposits be separate?
-    status: TransactionStatusTypes.depositing, // TODO JIN - different deposit for Uniswap
+    protocol: ProtocolType.uniswap,
+    status: TransactionStatus.depositing,
     to: deposit?.to,
-    type: TransactionTypes.deposit, // TODO JIN - different type
+    type: TransactionType.deposit,
   };
   logger.log(`${actionName} adding new txn`, newTransaction);
   await dispatch(dataAddNewTransaction(newTransaction, accountAddress));
