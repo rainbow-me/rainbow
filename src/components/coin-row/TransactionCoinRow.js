@@ -1,4 +1,4 @@
-import { compact, get, toLower } from 'lodash';
+import { compact, toLower } from 'lodash';
 import React, { useCallback } from 'react';
 import { css } from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
@@ -56,7 +56,7 @@ const BottomRow = ({ description, native, status, type }) => {
   if (isIncomingSwap) balanceTextColor = colors.swapPurple;
   if (isOutgoingSwap) balanceTextColor = colors.dark;
 
-  const nativeDisplay = get(native, 'display');
+  const nativeDisplay = native?.display;
   const balanceText = nativeDisplay
     ? compact([isFailed || isSent ? '-' : null, nativeDisplay]).join(' ')
     : '';
@@ -80,7 +80,7 @@ const TopRow = ({ balance, pending, status, title }) => (
   <RowWithMargins align="center" justify="space-between" margin={19}>
     <TransactionStatusBadge pending={pending} status={status} title={title} />
     <Row align="center" flex={1} justify="end">
-      <BottomRowText align="right">{get(balance, 'display', '')}</BottomRowText>
+      <BottomRowText align="right">{balance?.display ?? ''}</BottomRowText>
     </Row>
   </RowWithMargins>
 );
