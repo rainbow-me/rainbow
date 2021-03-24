@@ -308,8 +308,6 @@ function RecyclerAssetList({
       // Checks if value is *nullish*.
       if (data == null || index == null) {
         return null;
-      } else if (isCoinListEdited && !(type.index < 4)) {
-        return null;
       }
 
       if (type.index === ViewTypes.HEADER.index) {
