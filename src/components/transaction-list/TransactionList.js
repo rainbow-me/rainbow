@@ -10,9 +10,9 @@ import { FloatingEmojis } from '../floating-emojis';
 import useExperimentalFlag, {
   AVATAR_PICKER,
 } from '@rainbow-me/config/experimentalHooks';
+import { TransactionStatusTypes } from '@rainbow-me/entities';
 import showWalletErrorAlert from '@rainbow-me/helpers/support';
 import TransactionActions from '@rainbow-me/helpers/transactionActions';
-import TransactionStatusTypes from '@rainbow-me/helpers/transactionStatusTypes';
 import {
   getHumanReadableDate,
   hasAddableContact,

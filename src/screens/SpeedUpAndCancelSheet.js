@@ -18,9 +18,8 @@ import {
   SlackSheet,
 } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
+import { TransactionStatusTypes, TransactionTypes } from '@rainbow-me/entities';
 import { getTransaction, toHex } from '@rainbow-me/handlers/web3';
-import TransactionStatusTypes from '@rainbow-me/helpers/transactionStatusTypes';
-import TransactionTypes from '@rainbow-me/helpers/transactionTypes';
 import {
   useAccountSettings,
   useBooleanState,

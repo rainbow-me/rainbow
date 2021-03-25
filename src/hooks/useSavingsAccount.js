@@ -14,11 +14,11 @@ import { useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
 import { compoundClient } from '@rainbow-me/apollo/client';
 import { COMPOUND_ACCOUNT_AND_MARKET_QUERY } from '@rainbow-me/apollo/queries';
+import { AssetTypes } from '@rainbow-me/entities';
 import {
   getSavings,
   saveSavings,
 } from '@rainbow-me/handlers/localstorage/accountLocal';
-import AssetTypes from '@rainbow-me/helpers/assetTypes';
 import { multiply } from '@rainbow-me/helpers/utilities';
 import { parseAssetName, parseAssetSymbol } from '@rainbow-me/parsers';
 import { CDAI_CONTRACT, DAI_ADDRESS } from '@rainbow-me/references';

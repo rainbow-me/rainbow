@@ -1,23 +1,22 @@
 import { convertHexToUtf8 } from '@walletconnect/utils';
 import BigNumber from 'bignumber.js';
 import { get, isNil } from 'lodash';
-import { isHexString } from '../handlers/web3';
+import { isHexString } from '@rainbow-me/handlers/web3';
+import { ethUnits, smartContractMethods } from '@rainbow-me/references';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertHexToString,
   convertRawAmountToDecimalFormat,
   fromWei,
-} from '../helpers/utilities';
-import smartContractMethods from '../references/smartcontract-methods.json';
-import { ethereumUtils } from '../utils';
+} from '@rainbow-me/utilities';
+import { ethereumUtils } from '@rainbow-me/utils';
 import {
   PERSONAL_SIGN,
   SEND_TRANSACTION,
   SIGN,
   SIGN_TRANSACTION,
   SIGN_TYPED_DATA,
-} from '../utils/signingMethods';
-import { ethUnits } from '@rainbow-me/references';
+} from '@rainbow-me/utils/signingMethods';
 
 export const getRequestDisplayDetails = (payload, assets, nativeCurrency) => {
   let timestampInMs = Date.now();
