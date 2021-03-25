@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { captureEvent, captureException } from '@sentry/react-native';
-import { get, isEmpty, isString, toLower } from 'lodash';
+import { isEmpty, isString, toLower } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { InteractionManager, Keyboard, StatusBar } from 'react-native';
 import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
@@ -18,18 +18,14 @@ import {
   SendHeader,
   SendTransactionSpeed,
 } from '../components/send';
-import { createSignableTransaction, estimateGasLimit } from '../handlers/web3';
-import AssetTypes from '../helpers/assetTypes';
-import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
+import { AssetTypes } from '@rainbow-me/entities';
 import {
-  convertAmountAndPriceToNativeDisplay,
-  convertAmountFromNativeValue,
-  formatInputDecimals,
-} from '../helpers/utilities';
-import { checkIsValidAddressOrDomain } from '../helpers/validators';
-import { sendTransaction } from '../model/wallet';
-import { useNavigation } from '../navigation/Navigation';
+  createSignableTransaction,
+  estimateGasLimit,
+} from '@rainbow-me/handlers/web3';
+import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import NetworkTypes from '@rainbow-me/helpers/networkTypes';
+import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
 import {
   useAccountAssets,
   useAccountSettings,
@@ -46,9 +42,16 @@ import {
   useTransactionConfirmation,
   useUpdateAssetOnchainBalance,
 } from '@rainbow-me/hooks';
+import { sendTransaction } from '@rainbow-me/model/wallet';
+import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { borders } from '@rainbow-me/styles';
+import {
+  convertAmountAndPriceToNativeDisplay,
+  convertAmountFromNativeValue,
+  formatInputDecimals,
+} from '@rainbow-me/utilities';
 import { deviceUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
@@ -172,8 +175,8 @@ export default function SendSheet(props) {
   useEffect(() => {
     if (
       selected?.address === ETH_ADDRESS &&
-      get(prevSelectedGasPrice, 'txFee.value.amount', 0) !==
-        get(selectedGasPrice, 'txFee.value.amount', 0)
+      (prevSelectedGasPrice?.txFee?.value?.amount ?? 0) !==
+        (selectedGasPrice?.txFee?.value?.amount ?? 0)
     ) {
       updateMaxInputBalance(selected);
     }
@@ -184,7 +187,7 @@ export default function SendSheet(props) {
       const _assetAmount = newAssetAmount.replace(/[^0-9.]/g, '');
       let _nativeAmount = '';
       if (_assetAmount.length) {
-        const priceUnit = get(selected, 'price.value', 0);
+        const priceUnit = selected?.price?.value ?? 0;
         const {
           amount: convertedNativeAmount,
         } = convertAmountAndPriceToNativeDisplay(
@@ -211,7 +214,7 @@ export default function SendSheet(props) {
   const sendUpdateSelected = useCallback(
     newSelected => {
       updateMaxInputBalance(newSelected);
-      if (get(newSelected, 'type') === AssetTypes.nft) {
+      if (newSelected?.type === AssetTypes.nft) {
         setAmountDetails({
           assetAmount: '1',
           isSufficientBalance: true,
@@ -219,7 +222,7 @@ export default function SendSheet(props) {
         });
         setSelected({
           ...newSelected,
-          symbol: get(newSelected, 'asset_contract.name'),
+          symbol: newSelected?.asset_contract?.name,
         });
       } else {
         setSelected(newSelected);
@@ -252,7 +255,7 @@ export default function SendSheet(props) {
       const _nativeAmount = newNativeAmount.replace(/[^0-9.]/g, '');
       let _assetAmount = '';
       if (_nativeAmount.length) {
-        const priceUnit = get(selected, 'price.value', 0);
+        const priceUnit = selected?.price?.value ?? 0;
         const convertedAssetAmount = convertAmountFromNativeValue(
           _nativeAmount,
           priceUnit,
@@ -326,9 +329,7 @@ export default function SendSheet(props) {
     }
 
     const gasPriceToUse =
-      network === NetworkTypes.kovanovm
-        ? 0
-        : get(selectedGasPrice, 'value.amount');
+      network === NetworkTypes.kovanovm ? 0 : selectedGasPrice?.value?.amount;
 
     const txDetails = {
       amount: amountDetails.assetAmount,

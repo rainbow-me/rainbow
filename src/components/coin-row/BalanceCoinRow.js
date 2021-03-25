@@ -180,7 +180,13 @@ const BalanceCoinRow = ({
         </ButtonPressAnimation>
       </Animated.View>
       <Animated.View
-        style={{ opacity: isCoinListEditedValue, position: 'absolute' }}
+        style={{
+          marginLeft: Animated.multiply(
+            -editTranslateOffset * 1.5,
+            Animated.sub(1, isCoinListEditedValue)
+          ),
+          position: 'absolute',
+        }}
       >
         <BalanceCoinRowCoinCheckButton
           onPress={handleEditModePress}

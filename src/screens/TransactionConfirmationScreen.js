@@ -2,7 +2,7 @@ import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import BigNumber from 'bignumber.js';
 import lang from 'i18n-js';
-import { get, isEmpty, isNil, omit } from 'lodash';
+import { isEmpty, isNil, omit } from 'lodash';
 import React, {
   useCallback,
   useEffect,
@@ -321,7 +321,7 @@ export default function TransactionConfirmationScreen() {
 
   const calculateGasLimit = useCallback(async () => {
     calculatingGasLimit.current = true;
-    const txPayload = get(params, '[0]');
+    const txPayload = params?.[0];
     // use the default
     let gas = txPayload.gasLimit || txPayload.gas;
     try {
@@ -379,15 +379,15 @@ export default function TransactionConfirmationScreen() {
       return;
     }
     // Get the TX fee Amount
-    const txFeeAmount = fromWei(get(txFee, 'value.amount', 0));
+    const txFeeAmount = fromWei(txFee?.value?.amount ?? 0);
 
     // Get the ETH balance
     const ethAsset = ethereumUtils.getAsset(allAssets);
-    const balanceAmount = get(ethAsset, 'balance.amount', 0);
+    const balanceAmount = ethAsset?.balance?.amount ?? 0;
 
     // Get the TX value
-    const txPayload = get(params, '[0]');
-    const value = get(txPayload, 'value', 0);
+    const txPayload = params?.[0];
+    const value = txPayload?.value ?? 0;
 
     // Check that there's enough ETH to pay for everything!
     const totalAmount = BigNumber(fromWei(value)).plus(txFeeAmount);
@@ -406,10 +406,10 @@ export default function TransactionConfirmationScreen() {
 
   const handleConfirmTransaction = useCallback(async () => {
     const sendInsteadOfSign = method === SEND_TRANSACTION;
-    const txPayload = get(params, '[0]');
+    const txPayload = params?.[0];
     let { gas, gasLimit: gasLimitFromPayload, gasPrice } = txPayload;
 
-    const rawGasPrice = get(selectedGasPrice, 'value.amount');
+    const rawGasPrice = selectedGasPrice?.value?.amount;
     if (rawGasPrice) {
       gasPrice = toHex(rawGasPrice);
     }
@@ -473,15 +473,15 @@ export default function TransactionConfirmationScreen() {
       }
       if (sendInsteadOfSign) {
         const txDetails = {
-          amount: get(displayDetails, 'request.value'),
-          asset: get(displayDetails, 'request.asset'),
+          amount: displayDetails?.request?.value ?? 0,
+          asset: displayDetails?.request?.asset,
           dappName,
-          from: get(displayDetails, 'request.from'),
+          from: displayDetails?.request?.from,
           gasLimit,
           gasPrice,
           hash: result.hash,
           nonce: result.nonce,
-          to: get(displayDetails, 'request.to'),
+          to: displayDetails?.request?.to,
         };
 
         dispatch(dataAddNewTransaction(txDetails));
@@ -517,9 +517,9 @@ export default function TransactionConfirmationScreen() {
     let message = null;
     let flatFormatSignature = null;
     if (isSignFirstParamType(method)) {
-      message = get(params, '[0]');
+      message = params?.[0];
     } else if (isSignSecondParamType(method)) {
-      message = get(params, '[1]');
+      message = params?.[1];
     }
     switch (method) {
       case SIGN:
@@ -647,9 +647,9 @@ export default function TransactionConfirmationScreen() {
       );
     }
 
-    if (isTransactionDisplayType(method) && get(request, 'asset')) {
+    if (isTransactionDisplayType(method) && request?.asset) {
       const priceOfEther = ethereumUtils.getEthPriceUnit();
-      const amount = get(request, 'value', '0.00');
+      const amount = request?.value ?? '0.00';
       const nativeAmount = multiply(priceOfEther, amount);
       const nativeAmountDisplay = convertAmountToNativeDisplay(
         nativeAmount,
@@ -696,13 +696,13 @@ export default function TransactionConfirmationScreen() {
     }
   }, [isKeyboardVisible, keyboardHeight, offset, sheetOpacity]);
 
-  const amount = get(request, 'value', '0.00');
+  const amount = request?.value ?? '0.00';
 
   const isAndroidApprovalRequest = useMemo(
     () =>
       android &&
       isTransactionDisplayType(method) &&
-      !!get(request, 'asset', false) &&
+      !!request?.asset &&
       amount === 0 &&
       isBalanceEnough,
     [amount, isBalanceEnough, method, request]
@@ -730,7 +730,7 @@ export default function TransactionConfirmationScreen() {
       : deviceHeight - sheetHeight + (isMessageRequest ? 265 : 210)
     : null;
 
-  if (isTransactionDisplayType(method) && !get(request, 'asset', false)) {
+  if (isTransactionDisplayType(method) && !request?.asset) {
     marginTop += 50;
   }
 

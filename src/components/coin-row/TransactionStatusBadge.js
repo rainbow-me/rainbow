@@ -4,7 +4,7 @@ import Spinner from '../Spinner';
 import { Icon } from '../icons';
 import { Row } from '../layout';
 import { Text } from '../text';
-import TransactionStatusTypes from '@rainbow-me/helpers/transactionStatusTypes';
+import { TransactionStatusTypes } from '@rainbow-me/entities';
 import { position } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 

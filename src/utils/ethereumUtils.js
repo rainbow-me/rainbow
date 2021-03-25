@@ -317,6 +317,7 @@ export default {
   deriveAccountFromWalletInput,
   formatGenericAsset,
   getAsset,
+  getAssetPrice,
   getBalanceAmount,
   getChainIdFromNetwork,
   getDataString,

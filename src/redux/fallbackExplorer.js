@@ -1,23 +1,26 @@
 import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
 import { get, toLower, uniqBy } from 'lodash';
-import { web3Provider } from '../handlers/web3';
-import AssetTypes from '../helpers/assetTypes';
-import networkInfo from '../helpers/networkInfo';
-import NetworkTypes from '../helpers/networkTypes';
-import { delay } from '../helpers/utilities';
-import balanceCheckerContractAbiOVM from '../references/balances-checker-abi-ovm.json';
-import balanceCheckerContractAbi from '../references/balances-checker-abi.json';
-import coingeckoIdsFallback from '../references/coingecko/ids.json';
-import migratedTokens from '../references/migratedTokens.json';
-import testnetAssets from '../references/testnet-assets.json';
 /* eslint-disable-next-line import/no-cycle */
 import {
   addressAssetsReceived,
   COINGECKO_IDS_ENDPOINT,
   fetchAssetPrices,
 } from './data';
-import { ETH_ADDRESS, ETH_COINGECKO_ID } from '@rainbow-me/references';
+import { AssetTypes } from '@rainbow-me/entities';
+import { web3Provider } from '@rainbow-me/handlers/web3';
+import networkInfo from '@rainbow-me/helpers/networkInfo';
+import NetworkTypes from '@rainbow-me/helpers/networkTypes';
+import {
+  balanceCheckerContractAbi,
+  balanceCheckerContractAbiOVM,
+  coingeckoIdsFallback,
+  ETH_ADDRESS,
+  ETH_COINGECKO_ID,
+  migratedTokens,
+  testnetAssets,
+} from '@rainbow-me/references';
+import { delay } from '@rainbow-me/utilities';
 import logger from 'logger';
 
 // -- Constants --------------------------------------- //

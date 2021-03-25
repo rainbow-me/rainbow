@@ -9,12 +9,19 @@ const renderInvestmentsListRow = item => (
   <UniswapInvestmentRow assetType="uniswap" item={item} key={item.uniqueId} />
 );
 
-export default function PoolsListWrapper({ data, totalValue = '0' }) {
+export default function PoolsListWrapper({
+  data,
+  totalValue = '0',
+  isCoinListEdited,
+}) {
   const {
     isInvestmentCardsOpen,
     toggleOpenInvestmentCards,
   } = useOpenInvestmentCards();
 
+  if (isCoinListEdited) {
+    return null;
+  }
   return (
     <Fragment>
       <SavingsListHeader

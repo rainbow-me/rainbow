@@ -57,7 +57,7 @@ const CoinDividerEditButton = ({
       >
         <ButtonContent isActive={isActive} style={style}>
           <Text
-            align="center"
+            align={ios ? 'center' : 'left'}
             color={
               isActive
                 ? colors.whiteLabel
