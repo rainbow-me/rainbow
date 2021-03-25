@@ -7,14 +7,18 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { findNodeHandle, NativeModules } from 'react-native';
-// eslint-disable-next-line import/no-unresolved
-import SlackBottomSheet from 'react-native-slack-bottom-sheet';
+import {
+  findNodeHandle,
+  NativeModules,
+  requireNativeComponent,
+} from 'react-native';
 import { SlackSheet } from '../sheet';
 import DiscoverSheetContent from './DiscoverSheetContent';
 import DiscoverSheetContext from './DiscoverSheetContext';
 import DiscoverSheetHeader from './DiscoverSheetHeader';
 import { safeAreaInsetValues } from '@rainbow-me/utils';
+
+const BottomSheet = requireNativeComponent('DiscoverSheet');
 
 const renderHeader = yPosition => <DiscoverSheetHeader yPosition={yPosition} />;
 
@@ -40,20 +44,20 @@ function DiscoverSheet(_, forwardedRef) {
       jumpToLong() {
         const screen = findNodeHandle(ref.current);
         if (screen) {
-          NativeModules.ModalView.jumpTo(true, screen);
+          NativeModules.DiscoverSheet.jumpTo(true, screen);
         }
       },
       jumpToShort() {
         sheet.current.scrollTo({ animated: false, x: 0, y: 0 });
         const screen = findNodeHandle(ref.current);
         if (screen) {
-          NativeModules.ModalView.jumpTo(false, screen);
+          NativeModules.DiscoverSheet.jumpTo(false, screen);
         }
       },
       layoutScrollView() {
         const screen = findNodeHandle(ref.current);
         if (screen) {
-          NativeModules.ModalView.layout(screen);
+          NativeModules.DiscoverSheet.layout(screen);
         }
       },
       onFabSearch,
@@ -72,7 +76,7 @@ function DiscoverSheet(_, forwardedRef) {
   // noinspection JSConstructorReturnsPrimitive
   return (
     <DiscoverSheetContext.Provider value={value}>
-      <SlackBottomSheet
+      <BottomSheet
         allowsDragToDismiss={false}
         allowsTapToDismiss={false}
         backgroundOpacity={0}
@@ -104,7 +108,7 @@ function DiscoverSheet(_, forwardedRef) {
         >
           <DiscoverSheetContent />
         </SlackSheet>
-      </SlackBottomSheet>
+      </BottomSheet>
     </DiscoverSheetContext.Provider>
   );
 }
