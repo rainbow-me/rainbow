@@ -328,8 +328,6 @@ function RecyclerAssetList({
       } else if (type.index === ViewTypes.COIN_DIVIDER.index) {
         return ViewTypes.COIN_DIVIDER.renderComponent({
           data,
-          isCoinListEdited,
-          nativeCurrency,
         });
       } else if (type.index === ViewTypes.COIN_SMALL_BALANCES.index) {
         return ViewTypes.COIN_SMALL_BALANCES.renderComponent({
@@ -741,12 +739,7 @@ function RecyclerAssetList({
           },
         ]}
       >
-        <CoinDivider
-          balancesSum={0}
-          isSticky
-          nativeCurrency={nativeCurrency}
-          onEndEdit={() => null}
-        />
+        <CoinDivider balancesSum={0} isSticky onEndEdit={() => null} />
       </View>
     </StyledContainer>
   );
