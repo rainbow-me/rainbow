@@ -12,6 +12,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.5.0](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.0)
+
+### Added
+* Discover Page
+
+### Changed
+* RecyclerView Refactor 
+* Performance Improvements
+
 ## [1.2.58](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.58)
 
 ### Changed
