@@ -300,7 +300,7 @@ function openTransactionInBlockExplorer(hash, network) {
   const normalizedHash = hash.replace(/-.*/g, '');
   if (network && network === networkTypes.kovanovm) {
     Linking.openURL(
-      `https://expedition.dev/block/${normalizedHash}?rpcUrl=${encodeURIComponent(
+      `https://expedition.dev/tx/${normalizedHash}?rpcUrl=${encodeURIComponent(
         OPTIMISIM_KOVAN_RPC_ENDPOINT
       )}`
     );
