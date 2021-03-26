@@ -42,6 +42,8 @@ build/
 .gradle
 local.properties
 *.iml
+android/app/google-services.json
+
 
 # node.js
 #

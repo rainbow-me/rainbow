@@ -255,6 +255,7 @@ export default function UniswapPools() {
           keyExtractor={item => item.address}
           removeClippedSubviews
           renderItem={renderUniswapPoolListRow}
+          scrollsToTop={false}
           windowSize={11}
         />
       ) : (
