@@ -57,6 +57,7 @@ export default function ChartExpandedStateHeader({
   priceRef,
   chartTimeSharedValue,
   showChart,
+  testID,
   overrideValue = false,
 }) {
   const { colors } = useTheme();
@@ -95,7 +96,9 @@ export default function ChartExpandedStateHeader({
       <Row
         align="center"
         justify="space-between"
-        testID="expanded-state-header"
+        testID={
+          testID ? `${testID}-expanded-state-header` : 'expanded-state-header'
+        }
       >
         <CoinIconGroup tokens={tokens} />
         <Row>
@@ -143,6 +146,7 @@ export default function ChartExpandedStateHeader({
             color={
               isNoPriceData ? colors.alpha(colors.blueGreyDark, 0.8) : color
             }
+            testID={`chart-header-${titleOrNoPriceData}`}
             weight={isNoPriceData ? 'semibold' : 'bold'}
           >
             {titleOrNoPriceData}
