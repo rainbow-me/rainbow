@@ -45,7 +45,7 @@ export default function DiscoverSheetContent() {
       >
         {showSearch ? 'Search' : 'Discover'}
       </HeaderTitle>
-      <ColumnWithMargins flex={1} margin={42}>
+      <ColumnWithMargins flex={1} margin={42} testID="discover-home">
         <DiscoverSearchContainer
           ref={ref}
           setShowSearch={setShowSearch}
