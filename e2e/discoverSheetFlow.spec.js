@@ -91,7 +91,11 @@ describe('Discover Sheet Flow', () => {
     await Helpers.checkIfVisible('add-token-sheet');
     await Helpers.tap('add-to-watchlist');
     await Helpers.delay(1000);
+    await Helpers.checkIfVisible('remove-from-watchlist');
     await Helpers.tap('remove-from-favorites');
+    await Helpers.delay(1000);
+    await Helpers.checkIfNotVisible('remove-from-favorites');
+
     await Helpers.delay(1000);
     await Helpers.tap('close-action-button');
   });
