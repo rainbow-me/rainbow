@@ -72,63 +72,124 @@ describe('Discover Sheet Flow', () => {
     await Helpers.delay(2000);
     await Helpers.checkIfVisible('done-button');
   });
-  /*
-  it('Should navigate to Discover screen after Dsicover Button', async () => {
+
+  it('Should search and open expanded state for SOCKS', async () => {
     await Helpers.delay(1000);
+    await Helpers.typeText('discover-search-input', 'SOCKS\n', true);
+    await Helpers.delay(8000);
+    await Helpers.checkIfVisible(
+      'discover-currency-select-list-exchange-coin-row-SOCKS'
+    );
+    await Helpers.checkIfNotVisible(
+      'discover-currency-select-list-exchange-coin-row-ETH'
+    );
+    await Helpers.tap('discover-currency-select-list-exchange-coin-row-SOCKS');
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('chart-header-Unisocks');
   });
 
-  it('Should navigate to Discover screen after Dsicover Button', async () => {
+  it('Should add Unisocks to Watchlist & remove from Favorites', async () => {
+    await Helpers.tap('add-to-list-button');
+    await Helpers.checkIfVisible('add-token-sheet');
+    await Helpers.tap('add-to-watchlist');
+    await Helpers.tap('remove-from-favorites');
     await Helpers.delay(1000);
+    await Helpers.tap('close-action-button');
   });
 
-  it('Should navigate to Discover screen after Dsicover Button', async () => {
+  it('Should close expanded state and return to search', async () => {
+    await Helpers.delay(4000);
+    await Helpers.swipe('expanded-state-header', 'down');
     await Helpers.delay(1000);
+    await Helpers.checkIfNotVisible(
+      'discover-currency-select-list-exchange-coin-row-ETH'
+    );
   });
 
-  it('Should navigate to Discover screen after Dsicover Button', async () => {
+  it('Should close search and return to Discover Home on pressing Done', async () => {
+    await Helpers.tap('done-button');
     await Helpers.delay(1000);
+    await Helpers.checkIfVisible('top-movers-section');
+    await Helpers.checkIfVisible('dpi-button');
+    await Helpers.checkIfVisible('lists-section');
+    await Helpers.checkIfVisible('pools-section');
   });
 
-  it('Should navigate to Discover screen after Dsicover Button', async () => {
-    await Helpers.delay(1000);
+  it('Top Movers should be swipeable and open expanded states', async () => {
+    await Helpers.tap('top-gainers-coin-row-0');
+    await Helpers.delay(10000);
+    await Helpers.swipe('expanded-state-header', 'down');
+    await Helpers.swipe('top-gainers', 'left');
+    await Helpers.checkIfNotVisible('top-gainers-coin-row-0');
+    await Helpers.tap('top-losers-coin-row-0');
+    await Helpers.delay(10000);
+    await Helpers.swipe('expanded-state-header', 'down');
+    await Helpers.swipe('top-losers', 'left');
+    await Helpers.checkIfNotVisible('top-losers-coin-row-0');
   });
 
-  it('Should navigate to Discover screen after Dsicover Button', async () => {
-    await Helpers.delay(1000);
+  it('Should open DPI expanded state on DPI press', async () => {
+    await Helpers.tap('dpi-button');
+    await Helpers.delay(2000);
+    await Helpers.checkIfVisible('index-expanded-state');
+    await Helpers.checkIfVisible('index-underlying-assets');
+    await Helpers.delay(3000);
   });
 
-  it('Should navigate to Discover screen after Dsicover Button', async () => {
-    await Helpers.delay(1000);
+  it('Should open underlying asset expanded state', async () => {
+    await Helpers.tap('underlying-asset-UNI');
+    await Helpers.delay(2000);
+    await Helpers.checkIfVisible('chart-header-Uniswap');
+    await Helpers.swipe('expanded-state-header', 'down');
   });
 
-  it('Should navigate to Discover screen after Dsicover Button', async () => {
+  it('Should close DPI expanded state and return to Discover Home', async () => {
+    await Helpers.swipe('index-expanded-state-header', 'down');
     await Helpers.delay(1000);
+    await Helpers.checkIfVisible('top-movers-section');
+    await Helpers.checkIfVisible('dpi-button');
+    await Helpers.checkIfVisible('lists-section');
+    await Helpers.checkIfVisible('pools-section');
   });
 
-  it('Should navigate to Discover screen after Dsicover Button', async () => {
+  it('Should cycle through token lists', async () => {
+    await Helpers.checkIfVisible('lists-section-favorites');
+    await Helpers.checkIfNotVisible('list-coin-row-Unisocks');
+    await Helpers.tap('list-watchlist');
     await Helpers.delay(1000);
+    await Helpers.checkIfVisible('lists-section-watchlist');
+    await Helpers.checkIfVisible('list-coin-row-Unisocks');
+    await Helpers.tap('list-trending');
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('lists-section-trending');
+    await Helpers.tap('list-favorites');
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('lists-section-favorites');
+    await Helpers.tap('list-defi');
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('lists-section-defi');
+    await Helpers.tap('list-dollars');
+    await Helpers.delay(1000);
+    await Helpers.checkIfVisible('lists-section-dollars');
   });
 
-  it('Should navigate to Discover screen after Dsicover Button', async () => {
+  it('Should cycle through pools lists', async () => {
+    await Helpers.swipe('dpi-button', 'up');
     await Helpers.delay(1000);
-  });
+    await Helpers.tap('pools-list-liquidity');
+    await Helpers.checkIfVisible('pools-section-liquidity');
+    await Helpers.delay(5000);
+    await Helpers.tap('pools-list-annualized_fees');
+    await Helpers.checkIfVisible('pools-section-annualized_fees');
+    await Helpers.delay(5000);
+    await Helpers.tap('pools-list-profit30d');
+    await Helpers.checkIfVisible('pools-section-profit30d');
+    await Helpers.delay(5000);
+    await Helpers.tap('pools-list-oneDayVolumeUSD');
+    await Helpers.checkIfVisible('pools-section-oneDayVolumeUSD');
 
-  it('Should navigate to Discover screen after Dsicover Button', async () => {
-    await Helpers.delay(1000);
+    await Helpers.delay(5000);
   });
-
-  it('Should navigate to Discover screen after Dsicover Button', async () => {
-    await Helpers.delay(1000);
-  });
-
-  it('Should navigate to Discover screen after Dsicover Button', async () => {
-    await Helpers.delay(1000);
-  });
-
-  it('Should navigate to Discover screen after Dsicover Button', async () => {
-    await Helpers.delay(1000);
-  });
-  */
   afterAll(async () => {
     // Reset the app state
     await device.clearKeychain();
