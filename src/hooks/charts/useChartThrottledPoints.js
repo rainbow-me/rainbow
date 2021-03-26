@@ -13,7 +13,7 @@ import { ETH_ADDRESS } from '@rainbow-me/references';
 
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
 
-export const UniBalanceHeightDifference = 150;
+export const UniBalanceHeightDifference = 210;
 
 const traverseData = (prev, data) => {
   if (!data || data.length === 0) {

@@ -18,6 +18,7 @@ import {
 } from 'lodash';
 import { Linking, NativeModules } from 'react-native';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
+import { useSelector } from 'react-redux';
 import URL from 'url-parse';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
@@ -47,6 +48,16 @@ const getAssetPrice = (address = ETH_ADDRESS) => {
   const { assets, genericAssets } = store.getState().data;
   const genericPrice = genericAssets[address]?.price?.value;
   return genericPrice || getAsset(assets, address)?.price?.value || 0;
+};
+
+export const useEth = () => {
+  return useSelector(
+    ({
+      data: {
+        genericAssets: { [ETH_ADDRESS]: asset },
+      },
+    }) => asset
+  );
 };
 
 const getEthPriceUnit = () => getAssetPrice();

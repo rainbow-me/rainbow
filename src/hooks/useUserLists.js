@@ -11,7 +11,7 @@ const userListsSelector = state => state.userLists.lists;
 const userListsReadySelector = state => state.userLists.ready;
 const userListsSelectedListSelector = state => state.userLists.selectedList;
 
-export default function useUSerLists() {
+export default function useUserLists() {
   const dispatch = useDispatch();
   const lists = useSelector(userListsSelector);
   const ready = useSelector(userListsReadySelector);

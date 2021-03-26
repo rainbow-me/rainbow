@@ -10,6 +10,7 @@ export default function TokenInfoItem({
   children,
   title,
   weight,
+  hidden,
   ...props
 }) {
   return (
@@ -19,12 +20,12 @@ export default function TokenInfoItem({
       margin={android ? -6 : 3}
       {...props}
     >
-      <TokenInfoHeading align={align}>{title}</TokenInfoHeading>
-      {asset ? (
+      <TokenInfoHeading align={align}>{hidden ? '' : title}</TokenInfoHeading>
+      {asset && !hidden ? (
         <TokenInfoBalanceValue align={align} asset={asset} />
       ) : (
         <TokenInfoValue align={align} weight={weight}>
-          {children}
+          {!hidden && children}
         </TokenInfoValue>
       )}
     </ColumnWithMargins>

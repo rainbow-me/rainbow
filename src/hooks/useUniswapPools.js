@@ -16,6 +16,7 @@ import {
   emitAssetRequest,
   emitChartsRequest,
 } from '@rainbow-me/redux/explorer';
+import { setAnnualizedFees } from '@rainbow-me/redux/uniswapLiquidity';
 import { ETH_ADDRESS, WETH_ADDRESS } from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
@@ -359,10 +360,23 @@ export default function useUniswapPools(sortField, sortDirection) {
   const { charts } = useSelector(({ charts: { charts } }) => ({
     charts,
   }));
+  const dispatch = useDispatch();
 
   const [ethereumPriceOneMonthAgo, setEthereumPriceOneMonthAgo] = useState();
   const [priceOfEther, setPriceOfEther] = useState();
   const [pairs, setPairs] = useState();
+
+  useEffect(() => {
+    pairs &&
+      dispatch(
+        setAnnualizedFees(
+          pairs.reduce((acc, pair) => {
+            acc[pair.address] = pair.annualized_fees;
+            return acc;
+          }, {})
+        )
+      );
+  }, [pairs, dispatch]);
 
   const { genericAssets, assets } = useSelector(
     ({ data: { assets, genericAssets } }) => ({
@@ -391,8 +405,6 @@ export default function useUniswapPools(sortField, sortDirection) {
     priceOfEther,
     ethereumPriceOneMonthAgo,
   ]);
-
-  const dispatch = useDispatch();
 
   const { data: idsData, error } = useQuery(UNISWAP_PAIRS_ID_QUERY, {
     client: uniswapClient,
