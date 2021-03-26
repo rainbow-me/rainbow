@@ -75,11 +75,13 @@ const TopMoverCoinRow = asset => {
     truncatedName,
     onPressCancel,
     onPressStart,
+    testID,
   } = asset;
   const handlePress = useCallback(() => {
     onPress?.(asset);
   }, [asset, onPress]);
   const { colors } = useTheme();
+  console.log('COINROW:',testID);
 
   return (
     <ButtonPressAnimation
@@ -103,6 +105,7 @@ const TopMoverCoinRow = asset => {
       <RowWithMargins
         margin={TopMoverCoinRowMargin}
         paddingHorizontal={PADDING_BETWEEN_ITEMS / 2}
+        testID={testID}
       >
         <Centered>
           <CoinIcon
