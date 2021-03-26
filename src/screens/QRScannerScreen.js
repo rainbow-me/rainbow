@@ -1,13 +1,14 @@
 import { useIsFocused } from '@react-navigation/native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
-import { IS_TESTING } from 'react-native-dotenv';
+import { useIsEmulator } from 'react-native-device-info';
 import { useSharedValue } from 'react-native-reanimated';
 import styled from 'styled-components';
 import { DiscoverSheet } from '../components/discover-sheet';
 import { FabWrapper, SearchFab } from '../components/fab';
 import { BackButton, Header, HeaderHeight } from '../components/header';
 import { Centered } from '../components/layout';
+
 import {
   CameraDimmer,
   EmulatorPasteUriButton,
@@ -62,6 +63,7 @@ export default function QRScannerScreen() {
   }, [initializeCamera, isFocusedAndroid]);
 
   const { colors } = useTheme();
+  const { result: isEmulator } = useIsEmulator();
 
   return (
     <>
@@ -81,7 +83,7 @@ export default function QRScannerScreen() {
                 <EmulatorPasteUriButton />
               </ScannerHeader>
             )}
-            {initializeCamera && IS_TESTING !== true && (
+            {initializeCamera && !isEmulator && (
               <QRCodeScanner
                 cameraDim={cameraDim}
                 contentPositionTop={HeaderHeight}

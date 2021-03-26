@@ -219,7 +219,7 @@ export default function UniswapPools() {
           shadowOpacity={0.2}
           width={22}
         />
-        <Text size="larger" weight="heavy">
+        <Text size="larger" testID="pools-section" weight="heavy">
           Uniswap Pools
         </Text>
       </Row>

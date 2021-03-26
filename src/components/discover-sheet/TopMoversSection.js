@@ -102,12 +102,14 @@ export default function TopMoversSection() {
             <MarqueeList
               items={gainerItems}
               speed={IS_TESTING !== 'true' ? -40 : 0}
+              testID="top-gainers"
             />
           )}
           {loserItems?.length !== 0 && (
             <MarqueeList
               items={loserItems}
               speed={IS_TESTING !== 'true' ? -40 : 0}
+              testID="top-losers"
             />
           )}
         </Column>

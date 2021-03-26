@@ -100,11 +100,11 @@ const TopMoverCoinRow = asset => {
       onPressStart={onPressStart}
       reanimatedButton={android}
       scaleTo={0.925}
+      testID={testID}
     >
       <RowWithMargins
         margin={TopMoverCoinRowMargin}
         paddingHorizontal={PADDING_BETWEEN_ITEMS / 2}
-        testID={testID}
       >
         <Centered>
           <CoinIcon

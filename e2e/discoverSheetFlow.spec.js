@@ -170,9 +170,9 @@ describe('Discover Sheet Flow', () => {
     await Helpers.tap('list-defi');
     await Helpers.delay(1000);
     await Helpers.checkIfVisible('lists-section-defi');
-    await Helpers.tap('list-dollars');
+    await Helpers.tap('list-stablecoins');
     await Helpers.delay(1000);
-    await Helpers.checkIfVisible('lists-section-dollars');
+    await Helpers.checkIfVisible('lists-section-stablecoins');
   });
 
   it('Should cycle through pools lists', async () => {
