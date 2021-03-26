@@ -26,9 +26,9 @@ import {
 } from '@rainbow-me/hooks';
 import { ethereumUtils } from '@rainbow-me/utils';
 
-const baseHeight = 309 + (android && 20 - getSoftMenuBarHeight());
+const baseHeight = 317 + (android && 20 - getSoftMenuBarHeight());
 const heightWithoutChart = baseHeight + (android && 30);
-const heightWithChart = baseHeight + 310;
+const heightWithChart = baseHeight + 307;
 
 export const initialChartExpandedStateSheetHeight = heightWithChart;
 
@@ -83,7 +83,7 @@ export default function ChartExpandedState({ asset }) {
     ios || showChart ? heightWithChart : heightWithoutChart;
 
   if (android && !hasBalance) {
-    ChartExpandedStateSheetHeight -= 68;
+    ChartExpandedStateSheetHeight -= 60;
   }
 
   return (

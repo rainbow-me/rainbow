@@ -62,6 +62,10 @@ export default function DiscoverHeaderButton() {
           backgroundColor={colors.white}
           borderRadius={50}
           shadows={shadows}
+          {...(android && {
+            height: 35,
+            width: 120,
+          })}
         >
           <BackgroundFill />
           <BackgroundGradient />

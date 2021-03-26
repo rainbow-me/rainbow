@@ -112,6 +112,12 @@ export type RecyclerAssetListReduxProps = {
     readonly openInvestmentCards: {
       readonly [key: string]: boolean;
     };
+    readonly openSavings: {
+      readonly [key: string]: boolean;
+    };
+    readonly openSmallBalances: {
+      readonly [key: string]: boolean;
+    };
   };
   readonly settings: {
     readonly nativeCurrency: string;
@@ -121,6 +127,7 @@ export type RecyclerAssetListReduxProps = {
 export type RecyclerAssetListProps = {
   readonly isCoinListEdited: boolean;
   readonly fetchData: () => Promise<unknown>;
+  readonly setIsBlockingUpdate: (isBlockingUpdate: boolean) => void;
   // TODO: This needs to be migrated into a global type.
   readonly colors: {
     readonly alpha: (color: string, alpha: number) => string;
@@ -129,6 +136,7 @@ export type RecyclerAssetListProps = {
   readonly nativeCurrency: string;
   readonly sections: readonly RecyclerAssetListSection[];
   readonly paddingBottom?: number;
+  readonly isBlockingUpdate: boolean;
   readonly hideHeader: boolean;
   readonly renderAheadOffset?: number;
   readonly openInvestmentCards: boolean;
@@ -152,6 +160,7 @@ function RecyclerAssetList({
   paddingBottom = 0,
   hideHeader,
   renderAheadOffset = deviceUtils.dimensions.height,
+  setIsBlockingUpdate,
   ...extras
 }: RecyclerAssetListProps): JSX.Element {
   const { ref, handleRef } = useRecyclerListViewRef();
@@ -259,13 +268,15 @@ function RecyclerAssetList({
     }
     try {
       setIsRefreshing(true);
+      setIsBlockingUpdate(true);
       await fetchData();
     } catch (e) {
       logger.error(e);
     } finally {
+      setTimeout(() => setIsBlockingUpdate(false), 200);
       setIsRefreshing(false);
     }
-  }, [isRefreshing, setIsRefreshing, fetchData]);
+  }, [isRefreshing, fetchData, setIsBlockingUpdate]);
   const onLayout = useCallback(
     ({ nativeEvent }: LayoutChangeEvent) => {
       // set globalDeviceDimensions
@@ -302,8 +313,6 @@ function RecyclerAssetList({
       // Checks if value is *nullish*.
       if (data == null || index == null) {
         return null;
-      } else if (isCoinListEdited && !(type.index < 4)) {
-        return null;
       }
 
       if (type.index === ViewTypes.HEADER.index) {
@@ -319,8 +328,6 @@ function RecyclerAssetList({
       } else if (type.index === ViewTypes.COIN_DIVIDER.index) {
         return ViewTypes.COIN_DIVIDER.renderComponent({
           data,
-          isCoinListEdited,
-          nativeCurrency,
         });
       } else if (type.index === ViewTypes.COIN_SMALL_BALANCES.index) {
         return ViewTypes.COIN_SMALL_BALANCES.renderComponent({
@@ -732,12 +739,7 @@ function RecyclerAssetList({
           },
         ]}
       >
-        <CoinDivider
-          balancesSum={0}
-          isSticky
-          nativeCurrency={nativeCurrency}
-          onEndEdit={() => null}
-        />
+        <CoinDivider balancesSum={0} isSticky onEndEdit={() => null} />
       </View>
     </StyledContainer>
   );
@@ -746,9 +748,12 @@ function RecyclerAssetList({
 export default connect(
   ({
     editOptions: { isCoinListEdited },
-    openSavings,
-    openSmallBalances,
-    openStateSettings: { openFamilyTabs, openInvestmentCards },
+    openStateSettings: {
+      openFamilyTabs,
+      openInvestmentCards,
+      openSavings,
+      openSmallBalances,
+    },
     settings: { nativeCurrency },
   }: RecyclerAssetListReduxProps) => ({
     isCoinListEdited,
@@ -758,4 +763,8 @@ export default connect(
     openSavings,
     openSmallBalances,
   })
-)(withThemeContext(RecyclerAssetList));
+)(
+  withThemeContext(
+    React.memo(RecyclerAssetList, (_, curr) => curr.isBlockingUpdate)
+  )
+);

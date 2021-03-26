@@ -32,6 +32,7 @@ export default function useWyreApplePay() {
 
   const [isPaymentComplete, setPaymentComplete] = useState(false);
   const [orderCurrency, setOrderCurrency] = useState(null);
+  const [orderId, setOrderId] = useState(null);
 
   const { error, orderStatus, transferStatus } = usePurchaseTransactionStatus();
 
@@ -128,6 +129,7 @@ export default function useWyreApplePay() {
         if (orderId) {
           referenceInfo.orderId = orderId;
           applePayResponse.complete(PaymentRequestStatusTypes.SUCCESS);
+          setOrderId(orderId);
           handlePaymentCallback();
           dispatch(
             addCashGetOrderStatus(
@@ -169,6 +171,7 @@ export default function useWyreApplePay() {
     isPaymentComplete,
     onPurchase,
     orderCurrency,
+    orderId,
     orderStatus,
     resetAddCashForm,
     transferStatus,

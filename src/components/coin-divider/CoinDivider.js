@@ -1,5 +1,7 @@
-import React, { useCallback, useEffect } from 'react';
+import { map } from 'lodash';
+import React, { useCallback, useEffect, useState } from 'react';
 import { LayoutAnimation, View } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Row, RowWithMargins } from '../layout';
 import CoinDividerAssetsValue from './CoinDividerAssetsValue';
@@ -7,11 +9,13 @@ import CoinDividerEditButton from './CoinDividerEditButton';
 import CoinDividerOpenButton from './CoinDividerOpenButton';
 import EditOptions from '@rainbow-me/helpers/editOptionTypes';
 import {
+  useAccountSettings,
   useCoinListEdited,
   useCoinListEditOptions,
   useDimensions,
   useOpenSmallBalances,
 } from '@rainbow-me/hooks';
+import { emitChartsRequest } from '@rainbow-me/redux/explorer';
 import { padding } from '@rainbow-me/styles';
 
 export const CoinDividerHeight = 30;
@@ -43,12 +47,12 @@ const EditButtonWrapper = styled(Row).attrs({
   right: 0;
 `;
 
-export default function CoinDivider({
-  balancesSum,
-  isSticky,
-  nativeCurrency,
-  onEndEdit,
-}) {
+export default function CoinDivider({ balancesSum, isSticky, onEndEdit }) {
+  const { nativeCurrency } = useAccountSettings();
+  const dispatch = useDispatch();
+  const assets = useSelector(({ data: { assets } }) => assets);
+
+  const [fetchedCharts, setFetchedCharts] = useState(false);
   const { width: deviceWidth } = useDimensions();
 
   const {
@@ -65,6 +69,20 @@ export default function CoinDivider({
     isSmallBalancesOpen,
     toggleOpenSmallBalances,
   } = useOpenSmallBalances();
+
+  useEffect(() => {
+    if (isSmallBalancesOpen && !fetchedCharts) {
+      const assetCodes = map(assets, 'address');
+      dispatch(emitChartsRequest(assetCodes));
+      setFetchedCharts(true);
+    }
+  }, [
+    assets,
+    dispatch,
+    fetchedCharts,
+    isSmallBalancesOpen,
+    toggleOpenSmallBalances,
+  ]);
 
   const handlePressEdit = useCallback(() => {
     if (isCoinListEdited && onEndEdit) {

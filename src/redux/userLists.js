@@ -1,5 +1,5 @@
 import produce from 'immer';
-import { concat, map, toLower, uniq, without } from 'lodash';
+import { concat, isArray, uniq, without } from 'lodash';
 import { InteractionManager } from 'react-native';
 import {
   getSelectedUserList,
@@ -55,9 +55,6 @@ export const userListsLoadState = () => async (dispatch, getState) => {
   }
 };
 
-export const userListsResetState = () => dispatch =>
-  dispatch({ type: USER_LISTS_CLEAR_STATE });
-
 export const userListsSetSelectedList = (listId, save = true) => dispatch => {
   dispatch({
     payload: listId,
@@ -99,7 +96,6 @@ export const userListsUpdateList = (assetAddress, listId, add = true) => (
   dispatch,
   getState
 ) => {
-  const address = toLower(assetAddress);
   if (listId === FAVORITES_LIST_ID) {
     dispatch(uniswapUpdateFavorites(assetAddress, add));
   } else {
@@ -115,16 +111,15 @@ export const userListsUpdateList = (assetAddress, listId, add = true) => (
       }
       return false;
     });
-    // Normalize the list
-    const normalizedListTokens = map(allNewLists[listIndex].tokens, toLower);
 
     // add or remove
     const updatedListTokens = add
-      ? uniq(concat(normalizedListTokens, address))
-      : without(normalizedListTokens, address);
-
+      ? uniq(concat(allNewLists[listIndex].tokens, assetAddress))
+      : isArray(assetAddress)
+      ? without(allNewLists[listIndex].tokens, ...assetAddress)
+      : without(allNewLists[listIndex].tokens, assetAddress);
     if (add) {
-      dispatch(emitAssetRequest([assetAddress]));
+      dispatch(emitAssetRequest(assetAddress));
     }
 
     // update the list

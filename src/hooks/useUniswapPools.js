@@ -1,6 +1,6 @@
 import { useQuery } from '@apollo/client';
 import { getUnixTime, startOfMinute, sub } from 'date-fns';
-import { get, sortBy, toLower, uniq } from 'lodash';
+import { get, pick, sortBy, toLower } from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { blockClient, uniswapClient } from '@rainbow-me/apollo/client';
@@ -12,12 +12,16 @@ import {
   UNISWAP_PAIRS_ID_QUERY,
 } from '@rainbow-me/apollo/queries';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
-import { emitAssetRequest } from '@rainbow-me/redux/explorer';
+import {
+  emitAssetRequest,
+  emitChartsRequest,
+} from '@rainbow-me/redux/explorer';
 import { ETH_ADDRESS, WETH_ADDRESS } from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const UNISWAP_QUERY_INTERVAL = 1000 * 60 * 5; // 5 minutes
+const AMOUNT_OF_PAIRS_TO_DISPLAY = 30;
 
 export const SORT_DIRECTION = {
   ASC: 'asc',
@@ -106,7 +110,7 @@ async function getBulkPairData(pairList, ethPrice, ethPriceOneMonthAgo) {
     ] = await getBlocksFromTimestamps([t1, t2, t3]);
 
     const current = await uniswapClient.query({
-      fetchPolicy: 'network-only',
+      fetchPolicy: 'no-cache',
       query: UNISWAP_PAIRS_BULK_QUERY,
       variables: {
         allPairs: pairList,
@@ -116,7 +120,7 @@ async function getBulkPairData(pairList, ethPrice, ethPriceOneMonthAgo) {
     const [oneDayResult, twoDayResult, oneMonthResult] = await Promise.all(
       [b1, b2, b3].map(async block => {
         const result = uniswapClient.query({
-          fetchPolicy: 'network-only',
+          fetchPolicy: 'no-cache',
           query: UNISWAP_PAIRS_HISTORICAL_BULK_QUERY,
           variables: {
             block,
@@ -146,26 +150,26 @@ async function getBulkPairData(pairList, ethPrice, ethPriceOneMonthAgo) {
           let oneDayHistory = oneDayData?.[pair.id];
           if (!oneDayHistory) {
             const newData = await uniswapClient.query({
-              fetchPolicy: 'network-only',
+              fetchPolicy: 'no-cache',
               query: UNISWAP_PAIR_DATA_QUERY(pair.id, b1),
             });
-            oneDayHistory = newData.data.pairs[0];
+            oneDayHistory = newData?.data?.pairs[0];
           }
           let twoDayHistory = twoDayData?.[pair.id];
           if (!twoDayHistory) {
             const newData = await uniswapClient.query({
-              fetchPolicy: 'network-only',
+              fetchPolicy: 'no-cache',
               query: UNISWAP_PAIR_DATA_QUERY(pair.id, b2),
             });
-            twoDayHistory = newData.data.pairs[0];
+            twoDayHistory = newData?.data?.pairs[0];
           }
           let oneMonthHistory = oneMonthData?.[pair.id];
           if (!oneMonthHistory) {
             const newData = await uniswapClient.query({
-              fetchPolicy: 'network-only',
+              fetchPolicy: 'no-cache',
               query: UNISWAP_PAIR_DATA_QUERY(pair.id, b3),
             });
-            oneMonthHistory = newData.data.pairs[0];
+            oneMonthHistory = newData?.data?.pairs[0];
           }
 
           data = parseData(
@@ -242,16 +246,19 @@ function parseData(
     (newData.oneDayVolumeUSD * 0.003 * 365 * 100) / newData.trackedReserveUSD;
 
   return {
-    ...newData,
     address: newData.id,
+    annualized_fees: newData.annualized_fees,
     liquidity: Number(Number(newData.reserveUSD).toFixed(2)),
+    oneDayVolumeUSD: newData.oneDayVolumeUSD,
+    profit30d: newData.profit30d,
     symbol: 'UNI-V2',
+    token0: pick(newData.token0, ['id', 'name', 'symbol']),
+    token1: pick(newData.token1, ['id', 'name', 'symbol']),
     tokenNames: `${newData.token0.symbol}-${newData.token1.symbol}`.replace(
       'WETH',
       'ETH'
     ),
     type: 'uniswap-v2',
-    uniqueId: newData.id,
   };
 }
 
@@ -353,12 +360,9 @@ export default function useUniswapPools(sortField, sortDirection) {
     charts,
   }));
 
-  const ethereumPriceOneMonthAgo = useMemo(
-    () => get(charts, `[${ETH_ADDRESS}][${ChartTypes.month}][0][1]`, 0),
-    [charts]
-  );
-
-  const is30DayEnabled = ethereumPriceOneMonthAgo > 0;
+  const [ethereumPriceOneMonthAgo, setEthereumPriceOneMonthAgo] = useState();
+  const [priceOfEther, setPriceOfEther] = useState();
+  const [pairs, setPairs] = useState();
 
   const { genericAssets, assets } = useSelector(
     ({ data: { assets, genericAssets } }) => ({
@@ -367,47 +371,56 @@ export default function useUniswapPools(sortField, sortDirection) {
     })
   );
 
-  const priceOfEther = useMemo(() => {
+  useEffect(() => {
     const genericEthPrice = genericAssets?.eth?.price?.value;
-    return genericEthPrice || ethereumUtils.getAsset(assets)?.price?.value || 0;
-  }, [assets, genericAssets]);
+    const newPriceOfEther =
+      genericEthPrice || ethereumUtils.getAsset(assets)?.price?.value || 0;
+    if (!priceOfEther) {
+      setPriceOfEther(newPriceOfEther);
+    }
 
-  const [ids, setIds] = useState();
-  const [pairs, setPairs] = useState();
+    if (!ethereumPriceOneMonthAgo) {
+      setEthereumPriceOneMonthAgo(
+        get(charts, `[${ETH_ADDRESS}][${ChartTypes.month}][0][1]`, 0)
+      );
+    }
+  }, [
+    genericAssets?.eth?.price?.value,
+    assets,
+    charts,
+    priceOfEther,
+    ethereumPriceOneMonthAgo,
+  ]);
+
   const dispatch = useDispatch();
 
   const { data: idsData, error } = useQuery(UNISWAP_PAIRS_ID_QUERY, {
     client: uniswapClient,
+    fetchPolicy: 'no-cache',
     pollInterval: UNISWAP_QUERY_INTERVAL,
+    skip: !priceOfEther || !ethereumPriceOneMonthAgo,
     variables: {},
   });
-
-  useEffect(() => {
-    if (idsData?.pairs) {
-      setIds(idsData.pairs.map(item => item.id));
-    }
-  }, [idsData]);
 
   const fetchPairsData = useCallback(async () => {
     // get data for every pair in list
     try {
       const topPairs = await getBulkPairData(
-        ids,
+        idsData.pairs.map(item => item.id),
         Number(priceOfEther),
-        Number(ethereumPriceOneMonthAgo),
-        genericAssets
+        Number(ethereumPriceOneMonthAgo)
       );
       setPairs(topPairs);
     } catch (e) {
       logger.log('🦄🦄🦄 error getting pairs data', e);
     }
-  }, [ethereumPriceOneMonthAgo, genericAssets, ids, priceOfEther]);
+  }, [ethereumPriceOneMonthAgo, idsData?.pairs, priceOfEther]);
 
   useEffect(() => {
-    if (ids && !pairs && priceOfEther > 0 && ethereumPriceOneMonthAgo > 0) {
+    if (idsData?.pairs && priceOfEther > 0 && ethereumPriceOneMonthAgo > 0) {
       fetchPairsData();
     }
-  }, [fetchPairsData, ids, pairs, priceOfEther, ethereumPriceOneMonthAgo]);
+  }, [fetchPairsData, priceOfEther, ethereumPriceOneMonthAgo, idsData?.pairs]);
 
   const top40PairsSorted = useMemo(() => {
     if (!pairs) return null;
@@ -417,7 +430,7 @@ export default function useUniswapPools(sortField, sortDirection) {
     }
 
     // top 40
-    sortedPairs = sortedPairs.slice(0, 39);
+    sortedPairs = sortedPairs.slice(0, AMOUNT_OF_PAIRS_TO_DISPLAY - 1);
     const tmpAllTokens = [];
     // Override with tokens from generic assets
     sortedPairs = sortedPairs.map(pair => {
@@ -435,19 +448,31 @@ export default function useUniswapPools(sortField, sortDirection) {
               address: pair.token1.id,
             };
       pair.tokens = [token0, token1];
-      tmpAllTokens.push(toLower(pair.token0.id));
-      tmpAllTokens.push(toLower(pair.token1.id));
-      return pair;
+      tmpAllTokens.push(toLower(pair.tokens[0].id));
+      tmpAllTokens.push(toLower(pair.tokens[1].id));
+      return pick(pair, [
+        'address',
+        'annualized_fees',
+        'liquidity',
+        'oneDayVolumeUSD',
+        'profit30d',
+        'symbol',
+        'tokens',
+        'tokenNames',
+        'type',
+      ]);
     });
-    const allTokens = uniq(tmpAllTokens);
-    const allLPTokens = sortedPairs.map(({ id }) => id);
-    dispatch(emitAssetRequest(allTokens.concat(allLPTokens)));
+
+    const allLPTokens = sortedPairs.map(({ address }) => address);
+    dispatch(emitAssetRequest(allLPTokens));
+    dispatch(emitChartsRequest(allLPTokens));
     return sortedPairs;
-  }, [dispatch, genericAssets, pairs, sortDirection, sortField]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, pairs, sortDirection, sortField]);
 
   return {
     error,
-    is30DayEnabled,
+    is30DayEnabled: ethereumPriceOneMonthAgo > 0,
     pairs: top40PairsSorted,
   };
 }

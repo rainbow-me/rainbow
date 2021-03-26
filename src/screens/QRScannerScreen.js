@@ -1,6 +1,7 @@
 import { useIsFocused } from '@react-navigation/native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
+import { IS_TESTING } from 'react-native-dotenv';
 import { useSharedValue } from 'react-native-reanimated';
 import styled from 'styled-components';
 import { DiscoverSheet } from '../components/discover-sheet';
@@ -69,7 +70,18 @@ export default function QRScannerScreen() {
         <ScannerContainer>
           <Background />
           <CameraDimmer cameraVisible={cameraVisible}>
-            {initializeCamera && false && (
+            {android && (
+              <ScannerHeader>
+                <BackButton
+                  color={colors.whiteLabel}
+                  direction="left"
+                  onPress={handlePressBackButton}
+                  testID="goToBalancesFromScanner"
+                />
+                <EmulatorPasteUriButton />
+              </ScannerHeader>
+            )}
+            {initializeCamera && IS_TESTING !== true && (
               <QRCodeScanner
                 cameraDim={cameraDim}
                 contentPositionTop={HeaderHeight}
@@ -78,16 +90,19 @@ export default function QRScannerScreen() {
               />
             )}
           </CameraDimmer>
-          {android ? <DiscoverSheet ref={dsRef} /> : null}
-          <ScannerHeader>
-            <BackButton
-              color={colors.whiteLabel}
-              direction="left"
-              onPress={handlePressBackButton}
-              testID="goToBalancesFromScanner"
-            />
-            <EmulatorPasteUriButton />
-          </ScannerHeader>
+          {android ? (
+            <DiscoverSheet ref={dsRef} />
+          ) : (
+            <ScannerHeader>
+              <BackButton
+                color={colors.whiteLabel}
+                direction="left"
+                onPress={handlePressBackButton}
+                testID="goToBalancesFromScanner"
+              />
+              <EmulatorPasteUriButton />
+            </ScannerHeader>
+          )}
         </ScannerContainer>
       </View>
       <FabWrapper

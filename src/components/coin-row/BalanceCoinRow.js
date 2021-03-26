@@ -180,7 +180,13 @@ const BalanceCoinRow = ({
         </ButtonPressAnimation>
       </Animated.View>
       <Animated.View
-        style={{ opacity: isCoinListEditedValue, position: 'absolute' }}
+        style={{
+          marginLeft: Animated.multiply(
+            -editTranslateOffset * 1.5,
+            Animated.sub(1, isCoinListEditedValue)
+          ),
+          position: 'absolute',
+        }}
       >
         <BalanceCoinRowCoinCheckButton
           onPress={handleEditModePress}
@@ -219,7 +225,10 @@ const arePropsEqual = (prev, next) => {
 const MemoizedBalanceCoinRow = React.memo(BalanceCoinRow, arePropsEqual);
 
 export default connect(
-  ({ editOptions: { recentlyPinnedCount }, openSmallBalances }) => ({
+  ({
+    editOptions: { recentlyPinnedCount },
+    openStateSettings: { openSmallBalances },
+  }) => ({
     openSmallBalances,
     recentlyPinnedCount,
   }),

@@ -90,10 +90,7 @@ export const addCashUpdatePurchases = purchases => (dispatch, getState) => {
   savePurchaseTransactions(updatedPurchases, accountAddress, network);
 };
 
-export const addCashNewPurchaseTransaction = txDetails => (
-  dispatch,
-  getState
-) => {
+const addCashNewPurchaseTransaction = txDetails => (dispatch, getState) => {
   const { purchaseTransactions } = getState().addCash;
   const { accountAddress, network } = getState().settings;
   const updatedPurchases = [txDetails, ...purchaseTransactions];

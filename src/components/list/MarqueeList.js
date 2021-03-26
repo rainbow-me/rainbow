@@ -238,8 +238,6 @@ const SwipeableList = ({ components, speed, testID }) => {
 };
 
 const MarqueeList = ({ items = [], speed, testID }) => {
-  console.log('MARQUEEOW:', testID);
-
   const renderItemCallback = useCallback(
     ({ item, index, onPressCancel, onPressStart, testID }) => (
       <TopMoverCoinRow
@@ -250,7 +248,7 @@ const MarqueeList = ({ items = [], speed, testID }) => {
         testID={`${testID}-coin-row-${index}`}
       />
     ),
-    [testID]
+    []
   );
 
   return (
@@ -258,11 +256,11 @@ const MarqueeList = ({ items = [], speed, testID }) => {
       <SwipeableList
         components={items.map((item, index) => ({
           view: ios
-            ? ({ testID }) => renderItemCallback({ item, index, testID })
+            ? ({ testID }) => renderItemCallback({ index, item, testID })
             : ({ onPressCancel, onPressStart, testID }) =>
                 renderItemCallback({
-                  item,
                   index,
+                  item,
                   onPressCancel,
                   onPressStart,
                   testID,

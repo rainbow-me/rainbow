@@ -4,6 +4,7 @@ import { Asset, SavingsAsset } from '@rainbow-me/entities';
 
 export { default as chains } from './chains.json';
 export { compoundCERC20ABI, compoundCETHABI } from './compound';
+export { default as DefaultTokenLists } from './default-token-lists.json';
 export {
   defiSdkAdapterRegistryABI,
   DEFI_SDK_ADAPTER_REGISTRY_ADDRESS,
@@ -27,7 +28,11 @@ export {
   UNISWAP_V2_ROUTER_ABI,
   UNISWAP_V2_ROUTER_ADDRESS,
 } from './uniswap';
-export { default as DefaultTokenLists } from './default-token-lists.json';
+export {
+  getWyreErrorOverride,
+  wyreSupportedCountries,
+  WYRE_SUPPORTED_COUNTRIES_ISO,
+} from './wyre';
 
 export const ETH_ICON_URL = 'https://s3.amazonaws.com/token-icons/eth.png';
 

@@ -19,6 +19,7 @@ export const saveKeychainIntegrityState = state =>
 export const getAuthTimelock = () => getGlobal(AUTH_TIMELOCK, null);
 
 export const saveAuthTimelock = ts => saveGlobal(AUTH_TIMELOCK, ts);
+
 export const getPinAuthAttemptsLeft = () =>
   getGlobal(PIN_AUTH_ATTEMPTS_LEFT, null);
 

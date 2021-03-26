@@ -28,27 +28,28 @@ const Label = styled(Text).attrs(
 
 export default function PriceImpactWarning({
   onPress,
+  isHighPriceImpact,
   priceImpactColor,
   priceImpactNativeAmount,
   priceImpactPercentDisplay,
   style,
   ...props
 }) {
-  const heading = priceImpactNativeAmount ? 'Losing' : 'Price impact';
-  const headingValue =
-    priceImpactNativeAmount ?? `${priceImpactPercentDisplay}%`;
+  const headingValue = priceImpactNativeAmount ?? priceImpactPercentDisplay;
   return (
     <Animated.View {...props} style={[style, position.coverAsObject]}>
-      <ButtonPressAnimation onPress={onPress} scaleTo={0.94}>
-        <Content>
-          <Label color={priceImpactColor}>{`􀇿 `}</Label>
-          <Label color="whiteLabel">Small Market</Label>
-          <Label color={priceImpactColor}>{` • ${heading} `}</Label>
-          <Label color={priceImpactColor} letterSpacing="roundedTight">
-            {headingValue}
-          </Label>
-        </Content>
-      </ButtonPressAnimation>
+      {isHighPriceImpact && (
+        <ButtonPressAnimation onPress={onPress} scaleTo={0.94}>
+          <Content>
+            <Label color={priceImpactColor}>{`􀇿 `}</Label>
+            <Label color="whiteLabel">Small Market</Label>
+            <Label color={priceImpactColor}>{` • Losing `}</Label>
+            <Label color={priceImpactColor} letterSpacing="roundedTight">
+              {headingValue}
+            </Label>
+          </Content>
+        </ButtonPressAnimation>
+      )}
     </Animated.View>
   );
 }

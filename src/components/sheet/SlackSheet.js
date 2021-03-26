@@ -173,6 +173,7 @@ export default forwardRef(function SlackSheet(
             onContentSizeChange={onContentSizeChange}
             onScroll={scrollHandler}
             ref={sheet}
+            removeClippedSubviews={removeClippedSubviews}
             scrollEnabled={scrollEnabled}
             scrollIndicatorInsets={scrollIndicatorInsets}
           >

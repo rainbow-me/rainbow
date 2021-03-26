@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { View } from 'react-primitives';
 import { Column, Row } from '../layout';
 import CoinIcon from './CoinIcon';
+import { neverRerender } from '@rainbow-me/utils';
 
 // Note that `width` is always smaller than `iconSize`. We do this to force the
 // `CoinIcon`'s to overlap each other (imagine the Olympics logo).
@@ -16,7 +17,22 @@ const sizesTable = [
   { breakIndex: 4, iconSize: 20, width: 15 },
 ];
 
-export default function CoinIconGroup({ tokens }) {
+const TokenRowsComponent = ({ tokenRows, iconSize, width }) =>
+  tokenRows.map((setOfTokens, lineIndex) => (
+    <Row key={`coinLine_${lineIndex}`}>
+      {setOfTokens.map((token, index) => (
+        <View key={`coin_${index}_${lineIndex}`} width={width} zIndex={-index}>
+          <CoinIcon
+            address={token?.address}
+            size={iconSize}
+            symbol={token?.symbol}
+          />
+        </View>
+      ))}
+    </Row>
+  ));
+
+function CoinIconGroup({ tokens }) {
   const { breakIndex, iconSize, width } = useMemo(
     () => sizesTable[tokens.length - 1],
     [tokens]
@@ -31,23 +47,13 @@ export default function CoinIconGroup({ tokens }) {
 
   return (
     <Column align={breakIndex ? 'center' : 'start'} width={70}>
-      {tokenRows.map((setOfTokens, lineIndex) => (
-        <Row key={`coinLine_${lineIndex}`}>
-          {setOfTokens.map((token, index) => (
-            <View
-              key={`coin_${index}_${lineIndex}`}
-              width={width}
-              zIndex={-index}
-            >
-              <CoinIcon
-                address={token?.address}
-                size={iconSize}
-                symbol={token?.symbol}
-              />
-            </View>
-          ))}
-        </Row>
-      ))}
+      <TokenRowsComponent
+        iconSize={iconSize}
+        tokenRows={tokenRows}
+        width={width}
+      />
     </Column>
   );
 }
+
+export default neverRerender(CoinIconGroup);

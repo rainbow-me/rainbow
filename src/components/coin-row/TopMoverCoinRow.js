@@ -81,7 +81,6 @@ const TopMoverCoinRow = asset => {
     onPress?.(asset);
   }, [asset, onPress]);
   const { colors } = useTheme();
-  console.log('COINROW:',testID);
 
   return (
     <ButtonPressAnimation

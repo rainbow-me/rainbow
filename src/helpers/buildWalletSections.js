@@ -365,7 +365,7 @@ const withUniqueTokenFamiliesSection = (language, uniqueTokens, data) => {
       data.map(buildImagesToPreloadArray)
     );
     isPreloadComplete = !!imagesToPreload.length;
-    ImgixImage.preload(imagesToPreload);
+    ImgixImage.preload(imagesToPreload, 200);
   }
 
   return {
