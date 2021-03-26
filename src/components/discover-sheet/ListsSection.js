@@ -243,6 +243,7 @@ export default function ListSection() {
         key={`list-${list.id}`}
         onPress={() => handleSwitchList(list.id, index)}
         selected={selectedList === list.id}
+        testID={`list-${list.id}`}
       >
         <Row>
           <Emoji name={list.emoji} size="small" />
@@ -288,6 +289,7 @@ export default function ListSection() {
             renderItem={renderItem}
             scrollsToTop={false}
             showsHorizontalScrollIndicator={false}
+            testID={`lists-section-${selectedList}`}
           />
           <EdgeFade />
         </Column>
