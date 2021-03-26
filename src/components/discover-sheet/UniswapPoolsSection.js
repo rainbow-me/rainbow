@@ -152,6 +152,7 @@ export default function UniswapPools() {
         key={`list-${list.id}`}
         onPress={() => handleSwitchList(list.id, index)}
         selected={selectedList === list.id}
+        testID={`pools-list-${list.id}`}
         titleColor={getTitleColor(selectedList === list.id, list.id)}
       >
         <Row>
@@ -236,6 +237,7 @@ export default function UniswapPools() {
             renderItem={renderTypeItem}
             scrollsToTop={false}
             showsHorizontalScrollIndicator={false}
+            testID={`pools-section-${selectedList}`}
           />
           <EdgeFade />
         </Column>

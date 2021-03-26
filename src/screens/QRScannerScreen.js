@@ -1,6 +1,7 @@
 import { useIsFocused } from '@react-navigation/native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
+import { IS_TESTING } from 'react-native-dotenv';
 import { useSharedValue } from 'react-native-reanimated';
 import styled from 'styled-components';
 import { DiscoverSheet } from '../components/discover-sheet';
@@ -32,6 +33,7 @@ const ScannerContainer = styled(Centered).attrs({
 
 const ScannerHeader = styled(Header).attrs({
   justify: 'space-between',
+  testID: 'scanner-header',
 })`
   position: absolute;
   top: 0;
@@ -79,7 +81,7 @@ export default function QRScannerScreen() {
                 <EmulatorPasteUriButton />
               </ScannerHeader>
             )}
-            {initializeCamera && (
+            {initializeCamera && IS_TESTING !== true && (
               <QRCodeScanner
                 cameraDim={cameraDim}
                 contentPositionTop={HeaderHeight}

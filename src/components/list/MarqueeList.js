@@ -66,7 +66,7 @@ const SingleElement = ({
   );
 };
 
-const SwipeableList = ({ components, speed }) => {
+const SwipeableList = ({ components, speed, testID }) => {
   const transX = useSharedValue(0);
   const swiping = useSharedValue(0);
   const offset = useSharedValue(100000);
@@ -184,7 +184,10 @@ const SwipeableList = ({ components, speed }) => {
               ref={panRef}
               simultaneousHandlers={[lpRef, tapRef]}
             >
-              <Animated.View style={{ height: 53, width: '100%' }}>
+              <Animated.View
+                style={{ height: 53, width: '100%' }}
+                testID={testID}
+              >
                 <Animated.View
                   style={{
                     flexDirection: 'row',
@@ -199,7 +202,9 @@ const SwipeableList = ({ components, speed }) => {
                   >
                     {components.map(({ view }) =>
                       ios
-                        ? view
+                        ? view({
+                            testID: null,
+                          })
                         : view({
                             onPressCancel: restoreAnimation,
                             onPressStart: startAnimation,
@@ -213,7 +218,9 @@ const SwipeableList = ({ components, speed }) => {
                   >
                     {components.map(({ view }) =>
                       ios
-                        ? view
+                        ? view({
+                            testID: testID,
+                          })
                         : view({
                             onPressCancel: restoreAnimation,
                             onPressStart: startAnimation,
@@ -230,14 +237,15 @@ const SwipeableList = ({ components, speed }) => {
   );
 };
 
-const MarqueeList = ({ items = [], speed }) => {
+const MarqueeList = ({ items = [], speed, testID }) => {
   const renderItemCallback = useCallback(
-    ({ item, onPressCancel, onPressStart }) => (
+    ({ item, index, onPressCancel, onPressStart, testID }) => (
       <TopMoverCoinRow
         {...item}
         key={`topmovercoinrow-${item?.address}`}
         onPressCancel={onPressCancel}
         onPressStart={onPressStart}
+        testID={`${testID}-coin-row-${index}`}
       />
     ),
     []
@@ -246,13 +254,20 @@ const MarqueeList = ({ items = [], speed }) => {
   return (
     <>
       <SwipeableList
-        components={items.map(item => ({
+        components={items.map((item, index) => ({
           view: ios
-            ? renderItemCallback({ item })
-            : ({ onPressCancel, onPressStart }) =>
-                renderItemCallback({ item, onPressCancel, onPressStart }),
+            ? ({ testID }) => renderItemCallback({ index, item, testID })
+            : ({ onPressCancel, onPressStart, testID }) =>
+                renderItemCallback({
+                  index,
+                  item,
+                  onPressCancel,
+                  onPressStart,
+                  testID,
+                }),
         }))}
         speed={speed}
+        testID={testID}
       />
     </>
   );

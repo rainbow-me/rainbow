@@ -40,7 +40,11 @@ export default function DiscoverSheetContent() {
   return (
     <>
       {android && <Spacer />}
-      <HeaderTitle>{showSearch ? 'Search' : 'Discover'}</HeaderTitle>
+      <HeaderTitle
+        testID={showSearch ? 'discover-header-search' : 'discover-header'}
+      >
+        {showSearch ? 'Search' : 'Discover'}
+      </HeaderTitle>
       <ColumnWithMargins flex={1} margin={42}>
         <DiscoverSearchContainer
           ref={ref}
