@@ -460,9 +460,6 @@ PODS:
     - React
   - ReactNativePayments (1.1.5):
     - React
-  - reactnativeslackbottomsheet (0.5.0):
-    - PanModal
-    - React
   - RNAnalytics (1.4.3):
     - Analytics
     - React-Core
@@ -668,7 +665,6 @@ DEPENDENCIES:
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - ReactNativeDarkMode (from `../node_modules/react-native-dark-mode`)
   - "ReactNativePayments (from `../node_modules/@rainbow-me/react-native-payments/lib/ios`)"
-  - reactnativeslackbottomsheet (from `../node_modules/react-native-slack-bottom-sheet`)
   - "RNAnalytics (from `../node_modules/@segment/analytics-react-native`)"
   - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
   - "RNCClipboard (from `../node_modules/@react-native-community/clipboard`)"
@@ -860,8 +856,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-dark-mode"
   ReactNativePayments:
     :path: "../node_modules/@rainbow-me/react-native-payments/lib/ios"
-  reactnativeslackbottomsheet:
-    :path: "../node_modules/react-native-slack-bottom-sheet"
   RNAnalytics:
     :path: "../node_modules/@segment/analytics-react-native"
   RNCAsyncStorage:
@@ -1021,7 +1015,6 @@ SPEC CHECKSUMS:
   ReactCommon: 4167844018c9ed375cc01a843e9ee564399e53c3
   ReactNativeDarkMode: 0178ffca3b10f6a7c9f49d6f9810232b328fa949
   ReactNativePayments: 40a266450628c05db440fe219b631210e4358a49
-  reactnativeslackbottomsheet: d44b4c59c1e69c045983044d2f361d256d3ddb98
   RNAnalytics: 43a09152058061b4096eb6cb806093e7b772b1e5
   RNCAsyncStorage: b03032fdbdb725bea0bd9e5ec5a7272865ae7398
   RNCClipboard: 48eaf27bea3de7c9a265529725434268d47a2ee9
@@ -1065,4 +1058,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 412313ac47634ca15faa48e68aadac98633cc980
 
-COCOAPODS: 1.10.0
+COCOAPODS: 1.10.1
