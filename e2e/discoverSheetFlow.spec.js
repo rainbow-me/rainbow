@@ -23,12 +23,13 @@ describe('Discover Sheet Flow', () => {
   it('Should show the "Add wallet modal" after tapping import with a valid seed"', async () => {
     await Helpers.clearField('import-sheet-input');
     await Helpers.typeText('import-sheet-input', process.env.TEST_SEEDS, false);
-    await Helpers.delay(1500);
+    await Helpers.delay(2000);
     await Helpers.checkIfElementHasString(
       'import-sheet-button-label',
       'Import'
     );
     await Helpers.tap('import-sheet-button');
+    await Helpers.delay(2000);
     await Helpers.checkIfVisible('wallet-info-modal');
   });
 
@@ -49,7 +50,7 @@ describe('Discover Sheet Flow', () => {
   it('Should navigate to Discover screen after tapping Discover Button', async () => {
     await Helpers.delay(2000);
     await Helpers.tap('discover-button');
-    await Helpers.delay(1000);
+    await Helpers.delay(3000);
     await Helpers.checkIfVisible('top-movers-section');
     await Helpers.checkIfVisible('dpi-button');
     await Helpers.checkIfVisible('lists-section');
@@ -68,7 +69,6 @@ describe('Discover Sheet Flow', () => {
     await Helpers.delay(1000);
     await Helpers.tap('search-fab');
     await Helpers.swipe('discover-header', 'up');
-
     await Helpers.delay(2000);
     await Helpers.checkIfVisible('done-button');
   });
@@ -84,14 +84,16 @@ describe('Discover Sheet Flow', () => {
       'discover-currency-select-list-exchange-coin-row-ETH'
     );
     await Helpers.tap('discover-currency-select-list-exchange-coin-row-SOCKS');
-    await Helpers.delay(1000);
+    await Helpers.delay(2500);
     await Helpers.checkIfVisible('chart-header-Unisocks');
   });
 
   it('Should add Unisocks to Watchlist & remove from Favorites', async () => {
     await Helpers.tap('add-to-list-button');
+    await Helpers.delay(2000);
     await Helpers.checkIfVisible('add-token-sheet');
     await Helpers.tap('add-to-watchlist');
+    await Helpers.delay(1000);
     await Helpers.tap('remove-from-favorites');
     await Helpers.delay(1000);
     await Helpers.tap('close-action-button');
@@ -117,12 +119,12 @@ describe('Discover Sheet Flow', () => {
 
   it('Top Movers should be swipeable and open expanded states', async () => {
     await Helpers.tap('top-gainers-coin-row-0');
-    await Helpers.delay(10000);
+    await Helpers.delay(3000);
     await Helpers.swipe('expanded-state-header', 'down');
     await Helpers.swipe('top-gainers', 'left');
     await Helpers.checkIfNotVisible('top-gainers-coin-row-0');
     await Helpers.tap('top-losers-coin-row-0');
-    await Helpers.delay(10000);
+    await Helpers.delay(3000);
     await Helpers.swipe('expanded-state-header', 'down');
     await Helpers.swipe('top-losers', 'left');
     await Helpers.checkIfNotVisible('top-losers-coin-row-0');
@@ -145,7 +147,7 @@ describe('Discover Sheet Flow', () => {
 
   it('Should close DPI expanded state and return to Discover Home', async () => {
     await Helpers.swipe('index-expanded-state-header', 'down');
-    await Helpers.delay(1000);
+    await Helpers.delay(2000);
     await Helpers.checkIfVisible('top-movers-section');
     await Helpers.checkIfVisible('dpi-button');
     await Helpers.checkIfVisible('lists-section');
@@ -156,7 +158,7 @@ describe('Discover Sheet Flow', () => {
     await Helpers.checkIfVisible('lists-section-favorites');
     await Helpers.checkIfNotVisible('list-coin-row-Unisocks');
     await Helpers.tap('list-watchlist');
-    await Helpers.delay(1000);
+    await Helpers.delay(2000);
     await Helpers.checkIfVisible('lists-section-watchlist');
     await Helpers.checkIfVisible('list-coin-row-Unisocks');
     await Helpers.tap('list-trending');
