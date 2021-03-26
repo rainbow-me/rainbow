@@ -51,7 +51,7 @@ describe('Discover Sheet Flow', () => {
     await Helpers.delay(2000);
     await Helpers.tap('discover-button');
     await Helpers.delay(3000);
-    await Helpers.checkIfVisible('discover-home');
+    await Helpers.checkIfVisible('discover-header');
   });
 
   it('Should show the camera if Discover is minimized', async () => {
@@ -59,7 +59,7 @@ describe('Discover Sheet Flow', () => {
     await Helpers.swipe('discover-header', 'down');
     await Helpers.delay(1000);
     await Helpers.checkIfVisible('scanner-header');
-    await Helpers.checkIfNotVisible('pools-section');
+    await Helpers.checkIfNotVisible('lists-section');
   });
 
   it('Should open Discover Search on pressing search fab', async () => {
@@ -112,7 +112,7 @@ describe('Discover Sheet Flow', () => {
   it('Should close search and return to Discover Home on pressing Done', async () => {
     await Helpers.tap('done-button');
     await Helpers.delay(1000);
-    await Helpers.checkIfVisible('discover-home');
+    await Helpers.checkIfVisible('top-movers-section');
   });
 
   it('Top Movers should be swipeable and open expanded states', async () => {
@@ -146,7 +146,7 @@ describe('Discover Sheet Flow', () => {
   it('Should close DPI expanded state and return to Discover Home', async () => {
     await Helpers.swipe('index-expanded-state-header', 'down');
     await Helpers.delay(2000);
-    await Helpers.checkIfVisible('discover-home');
+    await Helpers.checkIfVisible('discover-header');
   });
 
   it('Should cycle through token lists', async () => {
