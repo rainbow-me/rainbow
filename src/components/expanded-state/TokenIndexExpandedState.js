@@ -189,6 +189,7 @@ export default function TokenIndexExpandedState({ asset }) {
         {...(ios
           ? { height: '100%' }
           : { additionalTopPadding: true, contentHeight: screenHeight - 80 })}
+        testID="index-expanded-state"
       >
         <ChartPathProvider data={throttledData}>
           <Chart
@@ -201,6 +202,7 @@ export default function TokenIndexExpandedState({ asset }) {
             fetchingCharts={fetchingCharts}
             nativePoints={chart}
             showChart={showChart}
+            testID="index"
             throttledData={throttledData}
           />
         </ChartPathProvider>
@@ -227,6 +229,7 @@ export default function TokenIndexExpandedState({ asset }) {
             <Text
               color={colors.alpha(colors.blueGreyDark, 0.5)}
               letterSpacing="roundedMedium"
+              testID="index-underlying-assets"
               weight="semibold"
             >
               Underlying Assets
@@ -251,6 +254,7 @@ export default function TokenIndexExpandedState({ asset }) {
                   key={`dpi-${item?.address}`}
                   onPress={() => handlePress(item)}
                   scaleTo={0.95}
+                  testID={`underlying-asset-${item.symbol}`}
                 >
                   <Column align="start" flex={1}>
                     <UnderlyingAssetCoinRow {...item} />
@@ -319,7 +323,7 @@ export default function TokenIndexExpandedState({ asset }) {
                 <AssetListItemSkeleton
                   animated
                   descendingOpacity
-                  key={`underlying-aseets-skeleton-${index}`}
+                  key={`underlying-assets-skeleton-${index}`}
                 />
               ))}
         </Column>
