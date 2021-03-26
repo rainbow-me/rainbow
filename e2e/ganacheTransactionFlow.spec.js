@@ -80,7 +80,7 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.checkIfVisible('developer-settings-modal');
   });
 
-  if (device.getPlatform() === 'android') {
+  if (device.getPlatform() === 'ios') {
     it('Should show Applied alert after pressing Alert', async () => {
       await Helpers.tap('alert-section');
       await Helpers.delay(5000);
