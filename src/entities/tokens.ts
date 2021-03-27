@@ -27,6 +27,10 @@ export interface SavingsAsset extends Asset {
   contractAddress: string;
 }
 
+export interface OptimismAsset extends Asset {
+  optimismAddress: string;
+}
+
 export interface ParsedAddressAsset extends Asset {
   balance?: {
     amount?: string;

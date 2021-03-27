@@ -7,13 +7,14 @@ import {
   COINGECKO_IDS_ENDPOINT,
   fetchAssetPrices,
 } from './data';
+// eslint-disable-next-line import/no-cycle
+import { optimismExplorerInit } from './optimismExplorer';
 import { AssetTypes } from '@rainbow-me/entities';
 import { web3Provider } from '@rainbow-me/handlers/web3';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import NetworkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   balanceCheckerContractAbi,
-  balanceCheckerContractAbiOVM,
   coingeckoIdsFallback,
   ETH_ADDRESS,
   ETH_COINGECKO_ID,
@@ -212,14 +213,9 @@ const getTokenTxDataFromEtherscan = async (
 };
 
 const fetchAssetBalances = async (tokens, address, network) => {
-  const abi =
-    network === NetworkTypes.kovanovm
-      ? balanceCheckerContractAbiOVM
-      : balanceCheckerContractAbi;
-
   const balanceCheckerContract = new Contract(
     get(networkInfo[network], 'balance_checker_contract_address'),
-    abi,
+    balanceCheckerContractAbi,
     web3Provider
   );
   try {
@@ -368,6 +364,8 @@ export const fallbackExplorerInit = () => async (dispatch, getState) => {
     });
   };
   fetchAssetsBalancesAndPrices();
+  // Start watching optimism assets
+  dispatch(optimismExplorerInit());
 };
 
 export const fallbackExplorerClearState = () => (dispatch, getState) => {

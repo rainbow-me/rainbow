@@ -1,6 +1,7 @@
 import { compact, get, toLower } from 'lodash';
 import React, { useCallback } from 'react';
 import { css } from 'styled-components';
+import { optimismMainnet } from '../../config/defaultDebug';
 import { useTheme } from '../../context/ThemeContext';
 import { getRandomColor } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';
@@ -11,7 +12,12 @@ import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
-import { TransactionStatusTypes, TransactionTypes } from '@rainbow-me/entities';
+import {
+  AssetType,
+  TransactionStatusTypes,
+  TransactionTypes,
+} from '@rainbow-me/entities';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
 import TransactionActions from '@rainbow-me/helpers/transactionActions';
 import {
   getHumanReadableDate,
@@ -87,7 +93,7 @@ const TopRow = ({ balance, pending, status, title }) => (
 
 export default function TransactionCoinRow({ item, ...props }) {
   const { contact } = item;
-  const { accountAddress, network } = useAccountSettings();
+  const { accountAddress } = useAccountSettings();
   const { navigate } = useNavigation();
 
   const onPressTransaction = useCallback(async () => {
@@ -180,6 +186,12 @@ export default function TransactionCoinRow({ item, ...props }) {
               });
               break;
             case TransactionActions.viewOnEtherscan: {
+              let network = null;
+              if (item.type === AssetType.optimism) {
+                network = optimismMainnet
+                  ? networkTypes.ovm
+                  : networkTypes.kovanovm;
+              }
               ethereumUtils.openTransactionInBlockExplorer(hash, network);
               break;
             }
@@ -188,7 +200,7 @@ export default function TransactionCoinRow({ item, ...props }) {
         }
       );
     }
-  }, [accountAddress, contact, item, navigate, network]);
+  }, [accountAddress, contact, item, navigate]);
 
   return (
     <ButtonPressAnimation onPress={onPressTransaction} scaleTo={0.96}>

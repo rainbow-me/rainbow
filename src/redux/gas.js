@@ -1,14 +1,12 @@
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import { get, isEmpty } from 'lodash';
-import store from './store';
 import {
   etherscanGetGasEstimates,
   etherscanGetGasPrices,
   ethGasStationGetGasPrices,
   getEstimatedTimeForGasPrice,
 } from '@rainbow-me/handlers/gasPrices';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   defaultGasPriceFormat,
   getFallbackGasPrices,
@@ -273,12 +271,7 @@ const getSelectedGasPrice = (
   const balanceAmount = get(ethAsset, 'balance.amount', 0);
   const txFeeAmount = fromWei(get(txFee, 'txFee.value.amount', 0));
 
-  const { network } = store.getState().settings;
-
-  const isSufficientGas =
-    network === networkTypes.kovanovm
-      ? true
-      : greaterThanOrEqualTo(balanceAmount, txFeeAmount);
+  const isSufficientGas = greaterThanOrEqualTo(balanceAmount, txFeeAmount);
   return {
     isSufficientGas,
     selectedGasPrice: {

@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { View } from 'react-primitives';
 import { Column, Row } from '../layout';
 import CoinIcon from './CoinIcon';
+import OptimismBadge from './OptimismBadge';
 import { neverRerender } from '@rainbow-me/utils';
 
 // Note that `width` is always smaller than `iconSize`. We do this to force the
@@ -32,7 +33,7 @@ const TokenRowsComponent = ({ tokenRows, iconSize, width }) =>
     </Row>
   ));
 
-function CoinIconGroup({ tokens }) {
+function CoinIconGroup({ isOptimism, tokens }) {
   const { breakIndex, iconSize, width } = useMemo(
     () => sizesTable[tokens.length - 1],
     [tokens]
@@ -52,6 +53,7 @@ function CoinIconGroup({ tokens }) {
         tokenRows={tokenRows}
         width={width}
       />
+      {isOptimism && <OptimismBadge />}
     </Column>
   );
 }

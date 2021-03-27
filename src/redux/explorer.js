@@ -15,6 +15,8 @@ import {
   fallbackExplorerClearState,
   fallbackExplorerInit,
 } from './fallbackExplorer';
+// eslint-disable-next-line import/no-cycle
+import { optimismExplorerInit } from './optimismExplorer';
 import { updateTopMovers } from './topMovers';
 import { disableCharts, forceFallbackProvider } from '@rainbow-me/config/debug';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
@@ -369,6 +371,8 @@ const listenOnAddressMessages = socket => dispatch => {
         '😬 Cancelling fallback data provider listener. Zerion is good!'
       );
       dispatch(disableFallbackIfNeeded());
+      // Start watching optimism assets
+      dispatch(optimismExplorerInit());
     }
   });
 

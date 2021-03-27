@@ -13,6 +13,7 @@ import imageMetadata from './imageMetadata';
 import keyboardHeight from './keyboardHeight';
 import multicall from './multicall';
 import openStateSettings from './openStateSettings';
+import optimismExplorer from './optimismExplorer';
 import requests from './requests';
 import settings from './settings';
 import showcaseTokens from './showcaseTokens';
@@ -39,6 +40,7 @@ export default combineReducers({
   keyboardHeight,
   multicall,
   openStateSettings,
+  optimismExplorer,
   requests,
   settings,
   showcaseTokens,

@@ -18,13 +18,12 @@ import {
   SendHeader,
   SendTransactionSpeed,
 } from '../components/send';
-import { AssetTypes } from '@rainbow-me/entities';
+import { AssetType, AssetTypes } from '@rainbow-me/entities';
 import {
   createSignableTransaction,
   estimateGasLimit,
 } from '@rainbow-me/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
-import NetworkTypes from '@rainbow-me/helpers/networkTypes';
 import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
 import {
   useAccountAssets,
@@ -329,7 +328,9 @@ export default function SendSheet(props) {
     }
 
     const gasPriceToUse =
-      network === NetworkTypes.kovanovm ? 0 : selectedGasPrice?.value?.amount;
+      selected.type === AssetType.optimism
+        ? 0
+        : selectedGasPrice?.value?.amount;
 
     const txDetails = {
       amount: amountDetails.assetAmount,
@@ -371,7 +372,6 @@ export default function SendSheet(props) {
     isAuthorizing,
     isSufficientGas,
     isValidAddress,
-    network,
     recipient,
     selected,
     selectedGasPrice,

@@ -5,12 +5,14 @@ import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { requireNativeComponent } from 'react-native';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
+import { optimismMainnet } from '../../config/defaultDebug';
 import { getRandomColor } from '../../styles/colors';
 import { FloatingEmojis } from '../floating-emojis';
 import useExperimentalFlag, {
   AVATAR_PICKER,
 } from '@rainbow-me/config/experimentalHooks';
-import { TransactionStatusTypes } from '@rainbow-me/entities';
+import { AssetType, TransactionStatusTypes } from '@rainbow-me/entities';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
 import showWalletErrorAlert from '@rainbow-me/helpers/support';
 import TransactionActions from '@rainbow-me/helpers/transactionActions';
 import {
@@ -23,7 +25,6 @@ import {
 } from '@rainbow-me/helpers/validators';
 import {
   useAccountProfile,
-  useAccountSettings,
   useOnAvatarPress,
   useSafeImageUri,
   useWallets,
@@ -67,7 +68,6 @@ export default function TransactionList({
   requests,
   transactions,
 }) {
-  const { network } = useAccountSettings();
   const { isDamaged } = useWallets();
   const [tapTarget, setTapTarget] = useState([0, 0, 0, 0]);
   const onNewEmoji = useRef();
@@ -221,6 +221,12 @@ export default function TransactionList({
                 });
                 break;
               case TransactionActions.viewOnEtherscan: {
+                let network = null;
+                if (item.type === AssetType.optimism) {
+                  network = optimismMainnet
+                    ? networkTypes.ovm
+                    : networkTypes.kovanovm;
+                }
                 ethereumUtils.openTransactionInBlockExplorer(hash, network);
                 break;
               }
@@ -230,7 +236,7 @@ export default function TransactionList({
         );
       }
     },
-    [accountAddress, contacts, navigate, network, transactions]
+    [accountAddress, contacts, navigate, transactions]
   );
 
   const onCopyAddressPress = useCallback(

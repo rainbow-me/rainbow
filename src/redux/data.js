@@ -449,13 +449,11 @@ export const addressAssetsReceived = (
     uniswapUpdateLiquidityTokens(liquidityTokens, append || change || removed)
   );
 
-  if (append || change || removed) {
-    const { assets: existingAssets } = getState().data;
-    parsedAssets = uniqBy(
-      concat(parsedAssets, existingAssets),
-      item => item.uniqueId
-    );
-  }
+  const { assets: existingAssets } = getState().data;
+  parsedAssets = uniqBy(
+    concat(parsedAssets, existingAssets),
+    item => item.uniqueId
+  );
 
   parsedAssets = parsedAssets.filter(
     asset => !!Number(get(asset, 'balance.amount'))

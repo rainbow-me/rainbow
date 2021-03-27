@@ -24,7 +24,6 @@ import logger from 'logger';
 
 const infuraProjectId = __DEV__ ? INFURA_PROJECT_ID_DEV : INFURA_PROJECT_ID;
 const infuraUrl = `https://network.infura.io/v3/${infuraProjectId}`;
-export const OPTIMISIM_KOVAN_RPC_ENDPOINT = 'https://kovan.optimism.io';
 
 /**
  * @desc web3 http instance
@@ -42,17 +41,8 @@ export const web3SetHttpProvider = async network => {
   if (network.startsWith('http://')) {
     web3Provider = new JsonRpcProvider(network, NetworkTypes.mainnet);
   } else {
-    const url =
-      network === NetworkTypes.kovanovm
-        ? OPTIMISIM_KOVAN_RPC_ENDPOINT
-        : replace(infuraUrl, 'network', network);
-    try {
-      web3Provider = new JsonRpcProvider(url);
-      return web3Provider.ready;
-    } catch (e) {
-      logger.log('ERROR connecting to RPC endpoint', e);
-      return null;
-    }
+    web3Provider = new JsonRpcProvider(replace(infuraUrl, 'network', network));
+    return web3Provider.ready;
   }
 };
 

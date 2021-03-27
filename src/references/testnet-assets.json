@@ -154,6 +154,7 @@
     "kovanovm": [
       {
         "asset": {
+          "mainnet_address": "eth",
           "asset_code": "0x4200000000000000000000000000000000000006",
           "coingecko_id": "ethereum",
           "decimals": 18,
@@ -164,12 +165,14 @@
             "relative_change_24h": -4.586615622469276,
             "value": 259.2
           },
-          "symbol": "ETH"
+          "symbol": "ETH",
+          "type": "optimism"
         },
         "quantity": 0
       },
       {
         "asset": {
+          "mainnet_address": "0x6b175474e89094c44da98b954eedeac495271d0f",
           "asset_code": "0x782e1ec5F7381269b2e5DC4eD58648C60161539b",
           "coingecko_id": "dai",
           "decimals": 18,
@@ -180,7 +183,8 @@
             "relative_change_24h": 0.8470466197462612,
             "value": 1
           },
-          "symbol": "DAI"
+          "symbol": "DAI",
+          "type": "optimism"
         },
         "quantity": 0
       }
