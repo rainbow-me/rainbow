@@ -5,11 +5,14 @@ import { toLower } from 'lodash';
 import { optimismMainnet } from '../config/debug';
 // eslint-disable-next-line import/no-cycle
 import { addressAssetsReceived, fetchAssetPrices } from './data';
+// eslint-disable-next-line import/no-cycle
+import { emitAssetRequest, emitChartsRequest } from './explorer';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import {
   balanceCheckerContractAbiOVM,
   testnetAssets,
 } from '@rainbow-me/references';
+import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 // -- Constants --------------------------------------- //
@@ -65,6 +68,7 @@ const fetchAssetBalances = async (tokens, address) => {
 };
 
 export const optimismExplorerInit = () => async (dispatch, getState) => {
+  const { assets: allAssets, genericAssets } = getState().data;
   const { accountAddress, nativeCurrency } = getState().settings;
   const formattedNativeCurrency = toLower(nativeCurrency);
 
@@ -85,6 +89,13 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
       return;
     }
 
+    const tokenAddresses = assets.map(
+      ({ asset: { asset_code } }) => asset_code
+    );
+
+    dispatch(emitAssetRequest(tokenAddresses));
+    dispatch(emitChartsRequest(tokenAddresses));
+
     const prices = await fetchAssetPrices(
       assets.map(({ asset: { coingecko_id } }) => coingecko_id),
       formattedNativeCurrency
@@ -94,7 +105,13 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
       Object.keys(prices).forEach(key => {
         for (let i = 0; i < assets.length; i++) {
           if (toLower(assets[i].asset.coingecko_id) === toLower(key)) {
-            assets[i].asset.price = {
+            const asset =
+              ethereumUtils.getAsset(
+                allAssets,
+                toLower(assets[i].asset.mainnet_address)
+              ) || genericAssets[toLower(assets[i].asset.mainnet_address)];
+
+            assets[i].asset.price = asset?.price || {
               changed_at: prices[key].last_updated_at,
               relative_change_24h:
                 prices[key][`${formattedNativeCurrency}_24h_change`],
