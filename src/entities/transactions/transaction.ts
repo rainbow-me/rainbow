@@ -23,6 +23,7 @@ export interface RainbowTransaction {
     display: string;
   };
   nonce: number | null;
+  optimism?: boolean;
   pending: boolean;
   protocol?: ProtocolType | null;
   sourceAmount?: string; // for purchases
@@ -44,6 +45,7 @@ export interface NewTransaction {
   gasPrice?: string;
   hash: string | null;
   nonce: number | null;
+  optimism?: boolean;
   protocol?: ProtocolType | null;
   sourceAmount?: string; // for purchases
   status?: TransactionStatus;

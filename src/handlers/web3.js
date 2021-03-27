@@ -9,6 +9,11 @@ import { get, replace, startsWith } from 'lodash';
 import { INFURA_PROJECT_ID, INFURA_PROJECT_ID_DEV } from 'react-native-dotenv';
 import { AssetTypes } from '@rainbow-me/entities';
 import NetworkTypes from '@rainbow-me/helpers/networkTypes';
+// eslint-disable-next-line import/no-cycle
+import {
+  OPTIMISM_KOVAN_RPC_ENDPOINT,
+  OPTIMISM_MAINNET_RPC_ENDPOINT,
+} from '@rainbow-me/redux/optimismExplorer';
 import { ethUnits, smartContractMethods } from '@rainbow-me/references';
 import {
   addBuffer,
@@ -43,6 +48,31 @@ export const web3SetHttpProvider = async network => {
   } else {
     web3Provider = new JsonRpcProvider(replace(infuraUrl, 'network', network));
     return web3Provider.ready;
+  }
+};
+
+/**
+ * @desc returns a web3 provider for the specified network
+ * @param {String} network
+ */
+export const getProviderForNetwork = async network => {
+  if (network.startsWith('http://')) {
+    return new JsonRpcProvider(network, NetworkTypes.mainnet);
+  } else {
+    let url;
+    switch (network) {
+      case NetworkTypes.kovanovm:
+        url = OPTIMISM_KOVAN_RPC_ENDPOINT;
+        break;
+      case NetworkTypes.ovm:
+        url = OPTIMISM_MAINNET_RPC_ENDPOINT;
+        break;
+      default:
+        url = replace(infuraUrl, 'network', network);
+    }
+    const provider = new JsonRpcProvider(url);
+    await provider.ready;
+    return provider;
   }
 };
 
@@ -99,9 +129,10 @@ export const toChecksumAddress = address => {
  * @param  {String} address
  * @return {String} gas limit
  */
-export const estimateGas = async estimateGasData => {
+export const estimateGas = async (estimateGasData, provider = null) => {
   try {
-    const gasLimit = await web3Provider.estimateGas(estimateGasData);
+    const p = provider || web3Provider;
+    const gasLimit = await p.estimateGas(estimateGasData);
     return gasLimit.toString();
   } catch (error) {
     return null;
@@ -110,14 +141,16 @@ export const estimateGas = async estimateGasData => {
 
 export const estimateGasWithPadding = async (
   txPayload,
+  provider = null,
   paddingFactor = 1.1
 ) => {
   try {
+    const p = provider || web3Provider;
     const txPayloadToEstimate = { ...txPayload };
-    const { gasLimit } = await web3Provider.getBlock();
+    const { gasLimit } = await p.getBlock();
     const { to, data } = txPayloadToEstimate;
     // 1 - Check if the receiver is a contract
-    const code = to ? await web3Provider.getCode(to) : undefined;
+    const code = to ? await p.getCode(to) : undefined;
     // 2 - if it's not a contract AND it doesn't have any data use the default gas limit
     if (!to || (to && !data && (!code || code === '0x'))) {
       logger.log(
@@ -132,7 +165,7 @@ export const estimateGasWithPadding = async (
     logger.log('⛽ safer gas limit for last block is', saferGasLimit);
 
     txPayloadToEstimate.gas = toHex(saferGasLimit);
-    const estimatedGas = await web3Provider.estimateGas(txPayloadToEstimate);
+    const estimatedGas = await p.estimateGas(txPayloadToEstimate);
 
     const lastBlockGasLimit = addBuffer(gasLimit.toString(), 0.9);
     const paddedGas = addBuffer(
@@ -232,12 +265,13 @@ export const resolveUnstoppableDomain = async domain => {
   return res;
 };
 
-const resolveNameOrAddress = async nameOrAddress => {
+const resolveNameOrAddress = async (nameOrAddress, provider) => {
   if (!isHexString(nameOrAddress)) {
     if (/^([\w-]+\.)+(crypto)$/.test(nameOrAddress)) {
       return resolveUnstoppableDomain(nameOrAddress);
     }
-    return web3Provider.resolveName(nameOrAddress);
+    const p = provider || web3Provider;
+    return p.resolveName(nameOrAddress);
   }
   return nameOrAddress;
 };
@@ -357,14 +391,15 @@ export const getDataForNftTransfer = (from, to, asset) => {
  */
 export const estimateGasLimit = async (
   { asset, address, recipient, amount },
-  addPadding = false
+  addPadding = false,
+  provider = null
 ) => {
   const _amount =
     amount && Number(amount)
       ? convertAmountToRawAmount(amount, asset.decimals)
       : estimateAssetBalancePortion(asset);
   const value = _amount.toString();
-  const _recipient = await resolveNameOrAddress(recipient);
+  const _recipient = await resolveNameOrAddress(recipient, provider);
   let estimateGasData = {
     data: '0x',
     from: address,
@@ -389,8 +424,8 @@ export const estimateGasLimit = async (
     };
   }
   if (addPadding) {
-    return estimateGasWithPadding(estimateGasData);
+    return estimateGasWithPadding(estimateGasData, provider);
   } else {
-    return estimateGas(estimateGasData);
+    return estimateGas(estimateGasData, provider);
   }
 };

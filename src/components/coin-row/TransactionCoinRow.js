@@ -12,11 +12,7 @@ import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
-import {
-  AssetType,
-  TransactionStatusTypes,
-  TransactionTypes,
-} from '@rainbow-me/entities';
+import { TransactionStatusTypes, TransactionTypes } from '@rainbow-me/entities';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import TransactionActions from '@rainbow-me/helpers/transactionActions';
 import {
@@ -97,7 +93,7 @@ export default function TransactionCoinRow({ item, ...props }) {
   const { navigate } = useNavigation();
 
   const onPressTransaction = useCallback(async () => {
-    const { hash, from, minedAt, pending, to, status, type } = item;
+    const { hash, from, minedAt, pending, to, status, type, optimism } = item;
 
     const date = getHumanReadableDate(minedAt);
     const isSent =
@@ -187,7 +183,7 @@ export default function TransactionCoinRow({ item, ...props }) {
               break;
             case TransactionActions.viewOnEtherscan: {
               let network = null;
-              if (item.type === AssetType.optimism) {
+              if (optimism) {
                 network = optimismMainnet
                   ? networkTypes.ovm
                   : networkTypes.kovanovm;

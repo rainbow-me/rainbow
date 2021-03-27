@@ -18,12 +18,15 @@ import {
   SendHeader,
   SendTransactionSpeed,
 } from '../components/send';
+import { optimismMainnet } from '../config/defaultDebug';
 import { AssetType, AssetTypes } from '@rainbow-me/entities';
 import {
   createSignableTransaction,
   estimateGasLimit,
+  getProviderForNetwork,
 } from '@rainbow-me/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
 import {
   useAccountAssets,
@@ -150,6 +153,7 @@ export default function SendSheet(props) {
   const [recipient, setRecipient] = useState('');
   const [selected, setSelected] = useState({});
   const { maxInputBalance, updateMaxInputBalance } = useMaxInputBalance();
+  const [currentProvider, setCurrentProvider] = useState();
 
   const showEmptyState = !isValidAddress;
   const showAssetList = isValidAddress && isEmpty(selected);
@@ -248,6 +252,20 @@ export default function SendSheet(props) {
     ]
   );
 
+  useEffect(() => {
+    const updateCurrentProvider = async () => {
+      if (selected && selected.type === AssetType.optimism) {
+        const provider = await getProviderForNetwork(
+          optimismMainnet ? networkTypes.ovm : networkTypes.kovanovm
+        );
+        setCurrentProvider(provider);
+      } else {
+        setCurrentProvider();
+      }
+    };
+    updateCurrentProvider();
+  }, [selected]);
+
   const onChangeNativeAmount = useCallback(
     newNativeAmount => {
       if (!isString(newNativeAmount)) return;
@@ -293,7 +311,9 @@ export default function SendSheet(props) {
 
   const onSubmit = useCallback(async () => {
     const validTransaction =
-      isValidAddress && amountDetails.isSufficientBalance && isSufficientGas;
+      isValidAddress &&
+      ((amountDetails.isSufficientBalance && isSufficientGas) ||
+        (selected.type === AssetTypes.optimism && !optimismMainnet));
     if (!selectedGasPrice.txFee || !validTransaction || isAuthorizing) {
       logger.sentry('preventing tx submit for one of the following reasons:');
       logger.sentry('selectedGasPrice.txFee ? ', selectedGasPrice?.txFee);
@@ -316,7 +336,8 @@ export default function SendSheet(props) {
             asset: selected,
             recipient,
           },
-          true
+          true,
+          currentProvider
         );
         logger.log('gasLimit updated before sending', {
           after: updatedGasLimit,
@@ -344,6 +365,7 @@ export default function SendSheet(props) {
     try {
       const signableTransaction = await createSignableTransaction(txDetails);
       const txResult = await sendTransaction({
+        provider: currentProvider,
         transaction: signableTransaction,
       });
       const { hash, nonce } = txResult;
@@ -351,6 +373,7 @@ export default function SendSheet(props) {
         submitSuccess = true;
         txDetails.hash = hash;
         txDetails.nonce = nonce;
+        txDetails.optimism = selected.type === AssetType.optimism;
         await dispatch(dataAddNewTransaction(txDetails));
       }
     } catch (error) {
@@ -366,6 +389,7 @@ export default function SendSheet(props) {
     accountAddress,
     amountDetails.assetAmount,
     amountDetails.isSufficientBalance,
+    currentProvider,
     dataAddNewTransaction,
     dispatch,
     gasLimit,
@@ -374,7 +398,8 @@ export default function SendSheet(props) {
     isValidAddress,
     recipient,
     selected,
-    selectedGasPrice,
+    selectedGasPrice.txFee,
+    selectedGasPrice?.value?.amount,
     updateTxFee,
   ]);
 
@@ -475,18 +500,23 @@ export default function SendSheet(props) {
 
   useEffect(() => {
     if (isValidAddress) {
-      estimateGasLimit({
-        address: accountAddress,
-        amount: amountDetails.assetAmount,
-        asset: selected,
-        recipient,
-      })
+      estimateGasLimit(
+        {
+          address: accountAddress,
+          amount: amountDetails.assetAmount,
+          asset: selected,
+          recipient,
+        },
+        false,
+        currentProvider
+      )
         .then(gasLimit => updateTxFee(gasLimit))
         .catch(() => updateTxFee(null));
     }
   }, [
     accountAddress,
     amountDetails.assetAmount,
+    currentProvider,
     dispatch,
     isValidAddress,
     recipient,
@@ -541,8 +571,14 @@ export default function SendSheet(props) {
                 {...props}
                 assetAmount={amountDetails.assetAmount}
                 isAuthorizing={isAuthorizing}
-                isSufficientBalance={amountDetails.isSufficientBalance}
-                isSufficientGas={isSufficientGas}
+                isSufficientBalance={
+                  amountDetails.isSufficientBalance ||
+                  (selected.type === AssetTypes.optimism && !optimismMainnet)
+                }
+                isSufficientGas={
+                  isSufficientGas ||
+                  (selected.type === AssetTypes.optimism && !optimismMainnet)
+                }
                 onLongPress={onLongPressSend}
                 smallButton={isTinyPhone}
                 testID="send-sheet-confirm"

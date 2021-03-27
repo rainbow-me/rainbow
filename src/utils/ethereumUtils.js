@@ -19,7 +19,6 @@ import {
 import { Linking, NativeModules } from 'react-native';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import URL from 'url-parse';
-import { OPTIMISIM_KOVAN_RPC_ENDPOINT } from '@rainbow-me/handlers/web3';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   convertAmountAndPriceToNativeDisplay,
@@ -35,6 +34,10 @@ import {
   identifyWalletType,
   WalletLibraryType,
 } from '@rainbow-me/model/wallet';
+import {
+  OPTIMISM_KOVAN_RPC_ENDPOINT,
+  OPTIMISM_MAINNET_RPC_ENDPOINT,
+} from '@rainbow-me/redux/optimismExplorer';
 import store from '@rainbow-me/redux/store';
 import { chains, ETH_ADDRESS } from '@rainbow-me/references';
 import logger from 'logger';
@@ -298,10 +301,12 @@ function openTokenEtherscanURL(address) {
 
 function openTransactionInBlockExplorer(hash, network) {
   const normalizedHash = hash.replace(/-.*/g, '');
-  if (network && network === networkTypes.kovanovm) {
+  if (network) {
     Linking.openURL(
       `https://expedition.dev/tx/${normalizedHash}?rpcUrl=${encodeURIComponent(
-        OPTIMISIM_KOVAN_RPC_ENDPOINT
+        network === networkTypes.kovanovm
+          ? OPTIMISM_KOVAN_RPC_ENDPOINT
+          : OPTIMISM_MAINNET_RPC_ENDPOINT
       )}`
     );
   }

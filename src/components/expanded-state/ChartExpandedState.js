@@ -41,18 +41,19 @@ export default function ChartExpandedState({ asset }) {
 
   // If we don't have a balance for this asset
   // It's a generic asset
-  const hasBalance = asset?.balance && asset.type !== AssetType.optimism;
+  const hasBalance = asset?.balance;
   const assetAddress =
     asset.type === AssetType.optimism ? asset?.mainnet_address : asset?.address;
 
-  const assetWithPrice = hasBalance
-    ? asset
-    : genericAssets[assetAddress]
-    ? ethereumUtils.formatGenericAsset(
-        genericAssets[assetAddress],
-        nativeCurrency
-      )
-    : asset;
+  const assetWithPrice =
+    hasBalance && asset.type !== AssetType.optimism
+      ? asset
+      : genericAssets[assetAddress]
+      ? ethereumUtils.formatGenericAsset(
+          genericAssets[assetAddress],
+          nativeCurrency
+        )
+      : asset;
 
   assetWithPrice.type = asset.type;
   assetWithPrice.name = asset.name;

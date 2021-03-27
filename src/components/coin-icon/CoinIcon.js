@@ -28,7 +28,7 @@ const CoinIcon = ({
   badgeYPosition,
   ...props
 }) => {
-  const tokenMetadata = getTokenMetadata(address);
+  const tokenMetadata = getTokenMetadata(props.mainnet_address || address);
   const color = useColorForAsset({ address });
   const { colors, isDarkMode } = useTheme();
   const forceFallback = !isETH(address) && isNil(tokenMetadata);

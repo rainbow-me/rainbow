@@ -11,7 +11,7 @@ import { FloatingEmojis } from '../floating-emojis';
 import useExperimentalFlag, {
   AVATAR_PICKER,
 } from '@rainbow-me/config/experimentalHooks';
-import { AssetType, TransactionStatusTypes } from '@rainbow-me/entities';
+import { TransactionStatusTypes } from '@rainbow-me/entities';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import showWalletErrorAlert from '@rainbow-me/helpers/support';
 import TransactionActions from '@rainbow-me/helpers/transactionActions';
@@ -130,7 +130,7 @@ export default function TransactionList({
     e => {
       const { index } = e.nativeEvent;
       const item = transactions[index];
-      const { hash, from, minedAt, pending, to, status, type } = item;
+      const { hash, from, minedAt, pending, to, status, type, optimism } = item;
 
       const date = getHumanReadableDate(minedAt);
 
@@ -222,7 +222,7 @@ export default function TransactionList({
                 break;
               case TransactionActions.viewOnEtherscan: {
                 let network = null;
-                if (item.type === AssetType.optimism) {
+                if (optimism) {
                   network = optimismMainnet
                     ? networkTypes.ovm
                     : networkTypes.kovanovm;

@@ -86,6 +86,7 @@ export default function SendAssetForm({
         width={deviceWidth}
       >
         <AssetRowElement
+          badgeYPosition={5}
           item={selectedAsset}
           onPress={onResetAssetSelection}
           selected
