@@ -76,14 +76,17 @@ export const getProviderForNetwork = async network => {
   }
 };
 
-export const sendRpcCall = async payload =>
-  web3Provider.send(payload.method, payload.params);
+export const sendRpcCall = async (payload, provider = null) =>
+  (provider || web3Provider).send(payload.method, payload.params);
 
-export const getTransactionReceipt = txHash =>
-  sendRpcCall({
-    method: 'eth_getTransactionReceipt',
-    params: [txHash],
-  });
+export const getTransactionReceipt = (txHash, provider = null) =>
+  sendRpcCall(
+    {
+      method: 'eth_getTransactionReceipt',
+      params: [txHash],
+    },
+    provider
+  );
 
 /**
  * @desc check if hex string

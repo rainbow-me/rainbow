@@ -374,7 +374,9 @@ export default function SendSheet(props) {
         txDetails.hash = hash;
         txDetails.nonce = nonce;
         txDetails.optimism = selected.type === AssetType.optimism;
-        await dispatch(dataAddNewTransaction(txDetails));
+        await dispatch(
+          dataAddNewTransaction(txDetails, null, false, currentProvider)
+        );
       }
     } catch (error) {
       logger.sentry('TX Details', txDetails);

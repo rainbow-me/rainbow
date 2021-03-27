@@ -45,6 +45,7 @@ import {
   saveAssets,
   saveLocalTransactions,
 } from '@rainbow-me/handlers/localstorage/accountLocal';
+// eslint-disable-next-line import/no-cycle
 import { getTransactionReceipt } from '@rainbow-me/handlers/web3';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { Navigation } from '@rainbow-me/navigation';
@@ -609,7 +610,8 @@ export const assetPricesChanged = message => (dispatch, getState) => {
 export const dataAddNewTransaction = (
   txDetails,
   accountAddressToUpdate = null,
-  disableTxnWatcher = false
+  disableTxnWatcher = false,
+  provider = null
 ) => async (dispatch, getState) => {
   const { transactions } = getState().data;
   const { accountAddress, nativeCurrency, network } = getState().settings;
@@ -631,7 +633,14 @@ export const dataAddNewTransaction = (
     });
     saveLocalTransactions(_transactions, accountAddress, network);
     if (!disableTxnWatcher || network !== networkTypes.mainnet) {
-      dispatch(watchPendingTransactions(accountAddress));
+      dispatch(
+        watchPendingTransactions(
+          accountAddress,
+          TXN_WATCHER_MAX_TRIES,
+          null,
+          provider
+        )
+      );
     }
     return parsedTransaction;
     // eslint-disable-next-line no-empty
@@ -655,10 +664,10 @@ const getConfirmedState = type => {
   }
 };
 
-export const dataWatchPendingTransactions = (cb = null) => async (
-  dispatch,
-  getState
-) => {
+export const dataWatchPendingTransactions = (
+  cb = null,
+  provider = null
+) => async (dispatch, getState) => {
   const { transactions } = getState().data;
   if (!transactions.length) return true;
   let txStatusesDidChange = false;
@@ -676,7 +685,7 @@ export const dataWatchPendingTransactions = (cb = null) => async (
       const txHash = ethereumUtils.getHash(tx);
       try {
         logger.log('Checking pending tx with hash', txHash);
-        const txObj = await getTransactionReceipt(txHash);
+        const txObj = await getTransactionReceipt(txHash, provider);
         if (txObj && txObj.blockNumber) {
           // When speeding up a non "normal tx" we need to resubscribe
           // because zerion "append" event isn't reliable
@@ -780,7 +789,8 @@ const updatePurchases = updatedTransactions => dispatch => {
 const watchPendingTransactions = (
   accountAddressToWatch,
   remainingTries = TXN_WATCHER_MAX_TRIES,
-  cb = null
+  cb = null,
+  provider = null
 ) => async (dispatch, getState) => {
   pendingTransactionsHandle && clearTimeout(pendingTransactionsHandle);
   if (remainingTries === 0) return;
@@ -788,12 +798,17 @@ const watchPendingTransactions = (
   const { accountAddress: currentAccountAddress } = getState().settings;
   if (currentAccountAddress !== accountAddressToWatch) return;
 
-  const done = await dispatch(dataWatchPendingTransactions(cb));
+  const done = await dispatch(dataWatchPendingTransactions(cb, provider));
 
   if (!done) {
     pendingTransactionsHandle = setTimeout(() => {
       dispatch(
-        watchPendingTransactions(accountAddressToWatch, remainingTries - 1, cb)
+        watchPendingTransactions(
+          accountAddressToWatch,
+          remainingTries - 1,
+          cb,
+          provider
+        )
       );
     }, TXN_WATCHER_POLL_INTERVAL);
   }
