@@ -4,6 +4,7 @@ import React, { Fragment, useMemo } from 'react';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import styled from 'styled-components';
 import { UniBalanceHeightDifference } from '../../hooks/charts/useChartThrottledPoints';
+import useNativeCurrencyToUSD from '../../hooks/useNativeCurrencyToUSD';
 import { useUsersPositions } from '../../hooks/useUsersPositions';
 import { renderPoolValue } from '../investment-cards/renderPoolValue';
 
@@ -27,8 +28,8 @@ import { toChecksumAddress } from '@rainbow-me/handlers/web3';
 import chartTypes from '@rainbow-me/helpers/chartTypes';
 import {
   useAccountSettings,
-  useAnnualizedFees,
   useChartThrottledPoints,
+  usePoolDetails,
 } from '@rainbow-me/hooks';
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import { magicMemo } from '@rainbow-me/utils';
@@ -50,8 +51,13 @@ const APYWrapper = styled.View`
   flex: 1;
 `;
 
-const LiquidityPoolExpandedState = ({ asset }) => {
+const Carousel = styled.ScrollView.attrs({
+  horizontal: true,
+})``;
+
+const LiquidityPoolExpandedState = () => {
   const { params } = useRoute();
+  const { asset } = params;
   const { tokenNames, tokens, totalNativeDisplay, type, uniBalance } = asset;
 
   const tokenType = type === 'uniswap' ? 'UNI-V1' : 'UNI-V2';
@@ -73,7 +79,19 @@ const LiquidityPoolExpandedState = ({ asset }) => {
     [asset.address, nativeCurrency, positions]
   );
 
-  const fee = useAnnualizedFees(asset.address);
+  useNativeCurrencyToUSD();
+
+  const details = usePoolDetails(asset.address);
+  const { annualized_fees: fee, oneDayVolumeUSD } = details || {};
+
+  const volume = useMemo(
+    () =>
+      oneDayVolumeUSD?.toLocaleString('en-US', {
+        currency: 'USD',
+        style: 'currency',
+      }),
+    [oneDayVolumeUSD]
+  );
 
   const {
     chart,
@@ -98,7 +116,7 @@ const LiquidityPoolExpandedState = ({ asset }) => {
     (uniBalance ? 0 : UniBalanceHeightDifference);
 
   const tokenAddresses = useMemo(() => {
-    return tokens.map(token => formatTokenAddress(token.address));
+    return tokens?.map(token => formatTokenAddress(token.address));
   }, [tokens]);
 
   const chartDataLabels = useMemo(() => {
@@ -160,7 +178,7 @@ const LiquidityPoolExpandedState = ({ asset }) => {
                 {totalNativeDisplay}
               </TokenInfoItem>
             </TokenInfoRow>
-            <TokenInfoRow>
+            <Carousel>
               <TokenInfoItem hidden={!fee} title="Annualized fees">
                 <APYWrapper>
                   {renderPoolValue(
@@ -176,23 +194,41 @@ const LiquidityPoolExpandedState = ({ asset }) => {
                 title="Total fee earned"
                 weight="bold"
               >
-                {totalFeeEarned}
+                {totalFeeEarned} 🤑
               </TokenInfoItem>
-            </TokenInfoRow>
+              <TokenInfoItem
+                hidden={!totalFeeEarned}
+                title="Pool volume 24h"
+                weight="bold"
+              >
+                {volume}
+              </TokenInfoItem>
+              <TokenInfoItem
+                hidden={!totalFeeEarned}
+                title="30d profit"
+                weight="bold"
+              >
+                {volume}
+              </TokenInfoItem>
+            </Carousel>
           </TokenInfoSection>
           <SheetActionButtonRow>
-            <WithdrawActionButton
-              symbol={tokenNames}
-              token1Address={tokenAddresses[0]}
-              token2Address={tokenAddresses[1]}
-              weight="bold"
-            />
-            <DepositActionButton
-              symbol={tokenNames}
-              token1Address={tokenAddresses[0]}
-              token2Address={tokenAddresses[1]}
-              weight="bold"
-            />
+            {tokenAddresses?.length > 0 && (
+              <WithdrawActionButton
+                symbol={tokenNames}
+                token1Address={tokenAddresses[0]}
+                token2Address={tokenAddresses[1]}
+                weight="bold"
+              />
+            )}
+            {tokenAddresses?.length > 0 && (
+              <DepositActionButton
+                symbol={tokenNames}
+                token1Address={tokenAddresses[0]}
+                token2Address={tokenAddresses[1]}
+                weight="bold"
+              />
+            )}
           </SheetActionButtonRow>
         </Fragment>
       ) : (

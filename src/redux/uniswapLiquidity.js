@@ -17,7 +17,7 @@ const UNISWAP_UPDATE_LIQUIDITY_TOKENS =
   'uniswap/UNISWAP_UPDATE_LIQUIDITY_TOKENS';
 const UNISWAP_CLEAR_STATE = 'uniswap/UNISWAP_CLEAR_STATE';
 
-const UNISWAP_SET_ANNUALIZED_FEES = 'uniswap/UNISWAP_SET_ANNUALIZED_FEES';
+const UNISWAP_POOLS_DETAILS = 'uniswap/UNISWAP_POOLS_DETAILS';
 
 // -- Actions --------------------------------------------------------------- //
 
@@ -44,8 +44,8 @@ export const uniswapLiquidityLoadState = () => async (dispatch, getState) => {
 export const uniswapLiquidityResetState = () => dispatch =>
   dispatch({ type: UNISWAP_CLEAR_STATE });
 
-export const setAnnualizedFees = fees => dispatch =>
-  dispatch({ payload: fees, type: UNISWAP_SET_ANNUALIZED_FEES });
+export const setPoolsDetails = fees => dispatch =>
+  dispatch({ payload: fees, type: UNISWAP_POOLS_DETAILS });
 
 export const uniswapUpdateLiquidityTokens = (
   liquidityTokens,
@@ -108,8 +108,8 @@ export const uniswapUpdateLiquidityInfo = () => async (dispatch, getState) => {
 
 // -- Reducer --------------------------------------------------------------- //
 export const INITIAL_UNISWAP_LIQUIDITY_STATE = {
-  annualizedFees: {},
   liquidityTokens: [],
+  poolsDetails: {},
   uniswapLiquidityTokenInfo: {},
 };
 
@@ -119,10 +119,10 @@ export default (state = INITIAL_UNISWAP_LIQUIDITY_STATE, action) => {
       return { ...state, uniswapLiquidityTokenInfo: action.payload };
     case UNISWAP_UPDATE_LIQUIDITY_TOKENS:
       return { ...state, liquidityTokens: action.payload };
-    case UNISWAP_SET_ANNUALIZED_FEES:
+    case UNISWAP_POOLS_DETAILS:
       return {
         ...state,
-        annualizedFees: { ...state.annualizedFees, ...action.payload },
+        poolsDetails: { ...state.annualizedFees, ...action.payload },
       };
     case UNISWAP_CLEAR_STATE:
       return INITIAL_UNISWAP_LIQUIDITY_STATE;

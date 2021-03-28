@@ -41,7 +41,13 @@ const bigNumberFormat = (num, nativeCurrency) => {
   return ret;
 };
 
-export const renderPoolValue = (type, value, nativeCurrency, colors) => {
+export const renderPoolValue = (
+  type,
+  value,
+  nativeCurrency,
+  colors,
+  simple = true
+) => {
   let formattedValue = value;
   let color = type === 'oneDayVolumeUSD' ? colors.swapPurple : colors.appleBlue;
 
@@ -78,7 +84,7 @@ export const renderPoolValue = (type, value, nativeCurrency, colors) => {
     formattedValue = bigNumberFormat(value, nativeCurrency);
   }
   return (
-    <PoolValueWrapper backgroundColor={colors.alpha(color, 0.06)}>
+    <PoolValueWrapper backgroundColor={colors.alpha(color, simple ? 0 : 0.06)}>
       <PoolValueText color={color}>{formattedValue}</PoolValueText>
     </PoolValueWrapper>
   );

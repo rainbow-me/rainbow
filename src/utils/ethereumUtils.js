@@ -60,6 +60,14 @@ export const useEth = () => {
   );
 };
 
+export const useEthUSDPrice = () => {
+  return useSelector(({ data: { ethUSDPrice } }) => ethUSDPrice);
+};
+
+export const useEthUSDMonthChart = () => {
+  return useSelector(({ charts: { chartsEthUSDMonth } }) => chartsEthUSDMonth);
+};
+
 const getEthPriceUnit = () => getAssetPrice();
 
 const getBalanceAmount = (selectedGasPrice, selected) => {
