@@ -18,6 +18,7 @@ import {
 import { updateTopMovers } from './topMovers';
 import { disableCharts, forceFallbackProvider } from '@rainbow-me/config/debug';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
+import currencyTypes from '@rainbow-me/helpers/currencyTypes';
 import NetworkTypes from '@rainbow-me/helpers/networkTypes';
 import { DPI_ADDRESS, ETH_ADDRESS } from '@rainbow-me/references';
 import { TokensListenedCache } from '@rainbow-me/utils';
@@ -112,7 +113,7 @@ const ethUSDSubscription = [
   {
     payload: {
       asset_codes: [ETH_ADDRESS],
-      currency: 'usd',
+      currency: currencyTypes.usd,
     },
     scope: ['prices'],
   },
@@ -264,7 +265,9 @@ export const explorerInit = () => async (dispatch, getState) => {
     if (!disableCharts) {
       // We need this for Uniswap Pools profit calculation
       dispatch(emitChartsRequest([ETH_ADDRESS, DPI_ADDRESS], ChartTypes.month));
-      dispatch(emitChartsRequest([ETH_ADDRESS], ChartTypes.month, 'usd'));
+      dispatch(
+        emitChartsRequest([ETH_ADDRESS], ChartTypes.month, currencyTypes.usd)
+      );
     }
   });
 

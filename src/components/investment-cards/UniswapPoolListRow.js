@@ -3,14 +3,13 @@ import React, { useCallback } from 'react';
 import { View } from 'react-native';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { useTheme } from '../../context/ThemeContext';
 import { UniBalanceHeightDifference } from '../../hooks/charts/useChartThrottledPoints';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText, CoinRow } from '../coin-row';
 import CoinName from '../coin-row/CoinName';
 import { initialLiquidityPoolExpandedStateSheetHeight } from '../expanded-state/LiquidityPoolExpandedState';
 import { FlexItem, Row } from '../layout';
-import { renderPoolValue } from './renderPoolValue';
+import { PoolValue } from './poolValue';
 import { readableUniswapSelector } from '@rainbow-me/helpers/uniswapLiquidityTokenInfoSelector';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
@@ -45,22 +44,14 @@ const BottomRow = ({ symbol }) => {
 };
 
 const TopRow = item => {
-  const { colors } = useTheme();
-  const { nativeCurrency } = useAccountSettings();
-  const poolValue = useMemo(() => {
-    return renderPoolValue(
-      item.attribute,
-      item[item.attribute],
-      nativeCurrency,
-      colors
-    );
-  }, [colors, item, nativeCurrency]);
   return (
     <TopRowContainer>
       <FlexItem flex={1}>
         <CoinName>{item.tokenNames}</CoinName>
       </FlexItem>
-      <PriceContainer>{poolValue}</PriceContainer>
+      <PriceContainer>
+        <PoolValue type={item.attribute} value={item[item.attribute]} />
+      </PriceContainer>
     </TopRowContainer>
   );
 };

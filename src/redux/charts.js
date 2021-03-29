@@ -1,6 +1,7 @@
 import { get, mapValues, reverse, toLower } from 'lodash';
 
 import ChartTypes from '../helpers/chartTypes';
+import currenyTypes from '@rainbow-me/helpers/currencyTypes';
 import { ETH_ADDRESS } from '@rainbow-me/references';
 
 // -- Constants --------------------------------------- //
@@ -40,7 +41,7 @@ export const assetChartsReceived = message => (dispatch, getState) => {
   }
 
   if (
-    message?.meta?.currency === 'usd' &&
+    message?.meta?.currency === currenyTypes.usd &&
     assetCharts[ETH_ADDRESS] &&
     message?.meta?.charts_type === 'm'
   ) {

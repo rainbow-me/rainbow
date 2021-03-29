@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { convertAmountToNativeDisplay } from '../../helpers/utilities';
 import { Row } from '../layout';
 import { Text } from '../text';
+import { useAccountSettings } from '@rainbow-me/hooks';
 
 const PoolValueWrapper = styled(Row)`
   border-radius: 15px;
@@ -41,15 +42,11 @@ const bigNumberFormat = (num, nativeCurrency) => {
   return ret;
 };
 
-export const renderPoolValue = (
-  type,
-  value,
-  nativeCurrency,
-  colors,
-  simple = true
-) => {
+export const PoolValue = ({ type, value, simple = true }) => {
   let formattedValue = value;
+  const { colors } = useTheme();
   let color = type === 'oneDayVolumeUSD' ? colors.swapPurple : colors.appleBlue;
+  const { nativeCurrency } = useAccountSettings();
 
   if (type === 'annualized_fees' || type === 'profit30d') {
     let percent = parseFloat(value);
