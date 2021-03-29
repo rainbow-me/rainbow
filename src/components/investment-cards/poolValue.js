@@ -28,7 +28,7 @@ const bigNumberFormat = (num, nativeCurrency) => {
     ret = `${convertAmountToNativeDisplay(
       (num / 1000000000).toString(),
       nativeCurrency
-    )} b`;
+    )}b`;
   } else if (num > 1000000) {
     ret = `${convertAmountToNativeDisplay(
       (num / 1000000).toString(),
