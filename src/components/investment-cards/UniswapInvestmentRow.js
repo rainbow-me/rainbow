@@ -93,6 +93,7 @@ export default function UniswapInvestmentRow({ assetType, item, ...props }) {
     navigate(Routes.EXPANDED_ASSET_SHEET, {
       asset: item,
       longFormHeight: initialLiquidityPoolExpandedStateSheetHeight,
+      shortFormHeight: 0,
       type: assetType,
     });
   }, [assetType, item, navigate]);

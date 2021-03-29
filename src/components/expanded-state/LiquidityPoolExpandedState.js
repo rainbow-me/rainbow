@@ -1,12 +1,12 @@
 import { useRoute } from '@react-navigation/core';
-import { map, toLower } from 'lodash';
-import React, { Fragment, useMemo } from 'react';
+import { toLower } from 'lodash';
+import React, { Fragment, useEffect, useMemo } from 'react';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { UniBalanceHeightDifference } from '../../hooks/charts/useChartThrottledPoints';
-import useNativeCurrencyToUSD from '../../hooks/useNativeCurrencyToUSD';
-import { useUsersPositions } from '../../hooks/useUsersPositions';
 import { renderPoolValue } from '../investment-cards/renderPoolValue';
+import { Column, Row } from '../layout';
 
 import {
   DepositActionButton,
@@ -15,29 +15,30 @@ import {
   SlackSheet,
   WithdrawActionButton,
 } from '../sheet';
-import {
-  TokenInfoBalanceValue,
-  TokenInfoItem,
-  TokenInfoRow,
-  TokenInfoSection,
-} from '../token-info';
+import { Text } from '../text';
+import { TokenInfoItem, TokenInfoRow, TokenInfoSection } from '../token-info';
 import { Chart } from '../value-chart';
+import UnderlyingAsset from './unique-token/UnderlyingAsset';
 import { ChartPathProvider } from '@rainbow-me/animated-charts';
 import { useTheme } from '@rainbow-me/context';
 import { toChecksumAddress } from '@rainbow-me/handlers/web3';
 import chartTypes from '@rainbow-me/helpers/chartTypes';
 import {
   useAccountSettings,
+  useAsset,
   useChartThrottledPoints,
   usePoolDetails,
+  useTotalFeeEarnedPerAsset,
 } from '@rainbow-me/hooks';
+import { emitAssetRequest } from '@rainbow-me/redux/explorer';
+
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import { magicMemo } from '@rainbow-me/utils';
 
 const heightWithoutChart = 452 + (android ? 20 - getSoftMenuBarHeight() : 0);
 const heightWithChart = heightWithoutChart + 293;
 
-export const initialLiquidityPoolExpandedStateSheetHeight = heightWithChart;
+export const initialLiquidityPoolExpandedStateSheetHeight = 400;
 
 const formatTokenAddress = address => {
   if (!address || toLower(address) === ETH_ADDRESS) {
@@ -51,35 +52,50 @@ const APYWrapper = styled.View`
   flex: 1;
 `;
 
+const UnderlyingAssetsWrapper = styled.View`
+  margin-horizontal: 20;
+`;
+
 const Carousel = styled.ScrollView.attrs({
+  contentContainerStyle: { paddingHorizontal: 5 },
   horizontal: true,
+  showsHorizontalScrollIndicator: false,
 })``;
+
+const CarouselItem = styled(TokenInfoItem)`
+  margin-horizontal: 15;
+`;
 
 const LiquidityPoolExpandedState = () => {
   const { params } = useRoute();
   const { asset } = params;
-  const { tokenNames, tokens, totalNativeDisplay, type, uniBalance } = asset;
+  const {
+    tokenNames,
+    tokens,
+    totalNativeDisplay,
+    type,
+    uniBalance,
+    native,
+  } = asset;
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(emitAssetRequest(tokens));
+  }, [dispatch, tokens]);
 
   const tokenType = type === 'uniswap' ? 'UNI-V1' : 'UNI-V2';
   const uniBalanceLabel = `${uniBalance} ${tokenType}`;
   const { nativeCurrency } = useAccountSettings();
 
-  const positions = useUsersPositions();
-
+  const earnedFee = useTotalFeeEarnedPerAsset(asset?.address);
   const totalFeeEarned = useMemo(
     () =>
-      nativeCurrency === 'USD'
-        ? positions
-            ?.find(({ pair: { id } }) => id === asset.address)
-            ?.fees.sum.toLocaleString('en-US', {
-              currency: 'USD',
-              style: 'currency',
-            })
-        : '',
-    [asset.address, nativeCurrency, positions]
+      earnedFee?.toLocaleString('en-US', {
+        currency: nativeCurrency,
+        style: 'currency',
+      }),
+    [earnedFee, nativeCurrency]
   );
-
-  useNativeCurrencyToUSD();
 
   const details = usePoolDetails(asset.address);
   const { annualized_fees: fee, oneDayVolumeUSD } = details || {};
@@ -87,10 +103,10 @@ const LiquidityPoolExpandedState = () => {
   const volume = useMemo(
     () =>
       oneDayVolumeUSD?.toLocaleString('en-US', {
-        currency: 'USD',
+        currency: nativeCurrency,
         style: 'currency',
       }),
-    [oneDayVolumeUSD]
+    [nativeCurrency, oneDayVolumeUSD]
   );
 
   const {
@@ -130,6 +146,23 @@ const LiquidityPoolExpandedState = () => {
 
   const { colors } = useTheme();
 
+  const token0 = useAsset({
+    address: toLower(tokenAddresses?.[0]),
+    type: 'token',
+  });
+  const token1 = useAsset({
+    address: toLower(tokenAddresses?.[1]),
+    type: 'token',
+  });
+
+  const half =
+    Number(native?.balance?.amount) === 0
+      ? 'Half'
+      : (native?.balance?.amount / 2)?.toLocaleString('en-US', {
+          currency: nativeCurrency,
+          style: 'currency',
+        });
+
   return (
     <SlackSheet
       additionalTopPadding={android}
@@ -160,17 +193,6 @@ const LiquidityPoolExpandedState = () => {
           <SheetDivider />
           <TokenInfoSection>
             <TokenInfoRow>
-              {map(tokens, tokenAsset => (
-                <TokenInfoItem
-                  asset={tokenAsset}
-                  key={`tokeninfo-${tokenAsset.symbol}`}
-                  title={`${tokenAsset.symbol} balance`}
-                >
-                  <TokenInfoBalanceValue />
-                </TokenInfoItem>
-              ))}
-            </TokenInfoRow>
-            <TokenInfoRow>
               <TokenInfoItem title="Pool shares">
                 {uniBalanceLabel}
               </TokenInfoItem>
@@ -178,39 +200,6 @@ const LiquidityPoolExpandedState = () => {
                 {totalNativeDisplay}
               </TokenInfoItem>
             </TokenInfoRow>
-            <Carousel>
-              <TokenInfoItem hidden={!fee} title="Annualized fees">
-                <APYWrapper>
-                  {renderPoolValue(
-                    'annualized_fees',
-                    Number(fee),
-                    nativeCurrency,
-                    colors
-                  )}
-                </APYWrapper>
-              </TokenInfoItem>
-              <TokenInfoItem
-                hidden={!totalFeeEarned}
-                title="Total fee earned"
-                weight="bold"
-              >
-                {totalFeeEarned} 🤑
-              </TokenInfoItem>
-              <TokenInfoItem
-                hidden={!totalFeeEarned}
-                title="Pool volume 24h"
-                weight="bold"
-              >
-                {volume}
-              </TokenInfoItem>
-              <TokenInfoItem
-                hidden={!totalFeeEarned}
-                title="30d profit"
-                weight="bold"
-              >
-                {volume}
-              </TokenInfoItem>
-            </Carousel>
           </TokenInfoSection>
           <SheetActionButtonRow>
             {tokenAddresses?.length > 0 && (
@@ -241,6 +230,79 @@ const LiquidityPoolExpandedState = () => {
             weight="bold"
           />
         </SheetActionButtonRow>
+      )}
+      <Carousel>
+        <CarouselItem hidden={!fee} title="Annualized fees">
+          <APYWrapper>
+            {renderPoolValue(
+              'annualized_fees',
+              Number(fee),
+              nativeCurrency,
+              colors
+            )}
+          </APYWrapper>
+        </CarouselItem>
+        <CarouselItem
+          hidden={!totalFeeEarned}
+          title="Fees earned"
+          weight="bold"
+        >
+          {totalFeeEarned} 🤑
+        </CarouselItem>
+        <CarouselItem hidden={!volume} title="Pool volume 24h" weight="bold">
+          {volume}
+        </CarouselItem>
+      </Carousel>
+      {token0 && token1 && (
+        <>
+          <Row marginBottom={15} marginHorizontal={20} marginTop={25}>
+            <Column align="start" flex={1}>
+              <Text
+                color={colors.alpha(colors.blueGreyDark, 0.5)}
+                letterSpacing="roundedMedium"
+                weight="semibold"
+              >
+                Underlying Assets
+              </Text>
+            </Column>
+            <Column align="end" flex={1}>
+              <Text
+                align="right"
+                color={colors.alpha(colors.blueGreyDark, 0.5)}
+                letterSpacing="roundedMedium"
+                weight="semibold"
+              >
+                Pool makeup
+              </Text>
+            </Column>
+          </Row>
+          <UnderlyingAssetsWrapper>
+            <UnderlyingAsset
+              {...{
+                address: tokenAddresses[0],
+                change: token0?.native?.change,
+                color: token0.color,
+                isPositive: token0?.price?.relative_change_24h > 0,
+                name: tokens[0].name,
+                percentageAllocation: 50,
+                pricePerUnitFormatted: half,
+                symbol: tokens[0].symbol,
+              }}
+            />
+            <UnderlyingAsset
+              {...{
+                address: tokenAddresses[1],
+                change: token1?.native?.change,
+                color: token1.color,
+                isPositive: token1?.price?.relative_change_24h > 0,
+                name: tokens[1].name,
+                percentageAllocation: 50,
+                pricePerUnitFormatted: half,
+                symbol: tokens[1].symbol,
+              }}
+            />
+          </UnderlyingAssetsWrapper>
+        </>
       )}
     </SlackSheet>
   );
