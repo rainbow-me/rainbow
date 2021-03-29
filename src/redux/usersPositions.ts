@@ -7,15 +7,28 @@ import {
 } from '../apollo/queries';
 import { AppDispatch, AppGetState } from '@rainbow-me/redux/store';
 import {
+  BUSD_ADDRESS,
   DAI_ADDRESS,
+  GUSD_ADDRESS,
+  SUSD_ADDRESS,
+  TUSD_ADDRESS,
   USDC_ADDRESS,
+  USDT_ADDRESS,
   WETH_ADDRESS,
 } from '@rainbow-me/references';
 import { ethereumUtils, logger } from '@rainbow-me/utils';
 
 const PRICE_DISCOVERY_START_TIMESTAMP = 1589747086;
 
-export const priceOverrides = [USDC_ADDRESS, DAI_ADDRESS];
+export const priceOverrides = [
+  USDC_ADDRESS,
+  DAI_ADDRESS,
+  USDT_ADDRESS,
+  TUSD_ADDRESS,
+  BUSD_ADDRESS,
+  SUSD_ADDRESS,
+  GUSD_ADDRESS,
+];
 export interface TypeSpecificParameters {
   cTokenBalance: string;
   supplyBalanceUnderlying: string;
