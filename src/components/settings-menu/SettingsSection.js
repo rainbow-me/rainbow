@@ -243,7 +243,7 @@ export default function SettingsSection({
           }
           label="Theme"
           onPress={toggleTheme}
-          testID="darkmode-section"
+          testID={`darkmode-section-${isDarkMode}`}
         >
           <Column align="end" flex="1" justify="end">
             <Text

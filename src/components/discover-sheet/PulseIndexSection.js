@@ -90,6 +90,7 @@ const PulseIndex = () => {
         onPress={handlePress}
         overflowMargin={15}
         scaleTo={0.9}
+        testID="dpi-button"
       >
         <View
           style={{
