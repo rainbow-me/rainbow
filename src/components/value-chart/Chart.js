@@ -114,6 +114,7 @@ export default function ChartWrapper({
   showChart,
   showMonth,
   showYear,
+  testID,
   throttledData,
   overrideValue = false,
   ...props
@@ -205,6 +206,7 @@ export default function ChartWrapper({
         isPool={isPool}
         overrideValue={overrideValue}
         showChart={showChart}
+        testID={testID}
       />
       <ChartContainer showChart={showChart}>
         {showChart && (
