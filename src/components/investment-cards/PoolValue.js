@@ -42,7 +42,7 @@ const bigNumberFormat = (num, nativeCurrency) => {
   return ret;
 };
 
-export const PoolValue = ({ type, value, simple = true }) => {
+export const PoolValue = ({ type, value, simple }) => {
   let formattedValue = value;
   const { colors } = useTheme();
   let color = type === 'oneDayVolumeUSD' ? colors.swapPurple : colors.appleBlue;

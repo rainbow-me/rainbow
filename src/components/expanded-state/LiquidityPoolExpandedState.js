@@ -5,7 +5,7 @@ import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { UniBalanceHeightDifference } from '../../hooks/charts/useChartThrottledPoints';
-import { renderPoolValue } from '../investment-cards/renderPoolValue';
+import { PoolValue } from '../investment-cards/PoolValue';
 import { Column, Row } from '../layout';
 
 import {
@@ -234,12 +234,7 @@ const LiquidityPoolExpandedState = () => {
       <Carousel>
         <CarouselItem hidden={!fee} title="Annualized fees">
           <APYWrapper>
-            {renderPoolValue(
-              'annualized_fees',
-              Number(fee),
-              nativeCurrency,
-              colors
-            )}
+            <PoolValue simple type="annualized_fees" value={Number(fee)} />
           </APYWrapper>
         </CarouselItem>
         <CarouselItem
