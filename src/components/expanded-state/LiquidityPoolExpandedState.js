@@ -306,28 +306,24 @@ const LiquidityPoolExpandedState = () => {
           </Row>
           <UnderlyingAssetsWrapper>
             <UnderlyingAsset
-              {...{
-                address: tokenAddresses[0],
-                change: token0?.native?.change,
-                color: token0.color,
-                isPositive: token0?.price?.relative_change_24h > 0,
-                name: tokens[0].name,
-                percentageAllocation: 50,
-                pricePerUnitFormatted: half,
-                symbol: tokens[0].symbol,
-              }}
+              address={tokenAddresses[0]}
+              change={token0?.native?.change}
+              color={token0.color}
+              isPositive={token0?.price?.relative_change_24h > 0}
+              name={tokens[0].name}
+              percentageAllocation={50}
+              pricePerUnitFormatted={half}
+              symbol={tokens[0].symbol}
             />
             <UnderlyingAsset
-              {...{
-                address: tokenAddresses[1],
-                change: token1?.native?.change,
-                color: token1.color,
-                isPositive: token1?.price?.relative_change_24h > 0,
-                name: tokens[1].name,
-                percentageAllocation: 50,
-                pricePerUnitFormatted: half,
-                symbol: tokens[1].symbol,
-              }}
+              address={tokenAddresses[1]}
+              change={token1?.native?.change}
+              color={token1.color}
+              isPositive={token1?.price?.relative_change_24h > 0}
+              name={tokens[1].name}
+              percentageAllocation={50}
+              pricePerUnitFormatted={half}
+              symbol={tokens[1].symbol}
             />
             <Spacer />
           </UnderlyingAssetsWrapper>
