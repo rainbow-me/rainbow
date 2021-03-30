@@ -26,6 +26,7 @@ import WelcomeScreen from '../screens/WelcomeScreen';
 import WithdrawModal from '../screens/WithdrawModal';
 import WyreWebview from '../screens/WyreWebview';
 import { SwipeNavigator } from './SwipeNavigator';
+import { createBottomSheetNavigator } from './bottom-sheet';
 import {
   closeKeyboardOnClose,
   defaultScreenStackOptions,
@@ -52,6 +53,7 @@ import { ExchangeModalNavigator } from './index';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
+const BSStack = createBottomSheetNavigator();
 
 function SendFlowNavigator() {
   return (
@@ -274,18 +276,28 @@ function MainOuterNavigator() {
         name={Routes.BACKUP_SCREEN}
         options={sheetPreset}
       />
-      <OuterStack.Screen
+    </OuterStack.Navigator>
+  );
+}
+
+function BSNavigator() {
+  return (
+    <BSStack.Navigator>
+      <BSStack.Screen
+        component={MainOuterNavigator}
+        name={Routes.MAIN_NAVIGATOR_WRAPPER}
+      />
+      <BSStack.Screen
         component={SendFlowNavigator}
         name={Routes.SEND_SHEET_NAVIGATOR}
-        options={sheetPresetWithSmallGestureResponseDistance}
       />
-    </OuterStack.Navigator>
+    </BSStack.Navigator>
   );
 }
 
 const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
   <NavigationContainer onStateChange={onNavigationStateChange} ref={ref}>
-    <MainOuterNavigator />
+    <BSNavigator />
   </NavigationContainer>
 ));
 
