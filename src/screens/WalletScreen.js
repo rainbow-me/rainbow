@@ -15,6 +15,7 @@ import {
   ProfileHeaderButton,
 } from '../components/header';
 import { Page } from '../components/layout';
+import { useEth } from '../utils/ethereumUtils';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import {
   useAccountEmptyState,
@@ -28,6 +29,7 @@ import {
 import { useCoinListEditedValue } from '@rainbow-me/hooks/useCoinListEdited';
 import { updateRefetchSavings } from '@rainbow-me/redux/data';
 import { emitChartsRequest } from '@rainbow-me/redux/explorer';
+import { updatePositions } from '@rainbow-me/redux/usersPositions';
 import { position } from '@rainbow-me/styles';
 
 const HeaderOpacityToggler = styled(OpacityToggler).attrs(({ isVisible }) => ({
@@ -61,11 +63,18 @@ export default function WalletScreen() {
     shouldRefetchSavings,
   } = useWalletSectionsData();
 
+  const eth = useEth();
+  const numberOfPools = sections.find(({ pools }) => pools)?.data.length ?? 0;
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    eth && dispatch(updatePositions);
+  }, [dispatch, eth, numberOfPools]);
+
   const assetsSocket = useSelector(
     ({ explorer: { assetsSocket } }) => assetsSocket
   );
-
-  const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchAndResetFetchSavings = async () => {

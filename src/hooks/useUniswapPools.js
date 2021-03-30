@@ -1,8 +1,10 @@
 import { useQuery } from '@apollo/client';
 import { getUnixTime, startOfMinute, sub } from 'date-fns';
-import { get, pick, sortBy, toLower } from 'lodash';
+import { pick, sortBy, toLower } from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useEthUSDMonthChart, useEthUSDPrice } from '../utils/ethereumUtils';
+import useNativeCurrencyToUSD from './useNativeCurrencyToUSD';
 import { blockClient, uniswapClient } from '@rainbow-me/apollo/client';
 import {
   GET_BLOCKS_QUERY,
@@ -11,13 +13,12 @@ import {
   UNISWAP_PAIRS_HISTORICAL_BULK_QUERY,
   UNISWAP_PAIRS_ID_QUERY,
 } from '@rainbow-me/apollo/queries';
-import ChartTypes from '@rainbow-me/helpers/chartTypes';
 import {
   emitAssetRequest,
   emitChartsRequest,
 } from '@rainbow-me/redux/explorer';
-import { ETH_ADDRESS, WETH_ADDRESS } from '@rainbow-me/references';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { setPoolsDetails } from '@rainbow-me/redux/uniswapLiquidity';
+import { WETH_ADDRESS } from '@rainbow-me/references';
 import logger from 'logger';
 
 const UNISWAP_QUERY_INTERVAL = 1000 * 60 * 5; // 5 minutes
@@ -356,43 +357,30 @@ export const getPercentChange = (valueNow, value24HoursAgo) => {
 };
 
 export default function useUniswapPools(sortField, sortDirection) {
-  const { charts } = useSelector(({ charts: { charts } }) => ({
-    charts,
-  }));
+  const dispatch = useDispatch();
 
-  const [ethereumPriceOneMonthAgo, setEthereumPriceOneMonthAgo] = useState();
-  const [priceOfEther, setPriceOfEther] = useState();
   const [pairs, setPairs] = useState();
+  const priceOfEther = useEthUSDPrice();
+  const ethereumPriceOneMonthAgo = useEthUSDMonthChart()?.[0]?.[1];
 
-  const { genericAssets, assets } = useSelector(
+  useEffect(() => {
+    pairs &&
+      dispatch(
+        setPoolsDetails(
+          pairs.reduce((acc, pair) => {
+            acc[pair.address] = pair;
+            return acc;
+          }, {})
+        )
+      );
+  }, [pairs, dispatch]);
+
+  const { genericAssets } = useSelector(
     ({ data: { assets, genericAssets } }) => ({
       assets,
       genericAssets,
     })
   );
-
-  useEffect(() => {
-    const genericEthPrice = genericAssets?.eth?.price?.value;
-    const newPriceOfEther =
-      genericEthPrice || ethereumUtils.getAsset(assets)?.price?.value || 0;
-    if (!priceOfEther) {
-      setPriceOfEther(newPriceOfEther);
-    }
-
-    if (!ethereumPriceOneMonthAgo) {
-      setEthereumPriceOneMonthAgo(
-        get(charts, `[${ETH_ADDRESS}][${ChartTypes.month}][0][1]`, 0)
-      );
-    }
-  }, [
-    genericAssets?.eth?.price?.value,
-    assets,
-    charts,
-    priceOfEther,
-    ethereumPriceOneMonthAgo,
-  ]);
-
-  const dispatch = useDispatch();
 
   const { data: idsData, error } = useQuery(UNISWAP_PAIRS_ID_QUERY, {
     client: uniswapClient,
@@ -422,6 +410,8 @@ export default function useUniswapPools(sortField, sortDirection) {
     }
   }, [fetchPairsData, priceOfEther, ethereumPriceOneMonthAgo, idsData?.pairs]);
 
+  const currenciesRate = useNativeCurrencyToUSD();
+
   const top40PairsSorted = useMemo(() => {
     if (!pairs) return null;
     let sortedPairs = sortBy(pairs, sortField);
@@ -450,7 +440,12 @@ export default function useUniswapPools(sortField, sortDirection) {
       pair.tokens = [token0, token1];
       tmpAllTokens.push(toLower(pair.tokens[0].id));
       tmpAllTokens.push(toLower(pair.tokens[1].id));
-      return pick(pair, [
+      const pairAdjustedForCurrency = {
+        ...pair,
+        liquidity: pair.liquidity * currenciesRate,
+        oneDayVolumeUSD: pair.oneDayVolumeUSD * currenciesRate,
+      };
+      return pick(pairAdjustedForCurrency, [
         'address',
         'annualized_fees',
         'liquidity',

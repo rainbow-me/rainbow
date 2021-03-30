@@ -22,6 +22,7 @@ import uniqueTokens from './uniqueTokens';
 import uniswap from './uniswap';
 import uniswapLiquidity from './uniswapLiquidity';
 import userLists from './userLists';
+import usersPositions from './usersPositions';
 import walletconnect from './walletconnect';
 import wallets from './wallets';
 
@@ -48,6 +49,7 @@ export default combineReducers({
   uniswap,
   uniswapLiquidity,
   userLists,
+  usersPositions,
   walletconnect,
   wallets,
 });
