@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { UniBalanceHeightDifference } from '../../hooks/charts/useChartThrottledPoints';
 import deviceUtils from '../../utils/deviceUtils';
+import EdgeFade from '../discover-sheet/EdgeFade';
 import { PoolValue } from '../investment-cards/PoolValue';
 import { Column, Row } from '../layout';
 
@@ -57,7 +58,7 @@ const formatTokenAddress = address => {
 };
 
 const APYWrapper = styled.View`
-  padding-top: 5;
+  padding-top: 3;
   flex: 1;
 `;
 
@@ -65,9 +66,7 @@ const UnderlyingAssetsWrapper = styled.View`
   margin-horizontal: 20;
 `;
 
-const CarouselWrapper = styled.View`
-  margin-horizontal: 20;
-`;
+const CarouselWrapper = styled.View``;
 
 const Carousel = styled.ScrollView.attrs({
   contentContainerStyle: { paddingHorizontal: 5 },
@@ -255,7 +254,12 @@ const LiquidityPoolExpandedState = () => {
         <Carousel>
           <CarouselItem hidden={!fee} title="Annualized fees">
             <APYWrapper>
-              <PoolValue simple type="annualized_fees" value={Number(fee)} />
+              <PoolValue
+                simple
+                size="larger"
+                type="annualized_fees"
+                value={Number(fee)}
+              />
             </APYWrapper>
           </CarouselItem>
           <CarouselItem
@@ -265,10 +269,16 @@ const LiquidityPoolExpandedState = () => {
           >
             {totalFeeEarned} 🤑
           </CarouselItem>
-          <CarouselItem hidden={!volume} title="Pool volume 24h" weight="bold">
+          <CarouselItem
+            hidden={!volume}
+            {...(ios ? { lineHeight: 28 } : {})}
+            title="Pool volume 24h"
+            weight="bold"
+          >
             {volume}
           </CarouselItem>
         </Carousel>
+        <EdgeFade />
       </CarouselWrapper>
 
       {token0 && token1 && (

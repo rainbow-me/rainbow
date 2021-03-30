@@ -12,13 +12,13 @@ const PoolValueWrapper = styled(Row)`
   padding-top: 2px;
 `;
 
-const PoolValueText = styled(Text).attrs({
+const PoolValueText = styled(Text).attrs(({ size }) => ({
   align: 'center',
   letterSpacing: 'roundedTight',
   lineHeight: 'paragraphSmall',
-  size: 'lmedium',
+  size: size || 'lmedium',
   weight: 'bold',
-})`
+}))`
   ${android && 'padding-top: 3px'}
 `;
 
@@ -42,7 +42,7 @@ const bigNumberFormat = (num, nativeCurrency) => {
   return ret;
 };
 
-export const PoolValue = ({ type, value, simple }) => {
+export const PoolValue = ({ type, value, simple, ...props }) => {
   let formattedValue = value;
   const { colors } = useTheme();
   let color = type === 'oneDayVolumeUSD' ? colors.swapPurple : colors.appleBlue;
@@ -82,7 +82,9 @@ export const PoolValue = ({ type, value, simple }) => {
   }
   return (
     <PoolValueWrapper backgroundColor={colors.alpha(color, simple ? 0 : 0.06)}>
-      <PoolValueText color={color}>{formattedValue}</PoolValueText>
+      <PoolValueText color={color} {...props}>
+        {formattedValue}
+      </PoolValueText>
     </PoolValueWrapper>
   );
 };
