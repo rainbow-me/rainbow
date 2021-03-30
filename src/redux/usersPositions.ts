@@ -6,13 +6,28 @@ import {
   USER_POSITIONS,
 } from '../apollo/queries';
 import { AppDispatch, AppGetState } from '@rainbow-me/redux/store';
+import {
+  BUSD_ADDRESS,
+  DAI_ADDRESS,
+  GUSD_ADDRESS,
+  SUSD_ADDRESS,
+  TUSD_ADDRESS,
+  USDC_ADDRESS,
+  USDT_ADDRESS,
+  WETH_ADDRESS,
+} from '@rainbow-me/references';
 import { ethereumUtils, logger } from '@rainbow-me/utils';
 
 const PRICE_DISCOVERY_START_TIMESTAMP = 1589747086;
 
 export const priceOverrides = [
-  '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // USDC
-  '0x6b175474e89094c44da98b954eedeac495271d0f', // DAI
+  USDC_ADDRESS,
+  DAI_ADDRESS,
+  USDT_ADDRESS,
+  TUSD_ADDRESS,
+  BUSD_ADDRESS,
+  SUSD_ADDRESS,
+  GUSD_ADDRESS,
 ];
 export interface TypeSpecificParameters {
   cTokenBalance: string;
@@ -43,8 +58,7 @@ interface Position {
   token1PriceUSD: number;
 }
 
-export type StoredPositions = Position &
-  ReturnMetrics & { fees: { sum: number } };
+export type StoredPositions = Position & ReturnMetrics;
 
 // --- fetching ----------------//
 
@@ -60,14 +74,10 @@ function formatPricesForEarlyTimestamps(position: any): Position {
       position.token1PriceUSD = 1;
     }
     // WETH price
-    if (
-      position.pair?.token0.id === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
-    ) {
+    if (position.pair?.token0.id === WETH_ADDRESS) {
       position.token0PriceUSD = 203;
     }
-    if (
-      position.pair?.token1.id === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
-    ) {
+    if (position.pair?.token1.id === WETH_ADDRESS) {
       position.token1PriceUSD = 203;
     }
   }
@@ -162,7 +172,7 @@ async function getPrincipalForUserPerPair(user: string, pairAddress: string) {
     const mintToken0 = mint.pair.token0.id;
     const mintToken1 = mint.pair.token1.id;
 
-    // if trackign before prices were discovered (pre-launch days), hardcode stablecoins
+    // if tracking before prices were discovered (pre-launch days), hardcode stablecoins
     if (
       priceOverrides.includes(mintToken0) &&
       mint.timestamp < PRICE_DISCOVERY_START_TIMESTAMP
@@ -185,7 +195,7 @@ async function getPrincipalForUserPerPair(user: string, pairAddress: string) {
     const burnToken0 = burn.pair.token0.id;
     const burnToken1 = burn.pair.token1.id;
 
-    // if trackign before prices were discovered (pre-launch days), hardcode stablecoins
+    // if tracking before prices were discovered (pre-launch days), hardcode stablecoins
     if (
       priceOverrides.includes(burnToken0) &&
       burn.timestamp < PRICE_DISCOVERY_START_TIMESTAMP
