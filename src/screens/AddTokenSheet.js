@@ -109,7 +109,7 @@ export default function AddTokenSheet() {
         contentHeight={sheetHeight}
         scrollEnabled={false}
       >
-        <Centered direction="column">
+        <Centered direction="column" testID="add-token-sheet">
           <Column marginTop={16}>
             <CoinIcon address={item.address} size={50} symbol={item.symbol} />
           </Column>
@@ -159,6 +159,7 @@ export default function AddTokenSheet() {
                     <ListButton
                       alreadyAdded={alreadyAdded}
                       onPress={alreadyAdded ? handleRemove : handleAdd}
+                      testID={`add-to-${list.id}`}
                     >
                       <Row>
                         <ListEmoji name={list.emoji} />
@@ -176,7 +177,10 @@ export default function AddTokenSheet() {
                       </Row>
                     </ListButton>
                     {alreadyAdded && (
-                      <RemoveButton onPress={handleRemove}>
+                      <RemoveButton
+                        onPress={handleRemove}
+                        testID={`remove-from-${list.id}`}
+                      >
                         <RemoveButtonContent>􀈔 Remove</RemoveButtonContent>
                       </RemoveButton>
                     )}
@@ -192,6 +196,7 @@ export default function AddTokenSheet() {
               label="Cancel"
               onPress={goBack}
               size="big"
+              testID="close"
               textColor={colors.alpha(colors.blueGreyDark, 0.8)}
               weight="bold"
             />

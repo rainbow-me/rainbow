@@ -67,13 +67,20 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.checkIfVisible('settings-modal');
   });
 
+  it('Should toggle Dark Mode on and off', async () => {
+    await Helpers.tap('darkmode-section-false');
+    await Helpers.delay(3000);
+    await Helpers.tap('darkmode-section-true');
+    await Helpers.delay(3000);
+  });
+
   it('Should navigate to Developer Settings after tapping Developer Section', async () => {
     await Helpers.tap('developer-section');
     await Helpers.delay(3000);
     await Helpers.checkIfVisible('developer-settings-modal');
   });
 
-  if (device.getPlatform() === 'android') {
+  if (device.getPlatform() === 'ios') {
     it('Should show Applied alert after pressing Alert', async () => {
       await Helpers.tap('alert-section');
       await Helpers.delay(5000);

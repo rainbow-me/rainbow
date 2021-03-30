@@ -67,6 +67,7 @@ const ListCoinRow = ({ item, onPress }) => {
       height={CoinIconSize + CoinRowPaddingTop + CoinRowPaddingBottom}
       onPress={handlePress}
       scaleTo={0.96}
+      testID={`list-coin-row-${item.name}`}
       throttle
     >
       <CoinRow
@@ -76,7 +77,6 @@ const ListCoinRow = ({ item, onPress }) => {
           padding(CoinRowPaddingTop, 38, CoinRowPaddingBottom, 15)
         )}
         showBalance={false}
-        testID="list-coin-row"
         topRowRender={TopRow}
       />
     </ButtonPressAnimation>

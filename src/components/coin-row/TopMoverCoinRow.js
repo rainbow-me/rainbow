@@ -75,6 +75,7 @@ const TopMoverCoinRow = asset => {
     truncatedName,
     onPressCancel,
     onPressStart,
+    testID,
   } = asset;
   const handlePress = useCallback(() => {
     onPress?.(asset);
@@ -99,6 +100,7 @@ const TopMoverCoinRow = asset => {
       onPressStart={onPressStart}
       reanimatedButton={android}
       scaleTo={0.925}
+      testID={testID}
     >
       <RowWithMargins
         margin={TopMoverCoinRowMargin}
