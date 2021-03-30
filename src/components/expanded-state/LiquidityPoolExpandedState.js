@@ -5,6 +5,7 @@ import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { UniBalanceHeightDifference } from '../../hooks/charts/useChartThrottledPoints';
+import deviceUtils from '../../utils/deviceUtils';
 import { PoolValue } from '../investment-cards/PoolValue';
 import { Column, Row } from '../layout';
 
@@ -35,10 +36,18 @@ import { emitAssetRequest } from '@rainbow-me/redux/explorer';
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import { magicMemo } from '@rainbow-me/utils';
 
+const Spacer = styled.View`
+  height: 40;
+`;
+
+export const underlyingAssetsHeight = 70;
 const heightWithoutChart = 452 + (android ? 20 - getSoftMenuBarHeight() : 0);
 const heightWithChart = heightWithoutChart + 293;
 
-export const initialLiquidityPoolExpandedStateSheetHeight = 400;
+export const initialLiquidityPoolExpandedStateSheetHeight = Math.min(
+  deviceUtils.dimensions.height,
+  heightWithChart + underlyingAssetsHeight
+);
 
 const formatTokenAddress = address => {
   if (!address || toLower(address) === ETH_ADDRESS) {
@@ -53,6 +62,10 @@ const APYWrapper = styled.View`
 `;
 
 const UnderlyingAssetsWrapper = styled.View`
+  margin-horizontal: 20;
+`;
+
+const CarouselWrapper = styled.View`
   margin-horizontal: 20;
 `;
 
@@ -109,6 +122,20 @@ const LiquidityPoolExpandedState = () => {
     [nativeCurrency, oneDayVolumeUSD]
   );
 
+  const tokenAddresses = useMemo(() => {
+    return tokens?.map(token => formatTokenAddress(token.address));
+  }, [tokens]);
+
+  const token0 = useAsset({
+    address: toLower(tokenAddresses?.[0]),
+    type: 'token',
+  });
+
+  const token1 = useAsset({
+    address: toLower(tokenAddresses?.[1]),
+    type: 'token',
+  });
+
   const {
     chart,
     chartData,
@@ -120,8 +147,14 @@ const LiquidityPoolExpandedState = () => {
     throttledData,
   } = useChartThrottledPoints({
     asset,
-    heightWithChart,
-    heightWithoutChart,
+    heightWithChart: Math.min(
+      heightWithChart + (token1 && token0 ? underlyingAssetsHeight : 0),
+      deviceUtils.dimensions.height
+    ),
+    heightWithoutChart: Math.min(
+      heightWithoutChart + (token1 && token0 ? underlyingAssetsHeight : 0),
+      deviceUtils.dimensions.height
+    ),
     isPool: true,
     uniBalance: !!uniBalance,
   });
@@ -130,10 +163,6 @@ const LiquidityPoolExpandedState = () => {
     (ios || showChart ? heightWithChart : heightWithoutChart) +
     (android && 44) -
     (uniBalance ? 0 : UniBalanceHeightDifference);
-
-  const tokenAddresses = useMemo(() => {
-    return tokens?.map(token => formatTokenAddress(token.address));
-  }, [tokens]);
 
   const chartDataLabels = useMemo(() => {
     if (chartType === chartTypes.month && params?.asset?.profit30d) {
@@ -145,15 +174,6 @@ const LiquidityPoolExpandedState = () => {
   }, [chartType, initialChartDataLabels, params?.asset?.profit30d]);
 
   const { colors } = useTheme();
-
-  const token0 = useAsset({
-    address: toLower(tokenAddresses?.[0]),
-    type: 'token',
-  });
-  const token1 = useAsset({
-    address: toLower(tokenAddresses?.[1]),
-    type: 'token',
-  });
 
   const half =
     Number(native?.balance?.amount) === 0
@@ -231,23 +251,26 @@ const LiquidityPoolExpandedState = () => {
           />
         </SheetActionButtonRow>
       )}
-      <Carousel>
-        <CarouselItem hidden={!fee} title="Annualized fees">
-          <APYWrapper>
-            <PoolValue simple type="annualized_fees" value={Number(fee)} />
-          </APYWrapper>
-        </CarouselItem>
-        <CarouselItem
-          hidden={!totalFeeEarned}
-          title="Fees earned"
-          weight="bold"
-        >
-          {totalFeeEarned} 🤑
-        </CarouselItem>
-        <CarouselItem hidden={!volume} title="Pool volume 24h" weight="bold">
-          {volume}
-        </CarouselItem>
-      </Carousel>
+      <CarouselWrapper>
+        <Carousel>
+          <CarouselItem hidden={!fee} title="Annualized fees">
+            <APYWrapper>
+              <PoolValue simple type="annualized_fees" value={Number(fee)} />
+            </APYWrapper>
+          </CarouselItem>
+          <CarouselItem
+            hidden={!totalFeeEarned}
+            title="Fees earned"
+            weight="bold"
+          >
+            {totalFeeEarned} 🤑
+          </CarouselItem>
+          <CarouselItem hidden={!volume} title="Pool volume 24h" weight="bold">
+            {volume}
+          </CarouselItem>
+        </Carousel>
+      </CarouselWrapper>
+
       {token0 && token1 && (
         <>
           <Row marginBottom={15} marginHorizontal={20} marginTop={25}>
@@ -296,6 +319,7 @@ const LiquidityPoolExpandedState = () => {
                 symbol: tokens[1].symbol,
               }}
             />
+            <Spacer />
           </UnderlyingAssetsWrapper>
         </>
       )}
