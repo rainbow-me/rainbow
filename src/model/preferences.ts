@@ -3,7 +3,7 @@ import axios from 'axios';
 import logger from 'logger';
 
 export enum PreferenceActionType {
-  add = 'add',
+  update = 'update',
   remove = 'remove',
   wipe = 'wipe',
   init = 'init',
@@ -14,8 +14,7 @@ export interface PreferencesResponse {
   data?: Object;
 }
 
-const PREFS_ENDPOINT =
-  'https://us-central1-rainbow-me.cloudfunctions.net/showcase';
+const PREFS_ENDPOINT = 'https://us-central1-rainbow-me.cloudfunctions.net';
 
 const preferencesAPI = axios.create({
   headers: {
@@ -28,8 +27,8 @@ const preferencesAPI = axios.create({
 export async function setPreference(
   action: PreferenceActionType,
   key: string,
-  value: Object,
-  wallet: Wallet
+  wallet: Wallet,
+  value?: Object | undefined
 ): Promise<boolean> {
   try {
     const address = await wallet.getAddress();
@@ -41,8 +40,9 @@ export async function setPreference(
     };
     const message = JSON.stringify(objToSign);
     const signature = await wallet.signMessage(message);
+    logger.log('SENDING ', message);
     const response: PreferencesResponse = await preferencesAPI.post(
-      PREFS_ENDPOINT,
+      `${PREFS_ENDPOINT}/${key}`,
       {
         message,
         signature,

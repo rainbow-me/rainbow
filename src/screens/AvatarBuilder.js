@@ -11,7 +11,7 @@ import { Column, Row } from '../components/layout';
 import { useNavigation } from '../navigation/Navigation';
 import { walletsSetSelected, walletsUpdate } from '../redux/wallets';
 import { deviceUtils } from '../utils';
-import { useWallets } from '@rainbow-me/hooks';
+import { useWallets, useWebData } from '@rainbow-me/hooks';
 import useAccountSettings from '@rainbow-me/hooks/useAccountSettings';
 
 const AvatarCircleHeight = 65;
@@ -45,6 +45,7 @@ const springTo = (node, toValue) =>
 
 const AvatarBuilder = ({ route: { params } }) => {
   const { wallets, selectedWallet } = useWallets();
+  const { updateWebProfile } = useWebData();
   const [translateX] = useValues((params.initialAccountColor - 4) * 39);
   const { goBack } = useNavigation();
   const { accountAddress } = useAccountSettings();
@@ -92,6 +93,7 @@ const AvatarBuilder = ({ route: { params } }) => {
 
     await dispatch(walletsSetSelected(newWallets[walletId]));
     await dispatch(walletsUpdate(newWallets));
+    updateWebProfile(updateWebProfile);
   };
 
   const colorCircleTopPadding = 15;

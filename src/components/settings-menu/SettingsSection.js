@@ -31,8 +31,8 @@ import {
   useAccountSettings,
   useDimensions,
   useSendFeedback,
-  useShowcaseTokens,
   useWallets,
+  useWebData,
 } from '@rainbow-me/hooks';
 import { position } from '@rainbow-me/styles';
 import {
@@ -131,11 +131,7 @@ export default function SettingsSection({
   onPressNetwork,
   onPressShowSecret,
 }) {
-  const {
-    webShowcaseEnabled,
-    enableWebShowcase,
-    disableWebShowcase,
-  } = useShowcaseTokens();
+  const { webDataEnabled, initWebData, wipeWebData } = useWebData();
   const isReviewAvailable = useExperimentalFlag(REVIEW_ANDROID) || ios;
   const { wallets } = useWallets();
   const { /*language,*/ nativeCurrency, network } = useAccountSettings();
@@ -192,13 +188,13 @@ export default function SettingsSection({
     }
   }, [setTheme, colorScheme]);
 
-  const toggleWebShowcase = useCallback(() => {
-    if (webShowcaseEnabled) {
-      disableWebShowcase();
+  const toggleWebData = useCallback(() => {
+    if (webDataEnabled) {
+      wipeWebData();
     } else {
-      enableWebShowcase();
+      initWebData();
     }
-  }, [disableWebShowcase, enableWebShowcase, webShowcaseEnabled]);
+  }, [initWebData, webDataEnabled, wipeWebData]);
 
   return (
     <Container backgroundColor={colors.white} scrollEnabled={isTinyPhone}>
@@ -273,14 +269,11 @@ export default function SettingsSection({
         <ListItem
           icon={<Emoji name="globe_showing_americas" />}
           label="Web Showcase"
-          onPress={toggleWebShowcase}
+          onPress={toggleWebData}
           testID="enable-web-showcase"
         >
           <Column align="end" flex="1" justify="end">
-            <Switch
-              onValueChange={toggleWebShowcase}
-              value={webShowcaseEnabled}
-            />
+            <Switch onValueChange={toggleWebData} value={webDataEnabled} />
           </Column>
         </ListItem>
         {/*<ListItem

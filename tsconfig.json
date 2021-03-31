@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "allowJs": true,
+    "globals": ["useTheme"],
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "isolatedModules": true,

@@ -22,7 +22,7 @@ const TRANSACTIONS = 'transactions';
 const UNIQUE_TOKENS = 'uniquetokens';
 const PINNED_COINS = 'pinnedCoins';
 const HIDDEN_COINS = 'hiddenCoins';
-const WEB_SHOWCASE_ENABLED = 'webShowcaseEnabled';
+const WEB_DATA_ENABLED = 'webDataEnabled';
 
 export const accountLocalKeys = [
   ACCOUNT_INFO,
@@ -38,7 +38,7 @@ export const accountLocalKeys = [
   UNIQUE_TOKENS,
   PINNED_COINS,
   HIDDEN_COINS,
-  WEB_SHOWCASE_ENABLED,
+  WEB_DATA_ENABLED,
 ];
 
 /**
@@ -371,19 +371,19 @@ export const saveShowcaseTokens = (showcaseTokens, accountAddress, network) =>
   saveAccountLocal(SHOWCASE_TOKENS, showcaseTokens, accountAddress, network);
 
 /**
- * @desc get web showcase enabled preference
+ * @desc get web data enabled preference
  * @param  {String}   [address]
  * @param  {String}   [network]
- * @return {Afray}
+ * @return {Array}
  */
-export const getWebShowcaseEnabled = (accountAddress, network) =>
-  getAccountLocal(WEB_SHOWCASE_ENABLED, accountAddress, network, []);
+export const getWebDataEnabled = (accountAddress, network) =>
+  getAccountLocal(WEB_DATA_ENABLED, accountAddress, network, []);
 
 /**
  * @desc save web showcase enabled preference
  * @param  {String}   [address]
- * @param  {Array}    [Showcase tokens]
+ * @param  {Boolean}  [value]
  * @param  {String}   [network]
  */
-export const saveWebShowcaseEnabled = (preference, accountAddress, network) =>
-  saveAccountLocal(WEB_SHOWCASE_ENABLED, preference, accountAddress, network);
+export const saveWebDataEnabled = (preference, accountAddress, network) =>
+  saveAccountLocal(WEB_DATA_ENABLED, preference, accountAddress, network);
