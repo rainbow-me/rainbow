@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { Image, Linking, NativeModules, ScrollView, Share } from 'react-native';
+import { Switch } from 'react-native-gesture-handler';
 import styled from 'styled-components';
 import { REVIEW_ANDROID } from '../../config/experimental';
 import useExperimentalFlag from '../../config/experimentalHooks';
@@ -30,6 +31,7 @@ import {
   useAccountSettings,
   useDimensions,
   useSendFeedback,
+  useShowcaseTokens,
   useWallets,
 } from '@rainbow-me/hooks';
 import { position } from '@rainbow-me/styles';
@@ -129,6 +131,11 @@ export default function SettingsSection({
   onPressNetwork,
   onPressShowSecret,
 }) {
+  const {
+    webShowcaseEnabled,
+    enableWebShowcase,
+    disableWebShowcase,
+  } = useShowcaseTokens();
   const isReviewAvailable = useExperimentalFlag(REVIEW_ANDROID) || ios;
   const { wallets } = useWallets();
   const { /*language,*/ nativeCurrency, network } = useAccountSettings();
@@ -184,6 +191,14 @@ export default function SettingsSection({
       setTheme(THEMES.SYSTEM);
     }
   }, [setTheme, colorScheme]);
+
+  const toggleWebShowcase = useCallback(() => {
+    if (webShowcaseEnabled) {
+      disableWebShowcase();
+    } else {
+      enableWebShowcase();
+    }
+  }, [disableWebShowcase, enableWebShowcase, webShowcaseEnabled]);
 
   return (
     <Container backgroundColor={colors.white} scrollEnabled={isTinyPhone}>
@@ -253,6 +268,19 @@ export default function SettingsSection({
             >
               {capitalizeFirstLetter(colorScheme)}
             </Text>
+          </Column>
+        </ListItem>
+        <ListItem
+          icon={<Emoji name="globe_showing_americas" />}
+          label="Web Showcase"
+          onPress={toggleWebShowcase}
+          testID="enable-web-showcase"
+        >
+          <Column align="end" flex="1" justify="end">
+            <Switch
+              onValueChange={toggleWebShowcase}
+              value={webShowcaseEnabled}
+            />
           </Column>
         </ListItem>
         {/*<ListItem

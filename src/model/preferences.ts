@@ -1,10 +1,12 @@
 import { Wallet } from '@ethersproject/wallet';
 import axios from 'axios';
+import logger from 'logger';
 
 export enum PreferenceActionType {
   add = 'add',
   remove = 'remove',
-  update = 'update',
+  wipe = 'wipe',
+  init = 'init',
 }
 
 export interface PreferencesResponse {
@@ -12,7 +14,8 @@ export interface PreferencesResponse {
   data?: Object;
 }
 
-const PREFS_ENDPOINT = 'http://localhost:8080/api/preferences';
+const PREFS_ENDPOINT =
+  'https://us-central1-rainbow-me.cloudfunctions.net/showcase';
 
 const preferencesAPI = axios.create({
   headers: {
@@ -37,39 +40,17 @@ export async function setPreference(
       value,
     };
     const message = JSON.stringify(objToSign);
-
-    console.log({ action, key, value, wallet });
-    console.log({ objToSign });
-
     const signature = await wallet.signMessage(message);
-    console.log(signature);
-    const apiCall =
-      action === 'add'
-        ? preferencesAPI.post
-        : action === 'update'
-        ? preferencesAPI.patch
-        : preferencesAPI.delete;
-
-    const response: PreferencesResponse = await apiCall(PREFS_ENDPOINT, {
-      message,
-      signature,
-    });
+    const response: PreferencesResponse = await preferencesAPI.post(
+      PREFS_ENDPOINT,
+      {
+        message,
+        signature,
+      }
+    );
     return response.success;
   } catch (e) {
-    console.log('error setting pref', e);
+    logger.log('error setting pref', e);
     return false;
   }
-}
-
-export async function getPreference(
-  key: string,
-  wallet: Wallet
-): Promise<Object | undefined> {
-  const auth = { auth: true };
-  const msg = await wallet.signMessage(JSON.stringify(auth));
-  const response: PreferencesResponse = await preferencesAPI.get(
-    PREFS_ENDPOINT,
-    { params: msg }
-  );
-  return response.data;
 }
