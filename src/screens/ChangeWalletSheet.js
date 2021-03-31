@@ -230,7 +230,11 @@ export default function ChangeWalletSheet() {
                             walletsSetSelected(newWallets[walletId])
                           );
                         }
-                        updateWebProfile(address);
+                        updateWebProfile(
+                          address,
+                          args.name,
+                          colors.avatarColor[args.color]
+                        );
                         return true;
                       }
                       return false;

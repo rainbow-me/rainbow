@@ -93,7 +93,11 @@ const AvatarBuilder = ({ route: { params } }) => {
 
     await dispatch(walletsSetSelected(newWallets[walletId]));
     await dispatch(walletsUpdate(newWallets));
-    updateWebProfile(updateWebProfile);
+    updateWebProfile(
+      selectedWallet.address,
+      name,
+      (color !== undefined && colors.avatarColor[color]) || currentAccountColor
+    );
   };
 
   const colorCircleTopPadding = 15;

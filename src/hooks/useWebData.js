@@ -1,3 +1,4 @@
+import GraphemeSplitter from 'grapheme-splitter';
 import { useCallback, useEffect, useState } from 'react';
 import { PreferenceActionType, setPreference } from '../model/preferences';
 import { loadWallet } from '../model/wallet';
@@ -7,6 +8,19 @@ import {
   getWebDataEnabled,
   saveWebDataEnabled,
 } from '@rainbow-me/handlers/localstorage/accountLocal';
+import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
+
+const getAccountSymbol = name => {
+  if (!name) {
+    return null;
+  }
+  const accountSymbol = new GraphemeSplitter().splitGraphemes(name)[0];
+  return accountSymbol;
+};
+
+const getNameWithoutEmoji = name => {
+  return removeFirstEmojiFromString(name).join('');
+};
 
 export default function useWebData() {
   const { accountAddress, network } = useAccountSettings();
@@ -64,18 +78,19 @@ export default function useWebData() {
   }, [accountAddress, network]);
 
   const updateWebProfile = useCallback(
-    async address => {
+    async (address, name, color) => {
       const pref = await getWebDataEnabled(address, network);
       if (!pref) return;
       const wallet = await loadWallet(address);
       if (!wallet) return;
-      await setPreference(PreferenceActionType.update, 'profile', wallet, {
-        accountColor: colors.avatarColor[accountColor],
-        accountName: accountName,
-        accountSymbol: accountSymbol,
-      });
+      const data = {
+        accountColor: color || accountColor,
+        accountName: name ? getNameWithoutEmoji(name) : accountName,
+        accountSymbol: name ? getAccountSymbol(name) : accountSymbol,
+      };
+      await setPreference(PreferenceActionType.update, 'profile', wallet, data);
     },
-    [accountColor, accountName, accountSymbol, colors.avatarColor, network]
+    [accountColor, accountName, accountSymbol, network]
   );
 
   const addAssetToWebShowcase = useCallback(
