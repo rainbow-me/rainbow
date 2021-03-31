@@ -24,7 +24,7 @@ if (typeof atob === 'undefined') {
 
 // Can remove when we update hermes after they enable Proxy support
 ReactNative.Platform.OS === 'android' && enableES5();
-ReactNative.Platform.OS === 'ios' && toLocaleStringPolyfill();
+ReactNative.Platform.OS === 'android' && toLocaleStringPolyfill();
 
 ReactNative.Platform.OS === 'ios' &&
   Animated.addWhitelistedNativeProps({ d: true });
