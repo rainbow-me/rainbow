@@ -311,7 +311,7 @@ const LiquidityPoolExpandedState = () => {
               color={token0.color}
               isPositive={token0?.price?.relative_change_24h > 0}
               name={tokens[0].name}
-              percentageAllocation={50}
+              percentageAllocation={20}
               pricePerUnitFormatted={half}
               symbol={tokens[0].symbol}
             />
@@ -321,7 +321,7 @@ const LiquidityPoolExpandedState = () => {
               color={token1.color}
               isPositive={token1?.price?.relative_change_24h > 0}
               name={tokens[1].name}
-              percentageAllocation={50}
+              percentageAllocation={20}
               pricePerUnitFormatted={half}
               symbol={tokens[1].symbol}
             />
