@@ -3,15 +3,12 @@ import { PreferenceActionType, setPreference } from '../model/preferences';
 import { loadWallet } from '../model/wallet';
 import useAccountProfile from './useAccountProfile';
 import useAccountSettings from './useAccountSettings';
-// eslint-disable-next-line import/no-cycle
-import useShowcaseTokens from './useShowcaseTokens';
 import {
   getWebDataEnabled,
   saveWebDataEnabled,
 } from '@rainbow-me/handlers/localstorage/accountLocal';
 
 export default function useWebData() {
-  const { showcaseTokens } = useShowcaseTokens();
   const { accountAddress, network } = useAccountSettings();
   const { colors } = useTheme();
   const { accountName, accountSymbol, accountColor } = useAccountProfile();
@@ -26,8 +23,8 @@ export default function useWebData() {
   }, [accountAddress, network]);
 
   const initWebData = useCallback(
-    async address => {
-      const wallet = await loadWallet(address);
+    async showcaseTokens => {
+      const wallet = await loadWallet();
       if (!wallet) return;
       await setPreference(
         PreferenceActionType.init,
@@ -42,32 +39,29 @@ export default function useWebData() {
         accountSymbol: accountSymbol,
       });
 
-      await saveWebDataEnabled(true, address, network);
+      await saveWebDataEnabled(true, accountAddress, network);
       setWebDataEnabled(true);
     },
     [
+      accountAddress,
       accountColor,
       accountName,
       accountSymbol,
       colors.avatarColor,
       network,
-      showcaseTokens,
     ]
   );
 
-  const wipeWebData = useCallback(
-    async address => {
-      const pref = await getWebDataEnabled(address, network);
-      if (!pref) return;
-      const wallet = await loadWallet(address);
-      if (!wallet) return;
-      await setPreference(PreferenceActionType.wipe, 'showcase', wallet);
-      await setPreference(PreferenceActionType.wipe, 'profile', wallet);
-      await saveWebDataEnabled(false, address, network);
-      setWebDataEnabled(false);
-    },
-    [network]
-  );
+  const wipeWebData = useCallback(async () => {
+    const pref = await getWebDataEnabled(accountAddress, network);
+    if (!pref) return;
+    const wallet = await loadWallet(accountAddress);
+    if (!wallet) return;
+    await setPreference(PreferenceActionType.wipe, 'showcase', wallet);
+    await setPreference(PreferenceActionType.wipe, 'profile', wallet);
+    await saveWebDataEnabled(false, accountAddress, network);
+    setWebDataEnabled(false);
+  }, [accountAddress, network]);
 
   const updateWebProfile = useCallback(
     async address => {

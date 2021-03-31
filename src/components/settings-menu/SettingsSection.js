@@ -31,6 +31,7 @@ import {
   useAccountSettings,
   useDimensions,
   useSendFeedback,
+  useShowcaseTokens,
   useWallets,
   useWebData,
 } from '@rainbow-me/hooks';
@@ -131,6 +132,7 @@ export default function SettingsSection({
   onPressNetwork,
   onPressShowSecret,
 }) {
+  const { showcaseTokens } = useShowcaseTokens();
   const { webDataEnabled, initWebData, wipeWebData } = useWebData();
   const isReviewAvailable = useExperimentalFlag(REVIEW_ANDROID) || ios;
   const { wallets } = useWallets();
@@ -192,9 +194,9 @@ export default function SettingsSection({
     if (webDataEnabled) {
       wipeWebData();
     } else {
-      initWebData();
+      initWebData(showcaseTokens);
     }
-  }, [initWebData, webDataEnabled, wipeWebData]);
+  }, [initWebData, showcaseTokens, webDataEnabled, wipeWebData]);
 
   return (
     <Container backgroundColor={colors.white} scrollEnabled={isTinyPhone}>

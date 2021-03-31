@@ -5,7 +5,6 @@ import {
   addShowcaseToken as rawAddShowcaseToken,
   removeShowcaseToken as rawRemoveShowcaseToken,
 } from '../redux/showcaseTokens';
-// eslint-disable-next-line import/no-cycle
 import useWebData from './useWebData';
 
 export default function useShowcaseTokens() {
