@@ -1,7 +1,10 @@
 import { find } from 'lodash';
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useSelector } from 'react-redux';
+import useAdditionalAssetData from '../../hooks/useAdditionalAssetData';
+import Link from '../Link';
+import { Column } from '../layout';
 import {
   BuyActionButton,
   SendActionButton,
@@ -10,6 +13,7 @@ import {
   SlackSheet,
   SwapActionButton,
 } from '../sheet';
+import { Text } from '../text';
 import {
   TokenInfoBalanceValue,
   TokenInfoItem,
@@ -17,26 +21,29 @@ import {
   TokenInfoSection,
 } from '../token-info';
 import { Chart } from '../value-chart';
+import ExpandedStateSection from './ExpandedStateSection';
 import { ChartPathProvider } from '@rainbow-me/animated-charts';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 import {
   useAccountSettings,
   useChartThrottledPoints,
+  useDimensions,
   useUniswapAssetsInWallet,
 } from '@rainbow-me/hooks';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { deviceUtils, ethereumUtils } from '@rainbow-me/utils';
 
 const baseHeight = 317 + (android && 20 - getSoftMenuBarHeight());
 const heightWithoutChart = baseHeight + (android && 30);
 const heightWithChart = baseHeight + 307;
 
-export const initialChartExpandedStateSheetHeight = heightWithChart;
+export const initialChartExpandedStateSheetHeight = undefined;
 
 export default function ChartExpandedState({ asset }) {
   const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
     genericAssets,
   }));
   const { nativeCurrency } = useAccountSettings();
+  const [descriptionHeight, setDescriptionHeight] = useState(0);
 
   // If we don't have a balance for this asset
   // It's a generic asset
@@ -50,6 +57,8 @@ export default function ChartExpandedState({ asset }) {
       )
     : asset;
 
+  const { height: screenHeight } = useDimensions();
+
   const {
     chart,
     chartData,
@@ -61,8 +70,14 @@ export default function ChartExpandedState({ asset }) {
     throttledData,
   } = useChartThrottledPoints({
     asset: assetWithPrice,
-    heightWithChart: heightWithChart - (!hasBalance && 68),
-    heightWithoutChart: heightWithoutChart - (!hasBalance && 68),
+    heightWithChart: Math.min(
+      heightWithChart - (!hasBalance && 68) + descriptionHeight,
+      screenHeight
+    ),
+    heightWithoutChart: Math.min(
+      heightWithoutChart - (!hasBalance && 68) + descriptionHeight,
+      screenHeight
+    ),
   });
 
   const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
@@ -70,6 +85,8 @@ export default function ChartExpandedState({ asset }) {
     'uniqueId',
     asset?.uniqueId,
   ]);
+
+  const { description } = useAdditionalAssetData(asset?.address);
 
   const needsEth = asset?.address === 'eth' && asset?.balance?.amount === '0';
 
@@ -86,11 +103,16 @@ export default function ChartExpandedState({ asset }) {
     ChartExpandedStateSheetHeight -= 60;
   }
 
+  const { colors, isDarkMode } = useTheme();
+
   return (
     <SlackSheet
       additionalTopPadding={android}
       contentHeight={ChartExpandedStateSheetHeight}
-      scrollEnabled={false}
+      scrollEnabled
+      {...(ios
+        ? { height: '100%' }
+        : { additionalTopPadding: true, contentHeight: screenHeight - 80 })}
     >
       <ChartPathProvider data={throttledData}>
         <Chart
@@ -142,6 +164,26 @@ export default function ChartExpandedState({ asset }) {
             />
           )}
         </SheetActionButtonRow>
+      )}
+      {!!description && (
+        <ExpandedStateSection
+          onLayout={({
+            nativeEvent: {
+              layout: { height },
+            },
+          }) => setDescriptionHeight(height)}
+          title={`About ${asset?.name}`}
+        >
+          <Column>
+            <Text
+              color={colors.alpha(colors.blueGreyDark, 0.5)}
+              lineHeight="paragraphSmall"
+              size="lmedium"
+            >
+              {description}
+            </Text>
+          </Column>
+        </ExpandedStateSection>
       )}
     </SlackSheet>
   );
