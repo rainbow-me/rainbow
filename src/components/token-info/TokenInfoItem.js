@@ -11,6 +11,7 @@ export default function TokenInfoItem({
   title,
   weight,
   hidden,
+  color,
   ...props
 }) {
   return (
@@ -24,7 +25,7 @@ export default function TokenInfoItem({
       {asset && !hidden ? (
         <TokenInfoBalanceValue align={align} asset={asset} />
       ) : (
-        <TokenInfoValue align={align} weight={weight}>
+        <TokenInfoValue align={align} color={color} weight={weight}>
           {!hidden && children}
         </TokenInfoValue>
       )}

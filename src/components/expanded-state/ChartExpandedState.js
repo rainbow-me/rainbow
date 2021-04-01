@@ -2,8 +2,9 @@ import { find } from 'lodash';
 import React, { useRef, useState } from 'react';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useSelector } from 'react-redux';
+import styled from 'styled-components';
 import useAdditionalAssetData from '../../hooks/useAdditionalAssetData';
-import Link from '../Link';
+import EdgeFade from '../discover-sheet/EdgeFade';
 import { Column } from '../layout';
 import {
   BuyActionButton,
@@ -30,13 +31,27 @@ import {
   useDimensions,
   useUniswapAssetsInWallet,
 } from '@rainbow-me/hooks';
-import { deviceUtils, ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils } from '@rainbow-me/utils';
 
 const baseHeight = 317 + (android && 20 - getSoftMenuBarHeight());
 const heightWithoutChart = baseHeight + (android && 30);
 const heightWithChart = baseHeight + 307;
 
 export const initialChartExpandedStateSheetHeight = undefined;
+
+const Carousel = styled.ScrollView.attrs({
+  contentContainerStyle: { paddingHorizontal: 5 },
+  horizontal: true,
+  showsHorizontalScrollIndicator: false,
+})``;
+
+const CarouselItem = styled(TokenInfoItem).attrs(({ theme: { colors } }) => ({
+  color: colors.alpha(colors.blueGreyDark, 0.5),
+}))`
+  margin-horizontal: 15;
+`;
+
+const CarouselWrapper = styled.View``;
 
 export default function ChartExpandedState({ asset }) {
   const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
@@ -58,6 +73,15 @@ export default function ChartExpandedState({ asset }) {
     : asset;
 
   const { height: screenHeight } = useDimensions();
+  const {
+    description,
+    marketCap,
+    totalLiquidity,
+    totalVolume,
+  } = useAdditionalAssetData(asset?.address, assetWithPrice?.price?.value);
+
+  const scrollableContentHeight =
+    !!totalVolume || !!marketCap || !!totalLiquidity ? 68 : 0;
 
   const {
     chart,
@@ -71,11 +95,17 @@ export default function ChartExpandedState({ asset }) {
   } = useChartThrottledPoints({
     asset: assetWithPrice,
     heightWithChart: Math.min(
-      heightWithChart - (!hasBalance && 68) + descriptionHeight,
+      heightWithChart -
+        (!hasBalance && 68) +
+        descriptionHeight +
+        scrollableContentHeight,
       screenHeight
     ),
     heightWithoutChart: Math.min(
-      heightWithoutChart - (!hasBalance && 68) + descriptionHeight,
+      heightWithoutChart -
+        (!hasBalance && 68) +
+        descriptionHeight +
+        scrollableContentHeight,
       screenHeight
     ),
   });
@@ -85,8 +115,6 @@ export default function ChartExpandedState({ asset }) {
     'uniqueId',
     asset?.uniqueId,
   ]);
-
-  const { description } = useAdditionalAssetData(asset?.address);
 
   const needsEth = asset?.address === 'eth' && asset?.balance?.amount === '0';
 
@@ -103,7 +131,7 @@ export default function ChartExpandedState({ asset }) {
     ChartExpandedStateSheetHeight -= 60;
   }
 
-  const { colors, isDarkMode } = useTheme();
+  const { colors } = useTheme();
 
   return (
     <SlackSheet
@@ -165,6 +193,24 @@ export default function ChartExpandedState({ asset }) {
           )}
         </SheetActionButtonRow>
       )}
+      <CarouselWrapper>
+        <Carousel>
+          <CarouselItem hidden={!totalVolume} title="24h volume" weight="bold">
+            {totalVolume}
+          </CarouselItem>
+          <CarouselItem hidden={!marketCap} title="Market cap" weight="bold">
+            {marketCap}
+          </CarouselItem>
+          <CarouselItem
+            hidden={!totalLiquidity}
+            title="Uniswap liquidity"
+            weight="bold"
+          >
+            {totalLiquidity}
+          </CarouselItem>
+        </Carousel>
+        <EdgeFade />
+      </CarouselWrapper>
       {!!description && (
         <ExpandedStateSection
           onLayout={({

@@ -7,6 +7,7 @@ import ReactNative from 'react-native';
 import Animated from 'react-native-reanimated';
 import Storage from 'react-native-storage';
 import { debugLayoutAnimations } from './src/config/debug';
+import toLocaleStringPolyfill from '@rainbow-me/helpers/toLocaleStringPolyfill';
 import logger from 'logger';
 
 if (typeof btoa === 'undefined') {
@@ -23,6 +24,7 @@ if (typeof atob === 'undefined') {
 
 // Can remove when we update hermes after they enable Proxy support
 ReactNative.Platform.OS === 'android' && enableES5();
+ReactNative.Platform.OS === 'android' && toLocaleStringPolyfill();
 
 ReactNative.Platform.OS === 'ios' &&
   Animated.addWhitelistedNativeProps({ d: true });

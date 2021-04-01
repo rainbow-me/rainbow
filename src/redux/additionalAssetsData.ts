@@ -8,7 +8,7 @@ const ADDITIONAL_ASSET_DATA_ADD = 'additionalAssetData/ADDITIONAL_ASSET_DATA';
 export type AdditionalData = {
   description?: string;
   totalVolumeInEth?: number;
-  totalSupply?: number;
+  circulatingSupply?: number;
 };
 
 export type AdditionalDataWrapped = {
@@ -52,19 +52,21 @@ export const additionalAssetsDataAdd = (address: string) => async (
 
     const totalVolumeInEth = data?.data?.market_data?.total_volume?.eth;
 
-    const totalSupply = data?.data?.market_data?.total_supply;
+    const circulatingSupply = data?.data?.market_data?.circulating_supply;
 
-    console.log(totalVolumeInEth, data?.data?.market_data?.total_volume);
     const newData: AdditionalData = {};
     if (totalVolumeInEth) {
       newData.totalVolumeInEth = totalVolumeInEth;
     }
+
     if (description) {
       newData.description = description;
     }
-    if (totalSupply) {
-      newData.totalSupply = totalSupply;
+
+    if (circulatingSupply) {
+      newData.circulatingSupply = circulatingSupply;
     }
+
     const payload: State = {
       [address]: {
         coingeckoId: 'dd',
