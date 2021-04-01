@@ -8,7 +8,6 @@ import {
   getWebDataEnabled,
   saveWebDataEnabled,
 } from '@rainbow-me/handlers/localstorage/accountLocal';
-import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
 
 const getAccountSymbol = name => {
   if (!name) {
@@ -18,14 +17,10 @@ const getAccountSymbol = name => {
   return accountSymbol;
 };
 
-const getNameWithoutEmoji = name => {
-  return removeFirstEmojiFromString(name).join('');
-};
-
 export default function useWebData() {
   const { accountAddress, network } = useAccountSettings();
   const { colors } = useTheme();
-  const { accountName, accountSymbol, accountColor } = useAccountProfile();
+  const { accountSymbol, accountColor } = useAccountProfile();
   const [webDataEnabled, setWebDataEnabled] = useState(false);
 
   useEffect(() => {
@@ -49,21 +44,13 @@ export default function useWebData() {
 
       await setPreference(PreferenceActionType.init, 'profile', wallet, {
         accountColor: colors.avatarColor[accountColor],
-        accountName: accountName,
         accountSymbol: accountSymbol,
       });
 
       await saveWebDataEnabled(true, accountAddress, network);
       setWebDataEnabled(true);
     },
-    [
-      accountAddress,
-      accountColor,
-      accountName,
-      accountSymbol,
-      colors.avatarColor,
-      network,
-    ]
+    [accountAddress, accountColor, accountSymbol, colors.avatarColor, network]
   );
 
   const wipeWebData = useCallback(async () => {
@@ -85,12 +72,11 @@ export default function useWebData() {
       if (!wallet) return;
       const data = {
         accountColor: color || accountColor,
-        accountName: name ? getNameWithoutEmoji(name) : accountName,
         accountSymbol: name ? getAccountSymbol(name) : accountSymbol,
       };
       await setPreference(PreferenceActionType.update, 'profile', wallet, data);
     },
-    [accountColor, accountName, accountSymbol, network]
+    [accountColor, accountSymbol, network]
   );
 
   const addAssetToWebShowcase = useCallback(
