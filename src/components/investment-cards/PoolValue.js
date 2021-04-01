@@ -4,20 +4,20 @@ import { convertAmountToNativeDisplay } from '../../helpers/utilities';
 import { Row } from '../layout';
 import { Text } from '../text';
 import { useAccountSettings } from '@rainbow-me/hooks';
+import { padding } from '@rainbow-me/styles';
 
 const PoolValueWrapper = styled(Row)`
-  border-radius: 15px;
-  height: 30px;
-  padding-horizontal: 9px;
-  padding-top: 2px;
+  border-radius: ${({ simple }) => (simple ? 0 : 15)};
+  height: ${({ simple }) => (simple ? undefined : 30)};
+  ${({ simple }) => (simple ? undefined : padding(2, 9, 0))};
 `;
 
-const PoolValueText = styled(Text).attrs(({ size }) => ({
-  align: 'center',
+const PoolValueText = styled(Text).attrs(({ simple, size }) => ({
+  align: simple ? 'left' : 'center',
   letterSpacing: 'roundedTight',
-  lineHeight: 'paragraphSmall',
+  lineHeight: simple ? undefined : 'paragraphSmall',
   size: size || 'lmedium',
-  weight: 'bold',
+  weight: simple ? 'semibold' : 'bold',
 }))`
   ${android && 'padding-top: 3px'}
 `;
@@ -81,8 +81,11 @@ export const PoolValue = ({ type, value, simple, ...props }) => {
     formattedValue = bigNumberFormat(value, nativeCurrency);
   }
   return (
-    <PoolValueWrapper backgroundColor={colors.alpha(color, simple ? 0 : 0.06)}>
-      <PoolValueText color={color} {...props}>
+    <PoolValueWrapper
+      backgroundColor={colors.alpha(color, simple ? 0 : 0.06)}
+      simple={simple}
+    >
+      <PoolValueText color={color} simple={simple} {...props}>
         {formattedValue}
       </PoolValueText>
     </PoolValueWrapper>

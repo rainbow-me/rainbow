@@ -7,6 +7,7 @@ import TokenInfoValue from './TokenInfoValue';
 export default function TokenInfoItem({
   align = 'left',
   asset,
+  color,
   children,
   title,
   weight,
@@ -25,7 +26,12 @@ export default function TokenInfoItem({
       {asset && !hidden ? (
         <TokenInfoBalanceValue align={align} asset={asset} />
       ) : (
-        <TokenInfoValue align={align} lineHeight={lineHeight} weight={weight}>
+        <TokenInfoValue
+          align={align}
+          color={color}
+          lineHeight={lineHeight}
+          weight={weight}
+        >
           {!hidden && children}
         </TokenInfoValue>
       )}

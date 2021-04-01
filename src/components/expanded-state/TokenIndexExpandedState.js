@@ -193,10 +193,11 @@ export default function TokenIndexExpandedState({ asset }) {
             <Text
               color={colors.alpha(colors.blueGreyDark, 0.5)}
               letterSpacing="roundedMedium"
+              size="smedium"
               testID="index-underlying-assets"
               weight="semibold"
             >
-              Underlying Assets
+              Underlying tokens
             </Text>
           </Column>
           <Column align="end" flex={1}>
@@ -204,6 +205,7 @@ export default function TokenIndexExpandedState({ asset }) {
               align="right"
               color={colors.alpha(colors.blueGreyDark, 0.5)}
               letterSpacing="roundedMedium"
+              size="smedium"
               weight="semibold"
             >
               Makeup of 1 {assetWithPrice.symbol}
@@ -219,6 +221,7 @@ export default function TokenIndexExpandedState({ asset }) {
                 <AssetListItemSkeleton
                   animated
                   descendingOpacity
+                  ignorePaddingHorizontal
                   key={`underlying-assets-skeleton-${index}`}
                 />
               ))}

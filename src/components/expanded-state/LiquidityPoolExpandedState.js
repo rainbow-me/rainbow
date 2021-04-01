@@ -58,24 +58,30 @@ const formatTokenAddress = address => {
 };
 
 const APYWrapper = styled.View`
-  padding-top: 3;
   flex: 1;
+  padding-top: 3;
 `;
 
 const UnderlyingAssetsWrapper = styled.View`
-  margin-horizontal: 20;
+  margin-horizontal: 19;
+  margin-top: 12;
 `;
 
-const CarouselWrapper = styled.View``;
+const CarouselWrapper = styled.View`
+  margin-top: 6;
+`;
 
 const Carousel = styled.ScrollView.attrs({
-  contentContainerStyle: { paddingHorizontal: 5 },
+  contentContainerStyle: { paddingHorizontal: 6 },
   horizontal: true,
   showsHorizontalScrollIndicator: false,
 })``;
 
-const CarouselItem = styled(TokenInfoItem)`
-  margin-horizontal: 15;
+const CarouselItem = styled(TokenInfoItem).attrs(({ theme: { colors } }) => ({
+  color: colors.alpha(colors.dark, 0.8),
+  letterSpacing: 'roundedTighter',
+}))`
+  margin-horizontal: 13;
 `;
 
 const LiquidityPoolExpandedState = () => {
@@ -262,19 +268,10 @@ const LiquidityPoolExpandedState = () => {
               />
             </APYWrapper>
           </CarouselItem>
-          <CarouselItem
-            hidden={!totalFeeEarned}
-            title="Fees earned"
-            weight="bold"
-          >
-            {totalFeeEarned} 🤑
+          <CarouselItem hidden={!totalFeeEarned} title="Fees earned">
+            {totalFeeEarned}
           </CarouselItem>
-          <CarouselItem
-            hidden={!volume}
-            {...(ios ? { lineHeight: 28 } : {})}
-            title="Pool volume 24h"
-            weight="bold"
-          >
+          <CarouselItem hidden={!volume} title="24h pool volume">
             {volume}
           </CarouselItem>
         </Carousel>
@@ -283,14 +280,15 @@ const LiquidityPoolExpandedState = () => {
 
       {token0 && token1 && (
         <>
-          <Row marginBottom={15} marginHorizontal={20} marginTop={25}>
+          <Row marginHorizontal={19} marginTop={27}>
             <Column align="start" flex={1}>
               <Text
                 color={colors.alpha(colors.blueGreyDark, 0.5)}
                 letterSpacing="roundedMedium"
+                size="smedium"
                 weight="semibold"
               >
-                Underlying Assets
+                Underlying tokens
               </Text>
             </Column>
             <Column align="end" flex={1}>
@@ -298,6 +296,7 @@ const LiquidityPoolExpandedState = () => {
                 align="right"
                 color={colors.alpha(colors.blueGreyDark, 0.5)}
                 letterSpacing="roundedMedium"
+                size="smedium"
                 weight="semibold"
               >
                 Pool makeup
@@ -311,7 +310,7 @@ const LiquidityPoolExpandedState = () => {
               color={token0.color}
               isPositive={token0?.price?.relative_change_24h > 0}
               name={tokens[0].name}
-              percentageAllocation={20}
+              percentageAllocation={15}
               pricePerUnitFormatted={half}
               symbol={tokens[0].symbol}
             />
@@ -321,7 +320,7 @@ const LiquidityPoolExpandedState = () => {
               color={token1.color}
               isPositive={token1?.price?.relative_change_24h > 0}
               name={tokens[1].name}
-              percentageAllocation={20}
+              percentageAllocation={15}
               pricePerUnitFormatted={half}
               symbol={tokens[1].symbol}
             />
