@@ -124,6 +124,7 @@ const IconTypes = {
   swap: SwapIcon,
   threeDots: ThreeDotsIcon,
   touchid: TouchIdIcon,
+  unicorn: Emoji,
   walletConnect: WalletConnectIcon,
   warning: WarningIcon,
   warningCircled: WarningCircledIcon,

@@ -76,9 +76,14 @@ const BottomRow = ({ description, native, status, type }) => {
   );
 };
 
-const TopRow = ({ balance, pending, status, title }) => (
+const TopRow = ({ balance, pending, protocol, status, title }) => (
   <RowWithMargins align="center" justify="space-between" margin={19}>
-    <TransactionStatusBadge pending={pending} status={status} title={title} />
+    <TransactionStatusBadge
+      pending={pending}
+      protocol={protocol}
+      status={status}
+      title={title}
+    />
     <Row align="center" flex={1} justify="end">
       <BottomRowText align="right">{balance?.display ?? ''}</BottomRowText>
     </Row>

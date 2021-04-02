@@ -1,10 +1,9 @@
-import { includes } from 'lodash';
 import React from 'react';
 import Spinner from '../Spinner';
 import { Icon } from '../icons';
 import { Row } from '../layout';
 import { Text } from '../text';
-import { TransactionStatusTypes } from '@rainbow-me/entities';
+import { ProtocolTypes, TransactionStatusTypes } from '@rainbow-me/entities';
 import { position } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
@@ -20,7 +19,6 @@ const StatusProps = {
     marginRight: 4,
   },
   [TransactionStatusTypes.deposited]: {
-    name: 'sunflower',
     style: { fontSize: 11, left: -1.3, marginBottom: 1.5, marginRight: 1 },
   },
   [TransactionStatusTypes.depositing]: {
@@ -75,12 +73,41 @@ const StatusProps = {
     marginRight: 4,
   },
   [TransactionStatusTypes.withdrew]: {
-    name: 'sunflower',
     style: { fontSize: 11, left: -1.3, marginBottom: 1.5, marginRight: 1 },
   },
 };
 
-const TransactionStatusBadge = ({ pending, status, style, title }) => {
+const getStatusProps = (status, protocol) => {
+  const props = StatusProps[status];
+  if (
+    props &&
+    protocol &&
+    (status === TransactionStatusTypes.deposited ||
+      status === TransactionStatusTypes.withdrew)
+  ) {
+    if (protocol === ProtocolTypes.compound) {
+      return {
+        ...props,
+        name: 'sunflower',
+      };
+    }
+    if (protocol === ProtocolTypes.uniswap) {
+      return {
+        ...props,
+        name: 'uniswap',
+      };
+    }
+  }
+  return props;
+};
+
+const TransactionStatusBadge = ({
+  pending,
+  protocol,
+  status,
+  style,
+  title,
+}) => {
   const { colors } = useTheme();
   const isSwapping = status === TransactionStatusTypes.swapping;
 
@@ -95,6 +122,8 @@ const TransactionStatusBadge = ({ pending, status, style, title }) => {
     statusColor = colors.swapPurple;
   }
 
+  const statusProps = getStatusProps(status, protocol);
+
   return (
     <Row align="center" style={style}>
       {pending && (
@@ -103,11 +132,11 @@ const TransactionStatusBadge = ({ pending, status, style, title }) => {
           size={12}
         />
       )}
-      {status && includes(Object.keys(StatusProps), status) && (
+      {status && statusProps && (
         <Icon
           color={statusColor}
           style={position.maxSizeAsObject(10)}
-          {...StatusProps[status]}
+          {...statusProps}
         />
       )}
       <Text color={statusColor} size="smedium" weight="semibold">
@@ -119,6 +148,7 @@ const TransactionStatusBadge = ({ pending, status, style, title }) => {
 
 export default magicMemo(TransactionStatusBadge, [
   'pending',
+  'protocol',
   'status',
   'title',
 ]);
