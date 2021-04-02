@@ -58,7 +58,7 @@ const ListName = styled(Text)`
 const listData = [
   {
     id: 'liquidity',
-    name: 'Liquidity',
+    name: 'Pool size',
   },
   {
     id: 'annualized_fees',
