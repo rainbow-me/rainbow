@@ -23,6 +23,7 @@ export default function UnderlyingAsset({
   change,
   color,
   percentageAllocation,
+  changeVisible,
 }) {
   const { nativeCurrency } = useAccountSettings();
 
@@ -60,6 +61,7 @@ export default function UnderlyingAsset({
         <UnderlyingAssetCoinRow
           address={address}
           change={change}
+          changeVisible={changeVisible}
           isPositive={isPositive}
           name={name}
           symbol={symbol}

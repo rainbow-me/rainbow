@@ -306,9 +306,14 @@ const LiquidityPoolExpandedState = () => {
             <UnderlyingAsset
               address={tokenAddresses[0]}
               change={token0?.native?.change.replace('-', '')}
+              changeVisible={!uniBalance}
               color={color0}
               isPositive={token0?.price?.relative_change_24h > 0}
-              name={tokens[0].name}
+              name={
+                uniBalance
+                  ? `${tokens[0].value} ${tokens[0].symbol}`
+                  : tokens[0].name
+              }
               percentageAllocation={15}
               pricePerUnitFormatted={half}
               symbol={tokens[0].symbol}
@@ -316,9 +321,14 @@ const LiquidityPoolExpandedState = () => {
             <UnderlyingAsset
               address={tokenAddresses[1]}
               change={token1?.native?.change.replace('-', '')}
+              changeVisible={!uniBalance}
               color={color1}
               isPositive={token1?.price?.relative_change_24h > 0}
-              name={tokens[1].name}
+              name={
+                uniBalance
+                  ? `${tokens[1].value} ${tokens[1].symbol}`
+                  : tokens[1].name
+              }
               percentageAllocation={15}
               pricePerUnitFormatted={half}
               symbol={tokens[1].symbol}
