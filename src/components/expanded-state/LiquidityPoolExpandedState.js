@@ -117,7 +117,7 @@ const LiquidityPoolExpandedState = () => {
   );
 
   const details = usePoolDetails(asset.address);
-  const { annualized_fees: fee, volume } = details || {};
+  const { annualized_fees: fee, volume, nativeLiquidity } = details || {};
 
   const tokenAddresses = useMemo(() => {
     return tokens?.map(token => formatTokenAddress(token.address));
@@ -269,6 +269,9 @@ const LiquidityPoolExpandedState = () => {
           </CarouselItem>
           <CarouselItem hidden={!volume} title="24h pool volume">
             {volume}
+          </CarouselItem>
+          <CarouselItem hidden={!nativeLiquidity} title="Pool size">
+            {nativeLiquidity}
           </CarouselItem>
         </Carousel>
         <EdgeFade />
