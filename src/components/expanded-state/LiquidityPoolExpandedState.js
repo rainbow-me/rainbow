@@ -82,7 +82,7 @@ const CarouselItem = styled(TokenInfoItem).attrs(({ theme: { colors } }) => ({
   color: colors.alpha(colors.dark, 0.8),
   letterSpacing: 'roundedTighter',
 }))`
-  margin-horizontal: 13;
+  margin-horizontal: ${({ hidden }) => (hidden ? 0 : 13)};
 `;
 
 const LiquidityPoolExpandedState = () => {
