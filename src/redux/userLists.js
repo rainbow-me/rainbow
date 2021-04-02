@@ -30,15 +30,6 @@ export const userListsLoadState = () => async (dispatch, getState) => {
     const defaultLists = DefaultTokenLists[network] || [];
     const userLists = await getUserLists(network);
     let lists = userLists?.length ? userLists : defaultLists;
-    // ---- migration ------
-    lists = lists.map(list => {
-      if (list.id !== 'dollars') {
-        return list;
-      }
-      return DefaultTokenLists[network].find(({ id }) => id === 'stablecoins');
-    });
-    // ---- end migration ------
-
     let allAddresses = [];
     lists.forEach(list => {
       allAddresses = [...allAddresses, ...list.tokens];
