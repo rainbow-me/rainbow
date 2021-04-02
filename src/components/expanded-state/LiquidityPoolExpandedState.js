@@ -29,6 +29,7 @@ import {
   useAccountSettings,
   useAsset,
   useChartThrottledPoints,
+  useColorForAsset,
   usePoolDetails,
   useTotalFeeEarnedPerAsset,
 } from '@rainbow-me/hooks';
@@ -180,6 +181,9 @@ const LiquidityPoolExpandedState = () => {
 
   const { colors } = useTheme();
 
+  const color0 = useColorForAsset(token0);
+  const color1 = useColorForAsset(token1);
+
   const half =
     Number(native?.balance?.amount) === 0
       ? 'Half'
@@ -307,7 +311,7 @@ const LiquidityPoolExpandedState = () => {
             <UnderlyingAsset
               address={tokenAddresses[0]}
               change={token0?.native?.change}
-              color={token0.color}
+              color={color0}
               isPositive={token0?.price?.relative_change_24h > 0}
               name={tokens[0].name}
               percentageAllocation={15}
@@ -317,7 +321,7 @@ const LiquidityPoolExpandedState = () => {
             <UnderlyingAsset
               address={tokenAddresses[1]}
               change={token1?.native?.change}
-              color={token1.color}
+              color={color1}
               isPositive={token1?.price?.relative_change_24h > 0}
               name={tokens[1].name}
               percentageAllocation={15}
