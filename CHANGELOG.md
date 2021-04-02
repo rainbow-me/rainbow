@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.5.1](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.1)
+
+### Changed
+* Typescript Transaction Parser
+* Bug Fixes
+
 ## [1.5.0](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.0)
 
 ### Added
