@@ -62,6 +62,7 @@ export default function UnderlyingAsset({
           isPositive={isPositive}
           name={name}
           symbol={symbol}
+          testID={`underlying-asset-${symbol}`}
         />
       </Column>
       <Column aling="end">
