@@ -310,7 +310,7 @@ const LiquidityPoolExpandedState = () => {
           <UnderlyingAssetsWrapper>
             <UnderlyingAsset
               address={tokenAddresses[0]}
-              change={token0?.native?.change}
+              change={token0?.native?.change.replace('-', '')}
               color={color0}
               isPositive={token0?.price?.relative_change_24h > 0}
               name={tokens[0].name}
@@ -320,7 +320,7 @@ const LiquidityPoolExpandedState = () => {
             />
             <UnderlyingAsset
               address={tokenAddresses[1]}
-              change={token1?.native?.change}
+              change={token1?.native?.change.replace('-', '')}
               color={color1}
               isPositive={token1?.price?.relative_change_24h > 0}
               name={tokens[1].name}
