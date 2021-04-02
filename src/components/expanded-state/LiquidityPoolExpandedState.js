@@ -144,7 +144,6 @@ const LiquidityPoolExpandedState = () => {
     throttledData,
   } = useChartThrottledPoints({
     asset,
-    dpi: true,
     heightWithChart: Math.min(
       heightWithChart + (token1 && token0 ? underlyingAssetsHeight : 0),
       deviceUtils.dimensions.height
@@ -154,6 +153,7 @@ const LiquidityPoolExpandedState = () => {
       deviceUtils.dimensions.height
     ),
     isPool: true,
+    secondStore: true,
     uniBalance: !!uniBalance,
   });
 

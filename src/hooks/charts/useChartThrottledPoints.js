@@ -75,7 +75,7 @@ export default function useChartThrottledPoints({
   heightWithoutChart,
   isPool,
   uniBalance = true,
-  dpi,
+  secondStore,
 }) {
   const { nativeCurrency } = useAccountSettings();
 
@@ -90,7 +90,7 @@ export default function useChartThrottledPoints({
 
   const { chart, chartType, fetchingCharts, ...chartData } = useChartData(
     asset,
-    dpi
+    secondStore
   );
 
   const [throttledPoints, setThrottledPoints] = useState(() =>
