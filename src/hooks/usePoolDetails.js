@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
+import useAccountSettings from './useAccountSettings';
 import useNativeCurrencyToUSD from './useNativeCurrencyToUSD';
-import { useAccountSettings } from './index';
 
 export default function usePoolDetails(address) {
   const { nativeCurrency } = useAccountSettings();
