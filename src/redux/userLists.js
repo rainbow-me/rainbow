@@ -29,7 +29,7 @@ export const userListsLoadState = () => async (dispatch, getState) => {
   try {
     const defaultLists = DefaultTokenLists[network] || [];
     const userLists = await getUserLists(network);
-    let lists = userLists?.length ? userLists : defaultLists;
+    const lists = userLists?.length ? userLists : defaultLists;
     let allAddresses = [];
     lists.forEach(list => {
       allAddresses = [...allAddresses, ...list.tokens];
