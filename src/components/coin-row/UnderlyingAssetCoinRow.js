@@ -36,7 +36,7 @@ const UnderlyingAssetCoinRow = ({
             letterSpacing="roundedTight"
             size="smedium"
           >
-            {isPositive ? `↑` : `↓`} {change}
+            {change ? (isPositive ? `↑` : `↓`) : ''} {change}
           </Text>
         </Text>
       </Row>
