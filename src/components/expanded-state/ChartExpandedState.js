@@ -47,8 +47,9 @@ const Carousel = styled.ScrollView.attrs({
 
 const CarouselItem = styled(TokenInfoItem).attrs(({ theme: { colors } }) => ({
   color: colors.alpha(colors.blueGreyDark, 0.5),
+  letterSpacing: 'roundedTighter',
 }))`
-  margin-horizontal: ${({ hidden }) => (hidden ? 0 : 15)};
+  margin-horizontal: ${({ hidden }) => (hidden ? 0 : 13)};
 `;
 
 const CarouselWrapper = styled.View``;
