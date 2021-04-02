@@ -23,7 +23,7 @@ import {
   AssetType,
   EthereumAddress,
   ProtocolType,
-  ProtocolTypeNames,
+  ProtocolTypes,
   RainbowTransaction,
   TransactionDirection,
   TransactionStatus,
@@ -425,7 +425,7 @@ export const getTitle = ({
       if (protocol === ProtocolType.compound) {
         return 'Savings';
       } else {
-        return ProtocolTypeNames?.[protocol];
+        return ProtocolTypes?.[protocol];
       }
     }
   }

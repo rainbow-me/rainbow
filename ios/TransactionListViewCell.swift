@@ -129,7 +129,12 @@ class TransactionListViewCell: TransactionListBaseCell {
     
     // Savings Overrides
     if (transaction.status ==  "deposited" || transaction.status == "withdrew") {
-      transactionIcon.image = UIImage.init(named: "sunflower")
+      if (transaction.protocol == "compound") {
+        transactionIcon.image = UIImage.init(named: "sunflower")
+      }
+      if (transaction.protocol == "uniswap") {
+        transactionIcon.image = UIImage.init(named: "unicorn")
+      }
       iconFrame = CGRect(x: 69, y: 10, width: 13, height: 14)
       statusFrame = CGRect(x: 82, y: 9, width: 206, height: 16)
     }

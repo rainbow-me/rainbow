@@ -132,6 +132,7 @@ const IconTypes = {
   threeDots: ThreeDotsIcon,
   touchid: TouchIdIcon,
   twitter: TwitterIcon,
+  unicorn: Emoji,
   walletConnect: WalletConnectIcon,
   warning: WarningIcon,
   warningCircled: WarningCircledIcon,

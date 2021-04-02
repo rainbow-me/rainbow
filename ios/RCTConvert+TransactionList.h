@@ -74,7 +74,9 @@
     if ([data valueForKey:@"pending"] != [NSNull null]) {
       transaction.pending = [[data valueForKey:@"pending"] boolValue];
     }
-    
+    if (data[@"protocol"] != [NSNull null]) {
+       transaction.protocol = data[@"protocol"];
+    }
     if (data[@"minedAt"] != [NSNull null]) {
       transaction.minedAt = [NSDate dateWithTimeIntervalSince1970: [data[@"minedAt"] doubleValue]];
     } else {
