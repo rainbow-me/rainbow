@@ -54,6 +54,7 @@ export default function UnderlyingAsset({
       key={`dpi-${address}`}
       onPress={handlePress}
       scaleTo={0.95}
+      testID={`underlying-asset-${symbol}`}
     >
       <Column align="start" flex={1}>
         <UnderlyingAssetCoinRow
@@ -62,7 +63,6 @@ export default function UnderlyingAsset({
           isPositive={isPositive}
           name={name}
           symbol={symbol}
-          testID={`underlying-asset-${symbol}`}
         />
       </Column>
       <Column aling="end">
