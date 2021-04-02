@@ -25,7 +25,7 @@ export default function useAdditionalAssetData(
   const data: AdditionalData | undefined = useSelector(
     // @ts-ignore
     ({ additionalAssetsData }): AppState =>
-      additionalAssetsData[address?.toLowerCase()].data
+      additionalAssetsData[address?.toLowerCase()]?.data
   );
 
   const allTokens = useSelector((state: AppState) => state.uniswap.allTokens);

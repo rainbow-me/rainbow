@@ -37,7 +37,13 @@ const traverseData = (prev, data) => {
   };
 };
 
-function useJumpingForm(isLong, heightWithChart, heightWithoutChart) {
+function useJumpingForm(
+  isLong,
+  heightWithChart,
+  heightWithoutChart,
+  shortHeightWithChart,
+  shortHeightWithoutChart
+) {
   const { setOptions } = useNavigation();
 
   const { jumpToShort, jumpToLong } = useContext(ModalContext) || {};
@@ -50,12 +56,18 @@ function useJumpingForm(isLong, heightWithChart, heightWithoutChart) {
       ) {
         setOptions({
           longFormHeight: heightWithoutChart,
+          ...(shortHeightWithoutChart && {
+            shortFormHeight: shortHeightWithoutChart,
+          }),
         });
       }
     } else {
       if (typeof heightWithChart === 'number' && !isNaN(heightWithChart)) {
         setOptions({
           longFormHeight: heightWithChart,
+          ...(shortHeightWithChart && {
+            shortFormHeight: shortHeightWithChart,
+          }),
         });
       }
     }
@@ -66,6 +78,8 @@ function useJumpingForm(isLong, heightWithChart, heightWithoutChart) {
     setOptions,
     jumpToShort,
     jumpToLong,
+    shortHeightWithoutChart,
+    shortHeightWithChart,
   ]);
 }
 
@@ -76,6 +90,8 @@ export default function useChartThrottledPoints({
   isPool,
   uniBalance = true,
   dpi,
+  shortHeightWithChart,
+  shortHeightWithoutChart,
 }) {
   const { nativeCurrency } = useAccountSettings();
 
@@ -133,7 +149,9 @@ export default function useChartThrottledPoints({
   useJumpingForm(
     showChart,
     heightWithChart - (uniBalance ? 0 : UniBalanceHeightDifference),
-    heightWithoutChart - (uniBalance ? 0 : UniBalanceHeightDifference)
+    heightWithoutChart - (uniBalance ? 0 : UniBalanceHeightDifference),
+    shortHeightWithChart - (uniBalance ? 0 : UniBalanceHeightDifference),
+    shortHeightWithoutChart - (uniBalance ? 0 : UniBalanceHeightDifference)
   );
 
   const [throttledData, setThrottledData] = useState({

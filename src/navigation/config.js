@@ -24,11 +24,13 @@ const buildCoolModalConfig = params => ({
   gestureEnabled: true,
   headerHeight: params.headerHeight || 25,
   ignoreBottomOffset: true,
-  isShortFormEnabled: params.isShortFormEnabled,
+  isShortFormEnabled: params.isShortFormEnabled || params?.type === 'token',
   longFormHeight: params.longFormHeight,
   onAppear: params.onAppear || null,
   scrollEnabled: params.scrollEnabled,
   single: params.single,
+  startFromShortForm:
+    params.startFromShortForm || params?.type === 'token' || false,
   topOffset: params.topOffset || sharedCoolModalTopOffset,
 });
 

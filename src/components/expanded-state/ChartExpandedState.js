@@ -48,7 +48,7 @@ const Carousel = styled.ScrollView.attrs({
 const CarouselItem = styled(TokenInfoItem).attrs(({ theme: { colors } }) => ({
   color: colors.alpha(colors.blueGreyDark, 0.5),
 }))`
-  margin-horizontal: 15;
+  margin-horizontal: ${({ hidden }) => (hidden ? 0 : 15)};
 `;
 
 const CarouselWrapper = styled.View``;
@@ -106,6 +106,14 @@ export default function ChartExpandedState({ asset }) {
         (!hasBalance && 68) +
         descriptionHeight +
         scrollableContentHeight,
+      screenHeight
+    ),
+    shortHeightWithChart: Math.min(
+      heightWithChart - (!hasBalance && 68),
+      screenHeight
+    ),
+    shortHeightWithoutChart: Math.min(
+      heightWithoutChart - (!hasBalance && 68),
       screenHeight
     ),
   });
