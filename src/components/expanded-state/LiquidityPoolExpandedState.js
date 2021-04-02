@@ -117,16 +117,7 @@ const LiquidityPoolExpandedState = () => {
   );
 
   const details = usePoolDetails(asset.address);
-  const { annualized_fees: fee, oneDayVolumeUSD } = details || {};
-
-  const volume = useMemo(
-    () =>
-      oneDayVolumeUSD?.toLocaleString('en-US', {
-        currency: nativeCurrency,
-        style: 'currency',
-      }),
-    [nativeCurrency, oneDayVolumeUSD]
-  );
+  const { annualized_fees: fee, volume } = details || {};
 
   const tokenAddresses = useMemo(() => {
     return tokens?.map(token => formatTokenAddress(token.address));
