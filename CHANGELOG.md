@@ -12,6 +12,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.5.2](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.2)
+
+### Added
+* Support for new WC bridges
+
+### Changed
+* Fixes in apps connected button
+
 ## [1.5.1](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.1)
 
 ### Changed
