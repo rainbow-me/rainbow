@@ -9,6 +9,7 @@ import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
 import org.devio.rn.splashscreen.SplashScreen;
 import io.branch.rnbranch.*;
 import me.rainbow.NativeModules.RNBackHandler.RNBackHandlerPackage;
+import me.rainbow.NativeModules.Internals.*;
 import android.webkit.WebView;
 
 import android.content.Intent;
