@@ -24,8 +24,8 @@ import com.swmansion.reanimated.ReanimatedJSIModulePackage;
 
 
 public class MainApplication extends Application implements ReactApplication {
-
-  private final ReactNativeHost mReactNativeHost =
+    private static Context context;
+    private final ReactNativeHost mReactNativeHost =
       new ReactNativeHost(this) {
         @Override
         public boolean getUseDeveloperSupport() {
@@ -73,6 +73,7 @@ public class MainApplication extends Application implements ReactApplication {
   @Override
   public void onCreate() {
     super.onCreate();
+    context = this;
     SoLoader.init(this, /* native exopackage */ false);
     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
     RNBranchModule.getAutoInstance(this);
@@ -108,4 +109,7 @@ public class MainApplication extends Application implements ReactApplication {
       }
     }
   }
+    public static Context getAppContext() {
+        return MainApplication.context;
+    }
 }
