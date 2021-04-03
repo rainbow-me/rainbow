@@ -60,6 +60,7 @@ const formatTokenAddress = address => {
 
 const APYWrapper = styled.View`
   flex: 1;
+  height: 23;
   padding-top: 3;
 `;
 
@@ -82,7 +83,7 @@ const CarouselItem = styled(TokenInfoItem).attrs(({ theme: { colors } }) => ({
   color: colors.alpha(colors.dark, 0.8),
   letterSpacing: 'roundedTighter',
 }))`
-  margin-horizontal: ${({ hidden }) => (hidden ? 0 : 13)};
+  margin-horizontal: 13;
 `;
 
 const LiquidityPoolExpandedState = () => {
@@ -254,7 +255,7 @@ const LiquidityPoolExpandedState = () => {
       )}
       <CarouselWrapper>
         <Carousel>
-          <CarouselItem hidden={!fee} title="Annualized fees">
+          <CarouselItem loading={!fee} title="Annualized fees">
             <APYWrapper>
               <PoolValue
                 simple
@@ -264,13 +265,13 @@ const LiquidityPoolExpandedState = () => {
               />
             </APYWrapper>
           </CarouselItem>
-          <CarouselItem hidden={!totalFeeEarned} title="Fees earned">
+          <CarouselItem loading={!totalFeeEarned} title="Fees earned">
             {totalFeeEarned}
           </CarouselItem>
-          <CarouselItem hidden={!volume} title="24h pool volume">
+          <CarouselItem loading={!volume} title="24h pool volume">
             {volume}
           </CarouselItem>
-          <CarouselItem hidden={!nativeLiquidity} title="Pool size">
+          <CarouselItem loading={!nativeLiquidity} title="Pool size">
             {nativeLiquidity}
           </CarouselItem>
         </Carousel>
