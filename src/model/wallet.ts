@@ -148,7 +148,7 @@ interface RainbowSelectedWalletData {
   wallet: RainbowWallet;
 }
 
-interface PrivateKeyData {
+export interface PrivateKeyData {
   privateKey: EthereumPrivateKey;
   version: string;
 }
