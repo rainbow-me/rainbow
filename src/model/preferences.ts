@@ -24,7 +24,7 @@ const preferencesAPI = axios.create({
   timeout: 30000, // 30 secs
 });
 
-export async function setPreference(
+export async function useSetPreference(
   action: PreferenceActionType,
   key: string,
   wallet: Wallet,

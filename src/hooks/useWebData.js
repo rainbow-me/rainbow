@@ -1,6 +1,6 @@
 import GraphemeSplitter from 'grapheme-splitter';
 import { useCallback, useEffect, useState } from 'react';
-import { PreferenceActionType, setPreference } from '../model/preferences';
+import { PreferenceActionType, useSetPreference } from '../model/preferences';
 import { loadWallet } from '../model/wallet';
 import useAccountProfile from './useAccountProfile';
 import useAccountSettings from './useAccountSettings';
@@ -31,6 +31,7 @@ export default function useWebData() {
     init();
   }, [accountAddress, network]);
 
+  const setPreference = useSetPreference();
   const initWebData = useCallback(
     async showcaseTokens => {
       const wallet = await loadWallet();
@@ -62,7 +63,7 @@ export default function useWebData() {
     await setPreference(PreferenceActionType.wipe, 'profile', wallet);
     await saveWebDataEnabled(false, accountAddress, network);
     setWebDataEnabled(false);
-  }, [accountAddress, network]);
+  }, [accountAddress, network, setPreference]);
 
   const updateWebProfile = useCallback(
     async (address, name, color) => {
@@ -76,7 +77,7 @@ export default function useWebData() {
       };
       await setPreference(PreferenceActionType.update, 'profile', wallet, data);
     },
-    [accountColor, accountSymbol, network]
+    [accountColor, accountSymbol, network, setPreference]
   );
 
   const addAssetToWebShowcase = useCallback(
@@ -89,7 +90,7 @@ export default function useWebData() {
         asset_id,
       ]);
     },
-    [accountAddress, network]
+    [accountAddress, network, setPreference]
   );
 
   const removeAssetFromWebShowcase = useCallback(
@@ -100,7 +101,7 @@ export default function useWebData() {
       if (!wallet) return;
       setPreference(PreferenceActionType.remove, 'showcase', wallet, asset_id);
     },
-    [accountAddress, network]
+    [accountAddress, network, setPreference]
   );
 
   return {
