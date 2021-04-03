@@ -4,21 +4,21 @@ import { convertAmountToNativeDisplay } from '../../helpers/utilities';
 import { Row } from '../layout';
 import { Text } from '../text';
 import { useAccountSettings } from '@rainbow-me/hooks';
+import { padding } from '@rainbow-me/styles';
 
 const PoolValueWrapper = styled(Row)`
-  border-radius: 15px;
-  height: 30px;
-  padding-horizontal: 9px;
-  padding-top: 2px;
+  border-radius: ${({ simple }) => (simple ? 0 : 15)};
+  height: ${({ simple }) => (simple ? undefined : 30)};
+  ${({ simple }) => (simple ? undefined : padding(2, 9, 0))};
 `;
 
-const PoolValueText = styled(Text).attrs({
-  align: 'center',
+const PoolValueText = styled(Text).attrs(({ simple, size }) => ({
+  align: simple ? 'left' : 'center',
   letterSpacing: 'roundedTight',
-  lineHeight: 'paragraphSmall',
-  size: 'lmedium',
-  weight: 'bold',
-})`
+  lineHeight: simple ? undefined : 'paragraphSmall',
+  size: size || 'lmedium',
+  weight: simple ? 'semibold' : 'bold',
+}))`
   ${android && 'padding-top: 3px'}
 `;
 
@@ -42,7 +42,7 @@ const bigNumberFormat = (num, nativeCurrency) => {
   return ret;
 };
 
-export const PoolValue = ({ type, value, simple = true }) => {
+export const PoolValue = ({ type, value, simple, ...props }) => {
   let formattedValue = value;
   const { colors } = useTheme();
   let color = type === 'oneDayVolumeUSD' ? colors.swapPurple : colors.appleBlue;
@@ -81,8 +81,13 @@ export const PoolValue = ({ type, value, simple = true }) => {
     formattedValue = bigNumberFormat(value, nativeCurrency);
   }
   return (
-    <PoolValueWrapper backgroundColor={colors.alpha(color, simple ? 0 : 0.06)}>
-      <PoolValueText color={color}>{formattedValue}</PoolValueText>
+    <PoolValueWrapper
+      backgroundColor={colors.alpha(color, simple ? 0 : 0.06)}
+      simple={simple}
+    >
+      <PoolValueText color={color} simple={simple} {...props}>
+        {formattedValue}
+      </PoolValueText>
     </PoolValueWrapper>
   );
 };

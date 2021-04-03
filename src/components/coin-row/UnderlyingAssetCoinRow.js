@@ -12,6 +12,7 @@ const UnderlyingAssetCoinRow = ({
   isPositive,
   name,
   symbol,
+  changeVisible,
 }) => {
   const { colors } = useTheme();
 
@@ -31,13 +32,15 @@ const UnderlyingAssetCoinRow = ({
           weight="medium"
         >
           {name}{' '}
-          <Text
-            color={isPositive ? colors.green : colors.brightRed}
-            letterSpacing="roundedTight"
-            size="smedium"
-          >
-            {isPositive ? `↑` : `↓`} {change}
-          </Text>
+          {changeVisible && (
+            <Text
+              color={isPositive ? colors.green : colors.brightRed}
+              letterSpacing="roundedTight"
+              size="smedium"
+            >
+              {change ? (isPositive ? `↑` : `↓`) : ''} {change}
+            </Text>
+          )}
         </Text>
       </Row>
     </Row>

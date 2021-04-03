@@ -58,7 +58,8 @@ interface Position {
   token1PriceUSD: number;
 }
 
-export type StoredPositions = Position & ReturnMetrics;
+export type StoredPositions = Position &
+  ReturnMetrics & { fees: { sum: number } };
 
 // --- fetching ----------------//
 

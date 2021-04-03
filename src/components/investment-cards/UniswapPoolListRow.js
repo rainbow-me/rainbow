@@ -75,8 +75,9 @@ export default function UniswapPoolListRow({ assetType, item, ...props }) {
         nativeCurrency
       )[0];
     }
-    navigate(Routes.EXPANDED_ASSET_SHEET, {
+    navigate(Routes.EXPANDED_ASSET_SHEET_POOLS, {
       asset: poolAsset,
+      dpi: true,
       fromDiscover: true,
       longFormHeight: inWallet
         ? initialLiquidityPoolExpandedStateSheetHeight

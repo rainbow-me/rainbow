@@ -13,7 +13,7 @@ import { ETH_ADDRESS } from '@rainbow-me/references';
 
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
 
-export const UniBalanceHeightDifference = 150;
+export const UniBalanceHeightDifference = 100;
 
 const traverseData = (prev, data) => {
   if (!data || data.length === 0) {
@@ -89,7 +89,7 @@ export default function useChartThrottledPoints({
   heightWithoutChart,
   isPool,
   uniBalance = true,
-  dpi,
+  secondStore,
   shortHeightWithChart,
   shortHeightWithoutChart,
 }) {
@@ -106,7 +106,7 @@ export default function useChartThrottledPoints({
 
   const { chart, chartType, fetchingCharts, ...chartData } = useChartData(
     asset,
-    dpi
+    secondStore
   );
 
   const [throttledPoints, setThrottledPoints] = useState(() =>

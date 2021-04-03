@@ -12,10 +12,10 @@ const CHARTS_UPDATE_USD = 'charts/CHARTS_UPDATE_USD';
 export const DEFAULT_CHART_TYPE = ChartTypes.day;
 
 // -- Actions ---------------------------------------- //
-export const chartsUpdateChartType = (chartType, dpi) => dispatch =>
+export const chartsUpdateChartType = (chartType, secondStore) => dispatch =>
   dispatch({
-    dpi,
     payload: chartType,
+    secondStore,
     type: CHARTS_UPDATE_CHART_TYPE,
   });
 
@@ -57,9 +57,9 @@ const INITIAL_STATE = {
   charts: {},
   chartsEthUSDMonth: {},
   chartType: DEFAULT_CHART_TYPE,
-  chartTypeDPI: DEFAULT_CHART_TYPE,
+  chartType2: DEFAULT_CHART_TYPE,
   fetchingCharts: false,
-  fetchingChartsDPI: false,
+  fetchingCharts2: false,
 };
 
 export default (state = INITIAL_STATE, action) => {
@@ -67,15 +67,15 @@ export default (state = INITIAL_STATE, action) => {
     case CHARTS_UPDATE_CHART_TYPE:
       return {
         ...state,
-        [action.dpi ? 'chartTypeDPI' : 'chartType']: action.payload,
-        [action.dpi ? 'fetchingChartsDPI' : 'fetchingCharts']: true,
+        [action.secondStore ? 'chartType2' : 'chartType']: action.payload,
+        [action.secondStore ? 'fetchingCharts2' : 'fetchingCharts']: true,
       };
     case CHARTS_UPDATE:
       return {
         ...state,
         charts: action.payload,
         fetchingCharts: false,
-        fetchingChartsDPI: false,
+        fetchingCharts2: false,
       };
     case CHARTS_UPDATE_USD:
       return {
