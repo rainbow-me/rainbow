@@ -265,9 +265,11 @@ const LiquidityPoolExpandedState = () => {
               />
             </APYWrapper>
           </CarouselItem>
-          <CarouselItem loading={!totalFeeEarned} title="Fees earned">
-            {totalFeeEarned}
-          </CarouselItem>
+          {totalFeeEarned && (
+            <CarouselItem loading={!totalFeeEarned} title="Fees earned">
+              {totalFeeEarned}
+            </CarouselItem>
+          )}
           <CarouselItem loading={!volume} title="24h pool volume">
             {volume}
           </CarouselItem>
