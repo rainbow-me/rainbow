@@ -10,6 +10,13 @@ import {
 import type { AppState } from '@rainbow-me/redux/store';
 import { WETH_ADDRESS } from '@rainbow-me/references';
 
+function cutIfOver10000(
+  localeValue: string | undefined,
+  value: number
+): string | undefined {
+  return localeValue?.slice(0, value > 10000 ? -3 : 0);
+}
+
 export default function useAdditionalAssetData(
   address: string,
   tokenPrice = 0
@@ -46,34 +53,34 @@ export default function useAdditionalAssetData(
     description: data?.description,
     ...(data?.totalVolumeInEth
       ? {
-          totalVolume: (data?.totalVolumeInEth * ethNative).toLocaleString(
-            'en-US',
-            {
+          totalVolume: cutIfOver10000(
+            (data?.totalVolumeInEth * ethNative).toLocaleString('en-US', {
               currency: nativeCurrency,
               style: 'currency',
-            }
+            }),
+            data?.totalVolumeInEth * ethNative
           ),
         }
       : {}),
     ...(data?.circulatingSupply
       ? {
-          marketCap: (data?.circulatingSupply * tokenPrice).toLocaleString(
-            'en-US',
-            {
+          marketCap: cutIfOver10000(
+            (data?.circulatingSupply * tokenPrice).toLocaleString('en-US', {
               currency: nativeCurrency,
               style: 'currency',
-            }
+            }),
+            data?.circulatingSupply * tokenPrice
           ),
         }
       : {}),
     ...(totalLiquidity
       ? {
-          totalLiquidity: (tokenPrice * totalLiquidity).toLocaleString(
-            'en-US',
-            {
+          totalLiquidity: cutIfOver10000(
+            (tokenPrice * totalLiquidity).toLocaleString('en-US', {
               currency: nativeCurrency,
               style: 'currency',
-            }
+            }),
+            tokenPrice * totalLiquidity
           ),
         }
       : {}),

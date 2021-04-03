@@ -49,7 +49,7 @@ const CarouselItem = styled(TokenInfoItem).attrs(({ theme: { colors } }) => ({
   color: colors.alpha(colors.blueGreyDark, 0.5),
   letterSpacing: 'roundedTighter',
 }))`
-  margin-horizontal: ${({ hidden }) => (hidden ? 0 : 13)};
+  margin-horizontal: 14;
 `;
 
 const CarouselWrapper = styled.View``;
@@ -204,14 +204,14 @@ export default function ChartExpandedState({ asset }) {
       )}
       <CarouselWrapper>
         <Carousel>
-          <CarouselItem hidden={!totalVolume} title="24h volume" weight="bold">
+          <CarouselItem loading={!totalVolume} title="24h volume" weight="bold">
             {totalVolume}
           </CarouselItem>
-          <CarouselItem hidden={!marketCap} title="Market cap" weight="bold">
+          <CarouselItem loading={!marketCap} title="Market cap" weight="bold">
             {marketCap}
           </CarouselItem>
           <CarouselItem
-            hidden={!totalLiquidity}
+            loading={!totalLiquidity}
             title="Uniswap liquidity"
             weight="bold"
           >
