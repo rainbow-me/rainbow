@@ -44,7 +44,7 @@ git update-index --assume-unchanged "ios/Internals/ios/Internals.m"
 git update-index --assume-unchanged "ios/Internals/ios/Internals.swift"
 git update-index --assume-unchanged "ios/Internals/ios/Internals-Bridging-Header.h"
 git update-index --assume-unchanged "ios/Extras.json"
-git update-index --assume-unchanged "android/app/src/main/res/raw/Extras.json"
+git update-index --assume-unchanged "android/app/src/main/res/raw/extras.json"
 git update-index --assume-unchanged "android/app/src/main/java/me/rainbow/NativeModules/Internals/InternalModule.java"
 git update-index --assume-unchanged "android/app/src/main/java/me/rainbow/MainActivity.java"
 
