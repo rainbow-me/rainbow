@@ -32,6 +32,10 @@ if [ -n "$RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK" ]; then
   eval $RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK;
   echo "✅ executed ios prebuild hook"
 fi
+if [ -n "$RAINBOW_SCRIPTS_APP_ANDROID_PREBUILD_HOOK" ]; then
+  eval $RAINBOW_SCRIPTS_APP_ANDROID_PREBUILD_HOOK;
+  echo "✅ executed android prebuild hook"
+fi
 
 # Ignore any potential tracked changes to mutable development files.
 git update-index --assume-unchanged "ios/Internals/ios/Internals.h"

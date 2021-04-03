@@ -1,6 +1,8 @@
 package me.rainbow;
+import com.facebook.react.modules.network.OkHttpClientProvider;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import me.rainbow.NativeModules.Internal.*;
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
@@ -16,9 +18,10 @@ public class MainActivity extends ReactActivity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-        SplashScreen.show(this, R.style.NoActionBar);
-        super.onCreate(savedInstanceState);
-        WebView.setWebContentsDebuggingEnabled(true);
+
+      SplashScreen.show(this, R.style.NoActionBar);
+      super.onCreate(savedInstanceState);
+      WebView.setWebContentsDebuggingEnabled(false);
   }
 
   /**

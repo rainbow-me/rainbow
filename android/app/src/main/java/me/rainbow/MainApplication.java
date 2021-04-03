@@ -12,6 +12,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import com.microsoft.codepush.react.CodePush;
 import io.branch.rnbranch.RNBranchModule;
+import me.rainbow.NativeModules.Internal.InternalPackage;
 import me.rainbow.NativeModules.RNBip39.RNBip39Package;
 import me.rainbow.NativeModules.RNBackHandler.RNBackHandlerPackage;
 import me.rainbow.NativeModules.RNReview.RNReviewPackage;
@@ -19,7 +20,6 @@ import me.rainbow.NativeModules.RNTextAnimatorPackage.RNTextAnimatorPackage;
 import me.rainbow.NativeModules.RNZoomableButton.RNZoomableButtonPackage;
 
 import com.facebook.react.bridge.JSIModulePackage;
-import com.swmansion.gesturehandler.react.RNZoomableButtonManager;
 import com.swmansion.reanimated.ReanimatedJSIModulePackage;
 
 
@@ -42,6 +42,7 @@ public class MainApplication extends Application implements ReactApplication {
           packages.add(new RNBackHandlerPackage());
           packages.add(new RNTextAnimatorPackage());
           packages.add(new RNZoomableButtonPackage());
+          packages.add(new InternalPackage());
           return packages;
         }
 
