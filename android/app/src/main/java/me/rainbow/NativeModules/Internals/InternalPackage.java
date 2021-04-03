@@ -1,4 +1,4 @@
-package me.rainbow.NativeModules.Internal;
+package me.rainbow.NativeModules.Internals;
 
 import java.util.Arrays;
 import java.util.Collections;

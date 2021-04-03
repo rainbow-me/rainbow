@@ -1,8 +1,7 @@
 package me.rainbow;
-import com.facebook.react.modules.network.OkHttpClientProvider;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import me.rainbow.NativeModules.Internal.*;
+
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;

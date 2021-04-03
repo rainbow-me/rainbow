@@ -1,4 +1,4 @@
-package me.rainbow.NativeModules.Internal;
+package me.rainbow.NativeModules.Internals;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 
