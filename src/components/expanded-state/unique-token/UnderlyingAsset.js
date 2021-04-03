@@ -62,6 +62,7 @@ export default function UnderlyingAsset({
           address={address}
           change={change}
           changeVisible={changeVisible}
+          color={color}
           isPositive={isPositive}
           name={name}
           symbol={symbol}
