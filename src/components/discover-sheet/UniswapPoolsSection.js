@@ -21,10 +21,17 @@ const getItemLayout = (_, index) => ({
   offset: ITEM_HEIGHT * index,
 });
 
-const ShowMoreButton = ({ onPress }) => (
-  <Row justify="center" marginTop={40}>
-    <ButtonPressAnimation onPress={onPress}>
-      <Text align="center" weight="semibold">
+const ShowMoreButton = ({ backgroundColor, color, onPress }) => (
+  <Row justify="center">
+    <ButtonPressAnimation
+      backgroundColor={backgroundColor}
+      borderRadius={18}
+      height={36}
+      onPress={onPress}
+      paddingHorizontal={12}
+      paddingTop={7}
+    >
+      <Text align="center" color={color} size="lmedium" weight="heavy">
         Show more
       </Text>
     </ButtonPressAnimation>
@@ -276,12 +283,19 @@ export default function UniswapPools() {
             data={pairsSorted}
             getItemLayout={getItemLayout}
             keyExtractor={item => item.address}
+            paddingBottom={10}
             removeClippedSubviews
             renderItem={renderUniswapPoolListRow}
             scrollsToTop={false}
             windowSize={11}
           />
-          {!showAll && <ShowMoreButton onPress={handleShowMorePress} />}
+          {!showAll && (
+            <ShowMoreButton
+              backgroundColor={colors.alpha(colors.blueGreyDark, 0.06)}
+              color={colors.alpha(colors.blueGreyDark, 0.6)}
+              onPress={handleShowMorePress}
+            />
+          )}
         </Fragment>
       ) : (
         times(3, index => (
