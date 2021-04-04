@@ -35,7 +35,6 @@ export default function TokenInfoItem({
       flex={asset ? 1 : 0}
       justify={align === 'left' ? 'start' : 'end'}
       margin={android ? -6 : 3}
-      overflow="hidden"
       {...props}
     >
       <TokenInfoHeading align={align}>{title}</TokenInfoHeading>
