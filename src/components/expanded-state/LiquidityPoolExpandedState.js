@@ -36,10 +36,10 @@ import {
 import { emitAssetRequest } from '@rainbow-me/redux/explorer';
 
 import { ETH_ADDRESS } from '@rainbow-me/references';
-import { magicMemo } from '@rainbow-me/utils';
+import { magicMemo, safeAreaInsetValues } from '@rainbow-me/utils';
 
 const Spacer = styled.View`
-  height: 40;
+  height: ${safeAreaInsetValues.bottom + 20};
 `;
 
 export const underlyingAssetsHeight = 70;
@@ -80,7 +80,7 @@ const Carousel = styled.ScrollView.attrs({
 })``;
 
 const CarouselItem = styled(TokenInfoItem).attrs(({ theme: { colors } }) => ({
-  color: colors.alpha(colors.dark, 0.8),
+  color: colors.alpha(colors.blueGreyDark, 0.8),
   letterSpacing: 'roundedTighter',
 }))`
   margin-horizontal: 13;
