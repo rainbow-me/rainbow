@@ -89,22 +89,13 @@ const CarouselItem = styled(TokenInfoItem).attrs(({ theme: { colors } }) => ({
 const LiquidityPoolExpandedState = () => {
   const { params } = useRoute();
   const { asset } = params;
-  const {
-    tokenNames,
-    tokens,
-    totalNativeDisplay,
-    type,
-    uniBalance,
-    native,
-  } = asset;
+  const { tokenNames, tokens, totalNativeDisplay, uniBalance, native } = asset;
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(emitAssetRequest(tokens));
   }, [dispatch, tokens]);
 
-  const tokenType = type === 'uniswap' ? 'UNI-V1' : 'UNI-V2';
-  const uniBalanceLabel = `${uniBalance} ${tokenType}`;
   const { nativeCurrency } = useAccountSettings();
 
   const earnedFee = useTotalFeeEarnedPerAsset(asset?.address);
@@ -215,9 +206,7 @@ const LiquidityPoolExpandedState = () => {
           <SheetDivider />
           <TokenInfoSection>
             <TokenInfoRow>
-              <TokenInfoItem title="Pool shares">
-                {uniBalanceLabel}
-              </TokenInfoItem>
+              <TokenInfoItem title="Pool shares">{uniBalance}</TokenInfoItem>
               <TokenInfoItem title="Total value" weight="bold">
                 {totalNativeDisplay}
               </TokenInfoItem>

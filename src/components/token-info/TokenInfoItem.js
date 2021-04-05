@@ -69,12 +69,12 @@ export default function TokenInfoItem({
         )}
         {loading && (
           <WrapperView
-            backgroundColor={colors.alpha(colors.blueGreyDark, 0.03)}
+            backgroundColor={colors.alpha(colors.blueGreyDark, 0.04)}
           >
             <ShimmerAnimation
-              color={colors.alpha(colors.blueGreyDark, 0.05)}
+              color={colors.alpha(colors.blueGreyDark, 0.06)}
               enabled
-              gradientColor={colors.alpha(colors.blueGreyDark, 0.05)}
+              gradientColor={colors.alpha(colors.blueGreyDark, 0.06)}
               width={50}
             />
           </WrapperView>
