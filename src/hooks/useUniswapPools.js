@@ -22,7 +22,7 @@ import { WETH_ADDRESS } from '@rainbow-me/references';
 import logger from 'logger';
 
 const UNISWAP_QUERY_INTERVAL = 1000 * 60 * 5; // 5 minutes
-const AMOUNT_OF_PAIRS_TO_DISPLAY = 30;
+const AMOUNT_OF_PAIRS_TO_DISPLAY = 40;
 
 export const SORT_DIRECTION = {
   ASC: 'asc',

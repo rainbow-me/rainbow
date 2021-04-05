@@ -1,5 +1,5 @@
 import { times } from 'lodash';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { Fragment, useCallback, useMemo, useRef, useState } from 'react';
 import { FlatList, LayoutAnimation } from 'react-native';
 import styled from 'styled-components';
 import { SORT_DIRECTION } from '../../hooks/useUniswapPools';
@@ -14,11 +14,30 @@ import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { useAccountSettings, useUniswapPools } from '@rainbow-me/hooks';
 
 const ITEM_HEIGHT = 60;
+const INITIAL_PAGE_AMOUNT = 15;
 const getItemLayout = (_, index) => ({
   index,
   length: ITEM_HEIGHT,
   offset: ITEM_HEIGHT * index,
 });
+
+const ShowMoreButton = ({ backgroundColor, color, onPress }) => (
+  <Row justify="center">
+    <ButtonPressAnimation onPress={onPress}>
+      <Row
+        backgroundColor={backgroundColor}
+        borderRadius={18}
+        height={36}
+        paddingHorizontal={12}
+        paddingTop={android ? 3 : 7}
+      >
+        <Text align="center" color={color} size="lmedium" weight="heavy">
+          Show more
+        </Text>
+      </Row>
+    </ButtonPressAnimation>
+  </Row>
+);
 
 const ErrorMessage = ({ colors, children }) => (
   <Centered marginVertical={50}>
@@ -82,6 +101,7 @@ export default function UniswapPools() {
   const listRef = useRef(null);
   const { colors, isDarkMode } = useTheme();
   const { network } = useAccountSettings();
+  const [showAll, setShowAll] = useState(false);
   const [selectedList, setSelectedList] = useState(listData[0].id);
   const [sortDirection, setSortDirection] = useState(SORT_DIRECTION.DESC);
   const { pairs, error, is30DayEnabled } = useUniswapPools(
@@ -95,6 +115,10 @@ export default function UniswapPools() {
     }
     return listData;
   }, [is30DayEnabled]);
+
+  const handleShowMorePress = useCallback(() => {
+    setShowAll(true);
+  }, []);
 
   const handleSwitchList = useCallback(
     (id, index) => {
@@ -196,8 +220,12 @@ export default function UniswapPools() {
     if (sortDirection === SORT_DIRECTION.ASC) {
       allPairs.sort((a, b) => a[selectedList] - b[selectedList]);
     }
+    if (!showAll) {
+      return allPairs.slice(0, INITIAL_PAGE_AMOUNT);
+    }
+
     return allPairs;
-  }, [allPairs, selectedList, sortDirection]);
+  }, [allPairs, selectedList, showAll, sortDirection]);
 
   return (
     <Column marginTop={32}>
@@ -251,15 +279,25 @@ export default function UniswapPools() {
           Pools are disabled on Testnets
         </ErrorMessage>
       ) : pairsSorted?.length > 0 ? (
-        <FlatList
-          data={pairsSorted}
-          getItemLayout={getItemLayout}
-          keyExtractor={item => item.address}
-          removeClippedSubviews
-          renderItem={renderUniswapPoolListRow}
-          scrollsToTop={false}
-          windowSize={11}
-        />
+        <Fragment>
+          <FlatList
+            data={pairsSorted}
+            getItemLayout={getItemLayout}
+            keyExtractor={item => item.address}
+            paddingBottom={10}
+            removeClippedSubviews
+            renderItem={renderUniswapPoolListRow}
+            scrollsToTop={false}
+            windowSize={11}
+          />
+          {!showAll && (
+            <ShowMoreButton
+              backgroundColor={colors.alpha(colors.blueGreyDark, 0.06)}
+              color={colors.alpha(colors.blueGreyDark, 0.6)}
+              onPress={handleShowMorePress}
+            />
+          )}
+        </Fragment>
       ) : (
         times(3, index => (
           <AssetListItemSkeleton
