@@ -33,24 +33,28 @@ import {
 } from '@rainbow-me/hooks';
 import { ethereumUtils } from '@rainbow-me/utils';
 
-const baseHeight = 380 + (android && 20 - getSoftMenuBarHeight());
+const baseHeight = 386 + (android && 20 - getSoftMenuBarHeight());
 const heightWithoutChart = baseHeight + (android && 30);
 const heightWithChart = baseHeight + 292;
 
 export const initialChartExpandedStateSheetHeight = undefined;
 
 const Carousel = styled.ScrollView.attrs({
-  contentContainerStyle: { paddingBottom: 11, paddingHorizontal: 6 },
+  contentContainerStyle: {
+    paddingBottom: 11,
+    paddingHorizontal: 7,
+    paddingTop: 6,
+  },
   horizontal: true,
   showsHorizontalScrollIndicator: false,
 })``;
 
 const CarouselItem = styled(TokenInfoItem).attrs(({ theme: { colors } }) => ({
-  color: colors.alpha(colors.blueGreyDark, 0.8),
+  color: colors.alpha(colors.blueGreyDark, 0.7),
   letterSpacing: 'roundedTighter',
   weight: 'semibold',
 }))`
-  margin-horizontal: 13;
+  margin-horizontal: 12;
 `;
 
 const CarouselWrapper = styled.View``;
@@ -209,11 +213,17 @@ export default function ChartExpandedState({ asset }) {
       )}
       <CarouselWrapper>
         <Carousel>
-          <CarouselItem loading={!totalVolume} title="24h volume" weight="bold">
+          <CarouselItem
+            loading={!totalVolume}
+            showDivider
+            title="24h volume"
+            weight="bold"
+          >
             {totalVolume}
           </CarouselItem>
           <CarouselItem
             loading={!totalLiquidity}
+            showDivider
             title="Uniswap liquidity"
             weight="bold"
           >

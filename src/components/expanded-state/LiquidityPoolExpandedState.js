@@ -36,10 +36,10 @@ import {
 import { emitAssetRequest } from '@rainbow-me/redux/explorer';
 
 import { ETH_ADDRESS } from '@rainbow-me/references';
-import { magicMemo, safeAreaInsetValues } from '@rainbow-me/utils';
+import { magicMemo } from '@rainbow-me/utils';
 
 const Spacer = styled.View`
-  height: ${safeAreaInsetValues.bottom + 20};
+  height: 40;
 `;
 
 export const underlyingAssetsHeight = 70;
@@ -62,7 +62,6 @@ const APYWrapper = styled.View`
   flex: 1;
   height: 23;
   padding-top: 3;
-  transform: translateY(${android ? -6 : 0}px);
 `;
 
 const UnderlyingAssetsWrapper = styled.View`
@@ -75,16 +74,16 @@ const CarouselWrapper = styled.View`
 `;
 
 const Carousel = styled.ScrollView.attrs({
-  contentContainerStyle: { paddingHorizontal: 6 },
+  contentContainerStyle: { paddingHorizontal: 7 },
   horizontal: true,
   showsHorizontalScrollIndicator: false,
 })``;
 
 const CarouselItem = styled(TokenInfoItem).attrs(({ theme: { colors } }) => ({
-  color: colors.alpha(colors.blueGreyDark, 0.8),
+  color: colors.alpha(colors.dark, 0.7),
   letterSpacing: 'roundedTighter',
 }))`
-  margin-horizontal: 13;
+  margin-horizontal: 12;
 `;
 
 const LiquidityPoolExpandedState = () => {
@@ -178,12 +177,13 @@ const LiquidityPoolExpandedState = () => {
   const color0 = useColorForAsset(token0);
   const color1 = useColorForAsset(token1);
 
-  const half = !Number(native?.balance?.amount)
-    ? 'Half'
-    : (native?.balance?.amount / 2)?.toLocaleString('en-US', {
-        currency: nativeCurrency,
-        style: 'currency',
-      });
+  const half =
+    Number(native?.balance?.amount) === 0
+      ? 'Half'
+      : (native?.balance?.amount / 2)?.toLocaleString('en-US', {
+          currency: nativeCurrency,
+          style: 'currency',
+        });
 
   return (
     <SlackSheet
@@ -249,13 +249,13 @@ const LiquidityPoolExpandedState = () => {
             symbol={tokenNames}
             token1Address={tokenAddresses[0]}
             token2Address={tokenAddresses[1]}
-            weight="bold"
+            weight="heavy"
           />
         </SheetActionButtonRow>
       )}
       <CarouselWrapper>
         <Carousel>
-          <CarouselItem loading={!fee} title="Annualized fees">
+          <CarouselItem loading={!fee} showDivider title="Annualized fees">
             <APYWrapper>
               <PoolValue
                 simple
@@ -265,12 +265,14 @@ const LiquidityPoolExpandedState = () => {
               />
             </APYWrapper>
           </CarouselItem>
-          {totalFeeEarned && (
-            <CarouselItem loading={!totalFeeEarned} title="Fees earned">
-              {totalFeeEarned}
-            </CarouselItem>
-          )}
-          <CarouselItem loading={!volume} title="24h pool volume">
+          <CarouselItem
+            loading={!totalFeeEarned}
+            showDivider
+            title="Fees earned"
+          >
+            {totalFeeEarned}
+          </CarouselItem>
+          <CarouselItem loading={!volume} showDivider title="24h pool volume">
             {volume}
           </CarouselItem>
           <CarouselItem loading={!nativeLiquidity} title="Pool size">
