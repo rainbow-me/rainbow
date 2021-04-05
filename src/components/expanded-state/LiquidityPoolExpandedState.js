@@ -36,10 +36,10 @@ import {
 import { emitAssetRequest } from '@rainbow-me/redux/explorer';
 
 import { ETH_ADDRESS } from '@rainbow-me/references';
-import { magicMemo } from '@rainbow-me/utils';
+import { magicMemo, safeAreaInsetValues } from '@rainbow-me/utils';
 
 const Spacer = styled.View`
-  height: 40;
+  height: ${safeAreaInsetValues.bottom + 20};
 `;
 
 export const underlyingAssetsHeight = 70;
@@ -80,7 +80,7 @@ const Carousel = styled.ScrollView.attrs({
 })``;
 
 const CarouselItem = styled(TokenInfoItem).attrs(({ theme: { colors } }) => ({
-  color: colors.alpha(colors.dark, 0.7),
+  color: colors.alpha(colors.blueGreyDark, 0.7),
   letterSpacing: 'roundedTighter',
 }))`
   margin-horizontal: 12;
@@ -265,13 +265,15 @@ const LiquidityPoolExpandedState = () => {
               />
             </APYWrapper>
           </CarouselItem>
-          <CarouselItem
-            loading={!totalFeeEarned}
-            showDivider
-            title="Fees earned"
-          >
-            {totalFeeEarned}
-          </CarouselItem>
+          {totalFeeEarned && (
+            <CarouselItem
+              loading={!totalFeeEarned}
+              showDivider
+              title="Fees earned"
+            >
+              {totalFeeEarned}
+            </CarouselItem>
+          )}
           <CarouselItem loading={!volume} showDivider title="24h pool volume">
             {volume}
           </CarouselItem>

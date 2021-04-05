@@ -31,7 +31,7 @@ import {
   useDimensions,
   useUniswapAssetsInWallet,
 } from '@rainbow-me/hooks';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 
 const baseHeight = 386 + (android && 20 - getSoftMenuBarHeight());
 const heightWithoutChart = baseHeight + (android && 30);
@@ -60,7 +60,7 @@ const CarouselItem = styled(TokenInfoItem).attrs(({ theme: { colors } }) => ({
 const CarouselWrapper = styled.View``;
 
 const Spacer = styled.View`
-  height: 40;
+  height: ${safeAreaInsetValues.bottom};
 `;
 
 export default function ChartExpandedState({ asset }) {
