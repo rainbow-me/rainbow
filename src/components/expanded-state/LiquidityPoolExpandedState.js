@@ -62,6 +62,7 @@ const APYWrapper = styled.View`
   flex: 1;
   height: 23;
   padding-top: 3;
+  transform: translateY(${android ? -6 : 0}px);
 `;
 
 const UnderlyingAssetsWrapper = styled.View`
