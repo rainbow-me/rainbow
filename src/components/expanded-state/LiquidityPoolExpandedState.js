@@ -178,13 +178,12 @@ const LiquidityPoolExpandedState = () => {
   const color0 = useColorForAsset(token0);
   const color1 = useColorForAsset(token1);
 
-  const half =
-    Number(native?.balance?.amount) === 0
-      ? 'Half'
-      : (native?.balance?.amount / 2)?.toLocaleString('en-US', {
-          currency: nativeCurrency,
-          style: 'currency',
-        });
+  const half = !Number(native?.balance?.amount)
+    ? 'Half'
+    : (native?.balance?.amount / 2)?.toLocaleString('en-US', {
+        currency: nativeCurrency,
+        style: 'currency',
+      });
 
   return (
     <SlackSheet
