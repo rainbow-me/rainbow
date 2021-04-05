@@ -259,7 +259,11 @@ function MainOuterNavigator() {
       <OuterStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SCREEN}
-        options={sheetPreset}
+        options={args =>
+          args?.route?.params?.type === 'token'
+            ? sheetPresetWithSmallGestureResponseDistance(args)
+            : sheetPreset(args)
+        }
       />
       <OuterStack.Screen
         component={ExpandedAssetSheet}
