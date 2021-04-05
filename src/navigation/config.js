@@ -19,7 +19,7 @@ const buildCoolModalConfig = params => ({
   allowsTapToDismiss: true,
   backgroundOpacity: params.backgroundOpacity || 0.7,
   blocksBackgroundTouches: true,
-  cornerRadius: params.cornerRadius || (params.longFormHeight ? 39 : 30),
+  cornerRadius: params.cornerRadius || 39,
   customStack: true,
   gestureEnabled: true,
   headerHeight: params.headerHeight || 25,

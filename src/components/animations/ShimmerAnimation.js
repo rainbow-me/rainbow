@@ -36,7 +36,7 @@ export default function ShimmerAnimation({
   const gradientColors = useMemo(
     () => [
       colors.alpha(color, 0),
-      colors.alpha(gradientColor || colors.whiteLabel, 0.2),
+      gradientColor || colors.alpha(colors.whiteLabel, 0.2),
       colors.alpha(color, 0),
     ],
     [gradientColor, color, colors]

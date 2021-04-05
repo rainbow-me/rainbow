@@ -33,26 +33,31 @@ import {
 } from '@rainbow-me/hooks';
 import { ethereumUtils } from '@rainbow-me/utils';
 
-const baseHeight = 317 + (android && 20 - getSoftMenuBarHeight());
+const baseHeight = 380 + (android && 20 - getSoftMenuBarHeight());
 const heightWithoutChart = baseHeight + (android && 30);
-const heightWithChart = baseHeight + 307;
+const heightWithChart = baseHeight + 292;
 
 export const initialChartExpandedStateSheetHeight = undefined;
 
 const Carousel = styled.ScrollView.attrs({
-  contentContainerStyle: { paddingHorizontal: 5 },
+  contentContainerStyle: { paddingBottom: 11, paddingHorizontal: 6 },
   horizontal: true,
   showsHorizontalScrollIndicator: false,
 })``;
 
 const CarouselItem = styled(TokenInfoItem).attrs(({ theme: { colors } }) => ({
-  color: colors.alpha(colors.blueGreyDark, 0.5),
+  color: colors.alpha(colors.blueGreyDark, 0.8),
   letterSpacing: 'roundedTighter',
+  weight: 'semibold',
 }))`
-  margin-horizontal: 14;
+  margin-horizontal: 13;
 `;
 
 const CarouselWrapper = styled.View``;
+
+const Spacer = styled.View`
+  height: 40;
+`;
 
 export default function ChartExpandedState({ asset }) {
   const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
@@ -207,15 +212,15 @@ export default function ChartExpandedState({ asset }) {
           <CarouselItem loading={!totalVolume} title="24h volume" weight="bold">
             {totalVolume}
           </CarouselItem>
-          <CarouselItem loading={!marketCap} title="Market cap" weight="bold">
-            {marketCap}
-          </CarouselItem>
           <CarouselItem
             loading={!totalLiquidity}
             title="Uniswap liquidity"
             weight="bold"
           >
             {totalLiquidity}
+          </CarouselItem>
+          <CarouselItem loading={!marketCap} title="Market cap" weight="bold">
+            {marketCap}
           </CarouselItem>
         </Carousel>
         <EdgeFade />
@@ -238,6 +243,7 @@ export default function ChartExpandedState({ asset }) {
               {description}
             </Text>
           </Column>
+          <Spacer />
         </ExpandedStateSection>
       )}
     </SlackSheet>
