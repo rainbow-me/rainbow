@@ -23,17 +23,18 @@ const getItemLayout = (_, index) => ({
 
 const ShowMoreButton = ({ backgroundColor, color, onPress }) => (
   <Row justify="center">
-    <ButtonPressAnimation
-      backgroundColor={backgroundColor}
-      borderRadius={18}
-      height={36}
-      onPress={onPress}
-      paddingHorizontal={12}
-      paddingTop={7}
-    >
-      <Text align="center" color={color} size="lmedium" weight="heavy">
-        Show more
-      </Text>
+    <ButtonPressAnimation onPress={onPress}>
+      <Row
+        backgroundColor={backgroundColor}
+        borderRadius={18}
+        height={36}
+        paddingHorizontal={12}
+        paddingTop={android ? 3 : 7}
+      >
+        <Text align="center" color={color} size="lmedium" weight="heavy">
+          Show more
+        </Text>
+      </Row>
     </ButtonPressAnimation>
   </Row>
 );
