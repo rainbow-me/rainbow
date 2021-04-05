@@ -8,7 +8,7 @@ import { padding } from '@rainbow-me/styles';
 
 const PoolValueWrapper = styled(Row)`
   border-radius: ${({ simple }) => (simple ? 0 : 15)};
-  height: ${({ simple }) => (simple ? undefined : 30)};
+  ${({ simple }) => (simple ? undefined : 'height: 30')};
   ${({ simple }) => (simple ? undefined : padding(2, 9, 0))};
 `;
 

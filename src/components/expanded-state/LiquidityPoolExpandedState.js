@@ -36,10 +36,10 @@ import {
 import { emitAssetRequest } from '@rainbow-me/redux/explorer';
 
 import { ETH_ADDRESS } from '@rainbow-me/references';
-import { magicMemo } from '@rainbow-me/utils';
+import { magicMemo, safeAreaInsetValues } from '@rainbow-me/utils';
 
 const Spacer = styled.View`
-  height: 40;
+  height: ${safeAreaInsetValues.bottom + 20};
 `;
 
 export const underlyingAssetsHeight = 70;
@@ -62,6 +62,7 @@ const APYWrapper = styled.View`
   flex: 1;
   height: 23;
   padding-top: 3;
+  transform: translateY(${android ? -6 : 0}px);
 `;
 
 const UnderlyingAssetsWrapper = styled.View`
@@ -80,7 +81,7 @@ const Carousel = styled.ScrollView.attrs({
 })``;
 
 const CarouselItem = styled(TokenInfoItem).attrs(({ theme: { colors } }) => ({
-  color: colors.alpha(colors.dark, 0.8),
+  color: colors.alpha(colors.blueGreyDark, 0.8),
   letterSpacing: 'roundedTighter',
 }))`
   margin-horizontal: 13;
@@ -177,13 +178,12 @@ const LiquidityPoolExpandedState = () => {
   const color0 = useColorForAsset(token0);
   const color1 = useColorForAsset(token1);
 
-  const half =
-    Number(native?.balance?.amount) === 0
-      ? 'Half'
-      : (native?.balance?.amount / 2)?.toLocaleString('en-US', {
-          currency: nativeCurrency,
-          style: 'currency',
-        });
+  const half = !Number(native?.balance?.amount)
+    ? 'Half'
+    : (native?.balance?.amount / 2)?.toLocaleString('en-US', {
+        currency: nativeCurrency,
+        style: 'currency',
+      });
 
   return (
     <SlackSheet
@@ -265,9 +265,11 @@ const LiquidityPoolExpandedState = () => {
               />
             </APYWrapper>
           </CarouselItem>
-          <CarouselItem loading={!totalFeeEarned} title="Fees earned">
-            {totalFeeEarned}
-          </CarouselItem>
+          {totalFeeEarned && (
+            <CarouselItem loading={!totalFeeEarned} title="Fees earned">
+              {totalFeeEarned}
+            </CarouselItem>
+          )}
           <CarouselItem loading={!volume} title="24h pool volume">
             {volume}
           </CarouselItem>

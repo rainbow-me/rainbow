@@ -9,6 +9,7 @@ const UnderlyingCoinIconSize = 20;
 const UnderlyingAssetCoinRow = ({
   address,
   change,
+  color,
   isPositive,
   name,
   symbol,
@@ -27,7 +28,7 @@ const UnderlyingAssetCoinRow = ({
       </Centered>
       <Row>
         <Text
-          color={colors.alpha(colors.blueGreyDark, 0.7)}
+          color={changeVisible ? colors.alpha(colors.blueGreyDark, 0.7) : color}
           size="large"
           weight="medium"
         >

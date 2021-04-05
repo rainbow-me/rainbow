@@ -215,7 +215,7 @@ export default function TokenIndexExpandedState({ asset }) {
         <Column marginBottom={55} marginHorizontal={19} marginTop={12}>
           {underlying?.length
             ? underlying.map(item => (
-                <UnderlyingAsset {...item} key={item.address} />
+                <UnderlyingAsset {...item} changeVisible key={item.address} />
               ))
             : times(3, index => (
                 <AssetListItemSkeleton

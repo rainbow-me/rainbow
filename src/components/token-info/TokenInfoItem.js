@@ -8,13 +8,13 @@ import TokenInfoValue from './TokenInfoValue';
 import { useTheme } from '@rainbow-me/context';
 
 const WrapperView = styled.View`
-  width: 100;
+  width: 80;
   padding-top: 5;
   position: absolute;
-  height: 30;
+  height: ${ios ? 20 : 22};
   border-radius: 15;
   overflow: hidden;
-  top: 18;
+  top: ${ios ? 22 : 28};
 `;
 
 export default function TokenInfoItem({
@@ -35,7 +35,6 @@ export default function TokenInfoItem({
       flex={asset ? 1 : 0}
       justify={align === 'left' ? 'start' : 'end'}
       margin={android ? -6 : 3}
-      overflow="hidden"
       {...props}
     >
       <TokenInfoHeading align={align}>{title}</TokenInfoHeading>
