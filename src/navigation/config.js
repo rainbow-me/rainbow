@@ -19,16 +19,18 @@ const buildCoolModalConfig = params => ({
   allowsTapToDismiss: true,
   backgroundOpacity: params.backgroundOpacity || 0.7,
   blocksBackgroundTouches: true,
-  cornerRadius: params.cornerRadius || (params.longFormHeight ? 39 : 30),
+  cornerRadius: params.cornerRadius || 39,
   customStack: true,
   gestureEnabled: true,
   headerHeight: params.headerHeight || 25,
   ignoreBottomOffset: true,
-  isShortFormEnabled: params.isShortFormEnabled,
+  isShortFormEnabled: params.isShortFormEnabled || params?.type === 'token',
   longFormHeight: params.longFormHeight,
   onAppear: params.onAppear || null,
   scrollEnabled: params.scrollEnabled,
   single: params.single,
+  startFromShortForm:
+    params.startFromShortForm || params?.type === 'token' || false,
   topOffset: params.topOffset || sharedCoolModalTopOffset,
 });
 

@@ -39,7 +39,6 @@ export default function ExpandedAssetSheet(props) {
   const { goBack } = useNavigation();
   const { params } = useRoute();
   const { isDarkMode } = useTheme();
-
   const selectedAsset = useAsset(params.asset);
 
   return (

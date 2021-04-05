@@ -8,11 +8,11 @@ import TokenInfoValue from './TokenInfoValue';
 import { useTheme } from '@rainbow-me/context';
 
 const WrapperView = styled.View`
-  width: 80;
-  padding-top: 5;
+  width: 50;
+  padding-top: 12;
   position: absolute;
   height: ${ios ? 20 : 22};
-  border-radius: 15;
+  border-radius: 12;
   overflow: hidden;
   top: ${ios ? 22 : 28};
 `;
@@ -51,12 +51,12 @@ export default function TokenInfoItem({
         </TokenInfoValue>
       )}
       {loading && (
-        <WrapperView>
+        <WrapperView backgroundColor={colors.alpha(colors.blueGreyDark, 0.03)}>
           <ShimmerAnimation
-            color={colors.whiteLabel}
+            color={colors.alpha(colors.blueGreyDark, 0.05)}
             enabled
-            gradientColor={colors.mediumGrey}
-            width={20}
+            gradientColor={colors.alpha(colors.blueGreyDark, 0.05)}
+            width={50}
           />
         </WrapperView>
       )}
