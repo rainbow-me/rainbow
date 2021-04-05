@@ -11861,10 +11861,10 @@ rc@^1.2.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-react-coin-icon@0.1.37:
-  version "0.1.37"
-  resolved "https://registry.yarnpkg.com/react-coin-icon/-/react-coin-icon-0.1.37.tgz#79af2930f213ef0ecf1e5f7e87876b26237950a8"
-  integrity sha512-0vcoOg6ertpbxEPAtVeGp6s+nGOf8taqoS6NhU4H4+w3mJ1cINi4wngrqqgeg/w3lGDmmNaXoiPqjHI6Yhrg/Q==
+react-coin-icon@^0.1.42:
+  version "0.1.42"
+  resolved "https://registry.yarnpkg.com/react-coin-icon/-/react-coin-icon-0.1.42.tgz#996509daccb19c45e756795b9b925cb0ceda6b17"
+  integrity sha512-PjFpzNDtemYqhNkffj3R1DQGGgUcmR9XMyZihj8WJMMMp+1uO/nXuO2uRlozVEgqcdXtqeK74mbEeIjddKeWiQ==
   dependencies:
     "@svgr/cli" "^4.3.0"
     react-primitives "^0.8.1"
