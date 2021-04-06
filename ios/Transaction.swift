@@ -37,7 +37,7 @@ import Foundation
   var type: String!
   var minedAt: Date!
   var pending: Bool = false
-  var protocol: String?
+  var protocolName: String?
   var address: String?
   var status: String!
   var symbol: String!
