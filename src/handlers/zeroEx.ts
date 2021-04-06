@@ -1,7 +1,8 @@
 import axios, { AxiosResponse } from 'axios';
 import { ZeroExPayload, ZeroExQuote } from '@rainbow-me/entities';
+import { toHex } from '@rainbow-me/handlers/web3';
 import NetworkTypes from '@rainbow-me/networkTypes';
-import { RAINBOW_ADDRESS } from '@rainbow-me/references';
+import { RAINBOW_ADDRESS, ZERO_ADDRESS } from '@rainbow-me/references';
 import logger from 'logger';
 
 const api = axios.create({
@@ -32,6 +33,14 @@ export const getQuote = async (
   sellAmount: string
 ): Promise<ZeroExPayload | null> => {
   try {
+    if (sellToken === buyToken) {
+      return {
+        allowanceTarget: ZERO_ADDRESS,
+        swapPayload: toHex(0),
+        swapTarget: ZERO_ADDRESS,
+      };
+    }
+
     const networkPrefix = network === NetworkTypes.mainnet ? '' : `${network}.`;
     const params = {
       affiliateAddress: RAINBOW_ADDRESS,
