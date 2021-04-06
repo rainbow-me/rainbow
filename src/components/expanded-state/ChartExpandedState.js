@@ -108,14 +108,14 @@ export default function ChartExpandedState({ asset }) {
       heightWithChart -
         (!hasBalance && 68) +
         descriptionHeight +
-        scrollableContentHeight,
+        (descriptionHeight === 0 ? 0 : scrollableContentHeight),
       screenHeight
     ),
     heightWithoutChart: Math.min(
       heightWithoutChart -
         (!hasBalance && 68) +
         descriptionHeight +
-        scrollableContentHeight,
+        (descriptionHeight === 0 ? 0 : scrollableContentHeight),
       screenHeight
     ),
     shortHeightWithChart: Math.min(
