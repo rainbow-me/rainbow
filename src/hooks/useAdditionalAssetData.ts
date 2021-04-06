@@ -1,5 +1,6 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { bigNumberFormat } from '../components/investment-cards/PoolValue';
 import { useEth } from '../utils/ethereumUtils';
 import { useAccountSettings } from './index';
 import {
@@ -10,11 +11,8 @@ import {
 import type { AppState } from '@rainbow-me/redux/store';
 import { WETH_ADDRESS } from '@rainbow-me/references';
 
-function cutIfOver10000(
-  localeValue: string | undefined,
-  value: number
-): string | undefined {
-  return localeValue?.slice(0, value > 10000 ? -3 : 0);
+function cutIfOver10000(value: number): number {
+  return value > 10000 ? Math.round(value) : value;
 }
 
 export default function useAdditionalAssetData(
@@ -45,6 +43,11 @@ export default function useAdditionalAssetData(
 
   const { nativeCurrency } = useAccountSettings();
 
+  const format = useCallback(
+    value => bigNumberFormat(cutIfOver10000(value), nativeCurrency),
+    [nativeCurrency]
+  );
+
   useEffect(() => {
     !data && dispatch(additionalAssetsDataAdd(address?.toLowerCase()));
   }, [data, address, dispatch]);
@@ -53,35 +56,17 @@ export default function useAdditionalAssetData(
     description: data?.description,
     ...(data?.totalVolumeInEth
       ? {
-          totalVolume: cutIfOver10000(
-            (data?.totalVolumeInEth * ethNative).toLocaleString('en-US', {
-              currency: nativeCurrency,
-              style: 'currency',
-            }),
-            data?.totalVolumeInEth * ethNative
-          ),
+          totalVolume: format(data?.totalVolumeInEth * ethNative),
         }
       : {}),
     ...(data?.circulatingSupply
       ? {
-          marketCap: cutIfOver10000(
-            (data?.circulatingSupply * tokenPrice).toLocaleString('en-US', {
-              currency: nativeCurrency,
-              style: 'currency',
-            }),
-            data?.circulatingSupply * tokenPrice
-          ),
+          marketCap: format(data?.circulatingSupply * tokenPrice),
         }
       : {}),
     ...(totalLiquidity
       ? {
-          totalLiquidity: cutIfOver10000(
-            (tokenPrice * totalLiquidity).toLocaleString('en-US', {
-              currency: nativeCurrency,
-              style: 'currency',
-            }),
-            tokenPrice * totalLiquidity
-          ),
+          totalLiquidity: format(tokenPrice * totalLiquidity),
         }
       : {}),
   };

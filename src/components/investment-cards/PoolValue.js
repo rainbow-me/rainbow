@@ -22,7 +22,7 @@ const PoolValueText = styled(Text).attrs(({ simple, size }) => ({
   ${android && 'padding-top: 3px'}
 `;
 
-const bigNumberFormat = (num, nativeCurrency) => {
+export const bigNumberFormat = (num, nativeCurrency) => {
   let ret;
   if (num > 1000000000) {
     ret = `${convertAmountToNativeDisplay(
