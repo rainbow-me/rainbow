@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import { UniBalanceHeightDifference } from '../../hooks/charts/useChartThrottledPoints';
 import deviceUtils from '../../utils/deviceUtils';
 import EdgeFade from '../discover-sheet/EdgeFade';
-import { PoolValue } from '../investment-cards/PoolValue';
+import { bigNumberFormat, PoolValue } from '../investment-cards/PoolValue';
 import { Column, Row } from '../layout';
 
 import {
@@ -89,7 +89,7 @@ const CarouselItem = styled(TokenInfoItem).attrs(({ theme: { colors } }) => ({
 const LiquidityPoolExpandedState = () => {
   const { params } = useRoute();
   const { asset } = params;
-  const { tokenNames, tokens, totalNativeDisplay, uniBalance, native } = asset;
+  const { tokenNames, tokens, totalNativeDisplay, uniBalance } = asset;
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -168,13 +168,15 @@ const LiquidityPoolExpandedState = () => {
   const color0 = useColorForAsset(token0);
   const color1 = useColorForAsset(token1);
 
-  const half =
-    Number(native?.balance?.amount) === 0
-      ? 'Half'
-      : (native?.balance?.amount / 2)?.toLocaleString('en-US', {
-          currency: nativeCurrency,
-          style: 'currency',
-        });
+  const half0 = token0?.price?.value * tokens[0].value;
+  const half1 = token1?.price?.value * tokens[1].value;
+
+  const formattedHalf0 = half0
+    ? bigNumberFormat(half0, nativeCurrency)
+    : 'Half';
+  const formattedHalf1 = half1
+    ? bigNumberFormat(half1, nativeCurrency)
+    : 'Half';
 
   return (
     <SlackSheet
@@ -311,7 +313,7 @@ const LiquidityPoolExpandedState = () => {
                   : tokens[0].name
               }
               percentageAllocation={15}
-              pricePerUnitFormatted={half}
+              pricePerUnitFormatted={formattedHalf0}
               symbol={tokens[0].symbol}
             />
             <UnderlyingAsset
@@ -326,7 +328,7 @@ const LiquidityPoolExpandedState = () => {
                   : tokens[1].name
               }
               percentageAllocation={15}
-              pricePerUnitFormatted={half}
+              pricePerUnitFormatted={formattedHalf1}
               symbol={tokens[1].symbol}
             />
             <Spacer />
