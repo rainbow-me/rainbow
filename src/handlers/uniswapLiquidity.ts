@@ -13,7 +13,7 @@ import {
   ETH_ADDRESS,
   WETH_ADDRESS,
   ZAP_IN_ABI,
-  ZapInAddress,
+  ZAP_IN_ADDRESS,
   ZERO_ADDRESS,
 } from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';
@@ -112,7 +112,7 @@ const executeDepositZap = (
 
   const providerOrSigner = !estimateGas && wallet ? wallet : web3Provider;
   const zapInContract = new Contract(
-    ZapInAddress,
+    ZAP_IN_ADDRESS,
     ZAP_IN_ABI,
     providerOrSigner
   );
