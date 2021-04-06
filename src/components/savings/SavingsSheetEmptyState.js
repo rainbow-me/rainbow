@@ -54,7 +54,7 @@ const SavingsSheetEmptyState = ({
       navigate(Routes.SAVINGS_DEPOSIT_MODAL, {
         params: {
           params: {
-            defaultInputAsset: underlying,
+            underlying,
           },
           screen: Routes.MAIN_EXCHANGE_SCREEN,
         },
