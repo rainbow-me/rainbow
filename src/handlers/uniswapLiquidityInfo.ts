@@ -2,7 +2,7 @@ import { Contract } from '@ethersproject/contracts';
 import { ChainId, WETH } from '@uniswap/sdk';
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json';
 import contractMap from 'eth-contract-metadata';
-import { compact, get, keyBy, map, partition, toLower } from 'lodash';
+import { compact, keyBy, map, partition, toLower } from 'lodash';
 import { web3Provider } from './web3';
 import { Asset, AssetType, ParsedAddressAsset } from '@rainbow-me/entities';
 import { parseAssetsNative } from '@rainbow-me/parsers';
@@ -35,7 +35,8 @@ const getTokenDetails = async (
   tokenAddress: string,
   pairs: Record<string, Asset>
 ): Promise<Asset> => {
-  if (toLower(tokenAddress) === toLower(WETH[chainId].address)) {
+  const loweredTokenAddress = toLower(tokenAddress);
+  if (loweredTokenAddress === toLower(WETH[chainId].address)) {
     return {
       address: ETH_ADDRESS,
       decimals: 18,
@@ -46,7 +47,7 @@ const getTokenDetails = async (
 
   const tokenContract = new Contract(tokenAddress, erc20ABI, web3Provider);
 
-  const token = get(pairs, `[${toLower(tokenAddress)}]`);
+  const token = pairs?.[loweredTokenAddress];
 
   let decimals: number;
   let name = '';
@@ -57,7 +58,7 @@ const getTokenDetails = async (
     symbol = token.symbol;
     decimals = Number(token.decimals);
   } else {
-    decimals = get(contractMap, `[${tokenAddress}].decimals`);
+    decimals = contractMap?.[tokenAddress]?.decimals;
     if (!decimals) {
       try {
         decimals = await tokenContract.decimals().catch();
@@ -72,7 +73,7 @@ const getTokenDetails = async (
       }
     }
 
-    name = get(contractMap, `[${tokenAddress}].name`, '');
+    name = contractMap?.[tokenAddress]?.name ?? '';
     if (!name) {
       try {
         name = await tokenContract.name().catch();
@@ -86,7 +87,7 @@ const getTokenDetails = async (
       }
     }
 
-    symbol = get(contractMap, `[${tokenAddress}].symbol`, '');
+    symbol = contractMap?.[tokenAddress]?.symbol ?? '';
     if (!symbol) {
       try {
         symbol = await tokenContract.symbol().catch();
@@ -100,6 +101,7 @@ const getTokenDetails = async (
       }
     }
   }
+
   return {
     address: tokenAddress,
     decimals,
