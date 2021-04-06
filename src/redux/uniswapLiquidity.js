@@ -87,16 +87,17 @@ export const uniswapUpdateLiquidityInfo = () => async (dispatch, getState) => {
   const { pairs } = getState().uniswap;
   const { liquidityTokens } = getState().uniswapLiquidity;
 
-  if (isEmpty(liquidityTokens)) return;
-
   try {
-    const liquidityInfo = await getLiquidityInfo(
-      chainId,
-      accountAddress,
-      nativeCurrency,
-      liquidityTokens,
-      pairs
-    );
+    let liquidityInfo = {};
+    if (!isEmpty(liquidityTokens)) {
+      liquidityInfo = await getLiquidityInfo(
+        chainId,
+        accountAddress,
+        nativeCurrency,
+        liquidityTokens,
+        pairs
+      );
+    }
     saveLiquidityInfo(liquidityInfo, accountAddress, network);
     dispatch({
       payload: liquidityInfo,
