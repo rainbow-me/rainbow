@@ -92,9 +92,13 @@ const LiquidityPoolExpandedState = () => {
   const { tokenNames, tokens, totalNativeDisplay, uniBalance } = asset;
   const dispatch = useDispatch();
 
+  const tokenAddresses = useMemo(() => {
+    return tokens?.map(token => formatTokenAddress(token.address));
+  }, [tokens]);
+
   useEffect(() => {
-    dispatch(emitAssetRequest(tokens));
-  }, [dispatch, tokens]);
+    dispatch(emitAssetRequest(tokenAddresses));
+  }, [dispatch, tokenAddresses]);
 
   const { nativeCurrency } = useAccountSettings();
 
@@ -110,10 +114,6 @@ const LiquidityPoolExpandedState = () => {
 
   const details = usePoolDetails(asset.address);
   const { annualized_fees: fee, volume, nativeLiquidity } = details || {};
-
-  const tokenAddresses = useMemo(() => {
-    return tokens?.map(token => formatTokenAddress(token.address));
-  }, [tokens]);
 
   const token0 = useAsset({
     address: toLower(tokenAddresses?.[0]),

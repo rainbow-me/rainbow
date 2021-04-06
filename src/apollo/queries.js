@@ -177,6 +177,16 @@ export const UNISWAP_ALL_TOKENS = gql`
   }
 `;
 
+export const UNISWAP_ADDITIONAL_POOL_DATA = gql`
+  query pairs($address: String!) {
+    pairs(where: { id: $address }) {
+      volumeUSD
+      reserveUSD
+      trackedReserveETH
+    }
+  }
+`;
+
 export const GET_BLOCKS_QUERY = timestamps => {
   let queryString = 'query blocks {';
   queryString += timestamps.map(timestamp => {
