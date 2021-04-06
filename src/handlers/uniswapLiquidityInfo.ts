@@ -4,7 +4,7 @@ import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.
 import contractMap from 'eth-contract-metadata';
 import { compact, get, keyBy, map, partition, toLower } from 'lodash';
 import { web3Provider } from './web3';
-import { Asset, ParsedAddressAsset } from '@rainbow-me/entities';
+import { Asset, AssetType, ParsedAddressAsset } from '@rainbow-me/entities';
 import { parseAssetsNative } from '@rainbow-me/parsers';
 import {
   erc20ABI,
@@ -121,7 +121,7 @@ export const getLiquidityInfo = async (
   );
   const [v1Tokens, v2Tokens] = partition(
     liquidityPoolTokensWithNative,
-    token => token.type === 'uniswap'
+    token => token.type === AssetType.uniswap
   );
   const v1TokensCall = getLiquidityInfoV1(
     chainId,
