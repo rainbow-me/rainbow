@@ -231,7 +231,9 @@ export const handleSignificantDecimals = (
   } else {
     decimals = Math.min(decimals, buffer);
   }
-  const result = new BigNumber(new BigNumber(value).toFixed(0)).toFixed();
+  const result = new BigNumber(
+    new BigNumber(value).toFixed(decimals)
+  ).toFixed();
   const resultBN = new BigNumber(result);
   return resultBN.dp() <= 2
     ? resultBN.toFormat(skipDecimals ? 0 : 2)
