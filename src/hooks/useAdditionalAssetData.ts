@@ -44,7 +44,8 @@ export default function useAdditionalAssetData(
   const { nativeCurrency } = useAccountSettings();
 
   const format = useCallback(
-    value => bigNumberFormat(cutIfOver10000(value), nativeCurrency),
+    value =>
+      bigNumberFormat(cutIfOver10000(value), nativeCurrency, value >= 10000),
     [nativeCurrency]
   );
 

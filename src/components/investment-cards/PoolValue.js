@@ -22,7 +22,7 @@ const PoolValueText = styled(Text).attrs(({ simple, size }) => ({
   ${android && 'padding-top: 3px'}
 `;
 
-export const bigNumberFormat = (num, nativeCurrency) => {
+export const bigNumberFormat = (num, nativeCurrency, skipDecimals) => {
   let ret;
   if (num > 1000000000) {
     ret = `${convertAmountToNativeDisplay(
@@ -35,7 +35,12 @@ export const bigNumberFormat = (num, nativeCurrency) => {
       nativeCurrency
     )}m`;
   } else {
-    ret = convertAmountToNativeDisplay(num.toString(), nativeCurrency);
+    ret = convertAmountToNativeDisplay(
+      num.toString(),
+      nativeCurrency,
+      3,
+      skipDecimals
+    );
     num.toFixed(2);
   }
 
@@ -69,7 +74,10 @@ export const PoolValue = ({ type, value, simple, ...props }) => {
     if (fixedPercent > 0) {
       color = colors.green;
       if (fixedPercent > 100) {
-        formattedValue = `+${percent?.toFixed(2).toString()}%`;
+        formattedValue = `+${percent
+          ?.toFixed(2)
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}%`;
       } else {
         formattedValue = `+${fixedPercent}%`;
       }
