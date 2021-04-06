@@ -16,6 +16,7 @@ export type {
 export type {
   NewTransaction,
   RainbowTransaction,
+  TransactionParams,
   ZerionTransaction,
   ZerionTransactionChange,
 } from './transactions';

@@ -5,6 +5,7 @@ import { Rap, RapActionParameters, SwapActionParameters } from '../common';
 import {
   ExchangeModalType,
   ProtocolType,
+  TransactionParams,
   TransactionStatus,
   TransactionType,
 } from '@rainbow-me/entities';
@@ -20,12 +21,6 @@ import { ethUnits } from '@rainbow-me/references';
 import { convertAmountToRawAmount } from '@rainbow-me/utilities';
 import { gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
-
-interface TransactionParams {
-  gasLimit?: number;
-  gasPrice?: string;
-  nonce?: string;
-}
 
 const actionName = '[deposit uniswap]';
 
