@@ -28,6 +28,7 @@ import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 import {
   useAccountSettings,
   useChartThrottledPoints,
+  useDelayedValueWithLayoutAnimation,
   useDimensions,
   useUniswapAssetsInWallet,
 } from '@rainbow-me/hooks';
@@ -89,6 +90,8 @@ export default function ChartExpandedState({ asset }) {
     totalLiquidity,
     totalVolume,
   } = useAdditionalAssetData(asset?.address, assetWithPrice?.price?.value);
+
+  const delayedDescriptions = useDelayedValueWithLayoutAnimation(description);
 
   const scrollableContentHeight =
     !!totalVolume || !!marketCap || !!totalLiquidity ? 68 : 0;
@@ -235,7 +238,7 @@ export default function ChartExpandedState({ asset }) {
         </Carousel>
         <EdgeFade />
       </CarouselWrapper>
-      {!!description && (
+      {!!delayedDescriptions && (
         <ExpandedStateSection
           onLayout={({
             nativeEvent: {

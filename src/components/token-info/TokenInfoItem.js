@@ -7,6 +7,7 @@ import TokenInfoBalanceValue from './TokenInfoBalanceValue';
 import TokenInfoHeading from './TokenInfoHeading';
 import TokenInfoValue from './TokenInfoValue';
 import { useTheme } from '@rainbow-me/context';
+import { useDelayedValueWithLayoutAnimation } from '@rainbow-me/hooks';
 
 const Container = styled.View``;
 
@@ -27,7 +28,7 @@ const WrapperView = styled.View`
   width: 50;
 `;
 
-const TIMEOUT_MS = 4000;
+const TIMEOUT_MS = 10000;
 
 export default function TokenInfoItem({
   align = 'left',
@@ -39,16 +40,16 @@ export default function TokenInfoItem({
   title,
   weight,
   lineHeight,
-  loading,
+  loading: rawLoading,
   ...props
 }) {
   const { colors } = useTheme();
 
-  const [visible, setVisible] = useState(true);
+  const [rawVisible, setVisible] = useState(true);
 
   const visibleTimeout = useRef();
   useEffect(() => {
-    if (loading) {
+    if (rawLoading) {
       if (!visibleTimeout.current) {
         visibleTimeout.current = setTimeout(() => {
           setVisible(false);
@@ -57,9 +58,12 @@ export default function TokenInfoItem({
     } else {
       clearTimeout(visibleTimeout.current);
       visibleTimeout.current = null;
-      !visible && setVisible(true);
+      !rawVisible && setVisible(true);
     }
-  }, [loading, visible]);
+  }, [rawLoading, rawVisible]);
+
+  const loading = useDelayedValueWithLayoutAnimation(rawLoading);
+  const visible = useDelayedValueWithLayoutAnimation(rawVisible);
 
   if (!visible) {
     return null;
