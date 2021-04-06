@@ -12,7 +12,7 @@ import {
   SwapActionParameters,
 } from './common';
 import store from '@rainbow-me/redux/store';
-import { ethUnits, ZapInAddress } from '@rainbow-me/references';
+import { ethUnits, ZAP_IN_ADDRESS } from '@rainbow-me/references';
 import { add } from '@rainbow-me/utilities';
 
 export const estimateUnlockAndDepositUniswap = async (
@@ -34,13 +34,13 @@ export const estimateUnlockAndDepositUniswap = async (
     accountAddress,
     inputAmount,
     inputCurrency,
-    ZapInAddress
+    ZAP_IN_ADDRESS
   );
   if (depositAssetNeedsUnlocking) {
     const unlockGasLimit = await estimateApprove(
       accountAddress,
       inputCurrency.address,
-      ZapInAddress
+      ZAP_IN_ADDRESS
     );
     gasLimits = concat(
       gasLimits,
@@ -72,14 +72,14 @@ export const createDepositUniswapRap = async (
     accountAddress,
     inputAmount,
     inputCurrency,
-    ZapInAddress
+    ZAP_IN_ADDRESS
   );
 
   if (depositAssetNeedsUnlocking) {
     const unlock = createNewAction(RapActionTypes.unlock, {
       amount: inputAmount,
       assetToUnlock: inputCurrency,
-      contractAddress: ZapInAddress,
+      contractAddress: ZAP_IN_ADDRESS,
     });
     actions = concat(actions, unlock);
   }
