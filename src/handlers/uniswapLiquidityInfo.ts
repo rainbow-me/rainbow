@@ -6,7 +6,11 @@ import { compact, get, keyBy, map, partition, toLower } from 'lodash';
 import { web3Provider } from './web3';
 import { Asset, ParsedAddressAsset } from '@rainbow-me/entities';
 import { parseAssetsNative } from '@rainbow-me/parsers';
-import { erc20ABI, UNISWAP_V1_EXCHANGE_ABI } from '@rainbow-me/references';
+import {
+  erc20ABI,
+  ETH_ADDRESS,
+  UNISWAP_V1_EXCHANGE_ABI,
+} from '@rainbow-me/references';
 import {
   convertAmountToRawAmount,
   convertRawAmountToDecimalFormat,
@@ -33,7 +37,7 @@ const getTokenDetails = async (
 ): Promise<Asset> => {
   if (toLower(tokenAddress) === toLower(WETH[chainId].address)) {
     return {
-      address: 'eth',
+      address: ETH_ADDRESS,
       decimals: 18,
       name: 'Ethereum',
       symbol: 'ETH',
@@ -280,7 +284,7 @@ const getLiquidityInfoV1 = async (
             ...token,
           },
           {
-            address: 'eth',
+            address: ETH_ADDRESS,
             balance: ethBalance,
             decimals: 18,
             name: 'Ethereum',
