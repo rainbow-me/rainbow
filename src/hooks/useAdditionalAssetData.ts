@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { bigNumberFormat } from '../components/investment-cards/PoolValue';
-import { useEth } from '../utils/ethereumUtils';
+import useNativeCurrencyToUSD from './useNativeCurrencyToUSD';
 import { useAccountSettings } from './index';
 import {
   additionalAssetsDataAdd,
@@ -36,7 +36,6 @@ export default function useAdditionalAssetData(
   const allTokens = useSelector((state: AppState) => state.uniswap.allTokens);
   const uniswapToken =
     allTokens[address.toLowerCase() === 'eth' ? WETH_ADDRESS : address];
-  const { price: { value: ethNative = 0 } = {} } = useEth() || {};
 
   const totalLiquidity = uniswapToken?.totalLiquidity;
   const dispatch = useDispatch();
@@ -49,15 +48,17 @@ export default function useAdditionalAssetData(
     [nativeCurrency]
   );
 
+  const rate = useNativeCurrencyToUSD();
+
   useEffect(() => {
     !data && dispatch(additionalAssetsDataAdd(address?.toLowerCase()));
   }, [data, address, dispatch]);
 
   const newData = {
     description: data?.description,
-    ...(data?.totalVolumeInEth
+    ...(data?.oneDayVolumeUSD
       ? {
-          totalVolume: format(data?.totalVolumeInEth * ethNative),
+          totalVolume: format(data?.oneDayVolumeUSD * rate),
         }
       : {}),
     ...(data?.circulatingSupply
