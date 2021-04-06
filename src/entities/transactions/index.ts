@@ -1,4 +1,5 @@
 export type { NewTransaction, RainbowTransaction } from './transaction';
+export type { TransactionParams } from './transactionParams';
 export {
   default as TransactionStatusTypes,
   TransactionStatus,
