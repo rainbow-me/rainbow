@@ -24,7 +24,7 @@ const buildCoolModalConfig = params => ({
   gestureEnabled: true,
   headerHeight: params.headerHeight || 25,
   ignoreBottomOffset: true,
-  isShortFormEnabled: params.isShortFormEnabled || params?.type === 'token',
+  isShortFormEnabled: params.isShortFormEnabled,
   longFormHeight: params.longFormHeight,
   onAppear: params.onAppear || null,
   scrollEnabled: params.scrollEnabled,

@@ -180,6 +180,12 @@ class DiscoverSheetViewController: UIViewController, PanModalPresentable {
       isShortFormEnabledInternal -= 1
       return false
     }
+    
+    if isShortFormEnabledInternal > 0 && startFromShortForm {
+      isShortFormEnabledInternal -= 1
+      return true
+    }
+    
     return self.config?.value(forKey: "isShortFormEnabled") as! Bool
   }
 
