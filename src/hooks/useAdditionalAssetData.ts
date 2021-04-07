@@ -4,8 +4,10 @@ import { bigNumberFormat } from '../components/investment-cards/PoolValue';
 import useNativeCurrencyToUSD from './useNativeCurrencyToUSD';
 import { useAccountSettings } from './index';
 import {
-  additionalAssetsDataAdd,
-  AdditionalData,
+  additionalAssetsDataAddCoingecko,
+  additionalAssetsDataAddUniswap,
+  AdditionalDataCongecko,
+  AdditionalDataUniswap,
 } from '@rainbow-me/redux/additionalAssetsData';
 
 import type { AppState } from '@rainbow-me/redux/store';
@@ -27,10 +29,24 @@ export default function useAdditionalAssetData(
     }
   | undefined {
   // @ts-ignore
-  const data: AdditionalData | undefined = useSelector(
+  const coingeckoId: string | undefined = useSelector(
     // @ts-ignore
-    ({ additionalAssetsData }): AppState =>
-      additionalAssetsData[address?.toLowerCase()]?.data
+    ({ additionalAssetsData: { coingeckoIds } }): AppState =>
+      coingeckoIds[address.toLowerCase()]
+  );
+
+  // @ts-ignore
+  const coingeckoData: AdditionalDataCongecko | undefined = useSelector(
+    // @ts-ignore
+    ({ additionalAssetsData: { coingeckoData } }): AppState =>
+      coingeckoData[address.toLowerCase()]
+  );
+
+  // @ts-ignore
+  const uniswapData: AdditionalDataUniswap | undefined = useSelector(
+    // @ts-ignore
+    ({ additionalAssetsData: { uniswapData } }): AppState =>
+      uniswapData[address.toLowerCase()]
   );
 
   const allTokens = useSelector((state: AppState) => state.uniswap.allTokens);
@@ -51,19 +67,26 @@ export default function useAdditionalAssetData(
   const rate = useNativeCurrencyToUSD();
 
   useEffect(() => {
-    !data && dispatch(additionalAssetsDataAdd(address?.toLowerCase()));
-  }, [data, address, dispatch]);
+    coingeckoId &&
+      !coingeckoData &&
+      dispatch(additionalAssetsDataAddCoingecko(address?.toLowerCase()));
+  }, [coingeckoId, address, coingeckoData, dispatch]);
+
+  useEffect(() => {
+    !uniswapData &&
+      dispatch(additionalAssetsDataAddUniswap(address?.toLowerCase()));
+  }, [coingeckoId, address, coingeckoData, dispatch, uniswapData]);
 
   const newData = {
-    description: data?.description,
-    ...(data?.oneDayVolumeUSD
+    description: coingeckoData?.description,
+    ...(uniswapData?.oneDayVolumeUSD
       ? {
-          totalVolume: format(data?.oneDayVolumeUSD * rate),
+          totalVolume: format(uniswapData?.oneDayVolumeUSD * rate),
         }
       : {}),
-    ...(data?.circulatingSupply
+    ...(coingeckoData?.circulatingSupply
       ? {
-          marketCap: format(data?.circulatingSupply * tokenPrice),
+          marketCap: format(coingeckoData?.circulatingSupply * tokenPrice),
         }
       : {}),
     ...(totalLiquidity

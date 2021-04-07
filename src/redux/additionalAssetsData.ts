@@ -11,26 +11,61 @@ import { AppDispatch, AppState } from '@rainbow-me/redux/store';
 import { logger } from '@rainbow-me/utils';
 
 // -- Constants ------------------------------------------------------------- //
-const ADDITIONAL_ASSET_DATA_ADD = 'additionalAssetData/ADDITIONAL_ASSET_DATA';
+const ADDITIONAL_ASSET_DATA_COINGECKO =
+  'additionalAssetData/ADDITIONAL_ASSET_DATA_COINGECKO';
+const ADDITIONAL_ASSET_DATA_UNISWAP =
+  'additionalAssetData/ADDITIONAL_ASSET_DATA_UNISWAP';
+const ADDITIONAL_ASSET_DATA_COINGECKO_IDS =
+  'additionalAssetData/ADDITIONAL_ASSET_DATA_COINGOCKO_IDS';
 
-export type AdditionalData = {
+export type AdditionalDataCongecko = {
   description?: string;
   circulatingSupply?: number;
+};
+
+export type AdditionalDataUniswap = {
   oneDayVolumeUSD?: number;
 };
 
-export type AdditionalDataWrapped = {
-  coingeckoId: string;
-  data?: AdditionalData;
+export type AdditionalData = {
+  coingeckoData?: AdditionalDataCongecko;
 };
 
-type AdditionalAssetDataAddAction = {
-  type: typeof ADDITIONAL_ASSET_DATA_ADD;
-  payload: State;
+type AdditionalAssetCoingeckoDataAction = {
+  type: typeof ADDITIONAL_ASSET_DATA_COINGECKO;
+  payload: AdditionalDataCoingeckoState;
+};
+
+type AdditionalAssetCoingeckoIdsAction = {
+  type: typeof ADDITIONAL_ASSET_DATA_COINGECKO_IDS;
+  payload: CoingeckoMappingState;
+};
+
+type AdditionalAssetUniswapDataAction = {
+  type: typeof ADDITIONAL_ASSET_DATA_UNISWAP;
+  payload: AdditionalDataUniswapState;
+};
+
+type Action =
+  | AdditionalAssetCoingeckoDataAction
+  | AdditionalAssetCoingeckoIdsAction
+  | AdditionalAssetUniswapDataAction;
+
+type AdditionalDataCoingeckoState = {
+  [key: string]: AdditionalDataCongecko;
+};
+type AdditionalDataUniswapState = {
+  [key: string]: AdditionalDataUniswap;
+};
+
+type CoingeckoMappingState = {
+  [key: string]: string;
 };
 
 type State = {
-  [key: string]: AdditionalDataWrapped;
+  coingeckoIds: CoingeckoMappingState;
+  coingeckoData: AdditionalDataCoingeckoState;
+  uniswapData: AdditionalDataUniswapState;
 };
 
 // -- Actions --------------------------------------------------------------- //
@@ -41,15 +76,12 @@ const getTimestampsForChanges = () => {
   return [t1, t2];
 };
 
-export const additionalAssetsDataAdd = (address: string) => async (
+export const additionalAssetsDataAddCoingecko = (address: string) => async (
   dispatch: AppDispatch,
   getState: () => AppState
 ) => {
-  const newData: AdditionalData = {};
-
-  // coingecko logic
-  // @ts-ignore
-  const token = getState().additionalAssetsData[address];
+  const newData: AdditionalDataCongecko = {};
+  const token = getState().additionalAssetsData.coingeckoIds[address];
   if (token) {
     try {
       const data = await axios({
@@ -62,7 +94,7 @@ export const additionalAssetsDataAdd = (address: string) => async (
           sparkline: false,
           tickers: false,
         },
-        url: `https://api.coingecko.com/api/v3/coins/${token.coingeckoId}`,
+        url: `https://api.coingecko.com/api/v3/coins/${token}`,
       });
       const description = data?.data?.description?.en?.replace(
         /<\/?[^>]+(>|$)/g,
@@ -72,7 +104,7 @@ export const additionalAssetsDataAdd = (address: string) => async (
       const circulatingSupply = data?.data?.market_data?.circulating_supply;
 
       if (description) {
-        newData.description = description;
+        newData!.description = description;
       }
 
       if (circulatingSupply) {
@@ -81,7 +113,19 @@ export const additionalAssetsDataAdd = (address: string) => async (
     } catch (e) {
       logger.log('Error with coingecko logic for additional asset data', e);
     }
+
+    const payload = {
+      [address]: newData,
+    };
+
+    dispatch({ payload, type: ADDITIONAL_ASSET_DATA_COINGECKO });
   }
+};
+
+export const additionalAssetsDataAddUniswap = (address: string) => async (
+  dispatch: AppDispatch
+) => {
+  const newData: AdditionalDataUniswap = {};
 
   // uniswap v2 graph for the volume
   try {
@@ -126,14 +170,11 @@ export const additionalAssetsDataAdd = (address: string) => async (
     logger.log('Error with Uniswap v2 fetching for additional asset data', e);
   }
 
-  const payload: State = {
-    [address]: {
-      coingeckoId: 'dd',
-      data: newData,
-    },
+  const payload = {
+    [address]: newData,
   };
 
-  dispatch({ payload, type: ADDITIONAL_ASSET_DATA_ADD });
+  dispatch({ payload, type: ADDITIONAL_ASSET_DATA_UNISWAP });
 };
 
 export const additionalDataCoingeckoIds = async (
@@ -141,31 +182,55 @@ export const additionalDataCoingeckoIds = async (
   getState: () => AppState
 ) => {
   // @ts-ignore
-  if (Object.keys(getState().additionalAssetsData).length === 0) {
+  if (Object.keys(getState().additionalAssetsData.coingeckoIds).length === 0) {
     const ids: { [key: string]: string } = (await fetchCoingeckoIds()) as {
       [key: string]: string;
     };
-    const newState: State = Object.entries(ids).reduce((acc, curr) => {
-      acc[curr[0].toLowerCase()] = { coingeckoId: curr[1] };
-      return acc;
-    }, {} as State);
-    newState['eth'] = { coingeckoId: 'ethereum' };
-    dispatch({ payload: newState, type: ADDITIONAL_ASSET_DATA_ADD });
+    const newState: CoingeckoMappingState = Object.entries(ids).reduce(
+      (acc, curr) => {
+        acc[curr[0].toLowerCase()] = curr[1];
+        return acc;
+      },
+      {} as CoingeckoMappingState
+    );
+    newState['eth'] = 'ethereum';
+    dispatch({ payload: newState, type: ADDITIONAL_ASSET_DATA_COINGECKO_IDS });
   }
 };
 
 // -- Reducer --------------------------------------------------------------- //
-export const INITIAL_UNIQUE_TOKENS_STATE = {};
+export const INITIAL_UNIQUE_TOKENS_STATE = {
+  coingeckoData: {},
+  coingeckoIds: {},
+  uniswapData: {},
+};
 
-export default (
-  state: State = INITIAL_UNIQUE_TOKENS_STATE,
-  action: AdditionalAssetDataAddAction
-) => {
+export default (state: State = INITIAL_UNIQUE_TOKENS_STATE, action: Action) => {
   switch (action.type) {
-    case ADDITIONAL_ASSET_DATA_ADD:
+    case ADDITIONAL_ASSET_DATA_COINGECKO:
       return {
         ...state,
-        ...action.payload,
+        coingeckoData: {
+          ...state.coingeckoData,
+          ...action.payload,
+        },
+      };
+    case ADDITIONAL_ASSET_DATA_COINGECKO_IDS:
+      return {
+        ...state,
+        coingeckoIds: {
+          ...state.coingeckoIds,
+          ...action.payload,
+        },
+      };
+
+    case ADDITIONAL_ASSET_DATA_UNISWAP:
+      return {
+        ...state,
+        uniswapData: {
+          ...state.uniswapData,
+          ...action.payload,
+        },
       };
     default:
       return state;
