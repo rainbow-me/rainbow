@@ -1,18 +1,17 @@
 import { verifyMessage, Wallet } from '@ethersproject/wallet';
-import lang from 'i18n-js';
 // @ts-ignore
 import { RAINBOW_MASTER_KEY } from 'react-native-dotenv';
 import { loadString, saveString } from '../model/keychain';
-import * as keychain from '../model/keychain';
-import { PrivateKeyData, publicAccessControlOptions } from '../model/wallet';
-import { privateKeyKey } from '../utils/keychainConstants';
+import { loadWallet, publicAccessControlOptions } from '../model/wallet';
+import {
+  signingWalletAddress,
+  signingWallet as signingWalletKeychain,
+} from '../utils/keychainConstants';
 import AesEncryptor from '@rainbow-me/handlers/aesEncryption';
 import { logger } from '@rainbow-me/utils';
 
-const authenticationPrompt = lang.t('wallet.authenticate.please');
-
 export async function getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded(): Promise<string> {
-  let alreadyExistingWallet = await loadString('signing_wallet_address');
+  let alreadyExistingWallet = await loadString(signingWalletAddress);
   if (typeof alreadyExistingWallet !== 'string') {
     const wallet = Wallet.createRandom();
     logger.log('Created signing wallet');
@@ -24,23 +23,19 @@ export async function getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded(): P
     )) as string;
 
     await saveString(
-      'signing_wallet',
+      signingWalletKeychain,
       encryptedPrivateKey,
       publicAccessControlOptions
     );
 
-    await saveString(
-      'signing_wallet_address',
-      address,
-      publicAccessControlOptions
-    );
+    await saveString(signingWalletAddress, address, publicAccessControlOptions);
     alreadyExistingWallet = address;
   }
   logger.log('Signing wallet already existing');
   return alreadyExistingWallet;
 }
 
-export async function getASignatureForSigningWalletAndCreateSignatureIfNeeded(
+export async function getSignatureForSigningWalletAndCreateSignatureIfNeeded(
   address: string
 ): Promise<string | undefined> {
   const publicKeyForTheSigningWallet = await getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded();
@@ -60,21 +55,15 @@ export async function getASignatureForSigningWalletAndCreateSignatureIfNeeded(
     ) {
       return decryptedSignature;
     } else {
-      logger.log('Signature is not matching. Creating a new one.');
+      logger.log('Signature does not match. Creating a new one.');
       alreadyExistingEncodedSignature = null;
     }
   }
   if (!alreadyExistingEncodedSignature) {
-    const key = `${address}_${privateKeyKey}`;
-
-    const pkey = (await keychain.loadObject(key, {
-      authenticationPrompt,
-    })) as PrivateKeyData | -2;
     logger.log('Creating a signature');
-    if (pkey !== -2) {
-      const { privateKey } = pkey;
 
-      const mainWallet = new Wallet(privateKey);
+    const mainWallet = await loadWallet(address, false);
+    if (mainWallet) {
       const signatureForSigningWallet = await mainWallet.signMessage(
         publicKeyForTheSigningWallet
       );
@@ -101,18 +90,17 @@ export async function getASignatureForSigningWalletAndCreateSignatureIfNeeded(
 export async function signWithSigningWallet(
   messageToSign: string
 ): Promise<string> {
-  const encryptedPrivateKeyOfTheSigningWaller = await loadString(
-    'signing_wallet',
+  const encryptedPrivateKeyOfTheSigningWallet = await loadString(
+    signingWalletKeychain,
     publicAccessControlOptions
   );
   const encryptor = new AesEncryptor();
-  const decryptedPrivateKeyOfTheSigningWaller = await encryptor.decrypt(
+  const decryptedPrivateKeyOfTheSigningWallet = await encryptor.decrypt(
     RAINBOW_MASTER_KEY,
-    encryptedPrivateKeyOfTheSigningWaller
+    encryptedPrivateKeyOfTheSigningWallet
   );
   logger.log('Signing with a signing wallet.');
 
-  const signingWallet = new Wallet(decryptedPrivateKeyOfTheSigningWaller);
-  const signitureOfTheMessage = signingWallet.signMessage(messageToSign);
-  return signitureOfTheMessage;
+  const signingWallet = new Wallet(decryptedPrivateKeyOfTheSigningWallet);
+  return signingWallet.signMessage(messageToSign);
 }
