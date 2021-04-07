@@ -8,6 +8,7 @@ import {
 } from '../hooks/useUniswapPools';
 import { fetchCoingeckoIds } from '@rainbow-me/redux/fallbackExplorer';
 import { AppDispatch, AppState } from '@rainbow-me/redux/store';
+import { ETH_ADDRESS, WETH_ADDRESS } from '@rainbow-me/references';
 import { logger } from '@rainbow-me/utils';
 
 // -- Constants ------------------------------------------------------------- //
@@ -121,9 +122,10 @@ export const additionalAssetsDataAddCoingecko = (address: string) => async (
   }
 };
 
-export const additionalAssetsDataAddUniswap = (address: string) => async (
+export const additionalAssetsDataAddUniswap = (rawAddress: string) => async (
   dispatch: AppDispatch
 ) => {
+  const address = rawAddress === ETH_ADDRESS ? WETH_ADDRESS : rawAddress;
   const newData: AdditionalDataUniswap = {};
 
   // uniswap v2 graph for the volume
@@ -170,7 +172,7 @@ export const additionalAssetsDataAddUniswap = (address: string) => async (
   }
 
   const payload = {
-    [address]: newData,
+    [rawAddress]: newData,
   };
 
   dispatch({ payload, type: ADDITIONAL_ASSET_DATA_UNISWAP });
