@@ -349,7 +349,7 @@ function RecyclerAssetList({
       }
       return null;
     },
-    [isCoinListEdited, nativeCurrency, sections]
+    [isCoinListEdited, sections]
   );
 
   const animator = useMemo(

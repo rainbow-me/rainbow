@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import { UniBalanceHeightDifference } from '../../hooks/charts/useChartThrottledPoints';
 import deviceUtils from '../../utils/deviceUtils';
 import EdgeFade from '../discover-sheet/EdgeFade';
-import { bigNumberFormat, PoolValue } from '../investment-cards/PoolValue';
+import { PoolValue } from '../investment-cards/PoolValue';
 import { Column, Row } from '../layout';
 
 import {
@@ -24,6 +24,7 @@ import UnderlyingAsset from './unique-token/UnderlyingAsset';
 import { ChartPathProvider } from '@rainbow-me/animated-charts';
 import { useTheme } from '@rainbow-me/context';
 import { toChecksumAddress } from '@rainbow-me/handlers/web3';
+import { bigNumberFormat } from '@rainbow-me/helpers/bigNumberFormat';
 import chartTypes from '@rainbow-me/helpers/chartTypes';
 import {
   useAccountSettings,

@@ -1,8 +1,8 @@
 import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { bigNumberFormat } from '../components/investment-cards/PoolValue';
 import useNativeCurrencyToUSD from './useNativeCurrencyToUSD';
 import { useAccountSettings } from './index';
+import { bigNumberFormat } from '@rainbow-me/helpers/bigNumberFormat';
 import {
   additionalAssetsDataAddCoingecko,
   additionalAssetsDataAddUniswap,

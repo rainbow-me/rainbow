@@ -6,13 +6,13 @@ import {
   UNISWAP_ADDITIONAL_POOL_DATA,
   UNISWAP_PAIR_DATA_QUERY_VOLUME,
 } from '../apollo/queries';
-import { bigNumberFormat } from '../components/investment-cards/PoolValue';
 import useAccountSettings from './useAccountSettings';
 import useNativeCurrencyToUSD from './useNativeCurrencyToUSD';
 import {
   get2DayPercentChange,
   getBlocksFromTimestamps,
 } from './useUniswapPools';
+import { bigNumberFormat } from '@rainbow-me/helpers/bigNumberFormat';
 import { setPoolsDetails } from '@rainbow-me/redux/uniswapLiquidity';
 import { ethereumUtils } from '@rainbow-me/utils';
 
