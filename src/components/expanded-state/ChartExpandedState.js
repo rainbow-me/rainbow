@@ -61,7 +61,7 @@ const CarouselItem = styled(TokenInfoItem).attrs(({ theme: { colors } }) => ({
   margin-horizontal: 12;
 `;
 
-const TIMEOUT = 10000;
+const TIMEOUT = 15000;
 
 function CarouselWrapper({
   style,
@@ -73,8 +73,8 @@ function CarouselWrapper({
   const [visible, setVisible] = useState(true);
   const timeout = useRef();
   useEffect(() => {
+    clearTimeout(timeout.current);
     if (!isAnyItemVisible) {
-      clearTimeout(timeout.current);
       timeout.current = setTimeout(
         () => {
           setVisible(false);
