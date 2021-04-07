@@ -45,6 +45,12 @@ export default function TokenInfoItem({
 
   const loading = useDelayedValueWithLayoutAnimation(rawLoading);
 
+  const hidden = useDelayedValueWithLayoutAnimation(!loading && !children);
+
+  if (hidden) {
+    return null;
+  }
+
   return (
     <Container
       as={showDivider ? RowWithMargins : View}

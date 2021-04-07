@@ -101,15 +101,14 @@ export const additionalAssetsDataAddCoingecko = (address: string) => async (
         ''
       ); //strip HTML
 
-      const circulatingSupply = data?.data?.market_data?.circulating_supply;
+      const circulatingSupply =
+        data?.data?.market_data?.circulating_supply ?? 0;
 
       if (description) {
         newData!.description = description;
       }
 
-      if (circulatingSupply) {
-        newData.circulatingSupply = circulatingSupply;
-      }
+      newData.circulatingSupply = circulatingSupply;
     } catch (e) {
       logger.log('Error with coingecko logic for additional asset data', e);
     }

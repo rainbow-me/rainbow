@@ -26,6 +26,9 @@ export default function useAdditionalAssetData(
       totalVolume?: string;
       totalLiquidity?: string;
       marketCap?: string;
+      totalVolumeLoading: boolean;
+      totalLiquidityLoading: boolean;
+      marketCapLoading: boolean;
     }
   | undefined {
   // @ts-ignore
@@ -81,16 +84,20 @@ export default function useAdditionalAssetData(
 
   const newData = {
     description: coingeckoData?.description,
+    totalVolumeLoading: typeof uniswapData?.oneDayVolumeUSD !== 'number',
     ...(uniswapData?.oneDayVolumeUSD
       ? {
           totalVolume: format(uniswapData?.oneDayVolumeUSD * rate),
         }
       : {}),
+    marketCapLoading:
+      typeof coingeckoData?.circulatingSupply !== 'number' && !!coingeckoId,
     ...(coingeckoData?.circulatingSupply
       ? {
           marketCap: format(coingeckoData?.circulatingSupply * tokenPrice),
         }
       : {}),
+    totalLiquidityLoading: typeof totalLiquidity !== 'number',
     ...(totalLiquidity
       ? {
           totalLiquidity: format(tokenPrice * totalLiquidity),

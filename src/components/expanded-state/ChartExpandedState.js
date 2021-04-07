@@ -66,6 +66,7 @@ const TIMEOUT = 10000;
 function CarouselWrapper({
   style,
   isAnyItemVisible,
+  isAnyItemLoading,
   setCarouselHeight,
   ...props
 }) {
@@ -73,19 +74,30 @@ function CarouselWrapper({
   const timeout = useRef();
   useEffect(() => {
     if (!isAnyItemVisible) {
-      timeout.current = setTimeout(() => {
-        setVisible(false);
-        setCarouselHeight(0);
-      }, TIMEOUT);
-    } else {
       clearTimeout(timeout.current);
+      timeout.current = setTimeout(
+        () => {
+          setVisible(false);
+          setCarouselHeight(0);
+        },
+        isAnyItemLoading ? TIMEOUT : 0
+      );
+    } else {
       setVisible(true);
       setCarouselHeight(defaultCarouselHeight);
     }
-  }, [isAnyItemVisible, setCarouselHeight]);
+  }, [isAnyItemLoading, isAnyItemVisible, setCarouselHeight]);
   const delayedVisible = useDelayedValueWithLayoutAnimation(visible);
   return (
-    <View {...props} style={[style, { opacity: delayedVisible ? 1 : 0 }]} />
+    <View
+      {...props}
+      style={[
+        style,
+        {
+          opacity: delayedVisible ? 1 : 0,
+        },
+      ]}
+    />
   );
 }
 
@@ -119,6 +131,9 @@ export default function ChartExpandedState({ asset }) {
     marketCap,
     totalLiquidity,
     totalVolume,
+    marketCapLoading,
+    totalLiquidityLoading,
+    totalVolumeLoading,
   } = useAdditionalAssetData(asset?.address, assetWithPrice?.price?.value);
 
   const delayedDescriptions = useDelayedValueWithLayoutAnimation(description);
@@ -247,12 +262,15 @@ export default function ChartExpandedState({ asset }) {
         </SheetActionButtonRow>
       )}
       <CarouselWrapper
+        isAnyItemLoading={
+          totalVolumeLoading || totalLiquidityLoading || marketCapLoading
+        }
         isAnyItemVisible={!!(totalVolume || totalLiquidity || marketCap)}
         setCarouselHeight={setCarouselHeight}
       >
         <Carousel>
           <CarouselItem
-            loading={!totalVolume}
+            loading={totalVolumeLoading}
             showDivider
             title="24h volume"
             weight="bold"
@@ -260,14 +278,18 @@ export default function ChartExpandedState({ asset }) {
             {totalVolume}
           </CarouselItem>
           <CarouselItem
-            loading={!totalLiquidity}
+            loading={totalLiquidityLoading}
             showDivider
             title="Uniswap liquidity"
             weight="bold"
           >
             {totalLiquidity}
           </CarouselItem>
-          <CarouselItem loading={!marketCap} title="Market cap" weight="bold">
+          <CarouselItem
+            loading={marketCapLoading}
+            title="Market cap"
+            weight="bold"
+          >
             {marketCap}
           </CarouselItem>
         </Carousel>
