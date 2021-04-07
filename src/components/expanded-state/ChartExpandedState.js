@@ -1,5 +1,6 @@
 import { find } from 'lodash';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { View } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -34,7 +35,9 @@ import {
 } from '@rainbow-me/hooks';
 import { ethereumUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 
-const baseHeight = 386 + (android && 20 - getSoftMenuBarHeight());
+const defaultCarouselHeight = 60;
+const baseHeight =
+  386 + (android && 20 - getSoftMenuBarHeight()) - defaultCarouselHeight;
 const heightWithoutChart = baseHeight + (android && 30);
 const heightWithChart = baseHeight + 292;
 
@@ -58,7 +61,33 @@ const CarouselItem = styled(TokenInfoItem).attrs(({ theme: { colors } }) => ({
   margin-horizontal: 12;
 `;
 
-const CarouselWrapper = styled.View``;
+const TIMEOUT = 10000;
+
+function CarouselWrapper({
+  style,
+  isAnyItemVisible,
+  setCarouselHeight,
+  ...props
+}) {
+  const [visible, setVisible] = useState(true);
+  const timeout = useRef();
+  useEffect(() => {
+    if (!isAnyItemVisible) {
+      timeout.current = setTimeout(() => {
+        setVisible(false);
+        setCarouselHeight(0);
+      }, TIMEOUT);
+    } else {
+      clearTimeout(timeout.current);
+      setVisible(true);
+      setCarouselHeight(defaultCarouselHeight);
+    }
+  }, [isAnyItemVisible, setCarouselHeight]);
+  const delayedVisible = useDelayedValueWithLayoutAnimation(visible);
+  return (
+    <View {...props} style={[style, { opacity: delayedVisible ? 1 : 0 }]} />
+  );
+}
 
 const Spacer = styled.View`
   height: ${safeAreaInsetValues.bottom};
@@ -68,6 +97,7 @@ export default function ChartExpandedState({ asset }) {
   const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
     genericAssets,
   }));
+  const [carouselHeight, setCarouselHeight] = useState(defaultCarouselHeight);
   const { nativeCurrency } = useAccountSettings();
   const [descriptionHeight, setDescriptionHeight] = useState(0);
 
@@ -108,25 +138,27 @@ export default function ChartExpandedState({ asset }) {
   } = useChartThrottledPoints({
     asset: assetWithPrice,
     heightWithChart: Math.min(
-      heightWithChart -
+      carouselHeight +
+        heightWithChart -
         (!hasBalance && 68) +
         descriptionHeight +
         (descriptionHeight === 0 ? 0 : scrollableContentHeight),
       screenHeight
     ),
     heightWithoutChart: Math.min(
-      heightWithoutChart -
+      carouselHeight +
+        heightWithoutChart -
         (!hasBalance && 68) +
         descriptionHeight +
         (descriptionHeight === 0 ? 0 : scrollableContentHeight),
       screenHeight
     ),
     shortHeightWithChart: Math.min(
-      heightWithChart - (!hasBalance && 68),
+      carouselHeight + heightWithChart - (!hasBalance && 68),
       screenHeight
     ),
     shortHeightWithoutChart: Math.min(
-      heightWithoutChart - (!hasBalance && 68),
+      carouselHeight + heightWithoutChart - (!hasBalance && 68),
       screenHeight
     ),
   });
@@ -214,7 +246,10 @@ export default function ChartExpandedState({ asset }) {
           )}
         </SheetActionButtonRow>
       )}
-      <CarouselWrapper>
+      <CarouselWrapper
+        isAnyItemVisible={!!(totalVolume || totalLiquidity || marketCap)}
+        setCarouselHeight={setCarouselHeight}
+      >
         <Carousel>
           <CarouselItem
             loading={!totalVolume}

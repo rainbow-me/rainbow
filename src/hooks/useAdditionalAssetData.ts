@@ -60,7 +60,9 @@ export default function useAdditionalAssetData(
 
   const format = useCallback(
     value =>
-      bigNumberFormat(cutIfOver10000(value), nativeCurrency, value >= 10000),
+      value
+        ? bigNumberFormat(cutIfOver10000(value), nativeCurrency, value >= 10000)
+        : '',
     [nativeCurrency]
   );
 

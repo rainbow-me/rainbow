@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import { View } from 'react-native';
 import styled from 'styled-components';
 import { ShimmerAnimation } from '../animations';
@@ -28,8 +28,6 @@ const WrapperView = styled.View`
   width: 50;
 `;
 
-const TIMEOUT_MS = 10000;
-
 export default function TokenInfoItem({
   align = 'left',
   asset,
@@ -45,29 +43,7 @@ export default function TokenInfoItem({
 }) {
   const { colors } = useTheme();
 
-  const [rawVisible, setVisible] = useState(true);
-
-  const visibleTimeout = useRef();
-  useEffect(() => {
-    if (rawLoading) {
-      if (!visibleTimeout.current) {
-        visibleTimeout.current = setTimeout(() => {
-          setVisible(false);
-        }, TIMEOUT_MS);
-      }
-    } else {
-      clearTimeout(visibleTimeout.current);
-      visibleTimeout.current = null;
-      !rawVisible && setVisible(true);
-    }
-  }, [rawLoading, rawVisible]);
-
   const loading = useDelayedValueWithLayoutAnimation(rawLoading);
-  const visible = useDelayedValueWithLayoutAnimation(rawVisible);
-
-  if (!visible) {
-    return null;
-  }
 
   return (
     <Container
