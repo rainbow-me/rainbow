@@ -46,6 +46,23 @@ export const UNISWAP_PAIR_DATA_QUERY = (pairAddress, block) => {
   `;
 };
 
+export const UNISWAP_PAIR_DATA_QUERY_VOLUME = (pairAddress, block) => {
+  const queryString = `
+    fragment PairFields on Pair {
+      volumeUSD
+  }
+  query pairs {
+    pairs(${
+      block ? `block: {number: ${block}}` : ``
+    } where: { id: "${pairAddress}"} ) {
+      ...PairFields
+    }
+  }`;
+  return gql`
+    ${queryString}
+  `;
+};
+
 export const UNISWAP_PAIRS_BULK_QUERY = gql`
   fragment PairFields on Pair {
     id

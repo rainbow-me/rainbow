@@ -1,16 +1,30 @@
+import { getUnixTime, startOfMinute, sub } from 'date-fns';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { uniswapClient } from '../apollo/client';
-import { UNISWAP_ADDITIONAL_POOL_DATA } from '../apollo/queries';
+import {
+  UNISWAP_ADDITIONAL_POOL_DATA,
+  UNISWAP_PAIR_DATA_QUERY_VOLUME,
+} from '../apollo/queries';
 import { bigNumberFormat } from '../components/investment-cards/PoolValue';
 import useAccountSettings from './useAccountSettings';
 import useNativeCurrencyToUSD from './useNativeCurrencyToUSD';
+import {
+  get2DayPercentChange,
+  getBlocksFromTimestamps,
+} from './useUniswapPools';
 import { setPoolsDetails } from '@rainbow-me/redux/uniswapLiquidity';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 function cutIfOver10000(value) {
   return value > 10000 ? Math.round(value) : value;
 }
+
+const getTimestampsForChanges = () => {
+  const t1 = getUnixTime(startOfMinute(sub(Date.now(), { days: 1 })));
+  const t2 = getUnixTime(startOfMinute(sub(Date.now(), { days: 2 })));
+  return [t1, t2];
+};
 
 async function fetchPoolDetails(address, dispatch) {
   const result = await uniswapClient.query({
@@ -20,6 +34,8 @@ async function fetchPoolDetails(address, dispatch) {
     },
   });
 
+  // uniswap v2 graph for the volume
+
   const pair = result?.data?.pairs?.[0];
 
   if (pair) {
@@ -28,6 +44,36 @@ async function fetchPoolDetails(address, dispatch) {
       oneDayVolumeUSD: parseFloat(pair.volumeUSD),
       partial: true,
     };
+    const [t1, t2] = getTimestampsForChanges();
+    const [{ number: b1 }, { number: b2 }] = await getBlocksFromTimestamps([
+      t1,
+      t2,
+    ]);
+
+    const oneDayResult = await uniswapClient.query({
+      fetchPolicy: 'cache-first',
+      query: UNISWAP_PAIR_DATA_QUERY_VOLUME(address, b1),
+    });
+    const twoDayResult = await uniswapClient.query({
+      fetchPolicy: 'cache-first',
+      query: UNISWAP_PAIR_DATA_QUERY_VOLUME(address, b2),
+    });
+
+    const oneDayHistory = oneDayResult?.data?.pairs[0];
+    const twoDayHistory = twoDayResult?.data?.pairs[0];
+
+    const [oneDayVolumeUSD] = get2DayPercentChange(
+      pair.volumeUSD,
+      oneDayHistory?.volumeUSD ? oneDayHistory.volumeUSD : 0,
+      twoDayHistory?.volumeUSD ? twoDayHistory.volumeUSD : 0
+    );
+
+    partialData.oneDayVolumeUSD = oneDayVolumeUSD;
+
+    if (!oneDayHistory || !twoDayHistory) {
+      partialData.oneDayVolumeUSD = parseFloat(pair.volumeUSD);
+    }
+
     const priceOfEther = ethereumUtils.getEthPriceUnit();
     const trackedReserveUSD = pair.trackedReserveETH * priceOfEther;
     partialData.annualized_fees =
