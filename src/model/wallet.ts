@@ -217,7 +217,8 @@ export const walletInit = async (
 };
 
 export const loadWallet = async (
-  address?: EthereumAddress | undefined
+  address?: EthereumAddress | undefined,
+  showErrorIfNotLoaded = true
 ): Promise<null | Wallet> => {
   const privateKey = await loadPrivateKey(address);
   if (privateKey === -1 || privateKey === -2) {
@@ -226,7 +227,7 @@ export const loadWallet = async (
   if (privateKey) {
     return new Wallet(privateKey, web3Provider);
   }
-  if (ios) {
+  if (ios && showErrorIfNotLoaded) {
     showWalletErrorAlert();
   }
   return null;

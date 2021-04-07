@@ -1,7 +1,7 @@
 import { Wallet } from '@ethersproject/wallet';
 import axios from 'axios';
 import {
-  getASignatureForSigningWalletAndCreateSignatureIfNeeded,
+  getSignatureForSigningWalletAndCreateSignatureIfNeeded,
   signWithSigningWallet,
 } from '@rainbow-me/helpers/signingWallet';
 import logger from 'logger';
@@ -35,10 +35,13 @@ export async function setPreference(
   value?: Object | undefined
 ): Promise<boolean> {
   try {
-    const signature = await getASignatureForSigningWalletAndCreateSignatureIfNeeded(
-      await wallet.getAddress()
-    );
     const address = await wallet.getAddress();
+    const signature = await getSignatureForSigningWalletAndCreateSignatureIfNeeded(
+      address
+    );
+    if (!signature) {
+      return false;
+    }
     const objToSign = {
       action,
       address,
