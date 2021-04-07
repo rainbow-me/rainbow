@@ -93,7 +93,9 @@ export default function usePoolDetails(address) {
 
   const format = useCallback(
     value =>
-      bigNumberFormat(cutIfOver10000(value), nativeCurrency, value >= 10000),
+      value
+        ? bigNumberFormat(cutIfOver10000(value), nativeCurrency, value >= 10000)
+        : '',
     [nativeCurrency]
   );
 
@@ -116,7 +118,7 @@ export default function usePoolDetails(address) {
   ]);
   const nativeLiquidity = useMemo(() => format(data?.liquidity * rate), [
     data?.liquidity,
-    nativeCurrency,
+    format,
     rate,
   ]);
 
