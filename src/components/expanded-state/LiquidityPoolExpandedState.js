@@ -98,7 +98,7 @@ const LiquidityPoolExpandedState = () => {
   }, [tokens]);
 
   useEffect(() => {
-    dispatch(emitAssetRequest(tokenAddresses));
+    dispatch(emitAssetRequest(tokenAddresses.map(toLower)));
   }, [dispatch, tokenAddresses]);
 
   const { nativeCurrency } = useAccountSettings();
@@ -304,7 +304,7 @@ const LiquidityPoolExpandedState = () => {
           <UnderlyingAssetsWrapper>
             <UnderlyingAsset
               address={tokenAddresses[0]}
-              change={token0?.native?.change.replace('-', '')}
+              change={token0?.price?.relative_change_24h?.toFixed(2)}
               changeVisible={!uniBalance}
               color={color0}
               isPositive={token0?.price?.relative_change_24h > 0}
@@ -319,7 +319,7 @@ const LiquidityPoolExpandedState = () => {
             />
             <UnderlyingAsset
               address={tokenAddresses[1]}
-              change={token1?.native?.change.replace('-', '')}
+              change={token1?.price?.relative_change_24h?.toFixed(2)}
               changeVisible={!uniBalance}
               color={color1}
               isPositive={token1?.price?.relative_change_24h > 0}
