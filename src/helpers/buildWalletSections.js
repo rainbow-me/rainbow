@@ -70,7 +70,7 @@ const balancesSkeletonRenderItem = item => (
 
 const balancesRenderItem = item => <TokenItem {...item} assetType="token" />;
 
-const tokenFamilyItem = item => (
+export const tokenFamilyItem = item => (
   <CollectibleTokenFamily {...item} uniqueId={item.uniqueId} />
 );
 const uniswapRenderItem = item => (

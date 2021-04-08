@@ -144,6 +144,7 @@ export type RecyclerAssetListProps = {
     readonly [key: string]: boolean;
   };
   readonly openSavings: boolean;
+  readonly openFamilies?: boolean;
   readonly openSmallBalances: boolean;
 };
 
@@ -161,6 +162,7 @@ function RecyclerAssetList({
   hideHeader,
   renderAheadOffset = deviceUtils.dimensions.height,
   setIsBlockingUpdate,
+  openFamilies,
   ...extras
 }: RecyclerAssetListProps): JSX.Element {
   const { ref, handleRef } = useRecyclerListViewRef();
@@ -198,7 +200,11 @@ function RecyclerAssetList({
         ]);
         if (section.collectibles) {
           section.data.forEach((item, index) => {
-            if (item.isHeader || openFamilyTabs[item.familyName]) {
+            if (
+              item.isHeader ||
+              openFamilyTabs[item.familyName] ||
+              openFamilies
+            ) {
               ctx.push({
                 familySectionIndex: index,
                 item: { ...item, ...section.perData },
@@ -228,7 +234,7 @@ function RecyclerAssetList({
       sectionsIndices,
       stickyComponentsIndices,
     };
-  }, [openFamilyTabs, sections]);
+  }, [openFamilies, openFamilyTabs, sections]);
 
   // Defines the position of the coinDivider, if it exists.
   const coinDividerIndex = useMemo<number>(() => {
@@ -510,7 +516,7 @@ function RecyclerAssetList({
                 isOpen:
                   openFamilyTabs[
                     sections[collectiblesIndex].data[familyIndex].familyName
-                  ],
+                  ] || openFamilies,
               }),
               index: ViewTypes.UNIQUE_TOKEN_ROW.index,
               isFirst,
@@ -541,6 +547,7 @@ function RecyclerAssetList({
     isCoinListEdited,
     items,
     itemsCount,
+    openFamilies,
     openFamilyTabs,
     openInvestmentCards,
     openSavings,

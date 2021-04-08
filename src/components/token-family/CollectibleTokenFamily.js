@@ -10,13 +10,15 @@ const CollectibleTokenFamily = ({
   familyImage,
   familyName,
   item,
+  forceOpen,
   ...props
 }) => {
   const dispatch = useDispatch();
 
-  const isFamilyOpen = useSelector(
-    ({ openStateSettings }) => openStateSettings.openFamilyTabs[familyName]
-  );
+  const isFamilyOpen =
+    useSelector(
+      ({ openStateSettings }) => openStateSettings.openFamilyTabs[familyName]
+    ) || forceOpen;
 
   const handleToggle = useCallback(
     () =>
@@ -34,6 +36,7 @@ const CollectibleTokenFamily = ({
       {...props}
       familyId={familyId}
       familyImage={familyImage}
+      forceOpen={forceOpen}
       isOpen={isFamilyOpen}
       item={item}
       onToggle={handleToggle}
@@ -41,13 +44,6 @@ const CollectibleTokenFamily = ({
       title={familyName}
     />
   );
-};
-
-CollectibleTokenFamily.propTypes = {
-  familyId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  familyImage: PropTypes.string,
-  familyName: PropTypes.string,
-  item: PropTypes.object,
 };
 
 export default React.memo(CollectibleTokenFamily);

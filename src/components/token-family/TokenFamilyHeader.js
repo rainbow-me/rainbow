@@ -68,6 +68,7 @@ const TokenFamilyHeader = ({
   onPress,
   testID,
   title,
+  forceOpen,
 }) => {
   const animation = useTimingTransition(!isOpen, {
     duration: TokenFamilyHeaderAnimationDuration,
@@ -83,6 +84,7 @@ const TokenFamilyHeader = ({
 
   return (
     <ButtonPressAnimation
+      disabled={forceOpen}
       key={`token_family_header_${emoji || familyImage || title}`}
       onPress={onPress}
       scaleTo={1.05}
@@ -101,12 +103,14 @@ const TokenFamilyHeader = ({
           )}
         </RowWithMargins>
         <TitleText isShowcase={title === 'Showcase'}>{title}</TitleText>
-        <RowWithMargins align="center" margin={13}>
-          <Animated.View style={{ opacity: animation }}>
-            <ChildrenAmountText>{childrenAmount}</ChildrenAmountText>
-          </Animated.View>
-          <RotatingArrowIcon style={{ transform: [{ rotate }] }} />
-        </RowWithMargins>
+        {!forceOpen && (
+          <RowWithMargins align="center" margin={13}>
+            <Animated.View style={{ opacity: animation }}>
+              <ChildrenAmountText>{childrenAmount}</ChildrenAmountText>
+            </Animated.View>
+            <RotatingArrowIcon style={{ transform: [{ rotate }] }} />
+          </RowWithMargins>
+        )}
       </Content>
     </ButtonPressAnimation>
   );

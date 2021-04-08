@@ -30,6 +30,8 @@ const UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE =
   'uniqueTokens/UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE';
 
 const UNIQUE_TOKENS_CLEAR_STATE = 'uniqueTokens/UNIQUE_TOKENS_CLEAR_STATE';
+const UNIQUE_TOKENS_CLEAR_STATE_SHOWCASE =
+  'uniqueTokens/UNIQUE_TOKENS_CLEAR_STATE_SHOWCASE';
 
 // -- Actions --------------------------------------------------------------- //
 let uniqueTokensHandle = null;
@@ -64,9 +66,22 @@ export const uniqueTokensRefreshState = () => async (dispatch, getState) => {
   dispatch(fetchUniqueTokens());
 };
 
-const fetchUniqueTokens = () => async (dispatch, getState) => {
-  dispatch({ type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_REQUEST });
-  const { accountAddress, network } = getState().settings;
+export const fetchUniqueTokens = showcaseAddress => async (
+  dispatch,
+  getState
+) => {
+  dispatch({
+    showcase: !!showcaseAddress,
+    type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_REQUEST,
+  });
+  if (showcaseAddress) {
+    dispatch({
+      showcase: !!showcaseAddress,
+      type: UNIQUE_TOKENS_CLEAR_STATE_SHOWCASE,
+    });
+  }
+  const { network } = getState().settings;
+  const accountAddress = getState().settings.accountAddress || showcaseAddress;
   const { assets } = getState().data;
   const { uniqueTokens: existingUniqueTokens } = getState().uniqueTokens;
   const shouldUpdateInBatches = isEmpty(existingUniqueTokens);
@@ -96,6 +111,7 @@ const fetchUniqueTokens = () => async (dispatch, getState) => {
       if (shouldUpdateInBatches) {
         dispatch({
           payload: uniqueTokens,
+          showcase: !!showcaseAddress,
           type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS,
         });
       }
@@ -104,6 +120,7 @@ const fetchUniqueTokens = () => async (dispatch, getState) => {
         if (!shouldUpdateInBatches) {
           dispatch({
             payload: uniqueTokens,
+            showcase: !!showcaseAddress,
             type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS,
           });
         }
@@ -117,12 +134,17 @@ const fetchUniqueTokens = () => async (dispatch, getState) => {
           );
           dispatch(dataUpdateAssets(dedupedAssets));
         }
-        saveUniqueTokens(uniqueTokens, accountAddress, network);
+        if (!showcaseAddress) {
+          saveUniqueTokens(uniqueTokens, accountAddress, network);
+        }
       } else {
         uniqueTokensHandle = setTimeout(fetchPage, 200);
       }
     } catch (error) {
-      dispatch({ type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE });
+      dispatch({
+        showcase: !!showcaseAddress,
+        type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE,
+      });
       captureException(error);
     }
   };
@@ -133,8 +155,11 @@ const fetchUniqueTokens = () => async (dispatch, getState) => {
 // -- Reducer --------------------------------------------------------------- //
 export const INITIAL_UNIQUE_TOKENS_STATE = {
   fetchingUniqueTokens: false,
+  fetchingUniqueTokensShowcase: false,
   loadingUniqueTokens: false,
+  loadingUniqueTokensShowcase: false,
   uniqueTokens: [],
+  uniqueTokensShowcase: [],
 };
 
 export default (state = INITIAL_UNIQUE_TOKENS_STATE, action) => {
@@ -156,25 +181,57 @@ export default (state = INITIAL_UNIQUE_TOKENS_STATE, action) => {
         loadingUniqueTokens: false,
       };
     case UNIQUE_TOKENS_GET_UNIQUE_TOKENS_REQUEST:
-      return {
-        ...state,
-        fetchingUniqueTokens: true,
-      };
+      if (action.showcase) {
+        return {
+          ...state,
+          fetchingUniqueTokens: true,
+        };
+      } else {
+        return {
+          ...state,
+          fetchingUniqueTokensShowcase: true,
+        };
+      }
     case UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS:
-      return {
-        ...state,
-        fetchingUniqueTokens: false,
-        uniqueTokens: action.payload,
-      };
+      if (action.showcase) {
+        return {
+          ...state,
+          fetchingUniqueTokensShowcase: false,
+          uniqueTokensShowcase: action.payload,
+        };
+      } else {
+        return {
+          ...state,
+          fetchingUniqueTokens: false,
+          uniqueTokens: action.payload,
+        };
+      }
     case UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE:
-      return {
-        ...state,
-        fetchingUniqueTokens: false,
-      };
+      if (action.showcase) {
+        return {
+          ...state,
+          fetchingUniqueTokensShowcase: false,
+        };
+      } else {
+        return {
+          ...state,
+          fetchingUniqueTokens: false,
+        };
+      }
+
     case UNIQUE_TOKENS_CLEAR_STATE:
       return {
         ...state,
         ...INITIAL_UNIQUE_TOKENS_STATE,
+      };
+    case UNIQUE_TOKENS_CLEAR_STATE_SHOWCASE:
+      return {
+        ...state,
+        ...{
+          fetchingUniqueTokensShowcase: false,
+          loadingUniqueTokensShowcase: false,
+          uniqueTokensShowcase: [],
+        },
       };
     default:
       return state;
