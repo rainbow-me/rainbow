@@ -172,6 +172,15 @@ const LiquidityPoolExpandedState = () => {
   const half0 = token0?.price?.value * tokens[0].value;
   const half1 = token1?.price?.value * tokens[1].value;
 
+  const token0Change = token0?.price?.relative_change_24h
+    ?.toFixed(2)
+    .replace('-', '')
+    .concat('%');
+  const token1Change = token1?.price?.relative_change_24h
+    ?.toFixed(2)
+    .replace('-', '')
+    .concat('%');
+
   const formattedHalf0 = half0
     ? bigNumberFormat(half0, nativeCurrency)
     : 'Half';
@@ -304,7 +313,7 @@ const LiquidityPoolExpandedState = () => {
           <UnderlyingAssetsWrapper>
             <UnderlyingAsset
               address={tokenAddresses[0]}
-              change={token0?.price?.relative_change_24h?.toFixed(2)}
+              change={token0Change}
               changeVisible={!uniBalance}
               color={color0}
               isPositive={token0?.price?.relative_change_24h > 0}
@@ -319,7 +328,7 @@ const LiquidityPoolExpandedState = () => {
             />
             <UnderlyingAsset
               address={tokenAddresses[1]}
-              change={token1?.price?.relative_change_24h?.toFixed(2)}
+              change={token1Change}
               changeVisible={!uniBalance}
               color={color1}
               isPositive={token1?.price?.relative_change_24h > 0}
