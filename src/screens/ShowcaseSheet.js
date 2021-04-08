@@ -2,8 +2,8 @@ import axios from 'axios';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AssetList } from '../components/asset-list';
-import { SlackSheet } from '../components/sheet';
 import { PREFS_ENDPOINT } from '../model/preferences';
+import deviceUtils from '../utils/deviceUtils';
 import { buildUniqueTokenList } from '@rainbow-me/helpers/assets';
 import { tokenFamilyItem } from '@rainbow-me/helpers/buildWalletSections';
 import { useAccountSettings } from '@rainbow-me/hooks';
@@ -22,8 +22,7 @@ async function fetchShowcaseForAddress(address) {
 
 export default function ShowcaseScreen() {
   const someRandomAddress = '0x7a3d05c70581bd345fe117c06e45f9669205384f';
-  // eslint-disable-next-line no-unused-vars
-  const [userData, setUserData] = useState();
+  const [userData, setUserData] = useState(null);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -44,37 +43,42 @@ export default function ShowcaseScreen() {
     state => state.uniqueTokens.uniqueTokensShowcase
   );
 
+  const uniqueTokensShowcaseLoading = useSelector(
+    state => state.uniqueTokens.fetchingUniqueTokensShowcase
+  );
+
   const sections = useMemo(
     () => [
       {
         collectibles: true,
-        data: buildUniqueTokenList(uniqueTokensShowcase, []),
+        data: buildUniqueTokenList(
+          uniqueTokensShowcase,
+          userData?.data?.showcase?.ids ?? []
+        ),
         header: {
           title: '',
           totalItems: uniqueTokensShowcase.length,
           totalValue: '',
         },
         name: 'collectibles',
-        renderItem: tokenFamilyItem,
+        renderItem: item => tokenFamilyItem({ ...item, forceOpen: true }),
         type: 'big',
       },
     ],
-    [uniqueTokensShowcase]
+    [uniqueTokensShowcase, userData?.data?.showcase?.ids]
   );
 
-  //console.log(JSON.stringify(sections));
-
   return (
-    <SlackSheet {...(ios && { height: '100%' })}>
-      <AssetList
-        fetchData={() => {}}
-        hideHeader
-        isEmpty={false}
-        isWalletEthZero={false}
-        network={network}
-        openFamilies
-        sections={sections}
-      />
-    </SlackSheet>
+    <AssetList
+      hideHeader={false}
+      isEmpty={userData === null || uniqueTokensShowcaseLoading}
+      isWalletEthZero={false}
+      network={network}
+      openFamilies
+      renderAheadOffset={
+        uniqueTokensShowcase.length * deviceUtils.dimensions.height
+      }
+      sections={sections}
+    />
   );
 }
