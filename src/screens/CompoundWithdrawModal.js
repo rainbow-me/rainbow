@@ -15,12 +15,13 @@ export default function CompoundWithdrawModal(props) {
     [type]: {
       cTokenBalance: params?.cTokenBalance,
       supplyBalanceUnderlying: params?.supplyBalanceUnderlying,
+      underlying: params?.underlying,
     },
   };
 
   return (
     <ExchangeModal
-      defaultInputAsset={params?.defaultInputAsset}
+      defaultInputAsset={params?.underlying}
       type={type}
       typeSpecificParams={typeSpecificParams}
       {...props}

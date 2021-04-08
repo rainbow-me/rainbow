@@ -16,13 +16,13 @@ const CompoundDepositModal = props => {
 
   const typeSpecificParams = {
     [type]: {
-      depositCurrency: params?.defaultInputAsset,
+      depositCurrency: params?.underlying,
     },
   };
 
   return (
     <ExchangeModal
-      defaultInputAsset={params?.defaultInputAsset}
+      defaultInputAsset={params?.underlying}
       type={type}
       typeSpecificParams={typeSpecificParams}
       {...props}

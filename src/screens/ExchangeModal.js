@@ -69,13 +69,21 @@ const InnerWrapper = styled(Centered).attrs({
   background-color: ${({ theme: { colors } }) => colors.transparent};
 `;
 
-const getInputHeaderTitle = (type, defaultInputAsset) => {
+const getInputHeaderTitle = (type, typeSpecificParams) => {
   switch (type) {
     case ExchangeModalTypes.depositCompound:
-    case ExchangeModalTypes.depositUniswap:
-      return 'Deposit';
-    case ExchangeModalTypes.withdrawCompound:
-      return `Withdraw ${defaultInputAsset.symbol}`;
+    case ExchangeModalTypes.depositUniswap: {
+      const poolName =
+        typeSpecificParams?.[ExchangeModalTypes.depositUniswap]?.uniswapPair
+          ?.tokenNames;
+      return poolName ? `Deposit to ${poolName}` : 'Deposit';
+    }
+    case ExchangeModalTypes.withdrawCompound: {
+      const tokenName =
+        typeSpecificParams?.[ExchangeModalTypes.withdrawCompound]?.underlying
+          ?.symbol;
+      return tokenName ? `Withdraw ${tokenName}` : 'Withdraw';
+    }
     case ExchangeModalTypes.withdrawUniswap:
       return 'Withdraw';
     default:
@@ -123,7 +131,7 @@ export default function ExchangeModal({
     dispatch(updateSwapTypeDetails(type, typeSpecificParams));
   }, [dispatch, type, typeSpecificParams]);
 
-  const title = getInputHeaderTitle(type, defaultInputAsset);
+  const title = getInputHeaderTitle(type, typeSpecificParams);
   const showOutputField = getShowOutputField(type);
 
   const {

@@ -103,8 +103,8 @@ const SavingsSheet = () => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
       navigate(Routes.SAVINGS_WITHDRAW_MODAL, {
         cTokenBalance,
-        defaultInputAsset: underlying,
         supplyBalanceUnderlying,
+        underlying,
       });
 
       analytics.track('Navigated to SavingsWithdrawModal', {
@@ -127,7 +127,7 @@ const SavingsSheet = () => {
       navigate(Routes.SAVINGS_DEPOSIT_MODAL, {
         params: {
           params: {
-            defaultInputAsset: underlying,
+            underlying,
           },
           screen: Routes.MAIN_EXCHANGE_SCREEN,
         },
