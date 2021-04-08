@@ -220,12 +220,12 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   var hasAskedAboutShortForm = 2;
   var isShortFormEnabled: Bool {
     hasAskedAboutShortForm -= 1;
-    let startFromShortForm = self.config!.startFromShortForm
+    let startFromShortForm = self.config?.startFromShortForm ?? true;
     if isShortFormEnabledInternal > 0 && !startFromShortForm {
       isShortFormEnabledInternal -= 1
       return false
     }
-    return self.config!.isShortFormEnabled
+    return self.config?.isShortFormEnabled ?? true
   }
 
   var shortFormHeight: PanModalHeight {
