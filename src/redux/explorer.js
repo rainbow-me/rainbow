@@ -18,6 +18,7 @@ import {
 import { updateTopMovers } from './topMovers';
 import { disableCharts, forceFallbackProvider } from '@rainbow-me/config/debug';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
+import currencyTypes from '@rainbow-me/helpers/currencyTypes';
 import NetworkTypes from '@rainbow-me/helpers/networkTypes';
 import { DPI_ADDRESS, ETH_ADDRESS } from '@rainbow-me/references';
 import { TokensListenedCache } from '@rainbow-me/utils';
@@ -106,6 +107,17 @@ const assetPricesSubscription = (
     },
   ];
 };
+
+const ethUSDSubscription = [
+  'subscribe',
+  {
+    payload: {
+      asset_codes: [ETH_ADDRESS],
+      currency: currencyTypes.usd,
+    },
+    scope: ['prices'],
+  },
+];
 
 const assetInfoRequest = (currency, order = 'desc') => [
   'get',
@@ -253,6 +265,9 @@ export const explorerInit = () => async (dispatch, getState) => {
     if (!disableCharts) {
       // We need this for Uniswap Pools profit calculation
       dispatch(emitChartsRequest([ETH_ADDRESS, DPI_ADDRESS], ChartTypes.month));
+      dispatch(
+        emitChartsRequest([ETH_ADDRESS], ChartTypes.month, currencyTypes.usd)
+      );
     }
   });
 
@@ -282,14 +297,19 @@ export const emitAssetRequest = assetAddress => (dispatch, getState) => {
     ? assetAddress
     : [assetAddress];
 
-  const newAssetsCodes = assetCodes.filter(code => !TokensListenedCache[code]);
+  const newAssetsCodes = assetCodes.filter(
+    code => !TokensListenedCache[code + nativeCurrency]
+  );
 
-  newAssetsCodes.forEach(code => (TokensListenedCache[code] = true));
+  newAssetsCodes.forEach(
+    code => (TokensListenedCache[code + nativeCurrency] = true)
+  );
 
   if (newAssetsCodes.length > 0) {
     assetsSocket?.emit(
       ...assetPricesSubscription(newAssetsCodes, nativeCurrency)
     );
+    assetsSocket?.emit(...ethUSDSubscription);
   }
 };
 
@@ -308,9 +328,11 @@ export const emitAssetInfoRequest = () => (dispatch, getState) => {
 
 export const emitChartsRequest = (
   assetAddress,
-  chartType = DEFAULT_CHART_TYPE
+  chartType = DEFAULT_CHART_TYPE,
+  givenNativeCurrency
 ) => (dispatch, getState) => {
-  const { nativeCurrency } = getState().settings;
+  const nativeCurrency =
+    givenNativeCurrency || getState().settings.nativeCurrency;
   const { assetsSocket } = getState().explorer;
   const assetCodes = Array.isArray(assetAddress)
     ? assetAddress

@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.5.1-1",
+  "version": "1.5.3-1",
   "private": true,
   "scripts": {
     "setup": "yarn install && yarn allow-scripts && yarn postinstall",
@@ -140,7 +140,7 @@
     "querystring-es3": "^0.2.1",
     "rainbow-token-list": "^1.2.1",
     "react": "16.11.0",
-    "react-coin-icon": "0.1.37",
+    "react-coin-icon": "^0.1.42",
     "react-fast-compare": "^2.0.4",
     "react-flatten-children": "^1.1.2",
     "react-native": "0.63.3",
@@ -284,6 +284,7 @@
     "**/logkitty": "0.7.1",
     "**/madge": "4.0.2",
     "**/minimist": "1.2.3",
+    "**/netmask": "2.0.1",
     "**/resolve": "1.8.1",
     "**/semver": "7.3.2",
     "**/xmldom": "0.5.0",

@@ -36,6 +36,7 @@ const UniqueTokenRow = magicMemo(({ item }) => {
         ios ? Routes.EXPANDED_ASSET_SHEET : Routes.EXPANDED_ASSET_SCREEN,
         {
           asset,
+          cornerRadius: 30,
           isReadOnlyWallet,
           type: 'unique_token',
         }

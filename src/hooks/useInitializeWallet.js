@@ -18,6 +18,7 @@ import useInitializeDiscoverData from './useInitializeDiscoverData';
 import useLoadAccountData from './useLoadAccountData';
 import useLoadGlobalData from './useLoadGlobalData';
 import useResetAccountState from './useResetAccountState';
+import { additionalDataCoingeckoIds } from '@rainbow-me/redux/additionalAssetsData';
 import logger from 'logger';
 
 export default function useInitializeWallet() {
@@ -115,6 +116,7 @@ export default function useInitializeWallet() {
 
         if (!switching) {
           initializeDiscoverData();
+          dispatch(additionalDataCoingeckoIds);
         }
 
         logger.sentry('💰 Wallet initialized');

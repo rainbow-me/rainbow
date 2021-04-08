@@ -1,4 +1,5 @@
 import React, { Fragment } from 'react';
+import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import styled from 'styled-components';
 import { Column, ColumnWithMargins } from '../layout';
 import SendAssetFormField from './SendAssetFormField';
@@ -6,10 +7,11 @@ import { useDimensions } from '@rainbow-me/hooks';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 import { removeLeadingZeros } from '@rainbow-me/utils';
 
-const footerMargin = 31;
+const footerMargin = 31 + getSoftMenuBarHeight() / 2;
 const FooterContainer = styled(ColumnWithMargins).attrs(({ deviceHeight }) => ({
   justify: 'end',
   margin: deviceHeight > 812 ? footerMargin : footerMargin / 2,
+  marginBottom: android ? footerMargin : 0,
 }))`
   flex: 1;
   width: 100%;

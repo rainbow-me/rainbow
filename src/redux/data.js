@@ -92,6 +92,8 @@ const DATA_UPDATE_ASSET_PRICES_FROM_UNISWAP =
   'data/DATA_UPDATE_ASSET_PRICES_FROM_UNISWAP';
 const DATA_UPDATE_ASSETS = 'data/DATA_UPDATE_ASSETS';
 const DATA_UPDATE_GENERIC_ASSETS = 'data/DATA_UPDATE_GENERIC_ASSETS';
+const DATA_UPDATE_ETH_USD = 'data/DATA_UPDATE_ETH_USD';
+const DATA_UPDATE_ETH_USD_CHARTS = 'data/DATA_UPDATE_ETH_USD_CHARTS';
 const DATA_UPDATE_TRANSACTIONS = 'data/DATA_UPDATE_TRANSACTIONS';
 const DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION =
   'data/DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION';
@@ -572,20 +574,30 @@ export const assetPricesReceived = (message, fromFallback = false) => (
     disableGenericAssetsFallbackIfNeeded();
   }
   const assets = get(message, 'payload.prices', {});
+  const { nativeCurrency } = getState().settings;
 
-  if (isEmpty(assets)) return;
-  const parsedAssets = mapValues(assets, asset => parseAsset(asset));
-  const { genericAssets } = getState().data;
+  if (toLower(nativeCurrency) === message?.meta?.currency) {
+    if (isEmpty(assets)) return;
+    const parsedAssets = mapValues(assets, asset => parseAsset(asset));
+    const { genericAssets } = getState().data;
 
-  const updatedAssets = {
-    ...genericAssets,
-    ...parsedAssets,
-  };
+    const updatedAssets = {
+      ...genericAssets,
+      ...parsedAssets,
+    };
 
-  dispatch({
-    payload: updatedAssets,
-    type: DATA_UPDATE_GENERIC_ASSETS,
-  });
+    dispatch({
+      payload: updatedAssets,
+      type: DATA_UPDATE_GENERIC_ASSETS,
+    });
+  }
+  if (message?.meta?.currency === 'usd' && assets[ETH_ADDRESS]) {
+    const value = assets[ETH_ADDRESS]?.price?.value;
+    dispatch({
+      payload: value,
+      type: DATA_UPDATE_ETH_USD,
+    });
+  }
 };
 
 export const assetPricesChanged = message => (dispatch, getState) => {
@@ -821,6 +833,8 @@ export const updateRefetchSavings = fetch => dispatch =>
 const INITIAL_STATE = {
   assetPricesFromUniswap: {},
   assets: [], // for account-specific assets
+  ethUSDCharts: null,
+  ethUSDPrice: null,
   genericAssets: {},
   isLoadingAssets: true,
   isLoadingTransactions: true,
@@ -855,6 +869,16 @@ export default (state = INITIAL_STATE, action) => {
         ...state,
         isLoadingTransactions: false,
         transactions: action.payload,
+      };
+    case DATA_UPDATE_ETH_USD:
+      return {
+        ...state,
+        ethUSDPrice: action.payload,
+      };
+    case DATA_UPDATE_ETH_USD_CHARTS:
+      return {
+        ...state,
+        ethUSDCharts: action.payload,
       };
     case DATA_LOAD_TRANSACTIONS_REQUEST:
       return {
