@@ -17,44 +17,40 @@ const formatChartData = chart => {
 
 const chartSelector = createSelector(
   ({
-    charts: {
-      charts,
-      chartType,
-      chartTypeDPI,
-      fetchingCharts,
-      fetchingChartsDPI,
-    },
+    charts: { charts, chartType, chartType2, fetchingCharts, fetchingCharts2 },
   }) => ({
     charts,
     chartType,
-    chartTypeDPI,
+    chartType2,
     fetchingCharts,
-    fetchingChartsDPI,
+    fetchingCharts2,
   }),
   (_, address) => address,
-  (state, { address, dpi }) => {
+  (state, { address, secondStore }) => {
     const {
       charts,
       chartType,
-      chartTypeDPI,
+      chartType2,
       fetchingCharts,
-      fetchingChartsDPI,
+      fetchingCharts2,
     } = state;
     const chartsForAsset = {
       ...charts?.[address],
     };
     return {
-      chart: formatChartData(chartsForAsset?.[dpi ? chartTypeDPI : chartType]),
+      chart: formatChartData(
+        chartsForAsset?.[secondStore ? chartType2 : chartType]
+      ),
       chartsForAsset,
       chartType,
-      chartTypeDPI,
+      chartType2,
       fetchingCharts,
-      fetchingChartsDPI,
+      fetchingCharts2,
     };
   }
 );
 
-export default function useChartData(asset, dpi) {
+export default function useChartData(asset, secondStore) {
   const [daysFromFirstTx, setDaysFromFirstTx] = useState(1000);
   const dispatch = useDispatch();
   const { address, price: priceObject } = useAsset(asset);
@@ -64,20 +60,20 @@ export default function useChartData(asset, dpi) {
   const {
     chart,
     chartsForAsset,
-    chartTypeDPI,
+    chartType2,
     chartType: chartTypeRest,
-    fetchingChartsDPI,
+    fetchingCharts2,
     fetchingCharts: fetchingChartsRest,
   } = useSelector(
-    useCallbackOne(state => chartSelector(state, { address, dpi }), [
+    useCallbackOne(state => chartSelector(state, { address, secondStore }), [
       address,
-      dpi,
+      secondStore,
     ]),
     isEqual
   );
 
-  const chartType = dpi ? chartTypeDPI : chartTypeRest;
-  const fetchingCharts = dpi ? fetchingChartsDPI : fetchingChartsRest;
+  const chartType = secondStore ? chartType2 : chartTypeRest;
+  const fetchingCharts = secondStore ? fetchingCharts2 : fetchingChartsRest;
 
   useEffect(() => {
     async function fetchDays() {
@@ -96,14 +92,14 @@ export default function useChartData(asset, dpi) {
   }, [address, chartType, dispatch]);
 
   const updateChartType = useCallback(
-    type => dispatch(chartsUpdateChartType(type, dpi)),
-    [dispatch, dpi]
+    type => dispatch(chartsUpdateChartType(type, secondStore)),
+    [dispatch, secondStore]
   );
 
   // Reset chart timeframe on unmount.
-  useEffect(() => () => updateChartType(DEFAULT_CHART_TYPE, dpi), [
+  useEffect(() => () => updateChartType(DEFAULT_CHART_TYPE, secondStore), [
     updateChartType,
-    dpi,
+    secondStore,
   ]);
 
   // add current price at the very end

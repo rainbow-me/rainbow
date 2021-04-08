@@ -1,4 +1,5 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
+import styled from 'styled-components';
 import Link from '../Link';
 import { Column, ColumnWithDividers } from '../layout';
 import {
@@ -17,7 +18,11 @@ import {
   UniqueTokenExpandedStateHeader,
 } from './unique-token';
 import { useDimensions, useShowcaseTokens } from '@rainbow-me/hooks';
-import { magicMemo } from '@rainbow-me/utils';
+import { magicMemo, safeAreaInsetValues } from '@rainbow-me/utils';
+
+const Spacer = styled.View`
+  height: ${safeAreaInsetValues.bottom + 20};
+`;
 
 const UniqueTokenExpandedState = ({ asset }) => {
   const {
@@ -101,6 +106,7 @@ const UniqueTokenExpandedState = ({ asset }) => {
             </ExpandedStateSection>
           )}
         </ColumnWithDividers>
+        <Spacer />
       </SlackSheet>
       <ToastPositionContainer>
         <ToggleStateToast

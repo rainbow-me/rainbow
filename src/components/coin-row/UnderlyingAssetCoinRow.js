@@ -9,9 +9,11 @@ const UnderlyingCoinIconSize = 20;
 const UnderlyingAssetCoinRow = ({
   address,
   change,
+  color,
   isPositive,
   name,
   symbol,
+  changeVisible,
 }) => {
   const { colors } = useTheme();
 
@@ -26,18 +28,20 @@ const UnderlyingAssetCoinRow = ({
       </Centered>
       <Row>
         <Text
-          color={colors.alpha(colors.blueGreyDark, 0.7)}
+          color={changeVisible ? colors.alpha(colors.blueGreyDark, 0.7) : color}
           size="large"
           weight="medium"
         >
           {name}{' '}
-          <Text
-            color={isPositive ? colors.green : colors.brightRed}
-            letterSpacing="roundedTight"
-            size="smedium"
-          >
-            {isPositive ? `↑` : `↓`} {change}
-          </Text>
+          {changeVisible && (
+            <Text
+              color={isPositive ? colors.green : colors.brightRed}
+              letterSpacing="roundedTight"
+              size="smedium"
+            >
+              {change ? (isPositive ? `↑` : `↓`) : ''} {change}
+            </Text>
+          )}
         </Text>
       </Row>
     </Row>

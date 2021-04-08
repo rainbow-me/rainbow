@@ -221,6 +221,7 @@ export default function ListSection() {
     genericAssets,
     lists,
     nativeCurrency,
+    network,
     selectedList,
   ]);
 

@@ -301,7 +301,9 @@ export const emitAssetRequest = assetAddress => (dispatch, getState) => {
     code => !TokensListenedCache[code + nativeCurrency]
   );
 
-  newAssetsCodes.forEach(code => (TokensListenedCache[code] = true));
+  newAssetsCodes.forEach(
+    code => (TokensListenedCache[code + nativeCurrency] = true)
+  );
 
   if (newAssetsCodes.length > 0) {
     assetsSocket?.emit(

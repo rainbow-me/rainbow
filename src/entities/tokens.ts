@@ -54,6 +54,7 @@ export interface UniswapCurrency extends ParsedAddressAsset {
 export interface RainbowToken extends Asset {
   color?: string;
   highLiquidity?: boolean;
+  totalLiquidity?: number;
   favorite?: boolean;
   isRainbowCurated?: boolean;
   isVerified?: boolean;

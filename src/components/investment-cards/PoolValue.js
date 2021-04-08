@@ -1,48 +1,28 @@
 import React from 'react';
 import styled from 'styled-components';
-import { convertAmountToNativeDisplay } from '../../helpers/utilities';
 import { Row } from '../layout';
 import { Text } from '../text';
+import { bigNumberFormat } from '@rainbow-me/helpers/bigNumberFormat';
 import { useAccountSettings } from '@rainbow-me/hooks';
+import { padding } from '@rainbow-me/styles';
 
 const PoolValueWrapper = styled(Row)`
-  border-radius: 15px;
-  height: 30px;
-  padding-horizontal: 9px;
-  padding-top: 2px;
+  border-radius: ${({ simple }) => (simple ? 0 : 15)};
+  ${({ simple }) => (simple ? undefined : 'height: 30')};
+  ${({ simple }) => (simple ? undefined : padding(2, 9, 0))};
 `;
 
-const PoolValueText = styled(Text).attrs({
-  align: 'center',
+const PoolValueText = styled(Text).attrs(({ simple, size }) => ({
+  align: simple ? 'left' : 'center',
   letterSpacing: 'roundedTight',
-  lineHeight: 'paragraphSmall',
-  size: 'lmedium',
-  weight: 'bold',
-})`
+  lineHeight: simple ? undefined : 'paragraphSmall',
+  size: size || 'lmedium',
+  weight: simple ? 'semibold' : 'bold',
+}))`
   ${android && 'padding-top: 3px'}
 `;
 
-const bigNumberFormat = (num, nativeCurrency) => {
-  let ret;
-  if (num > 1000000000) {
-    ret = `${convertAmountToNativeDisplay(
-      (num / 1000000000).toString(),
-      nativeCurrency
-    )}b`;
-  } else if (num > 1000000) {
-    ret = `${convertAmountToNativeDisplay(
-      (num / 1000000).toString(),
-      nativeCurrency
-    )}m`;
-  } else {
-    ret = convertAmountToNativeDisplay(num.toString(), nativeCurrency);
-    num.toFixed(2);
-  }
-
-  return ret;
-};
-
-export const PoolValue = ({ type, value, simple = true }) => {
+export const PoolValue = ({ type, value, simple, ...props }) => {
   let formattedValue = value;
   const { colors } = useTheme();
   let color = type === 'oneDayVolumeUSD' ? colors.swapPurple : colors.appleBlue;
@@ -69,7 +49,10 @@ export const PoolValue = ({ type, value, simple = true }) => {
     if (fixedPercent > 0) {
       color = colors.green;
       if (fixedPercent > 100) {
-        formattedValue = `+${percent?.toFixed(2).toString()}%`;
+        formattedValue = `+${percent
+          ?.toFixed(2)
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}%`;
       } else {
         formattedValue = `+${fixedPercent}%`;
       }
@@ -81,8 +64,13 @@ export const PoolValue = ({ type, value, simple = true }) => {
     formattedValue = bigNumberFormat(value, nativeCurrency);
   }
   return (
-    <PoolValueWrapper backgroundColor={colors.alpha(color, simple ? 0 : 0.06)}>
-      <PoolValueText color={color}>{formattedValue}</PoolValueText>
+    <PoolValueWrapper
+      backgroundColor={colors.alpha(color, simple ? 0 : 0.06)}
+      simple={simple}
+    >
+      <PoolValueText color={color} simple={simple} {...props}>
+        {formattedValue}
+      </PoolValueText>
     </PoolValueWrapper>
   );
 };

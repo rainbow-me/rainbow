@@ -123,7 +123,7 @@ export default (state = INITIAL_UNISWAP_LIQUIDITY_STATE, action) => {
     case UNISWAP_POOLS_DETAILS:
       return {
         ...state,
-        poolsDetails: { ...state.annualizedFees, ...action.payload },
+        poolsDetails: { ...state.poolsDetails, ...action.payload },
       };
     case UNISWAP_CLEAR_STATE:
       return INITIAL_UNISWAP_LIQUIDITY_STATE;

@@ -132,6 +132,11 @@ function MainNavigator() {
       />
       <Stack.Screen
         component={ExpandedAssetSheet}
+        name={Routes.EXPANDED_ASSET_SHEET_POOLS}
+        options={expandedPresetWithSmallGestureResponseDistance}
+      />
+      <Stack.Screen
+        component={ExpandedAssetSheet}
         name={Routes.TOKEN_INDEX_SHEET}
         options={expandedPreset}
       />
@@ -254,7 +259,11 @@ function MainOuterNavigator() {
       <OuterStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SCREEN}
-        options={sheetPreset}
+        options={args =>
+          args?.route?.params?.type === 'token'
+            ? sheetPresetWithSmallGestureResponseDistance(args)
+            : sheetPreset(args)
+        }
       />
       <OuterStack.Screen
         component={ExpandedAssetSheet}
