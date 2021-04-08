@@ -1,8 +1,11 @@
 import axios from 'axios';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import styled from 'styled-components';
 import { AssetList } from '../components/asset-list';
+import { SlackSheet } from '../components/sheet';
 import { PREFS_ENDPOINT } from '../model/preferences';
+import { ModalContext } from '../react-native-cool-modals/NativeStackView';
 import deviceUtils from '../utils/deviceUtils';
 import { buildUniqueTokenList } from '@rainbow-me/helpers/assets';
 import { tokenFamilyItem } from '@rainbow-me/helpers/buildWalletSections';
@@ -20,8 +23,18 @@ async function fetchShowcaseForAddress(address) {
   return response.data;
 }
 
+const HeaderWrapper = styled.View`
+  width: 100%;
+  height: 400;
+  background-color: blue;
+`;
+
+export function Header() {
+  return <HeaderWrapper />;
+}
 export default function ShowcaseScreen() {
   const someRandomAddress = '0x7a3d05c70581bd345fe117c06e45f9669205384f';
+  // eslint-disable-next-line no-unused-vars
   const [userData, setUserData] = useState(null);
   const dispatch = useDispatch();
 
@@ -47,6 +60,8 @@ export default function ShowcaseScreen() {
     state => state.uniqueTokens.fetchingUniqueTokensShowcase
   );
 
+  const { layout } = useContext(ModalContext) || {};
+
   const sections = useMemo(
     () => [
       {
@@ -68,17 +83,22 @@ export default function ShowcaseScreen() {
     [uniqueTokensShowcase, userData?.data?.showcase?.ids]
   );
 
+  useEffect(() => {
+    setTimeout(() => layout(), 300);
+  }, [layout, sections]);
+
+  //console.log(JSON.stringify(sections));
+
   return (
     <AssetList
+      disableStickyHeaders
       hideHeader={false}
       isEmpty={userData === null || uniqueTokensShowcaseLoading}
       isWalletEthZero={false}
       network={network}
       openFamilies
-      renderAheadOffset={
-        uniqueTokensShowcase.length * deviceUtils.dimensions.height
-      }
       sections={sections}
+      showcase
     />
   );
 }

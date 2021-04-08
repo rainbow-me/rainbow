@@ -2,6 +2,7 @@
 /* eslint-disable sort-keys */
 import { get } from 'lodash';
 import React from 'react';
+import { Header } from '../../screens/ShowcaseSheet';
 import {
   CoinDivider,
   CoinDividerHeight,
@@ -46,6 +47,15 @@ export const ViewTypes = {
     index: 0,
     renderComponent: ({ data, isCoinListEdited }) => {
       return <AssetListHeader {...data} isCoinListEdited={isCoinListEdited} />;
+    },
+    visibleDuringCoinEdit: true,
+  },
+
+  SHOWCASE_HEADER: {
+    calculateHeight: () => 400,
+    index: 8,
+    renderComponent: data => {
+      return <Header {...data} />;
     },
     visibleDuringCoinEdit: true,
   },

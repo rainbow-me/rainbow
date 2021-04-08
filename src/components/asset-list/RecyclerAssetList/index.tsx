@@ -124,6 +124,12 @@ export type RecyclerAssetListReduxProps = {
   };
 };
 
+const NoStickyContainer = ({
+  children,
+}: {
+  children: JSX.Element;
+}): JSX.Element => children;
+
 export type RecyclerAssetListProps = {
   readonly isCoinListEdited: boolean;
   readonly fetchData: () => Promise<unknown>;
@@ -145,6 +151,8 @@ export type RecyclerAssetListProps = {
   };
   readonly openSavings: boolean;
   readonly openFamilies?: boolean;
+  readonly showcase?: boolean;
+  readonly disableStickyHeaders?: boolean;
   readonly openSmallBalances: boolean;
 };
 
@@ -163,6 +171,8 @@ function RecyclerAssetList({
   renderAheadOffset = deviceUtils.dimensions.height,
   setIsBlockingUpdate,
   openFamilies,
+  showcase,
+  disableStickyHeaders,
   ...extras
 }: RecyclerAssetListProps): JSX.Element {
   const { ref, handleRef } = useRecyclerListViewRef();
@@ -322,7 +332,10 @@ function RecyclerAssetList({
       }
 
       if (type.index === ViewTypes.HEADER.index) {
-        return ViewTypes.HEADER.renderComponent({
+        return (showcase
+          ? ViewTypes.SHOWCASE_HEADER
+          : ViewTypes.HEADER
+        ).renderComponent({
           data,
           isCoinListEdited,
         });
@@ -355,7 +368,7 @@ function RecyclerAssetList({
       }
       return null;
     },
-    [isCoinListEdited, sections]
+    [isCoinListEdited, sections, showcase]
   );
 
   const animator = useMemo(
@@ -400,7 +413,10 @@ function RecyclerAssetList({
             };
           }
           return {
-            height: ViewTypes.HEADER.calculateHeight({
+            height: (showcase
+              ? ViewTypes.SHOWCASE_HEADER
+              : ViewTypes.HEADER
+            ).calculateHeight({
               hideHeader,
             }),
             index: ViewTypes.HEADER.index,
@@ -712,13 +728,21 @@ function RecyclerAssetList({
     scrollToOffset,
   ]);
 
+  const MaybeStickyContainer = disableStickyHeaders
+    ? NoStickyContainer
+    : StickyContainer;
+
   return (
     <StyledContainer onLayout={onLayout}>
       {/* @ts-ignore */}
-      <StickyContainer
+      <MaybeStickyContainer
         overrideRowRenderer={stickyRowRenderer}
         stickyHeaderIndices={
-          isCoinListEdited ? defaultIndices : stickyComponentsIndices
+          disableStickyHeaders
+            ? []
+            : isCoinListEdited
+            ? defaultIndices
+            : stickyComponentsIndices
         }
       >
         {/* @ts-ignore */}
@@ -734,7 +758,7 @@ function RecyclerAssetList({
           scrollViewProps={scrollViewProps}
           {...extras}
         />
-      </StickyContainer>
+      </MaybeStickyContainer>
       <View
         pointerEvents="none"
         ref={stickyCoinDividerRef}
