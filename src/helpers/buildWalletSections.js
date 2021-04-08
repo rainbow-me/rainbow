@@ -51,7 +51,7 @@ const enhanceRenderItem = compose(
   withHandlers({
     onPress: ({ assetType, navigation }) => (item, params) => {
       navigation.navigate(
-        ios ? Routes.EXPANDED_ASSET_SHEET : Routes.EXPANDED_ASSET_SCREEN,
+        ios ? Routes.SHOWCASE_SHEET : Routes.EXPANDED_ASSET_SCREEN,
         {
           asset: item,
           type: assetType,
