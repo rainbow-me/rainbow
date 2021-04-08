@@ -257,7 +257,7 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   }
 
   var longFormHeight: PanModalHeight {
-    return .contentHeight(CGFloat(truncating: self.config!.longFormHeight))
+    return .contentHeight(CGFloat(truncating: self.config?.longFormHeight ?? 0.0))
   }
 
   func panModalDidDismiss() {
