@@ -475,8 +475,8 @@ PODS:
     - React
   - RNDominantColor (1.7.0):
     - React
-  - RNFastImage (8.3.2):
-    - React
+  - RNFastImage (8.3.4):
+    - React-Core
     - SDWebImage (~> 5.8)
     - SDWebImageWebPCoder (~> 0.6.1)
   - RNFBApp (8.4.5):
@@ -1022,7 +1022,7 @@ SPEC CHECKSUMS:
   RNCPushNotificationIOS: ec7ffe65c7b5097f8d287fd627e1c1674ea69cef
   RNDeviceInfo: 6f20764111df002b4484f90cbe0a861be29bcc6c
   RNDominantColor: 72126cb96ffedf4bcd564ed00e2e578f5b93e0d6
-  RNFastImage: e19ba191922e7dab9d932a4d59d62d76660aa222
+  RNFastImage: d4870d58f5936111c56218dbd7fcfc18e65b58ff
   RNFBApp: 570b136767f588b7eef0ab918284e9fe364d0c3e
   RNFBCrashlytics: 7b60463c742f830255fa76f13a837f95c6581700
   RNFBMessaging: dc3849747c2c61bfcd3c1ce6b5390f27ff4f7756
@@ -1058,4 +1058,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 412313ac47634ca15faa48e68aadac98633cc980
 
-COCOAPODS: 1.10.1
+COCOAPODS: 1.10.0

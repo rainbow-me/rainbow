@@ -220,12 +220,12 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   var hasAskedAboutShortForm = 2;
   var isShortFormEnabled: Bool {
     hasAskedAboutShortForm -= 1;
-    let startFromShortForm = self.config!.startFromShortForm
+    let startFromShortForm = self.config?.startFromShortForm ?? true;
     if isShortFormEnabledInternal > 0 && !startFromShortForm {
       isShortFormEnabledInternal -= 1
       return false
     }
-    return self.config!.isShortFormEnabled
+    return self.config?.isShortFormEnabled ?? true
   }
 
   var shortFormHeight: PanModalHeight {
@@ -257,7 +257,7 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   }
 
   var longFormHeight: PanModalHeight {
-    return .contentHeight(CGFloat(truncating: self.config!.longFormHeight))
+    return .contentHeight(CGFloat(truncating: self.config?.longFormHeight ?? 0.0))
   }
 
   func panModalDidDismiss() {
