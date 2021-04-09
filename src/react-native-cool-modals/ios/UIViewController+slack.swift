@@ -175,15 +175,15 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   }
 
   var allowsDragToDismiss: Bool {
-    return self.config!.allowsDragToDismiss
+    return self.config?.allowsDragToDismiss ?? false
   }
 
   var allowsTapToDismiss: Bool {
-    return self.config!.allowsTapToDismiss
+    return self.config?.allowsTapToDismiss ?? false
   }
 
   var anchorModalToLongForm: Bool {
-    return self.config!.anchorModalToLongForm
+    return self.config?.anchorModalToLongForm ?? false
   }
 
   var panModalBackgroundColor: UIColor {
@@ -238,11 +238,11 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   }
 
   var transitionDuration: Double {
-    return Double(truncating: self.config!.transitionDuration)
+    return Double(truncating: self.config?.transitionDuration ?? 300)
   }
 
   var showDragIndicator: Bool {
-    return config!.showDragIndicator
+    return config?.showDragIndicator ?? false
   }
 
   var topOffset: CGFloat {
