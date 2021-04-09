@@ -1,9 +1,11 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import React, { useCallback, useRef } from 'react';
 import {
   LongPressGestureHandler,
   PanGestureHandler,
   TapGestureHandler,
 } from 'react-native-gesture-handler';
+
 import Animated, {
   cancelAnimation,
   runOnJS,
@@ -74,8 +76,9 @@ const SwipeableList = ({ components, speed, testID }) => {
   const startPan = () => (isPanStarted.current = true);
   const endPan = () => (isPanStarted.current = false);
 
-  useEffect(() => {
-    swiping.value = withSpeed({ speed });
+  useFocusEffect(() => {
+    swiping.value = withSpeed({ targetSpeed: speed });
+    return () => cancelAnimation(swiping);
   }, [speed, swiping]);
 
   const onGestureEvent = useAnimatedGestureHandler({
@@ -92,7 +95,7 @@ const SwipeableList = ({ components, speed, testID }) => {
         deceleration: DECCELERATION,
         velocity: event.velocityX,
       });
-      swiping.value = withSpeed({ speed });
+      swiping.value = withSpeed({ targetSpeed: speed });
     },
     onFail: () => {
       android && runOnJS(endPan)();
@@ -105,7 +108,7 @@ const SwipeableList = ({ components, speed, testID }) => {
   const restoreAnimation = useCallback(() => {
     setTimeout(() => {
       if (!isPanStarted.current) {
-        swiping.value = withSpeed({ speed });
+        swiping.value = withSpeed({ targetSpeed: speed });
       }
     }, 100);
   }, [speed, swiping]);
@@ -117,13 +120,13 @@ const SwipeableList = ({ components, speed, testID }) => {
 
   const onTapGestureEvent = useAnimatedGestureHandler({
     onCancel: () => {
-      ios && (swiping.value = withSpeed({ speed }));
+      ios && (swiping.value = withSpeed({ targetSpeed: speed }));
     },
     onEnd: () => {
-      swiping.value = withSpeed({ speed });
+      swiping.value = withSpeed({ targetSpeed: speed });
     },
     onFail: () => {
-      ios && (swiping.value = withSpeed({ speed }));
+      ios && (swiping.value = withSpeed({ targetSpeed: speed }));
     },
     onStart: () => {
       if (ios) {
@@ -135,7 +138,7 @@ const SwipeableList = ({ components, speed, testID }) => {
 
   const onLongGestureEvent = useAnimatedGestureHandler({
     onEnd: () => {
-      android && (swiping.value = withSpeed({ speed }));
+      android && (swiping.value = withSpeed({ targetSpeed: speed }));
     },
   });
 
@@ -145,7 +148,7 @@ const SwipeableList = ({ components, speed, testID }) => {
   const onHandlerStateChangeAndroid = useCallback(
     event => {
       if (event.nativeEvent.state === 3 || event.nativeEvent.state === 5) {
-        swiping.value = withSpeed({ speed });
+        swiping.value = withSpeed({ targetSpeed: speed });
       }
 
       if (event.nativeEvent.state === 2) {
