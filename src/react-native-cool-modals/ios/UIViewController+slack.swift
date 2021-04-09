@@ -234,7 +234,7 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   }
 
   var springDamping: CGFloat {
-    return CGFloat(truncating: self.config!.springDamping)
+    return CGFloat(truncating: self.config?.springDamping ?? 0)
   }
 
   var transitionDuration: Double {
