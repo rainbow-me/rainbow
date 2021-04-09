@@ -1,8 +1,16 @@
 import React from 'react';
+import styled from 'styled-components';
 import { magicMemo } from '../../utils';
 import { CoinIcon } from '../coin-icon';
 import { Centered, Row } from '../layout';
-import { Text } from '../text';
+import { Text, TruncatedText } from '../text';
+
+const CoinName = styled(TruncatedText).attrs({
+  size: 'large',
+  weight: 'medium',
+})`
+  padding-right: 42;
+`;
 
 const UnderlyingCoinIconSize = 20;
 
@@ -27,10 +35,8 @@ const UnderlyingAssetCoinRow = ({
         />
       </Centered>
       <Row>
-        <Text
+        <CoinName
           color={changeVisible ? colors.alpha(colors.blueGreyDark, 0.7) : color}
-          size="large"
-          weight="medium"
         >
           {name}{' '}
           {changeVisible && (
@@ -38,11 +44,12 @@ const UnderlyingAssetCoinRow = ({
               color={isPositive ? colors.green : colors.brightRed}
               letterSpacing="roundedTight"
               size="smedium"
+              weight="medium"
             >
               {change ? (isPositive ? `↑` : `↓`) : ''} {change}
             </Text>
           )}
-        </Text>
+        </CoinName>
       </Row>
     </Row>
   );
