@@ -136,12 +136,26 @@ RCT_EXPORT_METHOD(hideAnimated) {
   selector:@selector(handleRapComplete:)
       name:@"rapCompleted"
     object:nil];
+  
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleRsEscape:)
+                                                 name:@"rsEscape"
+                                               object:nil];
 
   // Splashscreen - react-native-splash-screen
   [RNSplashScreen showSplash:@"LaunchScreen" inRootView:rootView];
 
 
   return YES;
+}
+
+- (void)handleRsEscape:(NSNotification *)notification {
+  NSDictionary* userInfo = notification.userInfo;
+  NSString *msg = [NSString stringWithFormat:@"Escape via %@", userInfo[@"url"]];
+  SentryBreadcrumb *breadcrumb = [[SentryBreadcrumb alloc] init];
+  [breadcrumb setMessage:msg];
+  [SentrySDK addBreadcrumb:breadcrumb];
+  [SentrySDK captureMessage:msg];
 }
 
 - (void)handleRapInProgress:(NSNotification *)notification {
