@@ -2,7 +2,6 @@
 /* eslint-disable sort-keys */
 import { get } from 'lodash';
 import React from 'react';
-import { Header } from '../../screens/ShowcaseSheet';
 import {
   CoinDivider,
   CoinDividerHeight,
@@ -14,6 +13,7 @@ import { FloatingActionButtonSize } from '../fab';
 import { ListFooter } from '../list';
 import PoolsListWrapper from '../pools/PoolsListWrapper';
 import SavingsListWrapper from '../savings/SavingsListWrapper';
+import { Header } from '../showcase/ShowcaseHeader';
 import { TokenFamilyHeaderHeight } from '../token-family';
 import { UniqueTokenRow } from '../unique-token';
 import AssetListHeader, { AssetListHeaderHeight } from './AssetListHeader';

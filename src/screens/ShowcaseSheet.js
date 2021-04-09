@@ -3,10 +3,9 @@ import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { AssetList } from '../components/asset-list';
-import { SlackSheet } from '../components/sheet';
+import { ShowcaseContext } from '../components/showcase/ShowcaseHeader';
 import { PREFS_ENDPOINT } from '../model/preferences';
 import { ModalContext } from '../react-native-cool-modals/NativeStackView';
-import deviceUtils from '../utils/deviceUtils';
 import { buildUniqueTokenList } from '@rainbow-me/helpers/assets';
 import { tokenFamilyItem } from '@rainbow-me/helpers/buildWalletSections';
 import { useAccountSettings } from '@rainbow-me/hooks';
@@ -23,18 +22,12 @@ async function fetchShowcaseForAddress(address) {
   return response.data;
 }
 
-const HeaderWrapper = styled.View`
-  width: 100%;
-  height: 400;
-  background-color: blue;
+const Wrapper = styled.View`
+  height: 100%;
+  background-color: ${({ theme: { colors } }) => colors.white};
 `;
-
-export function Header() {
-  return <HeaderWrapper />;
-}
 export default function ShowcaseScreen() {
   const someRandomAddress = '0x7a3d05c70581bd345fe117c06e45f9669205384f';
-  // eslint-disable-next-line no-unused-vars
   const [userData, setUserData] = useState(null);
   const dispatch = useDispatch();
 
@@ -45,7 +38,7 @@ export default function ShowcaseScreen() {
   useEffect(() => {
     async function fetchShowcase() {
       const userData = await fetchShowcaseForAddress(someRandomAddress);
-      setUserData(userData);
+      setUserData({ ...userData, address: someRandomAddress });
     }
     fetchShowcase();
   }, [someRandomAddress]);
@@ -90,15 +83,19 @@ export default function ShowcaseScreen() {
   //console.log(JSON.stringify(sections));
 
   return (
-    <AssetList
-      disableStickyHeaders
-      hideHeader={false}
-      isEmpty={userData === null || uniqueTokensShowcaseLoading}
-      isWalletEthZero={false}
-      network={network}
-      openFamilies
-      sections={sections}
-      showcase
-    />
+    <Wrapper>
+      <ShowcaseContext.Provider value={userData}>
+        <AssetList
+          disableStickyHeaders
+          hideHeader={false}
+          isEmpty={userData === null || uniqueTokensShowcaseLoading}
+          isWalletEthZero={false}
+          network={network}
+          openFamilies
+          sections={sections}
+          showcase
+        />
+      </ShowcaseContext.Provider>
+    </Wrapper>
   );
 }
