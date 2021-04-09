@@ -187,8 +187,8 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   }
 
   var panModalBackgroundColor: UIColor {
-    let backgroundColor: UIColor = self.config!.modalBackgroundColor
-    return backgroundColor.withAlphaComponent(CGFloat(truncating: self.config!.backgroundOpacity))
+    let backgroundColor: UIColor = self.config?.modalBackgroundColor ?? UIColor.black
+    return backgroundColor.withAlphaComponent(CGFloat(truncating: self.config?.backgroundOpacity ?? 1))
   }
 
   var scrollIndicatorInsets: UIEdgeInsets {
@@ -234,7 +234,7 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   }
 
   var springDamping: CGFloat {
-    return CGFloat(truncating: self.config!.springDamping)
+    return CGFloat(truncating: self.config?.springDamping ?? 0)
   }
 
   var transitionDuration: Double {
