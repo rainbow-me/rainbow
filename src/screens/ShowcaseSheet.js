@@ -79,13 +79,13 @@ export default function ShowcaseScreen() {
   useEffect(() => {
     setTimeout(() => layout(), 300);
   }, [layout, sections]);
-
   //console.log(JSON.stringify(sections));
 
   return (
     <Wrapper>
       <ShowcaseContext.Provider value={userData}>
         <AssetList
+          disableAutoScrolling
           disableStickyHeaders
           hideHeader={false}
           isEmpty={userData === null || uniqueTokensShowcaseLoading}

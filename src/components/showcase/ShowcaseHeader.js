@@ -1,10 +1,16 @@
-import React, { createContext, useContext, useMemo } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import styled from 'styled-components';
-import { RainbowButton } from '../buttons';
 import { ColumnWithMargins } from '../layout';
 import AvatarCircle from '../profile/AvatarCircle';
 import { SheetActionButton } from '../sheet/sheet-action-buttons';
-import { TruncatedAddress } from '../text';
+import { Text, TruncatedAddress } from '../text';
+import { web3Provider } from '@rainbow-me/handlers/web3';
 import { useDimensions } from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
 
@@ -12,7 +18,8 @@ export const ShowcaseContext = createContext();
 
 const HeaderWrapper = styled.View`
   width: 100%;
-  height: 400;
+  height: 330;
+  padding-top: 40;
   justify-content: center;
   align-items: center;
 `;
@@ -30,6 +37,16 @@ const AddressText = styled(TruncatedAddress).attrs(({ theme: { colors } }) => ({
   lineHeight: 'loosest',
   opacity: 0.6,
   size: 'large',
+  weight: 'semibold',
+}))`
+  width: 100%;
+`;
+
+const ENSAddress = styled(Text).attrs(({ theme: { colors } }) => ({
+  align: 'center',
+  color: colors.whiteLabel,
+  lineHeight: 'loosest',
+  size: 'larger',
   weight: 'semibold',
 }))`
   width: 100%;
@@ -54,28 +71,41 @@ export function Header() {
   const { width: deviceWidth } = useDimensions();
   const maxButtonWidth = deviceWidth - 30;
 
+  const [ensName, setEnsName] = useState();
   const contextValue = useContext(ShowcaseContext);
+
+  useEffect(() => {
+    async function resolve() {
+      if (contextValue?.address) {
+        const ensName = await web3Provider.lookupAddress(contextValue.address);
+        setEnsName(ensName);
+      }
+    }
+    resolve();
+  }, [contextValue, contextValue.address]);
+
   const { colors } = useTheme();
   const emoji = useMemo(() => {
     const emojiFromContext = contextValue?.data?.profile?.accountSymbol;
-    if (!emojiFromContext) {
+    if (emojiFromContext) {
       return emojiFromContext;
     }
     return popularEmojis[
       Math.abs(
-        hashCode(contextValue.address.slice(0, 8)) % popularEmojis.length
+        hashCode(contextValue?.address?.slice(0, 8)) % popularEmojis.length
       ) % popularEmojis.length
     ];
   }, [contextValue]);
 
   const color = useMemo(() => {
     const colorFromContext = contextValue?.data?.profile?.accountColor;
-    if (!colorFromContext) {
+    if (colorFromContext) {
       return colorFromContext;
     }
     return colors.avatarColor[
       Math.abs(
-        hashCode(contextValue.address.slice(9, 15)) % colors.avatarColor.length
+        hashCode(contextValue?.address?.slice(9, 15)) %
+          colors.avatarColor.length
       ) % colors.avatarColor.length
     ];
   }, [
@@ -92,12 +122,13 @@ export function Header() {
         showcaseAccountColor={color}
         showcaseAccountSymbol={emoji}
       />
+      {ensName && <ENSAddress>{ensName}</ENSAddress>}
       <AddressText address={contextValue.address} />
       <Footer>
         <SheetActionButton
           androidWidth={maxButtonWidth}
           color={color}
-          label="SDFSF"
+          label=" 􀜖 Add to Contacts "
           onPress={() => {}}
           size="big"
           textColor={colors.alpha(colors.blueGreyDark, 0.8)}
@@ -105,7 +136,7 @@ export function Header() {
         <SheetActionButton
           androidWidth={maxButtonWidth}
           color={colors.white}
-          label="SDFSF"
+          label="􀨭 Watch this Wallet"
           onPress={() => {}}
           size="big"
           textColor={colors.alpha(colors.blueGreyDark, 0.8)}

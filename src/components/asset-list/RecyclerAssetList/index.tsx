@@ -153,6 +153,7 @@ export type RecyclerAssetListProps = {
   readonly openFamilies?: boolean;
   readonly showcase?: boolean;
   readonly disableStickyHeaders?: boolean;
+  readonly disableAutoScrolling?: boolean;
   readonly openSmallBalances: boolean;
 };
 
@@ -173,6 +174,7 @@ function RecyclerAssetList({
   openFamilies,
   showcase,
   disableStickyHeaders,
+  disableAutoScrolling,
   ...extras
 }: RecyclerAssetListProps): JSX.Element {
   const { ref, handleRef } = useRecyclerListViewRef();
@@ -594,8 +596,10 @@ function RecyclerAssetList({
 
   const scrollToOffset = useCallback(
     (offsetY: number, animated: boolean = false) =>
-      requestAnimationFrame(() => ref?.scrollToOffset(0, offsetY, animated)),
-    [ref]
+      requestAnimationFrame(
+        () => !disableAutoScrolling && ref?.scrollToOffset(0, offsetY, animated)
+      ),
+    [disableAutoScrolling, ref]
   );
   useEffect(() => {
     requestAnimationFrame(() => ref?.scrollToTop(false));

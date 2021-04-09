@@ -52,7 +52,7 @@ export const ViewTypes = {
   },
 
   SHOWCASE_HEADER: {
-    calculateHeight: () => 400,
+    calculateHeight: () => 330,
     index: 8,
     renderComponent: data => {
       return <Header {...data} />;
