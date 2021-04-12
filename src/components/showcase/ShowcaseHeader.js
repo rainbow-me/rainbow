@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useContext, useMemo } from 'react';
 import styled from 'styled-components';
+import { useImportingWallet } from '../../screens/ImportSeedPhraseSheet';
 import { ColumnWithMargins } from '../layout';
 import AvatarCircle from '../profile/AvatarCircle';
 import { SheetActionButton } from '../sheet/sheet-action-buttons';
@@ -113,6 +114,12 @@ export function Header() {
     });
   }, [color, contextValue?.address, contextValue?.ensName, navigate]);
 
+  const { handlePressImportButton } = useImportingWallet();
+
+  const onWatchAddress = useCallback(() => {
+    handlePressImportButton(color, contextValue.address);
+  }, [color, contextValue.address, handlePressImportButton]);
+
   return (
     <HeaderWrapper>
       <AvatarCircle
@@ -139,7 +146,7 @@ export function Header() {
           androidWidth={maxButtonWidth}
           color={colors.white}
           label="􀨭 Watch this Wallet"
-          onPress={() => {}}
+          onPress={onWatchAddress}
           size="big"
           textColor={colors.alpha(colors.blueGreyDark, 0.8)}
         />

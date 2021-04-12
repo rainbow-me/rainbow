@@ -55,12 +55,14 @@ export default function ShowcaseScreen() {
   );
 
   const [ensName, setEnsName] = useState();
+  const [ensNameLoading, setEnsNameLoading] = useState(true);
 
   useEffect(() => {
     async function resolve() {
       if (someRandomAddress) {
         const ensName = await web3Provider.lookupAddress(someRandomAddress);
         setEnsName(ensName);
+        setEnsNameLoading(false);
       }
     }
     resolve();
@@ -108,7 +110,9 @@ export default function ShowcaseScreen() {
           disableAutoScrolling
           disableStickyHeaders
           hideHeader={false}
-          isEmpty={userData === null || uniqueTokensShowcaseLoading}
+          isEmpty={
+            ensNameLoading || userData === null || uniqueTokensShowcaseLoading
+          }
           isWalletEthZero={false}
           network={network}
           openFamilies

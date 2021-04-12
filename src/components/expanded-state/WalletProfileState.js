@@ -74,6 +74,7 @@ export default function WalletProfileState({
   isNewProfile,
   onCloseModal,
   profile,
+  forceColor,
 }) {
   const nameEmoji = returnStringFirstEmoji(profile?.name);
   const { goBack, navigate } = useNavigation();
@@ -81,7 +82,9 @@ export default function WalletProfileState({
 
   const { colors } = useTheme();
   const [color, setColor] = useState(
-    (profile.color !== null && profile.color) || getRandomColor()
+    (profile.color !== null && profile.color) ||
+      colors.avatarColor.indexOf(forceColor) ||
+      getRandomColor()
   );
 
   const [value, setValue] = useState(
