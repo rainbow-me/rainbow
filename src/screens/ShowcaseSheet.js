@@ -1,3 +1,4 @@
+import { useRoute } from '@react-navigation/native';
 import axios from 'axios';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -39,10 +40,9 @@ const LoadingWrapper = styled.View`
 
 const LoadingSpinner = android ? Spinner : ActivityIndicator;
 
-const someAddress = '0x7a3d05c70581bd345fe117c06e45f9669205384f';
-
 export default function ShowcaseScreen() {
-  const accountAddress = someAddress;
+  const { params: { address: accountAddress } = {} } = useRoute();
+
   const [userData, setUserData] = useState(null);
   const dispatch = useDispatch();
 

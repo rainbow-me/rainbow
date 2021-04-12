@@ -38,14 +38,16 @@ const DiscoverButtonContent = styled(RowWithMargins).attrs({
   height: 34;
   z-index: 2;
 `;
+const someAddress = '0x7a3d05c70581bd345fe117c06e45f9669205384f';
 
 export default function DiscoverHeaderButton() {
   const { navigate } = useNavigation();
   const { colors, isDarkMode } = useTheme();
 
-  const onPress = useCallback(() => navigate(Routes.QR_SCANNER_SCREEN), [
-    navigate,
-  ]);
+  const onPress = useCallback(
+    () => navigate(Routes.SHOWCASE_SHEET, { address: someAddress }),
+    [navigate]
+  );
 
   const shadows = useMemo(() => DiscoverButtonShadowsFactory(colors), [colors]);
 
