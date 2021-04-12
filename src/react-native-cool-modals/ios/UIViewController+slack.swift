@@ -175,20 +175,20 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   }
 
   var allowsDragToDismiss: Bool {
-    return self.config!.allowsDragToDismiss
+    return self.config?.allowsDragToDismiss ?? false
   }
 
   var allowsTapToDismiss: Bool {
-    return self.config!.allowsTapToDismiss
+    return self.config?.allowsTapToDismiss ?? false
   }
 
   var anchorModalToLongForm: Bool {
-    return self.config!.anchorModalToLongForm
+    return self.config?.anchorModalToLongForm ?? false
   }
 
   var panModalBackgroundColor: UIColor {
-    let backgroundColor: UIColor = self.config!.modalBackgroundColor
-    return backgroundColor.withAlphaComponent(CGFloat(truncating: self.config!.backgroundOpacity))
+    let backgroundColor: UIColor = self.config?.modalBackgroundColor ?? UIColor.black
+    return backgroundColor.withAlphaComponent(CGFloat(truncating: self.config?.backgroundOpacity ?? 1))
   }
 
   var scrollIndicatorInsets: UIEdgeInsets {
@@ -220,12 +220,12 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   var hasAskedAboutShortForm = 2;
   var isShortFormEnabled: Bool {
     hasAskedAboutShortForm -= 1;
-    let startFromShortForm = self.config!.startFromShortForm
+    let startFromShortForm = self.config?.startFromShortForm ?? true;
     if isShortFormEnabledInternal > 0 && !startFromShortForm {
       isShortFormEnabledInternal -= 1
       return false
     }
-    return self.config!.isShortFormEnabled
+    return self.config?.isShortFormEnabled ?? true
   }
 
   var shortFormHeight: PanModalHeight {
@@ -234,15 +234,15 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   }
 
   var springDamping: CGFloat {
-    return CGFloat(truncating: self.config!.springDamping)
+    return CGFloat(truncating: self.config?.springDamping ?? 0)
   }
 
   var transitionDuration: Double {
-    return Double(truncating: self.config!.transitionDuration)
+    return Double(truncating: self.config?.transitionDuration ?? 300)
   }
 
   var showDragIndicator: Bool {
-    return config!.showDragIndicator
+    return config?.showDragIndicator ?? false
   }
 
   var topOffset: CGFloat {
@@ -257,7 +257,7 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   }
 
   var longFormHeight: PanModalHeight {
-    return .contentHeight(CGFloat(truncating: self.config!.longFormHeight))
+    return .contentHeight(CGFloat(truncating: self.config?.longFormHeight ?? 0.0))
   }
 
   func panModalDidDismiss() {

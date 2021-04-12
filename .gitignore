@@ -38,6 +38,7 @@ src/config/debug.js
 # Android/IntelliJ
 #
 build/
+android/app/src/main/java/me/rainbow/NativeModules/Internals/
 .idea
 .gradle
 local.properties

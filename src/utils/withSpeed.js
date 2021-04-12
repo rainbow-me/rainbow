@@ -6,7 +6,8 @@ export default function withSpeed(userConfig) {
   return defineAnimation(0, () => {
     'worklet';
     const config = {
-      speed: 100,
+      acceleration: 10,
+      targetSpeed: 400,
     };
     if (userConfig) {
       Object.keys(userConfig).forEach(key => (config[key] = userConfig[key]));
@@ -17,14 +18,26 @@ export default function withSpeed(userConfig) {
 
       const deltaTime = Math.min(now - lastTimestamp, 64);
       animation.lastTimestamp = now;
+      if (config.targetSpeed > 0) {
+        animation.speed = Math.min(
+          config.targetSpeed,
+          animation.speed + config.acceleration
+        );
+      } else {
+        animation.speed = Math.max(
+          config.targetSpeed,
+          animation.speed - config.acceleration
+        );
+      }
 
-      animation.current = current + (deltaTime / 1000) * config.speed;
+      animation.current = current + (deltaTime / 1000) * animation.speed;
     }
 
     function onStart(animation, value, now) {
       animation.current = value;
       animation.lastTimestamp = now;
       animation.initialVelocity = config.velocity;
+      animation.speed = 0;
     }
 
     return {

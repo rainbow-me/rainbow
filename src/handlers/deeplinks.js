@@ -1,4 +1,5 @@
 import qs from 'qs';
+import { Alert } from 'react-native';
 import URL from 'url-parse';
 import store from '../redux/store';
 import {
@@ -6,6 +7,9 @@ import {
   walletConnectRemovePendingRedirect,
   walletConnectSetPendingRedirect,
 } from '../redux/walletconnect';
+import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
+import { Navigation } from '@rainbow-me/navigation';
+import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 
 export default function handleDeeplink(url) {
@@ -17,6 +21,17 @@ export default function handleDeeplink(url) {
       case 'wc': {
         const { uri } = qs.parse(urlObj.query.substring(1));
         handleWalletConnect(uri);
+        break;
+      }
+      case 'showcase': {
+        const addressOrENS = urlObj.pathname.split('/')[2];
+        if (checkIsValidAddressOrDomain(addressOrENS)) {
+          return Navigation.handleAction(Routes.SHOWCASE_SHEET, {
+            address: addressOrENS,
+          });
+        } else {
+          Alert.alert('Invalid deeplink');
+        }
         break;
       }
       default:

@@ -12,6 +12,8 @@
 		<string>applinks:rnbwappdotcom-alternate.app.link</string>
 		<string>applinks:rainbowdotme.app.link</string>
 		<string>applinks:rainbowdotme-alternate.app.link</string>
+		<string>applinks:rainbow-web.vercel.app</string>
+		<string>applinks:rainbow.me</string>
 		<string>webcredentials:rainbow.me</string>
 	</array>
 	<key>com.apple.developer.icloud-container-identifiers</key>
