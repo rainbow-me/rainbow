@@ -1,4 +1,4 @@
-import { VibrancyView } from '@react-native-community/blur';
+import { BlurView } from '@react-native-community/blur';
 import React from 'react';
 import { View } from 'react-native';
 import styled from 'styled-components';
@@ -26,7 +26,7 @@ export default function SheetHandle({ showBlur, ...props }) {
   return (
     <Handle
       {...props}
-      as={showBlur && ios ? VibrancyView : View}
+      as={showBlur && ios ? BlurView : View}
       blurType={isDarkMode ? 'chromeMaterial' : 'light'}
       isDarkMode={isDarkMode}
       showBlur={showBlur}
