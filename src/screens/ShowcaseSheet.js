@@ -27,6 +27,10 @@ async function fetchShowcaseForAddress(address) {
 }
 
 const Wrapper = styled.View`
+  border-top-left-radius: 15;
+  background-color: red;
+  overflow: hidden;
+  border-top-right-radius: 15;
   height: 100%;
   background-color: ${({ theme: { colors } }) => colors.white};
 `;
@@ -118,7 +122,7 @@ export default function ShowcaseScreen() {
     ensNameLoading || userData === null || uniqueTokensShowcaseLoading;
 
   useEffect(() => {
-    setTimeout(() => layout(), 300);
+    setTimeout(() => layout?.(), 300);
   }, [layout, sections, loading]);
 
   return (

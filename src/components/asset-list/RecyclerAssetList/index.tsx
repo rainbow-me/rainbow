@@ -1,3 +1,4 @@
+import { BottomSheetScrollView, useBottomSheet } from '@gorhom/bottom-sheet';
 import { findIndex, get } from 'lodash';
 import React, {
   useCallback,
@@ -21,7 +22,6 @@ import {
   LayoutProvider,
   RecyclerListView,
 } from 'recyclerlistview';
-
 import {
   RecyclerListViewProps,
   RecyclerListViewState,
@@ -742,6 +742,8 @@ function RecyclerAssetList({
     ? NoStickyContainer
     : StickyContainer;
 
+  const isInsideBottomSheet = !!useBottomSheet();
+
   return (
     <StyledContainer onLayout={onLayout}>
       {/* @ts-ignore */}
@@ -759,6 +761,9 @@ function RecyclerAssetList({
         <StyledRecyclerListView
           dataProvider={dataProvider}
           extendedState={extendedState}
+          {...(isInsideBottomSheet && {
+            externalScrollView: BottomSheetScrollView,
+          })}
           itemAnimator={animator}
           layoutProvider={layoutProvider}
           onScroll={onScroll}

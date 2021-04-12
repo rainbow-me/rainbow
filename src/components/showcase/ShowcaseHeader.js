@@ -34,7 +34,7 @@ const Spacer = styled.View`
 
 const AddressText = styled(TruncatedAddress).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors.whiteLabel,
+  color: colors.blueGreyDark,
   lineHeight: 'loosest',
   opacity: 0.6,
   size: 'large',
@@ -45,7 +45,7 @@ const AddressText = styled(TruncatedAddress).attrs(({ theme: { colors } }) => ({
 
 const ENSAddress = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors.lightestGrey,
+  color: colors.dark,
   lineHeight: 'loosest',
   size: 'larger',
   weight: 'heavy',
