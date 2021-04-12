@@ -1,0 +1,15 @@
+diff --git a/node_modules/@react-native-community/blur/ios/BlurView.m b/node_modules/@react-native-community/blur/ios/BlurView.m
+index f333d8d..ebec436 100644
+--- a/node_modules/@react-native-community/blur/ios/BlurView.m
++++ b/node_modules/@react-native-community/blur/ios/BlurView.m
+@@ -129,7 +129,9 @@ - (void)updateBlurEffect
+ {
+   UIBlurEffectStyle style = [self blurEffectStyle];
+   self.blurEffect = [BlurEffectWithAmount effectWithStyle:style andBlurAmount:self.blurAmount];
+-  self.blurEffectView.effect = self.blurEffect;
++  if(self.blurEffectView != nil){
++      self.blurEffectView.effect = self.blurEffect;
++  }
+ }
+ 
+ - (void)updateFallbackView
