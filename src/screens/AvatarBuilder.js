@@ -32,7 +32,6 @@ const SheetContainer = styled(Column)`
 `;
 
 const springTo = (node, toValue) =>
-  // eslint-disable-next-line import/no-named-as-default-member
   Animated.spring(node, {
     damping: 38,
     mass: 1,

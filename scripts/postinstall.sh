@@ -32,13 +32,22 @@ if [ -n "$RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK" ]; then
   eval $RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK;
   echo "✅ executed ios prebuild hook"
 fi
+if [ -n "$RAINBOW_SCRIPTS_APP_ANDROID_PREBUILD_HOOK" ]; then
+  eval $RAINBOW_SCRIPTS_APP_ANDROID_PREBUILD_HOOK;
+  echo "✅ executed android prebuild hook"
+fi
 
 # Ignore any potential tracked changes to mutable development files.
+
 git update-index --assume-unchanged "ios/Internals/ios/Internals.h"
 git update-index --assume-unchanged "ios/Internals/ios/Internals.m"
 git update-index --assume-unchanged "ios/Internals/ios/Internals.swift"
 git update-index --assume-unchanged "ios/Internals/ios/Internals-Bridging-Header.h"
 git update-index --assume-unchanged "ios/Extras.json"
+git update-index --assume-unchanged "android/app/src/main/res/raw/extras.json"
+git update-index --assume-unchanged "android/app/src/main/java/me/rainbow/NativeModules/Internals/InternalModule.java"
+git update-index --assume-unchanged "android/app/src/main/java/me/rainbow/MainActivity.java"
+
 
 # Specifying ONLY the node packages that we need to install via browserify
 # (because those aren't available in react native) and some of our deps require them.
