@@ -32,6 +32,10 @@ const Spacer = styled.View`
   height: 19;
 `;
 
+const ButtonSpacer = styled.View`
+  height: 0;
+`;
+
 const AddressText = styled(TruncatedAddress).attrs(({ theme: { colors } }) => ({
   align: 'center',
   color: colors.blueGreyDark,
@@ -150,6 +154,7 @@ export function Header() {
           textColor={colors.whiteLabel}
           weight="heavy"
         />
+        {android && <ButtonSpacer />}
         <SheetActionButton
           androidWidth={maxButtonWidth}
           color={colors.blueGreyDark30}
