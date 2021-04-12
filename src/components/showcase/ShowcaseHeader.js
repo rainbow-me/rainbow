@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { useImportingWallet } from '../../screens/ImportSeedPhraseSheet';
 import { ColumnWithMargins } from '../layout';
 import AvatarCircle from '../profile/AvatarCircle';
+import SheetHandle from '../sheet/SheetHandle';
 import { SheetActionButton } from '../sheet/sheet-action-buttons';
 import { Text, TruncatedAddress } from '../text';
 import { useDimensions } from '@rainbow-me/hooks';
@@ -27,23 +28,27 @@ const Footer = styled(ColumnWithMargins).attrs({
   width: 100%;
 `;
 
+const Spacer = styled.View`
+  height: 19;
+`;
+
 const AddressText = styled(TruncatedAddress).attrs(({ theme: { colors } }) => ({
   align: 'center',
   color: colors.whiteLabel,
   lineHeight: 'loosest',
   opacity: 0.6,
   size: 'large',
-  weight: 'semibold',
+  weight: 'heavy',
 }))`
   width: 100%;
 `;
 
 const ENSAddress = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors.whiteLabel,
+  color: colors.lightestGrey,
   lineHeight: 'loosest',
   size: 'larger',
-  weight: 'semibold',
+  weight: 'heavy',
 }))`
   width: 100%;
 `;
@@ -122,6 +127,8 @@ export function Header() {
 
   return (
     <HeaderWrapper>
+      <SheetHandle />
+      <Spacer />
       <AvatarCircle
         image={null}
         isAvatarPickerAvailable={false}
@@ -140,15 +147,17 @@ export function Header() {
           label=" 􀜖 Add to Contacts "
           onPress={onAddToContact}
           size="big"
-          textColor={colors.alpha(colors.blueGreyDark, 0.8)}
+          textColor={colors.whiteLabel}
+          weight="heavy"
         />
         <SheetActionButton
           androidWidth={maxButtonWidth}
-          color={colors.white}
+          color={colors.blueGreyDark30}
           label="􀨭 Watch this Wallet"
           onPress={onWatchAddress}
           size="big"
-          textColor={colors.alpha(colors.blueGreyDark, 0.8)}
+          textColor={colors.whiteLabel}
+          weight="heavy"
         />
       </Footer>
     </HeaderWrapper>
