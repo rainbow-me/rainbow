@@ -4,7 +4,6 @@ import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import ActivityIndicator from '../components/ActivityIndicator';
-import Spinner from '../components/Spinner';
 import { AssetList } from '../components/asset-list';
 import { ShowcaseContext } from '../components/showcase/ShowcaseHeader';
 import { PREFS_ENDPOINT } from '../model/preferences';
@@ -41,8 +40,6 @@ const LoadingWrapper = styled.View`
   justify-content: center;
   align-items: center;
 `;
-
-const LoadingSpinner = android ? Spinner : ActivityIndicator;
 
 export default function ShowcaseScreen() {
   const { params: { address: accountAddress } = {} } = useRoute();
@@ -130,7 +127,7 @@ export default function ShowcaseScreen() {
       <ShowcaseContext.Provider value={contextValue}>
         {loading ? (
           <LoadingWrapper>
-            <LoadingSpinner />
+            <ActivityIndicator />
           </LoadingWrapper>
         ) : (
           <AssetList
