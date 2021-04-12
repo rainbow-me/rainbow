@@ -257,11 +257,6 @@ class DiscoverSheetViewController: UIViewController, PanModalPresentable {
     if !(pview is PossiblyTouchesPassableUIView && !hacked) {
       let oldClass: AnyClass = type(of: pview)
       object_setClass(pview, PossiblyTouchesPassableUIView.self)
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-        if (pview is PossiblyTouchesPassableUIView) {
-          object_setClass(pview, oldClass)
-        }
-      }
       hacked = true;
       (pview as! PossiblyTouchesPassableUIView).config = self.config
       (pview as! PossiblyTouchesPassableUIView).topLayoutGuideLength = self.topLayoutGuide.length

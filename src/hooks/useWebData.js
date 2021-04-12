@@ -98,7 +98,9 @@ export default function useWebData() {
       if (!pref) return;
       const wallet = await loadWallet();
       if (!wallet) return;
-      setPreference(PreferenceActionType.remove, 'showcase', wallet, asset_id);
+      setPreference(PreferenceActionType.remove, 'showcase', wallet, [
+        asset_id,
+      ]);
     },
     [accountAddress, network]
   );

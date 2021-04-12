@@ -161,7 +161,9 @@ export default function ListSection() {
       );
       if (listData?.length > 0) {
         setTimeout(() => {
-          handleSwitchList(lists[currentListIndex].id, currentListIndex);
+          if (lists[currentListIndex]) {
+            handleSwitchList(lists[currentListIndex].id, currentListIndex);
+          }
         }, 300);
       }
       initialized.current = true;
@@ -219,6 +221,7 @@ export default function ListSection() {
     genericAssets,
     lists,
     nativeCurrency,
+    network,
     selectedList,
   ]);
 

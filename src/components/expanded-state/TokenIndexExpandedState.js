@@ -1,18 +1,7 @@
 import { sortBy, times, toLower } from 'lodash';
-import React, {
-  Fragment,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-} from 'react';
-import LinearGradient from 'react-native-linear-gradient';
+import React, { Fragment, useContext, useEffect, useMemo, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import { ButtonPressAnimation } from '../animations';
 import { AssetListItemSkeleton } from '../asset-list';
-import { UnderlyingAssetCoinRow } from '../coin-row';
-import { initialChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
 import { Column, Row } from '../layout';
 import {
   BuyActionButton,
@@ -23,19 +12,16 @@ import {
 } from '../sheet';
 import { Text } from '../text';
 import { Chart } from '../value-chart';
+import UnderlyingAsset from './unique-token/UnderlyingAsset';
 import { ChartPathProvider } from '@rainbow-me/animated-charts';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 import {
-  useAccountAssets,
   useAccountSettings,
   useChartThrottledPoints,
   useDimensions,
   useDPI,
 } from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
 import { ETH_ADDRESS } from '@rainbow-me/references';
-import Routes from '@rainbow-me/routes';
-import { position } from '@rainbow-me/styles';
 import {
   convertRawAmountToNativeDisplay,
   divide,
@@ -44,7 +30,6 @@ import {
 } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
-import ShadowStack from 'react-native-shadow-stack';
 
 const formatItem = (
   { address, name, price, symbol, color },
@@ -71,12 +56,10 @@ const formatItem = (
 };
 
 export default function TokenIndexExpandedState({ asset }) {
-  const { colors, isDarkMode } = useTheme();
-  const { allAssets } = useAccountAssets();
-  const { navigate } = useNavigation();
-  const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
-    genericAssets,
-  }));
+  const { colors } = useTheme();
+  const genericAssets = useSelector(
+    ({ data: { genericAssets } }) => genericAssets
+  );
   const { nativeCurrency, nativeCurrencySymbol } = useAccountSettings();
 
   const dpi = useDPI();
@@ -150,7 +133,7 @@ export default function TokenIndexExpandedState({ asset }) {
     throttledData,
   } = useChartThrottledPoints({
     asset: assetWithPrice,
-    dpi: true,
+    secondStore: true,
   });
 
   const needsEth =
@@ -162,27 +145,6 @@ export default function TokenIndexExpandedState({ asset }) {
     duration.current = 300;
   }
   const { height: screenHeight } = useDimensions();
-
-  const handlePress = useCallback(
-    item => {
-      const asset =
-        ethereumUtils.getAsset(allAssets, toLower(item.address)) ||
-        ethereumUtils.formatGenericAsset(
-          genericAssets[toLower(item.address)],
-          nativeCurrency
-        );
-
-      navigate(
-        ios ? Routes.EXPANDED_ASSET_SHEET : Routes.EXPANDED_ASSET_SCREEN,
-        {
-          asset,
-          longFormHeight: initialChartExpandedStateSheetHeight,
-          type: 'token',
-        }
-      );
-    },
-    [allAssets, genericAssets, nativeCurrency, navigate]
-  );
 
   return (
     <Fragment>
@@ -231,10 +193,11 @@ export default function TokenIndexExpandedState({ asset }) {
             <Text
               color={colors.alpha(colors.blueGreyDark, 0.5)}
               letterSpacing="roundedMedium"
+              size="smedium"
               testID="index-underlying-assets"
               weight="semibold"
             >
-              Underlying Assets
+              Underlying tokens
             </Text>
           </Column>
           <Column align="end" flex={1}>
@@ -242,6 +205,7 @@ export default function TokenIndexExpandedState({ asset }) {
               align="right"
               color={colors.alpha(colors.blueGreyDark, 0.5)}
               letterSpacing="roundedMedium"
+              size="smedium"
               weight="semibold"
             >
               Makeup of 1 {assetWithPrice.symbol}
@@ -251,80 +215,13 @@ export default function TokenIndexExpandedState({ asset }) {
         <Column marginBottom={55} marginHorizontal={19} marginTop={12}>
           {underlying?.length
             ? underlying.map(item => (
-                <Row
-                  as={ButtonPressAnimation}
-                  key={`dpi-${item?.address}`}
-                  onPress={() => handlePress(item)}
-                  scaleTo={0.95}
-                  testID={`underlying-asset-${item.symbol}`}
-                >
-                  <Column align="start" flex={1}>
-                    <UnderlyingAssetCoinRow {...item} />
-                  </Column>
-                  <Column aling="end">
-                    <Row key={`allocation-${item.symbol}`}>
-                      <Text
-                        align="right"
-                        color={colors.alpha(colors.blueGreyDark, 0.7)}
-                        letterSpacing="roundedTight"
-                        size="large"
-                        weight="medium"
-                      >
-                        {item.pricePerUnitFormatted}
-                      </Text>
-                      <Column
-                        align="end"
-                        backgroundColor={colors.white}
-                        height={30}
-                        marginLeft={6}
-                      >
-                        <Column
-                          height={16}
-                          marginTop={android ? 8 : 3}
-                          width={item.percentageAllocation * 2}
-                        >
-                          <ShadowStack
-                            backgroundColor={item.color}
-                            borderRadius={8}
-                            shadows={[
-                              [
-                                0,
-                                3,
-                                9,
-                                isDarkMode ? colors.shadow : item.color,
-                                0.2,
-                              ],
-                            ]}
-                            style={{
-                              height: 16,
-                              width: '100%',
-                            }}
-                          >
-                            <LinearGradient
-                              colors={[
-                                colors.alpha(
-                                  colors.whiteLabel,
-                                  isDarkMode ? 0.2 : 0.3
-                                ),
-                                colors.alpha(colors.whiteLabel, 0),
-                              ]}
-                              end={{ x: 1, y: 0.5 }}
-                              overflow="hidden"
-                              pointerEvents="none"
-                              start={{ x: 0, y: 0.5 }}
-                              style={position.coverAsObject}
-                            />
-                          </ShadowStack>
-                        </Column>
-                      </Column>
-                    </Row>
-                  </Column>
-                </Row>
+                <UnderlyingAsset {...item} changeVisible key={item.address} />
               ))
             : times(3, index => (
                 <AssetListItemSkeleton
                   animated
                   descendingOpacity
+                  ignorePaddingHorizontal
                   key={`underlying-assets-skeleton-${index}`}
                 />
               ))}

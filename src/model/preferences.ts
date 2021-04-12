@@ -1,5 +1,9 @@
 import { Wallet } from '@ethersproject/wallet';
 import axios from 'axios';
+import {
+  getSignatureForSigningWalletAndCreateSignatureIfNeeded,
+  signWithSigningWallet,
+} from '@rainbow-me/helpers/signingWallet';
 import logger from 'logger';
 
 export enum PreferenceActionType {
@@ -32,6 +36,12 @@ export async function setPreference(
 ): Promise<boolean> {
   try {
     const address = await wallet.getAddress();
+    const signature = await getSignatureForSigningWalletAndCreateSignatureIfNeeded(
+      address
+    );
+    if (!signature) {
+      return false;
+    }
     const objToSign = {
       action,
       address,
@@ -39,13 +49,14 @@ export async function setPreference(
       value,
     };
     const message = JSON.stringify(objToSign);
-    const signature = await wallet.signMessage(message);
+    const signature2 = await signWithSigningWallet(message);
     logger.log('SENDING ', message);
     const response: PreferencesResponse = await preferencesAPI.post(
       `${PREFS_ENDPOINT}/${key}`,
       {
         message,
         signature,
+        signature2,
       }
     );
     return response.success;
