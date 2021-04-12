@@ -154,6 +154,7 @@ export type RecyclerAssetListProps = {
   readonly showcase?: boolean;
   readonly disableStickyHeaders?: boolean;
   readonly disableAutoScrolling?: boolean;
+  readonly disableRefreshControl?: boolean;
   readonly openSmallBalances: boolean;
 };
 
@@ -175,6 +176,7 @@ function RecyclerAssetList({
   showcase,
   disableStickyHeaders,
   disableAutoScrolling,
+  disableRefreshControl,
   ...extras
 }: RecyclerAssetListProps): JSX.Element {
   const { ref, handleRef } = useRecyclerListViewRef();
@@ -573,19 +575,23 @@ function RecyclerAssetList({
     paddingBottom,
     sections,
     sectionsIndices,
+    showcase,
   ]);
 
   const scrollViewProps = useMemo(
-    (): Partial<ScrollViewProps> => ({
-      refreshControl: (
-        <StyledRefreshControl
-          onRefresh={handleRefresh}
-          refreshing={isRefreshing}
-          tintColor={colors.alpha(colors.blueGreyDark, 0.4)}
-        />
-      ),
-    }),
-    [handleRefresh, isRefreshing, colors]
+    (): Partial<ScrollViewProps> =>
+      disableRefreshControl
+        ? {}
+        : {
+            refreshControl: (
+              <StyledRefreshControl
+                onRefresh={handleRefresh}
+                refreshing={isRefreshing}
+                tintColor={colors.alpha(colors.blueGreyDark, 0.4)}
+              />
+            ),
+          },
+    [disableRefreshControl, handleRefresh, isRefreshing, colors]
   );
 
   const extendedState = useMemo(() => ({ sectionsIndices }), [sectionsIndices]);

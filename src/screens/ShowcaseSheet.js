@@ -2,6 +2,8 @@ import axios from 'axios';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
+import ActivityIndicator from '../components/ActivityIndicator';
+import Spinner from '../components/Spinner';
 import { AssetList } from '../components/asset-list';
 import { ShowcaseContext } from '../components/showcase/ShowcaseHeader';
 import { PREFS_ENDPOINT } from '../model/preferences';
@@ -27,22 +29,34 @@ const Wrapper = styled.View`
   height: 100%;
   background-color: ${({ theme: { colors } }) => colors.white};
 `;
+
+const LoadingWrapper = styled.View`
+  height: 100%;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+`;
+
+const LoadingSpinner = android ? Spinner : ActivityIndicator;
+
+const someAddress = '0x7a3d05c70581bd345fe117c06e45f9669205384f';
+
 export default function ShowcaseScreen() {
-  const someRandomAddress = '0x7a3d05c70581bd345fe117c06e45f9669205384f';
+  const accountAddress = someAddress;
   const [userData, setUserData] = useState(null);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(fetchUniqueTokens(someRandomAddress));
-  }, [dispatch, someRandomAddress]);
+    dispatch(fetchUniqueTokens(accountAddress));
+  }, [dispatch, accountAddress]);
 
   useEffect(() => {
     async function fetchShowcase() {
-      const userData = await fetchShowcaseForAddress(someRandomAddress);
+      const userData = await fetchShowcaseForAddress(accountAddress);
       setUserData(userData);
     }
     fetchShowcase();
-  }, [someRandomAddress]);
+  }, [accountAddress]);
 
   const { network } = useAccountSettings();
 
@@ -59,14 +73,14 @@ export default function ShowcaseScreen() {
 
   useEffect(() => {
     async function resolve() {
-      if (someRandomAddress) {
-        const ensName = await web3Provider.lookupAddress(someRandomAddress);
+      if (accountAddress) {
+        const ensName = await web3Provider.lookupAddress(accountAddress);
         setEnsName(ensName);
         setEnsNameLoading(false);
       }
     }
     resolve();
-  }, [someRandomAddress]);
+  }, [accountAddress]);
 
   const { layout } = useContext(ModalContext) || {};
 
@@ -91,34 +105,42 @@ export default function ShowcaseScreen() {
     [uniqueTokensShowcase, userData?.data?.showcase?.ids]
   );
 
-  useEffect(() => {
-    setTimeout(() => layout(), 300);
-  }, [layout, sections]);
-
   const contextValue = useMemo(
     () => ({
       ...userData,
-      address: someRandomAddress,
+      address: accountAddress,
       ensName,
     }),
-    [ensName, userData]
+    [accountAddress, ensName, userData]
   );
+
+  const loading =
+    ensNameLoading || userData === null || uniqueTokensShowcaseLoading;
+
+  useEffect(() => {
+    setTimeout(() => layout(), 300);
+  }, [layout, sections, loading]);
+
   return (
     <Wrapper>
       <ShowcaseContext.Provider value={contextValue}>
-        <AssetList
-          disableAutoScrolling
-          disableStickyHeaders
-          hideHeader={false}
-          isEmpty={
-            ensNameLoading || userData === null || uniqueTokensShowcaseLoading
-          }
-          isWalletEthZero={false}
-          network={network}
-          openFamilies
-          sections={sections}
-          showcase
-        />
+        {loading ? (
+          <LoadingWrapper>
+            <LoadingSpinner />
+          </LoadingWrapper>
+        ) : (
+          <AssetList
+            disableAutoScrolling
+            disableRefreshControl
+            disableStickyHeaders
+            hideHeader={false}
+            isWalletEthZero={false}
+            network={network}
+            openFamilies
+            sections={sections}
+            showcase
+          />
+        )}
       </ShowcaseContext.Provider>
     </Wrapper>
   );
