@@ -1,23 +1,23 @@
 export interface ZeroExQuote {
-  price: string;
-  guaranteedPrice: string;
-  to: string;
-  data: string;
-  value: string;
-  gas: string;
-  estimatedGas: string;
-  gasPrice: string;
-  protocolFee: string;
-  minimumProtocolFee: string;
-  buyTokenAddress: string;
-  sellTokenAddress: string;
-  buyAmount: string;
-  sellAmount: string;
-  sources: string[];
-  orders: string[];
-  sellTokenToEthRate: string;
-  buyTokenToEthRate: string;
   allowanceTarget: string;
+  buyAmount: string;
+  buyTokenAddress: string;
+  buyTokenToEthRate: string;
+  data: string;
+  estimatedGas: string;
+  gas: string;
+  gasPrice: string;
+  guaranteedPrice: string;
+  minimumProtocolFee: string;
+  orders: string[];
+  price: string;
+  protocolFee: string;
+  sellAmount: string;
+  sellTokenAddress: string;
+  sellTokenToEthRate: string;
+  sources: string[];
+  to: string;
+  value: string;
 }
 
 export interface ZeroExPayload {

@@ -13,10 +13,12 @@ const api = axios.create({
 });
 
 const buyTokenPercentageFee = '1';
+const slippagePercentage = '1';
 
 const parseQuote = (
   response: AxiosResponse<ZeroExQuote>
 ): ZeroExPayload | null => {
+  logger.log('Requested 0x url', response?.request?.responseURL);
   if (!response?.data) return null;
   const result: ZeroExQuote = response.data;
   return {
@@ -49,6 +51,7 @@ export const getQuote = async (
       feeRecipient: RAINBOW_ADDRESS,
       sellAmount,
       sellToken,
+      slippagePercentage,
     };
     const url = `https://${networkPrefix}api.0x.org/swap/v1/quote`;
     const response = await api.get(url, {
