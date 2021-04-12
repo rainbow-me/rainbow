@@ -6,7 +6,7 @@ export default function withSpeed(userConfig) {
   return defineAnimation(0, () => {
     'worklet';
     const config = {
-      acceleration: 1,
+      acceleration: 10,
       targetSpeed: 400,
     };
     if (userConfig) {
