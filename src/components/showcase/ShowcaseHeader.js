@@ -1,17 +1,12 @@
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import React, { createContext, useCallback, useContext, useMemo } from 'react';
 import styled from 'styled-components';
 import { ColumnWithMargins } from '../layout';
 import AvatarCircle from '../profile/AvatarCircle';
 import { SheetActionButton } from '../sheet/sheet-action-buttons';
 import { Text, TruncatedAddress } from '../text';
-import { web3Provider } from '@rainbow-me/handlers/web3';
 import { useDimensions } from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
+import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
 
 export const ShowcaseContext = createContext();
@@ -71,18 +66,7 @@ export function Header() {
   const { width: deviceWidth } = useDimensions();
   const maxButtonWidth = deviceWidth - 30;
 
-  const [ensName, setEnsName] = useState();
   const contextValue = useContext(ShowcaseContext);
-
-  useEffect(() => {
-    async function resolve() {
-      if (contextValue?.address) {
-        const ensName = await web3Provider.lookupAddress(contextValue.address);
-        setEnsName(ensName);
-      }
-    }
-    resolve();
-  }, [contextValue, contextValue.address]);
 
   const { colors } = useTheme();
   const emoji = useMemo(() => {
@@ -113,23 +97,41 @@ export function Header() {
     contextValue.address,
     contextValue?.data?.profile?.accountColor,
   ]);
+
+  const { navigate } = useNavigation();
+
+  const onAddToContact = useCallback(() => {
+    navigate(Routes.MODAL_SCREEN, {
+      address: contextValue?.address,
+      color,
+      contact: {
+        address: contextValue?.address,
+        color,
+        nickname: contextValue?.ensName,
+      },
+      type: 'contact_profile',
+    });
+  }, [color, contextValue?.address, contextValue?.ensName, navigate]);
+
   return (
     <HeaderWrapper>
       <AvatarCircle
         image={null}
         isAvatarPickerAvailable={false}
-        onPress={() => null}
+        onPress={() => {}}
         showcaseAccountColor={color}
         showcaseAccountSymbol={emoji}
       />
-      {ensName && <ENSAddress>{ensName}</ENSAddress>}
+      {contextValue?.ensName && (
+        <ENSAddress>{contextValue?.ensName}</ENSAddress>
+      )}
       <AddressText address={contextValue.address} />
       <Footer>
         <SheetActionButton
           androidWidth={maxButtonWidth}
           color={color}
           label=" 􀜖 Add to Contacts "
-          onPress={() => {}}
+          onPress={onAddToContact}
           size="big"
           textColor={colors.alpha(colors.blueGreyDark, 0.8)}
         />

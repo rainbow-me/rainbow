@@ -6,6 +6,7 @@ import { AssetList } from '../components/asset-list';
 import { ShowcaseContext } from '../components/showcase/ShowcaseHeader';
 import { PREFS_ENDPOINT } from '../model/preferences';
 import { ModalContext } from '../react-native-cool-modals/NativeStackView';
+import { web3Provider } from '@rainbow-me/handlers/web3';
 import { buildUniqueTokenList } from '@rainbow-me/helpers/assets';
 import { tokenFamilyItem } from '@rainbow-me/helpers/buildWalletSections';
 import { useAccountSettings } from '@rainbow-me/hooks';
@@ -38,7 +39,7 @@ export default function ShowcaseScreen() {
   useEffect(() => {
     async function fetchShowcase() {
       const userData = await fetchShowcaseForAddress(someRandomAddress);
-      setUserData({ ...userData, address: someRandomAddress });
+      setUserData(userData);
     }
     fetchShowcase();
   }, [someRandomAddress]);
@@ -52,6 +53,18 @@ export default function ShowcaseScreen() {
   const uniqueTokensShowcaseLoading = useSelector(
     state => state.uniqueTokens.fetchingUniqueTokensShowcase
   );
+
+  const [ensName, setEnsName] = useState();
+
+  useEffect(() => {
+    async function resolve() {
+      if (someRandomAddress) {
+        const ensName = await web3Provider.lookupAddress(someRandomAddress);
+        setEnsName(ensName);
+      }
+    }
+    resolve();
+  }, [someRandomAddress]);
 
   const { layout } = useContext(ModalContext) || {};
 
@@ -79,11 +92,18 @@ export default function ShowcaseScreen() {
   useEffect(() => {
     setTimeout(() => layout(), 300);
   }, [layout, sections]);
-  //console.log(JSON.stringify(sections));
 
+  const contextValue = useMemo(
+    () => ({
+      ...userData,
+      address: someRandomAddress,
+      ensName,
+    }),
+    [ensName, userData]
+  );
   return (
     <Wrapper>
-      <ShowcaseContext.Provider value={userData}>
+      <ShowcaseContext.Provider value={contextValue}>
         <AssetList
           disableAutoScrolling
           disableStickyHeaders
