@@ -1,5 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import axios from 'axios';
+import { isValidAddress } from 'ethereumjs-util';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -8,7 +9,7 @@ import { AssetList } from '../components/asset-list';
 import { ShowcaseContext } from '../components/showcase/ShowcaseHeader';
 import { PREFS_ENDPOINT } from '../model/preferences';
 import { ModalContext } from '../react-native-cool-modals/NativeStackView';
-import { web3Provider } from '@rainbow-me/handlers/web3';
+import { resolveNameOrAddress, web3Provider } from '@rainbow-me/handlers/web3';
 import { buildUniqueTokenList } from '@rainbow-me/helpers/assets';
 import { tokenFamilyItem } from '@rainbow-me/helpers/buildWalletSections';
 import { useAccountSettings } from '@rainbow-me/hooks';
@@ -42,13 +43,22 @@ const LoadingWrapper = styled.View`
 `;
 
 export default function ShowcaseScreen() {
-  const { params: { address: accountAddress } = {} } = useRoute();
+  const { params: { address: addressOrDomain } = {} } = useRoute();
 
   const [userData, setUserData] = useState(null);
+  const [accountAddress, setAcccountAddress] = useState(null);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(fetchUniqueTokens(accountAddress));
+    const init = async () => {
+      const address = await resolveNameOrAddress(addressOrDomain);
+      setAcccountAddress(address);
+    };
+    init();
+  }, [addressOrDomain]);
+
+  useEffect(() => {
+    accountAddress && dispatch(fetchUniqueTokens(accountAddress));
   }, [dispatch, accountAddress]);
 
   useEffect(() => {
@@ -56,7 +66,7 @@ export default function ShowcaseScreen() {
       const userData = await fetchShowcaseForAddress(accountAddress);
       setUserData(userData);
     }
-    fetchShowcase();
+    accountAddress && fetchShowcase();
   }, [accountAddress]);
 
   const { network } = useAccountSettings();
@@ -73,14 +83,14 @@ export default function ShowcaseScreen() {
   const [ensNameLoading, setEnsNameLoading] = useState(true);
 
   useEffect(() => {
-    async function resolve() {
-      if (accountAddress) {
+    async function reverseResolve() {
+      if (isValidAddress(accountAddress)) {
         const ensName = await web3Provider.lookupAddress(accountAddress);
         setEnsName(ensName);
         setEnsNameLoading(false);
       }
     }
-    resolve();
+    reverseResolve();
   }, [accountAddress]);
 
   const { layout } = useContext(ModalContext) || {};
