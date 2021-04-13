@@ -52,7 +52,7 @@ export default function ShowcaseScreen() {
   useEffect(() => {
     const init = async () => {
       const address = await resolveNameOrAddress(addressOrDomain);
-      setAcccountAddress(address);
+      setAcccountAddress(address?.toLowerCase());
     };
     init();
   }, [addressOrDomain]);

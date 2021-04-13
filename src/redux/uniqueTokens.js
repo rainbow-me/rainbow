@@ -81,7 +81,7 @@ export const fetchUniqueTokens = showcaseAddress => async (
     });
   }
   const { network } = getState().settings;
-  const accountAddress = getState().settings.accountAddress || showcaseAddress;
+  const accountAddress = showcaseAddress || getState().settings.accountAddress;
   const { assets } = getState().data;
   const { uniqueTokens: existingUniqueTokens } = getState().uniqueTokens;
   const shouldUpdateInBatches = isEmpty(existingUniqueTokens);
@@ -99,7 +99,8 @@ export const fetchUniqueTokens = showcaseAddress => async (
       );
 
       // check that the account address to fetch for has not changed
-      const { accountAddress: currentAccountAddress } = getState().settings;
+      const currentAccountAddress =
+        showcaseAddress || getState().settings.accountAddress;
       if (currentAccountAddress !== accountAddress) return;
 
       uniqueTokens = concat(uniqueTokens, newPageResults);

@@ -6,6 +6,7 @@ import AvatarCircle from '../profile/AvatarCircle';
 import SheetHandle from '../sheet/SheetHandle';
 import { SheetActionButton } from '../sheet/sheet-action-buttons';
 import { Text, TruncatedAddress } from '../text';
+import { getContacts } from '@rainbow-me/handlers/localstorage/contacts';
 import { useDimensions } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
@@ -110,14 +111,18 @@ export function Header() {
 
   const { navigate } = useNavigation();
 
-  const onAddToContact = useCallback(() => {
+  const onAddToContact = useCallback(async () => {
+    const contacts = await getContacts();
+    const currentContact = contacts[contextValue?.address];
+
     navigate(Routes.MODAL_SCREEN, {
       address: contextValue?.address,
       color,
-      contact: {
+      contact: currentContact || {
         address: contextValue?.address,
         color,
         nickname: contextValue?.ensName,
+        temporary: true,
       },
       type: 'contact_profile',
     });

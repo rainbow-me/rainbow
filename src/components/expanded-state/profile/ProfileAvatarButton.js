@@ -11,10 +11,15 @@ const ProfileAvatarButton = ({
   radiusAndroid,
 }) => {
   const { colors } = useTheme();
-  const handleChangeColor = useCallback(
-    () => setColor?.(prevColor => (prevColor + 1) % colors.avatarColor.length),
-    [setColor, colors]
-  );
+  const handleChangeColor = useCallback(() => {
+    setColor?.(prevColor => {
+      const idx =
+        typeof prevColor === 'string'
+          ? colors.avatarColor.indexOf(prevColor)
+          : prevColor;
+      return (idx + 1) % colors.avatarColor.length;
+    });
+  }, [setColor, colors]);
 
   return (
     <ButtonPressAnimation
