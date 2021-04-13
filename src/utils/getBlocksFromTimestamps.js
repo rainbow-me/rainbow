@@ -39,7 +39,10 @@ async function splitQuery(query, localClient, vars, list, skipCount = 100) {
   return fetchedData;
 }
 
-export async function getBlocksFromTimestamps(timestamps, skipCount = 500) {
+export default async function getBlocksFromTimestamps(
+  timestamps,
+  skipCount = 500
+) {
   if (timestamps?.length === 0) {
     return [];
   }
