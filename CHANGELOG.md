@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 * Extra Token Details
 
 ### Changed
-* Numerous Performance Improvments
+* Numerous Performance Improvements
 
 ## [1.5.2](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.2)
 
