@@ -25,8 +25,6 @@ import {
   UNISWAP_PRICES_QUERY,
 } from '../apollo/queries';
 /* eslint-disable-next-line import/no-cycle */
-import { getBlocksFromTimestamps } from '../hooks/useUniswapPools';
-/* eslint-disable-next-line import/no-cycle */
 import { addCashUpdatePurchases } from './addCash';
 /* eslint-disable-next-line import/no-cycle */
 import { uniqueTokensRefreshState } from './uniqueTokens';
@@ -71,6 +69,7 @@ import Routes from '@rainbow-me/routes';
 import { delay, isZero, multiply } from '@rainbow-me/utilities';
 import {
   ethereumUtils,
+  getBlocksFromTimestamps,
   isLowerCaseMatch,
   TokensListenedCache,
 } from '@rainbow-me/utils';

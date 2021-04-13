@@ -8,13 +8,10 @@ import {
 } from '../apollo/queries';
 import useAccountSettings from './useAccountSettings';
 import useNativeCurrencyToUSD from './useNativeCurrencyToUSD';
-import {
-  get2DayPercentChange,
-  getBlocksFromTimestamps,
-} from './useUniswapPools';
+import { get2DayPercentChange } from './useUniswapPools';
 import { bigNumberFormat } from '@rainbow-me/helpers/bigNumberFormat';
 import { setPoolsDetails } from '@rainbow-me/redux/uniswapLiquidity';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils, getBlocksFromTimestamps } from '@rainbow-me/utils';
 
 function cutIfOver10000(value) {
   return value > 10000 ? Math.round(value) : value;
