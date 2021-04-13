@@ -13,6 +13,7 @@ import { FloatingActionButtonSize } from '../fab';
 import { ListFooter } from '../list';
 import PoolsListWrapper from '../pools/PoolsListWrapper';
 import SavingsListWrapper from '../savings/SavingsListWrapper';
+import { Header } from '../showcase/ShowcaseHeader';
 import { TokenFamilyHeaderHeight } from '../token-family';
 import { UniqueTokenRow } from '../unique-token';
 import AssetListHeader, { AssetListHeaderHeight } from './AssetListHeader';
@@ -46,6 +47,15 @@ export const ViewTypes = {
     index: 0,
     renderComponent: ({ data, isCoinListEdited }) => {
       return <AssetListHeader {...data} isCoinListEdited={isCoinListEdited} />;
+    },
+    visibleDuringCoinEdit: true,
+  },
+
+  SHOWCASE_HEADER: {
+    calculateHeight: () => 360,
+    index: 8,
+    renderComponent: data => {
+      return <Header {...data} />;
     },
     visibleDuringCoinEdit: true,
   },

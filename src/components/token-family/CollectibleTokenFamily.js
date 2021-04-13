@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setOpenFamilyTabs } from '../../redux/openStateSettings';
@@ -10,13 +9,15 @@ const CollectibleTokenFamily = ({
   familyImage,
   familyName,
   item,
+  forceOpen,
   ...props
 }) => {
   const dispatch = useDispatch();
 
-  const isFamilyOpen = useSelector(
-    ({ openStateSettings }) => openStateSettings.openFamilyTabs[familyName]
-  );
+  const isFamilyOpen =
+    useSelector(
+      ({ openStateSettings }) => openStateSettings.openFamilyTabs[familyName]
+    ) || forceOpen;
 
   const handleToggle = useCallback(
     () =>
@@ -25,8 +26,14 @@ const CollectibleTokenFamily = ({
   );
 
   const renderChild = useCallback(
-    i => <UniqueTokenRow item={item[i]} key={`${familyName}_${i}`} />,
-    [familyName, item]
+    i => (
+      <UniqueTokenRow
+        forceOpen={forceOpen}
+        item={item[i]}
+        key={`${familyName}_${i}`}
+      />
+    ),
+    [familyName, forceOpen, item]
   );
 
   return (
@@ -34,6 +41,7 @@ const CollectibleTokenFamily = ({
       {...props}
       familyId={familyId}
       familyImage={familyImage}
+      forceOpen={forceOpen}
       isOpen={isFamilyOpen}
       item={item}
       onToggle={handleToggle}
@@ -41,13 +49,6 @@ const CollectibleTokenFamily = ({
       title={familyName}
     />
   );
-};
-
-CollectibleTokenFamily.propTypes = {
-  familyId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  familyImage: PropTypes.string,
-  familyName: PropTypes.string,
-  item: PropTypes.object,
 };
 
 export default React.memo(CollectibleTokenFamily);

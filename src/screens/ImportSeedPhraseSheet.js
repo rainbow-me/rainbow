@@ -142,13 +142,10 @@ const Sheet = styled(Column).attrs({
   z-index: 1;
 `;
 
-export default function ImportSeedPhraseSheet() {
+export function useImportingWallet() {
   const { accountAddress } = useAccountSettings();
   const { selectedWallet, setIsWalletLoading, wallets } = useWallets();
-  const { getClipboard, hasClipboardData, clipboard } = useClipboard();
-  const { onInvalidPaste } = useInvalidPaste();
-  const { isSmallPhone } = useDimensions();
-  const keyboardHeight = useKeyboardHeight();
+
   const { goBack, navigate, replace, setParams } = useNavigation();
   const initializeWallet = useInitializeWallet();
   const isWalletEthZero = useIsWalletEthZero();
@@ -172,14 +169,6 @@ export default function ImportSeedPhraseSheet() {
   }, []);
   const { handleFocus } = useMagicAutofocus(inputRef);
 
-  const isClipboardValidSecret = useMemo(
-    () =>
-      deviceUtils.isIOS14
-        ? hasClipboardData
-        : clipboard !== accountAddress && isValidWallet(clipboard),
-    [accountAddress, clipboard, hasClipboardData]
-  );
-
   const isSecretValid = useMemo(() => {
     return seedPhrase !== accountAddress && isValidWallet(seedPhrase);
   }, [accountAddress, seedPhrase]);
@@ -201,11 +190,12 @@ export default function ImportSeedPhraseSheet() {
   );
 
   const showWalletProfileModal = useCallback(
-    name => {
+    (name, forceColor) => {
       navigate(Routes.MODAL_SCREEN, {
         actionType: 'Import',
         additionalPadding: true,
         asset: [],
+        forceColor,
         isNewProfile: true,
         onCloseModal: ({ color, name }) => {
           if (color !== null) setColor(color);
@@ -220,87 +210,74 @@ export default function ImportSeedPhraseSheet() {
     [handleSetImporting, navigate]
   );
 
-  const handlePressImportButton = useCallback(async () => {
-    if (!isSecretValid || !seedPhrase) return null;
-    const input = sanitizeSeedPhrase(seedPhrase);
-    let name = null;
-    // Validate ENS
-    if (isENSAddressFormat(input)) {
-      try {
-        const address = await web3Provider.resolveName(input);
-        if (!address) {
-          Alert.alert('This is not a valid ENS name');
-          return;
-        }
-        setResolvedAddress(address);
-        name = input;
-        showWalletProfileModal(name);
-      } catch (e) {
-        Alert.alert(
-          'Sorry, we cannot add this ENS name at this time. Please try again later!'
-        );
-        return;
-      }
-      // Look up ENS for 0x address
-    } else if (isUnstoppableAddressFormat(input)) {
-      try {
-        const address = await resolveUnstoppableDomain(input);
-        if (!address) {
-          Alert.alert('This is not a valid Unstoppable name');
-          return;
-        }
-        setResolvedAddress(address);
-        name = input;
-        showWalletProfileModal(name);
-      } catch (e) {
-        Alert.alert(
-          'Sorry, we cannot add this Unstoppable name at this time. Please try again later!'
-        );
-        return;
-      }
-    } else if (isValidAddress(input)) {
-      const ens = await web3Provider.lookupAddress(input);
-      if (ens && ens !== input) {
-        name = ens;
-      }
-      showWalletProfileModal(name);
-    } else {
-      try {
-        setBusy(true);
-        setTimeout(async () => {
-          const walletResult = await ethereumUtils.deriveAccountFromWalletInput(
-            input
-          );
-          setCheckedWallet(walletResult);
-          const ens = await web3Provider.lookupAddress(walletResult.address);
-          if (ens && ens !== input) {
-            name = ens;
+  const handlePressImportButton = useCallback(
+    async (forceColor, forceAddress) => {
+      if ((!isSecretValid || !seedPhrase) && !forceAddress) return null;
+      const input = sanitizeSeedPhrase(seedPhrase || forceAddress);
+      let name = null;
+      // Validate ENS
+      if (isENSAddressFormat(input)) {
+        try {
+          const address = await web3Provider.resolveName(input);
+          if (!address) {
+            Alert.alert('This is not a valid ENS name');
+            return;
           }
+          setResolvedAddress(address);
+          name = input;
+          showWalletProfileModal(name, forceColor);
+        } catch (e) {
+          Alert.alert(
+            'Sorry, we cannot add this ENS name at this time. Please try again later!'
+          );
+          return;
+        }
+        // Look up ENS for 0x address
+      } else if (isUnstoppableAddressFormat(input)) {
+        try {
+          const address = await resolveUnstoppableDomain(input);
+          if (!address) {
+            Alert.alert('This is not a valid Unstoppable name');
+            return;
+          }
+          setResolvedAddress(address);
+          name = input;
+          showWalletProfileModal(name, forceColor);
+        } catch (e) {
+          Alert.alert(
+            'Sorry, we cannot add this Unstoppable name at this time. Please try again later!'
+          );
+          return;
+        }
+      } else if (isValidAddress(input)) {
+        const ens = await web3Provider.lookupAddress(input);
+        if (ens && ens !== input) {
+          name = ens;
+        }
+        showWalletProfileModal(name, forceColor);
+      } else {
+        try {
+          setBusy(true);
+          setTimeout(async () => {
+            const walletResult = await ethereumUtils.deriveAccountFromWalletInput(
+              input
+            );
+            setCheckedWallet(walletResult);
+            const ens = await web3Provider.lookupAddress(walletResult.address);
+            if (ens && ens !== input) {
+              name = ens;
+            }
+            setBusy(false);
+            showWalletProfileModal(name, forceColor);
+          }, 100);
+        } catch (error) {
+          logger.log('Error looking up ENS for imported HD type wallet', error);
           setBusy(false);
-          showWalletProfileModal(name);
-        }, 100);
-      } catch (error) {
-        logger.log('Error looking up ENS for imported HD type wallet', error);
-        setBusy(false);
+        }
       }
-    }
-  }, [isSecretValid, seedPhrase, showWalletProfileModal]);
-
-  const handlePressPasteButton = useCallback(() => {
-    if (deviceUtils.isIOS14 && !hasClipboardData) return;
-    getClipboard(result => {
-      if (result !== accountAddress && isValidWallet(result)) {
-        return handleSetSeedPhrase(result);
-      }
-      return onInvalidPaste();
-    });
-  }, [
-    accountAddress,
-    getClipboard,
-    handleSetSeedPhrase,
-    hasClipboardData,
-    onInvalidPaste,
-  ]);
+    },
+    [isSecretValid, seedPhrase, showWalletProfileModal]
+  );
 
   useEffect(() => {
     if (!wasImporting && isImporting) {
@@ -395,6 +372,60 @@ export default function ImportSeedPhraseSheet() {
       isImporting ? walletLoadingStates.IMPORTING_WALLET : null
     );
   }, [isImporting, setIsWalletLoading]);
+
+  return {
+    busy,
+    handleFocus,
+    handlePressImportButton,
+    handleSetSeedPhrase,
+    inputRef,
+    isSecretValid,
+    seedPhrase,
+  };
+}
+
+export default function ImportSeedPhraseSheet() {
+  const { isSmallPhone } = useDimensions();
+  const keyboardHeight = useKeyboardHeight();
+  const {
+    busy,
+    handleFocus,
+    handlePressImportButton,
+    handleSetSeedPhrase,
+    inputRef,
+    isSecretValid,
+    seedPhrase,
+  } = useImportingWallet();
+
+  const { accountAddress } = useAccountSettings();
+
+  const { getClipboard, hasClipboardData, clipboard } = useClipboard();
+  const { onInvalidPaste } = useInvalidPaste();
+
+  const isClipboardValidSecret = useMemo(
+    () =>
+      deviceUtils.isIOS14
+        ? hasClipboardData
+        : clipboard !== accountAddress && isValidWallet(clipboard),
+    [accountAddress, clipboard, hasClipboardData]
+  );
+
+  const handlePressPasteButton = useCallback(() => {
+    if (deviceUtils.isIOS14 && !hasClipboardData) return;
+    getClipboard(result => {
+      if (result !== accountAddress && isValidWallet(result)) {
+        return handleSetSeedPhrase(result);
+      }
+      return onInvalidPaste();
+    });
+  }, [
+    accountAddress,
+    getClipboard,
+    handleSetSeedPhrase,
+    hasClipboardData,
+    onInvalidPaste,
+  ]);
+
   const { colors } = useTheme();
   return (
     <Container testID="import-sheet">

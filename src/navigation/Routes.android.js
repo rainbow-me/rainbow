@@ -18,6 +18,7 @@ import RestoreSheet from '../screens/RestoreSheet';
 import SavingsSheet from '../screens/SavingsSheet';
 import SendSheet from '../screens/SendSheet';
 import SettingsModal from '../screens/SettingsModal';
+import ShowcaseSheet from '../screens/ShowcaseSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
@@ -299,6 +300,13 @@ function BSNavigator() {
       <BSStack.Screen
         component={SendFlowNavigator}
         name={Routes.SEND_SHEET_NAVIGATOR}
+      />
+      <BSStack.Screen
+        component={ShowcaseSheet}
+        name={Routes.SHOWCASE_SHEET}
+        options={{
+          height: '90%',
+        }}
       />
     </BSStack.Navigator>
   );

@@ -18,7 +18,8 @@ export interface PreferencesResponse {
   data?: Object;
 }
 
-const PREFS_ENDPOINT = 'https://us-central1-rainbow-me.cloudfunctions.net';
+export const PREFS_ENDPOINT =
+  'https://us-central1-rainbow-me.cloudfunctions.net';
 
 const preferencesAPI = axios.create({
   headers: {

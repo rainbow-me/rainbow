@@ -73,7 +73,9 @@ export default class RecyclerActivityList extends PureComponent {
     this.layoutProvider = new LayoutProvider(
       index => {
         if (index === 0) {
-          return ViewTypes.COMPONENT_HEADER;
+          return props.showcase
+            ? ViewTypes.SHOWCASE_HEADER
+            : ViewTypes.COMPONENT_HEADER;
         }
 
         if (this.state.headersIndices.includes(index)) {
@@ -97,6 +99,8 @@ export default class RecyclerActivityList extends PureComponent {
           dim.height = 70;
         } else if (type === ViewTypes.SWAPPED_ROW) {
           dim.height = 70;
+        } else if (type === ViewTypes.SHOWCASE_HEADER) {
+          dim.height = 400;
         } else if (type === ViewTypes.FOOTER) {
           dim.height = 19;
         } else if (type === ViewTypes.HEADER) {

@@ -260,6 +260,7 @@ export default function ChangeWalletSheet() {
       dispatch,
       currentSelectedWallet.id,
       updateWebProfile,
+      colors.avatarColor,
     ]
   );
 
