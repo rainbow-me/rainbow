@@ -1,12 +1,15 @@
 import { find } from 'lodash';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import useAdditionalAssetData from '../../hooks/useAdditionalAssetData';
+import { ModalContext } from '../../react-native-cool-modals/NativeStackView';
 import EdgeFade from '../discover-sheet/EdgeFade';
+import UniswapPools from '../discover-sheet/UniswapPoolsSection';
 import { Column } from '../layout';
+
 import {
   BuyActionButton,
   SendActionButton,
@@ -52,6 +55,8 @@ const Carousel = styled.ScrollView.attrs({
   horizontal: true,
   showsHorizontalScrollIndicator: false,
 })``;
+
+const AdditionalContentWrapper = styled.View``;
 
 const CarouselItem = styled(TokenInfoItem).attrs(({ theme: { colors } }) => ({
   color: colors.alpha(colors.blueGreyDark, 0.7),
@@ -199,6 +204,8 @@ export default function ChartExpandedState({ asset }) {
     ChartExpandedStateSheetHeight -= 60;
   }
 
+  const { layout } = useContext(ModalContext) || {};
+
   const { colors } = useTheme();
 
   return (
@@ -295,27 +302,33 @@ export default function ChartExpandedState({ asset }) {
         </Carousel>
         <EdgeFade />
       </CarouselWrapper>
-      {!!delayedDescriptions && (
-        <ExpandedStateSection
-          onLayout={({
-            nativeEvent: {
-              layout: { height },
-            },
-          }) => setDescriptionHeight(height)}
-          title={`About ${asset?.name}`}
-        >
-          <Column>
-            <Text
-              color={colors.alpha(colors.blueGreyDark, 0.5)}
-              lineHeight="paragraphSmall"
-              size="lmedium"
-            >
-              {description}
-            </Text>
-          </Column>
-          <Spacer />
-        </ExpandedStateSection>
-      )}
+      <AdditionalContentWrapper
+        onLayout={({
+          nativeEvent: {
+            layout: { height },
+          },
+        }) => {
+          setDescriptionHeight(height);
+          layout?.();
+        }}
+      >
+        <UniswapPools hideIfEmpty token={asset?.address} />
+
+        {!!delayedDescriptions && (
+          <ExpandedStateSection title={`About ${asset?.name}`}>
+            <Column>
+              <Text
+                color={colors.alpha(colors.blueGreyDark, 0.5)}
+                lineHeight="paragraphSmall"
+                size="lmedium"
+              >
+                {description}
+              </Text>
+            </Column>
+            <Spacer />
+          </ExpandedStateSection>
+        )}
+      </AdditionalContentWrapper>
     </SlackSheet>
   );
 }

@@ -97,16 +97,17 @@ const renderUniswapPoolListRow = ({ item }) => (
   <UniswapPoolListRow assetType="uniswap" item={item} />
 );
 
-export default function UniswapPools() {
+export default function UniswapPools({ token, hideIfEmpty }) {
   const listRef = useRef(null);
   const { colors, isDarkMode } = useTheme();
   const { network } = useAccountSettings();
   const [showAll, setShowAll] = useState(false);
   const [selectedList, setSelectedList] = useState(listData[0].id);
   const [sortDirection, setSortDirection] = useState(SORT_DIRECTION.DESC);
-  const { pairs, error, is30DayEnabled } = useUniswapPools(
+  const { pairs, error, is30DayEnabled, isEmpty } = useUniswapPools(
     selectedList,
-    sortDirection
+    sortDirection,
+    token
   );
 
   const listDataFiltered = useMemo(() => {
@@ -227,6 +228,10 @@ export default function UniswapPools() {
     return allPairs;
   }, [allPairs, selectedList, showAll, sortDirection]);
 
+  if (hideIfEmpty && isEmpty) {
+    return null;
+  }
+
   return (
     <Column marginTop={32}>
       <Row marginBottom={12} paddingHorizontal={19}>
@@ -290,7 +295,7 @@ export default function UniswapPools() {
             scrollsToTop={false}
             windowSize={11}
           />
-          {!showAll && (
+          {!showAll && !token && (
             <ShowMoreButton
               backgroundColor={colors.alpha(colors.blueGreyDark, 0.06)}
               color={colors.alpha(colors.blueGreyDark, 0.6)}
