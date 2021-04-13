@@ -1,4 +1,6 @@
+import { useFocusEffect } from '@react-navigation/native';
 import { times } from 'lodash';
+
 import React, { Fragment, useCallback, useMemo, useRef, useState } from 'react';
 import { FlatList, LayoutAnimation } from 'react-native';
 import styled from 'styled-components';
@@ -120,8 +122,11 @@ export default function UniswapPools() {
     setShowAll(true);
   }, []);
 
+  useFocusEffect(() => () => setShowAll(false));
+
   const handleSwitchList = useCallback(
     (id, index) => {
+      setShowAll(false);
       // This crashes the app on android
       // that's why it's disabled...
       ios &&
