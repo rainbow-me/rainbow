@@ -122,16 +122,16 @@ export const estimateGasWithPadding = async (
     const code = to ? await web3Provider.getCode(to) : undefined;
     // 2 - if it's not a contract AND it doesn't have any data use the default gas limit
     if (!to || (to && !data && (!code || code === '0x'))) {
-      logger.log(
+      logger.sentry(
         '⛽ Skipping estimates, using default',
         ethUnits.basic_tx.toString()
       );
       return ethUnits.basic_tx.toString();
     }
-    logger.log('⛽ Calculating safer gas limit for last block');
+    logger.sentry('⛽ Calculating safer gas limit for last block');
     // 3 - If it is a contract, call the RPC method `estimateGas` with a safe value
     const saferGasLimit = fraction(gasLimit.toString(), 19, 20);
-    logger.log('⛽ safer gas limit for last block is', saferGasLimit);
+    logger.sentry('⛽ safer gas limit for last block is', saferGasLimit);
 
     txPayloadToEstimate.gas = toHex(saferGasLimit);
     const estimatedGas = await web3Provider.estimateGas(txPayloadToEstimate);
@@ -141,7 +141,7 @@ export const estimateGasWithPadding = async (
       estimatedGas.toString(),
       paddingFactor.toString()
     );
-    logger.log('⛽ GAS CALCULATIONS!', {
+    logger.sentry('⛽ GAS CALCULATIONS!', {
       estimatedGas: estimatedGas.toString(),
       gasLimit: gasLimit.toString(),
       lastBlockGasLimit: lastBlockGasLimit,
@@ -149,7 +149,7 @@ export const estimateGasWithPadding = async (
     });
     // If the safe estimation is above the last block gas limit, use it
     if (greaterThan(estimatedGas, lastBlockGasLimit)) {
-      logger.log(
+      logger.sentry(
         '⛽ returning orginal gas estimation',
         estimatedGas.toString()
       );
@@ -157,11 +157,11 @@ export const estimateGasWithPadding = async (
     }
     // If the estimation is below the last block gas limit, use the padded estimate
     if (greaterThan(lastBlockGasLimit, paddedGas)) {
-      logger.log('⛽ returning padded gas estimation', paddedGas);
+      logger.sentry('⛽ returning padded gas estimation', paddedGas);
       return paddedGas;
     }
     // otherwise default to the last block gas limit
-    logger.log('⛽ returning last block gas limit', lastBlockGasLimit);
+    logger.sentry('⛽ returning last block gas limit', lastBlockGasLimit);
     return lastBlockGasLimit;
   } catch (error) {
     logger.error('Error calculating gas limit with padding', error);
