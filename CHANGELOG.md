@@ -12,7 +12,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
-## [1.5.3](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.3)
+## [1.5.4](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.4)
+
+### Added
+* Token Price Fallback via The Graph
+* Gas Estimation Logging
+
+### Changed
+* Top Movers Animation tweaked
+
+## [1.5.3](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.4)
 
 ### Added
 * Extra Details for LP Positions
