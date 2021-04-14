@@ -29,7 +29,7 @@ export default function UnderlyingAsset({
 
   const { colors, isDarkMode } = useTheme();
   const { allAssets } = useAccountAssets();
-  const { navigate } = useNavigation();
+  const { push } = useNavigation();
   const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
     genericAssets,
   }));
@@ -42,12 +42,12 @@ export default function UnderlyingAsset({
         nativeCurrency
       );
 
-    navigate(ios ? Routes.EXPANDED_ASSET_SHEET : Routes.EXPANDED_ASSET_SCREEN, {
+    push(ios ? Routes.EXPANDED_ASSET_SHEET : Routes.EXPANDED_ASSET_SCREEN, {
       asset,
       longFormHeight: initialChartExpandedStateSheetHeight,
       type: 'token',
     });
-  }, [address, allAssets, genericAssets, nativeCurrency, navigate]);
+  }, [address, allAssets, genericAssets, nativeCurrency, push]);
 
   return (
     <Row

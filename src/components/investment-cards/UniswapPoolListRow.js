@@ -57,7 +57,7 @@ const TopRow = item => {
 };
 
 export default function UniswapPoolListRow({ assetType, item, ...props }) {
-  const { navigate } = useNavigation();
+  const { push } = useNavigation();
   const { nativeCurrency } = useAccountSettings();
   const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
     genericAssets,
@@ -75,7 +75,7 @@ export default function UniswapPoolListRow({ assetType, item, ...props }) {
         nativeCurrency
       )[0];
     }
-    navigate(Routes.EXPANDED_ASSET_SHEET_POOLS, {
+    push(Routes.EXPANDED_ASSET_SHEET_POOLS, {
       asset: poolAsset,
       dpi: true,
       fromDiscover: true,
@@ -85,7 +85,7 @@ export default function UniswapPoolListRow({ assetType, item, ...props }) {
           UniBalanceHeightDifference,
       type: assetType,
     });
-  }, [assetType, genericAssets, item, nativeCurrency, navigate, uniswap]);
+  }, [assetType, genericAssets, item, nativeCurrency, push, uniswap]);
 
   return (
     <ButtonPressAnimation onPress={handleOpenExpandedState} scaleTo={0.96}>
