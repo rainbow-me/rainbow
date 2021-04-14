@@ -268,6 +268,9 @@ export const explorerInit = () => async (dispatch, getState) => {
       dispatch(
         emitChartsRequest([ETH_ADDRESS], ChartTypes.month, currencyTypes.usd)
       );
+      dispatch(
+        emitChartsRequest([ETH_ADDRESS], ChartTypes.day, currencyTypes.usd)
+      );
     }
   });
 
