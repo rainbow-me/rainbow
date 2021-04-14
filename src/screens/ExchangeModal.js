@@ -482,6 +482,7 @@ export default function ExchangeModal({
           <GasSpeedButton
             dontBlur
             onCustomGasBlur={handleCustomGasBlur}
+            options={['normal', 'fast', 'custom']}
             testID={`${testID}-gas`}
             type={type}
           />
