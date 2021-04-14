@@ -1,6 +1,5 @@
 import { Provider } from '@ethersproject/abstract-provider';
 import { Signer } from '@ethersproject/abstract-signer';
-import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
 import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
@@ -17,7 +16,7 @@ import { get, mapKeys, mapValues, toLower } from 'lodash';
 import { uniswapClient } from '../apollo/client';
 import { UNISWAP_ALL_TOKENS } from '../apollo/queries';
 import { loadWallet } from '../model/wallet';
-import { toHex, web3Provider } from './web3';
+import { estimateGasWithPadding, toHex, web3Provider } from './web3';
 import { Asset } from '@rainbow-me/entities';
 import { Network } from '@rainbow-me/networkTypes';
 import store from '@rainbow-me/redux/store';
@@ -113,10 +112,14 @@ export const estimateSwapGasLimit = async ({
     });
 
     const params = { from: accountAddress, ...(value ? { value } : {}) };
-    const gasEstimates: (BigNumber | undefined)[] = await Promise.all(
+    const gasEstimates: (String | undefined)[] = await Promise.all(
       methodNames.map((methodName: string) =>
-        exchange.estimateGas[methodName](...updatedMethodArgs, params)
-          .then((value: BigNumber) => value)
+        estimateGasWithPadding(
+          params,
+          exchange.estimateGas[methodName],
+          updatedMethodArgs
+        )
+          .then((value: String) => value)
           .catch((_: Error) => {
             return undefined;
           })
