@@ -6,17 +6,17 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { View } from 'react-native';
+import { LayoutAnimation, View } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import useAdditionalAssetData from '../../hooks/useAdditionalAssetData';
 import { ModalContext } from '../../react-native-cool-modals/NativeStackView';
+import { ButtonPressAnimation } from '../animations';
 import { CoinDividerHeight } from '../coin-divider';
 import CoinDividerOpenButton from '../coin-divider/CoinDividerOpenButton';
 import EdgeFade from '../discover-sheet/EdgeFade';
 import UniswapPools from '../discover-sheet/UniswapPoolsSection';
-import { Column } from '../layout';
 
 import {
   BuyActionButton,
@@ -26,7 +26,7 @@ import {
   SlackSheet,
   SwapActionButton,
 } from '../sheet';
-import { Text } from '../text';
+import { Bold, Text } from '../text';
 import {
   TokenInfoBalanceValue,
   TokenInfoItem,
@@ -117,6 +117,47 @@ function CarouselWrapper({
 const Spacer = styled.View`
   height: ${safeAreaInsetValues.bottom};
 `;
+
+// truncate after the first paragraph or 4th dot
+function truncate(text) {
+  const firstParagraph = text.split('\n')[0];
+  const first4Sentences = text.split('.').slice(0, 4).join('.');
+  const shorterOne =
+    first4Sentences.length < firstParagraph.length
+      ? first4Sentences
+      : firstParagraph;
+  // If there is not much to expand, return the whole text
+  if (text.length < shorterOne.length * 1.5) {
+    return text;
+  }
+
+  return shorterOne;
+}
+
+function Description({ text }) {
+  const truncatedText = truncate(text);
+  const needToTruncate = truncatedText.length !== text.length;
+  const [truncated, setTruncated] = useState(true);
+  const delayedTruncated = useDelayedValueWithLayoutAnimation(
+    truncated,
+    LayoutAnimation.Properties.scaleXY
+  );
+
+  const { colors } = useTheme();
+  return (
+    <ButtonPressAnimation disabled={!needToTruncate} scaleTo={0.99}>
+      <Text
+        color={colors.alpha(colors.blueGreyDark, 0.5)}
+        lineHeight="paragraphSmall"
+        onPress={() => setTruncated(prev => !prev)}
+        size="lmedium"
+      >
+        {delayedTruncated ? truncatedText : text}
+      </Text>
+      {truncated && needToTruncate && <Bold>Read more 􀯼</Bold>}
+    </ButtonPressAnimation>
+  );
+}
 
 export default function ChartExpandedState({ asset }) {
   const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
@@ -214,8 +255,6 @@ export default function ChartExpandedState({ asset }) {
   }
 
   const { layout } = useContext(ModalContext) || {};
-
-  const { colors } = useTheme();
 
   const [morePoolsVisible, setMorePoolsVisible] = useState(false);
 
@@ -350,15 +389,7 @@ export default function ChartExpandedState({ asset }) {
 
         {!!delayedDescriptions && (
           <ExpandedStateSection title={`About ${asset?.name}`}>
-            <Column>
-              <Text
-                color={colors.alpha(colors.blueGreyDark, 0.5)}
-                lineHeight="paragraphSmall"
-                size="lmedium"
-              >
-                {description}
-              </Text>
-            </Column>
+            <Description text={description} />
             <Spacer />
           </ExpandedStateSection>
         )}
