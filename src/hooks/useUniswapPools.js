@@ -407,9 +407,9 @@ export default function useUniswapPools(sortField, sortDirection, token) {
         ? (idsData?.pairs0?.concat(idsData?.pairs1) ?? [])
             .sort(
               (a, b) =>
-                Number(a.trackedReserveETH) - Number(b.trackedReserveETH)
+                Number(b.trackedReserveETH) - Number(a.trackedReserveETH)
             )
-            .slice(0, 10)
+            .slice(0, 30)
         : idsData?.pairs ?? [],
     [idsData?.pairs, idsData?.pairs0, idsData?.pairs1, token]
   );

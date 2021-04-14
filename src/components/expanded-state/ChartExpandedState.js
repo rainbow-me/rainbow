@@ -1,11 +1,19 @@
 import { find } from 'lodash';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { View } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import useAdditionalAssetData from '../../hooks/useAdditionalAssetData';
 import { ModalContext } from '../../react-native-cool-modals/NativeStackView';
+import { CoinDividerHeight } from '../coin-divider';
+import CoinDividerOpenButton from '../coin-divider/CoinDividerOpenButton';
 import EdgeFade from '../discover-sheet/EdgeFade';
 import UniswapPools from '../discover-sheet/UniswapPoolsSection';
 import { Column } from '../layout';
@@ -114,6 +122,7 @@ export default function ChartExpandedState({ asset }) {
   const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
     genericAssets,
   }));
+
   const [carouselHeight, setCarouselHeight] = useState(defaultCarouselHeight);
   const { nativeCurrency } = useAccountSettings();
   const [descriptionHeight, setDescriptionHeight] = useState(0);
@@ -207,6 +216,24 @@ export default function ChartExpandedState({ asset }) {
   const { layout } = useContext(ModalContext) || {};
 
   const { colors } = useTheme();
+
+  const [morePoolsVisible, setMorePoolsVisible] = useState(false);
+
+  const delayedMorePoolsVisible = useDelayedValueWithLayoutAnimation(
+    morePoolsVisible
+  );
+
+  const MoreButton = useCallback(() => {
+    return (
+      <CoinDividerOpenButton
+        coinDividerHeight={CoinDividerHeight}
+        isActive
+        isSmallBalancesOpen={delayedMorePoolsVisible}
+        marginLeft={18}
+        onPress={() => setMorePoolsVisible(prev => !prev)}
+      />
+    );
+  }, [delayedMorePoolsVisible]);
 
   return (
     <SlackSheet
@@ -312,7 +339,14 @@ export default function ChartExpandedState({ asset }) {
           layout?.();
         }}
       >
-        <UniswapPools hideIfEmpty token={asset?.address} />
+        <UniswapPools
+          ShowMoreButton={MoreButton}
+          alwaysShowMoreButton
+          forceShowAll={delayedMorePoolsVisible}
+          hideIfEmpty
+          initialPageAmount={3}
+          token={asset?.address}
+        />
 
         {!!delayedDescriptions && (
           <ExpandedStateSection title={`About ${asset?.name}`}>

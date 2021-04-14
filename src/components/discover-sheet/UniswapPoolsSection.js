@@ -21,7 +21,7 @@ const getItemLayout = (_, index) => ({
   offset: ITEM_HEIGHT * index,
 });
 
-const ShowMoreButton = ({ backgroundColor, color, onPress }) => (
+const DefaultShowMoreButton = ({ backgroundColor, color, onPress }) => (
   <Row justify="center">
     <ButtonPressAnimation onPress={onPress}>
       <Row
@@ -97,11 +97,19 @@ const renderUniswapPoolListRow = ({ item }) => (
   <UniswapPoolListRow assetType="uniswap" item={item} />
 );
 
-export default function UniswapPools({ token, hideIfEmpty }) {
+export default function UniswapPools({
+  token,
+  hideIfEmpty,
+  initialPageAmount = INITIAL_PAGE_AMOUNT,
+  ShowMoreButton = DefaultShowMoreButton,
+  forceShowAll,
+  alwaysShowMoreButton,
+}) {
   const listRef = useRef(null);
   const { colors, isDarkMode } = useTheme();
   const { network } = useAccountSettings();
-  const [showAll, setShowAll] = useState(false);
+  const [showAllState, setShowAll] = useState(false);
+  const showAll = forceShowAll === undefined ? showAllState : forceShowAll;
   const [selectedList, setSelectedList] = useState(listData[0].id);
   const [sortDirection, setSortDirection] = useState(SORT_DIRECTION.DESC);
   const { pairs, error, is30DayEnabled, isEmpty } = useUniswapPools(
@@ -222,11 +230,11 @@ export default function UniswapPools({ token, hideIfEmpty }) {
       allPairs.sort((a, b) => a[selectedList] - b[selectedList]);
     }
     if (!showAll) {
-      return allPairs.slice(0, INITIAL_PAGE_AMOUNT);
+      return allPairs.slice(0, initialPageAmount);
     }
 
     return allPairs;
-  }, [allPairs, selectedList, showAll, sortDirection]);
+  }, [allPairs, initialPageAmount, selectedList, showAll, sortDirection]);
 
   if (hideIfEmpty && isEmpty) {
     return null;
@@ -295,13 +303,14 @@ export default function UniswapPools({ token, hideIfEmpty }) {
             scrollsToTop={false}
             windowSize={11}
           />
-          {!showAll && !token && (
-            <ShowMoreButton
-              backgroundColor={colors.alpha(colors.blueGreyDark, 0.06)}
-              color={colors.alpha(colors.blueGreyDark, 0.6)}
-              onPress={handleShowMorePress}
-            />
-          )}
+          {(!showAll || alwaysShowMoreButton) &&
+            initialPageAmount < allPairs.length && (
+              <ShowMoreButton
+                backgroundColor={colors.alpha(colors.blueGreyDark, 0.06)}
+                color={colors.alpha(colors.blueGreyDark, 0.6)}
+                onPress={handleShowMorePress}
+              />
+            )}
         </Fragment>
       ) : (
         times(3, index => (

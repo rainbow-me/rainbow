@@ -11,7 +11,7 @@ export const UNISWAP_PAIRS_ID_QUERY = gql`
 export const UNISWAP_PAIRS_ID_QUERY_BY_TOKEN = gql`
   query pairs($address: String!) {
     pairs0: pairs(
-      first: 10
+      first: 30
       orderBy: trackedReserveETH
       orderDirection: desc
       where: { token0: $address, trackedReserveETH_gt: 5 }
@@ -20,7 +20,7 @@ export const UNISWAP_PAIRS_ID_QUERY_BY_TOKEN = gql`
       trackedReserveETH
     }
     pairs1: pairs(
-      first: 10
+      first: 30
       orderBy: trackedReserveETH
       orderDirection: desc
       where: { token1: $address, trackedReserveETH_gt: 5 }
