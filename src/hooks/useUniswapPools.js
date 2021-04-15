@@ -4,7 +4,6 @@ import { pick, sortBy, toLower } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  GET_BLOCKS_QUERY,
   UNISWAP_PAIR_DATA_QUERY,
   UNISWAP_PAIRS_BULK_QUERY,
   UNISWAP_PAIRS_HISTORICAL_BULK_QUERY,
@@ -13,16 +12,15 @@ import {
 } from '../apollo/queries';
 import { useEthUSDMonthChart, useEthUSDPrice } from '../utils/ethereumUtils';
 import useNativeCurrencyToUSD from './useNativeCurrencyToUSD';
-import { blockClient, uniswapClient } from '@rainbow-me/apollo/client';
-
+import { uniswapClient } from '@rainbow-me/apollo/client';
 import {
   emitAssetRequest,
   emitChartsRequest,
 } from '@rainbow-me/redux/explorer';
 import { setPoolsDetails } from '@rainbow-me/redux/uniswapLiquidity';
 import { ETH_ADDRESS, WETH_ADDRESS } from '@rainbow-me/references';
+import { getBlocksFromTimestamps } from '@rainbow-me/utils';
 import logger from 'logger';
-
 const UNISWAP_QUERY_INTERVAL = 1000 * 60 * 5; // 5 minutes
 const AMOUNT_OF_PAIRS_TO_DISPLAY = 40;
 
@@ -30,71 +28,6 @@ export const SORT_DIRECTION = {
   ASC: 'asc',
   DESC: 'desc',
 };
-
-async function splitQuery(query, localClient, vars, list, skipCount = 100) {
-  let fetchedData = {};
-  let allFound = false;
-  let skip = 0;
-
-  while (!allFound) {
-    let end = list.length;
-    if (skip + skipCount < list.length) {
-      end = skip + skipCount;
-    }
-    const sliced = list.slice(skip, end);
-    try {
-      const result = await localClient.query({
-        fetchPolicy: 'network-only',
-        query: query(...vars, sliced),
-      });
-      fetchedData = {
-        ...fetchedData,
-        ...result.data,
-      };
-
-      if (
-        Object.keys(result.data).length < skipCount ||
-        skip + skipCount > list.length
-      ) {
-        allFound = true;
-      } else {
-        skip += skipCount;
-      }
-    } catch (e) {
-      logger.log('🦄 Pools split query error', e);
-    }
-  }
-
-  return fetchedData;
-}
-
-export async function getBlocksFromTimestamps(timestamps, skipCount = 500) {
-  if (timestamps?.length === 0) {
-    return [];
-  }
-
-  const fetchedData = await splitQuery(
-    GET_BLOCKS_QUERY,
-    blockClient,
-    [],
-    timestamps,
-    skipCount
-  );
-
-  const blocks = [];
-  if (fetchedData) {
-    for (let t in fetchedData) {
-      if (fetchedData[t].length > 0) {
-        blocks.push({
-          number: fetchedData[t][0]['number'],
-          timestamp: t.split('t')[1],
-        });
-      }
-    }
-  }
-
-  return blocks;
-}
 
 const getTimestampsForChanges = () => {
   const t1 = getUnixTime(startOfMinute(sub(Date.now(), { days: 1 })));

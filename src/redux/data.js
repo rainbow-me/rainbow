@@ -1,4 +1,4 @@
-import { getUnixTime, subDays } from 'date-fns';
+import { getUnixTime, startOfMinute, sub } from 'date-fns';
 import {
   concat,
   filter,
@@ -66,9 +66,10 @@ import {
   shitcoins,
 } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
-import { delay, divide, isZero } from '@rainbow-me/utilities';
+import { delay, isZero, multiply } from '@rainbow-me/utilities';
 import {
   ethereumUtils,
+  getBlocksFromTimestamps,
   isLowerCaseMatch,
   TokensListenedCache,
 } from '@rainbow-me/utils';
@@ -311,8 +312,8 @@ export const dataUpdateAssets = assets => (dispatch, getState) => {
 
 const checkMeta = message => (dispatch, getState) => {
   const { accountAddress, nativeCurrency } = getState().settings;
-  const address = get(message, 'meta.address');
-  const currency = get(message, 'meta.currency');
+  const address = message?.meta?.address;
+  const currency = message?.meta?.currency;
   return (
     isLowerCaseMatch(address, accountAddress) &&
     isLowerCaseMatch(currency, nativeCurrency)
@@ -337,7 +338,7 @@ export const transactionsReceived = (message, appended = false) => async (
 ) => {
   const isValidMeta = dispatch(checkMeta(message));
   if (!isValidMeta) return;
-  const transactionData = get(message, 'payload.transactions', []);
+  const transactionData = message?.payload?.transactions ?? [];
   if (appended) {
     dispatch(checkForConfirmedSavingsActions(transactionData));
   }
@@ -388,7 +389,7 @@ export const transactionsRemoved = message => (dispatch, getState) => {
   const isValidMeta = dispatch(checkMeta(message));
   if (!isValidMeta) return;
 
-  const transactionData = get(message, 'payload.transactions', []);
+  const transactionData = message?.payload?.transactions ?? [];
   if (!transactionData.length) return;
   const { accountAddress, network } = getState().settings;
   const { transactions } = getState().data;
@@ -416,7 +417,7 @@ export const addressAssetsReceived = (
   if (!isValidMeta) return;
   const { accountAddress, network } = getState().settings;
   const { uniqueTokens } = getState().uniqueTokens;
-  const payload = values(get(message, 'payload.assets', {}));
+  const payload = values(message?.payload?.assets ?? {});
   let assets = filter(
     payload,
     asset =>
@@ -459,9 +460,7 @@ export const addressAssetsReceived = (
     );
   }
 
-  parsedAssets = parsedAssets.filter(
-    asset => !!Number(get(asset, 'balance.amount'))
-  );
+  parsedAssets = parsedAssets.filter(asset => !!Number(asset?.balance?.amount));
 
   saveAssets(parsedAssets, accountAddress, network);
   if (parsedAssets.length > 0) {
@@ -484,6 +483,7 @@ export const addressAssetsReceived = (
 const subscribeToMissingPrices = addresses => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   const { uniswapPricesQuery } = getState().data;
+
   if (uniswapPricesQuery) {
     uniswapPricesQuery.refetch({ addresses });
   } else {
@@ -498,49 +498,72 @@ const subscribeToMissingPrices = addresses => (dispatch, getState) => {
 
     const newSubscription = newQuery.subscribe({
       next: async ({ data }) => {
-        if (data && data.tokens) {
-          const nativePriceOfEth = ethereumUtils.getEthPriceUnit();
-          const tokenAddresses = map(data.tokens, property('id'));
+        try {
+          if (data?.tokens) {
+            const nativePriceOfEth = ethereumUtils.getEthPriceUnit();
+            const tokenAddresses = map(data.tokens, property('id'));
 
-          const yesterday = getUnixTime(subDays(new Date(), 1));
-          const historicalPriceCalls = map(tokenAddresses, address =>
-            get24HourPrice(address, yesterday)
-          );
-          const historicalPriceResults = await Promise.all(
-            historicalPriceCalls
-          );
-          const mappedHistoricalData = keyBy(historicalPriceResults, 'id');
-          const missingHistoricalPrices = mapValues(
-            mappedHistoricalData,
-            value => value.priceUSD
-          );
+            const yesterday = getUnixTime(
+              startOfMinute(sub(Date.now(), { days: 1 }))
+            );
+            const [{ number: yesterdayBlock }] = await getBlocksFromTimestamps([
+              yesterday,
+            ]);
 
-          const mappedPricingData = keyBy(data.tokens, 'id');
-          const missingPrices = mapValues(mappedPricingData, token =>
-            divide(nativePriceOfEth, token.derivedETH)
-          );
-          const missingPriceInfo = mapValues(
-            missingPrices,
-            (currentPrice, key) => {
-              const historicalPrice = get(missingHistoricalPrices, `[${key}]`);
-              const tokenAddress = get(mappedPricingData, `[${key}].id`);
-              const relativePriceChange = historicalPrice
-                ? ((currentPrice - historicalPrice) / currentPrice) * 100
-                : 0;
-              return {
-                price: currentPrice,
-                relativePriceChange,
-                tokenAddress,
-              };
-            }
-          );
-          const tokenPricingInfo = mapKeys(missingPriceInfo, 'tokenAddress');
+            const historicalPriceCalls = map(tokenAddresses, address =>
+              get24HourPrice(address, yesterdayBlock)
+            );
+            const historicalPriceResults = await Promise.all(
+              historicalPriceCalls
+            );
+            const mappedHistoricalData = keyBy(historicalPriceResults, 'id');
+            const { chartsEthUSDDay } = getState().charts;
+            const ethereumPriceOneDayAgo = chartsEthUSDDay?.[0]?.[1];
 
-          saveAssetPricesFromUniswap(tokenPricingInfo, accountAddress, network);
-          dispatch({
-            payload: tokenPricingInfo,
-            type: DATA_UPDATE_ASSET_PRICES_FROM_UNISWAP,
-          });
+            const missingHistoricalPrices = mapValues(
+              mappedHistoricalData,
+              value => multiply(ethereumPriceOneDayAgo, value?.derivedETH)
+            );
+
+            const mappedPricingData = keyBy(data.tokens, 'id');
+            const missingPrices = mapValues(mappedPricingData, token =>
+              multiply(nativePriceOfEth, token.derivedETH)
+            );
+            const missingPriceInfo = mapValues(
+              missingPrices,
+              (currentPrice, key) => {
+                const historicalPrice = get(
+                  missingHistoricalPrices,
+                  `[${key}]`
+                );
+                const tokenAddress = get(mappedPricingData, `[${key}].id`);
+                const relativePriceChange = historicalPrice
+                  ? ((currentPrice - historicalPrice) / currentPrice) * 100
+                  : 0;
+                return {
+                  price: currentPrice,
+                  relativePriceChange,
+                  tokenAddress,
+                };
+              }
+            );
+            const tokenPricingInfo = mapKeys(missingPriceInfo, 'tokenAddress');
+
+            saveAssetPricesFromUniswap(
+              tokenPricingInfo,
+              accountAddress,
+              network
+            );
+            dispatch({
+              payload: tokenPricingInfo,
+              type: DATA_UPDATE_ASSET_PRICES_FROM_UNISWAP,
+            });
+          }
+        } catch (error) {
+          logger.log(
+            'Error fetching historical prices from the subgraph',
+            error
+          );
         }
       },
     });
@@ -555,15 +578,16 @@ const subscribeToMissingPrices = addresses => (dispatch, getState) => {
 };
 
 const get24HourPrice = async (address, yesterday) => {
-  const result = await uniswapClient.query({
-    query: UNISWAP_24HOUR_PRICE_QUERY,
-    variables: {
-      address,
+  try {
+    const result = await uniswapClient.query({
       fetchPolicy: 'no-cache',
-      timestamp: yesterday,
-    },
-  });
-  return get(result, 'data.tokenDayDatas[0]');
+      query: UNISWAP_24HOUR_PRICE_QUERY(address, yesterday),
+    });
+    return result?.data?.tokens?.[0];
+  } catch (error) {
+    logger.log('Error getting missing 24hour price', error);
+    return null;
+  }
 };
 
 export const assetPricesReceived = (message, fromFallback = false) => (
@@ -573,7 +597,7 @@ export const assetPricesReceived = (message, fromFallback = false) => (
   if (!fromFallback) {
     disableGenericAssetsFallbackIfNeeded();
   }
-  const assets = get(message, 'payload.prices', {});
+  const assets = message?.payload?.prices ?? {};
   const { nativeCurrency } = getState().settings;
 
   if (toLower(nativeCurrency) === message?.meta?.currency) {
@@ -601,8 +625,8 @@ export const assetPricesReceived = (message, fromFallback = false) => (
 };
 
 export const assetPricesChanged = message => (dispatch, getState) => {
-  const price = get(message, 'payload.prices[0].price');
-  const assetAddress = get(message, 'meta.asset_code');
+  const price = message?.payload?.prices?.[0]?.price;
+  const assetAddress = message?.meta?.asset_code;
   if (isNil(price) || isNil(assetAddress)) return;
   const { genericAssets } = getState().data;
   const genericAsset = {

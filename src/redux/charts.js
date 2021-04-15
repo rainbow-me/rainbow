@@ -7,7 +7,8 @@ import { ETH_ADDRESS } from '@rainbow-me/references';
 // -- Constants --------------------------------------- //
 const CHARTS_UPDATE_CHART_TYPE = 'charts/CHARTS_UPDATE_CHART_TYPE';
 const CHARTS_UPDATE = 'charts/CHARTS_UPDATE';
-const CHARTS_UPDATE_USD = 'charts/CHARTS_UPDATE_USD';
+const CHARTS_UPDATE_USD_DAY = 'charts/CHARTS_UPDATE_USD_DAY';
+const CHARTS_UPDATE_USD_MONTH = 'charts/CHARTS_UPDATE_USD_MONTH';
 
 export const DEFAULT_CHART_TYPE = ChartTypes.day;
 
@@ -42,19 +43,26 @@ export const assetChartsReceived = message => (dispatch, getState) => {
 
   if (
     message?.meta?.currency === currenyTypes.usd &&
-    assetCharts[ETH_ADDRESS] &&
-    message?.meta?.charts_type === 'm'
+    assetCharts[ETH_ADDRESS]
   ) {
-    dispatch({
-      payload: reverse(assetCharts[ETH_ADDRESS]),
-      type: CHARTS_UPDATE_USD,
-    });
+    if (message?.meta?.charts_type === 'm') {
+      dispatch({
+        payload: reverse(assetCharts[ETH_ADDRESS]),
+        type: CHARTS_UPDATE_USD_MONTH,
+      });
+    } else if (message?.meta?.charts_type === 'd') {
+      dispatch({
+        payload: reverse(assetCharts[ETH_ADDRESS]),
+        type: CHARTS_UPDATE_USD_DAY,
+      });
+    }
   }
 };
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
   charts: {},
+  chartsEthUSDDay: {},
   chartsEthUSDMonth: {},
   chartType: DEFAULT_CHART_TYPE,
   chartType2: DEFAULT_CHART_TYPE,
@@ -77,7 +85,12 @@ export default (state = INITIAL_STATE, action) => {
         fetchingCharts: false,
         fetchingCharts2: false,
       };
-    case CHARTS_UPDATE_USD:
+    case CHARTS_UPDATE_USD_DAY:
+      return {
+        ...state,
+        chartsEthUSDDay: action.payload,
+      };
+    case CHARTS_UPDATE_USD_MONTH:
       return {
         ...state,
         chartsEthUSDMonth: action.payload,

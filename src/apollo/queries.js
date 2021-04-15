@@ -177,20 +177,19 @@ export const COMPOUND_ACCOUNT_AND_MARKET_QUERY = gql`
   }
 `;
 
-export const UNISWAP_24HOUR_PRICE_QUERY = gql`
-  query tokenDayDatas($timestamp: Int!, $address: String!) {
-    tokenDayDatas(
-      where: { id: $address, date_lt: $timestamp }
-      first: 1
-      orderBy: dailyVolumeEth
-      orderDirection: desc
-    ) {
-      id
-      priceUSD
-      date
+export const UNISWAP_24HOUR_PRICE_QUERY = (tokenAddress, block) => {
+  const queryString = `
+    query tokens {
+      tokens(${
+        block ? `block : {number: ${block}}` : ``
+      } where: {id:"${tokenAddress}"}) {
+        id
+        derivedETH
+      }
     }
-  }
-`;
+  `;
+  return gql(queryString);
+};
 
 export const UNISWAP_PRICES_QUERY = gql`
   query tokens($addresses: [String]!) {

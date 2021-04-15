@@ -2,14 +2,12 @@ import axios from 'axios';
 import { getUnixTime, startOfMinute, sub } from 'date-fns';
 import { uniswapClient } from '../apollo/client';
 import { TOKEN_DATA, UNISWAP_ADDITIONAL_TOKEN_DATA } from '../apollo/queries';
-import {
-  get2DayPercentChange,
-  getBlocksFromTimestamps,
-} from '../hooks/useUniswapPools';
+import { get2DayPercentChange } from '../hooks/useUniswapPools';
 import { fetchCoingeckoIds } from '@rainbow-me/redux/fallbackExplorer';
 import { AppDispatch, AppState } from '@rainbow-me/redux/store';
 import { ETH_ADDRESS, WETH_ADDRESS } from '@rainbow-me/references';
-import { logger } from '@rainbow-me/utils';
+import { getBlocksFromTimestamps } from '@rainbow-me/utils';
+import logger from 'logger';
 
 // -- Constants ------------------------------------------------------------- //
 const ADDITIONAL_ASSET_DATA_COINGECKO =
