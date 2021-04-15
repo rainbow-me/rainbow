@@ -172,6 +172,7 @@ export default function ExchangeModal({
   const {
     derivedValues: { inputAmount, nativeAmount, outputAmount },
     displayValues: { inputAmountDisplay, outputAmountDisplay },
+    doneLoadingReserves,
     tradeDetails,
   } = useSwapDerivedOutputs();
 
@@ -344,6 +345,7 @@ export default function ExchangeModal({
   const confirmButtonProps = useMemoOne(
     () => ({
       disabled: !Number(inputAmount),
+      doneLoadingReserves,
       inputAmount,
       isAuthorizing,
       isHighPriceImpact,
@@ -352,6 +354,7 @@ export default function ExchangeModal({
       type,
     }),
     [
+      doneLoadingReserves,
       handleSubmit,
       inputAmount,
       isAuthorizing,
