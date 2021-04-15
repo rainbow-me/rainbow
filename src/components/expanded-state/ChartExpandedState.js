@@ -121,7 +121,7 @@ const Spacer = styled.View`
 // truncate after the first paragraph or 4th dot
 function truncate(text) {
   const firstParagraph = text.split('\n')[0];
-  const first4Sentences = text.split('.').slice(0, 4).join('.');
+  const first4Sentences = text.split('.').slice(0, 4).join('.') + '.';
   const shorterOne =
     first4Sentences.length < firstParagraph.length
       ? first4Sentences
@@ -145,11 +145,14 @@ function Description({ text }) {
 
   const { colors } = useTheme();
   return (
-    <ButtonPressAnimation disabled={!needToTruncate} scaleTo={0.99}>
+    <ButtonPressAnimation
+      disabled={!needToTruncate}
+      onPress={() => setTruncated(prev => !prev)}
+      scaleTo={0.99}
+    >
       <Text
         color={colors.alpha(colors.blueGreyDark, 0.5)}
         lineHeight="paragraphSmall"
-        onPress={() => setTruncated(prev => !prev)}
         size="lmedium"
       >
         {delayedTruncated ? truncatedText : text}
