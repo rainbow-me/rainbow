@@ -23,7 +23,7 @@ public extension UIView {
 
 class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSupport {
   static var swizzled = false
-  var config : RNCMScreenView?
+  @objc var config : RNCMScreenView?
   var length: CGFloat = 0
   var topAnchor: NSLayoutYAxisAnchor = NSLayoutYAxisAnchor.init()
   var bottomAnchor: NSLayoutYAxisAnchor = NSLayoutYAxisAnchor.init()
@@ -265,6 +265,16 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
       config?.removeController()
     }
     config = nil
+    
+    let isSlack = self.presentingViewController?.responds(to: NSSelectorFromString("unhackParent")) ?? false
+    
+    if (isSlack) {
+      let parentConfig: RNCMScreenView? = self.presentingViewController?.value(forKey: "config") as? RNCMScreenView
+      let isHidden: Bool = parentConfig?.value(forKey: "_hidden") as? Bool ?? false
+      if (isHidden) {
+        self.presentingViewController!.dismiss(animated: false)
+      }
+    }
   }
 
   override func viewDidAppear(_ animated: Bool) {

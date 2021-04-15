@@ -51,6 +51,7 @@
     _dismissable = YES;
     _ignoreBottomOffset = NO;
     _interactWithScrollView = true;
+    _hidden = false;
   }
   
   return self;
@@ -68,6 +69,14 @@
 
 - (void) layout {
   [(PanModalViewController*) [_controller parentVC] panModalSetNeedsLayoutUpdateWrapper];
+}
+
+- (void) setHidden:(BOOL)hidden {
+  if (hidden) {
+    _hidden = hidden;
+    self.superview.superview.subviews[0].backgroundColor = [UIColor.whiteColor colorWithAlphaComponent:0];
+    [(PanModalViewController*) [_controller parentVC] hide];
+  }
 }
 
 - (void)jumpTo:(nonnull NSNumber*)point {
@@ -469,6 +478,7 @@ RCT_EXPORT_VIEW_PROPERTY(allowsTapToDismiss, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(allowsDragToDismiss, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(startFromShortForm, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(ignoreBottomOffset, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(hidden, BOOL)
 
 
 - (UIView *)view

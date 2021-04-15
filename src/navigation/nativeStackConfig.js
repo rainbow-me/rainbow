@@ -4,6 +4,7 @@ import { getActiveRoute, onDidPop, onWillPop } from './Navigation';
 import { appearListener } from './nativeStackHelpers';
 
 export const nativeStackConfig = {
+  limitActiveModals: true,
   mode: 'modal',
   screenOptions: {
     contentStyle: {

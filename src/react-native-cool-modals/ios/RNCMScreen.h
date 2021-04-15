@@ -75,6 +75,7 @@ typedef NS_ENUM(NSInteger, RNSScreenStackAnimation) {
 @property (nonatomic, nonnull) NSNumber *headerHeight;
 @property (nonatomic, nonnull) NSNumber *shortFormHeight;
 @property (nonatomic) BOOL startFromShortForm;
+@property (nonatomic) BOOL hidden;
 
 - (void)notifyFinishTransitioning;
 - (void)willDismiss;

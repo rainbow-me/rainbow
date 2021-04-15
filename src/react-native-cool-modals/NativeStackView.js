@@ -13,7 +13,7 @@ const sx = StyleSheet.create({
 
 const { RNCMScreenManager } = NativeModules;
 
-function ScreenView({ colors, descriptors, navigation, route, state }) {
+function ScreenView({ colors, descriptors, navigation, route, state, hidden }) {
   const { options, render: renderScene } = descriptors[route.key];
   const ref = useRef();
   const {
@@ -85,6 +85,7 @@ function ScreenView({ colors, descriptors, navigation, route, state }) {
         dismissable={dismissable}
         gestureEnabled={gestureEnabled}
         headerHeight={headerHeight}
+        hidden={hidden}
         ignoreBottomOffset={ignoreBottomOffset}
         interactWithScrollView={interactWithScrollView}
         isShortFormEnabled={isShortFormEnabled}
@@ -148,8 +149,18 @@ function ScreenView({ colors, descriptors, navigation, route, state }) {
   );
 }
 
-export default function NativeStackView({ state, navigation, descriptors }) {
+export default function NativeStackView({
+  state,
+  navigation,
+  descriptors,
+  limitActiveModals,
+}) {
   const { colors } = useTheme();
+
+  const nonSingleRoutesLength = state.routes.filter(route => {
+    const { options } = descriptors[route.key];
+    return !options.single;
+  }).length;
 
   return (
     <Components.ScreenStack style={sx.container}>
@@ -157,6 +168,9 @@ export default function NativeStackView({ state, navigation, descriptors }) {
         <ScreenView
           colors={colors}
           descriptors={descriptors}
+          hidden={
+            limitActiveModals && nonSingleRoutesLength - 3 >= i && i !== 0
+          }
           key={`screen${i}`}
           navigation={navigation}
           route={route}
