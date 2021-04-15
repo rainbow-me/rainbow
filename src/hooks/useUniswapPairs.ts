@@ -17,14 +17,14 @@ export default function useUniswapPairs() {
     PAIR_GET_RESERVES_FRAGMENT
   );
 
-  const { allPairs, doneLoadingResults } = useMemo(() => {
-    let doneLoadingResults = true;
+  const { allPairs, doneLoadingReserves } = useMemo(() => {
+    let doneLoadingReserves = true;
     const viablePairs = multicallResults.map((result, i) => {
       const { result: reserves, loading } = result;
       const tokenA = allPairCombinations[i][0];
       const tokenB = allPairCombinations[i][1];
       if (loading) {
-        doneLoadingResults = false;
+        doneLoadingReserves = false;
       }
 
       if (loading || !reserves || !tokenA || !tokenB) return null;
@@ -37,14 +37,15 @@ export default function useUniswapPairs() {
         new TokenAmount(token1, reserve1.toString())
       );
     });
+
     return {
       allPairs: compact(viablePairs),
-      doneLoadingResults,
+      doneLoadingReserves,
     };
   }, [allPairCombinations, multicallResults]);
 
   return {
     allPairs,
-    doneLoadingResults,
+    doneLoadingReserves,
   };
 }
