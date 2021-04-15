@@ -149,12 +149,7 @@ function ScreenView({ colors, descriptors, navigation, route, state, hidden }) {
   );
 }
 
-export default function NativeStackView({
-  state,
-  navigation,
-  descriptors,
-  limitActiveModals,
-}) {
+export default function NativeStackView({ state, navigation, descriptors }) {
   const { colors } = useTheme();
 
   const nonSingleRoutesLength = state.routes.filter(route => {
@@ -164,19 +159,23 @@ export default function NativeStackView({
 
   return (
     <Components.ScreenStack style={sx.container}>
-      {state.routes.map((route, i) => (
-        <ScreenView
-          colors={colors}
-          descriptors={descriptors}
-          hidden={
-            limitActiveModals && nonSingleRoutesLength - 3 >= i && i !== 0
-          }
-          key={`screen${i}`}
-          navigation={navigation}
-          route={route}
-          state={state}
-        />
-      ))}
+      {state.routes.map((route, i) => {
+        const { options } = descriptors[route.key];
+        const { limitActiveModals } = options;
+        return (
+          <ScreenView
+            colors={colors}
+            descriptors={descriptors}
+            hidden={
+              limitActiveModals && nonSingleRoutesLength - 3 >= i && i !== 0
+            }
+            key={`screen${i}`}
+            navigation={navigation}
+            route={route}
+            state={state}
+          />
+        );
+      })}
     </Components.ScreenStack>
   );
 }

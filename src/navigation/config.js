@@ -93,6 +93,16 @@ export const expandedAssetSheetConfig = {
   }),
 };
 
+export const expandedAssetSheetConfigWithLimit = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      scrollEnabled: true,
+    }),
+    limitActiveModals: true,
+  }),
+};
+
 const restoreSheetSizes = {
   ...backupSheetSizes,
   medium: 505,
