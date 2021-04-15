@@ -112,7 +112,7 @@ export const estimateSwapGasLimit = async ({
     });
 
     const params = { from: accountAddress, ...(value ? { value } : {}) };
-    const gasEstimates: (String | undefined)[] = await Promise.all(
+    const gasEstimates: (string | undefined)[] = await Promise.all(
       methodNames.map((methodName: string) =>
         estimateGasWithPadding(
           params,
