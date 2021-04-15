@@ -74,8 +74,12 @@
 - (void) setHidden:(BOOL)hidden {
   if (hidden) {
     _hidden = hidden;
-    self.superview.superview.subviews[0].backgroundColor = [UIColor.whiteColor colorWithAlphaComponent:0];
-    [(PanModalViewController*) [_controller parentVC] hide];
+    dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC);
+    dispatch_after(delay, dispatch_get_main_queue(), ^(void){
+      self.superview.superview.subviews[0].backgroundColor = [UIColor.whiteColor colorWithAlphaComponent:0];
+      [(PanModalViewController*) [_controller parentVC] hide];
+    });
+   
   }
 }
 
