@@ -2,6 +2,7 @@ import { toLower } from 'lodash';
 import React, { useCallback } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
+import { useRemoveNextToLast } from '../../../navigation/useRemoveNextToLast';
 import { ButtonPressAnimation } from '../../animations';
 import { UnderlyingAssetCoinRow } from '../../coin-row';
 import { Column, Row } from '../../layout';
@@ -34,6 +35,8 @@ export default function UnderlyingAsset({
     genericAssets,
   }));
 
+  const removeNextToLastRoute = useRemoveNextToLast();
+
   const handlePress = useCallback(() => {
     const asset =
       ethereumUtils.getAsset(allAssets, toLower(address)) ||
@@ -42,12 +45,21 @@ export default function UnderlyingAsset({
         nativeCurrency
       );
 
-    push(ios ? Routes.EXPANDED_ASSET_SHEET : Routes.EXPANDED_ASSET_SCREEN, {
+    android && removeNextToLastRoute();
+
+    push(Routes.EXPANDED_ASSET_SHEET, {
       asset,
       longFormHeight: initialChartExpandedStateSheetHeight,
       type: 'token',
     });
-  }, [address, allAssets, genericAssets, nativeCurrency, push]);
+  }, [
+    address,
+    allAssets,
+    genericAssets,
+    nativeCurrency,
+    push,
+    removeNextToLastRoute,
+  ]);
 
   return (
     <Row

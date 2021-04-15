@@ -128,7 +128,11 @@ function MainNavigator() {
       <Stack.Screen
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SHEET}
-        options={expandedPreset}
+        options={args =>
+          args?.route?.params?.type === 'token'
+            ? sheetPresetWithSmallGestureResponseDistance(args)
+            : sheetPreset(args)
+        }
       />
       <Stack.Screen
         component={ExpandedAssetSheet}

@@ -4,6 +4,7 @@ import { View } from 'react-native';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { UniBalanceHeightDifference } from '../../hooks/charts/useChartThrottledPoints';
+import { useRemoveNextToLast } from '../../navigation/useRemoveNextToLast';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText, CoinRow } from '../coin-row';
 import CoinName from '../coin-row/CoinName';
@@ -58,6 +59,7 @@ const TopRow = item => {
 
 export default function UniswapPoolListRow({ assetType, item, ...props }) {
   const { push } = useNavigation();
+  const removeNextToLastRoute = useRemoveNextToLast();
   const { nativeCurrency } = useAccountSettings();
   const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
     genericAssets,
@@ -75,6 +77,7 @@ export default function UniswapPoolListRow({ assetType, item, ...props }) {
         nativeCurrency
       )[0];
     }
+    android && removeNextToLastRoute();
     push(Routes.EXPANDED_ASSET_SHEET_POOLS, {
       asset: poolAsset,
       dpi: true,
@@ -85,7 +88,15 @@ export default function UniswapPoolListRow({ assetType, item, ...props }) {
           UniBalanceHeightDifference,
       type: assetType,
     });
-  }, [assetType, genericAssets, item, nativeCurrency, push, uniswap]);
+  }, [
+    assetType,
+    genericAssets,
+    item,
+    nativeCurrency,
+    push,
+    removeNextToLastRoute,
+    uniswap,
+  ]);
 
   return (
     <ButtonPressAnimation onPress={handleOpenExpandedState} scaleTo={0.96}>
