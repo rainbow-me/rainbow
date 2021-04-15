@@ -163,7 +163,7 @@ const executeAction = async (
     );
     return { baseNonce: nonce, errorMessage: null };
   } catch (error) {
-    logger.sentry('[3 INNER] error running action');
+    logger.sentry('[3 INNER] error running action, code:', error?.code);
     captureException(error);
     analytics.track('Rap failed', {
       category: 'raps',
