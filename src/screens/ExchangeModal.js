@@ -304,7 +304,7 @@ export default function ExchangeModal({
           return;
         }
 
-        const callback = (success = true, errorMessage = null) => {
+        const callback = (success = false, errorMessage = null) => {
           setIsAuthorizing(false);
           if (success) {
             setParams({ focused: false });

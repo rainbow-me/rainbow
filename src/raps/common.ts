@@ -210,7 +210,7 @@ export const executeRap = async (
         const action = actions[index];
         await executeAction(action, wallet, rap, index, rapName, baseNonce);
       }
-      callback();
+      callback(true);
     } else {
       // Callback with failure state
       callback(false, errorMessage);
