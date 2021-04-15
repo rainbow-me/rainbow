@@ -182,10 +182,10 @@ const LiquidityPoolExpandedState = () => {
     .concat('%');
 
   const formattedHalf0 = half0
-    ? bigNumberFormat(half0, nativeCurrency)
+    ? bigNumberFormat(half0, nativeCurrency, half0 >= 10000)
     : 'Half';
   const formattedHalf1 = half1
-    ? bigNumberFormat(half1, nativeCurrency)
+    ? bigNumberFormat(half1, nativeCurrency, half1 >= 10000)
     : 'Half';
 
   return (

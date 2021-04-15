@@ -270,6 +270,7 @@ export default function ChartExpandedState({ asset }) {
       <CoinDividerOpenButton
         coinDividerHeight={CoinDividerHeight}
         isActive
+        isSendSheet
         isSmallBalancesOpen={delayedMorePoolsVisible}
         marginLeft={18}
         onPress={() => setMorePoolsVisible(prev => !prev)}
