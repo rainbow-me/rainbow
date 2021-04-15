@@ -77,7 +77,10 @@ export default function UniswapPoolListRow({ assetType, item, ...props }) {
         nativeCurrency
       )[0];
     }
+
+    // on iOS we handle this on native side
     android && removeNextToLastRoute();
+
     push(Routes.EXPANDED_ASSET_SHEET_POOLS, {
       asset: poolAsset,
       dpi: true,

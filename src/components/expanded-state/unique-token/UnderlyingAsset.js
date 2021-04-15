@@ -45,6 +45,7 @@ export default function UnderlyingAsset({
         nativeCurrency
       );
 
+    // on iOS we handle this on native side
     android && removeNextToLastRoute();
 
     push(Routes.EXPANDED_ASSET_SHEET, {

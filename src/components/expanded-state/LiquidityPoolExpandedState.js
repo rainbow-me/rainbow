@@ -153,7 +153,7 @@ const LiquidityPoolExpandedState = () => {
   const liquidityPoolExpandedStateSheetHeight =
     (ios || showChart ? heightWithChart : heightWithoutChart) +
     (android && 44) -
-    (uniBalance ? 0 : UniBalanceHeightDifference);
+    (uniBalance || android ? 0 : UniBalanceHeightDifference);
 
   const chartDataLabels = useMemo(() => {
     if (chartType === chartTypes.month && params?.asset?.profit30d) {

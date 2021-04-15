@@ -262,15 +262,6 @@ function MainOuterNavigator() {
       />
       <OuterStack.Screen
         component={ExpandedAssetSheet}
-        name={Routes.EXPANDED_ASSET_SCREEN}
-        options={args =>
-          args?.route?.params?.type === 'token'
-            ? sheetPresetWithSmallGestureResponseDistance(args)
-            : sheetPreset(args)
-        }
-      />
-      <OuterStack.Screen
-        component={ExpandedAssetSheet}
         name={Routes.TOKEN_INDEX_SCREEN}
         options={expandedPresetWithSmallGestureResponseDistance}
       />
