@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Keyboard } from 'react-native';
+import { Alert, Keyboard } from 'react-native';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
@@ -304,10 +304,14 @@ export default function ExchangeModal({
           return;
         }
 
-        const callback = () => {
+        const callback = (success = true, errorMessage = null) => {
           setIsAuthorizing(false);
-          setParams({ focused: false });
-          navigate(Routes.PROFILE_SCREEN);
+          if (success) {
+            setParams({ focused: false });
+            navigate(Routes.PROFILE_SCREEN);
+          } else if (errorMessage) {
+            Alert.alert(errorMessage);
+          }
         };
         logger.log('[exchange - handle submit] rap');
         const swapParameters = {
