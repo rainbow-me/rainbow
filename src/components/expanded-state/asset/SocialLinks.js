@@ -18,7 +18,7 @@ const Carousel = styled.ScrollView.attrs({
 })``;
 
 const CommunityLink = styled(Link)`
-  padding-top: 10;
+  padding-top: ${ios ? 10 : 5};
 `;
 
 const CommunityLinkWrapper = styled.View`
