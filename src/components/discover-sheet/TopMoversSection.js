@@ -1,7 +1,7 @@
 import { toLower } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import { IS_TESTING } from 'react-native-dotenv';
-import { initialChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
+import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/ChartExpandedState';
 import { Centered, Column, Flex } from '../layout';
 import { MarqueeList } from '../list';
 import { Text } from '../text';

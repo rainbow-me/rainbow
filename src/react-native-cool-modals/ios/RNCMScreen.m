@@ -52,6 +52,7 @@
     _ignoreBottomOffset = NO;
     _interactWithScrollView = true;
     _hidden = false;
+    _disableShortFormAfterTransitionToLongForm = false;
   }
   
   return self;
@@ -478,6 +479,7 @@ RCT_EXPORT_VIEW_PROPERTY(shortFormHeight, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(isShortFormEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(blocksBackgroundTouches, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(anchorModalToLongForm, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(disableShortFormAfterTransitionToLongForm, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(allowsTapToDismiss, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(allowsDragToDismiss, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(startFromShortForm, BOOL)

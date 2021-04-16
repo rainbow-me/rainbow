@@ -21,6 +21,10 @@ const buildCoolModalConfig = params => ({
   blocksBackgroundTouches: true,
   cornerRadius: params.cornerRadius || 39,
   customStack: true,
+  disableShortFormAfterTransitionToLongForm:
+    params.disableShortFormAfterTransitionToLongForm ||
+    params?.type === 'token' ||
+    params?.type === 'uniswap',
   gestureEnabled: true,
   headerHeight: params.headerHeight || 25,
   ignoreBottomOffset: true,

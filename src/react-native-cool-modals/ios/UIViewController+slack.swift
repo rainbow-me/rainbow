@@ -76,7 +76,13 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
     panModalSetNeedsLayoutUpdate()
   }
   
+  var forceDisableShortForm = false
+  
   func willTransition(to state: PanModalPresentationController.PresentationState) {
+    if state == .longForm && config?.disableShortFormAfterTransitionToLongForm ?? false {
+      forceDisableShortForm = true
+      self.panModalSetNeedsLayoutUpdate()
+    }
     self.state = state;
   }
 
@@ -230,7 +236,7 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
 
   var shortFormHeight: PanModalHeight {
     let height: CGFloat = CGFloat(truncating: self.config?.shortFormHeight ?? 0.0)
-    return isShortFormEnabled ? .contentHeight(height) : longFormHeight
+    return (isShortFormEnabled && !forceDisableShortForm) ? .contentHeight(height) : longFormHeight
   }
 
   var springDamping: CGFloat {

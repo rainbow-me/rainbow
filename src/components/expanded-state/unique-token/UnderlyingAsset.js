@@ -7,7 +7,7 @@ import { ButtonPressAnimation } from '../../animations';
 import { UnderlyingAssetCoinRow } from '../../coin-row';
 import { Column, Row } from '../../layout';
 import { Text } from '../../text';
-import { initialChartExpandedStateSheetHeight } from '../ChartExpandedState';
+import { initialChartExpandedStateSheetHeight } from '../asset/ChartExpandedState';
 import { useAccountAssets, useAccountSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';

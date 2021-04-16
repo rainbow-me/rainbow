@@ -43,6 +43,7 @@ function ScreenView({ colors, descriptors, navigation, route, state, hidden }) {
     startFromShortForm,
     topOffset,
     transitionDuration,
+    disableShortFormAfterTransitionToLongForm,
   } = options;
 
   const context = useMemo(
@@ -82,6 +83,9 @@ function ScreenView({ colors, descriptors, navigation, route, state, hidden }) {
         backgroundOpacity={backgroundOpacity}
         cornerRadius={cornerRadius}
         customStack={customStack}
+        disableShortFormAfterTransitionToLongForm={
+          disableShortFormAfterTransitionToLongForm
+        }
         dismissable={dismissable}
         gestureEnabled={gestureEnabled}
         headerHeight={headerHeight}

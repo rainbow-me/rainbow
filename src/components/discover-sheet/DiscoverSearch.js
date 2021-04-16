@@ -21,7 +21,7 @@ import tokenSectionTypes from '../../helpers/tokenSectionTypes';
 import { emitAssetRequest } from '../../redux/explorer';
 import deviceUtils from '../../utils/deviceUtils';
 import { CurrencySelectionList } from '../exchange';
-import { initialChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
+import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/ChartExpandedState';
 import { Row } from '../layout';
 import DiscoverSheetContext from './DiscoverSheetContext';
 import {
