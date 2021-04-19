@@ -179,35 +179,6 @@ export default function UniswapPools({
     [colors, sortDirection]
   );
 
-  const renderTypeItem = useCallback(
-    ({ item: list, index }) => (
-      <PoolListButton
-        key={`list-${list.id}`}
-        onPress={() => handleSwitchList(list.id, index)}
-        selected={selectedList === list.id}
-        testID={`pools-list-${list.id}`}
-        titleColor={getTitleColor(selectedList === list.id, list.id)}
-      >
-        <Row>
-          <ListName
-            color={getTitleColor(selectedList === list.id, list.id)}
-            lineHeight="paragraphSmall"
-            size="lmedium"
-            weight="bold"
-          >
-            {list.name}{' '}
-            {selectedList === list.id
-              ? sortDirection === 'desc'
-                ? '􀄩'
-                : '􀄨'
-              : ''}
-          </ListName>
-        </Row>
-      </PoolListButton>
-    ),
-    [getTitleColor, handleSwitchList, selectedList, sortDirection]
-  );
-
   const allPairs = useMemo(() => {
     if (!pairs) return [];
 
@@ -235,6 +206,42 @@ export default function UniswapPools({
 
     return allPairs;
   }, [allPairs, initialPageAmount, selectedList, showAll, sortDirection]);
+
+  const renderTypeItem = useCallback(
+    ({ item: list, index }) => (
+      <PoolListButton
+        disabled={pairsSorted.length === 1 && selectedList === list.id}
+        key={`list-${list.id}`}
+        onPress={() => handleSwitchList(list.id, index)}
+        selected={selectedList === list.id}
+        testID={`pools-list-${list.id}`}
+        titleColor={getTitleColor(selectedList === list.id, list.id)}
+      >
+        <Row>
+          <ListName
+            color={getTitleColor(selectedList === list.id, list.id)}
+            lineHeight="paragraphSmall"
+            size="lmedium"
+            weight="bold"
+          >
+            {list.name}{' '}
+            {selectedList === list.id && pairsSorted.length !== 1
+              ? sortDirection === 'desc'
+                ? '􀄩'
+                : '􀄨'
+              : ''}
+          </ListName>
+        </Row>
+      </PoolListButton>
+    ),
+    [
+      getTitleColor,
+      handleSwitchList,
+      pairsSorted.length,
+      selectedList,
+      sortDirection,
+    ]
+  );
 
   if (hideIfEmpty && isEmpty) {
     return null;
