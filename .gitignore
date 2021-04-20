@@ -45,7 +45,6 @@ local.properties
 *.iml
 android/app/google-services.json
 
-
 # node.js
 #
 node_modules/
@@ -87,4 +86,8 @@ ios/Extras.json
 
 # Rainbow scripts
 rainbow-scripts
+
+# Patches
+patches/react-native-webview+11.2.3.patch
+
 
