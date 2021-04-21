@@ -1,4 +1,4 @@
-import { sortBy, toLower, values } from 'lodash';
+import { sortBy, toLower } from 'lodash';
 import React, { useCallback, useMemo, useRef } from 'react';
 import DeviceInfo from 'react-native-device-info';
 import { SectionList } from 'react-native-gesture-handler';
@@ -11,9 +11,7 @@ import { SheetHandleFixedToTopHeight } from '../sheet';
 import { Text } from '../text';
 import { InvalidPasteToast, ToastPositionContainer } from '../toasts';
 import SendEmptyState from './SendEmptyState';
-import walletTypes from '@rainbow-me/helpers/walletTypes';
 import { useAccountSettings, useKeyboardHeight } from '@rainbow-me/hooks';
-import { useWalletsWithBalancesAndNames } from '@rainbow-me/hooks/useWalletsWithBalancesAndNames';
 
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
@@ -39,10 +37,10 @@ const SectionTitle = styled(Text).attrs({
 })`
   margin-left: 15;
   padding-top: 15;
-  padding-bottom: 15;
+  padding-bottom: 10;
 `;
 const SectionWrapper = styled.View`
-  margin-bottom: 20;
+  margin-bottom: 5;
   background-color: ${({ theme: { colors } }) => colors.white};
 `;
 const SendContactFlatList = styled(SectionList).attrs({
@@ -63,16 +61,15 @@ export default function SendContactList({
   currentInput,
   onPressContact,
   removeContact,
+  userAccounts,
 }) {
-  const { accountAddress, network } = useAccountSettings();
+  const { accountAddress } = useAccountSettings();
   const { navigate } = useNavigation();
   const insets = useSafeArea();
   const keyboardHeight = useKeyboardHeight();
 
   const contactRefs = useRef({});
   const touchedContact = useRef(undefined);
-
-  const wallets = useWalletsWithBalancesAndNames();
 
   const filteredContacts = useMemo(
     () => filterList(contacts, currentInput, ['nickname']),
@@ -126,22 +123,17 @@ export default function SendContactList({
   );
 
   const filteredAddresses = useMemo(() => {
-    const filteredWallets = values(wallets).filter(
-      wallet => wallet.type !== walletTypes.readOnly
+    return sortBy(
+      filterList(
+        userAccounts.filter(
+          account => toLower(account.address) !== toLower(accountAddress)
+        ),
+        currentInput,
+        ['label']
+      ),
+      ['index']
     );
-    const addresses = [];
-    filteredWallets.forEach(wallet => {
-      wallet.addresses.forEach(account => {
-        if (toLower(account.address) !== toLower(accountAddress)) {
-          addresses.push({
-            ...account,
-            network,
-          });
-        }
-      });
-    });
-    return sortBy(filterList(addresses, currentInput, ['label']), ['index']);
-  }, [accountAddress, currentInput, network, wallets]);
+  }, [accountAddress, currentInput, userAccounts]);
 
   const sections = useMemo(() => {
     const tmp = [];
