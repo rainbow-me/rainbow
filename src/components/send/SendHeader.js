@@ -163,7 +163,7 @@ export default function SendHeader({
           ref={recipientFieldRef}
           testID="send-asset-form-field"
         />
-        {isValidAddress && (
+        {isValidAddress && !userWallet && (
           <AddContactButton
             edit={isPreExistingContact}
             onPress={
