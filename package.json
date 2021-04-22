@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.5.3-1",
+  "version": "1.5.6-1",
   "private": true,
   "scripts": {
     "setup": "yarn install && yarn allow-scripts && yarn postinstall",
@@ -55,6 +55,7 @@
     "@ethersproject/constants": "^5.0.7",
     "@ethersproject/contracts": "^5.0.8",
     "@ethersproject/hdnode": "^5.0.7",
+    "@ethersproject/logger": "^5.1.0",
     "@ethersproject/providers": "^5.0.17",
     "@ethersproject/random": "^5.0.6",
     "@ethersproject/shims": "^5.0.10",
@@ -82,7 +83,7 @@
     "@react-navigation/native": "^5.5.1",
     "@react-navigation/stack": "^5.9.3",
     "@segment/analytics-react-native": "^1.4.1",
-    "@sentry/react-native": "2.0.2",
+    "@sentry/react-native": "2.4.0",
     "@tradle/react-native-http": "^2.0.1",
     "@types/i18n-js": "^3.0.3",
     "@types/lodash": "^4.14.168",

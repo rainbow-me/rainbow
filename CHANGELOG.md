@@ -12,6 +12,30 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.5.5](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.5)
+
+### Changed
+* Updated Transaction Error Logging
+* Removed Slow Speed from Swap
+
+## [1.5.4](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.4)
+
+### Added
+* Token Price Fallback via The Graph
+* Gas Estimation Logging
+
+### Changed
+* Top Movers Animation tweaked
+
+## [1.5.3](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.4)
+
+### Added
+* Extra Details for LP Positions
+* Extra Token Details
+
+### Changed
+* Numerous Performance Improvements
+
 ## [1.5.2](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.2)
 
 ### Added

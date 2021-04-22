@@ -84,7 +84,7 @@ export { default as useUniswapAssetsInWallet } from './useUniswapAssetsInWallet'
 export { default as useUniswapCalls } from './useUniswapCalls';
 export { default as useUpdateAssetOnchainBalance } from './useUpdateAssetOnchainBalance';
 export { default as useUniswapPools } from './useUniswapPools';
-export { default as useWebData } from './useWebData';
+export { default as useUserAccounts } from './useUserAccounts';
 export { default as useUserLists } from './useUserLists';
 export { default as useWalletBalances } from './useWalletBalances';
 export { default as useWalletCloudBackup } from './useWalletCloudBackup';
@@ -94,6 +94,7 @@ export { default as useWallets } from './useWallets';
 export { default as useWalletsDebug } from './useWalletsDebug';
 export { default as useWalletSectionsData } from './useWalletSectionsData';
 export { default as useWalletsWithBalancesAndNames } from './useWalletsWithBalancesAndNames';
+export { default as useWebData } from './useWebData';
 export { default as useWyreApplePay } from './useWyreApplePay';
 export { default as useForceUpdate } from './useForceUpdate';
 export { default as useOnAvatarPress } from './useOnAvatarPress';

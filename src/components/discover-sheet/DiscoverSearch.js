@@ -177,7 +177,7 @@ export default function DiscoverSearch() {
         setIsSearching(true);
         setSearchQueryForSearch(searchQuery);
       },
-      searchQuery === '' ? 1 : 250
+      searchQuery === '' ? 1 : 500
     );
   }, [searchQuery, setIsSearching, startQueryDebounce, stopQueryDebounce]);
 

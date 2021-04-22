@@ -1,3 +1,4 @@
+import { toChecksumAddress } from '@walletconnect/utils';
 import { toLower } from 'lodash';
 import React, { useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -76,24 +77,28 @@ export default function ReceiveModal() {
     setCopyCount(count => count + 1);
   }, []);
 
+  const checksummedAddress = useMemo(() => toChecksumAddress(accountAddress), [
+    accountAddress,
+  ]);
+
   return (
     <Container testID="receive-modal">
       <TouchableBackdrop onPress={goBack} />
       <Handle />
       <ColumnWithMargins align="center" margin={24}>
         <QRWrapper>
-          <QRCode size={QRCodeSize} value={accountAddress} />
+          <QRCode size={QRCodeSize} value={checksummedAddress} />
         </QRWrapper>
         <CopyFloatingEmojis
           onPress={handleCopiedText}
-          textToCopy={accountAddress}
+          textToCopy={checksummedAddress}
         >
           <ColumnWithMargins margin={2}>
             <NameText>{accountName}</NameText>
-            <AddressText address={accountAddress} />
+            <AddressText address={checksummedAddress} />
           </ColumnWithMargins>
         </CopyFloatingEmojis>
-        <ShareButton accountAddress={accountAddress} />
+        <ShareButton accountAddress={checksummedAddress} />
       </ColumnWithMargins>
       <ToastPositionContainer>
         <CopyToast copiedText={copiedText} copyCount={copyCount} />

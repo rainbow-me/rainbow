@@ -1,15 +1,18 @@
-import { toLower } from 'lodash';
+import { sortBy, toLower } from 'lodash';
 import React, { useCallback, useMemo, useRef } from 'react';
 import DeviceInfo from 'react-native-device-info';
-import { FlatList } from 'react-native-gesture-handler';
+import { SectionList } from 'react-native-gesture-handler';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components';
+import Divider from '../Divider';
 import { FlyInAnimation } from '../animations';
-import { SwipeableContactRow } from '../contacts';
+import { ContactRow, SwipeableContactRow } from '../contacts';
 import { SheetHandleFixedToTopHeight } from '../sheet';
+import { Text } from '../text';
 import { InvalidPasteToast, ToastPositionContainer } from '../toasts';
 import SendEmptyState from './SendEmptyState';
-import { useKeyboardHeight } from '@rainbow-me/hooks';
+import { useAccountSettings, useKeyboardHeight } from '@rainbow-me/hooks';
+
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { filterList } from '@rainbow-me/utils';
@@ -28,7 +31,19 @@ const getItemLayout = (data, index) => ({
 const contentContainerStyle = { paddingBottom: 32 };
 const keyExtractor = item => `SendContactList-${item.address}`;
 
-const SendContactFlatList = styled(FlatList).attrs({
+const SectionTitle = styled(Text).attrs({
+  size: 'bmedium',
+  weight: 'semibold',
+})`
+  margin-left: 15;
+  padding-top: 15;
+  padding-bottom: 10;
+`;
+const SectionWrapper = styled.View`
+  margin-bottom: 5;
+  background-color: ${({ theme: { colors } }) => colors.white};
+`;
+const SendContactFlatList = styled(SectionList).attrs({
   alwaysBounceVertical: true,
   contentContainerStyle,
   directionalLockEnabled: true,
@@ -36,6 +51,7 @@ const SendContactFlatList = styled(FlatList).attrs({
   keyboardDismissMode: 'none',
   keyboardShouldPersistTaps: 'always',
   keyExtractor,
+  marginTop: 0,
 })`
   flex: 1;
 `;
@@ -45,7 +61,9 @@ export default function SendContactList({
   currentInput,
   onPressContact,
   removeContact,
+  userAccounts,
 }) {
+  const { accountAddress } = useAccountSettings();
   const { navigate } = useNavigation();
   const insets = useSafeArea();
   const keyboardHeight = useKeyboardHeight();
@@ -79,18 +97,23 @@ export default function SendContactList({
   );
 
   const renderItemCallback = useCallback(
-    ({ item }) => (
-      <SwipeableContactRow
-        onPress={onPressContact}
-        onSelectEdit={handleEditContact}
-        onTouch={handleCloseAllDifferentContacts}
-        ref={component => {
-          contactRefs.current[toLower(item.address)] = component;
-        }}
-        removeContact={removeContact}
-        {...item}
-      />
-    ),
+    ({ item, section }) => {
+      const ComponentToReturn =
+        section.id === 'contacts' ? SwipeableContactRow : ContactRow;
+      return (
+        <ComponentToReturn
+          accountType={section.id}
+          onPress={onPressContact}
+          onSelectEdit={handleEditContact}
+          onTouch={handleCloseAllDifferentContacts}
+          ref={component => {
+            contactRefs.current[toLower(item.address)] = component;
+          }}
+          removeContact={removeContact}
+          {...item}
+        />
+      );
+    },
     [
       handleCloseAllDifferentContacts,
       handleEditContact,
@@ -99,15 +122,48 @@ export default function SendContactList({
     ]
   );
 
+  const filteredAddresses = useMemo(() => {
+    return sortBy(
+      filterList(
+        userAccounts.filter(
+          account => toLower(account.address) !== toLower(accountAddress)
+        ),
+        currentInput,
+        ['label']
+      ),
+      ['index']
+    );
+  }, [accountAddress, currentInput, userAccounts]);
+
+  const sections = useMemo(() => {
+    const tmp = [];
+    filteredContacts.length &&
+      tmp.push({ data: filteredContacts, id: 'contacts', title: 'Contacts' });
+    filteredAddresses.length &&
+      tmp.push({
+        data: filteredAddresses,
+        id: 'accounts',
+        title: 'Transfer between your accounts',
+      });
+    return tmp;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filteredAddresses, filteredContacts, currentInput]);
+
   return (
     <FlyInAnimation>
-      {filteredContacts.length === 0 ? (
+      {filteredContacts.length === 0 && filteredAddresses.length === 0 ? (
         <SendEmptyState />
       ) : (
         <SendContactFlatList
-          data={filteredContacts}
-          marginTop={17}
+          keyExtractor={(item, index) => index}
           renderItem={renderItemCallback}
+          renderSectionHeader={({ section }) => (
+            <SectionWrapper>
+              <SectionTitle>{section.title}</SectionTitle>
+              <Divider />
+            </SectionWrapper>
+          )}
+          sections={sections}
           testID="send-contact-list"
         />
       )}
