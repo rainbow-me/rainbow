@@ -10,6 +10,7 @@ import { Icon } from '../icons';
 import { Row } from '../layout';
 import { SheetHandle as SheetHandleAndroid } from '../sheet';
 import { Label } from '../text';
+import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
 import { useClipboard, useDimensions } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
@@ -63,6 +64,7 @@ export default function SendHeader({
   recipientFieldRef,
   removeContact,
   showAssetList,
+  userAccounts,
 }) {
   const { setClipboard } = useClipboard();
   const { isSmallPhone } = useDimensions();
@@ -72,6 +74,12 @@ export default function SendHeader({
   const contact = useMemo(() => {
     return get(contacts, `${[toLower(recipient)]}`, DefaultContactItem);
   }, [contacts, recipient]);
+
+  const userWallet = useMemo(() => {
+    return userAccounts.find(
+      account => toLower(account.address) === toLower(recipient)
+    );
+  }, [recipient, userAccounts]);
 
   const handleNavigateToContact = useCallback(() => {
     let color = get(contact, 'color');
@@ -133,6 +141,13 @@ export default function SendHeader({
   ]);
 
   const isPreExistingContact = (contact?.nickname?.length || 0) > 0;
+  const name = useMemo(
+    () =>
+      userWallet?.label
+        ? removeFirstEmojiFromString(userWallet.label).join('')
+        : contact.nickname,
+    [contact.nickname, userWallet?.label]
+  );
 
   return (
     <Fragment>
@@ -142,13 +157,13 @@ export default function SendHeader({
         <AddressField
           address={recipient}
           autoFocus={!showAssetList}
-          name={contact.nickname}
+          name={name}
           onChange={onChangeAddressInput}
           onFocus={onFocus}
           ref={recipientFieldRef}
           testID="send-asset-form-field"
         />
-        {isValidAddress && (
+        {isValidAddress && !userWallet && (
           <AddContactButton
             edit={isPreExistingContact}
             onPress={
