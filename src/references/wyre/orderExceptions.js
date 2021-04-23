@@ -81,12 +81,12 @@ export const orderExceptions = {
     },
     [orderCreationErrorCodes.MISSING_GIVEN_NAME]: {
       message:
-        'Please make sure to include your first name in the billing address details',
+        'Please make sure to include your first name in the billing address section of the Apple Pay sheet',
       tryAgain: true,
     },
     [orderCreationErrorCodes.MISSING_FAMILY_NAME]: {
       message:
-        'Please make sure to include your last name in the billing address details',
+        'Please make sure to include your last name in the billing address section of the Apple Pay sheet',
       tryAgain: true,
     },
     [orderCreationErrorCodes.DAILY_LIMIT_REACHED]: {
