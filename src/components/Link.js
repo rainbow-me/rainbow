@@ -29,6 +29,7 @@ const Link = ({
   emojiName = 'compass',
   color,
   transformOrigin = 'left',
+  scaleTo = 1.1,
   ...props
 }) => {
   const handlePress = useCallback(() => Linking.openURL(url), [url]);
@@ -38,7 +39,7 @@ const Link = ({
     <ButtonPressAnimation
       compensateForTransformOrigin
       onPress={handlePress}
-      scaleTo={1.1}
+      scaleTo={scaleTo}
       transformOrigin={transformOrigin}
     >
       <Container {...props}>

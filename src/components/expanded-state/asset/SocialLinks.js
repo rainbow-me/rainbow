@@ -17,11 +17,11 @@ const Carousel = styled.ScrollView.attrs({
   showsHorizontalScrollIndicator: false,
 })``;
 
-const CommunityLink = styled(Link)`
+const CommunityLink = styled(Link).attrs({
+  scaleTo: 0.925,
+})`
   padding-top: ${ios ? 10 : 5};
-`;
-
-const CommunityLinkWrapper = styled.View`
+  padding-bottom: ${ios ? 10 : 5};
   background-color: ${({ color, theme: { colors } }) =>
     colors.alpha(color, 0.1)};
   padding-horizontal: 16;
@@ -32,68 +32,56 @@ const CommunityLinkWrapper = styled.View`
 export default function SocialLinks({ color, links, address }) {
   return (
     <Carousel height={59}>
-      <CommunityLinkWrapper color={color}>
+      <CommunityLink
+        color={color}
+        display="Etherscan"
+        emoji="􀉣"
+        transformOrigin="center"
+        url={`${ETHERSCAN_URL}${address}`}
+      />
+      {!!links?.twitter_screen_name && (
         <CommunityLink
           color={color}
-          display="Etherscan"
-          emoji="􀉣"
+          display="Twitter"
+          emojiName="twitter"
           transformOrigin="center"
-          url={`${ETHERSCAN_URL}${address}`}
+          url={`${TWITTER_URL}${links?.twitter_screen_name}`}
         />
-      </CommunityLinkWrapper>
-      {!!links?.twitter_screen_name && (
-        <CommunityLinkWrapper color={color}>
-          <CommunityLink
-            color={color}
-            display="Twitter"
-            emojiName="twitter"
-            transformOrigin="center"
-            url={`${TWITTER_URL}${links?.twitter_screen_name}`}
-          />
-        </CommunityLinkWrapper>
       )}
       {!!links?.homepage?.[0] && (
-        <CommunityLinkWrapper color={color}>
-          <CommunityLink
-            color={color}
-            display="Homepage"
-            transformOrigin="center"
-            url={links?.homepage?.[0]}
-          />
-        </CommunityLinkWrapper>
+        <CommunityLink
+          color={color}
+          display="Homepage"
+          transformOrigin="center"
+          url={links?.homepage?.[0]}
+        />
       )}
       {!!links?.telegram_channel_identifier && (
-        <CommunityLinkWrapper color={color}>
-          <CommunityLink
-            color={color}
-            display="Telegram"
-            emojiName="telegram"
-            transformOrigin="center"
-            url={`${TELEGRAM_URL}${links?.telegram_channel_identifier}`}
-          />
-        </CommunityLinkWrapper>
+        <CommunityLink
+          color={color}
+          display="Telegram"
+          emojiName="telegram"
+          transformOrigin="center"
+          url={`${TELEGRAM_URL}${links?.telegram_channel_identifier}`}
+        />
       )}
       {!!links?.subreddit_url && (
-        <CommunityLinkWrapper color={color}>
-          <CommunityLink
-            color={color}
-            display="Reddit"
-            emojiName="reddit"
-            transformOrigin="center"
-            url={links?.subreddit_url}
-          />
-        </CommunityLinkWrapper>
+        <CommunityLink
+          color={color}
+          display="Reddit"
+          emojiName="reddit"
+          transformOrigin="center"
+          url={links?.subreddit_url}
+        />
       )}
       {!!links?.facebook_username && (
-        <CommunityLinkWrapper color={color}>
-          <CommunityLink
-            color={color}
-            display="Facebook"
-            emojiName="facebook"
-            transformOrigin="center"
-            url={`${FACEBOOK_URL}${links?.facebook_username}`}
-          />
-        </CommunityLinkWrapper>
+        <CommunityLink
+          color={color}
+          display="Facebook"
+          emojiName="facebook"
+          transformOrigin="center"
+          url={`${FACEBOOK_URL}${links?.facebook_username}`}
+        />
       )}
     </Carousel>
   );
