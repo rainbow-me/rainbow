@@ -75,27 +75,6 @@ RCT_EXPORT_METHOD(hideAnimated) {
   }];
 }
 
-- (void)applicationDidReceiveMemoryWarning:(UIApplication *)application {
-  SentryMessage *msg = [[SentryMessage alloc] initWithFormatted:@"applicationDidReceiveMemoryWarning was called"];
-  SentryEvent *sentryEvent = [[SentryEvent alloc] init];
-  [sentryEvent setMessage: msg];
-  [SentrySDK captureEvent:sentryEvent];
-  struct task_basic_info info;
-  mach_msg_type_number_t size = TASK_BASIC_INFO_COUNT;
-  kern_return_t kerr = task_info(mach_task_self(),
-                                 TASK_BASIC_INFO,
-                                 (task_info_t)&info,
-                                 &size);
-  if( kerr == KERN_SUCCESS ) {
-    NSString* memInMBWarn = [NSString stringWithFormat: @"Memory in use (in MiB): %f", ((CGFloat)info.resident_size / 1048576)];
-    SentryMessage *msg = [[SentryMessage alloc] initWithFormatted:memInMBWarn];
-    SentryEvent *sentryEvent = [[SentryEvent alloc] init];
-    [sentryEvent setMessage: msg];
-    [SentrySDK captureEvent:sentryEvent];
-  }
-}
-
-
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
 
