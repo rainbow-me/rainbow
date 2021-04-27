@@ -1,16 +1,14 @@
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import { useCallback, useEffect, useState } from 'react';
-import { InteractionManager, Alert as NativeAlert } from 'react-native';
+import { InteractionManager } from 'react-native';
 import { PERMISSIONS, request } from 'react-native-permissions';
 import { Alert } from '../components/alerts';
-import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 import { checkPushNotificationPermissions } from '../model/firebase';
 import { useNavigation } from '../navigation/Navigation';
 import usePrevious from './usePrevious';
 import useWalletConnectConnections from './useWalletConnectConnections';
-import useWallets from './useWallets';
-import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
+import { Navigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { addressUtils, haptics } from '@rainbow-me/utils';
 import logger from 'logger';
@@ -67,7 +65,6 @@ function useScannerState(enabled) {
 
 export default function useScanner(enabled) {
   const { navigate } = useNavigation();
-  const { isReadOnlyWallet } = useWallets();
   const { walletConnectOnSessionRequest } = useWalletConnectConnections();
 
   const {
@@ -79,11 +76,6 @@ export default function useScanner(enabled) {
 
   const handleScanAddress = useCallback(
     address => {
-      if (isReadOnlyWallet && !enableActionsOnReadOnlyWallet) {
-        NativeAlert.alert(`You need to import the wallet in order to do this`);
-        return null;
-      }
-
       haptics.notificationSuccess();
       analytics.track('Scanned address QR code');
 
@@ -91,18 +83,13 @@ export default function useScanner(enabled) {
       navigate(Routes.WALLET_SCREEN);
 
       // And then navigate to Send sheet
-      if (isNativeStackAvailable || android) {
-        navigate(Routes.SEND_FLOW, {
-          params: { address },
-          screen: Routes.SEND_SHEET,
-        });
-      } else {
-        navigate(Routes.SEND_FLOW, { address });
-      }
+      Navigation.handleAction(Routes.SHOWCASE_SHEET, {
+        address: address,
+      });
 
       setTimeout(enableScanning, 1000);
     },
-    [enableScanning, isReadOnlyWallet, navigate]
+    [enableScanning, navigate]
   );
 
   const handleScanWalletConnect = useCallback(
