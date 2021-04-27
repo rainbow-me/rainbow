@@ -10,7 +10,6 @@ import {
 import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
 import { Navigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import logger from 'logger';
 
 export default function handleDeeplink(url) {
   const urlObj = new URL(url);
@@ -23,7 +22,7 @@ export default function handleDeeplink(url) {
         handleWalletConnect(uri);
         break;
       }
-      case 'showcase': {
+      default: {
         const addressOrENS = urlObj.pathname.split('/')[2];
         if (checkIsValidAddressOrDomain(addressOrENS)) {
           return Navigation.handleAction(Routes.SHOWCASE_SHEET, {
@@ -32,10 +31,7 @@ export default function handleDeeplink(url) {
         } else {
           Alert.alert('Invalid deeplink');
         }
-        break;
       }
-      default:
-        logger.log('unknown deeplink');
     }
     // Android uses normal deeplinks
   } else if (urlObj.protocol === 'wc:') {
