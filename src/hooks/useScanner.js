@@ -87,7 +87,7 @@ export default function useScanner(enabled) {
         address: address,
       });
 
-      setTimeout(enableScanning, 1000);
+      setTimeout(enableScanning, 2500);
     },
     [enableScanning, navigate]
   );

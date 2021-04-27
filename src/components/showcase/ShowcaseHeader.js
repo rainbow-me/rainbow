@@ -7,7 +7,8 @@ import SheetHandle from '../sheet/SheetHandle';
 import { SheetActionButton } from '../sheet/sheet-action-buttons';
 import { Text, TruncatedAddress } from '../text';
 import { getContacts } from '@rainbow-me/handlers/localstorage/contacts';
-import { useDimensions } from '@rainbow-me/hooks';
+import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
+import { useDimensions, useWallets } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
@@ -16,7 +17,7 @@ export const ShowcaseContext = createContext();
 
 const HeaderWrapper = styled.View`
   width: 100%;
-  height: 330;
+  height: 350;
   padding-top: 40;
   justify-content: center;
   align-items: center;
@@ -76,8 +77,9 @@ function hashCode(text) {
 export function Header() {
   const { width: deviceWidth } = useDimensions();
   const maxButtonWidth = deviceWidth - 30;
-
+  const { goBack, navigate } = useNavigation();
   const contextValue = useContext(ShowcaseContext);
+  const { isReadOnlyWallet } = useWallets();
 
   const { colors } = useTheme();
   const emoji = useMemo(() => {
@@ -109,8 +111,6 @@ export function Header() {
     contextValue?.data?.profile?.accountColor,
   ]);
 
-  const { navigate } = useNavigation();
-
   const onAddToContact = useCallback(async () => {
     const contacts = await getContacts();
     const currentContact = contacts[contextValue?.address];
@@ -127,6 +127,18 @@ export function Header() {
       type: 'contact_profile',
     });
   }, [color, contextValue?.address, contextValue?.ensName, navigate]);
+
+  const onSend = useCallback(async () => {
+    goBack();
+    if (isNativeStackAvailable || android) {
+      navigate(Routes.SEND_FLOW, {
+        params: { address: contextValue?.address },
+        screen: Routes.SEND_SHEET,
+      });
+    } else {
+      navigate(Routes.SEND_FLOW, { address: contextValue?.address });
+    }
+  }, [contextValue?.address, goBack, navigate]);
 
   const { handlePressImportButton } = useImportingWallet();
 
@@ -153,12 +165,23 @@ export function Header() {
         <SheetActionButton
           androidWidth={maxButtonWidth}
           color={color}
-          label=" 􀜖 Add to Contacts "
+          label=" 􀜖 Add to Contacts"
           onPress={onAddToContact}
           size="big"
           textColor={colors.whiteLabel}
           weight="heavy"
         />
+        {!isReadOnlyWallet && (
+          <SheetActionButton
+            androidWidth={maxButtonWidth}
+            color={color}
+            label=" 􀈠 Send to this address"
+            onPress={onSend}
+            size="big"
+            textColor={colors.whiteLabel}
+            weight="heavy"
+          />
+        )}
         {android && <ButtonSpacer />}
         <SheetActionButton
           androidWidth={maxButtonWidth}
