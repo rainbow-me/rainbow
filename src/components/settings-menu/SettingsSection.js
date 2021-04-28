@@ -132,7 +132,7 @@ export default function SettingsSection({
   onPressShowSecret,
 }) {
   const isReviewAvailable = useExperimentalFlag(REVIEW_ANDROID) || ios;
-  const { wallets } = useWallets();
+  const { wallets, isReadOnlyWallet } = useWallets();
   const { /*language,*/ nativeCurrency, network } = useAccountSettings();
   const { isTinyPhone } = useDimensions();
 
@@ -257,14 +257,16 @@ export default function SettingsSection({
             </Text>
           </Column>
         </ListItem>
-        <ListItem
-          icon={<SettingIcon source={PrivacyIcon} />}
-          label="Privacy"
-          onPress={onPressPrivacy}
-          testID="privacy"
-        >
-          <ListItemArrowGroup />
-        </ListItem>
+        {!isReadOnlyWallet && (
+          <ListItem
+            icon={<SettingIcon source={PrivacyIcon} />}
+            label="Privacy"
+            onPress={onPressPrivacy}
+            testID="privacy"
+          >
+            <ListItemArrowGroup />
+          </ListItem>
+        )}
         {/*<ListItem
         {/*  icon={*/}
         {/*    <SettingIcon source={darkMode ? LanguageIconDark : LanguageIcon} />*/}
