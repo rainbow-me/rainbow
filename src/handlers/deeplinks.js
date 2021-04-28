@@ -23,7 +23,7 @@ export default function handleDeeplink(url) {
         break;
       }
       default: {
-        const addressOrENS = urlObj.pathname.split('/')[2];
+        const addressOrENS = urlObj.pathname.split('/')[1];
         if (checkIsValidAddressOrDomain(addressOrENS)) {
           return Navigation.handleAction(Routes.SHOWCASE_SHEET, {
             address: addressOrENS,
