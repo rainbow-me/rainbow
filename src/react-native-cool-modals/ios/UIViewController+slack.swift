@@ -275,8 +275,8 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
     let isSlack = self.presentingViewController?.responds(to: NSSelectorFromString("unhackParent")) ?? false
     
     if (isSlack) {
-      let parentConfig: RNCMScreenView? = self.presentingViewController?.value(forKey: "config") as? RNCMScreenView
-      let isHidden: Bool = parentConfig?.value(forKey: "_hidden") as? Bool ?? false
+      let parentConfig: RNCMScreenView = self.presentingViewController!.value(forKey: "config") as! RNCMScreenView
+      let isHidden: Bool = parentConfig.value(forKey: "_hidden") as? Bool ?? false
       if (isHidden) {
         self.presentingViewController!.dismiss(animated: false)
       }
