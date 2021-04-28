@@ -21,7 +21,7 @@ import tokenSectionTypes from '../../helpers/tokenSectionTypes';
 import { emitAssetRequest } from '../../redux/explorer';
 import deviceUtils from '../../utils/deviceUtils';
 import { CurrencySelectionList } from '../exchange';
-import { initialChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
+import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/ChartExpandedState';
 import { Row } from '../layout';
 import DiscoverSheetContext from './DiscoverSheetContext';
 import {
@@ -187,14 +187,11 @@ export default function DiscoverSearch() {
 
       dispatch(emitAssetRequest(item.address));
 
-      navigate(
-        ios ? Routes.EXPANDED_ASSET_SHEET : Routes.EXPANDED_ASSET_SCREEN,
-        {
-          asset: asset || item,
-          longFormHeight: initialChartExpandedStateSheetHeight,
-          type: 'token',
-        }
-      );
+      navigate(Routes.EXPANDED_ASSET_SHEET, {
+        asset: asset || item,
+        longFormHeight: initialChartExpandedStateSheetHeight,
+        type: 'token',
+      });
     },
     [allAssets, dispatch, navigate]
   );
