@@ -9,6 +9,7 @@ import {
   CurrencySection,
   LanguageSection,
   NetworkSection,
+  PrivacySection,
   SettingsSection,
 } from '../components/settings-menu';
 import SettingsBackupView from '../components/settings-menu/BackupSection/SettingsBackupView';
@@ -85,6 +86,11 @@ const SettingsPages = {
     component: NetworkSection,
     key: 'NetworkSection',
     title: 'Network',
+  },
+  privacy: {
+    component: PrivacySection,
+    key: 'PrivacySection',
+    title: 'Privacy',
   },
 };
 
@@ -184,6 +190,7 @@ export default function SettingsModal() {
                 onPressDev={onPressSection(SettingsPages.dev)}
                 onPressLanguage={onPressSection(SettingsPages.language)}
                 onPressNetwork={onPressSection(SettingsPages.network)}
+                onPressPrivacy={onPressSection(SettingsPages.privacy)}
               />
             )}
           </Stack.Screen>

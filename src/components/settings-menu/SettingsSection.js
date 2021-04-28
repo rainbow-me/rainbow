@@ -1,7 +1,6 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { Image, Linking, NativeModules, ScrollView, Share } from 'react-native';
-import { Switch } from 'react-native-gesture-handler';
 import styled from 'styled-components';
 import { REVIEW_ANDROID } from '../../config/experimental';
 import useExperimentalFlag from '../../config/experimentalHooks';
@@ -25,15 +24,14 @@ import DarkModeIcon from '@rainbow-me/assets/settingsDarkMode.png';
 import DarkModeIconDark from '@rainbow-me/assets/settingsDarkModeDark.png';
 import NetworkIcon from '@rainbow-me/assets/settingsNetwork.png';
 import NetworkIconDark from '@rainbow-me/assets/settingsNetworkDark.png';
+import PrivacyIcon from '@rainbow-me/assets/settingsPrivacy.png';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import {
   useAccountSettings,
   useDimensions,
   useSendFeedback,
-  useShowcaseTokens,
   useWallets,
-  useWebData,
 } from '@rainbow-me/hooks';
 import { position } from '@rainbow-me/styles';
 import {
@@ -130,10 +128,9 @@ export default function SettingsSection({
   onPressIcloudBackup,
   /*onPressLanguage,*/
   onPressNetwork,
+  onPressPrivacy,
   onPressShowSecret,
 }) {
-  const { showcaseTokens } = useShowcaseTokens();
-  const { webDataEnabled, initWebData, wipeWebData } = useWebData();
   const isReviewAvailable = useExperimentalFlag(REVIEW_ANDROID) || ios;
   const { wallets } = useWallets();
   const { /*language,*/ nativeCurrency, network } = useAccountSettings();
@@ -189,14 +186,6 @@ export default function SettingsSection({
       setTheme(THEMES.SYSTEM);
     }
   }, [setTheme, colorScheme]);
-
-  const toggleWebData = useCallback(() => {
-    if (webDataEnabled) {
-      wipeWebData();
-    } else {
-      initWebData(showcaseTokens);
-    }
-  }, [initWebData, showcaseTokens, webDataEnabled, wipeWebData]);
 
   return (
     <Container backgroundColor={colors.white} scrollEnabled={isTinyPhone}>
@@ -269,14 +258,12 @@ export default function SettingsSection({
           </Column>
         </ListItem>
         <ListItem
-          icon={<Emoji name="globe_showing_americas" />}
-          label="Web Showcase"
-          onPress={toggleWebData}
-          testID="enable-web-showcase"
+          icon={<SettingIcon source={PrivacyIcon} />}
+          label="Privacy"
+          onPress={onPressPrivacy}
+          testID="privacy"
         >
-          <Column align="end" flex="1" justify="end">
-            <Switch onValueChange={toggleWebData} value={webDataEnabled} />
-          </Column>
+          <ListItemArrowGroup />
         </ListItem>
         {/*<ListItem
         {/*  icon={*/}

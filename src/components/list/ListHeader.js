@@ -1,12 +1,20 @@
 import React, { createElement, Fragment } from 'react';
+import { Alert, Share } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components';
 import Divider from '../Divider';
+import { ButtonPressAnimation } from '../animations';
+import CoinDividerButtonLabel from '../coin-divider/CoinDividerButtonLabel';
 import { ContextMenu } from '../context-menu';
-import { Row } from '../layout';
+import { Column, Row } from '../layout';
 import SavingsListHeader from '../savings/SavingsListHeader';
 import { H1 } from '../text';
-import { useDimensions } from '@rainbow-me/hooks';
+import {
+  useAccountSettings,
+  useDimensions,
+  useWallets,
+} from '@rainbow-me/hooks';
+import { RAINBOW_PROFILES_BASE_URL } from '@rainbow-me/references';
 import { padding, position } from '@rainbow-me/styles';
 
 export const ListHeaderHeight = 44;
@@ -26,6 +34,25 @@ const BackgroundGradient = styled(LinearGradient).attrs(
   ${position.cover};
 `;
 
+const ShareCollectiblesBPA = styled(ButtonPressAnimation)`
+  background-color: ${({ theme: { colors } }) => colors.blueGreyDarkLight};
+  margin-right: 0;
+  width: 90;
+  height: 30;
+  border-radius: 15;
+  padding-left: 12;
+  padding-right: 8;
+  padding-top: 5;
+  padding-bottom: 5;
+  justify-content: center;
+`;
+
+const ShareCollectiblesButton = ({ onPress }) => (
+  <ShareCollectiblesBPA onPress={onPress} scale={0.9}>
+    <CoinDividerButtonLabel label="􀈂 Share" />
+  </ShareCollectiblesBPA>
+);
+
 const Content = styled(Row).attrs({
   align: 'center',
   justify: 'space-between',
@@ -44,6 +71,19 @@ const StickyBackgroundBlocker = styled.View`
   width: ${({ deviceDimensions }) => deviceDimensions.width};
 `;
 
+const handleShare = (isReadOnlyWallet, accountAddress) => {
+  if (!isReadOnlyWallet) {
+    const showcaseUrl = `${RAINBOW_PROFILES_BASE_URL}/${accountAddress}`;
+    const shareOptions = {
+      message: `Check out my collectibles on rainbow.me at ${showcaseUrl}`,
+      url: showcaseUrl,
+    };
+    Share.share(shareOptions);
+  } else {
+    return Alert.alert(`You need to import the wallet in order to do this`);
+  }
+};
+
 export default function ListHeader({
   children,
   contextMenuOptions,
@@ -55,6 +95,8 @@ export default function ListHeader({
   totalValue,
 }) {
   const deviceDimensions = useDimensions();
+  const { isReadOnlyWallet } = useWallets();
+  const { accountAddress } = useAccountSettings();
 
   if (title === 'Pools') {
     return (
@@ -74,6 +116,13 @@ export default function ListHeader({
         <Content isSticky={isSticky}>
           <Row align="center">
             {createElement(titleRenderer, { children: title })}
+            {title === 'Collectibles' && (
+              <Column align="flex-end" flex={1}>
+                <ShareCollectiblesButton
+                  onPress={() => handleShare(isReadOnlyWallet, accountAddress)}
+                />
+              </Column>
+            )}
             <ContextMenu marginTop={3} {...contextMenuOptions} />
           </Row>
           {children}
