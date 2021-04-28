@@ -59,7 +59,81 @@ const ENSAddress = styled(Text).attrs(({ theme: { colors } }) => ({
   width: 100%;
 `;
 
-const popularEmojis = ['🥺', '❤️', '🤣', '✨', '😍', '🥰', '😊'];
+const popularEmojis = [
+  '🌶',
+  '🤑',
+  '🐙',
+  '🫐',
+  '🐳',
+  '🤶',
+  '🌲',
+  '🌞',
+  '🐒',
+  '🐵',
+  '🦊',
+  '🐼',
+  '🦄',
+  '🐷',
+  '🐧',
+  '🦩',
+  '👽',
+  '🎈',
+  '🍉',
+  '🎉',
+  '🐲',
+  '🌎',
+  '🍊',
+  '🐭',
+  '🍣',
+  '🐥',
+  '👾',
+  '🥦',
+  '👹',
+  '🙀',
+  '⛱',
+  '⛵️',
+  '🥳',
+  '🤯',
+  '🤠',
+];
+
+const avatarColor = [
+  '#FC5C54',
+  '#FFD95A',
+  '#E95D72',
+  '#6A87C8',
+  '#5FD0F3',
+  '#FC5C54',
+  '#75C06B',
+  '#FFDD86',
+  '#5FC6D4',
+  '#FF949A',
+  '#FF8024',
+  '#9BA1A4',
+  '#EC66FF',
+  '#FF8CBC',
+  '#FF9A23',
+  '#FF949A',
+  '#C5DADB',
+  '#FC5C54',
+  '#FF949A',
+  '#FFD95A',
+  '#A8CE63',
+  '#71ABFF',
+  '#FFE279',
+  '#B6B1B6',
+  '#FF6780',
+  '#FFD95A',
+  '#A575FF',
+  '#A8CE63',
+  '#FC5C54',
+  '#FFE279',
+  '#5FD0F3',
+  '#4D82FF',
+  '#FFE279',
+  '#FF949A',
+  '#FFB35A',
+];
 
 function hashCode(text) {
   let hash = 0,
@@ -82,34 +156,24 @@ export function Header() {
   const { isReadOnlyWallet } = useWallets();
 
   const { colors } = useTheme();
+
+  const hash = Math.abs(hashCode(contextValue?.address?.toLowerCase()) % 35);
+
   const emoji = useMemo(() => {
     const emojiFromContext = contextValue?.data?.profile?.accountSymbol;
     if (emojiFromContext) {
       return emojiFromContext;
     }
-    return popularEmojis[
-      Math.abs(
-        hashCode(contextValue?.address?.slice(0, 8)) % popularEmojis.length
-      ) % popularEmojis.length
-    ];
-  }, [contextValue]);
+    return popularEmojis[hash];
+  }, [hash, contextValue]);
 
   const color = useMemo(() => {
     const colorFromContext = contextValue?.data?.profile?.accountColor;
     if (colorFromContext) {
       return colorFromContext;
     }
-    return colors.avatarColor[
-      Math.abs(
-        hashCode(contextValue?.address?.slice(9, 15)) %
-          colors.avatarColor.length
-      ) % colors.avatarColor.length
-    ];
-  }, [
-    colors.avatarColor,
-    contextValue.address,
-    contextValue?.data?.profile?.accountColor,
-  ]);
+    return avatarColor[hash];
+  }, [contextValue?.data?.profile?.accountColor, hash]);
 
   const onAddToContact = useCallback(async () => {
     const contacts = await getContacts();
