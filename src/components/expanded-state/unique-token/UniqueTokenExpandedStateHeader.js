@@ -63,7 +63,7 @@ const UniqueTokenExpandedStateHeader = ({ asset }) => {
             uppercase
             weight="semibold"
           >
-            {asset.asset_contract.name}
+            {asset.collection.name}
           </Text>
           <Pill maxWidth={150}>#{asset.id}</Pill>
         </RowWithMargins>
