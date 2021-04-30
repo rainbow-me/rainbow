@@ -1,3 +1,4 @@
+import { useRoute } from '@react-navigation/native';
 import { isEmpty } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import isEqual from 'react-fast-compare';
@@ -5,10 +6,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { useCallbackOne } from 'use-memo-one';
 import { disableCharts } from '../../config/debug';
-import { chartsUpdateChartType, DEFAULT_CHART_TYPE } from '../../redux/charts';
+import { DEFAULT_CHART_TYPE } from '../../redux/charts';
 import { emitChartsRequest } from '../../redux/explorer';
 import { daysFromTheFirstTx } from '../../utils/ethereumUtils';
 import useAsset from '../useAsset';
+import { useNavigation } from '@rainbow-me/navigation';
 
 const formatChartData = chart => {
   if (!chart || isEmpty(chart)) return null;
@@ -16,36 +18,20 @@ const formatChartData = chart => {
 };
 
 const chartSelector = createSelector(
-  ({
-    charts: { charts, chartType, chartType2, fetchingCharts, fetchingCharts2 },
-  }) => ({
+  ({ charts: { charts, fetchingCharts } }) => ({
     charts,
-    chartType,
-    chartType2,
     fetchingCharts,
-    fetchingCharts2,
   }),
   (_, address) => address,
-  (state, { address, secondStore }) => {
-    const {
-      charts,
-      chartType,
-      chartType2,
-      fetchingCharts,
-      fetchingCharts2,
-    } = state;
+  (state, { address, chartType }) => {
+    const { charts, fetchingCharts } = state;
     const chartsForAsset = {
       ...charts?.[address],
     };
     return {
-      chart: formatChartData(
-        chartsForAsset?.[secondStore ? chartType2 : chartType]
-      ),
+      chart: formatChartData(chartsForAsset?.[chartType]),
       chartsForAsset,
-      chartType,
-      chartType2,
       fetchingCharts,
-      fetchingCharts2,
     };
   }
 );
@@ -53,27 +39,22 @@ const chartSelector = createSelector(
 export default function useChartData(asset, secondStore) {
   const [daysFromFirstTx, setDaysFromFirstTx] = useState(1000);
   const dispatch = useDispatch();
+  const { setParams } = useNavigation();
+
+  const {
+    params: { chartType = DEFAULT_CHART_TYPE },
+  } = useRoute();
   const { address, price: priceObject } = useAsset(asset);
 
   const { value: price } = priceObject || {};
 
-  const {
-    chart,
-    chartsForAsset,
-    chartType2,
-    chartType: chartTypeRest,
-    fetchingCharts2,
-    fetchingCharts: fetchingChartsRest,
-  } = useSelector(
-    useCallbackOne(state => chartSelector(state, { address, secondStore }), [
-      address,
-      secondStore,
-    ]),
+  const { chart, chartsForAsset, fetchingCharts } = useSelector(
+    useCallbackOne(
+      state => chartSelector(state, { address, chartType, secondStore }),
+      [address, secondStore, chartType]
+    ),
     isEqual
   );
-
-  const chartType = secondStore ? chartType2 : chartTypeRest;
-  const fetchingCharts = secondStore ? fetchingCharts2 : fetchingChartsRest;
 
   useEffect(() => {
     async function fetchDays() {
@@ -92,15 +73,11 @@ export default function useChartData(asset, secondStore) {
   }, [address, chartType, dispatch]);
 
   const updateChartType = useCallback(
-    type => dispatch(chartsUpdateChartType(type, secondStore)),
-    [dispatch, secondStore]
+    type => {
+      setParams({ chartType: type });
+    },
+    [setParams]
   );
-
-  // Reset chart timeframe on unmount.
-  useEffect(() => () => updateChartType(DEFAULT_CHART_TYPE, secondStore), [
-    updateChartType,
-    secondStore,
-  ]);
 
   // add current price at the very end
   const filteredData = useMemo(() => {

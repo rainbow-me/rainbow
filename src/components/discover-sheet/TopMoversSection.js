@@ -1,7 +1,7 @@
 import { toLower } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import { IS_TESTING } from 'react-native-dotenv';
-import { initialChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
+import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/ChartExpandedState';
 import { Centered, Column, Flex } from '../layout';
 import { MarqueeList } from '../list';
 import { Text } from '../text';
@@ -39,15 +39,12 @@ export default function TopMoversSection() {
       const assetFormatted =
         ethereumUtils.getAsset(allAssets, toLower(asset.address)) || asset;
 
-      navigate(
-        ios ? Routes.EXPANDED_ASSET_SHEET : Routes.EXPANDED_ASSET_SCREEN,
-        {
-          asset: assetFormatted,
-          fromDiscover: true,
-          longFormHeight: initialChartExpandedStateSheetHeight,
-          type: 'token',
-        }
-      );
+      navigate(Routes.EXPANDED_ASSET_SHEET, {
+        asset: assetFormatted,
+        fromDiscover: true,
+        longFormHeight: initialChartExpandedStateSheetHeight,
+        type: 'token',
+      });
     },
     [allAssets, navigate]
   );

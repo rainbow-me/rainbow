@@ -8,6 +8,29 @@ export const UNISWAP_PAIRS_ID_QUERY = gql`
   }
 `;
 
+export const UNISWAP_PAIRS_ID_QUERY_BY_TOKEN = gql`
+  query pairs($address: String!) {
+    pairs0: pairs(
+      first: 30
+      orderBy: trackedReserveETH
+      orderDirection: desc
+      where: { token0: $address, trackedReserveETH_gt: 5 }
+    ) {
+      id
+      trackedReserveETH
+    }
+    pairs1: pairs(
+      first: 30
+      orderBy: trackedReserveETH
+      orderDirection: desc
+      where: { token1: $address, trackedReserveETH_gt: 5 }
+    ) {
+      id
+      trackedReserveETH
+    }
+  }
+`;
+
 export const UNISWAP_PAIR_DATA_QUERY = (pairAddress, block) => {
   const queryString = `
     fragment PairFields on Pair {

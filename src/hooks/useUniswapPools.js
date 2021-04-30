@@ -1,26 +1,26 @@
 import { useQuery } from '@apollo/client';
 import { getUnixTime, startOfMinute, sub } from 'date-fns';
 import { pick, sortBy, toLower } from 'lodash';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useEthUSDMonthChart, useEthUSDPrice } from '../utils/ethereumUtils';
-import useNativeCurrencyToUSD from './useNativeCurrencyToUSD';
-import { uniswapClient } from '@rainbow-me/apollo/client';
 import {
   UNISWAP_PAIR_DATA_QUERY,
   UNISWAP_PAIRS_BULK_QUERY,
   UNISWAP_PAIRS_HISTORICAL_BULK_QUERY,
   UNISWAP_PAIRS_ID_QUERY,
-} from '@rainbow-me/apollo/queries';
+  UNISWAP_PAIRS_ID_QUERY_BY_TOKEN,
+} from '../apollo/queries';
+import { useEthUSDMonthChart, useEthUSDPrice } from '../utils/ethereumUtils';
+import useNativeCurrencyToUSD from './useNativeCurrencyToUSD';
+import { uniswapClient } from '@rainbow-me/apollo/client';
 import {
   emitAssetRequest,
   emitChartsRequest,
 } from '@rainbow-me/redux/explorer';
 import { setPoolsDetails } from '@rainbow-me/redux/uniswapLiquidity';
-import { WETH_ADDRESS } from '@rainbow-me/references';
+import { ETH_ADDRESS, WETH_ADDRESS } from '@rainbow-me/references';
 import { getBlocksFromTimestamps } from '@rainbow-me/utils';
 import logger from 'logger';
-
 const UNISWAP_QUERY_INTERVAL = 1000 * 60 * 5; // 5 minutes
 const AMOUNT_OF_PAIRS_TO_DISPLAY = 40;
 
@@ -291,7 +291,7 @@ export const getPercentChange = (valueNow, value24HoursAgo) => {
   return adjustedPercentChange;
 };
 
-export default function useUniswapPools(sortField, sortDirection) {
+export default function useUniswapPools(sortField, sortDirection, token) {
   const dispatch = useDispatch();
 
   const [pairs, setPairs] = useState();
@@ -317,19 +317,41 @@ export default function useUniswapPools(sortField, sortDirection) {
     })
   );
 
-  const { data: idsData, error } = useQuery(UNISWAP_PAIRS_ID_QUERY, {
-    client: uniswapClient,
-    fetchPolicy: 'no-cache',
-    pollInterval: UNISWAP_QUERY_INTERVAL,
-    skip: !priceOfEther || !ethereumPriceOneMonthAgo,
-    variables: {},
-  });
+  const { data: idsData, error } = useQuery(
+    token ? UNISWAP_PAIRS_ID_QUERY_BY_TOKEN : UNISWAP_PAIRS_ID_QUERY,
+    {
+      client: uniswapClient,
+      fetchPolicy: 'no-cache',
+      pollInterval: UNISWAP_QUERY_INTERVAL,
+      skip: !priceOfEther || !ethereumPriceOneMonthAgo,
+      variables: {
+        address: token === ETH_ADDRESS ? WETH_ADDRESS : token,
+      },
+    }
+  );
+
+  const isEmpty =
+    idsData?.pairs?.length === 0 ||
+    (idsData?.pairs0?.length === 0 && idsData?.pairs1?.length === 0);
+
+  const pairsFromQuery = useMemo(
+    () =>
+      token
+        ? (idsData?.pairs0?.concat(idsData?.pairs1) ?? [])
+            .sort(
+              (a, b) =>
+                Number(b.trackedReserveETH) - Number(a.trackedReserveETH)
+            )
+            .slice(0, 30)
+        : idsData?.pairs ?? [],
+    [idsData?.pairs, idsData?.pairs0, idsData?.pairs1, token]
+  );
 
   const fetchPairsData = useCallback(async () => {
     // get data for every pair in list
     try {
       const topPairs = await getBulkPairData(
-        idsData.pairs.map(item => item.id),
+        pairsFromQuery.map(item => item.id),
         Number(priceOfEther),
         Number(ethereumPriceOneMonthAgo)
       );
@@ -337,13 +359,13 @@ export default function useUniswapPools(sortField, sortDirection) {
     } catch (e) {
       logger.log('🦄🦄🦄 error getting pairs data', e);
     }
-  }, [ethereumPriceOneMonthAgo, idsData?.pairs, priceOfEther]);
+  }, [ethereumPriceOneMonthAgo, pairsFromQuery, priceOfEther]);
 
   useEffect(() => {
-    if (idsData?.pairs && priceOfEther > 0 && ethereumPriceOneMonthAgo > 0) {
+    if (pairsFromQuery && priceOfEther > 0 && ethereumPriceOneMonthAgo > 0) {
       fetchPairsData();
     }
-  }, [fetchPairsData, priceOfEther, ethereumPriceOneMonthAgo, idsData?.pairs]);
+  }, [fetchPairsData, priceOfEther, ethereumPriceOneMonthAgo, pairsFromQuery]);
 
   const currenciesRate = useNativeCurrencyToUSD();
 
@@ -403,6 +425,7 @@ export default function useUniswapPools(sortField, sortDirection) {
   return {
     error,
     is30DayEnabled: ethereumPriceOneMonthAgo > 0,
+    isEmpty,
     pairs: top40PairsSorted,
   };
 }

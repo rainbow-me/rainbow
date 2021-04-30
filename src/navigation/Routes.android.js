@@ -129,7 +129,11 @@ function MainNavigator() {
       <Stack.Screen
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SHEET}
-        options={expandedPreset}
+        options={args =>
+          args?.route?.params?.type === 'token'
+            ? sheetPresetWithSmallGestureResponseDistance(args)
+            : sheetPreset(args)
+        }
       />
       <Stack.Screen
         component={ExpandedAssetSheet}
@@ -256,15 +260,6 @@ function MainOuterNavigator() {
       <OuterStack.Screen
         component={MainNavigator}
         name={Routes.MAIN_NAVIGATOR}
-      />
-      <OuterStack.Screen
-        component={ExpandedAssetSheet}
-        name={Routes.EXPANDED_ASSET_SCREEN}
-        options={args =>
-          args?.route?.params?.type === 'token'
-            ? sheetPresetWithSmallGestureResponseDistance(args)
-            : sheetPreset(args)
-        }
       />
       <OuterStack.Screen
         component={ExpandedAssetSheet}

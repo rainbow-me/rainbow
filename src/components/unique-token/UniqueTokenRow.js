@@ -32,15 +32,12 @@ const UniqueTokenRow = magicMemo(({ item, forceOpen }) => {
 
   const handleItemPress = useCallback(
     asset =>
-      navigate(
-        ios ? Routes.EXPANDED_ASSET_SHEET : Routes.EXPANDED_ASSET_SCREEN,
-        {
-          asset,
-          cornerRadius: 30,
-          isReadOnlyWallet,
-          type: 'unique_token',
-        }
-      ),
+      navigate(Routes.EXPANDED_ASSET_SHEET, {
+        asset,
+        cornerRadius: 30,
+        isReadOnlyWallet,
+        type: 'unique_token',
+      }),
     [isReadOnlyWallet, navigate]
   );
 

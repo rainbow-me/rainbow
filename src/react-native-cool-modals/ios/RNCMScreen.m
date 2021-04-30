@@ -51,6 +51,8 @@
     _dismissable = YES;
     _ignoreBottomOffset = NO;
     _interactWithScrollView = true;
+    _hidden = false;
+    _disableShortFormAfterTransitionToLongForm = false;
   }
   
   return self;
@@ -68,6 +70,20 @@
 
 - (void) layout {
   [(PanModalViewController*) [_controller parentVC] panModalSetNeedsLayoutUpdateWrapper];
+}
+
+- (void) setHidden:(BOOL)hidden {
+  if (hidden) {
+    _hidden = hidden;
+    dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC);
+    dispatch_after(delay, dispatch_get_main_queue(), ^(void){
+      if (self.superview.superview.subviews.count > 0) {
+        self.superview.superview.subviews[0].backgroundColor = [UIColor.whiteColor colorWithAlphaComponent:0];
+      }
+      [(PanModalViewController*) [_controller parentVC] hide];
+    });
+   
+  }
 }
 
 - (void)jumpTo:(nonnull NSNumber*)point {
@@ -465,10 +481,12 @@ RCT_EXPORT_VIEW_PROPERTY(shortFormHeight, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(isShortFormEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(blocksBackgroundTouches, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(anchorModalToLongForm, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(disableShortFormAfterTransitionToLongForm, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(allowsTapToDismiss, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(allowsDragToDismiss, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(startFromShortForm, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(ignoreBottomOffset, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(hidden, BOOL)
 
 
 - (UIView *)view
