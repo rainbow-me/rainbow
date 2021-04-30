@@ -1,9 +1,11 @@
 import { findKey, keys } from 'lodash';
+import colors from '../context/currentColors';
 import {
   getMigrationVersion,
   setMigrationVersion,
 } from '../handlers/localstorage/migrations';
 import WalletTypes from '../helpers/walletTypes';
+import { getAccountProfileInfo } from '../hooks/useAccountProfile';
 import {
   DEFAULT_WALLET_NAME,
   loadAddress,
@@ -16,10 +18,16 @@ import store from '../redux/store';
 import { walletsSetSelected, walletsUpdate } from '../redux/wallets';
 import { getRandomColor } from '../styles/colors';
 import { hasKey } from './keychain';
+import { PreferenceActionType, setPreference } from './preferences';
+import {
+  getWebDataEnabled,
+  saveWebDataEnabled,
+} from '@rainbow-me/handlers/localstorage/accountLocal';
 import {
   getUserLists,
   saveUserLists,
 } from '@rainbow-me/handlers/localstorage/userLists';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { DefaultTokenLists } from '@rainbow-me/references';
 import logger from 'logger';
 
@@ -233,6 +241,62 @@ export default async function runMigrations() {
 
   migrations.push(v5);
 
+  /* Fix dollars => stablecoins */
+  const v6 = async () => {
+    const userLists = await getUserLists();
+    const newLists = userLists.map(list => {
+      if (list.id !== 'dollars') {
+        return list;
+      }
+      return DefaultTokenLists['mainnet'].find(
+        ({ id }) => id === 'stablecoins'
+      );
+    });
+    await saveUserLists(newLists);
+  };
+
+  migrations.push(v6);
+
+  /* Turning ON web data for all accounts */
+  const v7 = async () => {
+    const { wallets, selectedWallet, walletNames } = store.getState().wallets;
+    const { accountAddress } = store.getState().settings;
+    const network = networkTypes.mainnet;
+    Object.keys(wallets).forEach(key => {
+      const wallet = wallets[key];
+      if (wallet.type !== WalletTypes.readOnly) {
+        wallet.addresses.forEach(async address => {
+          const isWebDataEnabled = await getWebDataEnabled(address, network);
+          if (!isWebDataEnabled) {
+            await setPreference(
+              PreferenceActionType.init,
+              'showcase',
+              wallet,
+              showcaseTokens
+            );
+
+            const { accountColor, accountSymbol } = getAccountProfileInfo(
+              selectedWallet,
+              walletNames,
+              network,
+              accountAddress
+            );
+
+            await setPreference(PreferenceActionType.init, 'profile', wallet, {
+              accountColor: colors.avatarColor[accountColor],
+              accountSymbol: accountSymbol,
+            });
+
+            await saveWebDataEnabled(true, address, network);
+          }
+        });
+      }
+    });
+    const showcaseTokens = store.getState().showcaseTokens.showcaseTokens;
+  };
+
+  migrations.push(v7);
+
   logger.sentry(
     `Migrations: ready to run migrations starting on number ${currentVersion}`
   );
@@ -248,19 +312,4 @@ export default async function runMigrations() {
     logger.sentry(`Migrations: Migration ${i} completed succesfully`);
     await setMigrationVersion(i + 1);
   }
-
-  const v6 = async () => {
-    const userLists = await getUserLists();
-    const newLists = userLists.map(list => {
-      if (list.id !== 'dollars') {
-        return list;
-      }
-      return DefaultTokenLists['mainnet'].find(
-        ({ id }) => id === 'stablecoins'
-      );
-    });
-    await saveUserLists(newLists);
-  };
-
-  migrations.push(v6);
 }

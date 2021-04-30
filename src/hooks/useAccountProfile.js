@@ -9,11 +9,20 @@ import useWallets from './useWallets';
 export default function useAccountProfile() {
   const wallets = useWallets();
   const { selectedWallet, walletNames } = wallets;
-
-  const { network } = useAccountSettings();
-  const settings = useAccountSettings();
-  const { accountAddress } = settings;
-
+  const { network, accountAddress } = useAccountSettings();
+  return getAccountProfileInfo(
+    selectedWallet,
+    walletNames,
+    network,
+    accountAddress
+  );
+}
+export function getAccountProfileInfo(
+  selectedWallet,
+  walletNames,
+  network,
+  accountAddress
+) {
   if (!selectedWallet) {
     return {};
   }
