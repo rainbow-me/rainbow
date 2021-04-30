@@ -16,7 +16,7 @@ export enum PreferenceActionType {
 export interface PreferencesResponse {
   success: boolean;
   reason: string;
-  data?: Object;
+  data?: Object | undefined;
 }
 
 export const PREFS_ENDPOINT =
@@ -66,5 +66,25 @@ export async function setPreference(
   } catch (e) {
     logger.log('☁️  error setting pref', e);
     return false;
+  }
+}
+
+export async function getPreference(
+  key: string,
+  address: EthereumAddress
+): Promise<Object | null> {
+  try {
+    const response = await preferencesAPI.get(`${PREFS_ENDPOINT}/${key}`, {
+      params: { address },
+    });
+    const responseData: PreferencesResponse = response.data;
+    logger.log('☁️  RESPONSE', {
+      reason: responseData?.reason,
+      success: responseData?.success,
+    });
+    return responseData?.data || null;
+  } catch (e) {
+    logger.log('☁️  error setting pref', e);
+    return null;
   }
 }

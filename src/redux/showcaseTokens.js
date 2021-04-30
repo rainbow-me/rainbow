@@ -1,7 +1,9 @@
 import produce from 'immer';
 import { concat, without } from 'lodash';
+import { getPreference } from '../model/preferences';
 import {
   getShowcaseTokens,
+  getWebDataEnabled,
   saveShowcaseTokens,
 } from '@rainbow-me/handlers/localstorage/accountLocal';
 
@@ -17,7 +19,21 @@ const REMOVE_SHOWCASE_TOKEN = 'showcaseTokens/REMOVE_SHOWCASE_TOKEN';
 export const showcaseTokensLoadState = () => async (dispatch, getState) => {
   try {
     const { accountAddress, network } = getState().settings;
-    const showcaseTokens = await getShowcaseTokens(accountAddress, network);
+
+    let showcaseTokens = await getShowcaseTokens(accountAddress, network);
+
+    // if web data is enabled, fetch values from cloud
+    const pref = await getWebDataEnabled(accountAddress, network);
+    if (pref) {
+      const showcaseTokensFromCloud = await getPreference(
+        'showcase',
+        accountAddress
+      );
+      if (showcaseTokensFromCloud?.showcase?.ids) {
+        showcaseTokens = showcaseTokensFromCloud.showcase.ids;
+      }
+    }
+
     dispatch({
       payload: showcaseTokens,
       type: SHOWCASE_TOKENS_LOAD_SUCCESS,
