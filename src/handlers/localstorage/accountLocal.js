@@ -377,7 +377,7 @@ export const saveShowcaseTokens = (showcaseTokens, accountAddress, network) =>
  * @return {Array}
  */
 export const getWebDataEnabled = (accountAddress, network) =>
-  getAccountLocal(WEB_DATA_ENABLED, accountAddress, network, []);
+  getAccountLocal(WEB_DATA_ENABLED, accountAddress, network, null);
 
 /**
  * @desc save web showcase enabled preference

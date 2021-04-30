@@ -1,7 +1,6 @@
 import GraphemeSplitter from 'grapheme-splitter';
 import { useCallback, useEffect, useState } from 'react';
 import { PreferenceActionType, setPreference } from '../model/preferences';
-import { loadWallet } from '../model/wallet';
 import useAccountProfile from './useAccountProfile';
 import useAccountSettings from './useAccountSettings';
 import {
@@ -33,19 +32,22 @@ export default function useWebData() {
 
   const initWebData = useCallback(
     async showcaseTokens => {
-      const wallet = await loadWallet();
-      if (!wallet) return;
       await setPreference(
         PreferenceActionType.init,
         'showcase',
-        wallet,
+        accountAddress,
         showcaseTokens
       );
 
-      await setPreference(PreferenceActionType.init, 'profile', wallet, {
-        accountColor: colors.avatarColor[accountColor],
-        accountSymbol: accountSymbol,
-      });
+      await setPreference(
+        PreferenceActionType.init,
+        'profile',
+        accountAddress,
+        {
+          accountColor: colors.avatarColor[accountColor],
+          accountSymbol: accountSymbol,
+        }
+      );
 
       await saveWebDataEnabled(true, accountAddress, network);
       setWebDataEnabled(true);
@@ -56,10 +58,8 @@ export default function useWebData() {
   const wipeWebData = useCallback(async () => {
     const pref = await getWebDataEnabled(accountAddress, network);
     if (!pref) return;
-    const wallet = await loadWallet(accountAddress);
-    if (!wallet) return;
-    await setPreference(PreferenceActionType.wipe, 'showcase', wallet);
-    await setPreference(PreferenceActionType.wipe, 'profile', wallet);
+    await setPreference(PreferenceActionType.wipe, 'showcase', accountAddress);
+    await setPreference(PreferenceActionType.wipe, 'profile', accountAddress);
     await saveWebDataEnabled(false, accountAddress, network);
     setWebDataEnabled(false);
   }, [accountAddress, network]);
@@ -68,13 +68,16 @@ export default function useWebData() {
     async (address, name, color) => {
       const pref = await getWebDataEnabled(address, network);
       if (!pref) return;
-      const wallet = await loadWallet(address);
-      if (!wallet) return;
       const data = {
         accountColor: color || accountColor,
         accountSymbol: name ? getAccountSymbol(name) : accountSymbol,
       };
-      await setPreference(PreferenceActionType.update, 'profile', wallet, data);
+      await setPreference(
+        PreferenceActionType.update,
+        'profile',
+        address,
+        data
+      );
     },
     [accountColor, accountSymbol, network]
   );
@@ -83,9 +86,7 @@ export default function useWebData() {
     async asset_id => {
       const pref = await getWebDataEnabled(accountAddress, network);
       if (!pref) return;
-      const wallet = await loadWallet();
-      if (!wallet) return;
-      setPreference(PreferenceActionType.update, 'showcase', wallet, [
+      setPreference(PreferenceActionType.update, 'showcase', accountAddress, [
         asset_id,
       ]);
     },
@@ -96,9 +97,7 @@ export default function useWebData() {
     async asset_id => {
       const pref = await getWebDataEnabled(accountAddress, network);
       if (!pref) return;
-      const wallet = await loadWallet();
-      if (!wallet) return;
-      setPreference(PreferenceActionType.remove, 'showcase', wallet, [
+      setPreference(PreferenceActionType.remove, 'showcase', accountAddress, [
         asset_id,
       ]);
     },

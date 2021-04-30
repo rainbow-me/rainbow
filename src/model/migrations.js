@@ -1,5 +1,4 @@
-import { findKey, keys } from 'lodash';
-import colors from '../context/currentColors';
+import { findKey, isNull, keys } from 'lodash';
 import {
   getMigrationVersion,
   setMigrationVersion,
@@ -16,10 +15,11 @@ import {
 import store from '../redux/store';
 
 import { walletsSetSelected, walletsUpdate } from '../redux/wallets';
-import { getRandomColor } from '../styles/colors';
+import { getRandomColor, lightModeThemeColors } from '../styles/colors';
 import { hasKey } from './keychain';
 import { PreferenceActionType, setPreference } from './preferences';
 import {
+  getShowcaseTokens,
   getWebDataEnabled,
   saveWebDataEnabled,
 } from '@rainbow-me/handlers/localstorage/accountLocal';
@@ -259,40 +259,42 @@ export default async function runMigrations() {
 
   /* Turning ON web data for all accounts */
   const v7 = async () => {
-    const { wallets, selectedWallet, walletNames } = store.getState().wallets;
-    const { accountAddress } = store.getState().settings;
+    const { wallets, selected, walletNames } = store.getState().wallets;
     const network = networkTypes.mainnet;
-    Object.keys(wallets).forEach(key => {
-      const wallet = wallets[key];
+    const walletKeys = Object.keys(wallets);
+    for (let i = 0; i < walletKeys.length; i++) {
+      const wallet = wallets[walletKeys[i]];
       if (wallet.type !== WalletTypes.readOnly) {
-        wallet.addresses.forEach(async address => {
+        wallet.addresses.forEach(async account => {
+          const { address } = account;
           const isWebDataEnabled = await getWebDataEnabled(address, network);
-          if (!isWebDataEnabled) {
+
+          if (isNull(isWebDataEnabled)) {
+            const showcaseTokens = await getShowcaseTokens(address, network);
+
             await setPreference(
               PreferenceActionType.init,
               'showcase',
-              wallet,
+              address,
               showcaseTokens
             );
 
             const { accountColor, accountSymbol } = getAccountProfileInfo(
-              selectedWallet,
+              selected,
               walletNames,
               network,
-              accountAddress
+              address
             );
 
-            await setPreference(PreferenceActionType.init, 'profile', wallet, {
-              accountColor: colors.avatarColor[accountColor],
-              accountSymbol: accountSymbol,
+            await setPreference(PreferenceActionType.init, 'profile', address, {
+              accountColor: lightModeThemeColors.avatarColor[accountColor],
+              accountSymbol,
             });
-
             await saveWebDataEnabled(true, address, network);
           }
         });
       }
-    });
-    const showcaseTokens = store.getState().showcaseTokens.showcaseTokens;
+    }
   };
 
   migrations.push(v7);

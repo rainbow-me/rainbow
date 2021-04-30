@@ -93,7 +93,7 @@ const AvatarBuilder = ({ route: { params } }) => {
     await dispatch(walletsSetSelected(newWallets[walletId]));
     await dispatch(walletsUpdate(newWallets));
     updateWebProfile(
-      selectedWallet.address,
+      accountAddress,
       name,
       (color !== undefined && colors.avatarColor[color]) || currentAccountColor
     );
