@@ -28,7 +28,7 @@ export default function useWebData() {
       setWebDataEnabled(!!pref);
     };
     init();
-  }, [accountAddress, network]);
+  }, [accountAddress, network, webDataEnabled]);
 
   const initWebData = useCallback(
     async showcaseTokens => {

@@ -1,4 +1,5 @@
-import React, { Fragment, useCallback } from 'react';
+import { isNil } from 'lodash';
+import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { Linking } from 'react-native';
 import { Switch } from 'react-native-gesture-handler';
 import { Column, Row } from '../layout';
@@ -16,16 +17,31 @@ const PrivacySection = () => {
   const { webDataEnabled, initWebData, wipeWebData } = useWebData();
   const { colors } = useTheme();
 
+  const [publicShowCase, setPublicShowCase] = useState();
+
+  useEffect(() => {
+    if (isNil(publicShowCase) && webDataEnabled) {
+      setPublicShowCase(webDataEnabled);
+    }
+  }, [publicShowCase, webDataEnabled]);
+
   const { accountAddress } = useAccountSettings();
   const rainbowProfileLink = `${RAINBOW_PROFILES_BASE_URL}/${accountAddress}`;
 
   const toggleWebData = useCallback(() => {
+    setPublicShowCase(!webDataEnabled);
     if (webDataEnabled) {
       wipeWebData();
     } else {
       initWebData(showcaseTokens);
     }
-  }, [initWebData, showcaseTokens, webDataEnabled, wipeWebData]);
+  }, [
+    initWebData,
+    setPublicShowCase,
+    showcaseTokens,
+    webDataEnabled,
+    wipeWebData,
+  ]);
 
   const handleLinkPress = useCallback(
     () => Linking.openURL(rainbowProfileLink),
@@ -41,7 +57,7 @@ const PrivacySection = () => {
         testID="public-showcase"
       >
         <Column align="end" flex="1" justify="end">
-          <Switch onValueChange={toggleWebData} value={webDataEnabled} />
+          <Switch onValueChange={toggleWebData} value={publicShowCase} />
         </Column>
       </ListItem>
       <Row marginLeft={20} marginRight={20} marginTop={10}>

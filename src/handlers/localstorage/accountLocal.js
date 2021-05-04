@@ -381,8 +381,8 @@ export const getWebDataEnabled = (accountAddress, network) =>
 
 /**
  * @desc save web showcase enabled preference
- * @param  {String}   [address]
  * @param  {Boolean}  [value]
+ * @param  {String}   [address]
  * @param  {String}   [network]
  */
 export const saveWebDataEnabled = (preference, accountAddress, network) =>
