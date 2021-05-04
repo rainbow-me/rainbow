@@ -1,4 +1,5 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
+import Markdown from 'react-native-markdown-display';
 import styled from 'styled-components';
 import useWallets from '../../hooks/useWallets';
 import Link from '../Link';
@@ -104,7 +105,7 @@ const UniqueTokenExpandedState = ({ asset, external }) => {
                   lineHeight="paragraphSmall"
                   size="lmedium"
                 >
-                  {familyDescription}
+                  <Markdown>{familyDescription}</Markdown>
                 </Text>
                 {familyLink && <Link url={familyLink} />}
               </Column>
