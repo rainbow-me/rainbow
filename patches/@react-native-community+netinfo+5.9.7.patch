@@ -1,0 +1,26 @@
+diff --git a/node_modules/@react-native-community/netinfo/ios/RNCNetInfo.m b/node_modules/@react-native-community/netinfo/ios/RNCNetInfo.m
+index 6b7ba9b..ad1930b 100644
+--- a/node_modules/@react-native-community/netinfo/ios/RNCNetInfo.m
++++ b/node_modules/@react-native-community/netinfo/ios/RNCNetInfo.m
+@@ -101,16 +101,16 @@ - (void)connectionStateWatcher:(RNCConnectionStateWatcher *)connectionStateWatch
+ - (NSDictionary *)currentDictionaryFromUpdateState:(RNCConnectionState *)state withInterface:(nullable NSString *)requestedInterface
+ {
+   NSString *selectedInterface = requestedInterface ?: state.type;
+-  NSMutableDictionary *details = [self detailsFromInterface:selectedInterface withState:state];
++  // NSMutableDictionary *details = [self detailsFromInterface:selectedInterface withState:state];
+   bool connected = [state.type isEqualToString:selectedInterface] && state.connected;
+-  if (connected) {
+-    details[@"isConnectionExpensive"] = @(state.expensive);
+-  }
++  //  if (connected) {
++  //      details[@"isConnectionExpensive"] = @(state.expensive);
++  //  }
+ 
+   return @{
+     @"type": selectedInterface,
+     @"isConnected": @(connected),
+-    @"details": details ?: NSNull.null
++    @"details": NSNull.null
+   };
+ }
+ 

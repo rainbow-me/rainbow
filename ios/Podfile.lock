@@ -475,8 +475,8 @@ PODS:
     - React
   - RNDominantColor (1.7.0):
     - React
-  - RNFastImage (8.3.2):
-    - React
+  - RNFastImage (8.3.4):
+    - React-Core
     - SDWebImage (~> 5.8)
     - SDWebImageWebPCoder (~> 0.6.1)
   - RNFBApp (8.4.5):
@@ -516,7 +516,7 @@ PODS:
     - React-Core
   - RNReactNativeHapticFeedback (1.11.0):
     - React-Core
-  - RNReanimated (2.0.0):
+  - RNReanimated (2.1.0):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -547,9 +547,9 @@ PODS:
     - Yoga
   - RNScreens (2.9.0):
     - React
-  - RNSentry (2.0.2):
+  - RNSentry (2.4.0):
     - React-Core
-    - Sentry (= 6.0.9)
+    - Sentry (= 6.1.4)
   - RNStoreReview (0.1.5):
     - React
   - RNSVG (12.1.0):
@@ -566,9 +566,9 @@ PODS:
   - SDWebImageWebPCoder (0.6.1):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.7)
-  - Sentry (6.0.9):
-    - Sentry/Core (= 6.0.9)
-  - Sentry/Core (6.0.9)
+  - Sentry (6.1.4):
+    - Sentry/Core (= 6.1.4)
+  - Sentry/Core (6.1.4)
   - SexyTooltip (1.2.7):
     - pop (~> 1.0)
   - Shimmer (1.0.2)
@@ -1022,7 +1022,7 @@ SPEC CHECKSUMS:
   RNCPushNotificationIOS: ec7ffe65c7b5097f8d287fd627e1c1674ea69cef
   RNDeviceInfo: 6f20764111df002b4484f90cbe0a861be29bcc6c
   RNDominantColor: 72126cb96ffedf4bcd564ed00e2e578f5b93e0d6
-  RNFastImage: e19ba191922e7dab9d932a4d59d62d76660aa222
+  RNFastImage: d4870d58f5936111c56218dbd7fcfc18e65b58ff
   RNFBApp: 570b136767f588b7eef0ab918284e9fe364d0c3e
   RNFBCrashlytics: 7b60463c742f830255fa76f13a837f95c6581700
   RNFBMessaging: dc3849747c2c61bfcd3c1ce6b5390f27ff4f7756
@@ -1036,16 +1036,16 @@ SPEC CHECKSUMS:
   RNOS: 31db6fa4a197d179afbba9e6b4d28d450a7f250b
   RNPermissions: 5df468064df661a4c8c017e2791ce90d7695eea5
   RNReactNativeHapticFeedback: 653a8c126a0f5e88ce15ffe280b3ff37e1fbb285
-  RNReanimated: 5231286440b796e09df3bfa5c1b12b02bfe07664
+  RNReanimated: 70f662b5232dd5d19ccff581e919a54ea73df51c
   RNScreens: c526239bbe0e957b988dacc8d75ac94ec9cb19da
-  RNSentry: 5ebc2926dbcbb9b77857ba6df0754a869037123d
+  RNSentry: b0d55027200c96f52e26b9bfb20296d47fc5051d
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
   RNTextSize: 21c94a67819fbf2c358a219bf6d251e3be9e5f29
   RNTooltips: e13180e4339e2a85daabd09507f62a5a32d3dc8a
   SDWebImage: 9169792e9eec3e45bba2a0c02f74bf8bd922d1ee
   SDWebImageWebPCoder: d0dac55073088d24b2ac1b191a71a8f8d0adac21
-  Sentry: 388c9dc093b2fd3a264466a5c5b21e25959610a9
+  Sentry: 9d055e2de30a77685e86b219acf02e59b82091fc
   SexyTooltip: e243da5a858c7160141cf35786a4033669d1efca
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86
   SRSRadialGradient: a372b4b3bc65a2f3b1a16b906485cff204e1db3e

@@ -16,6 +16,11 @@ import store from '../redux/store';
 import { walletsSetSelected, walletsUpdate } from '../redux/wallets';
 import { getRandomColor } from '../styles/colors';
 import { hasKey } from './keychain';
+import {
+  getUserLists,
+  saveUserLists,
+} from '@rainbow-me/handlers/localstorage/userLists';
+import { DefaultTokenLists } from '@rainbow-me/references';
 import logger from 'logger';
 
 export default async function runMigrations() {
@@ -243,4 +248,19 @@ export default async function runMigrations() {
     logger.sentry(`Migrations: Migration ${i} completed succesfully`);
     await setMigrationVersion(i + 1);
   }
+
+  const v6 = async () => {
+    const userLists = await getUserLists();
+    const newLists = userLists.map(list => {
+      if (list.id !== 'dollars') {
+        return list;
+      }
+      return DefaultTokenLists['mainnet'].find(
+        ({ id }) => id === 'stablecoins'
+      );
+    });
+    await saveUserLists(newLists);
+  };
+
+  migrations.push(v6);
 }

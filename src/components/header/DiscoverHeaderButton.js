@@ -53,7 +53,7 @@ export default function DiscoverHeaderButton() {
     <HeaderButton
       onPress={onPress}
       scaleTo={0.9}
-      testID="goToDiscover"
+      testID="discover-button"
       transformOrigin="right"
     >
       <Row>

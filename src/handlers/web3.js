@@ -144,6 +144,8 @@ export const estimateGas = async (estimateGasData, provider = null) => {
 
 export const estimateGasWithPadding = async (
   txPayload,
+  contractCallEstimateGas = null,
+  callArguments = null,
   provider = null,
   paddingFactor = 1.1
 ) => {
@@ -155,27 +157,35 @@ export const estimateGasWithPadding = async (
     // 1 - Check if the receiver is a contract
     const code = to ? await p.getCode(to) : undefined;
     // 2 - if it's not a contract AND it doesn't have any data use the default gas limit
-    if (!to || (to && !data && (!code || code === '0x'))) {
-      logger.log(
+    if (
+      (!contractCallEstimateGas && !to) ||
+      (to && !data && (!code || code === '0x'))
+    ) {
+      logger.sentry(
         '⛽ Skipping estimates, using default',
         ethUnits.basic_tx.toString()
       );
       return ethUnits.basic_tx.toString();
     }
-    logger.log('⛽ Calculating safer gas limit for last block');
+
+    logger.sentry('⛽ Calculating safer gas limit for last block');
     // 3 - If it is a contract, call the RPC method `estimateGas` with a safe value
     const saferGasLimit = fraction(gasLimit.toString(), 19, 20);
-    logger.log('⛽ safer gas limit for last block is', saferGasLimit);
+    logger.sentry('⛽ safer gas limit for last block is', saferGasLimit);
 
-    txPayloadToEstimate.gas = toHex(saferGasLimit);
-    const estimatedGas = await p.estimateGas(txPayloadToEstimate);
+    txPayloadToEstimate[contractCallEstimateGas ? 'gasLimit' : 'gas'] = toHex(
+      saferGasLimit
+    );
+    const estimatedGas = await (contractCallEstimateGas
+      ? contractCallEstimateGas(...callArguments, txPayloadToEstimate)
+      : p.estimateGas(txPayloadToEstimate));
 
     const lastBlockGasLimit = addBuffer(gasLimit.toString(), 0.9);
     const paddedGas = addBuffer(
       estimatedGas.toString(),
       paddingFactor.toString()
     );
-    logger.log('⛽ GAS CALCULATIONS!', {
+    logger.sentry('⛽ GAS CALCULATIONS!', {
       estimatedGas: estimatedGas.toString(),
       gasLimit: gasLimit.toString(),
       lastBlockGasLimit: lastBlockGasLimit,
@@ -183,7 +193,7 @@ export const estimateGasWithPadding = async (
     });
     // If the safe estimation is above the last block gas limit, use it
     if (greaterThan(estimatedGas, lastBlockGasLimit)) {
-      logger.log(
+      logger.sentry(
         '⛽ returning orginal gas estimation',
         estimatedGas.toString()
       );
@@ -191,11 +201,11 @@ export const estimateGasWithPadding = async (
     }
     // If the estimation is below the last block gas limit, use the padded estimate
     if (greaterThan(lastBlockGasLimit, paddedGas)) {
-      logger.log('⛽ returning padded gas estimation', paddedGas);
+      logger.sentry('⛽ returning padded gas estimation', paddedGas);
       return paddedGas;
     }
     // otherwise default to the last block gas limit
-    logger.log('⛽ returning last block gas limit', lastBlockGasLimit);
+    logger.sentry('⛽ returning last block gas limit', lastBlockGasLimit);
     return lastBlockGasLimit;
   } catch (error) {
     logger.error('Error calculating gas limit with padding', error);
@@ -427,7 +437,7 @@ export const estimateGasLimit = async (
     };
   }
   if (addPadding) {
-    return estimateGasWithPadding(estimateGasData, provider);
+    return estimateGasWithPadding(estimateGasData, null, null, provider);
   } else {
     return estimateGas(estimateGasData, provider);
   }

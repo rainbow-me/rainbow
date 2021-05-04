@@ -22,7 +22,16 @@ const Container = styled(RowWithMargins).attrs({
   ${android ? 'padding-vertical: 10' : 'padding-top: 14'};
 `;
 
-const Link = ({ url }) => {
+const Link = ({
+  url,
+  display,
+  emoji,
+  emojiName = 'compass',
+  color,
+  transformOrigin = 'left',
+  scaleTo = 1.1,
+  ...props
+}) => {
   const handlePress = useCallback(() => Linking.openURL(url), [url]);
   const { colors } = useTheme();
 
@@ -30,13 +39,18 @@ const Link = ({ url }) => {
     <ButtonPressAnimation
       compensateForTransformOrigin
       onPress={handlePress}
-      scaleTo={1.1}
-      transformOrigin="left"
+      scaleTo={scaleTo}
+      transformOrigin={transformOrigin}
     >
-      <Container>
-        <Icon color={colors.appleBlue} name="compass" />
-        <Text color={colors.appleBlue} size="lmedium" weight="semibold">
-          {formatURLForDisplay(url)}
+      <Container {...props}>
+        {!emoji && <Icon color={color || colors.appleBlue} name={emojiName} />}
+        <Text
+          color={color || colors.appleBlue}
+          size="lmedium"
+          weight="semibold"
+        >
+          {emoji}
+          {display || formatURLForDisplay(url)}
         </Text>
       </Container>
     </ButtonPressAnimation>

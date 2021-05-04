@@ -50,7 +50,7 @@ class PossiblyTouchesPassableUIView: UIView {
   //  // I don't really want to talk about it
   override func layoutSubviews() {
     super.layoutSubviews()
-    
+
     let outerView = self.config?.value(forKey: "outerView") as? UIView
     if (!(self.config!.value(forKey: "presentGlobally") as! Bool)) {
       if moved {
@@ -99,13 +99,13 @@ var PossiblyTouchesPassableUITransitionView: AnyClass?  = nil;
 
 class DiscoverSheetViewController: UIViewController, PanModalPresentable {
   func hide() {
-    
+
   }
-  
+
   func unhackParent() {
-    
+
   }
-  
+
   var observation: NSKeyValueObservation?
 
   @objc func jumpTo(long: NSNumber) {
@@ -249,7 +249,7 @@ class DiscoverSheetViewController: UIViewController, PanModalPresentable {
       self.config?.performSelector(inBackground: Selector.init(("callOnCrossMagicBoderFromTop")), with: nil)
     }
   }
-  
+
   var hacked = false
 
   public func hack() {
@@ -257,11 +257,6 @@ class DiscoverSheetViewController: UIViewController, PanModalPresentable {
     if !(pview is PossiblyTouchesPassableUIView && !hacked) {
       let oldClass: AnyClass = type(of: pview)
       object_setClass(pview, PossiblyTouchesPassableUIView.self)
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-        if (pview is PossiblyTouchesPassableUIView) {
-          object_setClass(pview, oldClass)
-        }
-      }
       hacked = true;
       (pview as! PossiblyTouchesPassableUIView).config = self.config
       (pview as! PossiblyTouchesPassableUIView).topLayoutGuideLength = self.topLayoutGuide.length

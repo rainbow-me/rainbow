@@ -84,7 +84,7 @@ export default function useSwapDerivedOutputs() {
   const outputPrice = genericAssets[outputCurrency?.address]?.price?.value;
 
   const { chainId } = useAccountSettings();
-  const { allPairs } = useUniswapPairs();
+  const { allPairs, doneLoadingReserves } = useUniswapPairs();
 
   return useMemo(() => {
     let tradeDetails = null;
@@ -100,7 +100,12 @@ export default function useSwapDerivedOutputs() {
     };
 
     if (!independentValue || !inputCurrency) {
-      return { derivedValues, displayValues, tradeDetails };
+      return {
+        derivedValues,
+        displayValues,
+        doneLoadingReserves,
+        tradeDetails,
+      };
     }
 
     const inputToken = getTokenForCurrency(inputCurrency, chainId);
@@ -164,7 +169,12 @@ export default function useSwapDerivedOutputs() {
       displayValues[DisplayValue.output] = outputAmountDisplay;
     } else {
       if (!outputToken || !inputToken || isEmpty(allPairs)) {
-        return { derivedValues, displayValues, tradeDetails };
+        return {
+          derivedValues,
+          displayValues,
+          doneLoadingReserves,
+          tradeDetails,
+        };
       }
       derivedValues[SwapModalField.output] = independentValue;
       displayValues[DisplayValue.output] = independentValue;
@@ -202,10 +212,11 @@ export default function useSwapDerivedOutputs() {
 
       derivedValues[SwapModalField.native] = nativeValue;
     }
-    return { derivedValues, displayValues, tradeDetails };
+    return { derivedValues, displayValues, doneLoadingReserves, tradeDetails };
   }, [
     allPairs,
     chainId,
+    doneLoadingReserves,
     independentField,
     independentValue,
     inputCurrency,

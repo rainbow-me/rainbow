@@ -43,6 +43,7 @@ import {
   useSendSavingsAccount,
   useTransactionConfirmation,
   useUpdateAssetOnchainBalance,
+  useUserAccounts,
 } from '@rainbow-me/hooks';
 import { sendTransaction } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
@@ -130,6 +131,7 @@ export default function SendSheet(props) {
     };
   }, [addListener]);
   const { contacts, onRemoveContact, filteredContacts } = useContacts();
+  const { userAccounts } = useUserAccounts();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
   const {
     accountAddress,
@@ -541,6 +543,7 @@ export default function SendSheet(props) {
           recipientFieldRef={recipientFieldRef}
           removeContact={onRemoveContact}
           showAssetList={showAssetList}
+          userAccounts={userAccounts}
         />
         {showEmptyState && (
           <SendContactList
@@ -548,6 +551,7 @@ export default function SendSheet(props) {
             currentInput={currentInput}
             onPressContact={setRecipient}
             removeContact={onRemoveContact}
+            userAccounts={userAccounts}
           />
         )}
         {showAssetList && (

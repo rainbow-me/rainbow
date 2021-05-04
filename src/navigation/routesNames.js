@@ -16,6 +16,7 @@ const Routes = {
   EXCHANGE_MODAL: 'ExchangeModal',
   EXPANDED_ASSET_SCREEN: 'ExpandedAssetScreen',
   EXPANDED_ASSET_SHEET: 'ExpandedAssetSheet',
+  EXPANDED_ASSET_SHEET_POOLS: 'ExpandedAssetSheetPools',
   IMPORT_SCREEN: 'ImportScreen',
   IMPORT_SEED_PHRASE_SHEET: 'ImportSeedPhraseSheet',
   IMPORT_SEED_PHRASE_SHEET_NAVIGATOR: 'ImportSeedPhraseSheetNavigator',

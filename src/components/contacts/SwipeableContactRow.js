@@ -50,7 +50,16 @@ const RightAction = ({ onPress, progress, text, x }) => {
 };
 
 const SwipeableContactRow = (
-  { address, color, nickname, onPress, onSelectEdit, onTouch, removeContact },
+  {
+    accountType,
+    address,
+    color,
+    nickname,
+    onPress,
+    onSelectEdit,
+    onTouch,
+    removeContact,
+  },
   forwardedRef
 ) => {
   const swipeableRef = useRef();
@@ -77,8 +86,6 @@ const SwipeableContactRow = (
     () => swipeableRef.current?.openRight?.(),
     []
   );
-
-  const handlePress = useCallback(() => onPress(address), [address, onPress]);
 
   const handlePressStart = useCallback(() => onTouch(address), [
     address,
@@ -113,11 +120,12 @@ const SwipeableContactRow = (
       rightThreshold={0}
     >
       <ContactRow
+        accountType={accountType}
         address={address}
         color={color}
         nickname={nickname}
         onLongPress={handleLongPress}
-        onPress={handlePress}
+        onPress={onPress}
         onPressStart={handlePressStart}
       />
     </Swipeable>

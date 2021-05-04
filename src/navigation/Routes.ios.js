@@ -32,6 +32,7 @@ import {
   backupSheetConfig,
   defaultScreenStackOptions,
   expandedAssetSheetConfig,
+  expandedAssetSheetConfigWithLimit,
   nativeStackDefaultConfig,
   nativeStackDefaultConfigWithoutStatusBar,
   restoreSheetConfig,
@@ -250,12 +251,17 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SHEET}
-        {...expandedAssetSheetConfig}
+        {...expandedAssetSheetConfigWithLimit}
+      />
+      <NativeStack.Screen
+        component={ExpandedAssetSheet}
+        name={Routes.EXPANDED_ASSET_SHEET_POOLS}
+        {...expandedAssetSheetConfigWithLimit}
       />
       <NativeStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.TOKEN_INDEX_SHEET}
-        {...expandedAssetSheetConfig}
+        {...expandedAssetSheetConfigWithLimit}
       />
       <NativeStack.Screen
         component={SpeedUpAndCancelSheet}

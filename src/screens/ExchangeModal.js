@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Keyboard } from 'react-native';
+import { Alert, Keyboard } from 'react-native';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
@@ -172,6 +172,7 @@ export default function ExchangeModal({
   const {
     derivedValues: { inputAmount, nativeAmount, outputAmount },
     displayValues: { inputAmountDisplay, outputAmountDisplay },
+    doneLoadingReserves,
     tradeDetails,
   } = useSwapDerivedOutputs();
 
@@ -304,10 +305,14 @@ export default function ExchangeModal({
           return;
         }
 
-        const callback = () => {
+        const callback = (success = false, errorMessage = null) => {
           setIsAuthorizing(false);
-          setParams({ focused: false });
-          navigate(Routes.PROFILE_SCREEN);
+          if (success) {
+            setParams({ focused: false });
+            navigate(Routes.PROFILE_SCREEN);
+          } else if (errorMessage) {
+            Alert.alert(errorMessage);
+          }
         };
         logger.log('[exchange - handle submit] rap');
         const swapParameters = {
@@ -344,6 +349,7 @@ export default function ExchangeModal({
   const confirmButtonProps = useMemoOne(
     () => ({
       disabled: !Number(inputAmount),
+      doneLoadingReserves,
       inputAmount,
       isAuthorizing,
       isHighPriceImpact,
@@ -352,6 +358,7 @@ export default function ExchangeModal({
       type,
     }),
     [
+      doneLoadingReserves,
       handleSubmit,
       inputAmount,
       isAuthorizing,
@@ -482,6 +489,7 @@ export default function ExchangeModal({
           <GasSpeedButton
             dontBlur
             onCustomGasBlur={handleCustomGasBlur}
+            options={['normal', 'fast', 'custom']}
             testID={`${testID}-gas`}
             type={type}
           />

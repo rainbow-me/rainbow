@@ -14,12 +14,7 @@ export default function ExpandedStateSection({ children, title, ...props }) {
   const { colors } = useTheme();
   return (
     <Container {...props}>
-      <Text
-        color={colors.dark}
-        letterSpacing="roundedTight"
-        size="larger"
-        weight="bold"
-      >
+      <Text color={colors.dark} size="larger" weight="bold">
         {title}
       </Text>
       {typeof children === 'string' ? (

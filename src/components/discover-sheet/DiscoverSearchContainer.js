@@ -132,6 +132,7 @@ export default forwardRef(function DiscoverSearchContainer(
             searchInputRef.current?.blur();
             setIsInputFocused(false);
           }}
+          testID="done-button"
         >
           {delayedShowSearch && <CancelText>Done</CancelText>}
         </CancelButton>

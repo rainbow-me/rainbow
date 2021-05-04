@@ -5,6 +5,7 @@ import { AppState } from '@rainbow-me/redux/store';
 import { greaterThan } from '@rainbow-me/utilities';
 
 export default function useSwapIsSufficientLiquidity(
+  doneLoadingReserves: boolean,
   tradeDetails: Trade | null
 ) {
   const independentValue = useSelector(
@@ -22,8 +23,9 @@ export default function useSwapIsSufficientLiquidity(
     const hasUserInput = greaterThan(independentValue, 0);
     const userHasSpecifiedInputOutput =
       inputCurrencyAddress && outputCurrencyAddress && hasUserInput;
-    return !(noRoute && userHasSpecifiedInputOutput);
+    return !(doneLoadingReserves && noRoute && userHasSpecifiedInputOutput);
   }, [
+    doneLoadingReserves,
     independentValue,
     inputCurrencyAddress,
     outputCurrencyAddress,

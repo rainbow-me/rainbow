@@ -447,10 +447,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.delay(3000);
   });
 
-  it('Should rotate between Slow, Normal, Fast, & Custom when Gas Button is Pressed', async () => {
-    await Helpers.tap('exchange-modal-gas');
-    await Helpers.delay(1000);
-    await Helpers.checkIfElementByTextIsVisible('Slow');
+  it('Should rotate between Normal, Fast, & Custom when Gas Button is Pressed', async () => {
     await Helpers.tap('exchange-modal-gas');
     await Helpers.delay(1000);
     await Helpers.checkIfElementByTextIsVisible('Normal');

@@ -1,6 +1,7 @@
 import { toLower } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
-import { initialChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
+import { IS_TESTING } from 'react-native-dotenv';
+import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/ChartExpandedState';
 import { Centered, Column, Flex } from '../layout';
 import { MarqueeList } from '../list';
 import { Text } from '../text';
@@ -38,15 +39,12 @@ export default function TopMoversSection() {
       const assetFormatted =
         ethereumUtils.getAsset(allAssets, toLower(asset.address)) || asset;
 
-      navigate(
-        ios ? Routes.EXPANDED_ASSET_SHEET : Routes.EXPANDED_ASSET_SCREEN,
-        {
-          asset: assetFormatted,
-          fromDiscover: true,
-          longFormHeight: initialChartExpandedStateSheetHeight,
-          type: 'token',
-        }
-      );
+      navigate(Routes.EXPANDED_ASSET_SHEET, {
+        asset: assetFormatted,
+        fromDiscover: true,
+        longFormHeight: initialChartExpandedStateSheetHeight,
+        type: 'token',
+      });
     },
     [allAssets, navigate]
   );
@@ -82,7 +80,7 @@ export default function TopMoversSection() {
   ]);
 
   return (
-    <Column marginBottom={15} marginTop={11}>
+    <Column marginBottom={15} marginTop={11} testID="top-movers-section">
       {(gainerItems?.length > 0 || loserItems?.length > 0) && (
         <Flex marginBottom={12} paddingHorizontal={19}>
           <Text size="larger" weight="heavy">
@@ -98,10 +96,18 @@ export default function TopMoversSection() {
       ) : (
         <Column>
           {gainerItems?.length !== 0 && (
-            <MarqueeList items={gainerItems} speed={40} />
+            <MarqueeList
+              items={gainerItems}
+              speed={IS_TESTING !== 'true' ? 40 : 0}
+              testID="top-gainers"
+            />
           )}
           {loserItems?.length !== 0 && (
-            <MarqueeList items={loserItems} speed={-40} />
+            <MarqueeList
+              items={loserItems}
+              speed={IS_TESTING !== 'true' ? -40 : 0}
+              testID="top-losers"
+            />
           )}
         </Column>
       )}

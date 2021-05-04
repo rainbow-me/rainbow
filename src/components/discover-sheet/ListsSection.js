@@ -15,7 +15,7 @@ import { DefaultTokenLists } from '../../references';
 import { ButtonPressAnimation } from '../animations';
 import { AssetListItemSkeleton } from '../asset-list';
 import { ListCoinRow } from '../coin-row';
-import { initialChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
+import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/ChartExpandedState';
 import { Centered, Column, Flex, Row } from '../layout';
 import { Emoji, Text } from '../text';
 import EdgeFade from './EdgeFade';
@@ -161,7 +161,9 @@ export default function ListSection() {
       );
       if (listData?.length > 0) {
         setTimeout(() => {
-          handleSwitchList(lists[currentListIndex].id, currentListIndex);
+          if (lists[currentListIndex]) {
+            handleSwitchList(lists[currentListIndex].id, currentListIndex);
+          }
         }, 300);
       }
       initialized.current = true;
@@ -225,15 +227,12 @@ export default function ListSection() {
 
   const handlePress = useCallback(
     item => {
-      navigate(
-        ios ? Routes.EXPANDED_ASSET_SHEET : Routes.EXPANDED_ASSET_SCREEN,
-        {
-          asset: item,
-          fromDiscover: true,
-          longFormHeight: initialChartExpandedStateSheetHeight,
-          type: 'token',
-        }
-      );
+      navigate(Routes.EXPANDED_ASSET_SHEET, {
+        asset: item,
+        fromDiscover: true,
+        longFormHeight: initialChartExpandedStateSheetHeight,
+        type: 'token',
+      });
     },
     [navigate]
   );
@@ -252,6 +251,7 @@ export default function ListSection() {
         key={`list-${list.id}`}
         onPress={() => handleSwitchList(list.id, index)}
         selected={selectedList === list.id}
+        testID={`list-${list.id}`}
       >
         <Row>
           <Emoji name={list.emoji} size="small" />
@@ -274,7 +274,7 @@ export default function ListSection() {
   );
 
   return (
-    <Column>
+    <Column testID="lists-section">
       <Flex paddingHorizontal={19}>
         <Text size="larger" weight="heavy">
           Lists
@@ -297,6 +297,7 @@ export default function ListSection() {
             renderItem={renderItem}
             scrollsToTop={false}
             showsHorizontalScrollIndicator={false}
+            testID={`lists-section-${selectedList}`}
           />
           <EdgeFade />
         </Column>

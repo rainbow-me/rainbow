@@ -26,6 +26,7 @@ import WelcomeScreen from '../screens/WelcomeScreen';
 import WithdrawModal from '../screens/WithdrawModal';
 import WyreWebview from '../screens/WyreWebview';
 import { SwipeNavigator } from './SwipeNavigator';
+import { createBottomSheetNavigator } from './bottom-sheet';
 import {
   closeKeyboardOnClose,
   defaultScreenStackOptions,
@@ -52,6 +53,7 @@ import { ExchangeModalNavigator } from './index';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
+const BSStack = createBottomSheetNavigator();
 
 function SendFlowNavigator() {
   return (
@@ -126,7 +128,16 @@ function MainNavigator() {
       <Stack.Screen
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SHEET}
-        options={expandedPreset}
+        options={args =>
+          args?.route?.params?.type === 'token'
+            ? sheetPresetWithSmallGestureResponseDistance(args)
+            : sheetPreset(args)
+        }
+      />
+      <Stack.Screen
+        component={ExpandedAssetSheet}
+        name={Routes.EXPANDED_ASSET_SHEET_POOLS}
+        options={expandedPresetWithSmallGestureResponseDistance}
       />
       <Stack.Screen
         component={ExpandedAssetSheet}
@@ -251,11 +262,6 @@ function MainOuterNavigator() {
       />
       <OuterStack.Screen
         component={ExpandedAssetSheet}
-        name={Routes.EXPANDED_ASSET_SCREEN}
-        options={sheetPreset}
-      />
-      <OuterStack.Screen
-        component={ExpandedAssetSheet}
         name={Routes.TOKEN_INDEX_SCREEN}
         options={expandedPresetWithSmallGestureResponseDistance}
       />
@@ -274,18 +280,28 @@ function MainOuterNavigator() {
         name={Routes.BACKUP_SCREEN}
         options={sheetPreset}
       />
-      <OuterStack.Screen
+    </OuterStack.Navigator>
+  );
+}
+
+function BSNavigator() {
+  return (
+    <BSStack.Navigator>
+      <BSStack.Screen
+        component={MainOuterNavigator}
+        name={Routes.MAIN_NAVIGATOR_WRAPPER}
+      />
+      <BSStack.Screen
         component={SendFlowNavigator}
         name={Routes.SEND_SHEET_NAVIGATOR}
-        options={sheetPresetWithSmallGestureResponseDistance}
       />
-    </OuterStack.Navigator>
+    </BSStack.Navigator>
   );
 }
 
 const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
   <NavigationContainer onStateChange={onNavigationStateChange} ref={ref}>
-    <MainOuterNavigator />
+    <BSNavigator />
   </NavigationContainer>
 ));
 

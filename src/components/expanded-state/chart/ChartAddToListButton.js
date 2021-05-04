@@ -49,7 +49,11 @@ const ChartAddToListButton = ({ asset }) => {
 
   return (
     <Fragment>
-      <AddToListButton as={ButtonPressAnimation} onPress={handlePress}>
+      <AddToListButton
+        as={ButtonPressAnimation}
+        onPress={handlePress}
+        testID="add-to-list-button"
+      >
         <Circle>
           <PlusIcon>􀅼</PlusIcon>
         </Circle>
