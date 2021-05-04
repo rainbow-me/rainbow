@@ -1,4 +1,5 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
+import Markdown from 'react-native-markdown-display';
 import styled from 'styled-components';
 import Link from '../Link';
 import { Column, ColumnWithDividers } from '../layout';
@@ -99,7 +100,7 @@ const UniqueTokenExpandedState = ({ asset }) => {
                   lineHeight="paragraphSmall"
                   size="lmedium"
                 >
-                  {familyDescription}
+                  <Markdown>{familyDescription}</Markdown>
                 </Text>
                 {familyLink && <Link url={familyLink} />}
               </Column>
