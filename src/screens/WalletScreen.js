@@ -112,7 +112,8 @@ export default function WalletScreen() {
       const fetchPortfolios = async () => {
         for (let i = 0; i < userAccounts.length; i++) {
           const account = userAccounts[i];
-          dispatch(emitPortfolioRequest(toLower(account.address)));
+          // Passing usd for consistency in tracking
+          dispatch(emitPortfolioRequest(toLower(account.address), 'usd'));
         }
       };
       fetchPortfolios();

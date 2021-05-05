@@ -308,8 +308,8 @@ export const explorerInit = () => async (dispatch, getState) => {
   }
 };
 
-export const emitPortfolioRequest = address => (dispatch, getState) => {
-  const { nativeCurrency } = getState().settings;
+export const emitPortfolioRequest = (address, currency) => getState => {
+  const nativeCurrency = currency || getState().settings;
   const { addressSocket } = getState().explorer;
   addressSocket?.emit(...portfolioSubscription(address, nativeCurrency));
 };
