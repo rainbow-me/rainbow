@@ -114,7 +114,6 @@ export default function WalletScreen() {
           const account = userAccounts[i];
           dispatch(emitPortfolioRequest(toLower(account.address)));
         }
-        //Wait until we get all the portfolios before tracking
       };
       fetchPortfolios();
     }
