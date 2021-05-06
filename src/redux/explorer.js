@@ -94,7 +94,7 @@ const addressSubscription = (address, currency, action = 'subscribe') => [
   },
 ];
 
-const portfolioSubscription = (address, currency, action = 'subscribe') => [
+const portfolioSubscription = (address, currency, action = 'get') => [
   action,
   {
     payload: {
@@ -308,9 +308,13 @@ export const explorerInit = () => async (dispatch, getState) => {
   }
 };
 
-export const emitPortfolioRequest = (address, currency) => getState => {
-  const nativeCurrency = currency || getState().settings;
+export const emitPortfolioRequest = (address, currency) => (
+  dispatch,
+  getState
+) => {
+  const nativeCurrency = currency || getState().settings.nativeCurrency;
   const { addressSocket } = getState().explorer;
+
   addressSocket?.emit(...portfolioSubscription(address, nativeCurrency));
 };
 
