@@ -146,15 +146,7 @@ export default function WalletScreen() {
         setFetchedCharts(true);
       }
     }
-  }, [
-    assetsSocket,
-    dispatch,
-    fetchedCharts,
-    initialized,
-    sections,
-    trackPortfolios,
-    userAccounts,
-  ]);
+  }, [assetsSocket, dispatch, fetchedCharts, initialized, sections]);
 
   // Show the exchange fab only for supported networks
   // (mainnet & rinkeby)
