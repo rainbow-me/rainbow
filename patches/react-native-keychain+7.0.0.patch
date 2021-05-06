@@ -1,10 +1,10 @@
 diff --git a/node_modules/react-native-keychain/RNKeychainManager/RNKeychainManager.m b/node_modules/react-native-keychain/RNKeychainManager/RNKeychainManager.m
-index 98e45fe..01e9b76 100644
+index 38ccdf3..b64430d 100644
 --- a/node_modules/react-native-keychain/RNKeychainManager/RNKeychainManager.m
 +++ b/node_modules/react-native-keychain/RNKeychainManager/RNKeychainManager.m
-@@ -542,4 +542,91 @@ - (OSStatus)deleteCredentialsForServer:(NSString *)server
+@@ -272,6 +272,94 @@ - (OSStatus)deleteCredentialsForServer:(NSString *)server
+   return SecItemDelete((__bridge CFDictionaryRef) query);
  }
- #endif
  
 +RCT_EXPORT_METHOD(getAllInternetCredentialsForServer:(NSDictionary *)options resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 +{
@@ -93,12 +93,15 @@ index 98e45fe..01e9b76 100644
 +}
 +
 +
- @end
++
+ -(NSArray<NSString*>*)getAllServicesForSecurityClasses:(NSArray *)secItemClasses
+ {
+   NSMutableDictionary *query = [NSMutableDictionary dictionaryWithObjectsAndKeys:
 diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.java b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.java
-index d4ded69..8503993 100644
+index 3da433f..dfe9a40 100644
 --- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.java
 +++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.java
-@@ -19,6 +19,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
+@@ -16,6 +16,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
  import com.facebook.react.bridge.ReactContextBaseJavaModule;
  import com.facebook.react.bridge.ReactMethod;
  import com.facebook.react.bridge.ReadableMap;
@@ -106,15 +109,7 @@ index d4ded69..8503993 100644
  import com.facebook.react.bridge.WritableMap;
  import com.oblador.keychain.PrefsStorage.ResultSet;
  import com.oblador.keychain.cipherStorage.CipherStorage;
-@@ -37,6 +38,7 @@ import com.oblador.keychain.exceptions.KeyStoreAccessException;
- 
- import java.util.HashMap;
- import java.util.Map;
-+import java.util.ArrayList;
- import java.util.concurrent.Executor;
- import java.util.concurrent.Executors;
- import java.util.concurrent.TimeUnit;
-@@ -572,6 +574,38 @@ public class KeychainModule extends ReactContextBaseJavaModule {
+@@ -618,6 +619,38 @@ public class KeychainModule extends ReactContextBaseJavaModule {
      return promptInfo;
    }
  
@@ -154,21 +149,24 @@ index d4ded69..8503993 100644
     * Extract credentials from current storage. In case if current storage is not matching
     * results set then executed migration.
 diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/PrefsStorage.java b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/PrefsStorage.java
-index e5768c9..113cdcf 100644
+index b7ecd51..fc91424 100644
 --- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/PrefsStorage.java
 +++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/PrefsStorage.java
-@@ -12,6 +12,10 @@ import com.oblador.keychain.KeychainModule.KnownCiphers;
+@@ -12,9 +12,13 @@ import com.oblador.keychain.KeychainModule.KnownCiphers;
  import com.oblador.keychain.cipherStorage.CipherStorage;
  import com.oblador.keychain.cipherStorage.CipherStorage.EncryptionResult;
  
 +import java.util.ArrayList;
 +import java.util.HashMap;
 +import java.util.Map;
+ import java.util.HashSet;
+ import java.util.Set;
+ 
 +
  @SuppressWarnings({"unused", "WeakerAccess"})
  public class PrefsStorage {
    public static final String KEYCHAIN_DATA = "RN_KEYCHAIN";
-@@ -34,6 +38,26 @@ public class PrefsStorage {
+@@ -37,6 +41,26 @@ public class PrefsStorage {
      this.prefs = reactContext.getSharedPreferences(KEYCHAIN_DATA, Context.MODE_PRIVATE);
    }
  
@@ -195,56 +193,26 @@ index e5768c9..113cdcf 100644
    @Nullable
    public ResultSet getEncryptedEntry(@NonNull final String service) {
      byte[] bytesForUsername = getBytesForUsername(service);
-diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreRsaEcb.java b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreRsaEcb.java
-index f718ba5..15236bf 100644
---- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreRsaEcb.java
-+++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreRsaEcb.java
-@@ -225,7 +225,7 @@ public class CipherStorageKeystoreRsaEcb extends CipherStorageBase {
-       .setEncryptionPaddings(PADDING_PKCS1)
-       .setRandomizedEncryptionRequired(true)
-       .setUserAuthenticationRequired(true)
--      .setUserAuthenticationValidityDurationSeconds(1)
-+      .setUserAuthenticationValidityDurationSeconds(5)
-       .setKeySize(ENCRYPTION_KEY_SIZE);
-   }
- 
 diff --git a/node_modules/react-native-keychain/index.js b/node_modules/react-native-keychain/index.js
-index e81235e..2b3d825 100644
+index b73cfb2..c32fefb 100644
 --- a/node_modules/react-native-keychain/index.js
 +++ b/node_modules/react-native-keychain/index.js
-@@ -98,18 +98,26 @@ export type Options = {
- };
+@@ -104,6 +104,14 @@ export type Result = {|
+   +storage: string,
+ |};
  
- export type Result = {|
--  +service: string,
--  +storage: string,
-+  service: string,
-+  storage: string,
-+|};
-+
 +export type AllCredentials = {|
 +  results: UserCredentials[],
 +|};
 +
 +export type AllCredentialsKeys = {|
 +  results: string[],
- |};
- 
++|};
++
  export type UserCredentials = {|
--  +username: string,
--  +password: string,
-+  username: string,
-+  password: string,
-   ...Result,
- |};
- 
- export type SharedWebCredentials = {|
--  +server: string,
-+  server: string,
-   ...UserCredentials,
- |};
- 
-@@ -256,6 +264,32 @@ export function getInternetCredentials(
+   +username: string,
+   +password: string,
+@@ -266,6 +274,32 @@ export function getInternetCredentials(
    );
  }
  
@@ -260,7 +228,7 @@ index e81235e..2b3d825 100644
 +    normalizeOptions(options)
 +  );
 +}
-+
++  
 +/**
 + * Fetches all the keychain entries for the app
 + * @param {object} options Keychain options, iOS only
@@ -278,32 +246,32 @@ index e81235e..2b3d825 100644
   * Deletes all internet password keychain entries for `server`.
   * @param {string} server URL to server.
 diff --git a/node_modules/react-native-keychain/typings/react-native-keychain.d.ts b/node_modules/react-native-keychain/typings/react-native-keychain.d.ts
-index 210e5b1..8ecf2d1 100644
+index af2eb56..65b608b 100644
 --- a/node_modules/react-native-keychain/typings/react-native-keychain.d.ts
 +++ b/node_modules/react-native-keychain/typings/react-native-keychain.d.ts
-@@ -9,6 +9,14 @@ declare module 'react-native-keychain' {
-     password: string;
+@@ -4,6 +4,14 @@ declare module 'react-native-keychain' {
+     storage: string;
    }
  
 +  export interface AllCredentials {
 +    results: UserCredentials[];
 +  }
-+
++  
 +  export interface AllCredentialsKeys {
 +    results: string[];
 +  }
 +
-   export interface SharedWebCredentials extends UserCredentials {
-     server: string;
-   }
-@@ -109,6 +117,10 @@ declare module 'react-native-keychain' {
+   export interface UserCredentials extends Result {
+     username: string;
+     password: string;
+@@ -111,6 +119,10 @@ declare module 'react-native-keychain' {
      options?: Options
    ): Promise<false | SharedWebCredentials>;
  
 +  function getAllInternetCredentials(): Promise<false | AllCredentials>;
 +
 +  function getAllInternetCredentialsKeys(): Promise<false | AllCredentialsKeys>;
-+
++  
    function resetInternetCredentials(
      server: string,
      options?: Options

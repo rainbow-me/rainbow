@@ -506,8 +506,8 @@ PODS:
   - RNInputMask (4.1.0)
   - RNKeyboard (1.0.5):
     - React
-  - RNKeychain (6.2.0):
-    - React
+  - RNKeychain (7.0.0):
+    - React-Core
   - RNLanguages (3.0.2):
     - React
   - RNOS (1.2.8):
@@ -1031,7 +1031,7 @@ SPEC CHECKSUMS:
   RNImageCropPicker: 54e5ea3d0e298ed51e1441a2fa0a0e7c90ee256d
   RNInputMask: 815461ebdf396beb62cf58916c35cf6930adb991
   RNKeyboard: ceec456427493b286539f40442620881b5840dff
-  RNKeychain: b8e0711b959a19c5b057d1e970d3c83d159b6da5
+  RNKeychain: f75b8c8b2f17d3b2aa1f25b4a0ac5b83d947ff8f
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNOS: 31db6fa4a197d179afbba9e6b4d28d450a7f250b
   RNPermissions: 5df468064df661a4c8c017e2791ce90d7695eea5
