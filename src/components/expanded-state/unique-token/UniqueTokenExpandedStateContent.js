@@ -1,11 +1,14 @@
+import { toLower } from 'lodash';
 import React from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import styled from 'styled-components';
+import { UNISWAP_V3_NFT_CONTRACT_ADDRESS } from '../../../references';
 import { magicMemo } from '../../../utils';
 import { SimpleModelView } from '../../3d';
 import { AudioPlayer } from '../../audio';
 import { Centered } from '../../layout';
 import { UniqueTokenImage } from '../../unique-token';
+import UniswapV3NFT from '../../unique-token/UniswapV3NFT';
 import { SimpleVideo } from '../../video';
 import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
 import {
@@ -48,7 +51,9 @@ const UniqueTokenExpandedStateImage = ({ asset }) => {
   const { width: deviceWidth } = useDimensions();
 
   const isSVG = isSupportedUriExtension(asset.image_url, ['.svg']);
-  const imageUrl = isSVG ? asset.image_preview_url : asset.image_url;
+  const imageUrl = (isSVG && asset.image_preview_url) || asset.image_url;
+  const isUniswapV3NFT =
+    toLower(asset?.asset_contract?.address) === UNISWAP_V3_NFT_CONTRACT_ADDRESS;
   const { dimensions: imageDimensions } = useImageMetadata(imageUrl);
 
   const maxImageWidth = deviceWidth - paddingHorizontal * 2;
@@ -86,6 +91,8 @@ const UniqueTokenExpandedStateImage = ({ asset }) => {
             />
           ) : supportsAudio ? (
             <AudioPlayer uri={asset.animation_url || imageUrl} />
+          ) : isUniswapV3NFT ? (
+            <UniswapV3NFT url={imageUrl} />
           ) : (
             <UniqueTokenImage
               backgroundColor={asset.background}
