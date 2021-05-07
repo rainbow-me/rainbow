@@ -12,6 +12,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.5.6](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.6)
+
+### Added
+* Added Accounts to Send Sheet
+
+### Changed
+* Expanded Asset Improvements
+* Improved Add Cash Error Messaging
+* Increased Search Debounce
+
 ## [1.5.5](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.5)
 
 ### Changed

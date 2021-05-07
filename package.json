@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.5.6-1",
+  "version": "1.5.7-1",
   "private": true,
   "scripts": {
     "setup": "yarn install && yarn allow-scripts && yarn postinstall",
@@ -91,8 +91,8 @@
     "@uniswap/sdk": "^3.0.3",
     "@uniswap/v2-core": "^1.0.1",
     "@unstoppabledomains/resolution": "^1.19.0",
-    "@walletconnect/client": "^1.4.0",
-    "@walletconnect/utils": "^1.4.0",
+    "@walletconnect/client": "^1.4.1",
+    "@walletconnect/utils": "^1.4.1",
     "assert": "^1.5.0",
     "asyncstorage-down": "^4.2.0",
     "axios": "^0.21.1",
@@ -139,7 +139,7 @@
     "qrcode": "^1.4.4",
     "qs": "^6.9.4",
     "querystring-es3": "^0.2.1",
-    "rainbow-token-list": "^1.2.1",
+    "rainbow-token-list": "^1.2.2",
     "react": "16.11.0",
     "react-coin-icon": "^0.1.42",
     "react-fast-compare": "^2.0.4",
@@ -289,6 +289,7 @@
     "**/resolve": "1.8.1",
     "**/semver": "7.3.2",
     "**/xmldom": "0.5.0",
+    "**/xmlhttprequest-ssl": "1.6.2",
     "**/y18n": "5.0.5",
     "**/yargs-parser": "20.2.5",
     "**/@hapi/hoek": "8.5.1"

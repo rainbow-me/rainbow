@@ -7,6 +7,7 @@ import {
   addressAssetsReceived,
   assetPricesChanged,
   assetPricesReceived,
+  portfolioReceived,
   transactionsReceived,
   transactionsRemoved,
 } from './data';
@@ -43,6 +44,9 @@ const messages = {
     CHANGED: 'changed address assets',
     RECEIVED: 'received address assets',
     REMOVED: 'removed address assets',
+  },
+  ADDRESS_PORTFOLIO: {
+    RECEIVED: 'received address portfolio',
   },
   ADDRESS_TRANSACTIONS: {
     APPENDED: 'appended address transactions',
@@ -87,6 +91,18 @@ const addressSubscription = (address, currency, action = 'subscribe') => [
       transactions_limit: TRANSACTIONS_LIMIT,
     },
     scope: ['assets', 'transactions'],
+  },
+];
+
+const portfolioSubscription = (address, currency, action = 'get') => [
+  action,
+  {
+    payload: {
+      address,
+      currency: toLower(currency),
+      portfolio_fields: 'all',
+    },
+    scope: ['portfolio'],
   },
 ];
 
@@ -292,6 +308,16 @@ export const explorerInit = () => async (dispatch, getState) => {
   }
 };
 
+export const emitPortfolioRequest = (address, currency) => (
+  dispatch,
+  getState
+) => {
+  const nativeCurrency = currency || getState().settings.nativeCurrency;
+  const { addressSocket } = getState().explorer;
+
+  addressSocket?.emit(...portfolioSubscription(address, nativeCurrency));
+};
+
 export const emitAssetRequest = assetAddress => (dispatch, getState) => {
   const { nativeCurrency } = getState().settings;
   const { assetsSocket } = getState().explorer;
@@ -367,6 +393,10 @@ const listenOnAssetMessages = socket => dispatch => {
 };
 
 const listenOnAddressMessages = socket => dispatch => {
+  socket.on(messages.ADDRESS_PORTFOLIO.RECEIVED, message => {
+    dispatch(portfolioReceived(message));
+  });
+
   socket.on(messages.ADDRESS_TRANSACTIONS.RECEIVED, message => {
     // logger.log('txns received', message?.payload?.transactions);
     dispatch(transactionsReceived(message));

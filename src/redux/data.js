@@ -95,6 +95,7 @@ const DATA_UPDATE_ASSETS = 'data/DATA_UPDATE_ASSETS';
 const DATA_UPDATE_GENERIC_ASSETS = 'data/DATA_UPDATE_GENERIC_ASSETS';
 const DATA_UPDATE_ETH_USD = 'data/DATA_UPDATE_ETH_USD';
 const DATA_UPDATE_ETH_USD_CHARTS = 'data/DATA_UPDATE_ETH_USD_CHARTS';
+const DATA_UPDATE_PORTFOLIOS = 'data/DATA_UPDATE_PORTFOLIOS';
 const DATA_UPDATE_TRANSACTIONS = 'data/DATA_UPDATE_TRANSACTIONS';
 const DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION =
   'data/DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION';
@@ -330,6 +331,21 @@ const checkForConfirmedSavingsActions = transactionsData => dispatch => {
   if (foundConfirmedSavings) {
     dispatch(updateRefetchSavings(true));
   }
+};
+
+export const portfolioReceived = message => async (dispatch, getState) => {
+  if (message?.meta?.status !== 'ok') return;
+  if (!message?.payload?.portfolio) return;
+
+  const { portfolios } = getState().data;
+
+  const newPortfolios = { ...portfolios };
+  newPortfolios[message.meta.address] = message.payload.portfolio;
+
+  dispatch({
+    payload: newPortfolios,
+    type: DATA_UPDATE_PORTFOLIOS,
+  });
 };
 
 export const transactionsReceived = (message, appended = false) => async (
@@ -862,6 +878,7 @@ const INITIAL_STATE = {
   genericAssets: {},
   isLoadingAssets: true,
   isLoadingTransactions: true,
+  portfolios: {},
   shouldRefetchSavings: false,
   subscribers: {
     appended: [],
@@ -893,6 +910,11 @@ export default (state = INITIAL_STATE, action) => {
         ...state,
         isLoadingTransactions: false,
         transactions: action.payload,
+      };
+    case DATA_UPDATE_PORTFOLIOS:
+      return {
+        ...state,
+        portfolios: action.payload,
       };
     case DATA_UPDATE_ETH_USD:
       return {
