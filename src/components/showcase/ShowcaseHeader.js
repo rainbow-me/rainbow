@@ -160,20 +160,20 @@ export function Header() {
   const hash = Math.abs(hashCode(contextValue?.address?.toLowerCase()) % 35);
 
   const emoji = useMemo(() => {
-    const emojiFromContext = contextValue?.data?.profile?.accountSymbol;
-    if (emojiFromContext) {
-      return emojiFromContext;
-    }
+    // const emojiFromContext = contextValue?.data?.profile?.accountSymbol;
+    // if (emojiFromContext) {
+    //   return emojiFromContext;
+    // }
     return popularEmojis[hash];
-  }, [hash, contextValue]);
+  }, [hash]);
 
   const color = useMemo(() => {
-    const colorFromContext = contextValue?.data?.profile?.accountColor;
-    if (colorFromContext) {
-      return colorFromContext;
-    }
+    // const colorFromContext = contextValue?.data?.profile?.accountColor;
+    // if (colorFromContext) {
+    //   return colorFromContext;
+    // }
     return avatarColor[hash];
-  }, [contextValue?.data?.profile?.accountColor, hash]);
+  }, [hash]);
 
   const onAddToContact = useCallback(async () => {
     const contacts = await getContacts();
