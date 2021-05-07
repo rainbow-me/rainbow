@@ -28,6 +28,7 @@ import { FloatingPanel } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
 import { ExchangeModalTypes, isKeyboardOpen } from '@rainbow-me/helpers';
+import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
 import {
   useAccountSettings,
   useBlockPolling,
@@ -296,42 +297,52 @@ export default function ExchangeModal({
         type,
       });
 
-      setIsAuthorizing(true);
-      try {
-        const wallet = await loadWallet();
-        if (!wallet) {
-          setIsAuthorizing(false);
-          logger.sentry(`aborting ${type} due to missing wallet`);
-          return;
+      try{
+        console.log(nativeCurrency);
+        if(nativeCurrency === 'usd'){
+          console.log(nativeAmount);
         }
 
-        const callback = (success = false, errorMessage = null) => {
-          setIsAuthorizing(false);
-          if (success) {
-            setParams({ focused: false });
-            navigate(Routes.PROFILE_SCREEN);
-          } else if (errorMessage) {
-            Alert.alert(errorMessage);
-          }
-        };
-        logger.log('[exchange - handle submit] rap');
-        const swapParameters = {
-          inputAmount,
-          outputAmount,
-          tradeDetails,
-        };
-        await executeRap(wallet, type, swapParameters, callback);
-        logger.log('[exchange - handle submit] executed rap!');
-        analytics.track(`Completed ${type}`, {
-          defaultInputAsset: defaultInputAsset?.symbol || '',
-          type,
-        });
-      } catch (error) {
-        setIsAuthorizing(false);
-        logger.log('[exchange - handle submit] error submitting swap', error);
-        setParams({ focused: false });
-        navigate(Routes.WALLET_SCREEN);
+      } catch(e){
+        console.log('WTF', e);
       }
+
+      // setIsAuthorizing(true);
+      // try {
+      //   const wallet = await loadWallet();
+      //   if (!wallet) {
+      //     setIsAuthorizing(false);
+      //     logger.sentry(`aborting ${type} due to missing wallet`);
+      //     return;
+      //   }
+
+      //   const callback = (success = false, errorMessage = null) => {
+      //     setIsAuthorizing(false);
+      //     if (success) {
+      //       setParams({ focused: false });
+      //       navigate(Routes.PROFILE_SCREEN);
+      //     } else if (errorMessage) {
+      //       Alert.alert(errorMessage);
+      //     }
+      //   };
+      //   logger.log('[exchange - handle submit] rap');
+      //   const swapParameters = {
+      //     inputAmount,
+      //     outputAmount,
+      //     tradeDetails,
+      //   };
+      //   await executeRap(wallet, type, swapParameters, callback);
+      //   logger.log('[exchange - handle submit] executed rap!');
+      //   analytics.track(`Completed ${type}`, {
+      //     defaultInputAsset: defaultInputAsset?.symbol || '',
+      //     type,
+      //   });
+      // } catch (error) {
+      //   setIsAuthorizing(false);
+      //   logger.log('[exchange - handle submit] error submitting swap', error);
+      //   setParams({ focused: false });
+      //   navigate(Routes.WALLET_SCREEN);
+      // }
     });
   }, [
     defaultInputAsset,
