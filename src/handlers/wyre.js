@@ -130,6 +130,25 @@ const createWyreConfig = network => {
   };
 };
 
+export const createUser = async network => {
+  const data = {
+    blockchains: ['ETH'],
+    fields: {},
+    immediate: false,
+    scopes: ['DEBIT_CARD_L2'],
+  };
+
+  try {
+    const baseUrl = getBaseUrl(network);
+    const config = createWyreConfig(network);
+    const response = await wyreApi.post(`${baseUrl}/v3/users`, data, config);
+    return response?.data?.id;
+  } catch (error) {
+    logger.sentry('Apple Pay - error creating user', error);
+    return null;
+  }
+};
+
 export const getWalletOrderQuotation = async (
   amount,
   destCurrency,
