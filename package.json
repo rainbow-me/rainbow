@@ -21,7 +21,6 @@
     "install-pods-no-flipper": "cd ios && bundle exec env SKIP_FLIPPER=true pod install --repo-update && cd ..",
     "ios": "react-native run-ios --simulator='iPhone 11'",
     "lint": "yarn lint:ts && yarn lint:js",
-    "lint:css": "stylelint './src/**/*.js'",
     "lint:js": "eslint --ext '.ts,.tsx,.js,.jsx' .",
     "lint:ts": "yarn tsc --skipLibCheck --noEmit",
     "postinstall": "./scripts/postinstall.sh",
@@ -39,8 +38,7 @@
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
-      "eslint --ext '.js,.jsx,.ts,.tsx' -c .eslintrc.js",
-      "stylelint"
+      "eslint --ext '.js,.jsx,.ts,.tsx' -c .eslintrc.js"
     ]
   },
   "dependencies": {
@@ -221,7 +219,6 @@
     "stream-browserify": "^1.0.0",
     "string.fromcodepoint": "^0.2.1",
     "styled-components": "5.2.1",
-    "stylelint": "^10.1.0",
     "timers-browserify": "^1.4.2",
     "tty-browserify": "0.0.0",
     "url": "^0.10.3",
@@ -273,9 +270,6 @@
     "react-test-renderer": "16.11.0",
     "rn-nodeify": "10.2.0",
     "schedule": "0.5.0",
-    "stylelint-config-react-native-styled-components": "^0.3.0",
-    "stylelint-processor-styled-components": "^1.10.0",
-    "stylelint-react-native": "^2.2.0",
     "typescript": "^3.9.7"
   },
   "resolutions": {
