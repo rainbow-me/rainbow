@@ -12,7 +12,7 @@ import { ModalContext } from '../react-native-cool-modals/NativeStackView';
 import { resolveNameOrAddress, web3Provider } from '@rainbow-me/handlers/web3';
 import { buildUniqueTokenList } from '@rainbow-me/helpers/assets';
 import { tokenFamilyItem } from '@rainbow-me/helpers/buildWalletSections';
-import { useAccountSettings } from '@rainbow-me/hooks';
+import { useAccountSettings, useWallets } from '@rainbow-me/hooks';
 import { fetchUniqueTokens } from '@rainbow-me/redux/uniqueTokens';
 
 async function fetchShowcaseForAddress(address) {
@@ -48,6 +48,7 @@ export default function ShowcaseScreen() {
   const [userData, setUserData] = useState(null);
   const [accountAddress, setAcccountAddress] = useState(null);
   const dispatch = useDispatch();
+  const { isReadOnlyWallet } = useWallets();
 
   useEffect(() => {
     const init = async () => {
@@ -145,6 +146,7 @@ export default function ShowcaseScreen() {
             disableRefreshControl
             disableStickyHeaders
             hideHeader={false}
+            isReadOnlyWallet={isReadOnlyWallet}
             isWalletEthZero={false}
             network={network}
             openFamilies

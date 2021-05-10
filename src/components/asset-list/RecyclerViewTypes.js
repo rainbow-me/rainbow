@@ -52,7 +52,7 @@ export const ViewTypes = {
   },
 
   SHOWCASE_HEADER: {
-    calculateHeight: () => 360,
+    calculateHeight: ({ isReadOnlyWallet }) => (isReadOnlyWallet ? 320 : 420),
     index: 8,
     renderComponent: data => {
       return <Header {...data} />;

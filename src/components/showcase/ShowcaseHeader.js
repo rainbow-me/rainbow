@@ -17,10 +17,10 @@ export const ShowcaseContext = createContext();
 
 const HeaderWrapper = styled.View`
   width: 100%;
-  height: 350;
   padding-top: 40;
   justify-content: center;
   align-items: center;
+  height: ${({ height }) => height};
 `;
 
 const Footer = styled(ColumnWithMargins).attrs({
@@ -211,7 +211,7 @@ export function Header() {
   }, [color, contextValue.address, handlePressImportButton]);
 
   return (
-    <HeaderWrapper>
+    <HeaderWrapper height={isReadOnlyWallet ? 320 : 400}>
       <SheetHandle />
       <Spacer />
       <AvatarCircle
