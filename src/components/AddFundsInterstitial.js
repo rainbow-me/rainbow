@@ -231,7 +231,7 @@ const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
         {network === networkTypes.mainnet ? (
           <Fragment>
             <Title>
-              To get started, buy some ETH{ios ? ` with Apple Pay` : ''}
+              Yo Alex, this works mah doood
             </Title>
             <Row justify="space-between" marginVertical={30}>
               <AmountButton
