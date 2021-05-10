@@ -340,7 +340,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.typeText('currency-select-search-input', 'ZRX', false);
     await Helpers.delay(5000);
     await Helpers.tap('currency-select-list-exchange-coin-row-ZRX');
-    await Helpers.delay(2000);
+    await Helpers.delay(5000);
     await Helpers.checkForElementByLabel('Insufficient Funds');
   });
 
