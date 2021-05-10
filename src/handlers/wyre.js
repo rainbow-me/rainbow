@@ -120,6 +120,16 @@ export const showApplePayRequest = async (
   }
 };
 
+const createWyreConfig = network => {
+  const wyreAuthToken =
+    network === NetworkTypes.mainnet ? WYRE_TOKEN : WYRE_TOKEN_TEST;
+  return {
+    headers: {
+      Authorization: `Bearer ${wyreAuthToken}`,
+    },
+  };
+};
+
 export const getWalletOrderQuotation = async (
   amount,
   destCurrency,
@@ -140,13 +150,7 @@ export const getWalletOrderQuotation = async (
   };
   const baseUrl = getBaseUrl(network);
   try {
-    const wyreAuthToken =
-      network === NetworkTypes.mainnet ? WYRE_TOKEN : WYRE_TOKEN_TEST;
-    const config = {
-      headers: {
-        Authorization: `Bearer ${wyreAuthToken}`,
-      },
-    };
+    const config = createWyreConfig(network);
     const response = await wyreApi.post(
       `${baseUrl}/v3/orders/quote/partner`,
       data,
@@ -186,13 +190,7 @@ export const reserveWyreOrder = async (
   }
   const baseUrl = getBaseUrl(network);
   try {
-    const wyreAuthToken =
-      network === NetworkTypes.mainnet ? WYRE_TOKEN : WYRE_TOKEN_TEST;
-    const config = {
-      headers: {
-        Authorization: `Bearer ${wyreAuthToken}`,
-      },
-    };
+    const config = createWyreConfig(network);
     const response = await wyreApi.post(
       `${baseUrl}/v3/orders/reserve`,
       data,
