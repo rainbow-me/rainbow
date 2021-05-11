@@ -165,7 +165,7 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.delay(3000);
     await Helpers.tap('send-savings-cSAI');
     await Helpers.delay(3000);
-    await Helpers.typeText('selected-asset-field-input', '2', true);
+    await Helpers.typeText('selected-asset-field-input', '1.69', true);
     await Helpers.delay(5000);
     await Helpers.tapAndLongPress('Hold to Send');
     await Helpers.delay(10000);
@@ -206,7 +206,7 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.delay(3000);
     await Helpers.tap('send-asset-BAT');
     await Helpers.delay(3000);
-    await Helpers.typeText('selected-asset-field-input', '1', true);
+    await Helpers.typeText('selected-asset-field-input', '1.02', true);
     await Helpers.delay(3000);
     await Helpers.tapAndLongPress('Hold to Send');
     await Helpers.delay(10000);
@@ -221,7 +221,7 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.delay(3000);
     await Helpers.tap('send-asset-ETH');
     await Helpers.delay(3000);
-    await Helpers.typeText('selected-asset-field-input', '.002', true);
+    await Helpers.typeText('selected-asset-field-input', '.003', true);
     await Helpers.delay(3000);
     await Helpers.tapAndLongPress('Hold to Send');
     await Helpers.delay(10000);
@@ -251,9 +251,9 @@ describe('Ganache Transaction Flow', () => {
   });*/
   it('Should show completed send ERC20 (cSAI)', async () => {
     try {
-      await Helpers.checkIfVisible('Sent-Compound SAI-2.00 cSAI');
+      await Helpers.checkIfVisible('Sent-Compound SAI-1.69 cSAI');
     } catch (e) {
-      await Helpers.checkIfVisible('Sending-Compound SAI-2.00 cSAI');
+      await Helpers.checkIfVisible('Sending-Compound SAI-1.69 cSAI');
     }
   });
 
@@ -269,17 +269,17 @@ describe('Ganache Transaction Flow', () => {
 
   it('Should show completed send ERC20 (BAT)', async () => {
     try {
-      await Helpers.checkIfVisible('Sent-Basic Attention Token-1.00 BAT');
+      await Helpers.checkIfVisible('Sent-Basic Attention Token-1.02 BAT');
     } catch (e) {
-      await Helpers.checkIfVisible('Sending-Basic Attention Token-1.00 BAT');
+      await Helpers.checkIfVisible('Sending-Basic Attention Token-1.02 BAT');
     }
   });
 
   it('Should show completed send ETH', async () => {
     try {
-      await Helpers.checkIfVisible('Sent-Ethereum-0.002 ETH');
+      await Helpers.checkIfVisible('Sent-Ethereum-0.003 ETH');
     } catch (e) {
-      await Helpers.checkIfVisible('Sending-Ethereum-0.002 ETH');
+      await Helpers.checkIfVisible('Sending-Ethereum-0.003 ETH');
     }
   });
 
