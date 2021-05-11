@@ -42,7 +42,7 @@ const editModeAdditionalHeight = 100;
 
 export const ViewTypes = {
   HEADER: {
-    calculateHeight: ({ hideHeader }) =>
+    calculateHeight: ({ hideHeader = false }) =>
       hideHeader ? 0 : AssetListHeaderHeight,
     index: 0,
     renderComponent: ({ data, isCoinListEdited }) => {
@@ -52,7 +52,8 @@ export const ViewTypes = {
   },
 
   SHOWCASE_HEADER: {
-    calculateHeight: ({ isReadOnlyWallet }) => (isReadOnlyWallet ? 320 : 420),
+    calculateHeight: ({ isReadOnlyWallet = false }) =>
+      isReadOnlyWallet ? 320 : 420,
     index: 8,
     renderComponent: data => {
       return <Header {...data} />;
