@@ -110,7 +110,8 @@ export default function ShowcaseScreen() {
           totalValue: '',
         },
         name: 'collectibles',
-        renderItem: item => tokenFamilyItem({ ...item, forceOpen: true }),
+        renderItem: item =>
+          tokenFamilyItem({ ...item, external: true, forceOpen: true }),
         type: 'big',
       },
     ],

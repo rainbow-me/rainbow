@@ -24,7 +24,7 @@ const Spacer = styled.View`
   height: ${safeAreaInsetValues.bottom + 20};
 `;
 
-const UniqueTokenExpandedState = ({ asset }) => {
+const UniqueTokenExpandedState = ({ asset, external }) => {
   const {
     asset_contract: {
       description: familyDescription,
@@ -70,15 +70,17 @@ const UniqueTokenExpandedState = ({ asset }) => {
       >
         <UniqueTokenExpandedStateHeader asset={asset} />
         <UniqueTokenExpandedStateContent asset={asset} />
-        <SheetActionButtonRow>
-          <SheetActionButton
-            color={isDarkMode ? colors.darkModeDark : colors.dark}
-            label={isShowcaseAsset ? '􀁏 Showcase' : '􀁍 Showcase'}
-            onPress={handlePressShowcase}
-            weight="bold"
-          />
-          {isSendable && <SendActionButton />}
-        </SheetActionButtonRow>
+        {!external && (
+          <SheetActionButtonRow>
+            <SheetActionButton
+              color={isDarkMode ? colors.darkModeDark : colors.dark}
+              label={isShowcaseAsset ? '􀁏 Showcase' : '􀁍 Showcase'}
+              onPress={handlePressShowcase}
+              weight="bold"
+            />
+            {isSendable && <SendActionButton />}
+          </SheetActionButtonRow>
+        )}
         <SheetDivider />
         <ColumnWithDividers dividerRenderer={SheetDivider}>
           {!!description && (

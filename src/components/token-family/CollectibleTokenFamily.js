@@ -5,6 +5,7 @@ import { UniqueTokenRow } from '../unique-token';
 import TokenFamilyWrap from './TokenFamilyWrap';
 
 const CollectibleTokenFamily = ({
+  external,
   familyId,
   familyImage,
   familyName,
@@ -28,12 +29,13 @@ const CollectibleTokenFamily = ({
   const renderChild = useCallback(
     i => (
       <UniqueTokenRow
+        external={external}
         forceOpen={forceOpen}
         item={item[i]}
         key={`${familyName}_${i}`}
       />
     ),
-    [familyName, forceOpen, item]
+    [external, familyName, forceOpen, item]
   );
 
   return (
