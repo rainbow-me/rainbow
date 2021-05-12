@@ -23,13 +23,22 @@ export default function useAccountSettings() {
   const { language } = useSelector(createLanguageSelector);
   const dispatch = useDispatch();
   const settingsData = useSelector(
-    ({ settings: { accountAddress, chainId, nativeCurrency, network } }) => ({
+    ({
+      settings: {
+        accountAddress,
+        chainId,
+        nativeCurrency,
+        network,
+        webDataEnabled,
+      },
+    }) => ({
       accountAddress,
       chainId,
       language,
       nativeCurrency,
       nativeCurrencySymbol: supportedNativeCurrencies[nativeCurrency].symbol,
       network,
+      webDataEnabled,
     })
   );
 

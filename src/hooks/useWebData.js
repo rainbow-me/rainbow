@@ -1,5 +1,5 @@
 import GraphemeSplitter from 'grapheme-splitter';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback } from 'react';
 import { PreferenceActionType, setPreference } from '../model/preferences';
 import useAccountProfile from './useAccountProfile';
 import useAccountSettings from './useAccountSettings';
@@ -17,18 +17,9 @@ const getAccountSymbol = name => {
 };
 
 export default function useWebData() {
-  const { accountAddress, network } = useAccountSettings();
+  const { accountAddress, network, webDataEnabled } = useAccountSettings();
   const { colors } = useTheme();
   const { accountSymbol, accountColor } = useAccountProfile();
-  const [webDataEnabled, setWebDataEnabled] = useState(false);
-
-  useEffect(() => {
-    const init = async () => {
-      const pref = await getWebDataEnabled(accountAddress, network);
-      setWebDataEnabled(!!pref);
-    };
-    init();
-  }, [accountAddress, network, webDataEnabled]);
 
   const initWebData = useCallback(
     async showcaseTokens => {
@@ -50,7 +41,6 @@ export default function useWebData() {
       );
 
       await saveWebDataEnabled(true, accountAddress, network);
-      setWebDataEnabled(true);
     },
     [accountAddress, accountColor, accountSymbol, colors.avatarColor, network]
   );
@@ -61,7 +51,6 @@ export default function useWebData() {
     await setPreference(PreferenceActionType.wipe, 'showcase', accountAddress);
     await setPreference(PreferenceActionType.wipe, 'profile', accountAddress);
     await saveWebDataEnabled(false, accountAddress, network);
-    setWebDataEnabled(false);
   }, [accountAddress, network]);
 
   const updateWebProfile = useCallback(
