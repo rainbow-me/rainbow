@@ -365,7 +365,19 @@ const GasSpeedButton = ({
       return;
     }
 
-    if (minGasPrice && Number(customGasPriceInput) < minGasPrice) {
+    const minGasPriceAllowed = Number(
+      gasPricesAvailable?.normal?.value?.amount || 0
+    );
+
+    // The minimum gas for the tx is the higher amount between:
+    // - 10% more than the submitted gas of the previous tx (If speeding up / cancelling)
+    // - The new "normal" gas price from our third party API
+
+    const minimumGasAcceptedForTx = minGasPrice
+      ? Math.max(minGasPrice, minGasPriceAllowed)
+      : minGasPriceAllowed;
+
+    if (minGasPrice && Number(customGasPriceInput) < minimumGasAcceptedForTx) {
       Alert({
         buttons: [
           {
@@ -373,16 +385,13 @@ const GasSpeedButton = ({
             text: 'OK',
           },
         ],
-        message: `The minimum gas price valid allowed is ${minGasPrice} GWEI`,
+        message: `The minimum gas price valid allowed is ${minimumGasAcceptedForTx} GWEI`,
         title: 'Gas Price Too Low',
       });
       return;
     }
 
     const priceInWei = gweiToWei(customGasPriceInput);
-    const minGasPriceAllowed = Number(
-      gasPricesAvailable?.normal?.value?.amount || 0
-    );
     const maxGasPriceFast = Number(
       gasPricesAvailable?.fast?.value?.amount || 0
     );
