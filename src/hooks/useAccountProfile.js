@@ -9,7 +9,7 @@ import useWallets from './useWallets';
 export default function useAccountProfile() {
   const wallets = useWallets();
   const { selectedWallet, walletNames } = wallets;
-  const { network, accountAddress } = useAccountSettings();
+  const { accountAddress, network } = useAccountSettings();
   return getAccountProfileInfo(
     selectedWallet,
     walletNames,
@@ -17,6 +17,7 @@ export default function useAccountProfile() {
     accountAddress
   );
 }
+
 export function getAccountProfileInfo(
   selectedWallet,
   walletNames,

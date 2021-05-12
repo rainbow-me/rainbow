@@ -9,8 +9,8 @@ const CollectibleTokenFamily = ({
   familyId,
   familyImage,
   familyName,
-  item,
   forceOpen,
+  item,
   ...props
 }) => {
   const dispatch = useDispatch();

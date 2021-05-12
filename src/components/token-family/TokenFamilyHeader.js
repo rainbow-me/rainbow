@@ -63,12 +63,12 @@ const TokenFamilyHeader = ({
   childrenAmount,
   emoji,
   familyImage,
+  forceOpen,
   isCoinRow,
   isOpen,
   onPress,
   testID,
   title,
-  forceOpen,
 }) => {
   const animation = useTimingTransition(!isOpen, {
     duration: TokenFamilyHeaderAnimationDuration,
