@@ -26,7 +26,7 @@ import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
 import { darkModeThemeColors } from '@rainbow-me/styles/colors';
 import { gasUtils, magicMemo } from '@rainbow-me/utils';
 
-const { GasSpeedOrder, CUSTOM, FAST, SLOW } = gasUtils;
+const { GasSpeedOrder, CUSTOM, FAST, NORMAL, SLOW } = gasUtils;
 
 const Container = styled(Row).attrs({
   justify: 'space-between',
@@ -365,8 +365,10 @@ const GasSpeedButton = ({
       return;
     }
 
+    const minKey = options.indexOf(SLOW) !== -1 ? SLOW : NORMAL;
+
     const minGasPriceAllowed = Number(
-      gasPricesAvailable?.normal?.value?.amount || 0
+      gasPricesAvailable?.[minKey]?.value?.amount || 0
     );
 
     // The minimum gas for the tx is the higher amount between:
@@ -424,9 +426,9 @@ const GasSpeedButton = ({
   }, [
     customGasPriceInput,
     inputFocused,
+    options,
+    gasPricesAvailable,
     minGasPrice,
-    gasPricesAvailable?.normal?.value?.amount,
-    gasPricesAvailable?.fast?.value?.amount,
     dontBlur,
     handleCustomGasBlur,
   ]);
