@@ -10,7 +10,7 @@ export const parseAccountUniqueTokens = data => {
   const erc721s = get(data, 'data.assets', null);
   if (isNil(erc721s)) throw new Error('Invalid data from OpenSea');
   return erc721s.map(
-    ({ asset_contract, background_color, token_id, ...asset }) => ({
+    ({ asset_contract, background_color, collection, token_id, ...asset }) => ({
       ...pick(asset, [
         'animation_url',
         'current_price',
@@ -26,21 +26,24 @@ export const parseAccountUniqueTokens = data => {
       ]),
       asset_contract: pick(asset_contract, [
         'address',
+        'name',
+        'nft_version',
+        'schema_name',
+        'symbol',
+        'total_supply',
+      ]),
+      background: background_color ? `#${background_color}` : null,
+      collection: pick(collection, [
         'description',
-        'external_link',
+        'external_url',
         'featured_image_url',
         'hidden',
         'image_url',
         'name',
-        'nft_version',
-        'schema_name',
         'short_description',
-        'symbol',
-        'total_supply',
         'wiki_link',
       ]),
-      background: background_color ? `#${background_color}` : null,
-      familyImage: asset_contract.image_url,
+      familyImage: collection.image_url,
       id: token_id,
       isSendable:
         asset_contract.nft_version === '1.0' ||
