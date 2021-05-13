@@ -12,6 +12,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.5.7](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.7)
+
+### Added
+* Increased Analytics Tracking
+
+### Changed
+* Patched WalletConnect 
+* Bumped Token List
+
 ## [1.5.6](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.6)
 
 ### Added

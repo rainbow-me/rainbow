@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.5.7-1",
+  "version": "1.5.8-1",
   "private": true,
   "scripts": {
     "setup": "yarn install && yarn allow-scripts && yarn postinstall",
@@ -20,8 +20,7 @@
     "install-pods-fast": "cd ios && bundle exec pod install && cd ..",
     "install-pods-no-flipper": "cd ios && bundle exec env SKIP_FLIPPER=true pod install --repo-update && cd ..",
     "ios": "react-native run-ios --simulator='iPhone 11'",
-    "lint": "yarn lint:ts && yarn lint:js && yarn lint:css",
-    "lint:css": "stylelint './src/**/*.js'",
+    "lint": "yarn lint:ts && yarn lint:js",
     "lint:js": "eslint --ext '.ts,.tsx,.js,.jsx' .",
     "lint:ts": "yarn tsc --skipLibCheck --noEmit",
     "postinstall": "./scripts/postinstall.sh",
@@ -39,8 +38,7 @@
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
-      "eslint --ext '.js,.jsx,.ts,.tsx' -c .eslintrc.js",
-      "stylelint"
+      "eslint --ext '.js,.jsx,.ts,.tsx' -c .eslintrc.js"
     ]
   },
   "dependencies": {
@@ -125,8 +123,8 @@
     "inherits": "^2.0.3",
     "lint-staged": "^10.0.7",
     "lodash": "^4.17.19",
-    "lottie-ios": "3.1.3",
-    "lottie-react-native": "3.4.0",
+    "lottie-ios": "3.1.8",
+    "lottie-react-native": "3.5.0",
     "make-color-more-chill": "^0.2.1",
     "match-sorter": "^4.0.2",
     "mnemonist": "^0.38.1",
@@ -221,11 +219,10 @@
     "stream-browserify": "^1.0.0",
     "string.fromcodepoint": "^0.2.1",
     "styled-components": "5.2.1",
-    "stylelint": "^10.1.0",
     "timers-browserify": "^1.4.2",
     "tty-browserify": "0.0.0",
     "url": "^0.10.3",
-    "url-parse": "^1.4.7",
+    "url-parse": "^1.5.0",
     "use-debounce": "^5.2.0",
     "use-memo-one": "^1.1.1",
     "util": "^0.10.3",
@@ -273,19 +270,19 @@
     "react-test-renderer": "16.11.0",
     "rn-nodeify": "10.2.0",
     "schedule": "0.5.0",
-    "stylelint-config-react-native-styled-components": "^0.3.0",
-    "stylelint-processor-styled-components": "^1.10.0",
-    "stylelint-react-native": "^2.2.0",
     "typescript": "^3.9.7"
   },
   "resolutions": {
     "**/node-fetch": "2.6.1",
     "**/bl": "2.2.1",
     "**/elliptic": "6.5.4",
+    "**/hosted-git-info": "3.0.8",
     "**/logkitty": "0.7.1",
+    "**/lodash": "4.17.21",
     "**/madge": "4.0.2",
     "**/minimist": "1.2.3",
     "**/netmask": "2.0.1",
+    "**/postcss": "8.2.10",
     "**/resolve": "1.8.1",
     "**/semver": "7.3.2",
     "**/xmldom": "0.5.0",
