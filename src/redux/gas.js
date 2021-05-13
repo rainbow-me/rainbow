@@ -148,7 +148,6 @@ export const gasPricesStartPolling = () => async (dispatch, getState) => {
           payload: fallbackGasPrices,
           type: GAS_PRICES_FAILURE,
         });
-        captureException(error);
         fetchReject(error);
       }
     });
