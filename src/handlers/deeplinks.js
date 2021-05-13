@@ -29,7 +29,7 @@ export default function handleDeeplink(url) {
             address: addressOrENS,
           });
         } else {
-          Alert.alert('Invalid deeplink');
+          Alert.alert('Uh oh! We couldn’t recognize this URL!');
         }
       }
     }
