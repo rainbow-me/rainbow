@@ -26,7 +26,7 @@ const Spacer = styled.View`
 
 const UniqueTokenExpandedState = ({ asset }) => {
   const {
-    asset_contract: {
+    collection: {
       description: familyDescription,
       external_link: familyLink,
       name: familyName,
