@@ -1,6 +1,5 @@
 import { useRoute } from '@react-navigation/native';
 import axios from 'axios';
-import { isValidAddress } from 'ethereumjs-util';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -9,7 +8,7 @@ import { AssetList } from '../components/asset-list';
 import { ShowcaseContext } from '../components/showcase/ShowcaseHeader';
 import { PREFS_ENDPOINT } from '../model/preferences';
 import { ModalContext } from '../react-native-cool-modals/NativeStackView';
-import { resolveNameOrAddress, web3Provider } from '@rainbow-me/handlers/web3';
+import { resolveNameOrAddress } from '@rainbow-me/handlers/web3';
 import { buildUniqueTokenList } from '@rainbow-me/helpers/assets';
 import { tokenFamilyItem } from '@rainbow-me/helpers/buildWalletSections';
 import { useAccountSettings, useWallets } from '@rainbow-me/hooks';
@@ -85,20 +84,6 @@ export default function ShowcaseScreen() {
     state => state.uniqueTokens.fetchingUniqueTokensShowcase
   );
 
-  const [ensName, setEnsName] = useState();
-  const [ensNameLoading, setEnsNameLoading] = useState(true);
-
-  useEffect(() => {
-    async function reverseResolve() {
-      if (isValidAddress(accountAddress)) {
-        const ensName = await web3Provider.lookupAddress(accountAddress);
-        setEnsName(ensName);
-        setEnsNameLoading(false);
-      }
-    }
-    reverseResolve();
-  }, [accountAddress]);
-
   const { layout } = useContext(ModalContext) || {};
 
   const sections = useMemo(
@@ -127,13 +112,12 @@ export default function ShowcaseScreen() {
     () => ({
       ...userData,
       address: accountAddress,
-      ensName,
+      addressOrDomain,
     }),
-    [accountAddress, ensName, userData]
+    [addressOrDomain, accountAddress, userData]
   );
 
-  const loading =
-    ensNameLoading || userData === null || uniqueTokensShowcaseLoading;
+  const loading = userData === null || uniqueTokensShowcaseLoading;
 
   useEffect(() => {
     setTimeout(() => layout?.(), 300);

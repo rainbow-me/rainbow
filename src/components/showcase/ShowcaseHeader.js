@@ -6,6 +6,7 @@ import SheetHandle from '../sheet/SheetHandle';
 import { SheetActionButton } from '../sheet/sheet-action-buttons';
 import { Text, TruncatedAddress } from '../text';
 import { getContacts } from '@rainbow-me/handlers/localstorage/contacts';
+import { isHexString } from '@rainbow-me/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import {
   useDimensions,
@@ -213,6 +214,15 @@ export function Header() {
     handlePressImportButton(color, contextValue.address);
   }, [color, contextValue.address, handlePressImportButton]);
 
+  const mainText =
+    contextValue?.data?.reverseEns ||
+    contextValue?.addressOrDomain?.toLowerCase();
+
+  const secondaryText =
+    contextValue.address?.toLowerCase() === mainText
+      ? null
+      : contextValue.address?.toLowerCase();
+
   return (
     <HeaderWrapper height={isReadOnlyWallet ? 320 : 400}>
       <SheetHandle />
@@ -224,10 +234,13 @@ export function Header() {
         showcaseAccountColor={color}
         showcaseAccountSymbol={emoji}
       />
-      {contextValue?.ensName && (
-        <ENSAddress>{contextValue?.ensName}</ENSAddress>
-      )}
-      <AddressText address={contextValue.address} />
+      <ENSAddress
+        address={mainText}
+        as={isHexString(mainText) && TruncatedAddress}
+      >
+        {mainText}
+      </ENSAddress>
+      {secondaryText && <AddressText address={secondaryText} />}
       <Footer>
         <SheetActionButton
           androidWidth={maxButtonWidth}
