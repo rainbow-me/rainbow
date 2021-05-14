@@ -185,12 +185,12 @@ export default (state = INITIAL_UNIQUE_TOKENS_STATE, action) => {
       if (action.showcase) {
         return {
           ...state,
-          fetchingUniqueTokens: true,
+          fetchingUniqueTokensShowcase: true,
         };
       } else {
         return {
           ...state,
-          fetchingUniqueTokensShowcase: true,
+          fetchingUniqueTokens: true,
         };
       }
     case UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS:
