@@ -9,33 +9,39 @@ const CollectibleTokenFamily = ({
   familyId,
   familyImage,
   familyName,
-  forceOpen,
+  showcase,
   item,
   ...props
 }) => {
   const dispatch = useDispatch();
 
-  const isFamilyOpen =
-    useSelector(
-      ({ openStateSettings }) => openStateSettings.openFamilyTabs[familyName]
-    ) || forceOpen;
+  const isFamilyOpen = useSelector(
+    ({ openStateSettings }) =>
+      openStateSettings.openFamilyTabs[
+        familyName + (showcase ? '-showcase' : '')
+      ]
+  );
 
   const handleToggle = useCallback(
     () =>
-      dispatch(setOpenFamilyTabs({ index: familyName, state: !isFamilyOpen })),
-    [dispatch, familyName, isFamilyOpen]
+      dispatch(
+        setOpenFamilyTabs({
+          index: familyName + (showcase ? '-showcase' : ''),
+          state: !isFamilyOpen,
+        })
+      ),
+    [dispatch, familyName, isFamilyOpen, showcase]
   );
 
   const renderChild = useCallback(
     i => (
       <UniqueTokenRow
         external={external}
-        forceOpen={forceOpen}
         item={item[i]}
         key={`${familyName}_${i}`}
       />
     ),
-    [external, familyName, forceOpen, item]
+    [external, familyName, item]
   );
 
   return (
@@ -43,7 +49,6 @@ const CollectibleTokenFamily = ({
       {...props}
       familyId={familyId}
       familyImage={familyImage}
-      forceOpen={forceOpen}
       isOpen={isFamilyOpen}
       item={item}
       onToggle={handleToggle}

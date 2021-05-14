@@ -63,7 +63,6 @@ const TokenFamilyHeader = ({
   childrenAmount,
   emoji,
   familyImage,
-  forceOpen,
   isCoinRow,
   isOpen,
   onPress,
@@ -84,7 +83,6 @@ const TokenFamilyHeader = ({
 
   return (
     <ButtonPressAnimation
-      disabled={forceOpen}
       key={`token_family_header_${emoji || familyImage || title}`}
       onPress={onPress}
       scaleTo={1.05}
@@ -103,14 +101,12 @@ const TokenFamilyHeader = ({
           )}
         </RowWithMargins>
         <TitleText isShowcase={title === 'Showcase'}>{title}</TitleText>
-        {!forceOpen && (
-          <RowWithMargins align="center" margin={13}>
-            <Animated.View style={{ opacity: animation }}>
-              <ChildrenAmountText>{childrenAmount}</ChildrenAmountText>
-            </Animated.View>
-            <RotatingArrowIcon style={{ transform: [{ rotate }] }} />
-          </RowWithMargins>
-        )}
+        <RowWithMargins align="center" margin={13}>
+          <Animated.View style={{ opacity: animation }}>
+            <ChildrenAmountText>{childrenAmount}</ChildrenAmountText>
+          </Animated.View>
+          <RotatingArrowIcon style={{ transform: [{ rotate }] }} />
+        </RowWithMargins>
       </Content>
     </ButtonPressAnimation>
   );

@@ -172,7 +172,6 @@ function RecyclerAssetList({
   hideHeader,
   renderAheadOffset = deviceUtils.dimensions.height,
   setIsBlockingUpdate,
-  openFamilies,
   showcase,
   disableStickyHeaders,
   disableAutoScrolling,
@@ -216,8 +215,7 @@ function RecyclerAssetList({
           section.data.forEach((item, index) => {
             if (
               item.isHeader ||
-              openFamilyTabs[item.familyName] ||
-              openFamilies
+              openFamilyTabs[item.familyName + showcase ? '-showcase' : '']
             ) {
               ctx.push({
                 familySectionIndex: index,
@@ -248,7 +246,7 @@ function RecyclerAssetList({
       sectionsIndices,
       stickyComponentsIndices,
     };
-  }, [openFamilies, openFamilyTabs, sections]);
+  }, [openFamilyTabs, sections, showcase]);
 
   // Defines the position of the coinDivider, if it exists.
   const coinDividerIndex = useMemo<number>(() => {
@@ -535,8 +533,9 @@ function RecyclerAssetList({
                 isHeader,
                 isOpen:
                   openFamilyTabs[
-                    sections[collectiblesIndex].data[familyIndex].familyName
-                  ] || openFamilies,
+                    sections[collectiblesIndex].data[familyIndex].familyName +
+                      (showcase ? '-showcase' : '')
+                  ],
               }),
               index: ViewTypes.UNIQUE_TOKEN_ROW.index,
               isFirst,
@@ -567,7 +566,6 @@ function RecyclerAssetList({
     isCoinListEdited,
     items,
     itemsCount,
-    openFamilies,
     openFamilyTabs,
     openInvestmentCards,
     openSavings,
@@ -640,8 +638,12 @@ function RecyclerAssetList({
       let i = 0;
       while (i < collectibles.data.length) {
         if (
-          openFamilyTabs[collectibles.data[i].familyName] === true &&
-          !lastOpenFamilyTabs[collectibles.data[i].familyName]
+          openFamilyTabs[
+            collectibles.data[i].familyName + (showcase ? '-showcase' : '')
+          ] === true &&
+          !lastOpenFamilyTabs[
+            collectibles.data[i].familyName + (showcase ? '-showcase' : '')
+          ]
         ) {
           const safeIndex = i;
           const safeCollectibles = collectibles;
