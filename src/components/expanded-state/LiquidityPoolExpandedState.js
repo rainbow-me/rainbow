@@ -153,7 +153,7 @@ const LiquidityPoolExpandedState = () => {
   const liquidityPoolExpandedStateSheetHeight =
     (ios || showChart ? heightWithChart : heightWithoutChart) +
     (android && 44) -
-    (uniBalance ? 0 : UniBalanceHeightDifference);
+    (uniBalance || android ? 0 : UniBalanceHeightDifference);
 
   const chartDataLabels = useMemo(() => {
     if (chartType === chartTypes.month && params?.asset?.profit30d) {
@@ -182,10 +182,10 @@ const LiquidityPoolExpandedState = () => {
     .concat('%');
 
   const formattedHalf0 = half0
-    ? bigNumberFormat(half0, nativeCurrency)
+    ? bigNumberFormat(half0, nativeCurrency, half0 >= 10000)
     : 'Half';
   const formattedHalf1 = half1
-    ? bigNumberFormat(half1, nativeCurrency)
+    ? bigNumberFormat(half1, nativeCurrency, half1 >= 10000)
     : 'Half';
 
   return (

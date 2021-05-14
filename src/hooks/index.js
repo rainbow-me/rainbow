@@ -53,6 +53,7 @@ export { default as useOpenSavings } from './useOpenSavings';
 export { default as useOpenSmallBalances } from './useOpenSmallBalances';
 export { default as usePrevious } from './usePrevious';
 export { default as usePurchaseTransactionStatus } from './usePurchaseTransactionStatus';
+export { default as usePortfolios } from './usePortfolios';
 export { default as useRefreshAccountData } from './useRefreshAccountData';
 export { default as useRequests } from './useRequests';
 export { default as useResetAccountState } from './useResetAccountState';
@@ -84,6 +85,7 @@ export { default as useUniswapAssetsInWallet } from './useUniswapAssetsInWallet'
 export { default as useUniswapCalls } from './useUniswapCalls';
 export { default as useUpdateAssetOnchainBalance } from './useUpdateAssetOnchainBalance';
 export { default as useUniswapPools } from './useUniswapPools';
+export { default as useUserAccounts } from './useUserAccounts';
 export { default as useUserLists } from './useUserLists';
 export { default as useWalletBalances } from './useWalletBalances';
 export { default as useWalletCloudBackup } from './useWalletCloudBackup';

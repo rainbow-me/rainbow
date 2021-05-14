@@ -6,12 +6,12 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
 def use_flipper!(versions = {})
-  versions['Flipper'] ||= '~> 0.33.1'
+  versions['Flipper'] ||= '~> 0.88.0'
   versions['DoubleConversion'] ||= '1.1.7'
-  versions['Flipper-Folly'] ||= '~> 2.1'
-  versions['Flipper-Glog'] ||= '0.3.6'
+  versions['Flipper-Folly'] ||= '~> 2.6.7'
+  versions['Flipper-Glog'] ||= '0.3.9'
   versions['Flipper-PeerTalk'] ||= '~> 0.0.4'
-  versions['Flipper-RSocket'] ||= '~> 1.0'
+  versions['Flipper-RSocket'] ||= '~> 1.4.3'
 
   pod 'FlipperKit', versions['Flipper'], :configuration => 'Debug'
   pod 'FlipperKit/FlipperKitLayoutPlugin', versions['Flipper'], :configuration => 'Debug'

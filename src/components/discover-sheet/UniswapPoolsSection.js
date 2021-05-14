@@ -21,7 +21,7 @@ const getItemLayout = (_, index) => ({
   offset: ITEM_HEIGHT * index,
 });
 
-const ShowMoreButton = ({ backgroundColor, color, onPress }) => (
+const DefaultShowMoreButton = ({ backgroundColor, color, onPress }) => (
   <Row justify="center">
     <ButtonPressAnimation onPress={onPress}>
       <Row
@@ -97,16 +97,25 @@ const renderUniswapPoolListRow = ({ item }) => (
   <UniswapPoolListRow assetType="uniswap" item={item} />
 );
 
-export default function UniswapPools() {
+export default function UniswapPools({
+  token,
+  hideIfEmpty,
+  initialPageAmount = INITIAL_PAGE_AMOUNT,
+  ShowMoreButton = DefaultShowMoreButton,
+  forceShowAll,
+  alwaysShowMoreButton,
+}) {
   const listRef = useRef(null);
   const { colors, isDarkMode } = useTheme();
   const { network } = useAccountSettings();
-  const [showAll, setShowAll] = useState(false);
+  const [showAllState, setShowAll] = useState(false);
+  const showAll = forceShowAll === undefined ? showAllState : forceShowAll;
   const [selectedList, setSelectedList] = useState(listData[0].id);
   const [sortDirection, setSortDirection] = useState(SORT_DIRECTION.DESC);
-  const { pairs, error, is30DayEnabled } = useUniswapPools(
+  const { pairs, error, is30DayEnabled, isEmpty } = useUniswapPools(
     selectedList,
-    sortDirection
+    sortDirection,
+    token
   );
 
   const listDataFiltered = useMemo(() => {
@@ -170,35 +179,6 @@ export default function UniswapPools() {
     [colors, sortDirection]
   );
 
-  const renderTypeItem = useCallback(
-    ({ item: list, index }) => (
-      <PoolListButton
-        key={`list-${list.id}`}
-        onPress={() => handleSwitchList(list.id, index)}
-        selected={selectedList === list.id}
-        testID={`pools-list-${list.id}`}
-        titleColor={getTitleColor(selectedList === list.id, list.id)}
-      >
-        <Row>
-          <ListName
-            color={getTitleColor(selectedList === list.id, list.id)}
-            lineHeight="paragraphSmall"
-            size="lmedium"
-            weight="bold"
-          >
-            {list.name}{' '}
-            {selectedList === list.id
-              ? sortDirection === 'desc'
-                ? '􀄩'
-                : '􀄨'
-              : ''}
-          </ListName>
-        </Row>
-      </PoolListButton>
-    ),
-    [getTitleColor, handleSwitchList, selectedList, sortDirection]
-  );
-
   const allPairs = useMemo(() => {
     if (!pairs) return [];
 
@@ -221,11 +201,51 @@ export default function UniswapPools() {
       allPairs.sort((a, b) => a[selectedList] - b[selectedList]);
     }
     if (!showAll) {
-      return allPairs.slice(0, INITIAL_PAGE_AMOUNT);
+      return allPairs.slice(0, initialPageAmount);
     }
 
     return allPairs;
-  }, [allPairs, selectedList, showAll, sortDirection]);
+  }, [allPairs, initialPageAmount, selectedList, showAll, sortDirection]);
+
+  const renderTypeItem = useCallback(
+    ({ item: list, index }) => (
+      <PoolListButton
+        disabled={pairsSorted.length === 1 && selectedList === list.id}
+        key={`list-${list.id}`}
+        onPress={() => handleSwitchList(list.id, index)}
+        selected={selectedList === list.id}
+        testID={`pools-list-${list.id}`}
+        titleColor={getTitleColor(selectedList === list.id, list.id)}
+      >
+        <Row>
+          <ListName
+            color={getTitleColor(selectedList === list.id, list.id)}
+            lineHeight="paragraphSmall"
+            size="lmedium"
+            weight="bold"
+          >
+            {list.name}{' '}
+            {selectedList === list.id && pairsSorted.length !== 1
+              ? sortDirection === 'desc'
+                ? '􀄩'
+                : '􀄨'
+              : ''}
+          </ListName>
+        </Row>
+      </PoolListButton>
+    ),
+    [
+      getTitleColor,
+      handleSwitchList,
+      pairsSorted.length,
+      selectedList,
+      sortDirection,
+    ]
+  );
+
+  if (hideIfEmpty && isEmpty) {
+    return null;
+  }
 
   return (
     <Column marginTop={32}>
@@ -290,13 +310,14 @@ export default function UniswapPools() {
             scrollsToTop={false}
             windowSize={11}
           />
-          {!showAll && (
-            <ShowMoreButton
-              backgroundColor={colors.alpha(colors.blueGreyDark, 0.06)}
-              color={colors.alpha(colors.blueGreyDark, 0.6)}
-              onPress={handleShowMorePress}
-            />
-          )}
+          {(!showAll || alwaysShowMoreButton) &&
+            initialPageAmount < allPairs.length && (
+              <ShowMoreButton
+                backgroundColor={colors.alpha(colors.blueGreyDark, 0.06)}
+                color={colors.alpha(colors.blueGreyDark, 0.6)}
+                onPress={handleShowMorePress}
+              />
+            )}
         </Fragment>
       ) : (
         times(3, index => (

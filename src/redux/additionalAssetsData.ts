@@ -20,6 +20,7 @@ const ADDITIONAL_ASSET_DATA_COINGECKO_IDS =
 export type AdditionalDataCongecko = {
   description?: string;
   circulatingSupply?: number;
+  links?: object;
 };
 
 export type AdditionalDataUniswap = {
@@ -86,7 +87,7 @@ export const additionalAssetsDataAddCoingecko = (address: string) => async (
       const data = await axios({
         method: 'get',
         params: {
-          community_data: false,
+          community_data: true,
           developer_data: false,
           localization: false,
           market_data: true,
@@ -103,8 +104,14 @@ export const additionalAssetsDataAddCoingecko = (address: string) => async (
       const circulatingSupply =
         data?.data?.market_data?.circulating_supply ?? 0;
 
+      const links = data?.data?.links || {};
+
       if (description) {
         newData!.description = description;
+      }
+
+      if (links) {
+        newData!.links = links;
       }
 
       newData.circulatingSupply = circulatingSupply;

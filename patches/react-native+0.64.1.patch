@@ -1,3 +1,15 @@
+diff --git a/node_modules/react-native/Libraries/BatchedBridge/NativeModules.js b/node_modules/react-native/Libraries/BatchedBridge/NativeModules.js
+index 4f76446..2cc52fa 100644
+--- a/node_modules/react-native/Libraries/BatchedBridge/NativeModules.js
++++ b/node_modules/react-native/Libraries/BatchedBridge/NativeModules.js
+@@ -172,6 +172,7 @@ function updateErrorWithErrorData(
+ let NativeModules: {[moduleName: string]: $FlowFixMe, ...} = {};
+ if (global.nativeModuleProxy) {
+   NativeModules = global.nativeModuleProxy;
++  global.nativeModuleProxy = null;
+ } else if (!global.nativeExtensions) {
+   const bridgeConfig = global.__fbBatchedBridgeConfig;
+   invariant(
 diff --git a/node_modules/react-native/Libraries/Core/Timers/JSTimers.js b/node_modules/react-native/Libraries/Core/Timers/JSTimers.js
 index 9c5d2a0..799fc5c 100644
 --- a/node_modules/react-native/Libraries/Core/Timers/JSTimers.js

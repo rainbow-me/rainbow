@@ -103,6 +103,7 @@ export default function useAdditionalAssetData(
           totalLiquidity: format(tokenPrice * totalLiquidity),
         }
       : {}),
+    links: coingeckoData?.links,
   };
 
   return newData || {};

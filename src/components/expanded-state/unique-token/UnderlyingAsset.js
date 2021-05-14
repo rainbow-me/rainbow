@@ -2,11 +2,11 @@ import { toLower } from 'lodash';
 import React, { useCallback } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
+import { useRemoveNextToLast } from '../../../navigation/useRemoveNextToLast';
 import { ButtonPressAnimation } from '../../animations';
 import { UnderlyingAssetCoinRow } from '../../coin-row';
 import { Column, Row } from '../../layout';
 import { Text } from '../../text';
-import { initialChartExpandedStateSheetHeight } from '../ChartExpandedState';
 import { useAccountAssets, useAccountSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
@@ -29,10 +29,12 @@ export default function UnderlyingAsset({
 
   const { colors, isDarkMode } = useTheme();
   const { allAssets } = useAccountAssets();
-  const { navigate } = useNavigation();
+  const { push } = useNavigation();
   const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
     genericAssets,
   }));
+
+  const removeNextToLastRoute = useRemoveNextToLast();
 
   const handlePress = useCallback(() => {
     const asset =
@@ -42,12 +44,21 @@ export default function UnderlyingAsset({
         nativeCurrency
       );
 
-    navigate(ios ? Routes.EXPANDED_ASSET_SHEET : Routes.EXPANDED_ASSET_SCREEN, {
+    // on iOS we handle this on native side
+    android && removeNextToLastRoute();
+
+    push(Routes.EXPANDED_ASSET_SHEET, {
       asset,
-      longFormHeight: initialChartExpandedStateSheetHeight,
       type: 'token',
     });
-  }, [address, allAssets, genericAssets, nativeCurrency, navigate]);
+  }, [
+    address,
+    allAssets,
+    genericAssets,
+    nativeCurrency,
+    push,
+    removeNextToLastRoute,
+  ]);
 
   return (
     <Row

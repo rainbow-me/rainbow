@@ -61,7 +61,7 @@ export const PoolValue = ({ type, value, simple, ...props }) => {
       color = colors.red;
     }
   } else if (type === 'liquidity' || type === 'oneDayVolumeUSD') {
-    formattedValue = bigNumberFormat(value, nativeCurrency);
+    formattedValue = bigNumberFormat(value, nativeCurrency, value >= 10000);
   }
   return (
     <PoolValueWrapper

@@ -48,6 +48,10 @@ const DisplayDappNames = Object.freeze({
     name: 'ENS App',
     uri: null,
   },
+  'foundation.app': {
+    name: 'Foundation',
+    uri: buildAssetUrl('foundation.app'),
+  },
   'furucombo.app': {
     name: 'Furucombo',
     uri: buildAssetUrl('furucombo.app'),

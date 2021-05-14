@@ -1,12 +1,23 @@
 import { find } from 'lodash';
-import React, { useEffect, useRef, useState } from 'react';
-import { View } from 'react-native';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import { LayoutAnimation, View } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import useAdditionalAssetData from '../../hooks/useAdditionalAssetData';
-import EdgeFade from '../discover-sheet/EdgeFade';
-import { Column } from '../layout';
+import useAdditionalAssetData from '../../../hooks/useAdditionalAssetData';
+import { ModalContext } from '../../../react-native-cool-modals/NativeStackView';
+import { ButtonPressAnimation } from '../../animations';
+import { CoinDividerHeight } from '../../coin-divider';
+import CoinDividerOpenButton from '../../coin-divider/CoinDividerOpenButton';
+import EdgeFade from '../../discover-sheet/EdgeFade';
+import UniswapPools from '../../discover-sheet/UniswapPoolsSection';
+
 import {
   BuyActionButton,
   SendActionButton,
@@ -14,16 +25,17 @@ import {
   SheetDivider,
   SlackSheet,
   SwapActionButton,
-} from '../sheet';
-import { Text } from '../text';
+} from '../../sheet';
+import { Bold, Text } from '../../text';
 import {
   TokenInfoBalanceValue,
   TokenInfoItem,
   TokenInfoRow,
   TokenInfoSection,
-} from '../token-info';
-import { Chart } from '../value-chart';
-import ExpandedStateSection from './ExpandedStateSection';
+} from '../../token-info';
+import { Chart } from '../../value-chart';
+import ExpandedStateSection from '../ExpandedStateSection';
+import SocialLinks from './SocialLinks';
 import { ChartPathProvider } from '@rainbow-me/animated-charts';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 import {
@@ -53,6 +65,8 @@ const Carousel = styled.ScrollView.attrs({
   showsHorizontalScrollIndicator: false,
 })``;
 
+const AdditionalContentWrapper = styled.View``;
+
 const CarouselItem = styled(TokenInfoItem).attrs(({ theme: { colors } }) => ({
   color: colors.alpha(colors.blueGreyDark, 0.7),
   letterSpacing: 'roundedTighter',
@@ -62,6 +76,10 @@ const CarouselItem = styled(TokenInfoItem).attrs(({ theme: { colors } }) => ({
 `;
 
 const TIMEOUT = 15000;
+
+const ReadMoreBotton = styled(Bold)`
+  margin-top: 12;
+`;
 
 function CarouselWrapper({
   style,
@@ -78,13 +96,13 @@ function CarouselWrapper({
       timeout.current = setTimeout(
         () => {
           setVisible(false);
-          setCarouselHeight(0);
+          setCarouselHeight?.(0);
         },
         isAnyItemLoading ? TIMEOUT : 0
       );
     } else {
       setVisible(true);
-      setCarouselHeight(defaultCarouselHeight);
+      setCarouselHeight?.(defaultCarouselHeight);
     }
   }, [isAnyItemLoading, isAnyItemVisible, setCarouselHeight]);
   const delayedVisible = useDelayedValueWithLayoutAnimation(visible);
@@ -102,16 +120,63 @@ function CarouselWrapper({
 }
 
 const Spacer = styled.View`
-  height: ${safeAreaInsetValues.bottom};
+  height: ${safeAreaInsetValues.bottom + 20};
 `;
+
+// truncate after the first paragraph or 4th dot
+function truncate(text) {
+  const firstParagraph = text.split('\n')[0];
+  const first4Sentences = text.split('.').slice(0, 4).join('.') + '.';
+  const shorterOne =
+    first4Sentences.length < firstParagraph.length
+      ? first4Sentences
+      : firstParagraph;
+  // If there is not much to expand, return the whole text
+  if (text.length < shorterOne.length * 1.5) {
+    return text;
+  }
+
+  return shorterOne;
+}
+
+function Description({ text }) {
+  const truncatedText = truncate(text);
+  const needToTruncate = truncatedText.length !== text.length;
+  const [truncated, setTruncated] = useState(true);
+  const delayedTruncated = useDelayedValueWithLayoutAnimation(
+    truncated,
+    LayoutAnimation.Properties.scaleXY
+  );
+
+  const { colors } = useTheme();
+  return (
+    <ButtonPressAnimation
+      disabled={!needToTruncate}
+      onPress={() => setTruncated(prev => !prev)}
+      scaleTo={0.99}
+    >
+      <Text
+        color={colors.alpha(colors.blueGreyDark, 0.5)}
+        lineHeight="paragraphSmall"
+        size="lmedium"
+      >
+        {delayedTruncated ? truncatedText : text}
+      </Text>
+      {truncated && needToTruncate && (
+        <ReadMoreBotton>Read more 􀯼</ReadMoreBotton>
+      )}
+    </ButtonPressAnimation>
+  );
+}
 
 export default function ChartExpandedState({ asset }) {
   const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
     genericAssets,
   }));
+
   const [carouselHeight, setCarouselHeight] = useState(defaultCarouselHeight);
   const { nativeCurrency } = useAccountSettings();
-  const [descriptionHeight, setDescriptionHeight] = useState(0);
+  const [additionalContentHeight, setAdditionalContentHeight] = useState(0);
 
   // If we don't have a balance for this asset
   // It's a generic asset
@@ -134,6 +199,7 @@ export default function ChartExpandedState({ asset }) {
     marketCapLoading,
     totalLiquidityLoading,
     totalVolumeLoading,
+    links,
   } = useAdditionalAssetData(asset?.address, assetWithPrice?.price?.value);
 
   const delayedDescriptions = useDelayedValueWithLayoutAnimation(description);
@@ -156,16 +222,16 @@ export default function ChartExpandedState({ asset }) {
       carouselHeight +
         heightWithChart -
         (!hasBalance && 68) +
-        descriptionHeight +
-        (descriptionHeight === 0 ? 0 : scrollableContentHeight),
+        additionalContentHeight +
+        (additionalContentHeight === 0 ? 0 : scrollableContentHeight),
       screenHeight
     ),
     heightWithoutChart: Math.min(
       carouselHeight +
         heightWithoutChart -
         (!hasBalance && 68) +
-        descriptionHeight +
-        (descriptionHeight === 0 ? 0 : scrollableContentHeight),
+        additionalContentHeight +
+        (additionalContentHeight === 0 ? 0 : scrollableContentHeight),
       screenHeight
     ),
     shortHeightWithChart: Math.min(
@@ -199,7 +265,26 @@ export default function ChartExpandedState({ asset }) {
     ChartExpandedStateSheetHeight -= 60;
   }
 
-  const { colors } = useTheme();
+  const { layout } = useContext(ModalContext) || {};
+
+  const [morePoolsVisible, setMorePoolsVisible] = useState(false);
+
+  const delayedMorePoolsVisible = useDelayedValueWithLayoutAnimation(
+    morePoolsVisible
+  );
+
+  const MoreButton = useCallback(() => {
+    return (
+      <CoinDividerOpenButton
+        coinDividerHeight={CoinDividerHeight}
+        isActive
+        isSendSheet
+        isSmallBalancesOpen={delayedMorePoolsVisible}
+        marginLeft={18}
+        onPress={() => setMorePoolsVisible(prev => !prev)}
+      />
+    );
+  }, [delayedMorePoolsVisible]);
 
   return (
     <SlackSheet
@@ -295,27 +380,33 @@ export default function ChartExpandedState({ asset }) {
         </Carousel>
         <EdgeFade />
       </CarouselWrapper>
-      {!!delayedDescriptions && (
-        <ExpandedStateSection
-          onLayout={({
-            nativeEvent: {
-              layout: { height },
-            },
-          }) => setDescriptionHeight(height)}
-          title={`About ${asset?.name}`}
-        >
-          <Column>
-            <Text
-              color={colors.alpha(colors.blueGreyDark, 0.5)}
-              lineHeight="paragraphSmall"
-              size="lmedium"
-            >
-              {description}
-            </Text>
-          </Column>
-          <Spacer />
-        </ExpandedStateSection>
-      )}
+      <AdditionalContentWrapper
+        onLayout={({
+          nativeEvent: {
+            layout: { height },
+          },
+        }) => {
+          setAdditionalContentHeight(height);
+          layout?.();
+        }}
+      >
+        <UniswapPools
+          ShowMoreButton={MoreButton}
+          alwaysShowMoreButton
+          forceShowAll={delayedMorePoolsVisible}
+          hideIfEmpty
+          initialPageAmount={3}
+          token={asset?.address}
+        />
+
+        {!!delayedDescriptions && (
+          <ExpandedStateSection title={`About ${asset?.name}`}>
+            <Description text={description} />
+          </ExpandedStateSection>
+        )}
+        <SocialLinks address={asset?.address} color={color} links={links} />
+        <Spacer />
+      </AdditionalContentWrapper>
     </SlackSheet>
   );
 }

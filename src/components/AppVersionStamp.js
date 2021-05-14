@@ -1,11 +1,17 @@
 import React, { useCallback, useState } from 'react';
-import { Alert } from 'react-native';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { Alert, Pressable } from 'react-native';
 import styled from 'styled-components';
 import { Text } from './text';
 import { useAppVersion, useTimeout, useWalletsDebug } from '@rainbow-me/hooks';
 
 const DEBUG_TAP_COUNT = 15;
+
+const StyledButton = styled(Pressable)`
+  padding-top: 10;
+  padding-bottom: 10;
+  padding-horizontal: 40;
+  margin-bottom: -10;
+`;
 
 const StampText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
@@ -26,7 +32,6 @@ export default function AppVersionStamp() {
 
     const tapCount = numberOfTaps + 1;
     setNumberOfTaps(tapCount);
-
     // Only show the secret "debug info" alert if the
     // user has tapped this AppVersionStamp the secret amount of times
     if (tapCount === DEBUG_TAP_COUNT) {
@@ -42,8 +47,8 @@ export default function AppVersionStamp() {
   }, [debug, numberOfTaps, startTimeout, stopTimeout]);
 
   return (
-    <TouchableWithoutFeedback onPress={handleVersionPress}>
+    <StyledButton onPress={handleVersionPress}>
       <StampText>{appVersion}</StampText>
-    </TouchableWithoutFeedback>
+    </StyledButton>
   );
 }
