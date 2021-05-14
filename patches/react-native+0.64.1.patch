@@ -1,0 +1,47 @@
+diff --git a/node_modules/react-native/Libraries/Core/Timers/JSTimers.js b/node_modules/react-native/Libraries/Core/Timers/JSTimers.js
+index 9c5d2a0..799fc5c 100644
+--- a/node_modules/react-native/Libraries/Core/Timers/JSTimers.js
++++ b/node_modules/react-native/Libraries/Core/Timers/JSTimers.js
+@@ -228,7 +228,7 @@ const JSTimers = {
+       );
+     }
+     const id = _allocateCallback(
+-      () => func.apply(undefined, args),
++      () => func?.apply(undefined, args),
+       'setTimeout',
+     );
+     createTimer(id, duration || 0, Date.now(), /* recurring */ false);
+@@ -254,7 +254,7 @@ const JSTimers = {
+       );
+     }
+     const id = _allocateCallback(
+-      () => func.apply(undefined, args),
++      () => func?.apply(undefined, args),
+       'setInterval',
+     );
+     createTimer(id, duration || 0, Date.now(), /* recurring */ true);
+@@ -267,7 +267,7 @@ const JSTimers = {
+    */
+   setImmediate: function(func: Function, ...args: any) {
+     const id = _allocateCallback(
+-      () => func.apply(undefined, args),
++      () => func?.apply(undefined, args),
+       'setImmediate',
+     );
+     immediates.push(id);
+diff --git a/node_modules/react-native/React/Views/RCTView.m b/node_modules/react-native/React/Views/RCTView.m
+index 91e28ab..23704d8 100644
+--- a/node_modules/react-native/React/Views/RCTView.m
++++ b/node_modules/react-native/React/Views/RCTView.m
+@@ -810,6 +810,11 @@ - (void)displayLayer:(CALayer *)layer
+     layer.contents = nil;
+     layer.needsDisplayOnBoundsChange = NO;
+     layer.mask = nil;
++    if (@available(iOS 13.0, *)) {
++      if (layer.cornerRadius < MIN(self.bounds.size.height, self.bounds.size.width) / 2) {
++        layer.cornerCurve = kCACornerCurveContinuous;
++      }
++    }
+     return;
+   }
+ 
