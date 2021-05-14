@@ -1,6 +1,5 @@
 import React, { createContext, useCallback, useContext, useMemo } from 'react';
 import styled from 'styled-components';
-import { useImportingWallet } from '../../screens/ImportSeedPhraseSheet';
 import { ColumnWithMargins } from '../layout';
 import AvatarCircle from '../profile/AvatarCircle';
 import SheetHandle from '../sheet/SheetHandle';
@@ -8,7 +7,11 @@ import { SheetActionButton } from '../sheet/sheet-action-buttons';
 import { Text, TruncatedAddress } from '../text';
 import { getContacts } from '@rainbow-me/handlers/localstorage/contacts';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
-import { useDimensions, useWallets } from '@rainbow-me/hooks';
+import {
+  useDimensions,
+  useImportingWallet,
+  useWallets,
+} from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
