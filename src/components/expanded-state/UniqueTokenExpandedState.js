@@ -1,5 +1,6 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
+import useWallets from '../../hooks/useWallets';
 import Link from '../Link';
 import { Column, ColumnWithDividers } from '../layout';
 import {
@@ -43,6 +44,8 @@ const UniqueTokenExpandedState = ({ asset, external }) => {
     showcaseTokens,
   } = useShowcaseTokens();
 
+  const { isReadOnlyWallet } = useWallets();
+
   const isShowcaseAsset = useMemo(() => showcaseTokens.includes(uniqueId), [
     showcaseTokens,
     uniqueId,
@@ -70,7 +73,7 @@ const UniqueTokenExpandedState = ({ asset, external }) => {
       >
         <UniqueTokenExpandedStateHeader asset={asset} />
         <UniqueTokenExpandedStateContent asset={asset} />
-        {!external && (
+        {!external && !isReadOnlyWallet && (
           <SheetActionButtonRow>
             <SheetActionButton
               color={isDarkMode ? colors.darkModeDark : colors.dark}

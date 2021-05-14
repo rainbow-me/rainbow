@@ -116,7 +116,7 @@ export default function ListHeader({
         <Content isSticky={isSticky}>
           <Row align="center">
             {createElement(titleRenderer, { children: title })}
-            {title === 'Collectibles' && (
+            {title === 'Collectibles' && !isReadOnlyWallet && (
               <Column align="flex-end" flex={1}>
                 <ShareCollectiblesButton
                   onPress={() => handleShare(isReadOnlyWallet, accountAddress)}
