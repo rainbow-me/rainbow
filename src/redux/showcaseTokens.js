@@ -5,6 +5,7 @@ import {
   getShowcaseTokens,
   getWebDataEnabled,
   saveShowcaseTokens,
+  saveWebDataEnabled,
 } from '@rainbow-me/handlers/localstorage/accountLocal';
 
 // -- Constants --------------------------------------- //
@@ -12,7 +13,7 @@ const SHOWCASE_TOKENS_LOAD_SUCCESS =
   'showcaseTokens/SHOWCASE_TOKENS_LOAD_SUCCESS';
 const SHOWCASE_TOKENS_LOAD_FAILURE =
   'showcaseTokens/SHOWCASE_TOKENS_LOAD_FAILURE';
-
+const UPDATE_WEB_DATA_ENABLED = 'showcaseTokens/UPDATE_WEB_DATA_ENABLED';
 const ADD_SHOWCASE_TOKEN = 'showcaseTokens/ADD_SHOWCASE_TOKEN';
 const REMOVE_SHOWCASE_TOKEN = 'showcaseTokens/REMOVE_SHOWCASE_TOKEN';
 
@@ -35,7 +36,10 @@ export const showcaseTokensLoadState = () => async (dispatch, getState) => {
     }
 
     dispatch({
-      payload: showcaseTokens,
+      payload: {
+        showcaseTokens,
+        webDataEnabled: !!pref,
+      },
       type: SHOWCASE_TOKENS_LOAD_SUCCESS,
     });
   } catch (error) {
@@ -68,9 +72,19 @@ export const removeShowcaseToken = tokenId => (dispatch, getState) => {
   saveShowcaseTokens(updatedShowcaseTokens, accountAddress, network);
 };
 
+export const updateWebDataEnabled = enabled => async (dispatch, getState) => {
+  const { accountAddress, network } = getState().settings;
+  dispatch({
+    payload: enabled,
+    type: UPDATE_WEB_DATA_ENABLED,
+  });
+  await saveWebDataEnabled(enabled, accountAddress, network);
+};
+
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
   showcaseTokens: [],
+  webDataEnabled: false,
 };
 
 export default (state = INITIAL_STATE, action) =>
@@ -80,6 +94,9 @@ export default (state = INITIAL_STATE, action) =>
     } else if (action.type === REMOVE_SHOWCASE_TOKEN) {
       draft.showcaseTokens = action.payload;
     } else if (action.type === SHOWCASE_TOKENS_LOAD_SUCCESS) {
-      draft.showcaseTokens = action.payload;
+      draft.showcaseTokens = action.payload.showcaseTokens;
+      draft.webDataEnabled = action.payload.webDataEnabled;
+    } else if (action.type === UPDATE_WEB_DATA_ENABLED) {
+      draft.webDataEnabled = action.payload;
     }
   });

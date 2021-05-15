@@ -1,12 +1,10 @@
 import GraphemeSplitter from 'grapheme-splitter';
 import { useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { PreferenceActionType, setPreference } from '../model/preferences';
 import useAccountProfile from './useAccountProfile';
 import useAccountSettings from './useAccountSettings';
-import {
-  getWebDataEnabled,
-  saveWebDataEnabled,
-} from '@rainbow-me/handlers/localstorage/accountLocal';
+import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
 
 const getAccountSymbol = name => {
   if (!name) {
@@ -17,7 +15,12 @@ const getAccountSymbol = name => {
 };
 
 export default function useWebData() {
-  const { accountAddress, network, webDataEnabled } = useAccountSettings();
+  const { accountAddress } = useAccountSettings();
+  const dispatch = useDispatch();
+
+  const webDataEnabled = useSelector(
+    ({ showcaseTokens: { webDataEnabled } }) => webDataEnabled
+  );
   const { colors } = useTheme();
   const { accountSymbol, accountColor } = useAccountProfile();
 
@@ -40,23 +43,21 @@ export default function useWebData() {
         }
       );
 
-      await saveWebDataEnabled(true, accountAddress, network);
+      dispatch(updateWebDataEnabled(true));
     },
-    [accountAddress, accountColor, accountSymbol, colors.avatarColor, network]
+    [accountAddress, accountColor, accountSymbol, colors.avatarColor, dispatch]
   );
 
   const wipeWebData = useCallback(async () => {
-    const pref = await getWebDataEnabled(accountAddress, network);
-    if (!pref) return;
+    if (!webDataEnabled) return;
     await setPreference(PreferenceActionType.wipe, 'showcase', accountAddress);
     await setPreference(PreferenceActionType.wipe, 'profile', accountAddress);
-    await saveWebDataEnabled(false, accountAddress, network);
-  }, [accountAddress, network]);
+    dispatch(updateWebDataEnabled(false));
+  }, [accountAddress, dispatch, webDataEnabled]);
 
   const updateWebProfile = useCallback(
     async (address, name, color) => {
-      const pref = await getWebDataEnabled(address, network);
-      if (!pref) return;
+      if (!webDataEnabled) return;
       const data = {
         accountColor: color || accountColor,
         accountSymbol: name ? getAccountSymbol(name) : accountSymbol,
@@ -68,29 +69,27 @@ export default function useWebData() {
         data
       );
     },
-    [accountColor, accountSymbol, network]
+    [accountColor, accountSymbol, webDataEnabled]
   );
 
   const addAssetToWebShowcase = useCallback(
     async asset_id => {
-      const pref = await getWebDataEnabled(accountAddress, network);
-      if (!pref) return;
+      if (!webDataEnabled) return;
       setPreference(PreferenceActionType.update, 'showcase', accountAddress, [
         asset_id,
       ]);
     },
-    [accountAddress, network]
+    [accountAddress, webDataEnabled]
   );
 
   const removeAssetFromWebShowcase = useCallback(
     async asset_id => {
-      const pref = await getWebDataEnabled(accountAddress, network);
-      if (!pref) return;
+      if (!webDataEnabled) return;
       setPreference(PreferenceActionType.remove, 'showcase', accountAddress, [
         asset_id,
       ]);
     },
-    [accountAddress, network]
+    [accountAddress, webDataEnabled]
   );
 
   return {

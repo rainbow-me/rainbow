@@ -13,13 +13,9 @@ import { ethereumUtils } from '../utils';
 import { dataResetState } from './data';
 import { explorerClearState, explorerInit } from './explorer';
 import { walletConnectUpdateSessions } from './walletconnect';
-import { getWebDataEnabled } from '@rainbow-me/handlers/localstorage/accountLocal';
 import logger from 'logger';
 
 // -- Constants ------------------------------------------------------------- //
-
-const SETTINGS_UPDATE_WEB_DATA_ENABLED =
-  'settings/SETTINGS_UPDATE_WEB_DATA_ENABLED';
 const SETTINGS_UPDATE_SETTINGS_ADDRESS =
   'settings/SETTINGS_UPDATE_SETTINGS_ADDRESS';
 const SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS =
@@ -63,12 +59,6 @@ export const settingsUpdateAccountAddress = accountAddress => async dispatch => 
     type: SETTINGS_UPDATE_SETTINGS_ADDRESS,
   });
   dispatch(walletConnectUpdateSessions());
-
-  const pref = await getWebDataEnabled(accountAddress, networkTypes.mainnet);
-  dispatch({
-    payload: { webDataEnabled: !!pref },
-    type: SETTINGS_UPDATE_WEB_DATA_ENABLED,
-  });
 };
 
 export const settingsUpdateNetwork = network => async dispatch => {
@@ -121,16 +111,10 @@ export const INITIAL_STATE = {
   language: 'en',
   nativeCurrency: 'USD',
   network: networkTypes.mainnet,
-  webDataEnabled: false,
 };
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case SETTINGS_UPDATE_WEB_DATA_ENABLED:
-      return {
-        ...state,
-        webDataEnabled: action.webDataEnabled,
-      };
     case SETTINGS_UPDATE_SETTINGS_ADDRESS:
       return {
         ...state,
