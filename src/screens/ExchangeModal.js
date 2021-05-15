@@ -9,7 +9,7 @@ import React, {
 } from 'react';
 import { Alert, Keyboard } from 'react-native';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { useMemoOne } from 'use-memo-one';
 import { dismissingScreenListener } from '../../shim';
@@ -28,6 +28,7 @@ import { FloatingPanel } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
 import { ExchangeModalTypes, isKeyboardOpen } from '@rainbow-me/helpers';
+import { divide, multiply } from '@rainbow-me/helpers/utilities';
 import {
   useAccountSettings,
   useBlockPolling,
@@ -44,10 +45,11 @@ import { useNavigation } from '@rainbow-me/navigation';
 import { executeRap, getRapEstimationByType } from '@rainbow-me/raps';
 import { multicallClearState } from '@rainbow-me/redux/multicall';
 import { swapClearState, updateSwapTypeDetails } from '@rainbow-me/redux/swap';
-import { ethUnits } from '@rainbow-me/references';
+import { ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
 import { backgroundTask } from '@rainbow-me/utils';
+import { useEthUSDPrice } from '@rainbow-me/utils/ethereumUtils';
 import logger from 'logger';
 
 const FloatingPanels = ios
@@ -104,6 +106,10 @@ export default function ExchangeModal({
 
   const title = getInputHeaderTitle(type, defaultInputAsset);
   const showOutputField = getShowOutputField(type);
+  const priceOfEther = useEthUSDPrice();
+  const genericAssets = useSelector(
+    ({ data: { genericAssets } }) => genericAssets
+  );
 
   const {
     navigate,
@@ -286,15 +292,36 @@ export default function ExchangeModal({
 
   const handleSubmit = useCallback(() => {
     backgroundTask.execute(async () => {
-      analytics.track(`Submitted ${type}`, {
-        defaultInputAsset: defaultInputAsset?.symbol ?? '',
-        isHighPriceImpact,
-        name: outputCurrency?.name ?? '',
-        priceImpact: priceImpactPercentDisplay,
-        symbol: outputCurrency?.symbol || '',
-        tokenAddress: outputCurrency?.address || '',
-        type,
-      });
+      let amountInUSD = 0;
+      try {
+        if (nativeCurrency === 'usd') {
+          amountInUSD = nativeAmount;
+        } else {
+          const ethPriceInNativeCurrency =
+            genericAssets[ETH_ADDRESS]?.price?.value ?? 0;
+          const tokenPriceInNativeCurrency =
+            genericAssets[inputCurrency?.address]?.price?.value ?? 0;
+          const tokensPerEth = divide(
+            tokenPriceInNativeCurrency,
+            ethPriceInNativeCurrency
+          );
+          const inputTokensInEth = multiply(tokensPerEth, inputAmount);
+          amountInUSD = multiply(priceOfEther, inputTokensInEth);
+        }
+      } catch (e) {
+        logger.log('error getting the swap amount in USD price', e);
+      } finally {
+        analytics.track(`Submitted ${type}`, {
+          amountInUSD,
+          defaultInputAsset: defaultInputAsset?.symbol ?? '',
+          isHighPriceImpact,
+          name: outputCurrency?.name ?? '',
+          priceImpact: priceImpactPercentDisplay,
+          symbol: outputCurrency?.symbol || '',
+          tokenAddress: outputCurrency?.address || '',
+          type,
+        });
+      }
 
       setIsAuthorizing(true);
       try {
@@ -334,13 +361,20 @@ export default function ExchangeModal({
       }
     });
   }, [
-    defaultInputAsset,
+    defaultInputAsset?.symbol,
+    genericAssets,
     inputAmount,
+    inputCurrency?.address,
     isHighPriceImpact,
+    nativeAmount,
+    nativeCurrency,
     navigate,
     outputAmount,
-    outputCurrency,
+    outputCurrency?.address,
+    outputCurrency?.name,
+    outputCurrency?.symbol,
     priceImpactPercentDisplay,
+    priceOfEther,
     setParams,
     tradeDetails,
     type,
