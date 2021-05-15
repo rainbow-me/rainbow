@@ -5,24 +5,30 @@ import {
   addShowcaseToken as rawAddShowcaseToken,
   removeShowcaseToken as rawRemoveShowcaseToken,
 } from '../redux/showcaseTokens';
+import useWebData from './useWebData';
 
 export default function useShowcaseTokens() {
   const dispatch = useDispatch();
+  const { addAssetToWebShowcase, removeAssetFromWebShowcase } = useWebData();
   const showcaseTokens = useSelector(
     state => state.showcaseTokens.showcaseTokens
   );
 
   const addShowcaseToken = useCallback(
-    asset => {
+    async asset => {
       dispatch(rawAddShowcaseToken(asset));
       dispatch(setOpenFamilyTabs({ index: 'Showcase', state: true }));
+      addAssetToWebShowcase(asset);
     },
-    [dispatch]
+    [addAssetToWebShowcase, dispatch]
   );
 
   const removeShowcaseToken = useCallback(
-    asset => dispatch(rawRemoveShowcaseToken(asset)),
-    [dispatch]
+    async asset => {
+      dispatch(rawRemoveShowcaseToken(asset));
+      removeAssetFromWebShowcase(asset);
+    },
+    [dispatch, removeAssetFromWebShowcase]
   );
 
   return {

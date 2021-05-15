@@ -91,6 +91,8 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
     inputRef,
   ]);
 
+  const isContact = contact && !contact.temporary;
+
   const { isDarkMode, colors } = useTheme();
 
   return (
@@ -131,13 +133,13 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
           value={value}
         >
           <SubmitButtonLabel value={value}>
-            {contact ? 'Done' : 'Add Contact'}
+            {isContact ? 'Done' : 'Add Contact'}
           </SubmitButtonLabel>
         </SubmitButton>
         <ButtonPressAnimation
           marginTop={11}
           onPress={
-            contact
+            isContact
               ? handleDeleteContact
               : () => {
                   goBack();
@@ -155,7 +157,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
               size="lmedium"
               weight="regular"
             >
-              {contact ? 'Delete Contact' : 'Cancel'}
+              {isContact ? 'Delete Contact' : 'Cancel'}
             </Text>
           </Centered>
         </ButtonPressAnimation>

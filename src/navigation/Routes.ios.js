@@ -20,6 +20,7 @@ import RestoreSheet from '../screens/RestoreSheet';
 import SavingsSheet from '../screens/SavingsSheet';
 import SendSheet from '../screens/SendSheet';
 import SettingsModal from '../screens/SettingsModal';
+import ShowcaseScreen from '../screens/ShowcaseSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
@@ -252,6 +253,13 @@ function NativeStackNavigator() {
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SHEET}
         {...expandedAssetSheetConfigWithLimit}
+      />
+      <NativeStack.Screen
+        component={ShowcaseScreen}
+        name={Routes.SHOWCASE_SHEET}
+        options={{
+          customStack: true,
+        }}
       />
       <NativeStack.Screen
         component={ExpandedAssetSheet}

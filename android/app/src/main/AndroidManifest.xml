@@ -42,6 +42,8 @@
           <category android:name="android.intent.category.DEFAULT" />
           <category android:name="android.intent.category.BROWSABLE" />
           <data android:scheme="https" android:host="rnbwapp.com" />
+          <data android:scheme="https" android:host="rainbow-web.vercel.app" />
+          <data android:scheme="https" android:host="rainbow.me" />
           <data android:scheme="https" android:host="rnbw.app" />
           <data android:scheme="https" android:host="rainbowdotme.app.link" />
           <data android:scheme="https" android:host="rnbwappdotcom.app.link" />

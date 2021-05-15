@@ -16,7 +16,6 @@ import { walletConnectUpdateSessions } from './walletconnect';
 import logger from 'logger';
 
 // -- Constants ------------------------------------------------------------- //
-
 const SETTINGS_UPDATE_SETTINGS_ADDRESS =
   'settings/SETTINGS_UPDATE_SETTINGS_ADDRESS';
 const SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS =
@@ -30,6 +29,7 @@ const SETTINGS_UPDATE_NETWORK_SUCCESS =
 export const settingsLoadState = () => async dispatch => {
   try {
     const nativeCurrency = await getNativeCurrency();
+
     dispatch({
       payload: nativeCurrency,
       type: SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS,
