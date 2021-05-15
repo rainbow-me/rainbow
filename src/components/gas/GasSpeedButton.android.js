@@ -26,7 +26,7 @@ import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
 import { darkModeThemeColors } from '@rainbow-me/styles/colors';
 import { gasUtils, magicMemo } from '@rainbow-me/utils';
 
-const { GasSpeedOrder, CUSTOM, FAST, SLOW } = gasUtils;
+const { GasSpeedOrder, CUSTOM, FAST, NORMAL, SLOW } = gasUtils;
 
 const Container = styled(Row).attrs({
   justify: 'space-between',
@@ -365,7 +365,21 @@ const GasSpeedButton = ({
       return;
     }
 
-    if (minGasPrice && Number(customGasPriceInput) < minGasPrice) {
+    const minKey = options.indexOf(SLOW) !== -1 ? SLOW : NORMAL;
+
+    const minGasPriceAllowed = Number(
+      gasPricesAvailable?.[minKey]?.value?.amount || 0
+    );
+
+    // The minimum gas for the tx is the higher amount between:
+    // - 10% more than the submitted gas of the previous tx (If speeding up / cancelling)
+    // - The new "normal" gas price from our third party API
+
+    const minimumGasAcceptedForTx = minGasPrice
+      ? Math.max(minGasPrice, minGasPriceAllowed)
+      : minGasPriceAllowed;
+
+    if (minGasPrice && Number(customGasPriceInput) < minimumGasAcceptedForTx) {
       Alert({
         buttons: [
           {
@@ -373,20 +387,17 @@ const GasSpeedButton = ({
             text: 'OK',
           },
         ],
-        message: `The minimum gas price valid allowed is ${minGasPrice} GWEI`,
+        message: `The minimum gas price valid allowed is ${minimumGasAcceptedForTx} GWEI`,
         title: 'Gas Price Too Low',
       });
       return;
     }
 
     const priceInWei = gweiToWei(customGasPriceInput);
-    const minGasPriceSlow = Number(
-      gasPricesAvailable?.slow?.value?.amount || 0
-    );
     const maxGasPriceFast = Number(
       gasPricesAvailable?.fast?.value?.amount || 0
     );
-    let tooLow = priceInWei < minGasPriceSlow;
+    let tooLow = priceInWei < minGasPriceAllowed;
     let tooHigh = priceInWei > maxGasPriceFast * 2.5;
 
     if (tooLow || tooHigh) {
@@ -415,9 +426,9 @@ const GasSpeedButton = ({
   }, [
     customGasPriceInput,
     inputFocused,
+    options,
+    gasPricesAvailable,
     minGasPrice,
-    gasPricesAvailable?.slow?.value?.amount,
-    gasPricesAvailable?.fast?.value?.amount,
     dontBlur,
     handleCustomGasBlur,
   ]);
