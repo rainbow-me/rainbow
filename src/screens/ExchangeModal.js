@@ -107,9 +107,9 @@ export default function ExchangeModal({
   const title = getInputHeaderTitle(type, defaultInputAsset);
   const showOutputField = getShowOutputField(type);
   const priceOfEther = useEthUSDPrice();
-  const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
-    genericAssets,
-  }));
+  const genericAssets = useSelector(
+    ({ data: { genericAssets } }) => genericAssets
+  );
 
   const {
     navigate,
