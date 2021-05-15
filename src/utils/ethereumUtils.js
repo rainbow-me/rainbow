@@ -268,6 +268,7 @@ const deriveAccountFromMnemonic = async (mnemonic, index = 0) => {
   const root = hdWallet.derivePath(DEFAULT_HD_PATH);
   const child = root.deriveChild(index);
   const wallet = child.getWallet();
+
   return {
     address: toChecksumAddress(wallet.getAddress().toString('hex')),
     isHDWallet: true,

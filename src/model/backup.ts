@@ -22,6 +22,7 @@ import * as keychain from './keychain';
 import {
   AllRainbowWallets,
   allWalletsVersion,
+  createWallet,
   publicAccessControlOptions,
   RainbowWallet,
 } from './wallet';
@@ -139,46 +140,53 @@ export function findLatestBackUp(wallets: AllRainbowWallets): string | null {
 
 export async function restoreCloudBackup(
   password: BackupPassword,
-  userData: BackupUserData
+  userData: BackupUserData | null,
+  backupSelected: string | null
 ): Promise<boolean> {
-  try {
-    const filename = findLatestBackUp(userData?.wallets);
+  // We support two flows
+  // Restoring from the welcome screen, which uses the userData to rebuild the wallet
+  // Restoring a specific backup from settings => Backup, which uses only the keys stored.
 
+  try {
+    const filename =
+      backupSelected || (userData && findLatestBackUp(userData?.wallets));
     if (!filename) {
       return false;
     }
-
     // 2- download that backup
     const data = await getDataFromCloud(password, filename);
     if (!data) {
       throw new Error('Invalid password');
     }
-
-    // Restore only wallets that were backed up in cloud
-    // or wallets that are read-only
-    const walletsToRestore: AllRainbowWallets = {};
-    forEach(userData.wallets, wallet => {
-      if (
-        (wallet.backedUp &&
-          wallet.backupDate &&
-          wallet.backupFile &&
-          wallet.backupType === WalletBackupTypes.cloud) ||
-        wallet.type === WalletTypes.readOnly
-      ) {
-        walletsToRestore[wallet.id] = wallet;
-      }
-    });
-
-    const dataToRestore = {
-      // All wallets
-      [allWalletsKey]: {
-        version: allWalletsVersion,
-        wallets: walletsToRestore,
-      },
+    let dataToRestore = {
       ...data.secrets,
     };
 
-    return restoreBackupIntoKeychain(dataToRestore);
+    if (userData) {
+      // Restore only wallets that were backed up in cloud
+      // or wallets that are read-only
+      const walletsToRestore: AllRainbowWallets = {};
+      forEach(userData.wallets, wallet => {
+        if (
+          (wallet.backedUp &&
+            wallet.backupDate &&
+            wallet.backupFile &&
+            wallet.backupType === WalletBackupTypes.cloud) ||
+          wallet.type === WalletTypes.readOnly
+        ) {
+          walletsToRestore[wallet.id] = wallet;
+        }
+      });
+
+      // All wallets
+      dataToRestore[allWalletsKey] = {
+        version: allWalletsVersion,
+        wallets: walletsToRestore,
+      };
+      return restoreCurrentBackupIntoKeychain(dataToRestore);
+    } else {
+      return restoreSpecificBackupIntoKeychain(dataToRestore);
+    }
   } catch (e) {
     logger.sentry('Error while restoring back up');
     captureException(e);
@@ -186,7 +194,30 @@ export async function restoreCloudBackup(
   }
 }
 
-async function restoreBackupIntoKeychain(
+async function restoreSpecificBackupIntoKeychain(
+  backedUpData: BackedUpData
+): Promise<boolean> {
+  try {
+    // Delete current wallets info
+    await keychain.remove(allWalletsKey);
+    await keychain.remove(selectedWalletKey);
+    // Re-import all the seeds (and / or pkeys) one by one
+    for (const key of Object.keys(backedUpData)) {
+      if (endsWith(key, seedPhraseKey)) {
+        const valueStr = backedUpData[key];
+        const { seedphrase } = JSON.parse(valueStr);
+        await createWallet(seedphrase);
+      }
+    }
+    return true;
+  } catch (e) {
+    logger.sentry('error in restoreSpecificBackupIntoKeychain');
+    captureException(e);
+    return false;
+  }
+}
+
+async function restoreCurrentBackupIntoKeychain(
   backedUpData: BackedUpData
 ): Promise<boolean> {
   try {
