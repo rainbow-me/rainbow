@@ -219,9 +219,9 @@ export function Header() {
     contextValue?.addressOrDomain?.toLowerCase();
 
   const secondaryText =
-    contextValue.address?.toLowerCase() === mainText
+    contextValue?.address?.toLowerCase() === mainText
       ? null
-      : contextValue.address?.toLowerCase();
+      : contextValue?.address?.toLowerCase();
 
   return (
     <HeaderWrapper height={isReadOnlyWallet ? 320 : 400}>
