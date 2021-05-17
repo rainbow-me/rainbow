@@ -245,7 +245,7 @@ export function Header() {
         <SheetActionButton
           androidWidth={maxButtonWidth}
           color={color}
-          label=" 􀜖 Add to Contacts"
+          label=" 􀜖 Add to contacts"
           onPress={onAddToContact}
           size="big"
           textColor={colors.whiteLabel}
@@ -266,7 +266,7 @@ export function Header() {
         <SheetActionButton
           androidWidth={maxButtonWidth}
           color={colors.blueGreyDark30}
-          label="􀨭 Watch this Wallet"
+          label="􀨭 Watch this wallet"
           onPress={onWatchAddress}
           size="big"
           textColor={colors.whiteLabel}
