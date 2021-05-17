@@ -37,6 +37,7 @@ import {
   useAccountSettings,
   useInitializeWallet,
   useWallets,
+  useWebData,
 } from '@rainbow-me/hooks';
 import { useWalletsWithBalancesAndNames } from '@rainbow-me/hooks/useWalletsWithBalancesAndNames';
 import Routes from '@rainbow-me/routes';
@@ -116,6 +117,7 @@ export default function ChangeWalletSheet() {
   } = useWallets();
   const [editMode, setEditMode] = useState(false);
   const { colors } = useTheme();
+  const { updateWebProfile } = useWebData();
 
   const { goBack, navigate, replace } = useNavigation();
   const dispatch = useDispatch();
@@ -216,18 +218,28 @@ export default function ChangeWalletSheet() {
               if (args) {
                 const newWallets = { ...wallets };
                 if ('name' in args) {
-                  newWallets[walletId].addresses.some((account, index) => {
-                    if (account.address === address) {
-                      newWallets[walletId].addresses[index].label = args.name;
-                      newWallets[walletId].addresses[index].color = args.color;
-                      if (currentSelectedWallet.id === walletId) {
-                        setCurrentSelectedWallet(wallet);
-                        dispatch(walletsSetSelected(newWallets[walletId]));
+                  newWallets[walletId].addresses.some(
+                    async (account, index) => {
+                      if (account.address === address) {
+                        newWallets[walletId].addresses[index].label = args.name;
+                        newWallets[walletId].addresses[index].color =
+                          args.color;
+                        if (currentSelectedWallet.id === walletId) {
+                          await setCurrentSelectedWallet(wallet);
+                          await dispatch(
+                            walletsSetSelected(newWallets[walletId])
+                          );
+                        }
+                        updateWebProfile(
+                          address,
+                          args.name,
+                          colors.avatarColor[args.color]
+                        );
+                        return true;
                       }
-                      return true;
+                      return false;
                     }
-                    return false;
-                  });
+                  );
                   await dispatch(walletsUpdate(newWallets));
                 }
               }
@@ -241,7 +253,15 @@ export default function ChangeWalletSheet() {
         }, 50);
       });
     },
-    [dispatch, goBack, navigate, currentSelectedWallet.id, wallets]
+    [
+      wallets,
+      goBack,
+      navigate,
+      dispatch,
+      currentSelectedWallet.id,
+      updateWebProfile,
+      colors.avatarColor,
+    ]
   );
 
   const onEditWallet = useCallback(

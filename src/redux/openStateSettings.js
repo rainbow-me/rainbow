@@ -18,6 +18,7 @@ const PUSH_OPEN_FAMILY_TAB = 'openStateSettings/PUSH_OPEN_FAMILY_TAB';
 const SET_OPEN_FAMILY_TABS = 'openStateSettings/SET_OPEN_FAMILY_TABS';
 const SET_OPEN_SAVINGS = 'openStateSettings/SET_OPEN_SAVINGS';
 const SET_OPEN_SMALL_BALANCES = 'openStateSettings/SET_OPEN_SMALL_BALANCES';
+const REMOVE_SHOWCASE = 'openStateSettings/REMOVE_SHOWCASE';
 const SET_OPEN_INVESTMENT_CARDS = 'openStateSettings/SET_OPEN_INVESTMENT_CARDS';
 
 // -- Actions --------------------------------------------------------------- //
@@ -56,6 +57,11 @@ export const setOpenSmallBalances = payload => dispatch =>
   dispatch({
     payload,
     type: SET_OPEN_SMALL_BALANCES,
+  });
+
+export const removeShowcase = dispatch =>
+  dispatch({
+    type: REMOVE_SHOWCASE,
   });
 
 export const pushOpenFamilyTab = payload => dispatch =>
@@ -100,6 +106,15 @@ export const INITIAL_STATE = {
   openSmallBalances: false,
 };
 
+function removeShowcaseFromDictionary(input) {
+  return Object.keys(input).reduce((acc, curr) => {
+    if (!curr.endsWith('-showcase')) {
+      acc[curr] = input[curr];
+    }
+    return acc;
+  }, {});
+}
+
 export default (state = INITIAL_STATE, action) =>
   produce(state, draft => {
     if (action.type === OPEN_STATE_SETTINGS_LOAD_SUCCESS) {
@@ -108,6 +123,8 @@ export default (state = INITIAL_STATE, action) =>
       draft.openSavings = action.payload.openSavings;
     } else if (action.type === SET_OPEN_FAMILY_TABS) {
       draft.openFamilyTabs = action.payload;
+    } else if (action.type === REMOVE_SHOWCASE) {
+      draft.openFamilyTabs = removeShowcaseFromDictionary(draft.openFamilyTabs);
     } else if (action.type === PUSH_OPEN_FAMILY_TAB) {
       draft.openFamilyTabs = action.payload;
     } else if (action.type === SET_OPEN_INVESTMENT_CARDS) {

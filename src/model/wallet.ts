@@ -148,7 +148,7 @@ interface RainbowSelectedWalletData {
   wallet: RainbowWallet;
 }
 
-interface PrivateKeyData {
+export interface PrivateKeyData {
   privateKey: EthereumPrivateKey;
   version: string;
 }
@@ -216,15 +216,18 @@ export const walletInit = async (
   return { isNew, walletAddress };
 };
 
-export const loadWallet = async (): Promise<null | Wallet> => {
-  const privateKey = await loadPrivateKey();
+export const loadWallet = async (
+  address?: EthereumAddress | undefined,
+  showErrorIfNotLoaded = true
+): Promise<null | Wallet> => {
+  const privateKey = await loadPrivateKey(address);
   if (privateKey === -1 || privateKey === -2) {
     return null;
   }
   if (privateKey) {
     return new Wallet(privateKey, web3Provider);
   }
-  if (ios) {
+  if (ios && showErrorIfNotLoaded) {
     showWalletErrorAlert();
   }
   return null;
@@ -401,9 +404,9 @@ export const oldLoadSeedPhrase = async (): Promise<null | EthereumWalletSeed> =>
 export const loadAddress = (): Promise<null | EthereumAddress> =>
   keychain.loadString(addressKey) as Promise<string | null>;
 
-const loadPrivateKey = async (): Promise<
-  null | EthereumPrivateKey | -1 | -2
-> => {
+const loadPrivateKey = async (
+  address?: EthereumAddress | undefined
+): Promise<null | EthereumPrivateKey | -1 | -2> => {
   try {
     const isSeedPhraseMigrated = await keychain.loadString(
       oldSeedPhraseMigratedKey
@@ -418,12 +421,12 @@ const loadPrivateKey = async (): Promise<
     }
 
     if (!privateKey) {
-      const address = await loadAddress();
-      if (!address) {
+      const addressToUse = address || (await loadAddress());
+      if (!addressToUse) {
         return null;
       }
 
-      const privateKeyData = await getPrivateKey(address);
+      const privateKeyData = await getPrivateKey(addressToUse);
       if (privateKeyData === -1) {
         return -1;
       }
