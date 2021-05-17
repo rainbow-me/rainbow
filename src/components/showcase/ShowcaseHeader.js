@@ -224,7 +224,7 @@ export function Header() {
       : contextValue?.address?.toLowerCase();
 
   return (
-    <HeaderWrapper height={isReadOnlyWallet ? 320 : 400}>
+    <HeaderWrapper height={isReadOnlyWallet ? 360 : 420}>
       <SheetHandle />
       <Spacer />
       <AvatarCircle
@@ -272,6 +272,7 @@ export function Header() {
           textColor={colors.whiteLabel}
           weight="heavy"
         />
+        <Spacer />
       </Footer>
     </HeaderWrapper>
   );
