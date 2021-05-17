@@ -1,10 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import {
-  createNativeWrapper,
-  PureNativeButton,
-  State,
-} from 'react-native-gesture-handler';
+import { createNativeWrapper, State } from 'react-native-gesture-handler';
+import { PureNativeButton } from 'react-native-gesture-handler/src/components/GestureButtons';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, {
   Clock,
