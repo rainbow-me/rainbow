@@ -25,6 +25,7 @@ import DarkModeIconDark from '@rainbow-me/assets/settingsDarkModeDark.png';
 import NetworkIcon from '@rainbow-me/assets/settingsNetwork.png';
 import NetworkIconDark from '@rainbow-me/assets/settingsNetworkDark.png';
 import PrivacyIcon from '@rainbow-me/assets/settingsPrivacy.png';
+import PrivacyIconDark from '@rainbow-me/assets/settingsPrivacyDark.png';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import {
@@ -259,7 +260,11 @@ export default function SettingsSection({
         </ListItem>
         {!isReadOnlyWallet && (
           <ListItem
-            icon={<SettingIcon source={PrivacyIcon} />}
+            icon={
+              <SettingIcon
+                source={isDarkMode ? PrivacyIconDark : PrivacyIcon}
+              />
+            }
             label="Privacy"
             onPress={onPressPrivacy}
             testID="privacy"
