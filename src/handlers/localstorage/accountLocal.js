@@ -5,7 +5,7 @@ const assetsVersion = '0.2.0';
 const purchaseTransactionsVersion = '0.1.0';
 const savingsVersion = '0.2.0';
 const transactionsVersion = '0.2.5';
-const uniqueTokensVersion = '0.2.0';
+const uniqueTokensVersion = '0.2.1';
 const accountEmptyVersion = '0.1.0';
 
 const ACCOUNT_INFO = 'accountInfo';
