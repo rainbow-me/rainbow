@@ -1,9 +1,7 @@
 import React, { createContext, useCallback, useContext, useMemo } from 'react';
 import { processColor, requireNativeComponent, View } from 'react-native';
-import {
-  createNativeWrapper,
-  PureNativeButton,
-} from 'react-native-gesture-handler';
+import { createNativeWrapper } from 'react-native-gesture-handler';
+import { PureNativeButton } from 'react-native-gesture-handler/src/components/GestureButtons';
 import Animated, {
   NewEasing as Easing,
   runOnJS,
