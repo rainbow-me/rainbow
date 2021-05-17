@@ -81,9 +81,11 @@ export default function WalletProfileState({
   const { accountImage } = useAccountProfile();
 
   const { colors } = useTheme();
+
+  const indexOfForceColor = colors.avatarColor.indexOf(forceColor);
   const [color, setColor] = useState(
     (profile.color !== null && profile.color) ||
-      colors.avatarColor.indexOf(forceColor) ||
+      (indexOfForceColor !== -1 && indexOfForceColor) ||
       getRandomColor()
   );
 
