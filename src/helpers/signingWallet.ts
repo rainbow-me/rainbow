@@ -7,10 +7,11 @@ import {
   signingWalletAddress,
   signingWallet as signingWalletKeychain,
 } from '../utils/keychainConstants';
+import { EthereumAddress } from '@rainbow-me/entities';
 import AesEncryptor from '@rainbow-me/handlers/aesEncryption';
 import { logger } from '@rainbow-me/utils';
 
-export async function getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded(): Promise<string> {
+export async function getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded(): Promise<EthereumAddress> {
   let alreadyExistingWallet = await loadString(signingWalletAddress);
   if (typeof alreadyExistingWallet !== 'string') {
     const wallet = Wallet.createRandom();
@@ -36,7 +37,7 @@ export async function getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded(): P
 }
 
 export async function getSignatureForSigningWalletAndCreateSignatureIfNeeded(
-  address: string
+  address: EthereumAddress
 ): Promise<string | undefined> {
   const publicKeyForTheSigningWallet = await getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded();
   let alreadyExistingEncodedSignature = await loadString(
