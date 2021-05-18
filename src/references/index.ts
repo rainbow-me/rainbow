@@ -40,6 +40,7 @@ export {
 } from './wyre';
 
 export const ETH_ICON_URL = 'https://s3.amazonaws.com/token-icons/eth.png';
+export const RAINBOW_PROFILES_BASE_URL = 'https://rainbow.me';
 
 export const ETH_COINGECKO_ID = 'ethereum';
 export const ETH_ADDRESS = 'eth';

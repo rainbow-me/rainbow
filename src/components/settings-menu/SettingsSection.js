@@ -24,6 +24,8 @@ import DarkModeIcon from '@rainbow-me/assets/settingsDarkMode.png';
 import DarkModeIconDark from '@rainbow-me/assets/settingsDarkModeDark.png';
 import NetworkIcon from '@rainbow-me/assets/settingsNetwork.png';
 import NetworkIconDark from '@rainbow-me/assets/settingsNetworkDark.png';
+import PrivacyIcon from '@rainbow-me/assets/settingsPrivacy.png';
+import PrivacyIconDark from '@rainbow-me/assets/settingsPrivacyDark.png';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import {
@@ -127,10 +129,11 @@ export default function SettingsSection({
   onPressIcloudBackup,
   /*onPressLanguage,*/
   onPressNetwork,
+  onPressPrivacy,
   onPressShowSecret,
 }) {
   const isReviewAvailable = useExperimentalFlag(REVIEW_ANDROID) || ios;
-  const { wallets } = useWallets();
+  const { wallets, isReadOnlyWallet } = useWallets();
   const { /*language,*/ nativeCurrency, network } = useAccountSettings();
   const { isTinyPhone } = useDimensions();
 
@@ -255,6 +258,20 @@ export default function SettingsSection({
             </Text>
           </Column>
         </ListItem>
+        {!isReadOnlyWallet && (
+          <ListItem
+            icon={
+              <SettingIcon
+                source={isDarkMode ? PrivacyIconDark : PrivacyIcon}
+              />
+            }
+            label="Privacy"
+            onPress={onPressPrivacy}
+            testID="privacy"
+          >
+            <ListItemArrowGroup />
+          </ListItem>
+        )}
         {/*<ListItem
         {/*  icon={*/}
         {/*    <SettingIcon source={darkMode ? LanguageIconDark : LanguageIcon} />*/}

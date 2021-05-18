@@ -1,4 +1,5 @@
 import qs from 'qs';
+import { Alert } from 'react-native';
 import URL from 'url-parse';
 import store from '../redux/store';
 import {
@@ -6,7 +7,9 @@ import {
   walletConnectRemovePendingRedirect,
   walletConnectSetPendingRedirect,
 } from '../redux/walletconnect';
-import logger from 'logger';
+import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
+import { Navigation } from '@rainbow-me/navigation';
+import Routes from '@rainbow-me/routes';
 
 export default function handleDeeplink(url) {
   const urlObj = new URL(url);
@@ -19,8 +22,16 @@ export default function handleDeeplink(url) {
         handleWalletConnect(uri);
         break;
       }
-      default:
-        logger.log('unknown deeplink');
+      default: {
+        const addressOrENS = urlObj.pathname?.split('/')?.[1] || '';
+        if (checkIsValidAddressOrDomain(addressOrENS)) {
+          return Navigation.handleAction(Routes.SHOWCASE_SHEET, {
+            address: addressOrENS,
+          });
+        } else {
+          Alert.alert('Uh oh! We couldn’t recognize this URL!');
+        }
+      }
     }
     // Android uses normal deeplinks
   } else if (urlObj.protocol === 'wc:') {

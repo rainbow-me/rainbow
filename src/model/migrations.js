@@ -20,6 +20,7 @@ import {
   getUserLists,
   saveUserLists,
 } from '@rainbow-me/handlers/localstorage/userLists';
+import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
 import { DefaultTokenLists } from '@rainbow-me/references';
 import logger from 'logger';
 
@@ -233,6 +234,45 @@ export default async function runMigrations() {
 
   migrations.push(v5);
 
+  /* Fix dollars => stablecoins */
+  const v6 = async () => {
+    try {
+      const userLists = await getUserLists();
+      const newLists = userLists.map(list => {
+        if (list.id !== 'dollars') {
+          return list;
+        }
+        return DefaultTokenLists['mainnet'].find(
+          ({ id }) => id === 'stablecoins'
+        );
+      });
+      await saveUserLists(newLists);
+    } catch (e) {
+      logger.log('ignoring lists migrations');
+    }
+  };
+
+  migrations.push(v6);
+
+  /* Turning ON web data for all accounts */
+  const v7 = async () => {
+    const { wallets } = store.getState().wallets;
+    if (!wallets) return;
+    const walletKeys = Object.keys(wallets);
+    for (let i = 0; i < walletKeys.length; i++) {
+      const wallet = wallets[walletKeys[i]];
+      if (wallet.type !== WalletTypes.readOnly) {
+        for (let x = 0; x < wallet.addresses.length; x++) {
+          const { address } = wallet.addresses[x];
+          logger.log('setting web profiles for address', address);
+          await store.dispatch(updateWebDataEnabled(true, address));
+        }
+      }
+    }
+  };
+
+  migrations.push(v7);
+
   logger.sentry(
     `Migrations: ready to run migrations starting on number ${currentVersion}`
   );
@@ -248,19 +288,4 @@ export default async function runMigrations() {
     logger.sentry(`Migrations: Migration ${i} completed succesfully`);
     await setMigrationVersion(i + 1);
   }
-
-  const v6 = async () => {
-    const userLists = await getUserLists();
-    const newLists = userLists.map(list => {
-      if (list.id !== 'dollars') {
-        return list;
-      }
-      return DefaultTokenLists['mainnet'].find(
-        ({ id }) => id === 'stablecoins'
-      );
-    });
-    await saveUserLists(newLists);
-  };
-
-  migrations.push(v6);
 }

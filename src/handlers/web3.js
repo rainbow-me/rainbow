@@ -244,7 +244,7 @@ export const resolveUnstoppableDomain = async domain => {
   return res;
 };
 
-const resolveNameOrAddress = async nameOrAddress => {
+export const resolveNameOrAddress = async nameOrAddress => {
   if (!isHexString(nameOrAddress)) {
     if (/^([\w-]+\.)+(crypto)$/.test(nameOrAddress)) {
       return resolveUnstoppableDomain(nameOrAddress);
