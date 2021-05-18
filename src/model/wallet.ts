@@ -21,7 +21,7 @@ import lang from 'i18n-js';
 import { find, findKey, forEach, get, isEmpty } from 'lodash';
 import { Alert } from 'react-native';
 import { ACCESSIBLE, getSupportedBiometryType } from 'react-native-keychain';
-import { getRandomColor } from '../styles/colors';
+import { getRandomColor, lightModeThemeColors } from '../styles/colors';
 import {
   addressKey,
   allWalletsKey,
@@ -32,6 +32,7 @@ import {
   selectedWalletKey,
 } from '../utils/keychainConstants';
 import * as keychain from './keychain';
+import { PreferenceActionType, setPreference } from './preferences';
 import { EthereumAddress } from '@rainbow-me/entities';
 import AesEncryptor from '@rainbow-me/handlers/aesEncryption';
 import {
@@ -46,13 +47,16 @@ import {
   isValidMnemonic,
   web3Provider,
 } from '@rainbow-me/handlers/web3';
+import { createSignature } from '@rainbow-me/helpers/signingWallet';
 import showWalletErrorAlert from '@rainbow-me/helpers/support';
 import WalletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
 import { EthereumWalletType } from '@rainbow-me/helpers/walletTypes';
+import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
 import store from '@rainbow-me/redux/store';
 import { setIsWalletLoading } from '@rainbow-me/redux/wallets';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
+
 const encryptor = new AesEncryptor();
 
 type EthereumPrivateKey = string;
@@ -503,12 +507,8 @@ export const createWallet = async (
   const walletSeed = seed || generateMnemonic();
   let addresses: RainbowAccount[] = [];
   try {
-    let wasLoading = false;
     const { dispatch } = store;
-    if (!checkedWallet && android) {
-      wasLoading = true;
-      dispatch(setIsWalletLoading(WalletLoadingStates.CREATING_WALLET));
-    }
+    dispatch(setIsWalletLoading(WalletLoadingStates.CREATING_WALLET));
 
     const {
       isHDWallet,
@@ -642,14 +642,28 @@ export const createWallet = async (
     }
     logger.sentry('[createWallet] - saved private key');
 
+    const colorForWallet = color !== null ? color : getRandomColor();
     addresses.push({
       address: walletAddress,
       avatar: null,
-      color: color !== null ? color : getRandomColor(),
+      color: colorForWallet,
       index: 0,
       label: name || '',
       visible: true,
     });
+    if (type !== EthereumWalletType.readOnly) {
+      // Creating signature for this wallet
+      logger.sentry(`[createWallet] - generating signature`);
+      await createSignature(walletAddress, pkey);
+      // Enable web profile
+      logger.sentry(`[createWallet] - enabling web profile`);
+      await store.dispatch(updateWebDataEnabled(true, walletAddress));
+      // Save the color
+      await setPreference(PreferenceActionType.init, 'profile', address, {
+        accountColor: lightModeThemeColors.avatarColor[colorForWallet],
+      });
+      logger.sentry(`[createWallet] - enabled web profile`);
+    }
 
     if (isHDWallet && root && isImported) {
       logger.sentry('[createWallet] - isHDWallet && isImported');
@@ -733,6 +747,26 @@ export const createWallet = async (
             label,
             visible: true,
           });
+
+          // Creating signature for this wallet
+          await createSignature(nextWallet.address, nextWallet.privateKey);
+          // Enable web profile
+          await store.dispatch(updateWebDataEnabled(true, nextWallet.address));
+
+          // Save the color
+          await setPreference(
+            PreferenceActionType.init,
+            'profile',
+            nextWallet.address,
+            {
+              accountColor: lightModeThemeColors.avatarColor[color],
+            }
+          );
+
+          logger.sentry(
+            `[createWallet] - enabled web profile for wallet ${index}`
+          );
+
           index++;
         } else {
           lookup = false;
@@ -787,11 +821,9 @@ export const createWallet = async (
         walletType === WalletLibraryType.ethers
           ? (walletResult as Wallet)
           : new Wallet(pkey);
-      if (wasLoading) {
-        setTimeout(() => {
-          dispatch(setIsWalletLoading(null));
-        }, 2000);
-      }
+      setTimeout(() => {
+        dispatch(setIsWalletLoading(null));
+      }, 2000);
 
       return ethersWallet;
     }
@@ -1013,6 +1045,8 @@ export const generateAccount = async (
     } else {
       await savePrivateKey(walletAddress, walletPkey);
     }
+    // Creating signature for this wallet
+    await createSignature(walletAddress, walletPkey);
 
     return newAccount;
   } catch (error) {

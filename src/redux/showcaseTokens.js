@@ -1,5 +1,5 @@
 import produce from 'immer';
-import { concat, without } from 'lodash';
+import { concat, toLower, without } from 'lodash';
 import { getPreference } from '../model/preferences';
 import {
   getShowcaseTokens,
@@ -7,6 +7,7 @@ import {
   saveShowcaseTokens,
   saveWebDataEnabled,
 } from '@rainbow-me/handlers/localstorage/accountLocal';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
 
 // -- Constants --------------------------------------- //
 const SHOWCASE_TOKENS_LOAD_SUCCESS =
@@ -30,7 +31,10 @@ export const showcaseTokensLoadState = () => async (dispatch, getState) => {
         'showcase',
         accountAddress
       );
-      if (showcaseTokensFromCloud?.showcase?.ids) {
+      if (
+        showcaseTokensFromCloud?.showcase?.ids &&
+        showcaseTokensFromCloud?.showcase?.ids.length > 0
+      ) {
         showcaseTokens = showcaseTokensFromCloud.showcase.ids;
       }
     }
@@ -72,13 +76,16 @@ export const removeShowcaseToken = tokenId => (dispatch, getState) => {
   saveShowcaseTokens(updatedShowcaseTokens, accountAddress, network);
 };
 
-export const updateWebDataEnabled = enabled => async (dispatch, getState) => {
-  const { accountAddress, network } = getState().settings;
+export const updateWebDataEnabled = (
+  enabled,
+  address,
+  network = networkTypes.mainnet
+) => async dispatch => {
   dispatch({
     payload: enabled,
     type: UPDATE_WEB_DATA_ENABLED,
   });
-  await saveWebDataEnabled(enabled, accountAddress, network);
+  await saveWebDataEnabled(enabled, toLower(address), network);
 };
 
 // -- Reducer ----------------------------------------- //
