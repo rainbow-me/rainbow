@@ -43,7 +43,7 @@ export default function useWebData() {
         }
       );
 
-      dispatch(updateWebDataEnabled(true));
+      dispatch(updateWebDataEnabled(true, accountAddress));
     },
     [accountAddress, accountColor, accountSymbol, colors.avatarColor, dispatch]
   );
@@ -52,7 +52,7 @@ export default function useWebData() {
     if (!webDataEnabled) return;
     await setPreference(PreferenceActionType.wipe, 'showcase', accountAddress);
     await setPreference(PreferenceActionType.wipe, 'profile', accountAddress);
-    dispatch(updateWebDataEnabled(false));
+    dispatch(updateWebDataEnabled(false, accountAddress));
   }, [accountAddress, dispatch, webDataEnabled]);
 
   const updateWebProfile = useCallback(

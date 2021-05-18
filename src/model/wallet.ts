@@ -39,10 +39,7 @@ import {
   authenticateWithPIN,
   getExistingPIN,
 } from '@rainbow-me/handlers/authentication';
-import {
-  saveAccountEmptyState,
-  saveWebDataEnabled,
-} from '@rainbow-me/handlers/localstorage/accountLocal';
+import { saveAccountEmptyState } from '@rainbow-me/handlers/localstorage/accountLocal';
 import {
   addHexPrefix,
   isHexString,
@@ -50,10 +47,10 @@ import {
   isValidMnemonic,
   web3Provider,
 } from '@rainbow-me/handlers/web3';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
 import showWalletErrorAlert from '@rainbow-me/helpers/support';
 import WalletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
 import { EthereumWalletType } from '@rainbow-me/helpers/walletTypes';
+import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
 import store from '@rainbow-me/redux/store';
 import { setIsWalletLoading } from '@rainbow-me/redux/wallets';
 import { ethereumUtils } from '@rainbow-me/utils';
@@ -509,12 +506,8 @@ export const createWallet = async (
   const walletSeed = seed || generateMnemonic();
   let addresses: RainbowAccount[] = [];
   try {
-    let wasLoading = false;
     const { dispatch } = store;
-    if (!checkedWallet && android) {
-      wasLoading = true;
-      dispatch(setIsWalletLoading(WalletLoadingStates.CREATING_WALLET));
-    }
+    dispatch(setIsWalletLoading(WalletLoadingStates.CREATING_WALLET));
 
     const {
       isHDWallet,
@@ -658,8 +651,9 @@ export const createWallet = async (
       visible: true,
     });
 
+    logger.sentry(`[createWallet] - enabling web profile for main account`);
     // Enable web profile
-    await saveWebDataEnabled(true, walletAddress, networkTypes.mainnet);
+    await store.dispatch(updateWebDataEnabled(true, walletAddress));
     // Save the color
     await setPreference(PreferenceActionType.init, 'profile', address, {
       accountColor: lightModeThemeColors.avatarColor[colorForWallet],
@@ -751,11 +745,7 @@ export const createWallet = async (
           });
 
           // Enable web profile
-          await saveWebDataEnabled(
-            true,
-            nextWallet.address,
-            networkTypes.mainnet
-          );
+          await store.dispatch(updateWebDataEnabled(true, nextWallet.address));
 
           // Save the color
           await setPreference(
@@ -825,11 +815,9 @@ export const createWallet = async (
         walletType === WalletLibraryType.ethers
           ? (walletResult as Wallet)
           : new Wallet(pkey);
-      if (wasLoading) {
-        setTimeout(() => {
-          dispatch(setIsWalletLoading(null));
-        }, 2000);
-      }
+      setTimeout(() => {
+        dispatch(setIsWalletLoading(null));
+      }, 2000);
 
       return ethersWallet;
     }

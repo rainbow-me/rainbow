@@ -29,8 +29,7 @@ import {
   privateKeyKey,
   seedPhraseKey,
 } from '../utils/keychainConstants';
-import { saveWebDataEnabled } from '@rainbow-me/handlers/localstorage/accountLocal';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
+import { updateWebDataEnabled } from './showcaseTokens';
 import { lightModeThemeColors } from '@rainbow-me/styles';
 
 // -- Constants --------------------------------------- //
@@ -202,9 +201,7 @@ export const createAccountForWallet = (id, color, name) => async (
     accountColor: lightModeThemeColors.avatarColor[color],
   });
 
-  logger.log('👾👾👾 profile stored in firebase');
-  await saveWebDataEnabled(true, account.address, networkTypes.mainnet);
-
+  await dispatch(updateWebDataEnabled(true, account.address));
   // Save all the wallets
   saveAllWallets(newWallets);
   // Set the address selected (KEYCHAIN)
