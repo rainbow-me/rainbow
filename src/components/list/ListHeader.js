@@ -13,6 +13,7 @@ import {
   useAccountSettings,
   useDimensions,
   useWallets,
+  useWebData,
 } from '@rainbow-me/hooks';
 import { RAINBOW_PROFILES_BASE_URL } from '@rainbow-me/references';
 import { padding, position } from '@rainbow-me/styles';
@@ -71,19 +72,6 @@ const StickyBackgroundBlocker = styled.View`
   width: ${({ deviceDimensions }) => deviceDimensions.width};
 `;
 
-const handleShare = (isReadOnlyWallet, accountAddress) => {
-  if (!isReadOnlyWallet) {
-    const showcaseUrl = `${RAINBOW_PROFILES_BASE_URL}/${accountAddress}`;
-    const shareOptions = {
-      message: `Check out my collectibles on rainbow.me at ${showcaseUrl}`,
-      url: showcaseUrl,
-    };
-    Share.share(shareOptions);
-  } else {
-    return Alert.alert(`You need to import the wallet in order to do this`);
-  }
-};
-
 export default function ListHeader({
   children,
   contextMenuOptions,
@@ -97,6 +85,21 @@ export default function ListHeader({
   const deviceDimensions = useDimensions();
   const { isReadOnlyWallet } = useWallets();
   const { accountAddress } = useAccountSettings();
+  const { initializeShowcaseIfNeeded } = useWebData();
+
+  const handleShare = useCallback(() => {
+    if (!isReadOnlyWallet) {
+      initializeShowcaseIfNeeded();
+      const showcaseUrl = `${RAINBOW_PROFILES_BASE_URL}/${accountAddress}`;
+      const shareOptions = {
+        message: `Check out my collectibles on rainbow.me at ${showcaseUrl}`,
+        url: showcaseUrl,
+      };
+      Share.share(shareOptions);
+    } else {
+      return Alert.alert(`You need to import the wallet in order to do this`);
+    }
+  }, [accountAddress, initializeShowcaseIfNeeded, isReadOnlyWallet]);
 
   if (title === 'Pools') {
     return (

@@ -1,10 +1,15 @@
 import GraphemeSplitter from 'grapheme-splitter';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { PreferenceActionType, setPreference } from '../model/preferences';
+import {
+  getPreference,
+  PreferenceActionType,
+  setPreference,
+} from '../model/preferences';
 import useAccountProfile from './useAccountProfile';
 import useAccountSettings from './useAccountSettings';
 import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
+import logger from 'logger';
 
 const getAccountSymbol = name => {
   if (!name) {
@@ -18,9 +23,13 @@ export default function useWebData() {
   const { accountAddress } = useAccountSettings();
   const dispatch = useDispatch();
 
-  const webDataEnabled = useSelector(
-    ({ showcaseTokens: { webDataEnabled } }) => webDataEnabled
+  const { showcaseTokens, webDataEnabled } = useSelector(
+    ({ showcaseTokens: { webDataEnabled, showcaseTokens } }) => ({
+      showcaseTokens,
+      webDataEnabled,
+    })
   );
+
   const { colors } = useTheme();
   const { accountSymbol, accountColor } = useAccountProfile();
 
@@ -85,7 +94,30 @@ export default function useWebData() {
     [accountAddress, webDataEnabled]
   );
 
+  const initializeShowcaseIfNeeded = useCallback(async () => {
+    try {
+      // If local showcase is not empty
+      if (showcaseTokens?.length > 0) {
+        // If webdata is enabled
+        if (webDataEnabled) {
+          const response = await getPreference('showcase', accountAddress);
+          // If the showcase is populated, nothing to do
+          if (response?.ids?.length > 0) {
+            logger.log('showcase already initialized. skipping');
+          } else {
+            // Initialize
+            await initWebData(showcaseTokens);
+            logger.log('showcase initialized!');
+          }
+        }
+      }
+    } catch (e) {
+      logger.log('Error trying to initiailze showcase');
+    }
+  }, [accountAddress, initWebData, showcaseTokens, webDataEnabled]);
+
   return {
+    initializeShowcaseIfNeeded,
     initWebData,
     updateWebProfile,
     updateWebShowcase,
