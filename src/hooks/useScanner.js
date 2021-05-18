@@ -3,6 +3,7 @@ import lang from 'i18n-js';
 import { useCallback, useEffect, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import { PERMISSIONS, request } from 'react-native-permissions';
+import URL from 'url-parse';
 import { Alert } from '../components/alerts';
 import { checkPushNotificationPermissions } from '../model/firebase';
 import { useNavigation } from '../navigation/Navigation';
@@ -99,10 +100,10 @@ export default function useScanner(enabled) {
       haptics.notificationSuccess();
       analytics.track('Scanned Rainbow profile url');
 
-      // First navigate to wallet screen
       const urlObj = new URL(url);
       const addressOrENS = urlObj.pathname?.split('/')?.[1] || '';
       if (checkIsValidAddressOrDomain(addressOrENS)) {
+        // First navigate to wallet screen
         navigate(Routes.WALLET_SCREEN);
         Navigation.handleAction(Routes.SHOWCASE_SHEET, {
           address: addressOrENS,
