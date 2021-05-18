@@ -84,14 +84,22 @@ export default function useWebData() {
   const updateWebShowcase = useCallback(
     async assetIds => {
       if (!webDataEnabled) return;
-      setPreference(
-        PreferenceActionType.update,
-        'showcase',
-        accountAddress,
-        assetIds
-      );
+      const response = await getPreference('showcase', accountAddress);
+      // If the showcase is populated, just updated it
+      if (response?.ids?.length > 0) {
+        setPreference(
+          PreferenceActionType.update,
+          'showcase',
+          accountAddress,
+          assetIds
+        );
+      } else {
+        // Initialize showcase and profiles
+        await initWebData(assetIds);
+        logger.log('showcase initialized!');
+      }
     },
-    [accountAddress, webDataEnabled]
+    [accountAddress, initWebData, webDataEnabled]
   );
 
   const initializeShowcaseIfNeeded = useCallback(async () => {
