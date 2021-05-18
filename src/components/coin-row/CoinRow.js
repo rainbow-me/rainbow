@@ -64,7 +64,7 @@ export default function CoinRow({
           {topRowRender({ name, symbol, ...accountSettings, ...props })}
         </Row>
         <Row align="center" marginBottom={0.5}>
-          {bottomRowRender({ symbol, ...accountSettings, ...props })}
+          {bottomRowRender({ address, symbol, ...accountSettings, ...props })}
         </Row>
       </Content>
       {typeof children === 'function'

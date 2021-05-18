@@ -11,6 +11,7 @@ import CoinRow from './CoinRow';
 import CoinRowAddButton from './CoinRowAddButton';
 import CoinRowFavoriteButton from './CoinRowFavoriteButton';
 import { useDimensions } from '@rainbow-me/hooks';
+import { ETH_ADDRESS } from '@rainbow-me/references';
 import { padding } from '@rainbow-me/styles';
 import { haptics, neverRerender } from '@rainbow-me/utils';
 
@@ -38,8 +39,13 @@ const FloatingFavoriteEmojis = styled(FloatingEmojis).attrs({
   z-index: 100;
 `;
 
-const BottomRow = ({ showBalance, symbol }) =>
-  showBalance ? null : <BottomRowText>{symbol}</BottomRowText>;
+const BottomRow = ({ showBalance, symbol, address }) => {
+  const formattedText =
+    address === ETH_ADDRESS
+      ? `${symbol}`
+      : `${symbol} | ${address.substring(0, 6)}...${address.substring(38)}`;
+  return showBalance ? null : <BottomRowText>{formattedText}</BottomRowText>;
+};
 
 const TopRow = ({ name, showBalance }) => (
   <Centered height={showBalance ? CoinIconSize : null}>
