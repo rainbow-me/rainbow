@@ -34,6 +34,7 @@ import logger from 'logger';
 export default async function runMigrations() {
   // get current version
   const currentVersion = Number(await getMigrationVersion());
+  //const currentVersion = Number(await getMigrationVersion()) - 1;
   const migrations = [];
 
   /*
@@ -243,16 +244,20 @@ export default async function runMigrations() {
 
   /* Fix dollars => stablecoins */
   const v6 = async () => {
-    const userLists = await getUserLists();
-    const newLists = userLists.map(list => {
-      if (list.id !== 'dollars') {
-        return list;
-      }
-      return DefaultTokenLists['mainnet'].find(
-        ({ id }) => id === 'stablecoins'
-      );
-    });
-    await saveUserLists(newLists);
+    try {
+      const userLists = await getUserLists();
+      const newLists = userLists.map(list => {
+        if (list.id !== 'dollars') {
+          return list;
+        }
+        return DefaultTokenLists['mainnet'].find(
+          ({ id }) => id === 'stablecoins'
+        );
+      });
+      await saveUserLists(newLists);
+    } catch (e) {
+      logger.log('ignoring lists migrations');
+    }
   };
 
   migrations.push(v6);
@@ -261,16 +266,19 @@ export default async function runMigrations() {
   const v7 = async () => {
     const { wallets, selected, walletNames } = store.getState().wallets;
     const network = networkTypes.mainnet;
+    if (!wallets) return;
     const walletKeys = Object.keys(wallets);
     for (let i = 0; i < walletKeys.length; i++) {
       const wallet = wallets[walletKeys[i]];
       if (wallet.type !== WalletTypes.readOnly) {
-        wallet.addresses.forEach(async account => {
-          const { address } = account;
+        for (let x = 0; x < wallet.addresses.length; x++) {
+          const { address } = wallet.addresses[x];
+          logger.log('👾👾👾 running migration for address', address);
           const isWebDataEnabled = await getWebDataEnabled(address, network);
-
+          logger.log('👾👾👾 isWebDataEnabled', isWebDataEnabled);
           if (isNull(isWebDataEnabled)) {
             const showcaseTokens = await getShowcaseTokens(address, network);
+            logger.log('got showcase tokens', showcaseTokens);
 
             await setPreference(
               PreferenceActionType.init,
@@ -279,6 +287,7 @@ export default async function runMigrations() {
               showcaseTokens
             );
 
+            logger.log('👾👾👾 showcase stored in firebase');
             const { accountColor, accountSymbol } = getAccountProfileInfo(
               selected,
               walletNames,
@@ -286,13 +295,22 @@ export default async function runMigrations() {
               address
             );
 
+            logger.log(
+              '👾👾👾 Got account profile info',
+              accountColor,
+              accountSymbol
+            );
+
             await setPreference(PreferenceActionType.init, 'profile', address, {
               accountColor: lightModeThemeColors.avatarColor[accountColor],
               accountSymbol,
             });
+
+            logger.log('👾👾👾 profile stored in firebase');
             await saveWebDataEnabled(true, address, network);
+            logger.log('👾👾👾 Done with this address');
           }
-        });
+        }
       }
     }
   };
