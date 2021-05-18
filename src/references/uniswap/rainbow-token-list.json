@@ -10024,10 +10024,11 @@
       "address": "0x7d91e637589EC3Bb54D8213a9e92Dc6E8D12da91",
       "chainId": 1,
       "decimals": 4,
-      "name": "FRIENDS WITH BENEFITS",
+      "name": "Freinds with Benefits (Old)",
       "symbol": "FWB",
       "extensions": {
-        "isVerified": true
+        "isVerified": false
+
       }
     },
     {
