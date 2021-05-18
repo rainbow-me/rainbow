@@ -31,7 +31,10 @@ export const showcaseTokensLoadState = () => async (dispatch, getState) => {
         'showcase',
         accountAddress
       );
-      if (showcaseTokensFromCloud?.showcase?.ids) {
+      if (
+        showcaseTokensFromCloud?.showcase?.ids &&
+        showcaseTokensFromCloud?.showcase?.ids.length > 0
+      ) {
         showcaseTokens = showcaseTokensFromCloud.showcase.ids;
       }
     }
