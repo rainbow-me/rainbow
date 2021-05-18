@@ -47,6 +47,7 @@ import {
   isValidMnemonic,
   web3Provider,
 } from '@rainbow-me/handlers/web3';
+import { createSignature } from '@rainbow-me/helpers/signingWallet';
 import showWalletErrorAlert from '@rainbow-me/helpers/support';
 import WalletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
 import { EthereumWalletType } from '@rainbow-me/helpers/walletTypes';
@@ -652,6 +653,8 @@ export const createWallet = async (
     });
 
     logger.sentry(`[createWallet] - enabling web profile for main account`);
+    // Creating signature for this wallet
+    await createSignature(walletAddress, pkey);
     // Enable web profile
     await store.dispatch(updateWebDataEnabled(true, walletAddress));
     // Save the color
@@ -744,6 +747,8 @@ export const createWallet = async (
             visible: true,
           });
 
+          // Creating signature for this wallet
+          await createSignature(nextWallet.address, nextWallet.privateKey);
           // Enable web profile
           await store.dispatch(updateWebDataEnabled(true, nextWallet.address));
 
@@ -1039,6 +1044,8 @@ export const generateAccount = async (
     } else {
       await savePrivateKey(walletAddress, walletPkey);
     }
+    // Creating signature for this wallet
+    await createSignature(walletAddress, walletPkey);
 
     return newAccount;
   } catch (error) {

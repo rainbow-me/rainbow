@@ -39,12 +39,12 @@ export async function getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded(): P
 export async function getSignatureForSigningWalletAndCreateSignatureIfNeeded(
   address: EthereumAddress
 ): Promise<string | undefined> {
-  const publicKeyForTheSigningWallet = await getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded();
   let alreadyExistingEncodedSignature = await loadString(
     `signature_${address}`,
     publicAccessControlOptions
   );
   if (alreadyExistingEncodedSignature) {
+    const publicKeyForTheSigningWallet = await getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded();
     const encryptor = new AesEncryptor();
     const decryptedSignature = await encryptor.decrypt(
       RAINBOW_MASTER_KEY,
@@ -60,30 +60,7 @@ export async function getSignatureForSigningWalletAndCreateSignatureIfNeeded(
       alreadyExistingEncodedSignature = null;
     }
   } else {
-    logger.log('Creating a signature');
-
-    const mainWallet = await loadWallet(address, false);
-    if (mainWallet) {
-      const signatureForSigningWallet = await mainWallet.signMessage(
-        publicKeyForTheSigningWallet
-      );
-
-      const encryptor = new AesEncryptor();
-      const encryptedSignature = (await encryptor.encrypt(
-        RAINBOW_MASTER_KEY,
-        signatureForSigningWallet
-      )) as string;
-
-      await saveString(
-        `signature_${address}`,
-        encryptedSignature,
-        publicAccessControlOptions
-      );
-      logger.log('Saved a new signature for signing wallet.');
-
-      return signatureForSigningWallet;
-    }
-    return undefined;
+    return createSignature(address);
   }
 }
 
@@ -103,4 +80,37 @@ export async function signWithSigningWallet(
 
   const signingWallet = new Wallet(decryptedPrivateKeyOfTheSigningWallet);
   return signingWallet.signMessage(messageToSign);
+}
+
+export async function createSignature(
+  address: EthereumAddress,
+  privateKey: string | null = null
+) {
+  logger.log('Creating a signature');
+  const publicKeyForTheSigningWallet = await getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded();
+
+  const mainWallet = privateKey
+    ? new Wallet(privateKey)
+    : await loadWallet(address, false);
+  if (mainWallet) {
+    const signatureForSigningWallet = await mainWallet.signMessage(
+      publicKeyForTheSigningWallet
+    );
+
+    const encryptor = new AesEncryptor();
+    const encryptedSignature = (await encryptor.encrypt(
+      RAINBOW_MASTER_KEY,
+      signatureForSigningWallet
+    )) as string;
+
+    await saveString(
+      `signature_${address}`,
+      encryptedSignature,
+      publicAccessControlOptions
+    );
+    logger.log('Saved a new signature for signing wallet.');
+
+    return signatureForSigningWallet;
+  }
+  return undefined;
 }
