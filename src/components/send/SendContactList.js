@@ -1,7 +1,7 @@
 import { sortBy, toLower } from 'lodash';
 import React, { useCallback, useMemo, useRef } from 'react';
+import { SectionList } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
-import { SectionList } from 'react-native-gesture-handler';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components';
 import Divider from '../Divider';
