@@ -15,7 +15,7 @@ import { RAINBOW_PROFILES_BASE_URL } from '@rainbow-me/references';
 const PrivacySection = () => {
   const { showcaseTokens } = useShowcaseTokens();
   const { webDataEnabled, initWebData, wipeWebData } = useWebData();
-  const { colors } = useTheme();
+  const { colors, isDarkMode } = useTheme();
 
   const [publicShowCase, setPublicShowCase] = useState();
 
@@ -61,10 +61,26 @@ const PrivacySection = () => {
         </Column>
       </ListItem>
       <Row marginLeft={20} marginRight={20} marginTop={10}>
-        <Text color={colors.blueGreyDark50} numberOfLines={3}>
-          􀅵 When public, your NFT Showcase will be visible on your Rainbow web
+        <Text
+          color={colors.alpha(colors.blueGreyDark, 0.4)}
+          letterSpacing="roundedMedium"
+          lineHeight="normal"
+          numberOfLines={3}
+          size="smedium"
+          weight="medium"
+        >
+          <Text color={colors.alpha(colors.blueGreyDark, 0.3)} weight="bold">
+            􀅵
+          </Text>{' '}
+          When public, your NFT Showcase will be visible on your Rainbow web
           profile! You can view your profile at{' '}
-          <Text color={colors.appleBlue} onPress={handleLinkPress}>
+          <Text
+            color={
+              isDarkMode ? colors.alpha(colors.paleBlue, 0.8) : colors.paleBlue
+            }
+            onPress={handleLinkPress}
+            weight="medium"
+          >
             {rainbowProfileLink.replace('https://', '')}
           </Text>
         </Text>
