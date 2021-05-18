@@ -11,6 +11,7 @@ import { web3Provider } from '../handlers/web3';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 import WalletTypes from '../helpers/walletTypes';
 import { hasKey } from '../model/keychain';
+import { PreferenceActionType, setPreference } from '../model/preferences';
 import {
   generateAccount,
   getAllWallets,
@@ -28,6 +29,9 @@ import {
   privateKeyKey,
   seedPhraseKey,
 } from '../utils/keychainConstants';
+import { saveWebDataEnabled } from '@rainbow-me/handlers/localstorage/accountLocal';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
+import { lightModeThemeColors } from '@rainbow-me/styles';
 
 // -- Constants --------------------------------------- //
 const WALLETS_ADDED_ACCOUNT = 'wallets/WALLETS_ADDED_ACCOUNT';
@@ -193,6 +197,13 @@ export const createAccountForWallet = (id, color, name) => async (
     label: name,
     visible: true,
   });
+
+  await setPreference(PreferenceActionType.init, 'profile', account.address, {
+    accountColor: lightModeThemeColors.avatarColor[color],
+  });
+
+  logger.log('👾👾👾 profile stored in firebase');
+  await saveWebDataEnabled(true, account.address, networkTypes.mainnet);
 
   // Save all the wallets
   saveAllWallets(newWallets);
