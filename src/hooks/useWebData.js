@@ -72,31 +72,23 @@ export default function useWebData() {
     [accountColor, accountSymbol, webDataEnabled]
   );
 
-  const addAssetToWebShowcase = useCallback(
-    async asset_id => {
+  const updateWebShowcase = useCallback(
+    async assetIds => {
       if (!webDataEnabled) return;
-      setPreference(PreferenceActionType.update, 'showcase', accountAddress, [
-        asset_id,
-      ]);
-    },
-    [accountAddress, webDataEnabled]
-  );
-
-  const removeAssetFromWebShowcase = useCallback(
-    async asset_id => {
-      if (!webDataEnabled) return;
-      setPreference(PreferenceActionType.remove, 'showcase', accountAddress, [
-        asset_id,
-      ]);
+      setPreference(
+        PreferenceActionType.update,
+        'showcase',
+        accountAddress,
+        assetIds
+      );
     },
     [accountAddress, webDataEnabled]
   );
 
   return {
-    addAssetToWebShowcase,
     initWebData,
-    removeAssetFromWebShowcase,
     updateWebProfile,
+    updateWebShowcase,
     webDataEnabled,
     wipeWebData,
   };

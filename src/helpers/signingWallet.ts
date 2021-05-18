@@ -58,6 +58,7 @@ export async function getSignatureForSigningWalletAndCreateSignatureIfNeeded(
     } else {
       logger.log('Signature does not match. Creating a new one.');
       alreadyExistingEncodedSignature = null;
+      return createSignature(address);
     }
   } else {
     return createSignature(address);
