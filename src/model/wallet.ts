@@ -21,7 +21,7 @@ import lang from 'i18n-js';
 import { find, findKey, forEach, get, isEmpty } from 'lodash';
 import { Alert } from 'react-native';
 import { ACCESSIBLE, getSupportedBiometryType } from 'react-native-keychain';
-import { getRandomColor } from '../styles/colors';
+import { getRandomColor, lightModeThemeColors } from '../styles/colors';
 import {
   addressKey,
   allWalletsKey,
@@ -32,13 +32,17 @@ import {
   selectedWalletKey,
 } from '../utils/keychainConstants';
 import * as keychain from './keychain';
+import { PreferenceActionType, setPreference } from './preferences';
 import { EthereumAddress } from '@rainbow-me/entities';
 import AesEncryptor from '@rainbow-me/handlers/aesEncryption';
 import {
   authenticateWithPIN,
   getExistingPIN,
 } from '@rainbow-me/handlers/authentication';
-import { saveAccountEmptyState } from '@rainbow-me/handlers/localstorage/accountLocal';
+import {
+  saveAccountEmptyState,
+  saveWebDataEnabled,
+} from '@rainbow-me/handlers/localstorage/accountLocal';
 import {
   addHexPrefix,
   isHexString,
@@ -46,6 +50,7 @@ import {
   isValidMnemonic,
   web3Provider,
 } from '@rainbow-me/handlers/web3';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
 import showWalletErrorAlert from '@rainbow-me/helpers/support';
 import WalletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
 import { EthereumWalletType } from '@rainbow-me/helpers/walletTypes';
@@ -53,6 +58,7 @@ import store from '@rainbow-me/redux/store';
 import { setIsWalletLoading } from '@rainbow-me/redux/wallets';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
+
 const encryptor = new AesEncryptor();
 
 type EthereumPrivateKey = string;
@@ -642,14 +648,24 @@ export const createWallet = async (
     }
     logger.sentry('[createWallet] - saved private key');
 
+    const colorForWallet = color !== null ? color : getRandomColor();
     addresses.push({
       address: walletAddress,
       avatar: null,
-      color: color !== null ? color : getRandomColor(),
+      color: colorForWallet,
       index: 0,
       label: name || '',
       visible: true,
     });
+
+    // Enable web profile
+    await saveWebDataEnabled(true, walletAddress, networkTypes.mainnet);
+    // Save the color
+    await setPreference(PreferenceActionType.init, 'profile', address, {
+      accountColor: lightModeThemeColors.avatarColor[colorForWallet],
+    });
+
+    logger.sentry(`[createWallet] - enabled web profile for main account`);
 
     if (isHDWallet && root && isImported) {
       logger.sentry('[createWallet] - isHDWallet && isImported');
@@ -733,6 +749,28 @@ export const createWallet = async (
             label,
             visible: true,
           });
+
+          // Enable web profile
+          await saveWebDataEnabled(
+            true,
+            nextWallet.address,
+            networkTypes.mainnet
+          );
+
+          // Save the color
+          await setPreference(
+            PreferenceActionType.init,
+            'profile',
+            nextWallet.address,
+            {
+              accountColor: lightModeThemeColors.avatarColor[color],
+            }
+          );
+
+          logger.sentry(
+            `[createWallet] - enabled web profile for wallet ${index}`
+          );
+
           index++;
         } else {
           lookup = false;
