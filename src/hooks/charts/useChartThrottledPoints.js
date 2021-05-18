@@ -21,8 +21,8 @@ const traverseData = (prev, data) => {
   }
   const filtered = data.filter(({ y }) => y);
   if (
-    filtered[0].y === prev?.nativePoints[0]?.y &&
-    filtered[0].x === prev?.nativePoints[0]?.x
+    filtered[0]?.y === prev?.nativePoints[0]?.y &&
+    filtered[0]?.x === prev?.nativePoints[0]?.x
   ) {
     return prev;
   }
