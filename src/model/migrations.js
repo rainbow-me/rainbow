@@ -27,7 +27,6 @@ import logger from 'logger';
 export default async function runMigrations() {
   // get current version
   const currentVersion = Number(await getMigrationVersion());
-  //const currentVersion = Number(await getMigrationVersion()) - 1;
   const migrations = [];
 
   /*
