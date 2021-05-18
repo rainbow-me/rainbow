@@ -651,18 +651,19 @@ export const createWallet = async (
       label: name || '',
       visible: true,
     });
-
-    logger.sentry(`[createWallet] - enabling web profile for main account`);
-    // Creating signature for this wallet
-    await createSignature(walletAddress, pkey);
-    // Enable web profile
-    await store.dispatch(updateWebDataEnabled(true, walletAddress));
-    // Save the color
-    await setPreference(PreferenceActionType.init, 'profile', address, {
-      accountColor: lightModeThemeColors.avatarColor[colorForWallet],
-    });
-
-    logger.sentry(`[createWallet] - enabled web profile for main account`);
+    if (type !== EthereumWalletType.readOnly) {
+      // Creating signature for this wallet
+      logger.sentry(`[createWallet] - generating signature`);
+      await createSignature(walletAddress, pkey);
+      // Enable web profile
+      logger.sentry(`[createWallet] - enabling web profile`);
+      await store.dispatch(updateWebDataEnabled(true, walletAddress));
+      // Save the color
+      await setPreference(PreferenceActionType.init, 'profile', address, {
+        accountColor: lightModeThemeColors.avatarColor[colorForWallet],
+      });
+      logger.sentry(`[createWallet] - enabled web profile`);
+    }
 
     if (isHDWallet && root && isImported) {
       logger.sentry('[createWallet] - isHDWallet && isImported');
