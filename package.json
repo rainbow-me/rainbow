@@ -306,7 +306,8 @@
     ],
     "setupFiles": [
       "./config/test/jest-setup.js"
-    ]
+    ],
+    "bail": 1
   },
   "detox": {
     "configurations": {
