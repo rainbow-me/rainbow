@@ -9,7 +9,7 @@ import useWebData from './useWebData';
 
 export default function useShowcaseTokens() {
   const dispatch = useDispatch();
-  const { addAssetToWebShowcase, removeAssetFromWebShowcase } = useWebData();
+  const { updateWebShowcase } = useWebData();
   const showcaseTokens = useSelector(
     state => state.showcaseTokens.showcaseTokens
   );
@@ -18,17 +18,17 @@ export default function useShowcaseTokens() {
     async asset => {
       dispatch(rawAddShowcaseToken(asset));
       dispatch(setOpenFamilyTabs({ index: 'Showcase', state: true }));
-      addAssetToWebShowcase(asset);
+      updateWebShowcase([...showcaseTokens, asset]);
     },
-    [addAssetToWebShowcase, dispatch]
+    [updateWebShowcase, dispatch, showcaseTokens]
   );
 
   const removeShowcaseToken = useCallback(
     async asset => {
       dispatch(rawRemoveShowcaseToken(asset));
-      removeAssetFromWebShowcase(asset);
+      updateWebShowcase(showcaseTokens.filter(id => id !== asset));
     },
-    [dispatch, removeAssetFromWebShowcase]
+    [dispatch, showcaseTokens, updateWebShowcase]
   );
 
   return {

@@ -1,10 +1,16 @@
 import GraphemeSplitter from 'grapheme-splitter';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { PreferenceActionType, setPreference } from '../model/preferences';
+import {
+  getPreference,
+  PreferenceActionType,
+  setPreference,
+} from '../model/preferences';
 import useAccountProfile from './useAccountProfile';
 import useAccountSettings from './useAccountSettings';
+import { containsEmoji } from '@rainbow-me/helpers/strings';
 import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
+import logger from 'logger';
 
 const getAccountSymbol = name => {
   if (!name) {
@@ -14,13 +20,25 @@ const getAccountSymbol = name => {
   return accountSymbol;
 };
 
+const wipeNotEmoji = text => {
+  const characters = new GraphemeSplitter().splitGraphemes(text);
+  if (characters.length !== 1) {
+    return null;
+  }
+  return containsEmoji(text) ? text : null;
+};
+
 export default function useWebData() {
   const { accountAddress } = useAccountSettings();
   const dispatch = useDispatch();
 
-  const webDataEnabled = useSelector(
-    ({ showcaseTokens: { webDataEnabled } }) => webDataEnabled
+  const { showcaseTokens, webDataEnabled } = useSelector(
+    ({ showcaseTokens: { webDataEnabled, showcaseTokens } }) => ({
+      showcaseTokens,
+      webDataEnabled,
+    })
   );
+
   const { colors } = useTheme();
   const { accountSymbol, accountColor } = useAccountProfile();
 
@@ -39,11 +57,11 @@ export default function useWebData() {
         accountAddress,
         {
           accountColor: colors.avatarColor[accountColor],
-          accountSymbol: accountSymbol,
+          accountSymbol: wipeNotEmoji(accountSymbol),
         }
       );
 
-      dispatch(updateWebDataEnabled(true));
+      dispatch(updateWebDataEnabled(true, accountAddress));
     },
     [accountAddress, accountColor, accountSymbol, colors.avatarColor, dispatch]
   );
@@ -52,7 +70,7 @@ export default function useWebData() {
     if (!webDataEnabled) return;
     await setPreference(PreferenceActionType.wipe, 'showcase', accountAddress);
     await setPreference(PreferenceActionType.wipe, 'profile', accountAddress);
-    dispatch(updateWebDataEnabled(false));
+    dispatch(updateWebDataEnabled(false, accountAddress));
   }, [accountAddress, dispatch, webDataEnabled]);
 
   const updateWebProfile = useCallback(
@@ -60,7 +78,9 @@ export default function useWebData() {
       if (!webDataEnabled) return;
       const data = {
         accountColor: color || accountColor,
-        accountSymbol: name ? getAccountSymbol(name) : accountSymbol,
+        accountSymbol: wipeNotEmoji(
+          name ? getAccountSymbol(name) : accountSymbol
+        ),
       };
       await setPreference(
         PreferenceActionType.update,
@@ -72,31 +92,54 @@ export default function useWebData() {
     [accountColor, accountSymbol, webDataEnabled]
   );
 
-  const addAssetToWebShowcase = useCallback(
-    async asset_id => {
+  const updateWebShowcase = useCallback(
+    async assetIds => {
       if (!webDataEnabled) return;
-      setPreference(PreferenceActionType.update, 'showcase', accountAddress, [
-        asset_id,
-      ]);
+      const response = await getPreference('showcase', accountAddress);
+      // If the showcase is populated, just updated it
+      if (response?.ids?.length > 0) {
+        setPreference(
+          PreferenceActionType.update,
+          'showcase',
+          accountAddress,
+          assetIds
+        );
+      } else {
+        // Initialize showcase and profiles
+        await initWebData(assetIds);
+        logger.log('showcase initialized!');
+      }
     },
-    [accountAddress, webDataEnabled]
+    [accountAddress, initWebData, webDataEnabled]
   );
 
-  const removeAssetFromWebShowcase = useCallback(
-    async asset_id => {
-      if (!webDataEnabled) return;
-      setPreference(PreferenceActionType.remove, 'showcase', accountAddress, [
-        asset_id,
-      ]);
-    },
-    [accountAddress, webDataEnabled]
-  );
+  const initializeShowcaseIfNeeded = useCallback(async () => {
+    try {
+      // If local showcase is not empty
+      if (showcaseTokens?.length > 0) {
+        // If webdata is enabled
+        if (webDataEnabled) {
+          const response = await getPreference('showcase', accountAddress);
+          // If the showcase is populated, nothing to do
+          if (response?.ids?.length > 0) {
+            logger.log('showcase already initialized. skipping');
+          } else {
+            // Initialize
+            await initWebData(showcaseTokens);
+            logger.log('showcase initialized!');
+          }
+        }
+      }
+    } catch (e) {
+      logger.log('Error trying to initiailze showcase');
+    }
+  }, [accountAddress, initWebData, showcaseTokens, webDataEnabled]);
 
   return {
-    addAssetToWebShowcase,
+    initializeShowcaseIfNeeded,
     initWebData,
-    removeAssetFromWebShowcase,
     updateWebProfile,
+    updateWebShowcase,
     webDataEnabled,
     wipeWebData,
   };

@@ -3,12 +3,15 @@ import lang from 'i18n-js';
 import { useCallback, useEffect, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import { PERMISSIONS, request } from 'react-native-permissions';
+import URL from 'url-parse';
 import { Alert } from '../components/alerts';
 import { checkPushNotificationPermissions } from '../model/firebase';
 import { useNavigation } from '../navigation/Navigation';
 import usePrevious from './usePrevious';
 import useWalletConnectConnections from './useWalletConnectConnections';
+import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
 import { Navigation } from '@rainbow-me/navigation';
+import { RAINBOW_PROFILES_BASE_URL } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { addressUtils, haptics } from '@rainbow-me/utils';
 import logger from 'logger';
@@ -92,6 +95,25 @@ export default function useScanner(enabled) {
     [enableScanning, navigate]
   );
 
+  const handleScanRainbowProfile = useCallback(
+    url => {
+      haptics.notificationSuccess();
+      analytics.track('Scanned Rainbow profile url');
+
+      const urlObj = new URL(url);
+      const addressOrENS = urlObj.pathname?.split('/')?.[1] || '';
+      if (checkIsValidAddressOrDomain(addressOrENS)) {
+        // First navigate to wallet screen
+        navigate(Routes.WALLET_SCREEN);
+        Navigation.handleAction(Routes.SHOWCASE_SHEET, {
+          address: addressOrENS,
+        });
+      }
+      setTimeout(enableScanning, 2500);
+    },
+    [enableScanning, navigate]
+  );
+
   const handleScanWalletConnect = useCallback(
     async qrCodeData => {
       haptics.notificationSuccess();
@@ -130,14 +152,18 @@ export default function useScanner(enabled) {
       const address = await addressUtils.getEthereumAddressFromQRCodeData(data);
       if (address) return handleScanAddress(address);
       if (data.startsWith('wc:')) return handleScanWalletConnect(data);
+      if (data.startsWith(RAINBOW_PROFILES_BASE_URL)) {
+        return handleScanRainbowProfile(data);
+      }
       return handleScanInvalid(data);
     },
     [
-      handleScanAddress,
-      handleScanInvalid,
-      handleScanWalletConnect,
       isScanningEnabled,
       disableScanning,
+      handleScanAddress,
+      handleScanWalletConnect,
+      handleScanRainbowProfile,
+      handleScanInvalid,
     ]
   );
 
