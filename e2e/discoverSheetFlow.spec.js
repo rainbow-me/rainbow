@@ -43,8 +43,7 @@ describe('Discover Sheet Flow', () => {
       // Confirm it
       await Helpers.authenticatePin('1234');
     }
-    await Helpers.delay(1000);
-    await Helpers.checkIfVisible('wallet-screen');
+    await Helpers.checkIfVisible('wallet-screen', 40000);
   });
 
   it('Should navigate to Discover screen after tapping Discover Button', async () => {

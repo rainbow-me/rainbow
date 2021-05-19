@@ -42,7 +42,7 @@ describe('Watch address flow', () => {
       // Confirm it
       await Helpers.authenticatePin('1234');
     }
-    await Helpers.checkIfVisible('wallet-screen');
+    await Helpers.checkIfVisible('wallet-screen', 40000);
   });
 
   it('Should say "vitalik.eth" in the Profile Screen header', async () => {

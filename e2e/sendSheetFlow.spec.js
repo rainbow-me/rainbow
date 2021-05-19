@@ -53,7 +53,7 @@ describe('Send Sheet Interaction Flow', () => {
       await Helpers.authenticatePin('1234');
     }
     await Helpers.delay(3000);
-    await Helpers.checkIfVisible('wallet-screen');
+    await Helpers.checkIfVisible('wallet-screen', 40000);
   });
 
   // Saving for now in case we want to test iCloud back up sheet

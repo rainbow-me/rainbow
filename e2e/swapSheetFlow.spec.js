@@ -43,7 +43,7 @@ describe('Swap Sheet Interaction Flow', () => {
       await Helpers.authenticatePin('1234');
     }
     await Helpers.delay(1000);
-    await Helpers.checkIfVisible('wallet-screen');
+    await Helpers.checkIfVisible('wallet-screen', 40000);
   });
 
   it('Should display swap modal on swap-fab press', async () => {

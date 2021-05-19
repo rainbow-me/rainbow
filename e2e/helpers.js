@@ -93,10 +93,10 @@ export async function goToURL(inputURL) {
   await device.openURL({ sourceApp: 'me.rainbow', url: inputURL });
 }
 
-export function checkIfVisible(elementId) {
+export function checkIfVisible(elementId, timeout) {
   return waitFor(element(by.id(elementId)))
     .toBeVisible()
-    .withTimeout(15000);
+    .withTimeout(timeout || 15000);
 }
 
 export function checkIfNotVisible(elementId) {
