@@ -9,8 +9,8 @@
     "android:bundle": "./scripts/check-env.sh && cd android && ./gradlew bundleRelease && open app/build/outputs/bundle/release/",
     "detox:android": "detox build -c android.emu.debug && detox test -R 1 -c android.emu.debug --loglevel verbose",
     "detox:android:release": "detox build -c android.emu.release && detox test -R 1 -c android.emu.release",
-    "detox:ios": "detox build -c ios.sim.debug && detox test -R 1 -c ios.sim.debug",
-    "detox:ios:release": "detox build -c ios.sim.release && detox test -R 1 -c ios.sim.release",
+    "detox:ios": "detox build -c ios.sim.debug && detox test -R 1 -c ios.sim.debug --bail",
+    "detox:ios:release": "detox build -c ios.sim.release && detox test -R 1 -c ios.sim.release --bail",
     "fast": "yarn setup && yarn install-pods-fast",
     "ganache": "source .env && ganache-cli --f https://mainnet.infura.io/v3/${INFURA_PROJECT_ID_DEV} -p 7545 -i 1 -b 10",
     "install-all": "yarn setup && yarn install-pods",
@@ -306,8 +306,7 @@
     ],
     "setupFiles": [
       "./config/test/jest-setup.js"
-    ],
-    "bail": 1
+    ]
   },
   "detox": {
     "configurations": {
