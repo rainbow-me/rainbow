@@ -1,10 +1,9 @@
-import { findKey, isNull, keys } from 'lodash';
+import { findKey, keys } from 'lodash';
 import {
   getMigrationVersion,
   setMigrationVersion,
 } from '../handlers/localstorage/migrations';
 import WalletTypes from '../helpers/walletTypes';
-import { getAccountProfileInfo } from '../hooks/useAccountProfile';
 import {
   DEFAULT_WALLET_NAME,
   loadAddress,
@@ -15,19 +14,13 @@ import {
 import store from '../redux/store';
 
 import { walletsSetSelected, walletsUpdate } from '../redux/wallets';
-import { getRandomColor, lightModeThemeColors } from '../styles/colors';
+import { getRandomColor } from '../styles/colors';
 import { hasKey } from './keychain';
-import { PreferenceActionType, setPreference } from './preferences';
-import {
-  getShowcaseTokens,
-  getWebDataEnabled,
-  saveWebDataEnabled,
-} from '@rainbow-me/handlers/localstorage/accountLocal';
 import {
   getUserLists,
   saveUserLists,
 } from '@rainbow-me/handlers/localstorage/userLists';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
+import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
 import { DefaultTokenLists } from '@rainbow-me/references';
 import logger from 'logger';
 
@@ -243,56 +236,37 @@ export default async function runMigrations() {
 
   /* Fix dollars => stablecoins */
   const v6 = async () => {
-    const userLists = await getUserLists();
-    const newLists = userLists.map(list => {
-      if (list.id !== 'dollars') {
-        return list;
-      }
-      return DefaultTokenLists['mainnet'].find(
-        ({ id }) => id === 'stablecoins'
-      );
-    });
-    await saveUserLists(newLists);
+    try {
+      const userLists = await getUserLists();
+      const newLists = userLists.map(list => {
+        if (list.id !== 'dollars') {
+          return list;
+        }
+        return DefaultTokenLists['mainnet'].find(
+          ({ id }) => id === 'stablecoins'
+        );
+      });
+      await saveUserLists(newLists);
+    } catch (e) {
+      logger.log('ignoring lists migrations');
+    }
   };
 
   migrations.push(v6);
 
   /* Turning ON web data for all accounts */
   const v7 = async () => {
-    const { wallets, selected, walletNames } = store.getState().wallets;
-    const network = networkTypes.mainnet;
+    const { wallets } = store.getState().wallets;
+    if (!wallets) return;
     const walletKeys = Object.keys(wallets);
     for (let i = 0; i < walletKeys.length; i++) {
       const wallet = wallets[walletKeys[i]];
       if (wallet.type !== WalletTypes.readOnly) {
-        wallet.addresses.forEach(async account => {
-          const { address } = account;
-          const isWebDataEnabled = await getWebDataEnabled(address, network);
-
-          if (isNull(isWebDataEnabled)) {
-            const showcaseTokens = await getShowcaseTokens(address, network);
-
-            await setPreference(
-              PreferenceActionType.init,
-              'showcase',
-              address,
-              showcaseTokens
-            );
-
-            const { accountColor, accountSymbol } = getAccountProfileInfo(
-              selected,
-              walletNames,
-              network,
-              address
-            );
-
-            await setPreference(PreferenceActionType.init, 'profile', address, {
-              accountColor: lightModeThemeColors.avatarColor[accountColor],
-              accountSymbol,
-            });
-            await saveWebDataEnabled(true, address, network);
-          }
-        });
+        for (let x = 0; x < wallet.addresses.length; x++) {
+          const { address } = wallet.addresses[x];
+          logger.log('setting web profiles for address', address);
+          await store.dispatch(updateWebDataEnabled(true, address));
+        }
       }
     }
   };
