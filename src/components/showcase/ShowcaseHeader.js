@@ -211,11 +211,17 @@ export function Header() {
     }
   }, [contextValue?.address, goBack, navigate]);
 
-  const { handlePressImportButton } = useImportingWallet();
+  const { handleSetSeedPhrase, handlePressImportButton } = useImportingWallet();
 
   const onWatchAddress = useCallback(() => {
+    handleSetSeedPhrase(contextValue.address);
     handlePressImportButton(color, contextValue.address);
-  }, [color, contextValue.address, handlePressImportButton]);
+  }, [
+    color,
+    contextValue.address,
+    handlePressImportButton,
+    handleSetSeedPhrase,
+  ]);
 
   const mainText =
     contextValue?.data?.reverseEns ||
