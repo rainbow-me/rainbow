@@ -3,7 +3,10 @@ import styled from 'styled-components';
 import { ColumnWithMargins } from '../layout';
 import AvatarCircle from '../profile/AvatarCircle';
 import SheetHandle from '../sheet/SheetHandle';
-import { SheetActionButton } from '../sheet/sheet-action-buttons';
+import {
+  SheetActionButton,
+  SheetActionButtonRow,
+} from '../sheet/sheet-action-buttons';
 import { Text, TruncatedAddress } from '../text';
 import { getContacts } from '@rainbow-me/handlers/localstorage/contacts';
 import { isHexString } from '@rainbow-me/handlers/web3';
@@ -154,7 +157,7 @@ function hashCode(text) {
 
 export function Header() {
   const { width: deviceWidth } = useDimensions();
-  const maxButtonWidth = deviceWidth - 30;
+  const maxButtonWidth = deviceWidth - 50;
   const { goBack, navigate } = useNavigation();
   const contextValue = useContext(ShowcaseContext);
   const { isReadOnlyWallet } = useWallets();
@@ -224,7 +227,7 @@ export function Header() {
       : contextValue?.address?.toLowerCase();
 
   return (
-    <HeaderWrapper height={isReadOnlyWallet ? 320 : 400}>
+    <HeaderWrapper height={350}>
       <SheetHandle />
       <Spacer />
       <AvatarCircle
@@ -242,36 +245,42 @@ export function Header() {
       </ENSAddress>
       {secondaryText && <AddressText address={secondaryText} />}
       <Footer>
-        <SheetActionButton
-          androidWidth={maxButtonWidth}
-          color={color}
-          label=" 􀜖 Add to Contacts"
-          onPress={onAddToContact}
-          size="big"
-          textColor={colors.whiteLabel}
-          weight="heavy"
-        />
-        {!isReadOnlyWallet && (
+        <SheetActionButtonRow ignorePaddingBottom>
           <SheetActionButton
-            androidWidth={maxButtonWidth}
+            androidWidth={
+              isReadOnlyWallet ? maxButtonWidth : maxButtonWidth / 2
+            }
             color={color}
-            label=" 􀈠 Send to this address"
-            onPress={onSend}
+            label=" 􀜖 Add"
+            onPress={onAddToContact}
             size="big"
             textColor={colors.whiteLabel}
             weight="heavy"
           />
-        )}
+          {!isReadOnlyWallet && (
+            <SheetActionButton
+              androidWidth={maxButtonWidth / 2}
+              color={color}
+              label=" 􀈠 Send"
+              onPress={onSend}
+              size="big"
+              textColor={colors.whiteLabel}
+              weight="heavy"
+            />
+          )}
+        </SheetActionButtonRow>
         {android && <ButtonSpacer />}
-        <SheetActionButton
-          androidWidth={maxButtonWidth}
-          color={colors.blueGreyDark30}
-          label="􀨭 Watch this Wallet"
-          onPress={onWatchAddress}
-          size="big"
-          textColor={colors.whiteLabel}
-          weight="heavy"
-        />
+        <SheetActionButtonRow ignorePaddingBottom>
+          <SheetActionButton
+            androidWidth={maxButtonWidth}
+            color={colors.blueGreyDark30}
+            label="􀨭 Watch this Wallet"
+            onPress={onWatchAddress}
+            size="big"
+            textColor={colors.whiteLabel}
+            weight="heavy"
+          />
+        </SheetActionButtonRow>
       </Footer>
     </HeaderWrapper>
   );
