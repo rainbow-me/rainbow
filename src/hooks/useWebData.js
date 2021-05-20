@@ -8,6 +8,7 @@ import {
 } from '../model/preferences';
 import useAccountProfile from './useAccountProfile';
 import useAccountSettings from './useAccountSettings';
+import { containsEmoji } from '@rainbow-me/helpers/strings';
 import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
 import logger from 'logger';
 
@@ -17,6 +18,14 @@ const getAccountSymbol = name => {
   }
   const accountSymbol = new GraphemeSplitter().splitGraphemes(name)[0];
   return accountSymbol;
+};
+
+const wipeNotEmoji = text => {
+  const characters = new GraphemeSplitter().splitGraphemes(text);
+  if (characters.length !== 1) {
+    return null;
+  }
+  return containsEmoji(text) ? text : null;
 };
 
 export default function useWebData() {
@@ -48,7 +57,7 @@ export default function useWebData() {
         accountAddress,
         {
           accountColor: colors.avatarColor[accountColor],
-          accountSymbol: accountSymbol,
+          accountSymbol: wipeNotEmoji(accountSymbol),
         }
       );
 
@@ -69,7 +78,9 @@ export default function useWebData() {
       if (!webDataEnabled) return;
       const data = {
         accountColor: color || accountColor,
-        accountSymbol: name ? getAccountSymbol(name) : accountSymbol,
+        accountSymbol: wipeNotEmoji(
+          name ? getAccountSymbol(name) : accountSymbol
+        ),
       };
       await setPreference(
         PreferenceActionType.update,
