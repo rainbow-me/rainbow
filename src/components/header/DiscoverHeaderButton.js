@@ -40,7 +40,7 @@ const DiscoverButtonContent = styled(RowWithMargins).attrs({
 })`
   align-items: center;
   justify-content: center;
-  ${padding(0, 10, 7.5)};
+  ${padding(ios ? 6 : 0, 10, 7.5)};
   height: 34;
   z-index: 2;
 `;
