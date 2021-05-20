@@ -1,7 +1,6 @@
 import 'react-native-get-random-values';
 import '@ethersproject/shims';
 import AsyncStorage from '@react-native-community/async-storage';
-import { enableES5 } from 'immer';
 // eslint-disable-next-line import/default
 import ReactNative from 'react-native';
 import Animated from 'react-native-reanimated';
@@ -22,9 +21,7 @@ if (typeof atob === 'undefined') {
   };
 }
 
-// Can remove when we update hermes after they enable Proxy support
-ReactNative.Platform.OS === 'android' && enableES5();
-ReactNative.Platform.OS === 'android' && toLocaleStringPolyfill();
+toLocaleStringPolyfill();
 
 ReactNative.Platform.OS === 'ios' &&
   Animated.addWhitelistedNativeProps({ d: true });
