@@ -126,6 +126,7 @@ export default function SpeedUpAndCancelSheet() {
   );
   const fetchedTx = useRef(false);
   const [gasLimit, setGasLimit] = useState(tx.gasLimit);
+  const [to, setTo] = useState(tx.to);
   const [data, setData] = useState(tx.data);
   const [value, setValue] = useState(tx.value);
   const [nonce, setNonce] = useState(tx.nonce);
@@ -201,7 +202,7 @@ export default function SpeedUpAndCancelSheet() {
         gasLimit,
         gasPrice,
         nonce,
-        to: tx.to,
+        to,
         value,
       };
       existingWallet = await loadWallet();
@@ -224,7 +225,7 @@ export default function SpeedUpAndCancelSheet() {
     } finally {
       goBack();
     }
-  }, [data, dispatch, gasLimit, getNewGasPrice, goBack, nonce, tx, value]);
+  }, [data, dispatch, gasLimit, getNewGasPrice, goBack, nonce, to, tx, value]);
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(async () => {
@@ -241,6 +242,7 @@ export default function SpeedUpAndCancelSheet() {
             setNonce(txObj.nonce);
             setValue(hexValue);
             setData(hexData);
+            setTo(txObj.to);
             setGasLimit(hexGasLimit);
             setMinGasPrice(calcMinGasPriceAllowed(hexGasPrice));
           }
