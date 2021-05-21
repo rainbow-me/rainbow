@@ -93,7 +93,6 @@ export default function ListHeader({
       const showcaseUrl = `${RAINBOW_PROFILES_BASE_URL}/${accountAddress}`;
       const shareOptions = {
         message: `Check out my collectibles on 🌈 Rainbow at ${showcaseUrl}`,
-        url: showcaseUrl,
       };
       Share.share(shareOptions);
     } else {
