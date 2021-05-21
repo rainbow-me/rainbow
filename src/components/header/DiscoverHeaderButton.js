@@ -14,6 +14,10 @@ const DiscoverButtonShadowsFactory = colors => [
   [0, 3.5, 10.5, colors.shadow, 0.04],
 ];
 
+const EmojiWrapper = styled.View`
+  margin-top: ${android ? 6 : 0}px;
+`;
+
 const BackgroundFill = styled.View`
   ${position.cover};
   background-color: ${({ theme: { colors } }) => colors.white};
@@ -34,7 +38,9 @@ const DiscoverButtonContent = styled(RowWithMargins).attrs({
   align: 'center',
   margin: 2,
 })`
-  ${padding(5.5, 10, 7.5)};
+  align-items: center;
+  justify-content: center;
+  ${padding(ios ? 6 : 0, 10, 7.5)};
   height: 34;
   z-index: 2;
 `;
@@ -77,9 +83,9 @@ export default function DiscoverHeaderButton() {
           <BackgroundGradient />
         </ShadowStack>
         <DiscoverButtonContent>
-          <Emoji lineHeight={18} size="medium">
-            🪐
-          </Emoji>
+          <EmojiWrapper>
+            <Emoji size="small">🪐</Emoji>
+          </EmojiWrapper>
           <Text
             color={colors.alpha(colors.blueGreyDark, isDarkMode ? 1 : 0.8)}
             letterSpacing="roundedTight"

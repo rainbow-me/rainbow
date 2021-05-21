@@ -88,7 +88,9 @@ const EditButtonLabel = styled(Text).attrs(
     size: 'large',
     weight: editMode ? 'semibold' : 'medium',
   })
-)``;
+)`
+  height: 40px;
+`;
 const Whitespace = styled.View`
   background-color: ${({ theme: { colors } }) => colors.white};
   bottom: -400px;

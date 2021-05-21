@@ -158,7 +158,9 @@ const BottomSheetRoute = ({
         index={index}
         onChange={handleOnChange}
         ref={ref}
+        simultaneousHandlers={[]}
         snapPoints={enhancedSpanPoints}
+        waitFor={[]}
       >
         <View style={screenContainerStyle}>{render()}</View>
       </BottomSheet>
