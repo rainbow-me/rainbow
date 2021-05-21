@@ -341,6 +341,8 @@ export default function ChartExpandedState({ asset }) {
               fullWidth={!showSwapButton}
               inputType={AssetInputTypes.out}
               label={`􀖅 Get ${asset?.symbol}`}
+              requireVerification
+              verified={asset?.isVerified}
               weight="heavy"
             />
           )}
