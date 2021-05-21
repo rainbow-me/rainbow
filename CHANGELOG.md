@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Added
 * Rainbow Web Profiles
-* Swap / Deposit / Widthraw Analytics
+* Swap / Deposit / Withdraw Analytics
 
 ### Changed
 * Fixed Speeding Up ERC20 Send
