@@ -10,6 +10,7 @@ import { Column, Row } from '../layout';
 import SavingsListHeader from '../savings/SavingsListHeader';
 import { H1 } from '../text';
 import {
+  useAccountProfile,
   useAccountSettings,
   useDimensions,
   useWallets,
@@ -85,20 +86,28 @@ export default function ListHeader({
   const deviceDimensions = useDimensions();
   const { isReadOnlyWallet } = useWallets();
   const { accountAddress } = useAccountSettings();
+  const { accountENS } = useAccountProfile();
   const { initializeShowcaseIfNeeded } = useWebData();
 
   const handleShare = useCallback(() => {
     if (!isReadOnlyWallet) {
       initializeShowcaseIfNeeded();
     }
-    const showcaseUrl = `${RAINBOW_PROFILES_BASE_URL}/${accountAddress}`;
+    const showcaseUrl = `${RAINBOW_PROFILES_BASE_URL}/${
+      accountENS || accountAddress
+    }`;
     const shareOptions = {
       message: isReadOnlyWallet
         ? `Check out this wallet's collectibles on 🌈 Rainbow at ${showcaseUrl}`
         : `Check out my collectibles on 🌈 Rainbow at ${showcaseUrl}`,
     };
     Share.share(shareOptions);
-  }, [accountAddress, initializeShowcaseIfNeeded, isReadOnlyWallet]);
+  }, [
+    accountAddress,
+    accountENS,
+    initializeShowcaseIfNeeded,
+    isReadOnlyWallet,
+  ]);
 
   if (title === 'Pools') {
     return (
