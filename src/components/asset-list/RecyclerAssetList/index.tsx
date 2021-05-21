@@ -738,6 +738,7 @@ function RecyclerAssetList({
     openFamilyTabs,
     paddingBottom,
     scrollToOffset,
+    showcase,
   ]);
 
   const MaybeStickyContainer = disableStickyHeaders
