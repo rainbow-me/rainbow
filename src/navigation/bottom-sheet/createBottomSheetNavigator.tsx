@@ -10,13 +10,13 @@ import {
 } from '@react-navigation/native';
 import React from 'react';
 import { router } from './router';
+import BottomSheetNavigatorView from './views/BottomSheetNavigatorView';
 import type {
   BottomSheetNavigationConfig,
   BottomSheetNavigationEventMap,
   BottomSheetNavigationOptions,
   // eslint-disable-next-line import/no-unresolved
 } from './types';
-import BottomSheetNavigatorView from './views/BottomSheetNavigatorView';
 
 type Props = DefaultNavigatorOptions<BottomSheetNavigationOptions> &
   StackRouterOptions &
