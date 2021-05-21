@@ -93,8 +93,9 @@ export default function ListHeader({
     }
     const showcaseUrl = `${RAINBOW_PROFILES_BASE_URL}/${accountAddress}`;
     const shareOptions = {
-      message: `Check out my collectibles on 🌈 Rainbow at ${showcaseUrl}`,
-      url: showcaseUrl,
+      message: isReadOnlyWallet
+        ? `Check out this wallet's collectibles on 🌈 Rainbow at ${showcaseUrl}`
+        : `Check out my collectibles on 🌈 Rainbow at ${showcaseUrl}`,
     };
     Share.share(shareOptions);
   }, [accountAddress, initializeShowcaseIfNeeded, isReadOnlyWallet]);
