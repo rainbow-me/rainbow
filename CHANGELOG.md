@@ -12,6 +12,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.5.8](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.8)
+
+### Added
+* Rainbow Web Profiles
+* Swap / Deposit / Widthraw Analytics
+
+### Changed
+* Fixed Speeding Up ERC20 Send
+* OpenSea Adjustments
+* Gas Fixes
+
 ## [1.5.7](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.7)
 
 ### Added
