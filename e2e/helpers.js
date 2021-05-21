@@ -1,8 +1,10 @@
+const DEFAULT_TIMEOUT = 8000;
+// eslint-disable-next-line eslint-comments/disable-enable-pair
 /* eslint-disable no-undef */
 export async function waitAndTap(elementId, timeout) {
   await waitFor(element(by.id(elementId)))
     .toBeVisible()
-    .withTimeout(timeout || 8000);
+    .withTimeout(timeout || DEFAULT_TIMEOUT);
 
   return element(by.id(elementId)).tap();
 }
@@ -93,16 +95,16 @@ export async function goToURL(inputURL) {
   await device.openURL({ sourceApp: 'me.rainbow', url: inputURL });
 }
 
-export function checkIfVisible(elementId) {
+export function checkIfVisible(elementId, timeout) {
   return waitFor(element(by.id(elementId)))
     .toBeVisible()
-    .withTimeout(15000);
+    .withTimeout(timeout || DEFAULT_TIMEOUT);
 }
 
-export function checkIfNotVisible(elementId) {
+export function checkIfNotVisible(elementId, timeout) {
   return waitFor(element(by.id(elementId)))
     .toBeNotVisible()
-    .withTimeout(10000);
+    .withTimeout(timeout || DEFAULT_TIMEOUT);
 }
 
 export function checkIfExists(elementId) {
@@ -113,15 +115,15 @@ export function checkIfExistsByText(text) {
   return expect(element(by.text(text))).toExist();
 }
 
-export function checkIfElementByTextIsVisible(text) {
+export function checkIfElementByTextIsVisible(text, timeout) {
   return waitFor(element(by.text(text)))
     .toBeVisible()
-    .withTimeout(10000);
+    .withTimeout(timeout || DEFAULT_TIMEOUT);
 }
-export function checkIfElementByTextToExist(text) {
+export function checkIfElementByTextToExist(text, timeout) {
   return waitFor(element(by.text(text)))
     .toExist()
-    .withTimeout(10000);
+    .withTimeout(timeout || DEFAULT_TIMEOUT);
 }
 
 export function checkForElementByLabel(text) {
