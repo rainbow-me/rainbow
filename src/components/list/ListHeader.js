@@ -1,5 +1,5 @@
 import React, { createElement, Fragment } from 'react';
-import { Alert, Share } from 'react-native';
+import { Share } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components';
 import Divider from '../Divider';
@@ -90,15 +90,13 @@ export default function ListHeader({
   const handleShare = useCallback(() => {
     if (!isReadOnlyWallet) {
       initializeShowcaseIfNeeded();
-      const showcaseUrl = `${RAINBOW_PROFILES_BASE_URL}/${accountAddress}`;
-      const shareOptions = {
-        message: `Check out my collectibles on 🌈 Rainbow at ${showcaseUrl}`,
-        url: showcaseUrl,
-      };
-      Share.share(shareOptions);
-    } else {
-      return Alert.alert(`You need to import the wallet in order to do this`);
     }
+    const showcaseUrl = `${RAINBOW_PROFILES_BASE_URL}/${accountAddress}`;
+    const shareOptions = {
+      message: `Check out my collectibles on 🌈 Rainbow at ${showcaseUrl}`,
+      url: showcaseUrl,
+    };
+    Share.share(shareOptions);
   }, [accountAddress, initializeShowcaseIfNeeded, isReadOnlyWallet]);
 
   if (title === 'Pools') {
@@ -119,7 +117,7 @@ export default function ListHeader({
         <Content isSticky={isSticky}>
           <Row align="center">
             {createElement(titleRenderer, { children: title })}
-            {title === 'Collectibles' && !isReadOnlyWallet && (
+            {title === 'Collectibles' && (
               <Column align="flex-end" flex={1}>
                 <ShareCollectiblesButton
                   onPress={() => handleShare(isReadOnlyWallet, accountAddress)}
