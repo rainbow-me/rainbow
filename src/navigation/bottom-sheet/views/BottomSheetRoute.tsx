@@ -4,6 +4,7 @@ import BottomSheet, {
 } from '@gorhom/bottom-sheet';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { View } from 'react-native';
+import type { ViewStyle } from 'react-native';
 import {
   CONTAINER_HEIGHT,
   DEFAULT_ANIMATION_DURATION,
@@ -14,7 +15,6 @@ import {
 import { BottomSheetNavigatorContext } from '../contexts/internal';
 // eslint-disable-next-line import/no-unresolved
 import type { BottomSheetDescriptor } from '../types';
-import type { ViewStyle } from 'react-native';
 
 interface Props {
   routeKey: string;

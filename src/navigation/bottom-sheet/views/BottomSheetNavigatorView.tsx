@@ -4,13 +4,13 @@ import {
   StackNavigationState,
 } from '@react-navigation/native';
 import React, { useCallback, useMemo, useRef } from 'react';
-import BottomSheetRoute from './BottomSheetRoute';
 import type {
   BottomSheetDescriptorMap,
   BottomSheetNavigationConfig,
   BottomSheetNavigationHelpers,
   // eslint-disable-next-line import/no-unresolved
 } from '../types';
+import BottomSheetRoute from './BottomSheetRoute';
 import { useForceUpdate } from '@rainbow-me/hooks';
 
 type Props = BottomSheetNavigationConfig & {
