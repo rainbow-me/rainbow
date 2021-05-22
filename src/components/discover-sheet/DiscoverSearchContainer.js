@@ -77,7 +77,7 @@ export default forwardRef(function DiscoverSearchContainer(
 
   const onTapSearch = useCallback(() => {
     if (isSearchModeEnabled) {
-      sectionListRef.current.scrollToLocation({
+      sectionListRef.current?.scrollToLocation({
         animated: true,
         itemIndex: 0,
         sectionIndex: 0,
