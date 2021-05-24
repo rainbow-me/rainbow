@@ -43,25 +43,30 @@ https://facebook.github.io/react-native/docs/getting-started.html
    or a self-provided config for a personal Firebase project (third-party
    contributors) registered under the package name `me.rainbow`.
 
-6. Start the React Native webserver with `yarn start`.
-
 This will leave you with the React Native webserver running and listening for
 file changes. Open a new terminal and start the app in an emulator using the
 directions below.
 
 ### MacOS
+*Note: Darwin versions of the application can only be developed/built on Darwin
+platforms with XCode.*
+
+#### First-time setup
 Install the required bundle and Pods with:
 
 ```shell
 yarn install-bundle && yarn install-pods
 ```
 
-Then, open `rainbow-wallet/ios/Rainbow.xcworkspace` in XCode, and run the
-project by clicking the play button.
+#### Running
+1. Open `rainbow-wallet/ios/Rainbow.xcworkspace` in XCode.
+2. Run the project by clicking the play button.
 
 ### Linux
-Non-Darwin development environments can only build/simulate the Android version
-of the project, since XCode is required for iOS.
+*Note: Linux development environments cannot develop or build Darwin versions of the
+project.*
+
+#### First-time setup
 
 First, [install Android
 Studio](https://developer.android.com/studio/install#linux), which comes with
@@ -77,17 +82,17 @@ Next, ensure you have the `secret-tool` and `watchman` commands available:
 sudo apt install libsecret-tools watchman
 ```
 
-Finally, build/install/launch the Android app in an emulator:
-
-```shell
-yarn android
-```
-
-(Make sure you have the `google-services.json` installed  as described above
-under **Preflight** or the compile will fail.)
-
-From now on, you will be able to simply run `yarn android` to start the emulator
-after starting the React Native bundler with `yarn start`.
+#### Running
+1. Start a React Native webserver with:
+    ```shell
+    yarn start
+    ```
+2. Build/install/start the debug version of the app in an emulator with:
+    ```shell
+    yarn android
+    ```
+    Make sure you have the `google-services.json` installed  as described above
+    under **Preflight** or the compile will fail.
 
 ## CodePush
 
