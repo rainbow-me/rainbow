@@ -62,7 +62,7 @@ const Header = styled(Column).attrs({
 `;
 
 const FOOTER_MIN_HEIGHT = 143;
-const FOOTER_CONTENT_HEIGHT = 241;
+const FOOTER_CONTENT_MIN_HEIGHT = 241;
 
 function useAndroidDisableGesturesOnFocus() {
   const { params } = useRoute();
@@ -119,7 +119,9 @@ export default function SwapDetailsState({
 
   const [footerHeight, setFooterHeight] = useHeight(FOOTER_MIN_HEIGHT);
   const [slippageMessageHeight, setSlippageMessageHeight] = useHeight();
-  const [contentHeight, setContentHeight] = useHeight(FOOTER_CONTENT_HEIGHT);
+  const [contentHeight, setContentHeight] = useHeight(
+    FOOTER_CONTENT_MIN_HEIGHT
+  );
 
   useEffect(() => () => restoreFocusOnSwapModal(), [restoreFocusOnSwapModal]);
   useAndroidDisableGesturesOnFocus();
