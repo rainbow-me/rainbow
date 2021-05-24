@@ -14,7 +14,7 @@
 * Install Watchman `brew install watchman`
 * Install the latest version of XCode: https://developer.apple.com/xcode/
 
-## How to run the project
+## Developing
 If you are new to React Native, this is a helpful introduction:
 https://facebook.github.io/react-native/docs/getting-started.html
 
