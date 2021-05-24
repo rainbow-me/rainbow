@@ -77,13 +77,14 @@ Next, ensure you have the `secret-tool` and `watchman` commands available:
 sudo apt install libsecret-tools watchman
 ```
 
-Finally, build/install/launch the Android app in an emulator. Make sure you have
-the `google-services.json` installed  as described above under **Preflight** or
-the compile will fail.
+Finally, build/install/launch the Android app in an emulator:
 
 ```shell
 yarn android
 ```
+
+(Make sure you have the `google-services.json` installed  as described above
+under **Preflight** or the compile will fail.)
 
 From now on, you will be able to simply run `yarn android` to start the emulator
 after starting the React Native bundler with `yarn start`.
