@@ -15,9 +15,10 @@
 * Install the latest version of XCode: https://developer.apple.com/xcode/
 
 ## How to run the project
+If you are new to React Native, this is a helpful introduction:
+https://facebook.github.io/react-native/docs/getting-started.html
 
-If you are new to React Native, this is a helpful introduction: https://facebook.github.io/react-native/docs/getting-started.html
-
+### Preflight
 1. Clone the GitHub repository to your machine.
 
 2. Run `nvm use 14` to use set the version of node for this project.
@@ -35,15 +36,69 @@ If you are new to React Native, this is a helpful introduction: https://facebook
 
 4. Run `yarn setup` to get all of the packages required.
 
-5. Run `yarn install-bundle`.
+5. Ensure a `google-services.json` has been added to the relevant project
+   directory/directories so the compile will not fail.
+   
+   This can either be the live Google Services config (for internal development)
+   or a self-provided config for a personal Firebase project (third-party
+   contributors) registered under the package name `me.rainbow`. 
 
-6. Install required Pods by running `yarn install-pods`.
+### MacOS
+1. Run `yarn install-bundle`.
 
-7. Run `yarn start` to start the React Native Bundler.
+2. Install required Pods by running `yarn install-pods`.
 
-8. Open `rainbow-wallet/ios/Rainbow.xcworkspace` in XCode.
+3. Run `yarn start` to start the React Native Bundler.
 
-9. Run the project by clicking the play button.
+4. Open `rainbow-wallet/ios/Rainbow.xcworkspace` in XCode.
+
+5. Run the project by clicking the play button.
+
+### Linux
+Non-Darwin development environments can only build/simulate the Android version
+of the project, since XCode is required for iOS, and will require Android
+Emulator and `adb` as system dependencies, which you can get by installing
+[Android Studio](https://developer.android.com/studio/install#linux).
+
+The React Native bundler relies on `emulator` and other Android SDK utilities
+existing in your `$PATH`, and also counts on an `ANDROID_SDK_ROOT` environment
+variable. Add the following lines to your `~/.bash_profile` or `~/.bashrc `(if
+you are using zsh then `~/.zprofile` or `~/.zshrc`) config file:
+
+```shell
+export ANDROID_HOME=$HOME/Android/Sdk
+export ANDROID_SDK_ROOT=$ANDROID_HOME
+export PATH=$PATH:$ANDROID_HOME/emulator
+export PATH=$PATH:$ANDROID_HOME/tools
+export PATH=$PATH:$ANDROID_HOME/tools/bin
+export PATH=$PATH:$ANDROID_HOME/platform-tools
+```
+
+(See [React Native environment setup
+instructions](https://reactnative.dev/docs/environment-setup) for more
+information.)
+
+You will also need the `secret-tool` package:
+
+```shell
+sudo apt install libsecret-tools
+```
+
+Finally, start the React Native webserver with:
+
+```shell
+yarn start
+```
+
+And, in a separate terminal, build/install/launch the Android app on an emulator
+with:
+
+```shell
+yarn android
+```
+
+Make sure you have the `google-services.json` installed  as described above or
+the compile will fail.
 
 ## CodePush
 
