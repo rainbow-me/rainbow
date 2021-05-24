@@ -6,24 +6,53 @@
 
 🐦️ [Follow us on Twitter](https://twitter.com/rainbowdotme)
 
-## Requirements
+## Setup
 
-* A computer running macOS.
-* NVM installed or Node.js 14: https://github.com/creationix/nvm
-* Install CocoaPods by running `sudo gem install cocoapods`
-* Install Watchman `brew install watchman`
-* Install the latest version of XCode: https://developer.apple.com/xcode/
+### General
+* Install NVM or Node.js 14: https://github.com/creationix/nvm
+* Install all project dependencies with `yarn setup`
+
+### MacOS
+1. Install Watchman:
+    ```shell
+    brew install watchman
+    ```
+
+2. Install CocoaPods:
+    ```shell
+    sudo gem install cocoapods
+    ```
+
+3. Install the required bundles and Pods for this project:
+    ```shell
+    yarn install-bundle && yarn install-pods
+    ```
+
+4. Install the [latest version of XCode](https://developer.apple.com/xcode/).
+
+### Linux
+1. Install system dependencies:
+    ```shell
+    sudo apt install libsecret-tools watchman
+    ```
+
+2. Follow the [React Native environment setup
+   instructions](https://reactnative.dev/docs/environment-setup) carefully,
+   which will involve installing Android Studio, the Android SDK, the emulator,
+   etc. and making them available in your `$PATH`.
+
+3. Ensure at least one [AVD
+   image](https://developer.android.com/studio/run/managing-avds) is available
+   for the emulator (unless using a physical device).
 
 ## Developing
 If you are new to React Native, this is a helpful introduction:
 https://facebook.github.io/react-native/docs/getting-started.html
 
 ### Preflight
-1. Clone the GitHub repository to your machine.
+1. Run `nvm use 14` to force Node.js v14.
 
-2. Run `nvm use 14` to use set the version of node for this project.
-
-3. Set up your .env file, use our env.example as a guide.
+2. Set up your .env file, use our env.example as a guide.
 
     ___Note that some features are currently not accessible, we are working with our Data Providers in order to provide open source API Keys!___
 
@@ -34,9 +63,7 @@ https://facebook.github.io/react-native/docs/getting-started.html
     * ETH Gas Station: https://docs.ethgasstation.info/
     * Imgix: https://www.imgix.com/
 
-4. Run `yarn setup` to get all of the packages required.
-
-5. Ensure a `google-services.json` has been added to the relevant project
+3. Ensure a `google-services.json` has been added to the relevant project
    directory/directories so the compile will not fail.
    
    This can either be the live Google Services config (for internal development)
@@ -47,14 +74,6 @@ https://facebook.github.io/react-native/docs/getting-started.html
 *Note: Darwin versions of the application can only be developed/built on Darwin
 platforms with XCode.*
 
-#### First-time setup
-Install the required bundle and Pods with:
-
-```shell
-yarn install-bundle && yarn install-pods
-```
-
-#### Running
 1. Start a React Native webserver with:
     ```shell
     yarn start
@@ -66,23 +85,6 @@ yarn install-bundle && yarn install-pods
 *Note: Linux development environments cannot develop or build Darwin versions of the
 project.*
 
-#### First-time setup
-
-First, [install Android
-Studio](https://developer.android.com/studio/install#linux), which comes with
-the Android SDK, emulator, and all other system dependencies required for React
-Native. Ensure at least one [AVD
-image](https://developer.android.com/studio/run/managing-avds) is available for
-the emulator.
-
-Next, ensure you have the `secret-tool` and `watchman` commands available:
-
-```shell
-# Ubuntu/Debian
-sudo apt install libsecret-tools watchman
-```
-
-#### Running
 1. Start a React Native webserver with:
     ```shell
     yarn start
@@ -91,8 +93,6 @@ sudo apt install libsecret-tools watchman
     ```shell
     yarn android
     ```
-    Make sure you have the `google-services.json` installed  as described above
-    under **Preflight** or the compile will fail.
 
 ## CodePush
 
