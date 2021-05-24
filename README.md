@@ -43,10 +43,6 @@ https://facebook.github.io/react-native/docs/getting-started.html
    or a self-provided config for a personal Firebase project (third-party
    contributors) registered under the package name `me.rainbow`.
 
-This will leave you with the React Native webserver running and listening for
-file changes. Open a new terminal and start the app in an emulator using the
-directions below.
-
 ### MacOS
 *Note: Darwin versions of the application can only be developed/built on Darwin
 platforms with XCode.*
@@ -59,8 +55,12 @@ yarn install-bundle && yarn install-pods
 ```
 
 #### Running
-1. Open `rainbow-wallet/ios/Rainbow.xcworkspace` in XCode.
-2. Run the project by clicking the play button.
+1. Start a React Native webserver with:
+    ```shell
+    yarn start
+    ```
+2. Open `rainbow-wallet/ios/Rainbow.xcworkspace` in XCode.
+3. Run the project by clicking the play button.
 
 ### Linux
 *Note: Linux development environments cannot develop or build Darwin versions of the
