@@ -1,4 +1,11 @@
 #!/bin/bash
+
+# If not using MacOS, gracefully skip.
+if [ "$(uname -s)" != "Darwin" ]; then
+  echo "Non-Darwin platform detected. Skipping postinstall."
+  exit 0
+fi
+
 set -eo pipefail
 
 if [ -e .env ]
