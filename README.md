@@ -45,12 +45,16 @@ https://facebook.github.io/react-native/docs/getting-started.html
 
 6. Start the React Native webserver with `yarn start`.
 
+This will leave you with the webserver running and listening for changes. Open a
+new terminal and start the app in an emulator using the directions below.
+
 ### MacOS
 Install the required bundle and Pods with:
 
 ```shell
 yarn install-bundle && yarn install-pods
 ```
+
 Then, open `rainbow-wallet/ios/Rainbow.xcworkspace` in XCode, and run the
 project by clicking the play button.
 
@@ -78,27 +82,24 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools
 instructions](https://reactnative.dev/docs/environment-setup) for more
 information.)
 
-You will also need the `secret-tool` package:
+Ensure you have the `secret-tool` command available:
 
 ```shell
+# Ubuntu/Debian
 sudo apt install libsecret-tools
 ```
 
-Finally, start the React Native webserver with:
-
-```shell
-yarn start
-```
-
-And, in a separate terminal, build/install/launch the Android app on an emulator
-with:
+Finally, build/install/launch the Android app on an emulator with:
 
 ```shell
 yarn android
 ```
 
-Make sure you have the `google-services.json` installed  as described above or
-the compile will fail.
+Make sure you have the `google-services.json` installed  as described above
+under **Preflight** or the compile will fail. 
+
+From now on, you will be able to simply run `yarn android` to start the emulator
+after creating a webserver with `yarn start`.
 
 ## CodePush
 
