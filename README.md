@@ -41,18 +41,18 @@ https://facebook.github.io/react-native/docs/getting-started.html
    
    This can either be the live Google Services config (for internal development)
    or a self-provided config for a personal Firebase project (third-party
-   contributors) registered under the package name `me.rainbow`. 
+   contributors) registered under the package name `me.rainbow`.
+
+6. Start the React Native webserver with `yarn start`.
 
 ### MacOS
-1. Run `yarn install-bundle`.
+Install the required bundle and Pods with:
 
-2. Install required Pods by running `yarn install-pods`.
-
-3. Run `yarn start` to start the React Native Bundler.
-
-4. Open `rainbow-wallet/ios/Rainbow.xcworkspace` in XCode.
-
-5. Run the project by clicking the play button.
+```shell
+yarn install-bundle && yarn install-pods
+```
+Then, open `rainbow-wallet/ios/Rainbow.xcworkspace` in XCode, and run the
+project by clicking the play button.
 
 ### Linux
 Non-Darwin development environments can only build/simulate the Android version
