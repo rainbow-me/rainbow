@@ -45,8 +45,9 @@ https://facebook.github.io/react-native/docs/getting-started.html
 
 6. Start the React Native webserver with `yarn start`.
 
-This will leave you with the webserver running and listening for changes. Open a
-new terminal and start the app in an emulator using the directions below.
+This will leave you with the React Native webserver running and listening for
+file changes. Open a new terminal and start the app in an emulator using the
+directions below.
 
 ### MacOS
 Install the required bundle and Pods with:
@@ -60,46 +61,32 @@ project by clicking the play button.
 
 ### Linux
 Non-Darwin development environments can only build/simulate the Android version
-of the project, since XCode is required for iOS, and will require Android
-Emulator and `adb` as system dependencies, which you can get by installing
-[Android Studio](https://developer.android.com/studio/install#linux).
+of the project, since XCode is required for iOS.
 
-The React Native bundler relies on `emulator` and other Android SDK utilities
-existing in your `$PATH`, and also counts on an `ANDROID_SDK_ROOT` environment
-variable. Add the following lines to your `~/.bash_profile` or `~/.bashrc `(if
-you are using zsh then `~/.zprofile` or `~/.zshrc`) config file:
+First, [install Android
+Studio](https://developer.android.com/studio/install#linux), which comes with
+the Android SDK, emulator, and all other system dependencies required for React
+Native. Ensure at least one [AVD
+image](https://developer.android.com/studio/run/managing-avds) is available for
+the emulator.
 
-```shell
-export ANDROID_HOME=$HOME/Android/Sdk
-export ANDROID_SDK_ROOT=$ANDROID_HOME
-export PATH=$PATH:$ANDROID_HOME/emulator
-export PATH=$PATH:$ANDROID_HOME/tools
-export PATH=$PATH:$ANDROID_HOME/tools/bin
-export PATH=$PATH:$ANDROID_HOME/platform-tools
-```
-
-(See [React Native environment setup
-instructions](https://reactnative.dev/docs/environment-setup) for more
-information.)
-
-Ensure you have the `secret-tool` command available:
+Next, ensure you have the `secret-tool` and `watchman` commands available:
 
 ```shell
 # Ubuntu/Debian
-sudo apt install libsecret-tools
+sudo apt install libsecret-tools watchman
 ```
 
-Finally, build/install/launch the Android app on an emulator with:
+Finally, build/install/launch the Android app in an emulator. Make sure you have
+the `google-services.json` installed  as described above under **Preflight** or
+the compile will fail.
 
 ```shell
 yarn android
 ```
 
-Make sure you have the `google-services.json` installed  as described above
-under **Preflight** or the compile will fail. 
-
 From now on, you will be able to simply run `yarn android` to start the emulator
-after creating a webserver with `yarn start`.
+after starting the React Native bundler with `yarn start`.
 
 ## CodePush
 
