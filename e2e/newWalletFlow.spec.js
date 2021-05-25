@@ -5,6 +5,7 @@ import * as Helpers from './helpers';
 describe('New Wallet flow', () => {
   it('should show the welcome screen', async () => {
     await Helpers.checkIfVisible('welcome-screen');
+    await Helpers.disableSynchronization();
   });
 
   it('go to the wallet screen after pressing "Get a new wallet" button', async () => {

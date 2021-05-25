@@ -78,6 +78,7 @@ describe('Import from private key flow', () => {
 
   it('Should reset keychain & reopen app', async () => {
     await Helpers.tap('reset-keychain-section');
+    await Helpers.delay(5000);
     await device.launchApp({ newInstance: true });
     await Helpers.disableSynchronization();
     await Helpers.delay(5000);

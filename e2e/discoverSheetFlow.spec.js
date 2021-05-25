@@ -85,18 +85,18 @@ describe('Discover Sheet Flow', () => {
   });
 
   it('Should add Unisocks to Watchlist & remove from Favorites', async () => {
-    await Helpers.tap('add-to-list-button');
-    await Helpers.delay(2000);
+    await Helpers.waitAndTap('add-to-list-button');
+    await Helpers.delay(3000);
     await Helpers.checkIfVisible('add-token-sheet');
-    await Helpers.tap('add-to-watchlist');
-    await Helpers.delay(1000);
+    await Helpers.waitAndTap('add-to-watchlist');
+    await Helpers.delay(3000);
     await Helpers.checkIfVisible('remove-from-watchlist');
-    await Helpers.tap('remove-from-favorites');
-    await Helpers.delay(1000);
+    await Helpers.waitAndTap('remove-from-favorites');
+    await Helpers.delay(3000);
     await Helpers.checkIfNotVisible('remove-from-favorites');
 
-    await Helpers.delay(1000);
-    await Helpers.tap('close-action-button');
+    await Helpers.delay(3000);
+    await Helpers.waitAndTap('close-action-button');
   });
 
   it('Should close expanded state and return to search', async () => {
@@ -115,13 +115,14 @@ describe('Discover Sheet Flow', () => {
   });
 
   it('Top Movers should be swipeable and open expanded states', async () => {
-    await Helpers.tap('top-gainers-coin-row-0');
     await Helpers.delay(3000);
+    await Helpers.waitAndTap('top-gainers-coin-row-0');
+    await Helpers.delay(7000);
     await Helpers.swipe('expanded-state-header', 'down');
     await Helpers.swipe('top-gainers', 'left');
     await Helpers.checkIfNotVisible('top-gainers-coin-row-0');
-    await Helpers.tap('top-losers-coin-row-0');
-    await Helpers.delay(3000);
+    await Helpers.waitAndTap('top-losers-coin-row-0');
+    await Helpers.delay(7000);
     await Helpers.swipe('expanded-state-header', 'down');
     await Helpers.swipe('top-losers', 'left');
     await Helpers.checkIfNotVisible('top-losers-coin-row-0');
@@ -132,12 +133,12 @@ describe('Discover Sheet Flow', () => {
     await Helpers.delay(2000);
     await Helpers.checkIfVisible('index-expanded-state');
     await Helpers.checkIfVisible('index-underlying-assets');
-    await Helpers.delay(3000);
+    await Helpers.delay(5000);
   });
 
   it('Should open underlying asset expanded state', async () => {
-    await Helpers.tap('underlying-asset-UNI');
-    await Helpers.delay(2000);
+    await Helpers.waitAndTap('underlying-asset-UNI');
+    await Helpers.delay(5000);
     await Helpers.checkIfVisible('chart-header-Uniswap');
     await Helpers.swipe('expanded-state-header', 'down');
   });
@@ -151,37 +152,37 @@ describe('Discover Sheet Flow', () => {
   it('Should cycle through token lists', async () => {
     await Helpers.checkIfVisible('lists-section-favorites');
     await Helpers.checkIfNotVisible('list-coin-row-Unisocks');
-    await Helpers.tap('list-watchlist');
-    await Helpers.delay(2000);
+    await Helpers.waitAndTap('list-watchlist');
+    await Helpers.delay(5000);
     await Helpers.checkIfVisible('lists-section-watchlist');
     await Helpers.checkIfVisible('list-coin-row-Unisocks');
-    await Helpers.tap('list-trending');
-    await Helpers.delay(1000);
+    await Helpers.waitAndTap('list-trending');
+    await Helpers.delay(5000);
     await Helpers.checkIfVisible('lists-section-trending');
-    await Helpers.tap('list-favorites');
-    await Helpers.delay(1000);
+    await Helpers.waitAndTap('list-favorites');
+    await Helpers.delay(5000);
     await Helpers.checkIfVisible('lists-section-favorites');
-    await Helpers.tap('list-defi');
-    await Helpers.delay(1000);
+    await Helpers.waitAndTap('list-defi');
+    await Helpers.delay(5000);
     await Helpers.checkIfVisible('lists-section-defi');
-    await Helpers.tap('list-stablecoins');
-    await Helpers.delay(1000);
+    await Helpers.waitAndTap('list-stablecoins');
+    await Helpers.delay(5000);
     await Helpers.checkIfVisible('lists-section-stablecoins');
   });
 
   it('Should cycle through pools lists', async () => {
     await Helpers.swipe('dpi-button', 'up');
-    await Helpers.delay(1000);
-    await Helpers.tap('pools-list-liquidity');
+    await Helpers.delay(3000);
+    await Helpers.waitAndTap('pools-list-liquidity');
     await Helpers.checkIfVisible('pools-section-liquidity');
     await Helpers.delay(5000);
-    await Helpers.tap('pools-list-annualized_fees');
+    await Helpers.waitAndTap('pools-list-annualized_fees');
     await Helpers.checkIfVisible('pools-section-annualized_fees');
     await Helpers.delay(5000);
-    await Helpers.tap('pools-list-profit30d');
+    await Helpers.waitAndTap('pools-list-profit30d');
     await Helpers.checkIfVisible('pools-section-profit30d');
     await Helpers.delay(5000);
-    await Helpers.tap('pools-list-oneDayVolumeUSD');
+    await Helpers.waitAndTap('pools-list-oneDayVolumeUSD');
     await Helpers.checkIfVisible('pools-section-oneDayVolumeUSD');
 
     await Helpers.delay(5000);
