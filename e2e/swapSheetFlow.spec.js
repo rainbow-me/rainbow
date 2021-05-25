@@ -111,7 +111,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.delay(1000);
     //this where it gets stuck, with all the assets loading I imagine
     await Helpers.tap('exchange-modal-output-selection-button');
-    await Helpers.delay(3000);
+    await Helpers.delay(8000);
     await Helpers.checkIfVisible('currency-select-list');
     if (device.getPlatform() === 'android') {
       await device.pressBack();
