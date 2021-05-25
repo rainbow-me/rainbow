@@ -9,7 +9,7 @@ import { Emoji, Text } from '../components/text';
 import { useDimensions } from '@rainbow-me/hooks';
 import { position } from '@rainbow-me/styles';
 
-const sheetHeight = 400;
+const sheetHeight = android ? 420 : 400;
 
 const Container = styled(Centered).attrs({ direction: 'column' })`
   ${position.cover};
@@ -33,6 +33,8 @@ const SavingsSheet = () => {
   const insets = useSafeArea();
   const { params: { type = 'gas' } = {} } = useRoute();
   const { colors } = useTheme();
+
+  const { width: deviceWidth } = useDimensions();
 
   return (
     <Container deviceHeight={deviceHeight} height={sheetHeight} insets={insets}>
@@ -71,7 +73,7 @@ const SavingsSheet = () => {
               {explainers[type].text}
             </Text>
             <SheetActionButton
-              androidWidth={120}
+              androidWidth={deviceWidth - 60}
               color={colors.white}
               label="Got it"
               size="big"
