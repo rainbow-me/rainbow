@@ -90,6 +90,14 @@ if (SHORTEN_PROP_TYPES_ERROR) {
       );
       return;
     }
+    if (
+      typeof arguments[0] === 'string' &&
+      arguments[0].startsWith(
+        'VirtualizedLists should never be nested inside plain ScrollViews'
+      )
+    ) {
+      return;
+    }
     oldConsoleError?.apply(this, arguments);
   };
 }
