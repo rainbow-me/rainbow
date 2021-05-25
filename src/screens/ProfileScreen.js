@@ -17,6 +17,7 @@ import {
   useAccountTransactions,
   useContacts,
   useRequests,
+  useWallets,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
@@ -69,9 +70,11 @@ export default function ProfileScreen({ navigation }) {
     navigate(Routes.CHANGE_WALLET_SHEET);
   }, [navigate]);
 
+  const { isReadOnlyWallet } = useWallets();
+
   const addCashSupportedNetworks =
     (IS_DEV && network === NetworkTypes.kovan) ||
-    network === NetworkTypes.mainnet;
+    (!isReadOnlyWallet && network === NetworkTypes.mainnet);
   const addCashAvailable =
     IS_TESTING === 'true' ? false : addCashSupportedNetworks;
 
