@@ -197,7 +197,7 @@ export const createAccountForWallet = (id, color, name) => async (
     visible: true,
   });
 
-  await setPreference(PreferenceActionType.init, 'profile', account.address, {
+  setPreference(PreferenceActionType.init, 'profile', account.address, {
     accountColor: lightModeThemeColors.avatarColor[color],
   });
 
