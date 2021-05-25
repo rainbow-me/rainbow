@@ -31,6 +31,9 @@ target 'Rainbow' do
   pod 'Shimmer'
 
   use_native_modules!
+  if ENV['SKIP_FLIPPER'] != "true"
+    use_flipper!()
+  end
 
   post_install do |installer|
     react_native_post_install(installer)
