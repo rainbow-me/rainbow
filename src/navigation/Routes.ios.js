@@ -13,6 +13,7 @@ import ChangeWalletSheet from '../screens/ChangeWalletSheet';
 import ConnectedDappsSheet from '../screens/ConnectedDappsSheet';
 import DepositModal from '../screens/DepositModal';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
+import ExplainSheet from '../screens/ExplainSheet';
 import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
 import ModalScreen from '../screens/ModalScreen';
 import ReceiveModal from '../screens/ReceiveModal';
@@ -34,6 +35,7 @@ import {
   defaultScreenStackOptions,
   expandedAssetSheetConfig,
   expandedAssetSheetConfigWithLimit,
+  explainSheetConfig,
   nativeStackDefaultConfig,
   nativeStackDefaultConfigWithoutStatusBar,
   restoreSheetConfig,
@@ -288,6 +290,11 @@ function NativeStackNavigator() {
         component={AddTokenSheet}
         name={Routes.ADD_TOKEN_SHEET}
         {...addTokenSheetConfig}
+      />
+      <NativeStack.Screen
+        component={ExplainSheet}
+        name={Routes.EXPLAIN_SHEET}
+        {...explainSheetConfig}
       />
       <NativeStack.Screen
         component={ChangeWalletSheet}
