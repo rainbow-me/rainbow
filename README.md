@@ -13,22 +13,23 @@
 * Install all project dependencies with `yarn setup`
 
 ### MacOS
-1. Install Watchman:
+
+1. Install the [latest version of XCode](https://developer.apple.com/xcode/).
+
+2. Install Watchman:
     ```shell
     brew install watchman
     ```
 
-2. Install CocoaPods:
+3. Install CocoaPods:
     ```shell
     sudo gem install cocoapods
     ```
 
-3. Install the required bundles and Pods for this project:
+4. Install the required bundles and Pods for this project:
     ```shell
     yarn install-bundle && yarn install-pods
     ```
-
-4. Install the [latest version of XCode](https://developer.apple.com/xcode/).
 
 ### Linux
 1. Install system dependencies:
