@@ -176,6 +176,7 @@ export default function WalletProfileState({
             color={colors.alpha(colors.blueGreyDark, 0.6)}
             letterSpacing="roundedMedium"
             weight="medium"
+            {...(android && { lineHeight: 21 })}
           >
             Cancel
           </WalletProfileButtonText>
