@@ -1014,7 +1014,7 @@ export const generateAccount = async (
     }
 
     if (!seedphrase) {
-      throw new Error(`Can't access seed phrase to create new accounts`);
+      throw new Error(`Can't access secret phrase to create new accounts`);
     }
 
     const {
