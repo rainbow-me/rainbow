@@ -477,17 +477,14 @@ export const identifyWalletType = (
   ) {
     return EthereumWalletType.privateKey;
   }
-
   // 12 or 24 words seed phrase
   if (isValidMnemonic(walletSeed)) {
     return EthereumWalletType.mnemonic;
   }
-
   // Public address (0x)
   if (isValidAddress(walletSeed)) {
     return EthereumWalletType.readOnly;
   }
-
   // seed
   return EthereumWalletType.seed;
 };
@@ -657,9 +654,9 @@ export const createWallet = async (
       await createSignature(walletAddress, pkey);
       // Enable web profile
       logger.sentry(`[createWallet] - enabling web profile`);
-      await store.dispatch(updateWebDataEnabled(true, walletAddress));
+      store.dispatch(updateWebDataEnabled(true, walletAddress));
       // Save the color
-      await setPreference(PreferenceActionType.init, 'profile', address, {
+      setPreference(PreferenceActionType.init, 'profile', address, {
         accountColor: lightModeThemeColors.avatarColor[colorForWallet],
       });
       logger.sentry(`[createWallet] - enabled web profile`);
@@ -751,10 +748,10 @@ export const createWallet = async (
           // Creating signature for this wallet
           await createSignature(nextWallet.address, nextWallet.privateKey);
           // Enable web profile
-          await store.dispatch(updateWebDataEnabled(true, nextWallet.address));
+          store.dispatch(updateWebDataEnabled(true, nextWallet.address));
 
           // Save the color
-          await setPreference(
+          setPreference(
             PreferenceActionType.init,
             'profile',
             nextWallet.address,

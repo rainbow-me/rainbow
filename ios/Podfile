@@ -12,9 +12,8 @@ target 'Rainbow' do
   use_react_native!(
     :path => config[:reactNativePath],
     # to enable hermes on iOS, change `false` to `true` and then install pods
-    :hermes_enabled => false
+    :hermes_enabled => ENV['USE_HERMES'] != 'NO'
   )
-
 
   # Rainbow's Internal Modules.
   pod 'Rainbow-Internals', :path => './Internals'
@@ -32,11 +31,6 @@ target 'Rainbow' do
   pod 'Shimmer'
 
   use_native_modules!
-
-  # Enables Flipper.
-  #
-  # Note that if you have use_frameworks! enabled, Flipper will not work and
-  # you should disable these next few lines.
   if ENV['SKIP_FLIPPER'] != "true"
     use_flipper!()
   end
