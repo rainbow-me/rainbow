@@ -86,10 +86,13 @@ _Note: Darwin versions of the application can only be developed/built on Darwin
 platforms with XCode._
 
 1. Start a React Native webserver with:
+
    ```shell
    yarn start
    ```
+
 2. Open `rainbow-wallet/ios/Rainbow.xcworkspace` in XCode.
+
 3. Run the project by clicking the play button.
 
 ### Linux
@@ -98,9 +101,11 @@ _Note: Linux development environments cannot develop or build Darwin versions of
 project._
 
 1. Start a React Native webserver with:
+
    ```shell
    yarn start
    ```
+
 2. Build/install/start the debug version of the app in an emulator with:
    ```shell
    yarn android
