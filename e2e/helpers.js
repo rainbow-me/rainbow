@@ -1,3 +1,4 @@
+import { expect } from 'detox';
 const DEFAULT_TIMEOUT = 8000;
 // eslint-disable-next-line eslint-comments/disable-enable-pair
 /* eslint-disable no-undef */
@@ -72,6 +73,19 @@ export function tapAlertWithButton(text, index) {
   }
 
   return element(by.label(text)).atIndex(0).tap();
+}
+
+export async function waitAndSwipe(
+  elementId,
+  direction,
+  speed = 'fast',
+  percentage = 0.75,
+  timeout
+) {
+  await waitFor(element(by.id(elementId)))
+    .toBeVisible()
+    .withTimeout(timeout || DEFAULT_TIMEOUT);
+  await element(by.id(elementId)).swipe(direction, speed, percentage);
 }
 
 export async function swipe(
@@ -164,6 +178,12 @@ export async function authenticatePin(pin) {
 export async function disableSynchronization() {
   if (device.getPlatform() === 'ios') {
     await device.disableSynchronization();
+  }
+  return true;
+}
+export async function enableSynchronization() {
+  if (device.getPlatform() === 'ios') {
+    await device.enableSynchronization();
   }
   return true;
 }

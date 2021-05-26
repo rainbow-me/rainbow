@@ -1,7 +1,6 @@
 import UIKit
 
 import PanModal
-import React
 
 class BetterGestureRecognizerDelegateAdapter: NSObject, UIGestureRecognizerDelegate {
   var grd: UIGestureRecognizerDelegate

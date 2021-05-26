@@ -15,8 +15,6 @@ import {
   StatusBar,
 } from 'react-native';
 import branch from 'react-native-branch';
-// eslint-disable-next-line import/default
-import CodePush from 'react-native-code-push';
 
 import {
   REACT_APP_SEGMENT_API_WRITE_KEY,
@@ -87,15 +85,6 @@ if (__DEV__) {
   }
   Sentry.init(sentryOptions);
 }
-
-CodePush.getUpdateMetadata(CodePush.UpdateState.RUNNING).then(update => {
-  if (update) {
-    // eslint-disable-next-line import/no-deprecated
-    Sentry.setRelease(
-      `me.rainbow-${VersionNumber.appVersion}-codepush:${update.label}`
-    );
-  }
-});
 
 enableScreens();
 
@@ -317,9 +306,6 @@ const AppWithRedux = connect(
   }
 )(App);
 
-const AppWithCodePush = CodePush({
-  checkFrequency: CodePush.CheckFrequency.ON_APP_RESUME,
-  installMode: CodePush.InstallMode.ON_NEXT_RESUME,
-})(() => <AppWithRedux store={store} />);
+const AppWithReduxStore = () => <AppWithRedux store={store} />;
 
-AppRegistry.registerComponent('Rainbow', () => AppWithCodePush);
+AppRegistry.registerComponent('Rainbow', () => AppWithReduxStore);

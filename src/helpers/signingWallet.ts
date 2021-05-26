@@ -1,4 +1,6 @@
 import { verifyMessage, Wallet } from '@ethersproject/wallet';
+import { generateMnemonic } from 'bip39';
+import { default as LibWallet } from 'ethereumjs-wallet';
 // @ts-ignore
 import { RAINBOW_MASTER_KEY } from 'react-native-dotenv';
 import { loadString, saveString } from '../model/keychain';
@@ -9,14 +11,23 @@ import {
 } from '../utils/keychainConstants';
 import { EthereumAddress } from '@rainbow-me/entities';
 import AesEncryptor from '@rainbow-me/handlers/aesEncryption';
-import { logger } from '@rainbow-me/utils';
+import { addHexPrefix } from '@rainbow-me/handlers/web3';
+import { ethereumUtils, logger } from '@rainbow-me/utils';
 
 export async function getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded(): Promise<EthereumAddress> {
   let alreadyExistingWallet = await loadString(signingWalletAddress);
+
   if (typeof alreadyExistingWallet !== 'string') {
-    const wallet = Wallet.createRandom();
-    logger.log('Created signing wallet');
-    const { privateKey, address } = wallet;
+    const walletSeed = generateMnemonic();
+    const {
+      wallet,
+      address,
+    } = await ethereumUtils.deriveAccountFromWalletInput(walletSeed);
+
+    const privateKey = addHexPrefix(
+      (wallet as LibWallet).getPrivateKey().toString('hex')
+    );
+
     const encryptor = new AesEncryptor();
     const encryptedPrivateKey = (await encryptor.encrypt(
       RAINBOW_MASTER_KEY,

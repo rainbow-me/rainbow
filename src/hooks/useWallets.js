@@ -1,4 +1,3 @@
-import { isEmpty } from 'lodash';
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
@@ -39,7 +38,7 @@ export default function useWallets() {
   );
 
   const isDamaged = useMemo(() => {
-    const bool = isEmpty(selectedWallet) || !wallets || selectedWallet?.damaged;
+    const bool = selectedWallet?.damaged;
     if (bool) {
       logger.sentry('Wallet is damaged. Check values below:');
       logger.sentry('selectedWallet: ', selectedWallet);
