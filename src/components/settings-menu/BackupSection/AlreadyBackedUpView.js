@@ -214,16 +214,14 @@ export default function AlreadyBackedUpView() {
     walletStatus,
   ]);
 
+  const isSecretPhrase = WalletTypes.mnemonic === wallets[walletId].type;
+
   const handleViewRecoveryPhrase = useCallback(() => {
     navigate('ShowSecretView', {
-      title: `${
-        WalletTypes.mnemonic === wallets[walletId].type
-          ? 'Secret Phrase'
-          : 'Private Key'
-      }`,
+      title: `${isSecretPhrase ? 'Secret Phrase' : 'Private Key'}`,
       walletId,
     });
-  }, [navigate, walletId, wallets]);
+  }, [isSecretPhrase, navigate, walletId]);
 
   const { colors } = useTheme();
 
@@ -268,7 +266,7 @@ export default function AlreadyBackedUpView() {
           <SheetActionButton
             androidWidth={225}
             color={colors.white}
-            label="🗝 View secret phrase"
+            label={`🗝 View ${isSecretPhrase ? 'secret phrase' : 'private key'}`}
             onPress={handleViewRecoveryPhrase}
             textColor={colors.alpha(colors.blueGreyDark, 0.8)}
           />
