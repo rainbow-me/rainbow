@@ -47,6 +47,13 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     didSet {
       if(darkMode != oldValue){
         UIColor.RainbowTheme.isDarkMode = darkMode
+        shadowLayer.shadowColor = darkMode ? UIColor.black.cgColor : accountColor?.cgColor
+        if isLoading {
+          let loadingView = tableView.subviews.first;
+          if loadingView is TransactionListLoadingViewCell {
+            loadingView!.layoutSubviews()
+          }
+        }
         tableView.backgroundColor = UIColor.RainbowTheme.Transactions.white
         header.backgroundColor = UIColor.RainbowTheme.Transactions.white
         backgroundColor = UIColor.RainbowTheme.Transactions.white
@@ -54,7 +61,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
         headerSeparator.backgroundColor = UIColor.RainbowTheme.Transactions.rowDividerLight
         header.accountAddress.textColor = UIColor.RainbowTheme.Transactions.dark
         header.accountDropdown.tintColor = UIColor.RainbowTheme.Transactions.dark;
-        shadowLayer.shadowColor = darkMode ? UIColor.black.cgColor : accountColor?.cgColor
+
 
         if accountColor != nil {
           shadowLayer.shadowColor = darkMode ? UIColor.black.cgColor : accountColor?.cgColor
