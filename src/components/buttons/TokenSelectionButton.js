@@ -76,6 +76,7 @@ export default function TokenSelectionButton({
         <Text
           align="center"
           color={colors.whiteLabel}
+          {...(android && { lineHeight: 21 })}
           size="large"
           testID={testID + '-text'}
           weight="bold"
