@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import OfflineMetadata from '../references/meta/tokens-metadata.json';
 import useDimensions from './useDimensions';
 import { updateImageMetadataCache } from '@rainbow-me/redux/imageMetadata';
 import { position } from '@rainbow-me/styles';
@@ -14,7 +15,8 @@ export default function useImageMetadata(imageUrl) {
     [imageUrl]
   );
 
-  const metadata = useSelector(imageMetadataSelector);
+  const selectorMeta = useSelector(imageMetadataSelector);
+  const metadata = imageUrl ? OfflineMetadata[imageUrl] || selectorMeta : null;
   const defaultMetadata = useMemo(
     () => ({
       dimensions: position.sizeAsObject(deviceWidth - 30),
@@ -26,7 +28,6 @@ export default function useImageMetadata(imageUrl) {
   const onCacheImageMetadata = useCallback(
     async ({ color, height, width }) => {
       if (isCached || !imageUrl) return;
-
       const colorFromImage = await getDominantColorFromImage(imageUrl);
 
       dispatch(
