@@ -12,13 +12,30 @@ import Spinner from '../Spinner';
 import { BiometricButtonContent, Button } from '../buttons';
 import { CopyFloatingEmojis } from '../floating-emojis';
 import { Icon } from '../icons';
-import { ColumnWithMargins, RowWithMargins } from '../layout';
+import { Column, ColumnWithMargins, RowWithMargins } from '../layout';
 import { Text } from '../text';
 import SecretDisplayCard from './SecretDisplayCard';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { useWallets } from '@rainbow-me/hooks';
 import { margin, padding, position, shadow } from '@rainbow-me/styles';
 import logger from 'logger';
+
+const Title = styled(Text).attrs({
+  align: 'center',
+  size: 'larger',
+  weight: 'bold',
+})`
+  padding-top: 20;
+`;
+const DescriptionText = styled(Text).attrs(({ theme: { colors } }) => ({
+  align: 'center',
+  color: colors.alpha(colors.blueGreyDark, 0.5),
+  lineHeight: 'loosest',
+  size: 'large',
+}))`
+  margin-bottom: 42;
+  padding-horizontal: 23;
+`;
 
 const AuthenticationText = styled(Text).attrs({
   align: 'center',
@@ -125,6 +142,13 @@ export default function SecretDisplaySection({
                 </CopyButtonRow>
               </CopyFloatingEmojis>
               <SecretDisplayCard seed={seed} type={type} />
+              <Column>
+                <Title>⚠️ Reminder:</Title>
+                <DescriptionText>
+                  These words are for your eyes only. Your secret phrase gives
+                  access to your entire wallet. Be very careful with it.
+                </DescriptionText>
+              </Column>
             </Fragment>
           ) : (
             <LoadingSpinner color={colors.blueGreyDark50} />
