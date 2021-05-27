@@ -315,7 +315,9 @@ export default function ChangeWalletSheet() {
                   if (!isLastAvailableWallet) {
                     await cleanUpWalletKeys();
                     goBack();
-                    replace(Routes.WELCOME_SCREEN);
+                    setTimeout(() => {
+                      replace(Routes.WELCOME_SCREEN);
+                    }, 800);
                   } else {
                     // If we're deleting the selected wallet
                     // we need to switch to another one

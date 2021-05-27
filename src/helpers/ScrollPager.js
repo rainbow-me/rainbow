@@ -191,7 +191,6 @@ export default class ScrollPager extends React.Component {
           }
           contentOffset={this.initialOffset}
           directionalLockEnabled
-          id={'AnimatedScrollViewPager' + this.props.id}
           keyboardShouldPersistTaps="always"
           onMomentumScrollEnd={this.handleMomentumScrollEnd}
           onScroll={this.onScroll}
