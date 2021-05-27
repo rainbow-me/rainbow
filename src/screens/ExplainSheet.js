@@ -17,9 +17,7 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
     height ? `height: ${height + deviceHeight}` : null};
 `;
 
-const GAS_EXPLAINER = `They’re the transaction fees required to use the Ethereum network!
-
-These fees fluctuate over time. The higher the fee you pay relative to others, the faster your transaction will be confirmed on the network!`;
+const GAS_EXPLAINER = `⛽️ The network fee is not controlled or received by Rainbow. It is the "gas fee" used by the Ethereum blockchain to validate your transaction. It changes constantly based on supply and demand.`;
 
 const explainers = {
   gas: {
