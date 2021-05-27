@@ -132,7 +132,7 @@ export default function SettingsSection({
   onPressPrivacy,
   onPressShowSecret,
 }) {
-  const isReviewAvailable = useExperimentalFlag(REVIEW_ANDROID) || ios;
+  const isReviewAvailable = false;
   const { wallets, isReadOnlyWallet } = useWallets();
   const { /*language,*/ nativeCurrency, network } = useAccountSettings();
   const { isTinyPhone } = useDimensions();
