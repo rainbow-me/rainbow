@@ -17,10 +17,11 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
     height ? `height: ${height + deviceHeight}` : null};
 `;
 
-const GAS_EXPLAINER = `⛽️ The network fee is not controlled or received by Rainbow. It is the "gas fee" used by the Ethereum blockchain to validate your transaction. It changes constantly based on supply and demand.`;
+const GAS_EXPLAINER = `The network fee is not controlled or received by Rainbow. It is the "gas fee" used by the Ethereum blockchain to validate your transaction. It changes constantly based on supply and demand.`;
 
 const explainers = {
   gas: {
+    emoji: '⛽️',
     text: GAS_EXPLAINER,
     title: 'What are network fees?',
   },
@@ -59,7 +60,7 @@ const SavingsSheet = () => {
             }}
           >
             <Emoji align="center" size="h1">
-              💡
+              {explainers[type].emoji}
             </Emoji>
             <SheetTitle>{explainers[type].title}</SheetTitle>
             <Text
