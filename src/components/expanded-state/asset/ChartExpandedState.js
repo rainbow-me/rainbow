@@ -316,7 +316,7 @@ export default function ChartExpandedState({ asset }) {
             <TokenInfoItem asset={asset} title="Balance">
               <TokenInfoBalanceValue />
             </TokenInfoItem>
-            {asset?.native?.balance.display && (
+            {asset?.native?.price.display && (
               <TokenInfoItem title="Value" weight="bold">
                 {asset?.native?.balance.display}
               </TokenInfoItem>
