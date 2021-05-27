@@ -1,11 +1,12 @@
 import { useRoute } from '@react-navigation/native';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { StatusBar, View } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components';
 import { Centered } from '../components/layout';
 import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
+import { useNavigation } from '../navigation/Navigation';
 import { useDimensions } from '@rainbow-me/hooks';
 import { position } from '@rainbow-me/styles';
 
@@ -28,12 +29,15 @@ const explainers = {
 };
 
 const SavingsSheet = () => {
-  const { height: deviceHeight } = useDimensions();
+  const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const insets = useSafeArea();
   const { params: { type = 'gas' } = {} } = useRoute();
   const { colors } = useTheme();
+  const { goBack } = useNavigation();
 
-  const { width: deviceWidth } = useDimensions();
+  const handleClose = useCallback(() => {
+    goBack();
+  }, [goBack]);
 
   return (
     <Container deviceHeight={deviceHeight} height={sheetHeight} insets={insets}>
@@ -75,6 +79,7 @@ const SavingsSheet = () => {
               androidWidth={deviceWidth - 60}
               color={colors.white}
               label="Got it"
+              onPress={handleClose}
               size="big"
               textColor={colors.alpha(colors.blueGreyDark, 0.8)}
             />
