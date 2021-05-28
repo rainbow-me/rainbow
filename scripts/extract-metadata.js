@@ -20,12 +20,10 @@ const getDirectories = source =>
     .map(dirent => dirent.name);
 
 const tokenAddresses = getDirectories(assets_dir);
-//.slice(0, 1);
 let allItems = {};
 const init = async () => {
   for (let i = 0; i < tokenAddresses.length; i++) {
     const address = tokenAddresses[i];
-    // Promise
     const imageUrl = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${address}/logo.png`;
     let metadata = {};
     try {
@@ -50,8 +48,8 @@ const init = async () => {
       if (color) {
         metadata.color = color;
       }
+      // eslint-disable-next-line no-empty
     } catch (e) {
-      // console.log('Error with', address, e);
     } finally {
       allItems[imageUrl] = metadata;
     }
