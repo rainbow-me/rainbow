@@ -83,7 +83,7 @@ export default function useChartData(asset, secondStore) {
   const filteredData = useMemo(() => {
     const now = Math.floor(Date.now() / 1000);
     // Filter tokens with no data
-    const validDataPoint = chart.find(({ y }) => y > 0);
+    const validDataPoint = (chart && chart.find(({ y }) => y > 0)) || false;
     if (!validDataPoint) return null;
 
     return chart
