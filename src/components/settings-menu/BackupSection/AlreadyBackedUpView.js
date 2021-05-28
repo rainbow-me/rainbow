@@ -214,14 +214,14 @@ export default function AlreadyBackedUpView() {
     walletStatus,
   ]);
 
+  const isSecretPhrase = WalletTypes.mnemonic === wallets[walletId].type;
+
   const handleViewRecoveryPhrase = useCallback(() => {
     navigate('ShowSecretView', {
-      title: `Recovery ${
-        WalletTypes.mnemonic === wallets[walletId].type ? 'Phrase' : 'Key'
-      }`,
+      title: `${isSecretPhrase ? 'Secret Phrase' : 'Private Key'}`,
       walletId,
     });
-  }, [navigate, walletId, wallets]);
+  }, [isSecretPhrase, navigate, walletId]);
 
   const { colors } = useTheme();
 
@@ -257,7 +257,7 @@ export default function AlreadyBackedUpView() {
             {(walletStatus === WalletBackupStatus.CLOUD_BACKUP &&
               `If you lose this device, you can recover your encrypted wallet backup from ${cloudPlatform}.`) ||
               (walletStatus === WalletBackupStatus.MANUAL_BACKUP &&
-                `If you lose this device, you can restore your wallet with the recovery phrase you saved.`) ||
+                `If you lose this device, you can restore your wallet with the secret phrase you saved.`) ||
               (walletStatus === WalletBackupStatus.IMPORTED &&
                 `If you lose this device, you can restore your wallet with the key you originally imported.`)}
           </DescriptionText>
@@ -266,7 +266,7 @@ export default function AlreadyBackedUpView() {
           <SheetActionButton
             androidWidth={225}
             color={colors.white}
-            label="🗝 View recovery key"
+            label={`🗝 View ${isSecretPhrase ? 'secret phrase' : 'private key'}`}
             onPress={handleViewRecoveryPhrase}
             textColor={colors.alpha(colors.blueGreyDark, 0.8)}
           />
