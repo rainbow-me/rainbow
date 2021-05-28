@@ -82,6 +82,10 @@ export default function useChartData(asset, secondStore) {
   // add current price at the very end
   const filteredData = useMemo(() => {
     const now = Math.floor(Date.now() / 1000);
+    // Filter tokens with no data
+    const validDataPoint = chart.find(({ y }) => y > 0);
+    if (!validDataPoint) return null;
+
     return chart
       ?.filter(({ x }) => x <= now)
       .slice(0, chart.length - 1)
