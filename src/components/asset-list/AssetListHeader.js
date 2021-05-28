@@ -18,7 +18,7 @@ const AssetListHeader = ({
     contextMenuOptions={contextMenuOptions}
     isCoinListEdited={isCoinListEdited}
     isSticky={isSticky}
-    title={title}
+    title={title || 'rainbow.eth'}
     totalValue={totalValue}
     {...props}
   >
