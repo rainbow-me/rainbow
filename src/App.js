@@ -227,11 +227,6 @@ class App extends Component {
     });
   };
 
-  performBackgroundTasks = () => {
-    // Leaving this placeholder in case
-    // we need to run code while going bg in the future
-  };
-
   handleAppStateChange = async nextAppState => {
     if (nextAppState === 'active') {
       PushNotificationIOS.removeAllDeliveredNotifications();
@@ -248,11 +243,6 @@ class App extends Component {
       category: 'app state',
       label: nextAppState,
     });
-
-    // After a successful state transition, perform state-defined operations:
-    if (nextAppState === 'background') {
-      this.performBackgroundTasks();
-    }
   };
 
   handleNavigatorRef = navigatorRef =>
