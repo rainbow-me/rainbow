@@ -240,7 +240,11 @@ function MainNavigator() {
         name={Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR}
         options={sheetPresetWithSmallGestureResponseDistance}
       />
-      <Stack.Screen component={WelcomeScreen} name={Routes.WELCOME_SCREEN} />
+      <Stack.Screen
+        component={WelcomeScreen}
+        name={Routes.WELCOME_SCREEN}
+        options={{ animationEnabled: false, gestureEnabled: false }}
+      />
       <Stack.Screen
         component={AddCashFlowNavigator}
         name={Routes.WYRE_WEBVIEW_NAVIGATOR}
