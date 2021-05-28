@@ -10,6 +10,7 @@ import ChangeWalletSheet from '../screens/ChangeWalletSheet';
 import ConnectedDappsSheet from '../screens/ConnectedDappsSheet';
 import DepositModal from '../screens/DepositModal';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
+import ExplainSheet from '../screens/ExplainSheet';
 import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
 import ModalScreen from '../screens/ModalScreen';
 import PinAuthenticationScreen from '../screens/PinAuthenticationScreen';
@@ -301,6 +302,13 @@ function BSNavigator() {
         name={Routes.SHOWCASE_SHEET}
         options={{
           height: '90%',
+        }}
+      />
+      <BSStack.Screen
+        component={ExplainSheet}
+        name={Routes.EXPLAIN_SHEET}
+        options={{
+          height: '100%',
         }}
       />
     </BSStack.Navigator>
