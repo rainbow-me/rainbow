@@ -237,7 +237,7 @@ export default function UniswapPools({
     ]
   );
 
-  if (hideIfEmpty && isEmpty) {
+  if (hideIfEmpty && (!pairs?.length || isEmpty)) {
     return null;
   }
 
