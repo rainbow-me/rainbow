@@ -142,11 +142,11 @@ export default function RestoreSheetFirstStep({
         <Column>
           <TextIcon color={colors.purple}>􀑚</TextIcon>
           <TitleRow justify="space-between" width="100%">
-            <Title>Restore with a recovery phrase or private key</Title>
+            <Title>Restore with a secret phrase or private key</Title>
             <CaretIcon />
           </TitleRow>
           <DescriptionText>
-            Use your recovery phrase from Rainbow or another crypto wallet
+            Use your secret phrase from Rainbow or another crypto wallet
           </DescriptionText>
         </Column>
       </SheetRow>
