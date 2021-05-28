@@ -10,9 +10,15 @@ import { Centered, ColumnWithMargins } from '../layout';
 import { Numpad, NumpadValue } from '../numpad';
 import AddCashFooter from './AddCashFooter';
 import AddCashSelector from './AddCashSelector';
-import { useDimensions, useIsWalletEthZero } from '@rainbow-me/hooks';
+import { toChecksumAddress } from '@rainbow-me/handlers/web3';
+import {
+  useAccountSettings,
+  useDimensions,
+  useIsWalletEthZero,
+} from '@rainbow-me/hooks';
 import { DAI_ADDRESS, ETH_ADDRESS } from '@rainbow-me/references';
 import { padding } from '@rainbow-me/styles';
+import { abbreviations } from '@rainbow-me/utils';
 
 const currencies = [DAI_ADDRESS, ETH_ADDRESS];
 const minimumPurchaseAmountUSD = 1;
@@ -39,6 +45,7 @@ const AddCashForm = ({
   );
 
   const { isReadOnlyWallet } = useWallets();
+  const { accountAddress } = useAccountSettings();
 
   const onSubmit = useCallback(async () => {
     if (paymentSheetVisible) return;
@@ -58,19 +65,30 @@ const AddCashForm = ({
       }
     }
     if (isReadOnlyWallet) {
+      const truncatedAddress = abbreviations.formatAddressForDisplay(
+        toChecksumAddress(accountAddress),
+        4,
+        6
+      );
       Alert({
         buttons: [
           { style: 'cancel', text: 'Cancel' },
           { onPress: handlePurchase, text: 'Proceed' },
         ],
-        message:
-          'The selected wallet is in "watching" mode. You will not able to manage funds before importing the wallet.',
-        title: `Read-only wallet`,
+        message: `The wallet you have open is read-only, so you can’t control what’s inside. Are you sure you want to add cash to ${truncatedAddress}?`,
+        title: `You’re in Watching Mode`,
       });
     } else {
       await handlePurchase();
     }
-  }, [isReadOnlyWallet, currency, onPurchase, paymentSheetVisible, value]);
+  }, [
+    accountAddress,
+    isReadOnlyWallet,
+    currency,
+    onPurchase,
+    paymentSheetVisible,
+    value,
+  ]);
 
   const handleNumpadPress = useCallback(
     newValue => {
