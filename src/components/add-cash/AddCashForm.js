@@ -3,6 +3,7 @@ import analytics from '@segment/analytics-react-native';
 import { isEmpty } from 'lodash';
 import React, { Fragment, useCallback, useState } from 'react';
 import { Clock } from 'react-native-reanimated';
+import useWallets from '../../hooks/useWallets';
 import { Alert } from '../alerts';
 import { runSpring } from '../animations';
 import { Centered, ColumnWithMargins } from '../layout';
@@ -37,22 +38,39 @@ const AddCashForm = ({
     params?.amount ? params?.amount?.toString() : ''
   );
 
-  const handlePurchase = useCallback(async () => {
+  const { isReadOnlyWallet } = useWallets();
+
+  const onSubmit = useCallback(async () => {
     if (paymentSheetVisible) return;
-    try {
-      analytics.track('Submitted Purchase', {
-        category: 'add cash',
-        label: currency,
-        value: Number(value),
-      });
-      setPaymentSheetVisible(true);
-      await onPurchase({ address: currency, value });
-      // eslint-disable-next-line no-empty
-    } catch (e) {
-    } finally {
-      setPaymentSheetVisible(false);
+    async function handlePurchase() {
+      try {
+        analytics.track('Submitted Purchase', {
+          category: 'add cash',
+          label: currency,
+          value: Number(value),
+        });
+        setPaymentSheetVisible(true);
+        await onPurchase({ address: currency, value });
+        // eslint-disable-next-line no-empty
+      } catch (e) {
+      } finally {
+        setPaymentSheetVisible(false);
+      }
     }
-  }, [currency, onPurchase, paymentSheetVisible, value]);
+    if (isReadOnlyWallet) {
+      Alert({
+        buttons: [
+          { style: 'cancel', text: 'Cancel' },
+          { onPress: handlePurchase, text: 'Proceed' },
+        ],
+        message:
+          'The selected wallet is in "watching" mode. You will not able to manage funds before importing the wallet.',
+        title: `Read-only wallet`,
+      });
+    } else {
+      await handlePurchase();
+    }
+  }, [isReadOnlyWallet, currency, onPurchase, paymentSheetVisible, value]);
 
   const handleNumpadPress = useCallback(
     newValue => {
@@ -172,7 +190,7 @@ const AddCashForm = ({
             isEmpty(value) || parseFloat(value) < minimumPurchaseAmountUSD
           }
           onDisabledPress={onShake}
-          onSubmit={handlePurchase}
+          onSubmit={onSubmit}
         />
       </ColumnWithMargins>
     </Fragment>
