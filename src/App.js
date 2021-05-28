@@ -39,7 +39,6 @@ import { MainThemeProvider } from './context/ThemeContext';
 import { InitialRouteContext } from './context/initialRoute';
 import monitorNetwork from './debugging/network';
 import handleDeeplink from './handlers/deeplinks';
-import { staticSignatureLRU } from './handlers/imgix';
 import {
   runKeychainIntegrityChecks,
   runWalletBackupStatusChecks,
@@ -229,25 +228,8 @@ class App extends Component {
   };
 
   performBackgroundTasks = () => {
-    try {
-      // TEMP: When the app goes into the background, we wish to log the size of
-      //       Imgix's staticSignatureLru to benchmark performance.
-      //       https://github.com/rainbow-me/rainbow/pull/1529
-      const { capacity, size } = staticSignatureLRU;
-      const usage = size / capacity;
-      if (isNaN(usage)) {
-        throw new Error(`Expected number usage, encountered ${usage}.`);
-      }
-      logger.log(
-        `[Imgix]: Cached signature buffer is at ${size}/${capacity} (${
-          usage * 100
-        }%) on application background.`
-      );
-    } catch (e) {
-      logger.log(
-        `Failed to compute staticSignatureLRU usage on application background. (${e.message})`
-      );
-    }
+    // Leaving this placeholder in case
+    // we need to run code while going bg in the future
   };
 
   handleAppStateChange = async nextAppState => {
