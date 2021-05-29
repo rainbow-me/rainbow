@@ -128,7 +128,11 @@ function MainNavigator() {
       screenOptions={defaultScreenStackOptions}
     >
       <Stack.Screen component={SwipeNavigator} name={Routes.SWIPE_LAYOUT} />
-      <Stack.Screen component={WelcomeScreen} name={Routes.WELCOME_SCREEN} />
+      <Stack.Screen
+        component={WelcomeScreen}
+        name={Routes.WELCOME_SCREEN}
+        options={{ animationEnabled: false, gestureEnabled: false }}
+      />
       <Stack.Screen
         component={AvatarBuilder}
         name={Routes.AVATAR_BUILDER}
