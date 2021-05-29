@@ -3,7 +3,7 @@ import { FallbackIcon } from 'react-coin-icon';
 import styled from 'styled-components';
 import { initials } from '../../utils';
 import { Emoji } from '../text';
-import { ImageWithCachedMetadata } from '@rainbow-me/images';
+import { ImgixImage } from '@rainbow-me/images';
 import { borders } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
@@ -46,7 +46,7 @@ const TokenFamilyHeaderIcon = ({
       style={style}
     >
       {familyImage ? (
-        <ImageWithCachedMetadata imageUrl={familyImage} style={circleStyle} />
+        <ImgixImage imageUrl={familyImage} style={circleStyle} />
       ) : (
         <FallbackIcon {...circleStyle} symbol={initials(familyName)} />
       )}
