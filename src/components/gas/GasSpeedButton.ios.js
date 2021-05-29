@@ -7,20 +7,26 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { LayoutAnimation } from 'react-native';
-import { BorderlessButton } from 'react-native-gesture-handler';
+import { LayoutAnimation, View } from 'react-native';
+import {
+  BorderlessButton,
+  TouchableOpacity,
+} from 'react-native-gesture-handler';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import styled from 'styled-components';
 import { darkModeThemeColors } from '../../styles/colors';
 import { Alert } from '../alerts';
 import { ButtonPressAnimation } from '../animations';
+import { Icon } from '../icons';
 import { Input } from '../inputs';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
 import GasSpeedLabelPager from './GasSpeedLabelPager';
 import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
 import { useAccountSettings, useGas } from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
 import { gweiToWei, weiToGwei } from '@rainbow-me/parsers';
+import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
 import { gasUtils, magicMemo } from '@rainbow-me/utils';
 
@@ -396,6 +402,12 @@ const GasSpeedButton = ({
   const focusOnInput = useCallback(() => inputRef.current?.focus(), []);
   const isCustom = selectedGasPriceOption === CUSTOM ? true : false;
 
+  const { navigate } = useNavigation();
+
+  const openGasHelper = useCallback(() => navigate(Routes.EXPLAIN_SHEET), [
+    navigate,
+  ]);
+
   return (
     <Container as={ButtonPressAnimation} onPress={handlePress} testID={testID}>
       <Row align="end" justify="space-between" marginBottom={1.5}>
@@ -467,15 +479,28 @@ const GasSpeedButton = ({
       </Row>
       <Row justify="space-between">
         {!isCustom ? (
-          <Label
-            color={
-              theme === 'dark'
-                ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)
-                : colors.alpha(colors.blueGreyDark, 0.6)
-            }
-          >
-            Network Fee
-          </Label>
+          <TouchableOpacity onPress={openGasHelper}>
+            <Label
+              color={
+                theme === 'dark'
+                  ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)
+                  : colors.alpha(colors.blueGreyDark, 0.6)
+              }
+            >
+              Network Fee
+              <View style={{ paddingLeft: 4 }}>
+                <Icon
+                  color={
+                    theme === 'dark'
+                      ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)
+                      : colors.alpha(colors.blueGreyDark, 0.6)
+                  }
+                  name="info"
+                  size={10}
+                />
+              </View>
+            </Label>
+          </TouchableOpacity>
         ) : (
           <LittleBorderlessButton
             onPress={handleInputButtonManager}

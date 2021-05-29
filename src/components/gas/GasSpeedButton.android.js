@@ -6,7 +6,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Keyboard, LayoutAnimation } from 'react-native';
+import { Keyboard, LayoutAnimation, View } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import styled from 'styled-components';
@@ -15,13 +15,16 @@ import {
   ButtonPressAnimation,
   ScaleButtonZoomableAndroid,
 } from '../animations';
+import { Icon } from '../icons';
 import { Input } from '../inputs';
 import { Column, Row } from '../layout';
 import { AnimatedNumber, Text } from '../text';
 import GasSpeedLabelPager from './GasSpeedLabelPager';
 import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
 import { useAccountSettings, useGas } from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
 import { gweiToWei, weiToGwei } from '@rainbow-me/parsers';
+import Routes from '@rainbow-me/routes';
 import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
 import { darkModeThemeColors } from '@rainbow-me/styles/colors';
 import { gasUtils, magicMemo } from '@rainbow-me/utils';
@@ -441,23 +444,33 @@ const GasSpeedButton = ({
   const focusOnInput = useCallback(() => inputRef.current?.focus(), []);
   const isCustom = selectedGasPriceOption === CUSTOM ? true : false;
 
+  const { navigate } = useNavigation();
+
+  const openGasHelper = useCallback(() => navigate(Routes.EXPLAIN_SHEET), [
+    navigate,
+  ]);
+
   return (
     <Container
-      as={!isCustom ? ButtonPressAnimation : ScaleButtonZoomableAndroid}
+      as={ScaleButtonZoomableAndroid}
       onPress={handlePress}
       testID={testID}
     >
       <Column>
         <Row align="end" height={30} justify="space-between">
           {!isCustom ? (
-            <AnimatedNumber
-              formatter={formatAnimatedGasPrice}
-              interval={6}
-              renderContent={renderGasPriceText}
-              steps={6}
-              timing="linear"
-              value={price}
-            />
+            <ButtonPressAnimation onPress={handlePress} reanimatedButton>
+              <View pointerEvents="none">
+                <AnimatedNumber
+                  formatter={formatAnimatedGasPrice}
+                  interval={6}
+                  renderContent={renderGasPriceText}
+                  steps={6}
+                  timing="linear"
+                  value={price}
+                />
+              </View>
+            </ButtonPressAnimation>
           ) : (
             <BorderlessButton onPress={focusOnInput}>
               <Row>
@@ -494,16 +507,33 @@ const GasSpeedButton = ({
 
         <Row justify="space-between" style={{ height: 27 }}>
           {!isCustom ? (
-            <Label
-              color={
-                theme === 'dark'
-                  ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)
-                  : colors.alpha(colors.blueGreyDark, 0.6)
-              }
-              height={10}
+            <ButtonPressAnimation
+              onPress={openGasHelper}
+              style={{ paddingLeft: 4, zIndex: 10 }}
+              wrapperStyle={{ zIndex: 10 }}
             >
-              Network Fee
-            </Label>
+              <Label
+                color={
+                  theme === 'dark'
+                    ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)
+                    : colors.alpha(colors.blueGreyDark, 0.6)
+                }
+                height={10}
+              >
+                Network Fee
+                <View style={{ paddingLeft: 4 }}>
+                  <Icon
+                    color={
+                      theme === 'dark'
+                        ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)
+                        : colors.alpha(colors.blueGreyDark, 0.6)
+                    }
+                    name="info"
+                    size={10}
+                  />
+                </View>
+              </Label>
+            </ButtonPressAnimation>
           ) : (
             <LittleBorderlessButton
               onPress={handleInputButtonManager}
@@ -518,7 +548,7 @@ const GasSpeedButton = ({
       </Column>
       <Column
         align="end"
-        as={isCustom && ButtonPressAnimation}
+        as={ButtonPressAnimation}
         onPress={handlePress}
         reanimatedButton
         wrapperStyle={{ flex: 1 }}

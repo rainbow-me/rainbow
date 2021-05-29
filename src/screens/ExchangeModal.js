@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Alert, Keyboard } from 'react-native';
+import { Alert, Keyboard, NativeModules } from 'react-native';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -48,7 +48,6 @@ import { swapClearState, updateSwapTypeDetails } from '@rainbow-me/redux/swap';
 import { ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
-import { backgroundTask } from '@rainbow-me/utils';
 import { useEthUSDPrice } from '@rainbow-me/utils/ethereumUtils';
 import logger from 'logger';
 
@@ -290,76 +289,81 @@ export default function ExchangeModal({
     updateMaxInputAmount();
   }, [updateMaxInputAmount]);
 
-  const handleSubmit = useCallback(() => {
-    backgroundTask.execute(async () => {
-      let amountInUSD = 0;
-      try {
-        if (nativeCurrency === 'usd') {
-          amountInUSD = nativeAmount;
-        } else {
-          const ethPriceInNativeCurrency =
-            genericAssets[ETH_ADDRESS]?.price?.value ?? 0;
-          const tokenPriceInNativeCurrency =
-            genericAssets[inputCurrency?.address]?.price?.value ?? 0;
-          const tokensPerEth = divide(
-            tokenPriceInNativeCurrency,
-            ethPriceInNativeCurrency
-          );
-          const inputTokensInEth = multiply(tokensPerEth, inputAmount);
-          amountInUSD = multiply(priceOfEther, inputTokensInEth);
-        }
-      } catch (e) {
-        logger.log('error getting the swap amount in USD price', e);
-      } finally {
-        analytics.track(`Submitted ${type}`, {
-          amountInUSD,
-          defaultInputAsset: defaultInputAsset?.symbol ?? '',
-          isHighPriceImpact,
-          name: outputCurrency?.name ?? '',
-          priceImpact: priceImpactPercentDisplay,
-          symbol: outputCurrency?.symbol || '',
-          tokenAddress: outputCurrency?.address || '',
-          type,
-        });
+  const handleSubmit = useCallback(async () => {
+    let amountInUSD = 0;
+    let NotificationManager = ios ? NativeModules.NotificationManager : null;
+    try {
+      // Tell iOS we're running a rap (for tracking purposes)
+      NotificationManager &&
+        NotificationManager.postNotification('rapInProgress');
+      if (nativeCurrency === 'usd') {
+        amountInUSD = nativeAmount;
+      } else {
+        const ethPriceInNativeCurrency =
+          genericAssets[ETH_ADDRESS]?.price?.value ?? 0;
+        const tokenPriceInNativeCurrency =
+          genericAssets[inputCurrency?.address]?.price?.value ?? 0;
+        const tokensPerEth = divide(
+          tokenPriceInNativeCurrency,
+          ethPriceInNativeCurrency
+        );
+        const inputTokensInEth = multiply(tokensPerEth, inputAmount);
+        amountInUSD = multiply(priceOfEther, inputTokensInEth);
       }
+    } catch (e) {
+      logger.log('error getting the swap amount in USD price', e);
+    } finally {
+      analytics.track(`Submitted ${type}`, {
+        amountInUSD,
+        defaultInputAsset: defaultInputAsset?.symbol ?? '',
+        isHighPriceImpact,
+        name: outputCurrency?.name ?? '',
+        priceImpact: priceImpactPercentDisplay,
+        symbol: outputCurrency?.symbol || '',
+        tokenAddress: outputCurrency?.address || '',
+        type,
+      });
+    }
 
-      setIsAuthorizing(true);
-      try {
-        const wallet = await loadWallet();
-        if (!wallet) {
-          setIsAuthorizing(false);
-          logger.sentry(`aborting ${type} due to missing wallet`);
-          return;
-        }
-
-        const callback = (success = false, errorMessage = null) => {
-          setIsAuthorizing(false);
-          if (success) {
-            setParams({ focused: false });
-            navigate(Routes.PROFILE_SCREEN);
-          } else if (errorMessage) {
-            Alert.alert(errorMessage);
-          }
-        };
-        logger.log('[exchange - handle submit] rap');
-        const swapParameters = {
-          inputAmount,
-          outputAmount,
-          tradeDetails,
-        };
-        await executeRap(wallet, type, swapParameters, callback);
-        logger.log('[exchange - handle submit] executed rap!');
-        analytics.track(`Completed ${type}`, {
-          defaultInputAsset: defaultInputAsset?.symbol || '',
-          type,
-        });
-      } catch (error) {
+    setIsAuthorizing(true);
+    try {
+      const wallet = await loadWallet();
+      if (!wallet) {
         setIsAuthorizing(false);
-        logger.log('[exchange - handle submit] error submitting swap', error);
-        setParams({ focused: false });
-        navigate(Routes.WALLET_SCREEN);
+        logger.sentry(`aborting ${type} due to missing wallet`);
+        return;
       }
-    });
+
+      const callback = (success = false, errorMessage = null) => {
+        setIsAuthorizing(false);
+        if (success) {
+          setParams({ focused: false });
+          navigate(Routes.PROFILE_SCREEN);
+        } else if (errorMessage) {
+          Alert.alert(errorMessage);
+        }
+      };
+      logger.log('[exchange - handle submit] rap');
+      const swapParameters = {
+        inputAmount,
+        outputAmount,
+        tradeDetails,
+      };
+      await executeRap(wallet, type, swapParameters, callback);
+      logger.log('[exchange - handle submit] executed rap!');
+      analytics.track(`Completed ${type}`, {
+        defaultInputAsset: defaultInputAsset?.symbol || '',
+        type,
+      });
+      // Tell iOS we finished running a rap (for tracking purposes)
+      NotificationManager &&
+        NotificationManager.postNotification('rapCompleted');
+    } catch (error) {
+      setIsAuthorizing(false);
+      logger.log('[exchange - handle submit] error submitting swap', error);
+      setParams({ focused: false });
+      navigate(Routes.WALLET_SCREEN);
+    }
   }, [
     defaultInputAsset?.symbol,
     genericAssets,

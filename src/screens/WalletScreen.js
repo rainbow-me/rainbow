@@ -29,6 +29,7 @@ import {
   useWalletSectionsData,
 } from '@rainbow-me/hooks';
 import { useCoinListEditedValue } from '@rainbow-me/hooks/useCoinListEdited';
+import { useNavigation } from '@rainbow-me/navigation';
 import { updateRefetchSavings } from '@rainbow-me/redux/data';
 import {
   emitChartsRequest,
@@ -52,6 +53,7 @@ const WalletPage = styled(Page)`
 
 export default function WalletScreen() {
   const { params } = useRoute();
+  const { setParams } = useNavigation();
   const [initialized, setInitialized] = useState(!!params?.initialized);
   const [portfoliosFetched, setPortfoliosFetched] = useState(false);
   const [fetchedCharts, setFetchedCharts] = useState(false);
@@ -99,12 +101,13 @@ export default function WalletScreen() {
   }, [dispatch, refetchSavings, shouldRefetchSavings]);
 
   useEffect(() => {
-    if (!initialized) {
+    if (!initialized || (params?.emptyWallet && initialized)) {
       // We run the migrations only once on app launch
       initializeWallet(null, null, null, true);
       setInitialized(true);
+      setParams({ emptyWallet: false });
     }
-  }, [initializeWallet, initialized, params]);
+  }, [initializeWallet, initialized, params, setParams]);
 
   useEffect(() => {
     if (initialized && addressSocket && !portfoliosFetched) {
