@@ -36,14 +36,14 @@ const init = async () => {
       };
 
       const palette = await Vibrant.from(filePath).getPalette();
-      const background = palette.Muted.hex;
-      const secondary = palette.LightMuted.hex;
-      let color = makeColorMoreChill(secondary);
-      if (isBlackOrWhite(background)) {
-        color = makeColorMoreChill(secondary);
+      const primaryColor = palette.Vibrant.hex;
+      const secondaryColor = palette.Muted.hex;
+      let color = makeColorMoreChill(primaryColor);
+      if (isBlackOrWhite(secondaryColor)) {
+        color = makeColorMoreChill(primaryColor);
       }
-      if (isBlackOrWhite(secondary)) {
-        color = makeColorMoreChill(background);
+      if (isBlackOrWhite(primaryColor)) {
+        color = makeColorMoreChill(secondaryColor);
       }
       if (color) {
         metadata.color = color;
