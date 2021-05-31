@@ -83,7 +83,7 @@ const addEth = section => {
   const assets = store.getState().data.genericAssets;
 
   if (assets.eth) {
-    const { relative_change_24h, value } = assets.eth.price;
+    const { relative_change_24h, value } = assets?.eth?.price || {};
     const zeroEthRow = {
       address: 'eth',
       balance: {

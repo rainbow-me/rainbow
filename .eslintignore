@@ -3,3 +3,6 @@ src/react-native-animated-charts/Example/node_modules/*
 src/react-native-animated-charts/Example/*
 patches/reanimated/*
 ios/*
+node_modules/*
+./node_modules/**
+**/node_modules/*

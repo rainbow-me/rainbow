@@ -10,6 +10,7 @@ import ChangeWalletSheet from '../screens/ChangeWalletSheet';
 import ConnectedDappsSheet from '../screens/ConnectedDappsSheet';
 import DepositModal from '../screens/DepositModal';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
+import ExplainSheet from '../screens/ExplainSheet';
 import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
 import ModalScreen from '../screens/ModalScreen';
 import PinAuthenticationScreen from '../screens/PinAuthenticationScreen';
@@ -240,7 +241,11 @@ function MainNavigator() {
         name={Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR}
         options={sheetPresetWithSmallGestureResponseDistance}
       />
-      <Stack.Screen component={WelcomeScreen} name={Routes.WELCOME_SCREEN} />
+      <Stack.Screen
+        component={WelcomeScreen}
+        name={Routes.WELCOME_SCREEN}
+        options={{ animationEnabled: false, gestureEnabled: false }}
+      />
       <Stack.Screen
         component={AddCashFlowNavigator}
         name={Routes.WYRE_WEBVIEW_NAVIGATOR}
@@ -301,6 +306,13 @@ function BSNavigator() {
         name={Routes.SHOWCASE_SHEET}
         options={{
           height: '90%',
+        }}
+      />
+      <BSStack.Screen
+        component={ExplainSheet}
+        name={Routes.EXPLAIN_SHEET}
+        options={{
+          height: '100%',
         }}
       />
     </BSStack.Navigator>

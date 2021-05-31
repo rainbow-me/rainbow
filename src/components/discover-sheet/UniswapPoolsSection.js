@@ -13,13 +13,7 @@ import EdgeFade from './EdgeFade';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { useAccountSettings, useUniswapPools } from '@rainbow-me/hooks';
 
-const ITEM_HEIGHT = 60;
 const INITIAL_PAGE_AMOUNT = 15;
-const getItemLayout = (_, index) => ({
-  index,
-  length: ITEM_HEIGHT,
-  offset: ITEM_HEIGHT * index,
-});
 
 const DefaultShowMoreButton = ({ backgroundColor, color, onPress }) => (
   <Row justify="center">
@@ -93,8 +87,8 @@ const listData = [
   },
 ];
 
-const renderUniswapPoolListRow = ({ item }) => (
-  <UniswapPoolListRow assetType="uniswap" item={item} />
+const renderUniswapPoolListRow = item => (
+  <UniswapPoolListRow assetType="uniswap" item={item} key={item.address} />
 );
 
 export default function UniswapPools({
@@ -243,7 +237,7 @@ export default function UniswapPools({
     ]
   );
 
-  if (hideIfEmpty && isEmpty) {
+  if (hideIfEmpty && (!pairs?.length || isEmpty)) {
     return null;
   }
 
@@ -300,22 +294,14 @@ export default function UniswapPools({
         </ErrorMessage>
       ) : pairsSorted?.length > 0 ? (
         <Fragment>
-          <FlatList
-            data={pairsSorted}
-            getItemLayout={getItemLayout}
-            keyExtractor={item => item.address}
-            paddingBottom={10}
-            removeClippedSubviews
-            renderItem={renderUniswapPoolListRow}
-            scrollsToTop={false}
-            windowSize={11}
-          />
+          {pairsSorted.map(pair => renderUniswapPoolListRow(pair))}
           {(!showAll || alwaysShowMoreButton) &&
             initialPageAmount < allPairs.length && (
               <ShowMoreButton
                 backgroundColor={colors.alpha(colors.blueGreyDark, 0.06)}
                 color={colors.alpha(colors.blueGreyDark, 0.6)}
                 onPress={handleShowMorePress}
+                paddingTop={10}
               />
             )}
         </Fragment>

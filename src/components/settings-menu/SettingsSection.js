@@ -2,9 +2,9 @@ import AsyncStorage from '@react-native-community/async-storage';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { Image, Linking, NativeModules, ScrollView, Share } from 'react-native';
 import styled from 'styled-components';
-import { REVIEW_ANDROID } from '../../config/experimental';
-import useExperimentalFlag from '../../config/experimentalHooks';
-//import { supportedLanguages } from '../../languages';
+// import { REVIEW_ANDROID } from '../../config/experimental';
+// import useExperimentalFlag from '../../config/experimentalHooks';
+// import { supportedLanguages } from '../../languages';
 import { THEMES, useTheme } from '../../context/ThemeContext';
 import AppVersionStamp from '../AppVersionStamp';
 import { Icon } from '../icons';
@@ -132,7 +132,7 @@ export default function SettingsSection({
   onPressPrivacy,
   onPressShowSecret,
 }) {
-  const isReviewAvailable = useExperimentalFlag(REVIEW_ANDROID) || ios;
+  const isReviewAvailable = false;
   const { wallets, isReadOnlyWallet } = useWallets();
   const { /*language,*/ nativeCurrency, network } = useAccountSettings();
   const { isTinyPhone } = useDimensions();

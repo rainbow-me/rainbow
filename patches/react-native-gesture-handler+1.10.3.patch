@@ -1,0 +1,58 @@
+diff --git a/node_modules/react-native-gesture-handler/ios/Handlers/RNNativeViewHandler.m b/node_modules/react-native-gesture-handler/ios/Handlers/RNNativeViewHandler.m
+index 73022d7..49b8507 100644
+--- a/node_modules/react-native-gesture-handler/ios/Handlers/RNNativeViewHandler.m
++++ b/node_modules/react-native-gesture-handler/ios/Handlers/RNNativeViewHandler.m
+@@ -78,7 +78,7 @@ - (void)bindToView:(UIView *)view
+         // we expect for RCTScrollView component to contain a subclass of UIScrollview as the only
+         // subview
+         UIScrollView *scrollView = [view.subviews objectAtIndex:0];
+-        scrollView.delaysContentTouches = YES;
++        scrollView.delaysContentTouches = NO;
+     }
+ }
+ 
+diff --git a/node_modules/react-native-gesture-handler/src/PlatformConstants.ts b/node_modules/react-native-gesture-handler/src/PlatformConstants.ts
+index cf7ad64..4ef5cdf 100644
+--- a/node_modules/react-native-gesture-handler/src/PlatformConstants.ts
++++ b/node_modules/react-native-gesture-handler/src/PlatformConstants.ts
+@@ -1,3 +1,4 @@
++// @ts-nocheck
+ import { NativeModules, Platform } from 'react-native';
+ 
+ type PlatformConstants = {
+diff --git a/node_modules/react-native-gesture-handler/src/handlers/createHandler.ts b/node_modules/react-native-gesture-handler/src/handlers/createHandler.ts
+index 38b32ea..0b70114 100644
+--- a/node_modules/react-native-gesture-handler/src/handlers/createHandler.ts
++++ b/node_modules/react-native-gesture-handler/src/handlers/createHandler.ts
+@@ -1,3 +1,4 @@
++// @ts-nocheck
+ import * as React from 'react';
+ import {
+   findNodeHandle as findNodeHandleRN,
+diff --git a/node_modules/react-native-gesture-handler/src/web/GestureHandler.ts b/node_modules/react-native-gesture-handler/src/web/GestureHandler.ts
+index 5f3f9f4..369171e 100644
+--- a/node_modules/react-native-gesture-handler/src/web/GestureHandler.ts
++++ b/node_modules/react-native-gesture-handler/src/web/GestureHandler.ts
+@@ -1,3 +1,4 @@
++// @ts-nocheck
+ /* eslint-disable eslint-comments/no-unlimited-disable */
+ /* eslint-disable */
+ import Hammer from '@egjs/hammerjs';
+diff --git a/node_modules/react-native-gesture-handler/src/web/PanGestureHandler.ts b/node_modules/react-native-gesture-handler/src/web/PanGestureHandler.ts
+index b588d69..6d7c466 100644
+--- a/node_modules/react-native-gesture-handler/src/web/PanGestureHandler.ts
++++ b/node_modules/react-native-gesture-handler/src/web/PanGestureHandler.ts
+@@ -1,3 +1,4 @@
++// @ts-nocheck
+ import Hammer from '@egjs/hammerjs';
+ 
+ import {
+diff --git a/node_modules/react-native-gesture-handler/src/web/TapGestureHandler.ts b/node_modules/react-native-gesture-handler/src/web/TapGestureHandler.ts
+index 312049c..0562f9c 100644
+--- a/node_modules/react-native-gesture-handler/src/web/TapGestureHandler.ts
++++ b/node_modules/react-native-gesture-handler/src/web/TapGestureHandler.ts
+@@ -1,3 +1,4 @@
++// @ts-nocheck
+ import Hammer from '@egjs/hammerjs';
+ 
+ import DiscreteGestureHandler from './DiscreteGestureHandler';

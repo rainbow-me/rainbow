@@ -1,7 +1,8 @@
 import { useRoute } from '@react-navigation/native';
-import React from 'react';
+import React, { useContext } from 'react';
 import Animated, { Extrapolate } from 'react-native-reanimated';
 import { useCallbackOne, useMemoOne } from 'use-memo-one';
+import { ScrollPagerContext } from '../../navigation/ScrollPagerContext';
 import { interpolate } from '../animations';
 import ExchangeFloatingPanels from './ExchangeFloatingPanels';
 
@@ -9,8 +10,11 @@ const AnimatedPanels = Animated.createAnimatedComponent(ExchangeFloatingPanels);
 
 export default function AnimatedExchangeFloatingPanels(props) {
   const {
-    params: { tabTransitionPosition },
+    params: { tabTransitionPosition: tabTransitionPositionFromRoute },
   } = useRoute();
+
+  const tabTransitionPosition =
+    useContext(ScrollPagerContext) || tabTransitionPositionFromRoute;
 
   const buildInterpolation = useCallbackOne(
     outputRange =>

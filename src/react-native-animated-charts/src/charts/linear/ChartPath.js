@@ -640,11 +640,18 @@ function ChartPath({
     };
   }, undefined);
 
+  const animatedStyleWrapper = useAnimatedStyle(() => {
+    return {
+      display: path.value === '' ? 'none' : 'flex',
+    };
+  });
+
   return (
     <InternalContext.Provider
       value={{
         animatedProps,
         animatedStyle,
+        animatedStyleWrapper,
         gestureEnabled,
         height,
         longPressGestureHandlerProps,
@@ -663,6 +670,7 @@ export function SvgComponent() {
   const {
     style,
     animatedStyle,
+    animatedStyleWrapper,
     height,
     width,
     animatedProps,
@@ -680,18 +688,20 @@ export function SvgComponent() {
       {...longPressGestureHandlerProps}
       {...{ onGestureEvent: onLongPressGestureEvent }}
     >
-      <Animated.View>
-        <Svg
-          height={height + 20} // temporary fix for clipped chart
-          viewBox={`0 0 ${width} ${height}`}
-          width={width}
-        >
-          <AnimatedPath
-            animatedProps={animatedProps}
-            {...props}
-            style={[style, animatedStyle]}
-          />
-        </Svg>
+      <Animated.View style={{ height: height + 20 }}>
+        <Animated.View style={animatedStyleWrapper}>
+          <Svg
+            height={height + 20} // temporary fix for clipped chart
+            viewBox={`0 0 ${width} ${height}`}
+            width={width}
+          >
+            <AnimatedPath
+              animatedProps={animatedProps}
+              {...props}
+              style={[style, animatedStyle]}
+            />
+          </Svg>
+        </Animated.View>
       </Animated.View>
     </LongPressGestureHandler>
   );

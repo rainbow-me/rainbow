@@ -88,6 +88,15 @@ export const addTokenSheetConfig = {
   }),
 };
 
+export const explainSheetConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      longFormHeight: 400,
+    }),
+  }),
+};
+
 export const expandedAssetSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({

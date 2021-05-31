@@ -1,9 +1,7 @@
 import React, { createContext, useCallback, useContext, useMemo } from 'react';
 import { processColor, requireNativeComponent, View } from 'react-native';
-import {
-  createNativeWrapper,
-  PureNativeButton,
-} from 'react-native-gesture-handler';
+import { createNativeWrapper } from 'react-native-gesture-handler';
+import { PureNativeButton } from 'react-native-gesture-handler/src/components/GestureButtons';
 import Animated, {
   NewEasing as Easing,
   runOnJS,
@@ -42,20 +40,27 @@ const Content = styled.View`
 // I couldn't just expend boundaries, because then it intercepts touches, so I managed to
 // extract animated component to external value
 
-export const ScaleButtonZoomable = ({ children, style }) => {
-  const value = useSharedValue(1);
+export const ScaleButtonZoomable = ({ children, style, duration = 160 }) => {
+  const scale = useSharedValue(1);
+  const scaleTraversed = useDerivedValue(() => {
+    const value = withTiming(scale.value, {
+      duration,
+      easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+    });
+    return value;
+  });
   const sz = useAnimatedStyle(() => {
     return {
       transform: [
         {
-          scale: value.value,
+          scale: scaleTraversed.value,
         },
       ],
     };
   });
 
   return (
-    <ScaleButtonContext.Provider value={value}>
+    <ScaleButtonContext.Provider value={scale}>
       <Animated.View style={[style, sz]}>{children}</Animated.View>
     </ScaleButtonContext.Provider>
   );
@@ -74,16 +79,16 @@ const ScaleButton = ({
   onPressStart,
   onPressCancel,
 }) => {
-  const scale = useSharedValue(1);
+  const parentScale = useContext(ScaleButtonContext);
+  const childScale = useSharedValue(1);
+  const scale = parentScale || childScale;
   const hasScaledDown = useSharedValue(0);
-  const parentValue = useContext(ScaleButtonContext);
   const scaleTraversed = useDerivedValue(() => {
     const value = withTiming(scale.value, {
       duration,
       easing: Easing.bezier(0.25, 0.1, 0.25, 1),
     });
-    if (parentValue) {
-      parentValue.value = value;
+    if (parentScale) {
       return 1;
     } else {
       return value;

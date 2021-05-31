@@ -3,8 +3,8 @@ import BottomSheet, {
   BottomSheetBackdropProps,
 } from '@gorhom/bottom-sheet';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import type { ViewStyle } from 'react-native';
 import { View } from 'react-native';
+import type { ViewStyle } from 'react-native';
 import {
   CONTAINER_HEIGHT,
   DEFAULT_ANIMATION_DURATION,
@@ -158,7 +158,9 @@ const BottomSheetRoute = ({
         index={index}
         onChange={handleOnChange}
         ref={ref}
+        simultaneousHandlers={[]}
         snapPoints={enhancedSpanPoints}
+        waitFor={[]}
       >
         <View style={screenContainerStyle}>{render()}</View>
       </BottomSheet>
