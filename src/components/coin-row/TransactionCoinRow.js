@@ -1,7 +1,7 @@
 import { compact, get, toLower } from 'lodash';
 import React, { useCallback } from 'react';
 import { css } from 'styled-components';
-import { optimismMainnet } from '../../config/defaultDebug';
+import { optimismMainnet } from '../../config/debug';
 import { useTheme } from '../../context/ThemeContext';
 import { getRandomColor } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';

@@ -5,7 +5,7 @@ import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { requireNativeComponent } from 'react-native';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { optimismMainnet } from '../../config/defaultDebug';
+import { optimismMainnet } from '../../config/debug';
 import { getRandomColor } from '../../styles/colors';
 import { FloatingEmojis } from '../floating-emojis';
 import useExperimentalFlag, {

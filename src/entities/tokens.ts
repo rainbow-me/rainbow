@@ -30,6 +30,9 @@ export interface SavingsAsset extends Asset {
 export interface OptimismAsset extends Asset {
   optimismAddress: string;
 }
+export interface PolygonAsset extends Asset {
+  polygonAddress: string;
+}
 
 export interface ParsedAddressAsset extends Asset {
   balance?: {

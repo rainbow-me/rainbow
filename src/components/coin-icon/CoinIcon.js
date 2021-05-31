@@ -3,10 +3,9 @@ import React, { Fragment } from 'react';
 import ReactCoinIcon from 'react-coin-icon';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
+import ChainBadge from './ChainBadge';
 import CoinIconFallback from './CoinIconFallback';
 import CoinIconIndicator from './CoinIconIndicator';
-import OptimismBadge from './OptimismBadge';
-import { AssetType } from '@rainbow-me/entities';
 import { useColorForAsset } from '@rainbow-me/hooks';
 import { getTokenMetadata, isETH, magicMemo } from '@rainbow-me/utils';
 
@@ -51,12 +50,11 @@ const CoinIcon = ({
         size={size}
         symbol={symbol}
       />
-      {type === AssetType.optimism && (
-        <OptimismBadge
-          badgeXPosition={badgeXPosition}
-          badgeYPosition={badgeYPosition}
-        />
-      )}
+      <ChainBadge
+        assetType={type}
+        badgeXPosition={badgeXPosition}
+        badgeYPosition={badgeYPosition}
+      />
     </Fragment>
   );
 };

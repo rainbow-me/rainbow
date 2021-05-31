@@ -181,7 +181,7 @@ export default function ChartExpandedState({ asset }) {
   // If we don't have a balance for this asset
   // It's a generic asset
   const hasBalance = asset?.balance;
-  const assetWithPrice = hasBalance
+  let assetWithPrice = hasBalance
     ? asset
     : genericAssets[asset?.address]
     ? ethereumUtils.formatGenericAsset(
@@ -189,6 +189,10 @@ export default function ChartExpandedState({ asset }) {
         nativeCurrency
       )
     : asset;
+
+  if (assetWithPrice?.mainnet_address) {
+    assetWithPrice.address = assetWithPrice.mainnet_address;
+  }
 
   const { height: screenHeight } = useDimensions();
   const {

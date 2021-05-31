@@ -18,7 +18,7 @@ import {
   SendHeader,
   SendTransactionSpeed,
 } from '../components/send';
-import { optimismMainnet } from '../config/defaultDebug';
+import { optimismMainnet } from '../config/debug';
 import { AssetType, AssetTypes } from '@rainbow-me/entities';
 import {
   createSignableTransaction,

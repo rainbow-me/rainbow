@@ -35,10 +35,6 @@ import {
   identifyWalletType,
   WalletLibraryType,
 } from '@rainbow-me/model/wallet';
-import {
-  OPTIMISM_KOVAN_RPC_ENDPOINT,
-  OPTIMISM_MAINNET_RPC_ENDPOINT,
-} from '@rainbow-me/redux/optimismExplorer';
 import store from '@rainbow-me/redux/store';
 import { chains, ETH_ADDRESS } from '@rainbow-me/references';
 import logger from 'logger';
@@ -320,14 +316,10 @@ function openTokenEtherscanURL(address) {
 
 function openTransactionInBlockExplorer(hash, network) {
   const normalizedHash = hash.replace(/-.*/g, '');
-  if (network) {
-    Linking.openURL(
-      `https://expedition.dev/tx/${normalizedHash}?rpcUrl=${encodeURIComponent(
-        network === networkTypes.kovanovm
-          ? OPTIMISM_KOVAN_RPC_ENDPOINT
-          : OPTIMISM_MAINNET_RPC_ENDPOINT
-      )}`
-    );
+  if (network === networkTypes.kovanovm || network === networkTypes.ovm) {
+    const subdomain =
+      network === networkTypes.kovanovm ? 'kovan-optimistic' : 'optimistic';
+    Linking.openURL(`https://${subdomain}.etherscan.io/tx/${normalizedHash}`);
   }
   if (!isString(hash)) return;
   const etherscanHost = getEtherscanHostForNetwork();

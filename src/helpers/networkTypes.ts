@@ -3,6 +3,7 @@ export enum Network {
   kovan = 'kovan',
   mainnet = 'mainnet',
   kovanovm = 'kovanovm',
+  ovm = 'ovm',
   rinkeby = 'rinkeby',
   ropsten = 'ropsten',
 }
@@ -14,6 +15,7 @@ export default {
   kovan: 'kovan' as Network,
   kovanovm: 'kovanovm' as Network,
   mainnet: 'mainnet' as Network,
+  ovm: 'ovm' as Network,
   rinkeby: 'rinkeby' as Network,
   ropsten: 'ropsten' as Network,
 };
