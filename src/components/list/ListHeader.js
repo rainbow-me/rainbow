@@ -125,17 +125,21 @@ export default function ListHeader({
       <Fragment>
         <BackgroundGradient />
         <Content isSticky={isSticky}>
-          <Row align="center">
-            {createElement(titleRenderer, { children: title })}
-            {title === 'Collectibles' && (
-              <Column align="flex-end" flex={1}>
-                <ShareCollectiblesButton
-                  onPress={() => handleShare(isReadOnlyWallet, accountAddress)}
-                />
-              </Column>
-            )}
-            <ContextMenu marginTop={3} {...contextMenuOptions} />
-          </Row>
+          {title && (
+            <Row align="center">
+              {createElement(titleRenderer, { children: title })}
+              {title === 'Collectibles' && (
+                <Column align="flex-end" flex={1}>
+                  <ShareCollectiblesButton
+                    onPress={() =>
+                      handleShare(isReadOnlyWallet, accountAddress)
+                    }
+                  />
+                </Column>
+              )}
+              <ContextMenu marginTop={3} {...contextMenuOptions} />
+            </Row>
+          )}
           {children}
         </Content>
         {showDivider && <Divider />}
