@@ -58,5 +58,13 @@
     "network": "kovanovm",
     "chain_id": 69,
     "network_id": 69
+  },
+  {
+    "name": "Polygon (Matic)",
+    "short_name": "poly",
+    "chain": "ETH",
+    "network": "polygon",
+    "chain_id": 137,
+    "network_id": 137
   }
 ]

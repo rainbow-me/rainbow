@@ -18,6 +18,8 @@ import {
 } from './fallbackExplorer';
 // eslint-disable-next-line import/no-cycle
 import { optimismExplorerInit } from './optimismExplorer';
+// eslint-disable-next-line import/no-cycle
+import { polygonExplorerInit } from './polygonExplorer';
 import { updateTopMovers } from './topMovers';
 import { disableCharts, forceFallbackProvider } from '@rainbow-me/config/debug';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
@@ -428,6 +430,8 @@ const listenOnAddressMessages = socket => dispatch => {
       dispatch(disableFallbackIfNeeded());
       // Start watching optimism assets
       dispatch(optimismExplorerInit());
+      // Start watching polygon assets
+      dispatch(polygonExplorerInit());
     }
   });
 

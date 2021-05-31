@@ -18,7 +18,6 @@ import {
 } from '../token-info';
 import { Chart } from '../value-chart';
 import { ChartPathProvider } from '@rainbow-me/animated-charts';
-import { AssetType } from '@rainbow-me/entities';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 import {
   useAccountSettings,
@@ -42,11 +41,10 @@ export default function ChartExpandedState({ asset }) {
   // If we don't have a balance for this asset
   // It's a generic asset
   const hasBalance = asset?.balance;
-  const assetAddress =
-    asset.type === AssetType.optimism ? asset?.mainnet_address : asset?.address;
+  const assetAddress = asset?.mainnet_address || asset?.address;
 
   const assetWithPrice =
-    hasBalance && asset.type !== AssetType.optimism
+    hasBalance && asset?.mainnet_address
       ? asset
       : genericAssets[assetAddress]
       ? ethereumUtils.formatGenericAsset(

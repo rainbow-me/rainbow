@@ -256,9 +256,17 @@ export default function SendSheet(props) {
 
   useEffect(() => {
     const updateCurrentProvider = async () => {
-      if (selected && selected.type === AssetType.optimism) {
+      if (
+        selected &&
+        (selected.type === AssetType.optimism ||
+          selected.type === AssetType.polygon)
+      ) {
         const provider = await getProviderForNetwork(
-          optimismMainnet ? networkTypes.ovm : networkTypes.kovanovm
+          selected.type === AssetType.optimism
+            ? optimismMainnet
+              ? networkTypes.ovm
+              : networkTypes.kovanovm
+            : networkTypes.polygon
         );
         setCurrentProvider(provider);
       } else {
@@ -376,6 +384,7 @@ export default function SendSheet(props) {
         txDetails.hash = hash;
         txDetails.nonce = nonce;
         txDetails.optimism = selected.type === AssetType.optimism;
+        txDetails.polygon = selected.type === AssetType.polygon;
         await dispatch(
           dataAddNewTransaction(txDetails, null, false, currentProvider)
         );

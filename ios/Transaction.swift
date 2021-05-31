@@ -12,6 +12,7 @@
 //    "minedAt": 1587390398,
 //    "optimism": false,
 //    "pending": false,
+//    "polygon": false,
 //    "address": "0x6b175474e89094c44da98b954eedeac495271d0f",
 //    "balance": {
 //      "amount": "0.00176391284123519",
@@ -37,8 +38,9 @@ import Foundation
   var title: String!
   var type: String!
   var minedAt: Date!
-  var pending: Bool = false
   var optimism: Bool = false
+  var polygon: Bool = false
+  var pending: Bool = false
   var address: String?
   var status: String!
   var symbol: String!

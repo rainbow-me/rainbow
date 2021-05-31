@@ -9,6 +9,8 @@ import {
 } from './data';
 // eslint-disable-next-line import/no-cycle
 import { optimismExplorerInit } from './optimismExplorer';
+// eslint-disable-next-line import/no-cycle
+import { polygonExplorerInit } from './polygonExplorer';
 import { AssetTypes } from '@rainbow-me/entities';
 // eslint-disable-next-line import/no-cycle
 import { web3Provider } from '@rainbow-me/handlers/web3';
@@ -367,6 +369,8 @@ export const fallbackExplorerInit = () => async (dispatch, getState) => {
   fetchAssetsBalancesAndPrices();
   // Start watching optimism assets
   dispatch(optimismExplorerInit());
+  // Start watching polygon assets
+  dispatch(polygonExplorerInit());
 };
 
 export const fallbackExplorerClearState = () => (dispatch, getState) => {

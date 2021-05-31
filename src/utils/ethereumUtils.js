@@ -320,6 +320,12 @@ function openTransactionInBlockExplorer(hash, network) {
     const subdomain =
       network === networkTypes.kovanovm ? 'kovan-optimistic' : 'optimistic';
     Linking.openURL(`https://${subdomain}.etherscan.io/tx/${normalizedHash}`);
+    return;
+  } else if (network === networkTypes.polygon) {
+    Linking.openURL(
+      `https://polygon-explorer-mainnet.chainstacklabs.com/tx/${normalizedHash}`
+    );
+    return;
   }
   if (!isString(hash)) return;
   const etherscanHost = getEtherscanHostForNetwork();

@@ -71,6 +71,7 @@ export const parseNewTransaction = async (
     nonce: txDetails.nonce,
     optimism: txDetails.optimism,
     pending: true,
+    polygon: txDetails.polygon,
     protocol: txDetails?.protocol,
     sourceAmount: txDetails.sourceAmount,
     status,

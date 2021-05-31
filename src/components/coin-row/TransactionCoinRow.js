@@ -93,7 +93,17 @@ export default function TransactionCoinRow({ item, ...props }) {
   const { navigate } = useNavigation();
 
   const onPressTransaction = useCallback(async () => {
-    const { hash, from, minedAt, pending, to, status, type, optimism } = item;
+    const {
+      hash,
+      from,
+      minedAt,
+      pending,
+      to,
+      status,
+      type,
+      optimism,
+      polygon,
+    } = item;
 
     const date = getHumanReadableDate(minedAt);
     const isSent =
@@ -187,6 +197,8 @@ export default function TransactionCoinRow({ item, ...props }) {
                 network = optimismMainnet
                   ? networkTypes.ovm
                   : networkTypes.kovanovm;
+              } else if (polygon) {
+                network = networkTypes.polygon;
               }
               ethereumUtils.openTransactionInBlockExplorer(hash, network);
               break;

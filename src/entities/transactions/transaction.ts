@@ -24,6 +24,7 @@ export interface RainbowTransaction {
   };
   nonce: number | null;
   optimism?: boolean;
+  polygon?: boolean;
   pending: boolean;
   protocol?: ProtocolType | null;
   sourceAmount?: string; // for purchases
@@ -37,6 +38,7 @@ export interface RainbowTransaction {
 }
 
 export interface NewTransaction {
+  optimism: boolean | undefined;
   amount: string | null;
   asset: ParsedAddressAsset | null;
   dappName?: string; // for walletconnect
@@ -45,7 +47,7 @@ export interface NewTransaction {
   gasPrice?: string;
   hash: string | null;
   nonce: number | null;
-  optimism?: boolean;
+  polygon: boolean | undefined;
   protocol?: ProtocolType | null;
   sourceAmount?: string; // for purchases
   status?: TransactionStatus;

@@ -2,48 +2,44 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { toLower } from 'lodash';
-import { optimismMainnet } from '../config/debug';
 // eslint-disable-next-line import/no-cycle
 import { addressAssetsReceived, fetchAssetPrices } from './data';
 // eslint-disable-next-line import/no-cycle
 import { emitAssetRequest, emitChartsRequest } from './explorer';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
-  balanceCheckerContractAbiOVM,
+  balanceCheckerContractAbi,
   testnetAssets,
 } from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 // -- Constants --------------------------------------- //
-export const OPTIMISM_KOVAN_RPC_ENDPOINT = 'https://kovan.optimism.io';
-export const OPTIMISM_MAINNET_RPC_ENDPOINT = 'https://mainnet.optimism.io';
-const OPTIMISM_EXPLORER_CLEAR_STATE = 'explorer/OPTIMISM_EXPLORER_CLEAR_STATE';
-const OPTIMISM_EXPLORER_SET_ASSETS = 'explorer/OPTIMISM_EXPLORER_SET_ASSETS';
-const OPTIMISM_EXPLORER_SET_BALANCE_HANDLER =
-  'explorer/OPTIMISM_EXPLORER_SET_BALANCE_HANDLER';
-const OPTIMISM_EXPLORER_SET_HANDLERS =
-  'explorer/OPTIMISM_EXPLORER_SET_HANDLERS';
-const OPTIMISM_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER =
-  'explorer/OPTIMISM_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER';
+export const POLYGON_MAINNET_RPC_ENDPOINT = 'https://rpc-mainnet.matic.network';
+const POLYGON_EXPLORER_CLEAR_STATE = 'explorer/POLYGON_EXPLORER_CLEAR_STATE';
+const POLYGON_EXPLORER_SET_ASSETS = 'explorer/POLYGON_EXPLORER_SET_ASSETS';
+const POLYGON_EXPLORER_SET_BALANCE_HANDLER =
+  'explorer/POLYGON_EXPLORER_SET_BALANCE_HANDLER';
+const POLYGON_EXPLORER_SET_HANDLERS = 'explorer/POLYGON_EXPLORER_SET_HANDLERS';
+const POLYGON_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER =
+  'explorer/POLYGON_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER';
 
 const UPDATE_BALANCE_AND_PRICE_FREQUENCY = 30000;
 
-const optimismProvider = new JsonRpcProvider(
-  optimismMainnet ? OPTIMISM_MAINNET_RPC_ENDPOINT : OPTIMISM_KOVAN_RPC_ENDPOINT
-);
+const polygonProvider = new JsonRpcProvider(POLYGON_MAINNET_RPC_ENDPOINT);
 
-const network = optimismMainnet ? 'ovm' : 'kovanovm';
+const network = networkTypes.polygon;
 
 const fetchAssetBalances = async (tokens, address) => {
-  const abi = balanceCheckerContractAbiOVM;
+  const abi = balanceCheckerContractAbi;
 
   const contractAddress = networkInfo[network].balance_checker_contract_address;
 
   const balanceCheckerContract = new Contract(
     contractAddress,
     abi,
-    optimismProvider
+    polygonProvider
   );
 
   try {
@@ -67,24 +63,37 @@ const fetchAssetBalances = async (tokens, address) => {
   }
 };
 
-export const optimismExplorerInit = () => async (dispatch, getState) => {
+// const fetchAssetsMapping = async () => {
+//   try {
+//     const url =
+//       'https://tokenmapper.api.matic.today/api/v1/mapping?map_type=[%22POS%22]&chain_id=137&limit=5000&offset=0';
+//     const request = await fetch(url);
+//     return request.json();
+//   } catch (e) {
+//     logger.log(`Error trying to fetch polygon token map`, e);
+//   }
+// };
+
+export const polygonExplorerInit = () => async (dispatch, getState) => {
   const { assets: allAssets, genericAssets } = getState().data;
   const { accountAddress, nativeCurrency } = getState().settings;
   const formattedNativeCurrency = toLower(nativeCurrency);
 
   const fetchAssetsBalancesAndPrices = async () => {
-    logger.log('🔴 optimismExplorer fetchAssetsBalancesAndPrices');
+    logger.log('🟣 polygonExplorer fetchAssetsBalancesAndPrices');
     const assets = testnetAssets[network];
+    // TODO - From the list of mappins, filter the tokens that are in the account
+
     if (!assets || !assets.length) {
-      const optimismExplorerBalancesHandle = setTimeout(
+      const polygonExplorerBalancesHandle = setTimeout(
         fetchAssetsBalancesAndPrices,
         10000
       );
       dispatch({
         payload: {
-          optimismExplorerBalancesHandle,
+          polygonExplorerBalancesHandle,
         },
-        type: OPTIMISM_EXPLORER_SET_BALANCE_HANDLER,
+        type: POLYGON_EXPLORER_SET_BALANCE_HANDLER,
       });
       return;
     }
@@ -142,7 +151,7 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
       });
     }
 
-    logger.log('🔴 optimismExplorer updating assets');
+    logger.log('🟣 polygonExplorer updating assets');
     dispatch(
       addressAssetsReceived(
         {
@@ -157,72 +166,70 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
       )
     );
 
-    const optimismExplorerBalancesHandle = setTimeout(
+    const polygonExplorerBalancesHandle = setTimeout(
       fetchAssetsBalancesAndPrices,
       UPDATE_BALANCE_AND_PRICE_FREQUENCY
     );
-    let optimismExplorerAssetsHandle = null;
+    let polygonExplorerAssetsHandle = null;
 
     dispatch({
       payload: {
-        optimismExplorerAssetsHandle,
-        optimismExplorerBalancesHandle,
+        polygonExplorerAssetsHandle,
+        polygonExplorerBalancesHandle,
       },
-      type: OPTIMISM_EXPLORER_SET_HANDLERS,
+      type: POLYGON_EXPLORER_SET_HANDLERS,
     });
   };
   fetchAssetsBalancesAndPrices();
 };
 
-export const optimismExplorerClearState = () => (dispatch, getState) => {
+export const polygonExplorerClearState = () => (dispatch, getState) => {
   const {
-    optimismExplorerBalancesHandle,
-    optimismExplorerAssetsHandle,
-  } = getState().optimismExplorer;
+    polygonExplorerBalancesHandle,
+    polygonExplorerAssetsHandle,
+  } = getState().polygonExplorer;
 
-  optimismExplorerBalancesHandle &&
-    clearTimeout(optimismExplorerBalancesHandle);
-  optimismExplorerAssetsHandle && clearTimeout(optimismExplorerAssetsHandle);
-  dispatch({ type: OPTIMISM_EXPLORER_CLEAR_STATE });
+  polygonExplorerBalancesHandle && clearTimeout(polygonExplorerBalancesHandle);
+  polygonExplorerAssetsHandle && clearTimeout(polygonExplorerAssetsHandle);
+  dispatch({ type: POLYGON_EXPLORER_CLEAR_STATE });
 };
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
   assetsFound: [],
-  optimismExplorerAssetsHandle: null,
-  optimismExplorerBalancesHandle: null,
+  polygonExplorerAssetsHandle: null,
+  polygonExplorerBalancesHandle: null,
 };
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case OPTIMISM_EXPLORER_SET_ASSETS:
+    case POLYGON_EXPLORER_SET_ASSETS:
       return {
         ...state,
         assetsFound: action.payload.assetsFound,
       };
-    case OPTIMISM_EXPLORER_CLEAR_STATE:
+    case POLYGON_EXPLORER_CLEAR_STATE:
       return {
         ...state,
         ...INITIAL_STATE,
       };
-    case OPTIMISM_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER:
+    case POLYGON_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER:
       return {
         ...state,
         latestTxBlockNumber: action.payload.latestTxBlockNumber,
       };
-    case OPTIMISM_EXPLORER_SET_HANDLERS:
+    case POLYGON_EXPLORER_SET_HANDLERS:
       return {
         ...state,
-        optimismExplorerAssetsHandle:
-          action.payload.optimismExplorerAssetsHandle,
-        optimismExplorerBalancesHandle:
-          action.payload.optimismExplorerBalancesHandle,
+        polygonExplorerAssetsHandle: action.payload.polygonExplorerAssetsHandle,
+        polygonExplorerBalancesHandle:
+          action.payload.polygonExplorerBalancesHandle,
       };
-    case OPTIMISM_EXPLORER_SET_BALANCE_HANDLER:
+    case POLYGON_EXPLORER_SET_BALANCE_HANDLER:
       return {
         ...state,
-        optimismExplorerBalancesHandle:
-          action.payload.optimismExplorerBalancesHandle,
+        polygonExplorerBalancesHandle:
+          action.payload.polygonExplorerBalancesHandle,
       };
     default:
       return state;

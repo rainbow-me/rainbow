@@ -6,8 +6,6 @@ export type {
   Asset,
   IndexToken,
   SavingsAsset,
-  OptimismAsset,
-  PolygonAsset,
   ParsedAddressAsset,
   RainbowToken,
   UniswapCurrency,

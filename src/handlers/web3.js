@@ -14,6 +14,8 @@ import {
   OPTIMISM_KOVAN_RPC_ENDPOINT,
   OPTIMISM_MAINNET_RPC_ENDPOINT,
 } from '@rainbow-me/redux/optimismExplorer';
+// eslint-disable-next-line import/no-cycle
+import { POLYGON_MAINNET_RPC_ENDPOINT } from '@rainbow-me/redux/polygonExplorer';
 import { ethUnits, smartContractMethods } from '@rainbow-me/references';
 import {
   addBuffer,
@@ -66,6 +68,9 @@ export const getProviderForNetwork = async network => {
         break;
       case NetworkTypes.ovm:
         url = OPTIMISM_MAINNET_RPC_ENDPOINT;
+        break;
+      case NetworkTypes.polygon:
+        url = POLYGON_MAINNET_RPC_ENDPOINT;
         break;
       default:
         url = replace(infuraUrl, 'network', network);

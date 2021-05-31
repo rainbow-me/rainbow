@@ -75,6 +75,11 @@ class TransactionListViewCell: TransactionListBaseCell {
         badge.image = img
         badge.isHidden = false
       }
+    } else if transaction.polygon {
+      if let img = UIImage.init(named:"polygonBadge") {
+        badge.image = img
+        badge.isHidden = false
+      }
     }
 
     

@@ -130,7 +130,17 @@ export default function TransactionList({
     e => {
       const { index } = e.nativeEvent;
       const item = transactions[index];
-      const { hash, from, minedAt, pending, to, status, type, optimism } = item;
+      const {
+        hash,
+        from,
+        minedAt,
+        pending,
+        to,
+        status,
+        type,
+        optimism,
+        polygon,
+      } = item;
 
       const date = getHumanReadableDate(minedAt);
 
@@ -226,6 +236,8 @@ export default function TransactionList({
                   network = optimismMainnet
                     ? networkTypes.ovm
                     : networkTypes.kovanovm;
+                } else if (polygon) {
+                  network = networkTypes.polygon;
                 }
                 ethereumUtils.openTransactionInBlockExplorer(hash, network);
                 break;

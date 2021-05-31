@@ -4,6 +4,7 @@ export enum Network {
   mainnet = 'mainnet',
   kovanovm = 'kovanovm',
   ovm = 'ovm',
+  polygon = 'polygon',
   rinkeby = 'rinkeby',
   ropsten = 'ropsten',
 }
@@ -16,6 +17,7 @@ export default {
   kovanovm: 'kovanovm' as Network,
   mainnet: 'mainnet' as Network,
   ovm: 'ovm' as Network,
+  polygon: 'polygon' as Network,
   rinkeby: 'rinkeby' as Network,
   ropsten: 'ropsten' as Network,
 };
