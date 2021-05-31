@@ -1,5 +1,6 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
+import useWallets from '../../hooks/useWallets';
 import Link from '../Link';
 import { Column, ColumnWithDividers } from '../layout';
 import {
@@ -24,9 +25,9 @@ const Spacer = styled.View`
   height: ${safeAreaInsetValues.bottom + 20};
 `;
 
-const UniqueTokenExpandedState = ({ asset }) => {
+const UniqueTokenExpandedState = ({ asset, external }) => {
   const {
-    asset_contract: {
+    collection: {
       description: familyDescription,
       external_link: familyLink,
       name: familyName,
@@ -42,6 +43,8 @@ const UniqueTokenExpandedState = ({ asset }) => {
     removeShowcaseToken,
     showcaseTokens,
   } = useShowcaseTokens();
+
+  const { isReadOnlyWallet } = useWallets();
 
   const isShowcaseAsset = useMemo(() => showcaseTokens.includes(uniqueId), [
     showcaseTokens,
@@ -70,15 +73,17 @@ const UniqueTokenExpandedState = ({ asset }) => {
       >
         <UniqueTokenExpandedStateHeader asset={asset} />
         <UniqueTokenExpandedStateContent asset={asset} />
-        <SheetActionButtonRow>
-          <SheetActionButton
-            color={isDarkMode ? colors.darkModeDark : colors.dark}
-            label={isShowcaseAsset ? '􀁏 Showcase' : '􀁍 Showcase'}
-            onPress={handlePressShowcase}
-            weight="bold"
-          />
-          {isSendable && <SendActionButton />}
-        </SheetActionButtonRow>
+        {!external && !isReadOnlyWallet && (
+          <SheetActionButtonRow>
+            <SheetActionButton
+              color={isDarkMode ? colors.darkModeDark : colors.dark}
+              label={isShowcaseAsset ? '􀁏 Showcase' : '􀁍 Showcase'}
+              onPress={handlePressShowcase}
+              weight="bold"
+            />
+            {isSendable && <SendActionButton />}
+          </SheetActionButtonRow>
+        )}
         <SheetDivider />
         <ColumnWithDividers dividerRenderer={SheetDivider}>
           {!!description && (

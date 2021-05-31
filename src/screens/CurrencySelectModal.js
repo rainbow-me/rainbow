@@ -5,6 +5,7 @@ import matchSorter from 'match-sorter';
 import React, {
   Fragment,
   useCallback,
+  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -23,6 +24,7 @@ import {
 } from '../components/exchange';
 import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
+import { ScrollPagerContext } from '../navigation/ScrollPagerContext';
 import { addHexPrefix } from '@rainbow-me/handlers/web3';
 import { CurrencySelectionTypes, TokenSectionTypes } from '@rainbow-me/helpers';
 import {
@@ -70,11 +72,14 @@ export default function CurrencySelectModal() {
       onSelectCurrency,
       restoreFocusOnSwapModal,
       setPointerEvents,
-      tabTransitionPosition,
+      tabTransitionPosition: tabTransitionPositionFromRoute,
       toggleGestureEnabled,
       type,
     },
   } = useRoute();
+
+  const tabTransitionPosition =
+    useContext(ScrollPagerContext) || tabTransitionPositionFromRoute;
 
   const searchInputRef = useRef();
   const { handleFocus } = useMagicAutofocus(searchInputRef, undefined, true);

@@ -48,7 +48,12 @@ const UniqueTokenExpandedStateImage = ({ asset }) => {
   const { width: deviceWidth } = useDimensions();
 
   const isSVG = isSupportedUriExtension(asset.image_url, ['.svg']);
-  const imageUrl = isSVG ? asset.image_preview_url : asset.image_url;
+  const imageUrl = isSVG
+    ? asset.image_preview_url
+    : asset.image_url ||
+      asset.image_original_url ||
+      asset.image_preview_url ||
+      asset.image_thumbnail_url;
   const { dimensions: imageDimensions } = useImageMetadata(imageUrl);
 
   const maxImageWidth = deviceWidth - paddingHorizontal * 2;

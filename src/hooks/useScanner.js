@@ -1,16 +1,17 @@
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import { useCallback, useEffect, useState } from 'react';
-import { InteractionManager, Alert as NativeAlert } from 'react-native';
+import { InteractionManager } from 'react-native';
 import { PERMISSIONS, request } from 'react-native-permissions';
+import URL from 'url-parse';
 import { Alert } from '../components/alerts';
-import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 import { checkPushNotificationPermissions } from '../model/firebase';
 import { useNavigation } from '../navigation/Navigation';
 import usePrevious from './usePrevious';
 import useWalletConnectConnections from './useWalletConnectConnections';
-import useWallets from './useWallets';
-import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
+import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
+import { Navigation } from '@rainbow-me/navigation';
+import { RAINBOW_PROFILES_BASE_URL } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { addressUtils, haptics } from '@rainbow-me/utils';
 import logger from 'logger';
@@ -67,7 +68,6 @@ function useScannerState(enabled) {
 
 export default function useScanner(enabled) {
   const { navigate } = useNavigation();
-  const { isReadOnlyWallet } = useWallets();
   const { walletConnectOnSessionRequest } = useWalletConnectConnections();
 
   const {
@@ -79,11 +79,6 @@ export default function useScanner(enabled) {
 
   const handleScanAddress = useCallback(
     address => {
-      if (isReadOnlyWallet && !enableActionsOnReadOnlyWallet) {
-        NativeAlert.alert(`You need to import the wallet in order to do this`);
-        return null;
-      }
-
       haptics.notificationSuccess();
       analytics.track('Scanned address QR code');
 
@@ -91,18 +86,32 @@ export default function useScanner(enabled) {
       navigate(Routes.WALLET_SCREEN);
 
       // And then navigate to Send sheet
-      if (isNativeStackAvailable || android) {
-        navigate(Routes.SEND_FLOW, {
-          params: { address },
-          screen: Routes.SEND_SHEET,
-        });
-      } else {
-        navigate(Routes.SEND_FLOW, { address });
-      }
+      Navigation.handleAction(Routes.SHOWCASE_SHEET, {
+        address: address,
+      });
 
-      setTimeout(enableScanning, 1000);
+      setTimeout(enableScanning, 2500);
     },
-    [enableScanning, isReadOnlyWallet, navigate]
+    [enableScanning, navigate]
+  );
+
+  const handleScanRainbowProfile = useCallback(
+    url => {
+      haptics.notificationSuccess();
+      analytics.track('Scanned Rainbow profile url');
+
+      const urlObj = new URL(url);
+      const addressOrENS = urlObj.pathname?.split('/')?.[1] || '';
+      if (checkIsValidAddressOrDomain(addressOrENS)) {
+        // First navigate to wallet screen
+        navigate(Routes.WALLET_SCREEN);
+        Navigation.handleAction(Routes.SHOWCASE_SHEET, {
+          address: addressOrENS,
+        });
+      }
+      setTimeout(enableScanning, 2500);
+    },
+    [enableScanning, navigate]
   );
 
   const handleScanWalletConnect = useCallback(
@@ -143,14 +152,18 @@ export default function useScanner(enabled) {
       const address = await addressUtils.getEthereumAddressFromQRCodeData(data);
       if (address) return handleScanAddress(address);
       if (data.startsWith('wc:')) return handleScanWalletConnect(data);
+      if (data.startsWith(RAINBOW_PROFILES_BASE_URL)) {
+        return handleScanRainbowProfile(data);
+      }
       return handleScanInvalid(data);
     },
     [
-      handleScanAddress,
-      handleScanInvalid,
-      handleScanWalletConnect,
       isScanningEnabled,
       disableScanning,
+      handleScanAddress,
+      handleScanWalletConnect,
+      handleScanRainbowProfile,
+      handleScanInvalid,
     ]
   );
 

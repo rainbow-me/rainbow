@@ -2,6 +2,7 @@ import * as React from 'react';
 import { InteractionManager, Keyboard, StyleSheet } from 'react-native';
 import { ScrollView as GHScrollView } from 'react-native-gesture-handler';
 import Animated, { Value } from 'react-native-reanimated';
+import { ScrollPagerContext } from '../navigation/ScrollPagerContext';
 
 const { event, divide, onChange, cond, eq, round, call } = Animated;
 
@@ -190,7 +191,6 @@ export default class ScrollPager extends React.Component {
           }
           contentOffset={this.initialOffset}
           directionalLockEnabled
-          id={'AnimatedScrollViewPager' + this.props.id}
           keyboardShouldPersistTaps="always"
           onMomentumScrollEnd={this.handleMomentumScrollEnd}
           onScroll={this.onScroll}
@@ -206,7 +206,9 @@ export default class ScrollPager extends React.Component {
           showsHorizontalScrollIndicator={false}
           style={styles.container}
         >
-          {children}
+          <ScrollPagerContext.Provider value={this.relativePosition}>
+            {children}
+          </ScrollPagerContext.Provider>
           <Animated.Code
             exec={onChange(
               this.relativePosition,

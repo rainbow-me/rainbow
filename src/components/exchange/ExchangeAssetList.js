@@ -108,7 +108,7 @@ const ExchangeAssetList = (
 
   // Scroll to top once the query is cleared
   if (prevQuery && prevQuery.length && !query.length) {
-    sectionListRef.current.scrollToLocation({
+    sectionListRef.current?.scrollToLocation({
       animated: true,
       itemIndex: 0,
       sectionIndex: 0,

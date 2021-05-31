@@ -34,7 +34,7 @@ const TitleText = styled(Text).attrs({
 
 const countries = values(wyreSupportedCountries).map(c =>
   c.name === 'United States'
-    ? 'United\xa0States (except CT, HI, NC, NH, NY, VA, VT)'
+    ? 'United\xa0States (except Texas and New York)'
     : c.name.replace(/ /g, '\xa0')
 );
 const countriesList = `${countries.join(', ')}`;

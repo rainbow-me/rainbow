@@ -9,6 +9,7 @@ import {
   CurrencySection,
   LanguageSection,
   NetworkSection,
+  PrivacySection,
   SettingsSection,
 } from '../components/settings-menu';
 import SettingsBackupView from '../components/settings-menu/BackupSection/SettingsBackupView';
@@ -86,6 +87,11 @@ const SettingsPages = {
     key: 'NetworkSection',
     title: 'Network',
   },
+  privacy: {
+    component: PrivacySection,
+    key: 'PrivacySection',
+    title: 'Privacy',
+  },
 };
 
 const Container = styled.View`
@@ -156,7 +162,7 @@ export default function SettingsModal() {
   const memoSettingsOptions = useMemo(() => settingsOptions(colors), [colors]);
   return (
     <Modal
-      minHeight={isTinyPhone ? 500 : 600}
+      minHeight={isTinyPhone ? 650 : 750}
       onCloseModal={goBack}
       radius={18}
       showDoneButton={ios}
@@ -184,6 +190,7 @@ export default function SettingsModal() {
                 onPressDev={onPressSection(SettingsPages.dev)}
                 onPressLanguage={onPressSection(SettingsPages.language)}
                 onPressNetwork={onPressSection(SettingsPages.network)}
+                onPressPrivacy={onPressSection(SettingsPages.privacy)}
               />
             )}
           </Stack.Screen>

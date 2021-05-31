@@ -115,7 +115,9 @@ export const gasPricesStartPolling = () => async (dispatch, getState) => {
           // Add gas estimates
           adjustedGasPrices = await etherscanGetGasEstimates(priceData);
         } catch (e) {
-          logger.log('falling back to eth gas station', e);
+          captureException(new Error('Etherscan gas estimates failed'));
+          logger.sentry('Etherscan gas estimates error:', e);
+          logger.sentry('falling back to eth gas station');
           source = 'ethGasStation';
           // Fallback to ETHGasStation if Etherscan fails
           const {
@@ -140,11 +142,12 @@ export const gasPricesStartPolling = () => async (dispatch, getState) => {
 
         fetchResolve(true);
       } catch (error) {
+        captureException(new Error('all gas estimates failed'));
+        logger.sentry('gas estimates error', error);
         dispatch({
           payload: fallbackGasPrices,
           type: GAS_PRICES_FAILURE,
         });
-        captureException(error);
         fetchReject(error);
       }
     });

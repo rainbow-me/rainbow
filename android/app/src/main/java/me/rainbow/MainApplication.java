@@ -10,7 +10,6 @@ import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import com.microsoft.codepush.react.CodePush;
 import io.branch.rnbranch.RNBranchModule;
 import me.rainbow.NativeModules.Internals.InternalPackage;
 import me.rainbow.NativeModules.RNBip39.RNBip39Package;
@@ -57,12 +56,6 @@ public class MainApplication extends Application implements ReactApplication {
            return new ReanimatedJSIModulePackage();
          }
          // */
-
-
-        @Override
-        protected String getJSBundleFile() {
-            return CodePush.getJSBundleFile();
-        }
       };
 
   @Override

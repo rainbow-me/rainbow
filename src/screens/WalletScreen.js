@@ -1,5 +1,5 @@
 import { useRoute } from '@react-navigation/core';
-import { compact, find, get, isEmpty, map } from 'lodash';
+import { compact, find, get, isEmpty, keys, map, toLower } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { StatusBar } from 'react-native';
 import Animated from 'react-native-reanimated';
@@ -22,13 +22,19 @@ import {
   useAccountSettings,
   useCoinListEdited,
   useInitializeWallet,
+  usePortfolios,
   useRefreshAccountData,
+  useUserAccounts,
   useWallets,
   useWalletSectionsData,
 } from '@rainbow-me/hooks';
 import { useCoinListEditedValue } from '@rainbow-me/hooks/useCoinListEdited';
+import { useNavigation } from '@rainbow-me/navigation';
 import { updateRefetchSavings } from '@rainbow-me/redux/data';
-import { emitChartsRequest } from '@rainbow-me/redux/explorer';
+import {
+  emitChartsRequest,
+  emitPortfolioRequest,
+} from '@rainbow-me/redux/explorer';
 import { updatePositions } from '@rainbow-me/redux/usersPositions';
 import { position } from '@rainbow-me/styles';
 
@@ -47,7 +53,9 @@ const WalletPage = styled(Page)`
 
 export default function WalletScreen() {
   const { params } = useRoute();
+  const { setParams } = useNavigation();
   const [initialized, setInitialized] = useState(!!params?.initialized);
+  const [portfoliosFetched, setPortfoliosFetched] = useState(false);
   const [fetchedCharts, setFetchedCharts] = useState(false);
   const initializeWallet = useInitializeWallet();
   const refreshAccountData = useRefreshAccountData();
@@ -56,6 +64,9 @@ export default function WalletScreen() {
   const { isReadOnlyWallet } = useWallets();
   const { isEmpty: isAccountEmpty } = useAccountEmptyState();
   const { network } = useAccountSettings();
+  const { userAccounts } = useUserAccounts();
+  const { portfolios, trackPortfolios } = usePortfolios();
+
   const {
     isWalletEthZero,
     refetchSavings,
@@ -72,8 +83,11 @@ export default function WalletScreen() {
     eth && dispatch(updatePositions);
   }, [dispatch, eth, numberOfPools]);
 
-  const assetsSocket = useSelector(
-    ({ explorer: { assetsSocket } }) => assetsSocket
+  const { addressSocket, assetsSocket } = useSelector(
+    ({ explorer: { addressSocket, assetsSocket } }) => ({
+      addressSocket,
+      assetsSocket,
+    })
   );
 
   useEffect(() => {
@@ -87,12 +101,44 @@ export default function WalletScreen() {
   }, [dispatch, refetchSavings, shouldRefetchSavings]);
 
   useEffect(() => {
-    if (!initialized) {
+    if (!initialized || (params?.emptyWallet && initialized)) {
       // We run the migrations only once on app launch
       initializeWallet(null, null, null, true);
       setInitialized(true);
+      setParams({ emptyWallet: false });
     }
-  }, [initializeWallet, initialized, params]);
+  }, [initializeWallet, initialized, params, setParams]);
+
+  useEffect(() => {
+    if (initialized && addressSocket && !portfoliosFetched) {
+      setPortfoliosFetched(true);
+      const fetchPortfolios = async () => {
+        for (let i = 0; i < userAccounts.length; i++) {
+          const account = userAccounts[i];
+          // Passing usd for consistency in tracking
+          dispatch(emitPortfolioRequest(toLower(account.address), 'usd'));
+        }
+      };
+      fetchPortfolios();
+    }
+  }, [
+    addressSocket,
+    dispatch,
+    initialized,
+    portfolios,
+    portfoliosFetched,
+    userAccounts,
+  ]);
+
+  useEffect(() => {
+    if (
+      !isEmpty(portfolios) &&
+      portfoliosFetched &&
+      keys(portfolios).length === userAccounts.length
+    ) {
+      trackPortfolios();
+    }
+  }, [portfolios, portfoliosFetched, trackPortfolios, userAccounts.length]);
 
   useEffect(() => {
     if (initialized && assetsSocket && !fetchedCharts) {

@@ -8,7 +8,8 @@ describe('New Wallet flow', () => {
   });
 
   it('go to the wallet screen after pressing "Get a new wallet" button', async () => {
-    await Helpers.tap('new-wallet-button');
+    await Helpers.disableSynchronization();
+    await Helpers.waitAndTap('new-wallet-button');
     if (device.getPlatform() === 'android') {
       await Helpers.checkIfVisible('pin-authentication-screen');
       // Set the pin
@@ -16,7 +17,8 @@ describe('New Wallet flow', () => {
       // Confirm it
       await Helpers.authenticatePin('1234');
     }
-    await Helpers.checkIfVisible('wallet-screen');
+    await Helpers.checkIfVisible('wallet-screen', 40000);
+    await Helpers.enableSynchronization();
   });
 
   // Saving for now in case we want to test iCloud back up sheet
@@ -32,11 +34,10 @@ describe('New Wallet flow', () => {
 
   it('should show "No transactions yet" in the activity list', async () => {
     if (device.getPlatform() === 'android') {
-      await Helpers.tap('navbar-profile-button');
+      await Helpers.waitAndTap('navbar-profile-button');
       await Helpers.checkIfElementByTextIsVisible('No transactions yet');
     } else {
-      await Helpers.tap('navbar-profile-button');
-      await Helpers.delay(2000);
+      await Helpers.waitAndTap('navbar-profile-button');
       await Helpers.checkForElementByLabel('no-transactions-yet-label');
     }
   });

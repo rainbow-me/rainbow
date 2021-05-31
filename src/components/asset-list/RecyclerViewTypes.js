@@ -13,6 +13,7 @@ import { FloatingActionButtonSize } from '../fab';
 import { ListFooter } from '../list';
 import PoolsListWrapper from '../pools/PoolsListWrapper';
 import SavingsListWrapper from '../savings/SavingsListWrapper';
+import { Header } from '../showcase/ShowcaseHeader';
 import { TokenFamilyHeaderHeight } from '../token-family';
 import { UniqueTokenRow } from '../unique-token';
 import AssetListHeader, { AssetListHeaderHeight } from './AssetListHeader';
@@ -41,11 +42,20 @@ const editModeAdditionalHeight = 100;
 
 export const ViewTypes = {
   HEADER: {
-    calculateHeight: ({ hideHeader }) =>
+    calculateHeight: ({ hideHeader = false }) =>
       hideHeader ? 0 : AssetListHeaderHeight,
     index: 0,
     renderComponent: ({ data, isCoinListEdited }) => {
       return <AssetListHeader {...data} isCoinListEdited={isCoinListEdited} />;
+    },
+    visibleDuringCoinEdit: true,
+  },
+
+  SHOWCASE_HEADER: {
+    calculateHeight: () => 380,
+    index: 8,
+    renderComponent: data => {
+      return <Header {...data} />;
     },
     visibleDuringCoinEdit: true,
   },

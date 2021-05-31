@@ -12,6 +12,47 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.5.9](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.9)
+
+### Added
+* Bumped React Native 0.64
+
+### Changed
+* Settings Modal Height
+* Sharing URL Adjustments
+
+
+
+## [1.5.8](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.8)
+
+### Added
+* Rainbow Web Profiles
+* Swap / Deposit / Withdraw Analytics
+
+### Changed
+* Fixed Speeding Up ERC20 Send
+* OpenSea Adjustments
+* Gas Fixes
+
+## [1.5.7](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.7)
+
+### Added
+* Increased Analytics Tracking
+
+### Changed
+* Patched WalletConnect 
+* Bumped Token List
+
+## [1.5.6](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.6)
+
+### Added
+* Added Accounts to Send Sheet
+
+### Changed
+* Expanded Asset Improvements
+* Improved Add Cash Error Messaging
+* Increased Search Debounce
+
 ## [1.5.5](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.5)
 
 ### Changed

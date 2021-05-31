@@ -9,6 +9,7 @@ import Reanimated, {
   timing,
 } from 'react-native-reanimated';
 import { useValue } from 'react-native-redash';
+import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import styled from 'styled-components';
 import { useMemoOne } from 'use-memo-one';
 import RainbowGreyNeon from '../assets/rainbows/greyneon.png';
@@ -345,7 +346,7 @@ function colorAnimation(rValue, fromShadow) {
 
 export default function WelcomeScreen() {
   const { colors } = useTheme();
-  const { replace, navigate } = useNavigation();
+  const { replace, navigate, dangerouslyGetState } = useNavigation();
   const contentAnimation = useAnimatedValue(1);
   const hideSplashScreen = useHideSplashScreen();
   const createWalletButtonAnimation = useAnimatedValue(1);
@@ -441,11 +442,12 @@ export default function WelcomeScreen() {
   const backgroundColor = useMemoOne(() => colorAnimation(rValue, false), []);
 
   const onCreateWallet = useCallback(async () => {
-    replace(Routes.SWIPE_LAYOUT, {
+    const operation = dangerouslyGetState().index === 1 ? navigate : replace;
+    operation(Routes.SWIPE_LAYOUT, {
       params: { emptyWallet: true },
       screen: Routes.WALLET_SCREEN,
     });
-  }, [replace]);
+  }, [dangerouslyGetState, navigate, replace]);
 
   const createWalletButtonProps = useMemoOne(() => {
     const color = colorAnimation(rValue, true);
@@ -497,6 +499,10 @@ export default function WelcomeScreen() {
       backgroundColor,
     };
   }, [rValue]);
+
+  useAndroidBackHandler(() => {
+    return true;
+  });
 
   return (
     <Container testID="welcome-screen">

@@ -20,24 +20,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <mach/mach.h>
 
-#if DEBUG
-#import <FlipperKit/FlipperClient.h>
-#import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
-#import <FlipperKitUserDefaultsPlugin/FKUserDefaultsPlugin.h>
-#import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
-#import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
-#import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
 
-static void InitializeFlipper(UIApplication *application) {
-  FlipperClient *client = [FlipperClient sharedClient];
-  SKDescriptorMapper *layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWithDefaults];
-  [client addPlugin:[[FlipperKitLayoutPlugin alloc] initWithRootNode:application withDescriptorMapper:layoutDescriptorMapper]];
-  [client addPlugin:[[FKUserDefaultsPlugin alloc] initWithSuiteName:nil]];
-  [client addPlugin:[FlipperKitReactPlugin new]];
-  [client addPlugin:[[FlipperKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
-  [client start];
-}
-#endif
 
 @interface RainbowSplashScreenManager : NSObject <RCTBridgeModule>
 @end
@@ -75,36 +58,11 @@ RCT_EXPORT_METHOD(hideAnimated) {
   }];
 }
 
-- (void)applicationDidReceiveMemoryWarning:(UIApplication *)application {
-  SentryMessage *msg = [[SentryMessage alloc] initWithFormatted:@"applicationDidReceiveMemoryWarning was called"];
-  SentryEvent *sentryEvent = [[SentryEvent alloc] init];
-  [sentryEvent setMessage: msg];
-  [SentrySDK captureEvent:sentryEvent];
-  struct task_basic_info info;
-  mach_msg_type_number_t size = TASK_BASIC_INFO_COUNT;
-  kern_return_t kerr = task_info(mach_task_self(),
-                                 TASK_BASIC_INFO,
-                                 (task_info_t)&info,
-                                 &size);
-  if( kerr == KERN_SUCCESS ) {
-    NSString* memInMBWarn = [NSString stringWithFormat: @"Memory in use (in MiB): %f", ((CGFloat)info.resident_size / 1048576)];
-    SentryMessage *msg = [[SentryMessage alloc] initWithFormatted:memInMBWarn];
-    SentryEvent *sentryEvent = [[SentryEvent alloc] init];
-    [sentryEvent setMessage: msg];
-    [SentrySDK captureEvent:sentryEvent];
-  }
-}
-
-
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
 
   // Developer support; define whether internal support has been declared for this build.
   NSLog(@"⚙️ Rainbow internals are %@.", RAINBOW_INTERNALS_ENABLED ? @"enabled" : @"disabled");
-
-  #if DEBUG
-    InitializeFlipper(application);
-  #endif
 
   [FIRApp configure];
   // Define UNUserNotificationCenter

@@ -316,7 +316,7 @@ export default function ChartExpandedState({ asset }) {
             <TokenInfoItem asset={asset} title="Balance">
               <TokenInfoBalanceValue />
             </TokenInfoItem>
-            {asset?.native?.price.display && (
+            {asset?.native?.balance.display && (
               <TokenInfoItem title="Value" weight="bold">
                 {asset?.native?.balance.display}
               </TokenInfoItem>
@@ -341,6 +341,8 @@ export default function ChartExpandedState({ asset }) {
               fullWidth={!showSwapButton}
               inputType={AssetInputTypes.out}
               label={`􀖅 Get ${asset?.symbol}`}
+              requireVerification
+              verified={asset?.isVerified}
               weight="heavy"
             />
           )}

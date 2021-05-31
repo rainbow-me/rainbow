@@ -1,3 +1,4 @@
+import { BottomSheetScrollView, useBottomSheet } from '@gorhom/bottom-sheet';
 import { findIndex, get } from 'lodash';
 import React, {
   useCallback,
@@ -21,7 +22,6 @@ import {
   LayoutProvider,
   RecyclerListView,
 } from 'recyclerlistview';
-
 import {
   RecyclerListViewProps,
   RecyclerListViewState,
@@ -124,6 +124,12 @@ export type RecyclerAssetListReduxProps = {
   };
 };
 
+const NoStickyContainer = ({
+  children,
+}: {
+  children: JSX.Element;
+}): JSX.Element => children;
+
 export type RecyclerAssetListProps = {
   readonly isCoinListEdited: boolean;
   readonly fetchData: () => Promise<unknown>;
@@ -144,6 +150,11 @@ export type RecyclerAssetListProps = {
     readonly [key: string]: boolean;
   };
   readonly openSavings: boolean;
+  readonly openFamilies?: boolean;
+  readonly showcase?: boolean;
+  readonly disableStickyHeaders?: boolean;
+  readonly disableAutoScrolling?: boolean;
+  readonly disableRefreshControl?: boolean;
   readonly openSmallBalances: boolean;
 };
 
@@ -161,6 +172,10 @@ function RecyclerAssetList({
   hideHeader,
   renderAheadOffset = deviceUtils.dimensions.height,
   setIsBlockingUpdate,
+  showcase,
+  disableStickyHeaders,
+  disableAutoScrolling,
+  disableRefreshControl,
   ...extras
 }: RecyclerAssetListProps): JSX.Element {
   const { ref, handleRef } = useRecyclerListViewRef();
@@ -198,7 +213,10 @@ function RecyclerAssetList({
         ]);
         if (section.collectibles) {
           section.data.forEach((item, index) => {
-            if (item.isHeader || openFamilyTabs[item.familyName]) {
+            if (
+              item.isHeader ||
+              openFamilyTabs[item.familyName + showcase ? '-showcase' : '']
+            ) {
               ctx.push({
                 familySectionIndex: index,
                 item: { ...item, ...section.perData },
@@ -228,7 +246,7 @@ function RecyclerAssetList({
       sectionsIndices,
       stickyComponentsIndices,
     };
-  }, [openFamilyTabs, sections]);
+  }, [openFamilyTabs, sections, showcase]);
 
   // Defines the position of the coinDivider, if it exists.
   const coinDividerIndex = useMemo<number>(() => {
@@ -316,7 +334,10 @@ function RecyclerAssetList({
       }
 
       if (type.index === ViewTypes.HEADER.index) {
-        return ViewTypes.HEADER.renderComponent({
+        return (showcase
+          ? ViewTypes.SHOWCASE_HEADER
+          : ViewTypes.HEADER
+        ).renderComponent({
           data,
           isCoinListEdited,
         });
@@ -349,7 +370,7 @@ function RecyclerAssetList({
       }
       return null;
     },
-    [isCoinListEdited, sections]
+    [isCoinListEdited, sections, showcase]
   );
 
   const animator = useMemo(
@@ -394,7 +415,10 @@ function RecyclerAssetList({
             };
           }
           return {
-            height: ViewTypes.HEADER.calculateHeight({
+            height: (showcase
+              ? ViewTypes.SHOWCASE_HEADER
+              : ViewTypes.HEADER
+            ).calculateHeight({
               hideHeader,
             }),
             index: ViewTypes.HEADER.index,
@@ -509,7 +533,8 @@ function RecyclerAssetList({
                 isHeader,
                 isOpen:
                   openFamilyTabs[
-                    sections[collectiblesIndex].data[familyIndex].familyName
+                    sections[collectiblesIndex].data[familyIndex].familyName +
+                      (showcase ? '-showcase' : '')
                   ],
               }),
               index: ViewTypes.UNIQUE_TOKEN_ROW.index,
@@ -548,19 +573,23 @@ function RecyclerAssetList({
     paddingBottom,
     sections,
     sectionsIndices,
+    showcase,
   ]);
 
   const scrollViewProps = useMemo(
-    (): Partial<ScrollViewProps> => ({
-      refreshControl: (
-        <StyledRefreshControl
-          onRefresh={handleRefresh}
-          refreshing={isRefreshing}
-          tintColor={colors.alpha(colors.blueGreyDark, 0.4)}
-        />
-      ),
-    }),
-    [handleRefresh, isRefreshing, colors]
+    (): Partial<ScrollViewProps> =>
+      disableRefreshControl
+        ? {}
+        : {
+            refreshControl: (
+              <StyledRefreshControl
+                onRefresh={handleRefresh}
+                refreshing={isRefreshing}
+                tintColor={colors.alpha(colors.blueGreyDark, 0.4)}
+              />
+            ),
+          },
+    [disableRefreshControl, handleRefresh, isRefreshing, colors]
   );
 
   const extendedState = useMemo(() => ({ sectionsIndices }), [sectionsIndices]);
@@ -571,8 +600,10 @@ function RecyclerAssetList({
 
   const scrollToOffset = useCallback(
     (offsetY: number, animated: boolean = false) =>
-      requestAnimationFrame(() => ref?.scrollToOffset(0, offsetY, animated)),
-    [ref]
+      requestAnimationFrame(
+        () => !disableAutoScrolling && ref?.scrollToOffset(0, offsetY, animated)
+      ),
+    [disableAutoScrolling, ref]
   );
   useEffect(() => {
     requestAnimationFrame(() => ref?.scrollToTop(false));
@@ -607,8 +638,12 @@ function RecyclerAssetList({
       let i = 0;
       while (i < collectibles.data.length) {
         if (
-          openFamilyTabs[collectibles.data[i].familyName] === true &&
-          !lastOpenFamilyTabs[collectibles.data[i].familyName]
+          openFamilyTabs[
+            collectibles.data[i].familyName + (showcase ? '-showcase' : '')
+          ] === true &&
+          !lastOpenFamilyTabs[
+            collectibles.data[i].familyName + (showcase ? '-showcase' : '')
+          ]
         ) {
           const safeIndex = i;
           const safeCollectibles = collectibles;
@@ -703,21 +738,35 @@ function RecyclerAssetList({
     openFamilyTabs,
     paddingBottom,
     scrollToOffset,
+    showcase,
   ]);
+
+  const MaybeStickyContainer = disableStickyHeaders
+    ? NoStickyContainer
+    : StickyContainer;
+
+  const isInsideBottomSheet = !!useBottomSheet();
 
   return (
     <StyledContainer onLayout={onLayout}>
       {/* @ts-ignore */}
-      <StickyContainer
+      <MaybeStickyContainer
         overrideRowRenderer={stickyRowRenderer}
         stickyHeaderIndices={
-          isCoinListEdited ? defaultIndices : stickyComponentsIndices
+          disableStickyHeaders
+            ? []
+            : isCoinListEdited
+            ? defaultIndices
+            : stickyComponentsIndices
         }
       >
         {/* @ts-ignore */}
         <StyledRecyclerListView
           dataProvider={dataProvider}
           extendedState={extendedState}
+          {...(isInsideBottomSheet && {
+            externalScrollView: BottomSheetScrollView,
+          })}
           itemAnimator={animator}
           layoutProvider={layoutProvider}
           onScroll={onScroll}
@@ -727,7 +776,7 @@ function RecyclerAssetList({
           scrollViewProps={scrollViewProps}
           {...extras}
         />
-      </StickyContainer>
+      </MaybeStickyContainer>
       <View
         pointerEvents="none"
         ref={stickyCoinDividerRef}

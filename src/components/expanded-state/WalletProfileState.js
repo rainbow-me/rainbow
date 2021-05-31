@@ -74,14 +74,19 @@ export default function WalletProfileState({
   isNewProfile,
   onCloseModal,
   profile,
+  forceColor,
 }) {
   const nameEmoji = returnStringFirstEmoji(profile?.name);
   const { goBack, navigate } = useNavigation();
   const { accountImage } = useAccountProfile();
 
   const { colors } = useTheme();
+
+  const indexOfForceColor = colors.avatarColor.indexOf(forceColor);
   const [color, setColor] = useState(
-    (profile.color !== null && profile.color) || getRandomColor()
+    (profile.color !== null && profile.color) ||
+      (indexOfForceColor !== -1 && indexOfForceColor) ||
+      getRandomColor()
   );
 
   const [value, setValue] = useState(
@@ -171,6 +176,7 @@ export default function WalletProfileState({
             color={colors.alpha(colors.blueGreyDark, 0.6)}
             letterSpacing="roundedMedium"
             weight="medium"
+            {...(android && { lineHeight: 21 })}
           >
             Cancel
           </WalletProfileButtonText>

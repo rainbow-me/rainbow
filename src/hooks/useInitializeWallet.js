@@ -132,14 +132,14 @@ export default function useInitializeWallet() {
       }
     },
     [
-      resetAccountState,
       dispatch,
       hideSplashScreen,
       initializeAccountData,
       initializeDiscoverData,
-      loadGlobalData,
       loadAccountData,
+      loadGlobalData,
       network,
+      resetAccountState,
     ]
   );
 

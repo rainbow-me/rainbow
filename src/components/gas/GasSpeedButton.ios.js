@@ -7,24 +7,30 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { LayoutAnimation } from 'react-native';
-import { BorderlessButton } from 'react-native-gesture-handler';
+import { LayoutAnimation, View } from 'react-native';
+import {
+  BorderlessButton,
+  TouchableOpacity,
+} from 'react-native-gesture-handler';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import styled from 'styled-components';
 import { darkModeThemeColors } from '../../styles/colors';
 import { Alert } from '../alerts';
 import { ButtonPressAnimation } from '../animations';
+import { Icon } from '../icons';
 import { Input } from '../inputs';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
 import GasSpeedLabelPager from './GasSpeedLabelPager';
 import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
 import { useAccountSettings, useGas } from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
 import { gweiToWei, weiToGwei } from '@rainbow-me/parsers';
+import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
 import { gasUtils, magicMemo } from '@rainbow-me/utils';
 
-const { GasSpeedOrder, CUSTOM, FAST, SLOW } = gasUtils;
+const { GasSpeedOrder, CUSTOM, FAST, NORMAL, SLOW } = gasUtils;
 
 const Container = styled(Column).attrs({
   hapticType: 'impactHeavy',
@@ -325,7 +331,21 @@ const GasSpeedButton = ({
       return;
     }
 
-    if (minGasPrice && Number(customGasPriceInput) < minGasPrice) {
+    const minKey = options.indexOf(SLOW) !== -1 ? SLOW : NORMAL;
+
+    const minGasPriceAllowed = Number(
+      gasPricesAvailable?.[minKey]?.value?.amount || 0
+    );
+
+    // The minimum gas for the tx is the higher amount between:
+    // - 10% more than the submitted gas of the previous tx (If speeding up / cancelling)
+    // - The new "normal" gas price from our third party API
+
+    const minimumGasAcceptedForTx = minGasPrice
+      ? Math.max(minGasPrice, minGasPriceAllowed)
+      : minGasPriceAllowed;
+
+    if (minGasPrice && Number(customGasPriceInput) < minimumGasAcceptedForTx) {
       Alert({
         buttons: [
           {
@@ -333,20 +353,17 @@ const GasSpeedButton = ({
             text: 'OK',
           },
         ],
-        message: `The minimum gas price valid allowed is ${minGasPrice} GWEI`,
+        message: `The minimum gas price valid allowed is ${minimumGasAcceptedForTx} GWEI`,
         title: 'Gas Price Too Low',
       });
       return;
     }
 
     const priceInWei = gweiToWei(customGasPriceInput);
-    const minGasPriceSlow = Number(
-      gasPricesAvailable?.slow?.value?.amount || 0
-    );
     const maxGasPriceFast = Number(
       gasPricesAvailable?.fast?.value?.amount || 0
     );
-    let tooLow = priceInWei < minGasPriceSlow;
+    let tooLow = priceInWei < minGasPriceAllowed;
     let tooHigh = priceInWei > maxGasPriceFast * 2.5;
 
     if (tooLow || tooHigh) {
@@ -375,15 +392,21 @@ const GasSpeedButton = ({
   }, [
     customGasPriceInput,
     inputFocused,
+    options,
+    gasPricesAvailable,
     minGasPrice,
-    gasPricesAvailable?.slow?.value?.amount,
-    gasPricesAvailable?.fast?.value?.amount,
     dontBlur,
     handleCustomGasBlur,
   ]);
 
   const focusOnInput = useCallback(() => inputRef.current?.focus(), []);
   const isCustom = selectedGasPriceOption === CUSTOM ? true : false;
+
+  const { navigate } = useNavigation();
+
+  const openGasHelper = useCallback(() => navigate(Routes.EXPLAIN_SHEET), [
+    navigate,
+  ]);
 
   return (
     <Container as={ButtonPressAnimation} onPress={handlePress} testID={testID}>
@@ -456,15 +479,28 @@ const GasSpeedButton = ({
       </Row>
       <Row justify="space-between">
         {!isCustom ? (
-          <Label
-            color={
-              theme === 'dark'
-                ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)
-                : colors.alpha(colors.blueGreyDark, 0.6)
-            }
-          >
-            Network Fee
-          </Label>
+          <TouchableOpacity onPress={openGasHelper}>
+            <Label
+              color={
+                theme === 'dark'
+                  ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)
+                  : colors.alpha(colors.blueGreyDark, 0.6)
+              }
+            >
+              Network Fee
+              <View style={{ paddingLeft: 4 }}>
+                <Icon
+                  color={
+                    theme === 'dark'
+                      ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)
+                      : colors.alpha(colors.blueGreyDark, 0.6)
+                  }
+                  name="info"
+                  size={10}
+                />
+              </View>
+            </Label>
+          </TouchableOpacity>
         ) : (
           <LittleBorderlessButton
             onPress={handleInputButtonManager}

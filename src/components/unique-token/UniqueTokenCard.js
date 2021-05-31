@@ -25,7 +25,7 @@ const UniqueTokenCard = ({
   disabled,
   enableHapticFeedback = true,
   height,
-  item: { background, image_preview_url, ...item },
+  item,
   onPress,
   resizeMode,
   scaleTo = 0.96,
@@ -46,6 +46,8 @@ const UniqueTokenCard = ({
     colors,
   ]);
 
+  const imageUrl =
+    item.image_preview_url || item.image_url || item.image_original_url;
   return (
     <Container
       as={ButtonPressAnimation}
@@ -57,8 +59,8 @@ const UniqueTokenCard = ({
     >
       <Content {...props} height={height} style={style} width={width}>
         <UniqueTokenImage
-          backgroundColor={background || colors.lightestGrey}
-          imageUrl={image_preview_url}
+          backgroundColor={item.background || colors.lightestGrey}
+          imageUrl={imageUrl}
           item={item}
           resizeMode={resizeMode}
         />
