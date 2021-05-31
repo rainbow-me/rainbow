@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { LayoutAnimation, View } from 'react-native';
+import { LayoutAnimation } from 'react-native';
 import {
   BorderlessButton,
   TouchableOpacity,
@@ -17,7 +17,6 @@ import styled from 'styled-components';
 import { darkModeThemeColors } from '../../styles/colors';
 import { Alert } from '../alerts';
 import { ButtonPressAnimation } from '../animations';
-import { Icon } from '../icons';
 import { Input } from '../inputs';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
@@ -487,18 +486,16 @@ const GasSpeedButton = ({
                   : colors.alpha(colors.blueGreyDark, 0.6)
               }
             >
-              Network Fee
-              <View style={{ paddingLeft: 4 }}>
-                <Icon
-                  color={
-                    theme === 'dark'
-                      ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)
-                      : colors.alpha(colors.blueGreyDark, 0.6)
-                  }
-                  name="info"
-                  size={10}
-                />
-              </View>
+              Network Fee{' '}
+              <Label
+                color={
+                  theme === 'dark'
+                    ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.4)
+                    : colors.alpha(colors.blueGreyDark, 0.4)
+                }
+              >
+                􀅵
+              </Label>
             </Label>
           </TouchableOpacity>
         ) : (

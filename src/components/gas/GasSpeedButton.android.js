@@ -15,7 +15,6 @@ import {
   ButtonPressAnimation,
   ScaleButtonZoomableAndroid,
 } from '../animations';
-import { Icon } from '../icons';
 import { Input } from '../inputs';
 import { Column, Row } from '../layout';
 import { AnimatedNumber, Text } from '../text';
@@ -520,18 +519,16 @@ const GasSpeedButton = ({
                 }
                 height={10}
               >
-                Network Fee
-                <View style={{ paddingLeft: 4 }}>
-                  <Icon
-                    color={
-                      theme === 'dark'
-                        ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)
-                        : colors.alpha(colors.blueGreyDark, 0.6)
-                    }
-                    name="info"
-                    size={10}
-                  />
-                </View>
+                Network Fee{' '}
+                <Label
+                  color={
+                    theme === 'dark'
+                      ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.4)
+                      : colors.alpha(colors.blueGreyDark, 0.4)
+                  }
+                >
+                  􀅵
+                </Label>
               </Label>
             </ButtonPressAnimation>
           ) : (
