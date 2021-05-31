@@ -1,4 +1,3 @@
-import { sortBy } from 'lodash';
 import { Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { cloudPlatform } from '../utils/platform';
@@ -12,7 +11,7 @@ import walletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import { walletsUpdate } from '@rainbow-me/redux/wallets';
 import Routes from '@rainbow-me/routes';
-import { logger, showActionSheetWithOptions } from '@rainbow-me/utils';
+import { showActionSheetWithOptions } from '@rainbow-me/utils';
 
 export default function useManageCloudBackups() {
   const dispatch = useDispatch();
@@ -36,7 +35,6 @@ export default function useManageCloudBackups() {
       async buttonIndex => {
         if (buttonIndex === 0) {
           const { files } = await fetchAllBackups();
-          logger.log(JSON.stringify(files, null, 2));
           const filteredFiles = files.filter(
             file => file.name.indexOf('backup_') !== -1
           );
@@ -52,37 +50,59 @@ export default function useManageCloudBackups() {
             const name = `Backup ${i + 1} - ${date.toLocaleDateString()}`;
             return name;
           });
-          // Delete wallet with confirmation
-          showActionSheetWithOptions(
-            {
-              cancelButtonIndex: backupFiles.length,
-              message: `Restore a wallet from a ${cloudPlatform} backups`,
-              options: backupFiles.concat(['Cancel']),
-            },
-            async buttonIndex => {
-              const sortedBackups = sortBy(
-                filteredFiles,
-                'lastModified'
-              ).reverse();
-              const mostRecentBackup = sortedBackups[0];
-              let userData = null;
-              let backupSelected = null;
-              // If the backup is the latest, we use the normal restore flow
-              // To preserve account names, colors, etc
-              if (mostRecentBackup.name === filteredFiles[buttonIndex].name) {
-                userData = await fetchUserDataFromCloud();
-              } else {
-                backupSelected = filteredFiles[buttonIndex];
-              }
 
-              navigate(Routes.RESTORE_SHEET, {
-                backupSelected,
-                fromSettings: true,
-                step: walletBackupStepTypes.cloud,
-                userData,
-              });
-            }
-          );
+          if (filteredFiles.length > 1) {
+            // Choose backup
+            showActionSheetWithOptions(
+              {
+                cancelButtonIndex: backupFiles.length,
+                message: `Choose your ${cloudPlatform} backups`,
+                options: backupFiles.concat(['Cancel']),
+              },
+              async buttonIndex => {
+                showActionSheetWithOptions(
+                  {
+                    cancelButtonIndex: 1,
+                    destructiveButtonIndex: 0,
+                    message: `This will override all your current wallets. Are you sure?`,
+                    options: [`Yes, Restore my backup`, 'Cancel'],
+                  },
+                  async actionIndex => {
+                    if (actionIndex === 0) {
+                      const potentialUserData = await fetchUserDataFromCloud();
+                      let backupSelected = null;
+                      let userData = null;
+                      // If the backup is the latest, we use the normal restore flow
+                      // To preserve account names, colors, etc
+                      const isUserdataAvailableForThisBackup =
+                        potentialUserData
+                          .toString()
+                          .indexOf(filteredFiles[buttonIndex].name) !== -1;
+                      if (isUserdataAvailableForThisBackup) {
+                        userData = potentialUserData;
+                      } else {
+                        backupSelected = filteredFiles[buttonIndex];
+                      }
+
+                      navigate(Routes.RESTORE_SHEET, {
+                        backupSelected,
+                        fromSettings: true,
+                        step: walletBackupStepTypes.cloud,
+                        userData,
+                      });
+                    }
+                  }
+                );
+              }
+            );
+          } else {
+            const userData = await fetchUserDataFromCloud();
+            navigate(Routes.RESTORE_SHEET, {
+              fromSettings: true,
+              step: walletBackupStepTypes.cloud,
+              userData: userData,
+            });
+          }
         } else if (buttonIndex === 1) {
           // Delete wallet with confirmation
           showActionSheetWithOptions(
