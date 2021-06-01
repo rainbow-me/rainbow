@@ -236,6 +236,8 @@ android {
             signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            // Detox-specific additions to pro-guard
+            proguardFile "${rootProject.projectDir}/../node_modules/detox/android/detox/proguard-rules-app.pro"
         }
     }
 
@@ -291,7 +293,7 @@ dependencies {
     }
 
     // DETOX
-    androidTestImplementation(project(path: ":detox"))
+    androidTestImplementation('com.wix:detox:+')
 
 }
 
