@@ -9,6 +9,7 @@ import { Platform } from 'react-native';
 import { LongPressGestureHandler } from 'react-native-gesture-handler';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, {
+  runOnJS,
   useAnimatedGestureHandler,
   useAnimatedReaction,
   useAnimatedStyle,
@@ -639,21 +640,15 @@ function ChartPath({
     return {
       opacity: pathOpacity.value * (1 - selectedOpacity) + selectedOpacity,
     };
-  }, undefined);
+  });
 
-  const animatedStyleWrapper = useAnimatedStyle(() => ({
-    display: path.value === '' ? 'none' : 'flex',
-  }));
-
-  const [key, setKey] = useState('-empty');
+  const [pathState, setPath] = useState('');
   useAnimatedReaction(
     () => path.value === '',
-    isEmptyPath => {
-      if (!isEmptyPath) {
-        setKey('');
-      }
+    () => {
+      runOnJS(setPath)(path.value);
     },
-    [setKey]
+    [setPath]
   );
 
   return (
@@ -661,34 +656,48 @@ function ChartPath({
       value={{
         animatedProps,
         animatedStyle,
-        animatedStyleWrapper,
         gestureEnabled,
         height,
         longPressGestureHandlerProps,
         onLongPressGestureEvent,
+        pathState,
         props,
+        strokeWidth,
         style,
         width,
       }}
     >
-      {__disableRendering ? children : <SvgComponent key={'path' + key} />}
+      {__disableRendering ? children : <SvgComponent />}
     </InternalContext.Provider>
   );
+}
+
+function useDelayedValue(value) {
+  const [delayedValue, setValue] = useState(value);
+
+  useEffect(() => {
+    setValue(value);
+  }, [setValue, value]);
+
+  return delayedValue;
 }
 
 export function SvgComponent() {
   const {
     style,
     animatedStyle,
-    animatedStyleWrapper,
     height,
     width,
     animatedProps,
     props,
     onLongPressGestureEvent,
     gestureEnabled,
+    pathState,
+    strokeWidth,
     longPressGestureHandlerProps,
   } = useContext(InternalContext);
+
+  const delayedPathValue = useDelayedValue(pathState === '');
   return (
     <LongPressGestureHandler
       enabled={gestureEnabled}
@@ -699,19 +708,19 @@ export function SvgComponent() {
       {...{ onGestureEvent: onLongPressGestureEvent }}
     >
       <Animated.View style={{ height: height + 20 }}>
-        <Animated.View style={animatedStyleWrapper}>
-          <Svg
-            height={height + 20} // temporary fix for clipped chart
-            viewBox={`0 0 ${width} ${height}`}
-            width={width}
-          >
-            <AnimatedPath
-              animatedProps={animatedProps}
-              {...props}
-              style={[style, animatedStyle]}
-            />
-          </Svg>
-        </Animated.View>
+        <Svg
+          height={height + 20} // temporary fix for clipped chart
+          viewBox={`0 0 ${width} ${height}`}
+          width={width}
+        >
+          <AnimatedPath
+            {...(delayedPathValue ? { animatedProps } : {})}
+            d={pathState}
+            strokeWidth={strokeWidth}
+            {...props}
+            style={[style, ...(delayedPathValue ? [animatedStyle] : [])]}
+          />
+        </Svg>
       </Animated.View>
     </LongPressGestureHandler>
   );
