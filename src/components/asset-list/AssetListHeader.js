@@ -24,20 +24,21 @@ const AccountName = styled(TruncatedText).attrs({
   letterSpacing: 'roundedMedium',
   size: 'big',
   truncationLength: 4,
-  weight: 'bold',
+  weight: 'heavy',
 })`
-  height: ${android ? '38' : '33'};
-  margin-top: ${android ? '-10' : '-1'};
-  margin-bottom: ${android ? '10' : '1'};
-  max-width: ${({ deviceWidth }) => deviceWidth - dropdownArrowWidth - 60};
+  height: ${android ? '35' : '30'};
+  margin-top: ${android ? '-10' : '2'};
+  margin-bottom: ${android ? '10' : '0'};
+  max-width: ${({ deviceWidth, totalValueLength }) =>
+    deviceWidth - dropdownArrowWidth - 57 - totalValueLength * 15};
   padding-right: 6;
 `;
 
 const DropdownArrow = styled(Centered)`
-  height: 9;
-  height: 28px;
   border-radius: 15px;
-  width: 28px;
+  height: 30px;
+  margin-top: 2px;
+  width: 30px;
 `;
 
 const AssetListHeader = ({
@@ -69,23 +70,25 @@ const AssetListHeader = ({
       {!title && (
         <ButtonPressAnimation onPress={onChangeWallet}>
           <Row>
-            <AccountName deviceWidth={deviceWidth}>{accountName}</AccountName>
-            <DropdownArrow>
-              <LinearGradient
-                borderRadius={49}
-                colors={colors.gradients.savings}
-                end={{ x: 0.5, y: 1 }}
-                pointerEvents="none"
-                start={{ x: 0.5, y: 0 }}
-                style={position.coverAsObject}
-              />
-              <Icon
-                color={colors.dark}
-                direction="down"
-                name="caret"
-                size={7}
-              />
-            </DropdownArrow>
+            <AccountName
+              deviceWidth={deviceWidth}
+              totalValueLength={totalValue.length}
+            >
+              {accountName}
+            </AccountName>
+            {accountName && (
+              <DropdownArrow>
+                <LinearGradient
+                  borderRadius={15}
+                  colors={colors.gradients.lightestGrey}
+                  end={{ x: 0.5, y: 1 }}
+                  pointerEvents="none"
+                  start={{ x: 0.5, y: 0 }}
+                  style={position.coverAsObject}
+                />
+                <Icon name="walletSwitcherCaret" />
+              </DropdownArrow>
+            )}
           </Row>
         </ButtonPressAnimation>
       )}

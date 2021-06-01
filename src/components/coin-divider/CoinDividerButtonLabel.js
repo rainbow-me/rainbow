@@ -12,11 +12,14 @@ const LabelText = styled(Text).attrs(({ theme: { colors } }) => ({
 }))`
   position: absolute;
   top: ${android ? -15.25 : -10.25};
+  width: ${({ shareButton }) => shareButton && '100%'};
 `;
 
-const CoinDividerButtonLabel = ({ isVisible, label }) => (
+const CoinDividerButtonLabel = ({ align, isVisible, label, shareButton }) => (
   <OpacityToggler isVisible={isVisible}>
-    <LabelText>{label}</LabelText>
+    <LabelText align={align} shareButton={shareButton}>
+      {label}
+    </LabelText>
   </OpacityToggler>
 );
 
