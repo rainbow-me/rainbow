@@ -27,8 +27,8 @@ const AccountName = styled(TruncatedText).attrs({
   weight: 'heavy',
 })`
   height: ${android ? '35' : '30'};
-  margin-top: ${android ? '-10' : '2'};
-  margin-bottom: ${android ? '10' : '0'};
+  margin-top: 2;
+  margin-bottom: ${android ? '8' : '0'};
   max-width: ${({ deviceWidth, totalValueLength }) =>
     deviceWidth - dropdownArrowWidth - 57 - totalValueLength * 15};
   padding-right: 6;
@@ -37,7 +37,7 @@ const AccountName = styled(TruncatedText).attrs({
 const DropdownArrow = styled(Centered)`
   border-radius: 15px;
   height: 30px;
-  margin-top: 2px;
+  margin-top: ${android ? '8px' : '2px'};
   width: 30px;
 `;
 
@@ -84,7 +84,7 @@ const AssetListHeader = ({
                   end={{ x: 0.5, y: 1 }}
                   pointerEvents="none"
                   start={{ x: 0.5, y: 0 }}
-                  style={position.coverAsObject}
+                  style={[position.coverAsObject, { borderRadius: 15 }]}
                 />
                 <Icon name="walletSwitcherCaret" />
               </DropdownArrow>
