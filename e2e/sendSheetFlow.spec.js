@@ -81,12 +81,12 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.checkIfElementByTextIsVisible('Collectibles');
   });
 
-  it('Should say "poopcoin.eth" in the Profile Screen header', async () => {
+  it('Should say correct address in the Profile Screen header', async () => {
     await Helpers.swipe('wallet-screen', 'right');
     if (device.getPlatform() === 'android') {
-      await Helpers.checkIfElementByTextToExist('0x3C...D3f608');
+      await Helpers.checkIfElementByTextToExist('0x3C...f608');
     } else {
-      await Helpers.checkIfElementByTextIsVisible('0x3C...D3f608');
+      await Helpers.checkIfElementByTextIsVisible('0x3C...f608');
     }
     await Helpers.swipe('profile-screen', 'left');
   });

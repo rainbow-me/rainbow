@@ -64,6 +64,7 @@ import ThreeDotsIcon from './svg/ThreeDotsIcon';
 import TouchIdIcon from './svg/TouchIdIcon';
 import TwitterIcon from './svg/TwitterIcon';
 import WalletConnectIcon from './svg/WalletConnectIcon';
+import WalletSwitcherCaret from './svg/WalletSwitcherCaret';
 import WarningCircledIcon from './svg/WarningCircledIcon';
 import WarningIcon from './svg/WarningIcon';
 
@@ -133,6 +134,7 @@ const IconTypes = {
   touchid: TouchIdIcon,
   twitter: TwitterIcon,
   walletConnect: WalletConnectIcon,
+  walletSwitcherCaret: WalletSwitcherCaret,
   warning: WarningIcon,
   warningCircled: WarningCircledIcon,
 };
