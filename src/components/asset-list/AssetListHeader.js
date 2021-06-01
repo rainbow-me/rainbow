@@ -17,7 +17,7 @@ import { position } from '@rainbow-me/styles';
 
 export const AssetListHeaderHeight = ListHeaderHeight + DividerSize;
 
-const dropdownArrowWidth = 21;
+const dropdownArrowWidth = 30;
 
 const AccountName = styled(TruncatedText).attrs({
   align: 'left',
@@ -31,15 +31,15 @@ const AccountName = styled(TruncatedText).attrs({
   margin-top: 2;
   margin-bottom: ${android ? '8' : '0'};
   max-width: ${({ deviceWidth, totalValueLength }) =>
-    deviceWidth - dropdownArrowWidth - 57 - totalValueLength * 15};
+    deviceWidth - dropdownArrowWidth - 32 - totalValueLength * 15};
   padding-right: 6;
 `;
 
 const DropdownArrow = styled(Centered)`
-  border-radius: 15px;
-  height: 30px;
-  margin-top: ${android ? '9px' : '2px'};
-  width: 30px;
+  border-radius: 15;
+  height: ${dropdownArrowWidth};
+  margin-top: ${android ? '9' : '2'};
+  width: ${dropdownArrowWidth};
 `;
 
 const AssetListHeader = ({
