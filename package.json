@@ -30,7 +30,8 @@
     "test": "jest test.js",
     "update-env": "curl -H 'Authorization: token '$GITHUB_TOKEN -H 'Accept: application/vnd.github.v3.raw' -O  -L https://api.github.com/repos/rainbow-me/rainbow-env/contents/dotenv && rm -f .env && mv dotenv .env",
     "android-reverse-ports": "adb reverse tcp:8097 tcp:8097 && adb reverse tcp:8081 tcp:8081",
-    "update-token-list": "./scripts/update-token-list.sh"
+    "update-token-list": "./scripts/update-token-list.sh",
+    "update-token-metadata": "./scripts/update-token-metadata.sh"
   },
   "husky": {
     "hooks": {
@@ -244,6 +245,8 @@
     "@types/react-test-renderer": "^16.9.3",
     "@types/styled-components": "^5.1.7",
     "@types/url-parse": "^1.4.3",
+    "@typescript-eslint/eslint-plugin": "^4.24.0",
+    "@typescript-eslint/parser": "^4.24.0",
     "ast-parser": "^0.0.5",
     "audit-ci": "^3.1.1",
     "babel-core": "7.0.0-bridge.0",
@@ -264,17 +267,17 @@
     "eslint-plugin-jest": "^24.3.6",
     "ganache-cli": "6.12.2",
     "graphql": "^15.3.0",
+    "image-size": "^1.0.0",
     "jest": "^26.6.3",
     "jest-circus": "^26.6.3",
     "metro-plugin-anisotropic-transform": "rainbow-me/metro-plugin-anisotropic-transform#463b4ca9f5631f9c5e6028d22a450f6f0e54214f",
     "metro-react-native-babel-preset": "^0.64.0",
+    "node-vibrant": "^3.2.1-alpha.1",
     "prettier": "^2.2.1",
     "react-test-renderer": "17.0.1",
     "rn-nodeify": "10.2.0",
     "schedule": "0.5.0",
-    "typescript": "^3.9.7",
-    "@typescript-eslint/parser": "^4.24.0",
-    "@typescript-eslint/eslint-plugin": "^4.24.0"
+    "typescript": "^3.9.7"
   },
   "resolutions": {
     "**/node-fetch": "2.6.1",

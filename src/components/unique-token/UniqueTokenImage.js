@@ -4,7 +4,7 @@ import { buildUniqueTokenName } from '../../helpers/assets';
 import { magicMemo } from '../../utils';
 import { Centered } from '../layout';
 import { Monospace } from '../text';
-import { ImageWithCachedMetadata, ImgixImage } from '@rainbow-me/images';
+import { ImgixImage } from '@rainbow-me/images';
 import { position } from '@rainbow-me/styles';
 
 const FallbackTextColorVariants = (darkMode, colors) => ({
@@ -33,10 +33,10 @@ const UniqueTokenImage = ({
   return (
     <Centered backgroundColor={backgroundColor} style={position.coverAsObject}>
       {imageUrl && !error ? (
-        <ImageWithCachedMetadata
-          imageUrl={imageUrl}
+        <ImgixImage
           onError={handleError}
           resizeMode={ImgixImage.resizeMode[resizeMode]}
+          source={{ uri: imageUrl }}
           style={position.coverAsObject}
         />
       ) : (
