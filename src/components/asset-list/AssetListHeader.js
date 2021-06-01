@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react';
+import { IS_TESTING } from 'react-native-dotenv';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components';
 import { abbreviations, magicMemo } from '../../utils';
@@ -67,7 +68,7 @@ const AssetListHeader = ({
       totalValue={totalValue}
       {...props}
     >
-      {!title && (
+      {!title && IS_TESTING !== 'true' && (
         <ButtonPressAnimation onPress={onChangeWallet} scaleTo={0.9}>
           <Row>
             <AccountName
