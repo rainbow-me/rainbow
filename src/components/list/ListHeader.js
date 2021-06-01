@@ -50,12 +50,7 @@ const ShareCollectiblesBPA = styled(ButtonPressAnimation)`
 
 const ShareCollectiblesButton = ({ onPress }) => (
   <ShareCollectiblesBPA onPress={onPress} scale={0.9}>
-    <CoinDividerButtonLabel
-      align="center"
-      label="􀈂 Share"
-      shareButton
-      style={{ alignSelf: 'center', width: 90 }}
-    />
+    <CoinDividerButtonLabel align="center" label="􀈂 Share" shareButton />
   </ShareCollectiblesBPA>
 );
 
