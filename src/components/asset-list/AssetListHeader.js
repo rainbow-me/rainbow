@@ -76,7 +76,7 @@ const AssetListHeader = ({
             >
               {accountName}
             </AccountName>
-            {accountName && (
+            {accountName ? (
               <DropdownArrow>
                 <LinearGradient
                   borderRadius={15}
@@ -88,7 +88,7 @@ const AssetListHeader = ({
                 />
                 <Icon name="walletSwitcherCaret" />
               </DropdownArrow>
-            )}
+            ) : null}
           </Row>
         </ButtonPressAnimation>
       )}
