@@ -10,6 +10,7 @@ import { LongPressGestureHandler } from 'react-native-gesture-handler';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, {
   useAnimatedGestureHandler,
+  useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
@@ -640,11 +641,20 @@ function ChartPath({
     };
   }, undefined);
 
-  const animatedStyleWrapper = useAnimatedStyle(() => {
-    return {
-      display: path.value === '' ? 'none' : 'flex',
-    };
-  });
+  const animatedStyleWrapper = useAnimatedStyle(() => ({
+    display: path.value === '' ? 'none' : 'flex',
+  }));
+
+  const [key, setKey] = useState('-empty');
+  useAnimatedReaction(
+    () => path.value === '',
+    isEmptyPath => {
+      if (!isEmptyPath) {
+        setKey('');
+      }
+    },
+    [setKey]
+  );
 
   return (
     <InternalContext.Provider
@@ -661,7 +671,7 @@ function ChartPath({
         width,
       }}
     >
-      {__disableRendering ? children : <SvgComponent />}
+      {__disableRendering ? children : <SvgComponent key={'path' + key} />}
     </InternalContext.Provider>
   );
 }
