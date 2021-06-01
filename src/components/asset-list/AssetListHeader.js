@@ -24,7 +24,7 @@ const AccountName = styled(TruncatedText).attrs({
   letterSpacing: 'roundedMedium',
   size: 'big',
   truncationLength: 4,
-  weight: 'heavy',
+  weight: 'bold',
 })`
   height: ${android ? '35' : '30'};
   margin-top: 2;
@@ -37,7 +37,7 @@ const AccountName = styled(TruncatedText).attrs({
 const DropdownArrow = styled(Centered)`
   border-radius: 15px;
   height: 30px;
-  margin-top: ${android ? '8px' : '2px'};
+  margin-top: ${android ? '9px' : '2px'};
   width: 30px;
 `;
 
@@ -68,7 +68,7 @@ const AssetListHeader = ({
       {...props}
     >
       {!title && (
-        <ButtonPressAnimation onPress={onChangeWallet}>
+        <ButtonPressAnimation onPress={onChangeWallet} scaleTo={0.9}>
           <Row>
             <AccountName
               deviceWidth={deviceWidth}
