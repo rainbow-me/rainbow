@@ -227,8 +227,8 @@ export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
 
   showcaseTokens.sort(function (a, b) {
     return (
-      selectedShowcaseTokens.indexOf(a.uniqueId) -
-      selectedShowcaseTokens.indexOf(b.uniqueId)
+      selectedShowcaseTokens?.indexOf(a.uniqueId) -
+      selectedShowcaseTokens?.indexOf(b.uniqueId)
     );
   });
 

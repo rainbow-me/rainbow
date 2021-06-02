@@ -265,8 +265,8 @@ const GasSpeedButton = ({
     }
     LayoutAnimation.easeInEaseOut();
     const gasOptions = options || GasSpeedOrder;
-    const currentSpeedIndex = gasOptions.indexOf(selectedGasPriceOption);
-    const nextSpeedIndex = (currentSpeedIndex + 1) % gasOptions.length;
+    const currentSpeedIndex = gasOptions?.indexOf(selectedGasPriceOption);
+    const nextSpeedIndex = (currentSpeedIndex + 1) % gasOptions?.length;
 
     const nextSpeed = gasOptions[nextSpeedIndex];
     updateGasPriceOption(nextSpeed);
@@ -372,7 +372,7 @@ const GasSpeedButton = ({
       return;
     }
 
-    const minKey = options.indexOf(SLOW) !== -1 ? SLOW : NORMAL;
+    const minKey = options?.indexOf(SLOW) !== -1 ? SLOW : NORMAL;
 
     const minGasPriceAllowed = Number(
       gasPricesAvailable?.[minKey]?.value?.amount || 0
