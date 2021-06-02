@@ -3,7 +3,7 @@ import { captureException } from '@sentry/react-native';
 import { BigNumber } from 'bignumber.js';
 import { get, isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, InteractionManager } from 'react-native';
+import { Alert } from 'react-native';
 import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
@@ -19,7 +19,7 @@ import {
 } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
 import { TransactionStatusTypes, TransactionTypes } from '@rainbow-me/entities';
-import { getTransaction, toHex } from '@rainbow-me/handlers/web3';
+import { getTransaction, isHexString, toHex } from '@rainbow-me/handlers/web3';
 import {
   useAccountSettings,
   useBooleanState,
@@ -125,11 +125,21 @@ export default function SpeedUpAndCancelSheet() {
     calcMinGasPriceAllowed(tx.gasPrice)
   );
   const fetchedTx = useRef(false);
-  const [gasLimit, setGasLimit] = useState(tx.gasLimit);
+  const [gasLimit, setGasLimit] = useState(
+    tx.gasLimit && isHexString(tx.gasLimit)
+      ? tx.gasLimit
+      : toHex(tx.gasLimit.toString())
+  );
   const [to, setTo] = useState(tx.to);
-  const [data, setData] = useState(tx.data);
-  const [value, setValue] = useState(tx.value);
-  const [nonce, setNonce] = useState(tx.nonce);
+  const [data, setData] = useState(
+    tx.data && isHexString(tx.data) ? tx.data : toHex(tx.data.toString())
+  );
+  const [value, setValue] = useState(
+    tx.value && isHexString(tx.value) ? tx.value : toHex(tx.value.toString())
+  );
+  const [nonce, setNonce] = useState(
+    tx.nonce && isHexString(tx.nonce) ? tx.nonce : toHex(tx.nonce.toString())
+  );
 
   const getNewGasPrice = useCallback(() => {
     const rawGasPrice = get(selectedGasPrice, 'value.amount');
@@ -228,7 +238,7 @@ export default function SpeedUpAndCancelSheet() {
   }, [data, dispatch, gasLimit, getNewGasPrice, goBack, nonce, to, tx, value]);
 
   useEffect(() => {
-    InteractionManager.runAfterInteractions(async () => {
+    setTimeout(async () => {
       if (!fetchedTx.current) {
         const txHash = tx.hash.split('-')[0];
         try {
@@ -262,7 +272,8 @@ export default function SpeedUpAndCancelSheet() {
         // Always default to fast
         updateGasPriceOption('fast');
       }
-    });
+    }, 300);
+
     return () => {
       stopPollingGasPrices();
     };
