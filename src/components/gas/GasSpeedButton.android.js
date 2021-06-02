@@ -44,7 +44,8 @@ const Label = styled(Text).attrs({
   size: 'smedium',
   weight: 'semibold',
 })`
-${fontWithWidth(fonts.weight.semibold)};`;
+  ${fontWithWidth(fonts.weight.semibold)};
+`;
 
 const ButtonLabel = styled(BorderlessButton).attrs(({ theme: { colors } }) => ({
   color: colors.appleBlue,

@@ -84,7 +84,6 @@ function APYPill({ small, value }) {
         size={small ? 'smedium' : 'lmedium'}
         weight="semibold"
         {...(android && { lineHeight: small ? 24 : 30 })}
-
       >
         {value}% APY
       </TextComponent>
