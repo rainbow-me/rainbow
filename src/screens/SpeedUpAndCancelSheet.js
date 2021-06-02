@@ -26,7 +26,7 @@ import {
 } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
 import { TransactionStatusTypes, TransactionTypes } from '@rainbow-me/entities';
-import { getTransaction, isHexString, toHex } from '@rainbow-me/handlers/web3';
+import { getTransaction, toHex } from '@rainbow-me/handlers/web3';
 import {
   useAccountSettings,
   useBooleanState,
@@ -135,20 +135,11 @@ export default function SpeedUpAndCancelSheet() {
     calcMinGasPriceAllowed(tx.gasPrice)
   );
   const fetchedTx = useRef(false);
-  const [gasLimit, setGasLimit] = useState(
-    tx.gasLimit &&
-      (isHexString(tx.gasLimit) ? tx.gasLimit : toHex(tx.gasLimit.toString()))
-  );
+  const [data, setData] = useState(null);
+  const [gasLimit, setGasLimit] = useState(null);
+  const [nonce, setNonce] = useState(null);
   const [to, setTo] = useState(tx.to);
-  const [data, setData] = useState(
-    tx.data && (isHexString(tx.data) ? tx.data : toHex(tx.data.toString()))
-  );
-  const [value, setValue] = useState(
-    tx.value && (isHexString(tx.value) ? tx.value : toHex(tx.value.toString()))
-  );
-  const [nonce, setNonce] = useState(
-    tx.nonce && (isHexString(tx.nonce) ? tx.nonce : toHex(tx.nonce.toString()))
-  );
+  const [value, setValue] = useState(null);
 
   const getNewGasPrice = useCallback(() => {
     const rawGasPrice = get(selectedGasPrice, 'value.amount');
@@ -209,7 +200,6 @@ export default function SpeedUpAndCancelSheet() {
     getNewGasPrice,
     goBack,
     nonce,
-    ready,
     reloadTransactions,
     tx,
   ]);
@@ -245,18 +235,7 @@ export default function SpeedUpAndCancelSheet() {
     } finally {
       goBack();
     }
-  }, [
-    data,
-    dispatch,
-    gasLimit,
-    getNewGasPrice,
-    goBack,
-    nonce,
-    ready,
-    to,
-    tx,
-    value,
-  ]);
+  }, [data, dispatch, gasLimit, getNewGasPrice, goBack, nonce, to, tx, value]);
 
   useEffect(() => {
     setTimeout(async () => {
