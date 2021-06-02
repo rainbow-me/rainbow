@@ -7,6 +7,7 @@
     "android": "adb uninstall me.rainbow || true && react-native run-android",
     "android:apk": "cd android && ./gradlew assembleRelease && (adb uninstall me.rainbow || true) && adb install app/build/outputs/apk/release/app-release.apk",
     "android:bundle": "./scripts/check-env.sh && cd android && ./gradlew bundleRelease && open app/build/outputs/bundle/release/",
+    "dedupe": "npx yarn-deduplicate yarn.lock && yarn setup",
     "detox:android": "detox build -c android.emu.debug && detox test -R 1 -c android.emu.debug --loglevel verbose",
     "detox:android:release": "detox build -c android.emu.release && detox test -R 1 -c android.emu.release",
     "detox:ios": "detox build -c ios.sim.debug && detox test -R 1 -c ios.sim.debug --bail",
@@ -31,7 +32,9 @@
     "update-env": "curl -H 'Authorization: token '$GITHUB_TOKEN -H 'Accept: application/vnd.github.v3.raw' -O  -L https://api.github.com/repos/rainbow-me/rainbow-env/contents/dotenv && rm -f .env && mv dotenv .env",
     "android-reverse-ports": "adb reverse tcp:8097 tcp:8097 && adb reverse tcp:8081 tcp:8081",
     "update-token-list": "./scripts/update-token-list.sh",
-    "update-token-metadata": "./scripts/update-token-metadata.sh"
+    "update-token-metadata": "./scripts/update-token-metadata.sh",
+    "visualize:android": " npx react-native-bundle-visualizer --dev false --platform android",
+    "visualize:ios": " npx react-native-bundle-visualizer --dev false --platform ios"
   },
   "husky": {
     "hooks": {
