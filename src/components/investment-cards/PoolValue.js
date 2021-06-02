@@ -19,7 +19,7 @@ const PoolValueText = styled(Text).attrs(({ simple, size }) => ({
   size: size || 'lmedium',
   weight: simple ? 'semibold' : 'bold',
 }))`
-  ${android && 'padding-top: 3px'}
+  ${android && 'margin-top: -3px; height: 30px;'}
 `;
 
 export const PoolValue = ({ type, value, simple, ...props }) => {
