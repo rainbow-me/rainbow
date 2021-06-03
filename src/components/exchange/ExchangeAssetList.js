@@ -13,6 +13,7 @@ import { ButtonPressAnimation } from '../../components/animations';
 import { CoinRowHeight, ExchangeCoinRow } from '../coin-row';
 import DiscoverSheetContext from '../discover-sheet/DiscoverSheetContext';
 import { GradientText, Text } from '../text';
+import { TokenSectionTypes } from '@rainbow-me/helpers';
 import { usePrevious } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
@@ -54,9 +55,7 @@ const HeaderTitleGradient = styled(GradientText).attrs({
   weight: 'heavy',
 })``;
 
-const HeaderTitleWrapper = styled.View`
-  width: ${android ? '150' : '143'}px;
-`;
+const HeaderTitleWrapper = styled.View``;
 
 const contentContainerStyle = { paddingBottom: 9.5 };
 const keyExtractor = ({ uniqueId }) => `ExchangeAssetList-${uniqueId}`;
@@ -140,13 +139,18 @@ const ExchangeAssetList = (
     const TitleComponent = section.useGradientText
       ? HeaderTitleGradient
       : HeaderTitle;
+    const isVerified = section.title === TokenSectionTypes.verifiedTokenSection;
     return section?.title ? (
-      <ButtonPressAnimation onPress={openVerifiedExplainer} scaleTo={0.96}>
+      <ButtonPressAnimation
+        disabled={!isVerified}
+        onPress={openVerifiedExplainer}
+        scaleTo={0.96}
+      >
         <Header>
           <HeaderBackground />
           <HeaderTitleWrapper>
             <TitleComponent color={section.color}>
-              {section.title}
+              {`${section.title}${isVerified ? '  􀅵' : ' '}`}
             </TitleComponent>
           </HeaderTitleWrapper>
         </Header>
