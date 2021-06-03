@@ -41,7 +41,7 @@ const ScannerHeader = styled(Header).attrs({
 `;
 
 export default function QRScannerScreen() {
-  const isFocusedAndroid = useIsFocused();
+  const isFocused = useIsFocused();
   const [initializeCamera, setInitializeCamera] = useState(ios ? true : false);
   const { navigate } = useNavigation();
   const [cameraVisible, setCameraVisible] = useState();
@@ -59,8 +59,8 @@ export default function QRScannerScreen() {
   );
 
   useEffect(() => {
-    isFocusedAndroid && !initializeCamera && setInitializeCamera(true);
-  }, [initializeCamera, isFocusedAndroid]);
+    isFocused && !initializeCamera && setInitializeCamera(true);
+  }, [initializeCamera, isFocused]);
 
   const { colors } = useTheme();
   const { result: isEmulator } = useIsEmulator();
@@ -88,7 +88,7 @@ export default function QRScannerScreen() {
                 cameraDim={cameraDim}
                 contentPositionTop={HeaderHeight}
                 dsRef={dsRef}
-                enableCamera={cameraVisible}
+                enableCamera={isFocused}
               />
             )}
           </CameraDimmer>
