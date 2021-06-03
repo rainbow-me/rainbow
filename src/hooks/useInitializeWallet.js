@@ -10,6 +10,7 @@ import {
   settingsLoadNetwork,
   settingsUpdateAccountAddress,
 } from '../redux/settings';
+import { uniswapGetAllExchanges, uniswapPairsInit } from '../redux/uniswap';
 import { walletsLoadState } from '../redux/wallets';
 import useAccountSettings from './useAccountSettings';
 import useHideSplashScreen from './useHideSplashScreen';
@@ -115,6 +116,8 @@ export default function useInitializeWallet() {
         }
 
         if (!switching) {
+          dispatch(uniswapPairsInit());
+          dispatch(uniswapGetAllExchanges());
           initializeDiscoverData();
           dispatch(additionalDataCoingeckoIds);
         }
