@@ -307,8 +307,7 @@
     "**/yargs-parser": "20.2.5",
     "**/@hapi/hoek": "8.5.1",
     "@walletconnect/socket-transport/**/ws": "7.4.6",
-    "@walletconnect/client/**/ws": "7.4.6",
-    "react-native/**/ws": "7.4.6"
+    "@walletconnect/client/**/ws": "7.4.6"
   },
   "jest": {
     "preset": "react-native",
