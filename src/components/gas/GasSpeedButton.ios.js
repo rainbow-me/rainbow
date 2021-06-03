@@ -403,9 +403,10 @@ const GasSpeedButton = ({
 
   const { navigate } = useNavigation();
 
-  const openGasHelper = useCallback(() => navigate(Routes.EXPLAIN_SHEET), [
-    navigate,
-  ]);
+  const openGasHelper = useCallback(
+    () => navigate(Routes.EXPLAIN_SHEET, { type: 'gas' }),
+    [navigate]
+  );
 
   return (
     <Container as={ButtonPressAnimation} onPress={handlePress} testID={testID}>
