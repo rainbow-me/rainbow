@@ -296,11 +296,6 @@ function BSNavigator() {
       <BSStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SHEET}
-        options={args =>
-          args?.route?.params?.type === 'token'
-            ? sheetPresetWithSmallGestureResponseDistance(args)
-            : sheetPreset(args)
-        }
       />
       <BSStack.Screen
         component={ExpandedAssetSheet}
