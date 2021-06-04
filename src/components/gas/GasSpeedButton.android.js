@@ -43,7 +43,9 @@ const Container = styled(Row).attrs({
 const Label = styled(Text).attrs({
   size: 'smedium',
   weight: 'semibold',
-})``;
+})`
+  ${fontWithWidth(fonts.weight.semibold)};
+`;
 
 const ButtonLabel = styled(BorderlessButton).attrs(({ theme: { colors } }) => ({
   color: colors.appleBlue,
@@ -445,9 +447,10 @@ const GasSpeedButton = ({
 
   const { navigate } = useNavigation();
 
-  const openGasHelper = useCallback(() => navigate(Routes.EXPLAIN_SHEET), [
-    navigate,
-  ]);
+  const openGasHelper = useCallback(() => {
+    Keyboard.dismiss();
+    navigate(Routes.EXPLAIN_SHEET, { type: 'gas' });
+  }, [navigate]);
 
   return (
     <Container
