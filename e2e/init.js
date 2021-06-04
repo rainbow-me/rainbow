@@ -3,5 +3,10 @@
 require('dotenv').config({ path: '.env' });
 
 beforeAll(async () => {
-  await device.launchApp();
+  await device.launchApp({
+    launchArgs: {
+      detoxURLBlacklistRegex:
+        ' \\("https://api.thegraph.com/subgraphs/name/ianlapham/uniswapv2"\\)',
+    },
+  });
 });
