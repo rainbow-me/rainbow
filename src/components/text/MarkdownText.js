@@ -1,25 +1,28 @@
 import React from 'react';
 import Markdown from 'react-native-markdown-display';
+import styled from 'styled-components';
 import Text from './Text';
 
-const MarkdownText = ({ children, ...props }) => {
-  const MarkdownBody = (node, markdownChildren, _parent, styles) => (
-    <Text key={node.key} style={{ ...styles, marginBottom: 36 }} {...props}>
-      {markdownChildren}
-    </Text>
+const Paragraph = styled(Text)`
+  margin-bottom: 19;
+`;
+
+export default function MarkdownText({ children, ...props }) {
+  const renderParagraph = useCallback(
+    ({ key }, markdownChildren, _, styles) => (
+      <Paragraph {...props} key={key} style={styles}>
+        {markdownChildren}
+      </Paragraph>
+    ),
+    [props]
   );
 
-  return (
-    <Markdown
-      rules={{
-        paragraph: MarkdownBody,
-      }}
-    >
-      {children}
-    </Markdown>
+  const rules = useMemo(
+    () => ({
+      paragraph: renderParagraph,
+    }),
+    [renderParagraph]
   );
-};
 
-MarkdownText.propTypes = {};
-
-export default MarkdownText;
+  return <Markdown rules={rules}>{children}</Markdown>;
+}
