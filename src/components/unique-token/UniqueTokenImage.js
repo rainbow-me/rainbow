@@ -22,7 +22,7 @@ const getFallbackTextColor = (bg, darkMode, colors) =>
     FallbackTextColorVariants(darkMode, colors)
   );
 
-const ImageTale = styled(ImgixImage)`
+const ImageTile = styled(ImgixImage)`
   justify-content: center;
   align-items: center;
 `;
@@ -52,7 +52,7 @@ const UniqueTokenImage = ({
   return (
     <Centered backgroundColor={backgroundColor} style={position.coverAsObject}>
       {imageUrl && !error ? (
-        <ImageTale
+        <ImageTile
           onError={handleError}
           resizeMode={ImgixImage.resizeMode[resizeMode]}
           source={{ uri: image }}
