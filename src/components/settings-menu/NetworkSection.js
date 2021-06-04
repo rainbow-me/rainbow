@@ -43,6 +43,7 @@ const NetworkSection = () => {
         key: value,
         label: name,
         selected: toLower(network) === toLower(value),
+        testID: `${value}-network`,
         value,
       }))}
       marginTop={7}

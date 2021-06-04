@@ -653,6 +653,7 @@ export default function TransactionConfirmationScreen() {
           label="􀎽 Confirm"
           onPress={ready ? onPressSend : NOOP}
           size="big"
+          testID="wc-confirm"
           weight="bold"
         />
       </SheetActionButtonRow>
@@ -779,7 +780,7 @@ export default function TransactionConfirmationScreen() {
         hideHandle
         scrollEnabled={false}
       >
-        <Column>
+        <Column testID="wc-request-sheet">
           <AnimatedSheet
             backgroundColor={colors.white}
             borderRadius={39}

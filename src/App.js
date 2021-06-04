@@ -15,12 +15,13 @@ import {
   StatusBar,
 } from 'react-native';
 import branch from 'react-native-branch';
-
 import {
+  IS_TESTING,
   REACT_APP_SEGMENT_API_WRITE_KEY,
   SENTRY_ENDPOINT,
   SENTRY_ENVIRONMENT,
 } from 'react-native-dotenv';
+
 // eslint-disable-next-line import/default
 import RNIOS11DeviceCheck from 'react-native-ios11-devicecheck';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -132,7 +133,11 @@ class App extends Component {
       } else if (!params['+clicked_branch_link']) {
         // Indicates initialization success and some other conditions.
         // No link was opened.
-        return;
+        if (IS_TESTING === 'true') {
+          handleDeeplink(uri);
+        } else {
+          return;
+        }
       } else if (uri) {
         handleDeeplink(uri);
       }

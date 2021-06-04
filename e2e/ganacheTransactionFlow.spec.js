@@ -1,10 +1,30 @@
+/* eslint-disable sort-keys */
 /* eslint-disable no-undef */
 /* eslint-disable jest/expect-expect */
 import { exec } from 'child_process';
+import WalletConnect from '@walletconnect/client';
 import * as Helpers from './helpers';
 
+let connector = null;
+let uri = null;
+let account = null;
+
 beforeAll(async () => {
-  // Reset the app state
+  // Create WC client
+  // Create a connector
+  connector = new WalletConnect({
+    bridge: 'https://bridge.walletconnect.org',
+    clientMeta: {
+      description: 'Connect with WalletConnect',
+      icons: ['https://walletconnect.org/walletconnect-logo.png'],
+      name: 'WalletConnect',
+      url: 'https://walletconnect.org',
+    },
+  });
+
+  await connector.createSession();
+  uri = connector.uri;
+  // Connect to ganache
   await exec('yarn ganache');
 });
 
@@ -160,6 +180,141 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.tap('send-asset-ETH');
     await Helpers.typeText('selected-asset-field-input', '0.003', true);
     await Helpers.tapAndLongPress('Hold to Send');
+    await Helpers.swipe('profile-screen', 'left', 'slow');
+  });
+
+  it('Should receive the WC connect request and approve it', async () => {
+    const connected = new Promise(async (resolve, reject) => {
+      connector.on('connect', (error, payload) => {
+        if (error) {
+          reject(error);
+        }
+        const { accounts } = payload.params[0];
+        if (accounts[0] === '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608') {
+          account = accounts[0];
+          resolve(true);
+        } else {
+          reject(false);
+        }
+      });
+    });
+
+    const baseUrl = 'https://rnbwapp.com';
+    const encodedUri = encodeURIComponent(uri);
+    const fullUrl = `${baseUrl}/wc?uri=${encodedUri}`;
+    await device.sendToHome();
+
+    await device.launchApp({
+      newInstance: false,
+      sourceApp: 'com.apple.mobilesafari',
+      url: fullUrl,
+    });
+
+    await Helpers.checkIfVisible('wc-approval-sheet', 30000);
+    await Helpers.waitAndTap('wc-connect-action-button');
+    const isConnected = await connected;
+    if (!isConnected) throw new Error('WC Connection failed');
+    await Helpers.checkIfVisible('wc-redirect-sheet');
+    await Helpers.swipe('wallet-screen', 'down', 'slow');
+  });
+
+  it('Should be able to sign personal messages via WC', async () => {
+    const result = connector.signPersonalMessage(['My msg', account]);
+    await Helpers.checkIfVisible('wc-request-sheet');
+    await Helpers.waitAndTap('wc-confirm-action-button');
+    await Helpers.delay(1000);
+    if (!result) throw new Error('WC Connection failed');
+    const signature = await result;
+    if (
+      signature !==
+      '0x9b08221727750e582b43e14f50069083ac6d8a2670a9f28009f14cbef7e66ba16d3370330aed5b6744027bd6a0bef32cb97bb9da3db34c67ba2237b2ef5d1ec71b'
+    ) {
+      throw new Error('WC personal sign failed');
+    }
+  });
+
+  it('Should be able to sign typed data messages via WC', async () => {
+    const msg = {
+      types: {
+        EIP712Domain: [
+          { name: 'name', type: 'string' },
+          { name: 'version', type: 'string' },
+          { name: 'verifyingContract', type: 'address' },
+        ],
+        RelayRequest: [
+          { name: 'target', type: 'address' },
+          { name: 'encodedFunction', type: 'bytes' },
+          { name: 'gasData', type: 'GasData' },
+          { name: 'relayData', type: 'RelayData' },
+        ],
+        GasData: [
+          { name: 'gasLimit', type: 'uint256' },
+          { name: 'gasPrice', type: 'uint256' },
+          { name: 'pctRelayFee', type: 'uint256' },
+          { name: 'baseRelayFee', type: 'uint256' },
+        ],
+        RelayData: [
+          { name: 'senderAddress', type: 'address' },
+          { name: 'senderNonce', type: 'uint256' },
+          { name: 'relayWorker', type: 'address' },
+          { name: 'paymaster', type: 'address' },
+        ],
+      },
+      domain: {
+        name: 'GSN Relayed Transaction',
+        version: '1',
+        chainId: 42,
+        verifyingContract: '0x6453D37248Ab2C16eBd1A8f782a2CBC65860E60B',
+      },
+      primaryType: 'RelayRequest',
+      message: {
+        target: '0x9cf40ef3d1622efe270fe6fe720585b4be4eeeff',
+        encodedFunction:
+          '0xa9059cbb0000000000000000000000002e0d94754b348d208d64d52d78bcd443afa9fa520000000000000000000000000000000000000000000000000000000000000007',
+        gasData: {
+          gasLimit: '39507',
+          gasPrice: '1700000000',
+          pctRelayFee: '70',
+          baseRelayFee: '0',
+        },
+        relayData: {
+          senderAddress: '0x22d491bde2303f2f43325b2108d26f1eaba1e32b',
+          senderNonce: '3',
+          relayWorker: '0x3baee457ad824c94bd3953183d725847d023a2cf',
+          paymaster: '0x957F270d45e9Ceca5c5af2b49f1b5dC1Abb0421c',
+        },
+      },
+    };
+
+    const result = connector.signTypedData([account, JSON.stringify(msg)]);
+    await Helpers.checkIfVisible('wc-request-sheet');
+    await Helpers.waitAndTap('wc-confirm-action-button');
+    await Helpers.delay(1000);
+    const signature = await result;
+    if (
+      signature !==
+      '0xb78f17ff5779826ebfe4a7572a569a8802c02962242ff0195bd17bd4c07248b930a8c459276bc6eaa02dfb4523b8dc66d0020742d3f60a9209bde811aebb39351b'
+    ) {
+      throw new Error('WC personal sign failed');
+    }
+  });
+
+  it('Should be able to approve transactions via WC', async () => {
+    const result = connector.sendTransaction({
+      from: account,
+      to: account,
+      value: '0x0',
+      data: '0x',
+    });
+    await Helpers.checkIfVisible('wc-request-sheet');
+    await Helpers.delay(3000);
+    await Helpers.waitAndTap('wc-confirm-action-button');
+    await Helpers.delay(1000);
+    const hash = await result;
+    if (!hash) {
+      throw new Error('WC approving tx failed');
+    }
+    await Helpers.swipe('wallet-screen', 'right', 'slow');
   });
 
   /*
@@ -214,6 +369,14 @@ describe('Ganache Transaction Flow', () => {
       await Helpers.checkIfVisible('Sent-Ethereum-0.003 ETH');
     } catch (e) {
       await Helpers.checkIfVisible('Sending-Ethereum-0.003 ETH');
+    }
+  });
+
+  it('Should show completed send ETH (WC)', async () => {
+    try {
+      await Helpers.checkIfVisible('Sent-Ethereum-0.00 ETH');
+    } catch (e) {
+      await Helpers.checkIfVisible('Sending-Ethereum-0.00 ETH');
     }
   });
 
