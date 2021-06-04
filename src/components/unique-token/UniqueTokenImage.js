@@ -59,7 +59,7 @@ const UniqueTokenImage = ({
           style={position.coverAsObject}
         >
           {isENS && <ENSText small={small}>{item.name}</ENSText>}
-        </ImageTale>
+        </ImageTile>
       ) : (
         <Monospace
           align="center"
