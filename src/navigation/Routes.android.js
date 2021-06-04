@@ -142,11 +142,6 @@ function MainNavigator() {
         options={expandedPresetWithSmallGestureResponseDistance}
       />
       <Stack.Screen
-        component={ExpandedAssetSheet}
-        name={Routes.TOKEN_INDEX_SHEET}
-        options={expandedPreset}
-      />
-      <Stack.Screen
         component={ChangeWalletSheet}
         name={Routes.CHANGE_WALLET_SHEET}
         options={expandedPreset}
@@ -300,6 +295,10 @@ function BSNavigator() {
       <BSStack.Screen
         component={SendFlowNavigator}
         name={Routes.SEND_SHEET_NAVIGATOR}
+      />
+      <BSStack.Screen
+        component={ExpandedAssetSheet}
+        name={Routes.TOKEN_INDEX_SHEET}
       />
       <BSStack.Screen
         component={ShowcaseSheet}
