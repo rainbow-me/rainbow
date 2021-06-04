@@ -374,7 +374,7 @@ describe('Ganache Transaction Flow', () => {
 
   it('Should show completed send ETH (WC)', async () => {
     try {
-      await Helpers.checkIfVisible('Sent-Ethereum-0.00 ETH');
+      await Helpers.checkIfVisible('Self-Ethereum-0.00 ETH');
     } catch (e) {
       await Helpers.checkIfVisible('Sending-Ethereum-0.00 ETH');
     }
