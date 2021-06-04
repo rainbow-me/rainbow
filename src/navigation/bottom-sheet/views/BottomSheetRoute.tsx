@@ -5,6 +5,7 @@ import BottomSheet, {
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { View } from 'react-native';
 import type { ViewStyle } from 'react-native';
+import { useSharedValue } from 'react-native-reanimated';
 import {
   CONTAINER_HEIGHT,
   DEFAULT_ANIMATION_DURATION,
@@ -53,6 +54,8 @@ const BottomSheetRoute = ({
   //#region variables
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const enhancedSpanPoints = useMemo(() => [0, ...snapPoints], [...snapPoints]);
+
+  const animatedIndex = useSharedValue(-1);
   //#endregion
 
   //#region styles
@@ -101,11 +104,13 @@ const BottomSheetRoute = ({
 
   const contextVariables = useMemo(
     () => ({
+      animatedIndex,
       setEnableContentPanningGesture: handleSettingEnableContentPanningGesture,
       setEnableHandlePanningGesture: handleSettingEnableHandlePanningGesture,
       setSnapPoints: handleSettingSnapPoints,
     }),
     [
+      animatedIndex,
       handleSettingEnableContentPanningGesture,
       handleSettingEnableHandlePanningGesture,
       handleSettingSnapPoints,
@@ -149,6 +154,7 @@ const BottomSheetRoute = ({
       <BottomSheet
         activeOffsetY={[-3, 3]}
         animateOnMount
+        animatedIndex={animatedIndex}
         animationDuration={DEFAULT_ANIMATION_DURATION}
         backdropComponent={renderBackdropComponent}
         backgroundComponent={null}

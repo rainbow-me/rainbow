@@ -104,8 +104,11 @@ export default function useSwapCurrencyHandlers({
     dispatch(flipSwapCurrencies());
     startFlipFocusTimeout(() => {
       if (inputFieldRef.current === currentlyFocusedInput()) {
+        console.log('focusing outputFieldRef');
+
         focusTextInput(outputFieldRef.current);
       } else if (outputFieldRef.current === currentlyFocusedInput()) {
+        console.log('focusing inputFieldRef');
         focusTextInput(inputFieldRef.current);
       }
     }, 50);

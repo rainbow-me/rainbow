@@ -150,11 +150,6 @@ function MainNavigator() {
         }}
       />
       <Stack.Screen
-        component={ExchangeModalNavigator}
-        name={Routes.EXCHANGE_MODAL}
-        options={exchangePreset}
-      />
-      <Stack.Screen
         component={ModalScreen}
         {...closeKeyboardOnClose}
         name={Routes.MODAL_SCREEN}
@@ -193,11 +188,6 @@ function MainNavigator() {
       <Stack.Screen
         component={WithdrawModal}
         name={Routes.SAVINGS_WITHDRAW_MODAL}
-        options={exchangePreset}
-      />
-      <Stack.Screen
-        component={DepositModal}
-        name={Routes.SAVINGS_DEPOSIT_MODAL}
         options={exchangePreset}
       />
       <Stack.Screen
@@ -296,6 +286,20 @@ function BSNavigator() {
         name={Routes.EXPLAIN_SHEET}
         options={{
           height: '100%',
+        }}
+      />
+      <BSStack.Screen
+        component={ExchangeModalNavigator}
+        name={Routes.EXCHANGE_MODAL}
+        options={{
+          backdropOpacity: 1,
+        }}
+      />
+      <BSStack.Screen
+        component={DepositModal}
+        name={Routes.SAVINGS_DEPOSIT_MODAL}
+        options={{
+          backdropOpacity: 1,
         }}
       />
       <BSStack.Screen component={SavingsSheet} name={Routes.SAVINGS_SHEET} />

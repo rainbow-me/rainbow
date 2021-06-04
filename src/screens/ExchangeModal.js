@@ -8,6 +8,7 @@ import React, {
   useState,
 } from 'react';
 import { Alert, Keyboard, NativeModules } from 'react-native';
+import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -27,6 +28,7 @@ import {
 import { FloatingPanel } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
+import { useBottomSheetNavigator } from '../navigation/bottom-sheet';
 import { ExchangeModalTypes, isKeyboardOpen } from '@rainbow-me/helpers';
 import { divide, multiply } from '@rainbow-me/helpers/utilities';
 import {
@@ -188,6 +190,23 @@ export default function ExchangeModal({
     priceImpactPercentDisplay,
   } = usePriceImpactDetails(inputAmount, outputAmount, tradeDetails);
 
+  const { animatedIndex } = useBottomSheetNavigator();
+
+  const onTouchTop = useCallback(() => {
+    console.log({ x: lastFocusedInputHandle?.current?.focus });
+    lastFocusedInputHandle.current?.focus();
+  }, [lastFocusedInputHandle]);
+
+  useAnimatedReaction(
+    () => animatedIndex.value === 1,
+    isOnTheTop => {
+      if (isOnTheTop) {
+        runOnJS(onTouchTop)();
+      }
+    },
+    [onTouchTop]
+  );
+
   const isDismissing = useRef(false);
   useEffect(() => {
     if (ios) {
@@ -200,6 +219,7 @@ export default function ExchangeModal({
     const unsubscribe = (
       dangerouslyGetParent()?.dangerouslyGetParent()?.addListener || addListener
     )('transitionEnd', ({ data: { closing } }) => {
+      console.log('DDD');
       if (!closing && isDismissing.current) {
         isDismissing.current = false;
         lastFocusedInputHandle?.current?.focus();
