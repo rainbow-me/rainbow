@@ -6,13 +6,17 @@ import React, {
   useImperativeHandle,
   useRef,
 } from 'react';
-import { Alert, SectionList } from 'react-native';
+import { Alert, Keyboard, SectionList } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components';
+import { ButtonPressAnimation } from '../../components/animations';
 import { CoinRowHeight, ExchangeCoinRow } from '../coin-row';
 import DiscoverSheetContext from '../discover-sheet/DiscoverSheetContext';
 import { GradientText, Text } from '../text';
+import { TokenSectionTypes } from '@rainbow-me/helpers';
 import { usePrevious } from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
+import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
 import { deviceUtils, magicMemo } from '@rainbow-me/utils';
 
@@ -51,23 +55,7 @@ const HeaderTitleGradient = styled(GradientText).attrs({
   weight: 'heavy',
 })``;
 
-const HeaderTitleWrapper = styled.View`
-  width: ${android ? '150' : '143'}px;
-`;
-
-const ExchangeAssetSectionListHeader = ({ section }) => {
-  const TitleComponent = section.useGradientText
-    ? HeaderTitleGradient
-    : HeaderTitle;
-  return section?.title ? (
-    <Header>
-      <HeaderBackground />
-      <HeaderTitleWrapper>
-        <TitleComponent color={section.color}>{section.title}</TitleComponent>
-      </HeaderTitleWrapper>
-    </Header>
-  ) : null;
-};
+const HeaderTitleWrapper = styled.View``;
 
 const contentContainerStyle = { paddingBottom: 9.5 };
 const keyExtractor = ({ uniqueId }) => `ExchangeAssetList-${uniqueId}`;
@@ -105,6 +93,7 @@ const ExchangeAssetList = (
   const { sectionListRef = useRef() } = useContext(DiscoverSheetContext) || {};
   useImperativeHandle(ref, () => sectionListRef.current);
   const prevQuery = usePrevious(query);
+  const { navigate } = useNavigation();
 
   // Scroll to top once the query is cleared
   if (prevQuery && prevQuery.length && !query.length) {
@@ -140,6 +129,34 @@ const ExchangeAssetList = (
     },
     [itemProps]
   );
+
+  const openVerifiedExplainer = useCallback(() => {
+    android && Keyboard.dismiss();
+    navigate(Routes.EXPLAIN_SHEET, { type: 'verified' });
+  }, [navigate]);
+
+  const ExchangeAssetSectionListHeader = ({ section }) => {
+    const TitleComponent = section.useGradientText
+      ? HeaderTitleGradient
+      : HeaderTitle;
+    const isVerified = section.title === TokenSectionTypes.verifiedTokenSection;
+    return section?.title ? (
+      <ButtonPressAnimation
+        disabled={!isVerified}
+        onPress={openVerifiedExplainer}
+        scaleTo={0.96}
+      >
+        <Header>
+          <HeaderBackground />
+          <HeaderTitleWrapper>
+            <TitleComponent color={section.color}>
+              {`${section.title}${isVerified ? '  􀅵' : ' '}`}
+            </TitleComponent>
+          </HeaderTitleWrapper>
+        </Header>
+      </ButtonPressAnimation>
+    ) : null;
+  };
 
   const renderItemCallback = useCallback(
     ({ item }) => (

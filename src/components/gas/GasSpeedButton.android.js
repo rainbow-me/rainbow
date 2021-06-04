@@ -43,7 +43,9 @@ const Container = styled(Row).attrs({
 const Label = styled(Text).attrs({
   size: 'smedium',
   weight: 'semibold',
-})``;
+})`
+  ${fontWithWidth(fonts.weight.semibold)};
+`;
 
 const ButtonLabel = styled(BorderlessButton).attrs(({ theme: { colors } }) => ({
   color: colors.appleBlue,
@@ -265,8 +267,8 @@ const GasSpeedButton = ({
     }
     LayoutAnimation.easeInEaseOut();
     const gasOptions = options || GasSpeedOrder;
-    const currentSpeedIndex = gasOptions.indexOf(selectedGasPriceOption);
-    const nextSpeedIndex = (currentSpeedIndex + 1) % gasOptions.length;
+    const currentSpeedIndex = gasOptions?.indexOf(selectedGasPriceOption);
+    const nextSpeedIndex = (currentSpeedIndex + 1) % gasOptions?.length;
 
     const nextSpeed = gasOptions[nextSpeedIndex];
     updateGasPriceOption(nextSpeed);
@@ -372,7 +374,7 @@ const GasSpeedButton = ({
       return;
     }
 
-    const minKey = options.indexOf(SLOW) !== -1 ? SLOW : NORMAL;
+    const minKey = options?.indexOf(SLOW) !== -1 ? SLOW : NORMAL;
 
     const minGasPriceAllowed = Number(
       gasPricesAvailable?.[minKey]?.value?.amount || 0
@@ -445,9 +447,10 @@ const GasSpeedButton = ({
 
   const { navigate } = useNavigation();
 
-  const openGasHelper = useCallback(() => navigate(Routes.EXPLAIN_SHEET), [
-    navigate,
-  ]);
+  const openGasHelper = useCallback(() => {
+    Keyboard.dismiss();
+    navigate(Routes.EXPLAIN_SHEET, { type: 'gas' });
+  }, [navigate]);
 
   return (
     <Container
