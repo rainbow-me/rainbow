@@ -352,7 +352,9 @@ export default function ExchangeModal({
       await executeRap(wallet, type, swapParameters, callback);
       logger.log('[exchange - handle submit] executed rap!');
       analytics.track(`Completed ${type}`, {
-        defaultInputAsset: defaultInputAsset?.symbol || '',
+        amountInUSD,
+        input: defaultInputAsset?.symbol || '',
+        output: outputCurrency?.symbol || '',
         type,
       });
       // Tell iOS we finished running a rap (for tracking purposes)
