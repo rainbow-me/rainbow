@@ -43,7 +43,6 @@ import {
   expandedPreset,
   expandedPresetWithSmallGestureResponseDistance,
   overlayExpandedPreset,
-  settingsPreset,
   sheetPreset,
   sheetPresetWithSmallGestureResponseDistance,
   speedUpAndCancelStyleInterpolator,
@@ -187,11 +186,6 @@ function MainNavigator() {
         options={sheetPreset}
       />
       <Stack.Screen
-        component={SavingsSheet}
-        name={Routes.SAVINGS_SHEET}
-        options={bottomSheetPreset}
-      />
-      <Stack.Screen
         component={AddTokenSheet}
         name={Routes.ADD_TOKEN_SHEET}
         options={bottomSheetPreset}
@@ -253,11 +247,6 @@ function MainOuterNavigator() {
         options={expandedPresetWithSmallGestureResponseDistance}
       />
       <OuterStack.Screen
-        component={SettingsModal}
-        name={Routes.SETTINGS_MODAL}
-        options={settingsPreset}
-      />
-      <OuterStack.Screen
         component={PinAuthenticationScreen}
         name={Routes.PIN_AUTHENTICATION_SCREEN}
         options={{ ...sheetPreset, gestureEnabled: false }}
@@ -309,6 +298,8 @@ function BSNavigator() {
           height: '100%',
         }}
       />
+      <BSStack.Screen component={SavingsSheet} name={Routes.SAVINGS_SHEET} />
+      <BSStack.Screen component={SettingsModal} name={Routes.SETTINGS_MODAL} />
     </BSStack.Navigator>
   );
 }
