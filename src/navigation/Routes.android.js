@@ -128,20 +128,6 @@ function MainNavigator() {
         options={emojiPreset}
       />
       <Stack.Screen
-        component={ExpandedAssetSheet}
-        name={Routes.EXPANDED_ASSET_SHEET}
-        options={args =>
-          args?.route?.params?.type === 'token'
-            ? sheetPresetWithSmallGestureResponseDistance(args)
-            : sheetPreset(args)
-        }
-      />
-      <Stack.Screen
-        component={ExpandedAssetSheet}
-        name={Routes.EXPANDED_ASSET_SHEET_POOLS}
-        options={expandedPresetWithSmallGestureResponseDistance}
-      />
-      <Stack.Screen
         component={ChangeWalletSheet}
         name={Routes.CHANGE_WALLET_SHEET}
         options={expandedPreset}
@@ -306,6 +292,20 @@ function BSNavigator() {
         options={{
           height: '90%',
         }}
+      />
+      <BSStack.Screen
+        component={ExpandedAssetSheet}
+        name={Routes.EXPANDED_ASSET_SHEET}
+        options={args =>
+          args?.route?.params?.type === 'token'
+            ? sheetPresetWithSmallGestureResponseDistance(args)
+            : sheetPreset(args)
+        }
+      />
+      <BSStack.Screen
+        component={ExpandedAssetSheet}
+        name={Routes.EXPANDED_ASSET_SHEET_POOLS}
+        options={expandedPresetWithSmallGestureResponseDistance}
       />
       <BSStack.Screen
         component={ExplainSheet}
