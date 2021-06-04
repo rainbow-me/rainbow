@@ -7,6 +7,7 @@ import { SheetHandleFixedToTopHeight } from '../components/sheet';
 import { Text } from '../components/text';
 import { useTheme } from '../context/ThemeContext';
 import colors from '../context/currentColors';
+import { ExplainSheetHeight } from '../screens/ExplainSheet';
 import { onWillPop } from './Navigation';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import { fonts } from '@rainbow-me/styles';
@@ -84,6 +85,15 @@ export const addTokenSheetConfig = {
     ...buildCoolModalConfig({
       ...params,
       longFormHeight: 394,
+    }),
+  }),
+};
+
+export const explainSheetConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      longFormHeight: ExplainSheetHeight,
     }),
   }),
 };

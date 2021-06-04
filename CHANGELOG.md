@@ -12,6 +12,31 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.5.10](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.10)
+
+### Added
+* Moves iOS to Hermes
+
+### Changed
+* NFT background Fix
+* Secret Phrase Change
+* Wallet Switcher on Wallet Screen
+* Removed background execution
+* Add Cash Warning for Read-Only
+* Offline token metadata
+
+
+## [1.5.9](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.9)
+
+### Added
+* Bumped React Native 0.64
+
+### Changed
+* Settings Modal Height
+* Sharing URL Adjustments
+
+
+
 ## [1.5.8](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.8)
 
 ### Added

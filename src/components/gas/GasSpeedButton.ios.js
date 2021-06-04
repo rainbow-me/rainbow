@@ -8,7 +8,10 @@ import React, {
   useState,
 } from 'react';
 import { LayoutAnimation } from 'react-native';
-import { BorderlessButton } from 'react-native-gesture-handler';
+import {
+  BorderlessButton,
+  TouchableOpacity,
+} from 'react-native-gesture-handler';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import styled from 'styled-components';
 import { darkModeThemeColors } from '../../styles/colors';
@@ -20,7 +23,9 @@ import { Text } from '../text';
 import GasSpeedLabelPager from './GasSpeedLabelPager';
 import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
 import { useAccountSettings, useGas } from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
 import { gweiToWei, weiToGwei } from '@rainbow-me/parsers';
+import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
 import { gasUtils, magicMemo } from '@rainbow-me/utils';
 
@@ -218,8 +223,8 @@ const GasSpeedButton = ({
     }
     LayoutAnimation.easeInEaseOut();
     const gasOptions = options || GasSpeedOrder;
-    const currentSpeedIndex = gasOptions.indexOf(selectedGasPriceOption);
-    const nextSpeedIndex = (currentSpeedIndex + 1) % gasOptions.length;
+    const currentSpeedIndex = gasOptions?.indexOf(selectedGasPriceOption);
+    const nextSpeedIndex = (currentSpeedIndex + 1) % gasOptions?.length;
 
     const nextSpeed = gasOptions[nextSpeedIndex];
     updateGasPriceOption(nextSpeed);
@@ -325,7 +330,7 @@ const GasSpeedButton = ({
       return;
     }
 
-    const minKey = options.indexOf(SLOW) !== -1 ? SLOW : NORMAL;
+    const minKey = options?.indexOf(SLOW) !== -1 ? SLOW : NORMAL;
 
     const minGasPriceAllowed = Number(
       gasPricesAvailable?.[minKey]?.value?.amount || 0
@@ -395,6 +400,12 @@ const GasSpeedButton = ({
 
   const focusOnInput = useCallback(() => inputRef.current?.focus(), []);
   const isCustom = selectedGasPriceOption === CUSTOM ? true : false;
+
+  const { navigate } = useNavigation();
+
+  const openGasHelper = useCallback(() => navigate(Routes.EXPLAIN_SHEET), [
+    navigate,
+  ]);
 
   return (
     <Container as={ButtonPressAnimation} onPress={handlePress} testID={testID}>
@@ -467,15 +478,26 @@ const GasSpeedButton = ({
       </Row>
       <Row justify="space-between">
         {!isCustom ? (
-          <Label
-            color={
-              theme === 'dark'
-                ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)
-                : colors.alpha(colors.blueGreyDark, 0.6)
-            }
-          >
-            Network Fee
-          </Label>
+          <TouchableOpacity onPress={openGasHelper}>
+            <Label
+              color={
+                theme === 'dark'
+                  ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)
+                  : colors.alpha(colors.blueGreyDark, 0.6)
+              }
+            >
+              Network Fee{' '}
+              <Label
+                color={
+                  theme === 'dark'
+                    ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.4)
+                    : colors.alpha(colors.blueGreyDark, 0.4)
+                }
+              >
+                􀅵
+              </Label>
+            </Label>
+          </TouchableOpacity>
         ) : (
           <LittleBorderlessButton
             onPress={handleInputButtonManager}

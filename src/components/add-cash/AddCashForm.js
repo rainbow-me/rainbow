@@ -3,15 +3,22 @@ import analytics from '@segment/analytics-react-native';
 import { isEmpty } from 'lodash';
 import React, { Fragment, useCallback, useState } from 'react';
 import { Clock } from 'react-native-reanimated';
+import useWallets from '../../hooks/useWallets';
 import { Alert } from '../alerts';
 import { runSpring } from '../animations';
 import { Centered, ColumnWithMargins } from '../layout';
 import { Numpad, NumpadValue } from '../numpad';
 import AddCashFooter from './AddCashFooter';
 import AddCashSelector from './AddCashSelector';
-import { useDimensions, useIsWalletEthZero } from '@rainbow-me/hooks';
+import { toChecksumAddress } from '@rainbow-me/handlers/web3';
+import {
+  useAccountSettings,
+  useDimensions,
+  useIsWalletEthZero,
+} from '@rainbow-me/hooks';
 import { DAI_ADDRESS, ETH_ADDRESS } from '@rainbow-me/references';
 import { padding } from '@rainbow-me/styles';
+import { abbreviations } from '@rainbow-me/utils';
 
 const currencies = [DAI_ADDRESS, ETH_ADDRESS];
 const minimumPurchaseAmountUSD = 1;
@@ -37,22 +44,51 @@ const AddCashForm = ({
     params?.amount ? params?.amount?.toString() : ''
   );
 
-  const handlePurchase = useCallback(async () => {
+  const { isReadOnlyWallet } = useWallets();
+  const { accountAddress } = useAccountSettings();
+
+  const onSubmit = useCallback(async () => {
     if (paymentSheetVisible) return;
-    try {
-      analytics.track('Submitted Purchase', {
-        category: 'add cash',
-        label: currency,
-        value: Number(value),
-      });
-      setPaymentSheetVisible(true);
-      await onPurchase({ address: currency, value });
-      // eslint-disable-next-line no-empty
-    } catch (e) {
-    } finally {
-      setPaymentSheetVisible(false);
+    async function handlePurchase() {
+      try {
+        analytics.track('Submitted Purchase', {
+          category: 'add cash',
+          label: currency,
+          value: Number(value),
+        });
+        setPaymentSheetVisible(true);
+        await onPurchase({ address: currency, value });
+        // eslint-disable-next-line no-empty
+      } catch (e) {
+      } finally {
+        setPaymentSheetVisible(false);
+      }
     }
-  }, [currency, onPurchase, paymentSheetVisible, value]);
+    if (isReadOnlyWallet) {
+      const truncatedAddress = abbreviations.formatAddressForDisplay(
+        toChecksumAddress(accountAddress),
+        4,
+        6
+      );
+      Alert({
+        buttons: [
+          { style: 'cancel', text: 'Cancel' },
+          { onPress: handlePurchase, text: 'Proceed' },
+        ],
+        message: `The wallet you have open is read-only, so you can’t control what’s inside. Are you sure you want to add cash to ${truncatedAddress}?`,
+        title: `You’re in Watching Mode`,
+      });
+    } else {
+      await handlePurchase();
+    }
+  }, [
+    accountAddress,
+    isReadOnlyWallet,
+    currency,
+    onPurchase,
+    paymentSheetVisible,
+    value,
+  ]);
 
   const handleNumpadPress = useCallback(
     newValue => {
@@ -172,7 +208,7 @@ const AddCashForm = ({
             isEmpty(value) || parseFloat(value) < minimumPurchaseAmountUSD
           }
           onDisabledPress={onShake}
-          onSubmit={handlePurchase}
+          onSubmit={onSubmit}
         />
       </ColumnWithMargins>
     </Fragment>

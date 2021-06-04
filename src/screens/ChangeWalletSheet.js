@@ -121,7 +121,7 @@ export default function ChangeWalletSheet() {
   const { colors } = useTheme();
   const { updateWebProfile } = useWebData();
 
-  const { goBack, navigate, replace } = useNavigation();
+  const { goBack, navigate } = useNavigation();
   const dispatch = useDispatch();
   const { accountAddress } = useAccountSettings();
   const initializeWallet = useInitializeWallet();
@@ -315,7 +315,7 @@ export default function ChangeWalletSheet() {
                   if (!isLastAvailableWallet) {
                     await cleanUpWalletKeys();
                     goBack();
-                    replace(Routes.WELCOME_SCREEN);
+                    navigate(Routes.WELCOME_SCREEN);
                   } else {
                     // If we're deleting the selected wallet
                     // we need to switch to another one
@@ -348,7 +348,7 @@ export default function ChangeWalletSheet() {
       goBack,
       onChangeAccount,
       renameWallet,
-      replace,
+      navigate,
       wallets,
     ]
   );

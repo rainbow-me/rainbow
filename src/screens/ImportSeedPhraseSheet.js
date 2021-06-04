@@ -84,7 +84,7 @@ const SecretTextArea = styled(Input).attrs({
   lineHeight: 'looser',
   multiline: true,
   numberOfLines: 3,
-  placeholder: 'Seed phrase, private key, Ethereum address, or ENS name',
+  placeholder: 'Secret phrase, private key, Ethereum address, or ENS name',
   returnKeyType: 'done',
   size: 'large',
   spellCheck: false,
@@ -167,7 +167,7 @@ export default function ImportSeedPhraseSheet() {
             onChangeText={handleSetSeedPhrase}
             onFocus={handleFocus}
             onSubmitEditing={handlePressImportButton}
-            placeholder="Seed phrase, private key, Ethereum address or ENS name"
+            placeholder="Secret phrase, private key, Ethereum address or ENS name"
             placeholderTextColor={colors.alpha(colors.blueGreyDark, 0.3)}
             ref={inputRef}
             returnKeyType="done"
