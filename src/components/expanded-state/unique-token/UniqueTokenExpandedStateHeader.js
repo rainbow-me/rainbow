@@ -3,6 +3,7 @@ import React, { useCallback } from 'react';
 import { Linking, Share } from 'react-native';
 import styled from 'styled-components';
 import { buildUniqueTokenName } from '../../../helpers/assets';
+import { ENSAddress } from '../../../parsers/uniqueTokens';
 import { magicMemo } from '../../../utils';
 import Pill from '../../Pill';
 import { ContextCircleButton } from '../../context-menu';
@@ -63,7 +64,9 @@ const UniqueTokenExpandedStateHeader = ({ asset }) => {
             uppercase
             weight="semibold"
           >
-            {asset.collection.name}
+            {asset.asset_contract.address !== ENSAddress
+              ? 'ENS'
+              : asset.collection.name}
           </Text>
           <Pill maxWidth={150}>#{asset.id}</Pill>
         </RowWithMargins>
