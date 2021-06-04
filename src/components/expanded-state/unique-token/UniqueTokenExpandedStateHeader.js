@@ -64,7 +64,7 @@ const UniqueTokenExpandedStateHeader = ({ asset }) => {
             uppercase
             weight="semibold"
           >
-            {asset.asset_contract.address !== ENSAddress
+            {asset.asset_contract.address === ENSAddress
               ? 'ENS'
               : asset.collection.name}
           </Text>
