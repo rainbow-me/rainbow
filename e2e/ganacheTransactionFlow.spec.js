@@ -315,7 +315,8 @@ describe('Ganache Transaction Flow', () => {
       throw new Error('WC approving tx failed');
     }
     await Helpers.swipe('wallet-screen', 'right', 'slow');
-    connector.disconnect();
+    connector.killSession();
+    connector = null;
   });
 
   /*
