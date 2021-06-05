@@ -63,6 +63,7 @@ const UniqueTokenCard = ({
           imageUrl={imageUrl}
           item={item}
           resizeMode={resizeMode}
+          small
         />
         {borderEnabled && (
           <InnerBorder

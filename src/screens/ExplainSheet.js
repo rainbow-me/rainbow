@@ -1,16 +1,17 @@
 import { useRoute } from '@react-navigation/native';
 import React, { useCallback } from 'react';
-import { StatusBar, View } from 'react-native';
+import { StatusBar } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components';
-import { Centered } from '../components/layout';
+import { Centered, ColumnWithMargins } from '../components/layout';
 import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
-import { Emoji, Text } from '../components/text';
+import { Emoji, GradientText, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
 import { useDimensions } from '@rainbow-me/hooks';
-import { position } from '@rainbow-me/styles';
+import { fonts, fontWithWidth, position } from '@rainbow-me/styles';
 
-const sheetHeight = android ? 420 : 400;
+export const VerifiedSheetHeight = android ? 334 : 304;
+export const ExplainSheetHeight = android ? 454 : 434;
 
 const Container = styled(Centered).attrs({ direction: 'column' })`
   ${position.cover};
@@ -18,13 +19,29 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
     height ? `height: ${height + deviceHeight}` : null};
 `;
 
-const GAS_EXPLAINER = `The network fee is not controlled or received by Rainbow. It is the "gas fee" used by the Ethereum blockchain to validate your transaction. It changes constantly based on supply and demand.`;
+const Gradient = styled(GradientText).attrs({
+  colors: ['#6AA2E3', '#FF54BB', '#FFA230'],
+  letterSpacing: 'roundedMedium',
+  steps: [0, 0.5, 1],
+  weight: 'heavy',
+})``;
+
+const GAS_EXPLAINER = `This is the "gas fee" used by the Ethereum blockchain to securely validate your transaction.
+
+This fee varies depending on the complexity of your transaction and how busy the network is!`;
+
+const VERIFIED_EXPLAINER = `Rainbow verified tokens indicate that these tokens have been verified on more than 3 Token Lists `;
 
 const explainers = {
   gas: {
     emoji: '⛽️',
     text: GAS_EXPLAINER,
-    title: 'What are network fees?',
+    title: 'Ethereum network fee',
+  },
+  verified: {
+    emoji: '􀇻',
+    text: VERIFIED_EXPLAINER,
+    title: 'Verified Tokens',
   },
 };
 
@@ -39,8 +56,17 @@ const SavingsSheet = () => {
     goBack();
   }, [goBack]);
 
+  const sheetHeight =
+    android && type === 'verified' ? VerifiedSheetHeight : ExplainSheetHeight;
+  const EmojiText = type === 'verified' ? Gradient : Emoji;
+  const Title = type === 'verified' ? Gradient : SheetTitle;
+
   return (
-    <Container deviceHeight={deviceHeight} height={sheetHeight} insets={insets}>
+    <Container
+      deviceHeight={deviceHeight}
+      height={ExplainSheetHeight}
+      insets={insets}
+    >
       {ios && <StatusBar barStyle="light-content" />}
 
       <SlackSheet
@@ -54,36 +80,50 @@ const SavingsSheet = () => {
           testID="add-token-sheet"
           width="100%"
         >
-          <View
+          <ColumnWithMargins
+            margin={15}
             style={{
-              display: 'flex',
               height: sheetHeight,
-              justifyContent: 'space-between',
-              padding: 30,
+              paddingHorizontal: 19,
+              paddingTop: 19,
               width: '100%',
             }}
           >
-            <Emoji align="center" size="h1">
+            <EmojiText
+              align="center"
+              size="h1"
+              style={{ ...fontWithWidth(fonts.weight.bold) }}
+            >
               {explainers[type].emoji}
-            </Emoji>
-            <SheetTitle>{explainers[type].title}</SheetTitle>
+            </EmojiText>
+            <Title align="center" size="big" weight="heavy">
+              {explainers[type].title}
+            </Title>
             <Text
               align="center"
-              color={colors.alpha(colors.blueGreyDark, 0.5)}
-              lineHeight="paragraphSmall"
-              size="lmedium"
+              color={colors.alpha(colors.blueGreyDark, 0.6)}
+              lineHeight="looser"
+              size="large"
+              style={{
+                alignSelf: 'center',
+                maxWidth: 376,
+                paddingBottom: 15,
+                paddingHorizontal: 23,
+              }}
             >
               {explainers[type].text}
             </Text>
             <SheetActionButton
               androidWidth={deviceWidth - 60}
-              color={colors.white}
+              color={colors.alpha(colors.appleBlue, 0.06)}
+              isTransparent
               label="Got it"
               onPress={handleClose}
               size="big"
-              textColor={colors.alpha(colors.blueGreyDark, 0.8)}
+              textColor={colors.appleBlue}
+              weight="heavy"
             />
-          </View>
+          </ColumnWithMargins>
         </Centered>
       </SlackSheet>
     </Container>

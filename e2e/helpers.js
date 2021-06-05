@@ -85,7 +85,7 @@ export async function waitAndSwipe(
   await waitFor(element(by.id(elementId)))
     .toBeVisible()
     .withTimeout(timeout || DEFAULT_TIMEOUT);
-  await element(by.id(elementId)).swipe(direction, speed, percentage);
+  await element(by.id(elementId))?.swipe(direction, speed, percentage);
 }
 
 export async function swipe(
@@ -94,7 +94,7 @@ export async function swipe(
   speed = 'fast',
   percentage = 0.75
 ) {
-  await element(by.id(elementId)).swipe(direction, speed, percentage);
+  await element(by.id(elementId))?.swipe(direction, speed, percentage);
 }
 
 export async function scrollTo(scrollviewId, edge) {

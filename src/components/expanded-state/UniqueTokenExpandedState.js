@@ -10,7 +10,7 @@ import {
   SheetDivider,
   SlackSheet,
 } from '../sheet';
-import { Text } from '../text';
+import { MarkdownText } from '../text';
 import { ToastPositionContainer, ToggleStateToast } from '../toasts';
 import { UniqueTokenAttributes } from '../unique-token';
 import ExpandedStateSection from './ExpandedStateSection';
@@ -99,13 +99,13 @@ const UniqueTokenExpandedState = ({ asset, external }) => {
           {!!familyDescription && (
             <ExpandedStateSection title={`About ${familyName}`}>
               <Column>
-                <Text
+                <MarkdownText
                   color={colors.alpha(colors.blueGreyDark, 0.5)}
                   lineHeight="paragraphSmall"
                   size="lmedium"
                 >
                   {familyDescription}
-                </Text>
+                </MarkdownText>
                 {familyLink && <Link url={familyLink} />}
               </Column>
             </ExpandedStateSection>

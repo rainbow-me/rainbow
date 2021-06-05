@@ -50,10 +50,10 @@ export function getAccountProfileInfo(
 
   const accountName = removeFirstEmojiFromString(
     network === networkTypes.mainnet
-      ? label || accountENS || address(accountAddress, 6, 4)
+      ? label || accountENS || address(accountAddress, 4, 4)
       : label === accountENS
-      ? address(accountAddress, 6, 4)
-      : label || address(accountAddress, 6, 4)
+      ? address(accountAddress, 4, 4)
+      : label || address(accountAddress, 4, 4)
   ).join('');
 
   const labelOrAccountName =

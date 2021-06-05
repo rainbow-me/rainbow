@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { LayoutAnimation, View } from 'react-native';
+import { LayoutAnimation } from 'react-native';
 import {
   BorderlessButton,
   TouchableOpacity,
@@ -17,7 +17,6 @@ import styled from 'styled-components';
 import { darkModeThemeColors } from '../../styles/colors';
 import { Alert } from '../alerts';
 import { ButtonPressAnimation } from '../animations';
-import { Icon } from '../icons';
 import { Input } from '../inputs';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
@@ -224,8 +223,8 @@ const GasSpeedButton = ({
     }
     LayoutAnimation.easeInEaseOut();
     const gasOptions = options || GasSpeedOrder;
-    const currentSpeedIndex = gasOptions.indexOf(selectedGasPriceOption);
-    const nextSpeedIndex = (currentSpeedIndex + 1) % gasOptions.length;
+    const currentSpeedIndex = gasOptions?.indexOf(selectedGasPriceOption);
+    const nextSpeedIndex = (currentSpeedIndex + 1) % gasOptions?.length;
 
     const nextSpeed = gasOptions[nextSpeedIndex];
     updateGasPriceOption(nextSpeed);
@@ -331,7 +330,7 @@ const GasSpeedButton = ({
       return;
     }
 
-    const minKey = options.indexOf(SLOW) !== -1 ? SLOW : NORMAL;
+    const minKey = options?.indexOf(SLOW) !== -1 ? SLOW : NORMAL;
 
     const minGasPriceAllowed = Number(
       gasPricesAvailable?.[minKey]?.value?.amount || 0
@@ -404,9 +403,10 @@ const GasSpeedButton = ({
 
   const { navigate } = useNavigation();
 
-  const openGasHelper = useCallback(() => navigate(Routes.EXPLAIN_SHEET), [
-    navigate,
-  ]);
+  const openGasHelper = useCallback(
+    () => navigate(Routes.EXPLAIN_SHEET, { type: 'gas' }),
+    [navigate]
+  );
 
   return (
     <Container as={ButtonPressAnimation} onPress={handlePress} testID={testID}>
@@ -487,18 +487,16 @@ const GasSpeedButton = ({
                   : colors.alpha(colors.blueGreyDark, 0.6)
               }
             >
-              Network Fee
-              <View style={{ paddingLeft: 4 }}>
-                <Icon
-                  color={
-                    theme === 'dark'
-                      ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)
-                      : colors.alpha(colors.blueGreyDark, 0.6)
-                  }
-                  name="info"
-                  size={10}
-                />
-              </View>
+              Network Fee{' '}
+              <Label
+                color={
+                  theme === 'dark'
+                    ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.4)
+                    : colors.alpha(colors.blueGreyDark, 0.4)
+                }
+              >
+                􀅵
+              </Label>
             </Label>
           </TouchableOpacity>
         ) : (
