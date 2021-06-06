@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.5.11](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.11)
+
+### Changed
+* Improved Swap Analytics
+* WC signing fix
+
 ## [1.5.10](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.10)
 
 ### Added
