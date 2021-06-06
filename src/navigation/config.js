@@ -7,10 +7,7 @@ import { SheetHandleFixedToTopHeight } from '../components/sheet';
 import { Text } from '../components/text';
 import { useTheme } from '../context/ThemeContext';
 import colors from '../context/currentColors';
-import {
-  ExplainSheetHeight,
-  VerifiedSheetHeight,
-} from '../screens/ExplainSheet';
+import { ExplainSheetHeight } from '../screens/ExplainSheet';
 import { onWillPop } from './Navigation';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import { fonts } from '@rainbow-me/styles';
@@ -94,11 +91,9 @@ export const addTokenSheetConfig = {
 
 export const explainSheetConfig = {
   options: ({ route: { params = {} } }) => {
-    const sheetHeight =
-      params?.type === 'verified' ? VerifiedSheetHeight : ExplainSheetHeight;
     return buildCoolModalConfig({
       ...params,
-      longFormHeight: sheetHeight,
+      longFormHeight: ExplainSheetHeight,
     });
   },
 };
