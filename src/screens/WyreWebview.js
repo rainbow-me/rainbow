@@ -32,6 +32,7 @@ export default function WyreWebview() {
         'ETH',
         accountAddress,
         network,
+        null, // wyreUserID,
         'debit-card'
       );
       setUrl(url);

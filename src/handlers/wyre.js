@@ -192,15 +192,18 @@ export const reserveWyreOrder = async (
   destCurrency,
   accountAddress,
   network,
+  wyreUserId = null,
   paymentMethod = null
 ) => {
   const partnerId =
     network === NetworkTypes.mainnet ? WYRE_ACCOUNT_ID : WYRE_ACCOUNT_ID_TEST;
   const dest = `ethereum:${accountAddress}`;
+  const owner = wyreUserId ? `user:${wyreUserId}` : undefined;
   const data = {
     amount,
     dest,
     destCurrency,
+    owner,
     referrerAccountId: partnerId,
     sourceCurrency: SOURCE_CURRENCY_USD,
   };
