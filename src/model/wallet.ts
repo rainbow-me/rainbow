@@ -30,6 +30,7 @@ import {
   privateKeyKey,
   seedPhraseKey,
   selectedWalletKey,
+  wyreUserIdKey,
 } from '../utils/keychainConstants';
 import * as keychain from './keychain';
 import { PreferenceActionType, setPreference } from './preferences';
@@ -949,6 +950,27 @@ export const saveAllWallets = async (wallets: AllRainbowWallets) => {
   };
 
   await keychain.saveObject(allWalletsKey, val, publicAccessControlOptions);
+};
+
+export const getWyreUserId = async (): Promise<string | null> => {
+  try {
+    const wyreUserId = await keychain.loadString(wyreUserIdKey);
+    if (wyreUserId) {
+      return wyreUserId as string;
+    }
+    return null;
+  } catch (error) {
+    logger.sentry('Error in getWyreUserId');
+    captureException(error);
+    return null;
+  }
+};
+
+export const saveWyreUserId = async (
+  wyreUserId: string,
+  accessControlOptions = publicAccessControlOptions
+): Promise<void> => {
+  return keychain.saveString(wyreUserIdKey, wyreUserId, accessControlOptions);
 };
 
 export const getAllWallets = async (): Promise<null | AllRainbowWalletsData> => {
