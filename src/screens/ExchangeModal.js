@@ -300,7 +300,7 @@ export default function ExchangeModal({
       const res = new Promise(resolve => {
         Alert.alert(
           'Are you sure?',
-          'This transaction will cost you more than the value you are swapping, are you sure you want to continue?',
+          'This transaction will cost you more than the value you are swapping to, are you sure you want to continue?',
           [
             {
               onPress: () => {
