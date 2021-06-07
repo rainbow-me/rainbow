@@ -10,7 +10,6 @@ import { useNavigation } from '../navigation/Navigation';
 import { useDimensions } from '@rainbow-me/hooks';
 import { fonts, fontWithWidth, position } from '@rainbow-me/styles';
 
-export const VerifiedSheetHeight = android ? 334 : 304;
 export const ExplainSheetHeight = android ? 454 : 434;
 
 const Container = styled(Centered).attrs({ direction: 'column' })`
@@ -30,7 +29,9 @@ const GAS_EXPLAINER = `This is the "gas fee" used by the Ethereum blockchain to 
 
 This fee varies depending on the complexity of your transaction and how busy the network is!`;
 
-const VERIFIED_EXPLAINER = `Rainbow verified tokens indicate that these tokens have been verified on more than 3 Token Lists `;
+const VERIFIED_EXPLAINER = `Tokens with a verified badge mean they have appeared on at least 3 other outside token lists.
+
+Always do your own research to ensure you are interacting with a token you trust.`;
 
 const explainers = {
   gas: {
@@ -56,8 +57,6 @@ const SavingsSheet = () => {
     goBack();
   }, [goBack]);
 
-  const sheetHeight =
-    android && type === 'verified' ? VerifiedSheetHeight : ExplainSheetHeight;
   const EmojiText = type === 'verified' ? Gradient : Emoji;
   const Title = type === 'verified' ? Gradient : SheetTitle;
 
@@ -71,19 +70,19 @@ const SavingsSheet = () => {
 
       <SlackSheet
         additionalTopPadding={android}
-        contentHeight={sheetHeight}
+        contentHeight={ExplainSheetHeight}
         scrollEnabled={false}
       >
         <Centered
           direction="column"
-          height={sheetHeight}
+          height={ExplainSheetHeight}
           testID="add-token-sheet"
           width="100%"
         >
           <ColumnWithMargins
             margin={15}
             style={{
-              height: sheetHeight,
+              height: ExplainSheetHeight,
               paddingHorizontal: 19,
               paddingTop: 19,
               width: '100%',
