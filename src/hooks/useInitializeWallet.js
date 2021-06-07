@@ -19,6 +19,7 @@ import useInitializeDiscoverData from './useInitializeDiscoverData';
 import useLoadAccountData from './useLoadAccountData';
 import useLoadGlobalData from './useLoadGlobalData';
 import useResetAccountState from './useResetAccountState';
+import { runKeychainIntegrityChecks } from '@rainbow-me/handlers/walletReadyEvents';
 import { additionalDataCoingeckoIds } from '@rainbow-me/redux/additionalAssetsData';
 import logger from 'logger';
 
@@ -78,6 +79,12 @@ export default function useInitializeWallet() {
           walletAddress,
         });
 
+        if (!switching) {
+          // Run keychain integrity checks right after walletInit
+          // Except when switching wallets!
+          await runKeychainIntegrityChecks();
+        }
+
         if (seedPhrase || isNew) {
           logger.sentry('walletsLoadState call #2');
           await dispatch(walletsLoadState());
@@ -111,6 +118,7 @@ export default function useInitializeWallet() {
         hideSplashScreen();
         logger.sentry('Hide splash screen');
         initializeAccountData();
+
         if (!isImporting) {
           dispatch(appStateUpdate({ walletReady: true }));
         }
@@ -123,6 +131,7 @@ export default function useInitializeWallet() {
         }
 
         logger.sentry('💰 Wallet initialized');
+
         return walletAddress;
       } catch (error) {
         logger.sentry('Error while initializing wallet');
@@ -130,6 +139,9 @@ export default function useInitializeWallet() {
         hideSplashScreen();
         captureException(error);
         Alert.alert('Something went wrong while importing. Please try again!');
+        if (!switching) {
+          await runKeychainIntegrityChecks();
+        }
         dispatch(appStateUpdate({ walletReady: true }));
         return null;
       }

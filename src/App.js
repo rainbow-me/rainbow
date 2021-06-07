@@ -40,10 +40,7 @@ import { MainThemeProvider } from './context/ThemeContext';
 import { InitialRouteContext } from './context/initialRoute';
 import monitorNetwork from './debugging/network';
 import handleDeeplink from './handlers/deeplinks';
-import {
-  runKeychainIntegrityChecks,
-  runWalletBackupStatusChecks,
-} from './handlers/walletReadyEvents';
+import { runWalletBackupStatusChecks } from './handlers/walletReadyEvents';
 import RainbowContextWrapper from './helpers/RainbowContext';
 import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import * as keychain from './model/keychain';
@@ -163,7 +160,6 @@ class App extends Component {
     if (!prevProps.walletReady && this.props.walletReady) {
       // Everything we need to do after the wallet is ready goes here
       logger.sentry('✅ Wallet ready!');
-      runKeychainIntegrityChecks();
       runWalletBackupStatusChecks();
     }
   }
