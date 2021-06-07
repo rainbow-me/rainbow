@@ -24,12 +24,7 @@ const CopyToast = ({ copiedText, copyCount }) => {
     showToast,
   ]);
 
-  return (
-    <Toast
-      isVisible={isVisible}
-      text={`􀉂 Copied "${copiedText}" to clipboard`}
-    />
-  );
+  return <Toast isVisible={isVisible} text={`􀁣 Copied "${copiedText}"`} />;
 };
 
 export default magicMemo(CopyToast, ['copiedText', 'copyCount']);
