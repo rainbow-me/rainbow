@@ -10,12 +10,15 @@ import {
 } from '@rainbow-me/handlers/localstorage/accountLocal';
 import { trackWyreOrder, trackWyreTransfer } from '@rainbow-me/handlers/wyre';
 import { WYRE_ORDER_STATUS_TYPES } from '@rainbow-me/helpers/wyreStatusTypes';
+import { getWyreUserId, saveWyreUserId } from '@rainbow-me/model/wallet';
 import { AddCashCurrencies, AddCashCurrencyInfo } from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';
 import maybeReviewAlert from '@rainbow-me/utils/reviewAlert';
 import logger from 'logger';
 
 // -- Constants --------------------------------------- //
+const ADD_CASH_UPDATE_USER_ID = 'addCash/ADD_CASH_UPDATE_USER_ID';
+
 const ADD_CASH_UPDATE_PURCHASE_TRANSACTIONS =
   'addCash/ADD_CASH_UPDATE_PURCHASE_TRANSACTIONS';
 
@@ -49,6 +52,17 @@ export const addCashLoadState = () => async (dispatch, getState) => {
       payload: purchases,
       type: ADD_CASH_UPDATE_PURCHASE_TRANSACTIONS,
     });
+    // eslint-disable-next-line no-empty
+  } catch (error) {}
+
+  try {
+    const wyreUserId = await getWyreUserId();
+    if (wyreUserId) {
+      dispatch({
+        payload: wyreUserId,
+        type: ADD_CASH_UPDATE_USER_ID,
+      });
+    }
     // eslint-disable-next-line no-empty
   } catch (error) {}
 };
@@ -299,6 +313,14 @@ const addCashGetTransferHash = (
   await getTransferHash(referenceInfo, transferId, sourceAmount);
 };
 
+export const addCashUpdateUserId = userId => dispatch => {
+  dispatch({
+    payload: userId,
+    type: ADD_CASH_UPDATE_USER_ID,
+  });
+  saveWyreUserId(userId);
+};
+
 export const addCashResetCurrentOrder = () => dispatch =>
   dispatch({
     type: ADD_CASH_RESET_CURRENT_ORDER,
@@ -316,10 +338,16 @@ const INITIAL_STATE = {
   currentTransferId: null,
   error: {},
   purchaseTransactions: [],
+  wyreUserId: null,
 };
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
+    case ADD_CASH_UPDATE_USER_ID:
+      return {
+        ...state,
+        wyreUserId: action.payload,
+      };
     case ADD_CASH_RESET_CURRENT_ORDER:
       return {
         ...state,
