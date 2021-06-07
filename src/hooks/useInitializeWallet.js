@@ -136,12 +136,12 @@ export default function useInitializeWallet() {
       } catch (error) {
         logger.sentry('Error while initializing wallet');
         // TODO specify error states more granular
-        hideSplashScreen();
-        captureException(error);
-        Alert.alert('Something went wrong while importing. Please try again!');
         if (!switching) {
           await runKeychainIntegrityChecks();
         }
+        hideSplashScreen();
+        captureException(error);
+        Alert.alert('Something went wrong while importing. Please try again!');
         dispatch(appStateUpdate({ walletReady: true }));
         return null;
       }
