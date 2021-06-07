@@ -147,6 +147,7 @@ const BottomSheetRoute = ({
   return (
     <BottomSheetNavigatorContext.Provider value={contextVariables}>
       <BottomSheet
+        activeOffsetY={[-3, 3]}
         animateOnMount
         animationDuration={DEFAULT_ANIMATION_DURATION}
         backdropComponent={renderBackdropComponent}
