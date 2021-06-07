@@ -1,5 +1,4 @@
 import analytics from '@segment/analytics-react-native';
-import { get } from 'lodash';
 import React, {
   Fragment,
   useCallback,
@@ -360,7 +359,7 @@ export default function ExchangeModal({
       });
     }
 
-    const gasPrice = get(selectedGasPrice, 'txFee.native.value.amount');
+    const gasPrice = selectedGasPrice?.txFee?.native?.value?.amount;
     const cancelTransaction = await checkGasvInput(gasPrice, amountInUSD);
 
     if (cancelTransaction) {
