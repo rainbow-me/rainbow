@@ -2,7 +2,7 @@ import { AnyAction } from 'redux';
 import { uniswapClient } from '../apollo/client';
 import {
   USER_HISTORY,
-  USER_MINTS_BUNRS_PER_PAIR,
+  USER_MINTS_BURNS_PER_PAIR,
   USER_POSITIONS,
 } from '../apollo/queries';
 import { AppDispatch, AppGetState } from '@rainbow-me/redux/store';
@@ -160,9 +160,9 @@ async function getPrincipalForUserPerPair(user: string, pairAddress: string) {
   let usd = 0;
   let amount0 = 0;
   let amount1 = 0;
-  // get all minst and burns to get principal amounts
+  // get all mints and burns to get principal amounts
   const results = await uniswapClient.query({
-    query: USER_MINTS_BUNRS_PER_PAIR,
+    query: USER_MINTS_BURNS_PER_PAIR,
     variables: {
       pair: pairAddress,
       user,
