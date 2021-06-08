@@ -20,7 +20,7 @@ describe('Watch address flow', () => {
   it('Should show the "Add wallet modal" after tapping import with a valid address', async () => {
     await Helpers.clearField('import-sheet-input');
     await Helpers.checkIfElementHasString('import-sheet-button-label', 'Paste');
-    await Helpers.typeText('import-sheet-input', 'vitalik.eth', false);
+    await Helpers.typeText('import-sheet-input', 'test.eth', false);
     await Helpers.checkIfElementHasString(
       'import-sheet-button-label',
       'Import'
@@ -43,14 +43,14 @@ describe('Watch address flow', () => {
     await Helpers.enableSynchronization();
   });
 
-  it('Should say "vitalik.eth" in the Profile Screen header', async () => {
+  it('Should say "test.eth" in the Profile Screen header', async () => {
     if (device.getPlatform() === 'android') {
       // not working on android!
       // (app isn't idle and test times out)
-      //   // await Helpers.checkIfElementByTextIsVisible('vitalik.eth');
+      //   // await Helpers.checkIfElementByTextIsVisible('test.eth');
     } else {
       await Helpers.swipe('wallet-screen', 'right');
-      await Helpers.checkIfElementByTextIsVisible('vitalik.eth');
+      await Helpers.checkIfElementByTextIsVisible('test.eth');
     }
   });
 

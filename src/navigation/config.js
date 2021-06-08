@@ -7,6 +7,7 @@ import { SheetHandleFixedToTopHeight } from '../components/sheet';
 import { Text } from '../components/text';
 import { useTheme } from '../context/ThemeContext';
 import colors from '../context/currentColors';
+import { ExplainSheetHeight } from '../screens/ExplainSheet';
 import { onWillPop } from './Navigation';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import { fonts } from '@rainbow-me/styles';
@@ -89,12 +90,12 @@ export const addTokenSheetConfig = {
 };
 
 export const explainSheetConfig = {
-  options: ({ route: { params = {} } }) => ({
-    ...buildCoolModalConfig({
+  options: ({ route: { params = {} } }) => {
+    return buildCoolModalConfig({
       ...params,
-      longFormHeight: 400,
-    }),
-  }),
+      longFormHeight: ExplainSheetHeight,
+    });
+  },
 };
 
 export const expandedAssetSheetConfig = {

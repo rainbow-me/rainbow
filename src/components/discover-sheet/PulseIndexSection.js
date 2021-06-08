@@ -65,7 +65,7 @@ const PulseIndex = () => {
       nativeCurrency
     );
 
-    navigate(ios ? Routes.TOKEN_INDEX_SHEET : Routes.TOKEN_INDEX_SCREEN, {
+    navigate(Routes.TOKEN_INDEX_SHEET, {
       asset,
       backgroundOpacity: 1,
       cornerRadius: 39,

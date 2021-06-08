@@ -1,8 +1,8 @@
 diff --git a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/BottomSheet.tsx b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/BottomSheet.tsx
-index 757f3ac..08e787a 100644
+index 78e5510..2656c76 100644
 --- a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/BottomSheet.tsx
 +++ b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/BottomSheet.tsx
-@@ -18,7 +18,7 @@ import Animated, {
+@@ -17,7 +17,7 @@ import Animated, {
    useAnimatedStyle,
    useDerivedValue,
    runOnJS,
@@ -10,27 +10,26 @@ index 757f3ac..08e787a 100644
 +  newInterpolate as interpolate,
    Extrapolate,
    runOnUI,
-   useWorkletCallback,
+   cancelAnimation,
 diff --git a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/constants.ts b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/constants.ts
-index db85178..ac4f657 100644
+index bd6c73b..6362875 100644
 --- a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/constants.ts
 +++ b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/constants.ts
-@@ -1,5 +1,5 @@
- import { Platform } from 'react-native';
+@@ -1,4 +1,4 @@
 -import Animated, { Easing } from 'react-native-reanimated';
 +import Animated, { NewEasing as Easing } from 'react-native-reanimated';
+ import { KEYBOARD_BEHAVIOR, KEYBOARD_BLUR_BEHAVIOR } from '../../constants';
  import { exp } from '../../utilities/easingExp';
-
- const DEFAULT_ANIMATION_EASING: Animated.EasingFunction = Easing.out(exp);
+ 
 diff --git a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheetBackdrop/BottomSheetBackdrop.tsx b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheetBackdrop/BottomSheetBackdrop.tsx
-index bc12211..02c06a7 100644
+index 1469a59..da5a7e4 100644
 --- a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheetBackdrop/BottomSheetBackdrop.tsx
 +++ b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheetBackdrop/BottomSheetBackdrop.tsx
 @@ -1,6 +1,6 @@
- import React, { memo, useMemo } from 'react';
+ import React, { memo, useCallback, useMemo, useRef } from 'react';
  import Animated, {
 -  interpolate,
 +  newInterpolate as interpolate,
    Extrapolate,
    useAnimatedStyle,
-   useAnimatedProps,
+   useAnimatedReaction,

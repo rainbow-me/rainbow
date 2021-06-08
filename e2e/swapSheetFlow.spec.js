@@ -345,6 +345,12 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfElementByTextIsVisible('Custom');
   });
 
+  it('Should throw alert if gas price is greater than input amount', async () => {
+    await Helpers.typeText('exchange-modal-input', '0.000001', false);
+    await Helpers.tapAndLongPress('exchange-modal-confirm');
+    await Helpers.tapAlertWithButton('Cancel');
+  });
+
   afterAll(async () => {
     // Reset the app state
     await device.clearKeychain();

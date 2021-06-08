@@ -100,7 +100,7 @@ GEM
     faraday_middleware (1.0.0)
       faraday (~> 1.0)
     fastimage (2.2.3)
-    fastlane (2.183.1)
+    fastlane (2.184.1)
       CFPropertyList (>= 2.3, < 4.0.0)
       addressable (>= 2.3, < 3.0.0)
       artifactory (~> 3.0)
@@ -265,4 +265,4 @@ DEPENDENCIES
   fastlane-plugin-sentry
 
 BUNDLED WITH
-   1.17.3
+   2.1.4

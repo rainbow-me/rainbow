@@ -51,7 +51,7 @@ const WalletConnectRedirectSheet = () => {
 
   return (
     <Sheet hideHandle>
-      <Centered direction="column" paddingTop={12}>
+      <Centered direction="column" paddingTop={12} testID="wc-redirect-sheet">
         <Text letterSpacing="zero" size="h2">
           {emojisMap[type]}
         </Text>
