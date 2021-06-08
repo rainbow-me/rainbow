@@ -2,11 +2,7 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
 import { get, toLower, uniqBy } from 'lodash';
 /* eslint-disable-next-line import/no-cycle */
-import {
-  addressAssetsReceived,
-  COINGECKO_IDS_ENDPOINT,
-  fetchAssetPrices,
-} from './data';
+import { addressAssetsReceived, fetchAssetPrices } from './data';
 // eslint-disable-next-line import/no-cycle
 import { optimismExplorerInit } from './optimismExplorer';
 // eslint-disable-next-line import/no-cycle
@@ -18,7 +14,6 @@ import networkInfo from '@rainbow-me/helpers/networkInfo';
 import NetworkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   balanceCheckerContractAbi,
-  coingeckoIdsFallback,
   ETH_ADDRESS,
   ETH_COINGECKO_ID,
   migratedTokens,
@@ -77,28 +72,13 @@ const findNewAssetsToWatch = () => async (dispatch, getState) => {
   }
 };
 
-export const fetchCoingeckoIds = async () => {
-  let ids;
-  try {
-    const request = await fetch(COINGECKO_IDS_ENDPOINT);
-    ids = await request.json();
-  } catch (e) {
-    ids = coingeckoIdsFallback;
-  }
-
-  const idsMap = {};
-  ids.forEach(({ id, platforms: { ethereum: tokenAddress } }) => {
-    const address = tokenAddress && toLower(tokenAddress);
-    if (address && address.substr(0, 2) === '0x') {
-      idsMap[address] = id;
-    }
-  });
-  return idsMap;
-};
-
-const findAssetsToWatch = async (address, latestTxBlockNumber, dispatch) => {
+const findAssetsToWatch = async (
+  address,
+  latestTxBlockNumber,
+  dispatch,
+  coingeckoIds
+) => {
   // 1 - Discover the list of tokens for the address
-  const coingeckoIds = await fetchCoingeckoIds();
   const tokensInWallet = await discoverTokens(
     coingeckoIds,
     address,
@@ -246,6 +226,7 @@ export const fallbackExplorerInit = () => async (dispatch, getState) => {
   const { accountAddress, nativeCurrency, network } = getState().settings;
   const { latestTxBlockNumber, mainnetAssets } = getState().fallbackExplorer;
   const formattedNativeCurrency = toLower(nativeCurrency);
+  const { coingeckoIds } = getState().additionalAssetsData;
   // If mainnet, we need to get all the info
   // 1 - Coingecko ids
   // 2 - All tokens list
@@ -254,7 +235,8 @@ export const fallbackExplorerInit = () => async (dispatch, getState) => {
     const newMainnetAssets = await findAssetsToWatch(
       accountAddress,
       latestTxBlockNumber,
-      dispatch
+      dispatch,
+      coingeckoIds
     );
 
     await dispatch({

@@ -2,7 +2,7 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { toLower } from 'lodash';
-import { optimismMainnet } from '../config/debug';
+import { optimismEnabled, optimismMainnet } from '../config/debug';
 // eslint-disable-next-line import/no-cycle
 import { addressAssetsReceived, fetchAssetPrices } from './data';
 // eslint-disable-next-line import/no-cycle
@@ -68,6 +68,7 @@ const fetchAssetBalances = async (tokens, address) => {
 };
 
 export const optimismExplorerInit = () => async (dispatch, getState) => {
+  if (!optimismEnabled) return;
   const { assets: allAssets, genericAssets } = getState().data;
   const { accountAddress, nativeCurrency } = getState().settings;
   const formattedNativeCurrency = toLower(nativeCurrency);
