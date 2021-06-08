@@ -149,6 +149,21 @@ export const createUser = async network => {
   }
 };
 
+export const getOnboardingLink = async (wyreUserId, network) => {
+  try {
+    const baseUrl = getBaseUrl(network);
+    const config = createWyreConfig(network);
+    const response = await wyreApi.get(
+      `${baseUrl}/v3/sumsub/users/${wyreUserId}`,
+      config
+    );
+    return response?.data?.verificationLinkUrl;
+  } catch (error) {
+    logger.sentry('Apple Pay - error getting onboarding link', error);
+    return null;
+  }
+};
+
 export const getWalletOrderQuotation = async (
   amount,
   destCurrency,
