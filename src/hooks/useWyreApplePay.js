@@ -3,6 +3,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Alert } from '../components/alerts';
 import {
+  // createUser,
+  // getOnboardingLink,
   getOrderId,
   getReferenceId,
   getWalletOrderQuotation,
@@ -58,6 +60,13 @@ export default function useWyreApplePay() {
       const referenceInfo = {
         referenceId: getReferenceId(accountAddress),
       };
+
+      /////////////////////////////////
+      // const wyreUserId = await createUser(network);
+      // const onboardingLink = await getOnboardingLink(wyreUserId, network);
+      // return;
+      /////////////////////////////////
+
       const { reservation: reservationId } = await reserveWyreOrder(
         value,
         currency,
