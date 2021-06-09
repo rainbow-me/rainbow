@@ -235,8 +235,7 @@ export const gasUpdateCustomValues = (price, network) => async (
   newGasPrices[CUSTOM] = defaultGasPriceFormat(
     CUSTOM,
     estimateInMinutes,
-    price,
-    true
+    price
   );
 
   await dispatch({

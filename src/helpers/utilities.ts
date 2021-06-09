@@ -2,13 +2,16 @@ import BigNumber from 'bignumber.js';
 import { get, isNil } from 'lodash';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 
-type BigNumberish = number | string | BigNumber;
+export type BigNumberish = number | string | BigNumber;
 
 export const abs = (value: BigNumberish): string =>
   new BigNumber(value).abs().toFixed();
 
 export const isPositive = (value: BigNumberish): boolean =>
   new BigNumber(value).isPositive();
+
+export const ceil = (value: BigNumberIsh) =>
+  new BigNumber(value).toFixed(0, BigNumber.ROUND_CEIL);
 
 export const subtract = (
   numberOne: BigNumberish,
