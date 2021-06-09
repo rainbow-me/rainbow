@@ -24,17 +24,17 @@ const { GasSpeedOrder } = gasUtils;
 
 const parseGasPricesEtherscan = (data: EtherscanPrices): GasPrices => ({
   [GasSpeedOption.CUSTOM]: null,
-  [GasSpeedOption.FAST]: defaultGasPriceFormat(
+  [GasSpeedOption.FAST]: formatGasPrice(
     GasSpeedOption.FAST,
     data.fastWait,
     data.fast
   ),
-  [GasSpeedOption.NORMAL]: defaultGasPriceFormat(
+  [GasSpeedOption.NORMAL]: formatGasPrice(
     GasSpeedOption.NORMAL,
     data.avgWait,
     data.average
   ),
-  [GasSpeedOption.SLOW]: defaultGasPriceFormat(
+  [GasSpeedOption.SLOW]: formatGasPrice(
     GasSpeedOption.SLOW,
     data.safeLowWait,
     data.safeLow
@@ -43,17 +43,17 @@ const parseGasPricesEtherscan = (data: EtherscanPrices): GasPrices => ({
 
 const parseGasPricesEthGasStation = (data: EthGasStationPrices): GasPrices => ({
   [GasSpeedOption.CUSTOM]: null,
-  [GasSpeedOption.FAST]: defaultGasPriceFormat(
+  [GasSpeedOption.FAST]: formatGasPrice(
     GasSpeedOption.FAST,
     data.fastestWait,
     divide(data.fastest, 10)
   ),
-  [GasSpeedOption.NORMAL]: defaultGasPriceFormat(
+  [GasSpeedOption.NORMAL]: formatGasPrice(
     GasSpeedOption.NORMAL,
     data.fastWait,
     divide(data.fast, 10)
   ),
-  [GasSpeedOption.SLOW]: defaultGasPriceFormat(
+  [GasSpeedOption.SLOW]: formatGasPrice(
     GasSpeedOption.SLOW,
     data.avgWait,
     divide(data.average, 10)
@@ -102,7 +102,7 @@ export const parseGasPrices = (
   }
 }
 
-export const defaultGasPriceFormat = (
+export const formatGasPrice = (
   option: GasSpeedOption,
   timeWait: BigNumberish,
   value: string

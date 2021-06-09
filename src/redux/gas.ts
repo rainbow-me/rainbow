@@ -20,7 +20,7 @@ import {
 import { getProviderForNetwork, isL2Network } from '@rainbow-me/handlers/web3';
 import { Network } from '@rainbow-me/helpers/networkTypes';
 import {
-  defaultGasPriceFormat,
+  formatGasPrice,
   parseGasPrices,
   parseTxFees,
   weiToGwei,
@@ -254,7 +254,7 @@ export const gasUpdateCustomValues = (price: string, network: Network) => async 
     ? 0.5
     : await getEstimatedTimeForGasPrice(price);
   const newGasPrices = { ...gasPrices };
-  newGasPrices[GasSpeedOption.CUSTOM] = defaultGasPriceFormat(
+  newGasPrices[GasSpeedOption.CUSTOM] = formatGasPrice(
     GasSpeedOption.CUSTOM,
     estimateInMinutes,
     price
