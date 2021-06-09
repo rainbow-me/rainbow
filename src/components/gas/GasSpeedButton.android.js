@@ -156,7 +156,7 @@ const GasSpeedButton = ({
     selectedGasPrice,
     txFees,
     updateCustomValues,
-    updateGasPriceOption,
+    updateGasSpeedOption,
   } = useGas();
 
   const gasPricesAvailable = useMemo(() => {
@@ -245,13 +245,13 @@ const GasSpeedButton = ({
     async price => {
       try {
         await updateCustomValues(price, currentNetwork);
-        updateGasPriceOption(GasSpeedOptions.CUSTOM, currentNetwork);
+        updateGasSpeedOption(GasSpeedOptions.CUSTOM, currentNetwork);
       } catch (e) {
         setEstimatedTimeValue(0);
         setEstimatedTimeUnit('min');
       }
     },
-    [currentNetwork, updateCustomValues, updateGasPriceOption]
+    [currentNetwork, updateCustomValues, updateGasSpeedOption]
   );
 
   useEffect(() => {
@@ -301,8 +301,8 @@ const GasSpeedButton = ({
     const nextSpeedIndex = (currentSpeedIndex + 1) % gasOptions?.length;
 
     const nextSpeed = gasOptions[nextSpeedIndex];
-    updateGasPriceOption(nextSpeed);
-  }, [gasSpeedOption, inputFocused, options, updateGasPriceOption]);
+    updateGasSpeedOption(nextSpeed);
+  }, [gasSpeedOption, inputFocused, options, updateGasSpeedOption]);
 
   const formatBottomRightLabel = useCallback(() => {
     const actionLabel = getActionLabel(type);

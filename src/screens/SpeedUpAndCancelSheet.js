@@ -25,7 +25,10 @@ import {
   SlackSheet,
 } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
-import { TransactionStatusTypes } from '@rainbow-me/entities';
+import {
+  GasSpeedOptions,
+  TransactionStatusTypes,
+} from '@rainbow-me/entities';
 import { getProviderForNetwork, toHex } from '@rainbow-me/handlers/web3';
 import {
   useAccountSettings,
@@ -121,7 +124,7 @@ export default function SpeedUpAndCancelSheet() {
   const keyboardHeight = useKeyboardHeight();
   const {
     gasPrices,
-    updateGasPriceOption,
+    updateGasSpeedOption,
     selectedGasPrice,
     startPollingGasPrices,
     stopPollingGasPrices,
@@ -279,9 +282,9 @@ export default function SpeedUpAndCancelSheet() {
     if (!isEmpty(gasPrices) && gasLimit) {
       updateTxFee(gasLimit, null, currentNetwork);
       // Always default to fast
-      updateGasPriceOption('fast');
+      updateGasSpeedOption(GasSpeedOptions.FAST);
     }
-  }, [currentNetwork, gasLimit, gasPrices, updateGasPriceOption, updateTxFee]);
+  }, [currentNetwork, gasLimit, gasPrices, updateGasSpeedOption, updateTxFee]);
 
   useEffect(() => {
     const init = async () => {
@@ -333,14 +336,13 @@ export default function SpeedUpAndCancelSheet() {
     tx.gasPrice,
     tx.hash,
     type,
-    updateGasPriceOption,
   ]);
 
   useEffect(() => {
     if (!isEmpty(gasPrices) && !calculatingGasLimit.current) {
       calculatingGasLimit.current = true;
       if (Number(gweiToWei(minGasPrice)) > Number(gasPrices.fast.value)) {
-        dispatch(updateGasPriceForSpeed('fast', gweiToWei(minGasPrice)));
+        dispatch(updateGasPriceForSpeed(GasSpeedOptions.FAST, gweiToWei(minGasPrice)));
       }
       const gasLimitForNewTx =
         type === CANCEL_TX ? ethUnits.basic_tx : tx.gasLimit;
@@ -500,7 +502,7 @@ export default function SpeedUpAndCancelSheet() {
                       minGasPrice={minGasPrice}
                       onCustomGasBlur={hideKeyboard}
                       onCustomGasFocus={showKeyboard}
-                      options={['fast', 'custom']}
+                      options={[GasSpeedOptions.FAST, GasSpeedOptions.CUSTOM]}
                       theme={isDarkMode ? 'dark' : 'light'}
                       type="transaction"
                     />

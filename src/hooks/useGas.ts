@@ -56,7 +56,7 @@ export default function useGas() {
     [dispatch]
   );
 
-  const updateGasPriceOption = useCallback(
+  const updateGasSpeedOption = useCallback(
     (option: GasSpeedOption, network: Network = currentNetwork, assetsOverride?: Asset[]) =>
       dispatch(gasUpdateGasSpeedOption(option, network, assetsOverride)),
     [currentNetwork, dispatch]
@@ -81,7 +81,7 @@ export default function useGas() {
     stopPollingGasPrices,
     updateCustomValues,
     updateDefaultGasLimit,
-    updateGasPriceOption,
+    updateGasSpeedOption,
     updateTxFee,
     ...gasData,
   };
