@@ -1,8 +1,11 @@
 export { default as AssetTypes, AssetType } from './assetTypes';
 export { GasSpeedOption, GasSpeedOptions } from './gas';
 export type {
+  EtherscanPrices,
+  EthGasStationPrices,
   GasPrice,
   GasPrices,
+  MaticGasStationPrices,
   SelectedGasPrice,
   TxFee,
   TxFees,

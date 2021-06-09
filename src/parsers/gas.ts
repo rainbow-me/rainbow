@@ -1,8 +1,11 @@
 import { get, map, zipObject } from 'lodash';
 import {
+  EtherscanPrices,
+  EthGasStationPrices,
   GasPrice,
   GasPrices,
   GasSpeedOption,
+  MaticGasStationPrices,
   TxFee,
 } from '@rainbow-me/entities';
 import { getMinimalTimeUnitStringForMs } from '@rainbow-me/helpers/time';
@@ -18,30 +21,6 @@ import {
 import { gasUtils } from '@rainbow-me/utils';
 
 const { GasSpeedOrder } = gasUtils;
-
-interface EtherscanPrices {
-  average: string;
-  avgWait: string | number;
-  fast: string;
-  fastWait: string | number;
-  safeLow: string;
-  safeLowWait: string | number;
-}
-
-interface EthGasStationPrices {
-  average: string | number;
-  avgWait: string | number;
-  fast: string | number;
-  fastWait: string | number;
-  fastest: string | number;
-  fastestWait: string | number;
-}
-
-interface MaticGasStationPrices {
-  average: string | number;
-  fast: string | number;
-  fastest: string | number;
-}
 
 const parseGasPricesEtherscan = (data: EtherscanPrices): GasPrices => ({
   [GasSpeedOption.CUSTOM]: null,

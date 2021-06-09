@@ -10,7 +10,7 @@ import { ethUnits } from '@rainbow-me/references';
  * Configuration for defipulse API
  * @type axios instance
  */
-const ethGasstationApi = axios.create({
+const ethGasStationApi = axios.create({
   baseURL: 'https://data-api.defipulse.com',
   headers: {
     'Accept': 'application/json',
@@ -24,7 +24,7 @@ const ethGasstationApi = axios.create({
  * @return {Promise}
  */
 export const ethGasStationGetGasPrices = () =>
-  ethGasstationApi.get(
+  ethGasStationApi.get(
     `/api/v1/egs/api/ethgasAPI.json?api-key=${ETH_GAS_STATION_API_KEY}`
   );
 
