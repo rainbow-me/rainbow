@@ -2,15 +2,17 @@ import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
 import usePrevious from './usePrevious';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
+import { Asset, GasSpeedOption } from '@rainbow-me/entities';
+import { Network } from '@rainbow-me/helpers/networkTypes';
 import {
   gasPricesStartPolling,
   gasPricesStopPolling,
   gasUpdateCustomValues,
   gasUpdateDefaultGasLimit,
-  gasUpdateGasPriceOption,
+  gasUpdateGasSpeedOption,
   gasUpdateTxFee,
 } from '@rainbow-me/redux/gas';
+import { AppState } from '@rainbow-me/redux/store';
 
 export default function useGas() {
   const dispatch = useDispatch();
@@ -21,17 +23,17 @@ export default function useGas() {
       gas: {
         gasLimit,
         gasPrices,
+        gasSpeedOption,
         isSufficientGas,
         selectedGasPrice,
-        selectedGasPriceOption,
         txFees,
       },
-    }) => ({
+    }: AppState) => ({
       gasLimit,
       gasPrices,
+      gasSpeedOption,
       isSufficientGas,
       selectedGasPrice,
-      selectedGasPriceOption,
       txFees,
     })
   );
@@ -39,7 +41,7 @@ export default function useGas() {
   const prevSelectedGasPrice = usePrevious(gasData?.selectedGasPrice);
 
   const startPollingGasPrices = useCallback(
-    (network = networkTypes.mainnet) =>
+    (network: Network = Network.mainnet) =>
       dispatch(gasPricesStartPolling(network)),
     [dispatch]
   );
@@ -49,26 +51,26 @@ export default function useGas() {
   );
 
   const updateDefaultGasLimit = useCallback(
-    (network, defaultGasLimit) =>
+    (network: Network, defaultGasLimit: number) =>
       dispatch(gasUpdateDefaultGasLimit(network, defaultGasLimit)),
     [dispatch]
   );
 
   const updateGasPriceOption = useCallback(
-    (option, network = currentNetwork, assetsOverride = null) =>
-      dispatch(gasUpdateGasPriceOption(option, network, assetsOverride)),
+    (option: GasSpeedOption, network: Network = currentNetwork, assetsOverride?: Asset[]) =>
+      dispatch(gasUpdateGasSpeedOption(option, network, assetsOverride)),
     [currentNetwork, dispatch]
   );
 
   const updateTxFee = useCallback(
-    (newGasLimit, overrideGasOption, network = currentNetwork) => {
+    (newGasLimit: string | number, overrideGasOption: GasSpeedOption, network: Network = currentNetwork) => {
       dispatch(gasUpdateTxFee(network, newGasLimit, overrideGasOption));
     },
     [currentNetwork, dispatch]
   );
 
   const updateCustomValues = useCallback(
-    (price, network = currentNetwork) =>
+    (price: string, network: Network = currentNetwork) =>
       dispatch(gasUpdateCustomValues(price, network)),
     [currentNetwork, dispatch]
   );

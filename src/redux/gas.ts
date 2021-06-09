@@ -41,9 +41,9 @@ interface GasState {
   defaultGasLimit: number;
   gasLimit: string | number | null;
   gasPrices: GasPrices | {};
+  gasSpeedOption: GasSpeedOption;
   isSufficientGas?: boolean;
   selectedGasPrice: SelectedGasPrice | {};
-  selectedGasPriceOption: GasSpeedOption;
   txFees: TxFees | {};
 }
 
@@ -215,8 +215,8 @@ export const gasPricesStartPolling = (network: Network = Network.mainnet) => asy
   watchGasPrices();
 };
 
-export const gasUpdateGasPriceOption = (
-  newGasPriceOption: GasSpeedOption,
+export const gasUpdateGasSpeedOption = (
+  newGasSpeedOption: GasSpeedOption,
   network: Network,
   assetsOverride?: Asset[]
 ) => (
@@ -230,18 +230,18 @@ export const gasUpdateGasPriceOption = (
     assetsOverride || assets,
     gasPrices,
     txFees,
-    newGasPriceOption,
+    newGasSpeedOption,
     network
   );
 
   dispatch({
     payload: {
       ...results,
-      selectedGasPriceOption: newGasPriceOption,
+      gasSpeedOption: newGasSpeedOption,
     },
     type: GAS_UPDATE_GAS_PRICE_OPTION,
   });
-  analytics.track('Updated Gas Price', { gasPriceOption: newGasPriceOption });
+  analytics.track('Updated Gas Speed', { gasSpeedOption: newGasSpeedOption });
 };
 
 export const gasUpdateCustomValues = (price: string, network: Network) => async (
@@ -286,9 +286,9 @@ export const gasUpdateTxFee = (
   gasLimit: string | number,
   overrideGasOption?: GasSpeedOption
 ) => (dispatch: AppDispatch, getState: AppGetState) => {
-  const { defaultGasLimit, gasPrices, selectedGasPriceOption } = getState().gas;
+  const { defaultGasLimit, gasPrices, gasSpeedOption } = getState().gas;
   const _gasLimit = gasLimit || defaultGasLimit;
-  const _selectedGasPriceOption = overrideGasOption || selectedGasPriceOption;
+  const _newGasSpeedOption = overrideGasOption || gasSpeedOption;
   if (isEmpty(gasPrices)) return;
   const { assets } = getState().data;
   const { nativeCurrency } = getState().settings;
@@ -308,7 +308,7 @@ export const gasUpdateTxFee = (
     assets,
     gasPrices,
     txFees,
-    _selectedGasPriceOption,
+    _newGasSpeedOption,
     network
   );
 
@@ -326,13 +326,13 @@ const getSelectedGasPrice = (
   assets: Asset[],
   gasPrices: GasPrices,
   txFees: TxFees,
-  selectedGasPriceOption: GasSpeedOption,
+  gasSpeedOption: GasSpeedOption,
   network: Network
 ) => {
-  let txFee = txFees[selectedGasPriceOption];
+  let txFee = txFees[gasSpeedOption];
   // If no custom price is set we default to FAST
   if (
-    selectedGasPriceOption === GasSpeedOption.CUSTOM &&
+    gasSpeedOption === GasSpeedOption.CUSTOM &&
     txFee?.txFee?.value?.amount === 'NaN'
   ) {
     txFee = txFees[GasSpeedOption.FAST];
@@ -363,7 +363,7 @@ const getSelectedGasPrice = (
     isSufficientGas,
     selectedGasPrice: {
       ...txFee,
-      ...gasPrices[selectedGasPriceOption],
+      ...gasPrices[gasSpeedOption],
     },
   };
 };
@@ -380,9 +380,9 @@ const INITIAL_STATE: GasState = {
   defaultGasLimit: ethUnits.basic_tx,
   gasLimit: null,
   gasPrices: {},
+  gasSpeedOption: GasSpeedOption.NORMAL,
   isSufficientGas: undefined,
   selectedGasPrice: {},
-  selectedGasPriceOption: GasSpeedOption.NORMAL,
   txFees: {},
 };
 
@@ -409,9 +409,9 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
     case GAS_UPDATE_GAS_PRICE_OPTION:
       return {
         ...state,
+        gasSpeedOption: action.payload.gasSpeedOption,
         isSufficientGas: action.payload.isSufficientGas,
         selectedGasPrice: action.payload.selectedGasPrice,
-        selectedGasPriceOption: action.payload.selectedGasPriceOption,
       };
     case GAS_PRICES_RESET:
       return INITIAL_STATE;
