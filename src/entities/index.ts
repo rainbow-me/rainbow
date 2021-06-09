@@ -1,6 +1,12 @@
 export { default as AssetTypes, AssetType } from './assetTypes';
 export { GasSpeedOption } from './gas';
-export type { GasPrice, GasPrices, TxFee, SelectedGasPrice } from './gas';
+export type {
+  GasPrice,
+  GasPrices,
+  SelectedGasPrice,
+  TxFee,
+  TxFees,
+} from './gas';
 export type Numberish = string | number;
 export { default as ProtocolTypeNames, ProtocolType } from './protocolTypes';
 export type {

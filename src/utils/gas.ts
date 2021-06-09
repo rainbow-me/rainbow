@@ -1,9 +1,4 @@
-const CUSTOM = 'custom';
-const FAST = 'fast';
-const NORMAL = 'normal';
-const SLOW = 'slow';
-
-const GasSpeedOrder = [SLOW, NORMAL, FAST, CUSTOM];
+import { GasSpeedOption } from '@rainbow-me/entities';
 
 const GAS_PRICE_SOURCES = {
   ARBITRUM_NODE: 'arbitrumNode',
@@ -13,11 +8,14 @@ const GAS_PRICE_SOURCES = {
   OPTIMISM_NODE: 'optimismNode',
 };
 
+const GasSpeedOrder = [
+  GasSpeedOption.SLOW,
+  GasSpeedOption.NORMAL,
+  GasSpeedOption.FAST,
+  GasSpeedOption.CUSTOM,
+];
+
 export default {
-  CUSTOM,
-  FAST,
   GAS_PRICE_SOURCES,
   GasSpeedOrder,
-  NORMAL,
-  SLOW,
 };
