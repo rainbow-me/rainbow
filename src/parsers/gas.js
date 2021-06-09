@@ -12,18 +12,6 @@ import { gasUtils } from '../utils';
 
 const { CUSTOM, FAST, NORMAL, SLOW, GasSpeedOrder } = gasUtils;
 
-/**
- * @desc parse ether gas prices
- * @param {Object} data
- * @param {Boolean} short - use short format or not
- */
-export const getFallbackGasPrices = (short = true) => ({
-  [CUSTOM]: null,
-  [FAST]: defaultGasPriceFormat(FAST, '0.5', '200', short),
-  [NORMAL]: defaultGasPriceFormat(NORMAL, '2.5', '100', short),
-  [SLOW]: defaultGasPriceFormat(SLOW, '2.5', '100', short),
-});
-
 const parseGasPricesEtherscan = data => ({
   [CUSTOM]: null,
   [FAST]: defaultGasPriceFormat(FAST, data.fastWait, data.fast, true),
@@ -86,7 +74,7 @@ export const parseGasPrices = (
   data,
   source = gasUtils.GAS_PRICE_SOURCES.ETHERSCAN
 ) => {
-  if (!data) return getFallbackGasPrices();
+  if (!data) return null;
   switch (source) {
     case gasUtils.GAS_PRICE_SOURCES.ETH_GAS_STATION:
       return parseGasPricesEthGasStation(data);

@@ -13,7 +13,6 @@ import { getProviderForNetwork, isL2Network } from '@rainbow-me/handlers/web3';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   defaultGasPriceFormat,
-  getFallbackGasPrices,
   parseGasPrices,
   parseTxFees,
   weiToGwei,
@@ -36,9 +35,7 @@ const { CUSTOM, NORMAL } = gasUtils;
 const OPTIMISM_GAS_PRICE_GWEI = 0.015;
 const GAS_MULTIPLIER = 1.101;
 const GAS_UPDATE_DEFAULT_GAS_LIMIT = 'gas/GAS_UPDATE_DEFAULT_GAS_LIMIT';
-const GAS_PRICES_DEFAULT = 'gas/GAS_PRICES_DEFAULT';
 const GAS_PRICES_SUCCESS = 'gas/GAS_PRICES_SUCCESS';
-const GAS_PRICES_FAILURE = 'gas/GAS_PRICES_FAILURE';
 
 const GAS_PRICES_RESET = 'gas/GAS_PRICES_RESET';
 const GAS_UPDATE_TX_FEE = 'gas/GAS_UPDATE_TX_FEE';
@@ -48,28 +45,6 @@ const GAS_UPDATE_GAS_PRICE_OPTION = 'gas/GAS_UPDATE_GAS_PRICE_OPTION';
 let gasPricesHandle = null;
 
 const { GAS_PRICE_SOURCES } = gasUtils;
-
-const getDefaultTxFees = () => (dispatch, getState) => {
-  const { defaultGasLimit } = getState().gas;
-  const { nativeCurrency } = getState().settings;
-  const fallbackGasPrices = getFallbackGasPrices();
-  const ethPriceUnit = ethereumUtils.getEthPriceUnit();
-  const txFees = parseTxFees(
-    fallbackGasPrices,
-    ethPriceUnit,
-    defaultGasLimit,
-    nativeCurrency
-  );
-  const selectedGasPrice = {
-    ...txFees[NORMAL],
-    ...fallbackGasPrices[NORMAL],
-  };
-  return {
-    fallbackGasPrices,
-    selectedGasPrice,
-    txFees,
-  };
-};
 
 export const updateGasPriceForSpeed = (speed, newPrice) => async (
   dispatch,
@@ -200,13 +175,8 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
 
         fetchResolve(true);
       } catch (error) {
-        const { fallbackGasPrices } = dispatch(getDefaultTxFees());
         captureException(new Error('all gas estimates failed'));
         logger.sentry('gas estimates error', error);
-        dispatch({
-          payload: fallbackGasPrices,
-          type: GAS_PRICES_FAILURE,
-        });
         fetchReject(error);
       }
     });
@@ -414,22 +384,10 @@ export default (state = INITIAL_STATE, action) => {
         ...state,
         defaultGasLimit: action.payload,
       };
-    case GAS_PRICES_DEFAULT:
-      return {
-        ...state,
-        gasPrices: action.payload.gasPrices,
-        selectedGasPrice: action.payload.selectedGasPrice,
-        txFees: action.payload.txFees,
-      };
     case GAS_PRICES_SUCCESS:
       return {
         ...state,
         gasPrices: action.payload.gasPrices,
-      };
-    case GAS_PRICES_FAILURE:
-      return {
-        ...state,
-        gasPrices: action.payload,
       };
     case GAS_UPDATE_TX_FEE:
       return {

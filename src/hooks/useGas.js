@@ -66,6 +66,7 @@ export default function useGas() {
     },
     [currentNetwork, dispatch]
   );
+
   const updateCustomValues = useCallback(
     (price, network = currentNetwork) =>
       dispatch(gasUpdateCustomValues(price, network)),
