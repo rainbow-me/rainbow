@@ -2,22 +2,23 @@ import { has } from 'lodash';
 import React from 'react';
 import styled from 'styled-components';
 import { Emoji } from '../text';
-import { gasUtils, magicMemo } from '@rainbow-me/utils';
+import { GasSpeedOptions } from '@rainbow-me/entities';
+import { magicMemo } from '@rainbow-me/utils';
 
 const EmojiForGasSpeedType = {
-  [gasUtils.FAST]: {
+  [GasSpeedOptions.FAST]: {
     emoji: 'rocket', // 🚀️
     position: [android ? 2 : 0.5, android ? 5 : 0], // (x, y)
   },
-  [gasUtils.NORMAL]: {
+  [GasSpeedOptions.NORMAL]: {
     emoji: 'stopwatch', // ⏱️
     position: [android ? 3.5 : 1, android ? 3.25 : -1], // (x, y)
   },
-  [gasUtils.SLOW]: {
+  [GasSpeedOptions.SLOW]: {
     emoji: 'snail', // 🐌️
     position: [android ? 2 : 0, android ? 3.5 : -2], // (x, y)
   },
-  [gasUtils.CUSTOM]: {
+  [GasSpeedOptions.CUSTOM]: {
     emoji: 'gear', // ⚙️
     position: [android ? 3 : 1, android ? 3.5 : -0.25], // (x, y)
   },
@@ -40,7 +41,7 @@ const GasEmoji = styled(Emoji).attrs({
 const GasSpeedEmoji = ({ containerHeight, label }) => {
   const gasSpeed = has(EmojiForGasSpeedType, label)
     ? EmojiForGasSpeedType[label]
-    : EmojiForGasSpeedType[gasUtils.NORMAL];
+    : EmojiForGasSpeedType[GasSpeedOptions.NORMAL];
 
   return (
     <Container height={containerHeight}>

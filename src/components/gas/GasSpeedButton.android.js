@@ -19,6 +19,7 @@ import { Input } from '../inputs';
 import { Column, Row } from '../layout';
 import { AnimatedNumber, Text } from '../text';
 import GasSpeedLabelPager from './GasSpeedLabelPager';
+import { GasSpeedOptions } from '@rainbow-me/entities';
 import { isL2Network } from '@rainbow-me/handlers/web3';
 import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
 import { useAccountSettings, useGas } from '@rainbow-me/hooks';
@@ -29,7 +30,7 @@ import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
 import { darkModeThemeColors } from '@rainbow-me/styles/colors';
 import { gasUtils, magicMemo } from '@rainbow-me/utils';
 
-const { GasSpeedOrder, CUSTOM, FAST, NORMAL, SLOW } = gasUtils;
+const { GasSpeedOrder } = gasUtils;
 
 const Container = styled(Row).attrs({
   justify: 'space-between',
@@ -244,7 +245,7 @@ const GasSpeedButton = ({
     async price => {
       try {
         await updateCustomValues(price, currentNetwork);
-        updateGasPriceOption(CUSTOM, currentNetwork);
+        updateGasPriceOption(GasSpeedOptions.CUSTOM, currentNetwork);
       } catch (e) {
         setEstimatedTimeValue(0);
         setEstimatedTimeUnit('min');
@@ -312,15 +313,19 @@ const GasSpeedButton = ({
     }
     let timeSymbol = '~';
 
-    if (selectedGasPriceOption === CUSTOM) {
+    if (selectedGasPriceOption === GasSpeedOptions.CUSTOM) {
       if (!customGasPriceInput) {
         return `${defaultCustomGasPriceNative} ~ ${defaultCustomGasConfirmationTime}`;
-      } else if (gasPricesAvailable[CUSTOM]?.value) {
-        const priceInWei = Number(gasPricesAvailable[CUSTOM].value.amount);
-        const minGasPriceSlow = gasPricesAvailable[SLOW]
-          ? Number(gasPricesAvailable[SLOW].value.amount)
-          : Number(gasPricesAvailable[FAST].value.amount);
-        const maxGasPriceFast = Number(gasPricesAvailable[FAST].value.amount);
+      } else if (gasPricesAvailable[GasSpeedOptions.CUSTOM]?.value) {
+        const priceInWei = Number(
+          gasPricesAvailable[GasSpeedOptions.CUSTOM].value.amount
+        );
+        const minGasPriceSlow = gasPricesAvailable[GasSpeedOptions.SLOW]
+          ? Number(gasPricesAvailable[GasSpeedOptions.SLOW].value.amount)
+          : Number(gasPricesAvailable[GasSpeedOptions.FAST].value.amount);
+        const maxGasPriceFast = Number(
+          gasPricesAvailable[GasSpeedOptions.FAST].value.amount
+        );
         if (priceInWei < minGasPriceSlow) {
           timeSymbol = '>';
         } else if (priceInWei > maxGasPriceFast) {
@@ -404,7 +409,10 @@ const GasSpeedButton = ({
       return;
     }
 
-    const minKey = options?.indexOf(SLOW) !== -1 ? SLOW : NORMAL;
+    const minKey =
+      options?.indexOf(GasSpeedOptions.SLOW) !== -1
+        ? GasSpeedOptions.SLOW
+        : GasSpeedOptions.NORMAL;
 
     const minGasPriceAllowed = Number(
       gasPricesAvailable?.[minKey]?.value?.amount || 0
@@ -473,7 +481,7 @@ const GasSpeedButton = ({
   ]);
 
   const focusOnInput = useCallback(() => inputRef.current?.focus(), []);
-  const isCustom = selectedGasPriceOption === CUSTOM ? true : false;
+  const isCustom = selectedGasPriceOption === GasSpeedOptions.CUSTOM;
 
   const { navigate } = useNavigation();
 

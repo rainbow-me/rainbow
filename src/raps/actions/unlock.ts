@@ -7,6 +7,7 @@ import { alwaysRequireApprove } from '../../config/debug';
 import { Rap, RapActionParameters, UnlockActionParameters } from '../common';
 import {
   Asset,
+  GasSpeedOption,
   TransactionStatus,
   TransactionType,
 } from '@rainbow-me/entities';
@@ -15,7 +16,7 @@ import { dataAddNewTransaction } from '@rainbow-me/redux/data';
 import store from '@rainbow-me/redux/store';
 import { erc20ABI, ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
 import { convertAmountToRawAmount, greaterThan } from '@rainbow-me/utilities';
-import { AllowancesCache, gasUtils } from '@rainbow-me/utils';
+import { AllowancesCache } from '@rainbow-me/utils';
 import logger from 'logger';
 
 export const estimateApprove = async (
@@ -116,7 +117,7 @@ const unlock = async (
   try {
     // approvals should always use fast gas or custom (whatever is faster)
     gasPrice = selectedGasPrice?.value?.amount;
-    const fastPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);
+    const fastPrice = get(gasPrices, `[${GasSpeedOption.FAST}].value.amount`);
     if (greaterThan(fastPrice, gasPrice)) {
       gasPrice = fastPrice;
     }

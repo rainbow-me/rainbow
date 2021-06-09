@@ -3,6 +3,7 @@ import { captureException } from '@sentry/react-native';
 import { get } from 'lodash';
 import { Rap, RapActionParameters, SwapActionParameters } from '../common';
 import {
+  GasSpeedOption,
   ProtocolType,
   TransactionStatus,
   TransactionType,
@@ -15,7 +16,6 @@ import { dataAddNewTransaction } from '@rainbow-me/redux/data';
 import store from '@rainbow-me/redux/store';
 import { ethUnits } from '@rainbow-me/references';
 import { greaterThan } from '@rainbow-me/utilities';
-import { gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const actionName = 'swap';
@@ -42,7 +42,7 @@ const swap = async (
   let gasPrice = selectedGasPrice?.value?.amount;
   // if swap isn't the last action, use fast gas or custom (whatever is faster)
   if (currentRap.actions.length - 1 > index || !gasPrice) {
-    const fastPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);
+    const fastPrice = get(gasPrices, `[${GasSpeedOption.FAST}].value.amount`);
     if (greaterThan(fastPrice, gasPrice)) {
       gasPrice = fastPrice;
     }

@@ -5,6 +5,13 @@ export enum GasSpeedOption {
   SLOW = 'slow',
 }
 
+export const GasSpeedOptions = {
+  CUSTOM: 'custom',
+  FAST: 'fast',
+  NORMAL: 'normal',
+  SLOW: 'slow',
+};
+
 export interface TxFee {
   native: { value: { amount: string; display: string } };
   value: { amount: string; display: { amount: string; display: string } };

@@ -4,6 +4,7 @@ import { captureException } from '@sentry/react-native';
 import { get } from 'lodash';
 import { Rap, RapActionParameters, SwapActionParameters } from '../common';
 import {
+  GasSpeedOption,
   ProtocolType,
   TransactionStatus,
   TransactionType,
@@ -20,7 +21,6 @@ import {
   savingsAssetsListByUnderlying,
 } from '@rainbow-me/references';
 import { convertAmountToRawAmount, isEqual } from '@rainbow-me/utilities';
-import { gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const CTOKEN_DECIMALS = 8;
@@ -56,7 +56,7 @@ const withdrawCompound = async (
 
   let gasPrice = selectedGasPrice?.value.amount;
   if (!gasPrice) {
-    gasPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);
+    gasPrice = get(gasPrices, `[${GasSpeedOption.FAST}].value.amount`);
   }
 
   logger.log(`[${actionName}] gas price`, gasPrice);

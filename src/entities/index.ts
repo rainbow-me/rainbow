@@ -1,5 +1,5 @@
 export { default as AssetTypes, AssetType } from './assetTypes';
-export { GasSpeedOption } from './gas';
+export { GasSpeedOption, GasSpeedOptions } from './gas';
 export type {
   GasPrice,
   GasPrices,

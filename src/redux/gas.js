@@ -1,6 +1,7 @@
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import { get, isEmpty } from 'lodash';
+import { GasSpeedOptions } from '@rainbow-me/entities';
 import {
   etherscanGetGasEstimates,
   etherscanGetGasPrices,
@@ -25,11 +26,8 @@ import {
   OPTIMISM_ETH_ADDRESS,
 } from '@rainbow-me/references';
 import { fromWei, greaterThanOrEqualTo, multiply } from '@rainbow-me/utilities';
-
 import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
-
-const { CUSTOM, NORMAL } = gasUtils;
 
 // -- Constants ------------------------------------------------------------- //
 const OPTIMISM_GAS_PRICE_GWEI = 0.015;
@@ -161,9 +159,10 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
         }
 
         let gasPrices = parseGasPrices(adjustedGasPrices, source);
-        if (existingGasPrice[CUSTOM] !== null) {
+        if (existingGasPrice[GasSpeedOptions.CUSTOM] !== null) {
           // Preserve custom values while updating prices
-          gasPrices[CUSTOM] = existingGasPrice[CUSTOM];
+          gasPrices[GasSpeedOptions.CUSTOM] =
+            existingGasPrice[GasSpeedOptions.CUSTOM];
         }
 
         dispatch({
@@ -232,8 +231,8 @@ export const gasUpdateCustomValues = (price, network) => async (
     ? 0.5
     : await getEstimatedTimeForGasPrice(price);
   const newGasPrices = { ...gasPrices };
-  newGasPrices[CUSTOM] = defaultGasPriceFormat(
-    CUSTOM,
+  newGasPrices[GasSpeedOptions.CUSTOM] = defaultGasPriceFormat(
+    GasSpeedOptions.CUSTOM,
     estimateInMinutes,
     price
   );
@@ -309,10 +308,10 @@ const getSelectedGasPrice = (
   let txFee = txFees[selectedGasPriceOption];
   // If no custom price is set we default to FAST
   if (
-    selectedGasPriceOption === gasUtils.CUSTOM &&
+    selectedGasPriceOption === GasSpeedOptions.CUSTOM &&
     get(txFee, 'txFee.value.amount') === 'NaN'
   ) {
-    txFee = txFees[gasUtils.FAST];
+    txFee = txFees[GasSpeedOptions.FAST];
   }
   let nativeAssetAddress;
 
@@ -372,7 +371,7 @@ const INITIAL_STATE = {
   gasPrices: {},
   isSufficientGas: undefined,
   selectedGasPrice: {},
-  selectedGasPriceOption: NORMAL,
+  selectedGasPriceOption: GasSpeedOptions.NORMAL,
   txFees: {},
 };
 
