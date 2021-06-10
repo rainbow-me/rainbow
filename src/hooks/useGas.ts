@@ -63,7 +63,7 @@ export default function useGas() {
   );
 
   const updateTxFee = useCallback(
-    (newGasLimit: string | number, overrideGasOption: GasSpeedOption, network: Network = currentNetwork) => {
+    (newGasLimit: string | number | null, network: Network = currentNetwork, overrideGasOption?: GasSpeedOption) => {
       dispatch(gasUpdateTxFee(network, newGasLimit, overrideGasOption));
     },
     [currentNetwork, dispatch]

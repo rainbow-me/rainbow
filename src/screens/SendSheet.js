@@ -499,7 +499,7 @@ export default function SendSheet(props) {
           before: gasLimit,
         });
 
-        updateTxFee(updatedGasLimit, null, currentNetwork);
+        updateTxFee(updatedGasLimit, currentNetwork);
         // eslint-disable-next-line no-empty
       } catch (e) {}
     }
@@ -778,10 +778,10 @@ export default function SendSheet(props) {
         currentNetwork
       )
         .then(gasLimit => {
-          updateTxFee(gasLimit, null, currentNetwork);
+          updateTxFee(gasLimit, currentNetwork);
         })
         .catch(() => {
-          updateTxFee(null, null, currentNetwork);
+          updateTxFee(null, currentNetwork);
         });
     }
   }, [

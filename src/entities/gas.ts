@@ -51,6 +51,6 @@ export interface SelectedGasPrice extends GasPrice {
   txFee: TxFee;
 }
 
-export type TxFees = Record<GasSpeedOption, Record<string, TxFee>>;
+export type TxFees = Record<GasSpeedOption, Record<string, TxFee | null>>;
 
 export type GasPrices = Record<GasSpeedOption, GasPrice | null>;

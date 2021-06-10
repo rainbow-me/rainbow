@@ -1,4 +1,4 @@
-import { get, map, zipObject } from 'lodash';
+import { map, zipObject } from 'lodash';
 import {
   EtherscanPrices,
   EthGasStationPrices,
@@ -135,9 +135,9 @@ export const parseTxFees = (
   priceUnit: BigNumberish,
   gasLimit: BigNumberish,
   nativeCurrency: string
-): Record<string, Record<string, TxFee>> => {
+): Record<string, Record<string, TxFee | null>> => {
   const txFees = map(GasSpeedOrder, speed => {
-    const gasPrice = get(gasPrices, `${speed}.value.amount`);
+    const gasPrice = gasPrices?.[speed]?.value?.amount;
     return {
       txFee: getTxFee(gasPrice, gasLimit, priceUnit, nativeCurrency),
     };
@@ -146,11 +146,12 @@ export const parseTxFees = (
 };
 
 const getTxFee = (
-  gasPrice: BigNumberish,
+  gasPrice: BigNumberish | undefined,
   gasLimit: BigNumberish,
   priceUnit: BigNumberish,
   nativeCurrency: string
-): TxFee => {
+): TxFee | null => {
+  if (!gasPrice) return null;
   const amount = multiply(gasPrice, gasLimit);
   return {
     native: {

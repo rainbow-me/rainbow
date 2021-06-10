@@ -8,7 +8,7 @@ const GAS_PRICE_SOURCES = {
   OPTIMISM_NODE: 'optimismNode',
 };
 
-const GasSpeedOrder = [
+const GasSpeedOrder: GasSpeedOption[] = [
   GasSpeedOption.SLOW,
   GasSpeedOption.NORMAL,
   GasSpeedOption.FAST,

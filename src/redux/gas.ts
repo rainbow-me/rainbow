@@ -1,7 +1,5 @@
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
-import { isEmpty } from 'lodash';
-import { AnyAction } from 'redux';
 import {
   Asset,
   GasPrices,
@@ -40,12 +38,52 @@ import logger from 'logger';
 interface GasState {
   defaultGasLimit: number;
   gasLimit: string | number | null;
-  gasPrices: GasPrices | {};
+  gasPrices: GasPrices | null;
   gasSpeedOption: GasSpeedOption;
   isSufficientGas?: boolean;
   selectedGasPrice: SelectedGasPrice | {};
   txFees: TxFees | {};
 }
+
+interface GasUpdateDefaultGasLimitAction {
+  type: typeof GAS_UPDATE_DEFAULT_GAS_LIMIT;
+  payload: GasState['defaultGasLimit'];
+}
+
+interface GasPricesSuccessAction {
+  type: typeof GAS_PRICES_SUCCESS;
+  payload: GasState['gasPrices'];
+}
+
+interface GasPricesResetAction {
+  type: typeof GAS_PRICES_RESET;
+}
+
+interface GasUpdateTxFeeAction {
+  type: typeof GAS_UPDATE_TX_FEE;
+  payload: {
+    gasLimit: GasState['gasLimit'];
+    isSufficientGas: GasState['isSufficientGas'];
+    selectedGasPrice: GasState['selectedGasPrice'];
+    txFees: GasState['txFees'];
+  };
+}
+
+interface GasUpdateGasPriceOptionAction {
+  type: typeof GAS_UPDATE_GAS_PRICE_OPTION;
+  payload: {
+    gasSpeedOption: GasState['gasSpeedOption'];
+    isSufficientGas: GasState['isSufficientGas'];
+    selectedGasPrice: GasState['selectedGasPrice'];
+  };
+}
+
+export type GasActionTypes =
+  | GasUpdateDefaultGasLimitAction
+  | GasPricesResetAction
+  | GasPricesSuccessAction
+  | GasUpdateTxFeeAction
+  | GasUpdateGasPriceOptionAction;
 
 // -- Constants ------------------------------------------------------------- //
 const OPTIMISM_GAS_PRICE_GWEI = 0.015;
@@ -67,18 +105,23 @@ export const updateGasPriceForSpeed = (
 ) => async (dispatch: AppDispatch, getState: AppGetState) => {
   const { gasPrices } = getState().gas;
 
-  const newGasPrices = { ...gasPrices };
-  newGasPrices[speed].value = {
-    amount: newPrice,
-    display: `${newPrice} Gwei`,
-  };
-
-  dispatch({
-    payload: {
-      gasPrices: newGasPrices,
-    },
-    type: GAS_PRICES_SUCCESS,
-  });
+  if (gasPrices) {
+    const newGasPrices: GasPrices = { ...gasPrices };
+    const speedGasPrice = newGasPrices[speed];
+    if (speedGasPrice) {
+      newGasPrices[speed] = {
+        ...speedGasPrice,
+        value: {
+          amount: newPrice,
+          display: `${newPrice} Gwei`,
+        },
+      };
+      dispatch({
+        payload: newGasPrices,
+        type: GAS_PRICES_SUCCESS,
+      });
+    }
+  }
 };
 
 export const gasPricesStartPolling = (network: Network = Network.mainnet) => async (
@@ -176,7 +219,7 @@ export const gasPricesStartPolling = (network: Network = Network.mainnet) => asy
         }
 
         let gasPrices = parseGasPrices(adjustedGasPrices, source);
-        if (gasPrices && existingGasPrice[GasSpeedOption.CUSTOM] !== null) {
+        if (gasPrices && existingGasPrice?.[GasSpeedOption.CUSTOM]) {
           // Preserve custom values while updating prices
           gasPrices[GasSpeedOption.CUSTOM] =
             existingGasPrice[GasSpeedOption.CUSTOM];
@@ -184,9 +227,7 @@ export const gasPricesStartPolling = (network: Network = Network.mainnet) => asy
 
         if (gasPrices) {
           dispatch({
-            payload: {
-              gasPrices,
-            },
+            payload: gasPrices,
             type: GAS_PRICES_SUCCESS,
           });
           fetchResolve(true);
@@ -224,12 +265,12 @@ export const gasUpdateGasSpeedOption = (
   getState: AppGetState
 ) => {
   const { gasPrices, txFees } = getState().gas;
-  if (isEmpty(gasPrices)) return;
+  if (!gasPrices) return;
   const { assets } = getState().data;
   const results = getSelectedGasPrice(
     assetsOverride || assets,
     gasPrices,
-    txFees,
+    txFees as TxFees,
     newGasSpeedOption,
     network
   );
@@ -253,21 +294,21 @@ export const gasUpdateCustomValues = (price: string, network: Network) => async 
   const estimateInMinutes = isL2Network(network)
     ? 0.5
     : await getEstimatedTimeForGasPrice(price);
-  const newGasPrices = { ...gasPrices };
-  newGasPrices[GasSpeedOption.CUSTOM] = formatGasPrice(
-    GasSpeedOption.CUSTOM,
-    estimateInMinutes,
-    price
-  );
+  if (gasPrices) {
+    const newGasPrices = { ...gasPrices };
+    newGasPrices[GasSpeedOption.CUSTOM] = formatGasPrice(
+      GasSpeedOption.CUSTOM,
+      estimateInMinutes,
+      price
+    );
 
-  await dispatch({
-    payload: {
-      gasPrices: newGasPrices,
-    },
-    type: GAS_PRICES_SUCCESS,
-  });
+    await dispatch({
+      payload: newGasPrices,
+      type: GAS_PRICES_SUCCESS,
+    });
 
-  dispatch(gasUpdateTxFee(network, gasLimit));
+    dispatch(gasUpdateTxFee(network, gasLimit));
+  }
 };
 
 export const gasUpdateDefaultGasLimit = (
@@ -283,13 +324,13 @@ export const gasUpdateDefaultGasLimit = (
 
 export const gasUpdateTxFee = (
   network: Network,
-  gasLimit: string | number,
+  gasLimit: string | number | null,
   overrideGasOption?: GasSpeedOption
 ) => (dispatch: AppDispatch, getState: AppGetState) => {
   const { defaultGasLimit, gasPrices, gasSpeedOption } = getState().gas;
   const _gasLimit = gasLimit || defaultGasLimit;
   const _newGasSpeedOption = overrideGasOption || gasSpeedOption;
-  if (isEmpty(gasPrices)) return;
+  if (!gasPrices) return;
   const { assets } = getState().data;
   const { nativeCurrency } = getState().settings;
   let nativeTokenPriceUnit = ethereumUtils.getEthPriceUnit();
@@ -379,14 +420,14 @@ export const gasPricesStopPolling = () => (dispatch: AppDispatch) => {
 const INITIAL_STATE: GasState = {
   defaultGasLimit: ethUnits.basic_tx,
   gasLimit: null,
-  gasPrices: {},
+  gasPrices: null,
   gasSpeedOption: GasSpeedOption.NORMAL,
   isSufficientGas: undefined,
   selectedGasPrice: {},
   txFees: {},
 };
 
-export default (state = INITIAL_STATE, action: AnyAction) => {
+export default (state = INITIAL_STATE, action: GasActionTypes) => {
   switch (action.type) {
     case GAS_UPDATE_DEFAULT_GAS_LIMIT:
       return {
@@ -396,7 +437,7 @@ export default (state = INITIAL_STATE, action: AnyAction) => {
     case GAS_PRICES_SUCCESS:
       return {
         ...state,
-        gasPrices: action.payload.gasPrices,
+        gasPrices: action.payload,
       };
     case GAS_UPDATE_TX_FEE:
       return {

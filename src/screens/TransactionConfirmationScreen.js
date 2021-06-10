@@ -436,7 +436,7 @@ export default function TransactionConfirmationScreen() {
       logger.log('error estimating gas', error);
     }
     logger.log('Setting gas limit to', convertHexToString(gas));
-    updateTxFee(gas, null, network);
+    updateTxFee(gas, network);
   }, [network, params, provider, updateTxFee]);
 
   useEffect(() => {
@@ -452,13 +452,9 @@ export default function TransactionConfirmationScreen() {
     }
   }, [
     calculateGasLimit,
-    gasLimit,
     gasPrices,
     isMessageRequest,
-    method,
-    params,
     provider,
-    updateTxFee,
   ]);
 
   const walletBalance = useMemo(() => {
