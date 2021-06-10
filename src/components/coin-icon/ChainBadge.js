@@ -16,7 +16,7 @@ const ChainIcon = styled(ImgixImage)`
 const IndicatorIconContainer = styled(Centered)`
   ${borders.buildCircle(40)};
   bottom: ${({ badgeYPosition }) => badgeYPosition || -5};
-  left: ${({ badgeXPosition }) => badgeXPosition || 30};
+  left: ${({ badgeXPosition }) => badgeXPosition || 7};
   position: absolute;
   z-index: 10;
 `;
