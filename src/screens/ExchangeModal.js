@@ -155,6 +155,7 @@ export default function ExchangeModal({
     handleFocus,
     inputFieldRef,
     lastFocusedInputHandle,
+    setLastFocusedInputHandle,
     nativeFieldRef,
     outputFieldRef,
   } = useSwapInputRefs();
@@ -174,7 +175,9 @@ export default function ExchangeModal({
     defaultInputAsset,
     defaultOutputAsset,
     inputFieldRef,
+    lastFocusedInputHandle,
     outputFieldRef,
+    setLastFocusedInputHandle,
     title,
     type,
   });

@@ -33,6 +33,7 @@ export default function useSwapCurrencyHandlers({
   defaultInputAsset,
   defaultOutputAsset,
   inputFieldRef,
+  setLastFocusedInputHandle,
   outputFieldRef,
   title,
   type,
@@ -114,15 +115,17 @@ export default function useSwapCurrencyHandlers({
   const updateInputCurrency = useCallback(
     newInputCurrency => {
       dispatch(updateSwapInputCurrency(newInputCurrency));
+      setLastFocusedInputHandle(inputFieldRef);
     },
-    [dispatch]
+    [dispatch, inputFieldRef, setLastFocusedInputHandle]
   );
 
   const updateOutputCurrency = useCallback(
     newOutputCurrency => {
       dispatch(updateSwapOutputCurrency(newOutputCurrency));
+      setLastFocusedInputHandle(outputFieldRef);
     },
-    [dispatch]
+    [dispatch, outputFieldRef, setLastFocusedInputHandle]
   );
 
   const navigateToSelectInputCurrency = useCallback(() => {
