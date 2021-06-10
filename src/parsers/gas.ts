@@ -17,6 +17,7 @@ import {
   convertRawAmountToNativeDisplay,
   divide,
   multiply,
+  toFixedDecimals,
 } from '@rainbow-me/utilities';
 import { gasUtils } from '@rainbow-me/utils';
 
@@ -64,17 +65,17 @@ const parseGasPricesMaticGasStation = (data: MaticGasStationPrices) => {
   const maticGasPriceBumpFactor = 1.15;
   return {
     [GasSpeedOption.CUSTOM]: null,
-    [GasSpeedOption.FAST]: defaultGasPriceFormat(
+    [GasSpeedOption.FAST]: formatGasPrice(
       GasSpeedOption.FAST,
       0.2,
       ceil(multiply(divide(data.fastest, 10), maticGasPriceBumpFactor))
     ),
-    [GasSpeedOption.NORMAL]: defaultGasPriceFormat(
+    [GasSpeedOption.NORMAL]: formatGasPrice(
       GasSpeedOption.NORMAL,
       0.5,
       ceil(multiply(divide(data.fast, 10), maticGasPriceBumpFactor))
     ),
-    [GasSpeedOption.SLOW]: defaultGasPriceFormat(
+    [GasSpeedOption.SLOW]: formatGasPrice(
       GasSpeedOption.SLOW,
       1,
       ceil(multiply(divide(data.average, 10), maticGasPriceBumpFactor))
@@ -105,10 +106,11 @@ export const parseGasPrices = (
 export const formatGasPrice = (
   option: GasSpeedOption,
   timeWait: BigNumberish,
-  value: string
+  value: string | number
 ): GasPrice => {
   const timeAmount = multiply(timeWait, timeUnits.ms.minute);
   const weiAmount = multiply(value, ethUnits.gwei);
+  const gweiAmount = toFixedDecimals(value, 0);
   return {
     estimatedTime: {
       amount: timeAmount,
@@ -117,7 +119,7 @@ export const formatGasPrice = (
     option,
     value: {
       amount: weiAmount,
-      display: `${value} Gwei`,
+      display: `${gweiAmount} Gwei`,
     },
   };
 };

@@ -13,21 +13,21 @@ export const GasSpeedOptions = {
 };
 
 export interface EtherscanPrices {
-  average: string;
-  avgWait: string | number;
-  fast: string;
-  fastWait: string | number;
-  safeLow: string;
-  safeLowWait: string | number;
+  average: number;
+  avgWait: number;
+  fast: number;
+  fastWait: number;
+  safeLow: number;
+  safeLowWait: number;
 }
 
 export interface EthGasStationPrices {
-  average: string | number;
-  avgWait: string | number;
-  fast: string | number;
-  fastWait: string | number;
-  fastest: string | number;
-  fastestWait: string | number;
+  average: number;
+  avgWait: number;
+  fast: number;
+  fastWait: number;
+  fastest: number;
+  fastestWait: number;
 }
 
 export interface MaticGasStationPrices {
