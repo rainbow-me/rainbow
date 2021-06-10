@@ -23,8 +23,10 @@ import WalletTypes from '../helpers/walletTypes';
 import { getFCMToken } from '../model/firebase';
 import { Navigation } from '../navigation';
 import { isSigningMethod } from '../utils/signingMethods';
+import { OPTIMISM_MAINNET_RPC_ENDPOINT } from './optimismExplorer';
 import { addRequestToApprove } from './requests';
 import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
+import { convertHexToString } from '@rainbow-me/helpers/utilities';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 
@@ -196,7 +198,61 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
     }
     const { clientId, peerId, peerMeta } = walletConnector;
     const requestId = payload.id;
-    if (!isSigningMethod(payload.method)) {
+    if (payload.method === 'wallet_addEthereumChain') {
+      const { chainId, chainName, rpcUrls } = payload.params[0];
+      // Currently supports Optimism and Mainnet
+      if (
+        (chainId === '0xa' &&
+          chainName === 'Optimism' &&
+          rpcUrls[0] === OPTIMISM_MAINNET_RPC_ENDPOINT) ||
+        chainId === '0x1'
+      ) {
+        Alert.alert(
+          `Network Change request`,
+          `${peerMeta.name} wants to connect to chainId ${convertHexToString(
+            chainId
+          )}`,
+          [
+            {
+              onPress: () => {
+                walletConnector.approveRequest({
+                  id: requestId,
+                  result: null,
+                });
+                const { accountAddress } = getState().settings;
+                logger.log('Updating session for optimism!');
+                walletConnector.updateSession({
+                  accounts: [accountAddress],
+                  chainId: convertHexToString(chainId),
+                });
+                saveWalletConnectSession(
+                  walletConnector.peerId,
+                  walletConnector.session
+                );
+              },
+              text: `LFG!`,
+            },
+            {
+              onPress: () => {
+                walletConnector.rejectRequest({
+                  error: { message: 'Chain currently not supported' },
+                  id: requestId,
+                });
+              },
+              style: 'cancel',
+              text: 'Go Back',
+            },
+          ]
+        );
+      } else {
+        walletConnector.rejectRequest({
+          error: { message: 'Chain currently not supported' },
+          id: requestId,
+        });
+      }
+
+      return;
+    } else if (!isSigningMethod(payload.method)) {
       sendRpcCall(payload)
         .then(result => {
           walletConnector.approveRequest({
