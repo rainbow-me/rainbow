@@ -1,5 +1,7 @@
 package me.rainbow;
+import android.content.res.Configuration;
 import android.os.Bundle;
+
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
@@ -7,6 +9,7 @@ import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
 import org.devio.rn.splashscreen.SplashScreen;
 import io.branch.rnbranch.*;
 import me.rainbow.NativeModules.RNBackHandler.RNBackHandlerPackage;
+import me.rainbow.NativeModules.Internals.*;
 import android.webkit.WebView;
 
 import android.content.Intent;
@@ -15,9 +18,10 @@ public class MainActivity extends ReactActivity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-        SplashScreen.show(this, R.style.NoActionBar);
-        super.onCreate(savedInstanceState);
-        WebView.setWebContentsDebuggingEnabled(true);
+
+      SplashScreen.show(this, R.style.NoActionBar);
+      super.onCreate(savedInstanceState);
+      WebView.setWebContentsDebuggingEnabled(false);
   }
 
   /**
@@ -40,6 +44,12 @@ public class MainActivity extends ReactActivity {
       if (!RNBackHandlerPackage.sBlockBack) {
           super.onBackPressed();
       }
+  }
+
+  @Override
+  public void onConfigurationChanged(Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+    getReactInstanceManager().onConfigurationChanged(this, newConfig);
   }
 
   @Override

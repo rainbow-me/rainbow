@@ -1,6 +1,7 @@
 import { get, isEmpty, isNumber, toLower } from 'lodash';
 import React, { Fragment, useCallback, useMemo } from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
+import { useTheme } from '../../context/ThemeContext';
 import { useNavigation } from '../../navigation/Navigation';
 import Divider from '../Divider';
 import { AddContactButton, PasteAddressButton } from '../buttons';
@@ -9,9 +10,10 @@ import { Icon } from '../icons';
 import { Row } from '../layout';
 import { SheetHandle as SheetHandleAndroid } from '../sheet';
 import { Label } from '../text';
+import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
 import { useClipboard, useDimensions } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
-import { colors, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 import { showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const AddressInputContainer = styled(Row).attrs({ align: 'center' })`
@@ -21,12 +23,13 @@ const AddressInputContainer = styled(Row).attrs({ align: 'center' })`
       : android
       ? padding(5, 15)
       : padding(19, 15)};
-  background-color: ${colors.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
   overflow: hidden;
   width: 100%;
 `;
 
 const AddressFieldLabel = styled(Label)`
+  color: ${({ theme: { colors } }) => colors.dark};
   margin-right: 6;
   opacity: 0.45;
 `;
@@ -35,11 +38,11 @@ const SheetHandle = android
   ? styled(SheetHandleAndroid)`
       margin-top: 6;
     `
-  : styled(Icon).attrs({
+  : styled(Icon).attrs(({ theme: { colors } }) => ({
       color: colors.sendScreen.grey,
       name: 'handle',
       testID: 'sheet-handle',
-    })`
+    }))`
       height: 11;
       margin-top: 13;
     `;
@@ -61,14 +64,22 @@ export default function SendHeader({
   recipientFieldRef,
   removeContact,
   showAssetList,
+  userAccounts,
 }) {
   const { setClipboard } = useClipboard();
   const { isSmallPhone } = useDimensions();
   const { navigate } = useNavigation();
+  const { colors } = useTheme();
 
   const contact = useMemo(() => {
     return get(contacts, `${[toLower(recipient)]}`, DefaultContactItem);
   }, [contacts, recipient]);
+
+  const userWallet = useMemo(() => {
+    return userAccounts.find(
+      account => toLower(account.address) === toLower(recipient)
+    );
+  }, [recipient, userAccounts]);
 
   const handleNavigateToContact = useCallback(() => {
     let color = get(contact, 'color');
@@ -84,7 +95,7 @@ export default function SendHeader({
       onRefocusInput,
       type: 'contact_profile',
     });
-  }, [contact, navigate, onRefocusInput, recipient]);
+  }, [colors, contact, navigate, onRefocusInput, recipient]);
 
   const handleOpenContactActionSheet = useCallback(async () => {
     return showActionSheetWithOptions(
@@ -130,6 +141,13 @@ export default function SendHeader({
   ]);
 
   const isPreExistingContact = (contact?.nickname?.length || 0) > 0;
+  const name = useMemo(
+    () =>
+      userWallet?.label
+        ? removeFirstEmojiFromString(userWallet.label).join('')
+        : contact.nickname,
+    [contact.nickname, userWallet?.label]
+  );
 
   return (
     <Fragment>
@@ -139,13 +157,13 @@ export default function SendHeader({
         <AddressField
           address={recipient}
           autoFocus={!showAssetList}
-          name={contact.nickname}
+          name={name}
           onChange={onChangeAddressInput}
           onFocus={onFocus}
           ref={recipientFieldRef}
           testID="send-asset-form-field"
         />
-        {isValidAddress && (
+        {isValidAddress && !userWallet && (
           <AddContactButton
             edit={isPreExistingContact}
             onPress={

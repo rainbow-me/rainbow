@@ -5,6 +5,7 @@ import matchSorter from 'match-sorter';
 import React, {
   Fragment,
   useCallback,
+  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -13,7 +14,7 @@ import React, {
 import { StatusBar } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import Animated, { Extrapolate } from 'react-native-reanimated';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import GestureBlocker from '../components/GestureBlocker';
 import { interpolate } from '../components/animations';
 import {
@@ -23,9 +24,9 @@ import {
 } from '../components/exchange';
 import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
+import { ScrollPagerContext } from '../navigation/ScrollPagerContext';
 import { addHexPrefix } from '@rainbow-me/handlers/web3';
-import CurrencySelectionTypes from '@rainbow-me/helpers/currencySelectionTypes';
-import tokenSectionTypes from '@rainbow-me/helpers/tokenSectionTypes';
+import { CurrencySelectionTypes, TokenSectionTypes } from '@rainbow-me/helpers';
 import {
   useInteraction,
   useMagicAutofocus,
@@ -37,7 +38,7 @@ import {
 import { delayNext } from '@rainbow-me/hooks/useMagicAutofocus';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import Routes from '@rainbow-me/routes';
-import { colors, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 import { filterList } from '@rainbow-me/utils';
 
 const TabTransitionAnimation = styled(Animated.View)`
@@ -68,15 +69,17 @@ export default function CurrencySelectModal() {
   const { navigate, dangerouslyGetState } = useNavigation();
   const {
     params: {
-      category,
       onSelectCurrency,
       restoreFocusOnSwapModal,
       setPointerEvents,
-      tabTransitionPosition,
+      tabTransitionPosition: tabTransitionPositionFromRoute,
       toggleGestureEnabled,
       type,
     },
   } = useRoute();
+
+  const tabTransitionPosition =
+    useContext(ScrollPagerContext) || tabTransitionPositionFromRoute;
 
   const searchInputRef = useRef();
   const { handleFocus } = useMagicAutofocus(searchInputRef, undefined, true);
@@ -89,12 +92,13 @@ export default function CurrencySelectModal() {
     searchQuery,
   ]);
 
+  const { colors } = useTheme();
   const {
     curatedNotFavorited,
     favorites,
     globalHighLiquidityAssets,
     globalLowLiquidityAssets,
-    globalVerifiedHighLiquidityAssets,
+    globalVerifiedAssets,
     loadingAllTokens,
     updateFavorites,
   } = useUniswapAssets();
@@ -121,7 +125,7 @@ export default function CurrencySelectModal() {
         ] = map(
           [
             favorites,
-            globalVerifiedHighLiquidityAssets,
+            globalVerifiedAssets,
             globalHighLiquidityAssets,
             globalLowLiquidityAssets,
           ],
@@ -133,37 +137,37 @@ export default function CurrencySelectModal() {
           filteredList.push({
             color: colors.yellowFavorite,
             data: filteredFavorite,
-            title: tokenSectionTypes.favoriteTokenSection,
+            title: TokenSectionTypes.favoriteTokenSection,
           });
 
         filteredVerified.length &&
           filteredList.push({
             data: filteredVerified,
-            title: tokenSectionTypes.verifiedTokenSection,
+            title: TokenSectionTypes.verifiedTokenSection,
             useGradientText: IS_TESTING === 'true' ? false : true,
           });
 
         filteredHighUnverified.length &&
           filteredList.push({
             data: filteredHighUnverified,
-            title: tokenSectionTypes.unverifiedTokenSection,
+            title: TokenSectionTypes.unverifiedTokenSection,
           });
 
         filteredLow.length &&
           filteredList.push({
             data: filteredLow,
-            title: tokenSectionTypes.lowLiquidityTokenSection,
+            title: TokenSectionTypes.lowLiquidityTokenSection,
           });
       } else {
         filteredList = [
           {
             color: colors.yellowFavorite,
             data: favorites,
-            title: tokenSectionTypes.favoriteTokenSection,
+            title: TokenSectionTypes.favoriteTokenSection,
           },
           {
             data: curatedNotFavorited,
-            title: tokenSectionTypes.verifiedTokenSection,
+            title: TokenSectionTypes.verifiedTokenSection,
             useGradientText: IS_TESTING === 'true' ? false : true,
           },
         ];
@@ -172,9 +176,10 @@ export default function CurrencySelectModal() {
     setIsSearching(false);
     return filteredList;
   }, [
+    colors,
     curatedNotFavorited,
     favorites,
-    globalVerifiedHighLiquidityAssets,
+    globalVerifiedAssets,
     globalHighLiquidityAssets,
     globalLowLiquidityAssets,
     searchQueryForSearch,
@@ -201,7 +206,6 @@ export default function CurrencySelectModal() {
         [asset.address]: isFavorited,
       }));
       analytics.track('Toggled an asset as Favorited', {
-        category,
         isFavorited,
         name: asset.name,
         symbol: asset.symbol,
@@ -209,7 +213,7 @@ export default function CurrencySelectModal() {
         type,
       });
     },
-    [category, type]
+    [type]
   );
 
   const handleSelectAsset = useCallback(
@@ -218,7 +222,6 @@ export default function CurrencySelectModal() {
       onSelectCurrency(item);
       if (searchQueryForSearch) {
         analytics.track('Selected a search result in Swap', {
-          category,
           name: item.name,
           searchQueryForSearch,
           symbol: item.symbol,
@@ -236,14 +239,13 @@ export default function CurrencySelectModal() {
       searchQueryForSearch,
       dangerouslyGetState,
       navigate,
-      category,
       type,
     ]
   );
 
   const itemProps = useMemo(
     () => ({
-      onFavoriteAsset: handleFavoriteAsset,
+      onActionAsset: handleFavoriteAsset,
       onPress: handleSelectAsset,
       showBalance: type === CurrencySelectionTypes.input,
       showFavoriteButton: type === CurrencySelectionTypes.output,

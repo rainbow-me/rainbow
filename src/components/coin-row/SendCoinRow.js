@@ -1,14 +1,15 @@
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { css } from 'styled-components/primitives';
+import { css } from 'styled-components';
+import { useTheme } from '../../context/ThemeContext';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
 import { deviceUtils, magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Text } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
-import { colors, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 
 const isTinyPhone = deviceUtils.dimensions.height <= 568;
 const selectedHeight = isTinyPhone ? 62 : 78;
@@ -24,6 +25,7 @@ const containerSelectedStyles = css`
 `;
 
 const BottomRow = ({ balance, native, nativeCurrencySymbol }) => {
+  const { colors } = useTheme();
   const fiatValue =
     get(native, 'balance.display') || `${nativeCurrencySymbol}0.00`;
 

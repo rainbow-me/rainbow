@@ -1,4 +1,6 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
+import styled from 'styled-components';
+import useWallets from '../../hooks/useWallets';
 import Link from '../Link';
 import { Column, ColumnWithDividers } from '../layout';
 import {
@@ -8,21 +10,24 @@ import {
   SheetDivider,
   SlackSheet,
 } from '../sheet';
-import { Text } from '../text';
-import { ShowcaseToast, ToastPositionContainer } from '../toasts';
+import { MarkdownText } from '../text';
+import { ToastPositionContainer, ToggleStateToast } from '../toasts';
 import { UniqueTokenAttributes } from '../unique-token';
 import ExpandedStateSection from './ExpandedStateSection';
 import {
+  UniqueTokenExpandedStateContent,
   UniqueTokenExpandedStateHeader,
-  UniqueTokenExpandedStateImage,
 } from './unique-token';
 import { useDimensions, useShowcaseTokens } from '@rainbow-me/hooks';
-import { colors } from '@rainbow-me/styles';
-import { magicMemo } from '@rainbow-me/utils';
+import { magicMemo, safeAreaInsetValues } from '@rainbow-me/utils';
 
-const UniqueTokenExpandedState = ({ asset }) => {
+const Spacer = styled.View`
+  height: ${safeAreaInsetValues.bottom + 20};
+`;
+
+const UniqueTokenExpandedState = ({ asset, external }) => {
   const {
-    asset_contract: {
+    collection: {
       description: familyDescription,
       external_link: familyLink,
       name: familyName,
@@ -39,6 +44,8 @@ const UniqueTokenExpandedState = ({ asset }) => {
     showcaseTokens,
   } = useShowcaseTokens();
 
+  const { isReadOnlyWallet } = useWallets();
+
   const isShowcaseAsset = useMemo(() => showcaseTokens.includes(uniqueId), [
     showcaseTokens,
     uniqueId,
@@ -53,6 +60,7 @@ const UniqueTokenExpandedState = ({ asset }) => {
   }, [addShowcaseToken, isShowcaseAsset, removeShowcaseToken, uniqueId]);
 
   const { height: screenHeight } = useDimensions();
+  const { colors, isDarkMode } = useTheme();
 
   return (
     <Fragment>
@@ -64,20 +72,22 @@ const UniqueTokenExpandedState = ({ asset }) => {
         scrollEnabled
       >
         <UniqueTokenExpandedStateHeader asset={asset} />
-        <UniqueTokenExpandedStateImage asset={asset} />
-        <SheetActionButtonRow>
-          <SheetActionButton
-            color={colors.dark}
-            label={isShowcaseAsset ? '􀁏 Showcase' : '􀁍 Showcase'}
-            onPress={handlePressShowcase}
-            weight="bold"
-          />
-          {isSendable && <SendActionButton />}
-        </SheetActionButtonRow>
+        <UniqueTokenExpandedStateContent asset={asset} />
+        {!external && !isReadOnlyWallet && (
+          <SheetActionButtonRow>
+            <SheetActionButton
+              color={isDarkMode ? colors.darkModeDark : colors.dark}
+              label={isShowcaseAsset ? '􀁏 Showcase' : '􀁍 Showcase'}
+              onPress={handlePressShowcase}
+              weight="bold"
+            />
+            {isSendable && <SendActionButton />}
+          </SheetActionButtonRow>
+        )}
         <SheetDivider />
         <ColumnWithDividers dividerRenderer={SheetDivider}>
           {!!description && (
-            <ExpandedStateSection title="Bio">
+            <ExpandedStateSection title="Description">
               {description}
             </ExpandedStateSection>
           )}
@@ -89,21 +99,26 @@ const UniqueTokenExpandedState = ({ asset }) => {
           {!!familyDescription && (
             <ExpandedStateSection title={`About ${familyName}`}>
               <Column>
-                <Text
+                <MarkdownText
                   color={colors.alpha(colors.blueGreyDark, 0.5)}
                   lineHeight="paragraphSmall"
                   size="lmedium"
                 >
                   {familyDescription}
-                </Text>
+                </MarkdownText>
                 {familyLink && <Link url={familyLink} />}
               </Column>
             </ExpandedStateSection>
           )}
         </ColumnWithDividers>
+        <Spacer />
       </SlackSheet>
       <ToastPositionContainer>
-        <ShowcaseToast isShowcaseAsset={isShowcaseAsset} />
+        <ToggleStateToast
+          addCopy="Added to showcase"
+          isAdded={isShowcaseAsset}
+          removeCopy="Removed from showcase"
+        />
       </ToastPositionContainer>
     </Fragment>
   );

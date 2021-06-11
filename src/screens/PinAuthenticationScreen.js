@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/core';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert } from 'react-native';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import RainbowLogo from '../assets/rainbows/light.png';
 import { Centered, Column, ColumnWithMargins } from '../components/layout';
 import { Numpad, PinValue } from '../components/numpad';
@@ -12,11 +12,11 @@ import {
   saveAuthTimelock,
   savePinAuthAttemptsLeft,
 } from '../handlers/localstorage/globalSettings';
-import { useDimensions, useShakeAnimation } from '../hooks';
-import { useBlockBackButton } from '../hooks/useBlockBackButton';
 import { useNavigation } from '../navigation/Navigation';
+import { useDimensions, useShakeAnimation } from '@rainbow-me/hooks';
+import { useBlockBackButton } from '@rainbow-me/hooks/useBlockBackButton';
 import { ImgixImage } from '@rainbow-me/images';
-import { colors, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 
 const Logo = styled(ImgixImage).attrs({
   source: RainbowLogo,
@@ -183,6 +183,8 @@ const PinAuthenticationScreen = () => {
     },
     [actionType, attemptsLeft, goBack, initialPin, onShake, params]
   );
+
+  const { colors } = useTheme();
 
   return (
     <Column

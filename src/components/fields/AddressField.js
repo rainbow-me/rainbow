@@ -1,13 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { isHexString } from '../../handlers/web3';
-import { checkIsValidAddressOrENS } from '../../helpers/validators';
+import { checkIsValidAddressOrDomain } from '../../helpers/validators';
 import { Input } from '../inputs';
 import { Row } from '../layout';
 import { Label } from '../text';
 import { useClipboard } from '@rainbow-me/hooks';
-import { colors } from '@rainbow-me/styles';
 import { abbreviations, addressUtils } from '@rainbow-me/utils';
 
 const AddressInput = styled(Input).attrs({
@@ -34,6 +33,7 @@ const Placeholder = styled(Row)`
 `;
 
 const PlaceholderText = styled(Label)`
+  color: ${({ theme: { colors } }) => colors.dark};
   opacity: 0.45;
 `;
 
@@ -46,6 +46,7 @@ const AddressField = (
   { address, autoFocus, name, onChange, onFocus, testID, ...props },
   ref
 ) => {
+  const { colors } = useTheme();
   const { clipboard, setClipboard } = useClipboard();
   const [inputValue, setInputValue] = useState('');
   const [isValid, setIsValid] = useState(false);
@@ -57,7 +58,7 @@ const AddressField = (
   }, [address, clipboard, setClipboard]);
 
   const validateAddress = useCallback(async address => {
-    const newIsValid = await checkIsValidAddressOrENS(address);
+    const newIsValid = await checkIsValidAddressOrDomain(address);
     return setIsValid(newIsValid);
   }, []);
 

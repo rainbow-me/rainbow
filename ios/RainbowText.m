@@ -24,6 +24,7 @@
   double _interval;
   float _stepPerDay;
   BOOL _isSymbolStablecoin;
+  BOOL _darkMode;
   NSString* _symbol;
   NSNumberFormatter* _fmt;
   CFAbsoluteTime _time;
@@ -44,6 +45,7 @@
   _duration = ((NSNumber*) config[@"duration"]).intValue;
   NSString* color = ((NSString*) config[@"color"]);
   _isSymbolStablecoin = ((NSNumber*) config[@"isSymbolStablecoin"]).boolValue;
+  _darkMode = ((NSNumber*) config[@"darkMode"]).boolValue;
   _symbol = config[@"symbol"];
   _timer = [NSTimer scheduledTimerWithTimeInterval:_interval / 1000  target:self selector:@selector(animate) userInfo:nil repeats:YES];
   _fmt = [[NSNumberFormatter alloc] init];
@@ -57,14 +59,18 @@
   NSScanner *scanner = [NSScanner scannerWithString:color];
   [scanner setScanLocation:1];
   [scanner scanHexInt:&rgbValue];
-  float r = ((rgbValue & 0xFF0000) >> 16)/255.0;
-  float g = ((rgbValue & 0xFF00) >> 8)/255.0;
-  float b = (rgbValue & 0xFF)/255.0;
-
+  float startR = _darkMode ?  0.878 : 0.145;
+  float startG = _darkMode ?  0.91 : 0.161;
+  float startB = _darkMode ?  1.00 : 0.18;
+  float r = ((rgbValue & 0xFF0000) >> 16)/255.0 - startR;
+  float g = ((rgbValue & 0xFF00) >> 8)/255.0 - startG;
+  float b = (rgbValue & 0xFF)/255.0 - startB;
+  self.textColor = _darkMode ? [UIColor colorWithRed:0.878 green:0.91 blue:1.00 alpha:1.00] : [UIColor colorWithRed:0.145 green:0.161 blue:0.18 alpha:1.0];
+  
   _colorsMap = [NSMutableArray new];
   for (int i = _duration; i > 0; i--) {
     float factor = i / (float)_duration;
-    [_colorsMap addObject:[UIColor colorWithRed: r * factor green:g * factor blue:b * factor alpha:1]];
+    [_colorsMap addObject:[UIColor colorWithRed: startR + r * factor green:startG + g * factor blue:startB + b * factor alpha:1]];
   }
 
   UIFont* font = [UIFont fontWithName:@"SFRounded-Bold" size:16];

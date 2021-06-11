@@ -1,11 +1,18 @@
 import analytics from '@segment/analytics-react-native';
 import React, { useCallback, useState } from 'react';
+import { Linking } from 'react-native';
 import { neverRerender } from '../../../utils';
-import { ComingSoonFloatingEmojis } from '../../floating-emojis';
 import SheetActionButton from './SheetActionButton';
-import { colors } from '@rainbow-me/styles';
 
-function WithdrawActionButton({ color = colors.white, symbol, ...props }) {
+function WithdrawActionButton({
+  color: givenColor,
+  symbol,
+  token1Address,
+  token2Address,
+  ...props
+}) {
+  const { colors, isDarkMode } = useTheme();
+  const color = givenColor || (isDarkMode ? colors.darkModeDark : colors.dark);
   const [didTrack, setDidTrack] = useState(false);
 
   const handlePress = useCallback(() => {
@@ -16,18 +23,19 @@ function WithdrawActionButton({ color = colors.white, symbol, ...props }) {
       });
       setDidTrack(true);
     }
-  }, [didTrack, symbol]);
+
+    Linking.openURL(
+      `https://app.uniswap.org/#/remove/${token1Address}/${token2Address}`
+    );
+  }, [didTrack, symbol, token1Address, token2Address]);
 
   return (
-    <ComingSoonFloatingEmojis>
-      <SheetActionButton
-        {...props}
-        color={color}
-        label="􀁏 Withdraw"
-        onPress={handlePress}
-        textColor={colors.dark}
-      />
-    </ComingSoonFloatingEmojis>
+    <SheetActionButton
+      {...props}
+      color={color}
+      label="􀁏 Withdraw"
+      onPress={handlePress}
+    />
   );
 }
 

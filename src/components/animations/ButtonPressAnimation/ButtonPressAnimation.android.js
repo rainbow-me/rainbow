@@ -1,9 +1,7 @@
-import React, { createContext, useContext, useMemo, useRef } from 'react';
+import React, { createContext, useCallback, useContext, useMemo } from 'react';
 import { processColor, requireNativeComponent, View } from 'react-native';
-import {
-  createNativeWrapper,
-  PureNativeButton,
-} from 'react-native-gesture-handler';
+import { createNativeWrapper } from 'react-native-gesture-handler';
+import { PureNativeButton } from 'react-native-gesture-handler/src/components/GestureButtons';
 import Animated, {
   NewEasing as Easing,
   runOnJS,
@@ -13,7 +11,9 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import styled from 'styled-components';
 import { normalizeTransformOrigin } from './NativeButton';
+import { useLongPressEvents } from '@rainbow-me/hooks';
 
 const ZoomableRawButton = requireNativeComponent('RNZoomableButton');
 
@@ -31,25 +31,41 @@ const OVERFLOW_MARGIN = 5;
 
 const ScaleButtonContext = createContext(null);
 
+const Content = styled.View`
+  overflow: visible;
+`;
+
 // I managed to implement partially overflow in scale button (up to 5px),
 // but overflow is not visible beyond small boundaries. Hence, to make it reactive to touches
 // I couldn't just expend boundaries, because then it intercepts touches, so I managed to
 // extract animated component to external value
 
-export const ScaleButtonZoomable = ({ children, style, testID }) => {
-  const value = useSharedValue(1);
+export const ScaleButtonZoomable = ({
+  children,
+  style,
+  duration = 160,
+  testID,
+}) => {
+  const scale = useSharedValue(1);
+  const scaleTraversed = useDerivedValue(() => {
+    const value = withTiming(scale.value, {
+      duration,
+      easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+    });
+    return value;
+  });
   const sz = useAnimatedStyle(() => {
     return {
       transform: [
         {
-          scale: value.value,
+          scale: scaleTraversed.value,
         },
       ],
     };
   });
 
   return (
-    <ScaleButtonContext.Provider value={value}>
+    <ScaleButtonContext.Provider value={scale}>
       <Animated.View style={[style, sz]} testID={testID}>
         {children}
       </Animated.View>
@@ -57,62 +73,30 @@ export const ScaleButtonZoomable = ({ children, style, testID }) => {
   );
 };
 
-const useLongPress = ({ onPress, onLongPress, minLongPressDuration }) => {
-  const longPressTimer = useRef(null);
-  const isPressEventLegal = useRef(false);
-
-  const handleStartPress = () => {
-    if (longPressTimer.current == null) {
-      longPressTimer.current = setTimeout(() => {
-        longPressTimer.current = null;
-        onLongPress?.();
-      }, minLongPressDuration);
-    }
-
-    isPressEventLegal.current = true;
-  };
-  const handlePress = () => {
-    clearTimeout(longPressTimer.current);
-    if (longPressTimer.current) {
-      onPress();
-      longPressTimer.current = null;
-    }
-  };
-
-  const handleCancel = () => {
-    clearTimeout(longPressTimer.current);
-    isPressEventLegal.current = false;
-  };
-
-  return {
-    handleCancel,
-    handlePress,
-    handleStartPress,
-  };
-};
-
 const ScaleButton = ({
-  duration,
-  scaleTo,
   children,
-  onPress,
-  onLongPress,
   contentContainerStyle,
+  duration,
   minLongPressDuration,
+  onLongPress,
+  onPress,
   overflowMargin,
   testID,
+  scaleTo,
   wrapperStyle,
+  onPressStart,
+  onPressCancel,
 }) => {
-  const scale = useSharedValue(1);
+  const parentScale = useContext(ScaleButtonContext);
+  const childScale = useSharedValue(1);
+  const scale = parentScale || childScale;
   const hasScaledDown = useSharedValue(0);
-  const parentValue = useContext(ScaleButtonContext);
   const scaleTraversed = useDerivedValue(() => {
     const value = withTiming(scale.value, {
       duration,
       easing: Easing.bezier(0.25, 0.1, 0.25, 1),
     });
-    if (parentValue) {
-      parentValue.value = value;
+    if (parentScale) {
       return 1;
     } else {
       return value;
@@ -128,10 +112,12 @@ const ScaleButton = ({
     };
   });
 
-  const { handleCancel, handlePress, handleStartPress } = useLongPress({
+  const { handleCancel, handlePress, handleStartPress } = useLongPressEvents({
     minLongPressDuration,
     onLongPress,
     onPress,
+    onPressCancel,
+    onPressStart,
   });
 
   const gestureHandler = useAnimatedGestureHandler({
@@ -182,26 +168,29 @@ const ScaleButton = ({
 const SimpleScaleButton = ({
   backgroundColor,
   borderRadius,
-  scaleTo,
   children,
-  onPress,
-  onLongPress,
   contentContainerStyle,
-  minLongPressDuration,
-  overflowMargin,
-  wrapperStyle,
   duration,
+  minLongPressDuration,
+  onLongPress,
+  onPress,
+  overflowMargin,
+  scaleTo,
+  skipTopMargin,
   testID,
   transformOrigin,
-  skipTopMargin,
+  wrapperStyle,
 }) => {
-  const onNativePress = ({ nativeEvent: { type } }) => {
-    if (type === 'longPress') {
-      onLongPress?.();
-    } else {
-      onPress();
-    }
-  };
+  const onNativePress = useCallback(
+    ({ nativeEvent: { type } }) => {
+      if (type === 'longPress') {
+        onLongPress?.();
+      } else {
+        onPress?.();
+      }
+    },
+    [onLongPress, onPress]
+  );
 
   return (
     <View
@@ -255,36 +244,34 @@ export default function ButtonPressAnimation({
   backgroundColor = 'transparent',
   borderRadius = 0,
   children,
+  contentContainerStyle,
   disabled,
   duration = 160,
+  hitSlop,
+  minLongPressDuration = 500,
   onLongPress,
   onPress,
   onPressStart,
-  style,
-  minLongPressDuration = 500,
-  testID,
-  scaleTo = 0.86,
-  contentContainerStyle,
   overflowMargin = OVERFLOW_MARGIN,
-  hitSlop,
-  wrapperStyle,
   reanimatedButton,
-  transformOrigin,
+  scaleTo = 0.86,
   skipTopMargin,
+  style,
+  testID,
+  transformOrigin,
+  wrapperStyle,
+  onPressCancel,
 }) {
   const normalizedTransformOrigin = useMemo(
     () => normalizeTransformOrigin(transformOrigin),
     [transformOrigin]
   );
 
-  if (disabled) {
-    return <View style={[style, { overflow: 'visible' }]}>{children}</View>;
-  }
-
-  const Button = reanimatedButton ? ScaleButton : SimpleScaleButton;
-
-  return (
-    <Button
+  const ButtonElement = reanimatedButton ? ScaleButton : SimpleScaleButton;
+  return disabled ? (
+    <Content style={style}>{children}</Content>
+  ) : (
+    <ButtonElement
       backgroundColor={backgroundColor}
       borderRadius={borderRadius}
       contentContainerStyle={contentContainerStyle}
@@ -293,6 +280,7 @@ export default function ButtonPressAnimation({
       minLongPressDuration={minLongPressDuration}
       onLongPress={onLongPress}
       onPress={onPress}
+      onPressCancel={onPressCancel}
       onPressStart={onPressStart}
       overflowMargin={overflowMargin}
       scaleTo={scaleTo}
@@ -301,9 +289,9 @@ export default function ButtonPressAnimation({
       transformOrigin={normalizedTransformOrigin}
       wrapperStyle={wrapperStyle}
     >
-      <View pointerEvents="box-only" style={[style, { overflow: 'visible' }]}>
+      <Content pointerEvents="box-only" style={style}>
         {children}
-      </View>
-    </Button>
+      </Content>
+    </ButtonElement>
   );
 }

@@ -21,39 +21,44 @@ import lang from 'i18n-js';
 import { find, findKey, forEach, get, isEmpty } from 'lodash';
 import { Alert } from 'react-native';
 import { ACCESSIBLE, getSupportedBiometryType } from 'react-native-keychain';
-import AesEncryptor from '../handlers/aesEncryption';
+import { getRandomColor, lightModeThemeColors } from '../styles/colors';
+import {
+  addressKey,
+  allWalletsKey,
+  oldSeedPhraseMigratedKey,
+  pinKey,
+  privateKeyKey,
+  seedPhraseKey,
+  selectedWalletKey,
+} from '../utils/keychainConstants';
+import * as keychain from './keychain';
+import { PreferenceActionType, setPreference } from './preferences';
+import { EthereumAddress } from '@rainbow-me/entities';
+import AesEncryptor from '@rainbow-me/handlers/aesEncryption';
 import {
   authenticateWithPIN,
   getExistingPIN,
-} from '../handlers/authentication';
-import { saveAccountEmptyState } from '../handlers/localstorage/accountLocal';
+} from '@rainbow-me/handlers/authentication';
+import { saveAccountEmptyState } from '@rainbow-me/handlers/localstorage/accountLocal';
 import {
   addHexPrefix,
   isHexString,
   isHexStringIgnorePrefix,
   isValidMnemonic,
   web3Provider,
-} from '../handlers/web3';
-import showWalletErrorAlert from '../helpers/support';
-import WalletLoadingStates from '../helpers/walletLoadingStates';
-import { EthereumWalletType } from '../helpers/walletTypes';
-import store from '../redux/store';
-import { setIsWalletLoading } from '../redux/wallets';
-import { ethereumUtils } from '../utils';
-import {
-  addressKey,
-  allWalletsKey,
-  oldSeedPhraseMigratedKey,
-  privateKeyKey,
-  seedPhraseKey,
-  selectedWalletKey,
-} from '../utils/keychainConstants';
-import * as keychain from './keychain';
-import { colors } from '@rainbow-me/styles';
+} from '@rainbow-me/handlers/web3';
+import { createSignature } from '@rainbow-me/helpers/signingWallet';
+import showWalletErrorAlert from '@rainbow-me/helpers/support';
+import WalletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
+import { EthereumWalletType } from '@rainbow-me/helpers/walletTypes';
+import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
+import store from '@rainbow-me/redux/store';
+import { setIsWalletLoading } from '@rainbow-me/redux/wallets';
+import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
+
 const encryptor = new AesEncryptor();
 
-type EthereumAddress = string;
 type EthereumPrivateKey = string;
 type EthereumMnemonic = string;
 type EthereumSeed = string;
@@ -147,7 +152,7 @@ interface RainbowSelectedWalletData {
   wallet: RainbowWallet;
 }
 
-interface PrivateKeyData {
+export interface PrivateKeyData {
   privateKey: EthereumPrivateKey;
   version: string;
 }
@@ -215,15 +220,18 @@ export const walletInit = async (
   return { isNew, walletAddress };
 };
 
-export const loadWallet = async (): Promise<null | Wallet> => {
-  const privateKey = await loadPrivateKey();
+export const loadWallet = async (
+  address?: EthereumAddress | undefined,
+  showErrorIfNotLoaded = true
+): Promise<null | Wallet> => {
+  const privateKey = await loadPrivateKey(address);
   if (privateKey === -1 || privateKey === -2) {
     return null;
   }
   if (privateKey) {
     return new Wallet(privateKey, web3Provider);
   }
-  if (ios) {
+  if (ios && showErrorIfNotLoaded) {
     showWalletErrorAlert();
   }
   return null;
@@ -400,9 +408,9 @@ export const oldLoadSeedPhrase = async (): Promise<null | EthereumWalletSeed> =>
 export const loadAddress = (): Promise<null | EthereumAddress> =>
   keychain.loadString(addressKey) as Promise<string | null>;
 
-const loadPrivateKey = async (): Promise<
-  null | EthereumPrivateKey | -1 | -2
-> => {
+const loadPrivateKey = async (
+  address?: EthereumAddress | undefined
+): Promise<null | EthereumPrivateKey | -1 | -2> => {
   try {
     const isSeedPhraseMigrated = await keychain.loadString(
       oldSeedPhraseMigratedKey
@@ -417,12 +425,12 @@ const loadPrivateKey = async (): Promise<
     }
 
     if (!privateKey) {
-      const address = await loadAddress();
-      if (!address) {
+      const addressToUse = address || (await loadAddress());
+      if (!addressToUse) {
         return null;
       }
 
-      const privateKeyData = await getPrivateKey(address);
+      const privateKeyData = await getPrivateKey(addressToUse);
       if (privateKeyData === -1) {
         return -1;
       }
@@ -469,17 +477,14 @@ export const identifyWalletType = (
   ) {
     return EthereumWalletType.privateKey;
   }
-
   // 12 or 24 words seed phrase
   if (isValidMnemonic(walletSeed)) {
     return EthereumWalletType.mnemonic;
   }
-
   // Public address (0x)
   if (isValidAddress(walletSeed)) {
     return EthereumWalletType.readOnly;
   }
-
   // seed
   return EthereumWalletType.seed;
 };
@@ -499,12 +504,8 @@ export const createWallet = async (
   const walletSeed = seed || generateMnemonic();
   let addresses: RainbowAccount[] = [];
   try {
-    let wasLoading = false;
     const { dispatch } = store;
-    if (!checkedWallet && android) {
-      wasLoading = true;
-      dispatch(setIsWalletLoading(WalletLoadingStates.CREATING_WALLET));
-    }
+    dispatch(setIsWalletLoading(WalletLoadingStates.CREATING_WALLET));
 
     const {
       isHDWallet,
@@ -638,14 +639,28 @@ export const createWallet = async (
     }
     logger.sentry('[createWallet] - saved private key');
 
+    const colorForWallet = color !== null ? color : getRandomColor();
     addresses.push({
       address: walletAddress,
       avatar: null,
-      color: color !== null ? color : colors.getRandomColor(),
+      color: colorForWallet,
       index: 0,
       label: name || '',
       visible: true,
     });
+    if (type !== EthereumWalletType.readOnly) {
+      // Creating signature for this wallet
+      logger.sentry(`[createWallet] - generating signature`);
+      await createSignature(walletAddress, pkey);
+      // Enable web profile
+      logger.sentry(`[createWallet] - enabling web profile`);
+      store.dispatch(updateWebDataEnabled(true, walletAddress));
+      // Save the color
+      setPreference(PreferenceActionType.init, 'profile', address, {
+        accountColor: lightModeThemeColors.avatarColor[colorForWallet],
+      });
+      logger.sentry(`[createWallet] - enabled web profile`);
+    }
 
     if (isHDWallet && root && isImported) {
       logger.sentry('[createWallet] - isHDWallet && isImported');
@@ -689,7 +704,7 @@ export const createWallet = async (
 
         // Remove any discovered wallets if they already exist
         // and copy over label and color if account was visible
-        let color = colors.getRandomColor();
+        let color = getRandomColor();
         let label = '';
 
         if (discoveredAccount && discoveredWalletId) {
@@ -729,6 +744,26 @@ export const createWallet = async (
             label,
             visible: true,
           });
+
+          // Creating signature for this wallet
+          await createSignature(nextWallet.address, nextWallet.privateKey);
+          // Enable web profile
+          store.dispatch(updateWebDataEnabled(true, nextWallet.address));
+
+          // Save the color
+          setPreference(
+            PreferenceActionType.init,
+            'profile',
+            nextWallet.address,
+            {
+              accountColor: lightModeThemeColors.avatarColor[color],
+            }
+          );
+
+          logger.sentry(
+            `[createWallet] - enabled web profile for wallet ${index}`
+          );
+
           index++;
         } else {
           lookup = false;
@@ -783,11 +818,9 @@ export const createWallet = async (
         walletType === WalletLibraryType.ethers
           ? (walletResult as Wallet)
           : new Wallet(pkey);
-      if (wasLoading) {
-        setTimeout(() => {
-          dispatch(setIsWalletLoading(null));
-        }, 2000);
-      }
+      setTimeout(() => {
+        dispatch(setIsWalletLoading(null));
+      }, 2000);
 
       return ethersWallet;
     }
@@ -978,7 +1011,7 @@ export const generateAccount = async (
     }
 
     if (!seedphrase) {
-      throw new Error(`Can't access seed phrase to create new accounts`);
+      throw new Error(`Can't access secret phrase to create new accounts`);
     }
 
     const {
@@ -1009,6 +1042,8 @@ export const generateAccount = async (
     } else {
       await savePrivateKey(walletAddress, walletPkey);
     }
+    // Creating signature for this wallet
+    await createSignature(walletAddress, walletPkey);
 
     return newAccount;
   } catch (error) {
@@ -1118,6 +1153,33 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
     logger.sentry('Error while migrating secrets');
     captureException(e);
     return null;
+  }
+};
+
+export const cleanUpWalletKeys = async (): Promise<boolean> => {
+  const keys = [
+    addressKey,
+    allWalletsKey,
+    oldSeedPhraseMigratedKey,
+    pinKey,
+    selectedWalletKey,
+  ];
+
+  try {
+    await Promise.all(
+      keys.map(key => {
+        try {
+          keychain.remove(key);
+        } catch (e) {
+          // key might not exists
+          logger.log('failure to delete key', key);
+        }
+        return true;
+      })
+    );
+    return true;
+  } catch (e) {
+    return false;
   }
 };
 

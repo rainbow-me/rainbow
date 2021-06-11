@@ -1,5 +1,5 @@
 import { get, isNil } from 'lodash';
-import { css } from 'styled-components/primitives';
+import { css } from 'styled-components';
 import colors from './colors';
 import fonts from './fonts';
 
@@ -49,7 +49,8 @@ export function fontWithWidth(weight, family = 'SFProRounded', mono = false) {
 
 const buildTextStyles = css`
   /* Color */
-  color: ${({ color }) => colors.get(color) || colors.dark};
+  color: ${({ color, theme }) =>
+    colors.get(color, theme.colors) || theme.colors.dark};
 
   /* Font Family */
   ${({ isEmoji, family = 'SFProRounded', mono, weight }) => {

@@ -3,10 +3,11 @@ import { StyleSheet } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import LinearGradient from 'react-native-linear-gradient';
 import RadialGradient from 'react-native-radial-gradient';
+import { lightModeThemeColors } from '../../styles/colors';
 import { Centered } from '../layout';
 
 import { GradientText, Text } from '../text';
-import { colors, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 
 const sx = StyleSheet.create({
   container: {
@@ -41,8 +42,8 @@ const radialGradientProps = {
   ...gradientProps,
   center: [0, 1],
   colors: [
-    colors.alpha(gradientColors[0], 0.1),
-    colors.alpha(gradientColors[1], 0.08),
+    lightModeThemeColors.alpha(gradientColors[0], 0.1),
+    lightModeThemeColors.alpha(gradientColors[1], 0.08),
   ],
 };
 
@@ -53,7 +54,7 @@ const textProps = {
 };
 
 if (android) {
-  textProps.color = colors.green;
+  textProps.color = lightModeThemeColors.green;
 }
 
 const TextComponent = ios ? GradientText : Text;
@@ -82,6 +83,7 @@ function APYPill({ small, value }) {
         letterSpacing="roundedTight"
         size={small ? 'smedium' : 'lmedium'}
         weight="semibold"
+        {...(android && { lineHeight: small ? 24 : 30 })}
       >
         {value}% APY
       </TextComponent>

@@ -1,16 +1,25 @@
 import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
 import { get, toLower, uniqBy } from 'lodash';
-import { web3Provider } from '../handlers/web3';
-import AssetTypes from '../helpers/assetTypes';
-import networkInfo from '../helpers/networkInfo';
-import networkTypes from '../helpers/networkTypes';
-import { delay } from '../helpers/utilities';
-import balanceCheckerContractAbi from '../references/balances-checker-abi.json';
-import coingeckoIdsFallback from '../references/coingecko/ids.json';
-import migratedTokens from '../references/migratedTokens.json';
-import testnetAssets from '../references/testnet-assets.json';
-import { addressAssetsReceived } from './data';
+/* eslint-disable-next-line import/no-cycle */
+import {
+  addressAssetsReceived,
+  COINGECKO_IDS_ENDPOINT,
+  fetchAssetPrices,
+} from './data';
+import { AssetTypes } from '@rainbow-me/entities';
+import { web3Provider } from '@rainbow-me/handlers/web3';
+import networkInfo from '@rainbow-me/helpers/networkInfo';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
+import {
+  balanceCheckerContractAbi,
+  coingeckoIdsFallback,
+  ETH_ADDRESS,
+  ETH_COINGECKO_ID,
+  migratedTokens,
+  testnetAssets,
+} from '@rainbow-me/references';
+import { delay } from '@rainbow-me/utilities';
 import logger from 'logger';
 
 // -- Constants --------------------------------------- //
@@ -23,9 +32,9 @@ const FALLBACK_EXPLORER_SET_HANDLERS =
 const FALLBACK_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER =
   'explorer/FALLBACK_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER';
 
-const ETH_ADDRESS = '0x0000000000000000000000000000000000000000';
-const COINGECKO_IDS_ENDPOINT =
-  'https://api.coingecko.com/api/v3/coins/list?include_platform=true&asset_platform_id=ethereum';
+const ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT =
+  '0x0000000000000000000000000000000000000000';
+
 const UPDATE_BALANCE_AND_PRICE_FREQUENCY = 10000;
 const DISCOVER_NEW_ASSETS_FREQUENCY = 13000;
 
@@ -63,7 +72,7 @@ const findNewAssetsToWatch = () => async (dispatch, getState) => {
   }
 };
 
-const fetchCoingeckoIds = async () => {
+export const fetchCoingeckoIds = async () => {
   let ids;
   try {
     const request = await fetch(COINGECKO_IDS_ENDPOINT);
@@ -99,8 +108,8 @@ const findAssetsToWatch = async (address, latestTxBlockNumber, dispatch) => {
     ...tokensInWallet,
     {
       asset: {
-        asset_code: 'eth',
-        coingecko_id: 'ethereum',
+        asset_code: ETH_ADDRESS,
+        coingecko_id: ETH_COINGECKO_ID,
         decimals: 18,
         name: 'Ethereum',
         symbol: 'ETH',
@@ -201,21 +210,6 @@ const getTokenTxDataFromEtherscan = async (
   return null;
 };
 
-const fetchAssetPrices = async (coingeckoIds, nativeCurrency) => {
-  try {
-    const url = `https://api.coingecko.com/api/v3/simple/price?ids=${coingeckoIds
-      .filter(val => !!val)
-      .sort()
-      .join(
-        ','
-      )}&vs_currencies=${nativeCurrency}&include_24hr_change=true&include_last_updated_at=true`;
-    const priceRequest = await fetch(url);
-    return priceRequest.json();
-  } catch (e) {
-    logger.log(`Error trying to fetch ${coingeckoIds} prices`, e);
-  }
-};
-
 const fetchAssetBalances = async (tokens, address, network) => {
   const balanceCheckerContract = new Contract(
     get(networkInfo[network], 'balance_checker_contract_address'),
@@ -309,7 +303,9 @@ export const fallbackExplorerInit = () => async (dispatch, getState) => {
     }
     const balances = await fetchAssetBalances(
       assets.map(({ asset: { asset_code } }) =>
-        asset_code === 'eth' ? ETH_ADDRESS : asset_code
+        asset_code === ETH_ADDRESS
+          ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
+          : asset_code
       ),
       accountAddress,
       network
@@ -322,7 +318,8 @@ export const fallbackExplorerInit = () => async (dispatch, getState) => {
         for (let i = 0; i < assets.length; i++) {
           if (
             assets[i].asset.asset_code.toLowerCase() === key.toLowerCase() ||
-            (assets[i].asset.asset_code === 'eth' && key === ETH_ADDRESS)
+            (assets[i].asset.asset_code === ETH_ADDRESS &&
+              key === ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT)
           ) {
             assets[i].quantity = balances[key];
             break;
@@ -344,6 +341,7 @@ export const fallbackExplorerInit = () => async (dispatch, getState) => {
         payload: { assets },
       })
     );
+
     const fallbackExplorerBalancesHandle = setTimeout(
       fetchAssetsBalancesAndPrices,
       UPDATE_BALANCE_AND_PRICE_FREQUENCY

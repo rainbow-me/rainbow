@@ -1,5 +1,7 @@
 import React, { useCallback, useRef, useState } from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
+import { useTheme } from '../../context/ThemeContext';
+import { getRandomColor } from '../../styles/colors';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { BiometricButtonContent } from '../buttons';
@@ -12,20 +14,23 @@ import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
 } from '@rainbow-me/helpers/emojiHandler';
+
 import { useAccountProfile } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors, margin, padding, position } from '@rainbow-me/styles';
+import { margin, padding, position } from '@rainbow-me/styles';
 import { abbreviations } from '@rainbow-me/utils';
 
-const WalletProfileAddressText = styled(TruncatedAddress).attrs({
-  align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.6),
-  firstSectionLength: abbreviations.defaultNumCharsPerSection,
-  size: 'lmedium',
-  truncationLength: 4,
-  weight: 'medium',
-})`
+const WalletProfileAddressText = styled(TruncatedAddress).attrs(
+  ({ theme: { colors } }) => ({
+    align: 'center',
+    color: colors.alpha(colors.blueGreyDark, 0.6),
+    firstSectionLength: abbreviations.defaultNumCharsPerSection,
+    size: 'lmedium',
+    truncationLength: 4,
+    weight: 'medium',
+  })
+)`
   ${margin(9, 0, 5)};
   width: 100%;
 `;
@@ -51,12 +56,11 @@ const ProfileImage = styled(ImageAvatar)`
   margin-bottom: 15;
 `;
 
-const WalletProfileDivider = styled(Divider).attrs({
+const WalletProfileDivider = styled(Divider).attrs(({ theme: { colors } }) => ({
   borderRadius: 1,
   color: colors.rowDividerLight,
   inset: false,
-})``;
-
+}))``;
 const WalletProfileModal = styled(ProfileModal).attrs({
   dividerRenderer: WalletProfileDivider,
 })`
@@ -70,13 +74,19 @@ export default function WalletProfileState({
   isNewProfile,
   onCloseModal,
   profile,
+  forceColor,
 }) {
   const nameEmoji = returnStringFirstEmoji(profile?.name);
   const { goBack, navigate } = useNavigation();
   const { accountImage } = useAccountProfile();
 
+  const { colors } = useTheme();
+
+  const indexOfForceColor = colors.avatarColor.indexOf(forceColor);
   const [color, setColor] = useState(
-    (profile.color !== null && profile.color) || colors.getRandomColor()
+    (profile.color !== null && profile.color) ||
+      (indexOfForceColor !== -1 && indexOfForceColor) ||
+      getRandomColor()
   );
 
   const [value, setValue] = useState(
@@ -156,9 +166,9 @@ export default function WalletProfileState({
       <ColumnWithDividers dividerRenderer={WalletProfileDivider} width="100%">
         <WalletProfileButton onPress={handleSubmit}>
           <BiometricButtonContent
+            label={isNewProfile ? `${actionType} Wallet` : 'Done'}
             showIcon={actionType === 'Create'}
             testID="wallet-info-submit-button"
-            text={isNewProfile ? `${actionType} Wallet` : 'Done'}
           />
         </WalletProfileButton>
         <WalletProfileButton onPress={handleCancel}>
@@ -166,6 +176,7 @@ export default function WalletProfileState({
             color={colors.alpha(colors.blueGreyDark, 0.6)}
             letterSpacing="roundedMedium"
             weight="medium"
+            {...(android && { lineHeight: 21 })}
           >
             Cancel
           </WalletProfileButtonText>

@@ -1,12 +1,23 @@
-import React, { useCallback, useRef } from 'react';
-import { Alert } from 'react-native';
-import { SectionList } from 'react-native-gesture-handler';
+import { useIsFocused } from '@react-navigation/native';
+import React, {
+  forwardRef,
+  useCallback,
+  useContext,
+  useImperativeHandle,
+  useRef,
+} from 'react';
+import { Alert, Keyboard, SectionList } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import styled from 'styled-components/primitives';
-import { usePrevious } from '../../hooks';
+import styled from 'styled-components';
+import { ButtonPressAnimation } from '../../components/animations';
 import { CoinRowHeight, ExchangeCoinRow } from '../coin-row';
+import DiscoverSheetContext from '../discover-sheet/DiscoverSheetContext';
 import { GradientText, Text } from '../text';
-import { colors, padding } from '@rainbow-me/styles';
+import { TokenSectionTypes } from '@rainbow-me/helpers';
+import { usePrevious } from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
+import Routes from '@rainbow-me/routes';
+import { padding } from '@rainbow-me/styles';
 import { deviceUtils, magicMemo } from '@rainbow-me/utils';
 
 const deviceWidth = deviceUtils.dimensions.width;
@@ -16,18 +27,20 @@ const Header = styled.View`
   position: relative;
 `;
 
-const HeaderBackground = styled(LinearGradient).attrs({
-  colors: [colors.white, colors.alpha(colors.white, 0)],
-  end: { x: 0.5, y: 1 },
-  locations: [0.55, 1],
-  start: { x: 0.5, y: 0 },
-})`
+const HeaderBackground = styled(LinearGradient).attrs(
+  ({ theme: { colors } }) => ({
+    colors: [colors.white, colors.alpha(colors.white, 0)],
+    end: { x: 0.5, y: 1 },
+    locations: [0.55, 1],
+    start: { x: 0.5, y: 0 },
+  })
+)`
   height: 40px;
   position: absolute;
   width: ${deviceWidth};
 `;
 
-const HeaderTitle = styled(Text).attrs(({ color }) => ({
+const HeaderTitle = styled(Text).attrs(({ color, theme: { colors } }) => ({
   color: color || colors.blueGreyDark50,
   letterSpacing: 'roundedMedium',
   size: 'smedium',
@@ -42,23 +55,7 @@ const HeaderTitleGradient = styled(GradientText).attrs({
   weight: 'heavy',
 })``;
 
-const HeaderTitleWrapper = styled.View`
-  width: ${android ? '150' : '143'}px;
-`;
-
-const ExchangeAssetSectionListHeader = ({ section }) => {
-  const TitleComponent = section.useGradientText
-    ? HeaderTitleGradient
-    : HeaderTitle;
-  return section?.title ? (
-    <Header>
-      <HeaderBackground />
-      <HeaderTitleWrapper>
-        <TitleComponent color={section.color}>{section.title}</TitleComponent>
-      </HeaderTitleWrapper>
-    </Header>
-  ) : null;
-};
+const HeaderTitleWrapper = styled.View``;
 
 const contentContainerStyle = { paddingBottom: 9.5 };
 const keyExtractor = ({ uniqueId }) => `ExchangeAssetList-${uniqueId}`;
@@ -78,7 +75,6 @@ const ExchangeAssetSectionList = styled(SectionList).attrs({
   directionalLockEnabled: true,
   getItemLayout,
   initialNumToRender: 10,
-  keyboardDismissMode: 'none',
   keyboardShouldPersistTaps: 'always',
   keyExtractor,
   maxToRenderPerBatch: 50,
@@ -89,13 +85,19 @@ const ExchangeAssetSectionList = styled(SectionList).attrs({
   height: 100%;
 `;
 
-const ExchangeAssetList = ({ itemProps, items, onLayout, query }) => {
-  const sectionListRef = useRef();
+const ExchangeAssetList = (
+  { itemProps, items, onLayout, query, testID, keyboardDismissMode = 'none' },
+  ref
+) => {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const { sectionListRef = useRef() } = useContext(DiscoverSheetContext) || {};
+  useImperativeHandle(ref, () => sectionListRef.current);
   const prevQuery = usePrevious(query);
+  const { navigate } = useNavigation();
 
   // Scroll to top once the query is cleared
   if (prevQuery && prevQuery.length && !query.length) {
-    sectionListRef.current.scrollToLocation({
+    sectionListRef.current?.scrollToLocation({
       animated: true,
       itemIndex: 0,
       sectionIndex: 0,
@@ -128,6 +130,34 @@ const ExchangeAssetList = ({ itemProps, items, onLayout, query }) => {
     [itemProps]
   );
 
+  const openVerifiedExplainer = useCallback(() => {
+    android && Keyboard.dismiss();
+    navigate(Routes.EXPLAIN_SHEET, { type: 'verified' });
+  }, [navigate]);
+
+  const ExchangeAssetSectionListHeader = ({ section }) => {
+    const TitleComponent = section.useGradientText
+      ? HeaderTitleGradient
+      : HeaderTitle;
+    const isVerified = section.title === TokenSectionTypes.verifiedTokenSection;
+    return section?.title ? (
+      <ButtonPressAnimation
+        disabled={!isVerified}
+        onPress={openVerifiedExplainer}
+        scaleTo={0.96}
+      >
+        <Header>
+          <HeaderBackground />
+          <HeaderTitleWrapper>
+            <TitleComponent color={section.color}>
+              {`${section.title}${isVerified ? '  􀅵' : ' '}`}
+            </TitleComponent>
+          </HeaderTitleWrapper>
+        </Header>
+      </ButtonPressAnimation>
+    ) : null;
+  };
+
   const renderItemCallback = useCallback(
     ({ item }) => (
       <ExchangeCoinRow
@@ -135,21 +165,26 @@ const ExchangeAssetList = ({ itemProps, items, onLayout, query }) => {
         isVerified={item.isVerified}
         item={item}
         onUnverifiedTokenPress={handleUnverifiedTokenPress}
+        testID={testID}
       />
     ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 
+  const isFocused = useIsFocused();
+
   return (
     <ExchangeAssetSectionList
+      keyboardDismissMode={keyboardDismissMode}
       onLayout={onLayout}
       ref={sectionListRef}
       renderItem={renderItemCallback}
       renderSectionHeader={ExchangeAssetSectionListHeader}
+      scrollsToTop={isFocused}
       sections={items.map(createItem)}
     />
   );
 };
 
-export default magicMemo(ExchangeAssetList, ['items', 'query']);
+export default magicMemo(forwardRef(ExchangeAssetList), ['items', 'query']);

@@ -1,27 +1,26 @@
 import { useRoute } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { Animated, InteractionManager, View } from 'react-native';
-import styled from 'styled-components/native';
-import BackButton from '../components/header/BackButton';
+import styled from 'styled-components';
 import { Modal } from '../components/modal';
 import ModalHeaderButton from '../components/modal/ModalHeaderButton';
 import {
   CurrencySection,
   LanguageSection,
   NetworkSection,
+  PrivacySection,
   SettingsSection,
 } from '../components/settings-menu';
 import SettingsBackupView from '../components/settings-menu/BackupSection/SettingsBackupView';
 import ShowSecretView from '../components/settings-menu/BackupSection/ShowSecretView';
 import WalletSelectionView from '../components/settings-menu/BackupSection/WalletSelectionView';
 import DevSection from '../components/settings-menu/DevSection';
-import { Text } from '../components/text';
+import { useTheme } from '../context/ThemeContext';
 import WalletTypes from '../helpers/walletTypes';
-import { useDimensions, useWallets } from '../hooks';
 import { settingsOptions } from '../navigation/config';
+import { useDimensions, useWallets } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import { colors } from '@rainbow-me/styles';
 
 function cardStyleInterpolator({
   current,
@@ -88,11 +87,13 @@ const SettingsPages = {
     key: 'NetworkSection',
     title: 'Network',
   },
+  privacy: {
+    component: PrivacySection,
+    key: 'PrivacySection',
+    title: 'Privacy',
+  },
 };
 
-const EmptyButtonPlaceholder = styled.View`
-  flex: 1;
-`;
 const Container = styled.View`
   flex: 1;
   overflow: hidden;
@@ -100,25 +101,12 @@ const Container = styled.View`
 
 const Stack = createStackNavigator();
 
-const SettingsTitle = ({ children }) => {
-  return (
-    <Text
-      align="center"
-      color={colors.dark}
-      letterSpacing="roundedMedium"
-      size="large"
-      weight="bold"
-    >
-      {children}
-    </Text>
-  );
-};
-
 export default function SettingsModal() {
   const { goBack, navigate } = useNavigation();
   const { wallets, selectedWallet } = useWallets();
   const { params } = useRoute();
   const { isTinyPhone } = useDimensions();
+  const { colors } = useTheme();
 
   const getRealRoute = useCallback(
     key => {
@@ -171,9 +159,10 @@ export default function SettingsModal() {
     }
   }, [getRealRoute, navigate, params]);
 
+  const memoSettingsOptions = useMemo(() => settingsOptions(colors), [colors]);
   return (
     <Modal
-      minHeight={isTinyPhone ? 500 : 600}
+      minHeight={isTinyPhone ? 650 : 750}
       onCloseModal={goBack}
       radius={18}
       showDoneButton={ios}
@@ -183,18 +172,8 @@ export default function SettingsModal() {
       <Container>
         <Stack.Navigator
           screenOptions={{
-            ...settingsOptions,
+            ...memoSettingsOptions,
             headerRight: renderHeaderRight,
-            ...(android && {
-              // eslint-disable-next-line react/display-name
-              headerRight: () => <EmptyButtonPlaceholder />,
-              // eslint-disable-next-line react/display-name
-              headerTitle: props => <SettingsTitle {...props} />,
-              ...(android && {
-                // eslint-disable-next-line react/display-name
-                headerLeft: props => <BackButton {...props} textChevron />,
-              }),
-            }),
           }}
         >
           <Stack.Screen
@@ -211,6 +190,7 @@ export default function SettingsModal() {
                 onPressDev={onPressSection(SettingsPages.dev)}
                 onPressLanguage={onPressSection(SettingsPages.language)}
                 onPressNetwork={onPressSection(SettingsPages.network)}
+                onPressPrivacy={onPressSection(SettingsPages.privacy)}
               />
             )}
           </Stack.Screen>

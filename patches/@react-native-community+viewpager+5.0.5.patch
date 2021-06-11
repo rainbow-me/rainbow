@@ -1,0 +1,25 @@
+diff --git a/node_modules/@react-native-community/viewpager/android/src/main/java/com/reactnativecommunity/viewpager/ReactViewPagerManager.java b/node_modules/@react-native-community/viewpager/android/src/main/java/com/reactnativecommunity/viewpager/ReactViewPagerManager.java
+index ad743ff..6fa9572 100644
+--- a/node_modules/@react-native-community/viewpager/android/src/main/java/com/reactnativecommunity/viewpager/ReactViewPagerManager.java
++++ b/node_modules/@react-native-community/viewpager/android/src/main/java/com/reactnativecommunity/viewpager/ReactViewPagerManager.java
+@@ -57,6 +57,7 @@ public class ReactViewPagerManager extends ViewGroupManager<ViewPager2> {
+     @Override
+     protected ViewPager2 createViewInstance(@NonNull ThemedReactContext reactContext) {
+         final ViewPager2 vp = new ViewPager2(reactContext);
++        vp.setOffscreenPageLimit(4);
+         final FragmentAdapter adapter = new FragmentAdapter((FragmentActivity) reactContext.getCurrentActivity());
+         vp.setAdapter((FragmentStateAdapter) adapter);
+         eventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+diff --git a/node_modules/@react-native-community/viewpager/ios/ReactNativePageView.h b/node_modules/@react-native-community/viewpager/ios/ReactNativePageView.h
+index 4378be8..c77d00d 100644
+--- a/node_modules/@react-native-community/viewpager/ios/ReactNativePageView.h
++++ b/node_modules/@react-native-community/viewpager/ios/ReactNativePageView.h
+@@ -2,6 +2,8 @@
+ #import <React/RCTShadowView.h>
+ #import <React/UIView+React.h>
+ #import <UIKit/UIKit.h>
++#import <React/RCTEventDispatcher.h>
++
+ 
+ NS_ASSUME_NONNULL_BEGIN
+ 

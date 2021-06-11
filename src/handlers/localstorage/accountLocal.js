@@ -5,18 +5,16 @@ const assetsVersion = '0.2.0';
 const purchaseTransactionsVersion = '0.1.0';
 const savingsVersion = '0.2.0';
 const transactionsVersion = '0.2.5';
-const uniqueTokensVersion = '0.2.0';
+const uniqueTokensVersion = '0.2.1';
 const accountEmptyVersion = '0.1.0';
 
 const ACCOUNT_INFO = 'accountInfo';
 const ACCOUNT_EMPTY = 'accountEmpty';
 const ASSET_PRICES_FROM_UNISWAP = 'assetPricesFromUniswap';
 const ASSETS = 'assets';
-const ACCOUNT_CHARTS = 'accountCharts';
 const OPEN_FAMILIES = 'openFamilies';
 const OPEN_INVESTMENT_CARDS = 'openInvestmentCards';
 const PURCHASE_TRANSACTIONS = 'purchaseTransactions';
-const SMALL_BALANCE_TOGGLE = 'smallBalanceToggle';
 const SAVINGS = 'savings';
 const SAVINGS_TOGGLE = 'savingsToggle';
 const SHOWCASE_TOKENS = 'showcaseTokens';
@@ -24,16 +22,15 @@ const TRANSACTIONS = 'transactions';
 const UNIQUE_TOKENS = 'uniquetokens';
 const PINNED_COINS = 'pinnedCoins';
 const HIDDEN_COINS = 'hiddenCoins';
+const WEB_DATA_ENABLED = 'webDataEnabled';
 
 export const accountLocalKeys = [
   ACCOUNT_INFO,
   ASSET_PRICES_FROM_UNISWAP,
   ASSETS,
-  ACCOUNT_CHARTS,
   OPEN_FAMILIES,
   OPEN_INVESTMENT_CARDS,
   PURCHASE_TRANSACTIONS,
-  SMALL_BALANCE_TOGGLE,
   SAVINGS,
   SAVINGS_TOGGLE,
   SHOWCASE_TOKENS,
@@ -41,6 +38,7 @@ export const accountLocalKeys = [
   UNIQUE_TOKENS,
   PINNED_COINS,
   HIDDEN_COINS,
+  WEB_DATA_ENABLED,
 ];
 
 /**
@@ -178,24 +176,6 @@ export const savePurchaseTransactions = (
   );
 
 /**
- * @desc get charts
- * @param  {String}   [address]
- * @param  {String}   [network]
- * @return {Object}
- */
-export const getAccountCharts = (accountAddress, network) =>
-  getAccountLocal(ACCOUNT_CHARTS, accountAddress, network, {});
-
-/**
- * @desc save charts data
- * @param  {Object}   [charts]
- * @param  {String}   [address]
- * @param  {String}   [network]
- */
-export const saveAccountCharts = (charts, accountAddress, network) =>
-  saveAccountLocal(ACCOUNT_CHARTS, charts, accountAddress, network);
-
-/**
  * @desc get transactions
  * @param  {String}   [address]
  * @param  {String}   [network]
@@ -253,33 +233,6 @@ export const saveUniqueTokens = (uniqueTokens, accountAddress, network) =>
     accountAddress,
     network,
     uniqueTokensVersion
-  );
-
-/**
- * @desc get open small balances
- * @param  {String}   [address]
- * @param  {String}   [network]
- * @return {Object}
- */
-export const getSmallBalanceToggle = (accountAddress, network) =>
-  getAccountLocal(SMALL_BALANCE_TOGGLE, accountAddress, network, false);
-
-/**
- * @desc save small balance toggle
- * @param  {String}   [address]
- * @param  {Boolean}    [small balance toggle]
- * @param  {String}   [network]
- */
-export const saveSmallBalanceToggle = (
-  openSmallBalances,
-  accountAddress,
-  network
-) =>
-  saveAccountLocal(
-    SMALL_BALANCE_TOGGLE,
-    openSmallBalances,
-    accountAddress,
-    network
   );
 
 /**
@@ -416,3 +369,21 @@ export const getShowcaseTokens = (accountAddress, network) =>
  */
 export const saveShowcaseTokens = (showcaseTokens, accountAddress, network) =>
   saveAccountLocal(SHOWCASE_TOKENS, showcaseTokens, accountAddress, network);
+
+/**
+ * @desc get web data enabled preference
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Array}
+ */
+export const getWebDataEnabled = (accountAddress, network) =>
+  getAccountLocal(WEB_DATA_ENABLED, accountAddress, network, null);
+
+/**
+ * @desc save web showcase enabled preference
+ * @param  {Boolean}  [value]
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ */
+export const saveWebDataEnabled = (preference, accountAddress, network) =>
+  saveAccountLocal(WEB_DATA_ENABLED, preference, accountAddress, network);

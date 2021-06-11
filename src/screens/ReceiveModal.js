@@ -1,8 +1,9 @@
+import { toChecksumAddress } from '@walletconnect/utils';
 import { toLower } from 'lodash';
 import React, { useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import { CopyFloatingEmojis } from '../components/floating-emojis';
 import { Centered, Column, ColumnWithMargins } from '../components/layout';
@@ -11,21 +12,21 @@ import ShareButton from '../components/qr-code/ShareButton';
 import { SheetHandle } from '../components/sheet';
 import { Text, TruncatedAddress } from '../components/text';
 import { CopyToast, ToastPositionContainer } from '../components/toasts';
-import { useAccountProfile } from '../hooks';
 import { useNavigation } from '../navigation/Navigation';
 import { abbreviations, deviceUtils } from '../utils';
-import { colors, padding, shadow } from '@rainbow-me/styles';
+import { useAccountProfile } from '@rainbow-me/hooks';
+import { padding, shadow } from '@rainbow-me/styles';
 
 const QRCodeSize = ios ? 250 : Math.min(230, deviceUtils.dimensions.width - 20);
 
-const AddressText = styled(TruncatedAddress).attrs({
+const AddressText = styled(TruncatedAddress).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors.white,
+  color: colors.whiteLabel,
   lineHeight: 'loosest',
   opacity: 0.6,
   size: 'large',
   weight: 'semibold',
-})`
+}))`
   width: 100%;
 `;
 
@@ -36,26 +37,27 @@ const Container = styled(Centered).attrs({
   flex: 1;
 `;
 
-const Handle = styled(SheetHandle).attrs({
-  color: colors.white,
-})`
+const Handle = styled(SheetHandle).attrs(({ theme: { colors } }) => ({
+  color: colors.whiteLabel,
+}))`
   margin-bottom: 19;
 `;
 
 const QRWrapper = styled(Column).attrs({ align: 'center' })`
   ${padding(24)};
-  ${shadow.build(0, 10, 50, colors.black, 0.6)};
-  background-color: ${colors.white};
+  ${({ theme: { colors } }) =>
+    shadow.build(0, 10, 50, colors.shadowBlack, 0.6)};
+  background-color: ${({ theme: { colors } }) => colors.whiteLabel};
   border-radius: 39;
 `;
 
-const NameText = styled(Text).attrs({
+const NameText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors.white,
+  color: colors.whiteLabel,
   letterSpacing: 'roundedMedium',
   size: 'bigger',
   weight: 'bold',
-})``;
+}))``;
 
 const accountAddressSelector = state => state.settings.accountAddress;
 const lowercaseAccountAddressSelector = createSelector(
@@ -75,24 +77,28 @@ export default function ReceiveModal() {
     setCopyCount(count => count + 1);
   }, []);
 
+  const checksummedAddress = useMemo(() => toChecksumAddress(accountAddress), [
+    accountAddress,
+  ]);
+
   return (
     <Container testID="receive-modal">
       <TouchableBackdrop onPress={goBack} />
       <Handle />
       <ColumnWithMargins align="center" margin={24}>
         <QRWrapper>
-          <QRCode size={QRCodeSize} value={accountAddress} />
+          <QRCode size={QRCodeSize} value={checksummedAddress} />
         </QRWrapper>
         <CopyFloatingEmojis
           onPress={handleCopiedText}
-          textToCopy={accountAddress}
+          textToCopy={checksummedAddress}
         >
           <ColumnWithMargins margin={2}>
             <NameText>{accountName}</NameText>
-            <AddressText address={accountAddress} />
+            <AddressText address={checksummedAddress} />
           </ColumnWithMargins>
         </CopyFloatingEmojis>
-        <ShareButton accountAddress={accountAddress} />
+        <ShareButton accountAddress={checksummedAddress} />
       </ColumnWithMargins>
       <ToastPositionContainer>
         <CopyToast copiedText={copiedText} copyCount={copyCount} />

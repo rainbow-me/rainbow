@@ -2,18 +2,17 @@ import React, { useState } from 'react';
 import Animated from 'react-native-reanimated';
 import { useValues } from 'react-native-redash';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import ColorCircle from '../components/avatar-builder/ColorCircle';
 import EmojiSelector from '../components/avatar-builder/EmojiSelector';
 import { HeaderHeightWithStatusBar } from '../components/header';
 import { Column, Row } from '../components/layout';
-import { useWallets } from '../hooks';
-import useAccountSettings from '../hooks/useAccountSettings';
 import { useNavigation } from '../navigation/Navigation';
 import { walletsSetSelected, walletsUpdate } from '../redux/wallets';
 import { deviceUtils } from '../utils';
-import { colors } from '@rainbow-me/styles';
+import { useWallets, useWebData } from '@rainbow-me/hooks';
+import useAccountSettings from '@rainbow-me/hooks/useAccountSettings';
 
 const AvatarCircleHeight = 65;
 const AvatarCircleMarginTop = 2;
@@ -21,11 +20,11 @@ const AvatarBuilderTopPoint =
   HeaderHeightWithStatusBar + AvatarCircleHeight + AvatarCircleMarginTop;
 
 const Container = styled(Column)`
-  background-color: ${colors.transparent};
+  background-color: ${({ theme: { colors } }) => colors.transparent};
 `;
 
 const SheetContainer = styled(Column)`
-  background-color: ${colors.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
   border-radius: 20px;
   height: 420px;
   overflow: hidden;
@@ -33,7 +32,6 @@ const SheetContainer = styled(Column)`
 `;
 
 const springTo = (node, toValue) =>
-  // eslint-disable-next-line import/no-named-as-default-member
   Animated.spring(node, {
     damping: 38,
     mass: 1,
@@ -46,9 +44,11 @@ const springTo = (node, toValue) =>
 
 const AvatarBuilder = ({ route: { params } }) => {
   const { wallets, selectedWallet } = useWallets();
+  const { updateWebProfile } = useWebData();
   const [translateX] = useValues((params.initialAccountColor - 4) * 39);
   const { goBack } = useNavigation();
   const { accountAddress } = useAccountSettings();
+  const { colors } = useTheme();
   const [currentAccountColor, setCurrentAccountColor] = useState(
     colors.avatarColor[params.initialAccountColor]
   );
@@ -92,6 +92,11 @@ const AvatarBuilder = ({ route: { params } }) => {
 
     await dispatch(walletsSetSelected(newWallets[walletId]));
     await dispatch(walletsUpdate(newWallets));
+    updateWebProfile(
+      accountAddress,
+      name,
+      (color !== undefined && colors.avatarColor[color]) || currentAccountColor
+    );
   };
 
   const colorCircleTopPadding = 15;

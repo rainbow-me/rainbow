@@ -1,52 +1,25 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import React, { useCallback, useRef } from 'react';
 import {
   LongPressGestureHandler,
   PanGestureHandler,
-  State,
   TapGestureHandler,
 } from 'react-native-gesture-handler';
-import Animated, { Clock, decay, Value } from 'react-native-reanimated';
-import { useMemoOne } from 'use-memo-one';
-import { measureTopMoverCoinRow, TopMoverCoinRow } from '../coin-row';
 
-const {
-  set,
-  cond,
-  eq,
-  add,
-  modulo,
-  startClock,
-  stopClock,
-  clockRunning,
-  sub,
-  event,
-  or,
-} = Animated;
+import Animated, {
+  cancelAnimation,
+  runOnJS,
+  useAnimatedGestureHandler,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+  Value,
+  withDecay,
+} from 'react-native-reanimated';
+import { TopMoverCoinRow } from '../coin-row';
+import { withSpeed } from '@rainbow-me/utils';
 
 const DECCELERATION = 0.998;
-
-function runDecay(clock, value, velocity) {
-  const state = {
-    finished: new Value(0),
-    position: value,
-    time: new Value(0),
-    velocity: velocity,
-  };
-
-  const config = { deceleration: DECCELERATION };
-
-  return [
-    cond(clockRunning(clock), 0, [set(state.time, 0), startClock(clock)]),
-    decay(clock, state, config),
-    state.position,
-  ];
-}
 
 export const useReanimatedValue = initialValue => {
   const value = useRef();
@@ -58,120 +31,205 @@ export const useReanimatedValue = initialValue => {
   return value.current;
 };
 
-const SwipeableList = ({ components, speed }) => {
-  const dragX = useReanimatedValue(0);
-  const state = useReanimatedValue(-1);
-  const lpstate = useReanimatedValue(-1);
-  const dragVX = useReanimatedValue(0);
-
-  const onGestureEvent = useMemoOne(
-    () =>
-      event([
+const SAFETY_MARGIN = 100;
+// beginning of the component should be within -100 and inf
+const SingleElement = ({
+  transX,
+  offset = { value: 0 },
+  sumWidth,
+  children,
+  onLayout,
+}) => {
+  const style = useAnimatedStyle(() => {
+    const transWithinRange =
+      (((transX.value + SAFETY_MARGIN) % sumWidth.value) - sumWidth.value) %
+      sumWidth.value;
+    return {
+      transform: [
         {
-          nativeEvent: { state, translationX: dragX, velocityX: dragVX },
+          translateX: transWithinRange + offset.value - SAFETY_MARGIN,
         },
-      ]),
-    [dragVX, dragVX, state]
-  );
-
-  const onLPGestureEvent = useMemo(
-    () =>
-      event([
+      ],
+    };
+  });
+  return (
+    <Animated.View
+      onLayout={onLayout}
+      style={[
         {
-          nativeEvent: { state: lpstate },
+          flexDirection: 'row',
+          position: 'absolute',
         },
-      ]),
-    [lpstate]
+        style,
+      ]}
+    >
+      {children}
+    </Animated.View>
   );
+};
 
-  const transX = useReanimatedValue(0);
-  const prevDragX = useReanimatedValue(0);
+const SwipeableList = ({ components, speed, testID }) => {
+  const transX = useSharedValue(0);
+  const swiping = useSharedValue(0);
+  const offset = useSharedValue(100000);
+  const isPanStarted = useRef(false);
+  const startPan = () => (isPanStarted.current = true);
+  const endPan = () => (isPanStarted.current = false);
 
-  const clock = useMemoOne(() => new Clock(), []);
+  useFocusEffect(() => {
+    swiping.value = withSpeed({ targetSpeed: speed });
+    return () => cancelAnimation(swiping);
+  }, [speed, swiping]);
 
-  const transXWrapped = useMemo(
-    () =>
-      cond(
-        or(eq(state, State.ACTIVE), eq(lpstate, 2)),
-        [
-          stopClock(clock),
-          cond(
-            eq(state, State.ACTIVE),
-            [
-              set(transX, add(transX, sub(dragX, prevDragX))),
-              set(prevDragX, dragX),
-            ],
-            [set(dragVX, 0)]
-          ),
+  const onGestureEvent = useAnimatedGestureHandler({
+    onActive: (event, ctx) => {
+      android && runOnJS(startPan)();
+      transX.value = ctx.start + event.translationX;
+    },
+    onCancel: () => {
+      android && runOnJS(endPan)();
+    },
+    onEnd: event => {
+      android && runOnJS(endPan)();
+      transX.value = withDecay({
+        deceleration: DECCELERATION,
+        velocity: event.velocityX,
+      });
+      swiping.value = withSpeed({ targetSpeed: speed });
+    },
+    onFail: () => {
+      android && runOnJS(endPan)();
+    },
+    onStart: (_, ctx) => {
+      ctx.start = transX.value;
+    },
+  });
 
-          transX,
-        ],
-        [
-          set(prevDragX, 0),
-          set(transX, runDecay(clock, transX, dragVX)),
-          set(transX, add(transX, speed)),
-        ]
-      ),
-    [clock, dragVX, dragX, lpstate, prevDragX, speed, state, transX]
-  );
+  const restoreAnimation = useCallback(() => {
+    setTimeout(() => {
+      if (!isPanStarted.current) {
+        swiping.value = withSpeed({ targetSpeed: speed });
+      }
+    }, 100);
+  }, [speed, swiping]);
 
-  const sumWidth = useMemoOne(
-    () => components.reduce((acc, { width }) => acc + width, 0),
-    [components]
-  );
+  const startAnimation = useCallback(() => {
+    cancelAnimation(transX);
+    cancelAnimation(swiping);
+  }, [swiping, transX]);
+
+  const onTapGestureEvent = useAnimatedGestureHandler({
+    onCancel: () => {
+      ios && (swiping.value = withSpeed({ targetSpeed: speed }));
+    },
+    onEnd: () => {
+      swiping.value = withSpeed({ targetSpeed: speed });
+    },
+    onFail: () => {
+      ios && (swiping.value = withSpeed({ targetSpeed: speed }));
+    },
+    onStart: () => {
+      if (ios) {
+        cancelAnimation(transX);
+        cancelAnimation(swiping);
+      }
+    },
+  });
+
+  const onLongGestureEvent = useAnimatedGestureHandler({
+    onEnd: () => {
+      android && (swiping.value = withSpeed({ targetSpeed: speed }));
+    },
+  });
 
   const panRef = useRef();
   const lpRef = useRef();
   const tapRef = useRef();
+  const onHandlerStateChangeAndroid = useCallback(
+    event => {
+      if (event.nativeEvent.state === 3 || event.nativeEvent.state === 5) {
+        swiping.value = withSpeed({ targetSpeed: speed });
+      }
+
+      if (event.nativeEvent.state === 2) {
+        cancelAnimation(transX);
+        cancelAnimation(swiping);
+      }
+    },
+    [speed, swiping, transX]
+  );
+
+  const translate = useDerivedValue(() => swiping.value + transX.value, []);
 
   return (
     <LongPressGestureHandler
       maxDist={100000}
       maxPointers={1}
+      onGestureEvent={onLongGestureEvent}
+      onHandlerStateChange={onLongGestureEvent}
       ref={lpRef}
       simultaneousHandlers={[panRef, tapRef]}
     >
       <Animated.View>
         <TapGestureHandler
-          onGestureEvent={onLPGestureEvent}
-          onHandlerStateChange={onLPGestureEvent}
+          onGestureEvent={onTapGestureEvent}
+          onHandlerStateChang={onTapGestureEvent}
           ref={tapRef}
           simultaneousHandlers={[panRef, lpRef]}
         >
           <Animated.View>
             <PanGestureHandler
+              activeOffsetX={[-6, 10]}
               onGestureEvent={onGestureEvent}
-              onHandlerStateChange={onGestureEvent}
+              {...(android && {
+                onHandlerStateChange: onHandlerStateChangeAndroid,
+              })}
               ref={panRef}
               simultaneousHandlers={[lpRef, tapRef]}
             >
-              <Animated.View style={{ height: 78, width: '100%' }}>
+              <Animated.View
+                style={{ height: 53, width: '100%' }}
+                testID={testID}
+              >
                 <Animated.View
                   style={{
                     flexDirection: 'row',
                   }}
                 >
-                  {components.map(({ view, offset, width }) => (
-                    <Animated.View
-                      key={offset}
-                      style={{
-                        position: 'absolute',
-                        transform: [
-                          {
-                            translateX: sub(
-                              modulo(
-                                add(transXWrapped, offset, width),
-                                sumWidth || 0
-                              ),
-                              width
-                            ),
-                          },
-                        ],
-                      }}
-                    >
-                      {view}
-                    </Animated.View>
-                  ))}
+                  <SingleElement
+                    onLayout={e => {
+                      offset.value = e.nativeEvent.layout.width;
+                    }}
+                    sumWidth={offset}
+                    transX={translate}
+                  >
+                    {components.map(({ view }) =>
+                      ios
+                        ? view({
+                            testID: null,
+                          })
+                        : view({
+                            onPressCancel: restoreAnimation,
+                            onPressStart: startAnimation,
+                          })
+                    )}
+                  </SingleElement>
+                  <SingleElement
+                    offset={offset}
+                    sumWidth={offset}
+                    transX={translate}
+                  >
+                    {components.map(({ view }) =>
+                      ios
+                        ? view({
+                            testID: testID,
+                          })
+                        : view({
+                            onPressCancel: restoreAnimation,
+                            onPressStart: startAnimation,
+                          })
+                    )}
+                  </SingleElement>
                 </Animated.View>
               </Animated.View>
             </PanGestureHandler>
@@ -182,46 +240,37 @@ const SwipeableList = ({ components, speed }) => {
   );
 };
 
-const MarqueeList = ({ items = [], speed }) => {
-  const [itemWidths, setItemWidths] = useState(null);
-
-  const updateItemWidths = useCallback(async () => {
-    const widths = await Promise.all(items.map(measureTopMoverCoinRow));
-    setItemWidths(widths);
-  }, [items]);
-
-  useEffect(() => {
-    updateItemWidths();
-  }, [updateItemWidths]);
-
+const MarqueeList = ({ items = [], speed, testID }) => {
   const renderItemCallback = useCallback(
-    ({ item }) => <TopMoverCoinRow {...item} key={item?.address} />,
+    ({ item, index, onPressCancel, onPressStart, testID }) => (
+      <TopMoverCoinRow
+        {...item}
+        key={`topmovercoinrow-${item?.address}`}
+        onPressCancel={onPressCancel}
+        onPressStart={onPressStart}
+        testID={`${testID}-coin-row-${index}`}
+      />
+    ),
     []
   );
-
-  const offsets = useMemoOne(
-    () =>
-      itemWidths
-        ?.reduce(([first, ...tail], width) => [width + first, first, ...tail], [
-          0,
-        ])
-        .reverse(),
-    [itemWidths]
-  );
-
-  if (itemWidths === null) {
-    return null;
-  }
 
   return (
     <>
       <SwipeableList
-        components={items.map((item, idx) => ({
-          offset: offsets[idx],
-          view: renderItemCallback({ item }),
-          width: itemWidths[idx],
+        components={items.map((item, index) => ({
+          view: ios
+            ? ({ testID }) => renderItemCallback({ index, item, testID })
+            : ({ onPressCancel, onPressStart, testID }) =>
+                renderItemCallback({
+                  index,
+                  item,
+                  onPressCancel,
+                  onPressStart,
+                  testID,
+                }),
         }))}
         speed={speed}
+        testID={testID}
       />
     </>
   );

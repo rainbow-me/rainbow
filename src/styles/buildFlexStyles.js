@@ -1,4 +1,4 @@
-import { css } from 'styled-components/primitives';
+import { css } from 'styled-components';
 import position from './position';
 
 export const getFlexStylesFromShorthand = style =>
@@ -30,7 +30,6 @@ const buildFlexStyles = css`
   /* Justify Content */
   justify-content: ${({ justify = 'start' }) =>
     getFlexStylesFromShorthand(justify)};
-
 
   /* Shorthand Shortcuts 💇‍♂️️ */
   ${({ centered }) => (centered ? position.centered : '')}

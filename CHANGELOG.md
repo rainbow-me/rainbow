@@ -12,6 +12,188 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.5.11](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.11)
+
+### Changed
+* Improved Swap Analytics
+* WC signing fix
+
+## [1.5.10](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.10)
+
+### Added
+* Moves iOS to Hermes
+
+### Changed
+* NFT background Fix
+* Secret Phrase Change
+* Wallet Switcher on Wallet Screen
+* Removed background execution
+* Add Cash Warning for Read-Only
+* Offline token metadata
+
+
+## [1.5.9](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.9)
+
+### Added
+* Bumped React Native 0.64
+
+### Changed
+* Settings Modal Height
+* Sharing URL Adjustments
+
+
+
+## [1.5.8](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.8)
+
+### Added
+* Rainbow Web Profiles
+* Swap / Deposit / Withdraw Analytics
+
+### Changed
+* Fixed Speeding Up ERC20 Send
+* OpenSea Adjustments
+* Gas Fixes
+
+## [1.5.7](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.7)
+
+### Added
+* Increased Analytics Tracking
+
+### Changed
+* Patched WalletConnect 
+* Bumped Token List
+
+## [1.5.6](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.6)
+
+### Added
+* Added Accounts to Send Sheet
+
+### Changed
+* Expanded Asset Improvements
+* Improved Add Cash Error Messaging
+* Increased Search Debounce
+
+## [1.5.5](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.5)
+
+### Changed
+* Updated Transaction Error Logging
+* Removed Slow Speed from Swap
+
+## [1.5.4](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.4)
+
+### Added
+* Token Price Fallback via The Graph
+* Gas Estimation Logging
+
+### Changed
+* Top Movers Animation tweaked
+
+## [1.5.3](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.4)
+
+### Added
+* Extra Details for LP Positions
+* Extra Token Details
+
+### Changed
+* Numerous Performance Improvements
+
+## [1.5.2](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.2)
+
+### Added
+* Support for new WC bridges
+
+### Changed
+* Fixes in apps connected button
+
+## [1.5.1](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.1)
+
+### Changed
+* Typescript Transaction Parser
+* Bug Fixes
+
+## [1.5.0](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.0)
+
+### Added
+* Discover Page
+
+### Changed
+* RecyclerView Refactor 
+* Performance Improvements
+
+## [1.2.58](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.58)
+
+### Changed
+* Multimedia NFT Image Fallback
+* Reanimated Fix
+* UI Tweaks
+
+## [1.2.57](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.57)
+
+### Added
+* Multimedia NFT support
+
+### Changed
+* Fix Lingering Pools 
+* Bug Fixes
+
+## [1.2.55](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.55)
+
+### Added
+* Swap Details Sheet
+* Flip button
+
+### Changed
+* Fix Testnets
+* Bug Fixes
+
+## [1.2.54](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.54)
+
+### Changed
+* Bug Fixes
+
+## [1.2.53](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.53)
+
+### Changed
+* Improved Search Performance
+* Bug Fixes
+
+## [1.2.52](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.52)
+
+### Changed
+* Improved Gas Estimation 
+* Added Rainbow Curated List to Search Results
+* Default Slippage for Uniswap
+
+
+## [1.2.51](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.51)
+### Added
+* System support for Dark Mode
+* Unstoppable Domains Support
+
+## [1.2.50](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.50)
+### Added
+* Dark Mode Support for iOS 12
+
+
+## [1.2.49](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.49)
+### Added
+* Dark Mode
+* High Quality NFT Images
+
+### Changed
+* Improved Gas Estimation 
+* Wallet Deletion Fixes
+* Avatar Fixes
+
+## [1.2.48](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.48)
+### Changed
+* UI Bug Fixes
+
+## [1.2.47](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.47)
+### Changed
+* Search Improvements
+* WalletConnect Error Reporting
+
 ## [1.2.46](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.46)
 ### Changed
 * Token Approval Improvements

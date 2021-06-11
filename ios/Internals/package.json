@@ -1,0 +1,21 @@
+{
+  "name": "@rainbow-me/internals",
+  "version": "0.1.0",
+  "description": "🌈 Rainbow's internal application support framework.",
+  "repository": "https://github.com/rainbow-me/rainbow",
+  "author": "Alex Thomas (@cawfree) <hello@cawfree.com> (https://github.com/rainbow-me)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rainbow-me/rainbow/issues"
+  },
+  "homepage": "https://github.com/rainbow-me/rainbow#readme",
+  "devDependencies": {
+    "pod-install": "^0.1.0",
+    "react": "16.13.1",
+    "react-native": "0.63.4"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  }
+}

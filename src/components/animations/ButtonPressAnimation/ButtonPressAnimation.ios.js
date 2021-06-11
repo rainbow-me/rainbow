@@ -1,10 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import {
-  createNativeWrapper,
-  PureNativeButton,
-  State,
-} from 'react-native-gesture-handler';
+import { createNativeWrapper, State } from 'react-native-gesture-handler';
+import { PureNativeButton } from 'react-native-gesture-handler/src/components/GestureButtons';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, {
   Clock,
@@ -16,9 +13,9 @@ import Animated, {
 import stylePropType from 'react-style-proptype';
 import { useMemoOne } from 'use-memo-one';
 import useNativeButtonAvailable from '../../../helpers/isNativeButtonAvailable';
-import { useInteraction, useTransformOrigin } from '../../../hooks';
 import { directionPropType } from '../../../utils';
 import NativeButton from './NativeButton';
+import { useInteraction, useTransformOrigin } from '@rainbow-me/hooks';
 
 const {
   and,
@@ -87,7 +84,7 @@ function usePressHandler({
 
 const maybeProc = ios ? a => a : proc;
 
-const ButtonPressAnimationProc = maybeProc(function(
+const ButtonPressAnimationProc = maybeProc(function (
   animationState,
   durationVal,
   finished,
@@ -176,7 +173,7 @@ const ButtonPressAnimationProc = maybeProc(function(
   ]);
 });
 
-const ButtonPressAnimationHelperProc = maybeProc(function(
+const ButtonPressAnimationHelperProc = maybeProc(function (
   animationState,
   gestureState,
   prevGestureState,
@@ -379,13 +376,14 @@ function ButtonPressAnimationJS({
   );
 }
 
-const ButtonPressAnimation = props => {
+const ButtonPressAnimation = React.forwardRef((props, ref) => {
   const isNativeButtonAvailable = useNativeButtonAvailable();
   const Component = isNativeButtonAvailable
     ? NativeButton
     : ButtonPressAnimationJS;
-  return <Component {...props} />;
-};
+  return <Component {...props} ref={ref} />;
+});
+ButtonPressAnimation.displayName = 'ButtonPressAnimation';
 
 export default ButtonPressAnimation;
 

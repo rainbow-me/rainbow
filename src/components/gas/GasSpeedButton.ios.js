@@ -8,22 +8,28 @@ import React, {
   useState,
 } from 'react';
 import { LayoutAnimation } from 'react-native';
-import { BorderlessButton } from 'react-native-gesture-handler';
+import {
+  BorderlessButton,
+  TouchableOpacity,
+} from 'react-native-gesture-handler';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import styled from 'styled-components/primitives';
-import ExchangeModalTypes from '../../helpers/exchangeModalTypes';
-import { useAccountSettings, useGas } from '../../hooks';
-import { gweiToWei, weiToGwei } from '../../parsers/gas';
-import { gasUtils, magicMemo } from '../../utils';
+import styled from 'styled-components';
+import { darkModeThemeColors } from '../../styles/colors';
 import { Alert } from '../alerts';
 import { ButtonPressAnimation } from '../animations';
 import { Input } from '../inputs';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
 import GasSpeedLabelPager from './GasSpeedLabelPager';
-import { colors, padding } from '@rainbow-me/styles';
+import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
+import { useAccountSettings, useGas } from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
+import { gweiToWei, weiToGwei } from '@rainbow-me/parsers';
+import Routes from '@rainbow-me/routes';
+import { padding } from '@rainbow-me/styles';
+import { gasUtils, magicMemo } from '@rainbow-me/utils';
 
-const { GasSpeedOrder, CUSTOM, FAST, SLOW } = gasUtils;
+const { GasSpeedOrder, CUSTOM, FAST, NORMAL, SLOW } = gasUtils;
 
 const Container = styled(Column).attrs({
   hapticType: 'impactHeavy',
@@ -39,36 +45,42 @@ const Label = styled(Text).attrs({
   weight: 'semibold',
 })``;
 
-const ButtonLabel = styled(BorderlessButton).attrs({
+const ButtonLabel = styled(BorderlessButton).attrs(({ theme: { colors } }) => ({
   color: colors.appleBlue,
   hitSlop: 40,
   opacity: 1,
   size: 'smedium',
   weight: 'bold',
-})`
+}))`
   padding-bottom: 10;
 `;
 
-const LittleBorderlessButton = ({ onPress, children, testID }) => (
-  <ButtonLabel onPress={onPress} testID={testID} width={120}>
-    <Text color={colors.appleBlue} size="smedium" weight="bold">
-      {children}
-    </Text>
-  </ButtonLabel>
-);
+const LittleBorderlessButton = ({ onPress, children, testID }) => {
+  const { colors } = useTheme();
+  return (
+    <ButtonLabel onPress={onPress} testID={testID} width={120}>
+      <Text color={colors.appleBlue} size="smedium" weight="bold">
+        {children}
+      </Text>
+    </ButtonLabel>
+  );
+};
 
-const BottomRightLabel = ({ formatter, theme }) => (
-  <Label
-    align="right"
-    color={
-      theme === 'dark'
-        ? colors.alpha(colors.darkModeColors.blueGreyDark, 0.6)
-        : colors.alpha(colors.blueGreyDark, 0.6)
-    }
-  >
-    {formatter()}
-  </Label>
-);
+const BottomRightLabel = ({ formatter, theme }) => {
+  const { colors } = useTheme();
+  return (
+    <Label
+      align="right"
+      color={
+        theme === 'dark'
+          ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)
+          : colors.alpha(colors.blueGreyDark, 0.6)
+      }
+    >
+      {formatter()}
+    </Label>
+  );
+};
 
 const formatGasPrice = (gasPrice, nativeCurrency) => {
   return nativeCurrency === 'ETH'
@@ -99,6 +111,7 @@ const GasSpeedButton = ({
   options = null,
   minGasPrice = null,
 }) => {
+  const { colors } = useTheme();
   const inputRef = useRef(null);
   const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
   const {
@@ -187,7 +200,7 @@ const GasSpeedButton = ({
       <Text
         color={
           theme === 'dark'
-            ? colors.white
+            ? colors.whiteLabel
             : colors.alpha(colors.blueGreyDark, 0.8)
         }
         letterSpacing="roundedTight"
@@ -201,7 +214,7 @@ const GasSpeedButton = ({
           : animatedNumber}
       </Text>
     ),
-    [gasPricesAvailable, isSufficientGas, theme, txFees]
+    [colors, gasPricesAvailable, isSufficientGas, theme, txFees]
   );
 
   const handlePress = useCallback(() => {
@@ -210,8 +223,8 @@ const GasSpeedButton = ({
     }
     LayoutAnimation.easeInEaseOut();
     const gasOptions = options || GasSpeedOrder;
-    const currentSpeedIndex = gasOptions.indexOf(selectedGasPriceOption);
-    const nextSpeedIndex = (currentSpeedIndex + 1) % gasOptions.length;
+    const currentSpeedIndex = gasOptions?.indexOf(selectedGasPriceOption);
+    const nextSpeedIndex = (currentSpeedIndex + 1) % gasOptions?.length;
 
     const nextSpeed = gasOptions[nextSpeedIndex];
     updateGasPriceOption(nextSpeed);
@@ -317,7 +330,21 @@ const GasSpeedButton = ({
       return;
     }
 
-    if (minGasPrice && Number(customGasPriceInput) < minGasPrice) {
+    const minKey = options?.indexOf(SLOW) !== -1 ? SLOW : NORMAL;
+
+    const minGasPriceAllowed = Number(
+      gasPricesAvailable?.[minKey]?.value?.amount || 0
+    );
+
+    // The minimum gas for the tx is the higher amount between:
+    // - 10% more than the submitted gas of the previous tx (If speeding up / cancelling)
+    // - The new "normal" gas price from our third party API
+
+    const minimumGasAcceptedForTx = minGasPrice
+      ? Math.max(minGasPrice, minGasPriceAllowed)
+      : minGasPriceAllowed;
+
+    if (minGasPrice && Number(customGasPriceInput) < minimumGasAcceptedForTx) {
       Alert({
         buttons: [
           {
@@ -325,20 +352,17 @@ const GasSpeedButton = ({
             text: 'OK',
           },
         ],
-        message: `The minimum gas price valid allowed is ${minGasPrice} GWEI`,
+        message: `The minimum gas price valid allowed is ${minimumGasAcceptedForTx} GWEI`,
         title: 'Gas Price Too Low',
       });
       return;
     }
 
     const priceInWei = gweiToWei(customGasPriceInput);
-    const minGasPriceSlow = Number(
-      gasPricesAvailable?.slow?.value?.amount || 0
-    );
     const maxGasPriceFast = Number(
       gasPricesAvailable?.fast?.value?.amount || 0
     );
-    let tooLow = priceInWei < minGasPriceSlow;
+    let tooLow = priceInWei < minGasPriceAllowed;
     let tooHigh = priceInWei > maxGasPriceFast * 2.5;
 
     if (tooLow || tooHigh) {
@@ -367,15 +391,22 @@ const GasSpeedButton = ({
   }, [
     customGasPriceInput,
     inputFocused,
+    options,
+    gasPricesAvailable,
     minGasPrice,
-    gasPricesAvailable?.slow?.value?.amount,
-    gasPricesAvailable?.fast?.value?.amount,
     dontBlur,
     handleCustomGasBlur,
   ]);
 
   const focusOnInput = useCallback(() => inputRef.current?.focus(), []);
   const isCustom = selectedGasPriceOption === CUSTOM ? true : false;
+
+  const { navigate } = useNavigation();
+
+  const openGasHelper = useCallback(
+    () => navigate(Routes.EXPLAIN_SHEET, { type: 'gas' }),
+    [navigate]
+  );
 
   return (
     <Container as={ButtonPressAnimation} onPress={handlePress} testID={testID}>
@@ -395,7 +426,7 @@ const GasSpeedButton = ({
               <Input
                 color={
                   theme === 'dark'
-                    ? colors.white
+                    ? colors.whiteLabel
                     : colors.alpha(colors.blueGreyDark, 0.8)
                 }
                 height={19}
@@ -410,7 +441,7 @@ const GasSpeedButton = ({
                 placeholder={`${defaultCustomGasPrice}`}
                 placeholderTextColor={
                   theme === 'dark'
-                    ? colors.alpha(colors.darkModeColors.blueGreyDark, 0.3)
+                    ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.3)
                     : colors.alpha(colors.blueGreyDark, 0.3)
                 }
                 ref={inputRef}
@@ -423,10 +454,10 @@ const GasSpeedButton = ({
                 color={
                   customGasPriceInput
                     ? theme === 'dark'
-                      ? colors.white
+                      ? colors.whiteLabel
                       : colors.alpha(colors.blueGreyDark, 0.8)
                     : theme === 'dark'
-                    ? colors.alpha(colors.darkModeColors.blueGreyDark, 0.3)
+                    ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.3)
                     : colors.alpha(colors.blueGreyDark, 0.3)
                 }
                 size="lmedium"
@@ -448,15 +479,26 @@ const GasSpeedButton = ({
       </Row>
       <Row justify="space-between">
         {!isCustom ? (
-          <Label
-            color={
-              theme === 'dark'
-                ? colors.alpha(colors.darkModeColors.blueGreyDark, 0.6)
-                : colors.alpha(colors.blueGreyDark, 0.6)
-            }
-          >
-            Network Fee
-          </Label>
+          <TouchableOpacity onPress={openGasHelper}>
+            <Label
+              color={
+                theme === 'dark'
+                  ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)
+                  : colors.alpha(colors.blueGreyDark, 0.6)
+              }
+            >
+              Network Fee{' '}
+              <Label
+                color={
+                  theme === 'dark'
+                    ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.4)
+                    : colors.alpha(colors.blueGreyDark, 0.4)
+                }
+              >
+                􀅵
+              </Label>
+            </Label>
+          </TouchableOpacity>
         ) : (
           <LittleBorderlessButton
             onPress={handleInputButtonManager}

@@ -2,6 +2,7 @@ import { forEach } from 'lodash';
 import React, { useEffect, useMemo } from 'react';
 import { IS_TESTING } from 'react-native-dotenv';
 import styled from 'styled-components';
+import { useTheme } from '../../context/ThemeContext';
 import { cloudPlatform } from '../../utils/platform';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
@@ -10,7 +11,6 @@ import { Column, Row, RowWithMargins } from '../layout';
 import { GradientText, Text } from '../text';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import { useNavigation } from '@rainbow-me/navigation';
-import { colors } from '@rainbow-me/styles';
 import { deviceUtils } from '@rainbow-me/utils';
 
 const deviceWidth = deviceUtils.dimensions.width;
@@ -42,13 +42,13 @@ const TitleRow = styled(RowWithMargins)`
 const RainbowText =
   android && IS_TESTING === 'true'
     ? Text
-    : styled(GradientText).attrs({
+    : styled(GradientText).attrs(({ theme: { colors } }) => ({
         angle: false,
         colors: colors.gradients.rainbow,
         end: { x: 0, y: 0.5 },
         start: { x: 1, y: 0.5 },
         steps: [0, 0.774321, 1],
-      })``;
+      }))``;
 
 const TextIcon = styled(Text).attrs({
   size: 29,
@@ -69,13 +69,13 @@ const Title = styled(Text).attrs({
   max-width: 276;
 `;
 
-const DescriptionText = styled(Text).attrs({
+const DescriptionText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'left',
   color: colors.alpha(colors.blueGreyDark, 0.4),
   lineHeight: 22,
   size: 'smedium',
   weight: 'medium',
-})`
+}))`
   max-width: 276;
   padding-bottom: 24;
 `;
@@ -87,6 +87,7 @@ export default function RestoreSheetFirstStep({
   userData,
 }) {
   const { setParams } = useNavigation();
+  const { colors } = useTheme();
 
   const walletsBackedUp = useMemo(() => {
     let count = 0;
@@ -110,12 +111,12 @@ export default function RestoreSheetFirstStep({
           <SheetRow as={ButtonPressAnimation} onPress={onCloudRestore}>
             <Column>
               <Row>
-                <RainbowText>
+                <RainbowText colors={colors}>
                   <TextIcon>􀌍</TextIcon>
                 </RainbowText>
               </Row>
               <TitleRow>
-                <RainbowText>
+                <RainbowText colors={colors}>
                   <Title>Restore from {cloudPlatform}</Title>
                 </RainbowText>
                 <CaretIcon />
@@ -141,11 +142,11 @@ export default function RestoreSheetFirstStep({
         <Column>
           <TextIcon color={colors.purple}>􀑚</TextIcon>
           <TitleRow justify="space-between" width="100%">
-            <Title>Restore with a recovery phrase or private key</Title>
+            <Title>Restore with a secret phrase or private key</Title>
             <CaretIcon />
           </TitleRow>
           <DescriptionText>
-            Use your recovery phrase from Rainbow or another crypto wallet
+            Use your secret phrase from Rainbow or another crypto wallet
           </DescriptionText>
         </Column>
       </SheetRow>

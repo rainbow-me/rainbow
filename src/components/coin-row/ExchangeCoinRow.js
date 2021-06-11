@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import styled, { css } from 'styled-components/primitives';
+import styled, { css } from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIconSize } from '../coin-icon';
 import { FloatingEmojis } from '../floating-emojis';
@@ -8,6 +8,7 @@ import BalanceText from './BalanceText';
 import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
+import CoinRowAddButton from './CoinRowAddButton';
 import CoinRowFavoriteButton from './CoinRowFavoriteButton';
 import { useDimensions } from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
@@ -49,22 +50,24 @@ const TopRow = ({ name, showBalance }) => (
 const ExchangeCoinRow = ({
   item,
   isVerified,
-  onFavoriteAsset,
+  onActionAsset,
   onPress,
   onUnverifiedTokenPress,
   showBalance,
   showFavoriteButton,
+  showAddButton,
+  testID,
 }) => {
   const { width: deviceWidth } = useDimensions();
   const [localFavorite, setLocalFavorite] = useState(!!item.favorite);
 
   const handlePress = useCallback(() => {
-    if (isVerified) {
+    if (isVerified || showBalance) {
       onPress(item);
     } else {
       onUnverifiedTokenPress(item);
     }
-  }, [isVerified, item, onPress, onUnverifiedTokenPress]);
+  }, [isVerified, item, onPress, onUnverifiedTokenPress, showBalance]);
 
   return (
     <>
@@ -80,13 +83,13 @@ const ExchangeCoinRow = ({
           containerStyles={css(
             padding(
               CoinRowPaddingTop,
-              showFavoriteButton ? 38 : 0,
+              showFavoriteButton || showAddButton ? 38 : 0,
               CoinRowPaddingBottom,
               15
             )
           )}
           showBalance={showBalance}
-          testID="exchange-coin-row"
+          testID={`${testID}-exchange-coin-row`}
           topRowRender={TopRow}
         >
           {showBalance && (
@@ -111,13 +114,20 @@ const ExchangeCoinRow = ({
                   } else {
                     haptics.selection();
                   }
-                  onFavoriteAsset(item, newLocalFavorite);
+                  onActionAsset(item, newLocalFavorite);
                   return newLocalFavorite;
                 });
               }}
             />
           )}
         </FloatingFavoriteEmojis>
+      )}
+      {showAddButton && (
+        <CoinRowAddButton
+          onPress={() => {
+            onActionAsset(item);
+          }}
+        />
       )}
     </>
   );

@@ -1,20 +1,18 @@
 import analytics from '@segment/analytics-react-native';
 import { captureException, captureMessage } from '@sentry/react-native';
 import { find, map, toLower } from 'lodash';
+/* eslint-disable-next-line import/no-cycle */
+import { dataAddNewTransaction } from './data';
+import { TransactionStatusTypes, TransactionTypes } from '@rainbow-me/entities';
 import {
   getPurchaseTransactions,
   savePurchaseTransactions,
-} from '../handlers/localstorage/accountLocal';
-import { trackWyreOrder, trackWyreTransfer } from '../handlers/wyre';
-import TransactionStatusTypes from '../helpers/transactionStatusTypes';
-import TransactionTypes from '../helpers/transactionTypes';
-import { WYRE_ORDER_STATUS_TYPES } from '../helpers/wyreStatusTypes';
-import { AddCashCurrencies, AddCashCurrencyInfo } from '../references';
-import { ethereumUtils } from '../utils';
-import maybeReviewAlert from '../utils/reviewAlert';
-
-/* eslint-disable-next-line import/no-cycle */
-import { dataAddNewTransaction } from './data';
+} from '@rainbow-me/handlers/localstorage/accountLocal';
+import { trackWyreOrder, trackWyreTransfer } from '@rainbow-me/handlers/wyre';
+import { WYRE_ORDER_STATUS_TYPES } from '@rainbow-me/helpers/wyreStatusTypes';
+import { AddCashCurrencies, AddCashCurrencyInfo } from '@rainbow-me/references';
+import { ethereumUtils } from '@rainbow-me/utils';
+import maybeReviewAlert from '@rainbow-me/utils/reviewAlert';
 import logger from 'logger';
 
 // -- Constants --------------------------------------- //
@@ -90,10 +88,7 @@ export const addCashUpdatePurchases = purchases => (dispatch, getState) => {
   savePurchaseTransactions(updatedPurchases, accountAddress, network);
 };
 
-export const addCashNewPurchaseTransaction = txDetails => (
-  dispatch,
-  getState
-) => {
+const addCashNewPurchaseTransaction = txDetails => (dispatch, getState) => {
   const { purchaseTransactions } = getState().addCash;
   const { accountAddress, network } = getState().settings;
   const updatedPurchases = [txDetails, ...purchaseTransactions];

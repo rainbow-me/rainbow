@@ -92,6 +92,7 @@ public class RNTextAnimatorPackage implements ReactPackage {
                 double stepPerDay = config.getDouble("stepPerDay");
                 boolean isStable = config.getBoolean("isStable");
                 String color = config.getString("color");
+                boolean darkMode = config.getBoolean("darkMode");
                 String symbol = config.getString("symbol");
                 final long date = System.currentTimeMillis();
                 final Map<Integer, Character> prevVals = new HashMap<>();
@@ -116,7 +117,7 @@ public class RNTextAnimatorPackage implements ReactPackage {
                         SpannableStringBuilder builder = new SpannableStringBuilder();
 
                         for (int i = 0; i < parsedText.length(); i++) {
-                            if (!prevVals.containsKey(i)) {
+                            if (!prevVals.containsKey(i )) {
                                 prevVals.put(i, parsedText.charAt(i));
                             }
 
@@ -143,7 +144,7 @@ public class RNTextAnimatorPackage implements ReactPackage {
                                 int greens = colors & 0x0000ff00;
                                 int blues = colors & 0x000000ff;
 
-                                int colort = 0xFF000000;
+                                int colort = darkMode ? 0xFFFFFFFF : 0xFF000000;
 
                                 int redt = colort & 0x00ff0000;
                                 int greent = colort & 0x0000ff00;

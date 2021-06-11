@@ -4,6 +4,12 @@ import { supportedNativeCurrencies } from '@rainbow-me/references';
 
 type BigNumberish = number | string | BigNumber;
 
+export const abs = (value: BigNumberish): string =>
+  new BigNumber(value).abs().toFixed();
+
+export const isPositive = (value: BigNumberish): boolean =>
+  new BigNumber(value).isPositive();
+
 export const subtract = (
   numberOne: BigNumberish,
   numberTwo: BigNumberish
@@ -86,8 +92,8 @@ export const countDecimalPlaces = (value: BigNumberish): number =>
  * @return {String}   updated amount
  */
 export const updatePrecisionToDisplay = (
-  amount: BigNumberish,
-  nativePrice: BigNumberish,
+  amount: BigNumberish | null,
+  nativePrice?: BigNumberish | null,
   roundUp: boolean = false
 ): string => {
   if (!amount) return '0';
@@ -163,6 +169,18 @@ export const divide = (
   return new BigNumber(numberOne).dividedBy(numberTwo).toFixed();
 };
 
+export const fraction = (
+  target: BigNumberish,
+  numerator: BigNumberish,
+  denominator: BigNumberish
+): string => {
+  if (!target || !numerator || !denominator) return '0';
+  return new BigNumber(target)
+    .times(numerator)
+    .dividedBy(denominator)
+    .toFixed(0);
+};
+
 /**
  * @desc convert to asset amount units from native price value units
  * @param  {String}   value
@@ -204,14 +222,11 @@ export const handleSignificantDecimalsWithThreshold = (
 export const handleSignificantDecimals = (
   value: BigNumberish,
   decimals: number,
-  buffer: number = 3
+  buffer: number = 3,
+  skipDecimals = false
 ): string => {
   if (lessThan(new BigNumber(value).abs(), 1)) {
-    decimals =
-      new BigNumber(value)
-        .toFixed()
-        .slice(2)
-        .search(/[^0]/g) + buffer;
+    decimals = new BigNumber(value).toFixed().slice(2).search(/[^0]/g) + buffer;
     decimals = Math.min(decimals, 8);
   } else {
     decimals = Math.min(decimals, buffer);
@@ -220,7 +235,9 @@ export const handleSignificantDecimals = (
     new BigNumber(value).toFixed(decimals)
   ).toFixed();
   const resultBN = new BigNumber(result);
-  return resultBN.dp() <= 2 ? resultBN.toFormat(2) : resultBN.toFormat();
+  return resultBN.dp() <= 2
+    ? resultBN.toFormat(skipDecimals ? 0 : 2)
+    : resultBN.toFormat();
 };
 
 /**
@@ -317,12 +334,29 @@ export const convertAmountToPercentageDisplay = (
 };
 
 /**
+ * @desc convert from amount to display formatted string
+ * with a threshold percent
+ */
+export const convertAmountToPercentageDisplayWithThreshold = (
+  value: BigNumberish,
+  decimals: number = 2,
+  threshold: string = '0.0001'
+): string => {
+  if (lessThan(value, threshold)) {
+    return '< 0.01%';
+  } else {
+    const display = new BigNumber(value).times(100).toFixed(decimals);
+    return `${display}%`;
+  }
+};
+
+/**
  * @desc convert from bips amount to percentage format
  */
 export const convertBipsToPercentage = (
   value: BigNumberish,
   decimals: number = 2
-): string => new BigNumber(value).shiftedBy(-2).toFixed(decimals);
+): string => new BigNumber(value || 0).shiftedBy(-2).toFixed(decimals);
 
 /**
  * @desc convert from amount value to display formatted string
@@ -330,11 +364,17 @@ export const convertBipsToPercentage = (
 export const convertAmountToNativeDisplay = (
   value: BigNumberish,
   nativeCurrency: string,
-  buffer?: number
+  buffer?: number,
+  skipDecimals?: boolean
 ) => {
   const nativeSelected = get(supportedNativeCurrencies, `${nativeCurrency}`);
   const { decimals } = nativeSelected;
-  const display = handleSignificantDecimals(value, decimals, buffer);
+  const display = handleSignificantDecimals(
+    value,
+    decimals,
+    buffer,
+    skipDecimals
+  );
   if (nativeSelected.alignment === 'left') {
     return `${nativeSelected.symbol}${display}`;
   }

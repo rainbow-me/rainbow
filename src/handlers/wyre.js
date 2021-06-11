@@ -12,9 +12,9 @@ import {
   WYRE_TOKEN,
   WYRE_TOKEN_TEST,
 } from 'react-native-dotenv';
-import NetworkTypes from '../helpers/networkTypes';
-import { subtract } from '../helpers/utilities';
-import { WYRE_SUPPORTED_COUNTRIES_ISO } from '../references/wyre';
+import NetworkTypes from '@rainbow-me/helpers/networkTypes';
+import { WYRE_SUPPORTED_COUNTRIES_ISO } from '@rainbow-me/references';
+import { subtract } from '@rainbow-me/utilities';
 import logger from 'logger';
 
 const SOURCE_CURRENCY_USD = 'USD';
@@ -256,7 +256,7 @@ export const getOrderId = async (
       `${baseUrl}/v3/apple-pay/process/partner`,
       data,
       {
-        validateStatus: function(status) {
+        validateStatus: function (status) {
           // do not throw error so we can get
           // exception ID and message from response
           return status >= 200;

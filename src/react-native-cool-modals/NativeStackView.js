@@ -11,7 +11,9 @@ const sx = StyleSheet.create({
   },
 });
 
-function ScreenView({ colors, descriptors, navigation, route, state }) {
+const { RNCMScreenManager } = NativeModules;
+
+function ScreenView({ colors, descriptors, navigation, route, state, hidden }) {
   const { options, render: renderScene } = descriptors[route.key];
   const ref = useRef();
   const {
@@ -41,6 +43,7 @@ function ScreenView({ colors, descriptors, navigation, route, state }) {
     startFromShortForm,
     topOffset,
     transitionDuration,
+    disableShortFormAfterTransitionToLongForm,
   } = options;
 
   const context = useMemo(
@@ -48,13 +51,19 @@ function ScreenView({ colors, descriptors, navigation, route, state }) {
       jumpToLong: () => {
         const screen = findNodeHandle(ref.current);
         if (screen) {
-          NativeModules.RNCMScreenManager.jumpTo(true, screen);
+          RNCMScreenManager.jumpTo(true, screen);
         }
       },
       jumpToShort: () => {
         const screen = findNodeHandle(ref.current);
         if (screen) {
-          NativeModules.RNCMScreenManager.jumpTo(false, screen);
+          RNCMScreenManager.jumpTo(false, screen);
+        }
+      },
+      layout: () => {
+        const screen = findNodeHandle(ref.current);
+        if (screen) {
+          RNCMScreenManager.layout(screen);
         }
       },
     }),
@@ -74,9 +83,13 @@ function ScreenView({ colors, descriptors, navigation, route, state }) {
         backgroundOpacity={backgroundOpacity}
         cornerRadius={cornerRadius}
         customStack={customStack}
+        disableShortFormAfterTransitionToLongForm={
+          disableShortFormAfterTransitionToLongForm
+        }
         dismissable={dismissable}
         gestureEnabled={gestureEnabled}
         headerHeight={headerHeight}
+        hidden={hidden}
         ignoreBottomOffset={ignoreBottomOffset}
         interactWithScrollView={interactWithScrollView}
         isShortFormEnabled={isShortFormEnabled}
@@ -143,18 +156,30 @@ function ScreenView({ colors, descriptors, navigation, route, state }) {
 export default function NativeStackView({ state, navigation, descriptors }) {
   const { colors } = useTheme();
 
+  const nonSingleRoutesLength = state.routes.filter(route => {
+    const { options } = descriptors[route.key];
+    return !options.single;
+  }).length;
+
   return (
     <Components.ScreenStack style={sx.container}>
-      {state.routes.map((route, i) => (
-        <ScreenView
-          colors={colors}
-          descriptors={descriptors}
-          key={`screen${i}`}
-          navigation={navigation}
-          route={route}
-          state={state}
-        />
-      ))}
+      {state.routes.map((route, i) => {
+        const { options } = descriptors[route.key];
+        const { limitActiveModals } = options;
+        return (
+          <ScreenView
+            colors={colors}
+            descriptors={descriptors}
+            hidden={
+              limitActiveModals && nonSingleRoutesLength - 3 >= i && i !== 0
+            }
+            key={`screen${i}`}
+            navigation={navigation}
+            route={route}
+            state={state}
+          />
+        );
+      })}
     </Components.ScreenStack>
   );
 }

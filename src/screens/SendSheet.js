@@ -1,13 +1,13 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { captureEvent, captureException } from '@sentry/react-native';
-import { get, isEmpty, isString, toLower } from 'lodash';
+import { isEmpty, isString, toLower } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { InteractionManager, Keyboard, StatusBar } from 'react-native';
 import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { dismissingScreenListener } from '../../shim';
 import { Column } from '../components/layout';
 import {
@@ -18,17 +18,13 @@ import {
   SendHeader,
   SendTransactionSpeed,
 } from '../components/send';
-import { createSignableTransaction, estimateGasLimit } from '../handlers/web3';
-import AssetTypes from '../helpers/assetTypes';
-import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
+import { AssetTypes } from '@rainbow-me/entities';
 import {
-  convertAmountAndPriceToNativeDisplay,
-  convertAmountFromNativeValue,
-  formatInputDecimals,
-} from '../helpers/utilities';
-import { checkIsValidAddressOrENS } from '../helpers/validators';
-import { sendTransaction } from '../model/wallet';
-import { useNavigation } from '../navigation/Navigation';
+  createSignableTransaction,
+  estimateGasLimit,
+} from '@rainbow-me/handlers/web3';
+import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
+import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
 import {
   useAccountAssets,
   useAccountSettings,
@@ -44,9 +40,18 @@ import {
   useSendSavingsAccount,
   useTransactionConfirmation,
   useUpdateAssetOnchainBalance,
+  useUserAccounts,
 } from '@rainbow-me/hooks';
+import { sendTransaction } from '@rainbow-me/model/wallet';
+import { useNavigation } from '@rainbow-me/navigation/Navigation';
+import { ETH_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
-import { borders, colors } from '@rainbow-me/styles';
+import { borders } from '@rainbow-me/styles';
+import {
+  convertAmountAndPriceToNativeDisplay,
+  convertAmountFromNativeValue,
+  formatInputDecimals,
+} from '@rainbow-me/utilities';
 import { deviceUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
@@ -54,7 +59,7 @@ const sheetHeight = deviceUtils.dimensions.height - (android ? 30 : 10);
 const statusBarHeight = getStatusBarHeight(true);
 
 const Container = styled.View`
-  background-color: ${colors.transparent};
+  background-color: ${({ theme: { colors } }) => colors.transparent};
   flex: 1;
   padding-top: ${isNativeStackAvailable ? 0 : statusBarHeight};
   width: 100%;
@@ -65,14 +70,14 @@ const SheetContainer = styled(Column).attrs({
   flex: 1,
 })`
   ${borders.buildRadius('top', isNativeStackAvailable ? 0 : 16)};
-  background-color: ${colors.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
   height: ${isNativeStackAvailable || android ? sheetHeight : '100%'};
   width: 100%;
 `;
 
 const KeyboardSizeView = styled(KeyboardArea)`
   width: 100%;
-  background-color: ${({ showAssetForm }) =>
+  background-color: ${({ showAssetForm, theme: { colors } }) =>
     showAssetForm ? colors.lighterGrey : colors.white};
 `;
 
@@ -87,6 +92,7 @@ export default function SendSheet(props) {
     gasLimit,
     gasPrices,
     isSufficientGas,
+    prevSelectedGasPrice,
     selectedGasPrice,
     startPollingGasPrices,
     stopPollingGasPrices,
@@ -122,6 +128,7 @@ export default function SendSheet(props) {
     };
   }, [addListener]);
   const { contacts, onRemoveContact, filteredContacts } = useContacts();
+  const { userAccounts } = useUserAccounts();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
   const {
     accountAddress,
@@ -149,7 +156,6 @@ export default function SendSheet(props) {
   const showEmptyState = !isValidAddress;
   const showAssetList = isValidAddress && isEmpty(selected);
   const showAssetForm = isValidAddress && !isEmpty(selected);
-  const prevSelectedGasPrice = usePrevious(selectedGasPrice);
 
   const { handleFocus, triggerFocus } = useMagicAutofocus(
     recipientFieldRef,
@@ -169,9 +175,9 @@ export default function SendSheet(props) {
   // Recalculate balance when gas price changes
   useEffect(() => {
     if (
-      selected?.address === 'eth' &&
-      get(prevSelectedGasPrice, 'txFee.value.amount', 0) !==
-        get(selectedGasPrice, 'txFee.value.amount', 0)
+      selected?.address === ETH_ADDRESS &&
+      (prevSelectedGasPrice?.txFee?.value?.amount ?? 0) !==
+        (selectedGasPrice?.txFee?.value?.amount ?? 0)
     ) {
       updateMaxInputBalance(selected);
     }
@@ -182,7 +188,7 @@ export default function SendSheet(props) {
       const _assetAmount = newAssetAmount.replace(/[^0-9.]/g, '');
       let _nativeAmount = '';
       if (_assetAmount.length) {
-        const priceUnit = get(selected, 'price.value', 0);
+        const priceUnit = selected?.price?.value ?? 0;
         const {
           amount: convertedNativeAmount,
         } = convertAmountAndPriceToNativeDisplay(
@@ -209,7 +215,7 @@ export default function SendSheet(props) {
   const sendUpdateSelected = useCallback(
     newSelected => {
       updateMaxInputBalance(newSelected);
-      if (get(newSelected, 'type') === AssetTypes.nft) {
+      if (newSelected?.type === AssetTypes.nft) {
         setAmountDetails({
           assetAmount: '1',
           isSufficientBalance: true,
@@ -217,7 +223,7 @@ export default function SendSheet(props) {
         });
         setSelected({
           ...newSelected,
-          symbol: get(newSelected, 'asset_contract.name'),
+          symbol: newSelected?.asset_contract?.name,
         });
       } else {
         setSelected(newSelected);
@@ -250,7 +256,7 @@ export default function SendSheet(props) {
       const _nativeAmount = newNativeAmount.replace(/[^0-9.]/g, '');
       let _assetAmount = '';
       if (_nativeAmount.length) {
-        const priceUnit = get(selected, 'price.value', 0);
+        const priceUnit = selected?.price?.value ?? 0;
         const convertedAssetAmount = convertAmountFromNativeValue(
           _nativeAmount,
           priceUnit,
@@ -300,13 +306,35 @@ export default function SendSheet(props) {
     }
 
     let submitSuccess = false;
+    let updatedGasLimit = null;
+    // Attempt to update gas limit before sending ERC20 / ERC721
+    if (selected?.address !== ETH_ADDRESS) {
+      try {
+        // Estimate the tx with gas limit padding before sending
+        updatedGasLimit = await estimateGasLimit(
+          {
+            address: accountAddress,
+            amount: amountDetails.assetAmount,
+            asset: selected,
+            recipient,
+          },
+          true
+        );
+        logger.log('gasLimit updated before sending', {
+          after: updatedGasLimit,
+          before: gasLimit,
+        });
+        updateTxFee(updatedGasLimit);
+        // eslint-disable-next-line no-empty
+      } catch (e) {}
+    }
 
     const txDetails = {
       amount: amountDetails.assetAmount,
       asset: selected,
       from: accountAddress,
-      gasLimit,
-      gasPrice: get(selectedGasPrice, 'value.amount'),
+      gasLimit: updatedGasLimit || gasLimit,
+      gasPrice: selectedGasPrice?.value?.amount,
       nonce: null,
       to: recipient,
     };
@@ -344,6 +372,7 @@ export default function SendSheet(props) {
     recipient,
     selected,
     selectedGasPrice,
+    updateTxFee,
   ]);
 
   const submitTransaction = useCallback(async () => {
@@ -433,7 +462,7 @@ export default function SendSheet(props) {
   }, [recipient, recipientOverride]);
 
   const checkAddress = useCallback(async () => {
-    const validAddress = await checkIsValidAddressOrENS(recipient);
+    const validAddress = await checkIsValidAddressOrDomain(recipient);
     setIsValidAddress(validAddress);
   }, [recipient]);
 
@@ -477,6 +506,7 @@ export default function SendSheet(props) {
           recipientFieldRef={recipientFieldRef}
           removeContact={onRemoveContact}
           showAssetList={showAssetList}
+          userAccounts={userAccounts}
         />
         {showEmptyState && (
           <SendContactList
@@ -484,6 +514,7 @@ export default function SendSheet(props) {
             currentInput={currentInput}
             onPressContact={setRecipient}
             removeContact={onRemoveContact}
+            userAccounts={userAccounts}
           />
         )}
         {showAssetList && (
@@ -535,7 +566,9 @@ export default function SendSheet(props) {
             }
           />
         )}
-        {android ? <KeyboardSizeView showAssetForm={showAssetForm} /> : null}
+        {android && showAssetForm ? (
+          <KeyboardSizeView showAssetForm={showAssetForm} />
+        ) : null}
       </SheetContainer>
     </Container>
   );

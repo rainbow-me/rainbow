@@ -1,13 +1,13 @@
 import { get, isNil, map, toUpper } from 'lodash';
 import { dedupeUniqueTokens } from './uniqueTokens';
-import AssetTypes from '@rainbow-me/helpers/assetTypes';
+import { AssetTypes } from '@rainbow-me/entities';
 import {
   add,
   convertAmountAndPriceToNativeDisplay,
   convertAmountToNativeDisplay,
   convertAmountToPercentageDisplay,
   convertRawAmountToBalance,
-} from '@rainbow-me/helpers/utilities';
+} from '@rainbow-me/utilities';
 import { getTokenMetadata, isLowerCaseMatch } from '@rainbow-me/utils';
 
 /**
@@ -53,7 +53,7 @@ export const parseAsset = ({ asset_code: address, ...asset } = {}) => {
       ? asset.type
       : AssetTypes.token;
 
-  return {
+  const parsedAsset = {
     ...asset,
     ...metadata,
     address,
@@ -62,6 +62,8 @@ export const parseAsset = ({ asset_code: address, ...asset } = {}) => {
     type,
     uniqueId: address || name,
   };
+
+  return parsedAsset;
 };
 
 export const parseAssetsNativeWithTotals = (assets, nativeCurrency) => {

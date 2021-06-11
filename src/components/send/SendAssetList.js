@@ -7,7 +7,7 @@ import {
   RecyclerListView,
 } from 'recyclerlistview';
 
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { buildCoinsList } from '../../helpers/assets';
 import networkTypes from '../../helpers/networkTypes';
 import { deviceUtils } from '../../utils';
@@ -23,7 +23,6 @@ import { Centered } from '../layout';
 import SavingsListHeader from '../savings/SavingsListHeader';
 import TokenFamilyHeader from '../token-family/TokenFamilyHeader';
 import { ImgixImage } from '@rainbow-me/images';
-import { colors } from '@rainbow-me/styles';
 
 const dividerMargin = 10;
 const dividerHeight = DividerSize + dividerMargin * 2;
@@ -42,11 +41,14 @@ const SendAssetRecyclerListView = styled(RecyclerListView)`
   min-height: 1;
 `;
 
-const SendAssetListDivider = () => (
-  <Centered marginVertical={dividerMargin}>
-    <Divider color={colors.lighterGrey} />
-  </Centered>
-);
+const SendAssetListDivider = () => {
+  const { colors } = useTheme();
+  return (
+    <Centered marginVertical={dividerMargin}>
+      <Divider color={colors.rowDividerLight} />
+    </Centered>
+  );
+};
 
 export default class SendAssetList extends React.Component {
   constructor(props) {
@@ -121,7 +123,7 @@ export default class SendAssetList extends React.Component {
       });
     });
 
-    ImgixImage.preload(imageTokens);
+    ImgixImage.preload(imageTokens, 45);
 
     this._layoutProvider = new LayoutProvider(
       i => {

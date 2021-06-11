@@ -1,10 +1,16 @@
 import { getGlobal, saveGlobal } from './common';
 
-// Key used for loading the cache with data from storage
-export const TOP_MOVERS_FROM_STORAGE = 'topMoversFromStorage';
+export const TOP_GAINERS = 'topGainers';
+export const TOP_LOSERS = 'topLosers';
 
-const TOP_MOVERS = 'topMovers';
+export const getTopMovers = async () => {
+  const gainers = await getGlobal(TOP_GAINERS, []);
+  const losers = await getGlobal(TOP_LOSERS, []);
+  return {
+    gainers,
+    losers,
+  };
+};
 
-export const getTopMovers = () => getGlobal(TOP_MOVERS, {});
-
-export const saveTopMovers = topMovers => saveGlobal(TOP_MOVERS, topMovers);
+export const saveTopGainers = gainers => saveGlobal(TOP_GAINERS, gainers);
+export const saveTopLosers = losers => saveGlobal(TOP_LOSERS, losers);

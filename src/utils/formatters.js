@@ -13,10 +13,7 @@ export const getFirstGrapheme = string => {
 export const initials = string =>
   !string || !isString(string)
     ? '?'
-    : string
-        .split(' ')
-        .map(firstCharacterOfString)
-        .join('');
+    : string.split(' ').map(firstCharacterOfString).join('');
 
 export function removeLeadingZeros(value = '') {
   if (

@@ -1,20 +1,28 @@
-import { concat, get, isNil, keys, map, toLower } from 'lodash';
+import { concat, isEmpty, isNil, keys, toLower } from 'lodash';
 import { DATA_API_KEY, DATA_ORIGIN } from 'react-native-dotenv';
 import io from 'socket.io-client';
 import { assetChartsReceived, DEFAULT_CHART_TYPE } from './charts';
+/* eslint-disable-next-line import/no-cycle */
 import {
   addressAssetsReceived,
   assetPricesChanged,
   assetPricesReceived,
+  portfolioReceived,
   transactionsReceived,
   transactionsRemoved,
 } from './data';
+/* eslint-disable-next-line import/no-cycle */
 import {
   fallbackExplorerClearState,
   fallbackExplorerInit,
 } from './fallbackExplorer';
+import { updateTopMovers } from './topMovers';
 import { disableCharts, forceFallbackProvider } from '@rainbow-me/config/debug';
+import ChartTypes from '@rainbow-me/helpers/chartTypes';
+import currencyTypes from '@rainbow-me/helpers/currencyTypes';
 import NetworkTypes from '@rainbow-me/helpers/networkTypes';
+import { DPI_ADDRESS, ETH_ADDRESS } from '@rainbow-me/references';
+import { TokensListenedCache } from '@rainbow-me/utils';
 import logger from 'logger';
 
 // -- Constants --------------------------------------- //
@@ -24,8 +32,11 @@ const EXPLORER_ENABLE_FALLBACK = 'explorer/EXPLORER_ENABLE_FALLBACK';
 const EXPLORER_DISABLE_FALLBACK = 'explorer/EXPLORER_DISABLE_FALLBACK';
 const EXPLORER_SET_FALLBACK_HANDLER = 'explorer/EXPLORER_SET_FALLBACK_HANDLER';
 
+let assetInfoHandle = null;
+
 const TRANSACTIONS_LIMIT = 1000;
 const ZERION_ASSETS_TIMEOUT = 15000; // 15 seconds
+const ASSET_INFO_TIMEOUT = 10 * 60 * 1000; // 10 minutes
 
 const messages = {
   ADDRESS_ASSETS: {
@@ -33,6 +44,9 @@ const messages = {
     CHANGED: 'changed address assets',
     RECEIVED: 'received address assets',
     REMOVED: 'removed address assets',
+  },
+  ADDRESS_PORTFOLIO: {
+    RECEIVED: 'received address portfolio',
   },
   ADDRESS_TRANSACTIONS: {
     APPENDED: 'appended address transactions',
@@ -44,6 +58,9 @@ const messages = {
     APPENDED: 'appended chart points',
     CHANGED: 'changed chart points',
     RECEIVED: 'received assets charts',
+  },
+  ASSET_INFO: {
+    RECEIVED: 'received assets info',
   },
   ASSETS: {
     CHANGED: 'changed assets prices',
@@ -77,8 +94,24 @@ const addressSubscription = (address, currency, action = 'subscribe') => [
   },
 ];
 
-const assetsSubscription = (pairs, currency, action = 'subscribe') => {
-  const assetCodes = concat(keys(pairs), 'eth');
+const portfolioSubscription = (address, currency, action = 'get') => [
+  action,
+  {
+    payload: {
+      address,
+      currency: toLower(currency),
+      portfolio_fields: 'all',
+    },
+    scope: ['portfolio'],
+  },
+];
+
+const assetPricesSubscription = (
+  tokenAddresses,
+  currency,
+  action = 'subscribe'
+) => {
+  const assetCodes = concat(tokenAddresses, ETH_ADDRESS, DPI_ADDRESS);
   return [
     action,
     {
@@ -91,6 +124,33 @@ const assetsSubscription = (pairs, currency, action = 'subscribe') => {
   ];
 };
 
+const ethUSDSubscription = [
+  'subscribe',
+  {
+    payload: {
+      asset_codes: [ETH_ADDRESS],
+      currency: currencyTypes.usd,
+    },
+    scope: ['prices'],
+  },
+];
+
+const assetInfoRequest = (currency, order = 'desc') => [
+  'get',
+  {
+    payload: {
+      currency: toLower(currency),
+      limit: 12,
+      offset: 0,
+      order_by: {
+        'relative_changes.1d': order,
+      },
+      search_query: '#Token is:verified',
+    },
+    scope: ['info'],
+  },
+];
+
 const chartsRetrieval = (assetCodes, currency, chartType, action = 'get') => [
   action,
   {
@@ -102,6 +162,23 @@ const chartsRetrieval = (assetCodes, currency, chartType, action = 'get') => [
     scope: ['charts'],
   },
 ];
+
+export const fetchAssetPrices = assetAddress => (dispatch, getState) => {
+  const { assetsSocket } = getState().explorer;
+  const { nativeCurrency } = getState().settings;
+
+  const payload = [
+    'get',
+    {
+      payload: {
+        asset_codes: [assetAddress],
+        currency: toLower(nativeCurrency),
+      },
+      scope: ['prices'],
+    },
+  ];
+  assetsSocket.emit(...payload);
+};
 
 const explorerUnsubscribe = () => (dispatch, getState) => {
   const {
@@ -119,7 +196,7 @@ const explorerUnsubscribe = () => (dispatch, getState) => {
   }
   if (!isNil(assetsSocket)) {
     assetsSocket.emit(
-      ...assetsSubscription(pairs, nativeCurrency, 'unsubscribe')
+      ...assetPricesSubscription(keys(pairs), nativeCurrency, 'unsubscribe')
     );
     assetsSocket.close();
   }
@@ -199,7 +276,18 @@ export const explorerInit = () => async (dispatch, getState) => {
   dispatch(listenOnAssetMessages(newAssetsSocket));
 
   newAssetsSocket.on(messages.CONNECT, () => {
-    newAssetsSocket.emit(...assetsSubscription(pairs, nativeCurrency));
+    dispatch(emitAssetRequest(keys(pairs)));
+    dispatch(emitAssetInfoRequest());
+    if (!disableCharts) {
+      // We need this for Uniswap Pools profit calculation
+      dispatch(emitChartsRequest([ETH_ADDRESS, DPI_ADDRESS], ChartTypes.month));
+      dispatch(
+        emitChartsRequest([ETH_ADDRESS], ChartTypes.month, currencyTypes.usd)
+      );
+      dispatch(
+        emitChartsRequest([ETH_ADDRESS], ChartTypes.day, currencyTypes.usd)
+      );
+    }
   });
 
   if (network === NetworkTypes.mainnet) {
@@ -220,31 +308,76 @@ export const explorerInit = () => async (dispatch, getState) => {
   }
 };
 
-export const emitChartsRequest = (
-  assetAddress,
-  chartType = DEFAULT_CHART_TYPE
-) => (dispatch, getState) => {
+export const emitPortfolioRequest = (address, currency) => (
+  dispatch,
+  getState
+) => {
+  const nativeCurrency = currency || getState().settings.nativeCurrency;
+  const { addressSocket } = getState().explorer;
+
+  addressSocket?.emit(...portfolioSubscription(address, nativeCurrency));
+};
+
+export const emitAssetRequest = assetAddress => (dispatch, getState) => {
   const { nativeCurrency } = getState().settings;
   const { assetsSocket } = getState().explorer;
 
-  let assetCodes;
-  if (assetAddress) {
-    assetCodes = [assetAddress];
-  } else {
-    const { assets } = getState().data;
-    const assetAddresses = map(assets, 'address');
+  const assetCodes = Array.isArray(assetAddress)
+    ? assetAddress
+    : [assetAddress];
 
-    const { liquidityTokens } = getState().uniswapLiquidity;
-    const lpTokenAddresses = map(liquidityTokens, token => token.address);
-
-    assetCodes = concat(assetAddresses, lpTokenAddresses);
-  }
-  assetsSocket?.emit?.(
-    ...chartsRetrieval(assetCodes, nativeCurrency, chartType)
+  const newAssetsCodes = assetCodes.filter(
+    code => !TokensListenedCache[code + nativeCurrency]
   );
+
+  newAssetsCodes.forEach(
+    code => (TokensListenedCache[code + nativeCurrency] = true)
+  );
+
+  if (newAssetsCodes.length > 0) {
+    assetsSocket?.emit(
+      ...assetPricesSubscription(newAssetsCodes, nativeCurrency)
+    );
+    assetsSocket?.emit(...ethUSDSubscription);
+  }
+};
+
+export const emitAssetInfoRequest = () => (dispatch, getState) => {
+  assetInfoHandle && clearTimeout(assetInfoHandle);
+
+  const { nativeCurrency } = getState().settings;
+  const { assetsSocket } = getState().explorer;
+  assetsSocket?.emit(...assetInfoRequest(nativeCurrency));
+  assetsSocket?.emit(...assetInfoRequest(nativeCurrency, 'asc'));
+
+  assetInfoHandle = setTimeout(() => {
+    dispatch(emitAssetInfoRequest());
+  }, ASSET_INFO_TIMEOUT);
+};
+
+export const emitChartsRequest = (
+  assetAddress,
+  chartType = DEFAULT_CHART_TYPE,
+  givenNativeCurrency
+) => (dispatch, getState) => {
+  const nativeCurrency =
+    givenNativeCurrency || getState().settings.nativeCurrency;
+  const { assetsSocket } = getState().explorer;
+  const assetCodes = Array.isArray(assetAddress)
+    ? assetAddress
+    : [assetAddress];
+  if (!isEmpty(assetCodes)) {
+    assetsSocket?.emit(
+      ...chartsRetrieval(assetCodes, nativeCurrency, chartType)
+    );
+  }
 };
 
 const listenOnAssetMessages = socket => dispatch => {
+  socket.on(messages.ASSET_INFO.RECEIVED, message => {
+    dispatch(updateTopMovers(message));
+  });
+
   socket.on(messages.ASSETS.RECEIVED, message => {
     dispatch(assetPricesReceived(message));
   });
@@ -254,37 +387,38 @@ const listenOnAssetMessages = socket => dispatch => {
   });
 
   socket.on(messages.ASSET_CHARTS.RECEIVED, message => {
-    //logger.log('charts received', get(message, 'payload.charts', {}));
+    // logger.log('charts received', message?.payload?.charts);
     dispatch(assetChartsReceived(message));
   });
 };
 
 const listenOnAddressMessages = socket => dispatch => {
+  socket.on(messages.ADDRESS_PORTFOLIO.RECEIVED, message => {
+    dispatch(portfolioReceived(message));
+  });
+
   socket.on(messages.ADDRESS_TRANSACTIONS.RECEIVED, message => {
-    // logger.log('txns received', get(message, 'payload.transactions', []));
+    // logger.log('txns received', message?.payload?.transactions);
     dispatch(transactionsReceived(message));
   });
 
   socket.on(messages.ADDRESS_TRANSACTIONS.APPENDED, message => {
-    logger.log('txns appended', get(message, 'payload.transactions', []));
+    logger.log('txns appended', message?.payload?.transactions);
     dispatch(transactionsReceived(message, true));
   });
 
   socket.on(messages.ADDRESS_TRANSACTIONS.CHANGED, message => {
-    logger.log('txns changed', get(message, 'payload.transactions', []));
+    logger.log('txns changed', message?.payload?.transactions);
     dispatch(transactionsReceived(message, true));
   });
 
   socket.on(messages.ADDRESS_TRANSACTIONS.REMOVED, message => {
-    logger.log('txns removed', get(message, 'payload.transactions', []));
+    logger.log('txns removed', message?.payload?.transactions);
     dispatch(transactionsRemoved(message));
   });
 
   socket.on(messages.ADDRESS_ASSETS.RECEIVED, message => {
     dispatch(addressAssetsReceived(message));
-    if (!disableCharts) {
-      dispatch(emitChartsRequest());
-    }
     if (isValidAssetsResponseFromZerion(message)) {
       logger.log(
         '😬 Cancelling fallback data provider listener. Zerion is good!'

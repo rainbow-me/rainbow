@@ -1,15 +1,13 @@
-import PropTypes from 'prop-types';
 import React, { useEffect, useRef } from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import { View } from 'react-primitives';
-import { compose, setPropTypes } from 'recompact';
 import AddContactIcon from '../../assets/addContactIcon.png';
-import { withNeverRerender } from '../../hoc';
+import { useTheme } from '../../context/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import Button from './Button';
 import { ImgixImage } from '@rainbow-me/images';
-import { colors } from '@rainbow-me/styles';
+import { neverRerender } from '@rainbow-me/utils';
 
 const duration = 200;
 const transition = (
@@ -42,31 +40,29 @@ const transition = (
   </Transition.Sequence>
 );
 
-const enhanceButton = compose(
-  setPropTypes({ onPress: PropTypes.func.isRequired }),
-  withNeverRerender
-);
+const AddButton = neverRerender(({ onPress }) => {
+  const { colors } = useTheme();
+  return (
+    <Button
+      backgroundColor={colors.appleBlue}
+      onPress={onPress}
+      size="small"
+      testID="add-contact-button"
+      type="pill"
+    >
+      <ImgixImage
+        source={AddContactIcon}
+        style={{
+          height: 14.7,
+          margin: 1.525,
+          width: 19,
+        }}
+      />
+    </Button>
+  );
+});
 
-const AddButton = enhanceButton(({ onPress }) => (
-  <Button
-    backgroundColor={colors.sendScreen.brightBlue}
-    onPress={onPress}
-    size="small"
-    testID="add-contact-button"
-    type="pill"
-  >
-    <ImgixImage
-      source={AddContactIcon}
-      style={{
-        height: 14.7,
-        margin: 1.525,
-        width: 19,
-      }}
-    />
-  </Button>
-));
-
-const EditButton = enhanceButton(({ onPress }) => (
+const EditButton = neverRerender(({ onPress }) => (
   <ButtonPressAnimation
     activeOpacity={0.2}
     onPress={onPress}

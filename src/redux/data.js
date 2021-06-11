@@ -1,4 +1,4 @@
-import { getUnixTime, subDays } from 'date-fns';
+import { getUnixTime, startOfMinute, sub } from 'date-fns';
 import {
   concat,
   filter,
@@ -7,6 +7,7 @@ import {
   isEmpty,
   isNil,
   keyBy,
+  keys,
   map,
   mapKeys,
   mapValues,
@@ -14,6 +15,7 @@ import {
   property,
   remove,
   toLower,
+  toUpper,
   uniqBy,
   values,
 } from 'lodash';
@@ -22,6 +24,18 @@ import {
   UNISWAP_24HOUR_PRICE_QUERY,
   UNISWAP_PRICES_QUERY,
 } from '../apollo/queries';
+/* eslint-disable-next-line import/no-cycle */
+import { addCashUpdatePurchases } from './addCash';
+/* eslint-disable-next-line import/no-cycle */
+import { uniqueTokensRefreshState } from './uniqueTokens';
+/* eslint-disable-next-line import/no-cycle */
+import { uniswapUpdateLiquidityTokens } from './uniswapLiquidity';
+import {
+  AssetTypes,
+  TransactionDirections,
+  TransactionStatusTypes,
+  TransactionTypes,
+} from '@rainbow-me/entities';
 import {
   getAssetPricesFromUniswap,
   getAssets,
@@ -30,40 +44,48 @@ import {
   saveAssetPricesFromUniswap,
   saveAssets,
   saveLocalTransactions,
-} from '../handlers/localstorage/accountLocal';
-import { getTransactionReceipt } from '../handlers/web3';
-import AssetTypes from '../helpers/assetTypes';
-import DirectionTypes from '../helpers/transactionDirectionTypes';
-import TransactionStatusTypes from '../helpers/transactionStatusTypes';
-import TransactionTypes from '../helpers/transactionTypes';
-import { divide, isZero } from '../helpers/utilities';
-import WalletTypes from '../helpers/walletTypes';
-import { Navigation } from '../navigation';
-import { triggerOnSwipeLayout } from '../navigation/onNavigationStateChange';
-import { parseAccountAssets, parseAsset } from '../parsers/accounts';
-import { parseNewTransaction } from '../parsers/newTransaction';
+} from '@rainbow-me/handlers/localstorage/accountLocal';
+import { getTransactionReceipt } from '@rainbow-me/handlers/web3';
+import WalletTypes from '@rainbow-me/helpers/walletTypes';
+import { Navigation } from '@rainbow-me/navigation';
+import { triggerOnSwipeLayout } from '@rainbow-me/navigation/onNavigationStateChange';
+import networkTypes from '@rainbow-me/networkTypes';
 import {
   getTitle,
   getTransactionLabel,
+  parseAccountAssets,
+  parseAsset,
+  parseNewTransaction,
   parseTransactions,
-} from '../parsers/transactions';
-import { shitcoins } from '../references';
-import { ethereumUtils, isLowerCaseMatch } from '../utils';
-
-/* eslint-disable-next-line import/no-cycle */
-import { addCashUpdatePurchases } from './addCash';
-/* eslint-disable-next-line import/no-cycle */
-import { uniqueTokensRefreshState } from './uniqueTokens';
-import { uniswapUpdateLiquidityTokens } from './uniswapLiquidity';
-import networkTypes from '@rainbow-me/networkTypes';
+} from '@rainbow-me/parsers';
+import {
+  coingeckoIdsFallback,
+  DPI_ADDRESS,
+  ETH_ADDRESS,
+  ETH_COINGECKO_ID,
+  shitcoins,
+} from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
+import { delay, isZero, multiply } from '@rainbow-me/utilities';
+import {
+  ethereumUtils,
+  getBlocksFromTimestamps,
+  isLowerCaseMatch,
+  TokensListenedCache,
+} from '@rainbow-me/utils';
 import logger from 'logger';
 
 const BACKUP_SHEET_DELAY_MS = 3000;
 
 let pendingTransactionsHandle = null;
+let genericAssetsHandle = null;
 const TXN_WATCHER_MAX_TRIES = 60;
 const TXN_WATCHER_POLL_INTERVAL = 5000; // 5 seconds
+const GENERIC_ASSETS_REFRESH_INTERVAL = 60000; // 1 minute
+const GENERIC_ASSETS_FALLBACK_TIMEOUT = 10000; // 10 seconds
+
+export const COINGECKO_IDS_ENDPOINT =
+  'https://api.coingecko.com/api/v3/coins/list?include_platform=true&asset_platform_id=ethereum';
 
 // -- Constants --------------------------------------- //
 
@@ -71,6 +93,9 @@ const DATA_UPDATE_ASSET_PRICES_FROM_UNISWAP =
   'data/DATA_UPDATE_ASSET_PRICES_FROM_UNISWAP';
 const DATA_UPDATE_ASSETS = 'data/DATA_UPDATE_ASSETS';
 const DATA_UPDATE_GENERIC_ASSETS = 'data/DATA_UPDATE_GENERIC_ASSETS';
+const DATA_UPDATE_ETH_USD = 'data/DATA_UPDATE_ETH_USD';
+const DATA_UPDATE_ETH_USD_CHARTS = 'data/DATA_UPDATE_ETH_USD_CHARTS';
+const DATA_UPDATE_PORTFOLIOS = 'data/DATA_UPDATE_PORTFOLIOS';
 const DATA_UPDATE_TRANSACTIONS = 'data/DATA_UPDATE_TRANSACTIONS';
 const DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION =
   'data/DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION';
@@ -128,6 +153,140 @@ export const dataLoadState = () => async (dispatch, getState) => {
   } catch (error) {
     dispatch({ type: DATA_LOAD_TRANSACTIONS_FAILURE });
   }
+  genericAssetsHandle = setTimeout(() => {
+    dispatch(genericAssetsFallback());
+  }, GENERIC_ASSETS_FALLBACK_TIMEOUT);
+};
+
+export const fetchAssetPrices = async (coingeckoIds, nativeCurrency) => {
+  try {
+    const url = `https://api.coingecko.com/api/v3/simple/price?ids=${coingeckoIds
+      .filter(val => !!val)
+      .sort()
+      .join(
+        ','
+      )}&vs_currencies=${nativeCurrency}&include_24hr_change=true&include_last_updated_at=true`;
+    const priceRequest = await fetch(url);
+    return priceRequest.json();
+  } catch (e) {
+    logger.log(`Error trying to fetch ${coingeckoIds} prices`, e);
+  }
+};
+
+const genericAssetsFallback = () => async (dispatch, getState) => {
+  logger.log('ZERION IS DOWN! ENABLING GENERIC ASSETS FALLBACK');
+  const { nativeCurrency } = getState().settings;
+  const formattedNativeCurrency = toLower(nativeCurrency);
+  let ids;
+  try {
+    const request = await fetch(COINGECKO_IDS_ENDPOINT);
+    ids = await request.json();
+  } catch (e) {
+    ids = coingeckoIdsFallback;
+  }
+
+  const allAssets = [
+    {
+      asset_code: ETH_ADDRESS,
+      coingecko_id: ETH_COINGECKO_ID,
+      decimals: 18,
+      name: 'Ethereum',
+      symbol: 'ETH',
+    },
+    {
+      asset_code: DPI_ADDRESS,
+      coingecko_id: 'defipulse-index',
+      decimals: 18,
+      name: 'DefiPulse Index',
+      symbol: 'DPI',
+    },
+  ];
+
+  keys(TokensListenedCache).forEach(address => {
+    const coingeckoAsset = ids.find(
+      ({ platforms: { ethereum: tokenAddress } }) =>
+        toLower(tokenAddress) === address
+    );
+
+    if (coingeckoAsset) {
+      allAssets.push({
+        asset_code: address,
+        coingecko_id: coingeckoAsset.id,
+        name: coingeckoAsset.name,
+        symbol: toUpper(coingeckoAsset.symbol),
+      });
+    }
+  });
+
+  const allAssetsUnique = uniqBy(allAssets, token => token.asset_code);
+
+  let prices = {};
+  const pricePageSize = 80;
+  const pages = Math.ceil(allAssetsUnique.length / pricePageSize);
+  try {
+    for (let currentPage = 0; currentPage < pages; currentPage++) {
+      const from = currentPage * pricePageSize;
+      const to = from + pricePageSize;
+      const currentPageIds = allAssetsUnique
+        .slice(from, to)
+        .map(({ coingecko_id }) => coingecko_id);
+
+      const pricesForCurrentPage = await fetchAssetPrices(
+        currentPageIds,
+        formattedNativeCurrency
+      );
+      await delay(1000);
+      prices = { ...prices, ...pricesForCurrentPage };
+    }
+  } catch (e) {
+    logger.sentry('error loading generic asset prices from coingecko', e);
+  }
+
+  if (!isEmpty(prices)) {
+    Object.keys(prices).forEach(key => {
+      for (let i = 0; i < allAssetsUnique.length; i++) {
+        if (toLower(allAssetsUnique[i].coingecko_id) === toLower(key)) {
+          allAssetsUnique[i].price = {
+            changed_at: prices[key].last_updated_at,
+            relative_change_24h:
+              prices[key][`${formattedNativeCurrency}_24h_change`],
+            value: prices[key][`${formattedNativeCurrency}`],
+          };
+          break;
+        }
+      }
+    });
+  }
+
+  const allPrices = {};
+
+  allAssetsUnique.forEach(asset => {
+    allPrices[asset.asset_code] = asset;
+  });
+
+  dispatch(
+    assetPricesReceived(
+      {
+        meta: {
+          currency: 'usd',
+          status: 'ok',
+        },
+        payload: { prices: allPrices },
+      },
+      true
+    )
+  );
+
+  genericAssetsHandle = setTimeout(() => {
+    logger.log('updating generic assets via fallback');
+    dispatch(genericAssetsFallback());
+  }, GENERIC_ASSETS_REFRESH_INTERVAL);
+};
+
+const disableGenericAssetsFallbackIfNeeded = () => {
+  if (genericAssetsHandle) {
+    clearTimeout(genericAssetsHandle);
+  }
 };
 
 export const dataResetState = () => (dispatch, getState) => {
@@ -154,8 +313,8 @@ export const dataUpdateAssets = assets => (dispatch, getState) => {
 
 const checkMeta = message => (dispatch, getState) => {
   const { accountAddress, nativeCurrency } = getState().settings;
-  const address = get(message, 'meta.address');
-  const currency = get(message, 'meta.currency');
+  const address = message?.meta?.address;
+  const currency = message?.meta?.currency;
   return (
     isLowerCaseMatch(address, accountAddress) &&
     isLowerCaseMatch(currency, nativeCurrency)
@@ -174,13 +333,28 @@ const checkForConfirmedSavingsActions = transactionsData => dispatch => {
   }
 };
 
+export const portfolioReceived = message => async (dispatch, getState) => {
+  if (message?.meta?.status !== 'ok') return;
+  if (!message?.payload?.portfolio) return;
+
+  const { portfolios } = getState().data;
+
+  const newPortfolios = { ...portfolios };
+  newPortfolios[message.meta.address] = message.payload.portfolio;
+
+  dispatch({
+    payload: newPortfolios,
+    type: DATA_UPDATE_PORTFOLIOS,
+  });
+};
+
 export const transactionsReceived = (message, appended = false) => async (
   dispatch,
   getState
 ) => {
   const isValidMeta = dispatch(checkMeta(message));
   if (!isValidMeta) return;
-  const transactionData = get(message, 'payload.transactions', []);
+  const transactionData = message?.payload?.transactions ?? [];
   if (appended) {
     dispatch(checkForConfirmedSavingsActions(transactionData));
   }
@@ -231,7 +405,7 @@ export const transactionsRemoved = message => (dispatch, getState) => {
   const isValidMeta = dispatch(checkMeta(message));
   if (!isValidMeta) return;
 
-  const transactionData = get(message, 'payload.transactions', []);
+  const transactionData = message?.payload?.transactions ?? [];
   if (!transactionData.length) return;
   const { accountAddress, network } = getState().settings;
   const { transactions } = getState().data;
@@ -257,10 +431,9 @@ export const addressAssetsReceived = (
 ) => (dispatch, getState) => {
   const isValidMeta = dispatch(checkMeta(message));
   if (!isValidMeta) return;
-
   const { accountAddress, network } = getState().settings;
   const { uniqueTokens } = getState().uniqueTokens;
-  const payload = values(get(message, 'payload.assets', {}));
+  const payload = values(message?.payload?.assets ?? {});
   let assets = filter(
     payload,
     asset =>
@@ -303,9 +476,7 @@ export const addressAssetsReceived = (
     );
   }
 
-  parsedAssets = parsedAssets.filter(
-    asset => !!Number(get(asset, 'balance.amount'))
-  );
+  parsedAssets = parsedAssets.filter(asset => !!Number(asset?.balance?.amount));
 
   saveAssets(parsedAssets, accountAddress, network);
   if (parsedAssets.length > 0) {
@@ -327,12 +498,13 @@ export const addressAssetsReceived = (
 
 const subscribeToMissingPrices = addresses => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
-  const { genericAssets, uniswapPricesQuery } = getState().data;
+  const { uniswapPricesQuery } = getState().data;
+
   if (uniswapPricesQuery) {
     uniswapPricesQuery.refetch({ addresses });
   } else {
     const newQuery = uniswapClient.watchQuery({
-      fetchPolicy: 'network-only',
+      fetchPolicy: 'no-cache',
       pollInterval: 15000, // 15 seconds
       query: UNISWAP_PRICES_QUERY,
       variables: {
@@ -342,49 +514,72 @@ const subscribeToMissingPrices = addresses => (dispatch, getState) => {
 
     const newSubscription = newQuery.subscribe({
       next: async ({ data }) => {
-        if (data && data.tokens) {
-          const nativePriceOfEth = ethereumUtils.getEthPriceUnit(genericAssets);
-          const tokenAddresses = map(data.tokens, property('id'));
+        try {
+          if (data?.tokens) {
+            const nativePriceOfEth = ethereumUtils.getEthPriceUnit();
+            const tokenAddresses = map(data.tokens, property('id'));
 
-          const yesterday = getUnixTime(subDays(new Date(), 1));
-          const historicalPriceCalls = map(tokenAddresses, address =>
-            get24HourPrice(address, yesterday)
-          );
-          const historicalPriceResults = await Promise.all(
-            historicalPriceCalls
-          );
-          const mappedHistoricalData = keyBy(historicalPriceResults, 'id');
-          const missingHistoricalPrices = mapValues(
-            mappedHistoricalData,
-            value => value.priceUSD
-          );
+            const yesterday = getUnixTime(
+              startOfMinute(sub(Date.now(), { days: 1 }))
+            );
+            const [{ number: yesterdayBlock }] = await getBlocksFromTimestamps([
+              yesterday,
+            ]);
 
-          const mappedPricingData = keyBy(data.tokens, 'id');
-          const missingPrices = mapValues(mappedPricingData, token =>
-            divide(nativePriceOfEth, token.derivedETH)
-          );
-          const missingPriceInfo = mapValues(
-            missingPrices,
-            (currentPrice, key) => {
-              const historicalPrice = get(missingHistoricalPrices, `[${key}]`);
-              const tokenAddress = get(mappedPricingData, `[${key}].id`);
-              const relativePriceChange = historicalPrice
-                ? ((currentPrice - historicalPrice) / currentPrice) * 100
-                : 0;
-              return {
-                price: currentPrice,
-                relativePriceChange,
-                tokenAddress,
-              };
-            }
-          );
-          const tokenPricingInfo = mapKeys(missingPriceInfo, 'tokenAddress');
+            const historicalPriceCalls = map(tokenAddresses, address =>
+              get24HourPrice(address, yesterdayBlock)
+            );
+            const historicalPriceResults = await Promise.all(
+              historicalPriceCalls
+            );
+            const mappedHistoricalData = keyBy(historicalPriceResults, 'id');
+            const { chartsEthUSDDay } = getState().charts;
+            const ethereumPriceOneDayAgo = chartsEthUSDDay?.[0]?.[1];
 
-          saveAssetPricesFromUniswap(tokenPricingInfo, accountAddress, network);
-          dispatch({
-            payload: tokenPricingInfo,
-            type: DATA_UPDATE_ASSET_PRICES_FROM_UNISWAP,
-          });
+            const missingHistoricalPrices = mapValues(
+              mappedHistoricalData,
+              value => multiply(ethereumPriceOneDayAgo, value?.derivedETH)
+            );
+
+            const mappedPricingData = keyBy(data.tokens, 'id');
+            const missingPrices = mapValues(mappedPricingData, token =>
+              multiply(nativePriceOfEth, token.derivedETH)
+            );
+            const missingPriceInfo = mapValues(
+              missingPrices,
+              (currentPrice, key) => {
+                const historicalPrice = get(
+                  missingHistoricalPrices,
+                  `[${key}]`
+                );
+                const tokenAddress = get(mappedPricingData, `[${key}].id`);
+                const relativePriceChange = historicalPrice
+                  ? ((currentPrice - historicalPrice) / currentPrice) * 100
+                  : 0;
+                return {
+                  price: currentPrice,
+                  relativePriceChange,
+                  tokenAddress,
+                };
+              }
+            );
+            const tokenPricingInfo = mapKeys(missingPriceInfo, 'tokenAddress');
+
+            saveAssetPricesFromUniswap(
+              tokenPricingInfo,
+              accountAddress,
+              network
+            );
+            dispatch({
+              payload: tokenPricingInfo,
+              type: DATA_UPDATE_ASSET_PRICES_FROM_UNISWAP,
+            });
+          }
+        } catch (error) {
+          logger.log(
+            'Error fetching historical prices from the subgraph',
+            error
+          );
         }
       },
     });
@@ -399,30 +594,55 @@ const subscribeToMissingPrices = addresses => (dispatch, getState) => {
 };
 
 const get24HourPrice = async (address, yesterday) => {
-  const result = await uniswapClient.query({
-    query: UNISWAP_24HOUR_PRICE_QUERY,
-    variables: {
-      address,
-      fetchPolicy: 'network-only',
-      timestamp: yesterday,
-    },
-  });
-  return get(result, 'data.tokenDayDatas[0]');
+  try {
+    const result = await uniswapClient.query({
+      fetchPolicy: 'no-cache',
+      query: UNISWAP_24HOUR_PRICE_QUERY(address, yesterday),
+    });
+    return result?.data?.tokens?.[0];
+  } catch (error) {
+    logger.log('Error getting missing 24hour price', error);
+    return null;
+  }
 };
 
-export const assetPricesReceived = message => dispatch => {
-  const assets = get(message, 'payload.prices', {});
-  if (isEmpty(assets)) return;
-  const parsedAssets = mapValues(assets, asset => parseAsset(asset));
-  dispatch({
-    payload: parsedAssets,
-    type: DATA_UPDATE_GENERIC_ASSETS,
-  });
+export const assetPricesReceived = (message, fromFallback = false) => (
+  dispatch,
+  getState
+) => {
+  if (!fromFallback) {
+    disableGenericAssetsFallbackIfNeeded();
+  }
+  const assets = message?.payload?.prices ?? {};
+  const { nativeCurrency } = getState().settings;
+
+  if (toLower(nativeCurrency) === message?.meta?.currency) {
+    if (isEmpty(assets)) return;
+    const parsedAssets = mapValues(assets, asset => parseAsset(asset));
+    const { genericAssets } = getState().data;
+
+    const updatedAssets = {
+      ...genericAssets,
+      ...parsedAssets,
+    };
+
+    dispatch({
+      payload: updatedAssets,
+      type: DATA_UPDATE_GENERIC_ASSETS,
+    });
+  }
+  if (message?.meta?.currency === 'usd' && assets[ETH_ADDRESS]) {
+    const value = assets[ETH_ADDRESS]?.price?.value;
+    dispatch({
+      payload: value,
+      type: DATA_UPDATE_ETH_USD,
+    });
+  }
 };
 
 export const assetPricesChanged = message => (dispatch, getState) => {
-  const price = get(message, 'payload.prices[0].price');
-  const assetAddress = get(message, 'meta.asset_code');
+  const price = message?.payload?.prices?.[0]?.price;
+  const assetAddress = message?.meta?.asset_code;
   if (isNil(price) || isNil(assetAddress)) return;
   const { genericAssets } = getState().data;
   const genericAsset = {
@@ -524,7 +744,9 @@ export const dataWatchPendingTransactions = (cb = null) => async (
           const isSelf = toLower(tx?.from) === toLower(tx?.to);
           if (!isZero(txObj.status)) {
             const newStatus = getTransactionLabel({
-              direction: isSelf ? DirectionTypes.self : DirectionTypes.out,
+              direction: isSelf
+                ? TransactionDirections.self
+                : TransactionDirections.out,
               pending: false,
               protocol: tx?.protocol,
               status:
@@ -651,9 +873,12 @@ export const updateRefetchSavings = fetch => dispatch =>
 const INITIAL_STATE = {
   assetPricesFromUniswap: {},
   assets: [], // for account-specific assets
+  ethUSDCharts: null,
+  ethUSDPrice: null,
   genericAssets: {},
   isLoadingAssets: true,
   isLoadingTransactions: true,
+  portfolios: {},
   shouldRefetchSavings: false,
   subscribers: {
     appended: [],
@@ -685,6 +910,21 @@ export default (state = INITIAL_STATE, action) => {
         ...state,
         isLoadingTransactions: false,
         transactions: action.payload,
+      };
+    case DATA_UPDATE_PORTFOLIOS:
+      return {
+        ...state,
+        portfolios: action.payload,
+      };
+    case DATA_UPDATE_ETH_USD:
+      return {
+        ...state,
+        ethUSDPrice: action.payload,
+      };
+    case DATA_UPDATE_ETH_USD_CHARTS:
+      return {
+        ...state,
+        ethUSDCharts: action.payload,
       };
     case DATA_LOAD_TRANSACTIONS_REQUEST:
       return {
@@ -737,6 +977,7 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         ...INITIAL_STATE,
+        genericAssets: state.genericAssets,
       };
     default:
       return state;

@@ -5,7 +5,8 @@ import { useDispatch } from 'react-redux';
 import NetworkTypes from '../helpers/networkTypes';
 import { explorerInit } from '../redux/explorer';
 import { uniqueTokensRefreshState } from '../redux/uniqueTokens';
-import { uniswapUpdateLiquidityState } from '../redux/uniswapLiquidity';
+import { uniswapUpdateLiquidityInfo } from '../redux/uniswapLiquidity';
+import { walletConnectLoadState } from '../redux/walletconnect';
 import { fetchWalletNames } from '../redux/wallets';
 import useAccountSettings from './useAccountSettings';
 import useSavingsAccount from './useSavingsAccount';
@@ -30,10 +31,10 @@ export default function useRefreshAccountData() {
 
     try {
       const getWalletNames = dispatch(fetchWalletNames());
-      const getUniswapLiquidity = dispatch(uniswapUpdateLiquidityState());
+      const getUniswapLiquidity = dispatch(uniswapUpdateLiquidityInfo());
       const getUniqueTokens = dispatch(uniqueTokensRefreshState());
       const explorer = dispatch(explorerInit());
-
+      const wc = dispatch(walletConnectLoadState());
       return Promise.all([
         delay(1250), // minimum duration we want the "Pull to Refresh" animation to last
         getWalletNames,
@@ -41,6 +42,7 @@ export default function useRefreshAccountData() {
         getUniqueTokens,
         refetchSavings(true),
         explorer,
+        wc,
       ]);
     } catch (error) {
       logger.log('Error refreshing data', error);

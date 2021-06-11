@@ -17,25 +17,10 @@
 #import <RNCPushNotificationIOS.h>
 #import <Sentry/Sentry.h>
 #import "RNSplashScreen.h"
+#import <AVFoundation/AVFoundation.h>
+#import <mach/mach.h>
 
-#if DEBUG
-#import <FlipperKit/FlipperClient.h>
-#import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
-#import <FlipperKitUserDefaultsPlugin/FKUserDefaultsPlugin.h>
-#import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
-#import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
-#import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
 
-static void InitializeFlipper(UIApplication *application) {
-  FlipperClient *client = [FlipperClient sharedClient];
-  SKDescriptorMapper *layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWithDefaults];
-  [client addPlugin:[[FlipperKitLayoutPlugin alloc] initWithRootNode:application withDescriptorMapper:layoutDescriptorMapper]];
-  [client addPlugin:[[FKUserDefaultsPlugin alloc] initWithSuiteName:nil]];
-  [client addPlugin:[FlipperKitReactPlugin new]];
-  [client addPlugin:[[FlipperKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
-  [client start];
-}
-#endif
 
 @interface RainbowSplashScreenManager : NSObject <RCTBridgeModule>
 @end
@@ -53,8 +38,6 @@ RCT_EXPORT_METHOD(hideAnimated) {
 }
 
 @end
-
-
 
 @implementation AppDelegate
 - (void)hideSplashScreenAnimated {
@@ -77,9 +60,9 @@ RCT_EXPORT_METHOD(hideAnimated) {
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  #if DEBUG
-    InitializeFlipper(application);
-  #endif
+
+  // Developer support; define whether internal support has been declared for this build.
+  NSLog(@"⚙️ Rainbow internals are %@.", RAINBOW_INTERNALS_ENABLED ? @"enabled" : @"disabled");
 
   [FIRApp configure];
   // Define UNUserNotificationCenter
@@ -111,10 +94,26 @@ RCT_EXPORT_METHOD(hideAnimated) {
   selector:@selector(handleRapComplete:)
       name:@"rapCompleted"
     object:nil];
+  
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleRsEscape:)
+                                                 name:@"rsEscape"
+                                               object:nil];
 
   // Splashscreen - react-native-splash-screen
   [RNSplashScreen showSplash:@"LaunchScreen" inRootView:rootView];
+
+
   return YES;
+}
+
+- (void)handleRsEscape:(NSNotification *)notification {
+  NSDictionary* userInfo = notification.userInfo;
+  NSString *msg = [NSString stringWithFormat:@"Escape via %@", userInfo[@"url"]];
+  SentryBreadcrumb *breadcrumb = [[SentryBreadcrumb alloc] init];
+  [breadcrumb setMessage:msg];
+  [SentrySDK addBreadcrumb:breadcrumb];
+  [SentrySDK captureMessage:msg];
 }
 
 - (void)handleRapInProgress:(NSNotification *)notification {

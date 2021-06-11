@@ -1,24 +1,25 @@
 import { useIsFocused } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import { IS_TESTING } from 'react-native-dotenv';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { ActivityList } from '../components/activity-list';
 import { BackButton, Header, HeaderButton } from '../components/header';
 import { Icon } from '../components/icons';
 import { Page } from '../components/layout';
 import { ProfileMasthead } from '../components/profile';
 import TransactionList from '../components/transaction-list/TransactionList';
+import { useTheme } from '../context/ThemeContext';
 import useNativeTransactionListAvailable from '../helpers/isNativeTransactionListAvailable';
 import NetworkTypes from '../helpers/networkTypes';
+import { useNavigation } from '../navigation/Navigation';
 import {
   useAccountSettings,
   useAccountTransactions,
   useContacts,
   useRequests,
-} from '../hooks';
-import { useNavigation } from '../navigation/Navigation';
+} from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
-import { colors, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 
 const ACTIVITY_LIST_INITIALIZATION_DELAY = 5000;
 
@@ -28,6 +29,7 @@ const ProfileScreenPage = styled(Page)`
 `;
 
 export default function ProfileScreen({ navigation }) {
+  const { colors } = useTheme();
   const [activityListInitialized, setActivityListInitialized] = useState(false);
   const isFocused = useIsFocused();
   const { navigate } = useNavigation();
@@ -68,13 +70,14 @@ export default function ProfileScreen({ navigation }) {
   }, [navigate]);
 
   const addCashSupportedNetworks =
-    network === NetworkTypes.kovan || network === NetworkTypes.mainnet;
+    (IS_DEV && network === NetworkTypes.kovan) ||
+    network === NetworkTypes.mainnet;
   const addCashAvailable =
     IS_TESTING === 'true' ? false : addCashSupportedNetworks;
 
   return (
     <ProfileScreenPage testID="profile-screen">
-      <Header justify="space-between">
+      <Header align="center" justify="space-between">
         <HeaderButton
           onPress={onPressSettings}
           opacityTouchable={false}

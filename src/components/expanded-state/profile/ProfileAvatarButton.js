@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react';
 import { ButtonPressAnimation } from '../../animations';
 import { ContactAvatar } from '../../contacts';
-import { colors } from '@rainbow-me/styles';
 
 const ProfileAvatarButton = ({
   color,
@@ -11,10 +10,16 @@ const ProfileAvatarButton = ({
   value,
   radiusAndroid,
 }) => {
-  const handleChangeColor = useCallback(
-    () => setColor?.(prevColor => (prevColor + 1) % colors.avatarColor.length),
-    [setColor]
-  );
+  const { colors } = useTheme();
+  const handleChangeColor = useCallback(() => {
+    setColor?.(prevColor => {
+      const idx =
+        typeof prevColor === 'string'
+          ? colors.avatarColor.indexOf(prevColor)
+          : prevColor;
+      return (idx + 1) % colors.avatarColor.length;
+    });
+  }, [setColor, colors]);
 
   return (
     <ButtonPressAnimation

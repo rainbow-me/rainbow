@@ -1,12 +1,12 @@
 import { get } from 'lodash';
 import React, { useCallback, useMemo, useState } from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { formatNative } from '../expanded-state/chart/chart-data-labels/ChartPriceLabel';
 import { Text } from '../text';
 import { useChartData } from '@rainbow-me/animated-charts';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
-import { colors, fonts } from '@rainbow-me/styles';
+import { fonts } from '@rainbow-me/styles';
 
 function trim(val) {
   return Math.min(Math.max(val, 0.05), 0.95);
@@ -63,6 +63,8 @@ export default function Labels({ color, width }) {
   const { nativeCurrency } = useAccountSettings();
   const nativeSelected = get(supportedNativeCurrencies, `${nativeCurrency}`);
   const { greatestX, greatestY, smallestX, smallestY } = useChartData();
+  const { colors } = useTheme();
+
   if (!greatestX) {
     return null;
   }
@@ -72,6 +74,7 @@ export default function Labels({ color, width }) {
   const positionMax = trim(
     (greatestY.x - smallestX.x) / (greatestX.x - smallestX.x)
   );
+
   return (
     <>
       {positionMin ? (

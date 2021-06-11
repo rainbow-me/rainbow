@@ -1,5 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
+import { captureMessage } from '@sentry/react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Keyboard } from 'react-native';
@@ -17,6 +18,7 @@ import {
   cloudBackupPasswordMinLength,
   isCloudBackupPasswordValid,
 } from '@rainbow-me/handlers/cloudBackup';
+import showWalletErrorAlert from '@rainbow-me/helpers/support';
 import {
   useDimensions,
   useMagicAutofocus,
@@ -26,20 +28,24 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 import logger from 'logger';
 
-const DescriptionText = styled(Text).attrs(({ isTinyPhone }) => ({
-  align: 'center',
-  color: colors.blueGreyDark50,
-  lineHeight: 'looser',
-  size: isTinyPhone ? 'lmedium' : 'large',
-}))``;
+const DescriptionText = styled(Text).attrs(
+  ({ isTinyPhone, theme: { colors } }) => ({
+    align: 'center',
+    color: colors.alpha(colors.blueGreyDark, 0.5),
+    lineHeight: 'looser',
+    size: isTinyPhone ? 'lmedium' : 'large',
+  })
+)``;
 
-const ImportantText = styled(DescriptionText).attrs({
-  color: colors.blueGreyDark60,
-  weight: 'medium',
-})``;
+const ImportantText = styled(DescriptionText).attrs(
+  ({ theme: { colors } }) => ({
+    color: colors.alpha(colors.blueGreyDark, 0.6),
+    weight: 'medium',
+  })
+)``;
 
 const Masthead = styled(Centered).attrs({
   direction: 'column',
@@ -49,7 +55,7 @@ const Masthead = styled(Centered).attrs({
   flex-shrink: 0;
 `;
 
-const MastheadIcon = styled(GradientText).attrs({
+const MastheadIcon = styled(GradientText).attrs(({ theme: { colors } }) => ({
   align: 'center',
   angle: false,
   colors: colors.gradients.rainbow,
@@ -58,7 +64,7 @@ const MastheadIcon = styled(GradientText).attrs({
   start: { x: 1, y: 0.5 },
   steps: [0, 0.774321, 1],
   weight: 'medium',
-})``;
+}))``;
 
 const Title = styled(Text).attrs(({ isTinyPhone }) => ({
   size: isTinyPhone ? 'large' : 'big',
@@ -72,9 +78,10 @@ const samsungGalaxy = (android && isSamsungGalaxy()) || false;
 export default function BackupCloudStep() {
   const { isTallPhone, isTinyPhone } = useDimensions();
   const currentlyFocusedInput = useRef();
+  const { goBack } = useNavigation();
   const { params } = useRoute();
   const walletCloudBackup = useWalletCloudBackup();
-  const { selectedWallet, setIsWalletLoading } = useWallets();
+  const { selectedWallet, setIsWalletLoading, isDamaged } = useWallets();
   const [validPassword, setValidPassword] = useState(false);
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(true);
@@ -91,18 +98,22 @@ export default function BackupCloudStep() {
     };
     Keyboard.addListener('keyboardDidShow', keyboardDidShow);
     Keyboard.addListener('keyboardDidHide', keyboardDidHide);
+    if (isDamaged) {
+      showWalletErrorAlert();
+      captureMessage('Damaged wallet preventing cloud backup');
+      goBack();
+    }
     return () => {
       Keyboard.removeListener('keyboardDidShow', keyboardDidShow);
       Keyboard.removeListener('keyboardDidHide', keyboardDidHide);
     };
-  }, []);
+  }, [goBack, isDamaged]);
 
   const isSettingsRoute = useRouteExistsInNavigationState(
     Routes.SETTINGS_MODAL
   );
 
   const walletId = params?.walletId || selectedWallet.id;
-  const { goBack } = useNavigation();
 
   const [label, setLabel] = useState(
     !validPassword ? `􀙶 Add to ${cloudPlatform} Backup` : '􀎽 Confirm Backup'

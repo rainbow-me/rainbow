@@ -1,7 +1,7 @@
-import networkTypes from '../../helpers/networkTypes';
 import { getGlobal, saveGlobal } from './common';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
 
-const IMAGE_METADATA = 'imageMetadata';
+export const IMAGE_METADATA = 'imageMetadata';
 const KEYBOARD_HEIGHT = 'keyboardHeight';
 const LANGUAGE = 'language';
 const NATIVE_CURRENCY = 'nativeCurrency';
@@ -19,6 +19,7 @@ export const saveKeychainIntegrityState = state =>
 export const getAuthTimelock = () => getGlobal(AUTH_TIMELOCK, null);
 
 export const saveAuthTimelock = ts => saveGlobal(AUTH_TIMELOCK, ts);
+
 export const getPinAuthAttemptsLeft = () =>
   getGlobal(PIN_AUTH_ATTEMPTS_LEFT, null);
 

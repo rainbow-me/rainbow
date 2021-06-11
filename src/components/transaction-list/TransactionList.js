@@ -1,30 +1,35 @@
 import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
-import { find, toLower } from 'lodash';
+import { toLower } from 'lodash';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { Linking, requireNativeComponent } from 'react-native';
-import ImagePicker from 'react-native-image-crop-picker';
+import { requireNativeComponent } from 'react-native';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
+import { getRandomColor } from '../../styles/colors';
+import { FloatingEmojis } from '../floating-emojis';
 import useExperimentalFlag, {
   AVATAR_PICKER,
-} from '../../config/experimentalHooks';
-import showWalletErrorAlert from '../../helpers/support';
-import TransactionActions from '../../helpers/transactionActions';
-import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
+} from '@rainbow-me/config/experimentalHooks';
+import { TransactionStatusTypes } from '@rainbow-me/entities';
+import showWalletErrorAlert from '@rainbow-me/helpers/support';
+import TransactionActions from '@rainbow-me/helpers/transactionActions';
 import {
   getHumanReadableDate,
   hasAddableContact,
-} from '../../helpers/transactions';
-import { isENSAddressFormat } from '../../helpers/validators';
-import { useAccountProfile, useWallets } from '../../hooks';
-import useSafeImageUri from '../../hooks/useSafeImageUri';
-import { useNavigation } from '../../navigation/Navigation';
-import { removeRequest } from '../../redux/requests';
-import { walletsSetSelected, walletsUpdate } from '../../redux/wallets';
-import { FloatingEmojis } from '../floating-emojis';
+} from '@rainbow-me/helpers/transactions';
+import {
+  isENSAddressFormat,
+  isUnstoppableAddressFormat,
+} from '@rainbow-me/helpers/validators';
+import {
+  useAccountProfile,
+  useOnAvatarPress,
+  useSafeImageUri,
+  useWallets,
+} from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation/Navigation';
+import { removeRequest } from '@rainbow-me/redux/requests';
 import Routes from '@rainbow-me/routes';
-import { colors } from '@rainbow-me/styles';
 import {
   abbreviations,
   ethereumUtils,
@@ -32,9 +37,6 @@ import {
 } from '@rainbow-me/utils';
 
 const NativeTransactionListView = requireNativeComponent('TransactionListView');
-
-const isAvatarEmojiPickerEnabled = true;
-const isAvatarImagePickerEnabled = true;
 
 const Container = styled.View`
   flex: 1;
@@ -61,11 +63,10 @@ export default function TransactionList({
   contacts,
   initialized,
   isLoading,
-  network,
   requests,
   transactions,
 }) {
-  const { wallets, selectedWallet, isDamaged } = useWallets();
+  const { isDamaged } = useWallets();
   const [tapTarget, setTapTarget] = useState([0, 0, 0, 0]);
   const onNewEmoji = useRef();
   const setOnNewEmoji = useCallback(
@@ -94,85 +95,7 @@ export default function TransactionList({
     });
   }, [navigate, isDamaged]);
 
-  const onRemovePhoto = useCallback(async () => {
-    // all this code is weak but lets ship it
-    const newWallets = { ...wallets };
-    const newWallet = newWallets[selectedWallet.id];
-    const account = find(newWallet.addresses, ['address', accountAddress]);
-
-    // remove zee photo
-    account.image = null;
-    newWallet.addresses[account.index] = account;
-
-    dispatch(walletsSetSelected(newWallet));
-    await dispatch(walletsUpdate(newWallets));
-  }, [dispatch, selectedWallet, accountAddress, wallets]);
-
-  const onAvatarPress = useCallback(() => {
-    if (isAvatarImagePickerEnabled) {
-      const processPhoto = image => {
-        const stringIndex = image?.path.indexOf('/tmp');
-        const newWallets = { ...wallets };
-        const walletId = selectedWallet.id;
-
-        newWallets[walletId].addresses.some((account, index) => {
-          newWallets[walletId].addresses[index].image = `~${image?.path.slice(
-            stringIndex
-          )}`;
-
-          dispatch(walletsSetSelected(newWallets[walletId]));
-          return true;
-        });
-        dispatch(walletsUpdate(newWallets));
-      };
-
-      const avatarActionSheetOptions = [
-        'Choose from Library',
-        ...(isAvatarEmojiPickerEnabled ? ['Pick an Emoji'] : []),
-        ...(accountImage ? ['Remove Photo'] : []),
-        'Cancel', // <-- cancelButtonIndex
-      ];
-
-      showActionSheetWithOptions(
-        {
-          cancelButtonIndex: avatarActionSheetOptions.length - 1,
-          destructiveButtonIndex: accountImage
-            ? avatarActionSheetOptions.length - 2
-            : undefined,
-          options: avatarActionSheetOptions,
-        },
-        async buttonIndex => {
-          if (buttonIndex === 0) {
-            ImagePicker.openPicker({
-              cropperCircleOverlay: true,
-              cropping: true,
-            }).then(processPhoto);
-          } else if (buttonIndex === 1 && isAvatarEmojiPickerEnabled) {
-            navigate(Routes.AVATAR_BUILDER, {
-              initialAccountColor: accountColor,
-              initialAccountName: accountName,
-            });
-          } else if (buttonIndex === 2 && accountImage) {
-            onRemovePhoto();
-          }
-        }
-      );
-    } else if (isAvatarEmojiPickerEnabled) {
-      navigate(Routes.AVATAR_BUILDER, {
-        initialAccountColor: accountColor,
-        initialAccountName: accountName,
-      });
-    }
-  }, [
-    accountColor,
-    accountImage,
-    accountName,
-    dispatch,
-    navigate,
-    onRemovePhoto,
-    selectedWallet.id,
-    wallets,
-  ]);
+  const onAvatarPress = useOnAvatarPress();
 
   const onReceivePress = useCallback(() => {
     if (isDamaged) {
@@ -228,10 +151,12 @@ export default function TransactionList({
         headerInfo.address = contact.nickname;
         contactColor = contact.color;
       } else {
-        headerInfo.address = isENSAddressFormat(contactAddress)
-          ? contactAddress
-          : abbreviations.address(contactAddress, 4, 10);
-        contactColor = colors.getRandomColor();
+        headerInfo.address =
+          isENSAddressFormat(contactAddress) ||
+          isUnstoppableAddressFormat(contactAddress)
+            ? contactAddress
+            : abbreviations.address(contactAddress, 4, 10);
+        contactColor = getRandomColor();
       }
 
       const isOutgoing = toLower(from) === toLower(accountAddress);
@@ -294,13 +219,7 @@ export default function TransactionList({
                 });
                 break;
               case TransactionActions.viewOnEtherscan: {
-                const normalizedHash = hash.replace(/-.*/g, '');
-                const etherscanHost = ethereumUtils.getEtherscanHostFromNetwork(
-                  network
-                );
-                Linking.openURL(
-                  `https://${etherscanHost}/tx/${normalizedHash}`
-                );
+                ethereumUtils.openTransactionEtherscanURL(hash);
                 break;
               }
               default:
@@ -309,7 +228,7 @@ export default function TransactionList({
         );
       }
     },
-    [accountAddress, contacts, navigate, network, transactions]
+    [accountAddress, contacts, navigate, transactions]
   );
 
   const onCopyAddressPress = useCallback(
@@ -349,6 +268,7 @@ export default function TransactionList({
   const isAvatarPickerAvailable = useExperimentalFlag(AVATAR_PICKER);
 
   const safeAccountImage = useSafeImageUri(accountImage);
+  const { isDarkMode, colors } = useTheme();
 
   return (
     <Container>
@@ -359,6 +279,7 @@ export default function TransactionList({
         accountName={accountSymbol}
         addCashAvailable={addCashAvailable}
         as={NativeTransactionListView}
+        darkMode={isDarkMode}
         data={data}
         isAvatarPickerAvailable={isAvatarPickerAvailable}
         isLoading={loading}

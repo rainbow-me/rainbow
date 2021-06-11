@@ -2,11 +2,11 @@ import { captureMessage } from '@sentry/react-native';
 import { get } from 'lodash';
 import React, { Fragment, useCallback } from 'react';
 import { Linking } from 'react-native';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
+import { useTheme } from '../context/ThemeContext';
 import networkInfo from '../helpers/networkInfo';
 import networkTypes from '../helpers/networkTypes';
 import showWalletErrorAlert from '../helpers/support';
-import { useAccountSettings, useDimensions, useWallets } from '../hooks';
 import { useNavigation } from '../navigation/Navigation';
 import { magicMemo } from '../utils';
 import Divider from './Divider';
@@ -14,8 +14,13 @@ import { ButtonPressAnimation, ScaleButtonZoomableAndroid } from './animations';
 import { Icon } from './icons';
 import { Centered, Row, RowWithMargins } from './layout';
 import { Text } from './text';
+import {
+  useAccountSettings,
+  useDimensions,
+  useWallets,
+} from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
-import { colors, padding, position } from '@rainbow-me/styles';
+import { padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const ButtonContainerHeight = 400;
@@ -25,28 +30,32 @@ const ButtonContainer = styled(Centered).attrs({ direction: 'column' })`
   width: ${ButtonContainerWidth};
 `;
 
-const InterstitialButton = styled(ButtonPressAnimation).attrs({
-  backgroundColor: colors.alpha(colors.blueGreyDark, 0.06),
-  borderRadius: 23,
-})`
-  ${padding(10.5, 15, 14.5)};
+const InterstitialButton = styled(ButtonPressAnimation).attrs(
+  ({ theme: { colors } }) => ({
+    backgroundColor: colors.alpha(colors.blueGreyDark, 0.06),
+    borderRadius: 23,
+  })
+)`
+  ${padding(11, 15, 14)};
 `;
 
 const InterstitialButtonRow = styled(Row)`
   margin-bottom: ${({ isSmallPhone }) => (isSmallPhone ? 19 : 42)};
 `;
 
-const InterstitialDivider = styled(Divider).attrs({
+const InterstitialDivider = styled(Divider).attrs(({ theme: { colors } }) => ({
   color: colors.rowDividerExtraLight,
   inset: [0, 0, 0, 0],
-})`
+}))`
   border-radius: 1;
 `;
 
-const CopyAddressButton = styled(ButtonPressAnimation).attrs({
-  backgroundColor: colors.alpha(colors.appleBlue, 0.06),
-  borderRadius: 23,
-})`
+const CopyAddressButton = styled(ButtonPressAnimation).attrs(
+  ({ theme: { colors } }) => ({
+    backgroundColor: colors.alpha(colors.appleBlue, 0.06),
+    borderRadius: 23,
+  })
+)`
   ${padding(10.5, 15, 14.5)};
 `;
 
@@ -61,28 +70,31 @@ const Container = styled(Centered)`
   top: 50%;
 `;
 
-const Paragraph = styled(Text).attrs({
+const Paragraph = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
   color: colors.alpha(colors.blueGreyDark, 0.4),
   letterSpacing: 'roundedMedium',
   lineHeight: 'paragraphSmall',
   size: 'lmedium',
   weight: 'semibold',
-})`
+}))`
   margin-bottom: 24;
   margin-top: 19;
 `;
 
-const Title = styled(Text).attrs({
+const Title = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
+  color: colors.dark,
   lineHeight: 32,
   size: 'bigger',
   weight: 'heavy',
-})`
+}))`
   margin-horizontal: 27;
 `;
 
-const Subtitle = styled(Title)`
+const Subtitle = styled(Title).attrs(({ theme: { colors } }) => ({
+  color: colors.dark,
+}))`
   margin-top: ${({ isSmallPhone }) => (isSmallPhone ? 19 : 42)};
 `;
 
@@ -124,23 +136,23 @@ const onAddFromFaucet = network => {
   Linking.openURL(faucetUrl);
 };
 
-const shadows = {
-  [colors.swapPurple]: [
-    [0, 5, 15, colors.dark, 0.2],
-    [0, 10, 30, colors.swapPurple, 0.4],
-  ],
-  [colors.purpleDark]: [
-    [0, 5, 15, colors.dark, 0.2],
-    [0, 10, 30, colors.purpleDark, 0.4],
-  ],
-};
-
 const InnerBPA = android ? ButtonPressAnimation : ({ children }) => children;
 
 const Wrapper = android ? ScaleButtonZoomableAndroid : AmountBPA;
 
 const AmountButton = ({ amount, backgroundColor, color, onPress }) => {
   const handlePress = useCallback(() => onPress?.(amount), [amount, onPress]);
+  const { colors } = useTheme();
+  const shadows = {
+    [colors.swapPurple]: [
+      [0, 5, 15, colors.shadow, 0.2],
+      [0, 10, 30, colors.swapPurple, 0.4],
+    ],
+    [colors.purpleDark]: [
+      [0, 5, 15, colors.shadow, 0.2],
+      [0, 10, 30, colors.purpleDark, 0.4],
+    ],
+  };
 
   return (
     <AmountButtonWrapper>
@@ -178,6 +190,7 @@ const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
   const { navigate } = useNavigation();
   const { isDamaged } = useWallets();
   const { accountAddress } = useAccountSettings();
+  const { colors } = useTheme();
 
   const handlePressAmount = useCallback(
     amount => {
@@ -222,19 +235,19 @@ const AddFundsInterstitial = ({ network, offsetY = 0 }) => {
             </Title>
             <Row justify="space-between" marginVertical={30}>
               <AmountButton
-                amount={50}
-                backgroundColor={colors.swapPurple}
-                color={colors.neonSkyblue}
-                onPress={handlePressAmount}
-              />
-              <AmountButton
                 amount={100}
                 backgroundColor={colors.swapPurple}
                 color={colors.neonSkyblue}
                 onPress={handlePressAmount}
               />
               <AmountButton
-                amount={250}
+                amount={200}
+                backgroundColor={colors.swapPurple}
+                color={colors.neonSkyblue}
+                onPress={handlePressAmount}
+              />
+              <AmountButton
+                amount={300}
                 backgroundColor={colors.purpleDark}
                 color={colors.pinkLight}
                 onPress={handlePressAmount}

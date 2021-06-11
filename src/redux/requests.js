@@ -1,11 +1,15 @@
 import { filter, get, omit, values } from 'lodash';
+import { maybeSignUri } from '@rainbow-me/handlers/imgix';
 import {
   getLocalRequests,
   removeLocalRequest,
   saveLocalRequests,
-} from '../handlers/localstorage/walletconnectRequests';
-import { dappLogoOverride, dappNameOverride } from '../helpers/dappNameHandler';
-import { getRequestDisplayDetails } from '../parsers/requests';
+} from '@rainbow-me/handlers/localstorage/walletconnectRequests';
+import {
+  dappLogoOverride,
+  dappNameOverride,
+} from '@rainbow-me/helpers/dappNameHandler';
+import { getRequestDisplayDetails } from '@rainbow-me/parsers';
 import logger from 'logger';
 
 // -- Constants --------------------------------------- //
@@ -46,7 +50,9 @@ export const addRequestToApprove = (
     logger.log('request expired!');
     return;
   }
-  const imageUrl = dappLogoOverride(peerMeta.url) || get(peerMeta, 'icons[0]');
+  const unsafeImageUrl =
+    dappLogoOverride(peerMeta.url) || get(peerMeta, 'icons[0]');
+  const imageUrl = maybeSignUri(unsafeImageUrl);
   const dappName =
     dappNameOverride(peerMeta.url) || peerMeta.name || 'Unknown Dapp';
   const dappUrl = peerMeta.url || 'Unknown Url';

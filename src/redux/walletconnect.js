@@ -24,6 +24,7 @@ import { getFCMToken } from '../model/firebase';
 import { Navigation } from '../navigation';
 import { isSigningMethod } from '../utils/signingMethods';
 import { addRequestToApprove } from './requests';
+import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 
@@ -111,7 +112,16 @@ export const walletConnectOnSessionRequest = (
     try {
       walletConnector = new WalletConnect({ clientMeta, uri }, push);
       walletConnector.on('session_request', (error, payload) => {
-        if (error) throw error;
+        if (error) {
+          analytics.track('Error on wc session_request', {
+            error,
+            payload,
+          });
+          logger.log('Error on wc session_request', payload);
+          captureException(error);
+          throw error;
+        }
+
         const { peerId, peerMeta } = payload.params[0];
 
         const imageUrl =
@@ -119,6 +129,11 @@ export const walletConnectOnSessionRequest = (
         const dappName = dappNameOverride(peerMeta.url) || peerMeta.name;
         const dappUrl = peerMeta.url;
         const dappScheme = peerMeta.scheme;
+
+        analytics.track('Showing Walletconnect session request', {
+          dappName,
+          dappUrl,
+        });
 
         Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {
           callback: async approved => {
@@ -150,10 +165,19 @@ export const walletConnectOnSessionRequest = (
         });
       });
     } catch (error) {
+      logger.log('Exception during wc session_request');
+      analytics.track('Exception on wc session_request', {
+        error,
+      });
       captureException(error);
       Alert.alert(lang.t('wallet.wallet_connect.error'));
     }
   } catch (error) {
+    logger.log('FCM exception during wc session_request');
+    analytics.track('FCM exception on wc session_request', {
+      error,
+    });
+    captureException(error);
     Alert.alert(lang.t('wallet.wallet_connect.missing_fcm'));
   }
 };
@@ -161,7 +185,15 @@ export const walletConnectOnSessionRequest = (
 const listenOnNewMessages = walletConnector => (dispatch, getState) => {
   walletConnector.on('call_request', async (error, payload) => {
     logger.log('WC Request!', error, payload);
-    if (error) throw error;
+    if (error) {
+      analytics.track('Error on wc call_request', {
+        error,
+        payload,
+      });
+      logger.log('Error on wc call_request');
+      captureException(error);
+      throw error;
+    }
     const { clientId, peerId, peerMeta } = walletConnector;
     const requestId = payload.id;
     if (!isSigningMethod(payload.method)) {
@@ -183,7 +215,7 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
       const { selected } = getState().wallets;
       const selectedWallet = selected || {};
       const isReadOnlyWallet = selectedWallet.type === WalletTypes.readOnly;
-      if (isReadOnlyWallet) {
+      if (isReadOnlyWallet && !enableActionsOnReadOnlyWallet) {
         Alert.alert(`You need to import the wallet in order to do this`);
         walletConnector.rejectRequest({
           error: { message: 'JSON RPC method not supported' },
@@ -199,6 +231,7 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
         : null;
 
       if (request) {
+        analytics.track('Showing Walletconnect signing request');
         InteractionManager.runAfterInteractions(() => {
           setTimeout(() => {
             Navigation.handleAction(Routes.CONFIRM_REQUEST, {
@@ -243,6 +276,11 @@ export const walletConnectLoadState = () => async (dispatch, getState) => {
       return dispatch(listenOnNewMessages(walletConnector));
     });
   } catch (error) {
+    analytics.track('Error on walletConnectLoadState', {
+      error,
+    });
+    logger.log('Error on wc walletConnectLoadState', error);
+    captureException(error);
     newWalletConnectors = {};
   }
   if (!isEmpty(newWalletConnectors)) {

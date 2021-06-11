@@ -1,13 +1,16 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import React, { useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { InitialRouteContext } from '../context/initialRoute';
 import AddCashSheet from '../screens/AddCashSheet';
+import AddTokenSheet from '../screens/AddTokenSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import BackupSheet from '../screens/BackupSheet';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
+import ConnectedDappsSheet from '../screens/ConnectedDappsSheet';
 import DepositModal from '../screens/DepositModal';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
+import ExplainSheet from '../screens/ExplainSheet';
 import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
 import ModalScreen from '../screens/ModalScreen';
 import PinAuthenticationScreen from '../screens/PinAuthenticationScreen';
@@ -16,6 +19,7 @@ import RestoreSheet from '../screens/RestoreSheet';
 import SavingsSheet from '../screens/SavingsSheet';
 import SendSheet from '../screens/SendSheet';
 import SettingsModal from '../screens/SettingsModal';
+import ShowcaseSheet from '../screens/ShowcaseSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
@@ -24,6 +28,7 @@ import WelcomeScreen from '../screens/WelcomeScreen';
 import WithdrawModal from '../screens/WithdrawModal';
 import WyreWebview from '../screens/WyreWebview';
 import { SwipeNavigator } from './SwipeNavigator';
+import { createBottomSheetNavigator } from './bottom-sheet';
 import {
   closeKeyboardOnClose,
   defaultScreenStackOptions,
@@ -36,8 +41,8 @@ import {
   emojiPreset,
   exchangePreset,
   expandedPreset,
+  expandedPresetWithSmallGestureResponseDistance,
   overlayExpandedPreset,
-  settingsPreset,
   sheetPreset,
   sheetPresetWithSmallGestureResponseDistance,
   speedUpAndCancelStyleInterpolator,
@@ -49,6 +54,7 @@ import { ExchangeModalNavigator } from './index';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
+const BSStack = createBottomSheetNavigator();
 
 function SendFlowNavigator() {
   return (
@@ -91,10 +97,14 @@ function ImportSeedPhraseFlowNavigator() {
 }
 
 function AddCashFlowNavigator() {
+  const { colors } = useTheme();
+  const themedWyreWebviewOptions = useMemo(() => wyreWebviewOptions(colors), [
+    colors,
+  ]);
   return (
     <Stack.Navigator
       initialRouteName={Routes.WYRE_WEBVIEW}
-      screenOptions={wyreWebviewOptions}
+      screenOptions={themedWyreWebviewOptions}
     >
       <Stack.Screen component={WyreWebview} name={Routes.WYRE_WEBVIEW} />
     </Stack.Navigator>
@@ -117,13 +127,13 @@ function MainNavigator() {
         options={emojiPreset}
       />
       <Stack.Screen
-        component={ExpandedAssetSheet}
-        name={Routes.EXPANDED_ASSET_SHEET}
+        component={ChangeWalletSheet}
+        name={Routes.CHANGE_WALLET_SHEET}
         options={expandedPreset}
       />
       <Stack.Screen
-        component={ChangeWalletSheet}
-        name={Routes.CHANGE_WALLET_SHEET}
+        component={ConnectedDappsSheet}
+        name={Routes.CONNECTED_DAPPS}
         options={expandedPreset}
       />
       <Stack.Screen
@@ -176,8 +186,8 @@ function MainNavigator() {
         options={sheetPreset}
       />
       <Stack.Screen
-        component={SavingsSheet}
-        name={Routes.SAVINGS_SHEET}
+        component={AddTokenSheet}
+        name={Routes.ADD_TOKEN_SHEET}
         options={bottomSheetPreset}
       />
       <Stack.Screen
@@ -206,7 +216,11 @@ function MainNavigator() {
         name={Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR}
         options={sheetPresetWithSmallGestureResponseDistance}
       />
-      <Stack.Screen component={WelcomeScreen} name={Routes.WELCOME_SCREEN} />
+      <Stack.Screen
+        component={WelcomeScreen}
+        name={Routes.WELCOME_SCREEN}
+        options={{ animationEnabled: false, gestureEnabled: false }}
+      />
       <Stack.Screen
         component={AddCashFlowNavigator}
         name={Routes.WYRE_WEBVIEW_NAVIGATOR}
@@ -229,13 +243,8 @@ function MainOuterNavigator() {
       />
       <OuterStack.Screen
         component={ExpandedAssetSheet}
-        name={Routes.EXPANDED_ASSET_SCREEN}
-        options={sheetPreset}
-      />
-      <OuterStack.Screen
-        component={SettingsModal}
-        name={Routes.SETTINGS_MODAL}
-        options={settingsPreset}
+        name={Routes.TOKEN_INDEX_SCREEN}
+        options={expandedPresetWithSmallGestureResponseDistance}
       />
       <OuterStack.Screen
         component={PinAuthenticationScreen}
@@ -247,18 +256,57 @@ function MainOuterNavigator() {
         name={Routes.BACKUP_SCREEN}
         options={sheetPreset}
       />
-      <OuterStack.Screen
+    </OuterStack.Navigator>
+  );
+}
+
+function BSNavigator() {
+  return (
+    <BSStack.Navigator>
+      <BSStack.Screen
+        component={MainOuterNavigator}
+        name={Routes.MAIN_NAVIGATOR_WRAPPER}
+      />
+      <BSStack.Screen
         component={SendFlowNavigator}
         name={Routes.SEND_SHEET_NAVIGATOR}
-        options={sheetPresetWithSmallGestureResponseDistance}
       />
-    </OuterStack.Navigator>
+      <BSStack.Screen
+        component={ExpandedAssetSheet}
+        name={Routes.TOKEN_INDEX_SHEET}
+      />
+      <BSStack.Screen
+        component={ShowcaseSheet}
+        name={Routes.SHOWCASE_SHEET}
+        options={{
+          height: '90%',
+        }}
+      />
+      <BSStack.Screen
+        component={ExpandedAssetSheet}
+        name={Routes.EXPANDED_ASSET_SHEET}
+      />
+      <BSStack.Screen
+        component={ExpandedAssetSheet}
+        name={Routes.EXPANDED_ASSET_SHEET_POOLS}
+        options={expandedPresetWithSmallGestureResponseDistance}
+      />
+      <BSStack.Screen
+        component={ExplainSheet}
+        name={Routes.EXPLAIN_SHEET}
+        options={{
+          height: '100%',
+        }}
+      />
+      <BSStack.Screen component={SavingsSheet} name={Routes.SAVINGS_SHEET} />
+      <BSStack.Screen component={SettingsModal} name={Routes.SETTINGS_MODAL} />
+    </BSStack.Navigator>
   );
 }
 
 const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
   <NavigationContainer onStateChange={onNavigationStateChange} ref={ref}>
-    <MainOuterNavigator />
+    <BSNavigator />
   </NavigationContainer>
 ));
 

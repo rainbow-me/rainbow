@@ -4,13 +4,13 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import Animated, { Easing } from 'react-native-reanimated';
 import { mixColor, useTimingTransition } from 'react-native-redash';
-import { useInterval, useTimeout, useTransformOrigin } from '../../hooks';
 import { magicMemo } from '../../utils';
 
 import { interpolate } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import { colors, position } from '@rainbow-me/styles';
+import { useInterval, useTimeout, useTransformOrigin } from '@rainbow-me/hooks';
+import { position } from '@rainbow-me/styles';
 
 const AnimatedText = Animated.createAnimatedComponent(Text);
 
@@ -26,6 +26,8 @@ const SheetSubtitleCyclerItem = ({ error, selected, subtitle }) => {
     duration: error ? 50 : 200,
     ease,
   });
+
+  const { colors } = useTheme();
 
   return (
     <Animated.View {...position.coverAsObject} style={{ opacity }}>

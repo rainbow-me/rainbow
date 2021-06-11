@@ -10,8 +10,8 @@ import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import com.microsoft.codepush.react.CodePush;
 import io.branch.rnbranch.RNBranchModule;
+import me.rainbow.NativeModules.Internals.InternalPackage;
 import me.rainbow.NativeModules.RNBip39.RNBip39Package;
 import me.rainbow.NativeModules.RNBackHandler.RNBackHandlerPackage;
 import me.rainbow.NativeModules.RNReview.RNReviewPackage;
@@ -19,13 +19,12 @@ import me.rainbow.NativeModules.RNTextAnimatorPackage.RNTextAnimatorPackage;
 import me.rainbow.NativeModules.RNZoomableButton.RNZoomableButtonPackage;
 
 import com.facebook.react.bridge.JSIModulePackage;
-import com.swmansion.gesturehandler.react.RNZoomableButtonManager;
 import com.swmansion.reanimated.ReanimatedJSIModulePackage;
 
 
 public class MainApplication extends Application implements ReactApplication {
-
-  private final ReactNativeHost mReactNativeHost =
+    private static Context context;
+    private final ReactNativeHost mReactNativeHost =
       new ReactNativeHost(this) {
         @Override
         public boolean getUseDeveloperSupport() {
@@ -42,6 +41,7 @@ public class MainApplication extends Application implements ReactApplication {
           packages.add(new RNBackHandlerPackage());
           packages.add(new RNTextAnimatorPackage());
           packages.add(new RNZoomableButtonPackage());
+          packages.add(new InternalPackage());
           return packages;
         }
 
@@ -56,12 +56,6 @@ public class MainApplication extends Application implements ReactApplication {
            return new ReanimatedJSIModulePackage();
          }
          // */
-
-
-        @Override
-        protected String getJSBundleFile() {
-            return CodePush.getJSBundleFile();
-        }
       };
 
   @Override
@@ -72,6 +66,7 @@ public class MainApplication extends Application implements ReactApplication {
   @Override
   public void onCreate() {
     super.onCreate();
+    context = this;
     SoLoader.init(this, /* native exopackage */ false);
     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
     RNBranchModule.getAutoInstance(this);
@@ -107,4 +102,7 @@ public class MainApplication extends Application implements ReactApplication {
       }
     }
   }
+    public static Context getAppContext() {
+        return MainApplication.context;
+    }
 }

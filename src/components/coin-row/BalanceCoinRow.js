@@ -2,16 +2,11 @@ import { get } from 'lodash';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import Animated from 'react-native-reanimated';
 import { View } from 'react-primitives';
-import { compose } from 'recompact';
-import styled from 'styled-components/primitives';
-import {
-  withCoinRecentlyPinned,
-  withEditOptions,
-  withOpenBalances,
-} from '../../hoc';
-import { useCoinListEditedValue } from '../../hooks/useCoinListEdited';
+import { connect } from 'react-redux';
+import styled from 'styled-components';
+import { useTheme } from '../../context/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
-import { initialChartExpandedStateSheetHeight } from '../expanded-state/ChartExpandedState';
+import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/ChartExpandedState';
 import { Column, FlexItem, Row } from '../layout';
 import BalanceText from './BalanceText';
 import BottomRowText from './BottomRowText';
@@ -20,7 +15,11 @@ import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import { buildAssetUniqueIdentifier } from '@rainbow-me/helpers/assets';
 import { useCoinListEdited } from '@rainbow-me/hooks';
-import { colors } from '@rainbow-me/styles';
+import { useCoinListEditedValue } from '@rainbow-me/hooks/useCoinListEdited';
+import {
+  pushSelectedCoin,
+  removeSelectedCoin,
+} from '@rainbow-me/redux/editOptions';
 import { isNewValueForObjectPaths, isNewValueForPath } from '@rainbow-me/utils';
 
 const editTranslateOffsetInner = android ? -8 : 0;
@@ -38,7 +37,8 @@ const BalanceCoinRowCoinCheckButton = styled(CoinCheckButton).attrs({
 const PercentageText = styled(BottomRowText).attrs({
   align: 'right',
 })`
-  ${({ isPositive }) => (isPositive ? `color: ${colors.green};` : null)};
+  color: ${({ isPositive, theme: { colors } }) =>
+    isPositive ? colors.green : colors.alpha(colors.blueGreyDark, 0.5)};
 `;
 
 const BottomRowContainer = ios
@@ -61,6 +61,7 @@ const PriceContainer = ios
     `;
 
 const BottomRow = ({ balance, native }) => {
+  const { colors } = useTheme();
   const percentChange = get(native, 'change');
   const percentageChangeDisplay = formatPercentageString(percentChange);
 
@@ -69,7 +70,9 @@ const BottomRow = ({ balance, native }) => {
   return (
     <BottomRowContainer>
       <FlexItem flex={1}>
-        <BottomRowText>{get(balance, 'display', '')}</BottomRowText>
+        <BottomRowText color={colors.alpha(colors.blueGreyDark, 0.5)}>
+          {get(balance, 'display', '')}
+        </BottomRowText>
       </FlexItem>
       <View>
         <PercentageText isPositive={isPositive}>
@@ -82,6 +85,7 @@ const BottomRow = ({ balance, native }) => {
 
 const TopRow = ({ name, native, nativeCurrencySymbol }) => {
   const nativeDisplay = get(native, 'balance.display');
+  const { colors } = useTheme();
 
   return (
     <TopRowContainer>
@@ -90,7 +94,7 @@ const TopRow = ({ name, native, nativeCurrencySymbol }) => {
       </FlexItem>
       <PriceContainer>
         <BalanceText
-          color={nativeDisplay ? null : colors.blueGreyLight}
+          color={nativeDisplay ? colors.dark : colors.blueGreyLight}
           numberOfLines={1}
         >
           {nativeDisplay || `${nativeCurrencySymbol}0.00`}
@@ -176,7 +180,13 @@ const BalanceCoinRow = ({
         </ButtonPressAnimation>
       </Animated.View>
       <Animated.View
-        style={{ opacity: isCoinListEditedValue, position: 'absolute' }}
+        style={{
+          marginLeft: Animated.multiply(
+            -editTranslateOffset * 1.5,
+            Animated.sub(1, isCoinListEditedValue)
+          ),
+          position: 'absolute',
+        }}
       >
         <BalanceCoinRowCoinCheckButton
           onPress={handleEditModePress}
@@ -214,8 +224,16 @@ const arePropsEqual = (prev, next) => {
 
 const MemoizedBalanceCoinRow = React.memo(BalanceCoinRow, arePropsEqual);
 
-export default compose(
-  withOpenBalances,
-  withEditOptions,
-  withCoinRecentlyPinned
+export default connect(
+  ({
+    editOptions: { recentlyPinnedCount },
+    openStateSettings: { openSmallBalances },
+  }) => ({
+    openSmallBalances,
+    recentlyPinnedCount,
+  }),
+  {
+    pushSelectedCoin,
+    removeSelectedCoin,
+  }
 )(MemoizedBalanceCoinRow);

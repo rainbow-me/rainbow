@@ -310,9 +310,9 @@
       },
       "settings": {
         "copy_address": "Copy Address",
-        "copy_seed_phrase": "Copy Seed Phrase",
-        "hide_seed_phrase": "Hide Seed Phrase",
-        "show_seed_phrase": "Show Seed Phrase"
+        "copy_seed_phrase": "Copy Secret Phrase",
+        "hide_seed_phrase": "Hide Secret Phrase",
+        "show_seed_phrase": "Show Secret Phrase"
       },
       "message_signing": {
         "message": "Message",

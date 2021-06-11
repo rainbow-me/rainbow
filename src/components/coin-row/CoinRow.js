@@ -1,5 +1,5 @@
 import React, { createElement } from 'react';
-import styled from 'styled-components/primitives';
+import styled from 'styled-components';
 import { CoinIcon, CoinIconGroup, CoinIconSize } from '../coin-icon';
 import { Column, Row } from '../layout';
 import { useAccountSettings } from '@rainbow-me/hooks';

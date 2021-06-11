@@ -51,6 +51,8 @@
     _dismissable = YES;
     _ignoreBottomOffset = NO;
     _interactWithScrollView = true;
+    _hidden = false;
+    _disableShortFormAfterTransitionToLongForm = false;
   }
   
   return self;
@@ -64,6 +66,24 @@
   _isShortFormEnabled = isShortFormEnabled;
   [(PanModalViewController*) [_controller parentVC] panModalSetNeedsLayoutUpdateWrapper];
   
+}
+
+- (void) layout {
+  [(PanModalViewController*) [_controller parentVC] panModalSetNeedsLayoutUpdateWrapper];
+}
+
+- (void) setHidden:(BOOL)hidden {
+  if (hidden) {
+    _hidden = hidden;
+    dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC);
+    dispatch_after(delay, dispatch_get_main_queue(), ^(void){
+      if (self.superview.superview.subviews.count > 0) {
+        self.superview.superview.subviews[0].backgroundColor = [UIColor.whiteColor colorWithAlphaComponent:0];
+      }
+      [(PanModalViewController*) [_controller parentVC] hide];
+    });
+   
+  }
 }
 
 - (void)jumpTo:(nonnull NSNumber*)point {
@@ -422,6 +442,18 @@ RCT_EXPORT_METHOD(jumpTo:(nonnull NSNumber*)point tag:(nonnull NSNumber*) reactT
   
 }
 
+RCT_EXPORT_METHOD(layout:(nonnull NSNumber*) reactTag) {
+  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *,UIView *> *viewRegistry) {
+    UIView *view = viewRegistry[reactTag];
+    if (!view || ![view isKindOfClass:[RNCMScreenView class]]) {
+      RCTLogError(@"Cannot find RNCMScreenView with tag #%@", reactTag);
+      return;
+    }
+    [(RNCMScreenView *) view layout];
+  }];
+  
+}
+
 
 RCT_EXPORT_MODULE()
 
@@ -449,10 +481,12 @@ RCT_EXPORT_VIEW_PROPERTY(shortFormHeight, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(isShortFormEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(blocksBackgroundTouches, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(anchorModalToLongForm, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(disableShortFormAfterTransitionToLongForm, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(allowsTapToDismiss, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(allowsDragToDismiss, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(startFromShortForm, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(ignoreBottomOffset, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(hidden, BOOL)
 
 
 - (UIView *)view

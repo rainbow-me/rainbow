@@ -4,16 +4,15 @@ import styled from 'styled-components';
 import { Centered } from '../components/layout';
 import { Sheet } from '../components/sheet';
 import { Text } from '../components/text';
-import { useAppState } from '../hooks';
 import { useNavigation } from '../navigation/Navigation';
-import { colors } from '@rainbow-me/styles';
+import { useAppState } from '@rainbow-me/hooks';
 
-const BodyText = styled(Text).attrs({
+const BodyText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
   color: colors.alpha(colors.blueGreyDark, 0.6),
   lineHeight: 'loosest',
   size: 'big',
-})`
+}))`
   padding-bottom: 23;
   padding-top: 4;
 `;
@@ -37,6 +36,7 @@ const titlesMap = {
 };
 
 const WalletConnectRedirectSheet = () => {
+  const { colors } = useTheme();
   const { goBack } = useNavigation();
   const { appState } = useAppState();
   const { params } = useRoute();
@@ -51,16 +51,16 @@ const WalletConnectRedirectSheet = () => {
 
   return (
     <Sheet hideHandle>
-      <Centered direction="column" paddingTop={12}>
+      <Centered direction="column" paddingTop={12} testID="wc-redirect-sheet">
         <Text letterSpacing="zero" size="h2">
           {emojisMap[type]}
         </Text>
         <Centered marginTop={9}>
-          <Text size="big" weight="bold">
+          <Text color={colors.dark} size="big" weight="bold">
             {titlesMap[type]}
           </Text>
         </Centered>
-        <BodyText>Go back to your browser</BodyText>
+        <BodyText color={colors.dark}>Go back to your browser</BodyText>
       </Centered>
     </Sheet>
   );

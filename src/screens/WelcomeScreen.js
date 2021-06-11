@@ -9,7 +9,8 @@ import Reanimated, {
   timing,
 } from 'react-native-reanimated';
 import { useValue } from 'react-native-redash';
-import styled from 'styled-components/native';
+import { useAndroidBackHandler } from 'react-navigation-backhandler';
+import styled from 'styled-components';
 import { useMemoOne } from 'use-memo-one';
 import RainbowGreyNeon from '../assets/rainbows/greyneon.png';
 import RainbowLight from '../assets/rainbows/light.png';
@@ -31,7 +32,7 @@ import { useHideSplashScreen } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { colors, shadow } from '@rainbow-me/styles';
+import { shadow } from '@rainbow-me/styles';
 import logger from 'logger';
 
 const {
@@ -61,9 +62,9 @@ const ButtonContent = styled(RowWithMargins).attrs({
 `;
 
 const ButtonLabel = styled(Text).attrs(
-  ({ textColor: color = colors.dark }) => ({
+  ({ textColor: color, theme: { colors } }) => ({
     align: 'center',
-    color,
+    color: color || colors.dark,
     size: 'larger',
     weight: 'bold',
   })
@@ -77,8 +78,8 @@ const ButtonEmoji = styled(Emoji).attrs({
 `;
 
 const DarkShadow = styled(Reanimated.View)`
-  ${shadow.build(0, 10, 30, colors.dark, 1)};
-  background-color: ${colors.white};
+  ${({ theme: { colors } }) => shadow.build(0, 10, 30, colors.dark, 1)};
+  background-color: ${({ theme: { colors } }) => colors.white};
   border-radius: 30;
   height: 60;
   left: -3;
@@ -89,7 +90,7 @@ const DarkShadow = styled(Reanimated.View)`
 `;
 
 const Shadow = styled(Reanimated.View)`
-  ${shadow.build(0, 5, 15, colors.dark, 0.4)};
+  ${({ theme: { colors } }) => shadow.build(0, 10, 30, colors.dark, 0.4)};
   border-radius: 30;
   height: 60;
   left: -3;
@@ -131,7 +132,7 @@ const RainbowButton = ({
 const Container = styled.View`
   ${StyleSheet.absoluteFillObject};
   align-items: center;
-  background-color: ${colors.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
   justify-content: center;
 `;
 
@@ -344,7 +345,8 @@ function colorAnimation(rValue, fromShadow) {
 }
 
 export default function WelcomeScreen() {
-  const { replace, navigate } = useNavigation();
+  const { colors } = useTheme();
+  const { replace, navigate, dangerouslyGetState } = useNavigation();
   const contentAnimation = useAnimatedValue(1);
   const hideSplashScreen = useHideSplashScreen();
   const createWalletButtonAnimation = useAnimatedValue(1);
@@ -440,11 +442,12 @@ export default function WelcomeScreen() {
   const backgroundColor = useMemoOne(() => colorAnimation(rValue, false), []);
 
   const onCreateWallet = useCallback(async () => {
-    replace(Routes.SWIPE_LAYOUT, {
+    const operation = dangerouslyGetState().index === 1 ? navigate : replace;
+    operation(Routes.SWIPE_LAYOUT, {
       params: { emptyWallet: true },
       screen: Routes.WALLET_SCREEN,
     });
-  }, [replace]);
+  }, [dangerouslyGetState, navigate, replace]);
 
   const createWalletButtonProps = useMemoOne(() => {
     const color = colorAnimation(rValue, true);
@@ -497,6 +500,10 @@ export default function WelcomeScreen() {
     };
   }, [rValue]);
 
+  useAndroidBackHandler(() => {
+    return true;
+  });
+
   return (
     <Container testID="welcome-screen">
       {traversedRainbows.map(({ source, style, id }) => (
@@ -510,9 +517,9 @@ export default function WelcomeScreen() {
 
       <ContentWrapper style={contentStyle}>
         {android && IS_TESTING === 'true' ? (
-          <RainbowText />
+          <RainbowText colors={colors} />
         ) : (
-          <MaskedView maskElement={<RainbowText />}>
+          <MaskedView maskElement={<RainbowText colors={colors} />}>
             <RainbowTextMask style={textStyle} />
           </MaskedView>
         )}

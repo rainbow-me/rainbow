@@ -1,8 +1,7 @@
 import { get } from 'lodash';
-import React, { useEffect, useRef } from 'react';
+import React, { forwardRef, useEffect, useRef } from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
-import styled from 'styled-components/primitives';
-import { usePrevious } from '../../hooks';
+import styled from 'styled-components';
 import { magicMemo } from '../../utils';
 import { EmptyAssetList } from '../asset-list';
 import { Centered } from '../layout';
@@ -10,13 +9,14 @@ import { NoResults } from '../list';
 import { CurrencySelectModalHeaderHeight } from './CurrencySelectModalHeader';
 import ExchangeAssetList from './ExchangeAssetList';
 import { ExchangeSearchHeight } from './ExchangeSearch';
-import { colors, position } from '@rainbow-me/styles';
+import { usePrevious } from '@rainbow-me/hooks';
+import { position } from '@rainbow-me/styles';
 
 const EmptyCurrencySelectionList = styled(EmptyAssetList).attrs({
   pointerEvents: 'none',
 })`
   ${position.cover};
-  background-color: ${colors.white};
+  background-color: ${({ theme: { colors } }) => colors.white};
 `;
 
 const NoCurrencyResults = styled(NoResults)`
@@ -31,14 +31,18 @@ const skeletonTransition = (
   </Transition.Sequence>
 );
 
-const CurrencySelectionList = ({
-  itemProps,
-  listItems,
-  loading,
-  showList,
-  testID,
-  query,
-}) => {
+const CurrencySelectionList = (
+  {
+    itemProps,
+    listItems,
+    loading,
+    showList,
+    testID,
+    query,
+    keyboardDismissMode,
+  },
+  ref
+) => {
   const skeletonTransitionRef = useRef();
   const showNoResults = get(listItems, '[0].data', []).length === 0;
   const showSkeleton = showNoResults && loading;
@@ -65,7 +69,10 @@ const CurrencySelectionList = ({
             <ExchangeAssetList
               itemProps={itemProps}
               items={listItems}
+              keyboardDismissMode={keyboardDismissMode}
               query={query}
+              ref={ref}
+              testID={testID}
             />
           )}
         </Centered>
@@ -75,4 +82,7 @@ const CurrencySelectionList = ({
   );
 };
 
-export default magicMemo(CurrencySelectionList, ['listItems', 'showList']);
+export default magicMemo(forwardRef(CurrencySelectionList), [
+  'listItems',
+  'showList',
+]);

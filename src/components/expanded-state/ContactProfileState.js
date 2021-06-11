@@ -1,7 +1,7 @@
 import React, { useCallback, useRef, useState } from 'react';
 import { Keyboard } from 'react-native';
-import styled from 'styled-components/primitives';
-import { useAccountSettings, useContacts } from '../../hooks';
+import styled from 'styled-components';
+import { useTheme } from '../../context/ThemeContext';
 import { useNavigation } from '../../navigation/Navigation';
 import { abbreviations, magicMemo } from '../../utils';
 import Divider from '../Divider';
@@ -12,16 +12,19 @@ import CopyTooltip from '../copy-tooltip';
 import { Centered } from '../layout';
 import { Text, TruncatedAddress } from '../text';
 import { ProfileAvatarButton, ProfileModal, ProfileNameInput } from './profile';
-import { colors, margin, padding } from '@rainbow-me/styles';
+import { useAccountSettings, useContacts } from '@rainbow-me/hooks';
+import { margin, padding } from '@rainbow-me/styles';
 
-const AddressAbbreviation = styled(TruncatedAddress).attrs({
-  align: 'center',
-  color: colors.blueGreyDark,
-  firstSectionLength: abbreviations.defaultNumCharsPerSection,
-  size: 'lmedium',
-  truncationLength: 4,
-  weight: 'regular',
-})`
+const AddressAbbreviation = styled(TruncatedAddress).attrs(
+  ({ theme: { colors } }) => ({
+    align: 'center',
+    color: colors.blueGreyDark,
+    firstSectionLength: abbreviations.defaultNumCharsPerSection,
+    size: 'lmedium',
+    truncationLength: 4,
+    weight: 'regular',
+  })
+)`
   ${margin(9, 0, 5)};
   opacity: 0.6;
   width: 100%;
@@ -31,7 +34,7 @@ const Spacer = styled.View`
   height: 19;
 `;
 
-const SubmitButton = styled(Button).attrs(({ value }) => ({
+const SubmitButton = styled(Button).attrs(({ theme: { colors }, value }) => ({
   backgroundColor: value.length > 0 ? colors.appleBlue : undefined,
   disabled: !value.length > 0,
   showShadow: true,
@@ -41,11 +44,11 @@ const SubmitButton = styled(Button).attrs(({ value }) => ({
   width: 215;
 `;
 
-const SubmitButtonLabel = styled(Text).attrs({
-  color: 'white',
+const SubmitButtonLabel = styled(Text).attrs(({ value }) => ({
+  color: value.length > 0 ? 'whiteLabel' : 'white',
   size: 'lmedium',
-  weight: 'semibold',
-})`
+  weight: 'bold',
+}))`
   margin-bottom: 1.5;
 `;
 
@@ -88,6 +91,10 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
     inputRef,
   ]);
 
+  const isContact = contact && !contact.temporary;
+
+  const { isDarkMode, colors } = useTheme();
+
   return (
     <ProfileModal onPressBackdrop={handleAddContact}>
       <Centered css={padding(24, 25)} direction="column">
@@ -120,18 +127,19 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
           <Divider inset={false} />
         </Centered>
         <SubmitButton
+          isDarkMode={isDarkMode}
           onPress={handleAddContact}
           testID="contact-profile-add-button"
           value={value}
         >
-          <SubmitButtonLabel>
-            {contact ? 'Done' : 'Add Contact'}
+          <SubmitButtonLabel value={value}>
+            {isContact ? 'Done' : 'Add Contact'}
           </SubmitButtonLabel>
         </SubmitButton>
         <ButtonPressAnimation
           marginTop={11}
           onPress={
-            contact
+            isContact
               ? handleDeleteContact
               : () => {
                   goBack();
@@ -149,7 +157,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
               size="lmedium"
               weight="regular"
             >
-              {contact ? 'Delete Contact' : 'Cancel'}
+              {isContact ? 'Delete Contact' : 'Cancel'}
             </Text>
           </Centered>
         </ButtonPressAnimation>

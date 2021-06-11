@@ -1,33 +1,22 @@
 import { useIsFocused } from '@react-navigation/native';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
-import Animated, { useCode } from 'react-native-reanimated';
-import styled from 'styled-components/primitives';
-import { BubbleSheet } from '../components/bubble-sheet';
+import { useIsEmulator } from 'react-native-device-info';
+import { useSharedValue } from 'react-native-reanimated';
+import styled from 'styled-components';
 import { DiscoverSheet } from '../components/discover-sheet';
+import { FabWrapper, SearchFab } from '../components/fab';
 import { BackButton, Header, HeaderHeight } from '../components/header';
 import { Centered } from '../components/layout';
+
 import {
   CameraDimmer,
   EmulatorPasteUriButton,
   QRCodeScanner,
 } from '../components/qrcode-scanner';
-import {
-  WalletConnectExplainer,
-  WalletConnectList,
-} from '../components/walletconnect-list';
-import useExperimentalFlag, {
-  DISCOVER_SHEET,
-} from '@rainbow-me/config/experimentalHooks';
-import { useHeight, useWalletConnectConnections } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import { scrollPosition } from '@rainbow-me/navigation/ScrollPagerWrapper';
 import Routes from '@rainbow-me/routes';
-import { colors, position } from '@rainbow-me/styles';
-
-const { call, greaterThan, onChange } = Animated;
-
-const ENABLING_CAMERA_OFFSET = 1.01;
+import { position } from '@rainbow-me/styles';
 
 const Background = styled.View`
   background-color: black;
@@ -45,37 +34,24 @@ const ScannerContainer = styled(Centered).attrs({
 
 const ScannerHeader = styled(Header).attrs({
   justify: 'space-between',
+  testID: 'scanner-header',
 })`
   position: absolute;
   top: 0;
 `;
 
-function useFocusFromSwipe() {
-  const [isFocused, setIsFocused] = useState(false);
-  useCode(
-    () =>
-      onChange(
-        greaterThan(scrollPosition, ENABLING_CAMERA_OFFSET),
-        call([scrollPosition], ([pos]) =>
-          setIsFocused(pos > ENABLING_CAMERA_OFFSET)
-        )
-      ),
-    []
-  );
-  return isFocused;
-}
-
 export default function QRScannerScreen() {
-  const discoverSheetAvailable = useExperimentalFlag(DISCOVER_SHEET);
-  const isFocusedIOS = useFocusFromSwipe();
-  const isFocusedAndroid = useIsFocused();
-  const [sheetHeight, onSheetLayout] = useHeight(240);
+  const isFocused = useIsFocused();
   const [initializeCamera, setInitializeCamera] = useState(ios ? true : false);
   const { navigate } = useNavigation();
-  const {
-    walletConnectorsByDappName,
-    walletConnectorsCount,
-  } = useWalletConnectConnections();
+  const [cameraVisible, setCameraVisible] = useState();
+
+  const cameraDim = useSharedValue(0);
+  const dsRef = useRef();
+  useEffect(
+    () => dsRef.current?.addOnCrossMagicBorderListener(setCameraVisible),
+    []
+  );
 
   const handlePressBackButton = useCallback(
     () => navigate(Routes.WALLET_SCREEN),
@@ -83,46 +59,58 @@ export default function QRScannerScreen() {
   );
 
   useEffect(() => {
-    isFocusedAndroid && !initializeCamera && setInitializeCamera(true);
-  }, [initializeCamera, isFocusedAndroid]);
+    isFocused && !initializeCamera && setInitializeCamera(true);
+  }, [initializeCamera, isFocused]);
+
+  const { colors } = useTheme();
+  const { result: isEmulator } = useIsEmulator();
 
   return (
-    <View>
-      {discoverSheetAvailable && ios ? <DiscoverSheet /> : null}
-      <ScannerContainer>
-        <Background />
-        <CameraDimmer>
-          {initializeCamera && (
-            <QRCodeScanner
-              contentPositionBottom={sheetHeight}
-              contentPositionTop={HeaderHeight}
-              enableCamera={ios ? isFocusedIOS : isFocusedAndroid}
-            />
-          )}
-        </CameraDimmer>
-        {discoverSheetAvailable ? (
-          android ? (
-            <DiscoverSheet />
-          ) : null
-        ) : (
-          <BubbleSheet onLayout={onSheetLayout}>
-            {walletConnectorsCount ? (
-              <WalletConnectList items={walletConnectorsByDappName} />
-            ) : (
-              <WalletConnectExplainer />
+    <>
+      <View pointerEvents="box-none">
+        {ios ? <DiscoverSheet ref={dsRef} /> : null}
+        <ScannerContainer>
+          <Background />
+          <CameraDimmer cameraVisible={cameraVisible}>
+            {android && (
+              <ScannerHeader>
+                <BackButton
+                  color={colors.whiteLabel}
+                  direction="left"
+                  onPress={handlePressBackButton}
+                  testID="goToBalancesFromScanner"
+                />
+                <EmulatorPasteUriButton />
+              </ScannerHeader>
             )}
-          </BubbleSheet>
-        )}
-        <ScannerHeader>
-          <BackButton
-            color={colors.white}
-            direction="left"
-            onPress={handlePressBackButton}
-            testID="goToBalancesFromScanner"
-          />
-          <EmulatorPasteUriButton />
-        </ScannerHeader>
-      </ScannerContainer>
-    </View>
+            {initializeCamera && !isEmulator && (
+              <QRCodeScanner
+                cameraDim={cameraDim}
+                contentPositionTop={HeaderHeight}
+                dsRef={dsRef}
+                enableCamera={isFocused}
+              />
+            )}
+          </CameraDimmer>
+          {android ? (
+            <DiscoverSheet ref={dsRef} />
+          ) : (
+            <ScannerHeader>
+              <BackButton
+                color={colors.whiteLabel}
+                direction="left"
+                onPress={handlePressBackButton}
+                testID="goToBalancesFromScanner"
+              />
+              <EmulatorPasteUriButton />
+            </ScannerHeader>
+          )}
+        </ScannerContainer>
+      </View>
+      <FabWrapper
+        fabs={[SearchFab]}
+        onPress={() => dsRef.current?.onFabSearch?.current()}
+      />
+    </>
   );
 }

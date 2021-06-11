@@ -10,7 +10,6 @@ const ASSETS = 'uniswapassets';
 const LIQUIDITY = 'uniswapliquidity';
 const LIQUIDITY_INFO = 'uniswap';
 const UNISWAP_FAVORITES = 'uniswapFavorites';
-
 const uniswapLiquidityVersion = '0.2.0';
 const uniswapLiquidityInfoVersion = '0.2.1';
 

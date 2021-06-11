@@ -9,11 +9,21 @@ import useWallets from './useWallets';
 export default function useAccountProfile() {
   const wallets = useWallets();
   const { selectedWallet, walletNames } = wallets;
+  const { accountAddress, network } = useAccountSettings();
+  return getAccountProfileInfo(
+    selectedWallet,
+    walletNames,
+    network,
+    accountAddress
+  );
+}
 
-  const { network } = useAccountSettings();
-  const settings = useAccountSettings();
-  const { accountAddress } = settings;
-
+export function getAccountProfileInfo(
+  selectedWallet,
+  walletNames,
+  network,
+  accountAddress
+) {
   if (!selectedWallet) {
     return {};
   }
@@ -40,10 +50,10 @@ export default function useAccountProfile() {
 
   const accountName = removeFirstEmojiFromString(
     network === networkTypes.mainnet
-      ? label || accountENS || address(accountAddress, 6, 4)
+      ? label || accountENS || address(accountAddress, 4, 4)
       : label === accountENS
-      ? address(accountAddress, 6, 4)
-      : label || address(accountAddress, 6, 4)
+      ? address(accountAddress, 4, 4)
+      : label || address(accountAddress, 4, 4)
   ).join('');
 
   const labelOrAccountName =

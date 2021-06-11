@@ -9,7 +9,7 @@ import { Text } from '../text';
 import ContactRow from './ContactRow';
 import showDeleteContactActionSheet from './showDeleteContactActionSheet';
 import { ImgixImage } from '@rainbow-me/images';
-import { colors, margin, position } from '@rainbow-me/styles';
+import { margin, position } from '@rainbow-me/styles';
 
 const AnimatedCentered = Animated.createAnimatedComponent(Centered);
 
@@ -19,6 +19,8 @@ const RightAction = ({ onPress, progress, text, x }) => {
     inputRange: [0, 1],
     outputRange: [x, 0],
   });
+
+  const { colors } = useTheme();
 
   return (
     <AnimatedCentered
@@ -48,7 +50,16 @@ const RightAction = ({ onPress, progress, text, x }) => {
 };
 
 const SwipeableContactRow = (
-  { address, color, nickname, onPress, onSelectEdit, onTouch, removeContact },
+  {
+    accountType,
+    address,
+    color,
+    nickname,
+    onPress,
+    onSelectEdit,
+    onTouch,
+    removeContact,
+  },
   forwardedRef
 ) => {
   const swipeableRef = useRef();
@@ -75,8 +86,6 @@ const SwipeableContactRow = (
     () => swipeableRef.current?.openRight?.(),
     []
   );
-
-  const handlePress = useCallback(() => onPress(address), [address, onPress]);
 
   const handlePressStart = useCallback(() => onTouch(address), [
     address,
@@ -111,11 +120,12 @@ const SwipeableContactRow = (
       rightThreshold={0}
     >
       <ContactRow
+        accountType={accountType}
         address={address}
         color={color}
         nickname={nickname}
         onLongPress={handleLongPress}
-        onPress={handlePress}
+        onPress={onPress}
         onPressStart={handlePressStart}
       />
     </Swipeable>

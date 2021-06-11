@@ -6,16 +6,16 @@ import {
   etherscanGetGasPrices,
   ethGasStationGetGasPrices,
   getEstimatedTimeForGasPrice,
-} from '../handlers/gasPrices';
-import { fromWei, greaterThanOrEqualTo } from '../helpers/utilities';
+} from '@rainbow-me/handlers/gasPrices';
 import {
   defaultGasPriceFormat,
   getFallbackGasPrices,
   parseGasPrices,
   parseTxFees,
-} from '../parsers/gas';
-import ethUnits from '../references/ethereum-units.json';
-import { ethereumUtils, gasUtils } from '../utils';
+} from '@rainbow-me/parsers';
+import { ethUnits } from '@rainbow-me/references';
+import { fromWei, greaterThanOrEqualTo } from '@rainbow-me/utilities';
+import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const { CUSTOM, NORMAL } = gasUtils;
@@ -34,11 +34,10 @@ const GAS_UPDATE_GAS_PRICE_OPTION = 'gas/GAS_UPDATE_GAS_PRICE_OPTION';
 let gasPricesHandle = null;
 
 const getDefaultTxFees = () => (dispatch, getState) => {
-  const { genericAssets } = getState().data;
   const { defaultGasLimit } = getState().gas;
   const { nativeCurrency } = getState().settings;
   const fallbackGasPrices = getFallbackGasPrices();
-  const ethPriceUnit = ethereumUtils.getEthPriceUnit(genericAssets);
+  const ethPriceUnit = ethereumUtils.getEthPriceUnit();
   const txFees = parseTxFees(
     fallbackGasPrices,
     ethPriceUnit,
@@ -116,7 +115,9 @@ export const gasPricesStartPolling = () => async (dispatch, getState) => {
           // Add gas estimates
           adjustedGasPrices = await etherscanGetGasEstimates(priceData);
         } catch (e) {
-          logger.log('falling back to eth gas station', e);
+          captureException(new Error('Etherscan gas estimates failed'));
+          logger.sentry('Etherscan gas estimates error:', e);
+          logger.sentry('falling back to eth gas station');
           source = 'ethGasStation';
           // Fallback to ETHGasStation if Etherscan fails
           const {
@@ -141,11 +142,12 @@ export const gasPricesStartPolling = () => async (dispatch, getState) => {
 
         fetchResolve(true);
       } catch (error) {
+        captureException(new Error('all gas estimates failed'));
+        logger.sentry('gas estimates error', error);
         dispatch({
           payload: fallbackGasPrices,
           type: GAS_PRICES_FAILURE,
         });
-        captureException(error);
         fetchReject(error);
       }
     });
@@ -228,9 +230,9 @@ export const gasUpdateTxFee = (gasLimit, overrideGasOption) => (
   const _gasLimit = gasLimit || defaultGasLimit;
   const _selectedGasPriceOption = overrideGasOption || selectedGasPriceOption;
   if (isEmpty(gasPrices)) return;
-  const { assets, genericAssets } = getState().data;
+  const { assets } = getState().data;
   const { nativeCurrency } = getState().settings;
-  const ethPriceUnit = ethereumUtils.getEthPriceUnit(genericAssets);
+  const ethPriceUnit = ethereumUtils.getEthPriceUnit();
   const txFees = parseTxFees(
     gasPrices,
     ethPriceUnit,
@@ -307,7 +309,6 @@ const INITIAL_STATE = {
   selectedGasPrice: {},
   selectedGasPriceOption: NORMAL,
   txFees: {},
-  useShortGasFormat: true,
 };
 
 export default (state = INITIAL_STATE, action) => {
