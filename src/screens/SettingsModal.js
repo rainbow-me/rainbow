@@ -162,7 +162,7 @@ export default function SettingsModal() {
   const memoSettingsOptions = useMemo(() => settingsOptions(colors), [colors]);
   return (
     <Modal
-      minHeight={height-100}
+      minHeight={height - 100}
       onCloseModal={goBack}
       radius={18}
       showDoneButton={ios}
