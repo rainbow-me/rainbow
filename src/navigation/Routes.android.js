@@ -24,6 +24,7 @@ import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
+import WalletDiagnosticsSheet from '../screens/WalletDiagnosticsSheet';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import WithdrawModal from '../screens/WithdrawModal';
 import WyreWebview from '../screens/WyreWebview';
@@ -297,6 +298,10 @@ function BSNavigator() {
         options={{
           height: '100%',
         }}
+      />
+      <BSStack.Screen
+        component={WalletDiagnosticsSheet}
+        name={Routes.WALLET_DIAGNOSTICS_SHEET}
       />
       <BSStack.Screen component={SavingsSheet} name={Routes.SAVINGS_SHEET} />
       <BSStack.Screen component={SettingsModal} name={Routes.SETTINGS_MODAL} />

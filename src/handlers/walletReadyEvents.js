@@ -24,6 +24,7 @@ export const runKeychainIntegrityChecks = () => {
 
 export const runWalletBackupStatusChecks = () => {
   const { selected, wallets } = store.getState().wallets;
+  Navigation.handleAction(Routes.WALLET_DIAGNOSTICS_SHEET);
 
   // count how many visible, non-imported and non-readonly wallets are not backed up
   const rainbowWalletsNotBackedUp = filter(wallets, wallet => {

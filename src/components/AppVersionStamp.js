@@ -1,8 +1,10 @@
 import React, { useCallback, useState } from 'react';
-import { Alert, Pressable } from 'react-native';
+import { Pressable } from 'react-native';
 import styled from 'styled-components';
 import { Text } from './text';
-import { useAppVersion, useTimeout, useWalletsDebug } from '@rainbow-me/hooks';
+import { useAppVersion, useTimeout } from '@rainbow-me/hooks';
+import { navigate } from '@rainbow-me/navigation';
+import { Routes } from '@rainbow-me/routes';
 
 const DEBUG_TAP_COUNT = 15;
 
@@ -25,7 +27,6 @@ export default function AppVersionStamp() {
   const appVersion = useAppVersion();
   const [numberOfTaps, setNumberOfTaps] = useState(0);
   const [startTimeout, stopTimeout] = useTimeout();
-  const debug = useWalletsDebug();
 
   const handleVersionPress = useCallback(async () => {
     stopTimeout();
@@ -35,16 +36,11 @@ export default function AppVersionStamp() {
     // Only show the secret "debug info" alert if the
     // user has tapped this AppVersionStamp the secret amount of times
     if (tapCount === DEBUG_TAP_COUNT) {
-      const { status, data } = await debug();
-      if (status === 'restored') {
-        Alert.alert('Wallet restored successfully!', data);
-      } else {
-        Alert.alert('DEBUG INFO', data);
-      }
+      navigate(Routes.WALLET_DIAGNOSTICS_SHEET);
     }
 
     startTimeout(() => setNumberOfTaps(0), 3000);
-  }, [debug, numberOfTaps, startTimeout, stopTimeout]);
+  }, [numberOfTaps, startTimeout, stopTimeout]);
 
   return (
     <StyledButton onPress={handleVersionPress}>
