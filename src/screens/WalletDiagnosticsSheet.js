@@ -4,6 +4,7 @@ import { toLower } from 'lodash';
 import React, { Fragment, useCallback, useEffect } from 'react';
 import { Alert, StatusBar, TextInput, View } from 'react-native';
 
+import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import ActivityIndicator from '../components/ActivityIndicator';
 import Divider from '../components/Divider';
 import Spinner from '../components/Spinner';
@@ -23,6 +24,7 @@ import { privateKeyKey, seedPhraseKey } from '../utils/keychainConstants';
 import { useDimensions, useImportingWallet } from '@rainbow-me/hooks';
 import { useWalletsWithBalancesAndNames } from '@rainbow-me/hooks/useWalletsWithBalancesAndNames';
 import { ethereumUtils, haptics } from '@rainbow-me/utils';
+
 import logger from 'logger';
 
 export const WalletDiagnosticsSheetHeight = '100%';
@@ -260,7 +262,7 @@ const WalletDiagnosticsSheet = () => {
       <ColumnWithMargins
         margin={15}
         style={{
-          paddingBottom: 60,
+          paddingBottom: ios ? 60 : 40 + getSoftMenuBarHeight(),
           paddingHorizontal: 19,
           paddingTop: 19,
           width: '100%',
