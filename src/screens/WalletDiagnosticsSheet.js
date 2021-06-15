@@ -2,15 +2,15 @@ import Clipboard from '@react-native-community/clipboard';
 import { captureException } from '@sentry/react-native';
 import { toLower } from 'lodash';
 import React, { Fragment, useCallback, useEffect } from 'react';
-import { Alert, StatusBar, TextInput } from 'react-native';
-import { useSafeArea } from 'react-native-safe-area-context';
-import styled from 'styled-components';
+import { Alert, StatusBar, TextInput, View } from 'react-native';
+
 import ActivityIndicator from '../components/ActivityIndicator';
 import Divider from '../components/Divider';
 import Spinner from '../components/Spinner';
 import { ButtonPressAnimation } from '../components/animations';
 import {
   Centered,
+  Column,
   ColumnWithMargins,
   Row,
   RowWithMargins,
@@ -22,22 +22,15 @@ import { useNavigation } from '../navigation/Navigation';
 import { privateKeyKey, seedPhraseKey } from '../utils/keychainConstants';
 import { useDimensions, useImportingWallet } from '@rainbow-me/hooks';
 import { useWalletsWithBalancesAndNames } from '@rainbow-me/hooks/useWalletsWithBalancesAndNames';
-import { position } from '@rainbow-me/styles';
 import { ethereumUtils, haptics } from '@rainbow-me/utils';
 import logger from 'logger';
 
-export const WalletDiagnosticsSheetHeight = android ? 454 : 400;
+export const WalletDiagnosticsSheetHeight = '100%';
 const LoadingSpinner = android ? Spinner : ActivityIndicator;
-
-const Container = styled(Centered).attrs({ direction: 'column' })`
-  ${position.cover};
-  ${({ deviceHeight, height }) =>
-    height ? `height: ${height + deviceHeight}` : null};
-`;
 
 const SecretInput = ({ value, color }) => {
   const { colors } = useTheme();
-  const copy = useCallback(() => {
+  const handleCopy = useCallback(() => {
     Alert.alert(
       'Reminder',
       `These words are for your eyes only. Your secret phrase gives access to your entire wallet. 
@@ -60,22 +53,27 @@ const SecretInput = ({ value, color }) => {
     );
   }, [value]);
   return (
-    <Row>
+    <Row justify="space-between" width="100%">
       <TextInput
         color={color}
         disabled
+        editable={false}
         secureTextEntry
         selectTextOnFocus
         style={{ width: '65%' }}
         value={value}
       />
-      <ButtonPressAnimation
-        backgroundColor={colors.appleBlue}
-        borderRadius={15}
-        onPress={copy}
-        style={{ marginLeft: 5, paddingHorizontal: 15, paddingVertical: 10 }}
-      >
-        <Text weight="bold">Copy Secret</Text>
+      <ButtonPressAnimation onPress={handleCopy}>
+        <Row
+          backgroundColor={colors.appleBlue}
+          borderRadius={15}
+          style={{ paddingHorizontal: 15, paddingVertical: 10 }}
+          width="100%"
+        >
+          <Text align="center" weight="bold">
+            Copy Secret
+          </Text>
+        </Row>
       </ButtonPressAnimation>
     </Row>
   );
@@ -88,11 +86,6 @@ const ItemRow = ({ data }) => {
     handlePressImportButton,
     busy,
   } = useImportingWallet();
-
-  const handlePressCopy = useCallback(() => {
-    Clipboard.setString(data.address);
-    haptics.notificationSuccess();
-  }, [data.address]);
 
   const handlePressRestore = useCallback(async () => {
     if (busy) return;
@@ -147,31 +140,16 @@ const ItemRow = ({ data }) => {
       <RowWithMargins>
         <SecretInput color={colors.blueGreyDark} value={data.secret} />
       </RowWithMargins>
-      <ButtonPressAnimation
-        backgroundColor={colors.green}
-        borderRadius={15}
-        onPress={handlePressCopy}
-        style={{ paddingHorizontal: 15, paddingVertical: 10 }}
-      >
-        <Text align="center" weight="bold">
-          Copy Address
-        </Text>
-      </ButtonPressAnimation>
-      <ButtonPressAnimation
-        backgroundColor={colors.dpiMid}
-        borderRadius={15}
-        onPress={handlePressRestore}
-        style={{ paddingHorizontal: 15, paddingVertical: 10 }}
-      >
-        {busy ? (
-          <Centered>
-            <LoadingSpinner />
-          </Centered>
-        ) : (
+      <ButtonPressAnimation onPress={handlePressRestore}>
+        <View
+          backgroundColor={colors.dpiMid}
+          borderRadius={15}
+          style={{ paddingHorizontal: 15, paddingVertical: 10 }}
+        >
           <Text align="center" weight="bold">
             Restore
           </Text>
-        )}
+        </View>
       </ButtonPressAnimation>
       <Divider />
     </ColumnWithMargins>
@@ -180,7 +158,6 @@ const ItemRow = ({ data }) => {
 
 const WalletDiagnosticsSheet = () => {
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
-  const insets = useSafeArea();
   const { colors } = useTheme();
   const { goBack } = useNavigation();
   const [keys, setKeys] = useState();
@@ -269,88 +246,78 @@ const WalletDiagnosticsSheet = () => {
   }, [goBack]);
 
   return (
-    <Container
-      deviceHeight={deviceHeight}
-      height={WalletDiagnosticsSheetHeight}
-      insets={insets}
+    <SlackSheet
+      additionalTopPadding={android}
+      {...(ios
+        ? { height: '100%' }
+        : { additionalTopPadding: true, contentHeight: deviceHeight - 40 })}
+      scrollEnabled
     >
       {ios && <StatusBar barStyle="light-content" />}
 
-      <SlackSheet
-        additionalTopPadding={android}
-        contentHeight={WalletDiagnosticsSheetHeight}
-        scrollEnabled
+      <ColumnWithMargins
+        margin={15}
+        style={{
+          paddingBottom: 60,
+          paddingHorizontal: 19,
+          paddingTop: 19,
+          width: '100%',
+        }}
       >
-        <Centered
-          direction="column"
-          height={WalletDiagnosticsSheetHeight}
-          testID="add-token-sheet"
-          width="100%"
-        >
-          <ColumnWithMargins
-            margin={15}
-            style={{
-              height: WalletDiagnosticsSheetHeight,
-              paddingHorizontal: 19,
-              paddingTop: 19,
-              width: '100%',
-            }}
-          >
-            <SheetTitle align="center" size="big" weight="heavy">
-              Wallet Diagnostics
-            </SheetTitle>
+        <SheetTitle align="center" size="big" weight="heavy">
+          Wallet Diagnostics
+        </SheetTitle>
 
-            {!keys && (
-              <Centered flex={1}>
-                <LoadingSpinner />
-              </Centered>
-            )}
+        {!keys && (
+          <Centered flex={1}>
+            <LoadingSpinner />
+          </Centered>
+        )}
 
-            {seeds?.length && (
-              <Fragment>
-                <Row>
-                  {seeds.map(key => (
-                    <ItemRow data={key} key={`row_${key.username}`} />
-                  ))}
-                </Row>
-              </Fragment>
-            )}
-            {pkeys?.length && (
-              <Fragment>
-                <Row>
-                  {pkeys.map(key => (
-                    <ItemRow data={key} key={`row_${key.username}`} />
-                  ))}
-                </Row>
-              </Fragment>
-            )}
+        {seeds?.length && (
+          <Fragment>
+            <Column>
+              {seeds.map(key => (
+                <ItemRow data={key} key={`row_${key.username}`} />
+              ))}
+            </Column>
+          </Fragment>
+        )}
+        {pkeys?.length && (
+          <Fragment>
+            <Column>
+              {pkeys?.map(key => (
+                <ItemRow data={key} key={`row_${key.username}`} />
+              ))}
+            </Column>
+          </Fragment>
+        )}
 
-            {oldSeed?.length > 0 && (
-              <Fragment>
-                <Row>
-                  {oldSeed?.map(key => (
-                    <ItemRow data={key} key={`row_${key.username}`} />
-                  ))}
-                </Row>
-              </Fragment>
-            )}
+        {keys?.length > 0 && (
+          <Fragment>
+            <Column>
+              {oldSeed?.map(key => (
+                <ItemRow data={key} key={`row_${key.username}`} />
+              ))}
+            </Column>
+          </Fragment>
+        )}
 
-            {keys && (
-              <SheetActionButton
-                androidWidth={deviceWidth - 60}
-                color={colors.alpha(colors.appleBlue, 0.06)}
-                isTransparent
-                label="Got it"
-                onPress={handleClose}
-                size="big"
-                textColor={colors.appleBlue}
-                weight="heavy"
-              />
-            )}
-          </ColumnWithMargins>
-        </Centered>
-      </SlackSheet>
-    </Container>
+        {keys && (
+          <SheetActionButton
+            androidWidth={deviceWidth - 40}
+            color={colors.alpha(colors.appleBlue, 0.06)}
+            isTransparent
+            label="Got it"
+            onPress={handleClose}
+            size="big"
+            style={{ margin: 0, padding: 0 }}
+            textColor={colors.appleBlue}
+            weight="heavy"
+          />
+        )}
+      </ColumnWithMargins>
+    </SlackSheet>
   );
 };
 
