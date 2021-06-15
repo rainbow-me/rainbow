@@ -24,7 +24,6 @@ import { privateKeyKey, seedPhraseKey } from '../utils/keychainConstants';
 import { useDimensions, useImportingWallet } from '@rainbow-me/hooks';
 import { useWalletsWithBalancesAndNames } from '@rainbow-me/hooks/useWalletsWithBalancesAndNames';
 import { ethereumUtils, haptics } from '@rainbow-me/utils';
-
 import logger from 'logger';
 
 export const WalletDiagnosticsSheetHeight = '100%';
