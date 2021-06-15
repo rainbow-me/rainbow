@@ -105,7 +105,7 @@ export default function SettingsModal() {
   const { goBack, navigate } = useNavigation();
   const { wallets, selectedWallet } = useWallets();
   const { params } = useRoute();
-  const { isTinyPhone } = useDimensions();
+  const { height } = useDimensions();
   const { colors } = useTheme();
 
   const getRealRoute = useCallback(
@@ -162,7 +162,7 @@ export default function SettingsModal() {
   const memoSettingsOptions = useMemo(() => settingsOptions(colors), [colors]);
   return (
     <Modal
-      minHeight={isTinyPhone ? 650 : 750}
+      minHeight={height - 100}
       onCloseModal={goBack}
       radius={18}
       showDoneButton={ios}
