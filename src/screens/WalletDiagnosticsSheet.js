@@ -67,7 +67,7 @@ const SecretInput = ({ value, color }) => {
         <Row
           backgroundColor={colors.appleBlue}
           borderRadius={15}
-          style={{ paddingHorizontal: 15, paddingVertical: 10 }}
+          style={{ paddingHorizontal: android ? 10 : 15, paddingVertical: 10 }}
           width="100%"
         >
           <Text align="center" weight="bold">
