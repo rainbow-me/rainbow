@@ -212,7 +212,11 @@ const L2Explainer = ({ assetType, colors, onPress, symbol }) => {
           />
         </Column>
         <Column marginLeft={40}>
-          <Text color={colors.alpha(colors.blueGreyDark, 0.6)} size="smedium">
+          <Text
+            color={colors.alpha(colors.blueGreyDark, 0.6)}
+            size="smedium"
+            weight="bold"
+          >
             This {symbol} is on the {capitalize(assetType)} network
           </Text>
         </Column>
