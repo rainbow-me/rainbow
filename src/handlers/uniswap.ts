@@ -31,7 +31,6 @@ import {
   UNISWAP_V2_ROUTER_ABI,
   UNISWAP_V2_ROUTER_ADDRESS,
 } from '@rainbow-me/references';
-import { addBuffer } from '@rainbow-me/utilities';
 import logger from 'logger';
 
 export enum Field {
@@ -156,10 +155,7 @@ export const estimateSwapGasLimit = async ({
     } else {
       methodName = methodNames[indexOfSuccessfulEstimation];
       const gasEstimate = gasEstimates[indexOfSuccessfulEstimation];
-      let gasLimit: string | number = ethUnits.basic_swap;
-      if (gasEstimate) {
-        gasLimit = addBuffer(gasEstimate.toString());
-      }
+      const gasLimit: string | number = gasEstimate ?? ethUnits.basic_swap;
       return { gasLimit, methodName };
     }
   } catch (error) {
