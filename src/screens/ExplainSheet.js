@@ -46,7 +46,7 @@ const POLYGON_EXPLAINER = `Polygon combines the best of Ethereum and sovereign b
 
 Polygon solves pain points associated with Blockchains, like high gas fees and slow speeds, without sacrificing on security.`;
 
-const explainers = {
+export const explainers = {
   gas: {
     emoji: '⛽️',
     text: GAS_EXPLAINER,
@@ -83,9 +83,9 @@ const explainers = {
 const SavingsSheet = () => {
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const insets = useSafeArea();
-  const { params: { type = 'gas', longFormHeight } = {} } = useRoute();
+  const { params: { type = 'gas' } = {} } = useRoute();
   const { colors } = useTheme();
-  const { goBack, setParams } = useNavigation();
+  const { goBack } = useNavigation();
   const handleClose = useCallback(() => {
     goBack();
   }, [goBack]);
@@ -99,12 +99,6 @@ const SavingsSheet = () => {
 
   const sheetHeight =
     ExplainSheetHeight + (explainers[type].readMoreLink ? 60 : 0);
-
-  useEffect(() => {
-    if (longFormHeight !== sheetHeight) {
-      setParams({ longFormHeight: sheetHeight });
-    }
-  }, [longFormHeight, setParams, sheetHeight]);
 
   return (
     <Container deviceHeight={deviceHeight} height={sheetHeight} insets={insets}>
@@ -130,7 +124,9 @@ const SavingsSheet = () => {
               width: '100%',
             }}
           >
-            {<Centered>{explainers[type].logo}</Centered> || (
+            {explainers[type].logo ? (
+              <Centered>{explainers[type].logo}</Centered>
+            ) : (
               <EmojiText
                 align="center"
                 size="h1"
