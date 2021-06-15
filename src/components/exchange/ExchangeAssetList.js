@@ -1,6 +1,7 @@
 import { useIsFocused } from '@react-navigation/native';
 import React, {
   forwardRef,
+  Fragment,
   useCallback,
   useContext,
   useImperativeHandle,
@@ -196,7 +197,7 @@ const ExchangeAssetList = (
   const isFocused = useIsFocused();
 
   return (
-    <>
+    <Fragment>
       <ExchangeAssetSectionList
         keyboardDismissMode={keyboardDismissMode}
         onLayout={onLayout}
@@ -209,7 +210,7 @@ const ExchangeAssetList = (
       <ToastPositionContainer>
         <CopyToast copiedText={copiedText} copyCount={copyCount} />
       </ToastPositionContainer>
-    </>
+    </Fragment>
   );
 };
 
