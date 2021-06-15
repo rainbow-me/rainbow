@@ -331,7 +331,7 @@ export default function ChartExpandedState({ asset }) {
   const handleL2ExplainerPress = useCallback(() => {
     navigate(Routes.EXPLAIN_SHEET, {
       network: assetWithPrice.type,
-      type: 'l2',
+      type: assetWithPrice.type,
     });
   }, [assetWithPrice.type, navigate]);
 

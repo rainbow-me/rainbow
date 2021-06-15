@@ -1,8 +1,10 @@
+/* eslint-disable sort-keys */
 import { useRoute } from '@react-navigation/native';
 import React, { useCallback } from 'react';
-import { StatusBar } from 'react-native';
+import { Linking, StatusBar } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components';
+import L2Logo from '../components/l2Logo';
 import { Centered, ColumnWithMargins } from '../components/layout';
 import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, GradientText, Text } from '../components/text';
@@ -33,6 +35,17 @@ const VERIFIED_EXPLAINER = `Tokens with a verified badge mean they have appeared
 
 Always do your own research to ensure you are interacting with a token you trust.`;
 
+const OPTIMISM_EXPLAINER = `Optimism is a layer 2 network that sits on top of Ethereum, allowing cheaper and faster transactions!
+
+Still curious? Read more about the pros and cons of the different networks you can use in Rainbow!`;
+
+const ARBITRUM_EXPLAINER = `Arbitrum is a layer 2 network that sits on top of Ethereum, allowing cheaper and faster transactions!
+You can move assets into and out of different layer 2 networks by swapping in Rainbow!`;
+
+const POLYGON_EXPLAINER = `Polygon combines the best of Ethereum and sovereign blockchains into a full-fledged multi-chain system.
+
+Polygon solves pain points associated with Blockchains, like high gas fees and slow speeds, without sacrificing on security.`;
+
 const explainers = {
   gas: {
     emoji: '⛽️',
@@ -44,57 +57,88 @@ const explainers = {
     text: VERIFIED_EXPLAINER,
     title: 'Verified Tokens',
   },
+  optimism: {
+    emoji: '⛽️',
+    logo: <L2Logo assetType="optimism" />,
+    text: OPTIMISM_EXPLAINER,
+    title: `What's Optimism?`,
+    readMoreLink: 'https://rainbow.me',
+  },
+  arbitrum: {
+    emoji: '⛽️',
+    logo: <L2Logo assetType="arbitrum" />,
+    text: ARBITRUM_EXPLAINER,
+    title: `What's Arbitrum?`,
+    readMoreLink: 'https://rainbow.me',
+  },
+  polygon: {
+    emoji: '⛽️',
+    logo: <L2Logo assetType="polygon" />,
+    text: POLYGON_EXPLAINER,
+    title: `What's Polygon?`,
+    readMoreLink: 'https://rainbow.me',
+  },
 };
 
 const SavingsSheet = () => {
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const insets = useSafeArea();
-  const { params: { type = 'gas' } = {} } = useRoute();
+  const { params: { type = 'gas', longFormHeight } = {} } = useRoute();
   const { colors } = useTheme();
-  const { goBack } = useNavigation();
-
+  const { goBack, setParams } = useNavigation();
   const handleClose = useCallback(() => {
     goBack();
   }, [goBack]);
 
+  const handleReadMore = useCallback(() => {
+    Linking.openURL(explainers[type].readMoreLink);
+  }, [type]);
+
   const EmojiText = type === 'verified' ? Gradient : Emoji;
   const Title = type === 'verified' ? Gradient : SheetTitle;
 
+  const sheetHeight =
+    ExplainSheetHeight + (explainers[type].readMoreLink ? 60 : 0);
+
+  useEffect(() => {
+    if (longFormHeight !== sheetHeight) {
+      setParams({ longFormHeight: sheetHeight });
+    }
+  }, [longFormHeight, setParams, sheetHeight]);
+
   return (
-    <Container
-      deviceHeight={deviceHeight}
-      height={ExplainSheetHeight}
-      insets={insets}
-    >
+    <Container deviceHeight={deviceHeight} height={sheetHeight} insets={insets}>
       {ios && <StatusBar barStyle="light-content" />}
 
       <SlackSheet
         additionalTopPadding={android}
-        contentHeight={ExplainSheetHeight}
+        contentHeight={sheetHeight}
         scrollEnabled={false}
       >
         <Centered
           direction="column"
-          height={ExplainSheetHeight}
+          height={sheetHeight}
           testID="add-token-sheet"
           width="100%"
         >
           <ColumnWithMargins
             margin={15}
             style={{
-              height: ExplainSheetHeight,
+              height: sheetHeight,
               paddingHorizontal: 19,
               paddingTop: 19,
               width: '100%',
             }}
           >
-            <EmojiText
-              align="center"
-              size="h1"
-              style={{ ...fontWithWidth(fonts.weight.bold) }}
-            >
-              {explainers[type].emoji}
-            </EmojiText>
+            {<Centered>{explainers[type].logo}</Centered> || (
+              <EmojiText
+                align="center"
+                size="h1"
+                style={{ ...fontWithWidth(fonts.weight.bold) }}
+              >
+                {explainers[type].emoji}
+              </EmojiText>
+            )}
             <Title align="center" size="big" weight="heavy">
               {explainers[type].title}
             </Title>
@@ -112,6 +156,18 @@ const SavingsSheet = () => {
             >
               {explainers[type].text}
             </Text>
+            {explainers[type].readMoreLink && (
+              <SheetActionButton
+                androidWidth={deviceWidth - 60}
+                color={colors.blueGreyDarkLight}
+                isTransparent
+                label="ReadMore"
+                onPress={handleReadMore}
+                size="big"
+                textColor={colors.blueGreyDark60}
+                weight="heavy"
+              />
+            )}
             <SheetActionButton
               androidWidth={deviceWidth - 60}
               color={colors.alpha(colors.appleBlue, 0.06)}
