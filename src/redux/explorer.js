@@ -1,6 +1,8 @@
 import { concat, isEmpty, isNil, keys, toLower } from 'lodash';
 import { DATA_API_KEY, DATA_ORIGIN } from 'react-native-dotenv';
 import io from 'socket.io-client';
+// eslint-disable-next-line import/no-cycle
+import { arbitrumExplorerInit } from './arbitrumExplorer';
 import { assetChartsReceived, DEFAULT_CHART_TYPE } from './charts';
 /* eslint-disable-next-line import/no-cycle */
 import {
@@ -428,6 +430,8 @@ const listenOnAddressMessages = socket => dispatch => {
         '😬 Cancelling fallback data provider listener. Zerion is good!'
       );
       dispatch(disableFallbackIfNeeded());
+      // Start watching arbitrum assets
+      dispatch(arbitrumExplorerInit());
       // Start watching optimism assets
       dispatch(optimismExplorerInit());
       // Start watching polygon assets

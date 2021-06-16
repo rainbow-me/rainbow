@@ -316,15 +316,16 @@ function openTokenEtherscanURL(address) {
 
 function openTransactionInBlockExplorer(hash, network) {
   const normalizedHash = hash.replace(/-.*/g, '');
-  if (network === networkTypes.kovanovm || network === networkTypes.ovm) {
-    const subdomain =
-      network === networkTypes.kovanovm ? 'kovan-optimistic' : 'optimistic';
-    Linking.openURL(`https://${subdomain}.etherscan.io/tx/${normalizedHash}`);
+  if (network === networkTypes.optimism) {
+    Linking.openURL(`https://optimistic.etherscan.io/tx/${normalizedHash}`);
     return;
   } else if (network === networkTypes.polygon) {
     Linking.openURL(
       `https://polygon-explorer-mainnet.chainstacklabs.com/tx/${normalizedHash}`
     );
+    return;
+  } else if (network === networkTypes.arbitrum) {
+    Linking.openURL(`https://explorer.arbitrum.io/tx/${normalizedHash}`);
     return;
   }
   if (!isString(hash)) return;

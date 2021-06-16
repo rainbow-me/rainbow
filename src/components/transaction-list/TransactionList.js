@@ -5,7 +5,6 @@ import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { requireNativeComponent } from 'react-native';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { optimismMainnet } from '../../config/debug';
 import { getRandomColor } from '../../styles/colors';
 import { FloatingEmojis } from '../floating-emojis';
 import useExperimentalFlag, {
@@ -131,6 +130,7 @@ export default function TransactionList({
       const { index } = e.nativeEvent;
       const item = transactions[index];
       const {
+        arbitrum,
         hash,
         from,
         minedAt,
@@ -233,11 +233,11 @@ export default function TransactionList({
               case TransactionActions.viewOnEtherscan: {
                 let network = null;
                 if (optimism) {
-                  network = optimismMainnet
-                    ? networkTypes.ovm
-                    : networkTypes.kovanovm;
+                  network = networkTypes.optimism;
                 } else if (polygon) {
                   network = networkTypes.polygon;
+                } else if (arbitrum) {
+                  network = networkTypes.arbitrum;
                 }
                 ethereumUtils.openTransactionInBlockExplorer(hash, network);
                 break;

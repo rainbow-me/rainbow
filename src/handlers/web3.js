@@ -7,13 +7,12 @@ import { parseEther } from '@ethersproject/units';
 import UnstoppableResolution from '@unstoppabledomains/resolution';
 import { get, replace, startsWith } from 'lodash';
 import { INFURA_PROJECT_ID, INFURA_PROJECT_ID_DEV } from 'react-native-dotenv';
-import { AssetTypes } from '@rainbow-me/entities';
+import { AssetType, AssetTypes } from '@rainbow-me/entities';
 import NetworkTypes from '@rainbow-me/helpers/networkTypes';
 // eslint-disable-next-line import/no-cycle
-import {
-  OPTIMISM_KOVAN_RPC_ENDPOINT,
-  OPTIMISM_MAINNET_RPC_ENDPOINT,
-} from '@rainbow-me/redux/optimismExplorer';
+import { ARBITRUM_MAINNET_RPC_ENDPOINT } from '@rainbow-me/redux/arbitrumExplorer';
+// eslint-disable-next-line import/no-cycle
+import { OPTIMISM_MAINNET_RPC_ENDPOINT } from '@rainbow-me/redux/optimismExplorer';
 // eslint-disable-next-line import/no-cycle
 import { POLYGON_MAINNET_RPC_ENDPOINT } from '@rainbow-me/redux/polygonExplorer';
 import { ethUnits, smartContractMethods } from '@rainbow-me/references';
@@ -54,6 +53,42 @@ export const web3SetHttpProvider = async network => {
 };
 
 /**
+ * @desc returns the network name provider for the specified asset type
+ * @param {String} assetType
+ */
+export const getNetworkForAssetType = assetType => {
+  switch (assetType) {
+    case AssetType.arbitrum:
+      return NetworkTypes.arbitrum;
+    case AssetType.optimism:
+      return NetworkTypes.optimism;
+    case AssetType.polygon:
+      return NetworkTypes.polygon;
+    default:
+      return null;
+  }
+};
+
+/**
+ * @desc returns the gas price depending on the network of the asset
+ * @param {String} assetType
+ * @param {String} defaultPrice
+ * @return {BigNumber}
+ */
+export const getGasPriceForAssetType = (assetType, defaultPrice) => {
+  switch (assetType) {
+    case AssetType.arbitrum:
+      return BigNumber.from('0'); // Arbitrum uses gas = 0
+    case AssetType.optimism:
+      return BigNumber.from('150000000'); // Optimism uses 0.15 gwei => 150000000 wei => 8F0D180
+    case AssetType.polygon:
+      return BigNumber.from('5000000000'); // TODO - We need to integrate gas station
+    default:
+      return defaultPrice;
+  }
+};
+
+/**
  * @desc returns a web3 provider for the specified network
  * @param {String} network
  */
@@ -63,10 +98,10 @@ export const getProviderForNetwork = async network => {
   } else {
     let url;
     switch (network) {
-      case NetworkTypes.kovanovm:
-        url = OPTIMISM_KOVAN_RPC_ENDPOINT;
+      case NetworkTypes.arbitrum:
+        url = ARBITRUM_MAINNET_RPC_ENDPOINT;
         break;
-      case NetworkTypes.ovm:
+      case NetworkTypes.optimism:
         url = OPTIMISM_MAINNET_RPC_ENDPOINT;
         break;
       case NetworkTypes.polygon:
@@ -252,7 +287,9 @@ export const getTxDetails = async transaction => {
   const { to } = transaction;
   const data = transaction.data ? transaction.data : '0x';
   const value = transaction.amount ? toHex(toWei(transaction.amount)) : '0x00';
-  const gasLimit = toHex(transaction.gasLimit) || undefined;
+  const gasLimit = transaction.gasLimit
+    ? toHex(transaction.gasLimit) || undefined
+    : undefined;
   const gasPrice = toHex(transaction.gasPrice) || undefined;
   const tx = {
     data,

@@ -1,9 +1,9 @@
 export enum Network {
+  arbitrum = 'arbitrum',
   goerli = 'goerli',
   kovan = 'kovan',
   mainnet = 'mainnet',
-  kovanovm = 'kovanovm',
-  ovm = 'ovm',
+  optimism = 'optimism',
   polygon = 'polygon',
   rinkeby = 'rinkeby',
   ropsten = 'ropsten',
@@ -12,11 +12,11 @@ export enum Network {
 // We need to keep this one until
 // we have typescript everywhere
 export default {
+  arbitrum: 'arbitrum' as Network,
   goerli: 'goerli' as Network,
   kovan: 'kovan' as Network,
-  kovanovm: 'kovanovm' as Network,
   mainnet: 'mainnet' as Network,
-  ovm: 'ovm' as Network,
+  optimism: 'optimism' as Network,
   polygon: 'polygon' as Network,
   rinkeby: 'rinkeby' as Network,
   ropsten: 'ropsten' as Network,

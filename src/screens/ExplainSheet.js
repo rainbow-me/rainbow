@@ -40,6 +40,7 @@ const OPTIMISM_EXPLAINER = `Optimism is a layer 2 network that sits on top of Et
 Still curious? Read more about the pros and cons of the different networks you can use in Rainbow!`;
 
 const ARBITRUM_EXPLAINER = `Arbitrum is a layer 2 network that sits on top of Ethereum, allowing cheaper and faster transactions!
+
 You can move assets into and out of different layer 2 networks by swapping in Rainbow!`;
 
 const POLYGON_EXPLAINER = `Polygon combines the best of Ethereum and sovereign blockchains into a full-fledged multi-chain system.
@@ -63,6 +64,7 @@ export const explainers = {
     text: OPTIMISM_EXPLAINER,
     title: `What's Optimism?`,
     readMoreLink: 'https://rainbow.me',
+    extraHeight: 60,
   },
   arbitrum: {
     emoji: '⛽️',
@@ -70,6 +72,7 @@ export const explainers = {
     text: ARBITRUM_EXPLAINER,
     title: `What's Arbitrum?`,
     readMoreLink: 'https://rainbow.me',
+    extraHeight: 50,
   },
   polygon: {
     emoji: '⛽️',
@@ -97,8 +100,7 @@ const SavingsSheet = () => {
   const EmojiText = type === 'verified' ? Gradient : Emoji;
   const Title = type === 'verified' ? Gradient : SheetTitle;
 
-  const sheetHeight =
-    ExplainSheetHeight + (explainers[type].readMoreLink ? 60 : 0);
+  const sheetHeight = ExplainSheetHeight + (explainers[type]?.extraHeight || 0);
 
   return (
     <Container deviceHeight={deviceHeight} height={sheetHeight} insets={insets}>
@@ -157,7 +159,7 @@ const SavingsSheet = () => {
                 androidWidth={deviceWidth - 60}
                 color={colors.blueGreyDarkLight}
                 isTransparent
-                label="ReadMore"
+                label="Read More"
                 onPress={handleReadMore}
                 size="big"
                 textColor={colors.blueGreyDark60}

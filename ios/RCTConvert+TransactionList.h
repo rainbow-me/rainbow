@@ -74,6 +74,9 @@
     if ([data valueForKey:@"pending"] != [NSNull null]) {
       transaction.pending = [[data valueForKey:@"pending"] boolValue];
     }
+    if ([data valueForKey:@"arbitrum"] != [NSNull null]) {
+      transaction.arbitrum = [[data valueForKey:@"arbitrum"] boolValue];
+    }
     if ([data valueForKey:@"optimism"] != [NSNull null]) {
       transaction.optimism = [[data valueForKey:@"optimism"] boolValue];
     }

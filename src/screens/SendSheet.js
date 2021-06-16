@@ -18,15 +18,15 @@ import {
   SendHeader,
   SendTransactionSpeed,
 } from '../components/send';
-import { optimismMainnet } from '../config/debug';
 import { AssetType, AssetTypes } from '@rainbow-me/entities';
 import {
   createSignableTransaction,
   estimateGasLimit,
+  getGasPriceForAssetType,
+  getNetworkForAssetType,
   getProviderForNetwork,
 } from '@rainbow-me/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
 import {
   useAccountAssets,
@@ -258,16 +258,12 @@ export default function SendSheet(props) {
     const updateCurrentProvider = async () => {
       if (
         selected &&
-        (selected.type === AssetType.optimism ||
+        (selected.type === AssetType.arbitrum ||
+          selected.type === AssetType.optimism ||
           selected.type === AssetType.polygon)
       ) {
-        const provider = await getProviderForNetwork(
-          selected.type === AssetType.optimism
-            ? optimismMainnet
-              ? networkTypes.ovm
-              : networkTypes.kovanovm
-            : networkTypes.polygon
-        );
+        const networkForAssetType = getNetworkForAssetType(selected.type);
+        const provider = await getProviderForNetwork(networkForAssetType);
         setCurrentProvider(provider);
       } else {
         setCurrentProvider();
@@ -321,9 +317,7 @@ export default function SendSheet(props) {
 
   const onSubmit = useCallback(async () => {
     const validTransaction =
-      isValidAddress &&
-      ((amountDetails.isSufficientBalance && isSufficientGas) ||
-        (selected.type === AssetTypes.optimism && !optimismMainnet));
+      isValidAddress && amountDetails.isSufficientBalance && isSufficientGas;
     if (!selectedGasPrice.txFee || !validTransaction || isAuthorizing) {
       logger.sentry('preventing tx submit for one of the following reasons:');
       logger.sentry('selectedGasPrice.txFee ? ', selectedGasPrice?.txFee);
@@ -358,10 +352,10 @@ export default function SendSheet(props) {
       } catch (e) {}
     }
 
-    const gasPriceToUse =
-      selected.type === AssetType.optimism
-        ? 0
-        : selectedGasPrice?.value?.amount;
+    const gasPriceToUse = getGasPriceForAssetType(
+      selected.type,
+      selectedGasPrice?.value?.amount
+    );
 
     const txDetails = {
       amount: amountDetails.assetAmount,
@@ -383,6 +377,7 @@ export default function SendSheet(props) {
         submitSuccess = true;
         txDetails.hash = hash;
         txDetails.nonce = nonce;
+        txDetails.arbitrum = selected.type === AssetType.arbitrum;
         txDetails.optimism = selected.type === AssetType.optimism;
         txDetails.polygon = selected.type === AssetType.polygon;
         await dispatch(
@@ -392,6 +387,7 @@ export default function SendSheet(props) {
     } catch (error) {
       logger.sentry('TX Details', txDetails);
       logger.sentry('SendSheet onSubmit error');
+      logger.sentry(error);
       captureException(error);
       submitSuccess = false;
     } finally {
@@ -586,14 +582,8 @@ export default function SendSheet(props) {
                 {...props}
                 assetAmount={amountDetails.assetAmount}
                 isAuthorizing={isAuthorizing}
-                isSufficientBalance={
-                  amountDetails.isSufficientBalance ||
-                  (selected.type === AssetTypes.optimism && !optimismMainnet)
-                }
-                isSufficientGas={
-                  isSufficientGas ||
-                  (selected.type === AssetTypes.optimism && !optimismMainnet)
-                }
+                isSufficientBalance={amountDetails.isSufficientBalance}
+                isSufficientGas={isSufficientGas}
                 onLongPress={onLongPressSend}
                 smallButton={isTinyPhone}
                 testID="send-sheet-confirm"

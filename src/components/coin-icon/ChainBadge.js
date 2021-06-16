@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import ArbitrumBadge from '../../assets/arbitrumBadge.png';
 import OptimismBadge from '../../assets/optimismBadge.png';
 import PolygonBadge from '../../assets/polygonBadge.png';
 import { Centered } from '../layout';
@@ -27,7 +28,9 @@ export default function ChainBadge({
 }) {
   const source = useMemo(() => {
     let val = null;
-    if (assetType === AssetType.optimism) {
+    if (assetType === AssetType.arbitrum) {
+      val = ArbitrumBadge;
+    } else if (assetType === AssetType.optimism) {
       val = OptimismBadge;
     } else if (assetType === AssetType.polygon) {
       val = PolygonBadge;

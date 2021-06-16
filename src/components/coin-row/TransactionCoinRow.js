@@ -1,7 +1,6 @@
 import { compact, get, toLower } from 'lodash';
 import React, { useCallback } from 'react';
 import { css } from 'styled-components';
-import { optimismMainnet } from '../../config/debug';
 import { useTheme } from '../../context/ThemeContext';
 import { getRandomColor } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';
@@ -94,6 +93,7 @@ export default function TransactionCoinRow({ item, ...props }) {
 
   const onPressTransaction = useCallback(async () => {
     const {
+      arbitrum,
       hash,
       from,
       minedAt,
@@ -194,11 +194,11 @@ export default function TransactionCoinRow({ item, ...props }) {
             case TransactionActions.viewOnEtherscan: {
               let network = null;
               if (optimism) {
-                network = optimismMainnet
-                  ? networkTypes.ovm
-                  : networkTypes.kovanovm;
+                network = networkTypes.ovm;
               } else if (polygon) {
                 network = networkTypes.polygon;
+              } else if (arbitrum) {
+                network = networkTypes.arbitrum;
               }
               ethereumUtils.openTransactionInBlockExplorer(hash, network);
               break;

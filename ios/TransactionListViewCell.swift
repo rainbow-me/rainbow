@@ -80,6 +80,11 @@ class TransactionListViewCell: TransactionListBaseCell {
         badge.image = img
         badge.isHidden = false
       }
+    } else if transaction.arbitrum {
+      if let img = UIImage.init(named:"arbitrumBadge") {
+        badge.image = img
+        badge.isHidden = false
+      }
     }
 
     

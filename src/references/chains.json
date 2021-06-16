@@ -47,17 +47,9 @@
     "name": "Optimism (Mainnet)",
     "short_name": "omainnet",
     "chain": "ETH",
-    "network": "ovm",
+    "network": "optimism",
     "chain_id": 10,
     "network_id": 10
-  },
-  {
-    "name": "Optimism (Kovan)",
-    "short_name": "okov",
-    "chain": "ETH",
-    "network": "kovanovm",
-    "chain_id": 69,
-    "network_id": 69
   },
   {
     "name": "Polygon (Matic)",

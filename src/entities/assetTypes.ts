@@ -1,4 +1,5 @@
 export enum AssetType {
+  arbitrum = 'arbitrum',
   compound = 'compound',
   eth = 'eth',
   nft = 'nft',
@@ -11,6 +12,7 @@ export enum AssetType {
 }
 
 export default {
+  arbitrum: 'arbitrum',
   compound: 'compound',
   eth: 'eth',
   nft: 'nft',

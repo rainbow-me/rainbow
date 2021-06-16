@@ -23,7 +23,6 @@ import WalletTypes from '../helpers/walletTypes';
 import { getFCMToken } from '../model/firebase';
 import { Navigation } from '../navigation';
 import { isSigningMethod } from '../utils/signingMethods';
-import { OPTIMISM_MAINNET_RPC_ENDPOINT } from './optimismExplorer';
 import { addRequestToApprove } from './requests';
 import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
 import { convertHexToString } from '@rainbow-me/helpers/utilities';
@@ -199,19 +198,17 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
     const { clientId, peerId, peerMeta } = walletConnector;
     const requestId = payload.id;
     if (payload.method === 'wallet_addEthereumChain') {
-      const { chainId, chainName, rpcUrls } = payload.params[0];
-      // Currently supports Optimism and Mainnet
+      const { chainId } = payload.params[0];
       if (
-        (chainId === '0xa' &&
-          chainName === 'Optimism' &&
-          rpcUrls[0] === OPTIMISM_MAINNET_RPC_ENDPOINT) ||
-        chainId === '0x1'
+        chainId === '0x1' || // Ethereum Mainnet
+        chainId === '0xa' || // Optimism Mainnet
+        chainId === '0xa4b1' || // Arbitrum Mainnet
+        chainId === '0x89' // Polygon Mainnet
       ) {
+        const numericChainId = convertHexToString(chainId);
         Alert.alert(
           `Network Change request`,
-          `${peerMeta.name} wants to connect to chainId ${convertHexToString(
-            chainId
-          )}`,
+          `${peerMeta.name} wants to connect to chainId ${numericChainId}`,
           [
             {
               onPress: () => {
@@ -220,10 +217,10 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
                   result: null,
                 });
                 const { accountAddress } = getState().settings;
-                logger.log('Updating session for optimism!');
+                logger.log('Updating session for chainID', numericChainId);
                 walletConnector.updateSession({
                   accounts: [accountAddress],
-                  chainId: convertHexToString(chainId),
+                  chainId: numericChainId,
                 });
                 saveWalletConnectSession(
                   walletConnector.peerId,

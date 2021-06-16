@@ -6,6 +6,7 @@ import { TransactionType } from './transactionType';
 
 export interface RainbowTransaction {
   address: string;
+  arbitrum?: boolean;
   balance: {
     amount: string;
     display: string;
@@ -38,7 +39,7 @@ export interface RainbowTransaction {
 }
 
 export interface NewTransaction {
-  optimism: boolean | undefined;
+  arbitrum: boolean | undefined;
   amount: string | null;
   asset: ParsedAddressAsset | null;
   dappName?: string; // for walletconnect
@@ -47,6 +48,7 @@ export interface NewTransaction {
   gasPrice?: string;
   hash: string | null;
   nonce: number | null;
+  optimism: boolean | undefined;
   polygon: boolean | undefined;
   protocol?: ProtocolType | null;
   sourceAmount?: string; // for purchases

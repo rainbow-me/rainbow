@@ -94,7 +94,10 @@ export const explainSheetConfig = {
     return buildCoolModalConfig({
       ...params,
       longFormHeight:
-        ExplainSheetHeight + (explainers[params?.type]?.readMoreLink ? 60 : 0),
+        ExplainSheetHeight +
+        (explainers[params?.type]?.readMoreLink
+          ? explainers[params?.type]?.extraHeight
+          : 0),
     });
   },
 };

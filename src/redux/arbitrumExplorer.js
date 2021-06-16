@@ -2,7 +2,7 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { toLower } from 'lodash';
-import { optimismEnabled } from '../config/debug';
+import { arbitrumEnabled } from '../config/debug';
 // eslint-disable-next-line import/no-cycle
 import { addressAssetsReceived, fetchAssetPrices } from './data';
 // eslint-disable-next-line import/no-cycle
@@ -17,21 +17,21 @@ import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 // -- Constants --------------------------------------- //
-export const OPTIMISM_MAINNET_RPC_ENDPOINT = 'https://mainnet.optimism.io';
-const OPTIMISM_EXPLORER_CLEAR_STATE = 'explorer/OPTIMISM_EXPLORER_CLEAR_STATE';
-const OPTIMISM_EXPLORER_SET_ASSETS = 'explorer/OPTIMISM_EXPLORER_SET_ASSETS';
-const OPTIMISM_EXPLORER_SET_BALANCE_HANDLER =
-  'explorer/OPTIMISM_EXPLORER_SET_BALANCE_HANDLER';
-const OPTIMISM_EXPLORER_SET_HANDLERS =
-  'explorer/OPTIMISM_EXPLORER_SET_HANDLERS';
-const OPTIMISM_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER =
-  'explorer/OPTIMISM_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER';
+export const ARBITRUM_MAINNET_RPC_ENDPOINT = 'https://arb1.arbitrum.io/rpc';
+const ARBITRUM_EXPLORER_CLEAR_STATE = 'explorer/ARBITRUM_EXPLORER_CLEAR_STATE';
+const ARBITRUM_EXPLORER_SET_ASSETS = 'explorer/ARBITRUM_EXPLORER_SET_ASSETS';
+const ARBITRUM_EXPLORER_SET_BALANCE_HANDLER =
+  'explorer/ARBITRUM_EXPLORER_SET_BALANCE_HANDLER';
+const ARBITRUM_EXPLORER_SET_HANDLERS =
+  'explorer/ARBITRUM_EXPLORER_SET_HANDLERS';
+const ARBITRUM_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER =
+  'explorer/ARBITRUM_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER';
 
 const UPDATE_BALANCE_AND_PRICE_FREQUENCY = 30000;
 
-const optimismProvider = new JsonRpcProvider(OPTIMISM_MAINNET_RPC_ENDPOINT);
+const arbitrumProvider = new JsonRpcProvider(ARBITRUM_MAINNET_RPC_ENDPOINT);
 
-const network = networkTypes.optimism;
+const network = networkTypes.arbitrum;
 
 const fetchAssetBalances = async (tokens, address) => {
   const abi = balanceCheckerContractAbiOVM;
@@ -41,7 +41,7 @@ const fetchAssetBalances = async (tokens, address) => {
   const balanceCheckerContract = new Contract(
     contractAddress,
     abi,
-    optimismProvider
+    arbitrumProvider
   );
 
   try {
@@ -65,25 +65,25 @@ const fetchAssetBalances = async (tokens, address) => {
   }
 };
 
-export const optimismExplorerInit = () => async (dispatch, getState) => {
-  if (!optimismEnabled) return;
+export const arbitrumExplorerInit = () => async (dispatch, getState) => {
+  if (!arbitrumEnabled) return;
   const { assets: allAssets, genericAssets } = getState().data;
   const { accountAddress, nativeCurrency } = getState().settings;
   const formattedNativeCurrency = toLower(nativeCurrency);
 
   const fetchAssetsBalancesAndPrices = async () => {
-    logger.log('🔴 optimismExplorer fetchAssetsBalancesAndPrices');
+    logger.log('🔵 arbitrumExplorer fetchAssetsBalancesAndPrices');
     const assets = testnetAssets[network];
     if (!assets || !assets.length) {
-      const optimismExplorerBalancesHandle = setTimeout(
+      const arbitrumExplorerBalancesHandle = setTimeout(
         fetchAssetsBalancesAndPrices,
         10000
       );
       dispatch({
         payload: {
-          optimismExplorerBalancesHandle,
+          arbitrumExplorerBalancesHandle,
         },
-        type: OPTIMISM_EXPLORER_SET_BALANCE_HANDLER,
+        type: ARBITRUM_EXPLORER_SET_BALANCE_HANDLER,
       });
       return;
     }
@@ -141,7 +141,7 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
       });
     }
 
-    logger.log('🔴 optimismExplorer updating assets');
+    logger.log('🔵 arbitrumExplorer updating assets');
     dispatch(
       addressAssetsReceived(
         {
@@ -156,72 +156,72 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
       )
     );
 
-    const optimismExplorerBalancesHandle = setTimeout(
+    const arbitrumExplorerBalancesHandle = setTimeout(
       fetchAssetsBalancesAndPrices,
       UPDATE_BALANCE_AND_PRICE_FREQUENCY
     );
-    let optimismExplorerAssetsHandle = null;
+    let arbitrumExplorerAssetsHandle = null;
 
     dispatch({
       payload: {
-        optimismExplorerAssetsHandle,
-        optimismExplorerBalancesHandle,
+        arbitrumExplorerAssetsHandle,
+        arbitrumExplorerBalancesHandle,
       },
-      type: OPTIMISM_EXPLORER_SET_HANDLERS,
+      type: ARBITRUM_EXPLORER_SET_HANDLERS,
     });
   };
   fetchAssetsBalancesAndPrices();
 };
 
-export const optimismExplorerClearState = () => (dispatch, getState) => {
+export const arbitrumExplorerClearState = () => (dispatch, getState) => {
   const {
-    optimismExplorerBalancesHandle,
-    optimismExplorerAssetsHandle,
-  } = getState().optimismExplorer;
+    arbitrumExplorerBalancesHandle,
+    arbitrumExplorerAssetsHandle,
+  } = getState().arbitrumExplorer;
 
-  optimismExplorerBalancesHandle &&
-    clearTimeout(optimismExplorerBalancesHandle);
-  optimismExplorerAssetsHandle && clearTimeout(optimismExplorerAssetsHandle);
-  dispatch({ type: OPTIMISM_EXPLORER_CLEAR_STATE });
+  arbitrumExplorerBalancesHandle &&
+    clearTimeout(arbitrumExplorerBalancesHandle);
+  arbitrumExplorerAssetsHandle && clearTimeout(arbitrumExplorerAssetsHandle);
+  dispatch({ type: ARBITRUM_EXPLORER_CLEAR_STATE });
 };
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
+  arbitrumExplorerAssetsHandle: null,
+  arbitrumExplorerBalancesHandle: null,
   assetsFound: [],
-  optimismExplorerAssetsHandle: null,
-  optimismExplorerBalancesHandle: null,
 };
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case OPTIMISM_EXPLORER_SET_ASSETS:
+    case ARBITRUM_EXPLORER_SET_ASSETS:
       return {
         ...state,
         assetsFound: action.payload.assetsFound,
       };
-    case OPTIMISM_EXPLORER_CLEAR_STATE:
+    case ARBITRUM_EXPLORER_CLEAR_STATE:
       return {
         ...state,
         ...INITIAL_STATE,
       };
-    case OPTIMISM_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER:
+    case ARBITRUM_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER:
       return {
         ...state,
         latestTxBlockNumber: action.payload.latestTxBlockNumber,
       };
-    case OPTIMISM_EXPLORER_SET_HANDLERS:
+    case ARBITRUM_EXPLORER_SET_HANDLERS:
       return {
         ...state,
-        optimismExplorerAssetsHandle:
-          action.payload.optimismExplorerAssetsHandle,
-        optimismExplorerBalancesHandle:
-          action.payload.optimismExplorerBalancesHandle,
+        arbitrumExplorerAssetsHandle:
+          action.payload.arbitrumExplorerAssetsHandle,
+        arbitrumExplorerBalancesHandle:
+          action.payload.arbitrumExplorerBalancesHandle,
       };
-    case OPTIMISM_EXPLORER_SET_BALANCE_HANDLER:
+    case ARBITRUM_EXPLORER_SET_BALANCE_HANDLER:
       return {
         ...state,
-        optimismExplorerBalancesHandle:
-          action.payload.optimismExplorerBalancesHandle,
+        arbitrumExplorerBalancesHandle:
+          action.payload.arbitrumExplorerBalancesHandle,
       };
     default:
       return state;

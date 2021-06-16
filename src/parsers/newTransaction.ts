@@ -58,6 +58,7 @@ export const parseNewTransaction = async (
 
   return {
     address: txDetails?.asset?.address ?? ETH_ADDRESS,
+    arbitrum: txDetails.arbitrum,
     balance,
     dappName: txDetails.dappName,
     description,

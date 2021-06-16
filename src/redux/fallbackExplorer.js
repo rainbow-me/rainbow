@@ -2,6 +2,8 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
 import { get, toLower, uniqBy } from 'lodash';
 /* eslint-disable-next-line import/no-cycle */
+import { arbitrumExplorerInit } from './arbitrumExplorer';
+// eslint-disable-next-line import/no-cycle
 import { addressAssetsReceived, fetchAssetPrices } from './data';
 // eslint-disable-next-line import/no-cycle
 import { optimismExplorerInit } from './optimismExplorer';
@@ -349,6 +351,8 @@ export const fallbackExplorerInit = () => async (dispatch, getState) => {
     });
   };
   fetchAssetsBalancesAndPrices();
+  // Start watching arbitrum assets
+  dispatch(arbitrumExplorerInit());
   // Start watching optimism assets
   dispatch(optimismExplorerInit());
   // Start watching polygon assets

@@ -14,4 +14,3 @@ export const parseAllTxnsOnReceive = false;
 export const reactNativeDisableYellowBox = true;
 export const showNetworkRequests = false;
 export const showNetworkResponses = false;
-export const optimismMainnet = false;

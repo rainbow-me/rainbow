@@ -13,9 +13,7 @@ import {
   useResetAccountState,
 } from '@rainbow-me/hooks';
 
-const networks = values(networkInfo).filter(
-  network => network.value.indexOf('ovm') === -1
-);
+const networks = values(networkInfo).filter(network => network.layer2 !== true);
 
 const NetworkSection = () => {
   const { network } = useAccountSettings();
