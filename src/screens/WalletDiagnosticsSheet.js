@@ -3,7 +3,6 @@ import { captureException } from '@sentry/react-native';
 import { toLower } from 'lodash';
 import React, { Fragment, useCallback, useEffect } from 'react';
 import { Alert, StatusBar, TextInput, View } from 'react-native';
-
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import ActivityIndicator from '../components/ActivityIndicator';
 import Divider from '../components/Divider';
@@ -71,7 +70,7 @@ const SecretInput = ({ value, color }) => {
           style={{ paddingHorizontal: android ? 10 : 15, paddingVertical: 10 }}
           width="100%"
         >
-          <Text align="center" weight="bold">
+          <Text align="center" color={colors.whiteLabel} weight="bold">
             Copy Secret
           </Text>
         </Row>
@@ -83,21 +82,37 @@ const SecretInput = ({ value, color }) => {
 const ItemRow = ({ data }) => {
   const { colors } = useTheme();
   const {
+    busy,
     handleSetSeedPhrase,
     handlePressImportButton,
-    busy,
   } = useImportingWallet();
 
   const handlePressRestore = useCallback(async () => {
     if (busy) return;
-    try {
-      handleSetSeedPhrase(data.secret);
-      await handlePressImportButton(null, data.secret);
-    } catch (e) {
-      logger.sentry('Error restoring from wallet diagnostics', e);
-      const customError = new Error('WalletDiagnostics restore failed');
-      captureException(customError);
-    }
+    Alert.alert(
+      'Heads up!',
+      'This action will completely replace this wallet. Are you sure?',
+      [
+        {
+          onPress: async () => {
+            try {
+              handleSetSeedPhrase(data.secret);
+              await handlePressImportButton(null, data.secret);
+            } catch (e) {
+              logger.sentry('Error restoring from wallet diagnostics', e);
+              const customError = new Error('WalletDiagnostics restore failed');
+              captureException(customError);
+            }
+          },
+          text: 'Yes, I understand',
+        },
+        {
+          onPress: null,
+          style: 'cancel',
+          text: 'Cancel',
+        },
+      ]
+    );
   }, [busy, data.secret, handlePressImportButton, handleSetSeedPhrase]);
   return (
     <ColumnWithMargins key={`key_${data.username}`}>
@@ -147,7 +162,7 @@ const ItemRow = ({ data }) => {
           borderRadius={15}
           style={{ paddingHorizontal: 15, paddingVertical: 10 }}
         >
-          <Text align="center" weight="bold">
+          <Text align="center" color={colors.whiteLabel} weight="bold">
             Restore
           </Text>
         </View>
@@ -272,12 +287,12 @@ const WalletDiagnosticsSheet = () => {
         </SheetTitle>
 
         {!keys && (
-          <Centered flex={1}>
+          <Centered flex={1} height={300}>
             <LoadingSpinner />
           </Centered>
         )}
 
-        {seeds?.length && (
+        {seeds?.length > 0 && (
           <Fragment>
             <Column>
               {seeds.map(key => (
@@ -286,7 +301,8 @@ const WalletDiagnosticsSheet = () => {
             </Column>
           </Fragment>
         )}
-        {pkeys?.length && (
+
+        {pkeys?.length > 0 && (
           <Fragment>
             <Column>
               {pkeys?.map(key => (
