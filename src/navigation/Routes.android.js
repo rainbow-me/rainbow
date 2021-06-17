@@ -43,7 +43,6 @@ import {
   expandedPreset,
   expandedPresetWithSmallGestureResponseDistance,
   overlayExpandedPreset,
-  settingsPreset,
   sheetPreset,
   sheetPresetWithSmallGestureResponseDistance,
   speedUpAndCancelStyleInterpolator,
@@ -128,25 +127,6 @@ function MainNavigator() {
         options={emojiPreset}
       />
       <Stack.Screen
-        component={ExpandedAssetSheet}
-        name={Routes.EXPANDED_ASSET_SHEET}
-        options={args =>
-          args?.route?.params?.type === 'token'
-            ? sheetPresetWithSmallGestureResponseDistance(args)
-            : sheetPreset(args)
-        }
-      />
-      <Stack.Screen
-        component={ExpandedAssetSheet}
-        name={Routes.EXPANDED_ASSET_SHEET_POOLS}
-        options={expandedPresetWithSmallGestureResponseDistance}
-      />
-      <Stack.Screen
-        component={ExpandedAssetSheet}
-        name={Routes.TOKEN_INDEX_SHEET}
-        options={expandedPreset}
-      />
-      <Stack.Screen
         component={ChangeWalletSheet}
         name={Routes.CHANGE_WALLET_SHEET}
         options={expandedPreset}
@@ -204,11 +184,6 @@ function MainNavigator() {
         component={ImportSeedPhraseSheet}
         name={Routes.IMPORT_SEED_PHRASE_SHEET}
         options={sheetPreset}
-      />
-      <Stack.Screen
-        component={SavingsSheet}
-        name={Routes.SAVINGS_SHEET}
-        options={bottomSheetPreset}
       />
       <Stack.Screen
         component={AddTokenSheet}
@@ -272,11 +247,6 @@ function MainOuterNavigator() {
         options={expandedPresetWithSmallGestureResponseDistance}
       />
       <OuterStack.Screen
-        component={SettingsModal}
-        name={Routes.SETTINGS_MODAL}
-        options={settingsPreset}
-      />
-      <OuterStack.Screen
         component={PinAuthenticationScreen}
         name={Routes.PIN_AUTHENTICATION_SCREEN}
         options={{ ...sheetPreset, gestureEnabled: false }}
@@ -302,11 +272,24 @@ function BSNavigator() {
         name={Routes.SEND_SHEET_NAVIGATOR}
       />
       <BSStack.Screen
+        component={ExpandedAssetSheet}
+        name={Routes.TOKEN_INDEX_SHEET}
+      />
+      <BSStack.Screen
         component={ShowcaseSheet}
         name={Routes.SHOWCASE_SHEET}
         options={{
           height: '90%',
         }}
+      />
+      <BSStack.Screen
+        component={ExpandedAssetSheet}
+        name={Routes.EXPANDED_ASSET_SHEET}
+      />
+      <BSStack.Screen
+        component={ExpandedAssetSheet}
+        name={Routes.EXPANDED_ASSET_SHEET_POOLS}
+        options={expandedPresetWithSmallGestureResponseDistance}
       />
       <BSStack.Screen
         component={ExplainSheet}
@@ -315,6 +298,8 @@ function BSNavigator() {
           height: '100%',
         }}
       />
+      <BSStack.Screen component={SavingsSheet} name={Routes.SAVINGS_SHEET} />
+      <BSStack.Screen component={SettingsModal} name={Routes.SETTINGS_MODAL} />
     </BSStack.Navigator>
   );
 }

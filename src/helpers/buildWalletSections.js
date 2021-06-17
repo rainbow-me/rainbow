@@ -234,7 +234,7 @@ const coinEditContextMenu = (
             },
           }
         : undefined,
-    title: lang.t('account.tab_balances'),
+    title: null,
     totalItems: isLoadingAssets ? 1 : allAssetsCount,
     totalValue: totalValue,
   };

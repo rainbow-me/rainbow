@@ -15,12 +15,13 @@ import {
   StatusBar,
 } from 'react-native';
 import branch from 'react-native-branch';
-
 import {
+  IS_TESTING,
   REACT_APP_SEGMENT_API_WRITE_KEY,
   SENTRY_ENDPOINT,
   SENTRY_ENVIRONMENT,
 } from 'react-native-dotenv';
+
 // eslint-disable-next-line import/default
 import RNIOS11DeviceCheck from 'react-native-ios11-devicecheck';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -39,10 +40,7 @@ import { MainThemeProvider } from './context/ThemeContext';
 import { InitialRouteContext } from './context/initialRoute';
 import monitorNetwork from './debugging/network';
 import handleDeeplink from './handlers/deeplinks';
-import {
-  runKeychainIntegrityChecks,
-  runWalletBackupStatusChecks,
-} from './handlers/walletReadyEvents';
+import { runWalletBackupStatusChecks } from './handlers/walletReadyEvents';
 import RainbowContextWrapper from './helpers/RainbowContext';
 import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import * as keychain from './model/keychain';
@@ -132,7 +130,11 @@ class App extends Component {
       } else if (!params['+clicked_branch_link']) {
         // Indicates initialization success and some other conditions.
         // No link was opened.
-        return;
+        if (IS_TESTING === 'true') {
+          handleDeeplink(uri);
+        } else {
+          return;
+        }
       } else if (uri) {
         handleDeeplink(uri);
       }
@@ -158,7 +160,6 @@ class App extends Component {
     if (!prevProps.walletReady && this.props.walletReady) {
       // Everything we need to do after the wallet is ready goes here
       logger.sentry('✅ Wallet ready!');
-      runKeychainIntegrityChecks();
       runWalletBackupStatusChecks();
     }
   }

@@ -127,6 +127,7 @@ export default function WalletConnectApprovalSheet() {
         paddingBottom={5}
         paddingHorizontal={19}
         paddingTop={17}
+        testID="wc-approval-sheet"
       >
         <DappLogo dappName={dappName || ''} imageUrl={imageUrl} />
         <Centered paddingHorizontal={24}>
@@ -165,6 +166,7 @@ export default function WalletConnectApprovalSheet() {
           label="Connect"
           onPress={handleConnect}
           size="big"
+          testID="wc-connect"
           weight="bold"
         />
       </SheetActionButtonRow>

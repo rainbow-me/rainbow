@@ -28,7 +28,11 @@ import { FloatingPanel } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
 import { ExchangeModalTypes, isKeyboardOpen } from '@rainbow-me/helpers';
-import { divide, multiply } from '@rainbow-me/helpers/utilities';
+import {
+  convertStringToNumber,
+  divide,
+  multiply,
+} from '@rainbow-me/helpers/utilities';
 import {
   useAccountSettings,
   useBlockPolling,
@@ -128,6 +132,7 @@ export default function ExchangeModal({
     : ethUnits.basic_swap;
 
   const {
+    selectedGasPrice,
     startPollingGasPrices,
     stopPollingGasPrices,
     updateDefaultGasLimit,
@@ -150,6 +155,7 @@ export default function ExchangeModal({
     handleFocus,
     inputFieldRef,
     lastFocusedInputHandle,
+    setLastFocusedInputHandle,
     nativeFieldRef,
     outputFieldRef,
   } = useSwapInputRefs();
@@ -169,7 +175,9 @@ export default function ExchangeModal({
     defaultInputAsset,
     defaultOutputAsset,
     inputFieldRef,
+    lastFocusedInputHandle,
     outputFieldRef,
+    setLastFocusedInputHandle,
     title,
     type,
   });
@@ -289,6 +297,35 @@ export default function ExchangeModal({
     updateMaxInputAmount();
   }, [updateMaxInputAmount]);
 
+  const checkGasvInput = async (gasPrice, inputPrice) => {
+    if (convertStringToNumber(gasPrice) > convertStringToNumber(inputPrice)) {
+      const res = new Promise(resolve => {
+        Alert.alert(
+          'Are you sure?',
+          'This transaction will cost you more than the value you are swapping to, are you sure you want to continue?',
+          [
+            {
+              onPress: () => {
+                resolve(false);
+              },
+              text: 'Proceed Anyway',
+            },
+            {
+              onPress: () => {
+                resolve(true);
+              },
+              style: 'cancel',
+              text: 'Cancel',
+            },
+          ]
+        );
+      });
+      return res;
+    } else {
+      return false;
+    }
+  };
+
   const handleSubmit = useCallback(async () => {
     let amountInUSD = 0;
     let NotificationManager = ios ? NativeModules.NotificationManager : null;
@@ -325,6 +362,13 @@ export default function ExchangeModal({
       });
     }
 
+    const gasPrice = selectedGasPrice?.txFee?.native?.value?.amount;
+    const cancelTransaction = await checkGasvInput(gasPrice, amountInUSD);
+
+    if (cancelTransaction) {
+      return;
+    }
+
     setIsAuthorizing(true);
     try {
       const wallet = await loadWallet();
@@ -352,7 +396,9 @@ export default function ExchangeModal({
       await executeRap(wallet, type, swapParameters, callback);
       logger.log('[exchange - handle submit] executed rap!');
       analytics.track(`Completed ${type}`, {
-        defaultInputAsset: defaultInputAsset?.symbol || '',
+        amountInUSD,
+        input: defaultInputAsset?.symbol || '',
+        output: outputCurrency?.symbol || '',
         type,
       });
       // Tell iOS we finished running a rap (for tracking purposes)
@@ -379,6 +425,7 @@ export default function ExchangeModal({
     outputCurrency?.symbol,
     priceImpactPercentDisplay,
     priceOfEther,
+    selectedGasPrice,
     setParams,
     tradeDetails,
     type,

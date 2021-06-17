@@ -1,4 +1,6 @@
 import { findKey, keys } from 'lodash';
+import { removeLocal } from '../handlers/localstorage/common';
+import { IMAGE_METADATA } from '../handlers/localstorage/globalSettings';
 import {
   getMigrationVersion,
   setMigrationVersion,
@@ -272,6 +274,13 @@ export default async function runMigrations() {
   };
 
   migrations.push(v7);
+
+  const v8 = async () => {
+    logger.log('wiping old metadata');
+    await removeLocal(IMAGE_METADATA);
+  };
+
+  migrations.push(v8);
 
   logger.sentry(
     `Migrations: ready to run migrations starting on number ${currentVersion}`
