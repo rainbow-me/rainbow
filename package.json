@@ -198,7 +198,6 @@
     "react-native-store-review": "^0.1.5",
     "react-native-svg": "12.1.0",
     "react-native-tab-view": "^2.14.2",
-    "react-native-tab-view-viewpager-adapter": "^1.1.0",
     "react-native-tcp": "^3.3.2",
     "react-native-text-input-mask": "^2.0.0",
     "react-native-text-size": "fcsvndev/react-native-text-size",
