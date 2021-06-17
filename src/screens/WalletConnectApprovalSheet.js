@@ -37,12 +37,19 @@ const DappLogo = styled(RequestVendorLogoIcon).attrs(
   margin-bottom: 24;
 `;
 
+export const WalletConnectApprovalSheetType = {
+  connect: 1,
+  switch_chain: 2,
+};
+
 export default function WalletConnectApprovalSheet() {
   const { colors } = useTheme();
   const { goBack } = useNavigation();
   const { params } = useRoute();
   const [scam, setScam] = useState(false);
   const handled = useRef(false);
+  const type = params?.type || WalletConnectApprovalSheetType.connect;
+  const chainId = params?.chainId || 1;
   const meta = params?.meta || {};
   const { dappName, dappUrl, imageUrl } = meta;
   const callback = params?.callback;
@@ -91,7 +98,7 @@ export default function WalletConnectApprovalSheet() {
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
       analytics.track('Shown Walletconnect session request');
-      checkIfScam(dappUrl);
+      type === WalletConnectApprovalSheetType.connect && checkIfScam(dappUrl);
     });
     // Reject if the modal is dismissed
     return () => {
@@ -141,7 +148,11 @@ export default function WalletConnectApprovalSheet() {
               <Text color="dark" size="big" weight="bold">
                 {dappName}
               </Text>{' '}
-              wants to connect to your wallet
+              {type === WalletConnectApprovalSheetType.connect
+                ? `wants to connect to your wallet`
+                : `wants to connect to the ${ethereumUtils.getNetworkNameFromChainId(
+                    chainId
+                  )} network`}
             </Text>
           </Row>
         </Centered>

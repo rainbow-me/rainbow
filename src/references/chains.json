@@ -44,7 +44,7 @@
     "testnet": true
   },
   {
-    "name": "Optimism (Mainnet)",
+    "name": "Optimism",
     "short_name": "omainnet",
     "chain": "ETH",
     "network": "optimism",
@@ -58,5 +58,13 @@
     "network": "polygon",
     "chain_id": 137,
     "network_id": 137
+  },
+  {
+    "name": "Arbitrum One",
+    "short_name": "arb",
+    "chain": "ETH",
+    "network": "arbitrum",
+    "chain_id": 421611,
+    "network_id": 421611
   }
 ]

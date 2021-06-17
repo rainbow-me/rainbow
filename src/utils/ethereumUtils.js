@@ -156,6 +156,15 @@ const getNetworkFromChainId = chainId => {
 };
 
 /**
+ * @desc get network string from chainId
+ * @param  {Number} chainId
+ */
+const getNetworkNameFromChainId = chainId => {
+  const networkData = find(chains, ['chain_id', chainId]);
+  return networkData?.name;
+};
+
+/**
  * @desc get chainId from network string
  * @param  {String} network
  */
@@ -347,6 +356,7 @@ export default {
   getEthPriceUnit,
   getHash,
   getNetworkFromChainId,
+  getNetworkNameFromChainId,
   hasPreviousTransactions,
   isEthAddress,
   openTokenEtherscanURL,

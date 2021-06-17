@@ -22,11 +22,14 @@ import { dappLogoOverride, dappNameOverride } from '../helpers/dappNameHandler';
 import WalletTypes from '../helpers/walletTypes';
 import { getFCMToken } from '../model/firebase';
 import { Navigation } from '../navigation';
+import { WalletConnectApprovalSheetType } from '../screens/WalletConnectApprovalSheet';
 import { isSigningMethod } from '../utils/signingMethods';
 import { addRequestToApprove } from './requests';
 import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { convertHexToString } from '@rainbow-me/helpers/utilities';
 import Routes from '@rainbow-me/routes';
+import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 // -- Constants --------------------------------------- //
@@ -196,22 +199,26 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
       throw error;
     }
     const { clientId, peerId, peerMeta } = walletConnector;
+    const imageUrl =
+      dappLogoOverride(peerMeta.url) || get(peerMeta, 'icons[0]');
+    const dappName = dappNameOverride(peerMeta.url) || peerMeta.name;
+    const dappUrl = peerMeta.url;
     const requestId = payload.id;
     if (payload.method === 'wallet_addEthereumChain') {
       const { chainId } = payload.params[0];
-      if (
-        chainId === '0x1' || // Ethereum Mainnet
-        chainId === '0xa' || // Optimism Mainnet
-        chainId === '0xa4b1' || // Arbitrum Mainnet
-        chainId === '0x89' // Polygon Mainnet
-      ) {
-        const numericChainId = convertHexToString(chainId);
-        Alert.alert(
-          `Network Change request`,
-          `${peerMeta.name} wants to connect to chainId ${numericChainId}`,
-          [
-            {
-              onPress: () => {
+      const supportedChains = [
+        networkTypes.mainnet,
+        networkTypes.polygon,
+        networkTypes.optimism,
+        networkTypes.arbitrum,
+      ].map(network => ethereumUtils.getChainIdFromNetwork(network).toString());
+      const numericChainId = convertHexToString(chainId);
+      if (supportedChains.includes(numericChainId)) {
+        try {
+          dispatch(walletConnectSetPendingRedirect());
+          Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {
+            callback: async approved => {
+              if (approved) {
                 walletConnector.approveRequest({
                   id: requestId,
                   result: null,
@@ -226,22 +233,36 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
                   walletConnector.peerId,
                   walletConnector.session
                 );
-              },
-              text: `LFG!`,
-            },
-            {
-              onPress: () => {
+                analytics.track('Approved WalletConnect network switch', {
+                  chainId,
+                  dappName,
+                  dappUrl,
+                });
+                dispatch(walletConnectRemovePendingRedirect('connect'));
+              } else {
                 walletConnector.rejectRequest({
                   error: { message: 'Chain currently not supported' },
                   id: requestId,
                 });
-              },
-              style: 'cancel',
-              text: 'Go Back',
+                analytics.track('Rejected new WalletConnect chain request', {
+                  dappName,
+                  dappUrl,
+                });
+              }
             },
-          ]
-        );
+            chainId: Number(numericChainId),
+            meta: {
+              dappName,
+              dappUrl,
+              imageUrl,
+            },
+            type: WalletConnectApprovalSheetType.switch_chain,
+          });
+        } catch (e) {
+          logger.log('WHAT?', e);
+        }
       } else {
+        logger.log('NOT SUPPORTED CHAIN');
         walletConnector.rejectRequest({
           error: { message: 'Chain currently not supported' },
           id: requestId,
