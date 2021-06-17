@@ -49,6 +49,7 @@ const Routes = {
   TOKEN_INDEX_SHEET: 'TokenIndexSheet',
   WALLET_CONNECT_APPROVAL_SHEET: 'WalletConnectApprovalSheet',
   WALLET_CONNECT_REDIRECT_SHEET: 'WalletConnectRedirectSheet',
+  WALLET_DIAGNOSTICS_SHEET: 'WalletDiagnosticsSheet',
   WALLET_SCREEN: 'WalletScreen',
   WELCOME_SCREEN: 'WelcomeScreen',
   WYRE_WEBVIEW: 'WyreWebview',
