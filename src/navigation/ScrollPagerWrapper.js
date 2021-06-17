@@ -1,8 +1,8 @@
 import React, { forwardRef } from 'react';
 import { Platform } from 'react-native';
 import { Value } from 'react-native-reanimated';
-import ViewPagerAdapter from 'react-native-tab-view-viewpager-adapter';
 import ScrollPager from '../helpers/ScrollPager';
+import ViewPagerAdapter from './ViewPagerAdapter';
 
 export const scrollPosition = new Value(1);
 
