@@ -1,10 +1,21 @@
 import ViewPager from '@react-native-community/viewpager';
-import React, { forwardRef } from 'react';
-import { Keyboard, Platform } from 'react-native';
+import React, { forwardRef, useEffect } from 'react';
+import { Keyboard } from 'react-native';
 import Animated from 'react-native-reanimated';
 const AnimatedViewPager = Animated.createAnimatedComponent(ViewPager);
 
 const { event, add } = Animated;
+
+// eslint-disable-next-line react/display-name
+const ViewPagerWrapper = forwardRef((props, fref) => {
+  const ref = React.useRef();
+  useEffect(() => {
+    android &&
+      ref?.current?.getNode().setPageWithoutAnimation(props.initialPage);
+  }, [props.initialPage]);
+  React.useImperativeHandle(fref, () => ref.current);
+  return <AnimatedViewPager ref={ref} {...props} />;
+});
 
 export default class ViewPagerBackend extends React.Component {
   static defaultProps = {
@@ -154,14 +165,3 @@ export default class ViewPagerBackend extends React.Component {
     });
   }
 }
-
-// eslint-disable-next-line react/display-name
-const ViewPagerWrapper = forwardRef((props, fref) => {
-  const ref = React.useRef();
-  React.useEffect(() => {
-    Platform.OS === 'android' &&
-      ref?.current?.getNode().setPageWithoutAnimation(props.initialPage);
-  }, [props.initialPage]);
-  React.useImperativeHandle(fref, () => ref.current);
-  return <AnimatedViewPager ref={ref} {...props} />;
-});
