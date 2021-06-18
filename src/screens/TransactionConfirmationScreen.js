@@ -42,9 +42,11 @@ import {
 import {
   estimateGas,
   estimateGasWithPadding,
+  getProviderForNetwork,
   toHex,
 } from '@rainbow-me/handlers/web3';
 import { isDappAuthenticated } from '@rainbow-me/helpers/dappNameHandler';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   useAccountAssets,
   useAccountProfile,
@@ -185,8 +187,15 @@ export default function TransactionConfirmationScreen() {
       peerId,
       requestId,
     },
+    walletConnector,
   } = routeParams;
 
+  const network = useMemo(
+    () => ethereumUtils.getNetworkFromChainId(Number(walletConnector._chainId)),
+    [walletConnector._chainId]
+  );
+
+  const provider = useMemo(() => getProviderForNetwork(network), [network]);
   const isMessageRequest = isMessageDisplayType(method);
 
   const {
@@ -245,7 +254,9 @@ export default function TransactionConfirmationScreen() {
     }
     InteractionManager.runAfterInteractions(() => {
       if (!isMessageRequest) {
-        startPollingGasPrices();
+        startPollingGasPrices(
+          (network === networkTypes.polygon && network) || null
+        );
         fetchMethodName(params[0].data);
       } else {
         setMethodName(lang.t('wallet.message_signing.request'));
@@ -256,6 +267,7 @@ export default function TransactionConfirmationScreen() {
     fetchMethodName,
     isMessageRequest,
     method,
+    network,
     openAutomatically,
     params,
     startPollingGasPrices,
@@ -328,7 +340,7 @@ export default function TransactionConfirmationScreen() {
     try {
       // attempt to re-run estimation
       logger.log('Estimating gas limit');
-      const rawGasLimit = await estimateGas(txPayload);
+      const rawGasLimit = await estimateGas(txPayload, provider);
       logger.log('Estimated gas limit', rawGasLimit);
       if (rawGasLimit) {
         gas = toHex(rawGasLimit);
@@ -341,7 +353,7 @@ export default function TransactionConfirmationScreen() {
     setTimeout(() => {
       updateTxFee(gas);
     }, 1000);
-  }, [params, updateTxFee]);
+  }, [params, provider, updateTxFee]);
 
   useEffect(() => {
     if (
@@ -421,19 +433,21 @@ export default function TransactionConfirmationScreen() {
         gasLimitFromPayload: convertHexToString(gasLimitFromPayload),
       });
 
-      // Estimate the tx with gas limit padding before sending
-      const rawGasLimit = await estimateGasWithPadding(txPayload);
+      if (network === networkTypes.mainnet) {
+        // Estimate the tx with gas limit padding before sending
+        const rawGasLimit = await estimateGasWithPadding(txPayload, provider);
 
-      // If the estimation with padding is higher or gas limit was missing,
-      // let's use the higher value
-      if (
-        (isNil(gas) && isNil(gasLimitFromPayload)) ||
-        (!isNil(gas) && greaterThan(rawGasLimit, convertHexToString(gas))) ||
-        (!isNil(gasLimitFromPayload) &&
-          greaterThan(rawGasLimit, convertHexToString(gasLimitFromPayload)))
-      ) {
-        logger.log('⛽ using padded estimation!', rawGasLimit.toString());
-        gas = toHex(rawGasLimit);
+        // If the estimation with padding is higher or gas limit was missing,
+        // let's use the higher value
+        if (
+          (isNil(gas) && isNil(gasLimitFromPayload)) ||
+          (!isNil(gas) && greaterThan(rawGasLimit, convertHexToString(gas))) ||
+          (!isNil(gasLimitFromPayload) &&
+            greaterThan(rawGasLimit, convertHexToString(gasLimitFromPayload)))
+        ) {
+          logger.log('⛽ using padded estimation!', rawGasLimit.toString());
+          gas = toHex(rawGasLimit);
+        }
       }
     } catch (error) {
       logger.log('⛽ error estimating gas', error);
@@ -521,6 +535,7 @@ export default function TransactionConfirmationScreen() {
     params,
     selectedGasPrice?.value?.amount,
     gasLimit,
+    provider,
     callback,
     requestId,
     closeScreen,
@@ -534,11 +549,11 @@ export default function TransactionConfirmationScreen() {
     removeRequest,
     walletConnectSendStatus,
     peerId,
+    onCancel,
     dappScheme,
     dappUrl,
     formattedDappUrl,
     isAuthenticated,
-    onCancel,
   ]);
 
   const handleSignMessage = useCallback(async () => {

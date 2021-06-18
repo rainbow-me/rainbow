@@ -27,6 +27,7 @@ import {
   getProviderForNetwork,
 } from '@rainbow-me/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
 import {
   useAccountAssets,
@@ -170,11 +171,17 @@ export default function SendSheet(props) {
   );
 
   useEffect(() => {
-    InteractionManager.runAfterInteractions(() => startPollingGasPrices());
+    const networkBasedOnAssetType =
+      selected.type === AssetType.polygon
+        ? networkTypes.polygon
+        : networkTypes.mainnet;
+    InteractionManager.runAfterInteractions(() =>
+      startPollingGasPrices(networkBasedOnAssetType)
+    );
     return () => {
       InteractionManager.runAfterInteractions(() => stopPollingGasPrices());
     };
-  }, [startPollingGasPrices, stopPollingGasPrices]);
+  }, [selected.type, startPollingGasPrices, stopPollingGasPrices]);
 
   // Recalculate balance when gas price changes
   useEffect(() => {

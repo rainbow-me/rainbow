@@ -7,7 +7,7 @@ import { multiply } from '../helpers/utilities';
 import { ethUnits } from '@rainbow-me/references';
 
 /**
- * Configuration for Dapple API
+ * Configuration for defipulse API
  * @type axios instance
  */
 const ethGasstationApi = axios.create({
@@ -27,6 +27,25 @@ export const ethGasStationGetGasPrices = () =>
   ethGasstationApi.get(
     `/api/v1/egs/api/ethgasAPI.json?api-key=${ETH_GAS_STATION_API_KEY}`
   );
+
+/**
+ * Configuration for Matic GAS Station API
+ * @type axios instance
+ */
+const maticGasstationApi = axios.create({
+  baseURL: 'https://gasstation-mainnet.matic.network',
+  headers: {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+  },
+  timeout: 30000, // 30 secs
+});
+
+/**
+ * @desc get Matic gas prices
+ * @return {Promise}
+ */
+export const maticGasStationGetGasPrices = () => maticGasstationApi.get(`/`);
 
 /**
  * Configuration for Etherscan API

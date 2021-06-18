@@ -146,12 +146,9 @@ export const polygonExplorerInit = () => async (dispatch, getState) => {
   const { assets: allAssets, genericAssets } = getState().data;
   const { coingeckoIds } = getState().additionalAssetsData;
   const formattedNativeCurrency = toLower(nativeCurrency);
-  logger.log('🟣 polygonExplorer initializing');
   tokenMapping = await fetchAssetsMapping();
 
   const fetchAssetsBalancesAndPrices = async () => {
-    logger.log('🟣 polygonExplorer fetchAssetsBalancesAndPrices');
-    //const assets = testnetAssets[network];
     const chainId = ethereumUtils.getChainIdFromNetwork(network);
     const assets = await getAssetsFromCovalent(
       chainId,
@@ -194,10 +191,6 @@ export const polygonExplorerInit = () => async (dispatch, getState) => {
         for (let i = 0; i < assets.length; i++) {
           if (toLower(assets[i].asset.coingecko_id) === toLower(key)) {
             if (!assets[i].asset.price.relative_change_24h) {
-              logger.log(
-                '🟣 polygonExplorer updating 24h change for ',
-                assets[i].asset.symbol
-              );
               assets[i].asset.price.relative_change_24h =
                 prices[key][`${formattedNativeCurrency}_24h_change`];
             }
@@ -207,7 +200,6 @@ export const polygonExplorerInit = () => async (dispatch, getState) => {
       });
     }
 
-    logger.log('🟣 polygonExplorer updating assets');
     dispatch(
       addressAssetsReceived(
         {

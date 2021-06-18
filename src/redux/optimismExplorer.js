@@ -72,7 +72,6 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
   const formattedNativeCurrency = toLower(nativeCurrency);
 
   const fetchAssetsBalancesAndPrices = async () => {
-    logger.log('🔴 optimismExplorer fetchAssetsBalancesAndPrices');
     const assets = testnetAssets[network];
     if (!assets || !assets.length) {
       const optimismExplorerBalancesHandle = setTimeout(
@@ -141,7 +140,6 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
       });
     }
 
-    logger.log('🔴 optimismExplorer updating assets');
     dispatch(
       addressAssetsReceived(
         {

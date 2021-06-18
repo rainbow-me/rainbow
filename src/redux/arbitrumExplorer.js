@@ -72,7 +72,6 @@ export const arbitrumExplorerInit = () => async (dispatch, getState) => {
   const formattedNativeCurrency = toLower(nativeCurrency);
 
   const fetchAssetsBalancesAndPrices = async () => {
-    logger.log('🔵 arbitrumExplorer fetchAssetsBalancesAndPrices');
     const assets = testnetAssets[network];
     if (!assets || !assets.length) {
       const arbitrumExplorerBalancesHandle = setTimeout(
@@ -141,7 +140,6 @@ export const arbitrumExplorerInit = () => async (dispatch, getState) => {
       });
     }
 
-    logger.log('🔵 arbitrumExplorer updating assets');
     dispatch(
       addressAssetsReceived(
         {

@@ -6,7 +6,9 @@ import {
   etherscanGetGasPrices,
   ethGasStationGetGasPrices,
   getEstimatedTimeForGasPrice,
+  maticGasStationGetGasPrices,
 } from '@rainbow-me/handlers/gasPrices';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   defaultGasPriceFormat,
   getFallbackGasPrices,
@@ -75,7 +77,10 @@ export const updateGasPriceForSpeed = (speed, newPrice) => async (
   });
 };
 
-export const gasPricesStartPolling = () => async (dispatch, getState) => {
+export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
+  dispatch,
+  getState
+) => {
   const { gasPrices } = getState().gas;
 
   const { fallbackGasPrices, selectedGasPrice, txFees } = dispatch(
@@ -101,30 +106,40 @@ export const gasPricesStartPolling = () => async (dispatch, getState) => {
 
         let adjustedGasPrices;
         let source = 'etherscan';
-        try {
-          // Use etherscan as our Gas Price Oracle
-          const {
-            data: { result: etherscanGasPrices },
-          } = await etherscanGetGasPrices();
-
-          const priceData = {
-            average: Number(etherscanGasPrices.ProposeGasPrice),
-            fast: Number(etherscanGasPrices.FastGasPrice),
-            safeLow: Number(etherscanGasPrices.SafeGasPrice),
-          };
-          // Add gas estimates
-          adjustedGasPrices = await etherscanGetGasEstimates(priceData);
-        } catch (e) {
-          captureException(new Error('Etherscan gas estimates failed'));
-          logger.sentry('Etherscan gas estimates error:', e);
-          logger.sentry('falling back to eth gas station');
-          source = 'ethGasStation';
+        if (network === networkTypes.polygon) {
+          source = 'maticGasStation';
           // Fallback to ETHGasStation if Etherscan fails
           const {
-            data: ethGasStationPrices,
-          } = await ethGasStationGetGasPrices();
-          // Only bumping for ETHGasStation
-          adjustedGasPrices = bumpGasPrices(ethGasStationPrices);
+            data: maticGasStationPrices,
+          } = await maticGasStationGetGasPrices();
+          // Only bumping for maticGasStation
+          adjustedGasPrices = bumpGasPrices(maticGasStationPrices);
+        } else {
+          try {
+            // Use etherscan as our Gas Price Oracle
+            const {
+              data: { result: etherscanGasPrices },
+            } = await etherscanGetGasPrices();
+
+            const priceData = {
+              average: Number(etherscanGasPrices.ProposeGasPrice),
+              fast: Number(etherscanGasPrices.FastGasPrice),
+              safeLow: Number(etherscanGasPrices.SafeGasPrice),
+            };
+            // Add gas estimates
+            adjustedGasPrices = await etherscanGetGasEstimates(priceData);
+          } catch (e) {
+            captureException(new Error('Etherscan gas estimates failed'));
+            logger.sentry('Etherscan gas estimates error:', e);
+            logger.sentry('falling back to eth gas station');
+            source = 'ethGasStation';
+            // Fallback to ETHGasStation if Etherscan fails
+            const {
+              data: ethGasStationPrices,
+            } = await ethGasStationGetGasPrices();
+            // Only bumping for ETHGasStation
+            adjustedGasPrices = bumpGasPrices(ethGasStationPrices);
+          }
         }
 
         let gasPrices = parseGasPrices(adjustedGasPrices, source);
@@ -152,10 +167,10 @@ export const gasPricesStartPolling = () => async (dispatch, getState) => {
       }
     });
 
-  const watchGasPrices = async () => {
+  const watchGasPrices = async network => {
     gasPricesHandle && clearTimeout(gasPricesHandle);
     try {
-      await getGasPrices();
+      await getGasPrices(network);
       // eslint-disable-next-line no-empty
     } catch (e) {
     } finally {
@@ -163,7 +178,7 @@ export const gasPricesStartPolling = () => async (dispatch, getState) => {
     }
   };
 
-  watchGasPrices();
+  watchGasPrices(network);
 };
 
 export const gasUpdateGasPriceOption = newGasPriceOption => (
@@ -273,7 +288,6 @@ const getSelectedGasPrice = (
   const ethAsset = ethereumUtils.getAsset(assets);
   const balanceAmount = get(ethAsset, 'balance.amount', 0);
   const txFeeAmount = fromWei(get(txFee, 'txFee.value.amount', 0));
-
   const isSufficientGas = greaterThanOrEqualTo(balanceAmount, txFeeAmount);
   return {
     isSufficientGas,

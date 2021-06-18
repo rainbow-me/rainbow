@@ -311,6 +311,7 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
             Navigation.handleAction(Routes.CONFIRM_REQUEST, {
               openAutomatically: true,
               transactionDetails: request,
+              walletConnector,
             });
           }, 1000);
         });
