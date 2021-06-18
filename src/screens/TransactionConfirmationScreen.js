@@ -535,6 +535,7 @@ export default function TransactionConfirmationScreen() {
     params,
     selectedGasPrice?.value?.amount,
     gasLimit,
+    network,
     provider,
     callback,
     requestId,
