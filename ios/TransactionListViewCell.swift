@@ -71,17 +71,23 @@ class TransactionListViewCell: TransactionListBaseCell {
     }
     
     if transaction.optimism {
-      if let img = UIImage.init(named:"optimismBadge") {
+      var imgName = "optimismBadge"
+      if(darkMode){ imgName += "Dark" }
+      if let img = UIImage.init(named:imgName) {
         badge.image = img
         badge.isHidden = false
       }
     } else if transaction.polygon {
-      if let img = UIImage.init(named:"polygonBadge") {
+      var imgName = "polygonBadge"
+      if(darkMode){ imgName += "Dark" }
+      if let img = UIImage.init(named:imgName) {
         badge.image = img
         badge.isHidden = false
       }
     } else if transaction.arbitrum {
-      if let img = UIImage.init(named:"arbitrumBadge") {
+      var imgName = "arbitrumBadge"
+      if(darkMode){ imgName += "Dark" }
+      if let img = UIImage.init(named:imgName) {
         badge.image = img
         badge.isHidden = false
       }

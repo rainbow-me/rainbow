@@ -1,8 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
-import ArbitrumBadge from '../assets/arbitrumBadge.png';
-import OptimismBadge from '../assets/optimismBadge.png';
-import PolygonBadge from '../assets/polygonBadge.png';
+import ArbitrumBadge from '../assets/badges/arbitrumBadge.png';
+import ArbitrumBadgeDark from '../assets/badges/arbitrumBadgeDark.png';
+import OptimismBadge from '../assets/badges/optimismBadge.png';
+import OptimismBadgeDark from '../assets/badges/optimismBadgeDark.png';
+import PolygonBadge from '../assets/badges/polygonBadge.png';
+import PolygonBadgeDark from '../assets/badges/polygonBadgeDark.png';
 import { Centered } from './layout';
 import { AssetType } from '@rainbow-me/entities';
 import { ImgixImage } from '@rainbow-me/images';
@@ -29,18 +32,18 @@ const Content = styled(Centered)`
 `;
 
 export default function L2Logo({ assetType, size = 40, ...props }) {
-  const { colors } = useTheme();
+  const { colors, isDarkMode } = useTheme();
   const source = useMemo(() => {
     let val = null;
     if (assetType === AssetType.arbitrum) {
-      val = ArbitrumBadge;
+      val = isDarkMode ? ArbitrumBadgeDark : ArbitrumBadge;
     } else if (assetType === AssetType.optimism) {
-      val = OptimismBadge;
+      val = isDarkMode ? OptimismBadgeDark : OptimismBadge;
     } else if (assetType === AssetType.polygon) {
-      val = PolygonBadge;
+      val = isDarkMode ? PolygonBadgeDark : PolygonBadge;
     }
     return val;
-  }, [assetType]);
+  }, [assetType, isDarkMode]);
 
   if (!source) return null;
 
