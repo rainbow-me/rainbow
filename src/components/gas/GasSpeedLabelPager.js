@@ -5,6 +5,7 @@ import { Row } from '../layout';
 import GasSpeedLabelPagerItem, {
   GasSpeedLabelPagerItemHeight,
 } from './GasSpeedLabelPagerItem';
+import { GasSpeedOptions } from '@rainbow-me/entities';
 import { gasUtils, magicMemo } from '@rainbow-me/utils';
 
 const speedColorsFactory = colors => ({
@@ -50,7 +51,7 @@ const GasSpeedLabelPager = ({
             <PagerItem
               backgroundColor={
                 speed === label
-                  ? label === 'custom'
+                  ? label === GasSpeedOptions.CUSTOM
                     ? colors.appleBlue
                     : speedColors[theme][i]
                   : theme === 'dark' || isDarkMode

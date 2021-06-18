@@ -28,12 +28,8 @@ import {
 import { FloatingPanel } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
+import { GasSpeedOptions } from '@rainbow-me/entities';
 import { ExchangeModalTypes, isKeyboardOpen } from '@rainbow-me/helpers';
-import {
-  convertStringToNumber,
-  divide,
-  multiply,
-} from '@rainbow-me/helpers/utilities';
 import {
   useAccountSettings,
   useBlockPolling,
@@ -54,6 +50,7 @@ import { swapClearState, updateSwapTypeDetails } from '@rainbow-me/redux/swap';
 import { ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
+import { convertStringToNumber, divide, multiply } from '@rainbow-me/utilities';
 import { useEthUSDPrice } from '@rainbow-me/utils/ethereumUtils';
 import logger from 'logger';
 
@@ -587,7 +584,11 @@ export default function ExchangeModal({
             currentNetwork={network}
             dontBlur
             onCustomGasBlur={handleCustomGasBlur}
-            options={['normal', 'fast', 'custom']}
+            options={[
+              GasSpeedOptions.NORMAL,
+              GasSpeedOptions.FAST,
+              GasSpeedOptions.CUSTOM,
+            ]}
             testID={`${testID}-gas`}
             type={type}
           />
