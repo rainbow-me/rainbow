@@ -3,7 +3,7 @@ import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import BigNumber from 'bignumber.js';
 import lang from 'i18n-js';
-import { isEmpty, isNil, omit } from 'lodash';
+import { isNil, omit } from 'lodash';
 import React, {
   Fragment,
   useCallback,
@@ -441,7 +441,7 @@ export default function TransactionConfirmationScreen() {
 
   useEffect(() => {
     if (
-      !isEmpty(gasPrices) &&
+      gasPrices &&
       !calculatingGasLimit.current &&
       !isMessageRequest &&
       provider

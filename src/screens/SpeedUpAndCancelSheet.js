@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import { captureException } from '@sentry/react-native';
 import { BigNumber } from 'bignumber.js';
-import { get, isEmpty } from 'lodash';
+import { get } from 'lodash';
 import React, {
   Fragment,
   useCallback,
@@ -339,7 +339,7 @@ export default function SpeedUpAndCancelSheet() {
   ]);
 
   useEffect(() => {
-    if (!isEmpty(gasPrices) && !calculatingGasLimit.current) {
+    if (gasPrices && !calculatingGasLimit.current) {
       calculatingGasLimit.current = true;
       if (Number(gweiToWei(minGasPrice)) > Number(gasPrices.fast.value)) {
         dispatch(
