@@ -52,7 +52,7 @@ export default function ConfirmExchangeButton({
   );
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
   const asset = outputCurrency ?? inputCurrency;
-  const { isSufficientGas } = useGas();
+  const { gasPrices, isSufficientGas } = useGas();
   const { name: routeName } = useRoute();
 
   const isSwapDetailsRoute = routeName === Routes.SWAP_DETAILS_SHEET;
@@ -112,13 +112,13 @@ export default function ConfirmExchangeButton({
     label = 'Insufficient Funds';
   } else if (!isSufficientLiquidity) {
     label = 'Insufficient Liquidity';
-  } else if (!isSufficientGas) {
+  } else if (gasPrices && !isSufficientGas) {
     label = 'Insufficient ETH';
   } else if (isHighPriceImpact) {
     label = isSwapDetailsRoute ? 'Swap Anyway' : '􀕹 View Details';
   } else if (disabled) {
     label = 'Enter an Amount';
-  } else if (!doneLoadingReserves) {
+  } else if (!doneLoadingReserves || !gasPrices) {
     label = 'Fetching Details...';
   }
 
