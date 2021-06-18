@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from 'react';
+import { SvgCssUri } from 'react-native-svg';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { buildUniqueTokenName } from '../../helpers/assets';
@@ -48,10 +49,18 @@ const UniqueTokenImage = ({
   const [error, setError] = useState(null);
   const handleError = useCallback(error => setError(error), [setError]);
   const { isDarkMode, colors } = useTheme();
+  const isSVG = imageUrl.substr(-4) === '.svg';
 
   return (
     <Centered backgroundColor={backgroundColor} style={position.coverAsObject}>
-      {imageUrl && !error ? (
+      {isSVG ? (
+        <SvgCssUri
+          height="100%"
+          style={position.coverAsObject}
+          uri={imageUrl}
+          width="100%"
+        />
+      ) : imageUrl && !error ? (
         <ImageTile
           onError={handleError}
           resizeMode={ImgixImage.resizeMode[resizeMode]}
