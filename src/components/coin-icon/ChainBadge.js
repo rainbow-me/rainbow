@@ -12,15 +12,15 @@ import { ImgixImage } from '@rainbow-me/images';
 import { borders } from '@rainbow-me/styles';
 
 const ChainIcon = styled(ImgixImage)`
-  height: 20;
+  height: 40;
   margin-top: 1;
-  width: 20;
+  width: 40;
 `;
 
 const IndicatorIconContainer = styled(Centered)`
   ${borders.buildCircle(40)};
-  bottom: ${({ badgeYPosition }) => badgeYPosition || -5};
-  left: ${({ badgeXPosition }) => badgeXPosition || 7};
+  bottom: ${({ badgeYPosition }) => badgeYPosition || -4};
+  left: ${({ badgeXPosition }) => badgeXPosition || 2};
   position: absolute;
   z-index: 10;
 `;

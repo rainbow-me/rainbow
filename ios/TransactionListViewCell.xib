@@ -60,7 +60,7 @@
                         <rect key="frame" x="69" y="11" width="12" height="12"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     </imageView>
-                    <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" id="QZL-nP-Qk6" userLabel="Badge">
+                    <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" id="QZL-nP-Qk6" userLabel="Badge">
                         <rect key="frame" x="12" y="34" width="20" height="20"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </imageView>

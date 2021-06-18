@@ -194,7 +194,7 @@ export default function TransactionCoinRow({ item, ...props }) {
             case TransactionActions.viewOnEtherscan: {
               let network = null;
               if (optimism) {
-                network = networkTypes.ovm;
+                network = networkTypes.optimism;
               } else if (polygon) {
                 network = networkTypes.polygon;
               } else if (arbitrum) {

@@ -208,7 +208,7 @@ const L2Explainer = ({ assetType, colors, onPress, symbol }) => {
           <ChainBadge
             assetType={assetType}
             badgeXPosition={-3}
-            badgeYPosition={-10}
+            badgeYPosition={-15}
           />
         </Column>
         <Column marginLeft={40}>
