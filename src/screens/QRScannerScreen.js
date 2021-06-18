@@ -60,7 +60,7 @@ export default function QRScannerScreen() {
 
   useEffect(() => {
     cameraVisible && !initializeCamera && setInitializeCamera(true);
-  }, [cameraVisible, initializeCamera, isFocused]);
+  }, [cameraVisible, initializeCamera]);
 
   const { colors } = useTheme();
   const { result: isEmulator } = useIsEmulator();
