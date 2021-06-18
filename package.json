@@ -7,7 +7,7 @@
     "android": "yarn uninstall:android && react-native run-android",
     "android:apk": "yarn gradle assembleRelease && yarn uninstall:android && yarn android:load-apk",
     "android:bundle": "./scripts/check-env.sh && yarn gradle bundleRelease && open app/build/outputs/bundle/release/",
-    "android:load-apk": "adb install app/build/outputs/apk/release/app-release.apk",
+    "android:load-apk": "adb install android/app/build/outputs/apk/release/app-release.apk",
     "clean:android": "yarn uninstall:android && yarn gradle clean",
     "detox:android": "detox build -c android.emu.debug && detox test -R 1 -c android.emu.debug --loglevel verbose",
     "detox:android:release": "detox build -c android.emu.release && detox test -R 1 -c android.emu.release",
