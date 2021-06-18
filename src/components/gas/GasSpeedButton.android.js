@@ -171,7 +171,7 @@ const GasSpeedButton = ({
     return filteredGasPrices;
   }, [gasPrices, minGasPrice, options]);
 
-  const gasPrice = get(selectedGasPrice, 'txFee.native.value.display');
+  const gasPrice = selectedGasPrice?.txFee?.native?.value?.display;
   const customGasPriceTimeEstimateHandler = useRef(null);
   useEffect(() => {
     listener = () => {
@@ -192,10 +192,7 @@ const GasSpeedButton = ({
   const defaultCustomGasPrice = Math.round(
     weiToGwei(gasPricesAvailable?.fast?.value?.amount)
   );
-  const defaultCustomGasPriceNative = get(
-    txFees?.fast,
-    'txFee.native.value.display'
-  );
+  const defaultCustomGasPriceNative = txFees?.fast?.native?.value?.display;
   const defaultCustomGasConfirmationTime =
     gasPricesAvailable?.fast?.estimatedTime?.display;
 
@@ -307,7 +304,7 @@ const GasSpeedButton = ({
   const formatBottomRightLabel = useCallback(() => {
     const actionLabel = getActionLabel(type);
     const time = parseFloat(estimatedTimeValue || 0).toFixed(0);
-    let gasPriceGwei = get(selectedGasPrice, 'value.display');
+    let gasPriceGwei = selectedGasPrice?.value?.display;
     if (gasPriceGwei === '0 Gwei') {
       gasPriceGwei = '< 1 Gwei';
     }

@@ -135,12 +135,10 @@ export const parseTxFees = (
   priceUnit: BigNumberish,
   gasLimit: BigNumberish,
   nativeCurrency: string
-): Record<string, Record<string, TxFee | null>> => {
+): Record<string, TxFee | null> => {
   const txFees = map(GasSpeedOrder, speed => {
     const gasPrice = gasPrices?.[speed]?.value?.amount;
-    return {
-      txFee: getTxFee(gasPrice, gasLimit, priceUnit, nativeCurrency),
-    };
+    return getTxFee(gasPrice, gasLimit, priceUnit, nativeCurrency);
   });
   return zipObject(GasSpeedOrder, txFees);
 };
