@@ -85,12 +85,10 @@ export default function WalletProfileState({
   const { colors } = useTheme();
 
   const indexOfForceColor = colors.avatarBackgrounds.indexOf(forceColor);
-  const [color, setColor] = useState(
+  const color =
     profile.color !== null
       ? profile.color
-      : (indexOfForceColor !== -1 && indexOfForceColor) || getRandomColor()
-  );
-
+      : (indexOfForceColor !== -1 && indexOfForceColor) || getRandomColor();
   const [value, setValue] = useState(
     profile?.name ? removeFirstEmojiFromString(profile.name).join('') : ''
   );
