@@ -37,7 +37,6 @@ export default function useInitializeWallet() {
   const initializeWallet = useCallback(
     async (
       seedPhrase,
-      color = null,
       name = null,
       shouldRunMigrations = false,
       overwrite = false,

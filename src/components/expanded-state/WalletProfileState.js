@@ -8,8 +8,9 @@ import { BiometricButtonContent } from '../buttons';
 import ImageAvatar from '../contacts/ImageAvatar';
 import CopyTooltip from '../copy-tooltip';
 import { Centered, ColumnWithDividers } from '../layout';
+import { AvatarCircle } from '../profile';
 import { Text, TruncatedAddress } from '../text';
-import { ProfileAvatarButton, ProfileModal, ProfileNameInput } from './profile';
+import { ProfileModal, ProfileNameInput } from './profile';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
@@ -21,7 +22,6 @@ import Routes from '@rainbow-me/routes';
 import { margin, padding, position } from '@rainbow-me/styles';
 import { abbreviations } from '@rainbow-me/utils';
 import { addressHashedEmoji } from '@rainbow-me/utils/defaultProfileUtils';
-import { AvatarCircle } from '../profile';
 
 const WalletProfileAddressText = styled(TruncatedAddress).attrs(
   ({ theme: { colors } }) => ({
