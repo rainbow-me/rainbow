@@ -20,6 +20,7 @@ import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { margin, padding, position } from '@rainbow-me/styles';
 import { abbreviations } from '@rainbow-me/utils';
+import { addressHashedEmoji } from '@rainbow-me/utils/defaultProfileUtils';
 
 const WalletProfileAddressText = styled(TruncatedAddress).attrs(
   ({ theme: { colors } }) => ({
@@ -82,11 +83,11 @@ export default function WalletProfileState({
 
   const { colors } = useTheme();
 
-  const indexOfForceColor = colors.avatarColor.indexOf(forceColor);
+  const indexOfForceColor = colors.avatarBackgrounds.indexOf(forceColor);
   const [color, setColor] = useState(
-    (profile.color !== null && profile.color) ||
-      (indexOfForceColor !== -1 && indexOfForceColor) ||
-      getRandomColor()
+    profile.color !== null
+      ? profile.color
+      : (indexOfForceColor !== -1 && indexOfForceColor) || getRandomColor()
   );
 
   const [value, setValue] = useState(
@@ -133,17 +134,22 @@ export default function WalletProfileState({
         {accountImage ? (
           <ProfileImage image={accountImage} size="large" />
         ) : (
-          <>
-            <ProfileAvatarButton
-              color={color}
-              marginBottom={0}
-              radiusAndroid={32}
-              setColor={setColor}
-              value={nameEmoji || value}
-            />
-            <Spacer />
-          </>
+          // hide avatar if creating new wallet since we
+          // don't know what emoji / color it will be (determined by address)
+          !isNewProfile && (
+            <>
+              <ProfileAvatarButton
+                color={color}
+                marginBottom={0}
+                radiusAndroid={32}
+                setColor={setColor}
+                value={nameEmoji || addressHashedEmoji(address)}
+              />
+              <Spacer />
+            </>
+          )
         )}
+        {isNewProfile && <Spacer />}
         <ProfileNameInput
           onChange={setValue}
           onSubmitEditing={handleSubmit}

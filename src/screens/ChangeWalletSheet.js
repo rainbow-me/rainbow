@@ -31,7 +31,6 @@ import {
   walletsSetSelected,
   walletsUpdate,
 } from '../redux/wallets';
-import { getRandomColor } from '../styles/colors';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import {
   useAccountSettings,
@@ -372,7 +371,6 @@ export default function ChangeWalletSheet() {
               if (args) {
                 setIsWalletLoading(WalletLoadingStates.CREATING_WALLET);
                 const name = get(args, 'name', '');
-                const color = get(args, 'color', getRandomColor());
                 // Check if the selected wallet is the primary
                 let primaryWalletKey = selectedWallet.primary
                   ? selectedWallet.id
@@ -411,7 +409,7 @@ export default function ChangeWalletSheet() {
                   // If we found it and it's not damaged use it to create the new account
                   if (primaryWalletKey && !wallets[primaryWalletKey].damaged) {
                     const newWallets = await dispatch(
-                      createAccountForWallet(primaryWalletKey, color, name)
+                      createAccountForWallet(primaryWalletKey, name)
                     );
                     await initializeWallet();
                     // If this wallet was previously backed up to the cloud
@@ -434,7 +432,7 @@ export default function ChangeWalletSheet() {
 
                     // If doesn't exist, we need to create a new wallet
                   } else {
-                    await createWallet(null, color, name);
+                    await createWallet(null, name);
                     await dispatch(walletsLoadState());
                     await initializeWallet();
                   }

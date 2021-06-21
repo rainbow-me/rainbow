@@ -1,8 +1,12 @@
 import GraphemeSplitter from 'grapheme-splitter';
-import { get, toUpper } from 'lodash';
-import { removeFirstEmojiFromString } from '../helpers/emojiHandler';
+import { get } from 'lodash';
+import {
+  removeFirstEmojiFromString,
+  returnStringFirstEmoji,
+} from '../helpers/emojiHandler';
 import networkTypes from '../helpers/networkTypes';
 import { address } from '../utils/abbreviations';
+import { addressHashedEmoji } from '../utils/defaultProfileUtils';
 import useAccountSettings from './useAccountSettings';
 import useWallets from './useWallets';
 
@@ -45,8 +49,7 @@ export function getAccountProfileInfo(
   if (!selectedAccount) {
     return {};
   }
-
-  const { label, color, index, image } = selectedAccount;
+  const { label, color, image } = selectedAccount;
 
   const accountName = removeFirstEmojiFromString(
     network === networkTypes.mainnet
@@ -56,14 +59,10 @@ export function getAccountProfileInfo(
       : label || address(accountAddress, 4, 4)
   ).join('');
 
-  const labelOrAccountName =
-    accountName === label ? toUpper(accountName) : label;
+  const emojiAvatar = returnStringFirstEmoji(label);
+
   const accountSymbol = new GraphemeSplitter().splitGraphemes(
-    network === networkTypes.mainnet
-      ? labelOrAccountName || toUpper(accountENS) || `${index + 1}`
-      : label === accountENS
-      ? toUpper(accountName)
-      : toUpper(label) || toUpper(accountName)
+    emojiAvatar || addressHashedEmoji(accountAddress)
   )[0];
   const accountColor = color;
   const accountImage = image;

@@ -1,7 +1,14 @@
 import React, { Fragment } from 'react';
 import styled from 'styled-components';
-import { removeFirstEmojiFromString } from '../../helpers/emojiHandler';
+import {
+  removeFirstEmojiFromString,
+  returnStringFirstEmoji,
+} from '../../helpers/emojiHandler';
 import { abbreviations, magicMemo } from '../../utils';
+import {
+  addressHashedEmoji,
+  isEthAddress,
+} from '../../utils/defaultProfileUtils';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText } from '../coin-row';
 import { Column, RowWithMargins } from '../layout';
@@ -46,7 +53,7 @@ const ContactName = styled(TruncatedText).attrs({
 const ContactRow = ({ address, color, nickname, ...props }, ref) => {
   const { width: deviceWidth } = useDimensions();
   const { colors } = useTheme();
-  const { accountType, image, label, balance, ens, index, onPress } = props;
+  const { accountType, image, label, balance, ens, onPress } = props;
   let cleanedUpBalance = balance;
   if (balance === '0.00') {
     cleanedUpBalance = '0';
@@ -76,7 +83,11 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
             color={color}
             marginRight={10}
             size="medium"
-            value={nickname || label || ens || `${index + 1}`}
+            value={
+              isEthAddress(address)
+                ? returnStringFirstEmoji(label) || addressHashedEmoji(address)
+                : nickname || label || ens
+            }
           />
         )}
         <Column justify={ios ? 'space-between' : 'center'}>

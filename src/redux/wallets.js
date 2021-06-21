@@ -24,6 +24,7 @@ import {
 } from '../model/wallet';
 import { settingsUpdateAccountAddress } from '../redux/settings';
 import { logger } from '../utils';
+import { addressHashedIndex } from '../utils/defaultProfileUtils';
 import {
   addressKey,
   privateKeyKey,
@@ -176,7 +177,7 @@ export const setWalletBackedUp = (
 
 export const addressSetSelected = address => () => saveAddress(address);
 
-export const createAccountForWallet = (id, color, name) => async (
+export const createAccountForWallet = (id, name) => async (
   dispatch,
   getState
 ) => {
@@ -188,17 +189,18 @@ export const createAccountForWallet = (id, color, name) => async (
   );
   const newIndex = index + 1;
   const account = await generateAccount(id, newIndex);
+  const walletColorIndex = addressHashedIndex(account.address);
   newWallets[id].addresses.push({
     address: account.address,
     avatar: null,
-    color,
+    color: walletColorIndex,
     index: newIndex,
     label: name,
     visible: true,
   });
 
   setPreference(PreferenceActionType.init, 'profile', account.address, {
-    accountColor: lightModeThemeColors.avatarColor[color],
+    accountColor: lightModeThemeColors.avatarBackgrounds[walletColorIndex],
   });
 
   await dispatch(updateWebDataEnabled(true, account.address));

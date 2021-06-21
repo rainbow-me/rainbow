@@ -2,8 +2,12 @@ import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useTheme } from '../../context/ThemeContext';
-import { removeFirstEmojiFromString } from '../../helpers/emojiHandler';
+import {
+  removeFirstEmojiFromString,
+  returnStringFirstEmoji,
+} from '../../helpers/emojiHandler';
 import { deviceUtils } from '../../utils';
+import { addressHashedEmoji } from '../../utils/defaultProfileUtils';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText } from '../coin-row';
 import CoinCheckButton from '../coin-row/CoinCheckButton';
@@ -93,7 +97,6 @@ export default function AddressRow({ data, editMode, onPress, onEditWallet }) {
     color: accountColor,
     ens,
     image: accountImage,
-    index,
     isSelected,
     isReadOnly,
     label,
@@ -150,7 +153,12 @@ export default function AddressRow({ data, editMode, onPress, onEditWallet }) {
                 color={accountColor}
                 marginRight={10}
                 size="medium"
-                value={label || ens || `${index + 1}`}
+                value={
+                  returnStringFirstEmoji(label) ||
+                  addressHashedEmoji(address) ||
+                  label ||
+                  ens
+                }
               />
             )}
             <ColumnWithMargins margin={3}>

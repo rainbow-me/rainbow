@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ScrollView } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useValues } from 'react-native-redash';
 import { useDispatch } from 'react-redux';
@@ -31,6 +32,10 @@ const SheetContainer = styled(Column)`
   width: 100%;
 `;
 
+const ScrollableColorPicker = styled(ScrollView)`
+  overflow: visible;
+`;
+
 const springTo = (node, toValue) =>
   Animated.spring(node, {
     damping: 38,
@@ -45,12 +50,12 @@ const springTo = (node, toValue) =>
 const AvatarBuilder = ({ route: { params } }) => {
   const { wallets, selectedWallet } = useWallets();
   const { updateWebProfile } = useWebData();
-  const [translateX] = useValues((params.initialAccountColor - 4) * 39);
+  const [translateX] = useValues(params.initialAccountColor * 39);
   const { goBack } = useNavigation();
   const { accountAddress } = useAccountSettings();
   const { colors } = useTheme();
   const [currentAccountColor, setCurrentAccountColor] = useState(
-    colors.avatarColor[params.initialAccountColor]
+    colors.avatarBackgrounds[params.initialAccountColor]
   );
   const dispatch = useDispatch();
 
@@ -58,13 +63,13 @@ const AvatarBuilder = ({ route: { params } }) => {
     saveInfo(`${event} ${params.initialAccountName}`);
   };
 
-  const avatarColors = colors.avatarColor.map((color, index) => (
+  const avatarColors = colors.avatarBackgrounds.map((color, index) => (
     <ColorCircle
       backgroundColor={color}
       isSelected={index - 4 === 0}
       key={color}
       onPressColor={() => {
-        const destination = (index - 4) * 39;
+        const destination = index * 39;
         springTo(translateX, destination);
         setCurrentAccountColor(color);
         saveInfo(null, index);
@@ -118,22 +123,26 @@ const AvatarBuilder = ({ route: { params } }) => {
           paddingTop={colorCircleTopPadding + 7}
           width="100%"
         >
-          <Animated.View
-            alignSelf="center"
-            borderColor={currentAccountColor}
-            borderRadius={19}
-            borderWidth={3}
-            height={38}
-            position="absolute"
-            style={{
-              transform: [{ translateX }],
-            }}
-            top={colorCircleTopPadding}
-            width={38}
-          />
-          {avatarColors}
+          <ScrollableColorPicker
+            horizontal
+            showsHorizontalScrollIndicator={false}
+          >
+            <Animated.View
+              alignSelf="center"
+              borderColor={currentAccountColor}
+              borderRadius={19}
+              borderWidth={3}
+              height={38}
+              left={0.75}
+              position="absolute"
+              style={{
+                transform: [{ translateX }],
+              }}
+              width={38}
+            />
+            {avatarColors}
+          </ScrollableColorPicker>
         </Row>
-
         <SheetContainer>
           <EmojiSelector
             columns={7}

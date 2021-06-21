@@ -67,7 +67,6 @@ export default function useInitializeWallet() {
 
         const { isNew, walletAddress } = await walletInit(
           seedPhrase,
-          color,
           name,
           overwrite,
           checkedWallet,

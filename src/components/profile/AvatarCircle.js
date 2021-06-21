@@ -44,7 +44,7 @@ export default function AvatarCircle({
   } = useAccountProfile();
   const accountSymbol = showcaseAccountSymbol || profileAccountSymbol;
   const resolvedColor =
-    showcaseAccountColor || colors.avatarColor[profileAccountColor || 0];
+    showcaseAccountColor || colors.avatarBackgrounds[profileAccountColor || 0];
   const shadows = useMemo(
     () => ({
       default: [
