@@ -234,7 +234,7 @@ export default function ChangeWalletSheet() {
                         updateWebProfile(
                           address,
                           args.name,
-                          colors.avatarColor[args.color]
+                          colors.avatarBackgrounds[args.color]
                         );
                         return true;
                       }
@@ -261,7 +261,7 @@ export default function ChangeWalletSheet() {
       dispatch,
       currentSelectedWallet.id,
       updateWebProfile,
-      colors.avatarColor,
+      colors.avatarBackgrounds,
     ]
   );
 

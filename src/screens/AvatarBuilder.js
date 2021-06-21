@@ -100,7 +100,8 @@ const AvatarBuilder = ({ route: { params } }) => {
     updateWebProfile(
       accountAddress,
       name,
-      (color !== undefined && colors.avatarColor[color]) || currentAccountColor
+      (color !== undefined && colors.avatarBackgrounds[color]) ||
+        currentAccountColor
     );
   };
 
