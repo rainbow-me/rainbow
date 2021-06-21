@@ -125,6 +125,9 @@ const AvatarBuilder = ({ route: { params } }) => {
           width="100%"
         >
           <ScrollableColorPicker
+            contentOffset={{
+              x: params.initialAccountColor * 39,
+            }}
             horizontal
             showsHorizontalScrollIndicator={false}
           >
