@@ -37,7 +37,7 @@ function ConnectedDapps() {
   const { walletConnectorsByDappName } = useWalletConnectConnections();
   const { navigate } = useNavigation();
 
-  return walletConnectorsByDappName.length !== 0 ? null : (
+  return walletConnectorsByDappName.length === 0 ? null : (
     <Overlay>
       <ButtonPressAnimation
         onPress={() => navigate(Routes.CONNECTED_DAPPS)}
