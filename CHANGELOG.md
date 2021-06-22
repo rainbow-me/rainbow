@@ -12,6 +12,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.5.12](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.12)
+
+### Added
+* Nerf Tooltips & Alerts
+* NFT Markdown Support
+* Custom ENS Assets
+* Exchange Token Info Menu
+
+### Changed
+* Move Fetching of Uniswap subgraph
+* Mo's Bottom Sheets
+* Swap Focus Fixes
+* Improved Wallet Diagnostics Sheet
+
 ## [1.5.11](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.11)
 
 ### Changed
