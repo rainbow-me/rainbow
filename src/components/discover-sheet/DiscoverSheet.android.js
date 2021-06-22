@@ -1,4 +1,5 @@
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { useIsFocused } from '@react-navigation/native';
 import React, {
   forwardRef,
   useCallback,
@@ -42,6 +43,7 @@ const AndroidWrapper = styled.View.attrs({
 
 const DiscoverSheet = (_, forwardedRef) => {
   const [headerButtonsHandlers, deps] = useAreHeaderButtonVisible();
+  const isFocused = useIsFocused();
 
   const listeners = useRef([]);
   const bottomSheetModalRef = useRef(null);
@@ -111,6 +113,7 @@ const DiscoverSheet = (_, forwardedRef) => {
           handleComponent={CustomHandle}
           index={1}
           ref={bottomSheetModalRef}
+          scrollsToTopOnTapStatusBar={isFocused}
           snapPoints={snapPoints}
           style={{
             borderRadius: 20,
