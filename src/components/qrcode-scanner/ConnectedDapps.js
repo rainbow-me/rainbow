@@ -11,6 +11,7 @@ import Routes from '@rainbow-me/routes';
 
 const LabelText = styled(Text)`
   margin-top: ${android ? 0 : -3};
+  line-height: 46;
 `;
 
 const Overlay = styled(Centered)`
@@ -36,7 +37,7 @@ function ConnectedDapps() {
   const { walletConnectorsByDappName } = useWalletConnectConnections();
   const { navigate } = useNavigation();
 
-  return walletConnectorsByDappName.length === 0 ? null : (
+  return walletConnectorsByDappName.length !== 0 ? null : (
     <Overlay>
       <ButtonPressAnimation
         onPress={() => navigate(Routes.CONNECTED_DAPPS)}
