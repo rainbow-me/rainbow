@@ -22,7 +22,7 @@ import { find, findKey, forEach, get, isEmpty } from 'lodash';
 import { Alert } from 'react-native';
 import { ACCESSIBLE, getSupportedBiometryType } from 'react-native-keychain';
 import { lightModeThemeColors } from '../styles/colors';
-import { addressHashedIndex } from '../utils/defaultProfileUtils';
+import { addressHashedColorIndex } from '../utils/defaultProfileUtils';
 import {
   addressKey,
   allWalletsKey,
@@ -637,7 +637,7 @@ export const createWallet = async (
     }
     logger.sentry('[createWallet] - saved private key');
 
-    const colorIndexForWallet = addressHashedIndex(walletAddress);
+    const colorIndexForWallet = addressHashedColorIndex(walletAddress);
     addresses.push({
       address: walletAddress,
       avatar: null,
@@ -703,7 +703,7 @@ export const createWallet = async (
 
         // Remove any discovered wallets if they already exist
         // and copy over label and color if account was visible
-        let colorIndexForWallet = addressHashedIndex(nextWallet.address);
+        let colorIndexForWallet = addressHashedColorIndex(nextWallet.address);
         let label = '';
 
         if (discoveredAccount && discoveredWalletId) {

@@ -1,40 +1,48 @@
-export const popularEmojis = [
-  '🌶',
-  '🤑',
-  '🐙',
-  '🫐',
-  '🐳',
-  '🤶',
-  '🌲',
-  '🌞',
-  '🐒',
-  '🐵',
-  '🦊',
-  '🐼',
-  '🦄',
-  '🐷',
-  '🐧',
-  '🦩',
-  '👽',
-  '🎈',
-  '🍉',
-  '🎉',
-  '🐲',
-  '🌎',
-  '🍊',
-  '🐭',
-  '🍣',
-  '🐥',
-  '👾',
-  '🥦',
-  '👹',
-  '🙀',
-  '⛱',
-  '⛵️',
-  '🥳',
-  '🤯',
-  '🤠',
-];
+/* eslint-disable sort-keys */
+
+// popularEmojisToColorIndex matches emojis to the index of their
+// color backgrounds in the `avatarBackgrounds` object in colors.js
+export const popularEmojisToColorIndex = {
+  '🌶': 0,
+  '🤑': 1,
+  '🐙': 2,
+  '🫐': 3,
+  '🐳': 4,
+  '🤶': 0,
+  '🌲': 5,
+  '🌞': 6,
+  '🐒': 7,
+  '🐵': 8,
+  '🦊': 9,
+  '🐼': 10,
+  '🦄': 11,
+  '🐷': 12,
+  '🐧': 13,
+  '🦩': 8,
+  '👽': 14,
+  '🎈': 0,
+  '🍉': 8,
+  '🎉': 1,
+  '🐲': 15,
+  '🌎': 16,
+  '🍊': 17,
+  '🐭': 18,
+  '🍣': 19,
+  '🐥': 1,
+  '👾': 20,
+  '🥦': 15,
+  '👹': 0,
+  '🙀': 17,
+  '⛱': 4,
+  '⛵️': 21,
+  '🥳': 17,
+  '🤯': 8,
+  '🤠': 22,
+};
+
+export const popularEmojis = Object.keys(popularEmojisToColorIndex);
+export const emojiColorIndexes = Object.values(popularEmojisToColorIndex);
+const emojiCount = Object.keys(popularEmojis).length;
 
 export function hashCode(text: string) {
   let hash = 0,
@@ -50,7 +58,13 @@ export function hashCode(text: string) {
 }
 
 export function addressHashedIndex(address: string) {
-  return Math.abs(hashCode(address.toLowerCase()) % 35);
+  return Math.abs(hashCode(address.toLowerCase()) % emojiCount);
+}
+
+export function addressHashedColorIndex(address: string) {
+  return emojiColorIndexes[
+    Math.abs(hashCode(address.toLowerCase()) % emojiCount)
+  ];
 }
 
 export function addressHashedEmoji(address: string) {
@@ -61,8 +75,3 @@ export function addressHashedEmoji(address: string) {
 export function isEthAddress(address: string | null) {
   return address?.match(/^(0x)?[0-9a-fA-F]{40}$/);
 }
-
-export default {
-  hashCode,
-  popularEmojis,
-};

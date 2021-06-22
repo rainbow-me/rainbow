@@ -72,7 +72,7 @@ const AvatarBuilder = ({ route: { params } }) => {
         const destination = index * 39;
         springTo(translateX, destination);
         setCurrentAccountColor(color);
-        saveInfo(null, index);
+        saveInfo(null, colors.avatarBackgrounds.indexOf(color));
       }}
     />
   ));

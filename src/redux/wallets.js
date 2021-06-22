@@ -24,7 +24,7 @@ import {
 } from '../model/wallet';
 import { settingsUpdateAccountAddress } from '../redux/settings';
 import { logger } from '../utils';
-import { addressHashedIndex } from '../utils/defaultProfileUtils';
+import { addressHashedColorIndex } from '../utils/defaultProfileUtils';
 import {
   addressKey,
   privateKeyKey,
@@ -189,7 +189,7 @@ export const createAccountForWallet = (id, name) => async (
   );
   const newIndex = index + 1;
   const account = await generateAccount(id, newIndex);
-  const walletColorIndex = addressHashedIndex(account.address);
+  const walletColorIndex = addressHashedColorIndex(account.address);
   newWallets[id].addresses.push({
     address: account.address,
     avatar: null,
