@@ -58,6 +58,7 @@ export function hashCode(text: string) {
 }
 
 export function addressHashedIndex(address: string) {
+  if (address === null || address === undefined) return null;
   return Math.abs(hashCode(address.toLowerCase()) % emojiCount);
 }
 
@@ -69,6 +70,7 @@ export function addressHashedColorIndex(address: string) {
 
 export function addressHashedEmoji(address: string) {
   const index = addressHashedIndex(address);
+  if (index === null || index === undefined) return null;
   return popularEmojis[index];
 }
 

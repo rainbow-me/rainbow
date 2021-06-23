@@ -371,6 +371,7 @@ export default function ChangeWalletSheet() {
               if (args) {
                 setIsWalletLoading(WalletLoadingStates.CREATING_WALLET);
                 const name = get(args, 'name', '');
+                const color = get(args, 'color', null);
                 // Check if the selected wallet is the primary
                 let primaryWalletKey = selectedWallet.primary
                   ? selectedWallet.id
@@ -409,7 +410,7 @@ export default function ChangeWalletSheet() {
                   // If we found it and it's not damaged use it to create the new account
                   if (primaryWalletKey && !wallets[primaryWalletKey].damaged) {
                     const newWallets = await dispatch(
-                      createAccountForWallet(primaryWalletKey, name)
+                      createAccountForWallet(primaryWalletKey, color, name)
                     );
                     await initializeWallet();
                     // If this wallet was previously backed up to the cloud
@@ -432,7 +433,7 @@ export default function ChangeWalletSheet() {
 
                     // If doesn't exist, we need to create a new wallet
                   } else {
-                    await createWallet(null, name);
+                    await createWallet(null, color, name);
                     await dispatch(walletsLoadState());
                     await initializeWallet();
                   }

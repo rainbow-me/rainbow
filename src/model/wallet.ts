@@ -189,6 +189,7 @@ export const publicAccessControlOptions = {
 
 export const walletInit = async (
   seedPhrase = null,
+  color = null,
   name = null,
   overwrite = false,
   checkedWallet = null,
@@ -200,6 +201,7 @@ export const walletInit = async (
   if (!isEmpty(seedPhrase)) {
     const wallet = await createWallet(
       seedPhrase,
+      color,
       name,
       overwrite,
       checkedWallet
@@ -490,6 +492,7 @@ export const identifyWalletType = (
 
 export const createWallet = async (
   seed: null | EthereumSeed = null,
+  color: null | number = null,
   name: null | string = null,
   overwrite: boolean = false,
   checkedWallet: null | EthereumWalletFromSeed = null
@@ -637,7 +640,8 @@ export const createWallet = async (
     }
     logger.sentry('[createWallet] - saved private key');
 
-    const colorIndexForWallet = addressHashedColorIndex(walletAddress);
+    const colorIndexForWallet =
+      color !== null ? color : addressHashedColorIndex(walletAddress);
     addresses.push({
       address: walletAddress,
       avatar: null,
@@ -799,7 +803,7 @@ export const createWallet = async (
     allWallets[id] = {
       addresses,
       backedUp: false,
-      color: 0,
+      color: color || 0,
       id,
       imported: isImported,
       name: walletName,

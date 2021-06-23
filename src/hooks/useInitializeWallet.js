@@ -37,6 +37,7 @@ export default function useInitializeWallet() {
   const initializeWallet = useCallback(
     async (
       seedPhrase,
+      color = null,
       name = null,
       shouldRunMigrations = false,
       overwrite = false,
@@ -66,6 +67,7 @@ export default function useInitializeWallet() {
 
         const { isNew, walletAddress } = await walletInit(
           seedPhrase,
+          color,
           name,
           overwrite,
           checkedWallet,

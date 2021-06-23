@@ -177,7 +177,7 @@ export const setWalletBackedUp = (
 
 export const addressSetSelected = address => () => saveAddress(address);
 
-export const createAccountForWallet = (id, name) => async (
+export const createAccountForWallet = (id, color, name) => async (
   dispatch,
   getState
 ) => {
@@ -189,7 +189,8 @@ export const createAccountForWallet = (id, name) => async (
   );
   const newIndex = index + 1;
   const account = await generateAccount(id, newIndex);
-  const walletColorIndex = addressHashedColorIndex(account.address);
+  const walletColorIndex =
+    color !== null ? color : addressHashedColorIndex(account.address);
   newWallets[id].addresses.push({
     address: account.address,
     avatar: null,
