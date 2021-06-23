@@ -49,7 +49,7 @@ const UniqueTokenImage = ({
   const [error, setError] = useState(null);
   const handleError = useCallback(error => setError(error), [setError]);
   const { isDarkMode, colors } = useTheme();
-  const isSVG = imageUrl.substr(-4) === '.svg';
+  const isSVG = imageUrl?.substr(-4) === '.svg';
 
   return (
     <Centered backgroundColor={backgroundColor} style={position.coverAsObject}>
