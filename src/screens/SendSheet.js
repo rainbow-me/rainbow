@@ -192,9 +192,11 @@ export default function SendSheet(props) {
       selected?.type === AssetType.polygon
         ? networkTypes.polygon
         : networkTypes.mainnet;
-    InteractionManager.runAfterInteractions(() =>
-      startPollingGasPrices(networkBasedOnAssetType)
-    );
+    if (selected?.type) {
+      InteractionManager.runAfterInteractions(() =>
+        startPollingGasPrices(networkBasedOnAssetType)
+      );
+    }
     return () => {
       InteractionManager.runAfterInteractions(() => stopPollingGasPrices());
     };
@@ -261,6 +263,7 @@ export default function SendSheet(props) {
         updateAssetOnchainBalanceIfNeeded(
           newSelected,
           accountAddress,
+          currentNetwork,
           updatedAsset => {
             // set selected asset with new balance
             setSelected(updatedAsset);
@@ -272,6 +275,7 @@ export default function SendSheet(props) {
     },
     [
       accountAddress,
+      currentNetwork,
       sendUpdateAssetAmount,
       updateAssetOnchainBalanceIfNeeded,
       updateMaxInputBalance,
@@ -545,12 +549,13 @@ export default function SendSheet(props) {
         false,
         currentProvider
       )
-        .then(gasLimit => updateTxFee(gasLimit))
-        .catch(() => updateTxFee(null));
+        .then(gasLimit => updateTxFee(gasLimit, null, currentNetwork))
+        .catch(() => updateTxFee(null, null, currentNetwork));
     }
   }, [
     accountAddress,
     amountDetails.assetAmount,
+    currentNetwork,
     currentProvider,
     dispatch,
     isValidAddress,

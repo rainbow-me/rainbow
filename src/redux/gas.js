@@ -7,6 +7,7 @@ import {
   ethGasStationGetGasPrices,
   getEstimatedTimeForGasPrice,
   maticGasStationGetGasPrices,
+  maticGetGasEstimates,
 } from '@rainbow-me/handlers/gasPrices';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
@@ -39,6 +40,8 @@ const GAS_UPDATE_GAS_PRICE_OPTION = 'gas/GAS_UPDATE_GAS_PRICE_OPTION';
 
 // -- Actions --------------------------------------------------------------- //
 let gasPricesHandle = null;
+
+const { GAS_PRICE_SOURCES } = gasUtils;
 
 const getDefaultTxFees = () => (dispatch, getState) => {
   const { defaultGasLimit } = getState().gas;
@@ -110,17 +113,20 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
         const { gasPrices: existingGasPrice } = getState().gas;
 
         let adjustedGasPrices;
-        let source = 'etherscan';
+        let source = GAS_PRICE_SOURCES.ETHERSCAN;
         if (network === networkTypes.polygon) {
-          source = 'maticGasStation';
+          source = GAS_PRICE_SOURCES.MATIC_GAS_STATION;
           // Use Matic Gas station as our Gas Price Oracle
           // if we're on polygon
           const {
             data: maticGasStationPrices,
           } = await maticGasStationGetGasPrices();
-          // Only bumping for maticGasStation
-          adjustedGasPrices = maticGasStationPrices;
-          logger.debug('GOT PRICES FROM MATIC GAS STATION', adjustedGasPrices);
+
+          // Override required to make it compatible with other responses
+          maticGasStationPrices['average'] = maticGasStationPrices['standard'];
+          delete maticGasStationPrices['standard'];
+
+          adjustedGasPrices = maticGetGasEstimates(maticGasStationPrices);
         } else {
           try {
             // Use etherscan as our Gas Price Oracle
@@ -139,7 +145,7 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
             captureException(new Error('Etherscan gas estimates failed'));
             logger.sentry('Etherscan gas estimates error:', e);
             logger.sentry('falling back to eth gas station');
-            source = 'ethGasStation';
+            source = GAS_PRICE_SOURCES.ETH_GAS_STATION;
             // Fallback to ETHGasStation if Etherscan fails
             const {
               data: ethGasStationPrices,
@@ -269,7 +275,6 @@ export const gasUpdateTxFee = (gasLimit, overrideGasOption, network) => (
   let nativeTokenPriceUnit = ethereumUtils.getEthPriceUnit();
   if (network === networkTypes.polygon) {
     nativeTokenPriceUnit = ethereumUtils.getMaticPriceUnit();
-    logger.debug('gasUpdateTxFee: nativeTokenPriceUnit ', nativeTokenPriceUnit);
   }
   const txFees = parseTxFees(
     gasPrices,
@@ -278,8 +283,6 @@ export const gasUpdateTxFee = (gasLimit, overrideGasOption, network) => (
     nativeCurrency
   );
 
-  logger.debug('gasUpdateTxFee: parseTxFees ', txFees);
-
   const results = getSelectedGasPrice(
     assets,
     gasPrices,
@@ -287,6 +290,7 @@ export const gasUpdateTxFee = (gasLimit, overrideGasOption, network) => (
     _selectedGasPriceOption,
     network
   );
+
   dispatch({
     payload: {
       ...results,
@@ -328,20 +332,11 @@ const getSelectedGasPrice = (
       nativeAssetAddress = 'eth';
   }
 
-  logger.debug('getSelectedGasPrice: nativeAssetAddress ', txFees);
-
   const nativeAsset = ethereumUtils.getAsset(assets, nativeAssetAddress);
-  logger.debug('getSelectedGasPrice: nativeAsset ', nativeAsset);
 
   const balanceAmount = get(nativeAsset, 'balance.amount', 0);
   const txFeeAmount = fromWei(get(txFee, 'txFee.value.amount', 0));
   const isSufficientGas = greaterThanOrEqualTo(balanceAmount, txFeeAmount);
-
-  logger.debug('getSelectedGasPrice: nativeAsset ', {
-    balanceAmount,
-    isSufficientGas,
-    txFeeAmount,
-  });
 
   return {
     isSufficientGas,

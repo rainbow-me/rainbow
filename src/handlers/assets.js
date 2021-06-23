@@ -4,24 +4,35 @@ import {
   convertRawAmountToDecimalFormat,
 } from '../helpers/utilities';
 import { erc20ABI } from '../references';
-import { web3Provider } from './web3';
+import { getProviderForNetwork } from './web3';
 
 export async function getOnchainAssetBalance(
   { address, decimals, symbol },
-  userAddress
+  userAddress,
+  network
 ) {
   if (address !== 'eth') {
-    return getOnchainTokenBalance({ address, decimals, symbol }, userAddress);
+    return getOnchainTokenBalance(
+      { address, decimals, symbol },
+      userAddress,
+      network
+    );
   }
-  return getOnchainEtherBalance({ address, decimals, symbol }, userAddress);
+  return getOnchainNativeAssetBalance(
+    { address, decimals, symbol },
+    userAddress,
+    network
+  );
 }
 
 async function getOnchainTokenBalance(
   { address, decimals, symbol },
-  userAddress
+  userAddress,
+  network
 ) {
   try {
-    const tokenContract = new Contract(address, erc20ABI, web3Provider);
+    const provider = getProviderForNetwork(network);
+    const tokenContract = new Contract(address, erc20ABI, provider);
     const balance = await tokenContract.balanceOf(userAddress);
     const tokenBalance = convertRawAmountToDecimalFormat(
       balance.toString(),
@@ -42,12 +53,14 @@ async function getOnchainTokenBalance(
   }
 }
 
-async function getOnchainEtherBalance(
+async function getOnchainNativeAssetBalance(
   { address, decimals, symbol },
-  userAddress
+  userAddress,
+  network
 ) {
   try {
-    const balance = await web3Provider.getBalance(userAddress);
+    const provider = getProviderForNetwork(network);
+    const balance = await provider.getBalance(userAddress);
     const tokenBalance = convertRawAmountToDecimalFormat(
       balance.toString(),
       decimals

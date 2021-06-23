@@ -64,14 +64,20 @@ const parseGasPricesMaticGasStation = data => ({
  * @param {Object} data
  * @param {Boolean} short - use short format or not
  */
-export const parseGasPrices = (data, source = 'etherscan') =>
-  !data
-    ? getFallbackGasPrices()
-    : source === 'etherscan'
-    ? parseGasPricesEtherscan(data)
-    : source === 'maticGasStation'
-    ? parseGasPricesMaticGasStation(data)
-    : parseGasPricesEthGasStation(data);
+export const parseGasPrices = (
+  data,
+  source = gasUtils.GAS_PRICE_SOURCES.ETHERSCAN
+) => {
+  if (!data) return getFallbackGasPrices();
+  switch (source) {
+    case gasUtils.GAS_PRICE_SOURCES.ETH_GAS_STATION:
+      return parseGasPricesEthGasStation(data);
+    case gasUtils.GAS_PRICE_SOURCES.MATIC_GAS_STATION:
+      return parseGasPricesMaticGasStation(data);
+    default:
+      return parseGasPricesEtherscan(data);
+  }
+};
 
 export const defaultGasPriceFormat = (option, timeWait, value) => {
   const timeAmount = multiply(timeWait, timeUnits.ms.minute);

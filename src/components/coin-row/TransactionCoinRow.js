@@ -141,7 +141,9 @@ export default function TransactionCoinRow({ item, ...props }) {
       let buttons = [
         ...(canBeResubmitted ? [TransactionActions.speedUp] : []),
         ...(canBeCancelled ? [TransactionActions.cancel] : []),
-        TransactionActions.viewOnEtherscan,
+        polygon || arbitrum
+          ? TransactionActions.viewOnBlockExplorer
+          : TransactionActions.viewOnEtherscan,
         ...(ios ? [TransactionActions.close] : []),
       ];
       if (showContactInfo) {
@@ -191,6 +193,7 @@ export default function TransactionCoinRow({ item, ...props }) {
                 type: 'cancel',
               });
               break;
+            case TransactionActions.viewOnBlockExplorer:
             case TransactionActions.viewOnEtherscan: {
               let network = null;
               if (optimism) {

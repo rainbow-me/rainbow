@@ -331,9 +331,7 @@ function openTransactionInBlockExplorer(hash, network) {
     Linking.openURL(`https://optimistic.etherscan.io/tx/${normalizedHash}`);
     return;
   } else if (network === networkTypes.polygon) {
-    Linking.openURL(
-      `https://polygon-explorer-mainnet.chainstacklabs.com/tx/${normalizedHash}`
-    );
+    Linking.openURL(`https://polygonscan.com/tx/${normalizedHash}`);
     return;
   } else if (network === networkTypes.arbitrum) {
     Linking.openURL(`https://explorer.arbitrum.io/tx/${normalizedHash}`);

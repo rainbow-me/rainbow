@@ -180,7 +180,9 @@ export default function TransactionList({
         let buttons = [
           ...(canBeResubmitted ? [TransactionActions.speedUp] : []),
           ...(canBeCancelled ? [TransactionActions.cancel] : []),
-          TransactionActions.viewOnEtherscan,
+          polygon || arbitrum
+            ? TransactionActions.viewOnBlockExplorer
+            : TransactionActions.viewOnEtherscan,
           ...(ios ? [TransactionActions.close] : []),
         ];
         if (showContactInfo) {
@@ -230,6 +232,7 @@ export default function TransactionList({
                   type: 'cancel',
                 });
                 break;
+              case TransactionActions.viewOnBlockExplorer:
               case TransactionActions.viewOnEtherscan: {
                 let network = null;
                 if (optimism) {

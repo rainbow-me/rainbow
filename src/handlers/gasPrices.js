@@ -70,6 +70,20 @@ export const etherscanGetGasPrices = () =>
   );
 
 /**
+ * @desc get matic time estimates
+ * @params {data}
+ * @return {Promise}
+ */
+export const maticGetGasEstimates = data => {
+  return {
+    ...data,
+    avgWait: 0.5,
+    fastWait: 0.2,
+    safeLowWait: 1,
+  };
+};
+
+/**
  * @desc get ethereum gas prices from Etherscan
  * @params {data}
  * @return {Promise}

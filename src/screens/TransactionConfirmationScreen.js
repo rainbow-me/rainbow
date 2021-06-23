@@ -468,10 +468,12 @@ export default function TransactionConfirmationScreen() {
     try {
       if (sendInsteadOfSign) {
         result = await sendTransaction({
+          provider,
           transaction: txPayloadUpdated,
         });
       } else {
         result = await signTransaction({
+          provider,
           transaction: txPayloadUpdated,
         });
       }
