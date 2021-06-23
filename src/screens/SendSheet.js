@@ -150,6 +150,7 @@ export default function SendSheet(props) {
     isSufficientBalance: false,
     nativeAmount: '',
   });
+  const [currentNetwork, setCurrentNetwork] = useState(network);
   const [currentInput, setCurrentInput] = useState('');
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const [isValidAddress, setIsValidAddress] = useState(false);
@@ -171,8 +172,24 @@ export default function SendSheet(props) {
   );
 
   useEffect(() => {
+    switch (selected?.type) {
+      case AssetType.polygon:
+        setCurrentNetwork(networkTypes.polygon);
+        break;
+      case AssetType.arbitrum:
+        setCurrentNetwork(networkTypes.arbitrum);
+        break;
+      case AssetTypes.optimism:
+        setCurrentNetwork(networkTypes.optimism);
+        break;
+      default:
+        setCurrentNetwork(network);
+    }
+
+    // This is because Polygon is the only network
+    // with a different gas price oracle
     const networkBasedOnAssetType =
-      selected.type === AssetType.polygon
+      selected?.type === AssetType.polygon
         ? networkTypes.polygon
         : networkTypes.mainnet;
     InteractionManager.runAfterInteractions(() =>
@@ -181,7 +198,7 @@ export default function SendSheet(props) {
     return () => {
       InteractionManager.runAfterInteractions(() => stopPollingGasPrices());
     };
-  }, [selected.type, startPollingGasPrices, stopPollingGasPrices]);
+  }, [network, selected?.type, startPollingGasPrices, stopPollingGasPrices]);
 
   // Recalculate balance when gas price changes
   useEffect(() => {
@@ -354,7 +371,8 @@ export default function SendSheet(props) {
           after: updatedGasLimit,
           before: gasLimit,
         });
-        updateTxFee(updatedGasLimit);
+
+        updateTxFee(updatedGasLimit, null, currentNetwork);
         // eslint-disable-next-line no-empty
       } catch (e) {}
     }
@@ -405,6 +423,7 @@ export default function SendSheet(props) {
     accountAddress,
     amountDetails.assetAmount,
     amountDetails.isSufficientBalance,
+    currentNetwork,
     currentProvider,
     dataAddNewTransaction,
     dispatch,
@@ -448,12 +467,12 @@ export default function SendSheet(props) {
       gasUtils.showTransactionSpeedOptions(
         gasPrices,
         txFees,
-        gasPriceOption => updateGasPriceOption(gasPriceOption),
+        gasPriceOption => updateGasPriceOption(gasPriceOption, currentNetwork),
         onSuccess,
         hideCustom
       );
     },
-    [txFees, gasPrices, updateGasPriceOption]
+    [gasPrices, txFees, updateGasPriceOption, currentNetwork]
   );
 
   const onLongPressSend = useCallback(() => {
@@ -591,6 +610,7 @@ export default function SendSheet(props) {
                 isAuthorizing={isAuthorizing}
                 isSufficientBalance={amountDetails.isSufficientBalance}
                 isSufficientGas={isSufficientGas}
+                network={currentNetwork}
                 onLongPress={onLongPressSend}
                 smallButton={isTinyPhone}
                 testID="send-sheet-confirm"

@@ -52,6 +52,12 @@ const parseGasPricesEthGasStation = data => ({
     true
   ),
 });
+const parseGasPricesMaticGasStation = data => ({
+  [CUSTOM]: null,
+  [FAST]: defaultGasPriceFormat(FAST, 0.2, Number(data.fastest) / 10, true),
+  [NORMAL]: defaultGasPriceFormat(NORMAL, 0.5, Number(data.fast) / 10, true),
+  [SLOW]: defaultGasPriceFormat(SLOW, 1, Number(data.average) / 10, true),
+});
 
 /**
  * @desc parse ether gas prices
@@ -63,6 +69,8 @@ export const parseGasPrices = (data, source = 'etherscan') =>
     ? getFallbackGasPrices()
     : source === 'etherscan'
     ? parseGasPricesEtherscan(data)
+    : source === 'maticGasStation'
+    ? parseGasPricesMaticGasStation(data)
     : parseGasPricesEthGasStation(data);
 
 export const defaultGasPriceFormat = (option, timeWait, value) => {

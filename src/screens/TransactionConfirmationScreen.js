@@ -351,9 +351,9 @@ export default function TransactionConfirmationScreen() {
     logger.log('Setting gas limit to', convertHexToString(gas));
     // Wait until the gas prices are populated
     setTimeout(() => {
-      updateTxFee(gas);
+      updateTxFee(gas, null, network);
     }, 1000);
-  }, [params, provider, updateTxFee]);
+  }, [network, params, provider, updateTxFee]);
 
   useEffect(() => {
     if (
@@ -894,6 +894,7 @@ export default function TransactionConfirmationScreen() {
           {!isMessageRequest && (
             <GasSpeedButtonContainer>
               <GasSpeedButton
+                currentNetwork={network}
                 onCustomGasBlur={hideKeyboard}
                 onCustomGasFocus={showKeyboard}
                 type="transaction"

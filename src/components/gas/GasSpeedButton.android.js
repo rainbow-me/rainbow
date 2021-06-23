@@ -145,6 +145,7 @@ const GasSpeedButton = ({
   theme = 'dark',
   options = null,
   minGasPrice = null,
+  currentNetwork,
 }) => {
   const { colors } = useTheme();
   const inputRef = useRef(null);
@@ -214,14 +215,14 @@ const GasSpeedButton = ({
   const calculateCustomPriceEstimatedTime = useCallback(
     async price => {
       try {
-        await updateCustomValues(price);
-        updateGasPriceOption(CUSTOM);
+        await updateCustomValues(price, currentNetwork);
+        updateGasPriceOption(CUSTOM, currentNetwork);
       } catch (e) {
         setEstimatedTimeValue(0);
         setEstimatedTimeUnit('min');
       }
     },
-    [updateCustomValues, updateGasPriceOption]
+    [currentNetwork, updateCustomValues, updateGasPriceOption]
   );
 
   useEffect(() => {

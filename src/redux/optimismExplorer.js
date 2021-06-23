@@ -11,7 +11,7 @@ import networkInfo from '@rainbow-me/helpers/networkInfo';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   balanceCheckerContractAbiOVM,
-  testnetAssets,
+  chainAssets,
 } from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
@@ -72,7 +72,7 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
   const formattedNativeCurrency = toLower(nativeCurrency);
 
   const fetchAssetsBalancesAndPrices = async () => {
-    const assets = testnetAssets[network];
+    const assets = chainAssets[network];
     if (!assets || !assets.length) {
       const optimismExplorerBalancesHandle = setTimeout(
         fetchAssetsBalancesAndPrices,

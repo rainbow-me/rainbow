@@ -16,10 +16,10 @@ import networkInfo from '@rainbow-me/helpers/networkInfo';
 import NetworkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   balanceCheckerContractAbi,
+  chainAssets,
   ETH_ADDRESS,
   ETH_COINGECKO_ID,
   migratedTokens,
-  testnetAssets,
 } from '@rainbow-me/references';
 import { delay } from '@rainbow-me/utilities';
 import logger from 'logger';
@@ -254,7 +254,7 @@ export const fallbackExplorerInit = () => async (dispatch, getState) => {
     const { network } = getState().settings;
     const { mainnetAssets } = getState().fallbackExplorer;
     const assets =
-      network === NetworkTypes.mainnet ? mainnetAssets : testnetAssets[network];
+      network === NetworkTypes.mainnet ? mainnetAssets : chainAssets[network];
     if (!assets || !assets.length) {
       const fallbackExplorerBalancesHandle = setTimeout(
         fetchAssetsBalancesAndPrices,
