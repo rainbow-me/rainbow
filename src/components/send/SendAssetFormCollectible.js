@@ -50,7 +50,7 @@ const SendFormUniqueTokenCard = styled(UniqueTokenCard).attrs(
     resizeMode: 'contain',
     scaleTo: 1,
     shadow: [0, 10, 25, colors.shadow, 0.4],
-    small: false,
+    smallENSName: false,
   })
 )`
   opacity: 1;
