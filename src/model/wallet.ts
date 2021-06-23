@@ -641,7 +641,7 @@ export const createWallet = async (
     logger.sentry('[createWallet] - saved private key');
 
     const colorIndexForWallet =
-      color !== null ? color : addressHashedColorIndex(walletAddress);
+      color !== null ? color : addressHashedColorIndex(walletAddress) || 0;
     addresses.push({
       address: walletAddress,
       avatar: null,
@@ -707,7 +707,8 @@ export const createWallet = async (
 
         // Remove any discovered wallets if they already exist
         // and copy over label and color if account was visible
-        let colorIndexForWallet = addressHashedColorIndex(nextWallet.address);
+        let colorIndexForWallet =
+          addressHashedColorIndex(nextWallet.address) || 0;
         let label = '';
 
         if (discoveredAccount && discoveredWalletId) {

@@ -75,10 +75,11 @@ export default function useImportingWallet() {
   );
 
   const showWalletProfileModal = useCallback(
-    (name, forceColor) => {
+    (name, forceColor, address = null) => {
       navigate(Routes.MODAL_SCREEN, {
         actionType: 'Import',
         additionalPadding: true,
+        address,
         asset: [],
         forceColor,
         isNewProfile: true,
@@ -110,7 +111,7 @@ export default function useImportingWallet() {
           }
           setResolvedAddress(address);
           name = input;
-          showWalletProfileModal(name, forceColor);
+          showWalletProfileModal(name, forceColor, address);
         } catch (e) {
           Alert.alert(
             'Sorry, we cannot add this ENS name at this time. Please try again later!'
@@ -127,7 +128,7 @@ export default function useImportingWallet() {
           }
           setResolvedAddress(address);
           name = input;
-          showWalletProfileModal(name, forceColor);
+          showWalletProfileModal(name, forceColor, address);
         } catch (e) {
           Alert.alert(
             'Sorry, we cannot add this Unstoppable name at this time. Please try again later!'
@@ -139,7 +140,7 @@ export default function useImportingWallet() {
         if (ens && ens !== input) {
           name = ens;
         }
-        showWalletProfileModal(name, forceColor);
+        showWalletProfileModal(name, forceColor, input);
       } else {
         try {
           setBusy(true);
@@ -153,7 +154,7 @@ export default function useImportingWallet() {
               name = ens;
             }
             setBusy(false);
-            showWalletProfileModal(name, forceColor);
+            showWalletProfileModal(name, forceColor, walletResult.address);
           }, 100);
         } catch (error) {
           logger.log('Error looking up ENS for imported HD type wallet', error);

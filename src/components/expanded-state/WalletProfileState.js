@@ -21,7 +21,10 @@ import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { margin, padding, position } from '@rainbow-me/styles';
 import { abbreviations } from '@rainbow-me/utils';
-import { addressHashedEmoji } from '@rainbow-me/utils/defaultProfileUtils';
+import {
+  addressHashedColorIndex,
+  addressHashedEmoji,
+} from '@rainbow-me/utils/defaultProfileUtils';
 
 const WalletProfileAddressText = styled(TruncatedAddress).attrs(
   ({ theme: { colors } }) => ({
@@ -78,7 +81,10 @@ export default function WalletProfileState({
   profile,
   forceColor,
 }) {
-  const nameEmoji = returnStringFirstEmoji(profile?.name);
+  const nameEmoji = isNewProfile
+    ? addressHashedEmoji(address)
+    : returnStringFirstEmoji(profile?.name) || addressHashedEmoji(address);
+
   const { goBack, navigate } = useNavigation();
   const { accountImage } = useAccountProfile();
 
@@ -86,7 +92,9 @@ export default function WalletProfileState({
 
   const indexOfForceColor = colors.avatarBackgrounds.indexOf(forceColor);
   const color =
-    profile.color !== null
+    isNewProfile && address
+      ? addressHashedColorIndex(address)
+      : profile.color !== null
       ? profile.color
       : isNewProfile
       ? null
@@ -137,10 +145,10 @@ export default function WalletProfileState({
         ) : (
           // hide avatar if creating new wallet since we
           // don't know what emoji / color it will be (determined by address)
-          !isNewProfile && (
+          (!isNewProfile || address) && (
             <AvatarCircle
-              accountColor={color}
-              accountSymbol={nameEmoji || addressHashedEmoji(address)}
+              showcaseAccountColor={color}
+              showcaseAccountSymbol={nameEmoji}
             />
           )
         )}

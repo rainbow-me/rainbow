@@ -63,6 +63,7 @@ export function addressHashedIndex(address: string) {
 }
 
 export function addressHashedColorIndex(address: string) {
+  if (address === null || address === undefined) return null;
   return emojiColorIndexes[
     Math.abs(hashCode(address.toLowerCase()) % emojiCount)
   ];
