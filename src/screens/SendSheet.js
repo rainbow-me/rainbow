@@ -465,12 +465,18 @@ export default function SendSheet(props) {
     resolveAddressIfNeeded();
   }, [recipient]);
 
+  const hasGasPrices = !!gasPrices;
+
   const onSubmit = useCallback(async () => {
     const validTransaction =
-      isValidAddress && amountDetails.isSufficientBalance && isSufficientGas;
+      isValidAddress &&
+      amountDetails.isSufficientBalance &&
+      hasGasPrices &&
+      isSufficientGas;
     if (!selectedGasPrice.txFee || !validTransaction) {
       logger.sentry('preventing tx submit for one of the following reasons:');
       logger.sentry('selectedGasPrice.txFee ? ', selectedGasPrice?.txFee);
+      logger.sentry('has gasPrices ? ', hasGasPrices);
       logger.sentry('validTransaction ? ', validTransaction);
       captureEvent('Preventing tx submit');
       return false;
@@ -546,6 +552,7 @@ export default function SendSheet(props) {
     dataAddNewTransaction,
     dispatch,
     gasLimit,
+    hasGasPrices,
     isSufficientGas,
     isValidAddress,
     selected,
@@ -618,12 +625,15 @@ export default function SendSheet(props) {
       nativeToken = 'MATIC';
     }
 
-    if (!isZeroAssetAmount && !isSufficientGas) {
+    if (!isZeroAssetAmount && hasGasPrices && !isSufficientGas) {
       disabled = true;
       label = `Insufficient ${nativeToken}`;
     } else if (!isZeroAssetAmount && !amountDetails.isSufficientBalance) {
       disabled = true;
       label = 'Insufficient Funds';
+    } else if (!hasGasPrices) {
+      disabled = true;
+      label = 'Fetching Details...';
     } else if (!isZeroAssetAmount) {
       disabled = false;
       label = '􀕹 Review';
@@ -633,6 +643,7 @@ export default function SendSheet(props) {
   }, [
     amountDetails.assetAmount,
     amountDetails.isSufficientBalance,
+    hasGasPrices,
     isSufficientGas,
     network,
   ]);

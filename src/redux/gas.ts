@@ -40,7 +40,7 @@ interface GasState {
   gasLimit: string | number | null;
   gasPrices: GasPrices | null;
   gasSpeedOption: GasSpeedOption;
-  isSufficientGas?: boolean;
+  isSufficientGas: boolean;
   selectedGasPrice: SelectedGasPrice | {};
   txFees: TxFees | {};
 }
@@ -419,7 +419,7 @@ const INITIAL_STATE: GasState = {
   gasLimit: null,
   gasPrices: null,
   gasSpeedOption: GasSpeedOption.NORMAL,
-  isSufficientGas: undefined,
+  isSufficientGas: false,
   selectedGasPrice: {},
   txFees: {},
 };
