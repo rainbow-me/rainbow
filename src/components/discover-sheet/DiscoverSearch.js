@@ -228,7 +228,7 @@ export default function DiscoverSearch() {
     <Animated.View
       style={[
         listAnimatedStyles,
-        { height: deviceUtils.dimensions.height - 140 },
+        !android && { height: deviceUtils.dimensions.height - 140 },
       ]}
     >
       <Row height="100%">
