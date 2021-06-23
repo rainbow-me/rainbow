@@ -36,7 +36,11 @@ import {
   WalletLibraryType,
 } from '@rainbow-me/model/wallet';
 import store from '@rainbow-me/redux/store';
-import { chains, ETH_ADDRESS, MATIC_ADDRESS } from '@rainbow-me/references';
+import {
+  chains,
+  ETH_ADDRESS,
+  MATIC_MAINNET_ADDRESS,
+} from '@rainbow-me/references';
 import logger from 'logger';
 
 const { RNBip39 } = NativeModules;
@@ -70,7 +74,7 @@ export const useEthUSDMonthChart = () => {
 
 const getEthPriceUnit = () => getAssetPrice();
 
-const getMaticPriceUnit = () => getAssetPrice(MATIC_ADDRESS);
+const getMaticPriceUnit = () => getAssetPrice(MATIC_MAINNET_ADDRESS);
 
 const getBalanceAmount = (selectedGasPrice, selected) => {
   const { assets } = store.getState().data;

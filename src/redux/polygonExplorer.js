@@ -11,6 +11,11 @@ import { emitAssetRequest, emitChartsRequest } from './explorer';
 import { AssetTypes } from '@rainbow-me/entities';
 //import networkInfo from '@rainbow-me/helpers/networkInfo';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
+import {
+  MATIC_MAINNET_ADDRESS,
+  MATIC_POLYGON_ADDRESS,
+  WETH_ADDRESS,
+} from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
@@ -95,13 +100,12 @@ const getAssetsFromCovalent = async (
         toLower(mainnetAddress) ===
         toLower('0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE')
       ) {
-        mainnetAddress = 'eth';
+        mainnetAddress = WETH_ADDRESS;
         coingeckoId = 'ethereum';
       } else if (
-        toLower(item.contract_address) ===
-        toLower('0x0000000000000000000000000000000000001010')
+        toLower(item.contract_address) === toLower(MATIC_POLYGON_ADDRESS)
       ) {
-        mainnetAddress = '0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0';
+        mainnetAddress = MATIC_MAINNET_ADDRESS;
         coingeckoId = 'matic-network';
       }
 

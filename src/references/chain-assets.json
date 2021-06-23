@@ -267,7 +267,7 @@
       {
         "asset": {
           "mainnet_address": "0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0",
-          "asset_code": "0x0000000000000000000000000000000000000000",
+          "asset_code": "0x0000000000000000000000000000000000001010",
           "coingecko_id": "matic-network",
           "decimals": 18,
           "icon_url": "https://s3.amazonaws.com/icons.assets/MATIC.png",

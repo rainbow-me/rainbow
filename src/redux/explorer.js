@@ -30,7 +30,7 @@ import NetworkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   DPI_ADDRESS,
   ETH_ADDRESS,
-  MATIC_ADDRESS,
+  MATIC_MAINNET_ADDRESS,
 } from '@rainbow-me/references';
 import { TokensListenedCache } from '@rainbow-me/utils';
 import logger from 'logger';
@@ -125,7 +125,7 @@ const assetPricesSubscription = (
     tokenAddresses,
     ETH_ADDRESS,
     DPI_ADDRESS,
-    MATIC_ADDRESS
+    MATIC_MAINNET_ADDRESS
   );
   return [
     action,

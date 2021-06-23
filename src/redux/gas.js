@@ -19,7 +19,7 @@ import {
 import {
   ABRITRUM_ETH_ADDRESS,
   ethUnits,
-  MATIC_ADDRESS,
+  MATIC_POLYGON_ADDRESS,
   OPTIMISM_ETH_ADDRESS,
 } from '@rainbow-me/references';
 import { fromWei, greaterThanOrEqualTo } from '@rainbow-me/utilities';
@@ -320,7 +320,7 @@ const getSelectedGasPrice = (
 
   switch (network) {
     case networkTypes.polygon:
-      nativeAssetAddress = MATIC_ADDRESS;
+      nativeAssetAddress = MATIC_POLYGON_ADDRESS;
       break;
     case networkTypes.arbitrum:
       nativeAssetAddress = ABRITRUM_ETH_ADDRESS;

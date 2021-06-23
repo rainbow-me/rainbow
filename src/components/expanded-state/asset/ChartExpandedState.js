@@ -255,6 +255,9 @@ export default function ChartExpandedState({ asset }) {
     assetWithPrice.address = assetWithPrice.mainnet_address;
   }
 
+  // This one includes the original l2 address if exists
+  const ogAsset = { ...assetWithPrice, address: assetWithPrice.uniqueId };
+
   const { height: screenHeight } = useDimensions();
   const {
     description,
@@ -411,7 +414,11 @@ export default function ChartExpandedState({ asset }) {
             <SwapActionButton color={color} inputType={AssetInputTypes.in} />
           )}
           {hasBalance ? (
-            <SendActionButton color={color} fullWidth={!showSwapButton} />
+            <SendActionButton
+              asset={ogAsset}
+              color={color}
+              fullWidth={!showSwapButton}
+            />
           ) : (
             <SwapActionButton
               color={color}

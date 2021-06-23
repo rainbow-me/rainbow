@@ -150,7 +150,8 @@ export default function SendSheet(props) {
     isSufficientBalance: false,
     nativeAmount: '',
   });
-  const [currentNetwork, setCurrentNetwork] = useState(network);
+  const [currentNetwork, setCurrentNetwork] = useState();
+  const prevNetwork = usePrevious(currentNetwork);
   const [currentInput, setCurrentInput] = useState('');
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const [isValidAddress, setIsValidAddress] = useState(false);
@@ -172,35 +173,23 @@ export default function SendSheet(props) {
   );
 
   useEffect(() => {
-    switch (selected?.type) {
-      case AssetType.polygon:
-        setCurrentNetwork(networkTypes.polygon);
-        break;
-      case AssetType.arbitrum:
-        setCurrentNetwork(networkTypes.arbitrum);
-        break;
-      case AssetTypes.optimism:
-        setCurrentNetwork(networkTypes.optimism);
-        break;
-      default:
-        setCurrentNetwork(network);
-    }
-
-    // This is because Polygon is the only network
-    // with a different gas price oracle
-    const networkBasedOnAssetType =
-      selected?.type === AssetType.polygon
-        ? networkTypes.polygon
-        : networkTypes.mainnet;
-    if (selected?.type) {
+    // We can start fetching gas prices
+    // after we know the network that the asset
+    // belongs to
+    if (prevNetwork !== currentNetwork) {
       InteractionManager.runAfterInteractions(() =>
-        startPollingGasPrices(networkBasedOnAssetType)
+        startPollingGasPrices(currentNetwork)
       );
     }
     return () => {
       InteractionManager.runAfterInteractions(() => stopPollingGasPrices());
     };
-  }, [network, selected?.type, startPollingGasPrices, stopPollingGasPrices]);
+  }, [
+    currentNetwork,
+    prevNetwork,
+    startPollingGasPrices,
+    stopPollingGasPrices,
+  ]);
 
   // Recalculate balance when gas price changes
   useEffect(() => {
@@ -215,6 +204,7 @@ export default function SendSheet(props) {
 
   const sendUpdateAssetAmount = useCallback(
     newAssetAmount => {
+      logger.debug('NEW ASSET AMOUNT', newAssetAmount);
       const _assetAmount = newAssetAmount.replace(/[^0-9.]/g, '');
       let _nativeAmount = '';
       if (_assetAmount.length) {
@@ -231,6 +221,7 @@ export default function SendSheet(props) {
           _assetAmount
         );
       }
+
       const _isSufficientBalance =
         Number(_assetAmount) <= Number(maxInputBalance);
       setAmountDetails({
@@ -260,17 +251,19 @@ export default function SendSheet(props) {
         sendUpdateAssetAmount('');
         // Since we don't trust the balance from zerion,
         // let's hit the blockchain and update it
-        updateAssetOnchainBalanceIfNeeded(
-          newSelected,
-          accountAddress,
-          currentNetwork,
-          updatedAsset => {
-            // set selected asset with new balance
-            setSelected(updatedAsset);
-            // Update selected to recalculate the maxInputAmount
-            sendUpdateSelected(updatedAsset);
-          }
-        );
+        if (currentNetwork) {
+          updateAssetOnchainBalanceIfNeeded(
+            newSelected,
+            accountAddress,
+            currentNetwork,
+            updatedAsset => {
+              // set selected asset with new balance
+              setSelected(updatedAsset);
+              // Update selected to recalculate the maxInputAmount
+              sendUpdateSelected(updatedAsset);
+            }
+          );
+        }
       }
     },
     [
@@ -281,6 +274,34 @@ export default function SendSheet(props) {
       updateMaxInputBalance,
     ]
   );
+
+  useEffect(() => {
+    if (selected?.type && (!currentNetwork || prevNetwork !== currentNetwork)) {
+      logger.debug('SELECTED TYPE', selected?.type);
+      switch (selected.type) {
+        case AssetType.polygon:
+          logger.debug('SETTING CURRENT NETWORK', networkTypes.polygon);
+          setCurrentNetwork(networkTypes.polygon);
+          break;
+        case AssetType.arbitrum:
+          setCurrentNetwork(networkTypes.arbitrum);
+          break;
+        case AssetTypes.optimism:
+          setCurrentNetwork(networkTypes.optimism);
+          break;
+        default:
+          setCurrentNetwork(network);
+      }
+      sendUpdateSelected(selected);
+    }
+  }, [
+    currentNetwork,
+    network,
+    prevNetwork,
+    selected,
+    selected.type,
+    sendUpdateSelected,
+  ]);
 
   useEffect(() => {
     const updateCurrentProvider = async () => {
@@ -336,6 +357,7 @@ export default function SendSheet(props) {
   const onChangeAssetAmount = useCallback(
     newAssetAmount => {
       if (isString(newAssetAmount)) {
+        logger.debug('SETTING NEW ASSET AMOUNT', newAssetAmount);
         sendUpdateAssetAmount(newAssetAmount);
         analytics.track('Changed token input in Send flow');
       }
@@ -563,6 +585,11 @@ export default function SendSheet(props) {
     selected,
     updateTxFee,
   ]);
+
+  // console.log({
+  //   isSufficientGas,
+  //   isSufficientBalance: amountDetails.isSufficientBalance,
+  // });
 
   return (
     <Container>
