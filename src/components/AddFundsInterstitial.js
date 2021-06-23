@@ -23,11 +23,10 @@ import Routes from '@rainbow-me/routes';
 import { padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
-const ButtonContainerHeight = 400;
-const ButtonContainerWidth = 261;
+const ContainerWidth = 261;
 
-const ButtonContainer = styled(Centered).attrs({ direction: 'column' })`
-  width: ${ButtonContainerWidth};
+const Container = styled(Centered).attrs({ direction: 'column' })`
+  width: ${ContainerWidth};
 `;
 
 const InterstitialButton = styled(ButtonPressAnimation).attrs(
@@ -206,7 +205,7 @@ const AddFundsInterstitial = ({ network }) => {
   }, [navigate, isDamaged]);
 
   return (
-    <ButtonContainer>
+    <Container>
       {network === networkTypes.mainnet ? (
         <Fragment>
           <Title>
@@ -307,7 +306,7 @@ const AddFundsInterstitial = ({ network }) => {
           </Text>
         </RowWithMargins>
       </CopyAddressButton>
-    </ButtonContainer>
+    </Container>
   );
 };
 
