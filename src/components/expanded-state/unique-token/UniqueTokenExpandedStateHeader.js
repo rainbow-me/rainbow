@@ -63,9 +63,9 @@ const UniqueTokenExpandedStateHeader = ({ asset }) => {
             uppercase
             weight="semibold"
           >
-            {asset.collection.name}
+            {asset.familyName}
           </Text>
-          <Pill maxWidth={150}>#{asset.id}</Pill>
+          <Pill maxWidth={125}>#{asset.id}</Pill>
         </RowWithMargins>
         <FlexItem flex={1}>
           <Text

@@ -13,7 +13,7 @@ beforeAll(async () => {
   // Create WC client
   // Create a connector
   connector = new WalletConnect({
-    bridge: 'https://bridge.walletconnect.org',
+    bridge: 'https://zora.bridge.walletconnect.org',
     clientMeta: {
       description: 'Connect with WalletConnect',
       icons: ['https://walletconnect.org/walletconnect-logo.png'],

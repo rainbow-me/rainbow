@@ -184,7 +184,7 @@ export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
   const showcaseTokens = [];
   const bundledShowcaseTokens = [];
 
-  const grouped = groupBy(uniqueTokens, token => token.collection.name);
+  const grouped = groupBy(uniqueTokens, token => token.familyName);
   const families = Object.keys(grouped);
 
   for (let i = 0; i < families.length; i++) {
