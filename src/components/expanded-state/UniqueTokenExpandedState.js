@@ -27,12 +27,9 @@ const Spacer = styled.View`
 
 const UniqueTokenExpandedState = ({ asset, external }) => {
   const {
-    collection: {
-      description: familyDescription,
-      external_link: familyLink,
-      name: familyName,
-    },
+    collection: { description: familyDescription, external_link: familyLink },
     description,
+    familyName,
     isSendable,
     traits,
     uniqueId,
