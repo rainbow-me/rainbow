@@ -158,7 +158,7 @@ export default function WalletProfileState({
           onSubmitEditing={handleSubmit}
           placeholder="Name your wallet"
           ref={inputRef}
-          selectionColor={colors.avatarColor[color]}
+          selectionColor={colors.avatarBackgrounds[color]}
           testID="wallet-info-input"
           value={value}
         />
