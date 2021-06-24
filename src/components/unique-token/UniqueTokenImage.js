@@ -24,17 +24,18 @@ const getFallbackTextColor = (bg, darkMode, colors) =>
   );
 
 const ImageTile = styled(ImgixImage)`
-  justify-content: center;
   align-items: center;
+  justify-content: center;
 `;
 
 const ENSText = styled(Text).attrs(({ theme: { colors }, small }) => ({
-  color: colors.white,
-  size: small ? 'small' : 'big',
+  color: colors.whiteLabel,
+  letterSpacing: 'roundedMedium',
+  size: small ? 'smedium' : 'bigger',
 }))`
   padding: 8px;
   text-align: center;
-  ${fontWithWidth(fonts.weight.bold)};
+  ${fontWithWidth(fonts.weight.heavy)};
 `;
 
 const UniqueTokenImage = ({
@@ -49,7 +50,7 @@ const UniqueTokenImage = ({
   const [error, setError] = useState(null);
   const handleError = useCallback(error => setError(error), [setError]);
   const { isDarkMode, colors } = useTheme();
-  const isSVG = imageUrl.substr(-4) === '.svg';
+  const isSVG = imageUrl?.substr(-4) === '.svg';
 
   return (
     <Centered backgroundColor={backgroundColor} style={position.coverAsObject}>

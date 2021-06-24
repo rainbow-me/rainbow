@@ -30,6 +30,7 @@ const UniqueTokenCard = ({
   resizeMode,
   scaleTo = 0.96,
   shadow,
+  smallENSName = true,
   style,
   width,
   ...props
@@ -63,7 +64,7 @@ const UniqueTokenCard = ({
           imageUrl={imageUrl}
           item={item}
           resizeMode={resizeMode}
-          small
+          small={smallENSName}
         />
         {borderEnabled && (
           <InnerBorder

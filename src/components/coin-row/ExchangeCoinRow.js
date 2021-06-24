@@ -103,7 +103,7 @@ const ExchangeCoinRow = ({
           )}
         </CoinRow>
       </ButtonPressAnimation>
-      {item.address !== ETH_ADDRESS && (
+      {item.address !== ETH_ADDRESS && !showBalance && (
         <CoinRowInfoButton
           item={item}
           onCopySwapDetailsText={onCopySwapDetailsText}

@@ -8,6 +8,8 @@ import Pill from '../../Pill';
 import { ContextCircleButton } from '../../context-menu';
 import { ColumnWithMargins, FlexItem, Row, RowWithMargins } from '../../layout';
 import { Text } from '../../text';
+import { useAccountProfile } from '@rainbow-me/hooks';
+import { RAINBOW_PROFILES_BASE_URL } from '@rainbow-me/references';
 import { padding } from '@rainbow-me/styles';
 
 const contextButtonOptions = [
@@ -35,19 +37,33 @@ const HeadingColumn = styled(ColumnWithMargins).attrs({
 `;
 
 const UniqueTokenExpandedStateHeader = ({ asset }) => {
+  const { accountAddress, accountENS } = useAccountProfile();
+
+  const buildRainbowUrl = useCallback(
+    asset => {
+      const address = accountENS || accountAddress;
+      const family = asset.familyName;
+      const assetId = asset.uniqueId;
+
+      const url = `${RAINBOW_PROFILES_BASE_URL}/${address}?family=${family}&nft=${assetId}`;
+      return url;
+    },
+    [accountAddress, accountENS]
+  );
+
   const handleActionSheetPress = useCallback(
     buttonIndex => {
       if (buttonIndex === 0) {
         Share.share({
           title: `Share ${buildUniqueTokenName(asset)} Info`,
-          url: asset.permalink,
+          url: buildRainbowUrl(asset),
         });
-      } else if (buttonIndex === 1) {
+      } else if (buttonIndex === 2) {
         // View on OpenSea
         Linking.openURL(asset.permalink);
       }
     },
-    [asset]
+    [asset, buildRainbowUrl]
   );
 
   const { colors } = useTheme();
@@ -63,9 +79,9 @@ const UniqueTokenExpandedStateHeader = ({ asset }) => {
             uppercase
             weight="semibold"
           >
-            {asset.collection.name}
+            {asset.familyName}
           </Text>
-          <Pill maxWidth={150}>#{asset.id}</Pill>
+          <Pill maxWidth={125}>#{asset.id}</Pill>
         </RowWithMargins>
         <FlexItem flex={1}>
           <Text

@@ -47,6 +47,8 @@ export const parseAccountUniqueTokens = data => {
         'wiki_link',
       ]),
       familyImage: collection.image_url,
+      familyName:
+        asset_contract.address === ENSAddress ? 'ENS' : collection.name,
       id: token_id,
       isSendable:
         asset_contract.nft_version === '1.0' ||
