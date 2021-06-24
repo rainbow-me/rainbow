@@ -23,7 +23,6 @@ import {
   createSignableTransaction,
   estimateGasLimit,
   getGasPriceForAssetType,
-  getNetworkForAssetType,
   getProviderForNetwork,
   web3Provider,
 } from '@rainbow-me/handlers/web3';
@@ -205,7 +204,6 @@ export default function SendSheet(props) {
 
   const sendUpdateAssetAmount = useCallback(
     newAssetAmount => {
-      logger.debug('NEW ASSET AMOUNT', newAssetAmount);
       const _assetAmount = newAssetAmount.replace(/[^0-9.]/g, '');
       let _nativeAmount = '';
       if (_assetAmount.length) {
@@ -252,7 +250,7 @@ export default function SendSheet(props) {
         sendUpdateAssetAmount('');
         // Since we don't trust the balance from zerion,
         // let's hit the blockchain and update it
-        if (currentNetwork) {
+        if (currentProvider) {
           updateAssetOnchainBalanceIfNeeded(
             newSelected,
             accountAddress,
@@ -279,24 +277,34 @@ export default function SendSheet(props) {
   );
 
   useEffect(() => {
-    if (selected?.type && (!currentNetwork || prevNetwork !== currentNetwork)) {
-      logger.debug('SELECTED TYPE', selected?.type);
-      switch (selected.type) {
-        case AssetType.polygon:
-          logger.debug('SETTING CURRENT NETWORK', networkTypes.polygon);
-          setCurrentNetwork(networkTypes.polygon);
-          break;
-        case AssetType.arbitrum:
-          setCurrentNetwork(networkTypes.arbitrum);
-          break;
-        case AssetTypes.optimism:
-          setCurrentNetwork(networkTypes.optimism);
-          break;
-        default:
-          setCurrentNetwork(network);
+    const updateNetworkAndProvider = async () => {
+      if (
+        selected?.type &&
+        (!currentNetwork || prevNetwork !== currentNetwork)
+      ) {
+        logger.debug('SELECTED TYPE', selected?.type);
+        let provider = web3Provider;
+        switch (selected.type) {
+          case AssetType.polygon:
+            logger.debug('SETTING CURRENT NETWORK', networkTypes.polygon);
+            setCurrentNetwork(networkTypes.polygon);
+            provider = await getProviderForNetwork(networkTypes.polygon);
+            break;
+          case AssetType.arbitrum:
+            setCurrentNetwork(networkTypes.arbitrum);
+            provider = await getProviderForNetwork(networkTypes.arbitrum);
+            break;
+          case AssetTypes.optimism:
+            setCurrentNetwork(networkTypes.optimism);
+            provider = await getProviderForNetwork(networkTypes.optimism);
+            break;
+          default:
+            setCurrentNetwork(network);
+        }
+        setCurrentProvider(provider);
       }
-      sendUpdateSelected(selected);
-    }
+    };
+    updateNetworkAndProvider();
   }, [
     currentNetwork,
     network,
@@ -307,22 +315,11 @@ export default function SendSheet(props) {
   ]);
 
   useEffect(() => {
-    const updateCurrentProvider = async () => {
-      if (
-        selected &&
-        (selected.type === AssetType.arbitrum ||
-          selected.type === AssetType.optimism ||
-          selected.type === AssetType.polygon)
-      ) {
-        const networkForAssetType = getNetworkForAssetType(selected.type);
-        const provider = await getProviderForNetwork(networkForAssetType);
-        setCurrentProvider(provider);
-      } else {
-        setCurrentProvider(web3Provider);
-      }
-    };
-    updateCurrentProvider();
-  }, [selected]);
+    if (currentProvider) {
+      sendUpdateSelected(selected);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentProvider]);
 
   const onChangeNativeAmount = useCallback(
     newNativeAmount => {
@@ -360,7 +357,6 @@ export default function SendSheet(props) {
   const onChangeAssetAmount = useCallback(
     newAssetAmount => {
       if (isString(newAssetAmount)) {
-        logger.debug('SETTING NEW ASSET AMOUNT', newAssetAmount);
         sendUpdateAssetAmount(newAssetAmount);
         analytics.track('Changed token input in Send flow');
       }
