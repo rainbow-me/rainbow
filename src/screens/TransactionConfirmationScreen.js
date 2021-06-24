@@ -43,7 +43,9 @@ import {
   estimateGas,
   estimateGasWithPadding,
   getProviderForNetwork,
+  isL2Network,
   toHex,
+  web3Provider,
 } from '@rainbow-me/handlers/web3';
 import { isDappAuthenticated } from '@rainbow-me/helpers/dappNameHandler';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
@@ -195,7 +197,12 @@ export default function TransactionConfirmationScreen() {
     [walletConnector._chainId]
   );
 
-  const provider = useMemo(() => getProviderForNetwork(network), [network]);
+  const provider = useMemo(async () => {
+    const p = isL2Network(network)
+      ? await getProviderForNetwork(network)
+      : web3Provider;
+    return p;
+  }, [network]);
   const isMessageRequest = isMessageDisplayType(method);
 
   const {

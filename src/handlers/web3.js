@@ -88,6 +88,17 @@ export const getGasPriceForAssetType = (assetType, defaultPrice) => {
   }
 };
 
+export const isL2Network = network => {
+  switch (network) {
+    case NetworkTypes.arbitrum:
+    case NetworkTypes.optimism:
+    case NetworkTypes.polygon:
+      return true;
+    default:
+      return false;
+  }
+};
+
 /**
  * @desc returns a web3 provider for the specified network
  * @param {String} network

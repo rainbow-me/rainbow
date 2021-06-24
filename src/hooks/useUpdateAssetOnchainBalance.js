@@ -10,11 +10,18 @@ export default function useUpdateAssetOnchainBalance() {
   const dispatch = useDispatch();
 
   const updateAssetOnchainBalance = useCallback(
-    async (assetToUpdate, accountAddress, network, successCallback) => {
+    async (
+      assetToUpdate,
+      accountAddress,
+      network,
+      provider,
+      successCallback
+    ) => {
       const balance = await getOnchainAssetBalance(
         assetToUpdate,
         accountAddress,
-        network
+        network,
+        provider
       );
       if (balance?.amount !== assetToUpdate?.balance?.amount) {
         // Now we need to update the asset

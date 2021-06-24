@@ -25,6 +25,7 @@ import {
   getGasPriceForAssetType,
   getNetworkForAssetType,
   getProviderForNetwork,
+  web3Provider,
 } from '@rainbow-me/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
@@ -256,6 +257,7 @@ export default function SendSheet(props) {
             newSelected,
             accountAddress,
             currentNetwork,
+            currentProvider,
             updatedAsset => {
               // set selected asset with new balance
               setSelected(updatedAsset);
@@ -269,6 +271,7 @@ export default function SendSheet(props) {
     [
       accountAddress,
       currentNetwork,
+      currentProvider,
       sendUpdateAssetAmount,
       updateAssetOnchainBalanceIfNeeded,
       updateMaxInputBalance,
@@ -315,7 +318,7 @@ export default function SendSheet(props) {
         const provider = await getProviderForNetwork(networkForAssetType);
         setCurrentProvider(provider);
       } else {
-        setCurrentProvider();
+        setCurrentProvider(web3Provider);
       }
     };
     updateCurrentProvider();
