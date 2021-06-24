@@ -103,12 +103,13 @@ const ExchangeCoinRow = ({
           )}
         </CoinRow>
       </ButtonPressAnimation>
-      {item.address !== ETH_ADDRESS && (
-        <CoinRowInfoButton
-          item={item}
-          onCopySwapDetailsText={onCopySwapDetailsText}
-        />
-      )}
+      {item.address !== ETH_ADDRESS &&
+        !showBalance(
+          <CoinRowInfoButton
+            item={item}
+            onCopySwapDetailsText={onCopySwapDetailsText}
+          />
+        )}
       {showFavoriteButton && (
         <FloatingFavoriteEmojis deviceWidth={deviceWidth}>
           {({ onNewEmoji }) => (
