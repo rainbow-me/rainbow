@@ -19,6 +19,7 @@ import {
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
+import { abbreviations } from '@rainbow-me/utils';
 
 export const ShowcaseContext = createContext();
 
@@ -48,6 +49,7 @@ const ButtonSpacer = styled.View`
 const AddressText = styled(TruncatedAddress).attrs(({ theme: { colors } }) => ({
   align: 'center',
   color: colors.blueGreyDark,
+  firstSectionLength: abbreviations.defaultNumCharsPerSection,
   lineHeight: 'loosest',
   opacity: 0.6,
   size: 'large',
