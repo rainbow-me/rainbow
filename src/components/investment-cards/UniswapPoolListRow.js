@@ -67,10 +67,8 @@ export default function UniswapPoolListRow({ assetType, item, ...props }) {
   const { uniswap } = useSelector(readableUniswapSelector);
 
   const handleOpenExpandedState = useCallback(() => {
-    let inWallet = true;
     let poolAsset = uniswap.find(pool => pool.address === item.address);
     if (!poolAsset) {
-      inWallet = false;
       const genericPoolAsset = genericAssets[item.address];
       poolAsset = parseAssetsNative(
         [{ ...item, ...genericPoolAsset }],
@@ -85,10 +83,7 @@ export default function UniswapPoolListRow({ assetType, item, ...props }) {
       asset: poolAsset,
       dpi: true,
       fromDiscover: true,
-      longFormHeight: inWallet
-        ? initialLiquidityPoolExpandedStateSheetHeight
-        : initialLiquidityPoolExpandedStateSheetHeight -
-          UniBalanceHeightDifference,
+      longFormHeight: initialLiquidityPoolExpandedStateSheetHeight,
       type: assetType,
     });
   }, [
