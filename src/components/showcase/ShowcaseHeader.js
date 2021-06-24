@@ -39,7 +39,7 @@ const HeaderWrapper = styled.View`
 const Footer = styled(ColumnWithMargins).attrs({
   margin: 19,
 })`
-  ${padding(19, 15, 21)};
+  ${padding(19, 0, 21)};
   width: 100%;
 `;
 
