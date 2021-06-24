@@ -9,7 +9,7 @@ import { RNCamera } from 'react-native-camera';
 import { useIsEmulator } from 'react-native-device-info';
 import styled from 'styled-components';
 import { Centered } from '../layout';
-import { ErrorText } from '../text';
+import { ErrorText, Text } from '../text';
 import ConnectedDapps from './ConnectedDapps';
 import QRCodeScannerCrosshair from './QRCodeScannerCrosshair';
 import QRCodeScannerNeedsAuthorization from './QRCodeScannerNeedsAuthorization';
@@ -55,14 +55,18 @@ export default function QRCodeScanner({
   dsRef,
   enableCamera: isEnabledByFocus,
 }) {
-  const [cameraEnabledByBottomSheetPosition, setCameraEnabled] = useState(
-    false
+  const [
+    cameraEnabledByBottomSheetPosition,
+    setCameraBottomSheetEnabled,
+  ] = useState(false);
+
+  const [cameraEnabled, setCameraEnabled] = useState(
+    isEnabledByFocus && cameraEnabledByBottomSheetPosition
   );
-  const cameraEnabled = isEnabledByFocus && cameraEnabledByBottomSheetPosition;
   const [error, showError] = useBooleanState();
   const [isInitialized, setInitialized] = useBooleanState();
   const { result: isEmulator } = useIsEmulator();
-  const { isCameraAuthorized, onScan } = useScanner(cameraEnabled);
+  const { onScan } = useScanner(cameraEnabled);
 
   const showErrorMessage = error && !isInitialized;
   const showCrosshair = !error && !showErrorMessage;
@@ -70,14 +74,20 @@ export default function QRCodeScanner({
 
   const onCrossMagicBorder = useCallback(
     below => {
-      setCameraEnabled(below);
+      setCameraBottomSheetEnabled(below);
     },
-    [setCameraEnabled]
+    [setCameraBottomSheetEnabled]
   );
   useEffect(
     () => dsRef.current?.addOnCrossMagicBorderListener(onCrossMagicBorder),
     [dsRef, onCrossMagicBorder]
   );
+
+  useEffect(() => {
+    if (isInitialized && !cameraEnabled && cameraEnabledByBottomSheetPosition) {
+      setCameraEnabled(true);
+    }
+  }, [cameraEnabled, cameraEnabledByBottomSheetPosition, isInitialized]);
   useEffect(() => {
     if (ios || !isInitialized) {
       return;
@@ -105,7 +115,7 @@ export default function QRCodeScanner({
           />
         )}
       </CameraWrapper>
-      {isCameraAuthorized ? (
+      {isInitialized ? (
         <ContentOverlay contentPositionTop={contentPositionTop}>
           {showErrorMessage && <ErrorText error="Error mounting camera" />}
           {showCrosshair && <QRCodeScannerCrosshair />}
