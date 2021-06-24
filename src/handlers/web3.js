@@ -15,7 +15,14 @@ import { ARBITRUM_MAINNET_RPC_ENDPOINT } from '@rainbow-me/redux/arbitrumExplore
 import { OPTIMISM_MAINNET_RPC_ENDPOINT } from '@rainbow-me/redux/optimismExplorer';
 // eslint-disable-next-line import/no-cycle
 import { POLYGON_MAINNET_RPC_ENDPOINT } from '@rainbow-me/redux/polygonExplorer';
-import { ethUnits, smartContractMethods } from '@rainbow-me/references';
+import {
+  ARBITRUM_ETH_ADDRESS,
+  ETH_ADDRESS,
+  ethUnits,
+  MATIC_POLYGON_ADDRESS,
+  OPTIMISM_ETH_ADDRESS,
+  smartContractMethods,
+} from '@rainbow-me/references';
 import {
   addBuffer,
   convertAmountToRawAmount,
@@ -388,7 +395,12 @@ export const getTransferTokenTransaction = async transaction => {
  * @return {Promise}
  */
 export const createSignableTransaction = async transaction => {
-  if (get(transaction, 'asset.address') === 'eth') {
+  if (
+    get(transaction, 'asset.address') === ETH_ADDRESS ||
+    get(transaction, 'asset.address') === ARBITRUM_ETH_ADDRESS ||
+    get(transaction, 'asset.address') === OPTIMISM_ETH_ADDRESS ||
+    get(transaction, 'asset.address') === MATIC_POLYGON_ADDRESS
+  ) {
     return getTxDetails(transaction);
   }
   const isNft = get(transaction, 'asset.type') === AssetTypes.nft;
