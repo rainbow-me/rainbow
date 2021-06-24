@@ -19,7 +19,12 @@ import {
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
+import colors from '@rainbow-me/styles/colors';
 import { abbreviations } from '@rainbow-me/utils';
+import {
+  emojiColorIndexes,
+  popularEmojis,
+} from '@rainbow-me/utils/defaultProfileUtils';
 
 export const ShowcaseContext = createContext();
 
@@ -68,81 +73,7 @@ const ENSAddress = styled(Text).attrs(({ theme: { colors } }) => ({
   width: 100%;
 `;
 
-const popularEmojis = [
-  '🌶',
-  '🤑',
-  '🐙',
-  '🫐',
-  '🐳',
-  '🤶',
-  '🌲',
-  '🌞',
-  '🐒',
-  '🐵',
-  '🦊',
-  '🐼',
-  '🦄',
-  '🐷',
-  '🐧',
-  '🦩',
-  '👽',
-  '🎈',
-  '🍉',
-  '🎉',
-  '🐲',
-  '🌎',
-  '🍊',
-  '🐭',
-  '🍣',
-  '🐥',
-  '👾',
-  '🥦',
-  '👹',
-  '🙀',
-  '⛱',
-  '⛵️',
-  '🥳',
-  '🤯',
-  '🤠',
-];
-
-const avatarColor = [
-  '#FC5C54',
-  '#FFD95A',
-  '#E95D72',
-  '#6A87C8',
-  '#5FD0F3',
-  '#FC5C54',
-  '#75C06B',
-  '#FFDD86',
-  '#5FC6D4',
-  '#FF949A',
-  '#FF8024',
-  '#9BA1A4',
-  '#EC66FF',
-  '#FF8CBC',
-  '#FF9A23',
-  '#FF949A',
-  '#C5DADB',
-  '#FC5C54',
-  '#FF949A',
-  '#FFD95A',
-  '#A8CE63',
-  '#71ABFF',
-  '#FFE279',
-  '#B6B1B6',
-  '#FF6780',
-  '#FFD95A',
-  '#A575FF',
-  '#A8CE63',
-  '#FC5C54',
-  '#FFE279',
-  '#5FD0F3',
-  '#4D82FF',
-  '#FFE279',
-  '#FF949A',
-  '#FFB35A',
-];
+const avatarColor = emojiColorIndexes.map(idx => colors.avatarBackgrounds[idx]);
 
 function hashCode(text) {
   let hash = 0,
