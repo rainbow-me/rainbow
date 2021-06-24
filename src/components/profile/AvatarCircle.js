@@ -1,3 +1,4 @@
+import { isString } from 'lodash';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
@@ -44,7 +45,9 @@ export default function AvatarCircle({
   } = useAccountProfile();
   const accountSymbol = showcaseAccountSymbol || profileAccountSymbol;
   const resolvedColor = showcaseAccountColor
-    ? colors.avatarBackgrounds[showcaseAccountColor]
+    ? isString(showcaseAccountColor)
+      ? showcaseAccountColor
+      : colors.avatarBackgrounds[showcaseAccountColor]
     : colors.avatarBackgrounds[profileAccountColor || 0];
   const shadows = useMemo(
     () => ({
