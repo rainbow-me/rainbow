@@ -3,7 +3,6 @@ import React, { useCallback } from 'react';
 import { View } from 'react-native';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { UniBalanceHeightDifference } from '../../hooks/charts/useChartThrottledPoints';
 import { useRemoveNextToLast } from '../../navigation/useRemoveNextToLast';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText, CoinRow } from '../coin-row';
