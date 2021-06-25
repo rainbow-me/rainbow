@@ -37,7 +37,7 @@ const SavingsListRowAnimatedNumber = ({
   value,
 }) => {
   const formatter = useCallback(
-    val => `${formatSavingsAmount(val)} ${symbol} `,
+    val => `${formatSavingsAmount(val)} ${'sss'} `,
     [symbol]
   );
 
@@ -73,7 +73,7 @@ const SavingsListRowAnimatedNumber = ({
       time={interval}
       value={Number(value)}
     >
-      {isRainbowTextAvailable ? null : formatter(initialValue)}
+      sss
     </TextComponent>
   );
 };

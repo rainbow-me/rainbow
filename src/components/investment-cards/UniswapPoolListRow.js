@@ -26,12 +26,7 @@ const TopRowContainer = styled(Row).attrs({
   justify: 'flex-start',
 })``;
 
-const PriceContainer = ios
-  ? View
-  : styled(View)`
-      margin-top: -3;
-      margin-bottom: 3;
-    `;
+const PriceContainer = View;
 
 const BottomRow = ({ symbol }) => {
   return (
