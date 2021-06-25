@@ -89,7 +89,7 @@ export const defaultGasPriceFormat = (option, timeWait, value) => {
     },
     option,
     value: {
-      amount: weiAmount,
+      amount: Math.round(weiAmount),
       display: `${parseInt(value, 10)} Gwei`,
     },
   };

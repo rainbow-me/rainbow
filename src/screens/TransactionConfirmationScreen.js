@@ -261,9 +261,7 @@ export default function TransactionConfirmationScreen() {
     }
     InteractionManager.runAfterInteractions(() => {
       if (!isMessageRequest) {
-        startPollingGasPrices(
-          (network === networkTypes.polygon && network) || null
-        );
+        startPollingGasPrices(network);
         fetchMethodName(params[0].data);
       } else {
         setMethodName(lang.t('wallet.message_signing.request'));

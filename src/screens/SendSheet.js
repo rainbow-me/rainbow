@@ -19,10 +19,10 @@ import {
   SendTransactionSpeed,
 } from '../components/send';
 import { AssetType, AssetTypes } from '@rainbow-me/entities';
+import { isNativeAsset } from '@rainbow-me/handlers/assets';
 import {
   createSignableTransaction,
   estimateGasLimit,
-  getGasPriceForAssetType,
   getProviderForNetwork,
   web3Provider,
 } from '@rainbow-me/handlers/web3';
@@ -282,11 +282,9 @@ export default function SendSheet(props) {
         selected?.type &&
         (!currentNetwork || prevNetwork !== currentNetwork)
       ) {
-        logger.debug('SELECTED TYPE', selected?.type);
         let provider = web3Provider;
         switch (selected.type) {
           case AssetType.polygon:
-            logger.debug('SETTING CURRENT NETWORK', networkTypes.polygon);
             setCurrentNetwork(networkTypes.polygon);
             provider = await getProviderForNetwork(networkTypes.polygon);
             break;
@@ -379,7 +377,7 @@ export default function SendSheet(props) {
     let submitSuccess = false;
     let updatedGasLimit = null;
     // Attempt to update gas limit before sending ERC20 / ERC721
-    if (selected?.address !== ETH_ADDRESS) {
+    if (!isNativeAsset(selected.address, currentNetwork)) {
       try {
         // Estimate the tx with gas limit padding before sending
         updatedGasLimit = await estimateGasLimit(
@@ -390,7 +388,7 @@ export default function SendSheet(props) {
             recipient,
           },
           true,
-          currentProvider
+          currentNetwork
         );
         logger.log('gasLimit updated before sending', {
           after: updatedGasLimit,
@@ -402,17 +400,12 @@ export default function SendSheet(props) {
       } catch (e) {}
     }
 
-    const gasPriceToUse = getGasPriceForAssetType(
-      selected.type,
-      selectedGasPrice?.value?.amount
-    );
-
     const txDetails = {
       amount: amountDetails.assetAmount,
       asset: selected,
       from: accountAddress,
       gasLimit: updatedGasLimit || gasLimit,
-      gasPrice: gasPriceToUse,
+      gasPrice: selectedGasPrice.value?.amount,
       nonce: null,
       to: recipient,
     };
@@ -568,7 +561,8 @@ export default function SendSheet(props) {
           recipient,
         },
         false,
-        currentProvider
+        currentProvider,
+        currentNetwork
       )
         .then(gasLimit => updateTxFee(gasLimit, null, currentNetwork))
         .catch(() => updateTxFee(null, null, currentNetwork));
@@ -584,11 +578,6 @@ export default function SendSheet(props) {
     selected,
     updateTxFee,
   ]);
-
-  // console.log({
-  //   isSufficientGas,
-  //   isSufficientBalance: amountDetails.isSufficientBalance,
-  // });
 
   return (
     <Container>

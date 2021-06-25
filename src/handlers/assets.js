@@ -12,13 +12,7 @@ import {
 } from '../references';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 
-export async function getOnchainAssetBalance(
-  { address, decimals, symbol },
-  userAddress,
-  network,
-  provider
-) {
-  // Check if it's the native chain asset
+export function isNativeAsset(address, network) {
   if (
     (address === ETH_ADDRESS &&
       (network === networkTypes.mainnet ||
@@ -29,6 +23,19 @@ export async function getOnchainAssetBalance(
     (address === ARBITRUM_ETH_ADDRESS && network === networkTypes.arbitrum) ||
     (address === OPTIMISM_ETH_ADDRESS && network === networkTypes.optimism)
   ) {
+    return true;
+  }
+  return false;
+}
+
+export async function getOnchainAssetBalance(
+  { address, decimals, symbol },
+  userAddress,
+  network,
+  provider
+) {
+  // Check if it's the native chain asset
+  if (isNativeAsset(address, network)) {
     return getOnchainNativeAssetBalance(
       { address, decimals, symbol },
       userAddress,

@@ -9,12 +9,14 @@ import {
   maticGasStationGetGasPrices,
   maticGetGasEstimates,
 } from '@rainbow-me/handlers/gasPrices';
+import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   defaultGasPriceFormat,
   getFallbackGasPrices,
   parseGasPrices,
   parseTxFees,
+  weiToGwei,
 } from '@rainbow-me/parsers';
 import {
   ABRITRUM_ETH_ADDRESS,
@@ -22,13 +24,15 @@ import {
   MATIC_POLYGON_ADDRESS,
   OPTIMISM_ETH_ADDRESS,
 } from '@rainbow-me/references';
-import { fromWei, greaterThanOrEqualTo } from '@rainbow-me/utilities';
+import { fromWei, greaterThanOrEqualTo, multiply } from '@rainbow-me/utilities';
+
 import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const { CUSTOM, NORMAL } = gasUtils;
 
 // -- Constants ------------------------------------------------------------- //
+const OPTIMISM_GAS_PRICE_GWEI = 0.015;
 const GAS_MULTIPLIER = 1.101;
 const GAS_UPDATE_DEFAULT_GAS_LIMIT = 'gas/GAS_UPDATE_DEFAULT_GAS_LIMIT';
 const GAS_PRICES_DEFAULT = 'gas/GAS_PRICES_DEFAULT';
@@ -107,6 +111,49 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
     });
   }
 
+  const getPolygonGasPrices = async () => {
+    const { data: maticGasStationPrices } = await maticGasStationGetGasPrices();
+
+    // Override required to make it compatible with other responses
+    maticGasStationPrices['average'] = maticGasStationPrices['standard'];
+    delete maticGasStationPrices['standard'];
+
+    return maticGetGasEstimates(maticGasStationPrices);
+  };
+
+  const getArbitrumGasPrices = async () => {
+    const provider = await getProviderForNetwork(networkTypes.arbitrum);
+    const baseGasPrice = await provider.getGasPrice();
+    const baseGasPriceGwei = weiToGwei(baseGasPrice.toString());
+
+    // Add 20% buffer suggested by the Arbitrum team
+    const fastGasPriceWithBuffer = multiply(baseGasPriceGwei, '1.2');
+    // Their node adds 10% buffer so -9.9% it's the safe low
+    const safeLowGasPriceWithBuffer = multiply(baseGasPriceGwei, '0.91');
+    const priceData = {
+      average: Number(baseGasPriceGwei),
+      avgWait: 0.5,
+      fast: Number(fastGasPriceWithBuffer),
+      fastWait: 0.2,
+      safeLow: Number(safeLowGasPriceWithBuffer),
+      safeLowWait: 1,
+    };
+
+    return priceData;
+  };
+
+  const getOptimismGasPrices = async () => {
+    const priceData = {
+      average: OPTIMISM_GAS_PRICE_GWEI,
+      avgWait: 0.5,
+      fast: OPTIMISM_GAS_PRICE_GWEI,
+      fastWait: 0.2,
+      safeLow: OPTIMISM_GAS_PRICE_GWEI,
+      safeLowWait: 1,
+    };
+    return priceData;
+  };
+
   const getGasPrices = () =>
     new Promise(async (fetchResolve, fetchReject) => {
       try {
@@ -116,17 +163,13 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
         let source = GAS_PRICE_SOURCES.ETHERSCAN;
         if (network === networkTypes.polygon) {
           source = GAS_PRICE_SOURCES.MATIC_GAS_STATION;
-          // Use Matic Gas station as our Gas Price Oracle
-          // if we're on polygon
-          const {
-            data: maticGasStationPrices,
-          } = await maticGasStationGetGasPrices();
-
-          // Override required to make it compatible with other responses
-          maticGasStationPrices['average'] = maticGasStationPrices['standard'];
-          delete maticGasStationPrices['standard'];
-
-          adjustedGasPrices = maticGetGasEstimates(maticGasStationPrices);
+          adjustedGasPrices = await getPolygonGasPrices();
+        } else if (network === networkTypes.arbitrum) {
+          source = GAS_PRICE_SOURCES.ARBITRUM_NODE;
+          adjustedGasPrices = await getArbitrumGasPrices();
+        } else if (network === networkTypes.optimism) {
+          source = GAS_PRICE_SOURCES.OPTIMISM_NODE;
+          adjustedGasPrices = await getOptimismGasPrices();
         } else {
           try {
             // Use etherscan as our Gas Price Oracle

@@ -7,6 +7,7 @@ import { parseEther } from '@ethersproject/units';
 import UnstoppableResolution from '@unstoppabledomains/resolution';
 import { get, replace, startsWith } from 'lodash';
 import { INFURA_PROJECT_ID, INFURA_PROJECT_ID_DEV } from 'react-native-dotenv';
+import { isNativeAsset } from './assets';
 import { AssetType, AssetTypes } from '@rainbow-me/entities';
 import NetworkTypes from '@rainbow-me/helpers/networkTypes';
 // eslint-disable-next-line import/no-cycle
@@ -73,25 +74,6 @@ export const getNetworkForAssetType = assetType => {
       return NetworkTypes.polygon;
     default:
       return null;
-  }
-};
-
-/**
- * @desc returns the gas price depending on the network of the asset
- * @param {String} assetType
- * @param {String} defaultPrice
- * @return {BigNumber}
- */
-export const getGasPriceForAssetType = (assetType, defaultPrice) => {
-  switch (assetType) {
-    case AssetType.arbitrum:
-      return BigNumber.from('0'); // Arbitrum uses gas = 0
-    case AssetType.optimism:
-      return BigNumber.from('150000000'); // Optimism uses 0.15 gwei => 150000000 wei => 8F0D180
-    case AssetType.polygon:
-      return BigNumber.from('5000000000'); // TODO - We need to integrate gas station
-    default:
-      return defaultPrice;
   }
 };
 
@@ -470,7 +452,8 @@ export const getDataForNftTransfer = (from, to, asset) => {
 export const estimateGasLimit = async (
   { asset, address, recipient, amount },
   addPadding = false,
-  provider = null
+  provider = null,
+  network = NetworkTypes.mainnet
 ) => {
   const _amount =
     amount && Number(amount)
@@ -492,7 +475,7 @@ export const estimateGasLimit = async (
       from: address,
       to: contractAddress,
     };
-  } else if (asset.symbol !== 'ETH') {
+  } else if (!isNativeAsset(asset.address, network)) {
     const transferData = getDataForTokenTransfer(value, _recipient);
     estimateGasData = {
       data: transferData,
