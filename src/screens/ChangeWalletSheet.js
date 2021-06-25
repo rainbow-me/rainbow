@@ -31,6 +31,7 @@ import {
   walletsSetSelected,
   walletsUpdate,
 } from '../redux/wallets';
+import { asyncSome } from '@rainbow-me/helpers/utilities';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import {
   useAccountSettings,
@@ -219,7 +220,8 @@ export default function ChangeWalletSheet() {
               if (args) {
                 const newWallets = { ...wallets };
                 if ('name' in args) {
-                  newWallets[walletId].addresses.some(
+                  asyncSome(
+                    newWallets[walletId].addresses,
                     async (account, index) => {
                       if (account.address === address) {
                         newWallets[walletId].addresses[index].label = args.name;
