@@ -147,6 +147,8 @@ const NOOP = () => undefined;
 export default function TransactionConfirmationScreen() {
   const { colors } = useTheme();
   const { allAssets } = useAccountAssets();
+  const [provider, setProvider] = useState();
+  const [network, setNetwork] = useState();
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const [isKeyboardVisible, showKeyboard, hideKeyboard] = useBooleanState();
   const [methodName, setMethodName] = useState(null);
@@ -192,17 +194,22 @@ export default function TransactionConfirmationScreen() {
     walletConnector,
   } = routeParams;
 
-  const network = useMemo(
-    () => ethereumUtils.getNetworkFromChainId(Number(walletConnector._chainId)),
-    [walletConnector._chainId]
-  );
+  useEffect(() => {
+    setNetwork(
+      ethereumUtils.getNetworkFromChainId(Number(walletConnector._chainId))
+    );
+  }, [walletConnector._chainId]);
 
-  const provider = useMemo(async () => {
-    const p = isL2Network(network)
-      ? await getProviderForNetwork(network)
-      : web3Provider;
-    return p;
+  useEffect(() => {
+    const initProvider = async () => {
+      const p = isL2Network(network)
+        ? await getProviderForNetwork(network)
+        : web3Provider;
+      setProvider(p);
+    };
+    network && initProvider();
   }, [network]);
+
   const isMessageRequest = isMessageDisplayType(method);
 
   const {
@@ -260,7 +267,7 @@ export default function TransactionConfirmationScreen() {
       Vibration.vibrate();
     }
     InteractionManager.runAfterInteractions(() => {
-      if (!isMessageRequest) {
+      if (!isMessageRequest && network) {
         startPollingGasPrices(network);
         fetchMethodName(params[0].data);
       } else {
@@ -364,7 +371,8 @@ export default function TransactionConfirmationScreen() {
     if (
       !isEmpty(gasPrices) &&
       !calculatingGasLimit.current &&
-      !isMessageRequest
+      !isMessageRequest &&
+      provider
     ) {
       InteractionManager.runAfterInteractions(() => {
         calculateGasLimit();
@@ -377,6 +385,7 @@ export default function TransactionConfirmationScreen() {
     isMessageRequest,
     method,
     params,
+    provider,
     updateTxFee,
   ]);
 
@@ -440,7 +449,12 @@ export default function TransactionConfirmationScreen() {
 
       if (network === networkTypes.mainnet) {
         // Estimate the tx with gas limit padding before sending
-        const rawGasLimit = await estimateGasWithPadding(txPayload, provider);
+        const rawGasLimit = await estimateGasWithPadding(
+          txPayload,
+          null,
+          null,
+          provider
+        );
 
         // If the estimation with padding is higher or gas limit was missing,
         // let's use the higher value

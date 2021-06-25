@@ -8,7 +8,7 @@ import UnstoppableResolution from '@unstoppabledomains/resolution';
 import { get, replace, startsWith } from 'lodash';
 import { INFURA_PROJECT_ID, INFURA_PROJECT_ID_DEV } from 'react-native-dotenv';
 import { isNativeAsset } from './assets';
-import { AssetType, AssetTypes } from '@rainbow-me/entities';
+import { AssetTypes } from '@rainbow-me/entities';
 import NetworkTypes from '@rainbow-me/helpers/networkTypes';
 // eslint-disable-next-line import/no-cycle
 import { ARBITRUM_MAINNET_RPC_ENDPOINT } from '@rainbow-me/redux/arbitrumExplorer';
@@ -57,23 +57,6 @@ export const web3SetHttpProvider = async network => {
   } else {
     web3Provider = new JsonRpcProvider(replace(infuraUrl, 'network', network));
     return web3Provider.ready;
-  }
-};
-
-/**
- * @desc returns the network name provider for the specified asset type
- * @param {String} assetType
- */
-export const getNetworkForAssetType = assetType => {
-  switch (assetType) {
-    case AssetType.arbitrum:
-      return NetworkTypes.arbitrum;
-    case AssetType.optimism:
-      return NetworkTypes.optimism;
-    case AssetType.polygon:
-      return NetworkTypes.polygon;
-    default:
-      return null;
   }
 };
 
@@ -216,6 +199,7 @@ export const estimateGasWithPadding = async (
     txPayloadToEstimate[contractCallEstimateGas ? 'gasLimit' : 'gas'] = toHex(
       saferGasLimit
     );
+
     const estimatedGas = await (contractCallEstimateGas
       ? contractCallEstimateGas(...callArguments, txPayloadToEstimate)
       : p.estimateGas(txPayloadToEstimate));
