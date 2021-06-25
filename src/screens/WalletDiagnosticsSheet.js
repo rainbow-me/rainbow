@@ -181,12 +181,6 @@ const WalletDiagnosticsSheet = () => {
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
 
   useEffect(() => {
-    logger.sentry('Testing sourcemaps...');
-    const e = new Error('SOURCEMAPS TEST');
-    captureException(e);
-  }, []);
-
-  useEffect(() => {
     const init = async () => {
       try {
         const allKeys = await loadAllKeys();
