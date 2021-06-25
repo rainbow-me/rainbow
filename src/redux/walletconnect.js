@@ -225,7 +225,7 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
                 });
                 const { accountAddress } = getState().settings;
                 logger.log('Updating session for chainID', numericChainId);
-                walletConnector.updateSession({
+                await walletConnector.updateSession({
                   accounts: [accountAddress],
                   chainId: numericChainId,
                 });
@@ -311,7 +311,6 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
             Navigation.handleAction(Routes.CONFIRM_REQUEST, {
               openAutomatically: true,
               transactionDetails: request,
-              walletConnector,
             });
           }, 1000);
         });

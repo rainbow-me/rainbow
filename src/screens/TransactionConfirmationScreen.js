@@ -173,6 +173,10 @@ export default function TransactionConfirmationScreen() {
     ({ walletconnect }) => walletconnect.pendingRedirect
   );
 
+  const walletConnectors = useSelector(
+    ({ walletconnect }) => walletconnect.walletConnectors
+  );
+
   const {
     dataAddNewTransaction,
     removeRequest,
@@ -191,8 +195,9 @@ export default function TransactionConfirmationScreen() {
       peerId,
       requestId,
     },
-    walletConnector,
   } = routeParams;
+
+  const walletConnector = walletConnectors[peerId];
 
   useEffect(() => {
     setNetwork(
@@ -519,6 +524,13 @@ export default function TransactionConfirmationScreen() {
           nonce: result.nonce,
           to: displayDetails?.request?.to,
         };
+        if (network === networkTypes.optimism) {
+          txDetails.optimism = true;
+        } else if (network === networkTypes.arbitrum) {
+          txDetails.arbitrum = true;
+        } else if (network === networkTypes.polygon) {
+          txDetails.polygon = true;
+        }
 
         dispatch(dataAddNewTransaction(txDetails));
       }
