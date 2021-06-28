@@ -44,10 +44,12 @@ const Icon = styled(Text).attrs(({ theme: { colors } }) => ({
 `;
 
 const CoinRowAddButton = ({ onPress }) => (
-  <AddButton as={ButtonPressAnimation} onPress={onPress}>
-    <Circle>
-      <Icon>􀅼</Icon>
-    </Circle>
+  <AddButton>
+    <ButtonPressAnimation onPress={onPress}>
+      <Circle>
+        <Icon>􀅼</Icon>
+      </Circle>
+    </ButtonPressAnimation>
   </AddButton>
 );
 
