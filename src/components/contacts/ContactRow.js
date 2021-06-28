@@ -1,14 +1,8 @@
 import React, { Fragment } from 'react';
 import styled from 'styled-components';
-import {
-  removeFirstEmojiFromString,
-  returnStringFirstEmoji,
-} from '../../helpers/emojiHandler';
+import { removeFirstEmojiFromString } from '../../helpers/emojiHandler';
 import { abbreviations, magicMemo } from '../../utils';
-import {
-  addressHashedEmoji,
-  isEthAddress,
-} from '../../utils/defaultProfileUtils';
+import {} from '../../utils/defaultProfileUtils';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText } from '../coin-row';
 import { Column, RowWithMargins } from '../layout';
@@ -83,11 +77,7 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
             color={color}
             marginRight={10}
             size="medium"
-            value={
-              isEthAddress(address)
-                ? returnStringFirstEmoji(label) || addressHashedEmoji(address)
-                : nickname || label || ens
-            }
+            value={nickname || label || ens}
           />
         )}
         <Column justify={ios ? 'space-between' : 'center'}>

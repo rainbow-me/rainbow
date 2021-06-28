@@ -1,3 +1,4 @@
+import { isString } from 'lodash';
 import React, { useCallback, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
@@ -24,8 +25,8 @@ import { abbreviations } from '@rainbow-me/utils';
 import {
   addressHashedColorIndex,
   addressHashedEmoji,
+  colorHexToIndex,
 } from '@rainbow-me/utils/defaultProfileUtils';
-
 const WalletProfileAddressText = styled(TruncatedAddress).attrs(
   ({ theme: { colors } }) => ({
     align: 'center',
@@ -81,9 +82,10 @@ export default function WalletProfileState({
   profile,
   forceColor,
 }) {
-  const nameEmoji = isNewProfile
-    ? addressHashedEmoji(address)
-    : returnStringFirstEmoji(profile?.name) || addressHashedEmoji(address);
+  const nameEmoji =
+    isNewProfile && !forceColor
+      ? addressHashedEmoji(address)
+      : returnStringFirstEmoji(profile?.name) || addressHashedEmoji(address);
 
   const { goBack, navigate } = useNavigation();
   const { accountImage } = useAccountProfile();
@@ -91,14 +93,15 @@ export default function WalletProfileState({
   const { colors } = useTheme();
 
   const indexOfForceColor = colors.avatarBackgrounds.indexOf(forceColor);
-  const color =
-    isNewProfile && address
-      ? addressHashedColorIndex(address)
-      : profile.color !== null
-      ? profile.color
-      : isNewProfile
-      ? null
-      : (indexOfForceColor !== -1 && indexOfForceColor) || getRandomColor();
+  const color = forceColor
+    ? forceColor
+    : isNewProfile && address
+    ? addressHashedColorIndex(address)
+    : profile.color !== null
+    ? profile.color
+    : isNewProfile
+    ? null
+    : (indexOfForceColor !== -1 && indexOfForceColor) || getRandomColor();
   const [value, setValue] = useState(
     profile?.name ? removeFirstEmojiFromString(profile.name).join('') : ''
   );
@@ -112,7 +115,10 @@ export default function WalletProfileState({
   }, [actionType, goBack, navigate]);
 
   const handleSubmit = useCallback(() => {
-    onCloseModal({ color, name: nameEmoji ? `${nameEmoji} ${value}` : value });
+    onCloseModal({
+      color: isString(color) ? colorHexToIndex(color) : color,
+      name: nameEmoji ? `${nameEmoji} ${value}` : value,
+    });
     goBack();
     if (actionType === 'Create' && isNewProfile) {
       navigate(Routes.CHANGE_WALLET_SHEET);

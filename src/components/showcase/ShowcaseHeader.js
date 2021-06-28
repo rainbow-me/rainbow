@@ -125,12 +125,12 @@ export function Header() {
       contact: currentContact || {
         address: contextValue?.address,
         color,
-        nickname: contextValue?.ensName,
+        nickname: contextValue?.data?.reverseEns,
         temporary: true,
       },
       type: 'contact_profile',
     });
-  }, [color, contextValue?.address, contextValue?.ensName, navigate]);
+  }, [color, contextValue?.address, contextValue?.data?.reverseEns, navigate]);
 
   const onSend = useCallback(async () => {
     goBack();
@@ -148,12 +148,17 @@ export function Header() {
 
   const onWatchAddress = useCallback(() => {
     handleSetSeedPhrase(contextValue.address);
-    handlePressImportButton(color, contextValue.address);
+    handlePressImportButton(
+      color,
+      contextValue.address,
+      contextValue?.data?.profile?.accountSymbol
+    );
   }, [
     color,
     contextValue.address,
     handlePressImportButton,
     handleSetSeedPhrase,
+    contextValue?.data?.profile?.accountSymbol,
   ]);
 
   const mainText =

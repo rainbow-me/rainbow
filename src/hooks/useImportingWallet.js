@@ -97,7 +97,7 @@ export default function useImportingWallet() {
   );
 
   const handlePressImportButton = useCallback(
-    async (forceColor, forceAddress) => {
+    async (forceColor, forceAddress, forceEmoji = null) => {
       if ((!isSecretValid || !seedPhrase) && !forceAddress) return null;
       const input = sanitizeSeedPhrase(seedPhrase || forceAddress);
       let name = null;
@@ -110,7 +110,7 @@ export default function useImportingWallet() {
             return;
           }
           setResolvedAddress(address);
-          name = input;
+          name = forceEmoji ? `${forceEmoji} ${input}` : input;
           showWalletProfileModal(name, forceColor, address);
         } catch (e) {
           Alert.alert(
@@ -127,7 +127,7 @@ export default function useImportingWallet() {
             return;
           }
           setResolvedAddress(address);
-          name = input;
+          name = forceEmoji ? `${forceEmoji} ${input}` : input;
           showWalletProfileModal(name, forceColor, address);
         } catch (e) {
           Alert.alert(
@@ -138,7 +138,7 @@ export default function useImportingWallet() {
       } else if (isValidAddress(input)) {
         const ens = await web3Provider.lookupAddress(input);
         if (ens && ens !== input) {
-          name = ens;
+          name = forceEmoji ? `${forceEmoji} ${ens}` : ens;
         }
         showWalletProfileModal(name, forceColor, input);
       } else {
@@ -151,7 +151,7 @@ export default function useImportingWallet() {
             setCheckedWallet(walletResult);
             const ens = await web3Provider.lookupAddress(walletResult.address);
             if (ens && ens !== input) {
-              name = ens;
+              name = forceEmoji ? `${forceEmoji} ${ens}` : ens;
             }
             setBusy(false);
             showWalletProfileModal(name, forceColor, walletResult.address);
