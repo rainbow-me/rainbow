@@ -52,7 +52,7 @@ import {
   convertAmountFromNativeValue,
   formatInputDecimals,
 } from '@rainbow-me/utilities';
-import { deviceUtils, gasUtils } from '@rainbow-me/utils';
+import { deviceUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const sheetHeight = deviceUtils.dimensions.height - (android ? 30 : 10);
@@ -91,15 +91,12 @@ export default function SendSheet(props) {
   const { allAssets } = useAccountAssets();
   const {
     gasLimit,
-    gasPrices,
     isSufficientGas,
     prevSelectedGasPrice,
     selectedGasPrice,
     startPollingGasPrices,
     stopPollingGasPrices,
-    txFees,
     updateDefaultGasLimit,
-    updateGasPriceOption,
     updateTxFee,
   } = useGas();
   const isDismissing = useRef(false);
@@ -396,28 +393,6 @@ export default function SendSheet(props) {
     }
   }, [amountDetails.assetAmount, navigate, onSubmit, recipient, selected]);
 
-  const onPressTransactionSpeed = useCallback(
-    onSuccess => {
-      const hideCustom = true;
-      gasUtils.showTransactionSpeedOptions(
-        gasPrices,
-        txFees,
-        gasPriceOption => updateGasPriceOption(gasPriceOption),
-        onSuccess,
-        hideCustom
-      );
-    },
-    [txFees, gasPrices, updateGasPriceOption]
-  );
-
-  const onLongPressSend = useCallback(() => {
-    if (isIphoneX()) {
-      submitTransaction();
-    } else {
-      onPressTransactionSpeed(submitTransaction);
-    }
-  }, [onPressTransactionSpeed, submitTransaction]);
-
   const onResetAssetSelection = useCallback(() => {
     analytics.track('Reset asset selection in Send flow');
     sendUpdateSelected({});
@@ -542,7 +517,7 @@ export default function SendSheet(props) {
                 isNft={isNft}
                 isSufficientBalance={amountDetails.isSufficientBalance}
                 isSufficientGas={isSufficientGas}
-                onLongPress={onLongPressSend}
+                onLongPress={submitTransaction}
                 selected={selected}
                 smallButton={!isTinyPhone && isSmallPhone}
                 testID="send-sheet-confirm"
