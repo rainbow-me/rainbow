@@ -2,46 +2,47 @@
 
 import colors from '../styles/colors';
 
-// popularEmojisToColorIndex matches emojis to the index of their
-// color backgrounds in the `avatarBackgrounds` object in colors.js
-export const popularEmojisToColorIndex = {
-  '🌶': 0,
-  '🤑': 1,
-  '🐙': 2,
-  '🫐': 3,
-  '🐳': 4,
-  '🤶': 0,
-  '🌲': 5,
-  '🌞': 6,
-  '🐒': 7,
-  '🐵': 8,
-  '🦊': 9,
-  '🐼': 10,
-  '🦄': 11,
-  '🐷': 12,
-  '🐧': 13,
-  '🦩': 8,
-  '👽': 14,
-  '🎈': 0,
-  '🍉': 8,
-  '🎉': 1,
-  '🐲': 15,
-  '🌎': 16,
-  '🍊': 17,
-  '🐭': 18,
-  '🍣': 19,
-  '🐥': 1,
-  '👾': 20,
-  '🥦': 15,
-  '👹': 0,
-  '🙀': 17,
-  '⛱': 4,
-  '⛵️': 21,
-  '🥳': 17,
-  '🤯': 8,
-  '🤠': 22,
-};
+// avatars groups emojis with their respective color backgrounds in the `avatarBackgrounds` object in colors.js
+export const avatars = [
+  { emoji: '🌶', color: colors.avatarBackgrounds[0] },
+  { emoji: '🤑', color: colors.avatarBackgrounds[1] },
+  { emoji: '🐙', color: colors.avatarBackgrounds[2] },
+  { emoji: '🫐', color: colors.avatarBackgrounds[3] },
+  { emoji: '🐳', color: colors.avatarBackgrounds[4] },
+  { emoji: '🤶', color: colors.avatarBackgrounds[0] },
+  { emoji: '🌲', color: colors.avatarBackgrounds[5] },
+  { emoji: '🌞', color: colors.avatarBackgrounds[6] },
+  { emoji: '🐒', color: colors.avatarBackgrounds[7] },
+  { emoji: '🐵', color: colors.avatarBackgrounds[8] },
+  { emoji: '🦊', color: colors.avatarBackgrounds[9] },
+  { emoji: '🐼', color: colors.avatarBackgrounds[10] },
+  { emoji: '🦄', color: colors.avatarBackgrounds[11] },
+  { emoji: '🐷', color: colors.avatarBackgrounds[12] },
+  { emoji: '🐧', color: colors.avatarBackgrounds[13] },
+  { emoji: '🦩', color: colors.avatarBackgrounds[8] },
+  { emoji: '👽', color: colors.avatarBackgrounds[14] },
+  { emoji: '🎈', color: colors.avatarBackgrounds[0] },
+  { emoji: '🍉', color: colors.avatarBackgrounds[8] },
+  { emoji: '🎉', color: colors.avatarBackgrounds[1] },
+  { emoji: '🐲', color: colors.avatarBackgrounds[15] },
+  { emoji: '🌎', color: colors.avatarBackgrounds[16] },
+  { emoji: '🍊', color: colors.avatarBackgrounds[17] },
+  { emoji: '🐭', color: colors.avatarBackgrounds[18] },
+  { emoji: '🍣', color: colors.avatarBackgrounds[19] },
+  { emoji: '🐥', color: colors.avatarBackgrounds[1] },
+  { emoji: '👾', color: colors.avatarBackgrounds[20] },
+  { emoji: '🥦', color: colors.avatarBackgrounds[15] },
+  { emoji: '👹', color: colors.avatarBackgrounds[0] },
+  { emoji: '🙀', color: colors.avatarBackgrounds[17] },
+  { emoji: '⛱', color: colors.avatarBackgrounds[4] },
+  { emoji: '⛵️', color: colors.avatarBackgrounds[21] },
+  { emoji: '🥳', color: colors.avatarBackgrounds[17] },
+  { emoji: '🤯', color: colors.avatarBackgrounds[8] },
+  { emoji: '🤠', color: colors.avatarBackgrounds[22] },
+];
 
+// oldAvatarColorToAvatarBackgroundIndex maps old hex colors from showcase of webProfiles
+// to new colors in colors.avatarBackgrounds (index)
 const oldAvatarColorToAvatarBackgroundIndex: { [hex: string]: number } = {
   '#FF494A': 0,
   '#01D3FF': 4,
@@ -58,10 +59,11 @@ export function getOldAvatarColorToAvatarBackgroundIndex(colorHex: string) {
   if (!colorHex) return null;
   return oldAvatarColorToAvatarBackgroundIndex[colorHex] || 0;
 }
-
-export const popularEmojis = Object.keys(popularEmojisToColorIndex);
-export const emojiColorIndexes = Object.values(popularEmojisToColorIndex);
-const emojiCount = Object.keys(popularEmojis).length;
+export const popularEmojis = avatars.map(avatar => avatar.emoji);
+export const emojiColorIndexes = avatars.map(avatar =>
+  colors.avatarBackgrounds.indexOf(avatar.color)
+);
+const emojiCount = avatars.length;
 
 export function hashCode(text: string) {
   let hash = 0,
