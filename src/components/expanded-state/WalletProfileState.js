@@ -158,7 +158,7 @@ export default function WalletProfileState({
             />
           )
         )}
-        {isNewProfile && <Spacer />}
+        {isNewProfile && !address && <Spacer />}
         <ProfileNameInput
           onChange={setValue}
           onSubmitEditing={handleSubmit}
