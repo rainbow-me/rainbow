@@ -15,9 +15,9 @@ const AddressInput = styled(Input).attrs({
   keyboardType: android ? 'visible-password' : 'default',
   maxLength: addressUtils.maxLength,
   selectTextOnFocus: true,
-  size: 'bmedium',
+  size: 'large',
   spellCheck: false,
-  weight: 'semibold',
+  weight: 'bold',
 })`
   flex-grow: 1;
   margin-top: ${android ? 6 : 1};
@@ -32,14 +32,17 @@ const Placeholder = styled(Row)`
   z-index: 1;
 `;
 
-const PlaceholderText = styled(Label)`
-  color: ${({ theme: { colors } }) => colors.dark};
-  opacity: 0.45;
+const PlaceholderText = styled(Label).attrs({
+  size: 'large',
+  weight: 'bold',
+})`
+  color: ${({ theme: { colors } }) => colors.alpha(colors.blueGreyDark, 0.3)};
+  opacity: 1;
 `;
 
 const formatValue = value =>
   isHexString(value) && value.length === addressUtils.maxLength
-    ? abbreviations.address(value, 4, 10)
+    ? abbreviations.address(value, 4, 4)
     : value;
 
 const AddressField = (
@@ -83,7 +86,7 @@ const AddressField = (
       <AddressInput
         {...props}
         autoFocus={autoFocus}
-        color={isValid ? colors.appleBlue : colors.blueGreyDark}
+        color={isValid ? colors.appleBlue : colors.dark}
         onBlur={expandAbbreviatedClipboard}
         onChange={handleChange}
         onChangeText={setInputValue}
@@ -95,7 +98,7 @@ const AddressField = (
       {!inputValue && (
         <Placeholder>
           <TouchableWithoutFeedback onPress={ref?.current?.focus}>
-            <PlaceholderText>ENS or Address (0x...)</PlaceholderText>
+            <PlaceholderText>Name, ENS, or address</PlaceholderText>
           </TouchableWithoutFeedback>
         </Placeholder>
       )}

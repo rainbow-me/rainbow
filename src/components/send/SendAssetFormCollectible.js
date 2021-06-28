@@ -3,24 +3,33 @@ import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components';
 import { OpacityToggler } from '../animations';
-import { Column, ColumnWithMargins } from '../layout';
+import { Column } from '../layout';
 import { UniqueTokenCard } from '../unique-token';
 import { useDimensions, useImageMetadata } from '@rainbow-me/hooks';
 import { padding, position } from '@rainbow-me/styles';
 
 const defaultImageDimensions = { height: 512, width: 512 };
 
-const ButtonWrapper = styled(ColumnWithMargins).attrs(({ isTallPhone }) => ({
-  margin: isTallPhone ? 25 : 15.5,
-}))`
-  ${padding(0, 15, 15)};
-  margin-bottom: 29;
+const ButtonWrapper = styled(Column).attrs({
+  margin: 0,
+})`
+  ${padding(0, 19, 15)};
+  margin-bottom: 21;
   width: 100%;
   z-index: 3;
 `;
 
 const Footer = styled(Column).attrs({ justify: 'end' })`
   height: 210;
+  width: 100%;
+`;
+
+const NFTWrapper = styled(Column).attrs({
+  align: 'center',
+  flex: 1,
+  justify: 'center',
+})`
+  margin-top: 20;
   width: 100%;
 `;
 
@@ -33,7 +42,6 @@ const Gradient = styled(LinearGradient).attrs(
   })
 )`
   ${position.cover};
-  border-radius: 19;
   overflow: hidden;
 `;
 
@@ -49,7 +57,7 @@ const SendFormUniqueTokenCard = styled(UniqueTokenCard).attrs(
     enableHapticFeedback: false,
     resizeMode: 'contain',
     scaleTo: 1,
-    shadow: [0, 10, 25, colors.shadow, 0.4],
+    shadow: [0, 5, 15, colors.shadow, 0.06],
     smallENSName: false,
   })
 )`
@@ -79,7 +87,7 @@ export default function SendAssetFormCollectible({
   const { height: imageHeight, width: imageWidth } = useMemo(() => {
     const imgDims = cachedImageDimensions || defaultImageDimensions;
 
-    const defaultWidth = deviceWidth - 30;
+    const defaultWidth = deviceWidth - 38;
     const defaultHeight = (defaultWidth * imgDims.height) / imgDims.width;
     let width = defaultWidth;
     let height = defaultHeight;
@@ -111,7 +119,7 @@ export default function SendAssetFormCollectible({
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <Column align="end" flex={1} width="100%">
-        <Column align="center" flex={1} onLayout={handleLayout} width="100%">
+        <NFTWrapper onLayout={handleLayout}>
           {!!containerHeight && !!containerWidth && (
             <SendFormUniqueTokenCard
               {...props}
@@ -120,7 +128,7 @@ export default function SendAssetFormCollectible({
               width={imageWidth}
             />
           )}
-        </Column>
+        </NFTWrapper>
         <Footer>
           <ButtonWrapper isTallPhone={isTallPhone}>
             {buttonRenderer}

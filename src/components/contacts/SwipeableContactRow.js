@@ -25,8 +25,8 @@ const RightAction = ({ onPress, progress, text, x }) => {
   return (
     <AnimatedCentered
       flex={1}
+      marginBottom={7}
       marginRight={isEdit ? 0 : 10}
-      marginTop={12}
       style={{ transform: [{ translateX }] }}
     >
       <ButtonPressAnimation onPress={onPress} scaleTo={0.9}>
@@ -40,7 +40,7 @@ const RightAction = ({ onPress, progress, text, x }) => {
           color={colors.alpha(colors.blueGreyDark, 0.4)}
           letterSpacing="roundedTight"
           size="smaller"
-          weight="medium"
+          weight="semibold"
         >
           {text}
         </Text>

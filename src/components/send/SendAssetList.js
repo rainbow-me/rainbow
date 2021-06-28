@@ -24,17 +24,17 @@ import SavingsListHeader from '../savings/SavingsListHeader';
 import TokenFamilyHeader from '../token-family/TokenFamilyHeader';
 import { ImgixImage } from '@rainbow-me/images';
 
-const dividerMargin = 10;
+const dividerMargin = 9;
 const dividerHeight = DividerSize + dividerMargin * 2;
 const familyRowHeight = 58;
-const familyHeaderHeight = 62;
+const familyHeaderHeight = 50;
 const rowHeight = 64;
 const smallBalancesHeader = 36;
 
 const SendAssetListCoinDividerOpenButton = styled(CoinDividerOpenButton).attrs({
   coinDividerHeight: 30,
 })`
-  margin-left: ${android ? 0 : 16};
+  margin-left: ${android ? 0 : 19};
 `;
 
 const SendAssetRecyclerListView = styled(RecyclerListView)`
@@ -356,7 +356,6 @@ export default class SendAssetList extends React.Component {
         <TokenFamilyHeader
           childrenAmount={item.data.length}
           familyImage={item.familyImage}
-          isCoinRow
           isOpen={this.state.openCards[item.familyId]}
           onPress={() => {
             this.changeOpenTab(item.familyId);

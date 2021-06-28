@@ -35,7 +35,7 @@ const Container = styled(Row).attrs({
   opacityTouchable: true,
   pointerEvents: 'auto',
 })`
-  ${padding(15, 19, 0)};
+  ${({ horizontalPadding }) => padding(15, horizontalPadding, 0)};
   height: 76;
   width: 100%;
 `;
@@ -138,6 +138,7 @@ Keyboard.addListener('keyboardDidHide', () => listener?.());
 
 const GasSpeedButton = ({
   dontBlur,
+  horizontalPadding = 19,
   onCustomGasBlur,
   onCustomGasFocus,
   testID,
@@ -455,6 +456,7 @@ const GasSpeedButton = ({
   return (
     <Container
       as={ScaleButtonZoomableAndroid}
+      horizontalPadding={horizontalPadding}
       onPress={handlePress}
       testID={testID}
     >

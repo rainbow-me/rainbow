@@ -9,6 +9,7 @@ import { KeyboardArea } from 'react-native-keyboard-area';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { dismissingScreenListener } from '../../shim';
+import { GasSpeedButton } from '../components/gas';
 import { Column } from '../components/layout';
 import {
   SendAssetForm,
@@ -16,7 +17,6 @@ import {
   SendButton,
   SendContactList,
   SendHeader,
-  SendTransactionSpeed,
 } from '../components/send';
 import { AssetTypes } from '@rainbow-me/entities';
 import {
@@ -85,6 +85,7 @@ export default function SendSheet(props) {
   const dispatch = useDispatch();
   const { isTinyPhone } = useDimensions();
   const { navigate, addListener } = useNavigation();
+  const { isDarkMode } = useTheme();
   const { dataAddNewTransaction } = useTransactionConfirmation();
   const updateAssetOnchainBalanceIfNeeded = useUpdateAssetOnchainBalance();
   const { allAssets } = useAccountAssets();
@@ -130,12 +131,7 @@ export default function SendSheet(props) {
   const { contacts, onRemoveContact, filteredContacts } = useContacts();
   const { userAccounts } = useUserAccounts();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
-  const {
-    accountAddress,
-    nativeCurrency,
-    nativeCurrencySymbol,
-    network,
-  } = useAccountSettings();
+  const { accountAddress, nativeCurrency, network } = useAccountSettings();
 
   const savings = useSendSavingsAccount();
   const fetchData = useRefreshAccountData();
@@ -156,6 +152,8 @@ export default function SendSheet(props) {
   const showEmptyState = !isValidAddress;
   const showAssetList = isValidAddress && isEmpty(selected);
   const showAssetForm = isValidAddress && !isEmpty(selected);
+
+  const isNft = selected?.type === AssetTypes.nft;
 
   const { handleFocus, triggerFocus } = useMagicAutofocus(
     recipientFieldRef,
@@ -497,6 +495,7 @@ export default function SendSheet(props) {
       <SheetContainer>
         <SendHeader
           contacts={contacts}
+          hideDivider={showAssetForm}
           isValidAddress={isValidAddress}
           onChangeAddressInput={onChangeInput}
           onFocus={handleFocus}
@@ -540,9 +539,11 @@ export default function SendSheet(props) {
                 {...props}
                 assetAmount={amountDetails.assetAmount}
                 isAuthorizing={isAuthorizing}
+                isNft={isNft}
                 isSufficientBalance={amountDetails.isSufficientBalance}
                 isSufficientGas={isSufficientGas}
                 onLongPress={onLongPressSend}
+                selected={selected}
                 smallButton={isTinyPhone}
                 testID="send-sheet-confirm"
               />
@@ -557,10 +558,10 @@ export default function SendSheet(props) {
             sendMaxBalance={sendMaxBalance}
             txSpeedRenderer={
               isIphoneX() && (
-                <SendTransactionSpeed
-                  gasPrice={selectedGasPrice}
-                  nativeCurrencySymbol={nativeCurrencySymbol}
-                  onPressTransactionSpeed={onPressTransactionSpeed}
+                <GasSpeedButton
+                  horizontalPadding={5}
+                  theme={isDarkMode ? 'dark' : 'light'}
+                  type="transaction"
                 />
               )
             }

@@ -4,12 +4,12 @@ import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { useNavigation } from '../../navigation/Navigation';
 import Divider from '../Divider';
-import { AddContactButton, PasteAddressButton } from '../buttons';
+import { ButtonPressAnimation } from '../animations';
+import { PasteAddressButton } from '../buttons';
 import { AddressField } from '../fields';
-import { Icon } from '../icons';
 import { Row } from '../layout';
-import { SheetHandle as SheetHandleAndroid } from '../sheet';
-import { Label } from '../text';
+import { SheetHandleFixedToTop, SheetTitle } from '../sheet';
+import { Label, Text } from '../text';
 import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
 import { useClipboard, useDimensions } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
@@ -22,30 +22,26 @@ const AddressInputContainer = styled(Row).attrs({ align: 'center' })`
       ? padding(12, 15)
       : android
       ? padding(5, 15)
-      : padding(19, 15)};
+      : padding(18, 19, 19)};
   background-color: ${({ theme: { colors } }) => colors.white};
   overflow: hidden;
   width: 100%;
 `;
 
-const AddressFieldLabel = styled(Label)`
-  color: ${({ theme: { colors } }) => colors.dark};
-  margin-right: 6;
-  opacity: 0.45;
+const AddressFieldLabel = styled(Label).attrs({
+  size: 'large',
+  weight: 'bold',
+})`
+  color: ${({ theme: { colors } }) => colors.alpha(colors.blueGreyDark, 0.6)};
+  margin-right: 4;
+  opacity: 1;
 `;
 
-const SheetHandle = android
-  ? styled(SheetHandleAndroid)`
-      margin-top: 6;
-    `
-  : styled(Icon).attrs(({ theme: { colors } }) => ({
-      color: colors.sendScreen.grey,
-      name: 'handle',
-      testID: 'sheet-handle',
-    }))`
-      height: 11;
-      margin-top: 13;
-    `;
+const SendSheetTitle = styled(SheetTitle).attrs({
+  weight: 'heavy',
+})`
+  margin-top: 17;
+`;
 
 const DefaultContactItem = {
   address: '',
@@ -55,6 +51,7 @@ const DefaultContactItem = {
 
 export default function SendHeader({
   contacts,
+  hideDivider,
   isValidAddress,
   onChangeAddressInput,
   onFocus,
@@ -151,7 +148,8 @@ export default function SendHeader({
 
   return (
     <Fragment>
-      <SheetHandle />
+      <SheetHandleFixedToTop />
+      <SendSheetTitle>Send</SendSheetTitle>
       <AddressInputContainer isSmallPhone={isSmallPhone}>
         <AddressFieldLabel>To:</AddressFieldLabel>
         <AddressField
@@ -164,18 +162,29 @@ export default function SendHeader({
           testID="send-asset-form-field"
         />
         {isValidAddress && !userWallet && (
-          <AddContactButton
-            edit={isPreExistingContact}
+          <ButtonPressAnimation
             onPress={
               isPreExistingContact
                 ? handleOpenContactActionSheet
                 : handleNavigateToContact
             }
-          />
+          >
+            <Text
+              align="right"
+              color="appleBlue"
+              size="large"
+              style={{ paddingLeft: 4 }}
+              weight="heavy"
+            >
+              {isPreExistingContact ? '􀍡' : '􀉯 Save'}
+            </Text>
+          </ButtonPressAnimation>
         )}
         {!isValidAddress && <PasteAddressButton onPress={onPressPaste} />}
       </AddressInputContainer>
-      <Divider color={colors.rowDivider} flex={0} inset={false} />
+      {hideDivider ? null : (
+        <Divider color={colors.rowDividerExtraLight} flex={0} inset={[0, 19]} />
+      )}
     </Fragment>
   );
 }

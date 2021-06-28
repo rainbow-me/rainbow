@@ -4,7 +4,6 @@ import { SectionList } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components';
-import Divider from '../Divider';
 import { FlyInAnimation } from '../animations';
 import { ContactRow, SwipeableContactRow } from '../contacts';
 import { SheetHandleFixedToTopHeight } from '../sheet';
@@ -28,19 +27,19 @@ const getItemLayout = (data, index) => ({
   length: rowHeight,
   offset: rowHeight * index,
 });
-const contentContainerStyle = { paddingBottom: 32 };
+const contentContainerStyle = { paddingBottom: 32, paddingTop: 7 };
 const keyExtractor = item => `SendContactList-${item.address}`;
 
 const SectionTitle = styled(Text).attrs({
-  size: 'bmedium',
-  weight: 'semibold',
+  size: 'lmedium',
+  weight: 'heavy',
 })`
-  margin-left: 15;
-  padding-top: 15;
-  padding-bottom: 10;
+  color: ${({ theme: { colors } }) => colors.alpha(colors.blueGreyDark, 0.6)};
+  margin-left: 19;
+  padding-bottom: 15;
+  padding-top: 12;
 `;
 const SectionWrapper = styled.View`
-  margin-bottom: 5;
   background-color: ${({ theme: { colors } }) => colors.white};
 `;
 const SendContactFlatList = styled(SectionList).attrs({
@@ -138,12 +137,12 @@ export default function SendContactList({
   const sections = useMemo(() => {
     const tmp = [];
     filteredContacts.length &&
-      tmp.push({ data: filteredContacts, id: 'contacts', title: 'Contacts' });
+      tmp.push({ data: filteredContacts, id: 'contacts', title: '􀉮 Contacts' });
     filteredAddresses.length &&
       tmp.push({
         data: filteredAddresses,
         id: 'accounts',
-        title: 'Transfer between your accounts',
+        title: '􀢲 My wallets',
       });
     return tmp;
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -160,7 +159,6 @@ export default function SendContactList({
           renderSectionHeader={({ section }) => (
             <SectionWrapper>
               <SectionTitle>{section.title}</SectionTitle>
-              <Divider />
             </SectionWrapper>
           )}
           sections={sections}
