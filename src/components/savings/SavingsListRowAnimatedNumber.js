@@ -37,7 +37,7 @@ const SavingsListRowAnimatedNumber = ({
   value,
 }) => {
   const formatter = useCallback(
-    val => `${formatSavingsAmount(val)} ${'symbol'} `,
+    val => `${formatSavingsAmount(val)} ${symbol} `,
     [symbol]
   );
 
