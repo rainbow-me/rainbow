@@ -11,6 +11,7 @@ import {
 import { magicMemo } from '../../utils';
 import { Centered } from '../layout';
 import { Monospace, Text } from '../text';
+import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
 import { ImgixImage } from '@rainbow-me/images';
 import { fonts, fontWithWidth, position } from '@rainbow-me/styles';
 
@@ -58,7 +59,8 @@ const UniqueTokenImage = ({
   const [error, setError] = useState(null);
   const handleError = useCallback(error => setError(error), [setError]);
   const { isDarkMode, colors } = useTheme();
-  const isSVG = !isUNIv3 && imageUrl?.substr(-4) === '.svg';
+  // UNI v3 NFTs are animated so we can't support those
+  const isSVG = !isUNIv3 && isSupportedUriExtension(imageUrl, ['.svg']);
 
   return (
     <Centered backgroundColor={backgroundColor} style={position.coverAsObject}>
