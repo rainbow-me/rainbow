@@ -168,6 +168,11 @@ export default function SendHeader({
                 ? handleOpenContactActionSheet
                 : handleNavigateToContact
             }
+            testID={
+              isPreExistingContact
+                ? 'edit-contact-button'
+                : 'add-contact-button'
+            }
           >
             <Text
               align="right"
