@@ -1,12 +1,17 @@
+import { toLower } from 'lodash';
 import React, { useCallback, useState } from 'react';
 import { SvgCssUri } from 'react-native-svg';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { buildUniqueTokenName } from '../../helpers/assets';
-import { ENSAddress } from '../../parsers/uniqueTokens';
+import {
+  ENS_NFT_CONTRACT_ADDRESS,
+  UNIV3_NFT_CONTRACT_ADDRESS,
+} from '../../references';
 import { magicMemo } from '../../utils';
 import { Centered } from '../layout';
 import { Monospace, Text } from '../text';
+import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
 import { ImgixImage } from '@rainbow-me/images';
 import { fonts, fontWithWidth, position } from '@rainbow-me/styles';
 
@@ -45,12 +50,17 @@ const UniqueTokenImage = ({
   resizeMode = ImgixImage.resizeMode.cover,
   small,
 }) => {
-  const isENS = item.asset_contract.address === ENSAddress;
+  const isENS =
+    toLower(item.asset_contract.address) === toLower(ENS_NFT_CONTRACT_ADDRESS);
+  const isUNIv3 =
+    toLower(item.asset_contract.address) ===
+    toLower(UNIV3_NFT_CONTRACT_ADDRESS);
   const image = isENS ? `${item.image_url}=s1` : imageUrl;
   const [error, setError] = useState(null);
   const handleError = useCallback(error => setError(error), [setError]);
   const { isDarkMode, colors } = useTheme();
-  const isSVG = imageUrl?.substr(-4) === '.svg';
+  // UNI v3 NFTs are animated so we can't support those
+  const isSVG = !isUNIv3 && isSupportedUriExtension(imageUrl, ['.svg']);
 
   return (
     <Centered backgroundColor={backgroundColor} style={position.coverAsObject}>

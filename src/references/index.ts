@@ -39,6 +39,12 @@ export {
   WYRE_SUPPORTED_COUNTRIES_ISO,
 } from './wyre';
 
+// NFTs Contracts
+export const ENS_NFT_CONTRACT_ADDRESS =
+  '0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85';
+export const UNIV3_NFT_CONTRACT_ADDRESS =
+  '0xc36442b4a4522e871399cd717abdd847ab11fe88';
+
 export const ETH_ICON_URL = 'https://s3.amazonaws.com/token-icons/eth.png';
 export const RAINBOW_PROFILES_BASE_URL = 'https://rainbow.me';
 
