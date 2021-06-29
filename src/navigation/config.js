@@ -89,6 +89,15 @@ export const addTokenSheetConfig = {
   }),
 };
 
+export const sendConfirmationSheetConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      longFormHeight: 600,
+    }),
+  }),
+};
+
 export const explainSheetConfig = {
   options: ({ route: { params = {} } }) => {
     return buildCoolModalConfig({

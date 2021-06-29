@@ -19,6 +19,7 @@ import ModalScreen from '../screens/ModalScreen';
 import ReceiveModal from '../screens/ReceiveModal';
 import RestoreSheet from '../screens/RestoreSheet';
 import SavingsSheet from '../screens/SavingsSheet';
+import SendConfirmationSheet from '../screens/SendConfirmationSheet';
 import SendSheet from '../screens/SendSheet';
 import SettingsModal from '../screens/SettingsModal';
 import ShowcaseScreen from '../screens/ShowcaseSheet';
@@ -41,6 +42,7 @@ import {
   nativeStackDefaultConfigWithoutStatusBar,
   restoreSheetConfig,
   savingsSheetConfig,
+  sendConfirmationSheetConfig,
   stackNavigationConfig,
 } from './config';
 import {
@@ -290,6 +292,11 @@ function NativeStackNavigator() {
           isShortFormEnabled: false,
           topOffset: 0,
         }}
+      />
+      <Stack.Screen
+        component={SendConfirmationSheet}
+        name={Routes.SEND_CONFIRMATION_SHEET}
+        {...sendConfirmationSheetConfig}
       />
       <NativeStack.Screen
         component={AddTokenSheet}

@@ -18,12 +18,14 @@ import {
   SendHeader,
   SendTransactionSpeed,
 } from '../components/send';
+import { SheetActionButton } from '../components/sheet';
 import { AssetType, AssetTypes } from '@rainbow-me/entities';
 import { isNativeAsset } from '@rainbow-me/handlers/assets';
 import {
   createSignableTransaction,
   estimateGasLimit,
   getProviderForNetwork,
+  isL2Network,
   web3Provider,
 } from '@rainbow-me/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
@@ -493,6 +495,13 @@ export default function SendSheet(props) {
     [gasPrices, txFees, updateGasPriceOption, currentNetwork]
   );
 
+  const validL2Transaction =
+    isValidAddress &&
+    amountDetails.isSufficientBalance &&
+    isSufficientGas &&
+    amountDetails.assetAmount &&
+    amountDetails.nativeAmount;
+
   const onLongPressSend = useCallback(() => {
     if (isIphoneX()) {
       submitTransaction();
@@ -500,6 +509,33 @@ export default function SendSheet(props) {
       onPressTransactionSpeed(submitTransaction);
     }
   }, [onPressTransactionSpeed, submitTransaction]);
+
+  const onPressSend = useCallback(() => {
+    if (validL2Transaction && isL2Network(currentNetwork)) {
+      Keyboard.dismiss();
+      navigate(Routes.SEND_CONFIRMATION_SHEET, {
+        amountDetails: amountDetails,
+        asset: selected,
+        callback: onLongPressSend,
+        from: accountAddress,
+        gasLimit: gasLimit,
+        gasPrice: selectedGasPrice.value?.amount,
+        network: currentNetwork,
+        to: recipient,
+      });
+    }
+  }, [
+    accountAddress,
+    amountDetails,
+    currentNetwork,
+    gasLimit,
+    navigate,
+    onLongPressSend,
+    recipient,
+    selected,
+    selectedGasPrice.value?.amount,
+    validL2Transaction,
+  ]);
 
   const onResetAssetSelection = useCallback(() => {
     analytics.track('Reset asset selection in Send flow');
@@ -579,6 +615,11 @@ export default function SendSheet(props) {
     updateTxFee,
   ]);
 
+  const { colors } = useTheme();
+  const shouldShowConfirmSheet = useMemo(() => isL2Network(currentNetwork), [
+    currentNetwork,
+  ]);
+
   return (
     <Container>
       {ios && <StatusBar barStyle="light-content" />}
@@ -624,17 +665,28 @@ export default function SendSheet(props) {
             allAssets={allAssets}
             assetAmount={amountDetails.assetAmount}
             buttonRenderer={
-              <SendButton
-                {...props}
-                assetAmount={amountDetails.assetAmount}
-                isAuthorizing={isAuthorizing}
-                isSufficientBalance={amountDetails.isSufficientBalance}
-                isSufficientGas={isSufficientGas}
-                network={currentNetwork}
-                onLongPress={onLongPressSend}
-                smallButton={isTinyPhone}
-                testID="send-sheet-confirm"
-              />
+              shouldShowConfirmSheet ? (
+                <SheetActionButton
+                  color={colors.appleBlue}
+                  disabled={!validL2Transaction}
+                  label="Next"
+                  onPress={onPressSend}
+                  size="big"
+                  weight="bold"
+                />
+              ) : (
+                <SendButton
+                  {...props}
+                  assetAmount={amountDetails.assetAmount}
+                  isAuthorizing={isAuthorizing}
+                  isSufficientBalance={amountDetails.isSufficientBalance}
+                  isSufficientGas={isSufficientGas}
+                  network={currentNetwork}
+                  onLongPress={onLongPressSend}
+                  smallButton={isTinyPhone}
+                  testID="send-sheet-confirm"
+                />
+              )
             }
             nativeAmount={amountDetails.nativeAmount}
             nativeCurrency={nativeCurrency}
