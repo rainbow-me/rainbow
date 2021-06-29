@@ -1,4 +1,3 @@
-import { isString } from 'lodash';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
@@ -46,7 +45,7 @@ export default function AvatarCircle({
   const accountSymbol = showcaseAccountSymbol || profileAccountSymbol;
   const resolvedColor =
     showcaseAccountColor != null
-      ? isString(showcaseAccountColor)
+      ? typeof showcaseAccountColor === 'string'
         ? showcaseAccountColor
         : colors.avatarBackgrounds[showcaseAccountColor]
       : colors.avatarBackgrounds[profileAccountColor || 0];

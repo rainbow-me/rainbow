@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { ScrollView } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useValues } from 'react-native-redash';
 import { useDispatch } from 'react-redux';
@@ -32,7 +31,7 @@ const SheetContainer = styled(Column)`
   width: 100%;
 `;
 
-const ScrollableColorPicker = styled(ScrollView)`
+const ScrollableColorPicker = styled.ScrollView`
   overflow: visible;
 `;
 

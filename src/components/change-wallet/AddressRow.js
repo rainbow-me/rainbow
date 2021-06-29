@@ -2,10 +2,6 @@ import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useTheme } from '../../context/ThemeContext';
-import {
-  removeFirstEmojiFromString,
-  returnStringFirstEmoji,
-} from '../../helpers/emojiHandler';
 import { deviceUtils } from '../../utils';
 import { addressHashedEmoji } from '../../utils/defaultProfileUtils';
 import { ButtonPressAnimation } from '../animations';
@@ -16,6 +12,10 @@ import ImageAvatar from '../contacts/ImageAvatar';
 import { Icon } from '../icons';
 import { Centered, Column, ColumnWithMargins, Row } from '../layout';
 import { TruncatedAddress, TruncatedText } from '../text';
+import {
+  removeFirstEmojiFromString,
+  returnStringFirstEmoji,
+} from '@rainbow-me/helpers/emojiHandler';
 import { fonts, getFontSize } from '@rainbow-me/styles';
 
 const maxAccountLabelWidth = deviceUtils.dimensions.width - 88;

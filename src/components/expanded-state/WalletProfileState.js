@@ -1,4 +1,3 @@
-import { isString } from 'lodash';
 import React, { useCallback, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
@@ -116,7 +115,7 @@ export default function WalletProfileState({
 
   const handleSubmit = useCallback(() => {
     onCloseModal({
-      color: isString(color) ? colorHexToIndex(color) : color,
+      color: typeof color === 'string' ? colorHexToIndex(color) : color,
       name: nameEmoji ? `${nameEmoji} ${value}` : value,
     });
     goBack();

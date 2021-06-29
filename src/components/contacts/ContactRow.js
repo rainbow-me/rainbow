@@ -2,7 +2,6 @@ import React, { Fragment } from 'react';
 import styled from 'styled-components';
 import { removeFirstEmojiFromString } from '../../helpers/emojiHandler';
 import { abbreviations, magicMemo } from '../../utils';
-import {} from '../../utils/defaultProfileUtils';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText } from '../coin-row';
 import { Column, RowWithMargins } from '../layout';
