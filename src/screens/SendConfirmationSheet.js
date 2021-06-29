@@ -10,6 +10,7 @@ import L2Explainer from '../components/L2Disclaimer';
 import Pill from '../components/Pill';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import { ButtonPressAnimation } from '../components/animations';
+import BiometricButtonContent from '../components/buttons/BiometricButtonContent';
 import { CoinIcon } from '../components/coin-icon';
 import { ContactAvatar } from '../components/contacts';
 import { Centered, Column, Row } from '../components/layout';
@@ -40,7 +41,17 @@ const Container = styled(Centered).attrs({
     height ? `height: ${height + deviceHeight}` : null};
 `;
 
-export const sheetHeight = android ? 600 - getSoftMenuBarHeight() : 394;
+export const sheetHeight = android ? 600 - getSoftMenuBarHeight() : 594;
+
+const Label = styled(BiometricButtonContent).attrs(
+  ({ smallButton, theme: { colors } }) => ({
+    color: colors.whiteLabel,
+    size: smallButton ? 'large' : 'larger',
+    weight: 'heavy',
+  })
+)`
+  bottom: 2;
+`;
 
 const ChevronDown = () => {
   const { colors } = useTheme();
@@ -212,7 +223,11 @@ export default function SendConfirmationSheet() {
                 weight="bold"
               />
               <Row paddingTop={4}>
-                <Text color={color} size="lmedium" weight="700">
+                <Text
+                  color={colors.alpha(colors.blueGreyDark, 0.6)}
+                  size="lmedium"
+                  weight="700"
+                >
                   First time send
                 </Text>
               </Row>
@@ -246,7 +261,6 @@ export default function SendConfirmationSheet() {
           <SheetActionButton
             color={canSubmit ? color : colors.white}
             fullWidth
-            label="Send"
             onPress={handleSubmit}
             size="big"
             testID="send-confirmation-button"
@@ -256,7 +270,9 @@ export default function SendConfirmationSheet() {
                 : colors.alpha(colors.blueGreyDark, 0.8)
             }
             weight="bold"
-          />
+          >
+            <Label label="Send" />
+          </SheetActionButton>
         </SheetActionButtonRow>
       </SlackSheet>
     </Container>
