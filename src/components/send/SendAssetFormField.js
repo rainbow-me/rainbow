@@ -26,18 +26,23 @@ const GradientBackground = styled(RadialGradient).attrs(
   height: ${({ width }) => width - 38};
   left: 0;
   position: absolute;
+  top: ${({ isSmallPhone, isTinyPhone, width }) =>
+    -((width - 38 - (isTinyPhone ? 40 : isSmallPhone ? 46 : 59)) / 2)};
   transform: scaleY(0.175074184);
-  top: ${({ width }) => -((width - 38 - 59) / 2)};
   width: ${({ width }) => width - 38};
 `;
 
 const Wrapper = styled(ButtonPressAnimation)`
   border-radius: 29.5;
-  height: 59;
+  height: ${({ isSmallPhone, isTinyPhone }) =>
+    isTinyPhone ? 40 : isSmallPhone ? 46 : 59};
   overflow: hidden;
-  padding-bottom: 11;
-  padding-horizontal: 19;
-  padding-top: 10;
+  padding-bottom: ${({ isSmallPhone, isTinyPhone }) =>
+    isTinyPhone ? 7 : isSmallPhone ? 8 : 11};
+  padding-horizontal: ${({ isSmallPhone, isTinyPhone }) =>
+    isTinyPhone ? 12 : isSmallPhone ? 15 : 19};
+  padding-top: ${({ isSmallPhone, isTinyPhone }) =>
+    isTinyPhone ? 6 : isSmallPhone ? 7 : 10};
   position: relative;
   width: 100%;
 `;
@@ -58,7 +63,7 @@ export default function SendAssetFormField({
   testID,
   ...props
 }) {
-  const { isTinyPhone, width } = useDimensions();
+  const { isTinyPhone, isSmallPhone, width } = useDimensions();
   const { colors } = useTheme();
   const handlePressButton = useCallback(
     event => {
@@ -70,8 +75,18 @@ export default function SendAssetFormField({
   const bubbleField = useRef();
 
   return (
-    <Wrapper onPress={() => bubbleField.current.focus()} scaleTo={1.05}>
-      <GradientBackground colorForAsset={colorForAsset} width={width} />
+    <Wrapper
+      isSmallPhone={isSmallPhone}
+      isTinyPhone={isTinyPhone}
+      onPress={() => bubbleField.current.focus()}
+      scaleTo={1.05}
+    >
+      <GradientBackground
+        colorForAsset={colorForAsset}
+        isSmallPhone={isSmallPhone}
+        isTinyPhone={isTinyPhone}
+        width={width}
+      />
       <RowWithMargins
         align="center"
         flex={1}
@@ -99,7 +114,7 @@ export default function SendAssetFormField({
           align="right"
           color={colorForAsset || colors.dark}
           letterSpacing="roundedTight"
-          size={isTinyPhone || android ? 'bigger' : 'h3'}
+          size={isTinyPhone ? 'big' : isSmallPhone ? 'bigger' : 'h3'}
           weight="medium"
         >
           {label.length > labelMaxLength

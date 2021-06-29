@@ -35,7 +35,8 @@ const Container = styled(Column).attrs({
   hapticType: 'impactHeavy',
   scaleTo: 1.0666,
 })`
-  ${({ horizontalPadding }) => padding(15, horizontalPadding, 0)};
+  ${({ horizontalPadding, topPadding }) =>
+    padding(topPadding, horizontalPadding, 0)};
   height: 76;
   width: 100%;
 `;
@@ -109,6 +110,7 @@ const GasSpeedButton = ({
   testID,
   type,
   theme = 'dark',
+  topPadding = 15,
   options = null,
   minGasPrice = null,
 }) => {
@@ -415,6 +417,7 @@ const GasSpeedButton = ({
       horizontalPadding={horizontalPadding}
       onPress={handlePress}
       testID={testID}
+      topPadding={topPadding}
     >
       <Row align="end" justify="space-between" marginBottom={1.5}>
         {!isCustom ? (

@@ -21,12 +21,15 @@ const FormContainer = styled(Column).attrs({
   align: 'center',
   justify: 'center',
 })`
-  flex: ${({ isSmallPhone }) => (android ? 1.8 : isSmallPhone ? 1.75 : 1)};
+  flex: 1;
+  min-height: ${({ isSmallPhone, isTinyPhone }) =>
+    isTinyPhone ? 104 : isSmallPhone ? 134 : 167};
   width: 100%;
 `;
 
 const Spacer = styled.View`
-  height: 15;
+  height: ${({ isSmallPhone, isTinyPhone }) =>
+    isTinyPhone ? 8 : isSmallPhone ? 12 : 15};
   width: 100%;
 `;
 
@@ -44,7 +47,7 @@ export default function SendAssetFormToken({
   txSpeedRenderer,
   ...props
 }) {
-  const { isSmallPhone } = useDimensions();
+  const { isSmallPhone, isTinyPhone } = useDimensions();
   const { colors } = useTheme();
 
   const {
@@ -54,7 +57,11 @@ export default function SendAssetFormToken({
 
   return (
     <Fragment>
-      <FormContainer isSmallPhone={isSmallPhone} {...props}>
+      <FormContainer
+        isSmallPhone={isSmallPhone}
+        isTinyPhone={isTinyPhone}
+        {...props}
+      >
         <SendAssetFormField
           colorForAsset={colorForAsset}
           format={removeLeadingZeros}
@@ -66,7 +73,7 @@ export default function SendAssetFormToken({
           testID="selected-asset-field"
           value={assetAmount}
         />
-        <Spacer />
+        <Spacer isSmallPhone={isSmallPhone} isTinyPhone={isTinyPhone} />
         <SendAssetFormField
           autoFocus
           colorForAsset={colors.alpha(colors.blueGreyDark, 0.8)}

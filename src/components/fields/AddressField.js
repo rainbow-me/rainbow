@@ -6,7 +6,7 @@ import { checkIsValidAddressOrDomain } from '../../helpers/validators';
 import { Input } from '../inputs';
 import { Row } from '../layout';
 import { Label } from '../text';
-import { useClipboard } from '@rainbow-me/hooks';
+import { useClipboard, useDimensions } from '@rainbow-me/hooks';
 import { abbreviations, addressUtils } from '@rainbow-me/utils';
 
 const AddressInput = styled(Input).attrs({
@@ -49,6 +49,7 @@ const AddressField = (
   { address, autoFocus, name, onChange, onFocus, testID, ...props },
   ref
 ) => {
+  const { isTinyPhone } = useDimensions();
   const { colors } = useTheme();
   const { clipboard, setClipboard } = useClipboard();
   const [inputValue, setInputValue] = useState('');
@@ -98,7 +99,9 @@ const AddressField = (
       {!inputValue && (
         <Placeholder>
           <TouchableWithoutFeedback onPress={ref?.current?.focus}>
-            <PlaceholderText>Name, ENS, or address</PlaceholderText>
+            <PlaceholderText>
+              {isTinyPhone ? 'ENS or address' : 'Name, ENS, or address'}
+            </PlaceholderText>
           </TouchableWithoutFeedback>
         </Placeholder>
       )}

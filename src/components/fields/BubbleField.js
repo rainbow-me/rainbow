@@ -14,11 +14,11 @@ import { Column, Row } from '../layout';
 import { useDimensions } from '@rainbow-me/hooks';
 
 const BubbleInput = styled(ExchangeInput).attrs(
-  ({ isTinyPhone, theme: { isDarkMode } }) => ({
+  ({ isSmallPhone, isTinyPhone, theme: { isDarkMode } }) => ({
     disableTabularNums: true,
     keyboardAppearance: isDarkMode ? 'dark' : 'light',
     letterSpacing: 'roundedTightest',
-    size: isTinyPhone || android ? 'bigger' : 'h3',
+    size: isTinyPhone ? 'big' : isSmallPhone ? 'bigger' : 'h3',
     weight: 'semibold',
   })
 )`
@@ -51,7 +51,7 @@ const BubbleField = (
   },
   forwardedRef
 ) => {
-  const { isTinyPhone } = useDimensions();
+  const { isSmallPhone, isTinyPhone } = useDimensions();
 
   const [isFocused, setIsFocused] = useState(autoFocus);
   const [value, setValue] = useState(valueProp);
@@ -121,6 +121,7 @@ const BubbleField = (
           autoFocus={autoFocus}
           color={colorForAsset}
           isDarkMode={isDarkMode}
+          isSmallPhone={isSmallPhone}
           isTinyPhone={isTinyPhone}
           keyboardType={keyboardType}
           mask={mask}

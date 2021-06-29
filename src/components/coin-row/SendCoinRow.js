@@ -13,16 +13,17 @@ import CoinRow from './CoinRow';
 import { useColorForAsset } from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
 
+const isSmallPhone = deviceUtils.dimensions.height <= 667;
 const isTinyPhone = deviceUtils.dimensions.height <= 568;
-const selectedHeight = isTinyPhone ? 62 : 70;
+const selectedHeight = isTinyPhone ? 50 : isSmallPhone ? 64 : 70;
 
 const containerStyles = `
   padding-left: 19;
-  padding-top: 17;
+  padding-top: 19;
 `;
 
 const containerSelectedStyles = css`
-  ${padding(15)};
+  ${isTinyPhone ? padding(10, 0, 0) : isSmallPhone ? padding(12) : padding(15)};
   height: ${selectedHeight};
 `;
 

@@ -35,7 +35,8 @@ const Container = styled(Row).attrs({
   opacityTouchable: true,
   pointerEvents: 'auto',
 })`
-  ${({ horizontalPadding }) => padding(15, horizontalPadding, 0)};
+  ${({ horizontalPadding, topPadding }) =>
+    padding(topPadding, horizontalPadding, 0)};
   height: 76;
   width: 100%;
 `;
@@ -144,6 +145,7 @@ const GasSpeedButton = ({
   testID,
   type,
   theme = 'dark',
+  topPadding = 15,
   options = null,
   minGasPrice = null,
 }) => {
@@ -459,6 +461,7 @@ const GasSpeedButton = ({
       horizontalPadding={horizontalPadding}
       onPress={handlePress}
       testID={testID}
+      topPadding={topPadding}
     >
       <Column>
         <Row align="end" height={30} justify="space-between">

@@ -40,14 +40,8 @@ const FormContainer = styled(Column).attrs({
   align: 'end',
   justify: 'space-between',
 })`
-  ${({ isNft, isTinyPhone }) =>
-    isNft
-      ? padding(22, 0, 0)
-      : isTinyPhone
-      ? padding(6, 19, 0)
-      : padding(0, 19)};
+  ${({ isNft }) => (isNft ? padding(0) : padding(0, 19))};
   flex: 1;
-  margin-bottom: ${android ? 0 : ({ isTinyPhone }) => (isTinyPhone ? -19 : 0)};
   width: 100%;
 `;
 
@@ -87,6 +81,7 @@ export default function SendAssetForm({
   const address = selectedAsset?.address;
   const colorForAsset = useColorForAsset({ address });
 
+  const noShadows = [[0, 0, 0, colors.transparent, 0]];
   const shadows = useMemo(() => AssetRowShadow(colors), [colors]);
 
   return (
@@ -97,10 +92,11 @@ export default function SendAssetForm({
           backgroundColor={colors.white}
           borderRadius={20}
           height={SendCoinRow.selectedHeight}
-          shadows={shadows}
+          overflow={isTinyPhone ? 'visible' : 'hidden'}
+          shadows={isTinyPhone ? noShadows : shadows}
           width={deviceWidth - 38}
         >
-          <AssetRowGradient />
+          {isTinyPhone ? null : <AssetRowGradient />}
           <AssetRowElement
             disablePressAnimation
             item={selectedAsset}
@@ -118,7 +114,7 @@ export default function SendAssetForm({
           </AssetRowElement>
         </ShadowStack>
       </ButtonPressAnimation>
-      <FormContainer isNft={isNft} isTinyPhone={isTinyPhone}>
+      <FormContainer isNft={isNft}>
         {isNft ? (
           <SendAssetFormCollectible
             asset={selectedAsset}

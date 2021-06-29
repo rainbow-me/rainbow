@@ -20,7 +20,6 @@ const ButtonWrapper = styled(Column).attrs({
 `;
 
 const Footer = styled(Column).attrs({ justify: 'end' })`
-  height: 210;
   width: 100%;
 `;
 
@@ -29,7 +28,6 @@ const NFTWrapper = styled(Column).attrs({
   flex: 1,
   justify: 'center',
 })`
-  margin-top: 20;
   width: 100%;
 `;
 
@@ -55,7 +53,7 @@ const SendFormUniqueTokenCard = styled(UniqueTokenCard).attrs(
   ({ theme: { colors } }) => ({
     borderEnabled: false,
     enableHapticFeedback: false,
-    resizeMode: 'contain',
+    resizeMode: 'cover',
     scaleTo: 1,
     shadow: [0, 5, 15, colors.shadow, 0.06],
     smallENSName: false,
@@ -73,6 +71,7 @@ export default function SendAssetFormCollectible({
   const {
     height: deviceHeight,
     isTallPhone,
+    isTinyPhone,
     width: deviceWidth,
   } = useDimensions();
 
@@ -92,7 +91,8 @@ export default function SendAssetFormCollectible({
     let width = defaultWidth;
     let height = defaultHeight;
 
-    const calculatedHeight = deviceHeight - (isTallPhone ? 440 : 330);
+    const calculatedHeight =
+      deviceHeight - (isTallPhone ? 440 : isTinyPhone ? 360 : 420);
 
     if (height > calculatedHeight) {
       height = calculatedHeight;
@@ -104,7 +104,13 @@ export default function SendAssetFormCollectible({
     }
 
     return { height, width };
-  }, [cachedImageDimensions, deviceHeight, deviceWidth, isTallPhone]);
+  }, [
+    cachedImageDimensions,
+    deviceHeight,
+    deviceWidth,
+    isTallPhone,
+    isTinyPhone,
+  ]);
 
   const handleLayout = useCallback(
     ({ nativeEvent: { layout } }) => {

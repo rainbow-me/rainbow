@@ -24,15 +24,15 @@ import SavingsListHeader from '../savings/SavingsListHeader';
 import TokenFamilyHeader from '../token-family/TokenFamilyHeader';
 import { ImgixImage } from '@rainbow-me/images';
 
-const dividerMargin = 9;
-const dividerHeight = DividerSize + dividerMargin * 2;
-const familyRowHeight = 58;
-const familyHeaderHeight = 50;
-const rowHeight = 64;
-const smallBalancesHeader = 36;
+const dividerMargin = 5;
+const dividerHeight = DividerSize + dividerMargin * 4;
+const familyRowHeight = 59;
+const familyHeaderHeight = 49;
+const rowHeight = 59;
+const smallBalancesHeader = 42;
 
 const SendAssetListCoinDividerOpenButton = styled(CoinDividerOpenButton).attrs({
-  coinDividerHeight: 30,
+  coinDividerHeight: 34,
 })`
   margin-left: ${android ? 0 : 19};
 `;
@@ -45,7 +45,7 @@ const SendAssetListDivider = () => {
   const { colors } = useTheme();
   return (
     <Centered marginVertical={dividerMargin}>
-      <Divider color={colors.rowDividerLight} />
+      <Divider color={colors.rowDividerExtraLight} />
     </Centered>
   );
 };

@@ -42,12 +42,19 @@ export default function PasteAddressButton({ onPress }) {
   }, [enablePaste, getClipboard, onInvalidPaste, onPress]);
 
   return (
-    <ButtonPressAnimation
-      disabled={deviceUtils.isIOS14 ? !hasClipboardData : clipboard && !isValid}
-      onPress={handlePress}
-      testID="paste-address-button"
-    >
-      <Text align="right" color={colors.appleBlue} size="large" weight="heavy">
+    deviceUtils.isIOS14 ? !hasClipboardData : clipboard && !isValid
+  ) ? null : (
+    <ButtonPressAnimation onPress={handlePress} testID="paste-address-button">
+      <Text
+        align="right"
+        color={
+          (deviceUtils.isIOS14 ? !hasClipboardData : clipboard && !isValid)
+            ? colors.alpha(colors.blueGreyDark, 0.3)
+            : colors.appleBlue
+        }
+        size="large"
+        weight="heavy"
+      >
         􀜍 Paste
       </Text>
     </ButtonPressAnimation>

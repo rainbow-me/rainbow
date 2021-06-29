@@ -2,6 +2,7 @@ import { sortBy, toLower } from 'lodash';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { SectionList } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
+import LinearGradient from 'react-native-linear-gradient';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components';
 import { FlyInAnimation } from '../animations';
@@ -21,7 +22,7 @@ const KeyboardArea = styled.View`
     DeviceInfo.hasNotch() ? keyboardHeight : keyboardHeight - insets.top};
 `;
 
-const rowHeight = 62;
+const rowHeight = 59;
 const getItemLayout = (data, index) => ({
   index,
   length: rowHeight,
@@ -39,8 +40,15 @@ const SectionTitle = styled(Text).attrs({
   padding-bottom: 15;
   padding-top: 12;
 `;
-const SectionWrapper = styled.View`
-  background-color: ${({ theme: { colors } }) => colors.white};
+const SectionWrapper = styled(LinearGradient).attrs(
+  ({ theme: { colors } }) => ({
+    colors: [colors.white, colors.alpha(colors.white, 0)],
+    end: { x: 0.5, y: 1 },
+    locations: [0.55, 1],
+    start: { x: 0.5, y: 0 },
+  })
+)`
+  height: 40;
 `;
 const SendContactFlatList = styled(SectionList).attrs({
   alwaysBounceVertical: true,

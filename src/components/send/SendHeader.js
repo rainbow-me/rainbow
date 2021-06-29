@@ -17,11 +17,11 @@ import { padding } from '@rainbow-me/styles';
 import { showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const AddressInputContainer = styled(Row).attrs({ align: 'center' })`
-  ${({ isSmallPhone }) =>
-    isSmallPhone
-      ? padding(12, 15)
-      : android
-      ? padding(5, 15)
+  ${({ isSmallPhone, isTinyPhone }) =>
+    isTinyPhone
+      ? padding(23, 15, 10)
+      : isSmallPhone
+      ? padding(11, 19, 15)
       : padding(18, 19, 19)};
   background-color: ${({ theme: { colors } }) => colors.white};
   overflow: hidden;
@@ -64,7 +64,7 @@ export default function SendHeader({
   userAccounts,
 }) {
   const { setClipboard } = useClipboard();
-  const { isSmallPhone } = useDimensions();
+  const { isSmallPhone, isTinyPhone } = useDimensions();
   const { navigate } = useNavigation();
   const { colors } = useTheme();
 
@@ -149,8 +149,11 @@ export default function SendHeader({
   return (
     <Fragment>
       <SheetHandleFixedToTop />
-      <SendSheetTitle>Send</SendSheetTitle>
-      <AddressInputContainer isSmallPhone={isSmallPhone}>
+      {isTinyPhone ? null : <SendSheetTitle>Send</SendSheetTitle>}
+      <AddressInputContainer
+        isSmallPhone={isSmallPhone}
+        isTinyPhone={isTinyPhone}
+      >
         <AddressFieldLabel>To:</AddressFieldLabel>
         <AddressField
           address={recipient}
@@ -187,7 +190,7 @@ export default function SendHeader({
         )}
         {!isValidAddress && <PasteAddressButton onPress={onPressPaste} />}
       </AddressInputContainer>
-      {hideDivider ? null : (
+      {hideDivider && !isTinyPhone ? null : (
         <Divider color={colors.rowDividerExtraLight} flex={0} inset={[0, 19]} />
       )}
     </Fragment>

@@ -83,7 +83,7 @@ const KeyboardSizeView = styled(KeyboardArea)`
 
 export default function SendSheet(props) {
   const dispatch = useDispatch();
-  const { isTinyPhone } = useDimensions();
+  const { isSmallPhone, isTinyPhone } = useDimensions();
   const { navigate, addListener } = useNavigation();
   const { isDarkMode } = useTheme();
   const { dataAddNewTransaction } = useTransactionConfirmation();
@@ -544,8 +544,9 @@ export default function SendSheet(props) {
                 isSufficientGas={isSufficientGas}
                 onLongPress={onLongPressSend}
                 selected={selected}
-                smallButton={isTinyPhone}
+                smallButton={!isTinyPhone && isSmallPhone}
                 testID="send-sheet-confirm"
+                tinyButton={isTinyPhone}
               />
             }
             nativeAmount={amountDetails.nativeAmount}
@@ -557,13 +558,12 @@ export default function SendSheet(props) {
             selected={selected}
             sendMaxBalance={sendMaxBalance}
             txSpeedRenderer={
-              isIphoneX() && (
-                <GasSpeedButton
-                  horizontalPadding={5}
-                  theme={isDarkMode ? 'dark' : 'light'}
-                  type="transaction"
-                />
-              )
+              <GasSpeedButton
+                horizontalPadding={isTinyPhone ? 0 : 5}
+                theme={isDarkMode ? 'dark' : 'light'}
+                topPadding={isTinyPhone ? 8 : 15}
+                type="transaction"
+              />
             }
           />
         )}
