@@ -26,8 +26,6 @@ const TopRowContainer = styled(Row).attrs({
   justify: 'flex-start',
 })``;
 
-const PriceContainer = View;
-
 const BottomRow = ({ symbol }) => {
   return (
     <BottomRowContainer>
@@ -44,9 +42,9 @@ const TopRow = item => {
       <FlexItem flex={1}>
         <CoinName>{item.tokenNames}</CoinName>
       </FlexItem>
-      <PriceContainer>
+      <View>
         <PoolValue type={item.attribute} value={item[item.attribute]} />
-      </PriceContainer>
+      </View>
     </TopRowContainer>
   );
 };
