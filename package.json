@@ -31,7 +31,7 @@
     "lint:ts": "yarn tsc --skipLibCheck --noEmit",
     "postinstall": "./scripts/postinstall.sh",
     "start": "react-native start",
-    "start:clean": "yarn start --reset-cache",
+    "start:clean": "yarn clear-cache && yarn start --reset-cache",
     "test": "jest test.js",
     "uninstall:android": "adb uninstall me.rainbow; true",
     "uninstall:ios": "echo 'Script not yet added.'",
