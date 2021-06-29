@@ -119,7 +119,7 @@ export default function BackupManualStep() {
       </Content>
       <Footer>
         {secretLoaded && (
-          <View marginBottom={30} marginTop={30}>
+          <View marginTop={30}>
             <SheetActionButton
               color={colors.appleBlue}
               fullWidth
