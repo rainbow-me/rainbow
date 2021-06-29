@@ -12,6 +12,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.5.13](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.13)
+
+### Added
+* SVG NFT Support
+* Share NFTs via Rainbow.me
+
+### Changed
+* Fixed Info Button on Swap Input
+* Improved ENS Cards
+* Android Discover Sheet Fixes
+* Android Search Fixes
+
+
 ## [1.5.12](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.12)
 
 ### Added
