@@ -57,6 +57,7 @@ import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountFromNativeValue,
   formatInputDecimals,
+  greaterThan,
 } from '@rainbow-me/utilities';
 import { deviceUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
@@ -495,12 +496,24 @@ export default function SendSheet(props) {
     [gasPrices, txFees, updateGasPriceOption, currentNetwork]
   );
 
-  const validL2Transaction =
-    isValidAddress &&
-    amountDetails.isSufficientBalance &&
-    isSufficientGas &&
-    amountDetails.assetAmount &&
-    amountDetails.nativeAmount;
+  const validL2Transaction = useMemo(() => {
+    if (
+      isValidAddress &&
+      amountDetails.isSufficientBalance &&
+      isSufficientGas &&
+      amountDetails.assetAmount &&
+      amountDetails.nativeAmount
+    ) {
+      return greaterThan(amountDetails.assetAmount, '0');
+    }
+    return false;
+  }, [
+    amountDetails.assetAmount,
+    amountDetails.isSufficientBalance,
+    amountDetails.nativeAmount,
+    isSufficientGas,
+    isValidAddress,
+  ]);
 
   const onLongPressSend = useCallback(() => {
     if (isIphoneX()) {
@@ -667,7 +680,7 @@ export default function SendSheet(props) {
             buttonRenderer={
               shouldShowConfirmSheet ? (
                 <SheetActionButton
-                  color={colors.appleBlue}
+                  color={!validL2Transaction ? colors.white : colors.appleBlue}
                   disabled={!validL2Transaction}
                   label="Next"
                   onPress={onPressSend}
