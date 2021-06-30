@@ -11,7 +11,7 @@ import { Column, Row } from '../components/layout';
 import { useNavigation } from '../navigation/Navigation';
 import { walletsSetSelected, walletsUpdate } from '../redux/wallets';
 import { deviceUtils } from '../utils';
-import { useWallets, useWebData } from '@rainbow-me/hooks';
+import { useDimensions, useWallets, useWebData } from '@rainbow-me/hooks';
 import useAccountSettings from '@rainbow-me/hooks/useAccountSettings';
 
 const AvatarCircleHeight = 65;
@@ -33,6 +33,7 @@ const SheetContainer = styled(Column)`
 
 const ScrollableColorPicker = styled.ScrollView`
   overflow: visible;
+  margin: 0px 10px;
 `;
 
 const SelectedColorRing = styled(Animated.View)`
@@ -58,6 +59,7 @@ const springTo = (node, toValue) =>
   }).start();
 
 const AvatarBuilder = ({ route: { params } }) => {
+  const { width } = useDimensions();
   const { wallets, selectedWallet } = useWallets();
   const { updateWebProfile } = useWebData();
   const [translateX] = useValues(params.initialAccountColor * 39);
@@ -136,7 +138,10 @@ const AvatarBuilder = ({ route: { params } }) => {
         >
           <ScrollableColorPicker
             contentOffset={{
-              x: params.initialAccountColor * 39,
+              x:
+                params.initialAccountColor * 39 -
+                width / 2 +
+                (width * 0.0063) ** 4, // curve to have selected color in middle of scrolling colorpicker
             }}
             horizontal
             showsHorizontalScrollIndicator={false}
