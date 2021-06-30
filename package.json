@@ -306,7 +306,8 @@
     "**/@hapi/hoek": "8.5.1",
     "**/glob-parent": "6.0.0",
     "**/merge-deep": "3.0.3",
-    "**/css-what": "5.0.1"
+    "**/css-what": "5.0.1",
+    "**/socket.io-parser": "4.0.2"
   },
   "jest": {
     "preset": "react-native",
