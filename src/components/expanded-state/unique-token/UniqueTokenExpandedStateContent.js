@@ -15,18 +15,17 @@ import {
 } from '@rainbow-me/hooks';
 import { margin, padding, position } from '@rainbow-me/styles';
 
-const paddingHorizontal = 19;
-
 const Container = styled(Centered)`
-  ${padding(0, paddingHorizontal)};
+  ${({ horizontalPadding }) => padding(0, horizontalPadding)};
   height: ${({ height }) => height};
   ${android ? `margin-bottom: 10;` : ``}
 `;
 
 const ImageWrapper = styled(Centered)`
-  ${({ isImageHuge }) => margin(isImageHuge ? paddingHorizontal : 0, 0)};
+  ${({ isImageHuge, horizontalPadding }) =>
+    margin(isImageHuge ? horizontalPadding : 0, 0)};
   ${position.size('100%')};
-  border-radius: 10;
+  border-radius: ${({ borderRadius }) => borderRadius || 10};
   overflow: hidden;
 `;
 
@@ -44,7 +43,13 @@ const LoadingWrapper = styled(View)`
   justify-content: flex-end;
 `;
 
-const UniqueTokenExpandedStateImage = ({ asset }) => {
+const UniqueTokenExpandedStateImage = ({
+  asset,
+  borderRadius,
+  height,
+  horizontalPadding = 19,
+  resizeMode = 'contain',
+}) => {
   const { width: deviceWidth } = useDimensions();
 
   const isSVG = isSupportedUriExtension(asset.image_url, ['.svg']);
@@ -56,7 +61,7 @@ const UniqueTokenExpandedStateImage = ({ asset }) => {
       asset.image_thumbnail_url;
   const { dimensions: imageDimensions } = useImageMetadata(imageUrl);
 
-  const maxImageWidth = deviceWidth - paddingHorizontal * 2;
+  const maxImageWidth = deviceWidth - horizontalPadding * 2;
   const maxImageHeight = maxImageWidth * 1.5;
 
   const heightForDeviceSize =
@@ -71,8 +76,15 @@ const UniqueTokenExpandedStateImage = ({ asset }) => {
   const [loading, setLoading] = React.useState(supports3d || supportsVideo);
 
   return (
-    <Container height={containerHeight}>
-      <ImageWrapper isImageHuge={heightForDeviceSize > maxImageHeight}>
+    <Container
+      height={height || containerHeight}
+      horizontalPadding={horizontalPadding}
+    >
+      <ImageWrapper
+        borderRadius={borderRadius}
+        horizontalPadding={horizontalPadding}
+        isImageHuge={heightForDeviceSize > maxImageHeight}
+      >
         <View style={StyleSheet.absoluteFill}>
           {supportsVideo ? (
             <SimpleVideo
@@ -96,7 +108,7 @@ const UniqueTokenExpandedStateImage = ({ asset }) => {
               backgroundColor={asset.background}
               imageUrl={imageUrl}
               item={asset}
-              resizeMode="contain"
+              resizeMode={resizeMode}
             />
           )}
           {!!loading && (

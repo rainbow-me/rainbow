@@ -3,8 +3,8 @@ import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components';
 import { OpacityToggler } from '../animations';
+import { UniqueTokenExpandedStateContent } from '../expanded-state/unique-token';
 import { Column } from '../layout';
-import { UniqueTokenCard } from '../unique-token';
 import { useDimensions, useImageMetadata } from '@rainbow-me/hooks';
 import { padding, position } from '@rainbow-me/styles';
 
@@ -21,6 +21,11 @@ const ButtonWrapper = styled(Column).attrs({
 
 const Footer = styled(Column).attrs({ justify: 'end' })`
   width: 100%;
+`;
+
+const NFTSizer = styled.View`
+  height: ${({ height }) => height};
+  width: ${({ width }) => width};
 `;
 
 const NFTWrapper = styled(Column).attrs({
@@ -47,19 +52,6 @@ const GradientToggler = styled(OpacityToggler).attrs({
   tension: 500,
 })`
   ${position.cover};
-`;
-
-const SendFormUniqueTokenCard = styled(UniqueTokenCard).attrs(
-  ({ theme: { colors } }) => ({
-    borderEnabled: false,
-    enableHapticFeedback: false,
-    resizeMode: 'cover',
-    scaleTo: 1,
-    shadow: [0, 5, 15, colors.shadow, 0.06],
-    smallENSName: false,
-  })
-)`
-  opacity: 1;
 `;
 
 export default function SendAssetFormCollectible({
@@ -127,12 +119,17 @@ export default function SendAssetFormCollectible({
       <Column align="end" flex={1} width="100%">
         <NFTWrapper onLayout={handleLayout}>
           {!!containerHeight && !!containerWidth && (
-            <SendFormUniqueTokenCard
-              {...props}
-              height={imageHeight}
-              item={asset}
-              width={imageWidth}
-            />
+            <NFTSizer height={imageHeight} width={imageWidth}>
+              <UniqueTokenExpandedStateContent
+                {...props}
+                asset={asset}
+                borderRadius={20}
+                height={imageHeight}
+                horizontalPadding={0}
+                resizeMode="cover"
+                width={imageWidth}
+              />
+            </NFTSizer>
           )}
         </NFTWrapper>
         <Footer>

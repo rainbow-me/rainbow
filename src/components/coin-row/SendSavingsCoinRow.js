@@ -1,6 +1,7 @@
 import React from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
-import { css } from 'styled-components';
+import LinearGradient from 'react-native-linear-gradient';
+import styled, { css } from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { deviceUtils } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
@@ -17,12 +18,33 @@ const selectedHeight = isTinyPhone ? 50 : isSmallPhone ? 64 : 70;
 const containerStyles = css`
   padding-bottom: 18;
   padding-left: 19;
-  padding-top: 6;
+  padding-top: 0;
 `;
 
 const containerSelectedStyles = css`
   ${isTinyPhone ? padding(10, 0, 0) : isSmallPhone ? padding(12) : padding(15)};
   height: ${selectedHeight};
+`;
+
+const NativeAmountBubble = styled(LinearGradient).attrs(
+  ({ theme: { colors } }) => ({
+    colors: colors.gradients.lighterGrey,
+    end: { x: 0.5, y: 1 },
+    start: { x: 0, y: 0 },
+  })
+)`
+  border-radius: 15;
+  height: 30;
+`;
+
+const NativeAmountBubbleText = styled(Text).attrs(({ theme: { colors } }) => ({
+  align: 'center',
+  color: colors.alpha(colors.blueGreyDark, 0.6),
+  letterSpacing: 'roundedTight',
+  size: 'lmedium',
+  weight: 'bold',
+}))`
+  ${padding(4.5, 10, 6.5)};
 `;
 
 const BottomRow = ({
@@ -45,9 +67,7 @@ const BottomRow = ({
       size="smedium"
       weight={selected ? 'bold' : 'regular'}
     >
-      {selected
-        ? `${balanceNativeValue} available`
-        : `${balanceDisplay} ≈ ${balanceNativeValue}`}
+      {selected ? `${balanceNativeValue} available` : `${balanceDisplay}`}
     </Text>
   );
 };
@@ -68,6 +88,7 @@ const TopRow = ({ item, name, selected }) => {
 };
 
 export default function SendSavingsCoinRow({
+  children,
   disablePressAnimation,
   item,
   onPress,
@@ -75,6 +96,12 @@ export default function SendSavingsCoinRow({
   testID,
   ...props
 }) {
+  const fiatValue = item?.native?.balance.display;
+  const chopCents =
+    fiatValue && fiatValue.split('.')[0].replace(/\D/g, '') > 100;
+  const fiatValueFormatted =
+    fiatValue && chopCents ? fiatValue.split('.')[0] : fiatValue;
+
   const Wrapper = disablePressAnimation
     ? TouchableWithoutFeedback
     : ButtonPressAnimation;
@@ -91,7 +118,17 @@ export default function SendSavingsCoinRow({
         selected={selected}
         testID={testID}
         topRowRender={TopRow}
-      />
+      >
+        {selected || !fiatValue ? (
+          children
+        ) : (
+          <NativeAmountBubble>
+            <NativeAmountBubbleText>
+              {fiatValueFormatted}
+            </NativeAmountBubbleText>
+          </NativeAmountBubble>
+        )}
+      </CoinRow>
     </Wrapper>
   );
 }

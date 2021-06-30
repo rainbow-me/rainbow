@@ -2,7 +2,8 @@ import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
-import { css } from 'styled-components';
+import LinearGradient from 'react-native-linear-gradient';
+import styled, { css } from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
 import { deviceUtils, magicMemo } from '../../utils';
@@ -27,6 +28,27 @@ const containerSelectedStyles = css`
   height: ${selectedHeight};
 `;
 
+const NativeAmountBubble = styled(LinearGradient).attrs(
+  ({ theme: { colors } }) => ({
+    colors: colors.gradients.lighterGrey,
+    end: { x: 0.5, y: 1 },
+    start: { x: 0, y: 0 },
+  })
+)`
+  border-radius: 15;
+  height: 30;
+`;
+
+const NativeAmountBubbleText = styled(Text).attrs(({ theme: { colors } }) => ({
+  align: 'center',
+  color: colors.alpha(colors.blueGreyDark, 0.6),
+  letterSpacing: 'roundedTight',
+  size: 'lmedium',
+  weight: 'bold',
+}))`
+  ${padding(4.5, 10, 6.5)};
+`;
+
 const BottomRow = ({ balance, native, nativeCurrencySymbol, selected }) => {
   const { colors } = useTheme();
   const fiatValue =
@@ -40,12 +62,11 @@ const BottomRow = ({ balance, native, nativeCurrencySymbol, selected }) => {
           : colors.alpha(colors.blueGreyDark, 0.5)
       }
       letterSpacing="roundedMedium"
+      numberOfLines={1}
       size="smedium"
       weight={selected ? 'bold' : 'regular'}
     >
-      {selected
-        ? `${fiatValue} available`
-        : `${get(balance, 'display')} ≈ ${fiatValue}`}
+      {selected ? `${fiatValue} available` : `${get(balance, 'display')}`}
     </Text>
   );
 };
@@ -67,14 +88,22 @@ const TopRow = ({ item, name, selected }) => {
 
 const SendCoinRow = magicMemo(
   ({
+    children,
     disablePressAnimation,
     item,
+    native,
     onPress,
     rowHeight,
     selected,
     testID,
     ...props
   }) => {
+    const fiatValue = get(native, 'balance.display');
+    const chopCents =
+      fiatValue && fiatValue.split('.')[0].replace(/\D/g, '') > 100;
+    const fiatValueFormatted =
+      fiatValue && chopCents ? fiatValue.split('.')[0] : fiatValue;
+
     const Wrapper = disablePressAnimation
       ? TouchableWithoutFeedback
       : ButtonPressAnimation;
@@ -91,7 +120,17 @@ const SendCoinRow = magicMemo(
           selected={selected}
           testID={testID}
           topRowRender={TopRow}
-        />
+        >
+          {selected || !fiatValue ? (
+            children
+          ) : (
+            <NativeAmountBubble>
+              <NativeAmountBubbleText>
+                {fiatValueFormatted}
+              </NativeAmountBubbleText>
+            </NativeAmountBubble>
+          )}
+        </CoinRow>
       </Wrapper>
     );
   },

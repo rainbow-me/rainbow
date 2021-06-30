@@ -12,6 +12,7 @@ import { magicMemo } from '../../utils';
 import { Centered } from '../layout';
 import { Monospace, Text } from '../text';
 import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
+import { useDimensions } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { fonts, fontWithWidth, position } from '@rainbow-me/styles';
 
@@ -33,11 +34,13 @@ const ImageTile = styled(ImgixImage)`
   justify-content: center;
 `;
 
-const ENSText = styled(Text).attrs(({ theme: { colors }, small }) => ({
-  color: colors.whiteLabel,
-  letterSpacing: 'roundedMedium',
-  size: small ? 'smedium' : 'bigger',
-}))`
+const ENSText = styled(Text).attrs(
+  ({ isTinyPhone, small, theme: { colors } }) => ({
+    color: colors.whiteLabel,
+    letterSpacing: 'roundedMedium',
+    size: small ? 'smedium' : isTinyPhone ? 'large' : 'bigger',
+  })
+)`
   padding: 8px;
   text-align: center;
   ${fontWithWidth(fonts.weight.heavy)};
@@ -50,6 +53,7 @@ const UniqueTokenImage = ({
   resizeMode = ImgixImage.resizeMode.cover,
   small,
 }) => {
+  const { isTinyPhone } = useDimensions();
   const isENS =
     toLower(item.asset_contract.address) === toLower(ENS_NFT_CONTRACT_ADDRESS);
   const isUNIv3 =
@@ -78,7 +82,11 @@ const UniqueTokenImage = ({
           source={{ uri: image }}
           style={position.coverAsObject}
         >
-          {isENS && <ENSText small={small}>{item.name}</ENSText>}
+          {isENS && (
+            <ENSText isTinyPhone={isTinyPhone} small={small}>
+              {item.name}
+            </ENSText>
+          )}
         </ImageTile>
       ) : (
         <Monospace
