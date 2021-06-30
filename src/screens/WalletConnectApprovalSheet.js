@@ -12,6 +12,7 @@ import { InteractionManager, View } from 'react-native';
 import styled from 'styled-components';
 import Divider from '../components/Divider';
 import { Alert } from '../components/alerts';
+import ButtonPressAnimation from '../components/animations/ButtonPressAnimation';
 import { RequestVendorLogoIcon } from '../components/coin-icon';
 import { ContactAvatar } from '../components/contacts';
 import ImageAvatar from '../components/contacts/ImageAvatar';
@@ -213,37 +214,41 @@ export default function WalletConnectApprovalSheet() {
       <SheetActionButtonRow>
         <Column>
           <NetworkLabelText>Wallet</NetworkLabelText>
-          <Row>
-            <AvatarWrapper>
-              {accountImage ? (
-                <ImageAvatar image={accountImage} size="smaller" />
-              ) : (
-                <ContactAvatar
-                  color={isNaN(accountColor) ? colors.skeleton : accountColor}
-                  size="smaller"
-                  value={accountSymbol}
-                />
-              )}
-            </AvatarWrapper>
-            <NetworkText numberOfLines={1}>
-              {accountENS || accountName}
-            </NetworkText>
-            <SwitchText>􀁰</SwitchText>
-          </Row>
+          <ButtonPressAnimation>
+            <Row>
+              <AvatarWrapper>
+                {accountImage ? (
+                  <ImageAvatar image={accountImage} size="smaller" />
+                ) : (
+                  <ContactAvatar
+                    color={isNaN(accountColor) ? colors.skeleton : accountColor}
+                    size="smaller"
+                    value={accountSymbol}
+                  />
+                )}
+              </AvatarWrapper>
+              <NetworkText numberOfLines={1}>
+                {accountENS || accountName}
+              </NetworkText>
+              <SwitchText>􀁰</SwitchText>
+            </Row>
+          </ButtonPressAnimation>
         </Column>
         <Column align="flex-end">
           <NetworkLabelText>Network</NetworkLabelText>
-          <Row>
-            <AvatarWrapper>
-              <ImageAvatar image={accountImage} size="smaller" />
-            </AvatarWrapper>
-            <NetworkText color={get(networkInfo[network], 'color')}>
-              {get(networkInfo[network], 'name')}
-            </NetworkText>
-            <SwitchText color={get(networkInfo[network], 'color')}>
-              􀁰
-            </SwitchText>
-          </Row>
+          <ButtonPressAnimation>
+            <Row>
+              <AvatarWrapper>
+                <ImageAvatar image={accountImage} size="smaller" />
+              </AvatarWrapper>
+              <NetworkText color={get(networkInfo[network], 'color')}>
+                {get(networkInfo[network], 'name')}
+              </NetworkText>
+              <SwitchText color={get(networkInfo[network], 'color')}>
+                􀁰
+              </SwitchText>
+            </Row>
+          </ButtonPressAnimation>
         </Column>
       </SheetActionButtonRow>
     </Sheet>
