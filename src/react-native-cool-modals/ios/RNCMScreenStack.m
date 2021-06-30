@@ -237,7 +237,7 @@
   UIViewController *changeRootController = _controller;
   
   // I noticed that sometimes makeOldClass was not called correctly
-  // Before traversing UIViewControllers I restores the previous class
+  // Before traversing UIViewControllers it restores the previous class
   UIViewController *someViewController = changeRootController.presentedViewController;
   while (someViewController != nil) {
     UIView *view = someViewController.view.superview.superview;
