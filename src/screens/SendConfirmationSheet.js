@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useRoute } from '@react-navigation/native';
 import { capitalize } from 'lodash';
 import React, { useCallback } from 'react';
@@ -10,18 +9,18 @@ import L2Explainer from '../components/L2Disclaimer';
 import Pill from '../components/Pill';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import { ButtonPressAnimation } from '../components/animations';
-import BiometricButtonContent from '../components/buttons/BiometricButtonContent';
 import { CoinIcon } from '../components/coin-icon';
 import { ContactAvatar } from '../components/contacts';
 import { Centered, Column, Row } from '../components/layout';
+import { SendButton } from '../components/send';
 import {
-  SheetActionButton,
   SheetActionButtonRow,
   SheetDivider,
   SheetTitle,
   SlackSheet,
 } from '../components/sheet';
 import { Text, TruncatedAddress } from '../components/text';
+import { isL2Network } from '@rainbow-me/handlers/web3';
 import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
 import {
   useAccountSettings,
@@ -43,16 +42,6 @@ const Container = styled(Centered).attrs({
 
 export const sheetHeight = android ? 600 - getSoftMenuBarHeight() : 594;
 
-const Label = styled(BiometricButtonContent).attrs(
-  ({ smallButton, theme: { colors } }) => ({
-    color: colors.whiteLabel,
-    size: smallButton ? 'large' : 'larger',
-    weight: 'heavy',
-  })
-)`
-  bottom: 2;
-`;
-
 const ChevronDown = () => {
   const { colors } = useTheme();
   return (
@@ -69,6 +58,7 @@ const ChevronDown = () => {
 
 const Checkbox = ({ id, checked, label, onPress, activeColor }) => {
   const { colors } = useTheme();
+
   const handlePress = useCallback(() => {
     onPress({ checked: !checked, id, label });
   }, [checked, id, label, onPress]);
@@ -100,18 +90,10 @@ export default function SendConfirmationSheet() {
   const { nativeCurrency } = useAccountSettings();
   const { goBack, navigate } = useNavigation();
   const { height: deviceHeight } = useDimensions();
+  const [isAuthorizing, setIsAuthorizing] = useState(false);
   const insets = useSafeArea();
   const {
-    params: {
-      asset,
-      amountDetails,
-      from,
-      to,
-      gasLimit,
-      gasPrice,
-      network,
-      callback,
-    },
+    params: { asset, amountDetails, callback, network, to },
   } = useRoute();
 
   const { colors } = useTheme();
@@ -151,12 +133,21 @@ export default function SendConfirmationSheet() {
     address: asset.mainnet_address || asset.address,
   });
 
-  const canSubmit =
-    checkboxes.filter(check => check.checked === false).length === 0;
+  const isL2 = isL2Network(network);
 
-  const handleSubmit = useCallback(() => {
+  const canSubmit =
+    !isL2 || checkboxes.filter(check => check.checked === false).length === 0;
+
+  const handleSubmit = useCallback(async () => {
     if (!canSubmit) return;
-    callback();
+    try {
+      setIsAuthorizing(true);
+      await callback();
+    } catch (e) {
+      logger.sentry('TX submit failed', e);
+    } finally {
+      setIsAuthorizing(false);
+    }
   }, [callback, canSubmit]);
 
   return (
@@ -238,13 +229,15 @@ export default function SendConfirmationSheet() {
           </Row>
         </Column>
         <SheetDivider />
-        <L2Explainer
-          assetType={asset.type}
-          colors={colors}
-          onPress={handleL2ExplainerPress}
-          sending
-          symbol={asset.symbol}
-        />
+        {isL2 && (
+          <L2Explainer
+            assetType={asset.type}
+            colors={colors}
+            onPress={handleL2ExplainerPress}
+            sending
+            symbol={asset.symbol}
+          />
+        )}
         <Column padding={24} paddingTop={19}>
           {checkboxes.map((check, i) => (
             <Checkbox
@@ -258,21 +251,13 @@ export default function SendConfirmationSheet() {
           ))}
         </Column>
         <SheetActionButtonRow>
-          <SheetActionButton
-            color={canSubmit ? color : colors.white}
-            fullWidth
-            onPress={handleSubmit}
-            size="big"
+          <SendButton
+            backgroundColor={color}
+            disabled={!canSubmit}
+            isAuthorizing={isAuthorizing}
+            onLongPress={handleSubmit}
             testID="send-confirmation-button"
-            textColor={
-              canSubmit
-                ? colors.whiteLabel
-                : colors.alpha(colors.blueGreyDark, 0.8)
-            }
-            weight="bold"
-          >
-            <Label label="Send" />
-          </SheetActionButton>
+          />
         </SheetActionButtonRow>
       </SlackSheet>
     </Container>
