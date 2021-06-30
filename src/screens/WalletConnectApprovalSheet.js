@@ -30,6 +30,7 @@ import {
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import { useAccountProfile, useAccountSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
+import Routes from '@rainbow-me/routes';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 const DappLogo = styled(RequestVendorLogoIcon).attrs(
@@ -87,6 +88,7 @@ export default function WalletConnectApprovalSheet() {
     accountName,
   } = useAccountProfile();
   const { network } = useAccountSettings();
+  const { navigate } = useNavigation();
 
   const checkIfScam = useCallback(
     async dappUrl => {
@@ -155,6 +157,10 @@ export default function WalletConnectApprovalSheet() {
     handleSuccess(false);
   }, [handleSuccess, goBack]);
 
+  const handlePressChangeWallet = useCallback(() => {
+    navigate(Routes.CHANGE_WALLET_SHEET);
+  }, [navigate]);
+
   useEffect(() => {
     if (scam) {
       handleCancel();
@@ -214,7 +220,7 @@ export default function WalletConnectApprovalSheet() {
       <SheetActionButtonRow>
         <Column>
           <NetworkLabelText>Wallet</NetworkLabelText>
-          <ButtonPressAnimation>
+          <ButtonPressAnimation onPress={handlePressChangeWallet}>
             <Row>
               <AvatarWrapper>
                 {accountImage ? (
