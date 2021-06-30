@@ -12,7 +12,9 @@ import styled from 'styled-components';
 import Divider from '../components/Divider';
 import { Alert } from '../components/alerts';
 import { RequestVendorLogoIcon } from '../components/coin-icon';
-import { Centered, Row } from '../components/layout';
+import { ContactAvatar } from '../components/contacts';
+import ImageAvatar from '../components/contacts/ImageAvatar';
+import { Centered, Column, Row } from '../components/layout';
 import {
   Sheet,
   SheetActionButton,
@@ -23,6 +25,7 @@ import {
   getDappHostname,
   isDappAuthenticated,
 } from '@rainbow-me/helpers/dappNameHandler';
+import { useAccountProfile } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { ethereumUtils } from '@rainbow-me/utils';
 
@@ -45,6 +48,17 @@ const NetworkLabelText = styled(Text).attrs(({ theme: { colors } }) => ({
   margin-bottom: 4;
 `;
 
+const NetworkText = styled(Text).attrs(({ theme: { colors } }) => ({
+  color: colors.black,
+  lineHeight: 20,
+  size: 'large',
+  weight: 'heavy',
+}))``;
+
+const AccountAvatarWrapper = styled(View).attrs(() => ({
+  marginRight: 5,
+}))``;
+
 export default function WalletConnectApprovalSheet() {
   const { colors } = useTheme();
   const { goBack } = useNavigation();
@@ -54,6 +68,14 @@ export default function WalletConnectApprovalSheet() {
   const meta = params?.meta || {};
   const { dappName, dappUrl, imageUrl } = meta;
   const callback = params?.callback;
+
+  const {
+    accountSymbol,
+    accountColor,
+    accountImage,
+    accountENS,
+    accountName,
+  } = useAccountProfile();
 
   const checkIfScam = useCallback(
     async dappUrl => {
@@ -179,28 +201,29 @@ export default function WalletConnectApprovalSheet() {
         />
       </SheetActionButtonRow>
       <SheetActionButtonRow>
-        <View style={{ flexDirection: 'column' }}>
+        <Column>
           <NetworkLabelText>Wallet</NetworkLabelText>
-          <SheetActionButton
-            color={colors.white}
-            label="Cancel"
-            onPress={handleCancel}
-            size="big"
-            textColor={colors.alpha(colors.blueGreyDark, 0.8)}
-            weight="bold"
-          />
-        </View>
-        <View style={{ flexDirection: 'column' }}>
+          <Row>
+            <AccountAvatarWrapper>
+              {accountImage ? (
+                <ImageAvatar image={accountImage} size="smaller" />
+              ) : (
+                <ContactAvatar
+                  color={isNaN(accountColor) ? colors.skeleton : accountColor}
+                  size="smaller"
+                  value={accountSymbol}
+                />
+              )}
+            </AccountAvatarWrapper>
+            <NetworkText numberOfLines={1}>
+              {accountENS || accountName}
+            </NetworkText>
+          </Row>
+        </Column>
+        <Column>
           <NetworkLabelText align="right">Network</NetworkLabelText>
-          <SheetActionButton
-            color={colors.appleBlue}
-            label="Connect"
-            onPress={handleConnect}
-            size="big"
-            testID="wc-connect"
-            weight="bold"
-          />
-        </View>
+          <NetworkText align="right">Mainnet</NetworkText>
+        </Column>
       </SheetActionButtonRow>
     </Sheet>
   );
