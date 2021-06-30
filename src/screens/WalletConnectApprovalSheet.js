@@ -1,5 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
+import { get } from 'lodash';
 import React, {
   useCallback,
   useEffect,
@@ -25,7 +26,8 @@ import {
   getDappHostname,
   isDappAuthenticated,
 } from '@rainbow-me/helpers/dappNameHandler';
-import { useAccountProfile } from '@rainbow-me/hooks';
+import networkInfo from '@rainbow-me/helpers/networkInfo';
+import { useAccountProfile, useAccountSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { ethereumUtils } from '@rainbow-me/utils';
 
@@ -48,8 +50,7 @@ const NetworkLabelText = styled(Text).attrs(({ theme: { colors } }) => ({
   margin-bottom: 4;
 `;
 
-const NetworkText = styled(Text).attrs(({ theme: { colors } }) => ({
-  color: colors.black,
+const NetworkText = styled(Text).attrs(() => ({
   lineHeight: 20,
   size: 'large',
   weight: 'heavy',
@@ -76,6 +77,7 @@ export default function WalletConnectApprovalSheet() {
     accountENS,
     accountName,
   } = useAccountProfile();
+  const { network } = useAccountSettings();
 
   const checkIfScam = useCallback(
     async dappUrl => {
@@ -222,7 +224,9 @@ export default function WalletConnectApprovalSheet() {
         </Column>
         <Column>
           <NetworkLabelText align="right">Network</NetworkLabelText>
-          <NetworkText align="right">Mainnet</NetworkText>
+          <NetworkText align="right" color={get(networkInfo[network], 'color')}>
+            {get(networkInfo[network], 'name')}
+          </NetworkText>
         </Column>
       </SheetActionButtonRow>
     </Sheet>
