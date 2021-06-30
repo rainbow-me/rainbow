@@ -58,7 +58,7 @@ const UniqueTokenExpandedStateHeader = ({ asset }) => {
           title: `Share ${buildUniqueTokenName(asset)} Info`,
           url: buildRainbowUrl(asset),
         });
-      } else if (buttonIndex === 2) {
+      } else if (buttonIndex === 1) {
         // View on OpenSea
         Linking.openURL(asset.permalink);
       }
