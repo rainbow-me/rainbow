@@ -56,7 +56,7 @@ const NetworkText = styled(Text).attrs(() => ({
   weight: 'heavy',
 }))``;
 
-const AccountAvatarWrapper = styled(View).attrs(() => ({
+const AvatarWrapper = styled(View).attrs(() => ({
   marginRight: 5,
 }))``;
 
@@ -206,7 +206,7 @@ export default function WalletConnectApprovalSheet() {
         <Column>
           <NetworkLabelText>Wallet</NetworkLabelText>
           <Row>
-            <AccountAvatarWrapper>
+            <AvatarWrapper>
               {accountImage ? (
                 <ImageAvatar image={accountImage} size="smaller" />
               ) : (
@@ -216,17 +216,22 @@ export default function WalletConnectApprovalSheet() {
                   value={accountSymbol}
                 />
               )}
-            </AccountAvatarWrapper>
+            </AvatarWrapper>
             <NetworkText numberOfLines={1}>
               {accountENS || accountName}
             </NetworkText>
           </Row>
         </Column>
-        <Column>
-          <NetworkLabelText align="right">Network</NetworkLabelText>
-          <NetworkText align="right" color={get(networkInfo[network], 'color')}>
-            {get(networkInfo[network], 'name')}
-          </NetworkText>
+        <Column align="flex-end">
+          <NetworkLabelText>Network</NetworkLabelText>
+          <Row>
+            <AvatarWrapper>
+              <ImageAvatar image={accountImage} size="smaller" />
+            </AvatarWrapper>
+            <NetworkText color={get(networkInfo[network], 'color')}>
+              {get(networkInfo[network], 'name')}
+            </NetworkText>
+          </Row>
         </Column>
       </SheetActionButtonRow>
     </Sheet>
