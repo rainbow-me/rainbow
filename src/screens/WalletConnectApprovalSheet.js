@@ -51,14 +51,22 @@ const NetworkLabelText = styled(Text).attrs(({ theme: { colors } }) => ({
 `;
 
 const NetworkText = styled(Text).attrs(() => ({
-  lineHeight: 20,
+  lineHeight: 22,
   size: 'large',
   weight: 'heavy',
 }))``;
 
-const AvatarWrapper = styled(View).attrs(() => ({
-  marginRight: 5,
-}))``;
+const AvatarWrapper = styled(View).attrs(() => ({}))`
+  margin-right: 5;
+`;
+
+const SwitchText = styled(Text).attrs(() => ({
+  fontSize: 18,
+  lineHeight: 22,
+  weight: 'heavy',
+}))`
+  margin-left: 5;
+`;
 
 export default function WalletConnectApprovalSheet() {
   const { colors } = useTheme();
@@ -220,6 +228,7 @@ export default function WalletConnectApprovalSheet() {
             <NetworkText numberOfLines={1}>
               {accountENS || accountName}
             </NetworkText>
+            <SwitchText>􀁰</SwitchText>
           </Row>
         </Column>
         <Column align="flex-end">
@@ -231,6 +240,9 @@ export default function WalletConnectApprovalSheet() {
             <NetworkText color={get(networkInfo[network], 'color')}>
               {get(networkInfo[network], 'name')}
             </NetworkText>
+            <SwitchText color={get(networkInfo[network], 'color')}>
+              􀁰
+            </SwitchText>
           </Row>
         </Column>
       </SheetActionButtonRow>
