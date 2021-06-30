@@ -35,6 +35,17 @@ const ScrollableColorPicker = styled.ScrollView`
   overflow: visible;
 `;
 
+const SelectedColorRing = styled(Animated.View)`
+  height: 38;
+  width: 38;
+  border-radius: 19;
+  border-width: 3;
+  position: absolute;
+  align-self: center;
+  left: 0.75;
+  border-color: ${({ selectedColor }) => selectedColor};
+`;
+
 const springTo = (node, toValue) =>
   Animated.spring(node, {
     damping: 38,
@@ -130,18 +141,11 @@ const AvatarBuilder = ({ route: { params } }) => {
             horizontal
             showsHorizontalScrollIndicator={false}
           >
-            <Animated.View
-              alignSelf="center"
-              borderColor={currentAccountColor}
-              borderRadius={19}
-              borderWidth={3}
-              height={38}
-              left={0.75}
-              position="absolute"
+            <SelectedColorRing
+              selectedColor={currentAccountColor}
               style={{
                 transform: [{ translateX }],
               }}
-              width={38}
             />
             {avatarColors}
           </ScrollableColorPicker>
