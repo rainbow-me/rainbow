@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { InteractionManager } from 'react-native';
+import { InteractionManager, View } from 'react-native';
 import styled from 'styled-components';
 import Divider from '../components/Divider';
 import { Alert } from '../components/alerts';
@@ -35,6 +35,14 @@ const DappLogo = styled(RequestVendorLogoIcon).attrs(
   })
 )`
   margin-bottom: 24;
+`;
+
+const NetworkLabelText = styled(Text).attrs(({ theme: { colors } }) => ({
+  color: colors.blueGreyDark,
+  lineHeight: 17,
+  size: 'lmedium',
+}))`
+  margin-bottom: 4;
 `;
 
 export default function WalletConnectApprovalSheet() {
@@ -169,6 +177,30 @@ export default function WalletConnectApprovalSheet() {
           testID="wc-connect"
           weight="bold"
         />
+      </SheetActionButtonRow>
+      <SheetActionButtonRow>
+        <View style={{ flexDirection: 'column' }}>
+          <NetworkLabelText>Wallet</NetworkLabelText>
+          <SheetActionButton
+            color={colors.white}
+            label="Cancel"
+            onPress={handleCancel}
+            size="big"
+            textColor={colors.alpha(colors.blueGreyDark, 0.8)}
+            weight="bold"
+          />
+        </View>
+        <View style={{ flexDirection: 'column' }}>
+          <NetworkLabelText align="right">Network</NetworkLabelText>
+          <SheetActionButton
+            color={colors.appleBlue}
+            label="Connect"
+            onPress={handleConnect}
+            size="big"
+            testID="wc-connect"
+            weight="bold"
+          />
+        </View>
       </SheetActionButtonRow>
     </Sheet>
   );
