@@ -31,7 +31,7 @@ const Content = styled(Centered)`
   ${({ size }) => position.size(size)};
 `;
 
-export default function L2Logo({ assetType, size = 40, ...props }) {
+export default function ChainLogo({ assetType, size = 40, ...props }) {
   const { colors, isDarkMode } = useTheme();
   const source = useMemo(() => {
     let val = null;

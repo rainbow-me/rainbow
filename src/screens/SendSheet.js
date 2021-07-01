@@ -13,11 +13,11 @@ import { Column } from '../components/layout';
 import {
   SendAssetForm,
   SendAssetList,
-  SendButton,
   SendContactList,
   SendHeader,
   SendTransactionSpeed,
 } from '../components/send';
+import { SheetActionButton } from '../components/sheet';
 import { AssetType, AssetTypes } from '@rainbow-me/entities';
 import { isNativeAsset } from '@rainbow-me/handlers/assets';
 import {
@@ -34,7 +34,6 @@ import {
   useAccountSettings,
   useCoinListEditOptions,
   useContacts,
-  useDimensions,
   useGas,
   useMagicAutofocus,
   useMaxInputBalance,
@@ -87,7 +86,6 @@ const KeyboardSizeView = styled(KeyboardArea)`
 
 export default function SendSheet(props) {
   const dispatch = useDispatch();
-  const { isTinyPhone } = useDimensions();
   const { navigate, addListener } = useNavigation();
   const { dataAddNewTransaction } = useTransactionConfirmation();
   const updateAssetOnchainBalanceIfNeeded = useUpdateAssetOnchainBalance();
@@ -153,7 +151,6 @@ export default function SendSheet(props) {
   const [currentNetwork, setCurrentNetwork] = useState();
   const prevNetwork = usePrevious(currentNetwork);
   const [currentInput, setCurrentInput] = useState('');
-  const [isAuthorizing, setIsAuthorizing] = useState(false);
   const [isValidAddress, setIsValidAddress] = useState(false);
   const [recipient, setRecipient] = useState('');
   const [selected, setSelected] = useState({});
@@ -365,11 +362,10 @@ export default function SendSheet(props) {
   const onSubmit = useCallback(async () => {
     const validTransaction =
       isValidAddress && amountDetails.isSufficientBalance && isSufficientGas;
-    if (!selectedGasPrice.txFee || !validTransaction || isAuthorizing) {
+    if (!selectedGasPrice.txFee || !validTransaction) {
       logger.sentry('preventing tx submit for one of the following reasons:');
       logger.sentry('selectedGasPrice.txFee ? ', selectedGasPrice?.txFee);
       logger.sentry('validTransaction ? ', validTransaction);
-      logger.sentry('isAuthorizing ? ', isAuthorizing);
       captureEvent('Preventing tx submit');
       return false;
     }
@@ -433,8 +429,6 @@ export default function SendSheet(props) {
       logger.sentry(error);
       captureException(error);
       submitSuccess = false;
-    } finally {
-      setIsAuthorizing(false);
     }
     return submitSuccess;
   }, [
@@ -446,36 +440,30 @@ export default function SendSheet(props) {
     dataAddNewTransaction,
     dispatch,
     gasLimit,
-    isAuthorizing,
     isSufficientGas,
     isValidAddress,
     recipient,
     selected,
     selectedGasPrice.txFee,
-    selectedGasPrice?.value?.amount,
+    selectedGasPrice.value?.amount,
     updateTxFee,
   ]);
 
   const submitTransaction = useCallback(async () => {
-    setIsAuthorizing(true);
     if (Number(amountDetails.assetAmount) <= 0) {
       logger.sentry('amountDetails.assetAmount ? ', amountDetails?.assetAmount);
       captureEvent('Preventing tx submit due to amount <= 0');
       return false;
     }
 
-    try {
-      const submitSuccessful = await onSubmit();
-      analytics.track('Sent transaction', {
-        assetName: selected?.name || '',
-        assetType: selected?.type || '',
-        isRecepientENS: toLower(recipient.slice(-4)) === '.eth',
-      });
-      if (submitSuccessful) {
-        navigate(Routes.PROFILE_SCREEN);
-      }
-    } catch (error) {
-      setIsAuthorizing(false);
+    const submitSuccessful = await onSubmit();
+    analytics.track('Sent transaction', {
+      assetName: selected?.name || '',
+      assetType: selected?.type || '',
+      isRecepientENS: toLower(recipient.slice(-4)) === '.eth',
+    });
+    if (submitSuccessful) {
+      navigate(Routes.PROFILE_SCREEN);
     }
   }, [amountDetails.assetAmount, navigate, onSubmit, recipient, selected]);
 
@@ -493,13 +481,39 @@ export default function SendSheet(props) {
     [gasPrices, txFees, updateGasPriceOption, currentNetwork]
   );
 
-  const onLongPressSend = useCallback(() => {
+  const showConfirmationSheet = useCallback(() => {
+    Keyboard.dismiss();
+    navigate(Routes.SEND_CONFIRMATION_SHEET, {
+      amountDetails: amountDetails,
+      asset: selected,
+      callback: submitTransaction,
+      from: accountAddress,
+      gasLimit: gasLimit,
+      gasPrice: selectedGasPrice.value?.amount,
+      isSufficientGas,
+      network: currentNetwork,
+      to: recipient,
+    });
+  }, [
+    accountAddress,
+    amountDetails,
+    currentNetwork,
+    gasLimit,
+    isSufficientGas,
+    navigate,
+    recipient,
+    selected,
+    selectedGasPrice.value?.amount,
+    submitTransaction,
+  ]);
+
+  const onPressSend = useCallback(() => {
     if (isIphoneX()) {
-      submitTransaction();
+      showConfirmationSheet();
     } else {
-      onPressTransactionSpeed(submitTransaction);
+      onPressTransactionSpeed(showConfirmationSheet);
     }
-  }, [onPressTransactionSpeed, submitTransaction]);
+  }, [onPressTransactionSpeed, showConfirmationSheet]);
 
   const onResetAssetSelection = useCallback(() => {
     analytics.track('Reset asset selection in Send flow');
@@ -579,6 +593,38 @@ export default function SendSheet(props) {
     updateTxFee,
   ]);
 
+  const { colors } = useTheme();
+
+  const { buttonDisabled, buttonLabel } = useMemo(() => {
+    const isZeroAssetAmount = Number(amountDetails.assetAmount) <= 0;
+
+    let disabled = true;
+    let label = 'Enter an Amount';
+
+    let nativeToken = 'ETH';
+    if (network === networkTypes.polygon) {
+      nativeToken = 'MATIC';
+    }
+
+    if (!isZeroAssetAmount && !isSufficientGas) {
+      disabled = true;
+      label = `Insufficient ${nativeToken}`;
+    } else if (!isZeroAssetAmount && !amountDetails.isSufficientBalance) {
+      disabled = true;
+      label = 'Insufficient Funds';
+    } else if (!isZeroAssetAmount) {
+      disabled = false;
+      label = '􀕹 Review';
+    }
+
+    return { buttonDisabled: disabled, buttonLabel: label };
+  }, [
+    amountDetails.assetAmount,
+    amountDetails.isSufficientBalance,
+    isSufficientGas,
+    network,
+  ]);
+
   return (
     <Container>
       {ios && <StatusBar barStyle="light-content" />}
@@ -624,16 +670,14 @@ export default function SendSheet(props) {
             allAssets={allAssets}
             assetAmount={amountDetails.assetAmount}
             buttonRenderer={
-              <SendButton
-                {...props}
-                assetAmount={amountDetails.assetAmount}
-                isAuthorizing={isAuthorizing}
-                isSufficientBalance={amountDetails.isSufficientBalance}
-                isSufficientGas={isSufficientGas}
-                network={currentNetwork}
-                onLongPress={onLongPressSend}
-                smallButton={isTinyPhone}
+              <SheetActionButton
+                color={buttonDisabled ? colors.white : colors.appleBlue}
+                disabled={buttonDisabled}
+                label={buttonLabel}
+                onPress={onPressSend}
+                size="big"
                 testID="send-sheet-confirm"
+                weight="bold"
               />
             }
             nativeAmount={amountDetails.nativeAmount}
