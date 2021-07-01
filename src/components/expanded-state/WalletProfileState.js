@@ -20,12 +20,7 @@ import { useAccountProfile } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { margin, padding, position } from '@rainbow-me/styles';
-import { abbreviations } from '@rainbow-me/utils';
-import {
-  addressHashedColorIndex,
-  addressHashedEmoji,
-  colorHexToIndex,
-} from '@rainbow-me/utils/defaultProfileUtils';
+import { abbreviations, defaultProfileUtils } from '@rainbow-me/utils';
 const WalletProfileAddressText = styled(TruncatedAddress).attrs(
   ({ theme: { colors } }) => ({
     align: 'center',
@@ -83,8 +78,9 @@ export default function WalletProfileState({
 }) {
   const nameEmoji =
     isNewProfile && !forceColor
-      ? addressHashedEmoji(address)
-      : returnStringFirstEmoji(profile?.name) || addressHashedEmoji(address);
+      ? defaultProfileUtils.addressHashedEmoji(address)
+      : returnStringFirstEmoji(profile?.name) ||
+        defaultProfileUtils.addressHashedEmoji(address);
 
   const { goBack, navigate } = useNavigation();
   const { accountImage } = useAccountProfile();
@@ -95,7 +91,7 @@ export default function WalletProfileState({
   const color = forceColor
     ? forceColor
     : isNewProfile && address
-    ? addressHashedColorIndex(address)
+    ? defaultProfileUtils.addressHashedColorIndex(address)
     : profile.color !== null
     ? profile.color
     : isNewProfile
@@ -115,7 +111,10 @@ export default function WalletProfileState({
 
   const handleSubmit = useCallback(() => {
     onCloseModal({
-      color: typeof color === 'string' ? colorHexToIndex(color) : color,
+      color:
+        typeof color === 'string'
+          ? defaultProfileUtils.colorHexToIndex(color)
+          : color,
       name: nameEmoji ? `${nameEmoji} ${value}` : value,
     });
     goBack();

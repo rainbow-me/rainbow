@@ -18,13 +18,8 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { padding } from '@rainbow-me/styles';
-import colors from '@rainbow-me/styles/colors';
-import { abbreviations } from '@rainbow-me/utils';
-import {
-  emojiColorIndexes,
-  popularEmojis,
-} from '@rainbow-me/utils/defaultProfileUtils';
+import { colors, padding } from '@rainbow-me/styles';
+import { abbreviations, defaultProfileUtils } from '@rainbow-me/utils';
 
 export const ShowcaseContext = createContext();
 
@@ -73,7 +68,9 @@ const ENSAddress = styled(Text).attrs(({ theme: { colors } }) => ({
   width: 100%;
 `;
 
-const avatarColor = emojiColorIndexes.map(idx => colors.avatarBackgrounds[idx]);
+const avatarColor = defaultProfileUtils.emojiColorIndexes.map(
+  idx => colors.avatarBackgrounds[idx]
+);
 
 function hashCode(text) {
   let hash = 0,
@@ -104,7 +101,7 @@ export function Header() {
     if (emojiFromContext) {
       return emojiFromContext;
     }
-    return popularEmojis[hash];
+    return defaultProfileUtils.popularEmojis[hash];
   }, [contextValue?.data?.profile?.accountSymbol, hash]);
 
   const color = useMemo(() => {

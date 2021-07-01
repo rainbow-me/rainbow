@@ -96,10 +96,6 @@ export function addressHashedEmoji(address: string) {
   return popularEmojis[index];
 }
 
-export function isEthAddress(address: string | null) {
-  return address?.match(/^(0x)?[0-9a-fA-F]{40}$/);
-}
-
 export function colorHexToIndex(colorHex: string | null) {
   if (!colorHex) return 0;
   if (colors.avatarBackgrounds.includes(colorHex)) {
@@ -109,3 +105,21 @@ export function colorHexToIndex(colorHex: string | null) {
   }
   return 0;
 }
+
+export function isEthAddress(address: string | null) {
+  return address?.match(/^(0x)?[0-9a-fA-F]{40}$/);
+}
+
+export default {
+  avatars,
+  addressHashedIndex,
+  addressHashedColorIndex,
+  addressHashedEmoji,
+  colorHexToIndex,
+  emojiColorIndexes,
+  emojiCount,
+  getOldAvatarColorToAvatarBackgroundIndex,
+  hashCode,
+  popularEmojis,
+  isEthAddress,
+};

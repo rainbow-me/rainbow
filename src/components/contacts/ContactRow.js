@@ -46,7 +46,7 @@ const ContactName = styled(TruncatedText).attrs({
 const ContactRow = ({ address, color, nickname, ...props }, ref) => {
   const { width: deviceWidth } = useDimensions();
   const { colors } = useTheme();
-  const { accountType, image, label, balance, ens, onPress } = props;
+  const { accountType, balance, ens, image, label, onPress } = props;
   let cleanedUpBalance = balance;
   if (balance === '0.00') {
     cleanedUpBalance = '0';

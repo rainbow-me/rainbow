@@ -2,8 +2,6 @@ import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useTheme } from '../../context/ThemeContext';
-import { deviceUtils } from '../../utils';
-import { addressHashedEmoji } from '../../utils/defaultProfileUtils';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText } from '../coin-row';
 import CoinCheckButton from '../coin-row/CoinCheckButton';
@@ -17,6 +15,7 @@ import {
   returnStringFirstEmoji,
 } from '@rainbow-me/helpers/emojiHandler';
 import { fonts, getFontSize } from '@rainbow-me/styles';
+import { defaultProfileUtils, deviceUtils } from '@rainbow-me/utils';
 
 const maxAccountLabelWidth = deviceUtils.dimensions.width - 88;
 const NOOP = () => undefined;
@@ -155,7 +154,7 @@ export default function AddressRow({ data, editMode, onPress, onEditWallet }) {
                 size="medium"
                 value={
                   returnStringFirstEmoji(label) ||
-                  addressHashedEmoji(address) ||
+                  defaultProfileUtils.addressHashedEmoji(address) ||
                   label ||
                   ens
                 }
