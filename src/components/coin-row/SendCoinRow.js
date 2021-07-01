@@ -1,5 +1,4 @@
-import { get } from 'lodash';
-import PropTypes from 'prop-types';
+import { concat } from 'lodash';
 import React from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -49,10 +48,15 @@ const NativeAmountBubbleText = styled(Text).attrs(({ theme: { colors } }) => ({
   ${padding(4.5, 10, 6.5)};
 `;
 
-const BottomRow = ({ balance, native, nativeCurrencySymbol, selected }) => {
+const BottomRow = ({
+  balance,
+  native,
+  nativeCurrencySymbol,
+  selected,
+  showNativeValue,
+}) => {
   const { colors } = useTheme();
-  const fiatValue =
-    get(native, 'balance.display') || `${nativeCurrencySymbol}0.00`;
+  const fiatValue = native?.balance?.display ?? `${nativeCurrencySymbol}0.00`;
 
   return (
     <Text
@@ -66,7 +70,7 @@ const BottomRow = ({ balance, native, nativeCurrencySymbol, selected }) => {
       size="smedium"
       weight={selected ? 'bold' : 'regular'}
     >
-      {selected ? `${fiatValue} available` : `${get(balance, 'display')}`}
+      {showNativeValue ? `${fiatValue} available` : `${balance?.display}`}
     </Text>
   );
 };
@@ -86,6 +90,11 @@ const TopRow = ({ item, name, selected }) => {
   );
 };
 
+const buildSendCoinRowIdentifier = props => {
+  const uniqueId = buildAssetUniqueIdentifier(props.item);
+  return concat(uniqueId, !!props?.showNativeValue);
+};
+
 const SendCoinRow = magicMemo(
   ({
     children,
@@ -95,10 +104,11 @@ const SendCoinRow = magicMemo(
     onPress,
     rowHeight,
     selected,
+    showNativeValue,
     testID,
     ...props
   }) => {
-    const fiatValue = get(native, 'balance.display');
+    const fiatValue = native?.balance?.display;
     const chopCents =
       fiatValue && fiatValue.split('.')[0].replace(/\D/g, '') > 100;
     const fiatValueFormatted =
@@ -118,6 +128,7 @@ const SendCoinRow = magicMemo(
           isHidden={false}
           item={item}
           selected={selected}
+          showNativeValue={showNativeValue}
           testID={testID}
           topRowRender={TopRow}
         >
@@ -134,19 +145,11 @@ const SendCoinRow = magicMemo(
       </Wrapper>
     );
   },
-  ['item', 'selected'],
-  buildAssetUniqueIdentifier
+  ['item', 'selected', 'showNativeValue'],
+  buildSendCoinRowIdentifier
 );
 
 SendCoinRow.displayName = 'SendCoinRow';
-
-SendCoinRow.propTypes = {
-  item: PropTypes.object,
-  onPress: PropTypes.func,
-  rowHeight: PropTypes.number,
-  selected: PropTypes.bool,
-};
-
 SendCoinRow.selectedHeight = selectedHeight;
 
 export default SendCoinRow;

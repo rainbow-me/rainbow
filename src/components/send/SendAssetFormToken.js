@@ -41,7 +41,8 @@ export default function SendAssetFormToken({
   nativeCurrency,
   onChangeAssetAmount,
   onChangeNativeAmount,
-  onFocus,
+  onFocusAssetInput,
+  onFocusNativeInput,
   selected,
   sendMaxBalance,
   txSpeedRenderer,
@@ -67,7 +68,7 @@ export default function SendAssetFormToken({
           format={removeLeadingZeros}
           label={selected.symbol}
           onChange={onChangeAssetAmount}
-          onFocus={onFocus}
+          onFocus={onFocusAssetInput}
           onPressButton={sendMaxBalance}
           placeholder="0"
           testID="selected-asset-field"
@@ -81,7 +82,7 @@ export default function SendAssetFormToken({
           mask={nativeMask}
           maxLabelColor={colors.alpha(colors.blueGreyDark, 0.6)}
           onChange={onChangeNativeAmount}
-          onFocus={onFocus}
+          onFocus={onFocusNativeInput}
           onPressButton={sendMaxBalance}
           placeholder={nativePlaceholder}
           testID="selected-asset-quantity-field"

@@ -54,7 +54,6 @@ export default function SendHeader({
   hideDivider,
   isValidAddress,
   onChangeAddressInput,
-  onFocus,
   onPressPaste,
   onRefocusInput,
   recipient,
@@ -160,7 +159,6 @@ export default function SendHeader({
           autoFocus={!showAssetList}
           name={name}
           onChange={onChangeAddressInput}
-          onFocus={onFocus}
           ref={recipientFieldRef}
           testID="send-asset-form-field"
         />

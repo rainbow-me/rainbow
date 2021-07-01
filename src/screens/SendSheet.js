@@ -152,7 +152,7 @@ export default function SendSheet(props) {
 
   const isNft = selected?.type === AssetTypes.nft;
 
-  const { handleFocus, triggerFocus } = useMagicAutofocus(recipientFieldRef);
+  const { triggerFocus } = useMagicAutofocus(recipientFieldRef);
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => startPollingGasPrices());
@@ -467,7 +467,6 @@ export default function SendSheet(props) {
           hideDivider={showAssetForm}
           isValidAddress={isValidAddress}
           onChangeAddressInput={onChangeInput}
-          onFocus={handleFocus}
           onPressPaste={setRecipient}
           onRefocusInput={triggerFocus}
           recipient={recipient}
@@ -522,7 +521,6 @@ export default function SendSheet(props) {
             nativeCurrency={nativeCurrency}
             onChangeAssetAmount={onChangeAssetAmount}
             onChangeNativeAmount={onChangeNativeAmount}
-            onFocus={handleFocus}
             onResetAssetSelection={onResetAssetSelection}
             selected={selected}
             sendMaxBalance={sendMaxBalance}

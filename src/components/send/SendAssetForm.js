@@ -56,7 +56,6 @@ export default function SendAssetForm({
   nativeCurrency,
   onChangeAssetAmount,
   onChangeNativeAmount,
-  onFocus,
   onResetAssetSelection,
   selected,
   sendMaxBalance,
@@ -64,6 +63,7 @@ export default function SendAssetForm({
   ...props
 }) {
   const { isTinyPhone, width: deviceWidth } = useDimensions();
+  const [showNativeValue, setShowNativeValue] = useState(true);
 
   const selectedAsset = useAsset(selected);
 
@@ -75,6 +75,14 @@ export default function SendAssetForm({
     : isSavings
     ? SendSavingsCoinRow
     : SendCoinRow;
+
+  const onFocusAssetInput = useCallback(() => {
+    setShowNativeValue(false);
+  }, []);
+
+  const onFocusNativeInput = useCallback(() => {
+    setShowNativeValue(true);
+  }, []);
 
   const { colors } = useTheme();
 
@@ -101,6 +109,7 @@ export default function SendAssetForm({
             disablePressAnimation
             item={selectedAsset}
             selected
+            showNativeValue={showNativeValue}
             testID="send-asset-form"
           >
             <Text
@@ -132,7 +141,8 @@ export default function SendAssetForm({
               nativeCurrency={nativeCurrency}
               onChangeAssetAmount={onChangeAssetAmount}
               onChangeNativeAmount={onChangeNativeAmount}
-              onFocus={onFocus}
+              onFocusAssetInput={onFocusAssetInput}
+              onFocusNativeInput={onFocusNativeInput}
               selected={selectedAsset}
               sendMaxBalance={sendMaxBalance}
               txSpeedRenderer={txSpeedRenderer}

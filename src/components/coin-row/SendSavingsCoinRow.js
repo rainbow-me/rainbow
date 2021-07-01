@@ -53,6 +53,7 @@ const BottomRow = ({
     balance: { display: balanceNativeValue },
   },
   selected,
+  showNativeValue,
 }) => {
   const { colors } = useTheme();
 
@@ -67,7 +68,9 @@ const BottomRow = ({
       size="smedium"
       weight={selected ? 'bold' : 'regular'}
     >
-      {selected ? `${balanceNativeValue} available` : `${balanceDisplay}`}
+      {showNativeValue
+        ? `${balanceNativeValue} available`
+        : `${balanceDisplay}`}
     </Text>
   );
 };
