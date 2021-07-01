@@ -9,6 +9,7 @@ import React, {
   useState,
 } from 'react';
 import { InteractionManager, View } from 'react-native';
+import { ContextMenuButton } from 'react-native-ios-context-menu';
 import styled from 'styled-components';
 import Divider from '../components/Divider';
 import { Alert } from '../components/alerts';
@@ -69,6 +70,9 @@ const SwitchText = styled(Text).attrs(() => ({
 }))`
   margin-left: 5;
 `;
+
+export const SavingsSheetEmptyHeight = 313;
+export const SavingsSheetHeight = android ? 424 : 352;
 
 export default function WalletConnectApprovalSheet() {
   const { colors } = useTheme();
@@ -242,19 +246,38 @@ export default function WalletConnectApprovalSheet() {
         </Column>
         <Column align="flex-end">
           <NetworkLabelText>Network</NetworkLabelText>
-          <ButtonPressAnimation>
-            <Row>
-              <AvatarWrapper>
-                <ImageAvatar image={accountImage} size="smaller" />
-              </AvatarWrapper>
-              <NetworkText color={get(networkInfo[network], 'color')}>
-                {get(networkInfo[network], 'name')}
-              </NetworkText>
-              <SwitchText color={get(networkInfo[network], 'color')}>
-                􀁰
-              </SwitchText>
-            </Row>
-          </ButtonPressAnimation>
+          <ContextMenuButton
+            activeOpacity={0}
+            isMenuPrimaryAction
+            menuConfig={{
+              menuItems: [
+                {
+                  actionKey: 'action-key',
+                  actionTitle: 'Action #1',
+                },
+              ],
+              menuTitle: 'Context Menu Example',
+            }}
+            onPressMenuItem={({ nativeEvent }) => {
+              alert(`${nativeEvent.actionKey} was pressed`);
+            }}
+            useActionSheetFallback={false}
+            wrapNativeComponent={false}
+          >
+            <ButtonPressAnimation>
+              <Row>
+                <AvatarWrapper>
+                  <ImageAvatar image={accountImage} size="smaller" />
+                </AvatarWrapper>
+                <NetworkText color={get(networkInfo[network], 'color')}>
+                  {get(networkInfo[network], 'name')}
+                </NetworkText>
+                <SwitchText color={get(networkInfo[network], 'color')}>
+                  􀁰
+                </SwitchText>
+              </Row>
+            </ButtonPressAnimation>
+          </ContextMenuButton>
         </Column>
       </SheetActionButtonRow>
     </Sheet>
