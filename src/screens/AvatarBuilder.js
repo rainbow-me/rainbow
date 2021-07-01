@@ -120,6 +120,13 @@ const AvatarBuilder = ({ route: { params } }) => {
   const colorCircleTopPadding = 15;
   const colorCircleBottomPadding = 19;
 
+  const selectedOffset = useMemo(
+    () => ({
+      x: params.initialAccountColor * 39 - width / 2 + width ** 0.5 * 1.5, // curve to have selected color in middle of scrolling colorpicker
+    }),
+    [params.initialAccountColor, width]
+  );
+
   return (
     <Container {...deviceUtils.dimensions}>
       <TouchableBackdrop onPress={goBack} />
@@ -131,18 +138,12 @@ const AvatarBuilder = ({ route: { params } }) => {
         <Row
           height={38 + colorCircleTopPadding + colorCircleBottomPadding}
           justify="center"
-          maxWidth={375}
           paddingBottom={colorCircleBottomPadding + 7}
           paddingTop={colorCircleTopPadding + 7}
           width="100%"
         >
           <ScrollableColorPicker
-            contentOffset={{
-              x:
-                params.initialAccountColor * 39 -
-                width / 2 +
-                (width * 0.0063) ** 4, // curve to have selected color in middle of scrolling colorpicker
-            }}
+            contentOffset={selectedOffset}
             horizontal
             showsHorizontalScrollIndicator={false}
           >
