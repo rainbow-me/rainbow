@@ -19,6 +19,10 @@ import { walletsSetSelected, walletsUpdate } from '../redux/wallets';
 import { getRandomColor } from '../styles/colors';
 import { hasKey } from './keychain';
 import {
+  getContacts,
+  saveContacts,
+} from '@rainbow-me/handlers/localstorage/contacts';
+import {
   getUserLists,
   saveUserLists,
 } from '@rainbow-me/handlers/localstorage/userLists';
@@ -281,6 +285,54 @@ export default async function runMigrations() {
   };
 
   migrations.push(v8);
+
+  /*
+   *************** Migration v9 ******************
+   * This step makes sure all wallets' color property (index)
+   * are updated to point to the new webProfile colors. Do the
+   * same for contacts
+   */
+  const v9 = async () => {
+    logger.log('Start migration v9');
+    // map from old color index to closest new color's index
+    const newColorIndexes = [0, 4, 12, 21, 1, 20, 4, 9, 10];
+    const { selected, wallets } = store.getState().wallets;
+    if (!wallets) return;
+    const walletKeys = Object.keys(wallets);
+    let updatedWallets = { ...wallets };
+    for (let i = 0; i < walletKeys.length; i++) {
+      const wallet = wallets[walletKeys[i]];
+      const newAddresses = wallet.addresses.map(address => ({
+        ...address,
+        color: newColorIndexes[address.color],
+      }));
+      const newWallet = { ...wallet, addresses: newAddresses };
+      updatedWallets[walletKeys[i]] = newWallet;
+    }
+    logger.log('update wallets in store to index new colors');
+    await store.dispatch(walletsUpdate(updatedWallets));
+
+    const selectedWalletId = selected?.id;
+    if (selectedWalletId) {
+      logger.log('update selected wallet to index new color');
+      await store.dispatch(
+        walletsSetSelected(updatedWallets[selectedWalletId])
+      );
+    }
+
+    // migrate contacts to new color index
+    const contacts = await getContacts();
+    if (!contacts) return;
+    const contactKeys = Object.keys(contacts);
+    const updatedContacts = contactKeys.map(contactKey => ({
+      ...contacts[contactKey],
+      color: newColorIndexes[contacts[contactKey].color] || 0,
+    }));
+    logger.log('update contacts to index new colors');
+    await saveContacts(updatedContacts);
+  };
+
+  migrations.push(v9);
 
   logger.sentry(
     `Migrations: ready to run migrations starting on number ${currentVersion}`
