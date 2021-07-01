@@ -4,7 +4,7 @@ import React, { useCallback } from 'react';
 import { Linking, StatusBar } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components';
-import L2Logo from '../components/l2Logo';
+import ChainLogo from '../components/ChainLogo';
 import { Centered, ColumnWithMargins } from '../components/layout';
 import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, GradientText, Text } from '../components/text';
@@ -60,7 +60,7 @@ export const explainers = {
   },
   optimism: {
     emoji: '⛽️',
-    logo: <L2Logo assetType="optimism" />,
+    logo: <ChainLogo assetType="optimism" />,
     text: OPTIMISM_EXPLAINER,
     title: `What's Optimism?`,
     readMoreLink: 'https://rainbow.me',
@@ -68,7 +68,7 @@ export const explainers = {
   },
   arbitrum: {
     emoji: '⛽️',
-    logo: <L2Logo assetType="arbitrum" />,
+    logo: <ChainLogo assetType="arbitrum" />,
     text: ARBITRUM_EXPLAINER,
     title: `What's Arbitrum?`,
     readMoreLink: 'https://rainbow.me',
@@ -76,7 +76,7 @@ export const explainers = {
   },
   polygon: {
     emoji: '⛽️',
-    logo: <L2Logo assetType="polygon" />,
+    logo: <ChainLogo assetType="polygon" />,
     text: POLYGON_EXPLAINER,
     title: `What's Polygon?`,
     readMoreLink: 'https://rainbow.me',

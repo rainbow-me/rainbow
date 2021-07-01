@@ -13,12 +13,7 @@ import { CoinIcon } from '../components/coin-icon';
 import { ContactAvatar } from '../components/contacts';
 import { Centered, Column, Row } from '../components/layout';
 import { SendButton } from '../components/send';
-import {
-  SheetActionButtonRow,
-  SheetDivider,
-  SheetTitle,
-  SlackSheet,
-} from '../components/sheet';
+import { SheetDivider, SheetTitle, SlackSheet } from '../components/sheet';
 import { Text, TruncatedAddress } from '../components/text';
 import { isL2Network } from '@rainbow-me/handlers/web3';
 import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
@@ -161,104 +156,107 @@ export default function SendConfirmationSheet() {
         scrollEnabled={false}
       >
         <SheetTitle>Sending</SheetTitle>
-        <Column padding={24}>
-          <Row>
-            <Column>
-              <Text size="big" weight="bold">
-                {nativeDisplayAmount}
-              </Text>
-              <Row paddingTop={4}>
-                <Text color={color} size="lmedium" weight="700">
-                  {amountDetails.assetAmount} {asset.symbol}
+        <Column height={sheetHeight - 50}>
+          <Column padding={24}>
+            <Row>
+              <Column>
+                <Text size="big" weight="bold">
+                  {nativeDisplayAmount}
                 </Text>
-              </Row>
-            </Column>
-            <Column align="end" flex={1} justify="end">
-              <Row>
-                <CoinIcon
-                  badgeXPosition={-15}
-                  badgeYPosition={-15}
-                  size={50}
-                  {...asset}
-                />
-              </Row>
-            </Column>
-          </Row>
-
-          <Row marginBottom={22} marginTop={22}>
-            <Column>
-              <Pill borderRadius={20} paddingHorizontal={10}>
-                <Column padding={5}>
-                  <Text
-                    color={colors.blueGreyDark60}
-                    size="large"
-                    weight="bold"
-                  >
-                    to
+                <Row paddingTop={4}>
+                  <Text color={color} size="lmedium" weight="700">
+                    {amountDetails.assetAmount} {asset.symbol}
                   </Text>
-                </Column>
-              </Pill>
-            </Column>
-            <Column align="end" flex={1} justify="end" marginRight={15}>
-              <ChevronDown />
-            </Column>
-          </Row>
+                </Row>
+              </Column>
+              <Column align="end" flex={1} justify="end">
+                <Row>
+                  <CoinIcon
+                    badgeXPosition={-15}
+                    badgeYPosition={-15}
+                    size={50}
+                    {...asset}
+                  />
+                </Row>
+              </Column>
+            </Row>
 
-          <Row marginBottom={30}>
-            <Column>
-              <TruncatedAddress
-                address={to}
-                firstSectionLength={6}
-                size="big"
-                truncationLength={4}
-                weight="bold"
-              />
-              <Row paddingTop={4}>
-                <Text
-                  color={colors.alpha(colors.blueGreyDark, 0.6)}
-                  size="lmedium"
-                  weight="700"
-                >
-                  First time send
-                </Text>
-              </Row>
-            </Column>
-            <Column align="end" flex={1} justify="end">
-              <ContactAvatar color={color} size="lmedium" value={to} />
-            </Column>
-          </Row>
-        </Column>
-        <SheetDivider />
-        {isL2 && (
-          <L2Explainer
-            assetType={asset.type}
-            colors={colors}
-            onPress={handleL2ExplainerPress}
-            sending
-            symbol={asset.symbol}
-          />
-        )}
-        <Column padding={24} paddingTop={19}>
-          {checkboxes.map((check, i) => (
-            <Checkbox
-              activeColor={color}
-              checked={check.checked}
-              id={i}
-              key={`check_${i}`}
-              label={check.label}
-              onPress={handleCheckbox}
+            <Row marginBottom={22} marginTop={22}>
+              <Column>
+                <Pill borderRadius={20} paddingHorizontal={10}>
+                  <Column padding={5}>
+                    <Text
+                      color={colors.blueGreyDark60}
+                      size="large"
+                      weight="bold"
+                    >
+                      to
+                    </Text>
+                  </Column>
+                </Pill>
+              </Column>
+              <Column align="end" flex={1} justify="end" marginRight={15}>
+                <ChevronDown />
+              </Column>
+            </Row>
+
+            <Row marginBottom={30}>
+              <Column>
+                <TruncatedAddress
+                  address={to}
+                  firstSectionLength={6}
+                  size="big"
+                  truncationLength={4}
+                  weight="bold"
+                />
+                <Row paddingTop={4}>
+                  <Text
+                    color={colors.alpha(colors.blueGreyDark, 0.6)}
+                    size="lmedium"
+                    weight="700"
+                  >
+                    First time send
+                  </Text>
+                </Row>
+              </Column>
+              <Column align="end" flex={1} justify="end">
+                <ContactAvatar color={color} size="lmedium" value={to} />
+              </Column>
+            </Row>
+          </Column>
+          <SheetDivider />
+          {isL2 && (
+            <L2Explainer
+              assetType={asset.type}
+              colors={colors}
+              onPress={handleL2ExplainerPress}
+              sending
+              symbol={asset.symbol}
             />
-          ))}
+          )}
+          <Column padding={24} paddingTop={19}>
+            {isL2 &&
+              checkboxes.map((check, i) => (
+                <Checkbox
+                  activeColor={color}
+                  checked={check.checked}
+                  id={i}
+                  key={`check_${i}`}
+                  label={check.label}
+                  onPress={handleCheckbox}
+                />
+              ))}
+          </Column>
+          <Column align="center" flex={1} justify="end">
+            <SendButton
+              backgroundColor={color}
+              disabled={!canSubmit}
+              isAuthorizing={isAuthorizing}
+              onLongPress={handleSubmit}
+              testID="send-confirmation-button"
+            />
+          </Column>
         </Column>
-        <SheetActionButtonRow>
-          <SendButton
-            backgroundColor={color}
-            disabled={!canSubmit}
-            isAuthorizing={isAuthorizing}
-            onLongPress={handleSubmit}
-            testID="send-confirmation-button"
-          />
-        </SheetActionButtonRow>
       </SlackSheet>
     </Container>
   );
