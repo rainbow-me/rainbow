@@ -120,12 +120,21 @@ const AvatarBuilder = ({ route: { params } }) => {
   const colorCircleTopPadding = 15;
   const colorCircleBottomPadding = 19;
 
-  const selectedOffset = useMemo(
-    () => ({
-      x: params.initialAccountColor * 39 - width / 2 + width ** 0.5 * 1.5, // curve to have selected color in middle of scrolling colorpicker
-    }),
-    [params.initialAccountColor, width]
-  );
+  const selectedOffset = useMemo(() => {
+    const maxOffset = colors.avatarBackgrounds.length * 39 - width + 20;
+    const rawOffset =
+      params.initialAccountColor * 39 - width / 2 + width ** 0.5 * 1.5;
+    let finalOffset = rawOffset;
+    if (rawOffset < 0) {
+      finalOffset = 0;
+    }
+    if (rawOffset > maxOffset) {
+      finalOffset = maxOffset;
+    }
+    return {
+      x: finalOffset, // curve to have selected color in middle of scrolling colorpicker
+    };
+  }, [params.initialAccountColor, width, colors.avatarBackgrounds.length]);
 
   return (
     <Container {...deviceUtils.dimensions}>
