@@ -86,7 +86,7 @@ const KeyboardSizeView = styled(KeyboardArea)`
 
 export default function SendSheet(props) {
   const dispatch = useDispatch();
-  const { navigate, addListener } = useNavigation();
+  const { goBack, navigate, addListener } = useNavigation();
   const { dataAddNewTransaction } = useTransactionConfirmation();
   const updateAssetOnchainBalanceIfNeeded = useUpdateAssetOnchainBalance();
   const { allAssets } = useAccountAssets();
@@ -463,7 +463,11 @@ export default function SendSheet(props) {
       isRecepientENS: toLower(recipient.slice(-4)) === '.eth',
     });
     if (submitSuccessful) {
-      navigate(Routes.PROFILE_SCREEN);
+      goBack();
+      navigate(Routes.WALLET_SCREEN);
+      InteractionManager.runAfterInteractions(() => {
+        navigate(Routes.PROFILE_SCREEN);
+      });
     }
   }, [amountDetails.assetAmount, navigate, onSubmit, recipient, selected]);
 
