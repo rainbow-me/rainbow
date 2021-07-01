@@ -1,4 +1,4 @@
-import { findKey, keys } from 'lodash';
+import { findKey, isNumber, keys } from 'lodash';
 import { removeLocal } from '../handlers/localstorage/common';
 import { IMAGE_METADATA } from '../handlers/localstorage/globalSettings';
 import {
@@ -16,7 +16,7 @@ import {
 import store from '../redux/store';
 
 import { walletsSetSelected, walletsUpdate } from '../redux/wallets';
-import { getRandomColor } from '../styles/colors';
+import colors, { getRandomColor } from '../styles/colors';
 import { hasKey } from './keychain';
 import {
   getContacts,
@@ -322,12 +322,21 @@ export default async function runMigrations() {
 
     // migrate contacts to new color index
     const contacts = await getContacts();
+    let updatedContacts = { ...contacts };
     if (!contacts) return;
     const contactKeys = Object.keys(contacts);
-    const updatedContacts = contactKeys.map(contactKey => ({
-      ...contacts[contactKey],
-      color: newColorIndexes[contacts[contactKey].color] || 0,
-    }));
+    for (let j = 0; j < contactKeys.length; j++) {
+      const contact = contacts[contactKeys[j]];
+      updatedContacts[contactKeys[j]] = {
+        ...contact,
+        color: isNumber(contact.color)
+          ? newColorIndexes[contact.color]
+          : typeof contact.color === 'string' &&
+            colors.avatarBackgrounds.includes(contact.color)
+          ? colors.avatarBackgrounds.indexOf(contact.color)
+          : getRandomColor(),
+      };
+    }
     logger.log('update contacts to index new colors');
     await saveContacts(updatedContacts);
   };
