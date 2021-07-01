@@ -36,7 +36,11 @@ import {
   WalletLibraryType,
 } from '@rainbow-me/model/wallet';
 import store from '@rainbow-me/redux/store';
-import { chains, ETH_ADDRESS } from '@rainbow-me/references';
+import {
+  chains,
+  ETH_ADDRESS,
+  MATIC_MAINNET_ADDRESS,
+} from '@rainbow-me/references';
 import logger from 'logger';
 
 const { RNBip39 } = NativeModules;
@@ -69,6 +73,8 @@ export const useEthUSDMonthChart = () => {
 };
 
 const getEthPriceUnit = () => getAssetPrice();
+
+const getMaticPriceUnit = () => getAssetPrice(MATIC_MAINNET_ADDRESS);
 
 const getBalanceAmount = (selectedGasPrice, selected) => {
   const { assets } = store.getState().data;
@@ -153,6 +159,15 @@ const getDataString = (func, arrVals) => {
 const getNetworkFromChainId = chainId => {
   const networkData = find(chains, ['chain_id', chainId]);
   return networkData?.network ?? networkTypes.mainnet;
+};
+
+/**
+ * @desc get network string from chainId
+ * @param  {Number} chainId
+ */
+const getNetworkNameFromChainId = chainId => {
+  const networkData = find(chains, ['chain_id', chainId]);
+  return networkData?.name;
 };
 
 /**
@@ -314,10 +329,20 @@ function openTokenEtherscanURL(address) {
   Linking.openURL(`https://${etherscanHost}/token/${address}`);
 }
 
-function openTransactionEtherscanURL(hash) {
+function openTransactionInBlockExplorer(hash, network) {
+  const normalizedHash = hash.replace(/-.*/g, '');
+  if (network === networkTypes.optimism) {
+    Linking.openURL(`https://optimistic.etherscan.io/tx/${normalizedHash}`);
+    return;
+  } else if (network === networkTypes.polygon) {
+    Linking.openURL(`https://polygonscan.com/tx/${normalizedHash}`);
+    return;
+  } else if (network === networkTypes.arbitrum) {
+    Linking.openURL(`https://explorer.arbitrum.io/tx/${normalizedHash}`);
+    return;
+  }
   if (!isString(hash)) return;
   const etherscanHost = getEtherscanHostForNetwork();
-  const normalizedHash = hash.replace(/-.*/g, '');
   Linking.openURL(`https://${etherscanHost}/tx/${normalizedHash}`);
 }
 
@@ -334,11 +359,13 @@ export default {
   getDataString,
   getEthPriceUnit,
   getHash,
+  getMaticPriceUnit,
   getNetworkFromChainId,
+  getNetworkNameFromChainId,
   hasPreviousTransactions,
   isEthAddress,
   openTokenEtherscanURL,
-  openTransactionEtherscanURL,
+  openTransactionInBlockExplorer,
   padLeft,
   removeHexPrefix,
 };

@@ -51,6 +51,39 @@ const networkInfo = {
     name: 'Goerli',
     value: networkTypes.goerli,
   },
+  [`${networkTypes.arbitrum}`]: {
+    balance_checker_contract_address:
+      '0x54A4E5800345c01455a7798E0D96438364e22723',
+    color: '#0000ff',
+    disabled: false,
+    exchange_enabled: false,
+    faucet_url: `https://faucet.kovan.network/`,
+    layer2: true,
+    name: 'Arbitrum (Mainnet)',
+    value: networkTypes.arbitrum,
+  },
+  [`${networkTypes.optimism}`]: {
+    balance_checker_contract_address:
+      '0x54A4E5800345c01455a7798E0D96438364e22723',
+    color: '#ff0000',
+    disabled: false,
+    exchange_enabled: false,
+    faucet_url: `https://faucet.kovan.network/`,
+    layer2: true,
+    name: 'Optimism (Mainnet)',
+    value: networkTypes.optimism,
+  },
+  [`${networkTypes.polygon}`]: {
+    balance_checker_contract_address:
+      '0x54A4E5800345c01455a7798E0D96438364e22723',
+    color: '#800080',
+    disabled: false,
+    exchange_enabled: false,
+    faucet_url: `https://faucet.kovan.network/`,
+    layer2: true,
+    name: 'Polygon (Matic)',
+    value: networkTypes.polygon,
+  },
 };
 
 export default networkInfo;

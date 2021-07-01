@@ -18,12 +18,16 @@ import {
   SendHeader,
   SendTransactionSpeed,
 } from '../components/send';
-import { AssetTypes } from '@rainbow-me/entities';
+import { AssetType, AssetTypes } from '@rainbow-me/entities';
+import { isNativeAsset } from '@rainbow-me/handlers/assets';
 import {
   createSignableTransaction,
   estimateGasLimit,
+  getProviderForNetwork,
+  web3Provider,
 } from '@rainbow-me/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
 import {
   useAccountAssets,
@@ -146,12 +150,15 @@ export default function SendSheet(props) {
     isSufficientBalance: false,
     nativeAmount: '',
   });
+  const [currentNetwork, setCurrentNetwork] = useState();
+  const prevNetwork = usePrevious(currentNetwork);
   const [currentInput, setCurrentInput] = useState('');
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const [isValidAddress, setIsValidAddress] = useState(false);
   const [recipient, setRecipient] = useState('');
   const [selected, setSelected] = useState({});
   const { maxInputBalance, updateMaxInputBalance } = useMaxInputBalance();
+  const [currentProvider, setCurrentProvider] = useState();
 
   const showEmptyState = !isValidAddress;
   const showAssetList = isValidAddress && isEmpty(selected);
@@ -166,11 +173,23 @@ export default function SendSheet(props) {
   );
 
   useEffect(() => {
-    InteractionManager.runAfterInteractions(() => startPollingGasPrices());
+    // We can start fetching gas prices
+    // after we know the network that the asset
+    // belongs to
+    if (prevNetwork !== currentNetwork) {
+      InteractionManager.runAfterInteractions(() =>
+        startPollingGasPrices(currentNetwork)
+      );
+    }
     return () => {
       InteractionManager.runAfterInteractions(() => stopPollingGasPrices());
     };
-  }, [startPollingGasPrices, stopPollingGasPrices]);
+  }, [
+    currentNetwork,
+    prevNetwork,
+    startPollingGasPrices,
+    stopPollingGasPrices,
+  ]);
 
   // Recalculate balance when gas price changes
   useEffect(() => {
@@ -201,6 +220,7 @@ export default function SendSheet(props) {
           _assetAmount
         );
       }
+
       const _isSufficientBalance =
         Number(_assetAmount) <= Number(maxInputBalance);
       setAmountDetails({
@@ -230,25 +250,74 @@ export default function SendSheet(props) {
         sendUpdateAssetAmount('');
         // Since we don't trust the balance from zerion,
         // let's hit the blockchain and update it
-        updateAssetOnchainBalanceIfNeeded(
-          newSelected,
-          accountAddress,
-          updatedAsset => {
-            // set selected asset with new balance
-            setSelected(updatedAsset);
-            // Update selected to recalculate the maxInputAmount
-            sendUpdateSelected(updatedAsset);
-          }
-        );
+        if (currentProvider) {
+          updateAssetOnchainBalanceIfNeeded(
+            newSelected,
+            accountAddress,
+            currentNetwork,
+            currentProvider,
+            updatedAsset => {
+              // set selected asset with new balance
+              setSelected(updatedAsset);
+              // Update selected to recalculate the maxInputAmount
+              sendUpdateSelected(updatedAsset);
+            }
+          );
+        }
       }
     },
     [
       accountAddress,
+      currentNetwork,
+      currentProvider,
       sendUpdateAssetAmount,
       updateAssetOnchainBalanceIfNeeded,
       updateMaxInputBalance,
     ]
   );
+
+  useEffect(() => {
+    const updateNetworkAndProvider = async () => {
+      if (
+        selected?.type &&
+        (!currentNetwork || prevNetwork !== currentNetwork)
+      ) {
+        let provider = web3Provider;
+        switch (selected.type) {
+          case AssetType.polygon:
+            setCurrentNetwork(networkTypes.polygon);
+            provider = await getProviderForNetwork(networkTypes.polygon);
+            break;
+          case AssetType.arbitrum:
+            setCurrentNetwork(networkTypes.arbitrum);
+            provider = await getProviderForNetwork(networkTypes.arbitrum);
+            break;
+          case AssetTypes.optimism:
+            setCurrentNetwork(networkTypes.optimism);
+            provider = await getProviderForNetwork(networkTypes.optimism);
+            break;
+          default:
+            setCurrentNetwork(network);
+        }
+        setCurrentProvider(provider);
+      }
+    };
+    updateNetworkAndProvider();
+  }, [
+    currentNetwork,
+    network,
+    prevNetwork,
+    selected,
+    selected.type,
+    sendUpdateSelected,
+  ]);
+
+  useEffect(() => {
+    if (currentProvider) {
+      sendUpdateSelected(selected);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentProvider]);
 
   const onChangeNativeAmount = useCallback(
     newNativeAmount => {
@@ -308,7 +377,7 @@ export default function SendSheet(props) {
     let submitSuccess = false;
     let updatedGasLimit = null;
     // Attempt to update gas limit before sending ERC20 / ERC721
-    if (selected?.address !== ETH_ADDRESS) {
+    if (!isNativeAsset(selected.address, currentNetwork)) {
       try {
         // Estimate the tx with gas limit padding before sending
         updatedGasLimit = await estimateGasLimit(
@@ -318,13 +387,15 @@ export default function SendSheet(props) {
             asset: selected,
             recipient,
           },
-          true
+          true,
+          currentNetwork
         );
         logger.log('gasLimit updated before sending', {
           after: updatedGasLimit,
           before: gasLimit,
         });
-        updateTxFee(updatedGasLimit);
+
+        updateTxFee(updatedGasLimit, null, currentNetwork);
         // eslint-disable-next-line no-empty
       } catch (e) {}
     }
@@ -334,13 +405,14 @@ export default function SendSheet(props) {
       asset: selected,
       from: accountAddress,
       gasLimit: updatedGasLimit || gasLimit,
-      gasPrice: selectedGasPrice?.value?.amount,
+      gasPrice: selectedGasPrice.value?.amount,
       nonce: null,
       to: recipient,
     };
     try {
       const signableTransaction = await createSignableTransaction(txDetails);
       const txResult = await sendTransaction({
+        provider: currentProvider,
         transaction: signableTransaction,
       });
       const { hash, nonce } = txResult;
@@ -348,11 +420,17 @@ export default function SendSheet(props) {
         submitSuccess = true;
         txDetails.hash = hash;
         txDetails.nonce = nonce;
-        await dispatch(dataAddNewTransaction(txDetails));
+        txDetails.arbitrum = selected.type === AssetType.arbitrum;
+        txDetails.optimism = selected.type === AssetType.optimism;
+        txDetails.polygon = selected.type === AssetType.polygon;
+        await dispatch(
+          dataAddNewTransaction(txDetails, null, false, currentProvider)
+        );
       }
     } catch (error) {
       logger.sentry('TX Details', txDetails);
       logger.sentry('SendSheet onSubmit error');
+      logger.sentry(error);
       captureException(error);
       submitSuccess = false;
     } finally {
@@ -363,6 +441,8 @@ export default function SendSheet(props) {
     accountAddress,
     amountDetails.assetAmount,
     amountDetails.isSufficientBalance,
+    currentNetwork,
+    currentProvider,
     dataAddNewTransaction,
     dispatch,
     gasLimit,
@@ -371,7 +451,8 @@ export default function SendSheet(props) {
     isValidAddress,
     recipient,
     selected,
-    selectedGasPrice,
+    selectedGasPrice.txFee,
+    selectedGasPrice?.value?.amount,
     updateTxFee,
   ]);
 
@@ -404,12 +485,12 @@ export default function SendSheet(props) {
       gasUtils.showTransactionSpeedOptions(
         gasPrices,
         txFees,
-        gasPriceOption => updateGasPriceOption(gasPriceOption),
+        gasPriceOption => updateGasPriceOption(gasPriceOption, currentNetwork),
         onSuccess,
         hideCustom
       );
     },
-    [txFees, gasPrices, updateGasPriceOption]
+    [gasPrices, txFees, updateGasPriceOption, currentNetwork]
   );
 
   const onLongPressSend = useCallback(() => {
@@ -472,18 +553,25 @@ export default function SendSheet(props) {
 
   useEffect(() => {
     if (isValidAddress) {
-      estimateGasLimit({
-        address: accountAddress,
-        amount: amountDetails.assetAmount,
-        asset: selected,
-        recipient,
-      })
-        .then(gasLimit => updateTxFee(gasLimit))
-        .catch(() => updateTxFee(null));
+      estimateGasLimit(
+        {
+          address: accountAddress,
+          amount: amountDetails.assetAmount,
+          asset: selected,
+          recipient,
+        },
+        false,
+        currentProvider,
+        currentNetwork
+      )
+        .then(gasLimit => updateTxFee(gasLimit, null, currentNetwork))
+        .catch(() => updateTxFee(null, null, currentNetwork));
     }
   }, [
     accountAddress,
     amountDetails.assetAmount,
+    currentNetwork,
+    currentProvider,
     dispatch,
     isValidAddress,
     recipient,
@@ -542,6 +630,7 @@ export default function SendSheet(props) {
                 isAuthorizing={isAuthorizing}
                 isSufficientBalance={amountDetails.isSufficientBalance}
                 isSufficientGas={isSufficientGas}
+                network={currentNetwork}
                 onLongPress={onLongPressSend}
                 smallButton={isTinyPhone}
                 testID="send-sheet-confirm"

@@ -1,5 +1,6 @@
 import React from 'react';
 import { HoldToAuthorizeButton } from '../buttons';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
 
 export default function SendButton({
   assetAmount,
@@ -8,6 +9,7 @@ export default function SendButton({
   isSufficientGas,
   onLongPress,
   testID,
+  network,
   ...props
 }) {
   const isZeroAssetAmount = Number(assetAmount) <= 0;
@@ -15,9 +17,14 @@ export default function SendButton({
   let disabled = true;
   let label = 'Enter an Amount';
 
+  let nativeToken = 'ETH';
+  if (network === networkTypes.polygon) {
+    nativeToken = 'MATIC';
+  }
+
   if (!isZeroAssetAmount && !isSufficientGas) {
     disabled = true;
-    label = 'Insufficient ETH';
+    label = `Insufficient ${nativeToken}`;
   } else if (!isZeroAssetAmount && !isSufficientBalance) {
     disabled = true;
     label = 'Insufficient Funds';

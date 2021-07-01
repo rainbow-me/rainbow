@@ -12,6 +12,7 @@ import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
 import { TransactionStatusTypes, TransactionTypes } from '@rainbow-me/entities';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
 import TransactionActions from '@rainbow-me/helpers/transactionActions';
 import {
   getHumanReadableDate,
@@ -91,7 +92,18 @@ export default function TransactionCoinRow({ item, ...props }) {
   const { navigate } = useNavigation();
 
   const onPressTransaction = useCallback(async () => {
-    const { hash, from, minedAt, pending, to, status, type } = item;
+    const {
+      arbitrum,
+      hash,
+      from,
+      minedAt,
+      pending,
+      to,
+      status,
+      type,
+      optimism,
+      polygon,
+    } = item;
 
     const date = getHumanReadableDate(minedAt);
     const isSent =
@@ -129,7 +141,9 @@ export default function TransactionCoinRow({ item, ...props }) {
       let buttons = [
         ...(canBeResubmitted ? [TransactionActions.speedUp] : []),
         ...(canBeCancelled ? [TransactionActions.cancel] : []),
-        TransactionActions.viewOnEtherscan,
+        polygon || arbitrum
+          ? TransactionActions.viewOnBlockExplorer
+          : TransactionActions.viewOnEtherscan,
         ...(ios ? [TransactionActions.close] : []),
       ];
       if (showContactInfo) {
@@ -179,8 +193,17 @@ export default function TransactionCoinRow({ item, ...props }) {
                 type: 'cancel',
               });
               break;
+            case TransactionActions.viewOnBlockExplorer:
             case TransactionActions.viewOnEtherscan: {
-              ethereumUtils.openTransactionEtherscanURL(hash);
+              let network = null;
+              if (optimism) {
+                network = networkTypes.optimism;
+              } else if (polygon) {
+                network = networkTypes.polygon;
+              } else if (arbitrum) {
+                network = networkTypes.arbitrum;
+              }
+              ethereumUtils.openTransactionInBlockExplorer(hash, network);
               break;
             }
             default:

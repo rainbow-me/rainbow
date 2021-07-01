@@ -1,4 +1,4 @@
-import { find } from 'lodash';
+import { capitalize, find } from 'lodash';
 import React, {
   useCallback,
   useContext,
@@ -8,6 +8,7 @@ import React, {
 } from 'react';
 import { LayoutAnimation, View } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
+import RadialGradient from 'react-native-radial-gradient';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import useAdditionalAssetData from '../../../hooks/useAdditionalAssetData';
@@ -15,8 +16,10 @@ import { ModalContext } from '../../../react-native-cool-modals/NativeStackView'
 import { ButtonPressAnimation } from '../../animations';
 import { CoinDividerHeight } from '../../coin-divider';
 import CoinDividerOpenButton from '../../coin-divider/CoinDividerOpenButton';
+import ChainBadge from '../../coin-icon/ChainBadge';
 import EdgeFade from '../../discover-sheet/EdgeFade';
 import UniswapPools from '../../discover-sheet/UniswapPoolsSection';
+import { Column, Row } from '../../layout';
 
 import {
   BuyActionButton,
@@ -45,6 +48,9 @@ import {
   useDimensions,
   useUniswapAssetsInWallet,
 } from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
+import Routes from '@rainbow-me/routes';
+import { lightModeThemeColors, position } from '@rainbow-me/styles';
 import { ethereumUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 
 const defaultCarouselHeight = 60;
@@ -169,6 +175,61 @@ function Description({ text }) {
   );
 }
 
+const L2Explainer = ({ assetType, colors, onPress, symbol }) => {
+  const gradientColors = ['#FFFFFF', '#F0F2F5'];
+  const radialGradientProps = {
+    center: [0, 1],
+    colors: [
+      lightModeThemeColors.alpha(gradientColors[0], 0.1),
+      lightModeThemeColors.alpha(gradientColors[1], 0.08),
+    ],
+    pointerEvents: 'none',
+    style: {
+      ...position.coverAsObject,
+      overflow: 'hidden',
+    },
+  };
+  return (
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.99}>
+      <Row
+        background={colors.red}
+        borderRadius={16}
+        marginBottom={19}
+        marginLeft={15}
+        marginRight={15}
+        padding={10}
+      >
+        <RadialGradient
+          {...radialGradientProps}
+          borderRadius={21}
+          radius={81}
+        />
+        <Column>
+          <ChainBadge
+            assetType={assetType}
+            badgeXPosition={-3}
+            badgeYPosition={-15}
+          />
+        </Column>
+        <Column marginLeft={40}>
+          <Text
+            color={colors.alpha(colors.blueGreyDark, 0.6)}
+            size="smedium"
+            weight="bold"
+          >
+            This {symbol} is on the {capitalize(assetType)} network
+          </Text>
+        </Column>
+        <Column align="end" flex={1} justify="end">
+          <Text color={colors.alpha(colors.blueGreyDark, 0.6)} size="smedium">
+            􀅵
+          </Text>
+        </Column>
+      </Row>
+    </ButtonPressAnimation>
+  );
+};
+
 export default function ChartExpandedState({ asset }) {
   const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
     genericAssets,
@@ -181,7 +242,7 @@ export default function ChartExpandedState({ asset }) {
   // If we don't have a balance for this asset
   // It's a generic asset
   const hasBalance = asset?.balance;
-  const assetWithPrice = hasBalance
+  let assetWithPrice = hasBalance
     ? asset
     : genericAssets[asset?.address]
     ? ethereumUtils.formatGenericAsset(
@@ -189,6 +250,13 @@ export default function ChartExpandedState({ asset }) {
         nativeCurrency
       )
     : asset;
+
+  if (assetWithPrice?.mainnet_address) {
+    assetWithPrice.address = assetWithPrice.mainnet_address;
+  }
+
+  // This one includes the original l2 address if exists
+  const ogAsset = { ...assetWithPrice, address: assetWithPrice.uniqueId };
 
   const { height: screenHeight } = useDimensions();
   const {
@@ -265,6 +333,15 @@ export default function ChartExpandedState({ asset }) {
     ChartExpandedStateSheetHeight -= 60;
   }
 
+  const { navigate } = useNavigation();
+
+  const handleL2ExplainerPress = useCallback(() => {
+    navigate(Routes.EXPLAIN_SHEET, {
+      network: assetWithPrice.type,
+      type: assetWithPrice.type,
+    });
+  }, [assetWithPrice.type, navigate]);
+
   const { layout } = useContext(ModalContext) || {};
 
   const [morePoolsVisible, setMorePoolsVisible] = useState(false);
@@ -272,6 +349,8 @@ export default function ChartExpandedState({ asset }) {
   const delayedMorePoolsVisible = useDelayedValueWithLayoutAnimation(
     morePoolsVisible
   );
+
+  const { colors } = useTheme();
 
   const MoreButton = useCallback(() => {
     return (
@@ -335,7 +414,11 @@ export default function ChartExpandedState({ asset }) {
             <SwapActionButton color={color} inputType={AssetInputTypes.in} />
           )}
           {hasBalance ? (
-            <SendActionButton color={color} fullWidth={!showSwapButton} />
+            <SendActionButton
+              asset={ogAsset}
+              color={color}
+              fullWidth={!showSwapButton}
+            />
           ) : (
             <SwapActionButton
               color={color}
@@ -349,6 +432,15 @@ export default function ChartExpandedState({ asset }) {
           )}
         </SheetActionButtonRow>
       )}
+      {assetWithPrice?.mainnet_address && (
+        <L2Explainer
+          assetType={assetWithPrice.type}
+          colors={colors}
+          onPress={handleL2ExplainerPress}
+          symbol={assetWithPrice.symbol}
+        />
+      )}
+
       <CarouselWrapper
         isAnyItemLoading={
           totalVolumeLoading || totalLiquidityLoading || marketCapLoading

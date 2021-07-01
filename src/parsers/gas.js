@@ -52,18 +52,32 @@ const parseGasPricesEthGasStation = data => ({
     true
   ),
 });
+const parseGasPricesMaticGasStation = data => ({
+  [CUSTOM]: null,
+  [FAST]: defaultGasPriceFormat(FAST, 0.2, Number(data.fastest) / 10, true),
+  [NORMAL]: defaultGasPriceFormat(NORMAL, 0.5, Number(data.fast) / 10, true),
+  [SLOW]: defaultGasPriceFormat(SLOW, 1, Number(data.average) / 10, true),
+});
 
 /**
  * @desc parse ether gas prices
  * @param {Object} data
  * @param {Boolean} short - use short format or not
  */
-export const parseGasPrices = (data, source = 'etherscan') =>
-  !data
-    ? getFallbackGasPrices()
-    : source === 'etherscan'
-    ? parseGasPricesEtherscan(data)
-    : parseGasPricesEthGasStation(data);
+export const parseGasPrices = (
+  data,
+  source = gasUtils.GAS_PRICE_SOURCES.ETHERSCAN
+) => {
+  if (!data) return getFallbackGasPrices();
+  switch (source) {
+    case gasUtils.GAS_PRICE_SOURCES.ETH_GAS_STATION:
+      return parseGasPricesEthGasStation(data);
+    case gasUtils.GAS_PRICE_SOURCES.MATIC_GAS_STATION:
+      return parseGasPricesMaticGasStation(data);
+    default:
+      return parseGasPricesEtherscan(data);
+  }
+};
 
 export const defaultGasPriceFormat = (option, timeWait, value) => {
   const timeAmount = multiply(timeWait, timeUnits.ms.minute);
@@ -75,7 +89,7 @@ export const defaultGasPriceFormat = (option, timeWait, value) => {
     },
     option,
     value: {
-      amount: weiAmount,
+      amount: Math.round(weiAmount),
       display: `${parseInt(value, 10)} Gwei`,
     },
   };

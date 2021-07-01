@@ -17,6 +17,12 @@ const SLOW = 'slow';
 
 const GasSpeedOrder = [SLOW, NORMAL, FAST, CUSTOM];
 
+const GAS_PRICE_SOURCES = {
+  ETH_GAS_STATION: 'ethGasStation',
+  ETHERSCAN: 'etherscan',
+  MATIC_GAS_STATION: 'maticGasStation',
+};
+
 const showTransactionSpeedOptions = (
   gasPrices,
   txFees,
@@ -73,6 +79,7 @@ const formatGasSpeedItems = (gasPrices, txFees, hideCustom = false) => {
 export default {
   CUSTOM,
   FAST,
+  GAS_PRICE_SOURCES,
   GasSpeedOrder,
   NORMAL,
   showTransactionSpeedOptions,

@@ -44,6 +44,7 @@ class TransactionListViewCell: TransactionListBaseCell {
   @IBOutlet weak var balanceDisplay: UILabel!
   @IBOutlet weak var nativeDisplay: UILabel!
   @IBOutlet weak var coinImage: UIImageView!
+  @IBOutlet weak var badge: UIImageView!
   
   override func awakeFromNib() {
     super.awakeFromNib()
@@ -67,6 +68,29 @@ class TransactionListViewCell: TransactionListBaseCell {
     transactionType.isAccessibilityElement = true;
     if transaction.title != nil && transaction.transactionDescription != nil && transaction.balanceDisplay != nil {
       transactionType.accessibilityIdentifier = "\(transaction.title!)-\(transaction.transactionDescription!)-\(transaction.balanceDisplay!)"
+    }
+    
+    if transaction.optimism {
+      var imgName = "optimismBadge"
+      if(darkMode){ imgName += "Dark" }
+      if let img = UIImage.init(named:imgName) {
+        badge.image = img
+        badge.isHidden = false
+      }
+    } else if transaction.polygon {
+      var imgName = "polygonBadge"
+      if(darkMode){ imgName += "Dark" }
+      if let img = UIImage.init(named:imgName) {
+        badge.image = img
+        badge.isHidden = false
+      }
+    } else if transaction.arbitrum {
+      var imgName = "arbitrumBadge"
+      if(darkMode){ imgName += "Dark" }
+      if let img = UIImage.init(named:imgName) {
+        badge.image = img
+        badge.isHidden = false
+      }
     }
 
     

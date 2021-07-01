@@ -3,7 +3,9 @@ import { savingsAssets } from './compound';
 import { Asset, SavingsAsset } from '@rainbow-me/entities';
 
 export { default as balanceCheckerContractAbi } from './balances-checker-abi.json';
+export { default as balanceCheckerContractAbiOVM } from './balances-checker-abi-ovm.json';
 export { default as chains } from './chains.json';
+export { default as chainAssets } from './chain-assets.json';
 export { default as coingeckoIdsFallback } from './coingecko/ids.json';
 export { compoundCERC20ABI, compoundCETHABI } from './compound';
 export { default as DefaultTokenLists } from './default-token-lists.json';
@@ -19,7 +21,6 @@ export { default as migratedTokens } from './migratedTokens.json';
 export { default as supportedNativeCurrencies } from './native-currencies.json';
 export { default as shitcoins } from './shitcoins.json';
 export { default as smartContractMethods } from './smartcontract-methods.json';
-export { default as testnetAssets } from './testnet-assets.json';
 export {
   CURATED_UNISWAP_TOKENS,
   PAIR_GET_RESERVES_CALL_DATA,
@@ -50,6 +51,14 @@ export const RAINBOW_PROFILES_BASE_URL = 'https://rainbow.me';
 
 export const ETH_COINGECKO_ID = 'ethereum';
 export const ETH_ADDRESS = 'eth';
+export const ARBITRUM_ETH_ADDRESS =
+  '0x0000000000000000000000000000000000000000';
+export const OPTIMISM_ETH_ADDRESS =
+  '0x4200000000000000000000000000000000000006';
+export const MATIC_MAINNET_ADDRESS =
+  '0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0';
+export const MATIC_POLYGON_ADDRESS =
+  '0x0000000000000000000000000000000000001010';
 export const WETH_ADDRESS = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
 export const CDAI_CONTRACT = '0x5d3a536e4d6dbd6114cc1ead35777bab948e3643';
 export const SAI_ADDRESS = '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359';

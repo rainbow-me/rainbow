@@ -113,7 +113,7 @@ const calcMinGasPriceAllowed = prevGasPrice => {
 
 export default function SpeedUpAndCancelSheet() {
   const { goBack } = useNavigation();
-  const { accountAddress } = useAccountSettings();
+  const { accountAddress, network } = useAccountSettings();
   const dispatch = useDispatch();
   const { height: deviceHeight } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
@@ -450,6 +450,7 @@ export default function SpeedUpAndCancelSheet() {
                   )}
                   <GasSpeedButtonContainer>
                     <GasSpeedButton
+                      currentNetwork={network}
                       minGasPrice={minGasPrice}
                       onCustomGasBlur={hideKeyboard}
                       onCustomGasFocus={showKeyboard}
