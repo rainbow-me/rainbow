@@ -11,6 +11,7 @@ import React, {
 import { InteractionManager, View } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import styled from 'styled-components';
+import ChainLogo from '../components/ChainLogo';
 import Divider from '../components/Divider';
 import { Alert } from '../components/alerts';
 import ButtonPressAnimation from '../components/animations/ButtonPressAnimation';
@@ -24,11 +25,13 @@ import {
   SheetActionButtonRow,
 } from '../components/sheet';
 import { Text } from '../components/text';
+import { useTheme } from '@rainbow-me/context';
 import {
   getDappHostname,
   isDappAuthenticated,
 } from '@rainbow-me/helpers/dappNameHandler';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { useAccountProfile, useAccountSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
@@ -99,6 +102,7 @@ export default function WalletConnectApprovalSheet() {
   } = useAccountProfile();
   const { network } = useAccountSettings();
   const { navigate } = useNavigation();
+  const { isDarkMode } = useTheme();
 
   const checkIfScam = useCallback(
     async dappUrl => {
@@ -131,6 +135,28 @@ export default function WalletConnectApprovalSheet() {
   const formattedDappUrl = useMemo(() => {
     return getDappHostname(dappUrl);
   }, [dappUrl]);
+
+  const networksMenuItems = useMemo(
+    () =>
+      Object.values(networkInfo)
+        .filter(({ disabled }) => !disabled)
+        .map(netInfo => ({
+          actionKey: `${netInfo.value}`,
+          actionTitle: netInfo.name,
+          icon: {
+            iconType: 'ASSET',
+            iconValue: `${netInfo.layer2 ? netInfo.value : 'ethereum'}Badge${
+              isDarkMode ? 'Dark' : ''
+            }`,
+          },
+        })),
+    [isDarkMode]
+  );
+
+  const handleOnPressNetworksMenuItem = useCallback(({ nativeEvent }) => {
+    const chainId = ethereumUtils.getChainIdFromNetwork(nativeEvent.actionKey);
+    alert(`${chainId} chainId was pressed`);
+  }, []);
 
   const handleSuccess = useCallback(
     (success = false) => {
@@ -260,25 +286,16 @@ export default function WalletConnectApprovalSheet() {
             activeOpacity={0}
             isMenuPrimaryAction
             menuConfig={{
-              menuItems: [
-                {
-                  actionKey: 'action-key',
-                  actionTitle: 'Action #1',
-                },
-              ],
-              menuTitle: 'Context Menu Example',
+              menuItems: networksMenuItems,
+              menuTitle: 'Available Networks',
             }}
-            onPressMenuItem={({ nativeEvent }) => {
-              alert(`${nativeEvent.actionKey} was pressed`);
-            }}
+            onPressMenuItem={handleOnPressNetworksMenuItem}
             useActionSheetFallback={false}
             wrapNativeComponent={false}
           >
             <ButtonPressAnimation>
               <Row>
-                <AvatarWrapper>
-                  <ImageAvatar image={accountImage} size="smaller" />
-                </AvatarWrapper>
+                <ChainLogo network={networkTypes.arbitrum} size={20} />
                 <NetworkText color={get(networkInfo[network], 'color')}>
                   {get(networkInfo[network], 'name')}
                 </NetworkText>
