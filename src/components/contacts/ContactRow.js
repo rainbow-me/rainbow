@@ -1,7 +1,10 @@
 import React, { Fragment } from 'react';
 import styled from 'styled-components';
-import { removeFirstEmojiFromString } from '../../helpers/emojiHandler';
-import { abbreviations, magicMemo } from '../../utils';
+import {
+  removeFirstEmojiFromString,
+  returnStringFirstEmoji,
+} from '../../helpers/emojiHandler';
+import { abbreviations, magicMemo, defaultProfileUtils } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText } from '../coin-row';
 import { Column, RowWithMargins } from '../layout';
@@ -52,6 +55,13 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
     cleanedUpBalance = '0';
   }
 
+  // show avatar for contact rows that are accounts, not contacts
+  const avatar =
+    accountType !== 'contacts'
+      ? returnStringFirstEmoji(label) ||
+        defaultProfileUtils.addressHashedEmoji(address)
+      : null;
+
   let cleanedUpLabel = null;
   if (label) {
     cleanedUpLabel = removeFirstEmojiFromString(label).join('');
@@ -76,7 +86,7 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
             color={color}
             marginRight={10}
             size="medium"
-            value={nickname || label || ens}
+            value={avatar || nickname || label || ens}
           />
         )}
         <Column justify={ios ? 'space-between' : 'center'}>
