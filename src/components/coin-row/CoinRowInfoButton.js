@@ -1,4 +1,6 @@
 import React from 'react';
+import { View } from 'react-native';
+import { IS_TESTING } from 'react-native-dotenv';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import RadialGradient from 'react-native-radial-gradient';
 import styled from 'styled-components';
@@ -29,10 +31,12 @@ const InfoButton = styled(Centered)`
   width: 68px;
 `;
 
-const Circle = styled(RadialGradient).attrs(({ theme: { colors } }) => ({
-  center: [0, 15],
-  colors: colors.gradients.lightestGrey,
-}))`
+const Circle = styled(IS_TESTING === 'true' ? View : RadialGradient).attrs(
+  ({ theme: { colors } }) => ({
+    center: [0, 15],
+    colors: colors.gradients.lightestGrey,
+  })
+)`
   border-radius: 15px;
   height: 30px;
   overflow: hidden;

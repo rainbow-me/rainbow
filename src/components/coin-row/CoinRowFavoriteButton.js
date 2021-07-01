@@ -1,4 +1,6 @@
 import React from 'react';
+import { View } from 'react-native';
+import { IS_TESTING } from 'react-native-dotenv';
 import { BaseButton } from 'react-native-gesture-handler';
 import RadialGradient from 'react-native-radial-gradient';
 import styled from 'styled-components';
@@ -22,7 +24,7 @@ const FavoriteButton = styled(Centered)`
   width: 68px;
 `;
 
-const Circle = styled(RadialGradient).attrs(
+const Circle = styled(IS_TESTING === 'true' ? View : RadialGradient).attrs(
   ({ isFavorited, theme: { colors, isDarkMode } }) => ({
     center: [0, 15],
     colors: isFavorited
