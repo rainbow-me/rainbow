@@ -85,7 +85,14 @@ export default function WalletConnectApprovalSheet() {
   const { colors } = useTheme();
   const { goBack } = useNavigation();
   const { params } = useRoute();
+  const { network } = useAccountSettings();
   const [scam, setScam] = useState(false);
+  const [approvalNetwork, setApprovalNetwork] = useState({
+    color: get(networkInfo[network], 'color'),
+    name: get(networkInfo[network], 'name'),
+    value: get(networkInfo[network], 'value'),
+  });
+
   const handled = useRef(false);
   const type = params?.type || WalletConnectApprovalSheetType.connect;
   const chainId = params?.chainId || 1;
@@ -100,7 +107,6 @@ export default function WalletConnectApprovalSheet() {
     accountENS,
     accountName,
   } = useAccountProfile();
-  const { network } = useAccountSettings();
   const { navigate } = useNavigation();
   const { isDarkMode } = useTheme();
 
@@ -153,10 +159,17 @@ export default function WalletConnectApprovalSheet() {
     [isDarkMode]
   );
 
-  const handleOnPressNetworksMenuItem = useCallback(({ nativeEvent }) => {
-    const chainId = ethereumUtils.getChainIdFromNetwork(nativeEvent.actionKey);
-    alert(`${chainId} chainId was pressed`);
-  }, []);
+  const handleOnPressNetworksMenuItem = useCallback(
+    ({ nativeEvent }) => {
+      // const chainId = ethereumUtils.getChainIdFromNetwork(nativeEvent.actionKey);
+      setApprovalNetwork({
+        color: get(networkInfo[nativeEvent.actionKey], 'color'),
+        name: get(networkInfo[nativeEvent.actionKey], 'name'),
+        value: get(networkInfo[nativeEvent.actionKey], 'value'),
+      });
+    },
+    [setApprovalNetwork]
+  );
 
   const handleSuccess = useCallback(
     (success = false) => {
@@ -295,13 +308,11 @@ export default function WalletConnectApprovalSheet() {
           >
             <ButtonPressAnimation>
               <Row>
-                <ChainLogo network={networkTypes.arbitrum} size={20} />
-                <NetworkText color={get(networkInfo[network], 'color')}>
-                  {get(networkInfo[network], 'name')}
+                <ChainLogo network={approvalNetwork.value} size={20} />
+                <NetworkText color={approvalNetwork.color} numberOfLines={1}>
+                  {approvalNetwork.value}
                 </NetworkText>
-                <SwitchText color={get(networkInfo[network], 'color')}>
-                  􀁰
-                </SwitchText>
+                <SwitchText color={approvalNetwork.color}>􀁰</SwitchText>
               </Row>
             </ButtonPressAnimation>
           </ContextMenuButton>
