@@ -152,13 +152,7 @@ export default function SendSheet(props) {
 
   const isNft = selected?.type === AssetTypes.nft;
 
-  const { handleFocus, triggerFocus } = useMagicAutofocus(
-    recipientFieldRef,
-    useCallback(
-      lastFocusedRef => (showAssetList ? null : lastFocusedRef.current),
-      [showAssetList]
-    )
-  );
+  const { handleFocus, triggerFocus } = useMagicAutofocus(recipientFieldRef);
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => startPollingGasPrices());
