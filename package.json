@@ -1,12 +1,12 @@
 {
   "name": "Rainbow",
-  "version": "1.5.14-1",
+  "version": "1.5.15-1",
   "private": true,
   "scripts": {
     "setup": "yarn install && yarn allow-scripts && yarn postinstall",
     "android": "yarn uninstall:android && react-native run-android",
     "android:apk": "yarn update-tokens && yarn gradle assembleRelease && yarn uninstall:android && yarn android:load-apk",
-    "android:bundle": "./scripts/check-env.sh && yarn update-tokens && yarn gradle bundleRelease && open android/app/build/outputs/bundle/release/",
+    "android:bundle": "./scripts/check-env.sh && yarn gradle bundleRelease && open android/app/build/outputs/bundle/release/",
     "android:load-apk": "adb install android/app/build/outputs/apk/release/app-release.apk",
     "clean:android": "yarn uninstall:android && yarn gradle clean",
     "detox:android": "detox build -c android.emu.debug && detox test -R 1 -c android.emu.debug --loglevel verbose",
@@ -306,7 +306,8 @@
     "**/@hapi/hoek": "8.5.1",
     "**/glob-parent": "6.0.0",
     "**/merge-deep": "3.0.3",
-    "**/css-what": "5.0.1"
+    "**/css-what": "5.0.1",
+    "**/socket.io-parser": "4.0.2"
   },
   "jest": {
     "preset": "react-native",
