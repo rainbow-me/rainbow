@@ -33,6 +33,7 @@ import { SwipeNavigator } from './SwipeNavigator';
 import {
   addTokenSheetConfig,
   backupSheetConfig,
+  basicSheetConfig,
   defaultScreenStackOptions,
   expandedAssetSheetConfig,
   expandedAssetSheetConfigWithLimit,
@@ -40,7 +41,6 @@ import {
   nativeStackDefaultConfig,
   nativeStackDefaultConfigWithoutStatusBar,
   restoreSheetConfig,
-  savingsSheetConfig,
   stackNavigationConfig,
 } from './config';
 import {
@@ -340,7 +340,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={SavingsSheet}
         name={Routes.SAVINGS_SHEET}
-        {...savingsSheetConfig}
+        {...basicSheetConfig}
       />
       <NativeStack.Screen
         component={TransactionConfirmationScreen}
@@ -395,12 +395,12 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={WalletConnectApprovalSheet}
         name={Routes.WALLET_CONNECT_APPROVAL_SHEET}
-        {...savingsSheetConfig}
+        {...basicSheetConfig}
       />
       <NativeStack.Screen
         component={WalletConnectRedirectSheet}
         name={Routes.WALLET_CONNECT_REDIRECT_SHEET}
-        {...savingsSheetConfig}
+        {...basicSheetConfig}
       />
     </NativeStack.Navigator>
   );
