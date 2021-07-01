@@ -64,7 +64,7 @@
     "short_name": "arb",
     "chain": "ETH",
     "network": "arbitrum",
-    "chain_id": 421611,
-    "network_id": 421611
+    "chain_id": 42161,
+    "network_id": 42161
   }
 ]

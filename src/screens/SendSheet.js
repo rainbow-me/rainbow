@@ -372,6 +372,7 @@ export default function SendSheet(props) {
 
     let submitSuccess = false;
     let updatedGasLimit = null;
+
     // Attempt to update gas limit before sending ERC20 / ERC721
     if (!isNativeAsset(selected.address, currentNetwork)) {
       try {
@@ -469,7 +470,15 @@ export default function SendSheet(props) {
         navigate(Routes.PROFILE_SCREEN);
       });
     }
-  }, [amountDetails.assetAmount, navigate, onSubmit, recipient, selected]);
+  }, [
+    amountDetails.assetAmount,
+    goBack,
+    navigate,
+    onSubmit,
+    recipient,
+    selected?.name,
+    selected?.type,
+  ]);
 
   const onPressTransactionSpeed = useCallback(
     onSuccess => {
@@ -597,7 +606,7 @@ export default function SendSheet(props) {
     updateTxFee,
   ]);
 
-  const { colors } = useTheme();
+  const { colors, isDarkMode } = useTheme();
 
   const { buttonDisabled, buttonLabel } = useMemo(() => {
     const isZeroAssetAmount = Number(amountDetails.assetAmount) <= 0;
@@ -675,7 +684,13 @@ export default function SendSheet(props) {
             assetAmount={amountDetails.assetAmount}
             buttonRenderer={
               <SheetActionButton
-                color={buttonDisabled ? colors.white : colors.appleBlue}
+                color={
+                  buttonDisabled
+                    ? isDarkMode
+                      ? colors.darkGrey
+                      : colors.lightGrey
+                    : colors.appleBlue
+                }
                 disabled={buttonDisabled}
                 label={buttonLabel}
                 onPress={onPressSend}
