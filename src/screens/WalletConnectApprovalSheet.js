@@ -85,9 +85,10 @@ export default function WalletConnectApprovalSheet() {
   const { colors } = useTheme();
   const { goBack } = useNavigation();
   const { params } = useRoute();
-  const { network } = useAccountSettings();
+  const { network, accountAddress } = useAccountSettings();
   const [scam, setScam] = useState(false);
   const [approvalNetwork, setApprovalNetwork] = useState({
+    chainId: ethereumUtils.getChainIdFromNetwork(network),
     color: get(networkInfo[network], 'color'),
     name: get(networkInfo[network], 'name'),
     value: get(networkInfo[network], 'value'),
@@ -161,11 +162,12 @@ export default function WalletConnectApprovalSheet() {
 
   const handleOnPressNetworksMenuItem = useCallback(
     ({ nativeEvent }) => {
-      // const chainId = ethereumUtils.getChainIdFromNetwork(nativeEvent.actionKey);
+      const network = nativeEvent.actionKey;
       setApprovalNetwork({
-        color: get(networkInfo[nativeEvent.actionKey], 'color'),
-        name: get(networkInfo[nativeEvent.actionKey], 'name'),
-        value: get(networkInfo[nativeEvent.actionKey], 'value'),
+        chainId: ethereumUtils.getChainIdFromNetwork(network),
+        color: get(networkInfo[network], 'color'),
+        name: get(networkInfo[network], 'name'),
+        value: get(networkInfo[network], 'value'),
       });
     },
     [setApprovalNetwork]
@@ -174,10 +176,13 @@ export default function WalletConnectApprovalSheet() {
   const handleSuccess = useCallback(
     (success = false) => {
       if (callback) {
-        setTimeout(() => callback(success), 300);
+        setTimeout(
+          () => callback(success, approvalNetwork.chainId, accountAddress),
+          300
+        );
       }
     },
-    [callback]
+    [accountAddress, callback, approvalNetwork]
   );
 
   useEffect(() => {
