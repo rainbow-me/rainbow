@@ -9,6 +9,7 @@ import { Centered, ColumnWithMargins } from '../components/layout';
 import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, GradientText, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { useDimensions } from '@rainbow-me/hooks';
 import { fonts, fontWithWidth, position } from '@rainbow-me/styles';
 
@@ -60,7 +61,7 @@ export const explainers = {
   },
   optimism: {
     emoji: '⛽️',
-    logo: <ChainLogo assetType="optimism" />,
+    logo: <ChainLogo network={networkTypes.optimism} />,
     text: OPTIMISM_EXPLAINER,
     title: `What's Optimism?`,
     readMoreLink: 'https://rainbow.me',
@@ -68,7 +69,7 @@ export const explainers = {
   },
   arbitrum: {
     emoji: '⛽️',
-    logo: <ChainLogo assetType="arbitrum" />,
+    logo: <ChainLogo network={networkTypes.arbitrum} />,
     text: ARBITRUM_EXPLAINER,
     title: `What's Arbitrum?`,
     readMoreLink: 'https://rainbow.me',
@@ -76,7 +77,7 @@ export const explainers = {
   },
   polygon: {
     emoji: '⛽️',
-    logo: <ChainLogo assetType="polygon" />,
+    logo: <ChainLogo network={networkTypes.polygon} />,
     text: POLYGON_EXPLAINER,
     title: `What's Polygon?`,
     readMoreLink: 'https://rainbow.me',

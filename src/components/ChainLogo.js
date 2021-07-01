@@ -7,7 +7,7 @@ import OptimismBadgeDark from '../assets/badges/optimismBadgeDark.png';
 import PolygonBadge from '../assets/badges/polygonBadge.png';
 import PolygonBadgeDark from '../assets/badges/polygonBadgeDark.png';
 import { Centered } from './layout';
-import { AssetType } from '@rainbow-me/entities';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { ImgixImage } from '@rainbow-me/images';
 import { position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
@@ -31,19 +31,19 @@ const Content = styled(Centered)`
   ${({ size }) => position.size(size)};
 `;
 
-export default function ChainLogo({ assetType, size = 40, ...props }) {
+export default function ChainLogo({ network, size = 40, ...props }) {
   const { colors, isDarkMode } = useTheme();
   const source = useMemo(() => {
     let val = null;
-    if (assetType === AssetType.arbitrum) {
+    if (networkTypes === networkTypes.arbitrum) {
       val = isDarkMode ? ArbitrumBadgeDark : ArbitrumBadge;
-    } else if (assetType === AssetType.optimism) {
+    } else if (network === networkTypes.optimism) {
       val = isDarkMode ? OptimismBadgeDark : OptimismBadge;
-    } else if (assetType === AssetType.polygon) {
+    } else if (network === networkTypes.polygon) {
       val = isDarkMode ? PolygonBadgeDark : PolygonBadge;
     }
     return val;
-  }, [assetType, isDarkMode]);
+  }, [isDarkMode, network]);
 
   if (!source) return null;
 
