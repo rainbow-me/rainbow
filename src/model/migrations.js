@@ -304,7 +304,7 @@ export default async function runMigrations() {
       const wallet = wallets[walletKeys[i]];
       const newAddresses = wallet.addresses.map(address => ({
         ...address,
-        color: newColorIndexes[address.color],
+        color: newColorIndexes[address.color] || 0,
       }));
       const newWallet = { ...wallet, addresses: newAddresses };
       updatedWallets[walletKeys[i]] = newWallet;
