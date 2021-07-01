@@ -4,7 +4,7 @@ import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
 } from '../../helpers/emojiHandler';
-import { abbreviations, magicMemo, defaultProfileUtils } from '../../utils';
+import { abbreviations, defaultProfileUtils, magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText } from '../coin-row';
 import { Column, RowWithMargins } from '../layout';
