@@ -35,7 +35,7 @@ export default function ChainLogo({ network, size = 40, ...props }) {
   const { colors, isDarkMode } = useTheme();
   const source = useMemo(() => {
     let val = null;
-    if (networkTypes === networkTypes.arbitrum) {
+    if (network === networkTypes.arbitrum) {
       val = isDarkMode ? ArbitrumBadgeDark : ArbitrumBadge;
     } else if (network === networkTypes.optimism) {
       val = isDarkMode ? OptimismBadgeDark : OptimismBadge;
