@@ -44,10 +44,8 @@ import {
   stackNavigationConfig,
 } from './config';
 import {
-  bottomSheetPreset,
   emojiPreset,
   exchangePreset,
-  expandedPreset,
   overlayExpandedPreset,
   sheetPreset,
 } from './effects';
@@ -138,16 +136,6 @@ function MainNavigator() {
         component={AvatarBuilder}
         name={Routes.AVATAR_BUILDER}
         options={emojiPreset}
-      />
-      <Stack.Screen
-        component={WalletConnectApprovalSheet}
-        name={Routes.WALLET_CONNECT_APPROVAL_SHEET}
-        options={expandedPreset}
-      />
-      <Stack.Screen
-        component={WalletConnectRedirectSheet}
-        name={Routes.WALLET_CONNECT_REDIRECT_SHEET}
-        options={bottomSheetPreset}
       />
     </Stack.Navigator>
   );
@@ -404,6 +392,16 @@ function NativeStackNavigator() {
           options={{ customStack: true }}
         />
       )}
+      <NativeStack.Screen
+        component={WalletConnectApprovalSheet}
+        name={Routes.WALLET_CONNECT_APPROVAL_SHEET}
+        {...savingsSheetConfig}
+      />
+      <NativeStack.Screen
+        component={WalletConnectRedirectSheet}
+        name={Routes.WALLET_CONNECT_REDIRECT_SHEET}
+        {...savingsSheetConfig}
+      />
     </NativeStack.Navigator>
   );
 }
