@@ -1,3 +1,4 @@
+import { isValidAddress as validateAddress } from 'ethereumjs-util';
 import { get, isEmpty, toLower } from 'lodash';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
@@ -97,7 +98,7 @@ export default function SendHeader({
       address: recipient,
       color,
       contact: isEmpty(contact.address)
-        ? recipient.match(/^(0x)?[0-9a-fA-F]{40}$/)
+        ? validateAddress(recipient)
           ? false
           : { color, nickname: recipient, temporary: true }
         : contact,
