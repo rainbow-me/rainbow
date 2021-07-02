@@ -1,5 +1,5 @@
 import React from 'react';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, PixelRatio, StyleSheet, View } from 'react-native';
 import styled from 'styled-components';
 import { magicMemo } from '../../../utils';
 import { SimpleModelView } from '../../3d';
@@ -56,6 +56,17 @@ const UniqueTokenExpandedStateImage = ({ asset }) => {
       asset.image_thumbnail_url;
   const { dimensions: imageDimensions } = useImageMetadata(imageUrl);
 
+  const pixelRatio = PixelRatio.get();
+  const size = Math.ceil((deviceWidth * pixelRatio) / 100) * 100;
+  const url = useMemo(() => {
+    if (
+      asset.image_url?.startsWith?.('https://lh3.googleusercontent.com/') &&
+      size > 0
+    ) {
+      return `${asset.image_url}=w${size}`;
+    }
+    return asset.image_url;
+  }, [asset.image_url, size]);
   const maxImageWidth = deviceWidth - paddingHorizontal * 2;
   const maxImageHeight = maxImageWidth * 1.5;
 
@@ -94,7 +105,7 @@ const UniqueTokenExpandedStateImage = ({ asset }) => {
           ) : (
             <UniqueTokenImage
               backgroundColor={asset.background}
-              imageUrl={imageUrl}
+              imageUrl={url}
               item={asset}
               resizeMode="contain"
             />
