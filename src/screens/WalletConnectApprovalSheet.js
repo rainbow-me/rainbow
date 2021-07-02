@@ -343,7 +343,9 @@ export default function WalletConnectApprovalSheet() {
           >
             <ButtonPressAnimation>
               <Row>
-                <ChainLogo network={approvalNetworkInfo.value} />
+                <Centered marginBottom={0} marginRight={8} marginTop={5}>
+                  <ChainLogo network={approvalNetworkInfo.value} />
+                </Centered>
                 <LabelText color={approvalNetworkInfo.color} numberOfLines={1}>
                   {approvalNetworkInfo.name}
                 </LabelText>
