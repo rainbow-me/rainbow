@@ -2,9 +2,8 @@ import {
   isENSAddressFormat,
   isUnstoppableAddressFormat,
 } from '../helpers/validators';
-import deviceUtils from './deviceUtils';
 
-const defaultNumCharsPerSection = deviceUtils.isNarrowPhone ? 8 : 10;
+const defaultNumCharsPerSection = 6;
 
 export function address(
   currentAddress,

@@ -11,7 +11,7 @@ import { Column, Row } from '../components/layout';
 import { useNavigation } from '../navigation/Navigation';
 import { walletsSetSelected, walletsUpdate } from '../redux/wallets';
 import { deviceUtils } from '../utils';
-import { useWallets, useWebData } from '@rainbow-me/hooks';
+import { useDimensions, useWallets, useWebData } from '@rainbow-me/hooks';
 import useAccountSettings from '@rainbow-me/hooks/useAccountSettings';
 
 const AvatarCircleHeight = 65;
@@ -31,6 +31,22 @@ const SheetContainer = styled(Column)`
   width: 100%;
 `;
 
+const ScrollableColorPicker = styled.ScrollView`
+  overflow: visible;
+  margin: 0px 10px;
+`;
+
+const SelectedColorRing = styled(Animated.View)`
+  height: 38;
+  width: 38;
+  border-radius: 19;
+  border-width: 3;
+  position: absolute;
+  align-self: center;
+  left: 0.75;
+  border-color: ${({ selectedColor }) => selectedColor};
+`;
+
 const springTo = (node, toValue) =>
   Animated.spring(node, {
     damping: 38,
@@ -43,14 +59,15 @@ const springTo = (node, toValue) =>
   }).start();
 
 const AvatarBuilder = ({ route: { params } }) => {
+  const { width } = useDimensions();
   const { wallets, selectedWallet } = useWallets();
   const { updateWebProfile } = useWebData();
-  const [translateX] = useValues((params.initialAccountColor - 4) * 39);
+  const [translateX] = useValues(params.initialAccountColor * 39);
   const { goBack } = useNavigation();
   const { accountAddress } = useAccountSettings();
   const { colors } = useTheme();
   const [currentAccountColor, setCurrentAccountColor] = useState(
-    colors.avatarColor[params.initialAccountColor]
+    colors.avatarBackgrounds[params.initialAccountColor]
   );
   const dispatch = useDispatch();
 
@@ -58,16 +75,16 @@ const AvatarBuilder = ({ route: { params } }) => {
     saveInfo(`${event} ${params.initialAccountName}`);
   };
 
-  const avatarColors = colors.avatarColor.map((color, index) => (
+  const avatarColors = colors.avatarBackgrounds.map((color, index) => (
     <ColorCircle
       backgroundColor={color}
       isSelected={index - 4 === 0}
       key={color}
       onPressColor={() => {
-        const destination = (index - 4) * 39;
+        const destination = index * 39;
         springTo(translateX, destination);
         setCurrentAccountColor(color);
-        saveInfo(null, index);
+        saveInfo(null, colors.avatarBackgrounds.indexOf(color));
       }}
     />
   ));
@@ -95,12 +112,29 @@ const AvatarBuilder = ({ route: { params } }) => {
     updateWebProfile(
       accountAddress,
       name,
-      (color !== undefined && colors.avatarColor[color]) || currentAccountColor
+      (color !== undefined && colors.avatarBackgrounds[color]) ||
+        currentAccountColor
     );
   };
 
   const colorCircleTopPadding = 15;
   const colorCircleBottomPadding = 19;
+
+  const selectedOffset = useMemo(() => {
+    const maxOffset = colors.avatarBackgrounds.length * 39 - width + 20;
+    const rawOffset =
+      params.initialAccountColor * 39 - width / 2 + width ** 0.5 * 1.5;
+    let finalOffset = rawOffset;
+    if (rawOffset < 0) {
+      finalOffset = 0;
+    }
+    if (rawOffset > maxOffset) {
+      finalOffset = maxOffset;
+    }
+    return {
+      x: finalOffset, // curve to have selected color in middle of scrolling colorpicker
+    };
+  }, [params.initialAccountColor, width, colors.avatarBackgrounds.length]);
 
   return (
     <Container {...deviceUtils.dimensions}>
@@ -113,27 +147,24 @@ const AvatarBuilder = ({ route: { params } }) => {
         <Row
           height={38 + colorCircleTopPadding + colorCircleBottomPadding}
           justify="center"
-          maxWidth={375}
           paddingBottom={colorCircleBottomPadding + 7}
           paddingTop={colorCircleTopPadding + 7}
           width="100%"
         >
-          <Animated.View
-            alignSelf="center"
-            borderColor={currentAccountColor}
-            borderRadius={19}
-            borderWidth={3}
-            height={38}
-            position="absolute"
-            style={{
-              transform: [{ translateX }],
-            }}
-            top={colorCircleTopPadding}
-            width={38}
-          />
-          {avatarColors}
+          <ScrollableColorPicker
+            contentOffset={selectedOffset}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+          >
+            <SelectedColorRing
+              selectedColor={currentAccountColor}
+              style={{
+                transform: [{ translateX }],
+              }}
+            />
+            {avatarColors}
+          </ScrollableColorPicker>
         </Row>
-
         <SheetContainer>
           <EmojiSelector
             columns={7}

@@ -75,10 +75,11 @@ export default function useImportingWallet() {
   );
 
   const showWalletProfileModal = useCallback(
-    (name, forceColor) => {
+    (name, forceColor, address = null) => {
       navigate(Routes.MODAL_SCREEN, {
         actionType: 'Import',
         additionalPadding: true,
+        address,
         asset: [],
         forceColor,
         isNewProfile: true,
@@ -96,7 +97,13 @@ export default function useImportingWallet() {
   );
 
   const handlePressImportButton = useCallback(
-    async (forceColor, forceAddress) => {
+    async (forceColor, forceAddress, forceEmoji = null) => {
+      // guard against pressEvent coming in as forceColor if
+      // handlePressImportButton is used as onClick handler
+      let guardedForceColor =
+        typeof forceColor === 'string' || typeof forceColor === 'number'
+          ? forceColor
+          : null;
       if ((!isSecretValid || !seedPhrase) && !forceAddress) return null;
       const input = sanitizeSeedPhrase(seedPhrase || forceAddress);
       let name = null;
@@ -109,8 +116,8 @@ export default function useImportingWallet() {
             return;
           }
           setResolvedAddress(address);
-          name = input;
-          showWalletProfileModal(name, forceColor);
+          name = forceEmoji ? `${forceEmoji} ${input}` : input;
+          showWalletProfileModal(name, guardedForceColor, address);
         } catch (e) {
           Alert.alert(
             'Sorry, we cannot add this ENS name at this time. Please try again later!'
@@ -126,8 +133,8 @@ export default function useImportingWallet() {
             return;
           }
           setResolvedAddress(address);
-          name = input;
-          showWalletProfileModal(name, forceColor);
+          name = forceEmoji ? `${forceEmoji} ${input}` : input;
+          showWalletProfileModal(name, guardedForceColor, address);
         } catch (e) {
           Alert.alert(
             'Sorry, we cannot add this Unstoppable name at this time. Please try again later!'
@@ -137,9 +144,9 @@ export default function useImportingWallet() {
       } else if (isValidAddress(input)) {
         const ens = await web3Provider.lookupAddress(input);
         if (ens && ens !== input) {
-          name = ens;
+          name = forceEmoji ? `${forceEmoji} ${ens}` : ens;
         }
-        showWalletProfileModal(name, forceColor);
+        showWalletProfileModal(name, guardedForceColor, input);
       } else {
         try {
           setBusy(true);
@@ -150,10 +157,14 @@ export default function useImportingWallet() {
             setCheckedWallet(walletResult);
             const ens = await web3Provider.lookupAddress(walletResult.address);
             if (ens && ens !== input) {
-              name = ens;
+              name = forceEmoji ? `${forceEmoji} ${ens}` : ens;
             }
             setBusy(false);
-            showWalletProfileModal(name, forceColor);
+            showWalletProfileModal(
+              name,
+              guardedForceColor,
+              walletResult.address
+            );
           }, 100);
         } catch (error) {
           logger.log('Error looking up ENS for imported HD type wallet', error);

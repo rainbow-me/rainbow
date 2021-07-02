@@ -1,7 +1,10 @@
 import React, { Fragment } from 'react';
 import styled from 'styled-components';
-import { removeFirstEmojiFromString } from '../../helpers/emojiHandler';
-import { abbreviations, magicMemo } from '../../utils';
+import {
+  removeFirstEmojiFromString,
+  returnStringFirstEmoji,
+} from '../../helpers/emojiHandler';
+import { abbreviations, defaultProfileUtils, magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText } from '../coin-row';
 import { Column, RowWithMargins } from '../layout';
@@ -46,11 +49,18 @@ const ContactName = styled(TruncatedText).attrs({
 const ContactRow = ({ address, color, nickname, ...props }, ref) => {
   const { width: deviceWidth } = useDimensions();
   const { colors } = useTheme();
-  const { accountType, image, label, balance, ens, index, onPress } = props;
+  const { accountType, balance, ens, image, label, onPress } = props;
   let cleanedUpBalance = balance;
   if (balance === '0.00') {
     cleanedUpBalance = '0';
   }
+
+  // show avatar for contact rows that are accounts, not contacts
+  const avatar =
+    accountType !== 'contacts'
+      ? returnStringFirstEmoji(label) ||
+        defaultProfileUtils.addressHashedEmoji(address)
+      : null;
 
   let cleanedUpLabel = null;
   if (label) {
@@ -76,7 +86,7 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
             color={color}
             marginRight={10}
             size="medium"
-            value={nickname || label || ens || `${index + 1}`}
+            value={avatar || nickname || label || ens}
           />
         )}
         <Column justify={ios ? 'space-between' : 'center'}>
