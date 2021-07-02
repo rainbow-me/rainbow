@@ -88,16 +88,14 @@ export default function WalletConnectApprovalSheet() {
   const { network, accountAddress: settingsAddress } = useAccountSettings();
   const handled = useRef(false);
   const [scam, setScam] = useState(false);
-  const [approvalAccountAddress, setApprovalAccountAddress] = useState(
-    settingsAddress
-  );
+
   const [approvalNetwork, setApprovalNetwork] = useState(network);
   const wallets = useWallets();
   const { selectedWallet, walletNames } = wallets;
-  const [approvalSelectedWallet, setApprovalSelectedWallet] = useState(
-    selectedWallet
-  );
-
+  const [approvalAccount, setApprovalAccount] = useState({
+    address: settingsAddress,
+    wallet: selectedWallet,
+  });
   const type = params?.type || WalletConnectApprovalSheetType.connect;
 
   // What's this used for?
@@ -140,21 +138,21 @@ export default function WalletConnectApprovalSheet() {
     return getDappHostname(dappUrl);
   }, [dappUrl]);
 
-  const approvalAccountInfo = useMemo(
-    () =>
-      getAccountProfileInfo(
-        approvalSelectedWallet,
-        walletNames,
-        approvalNetwork,
-        approvalAccountAddress
-      ),
-    [
-      approvalSelectedWallet,
+  const approvalAccountInfo = useMemo(() => {
+    const approvalAccountInfo = getAccountProfileInfo(
+      approvalAccount.wallet,
       walletNames,
       approvalNetwork,
-      approvalAccountAddress,
-    ]
-  );
+      approvalAccount.address
+    );
+    return {
+      ...approvalAccountInfo,
+      accountLabel:
+        approvalAccountInfo.accountENS ||
+        approvalAccountInfo.accountName ||
+        approvalAccount.address,
+    };
+  }, [walletNames, approvalNetwork, approvalAccount]);
 
   const approvalNetworkInfo = useMemo(
     () => ({
@@ -196,13 +194,13 @@ export default function WalletConnectApprovalSheet() {
             callback(
               success,
               approvalNetworkInfo.chainId,
-              approvalAccountAddress
+              approvalAccount.address
             ),
           300
         );
       }
     },
-    [approvalAccountAddress, callback, approvalNetworkInfo]
+    [approvalAccount.address, callback, approvalNetworkInfo]
   );
 
   useEffect(() => {
@@ -233,10 +231,8 @@ export default function WalletConnectApprovalSheet() {
 
   const handlePressChangeWallet = useCallback(() => {
     Navigation.handleAction(Routes.CHANGE_WALLET_SHEET, {
-      onChangeWallet: (address, selectedWallet) => {
-        setApprovalAccountAddress(address);
-        setApprovalSelectedWallet(selectedWallet);
-      },
+      onChangeWallet: (address, wallet) =>
+        setApprovalAccount({ address, wallet }),
       watchOnly: true,
     });
   }, []);
@@ -325,9 +321,7 @@ export default function WalletConnectApprovalSheet() {
                 )}
               </AvatarWrapper>
               <NetworkText numberOfLines={1}>
-                {approvalAccountInfo.accountENS ||
-                  approvalAccountInfo.accountName ||
-                  approvalAccountAddress}
+                {approvalAccountInfo.accountLabel}
               </NetworkText>
               <SwitchText>􀁰</SwitchText>
             </Row>
