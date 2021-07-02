@@ -67,7 +67,7 @@ export const explainers = {
     text: OPTIMISM_EXPLAINER,
     title: `What's Optimism?`,
     readMoreLink: 'https://rainbow.me',
-    extraHeight: 60,
+    extraHeight: 70,
   },
   arbitrum: {
     emoji: '⛽️',
@@ -77,7 +77,7 @@ export const explainers = {
     text: ARBITRUM_EXPLAINER,
     title: `What's Arbitrum?`,
     readMoreLink: 'https://rainbow.me',
-    extraHeight: 50,
+    extraHeight: 60,
   },
   polygon: {
     emoji: '⛽️',
@@ -87,6 +87,7 @@ export const explainers = {
     text: POLYGON_EXPLAINER,
     title: `What's Polygon?`,
     readMoreLink: 'https://rainbow.me',
+    extraHeight: 90,
   },
 };
 
