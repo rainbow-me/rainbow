@@ -238,7 +238,6 @@ export default function WalletConnectApprovalSheet() {
   const onPressAndroid = useCallback(() => {
     showActionSheetWithOptions(
       {
-        cancelButtonIndex: 2,
         options: androidNetworkActions,
         showSeparators: true,
         title: `Available Networks`,
