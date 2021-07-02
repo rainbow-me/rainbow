@@ -10,7 +10,6 @@ import { Centered } from './layout';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { ImgixImage } from '@rainbow-me/images';
 import { position } from '@rainbow-me/styles';
-import ShadowStack from 'react-native-shadow-stack';
 
 const ChainIcon = styled(ImgixImage)`
   height: ${({ size }) => size};
@@ -18,21 +17,13 @@ const ChainIcon = styled(ImgixImage)`
   width: ${({ size }) => size};
 `;
 
-const RVLIBorderRadius = 16.25;
-const RVLIShadows = colors => ({
-  default: [
-    [0, 4, 6, colors.shadow, 0.04],
-    [0, 1, 3, colors.shadow, 0.08],
-  ],
-  large: [[0, 6, 10, colors.shadow, 0.14]],
-});
-
 const Content = styled(Centered)`
-  ${({ size }) => position.size(size)};
+  ${({ size }) => position.size(size / 2)};
+  overflow: visible;
 `;
 
 export default function ChainLogo({ network, size = 40, ...props }) {
-  const { colors, isDarkMode } = useTheme();
+  const { isDarkMode } = useTheme();
   const source = useMemo(() => {
     let val = null;
     if (network === networkTypes.arbitrum) {
@@ -48,16 +39,8 @@ export default function ChainLogo({ network, size = 40, ...props }) {
   if (!source) return null;
 
   return (
-    <ShadowStack
-      {...props}
-      {...position.sizeAsObject(size)}
-      backgroundColor={colors.white}
-      borderRadius={RVLIBorderRadius}
-      shadows={RVLIShadows(colors)['default']}
-    >
-      <Content size={size}>
-        <ChainIcon size={size} source={source} />
-      </Content>
-    </ShadowStack>
+    <Content size={size * 0.5} {...props}>
+      <ChainIcon size={size} source={source} />
+    </Content>
   );
 }
