@@ -51,8 +51,8 @@ import {
 import logger from 'logger';
 
 const deviceHeight = deviceUtils.dimensions.height;
-export const footerHeight = 111;
-export const listPaddingBottom = 6;
+const footerHeight = 111;
+const listPaddingBottom = 6;
 const walletRowHeight = 59;
 const maxListHeight = deviceHeight - 220;
 
