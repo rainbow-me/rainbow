@@ -163,7 +163,7 @@ export default function ChangeWalletSheet() {
       if (watchOnly) {
         setCurrentAddress(address);
         setCurrentSelectedWallet(wallet);
-        onChangeWallet(address);
+        onChangeWallet(address, wallet);
         return;
       }
       if (address === currentAddress) return;

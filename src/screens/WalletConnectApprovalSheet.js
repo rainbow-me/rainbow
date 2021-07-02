@@ -32,11 +32,7 @@ import {
   isDappAuthenticated,
 } from '@rainbow-me/helpers/dappNameHandler';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
-import {
-  useAccountProfile,
-  useAccountSettings,
-  useWallets,
-} from '@rainbow-me/hooks';
+import { useAccountSettings, useWallets } from '@rainbow-me/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils } from '@rainbow-me/utils';
@@ -90,13 +86,17 @@ export default function WalletConnectApprovalSheet() {
   const { goBack } = useNavigation();
   const { params } = useRoute();
   const { network, accountAddress: settingsAddress } = useAccountSettings();
+  const handled = useRef(false);
   const [scam, setScam] = useState(false);
   const [approvalAccountAddress, setApprovalAccountAddress] = useState(
     settingsAddress
   );
   const [approvalNetwork, setApprovalNetwork] = useState(network);
   const wallets = useWallets();
-  const handled = useRef(false);
+  const { selectedWallet, walletNames } = wallets;
+  const [approvalSelectedWallet, setApprovalSelectedWallet] = useState(
+    selectedWallet
+  );
 
   const type = params?.type || WalletConnectApprovalSheetType.connect;
 
@@ -105,7 +105,6 @@ export default function WalletConnectApprovalSheet() {
   const meta = params?.meta || {};
   const { dappName, dappUrl, imageUrl } = meta;
   const callback = params?.callback;
-  const { selectedWallet, walletNames } = wallets;
 
   const { isDarkMode } = useTheme();
 
@@ -144,12 +143,17 @@ export default function WalletConnectApprovalSheet() {
   const approvalAccountInfo = useMemo(
     () =>
       getAccountProfileInfo(
-        selectedWallet,
+        approvalSelectedWallet,
         walletNames,
         approvalNetwork,
         approvalAccountAddress
       ),
-    [selectedWallet, walletNames, approvalNetwork, approvalAccountAddress]
+    [
+      approvalSelectedWallet,
+      walletNames,
+      approvalNetwork,
+      approvalAccountAddress,
+    ]
   );
 
   const approvalNetworkInfo = useMemo(
@@ -229,8 +233,9 @@ export default function WalletConnectApprovalSheet() {
 
   const handlePressChangeWallet = useCallback(() => {
     Navigation.handleAction(Routes.CHANGE_WALLET_SHEET, {
-      onChangeWallet: address => {
+      onChangeWallet: (address, selectedWallet) => {
         setApprovalAccountAddress(address);
+        setApprovalSelectedWallet(selectedWallet);
       },
       watchOnly: true,
     });
