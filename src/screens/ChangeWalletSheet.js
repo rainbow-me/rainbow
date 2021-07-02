@@ -134,9 +134,8 @@ export default function ChangeWalletSheet() {
     selectedWallet
   );
 
-  // FIX THIS
-  const watchOnly = false;
   const onChangeWallet = params?.onChangeWallet;
+  const watchOnly = params?.watchOnly;
 
   const walletRowCount = useMemo(() => getWalletRowCount(wallets), [wallets]);
 

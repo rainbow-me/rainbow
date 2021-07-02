@@ -232,6 +232,7 @@ export default function WalletConnectApprovalSheet() {
       onChangeWallet: address => {
         setApprovalAccountAddress(address);
       },
+      watchOnly: true,
     });
   }, []);
 
