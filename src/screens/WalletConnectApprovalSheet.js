@@ -35,7 +35,7 @@ import networkInfo from '@rainbow-me/helpers/networkInfo';
 import { useAccountSettings, useWallets } from '@rainbow-me/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const DappLogo = styled(RequestVendorLogoIcon).attrs(
   ({ theme: { colors } }) => ({
@@ -80,6 +80,12 @@ export const WalletConnectApprovalSheetType = {
   connect: 1,
   switch_chain: 2,
 };
+const androidNetworkActions = Object.values(networkInfo)
+  .filter(({ disabled }) => !disabled)
+  .map(netInfo => netInfo.name);
+
+const androidReverseNetoworkWithName = name =>
+  Object.values(networkInfo).find(netInfo => netInfo.name === name);
 
 export default function WalletConnectApprovalSheet() {
   const { colors } = useTheme();
@@ -229,6 +235,23 @@ export default function WalletConnectApprovalSheet() {
     handleSuccess(false);
   }, [handleSuccess, goBack]);
 
+  const onPressAndroid = useCallback(() => {
+    showActionSheetWithOptions(
+      {
+        cancelButtonIndex: 2,
+        options: androidNetworkActions,
+        showSeparators: true,
+        title: `Available Networks`,
+      },
+      idx => {
+        const { value } = androidReverseNetoworkWithName(
+          androidNetworkActions[idx]
+        );
+        setApprovalNetwork(value);
+      }
+    );
+  }, []);
+
   const handlePressChangeWallet = useCallback(() => {
     Navigation.handleAction(Routes.CHANGE_WALLET_SHEET, {
       currentAccountAddress: approvalAccount.address,
@@ -333,6 +356,7 @@ export default function WalletConnectApprovalSheet() {
           <ContextMenuButton
             activeOpacity={0}
             isMenuPrimaryAction
+            {...(android ? { onPress: onPressAndroid } : {})}
             menuConfig={{
               menuItems: networksMenuItems,
               menuTitle: 'Available Networks',
