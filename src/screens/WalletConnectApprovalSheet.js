@@ -26,6 +26,7 @@ import {
 } from '../components/sheet';
 import { Text } from '../components/text';
 import { useTheme } from '@rainbow-me/context';
+import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
 import {
   getDappHostname,
   isDappAuthenticated,
@@ -90,30 +91,21 @@ export default function WalletConnectApprovalSheet() {
   const { params } = useRoute();
   const { network, accountAddress: settingsAddress } = useAccountSettings();
   const [scam, setScam] = useState(false);
-  const [accountAddress, setAccountAddress] = useState(settingsAddress);
-  const [approvalNetwork, setApprovalNetwork] = useState({
-    chainId: ethereumUtils.getChainIdFromNetwork(network),
-    color: get(networkInfo[network], 'color'),
-    name: get(networkInfo[network], 'name'),
-    value: get(networkInfo[network], 'value'),
-  });
+  const [approvalAccountAddress, setApprovalAccountAddress] = useState(
+    settingsAddress
+  );
+  const [approvalNetwork, setApprovalNetwork] = useState(network);
   const wallets = useWallets();
-
   const handled = useRef(false);
+
   const type = params?.type || WalletConnectApprovalSheetType.connect;
+
+  // What's this used for?
   const chainId = params?.chainId || 1;
   const meta = params?.meta || {};
   const { dappName, dappUrl, imageUrl } = meta;
   const callback = params?.callback;
   const { selectedWallet, walletNames } = wallets;
-
-  const {
-    accountSymbol,
-    accountColor,
-    accountImage,
-    accountENS,
-    accountName,
-  } = useAccountProfile(selectedWallet, walletNames, network, accountAddress);
 
   const { isDarkMode } = useTheme();
 
@@ -149,6 +141,27 @@ export default function WalletConnectApprovalSheet() {
     return getDappHostname(dappUrl);
   }, [dappUrl]);
 
+  const approvalAccountInfo = useMemo(
+    () =>
+      getAccountProfileInfo(
+        selectedWallet,
+        walletNames,
+        approvalNetwork,
+        approvalAccountAddress
+      ),
+    [selectedWallet, walletNames, approvalNetwork, approvalAccountAddress]
+  );
+
+  const approvalNetworkInfo = useMemo(
+    () => ({
+      chainId: ethereumUtils.getChainIdFromNetwork(approvalNetwork),
+      color: get(networkInfo[approvalNetwork], 'color'),
+      name: get(networkInfo[approvalNetwork], 'name'),
+      value: get(networkInfo[approvalNetwork], 'value'),
+    }),
+    [approvalNetwork]
+  );
+
   const networksMenuItems = useMemo(
     () =>
       Object.values(networkInfo)
@@ -167,15 +180,7 @@ export default function WalletConnectApprovalSheet() {
   );
 
   const handleOnPressNetworksMenuItem = useCallback(
-    ({ nativeEvent }) => {
-      const network = nativeEvent.actionKey;
-      setApprovalNetwork({
-        chainId: ethereumUtils.getChainIdFromNetwork(network),
-        color: get(networkInfo[network], 'color'),
-        name: get(networkInfo[network], 'name'),
-        value: get(networkInfo[network], 'value'),
-      });
-    },
+    ({ nativeEvent }) => setApprovalNetwork(nativeEvent.actionKey),
     [setApprovalNetwork]
   );
 
@@ -183,12 +188,17 @@ export default function WalletConnectApprovalSheet() {
     (success = false) => {
       if (callback) {
         setTimeout(
-          () => callback(success, approvalNetwork.chainId, accountAddress),
+          () =>
+            callback(
+              success,
+              approvalNetworkInfo.chainId,
+              approvalAccountAddress
+            ),
           300
         );
       }
     },
-    [accountAddress, callback, approvalNetwork]
+    [approvalAccountAddress, callback, approvalNetworkInfo]
   );
 
   useEffect(() => {
@@ -220,7 +230,7 @@ export default function WalletConnectApprovalSheet() {
   const handlePressChangeWallet = useCallback(() => {
     Navigation.handleAction(Routes.CHANGE_WALLET_SHEET, {
       onChangeWallet: address => {
-        setAccountAddress(address);
+        setApprovalAccountAddress(address);
       },
     });
   }, []);
@@ -291,18 +301,27 @@ export default function WalletConnectApprovalSheet() {
           <ButtonPressAnimation onPress={handlePressChangeWallet}>
             <Row>
               <AvatarWrapper>
-                {accountImage ? (
-                  <ImageAvatar image={accountImage} size="smaller" />
+                {approvalAccountInfo.accountImage ? (
+                  <ImageAvatar
+                    image={approvalAccountInfo.accountImage}
+                    size="smaller"
+                  />
                 ) : (
                   <ContactAvatar
-                    color={isNaN(accountColor) ? colors.skeleton : accountColor}
+                    color={
+                      isNaN(approvalAccountInfo.accountColor)
+                        ? colors.skeleton
+                        : approvalAccountInfo.accountColor
+                    }
                     size="smaller"
-                    value={accountSymbol}
+                    value={approvalAccountInfo.accountSymbol}
                   />
                 )}
               </AvatarWrapper>
               <NetworkText numberOfLines={1}>
-                {accountENS || accountName}
+                {approvalAccountInfo.accountENS ||
+                  approvalAccountInfo.accountName ||
+                  approvalAccountAddress}
               </NetworkText>
               <SwitchText>􀁰</SwitchText>
             </Row>
@@ -323,11 +342,14 @@ export default function WalletConnectApprovalSheet() {
           >
             <ButtonPressAnimation>
               <Row>
-                <ChainLogo network={approvalNetwork.value} size={20} />
-                <NetworkText color={approvalNetwork.color} numberOfLines={1}>
-                  {approvalNetwork.value}
+                <ChainLogo network={approvalNetworkInfo.value} size={20} />
+                <NetworkText
+                  color={approvalNetworkInfo.color}
+                  numberOfLines={1}
+                >
+                  {approvalNetworkInfo.name}
                 </NetworkText>
-                <SwitchText color={approvalNetwork.color}>􀁰</SwitchText>
+                <SwitchText color={approvalNetworkInfo.color}>􀁰</SwitchText>
               </Row>
             </ButtonPressAnimation>
           </ContextMenuButton>

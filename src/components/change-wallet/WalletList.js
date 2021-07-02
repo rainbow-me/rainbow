@@ -226,7 +226,7 @@ export default function WalletList({
           return null;
       }
     },
-    [editMode, onEditWallet]
+    [editMode, onEditWallet, watchOnly]
   );
 
   return (
