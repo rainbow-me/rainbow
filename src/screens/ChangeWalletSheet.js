@@ -1,3 +1,4 @@
+import { useRoute } from '@react-navigation/core';
 import { captureException } from '@sentry/react-native';
 import { get, toLower } from 'lodash';
 import React, {
@@ -50,8 +51,8 @@ import {
 import logger from 'logger';
 
 const deviceHeight = deviceUtils.dimensions.height;
-const footerHeight = 111;
-const listPaddingBottom = 6;
+export const footerHeight = 111;
+export const listPaddingBottom = 6;
 const walletRowHeight = 59;
 const maxListHeight = deviceHeight - 220;
 
@@ -120,6 +121,7 @@ export default function ChangeWalletSheet() {
   const [editMode, setEditMode] = useState(false);
   const { colors } = useTheme();
   const { updateWebProfile } = useWebData();
+  const { params } = useRoute();
 
   const { goBack, navigate } = useNavigation();
   const dispatch = useDispatch();
@@ -132,11 +134,15 @@ export default function ChangeWalletSheet() {
     selectedWallet
   );
 
+  const watchOnly = true;
+  const onChangeWallet = params?.onChangeWallet;
+
   const walletRowCount = useMemo(() => getWalletRowCount(wallets), [wallets]);
 
   let headerHeight = android ? 0 : 30;
   let listHeight =
-    walletRowHeight * walletRowCount + footerHeight + listPaddingBottom;
+    walletRowHeight * walletRowCount +
+    (!watchOnly ? footerHeight + listPaddingBottom : 0);
   let scrollEnabled = false;
   let showDividers = false;
   if (listHeight > maxListHeight) {
@@ -153,9 +159,15 @@ export default function ChangeWalletSheet() {
   const onChangeAccount = useCallback(
     async (walletId, address, fromDeletion = false) => {
       if (editMode && !fromDeletion) return;
+      const wallet = wallets[walletId];
+      if (watchOnly) {
+        setCurrentAddress(address);
+        setCurrentSelectedWallet(wallet);
+        onChangeWallet(address);
+        return;
+      }
       if (address === currentAddress) return;
       try {
-        const wallet = wallets[walletId];
         setCurrentAddress(address);
         setCurrentSelectedWallet(wallet);
         const p1 = dispatch(walletsSetSelected(wallet));
@@ -168,7 +180,16 @@ export default function ChangeWalletSheet() {
         logger.log('error while switching account', e);
       }
     },
-    [currentAddress, dispatch, editMode, goBack, initializeWallet, wallets]
+    [
+      currentAddress,
+      dispatch,
+      editMode,
+      goBack,
+      initializeWallet,
+      onChangeWallet,
+      wallets,
+      watchOnly,
+    ]
   );
 
   const deleteWallet = useCallback(
@@ -488,11 +509,13 @@ export default function ChangeWalletSheet() {
           <Divider color={colors.rowDividerExtraLight} inset={[0, 15]} />
         )}
       </Column>
-      <EditButton editMode={editMode} onPress={() => setEditMode(e => !e)}>
-        <EditButtonLabel editMode={editMode}>
-          {editMode ? 'Done' : 'Edit'}
-        </EditButtonLabel>
-      </EditButton>
+      {!watchOnly && (
+        <EditButton editMode={editMode} onPress={() => setEditMode(e => !e)}>
+          <EditButtonLabel editMode={editMode}>
+            {editMode ? 'Done' : 'Edit'}
+          </EditButtonLabel>
+        </EditButton>
+      )}
       <WalletList
         accountAddress={currentAddress}
         allWallets={walletsWithBalancesAndNames}
@@ -505,6 +528,7 @@ export default function ChangeWalletSheet() {
         onPressImportSeedPhrase={onPressImportSeedPhrase}
         scrollEnabled={scrollEnabled}
         showDividers={showDividers}
+        watchOnly={watchOnly}
       />
     </Sheet>
   );

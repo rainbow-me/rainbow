@@ -31,9 +31,12 @@ import {
   isDappAuthenticated,
 } from '@rainbow-me/helpers/dappNameHandler';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
-import { useAccountProfile, useAccountSettings } from '@rainbow-me/hooks';
-import { useNavigation } from '@rainbow-me/navigation';
+import {
+  useAccountProfile,
+  useAccountSettings,
+  useWallets,
+} from '@rainbow-me/hooks';
+import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils } from '@rainbow-me/utils';
 
@@ -85,14 +88,16 @@ export default function WalletConnectApprovalSheet() {
   const { colors } = useTheme();
   const { goBack } = useNavigation();
   const { params } = useRoute();
-  const { network, accountAddress } = useAccountSettings();
+  const { network, accountAddress: settingsAddress } = useAccountSettings();
   const [scam, setScam] = useState(false);
+  const [accountAddress, setAccountAddress] = useState(settingsAddress);
   const [approvalNetwork, setApprovalNetwork] = useState({
     chainId: ethereumUtils.getChainIdFromNetwork(network),
     color: get(networkInfo[network], 'color'),
     name: get(networkInfo[network], 'name'),
     value: get(networkInfo[network], 'value'),
   });
+  const wallets = useWallets();
 
   const handled = useRef(false);
   const type = params?.type || WalletConnectApprovalSheetType.connect;
@@ -100,6 +105,7 @@ export default function WalletConnectApprovalSheet() {
   const meta = params?.meta || {};
   const { dappName, dappUrl, imageUrl } = meta;
   const callback = params?.callback;
+  const { selectedWallet, walletNames } = wallets;
 
   const {
     accountSymbol,
@@ -107,8 +113,8 @@ export default function WalletConnectApprovalSheet() {
     accountImage,
     accountENS,
     accountName,
-  } = useAccountProfile();
-  const { navigate } = useNavigation();
+  } = useAccountProfile(selectedWallet, walletNames, network, accountAddress);
+
   const { isDarkMode } = useTheme();
 
   const checkIfScam = useCallback(
@@ -212,8 +218,12 @@ export default function WalletConnectApprovalSheet() {
   }, [handleSuccess, goBack]);
 
   const handlePressChangeWallet = useCallback(() => {
-    navigate(Routes.CHANGE_WALLET_SHEET);
-  }, [navigate]);
+    Navigation.handleAction(Routes.CHANGE_WALLET_SHEET, {
+      onChangeWallet: address => {
+        setAccountAddress(address);
+      },
+    });
+  }, []);
 
   useEffect(() => {
     if (scam) {
