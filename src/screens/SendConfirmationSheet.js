@@ -1,10 +1,11 @@
 import { useRoute } from '@react-navigation/native';
-import { capitalize } from 'lodash';
+import { capitalize, get, toLower } from 'lodash';
 import React, { useCallback } from 'react';
 import { StatusBar } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components';
+import ContactRowInfoButton from '../components/ContactRowInfoButton';
 import L2Explainer from '../components/L2Disclaimer';
 import Pill from '../components/Pill';
 import TouchableBackdrop from '../components/TouchableBackdrop';
@@ -14,12 +15,20 @@ import { ContactAvatar } from '../components/contacts';
 import { Centered, Column, Row } from '../components/layout';
 import { SendButton } from '../components/send';
 import { SheetDivider, SheetTitle, SlackSheet } from '../components/sheet';
-import { Text, TruncatedAddress } from '../components/text';
+import {
+  Text,
+  TruncatedAddress,
+  TruncatedENS,
+  TruncatedText,
+} from '../components/text';
+import { getRandomColor } from '../styles/colors';
 import { isL2Network } from '@rainbow-me/handlers/web3';
 import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
+import { isENSAddressFormat } from '@rainbow-me/helpers/validators';
 import {
   useAccountSettings,
   useColorForAsset,
+  useContacts,
   useDimensions,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
@@ -81,15 +90,30 @@ const Checkbox = ({ id, checked, label, onPress, activeColor }) => {
   );
 };
 
+const defaultContactItem = randomColor => ({
+  address: '',
+  color: randomColor,
+  nickname: '',
+});
+
 export default function SendConfirmationSheet() {
   const { nativeCurrency } = useAccountSettings();
   const { goBack, navigate } = useNavigation();
   const { height: deviceHeight } = useDimensions();
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const insets = useSafeArea();
+  const { contacts } = useContacts();
   const {
-    params: { asset, amountDetails, callback, network, to },
+    params: { asset, amountDetails, callback, network, to, toAddress },
   } = useRoute();
+
+  const contact = useMemo(() => {
+    return get(
+      contacts,
+      `${[toLower(to)]}`,
+      defaultContactItem(getRandomColor())
+    );
+  }, [contacts, to]);
 
   const { colors } = useTheme();
   const [checkboxes, setCheckboxes] = useState([
@@ -201,14 +225,37 @@ export default function SendConfirmationSheet() {
             </Row>
 
             <Row marginBottom={30}>
-              <Column>
-                <TruncatedAddress
-                  address={to}
-                  firstSectionLength={6}
-                  size="big"
-                  truncationLength={4}
-                  weight="bold"
-                />
+              <Column flex={1}>
+                {isENSAddressFormat(to) || contact?.nickname ? (
+                  <Row>
+                    <Column>
+                      {isENSAddressFormat(to) ? (
+                        <TruncatedENS ens={to} size="big" weight="bold" />
+                      ) : (
+                        <TruncatedText size="big" weight="bold">
+                          {contact?.nickname}
+                        </TruncatedText>
+                      )}
+                    </Column>
+                    <Column>
+                      <ContactRowInfoButton
+                        item={{
+                          address: toAddress,
+                          name: contact?.nickname || to,
+                        }}
+                        network={network}
+                      />
+                    </Column>
+                  </Row>
+                ) : (
+                  <TruncatedAddress
+                    address={to}
+                    firstSectionLength={6}
+                    size="big"
+                    truncationLength={4}
+                    weight="bold"
+                  />
+                )}
                 <Row paddingTop={4}>
                   <Text
                     color={colors.alpha(colors.blueGreyDark, 0.6)}
@@ -219,7 +266,7 @@ export default function SendConfirmationSheet() {
                   </Text>
                 </Row>
               </Column>
-              <Column align="end" flex={1} justify="end">
+              <Column align="end" justify="end">
                 <ContactAvatar color={color} size="lmedium" value={to} />
               </Column>
             </Row>

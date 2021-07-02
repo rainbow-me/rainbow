@@ -5,9 +5,10 @@ import { abbreviations, magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText } from '../coin-row';
 import { Column, RowWithMargins } from '../layout';
-import { TruncatedAddress, TruncatedText } from '../text';
+import { TruncatedAddress, TruncatedENS, TruncatedText } from '../text';
 import ContactAvatar from './ContactAvatar';
 import ImageAvatar from './ImageAvatar';
+import { isENSAddressFormat } from '@rainbow-me/helpers/validators';
 import { useDimensions } from '@rainbow-me/hooks';
 import { margin } from '@rainbow-me/styles';
 
@@ -21,6 +22,16 @@ const ContactAddress = styled(TruncatedAddress).attrs(
     weight: 'regular',
   })
 )`
+  width: 100%;
+`;
+
+const ContactENS = styled(TruncatedENS).attrs(({ theme: { colors } }) => ({
+  align: 'left',
+  color: colors.alpha(colors.blueGreyDark, 0.4),
+  size: 'smedium',
+  truncationLength: 18,
+  weight: 'regular',
+}))`
   width: 100%;
 `;
 
@@ -77,7 +88,9 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
                 </ContactName>
               ) : (
                 <ContactName deviceWidth={deviceWidth}>
-                  {abbreviations.address(address, 4, 6)}
+                  {isENSAddressFormat(address)
+                    ? address
+                    : abbreviations.address(address, 4, 6)}
                 </ContactName>
               )}
               <BottomRowText color={colors.alpha(colors.blueGreyDark, 0.5)}>
@@ -89,7 +102,11 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
               <ContactName deviceWidth={deviceWidth}>
                 {removeFirstEmojiFromString(nickname)}
               </ContactName>
-              <ContactAddress address={address} />
+              {isENSAddressFormat(address) ? (
+                <ContactENS ens={address} />
+              ) : (
+                <ContactAddress address={address} />
+              )}
             </Fragment>
           )}
         </Column>

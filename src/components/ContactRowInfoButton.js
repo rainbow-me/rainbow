@@ -4,10 +4,10 @@ import { IS_TESTING } from 'react-native-dotenv';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import RadialGradient from 'react-native-radial-gradient';
 import styled from 'styled-components';
-import { ButtonPressAnimation } from '../animations';
-import { Centered } from '../layout';
-import { Text } from '../text';
-import { CoinRowHeight } from './CoinRow';
+import { ButtonPressAnimation } from './animations';
+import { CoinRowHeight } from './coin-row/CoinRow';
+import { Centered } from './layout';
+import { Text } from './text';
 import { useClipboard } from '@rainbow-me/hooks';
 import { fonts, fontWithWidth, padding } from '@rainbow-me/styles';
 
@@ -22,13 +22,12 @@ const InfoButton = styled(Centered)`
   ${padding(8, 0)}
   align-items: center;
   justify-content: center;
-  bottom: 0;
   flex: 0;
   height: ${CoinRowHeight};
   position: absolute;
-  right: 40;
-  top: 0;
   width: 68px;
+  top: -15;
+  left: -5;
 `;
 
 const Circle = styled(IS_TESTING === 'true' ? View : RadialGradient).attrs(
@@ -65,7 +64,7 @@ const CoinRowActionsEnum = {
 const CoinRowActions = {
   [CoinRowActionsEnum.copyAddress]: {
     actionKey: CoinRowActionsEnum.copyAddress,
-    actionTitle: 'Copy Contract Address',
+    actionTitle: 'Copy Address',
     icon: {
       iconType: 'SYSTEM',
       iconValue: 'doc.on.doc',
@@ -81,21 +80,16 @@ const CoinRowActions = {
   },
 };
 
-const androidContractActions = [
-  'Copy Contract Address',
-  'View on Etherscan',
-  'Cancel',
-];
+const androidContractActions = ['Copy Address', 'View on Etherscan', 'Cancel'];
 
-const CoinRowInfoButton = ({ item, onCopySwapDetailsText }) => {
+const ContactRowInfoButton = ({ item, network }) => {
   const { setClipboard } = useClipboard();
-  const handleCopyContractAddress = useCallback(
+  const handleCopyAddress = useCallback(
     address => {
       haptics.selection();
       setClipboard(address);
-      onCopySwapDetailsText(address);
     },
-    [onCopySwapDetailsText, setClipboard]
+    [setClipboard]
   );
 
   const onPressAndroid = useCallback(() => {
@@ -104,18 +98,18 @@ const CoinRowInfoButton = ({ item, onCopySwapDetailsText }) => {
         cancelButtonIndex: 2,
         options: androidContractActions,
         showSeparators: true,
-        title: `${item?.name} (${item?.symbol})`,
+        title: `${item?.name}`,
       },
       idx => {
         if (idx === 0) {
-          handleCopyContractAddress(item?.address);
+          handleCopyAddress(item?.address);
         }
         if (idx === 1) {
-          ethereumUtils.openTokenEtherscanURL(item?.address);
+          ethereumUtils.openAddressInBlockExplorer(item?.address, network);
         }
       }
     );
-  }, [item, handleCopyContractAddress]);
+  }, [item?.name, item?.address, handleCopyAddress, network]);
 
   const menuConfig = useMemo(
     () => ({
@@ -128,7 +122,7 @@ const CoinRowInfoButton = ({ item, onCopySwapDetailsText }) => {
           ),
         },
       ],
-      menuTitle: `${item?.name} (${item?.symbol})`,
+      menuTitle: `${item?.name}`,
     }),
     [item]
   );
@@ -136,12 +130,12 @@ const CoinRowInfoButton = ({ item, onCopySwapDetailsText }) => {
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === CoinRowActionsEnum.copyAddress) {
-        handleCopyContractAddress(item?.address);
+        handleCopyAddress(item?.address);
       } else if (actionKey === CoinRowActionsEnum.etherscan) {
-        ethereumUtils.openTokenEtherscanURL(item?.address);
+        ethereumUtils.openAddressInBlockExplorer(item?.address);
       }
     },
-    [item, handleCopyContractAddress]
+    [item, handleCopyAddress]
   );
 
   return (
@@ -165,4 +159,4 @@ const CoinRowInfoButton = ({ item, onCopySwapDetailsText }) => {
   );
 };
 
-export default CoinRowInfoButton;
+export default ContactRowInfoButton;

@@ -61,26 +61,33 @@ export const explainers = {
   },
   optimism: {
     emoji: '⛽️',
-    logo: <ChainLogo network={networkTypes.optimism} />,
+    logo: (
+      <ChainLogo marginBottom={10} network={networkTypes.optimism} size={100} />
+    ),
     text: OPTIMISM_EXPLAINER,
     title: `What's Optimism?`,
     readMoreLink: 'https://rainbow.me',
-    extraHeight: 60,
+    extraHeight: 70,
   },
   arbitrum: {
     emoji: '⛽️',
-    logo: <ChainLogo network={networkTypes.arbitrum} />,
+    logo: (
+      <ChainLogo marginBottom={10} network={networkTypes.arbitrum} size={100} />
+    ),
     text: ARBITRUM_EXPLAINER,
     title: `What's Arbitrum?`,
     readMoreLink: 'https://rainbow.me',
-    extraHeight: 50,
+    extraHeight: 60,
   },
   polygon: {
     emoji: '⛽️',
-    logo: <ChainLogo network={networkTypes.polygon} />,
+    logo: (
+      <ChainLogo marginBottom={10} network={networkTypes.polygon} size={100} />
+    ),
     text: POLYGON_EXPLAINER,
     title: `What's Polygon?`,
     readMoreLink: 'https://rainbow.me',
+    extraHeight: 90,
   },
 };
 
@@ -128,7 +135,9 @@ const SavingsSheet = () => {
             }}
           >
             {explainers[type].logo ? (
-              <Centered>{explainers[type].logo}</Centered>
+              <Centered marginBottom={10} marginTop={20}>
+                {explainers[type].logo}
+              </Centered>
             ) : (
               <EmojiText
                 align="center"

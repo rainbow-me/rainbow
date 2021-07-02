@@ -24,11 +24,15 @@ import {
   createSignableTransaction,
   estimateGasLimit,
   getProviderForNetwork,
+  resolveNameOrAddress,
   web3Provider,
 } from '@rainbow-me/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
-import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
+import {
+  checkIsValidAddressOrDomain,
+  isENSAddressFormat,
+} from '@rainbow-me/helpers/validators';
 import {
   useAccountAssets,
   useAccountSettings,
@@ -86,7 +90,7 @@ const KeyboardSizeView = styled(KeyboardArea)`
 
 export default function SendSheet(props) {
   const dispatch = useDispatch();
-  const { navigate, addListener } = useNavigation();
+  const { goBack, navigate, addListener } = useNavigation();
   const { dataAddNewTransaction } = useTransactionConfirmation();
   const updateAssetOnchainBalanceIfNeeded = useUpdateAssetOnchainBalance();
   const { allAssets } = useAccountAssets();
@@ -372,6 +376,7 @@ export default function SendSheet(props) {
 
     let submitSuccess = false;
     let updatedGasLimit = null;
+
     // Attempt to update gas limit before sending ERC20 / ERC721
     if (!isNativeAsset(selected.address, currentNetwork)) {
       try {
@@ -396,6 +401,11 @@ export default function SendSheet(props) {
       } catch (e) {}
     }
 
+    let toAddress = recipient;
+    if (isENSAddressFormat(recipient)) {
+      toAddress = await resolveNameOrAddress(recipient);
+    }
+
     const txDetails = {
       amount: amountDetails.assetAmount,
       asset: selected,
@@ -403,7 +413,7 @@ export default function SendSheet(props) {
       gasLimit: updatedGasLimit || gasLimit,
       gasPrice: selectedGasPrice.value?.amount,
       nonce: null,
-      to: recipient,
+      to: toAddress,
     };
     try {
       const signableTransaction = await createSignableTransaction(txDetails);
@@ -463,9 +473,21 @@ export default function SendSheet(props) {
       isRecepientENS: toLower(recipient.slice(-4)) === '.eth',
     });
     if (submitSuccessful) {
-      navigate(Routes.PROFILE_SCREEN);
+      goBack();
+      navigate(Routes.WALLET_SCREEN);
+      InteractionManager.runAfterInteractions(() => {
+        navigate(Routes.PROFILE_SCREEN);
+      });
     }
-  }, [amountDetails.assetAmount, navigate, onSubmit, recipient, selected]);
+  }, [
+    amountDetails.assetAmount,
+    goBack,
+    navigate,
+    onSubmit,
+    recipient,
+    selected?.name,
+    selected?.type,
+  ]);
 
   const onPressTransactionSpeed = useCallback(
     onSuccess => {
@@ -481,22 +503,29 @@ export default function SendSheet(props) {
     [gasPrices, txFees, updateGasPriceOption, currentNetwork]
   );
 
-  const showConfirmationSheet = useCallback(() => {
+  const showConfirmationSheet = useCallback(async () => {
+    let toAddress = recipient;
+    if (isENSAddressFormat(recipient)) {
+      toAddress = await resolveNameOrAddress(recipient);
+    }
     Keyboard.dismiss();
     navigate(Routes.SEND_CONFIRMATION_SHEET, {
       amountDetails: amountDetails,
       asset: selected,
       callback: submitTransaction,
+      currentInput,
       from: accountAddress,
       gasLimit: gasLimit,
       gasPrice: selectedGasPrice.value?.amount,
       isSufficientGas,
       network: currentNetwork,
       to: recipient,
+      toAddress,
     });
   }, [
     accountAddress,
     amountDetails,
+    currentInput,
     currentNetwork,
     gasLimit,
     isSufficientGas,
@@ -593,7 +622,7 @@ export default function SendSheet(props) {
     updateTxFee,
   ]);
 
-  const { colors } = useTheme();
+  const { colors, isDarkMode } = useTheme();
 
   const { buttonDisabled, buttonLabel } = useMemo(() => {
     const isZeroAssetAmount = Number(amountDetails.assetAmount) <= 0;
@@ -671,7 +700,13 @@ export default function SendSheet(props) {
             assetAmount={amountDetails.assetAmount}
             buttonRenderer={
               <SheetActionButton
-                color={buttonDisabled ? colors.white : colors.appleBlue}
+                color={
+                  buttonDisabled
+                    ? isDarkMode
+                      ? colors.darkGrey
+                      : colors.lightGrey
+                    : colors.appleBlue
+                }
                 disabled={buttonDisabled}
                 label={buttonLabel}
                 onPress={onPressSend}

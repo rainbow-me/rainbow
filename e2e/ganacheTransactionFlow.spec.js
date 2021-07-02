@@ -141,7 +141,8 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
     await Helpers.tap('send-savings-cSAI');
     await Helpers.typeText('selected-asset-field-input', '1.69', true);
-    await Helpers.tapAndLongPress('Hold to Send');
+    await Helpers.tap('send-sheet-confirm-action-button');
+    await Helpers.tapAndLongPress('send-confirmation-button');
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
@@ -161,7 +162,8 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
     await Helpers.tap('CryptoKitties-family-header');
     await Helpers.tapByText('Arun Cattybinky');
-    await Helpers.tapAndLongPress('Hold to Send');
+    await Helpers.tap('send-sheet-confirm-action-button');
+    await Helpers.tapAndLongPress('send-confirmation-button');
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
@@ -170,7 +172,8 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
     await Helpers.tap('send-asset-BAT');
     await Helpers.typeText('selected-asset-field-input', '1.02', true);
-    await Helpers.tapAndLongPress('Hold to Send');
+    await Helpers.tap('send-sheet-confirm-action-button');
+    await Helpers.tapAndLongPress('send-confirmation-button');
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
@@ -179,7 +182,8 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
     await Helpers.tap('send-asset-ETH');
     await Helpers.typeText('selected-asset-field-input', '0.003', true);
-    await Helpers.tapAndLongPress('Hold to Send');
+    await Helpers.tap('send-sheet-confirm-action-button');
+    await Helpers.tapAndLongPress('send-confirmation-button');
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
