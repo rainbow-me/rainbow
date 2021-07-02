@@ -24,11 +24,15 @@ import {
   createSignableTransaction,
   estimateGasLimit,
   getProviderForNetwork,
+  resolveNameOrAddress,
   web3Provider,
 } from '@rainbow-me/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
-import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
+import {
+  checkIsValidAddressOrDomain,
+  isENSAddressFormat,
+} from '@rainbow-me/helpers/validators';
 import {
   useAccountAssets,
   useAccountSettings,
@@ -397,6 +401,11 @@ export default function SendSheet(props) {
       } catch (e) {}
     }
 
+    let toAddress = recipient;
+    if (isENSAddressFormat(recipient)) {
+      toAddress = await resolveNameOrAddress(recipient);
+    }
+
     const txDetails = {
       amount: amountDetails.assetAmount,
       asset: selected,
@@ -404,7 +413,7 @@ export default function SendSheet(props) {
       gasLimit: updatedGasLimit || gasLimit,
       gasPrice: selectedGasPrice.value?.amount,
       nonce: null,
-      to: recipient,
+      to: toAddress,
     };
     try {
       const signableTransaction = await createSignableTransaction(txDetails);
@@ -494,22 +503,29 @@ export default function SendSheet(props) {
     [gasPrices, txFees, updateGasPriceOption, currentNetwork]
   );
 
-  const showConfirmationSheet = useCallback(() => {
+  const showConfirmationSheet = useCallback(async () => {
+    let toAddress = recipient;
+    if (isENSAddressFormat(recipient)) {
+      toAddress = await resolveNameOrAddress(recipient);
+    }
     Keyboard.dismiss();
     navigate(Routes.SEND_CONFIRMATION_SHEET, {
       amountDetails: amountDetails,
       asset: selected,
       callback: submitTransaction,
+      currentInput,
       from: accountAddress,
       gasLimit: gasLimit,
       gasPrice: selectedGasPrice.value?.amount,
       isSufficientGas,
       network: currentNetwork,
       to: recipient,
+      toAddress,
     });
   }, [
     accountAddress,
     amountDetails,
+    currentInput,
     currentNetwork,
     gasLimit,
     isSufficientGas,

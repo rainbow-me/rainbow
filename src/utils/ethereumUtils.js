@@ -323,6 +323,21 @@ const deriveAccountFromWalletInput = input => {
   return deriveAccountFromMnemonic(input);
 };
 
+function openAddressInBlockExplorer(address, network) {
+  if (network === networkTypes.optimism) {
+    Linking.openURL(`https://optimistic.etherscan.io/address/${address}`);
+    return;
+  } else if (network === networkTypes.polygon) {
+    Linking.openURL(`https://polygonscan.com/address/${address}`);
+    return;
+  } else if (network === networkTypes.arbitrum) {
+    Linking.openURL(`https://explorer.arbitrum.io/address/${address}`);
+    return;
+  }
+  const etherscanHost = getEtherscanHostForNetwork();
+  Linking.openURL(`https://${etherscanHost}/address/${address}`);
+}
+
 function openTokenEtherscanURL(address) {
   if (!isString(address)) return;
   const etherscanHost = getEtherscanHostForNetwork();
@@ -364,6 +379,7 @@ export default {
   getNetworkNameFromChainId,
   hasPreviousTransactions,
   isEthAddress,
+  openAddressInBlockExplorer,
   openTokenEtherscanURL,
   openTransactionInBlockExplorer,
   padLeft,
