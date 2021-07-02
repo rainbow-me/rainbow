@@ -112,30 +112,31 @@ const getWalletRowCount = wallets => {
 };
 
 export default function ChangeWalletSheet() {
+  const { params = {} } = useRoute();
+  const { onChangeWallet, watchOnly = false, currentAccountAddress } = params;
   const {
     isDamaged,
     selectedWallet,
     setIsWalletLoading,
     wallets,
   } = useWallets();
-  const [editMode, setEditMode] = useState(false);
+
   const { colors } = useTheme();
   const { updateWebProfile } = useWebData();
-  const { params } = useRoute();
-
+  const { accountAddress } = useAccountSettings();
   const { goBack, navigate } = useNavigation();
   const dispatch = useDispatch();
-  const { accountAddress } = useAccountSettings();
   const initializeWallet = useInitializeWallet();
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
   const creatingWallet = useRef();
-  const [currentAddress, setCurrentAddress] = useState(accountAddress);
+
+  const [editMode, setEditMode] = useState(false);
+  const [currentAddress, setCurrentAddress] = useState(
+    currentAccountAddress || accountAddress
+  );
   const [currentSelectedWallet, setCurrentSelectedWallet] = useState(
     selectedWallet
   );
-
-  const onChangeWallet = params?.onChangeWallet;
-  const watchOnly = params?.watchOnly;
 
   const walletRowCount = useMemo(() => getWalletRowCount(wallets), [wallets]);
 
@@ -151,10 +152,6 @@ export default function ChangeWalletSheet() {
     scrollEnabled = true;
     showDividers = true;
   }
-
-  useEffect(() => {
-    setCurrentAddress(accountAddress);
-  }, [accountAddress]);
 
   const onChangeAccount = useCallback(
     async (walletId, address, fromDeletion = false) => {
