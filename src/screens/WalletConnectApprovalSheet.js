@@ -56,7 +56,7 @@ const NetworkLabelText = styled(Text).attrs(({ theme: { colors } }) => ({
   margin-bottom: 4;
 `;
 
-const NetworkText = styled(Text).attrs(() => ({
+const LabelText = styled(Text).attrs(() => ({
   lineHeight: 22,
   size: 'large',
   weight: 'heavy',
@@ -154,15 +154,15 @@ export default function WalletConnectApprovalSheet() {
     };
   }, [walletNames, approvalNetwork, approvalAccount]);
 
-  const approvalNetworkInfo = useMemo(
-    () => ({
+  const approvalNetworkInfo = useMemo(() => {
+    const value = get(networkInfo[approvalNetwork], 'value');
+    return {
       chainId: ethereumUtils.getChainIdFromNetwork(approvalNetwork),
       color: get(networkInfo[approvalNetwork], 'color'),
-      name: get(networkInfo[approvalNetwork], 'name'),
-      value: get(networkInfo[approvalNetwork], 'value'),
-    }),
-    [approvalNetwork]
-  );
+      name: value.charAt(0).toUpperCase() + value.slice(1),
+      value,
+    };
+  }, [approvalNetwork]);
 
   const networksMenuItems = useMemo(
     () =>
@@ -320,9 +320,9 @@ export default function WalletConnectApprovalSheet() {
                   />
                 )}
               </AvatarWrapper>
-              <NetworkText numberOfLines={1}>
+              <LabelText numberOfLines={1}>
                 {approvalAccountInfo.accountLabel}
-              </NetworkText>
+              </LabelText>
               <SwitchText>􀁰</SwitchText>
             </Row>
           </ButtonPressAnimation>
@@ -342,13 +342,10 @@ export default function WalletConnectApprovalSheet() {
           >
             <ButtonPressAnimation>
               <Row>
-                <ChainLogo network={approvalNetworkInfo.value} size={20} />
-                <NetworkText
-                  color={approvalNetworkInfo.color}
-                  numberOfLines={1}
-                >
+                <ChainLogo network={approvalNetworkInfo.value} />
+                <LabelText color={approvalNetworkInfo.color} numberOfLines={1}>
                   {approvalNetworkInfo.name}
-                </NetworkText>
+                </LabelText>
                 <SwitchText color={approvalNetworkInfo.color}>􀁰</SwitchText>
               </Row>
             </ButtonPressAnimation>
