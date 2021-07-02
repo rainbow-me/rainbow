@@ -10,8 +10,9 @@ import { Button } from '../buttons';
 import { showDeleteContactActionSheet } from '../contacts';
 import CopyTooltip from '../copy-tooltip';
 import { Centered } from '../layout';
-import { Text, TruncatedAddress } from '../text';
+import { Text, TruncatedAddress, TruncatedENS } from '../text';
 import { ProfileAvatarButton, ProfileModal, ProfileNameInput } from './profile';
+import { isENSAddressFormat } from '@rainbow-me/helpers/validators';
 import { useAccountSettings, useContacts } from '@rainbow-me/hooks';
 import { margin, padding } from '@rainbow-me/styles';
 
@@ -25,6 +26,18 @@ const AddressAbbreviation = styled(TruncatedAddress).attrs(
     weight: 'regular',
   })
 )`
+  ${margin(9, 0, 5)};
+  opacity: 0.6;
+  width: 100%;
+`;
+
+const ENSAbbreviation = styled(TruncatedENS).attrs(({ theme: { colors } }) => ({
+  align: 'center',
+  color: colors.blueGreyDark,
+  size: 'lmedium',
+  truncationLength: 18,
+  weight: 'regular',
+}))`
   ${margin(9, 0, 5)};
   opacity: 0.6;
   width: 100%;
@@ -121,7 +134,11 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
           textToCopy={address}
           tooltipText="Copy Address"
         >
-          <AddressAbbreviation address={address} />
+          {isENSAddressFormat(address) ? (
+            <ENSAbbreviation ens={address} />
+          ) : (
+            <AddressAbbreviation address={address} />
+          )}
         </CopyTooltip>
         <Centered paddingVertical={19} width={93}>
           <Divider inset={false} />
