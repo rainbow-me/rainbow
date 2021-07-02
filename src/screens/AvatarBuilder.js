@@ -26,7 +26,8 @@ const Container = styled(Column)`
 const SheetContainer = styled(Column)`
   background-color: ${({ theme: { colors } }) => colors.white};
   border-radius: 20px;
-  height: 420px;
+  height: ${({ deviceHeight }) =>
+    deviceHeight ? Math.floor((deviceHeight / 13) ** 1.5) : 420}px;
   overflow: hidden;
   width: 100%;
 `;
@@ -59,7 +60,7 @@ const springTo = (node, toValue) =>
   }).start();
 
 const AvatarBuilder = ({ route: { params } }) => {
-  const { width } = useDimensions();
+  const { width, height } = useDimensions();
   const { wallets, selectedWallet } = useWallets();
   const { updateWebProfile } = useWebData();
   const [translateX] = useValues(params.initialAccountColor * 39);
@@ -165,7 +166,7 @@ const AvatarBuilder = ({ route: { params } }) => {
             {avatarColors}
           </ScrollableColorPicker>
         </Row>
-        <SheetContainer>
+        <SheetContainer deviceHeight={height}>
           <EmojiSelector
             columns={7}
             onEmojiSelected={onChangeEmoji}
