@@ -44,6 +44,33 @@ const darkModeColors = {
 
 const isHex = (color = '') => color.length >= 3 && color.charAt(0) === '#';
 const isRGB = (color = '') => toLower(color).substring(0, 3) === 'rgb';
+
+const avatarBackgrounds = [
+  '#FC5C54',
+  '#FFD95A',
+  '#E95D72',
+  '#6A87C8',
+  '#5FD0F3',
+  '#75C06B',
+  '#FFDD86',
+  '#5FC6D4',
+  '#FF949A',
+  '#FF8024',
+  '#9BA1A4',
+  '#EC66FF',
+  '#FF8CBC',
+  '#FF9A23',
+  '#C5DADB',
+  '#A8CE63',
+  '#71ABFF',
+  '#FFE279',
+  '#B6B1B6',
+  '#FF6780',
+  '#A575FF',
+  '#4D82FF',
+  '#FFB35A',
+];
+
 const getColorsByTheme = darkMode => {
   let base = {
     appleBlue: '#0E76FD', // '14, 118, 253'
@@ -224,6 +251,7 @@ const getColorsByTheme = darkMode => {
   return {
     alpha: buildRgba,
     assetIcon,
+    avatarBackgrounds,
     avatarColor,
     brighten,
     getFallbackTextColor,

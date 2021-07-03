@@ -21,7 +21,8 @@ import lang from 'i18n-js';
 import { find, findKey, forEach, get, isEmpty } from 'lodash';
 import { Alert } from 'react-native';
 import { ACCESSIBLE, getSupportedBiometryType } from 'react-native-keychain';
-import { getRandomColor, lightModeThemeColors } from '../styles/colors';
+import { lightModeThemeColors } from '../styles/colors';
+import { addressHashedColorIndex } from '../utils/defaultProfileUtils';
 import {
   addressKey,
   allWalletsKey,
@@ -639,11 +640,12 @@ export const createWallet = async (
     }
     logger.sentry('[createWallet] - saved private key');
 
-    const colorForWallet = color !== null ? color : getRandomColor();
+    const colorIndexForWallet =
+      color !== null ? color : addressHashedColorIndex(walletAddress) || 0;
     addresses.push({
       address: walletAddress,
       avatar: null,
-      color: colorForWallet,
+      color: colorIndexForWallet,
       index: 0,
       label: name || '',
       visible: true,
@@ -657,7 +659,8 @@ export const createWallet = async (
       store.dispatch(updateWebDataEnabled(true, walletAddress));
       // Save the color
       setPreference(PreferenceActionType.init, 'profile', address, {
-        accountColor: lightModeThemeColors.avatarColor[colorForWallet],
+        accountColor:
+          lightModeThemeColors.avatarBackgrounds[colorIndexForWallet],
       });
       logger.sentry(`[createWallet] - enabled web profile`);
     }
@@ -704,12 +707,13 @@ export const createWallet = async (
 
         // Remove any discovered wallets if they already exist
         // and copy over label and color if account was visible
-        let color = getRandomColor();
+        let colorIndexForWallet =
+          addressHashedColorIndex(nextWallet.address) || 0;
         let label = '';
 
         if (discoveredAccount && discoveredWalletId) {
           if (discoveredAccount.visible) {
-            color = discoveredAccount.color;
+            colorIndexForWallet = discoveredAccount.color;
             label = discoveredAccount.label ?? '';
           }
           // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
@@ -739,7 +743,7 @@ export const createWallet = async (
           addresses.push({
             address: nextWallet.address,
             avatar: null,
-            color,
+            color: colorIndexForWallet,
             index,
             label,
             visible: true,
@@ -756,7 +760,8 @@ export const createWallet = async (
             'profile',
             nextWallet.address,
             {
-              accountColor: lightModeThemeColors.avatarColor[color],
+              accountColor:
+                lightModeThemeColors.avatarBackgrounds[colorIndexForWallet],
             }
           );
 

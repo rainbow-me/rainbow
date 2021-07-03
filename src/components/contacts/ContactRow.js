@@ -1,13 +1,17 @@
 import React, { Fragment } from 'react';
 import styled from 'styled-components';
-import { removeFirstEmojiFromString } from '../../helpers/emojiHandler';
-import { abbreviations, magicMemo } from '../../utils';
+import {
+  removeFirstEmojiFromString,
+  returnStringFirstEmoji,
+} from '../../helpers/emojiHandler';
+import { abbreviations, defaultProfileUtils, magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText } from '../coin-row';
 import { Column, RowWithMargins } from '../layout';
-import { TruncatedAddress, TruncatedText } from '../text';
+import { TruncatedAddress, TruncatedENS, TruncatedText } from '../text';
 import ContactAvatar from './ContactAvatar';
 import ImageAvatar from './ImageAvatar';
+import { isENSAddressFormat } from '@rainbow-me/helpers/validators';
 import { useDimensions } from '@rainbow-me/hooks';
 import { margin } from '@rainbow-me/styles';
 
@@ -25,6 +29,16 @@ const ContactAddress = styled(TruncatedAddress).attrs(
   width: 100%;
 `;
 
+const ContactENS = styled(TruncatedENS).attrs(({ theme: { colors } }) => ({
+  align: 'left',
+  color: colors.alpha(colors.blueGreyDark, 0.4),
+  size: 'smedium',
+  truncationLength: 18,
+  weight: 'regular',
+}))`
+  width: 100%;
+`;
+
 const ContactName = styled(TruncatedText).attrs({
   size: 'lmedium',
   weight: 'medium',
@@ -36,11 +50,18 @@ const ContactName = styled(TruncatedText).attrs({
 const ContactRow = ({ address, color, nickname, ...props }, ref) => {
   const { width: deviceWidth } = useDimensions();
   const { colors } = useTheme();
-  const { accountType, image, label, balance, ens, index, onPress } = props;
+  const { accountType, balance, ens, image, label, onPress } = props;
   let cleanedUpBalance = balance;
   if (balance === '0.00') {
     cleanedUpBalance = '0';
   }
+
+  // show avatar for contact rows that are accounts, not contacts
+  const avatar =
+    accountType !== 'contacts'
+      ? returnStringFirstEmoji(label) ||
+        defaultProfileUtils.addressHashedEmoji(address)
+      : null;
 
   let cleanedUpLabel = null;
   if (label) {
@@ -66,7 +87,7 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
             color={color}
             marginRight={10}
             size="medium"
-            value={nickname || label || ens || `${index + 1}`}
+            value={avatar || nickname || label || ens}
           />
         )}
         <Column justify={ios ? 'space-between' : 'center'}>
@@ -78,7 +99,9 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
                 </ContactName>
               ) : (
                 <ContactName deviceWidth={deviceWidth}>
-                  {abbreviations.address(address, 4, 6)}
+                  {isENSAddressFormat(address)
+                    ? address
+                    : abbreviations.address(address, 4, 6)}
                 </ContactName>
               )}
               <BottomRowText
@@ -94,7 +117,11 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
               <ContactName deviceWidth={deviceWidth}>
                 {removeFirstEmojiFromString(nickname)}
               </ContactName>
-              <ContactAddress address={address} />
+              {isENSAddressFormat(address) ? (
+                <ContactENS ens={address} />
+              ) : (
+                <ContactAddress address={address} />
+              )}
             </Fragment>
           )}
         </Column>

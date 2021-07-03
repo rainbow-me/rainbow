@@ -1,4 +1,5 @@
-import { get, isEmpty, isNumber, toLower } from 'lodash';
+import { isValidAddress as validateAddress } from 'ethereumjs-util';
+import { get, isEmpty, toLower } from 'lodash';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
@@ -14,6 +15,7 @@ import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
 import { useClipboard, useDimensions } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
+import { getRandomColor } from '@rainbow-me/styles/colors';
 import { showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const AddressInputContainer = styled(Row).attrs({ align: 'center' })`
@@ -46,11 +48,11 @@ const SendSheetTitle = styled(SheetTitle).attrs({
   margin-top: ${android ? 10 : 17};
 `;
 
-const DefaultContactItem = {
+const defaultContactItem = randomColor => ({
   address: '',
-  color: 0,
+  color: randomColor,
   nickname: '',
-};
+});
 
 export default function SendHeader({
   contacts,
@@ -72,7 +74,11 @@ export default function SendHeader({
   const { colors } = useTheme();
 
   const contact = useMemo(() => {
-    return get(contacts, `${[toLower(recipient)]}`, DefaultContactItem);
+    return get(
+      contacts,
+      `${[toLower(recipient)]}`,
+      defaultContactItem(getRandomColor())
+    );
   }, [contacts, recipient]);
 
   const userWallet = useMemo(() => {
@@ -83,19 +89,23 @@ export default function SendHeader({
 
   const handleNavigateToContact = useCallback(() => {
     let color = get(contact, 'color');
-    if (!isNumber(color)) {
-      color = colors.getRandomColor();
+    if (color !== 0 && !color) {
+      color = getRandomColor();
     }
 
     navigate(Routes.MODAL_SCREEN, {
       additionalPadding: true,
       address: recipient,
       color,
-      contact: isEmpty(contact.address) ? false : contact,
+      contact: isEmpty(contact.address)
+        ? validateAddress(recipient)
+          ? false
+          : { color, nickname: recipient, temporary: true }
+        : contact,
       onRefocusInput,
       type: 'contact_profile',
     });
-  }, [colors, contact, navigate, onRefocusInput, recipient]);
+  }, [contact, navigate, onRefocusInput, recipient]);
 
   const handleOpenContactActionSheet = useCallback(async () => {
     return showActionSheetWithOptions(

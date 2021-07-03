@@ -18,7 +18,7 @@ const buildShadows = (color, size, darkMode, colors) => {
         10,
         darkMode
           ? darkModeThemeColors.shadow
-          : darkModeThemeColors.avatarColor[color] || color,
+          : darkModeThemeColors.avatarBackgrounds[color] || color,
         0.2,
       ],
     ];
@@ -28,7 +28,7 @@ const buildShadows = (color, size, darkMode, colors) => {
         0,
         4,
         android ? 5 : 12,
-        darkMode ? colors.shadow : colors.avatarColor[color] || color,
+        darkMode ? colors.shadow : colors.avatarBackgrounds[color] || color,
         0.4,
       ],
     ];
@@ -87,7 +87,7 @@ const ContactAvatar = ({ color, size = 'medium', value, ...props }) => {
     <ShadowStack
       {...props}
       {...borders.buildCircleAsObject(dimensions)}
-      backgroundColor={colors.avatarColor[color] || color}
+      backgroundColor={colors.avatarBackgrounds[color] || color}
       shadows={shadows}
     >
       <Centered flex={1}>
