@@ -85,6 +85,10 @@ const TopRow = ({ item, name, selected }) => {
     <CoinName
       color={selected ? colorForAsset || colors.dark : colors.dark}
       size={selected ? 'large' : 'lmedium'}
+      style={{
+        marginBottom: android && selected ? -3 : 0,
+        marginTop: android && selected ? 3 : 0,
+      }}
       weight={selected ? 'bold' : 'regular'}
     >
       {name}
