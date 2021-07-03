@@ -23,7 +23,7 @@ const FormContainer = styled(Column).attrs({
 })`
   flex: 1;
   min-height: ${({ isSmallPhone, isTinyPhone }) =>
-    isTinyPhone ? 104 : isSmallPhone ? 134 : 167};
+    isTinyPhone ? 104 : android || isSmallPhone ? 134 : 167};
   width: 100%;
 `;
 

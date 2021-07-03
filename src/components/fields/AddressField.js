@@ -20,13 +20,13 @@ const AddressInput = styled(Input).attrs({
   weight: 'bold',
 })`
   flex-grow: 1;
-  margin-top: ${android ? 6 : 1};
+  margin-top: ${android ? 7 : 1};
   z-index: 1;
 `;
 
 const Placeholder = styled(Row)`
-  margin-left: ${android ? 3 : 0};
-  margin-top: ${android ? 12 : 0};
+  margin-left: ${android ? 4 : 0};
+  margin-top: ${android ? 11 : 0};
   position: absolute;
   top: 0;
   z-index: 1;
@@ -100,7 +100,9 @@ const AddressField = (
         <Placeholder>
           <TouchableWithoutFeedback onPress={ref?.current?.focus}>
             <PlaceholderText>
-              {isTinyPhone ? 'ENS or address' : 'Name, ENS, or address'}
+              {android || isTinyPhone
+                ? 'ENS or address'
+                : 'Name, ENS, or address'}
             </PlaceholderText>
           </TouchableWithoutFeedback>
         </Placeholder>

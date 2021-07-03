@@ -79,7 +79,11 @@ export default function MiniButton({
         <ShadowStack
           {...position.coverAsObject}
           backgroundColor={
-            disabled ? colors.lightGrey : backgroundColor || colors.appleBlue
+            android
+              ? 'none'
+              : disabled
+              ? colors.lightGrey
+              : backgroundColor || colors.appleBlue
           }
           borderRadius={borderRadius}
           height={height}
@@ -92,12 +96,23 @@ export default function MiniButton({
           }
           width={width}
         />
-        <Content hasLeadingIcon={hasLeadingIcon} small={small}>
+        <Content
+          backgroundColor={
+            android
+              ? disabled
+                ? colors.lightGrey
+                : backgroundColor || colors.appleBlue
+              : 'none'
+          }
+          hasLeadingIcon={hasLeadingIcon}
+          small={small}
+        >
           {typeof children === 'string' ? (
             <Text
               align="center"
               color={color || colors.whiteLabel}
               letterSpacing={letterSpacing}
+              lineHeight={android ? 19 : null}
               weight={weight || 'bold'}
             >
               {children}

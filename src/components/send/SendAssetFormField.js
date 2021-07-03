@@ -44,7 +44,7 @@ const Wrapper = styled(ButtonPressAnimation)`
   padding-top: ${({ isSmallPhone, isTinyPhone }) =>
     isTinyPhone ? 6 : isSmallPhone ? 7 : 10};
   position: relative;
-  width: 100%;
+  width: ${({ width }) => (android ? width - 38 : '100%')};
 `;
 
 export default function SendAssetFormField({
@@ -76,14 +76,15 @@ export default function SendAssetFormField({
 
   return (
     <Wrapper
-      isSmallPhone={isSmallPhone}
+      isSmallPhone={android || isSmallPhone}
       isTinyPhone={isTinyPhone}
       onPress={() => bubbleField.current.focus()}
       scaleTo={1.05}
+      width={width}
     >
       <GradientBackground
         colorForAsset={colorForAsset}
-        isSmallPhone={isSmallPhone}
+        isSmallPhone={android || isSmallPhone}
         isTinyPhone={isTinyPhone}
         width={width}
       />
@@ -114,7 +115,16 @@ export default function SendAssetFormField({
           align="right"
           color={colorForAsset || colors.dark}
           letterSpacing="roundedTight"
-          size={isTinyPhone ? 'big' : isSmallPhone ? 'bigger' : 'h3'}
+          lineHeight={
+            android
+              ? isTinyPhone
+                ? 27
+                : android || isSmallPhone
+                ? 31
+                : 38
+              : null
+          }
+          size={isTinyPhone ? 'big' : android || isSmallPhone ? 'bigger' : 'h3'}
           weight="medium"
         >
           {label.length > labelMaxLength

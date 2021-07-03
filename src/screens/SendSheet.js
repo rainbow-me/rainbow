@@ -512,7 +512,7 @@ export default function SendSheet(props) {
                 isSufficientGas={isSufficientGas}
                 onLongPress={submitTransaction}
                 selected={selected}
-                smallButton={!isTinyPhone && isSmallPhone}
+                smallButton={!isTinyPhone && (android || isSmallPhone)}
                 testID="send-sheet-confirm"
                 tinyButton={isTinyPhone}
               />

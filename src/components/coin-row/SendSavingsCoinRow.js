@@ -11,9 +11,9 @@ import CoinRow from './CoinRow';
 import { useColorForAsset } from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
 
-const isSmallPhone = deviceUtils.dimensions.height <= 667;
+const isSmallPhone = android || deviceUtils.dimensions.height <= 667;
 const isTinyPhone = deviceUtils.dimensions.height <= 568;
-const selectedHeight = isTinyPhone ? 50 : isSmallPhone ? 64 : 70;
+const selectedHeight = isTinyPhone ? 50 : android || isSmallPhone ? 64 : 70;
 
 const containerStyles = css`
   padding-bottom: 18;
@@ -44,7 +44,7 @@ const NativeAmountBubbleText = styled(Text).attrs(({ theme: { colors } }) => ({
   size: 'lmedium',
   weight: 'bold',
 }))`
-  ${padding(4.5, 10, 6.5)};
+  ${android ? padding(0, 10) : padding(4.5, 10, 6.5)};
 `;
 
 const BottomRow = ({

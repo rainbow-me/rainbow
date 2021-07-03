@@ -37,8 +37,7 @@ const SectionTitle = styled(Text).attrs({
 })`
   color: ${({ theme: { colors } }) => colors.alpha(colors.blueGreyDark, 0.6)};
   margin-left: 19;
-  padding-bottom: 15;
-  padding-top: 12;
+  margin-top: ${android ? 6 : 12};
 `;
 const SectionWrapper = styled(LinearGradient).attrs(
   ({ theme: { colors } }) => ({

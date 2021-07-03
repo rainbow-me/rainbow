@@ -18,7 +18,9 @@ import { showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const AddressInputContainer = styled(Row).attrs({ align: 'center' })`
   ${({ isSmallPhone, isTinyPhone }) =>
-    isTinyPhone
+    android
+      ? padding(0, 19)
+      : isTinyPhone
       ? padding(23, 15, 10)
       : isSmallPhone
       ? padding(11, 19, 15)
@@ -40,7 +42,8 @@ const AddressFieldLabel = styled(Label).attrs({
 const SendSheetTitle = styled(SheetTitle).attrs({
   weight: 'heavy',
 })`
-  margin-top: 17;
+  margin-bottom: ${android ? -10 : 0};
+  margin-top: ${android ? 10 : 17};
 `;
 
 const DefaultContactItem = {
@@ -54,6 +57,7 @@ export default function SendHeader({
   hideDivider,
   isValidAddress,
   onChangeAddressInput,
+  onFocus,
   onPressPaste,
   onRefocusInput,
   recipient,
@@ -159,6 +163,7 @@ export default function SendHeader({
           autoFocus={!showAssetList}
           name={name}
           onChange={onChangeAddressInput}
+          onFocus={onFocus}
           ref={recipientFieldRef}
           testID="send-asset-form-field"
         />

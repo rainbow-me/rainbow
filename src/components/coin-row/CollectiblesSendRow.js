@@ -15,9 +15,9 @@ import CoinRow from './CoinRow';
 import { padding } from '@rainbow-me/styles';
 
 const dividerHeight = 22;
-const isSmallPhone = deviceUtils.dimensions.height <= 667;
+const isSmallPhone = android || deviceUtils.dimensions.height <= 667;
 const isTinyPhone = deviceUtils.dimensions.height <= 568;
-const selectedHeight = isTinyPhone ? 50 : isSmallPhone ? 64 : 70;
+const selectedHeight = isTinyPhone ? 50 : android || isSmallPhone ? 64 : 70;
 
 const selectedStyles = css`
   ${isTinyPhone ? padding(10, 0, 0) : isSmallPhone ? padding(12) : padding(15)};

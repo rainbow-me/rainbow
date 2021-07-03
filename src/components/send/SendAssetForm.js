@@ -94,7 +94,11 @@ export default function SendAssetForm({
 
   return (
     <Container>
-      <ButtonPressAnimation onPress={onResetAssetSelection} scaleTo={0.925}>
+      <ButtonPressAnimation
+        onPress={onResetAssetSelection}
+        overflowMargin={30}
+        scaleTo={0.925}
+      >
         <ShadowStack
           alignSelf="center"
           backgroundColor={colors.white}
