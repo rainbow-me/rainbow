@@ -32,6 +32,7 @@ import { isENSAddressFormat } from '@rainbow-me/helpers/validators';
 import {
   useAccountSettings,
   useColorForAsset,
+  useColorOverrides,
   useContacts,
   useDimensions,
 } from '@rainbow-me/hooks';
@@ -152,9 +153,11 @@ export default function SendConfirmationSheet() {
     [amountDetails.nativeAmount, nativeCurrency]
   );
 
-  const color = useColorForAsset({
+  let color = useColorForAsset({
     address: asset.mainnet_address || asset.address,
   });
+
+  color = useColorOverrides(color);
 
   const isL2 = isL2Network(network);
 
@@ -175,6 +178,8 @@ export default function SendConfirmationSheet() {
 
   const avatarValue = contact?.nickname || addressHashedEmoji(toAddress);
   const avatarColor = contact?.color || addressHashedColorIndex(toAddress);
+
+  logger.debug('COLOR', color);
 
   return (
     <Container deviceHeight={deviceHeight} height={sheetHeight} insets={insets}>
