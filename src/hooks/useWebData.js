@@ -56,14 +56,20 @@ export default function useWebData() {
         'profile',
         accountAddress,
         {
-          accountColor: colors.avatarColor[accountColor],
+          accountColor: colors.avatarBackgrounds[accountColor],
           accountSymbol: wipeNotEmoji(accountSymbol),
         }
       );
 
       dispatch(updateWebDataEnabled(true, accountAddress));
     },
-    [accountAddress, accountColor, accountSymbol, colors.avatarColor, dispatch]
+    [
+      accountAddress,
+      accountColor,
+      accountSymbol,
+      colors.avatarBackgrounds,
+      dispatch,
+    ]
   );
 
   const wipeWebData = useCallback(async () => {
