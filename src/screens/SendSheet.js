@@ -500,7 +500,6 @@ export default function SendSheet(props) {
         {showAssetForm && (
           <SendAssetForm
             {...props}
-            allAssets={allAssets}
             assetAmount={amountDetails.assetAmount}
             buttonRenderer={
               <SendButton

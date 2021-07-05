@@ -65,7 +65,7 @@ export default function SendAssetFormField({
 }) {
   const { isTinyPhone, isSmallPhone, width } = useDimensions();
   const { colors } = useTheme();
-  const handlePressButton = useCallback(
+  const handlePressMax = useCallback(
     event => {
       analytics.track('Clicked "Max" in Send flow input');
       onPressButton?.(event);
@@ -105,7 +105,7 @@ export default function SendAssetFormField({
           maxLabelColor={maxLabelColor}
           onChange={onChange}
           onFocus={onFocus}
-          onPressButton={handlePressButton}
+          onPressButton={handlePressMax}
           placeholder={placeholder}
           ref={bubbleField}
           testID={testID}

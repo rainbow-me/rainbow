@@ -11,7 +11,7 @@ import { Text } from '../text';
 import SendAssetFormCollectible from './SendAssetFormCollectible';
 import SendAssetFormToken from './SendAssetFormToken';
 import { AssetTypes } from '@rainbow-me/entities';
-import { useAsset, useColorForAsset, useDimensions } from '@rainbow-me/hooks';
+import { useColorForAsset, useDimensions } from '@rainbow-me/hooks';
 import { padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
@@ -65,10 +65,8 @@ export default function SendAssetForm({
   const { isTinyPhone, width: deviceWidth } = useDimensions();
   const [showNativeValue, setShowNativeValue] = useState(true);
 
-  const selectedAsset = useAsset(selected);
-
-  const isNft = selectedAsset.type === AssetTypes.nft;
-  const isSavings = selectedAsset.type === AssetTypes.compound;
+  const isNft = selected.type === AssetTypes.nft;
+  const isSavings = selected.type === AssetTypes.compound;
 
   const AssetRowElement = isNft
     ? CollectiblesSendRow
@@ -86,7 +84,7 @@ export default function SendAssetForm({
 
   const { colors } = useTheme();
 
-  const address = selectedAsset?.address;
+  const address = selected?.address;
   const colorForAsset = useColorForAsset({ address });
 
   const noShadows = [[0, 0, 0, colors.transparent, 0]];
@@ -111,7 +109,7 @@ export default function SendAssetForm({
           {isTinyPhone ? null : <AssetRowGradient />}
           <AssetRowElement
             disablePressAnimation
-            item={selectedAsset}
+            item={selected}
             selected
             showNativeValue={showNativeValue}
             testID="send-asset-form"
@@ -130,7 +128,7 @@ export default function SendAssetForm({
       <FormContainer isNft={isNft}>
         {isNft ? (
           <SendAssetFormCollectible
-            asset={selectedAsset}
+            asset={selected}
             buttonRenderer={buttonRenderer}
             txSpeedRenderer={txSpeedRenderer}
           />
@@ -147,7 +145,7 @@ export default function SendAssetForm({
               onChangeNativeAmount={onChangeNativeAmount}
               onFocusAssetInput={onFocusAssetInput}
               onFocusNativeInput={onFocusNativeInput}
-              selected={selectedAsset}
+              selected={selected}
               sendMaxBalance={sendMaxBalance}
               txSpeedRenderer={txSpeedRenderer}
             />
