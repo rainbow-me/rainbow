@@ -32,7 +32,7 @@ import {
   walletsSetSelected,
   walletsUpdate,
 } from '../redux/wallets';
-import { getRandomColor } from '../styles/colors';
+import { asyncSome } from '@rainbow-me/helpers/utilities';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import {
   useAccountSettings,
@@ -238,7 +238,8 @@ export default function ChangeWalletSheet() {
               if (args) {
                 const newWallets = { ...wallets };
                 if ('name' in args) {
-                  newWallets[walletId].addresses.some(
+                  asyncSome(
+                    newWallets[walletId].addresses,
                     async (account, index) => {
                       if (account.address === address) {
                         newWallets[walletId].addresses[index].label = args.name;
@@ -253,7 +254,7 @@ export default function ChangeWalletSheet() {
                         updateWebProfile(
                           address,
                           args.name,
-                          colors.avatarColor[args.color]
+                          colors.avatarBackgrounds[args.color]
                         );
                         return true;
                       }
@@ -280,7 +281,7 @@ export default function ChangeWalletSheet() {
       dispatch,
       currentSelectedWallet.id,
       updateWebProfile,
-      colors.avatarColor,
+      colors.avatarBackgrounds,
     ]
   );
 
@@ -390,7 +391,7 @@ export default function ChangeWalletSheet() {
               if (args) {
                 setIsWalletLoading(WalletLoadingStates.CREATING_WALLET);
                 const name = get(args, 'name', '');
-                const color = get(args, 'color', getRandomColor());
+                const color = get(args, 'color', null);
                 // Check if the selected wallet is the primary
                 let primaryWalletKey = selectedWallet.primary
                   ? selectedWallet.id
