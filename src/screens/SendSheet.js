@@ -84,7 +84,7 @@ const KeyboardSizeView = styled(KeyboardArea)`
 export default function SendSheet(props) {
   const dispatch = useDispatch();
   const { isSmallPhone, isTinyPhone } = useDimensions();
-  const { goBack, navigate, addListener } = useNavigation();
+  const { navigate, addListener } = useNavigation();
   const { isDarkMode } = useTheme();
   const { dataAddNewTransaction } = useTransactionConfirmation();
   const updateAssetOnchainBalanceIfNeeded = useUpdateAssetOnchainBalance();
@@ -390,7 +390,6 @@ export default function SendSheet(props) {
     }
   }, [
     amountDetails.assetAmount,
-    goBack,
     navigate,
     onSubmit,
     recipient,
