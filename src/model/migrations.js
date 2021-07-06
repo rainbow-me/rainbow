@@ -27,10 +27,7 @@ import {
   getUserLists,
   saveUserLists,
 } from '@rainbow-me/handlers/localstorage/userLists';
-import {
-  removeFirstEmojiFromString,
-  returnStringFirstEmoji,
-} from '@rainbow-me/helpers/emojiHandler';
+import { returnStringFirstEmoji } from '@rainbow-me/helpers/emojiHandler';
 import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
 import { DefaultTokenLists } from '@rainbow-me/references';
 import { defaultProfileUtils } from '@rainbow-me/utils';
