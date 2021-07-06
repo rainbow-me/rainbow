@@ -84,7 +84,7 @@ const KeyboardSizeView = styled(KeyboardArea)`
 export default function SendSheet(props) {
   const dispatch = useDispatch();
   const { isSmallPhone, isTinyPhone } = useDimensions();
-  const { navigate, addListener } = useNavigation();
+  const { goBack, navigate, addListener } = useNavigation();
   const { isDarkMode } = useTheme();
   const { dataAddNewTransaction } = useTransactionConfirmation();
   const updateAssetOnchainBalanceIfNeeded = useUpdateAssetOnchainBalance();
@@ -380,12 +380,24 @@ export default function SendSheet(props) {
         isRecepientENS: toLower(recipient.slice(-4)) === '.eth',
       });
       if (submitSuccessful) {
-        navigate(Routes.PROFILE_SCREEN);
+        goBack();
+        navigate(Routes.WALLET_SCREEN);
+        InteractionManager.runAfterInteractions(() => {
+          navigate(Routes.PROFILE_SCREEN);
+        });
       }
     } catch (error) {
       setIsAuthorizing(false);
     }
-  }, [amountDetails.assetAmount, navigate, onSubmit, recipient, selected]);
+  }, [
+    amountDetails.assetAmount,
+    goBack,
+    navigate,
+    onSubmit,
+    recipient,
+    selected?.name,
+    selected?.type,
+  ]);
 
   const onResetAssetSelection = useCallback(() => {
     analytics.track('Reset asset selection in Send flow');
