@@ -240,7 +240,6 @@ class HoldToAuthorizeButton extends PureComponent {
           <Animated.View
             {...props}
             style={[style, { transform: [{ scale: this.buttonScale }] }]}
-            testID={testID}
           >
             <ShadowStack
               backgroundColor={bgColor}
@@ -270,6 +269,7 @@ class HoldToAuthorizeButton extends PureComponent {
                       label={isAuthorizing ? 'Authorizing' : label}
                       showIcon={showBiometryIcon && !isAuthorizing}
                       smallButton={smallButton}
+                      testID={testID}
                       tinyButton={tinyButton}
                     />
                   </Fragment>

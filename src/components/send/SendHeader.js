@@ -184,17 +184,17 @@ export default function SendHeader({
                 ? handleOpenContactActionSheet
                 : handleNavigateToContact
             }
-            testID={
-              isPreExistingContact
-                ? 'edit-contact-button'
-                : 'add-contact-button'
-            }
           >
             <Text
               align="right"
               color="appleBlue"
               size="large"
               style={{ paddingLeft: 4 }}
+              testID={
+                isPreExistingContact
+                  ? 'edit-contact-button'
+                  : 'add-contact-button'
+              }
               weight="heavy"
             >
               {isPreExistingContact ? '􀍡' : ' 􀉯 Save'}

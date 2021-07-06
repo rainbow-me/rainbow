@@ -57,7 +57,7 @@ export default function SendButton({
       parentHorizontalPadding={19}
       shadows={disabled ? shadows.disabled : shadows.colored}
       showBiometryIcon={!disabled}
-      testID={testID}
+      testID={`${testID}-${label}`}
     />
   );
 }
