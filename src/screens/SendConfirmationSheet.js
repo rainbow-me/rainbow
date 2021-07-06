@@ -1,6 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import { capitalize, get, toLower } from 'lodash';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { StatusBar } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useSafeArea } from 'react-native-safe-area-context';
@@ -31,10 +31,12 @@ import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
 import { isENSAddressFormat } from '@rainbow-me/helpers/validators';
 import {
   useAccountSettings,
+  useAccountTransactions,
   useColorForAsset,
   useColorOverrides,
   useContacts,
   useDimensions,
+  useUserAccounts,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
@@ -109,9 +111,40 @@ export default function SendConfirmationSheet() {
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const insets = useSafeArea();
   const { contacts } = useContacts();
+
   const {
     params: { asset, amountDetails, callback, network, to, toAddress },
   } = useRoute();
+
+  const [alreadySentTransactions, setAlreadySentTransactions] = useState(0);
+
+  const { transactions } = useAccountTransactions(true, true);
+  const { userAccounts } = useUserAccounts();
+  const isSendingToUserAccount = useMemo(() => {
+    const found = userAccounts?.find(account => {
+      return toLower(account.address) === toLower(toAddress);
+    });
+    return !!found;
+  }, [toAddress, userAccounts]);
+
+  useEffect(() => {
+    if (!isSendingToUserAccount) {
+      let sends = 0;
+      transactions.forEach(tx => {
+        if (toLower(tx.to) === toLower(toAddress)) {
+          sends++;
+        }
+      });
+      if (sends > 0) {
+        setAlreadySentTransactions(sends);
+      }
+    }
+  }, [
+    isSendingToUserAccount,
+    setAlreadySentTransactions,
+    toAddress,
+    transactions,
+  ]);
 
   const contact = useMemo(() => {
     return get(
@@ -160,9 +193,12 @@ export default function SendConfirmationSheet() {
   color = useColorOverrides(color);
 
   const isL2 = isL2Network(network);
+  const shouldShowChecks =
+    isL2 && !isSendingToUserAccount && alreadySentTransactions < 3;
 
   const canSubmit =
-    !isL2 || checkboxes.filter(check => check.checked === false).length === 0;
+    !shouldShowChecks ||
+    checkboxes.filter(check => check.checked === false).length === 0;
 
   const handleSubmit = useCallback(async () => {
     if (!canSubmit) return;
@@ -178,8 +214,6 @@ export default function SendConfirmationSheet() {
 
   const avatarValue = contact?.nickname || addressHashedEmoji(toAddress);
   const avatarColor = contact?.color || addressHashedColorIndex(toAddress);
-
-  logger.debug('COLOR', color);
 
   return (
     <Container deviceHeight={deviceHeight} height={sheetHeight} insets={insets}>
@@ -274,7 +308,11 @@ export default function SendConfirmationSheet() {
                     size="lmedium"
                     weight="700"
                   >
-                    First time send
+                    {isSendingToUserAccount
+                      ? `You own this account`
+                      : alreadySentTransactions === 0
+                      ? `First time send`
+                      : `${alreadySentTransactions} previous sends`}
                   </Text>
                 </Row>
               </Column>
@@ -298,7 +336,7 @@ export default function SendConfirmationSheet() {
             />
           )}
           <Column padding={24} paddingTop={19}>
-            {isL2 &&
+            {shouldShowChecks &&
               checkboxes.map((check, i) => (
                 <Checkbox
                   activeColor={color}
