@@ -380,7 +380,6 @@ export default function SendSheet(props) {
         isRecepientENS: toLower(recipient.slice(-4)) === '.eth',
       });
       if (submitSuccessful) {
-        goBack();
         navigate(Routes.WALLET_SCREEN);
         InteractionManager.runAfterInteractions(() => {
           navigate(Routes.PROFILE_SCREEN);
