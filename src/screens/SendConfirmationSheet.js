@@ -22,12 +22,17 @@ import {
   TruncatedText,
 } from '../components/text';
 import { getRandomColor } from '../styles/colors';
+import {
+  addressHashedColorIndex,
+  addressHashedEmoji,
+} from '../utils/defaultProfileUtils';
 import { isL2Network } from '@rainbow-me/handlers/web3';
 import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
 import { isENSAddressFormat } from '@rainbow-me/helpers/validators';
 import {
   useAccountSettings,
   useColorForAsset,
+  useColorOverrides,
   useContacts,
   useDimensions,
 } from '@rainbow-me/hooks';
@@ -97,6 +102,7 @@ const defaultContactItem = randomColor => ({
 });
 
 export default function SendConfirmationSheet() {
+  const { colors } = useTheme();
   const { nativeCurrency } = useAccountSettings();
   const { goBack, navigate } = useNavigation();
   const { height: deviceHeight } = useDimensions();
@@ -115,7 +121,6 @@ export default function SendConfirmationSheet() {
     );
   }, [contacts, to]);
 
-  const { colors } = useTheme();
   const [checkboxes, setCheckboxes] = useState([
     { checked: false, label: 'I’m not sending to an exchange' },
     {
@@ -148,9 +153,11 @@ export default function SendConfirmationSheet() {
     [amountDetails.nativeAmount, nativeCurrency]
   );
 
-  const color = useColorForAsset({
+  let color = useColorForAsset({
     address: asset.mainnet_address || asset.address,
   });
+
+  color = useColorOverrides(color);
 
   const isL2 = isL2Network(network);
 
@@ -168,6 +175,11 @@ export default function SendConfirmationSheet() {
       setIsAuthorizing(false);
     }
   }, [callback, canSubmit]);
+
+  const avatarValue = contact?.nickname || addressHashedEmoji(toAddress);
+  const avatarColor = contact?.color || addressHashedColorIndex(toAddress);
+
+  logger.debug('COLOR', color);
 
   return (
     <Container deviceHeight={deviceHeight} height={sheetHeight} insets={insets}>
@@ -267,7 +279,11 @@ export default function SendConfirmationSheet() {
                 </Row>
               </Column>
               <Column align="end" justify="end">
-                <ContactAvatar color={color} size="lmedium" value={to} />
+                <ContactAvatar
+                  color={avatarColor}
+                  size="lmedium"
+                  value={avatarValue}
+                />
               </Column>
             </Row>
           </Column>

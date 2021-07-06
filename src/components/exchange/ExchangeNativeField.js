@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { Row } from '../layout';
 import { Text } from '../text';
 import ExchangeInput from './ExchangeInput';
-import { useColorForAsset } from '@rainbow-me/hooks';
+import { useColorForAsset, useColorOverrides } from '@rainbow-me/hooks';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 import { fonts } from '@rainbow-me/styles';
 
@@ -39,7 +39,8 @@ const ExchangeNativeField = (
   },
   ref
 ) => {
-  const colorForAsset = useColorForAsset({ address });
+  let colorForAsset = useColorForAsset({ address });
+  colorForAsset = useColorOverrides(colorForAsset);
   const [isFocused, setIsFocused] = useState(false);
   const { mask, placeholder, symbol } = supportedNativeCurrencies[
     nativeCurrency

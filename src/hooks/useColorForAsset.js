@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import { lightModeThemeColors } from '../styles/colors';
 import useImageMetadata from './useImageMetadata';
-import { ETH_ADDRESS } from '@rainbow-me/references';
 import {
   getTokenMetadata,
   getUrlForTrustIconFallback,
@@ -17,10 +16,7 @@ export default function useColorForAsset(
   const { isDarkMode: isDarkModeTheme, colors } = useTheme();
   const { address, color } = asset;
   const token = getTokenMetadata(address);
-  // If ETH then override to appleBlue
-  // because the grey color makes buttons look disabled!
-  const tokenListColor =
-    address === ETH_ADDRESS ? colors.appleBlue : token?.color;
+  const tokenListColor = token?.color;
 
   const { color: imageColor } = useImageMetadata(
     getUrlForTrustIconFallback(address)
