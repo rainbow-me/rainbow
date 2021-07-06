@@ -197,7 +197,7 @@ export default function SendHeader({
               style={{ paddingLeft: 4 }}
               weight="heavy"
             >
-              {isPreExistingContact ? '􀍡' : '􀉯 Save'}
+              {isPreExistingContact ? '􀍡' : ' 􀉯 Save'}
             </Text>
           </ButtonPressAnimation>
         )}
