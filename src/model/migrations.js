@@ -27,8 +27,13 @@ import {
   getUserLists,
   saveUserLists,
 } from '@rainbow-me/handlers/localstorage/userLists';
+import {
+  removeFirstEmojiFromString,
+  returnStringFirstEmoji,
+} from '@rainbow-me/helpers/emojiHandler';
 import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
 import { DefaultTokenLists } from '@rainbow-me/references';
+import { defaultProfileUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 export default async function runMigrations() {
@@ -304,10 +309,23 @@ export default async function runMigrations() {
       let updatedWallets = { ...wallets };
       for (let i = 0; i < walletKeys.length; i++) {
         const wallet = wallets[walletKeys[i]];
-        const newAddresses = wallet.addresses.map(address => ({
-          ...address,
-          color: newColorIndexes[address.color] || 0,
-        }));
+        const newAddresses = wallet.addresses.map(account => {
+          const accountEmoji = returnStringFirstEmoji(account?.label);
+          return {
+            ...account,
+            ...(!accountEmoji && {
+              label: `${defaultProfileUtils.addressHashedEmoji(
+                account.address
+              )} ${account.label}`,
+            }),
+            color:
+              (accountEmoji
+                ? newColorIndexes[account.color]
+                : defaultProfileUtils.addressHashedColorIndex(
+                    account.address
+                  )) || 0,
+          };
+        });
         const newWallet = { ...wallet, addresses: newAddresses };
         updatedWallets[walletKeys[i]] = newWallet;
       }
