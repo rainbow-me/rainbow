@@ -60,7 +60,7 @@ const springTo = (node, toValue) =>
   }).start();
 
 const AvatarBuilder = ({ route: { params } }) => {
-  const { width, height } = useDimensions();
+  const { height, width } = useDimensions();
   const { wallets, selectedWallet } = useWallets();
   const { updateWebProfile } = useWebData();
   const [translateX] = useValues(params.initialAccountColor * 39);
