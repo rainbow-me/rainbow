@@ -1,6 +1,7 @@
+import AsyncStorage from '@react-native-community/async-storage';
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
-import WalletConnect from '@walletconnect/client';
+import WalletConnect, { CLIENT_EVENTS } from '@walletconnect/client';
 import lang from 'i18n-js';
 import {
   forEach,
@@ -50,6 +51,8 @@ const WALLETCONNECT_SET_PENDING_REDIRECT =
 const WALLETCONNECT_REMOVE_PENDING_REDIRECT =
   'walletconnect/WALLETCONNECT_REMOVE_PENDING_REDIRECT';
 
+const WALLETCONNECT_ADD_CLIENT = 'walletconnect/WALLETCONNECT_ADD_CLIENT';
+
 // -- Actions ---------------------------------------- //
 const getNativeOptions = async () => {
   const language = 'en'; // TODO use lang from settings
@@ -64,7 +67,7 @@ const getNativeOptions = async () => {
   }
 
   const nativeOptions = {
-    clientMeta: {
+    metadata: {
       description: 'Rainbow makes exploring Ethereum fun and accessible 🌈',
       icons: ['https://avatars2.githubusercontent.com/u/48327834?s=200&v=4'],
       name: '🌈 Rainbow',
@@ -80,8 +83,10 @@ const getNativeOptions = async () => {
           url: 'https://wcpush.rainbow.me',
         }
       : undefined,
+    storageOptions: {
+      asyncStorage: AsyncStorage,
+    },
   };
-
   return nativeOptions;
 };
 
@@ -106,11 +111,40 @@ export const walletConnectRemovePendingRedirect = (
   }
 };
 
-export const walletConnectOnSessionRequest = (
-  uri,
-  callback
-) => async dispatch => {
+export const walletConnectInitClient = () => async dispatch => {
+  const nativeOptions = await getNativeOptions();
+  const client = await WalletConnect.init({
+    controller: true,
+    logger: 'debug',
+    metadata: nativeOptions.metadata,
+    relayProvider: 'wss://relay.walletconnect.org/',
+    storageOptions: nativeOptions.storageOptions,
+  });
+
+  client.on(CLIENT_EVENTS.session.proposal, proposal => {
+    // user should be prompted to approve the proposed session permissions displaying also dapp metadata
+    Alert.alert('Session proposal', proposal);
+  });
+
+  client.on(CLIENT_EVENTS.session.created, session => {
+    // session created succesfully
+    Alert.alert('Session created', session);
+  });
+
+  dispatch({
+    payload: client,
+    type: WALLETCONNECT_ADD_CLIENT,
+  });
+};
+
+export const walletConnectOnSessionRequest = (uri, callback) => async (
+  dispatch
+  // getState
+) => {
   let walletConnector = null;
+
+  // const { walletConnectClient } = getState().walletconnect;
+  // const pair = await walletConnectClient.pair({ uri });
   try {
     const { clientMeta, push } = await getNativeOptions();
     try {
@@ -125,20 +159,16 @@ export const walletConnectOnSessionRequest = (
           captureException(error);
           throw error;
         }
-
         const { peerId, peerMeta } = payload.params[0];
-
         const imageUrl =
           dappLogoOverride(peerMeta.url) || get(peerMeta, 'icons[0]');
         const dappName = dappNameOverride(peerMeta.url) || peerMeta.name;
         const dappUrl = peerMeta.url;
         const dappScheme = peerMeta.scheme;
-
         analytics.track('Showing Walletconnect session request', {
           dappName,
           dappUrl,
         });
-
         Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {
           callback: async (approved, chainId, accountAddress) => {
             if (approved) {
@@ -349,10 +379,12 @@ export const walletConnectLoadState = () => async (dispatch, getState) => {
 
     const allSessions = await getAllValidWalletConnectSessions();
 
-    const { clientMeta, push } = await getNativeOptions();
-
+    const { metadata, storageOptions, push } = await getNativeOptions();
     newWalletConnectors = mapValues(allSessions, session => {
-      const walletConnector = new WalletConnect({ clientMeta, session }, push);
+      const walletConnector = new WalletConnect(
+        { metadata, session, storageOptions },
+        push
+      );
       return dispatch(listenOnNewMessages(walletConnector));
     });
   } catch (error) {
@@ -540,6 +572,7 @@ export const walletConnectSendStatus = (peerId, requestId, result) => async (
 const INITIAL_STATE = {
   pendingRedirect: false,
   pendingRequests: {},
+  walletConnectClient: null,
   walletConnectors: {},
 };
 
@@ -561,6 +594,8 @@ export default (state = INITIAL_STATE, action) => {
       return { ...state, pendingRedirect: true };
     case WALLETCONNECT_REMOVE_PENDING_REDIRECT:
       return { ...state, pendingRedirect: false };
+    case WALLETCONNECT_ADD_CLIENT:
+      return { ...state, walletConnectClient: action.payload };
     default:
       return state;
   }
