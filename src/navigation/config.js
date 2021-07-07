@@ -8,6 +8,7 @@ import { Text } from '../components/text';
 import { useTheme } from '../context/ThemeContext';
 import colors from '../context/currentColors';
 import { explainers, ExplainSheetHeight } from '../screens/ExplainSheet';
+import { SendConfirmationSheetHeight } from '../screens/SendConfirmationSheet';
 import { onWillPop } from './Navigation';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import { fonts } from '@rainbow-me/styles';
@@ -93,7 +94,9 @@ export const sendConfirmationSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,
-      longFormHeight: 600,
+      longFormHeight: params.shouldShowChecks
+        ? SendConfirmationSheetHeight
+        : SendConfirmationSheetHeight - 150,
     }),
   }),
 };

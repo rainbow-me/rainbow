@@ -51,7 +51,9 @@ const Container = styled(Centered).attrs({
     height ? `height: ${height + deviceHeight}` : null};
 `;
 
-export const sheetHeight = android ? 600 - getSoftMenuBarHeight() : 594;
+export const SendConfirmationSheetHeight = android
+  ? 600 - getSoftMenuBarHeight()
+  : 594;
 
 const ChevronDown = () => {
   const { colors } = useTheme();
@@ -106,7 +108,7 @@ const defaultContactItem = randomColor => ({
 export default function SendConfirmationSheet() {
   const { colors } = useTheme();
   const { nativeCurrency } = useAccountSettings();
-  const { goBack, navigate } = useNavigation();
+  const { goBack, navigate, setParams } = useNavigation();
   const { height: deviceHeight } = useDimensions();
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const insets = useSafeArea();
@@ -196,6 +198,10 @@ export default function SendConfirmationSheet() {
   const shouldShowChecks =
     isL2 && !isSendingToUserAccount && alreadySentTransactions < 3;
 
+  useEffect(() => {
+    setParams({ shouldShowChecks });
+  }, [setParams, shouldShowChecks]);
+
   const canSubmit =
     !shouldShowChecks ||
     checkboxes.filter(check => check.checked === false).length === 0;
@@ -215,18 +221,26 @@ export default function SendConfirmationSheet() {
   const avatarValue = contact?.nickname || addressHashedEmoji(toAddress);
   const avatarColor = contact?.color || addressHashedColorIndex(toAddress);
 
+  const realSheetHeight = !shouldShowChecks
+    ? SendConfirmationSheetHeight - 150
+    : SendConfirmationSheetHeight;
+
   return (
-    <Container deviceHeight={deviceHeight} height={sheetHeight} insets={insets}>
+    <Container
+      deviceHeight={deviceHeight}
+      height={realSheetHeight}
+      insets={insets}
+    >
       {ios && <StatusBar barStyle="light-content" />}
       {ios && <TouchableBackdrop onPress={goBack} />}
 
       <SlackSheet
         additionalTopPadding={android}
-        contentHeight={sheetHeight}
+        contentHeight={realSheetHeight}
         scrollEnabled={false}
       >
         <SheetTitle>Sending</SheetTitle>
-        <Column height={sheetHeight - 50}>
+        <Column height={realSheetHeight - 50}>
           <Column padding={24}>
             <Row>
               <Column>
