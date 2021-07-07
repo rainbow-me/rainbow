@@ -8,7 +8,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { InteractionManager, View } from 'react-native';
+import { InteractionManager } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import styled from 'styled-components';
 import ChainLogo from '../components/ChainLogo';
@@ -25,7 +25,6 @@ import {
   SheetActionButtonRow,
 } from '../components/sheet';
 import { Text } from '../components/text';
-import { useTheme } from '@rainbow-me/context';
 import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
 import {
   getDappHostname,
@@ -62,7 +61,7 @@ const LabelText = styled(Text).attrs(() => ({
   weight: 'heavy',
 }))``;
 
-const AvatarWrapper = styled(View).attrs(() => ({}))`
+const AvatarWrapper = styled(Column)`
   margin-right: 5;
 `;
 
@@ -74,8 +73,6 @@ const SwitchText = styled(Text).attrs(() => ({
   margin-left: 5;
 `;
 
-export const SavingsSheetEmptyHeight = 313;
-export const SavingsSheetHeight = android ? 424 : 352;
 export const WalletConnectApprovalSheetType = {
   connect: 1,
   switch_chain: 2,
