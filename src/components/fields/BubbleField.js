@@ -123,7 +123,11 @@ const BubbleField = (
   const { colors, isDarkMode } = useTheme();
 
   return (
-    <Column flex={1} pointerEvents={isFocused ? 'auto' : 'none'} {...props}>
+    <Column
+      flex={1}
+      pointerEvents={android || isFocused ? 'auto' : 'none'}
+      {...props}
+    >
       <Row align="center" justify="space-between">
         <BubbleInput
           autoFocus={autoFocus}

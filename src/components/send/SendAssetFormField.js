@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { BubbleField } from '../fields';
-import { RowWithMargins } from '../layout';
+import { Row, RowWithMargins } from '../layout';
 import { Text } from '../text';
 import { useDimensions } from '@rainbow-me/hooks';
 
@@ -32,7 +32,9 @@ const GradientBackground = styled(RadialGradient).attrs(
   width: ${({ width }) => width - 38};
 `;
 
-const Wrapper = styled(ButtonPressAnimation)`
+const Wrapper = styled(android ? Row : ButtonPressAnimation).attrs({
+  scaleTo: 1.05,
+})`
   border-radius: 29.5;
   height: ${({ isSmallPhone, isTinyPhone }) =>
     isTinyPhone ? 40 : isSmallPhone ? 46 : 59};
@@ -78,8 +80,7 @@ export default function SendAssetFormField({
     <Wrapper
       isSmallPhone={android || isSmallPhone}
       isTinyPhone={isTinyPhone}
-      onPress={() => bubbleField.current.focus()}
-      scaleTo={1.05}
+      onPress={() => !android && bubbleField.current.focus()}
       width={width}
     >
       <GradientBackground
