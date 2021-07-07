@@ -45,7 +45,7 @@ const ENSText = styled(Text).attrs(({ theme: { colors }, small }) => ({
 
 const UniqueTokenImage = ({
   backgroundColor,
-  lowResImageUrl = null,
+  lowResUrl = null,
   imageUrl,
   item,
   resizeMode = ImgixImage.resizeMode.cover,
@@ -85,11 +85,10 @@ const UniqueTokenImage = ({
           >
             {isENS && <ENSText small={small}>{item.name}</ENSText>}
           </ImageTile>
-          {!loadedImg && lowResImageUrl && (
+          {!loadedImg && lowResUrl && (
             <ImageTile
-              onError={handleError}
               resizeMode={ImgixImage.resizeMode[resizeMode]}
-              source={{ uri: lowResImageUrl }}
+              source={{ uri: lowResUrl }}
               style={position.coverAsObject}
             />
           )}
