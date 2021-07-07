@@ -158,7 +158,7 @@ export default function WalletConnectApprovalSheet() {
   }, [walletNames, approvalNetwork, approvalAccount]);
 
   const approvalNetworkInfo = useMemo(() => {
-    const value = get(networkInfo[approvalNetwork], 'value');
+    const value = networkInfo[approvalNetwork]?.value
     return {
       chainId: ethereumUtils.getChainIdFromNetwork(approvalNetwork),
       color: get(networkInfo[approvalNetwork], 'color'),
