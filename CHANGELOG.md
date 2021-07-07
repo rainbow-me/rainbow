@@ -12,6 +12,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.5.15](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.15)
+
+### Changed
+* Updated Profile Emoji's & Colors
+* Improved Contact ENS Support
+* Fixed NFT Share Menu
+
 ## [1.5.14](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.14)
 
 ### Changed
