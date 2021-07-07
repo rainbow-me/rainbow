@@ -14,7 +14,10 @@ import {
   useUniqueToken,
 } from '@rainbow-me/hooks';
 import { margin, padding, position } from '@rainbow-me/styles';
+
+const GOOGLE_USER_CONTENT_URL = 'https://lh3.googleusercontent.com/';
 const paddingHorizontal = 19;
+const pixelRatio = PixelRatio.get();
 
 const Container = styled(Centered)`
   ${padding(0, paddingHorizontal)};
@@ -54,24 +57,16 @@ const UniqueTokenExpandedStateImage = ({ asset }) => {
       asset.image_preview_url ||
       asset.image_thumbnail_url;
   const { dimensions: imageDimensions } = useImageMetadata(imageUrl);
-
-  const pixelRatio = PixelRatio.get();
   const size = Math.ceil((deviceWidth * pixelRatio) / 100) * 100;
   const url = useMemo(() => {
-    if (
-      asset.image_url?.startsWith?.('https://lh3.googleusercontent.com/') &&
-      size > 0
-    ) {
+    if (asset.image_url?.startsWith?.(GOOGLE_USER_CONTENT_URL) && size > 0) {
       return `${asset.image_url}=w${size}`;
     }
     return asset.image_url;
   }, [asset.image_url, size]);
 
   const lowResUrl = useMemo(() => {
-    if (
-      asset.image_url?.startsWith?.('https://lh3.googleusercontent.com/') &&
-      size > 0
-    ) {
+    if (asset.image_url?.startsWith?.(GOOGLE_USER_CONTENT_URL) && size > 0) {
       return `${asset.image_url}=w${12}`;
     }
     return null;

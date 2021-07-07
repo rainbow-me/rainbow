@@ -1,5 +1,5 @@
 import { toLower } from 'lodash';
-import React, { useCallback, useState } from 'react';
+import React, { Fragment, useCallback, useState } from 'react';
 import { SvgCssUri } from 'react-native-svg';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
@@ -75,7 +75,7 @@ const UniqueTokenImage = ({
           width="100%"
         />
       ) : imageUrl && !error ? (
-        <>
+        <Fragment>
           <ImageTile
             onError={handleError}
             onLoad={onLoad}
@@ -92,7 +92,7 @@ const UniqueTokenImage = ({
               style={position.coverAsObject}
             />
           )}
-        </>
+        </Fragment>
       ) : (
         <Monospace
           align="center"
