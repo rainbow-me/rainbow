@@ -3,7 +3,7 @@ import analytics from '@segment/analytics-react-native';
 import { captureEvent, captureException } from '@sentry/react-native';
 import { isEmpty, isString, toLower } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, InteractionManager, Keyboard, StatusBar } from 'react-native';
+import { InteractionManager, Keyboard, StatusBar } from 'react-native';
 import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import { useDispatch } from 'react-redux';
@@ -533,10 +533,20 @@ export default function SendSheet(props) {
     const validRecipient = await validateReceipient(toAddress);
 
     if (!validRecipient) {
-      Alert.alert('STOP!', 'You are sending funds to a contract!');
+      navigate(Routes.EXPLAIN_SHEET, {
+        onClose: () => {
+          // Nasty workaround to take control over useMagicAutofocus :S
+          InteractionManager.runAfterInteractions(() => {
+            setTimeout(() => {
+              Keyboard.dismiss();
+              recipientFieldRef?.current?.focus();
+            }, 210);
+          });
+        },
+        type: 'sending_funds_to_contract',
+      });
       return;
     }
-
     Keyboard.dismiss();
     navigate(Routes.SEND_CONFIRMATION_SHEET, {
       amountDetails: amountDetails,
@@ -563,6 +573,7 @@ export default function SendSheet(props) {
     selected,
     selectedGasPrice.value?.amount,
     submitTransaction,
+    validateReceipient,
   ]);
 
   const onPressSend = useCallback(() => {

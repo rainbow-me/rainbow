@@ -104,7 +104,7 @@ export const explainSheetConfig = {
       ...params,
       longFormHeight:
         ExplainSheetHeight +
-        (explainers[params?.type]?.readMoreLink
+        (explainers[params?.type]?.extraHeight
           ? explainers[params?.type]?.extraHeight
           : 0),
     });
