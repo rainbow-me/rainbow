@@ -45,9 +45,9 @@ const ENSText = styled(Text).attrs(({ theme: { colors }, small }) => ({
 
 const UniqueTokenImage = ({
   backgroundColor,
-  lowResUrl = null,
   imageUrl,
   item,
+  lowResUrl = null,
   resizeMode = ImgixImage.resizeMode.cover,
   small,
 }) => {
