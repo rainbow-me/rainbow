@@ -12,7 +12,6 @@ import {
   useLoadAccountData,
   useResetAccountState,
 } from '@rainbow-me/hooks';
-import { walletConnectUpdateSessions } from '@rainbow-me/redux/walletconnect';
 
 const networks = values(networkInfo).filter(network => network.layer2 !== true);
 
@@ -27,7 +26,6 @@ const NetworkSection = () => {
     async network => {
       await resetAccountState();
       await dispatch(settingsUpdateNetwork(network));
-      dispatch(walletConnectUpdateSessions());
       InteractionManager.runAfterInteractions(async () => {
         await loadAccountData(network);
         initializeAccountData();

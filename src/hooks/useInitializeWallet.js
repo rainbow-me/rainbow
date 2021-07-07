@@ -21,7 +21,6 @@ import useLoadGlobalData from './useLoadGlobalData';
 import useResetAccountState from './useResetAccountState';
 import { runKeychainIntegrityChecks } from '@rainbow-me/handlers/walletReadyEvents';
 import { additionalDataCoingeckoIds } from '@rainbow-me/redux/additionalAssetsData';
-import { walletConnectUpdateSessions } from '@rainbow-me/redux/walletconnect';
 import logger from 'logger';
 
 export default function useInitializeWallet() {
@@ -108,7 +107,6 @@ export default function useInitializeWallet() {
         }
 
         await dispatch(settingsUpdateAccountAddress(walletAddress));
-        dispatch(walletConnectUpdateSessions());
         logger.sentry('updated settings address', walletAddress);
 
         // Newly created / imported accounts have no data in localstorage
