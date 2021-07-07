@@ -14,7 +14,6 @@ import {
   useUniqueToken,
 } from '@rainbow-me/hooks';
 import { margin, padding, position } from '@rainbow-me/styles';
-
 const paddingHorizontal = 19;
 
 const Container = styled(Centered)`
@@ -67,6 +66,17 @@ const UniqueTokenExpandedStateImage = ({ asset }) => {
     }
     return asset.image_url;
   }, [asset.image_url, size]);
+
+  const lowResUrl = useMemo(() => {
+    if (
+      asset.image_url?.startsWith?.('https://lh3.googleusercontent.com/') &&
+      size > 0
+    ) {
+      return `${asset.image_url}=w${12}`;
+    }
+    return null;
+  }, [asset.image_url, size]);
+
   const maxImageWidth = deviceWidth - paddingHorizontal * 2;
   const maxImageHeight = maxImageWidth * 1.5;
 
@@ -107,6 +117,7 @@ const UniqueTokenExpandedStateImage = ({ asset }) => {
               backgroundColor={asset.background}
               imageUrl={url}
               item={asset}
+              lowResUrl={lowResUrl}
               resizeMode="contain"
             />
           )}
