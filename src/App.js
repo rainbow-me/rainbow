@@ -49,7 +49,10 @@ import { Navigation } from './navigation';
 import RoutesComponent from './navigation/Routes';
 import { requestsForTopic } from './redux/requests';
 import store from './redux/store';
-import { walletConnectLoadState } from './redux/walletconnect';
+import {
+  walletConnectInitClient,
+  walletConnectLoadState,
+} from './redux/walletconnect';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 import { Portal } from 'react-native-cool-modals/Portal';
@@ -99,6 +102,7 @@ class App extends Component {
       const { isTestFlight } = RNTestFlight.getConstants();
       logger.sentry(`Test flight usage - ${isTestFlight}`);
     }
+    store.dispatch(walletConnectInitClient());
     this.identifyFlow();
     AppState.addEventListener('change', this.handleAppStateChange);
     await this.handleInitializeAnalytics();
