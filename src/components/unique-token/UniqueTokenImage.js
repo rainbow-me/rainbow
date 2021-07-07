@@ -47,7 +47,7 @@ const UniqueTokenImage = ({
   backgroundColor,
   imageUrl,
   item,
-  lowResUrl = null,
+  lowResUrl,
   resizeMode = ImgixImage.resizeMode.cover,
   small,
 }) => {
