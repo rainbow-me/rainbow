@@ -31,11 +31,11 @@ import {
   isDappAuthenticated,
 } from '@rainbow-me/helpers/dappNameHandler';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
+import WalletConnectApprovalSheetType from '@rainbow-me/helpers/walletConnectApprovalSheetTypes';
 import { useAccountSettings, useWallets } from '@rainbow-me/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
-
 const DappLogo = styled(RequestVendorLogoIcon).attrs(
   ({ theme: { colors } }) => ({
     backgroundColor: colors.transparent,
@@ -73,10 +73,6 @@ const SwitchText = styled(Text).attrs(() => ({
   margin-left: 5;
 `;
 
-export const WalletConnectApprovalSheetType = {
-  connect: 1,
-  switch_chain: 2,
-};
 const androidNetworkActions = Object.values(networkInfo)
   .filter(({ disabled }) => !disabled)
   .map(netInfo => netInfo.name);
@@ -88,20 +84,18 @@ export default function WalletConnectApprovalSheet() {
   const { colors } = useTheme();
   const { goBack } = useNavigation();
   const { params } = useRoute();
-  const { network, accountAddress: settingsAddress } = useAccountSettings();
+  const { network, accountAddress } = useAccountSettings();
+  const { selectedWallet, walletNames } = useWallets();
   const handled = useRef(false);
-  const [scam, setScam] = useState(false);
 
+  const [scam, setScam] = useState(false);
   const [approvalNetwork, setApprovalNetwork] = useState(network);
-  const wallets = useWallets();
-  const { selectedWallet, walletNames } = wallets;
   const [approvalAccount, setApprovalAccount] = useState({
-    address: settingsAddress,
+    address: accountAddress,
     wallet: selectedWallet,
   });
-  const type = params?.type || WalletConnectApprovalSheetType.connect;
 
-  // What's this used for?
+  const type = params?.type || WalletConnectApprovalSheetType.connect;
   const chainId = params?.chainId || 1;
   const meta = params?.meta || {};
   const { dappName, dappUrl, imageUrl } = meta;
