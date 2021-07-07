@@ -31,6 +31,7 @@ import {
   seedPhraseKey,
 } from '../utils/keychainConstants';
 import { updateWebDataEnabled } from './showcaseTokens';
+import { walletConnectUpdateSessions } from './walletconnect';
 import { lightModeThemeColors } from '@rainbow-me/styles';
 
 // -- Constants --------------------------------------- //
@@ -92,6 +93,7 @@ export const walletsLoadState = () => async (dispatch, getState) => {
     if (!selectedAddress) {
       const account = selectedWallet.addresses.find(a => a.visible);
       await dispatch(settingsUpdateAccountAddress(account.address));
+      dispatch(walletConnectUpdateSessions());
       await saveAddress(account.address);
       logger.sentry(
         'Selected the first visible address because there was not selected one'
