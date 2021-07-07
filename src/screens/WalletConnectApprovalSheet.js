@@ -1,6 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
-import { capitalize, get } from 'lodash';
+import { capitalize } from 'lodash';
 import React, {
   useCallback,
   useEffect,
