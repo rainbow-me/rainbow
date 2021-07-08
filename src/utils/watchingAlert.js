@@ -2,7 +2,7 @@ import { Alert } from 'react-native';
 import { Navigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 
-export default async function watchingAlert() {
+export default function watchingAlert() {
   Alert.alert(
     `This wallet is currently in "Watching" mode!`,
     `
