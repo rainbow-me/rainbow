@@ -28,6 +28,13 @@ const Gradient = styled(GradientText).attrs({
   weight: 'heavy',
 })``;
 
+const SENDING_FUNDS_TO_CONTRACT = `You're trying to send funds to a smart contract.
+
+Except for some very rare exceptions, you are not supposed to this and it's very likely that your funds will get lost.
+
+Please check the recipient address and try again or reach out to our support.
+`;
+
 const GAS_EXPLAINER = `This is the "gas fee" used by the Ethereum blockchain to securely validate your transaction.
 
 This fee varies depending on the complexity of your transaction and how busy the network is!`;
@@ -53,6 +60,12 @@ export const explainers = {
     emoji: '⛽️',
     text: GAS_EXPLAINER,
     title: 'Ethereum network fee',
+  },
+  sending_funds_to_contract: {
+    emoji: '✋',
+    text: SENDING_FUNDS_TO_CONTRACT,
+    title: 'Stop right there!',
+    extraHeight: 70,
   },
   verified: {
     emoji: '􀇻',
@@ -94,12 +107,14 @@ export const explainers = {
 const SavingsSheet = () => {
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const insets = useSafeArea();
-  const { params: { type = 'gas' } = {} } = useRoute();
+  const { params: { type = 'gas', onClose } = {} } = useRoute();
   const { colors } = useTheme();
   const { goBack } = useNavigation();
+
   const handleClose = useCallback(() => {
     goBack();
-  }, [goBack]);
+    onClose?.();
+  }, [onClose, goBack]);
 
   const handleReadMore = useCallback(() => {
     Linking.openURL(explainers[type].readMoreLink);
@@ -134,7 +149,7 @@ const SavingsSheet = () => {
               width: '100%',
             }}
           >
-            {explainers[type].logo ? (
+            {explainers[type]?.logo ? (
               <Centered marginBottom={10} marginTop={20}>
                 {explainers[type].logo}
               </Centered>

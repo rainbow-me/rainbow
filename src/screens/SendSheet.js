@@ -24,6 +24,7 @@ import {
   createSignableTransaction,
   estimateGasLimit,
   getProviderForNetwork,
+  isL2Network,
   resolveNameOrAddress,
   web3Provider,
 } from '@rainbow-me/handlers/web3';
@@ -51,7 +52,7 @@ import {
 } from '@rainbow-me/hooks';
 import { sendTransaction } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
-import { ETH_ADDRESS } from '@rainbow-me/references';
+import { ETH_ADDRESS, RAINBOW_TOKEN_LIST } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { borders } from '@rainbow-me/styles';
 import {
@@ -503,10 +504,48 @@ export default function SendSheet(props) {
     [gasPrices, txFees, updateGasPriceOption, currentNetwork]
   );
 
+  const validateReceipient = useCallback(
+    async toAddress => {
+      // Don't allow send to known ERC20 contracts
+      if (RAINBOW_TOKEN_LIST[toLower(toAddress)]) {
+        return false;
+      }
+
+      // Don't allow sending funds directly to contracts on L2
+      if (isL2Network(currentNetwork)) {
+        const code = await currentProvider.getCode(toAddress);
+        if (!code || code === '0x') {
+          return true;
+        }
+        return false;
+      }
+      return true;
+    },
+    [currentNetwork, currentProvider]
+  );
+
   const showConfirmationSheet = useCallback(async () => {
     let toAddress = recipient;
     if (isENSAddressFormat(recipient)) {
       toAddress = await resolveNameOrAddress(recipient);
+    }
+
+    const validRecipient = await validateReceipient(toAddress);
+
+    if (!validRecipient) {
+      navigate(Routes.EXPLAIN_SHEET, {
+        onClose: () => {
+          // Nasty workaround to take control over useMagicAutofocus :S
+          InteractionManager.runAfterInteractions(() => {
+            setTimeout(() => {
+              Keyboard.dismiss();
+              recipientFieldRef?.current?.focus();
+            }, 210);
+          });
+        },
+        type: 'sending_funds_to_contract',
+      });
+      return;
     }
     Keyboard.dismiss();
     navigate(Routes.SEND_CONFIRMATION_SHEET, {
@@ -534,6 +573,7 @@ export default function SendSheet(props) {
     selected,
     selectedGasPrice.value?.amount,
     submitTransaction,
+    validateReceipient,
   ]);
 
   const onPressSend = useCallback(() => {
