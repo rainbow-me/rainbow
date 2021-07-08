@@ -5,7 +5,7 @@ import useAsset from './useAsset';
 import useWallets from './useWallets';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 import { useNavigation } from '@rainbow-me/navigation';
-import watchingAlert from '@rainbow-me/utils/watchingAlert';
+import { watchingAlert } from '@rainbow-me/utils';
 
 export default function useExpandedStateNavigation(inputType) {
   const { goBack, navigate } = useNavigation();

@@ -26,7 +26,7 @@ import { isSigningMethod } from '../utils/signingMethods';
 import { addRequestToApprove } from './requests';
 import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
 import Routes from '@rainbow-me/routes';
-import watchingAlert from '@rainbow-me/utils/watchingAlert';
+import { watchingAlert } from '@rainbow-me/utils';
 import logger from 'logger';
 
 // -- Constants --------------------------------------- //
