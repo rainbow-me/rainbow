@@ -4,9 +4,8 @@ import Routes from '@rainbow-me/routes';
 
 export default async function watchingAlert() {
   Alert.alert(
-    `You need to import this wallet!`,
-    `This wallet is currently in "Watching" mode.
-
+    `This wallet is currently in "Watching" mode!`,
+    `
 It looks like you imported this wallet using only its public address. In order to control what's inside, you'll need to import the private key or secret phrase first.`,
     [
       {
