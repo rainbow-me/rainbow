@@ -12,6 +12,8 @@ import {
   isDappAuthenticated,
 } from '@rainbow-me/helpers/dappNameHandler';
 import { useWalletConnectConnections } from '@rainbow-me/hooks';
+import { Navigation, useNavigation } from '@rainbow-me/navigation';
+import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
 import { ethereumUtils } from '@rainbow-me/utils';
 
@@ -37,7 +39,6 @@ export default function WalletConnectListItem({
   const {
     walletConnectDisconnectAllByDappName,
   } = useWalletConnectConnections();
-
   const { colors } = useTheme();
 
   const isAuthenticated = useMemo(() => {
@@ -52,6 +53,14 @@ export default function WalletConnectListItem({
     return dappNameOverride(dappUrl);
   }, [dappUrl]);
 
+  const handlePressChangeWallet = useCallback(() => {
+    Navigation.handleAction(Routes.CHANGE_WALLET_SHEET, {
+      currentAccountAddress: accounts || '',
+      onChangeWallet: () => null,
+      watchOnly: true,
+    });
+  }, [accounts]);
+
   // <ContextMenu
   //   css={padding(16, 19)}
   //   destructiveButtonIndex={0}
@@ -62,15 +71,28 @@ export default function WalletConnectListItem({
 
   const handleOnPressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
-      if (actionKey === 'disconnect') {
-        walletConnectDisconnectAllByDappName(dappName);
-        analytics.track('Manually disconnected from WalletConnect connection', {
-          dappName,
-          dappUrl,
-        });
+      switch (actionKey) {
+        case 'disconnect':
+          walletConnectDisconnectAllByDappName(dappName);
+          analytics.track(
+            'Manually disconnected from WalletConnect connection',
+            {
+              dappName,
+              dappUrl,
+            }
+          );
+          break;
+        case 'switch-account':
+        default:
+          handlePressChangeWallet();
       }
     },
-    [dappName, dappUrl, walletConnectDisconnectAllByDappName]
+    [
+      dappName,
+      dappUrl,
+      handlePressChangeWallet,
+      walletConnectDisconnectAllByDappName,
+    ]
   );
 
   return (
