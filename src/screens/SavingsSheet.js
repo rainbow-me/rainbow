@@ -35,7 +35,6 @@ import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
 import { watchingAlert } from '@rainbow-me/utils';
 
-
 export const SavingsSheetEmptyHeight = 313;
 export const SavingsSheetHeight = android
   ? 424 - getSoftMenuBarHeight() / 2
