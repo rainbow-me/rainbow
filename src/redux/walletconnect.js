@@ -22,12 +22,12 @@ import { dappLogoOverride, dappNameOverride } from '../helpers/dappNameHandler';
 import WalletTypes from '../helpers/walletTypes';
 import { getFCMToken } from '../model/firebase';
 import { Navigation } from '../navigation';
-import { WalletConnectApprovalSheetType } from '../screens/WalletConnectApprovalSheet';
 import { isSigningMethod } from '../utils/signingMethods';
 import { addRequestToApprove } from './requests';
 import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { convertHexToString } from '@rainbow-me/helpers/utilities';
+import WalletConnectApprovalSheetType from '@rainbow-me/helpers/walletConnectApprovalSheetTypes';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
@@ -140,11 +140,17 @@ export const walletConnectOnSessionRequest = (
         });
 
         Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {
-          callback: async approved => {
+          callback: async (approved, chainId, accountAddress) => {
             if (approved) {
               dispatch(setPendingRequest(peerId, walletConnector));
               dispatch(
-                walletConnectApproveSession(peerId, callback, dappScheme)
+                walletConnectApproveSession(
+                  peerId,
+                  callback,
+                  dappScheme,
+                  chainId,
+                  accountAddress
+                )
               );
               analytics.track('Approved new WalletConnect session', {
                 dappName,
@@ -443,11 +449,13 @@ export const walletConnectUpdateSessions = () => (dispatch, getState) => {
   });
 };
 
-export const walletConnectApproveSession = (peerId, callback, dappScheme) => (
-  dispatch,
-  getState
-) => {
-  const { accountAddress, chainId } = getState().settings;
+export const walletConnectApproveSession = (
+  peerId,
+  callback,
+  dappScheme,
+  chainId,
+  accountAddress
+) => dispatch => {
   const walletConnector = dispatch(getPendingRequest(peerId));
   walletConnector.approveSession({
     accounts: [accountAddress],

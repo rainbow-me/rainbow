@@ -99,6 +99,7 @@ export default function WalletList({
   onPressImportSeedPhrase,
   scrollEnabled,
   showDividers,
+  watchOnly,
 }) {
   const [rows, setRows] = useState([]);
   const [ready, setReady] = useState(false);
@@ -217,6 +218,7 @@ export default function WalletList({
                 editMode={editMode}
                 onEditWallet={onEditWallet}
                 onPress={item.onPress}
+                watchOnly={watchOnly}
               />
             </Column>
           );
@@ -224,7 +226,7 @@ export default function WalletList({
           return null;
       }
     },
-    [editMode, onEditWallet]
+    [editMode, onEditWallet, watchOnly]
   );
 
   return (
@@ -244,20 +246,22 @@ export default function WalletList({
             showDividers={showDividers}
           />
           {showDividers && <WalletListDivider />}
-          <WalletListFooter>
-            <WalletOption
-              editMode={editMode}
-              icon="arrowBack"
-              label="􀁍 Create a new wallet"
-              onPress={onPressAddAccount}
-            />
-            <WalletOption
-              editMode={editMode}
-              icon="arrowBack"
-              label="􀂍 Add an existing wallet"
-              onPress={onPressImportSeedPhrase}
-            />
-          </WalletListFooter>
+          {!watchOnly && (
+            <WalletListFooter>
+              <WalletOption
+                editMode={editMode}
+                icon="arrowBack"
+                label="􀁍 Create a new wallet"
+                onPress={onPressAddAccount}
+              />
+              <WalletOption
+                editMode={editMode}
+                icon="arrowBack"
+                label="􀂍 Add an existing wallet"
+                onPress={onPressImportSeedPhrase}
+              />
+            </WalletListFooter>
+          )}
         </Fragment>
       ) : (
         <EmptyWalletList />

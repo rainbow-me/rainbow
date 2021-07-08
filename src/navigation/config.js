@@ -171,7 +171,7 @@ export const restoreSheetConfig = {
   },
 };
 
-export const savingsSheetConfig = {
+export const basicSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,
