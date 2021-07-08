@@ -2,7 +2,8 @@ import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import { RequestVendorLogoIcon } from '../coin-icon';
-import { ContextMenu } from '../context-menu';
+import { ContextMenuButton } from '../context-menu';
+import { Icon } from '../icons';
 import { Centered, ColumnWithMargins, Row } from '../layout';
 import { Text, TruncatedText } from '../text';
 import {
@@ -18,6 +19,12 @@ const ContainerPadding = 15;
 const VendorLogoIconSize = 50;
 export const WalletConnectListItemHeight =
   VendorLogoIconSize + ContainerPadding * 2;
+
+const ContextButton = props => (
+  <Centered css={padding(16, 19)} {...props}>
+    <Icon name="threeDots" />
+  </Centered>
+);
 
 export default function WalletConnectListItem({
   accounts,
@@ -45,9 +52,17 @@ export default function WalletConnectListItem({
     return dappNameOverride(dappUrl);
   }, [dappUrl]);
 
-  const handlePressActionSheet = useCallback(
-    buttonIndex => {
-      if (buttonIndex === 0) {
+  // <ContextMenu
+  //   css={padding(16, 19)}
+  //   destructiveButtonIndex={0}
+  //   onPressActionSheet={handlePressActionSheet}
+  //   options={['Disconnect', lang.t('wallet.action.cancel')]}
+  //   title={`Would you like to disconnect from ${dappName}?`}
+  // />
+
+  const handleOnPressMenuItem = useCallback(
+    ({ nativeEvent: { actionKey } }) => {
+      if (actionKey === 'disconnect') {
         walletConnectDisconnectAllByDappName(dappName);
         analytics.track('Manually disconnected from WalletConnect connection', {
           dappName,
@@ -104,13 +119,26 @@ export default function WalletConnectListItem({
         </ColumnWithMargins>
       </Row>
       <Centered>
-        <ContextMenu
-          css={padding(16, 19)}
-          destructiveButtonIndex={0}
-          onPressActionSheet={handlePressActionSheet}
-          options={['Disconnect', lang.t('wallet.action.cancel')]}
-          title={`Would you like to disconnect from ${dappName}?`}
-        />
+        <ContextMenuButton
+          menuItems={[
+            {
+              actionKey: 'disconnect',
+              actionTitle: 'Disconnect',
+            },
+            {
+              actionKey: 'switch-network',
+              actionTitle: 'Switch Network',
+            },
+            {
+              actionKey: 'switch-account',
+              actionTitle: 'Switch Account',
+            },
+          ]}
+          menuTitle={`Change ${dappName} connection?`}
+          onPressMenuItem={handleOnPressMenuItem}
+        >
+          <ContextButton />
+        </ContextMenuButton>
       </Centered>
     </Row>
   );
