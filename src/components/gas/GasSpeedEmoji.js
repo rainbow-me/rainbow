@@ -7,19 +7,19 @@ import { gasUtils, magicMemo } from '@rainbow-me/utils';
 const EmojiForGasSpeedType = {
   [gasUtils.FAST]: {
     emoji: 'rocket', // 🚀️
-    position: [0.5, 0], // (x, y)
+    position: [android ? 2 : 0.5, android ? 5 : 0], // (x, y)
   },
   [gasUtils.NORMAL]: {
     emoji: 'stopwatch', // ⏱️
-    position: [1, -1], // (x, y)
+    position: [android ? 3.5 : 1, android ? 3.25 : -1], // (x, y)
   },
   [gasUtils.SLOW]: {
     emoji: 'snail', // 🐌️
-    position: [0, -2], // (x, y)
+    position: [android ? 2 : 0, android ? 3.5 : -2], // (x, y)
   },
   [gasUtils.CUSTOM]: {
     emoji: 'gear', // ⚙️
-    position: [1, -0.25], // (x, y)
+    position: [android ? 3 : 1, android ? 3.5 : -0.25], // (x, y)
   },
 };
 

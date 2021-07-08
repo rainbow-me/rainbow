@@ -4,18 +4,18 @@ import { captureEvent, captureException } from '@sentry/react-native';
 import { isEmpty, isString, toLower } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { InteractionManager, Keyboard, StatusBar } from 'react-native';
-import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
+import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { dismissingScreenListener } from '../../shim';
+import { GasSpeedButton } from '../components/gas';
 import { Column } from '../components/layout';
 import {
   SendAssetForm,
   SendAssetList,
   SendContactList,
   SendHeader,
-  SendTransactionSpeed,
 } from '../components/send';
 import { SheetActionButton } from '../components/sheet';
 import { AssetType, AssetTypes } from '@rainbow-me/entities';
@@ -38,7 +38,9 @@ import {
   useAccountAssets,
   useAccountSettings,
   useCoinListEditOptions,
+  useColorForAsset,
   useContacts,
+  useDimensions,
   useGas,
   useMagicAutofocus,
   useMaxInputBalance,
@@ -60,7 +62,7 @@ import {
   convertAmountFromNativeValue,
   formatInputDecimals,
 } from '@rainbow-me/utilities';
-import { deviceUtils, gasUtils } from '@rainbow-me/utils';
+import { deviceUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const sheetHeight = deviceUtils.dimensions.height - (android ? 30 : 10);
@@ -91,21 +93,19 @@ const KeyboardSizeView = styled(KeyboardArea)`
 
 export default function SendSheet(props) {
   const dispatch = useDispatch();
+  const { isTinyPhone } = useDimensions();
   const { goBack, navigate, addListener } = useNavigation();
   const { dataAddNewTransaction } = useTransactionConfirmation();
   const updateAssetOnchainBalanceIfNeeded = useUpdateAssetOnchainBalance();
   const { allAssets } = useAccountAssets();
   const {
     gasLimit,
-    gasPrices,
     isSufficientGas,
     prevSelectedGasPrice,
     selectedGasPrice,
     startPollingGasPrices,
     stopPollingGasPrices,
-    txFees,
     updateDefaultGasLimit,
-    updateGasPriceOption,
     updateTxFee,
   } = useGas();
   const isDismissing = useRef(false);
@@ -137,12 +137,7 @@ export default function SendSheet(props) {
   const { contacts, onRemoveContact, filteredContacts } = useContacts();
   const { userAccounts } = useUserAccounts();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
-  const {
-    accountAddress,
-    nativeCurrency,
-    nativeCurrencySymbol,
-    network,
-  } = useAccountSettings();
+  const { accountAddress, nativeCurrency, network } = useAccountSettings();
 
   const savings = useSendSavingsAccount();
   const fetchData = useRefreshAccountData();
@@ -161,18 +156,19 @@ export default function SendSheet(props) {
   const [selected, setSelected] = useState({});
   const { maxInputBalance, updateMaxInputBalance } = useMaxInputBalance();
   const [currentProvider, setCurrentProvider] = useState();
+  const { colors, isDarkMode } = useTheme();
 
   const showEmptyState = !isValidAddress;
   const showAssetList = isValidAddress && isEmpty(selected);
   const showAssetForm = isValidAddress && !isEmpty(selected);
 
-  const { handleFocus, triggerFocus } = useMagicAutofocus(
-    recipientFieldRef,
-    useCallback(
-      lastFocusedRef => (showAssetList ? null : lastFocusedRef.current),
-      [showAssetList]
-    )
-  );
+  const isNft = selected?.type === AssetTypes.nft;
+  let color = useColorForAsset(selected);
+  if (isNft) {
+    color = colors.appleBlue;
+  }
+
+  const { triggerFocus } = useMagicAutofocus(recipientFieldRef);
 
   useEffect(() => {
     // We can start fetching gas prices
@@ -466,13 +462,13 @@ export default function SendSheet(props) {
       captureEvent('Preventing tx submit due to amount <= 0');
       return false;
     }
-
     const submitSuccessful = await onSubmit();
     analytics.track('Sent transaction', {
       assetName: selected?.name || '',
       assetType: selected?.type || '',
       isRecepientENS: toLower(recipient.slice(-4)) === '.eth',
     });
+
     if (submitSuccessful) {
       goBack();
       navigate(Routes.WALLET_SCREEN);
@@ -489,20 +485,6 @@ export default function SendSheet(props) {
     selected?.name,
     selected?.type,
   ]);
-
-  const onPressTransactionSpeed = useCallback(
-    onSuccess => {
-      const hideCustom = true;
-      gasUtils.showTransactionSpeedOptions(
-        gasPrices,
-        txFees,
-        gasPriceOption => updateGasPriceOption(gasPriceOption, currentNetwork),
-        onSuccess,
-        hideCustom
-      );
-    },
-    [gasPrices, txFees, updateGasPriceOption, currentNetwork]
-  );
 
   const validateReceipient = useCallback(
     async toAddress => {
@@ -556,6 +538,7 @@ export default function SendSheet(props) {
       from: accountAddress,
       gasLimit: gasLimit,
       gasPrice: selectedGasPrice.value?.amount,
+      isNft,
       isSufficientGas,
       network: currentNetwork,
       to: recipient,
@@ -567,6 +550,7 @@ export default function SendSheet(props) {
     currentInput,
     currentNetwork,
     gasLimit,
+    isNft,
     isSufficientGas,
     navigate,
     recipient,
@@ -575,14 +559,6 @@ export default function SendSheet(props) {
     submitTransaction,
     validateReceipient,
   ]);
-
-  const onPressSend = useCallback(() => {
-    if (isIphoneX()) {
-      showConfirmationSheet();
-    } else {
-      onPressTransactionSpeed(showConfirmationSheet);
-    }
-  }, [onPressTransactionSpeed, showConfirmationSheet]);
 
   const onResetAssetSelection = useCallback(() => {
     analytics.track('Reset asset selection in Send flow');
@@ -662,8 +638,6 @@ export default function SendSheet(props) {
     updateTxFee,
   ]);
 
-  const { colors, isDarkMode } = useTheme();
-
   const { buttonDisabled, buttonLabel } = useMemo(() => {
     const isZeroAssetAmount = Number(amountDetails.assetAmount) <= 0;
 
@@ -700,9 +674,9 @@ export default function SendSheet(props) {
       <SheetContainer>
         <SendHeader
           contacts={contacts}
+          hideDivider={showAssetForm}
           isValidAddress={isValidAddress}
           onChangeAddressInput={onChangeInput}
-          onFocus={handleFocus}
           onPressPaste={setRecipient}
           onRefocusInput={triggerFocus}
           recipient={recipient}
@@ -736,7 +710,6 @@ export default function SendSheet(props) {
         {showAssetForm && (
           <SendAssetForm
             {...props}
-            allAssets={allAssets}
             assetAmount={amountDetails.assetAmount}
             buttonRenderer={
               <SheetActionButton
@@ -745,11 +718,11 @@ export default function SendSheet(props) {
                     ? isDarkMode
                       ? colors.darkGrey
                       : colors.lightGrey
-                    : colors.appleBlue
+                    : color
                 }
                 disabled={buttonDisabled}
                 label={buttonLabel}
-                onPress={onPressSend}
+                onPress={showConfirmationSheet}
                 size="big"
                 testID="send-sheet-confirm"
                 weight="bold"
@@ -759,18 +732,16 @@ export default function SendSheet(props) {
             nativeCurrency={nativeCurrency}
             onChangeAssetAmount={onChangeAssetAmount}
             onChangeNativeAmount={onChangeNativeAmount}
-            onFocus={handleFocus}
             onResetAssetSelection={onResetAssetSelection}
             selected={selected}
             sendMaxBalance={sendMaxBalance}
             txSpeedRenderer={
-              isIphoneX() && (
-                <SendTransactionSpeed
-                  gasPrice={selectedGasPrice}
-                  nativeCurrencySymbol={nativeCurrencySymbol}
-                  onPressTransactionSpeed={onPressTransactionSpeed}
-                />
-              )
+              <GasSpeedButton
+                horizontalPadding={isTinyPhone ? 0 : 5}
+                theme={isDarkMode ? 'dark' : 'light'}
+                topPadding={isTinyPhone ? 8 : 15}
+                type="transaction"
+              />
             }
           />
         )}

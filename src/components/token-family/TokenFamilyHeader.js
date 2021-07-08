@@ -19,7 +19,7 @@ const Content = styled(Row).attrs({
   align: 'center',
   justify: 'space-between',
 })`
-  ${({ isCoinRow }) => padding(0, isCoinRow ? 16 : 19)};
+  ${({ isCoinRow }) => padding(0, isCoinRow ? 19 : 19)};
   background-color: ${({ theme: { colors } }) => colors.white};
   height: ${TokenFamilyHeaderHeight};
   width: 100%;
@@ -101,7 +101,7 @@ const TokenFamilyHeader = ({
           )}
         </RowWithMargins>
         <TitleText isShowcase={title === 'Showcase'}>{title}</TitleText>
-        <RowWithMargins align="center" margin={13}>
+        <RowWithMargins align="center" margin={10}>
           <Animated.View style={{ opacity: animation }}>
             <ChildrenAmountText>{childrenAmount}</ChildrenAmountText>
           </Animated.View>

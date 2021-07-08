@@ -6,63 +6,47 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
-import { Button } from '../buttons';
+import { MiniButton } from '../buttons';
 import { ExchangeInput } from '../exchange';
-import { ColumnWithMargins, Row } from '../layout';
+import { Column, Row } from '../layout';
 import { useDimensions } from '@rainbow-me/hooks';
-import { position } from '@rainbow-me/styles';
 
-const Underline = styled.View`
-  ${position.cover};
-  background-color: ${({ theme: { colors } }) => colors.blueGreyDark};
-  opacity: 0.2;
-`;
-
-const UnderlineAnimated = styled(Animated.View)`
-  ${position.cover};
-  background-color: ${({ theme: { colors } }) => colors.sendScreen.brightBlue};
-  left: -100%;
-`;
-
-const UnderlineInput = styled(ExchangeInput).attrs(
-  ({ isTinyPhone, theme: { isDarkMode, colors } }) => ({
-    color: colors.dark,
+const BubbleInput = styled(ExchangeInput).attrs(
+  ({ isSmallPhone, isTinyPhone, theme: { isDarkMode } }) => ({
     disableTabularNums: true,
     keyboardAppearance: isDarkMode ? 'dark' : 'light',
     letterSpacing: 'roundedTightest',
-    size: isTinyPhone || android ? 'bigger' : 'h3',
-    weight: 'medium',
+    lineHeight: android
+      ? isTinyPhone
+        ? 27
+        : android || isSmallPhone
+        ? 31
+        : 38
+      : undefined,
+    size: isTinyPhone ? 'big' : isSmallPhone ? 'bigger' : 'h3',
+    weight: 'semibold',
   })
 )`
-  padding-right: 8;
-  ${android ? 'height: 40;' : ''}
+  ${({ isTinyPhone }) =>
+    android ? (isTinyPhone ? 'height: 40' : 'height: 46;') : ''}}
   ${android ? 'padding-bottom: 0;' : ''}
   ${android ? 'padding-top: 0;' : ''}
-`;
-
-const UnderlineContainer = styled(Row)`
-  border-radius: 1px;
-  height: 2px;
-  overflow: hidden;
-  width: 100%;
+  margin-right: 10;
 `;
 
 const defaultFormatter = string => string;
 
-const UnderlineField = (
+const BubbleField = (
   {
     autoFocus,
     buttonText,
+    colorForAsset,
     format = defaultFormatter,
     keyboardType,
     mask,
+    maxLabelColor,
     maxLength,
     onBlur,
     onChange,
@@ -75,26 +59,14 @@ const UnderlineField = (
   },
   forwardedRef
 ) => {
-  const { isTinyPhone } = useDimensions();
+  const { isSmallPhone, isTinyPhone } = useDimensions();
 
   const [isFocused, setIsFocused] = useState(autoFocus);
   const [value, setValue] = useState(valueProp);
   const [wasButtonPressed, setWasButtonPressed] = useState(false);
-  const underlineSize = useSharedValue(autoFocus ? 1 : 0);
 
   const ref = useRef();
   useImperativeHandle(forwardedRef, () => ref.current);
-
-  useEffect(() => {
-    if (isFocused) {
-      underlineSize.value = withTiming(1, {
-        duration: 150,
-      });
-    } else {
-      underlineSize.value = 0;
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isFocused]);
 
   const formattedValue = useMemo(() => format(String(value || '')), [
     format,
@@ -148,20 +120,20 @@ const UnderlineField = (
     }
   }, [forwardedRef, value, valueProp, wasButtonPressed]);
 
-  const animatedStyles = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: underlineSize.value }],
-    };
-  });
-
   const { colors, isDarkMode } = useTheme();
 
   return (
-    <ColumnWithMargins flex={1} margin={8} {...props}>
+    <Column
+      flex={1}
+      pointerEvents={android || isFocused ? 'auto' : 'none'}
+      {...props}
+    >
       <Row align="center" justify="space-between">
-        <UnderlineInput
+        <BubbleInput
           autoFocus={autoFocus}
+          color={colorForAsset}
           isDarkMode={isDarkMode}
+          isSmallPhone={android || isSmallPhone}
           isTinyPhone={isTinyPhone}
           keyboardType={keyboardType}
           mask={mask}
@@ -170,27 +142,34 @@ const UnderlineField = (
           onChangeText={handleChangeText}
           onFocus={handleFocus}
           placeholder={placeholder}
+          placeholderTextColor={
+            maxLabelColor
+              ? colors.alpha(colors.blueGreyDark, 0.32)
+              : colors.alpha(colorForAsset, 0.4)
+          }
           ref={ref}
           testID={testID + '-input'}
           value={formattedValue}
         />
         {buttonText && isFocused && (
-          <Button
-            backgroundColor={colors.sendScreen.brightBlue}
+          <MiniButton
+            backgroundColor={
+              maxLabelColor
+                ? colors.alpha(colorForAsset, 0.048)
+                : colors.alpha(colorForAsset, 0.06)
+            }
+            color={colorForAsset}
+            letterSpacing="roundedMedium"
             onPress={handleButtonPress}
-            size="small"
-            type="pill"
+            small
+            weight="heavy"
           >
             {buttonText}
-          </Button>
+          </MiniButton>
         )}
       </Row>
-      <UnderlineContainer>
-        <Underline />
-        <UnderlineAnimated style={animatedStyles} />
-      </UnderlineContainer>
-    </ColumnWithMargins>
+    </Column>
   );
 };
 
-export default React.forwardRef(UnderlineField);
+export default React.forwardRef(BubbleField);

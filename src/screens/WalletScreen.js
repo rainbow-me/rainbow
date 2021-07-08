@@ -184,6 +184,7 @@ export default function WalletScreen() {
           </Header>
         </HeaderOpacityToggler>
         <AssetList
+          disableAutoScrolling
           fetchData={refreshAccountData}
           isEmpty={isAccountEmpty || !!params?.emptyWallet}
           isWalletEthZero={isWalletEthZero}
