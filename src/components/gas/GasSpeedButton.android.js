@@ -35,7 +35,8 @@ const Container = styled(Row).attrs({
   opacityTouchable: true,
   pointerEvents: 'auto',
 })`
-  ${padding(15, 19, 0)};
+  ${({ horizontalPadding, topPadding }) =>
+    padding(topPadding, horizontalPadding, 0)};
   height: 76;
   width: 100%;
 `;
@@ -78,7 +79,7 @@ const GasInput = styled(Input).attrs(
   })
 )`
   ${fontWithWidth(fonts.weight.bold)};
-  ${margin(-13, 0)}
+  ${margin(-13, 0, -15, -4)}
 `;
 
 const LittleBorderlessButton = ({ onPress, children, testID }) => {
@@ -107,6 +108,7 @@ const BottomRightLabel = ({ formatter, theme }) => {
           ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)
           : colors.alpha(colors.blueGreyDark, 0.6)
       }
+      style={{ marginTop: -2 }}
     >
       {formatter()}
     </Label>
@@ -138,11 +140,13 @@ Keyboard.addListener('keyboardDidHide', () => listener?.());
 
 const GasSpeedButton = ({
   dontBlur,
+  horizontalPadding = 19,
   onCustomGasBlur,
   onCustomGasFocus,
   testID,
   type,
   theme = 'dark',
+  topPadding = 15,
   options = null,
   minGasPrice = null,
 }) => {
@@ -455,11 +459,13 @@ const GasSpeedButton = ({
   return (
     <Container
       as={ScaleButtonZoomableAndroid}
+      horizontalPadding={horizontalPadding}
       onPress={handlePress}
       testID={testID}
+      topPadding={topPadding}
     >
       <Column>
-        <Row align="end" height={30} justify="space-between">
+        <Row align="end" height={30} justify="start">
           {!isCustom ? (
             <ButtonPressAnimation onPress={handlePress} reanimatedButton>
               <View pointerEvents="none">
@@ -468,6 +474,7 @@ const GasSpeedButton = ({
                   interval={6}
                   renderContent={renderGasPriceText}
                   steps={6}
+                  textAlign="left"
                   timing="linear"
                   value={price}
                 />
@@ -507,11 +514,11 @@ const GasSpeedButton = ({
           )}
         </Row>
 
-        <Row justify="space-between" style={{ height: 27 }}>
+        <Row justify="space-between" style={{ marginTop: isCustom ? -3 : 0 }}>
           {!isCustom ? (
             <ButtonPressAnimation
               onPress={openGasHelper}
-              style={{ paddingLeft: 4, zIndex: 10 }}
+              style={{ marginTop: -7, zIndex: 10 }}
               wrapperStyle={{ zIndex: 10 }}
             >
               <Label
@@ -520,7 +527,6 @@ const GasSpeedButton = ({
                     ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)
                     : colors.alpha(colors.blueGreyDark, 0.6)
                 }
-                height={10}
               >
                 Network Fee{' '}
                 <Label
@@ -553,7 +559,7 @@ const GasSpeedButton = ({
         reanimatedButton
         wrapperStyle={{ flex: 1 }}
       >
-        <Row align="end" css={margin(3, 0)} justify="end" marginBottom={1}>
+        <Row align="end" justify="end" marginBottom={1}>
           <GasSpeedLabelPager
             label={selectedGasPriceOption}
             options={options}

@@ -11,6 +11,7 @@ const ShadowStack = React.forwardRef(
       elevation = 0,
       height,
       hideShadow,
+      overflow = 'hidden',
       shadows,
       style,
       width,
@@ -55,7 +56,7 @@ const ShadowStack = React.forwardRef(
             0
           )}
           height={height}
-          overflow="hidden"
+          overflow={overflow}
           style={[StyleSheet.absoluteFill, { backgroundColor }]}
           width={width}
           zIndex={shadows?.length + 2 || 0}

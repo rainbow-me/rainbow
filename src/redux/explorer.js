@@ -177,7 +177,7 @@ export const fetchAssetPrices = assetAddress => (dispatch, getState) => {
       scope: ['prices'],
     },
   ];
-  assetsSocket.emit(...payload);
+  assetsSocket?.emit(...payload);
 };
 
 const explorerUnsubscribe = () => (dispatch, getState) => {
@@ -327,12 +327,15 @@ export const emitAssetRequest = assetAddress => (dispatch, getState) => {
     : [assetAddress];
 
   const newAssetsCodes = assetCodes.filter(
-    code => !TokensListenedCache[code + nativeCurrency]
+    code => !TokensListenedCache?.[nativeCurrency]?.[code]
   );
 
-  newAssetsCodes.forEach(
-    code => (TokensListenedCache[code + nativeCurrency] = true)
-  );
+  newAssetsCodes.forEach(code => {
+    if (!TokensListenedCache?.[nativeCurrency]) {
+      TokensListenedCache[nativeCurrency] = {};
+    }
+    TokensListenedCache[nativeCurrency][code] = true;
+  });
 
   if (newAssetsCodes.length > 0) {
     assetsSocket?.emit(
