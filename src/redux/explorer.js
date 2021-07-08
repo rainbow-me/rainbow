@@ -177,7 +177,7 @@ export const fetchAssetPrices = assetAddress => (dispatch, getState) => {
       scope: ['prices'],
     },
   ];
-  assetsSocket.emit(...payload);
+  assetsSocket?.emit(...payload);
 };
 
 const explorerUnsubscribe = () => (dispatch, getState) => {
