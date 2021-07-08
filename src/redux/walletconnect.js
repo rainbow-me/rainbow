@@ -29,7 +29,6 @@ import Routes from '@rainbow-me/routes';
 import watchingAlert from '@rainbow-me/utils/watchingAlert';
 import logger from 'logger';
 
-
 // -- Constants --------------------------------------- //
 
 const WALLETCONNECT_ADD_REQUEST = 'walletconnect/WALLETCONNECT_ADD_REQUEST';

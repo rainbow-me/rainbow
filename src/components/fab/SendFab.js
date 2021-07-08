@@ -9,7 +9,6 @@ import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
 import Routes from '@rainbow-me/routes';
 import watchingAlert from '@rainbow-me/utils/watchingAlert';
 
-
 const FabShadow = [
   [0, 10, 30, lightModeThemeColors.shadow, 0.8],
   [0, 5, 15, lightModeThemeColors.paleBlue, 1],

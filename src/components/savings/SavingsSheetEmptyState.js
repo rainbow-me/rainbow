@@ -14,7 +14,6 @@ import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
 import watchingAlert from '@rainbow-me/utils/watchingAlert';
 
-
 const APYHeadingText = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.dark,
   size: 'big',

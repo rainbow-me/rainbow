@@ -7,7 +7,6 @@ import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 import { useNavigation } from '@rainbow-me/navigation';
 import watchingAlert from '@rainbow-me/utils/watchingAlert';
 
-
 export default function useExpandedStateNavigation(inputType) {
   const { goBack, navigate } = useNavigation();
   const { params } = useRoute();
