@@ -1,5 +1,5 @@
 import { toLower } from 'lodash';
-import React, { useCallback, useState } from 'react';
+import React, { Fragment, useCallback, useState } from 'react';
 import { SvgCssUri } from 'react-native-svg';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
@@ -50,6 +50,7 @@ const UniqueTokenImage = ({
   backgroundColor,
   imageUrl,
   item,
+  lowResUrl,
   resizeMode = ImgixImage.resizeMode.cover,
   small,
 }) => {
@@ -65,6 +66,8 @@ const UniqueTokenImage = ({
   const { isDarkMode, colors } = useTheme();
   // UNI v3 NFTs are animated so we can't support those
   const isSVG = !isUNIv3 && isSupportedUriExtension(imageUrl, ['.svg']);
+  const [loadedImg, setLoadedImg] = useState(false);
+  const onLoad = useCallback(() => setLoadedImg(true), [setLoadedImg]);
 
   return (
     <Centered backgroundColor={backgroundColor} style={position.coverAsObject}>
@@ -76,18 +79,28 @@ const UniqueTokenImage = ({
           width="100%"
         />
       ) : imageUrl && !error ? (
-        <ImageTile
-          onError={handleError}
-          resizeMode={ImgixImage.resizeMode[resizeMode]}
-          source={{ uri: image }}
-          style={position.coverAsObject}
-        >
-          {isENS && (
-            <ENSText isTinyPhone={isTinyPhone} small={small}>
-              {item.name}
-            </ENSText>
+        <Fragment>
+          <ImageTile
+            onError={handleError}
+            onLoad={onLoad}
+            resizeMode={ImgixImage.resizeMode[resizeMode]}
+            source={{ uri: image }}
+            style={position.coverAsObject}
+          >
+            {isENS && (
+              <ENSText isTinyPhone={isTinyPhone} small={small}>
+                {item.name}
+              </ENSText>
+            )}
+          </ImageTile>
+          {!loadedImg && lowResUrl && (
+            <ImageTile
+              resizeMode={ImgixImage.resizeMode[resizeMode]}
+              source={{ uri: lowResUrl }}
+              style={position.coverAsObject}
+            />
           )}
-        </ImageTile>
+        </Fragment>
       ) : (
         <Monospace
           align="center"

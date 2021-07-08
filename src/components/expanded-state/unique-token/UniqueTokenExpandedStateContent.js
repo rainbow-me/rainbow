@@ -1,5 +1,5 @@
 import React from 'react';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, PixelRatio, StyleSheet, View } from 'react-native';
 import styled from 'styled-components';
 import { magicMemo } from '../../../utils';
 import { SimpleModelView } from '../../3d';
@@ -14,6 +14,9 @@ import {
   useUniqueToken,
 } from '@rainbow-me/hooks';
 import { margin, padding, position } from '@rainbow-me/styles';
+
+const GOOGLE_USER_CONTENT_URL = 'https://lh3.googleusercontent.com/';
+const pixelRatio = PixelRatio.get();
 
 const Container = styled(Centered)`
   ${({ horizontalPadding }) => padding(0, horizontalPadding)};
@@ -60,6 +63,20 @@ const UniqueTokenExpandedStateImage = ({
       asset.image_preview_url ||
       asset.image_thumbnail_url;
   const { dimensions: imageDimensions } = useImageMetadata(imageUrl);
+  const size = Math.ceil((deviceWidth * pixelRatio) / 100) * 100;
+  const url = useMemo(() => {
+    if (asset.image_url?.startsWith?.(GOOGLE_USER_CONTENT_URL) && size > 0) {
+      return `${asset.image_url}=w${size}`;
+    }
+    return asset.image_url;
+  }, [asset.image_url, size]);
+
+  const lowResUrl = useMemo(() => {
+    if (asset.image_url?.startsWith?.(GOOGLE_USER_CONTENT_URL) && size > 0) {
+      return `${asset.image_url}=w${12}`;
+    }
+    return null;
+  }, [asset.image_url, size]);
 
   const maxImageWidth = deviceWidth - horizontalPadding * 2;
   const maxImageHeight = maxImageWidth * 1.5;
@@ -106,8 +123,9 @@ const UniqueTokenExpandedStateImage = ({
           ) : (
             <UniqueTokenImage
               backgroundColor={asset.background}
-              imageUrl={imageUrl}
+              imageUrl={url}
               item={asset}
+              lowResUrl={lowResUrl}
               resizeMode={resizeMode}
             />
           )}
