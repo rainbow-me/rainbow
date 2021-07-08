@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo } from 'react';
-import { Alert } from 'react-native';
 import styled from 'styled-components';
 import { calculateAPY } from '../../helpers/savings';
 import { useNavigation } from '../../navigation/Navigation';
@@ -13,6 +12,8 @@ import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
 import { DAI_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
+import watchingAlert from '@rainbow-me/utils/watchingAlert';
+
 
 const APYHeadingText = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.dark,
@@ -61,7 +62,7 @@ const SavingsSheetEmptyState = ({
         screen: Routes.MAIN_EXCHANGE_NAVIGATOR,
       });
     } else {
-      Alert.alert(`You need to import the wallet in order to do this`);
+      watchingAlert();
     }
   }, [isReadOnlyWallet, navigate, underlying]);
 

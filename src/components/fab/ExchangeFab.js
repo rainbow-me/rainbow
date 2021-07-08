@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react';
-import { Alert } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
 import { delayNext } from '../../hooks/useMagicAutofocus';
 import { useNavigation } from '../../navigation/Navigation';
@@ -10,6 +9,7 @@ import FloatingActionButton from './FloatingActionButton';
 import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
 import Routes from '@rainbow-me/routes';
 import { magicMemo } from '@rainbow-me/utils';
+import watchingAlert from '@rainbow-me/utils/watchingAlert';
 
 const FabShadow = [
   [0, 10, 30, lightModeThemeColors.shadow, 0.8],
@@ -34,7 +34,7 @@ const ExchangeFab = ({ disabled, isReadOnlyWallet, ...props }) => {
         screen: Routes.MAIN_EXCHANGE_NAVIGATOR,
       });
     } else {
-      Alert.alert(`You need to import the wallet in order to do this`);
+      watchingAlert();
     }
   }, [isReadOnlyWallet, navigate, eth]);
 
