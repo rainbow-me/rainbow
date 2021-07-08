@@ -12,13 +12,21 @@ import {
 } from '@rainbow-me/helpers/dappNameHandler';
 import { useWalletConnectConnections } from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
+import { ethereumUtils } from '@rainbow-me/utils';
 
 const ContainerPadding = 15;
 const VendorLogoIconSize = 50;
 export const WalletConnectListItemHeight =
   VendorLogoIconSize + ContainerPadding * 2;
 
-export default function WalletConnectListItem({ dappIcon, dappName, dappUrl }) {
+export default function WalletConnectListItem({
+  accounts,
+  accountsLabels,
+  chainId,
+  dappIcon,
+  dappName,
+  dappUrl,
+}) {
   const {
     walletConnectDisconnectAllByDappName,
   } = useWalletConnectConnections();
@@ -90,7 +98,8 @@ export default function WalletConnectListItem({ dappIcon, dappName, dappUrl }) {
             size="smedium"
             weight="medium"
           >
-            Connected
+            {accountsLabels[accounts]} connected to{' '}
+            {ethereumUtils.getNetworkNameFromChainId(chainId)}
           </TruncatedText>
         </ColumnWithMargins>
       </Row>

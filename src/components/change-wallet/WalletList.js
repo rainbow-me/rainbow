@@ -211,6 +211,7 @@ export default function WalletList({
     ({ item }) => {
       switch (item.rowType) {
         case RowTypes.ADDRESS:
+          console.log('itemitem', item);
           return (
             <Column height={item.height}>
               <AddressRow

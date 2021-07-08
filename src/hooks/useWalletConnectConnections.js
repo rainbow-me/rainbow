@@ -11,6 +11,8 @@ import {
 const formatDappData = connections =>
   values(
     mapValues(connections, connection => ({
+      accounts: connection?.[0].accounts,
+      chainId: connection?.[0].chainId,
       dappIcon: connection?.[0].peerMeta.icons[0],
       dappName: connection?.[0].peerMeta.name,
       dappUrl: connection?.[0].peerMeta.url,
