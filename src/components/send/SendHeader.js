@@ -130,16 +130,19 @@ export default function SendHeader({
             async buttonIndex => {
               if (buttonIndex === 0) {
                 removeContact(recipient);
+                onRefocusInput();
+              } else {
+                onRefocusInput();
               }
             }
           );
         } else if (buttonIndex === 1) {
           handleNavigateToContact();
+          onRefocusInput();
         } else if (buttonIndex === 2) {
           setClipboard(recipient);
+          onRefocusInput();
         }
-
-        onRefocusInput();
       }
     );
   }, [

@@ -29,7 +29,7 @@ import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { convertHexToString } from '@rainbow-me/helpers/utilities';
 import WalletConnectApprovalSheetType from '@rainbow-me/helpers/walletConnectApprovalSheetTypes';
 import Routes from '@rainbow-me/routes';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils, watchingAlert } from '@rainbow-me/utils';
 import logger from 'logger';
 
 // -- Constants --------------------------------------- //
@@ -295,7 +295,7 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
       const selectedWallet = selected || {};
       const isReadOnlyWallet = selectedWallet.type === WalletTypes.readOnly;
       if (isReadOnlyWallet && !enableActionsOnReadOnlyWallet) {
-        Alert.alert(`You need to import the wallet in order to do this`);
+        watchingAlert();
         walletConnector.rejectRequest({
           error: { message: 'JSON RPC method not supported' },
           id: payload.id,
