@@ -521,17 +521,10 @@ export default function TransactionConfirmationScreen() {
           gasLimit,
           gasPrice,
           hash: result.hash,
+          network,
           nonce: result.nonce,
           to: displayDetails?.request?.to,
         };
-        if (network === networkTypes.optimism) {
-          txDetails.optimism = true;
-        } else if (network === networkTypes.arbitrum) {
-          txDetails.arbitrum = true;
-        } else if (network === networkTypes.polygon) {
-          txDetails.polygon = true;
-        }
-
         dispatch(dataAddNewTransaction(txDetails));
       }
       analytics.track('Approved WalletConnect transaction request');

@@ -12,7 +12,6 @@ import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
 import { TransactionStatusTypes, TransactionTypes } from '@rainbow-me/entities';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
 import TransactionActions from '@rainbow-me/helpers/transactionActions';
 import {
   getHumanReadableDate,
@@ -101,7 +100,7 @@ export default function TransactionCoinRow({ item, ...props }) {
       to,
       status,
       type,
-      optimism,
+      network,
       polygon,
     } = item;
 
@@ -195,14 +194,6 @@ export default function TransactionCoinRow({ item, ...props }) {
               break;
             case TransactionActions.viewOnBlockExplorer:
             case TransactionActions.viewOnEtherscan: {
-              let network = null;
-              if (optimism) {
-                network = networkTypes.optimism;
-              } else if (polygon) {
-                network = networkTypes.polygon;
-              } else if (arbitrum) {
-                network = networkTypes.arbitrum;
-              }
               ethereumUtils.openTransactionInBlockExplorer(hash, network);
               break;
             }

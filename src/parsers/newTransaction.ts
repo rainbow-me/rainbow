@@ -58,7 +58,6 @@ export const parseNewTransaction = async (
 
   return {
     address: txDetails?.asset?.address ?? ETH_ADDRESS,
-    arbitrum: txDetails.arbitrum,
     balance,
     dappName: txDetails.dappName,
     description,
@@ -69,10 +68,9 @@ export const parseNewTransaction = async (
     minedAt: null,
     name: txDetails?.asset?.name ?? null,
     native,
+    network: txDetails.network,
     nonce: txDetails.nonce,
-    optimism: txDetails.optimism,
     pending: true,
-    polygon: txDetails.polygon,
     protocol: txDetails?.protocol,
     sourceAmount: txDetails.sourceAmount,
     status,

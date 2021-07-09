@@ -10,9 +10,7 @@
 //    "protocol": "uniswap",
 //    "type": "trade",
 //    "minedAt": 1587390398,
-//    "arbitrum": false,
-//    "optimism": false,
-//    "polygon": false,
+//    "network": "optimism",
 //    "pending": false,
 //    "address": "0x6b175474e89094c44da98b954eedeac495271d0f",
 //    "balance": {
@@ -39,9 +37,7 @@ import Foundation
   var title: String!
   var type: String!
   var minedAt: Date!
-  var arbitrum: Bool = false
-  var optimism: Bool = false
-  var polygon: Bool = false
+  var network: String?
   var pending: Bool = false
   var address: String?
   var status: String!

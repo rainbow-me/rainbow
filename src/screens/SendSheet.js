@@ -423,9 +423,7 @@ export default function SendSheet(props) {
         submitSuccess = true;
         txDetails.hash = hash;
         txDetails.nonce = nonce;
-        txDetails.arbitrum = selected.type === AssetType.arbitrum;
-        txDetails.optimism = selected.type === AssetType.optimism;
-        txDetails.polygon = selected.type === AssetType.polygon;
+        txDetails.network = currentNetwork;
         await dispatch(
           dataAddNewTransaction(txDetails, null, false, currentProvider)
         );

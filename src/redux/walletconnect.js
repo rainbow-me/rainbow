@@ -214,6 +214,9 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
       const { chainId } = payload.params[0];
       const supportedChains = [
         networkTypes.mainnet,
+        networkTypes.ropsten,
+        networkTypes.kovan,
+        networkTypes.goerli,
         networkTypes.polygon,
         networkTypes.optimism,
         networkTypes.arbitrum,

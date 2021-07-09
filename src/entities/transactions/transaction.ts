@@ -3,10 +3,10 @@ import { ParsedAddressAsset } from '../tokens';
 import { EthereumAddress } from '../wallet';
 import { TransactionStatus } from './transactionStatus';
 import { TransactionType } from './transactionType';
+import { Network } from '@rainbow-me/helpers/networkTypes';
 
 export interface RainbowTransaction {
   address: string;
-  arbitrum?: boolean;
   balance: {
     amount: string;
     display: string;
@@ -23,9 +23,8 @@ export interface RainbowTransaction {
     amount: string;
     display: string;
   };
+  network?: Network;
   nonce: number | null;
-  optimism?: boolean;
-  polygon?: boolean;
   pending: boolean;
   protocol?: ProtocolType | null;
   sourceAmount?: string; // for purchases
@@ -39,7 +38,6 @@ export interface RainbowTransaction {
 }
 
 export interface NewTransaction {
-  arbitrum: boolean | undefined;
   amount: string | null;
   asset: ParsedAddressAsset | null;
   dappName?: string; // for walletconnect
@@ -47,9 +45,8 @@ export interface NewTransaction {
   gasLimit?: string | null;
   gasPrice?: string;
   hash: string | null;
+  network: Network | undefined;
   nonce: number | null;
-  optimism: boolean | undefined;
-  polygon: boolean | undefined;
   protocol?: ProtocolType | null;
   sourceAmount?: string; // for purchases
   status?: TransactionStatus;

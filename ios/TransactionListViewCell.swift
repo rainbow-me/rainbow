@@ -70,29 +70,30 @@ class TransactionListViewCell: TransactionListBaseCell {
       transactionType.accessibilityIdentifier = "\(transaction.title!)-\(transaction.transactionDescription!)-\(transaction.balanceDisplay!)"
     }
     
-    if transaction.optimism {
-      var imgName = "optimismBadge"
-      if(darkMode){ imgName += "Dark" }
-      if let img = UIImage.init(named:imgName) {
-        badge.image = img
-        badge.isHidden = false
-      }
-    } else if transaction.polygon {
-      var imgName = "polygonBadge"
-      if(darkMode){ imgName += "Dark" }
-      if let img = UIImage.init(named:imgName) {
-        badge.image = img
-        badge.isHidden = false
-      }
-    } else if transaction.arbitrum {
-      var imgName = "arbitrumBadge"
-      if(darkMode){ imgName += "Dark" }
-      if let img = UIImage.init(named:imgName) {
-        badge.image = img
-        badge.isHidden = false
+    if transaction.network != nil {
+      if transaction.network == "optimism" {
+        var imgName = "optimismBadge"
+        if(darkMode){ imgName += "Dark" }
+        if let img = UIImage.init(named:imgName) {
+          badge.image = img
+          badge.isHidden = false
+        }
+      }else if transaction.network == "polygon" {
+        var imgName = "polygonBadge"
+        if(darkMode){ imgName += "Dark" }
+        if let img = UIImage.init(named:imgName) {
+          badge.image = img
+          badge.isHidden = false
+        }
+      }else if transaction.network == "arbitrum" {
+        var imgName = "arbitrumBadge"
+        if(darkMode){ imgName += "Dark" }
+        if let img = UIImage.init(named:imgName) {
+          badge.image = img
+          badge.isHidden = false
+        }
       }
     }
-
     
     if transaction.symbol != nil {
       if let img = UIImage.init(named: transaction.symbol.lowercased()) {

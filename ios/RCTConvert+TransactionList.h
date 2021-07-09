@@ -74,16 +74,9 @@
     if ([data valueForKey:@"pending"] != [NSNull null]) {
       transaction.pending = [[data valueForKey:@"pending"] boolValue];
     }
-    if ([data valueForKey:@"arbitrum"] != [NSNull null]) {
-      transaction.arbitrum = [[data valueForKey:@"arbitrum"] boolValue];
-    }
-    if ([data valueForKey:@"optimism"] != [NSNull null]) {
-      transaction.optimism = [[data valueForKey:@"optimism"] boolValue];
-    }
-    if ([data valueForKey:@"polygon"] != [NSNull null]) {
-      transaction.polygon = [[data valueForKey:@"polygon"] boolValue];
-    }
-    
+    if ([data valueForKey:@"network"] != [NSNull null]) {
+      transaction.network = [data valueForKey:@"network"];
+    }    
     if (data[@"minedAt"] != [NSNull null]) {
       transaction.minedAt = [NSDate dateWithTimeIntervalSince1970: [data[@"minedAt"] doubleValue]];
     } else {

@@ -11,7 +11,6 @@ import useExperimentalFlag, {
   AVATAR_PICKER,
 } from '@rainbow-me/config/experimentalHooks';
 import { TransactionStatusTypes } from '@rainbow-me/entities';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
 import showWalletErrorAlert from '@rainbow-me/helpers/support';
 import TransactionActions from '@rainbow-me/helpers/transactionActions';
 import {
@@ -134,11 +133,11 @@ export default function TransactionList({
         hash,
         from,
         minedAt,
+        network,
         pending,
         to,
         status,
         type,
-        optimism,
         polygon,
       } = item;
 
@@ -234,14 +233,6 @@ export default function TransactionList({
                 break;
               case TransactionActions.viewOnBlockExplorer:
               case TransactionActions.viewOnEtherscan: {
-                let network = null;
-                if (optimism) {
-                  network = networkTypes.optimism;
-                } else if (polygon) {
-                  network = networkTypes.polygon;
-                } else if (arbitrum) {
-                  network = networkTypes.arbitrum;
-                }
                 ethereumUtils.openTransactionInBlockExplorer(hash, network);
                 break;
               }
