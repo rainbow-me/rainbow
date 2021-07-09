@@ -86,9 +86,11 @@ export default function useScanner(enabled) {
       navigate(Routes.WALLET_SCREEN);
 
       // And then navigate to Send sheet
-      Navigation.handleAction(Routes.SHOWCASE_SHEET, {
-        address: address,
-      });
+      setTimeout(() => {
+        Navigation.handleAction(Routes.SHOWCASE_SHEET, {
+          address: address,
+        });
+      }, 100);
 
       setTimeout(enableScanning, 2500);
     },
@@ -105,9 +107,11 @@ export default function useScanner(enabled) {
       if (checkIsValidAddressOrDomain(addressOrENS)) {
         // First navigate to wallet screen
         navigate(Routes.WALLET_SCREEN);
-        Navigation.handleAction(Routes.SHOWCASE_SHEET, {
-          address: addressOrENS,
-        });
+        setTimeout(() => {
+          Navigation.handleAction(Routes.SHOWCASE_SHEET, {
+            address: addressOrENS,
+          });
+        }, 100);
       }
       setTimeout(enableScanning, 2500);
     },
