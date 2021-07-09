@@ -163,7 +163,9 @@ export default function SendSheet(props) {
   const showAssetForm = isValidAddress && !isEmpty(selected);
 
   const isNft = selected?.type === AssetTypes.nft;
-  let color = useColorForAsset(selected);
+  let color = useColorForAsset({
+    address: selected?.mainnet_address || selected.address,
+  });
   if (isNft) {
     color = colors.appleBlue;
   }
