@@ -219,7 +219,7 @@ describe('Ganache Transaction Flow', () => {
     const isConnected = await connected;
     if (!isConnected) throw new Error('WC Connection failed');
     await Helpers.checkIfVisible('wc-redirect-sheet');
-    await Helpers.swipe('wallet-screen', 'down', 'slow');
+    await Helpers.swipe('wc-redirect-sheet', 'down', 'fast');
   });
 
   it('Should be able to sign personal messages via WC', async () => {
