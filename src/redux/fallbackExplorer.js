@@ -10,7 +10,6 @@ import { optimismExplorerInit } from './optimismExplorer';
 // eslint-disable-next-line import/no-cycle
 import { polygonExplorerInit } from './polygonExplorer';
 import { AssetTypes } from '@rainbow-me/entities';
-// eslint-disable-next-line import/no-cycle
 import { web3Provider } from '@rainbow-me/handlers/web3';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import NetworkTypes from '@rainbow-me/helpers/networkTypes';
