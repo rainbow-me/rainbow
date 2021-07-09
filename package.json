@@ -265,7 +265,7 @@
     "babel-plugin-rewire": "^1.2.0",
     "babel-plugin-styled-components": "^1.10.7",
     "babel-plugin-transform-remove-console": "^6.9.4",
-    "detox": "^18.14.1",
+    "detox": "^18.18.1",
     "dotenv": "^8.2.0",
     "eslint": "7.14.0",
     "eslint-config-satya164": "^3.1.6",
