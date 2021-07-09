@@ -453,21 +453,21 @@ export const walletConnectUpdateSessions = () => (dispatch, getState) => {
   });
 };
 
-export const walletConnectUpdateSessionConnectorAccountByDappName = (
+const walletConnectUpdateSessionConnectorByDappName = (
+  dispatch,
+  getState,
   dappName,
-  accountAddress
-) => (dispatch, getState) => {
-  const { chainId } = getState().settings;
+  { chainId, accountAddress }
+) => {
   const { walletConnectors } = getState().walletconnect;
-  const newSessionData = {
-    accounts: [accountAddress],
-    chainId,
-  };
   const connectors = pickBy(
     walletConnectors,
     connector => connector.peerMeta.name === dappName
   );
-
+  const newSessionData = {
+    accounts: [accountAddress],
+    chainId,
+  };
   values(connectors).forEach(connector => {
     connector.updateSession(newSessionData);
     saveWalletConnectSession(connector.peerId, connector.session);
@@ -478,27 +478,25 @@ export const walletConnectUpdateSessionConnectorAccountByDappName = (
   });
 };
 
+export const walletConnectUpdateSessionConnectorAccountByDappName = (
+  dappName,
+  accountAddress
+) => (dispatch, getState) => {
+  const { chainId } = getState().settings;
+  walletConnectUpdateSessionConnectorByDappName(dispatch, getState, dappName, {
+    accountAddress,
+    chainId,
+  });
+};
+
 export const walletConnectUpdateSessionConnectorChainIdByDappName = (
   dappName,
   chainId
 ) => (dispatch, getState) => {
   const { accountAddress } = getState().settings;
-  const { walletConnectors } = getState().walletconnect;
-  const connectors = pickBy(
-    walletConnectors,
-    connector => connector.peerMeta.name === dappName
-  );
-  const newSessionData = {
-    accounts: [accountAddress],
+  walletConnectUpdateSessionConnectorByDappName(dispatch, getState, dappName, {
+    accountAddress,
     chainId,
-  };
-  values(connectors).forEach(connector => {
-    connector.updateSession(newSessionData);
-    saveWalletConnectSession(connector.peerId, connector.session);
-  });
-  dispatch({
-    payload: clone(walletConnectors),
-    type: WALLETCONNECT_UPDATE_CONNECTORS,
   });
 };
 

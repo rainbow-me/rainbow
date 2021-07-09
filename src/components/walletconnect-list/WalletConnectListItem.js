@@ -147,7 +147,7 @@ export default function WalletConnectListItem({
             size="smedium"
             weight="medium"
           >
-            {accountsLabels[account]} connected to{' '}
+            {accountsLabels[account]} -{' '}
             {ethereumUtils.getNetworkNameFromChainId(chainId)}
           </TruncatedText>
         </ColumnWithMargins>
