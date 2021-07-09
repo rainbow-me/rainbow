@@ -21,10 +21,7 @@ const ScrollableItems = styled.ScrollView`
 `;
 
 export default function ConnectedDappsSheet() {
-  const {
-    walletConnectorsByDappName,
-    sortedWalletConnectors,
-  } = useWalletConnectConnections();
+  const { walletConnectorsByDappName } = useWalletConnectConnections();
   const { goBack } = useNavigation();
   const allWallets = useWalletsWithBalancesAndNames();
   const { network } = useAccountSettings();

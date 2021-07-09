@@ -10,6 +10,7 @@ import {
   dappNameOverride,
   isDappAuthenticated,
 } from '@rainbow-me/helpers/dappNameHandler';
+import networkInfo from '@rainbow-me/helpers/networkInfo';
 import { useWalletConnectConnections } from '@rainbow-me/hooks';
 import { Navigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
@@ -38,8 +39,9 @@ export default function WalletConnectListItem({
   const {
     walletConnectDisconnectAllByDappName,
     walletConnectUpdateSessionConnectorAccountByDappName,
+    walletConnectUpdateSessionConnectorChainIdByDappName,
   } = useWalletConnectConnections();
-  const { colors } = useTheme();
+  const { colors, isDarkMode } = useTheme();
 
   const isAuthenticated = useMemo(() => {
     return isDappAuthenticated(dappUrl);
@@ -65,20 +67,18 @@ export default function WalletConnectListItem({
 
   const handleOnPressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
-      switch (actionKey) {
-        case 'disconnect':
-          walletConnectDisconnectAllByDappName(dappName);
-          analytics.track(
-            'Manually disconnected from WalletConnect connection',
-            {
-              dappName,
-              dappUrl,
-            }
-          );
-          break;
-        case 'switch-account':
-        default:
-          handlePressChangeWallet();
+      if (actionKey === 'disconnect') {
+        walletConnectDisconnectAllByDappName(dappName);
+        analytics.track('Manually disconnected from WalletConnect connection', {
+          dappName,
+          dappUrl,
+        });
+      } else if (actionKey === 'switch-account') {
+        handlePressChangeWallet();
+      } else if (actionKey.indexOf('switch-to-') !== -1) {
+        const networkValue = actionKey.replace('switch-to-', '');
+        const chainId = ethereumUtils.getChainIdFromNetwork(networkValue);
+        walletConnectUpdateSessionConnectorChainIdByDappName(dappName, chainId);
       }
     },
     [
@@ -86,7 +86,25 @@ export default function WalletConnectListItem({
       dappUrl,
       handlePressChangeWallet,
       walletConnectDisconnectAllByDappName,
+      walletConnectUpdateSessionConnectorChainIdByDappName,
     ]
+  );
+
+  const networksMenuItems = useMemo(
+    () =>
+      Object.values(networkInfo)
+        .filter(({ disabled }) => !disabled)
+        .map(netInfo => ({
+          actionKey: `switch-to-${netInfo.value}`,
+          actionTitle: netInfo.name,
+          icon: {
+            iconType: 'ASSET',
+            iconValue: `${netInfo.layer2 ? netInfo.value : 'ethereum'}Badge${
+              isDarkMode ? 'Dark' : ''
+            }`,
+          },
+        })),
+    [isDarkMode]
   );
 
   return (
@@ -142,12 +160,12 @@ export default function WalletConnectListItem({
               actionTitle: 'Disconnect',
             },
             {
-              actionKey: 'switch-network',
-              actionTitle: 'Switch Network',
-            },
-            {
               actionKey: 'switch-account',
               actionTitle: 'Switch Account',
+            },
+            {
+              menuItems: networksMenuItems,
+              menuTitle: 'Switch Network',
             },
           ]}
           menuTitle={`Change ${dappName} connection?`}
