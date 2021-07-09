@@ -214,7 +214,7 @@ export default function SwapDetailsState({
         <Footer onLayout={setFooterHeight}>
           <ConfirmExchangeButton
             {...confirmButtonProps}
-            testID="swap-details-confirm"
+            testID="swap-details-confirm-button"
           />
           <Column
             justify="center"

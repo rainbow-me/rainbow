@@ -568,7 +568,7 @@ export default function ExchangeModal({
             <ConfirmExchangeButton
               {...confirmButtonProps}
               onPressViewDetails={navigateToSwapDetailsModal}
-              testID={`${testID}-confirm`}
+              testID={`${testID}-confirm-button`}
             />
           )}
           <GasSpeedButton
