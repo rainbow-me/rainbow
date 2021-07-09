@@ -174,7 +174,8 @@ export default function WalletConnectApprovalSheet() {
               isDarkMode ? 'Dark' : ''
             }`,
           },
-        })),
+        }))
+        .reverse(),
     [isDarkMode]
   );
 

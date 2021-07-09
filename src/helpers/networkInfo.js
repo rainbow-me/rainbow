@@ -8,7 +8,7 @@ const networkInfo = {
     disabled: false,
     exchange_enabled: true,
     faucet_url: null,
-    name: 'Mainnet',
+    name: 'Ethereum Mainnet',
     value: networkTypes.mainnet,
   },
   [`${networkTypes.ropsten}`]: {
@@ -18,7 +18,7 @@ const networkInfo = {
     disabled: false,
     exchange_enabled: false,
     faucet_url: `http://faucet.metamask.io/`,
-    name: 'Ropsten',
+    name: 'Ropsten Test Network',
     value: networkTypes.ropsten,
   },
   [`${networkTypes.kovan}`]: {
@@ -28,7 +28,7 @@ const networkInfo = {
     disabled: false,
     exchange_enabled: false,
     faucet_url: `https://faucet.kovan.network/`,
-    name: 'Kovan',
+    name: 'Kovan Test Network',
     value: networkTypes.kovan,
   },
   [`${networkTypes.rinkeby}`]: {
@@ -38,7 +38,7 @@ const networkInfo = {
     disabled: false,
     exchange_enabled: true,
     faucet_url: 'https://faucet.rinkeby.io/',
-    name: 'Rinkeby',
+    name: 'Rinkeby Test Network',
     value: networkTypes.rinkeby,
   },
   [`${networkTypes.goerli}`]: {
@@ -48,7 +48,7 @@ const networkInfo = {
     disabled: false,
     exchange_enabled: false,
     faucet_url: 'https://goerli-faucet.slock.it/',
-    name: 'Goerli',
+    name: 'Goerli Test Network',
     value: networkTypes.goerli,
   },
   [`${networkTypes.arbitrum}`]: {
@@ -59,7 +59,7 @@ const networkInfo = {
     exchange_enabled: false,
     faucet_url: `https://faucet.kovan.network/`,
     layer2: true,
-    name: 'Arbitrum (Mainnet)',
+    name: 'Arbitrum',
     value: networkTypes.arbitrum,
   },
   [`${networkTypes.optimism}`]: {
@@ -70,7 +70,7 @@ const networkInfo = {
     exchange_enabled: false,
     faucet_url: `https://faucet.kovan.network/`,
     layer2: true,
-    name: 'Optimism (Mainnet)',
+    name: 'Optimism',
     value: networkTypes.optimism,
   },
   [`${networkTypes.polygon}`]: {
