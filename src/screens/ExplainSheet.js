@@ -28,12 +28,11 @@ const Gradient = styled(GradientText).attrs({
   weight: 'heavy',
 })``;
 
-const SENDING_FUNDS_TO_CONTRACT = `You're trying to send funds to a smart contract.
+const SENDING_FUNDS_TO_CONTRACT = `The address you entered is for a smart contract. 
 
-Except for some very rare exceptions, you are not supposed to this and it's very likely that your funds will get lost.
+Except for rare situations, you probably shouldn't do this. You could lose your assets or they might go to the wrong place.
 
-Please check the recipient address and try again or reach out to our support.
-`;
+Double check the address, verify it with the recipient, or contact support first.`;
 
 const GAS_EXPLAINER = `This is the "gas fee" used by the Ethereum blockchain to securely validate your transaction.
 
@@ -64,7 +63,7 @@ export const explainers = {
   sending_funds_to_contract: {
     emoji: '✋',
     text: SENDING_FUNDS_TO_CONTRACT,
-    title: 'Stop right there!',
+    title: 'Hold your horses!',
     extraHeight: 70,
   },
   verified: {
