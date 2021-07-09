@@ -1,5 +1,4 @@
 import analytics from '@segment/analytics-react-native';
-import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import { RequestVendorLogoIcon } from '../coin-icon';
 import { ContextMenuButton } from '../context-menu';
@@ -12,7 +11,7 @@ import {
   isDappAuthenticated,
 } from '@rainbow-me/helpers/dappNameHandler';
 import { useWalletConnectConnections } from '@rainbow-me/hooks';
-import { Navigation, useNavigation } from '@rainbow-me/navigation';
+import { Navigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
 import { ethereumUtils } from '@rainbow-me/utils';
@@ -29,7 +28,7 @@ const ContextButton = props => (
 );
 
 export default function WalletConnectListItem({
-  accounts,
+  account,
   accountsLabels,
   chainId,
   dappIcon,
@@ -38,6 +37,7 @@ export default function WalletConnectListItem({
 }) {
   const {
     walletConnectDisconnectAllByDappName,
+    walletConnectUpdateSessionConnectorAccountByDappName,
   } = useWalletConnectConnections();
   const { colors } = useTheme();
 
@@ -55,19 +55,13 @@ export default function WalletConnectListItem({
 
   const handlePressChangeWallet = useCallback(() => {
     Navigation.handleAction(Routes.CHANGE_WALLET_SHEET, {
-      currentAccountAddress: accounts || '',
-      onChangeWallet: () => null,
+      currentAccountAddress: account,
+      onChangeWallet: address => {
+        walletConnectUpdateSessionConnectorAccountByDappName(dappName, address);
+      },
       watchOnly: true,
     });
-  }, [accounts]);
-
-  // <ContextMenu
-  //   css={padding(16, 19)}
-  //   destructiveButtonIndex={0}
-  //   onPressActionSheet={handlePressActionSheet}
-  //   options={['Disconnect', lang.t('wallet.action.cancel')]}
-  //   title={`Would you like to disconnect from ${dappName}?`}
-  // />
+  }, [account, dappName, walletConnectUpdateSessionConnectorAccountByDappName]);
 
   const handleOnPressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
@@ -135,7 +129,7 @@ export default function WalletConnectListItem({
             size="smedium"
             weight="medium"
           >
-            {accountsLabels[accounts]} connected to{' '}
+            {accountsLabels[account]} connected to{' '}
             {ethereumUtils.getNetworkNameFromChainId(chainId)}
           </TruncatedText>
         </ColumnWithMargins>

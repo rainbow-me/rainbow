@@ -449,6 +449,47 @@ export const walletConnectUpdateSessions = () => (dispatch, getState) => {
   });
 };
 
+export const walletConnectUpdateSessionConnectorAccountByDappName = (
+  dappName,
+  accountAddress
+) => (dispatch, getState) => {
+  const { chainId } = getState().settings;
+  const { walletConnectors } = getState().walletconnect;
+  const newSessionData = {
+    accounts: [accountAddress],
+    chainId,
+  };
+  const connectors = pickBy(
+    walletConnectors,
+    connector => connector.peerMeta.name === dappName
+  );
+
+  values(connectors).forEach(connector => {
+    connector.updateSession(newSessionData);
+    saveWalletConnectSession(connector.peerId, connector.session);
+  });
+};
+
+export const walletConnectUpdateSessionConnectorChainIdByDappName = (
+  dappName,
+  chainId
+) => (dispatch, getState) => {
+  const { accountAddress } = getState().settings;
+  const { walletConnectors } = getState().walletconnect;
+  const connectors = pickBy(
+    walletConnectors,
+    connector => connector.peerMeta.name === dappName
+  );
+  const newSessionData = {
+    accounts: [accountAddress],
+    chainId,
+  };
+  values(connectors).forEach(connector => {
+    connector.updateSession(newSessionData);
+    saveWalletConnectSession(connector.peerId, connector.session);
+  });
+};
+
 export const walletConnectApproveSession = (
   peerId,
   callback,

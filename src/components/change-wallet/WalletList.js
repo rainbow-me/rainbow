@@ -131,7 +131,7 @@ export default function WalletList({
           isReadOnly: wallet.type === WalletTypes.readOnly,
           isSelected:
             accountAddress === account.address &&
-            wallet.id === get(currentWallet, 'id'),
+            (watchOnly || wallet.id === get(currentWallet, 'id')),
           label:
             network !== networkTypes.mainnet && account.ens === account.label
               ? address(account.address, 6, 4)
@@ -167,6 +167,7 @@ export default function WalletList({
     network,
     onChangeAccount,
     onPressAddAccount,
+    watchOnly,
   ]);
 
   // Update the data provider when rows change
@@ -211,7 +212,6 @@ export default function WalletList({
     ({ item }) => {
       switch (item.rowType) {
         case RowTypes.ADDRESS:
-          console.log('itemitem', item);
           return (
             <Column height={item.height}>
               <AddressRow

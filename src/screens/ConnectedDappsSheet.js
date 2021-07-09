@@ -21,7 +21,10 @@ const ScrollableItems = styled.ScrollView`
 `;
 
 export default function ConnectedDappsSheet() {
-  const { walletConnectorsByDappName } = useWalletConnectConnections();
+  const {
+    walletConnectorsByDappName,
+    sortedWalletConnectors,
+  } = useWalletConnectConnections();
   const { goBack } = useNavigation();
   const allWallets = useWalletsWithBalancesAndNames();
   const { network } = useAccountSettings();
@@ -51,9 +54,9 @@ export default function ConnectedDappsSheet() {
       <SheetTitle>Connected apps</SheetTitle>
       <ScrollableItems length={walletConnectorsByDappName.length}>
         {walletConnectorsByDappName.map(
-          ({ accounts, chainId, dappIcon, dappName, dappUrl }) => (
+          ({ account, chainId, dappIcon, dappName, dappUrl }) => (
             <WalletConnectListItem
-              accounts={accounts}
+              account={account}
               accountsLabels={accountsLabels}
               chainId={chainId}
               dappIcon={dappIcon}
