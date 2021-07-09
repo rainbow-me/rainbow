@@ -20,6 +20,7 @@ import {
 } from '@rainbow-me/parsers';
 import {
   ABRITRUM_ETH_ADDRESS,
+  ETH_ADDRESS,
   ethUnits,
   MATIC_POLYGON_ADDRESS,
   OPTIMISM_ETH_ADDRESS,
@@ -366,7 +367,7 @@ const getSelectedGasPrice = (
       nativeAssetAddress = OPTIMISM_ETH_ADDRESS;
       break;
     default:
-      nativeAssetAddress = 'eth';
+      nativeAssetAddress = ETH_ADDRESS;
   }
 
   const nativeAsset = ethereumUtils.getAsset(assets, nativeAssetAddress);

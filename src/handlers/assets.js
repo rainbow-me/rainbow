@@ -13,6 +13,16 @@ import {
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 
 export function isNativeAsset(address, network) {
+  /* 
+    TL;DR of this nasty logic
+    check if an asset is native depending on
+    the network & asset address:
+    - ETH address + L1
+    - MATIC address + Polygon
+    - ARBITRUM ETH address + Arbtrum One
+    - OPTIMISM ETH ADDRESS + Optimism Mainnet
+  */
+
   if (
     (address === ETH_ADDRESS &&
       (network === networkTypes.mainnet ||

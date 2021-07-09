@@ -223,53 +223,49 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
       ].map(network => ethereumUtils.getChainIdFromNetwork(network).toString());
       const numericChainId = convertHexToString(chainId);
       if (supportedChains.includes(numericChainId)) {
-        try {
-          dispatch(walletConnectSetPendingRedirect());
-          Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {
-            callback: async approved => {
-              if (approved) {
-                walletConnector.approveRequest({
-                  id: requestId,
-                  result: null,
-                });
-                const { accountAddress } = getState().settings;
-                logger.log('Updating session for chainID', numericChainId);
-                await walletConnector.updateSession({
-                  accounts: [accountAddress],
-                  chainId: numericChainId,
-                });
-                saveWalletConnectSession(
-                  walletConnector.peerId,
-                  walletConnector.session
-                );
-                analytics.track('Approved WalletConnect network switch', {
-                  chainId,
-                  dappName,
-                  dappUrl,
-                });
-                dispatch(walletConnectRemovePendingRedirect('connect'));
-              } else {
-                walletConnector.rejectRequest({
-                  error: { message: 'Chain currently not supported' },
-                  id: requestId,
-                });
-                analytics.track('Rejected new WalletConnect chain request', {
-                  dappName,
-                  dappUrl,
-                });
-              }
-            },
-            chainId: Number(numericChainId),
-            meta: {
-              dappName,
-              dappUrl,
-              imageUrl,
-            },
-            type: WalletConnectApprovalSheetType.switch_chain,
-          });
-        } catch (e) {
-          logger.log('WHAT?', e);
-        }
+        dispatch(walletConnectSetPendingRedirect());
+        Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {
+          callback: async approved => {
+            if (approved) {
+              walletConnector.approveRequest({
+                id: requestId,
+                result: null,
+              });
+              const { accountAddress } = getState().settings;
+              logger.log('Updating session for chainID', numericChainId);
+              await walletConnector.updateSession({
+                accounts: [accountAddress],
+                chainId: numericChainId,
+              });
+              saveWalletConnectSession(
+                walletConnector.peerId,
+                walletConnector.session
+              );
+              analytics.track('Approved WalletConnect network switch', {
+                chainId,
+                dappName,
+                dappUrl,
+              });
+              dispatch(walletConnectRemovePendingRedirect('connect'));
+            } else {
+              walletConnector.rejectRequest({
+                error: { message: 'Chain currently not supported' },
+                id: requestId,
+              });
+              analytics.track('Rejected new WalletConnect chain request', {
+                dappName,
+                dappUrl,
+              });
+            }
+          },
+          chainId: Number(numericChainId),
+          meta: {
+            dappName,
+            dappUrl,
+            imageUrl,
+          },
+          type: WalletConnectApprovalSheetType.switch_chain,
+        });
       } else {
         logger.log('NOT SUPPORTED CHAIN');
         walletConnector.rejectRequest({

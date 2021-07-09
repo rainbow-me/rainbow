@@ -12,12 +12,12 @@ import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   balanceCheckerContractAbiOVM,
   chainAssets,
+  OPTIMISM_MAINNET_RPC_ENDPOINT,
 } from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 // -- Constants --------------------------------------- //
-export const OPTIMISM_MAINNET_RPC_ENDPOINT = 'https://mainnet.optimism.io';
 const OPTIMISM_EXPLORER_CLEAR_STATE = 'explorer/OPTIMISM_EXPLORER_CLEAR_STATE';
 const OPTIMISM_EXPLORER_SET_ASSETS = 'explorer/OPTIMISM_EXPLORER_SET_ASSETS';
 const OPTIMISM_EXPLORER_SET_BALANCE_HANDLER =

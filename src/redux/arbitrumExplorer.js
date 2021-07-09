@@ -17,7 +17,6 @@ import {
 import { ethereumUtils } from '@rainbow-me/utils';
 
 // -- Constants --------------------------------------- //
-export const ARBITRUM_MAINNET_RPC_ENDPOINT = 'https://arb1.arbitrum.io/rpc';
 const ARBITRUM_EXPLORER_CLEAR_STATE = 'explorer/ARBITRUM_EXPLORER_CLEAR_STATE';
 const ARBITRUM_EXPLORER_SET_ASSETS = 'explorer/ARBITRUM_EXPLORER_SET_ASSETS';
 const ARBITRUM_EXPLORER_SET_BALANCE_HANDLER =

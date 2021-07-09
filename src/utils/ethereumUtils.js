@@ -37,9 +37,12 @@ import {
 } from '@rainbow-me/model/wallet';
 import store from '@rainbow-me/redux/store';
 import {
+  ARBITRUM_BLOCK_EXPLORER_URL,
   chains,
   ETH_ADDRESS,
   MATIC_MAINNET_ADDRESS,
+  OPTIMISM_BLOCK_EXPLORER_URL,
+  POLYGON_BLOCK_EXPLORER_URL,
 } from '@rainbow-me/references';
 import logger from 'logger';
 
@@ -332,13 +335,13 @@ function supportsEtherscan(network) {
 
 function openAddressInBlockExplorer(address, network) {
   if (network === networkTypes.optimism) {
-    Linking.openURL(`https://optimistic.etherscan.io/address/${address}`);
+    Linking.openURL(`${OPTIMISM_BLOCK_EXPLORER_URL}/address/${address}`);
     return;
   } else if (network === networkTypes.polygon) {
-    Linking.openURL(`https://polygonscan.com/address/${address}`);
+    Linking.openURL(`${POLYGON_BLOCK_EXPLORER_URL}/address/${address}`);
     return;
   } else if (network === networkTypes.arbitrum) {
-    Linking.openURL(`https://explorer.arbitrum.io/address/${address}`);
+    Linking.openURL(`${ARBITRUM_BLOCK_EXPLORER_URL}/address/${address}`);
     return;
   }
   const etherscanHost = getEtherscanHostForNetwork();
@@ -354,13 +357,13 @@ function openTokenEtherscanURL(address) {
 function openTransactionInBlockExplorer(hash, network) {
   const normalizedHash = hash.replace(/-.*/g, '');
   if (network === networkTypes.optimism) {
-    Linking.openURL(`https://optimistic.etherscan.io/tx/${normalizedHash}`);
+    Linking.openURL(`${OPTIMISM_BLOCK_EXPLORER_URL}/tx/${normalizedHash}`);
     return;
   } else if (network === networkTypes.polygon) {
-    Linking.openURL(`https://polygonscan.com/tx/${normalizedHash}`);
+    Linking.openURL(`${POLYGON_BLOCK_EXPLORER_URL}/tx/${normalizedHash}`);
     return;
   } else if (network === networkTypes.arbitrum) {
-    Linking.openURL(`https://explorer.arbitrum.io/tx/${normalizedHash}`);
+    Linking.openURL(`${ARBITRUM_BLOCK_EXPLORER_URL}/tx/${normalizedHash}`);
     return;
   }
   if (!isString(hash)) return;
