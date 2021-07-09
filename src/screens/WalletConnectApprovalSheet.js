@@ -77,6 +77,20 @@ const androidNetworkActions = Object.values(networkInfo)
   .filter(({ disabled }) => !disabled)
   .map(netInfo => netInfo.name);
 
+const networksMenuItems = isDarkMode =>
+  Object.values(networkInfo)
+    .filter(({ disabled }) => !disabled)
+    .map(netInfo => ({
+      actionKey: `switch-to-${netInfo.value}`,
+      actionTitle: netInfo.name,
+      icon: {
+        iconType: 'ASSET',
+        iconValue: `${netInfo.layer2 ? netInfo.value : 'ethereum'}Badge${
+          isDarkMode ? 'Dark' : ''
+        }`,
+      },
+    }));
+
 const androidReverseNetoworkWithName = name =>
   Object.values(networkInfo).find(netInfo => netInfo.name === name);
 
@@ -160,23 +174,6 @@ export default function WalletConnectApprovalSheet() {
       value,
     };
   }, [approvalNetwork]);
-
-  const networksMenuItems = useMemo(
-    () =>
-      Object.values(networkInfo)
-        .filter(({ disabled }) => !disabled)
-        .map(netInfo => ({
-          actionKey: `${netInfo.value}`,
-          actionTitle: netInfo.name,
-          icon: {
-            iconType: 'ASSET',
-            iconValue: `${netInfo.layer2 ? netInfo.value : 'ethereum'}Badge${
-              isDarkMode ? 'Dark' : ''
-            }`,
-          },
-        })),
-    [isDarkMode]
-  );
 
   const handleOnPressNetworksMenuItem = useCallback(
     ({ nativeEvent }) => setApprovalNetwork(nativeEvent.actionKey),
@@ -348,7 +345,7 @@ export default function WalletConnectApprovalSheet() {
             isMenuPrimaryAction
             {...(android ? { onPress: onPressAndroid } : {})}
             menuConfig={{
-              menuItems: networksMenuItems,
+              menuItems: networksMenuItems(isDarkMode),
               menuTitle: 'Available Networks',
             }}
             onPressMenuItem={handleOnPressNetworksMenuItem}

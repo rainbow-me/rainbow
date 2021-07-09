@@ -28,6 +28,20 @@ const ContextButton = props => (
   </Centered>
 );
 
+const networksMenuItems = isDarkMode =>
+  Object.values(networkInfo)
+    .filter(({ disabled }) => !disabled)
+    .map(netInfo => ({
+      actionKey: `switch-to-${netInfo.value}`,
+      actionTitle: netInfo.name,
+      icon: {
+        iconType: 'ASSET',
+        iconValue: `${netInfo.layer2 ? netInfo.value : 'ethereum'}Badge${
+          isDarkMode ? 'Dark' : ''
+        }`,
+      },
+    }));
+
 export default function WalletConnectListItem({
   account,
   accountsLabels,
@@ -90,23 +104,6 @@ export default function WalletConnectListItem({
     ]
   );
 
-  const networksMenuItems = useMemo(
-    () =>
-      Object.values(networkInfo)
-        .filter(({ disabled }) => !disabled)
-        .map(netInfo => ({
-          actionKey: `switch-to-${netInfo.value}`,
-          actionTitle: netInfo.name,
-          icon: {
-            iconType: 'ASSET',
-            iconValue: `${netInfo.layer2 ? netInfo.value : 'ethereum'}Badge${
-              isDarkMode ? 'Dark' : ''
-            }`,
-          },
-        })),
-    [isDarkMode]
-  );
-
   return (
     <Row align="center" height={WalletConnectListItemHeight}>
       <Row
@@ -164,7 +161,7 @@ export default function WalletConnectListItem({
               actionTitle: 'Switch Account',
             },
             {
-              menuItems: networksMenuItems,
+              menuItems: networksMenuItems(isDarkMode),
               menuTitle: 'Switch Network',
             },
           ]}
