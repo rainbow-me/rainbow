@@ -288,7 +288,10 @@ const GasSpeedButton = ({
   const formatBottomRightLabel = useCallback(() => {
     const actionLabel = getActionLabel(type);
     const time = parseFloat(estimatedTimeValue || 0).toFixed(0);
-    const gasPriceGwei = get(selectedGasPrice, 'value.display');
+    let gasPriceGwei = get(selectedGasPrice, 'value.display');
+    if (gasPriceGwei === '0 Gwei') {
+      gasPriceGwei = '< 1 Gwei';
+    }
     let timeSymbol = '~';
 
     if (selectedGasPriceOption === CUSTOM) {
