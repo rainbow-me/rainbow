@@ -128,18 +128,7 @@ export default function TransactionList({
     e => {
       const { index } = e.nativeEvent;
       const item = transactions[index];
-      const {
-        arbitrum,
-        hash,
-        from,
-        minedAt,
-        network,
-        pending,
-        to,
-        status,
-        type,
-        polygon,
-      } = item;
+      const { hash, from, minedAt, network, pending, to, status, type } = item;
 
       const date = getHumanReadableDate(minedAt);
 
@@ -179,9 +168,9 @@ export default function TransactionList({
         let buttons = [
           ...(canBeResubmitted ? [TransactionActions.speedUp] : []),
           ...(canBeCancelled ? [TransactionActions.cancel] : []),
-          polygon || arbitrum
-            ? TransactionActions.viewOnBlockExplorer
-            : TransactionActions.viewOnEtherscan,
+          ethereumUtils.supportsEtherscan(network)
+            ? TransactionActions.viewOnEtherscan
+            : TransactionActions.viewOnBlockExplorer,
           ...(ios ? [TransactionActions.close] : []),
         ];
         if (showContactInfo) {

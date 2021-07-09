@@ -91,18 +91,7 @@ export default function TransactionCoinRow({ item, ...props }) {
   const { navigate } = useNavigation();
 
   const onPressTransaction = useCallback(async () => {
-    const {
-      arbitrum,
-      hash,
-      from,
-      minedAt,
-      pending,
-      to,
-      status,
-      type,
-      network,
-      polygon,
-    } = item;
+    const { hash, from, minedAt, pending, to, status, type, network } = item;
 
     const date = getHumanReadableDate(minedAt);
     const isSent =
@@ -140,9 +129,9 @@ export default function TransactionCoinRow({ item, ...props }) {
       let buttons = [
         ...(canBeResubmitted ? [TransactionActions.speedUp] : []),
         ...(canBeCancelled ? [TransactionActions.cancel] : []),
-        polygon || arbitrum
-          ? TransactionActions.viewOnBlockExplorer
-          : TransactionActions.viewOnEtherscan,
+        ethereumUtils.supportsEtherscan(network)
+          ? TransactionActions.viewOnEtherscan
+          : TransactionActions.viewOnBlockExplorer,
         ...(ios ? [TransactionActions.close] : []),
       ];
       if (showContactInfo) {

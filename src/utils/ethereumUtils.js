@@ -323,6 +323,13 @@ const deriveAccountFromWalletInput = input => {
   return deriveAccountFromMnemonic(input);
 };
 
+function supportsEtherscan(network) {
+  if (network === networkTypes.arbitrum) {
+    return false;
+  }
+  return true;
+}
+
 function openAddressInBlockExplorer(address, network) {
   if (network === networkTypes.optimism) {
     Linking.openURL(`https://optimistic.etherscan.io/address/${address}`);
@@ -384,4 +391,5 @@ export default {
   openTransactionInBlockExplorer,
   padLeft,
   removeHexPrefix,
+  supportsEtherscan,
 };
