@@ -2,10 +2,7 @@ import { concat, isEmpty, isNil, keys, toLower } from 'lodash';
 import { DATA_API_KEY, DATA_ORIGIN } from 'react-native-dotenv';
 import io from 'socket.io-client';
 // eslint-disable-next-line import/no-cycle
-import {
-  arbitrumExplorerClearState,
-  arbitrumExplorerInit,
-} from './arbitrumExplorer';
+import { arbitrumExplorerInit } from './arbitrumExplorer';
 import { assetChartsReceived, DEFAULT_CHART_TYPE } from './charts';
 /* eslint-disable-next-line import/no-cycle */
 import {
@@ -22,15 +19,9 @@ import {
   fallbackExplorerInit,
 } from './fallbackExplorer';
 // eslint-disable-next-line import/no-cycle
-import {
-  optimismExplorerClearState,
-  optimismExplorerInit,
-} from './optimismExplorer';
+import { optimismExplorerInit } from './optimismExplorer';
 // eslint-disable-next-line import/no-cycle
-import {
-  polygonExplorerClearState,
-  polygonExplorerInit,
-} from './polygonExplorer';
+import { polygonExplorerInit } from './polygonExplorer';
 import { updateTopMovers } from './topMovers';
 import { disableCharts, forceFallbackProvider } from '@rainbow-me/config/debug';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
@@ -275,12 +266,6 @@ export const explorerInit = () => async (dispatch, getState) => {
   // Fallback to the testnet data provider
   // if we're not on mainnnet
   if (network !== NetworkTypes.mainnet || forceFallbackProvider) {
-    if (network !== NetworkTypes.mainnet) {
-      logger.debug('SHUTING DOWN l2');
-      dispatch(arbitrumExplorerClearState());
-      dispatch(polygonExplorerClearState());
-      dispatch(optimismExplorerClearState());
-    }
     return dispatch(fallbackExplorerInit());
   }
 
@@ -425,7 +410,7 @@ const listenOnAssetMessages = socket => dispatch => {
   });
 };
 
-const listenOnAddressMessages = socket => dispatch => {
+const listenOnAddressMessages = socket => (dispatch, getState) => {
   socket.on(messages.ADDRESS_PORTFOLIO.RECEIVED, message => {
     dispatch(portfolioReceived(message));
   });
@@ -457,12 +442,14 @@ const listenOnAddressMessages = socket => dispatch => {
         '😬 Cancelling fallback data provider listener. Zerion is good!'
       );
       dispatch(disableFallbackIfNeeded());
-      // Start watching arbitrum assets
-      dispatch(arbitrumExplorerInit());
-      // Start watching optimism assets
-      dispatch(optimismExplorerInit());
-      // Start watching polygon assets
-      dispatch(polygonExplorerInit());
+      if (getState().settings.network === NetworkTypes.mainnet) {
+        // Start watching arbitrum assets
+        dispatch(arbitrumExplorerInit());
+        // Start watching optimism assets
+        dispatch(optimismExplorerInit());
+        // Start watching polygon assets
+        dispatch(polygonExplorerInit());
+      }
     }
   });
 

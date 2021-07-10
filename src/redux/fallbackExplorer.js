@@ -350,12 +350,14 @@ export const fallbackExplorerInit = () => async (dispatch, getState) => {
     });
   };
   fetchAssetsBalancesAndPrices();
-  // Start watching arbitrum assets
-  dispatch(arbitrumExplorerInit());
-  // Start watching optimism assets
-  dispatch(optimismExplorerInit());
-  // Start watching polygon assets
-  dispatch(polygonExplorerInit());
+  if (network === NetworkTypes.mainnet) {
+    // Start watching arbitrum assets
+    dispatch(arbitrumExplorerInit());
+    // Start watching optimism assets
+    dispatch(optimismExplorerInit());
+    // Start watching polygon assets
+    dispatch(polygonExplorerInit());
+  }
 };
 
 export const fallbackExplorerClearState = () => (dispatch, getState) => {
