@@ -18,7 +18,8 @@ const networkInfo = {
     disabled: false,
     exchange_enabled: false,
     faucet_url: `http://faucet.metamask.io/`,
-    name: 'Ropsten Test Network',
+    name: 'Ropsten',
+    testnet: true,
     value: networkTypes.ropsten,
   },
   [`${networkTypes.kovan}`]: {
@@ -28,7 +29,8 @@ const networkInfo = {
     disabled: false,
     exchange_enabled: false,
     faucet_url: `https://faucet.kovan.network/`,
-    name: 'Kovan Test Network',
+    name: 'Kovan',
+    testnet: true,
     value: networkTypes.kovan,
   },
   [`${networkTypes.rinkeby}`]: {
@@ -38,7 +40,8 @@ const networkInfo = {
     disabled: false,
     exchange_enabled: true,
     faucet_url: 'https://faucet.rinkeby.io/',
-    name: 'Rinkeby Test Network',
+    name: 'Rinkeby',
+    testnet: true,
     value: networkTypes.rinkeby,
   },
   [`${networkTypes.goerli}`]: {
@@ -48,7 +51,8 @@ const networkInfo = {
     disabled: false,
     exchange_enabled: false,
     faucet_url: 'https://goerli-faucet.slock.it/',
-    name: 'Goerli Test Network',
+    name: 'Goerli',
+    testnet: true,
     value: networkTypes.goerli,
   },
   [`${networkTypes.arbitrum}`]: {

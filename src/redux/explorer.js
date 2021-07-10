@@ -2,7 +2,10 @@ import { concat, isEmpty, isNil, keys, toLower } from 'lodash';
 import { DATA_API_KEY, DATA_ORIGIN } from 'react-native-dotenv';
 import io from 'socket.io-client';
 // eslint-disable-next-line import/no-cycle
-import { arbitrumExplorerInit } from './arbitrumExplorer';
+import {
+  arbitrumExplorerClearState,
+  arbitrumExplorerInit,
+} from './arbitrumExplorer';
 import { assetChartsReceived, DEFAULT_CHART_TYPE } from './charts';
 /* eslint-disable-next-line import/no-cycle */
 import {
@@ -19,9 +22,15 @@ import {
   fallbackExplorerInit,
 } from './fallbackExplorer';
 // eslint-disable-next-line import/no-cycle
-import { optimismExplorerInit } from './optimismExplorer';
+import {
+  optimismExplorerClearState,
+  optimismExplorerInit,
+} from './optimismExplorer';
 // eslint-disable-next-line import/no-cycle
-import { polygonExplorerInit } from './polygonExplorer';
+import {
+  polygonExplorerClearState,
+  polygonExplorerInit,
+} from './polygonExplorer';
 import { updateTopMovers } from './topMovers';
 import { disableCharts, forceFallbackProvider } from '@rainbow-me/config/debug';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
@@ -266,6 +275,12 @@ export const explorerInit = () => async (dispatch, getState) => {
   // Fallback to the testnet data provider
   // if we're not on mainnnet
   if (network !== NetworkTypes.mainnet || forceFallbackProvider) {
+    if (network !== NetworkTypes.mainnet) {
+      logger.debug('SHUTING DOWN l2');
+      dispatch(arbitrumExplorerClearState());
+      dispatch(polygonExplorerClearState());
+      dispatch(optimismExplorerClearState());
+    }
     return dispatch(fallbackExplorerInit());
   }
 
