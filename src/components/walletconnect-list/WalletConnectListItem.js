@@ -10,12 +10,12 @@ import {
   dappNameOverride,
   isDappAuthenticated,
 } from '@rainbow-me/helpers/dappNameHandler';
-import networkInfo from '@rainbow-me/helpers/networkInfo';
 import { useWalletConnectConnections } from '@rainbow-me/hooks';
 import { Navigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
 import { ethereumUtils } from '@rainbow-me/utils';
+import { networksMenuItems, NETWORK_MENU_ACTION_KEY_FILTER } from '@rainbow-me/helpers/walletConnectNetworks';
 
 const ContainerPadding = 15;
 const VendorLogoIconSize = 50;
@@ -27,20 +27,6 @@ const ContextButton = props => (
     <Icon name="threeDots" />
   </Centered>
 );
-
-const networksMenuItems = isDarkMode =>
-  Object.values(networkInfo)
-    .filter(({ disabled }) => !disabled)
-    .map(netInfo => ({
-      actionKey: `switch-to-${netInfo.value}`,
-      actionTitle: netInfo.name,
-      icon: {
-        iconType: 'ASSET',
-        iconValue: `${netInfo.layer2 ? netInfo.value : 'ethereum'}Badge${
-          isDarkMode ? 'Dark' : ''
-        }`,
-      },
-    }));
 
 export default function WalletConnectListItem({
   account,
@@ -89,8 +75,8 @@ export default function WalletConnectListItem({
         });
       } else if (actionKey === 'switch-account') {
         handlePressChangeWallet();
-      } else if (actionKey.indexOf('switch-to-') !== -1) {
-        const networkValue = actionKey.replace('switch-to-', '');
+      } else if (actionKey.indexOf(NETWORK_MENU_ACTION_KEY_FILTER) !== -1) {
+        const networkValue = actionKey.replace(NETWORK_MENU_ACTION_KEY_FILTER, '');
         const chainId = ethereumUtils.getChainIdFromNetwork(networkValue);
         walletConnectUpdateSessionConnectorChainIdByDappName(dappName, chainId);
       }

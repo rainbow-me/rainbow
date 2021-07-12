@@ -30,6 +30,7 @@ import {
   getDappHostname,
   isDappAuthenticated,
 } from '@rainbow-me/helpers/dappNameHandler';
+import { networksMenuItems, NETWORK_MENU_ACTION_KEY_FILTER } from '@rainbow-me/helpers/walletConnectNetworks'
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import WalletConnectApprovalSheetType from '@rainbow-me/helpers/walletConnectApprovalSheetTypes';
 import { useAccountSettings, useWallets } from '@rainbow-me/hooks';
@@ -76,20 +77,6 @@ const SwitchText = styled(Text).attrs(() => ({
 const androidNetworkActions = Object.values(networkInfo)
   .filter(({ disabled }) => !disabled)
   .map(netInfo => netInfo.name);
-
-const networksMenuItems = isDarkMode =>
-  Object.values(networkInfo)
-    .filter(({ disabled }) => !disabled)
-    .map(netInfo => ({
-      actionKey: `switch-to-${netInfo.value}`,
-      actionTitle: netInfo.name,
-      icon: {
-        iconType: 'ASSET',
-        iconValue: `${netInfo.layer2 ? netInfo.value : 'ethereum'}Badge${
-          isDarkMode ? 'Dark' : ''
-        }`,
-      },
-    }));
 
 const androidReverseNetoworkWithName = name =>
   Object.values(networkInfo).find(netInfo => netInfo.name === name);
@@ -170,13 +157,13 @@ export default function WalletConnectApprovalSheet() {
     return {
       chainId: ethereumUtils.getChainIdFromNetwork(approvalNetwork),
       color: networkInfo[approvalNetwork]?.color,
-      name: capitalize(value.charAt(0)) + value.slice(1),
+      name: capitalize(value?.charAt(0)) + value?.slice(1),
       value,
     };
   }, [approvalNetwork]);
 
   const handleOnPressNetworksMenuItem = useCallback(
-    ({ nativeEvent }) => setApprovalNetwork(nativeEvent.actionKey),
+    ({ nativeEvent }) => setApprovalNetwork(nativeEvent.actionKey?.replace(NETWORK_MENU_ACTION_KEY_FILTER, '')),
     [setApprovalNetwork]
   );
 
