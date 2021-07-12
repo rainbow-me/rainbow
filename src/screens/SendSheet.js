@@ -54,7 +54,11 @@ import {
 } from '@rainbow-me/hooks';
 import { sendTransaction } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
-import { ETH_ADDRESS, RAINBOW_TOKEN_LIST } from '@rainbow-me/references';
+import {
+  chainAssets,
+  ETH_ADDRESS,
+  RAINBOW_TOKEN_LIST,
+} from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { borders } from '@rainbow-me/styles';
 import {
@@ -488,22 +492,27 @@ export default function SendSheet(props) {
 
   const validateReceipient = useCallback(
     async toAddress => {
-      // Don't allow send to known ERC20 contracts
+      // Don't allow send to known ERC20 contracts on mainnet
       if (RAINBOW_TOKEN_LIST[toLower(toAddress)]) {
         return false;
       }
 
-      // Don't allow sending funds directly to contracts on L2
+      // Don't allow sending funds directly to known ERC20 contracts on L2
       if (isL2Network(currentNetwork)) {
-        const code = await currentProvider.getCode(toAddress);
-        if (!code || code === '0x') {
-          return true;
+        logger.log('CHECKING CURRENT CHAIN ASSETS');
+        const currentChainAssets = chainAssets[currentNetwork];
+        const found = currentChainAssets.find(
+          item => toLower(item.asset?.asset_code) === toLower(toAddress)
+        );
+        if (found) {
+          logger.log('FOUND');
+          return false;
         }
-        return false;
       }
+      logger.log('NOT FOUND');
       return true;
     },
-    [currentNetwork, currentProvider]
+    [currentNetwork]
   );
 
   const showConfirmationSheet = useCallback(async () => {
@@ -738,6 +747,11 @@ export default function SendSheet(props) {
             txSpeedRenderer={
               <GasSpeedButton
                 horizontalPadding={isTinyPhone ? 0 : 5}
+                options={
+                  currentNetwork === networkTypes.optimism
+                    ? ['normal']
+                    : undefined
+                }
                 theme={isDarkMode ? 'dark' : 'light'}
                 topPadding={isTinyPhone ? 8 : 15}
                 type="transaction"
