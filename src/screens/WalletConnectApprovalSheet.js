@@ -33,13 +33,15 @@ import {
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import WalletConnectApprovalSheetType from '@rainbow-me/helpers/walletConnectApprovalSheetTypes';
 import {
+  androidShowNetworksActionSheet,
   NETWORK_MENU_ACTION_KEY_FILTER,
   networksMenuItems,
 } from '@rainbow-me/helpers/walletConnectNetworks';
 import { useAccountSettings, useWallets } from '@rainbow-me/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { ethereumUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
+import { ethereumUtils } from '@rainbow-me/utils';
+
 const DappLogo = styled(RequestVendorLogoIcon).attrs(
   ({ theme: { colors } }) => ({
     backgroundColor: colors.transparent,
@@ -76,13 +78,6 @@ const SwitchText = styled(Text).attrs(() => ({
 }))`
   margin-left: 5;
 `;
-
-const androidNetworkActions = Object.values(networkInfo)
-  .filter(({ disabled }) => !disabled)
-  .map(netInfo => netInfo.name);
-
-const androidReverseNetoworkWithName = name =>
-  Object.values(networkInfo).find(netInfo => netInfo.name === name);
 
 export default function WalletConnectApprovalSheet() {
   const { colors } = useTheme();
@@ -217,18 +212,8 @@ export default function WalletConnectApprovalSheet() {
   }, [handleSuccess, goBack]);
 
   const onPressAndroid = useCallback(() => {
-    showActionSheetWithOptions(
-      {
-        options: androidNetworkActions,
-        showSeparators: true,
-        title: `Available Networks`,
-      },
-      idx => {
-        const { value } = androidReverseNetoworkWithName(
-          androidNetworkActions[idx]
-        );
-        setApprovalNetwork(value);
-      }
+    androidShowNetworksActionSheet(({ network }) =>
+      setApprovalNetwork(network)
     );
   }, []);
 

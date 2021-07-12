@@ -17,6 +17,7 @@ import {
 } from '@rainbow-me/helpers/dappNameHandler';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import {
+  androidShowNetworksActionSheet,
   changeConnectionMenuItems,
   NETWORK_MENU_ACTION_KEY_FILTER,
 } from '@rainbow-me/helpers/walletConnectNetworks';
@@ -28,7 +29,7 @@ import {
 import { Navigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const ContainerPadding = 15;
 const VendorLogoIconSize = 50;
@@ -40,6 +41,12 @@ const LabelText = styled(Text).attrs(() => ({
   size: 'lmedium',
   weight: 'regular',
 }))``;
+
+const androidContextMenuActions = [
+  'Switch Network',
+  'Switch Account',
+  'Disconnect',
+];
 
 const AvatarWrapper = styled(Column)`
   margin-right: 5;
@@ -117,6 +124,45 @@ export default function WalletConnectListItem({
     walletConnectUpdateSessionConnectorByDappName,
   ]);
 
+  const onPressAndroid = useCallback(() => {
+    showActionSheetWithOptions(
+      {
+        options: androidContextMenuActions,
+        showSeparators: true,
+        title: `Change ${dappName} connection?`,
+      },
+      idx => {
+        if (idx === 0) {
+          androidShowNetworksActionSheet(({ chainId }) => {
+            walletConnectUpdateSessionConnectorByDappName(
+              dappName,
+              account,
+              chainId
+            );
+          });
+        } else if (idx === 1) {
+          handlePressChangeWallet();
+        } else if (idx === 2) {
+          walletConnectDisconnectAllByDappName(dappName);
+          analytics.track(
+            'Manually disconnected from WalletConnect connection',
+            {
+              dappName,
+              dappUrl,
+            }
+          );
+        }
+      }
+    );
+  }, [
+    account,
+    dappName,
+    dappUrl,
+    handlePressChangeWallet,
+    walletConnectUpdateSessionConnectorByDappName,
+    walletConnectDisconnectAllByDappName,
+  ]);
+
   const handleOnPressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === 'disconnect') {
@@ -154,6 +200,7 @@ export default function WalletConnectListItem({
     <ContextMenuButton
       menuItems={changeConnectionMenuItems(isDarkMode)}
       menuTitle={`Change ${dappName} connection?`}
+      onPressAndroid={onPressAndroid}
       onPressMenuItem={handleOnPressMenuItem}
     >
       <Row align="center" height={WalletConnectListItemHeight}>
