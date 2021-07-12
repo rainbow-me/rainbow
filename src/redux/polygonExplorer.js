@@ -1,3 +1,6 @@
+import { BigNumber } from '@ethersproject/bignumber';
+import { Contract } from '@ethersproject/contracts';
+import { JsonRpcProvider } from '@ethersproject/providers';
 import { toLower } from 'lodash';
 import {
   COVALENT_ANDROID_API_KEY,
@@ -10,10 +13,14 @@ import { addressAssetsReceived, fetchAssetPrices } from './data';
 import { emitAssetRequest, emitChartsRequest } from './explorer';
 import { AssetTypes } from '@rainbow-me/entities';
 //import networkInfo from '@rainbow-me/helpers/networkInfo';
+import networkInfo from '@rainbow-me/helpers/networkInfo';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
+  balanceCheckerContractAbi,
+  chainAssets,
   MATIC_MAINNET_ADDRESS,
   MATIC_POLYGON_ADDRESS,
+  POLYGON_MAINNET_RPC_ENDPOINT,
   WETH_ADDRESS,
 } from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';
@@ -84,6 +91,7 @@ const getAssetsFromCovalent = async (
   }`;
   const request = await fetch(url);
   const response = await request.json();
+  logger.log('POLYGON RESPONSE', response);
   if (response.data && !response.error) {
     const updatedAt = new Date(response.data.update_at).getTime();
     const assets = response.data.items.map(item => {
@@ -143,6 +151,39 @@ const getAssetsFromCovalent = async (
   return null;
 };
 
+const fetchAssetBalances = async (tokens, address) => {
+  const abi = balanceCheckerContractAbi;
+
+  const contractAddress = networkInfo[network].balance_checker_contract_address;
+  const polygonProvider = new JsonRpcProvider(POLYGON_MAINNET_RPC_ENDPOINT);
+
+  const balanceCheckerContract = new Contract(
+    contractAddress,
+    abi,
+    polygonProvider
+  );
+
+  try {
+    const values = await balanceCheckerContract.balances([address], tokens);
+    const balances = {};
+    [address].forEach((addr, addrIdx) => {
+      balances[addr] = {};
+      tokens.forEach((tokenAddr, tokenIdx) => {
+        const balance = values[addrIdx * tokens.length + tokenIdx];
+        balances[addr][tokenAddr] = balance.toString();
+      });
+    });
+    return balances[address];
+  } catch (e) {
+    logger.log(
+      'Error fetching balances from balanceCheckerContract',
+      network,
+      e
+    );
+    return null;
+  }
+};
+
 export const polygonExplorerInit = () => async (dispatch, getState) => {
   if (!polygonEnabled) return;
   const { accountAddress, nativeCurrency } = getState().settings;
@@ -150,6 +191,76 @@ export const polygonExplorerInit = () => async (dispatch, getState) => {
   const { coingeckoIds } = getState().additionalAssetsData;
   const formattedNativeCurrency = toLower(nativeCurrency);
   tokenMapping = await fetchAssetsMapping();
+
+  const fetchAssetsBalancesAndPricesFallback = async () => {
+    const assets = chainAssets[network];
+    const tokenAddresses = assets.map(
+      ({ asset: { asset_code } }) => asset_code
+    );
+
+    dispatch(emitAssetRequest(tokenAddresses));
+    dispatch(emitChartsRequest(tokenAddresses));
+
+    const prices = await fetchAssetPrices(
+      assets.map(({ asset: { coingecko_id } }) => coingecko_id),
+      formattedNativeCurrency
+    );
+
+    if (prices) {
+      Object.keys(prices).forEach(key => {
+        for (let i = 0; i < assets.length; i++) {
+          if (toLower(assets[i].asset.coingecko_id) === toLower(key)) {
+            const asset =
+              ethereumUtils.getAsset(
+                allAssets,
+                toLower(assets[i].asset.mainnet_address)
+              ) || genericAssets[toLower(assets[i].asset.mainnet_address)];
+
+            assets[i].asset.price = asset?.price || {
+              changed_at: prices[key].last_updated_at,
+              relative_change_24h:
+                prices[key][`${formattedNativeCurrency}_24h_change`],
+              value: prices[key][`${formattedNativeCurrency}`],
+            };
+            break;
+          }
+        }
+      });
+    }
+    const balances = await fetchAssetBalances(
+      assets.map(({ asset: { asset_code } }) => asset_code),
+      accountAddress,
+      network
+    );
+
+    let total = BigNumber.from(0);
+
+    if (balances) {
+      Object.keys(balances).forEach(key => {
+        for (let i = 0; i < assets.length; i++) {
+          if (assets[i].asset.asset_code.toLowerCase() === key.toLowerCase()) {
+            assets[i].quantity = balances[key];
+            break;
+          }
+        }
+        total = total.add(balances[key]);
+      });
+    }
+
+    dispatch(
+      addressAssetsReceived(
+        {
+          meta: {
+            address: accountAddress,
+            currency: nativeCurrency,
+            status: 'ok',
+          },
+          payload: { assets },
+        },
+        true
+      )
+    );
+  };
 
   const fetchAssetsBalancesAndPrices = async () => {
     const chainId = ethereumUtils.getChainIdFromNetwork(network);
@@ -163,10 +274,16 @@ export const polygonExplorerInit = () => async (dispatch, getState) => {
       genericAssets
     );
 
+    if (assets === null) {
+      logger.debug('COVALENT FAILED, FALLING BACK');
+      fetchAssetsBalancesAndPricesFallback();
+      return;
+    }
+
     if (!assets || !assets.length) {
       const polygonExplorerBalancesHandle = setTimeout(
         fetchAssetsBalancesAndPrices,
-        10000
+        UPDATE_BALANCE_AND_PRICE_FREQUENCY
       );
       dispatch({
         payload: {
