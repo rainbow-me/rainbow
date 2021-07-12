@@ -1,13 +1,12 @@
 import React, { useCallback } from 'react';
-import { Alert } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
 import { useNavigation } from '../../navigation/Navigation';
 import { lightModeThemeColors } from '../../styles/colors';
-import { magicMemo } from '../../utils';
 import { Icon } from '../icons';
 import FloatingActionButton from './FloatingActionButton';
 import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
 import Routes from '@rainbow-me/routes';
+import { magicMemo, watchingAlert } from '@rainbow-me/utils';
 
 const FabShadow = [
   [0, 10, 30, lightModeThemeColors.shadow, 0.8],
@@ -22,7 +21,7 @@ const SendFab = ({ disabled, isReadOnlyWallet, ...props }) => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
       navigate(Routes.SEND_FLOW);
     } else {
-      Alert.alert(`You need to import the wallet in order to do this`);
+      watchingAlert();
     }
   }, [navigate, isReadOnlyWallet]);
 
