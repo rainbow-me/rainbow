@@ -14,7 +14,7 @@ import {
   ARBITRUM_ETH_ADDRESS,
   arbitrumTokenMapping,
 } from '@rainbow-me/references';
-import { ethereumUtils, logger } from '@rainbow-me/utils';
+import { ethereumUtils } from '@rainbow-me/utils';
 
 // -- Constants --------------------------------------- //
 const ARBITRUM_EXPLORER_CLEAR_STATE = 'explorer/ARBITRUM_EXPLORER_CLEAR_STATE';
@@ -94,7 +94,6 @@ const getAssetsFromCovalent = async (
 
 export const arbitrumExplorerInit = () => async (dispatch, getState) => {
   if (!arbitrumEnabled) return;
-  logger.debug('INITIALIZING ARBITRUM!');
   const { accountAddress, nativeCurrency } = getState().settings;
   const { assets: allAssets, genericAssets } = getState().data;
   const { coingeckoIds } = getState().additionalAssetsData;

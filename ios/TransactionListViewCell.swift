@@ -92,6 +92,9 @@ class TransactionListViewCell: TransactionListBaseCell {
           badge.image = img
           badge.isHidden = false
         }
+      } else {
+        badge.image = nil;
+        badge.isHidden = true
       }
     }
     

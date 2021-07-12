@@ -327,7 +327,7 @@ const deriveAccountFromWalletInput = input => {
 };
 
 function supportsEtherscan(network) {
-  if (network === networkTypes.arbitrum) {
+  if (network === networkTypes.arbitrum || network === networkTypes.polygon) {
     return false;
   }
   return true;
