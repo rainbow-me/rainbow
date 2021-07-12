@@ -22,7 +22,6 @@ export { default as useClipboard } from './useClipboard';
 export { default as useCoinListEdited } from './useCoinListEdited';
 export { default as useCoinListEditOptions } from './useCoinListEditOptions';
 export { default as useColorForAsset } from './useColorForAsset';
-export { default as useColorOverrides } from './useColorOverrides';
 export { default as useContacts } from './useContacts';
 export { default as useDimensions } from './useDimensions';
 export { default as useDPI } from './useDPI';

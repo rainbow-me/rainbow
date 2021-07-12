@@ -143,6 +143,7 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.typeText('selected-asset-field-input', '1.69', true);
     await Helpers.tap('send-sheet-confirm-action-button');
     await Helpers.tapAndLongPress('send-confirmation-button');
+    await Helpers.checkIfVisible('profile-screen');
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
@@ -164,6 +165,7 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.tapByText('Arun Cattybinky');
     await Helpers.tap('send-sheet-confirm-action-button');
     await Helpers.tapAndLongPress('send-confirmation-button');
+    await Helpers.checkIfVisible('profile-screen');
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
@@ -174,6 +176,7 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.typeText('selected-asset-field-input', '1.02', true);
     await Helpers.tap('send-sheet-confirm-action-button');
     await Helpers.tapAndLongPress('send-confirmation-button');
+    await Helpers.checkIfVisible('profile-screen');
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
@@ -184,6 +187,7 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.typeText('selected-asset-field-input', '0.003', true);
     await Helpers.tap('send-sheet-confirm-action-button');
     await Helpers.tapAndLongPress('send-confirmation-button');
+    await Helpers.checkIfVisible('profile-screen');
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
@@ -219,7 +223,7 @@ describe('Ganache Transaction Flow', () => {
     const isConnected = await connected;
     if (!isConnected) throw new Error('WC Connection failed');
     await Helpers.checkIfVisible('wc-redirect-sheet');
-    await Helpers.swipe('wallet-screen', 'down', 'slow');
+    await Helpers.swipe('wc-redirect-sheet', 'down', 'fast');
   });
 
   it('Should be able to sign personal messages via WC', async () => {
@@ -318,6 +322,7 @@ describe('Ganache Transaction Flow', () => {
     if (!hash) {
       throw new Error('WC approving tx failed');
     }
+    await Helpers.checkIfVisible('wallet-screen');
     await Helpers.swipe('wallet-screen', 'right', 'slow');
     connector.killSession();
     connector = null;

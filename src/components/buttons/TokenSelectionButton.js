@@ -5,7 +5,7 @@ import { ButtonPressAnimation } from '../animations';
 import { InnerBorder, RowWithMargins } from '../layout';
 import { Text } from '../text';
 import CaretImageSource from '@rainbow-me/assets/family-dropdown-arrow.png';
-import { useColorForAsset, useColorOverrides } from '@rainbow-me/hooks';
+import { useColorForAsset } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
@@ -41,11 +41,10 @@ export default function TokenSelectionButton({
 }) {
   const { isDarkMode, colors } = useTheme();
 
-  let colorForAsset = useColorForAsset(
+  const colorForAsset = useColorForAsset(
     { address },
     address ? undefined : colors.appleBlue
   );
-  colorForAsset = useColorOverrides(colorForAsset);
 
   const shadowsForAsset = useMemo(
     () => [

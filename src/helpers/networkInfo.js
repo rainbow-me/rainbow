@@ -19,6 +19,7 @@ const networkInfo = {
     exchange_enabled: false,
     faucet_url: `http://faucet.metamask.io/`,
     name: 'Ropsten',
+    testnet: true,
     value: networkTypes.ropsten,
   },
   [`${networkTypes.kovan}`]: {
@@ -29,6 +30,7 @@ const networkInfo = {
     exchange_enabled: false,
     faucet_url: `https://faucet.kovan.network/`,
     name: 'Kovan',
+    testnet: true,
     value: networkTypes.kovan,
   },
   [`${networkTypes.rinkeby}`]: {
@@ -39,6 +41,7 @@ const networkInfo = {
     exchange_enabled: true,
     faucet_url: 'https://faucet.rinkeby.io/',
     name: 'Rinkeby',
+    testnet: true,
     value: networkTypes.rinkeby,
   },
   [`${networkTypes.goerli}`]: {
@@ -49,6 +52,7 @@ const networkInfo = {
     exchange_enabled: false,
     faucet_url: 'https://goerli-faucet.slock.it/',
     name: 'Goerli',
+    testnet: true,
     value: networkTypes.goerli,
   },
   [`${networkTypes.arbitrum}`]: {
@@ -59,7 +63,7 @@ const networkInfo = {
     exchange_enabled: false,
     faucet_url: `https://faucet.kovan.network/`,
     layer2: true,
-    name: 'Arbitrum (Mainnet)',
+    name: 'Arbitrum',
     value: networkTypes.arbitrum,
   },
   [`${networkTypes.optimism}`]: {
@@ -70,7 +74,7 @@ const networkInfo = {
     exchange_enabled: false,
     faucet_url: `https://faucet.kovan.network/`,
     layer2: true,
-    name: 'Optimism (Mainnet)',
+    name: 'Optimism',
     value: networkTypes.optimism,
   },
   [`${networkTypes.polygon}`]: {

@@ -10,7 +10,6 @@ import { optimismExplorerInit } from './optimismExplorer';
 // eslint-disable-next-line import/no-cycle
 import { polygonExplorerInit } from './polygonExplorer';
 import { AssetTypes } from '@rainbow-me/entities';
-// eslint-disable-next-line import/no-cycle
 import { web3Provider } from '@rainbow-me/handlers/web3';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import NetworkTypes from '@rainbow-me/helpers/networkTypes';
@@ -351,12 +350,14 @@ export const fallbackExplorerInit = () => async (dispatch, getState) => {
     });
   };
   fetchAssetsBalancesAndPrices();
-  // Start watching arbitrum assets
-  dispatch(arbitrumExplorerInit());
-  // Start watching optimism assets
-  dispatch(optimismExplorerInit());
-  // Start watching polygon assets
-  dispatch(polygonExplorerInit());
+  if (network === NetworkTypes.mainnet) {
+    // Start watching arbitrum assets
+    dispatch(arbitrumExplorerInit());
+    // Start watching optimism assets
+    dispatch(optimismExplorerInit());
+    // Start watching polygon assets
+    dispatch(polygonExplorerInit());
+  }
 };
 
 export const fallbackExplorerClearState = () => (dispatch, getState) => {

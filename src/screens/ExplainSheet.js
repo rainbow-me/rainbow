@@ -28,12 +28,11 @@ const Gradient = styled(GradientText).attrs({
   weight: 'heavy',
 })``;
 
-const SENDING_FUNDS_TO_CONTRACT = `You're trying to send funds to a smart contract.
+const SENDING_FUNDS_TO_CONTRACT = `The address you entered is for a smart contract. 
 
-Except for some very rare exceptions, you are not supposed to this and it's very likely that your funds will get lost.
+Except for rare situations, you probably shouldn't do this. You could lose your assets or they might go to the wrong place.
 
-Please check the recipient address and try again or reach out to our support.
-`;
+Double check the address, verify it with the recipient, or contact support first.`;
 
 const GAS_EXPLAINER = `This is the "gas fee" used by the Ethereum blockchain to securely validate your transaction.
 
@@ -43,17 +42,17 @@ const VERIFIED_EXPLAINER = `Tokens with a verified badge mean they have appeared
 
 Always do your own research to ensure you are interacting with a token you trust.`;
 
-const OPTIMISM_EXPLAINER = `Optimism is a layer 2 network that sits on top of Ethereum, allowing cheaper and faster transactions!
+const OPTIMISM_EXPLAINER = `Optimism is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Layer 1.
 
-Still curious? Read more about the pros and cons of the different networks you can use in Rainbow!`;
+It bundles lots of transactions together in a "roll up" before sending them down to live permanently on Layer 1.`;
 
-const ARBITRUM_EXPLAINER = `Arbitrum is a layer 2 network that sits on top of Ethereum, allowing cheaper and faster transactions!
+const ARBITRUM_EXPLAINER = `Arbitrum is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Layer 1.
 
-You can move assets into and out of different layer 2 networks by swapping in Rainbow!`;
+It bundles lots of transactions together in a "roll up" before sending them down to live permanently on Layer 1.`;
 
-const POLYGON_EXPLAINER = `Polygon combines the best of Ethereum and sovereign blockchains into a full-fledged multi-chain system.
+const POLYGON_EXPLAINER = `Polygon is a sidechain, a distinct network that runs alongside Ethereum and is compatible with it. 
 
-Polygon solves pain points associated with Blockchains, like high gas fees and slow speeds, without sacrificing on security.`;
+It allows for cheaper and faster transactions, but unlike Layer 2 networks, Polygon has its own security and consensus mechanisms that differ from Ethereum.`;
 
 export const explainers = {
   gas: {
@@ -64,8 +63,8 @@ export const explainers = {
   sending_funds_to_contract: {
     emoji: '✋',
     text: SENDING_FUNDS_TO_CONTRACT,
-    title: 'Stop right there!',
-    extraHeight: 70,
+    title: 'Hold your horses!',
+    extraHeight: 80,
   },
   verified: {
     emoji: '􀇻',
@@ -79,8 +78,8 @@ export const explainers = {
     ),
     text: OPTIMISM_EXPLAINER,
     title: `What's Optimism?`,
-    readMoreLink: 'https://rainbow.me',
-    extraHeight: 70,
+    readMoreLink: 'https://optimism.io/',
+    extraHeight: 120,
   },
   arbitrum: {
     emoji: '⛽️',
@@ -89,8 +88,8 @@ export const explainers = {
     ),
     text: ARBITRUM_EXPLAINER,
     title: `What's Arbitrum?`,
-    readMoreLink: 'https://rainbow.me',
-    extraHeight: 60,
+    readMoreLink: 'https://arbitrum.io/',
+    extraHeight: 120,
   },
   polygon: {
     emoji: '⛽️',
@@ -99,8 +98,8 @@ export const explainers = {
     ),
     text: POLYGON_EXPLAINER,
     title: `What's Polygon?`,
-    readMoreLink: 'https://rainbow.me',
-    extraHeight: 90,
+    readMoreLink: 'https://polygon.technology/',
+    extraHeight: 120,
   },
 };
 
@@ -162,7 +161,7 @@ const SavingsSheet = () => {
                 {explainers[type].emoji}
               </EmojiText>
             )}
-            <Title align="center" size="big" weight="heavy">
+            <Title align="center" lineHeight="big" size="big" weight="heavy">
               {explainers[type].title}
             </Title>
             <Text

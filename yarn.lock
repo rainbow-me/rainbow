@@ -6071,10 +6071,10 @@ detective-typescript@^7.0.0:
     node-source-walk "^4.2.0"
     typescript "^3.9.7"
 
-detox@^18.14.1:
-  version "18.14.1"
-  resolved "https://registry.yarnpkg.com/detox/-/detox-18.14.1.tgz#dd36fbe51a1c626c104f4c9787f9b22a934d95ad"
-  integrity sha512-BOrf7rKgee7zZYmUIHQeomQ8SoQWEOJ9aNAM8lFQoON/RJrBi/NRUlO/jh4XFFepOkeJ5gr85Kz7g3pQxIPXow==
+detox@^18.18.1:
+  version "18.18.1"
+  resolved "https://registry.yarnpkg.com/detox/-/detox-18.18.1.tgz#11fdfbcf698ee79f6baaecc7f09bacc37134841b"
+  integrity sha512-H3KouvWnuPjeqV6R+f/SN5ZGSXIQMwMG/24lcynRmaq2ASSjSaJqKWRCimreIr3WKkhkaEmY9cPKtj0nAJHOmw==
   dependencies:
     bunyan "^1.8.12"
     bunyan-debug-stream "^1.1.0"

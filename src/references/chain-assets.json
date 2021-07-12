@@ -228,8 +228,44 @@
       },
       {
         "asset": {
+          "mainnet_address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+          "asset_code": "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58",
+          "coingecko_id": "tether",
+          "decimals": 8,
+          "icon_url": "https://s3.amazonaws.com/icons.assets/USDT.png",
+          "name": "Tether USD",
+          "price": {
+            "changed_at": 1582562452,
+            "relative_change_24h": 0.8470466197462612,
+            "value": 1
+          },
+          "symbol": "USDT",
+          "type": "optimism"
+        },
+        "quantity": 0
+      },
+      {
+        "asset": {
+          "mainnet_address": "0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f",
+          "asset_code": "0x8700daec35af8ff88c16bdf0418774cb3d7599b4",
+          "coingecko_id": "synthetix-network-token",
+          "decimals": 8,
+          "icon_url": "https://s3.amazonaws.com/icons.assets/SNX.png",
+          "name": "Synthetix",
+          "price": {
+            "changed_at": 1582562452,
+            "relative_change_24h": 0.8470466197462612,
+            "value": 1
+          },
+          "symbol": "SNX",
+          "type": "optimism"
+        },
+        "quantity": 0
+      },
+      {
+        "asset": {
           "mainnet_address": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
-          "asset_code": "0x067ca83e321979E31b06250E05d18a12e4f6A8f1",
+          "asset_code": "0x68f180fcCe6836688e9084f035309E29Bf0A2095",
           "coingecko_id": "wrapped-bitcoin",
           "decimals": 8,
           "icon_url": "https://s3.amazonaws.com/icons.assets/WBTC.png",

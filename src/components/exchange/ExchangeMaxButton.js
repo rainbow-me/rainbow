@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
 import { Row } from '../layout';
 import { Text } from '../text';
-import { useColorForAsset, useColorOverrides } from '@rainbow-me/hooks';
+import { useColorForAsset } from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
 
 const Container = styled(ButtonPressAnimation)`
@@ -31,9 +31,8 @@ export default function ExchangeMaxButton({
   onPress,
   testID,
 }) {
-  let colorForAsset = useColorForAsset({ address });
+  const colorForAsset = useColorForAsset({ address });
   const { colors } = useTheme();
-  colorForAsset = useColorOverrides(colorForAsset);
 
   return (
     <Container disabled={disabled} onPress={onPress} testID={testID}>

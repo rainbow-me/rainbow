@@ -30,7 +30,7 @@ import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { convertHexToString } from '@rainbow-me/helpers/utilities';
 import WalletConnectApprovalSheetType from '@rainbow-me/helpers/walletConnectApprovalSheetTypes';
 import Routes from '@rainbow-me/routes';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils, watchingAlert } from '@rainbow-me/utils';
 import logger from 'logger';
 
 // -- Constants --------------------------------------- //
@@ -218,59 +218,58 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
       const { chainId } = payload.params[0];
       const supportedChains = [
         networkTypes.mainnet,
+        networkTypes.ropsten,
+        networkTypes.kovan,
+        networkTypes.goerli,
         networkTypes.polygon,
         networkTypes.optimism,
         networkTypes.arbitrum,
       ].map(network => ethereumUtils.getChainIdFromNetwork(network).toString());
       const numericChainId = convertHexToString(chainId);
       if (supportedChains.includes(numericChainId)) {
-        try {
-          dispatch(walletConnectSetPendingRedirect());
-          Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {
-            callback: async approved => {
-              if (approved) {
-                walletConnector.approveRequest({
-                  id: requestId,
-                  result: null,
-                });
-                const { accountAddress } = getState().settings;
-                logger.log('Updating session for chainID', numericChainId);
-                await walletConnector.updateSession({
-                  accounts: [accountAddress],
-                  chainId: numericChainId,
-                });
-                saveWalletConnectSession(
-                  walletConnector.peerId,
-                  walletConnector.session
-                );
-                analytics.track('Approved WalletConnect network switch', {
-                  chainId,
-                  dappName,
-                  dappUrl,
-                });
-                dispatch(walletConnectRemovePendingRedirect('connect'));
-              } else {
-                walletConnector.rejectRequest({
-                  error: { message: 'Chain currently not supported' },
-                  id: requestId,
-                });
-                analytics.track('Rejected new WalletConnect chain request', {
-                  dappName,
-                  dappUrl,
-                });
-              }
-            },
-            chainId: Number(numericChainId),
-            meta: {
-              dappName,
-              dappUrl,
-              imageUrl,
-            },
-            type: WalletConnectApprovalSheetType.switch_chain,
-          });
-        } catch (e) {
-          logger.log('WHAT?', e);
-        }
+        dispatch(walletConnectSetPendingRedirect());
+        Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {
+          callback: async approved => {
+            if (approved) {
+              walletConnector.approveRequest({
+                id: requestId,
+                result: null,
+              });
+              const { accountAddress } = getState().settings;
+              logger.log('Updating session for chainID', numericChainId);
+              await walletConnector.updateSession({
+                accounts: [accountAddress],
+                chainId: numericChainId,
+              });
+              saveWalletConnectSession(
+                walletConnector.peerId,
+                walletConnector.session
+              );
+              analytics.track('Approved WalletConnect network switch', {
+                chainId,
+                dappName,
+                dappUrl,
+              });
+              dispatch(walletConnectRemovePendingRedirect('connect'));
+            } else {
+              walletConnector.rejectRequest({
+                error: { message: 'Chain currently not supported' },
+                id: requestId,
+              });
+              analytics.track('Rejected new WalletConnect chain request', {
+                dappName,
+                dappUrl,
+              });
+            }
+          },
+          chainId: Number(numericChainId),
+          meta: {
+            dappName,
+            dappUrl,
+            imageUrl,
+          },
+          type: WalletConnectApprovalSheetType.switch_chain,
+        });
       } else {
         logger.log('NOT SUPPORTED CHAIN');
         walletConnector.rejectRequest({
@@ -300,7 +299,7 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
       const selectedWallet = selected || {};
       const isReadOnlyWallet = selectedWallet.type === WalletTypes.readOnly;
       if (isReadOnlyWallet && !enableActionsOnReadOnlyWallet) {
-        Alert.alert(`You need to import the wallet in order to do this`);
+        watchingAlert();
         walletConnector.rejectRequest({
           error: { message: 'JSON RPC method not supported' },
           id: payload.id,

@@ -20,7 +20,6 @@ import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 // -- Constants --------------------------------------- //
-export const POLYGON_MAINNET_RPC_ENDPOINT = 'https://rpc-mainnet.matic.network';
 const POLYGON_EXPLORER_CLEAR_STATE = 'explorer/POLYGON_EXPLORER_CLEAR_STATE';
 const POLYGON_EXPLORER_SET_ASSETS = 'explorer/POLYGON_EXPLORER_SET_ASSETS';
 const POLYGON_EXPLORER_SET_BALANCE_HANDLER =

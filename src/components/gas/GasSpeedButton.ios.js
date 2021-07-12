@@ -35,7 +35,8 @@ const Container = styled(Column).attrs({
   hapticType: 'impactHeavy',
   scaleTo: 1.0666,
 })`
-  ${padding(15, 19, 0)};
+  ${({ horizontalPadding, topPadding }) =>
+    padding(topPadding, horizontalPadding, 0)};
   height: 76;
   width: 100%;
 `;
@@ -103,11 +104,13 @@ const getActionLabel = type => {
 
 const GasSpeedButton = ({
   dontBlur,
+  horizontalPadding = 19,
   onCustomGasBlur,
   onCustomGasFocus,
   testID,
   type,
   theme = 'dark',
+  topPadding = 15,
   options = null,
   minGasPrice = null,
   currentNetwork,
@@ -240,7 +243,10 @@ const GasSpeedButton = ({
   const formatBottomRightLabel = useCallback(() => {
     const actionLabel = getActionLabel(type);
     const time = parseFloat(estimatedTimeValue || 0).toFixed(0);
-    const gasPriceGwei = get(selectedGasPrice, 'value.display');
+    let gasPriceGwei = get(selectedGasPrice, 'value.display');
+    if (gasPriceGwei === '0 Gwei') {
+      gasPriceGwei = '< 1 Gwei';
+    }
     let timeSymbol = '~';
 
     if (selectedGasPriceOption === CUSTOM) {
@@ -410,7 +416,13 @@ const GasSpeedButton = ({
   );
 
   return (
-    <Container as={ButtonPressAnimation} onPress={handlePress} testID={testID}>
+    <Container
+      as={ButtonPressAnimation}
+      horizontalPadding={horizontalPadding}
+      onPress={handlePress}
+      testID={testID}
+      topPadding={topPadding}
+    >
       <Row align="end" justify="space-between" marginBottom={1.5}>
         {!isCustom ? (
           <AnimateNumber

@@ -7,23 +7,21 @@ import { parseEther } from '@ethersproject/units';
 import UnstoppableResolution from '@unstoppabledomains/resolution';
 import { get, replace, startsWith } from 'lodash';
 import { INFURA_PROJECT_ID, INFURA_PROJECT_ID_DEV } from 'react-native-dotenv';
-import { isNativeAsset } from './assets';
-import { AssetTypes } from '@rainbow-me/entities';
-import NetworkTypes from '@rainbow-me/helpers/networkTypes';
-// eslint-disable-next-line import/no-cycle
-import { ARBITRUM_MAINNET_RPC_ENDPOINT } from '@rainbow-me/redux/arbitrumExplorer';
-// eslint-disable-next-line import/no-cycle
-import { OPTIMISM_MAINNET_RPC_ENDPOINT } from '@rainbow-me/redux/optimismExplorer';
-// eslint-disable-next-line import/no-cycle
-import { POLYGON_MAINNET_RPC_ENDPOINT } from '@rainbow-me/redux/polygonExplorer';
 import {
   ARBITRUM_ETH_ADDRESS,
+  ARBITRUM_MAINNET_RPC_ENDPOINT,
   ETH_ADDRESS,
   ethUnits,
   MATIC_POLYGON_ADDRESS,
   OPTIMISM_ETH_ADDRESS,
+  OPTIMISM_MAINNET_RPC_ENDPOINT,
+  POLYGON_MAINNET_RPC_ENDPOINT,
   smartContractMethods,
-} from '@rainbow-me/references';
+} from '../references';
+import { isNativeAsset } from './assets';
+import { AssetTypes } from '@rainbow-me/entities';
+import NetworkTypes from '@rainbow-me/helpers/networkTypes';
+
 import {
   addBuffer,
   convertAmountToRawAmount,

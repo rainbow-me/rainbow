@@ -11,7 +11,6 @@ import useExperimentalFlag, {
   AVATAR_PICKER,
 } from '@rainbow-me/config/experimentalHooks';
 import { TransactionStatusTypes } from '@rainbow-me/entities';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
 import showWalletErrorAlert from '@rainbow-me/helpers/support';
 import TransactionActions from '@rainbow-me/helpers/transactionActions';
 import {
@@ -129,18 +128,7 @@ export default function TransactionList({
     e => {
       const { index } = e.nativeEvent;
       const item = transactions[index];
-      const {
-        arbitrum,
-        hash,
-        from,
-        minedAt,
-        pending,
-        to,
-        status,
-        type,
-        optimism,
-        polygon,
-      } = item;
+      const { hash, from, minedAt, network, pending, to, status, type } = item;
 
       const date = getHumanReadableDate(minedAt);
 
@@ -180,9 +168,9 @@ export default function TransactionList({
         let buttons = [
           ...(canBeResubmitted ? [TransactionActions.speedUp] : []),
           ...(canBeCancelled ? [TransactionActions.cancel] : []),
-          polygon || arbitrum
-            ? TransactionActions.viewOnBlockExplorer
-            : TransactionActions.viewOnEtherscan,
+          ethereumUtils.supportsEtherscan(network)
+            ? TransactionActions.viewOnEtherscan
+            : TransactionActions.viewOnBlockExplorer,
           ...(ios ? [TransactionActions.close] : []),
         ];
         if (showContactInfo) {
@@ -234,14 +222,6 @@ export default function TransactionList({
                 break;
               case TransactionActions.viewOnBlockExplorer:
               case TransactionActions.viewOnEtherscan: {
-                let network = null;
-                if (optimism) {
-                  network = networkTypes.optimism;
-                } else if (polygon) {
-                  network = networkTypes.polygon;
-                } else if (arbitrum) {
-                  network = networkTypes.arbitrum;
-                }
                 ethereumUtils.openTransactionInBlockExplorer(hash, network);
                 break;
               }

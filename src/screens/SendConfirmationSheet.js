@@ -33,7 +33,6 @@ import {
   useAccountSettings,
   useAccountTransactions,
   useColorForAsset,
-  useColorOverrides,
   useContacts,
   useDimensions,
   useUserAccounts,
@@ -106,16 +105,16 @@ const defaultContactItem = randomColor => ({
 });
 
 export default function SendConfirmationSheet() {
-  const { colors } = useTheme();
+  const { colors, isDarkMode } = useTheme();
   const { nativeCurrency } = useAccountSettings();
   const { goBack, navigate, setParams } = useNavigation();
-  const { height: deviceHeight } = useDimensions();
+  const { height: deviceHeight, isSmallPhone, isTinyPhone } = useDimensions();
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const insets = useSafeArea();
   const { contacts } = useContacts();
 
   const {
-    params: { asset, amountDetails, callback, network, to, toAddress },
+    params: { asset, amountDetails, callback, isNft, network, to, toAddress },
   } = useRoute();
 
   const [alreadySentTransactions, setAlreadySentTransactions] = useState(0);
@@ -192,7 +191,9 @@ export default function SendConfirmationSheet() {
     address: asset.mainnet_address || asset.address,
   });
 
-  color = useColorOverrides(color);
+  if (isNft) {
+    color = colors.appleBlue;
+  }
 
   const isL2 = isL2Network(network);
   const shouldShowChecks =
@@ -364,10 +365,17 @@ export default function SendConfirmationSheet() {
           </Column>
           <Column align="center" flex={1} justify="end">
             <SendButton
-              backgroundColor={color}
+              backgroundColor={
+                canSubmit
+                  ? color
+                  : isDarkMode
+                  ? colors.darkGrey
+                  : colors.lightGrey
+              }
               disabled={!canSubmit}
               isAuthorizing={isAuthorizing}
               onLongPress={handleSubmit}
+              smallButton={!isTinyPhone && (android || isSmallPhone)}
               testID="send-confirmation-button"
             />
           </Column>

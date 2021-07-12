@@ -9,7 +9,7 @@ import {
   maticGasStationGetGasPrices,
   maticGetGasEstimates,
 } from '@rainbow-me/handlers/gasPrices';
-import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
+import { getProviderForNetwork, isL2Network } from '@rainbow-me/handlers/web3';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   defaultGasPriceFormat,
@@ -20,6 +20,7 @@ import {
 } from '@rainbow-me/parsers';
 import {
   ABRITRUM_ETH_ADDRESS,
+  ETH_ADDRESS,
   ethUnits,
   MATIC_POLYGON_ADDRESS,
   OPTIMISM_ETH_ADDRESS,
@@ -268,13 +269,7 @@ export const gasUpdateCustomValues = (price, network) => async (
 ) => {
   const { gasPrices, gasLimit } = getState().gas;
 
-  const isL2 =
-    [
-      networkTypes.optimism,
-      networkTypes.polygon,
-      networkTypes.arbitrum,
-    ].indexOf(network) !== -1;
-  const estimateInMinutes = isL2
+  const estimateInMinutes = isL2Network(network)
     ? 0.5
     : await getEstimatedTimeForGasPrice(price);
   const newGasPrices = { ...gasPrices };
@@ -372,7 +367,7 @@ const getSelectedGasPrice = (
       nativeAssetAddress = OPTIMISM_ETH_ADDRESS;
       break;
     default:
-      nativeAssetAddress = 'eth';
+      nativeAssetAddress = ETH_ADDRESS;
   }
 
   const nativeAsset = ethereumUtils.getAsset(assets, nativeAssetAddress);

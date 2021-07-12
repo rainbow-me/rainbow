@@ -9,7 +9,6 @@ import { useTheme } from '@rainbow-me/context';
 import { ExchangeModalTypes } from '@rainbow-me/helpers';
 import {
   useColorForAsset,
-  useColorOverrides,
   useGas,
   useSwapCurrencies,
   useSwapIsSufficientBalance,
@@ -77,8 +76,7 @@ export default function ConfirmExchangeButton({
     [colors, isDarkMode]
   );
 
-  let colorForAsset = useColorForAsset(asset, undefined, true);
-  colorForAsset = useColorOverrides(colorForAsset);
+  const colorForAsset = useColorForAsset(asset, undefined, true);
   const { buttonColor, shadowsForAsset } = useMemo(() => {
     const color = isSwapDetailsRoute
       ? colorForAsset

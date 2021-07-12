@@ -49,7 +49,7 @@ const L2Explainer = ({ assetType, colors, onPress, sending, symbol }) => {
             size="smedium"
             weight="bold"
           >
-            {sending ? `Sending ` : `This ${symbol} is`} on the{' '}
+            {sending ? `Sending` : `This ${symbol} is`} on the{' '}
             {capitalize(assetType)} network
           </Text>
         </Column>
