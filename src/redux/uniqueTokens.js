@@ -2,6 +2,7 @@ import { captureException } from '@sentry/react-native';
 import { concat, isEmpty, without } from 'lodash';
 /* eslint-disable-next-line import/no-cycle */
 import { dataUpdateAssets } from './data';
+import { AssetType } from '@rainbow-me/entities';
 import {
   getUniqueTokens,
   saveUniqueTokens,
@@ -90,7 +91,7 @@ export const fetchUniqueTokens = showcaseAddress => async (
   let page = 0;
   let uniqueTokens = [];
 
-  const fetchPage = async () => {
+  const fetchPage = async network => {
     try {
       const newPageResults = await apiGetAccountUniqueTokens(
         network,
@@ -150,7 +151,8 @@ export const fetchUniqueTokens = showcaseAddress => async (
     }
   };
 
-  fetchPage();
+  fetchPage(network);
+  fetchPage(AssetType.polygon);
 };
 
 // -- Reducer --------------------------------------------------------------- //
