@@ -26,7 +26,6 @@ import {
 import RNIOS11DeviceCheck from 'react-native-ios11-devicecheck';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
-import VersionNumber from 'react-native-version-number';
 import { connect, Provider } from 'react-redux';
 import PortalConsumer from './components/PortalConsumer';
 import { FlexItem } from './components/layout';
@@ -67,19 +66,7 @@ if (__DEV__) {
     dsn: SENTRY_ENDPOINT,
     enableAutoSessionTracking: true,
     environment: SENTRY_ENVIRONMENT,
-    release: `me.rainbow-${VersionNumber.appVersion}`,
   };
-
-  if (android) {
-    const dist = VersionNumber.buildVersion;
-    // In order for sourcemaps to work on android,
-    // the release needs to be named with the following format
-    // me.rainbow@1.0+4
-    const releaseName = `me.rainbow@${VersionNumber.appVersion}+${dist}`;
-    sentryOptions.release = releaseName;
-    // and we also need to manually set the dist to the versionCode value
-    sentryOptions.dist = dist.toString();
-  }
   Sentry.init(sentryOptions);
 }
 

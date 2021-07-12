@@ -96,20 +96,3 @@ else
     echo "$DEBUGFILE does not exist. You use default debug settings."
     cp src/config/defaultDebug.js $DEBUGFILE
 fi
-
-# Remove the incomplete installation of sentry-cli from node_modules
-rm -rf node_modules/.bin/sentry-cli
-
-if [ ! -x "$(command -v sentry-cli)" ]; then
-  echo "Installing sentry-cli..."
-  case $PLATFORM in
-    # Mac + Linux environments can use Sentry's automatic install script.
-    Darwin | Linux)
-      curl -sL https://sentry.io/get-cli/ | bash
-      ;;
-  esac
-else
-  which sentry-cli
-  sentry-cli --version
-  echo "sentry-cli is already installed. Skipping"
-fi
