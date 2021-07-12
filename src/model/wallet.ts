@@ -117,13 +117,14 @@ interface EthereumWalletFromSeed {
 
 type EthereumWallet = Wallet | ReadOnlyWallet;
 
-interface RainbowAccount {
+export interface RainbowAccount {
   index: number;
   label: string;
   address: EthereumAddress;
   avatar: null | string;
   color: number;
   visible: boolean;
+  image: string | null;
 }
 
 export interface RainbowWallet {
@@ -646,6 +647,7 @@ export const createWallet = async (
       address: walletAddress,
       avatar: null,
       color: colorIndexForWallet,
+      image: null,
       index: 0,
       label: name || '',
       visible: true,
@@ -744,6 +746,7 @@ export const createWallet = async (
             address: nextWallet.address,
             avatar: null,
             color: colorIndexForWallet,
+            image: null,
             index,
             label,
             visible: true,

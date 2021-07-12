@@ -21,6 +21,9 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   @objc var onCopyAddressPress: RCTBubblingEventBlock = { _ in }
   @objc var onAccountNamePress: RCTBubblingEventBlock = { _ in }
   @objc var onAvatarPress: RCTBubblingEventBlock = { _ in }
+  @objc var onAvatarPickEmoji: RCTBubblingEventBlock = { _ in }
+  @objc var onAvatarChooseImage: RCTBubblingEventBlock = { _ in }
+  @objc var onAvatarRemovePhoto: RCTBubblingEventBlock = { _ in }
   @objc var onAddCashPress: RCTBubblingEventBlock = { _ in }
   @objc var addCashAvailable: Bool = true {
     didSet {
@@ -33,6 +36,20 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   @objc var isAvatarPickerAvailable: Bool = true {
     didSet {
       header.accountView.isEnabled = isAvatarPickerAvailable;
+    }
+  }
+  
+  @objc var avatarOptions: NSArray? {
+    didSet {
+      if #available(iOS 14.0, *) {
+        let options: Array = avatarOptions as! Array<NSDictionary>;
+        let actions: [UIAction] = options.map { opt in
+          return UIAction(title: opt["label"] as! String, image: UIImage(systemName: opt["uiImage"] as! String), handler: { _ in self.avatarOnPressFunction(optionId: opt["id"] as! String) })
+        }
+        let contextMenu = UIMenu(title: "Profile Options", options: .displayInline, children: actions)
+        header.accountView.menu = contextMenu
+        header.accountView.showsMenuAsPrimaryAction = true
+      }
     }
   }
   @objc var isLoading: Bool = false {
@@ -150,6 +167,22 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
       tableView.reloadData()
     }
   }
+
+    
+  @objc func avatarOnPressFunction(optionId: String) -> Void {
+    switch optionId {
+      case "newimage":
+        self.onAvatarChooseImage([:]);
+      case "newemoji":
+        self.onAvatarPickEmoji([:]);
+      case "removeimage":
+        self.onAvatarRemovePhoto([:]);
+    default:
+      return ();
+    }
+    return ();
+  }
+
   @objc func onAvatarPressed(_ sender: UIButton) {
     tableView.setContentOffset(.zero, animated: true)
     if tableView.contentOffset.y == CGFloat(0) {
