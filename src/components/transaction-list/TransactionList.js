@@ -95,7 +95,13 @@ export default function TransactionList({
     });
   }, [navigate, isDamaged]);
 
-  const onAvatarPress = useOnAvatarPress();
+  const {
+    avatarOptions,
+    onAvatarChooseImage,
+    onAvatarRemovePhoto,
+    onAvatarPickEmoji,
+    onAvatarPress,
+  } = useOnAvatarPress();
 
   const onReceivePress = useCallback(() => {
     if (isDamaged) {
@@ -279,13 +285,17 @@ export default function TransactionList({
         accountName={accountSymbol}
         addCashAvailable={addCashAvailable}
         as={NativeTransactionListView}
+        avatarOptions={avatarOptions}
         darkMode={isDarkMode}
         data={data}
         isAvatarPickerAvailable={isAvatarPickerAvailable}
         isLoading={loading}
         onAccountNamePress={onAccountNamePress}
         onAddCashPress={onAddCashPress}
+        onAvatarChooseImage={onAvatarChooseImage}
+        onAvatarPickEmoji={onAvatarPickEmoji}
         onAvatarPress={onAvatarPress}
+        onAvatarRemovePhoto={onAvatarRemovePhoto}
         onCopyAddressPress={onCopyAddressPress}
         onReceivePress={onReceivePress}
         onRequestExpire={onRequestExpire}
