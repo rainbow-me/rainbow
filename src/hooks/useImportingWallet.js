@@ -11,6 +11,7 @@ import useMagicAutofocus from './useMagicAutofocus';
 import usePrevious from './usePrevious';
 import useTimeout from './useTimeout';
 import useWallets from './useWallets';
+import { saveShowcaseTokens } from '@rainbow-me/handlers/localstorage/accountLocal';
 import {
   resolveUnstoppableDomain,
   web3Provider,
@@ -23,8 +24,14 @@ import {
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import walletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
+import store from '@rainbow-me/redux/store';
 import Routes from '@rainbow-me/routes';
-import { ethereumUtils, sanitizeSeedPhrase } from '@rainbow-me/utils';
+import {
+  ethereumUtils,
+  getProfileData,
+  getShowcaseData,
+  sanitizeSeedPhrase,
+} from '@rainbow-me/utils';
 import logger from 'logger';
 
 export default function useImportingWallet() {
@@ -75,7 +82,9 @@ export default function useImportingWallet() {
   );
 
   const showWalletProfileModal = useCallback(
-    (name, forceColor, address = null) => {
+    async (name, forceColor, address = null) => {
+      const profileData = await getProfileData(address);
+
       navigate(Routes.MODAL_SCREEN, {
         actionType: 'Import',
         additionalPadding: true,
@@ -88,7 +97,7 @@ export default function useImportingWallet() {
           if (name) setName(name);
           handleSetImporting(true);
         },
-        profile: { name },
+        profile: profileData ? { name, profileData } : { name },
         type: 'wallet_profile',
         withoutStatusBar: true,
       });
@@ -191,9 +200,12 @@ export default function useImportingWallet() {
           false,
           checkedWallet
         )
-          .then(success => {
+          .then(async success => {
             handleSetImporting(false);
             if (success) {
+              const { network } = store.getState().settings;
+              const showcaseTokens = await getShowcaseData(input);
+              saveShowcaseTokens(showcaseTokens, input, network);
               goBack();
               InteractionManager.runAfterInteractions(async () => {
                 if (previousWalletCount === 0) {
