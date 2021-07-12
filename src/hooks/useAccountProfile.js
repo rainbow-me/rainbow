@@ -51,14 +51,14 @@ export function getAccountProfileInfo(
   }
   const { label, color, image } = selectedAccount;
 
+  const labelWithoutEmoji = removeFirstEmojiFromString(label).join('');
+
   const accountName =
-    removeFirstEmojiFromString(
-      network === networkTypes.mainnet
-        ? label || accountENS || address(accountAddress, 4, 4)
-        : label === accountENS
-        ? address(accountAddress, 4, 4)
-        : label || address(accountAddress, 4, 4)
-    ).join('') || address(accountAddress, 4, 4);
+    network === networkTypes.mainnet
+      ? labelWithoutEmoji || accountENS || address(accountAddress, 4, 4)
+      : labelWithoutEmoji === accountENS
+      ? address(accountAddress, 4, 4)
+      : labelWithoutEmoji || address(accountAddress, 4, 4);
 
   const emojiAvatar = returnStringFirstEmoji(label);
 
