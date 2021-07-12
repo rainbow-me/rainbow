@@ -499,17 +499,14 @@ export default function SendSheet(props) {
 
       // Don't allow sending funds directly to known ERC20 contracts on L2
       if (isL2Network(currentNetwork)) {
-        logger.log('CHECKING CURRENT CHAIN ASSETS');
         const currentChainAssets = chainAssets[currentNetwork];
         const found = currentChainAssets.find(
           item => toLower(item.asset?.asset_code) === toLower(toAddress)
         );
         if (found) {
-          logger.log('FOUND');
           return false;
         }
       }
-      logger.log('NOT FOUND');
       return true;
     },
     [currentNetwork]
