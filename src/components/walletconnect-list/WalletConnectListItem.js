@@ -52,6 +52,11 @@ const AvatarWrapper = styled(Column)`
   margin-right: 5;
 `;
 
+const SessionRow = styled(Row)`
+  justify-content: space-between;
+  margin-top: 4;
+`;
+
 export default function WalletConnectListItem({
   account,
   chainId,
@@ -237,7 +242,7 @@ export default function WalletConnectListItem({
               )}
             </Row>
 
-            <Row style={{ justifyContent: 'space-between', marginTop: 4 }}>
+            <SessionRow>
               <Row>
                 <AvatarWrapper>
                   {approvalAccountInfo.accountImage ? (
@@ -272,7 +277,7 @@ export default function WalletConnectListItem({
                   {connectionNetworkInfo.name}
                 </LabelText>
               </Row>
-            </Row>
+            </SessionRow>
           </ColumnWithMargins>
         </Row>
       </Row>
