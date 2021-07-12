@@ -39,6 +39,7 @@ export default function ConfirmExchangeButton({
   isHighPriceImpact,
   onPressViewDetails,
   onSubmit,
+  testID,
   tradeDetails,
   type = ExchangeModalTypes.swap,
   ...props
@@ -147,6 +148,7 @@ export default function ConfirmExchangeButton({
             : shadows.default
         }
         showBiometryIcon={!isDisabled && !isHighPriceImpact}
+        testID={`${testID}-${label}`}
         {...props}
       />
     </Container>
