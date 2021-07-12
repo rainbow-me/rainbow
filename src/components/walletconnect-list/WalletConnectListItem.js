@@ -91,72 +91,69 @@ export default function WalletConnectListItem({
   );
 
   return (
-    <Row align="center" height={WalletConnectListItemHeight}>
-      <Row
-        align="center"
-        css={padding(ContainerPadding, 0, ContainerPadding, ContainerPadding)}
-        flex={1}
-      >
-        <RequestVendorLogoIcon
-          backgroundColor={colors.white}
-          dappName={dappName}
-          imageUrl={overrideLogo || dappIcon}
-          size={VendorLogoIconSize}
-        />
-        <ColumnWithMargins css={padding(0, 19, 1.5, 12)} flex={1} margin={2}>
-          <Row>
-            <TruncatedText
-              letterSpacing="roundedTight"
-              size="lmedium"
-              weight="bold"
-            >
-              {overrideName || dappName || 'Unknown Application'}{' '}
-            </TruncatedText>
-            {isAuthenticated && (
-              <Text
-                align="center"
-                color={colors.appleBlue}
-                letterSpacing="roundedMedium"
+    <ContextMenuButton
+      menuItems={[
+        {
+          actionKey: 'disconnect',
+          actionTitle: 'Disconnect',
+        },
+        {
+          actionKey: 'switch-account',
+          actionTitle: 'Switch Account',
+        },
+        {
+          menuItems: networksMenuItems(isDarkMode),
+          menuTitle: 'Switch Network',
+        },
+      ]}
+      menuTitle={`Change ${dappName} connection?`}
+      onPressMenuItem={handleOnPressMenuItem}
+    >
+      <Row align="center" height={WalletConnectListItemHeight}>
+        <Row
+          align="center"
+          css={padding(ContainerPadding, 0, ContainerPadding, ContainerPadding)}
+          flex={1}
+        >
+          <RequestVendorLogoIcon
+            backgroundColor={colors.white}
+            dappName={dappName}
+            imageUrl={overrideLogo || dappIcon}
+            size={VendorLogoIconSize}
+          />
+          <ColumnWithMargins css={padding(0, 19, 1.5, 12)} flex={1} margin={2}>
+            <Row>
+              <TruncatedText
+                letterSpacing="roundedTight"
                 size="lmedium"
                 weight="bold"
               >
-                􀇻
-              </Text>
-            )}
-          </Row>
+                {overrideName || dappName || 'Unknown Application'}{' '}
+              </TruncatedText>
+              {isAuthenticated && (
+                <Text
+                  align="center"
+                  color={colors.appleBlue}
+                  letterSpacing="roundedMedium"
+                  size="lmedium"
+                  weight="bold"
+                >
+                  􀇻
+                </Text>
+              )}
+            </Row>
 
-          <TruncatedText
-            color={colors.alpha(colors.blueGreyDark, 0.6)}
-            size="smedium"
-            weight="medium"
-          >
-            {accountsLabels[account]} -{' '}
-            {ethereumUtils.getNetworkNameFromChainId(chainId)}
-          </TruncatedText>
-        </ColumnWithMargins>
+            <TruncatedText
+              color={colors.alpha(colors.blueGreyDark, 0.6)}
+              size="smedium"
+              weight="medium"
+            >
+              {accountsLabels[account]} -{' '}
+              {ethereumUtils.getNetworkNameFromChainId(chainId)}
+            </TruncatedText>
+          </ColumnWithMargins>
+        </Row>
       </Row>
-      <Centered>
-        <ContextMenuButton
-          menuItems={[
-            {
-              actionKey: 'disconnect',
-              actionTitle: 'Disconnect',
-            },
-            {
-              actionKey: 'switch-account',
-              actionTitle: 'Switch Account',
-            },
-            {
-              menuItems: networksMenuItems(isDarkMode),
-              menuTitle: 'Switch Network',
-            },
-          ]}
-          menuTitle={`Change ${dappName} connection?`}
-          onPressMenuItem={handleOnPressMenuItem}
-        >
-          <ContextButton />
-        </ContextMenuButton>
-      </Centered>
-    </Row>
+    </ContextMenuButton>
   );
 }
