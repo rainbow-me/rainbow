@@ -102,7 +102,7 @@ export default function ProfileMasthead({
   } = useAccountProfile();
   const isAvatarPickerAvailable = useExperimentalFlag(AVATAR_PICKER);
 
-  const onAvatarPress = useOnAvatarPress();
+  const { onAvatarPress } = useOnAvatarPress();
 
   const handlePressAvatar = useCallback(() => {
     recyclerListRef?.scrollToTop(true);
