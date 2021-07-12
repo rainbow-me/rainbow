@@ -3,30 +3,41 @@ import React, { useCallback, useMemo } from 'react';
 import { RequestVendorLogoIcon } from '../coin-icon';
 import { ContextMenuButton } from '../context-menu';
 import { Icon } from '../icons';
-import { Centered, ColumnWithMargins, Row } from '../layout';
+import { Centered, Column, ColumnWithMargins, Row } from '../layout';
 import { Text, TruncatedText } from '../text';
 import {
   dappLogoOverride,
   dappNameOverride,
   isDappAuthenticated,
 } from '@rainbow-me/helpers/dappNameHandler';
-import { useWalletConnectConnections } from '@rainbow-me/hooks';
+import { useAccountSettings, useWalletConnectConnections, useWallets } from '@rainbow-me/hooks';
 import { Navigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
 import { ethereumUtils } from '@rainbow-me/utils';
 import { changeConnectionMenuItems, NETWORK_MENU_ACTION_KEY_FILTER } from '@rainbow-me/helpers/walletConnectNetworks';
+import ChainLogo from '../ChainLogo';
+import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
+import ImageAvatar from '../contacts/ImageAvatar';
+import { ContactAvatar } from '../contacts';
+import styled from 'styled-components';
+import networkInfo from '@rainbow-me/helpers/networkInfo';
+import { capitalize } from 'lodash';
 
 const ContainerPadding = 15;
 const VendorLogoIconSize = 50;
 export const WalletConnectListItemHeight =
   VendorLogoIconSize + ContainerPadding * 2;
 
-const ContextButton = props => (
-  <Centered css={padding(16, 19)} {...props}>
-    <Icon name="threeDots" />
-  </Centered>
-);
+const LabelText = styled(Text).attrs(() => ({
+  lineHeight: 22,
+  size: 'lmedium',
+  weight: 'regular',
+}))``;
+
+const AvatarWrapper = styled(Column)`
+  margin-right: 5;
+`;
 
 export default function WalletConnectListItem({
   account,
@@ -42,6 +53,8 @@ export default function WalletConnectListItem({
     walletConnectUpdateSessionConnectorChainIdByDappName,
   } = useWalletConnectConnections();
   const { colors, isDarkMode } = useTheme();
+  const { selectedWallet, walletNames } = useWallets();
+  const {network} = useAccountSettings()
 
   const isAuthenticated = useMemo(() => {
     return isDappAuthenticated(dappUrl);
@@ -54,6 +67,32 @@ export default function WalletConnectListItem({
   const overrideName = useMemo(() => {
     return dappNameOverride(dappUrl);
   }, [dappUrl]);
+
+  const approvalAccountInfo = useMemo(() => {
+    const approvalAccountInfo = getAccountProfileInfo(
+      selectedWallet,
+      walletNames,
+      network,
+      account
+    );
+    return {
+      ...approvalAccountInfo,
+      accountLabel:
+        approvalAccountInfo.accountENS ||
+        approvalAccountInfo.accountName ||
+        approvalAccount.address,
+    };
+  }, [walletNames, network, account, selectedWallet]);
+
+  const connectionNetworkInfo = useMemo(() => {
+    const network = ethereumUtils.getNetworkFromChainId(chainId)
+    return {
+      chainId,
+      color: networkInfo[network]?.color,
+      name: capitalize(network?.charAt(0)) + network?.slice(1),
+      value: network,
+    };
+  }, [chainId]);
 
   const handlePressChangeWallet = useCallback(() => {
     Navigation.handleAction(Routes.CHANGE_WALLET_SHEET, {
@@ -129,16 +168,43 @@ export default function WalletConnectListItem({
                 </Text>
               )}
             </Row>
+            
+            <Row style={{justifyContent: 'space-between', marginTop: 4}}>
+              <Row>
+                <AvatarWrapper>
+                  {approvalAccountInfo.accountImage ? (
+                    <ImageAvatar
+                      image={approvalAccountInfo.accountImage}
+                      size="smaller"
+                    />
+                  ) : (
+                    <ContactAvatar
+                      color={
+                        isNaN(approvalAccountInfo.accountColor)
+                          ? colors.skeleton
+                          : approvalAccountInfo.accountColor
+                      }
+                      size="smaller"
+                      value={approvalAccountInfo.accountSymbol}
+                    />
+                  )}
+                </AvatarWrapper>
+                <LabelText numberOfLines={1}>
+                  {approvalAccountInfo.accountLabel}
+                </LabelText>
+              </Row>
+              <Row>
+                <Centered marginBottom={0} marginRight={8} marginTop={5}>
+                  <ChainLogo network={connectionNetworkInfo.value} />
+                </Centered>
+                <LabelText color={''} numberOfLines={1}>
+                  {connectionNetworkInfo.name}
+                </LabelText>
+              </Row>
+            </Row>
 
-            <TruncatedText
-              color={colors.alpha(colors.blueGreyDark, 0.6)}
-              size="smedium"
-              weight="medium"
-            >
-              {accountsLabels[account]} -{' '}
-              {ethereumUtils.getNetworkNameFromChainId(chainId)}
-            </TruncatedText>
           </ColumnWithMargins>
+
         </Row>
       </Row>
     </ContextMenuButton>
