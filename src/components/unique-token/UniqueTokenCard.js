@@ -2,8 +2,10 @@ import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
+import ChainBadge from '../coin-icon/ChainBadge';
 import { InnerBorder } from '../layout';
 import UniqueTokenImage from './UniqueTokenImage';
+import { AssetType } from '@rainbow-me/entities';
 import { shadow as shadowUtil } from '@rainbow-me/styles';
 
 const UniqueTokenCardBorderRadius = 20;
@@ -71,6 +73,14 @@ const UniqueTokenCard = ({
             opacity={0.04}
             radius={UniqueTokenCardBorderRadius}
             width={0.5}
+          />
+        )}
+        {item.network === AssetType.polygon && (
+          <ChainBadge
+            assetType={AssetType.polygon}
+            badgeXPosition={-6}
+            badgeYPosition={-10}
+            large
           />
         )}
       </Content>
