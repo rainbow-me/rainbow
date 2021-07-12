@@ -30,16 +30,17 @@ export default function ConnectedDappsSheet() {
     const addressLabels = {};
     Object.values(allWallets).forEach(({ addresses }) =>
       addresses.forEach(account => {
+        console.log('CCOUNT', account)
         const label =
-          network !== networkTypes.mainnet && account.ens === account.label
-            ? address(account.address, 6, 4)
+          network !== networkTypes.mainnet || !account.label 
+            ? address(account.address, 4, 4)
             : account.label;
         addressLabels[account.address] = label;
       })
     );
     return addressLabels;
   }, [allWallets, network]);
-
+  console.log('accountsLabels', accountsLabels)
   useEffect(() => {
     if (walletConnectorsByDappName.length === 0) {
       goBack();
