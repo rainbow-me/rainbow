@@ -517,7 +517,6 @@ export default function SendSheet(props) {
     if (isENSAddressFormat(recipient)) {
       toAddress = await resolveNameOrAddress(recipient);
     }
-
     const validRecipient = await validateReceipient(toAddress);
 
     if (!validRecipient) {
@@ -535,6 +534,7 @@ export default function SendSheet(props) {
       });
       return;
     }
+
     Keyboard.dismiss();
     navigate(Routes.SEND_CONFIRMATION_SHEET, {
       amountDetails: amountDetails,
