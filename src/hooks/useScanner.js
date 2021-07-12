@@ -88,7 +88,7 @@ export default function useScanner(enabled) {
       // And then navigate to Showcase sheet
       InteractionManager.runAfterInteractions(() => {
         Navigation.handleAction(Routes.SHOWCASE_SHEET, {
-          address: address,
+          address,
         });
       });
 
