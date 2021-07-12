@@ -116,7 +116,7 @@ const UniqueTokenExpandedState = ({ asset, external }) => {
               {description}
             </ExpandedStateSection>
           )}
-          {!!traits.length && (
+          {!!traits?.length && (
             <ExpandedStateSection paddingBottom={14} title="Attributes">
               <UniqueTokenAttributes {...asset} />
             </ExpandedStateSection>
