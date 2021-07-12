@@ -64,7 +64,7 @@ export const explainers = {
     emoji: '✋',
     text: SENDING_FUNDS_TO_CONTRACT,
     title: 'Hold your horses!',
-    extraHeight: 70,
+    extraHeight: 80,
   },
   verified: {
     emoji: '􀇻',
