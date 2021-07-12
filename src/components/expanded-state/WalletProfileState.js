@@ -76,11 +76,12 @@ export default function WalletProfileState({
   profile,
   forceColor,
 }) {
-  const nameEmoji =
-    isNewProfile && !forceColor
-      ? defaultProfileUtils.addressHashedEmoji(address)
-      : returnStringFirstEmoji(profile?.name) ||
-        defaultProfileUtils.addressHashedEmoji(address);
+  const nameEmoji = profile.profileData
+    ? profile.profileData.accountSymbol
+    : isNewProfile && !forceColor
+    ? defaultProfileUtils.addressHashedEmoji(address)
+    : returnStringFirstEmoji(profile?.name) ||
+      defaultProfileUtils.addressHashedEmoji(address);
 
   const { goBack, navigate } = useNavigation();
   const { accountImage } = useAccountProfile();
@@ -90,6 +91,8 @@ export default function WalletProfileState({
   const indexOfForceColor = colors.avatarBackgrounds.indexOf(forceColor);
   const color = forceColor
     ? forceColor
+    : profile.profileData
+    ? profile.profileData.accountColor
     : isNewProfile && address
     ? defaultProfileUtils.addressHashedColorIndex(address)
     : profile.color !== null
@@ -97,6 +100,7 @@ export default function WalletProfileState({
     : isNewProfile
     ? null
     : (indexOfForceColor !== -1 && indexOfForceColor) || getRandomColor();
+
   const [value, setValue] = useState(
     profile?.name ? removeFirstEmojiFromString(profile.name).join('') : ''
   );
