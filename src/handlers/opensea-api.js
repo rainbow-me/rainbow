@@ -1,5 +1,6 @@
 import { OPENSEA_API_KEY, OPENSEA_RINKEBY_API_KEY } from 'react-native-dotenv';
 import { rainbowFetch } from '../rainbow-fetch';
+import { AssetType } from '@rainbow-me/entities';
 import NetworkTypes from '@rainbow-me/networkTypes';
 import { parseAccountUniqueTokens } from '@rainbow-me/parsers';
 import { handleSignificantDecimals } from '@rainbow-me/utilities';
@@ -10,14 +11,16 @@ export const UNIQUE_TOKENS_LIMIT_TOTAL = 2000;
 
 export const apiGetAccountUniqueTokens = async (network, address, page) => {
   try {
+    const isPolygon = network === AssetType.polygon;
     const API_KEY =
       network === NetworkTypes.rinkeby
         ? OPENSEA_RINKEBY_API_KEY
         : OPENSEA_API_KEY;
     const networkPrefix = network === NetworkTypes.mainnet ? '' : `${network}-`;
     const offset = page * UNIQUE_TOKENS_LIMIT_PER_PAGE;
-    const url = `https://${networkPrefix}api.opensea.io/api/v1/assets`;
-    const data = await rainbowFetch(url, {
+    const url = `https://${networkPrefix}api.opensea.io/api/v1/assets?exclude_currencies=true&owner=${address}&limit=${UNIQUE_TOKENS_LIMIT_PER_PAGE}&offset=${offset}`;
+    const urlV2 = `https://api.opensea.io/api/v2/assets/matic?exclude_currencies=true&owner=${address}&limit=${UNIQUE_TOKENS_LIMIT_PER_PAGE}&offset=${offset}`;
+    const data = await rainbowFetch(isPolygon ? urlV2 : url, {
       headers: {
         'Accept': 'application/json',
         'X-Api-Key': API_KEY,

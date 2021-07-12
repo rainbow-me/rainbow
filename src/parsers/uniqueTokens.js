@@ -1,15 +1,17 @@
 import { filter, find, get, isNil, map, pick, uniq } from 'lodash';
-import { AssetTypes } from '@rainbow-me/entities';
+import { AssetType, AssetTypes } from '@rainbow-me/entities';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';
 
 /**
  * @desc parse unique tokens from opensea
  * @param  {Object}
+ * @param  {String}
  * @return {Array}
  */
 
-export const parseAccountUniqueTokens = data => {
-  const erc721s = get(data, 'data.assets', null);
+export const parseAccountUniqueTokens = (data, network) => {
+  const isPolygon = network === AssetType.polygon;
+  const erc721s = get(data, isPolygon ? 'data.results' : 'data.assets', null);
   if (isNil(erc721s)) throw new Error('Invalid data from OpenSea');
   return erc721s
     .map(
@@ -80,6 +82,7 @@ export const parseAccountUniqueTokens = data => {
           ? asset.last_sale?.payment_token?.usd_price
           : null,
         lastSale: asset.last_sale,
+        network: network,
         type: AssetTypes.nft,
         uniqueId:
           asset_contract.address === ENS_NFT_CONTRACT_ADDRESS
