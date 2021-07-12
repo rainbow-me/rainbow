@@ -453,12 +453,11 @@ export const walletConnectUpdateSessions = () => (dispatch, getState) => {
   });
 };
 
-const walletConnectUpdateSessionConnectorByDappName = (
-  dispatch,
-  getState,
+export const walletConnectUpdateSessionConnectorByDappName = (
   dappName,
-  { chainId, accountAddress }
-) => {
+  accountAddress,
+  chainId
+) => (dispatch, getState) => {
   const { walletConnectors } = getState().walletconnect;
   const connectors = pickBy(
     walletConnectors,
@@ -475,28 +474,6 @@ const walletConnectUpdateSessionConnectorByDappName = (
   dispatch({
     payload: clone(walletConnectors),
     type: WALLETCONNECT_UPDATE_CONNECTORS,
-  });
-};
-
-export const walletConnectUpdateSessionConnectorAccountByDappName = (
-  dappName,
-  accountAddress
-) => (dispatch, getState) => {
-  const { chainId } = getState().settings;
-  walletConnectUpdateSessionConnectorByDappName(dispatch, getState, dappName, {
-    accountAddress,
-    chainId,
-  });
-};
-
-export const walletConnectUpdateSessionConnectorChainIdByDappName = (
-  dappName,
-  chainId
-) => (dispatch, getState) => {
-  const { accountAddress } = getState().settings;
-  walletConnectUpdateSessionConnectorByDappName(dispatch, getState, dappName, {
-    accountAddress,
-    chainId,
   });
 };
 

@@ -1,28 +1,34 @@
 import analytics from '@segment/analytics-react-native';
+import { capitalize } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
+import styled from 'styled-components';
+import ChainLogo from '../ChainLogo';
 import { RequestVendorLogoIcon } from '../coin-icon';
+import { ContactAvatar } from '../contacts';
+import ImageAvatar from '../contacts/ImageAvatar';
 import { ContextMenuButton } from '../context-menu';
-import { Icon } from '../icons';
 import { Centered, Column, ColumnWithMargins, Row } from '../layout';
 import { Text, TruncatedText } from '../text';
+import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
 import {
   dappLogoOverride,
   dappNameOverride,
   isDappAuthenticated,
 } from '@rainbow-me/helpers/dappNameHandler';
-import { useAccountSettings, useWalletConnectConnections, useWallets } from '@rainbow-me/hooks';
+import networkInfo from '@rainbow-me/helpers/networkInfo';
+import {
+  changeConnectionMenuItems,
+  NETWORK_MENU_ACTION_KEY_FILTER,
+} from '@rainbow-me/helpers/walletConnectNetworks';
+import {
+  useAccountSettings,
+  useWalletConnectConnections,
+  useWallets,
+} from '@rainbow-me/hooks';
 import { Navigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
 import { ethereumUtils } from '@rainbow-me/utils';
-import { changeConnectionMenuItems, NETWORK_MENU_ACTION_KEY_FILTER } from '@rainbow-me/helpers/walletConnectNetworks';
-import ChainLogo from '../ChainLogo';
-import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
-import ImageAvatar from '../contacts/ImageAvatar';
-import { ContactAvatar } from '../contacts';
-import styled from 'styled-components';
-import networkInfo from '@rainbow-me/helpers/networkInfo';
-import { capitalize } from 'lodash';
 
 const ContainerPadding = 15;
 const VendorLogoIconSize = 50;
@@ -41,7 +47,6 @@ const AvatarWrapper = styled(Column)`
 
 export default function WalletConnectListItem({
   account,
-  accountsLabels,
   chainId,
   dappIcon,
   dappName,
@@ -49,12 +54,11 @@ export default function WalletConnectListItem({
 }) {
   const {
     walletConnectDisconnectAllByDappName,
-    walletConnectUpdateSessionConnectorAccountByDappName,
-    walletConnectUpdateSessionConnectorChainIdByDappName,
+    walletConnectUpdateSessionConnectorByDappName,
   } = useWalletConnectConnections();
   const { colors, isDarkMode } = useTheme();
   const { selectedWallet, walletNames } = useWallets();
-  const {network} = useAccountSettings()
+  const { network } = useAccountSettings();
 
   const isAuthenticated = useMemo(() => {
     return isDappAuthenticated(dappUrl);
@@ -80,12 +84,12 @@ export default function WalletConnectListItem({
       accountLabel:
         approvalAccountInfo.accountENS ||
         approvalAccountInfo.accountName ||
-        approvalAccount.address,
+        account,
     };
   }, [walletNames, network, account, selectedWallet]);
 
   const connectionNetworkInfo = useMemo(() => {
-    const network = ethereumUtils.getNetworkFromChainId(chainId)
+    const network = ethereumUtils.getNetworkFromChainId(chainId);
     return {
       chainId,
       color: networkInfo[network]?.color,
@@ -98,11 +102,20 @@ export default function WalletConnectListItem({
     Navigation.handleAction(Routes.CHANGE_WALLET_SHEET, {
       currentAccountAddress: account,
       onChangeWallet: address => {
-        walletConnectUpdateSessionConnectorAccountByDappName(dappName, address);
+        walletConnectUpdateSessionConnectorByDappName(
+          dappName,
+          address,
+          chainId
+        );
       },
       watchOnly: true,
     });
-  }, [account, dappName, walletConnectUpdateSessionConnectorAccountByDappName]);
+  }, [
+    account,
+    chainId,
+    dappName,
+    walletConnectUpdateSessionConnectorByDappName,
+  ]);
 
   const handleOnPressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
@@ -115,17 +128,25 @@ export default function WalletConnectListItem({
       } else if (actionKey === 'switch-account') {
         handlePressChangeWallet();
       } else if (actionKey.indexOf(NETWORK_MENU_ACTION_KEY_FILTER) !== -1) {
-        const networkValue = actionKey.replace(NETWORK_MENU_ACTION_KEY_FILTER, '');
+        const networkValue = actionKey.replace(
+          NETWORK_MENU_ACTION_KEY_FILTER,
+          ''
+        );
         const chainId = ethereumUtils.getChainIdFromNetwork(networkValue);
-        walletConnectUpdateSessionConnectorChainIdByDappName(dappName, chainId);
+        walletConnectUpdateSessionConnectorByDappName(
+          dappName,
+          account,
+          chainId
+        );
       }
     },
     [
+      account,
       dappName,
       dappUrl,
       handlePressChangeWallet,
       walletConnectDisconnectAllByDappName,
-      walletConnectUpdateSessionConnectorChainIdByDappName,
+      walletConnectUpdateSessionConnectorByDappName,
     ]
   );
 
@@ -168,8 +189,8 @@ export default function WalletConnectListItem({
                 </Text>
               )}
             </Row>
-            
-            <Row style={{justifyContent: 'space-between', marginTop: 4}}>
+
+            <Row style={{ justifyContent: 'space-between', marginTop: 4 }}>
               <Row>
                 <AvatarWrapper>
                   {approvalAccountInfo.accountImage ? (
@@ -197,14 +218,15 @@ export default function WalletConnectListItem({
                 <Centered marginBottom={0} marginRight={8} marginTop={5}>
                   <ChainLogo network={connectionNetworkInfo.value} />
                 </Centered>
-                <LabelText color={''} numberOfLines={1}>
+                <LabelText
+                  color={connectionNetworkInfo.color}
+                  numberOfLines={1}
+                >
                   {connectionNetworkInfo.name}
                 </LabelText>
               </Row>
             </Row>
-
           </ColumnWithMargins>
-
         </Row>
       </Row>
     </ContextMenuButton>

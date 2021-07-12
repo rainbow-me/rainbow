@@ -30,9 +30,12 @@ import {
   getDappHostname,
   isDappAuthenticated,
 } from '@rainbow-me/helpers/dappNameHandler';
-import { networksMenuItems, NETWORK_MENU_ACTION_KEY_FILTER } from '@rainbow-me/helpers/walletConnectNetworks'
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import WalletConnectApprovalSheetType from '@rainbow-me/helpers/walletConnectApprovalSheetTypes';
+import {
+  NETWORK_MENU_ACTION_KEY_FILTER,
+  networksMenuItems,
+} from '@rainbow-me/helpers/walletConnectNetworks';
 import { useAccountSettings, useWallets } from '@rainbow-me/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
@@ -163,7 +166,10 @@ export default function WalletConnectApprovalSheet() {
   }, [approvalNetwork]);
 
   const handleOnPressNetworksMenuItem = useCallback(
-    ({ nativeEvent }) => setApprovalNetwork(nativeEvent.actionKey?.replace(NETWORK_MENU_ACTION_KEY_FILTER, '')),
+    ({ nativeEvent }) =>
+      setApprovalNetwork(
+        nativeEvent.actionKey?.replace(NETWORK_MENU_ACTION_KEY_FILTER, '')
+      ),
     [setApprovalNetwork]
   );
 

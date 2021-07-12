@@ -6,8 +6,7 @@ import { sortList } from '../helpers/sortList';
 import {
   walletConnectDisconnectAllByDappName as rawWalletConnectDisconnectAllByDappName,
   walletConnectOnSessionRequest as rawWalletConnectOnSessionRequest,
-  walletConnectUpdateSessionConnectorAccountByDappName as rawWalletConnectUpdateSessionConnectorAccountByDappName,
-  walletConnectUpdateSessionConnectorChainIdByDappName as rawWalletConnectUpdateSessionConnectorChainIdByDappName,
+  walletConnectUpdateSessionConnectorByDappName as rawWalletConnectUpdateSessionConnectorByDappName,
 } from '../redux/walletconnect';
 
 const formatDappData = connections =>
@@ -53,23 +52,13 @@ export default function useWalletConnectConnections() {
     [dispatch]
   );
 
-  const walletConnectUpdateSessionConnectorChainIdByDappName = useCallback(
-    (dappName, chainId) =>
+  const walletConnectUpdateSessionConnectorByDappName = useCallback(
+    (dappName, accountAddress, chainId) =>
       dispatch(
-        rawWalletConnectUpdateSessionConnectorChainIdByDappName(
+        rawWalletConnectUpdateSessionConnectorByDappName(
           dappName,
+          accountAddress,
           chainId
-        )
-      ),
-    [dispatch]
-  );
-
-  const walletConnectUpdateSessionConnectorAccountByDappName = useCallback(
-    (dappName, accountAddress) =>
-      dispatch(
-        rawWalletConnectUpdateSessionConnectorAccountByDappName(
-          dappName,
-          accountAddress
         )
       ),
     [dispatch]
@@ -81,7 +70,6 @@ export default function useWalletConnectConnections() {
     walletConnectOnSessionRequest,
     walletConnectorsByDappName,
     walletConnectorsCount,
-    walletConnectUpdateSessionConnectorAccountByDappName,
-    walletConnectUpdateSessionConnectorChainIdByDappName,
+    walletConnectUpdateSessionConnectorByDappName,
   };
 }
