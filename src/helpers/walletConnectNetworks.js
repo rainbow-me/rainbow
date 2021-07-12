@@ -16,3 +16,17 @@ export const networksMenuItems = isDarkMode =>
       },
     }));
 
+export const changeConnectionMenuItems = isDarkMode => [
+    {
+      actionKey: 'disconnect',
+      actionTitle: 'Disconnect',
+    },
+    {
+      actionKey: 'switch-account',
+      actionTitle: 'Switch Account',
+    },
+    {
+      menuItems: networksMenuItems(isDarkMode),
+      menuTitle: 'Switch Network',
+    },
+  ];

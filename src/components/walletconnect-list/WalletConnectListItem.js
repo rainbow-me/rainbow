@@ -15,7 +15,7 @@ import { Navigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
 import { ethereumUtils } from '@rainbow-me/utils';
-import { networksMenuItems, NETWORK_MENU_ACTION_KEY_FILTER } from '@rainbow-me/helpers/walletConnectNetworks';
+import { changeConnectionMenuItems, NETWORK_MENU_ACTION_KEY_FILTER } from '@rainbow-me/helpers/walletConnectNetworks';
 
 const ContainerPadding = 15;
 const VendorLogoIconSize = 50;
@@ -92,20 +92,7 @@ export default function WalletConnectListItem({
 
   return (
     <ContextMenuButton
-      menuItems={[
-        {
-          actionKey: 'disconnect',
-          actionTitle: 'Disconnect',
-        },
-        {
-          actionKey: 'switch-account',
-          actionTitle: 'Switch Account',
-        },
-        {
-          menuItems: networksMenuItems(isDarkMode),
-          menuTitle: 'Switch Network',
-        },
-      ]}
+      menuItems={changeConnectionMenuItems(isDarkMode)}
       menuTitle={`Change ${dappName} connection?`}
       onPressMenuItem={handleOnPressMenuItem}
     >
