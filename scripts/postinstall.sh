@@ -42,6 +42,10 @@ if [ -e .env ]; then
     cat .env | grep "GOOGLE" | sed 's/=/ = /g' >> ./ios/localrelease.xcconfig
     cat .env | grep "GOOGLE" | sed 's/=/ = /g' >> ./ios/staging.xcconfig
 
+    # Override Google Services API Key
+    sed -i'' -e  "s/\$(GOOGLE_SERVICE_API_KEY)/$GOOGLE_SERVICE_API_KEY/" ./ios/Frameworks/GoogleService-Info.plist
+    
+
     echo "✅ .xcconfig files created"
   fi
 
