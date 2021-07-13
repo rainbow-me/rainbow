@@ -4,7 +4,7 @@ const networkInfo = {
   [`${networkTypes.mainnet}`]: {
     balance_checker_contract_address:
       '0x4dcf4562268dd384fe814c00fad239f06c2a0c2b',
-    color: '#3cc29e',
+    color: '#0E76FD',
     disabled: false,
     exchange_enabled: true,
     faucet_url: null,
