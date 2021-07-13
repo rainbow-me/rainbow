@@ -18,7 +18,6 @@ platform :ios do
     upload_symbols_to_crashlytics(
       dsym_path: './Rainbow.app.dSYM.zip'
     )
-    clean_build_artifacts
   end
 
   desc "Submit a new Beta build to Apple TestFlight"
