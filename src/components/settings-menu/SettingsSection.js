@@ -58,14 +58,15 @@ const CheckmarkIcon = styled(Icon).attrs({
       colors.alpha(isDarkMode ? colors.shadow : colors.blueGreyDark50, 0.4)};
 `;
 
-const contentContainerStyle = { flex: 1 };
-const Container = styled(ScrollView).attrs({
-  contentContainerStyle,
-  scrollEventThrottle: 32,
-})`
+const Container = styled(Column).attrs({})`
   ${position.cover};
   background-color: ${({ backgroundColor }) => backgroundColor};
 `;
+
+const scrollContainerStyle = { flex: 1 };
+const ScrollContainer = styled(ScrollView).attrs({
+  scrollEventThrottle: 32,
+})``;
 
 // ⚠️ Beware: magic numbers lol
 const SettingIcon = styled(Image)`
@@ -189,146 +190,156 @@ export default function SettingsSection({
   }, [setTheme, colorScheme]);
 
   return (
-    <Container backgroundColor={colors.white} scrollEnabled={isTinyPhone}>
-      <ColumnWithDividers dividerRenderer={ListItemDivider} marginTop={7}>
-        {canBeBackedUp && (
-          <ListItem
-            icon={
-              <SettingIcon source={isDarkMode ? BackupIconDark : BackupIcon} />
-            }
-            label="Backup"
-            onPress={onPressBackup}
-            onPressIcloudBackup={onPressIcloudBackup}
-            onPressShowSecret={onPressShowSecret}
-            testID="backup-section"
-          >
-            <ListItemArrowGroup>
-              {areBackedUp ? (
-                <CheckmarkIcon
-                  color={backupStatusColor}
-                  isDarkMode={isDarkMode}
+    <Container backgroundColor={colors.white}>
+      <ScrollContainer
+        contentContainerStyle={!isTinyPhone && scrollContainerStyle}
+        scrollEnabled={isTinyPhone}
+      >
+        <ColumnWithDividers dividerRenderer={ListItemDivider} marginTop={7}>
+          {canBeBackedUp && (
+            <ListItem
+              icon={
+                <SettingIcon
+                  source={isDarkMode ? BackupIconDark : BackupIcon}
                 />
-              ) : (
-                <WarningIcon />
-              )}
-            </ListItemArrowGroup>
-          </ListItem>
-        )}
-        <ListItem
-          icon={
-            <SettingIcon
-              source={isDarkMode ? CurrencyIconDark : CurrencyIcon}
-            />
-          }
-          label="Currency"
-          onPress={onPressCurrency}
-          testID="currency-section"
-        >
-          <ListItemArrowGroup>{nativeCurrency || ''}</ListItemArrowGroup>
-        </ListItem>
-        <ListItem
-          icon={
-            <SettingIcon source={isDarkMode ? NetworkIconDark : NetworkIcon} />
-          }
-          label="Network"
-          onPress={onPressNetwork}
-          testID="network-section"
-        >
-          <ListItemArrowGroup>
-            {networkInfo?.[network]?.name}
-          </ListItemArrowGroup>
-        </ListItem>
-        <ListItem
-          icon={
-            <SettingIcon
-              source={isDarkMode ? DarkModeIconDark : DarkModeIcon}
-            />
-          }
-          label="Theme"
-          onPress={toggleTheme}
-          testID={`darkmode-section-${isDarkMode}`}
-        >
-          <Column align="end" flex="1" justify="end">
-            <Text
-              color={colors.alpha(colors.blueGreyDark, 0.6)}
-              size="large"
-              weight="medium"
+              }
+              label="Backup"
+              onPress={onPressBackup}
+              onPressIcloudBackup={onPressIcloudBackup}
+              onPressShowSecret={onPressShowSecret}
+              testID="backup-section"
             >
-              {capitalizeFirstLetter(colorScheme)}
-            </Text>
-          </Column>
-        </ListItem>
-        {!isReadOnlyWallet && (
+              <ListItemArrowGroup>
+                {areBackedUp ? (
+                  <CheckmarkIcon
+                    color={backupStatusColor}
+                    isDarkMode={isDarkMode}
+                  />
+                ) : (
+                  <WarningIcon />
+                )}
+              </ListItemArrowGroup>
+            </ListItem>
+          )}
           <ListItem
             icon={
               <SettingIcon
-                source={isDarkMode ? PrivacyIconDark : PrivacyIcon}
+                source={isDarkMode ? CurrencyIconDark : CurrencyIcon}
               />
             }
-            label="Privacy"
-            onPress={onPressPrivacy}
-            testID="privacy"
+            label="Currency"
+            onPress={onPressCurrency}
+            testID="currency-section"
           >
-            <ListItemArrowGroup />
+            <ListItemArrowGroup>{nativeCurrency || ''}</ListItemArrowGroup>
           </ListItem>
-        )}
-        {/*<ListItem
+          <ListItem
+            icon={
+              <SettingIcon
+                source={isDarkMode ? NetworkIconDark : NetworkIcon}
+              />
+            }
+            label="Network"
+            onPress={onPressNetwork}
+            testID="network-section"
+          >
+            <ListItemArrowGroup>
+              {networkInfo?.[network]?.name}
+            </ListItemArrowGroup>
+          </ListItem>
+          <ListItem
+            icon={
+              <SettingIcon
+                source={isDarkMode ? DarkModeIconDark : DarkModeIcon}
+              />
+            }
+            label="Theme"
+            onPress={toggleTheme}
+            testID={`darkmode-section-${isDarkMode}`}
+          >
+            <Column align="end" flex="1" justify="end">
+              <Text
+                color={colors.alpha(colors.blueGreyDark, 0.6)}
+                size="large"
+                weight="medium"
+              >
+                {capitalizeFirstLetter(colorScheme)}
+              </Text>
+            </Column>
+          </ListItem>
+          {!isReadOnlyWallet && (
+            <ListItem
+              icon={
+                <SettingIcon
+                  source={isDarkMode ? PrivacyIconDark : PrivacyIcon}
+                />
+              }
+              label="Privacy"
+              onPress={onPressPrivacy}
+              testID="privacy"
+            >
+              <ListItemArrowGroup />
+            </ListItem>
+          )}
+          {/*<ListItem
         {/*  icon={*/}
-        {/*    <SettingIcon source={darkMode ? LanguageIconDark : LanguageIcon} />*/}
-        {/*  }*/}
-        {/*  label="Language"*/}
-        {/*  onPress={onPressLanguage}*/}
-        {/*>*/}
-        {/*  <ListItemArrowGroup>*/}
-        {/*    {supportedLanguages[language] || ''}*/}
-        {/*  </ListItemArrowGroup>*/}
-        {/*</ListItem>*/}
-      </ColumnWithDividers>
-      <ListFooter />
-      <ColumnWithDividers dividerRenderer={ListItemDivider}>
-        <ListItem
-          icon={<Emoji name="rainbow" />}
-          label="Share Rainbow"
-          onPress={onPressShare}
-          testID="share-section"
-          value={SettingsExternalURLs.rainbowHomepage}
-        />
-        <ListItem
-          icon={<Emoji name="bird" />}
-          label="Follow Us on Twitter"
-          onPress={onPressTwitter}
-          testID="twitter-section"
-          value={SettingsExternalURLs.twitter}
-        />
-        <ListItem
-          icon={<Emoji name={ios ? 'speech_balloon' : 'lady_beetle'} />}
-          label={ios ? 'Feedback and Support' : 'Feedback & Bug Reports'}
-          onPress={onSendFeedback}
-          testID="feedback-section"
-        />
-        {isReviewAvailable && (
+          {/*    <SettingIcon source={darkMode ? LanguageIconDark : LanguageIcon} />*/}
+          {/*  }*/}
+          {/*  label="Language"*/}
+          {/*  onPress={onPressLanguage}*/}
+          {/*>*/}
+          {/*  <ListItemArrowGroup>*/}
+          {/*    {supportedLanguages[language] || ''}*/}
+          {/*  </ListItemArrowGroup>*/}
+          {/*</ListItem>*/}
+        </ColumnWithDividers>
+        <ListFooter />
+        <ColumnWithDividers dividerRenderer={ListItemDivider}>
           <ListItem
-            icon={<Emoji name="red_heart" />}
-            label="Review Rainbow"
-            onPress={onPressReview}
-            testID="review-section"
+            icon={<Emoji name="rainbow" />}
+            label="Share Rainbow"
+            onPress={onPressShare}
+            testID="share-section"
+            value={SettingsExternalURLs.rainbowHomepage}
           />
+          <ListItem
+            icon={<Emoji name="bird" />}
+            label="Follow Us on Twitter"
+            onPress={onPressTwitter}
+            testID="twitter-section"
+            value={SettingsExternalURLs.twitter}
+          />
+          <ListItem
+            icon={<Emoji name={ios ? 'speech_balloon' : 'lady_beetle'} />}
+            label={ios ? 'Feedback and Support' : 'Feedback & Bug Reports'}
+            onPress={onSendFeedback}
+            testID="feedback-section"
+          />
+          {isReviewAvailable && (
+            <ListItem
+              icon={<Emoji name="red_heart" />}
+              label="Review Rainbow"
+              onPress={onPressReview}
+              testID="review-section"
+            />
+          )}
+        </ColumnWithDividers>
+        {IS_DEV && (
+          <Fragment>
+            <ListFooter height={10} />
+            <ListItem
+              icon={<Emoji name="construction" />}
+              label="Developer Settings"
+              onPress={onPressDev}
+              testID="developer-section"
+            />
+          </Fragment>
         )}
-      </ColumnWithDividers>
-      {IS_DEV && (
-        <Fragment>
-          <ListFooter height={10} />
-          <ListItem
-            icon={<Emoji name="construction" />}
-            label="Developer Settings"
-            onPress={onPressDev}
-            testID="developer-section"
-          />
-        </Fragment>
-      )}
-      <VersionStampContainer>
-        <AppVersionStamp />
-      </VersionStampContainer>
+
+        <VersionStampContainer>
+          <AppVersionStamp />
+        </VersionStampContainer>
+      </ScrollContainer>
     </Container>
   );
 }
