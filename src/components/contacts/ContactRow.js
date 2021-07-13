@@ -31,10 +31,11 @@ const ContactAddress = styled(TruncatedAddress).attrs(
 
 const ContactENS = styled(TruncatedENS).attrs(({ theme: { colors } }) => ({
   align: 'left',
-  color: colors.alpha(colors.blueGreyDark, 0.4),
+  color: colors.alpha(colors.blueGreyDark, 0.5),
+  letterSpacing: 'roundedMedium',
   size: 'smedium',
   truncationLength: 18,
-  weight: 'regular',
+  weight: 'medium',
 }))`
   width: 100%;
 `;
