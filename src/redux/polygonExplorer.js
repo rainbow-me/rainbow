@@ -91,7 +91,6 @@ const getAssetsFromCovalent = async (
   }`;
   const request = await fetch(url);
   const response = await request.json();
-  logger.log('POLYGON RESPONSE', response);
   if (response.data && !response.error) {
     const updatedAt = new Date(response.data.update_at).getTime();
     const assets = response.data.items.map(item => {

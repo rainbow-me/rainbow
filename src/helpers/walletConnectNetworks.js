@@ -10,21 +10,21 @@ const androidReverseNetoworkWithName = name =>
 
 export const NETWORK_MENU_ACTION_KEY_FILTER = 'switch-to-network-';
 
-export const networksMenuItems = isDarkMode =>
+export const networksMenuItems = () =>
   Object.values(networkInfo)
-    .filter(({ disabled }) => !disabled)
+    .filter(({ disabled, testnet }) => !disabled && !testnet)
     .map(netInfo => ({
       actionKey: `${NETWORK_MENU_ACTION_KEY_FILTER}${netInfo.value}`,
       actionTitle: netInfo.name,
       icon: {
         iconType: 'ASSET',
-        iconValue: `${netInfo.layer2 ? netInfo.value : 'ethereum'}Badge${
-          isDarkMode ? 'Dark' : ''
+        iconValue: `${
+          netInfo.layer2 ? `${netInfo.value}BadgeNoShadow` : 'ethereumBadge'
         }`,
       },
     }));
 
-export const changeConnectionMenuItems = isDarkMode => [
+export const changeConnectionMenuItems = () => [
   {
     actionKey: 'disconnect',
     actionTitle: 'Disconnect',
@@ -34,7 +34,7 @@ export const changeConnectionMenuItems = isDarkMode => [
     actionTitle: 'Switch Account',
   },
   {
-    menuItems: networksMenuItems(isDarkMode),
+    menuItems: networksMenuItems(),
     menuTitle: 'Switch Network',
   },
 ];

@@ -58,7 +58,7 @@ const networkInfo = {
   [`${networkTypes.arbitrum}`]: {
     balance_checker_contract_address:
       '0x54A4E5800345c01455a7798E0D96438364e22723',
-    color: '#0000ff',
+    color: '#2D374B',
     disabled: false,
     exchange_enabled: false,
     faucet_url: `https://faucet.kovan.network/`,
@@ -69,7 +69,7 @@ const networkInfo = {
   [`${networkTypes.optimism}`]: {
     balance_checker_contract_address:
       '0x54A4E5800345c01455a7798E0D96438364e22723',
-    color: '#ff0000',
+    color: '#FF4040',
     disabled: false,
     exchange_enabled: false,
     faucet_url: `https://faucet.kovan.network/`,
@@ -80,7 +80,7 @@ const networkInfo = {
   [`${networkTypes.polygon}`]: {
     balance_checker_contract_address:
       '0x54A4E5800345c01455a7798E0D96438364e22723',
-    color: '#800080',
+    color: '#8247E5',
     disabled: false,
     exchange_enabled: false,
     faucet_url: `https://faucet.kovan.network/`,

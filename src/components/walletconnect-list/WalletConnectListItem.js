@@ -68,7 +68,7 @@ export default function WalletConnectListItem({
     walletConnectDisconnectAllByDappName,
     walletConnectUpdateSessionConnectorByDappName,
   } = useWalletConnectConnections();
-  const { colors, isDarkMode } = useTheme();
+  const { colors } = useTheme();
   const { selectedWallet, walletNames } = useWallets();
   const { network } = useAccountSettings();
 
@@ -203,7 +203,7 @@ export default function WalletConnectListItem({
 
   return (
     <ContextMenuButton
-      menuItems={changeConnectionMenuItems(isDarkMode)}
+      menuItems={changeConnectionMenuItems()}
       menuTitle={`Change ${dappName} connection?`}
       onPressAndroid={onPressAndroid}
       onPressMenuItem={handleOnPressMenuItem}

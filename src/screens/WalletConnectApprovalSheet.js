@@ -100,8 +100,6 @@ export default function WalletConnectApprovalSheet() {
   const { dappName, dappUrl, imageUrl } = meta;
   const callback = params?.callback;
 
-  const { isDarkMode } = useTheme();
-
   const checkIfScam = useCallback(
     async dappUrl => {
       const isScam = await ethereumUtils.checkIfUrlIsAScam(dappUrl);
@@ -328,7 +326,7 @@ export default function WalletConnectApprovalSheet() {
             isMenuPrimaryAction
             {...(android ? { onPress: onPressAndroid } : {})}
             menuConfig={{
-              menuItems: networksMenuItems(isDarkMode),
+              menuItems: networksMenuItems(),
               menuTitle: 'Available Networks',
             }}
             onPressMenuItem={handleOnPressNetworksMenuItem}
