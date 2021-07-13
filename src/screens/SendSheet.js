@@ -743,6 +743,7 @@ export default function SendSheet(props) {
             sendMaxBalance={sendMaxBalance}
             txSpeedRenderer={
               <GasSpeedButton
+                currentNetwork={currentNetwork}
                 horizontalPadding={isTinyPhone ? 0 : 5}
                 options={
                   currentNetwork === networkTypes.optimism

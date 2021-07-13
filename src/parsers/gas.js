@@ -62,7 +62,7 @@ const parseGasPricesMaticGasStation = data => ({
 /**
  * @desc parse ether gas prices
  * @param {Object} data
- * @param {Boolean} short - use short format or not
+ * @param {String} source
  */
 export const parseGasPrices = (
   data,
@@ -104,8 +104,9 @@ export const defaultGasPriceFormat = (option, timeWait, value) => {
 export const parseTxFees = (gasPrices, priceUnit, gasLimit, nativeCurrency) => {
   const txFees = map(GasSpeedOrder, speed => {
     const gasPrice = get(gasPrices, `${speed}.value.amount`);
+    const txFee = getTxFee(gasPrice, gasLimit, priceUnit, nativeCurrency);
     return {
-      txFee: getTxFee(gasPrice, gasLimit, priceUnit, nativeCurrency),
+      txFee,
     };
   });
   return zipObject(GasSpeedOrder, txFees);
