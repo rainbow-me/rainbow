@@ -4,6 +4,7 @@ import sentryUtils from './sentry';
 const Logger = {
   debug(...args) {
     if (__DEV__) {
+      Array.prototype.unshift.call(args, `⚡⚡⚡`);
       console.debug(...args); // eslint-disable-line no-console
     }
   },

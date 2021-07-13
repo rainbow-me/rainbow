@@ -2733,13 +2733,6 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-5.9.7.tgz#769c6b306ea6bbaa1c4a3fffdd183d0cfc30ed7e"
   integrity sha512-NAkkT68oF+M9o6El2xeUqZK7magPjG/tAcEbvCbqyhlh3yElKWnI1e1vpbVvFXzTefy67FwYFWOJqBN6U7Mnkg==
 
-"@react-native-community/push-notification-ios@^1.0.3":
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/@react-native-community/push-notification-ios/-/push-notification-ios-1.6.0.tgz#ca2107c6921c84f725edd16b32be287c9e3866c3"
-  integrity sha512-cZMG7IBtGX+IZ7pKa7zysX0Upz4nz5KNWWVMX7kQshdwkd1NPqmH9wL5GdW/RRttTnjmESSQz4zeHKYsDLAkSQ==
-  dependencies:
-    invariant "^2.2.4"
-
 "@react-native-community/viewpager@5.0.5":
   version "5.0.5"
   resolved "https://registry.yarnpkg.com/@react-native-community/viewpager/-/viewpager-5.0.5.tgz#e9455535b4aaa77924fb7055be9c6d1c1cb3313a"

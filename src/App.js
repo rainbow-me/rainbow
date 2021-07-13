@@ -1,4 +1,3 @@
-import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import messaging from '@react-native-firebase/messaging';
 import analytics from '@segment/analytics-react-native';
 import * as Sentry from '@sentry/react-native';
@@ -89,6 +88,7 @@ class App extends Component {
     this.identifyFlow();
     AppState.addEventListener('change', this.handleAppStateChange);
     await this.handleInitializeAnalytics();
+    logger.log('⚡⚡⚡ SAVING FCM TOKEN');
     saveFCMToken();
     this.onTokenRefreshListener = registerTokenRefreshListener();
 
@@ -96,7 +96,7 @@ class App extends Component {
       this.onRemoteNotification
     );
 
-    this.backgroundNotificationListener = messaging().onNotificationOpenedApp(
+    this.backgroundNotificationListener = messaging().setBackgroundMessageHandler(
       remoteMessage => {
         setTimeout(() => {
           const topic = get(remoteMessage, 'data.topic');
@@ -216,10 +216,6 @@ class App extends Component {
   };
 
   handleAppStateChange = async nextAppState => {
-    if (nextAppState === 'active') {
-      PushNotificationIOS.removeAllDeliveredNotifications();
-    }
-
     // Restore WC connectors when going from BG => FG
     if (this.state.appState === 'background' && nextAppState === 'active') {
       store.dispatch(walletConnectLoadState());

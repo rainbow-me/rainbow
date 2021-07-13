@@ -55,7 +55,7 @@ const getNativeOptions = async () => {
     token = await getFCMToken();
   } catch (error) {
     logger.log(
-      'Error getting FCM token, ignoring token for WC connection',
+      '⚡⚡⚡ Error getting FCM token, ignoring token for WC connection',
       error
     );
   }
