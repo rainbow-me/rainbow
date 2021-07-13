@@ -32,10 +32,16 @@ import {
 } from '@rainbow-me/helpers/dappNameHandler';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import WalletConnectApprovalSheetType from '@rainbow-me/helpers/walletConnectApprovalSheetTypes';
+import {
+  androidShowNetworksActionSheet,
+  NETWORK_MENU_ACTION_KEY_FILTER,
+  networksMenuItems,
+} from '@rainbow-me/helpers/walletConnectNetworks';
 import { useAccountSettings, useWallets } from '@rainbow-me/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { ethereumUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
+import { ethereumUtils } from '@rainbow-me/utils';
+
 const DappLogo = styled(RequestVendorLogoIcon).attrs(
   ({ theme: { colors } }) => ({
     backgroundColor: colors.transparent,
@@ -72,13 +78,6 @@ const SwitchText = styled(Text).attrs(() => ({
 }))`
   margin-left: 5;
 `;
-
-const androidNetworkActions = Object.values(networkInfo)
-  .filter(({ disabled }) => !disabled)
-  .map(netInfo => netInfo.name);
-
-const androidReverseNetoworkWithName = name =>
-  Object.values(networkInfo).find(netInfo => netInfo.name === name);
 
 export default function WalletConnectApprovalSheet() {
   const { colors } = useTheme();
@@ -149,38 +148,28 @@ export default function WalletConnectApprovalSheet() {
         approvalAccountInfo.accountName ||
         approvalAccount.address,
     };
-  }, [walletNames, approvalNetwork, approvalAccount]);
+  }, [
+    walletNames,
+    approvalNetwork,
+    approvalAccount.wallet,
+    approvalAccount.address,
+  ]);
 
   const approvalNetworkInfo = useMemo(() => {
     const value = networkInfo[approvalNetwork]?.value;
     return {
       chainId: ethereumUtils.getChainIdFromNetwork(approvalNetwork),
       color: networkInfo[approvalNetwork]?.color,
-      name: capitalize(value.charAt(0)) + value.slice(1),
+      name: capitalize(value?.charAt(0)) + value?.slice(1),
       value,
     };
   }, [approvalNetwork]);
 
-  const networksMenuItems = useMemo(
-    () =>
-      Object.values(networkInfo)
-        .filter(({ disabled }) => !disabled)
-        .map(netInfo => ({
-          actionKey: `${netInfo.value}`,
-          actionTitle: netInfo.name,
-          icon: {
-            iconType: 'ASSET',
-            iconValue: `${netInfo.layer2 ? netInfo.value : 'ethereum'}Badge${
-              isDarkMode ? 'Dark' : ''
-            }`,
-          },
-        }))
-        .reverse(),
-    [isDarkMode]
-  );
-
   const handleOnPressNetworksMenuItem = useCallback(
-    ({ nativeEvent }) => setApprovalNetwork(nativeEvent.actionKey),
+    ({ nativeEvent }) =>
+      setApprovalNetwork(
+        nativeEvent.actionKey?.replace(NETWORK_MENU_ACTION_KEY_FILTER, '')
+      ),
     [setApprovalNetwork]
   );
 
@@ -228,18 +217,8 @@ export default function WalletConnectApprovalSheet() {
   }, [handleSuccess, goBack]);
 
   const onPressAndroid = useCallback(() => {
-    showActionSheetWithOptions(
-      {
-        options: androidNetworkActions,
-        showSeparators: true,
-        title: `Available Networks`,
-      },
-      idx => {
-        const { value } = androidReverseNetoworkWithName(
-          androidNetworkActions[idx]
-        );
-        setApprovalNetwork(value);
-      }
+    androidShowNetworksActionSheet(({ network }) =>
+      setApprovalNetwork(network)
     );
   }, []);
 
@@ -349,7 +328,7 @@ export default function WalletConnectApprovalSheet() {
             isMenuPrimaryAction
             {...(android ? { onPress: onPressAndroid } : {})}
             menuConfig={{
-              menuItems: networksMenuItems,
+              menuItems: networksMenuItems(isDarkMode),
               menuTitle: 'Available Networks',
             }}
             onPressMenuItem={handleOnPressNetworksMenuItem}

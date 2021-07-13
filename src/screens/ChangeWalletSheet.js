@@ -32,9 +32,9 @@ import {
   useAccountSettings,
   useInitializeWallet,
   useWallets,
+  useWalletsWithBalancesAndNames,
   useWebData,
 } from '@rainbow-me/hooks';
-import { useWalletsWithBalancesAndNames } from '@rainbow-me/hooks/useWalletsWithBalancesAndNames';
 import Routes from '@rainbow-me/routes';
 import {
   abbreviations,

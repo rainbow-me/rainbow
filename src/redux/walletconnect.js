@@ -3,6 +3,7 @@ import { captureException } from '@sentry/react-native';
 import WalletConnect from '@walletconnect/client';
 import lang from 'i18n-js';
 import {
+  clone,
   forEach,
   get,
   isEmpty,
@@ -43,6 +44,9 @@ const WALLETCONNECT_REMOVE_SESSION =
   'walletconnect/WALLETCONNECT_REMOVE_SESSION';
 
 const WALLETCONNECT_INIT_SESSIONS = 'walletconnect/WALLETCONNECT_INIT_SESSIONS';
+const WALLETCONNECT_UPDATE_CONNECTORS =
+  'walletconnect/WALLETCONNECT_UPDATE_CONNECTORS';
+
 const WALLETCONNECT_CLEAR_STATE = 'walletconnect/WALLETCONNECT_CLEAR_STATE';
 
 const WALLETCONNECT_SET_PENDING_REDIRECT =
@@ -448,6 +452,30 @@ export const walletConnectUpdateSessions = () => (dispatch, getState) => {
   });
 };
 
+export const walletConnectUpdateSessionConnectorByDappName = (
+  dappName,
+  accountAddress,
+  chainId
+) => (dispatch, getState) => {
+  const { walletConnectors } = getState().walletconnect;
+  const connectors = pickBy(
+    walletConnectors,
+    connector => connector.peerMeta.name === dappName
+  );
+  const newSessionData = {
+    accounts: [accountAddress],
+    chainId,
+  };
+  values(connectors).forEach(connector => {
+    connector.updateSession(newSessionData);
+    saveWalletConnectSession(connector.peerId, connector.session);
+  });
+  dispatch({
+    payload: clone(walletConnectors),
+    type: WALLETCONNECT_UPDATE_CONNECTORS,
+  });
+};
+
 export const walletConnectApproveSession = (
   peerId,
   callback,
@@ -553,6 +581,8 @@ export default (state = INITIAL_STATE, action) => {
     case WALLETCONNECT_REMOVE_SESSION:
       return { ...state, walletConnectors: action.payload };
     case WALLETCONNECT_INIT_SESSIONS:
+      return { ...state, walletConnectors: action.payload };
+    case WALLETCONNECT_UPDATE_CONNECTORS:
       return { ...state, walletConnectors: action.payload };
     case WALLETCONNECT_CLEAR_STATE:
       return { ...state, ...INITIAL_STATE };
