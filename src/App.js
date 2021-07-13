@@ -50,6 +50,7 @@ import RainbowContextWrapper from './helpers/RainbowContext';
 import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import * as keychain from './model/keychain';
 import { loadAddress } from './model/wallet';
+import { walletConnectInit } from './model/walletConnect';
 import { Navigation } from './navigation';
 import RoutesComponent from './navigation/Routes';
 import { requestsForTopic } from './redux/requests';
@@ -113,6 +114,7 @@ class App extends Component {
       const { isTestFlight } = RNTestFlight.getConstants();
       logger.sentry(`Test flight usage - ${isTestFlight}`);
     }
+    walletConnectInit();
     this.identifyFlow();
     AppState.addEventListener('change', this.handleAppStateChange);
     await this.handleInitializeAnalytics();

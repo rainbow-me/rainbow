@@ -459,6 +459,7 @@ const INITIAL_STATE = {
   pendingRedirect: false,
   pendingRequests: {},
   walletConnectors: {},
+  walletConnectV2Client: null,
 };
 
 export default (state = INITIAL_STATE, action) => {
