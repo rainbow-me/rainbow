@@ -44,11 +44,21 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
       if #available(iOS 14.0, *) {
         let options: Array = avatarOptions as! Array<NSDictionary>;
         let actions: [UIAction] = options.map { opt in
-          return UIAction(title: opt["label"] as! String, image: UIImage(systemName: opt["uiImage"] as! String), handler: { _ in self.avatarOnPressFunction(optionId: opt["id"] as! String) })
+          return UIAction(title: opt["label"] as! String, 
+          image: UIImage(systemName: opt["uiImage"] as! String), 
+          handler: { _ in 
+            self.avatarOnPressFunction(optionId: opt["id"] as! String)   
+          })
         }
-        let contextMenu = UIMenu(title: "Profile Options", options: .displayInline, children: actions)
+        let contextMenu = UIMenu(title: "Profile Image", options: .displayInline, children: actions)
         header.accountView.menu = contextMenu
         header.accountView.showsMenuAsPrimaryAction = true
+        header.accountView.addAction(UIAction(title: ""){ _ in
+          self.window?.rootViewController?.presentedViewController?.dismiss(animated: true)
+        },for: .menuActionTriggered)
+        
+//        let discoverSheeet = self.window?.rootViewController?.presentedViewController;
+//        self.window?.rootViewController?.present(discoverSheeet!, animated: true)
       }
     }
   }
