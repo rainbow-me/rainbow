@@ -393,14 +393,13 @@
       "core-js": false,
       "detox": false,
       "dtrace-provider": false,
-      "fsevents": false,
       "husky": false,
       "keccak": false,
       "react-native-storage": false,
       "react-query": false,
-      "scrypt": false,
       "secp256k1": false,
-      "@sentry/cli": false
+      "@sentry/cli": true,
+      "better-sqlite3": false
     }
   }
 }
