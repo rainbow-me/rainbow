@@ -96,7 +96,7 @@ class App extends Component {
     );
 
     this.backgroundNotificationListener = messaging().setBackgroundMessageHandler(
-      remoteMessage => {
+      async remoteMessage => {
         setTimeout(() => {
           const topic = get(remoteMessage, 'data.topic');
           this.onPushNotificationOpened(topic);
