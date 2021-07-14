@@ -28,23 +28,25 @@ export default function handleDeeplink(url) {
     handleWalletConnect(url);
   }
 }
-
 function handleWalletConnect(uri) {
   const { dispatch } = store;
-  dispatch(walletConnectSetPendingRedirect());
-  const { query } = new URL(uri);
+  const { query, pathname } = new URL(uri);
   if (uri && query) {
-    console.log('walletConnectPair', uri);
-    walletConnectPair(uri);
-    // dispatch(
-    // walletConnectOnSessionRequest(uri, (status, dappScheme) => {
-    //   if (status === 'reject') {
-    //     dispatch(walletConnectRemovePendingRedirect('reject', dappScheme));
-    //   } else {
-    //     dispatch(walletConnectRemovePendingRedirect('connect', dappScheme));
-    //   }
-    // })
-    // );
+    const [, version] = pathname.split('@');
+    if (version === '2') {
+      walletConnectPair(uri);
+    } else {
+      dispatch(walletConnectSetPendingRedirect());
+      dispatch(
+        walletConnectOnSessionRequest(uri, (status, dappScheme) => {
+          if (status === 'reject') {
+            dispatch(walletConnectRemovePendingRedirect('reject', dappScheme));
+          } else {
+            dispatch(walletConnectRemovePendingRedirect('connect', dappScheme));
+          }
+        })
+      );
+    }
   } else {
     // This is when we get focused by WC due to a signing request
   }
