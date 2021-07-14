@@ -1,6 +1,7 @@
 import messaging from '@react-native-firebase/messaging';
 import lang from 'i18n-js';
 import { get } from 'lodash';
+import { requestNotifications } from 'react-native-permissions';
 import { Alert } from '../components/alerts';
 import { getLocal, saveLocal } from '../handlers/localstorage/common';
 import logger from 'logger';
@@ -11,7 +12,6 @@ export const getFCMToken = async () => {
   const fcmToken = get(fcmTokenLocal, 'data', null);
 
   if (!fcmToken) {
-    logger.log('⚡⚡⚡ NO FCM TOKEN Locally');
     throw new Error('Push notification token unavailable.');
   }
   return fcmToken;
@@ -20,27 +20,31 @@ export const getFCMToken = async () => {
 export const saveFCMToken = async () => {
   try {
     const permissionStatus = await getPermissionStatus();
-    logger.log('⚡⚡⚡ permissionStatus', permissionStatus);
     if (
       permissionStatus === messaging.AuthorizationStatus.AUTHORIZED ||
       permissionStatus === messaging.AuthorizationStatus.PROVISIONAL
     ) {
-      logger.log('⚡⚡⚡ BOUTA SAVE');
       const fcmToken = await messaging().getToken();
-      logger.log('⚡⚡⚡ GOT TOKEN', fcmToken);
       if (fcmToken) {
-        logger.log('⚡⚡⚡ TOKEN SAVED', fcmToken);
         saveLocal('rainbowFcmToken', { data: fcmToken });
       }
     }
   } catch (error) {
-    logger.log('⚡⚡⚡ error saving fcm token - cannot save', error);
+    logger.log('error saving fcm token - cannot save', error);
   }
 };
 
 export const getPermissionStatus = () => messaging().hasPermission();
 
-export const requestPermission = () => messaging().requestPermission();
+export const requestPermission = () => {
+  return new Promise((resolve, reject) => {
+    requestNotifications(['alert', 'sound', 'badge'])
+      .then(({ status }) => {
+        resolve(status === 'granted');
+      })
+      .catch(e => reject(e));
+  });
+};
 
 export const checkPushNotificationPermissions = async () => {
   return new Promise(async resolve => {
@@ -64,13 +68,10 @@ export const checkPushNotificationPermissions = async () => {
           {
             onPress: async () => {
               try {
-                logger.log('⚡⚡⚡ requestPermission');
                 await requestPermission();
-                logger.log('⚡⚡⚡ saveFCMToken');
                 await saveFCMToken();
-                logger.log('⚡⚡⚡ Done');
               } catch (error) {
-                logger.log('User rejected push notifications permissions');
+                logger.log('ERROR while getting permissions', error);
               } finally {
                 resolve(true);
               }
@@ -96,6 +97,5 @@ export const checkPushNotificationPermissions = async () => {
 
 export const registerTokenRefreshListener = () =>
   messaging().onTokenRefresh(fcmToken => {
-    logger.log('⚡⚡⚡ TOKEN REFRESH', fcmToken);
     saveLocal('rainbowFcmToken', { data: fcmToken });
   });
