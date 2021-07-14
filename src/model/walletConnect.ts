@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import WalletConnectClient, { CLIENT_EVENTS } from '@walletconnect/clientv2';
-import { ClientTypes, SessionTypes } from '@walletconnect/typesv2';
+import { Reason, SessionTypes } from '@walletconnect/typesv2';
 import { Alert } from 'react-native';
 import { Navigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
@@ -48,7 +48,6 @@ export const walletConnectInit = async () => {
   });
 
   wcLogger('Client started!');
-
   client.on(
     CLIENT_EVENTS.session.proposal,
     async (proposal: SessionTypes.Proposal) => {
@@ -109,6 +108,22 @@ export const walletConnectInit = async () => {
       wcLogger('SessionTypes.session', session);
     }
   );
+};
+
+export const walletConnectDisconnectAllSessions = () => {
+  wcLogger('walletConnectDisconnectAllSessions', client.session.values.length);
+  const sessions = client.session.values;
+  sessions.forEach(session => {
+    walletConnectDisconnect(session.topic);
+  });
+};
+
+export const walletConnectDisconnect = (topic: string) => {
+  const reason: Reason = {
+    code: 400,
+    message: 'User disconnected',
+  };
+  client.disconnect({ reason, topic });
 };
 
 export const walletConnectPair = async (uri: string) => {
