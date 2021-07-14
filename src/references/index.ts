@@ -18,11 +18,7 @@ export { default as emojis } from './emojis.json';
 export { default as erc20ABI } from './erc20-abi.json';
 export { default as ethUnits } from './ethereum-units.json';
 export { DPI_ADDRESS } from './indexes';
-export {
-  ARBITRUM_MAINNET_RPC_ENDPOINT,
-  OPTIMISM_MAINNET_RPC_ENDPOINT,
-  POLYGON_MAINNET_RPC_ENDPOINT,
-} from './rpc-endpoints';
+
 export { default as migratedTokens } from './migratedTokens.json';
 export { default as supportedNativeCurrencies } from './native-currencies.json';
 export { default as shitcoins } from './shitcoins.json';

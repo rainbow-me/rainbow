@@ -5,6 +5,7 @@ import { toLower } from 'lodash';
 import {
   COVALENT_ANDROID_API_KEY,
   COVALENT_IOS_API_KEY,
+  POLYGON_MAINNET_RPC,
 } from 'react-native-dotenv';
 import { polygonEnabled } from '../config/debug';
 // eslint-disable-next-line import/no-cycle
@@ -20,9 +21,9 @@ import {
   chainAssets,
   MATIC_MAINNET_ADDRESS,
   MATIC_POLYGON_ADDRESS,
-  POLYGON_MAINNET_RPC_ENDPOINT,
   WETH_ADDRESS,
 } from '@rainbow-me/references';
+
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
@@ -154,7 +155,7 @@ const fetchAssetBalances = async (tokens, address) => {
   const abi = balanceCheckerContractAbi;
 
   const contractAddress = networkInfo[network].balance_checker_contract_address;
-  const polygonProvider = new JsonRpcProvider(POLYGON_MAINNET_RPC_ENDPOINT);
+  const polygonProvider = new JsonRpcProvider(POLYGON_MAINNET_RPC);
 
   const balanceCheckerContract = new Contract(
     contractAddress,

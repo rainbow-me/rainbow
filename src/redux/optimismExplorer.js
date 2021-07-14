@@ -2,6 +2,7 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { toLower } from 'lodash';
+import { OPTIMISM_MAINNET_RPC } from 'react-native-dotenv';
 import { optimismEnabled } from '../config/debug';
 // eslint-disable-next-line import/no-cycle
 import { addressAssetsReceived, fetchAssetPrices } from './data';
@@ -12,7 +13,6 @@ import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   balanceCheckerContractAbiOVM,
   chainAssets,
-  OPTIMISM_MAINNET_RPC_ENDPOINT,
 } from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
@@ -28,8 +28,9 @@ const OPTIMISM_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER =
   'explorer/OPTIMISM_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER';
 
 const UPDATE_BALANCE_AND_PRICE_FREQUENCY = 30000;
+logger.debug(OPTIMISM_MAINNET_RPC);
 
-const optimismProvider = new JsonRpcProvider(OPTIMISM_MAINNET_RPC_ENDPOINT);
+const optimismProvider = new JsonRpcProvider(OPTIMISM_MAINNET_RPC);
 
 const network = networkTypes.optimism;
 
