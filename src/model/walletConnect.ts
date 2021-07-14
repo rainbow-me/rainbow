@@ -7,25 +7,24 @@ import Routes from '@rainbow-me/routes';
 
 let client: WalletConnectClient;
 
+const SUPPORTED_MAIN_CHAINS = [
+  'eip155:1',
+  'eip155:10',
+  'eip155:137',
+  'eip155:42161',
+];
+
+const SUPPORTED_TEST_CHAINS = ['eip155:3', 'eip155:4', 'eip155:5', 'eip155:42'];
+
+const generateWalletConnectAccount = (address: string, chain: string) =>
+  `${address}@${chain}`;
+
+// eslint-disable-next-line no-console
 const wcLogger = (a: String, b?: any) => console.info(`::: WC ::: ${a}`, b);
 
-function handleSessionUserApproval(
-  userApproved: boolean,
-  proposal: SessionTypes.Proposal
-) {
-  if (userApproved) {
-    // if user approved then include response with accounts matching the chains and wallet metadata
-    const response: SessionTypes.Response = {
-      state: {
-        accounts: ['0x292D909a4A38ff5023E539CD4dFFE92493fd8380@eip155:1'],
-      },
-    };
-    client.approve({ proposal, response });
-  } else {
-    // if user didn't approve then reject with no response
-    client.reject({ proposal });
-  }
-}
+const isSupportedChain = (chain: string) =>
+  SUPPORTED_MAIN_CHAINS.includes(chain) ||
+  SUPPORTED_TEST_CHAINS.includes(chain);
 
 export const walletConnectInit = async () => {
   client = await WalletConnectClient.init({
@@ -54,13 +53,45 @@ export const walletConnectInit = async () => {
       //   let approved: boolean;
       wcLogger('permissions', permissions);
       wcLogger('metadata', metadata);
+
+      const chains = permissions.blockchain.chains;
+
+      // should we connect several networks at the same time?
+      if (!isSupportedChain(chains[0])) {
+        Alert.alert('Chain not supported', `${chains[0]} is not supported`);
+        wcLogger('rejected');
+        client.reject({ proposal });
+        return;
+      }
       const { name, url, icons } = metadata;
       Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {
-        callback: (approved: boolean) => {
+        callback: (
+          approved: boolean,
+          chainId: string,
+          accountAddress: string
+        ) => {
           if (approved) {
             wcLogger('approved');
+            const response: SessionTypes.Response = {
+              metadata: {
+                description:
+                  'Rainbow makes exploring Ethereum fun and accessible 🌈',
+                icons: [
+                  'https://avatars2.githubusercontent.com/u/48327834?s=200&v=4',
+                ],
+                name: '🌈 Rainbow',
+                url: 'https://rainbow.me',
+              },
+              state: {
+                accounts: [
+                  generateWalletConnectAccount(accountAddress, chains[0]),
+                ],
+              },
+            };
+            client.approve({ proposal, response });
           } else {
             wcLogger('rejected');
+            client.reject({ proposal });
           }
         },
         meta: {
