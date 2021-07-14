@@ -24,7 +24,15 @@ const SUPPORTED_MAIN_CHAINS = [
 const SUPPORTED_TEST_CHAINS = ['eip155:3', 'eip155:4', 'eip155:5', 'eip155:42'];
 
 const toEIP55Format = (chainId: string) => `eip155:${chainId}`;
-const fromEIP55Format = (chain: string) => chain.replace('eip155:', '');
+export const fromEIP55Format = (chain: string) => chain.replace('eip155:', '');
+
+const getAddressAndChainIdFromWCAccount = (
+  account: string
+): { address: string; chainId: number } => {
+  const [address, eip155Network] = account.split('@');
+  const chainId = fromEIP55Format(eip155Network);
+  return { address, chainId: Number(chainId) };
+};
 
 const generateWalletConnectAccount = (address: string, chain: string) =>
   `${address}@${chain}`;
@@ -39,7 +47,7 @@ const isSupportedChain = (chain: string) =>
 export const walletConnectInit = async () => {
   client = await WalletConnectClient.init({
     controller: true,
-    // logger: 'debug',
+    logger: 'debug',
     metadata: RAINBOW_METADATA,
     relayProvider: 'wss://relay.walletconnect.org',
     storageOptions: {
@@ -55,6 +63,7 @@ export const walletConnectInit = async () => {
       const { proposer, permissions } = proposal;
       const { metadata } = proposer;
       //   let approved: boolean;
+      wcLogger('proposer', proposer);
       wcLogger('permissions', permissions);
       wcLogger('metadata', metadata);
 
@@ -97,16 +106,39 @@ export const walletConnectInit = async () => {
           imageUrl: icons?.[0],
         },
       });
-      //   handleSessionUserApproval(approved, proposal); // described in the step 4
     }
   );
 
-  client.on(
-    CLIENT_EVENTS.session.created,
-    async (session: SessionTypes.Created) => {
-      // session created succesfully
-      wcLogger('SessionTypes.session', session);
-    }
+  //   client.on(
+  //     CLIENT_EVENTS.session.created,
+  //     async (session: SessionTypes.Created) => {
+  //       // session created succesfully
+  //       wcLogger('SessionTypes.session', session);
+  //     }
+  //   );
+};
+
+export const walletConnectAllSessions = () => {
+  return (
+    client?.session?.values?.map(
+      ({
+        state: { accounts },
+        peer: {
+          metadata: { name, url, icons },
+        },
+      }) => {
+        const { address, chainId } = getAddressAndChainIdFromWCAccount(
+          accounts[0]
+        );
+        return {
+          account: address,
+          chainId,
+          dappIcon: icons[0],
+          dappName: name,
+          dappUrl: url,
+        };
+      }
+    ) || []
   );
 };
 

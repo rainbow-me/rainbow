@@ -1,6 +1,7 @@
 import React from 'react';
 import { walletConnectDisconnectAllSessions } from '../../model/walletConnect';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation/ButtonPressAnimation';
+import ConnectedDapps from '../qrcode-scanner/ConnectedDapps';
 import { Text } from '../text';
 import BottomSpacer from './BottomSpacer';
 import Lists from './ListsSection';
@@ -16,6 +17,7 @@ export default function DiscoverHome() {
     <React.Fragment>
       <TopMoversSection />
       <PulseIndex />
+      <ConnectedDapps />
       <ButtonPressAnimation
         onPress={() => walletConnectDisconnectAllSessions()}
       >

@@ -1,11 +1,12 @@
 import { BlurView } from '@react-native-community/blur';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import styled from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { useWalletConnectConnections } from '@rainbow-me/hooks';
+import { walletConnectAllSessions } from '@rainbow-me/model/walletConnect';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 
@@ -33,10 +34,16 @@ const OverlayBlur = styled(BlurView).attrs(({ isDarkMode }) => ({
 `;
 
 function ConnectedDapps() {
-  const { walletConnectorsByDappName } = useWalletConnectConnections();
   const { navigate } = useNavigation();
+  const { walletConnectorsByDappName } = useWalletConnectConnections();
+  const walletConnectSessionsV2 = walletConnectAllSessions();
 
-  return walletConnectorsByDappName.length === 0 ? null : (
+  const connectionsNumber = useMemo(
+    () => walletConnectorsByDappName.length + walletConnectSessionsV2.length,
+    [walletConnectorsByDappName, walletConnectSessionsV2]
+  );
+
+  return connectionsNumber === 0 ? null : (
     <Overlay>
       <ButtonPressAnimation
         onPress={() => navigate(Routes.CONNECTED_DAPPS)}
@@ -62,8 +69,8 @@ function ConnectedDapps() {
               size="lmedium"
               weight="heavy"
             >
-              ️‍🌈 {walletConnectorsByDappName.length} app
-              {walletConnectorsByDappName.length === 1 ? '' : 's'} connected 􀯼
+              ️‍🌈 {connectionsNumber} app
+              {connectionsNumber ? '' : 's'} connected 􀯼
             </LabelText>
           </OverlayBlur>
         </View>
