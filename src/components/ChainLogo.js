@@ -1,4 +1,5 @@
 import React from 'react';
+import FastImage from 'react-native-fast-image';
 import styled from 'styled-components';
 import ArbitrumBadge from '../assets/badges/arbitrumBadge.png';
 import ArbitrumBadgeDark from '../assets/badges/arbitrumBadgeDark.png';
@@ -9,12 +10,11 @@ import OptimismBadgeNoShadow from '../assets/badges/optimismBadgeNoShadow.png';
 import PolygonBadge from '../assets/badges/polygonBadge.png';
 import PolygonBadgeDark from '../assets/badges/polygonBadgeDark.png';
 import PolygonBadgeNoShadow from '../assets/badges/polygonBadgeNoShadow.png';
-import { ImgixImage } from './images';
 import { Centered } from './layout';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { position } from '@rainbow-me/styles';
 
-const ChainIcon = styled(ImgixImage)`
+const ChainIcon = styled(FastImage)`
   height: ${({ size }) => size};
   margin-top: 1;
   width: ${({ size }) => size};
