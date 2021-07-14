@@ -51,6 +51,13 @@ class TransactionListViewCell: TransactionListBaseCell {
     addShadowLayer(coinImage)
   }
   
+  override func prepareForReuse() {
+    super.prepareForReuse()
+    coinImage.image = nil;
+    badge.image = nil;
+    transactionIcon.image = nil;
+  }
+  
   func set(transaction: Transaction) {
     transactionType.text = transaction.title
     coinName.text = transaction.transactionDescription
