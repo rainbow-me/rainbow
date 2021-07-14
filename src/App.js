@@ -88,7 +88,6 @@ class App extends Component {
     this.identifyFlow();
     AppState.addEventListener('change', this.handleAppStateChange);
     await this.handleInitializeAnalytics();
-    logger.log('⚡⚡⚡ SAVING FCM TOKEN');
     saveFCMToken();
     this.onTokenRefreshListener = registerTokenRefreshListener();
 

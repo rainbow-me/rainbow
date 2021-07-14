@@ -39,12 +39,16 @@ function useScannerState(enabled) {
 
   useEffect(() => {
     if (enabled && !wasEnabled && ios) {
-      request(PERMISSIONS.IOS.CAMERA).then(permission => {
-        const result = permission === 'granted';
-        if (isCameraAuthorized !== result) {
-          setIsCameraAuthorized(result);
-        }
-      });
+      request(PERMISSIONS.IOS.CAMERA)
+        .then(permission => {
+          const result = permission === 'granted';
+          if (isCameraAuthorized !== result) {
+            setIsCameraAuthorized(result);
+          }
+        })
+        .catch(e => {
+          logger.log('ERROR REQUESTING CAM PERMISSION', e);
+        });
 
       if (!isScanningEnabled) {
         enableScanning();
