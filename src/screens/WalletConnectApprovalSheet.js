@@ -344,7 +344,9 @@ export default function WalletConnectApprovalSheet() {
                 >
                   {approvalNetworkInfo.name}
                 </LabelText>
-                <SwitchText color={colors.networkColors[approvalNetwork]}>􀁰</SwitchText>
+                <SwitchText color={colors.networkColors[approvalNetwork]}>
+                  􀁰
+                </SwitchText>
               </Row>
             </ButtonPressAnimation>
           </ContextMenuButton>

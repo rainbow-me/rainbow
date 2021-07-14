@@ -6,7 +6,7 @@ export function findWalletWithAccount(wallets, accountAddress) {
     const found = wallet.addresses.find(
       account => account.address === accountAddress
     );
-    if (found){
+    if (found) {
       walletWithAccount = wallet;
     }
   });
