@@ -15,7 +15,7 @@ import {
   dappNameOverride,
   isDappAuthenticated,
 } from '@rainbow-me/helpers/dappNameHandler';
-import networkInfo from '@rainbow-me/helpers/networkInfo';
+import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
 import {
   androidShowNetworksActionSheet,
   changeConnectionMenuItems,
@@ -39,7 +39,7 @@ export const WalletConnectListItemHeight =
 const LabelText = styled(Text).attrs(() => ({
   lineHeight: 22,
   size: 'lmedium',
-  weight: 'regular',
+  weight: 'semibold',
 }))``;
 
 const androidContextMenuActions = [
@@ -69,7 +69,7 @@ export default function WalletConnectListItem({
     walletConnectUpdateSessionConnectorByDappName,
   } = useWalletConnectConnections();
   const { colors } = useTheme();
-  const { selectedWallet, walletNames } = useWallets();
+  const { wallets, walletNames } = useWallets();
   const { network } = useAccountSettings();
 
   const isAuthenticated = useMemo(() => {
@@ -85,6 +85,7 @@ export default function WalletConnectListItem({
   }, [dappUrl]);
 
   const approvalAccountInfo = useMemo(() => {
+    const selectedWallet = findWalletWithAccount(wallets, account);
     const approvalAccountInfo = getAccountProfileInfo(
       selectedWallet,
       walletNames,
@@ -93,22 +94,18 @@ export default function WalletConnectListItem({
     );
     return {
       ...approvalAccountInfo,
-      accountLabel:
-        approvalAccountInfo.accountENS ||
-        approvalAccountInfo.accountName ||
-        account,
     };
-  }, [walletNames, network, account, selectedWallet]);
+  }, [wallets, walletNames, network, account]);
 
   const connectionNetworkInfo = useMemo(() => {
     const network = ethereumUtils.getNetworkFromChainId(chainId);
     return {
       chainId,
-      color: networkInfo[network]?.color,
+      color: colors.networkColors[network],
       name: capitalize(network?.charAt(0)) + network?.slice(1),
       value: network,
     };
-  }, [chainId]);
+  }, [chainId, colors]);
 
   const handlePressChangeWallet = useCallback(() => {
     Navigation.handleAction(Routes.CHANGE_WALLET_SHEET, {
@@ -134,7 +131,7 @@ export default function WalletConnectListItem({
       {
         options: androidContextMenuActions,
         showSeparators: true,
-        title: `Change ${dappName} connection?`,
+        title: dappName,
       },
       idx => {
         if (idx === 0) {
@@ -204,7 +201,7 @@ export default function WalletConnectListItem({
   return (
     <ContextMenuButton
       menuItems={changeConnectionMenuItems()}
-      menuTitle={`Change ${dappName} connection?`}
+      menuTitle={dappName}
       onPressAndroid={onPressAndroid}
       onPressMenuItem={handleOnPressMenuItem}
     >
@@ -221,7 +218,7 @@ export default function WalletConnectListItem({
             size={VendorLogoIconSize}
           />
           <ColumnWithMargins css={padding(0, 19, 1.5, 12)} flex={1} margin={2}>
-            <Row>
+            <Row width="70%">
               <TruncatedText
                 letterSpacing="roundedTight"
                 size="lmedium"
@@ -262,16 +259,20 @@ export default function WalletConnectListItem({
                     />
                   )}
                 </AvatarWrapper>
-                <LabelText numberOfLines={1}>
-                  {approvalAccountInfo.accountLabel}
-                </LabelText>
+                <TruncatedText
+                  size="medium"
+                  style={{ color: colors.alpha(colors.blueGreyDark, 0.5) }}
+                  weight="semibold"
+                >
+                  {approvalAccountInfo.accountName}
+                </TruncatedText>
               </Row>
               <Row>
                 <Centered marginBottom={0} marginRight={8} marginTop={5}>
                   <ChainLogo network={connectionNetworkInfo.value} />
                 </Centered>
                 <LabelText
-                  color={connectionNetworkInfo.color}
+                  color={colors.networkColors[connectionNetworkInfo.value]}
                   numberOfLines={1}
                 >
                   {connectionNetworkInfo.name}
