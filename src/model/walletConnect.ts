@@ -7,6 +7,13 @@ import Routes from '@rainbow-me/routes';
 
 let client: WalletConnectClient;
 
+const RAINBOW_METADATA = {
+  description: 'Rainbow makes exploring Ethereum fun and accessible 🌈',
+  icons: ['https://avatars2.githubusercontent.com/u/48327834?s=200&v=4'],
+  name: '🌈 Rainbow',
+  url: 'https://rainbow.me',
+};
+
 const SUPPORTED_MAIN_CHAINS = [
   'eip155:1',
   'eip155:10',
@@ -15,6 +22,9 @@ const SUPPORTED_MAIN_CHAINS = [
 ];
 
 const SUPPORTED_TEST_CHAINS = ['eip155:3', 'eip155:4', 'eip155:5', 'eip155:42'];
+
+const toEIP55Format = (chainId: string) => `eip155:${chainId}`;
+const fromEIP55Format = (chain: string) => chain.replace('eip155:', '');
 
 const generateWalletConnectAccount = (address: string, chain: string) =>
   `${address}@${chain}`;
@@ -30,12 +40,7 @@ export const walletConnectInit = async () => {
   client = await WalletConnectClient.init({
     controller: true,
     // logger: 'debug',
-    metadata: {
-      description: 'Rainbow makes exploring Ethereum fun and accessible 🌈',
-      icons: ['https://avatars2.githubusercontent.com/u/48327834?s=200&v=4'],
-      name: '🌈 Rainbow',
-      url: 'https://rainbow.me',
-    },
+    metadata: RAINBOW_METADATA,
     relayProvider: 'wss://relay.walletconnect.org',
     storageOptions: {
       asyncStorage: AsyncStorage as any,
@@ -63,6 +68,7 @@ export const walletConnectInit = async () => {
         client.reject({ proposal });
         return;
       }
+      wcLogger('chainid', fromEIP55Format(chains[0]));
       const { name, url, icons } = metadata;
       Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {
         callback: (
@@ -72,20 +78,11 @@ export const walletConnectInit = async () => {
         ) => {
           if (approved) {
             wcLogger('approved');
+            const chain = toEIP55Format(chainId);
             const response: SessionTypes.Response = {
-              metadata: {
-                description:
-                  'Rainbow makes exploring Ethereum fun and accessible 🌈',
-                icons: [
-                  'https://avatars2.githubusercontent.com/u/48327834?s=200&v=4',
-                ],
-                name: '🌈 Rainbow',
-                url: 'https://rainbow.me',
-              },
+              metadata: RAINBOW_METADATA,
               state: {
-                accounts: [
-                  generateWalletConnectAccount(accountAddress, chains[0]),
-                ],
+                accounts: [generateWalletConnectAccount(accountAddress, chain)],
               },
             };
             client.approve({ proposal, response });
@@ -94,6 +91,7 @@ export const walletConnectInit = async () => {
             client.reject({ proposal });
           }
         },
+        chainId: fromEIP55Format(chains[0]),
         meta: {
           dappName: name,
           dappUrl: url,
