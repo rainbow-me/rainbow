@@ -50,7 +50,6 @@ export const checkPushNotificationPermissions = async () => {
   return new Promise(async resolve => {
     let permissionStatus = null;
     try {
-      logger.debug('⚡⚡⚡ CHECKING PUSH NOTIFICATION PERMISSIONS');
       permissionStatus = await getPermissionStatus();
     } catch (error) {
       logger.log(
