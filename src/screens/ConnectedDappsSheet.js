@@ -44,6 +44,7 @@ export default function ConnectedDappsSheet() {
               dappName={dappName}
               dappUrl={dappUrl}
               key={dappName}
+              version="v1"
             />
           )
         )}
@@ -56,6 +57,7 @@ export default function ConnectedDappsSheet() {
               dappName={dappName}
               dappUrl={dappUrl}
               key={i}
+              version="v2"
             />
           )
         )}

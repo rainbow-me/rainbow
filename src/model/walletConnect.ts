@@ -59,14 +59,8 @@ export const walletConnectInit = async () => {
   client.on(
     CLIENT_EVENTS.session.proposal,
     async (proposal: SessionTypes.Proposal) => {
-      // user should be prompted to approve the proposed session permissions displaying also dapp metadata
       const { proposer, permissions } = proposal;
       const { metadata } = proposer;
-      //   let approved: boolean;
-      wcLogger('proposer', proposer);
-      wcLogger('permissions', permissions);
-      wcLogger('metadata', metadata);
-
       const chains = permissions.blockchain.chains;
 
       // should we connect several networks at the same time?
@@ -109,36 +103,31 @@ export const walletConnectInit = async () => {
     }
   );
 
-  //   client.on(
-  //     CLIENT_EVENTS.session.created,
-  //     async (session: SessionTypes.Created) => {
-  //       // session created succesfully
-  //       wcLogger('SessionTypes.session', session);
-  //     }
-  //   );
+  client.on(
+    CLIENT_EVENTS.session.created,
+    async (session: SessionTypes.Created) => {
+      // session created succesfully
+      wcLogger('SessionTypes.session', session);
+    }
+  );
 };
 
 export const walletConnectAllSessions = () => {
   return (
-    client?.session?.values?.map(
-      ({
-        state: { accounts },
-        peer: {
-          metadata: { name, url, icons },
-        },
-      }) => {
-        const { address, chainId } = getAddressAndChainIdFromWCAccount(
-          accounts[0]
-        );
-        return {
-          account: address,
-          chainId,
-          dappIcon: icons[0],
-          dappName: name,
-          dappUrl: url,
-        };
-      }
-    ) || []
+    client?.session?.values?.map(value => {
+      const accounts = value?.state?.accounts;
+      const { name, url, icons } = value?.peer?.metadata;
+      const { address, chainId } = getAddressAndChainIdFromWCAccount(
+        accounts[0]
+      );
+      return {
+        account: address,
+        chainId,
+        dappIcon: icons[0],
+        dappName: name,
+        dappUrl: url,
+      };
+    }) || []
   );
 };
 
@@ -150,6 +139,13 @@ export const walletConnectDisconnectAllSessions = () => {
   });
 };
 
+export const walletConnectDisconnectByDappName = (dappName: string) => {
+  const session = client?.session?.values?.find(
+    value => dappName === value?.peer?.metadata?.name
+  );
+  walletConnectDisconnect(session.topic);
+};
+
 export const walletConnectDisconnect = (topic: string) => {
   const reason: Reason = {
     code: 400,
@@ -159,8 +155,6 @@ export const walletConnectDisconnect = (topic: string) => {
 };
 
 export const walletConnectPair = async (uri: string) => {
-  wcLogger('start walletConnectPair', uri);
   const pair = await client.pair({ uri });
-  // when is paired we'll get a SessionTypes.Proposal
   wcLogger('on walletConnectPair', pair);
 };

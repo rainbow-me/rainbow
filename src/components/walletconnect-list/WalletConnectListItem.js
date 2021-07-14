@@ -10,7 +10,20 @@ import {
   dappNameOverride,
   isDappAuthenticated,
 } from '@rainbow-me/helpers/dappNameHandler';
-import { useWalletConnectConnections } from '@rainbow-me/hooks';
+import networkInfo from '@rainbow-me/helpers/networkInfo';
+import {
+  androidShowNetworksActionSheet,
+  changeConnectionMenuItems,
+  NETWORK_MENU_ACTION_KEY_FILTER,
+} from '@rainbow-me/helpers/walletConnectNetworks';
+import {
+  useAccountSettings,
+  useWalletConnectConnections,
+  useWallets,
+} from '@rainbow-me/hooks';
+import { walletConnectDisconnectByDappName } from '@rainbow-me/model/walletConnect';
+import { Navigation } from '@rainbow-me/navigation';
+import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
 
 const ContainerPadding = 15;
@@ -18,7 +31,35 @@ const VendorLogoIconSize = 50;
 export const WalletConnectListItemHeight =
   VendorLogoIconSize + ContainerPadding * 2;
 
-export default function WalletConnectListItem({ dappIcon, dappName, dappUrl }) {
+const LabelText = styled(Text).attrs(() => ({
+  lineHeight: 22,
+  size: 'lmedium',
+  weight: 'regular',
+}))``;
+
+const androidContextMenuActions = [
+  'Switch Network',
+  'Switch Account',
+  'Disconnect',
+];
+
+const AvatarWrapper = styled(Column)`
+  margin-right: 5;
+`;
+
+const SessionRow = styled(Row)`
+  justify-content: space-between;
+  margin-top: 4;
+`;
+
+export default function WalletConnectListItem({
+  account,
+  chainId,
+  dappIcon,
+  dappName,
+  dappUrl,
+  version,
+}) {
   const {
     walletConnectDisconnectAllByDappName,
   } = useWalletConnectConnections();
@@ -37,17 +78,135 @@ export default function WalletConnectListItem({ dappIcon, dappName, dappUrl }) {
     return dappNameOverride(dappUrl);
   }, [dappUrl]);
 
-  const handlePressActionSheet = useCallback(
-    buttonIndex => {
-      if (buttonIndex === 0) {
-        walletConnectDisconnectAllByDappName(dappName);
-        analytics.track('Manually disconnected from WalletConnect connection', {
+  const approvalAccountInfo = useMemo(() => {
+    const approvalAccountInfo = getAccountProfileInfo(
+      selectedWallet,
+      walletNames,
+      network,
+      account
+    );
+    return {
+      ...approvalAccountInfo,
+      accountLabel:
+        approvalAccountInfo.accountENS ||
+        approvalAccountInfo.accountName ||
+        account,
+    };
+  }, [walletNames, network, account, selectedWallet]);
+
+  const connectionNetworkInfo = useMemo(() => {
+    const network = ethereumUtils.getNetworkFromChainId(chainId);
+    return {
+      chainId,
+      color: networkInfo[network]?.color,
+      name: capitalize(network?.charAt(0)) + network?.slice(1),
+      value: network,
+    };
+  }, [chainId]);
+
+  const handlePressChangeWallet = useCallback(() => {
+    Navigation.handleAction(Routes.CHANGE_WALLET_SHEET, {
+      currentAccountAddress: account,
+      onChangeWallet: address => {
+        walletConnectUpdateSessionConnectorByDappName(
           dappName,
-          dappUrl,
-        });
+          address,
+          chainId
+        );
+      },
+      watchOnly: true,
+    });
+  }, [
+    account,
+    chainId,
+    dappName,
+    walletConnectUpdateSessionConnectorByDappName,
+  ]);
+
+  const onPressAndroid = useCallback(() => {
+    showActionSheetWithOptions(
+      {
+        options: androidContextMenuActions,
+        showSeparators: true,
+        title: `Change ${dappName} connection?`,
+      },
+      idx => {
+        if (idx === 0) {
+          androidShowNetworksActionSheet(({ chainId }) => {
+            walletConnectUpdateSessionConnectorByDappName(
+              dappName,
+              account,
+              chainId
+            );
+          });
+        } else if (idx === 1) {
+          handlePressChangeWallet();
+        } else if (idx === 2) {
+          walletConnectDisconnectAllByDappName(dappName);
+          analytics.track(
+            'Manually disconnected from WalletConnect connection',
+            {
+              dappName,
+              dappUrl,
+            }
+          );
+        }
+      }
+    );
+  }, [
+    account,
+    dappName,
+    dappUrl,
+    handlePressChangeWallet,
+    walletConnectUpdateSessionConnectorByDappName,
+    walletConnectDisconnectAllByDappName,
+  ]);
+
+  const handleOnPressMenuItem = useCallback(
+    ({ nativeEvent: { actionKey } }) => {
+      if (version === 'v2') {
+        if (actionKey === 'disconnect') {
+          walletConnectDisconnectByDappName(dappName);
+        } else if (actionKey === 'switch-account') {
+          //
+        } else if (actionKey.indexOf(NETWORK_MENU_ACTION_KEY_FILTER) !== -1) {
+          //
+        }
+      } else {
+        if (actionKey === 'disconnect') {
+          walletConnectDisconnectAllByDappName(dappName);
+          analytics.track(
+            'Manually disconnected from WalletConnect connection',
+            {
+              dappName,
+              dappUrl,
+            }
+          );
+        } else if (actionKey === 'switch-account') {
+          handlePressChangeWallet();
+        } else if (actionKey.indexOf(NETWORK_MENU_ACTION_KEY_FILTER) !== -1) {
+          const networkValue = actionKey.replace(
+            NETWORK_MENU_ACTION_KEY_FILTER,
+            ''
+          );
+          const chainId = ethereumUtils.getChainIdFromNetwork(networkValue);
+          walletConnectUpdateSessionConnectorByDappName(
+            dappName,
+            account,
+            chainId
+          );
+        }
       }
     },
-    [dappName, dappUrl, walletConnectDisconnectAllByDappName]
+    [
+      account,
+      dappName,
+      dappUrl,
+      handlePressChangeWallet,
+      version,
+      walletConnectDisconnectAllByDappName,
+      walletConnectUpdateSessionConnectorByDappName,
+    ]
   );
 
   return (
