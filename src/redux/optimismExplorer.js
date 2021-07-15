@@ -19,7 +19,6 @@ import logger from 'logger';
 
 // -- Constants --------------------------------------- //
 const OPTIMISM_EXPLORER_CLEAR_STATE = 'explorer/OPTIMISM_EXPLORER_CLEAR_STATE';
-const OPTIMISM_EXPLORER_SET_ASSETS = 'explorer/OPTIMISM_EXPLORER_SET_ASSETS';
 const OPTIMISM_EXPLORER_SET_BALANCE_HANDLER =
   'explorer/OPTIMISM_EXPLORER_SET_BALANCE_HANDLER';
 const OPTIMISM_EXPLORER_SET_HANDLERS =
@@ -193,11 +192,6 @@ const INITIAL_STATE = {
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case OPTIMISM_EXPLORER_SET_ASSETS:
-      return {
-        ...state,
-        assetsFound: action.payload.assetsFound,
-      };
     case OPTIMISM_EXPLORER_CLEAR_STATE:
       return {
         ...state,

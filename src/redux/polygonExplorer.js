@@ -29,7 +29,6 @@ import logger from 'logger';
 
 // -- Constants --------------------------------------- //
 const POLYGON_EXPLORER_CLEAR_STATE = 'explorer/POLYGON_EXPLORER_CLEAR_STATE';
-const POLYGON_EXPLORER_SET_ASSETS = 'explorer/POLYGON_EXPLORER_SET_ASSETS';
 const POLYGON_EXPLORER_SET_BALANCE_HANDLER =
   'explorer/POLYGON_EXPLORER_SET_BALANCE_HANDLER';
 const POLYGON_EXPLORER_SET_HANDLERS = 'explorer/POLYGON_EXPLORER_SET_HANDLERS';
@@ -371,11 +370,6 @@ const INITIAL_STATE = {
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case POLYGON_EXPLORER_SET_ASSETS:
-      return {
-        ...state,
-        assetsFound: action.payload.assetsFound,
-      };
     case POLYGON_EXPLORER_CLEAR_STATE:
       return {
         ...state,

@@ -18,7 +18,6 @@ import { ethereumUtils } from '@rainbow-me/utils';
 
 // -- Constants --------------------------------------- //
 const ARBITRUM_EXPLORER_CLEAR_STATE = 'explorer/ARBITRUM_EXPLORER_CLEAR_STATE';
-const ARBITRUM_EXPLORER_SET_ASSETS = 'explorer/ARBITRUM_EXPLORER_SET_ASSETS';
 const ARBITRUM_EXPLORER_SET_BALANCE_HANDLER =
   'explorer/ARBITRUM_EXPLORER_SET_BALANCE_HANDLER';
 const ARBITRUM_EXPLORER_SET_HANDLERS =
@@ -203,11 +202,6 @@ const INITIAL_STATE = {
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case ARBITRUM_EXPLORER_SET_ASSETS:
-      return {
-        ...state,
-        assetsFound: action.payload.assetsFound,
-      };
     case ARBITRUM_EXPLORER_CLEAR_STATE:
       return {
         ...state,
