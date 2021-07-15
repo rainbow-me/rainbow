@@ -45,7 +45,7 @@ export interface NewTransaction {
   gasLimit?: string | null;
   gasPrice?: string;
   hash: string | null;
-  network: Network | undefined;
+  network?: Network;
   nonce: number | null;
   protocol?: ProtocolType | null;
   sourceAmount?: string; // for purchases

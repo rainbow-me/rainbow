@@ -41,13 +41,13 @@ export default function ChainLogo({
           : ArbitrumBadge
         : ArbitrumBadgeNoShadow;
     } else if (network === networkTypes.optimism) {
-      val = val = withShadows
+      val = withShadows
         ? isDarkMode
           ? OptimismBadgeDark
           : OptimismBadge
         : OptimismBadgeNoShadow;
     } else if (network === networkTypes.polygon) {
-      val = val = withShadows
+      val = withShadows
         ? isDarkMode
           ? PolygonBadgeDark
           : PolygonBadge

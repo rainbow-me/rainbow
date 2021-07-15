@@ -2,6 +2,7 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { toLower } from 'lodash';
+import { OPTIMISM_MAINNET_RPC } from 'react-native-dotenv';
 import { optimismEnabled } from '../config/debug';
 // eslint-disable-next-line import/no-cycle
 import { addressAssetsReceived, fetchAssetPrices } from './data';
@@ -12,24 +13,21 @@ import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   balanceCheckerContractAbiOVM,
   chainAssets,
-  OPTIMISM_MAINNET_RPC_ENDPOINT,
 } from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 // -- Constants --------------------------------------- //
 const OPTIMISM_EXPLORER_CLEAR_STATE = 'explorer/OPTIMISM_EXPLORER_CLEAR_STATE';
-const OPTIMISM_EXPLORER_SET_ASSETS = 'explorer/OPTIMISM_EXPLORER_SET_ASSETS';
 const OPTIMISM_EXPLORER_SET_BALANCE_HANDLER =
   'explorer/OPTIMISM_EXPLORER_SET_BALANCE_HANDLER';
 const OPTIMISM_EXPLORER_SET_HANDLERS =
   'explorer/OPTIMISM_EXPLORER_SET_HANDLERS';
-const OPTIMISM_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER =
-  'explorer/OPTIMISM_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER';
 
 const UPDATE_BALANCE_AND_PRICE_FREQUENCY = 30000;
+logger.debug(OPTIMISM_MAINNET_RPC);
 
-const optimismProvider = new JsonRpcProvider(OPTIMISM_MAINNET_RPC_ENDPOINT);
+const optimismProvider = new JsonRpcProvider(OPTIMISM_MAINNET_RPC);
 
 const network = networkTypes.optimism;
 
@@ -185,27 +183,16 @@ export const optimismExplorerClearState = () => (dispatch, getState) => {
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
-  assetsFound: [],
   optimismExplorerAssetsHandle: null,
   optimismExplorerBalancesHandle: null,
 };
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case OPTIMISM_EXPLORER_SET_ASSETS:
-      return {
-        ...state,
-        assetsFound: action.payload.assetsFound,
-      };
     case OPTIMISM_EXPLORER_CLEAR_STATE:
       return {
         ...state,
         ...INITIAL_STATE,
-      };
-    case OPTIMISM_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER:
-      return {
-        ...state,
-        latestTxBlockNumber: action.payload.latestTxBlockNumber,
       };
     case OPTIMISM_EXPLORER_SET_HANDLERS:
       return {

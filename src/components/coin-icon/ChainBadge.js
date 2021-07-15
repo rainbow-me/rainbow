@@ -11,14 +11,26 @@ import { Centered } from '../layout';
 import { AssetType } from '@rainbow-me/entities';
 import { borders } from '@rainbow-me/styles';
 
+const sizeConfigs = {
+  small: {
+    iconSize: 40,
+  },
+  medium: {
+    iconSize: 45,
+  },
+  large: {
+    iconSize: 60,
+  },
+};
+
 const ChainIcon = styled(FastImage)`
-  height: 40;
+  height: ${({ iconSize }) => iconSize};
   margin-top: 1;
-  width: 40;
+  width: ${({ iconSize }) => iconSize};
 `;
 
 const IndicatorIconContainer = styled(Centered)`
-  ${borders.buildCircle(40)};
+  ${({ iconSize }) => borders.buildCircle(iconSize)};
   bottom: ${({ badgeYPosition }) => badgeYPosition || -4};
   left: ${({ badgeXPosition }) => badgeXPosition || 2};
   position: absolute;
@@ -28,8 +40,12 @@ export default function ChainBadge({
   assetType,
   badgeYPosition,
   badgeXPosition,
+  size = 'small',
 }) {
   const { isDarkMode } = useTheme();
+
+  const { iconSize }   =  sizeConfigs[size];
+
   const source = useMemo(() => {
     let val = null;
     if (assetType === AssetType.arbitrum) {
@@ -48,8 +64,9 @@ export default function ChainBadge({
     <IndicatorIconContainer
       badgeXPosition={badgeXPosition}
       badgeYPosition={badgeYPosition}
+      iconSize={iconSize}
     >
-      <ChainIcon source={source} />
+      <ChainIcon iconSize={iconSize} source={source} />
     </IndicatorIconContainer>
   );
 }
