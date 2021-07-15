@@ -1,5 +1,6 @@
 import React from 'react';
 import FastImage from 'react-native-fast-image';
+
 import styled from 'styled-components';
 import ArbitrumBadge from '../../assets/badges/arbitrumBadge.png';
 import ArbitrumBadgeDark from '../../assets/badges/arbitrumBadgeDark.png';
@@ -12,13 +13,13 @@ import { AssetType } from '@rainbow-me/entities';
 import { borders } from '@rainbow-me/styles';
 
 const ChainIcon = styled(FastImage)`
-  height: 40;
+  height: ${({ iconSize }) => iconSize};
   margin-top: 1;
-  width: 40;
+  width: ${({ iconSize }) => iconSize};
 `;
 
 const IndicatorIconContainer = styled(Centered)`
-  ${borders.buildCircle(40)};
+  ${({ iconSize }) => borders.buildCircle(iconSize)};
   bottom: ${({ badgeYPosition }) => badgeYPosition || -4};
   left: ${({ badgeXPosition }) => badgeXPosition || 2};
   position: absolute;
@@ -28,8 +29,20 @@ export default function ChainBadge({
   assetType,
   badgeYPosition,
   badgeXPosition,
+  size = 'small',
 }) {
   const { isDarkMode } = useTheme();
+
+  const iconSize = useMemo(() => {
+    let iconSize = 40;
+    if (size === 'large') {
+      iconSize = 60;
+    } else if (size === 'medium') {
+      iconSize = 45;
+    }
+    return iconSize;
+  }, [size]);
+
   const source = useMemo(() => {
     let val = null;
     if (assetType === AssetType.arbitrum) {
@@ -48,8 +61,9 @@ export default function ChainBadge({
     <IndicatorIconContainer
       badgeXPosition={badgeXPosition}
       badgeYPosition={badgeYPosition}
+      iconSize={iconSize}
     >
-      <ChainIcon source={source} />
+      <ChainIcon iconSize={iconSize} source={source} />
     </IndicatorIconContainer>
   );
 }
