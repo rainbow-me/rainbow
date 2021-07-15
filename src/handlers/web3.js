@@ -274,7 +274,7 @@ export const getTxDetails = async transaction => {
   const data = transaction.data ? transaction.data : '0x';
   const value = transaction.amount ? toHex(toWei(transaction.amount)) : '0x00';
   const gasLimit = transaction.gasLimit
-    ? toHex(transaction.gasLimit) || undefined
+    ? toHex(transaction.gasLimit)
     : undefined;
   const gasPrice = toHex(transaction.gasPrice) || undefined;
   const tx = {
