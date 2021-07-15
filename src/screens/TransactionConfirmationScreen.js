@@ -821,7 +821,7 @@ export default function TransactionConfirmationScreen() {
   }
 
   if (isL2) {
-    sheetHeight += 20;
+    sheetHeight += 30;
   }
 
   return (
