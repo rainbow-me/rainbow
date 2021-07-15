@@ -19,7 +19,7 @@ export const apiGetAccountUniqueTokens = async (network, address, page) => {
     const networkPrefix = network === NetworkTypes.mainnet ? '' : `${network}-`;
     const offset = page * UNIQUE_TOKENS_LIMIT_PER_PAGE;
     const url = `https://${networkPrefix}api.opensea.io/api/v1/assets?exclude_currencies=true&owner=${address}&limit=${UNIQUE_TOKENS_LIMIT_PER_PAGE}&offset=${offset}`;
-    const urlV2 = `https://api.opensea.io/api/v2/assets/matic?exclude_currencies=true&owner=${address}&limit=${UNIQUE_TOKENS_LIMIT_PER_PAGE}&offset=${offset}`;
+    const urlV2 = `https://api.opensea.io/api/v2/assets/matic?owner_address=${address}&limit=${UNIQUE_TOKENS_LIMIT_PER_PAGE}&offset=${offset}`;
     const data = await rainbowFetch(isPolygon ? urlV2 : url, {
       headers: {
         'Accept': 'application/json',
