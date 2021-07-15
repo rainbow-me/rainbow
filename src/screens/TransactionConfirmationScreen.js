@@ -175,6 +175,7 @@ export default function TransactionConfirmationScreen() {
   const {
     callback,
     transactionDetails: {
+      chainId,
       dappName,
       dappScheme,
       dappUrl,
@@ -185,6 +186,20 @@ export default function TransactionConfirmationScreen() {
       requestId,
     },
   } = routeParams;
+
+  useEffect(() => {
+    setNetwork(ethereumUtils.getNetworkFromChainId(Number(chainId)));
+  }, [chainId]);
+
+  useEffect(() => {
+    const initProvider = async () => {
+      const p = isL2Network(network)
+        ? await getProviderForNetwork(network)
+        : web3Provider;
+      setProvider(p);
+    };
+    network && initProvider();
+  }, [network]);
 
   const isMessageRequest = isMessageDisplayType(method);
 

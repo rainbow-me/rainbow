@@ -1,8 +1,15 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import WalletConnectClient, { CLIENT_EVENTS } from '@walletconnect/clientv2';
 import { Reason, SessionTypes } from '@walletconnect/typesv2';
-import { Alert } from 'react-native';
+import { Alert, InteractionManager } from 'react-native';
+import { useDispatch } from 'react-redux';
+import { isSigningMethod } from '../utils/signingMethods';
+import { sendRpcCall } from '@rainbow-me/handlers/web3';
 import { Navigation } from '@rainbow-me/navigation';
+import {
+  addRequestToApprove,
+  addRequestToApproveV2,
+} from '@rainbow-me/redux/requests';
 import Routes from '@rainbow-me/routes';
 
 let client: WalletConnectClient;
@@ -44,10 +51,10 @@ const isSupportedChain = (chain: string) =>
   SUPPORTED_MAIN_CHAINS.includes(chain) ||
   SUPPORTED_TEST_CHAINS.includes(chain);
 
-export const walletConnectInit = async () => {
+export const walletConnectInit = async (dispatch: any) => {
   client = await WalletConnectClient.init({
     controller: true,
-    logger: 'debug',
+    logger: 'fatal',
     metadata: RAINBOW_METADATA,
     relayProvider: 'wss://relay.walletconnect.org',
     storageOptions: {
@@ -110,9 +117,90 @@ export const walletConnectInit = async () => {
       wcLogger('SessionTypes.session', session);
     }
   );
+
+  client.on(
+    CLIENT_EVENTS.session.request,
+    async (requestEvent: SessionTypes.RequestEvent) => {
+      wcLogger('CLIENT_EVENTS.session.request');
+      // WalletConnect client can track multiple sessions
+      // assert the topic from which application requested
+      wcLogger('CLIENT_EVENTS.session requestEvent', requestEvent);
+      const { topic, request } = requestEvent;
+      const session = await client.session.get(requestEvent.topic);
+      wcLogger('CLIENT_EVENTS.session', session);
+      // now you can display to the user for approval using the stored metadata
+      const { metadata } = session.peer;
+      wcLogger('metadata', metadata);
+      wcLogger('request', request);
+      wcLogger('session', session);
+      const { method, params } = request;
+      const payload = { method, params };
+      wcLogger('request method', method);
+      wcLogger('request params', params);
+
+      if (method === 'wallet_addEthereumChain') {
+        wcLogger('wallet_addEthereumChain');
+      } else if (!isSigningMethod(method)) {
+        sendRpcCall(request)
+          .then(async result => {
+            const response = {
+              response: {
+                id: request.id,
+                jsonrpc: '2.0',
+                result,
+              },
+              topic,
+            };
+            await client.respond(response);
+          })
+          .catch(async () => {
+            const response = {
+              response: {
+                error: {
+                  // this code is wrong
+                  code: -32000,
+                  message: 'JSON RPC method not supported',
+                },
+                id: request.id,
+                jsonrpc: '2.0',
+              },
+              topic,
+            };
+            await client.respond(response);
+          });
+        return;
+      } else {
+        // check for read only accounts
+        // TODO
+
+        const requestToApprove = await dispatch(
+          addRequestToApproveV2(request.id, payload, metadata)
+        );
+
+        wcLogger('request V2', requestToApprove);
+
+        if (requestToApprove) {
+          // analytics.track('Showing Walletconnect signing request');
+          InteractionManager.runAfterInteractions(() => {
+            Navigation.handleAction(Routes.CONFIRM_REQUEST, {
+              openAutomatically: true,
+              transactionDetails: requestToApprove,
+            });
+          });
+        }
+      }
+    }
+  );
 };
 
-export const walletConnectAllSessions = () => {
+export const walletConnectGetClient = () => client;
+export const walletConnectAllSessions = (): {
+  account: string;
+  chainId: number;
+  dappIcon: string;
+  dappName: string;
+  dappUrl: string;
+}[] => {
   return (
     client?.session?.values?.map(value => {
       const accounts = value?.state?.accounts;
