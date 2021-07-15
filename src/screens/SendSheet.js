@@ -288,7 +288,7 @@ export default function SendSheet(props) {
     const updateNetworkAndProvider = async () => {
       const assetNetwork =
         selected?.type === AssetType.token || selected?.type === AssetType.nft
-          ? 'mainnet'
+          ? network
           : selected.type;
       if (
         selected?.type &&
@@ -312,7 +312,6 @@ export default function SendSheet(props) {
             break;
           default:
             setCurrentNetwork(network);
-            provider = await getProviderForNetwork(networkTypes.mainnet);
         }
         setCurrentProvider(provider);
       }
@@ -523,7 +522,7 @@ export default function SendSheet(props) {
       }
       return true;
     },
-    [currentNetwork]
+    [currentNetwork, isL2]
   );
 
   const { buttonDisabled, buttonLabel } = useMemo(() => {
@@ -603,6 +602,7 @@ export default function SendSheet(props) {
     currentInput,
     currentNetwork,
     gasLimit,
+    isL2,
     isNft,
     isSufficientGas,
     navigate,
