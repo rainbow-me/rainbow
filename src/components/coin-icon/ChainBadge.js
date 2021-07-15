@@ -12,14 +12,14 @@ import { AssetType } from '@rainbow-me/entities';
 import { borders } from '@rainbow-me/styles';
 
 const sizeConfigs = {
-  small: {
-    iconSize: 40,
+  large: {
+    iconSize: 60,
   },
   medium: {
     iconSize: 45,
   },
-  large: {
-    iconSize: 60,
+  small: {
+    iconSize: 40,
   },
 };
 
@@ -44,7 +44,7 @@ export default function ChainBadge({
 }) {
   const { isDarkMode } = useTheme();
 
-  const { iconSize }   =  sizeConfigs[size];
+  const { iconSize } = sizeConfigs[size];
 
   const source = useMemo(() => {
     let val = null;
