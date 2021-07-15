@@ -32,8 +32,6 @@ const POLYGON_EXPLORER_CLEAR_STATE = 'explorer/POLYGON_EXPLORER_CLEAR_STATE';
 const POLYGON_EXPLORER_SET_BALANCE_HANDLER =
   'explorer/POLYGON_EXPLORER_SET_BALANCE_HANDLER';
 const POLYGON_EXPLORER_SET_HANDLERS = 'explorer/POLYGON_EXPLORER_SET_HANDLERS';
-const POLYGON_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER =
-  'explorer/POLYGON_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER';
 
 const UPDATE_BALANCE_AND_PRICE_FREQUENCY = 30000;
 const network = networkTypes.polygon;
@@ -373,11 +371,6 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         ...INITIAL_STATE,
-      };
-    case POLYGON_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER:
-      return {
-        ...state,
-        latestTxBlockNumber: action.payload.latestTxBlockNumber,
       };
     case POLYGON_EXPLORER_SET_HANDLERS:
       return {

@@ -23,8 +23,6 @@ const OPTIMISM_EXPLORER_SET_BALANCE_HANDLER =
   'explorer/OPTIMISM_EXPLORER_SET_BALANCE_HANDLER';
 const OPTIMISM_EXPLORER_SET_HANDLERS =
   'explorer/OPTIMISM_EXPLORER_SET_HANDLERS';
-const OPTIMISM_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER =
-  'explorer/OPTIMISM_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER';
 
 const UPDATE_BALANCE_AND_PRICE_FREQUENCY = 30000;
 logger.debug(OPTIMISM_MAINNET_RPC);
@@ -195,11 +193,6 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         ...INITIAL_STATE,
-      };
-    case OPTIMISM_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER:
-      return {
-        ...state,
-        latestTxBlockNumber: action.payload.latestTxBlockNumber,
       };
     case OPTIMISM_EXPLORER_SET_HANDLERS:
       return {

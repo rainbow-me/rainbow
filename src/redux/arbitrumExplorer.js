@@ -22,9 +22,6 @@ const ARBITRUM_EXPLORER_SET_BALANCE_HANDLER =
   'explorer/ARBITRUM_EXPLORER_SET_BALANCE_HANDLER';
 const ARBITRUM_EXPLORER_SET_HANDLERS =
   'explorer/ARBITRUM_EXPLORER_SET_HANDLERS';
-const ARBITRUM_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER =
-  'explorer/ARBITRUM_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER';
-
 const UPDATE_BALANCE_AND_PRICE_FREQUENCY = 30000;
 
 const network = networkTypes.arbitrum;
@@ -205,11 +202,6 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         ...INITIAL_STATE,
-      };
-    case ARBITRUM_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER:
-      return {
-        ...state,
-        latestTxBlockNumber: action.payload.latestTxBlockNumber,
       };
     case ARBITRUM_EXPLORER_SET_HANDLERS:
       return {
