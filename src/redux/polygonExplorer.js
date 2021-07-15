@@ -5,6 +5,7 @@ import { toLower } from 'lodash';
 import {
   COVALENT_ANDROID_API_KEY,
   COVALENT_IOS_API_KEY,
+  POLYGON_MAINNET_RPC,
 } from 'react-native-dotenv';
 import { polygonEnabled } from '../config/debug';
 // eslint-disable-next-line import/no-cycle
@@ -20,20 +21,17 @@ import {
   chainAssets,
   MATIC_MAINNET_ADDRESS,
   MATIC_POLYGON_ADDRESS,
-  POLYGON_MAINNET_RPC_ENDPOINT,
   WETH_ADDRESS,
 } from '@rainbow-me/references';
+
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 // -- Constants --------------------------------------- //
 const POLYGON_EXPLORER_CLEAR_STATE = 'explorer/POLYGON_EXPLORER_CLEAR_STATE';
-const POLYGON_EXPLORER_SET_ASSETS = 'explorer/POLYGON_EXPLORER_SET_ASSETS';
 const POLYGON_EXPLORER_SET_BALANCE_HANDLER =
   'explorer/POLYGON_EXPLORER_SET_BALANCE_HANDLER';
 const POLYGON_EXPLORER_SET_HANDLERS = 'explorer/POLYGON_EXPLORER_SET_HANDLERS';
-const POLYGON_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER =
-  'explorer/POLYGON_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER';
 
 const UPDATE_BALANCE_AND_PRICE_FREQUENCY = 30000;
 const network = networkTypes.polygon;
@@ -154,7 +152,7 @@ const fetchAssetBalances = async (tokens, address) => {
   const abi = balanceCheckerContractAbi;
 
   const contractAddress = networkInfo[network].balance_checker_contract_address;
-  const polygonProvider = new JsonRpcProvider(POLYGON_MAINNET_RPC_ENDPOINT);
+  const polygonProvider = new JsonRpcProvider(POLYGON_MAINNET_RPC);
 
   const balanceCheckerContract = new Contract(
     contractAddress,
@@ -363,27 +361,16 @@ export const polygonExplorerClearState = () => (dispatch, getState) => {
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
-  assetsFound: [],
   polygonExplorerAssetsHandle: null,
   polygonExplorerBalancesHandle: null,
 };
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case POLYGON_EXPLORER_SET_ASSETS:
-      return {
-        ...state,
-        assetsFound: action.payload.assetsFound,
-      };
     case POLYGON_EXPLORER_CLEAR_STATE:
       return {
         ...state,
         ...INITIAL_STATE,
-      };
-    case POLYGON_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER:
-      return {
-        ...state,
-        latestTxBlockNumber: action.payload.latestTxBlockNumber,
       };
     case POLYGON_EXPLORER_SET_HANDLERS:
       return {

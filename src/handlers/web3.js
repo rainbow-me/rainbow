@@ -6,18 +6,22 @@ import { JsonRpcProvider } from '@ethersproject/providers';
 import { parseEther } from '@ethersproject/units';
 import UnstoppableResolution from '@unstoppabledomains/resolution';
 import { get, replace, startsWith } from 'lodash';
-import { INFURA_PROJECT_ID, INFURA_PROJECT_ID_DEV } from 'react-native-dotenv';
+import {
+  ARBITRUM_MAINNET_RPC,
+  INFURA_PROJECT_ID,
+  INFURA_PROJECT_ID_DEV,
+  OPTIMISM_MAINNET_RPC,
+  POLYGON_MAINNET_RPC,
+} from 'react-native-dotenv';
 import {
   ARBITRUM_ETH_ADDRESS,
-  ARBITRUM_MAINNET_RPC_ENDPOINT,
   ETH_ADDRESS,
   ethUnits,
   MATIC_POLYGON_ADDRESS,
   OPTIMISM_ETH_ADDRESS,
-  OPTIMISM_MAINNET_RPC_ENDPOINT,
-  POLYGON_MAINNET_RPC_ENDPOINT,
   smartContractMethods,
 } from '../references';
+
 import { isNativeAsset } from './assets';
 import { AssetTypes } from '@rainbow-me/entities';
 import NetworkTypes from '@rainbow-me/helpers/networkTypes';
@@ -54,8 +58,8 @@ export const web3SetHttpProvider = async network => {
     web3Provider = new JsonRpcProvider(network, NetworkTypes.mainnet);
   } else {
     web3Provider = new JsonRpcProvider(replace(infuraUrl, 'network', network));
-    return web3Provider.ready;
   }
+  return web3Provider.ready;
 };
 
 export const isL2Network = network => {
@@ -80,13 +84,13 @@ export const getProviderForNetwork = async network => {
     let url;
     switch (network) {
       case NetworkTypes.arbitrum:
-        url = ARBITRUM_MAINNET_RPC_ENDPOINT;
+        url = ARBITRUM_MAINNET_RPC;
         break;
       case NetworkTypes.optimism:
-        url = OPTIMISM_MAINNET_RPC_ENDPOINT;
+        url = OPTIMISM_MAINNET_RPC;
         break;
       case NetworkTypes.polygon:
-        url = POLYGON_MAINNET_RPC_ENDPOINT;
+        url = POLYGON_MAINNET_RPC;
         break;
       default:
         url = replace(infuraUrl, 'network', network);
@@ -270,7 +274,7 @@ export const getTxDetails = async transaction => {
   const data = transaction.data ? transaction.data : '0x';
   const value = transaction.amount ? toHex(toWei(transaction.amount)) : '0x00';
   const gasLimit = transaction.gasLimit
-    ? toHex(transaction.gasLimit) || undefined
+    ? toHex(transaction.gasLimit)
     : undefined;
   const gasPrice = toHex(transaction.gasPrice) || undefined;
   const tx = {

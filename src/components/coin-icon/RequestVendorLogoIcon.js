@@ -1,7 +1,9 @@
 import React, { useMemo, useState } from 'react';
+import { View } from 'react-native';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { initials } from '../../utils';
+import ChainBadge from '../coin-icon/ChainBadge';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { CoinIconSize } from './CoinIcon';
@@ -30,6 +32,7 @@ export default function RequestVendorLogoIcon({
   shouldPrioritizeImageLoading,
   showLargeShadow,
   size = CoinIconSize,
+  network,
   ...props
 }) {
   const [error, setError] = useState(null);
@@ -53,35 +56,43 @@ export default function RequestVendorLogoIcon({
   );
 
   return (
-    <ShadowStack
-      {...props}
-      {...position.sizeAsObject(size)}
-      backgroundColor={colors.white}
-      borderRadius={borderRadius}
-      shadows={
-        RVLIShadows(colors)[
-          noShadow ? 'none' : showLargeShadow ? 'large' : 'default'
-        ]
-      }
-    >
-      <Content color={bgColor} size={size}>
-        {imageUrl && !error ? (
-          <ImgixImage
-            onError={setError}
-            source={imageSource}
-            style={position.sizeAsObject('100%')}
-          />
-        ) : (
-          <Text
-            align="center"
-            color={colors.getFallbackTextColor(bgColor)}
-            size="smedium"
-            weight="semibold"
-          >
-            {initials(dappName)}
-          </Text>
-        )}
-      </Content>
-    </ShadowStack>
+    <View>
+      <ShadowStack
+        {...props}
+        {...position.sizeAsObject(size)}
+        backgroundColor={colors.white}
+        borderRadius={borderRadius}
+        shadows={
+          RVLIShadows(colors)[
+            noShadow ? 'none' : showLargeShadow ? 'large' : 'default'
+          ]
+        }
+      >
+        <Content color={bgColor} size={size}>
+          {imageUrl && !error ? (
+            <ImgixImage
+              onError={setError}
+              source={imageSource}
+              style={position.sizeAsObject('100%')}
+            />
+          ) : (
+            <Text
+              align="center"
+              color={colors.getFallbackTextColor(bgColor)}
+              size="smedium"
+              weight="semibold"
+            >
+              {initials(dappName)}
+            </Text>
+          )}
+        </Content>
+      </ShadowStack>
+      <ChainBadge
+        assetType={network}
+        badgeXPosition={-18}
+        badgeYPosition={-6}
+        size="medium"
+      />
+    </View>
   );
 }

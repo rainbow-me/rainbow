@@ -18,14 +18,10 @@ import { ethereumUtils } from '@rainbow-me/utils';
 
 // -- Constants --------------------------------------- //
 const ARBITRUM_EXPLORER_CLEAR_STATE = 'explorer/ARBITRUM_EXPLORER_CLEAR_STATE';
-const ARBITRUM_EXPLORER_SET_ASSETS = 'explorer/ARBITRUM_EXPLORER_SET_ASSETS';
 const ARBITRUM_EXPLORER_SET_BALANCE_HANDLER =
   'explorer/ARBITRUM_EXPLORER_SET_BALANCE_HANDLER';
 const ARBITRUM_EXPLORER_SET_HANDLERS =
   'explorer/ARBITRUM_EXPLORER_SET_HANDLERS';
-const ARBITRUM_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER =
-  'explorer/ARBITRUM_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER';
-
 const UPDATE_BALANCE_AND_PRICE_FREQUENCY = 30000;
 
 const network = networkTypes.arbitrum;
@@ -198,25 +194,14 @@ export const arbitrumExplorerClearState = () => (dispatch, getState) => {
 const INITIAL_STATE = {
   arbitrumExplorerAssetsHandle: null,
   arbitrumExplorerBalancesHandle: null,
-  assetsFound: [],
 };
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case ARBITRUM_EXPLORER_SET_ASSETS:
-      return {
-        ...state,
-        assetsFound: action.payload.assetsFound,
-      };
     case ARBITRUM_EXPLORER_CLEAR_STATE:
       return {
         ...state,
         ...INITIAL_STATE,
-      };
-    case ARBITRUM_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER:
-      return {
-        ...state,
-        latestTxBlockNumber: action.payload.latestTxBlockNumber,
       };
     case ARBITRUM_EXPLORER_SET_HANDLERS:
       return {

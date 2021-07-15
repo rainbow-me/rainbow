@@ -176,10 +176,9 @@ export default function SendConfirmationSheet() {
 
   const handleL2ExplainerPress = useCallback(() => {
     navigate(Routes.EXPLAIN_SHEET, {
-      network,
       type: asset.type,
     });
-  }, [asset.type, navigate, network]);
+  }, [asset.type, navigate]);
 
   const nativeDisplayAmount = useMemo(
     () =>

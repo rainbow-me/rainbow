@@ -503,7 +503,7 @@ export default function SendSheet(props) {
     selected?.type,
   ]);
 
-  const validateReceipient = useCallback(
+  const validateRecipient = useCallback(
     async toAddress => {
       // Don't allow send to known ERC20 contracts on mainnet
       if (RAINBOW_TOKEN_LIST[toLower(toAddress)]) {
@@ -561,7 +561,7 @@ export default function SendSheet(props) {
     if (isENSAddressFormat(recipient)) {
       toAddress = await resolveNameOrAddress(recipient);
     }
-    const validRecipient = await validateReceipient(toAddress);
+    const validRecipient = await validateRecipient(toAddress);
 
     if (!validRecipient) {
       navigate(Routes.EXPLAIN_SHEET, {
@@ -610,7 +610,7 @@ export default function SendSheet(props) {
     selected,
     selectedGasPrice.value?.amount,
     submitTransaction,
-    validateReceipient,
+    validateRecipient,
   ]);
 
   const onResetAssetSelection = useCallback(() => {

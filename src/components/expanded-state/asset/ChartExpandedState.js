@@ -184,7 +184,7 @@ export default function ChartExpandedState({ asset }) {
   // If we don't have a balance for this asset
   // It's a generic asset
   const hasBalance = asset?.balance;
-  let assetWithPrice = hasBalance
+  const assetWithPrice = hasBalance
     ? asset
     : genericAssets[asset?.address]
     ? ethereumUtils.formatGenericAsset(
@@ -279,7 +279,6 @@ export default function ChartExpandedState({ asset }) {
 
   const handleL2ExplainerPress = useCallback(() => {
     navigate(Routes.EXPLAIN_SHEET, {
-      network: assetWithPrice.type,
       type: assetWithPrice.type,
     });
   }, [assetWithPrice.type, navigate]);

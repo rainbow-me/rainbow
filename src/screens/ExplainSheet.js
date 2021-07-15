@@ -103,7 +103,7 @@ export const explainers = {
   },
 };
 
-const SavingsSheet = () => {
+const ExplainSheet = () => {
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const insets = useSafeArea();
   const { params: { type = 'gas', onClose } = {} } = useRoute();
@@ -207,4 +207,4 @@ const SavingsSheet = () => {
   );
 };
 
-export default React.memo(SavingsSheet);
+export default React.memo(ExplainSheet);
