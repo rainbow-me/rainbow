@@ -185,7 +185,6 @@ export const optimismExplorerClearState = () => (dispatch, getState) => {
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
-  assetsFound: [],
   optimismExplorerAssetsHandle: null,
   optimismExplorerBalancesHandle: null,
 };

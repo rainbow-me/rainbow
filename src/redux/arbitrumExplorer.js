@@ -197,7 +197,6 @@ export const arbitrumExplorerClearState = () => (dispatch, getState) => {
 const INITIAL_STATE = {
   arbitrumExplorerAssetsHandle: null,
   arbitrumExplorerBalancesHandle: null,
-  assetsFound: [],
 };
 
 export default (state = INITIAL_STATE, action) => {

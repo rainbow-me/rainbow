@@ -363,7 +363,6 @@ export const polygonExplorerClearState = () => (dispatch, getState) => {
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
-  assetsFound: [],
   polygonExplorerAssetsHandle: null,
   polygonExplorerBalancesHandle: null,
 };
