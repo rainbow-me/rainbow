@@ -525,7 +525,6 @@ export default function SendSheet(props) {
           // Nasty workaround to take control over useMagicAutofocus :S
           InteractionManager.runAfterInteractions(() => {
             setTimeout(() => {
-              Keyboard.dismiss();
               recipientFieldRef?.current?.focus();
             }, 210);
           });
@@ -535,7 +534,6 @@ export default function SendSheet(props) {
       return;
     }
 
-    Keyboard.dismiss();
     navigate(Routes.SEND_CONFIRMATION_SHEET, {
       amountDetails: amountDetails,
       asset: selected,
