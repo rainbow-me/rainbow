@@ -80,7 +80,7 @@ const UniqueTokenCard = ({
             assetType={AssetType.polygon}
             badgeXPosition={-6}
             badgeYPosition={-10}
-            large
+            size="large"
           />
         )}
       </Content>
