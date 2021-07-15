@@ -195,7 +195,10 @@ export default function SendConfirmationSheet() {
     color = colors.appleBlue;
   }
 
-  const isL2 = isL2Network(network);
+  const isL2 = useMemo(() => {
+    return isL2Network(network);
+  }, [network]);
+
   const shouldShowChecks =
     isL2 && !isSendingToUserAccount && alreadySentTransactions < 3;
 
@@ -222,9 +225,15 @@ export default function SendConfirmationSheet() {
   const avatarValue = contact?.nickname || addressHashedEmoji(toAddress);
   const avatarColor = contact?.color || addressHashedColorIndex(toAddress);
 
-  const realSheetHeight = !shouldShowChecks
+  let realSheetHeight = !shouldShowChecks
     ? SendConfirmationSheetHeight - 150
     : SendConfirmationSheetHeight;
+
+  if (!isL2) {
+    realSheetHeight -= 80;
+  }
+
+  const contentHeight = realSheetHeight - (isL2 ? 50 : 30);
 
   return (
     <Container
@@ -241,7 +250,7 @@ export default function SendConfirmationSheet() {
         scrollEnabled={false}
       >
         <SheetTitle>Sending</SheetTitle>
-        <Column height={realSheetHeight - 50}>
+        <Column height={contentHeight}>
           <Column padding={24}>
             <Row>
               <Column>
