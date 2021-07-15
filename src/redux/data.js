@@ -80,6 +80,7 @@ const BACKUP_SHEET_DELAY_MS = 3000;
 let pendingTransactionsHandle = null;
 let genericAssetsHandle = null;
 const TXN_WATCHER_MAX_TRIES = 60;
+const TXN_WATCHER_MAX_TRIES_LAYER_2 = 200;
 const TXN_WATCHER_POLL_INTERVAL = 5000; // 5 seconds
 const GENERIC_ASSETS_REFRESH_INTERVAL = 60000; // 1 minute
 const GENERIC_ASSETS_FALLBACK_TIMEOUT = 10000; // 10 seconds
@@ -702,11 +703,17 @@ export const dataAddNewTransaction = (
       type: DATA_ADD_NEW_TRANSACTION_SUCCESS,
     });
     saveLocalTransactions(_transactions, accountAddress, network);
-    if (!disableTxnWatcher || network !== networkTypes.mainnet) {
+    if (
+      !disableTxnWatcher ||
+      network !== networkTypes.mainnet ||
+      parsedTransaction?.network
+    ) {
       dispatch(
         watchPendingTransactions(
           accountAddress,
-          TXN_WATCHER_MAX_TRIES,
+          parsedTransaction.network
+            ? TXN_WATCHER_MAX_TRIES_LAYER_2
+            : TXN_WATCHER_MAX_TRIES,
           null,
           provider
         )
@@ -841,7 +848,11 @@ export const dataUpdateTransaction = (txHash, txObj, watch, cb) => (
   // Always watch cancellation and speed up
   if (watch) {
     dispatch(
-      watchPendingTransactions(accountAddress, TXN_WATCHER_MAX_TRIES, cb)
+      watchPendingTransactions(
+        accountAddress,
+        txObj.network ? TXN_WATCHER_MAX_TRIES_LAYER_2 : TXN_WATCHER_MAX_TRIES,
+        cb
+      )
     );
   }
 };
