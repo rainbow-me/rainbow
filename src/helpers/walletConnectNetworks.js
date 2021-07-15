@@ -28,12 +28,24 @@ export const changeConnectionMenuItems = () => [
   {
     actionKey: 'disconnect',
     actionTitle: 'Disconnect',
+    icon: {
+      iconType: 'SYSTEM',
+      iconValue: 'xmark.circle',
+    },
   },
   {
     actionKey: 'switch-account',
     actionTitle: 'Switch Account',
+    icon: {
+      iconType: 'SYSTEM',
+      iconValue: 'person.2',
+    },
   },
   {
+    icon: {
+      iconType: 'SYSTEM',
+      iconValue: 'cloud',
+    },
     menuItems: networksMenuItems(),
     menuTitle: 'Switch Network',
   },
