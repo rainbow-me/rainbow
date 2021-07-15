@@ -12,27 +12,25 @@ import {
 } from '../references';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 
+const nativeAssetsPerNetwork = {
+  [ARBITRUM_ETH_ADDRESS]: [networkTypes.arbitrum],
+  [ETH_ADDRESS]: [
+    networkTypes.mainnet,
+    networkTypes.ropsten,
+    networkTypes.kovan,
+    networkTypes.goerli,
+  ],
+  [MATIC_POLYGON_ADDRESS]: [networkTypes.polygon],
+  [OPTIMISM_ETH_ADDRESS]: [networkTypes.optimism],
+};
+
 export function isNativeAsset(address, network) {
   /* 
-    TL;DR of this nasty logic
     check if an asset is native depending on
-    the network & asset address:
-    - ETH address + L1
-    - MATIC address + Polygon
-    - ARBITRUM ETH address + Arbtrum One
-    - OPTIMISM ETH ADDRESS + Optimism Mainnet
+    the network & asset address
   */
 
-  if (
-    (address === ETH_ADDRESS &&
-      (network === networkTypes.mainnet ||
-        network === networkTypes.ropsten ||
-        network === networkTypes.kovan ||
-        network === networkTypes.goerli)) ||
-    (address === MATIC_POLYGON_ADDRESS && network === networkTypes.polygon) ||
-    (address === ARBITRUM_ETH_ADDRESS && network === networkTypes.arbitrum) ||
-    (address === OPTIMISM_ETH_ADDRESS && network === networkTypes.optimism)
-  ) {
+  if (nativeAssetsPerNetwork[address]?.indexOf(network) !== -1) {
     return true;
   }
   return false;
