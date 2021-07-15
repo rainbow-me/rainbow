@@ -16,6 +16,7 @@ import Animated, {
 import styled from 'styled-components';
 import useWallets from '../../hooks/useWallets';
 import { lightModeThemeColors } from '../../styles/colors';
+import L2Explainer from '../L2Disclaimer';
 import Link from '../Link';
 import { ButtonPressAnimation } from '../animations';
 import { Centered, Column, Row } from '../layout';
@@ -35,6 +36,7 @@ import {
   UniqueTokenExpandedStateContent,
   UniqueTokenExpandedStateHeader,
 } from './unique-token';
+import { AssetTypes } from '@rainbow-me/entities';
 import { apiGetUniqueTokenFloorPrice } from '@rainbow-me/handlers/opensea-api';
 import { buildUniqueTokenName } from '@rainbow-me/helpers/assets';
 import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
@@ -133,6 +135,12 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
   const sheetHandleStyle = useAnimatedStyle(() => ({
     opacity: 1 - animationProgress.value,
   }));
+
+  const handleL2ExplainerPress = useCallback(() => {
+    navigate(Routes.EXPLAIN_SHEET, {
+      type: asset.network,
+    });
+  }, [asset.network, navigate]);
 
   const isShowcaseAsset = useMemo(() => showcaseTokens.includes(uniqueId), [
     showcaseTokens,
@@ -316,6 +324,14 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
               />
             ) : null}
           </SheetActionButtonRow>
+          {asset.network === AssetTypes.polygon && (
+            <L2Explainer
+              assetType={AssetTypes.polygon}
+              colors={colors}
+              onPress={handleL2ExplainerPress}
+              symbol="NFT"
+            />
+          )}
           <TokenInfoSection isNft>
             <TokenInfoRow>
               <TokenInfoItem
