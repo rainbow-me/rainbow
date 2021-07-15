@@ -205,7 +205,7 @@ export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
       }
     }
     let tokens = compact(tokensRow);
-    tokens = chunk(tokens, tokens.length > 25 ? 4 : 25);
+    tokens = chunk(tokens, 50); // cap NFT cards per family at 100
     // eslint-disable-next-line no-loop-func
     tokens.forEach((tokenChunk, index) => {
       const id = tokensRow[0]
