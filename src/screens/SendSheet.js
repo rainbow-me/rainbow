@@ -512,7 +512,38 @@ export default function SendSheet(props) {
     [currentNetwork]
   );
 
+  const { buttonDisabled, buttonLabel } = useMemo(() => {
+    const isZeroAssetAmount = Number(amountDetails.assetAmount) <= 0;
+
+    let disabled = true;
+    let label = 'Enter an Amount';
+
+    let nativeToken = 'ETH';
+    if (network === networkTypes.polygon) {
+      nativeToken = 'MATIC';
+    }
+
+    if (!isZeroAssetAmount && !isSufficientGas) {
+      disabled = true;
+      label = `Insufficient ${nativeToken}`;
+    } else if (!isZeroAssetAmount && !amountDetails.isSufficientBalance) {
+      disabled = true;
+      label = 'Insufficient Funds';
+    } else if (!isZeroAssetAmount) {
+      disabled = false;
+      label = '􀕹 Review';
+    }
+
+    return { buttonDisabled: disabled, buttonLabel: label };
+  }, [
+    amountDetails.assetAmount,
+    amountDetails.isSufficientBalance,
+    isSufficientGas,
+    network,
+  ]);
+
   const showConfirmationSheet = useCallback(async () => {
+    if (buttonDisabled) return;
     let toAddress = recipient;
     if (isENSAddressFormat(recipient)) {
       toAddress = await resolveNameOrAddress(recipient);
@@ -553,6 +584,7 @@ export default function SendSheet(props) {
   }, [
     accountAddress,
     amountDetails,
+    buttonDisabled,
     currentInput,
     currentNetwork,
     gasLimit,
@@ -642,36 +674,6 @@ export default function SendSheet(props) {
     recipient,
     selected,
     updateTxFee,
-  ]);
-
-  const { buttonDisabled, buttonLabel } = useMemo(() => {
-    const isZeroAssetAmount = Number(amountDetails.assetAmount) <= 0;
-
-    let disabled = true;
-    let label = 'Enter an Amount';
-
-    let nativeToken = 'ETH';
-    if (network === networkTypes.polygon) {
-      nativeToken = 'MATIC';
-    }
-
-    if (!isZeroAssetAmount && !isSufficientGas) {
-      disabled = true;
-      label = `Insufficient ${nativeToken}`;
-    } else if (!isZeroAssetAmount && !amountDetails.isSufficientBalance) {
-      disabled = true;
-      label = 'Insufficient Funds';
-    } else if (!isZeroAssetAmount) {
-      disabled = false;
-      label = '􀕹 Review';
-    }
-
-    return { buttonDisabled: disabled, buttonLabel: label };
-  }, [
-    amountDetails.assetAmount,
-    amountDetails.isSufficientBalance,
-    isSufficientGas,
-    network,
   ]);
 
   return (
