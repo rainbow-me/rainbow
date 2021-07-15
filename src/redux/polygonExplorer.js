@@ -1,11 +1,9 @@
 import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
-import { JsonRpcProvider } from '@ethersproject/providers';
 import { toLower } from 'lodash';
 import {
   COVALENT_ANDROID_API_KEY,
   COVALENT_IOS_API_KEY,
-  POLYGON_MAINNET_RPC,
 } from 'react-native-dotenv';
 import { polygonEnabled } from '../config/debug';
 // eslint-disable-next-line import/no-cycle
@@ -14,6 +12,7 @@ import { addressAssetsReceived, fetchAssetPrices } from './data';
 import { emitAssetRequest, emitChartsRequest } from './explorer';
 import { AssetTypes } from '@rainbow-me/entities';
 //import networkInfo from '@rainbow-me/helpers/networkInfo';
+import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
@@ -152,7 +151,7 @@ const fetchAssetBalances = async (tokens, address) => {
   const abi = balanceCheckerContractAbi;
 
   const contractAddress = networkInfo[network].balance_checker_contract_address;
-  const polygonProvider = new JsonRpcProvider(POLYGON_MAINNET_RPC);
+  const polygonProvider = getProviderForNetwork(network);
 
   const balanceCheckerContract = new Contract(
     contractAddress,

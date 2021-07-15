@@ -41,6 +41,8 @@ import logger from 'logger';
 const infuraProjectId = __DEV__ ? INFURA_PROJECT_ID_DEV : INFURA_PROJECT_ID;
 const infuraUrl = `https://network.infura.io/v3/${infuraProjectId}`;
 
+export const networkProviders = {};
+
 /**
  * @desc web3 http instance
  */
@@ -78,6 +80,9 @@ export const isL2Network = network => {
  * @param {String} network
  */
 export const getProviderForNetwork = async network => {
+  if (networkProviders[network]) {
+    return networkProviders[network];
+  }
   if (network.startsWith('http://')) {
     return new JsonRpcProvider(network, NetworkTypes.mainnet);
   } else {
@@ -96,6 +101,7 @@ export const getProviderForNetwork = async network => {
         url = replace(infuraUrl, 'network', network);
     }
     const provider = new JsonRpcProvider(url);
+    networkProviders[network] = provider;
     await provider.ready;
     return provider;
   }

@@ -1,13 +1,12 @@
 import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
-import { JsonRpcProvider } from '@ethersproject/providers';
 import { toLower } from 'lodash';
-import { OPTIMISM_MAINNET_RPC } from 'react-native-dotenv';
 import { optimismEnabled } from '../config/debug';
 // eslint-disable-next-line import/no-cycle
 import { addressAssetsReceived, fetchAssetPrices } from './data';
 // eslint-disable-next-line import/no-cycle
 import { emitAssetRequest, emitChartsRequest } from './explorer';
+import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
@@ -26,7 +25,7 @@ const OPTIMISM_EXPLORER_SET_HANDLERS =
 
 const UPDATE_BALANCE_AND_PRICE_FREQUENCY = 30000;
 
-const optimismProvider = new JsonRpcProvider(OPTIMISM_MAINNET_RPC);
+const optimismProvider = getProviderForNetwork(networkTypes.optimism);
 
 const network = networkTypes.optimism;
 
