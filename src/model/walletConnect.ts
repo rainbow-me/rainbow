@@ -2,14 +2,10 @@ import AsyncStorage from '@react-native-community/async-storage';
 import WalletConnectClient, { CLIENT_EVENTS } from '@walletconnect/clientv2';
 import { Reason, SessionTypes } from '@walletconnect/typesv2';
 import { Alert, InteractionManager } from 'react-native';
-import { useDispatch } from 'react-redux';
 import { isSigningMethod } from '../utils/signingMethods';
 import { sendRpcCall } from '@rainbow-me/handlers/web3';
 import { Navigation } from '@rainbow-me/navigation';
-import {
-  addRequestToApprove,
-  addRequestToApproveV2,
-} from '@rainbow-me/redux/requests';
+import { addRequestToApproveV2 } from '@rainbow-me/redux/requests';
 import Routes from '@rainbow-me/routes';
 
 let client: WalletConnectClient;
@@ -183,6 +179,26 @@ export const walletConnectInit = async (dispatch: any) => {
           // analytics.track('Showing Walletconnect signing request');
           InteractionManager.runAfterInteractions(() => {
             Navigation.handleAction(Routes.CONFIRM_REQUEST, {
+              callback: async (res: { error: string; result: string }) => {
+                const { error, result } = res;
+                const response = {
+                  response: {
+                    id: request.id,
+                    jsonrpc: '2.0',
+                    ...(error
+                      ? {
+                          error: {
+                            // this code is wrong
+                            code: -32000,
+                            message: error,
+                          },
+                        }
+                      : { result }),
+                  },
+                  topic,
+                };
+                await client.respond(response);
+              },
               openAutomatically: true,
               transactionDetails: requestToApprove,
             });
