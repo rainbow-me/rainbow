@@ -213,7 +213,7 @@ export default function TransactionConfirmationScreen() {
     selectedGasPrice,
   } = useGas();
 
-  const request = displayDetails.request;
+  const request = displayDetails?.request;
   const openAutomatically = routeParams?.openAutomatically;
 
   const formattedDappUrl = useMemo(() => {
@@ -306,9 +306,7 @@ export default function TransactionConfirmationScreen() {
   const onCancel = useCallback(async () => {
     try {
       closeScreen(true);
-      if (callback) {
-        callback({ error: 'User cancelled the request' });
-      }
+      callback?.({ error: 'User cancelled the request' });
       setTimeout(async () => {
         if (requestId) {
           await dispatch(walletConnectSendStatus(peerId, requestId, null));
@@ -483,9 +481,7 @@ export default function TransactionConfirmationScreen() {
     }
 
     if (result) {
-      if (callback) {
-        callback({ result: result.hash });
-      }
+      callback?.({ result: result.hash });
       if (sendInsteadOfSign) {
         const txDetails = {
           amount: get(displayDetails, 'request.value'),
@@ -558,9 +554,8 @@ export default function TransactionConfirmationScreen() {
           walletConnectSendStatus(peerId, requestId, flatFormatSignature)
         );
       }
-      if (callback) {
-        callback({ sig: flatFormatSignature });
-      }
+      // TODO check v1
+      callback?.({ result: flatFormatSignature });
       closeScreen(false);
     } else {
       await onCancel();
