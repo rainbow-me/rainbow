@@ -91,14 +91,21 @@ export const addTokenSheetConfig = {
 };
 
 export const sendConfirmationSheetConfig = {
-  options: ({ route: { params = {} } }) => ({
-    ...buildCoolModalConfig({
-      ...params,
-      longFormHeight: params.shouldShowChecks
-        ? SendConfirmationSheetHeight
-        : SendConfirmationSheetHeight - 150,
-    }),
-  }),
+  options: ({ route: { params = {} } }) => {
+    let height = params.shouldShowChecks
+      ? SendConfirmationSheetHeight
+      : SendConfirmationSheetHeight - 150;
+
+    if (!params.isL2) {
+      height -= 60;
+    }
+    return {
+      ...buildCoolModalConfig({
+        ...params,
+        longFormHeight: height,
+      }),
+    };
+  },
 };
 
 export const explainSheetConfig = {

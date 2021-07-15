@@ -66,7 +66,7 @@ import {
   convertAmountFromNativeValue,
   formatInputDecimals,
 } from '@rainbow-me/utilities';
-import { deviceUtils } from '@rainbow-me/utils';
+import { deviceUtils, ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const sheetHeight = deviceUtils.dimensions.height - (android ? 30 : 10);
@@ -173,6 +173,10 @@ export default function SendSheet(props) {
   if (isNft) {
     color = colors.appleBlue;
   }
+
+  const isL2 = useMemo(() => {
+    return isL2Network(currentNetwork);
+  }, [currentNetwork]);
 
   const { triggerFocus } = useMagicAutofocus(recipientFieldRef);
 
@@ -282,9 +286,15 @@ export default function SendSheet(props) {
 
   useEffect(() => {
     const updateNetworkAndProvider = async () => {
+      const assetNetwork =
+        selected?.type === AssetType.token || selected?.type === AssetType.nft
+          ? network
+          : selected.type;
       if (
         selected?.type &&
-        (!currentNetwork || prevNetwork !== currentNetwork)
+        (assetNetwork !== currentNetwork ||
+          !currentNetwork ||
+          prevNetwork !== currentNetwork)
       ) {
         let provider = web3Provider;
         switch (selected.type) {
@@ -317,11 +327,14 @@ export default function SendSheet(props) {
   ]);
 
   useEffect(() => {
-    if (currentProvider) {
+    const currentProviderNetwork = ethereumUtils.getNetworkFromChainId(
+      currentProvider?._network.chainId
+    );
+    if (currentProviderNetwork === currentNetwork) {
       sendUpdateSelected(selected);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentProvider]);
+  }, [currentProvider, currentNetwork, selected]);
 
   const onChangeNativeAmount = useCallback(
     newNativeAmount => {
@@ -498,7 +511,7 @@ export default function SendSheet(props) {
       }
 
       // Don't allow sending funds directly to known ERC20 contracts on L2
-      if (isL2Network(currentNetwork)) {
+      if (isL2) {
         const currentChainAssets = chainAssets[currentNetwork];
         const found = currentChainAssets.find(
           item => toLower(item.asset?.asset_code) === toLower(toAddress)
@@ -509,10 +522,41 @@ export default function SendSheet(props) {
       }
       return true;
     },
-    [currentNetwork]
+    [currentNetwork, isL2]
   );
 
+  const { buttonDisabled, buttonLabel } = useMemo(() => {
+    const isZeroAssetAmount = Number(amountDetails.assetAmount) <= 0;
+
+    let disabled = true;
+    let label = 'Enter an Amount';
+
+    let nativeToken = 'ETH';
+    if (network === networkTypes.polygon) {
+      nativeToken = 'MATIC';
+    }
+
+    if (!isZeroAssetAmount && !isSufficientGas) {
+      disabled = true;
+      label = `Insufficient ${nativeToken}`;
+    } else if (!isZeroAssetAmount && !amountDetails.isSufficientBalance) {
+      disabled = true;
+      label = 'Insufficient Funds';
+    } else if (!isZeroAssetAmount) {
+      disabled = false;
+      label = '􀕹 Review';
+    }
+
+    return { buttonDisabled: disabled, buttonLabel: label };
+  }, [
+    amountDetails.assetAmount,
+    amountDetails.isSufficientBalance,
+    isSufficientGas,
+    network,
+  ]);
+
   const showConfirmationSheet = useCallback(async () => {
+    if (buttonDisabled) return;
     let toAddress = recipient;
     if (isENSAddressFormat(recipient)) {
       toAddress = await resolveNameOrAddress(recipient);
@@ -544,6 +588,7 @@ export default function SendSheet(props) {
       from: accountAddress,
       gasLimit: gasLimit,
       gasPrice: selectedGasPrice.value?.amount,
+      isL2,
       isNft,
       isSufficientGas,
       network: currentNetwork,
@@ -553,9 +598,11 @@ export default function SendSheet(props) {
   }, [
     accountAddress,
     amountDetails,
+    buttonDisabled,
     currentInput,
     currentNetwork,
     gasLimit,
+    isL2,
     isNft,
     isSufficientGas,
     navigate,
@@ -642,36 +689,6 @@ export default function SendSheet(props) {
     recipient,
     selected,
     updateTxFee,
-  ]);
-
-  const { buttonDisabled, buttonLabel } = useMemo(() => {
-    const isZeroAssetAmount = Number(amountDetails.assetAmount) <= 0;
-
-    let disabled = true;
-    let label = 'Enter an Amount';
-
-    let nativeToken = 'ETH';
-    if (network === networkTypes.polygon) {
-      nativeToken = 'MATIC';
-    }
-
-    if (!isZeroAssetAmount && !isSufficientGas) {
-      disabled = true;
-      label = `Insufficient ${nativeToken}`;
-    } else if (!isZeroAssetAmount && !amountDetails.isSufficientBalance) {
-      disabled = true;
-      label = 'Insufficient Funds';
-    } else if (!isZeroAssetAmount) {
-      disabled = false;
-      label = '􀕹 Review';
-    }
-
-    return { buttonDisabled: disabled, buttonLabel: label };
-  }, [
-    amountDetails.assetAmount,
-    amountDetails.isSufficientBalance,
-    isSufficientGas,
-    network,
   ]);
 
   return (

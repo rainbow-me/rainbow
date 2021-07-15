@@ -72,7 +72,9 @@ const BottomRow = ({
     >
       {showNativeValue
         ? `${fiatValue} available`
-        : `${balance?.display}${selected ? ' available' : ''}`}
+        : balance?.display
+        ? `${balance?.display}${selected ? ' available' : ''}`
+        : 'Fetching balances...'}
     </Text>
   );
 };
