@@ -11,6 +11,18 @@ import { Centered } from '../layout';
 import { AssetType } from '@rainbow-me/entities';
 import { borders } from '@rainbow-me/styles';
 
+const sizeConfigs = () => ({
+  small: {
+    iconSize: 40,
+  },
+  medium: {
+    iconSize: 45,
+  },
+  large: {
+    iconSize: 60,
+  },
+});
+
 const ChainIcon = styled(FastImage)`
   height: ${({ iconSize }) => iconSize};
   margin-top: 1;
@@ -32,15 +44,8 @@ export default function ChainBadge({
 }) {
   const { isDarkMode } = useTheme();
 
-  const iconSize = useMemo(() => {
-    let iconSize = 40;
-    if (size === 'large') {
-      iconSize = 60;
-    } else if (size === 'medium') {
-      iconSize = 45;
-    }
-    return iconSize;
-  }, [size]);
+  const { iconSize } = useMemo(() => sizeConfigs()[size], [size,
+]);
 
   const source = useMemo(() => {
     let val = null;
