@@ -58,8 +58,8 @@ export const web3SetHttpProvider = async network => {
     web3Provider = new JsonRpcProvider(network, NetworkTypes.mainnet);
   } else {
     web3Provider = new JsonRpcProvider(replace(infuraUrl, 'network', network));
-    return web3Provider.ready;
   }
+  return web3Provider.ready;
 };
 
 export const isL2Network = network => {
