@@ -1,7 +1,9 @@
+import { useNavigation } from '@react-navigation/core';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { Share } from 'react-native';
 import styled from 'styled-components';
 import useWallets from '../../hooks/useWallets';
+import L2Explainer from '../L2Disclaimer';
 import Link from '../Link';
 import { Column, ColumnWithDividers } from '../layout';
 import {
@@ -19,12 +21,14 @@ import {
   UniqueTokenExpandedStateContent,
   UniqueTokenExpandedStateHeader,
 } from './unique-token';
+import { AssetTypes } from '@rainbow-me/entities';
 import { buildUniqueTokenName } from '@rainbow-me/helpers/assets';
 import {
   useAccountProfile,
   useDimensions,
   useShowcaseTokens,
 } from '@rainbow-me/hooks';
+import Routes from '@rainbow-me/routes';
 import {
   buildRainbowUrl,
   magicMemo,
@@ -52,6 +56,13 @@ const UniqueTokenExpandedState = ({ asset, external }) => {
   } = useShowcaseTokens();
 
   const { isReadOnlyWallet } = useWallets();
+  const { navigate } = useNavigation();
+
+  const handleL2ExplainerPress = useCallback(() => {
+    navigate(Routes.EXPLAIN_SHEET, {
+      type: asset.network,
+    });
+  }, [asset.network, navigate]);
 
   const isShowcaseAsset = useMemo(() => showcaseTokens.includes(uniqueId), [
     showcaseTokens,
@@ -108,6 +119,14 @@ const UniqueTokenExpandedState = ({ asset, external }) => {
               weight="bold"
             />
           </SheetActionButtonRow>
+        )}
+        {asset.network === AssetTypes.polygon && (
+          <L2Explainer
+            assetType={AssetTypes.polygon}
+            colors={colors}
+            onPress={handleL2ExplainerPress}
+            symbol="NFT"
+          />
         )}
         <SheetDivider />
         <ColumnWithDividers dividerRenderer={SheetDivider}>
