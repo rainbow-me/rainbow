@@ -5,7 +5,7 @@ const androidNetworkActions = Object.values(networkInfo)
   .filter(({ disabled }) => !disabled)
   .map(netInfo => netInfo.name);
 
-const androidReverseNetoworkWithName = name =>
+const androidReverseNetworkWithName = name =>
   Object.values(networkInfo).find(netInfo => netInfo.name === name);
 
 export const NETWORK_MENU_ACTION_KEY_FILTER = 'switch-to-network-';
@@ -47,7 +47,7 @@ export const androidShowNetworksActionSheet = callback => {
       title: `Available Networks`,
     },
     idx => {
-      const { value } = androidReverseNetoworkWithName(
+      const { value } = androidReverseNetworkWithName(
         androidNetworkActions[idx]
       );
       const chainId = ethereumUtils.getChainIdFromNetwork(value);
