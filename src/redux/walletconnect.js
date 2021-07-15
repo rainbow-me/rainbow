@@ -319,7 +319,10 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
           setTimeout(() => {
             Navigation.handleAction(Routes.CONFIRM_REQUEST, {
               openAutomatically: true,
-              transactionDetails: request,
+              transactionDetails: {
+                ...request,
+                chainId: walletConnector._chainId,
+              },
             });
           }, 1000);
         });

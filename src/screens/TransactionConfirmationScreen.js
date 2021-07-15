@@ -173,10 +173,6 @@ export default function TransactionConfirmationScreen() {
     ({ walletconnect }) => walletconnect.pendingRedirect
   );
 
-  const walletConnectors = useSelector(
-    ({ walletconnect }) => walletconnect.walletConnectors
-  );
-
   const {
     dataAddNewTransaction,
     removeRequest,
@@ -186,6 +182,7 @@ export default function TransactionConfirmationScreen() {
   const {
     callback,
     transactionDetails: {
+      chainId,
       dappName,
       dappScheme,
       dappUrl,
@@ -197,13 +194,9 @@ export default function TransactionConfirmationScreen() {
     },
   } = routeParams;
 
-  const walletConnector = walletConnectors[peerId];
-
   useEffect(() => {
-    setNetwork(
-      ethereumUtils.getNetworkFromChainId(Number(walletConnector._chainId))
-    );
-  }, [walletConnector._chainId]);
+    setNetwork(ethereumUtils.getNetworkFromChainId(Number(chainId)));
+  }, [chainId]);
 
   useEffect(() => {
     const initProvider = async () => {

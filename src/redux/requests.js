@@ -78,6 +78,49 @@ export const addRequestToApprove = (
   return request;
 };
 
+export const addRequestToApproveV2 = (requestId, payload, peerMeta) => (
+  dispatch,
+  getState
+) => {
+  const { requests } = getState().requests;
+  const { accountAddress, network, nativeCurrency } = getState().settings;
+  const { assets } = getState().data;
+  const displayDetails = getRequestDisplayDetails(
+    payload,
+    assets,
+    nativeCurrency
+  );
+  const oneHourAgoTs = Date.now() - EXPIRATION_THRESHOLD_IN_MS;
+  if (displayDetails.timestampInMs < oneHourAgoTs) {
+    logger.log('request expired!');
+    return;
+  }
+  const unsafeImageUrl =
+    dappLogoOverride(peerMeta.url) || get(peerMeta, 'icons[0]');
+  const imageUrl = maybeSignUri(unsafeImageUrl);
+  const dappName =
+    dappNameOverride(peerMeta.url) || peerMeta.name || 'Unknown Dapp';
+  const dappUrl = peerMeta.url || 'Unknown Url';
+  const dappScheme = peerMeta.scheme || null;
+
+  const request = {
+    dappName,
+    dappScheme,
+    dappUrl,
+    displayDetails,
+    imageUrl,
+    payload,
+    requestId,
+  };
+  const updatedRequests = { ...requests, [requestId]: request };
+  dispatch({
+    payload: updatedRequests,
+    type: REQUESTS_UPDATE_REQUESTS_TO_APPROVE,
+  });
+  saveLocalRequests(updatedRequests, accountAddress, network);
+  return request;
+};
+
 export const requestsForTopic = topic => (dispatch, getState) => {
   const { requests } = getState().requests;
   return filter(values(requests), { clientId: topic });
