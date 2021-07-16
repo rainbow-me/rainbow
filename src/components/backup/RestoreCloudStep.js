@@ -165,9 +165,6 @@ export default function RestoreCloudStep({
           const wallets = await dispatch(walletsLoadState());
           if (!userData && backupSelected?.name) {
             goBack();
-            logger.log('updating redux state of new wallets');
-            // Reload the redux store
-            logger.log('done', wallets);
             logger.log('updating backup state of wallets');
             await Promise.all(
               Object.keys(wallets).map(walletId => {
