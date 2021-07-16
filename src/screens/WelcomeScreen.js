@@ -25,6 +25,7 @@ import { Emoji, Text } from '../components/text';
 import {
   fetchUserDataFromCloud,
   isCloudBackupAvailable,
+  syncCloud,
 } from '../handlers/cloudBackup';
 import { cloudPlatform } from '../utils/platform';
 
@@ -358,6 +359,9 @@ export default function WelcomeScreen() {
         logger.log(`downloading ${cloudPlatform} backup info...`);
         const isAvailable = await isCloudBackupAvailable();
         if (isAvailable && ios) {
+          logger.log('syncing...');
+          await syncCloud();
+          logger.log('fetching backup info...');
           const data = await fetchUserDataFromCloud();
           setUserData(data);
           logger.log(`Downloaded ${cloudPlatform} backup info`);

@@ -115,7 +115,7 @@ const checkAllWallets = wallets => {
     ) {
       areBackedUp = false;
     }
-    if (!wallets[key].type !== WalletTypes.readOnly) {
+    if (wallets[key].type !== WalletTypes.readOnly) {
       canBeBackedUp = true;
     }
   });
