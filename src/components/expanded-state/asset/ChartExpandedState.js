@@ -12,7 +12,7 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import useAdditionalAssetData from '../../../hooks/useAdditionalAssetData';
 import { ModalContext } from '../../../react-native-cool-modals/NativeStackView';
-import L2Explainer from '../../L2Disclaimer';
+import L2Disclaimer from '../../L2Disclaimer';
 import { ButtonPressAnimation } from '../../animations';
 import { CoinDividerHeight } from '../../coin-divider';
 import CoinDividerOpenButton from '../../coin-divider/CoinDividerOpenButton';
@@ -277,7 +277,7 @@ export default function ChartExpandedState({ asset }) {
 
   const { navigate } = useNavigation();
 
-  const handleL2ExplainerPress = useCallback(() => {
+  const handleL2DisclaimerPress = useCallback(() => {
     navigate(Routes.EXPLAIN_SHEET, {
       type: assetWithPrice.type,
     });
@@ -374,10 +374,10 @@ export default function ChartExpandedState({ asset }) {
         </SheetActionButtonRow>
       )}
       {assetWithPrice?.mainnet_address && (
-        <L2Explainer
+        <L2Disclaimer
           assetType={assetWithPrice.type}
           colors={colors}
-          onPress={handleL2ExplainerPress}
+          onPress={handleL2DisclaimerPress}
           symbol={assetWithPrice.symbol}
         />
       )}

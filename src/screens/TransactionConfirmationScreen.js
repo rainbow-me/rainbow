@@ -22,7 +22,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import URL from 'url-parse';
 import Divider from '../components/Divider';
-import L2Explainer from '../components/L2Disclaimer';
+import L2Disclaimer from '../components/L2Disclaimer';
 import { RequestVendorLogoIcon } from '../components/coin-icon';
 import { ContactAvatar } from '../components/contacts';
 import { GasSpeedButton } from '../components/gas';
@@ -243,7 +243,7 @@ export default function TransactionConfirmationScreen() {
     return isDappAuthenticated(dappUrl);
   }, [dappUrl]);
 
-  const handleL2ExplainerPress = useCallback(() => {
+  const handleL2DisclaimerPress = useCallback(() => {
     navigate(Routes.EXPLAIN_SHEET, {
       network: network,
       type: network,
@@ -905,10 +905,10 @@ export default function TransactionConfirmationScreen() {
             )}
             {renderTransactionSection()}
             {isL2 && (
-              <L2Explainer
+              <L2Disclaimer
                 assetType={network}
                 colors={colors}
-                onPress={handleL2ExplainerPress}
+                onPress={handleL2DisclaimerPress}
                 symbol="request"
               />
             )}

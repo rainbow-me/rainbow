@@ -6,7 +6,7 @@ import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components';
 import ContactRowInfoButton from '../components/ContactRowInfoButton';
-import L2Explainer from '../components/L2Disclaimer';
+import L2Disclaimer from '../components/L2Disclaimer';
 import Pill from '../components/Pill';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import { ButtonPressAnimation } from '../components/animations';
@@ -174,7 +174,7 @@ export default function SendConfirmationSheet() {
     [checkboxes]
   );
 
-  const handleL2ExplainerPress = useCallback(() => {
+  const handleL2DisclaimerPress = useCallback(() => {
     navigate(Routes.EXPLAIN_SHEET, {
       type: asset.type,
     });
@@ -350,10 +350,10 @@ export default function SendConfirmationSheet() {
           </Column>
           <SheetDivider />
           {isL2 && (
-            <L2Explainer
+            <L2Disclaimer
               assetType={asset.type}
               colors={colors}
-              onPress={handleL2ExplainerPress}
+              onPress={handleL2DisclaimerPress}
               sending
               symbol={asset.symbol}
             />
