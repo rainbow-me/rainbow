@@ -198,15 +198,12 @@ async function restoreSpecificBackupIntoKeychain(
   backedUpData: BackedUpData
 ): Promise<boolean> {
   try {
-    // Delete current wallets info
-    await keychain.remove(allWalletsKey);
-    await keychain.remove(selectedWalletKey);
     // Re-import all the seeds (and / or pkeys) one by one
     for (const key of Object.keys(backedUpData)) {
       if (endsWith(key, seedPhraseKey)) {
         const valueStr = backedUpData[key];
         const { seedphrase } = JSON.parse(valueStr);
-        await createWallet(seedphrase);
+        await createWallet(seedphrase, null, null, true);
       }
     }
     return true;
