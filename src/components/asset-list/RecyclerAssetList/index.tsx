@@ -215,7 +215,7 @@ function RecyclerAssetList({
           section.data.forEach((item, index) => {
             if (
               item.isHeader ||
-              openFamilyTabs[item.familyName + showcase ? '-showcase' : '']
+              openFamilyTabs[item.familyName + (showcase ? '-showcase' : '')]
             ) {
               ctx.push({
                 familySectionIndex: index,
