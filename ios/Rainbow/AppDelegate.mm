@@ -179,6 +179,10 @@ sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
     [SentrySDK captureMessage:@"Keychain Wiped!"];
     RCTTriggerReloadCommandListeners(@"keychain wiped");
   }
+  // delete the badge
+  [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
+  // delete the notifications
+  [[UNUserNotificationCenter currentNotificationCenter] removeAllDeliveredNotifications];
 }
 
 @end
