@@ -39,6 +39,18 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
     }
   }
   
+  func activelyWaitToPresentDiscoverSheetBack(controller: DiscoverSheetViewController) {
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+      if (self.window?.rootViewController?.presentedViewController == nil) {
+        controller.hacked = false;
+        moved = false;
+        self.window?.rootViewController?.present(controller, animated: true)
+      } else {
+        self.activelyWaitToPresentDiscoverSheetBack(controller: controller)
+      }
+    }
+  }
+  
   @objc var avatarOptions: NSArray? {
     didSet {
       if #available(iOS 14.0, *) {
@@ -54,11 +66,13 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
         header.accountView.menu = contextMenu
         header.accountView.showsMenuAsPrimaryAction = true
         header.accountView.addAction(UIAction(title: ""){ _ in
-          self.window?.rootViewController?.presentedViewController?.dismiss(animated: true)
+          let discoverSheeet: DiscoverSheetViewController = self.window?.rootViewController!.presentedViewController! as! DiscoverSheetViewController;
+          self.window?.rootViewController?.presentedViewController?.dismiss(animated: true, completion: {
+            self.activelyWaitToPresentDiscoverSheetBack(controller: discoverSheeet)
+          })
+          
         },for: .menuActionTriggered)
         
-//        let discoverSheeet = self.window?.rootViewController?.presentedViewController;
-//        self.window?.rootViewController?.present(discoverSheeet!, animated: true)
       }
     }
   }
