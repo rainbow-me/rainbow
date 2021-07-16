@@ -327,11 +327,13 @@ export default function SendSheet(props) {
   ]);
 
   useEffect(() => {
-    const currentProviderNetwork = ethereumUtils.getNetworkFromChainId(
-      currentProvider?._network.chainId
-    );
-    if (currentProviderNetwork === currentNetwork) {
-      sendUpdateSelected(selected);
+    if (currentProvider?._network?.chainId) {
+      const currentProviderNetwork = ethereumUtils.getNetworkFromChainId(
+        currentProvider._network.chainId
+      );
+      if (currentProviderNetwork === currentNetwork) {
+        sendUpdateSelected(selected);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentProvider, currentNetwork, selected]);
