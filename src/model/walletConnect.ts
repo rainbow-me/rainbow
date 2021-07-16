@@ -29,7 +29,7 @@ const SUPPORTED_TEST_CHAINS = ['eip155:3', 'eip155:4', 'eip155:5', 'eip155:42'];
 const toEIP55Format = (chainId: string) => `eip155:${chainId}`;
 export const fromEIP55Format = (chain: string) => chain.replace('eip155:', '');
 
-const getAddressAndChainIdFromWCAccount = (
+export const getAddressAndChainIdFromWCAccount = (
   account: string
 ): { address: string; chainId: number } => {
   const [address, eip155Network] = account.split('@');
@@ -117,26 +117,12 @@ export const walletConnectInit = async (dispatch: any) => {
   client.on(
     CLIENT_EVENTS.session.request,
     async (requestEvent: SessionTypes.RequestEvent) => {
-      wcLogger('CLIENT_EVENTS.session.request');
-      // WalletConnect client can track multiple sessions
-      // assert the topic from which application requested
-      wcLogger('CLIENT_EVENTS.session requestEvent', requestEvent);
       const { topic, request } = requestEvent;
       const session = await client.session.get(requestEvent.topic);
-      wcLogger('CLIENT_EVENTS.session', session);
-      // now you can display to the user for approval using the stored metadata
-      const { metadata } = session.peer;
-      wcLogger('metadata', metadata);
-      wcLogger('request', request);
-      wcLogger('session', session);
-      const { method, params } = request;
-      const payload = { method, params };
-      wcLogger('request method', method);
-      wcLogger('request params', params);
 
-      if (method === 'wallet_addEthereumChain') {
+      if (request.method === 'wallet_addEthereumChain') {
         wcLogger('wallet_addEthereumChain');
-      } else if (!isSigningMethod(method)) {
+      } else if (!isSigningMethod(request.method)) {
         sendRpcCall(request)
           .then(async result => {
             const response = {
@@ -170,11 +156,8 @@ export const walletConnectInit = async (dispatch: any) => {
         // TODO
 
         const requestToApprove = await dispatch(
-          addRequestToApproveV2(request.id, payload, metadata)
+          addRequestToApproveV2(request.id, session, request)
         );
-
-        wcLogger('request V2', requestToApprove);
-
         if (requestToApprove) {
           // analytics.track('Showing Walletconnect signing request');
           InteractionManager.runAfterInteractions(() => {
@@ -236,7 +219,6 @@ export const walletConnectAllSessions = (): {
 };
 
 export const walletConnectDisconnectAllSessions = () => {
-  wcLogger('walletConnectDisconnectAllSessions', client.session.values.length);
   const sessions = client.session.values;
   sessions.forEach(session => {
     walletConnectDisconnect(session.topic);

@@ -9,6 +9,7 @@ import {
   dappLogoOverride,
   dappNameOverride,
 } from '@rainbow-me/helpers/dappNameHandler';
+import { getAddressAndChainIdFromWCAccount } from '@rainbow-me/model/walletConnect';
 import { getRequestDisplayDetails } from '@rainbow-me/parsers';
 import logger from 'logger';
 
@@ -78,7 +79,7 @@ export const addRequestToApprove = (
   return request;
 };
 
-export const addRequestToApproveV2 = (requestId, payload, peerMeta) => (
+export const addRequestToApproveV2 = (requestId, session, payload) => (
   dispatch,
   getState
 ) => {
@@ -95,6 +96,7 @@ export const addRequestToApproveV2 = (requestId, payload, peerMeta) => (
     logger.log('request expired!');
     return;
   }
+  const peerMeta = session.peer.metadata;
   const unsafeImageUrl =
     dappLogoOverride(peerMeta.url) || get(peerMeta, 'icons[0]');
   const imageUrl = maybeSignUri(unsafeImageUrl);
@@ -102,8 +104,10 @@ export const addRequestToApproveV2 = (requestId, payload, peerMeta) => (
     dappNameOverride(peerMeta.url) || peerMeta.name || 'Unknown Dapp';
   const dappUrl = peerMeta.url || 'Unknown Url';
   const dappScheme = peerMeta.scheme || null;
-
+  const account = session.state.accounts?.[0];
+  const { chainId } = getAddressAndChainIdFromWCAccount(account);
   const request = {
+    chainId,
     dappName,
     dappScheme,
     dappUrl,
