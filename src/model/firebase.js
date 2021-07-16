@@ -30,7 +30,7 @@ export const saveFCMToken = async () => {
       }
     }
   } catch (error) {
-    logger.log('error saving fcm token - cannot save', error);
+    logger.log('error while getting & saving FCM token', error);
   }
 };
 
