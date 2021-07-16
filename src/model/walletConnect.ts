@@ -3,12 +3,13 @@ import WalletConnectClient, { CLIENT_EVENTS } from '@walletconnect/clientv2';
 import { Reason, SessionTypes } from '@walletconnect/typesv2';
 import { Alert, InteractionManager } from 'react-native';
 import { isSigningMethod } from '../utils/signingMethods';
+import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
 import { sendRpcCall } from '@rainbow-me/handlers/web3';
+import walletTypes from '@rainbow-me/helpers/walletTypes';
 import { Navigation } from '@rainbow-me/navigation';
 import { addRequestToApproveV2 } from '@rainbow-me/redux/requests';
 import Routes from '@rainbow-me/routes';
-
-let client: WalletConnectClient;
+import { watchingAlert } from '@rainbow-me/utils';
 
 const RAINBOW_METADATA = {
   description: 'Rainbow makes exploring Ethereum fun and accessible 🌈',
@@ -47,7 +48,9 @@ const isSupportedChain = (chain: string) =>
   SUPPORTED_MAIN_CHAINS.includes(chain) ||
   SUPPORTED_TEST_CHAINS.includes(chain);
 
-export const walletConnectInit = async (dispatch: any) => {
+let client: WalletConnectClient;
+
+export const walletConnectInit = async (store: any) => {
   client = await WalletConnectClient.init({
     controller: true,
     logger: 'fatal',
@@ -154,6 +157,27 @@ export const walletConnectInit = async (dispatch: any) => {
       } else {
         // check for read only accounts
         // TODO
+        const { dispatch, getState } = store;
+        const { selected } = getState().wallets;
+        const selectedWallet = selected || {};
+        const isReadOnlyWallet = selectedWallet.type === walletTypes.readOnly;
+        if (isReadOnlyWallet && !enableActionsOnReadOnlyWallet) {
+          watchingAlert();
+          const response = {
+            response: {
+              error: {
+                // this code is wrong
+                code: -32000,
+                message: 'JSON RPC method not supported',
+              },
+              id: request.id,
+              jsonrpc: '2.0',
+            },
+            topic,
+          };
+          await client.respond(response);
+          return;
+        }
 
         const requestToApprove = await dispatch(
           addRequestToApproveV2(request.id, session, request)
@@ -205,7 +229,7 @@ export const walletConnectAllSessions = (): {
       const accounts = value?.state?.accounts;
       const { name, url, icons } = value?.peer?.metadata;
       const { address, chainId } = getAddressAndChainIdFromWCAccount(
-        accounts[0]
+        accounts?.[0]
       );
       return {
         account: address,
