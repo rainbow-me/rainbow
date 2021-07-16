@@ -114,7 +114,7 @@ class App extends Component {
       const { isTestFlight } = RNTestFlight.getConstants();
       logger.sentry(`Test flight usage - ${isTestFlight}`);
     }
-    walletConnectInit(store.dispatch);
+    walletConnectInit(store);
     this.identifyFlow();
     AppState.addEventListener('change', this.handleAppStateChange);
     await this.handleInitializeAnalytics();
