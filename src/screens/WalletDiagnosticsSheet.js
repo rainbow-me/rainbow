@@ -184,6 +184,7 @@ const WalletDiagnosticsSheet = () => {
     const init = async () => {
       try {
         const allKeys = await loadAllKeys();
+        logger.log('ALL KEYS', allKeys);
         const processedKeys = await Promise.all(
           allKeys
             .filter(
