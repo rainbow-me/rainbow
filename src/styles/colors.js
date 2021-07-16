@@ -91,6 +91,8 @@ const getColorsByTheme = darkMode => {
     dpiLight: '#9B74EC', // '155, 116, 236'
     dpiMid: '#8E62E9', // '142, 98, 233'
     flamingo: '#E540F1', // '229, 64, 241'
+    gasLeft: '#f2e0a9',
+    gasRight: '#b9ddba',
     green: '#2CCC00', // '58, 166, 134'
     grey: '#A9ADB9', // '169, 173, 185'
     grey20: '#333333', // '51, 51, 51'
