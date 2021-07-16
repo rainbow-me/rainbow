@@ -173,7 +173,7 @@ describe('Send Sheet Interaction Flow', () => {
 
   it('Should only show a max of 2 decimals in quantity field', async () => {
     await Helpers.waitAndTap('send-asset-form-DAI');
-    await Helpers.waitAndTap('send-asset-DAI');
+    await Helpers.waitAndTap('send-asset-ETH');
     await Helpers.checkIfVisible('selected-asset-quantity-field-input');
     await Helpers.waitAndTap('selected-asset-quantity-field-input');
     await Helpers.typeText(
@@ -182,7 +182,7 @@ describe('Send Sheet Interaction Flow', () => {
       true
     );
     await Helpers.checkIfElementByTextIsVisible('8.12');
-    await Helpers.waitAndTap('send-asset-form-DAI');
+    await Helpers.waitAndTap('send-asset-form-ETH');
   });
 
   it('Should display Asset Form after tapping on asset ETH', async () => {
@@ -248,6 +248,7 @@ describe('Send Sheet Interaction Flow', () => {
 
   it('Should update address field to show contact name & show edit contact button', async () => {
     await Helpers.waitAndTap('add-contact-button');
+    await Helpers.clearField('contact-profile-name-input');
     await Helpers.typeText('contact-profile-name-input', 'testcoin.test', true);
     await Helpers.waitAndTap('contact-profile-add-button');
     await Helpers.checkIfElementByTextIsVisible('testcoin.test');
@@ -287,6 +288,7 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.waitAndTap('edit-contact-button');
     await Helpers.tapByText('Delete Contact');
     await Helpers.tapByText('Delete Contact');
+    await Helpers.delay(2000);
     await Helpers.checkIfVisible('add-contact-button');
   });
 

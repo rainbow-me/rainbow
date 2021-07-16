@@ -27,19 +27,18 @@ async function fetchShowcaseForAddress(address) {
 }
 
 const Wrapper = styled.View`
+  background-color: ${({ theme: { colors } }) => colors.white};
   border-top-left-radius: 15;
-  background-color: red;
-  overflow: hidden;
   border-top-right-radius: 15;
   height: 100%;
-  background-color: ${({ theme: { colors } }) => colors.white};
+  overflow: hidden;
 `;
 
 const LoadingWrapper = styled.View`
-  height: 100%;
-  width: 100%;
-  justify-content: center;
   align-items: center;
+  height: 100%;
+  justify-content: center;
+  width: 100%;
 `;
 
 export default function ShowcaseScreen() {

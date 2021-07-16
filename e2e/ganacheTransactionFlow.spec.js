@@ -13,7 +13,7 @@ beforeAll(async () => {
   // Create WC client
   // Create a connector
   connector = new WalletConnect({
-    bridge: 'https://bridge.walletconnect.org',
+    bridge: 'https://zora.bridge.walletconnect.org',
     clientMeta: {
       description: 'Connect with WalletConnect',
       icons: ['https://walletconnect.org/walletconnect-logo.png'],
@@ -141,7 +141,8 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
     await Helpers.tap('send-savings-cSAI');
     await Helpers.typeText('selected-asset-field-input', '1.69', true);
-    await Helpers.tapAndLongPress('Hold to Send');
+    await Helpers.tapAndLongPress('send-sheet-confirm-Hold to Send');
+    await Helpers.checkIfVisible('profile-screen');
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
@@ -161,7 +162,9 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
     await Helpers.tap('CryptoKitties-family-header');
     await Helpers.tapByText('Arun Cattybinky');
-    await Helpers.tapAndLongPress('Hold to Send');
+    await Helpers.tapAndLongPress('send-sheet-confirm-Hold to Send');
+    await Helpers.checkIfVisible('profile-screen');
+
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
@@ -170,7 +173,8 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
     await Helpers.tap('send-asset-BAT');
     await Helpers.typeText('selected-asset-field-input', '1.02', true);
-    await Helpers.tapAndLongPress('Hold to Send');
+    await Helpers.tapAndLongPress('send-sheet-confirm-Hold to Send');
+    await Helpers.checkIfVisible('profile-screen');
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
@@ -179,7 +183,8 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
     await Helpers.tap('send-asset-ETH');
     await Helpers.typeText('selected-asset-field-input', '0.003', true);
-    await Helpers.tapAndLongPress('Hold to Send');
+    await Helpers.tapAndLongPress('send-sheet-confirm-Hold to Send');
+    await Helpers.checkIfVisible('profile-screen');
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
@@ -215,7 +220,7 @@ describe('Ganache Transaction Flow', () => {
     const isConnected = await connected;
     if (!isConnected) throw new Error('WC Connection failed');
     await Helpers.checkIfVisible('wc-redirect-sheet');
-    await Helpers.swipe('wallet-screen', 'down', 'slow');
+    await Helpers.tap('wallet-screen');
   });
 
   it('Should be able to sign personal messages via WC', async () => {
@@ -314,9 +319,8 @@ describe('Ganache Transaction Flow', () => {
     if (!hash) {
       throw new Error('WC approving tx failed');
     }
+    await Helpers.delay(3000);
     await Helpers.swipe('wallet-screen', 'right', 'slow');
-    connector.killSession();
-    connector = null;
   });
 
   /*
@@ -340,6 +344,7 @@ describe('Ganache Transaction Flow', () => {
       await Helpers.checkIfVisible('Sending-Compound Sai');
     }
   });*/
+
   it('Should show completed send ERC20 (cSAI)', async () => {
     try {
       await Helpers.checkIfVisible('Sent-Compound SAI-1.69 cSAI');
@@ -384,6 +389,8 @@ describe('Ganache Transaction Flow', () => {
 
   afterAll(async () => {
     // Reset the app state
+    await connector.killSession();
+    connector = null;
     await device.clearKeychain();
     await exec('kill $(lsof -t -i:7545)');
   });

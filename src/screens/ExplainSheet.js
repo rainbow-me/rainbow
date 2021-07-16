@@ -95,7 +95,7 @@ const SavingsSheet = () => {
             >
               {explainers[type].emoji}
             </EmojiText>
-            <Title align="center" size="big" weight="heavy">
+            <Title align="center" lineHeight="big" size="big" weight="heavy">
               {explainers[type].title}
             </Title>
             <Text

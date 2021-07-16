@@ -1,4 +1,6 @@
 import React, { Fragment, useCallback } from 'react';
+import { View } from 'react-native';
+import { IS_TESTING } from 'react-native-dotenv';
 import RadialGradient from 'react-native-radial-gradient';
 import styled from 'styled-components';
 import { ButtonPressAnimation } from '../../animations';
@@ -18,10 +20,12 @@ const AddToListButton = styled(Centered)`
   margin-right: 10px;
 `;
 
-const Circle = styled(RadialGradient).attrs(({ theme: { colors } }) => ({
-  center: [0, 20],
-  colors: colors.gradients.lightestGrey,
-}))`
+const Circle = styled(IS_TESTING === 'true' ? View : RadialGradient).attrs(
+  ({ theme: { colors } }) => ({
+    center: [0, 20],
+    colors: colors.gradients.lightestGrey,
+  })
+)`
   border-radius: 20px;
   height: 40px;
   overflow: hidden;

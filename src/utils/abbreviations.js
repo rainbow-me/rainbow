@@ -2,9 +2,8 @@ import {
   isENSAddressFormat,
   isUnstoppableAddressFormat,
 } from '../helpers/validators';
-import deviceUtils from './deviceUtils';
 
-const defaultNumCharsPerSection = deviceUtils.isNarrowPhone ? 8 : 10;
+const defaultNumCharsPerSection = 6;
 
 export function address(
   currentAddress,
@@ -29,6 +28,18 @@ export function formatAddressForDisplay(
     : address(text, truncationLength, firstSectionLength);
 }
 
+export function abbreviateEnsForDisplay(text, truncationLength = 20) {
+  if (typeof text !== 'string' || !isENSAddressFormat(text)) {
+    return null;
+  }
+  const pieces = text.split('.');
+  if (pieces[0].length > truncationLength) {
+    return [pieces[0].slice(0, truncationLength), '(...).', pieces[1]].join('');
+  } else {
+    return text;
+  }
+}
+
 export function isAddress(currentAddress) {
   return (
     (currentAddress || '').substring(0, 2) === '0x' &&
@@ -37,6 +48,7 @@ export function isAddress(currentAddress) {
 }
 
 export default {
+  abbreviateEnsForDisplay,
   address,
   defaultNumCharsPerSection,
   formatAddressForDisplay,

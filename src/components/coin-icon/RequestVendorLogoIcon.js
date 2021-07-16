@@ -11,11 +11,9 @@ import ShadowStack from 'react-native-shadow-stack';
 
 const RVLIBorderRadius = 16.25;
 const RVLIShadows = colors => ({
-  default: [
-    [0, 4, 6, colors.shadow, 0.04],
-    [0, 1, 3, colors.shadow, 0.08],
-  ],
+  default: [[0, 4, 12, colors.shadow, 0.06]],
   large: [[0, 6, 10, colors.shadow, 0.14]],
+  none: [[0, 0, 0, colors.transparent, 0]],
 });
 
 const Content = styled(Centered)`
@@ -28,6 +26,7 @@ export default function RequestVendorLogoIcon({
   borderRadius = RVLIBorderRadius,
   dappName,
   imageUrl,
+  noShadow,
   shouldPrioritizeImageLoading,
   showLargeShadow,
   size = CoinIconSize,
@@ -59,7 +58,11 @@ export default function RequestVendorLogoIcon({
       {...position.sizeAsObject(size)}
       backgroundColor={colors.white}
       borderRadius={borderRadius}
-      shadows={RVLIShadows(colors)[showLargeShadow ? 'large' : 'default']}
+      shadows={
+        RVLIShadows(colors)[
+          noShadow ? 'none' : showLargeShadow ? 'large' : 'default'
+        ]
+      }
     >
       <Content color={bgColor} size={size}>
         {imageUrl && !error ? (

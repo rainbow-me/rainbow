@@ -19,6 +19,7 @@ const Input = (
     placeholderTextColor,
     selectionColor,
     spellCheck = true,
+    style,
     testID,
     textContentType = 'none',
     ...props
@@ -45,6 +46,7 @@ const Input = (
       ref={ref}
       selectionColor={selectionColor || defaultSelectionColor}
       spellCheck={spellCheck}
+      style={style}
       testID={testID}
       textContentType={textContentType}
     />

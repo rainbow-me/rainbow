@@ -4,11 +4,12 @@ import { captureEvent, captureException } from '@sentry/react-native';
 import { isEmpty, isString, toLower } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { InteractionManager, Keyboard, StatusBar } from 'react-native';
-import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
+import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { dismissingScreenListener } from '../../shim';
+import { GasSpeedButton } from '../components/gas';
 import { Column } from '../components/layout';
 import {
   SendAssetForm,
@@ -16,7 +17,6 @@ import {
   SendButton,
   SendContactList,
   SendHeader,
-  SendTransactionSpeed,
 } from '../components/send';
 import { AssetTypes } from '@rainbow-me/entities';
 import {
@@ -52,7 +52,7 @@ import {
   convertAmountFromNativeValue,
   formatInputDecimals,
 } from '@rainbow-me/utilities';
-import { deviceUtils, gasUtils } from '@rainbow-me/utils';
+import { deviceUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const sheetHeight = deviceUtils.dimensions.height - (android ? 30 : 10);
@@ -83,22 +83,20 @@ const KeyboardSizeView = styled(KeyboardArea)`
 
 export default function SendSheet(props) {
   const dispatch = useDispatch();
-  const { isTinyPhone } = useDimensions();
+  const { isSmallPhone, isTinyPhone } = useDimensions();
   const { navigate, addListener } = useNavigation();
+  const { isDarkMode } = useTheme();
   const { dataAddNewTransaction } = useTransactionConfirmation();
   const updateAssetOnchainBalanceIfNeeded = useUpdateAssetOnchainBalance();
   const { allAssets } = useAccountAssets();
   const {
     gasLimit,
-    gasPrices,
     isSufficientGas,
     prevSelectedGasPrice,
     selectedGasPrice,
     startPollingGasPrices,
     stopPollingGasPrices,
-    txFees,
     updateDefaultGasLimit,
-    updateGasPriceOption,
     updateTxFee,
   } = useGas();
   const isDismissing = useRef(false);
@@ -130,12 +128,7 @@ export default function SendSheet(props) {
   const { contacts, onRemoveContact, filteredContacts } = useContacts();
   const { userAccounts } = useUserAccounts();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
-  const {
-    accountAddress,
-    nativeCurrency,
-    nativeCurrencySymbol,
-    network,
-  } = useAccountSettings();
+  const { accountAddress, nativeCurrency, network } = useAccountSettings();
 
   const savings = useSendSavingsAccount();
   const fetchData = useRefreshAccountData();
@@ -157,13 +150,9 @@ export default function SendSheet(props) {
   const showAssetList = isValidAddress && isEmpty(selected);
   const showAssetForm = isValidAddress && !isEmpty(selected);
 
-  const { handleFocus, triggerFocus } = useMagicAutofocus(
-    recipientFieldRef,
-    useCallback(
-      lastFocusedRef => (showAssetList ? null : lastFocusedRef.current),
-      [showAssetList]
-    )
-  );
+  const isNft = selected?.type === AssetTypes.nft;
+
+  const { triggerFocus } = useMagicAutofocus(recipientFieldRef);
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => startPollingGasPrices());
@@ -391,34 +380,22 @@ export default function SendSheet(props) {
         isRecepientENS: toLower(recipient.slice(-4)) === '.eth',
       });
       if (submitSuccessful) {
-        navigate(Routes.PROFILE_SCREEN);
+        navigate(Routes.WALLET_SCREEN);
+        InteractionManager.runAfterInteractions(() => {
+          navigate(Routes.PROFILE_SCREEN);
+        });
       }
     } catch (error) {
       setIsAuthorizing(false);
     }
-  }, [amountDetails.assetAmount, navigate, onSubmit, recipient, selected]);
-
-  const onPressTransactionSpeed = useCallback(
-    onSuccess => {
-      const hideCustom = true;
-      gasUtils.showTransactionSpeedOptions(
-        gasPrices,
-        txFees,
-        gasPriceOption => updateGasPriceOption(gasPriceOption),
-        onSuccess,
-        hideCustom
-      );
-    },
-    [txFees, gasPrices, updateGasPriceOption]
-  );
-
-  const onLongPressSend = useCallback(() => {
-    if (isIphoneX()) {
-      submitTransaction();
-    } else {
-      onPressTransactionSpeed(submitTransaction);
-    }
-  }, [onPressTransactionSpeed, submitTransaction]);
+  }, [
+    amountDetails.assetAmount,
+    navigate,
+    onSubmit,
+    recipient,
+    selected?.name,
+    selected?.type,
+  ]);
 
   const onResetAssetSelection = useCallback(() => {
     analytics.track('Reset asset selection in Send flow');
@@ -497,9 +474,9 @@ export default function SendSheet(props) {
       <SheetContainer>
         <SendHeader
           contacts={contacts}
+          hideDivider={showAssetForm}
           isValidAddress={isValidAddress}
           onChangeAddressInput={onChangeInput}
-          onFocus={handleFocus}
           onPressPaste={setRecipient}
           onRefocusInput={triggerFocus}
           recipient={recipient}
@@ -533,36 +510,36 @@ export default function SendSheet(props) {
         {showAssetForm && (
           <SendAssetForm
             {...props}
-            allAssets={allAssets}
             assetAmount={amountDetails.assetAmount}
             buttonRenderer={
               <SendButton
                 {...props}
                 assetAmount={amountDetails.assetAmount}
                 isAuthorizing={isAuthorizing}
+                isNft={isNft}
                 isSufficientBalance={amountDetails.isSufficientBalance}
                 isSufficientGas={isSufficientGas}
-                onLongPress={onLongPressSend}
-                smallButton={isTinyPhone}
+                onLongPress={submitTransaction}
+                selected={selected}
+                smallButton={!isTinyPhone && (android || isSmallPhone)}
                 testID="send-sheet-confirm"
+                tinyButton={isTinyPhone}
               />
             }
             nativeAmount={amountDetails.nativeAmount}
             nativeCurrency={nativeCurrency}
             onChangeAssetAmount={onChangeAssetAmount}
             onChangeNativeAmount={onChangeNativeAmount}
-            onFocus={handleFocus}
             onResetAssetSelection={onResetAssetSelection}
             selected={selected}
             sendMaxBalance={sendMaxBalance}
             txSpeedRenderer={
-              isIphoneX() && (
-                <SendTransactionSpeed
-                  gasPrice={selectedGasPrice}
-                  nativeCurrencySymbol={nativeCurrencySymbol}
-                  onPressTransactionSpeed={onPressTransactionSpeed}
-                />
-              )
+              <GasSpeedButton
+                horizontalPadding={isTinyPhone ? 0 : 5}
+                theme={isDarkMode ? 'dark' : 'light'}
+                topPadding={isTinyPhone ? 8 : 15}
+                type="transaction"
+              />
             }
           />
         )}

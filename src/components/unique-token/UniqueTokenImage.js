@@ -1,11 +1,18 @@
-import React, { useCallback, useState } from 'react';
+import { toLower } from 'lodash';
+import React, { Fragment, useCallback, useState } from 'react';
+import { SvgCssUri } from 'react-native-svg';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { buildUniqueTokenName } from '../../helpers/assets';
-import { ENSAddress } from '../../parsers/uniqueTokens';
+import {
+  ENS_NFT_CONTRACT_ADDRESS,
+  UNIV3_NFT_CONTRACT_ADDRESS,
+} from '../../references';
 import { magicMemo } from '../../utils';
 import { Centered } from '../layout';
 import { Monospace, Text } from '../text';
+import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
+import { useDimensions } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { fonts, fontWithWidth, position } from '@rainbow-me/styles';
 
@@ -23,43 +30,77 @@ const getFallbackTextColor = (bg, darkMode, colors) =>
   );
 
 const ImageTile = styled(ImgixImage)`
-  justify-content: center;
   align-items: center;
+  justify-content: center;
 `;
 
-const ENSText = styled(Text).attrs(({ theme: { colors }, small }) => ({
-  color: colors.white,
-  size: small ? 'small' : 'big',
-}))`
+const ENSText = styled(Text).attrs(
+  ({ isTinyPhone, small, theme: { colors } }) => ({
+    color: colors.whiteLabel,
+    letterSpacing: 'roundedMedium',
+    size: small ? 'smedium' : isTinyPhone ? 'large' : 'bigger',
+  })
+)`
   padding: 8px;
   text-align: center;
-  ${fontWithWidth(fonts.weight.bold)};
+  ${fontWithWidth(fonts.weight.heavy)};
 `;
 
 const UniqueTokenImage = ({
   backgroundColor,
   imageUrl,
   item,
+  lowResUrl,
   resizeMode = ImgixImage.resizeMode.cover,
   small,
 }) => {
-  const isENS = item.asset_contract.address === ENSAddress;
+  const { isTinyPhone } = useDimensions();
+  const isENS =
+    toLower(item.asset_contract.address) === toLower(ENS_NFT_CONTRACT_ADDRESS);
+  const isUNIv3 =
+    toLower(item.asset_contract.address) ===
+    toLower(UNIV3_NFT_CONTRACT_ADDRESS);
   const image = isENS ? `${item.image_url}=s1` : imageUrl;
   const [error, setError] = useState(null);
   const handleError = useCallback(error => setError(error), [setError]);
   const { isDarkMode, colors } = useTheme();
+  // UNI v3 NFTs are animated so we can't support those
+  const isSVG = !isUNIv3 && isSupportedUriExtension(imageUrl, ['.svg']);
+  const [loadedImg, setLoadedImg] = useState(false);
+  const onLoad = useCallback(() => setLoadedImg(true), [setLoadedImg]);
 
   return (
     <Centered backgroundColor={backgroundColor} style={position.coverAsObject}>
-      {imageUrl && !error ? (
-        <ImageTile
-          onError={handleError}
-          resizeMode={ImgixImage.resizeMode[resizeMode]}
-          source={{ uri: image }}
+      {isSVG ? (
+        <SvgCssUri
+          height="100%"
           style={position.coverAsObject}
-        >
-          {isENS && <ENSText small={small}>{item.name}</ENSText>}
-        </ImageTile>
+          uri={imageUrl}
+          width="100%"
+        />
+      ) : imageUrl && !error ? (
+        <Fragment>
+          <ImageTile
+            onError={handleError}
+            onLoad={onLoad}
+            resizeMode={ImgixImage.resizeMode[resizeMode]}
+            source={{ uri: image }}
+            style={position.coverAsObject}
+          >
+            {isENS && (
+              <ENSText isTinyPhone={isTinyPhone} small={small}>
+                {item.name}
+              </ENSText>
+            )}
+          </ImageTile>
+          {!loadedImg && lowResUrl && (
+            <ImageTile
+              resizeMode={ImgixImage.resizeMode[resizeMode]}
+              source={{ uri: lowResUrl }}
+              style={position.coverAsObject}
+            />
+          )}
+        </Fragment>
       ) : (
         <Monospace
           align="center"

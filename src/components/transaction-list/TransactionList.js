@@ -274,7 +274,7 @@ export default function TransactionList({
     <Container>
       <Container
         accountAddress={accountName}
-        accountColor={colors.avatarColor[accountColor]}
+        accountColor={colors.avatarBackgrounds[accountColor]}
         accountImage={safeAccountImage}
         accountName={accountSymbol}
         addCashAvailable={addCashAvailable}

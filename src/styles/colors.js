@@ -12,6 +12,7 @@ const darkModeColors = {
   blueGreyDark04: '#222326',
   blueGreyDark20: '#3A3D45',
   blueGreyDark30: '#50535E',
+  blueGreyDark40: '#646876',
   blueGreyDark50: '#797D8B',
   blueGreyDarker: '#000000',
   blueGreyDarkLight: '#1E2027',
@@ -43,12 +44,40 @@ const darkModeColors = {
 
 const isHex = (color = '') => color.length >= 3 && color.charAt(0) === '#';
 const isRGB = (color = '') => toLower(color).substring(0, 3) === 'rgb';
+
+const avatarBackgrounds = [
+  '#FC5C54',
+  '#FFD95A',
+  '#E95D72',
+  '#6A87C8',
+  '#5FD0F3',
+  '#75C06B',
+  '#FFDD86',
+  '#5FC6D4',
+  '#FF949A',
+  '#FF8024',
+  '#9BA1A4',
+  '#EC66FF',
+  '#FF8CBC',
+  '#FF9A23',
+  '#C5DADB',
+  '#A8CE63',
+  '#71ABFF',
+  '#FFE279',
+  '#B6B1B6',
+  '#FF6780',
+  '#A575FF',
+  '#4D82FF',
+  '#FFB35A',
+];
+
 const getColorsByTheme = darkMode => {
   let base = {
     appleBlue: '#0E76FD', // '14, 118, 253'
     black: '#000000', // '0, 0, 0'
     blueGreyDark: '#3C4252', // '60, 66, 82'
     blueGreyDark30: '#C5C6CB', // this color is blueGreyDark at 30% over white
+    blueGreyDark40: '#B1B3BA', // this color is blueGreyDark at 40% over white
     blueGreyDark50: '#9DA0A8', // this color is blueGreyDark at 50% over white
     blueGreyDark60: '#898D97', // this color is blueGreyDark at 60% over white
     blueGreyDark80: '#636875', // this color is blueGreyDark at 80% over white
@@ -222,6 +251,7 @@ const getColorsByTheme = darkMode => {
   return {
     alpha: buildRgba,
     assetIcon,
+    avatarBackgrounds,
     avatarColor,
     brighten,
     getFallbackTextColor,

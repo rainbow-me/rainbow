@@ -123,6 +123,7 @@ export type BottomSheetNavigationOptions = Partial<
   backdropOpacity?: number;
   backdropColor?: string;
   height?: number | string;
+  offsetY?: number;
 };
 
 export type BottomSheetNavigationConfig = {};
