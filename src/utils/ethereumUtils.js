@@ -327,10 +327,7 @@ const deriveAccountFromWalletInput = input => {
 };
 
 function supportsEtherscan(network) {
-  if (network === networkTypes.arbitrum || network === networkTypes.polygon) {
-    return false;
-  }
-  return true;
+  return network !== networkTypes.arbitrum && network !== networkTypes.polygon;
 }
 
 function openAddressInBlockExplorer(address, network) {

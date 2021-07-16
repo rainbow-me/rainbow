@@ -142,9 +142,13 @@ export default function useImportingWallet() {
           return;
         }
       } else if (isValidAddress(input)) {
-        const ens = await web3Provider.lookupAddress(input);
-        if (ens && ens !== input) {
-          name = forceEmoji ? `${forceEmoji} ${ens}` : ens;
+        try {
+          const ens = await web3Provider.lookupAddress(input);
+          if (ens && ens !== input) {
+            name = forceEmoji ? `${forceEmoji} ${ens}` : ens;
+          }
+        } catch (e) {
+          logger.log(`Error resolving ENS during wallet import`, e);
         }
         showWalletProfileModal(name, guardedForceColor, input);
       } else {

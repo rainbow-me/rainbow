@@ -104,8 +104,6 @@ export default function WalletConnectApprovalSheet() {
   const { dappName, dappUrl, imageUrl } = meta;
   const callback = params?.callback;
 
-  const { isDarkMode } = useTheme();
-
   const checkIfScam = useCallback(
     async dappUrl => {
       const isScam = await ethereumUtils.checkIfUrlIsAScam(dappUrl);
@@ -330,7 +328,7 @@ export default function WalletConnectApprovalSheet() {
             isMenuPrimaryAction
             {...(android ? { onPress: onPressAndroid } : {})}
             menuConfig={{
-              menuItems: networksMenuItems(isDarkMode),
+              menuItems: networksMenuItems(),
               menuTitle: 'Available Networks',
             }}
             onPressMenuItem={handleOnPressNetworksMenuItem}
@@ -342,10 +340,15 @@ export default function WalletConnectApprovalSheet() {
                 <Centered marginBottom={0} marginRight={8} marginTop={5}>
                   <ChainLogo network={approvalNetworkInfo.value} />
                 </Centered>
-                <LabelText color={approvalNetworkInfo.color} numberOfLines={1}>
+                <LabelText
+                  color={colors.networkColors[approvalNetwork]}
+                  numberOfLines={1}
+                >
                   {approvalNetworkInfo.name}
                 </LabelText>
-                <SwitchText color={approvalNetworkInfo.color}>􀁰</SwitchText>
+                <SwitchText color={colors.networkColors[approvalNetwork]}>
+                  􀁰
+                </SwitchText>
               </Row>
             </ButtonPressAnimation>
           </ContextMenuButton>

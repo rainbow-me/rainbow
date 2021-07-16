@@ -22,6 +22,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import URL from 'url-parse';
 import Divider from '../components/Divider';
+import L2Explainer from '../components/L2Disclaimer';
 import { RequestVendorLogoIcon } from '../components/coin-icon';
 import { ContactAvatar } from '../components/contacts';
 import { GasSpeedButton } from '../components/gas';
@@ -70,6 +71,7 @@ import {
 } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
 import { walletConnectRemovePendingRedirect } from '@rainbow-me/redux/walletconnect';
+import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
 import {
   convertAmountToNativeDisplay,
@@ -167,10 +169,14 @@ export default function TransactionConfirmationScreen() {
   const keyboardHeight = useKeyboardHeight();
   const dispatch = useDispatch();
   const { params: routeParams } = useRoute();
-  const { goBack } = useNavigation();
+  const { goBack, navigate } = useNavigation();
 
   const pendingRedirect = useSelector(
     ({ walletconnect }) => walletconnect.pendingRedirect
+  );
+
+  const walletConnectors = useSelector(
+    ({ walletconnect }) => walletconnect.walletConnectors
   );
 
   const {
@@ -182,7 +188,6 @@ export default function TransactionConfirmationScreen() {
   const {
     callback,
     transactionDetails: {
-      chainId,
       dappName,
       dappScheme,
       dappUrl,
@@ -194,19 +199,25 @@ export default function TransactionConfirmationScreen() {
     },
   } = routeParams;
 
+  const walletConnector = walletConnectors[peerId];
+
+  const isL2 = useMemo(() => {
+    return isL2Network(network);
+  }, [network]);
+
   useEffect(() => {
-    setNetwork(ethereumUtils.getNetworkFromChainId(Number(chainId)));
-  }, [chainId]);
+    setNetwork(
+      ethereumUtils.getNetworkFromChainId(Number(walletConnector._chainId))
+    );
+  }, [walletConnector._chainId]);
 
   useEffect(() => {
     const initProvider = async () => {
-      const p = isL2Network(network)
-        ? await getProviderForNetwork(network)
-        : web3Provider;
+      const p = isL2 ? await getProviderForNetwork(network) : web3Provider;
       setProvider(p);
     };
     network && initProvider();
-  }, [network]);
+  }, [isL2, network]);
 
   const isMessageRequest = isMessageDisplayType(method);
 
@@ -220,7 +231,7 @@ export default function TransactionConfirmationScreen() {
     selectedGasPrice,
   } = useGas();
 
-  const request = displayDetails?.request;
+  const request = displayDetails.request;
   const openAutomatically = routeParams?.openAutomatically;
 
   const formattedDappUrl = useMemo(() => {
@@ -231,6 +242,13 @@ export default function TransactionConfirmationScreen() {
   const isAuthenticated = useMemo(() => {
     return isDappAuthenticated(dappUrl);
   }, [dappUrl]);
+
+  const handleL2ExplainerPress = useCallback(() => {
+    navigate(Routes.EXPLAIN_SHEET, {
+      network: network,
+      type: network,
+    });
+  }, [navigate, network]);
 
   const fetchMethodName = useCallback(
     async data => {
@@ -314,7 +332,9 @@ export default function TransactionConfirmationScreen() {
   const onCancel = useCallback(async () => {
     try {
       closeScreen(true);
-      callback?.({ error: 'User cancelled the request' });
+      if (callback) {
+        callback({ error: 'User cancelled the request' });
+      }
       setTimeout(async () => {
         if (requestId) {
           await dispatch(walletConnectSendStatus(peerId, requestId, null));
@@ -500,7 +520,9 @@ export default function TransactionConfirmationScreen() {
     }
 
     if (result) {
-      callback?.({ result: result.hash });
+      if (callback) {
+        callback({ result: result.hash });
+      }
       if (sendInsteadOfSign) {
         const txDetails = {
           amount: displayDetails?.request?.value ?? 0,
@@ -602,8 +624,9 @@ export default function TransactionConfirmationScreen() {
           walletConnectSendStatus(peerId, requestId, flatFormatSignature)
         );
       }
-      // TODO check v1
-      callback?.({ result: flatFormatSignature });
+      if (callback) {
+        callback({ sig: flatFormatSignature });
+      }
       closeScreen(false);
     } else {
       await onCancel();
@@ -797,6 +820,10 @@ export default function TransactionConfirmationScreen() {
     sheetHeight += 140;
   }
 
+  if (isL2) {
+    sheetHeight += 30;
+  }
+
   return (
     <SheetKeyboardAnimation
       as={AnimatedContainer}
@@ -831,7 +858,11 @@ export default function TransactionConfirmationScreen() {
           >
             <SheetHandleFixedToTop showBlur={false} />
             <Column marginBottom={17} />
-            <DappLogo dappName={dappName || ''} imageUrl={imageUrl || ''} />
+            <DappLogo
+              dappName={dappName || ''}
+              imageUrl={imageUrl || ''}
+              network={network}
+            />
             <Row marginBottom={5}>
               <Text
                 align="center"
@@ -873,6 +904,14 @@ export default function TransactionConfirmationScreen() {
               <Divider color={colors.rowDividerLight} inset={[0, 143.5]} />
             )}
             {renderTransactionSection()}
+            {isL2 && (
+              <L2Explainer
+                assetType={network}
+                colors={colors}
+                onPress={handleL2ExplainerPress}
+                symbol="request"
+              />
+            )}
             {renderTransactionButtons()}
             <RowWithMargins css={padding(0, 24, 30)} margin={15}>
               <Column>

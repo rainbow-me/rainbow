@@ -322,10 +322,8 @@ describe('Ganache Transaction Flow', () => {
     if (!hash) {
       throw new Error('WC approving tx failed');
     }
-    await Helpers.checkIfVisible('wallet-screen');
+    await Helpers.delay(3000);
     await Helpers.swipe('wallet-screen', 'right', 'slow');
-    connector.killSession();
-    connector = null;
   });
 
   /*
@@ -393,6 +391,8 @@ describe('Ganache Transaction Flow', () => {
 
   afterAll(async () => {
     // Reset the app state
+    await connector.killSession();
+    connector = null;
     await device.clearKeychain();
     await exec('kill $(lsof -t -i:7545)');
   });

@@ -7,7 +7,7 @@ import { Column, Row } from './layout';
 import { Text } from './text';
 import { lightModeThemeColors, position } from '@rainbow-me/styles';
 
-const L2Explainer = ({ assetType, colors, onPress, sending, symbol }) => {
+const L2Disclaimer = ({ assetType, colors, onPress, sending, symbol }) => {
   const gradientColors = ['#FFFFFF', '#F0F2F5'];
   const radialGradientProps = {
     center: [0, 1],
@@ -63,4 +63,4 @@ const L2Explainer = ({ assetType, colors, onPress, sending, symbol }) => {
   );
 };
 
-export default L2Explainer;
+export default L2Disclaimer;
