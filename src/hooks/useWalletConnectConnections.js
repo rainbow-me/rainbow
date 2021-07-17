@@ -3,9 +3,14 @@ import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { sortList } from '../helpers/sortList';
+import { getAddressAndChainIdFromWCAccount } from '../model/walletConnect';
 import {
   walletConnectDisconnectAllByDappName as rawWalletConnectDisconnectAllByDappName,
   walletConnectOnSessionRequest as rawWalletConnectOnSessionRequest,
+  walletConnectUpdateSessionConnectorByDappName as rawWalletConnectUpdateSessionConnectorByDappName,
+  walletConnectV2DisconnectAllSessions as rawWalletConnectV2DisconnectAllSessions,
+  walletConnectV2DisconnectByDappName as rawWalletConnectV2DisconnectByDappName,
+  walletConnectV2UpdateSessionByDappName as rawWalletConnectV2UpdateSessionByDappName,
 } from '../redux/walletconnect';
 
 const formatDappData = connections =>
@@ -15,6 +20,25 @@ const formatDappData = connections =>
       dappName: connection?.[0].peerMeta.name,
       dappUrl: connection?.[0].peerMeta.url,
     }))
+  );
+
+const formatSessionsData = clientSessions =>
+  values(
+    mapValues(clientSessions, session => {
+      const accounts = session?.state?.accounts;
+      const { name, url, icons } = session?.peer?.metadata;
+      const { address, chainId } = getAddressAndChainIdFromWCAccount(
+        accounts?.[0]
+      );
+      return {
+        account: address,
+        chainId,
+        dappIcon: icons[0],
+        dappName: name,
+        dappUrl: url,
+        version: 'v2',
+      };
+    })
   );
 
 const walletConnectSelector = createSelector(
@@ -30,6 +54,16 @@ const walletConnectSelector = createSelector(
   }
 );
 
+const walletConnectV2Selector = createSelector(
+  state => state.walletconnect.clientSessions,
+  clientSessions => {
+    return {
+      walletConnectV2Sessions: formatSessionsData(clientSessions),
+      walletConnectV2SessionsCount: clientSessions.length,
+    };
+  }
+);
+
 export default function useWalletConnectConnections() {
   const dispatch = useDispatch();
   const {
@@ -37,6 +71,10 @@ export default function useWalletConnectConnections() {
     walletConnectorsByDappName,
     walletConnectorsCount,
   } = useSelector(walletConnectSelector);
+
+  const { walletConnectV2Sessions, walletConnectV2SessionsCount } = useSelector(
+    walletConnectV2Selector
+  );
 
   const walletConnectDisconnectAllByDappName = useCallback(
     dappName => dispatch(rawWalletConnectDisconnectAllByDappName(dappName)),
@@ -49,11 +87,53 @@ export default function useWalletConnectConnections() {
     [dispatch]
   );
 
+  const walletConnectUpdateSessionConnectorByDappName = useCallback(
+    (dappName, accountAddress, chainId) =>
+      dispatch(
+        rawWalletConnectUpdateSessionConnectorByDappName(
+          dappName,
+          accountAddress,
+          chainId
+        )
+      ),
+    [dispatch]
+  );
+
+  const walletConnectV2DisconnectAllSessions = useCallback(
+    () => dispatch(rawWalletConnectV2DisconnectAllSessions()),
+    [dispatch]
+  );
+
+  const walletConnectV2UpdateSessionByDappName = useCallback(
+    (dappName, accountAddress, chainId) =>
+      dispatch(
+        rawWalletConnectV2UpdateSessionByDappName(
+          dappName,
+          accountAddress,
+          chainId
+        )
+      ),
+    [dispatch]
+  );
+
+  const walletConnectV2DisconnectByDappName = useCallback(
+    dappName => {
+      dispatch(rawWalletConnectV2DisconnectByDappName(dappName));
+    },
+    [dispatch]
+  );
+
   return {
     sortedWalletConnectors,
     walletConnectDisconnectAllByDappName,
     walletConnectOnSessionRequest,
     walletConnectorsByDappName,
     walletConnectorsCount,
+    walletConnectUpdateSessionConnectorByDappName,
+    walletConnectV2DisconnectAllSessions,
+    walletConnectV2DisconnectByDappName,
+    walletConnectV2Sessions,
+    walletConnectV2SessionsCount,
+    walletConnectV2UpdateSessionByDappName,
   };
 }

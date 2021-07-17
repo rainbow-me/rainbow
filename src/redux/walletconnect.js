@@ -25,6 +25,15 @@ import { Navigation } from '../navigation';
 import { isSigningMethod } from '../utils/signingMethods';
 import { addRequestToApprove } from './requests';
 import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
+import { convertHexToString } from '@rainbow-me/helpers/utilities';
+import WalletConnectApprovalSheetType from '@rainbow-me/helpers/walletConnectApprovalSheetTypes';
+import {
+  walletConnectDisconnectAllSessions,
+  walletConnectDisconnectByDappName,
+  walletConnectInit,
+  walletConnectUpdateSessionByDappName,
+} from '@rainbow-me/model/walletConnect';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 
@@ -45,6 +54,10 @@ const WALLETCONNECT_SET_PENDING_REDIRECT =
   'walletconnect/WALLETCONNECT_SET_PENDING_REDIRECT';
 const WALLETCONNECT_REMOVE_PENDING_REDIRECT =
   'walletconnect/WALLETCONNECT_REMOVE_PENDING_REDIRECT';
+export const WALLETCONNECT_V2_INIT_SESSIONS =
+  'walletconnect/WALLETCONNECT_V2_INIT_SESSIONS';
+export const WALLETCONNECT_V2_UPDATE_SESSIONS =
+  'walletconnect/WALLETCONNECT_V2_UPDATE_SESSIONS';
 
 // -- Actions ---------------------------------------- //
 const getNativeOptions = async () => {
@@ -292,6 +305,45 @@ export const walletConnectLoadState = () => async (dispatch, getState) => {
       type: WALLETCONNECT_INIT_SESSIONS,
     });
   }
+
+  // Wallet connect v2
+  const client = await walletConnectInit({ dispatch, getState });
+  dispatch({
+    payload: clone(client.session.values),
+    type: WALLETCONNECT_V2_INIT_SESSIONS,
+  });
+};
+
+export const walletConnectV2DisconnectAllSessions = () => async dispatch => {
+  const sessions = await walletConnectDisconnectAllSessions();
+  dispatch({
+    payload: clone(sessions),
+    type: WALLETCONNECT_V2_UPDATE_SESSIONS,
+  });
+};
+
+export const walletConnectV2UpdateSessionByDappName = (
+  dappName,
+  accountAddress,
+  chainId
+) => async dispatch => {
+  const sessions = await walletConnectUpdateSessionByDappName(
+    dappName,
+    accountAddress,
+    chainId
+  );
+  dispatch({
+    payload: clone(sessions),
+    type: WALLETCONNECT_V2_UPDATE_SESSIONS,
+  });
+};
+
+export const walletConnectV2DisconnectByDappName = dappName => async dispatch => {
+  const sessions = await walletConnectDisconnectByDappName(dappName);
+  dispatch({
+    payload: clone(sessions),
+    type: WALLETCONNECT_V2_UPDATE_SESSIONS,
+  });
 };
 
 export const setPendingRequest = (peerId, walletConnector) => (
@@ -459,6 +511,7 @@ export const walletConnectSendStatus = (peerId, requestId, result) => async (
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
+  clientSessions: [],
   pendingRedirect: false,
   pendingRequests: {},
   walletConnectors: {},
@@ -483,6 +536,10 @@ export default (state = INITIAL_STATE, action) => {
       return { ...state, pendingRedirect: true };
     case WALLETCONNECT_REMOVE_PENDING_REDIRECT:
       return { ...state, pendingRedirect: false };
+    case WALLETCONNECT_V2_INIT_SESSIONS:
+      return { ...state, clientSessions: action.payload };
+    case WALLETCONNECT_V2_UPDATE_SESSIONS:
+      return { ...state, clientSessions: action.payload };
     default:
       return state;
   }

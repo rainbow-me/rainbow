@@ -214,43 +214,19 @@ export const walletConnectInit = async (store: any) => {
       }
     }
   );
+  return client;
 };
 
-export const walletConnectGetClient = () => client;
-export const walletConnectAllSessions = (): {
-  account: string;
-  chainId: number;
-  dappIcon: string;
-  dappName: string;
-  dappUrl: string;
-}[] => {
-  return (
-    client?.session?.values?.map(value => {
-      const accounts = value?.state?.accounts;
-      const { name, url, icons } = value?.peer?.metadata;
-      const { address, chainId } = getAddressAndChainIdFromWCAccount(
-        accounts?.[0]
-      );
-      return {
-        account: address,
-        chainId,
-        dappIcon: icons[0],
-        dappName: name,
-        dappUrl: url,
-        version: 'v2',
-      };
-    }) || []
-  );
-};
-
-export const walletConnectDisconnectAllSessions = () => {
+export const walletConnectDisconnectAllSessions = async () => {
   const sessions = client.session.values;
-  sessions.forEach(session => {
-    walletConnectDisconnect(session.topic);
-  });
+  const disconnectSessions = sessions.map(session => () =>
+    walletConnectDisconnect(session.topic)
+  );
+  await Promise.all(disconnectSessions);
+  return client.session.values;
 };
 
-export const walletConnectUpdateSessionByDappName = (
+export const walletConnectUpdateSessionByDappName = async (
   dappName: string,
   newAccountAddress: string,
   newChainId: string
@@ -265,26 +241,27 @@ export const walletConnectUpdateSessionByDappName = (
   session.permissions.blockchain = [eip55ChainId];
   session.state.accounts = [newAccount];
 
-  client.update({
+  await client.update({
     state: session.state.accounts,
     topic: session.topic,
   });
-  //   client.notify(session.topic);
+  return client.session.values;
 };
 
-export const walletConnectDisconnectByDappName = (dappName: string) => {
+export const walletConnectDisconnectByDappName = async (dappName: string) => {
   const session = client?.session?.values?.find(
     value => dappName === value?.peer?.metadata?.name
   );
-  walletConnectDisconnect(session.topic);
+  await walletConnectDisconnect(session.topic);
+  return client.session.values;
 };
 
-export const walletConnectDisconnect = (topic: string) => {
+const walletConnectDisconnect = async (topic: string) => {
   const reason: Reason = {
     code: 400,
     message: 'User disconnected',
   };
-  client.disconnect({ reason, topic });
+  await client.disconnect({ reason, topic });
 };
 
 export const walletConnectPair = async (uri: string) => {

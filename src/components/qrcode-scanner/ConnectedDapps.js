@@ -6,7 +6,6 @@ import { ButtonPressAnimation } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { useWalletConnectConnections } from '@rainbow-me/hooks';
-import { walletConnectAllSessions } from '@rainbow-me/model/walletConnect';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 
@@ -35,12 +34,14 @@ const OverlayBlur = styled(BlurView).attrs(({ isDarkMode }) => ({
 
 function ConnectedDapps() {
   const { navigate } = useNavigation();
-  const { walletConnectorsByDappName } = useWalletConnectConnections();
-  const walletConnectSessionsV2 = walletConnectAllSessions();
+  const {
+    walletConnectorsCount,
+    walletConnectV2SessionsCount,
+  } = useWalletConnectConnections();
 
   const connectionsNumber = useMemo(
-    () => walletConnectorsByDappName.length + walletConnectSessionsV2.length,
-    [walletConnectorsByDappName, walletConnectSessionsV2]
+    () => walletConnectorsCount + walletConnectV2SessionsCount,
+    [walletConnectorsCount, walletConnectV2SessionsCount]
   );
 
   return connectionsNumber === 0 ? null : (

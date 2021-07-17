@@ -1,9 +1,5 @@
 import React from 'react';
-import URL from 'url-parse';
-import { walletConnectDisconnectAllSessions } from '../../model/walletConnect';
-import ButtonPressAnimation from '../animations/ButtonPressAnimation/ButtonPressAnimation';
 import ConnectedDapps from '../qrcode-scanner/ConnectedDapps';
-import { Text } from '../text';
 import BottomSpacer from './BottomSpacer';
 import Lists from './ListsSection';
 import PulseIndex from './PulseIndexSection';
@@ -19,11 +15,6 @@ export default function DiscoverHome() {
       <TopMoversSection />
       <PulseIndex />
       <ConnectedDapps />
-      <ButtonPressAnimation
-        onPress={() => walletConnectDisconnectAllSessions()}
-      >
-        <Text>Disconnect all wallet connect</Text>
-      </ButtonPressAnimation>
       <Lists />
       {/* <Strategies /> */}
       {accountAddress ? <UniswapPools /> : null}
