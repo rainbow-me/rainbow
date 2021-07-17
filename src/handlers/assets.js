@@ -1,39 +1,30 @@
 import { Contract } from '@ethersproject/contracts';
-import {
-  convertAmountToBalanceDisplay,
-  convertRawAmountToDecimalFormat,
-} from '../helpers/utilities';
+import { toLower } from 'lodash';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   ARBITRUM_ETH_ADDRESS,
   erc20ABI,
   ETH_ADDRESS,
   MATIC_POLYGON_ADDRESS,
   OPTIMISM_ETH_ADDRESS,
-} from '../references';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
+} from '@rainbow-me/references';
+import {
+  convertAmountToBalanceDisplay,
+  convertRawAmountToDecimalFormat,
+} from '@rainbow-me/utilities';
 
 const nativeAssetsPerNetwork = {
-  [ARBITRUM_ETH_ADDRESS]: [networkTypes.arbitrum],
-  [ETH_ADDRESS]: [
-    networkTypes.mainnet,
-    networkTypes.ropsten,
-    networkTypes.kovan,
-    networkTypes.goerli,
-  ],
-  [MATIC_POLYGON_ADDRESS]: [networkTypes.polygon],
-  [OPTIMISM_ETH_ADDRESS]: [networkTypes.optimism],
+  [networkTypes.arbitrum]: ARBITRUM_ETH_ADDRESS,
+  [networkTypes.goerli]: ETH_ADDRESS,
+  [networkTypes.kovan]: ETH_ADDRESS,
+  [networkTypes.mainnet]: ETH_ADDRESS,
+  [networkTypes.optimism]: OPTIMISM_ETH_ADDRESS,
+  [networkTypes.polygon]: MATIC_POLYGON_ADDRESS,
+  [networkTypes.ropsten]: ETH_ADDRESS,
 };
 
 export function isNativeAsset(address, network) {
-  /* 
-    check if an asset is native depending on
-    the network & asset address
-  */
-
-  if (nativeAssetsPerNetwork[address]?.indexOf(network) !== -1) {
-    return true;
-  }
-  return false;
+  return toLower(nativeAssetsPerNetwork[network]) === toLower(address);
 }
 
 export async function getOnchainAssetBalance(
