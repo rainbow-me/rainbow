@@ -20,8 +20,12 @@ export default function ConnectedDappsSheet() {
   const { walletConnectorsByDappName } = useWalletConnectConnections();
   const walletConnectSessionsV2 = walletConnectAllSessions();
 
-  const connectionsNumber = useMemo(
-    () => walletConnectorsByDappName.length + walletConnectSessionsV2.length,
+  const { connectionsNumber, connections } = useMemo(
+    () => ({
+      connections: walletConnectorsByDappName.concat(walletConnectSessionsV2),
+      connectionsNumber:
+        walletConnectorsByDappName.length + walletConnectSessionsV2.length,
+    }),
     [walletConnectorsByDappName, walletConnectSessionsV2]
   );
 
@@ -35,21 +39,8 @@ export default function ConnectedDappsSheet() {
     <Sheet borderRadius={30}>
       <SheetTitle>Connected apps</SheetTitle>
       <ScrollableItems length={connectionsNumber}>
-        {walletConnectorsByDappName.map(
-          ({ account, chainId, dappIcon, dappName, dappUrl }) => (
-            <WalletConnectListItem
-              account={account}
-              chainId={chainId}
-              dappIcon={dappIcon}
-              dappName={dappName}
-              dappUrl={dappUrl}
-              key={dappName}
-              version="v1"
-            />
-          )
-        )}
-        {walletConnectSessionsV2.map(
-          ({ account, chainId, dappIcon, dappName, dappUrl }, i) => (
+        {connections.map(
+          ({ account, chainId, dappIcon, dappName, dappUrl, version }, i) => (
             <WalletConnectListItem
               account={account}
               chainId={chainId}
@@ -57,7 +48,7 @@ export default function ConnectedDappsSheet() {
               dappName={dappName}
               dappUrl={dappUrl}
               key={i}
-              version="v2"
+              version={version}
             />
           )
         )}
