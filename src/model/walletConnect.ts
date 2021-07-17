@@ -27,8 +27,8 @@ const SUPPORTED_MAIN_CHAINS = [
 
 const SUPPORTED_TEST_CHAINS = ['eip155:3', 'eip155:4', 'eip155:5', 'eip155:42'];
 
-const toEIP55Format = (chainId: string) => `eip155:${chainId}`;
-export const fromEIP55Format = (chain: string) => chain.replace('eip155:', '');
+const toEIP55Format = (chainId: string | number) => `eip155:${chainId}`;
+export const fromEIP55Format = (chain: string) => chain?.replace('eip155:', '');
 
 export const getAddressAndChainIdFromWCAccount = (
   account: string
@@ -237,6 +237,7 @@ export const walletConnectAllSessions = (): {
         dappIcon: icons[0],
         dappName: name,
         dappUrl: url,
+        version: 'v2',
       };
     }) || []
   );
@@ -247,6 +248,28 @@ export const walletConnectDisconnectAllSessions = () => {
   sessions.forEach(session => {
     walletConnectDisconnect(session.topic);
   });
+};
+
+export const walletConnectUpdateSessionByDappName = (
+  dappName: string,
+  newAccountAddress: string,
+  newChainId: string
+) => {
+  const sessions = client?.session?.values;
+  const session = sessions?.find(
+    value => dappName === value?.peer?.metadata?.name
+  );
+  const { address } = getAddressAndChainIdFromWCAccount(newAccountAddress);
+  const eip55ChainId = toEIP55Format(newChainId);
+  const newAccount = generateWalletConnectAccount(address, eip55ChainId);
+  session.permissions.blockchain = [eip55ChainId];
+  session.state.accounts = [newAccount];
+
+  client.update({
+    state: session.state.accounts,
+    topic: session.topic,
+  });
+  //   client.notify(session.topic);
 };
 
 export const walletConnectDisconnectByDappName = (dappName: string) => {
