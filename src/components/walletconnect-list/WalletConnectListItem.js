@@ -26,10 +26,6 @@ import {
   useWalletConnectConnections,
   useWallets,
 } from '@rainbow-me/hooks';
-import {
-  walletConnectDisconnectByDappName,
-  walletConnectUpdateSessionByDappName,
-} from '@rainbow-me/model/walletConnect';
 import { Navigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
@@ -72,6 +68,8 @@ export default function WalletConnectListItem({
   const {
     walletConnectDisconnectAllByDappName,
     walletConnectUpdateSessionConnectorByDappName,
+    walletConnectV2DisconnectByDappName,
+    walletConnectV2UpdateSessionByDappName,
   } = useWalletConnectConnections();
   const { colors } = useTheme();
   const { wallets, walletNames } = useWallets();
@@ -116,22 +114,30 @@ export default function WalletConnectListItem({
     (dappName, address, chainId) => {
       const updateSession =
         version === 'v2'
-          ? walletConnectUpdateSessionByDappName
+          ? walletConnectV2UpdateSessionByDappName
           : walletConnectUpdateSessionConnectorByDappName;
       updateSession(dappName, address, chainId);
     },
-    [version, walletConnectUpdateSessionConnectorByDappName]
+    [
+      version,
+      walletConnectUpdateSessionConnectorByDappName,
+      walletConnectV2UpdateSessionByDappName,
+    ]
   );
 
   const walletConnectDisconnect = useCallback(
     dappName => {
       const updateSession =
         version === 'v2'
-          ? walletConnectDisconnectByDappName
+          ? walletConnectV2DisconnectByDappName
           : walletConnectDisconnectAllByDappName;
       updateSession(dappName);
     },
-    [version, walletConnectDisconnectAllByDappName]
+    [
+      version,
+      walletConnectDisconnectAllByDappName,
+      walletConnectV2DisconnectByDappName,
+    ]
   );
 
   const handlePressChangeWallet = useCallback(() => {
