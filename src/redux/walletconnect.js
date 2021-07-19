@@ -316,6 +316,13 @@ export const walletConnectLoadState = () => async (dispatch, getState) => {
   });
 };
 
+export const walletConnectV2UpdateSessions = sessions => async dispatch => {
+  dispatch({
+    payload: clone(sessions),
+    type: WALLETCONNECT_V2_UPDATE_SESSIONS,
+  });
+};
+
 export const walletConnectV2DisconnectAllSessions = () => async dispatch => {
   const sessions = await walletConnectDisconnectAllSessions();
   dispatch({

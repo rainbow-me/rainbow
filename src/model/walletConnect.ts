@@ -109,7 +109,7 @@ export const walletConnectInit = async (store: any) => {
         wcTrack('Showing Walletconnect session request', metadata);
 
         Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {
-          callback: (
+          callback: async (
             approved: boolean,
             chainId: string,
             accountAddress: string
@@ -128,12 +128,13 @@ export const walletConnectInit = async (store: any) => {
               };
               wcTrack('Approved new WalletConnect session', metadata);
               walletConnectV2HandleAction('connect');
-              client.approve({ proposal, response });
+              await client.approve({ proposal, response });
             } else {
               wcTrack('Rejected new WalletConnect session', metadata);
               walletConnectV2HandleAction('reject');
-              client.reject({ proposal });
+              await client.reject({ proposal });
             }
+            return client.session.values;
           },
           chainId: fromEIP55Format(chains?.[0]),
           meta: {
@@ -141,6 +142,7 @@ export const walletConnectInit = async (store: any) => {
             dappUrl: metadata.url,
             imageUrl: metadata.icons?.[0],
           },
+          version: 'v2',
         });
       } catch (error) {
         logger.log('Exception during wc session.proposal');
