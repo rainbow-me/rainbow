@@ -1,7 +1,9 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import analytics from '@segment/analytics-react-native';
+import { captureException } from '@sentry/react-native';
 import WalletConnectClient, { CLIENT_EVENTS } from '@walletconnect/clientv2';
 import { Reason, SessionTypes } from '@walletconnect/typesv2';
+import lang from 'i18n-js';
 import { Alert, InteractionManager } from 'react-native';
 import { isSigningMethod } from '../utils/signingMethods';
 import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
@@ -11,10 +13,22 @@ import { Navigation } from '@rainbow-me/navigation';
 import { addRequestToApproveV2 } from '@rainbow-me/redux/requests';
 import { RAINBOW_METADATA } from '@rainbow-me/redux/walletconnect';
 import Routes from '@rainbow-me/routes';
-import { watchingAlert } from '@rainbow-me/utils';
+import { logger, watchingAlert } from '@rainbow-me/utils';
 
 // eslint-disable-next-line no-console
 const wcLogger = (a: String, b?: any) => console.info(`::: WC ::: ${a}`, b);
+
+const wcTrack = (
+  event: string,
+  metadata: { name: string; url: string },
+  opts?: object
+) =>
+  analytics.track(event, {
+    dappName: metadata?.name || metadata.url,
+    dappUrl: metadata.url,
+    version: 'v2',
+    ...opts,
+  });
 
 const SUPPORTED_MAIN_CHAINS = [
   'eip155:1',
@@ -69,125 +83,155 @@ export const walletConnectInit = async (store: any) => {
   client.on(
     CLIENT_EVENTS.session.proposal,
     async (proposal: SessionTypes.Proposal) => {
-      const { proposer, permissions } = proposal;
-      const { metadata } = proposer;
-      const chains = permissions.blockchain.chains;
+      try {
+        const { proposer, permissions } = proposal;
+        const { metadata } = proposer;
+        const chains = permissions.blockchain.chains;
 
-      if (!isSupportedChain(chains[0])) {
-        Alert.alert('Chain not supported', `${chains[0]} is not supported`);
-        client.reject({ proposal });
-        return;
+        if (!isSupportedChain(chains[0])) {
+          Alert.alert('Chain not supported', `${chains[0]} is not supported`);
+          wcTrack('Walletconnect chain not supported', metadata, {
+            chain: chains[0],
+          });
+          client.reject({ proposal });
+          return;
+        }
+        wcTrack('Showing Walletconnect session request', metadata);
+
+        Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {
+          callback: (
+            approved: boolean,
+            chainId: string,
+            accountAddress: string
+          ) => {
+            if (approved) {
+              const chain = toEIP55Format(chainId);
+              const walletConnectAccount = generateWalletConnectAccount(
+                accountAddress,
+                chain
+              );
+              const response: SessionTypes.Response = {
+                metadata: RAINBOW_METADATA,
+                state: {
+                  accounts: [walletConnectAccount],
+                },
+              };
+              wcTrack('Approved new WalletConnect session', metadata);
+              client.approve({ proposal, response });
+            } else {
+              wcTrack('Rejected new WalletConnect session', metadata);
+              client.reject({ proposal });
+            }
+          },
+          chainId: fromEIP55Format(chains?.[0]),
+          meta: {
+            dappName: metadata.name,
+            dappUrl: metadata.url,
+            imageUrl: metadata.icons?.[0],
+          },
+        });
+      } catch (error) {
+        logger.log('Exception during wc session.proposal');
+        analytics.track('Exception on wc session.proposal', {
+          error,
+          version: 'v2',
+        });
+        captureException(error);
+        Alert.alert(lang.t('wallet.wallet_connect.error'));
       }
-
-      Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {
-        callback: (
-          approved: boolean,
-          chainId: string,
-          accountAddress: string
-        ) => {
-          if (approved) {
-            const chain = toEIP55Format(chainId);
-            const response: SessionTypes.Response = {
-              metadata: RAINBOW_METADATA,
-              state: {
-                accounts: [generateWalletConnectAccount(accountAddress, chain)],
-              },
-            };
-            client.approve({ proposal, response });
-          } else {
-            client.reject({ proposal });
-          }
-        },
-        chainId: fromEIP55Format(chains[0]),
-        meta: {
-          dappName: metadata.name,
-          dappUrl: metadata.url,
-          imageUrl: metadata.icons?.[0],
-        },
-      });
     }
   );
 
   client.on(
     CLIENT_EVENTS.session.request,
     async (requestEvent: SessionTypes.RequestEvent) => {
-      const { topic, request } = requestEvent;
-      const session = await client.session.get(requestEvent.topic);
+      try {
+        const { topic, request } = requestEvent;
+        const session = await client.session.get(requestEvent.topic);
 
-      if (request.method === 'wallet_addEthereumChain') {
-        wcLogger('wallet_addEthereumChain');
-      } else if (!isSigningMethod(request.method)) {
-        sendRpcCall(request)
-          .then(async result => {
-            const response = {
-              response: {
-                id: request.id,
-                jsonrpc: '2.0',
-                result,
-              },
-              topic,
-            };
-            await client.respond(response);
-          })
-          .catch(async () => {
+        if (request.method === 'wallet_addEthereumChain') {
+          wcLogger('wallet_addEthereumChain');
+        } else if (!isSigningMethod(request.method)) {
+          sendRpcCall(request)
+            .then(async result => {
+              const response = {
+                response: {
+                  id: request.id,
+                  jsonrpc: '2.0',
+                  result,
+                },
+                topic,
+              };
+              await client.respond(response);
+            })
+            .catch(async () => {
+              const response = {
+                response: notSupportedResponse(request.id),
+                topic,
+              };
+              await client.respond(response);
+            });
+          return;
+        } else {
+          const { dispatch, getState } = store;
+          const { selected } = getState().wallets;
+          const selectedWallet = selected || {};
+          const isReadOnlyWallet = selectedWallet.type === walletTypes.readOnly;
+          if (isReadOnlyWallet && !enableActionsOnReadOnlyWallet) {
+            watchingAlert();
             const response = {
               response: notSupportedResponse(request.id),
               topic,
             };
             await client.respond(response);
-          });
-        return;
-      } else {
-        const { dispatch, getState } = store;
-        const { selected } = getState().wallets;
-        const selectedWallet = selected || {};
-        const isReadOnlyWallet = selectedWallet.type === walletTypes.readOnly;
-        if (isReadOnlyWallet && !enableActionsOnReadOnlyWallet) {
-          watchingAlert();
-          const response = {
-            response: notSupportedResponse(request.id),
-            topic,
-          };
-          await client.respond(response);
-          return;
-        }
+            return;
+          }
 
-        const requestToApprove = await dispatch(
-          addRequestToApproveV2(request.id, session, request)
-        );
-        if (requestToApprove) {
-          analytics.track('Showing Walletconnect signing request');
-          InteractionManager.runAfterInteractions(() => {
-            Navigation.handleAction(Routes.CONFIRM_REQUEST, {
-              callback: async (res: { error: string; result: string }) => {
-                const { error, result } = res;
-                const response = {
-                  response: {
-                    id: request.id,
-                    jsonrpc: '2.0',
-                    ...(error
-                      ? {
-                          error: {
-                            // internal error
-                            code: -32603,
-                            message: error,
-                          },
-                        }
-                      : { result }),
-                  },
-                  topic,
-                };
-                await client.respond(response);
-              },
-              openAutomatically: true,
-              transactionDetails: requestToApprove,
+          const requestToApprove = await dispatch(
+            addRequestToApproveV2(request.id, session, request)
+          );
+
+          if (requestToApprove) {
+            InteractionManager.runAfterInteractions(() => {
+              wcTrack('Showing Walletconnect signing request', session);
+              Navigation.handleAction(Routes.CONFIRM_REQUEST, {
+                callback: async (res: { error: string; result: string }) => {
+                  const { error, result } = res;
+                  const response = {
+                    response: {
+                      id: request.id,
+                      jsonrpc: '2.0',
+                      ...(error
+                        ? {
+                            error: {
+                              // internal error
+                              code: -32603,
+                              message: error,
+                            },
+                          }
+                        : { result }),
+                    },
+                    topic,
+                  };
+                  await client.respond(response);
+                },
+                openAutomatically: true,
+                transactionDetails: requestToApprove,
+              });
             });
-          });
+          }
         }
+      } catch (error) {
+        logger.log('Exception during wc session.request');
+        analytics.track('Exception on wc session.request', {
+          error,
+          version: 'v2',
+        });
+        captureException(error);
+        Alert.alert(lang.t('wallet.wallet_connect.error'));
       }
     }
   );
-  return client;
 };
 
 export const walletConnectDisconnectAllSessions = async () => {
