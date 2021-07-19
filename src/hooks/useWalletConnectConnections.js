@@ -22,9 +22,9 @@ const formatDappData = connections =>
     }))
   );
 
-const formatSessionsData = clientSessions =>
+const formatSessionsData = clientV2Sessions =>
   values(
-    mapValues(clientSessions, session => {
+    mapValues(clientV2Sessions, session => {
       const accounts = session?.state?.accounts;
       const { name, url, icons } = session?.peer?.metadata;
       const { address, chainId } = getAddressAndChainIdFromWCAccount(
@@ -55,11 +55,11 @@ const walletConnectSelector = createSelector(
 );
 
 const walletConnectV2Selector = createSelector(
-  state => state.walletconnect.clientSessions,
-  clientSessions => {
+  state => state.walletconnect.clientV2Sessions,
+  clientV2Sessions => {
     return {
-      walletConnectV2Sessions: formatSessionsData(clientSessions),
-      walletConnectV2SessionsCount: clientSessions.length,
+      walletConnectV2Sessions: formatSessionsData(clientV2Sessions),
+      walletConnectV2SessionsCount: clientV2Sessions.length,
     };
   }
 );
