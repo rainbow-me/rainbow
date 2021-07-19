@@ -1,5 +1,5 @@
 import { BlurView } from '@react-native-community/blur';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import styled from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
@@ -34,10 +34,18 @@ const OverlayBlur = styled(BlurView).attrs(({ isDarkMode }) => ({
 `;
 
 function ConnectedDapps() {
-  const { walletConnectorsByDappName } = useWalletConnectConnections();
   const { navigate } = useNavigation();
+  const {
+    walletConnectorsCount,
+    walletConnectV2SessionsCount,
+  } = useWalletConnectConnections();
 
-  return walletConnectorsByDappName.length === 0 ? null : (
+  const connectionsNumber = useMemo(
+    () => walletConnectorsCount + walletConnectV2SessionsCount,
+    [walletConnectorsCount, walletConnectV2SessionsCount]
+  );
+
+  return connectionsNumber === 0 ? null : (
     <Overlay>
       <ButtonPressAnimation
         onPress={() => navigate(Routes.CONNECTED_DAPPS)}
@@ -63,8 +71,8 @@ function ConnectedDapps() {
               size="lmedium"
               weight="heavy"
             >
-              ️‍🌈 {walletConnectorsByDappName.length} app
-              {walletConnectorsByDappName.length === 1 ? '' : 's'} connected 􀯼
+              ️‍🌈 {connectionsNumber} app
+              {connectionsNumber ? '' : 's'} connected 􀯼
             </LabelText>
           </OverlayBlur>
         </View>

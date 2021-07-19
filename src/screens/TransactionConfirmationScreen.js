@@ -40,6 +40,7 @@ import {
   MessageSigningSection,
   TransactionConfirmationSection,
 } from '../components/transaction';
+import { walletConnectV2HandleAction } from '../model/walletConnect';
 import {
   estimateGas,
   estimateGasWithPadding,
@@ -175,10 +176,6 @@ export default function TransactionConfirmationScreen() {
     ({ walletconnect }) => walletconnect.pendingRedirect
   );
 
-  const walletConnectors = useSelector(
-    ({ walletconnect }) => walletconnect.walletConnectors
-  );
-
   const {
     dataAddNewTransaction,
     removeRequest,
@@ -188,6 +185,7 @@ export default function TransactionConfirmationScreen() {
   const {
     callback,
     transactionDetails: {
+      chainId,
       dappName,
       dappScheme,
       dappUrl,
@@ -196,20 +194,21 @@ export default function TransactionConfirmationScreen() {
       payload: { method, params },
       peerId,
       requestId,
+      version: requestVersion,
     },
   } = routeParams;
 
-  const walletConnector = walletConnectors[peerId];
+  const isWalletConnectV2Request = useMemo(() => requestVersion === 'v2', [
+    requestVersion,
+  ]);
 
   const isL2 = useMemo(() => {
     return isL2Network(network);
   }, [network]);
 
   useEffect(() => {
-    setNetwork(
-      ethereumUtils.getNetworkFromChainId(Number(walletConnector._chainId))
-    );
-  }, [walletConnector._chainId]);
+    setNetwork(ethereumUtils.getNetworkFromChainId(Number(chainId)));
+  }, [chainId]);
 
   useEffect(() => {
     const initProvider = async () => {
@@ -231,7 +230,7 @@ export default function TransactionConfirmationScreen() {
     selectedGasPrice,
   } = useGas();
 
-  const request = displayDetails.request;
+  const request = displayDetails?.request;
   const openAutomatically = routeParams?.openAutomatically;
 
   const formattedDappUrl = useMemo(() => {
@@ -275,8 +274,10 @@ export default function TransactionConfirmationScreen() {
   );
 
   useEffect(() => {
-    analytics.track('Shown Walletconnect signing request');
-  }, []);
+    analytics.track('Shown Walletconnect signing request', {
+      version: requestVersion,
+    });
+  }, [requestVersion]);
 
   useEffect(() => {
     if (openAutomatically && !isEmulatorSync()) {
@@ -307,14 +308,16 @@ export default function TransactionConfirmationScreen() {
       if (!isMessageRequest) {
         stopPollingGasPrices();
       }
-      if (pendingRedirect) {
+      if (pendingRedirect || isWalletConnectV2Request) {
         InteractionManager.runAfterInteractions(() => {
           let type = method === SEND_TRANSACTION ? 'transaction' : 'sign';
 
           if (canceled) {
             type = `${type}-canceled`;
           }
-          dispatch(walletConnectRemovePendingRedirect(type, dappScheme));
+          isWalletConnectV2Request
+            ? walletConnectV2HandleAction(type, dappScheme)
+            : dispatch(walletConnectRemovePendingRedirect(type, dappScheme));
         });
       }
     },
@@ -326,23 +329,24 @@ export default function TransactionConfirmationScreen() {
       method,
       dappScheme,
       dispatch,
+      isWalletConnectV2Request,
     ]
   );
 
   const onCancel = useCallback(async () => {
     try {
       closeScreen(true);
-      if (callback) {
-        callback({ error: 'User cancelled the request' });
-      }
+      callback?.({ error: 'User cancelled the request' });
       setTimeout(async () => {
-        if (requestId) {
+        if (requestId && !isWalletConnectV2Request) {
           await dispatch(walletConnectSendStatus(peerId, requestId, null));
           dispatch(removeRequest(requestId));
         }
         const rejectionType =
           method === SEND_TRANSACTION ? 'transaction' : 'signature';
-        analytics.track(`Rejected WalletConnect ${rejectionType} request`);
+        analytics.track(`Rejected WalletConnect ${rejectionType} request`, {
+          version: requestVersion,
+        });
       }, 300);
     } catch (error) {
       logger.log('error while handling cancel request', error);
@@ -356,7 +360,9 @@ export default function TransactionConfirmationScreen() {
     method,
     peerId,
     removeRequest,
+    requestVersion,
     requestId,
+    isWalletConnectV2Request,
     walletConnectSendStatus,
   ]);
 
@@ -520,9 +526,7 @@ export default function TransactionConfirmationScreen() {
     }
 
     if (result) {
-      if (callback) {
-        callback({ result: result.hash });
-      }
+      callback?.({ result: result.hash });
       if (sendInsteadOfSign) {
         const txDetails = {
           amount: displayDetails?.request?.value ?? 0,
@@ -538,8 +542,10 @@ export default function TransactionConfirmationScreen() {
         };
         dispatch(dataAddNewTransaction(txDetails));
       }
-      analytics.track('Approved WalletConnect transaction request');
-      if (requestId) {
+      analytics.track('Approved WalletConnect transaction request', {
+        version: requestVersion,
+      });
+      if (requestId && !isWalletConnectV2Request) {
         dispatch(removeRequest(requestId));
         await dispatch(walletConnectSendStatus(peerId, requestId, result.hash));
       }
@@ -576,6 +582,7 @@ export default function TransactionConfirmationScreen() {
     provider,
     callback,
     requestId,
+    isWalletConnectV2Request,
     closeScreen,
     displayDetails?.request?.value,
     displayDetails?.request?.asset,
@@ -585,6 +592,7 @@ export default function TransactionConfirmationScreen() {
     dispatch,
     dataAddNewTransaction,
     removeRequest,
+    requestVersion,
     walletConnectSendStatus,
     peerId,
     onCancel,
@@ -617,16 +625,17 @@ export default function TransactionConfirmationScreen() {
     }
 
     if (flatFormatSignature) {
-      analytics.track('Approved WalletConnect signature request');
-      if (requestId) {
+      analytics.track('Approved WalletConnect signature request', {
+        version: requestVersion,
+      });
+      if (requestId && !isWalletConnectV2Request) {
         dispatch(removeRequest(requestId));
         await dispatch(
           walletConnectSendStatus(peerId, requestId, flatFormatSignature)
         );
       }
-      if (callback) {
-        callback({ sig: flatFormatSignature });
-      }
+      // TODO check v1
+      callback?.({ result: flatFormatSignature });
       closeScreen(false);
     } else {
       await onCancel();
@@ -640,6 +649,8 @@ export default function TransactionConfirmationScreen() {
     params,
     peerId,
     removeRequest,
+    requestVersion,
+    isWalletConnectV2Request,
     requestId,
     walletConnectSendStatus,
   ]);

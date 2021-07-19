@@ -29,6 +29,12 @@ import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { convertHexToString } from '@rainbow-me/helpers/utilities';
 import WalletConnectApprovalSheetType from '@rainbow-me/helpers/walletConnectApprovalSheetTypes';
+import {
+  walletConnectDisconnectAllSessions,
+  walletConnectDisconnectByDappName,
+  walletConnectInit,
+  walletConnectUpdateSessionByDappName,
+} from '@rainbow-me/model/walletConnect';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils, watchingAlert } from '@rainbow-me/utils';
 import logger from 'logger';
@@ -53,6 +59,18 @@ const WALLETCONNECT_SET_PENDING_REDIRECT =
   'walletconnect/WALLETCONNECT_SET_PENDING_REDIRECT';
 const WALLETCONNECT_REMOVE_PENDING_REDIRECT =
   'walletconnect/WALLETCONNECT_REMOVE_PENDING_REDIRECT';
+export const WALLETCONNECT_V2_INIT_SESSIONS =
+  'walletconnect/WALLETCONNECT_V2_INIT_SESSIONS';
+export const WALLETCONNECT_V2_UPDATE_SESSIONS =
+  'walletconnect/WALLETCONNECT_V2_UPDATE_SESSIONS';
+
+export const RAINBOW_METADATA = {
+  description: 'Rainbow makes exploring Ethereum fun and accessible 🌈',
+  icons: ['https://avatars2.githubusercontent.com/u/48327834?s=200&v=4'],
+  name: '🌈 Rainbow',
+  ssl: true,
+  url: 'https://rainbow.me',
+};
 
 // -- Actions ---------------------------------------- //
 const getNativeOptions = async () => {
@@ -68,13 +86,7 @@ const getNativeOptions = async () => {
   }
 
   const nativeOptions = {
-    clientMeta: {
-      description: 'Rainbow makes exploring Ethereum fun and accessible 🌈',
-      icons: ['https://avatars2.githubusercontent.com/u/48327834?s=200&v=4'],
-      name: '🌈 Rainbow',
-      ssl: true,
-      url: 'https://rainbow.me',
-    },
+    clientMeta: RAINBOW_METADATA,
     push: token
       ? {
           language,
@@ -319,7 +331,10 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
           setTimeout(() => {
             Navigation.handleAction(Routes.CONFIRM_REQUEST, {
               openAutomatically: true,
-              transactionDetails: request,
+              transactionDetails: {
+                ...request,
+                chainId: walletConnector._chainId,
+              },
             });
           }, 1000);
         });
@@ -372,6 +387,52 @@ export const walletConnectLoadState = () => async (dispatch, getState) => {
       type: WALLETCONNECT_INIT_SESSIONS,
     });
   }
+
+  // Wallet connect v2
+  const client = await walletConnectInit({ dispatch, getState });
+  dispatch({
+    payload: clone(client.session.values),
+    type: WALLETCONNECT_V2_INIT_SESSIONS,
+  });
+};
+
+export const walletConnectV2UpdateSessions = sessions => async dispatch => {
+  dispatch({
+    payload: clone(sessions),
+    type: WALLETCONNECT_V2_UPDATE_SESSIONS,
+  });
+};
+
+export const walletConnectV2DisconnectAllSessions = () => async dispatch => {
+  const sessions = await walletConnectDisconnectAllSessions();
+  dispatch({
+    payload: clone(sessions),
+    type: WALLETCONNECT_V2_UPDATE_SESSIONS,
+  });
+};
+
+export const walletConnectV2UpdateSessionByDappName = (
+  dappName,
+  accountAddress,
+  chainId
+) => async dispatch => {
+  const sessions = await walletConnectUpdateSessionByDappName(
+    dappName,
+    accountAddress,
+    chainId
+  );
+  dispatch({
+    payload: clone(sessions),
+    type: WALLETCONNECT_V2_UPDATE_SESSIONS,
+  });
+};
+
+export const walletConnectV2DisconnectByDappName = dappName => async dispatch => {
+  const sessions = await walletConnectDisconnectByDappName(dappName);
+  dispatch({
+    payload: clone(sessions),
+    type: WALLETCONNECT_V2_UPDATE_SESSIONS,
+  });
 };
 
 export const setPendingRequest = (peerId, walletConnector) => (
@@ -565,6 +626,7 @@ export const walletConnectSendStatus = (peerId, requestId, result) => async (
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
+  clientV2Sessions: [],
   pendingRedirect: false,
   pendingRequests: {},
   walletConnectors: {},
@@ -590,6 +652,10 @@ export default (state = INITIAL_STATE, action) => {
       return { ...state, pendingRedirect: true };
     case WALLETCONNECT_REMOVE_PENDING_REDIRECT:
       return { ...state, pendingRedirect: false };
+    case WALLETCONNECT_V2_INIT_SESSIONS:
+      return { ...state, clientV2Sessions: action.payload };
+    case WALLETCONNECT_V2_UPDATE_SESSIONS:
+      return { ...state, clientV2Sessions: action.payload };
     default:
       return state;
   }

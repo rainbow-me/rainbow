@@ -98,6 +98,8 @@
     "@uniswap/v2-core": "^1.0.1",
     "@unstoppabledomains/resolution": "^1.19.0",
     "@walletconnect/client": "^1.4.1",
+    "@walletconnect/clientv2": "npm:@walletconnect/client@experimental",
+    "@walletconnect/typesv2": "npm:@walletconnect/types@experimental",
     "@walletconnect/utils": "^1.4.1",
     "assert": "^1.5.0",
     "asyncstorage-down": "^4.2.0",
@@ -422,14 +424,13 @@
       "core-js": false,
       "detox": false,
       "dtrace-provider": false,
-      "fsevents": false,
       "husky": false,
       "keccak": false,
       "react-native-storage": false,
       "react-query": false,
-      "scrypt": false,
       "secp256k1": false,
-      "@sentry/cli": true
+      "@sentry/cli": true,
+      "better-sqlite3": false
     }
   }
 }

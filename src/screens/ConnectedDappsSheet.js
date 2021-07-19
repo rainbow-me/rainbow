@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import { Sheet, SheetTitle } from '../components/sheet';
 import WalletConnectListItem, {
@@ -15,28 +15,47 @@ const ScrollableItems = styled.ScrollView`
 `;
 
 export default function ConnectedDappsSheet() {
-  const { walletConnectorsByDappName } = useWalletConnectConnections();
   const { goBack } = useNavigation();
+  const {
+    walletConnectorsByDappName,
+    walletConnectorsCount,
+    walletConnectV2SessionsCount,
+    walletConnectV2Sessions,
+  } = useWalletConnectConnections();
+
+  const { connectionsNumber, connections } = useMemo(
+    () => ({
+      connections: walletConnectorsByDappName.concat(walletConnectV2Sessions),
+      connectionsNumber: walletConnectorsCount + walletConnectV2SessionsCount,
+    }),
+    [
+      walletConnectorsByDappName,
+      walletConnectorsCount,
+      walletConnectV2Sessions,
+      walletConnectV2SessionsCount,
+    ]
+  );
 
   useEffect(() => {
-    if (walletConnectorsByDappName.length === 0) {
+    if (connectionsNumber === 0) {
       goBack();
     }
-  }, [goBack, walletConnectorsByDappName.length]);
+  }, [goBack, connectionsNumber]);
 
   return (
     <Sheet borderRadius={30}>
       <SheetTitle>Connected apps</SheetTitle>
-      <ScrollableItems length={walletConnectorsByDappName.length}>
-        {walletConnectorsByDappName.map(
-          ({ account, chainId, dappIcon, dappName, dappUrl }) => (
+      <ScrollableItems length={connectionsNumber}>
+        {connections.map(
+          ({ account, chainId, dappIcon, dappName, dappUrl, version }, i) => (
             <WalletConnectListItem
               account={account}
               chainId={chainId}
               dappIcon={dappIcon}
               dappName={dappName}
               dappUrl={dappUrl}
-              key={dappName}
+              key={i}
+              version={version}
             />
           )
         )}

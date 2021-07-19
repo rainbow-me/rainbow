@@ -10,6 +10,7 @@ import React, {
 } from 'react';
 import { InteractionManager } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import ChainLogo from '../components/ChainLogo';
 import Divider from '../components/Divider';
@@ -39,6 +40,7 @@ import {
 } from '@rainbow-me/helpers/walletConnectNetworks';
 import { useAccountSettings, useWallets } from '@rainbow-me/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
+import { walletConnectV2UpdateSessions } from '@rainbow-me/redux/walletconnect';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils } from '@rainbow-me/utils';
 
@@ -83,22 +85,28 @@ export default function WalletConnectApprovalSheet() {
   const { colors } = useTheme();
   const { goBack } = useNavigation();
   const { params } = useRoute();
+  const dispatch = useDispatch();
   const { network, accountAddress } = useAccountSettings();
   const { selectedWallet, walletNames } = useWallets();
   const handled = useRef(false);
 
   const [scam, setScam] = useState(false);
-  const [approvalNetwork, setApprovalNetwork] = useState(network);
+
+  const [approvalNetwork, setApprovalNetwork] = useState(
+    (params?.chainId &&
+      ethereumUtils.getNetworkFromChainId(Number(params.chainId))) ||
+      network
+  );
   const [approvalAccount, setApprovalAccount] = useState({
     address: accountAddress,
     wallet: selectedWallet,
   });
 
   const type = params?.type || WalletConnectApprovalSheetType.connect;
-  const chainId = params?.chainId || 1;
   const meta = params?.meta || {};
   const { dappName, dappUrl, imageUrl } = meta;
   const callback = params?.callback;
+  const isWalletConnectV2Request = params?.version === 'v2';
 
   const checkIfScam = useCallback(
     async dappUrl => {
@@ -175,17 +183,28 @@ export default function WalletConnectApprovalSheet() {
     (success = false) => {
       if (callback) {
         setTimeout(
-          () =>
-            callback(
+          async () => {
+            const sessions = await callback(
               success,
               approvalNetworkInfo.chainId,
               approvalAccount.address
-            ),
+            );
+            if (isWalletConnectV2Request) {
+              dispatch(walletConnectV2UpdateSessions(sessions));
+            }
+          },
+
           300
         );
       }
     },
-    [approvalAccount.address, callback, approvalNetworkInfo]
+    [
+      approvalAccount.address,
+      callback,
+      approvalNetworkInfo,
+      dispatch,
+      isWalletConnectV2Request,
+    ]
   );
 
   useEffect(() => {
@@ -258,9 +277,7 @@ export default function WalletConnectApprovalSheet() {
               </Text>{' '}
               {type === WalletConnectApprovalSheetType.connect
                 ? `wants to connect to your wallet`
-                : `wants to connect to the ${ethereumUtils.getNetworkNameFromChainId(
-                    chainId
-                  )} network`}
+                : `wants to connect to the ${approvalNetworkInfo.name} network`}
             </Text>
           </Row>
         </Centered>

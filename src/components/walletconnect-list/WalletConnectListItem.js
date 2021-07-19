@@ -63,10 +63,13 @@ export default function WalletConnectListItem({
   dappIcon,
   dappName,
   dappUrl,
+  version,
 }) {
   const {
     walletConnectDisconnectAllByDappName,
     walletConnectUpdateSessionConnectorByDappName,
+    walletConnectV2DisconnectByDappName,
+    walletConnectV2UpdateSessionByDappName,
   } = useWalletConnectConnections();
   const { colors } = useTheme();
   const { wallets, walletNames } = useWallets();
@@ -107,24 +110,45 @@ export default function WalletConnectListItem({
     };
   }, [chainId, colors]);
 
+  const walletConnectUpdateSession = useCallback(
+    (dappName, address, chainId) => {
+      const updateSession =
+        version === 'v2'
+          ? walletConnectV2UpdateSessionByDappName
+          : walletConnectUpdateSessionConnectorByDappName;
+      updateSession(dappName, address, chainId);
+    },
+    [
+      version,
+      walletConnectUpdateSessionConnectorByDappName,
+      walletConnectV2UpdateSessionByDappName,
+    ]
+  );
+
+  const walletConnectDisconnect = useCallback(
+    dappName => {
+      const updateSession =
+        version === 'v2'
+          ? walletConnectV2DisconnectByDappName
+          : walletConnectDisconnectAllByDappName;
+      updateSession(dappName);
+    },
+    [
+      version,
+      walletConnectDisconnectAllByDappName,
+      walletConnectV2DisconnectByDappName,
+    ]
+  );
+
   const handlePressChangeWallet = useCallback(() => {
     Navigation.handleAction(Routes.CHANGE_WALLET_SHEET, {
       currentAccountAddress: account,
       onChangeWallet: address => {
-        walletConnectUpdateSessionConnectorByDappName(
-          dappName,
-          address,
-          chainId
-        );
+        walletConnectUpdateSession(dappName, address, chainId);
       },
       watchOnly: true,
     });
-  }, [
-    account,
-    chainId,
-    dappName,
-    walletConnectUpdateSessionConnectorByDappName,
-  ]);
+  }, [account, chainId, dappName, walletConnectUpdateSession]);
 
   const onPressAndroid = useCallback(() => {
     showActionSheetWithOptions(
@@ -136,16 +160,12 @@ export default function WalletConnectListItem({
       idx => {
         if (idx === 0) {
           androidShowNetworksActionSheet(({ chainId }) => {
-            walletConnectUpdateSessionConnectorByDappName(
-              dappName,
-              account,
-              chainId
-            );
+            walletConnectUpdateSession(dappName, account, chainId);
           });
         } else if (idx === 1) {
           handlePressChangeWallet();
         } else if (idx === 2) {
-          walletConnectDisconnectAllByDappName(dappName);
+          walletConnectDisconnect(dappName);
           analytics.track(
             'Manually disconnected from WalletConnect connection',
             {
@@ -161,31 +181,28 @@ export default function WalletConnectListItem({
     dappName,
     dappUrl,
     handlePressChangeWallet,
-    walletConnectUpdateSessionConnectorByDappName,
-    walletConnectDisconnectAllByDappName,
+    walletConnectUpdateSession,
+    walletConnectDisconnect,
   ]);
 
   const handleOnPressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === 'disconnect') {
-        walletConnectDisconnectAllByDappName(dappName);
+        walletConnectDisconnect(dappName);
         analytics.track('Manually disconnected from WalletConnect connection', {
           dappName,
           dappUrl,
         });
       } else if (actionKey === 'switch-account') {
         handlePressChangeWallet();
+        //
       } else if (actionKey.indexOf(NETWORK_MENU_ACTION_KEY_FILTER) !== -1) {
         const networkValue = actionKey.replace(
           NETWORK_MENU_ACTION_KEY_FILTER,
           ''
         );
         const chainId = ethereumUtils.getChainIdFromNetwork(networkValue);
-        walletConnectUpdateSessionConnectorByDappName(
-          dappName,
-          account,
-          chainId
-        );
+        walletConnectUpdateSession(dappName, account, chainId);
       }
     },
     [
@@ -193,8 +210,8 @@ export default function WalletConnectListItem({
       dappName,
       dappUrl,
       handlePressChangeWallet,
-      walletConnectDisconnectAllByDappName,
-      walletConnectUpdateSessionConnectorByDappName,
+      walletConnectDisconnect,
+      walletConnectUpdateSession,
     ]
   );
 

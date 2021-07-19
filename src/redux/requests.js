@@ -9,6 +9,7 @@ import {
   dappLogoOverride,
   dappNameOverride,
 } from '@rainbow-me/helpers/dappNameHandler';
+import { getAddressAndChainIdFromWCAccount } from '@rainbow-me/model/walletConnect';
 import { getRequestDisplayDetails } from '@rainbow-me/parsers';
 import logger from 'logger';
 
@@ -68,6 +69,54 @@ export const addRequestToApprove = (
     payload,
     peerId,
     requestId,
+    version: 'v1',
+  };
+  const updatedRequests = { ...requests, [requestId]: request };
+  dispatch({
+    payload: updatedRequests,
+    type: REQUESTS_UPDATE_REQUESTS_TO_APPROVE,
+  });
+  saveLocalRequests(updatedRequests, accountAddress, network);
+  return request;
+};
+
+export const addRequestToApproveV2 = (requestId, session, payload) => (
+  dispatch,
+  getState
+) => {
+  const { requests } = getState().requests;
+  const { accountAddress, network, nativeCurrency } = getState().settings;
+  const { assets } = getState().data;
+  const displayDetails = getRequestDisplayDetails(
+    payload,
+    assets,
+    nativeCurrency
+  );
+  const oneHourAgoTs = Date.now() - EXPIRATION_THRESHOLD_IN_MS;
+  if (displayDetails.timestampInMs < oneHourAgoTs) {
+    logger.log('request expired!');
+    return;
+  }
+  const peerMeta = session.peer.metadata;
+  const unsafeImageUrl =
+    dappLogoOverride(peerMeta.url) || get(peerMeta, 'icons[0]');
+  const imageUrl = maybeSignUri(unsafeImageUrl);
+  const dappName =
+    dappNameOverride(peerMeta.url) || peerMeta.name || 'Unknown Dapp';
+  const dappUrl = peerMeta.url || 'Unknown Url';
+  const dappScheme = peerMeta.scheme || null;
+  const account = session.state.accounts?.[0];
+  const { chainId } = getAddressAndChainIdFromWCAccount(account);
+  const request = {
+    chainId,
+    dappName,
+    dappScheme,
+    dappUrl,
+    displayDetails,
+    imageUrl,
+    payload,
+    requestId,
+    version: 'v2',
   };
   const updatedRequests = { ...requests, [requestId]: request };
   dispatch({
