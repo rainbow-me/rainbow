@@ -17,6 +17,7 @@ import { useDimensions, useShakeAnimation } from '@rainbow-me/hooks';
 import { useBlockBackButton } from '@rainbow-me/hooks/useBlockBackButton';
 import { ImgixImage } from '@rainbow-me/images';
 import { padding } from '@rainbow-me/styles';
+import { haptics } from '@rainbow-me/utils';
 
 const Logo = styled(ImgixImage).attrs({
   source: RainbowLogo,
@@ -115,6 +116,7 @@ const PinAuthenticationScreen = () => {
 
   const handleNumpadPress = useCallback(
     newValue => {
+      android && haptics.keyboardPress();
       setValue(prevValue => {
         let nextValue = prevValue;
         if (nextValue === null) {
