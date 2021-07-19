@@ -69,6 +69,7 @@ export const addRequestToApprove = (
     payload,
     peerId,
     requestId,
+    version: 'v1',
   };
   const updatedRequests = { ...requests, [requestId]: request };
   dispatch({
@@ -115,6 +116,7 @@ export const addRequestToApproveV2 = (requestId, session, payload) => (
     imageUrl,
     payload,
     requestId,
+    version: 'v2',
   };
   const updatedRequests = { ...requests, [requestId]: request };
   dispatch({

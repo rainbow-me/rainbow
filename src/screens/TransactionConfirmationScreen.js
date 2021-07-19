@@ -40,6 +40,7 @@ import {
   MessageSigningSection,
   TransactionConfirmationSection,
 } from '../components/transaction';
+import { walletConnectV2HandleAction } from '../model/walletConnect';
 import {
   estimateGas,
   estimateGasWithPadding,
@@ -193,8 +194,13 @@ export default function TransactionConfirmationScreen() {
       payload: { method, params },
       peerId,
       requestId,
+      version: requestVersion,
     },
   } = routeParams;
+
+  const isWalletConnectV2Request = useMemo(() => requestVersion === 'v2', [
+    requestVersion,
+  ]);
 
   const isL2 = useMemo(() => {
     return isL2Network(network);
@@ -300,14 +306,16 @@ export default function TransactionConfirmationScreen() {
       if (!isMessageRequest) {
         stopPollingGasPrices();
       }
-      if (pendingRedirect) {
+      if (pendingRedirect || isWalletConnectV2Request) {
         InteractionManager.runAfterInteractions(() => {
           let type = method === SEND_TRANSACTION ? 'transaction' : 'sign';
 
           if (canceled) {
             type = `${type}-canceled`;
           }
-          dispatch(walletConnectRemovePendingRedirect(type, dappScheme));
+          isWalletConnectV2Request
+            ? walletConnectV2HandleAction(type, dappScheme)
+            : dispatch(walletConnectRemovePendingRedirect(type, dappScheme));
         });
       }
     },
@@ -319,6 +327,7 @@ export default function TransactionConfirmationScreen() {
       method,
       dappScheme,
       dispatch,
+      isWalletConnectV2Request,
     ]
   );
 
@@ -327,7 +336,7 @@ export default function TransactionConfirmationScreen() {
       closeScreen(true);
       callback?.({ error: 'User cancelled the request' });
       setTimeout(async () => {
-        if (requestId) {
+        if (requestId && !isWalletConnectV2Request) {
           await dispatch(walletConnectSendStatus(peerId, requestId, null));
           dispatch(removeRequest(requestId));
         }
@@ -348,6 +357,7 @@ export default function TransactionConfirmationScreen() {
     peerId,
     removeRequest,
     requestId,
+    isWalletConnectV2Request,
     walletConnectSendStatus,
   ]);
 
@@ -528,7 +538,7 @@ export default function TransactionConfirmationScreen() {
         dispatch(dataAddNewTransaction(txDetails));
       }
       analytics.track('Approved WalletConnect transaction request');
-      if (requestId) {
+      if (requestId && !isWalletConnectV2Request) {
         dispatch(removeRequest(requestId));
         await dispatch(walletConnectSendStatus(peerId, requestId, result.hash));
       }
@@ -565,6 +575,7 @@ export default function TransactionConfirmationScreen() {
     provider,
     callback,
     requestId,
+    isWalletConnectV2Request,
     closeScreen,
     displayDetails?.request?.value,
     displayDetails?.request?.asset,
@@ -607,7 +618,7 @@ export default function TransactionConfirmationScreen() {
 
     if (flatFormatSignature) {
       analytics.track('Approved WalletConnect signature request');
-      if (requestId) {
+      if (requestId && !isWalletConnectV2Request) {
         dispatch(removeRequest(requestId));
         await dispatch(
           walletConnectSendStatus(peerId, requestId, flatFormatSignature)
@@ -628,6 +639,7 @@ export default function TransactionConfirmationScreen() {
     params,
     peerId,
     removeRequest,
+    isWalletConnectV2Request,
     requestId,
     walletConnectSendStatus,
   ]);
