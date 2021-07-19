@@ -51,7 +51,8 @@ export function getAccountProfileInfo(
   }
   const { label, color, image } = selectedAccount;
 
-  const labelWithoutEmoji = removeFirstEmojiFromString(label).join('');
+  const labelWithoutEmoji =
+    label && removeFirstEmojiFromString(label)?.join('');
 
   const accountName =
     network === networkTypes.mainnet
