@@ -12,6 +12,7 @@ ios/debug.xcconfig
 ios/release.xcconfig
 ios/localrelease.xcconfig
 ios/staging.xcconfig
+ios/Frameworks/GoogleService-Info.plist
 
 # Xcode
 #

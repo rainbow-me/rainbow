@@ -30,6 +30,8 @@ fi
 # Set up the environment.
 if [ -e .env ]; then
 
+source .env
+
   # For MacOS, copy xconfig files.
   if [ $PLATFORM == "Darwin" ]; then
     cat .env | grep "BRANCH" | sed 's/=/ = /g' > ./ios/debug.xcconfig
@@ -42,11 +44,19 @@ if [ -e .env ]; then
     cat .env | grep "GOOGLE" | sed 's/=/ = /g' >> ./ios/localrelease.xcconfig
     cat .env | grep "GOOGLE" | sed 's/=/ = /g' >> ./ios/staging.xcconfig
 
+    # Override Google Services API Key
+    if [ -n "$GOOGLE_SERVICE_API_KEY" ]; then
+      sed -i''-e "s/\$(GOOGLE_SERVICE_API_KEY)/$GOOGLE_SERVICE_API_KEY/" ./ios/Frameworks/GoogleService-Info.plist
+      rm -rf 'ios/Frameworks/GoogleService-Info.plist-e'
+    else
+      echo "GOOGLE_SERVICE_API_KEY env variable is required";
+      exit 1;
+    fi
+
     echo "✅ .xcconfig files created"
   fi
 
   # Export Android env vars for all platforms.
-  source .env
   echo "✅ Android ENV vars exported"
 
 else
@@ -65,6 +75,7 @@ if [ -n "$RAINBOW_SCRIPTS_APP_ANDROID_PREBUILD_HOOK" ]; then
 fi
 
 # Ignore any potential tracked changes to mutable development files.
+git update-index --assume-unchanged "ios/Frameworks/GoogleService-Info.plist"
 git update-index --assume-unchanged "ios/Internals/ios/Internals.h"
 git update-index --assume-unchanged "ios/Internals/ios/Internals.m"
 git update-index --assume-unchanged "ios/Internals/ios/Internals.swift"
