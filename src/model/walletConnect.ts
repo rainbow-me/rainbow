@@ -5,16 +5,13 @@ import WalletConnectClient, { CLIENT_EVENTS } from '@walletconnect/clientv2';
 import { Reason, SessionTypes } from '@walletconnect/typesv2';
 import lang from 'i18n-js';
 import { Alert, InteractionManager, Linking } from 'react-native';
+import { enableActionsOnReadOnlyWallet } from '../config/debug';
 import { isSigningMethod } from '../utils/signingMethods';
-import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
 import { sendRpcCall } from '@rainbow-me/handlers/web3';
 import walletTypes from '@rainbow-me/helpers/walletTypes';
 import { Navigation } from '@rainbow-me/navigation';
 import { addRequestToApproveV2 } from '@rainbow-me/redux/requests';
-import {
-  RAINBOW_METADATA,
-  walletConnectRemovePendingRedirect,
-} from '@rainbow-me/redux/walletconnect';
+import { RAINBOW_METADATA } from '@rainbow-me/redux/walletconnect';
 import Routes from '@rainbow-me/routes';
 import { logger, watchingAlert } from '@rainbow-me/utils';
 
@@ -91,8 +88,6 @@ export const walletConnectInit = async (store: any) => {
       asyncStorage: AsyncStorage as any,
     },
   });
-
-  wcLogger('history', client.session.history.pending);
 
   wcLogger('Client started!');
   client.on(
