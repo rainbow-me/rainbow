@@ -256,8 +256,10 @@ export default function TransactionConfirmationScreen() {
   );
 
   useEffect(() => {
-    analytics.track('Shown Walletconnect signing request');
-  }, []);
+    analytics.track('Shown Walletconnect signing request', {
+      version: requestVersion,
+    });
+  }, [requestVersion]);
 
   useEffect(() => {
     if (openAutomatically && !isEmulatorSync()) {
@@ -323,7 +325,9 @@ export default function TransactionConfirmationScreen() {
         }
         const rejectionType =
           method === SEND_TRANSACTION ? 'transaction' : 'signature';
-        analytics.track(`Rejected WalletConnect ${rejectionType} request`);
+        analytics.track(`Rejected WalletConnect ${rejectionType} request`, {
+          version: requestVersion,
+        });
       }, 300);
     } catch (error) {
       logger.log('error while handling cancel request', error);
@@ -337,6 +341,7 @@ export default function TransactionConfirmationScreen() {
     method,
     peerId,
     removeRequest,
+    requestVersion,
     requestId,
     isWalletConnectV2Request,
     walletConnectSendStatus,
@@ -507,7 +512,9 @@ export default function TransactionConfirmationScreen() {
 
         dispatch(dataAddNewTransaction(txDetails));
       }
-      analytics.track('Approved WalletConnect transaction request');
+      analytics.track('Approved WalletConnect transaction request', {
+        version: requestVersion,
+      });
       if (requestId && !isWalletConnectV2Request) {
         dispatch(removeRequest(requestId));
         await dispatch(walletConnectSendStatus(peerId, requestId, result.hash));
@@ -530,6 +537,7 @@ export default function TransactionConfirmationScreen() {
     dappName,
     dataAddNewTransaction,
     removeRequest,
+    requestVersion,
     walletConnectSendStatus,
     peerId,
     onCancel,
@@ -558,7 +566,9 @@ export default function TransactionConfirmationScreen() {
     }
 
     if (flatFormatSignature) {
-      analytics.track('Approved WalletConnect signature request');
+      analytics.track('Approved WalletConnect signature request', {
+        version: requestVersion,
+      });
       if (requestId && !isWalletConnectV2Request) {
         dispatch(removeRequest(requestId));
         await dispatch(
@@ -580,6 +590,7 @@ export default function TransactionConfirmationScreen() {
     params,
     peerId,
     removeRequest,
+    requestVersion,
     isWalletConnectV2Request,
     requestId,
     walletConnectSendStatus,
