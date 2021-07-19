@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-community/async-storage';
+import analytics from '@segment/analytics-react-native';
 import WalletConnectClient, { CLIENT_EVENTS } from '@walletconnect/clientv2';
 import { Reason, SessionTypes } from '@walletconnect/typesv2';
 import { Alert, InteractionManager } from 'react-native';
@@ -8,15 +9,12 @@ import { sendRpcCall } from '@rainbow-me/handlers/web3';
 import walletTypes from '@rainbow-me/helpers/walletTypes';
 import { Navigation } from '@rainbow-me/navigation';
 import { addRequestToApproveV2 } from '@rainbow-me/redux/requests';
+import { RAINBOW_METADATA } from '@rainbow-me/redux/walletconnect';
 import Routes from '@rainbow-me/routes';
 import { watchingAlert } from '@rainbow-me/utils';
 
-const RAINBOW_METADATA = {
-  description: 'Rainbow makes exploring Ethereum fun and accessible 🌈',
-  icons: ['https://avatars2.githubusercontent.com/u/48327834?s=200&v=4'],
-  name: '🌈 Rainbow',
-  url: 'https://rainbow.me',
-};
+// eslint-disable-next-line no-console
+const wcLogger = (a: String, b?: any) => console.info(`::: WC ::: ${a}`, b);
 
 const SUPPORTED_MAIN_CHAINS = [
   'eip155:1',
@@ -27,8 +25,24 @@ const SUPPORTED_MAIN_CHAINS = [
 
 const SUPPORTED_TEST_CHAINS = ['eip155:3', 'eip155:4', 'eip155:5', 'eip155:42'];
 
+const notSupportedResponse = (id: number) => ({
+  error: {
+    code: -32601,
+    message: 'JSON RPC method not supported',
+  },
+  id,
+  jsonrpc: '2.0',
+});
+
 const toEIP55Format = (chainId: string | number) => `eip155:${chainId}`;
 export const fromEIP55Format = (chain: string) => chain?.replace('eip155:', '');
+
+const generateWalletConnectAccount = (address: string, chain: string) =>
+  `${address}@${chain}`;
+
+const isSupportedChain = (chain: string) =>
+  SUPPORTED_MAIN_CHAINS.includes(chain) ||
+  SUPPORTED_TEST_CHAINS.includes(chain);
 
 export const getAddressAndChainIdFromWCAccount = (
   account: string
@@ -37,16 +51,6 @@ export const getAddressAndChainIdFromWCAccount = (
   const chainId = fromEIP55Format(eip155Network);
   return { address, chainId: Number(chainId) };
 };
-
-const generateWalletConnectAccount = (address: string, chain: string) =>
-  `${address}@${chain}`;
-
-// eslint-disable-next-line no-console
-const wcLogger = (a: String, b?: any) => console.info(`::: WC ::: ${a}`, b);
-
-const isSupportedChain = (chain: string) =>
-  SUPPORTED_MAIN_CHAINS.includes(chain) ||
-  SUPPORTED_TEST_CHAINS.includes(chain);
 
 let client: WalletConnectClient;
 
@@ -69,15 +73,12 @@ export const walletConnectInit = async (store: any) => {
       const { metadata } = proposer;
       const chains = permissions.blockchain.chains;
 
-      // should we connect several networks at the same time?
       if (!isSupportedChain(chains[0])) {
         Alert.alert('Chain not supported', `${chains[0]} is not supported`);
-        wcLogger('rejected');
         client.reject({ proposal });
         return;
       }
-      wcLogger('chainid', fromEIP55Format(chains[0]));
-      const { name, url, icons } = metadata;
+
       Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {
         callback: (
           approved: boolean,
@@ -85,7 +86,6 @@ export const walletConnectInit = async (store: any) => {
           accountAddress: string
         ) => {
           if (approved) {
-            wcLogger('approved');
             const chain = toEIP55Format(chainId);
             const response: SessionTypes.Response = {
               metadata: RAINBOW_METADATA,
@@ -95,25 +95,16 @@ export const walletConnectInit = async (store: any) => {
             };
             client.approve({ proposal, response });
           } else {
-            wcLogger('rejected');
             client.reject({ proposal });
           }
         },
         chainId: fromEIP55Format(chains[0]),
         meta: {
-          dappName: name,
-          dappUrl: url,
-          imageUrl: icons?.[0],
+          dappName: metadata.name,
+          dappUrl: metadata.url,
+          imageUrl: metadata.icons?.[0],
         },
       });
-    }
-  );
-
-  client.on(
-    CLIENT_EVENTS.session.created,
-    async (session: SessionTypes.Created) => {
-      // session created succesfully
-      wcLogger('SessionTypes.session', session);
     }
   );
 
@@ -140,23 +131,13 @@ export const walletConnectInit = async (store: any) => {
           })
           .catch(async () => {
             const response = {
-              response: {
-                error: {
-                  // this code is wrong
-                  code: -32000,
-                  message: 'JSON RPC method not supported',
-                },
-                id: request.id,
-                jsonrpc: '2.0',
-              },
+              response: notSupportedResponse(request.id),
               topic,
             };
             await client.respond(response);
           });
         return;
       } else {
-        // check for read only accounts
-        // TODO
         const { dispatch, getState } = store;
         const { selected } = getState().wallets;
         const selectedWallet = selected || {};
@@ -164,15 +145,7 @@ export const walletConnectInit = async (store: any) => {
         if (isReadOnlyWallet && !enableActionsOnReadOnlyWallet) {
           watchingAlert();
           const response = {
-            response: {
-              error: {
-                // this code is wrong
-                code: -32000,
-                message: 'JSON RPC method not supported',
-              },
-              id: request.id,
-              jsonrpc: '2.0',
-            },
+            response: notSupportedResponse(request.id),
             topic,
           };
           await client.respond(response);
@@ -183,7 +156,7 @@ export const walletConnectInit = async (store: any) => {
           addRequestToApproveV2(request.id, session, request)
         );
         if (requestToApprove) {
-          // analytics.track('Showing Walletconnect signing request');
+          analytics.track('Showing Walletconnect signing request');
           InteractionManager.runAfterInteractions(() => {
             Navigation.handleAction(Routes.CONFIRM_REQUEST, {
               callback: async (res: { error: string; result: string }) => {
@@ -195,8 +168,8 @@ export const walletConnectInit = async (store: any) => {
                     ...(error
                       ? {
                           error: {
-                            // this code is wrong
-                            code: -32000,
+                            // internal error
+                            code: -32603,
                             message: error,
                           },
                         }

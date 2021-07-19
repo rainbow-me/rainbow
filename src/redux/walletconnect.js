@@ -64,6 +64,14 @@ export const WALLETCONNECT_V2_INIT_SESSIONS =
 export const WALLETCONNECT_V2_UPDATE_SESSIONS =
   'walletconnect/WALLETCONNECT_V2_UPDATE_SESSIONS';
 
+export const RAINBOW_METADATA = {
+  description: 'Rainbow makes exploring Ethereum fun and accessible 🌈',
+  icons: ['https://avatars2.githubusercontent.com/u/48327834?s=200&v=4'],
+  name: '🌈 Rainbow',
+  ssl: true,
+  url: 'https://rainbow.me',
+};
+
 // -- Actions ---------------------------------------- //
 const getNativeOptions = async () => {
   const language = 'en'; // TODO use lang from settings
@@ -78,13 +86,7 @@ const getNativeOptions = async () => {
   }
 
   const nativeOptions = {
-    clientMeta: {
-      description: 'Rainbow makes exploring Ethereum fun and accessible 🌈',
-      icons: ['https://avatars2.githubusercontent.com/u/48327834?s=200&v=4'],
-      name: '🌈 Rainbow',
-      ssl: true,
-      url: 'https://rainbow.me',
-    },
+    clientMeta: RAINBOW_METADATA,
     push: token
       ? {
           language,
@@ -617,11 +619,10 @@ export const walletConnectSendStatus = (peerId, requestId, result) => async (
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
-  clientSessions: [],
+  clientV2Sessions: [],
   pendingRedirect: false,
   pendingRequests: {},
   walletConnectors: {},
-  walletConnectV2Client: null,
 };
 
 export default (state = INITIAL_STATE, action) => {
@@ -645,9 +646,9 @@ export default (state = INITIAL_STATE, action) => {
     case WALLETCONNECT_REMOVE_PENDING_REDIRECT:
       return { ...state, pendingRedirect: false };
     case WALLETCONNECT_V2_INIT_SESSIONS:
-      return { ...state, clientSessions: action.payload };
+      return { ...state, clientV2Sessions: action.payload };
     case WALLETCONNECT_V2_UPDATE_SESSIONS:
-      return { ...state, clientSessions: action.payload };
+      return { ...state, clientV2Sessions: action.payload };
     default:
       return state;
   }
