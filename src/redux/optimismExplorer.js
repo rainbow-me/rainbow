@@ -25,22 +25,22 @@ const OPTIMISM_EXPLORER_SET_HANDLERS =
 
 const UPDATE_BALANCE_AND_PRICE_FREQUENCY = 30000;
 
-const optimismProvider = getProviderForNetwork(networkTypes.optimism);
-
 const network = networkTypes.optimism;
 
 const fetchAssetBalances = async (tokens, address) => {
-  const abi = balanceCheckerContractAbiOVM;
-
-  const contractAddress = networkInfo[network].balance_checker_contract_address;
-
-  const balanceCheckerContract = new Contract(
-    contractAddress,
-    abi,
-    optimismProvider
-  );
-
   try {
+    const abi = balanceCheckerContractAbiOVM;
+
+    const contractAddress =
+      networkInfo[network].balance_checker_contract_address;
+    const optimismProvider = await getProviderForNetwork(networkTypes.optimism);
+
+    const balanceCheckerContract = new Contract(
+      contractAddress,
+      abi,
+      optimismProvider
+    );
+
     const values = await balanceCheckerContract.balances([address], tokens);
     const balances = {};
     [address].forEach((addr, addrIdx) => {
@@ -89,7 +89,6 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
 
     dispatch(emitAssetRequest(tokenAddresses));
     dispatch(emitChartsRequest(tokenAddresses));
-
     const prices = await fetchAssetPrices(
       assets.map(({ asset: { coingecko_id } }) => coingecko_id),
       formattedNativeCurrency
@@ -116,6 +115,7 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
         }
       });
     }
+
     const balances = await fetchAssetBalances(
       assets.map(({ asset: { asset_code } }) => asset_code),
       accountAddress,

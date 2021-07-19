@@ -151,7 +151,7 @@ const fetchAssetBalances = async (tokens, address) => {
   const abi = balanceCheckerContractAbi;
 
   const contractAddress = networkInfo[network].balance_checker_contract_address;
-  const polygonProvider = getProviderForNetwork(network);
+  const polygonProvider = await getProviderForNetwork(network);
 
   const balanceCheckerContract = new Contract(
     contractAddress,
