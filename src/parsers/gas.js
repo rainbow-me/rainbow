@@ -52,12 +52,30 @@ const parseGasPricesEthGasStation = data => ({
     true
   ),
 });
-const parseGasPricesMaticGasStation = data => ({
-  [CUSTOM]: null,
-  [FAST]: defaultGasPriceFormat(FAST, 0.2, Number(data.fastest) / 10, true),
-  [NORMAL]: defaultGasPriceFormat(NORMAL, 0.5, Number(data.fast) / 10, true),
-  [SLOW]: defaultGasPriceFormat(SLOW, 1, Number(data.average) / 10, true),
-});
+const parseGasPricesMaticGasStation = data => {
+  const maticGasPriceBumpFactor = 1.15;
+  return {
+    [CUSTOM]: null,
+    [FAST]: defaultGasPriceFormat(
+      FAST,
+      0.2,
+      Math.ceil((Number(data.fastest) / 10) * maticGasPriceBumpFactor),
+      true
+    ),
+    [NORMAL]: defaultGasPriceFormat(
+      NORMAL,
+      0.5,
+      Math.ceil((Number(data.fast) / 10) * maticGasPriceBumpFactor),
+      true
+    ),
+    [SLOW]: defaultGasPriceFormat(
+      SLOW,
+      1,
+      Math.ceil((Number(data.average) / 10) * maticGasPriceBumpFactor) / 10,
+      true
+    ),
+  };
+};
 
 /**
  * @desc parse ether gas prices
