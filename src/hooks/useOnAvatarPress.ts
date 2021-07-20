@@ -95,16 +95,10 @@ export default () => {
       },
       async (buttonIndex: Number) => {
         if (buttonIndex === 0) {
-          ImagePicker.openPicker({
-            cropperCircleOverlay: true,
-            cropping: true,
-          }).then(processPhoto);
+          onAvatarChooseImage();
         } else if (buttonIndex === 1) {
           if (!accountImage) {
-            navigate(Routes.AVATAR_BUILDER, {
-              initialAccountColor: accountColor,
-              initialAccountName: accountName,
-            });
+            onAvatarPickEmoji();
           }
           if (accountImage) {
             onAvatarRemovePhoto();
@@ -113,12 +107,10 @@ export default () => {
       }
     );
   }, [
-    accountColor,
     accountImage,
-    accountName,
-    navigate,
+    onAvatarChooseImage,
+    onAvatarPickEmoji,
     onAvatarRemovePhoto,
-    processPhoto,
   ]);
 
   const avatarOptions = useMemo(
