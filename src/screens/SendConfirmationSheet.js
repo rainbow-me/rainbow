@@ -15,18 +15,15 @@ import { ContactAvatar } from '../components/contacts';
 import { Centered, Column, Row } from '../components/layout';
 import { SendButton } from '../components/send';
 import { SheetDivider, SheetTitle, SlackSheet } from '../components/sheet';
-import {
-  Text,
-  TruncatedAddress,
-  TruncatedENS,
-  TruncatedText,
-} from '../components/text';
-import { getRandomColor } from '../styles/colors';
+import { Text, TruncatedText } from '../components/text';
+import { address } from '../utils/abbreviations';
 import {
   addressHashedColorIndex,
   addressHashedEmoji,
 } from '../utils/defaultProfileUtils';
 import { isL2Network } from '@rainbow-me/handlers/web3';
+import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
+import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
 import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
 import { isENSAddressFormat } from '@rainbow-me/helpers/validators';
 import {
@@ -36,6 +33,7 @@ import {
   useContacts,
   useDimensions,
   useUserAccounts,
+  useWallets,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
@@ -57,14 +55,16 @@ export const SendConfirmationSheetHeight = android
 const ChevronDown = () => {
   const { colors } = useTheme();
   return (
-    <Text
-      color={colors.alpha(colors.blueGreyDark, 0.09)}
-      size="larger"
-      style={{ top: -5, transform: [{ rotate: '90deg' }] }}
-      weight="600"
-    >
-      􀰫
-    </Text>
+    <Column align="center" width={50}>
+      <Text
+        color={colors.alpha(colors.blueGreyDark, 0.09)}
+        size="larger"
+        style={{ top: -5, transform: [{ rotate: '90deg' }] }}
+        weight="600"
+      >
+        􀰫
+      </Text>
+    </Column>
   );
 };
 
@@ -98,12 +98,6 @@ const Checkbox = ({ id, checked, label, onPress, activeColor }) => {
   );
 };
 
-const defaultContactItem = randomColor => ({
-  address: '',
-  color: randomColor,
-  nickname: '',
-});
-
 export default function SendConfirmationSheet() {
   const { colors, isDarkMode } = useTheme();
   const { nativeCurrency } = useAccountSettings();
@@ -112,6 +106,7 @@ export default function SendConfirmationSheet() {
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const insets = useSafeArea();
   const { contacts } = useContacts();
+  const { wallets, walletNames } = useWallets();
 
   const {
     params: { asset, amountDetails, callback, isNft, network, to, toAddress },
@@ -148,11 +143,7 @@ export default function SendConfirmationSheet() {
   ]);
 
   const contact = useMemo(() => {
-    return get(
-      contacts,
-      `${[toLower(to)]}`,
-      defaultContactItem(getRandomColor())
-    );
+    return get(contacts, `${[toLower(to)]}`);
   }, [contacts, to]);
 
   const [checkboxes, setCheckboxes] = useState([
@@ -221,8 +212,33 @@ export default function SendConfirmationSheet() {
     }
   }, [callback, canSubmit]);
 
-  const avatarValue = contact?.nickname || addressHashedEmoji(toAddress);
-  const avatarColor = contact?.color || addressHashedColorIndex(toAddress);
+  const accountProfile = useMemo(() => {
+    const selectedWallet = findWalletWithAccount(wallets, toAddress);
+    const approvalAccountInfo = getAccountProfileInfo(
+      selectedWallet,
+      network,
+      walletNames,
+      toAddress
+    );
+    return {
+      ...approvalAccountInfo,
+    };
+  }, [wallets, toAddress, network, walletNames]);
+
+  const avatarName =
+    contact?.nickname ||
+    accountProfile?.accountName ||
+    (isENSAddressFormat(to) ? to : address(to, 4, 6));
+
+  const avatarValue =
+    contact?.nickname ||
+    accountProfile?.accountSymbol ||
+    addressHashedEmoji(toAddress);
+
+  const avatarColor =
+    contact?.color ||
+    accountProfile?.accountColor ||
+    addressHashedColorIndex(toAddress);
 
   let realSheetHeight = !shouldShowChecks
     ? SendConfirmationSheetHeight - 150
@@ -288,43 +304,29 @@ export default function SendConfirmationSheet() {
                   </Column>
                 </Pill>
               </Column>
-              <Column align="end" flex={1} justify="end" marginRight={15}>
+              <Column align="end" flex={1} justify="end">
                 <ChevronDown />
               </Column>
             </Row>
 
             <Row marginBottom={30}>
               <Column flex={1}>
-                {isENSAddressFormat(to) || contact?.nickname ? (
-                  <Row>
-                    <Column>
-                      {isENSAddressFormat(to) ? (
-                        <TruncatedENS ens={to} size="big" weight="bold" />
-                      ) : (
-                        <TruncatedText size="big" weight="bold">
-                          {contact?.nickname}
-                        </TruncatedText>
-                      )}
-                    </Column>
-                    <Column>
-                      <ContactRowInfoButton
-                        item={{
-                          address: toAddress,
-                          name: contact?.nickname || to,
-                        }}
-                        network={network}
-                      />
-                    </Column>
-                  </Row>
-                ) : (
-                  <TruncatedAddress
-                    address={to}
-                    firstSectionLength={6}
-                    size="big"
-                    truncationLength={4}
-                    weight="bold"
-                  />
-                )}
+                <Row width="70%">
+                  <Column>
+                    <TruncatedText size="big" weight="bold">
+                      {avatarName}
+                    </TruncatedText>
+                  </Column>
+                  <Column>
+                    <ContactRowInfoButton
+                      item={{
+                        address: toAddress,
+                        name: avatarName || address(to, 4, 8),
+                      }}
+                      network={network}
+                    />
+                  </Column>
+                </Row>
                 <Row paddingTop={4}>
                   <Text
                     color={colors.alpha(colors.blueGreyDark, 0.6)}
