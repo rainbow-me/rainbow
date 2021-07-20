@@ -245,7 +245,6 @@ export default function TransactionConfirmationScreen() {
 
   const handleL2DisclaimerPress = useCallback(() => {
     navigate(Routes.EXPLAIN_SHEET, {
-      network: network,
       type: network,
     });
   }, [navigate, network]);
