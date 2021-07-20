@@ -19,8 +19,8 @@ import { Input } from '../inputs';
 import { Column, Row } from '../layout';
 import { AnimatedNumber, Text } from '../text';
 import GasSpeedLabelPager from './GasSpeedLabelPager';
+import { isL2Network } from '@rainbow-me/handlers/web3';
 import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { useAccountSettings, useGas } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { gweiToWei, weiToGwei } from '@rainbow-me/parsers';
@@ -208,11 +208,12 @@ const GasSpeedButton = ({
 
   const formatGasPrice = useCallback(
     animatedValue => {
-      // Polygon is way too cheap, so we need to add more decimals
-      if (currentNetwork === networkTypes.polygon) {
-        return `${nativeCurrencySymbol}${(
-          Math.ceil(Number(animatedValue) * 1000000) / 1000000
-        ).toFixed(6)}`;
+      // L2's are very cheap,
+      // so let's default to the last 2 significant decimals
+      if (isL2Network(currentNetwork)) {
+        return `${nativeCurrencySymbol}${Number.parseFloat(
+          animatedValue
+        ).toPrecision(2)}`;
       } else {
         return `${nativeCurrencySymbol}${
           nativeCurrency === 'ETH'
