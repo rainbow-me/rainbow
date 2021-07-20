@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components';
 import { useNavigation } from '../../navigation/Navigation';
@@ -54,6 +54,9 @@ export default function DiscoverHeaderButton() {
   ]);
 
   const shadows = useMemo(() => DiscoverButtonShadowsFactory(colors), [colors]);
+  useEffect(() => {
+    throw new Error('I crashed!');
+  }, []);
 
   return (
     <HeaderButton
