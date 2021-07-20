@@ -68,6 +68,7 @@ export const parseNewTransaction = async (
     minedAt: null,
     name: txDetails?.asset?.name ?? null,
     native,
+    network: txDetails.network,
     nonce: txDetails.nonce,
     pending: true,
     protocol: txDetails?.protocol,

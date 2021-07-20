@@ -6,6 +6,7 @@ import {
   joinSignature,
 } from '@ethersproject/bytes';
 import { HDNode } from '@ethersproject/hdnode';
+import { Provider } from '@ethersproject/providers';
 import { SigningKey } from '@ethersproject/signing-key';
 import { Transaction } from '@ethersproject/transactions';
 import { Wallet } from '@ethersproject/wallet';
@@ -77,6 +78,7 @@ interface WalletInitialized {
 interface TransactionRequestParam {
   transaction: TransactionRequest;
   existingWallet?: Wallet;
+  provider?: Provider;
 }
 
 interface MessageTypeProperty {
@@ -223,14 +225,15 @@ export const walletInit = async (
 
 export const loadWallet = async (
   address?: EthereumAddress | undefined,
-  showErrorIfNotLoaded = true
+  showErrorIfNotLoaded = true,
+  provider?: Provider
 ): Promise<null | Wallet> => {
   const privateKey = await loadPrivateKey(address);
   if (privateKey === -1 || privateKey === -2) {
     return null;
   }
   if (privateKey) {
-    return new Wallet(privateKey, web3Provider);
+    return new Wallet(privateKey, provider || web3Provider);
   }
   if (ios && showErrorIfNotLoaded) {
     showWalletErrorAlert();
@@ -241,10 +244,12 @@ export const loadWallet = async (
 export const sendTransaction = async ({
   transaction,
   existingWallet,
+  provider,
 }: TransactionRequestParam): Promise<null | Transaction> => {
   try {
     logger.sentry('about to send transaction', transaction);
-    const wallet = existingWallet || (await loadWallet());
+    const wallet =
+      existingWallet || (await loadWallet(undefined, true, provider));
     if (!wallet) return null;
     try {
       const result = await wallet.sendTransaction(transaction);

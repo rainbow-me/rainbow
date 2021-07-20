@@ -1,6 +1,8 @@
 import { concat, isEmpty, isNil, keys, toLower } from 'lodash';
 import { DATA_API_KEY, DATA_ORIGIN } from 'react-native-dotenv';
 import io from 'socket.io-client';
+// eslint-disable-next-line import/no-cycle
+import { arbitrumExplorerInit } from './arbitrumExplorer';
 import { assetChartsReceived, DEFAULT_CHART_TYPE } from './charts';
 /* eslint-disable-next-line import/no-cycle */
 import {
@@ -16,12 +18,20 @@ import {
   fallbackExplorerClearState,
   fallbackExplorerInit,
 } from './fallbackExplorer';
+// eslint-disable-next-line import/no-cycle
+import { optimismExplorerInit } from './optimismExplorer';
+// eslint-disable-next-line import/no-cycle
+import { polygonExplorerInit } from './polygonExplorer';
 import { updateTopMovers } from './topMovers';
 import { disableCharts, forceFallbackProvider } from '@rainbow-me/config/debug';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
 import currencyTypes from '@rainbow-me/helpers/currencyTypes';
 import NetworkTypes from '@rainbow-me/helpers/networkTypes';
-import { DPI_ADDRESS, ETH_ADDRESS } from '@rainbow-me/references';
+import {
+  DPI_ADDRESS,
+  ETH_ADDRESS,
+  MATIC_MAINNET_ADDRESS,
+} from '@rainbow-me/references';
 import { TokensListenedCache } from '@rainbow-me/utils';
 import logger from 'logger';
 
@@ -111,7 +121,12 @@ const assetPricesSubscription = (
   currency,
   action = 'subscribe'
 ) => {
-  const assetCodes = concat(tokenAddresses, ETH_ADDRESS, DPI_ADDRESS);
+  const assetCodes = concat(
+    tokenAddresses,
+    ETH_ADDRESS,
+    DPI_ADDRESS,
+    MATIC_MAINNET_ADDRESS
+  );
   return [
     action,
     {
@@ -395,7 +410,7 @@ const listenOnAssetMessages = socket => dispatch => {
   });
 };
 
-const listenOnAddressMessages = socket => dispatch => {
+const listenOnAddressMessages = socket => (dispatch, getState) => {
   socket.on(messages.ADDRESS_PORTFOLIO.RECEIVED, message => {
     dispatch(portfolioReceived(message));
   });
@@ -427,6 +442,14 @@ const listenOnAddressMessages = socket => dispatch => {
         '😬 Cancelling fallback data provider listener. Zerion is good!'
       );
       dispatch(disableFallbackIfNeeded());
+      if (getState().settings.network === NetworkTypes.mainnet) {
+        // Start watching arbitrum assets
+        dispatch(arbitrumExplorerInit());
+        // Start watching optimism assets
+        dispatch(optimismExplorerInit());
+        // Start watching polygon assets
+        dispatch(polygonExplorerInit());
+      }
     }
   });
 

@@ -17,6 +17,7 @@ import PinAuthenticationScreen from '../screens/PinAuthenticationScreen';
 import ReceiveModal from '../screens/ReceiveModal';
 import RestoreSheet from '../screens/RestoreSheet';
 import SavingsSheet from '../screens/SavingsSheet';
+import SendConfirmationSheet from '../screens/SendConfirmationSheet';
 import SendSheet from '../screens/SendSheet';
 import SettingsModal from '../screens/SettingsModal';
 import ShowcaseSheet from '../screens/ShowcaseSheet';
@@ -67,6 +68,11 @@ function SendFlowNavigator() {
         component={ModalScreen}
         name={Routes.MODAL_SCREEN}
         options={overlayExpandedPreset}
+      />
+      <Stack.Screen
+        component={SendConfirmationSheet}
+        name={Routes.SEND_CONFIRMATION_SHEET}
+        options={sheetPreset}
       />
       <Stack.Screen
         component={SendSheet}

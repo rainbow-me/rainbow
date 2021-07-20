@@ -44,10 +44,18 @@ class TransactionListViewCell: TransactionListBaseCell {
   @IBOutlet weak var balanceDisplay: UILabel!
   @IBOutlet weak var nativeDisplay: UILabel!
   @IBOutlet weak var coinImage: UIImageView!
+  @IBOutlet weak var badge: UIImageView!
   
   override func awakeFromNib() {
     super.awakeFromNib()
     addShadowLayer(coinImage)
+  }
+  
+  override func prepareForReuse() {
+    super.prepareForReuse()
+    coinImage.image = nil;
+    badge.image = nil;
+    transactionIcon.image = nil;
   }
   
   func set(transaction: Transaction) {
@@ -68,7 +76,34 @@ class TransactionListViewCell: TransactionListBaseCell {
     if transaction.title != nil && transaction.transactionDescription != nil && transaction.balanceDisplay != nil {
       transactionType.accessibilityIdentifier = "\(transaction.title!)-\(transaction.transactionDescription!)-\(transaction.balanceDisplay!)"
     }
-
+    
+    if transaction.network != nil {
+      if transaction.network == "optimism" {
+        var imgName = "optimismBadge"
+        if(darkMode){ imgName += "Dark" }
+        if let img = UIImage.init(named:imgName) {
+          badge.image = img
+          badge.isHidden = false
+        }
+      }else if transaction.network == "polygon" {
+        var imgName = "polygonBadge"
+        if(darkMode){ imgName += "Dark" }
+        if let img = UIImage.init(named:imgName) {
+          badge.image = img
+          badge.isHidden = false
+        }
+      }else if transaction.network == "arbitrum" {
+        var imgName = "arbitrumBadge"
+        if(darkMode){ imgName += "Dark" }
+        if let img = UIImage.init(named:imgName) {
+          badge.image = img
+          badge.isHidden = false
+        }
+      } else {
+        badge.image = nil;
+        badge.isHidden = true
+      }
+    }
     
     if transaction.symbol != nil {
       if let img = UIImage.init(named: transaction.symbol.lowercased()) {

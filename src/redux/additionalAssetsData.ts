@@ -3,7 +3,7 @@ import { getUnixTime, startOfMinute, sub } from 'date-fns';
 import { uniswapClient } from '../apollo/client';
 import { TOKEN_DATA, UNISWAP_ADDITIONAL_TOKEN_DATA } from '../apollo/queries';
 import { get2DayPercentChange } from '../hooks/useUniswapPools';
-import { fetchCoingeckoIds } from '@rainbow-me/redux/fallbackExplorer';
+import { fetchCoingeckoIds } from '@rainbow-me/redux/data';
 import { AppDispatch, AppState } from '@rainbow-me/redux/store';
 import { ETH_ADDRESS, WETH_ADDRESS } from '@rainbow-me/references';
 import { getBlocksFromTimestamps } from '@rainbow-me/utils';

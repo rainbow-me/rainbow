@@ -128,7 +128,7 @@ export default function TransactionList({
     e => {
       const { index } = e.nativeEvent;
       const item = transactions[index];
-      const { hash, from, minedAt, pending, to, status, type } = item;
+      const { hash, from, minedAt, network, pending, to, status, type } = item;
 
       const date = getHumanReadableDate(minedAt);
 
@@ -168,7 +168,9 @@ export default function TransactionList({
         let buttons = [
           ...(canBeResubmitted ? [TransactionActions.speedUp] : []),
           ...(canBeCancelled ? [TransactionActions.cancel] : []),
-          TransactionActions.viewOnEtherscan,
+          ethereumUtils.supportsEtherscan(network)
+            ? TransactionActions.viewOnEtherscan
+            : TransactionActions.viewOnBlockExplorer,
           ...(ios ? [TransactionActions.close] : []),
         ];
         if (showContactInfo) {
@@ -218,8 +220,9 @@ export default function TransactionList({
                   type: 'cancel',
                 });
                 break;
+              case TransactionActions.viewOnBlockExplorer:
               case TransactionActions.viewOnEtherscan: {
-                ethereumUtils.openTransactionEtherscanURL(hash);
+                ethereumUtils.openTransactionInBlockExplorer(hash, network);
                 break;
               }
               default:

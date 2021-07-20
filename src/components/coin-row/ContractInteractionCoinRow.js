@@ -26,7 +26,7 @@ export default function ContractInteractionCoinRow({
       },
       buttonIndex => {
         if (buttonIndex === 0) {
-          ethereumUtils.openTransactionEtherscanURL(hash);
+          ethereumUtils.openTransactionInBlockExplorer(hash);
         }
       }
     );

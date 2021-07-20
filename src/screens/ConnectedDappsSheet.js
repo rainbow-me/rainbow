@@ -28,14 +28,18 @@ export default function ConnectedDappsSheet() {
     <Sheet borderRadius={30}>
       <SheetTitle>Connected apps</SheetTitle>
       <ScrollableItems length={walletConnectorsByDappName.length}>
-        {walletConnectorsByDappName.map(({ dappIcon, dappName, dappUrl }) => (
-          <WalletConnectListItem
-            dappIcon={dappIcon}
-            dappName={dappName}
-            dappUrl={dappUrl}
-            key={dappName}
-          />
-        ))}
+        {walletConnectorsByDappName.map(
+          ({ account, chainId, dappIcon, dappName, dappUrl }) => (
+            <WalletConnectListItem
+              account={account}
+              chainId={chainId}
+              dappIcon={dappIcon}
+              dappName={dappName}
+              dappUrl={dappUrl}
+              key={dappName}
+            />
+          )
+        )}
       </ScrollableItems>
     </Sheet>
   );

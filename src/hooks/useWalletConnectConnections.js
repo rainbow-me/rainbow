@@ -6,11 +6,14 @@ import { sortList } from '../helpers/sortList';
 import {
   walletConnectDisconnectAllByDappName as rawWalletConnectDisconnectAllByDappName,
   walletConnectOnSessionRequest as rawWalletConnectOnSessionRequest,
+  walletConnectUpdateSessionConnectorByDappName as rawWalletConnectUpdateSessionConnectorByDappName,
 } from '../redux/walletconnect';
 
 const formatDappData = connections =>
   values(
     mapValues(connections, connection => ({
+      account: connection?.[0].accounts?.[0],
+      chainId: connection?.[0].chainId,
       dappIcon: connection?.[0].peerMeta.icons[0],
       dappName: connection?.[0].peerMeta.name,
       dappUrl: connection?.[0].peerMeta.url,
@@ -49,11 +52,24 @@ export default function useWalletConnectConnections() {
     [dispatch]
   );
 
+  const walletConnectUpdateSessionConnectorByDappName = useCallback(
+    (dappName, accountAddress, chainId) =>
+      dispatch(
+        rawWalletConnectUpdateSessionConnectorByDappName(
+          dappName,
+          accountAddress,
+          chainId
+        )
+      ),
+    [dispatch]
+  );
+
   return {
     sortedWalletConnectors,
     walletConnectDisconnectAllByDappName,
     walletConnectOnSessionRequest,
     walletConnectorsByDappName,
     walletConnectorsCount,
+    walletConnectUpdateSessionConnectorByDappName,
   };
 }

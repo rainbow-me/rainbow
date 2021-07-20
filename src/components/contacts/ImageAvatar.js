@@ -31,6 +31,10 @@ const sizeConfigs = colors => ({
     dimensions: 34,
     textSize: 'large',
   },
+  smaller: {
+    dimensions: 20,
+    textSize: 'small',
+  },
 });
 
 const Avatar = styled(ImgixImage)`
@@ -47,7 +51,9 @@ const ImageAvatar = ({ image, size = 'medium', ...props }) => {
 
   const shadows = useMemo(
     () =>
-      size === 'small' ? buildSmallShadows(colors.shadow, colors) : shadow,
+      size === 'small' || size === 'smaller'
+        ? buildSmallShadows(colors.shadow, colors)
+        : shadow,
     [shadow, size, colors]
   );
 

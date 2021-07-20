@@ -241,7 +241,7 @@ describe('Swap Sheet Interaction Flow', () => {
   });
 
   it('Should show Hold to Swap Button & Swap Info Button on completion of all input fields', async () => {
-    await Helpers.checkIfVisible('exchange-modal-confirm-Hold to Swap');
+    await Helpers.checkIfVisible('exchange-modal-confirm-button');
     await Helpers.checkIfVisible('exchange-details-button');
   });
 
@@ -349,7 +349,7 @@ describe('Swap Sheet Interaction Flow', () => {
 
   it('Should throw alert if gas price is greater than input amount', async () => {
     await Helpers.typeText('exchange-modal-input', '0.000001', false);
-    await Helpers.tapAndLongPress('exchange-modal-confirm-Hold to Swap');
+    await Helpers.tapAndLongPress('exchange-modal-confirm-button');
     await Helpers.tapAlertWithButton('Cancel');
   });
 

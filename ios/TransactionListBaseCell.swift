@@ -10,6 +10,7 @@ import Foundation
 class TransactionListBaseCell : UITableViewCell {
   internal let hapticType = "select"
   
+  var darkMode = false
   var onItemPress: (Dictionary<AnyHashable, Any>) -> Void = { _ in }
   var row: Int? = nil
   var scaleTo: CGFloat = 0.96

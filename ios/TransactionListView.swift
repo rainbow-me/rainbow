@@ -427,6 +427,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
       cell.set(transaction: transaction)
       cell.backgroundColor = .clear
       cell.selectionStyle = .none
+      cell.darkMode = darkMode
 
       return cell;
     } else {

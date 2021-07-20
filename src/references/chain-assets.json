@@ -1,0 +1,358 @@
+{
+  "ropsten": [
+    {
+      "asset": {
+        "asset_code": "eth",
+        "coingecko_id": "ethereum",
+        "decimals": 18,
+        "icon_url": "https://s3.amazonaws.com/icons.assets/ETH.png",
+        "name": "Ether",
+        "price": {
+          "changed_at": 1582568575,
+          "relative_change_24h": -4.586615622469276,
+          "value": 259.2
+        },
+        "symbol": "ETH"
+      },
+      "quantity": 0
+    }
+  ],
+  "kovan": [
+    {
+      "asset": {
+        "asset_code": "eth",
+        "coingecko_id": "ethereum",
+        "decimals": 18,
+        "icon_url": "https://s3.amazonaws.com/icons.assets/ETH.png",
+        "name": "Ether",
+        "price": {
+          "changed_at": 1582568575,
+          "relative_change_24h": -4.586615622469276,
+          "value": 259.2
+        },
+        "symbol": "ETH"
+      },
+      "quantity": 0
+    },
+    {
+      "asset": {
+        "asset_code": "0xc4375b7de8af5a38a93548eb8453a498222c4ff2",
+        "coingecko_id": "dai",
+        "decimals": 18,
+        "icon_url": "https://s3.amazonaws.com/icons.assets/DAI_mcd.png",
+        "name": "Dai",
+        "price": {
+          "changed_at": 1582562452,
+          "relative_change_24h": 0.8470466197462612,
+          "value": 1
+        },
+        "symbol": "DAI"
+      },
+      "quantity": 0
+    }
+  ],
+  "rinkeby": [
+      {
+        "asset": {
+          "asset_code": "eth",
+          "coingecko_id": "ethereum",
+          "decimals": 18,
+          "icon_url": "https://s3.amazonaws.com/icons.assets/ETH.png",
+          "name": "Ether",
+          "price": {
+            "changed_at": 1582568575,
+            "relative_change_24h": -4.586615622469276,
+            "value": 259.2
+          },
+          "symbol": "ETH"
+        },
+        "quantity": 0
+      },
+      {
+        "asset": {
+          "asset_code": "0x5592ec0cfb4dbc12d3ab100b257153436a1f0fea",
+          "coingecko_id": "dai",
+          "decimals": 18,
+          "icon_url": "https://s3.amazonaws.com/icons.assets/DAI_mcd.png",
+          "name": "Dai",
+          "price": {
+            "changed_at": 1582562452,
+            "relative_change_24h": 0.8470466197462612,
+            "value": 1
+          },
+          "symbol": "DAI"
+        },
+        "quantity": 0
+      },
+      {
+        "asset": {
+          "asset_code": "0xF22e3F33768354c9805d046af3C0926f27741B43",
+          "coingecko_id": "0x",
+          "decimals": 18,
+          "icon_url": "https://s3.amazonaws.com/icons.assets/ZRX.png",
+          "name": "0x",
+          "price": {
+            "changed_at": 1582569109,
+            "relative_change_24h": -4.0050062578222825,
+            "value": 0.26834262
+          },
+          "symbol": "ZRX"
+        },
+        "quantity": 0
+      },
+      {
+        "asset": {
+          "asset_code": "0xDA5B056Cfb861282B4b59d29c9B395bcC238D29B",
+          "coingecko_id": "basic-attention-token",
+          "decimals": 18,
+          "icon_url": "https://s3.amazonaws.com/icons.assets/BAT.png",
+          "name": "Basic Attention Token",
+          "price": {
+            "changed_at": 1582568524,
+            "relative_change_24h": -4.586615622469282,
+            "value": 0.25059455999999997
+          },
+          "symbol": "BAT"
+        },
+        "quantity": 0
+      },
+      {
+        "asset": {
+          "asset_code": "0xF9bA5210F91D0474bd1e1DcDAeC4C58E359AaD85",
+          "coingecko_id": "maker",
+          "decimals": 18,
+          "icon_url": "https://s3.amazonaws.com/icons.assets/MKR.png",
+          "name": "Maker",
+          "price": {
+            "changed_at": 1582568524,
+            "relative_change_24h": -4.58661562246928,
+            "value": 622.0799999999999
+          },
+          "symbol": "MKR"
+        },
+        "quantity": 0
+      }
+    ],
+    "goerli": [
+      {
+        "asset": {
+          "asset_code": "eth",
+          "coingecko_id": "ethereum",
+          "decimals": 18,
+          "icon_url": "https://s3.amazonaws.com/icons.assets/ETH.png",
+          "name": "Ether",
+          "price": {
+            "changed_at": 1582568575,
+            "relative_change_24h": -4.586615622469276,
+            "value": 259.2
+          },
+          "symbol": "ETH"
+        },
+        "quantity": 0
+      }
+    ],
+    "arbitrum": [
+      {
+        "asset": {
+          "mainnet_address": "eth",
+          "asset_code": "0x0000000000000000000000000000000000000000",
+          "coingecko_id": "ethereum",
+          "decimals": 18,
+          "icon_url": "https://s3.amazonaws.com/icons.assets/ETH.png",
+          "name": "Ether",
+          "price": {
+            "changed_at": 1582568575,
+            "relative_change_24h": -4.586615622469276,
+            "value": 259.2
+          },
+          "symbol": "ETH",
+          "type": "arbitrum"
+        },
+        "quantity": 0
+      }
+    ],
+    "optimism": [
+      {
+        "asset": {
+          "mainnet_address": "eth",
+          "asset_code": "0x4200000000000000000000000000000000000006",
+          "coingecko_id": "ethereum",
+          "decimals": 18,
+          "icon_url": "https://s3.amazonaws.com/icons.assets/ETH.png",
+          "name": "Ether",
+          "price": {
+            "changed_at": 1582568575,
+            "relative_change_24h": -4.586615622469276,
+            "value": 259.2
+          },
+          "symbol": "ETH",
+          "type": "optimism"
+        },
+        "quantity": 0
+      },
+      {
+        "asset": {
+          "mainnet_address": "0x6b175474e89094c44da98b954eedeac495271d0f",
+          "asset_code": "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1",
+          "coingecko_id": "dai",
+          "decimals": 18,
+          "icon_url": "https://s3.amazonaws.com/icons.assets/DAI_mcd.png",
+          "name": "Dai",
+          "price": {
+            "changed_at": 1582562452,
+            "relative_change_24h": 0.8470466197462612,
+            "value": 1
+          },
+          "symbol": "DAI",
+          "type": "optimism"
+        },
+        "quantity": 0
+      },
+      {
+        "asset": {
+          "mainnet_address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+          "asset_code": "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58",
+          "coingecko_id": "tether",
+          "decimals": 8,
+          "icon_url": "https://s3.amazonaws.com/icons.assets/USDT.png",
+          "name": "Tether USD",
+          "price": {
+            "changed_at": 1582562452,
+            "relative_change_24h": 0.8470466197462612,
+            "value": 1
+          },
+          "symbol": "USDT",
+          "type": "optimism"
+        },
+        "quantity": 0
+      },
+      {
+        "asset": {
+          "mainnet_address": "0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f",
+          "asset_code": "0x8700daec35af8ff88c16bdf0418774cb3d7599b4",
+          "coingecko_id": "synthetix-network-token",
+          "decimals": 8,
+          "icon_url": "https://s3.amazonaws.com/icons.assets/SNX.png",
+          "name": "Synthetix",
+          "price": {
+            "changed_at": 1582562452,
+            "relative_change_24h": 0.8470466197462612,
+            "value": 1
+          },
+          "symbol": "SNX",
+          "type": "optimism"
+        },
+        "quantity": 0
+      },
+      {
+        "asset": {
+          "mainnet_address": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+          "asset_code": "0x68f180fcCe6836688e9084f035309E29Bf0A2095",
+          "coingecko_id": "wrapped-bitcoin",
+          "decimals": 8,
+          "icon_url": "https://s3.amazonaws.com/icons.assets/WBTC.png",
+          "name": "Wrapped Bitcoin",
+          "price": {
+            "changed_at": 1582562452,
+            "relative_change_24h": 0.8470466197462612,
+            "value": 1
+          },
+          "symbol": "WBTC",
+          "type": "optimism"
+        },
+        "quantity": 0
+      }
+    ],
+    "polygon": [
+      {
+        "asset": {
+          "mainnet_address": "eth",
+          "asset_code": "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619",
+          "coingecko_id": "ethereum",
+          "decimals": 18,
+          "icon_url": "https://s3.amazonaws.com/icons.assets/ETH.png",
+          "name": "Ether",
+          "price": {
+            "changed_at": 1582568575,
+            "relative_change_24h": -4.586615622469276,
+            "value": 259.2
+          },
+          "symbol": "ETH",
+          "type": "polygon"
+        },
+        "quantity": 0
+      },
+      {
+        "asset": {
+          "mainnet_address": "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0",
+          "asset_code": "0x0000000000000000000000000000000000001010",
+          "coingecko_id": "matic-network",
+          "decimals": 18,
+          "icon_url": "https://s3.amazonaws.com/icons.assets/MATIC.png",
+          "name": "Matic",
+          "price": {
+            "changed_at": 1582568575,
+            "relative_change_24h": -4.586615622469276,
+            "value": 259.2
+          },
+          "symbol": "MATIC",
+          "type": "polygon"
+        },
+        "quantity": 0
+      },
+      {
+        "asset": {
+          "mainnet_address": "0x6b175474e89094c44da98b954eedeac495271d0f",
+          "asset_code": "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063",
+          "coingecko_id": "dai",
+          "decimals": 18,
+          "icon_url": "https://s3.amazonaws.com/icons.assets/DAI_mcd.png",
+          "name": "Dai",
+          "price": {
+            "changed_at": 1582562452,
+            "relative_change_24h": 0.8470466197462612,
+            "value": 1
+          },
+          "symbol": "DAI",
+          "type": "polygon"
+        },
+        "quantity": 0
+      },
+      {
+        "asset": {
+          "mainnet_address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          "asset_code": "0x56836Eec6d4EfCcFBc162C0851007D9F72aD202B",
+          "coingecko_id": "usd-coin",
+          "decimals": 6,
+          "icon_url": "https://s3.amazonaws.com/icons.assets/USDC.png",
+          "name": "USD Coin",
+          "price": {
+            "changed_at": 1582562452,
+            "relative_change_24h": 0.8470466197462612,
+            "value": 1
+          },
+          "symbol": "USDC",
+          "type": "polygon"
+        },
+        "quantity": 0
+      },
+      {
+        "asset": {
+          "mainnet_address": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+          "asset_code": "0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6",
+          "coingecko_id": "wrapped-bitcoin",
+          "decimals": 8,
+          "icon_url": "https://s3.amazonaws.com/icons.assets/WBTC.png",
+          "name": "Wrapped Bitcoin",
+          "price": {
+            "changed_at": 1582562452,
+            "relative_change_24h": 0.8470466197462612,
+            "value": 1
+          },
+          "symbol": "WBTC",
+          "type": "polygon"
+        },
+        "quantity": 0
+      }
+    ]
+}
