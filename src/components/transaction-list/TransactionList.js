@@ -101,6 +101,7 @@ export default function TransactionList({
     onAvatarRemovePhoto,
     onAvatarPickEmoji,
     onAvatarPress,
+    onAvatarWebProfile,
   } = useOnAvatarPress();
 
   const onReceivePress = useCallback(() => {
@@ -276,6 +277,34 @@ export default function TransactionList({
   const safeAccountImage = useSafeImageUri(accountImage);
   const { isDarkMode, colors } = useTheme();
 
+  const onNativeAvatarMenuSelect = useCallback(
+    e => {
+      const { selection } = e.nativeEvent;
+      switch (selection) {
+        case 'newimage':
+          onAvatarChooseImage();
+          break;
+        case 'newemoji':
+          onAvatarPickEmoji();
+          break;
+        case 'removeimage':
+          onAvatarRemovePhoto();
+          break;
+        case 'webprofile':
+          onAvatarWebProfile();
+          break;
+        default:
+          break;
+      }
+    },
+    [
+      onAvatarChooseImage,
+      onAvatarPickEmoji,
+      onAvatarRemovePhoto,
+      onAvatarWebProfile,
+    ]
+  );
+
   return (
     <Container>
       <Container
@@ -292,11 +321,9 @@ export default function TransactionList({
         isLoading={loading}
         onAccountNamePress={onAccountNamePress}
         onAddCashPress={onAddCashPress}
-        onAvatarChooseImage={onAvatarChooseImage}
-        onAvatarPickEmoji={onAvatarPickEmoji}
         onAvatarPress={onAvatarPress}
-        onAvatarRemovePhoto={onAvatarRemovePhoto}
         onCopyAddressPress={onCopyAddressPress}
+        onNativeAvatarMenuSelect={onNativeAvatarMenuSelect}
         onReceivePress={onReceivePress}
         onRequestExpire={onRequestExpire}
         onRequestPress={onRequestPress}

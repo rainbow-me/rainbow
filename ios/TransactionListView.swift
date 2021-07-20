@@ -21,9 +21,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   @objc var onCopyAddressPress: RCTBubblingEventBlock = { _ in }
   @objc var onAccountNamePress: RCTBubblingEventBlock = { _ in }
   @objc var onAvatarPress: RCTBubblingEventBlock = { _ in }
-  @objc var onAvatarPickEmoji: RCTBubblingEventBlock = { _ in }
-  @objc var onAvatarChooseImage: RCTBubblingEventBlock = { _ in }
-  @objc var onAvatarRemovePhoto: RCTBubblingEventBlock = { _ in }
+  @objc var onNativeAvatarMenuSelect: RCTBubblingEventBlock = { _ in }
   @objc var onAddCashPress: RCTBubblingEventBlock = { _ in }
   @objc var addCashAvailable: Bool = true {
     didSet {
@@ -194,16 +192,9 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
 
     
   @objc func avatarOnPressFunction(optionId: String) -> Void {
-    switch optionId {
-      case "newimage":
-        self.onAvatarChooseImage([:]);
-      case "newemoji":
-        self.onAvatarPickEmoji([:]);
-      case "removeimage":
-        self.onAvatarRemovePhoto([:]);
-    default:
-      return ();
-    }
+    self.onNativeAvatarMenuSelect([
+      "selection": optionId,
+    ]);
     return ();
   }
 
