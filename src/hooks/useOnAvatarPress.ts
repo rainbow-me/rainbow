@@ -40,8 +40,8 @@ export default () => {
     await dispatch(walletsUpdate(newWallets));
   }, [dispatch, selectedWallet, accountAddress, wallets]);
 
-  return useMemo(() => {
-    const processPhoto = (image: any) => {
+  const processPhoto = useCallback(
+    (image: any) => {
       const stringIndex = image?.path.indexOf('/tmp');
       const newWallets = {
         ...wallets,
@@ -59,23 +59,70 @@ export default () => {
 
       dispatch(walletsSetSelected(newWallets[selectedWallet.id]));
       dispatch(walletsUpdate(newWallets));
-    };
+    },
+    [accountAddress, dispatch, selectedWallet.id, wallets]
+  );
 
-    const onAvatarPickEmoji = () => {
-      navigate(Routes.AVATAR_BUILDER, {
-        initialAccountColor: accountColor,
-        initialAccountName: accountName,
-      });
-    };
+  const onAvatarPickEmoji = useCallback(() => {
+    navigate(Routes.AVATAR_BUILDER, {
+      initialAccountColor: accountColor,
+      initialAccountName: accountName,
+    });
+  }, [accountColor, accountName, navigate]);
 
-    const onAvatarChooseImage = () => {
-      ImagePicker.openPicker({
-        cropperCircleOverlay: true,
-        cropping: true,
-      }).then(processPhoto);
-    };
+  const onAvatarChooseImage = useCallback(() => {
+    ImagePicker.openPicker({
+      cropperCircleOverlay: true,
+      cropping: true,
+    }).then(processPhoto);
+  }, [processPhoto]);
 
-    const avatarOptions = [
+  const onAvatarPress = useCallback(() => {
+    const avatarActionSheetOptions = [
+      'Choose from Library',
+      ...(!accountImage ? ['Pick an Emoji'] : []),
+      ...(accountImage ? ['Remove Photo'] : []),
+      ...(ios ? ['Cancel'] : []),
+    ];
+
+    showActionSheetWithOptions(
+      {
+        cancelButtonIndex: avatarActionSheetOptions.length - 1,
+        destructiveButtonIndex: accountImage
+          ? avatarActionSheetOptions.length - 2
+          : undefined,
+        options: avatarActionSheetOptions,
+      },
+      async (buttonIndex: Number) => {
+        if (buttonIndex === 0) {
+          ImagePicker.openPicker({
+            cropperCircleOverlay: true,
+            cropping: true,
+          }).then(processPhoto);
+        } else if (buttonIndex === 1) {
+          if (!accountImage) {
+            navigate(Routes.AVATAR_BUILDER, {
+              initialAccountColor: accountColor,
+              initialAccountName: accountName,
+            });
+          }
+          if (accountImage) {
+            onAvatarRemovePhoto();
+          }
+        }
+      }
+    );
+  }, [
+    accountColor,
+    accountImage,
+    accountName,
+    navigate,
+    onAvatarRemovePhoto,
+    processPhoto,
+  ]);
+
+  const avatarOptions = useMemo(
+    () => [
       {
         id: 'newimage',
         label: 'Choose from Library',
@@ -99,61 +146,15 @@ export default () => {
             },
           ]
         : []),
-    ];
+    ],
+    [accountImage]
+  );
 
-    const onAvatarPress = () => {
-      const avatarActionSheetOptions = [
-        'Choose from Library',
-        ...(!accountImage ? ['Pick an Emoji'] : []),
-        ...(accountImage ? ['Remove Photo'] : []),
-        ...(ios ? ['Cancel'] : []),
-      ];
-
-      showActionSheetWithOptions(
-        {
-          cancelButtonIndex: avatarActionSheetOptions.length - 1,
-          destructiveButtonIndex: accountImage
-            ? avatarActionSheetOptions.length - 2
-            : undefined,
-          options: avatarActionSheetOptions,
-        },
-        async (buttonIndex: Number) => {
-          if (buttonIndex === 0) {
-            ImagePicker.openPicker({
-              cropperCircleOverlay: true,
-              cropping: true,
-            }).then(processPhoto);
-          } else if (buttonIndex === 1) {
-            if (!accountImage) {
-              navigate(Routes.AVATAR_BUILDER, {
-                initialAccountColor: accountColor,
-                initialAccountName: accountName,
-              });
-            }
-            if (accountImage) {
-              onAvatarRemovePhoto();
-            }
-          }
-        }
-      );
-    };
-
-    return {
-      avatarOptions,
-      onAvatarChooseImage,
-      onAvatarPickEmoji,
-      onAvatarPress,
-      onAvatarRemovePhoto,
-    };
-  }, [
-    accountAddress,
-    accountColor,
-    accountImage,
-    accountName,
-    dispatch,
-    navigate,
+  return {
+    avatarOptions,
+    onAvatarChooseImage,
+    onAvatarPickEmoji,
+    onAvatarPress,
     onAvatarRemovePhoto,
-    selectedWallet.id,
-    wallets,
-  ]);
+  };
 };
