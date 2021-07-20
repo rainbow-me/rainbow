@@ -1,5 +1,6 @@
 import { toLower } from 'lodash';
 import { useCallback, useMemo } from 'react';
+import { Linking } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
 import { useDispatch } from 'react-redux';
 import { RainbowAccount } from '../model/wallet';
@@ -8,7 +9,7 @@ import useAccountProfile from './useAccountProfile';
 import useWallets from './useWallets';
 import { walletsSetSelected, walletsUpdate } from '@rainbow-me/redux/wallets';
 import Routes from '@rainbow-me/routes';
-import { showActionSheetWithOptions } from '@rainbow-me/utils';
+import { buildRainbowUrl, showActionSheetWithOptions } from '@rainbow-me/utils';
 
 export default () => {
   const { wallets, selectedWallet } = useWallets();
@@ -19,6 +20,7 @@ export default () => {
     accountColor,
     accountName,
     accountImage,
+    accountENS,
   } = useAccountProfile();
 
   const onAvatarRemovePhoto = useCallback(async () => {
@@ -76,6 +78,13 @@ export default () => {
       cropping: true,
     }).then(processPhoto);
   }, [processPhoto]);
+
+  const onAvatarWebProfile = useCallback(() => {
+    const rainbowURL = buildRainbowUrl(null, accountENS, accountAddress);
+    if (rainbowURL) {
+      Linking.openURL(rainbowURL);
+    }
+  }, [accountAddress, accountENS]);
 
   const onAvatarPress = useCallback(() => {
     const avatarActionSheetOptions = [
@@ -138,6 +147,11 @@ export default () => {
             },
           ]
         : []),
+      {
+        id: 'webprofile',
+        label: 'View Web Profile',
+        uiImage: 'safari',
+      },
     ],
     [accountImage]
   );
@@ -148,5 +162,6 @@ export default () => {
     onAvatarPickEmoji,
     onAvatarPress,
     onAvatarRemovePhoto,
+    onAvatarWebProfile,
   };
 };
