@@ -84,7 +84,7 @@ export default function SendContactList({
 
   const handleCloseAllDifferentContacts = useCallback(address => {
     if (touchedContact.current && contactRefs.current[touchedContact.current]) {
-      contactRefs.current[touchedContact.current].close();
+      contactRefs.current[touchedContact.current].close?.();
     }
     touchedContact.current = toLower(address);
   }, []);
