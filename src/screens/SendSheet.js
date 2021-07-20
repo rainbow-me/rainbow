@@ -146,7 +146,7 @@ export default function SendSheet(props) {
   const savings = useSendSavingsAccount();
   const fetchData = useRefreshAccountData();
   const { hiddenCoins, pinnedCoins } = useCoinListEditOptions();
-
+  const [toAddress, setToAddress] = useState();
   const [amountDetails, setAmountDetails] = useState({
     assetAmount: '',
     isSufficientBalance: false,
@@ -381,6 +381,17 @@ export default function SendSheet(props) {
     [sendUpdateAssetAmount]
   );
 
+  useEffect(() => {
+    const resolveAddressIfNeeded = async () => {
+      let realAddress = recipient;
+      if (isENSAddressFormat(recipient)) {
+        realAddress = await resolveNameOrAddress(recipient);
+      }
+      setToAddress(realAddress);
+    };
+    resolveAddressIfNeeded();
+  }, [recipient]);
+
   const onSubmit = useCallback(async () => {
     const validTransaction =
       isValidAddress && amountDetails.isSufficientBalance && isSufficientGas;
@@ -404,7 +415,7 @@ export default function SendSheet(props) {
             address: accountAddress,
             amount: amountDetails.assetAmount,
             asset: selected,
-            recipient,
+            recipient: toAddress,
           },
           true,
           currentNetwork
@@ -417,11 +428,6 @@ export default function SendSheet(props) {
         updateTxFee(updatedGasLimit, null, currentNetwork);
         // eslint-disable-next-line no-empty
       } catch (e) {}
-    }
-
-    let toAddress = recipient;
-    if (isENSAddressFormat(recipient)) {
-      toAddress = await resolveNameOrAddress(recipient);
     }
 
     const txDetails = {
@@ -468,10 +474,10 @@ export default function SendSheet(props) {
     gasLimit,
     isSufficientGas,
     isValidAddress,
-    recipient,
     selected,
     selectedGasPrice.txFee,
     selectedGasPrice.value?.amount,
+    toAddress,
     updateTxFee,
   ]);
 
@@ -670,7 +676,7 @@ export default function SendSheet(props) {
           address: accountAddress,
           amount: amountDetails.assetAmount,
           asset: selected,
-          recipient,
+          recipient: toAddress,
         },
         false,
         currentProvider,
@@ -688,6 +694,7 @@ export default function SendSheet(props) {
     isValidAddress,
     recipient,
     selected,
+    toAddress,
     updateTxFee,
   ]);
 
