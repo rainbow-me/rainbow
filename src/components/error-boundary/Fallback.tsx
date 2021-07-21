@@ -7,6 +7,7 @@ import { SheetActionButton } from '../sheet';
 import Text from '../text/Text';
 import { useTheme } from '@rainbow-me/context';
 import { useDimensions } from '@rainbow-me/hooks';
+import logger from 'logger';
 
 const Spacer = styled(View)<{ height: Number }>`
   height: ${({ height }) => `${height}`};
@@ -23,10 +24,18 @@ const Message = styled(View)`
   text-align: center;
   padding: 30px;
 `;
-export default function Fallback() {
+interface Props {
+  onResetApp: () => void;
+}
+
+export default function Fallback({ onResetApp }: Props) {
   const { colors } = useTheme();
   const { width: deviceWidth } = useDimensions();
-  const handleRestart = () => Restart.Restart();
+  const handleRestart = () => {
+    onResetApp();
+    logger.sentry('Restarting app after Error Boundary catch');
+    Restart.Restart();
+  };
   return (
     <Container>
       <Message>
