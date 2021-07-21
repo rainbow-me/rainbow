@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated from 'react-native-reanimated';
 import { useValues } from 'react-native-redash';
 import { useDispatch } from 'react-redux';
@@ -73,6 +74,7 @@ const AvatarBuilder = ({ route: { params } }) => {
   const dispatch = useDispatch();
 
   const onChangeEmoji = event => {
+    ReactNativeHapticFeedback.trigger('selection');
     saveInfo(`${event} ${params.initialAccountName}`);
   };
 
