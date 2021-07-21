@@ -59,7 +59,7 @@ async function getBulkPairData(pairList, ethPrice, ethPriceOneMonthAgo) {
           fetchPolicy: 'no-cache',
           query: UNISWAP_PAIRS_HISTORICAL_BULK_QUERY,
           variables: {
-            block,
+            block: Number(block),
             pairs: pairList,
           },
         });
@@ -310,11 +310,8 @@ export default function useUniswapPools(sortField, sortDirection, token) {
       );
   }, [pairs, dispatch]);
 
-  const { genericAssets } = useSelector(
-    ({ data: { assets, genericAssets } }) => ({
-      assets,
-      genericAssets,
-    })
+  const genericAssets = useSelector(
+    ({ data: { genericAssets } }) => genericAssets
   );
 
   const { data: idsData, error } = useQuery(
