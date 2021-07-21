@@ -1,3 +1,4 @@
+import { captureException, captureMessage } from '@sentry/react-native';
 import React from 'react';
 import Fallback from './Fallback';
 
@@ -9,8 +10,9 @@ export default class ErrorBoundary extends React.Component {
   state = { hasError: false };
 
   componentDidCatch(error: any, errorInfo: any) {
-    // log to Sentry here:
-    console.log('error info: ', { error, errorInfo });
+    // log captured error to Sentry
+    captureException(error);
+    captureMessage(errorInfo);
   }
 
   render() {

@@ -30,16 +30,14 @@ const Message = styled(View)`
 export default function Fallback() {
   const { colors } = useTheme();
   const { width: deviceWidth } = useDimensions();
-  const handleRestart = () => {
-    Restart.Restart();
-  };
+  const handleRestart = () => Restart.Restart();
   return (
     <Container>
       <Message>
         <Centered>
           <Text
             align="center"
-            color={colors.alpha(colors.black, 0.6)}
+            color={colors.alpha(colors.black, 0.8)}
             size="big"
             weight="bold"
           >
@@ -67,7 +65,7 @@ export default function Fallback() {
             size="large"
             weight="bold"
           >
-            Don&apos;t worry, your wallet is safe! Just restart the app to get
+            Don&apos;t worry, your wallets are safe! Just restart the app to get
             back to business.
           </Text>
         </Centered>
