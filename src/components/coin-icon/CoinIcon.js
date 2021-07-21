@@ -28,9 +28,10 @@ const CoinIcon = ({
   ...props
 }) => {
   const tokenMetadata = getTokenMetadata(props.mainnet_address || address);
-  const color = useColorForAsset({ address });
+  const color = useColorForAsset({ address: props.mainnet_address || address });
   const { colors, isDarkMode } = useTheme();
-  const forceFallback = !isETH(address) && isNil(tokenMetadata);
+  const forceFallback =
+    !isETH(props.mainnet_address || address) && isNil(tokenMetadata);
 
   return (
     <Fragment>
