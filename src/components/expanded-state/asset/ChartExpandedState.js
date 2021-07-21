@@ -346,11 +346,15 @@ export default function ChartExpandedState({ asset }) {
         </TokenInfoSection>
       )}
       {needsEth ? (
-        <SheetActionButtonRow>
+        <SheetActionButtonRow
+          paddingBottom={assetWithPrice?.mainnet_address && 19}
+        >
           <BuyActionButton color={color} fullWidth />
         </SheetActionButtonRow>
       ) : (
-        <SheetActionButtonRow>
+        <SheetActionButtonRow
+          paddingBottom={assetWithPrice?.mainnet_address && 19}
+        >
           {showSwapButton && (
             <SwapActionButton color={color} inputType={AssetInputTypes.in} />
           )}

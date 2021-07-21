@@ -8,12 +8,12 @@ import { Text } from './text';
 import { lightModeThemeColors, position } from '@rainbow-me/styles';
 
 const L2Disclaimer = ({ assetType, colors, onPress, sending, symbol }) => {
-  const gradientColors = ['#FFFFFF', '#F0F2F5'];
+  const gradientColors = ['#F0F2F5', '#FFFFFF'];
   const radialGradientProps = {
     center: [0, 1],
     colors: [
-      lightModeThemeColors.alpha(gradientColors[0], 0.1),
-      lightModeThemeColors.alpha(gradientColors[1], 0.08),
+      lightModeThemeColors.alpha(gradientColors[0], 0.5),
+      lightModeThemeColors.alpha(gradientColors[1], 0.5),
     ],
     pointerEvents: 'none',
     style: {
@@ -33,17 +33,17 @@ const L2Disclaimer = ({ assetType, colors, onPress, sending, symbol }) => {
       >
         <RadialGradient
           {...radialGradientProps}
-          borderRadius={21}
-          radius={81}
+          borderRadius={16}
+          radius={600}
         />
         <Column>
           <ChainBadge
             assetType={assetType}
-            badgeXPosition={-3}
+            badgeXPosition={-10}
             badgeYPosition={-15}
           />
         </Column>
-        <Column marginLeft={40}>
+        <Column marginLeft={27}>
           <Text
             color={colors.alpha(colors.blueGreyDark, 0.6)}
             size="smedium"
@@ -54,7 +54,7 @@ const L2Disclaimer = ({ assetType, colors, onPress, sending, symbol }) => {
           </Text>
         </Column>
         <Column align="end" flex={1} justify="end">
-          <Text color={colors.alpha(colors.blueGreyDark, 0.6)} size="smedium">
+          <Text color={colors.alpha(colors.blueGreyDark, 0.3)} size="smedium">
             􀅵
           </Text>
         </Column>
