@@ -8,12 +8,8 @@ import Text from '../text/Text';
 import { useTheme } from '@rainbow-me/context';
 import { useDimensions } from '@rainbow-me/hooks';
 
-const SmallSpacer = styled(View)`
-  height: 6;
-`;
-
-const Spacer = styled(View)`
-  height: 23;
+const Spacer = styled(View)<{ height: Number }>`
+  height: ${({ height }) => `${height}`};
 `;
 
 const Container = styled(View)`
@@ -35,20 +31,15 @@ export default function Fallback() {
     <Container>
       <Message>
         <Centered>
-          <Text
-            align="center"
-            color={colors.alpha(colors.black, 0.8)}
-            size="big"
-            weight="bold"
-          >
+          <Text align="center" color={colors.dark} size="bigger" weight="heavy">
             Oops! 😅
           </Text>
         </Centered>
-        <SmallSpacer />
+        <Spacer height={15} />
         <Centered>
           <Text
             align="center"
-            color={colors.alpha(colors.blueGreyDark, 0.6)}
+            color={colors.alpha(colors.blueGreyDark, 0.7)}
             lineHeight="loose"
             size="large"
             weight="bold"
@@ -56,11 +47,11 @@ export default function Fallback() {
             Something went wrong.
           </Text>
         </Centered>
-        <Spacer />
+        <Spacer height={21} />
         <Centered>
           <Text
             align="center"
-            color={colors.alpha(colors.blueGreyDark, 0.6)}
+            color={colors.alpha(colors.blueGreyDark, 0.7)}
             lineHeight="loose"
             size="large"
             weight="bold"
@@ -69,7 +60,7 @@ export default function Fallback() {
             back to business.
           </Text>
         </Centered>
-        <Spacer />
+        <Spacer height={33} />
         <Centered>
           <SheetActionButton
             androidWidth={deviceWidth - 60}
