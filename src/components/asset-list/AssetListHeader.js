@@ -56,7 +56,7 @@ const WalletSelectButton = ({
         <AccountName
           deviceWidth={deviceWidth}
           textWidth={textWidth}
-          totalValueLength={totalValue.length}
+          totalValueLength={totalValue?.length}
         >
           {truncatedAccountName}
         </AccountName>

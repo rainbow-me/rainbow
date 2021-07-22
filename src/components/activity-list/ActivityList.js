@@ -6,8 +6,8 @@ import networkTypes from '../../helpers/networkTypes';
 import ActivityIndicator from '../ActivityIndicator';
 import Spinner from '../Spinner';
 import { ButtonPressAnimation } from '../animations';
+import { ShowMoreButton } from '../buttons';
 import { CoinRowHeight } from '../coin-row';
-import Text from '../text/Text';
 import ActivityListEmptyState from './ActivityListEmptyState';
 import ActivityListHeader from './ActivityListHeader';
 import RecyclerActivityList from './RecyclerActivityList';
@@ -34,9 +34,14 @@ const FooterWrapper = styled(ButtonPressAnimation)`
   align-items: center;
   height: 40;
   padding-bottom: 10;
+  margin-bottom: 50;
 `;
 
-function ListFooterComponent({ label, onPress }) {
+const Spacer = styled.View`
+  height: 20;
+`;
+
+function ListFooterComponent({ onPress }) {
   const [isLoading, setIsLoading] = useState(false);
   const { colors } = useTheme();
 
@@ -46,23 +51,20 @@ function ListFooterComponent({ label, onPress }) {
       setIsLoading(false);
     }
   }, [isLoading, setIsLoading, onPress]);
-  const onPressWrapper = () => {
+  const onPressLoadMore = () => {
     setIsLoading(true);
   };
   return (
-    <FooterWrapper onPress={onPressWrapper}>
+    <FooterWrapper>
       {isLoading ? (
         <LoadingSpinner />
       ) : (
-        <Text
-          align="center"
-          color={colors.alpha(colors.blueGreyDark, 0.3)}
-          lineHeight="loose"
-          size="smedium"
-          weight="bold"
-        >
-          {label}
-        </Text>
+        <ShowMoreButton
+          backgroundColor={colors.alpha(colors.blueGreyDark, 0.06)}
+          color={colors.alpha(colors.blueGreyDark, 0.6)}
+          onPress={onPressLoadMore}
+          paddingTop={10}
+        />
       )}
     </FooterWrapper>
   );
@@ -82,7 +84,7 @@ const ActivityList = ({
   network,
   recyclerListView,
   nextPage,
-  remainingItemsLabel,
+  hasTransactionsToLoad,
 }) => {
   const pendingTransactionsCount = useMemo(() => {
     let currentPendingTransactionsCount = 0;
@@ -97,6 +99,16 @@ const ActivityList = ({
     recyclerListView ? (
       <RecyclerActivityList
         addCashAvailable={addCashAvailable}
+        footerComponent={() =>
+          hasTransactionsToLoad ? (
+            <ListFooterComponent
+              onPress={nextPage}
+              show={hasTransactionsToLoad}
+            />
+          ) : (
+            <Spacer />
+          )
+        }
         header={header}
         isEmpty={isEmpty}
         isLoading={isLoading}
@@ -108,11 +120,13 @@ const ActivityList = ({
     ) : (
       <SectionList
         ListFooterComponent={() =>
-          remainingItemsLabel && (
+          hasTransactionsToLoad ? (
             <ListFooterComponent
-              label={remainingItemsLabel}
               onPress={nextPage}
+              show={hasTransactionsToLoad}
             />
+          ) : (
+            <Spacer />
           )
         }
         ListHeaderComponent={header}

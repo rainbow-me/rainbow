@@ -196,6 +196,7 @@ export default class RecyclerActivityList extends PureComponent {
           layoutProvider={this.layoutProvider}
           ref={this.handleListRef}
           renderAheadOffset={deviceUtils.dimensions.height}
+          renderFooter={this.props.footerComponent}
           rowRenderer={this.rowRenderer}
           scrollEnabled={!(this.props.isEmpty || this.props.isLoading)}
           scrollIndicatorInsets={{

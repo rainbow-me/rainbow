@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import { SORT_DIRECTION } from '../../hooks/useUniswapPools';
 import { ButtonPressAnimation } from '../animations';
 import { AssetListItemSkeleton } from '../asset-list';
+import { ShowMoreButton as DefaultShowMoreButton } from '../buttons';
 import UniswapLogo from '../icons/UniswapLogo';
 import { UniswapPoolListRow } from '../investment-cards';
 import { Centered, Column, Row } from '../layout';
@@ -14,24 +15,6 @@ import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { useAccountSettings, useUniswapPools } from '@rainbow-me/hooks';
 
 const INITIAL_PAGE_AMOUNT = 15;
-
-const DefaultShowMoreButton = ({ backgroundColor, color, onPress }) => (
-  <Row justify="center">
-    <ButtonPressAnimation onPress={onPress}>
-      <Row
-        backgroundColor={backgroundColor}
-        borderRadius={18}
-        height={36}
-        paddingHorizontal={12}
-        paddingTop={android ? 3 : 7}
-      >
-        <Text align="center" color={color} size="lmedium" weight="heavy">
-          Show more
-        </Text>
-      </Row>
-    </ButtonPressAnimation>
-  </Row>
-);
 
 const ErrorMessage = ({ colors, children }) => (
   <Centered marginVertical={50}>

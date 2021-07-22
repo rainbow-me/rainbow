@@ -44,22 +44,15 @@ export default function useAccountTransactions(initialized, isFocused) {
 
   const { sections } = buildTransactionsSectionsSelector(accountState);
 
-  const remainingItemsLabel = useMemo(() => {
-    const remainingLength = transactions.length - slicedTransaction.length;
-    if (remainingLength === 0) {
-      return null;
-    }
-    if (transactions.length - slicedTransaction.length <= NOE_PAGE) {
-      return `Show last ${remainingLength} transactions.`;
-    }
-    return `Show ${NOE_PAGE} more transactions...`;
+  const hasTransactionsToLoad = useMemo(() => {
+    return transactions.length - slicedTransaction.length > 0;
   }, [slicedTransaction.length, transactions.length]);
 
   return {
+    hasTransactionsToLoad,
     isLoadingTransactions:
       network === NetworkTypes.mainnet ? isLoadingTransactions : false,
     nextPage,
-    remainingItemsLabel,
     sections,
     transactions: ios ? transactions : slicedTransaction,
     transactionsCount,
