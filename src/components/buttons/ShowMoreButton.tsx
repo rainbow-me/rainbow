@@ -7,9 +7,15 @@ interface Props {
   backgroundColor: string | null;
   color: string | null;
   onPress: () => void | null;
+  label: string;
 }
 
-const ShowMoreButton = ({ backgroundColor, color, onPress }: Props) => (
+const ShowMoreButton = ({
+  backgroundColor,
+  color,
+  onPress,
+  label = 'Show more',
+}: Props) => (
   <Row justify="center">
     <ButtonPressAnimation onPress={onPress}>
       <Row
@@ -20,7 +26,7 @@ const ShowMoreButton = ({ backgroundColor, color, onPress }: Props) => (
         paddingTop={android ? 3 : 7}
       >
         <Text align="center" color={color} size="lmedium" weight="heavy">
-          Show more
+          {label}
         </Text>
       </Row>
     </ButtonPressAnimation>
