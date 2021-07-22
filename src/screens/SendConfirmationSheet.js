@@ -16,6 +16,7 @@ import { Centered, Column, Row } from '../components/layout';
 import { SendButton } from '../components/send';
 import { SheetDivider, SheetTitle, SlackSheet } from '../components/sheet';
 import { Text, TruncatedText } from '../components/text';
+import TokenFamilyHeaderIcon from '../components/token-family/TokenFamilyHeaderIcon';
 import { address } from '../utils/abbreviations';
 import {
   addressHashedColorIndex,
@@ -268,10 +269,11 @@ export default function SendConfirmationSheet() {
         <Column height={contentHeight}>
           <Column padding={24}>
             <Row>
-              <Column>
-                <Text size="big" weight="bold">
-                  {nativeDisplayAmount}
-                </Text>
+              <Column width="80%">
+                <TruncatedText size="big" weight="bold">
+                  {isNft ? asset?.name : nativeDisplayAmount}
+                </TruncatedText>
+
                 <Row paddingTop={4}>
                   <Text color={color} size="lmedium" weight="700">
                     {amountDetails.assetAmount} {asset.symbol}
@@ -280,12 +282,20 @@ export default function SendConfirmationSheet() {
               </Column>
               <Column align="end" flex={1} justify="end">
                 <Row>
-                  <CoinIcon
-                    badgeXPosition={-15}
-                    badgeYPosition={-15}
-                    size={50}
-                    {...asset}
-                  />
+                  {isNft ? (
+                    <TokenFamilyHeaderIcon
+                      familyImage={asset.familyImage}
+                      familyName={asset.familyName}
+                      size="large"
+                    />
+                  ) : (
+                    <CoinIcon
+                      badgeXPosition={-15}
+                      badgeYPosition={-15}
+                      size={50}
+                      {...asset}
+                    />
+                  )}
                 </Row>
               </Column>
             </Row>
