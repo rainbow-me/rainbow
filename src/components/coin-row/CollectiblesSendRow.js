@@ -59,7 +59,7 @@ const TopRow = ({ id, name, selected }) => {
 
 const UniqueTokenCoinIcon = magicMemo(
   ({
-    asset_contract: { name },
+    collection: { name },
     background,
     image_thumbnail_url,
     selected,
@@ -110,10 +110,10 @@ const CollectiblesSendRow = React.memo(
     const subtitle = useMemo(
       () =>
         item.name
-          ? `${item.asset_contract.name} #${item.id}`
-          : item.asset_contract.name,
+          ? `${item.collection.name} #${item.id}`
+          : item.collection.name,
 
-      [item.asset_contract.name, item.id, item.name]
+      [item.collection.name, item.id, item.name]
     );
 
     const Wrapper = disablePressAnimation
