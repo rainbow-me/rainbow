@@ -183,7 +183,7 @@ export default function SendConfirmationSheet() {
   });
 
   if (isNft) {
-    color = colors.alpha(colors.blueGreyDark, 0.6);
+    color = colors.appleBlue;
   }
 
   const isL2 = useMemo(() => {
@@ -274,7 +274,13 @@ export default function SendConfirmationSheet() {
                 </TruncatedText>
 
                 <Row paddingTop={4}>
-                  <Text color={color} size="lmedium" weight="700">
+                  <Text
+                    color={
+                      isNft ? colors.alpha(colors.blueGreyDark, 0.6) : color
+                    }
+                    size="lmedium"
+                    weight="700"
+                  >
                     {isNft
                       ? asset.familyName
                       : `${amountDetails.assetAmount} ${asset.symbol}`}
@@ -285,6 +291,7 @@ export default function SendConfirmationSheet() {
                 <Row>
                   {isNft ? (
                     <RequestVendorLogoIcon
+                      backgroundColor={asset.background || colors.lightestGrey}
                       badgeXPosition={-19}
                       badgeYPosition={-16}
                       borderRadius={10}
