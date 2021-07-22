@@ -278,7 +278,6 @@ export default function SendConfirmationSheet() {
                     {isNft
                       ? asset.familyName
                       : `${amountDetails.assetAmount} ${asset.symbol}`}
-                    `
                   </Text>
                 </Row>
               </Column>
