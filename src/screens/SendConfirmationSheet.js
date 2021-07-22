@@ -11,12 +11,12 @@ import Pill from '../components/Pill';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import { ButtonPressAnimation } from '../components/animations';
 import { CoinIcon } from '../components/coin-icon';
+import RequestVendorLogoIcon from '../components/coin-icon/RequestVendorLogoIcon';
 import { ContactAvatar } from '../components/contacts';
 import { Centered, Column, Row } from '../components/layout';
 import { SendButton } from '../components/send';
 import { SheetDivider, SheetTitle, SlackSheet } from '../components/sheet';
 import { Text, TruncatedText } from '../components/text';
-import TokenFamilyHeaderIcon from '../components/token-family/TokenFamilyHeaderIcon';
 import { address } from '../utils/abbreviations';
 import {
   addressHashedColorIndex,
@@ -183,7 +183,7 @@ export default function SendConfirmationSheet() {
   });
 
   if (isNft) {
-    color = colors.appleBlue;
+    color = colors.alpha(colors.blueGreyDark, 0.6);
   }
 
   const isL2 = useMemo(() => {
@@ -250,7 +250,6 @@ export default function SendConfirmationSheet() {
   }
 
   const contentHeight = realSheetHeight - (isL2 ? 50 : 30);
-
   return (
     <Container
       deviceHeight={deviceHeight}
@@ -276,17 +275,24 @@ export default function SendConfirmationSheet() {
 
                 <Row paddingTop={4}>
                   <Text color={color} size="lmedium" weight="700">
-                    {amountDetails.assetAmount} {asset.symbol}
+                    {isNft
+                      ? asset.familyName
+                      : `${amountDetails.assetAmount} ${asset.symbol}`}
+                    `
                   </Text>
                 </Row>
               </Column>
               <Column align="end" flex={1} justify="end">
                 <Row>
                   {isNft ? (
-                    <TokenFamilyHeaderIcon
-                      familyImage={asset.familyImage}
-                      familyName={asset.familyName}
-                      size="large"
+                    <RequestVendorLogoIcon
+                      badgeXPosition={-19}
+                      badgeYPosition={-16}
+                      borderRadius={10}
+                      imageUrl={asset.image_thumbnail_url || asset.image_url}
+                      network={asset.network}
+                      showLargeShadow
+                      size={50}
                     />
                   ) : (
                     <CoinIcon
