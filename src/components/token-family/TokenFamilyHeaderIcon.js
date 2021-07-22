@@ -9,18 +9,6 @@ import ShadowStack from 'react-native-shadow-stack';
 
 const shadowsFactory = colors => [[0, 3, 9, colors.shadow, 0.1]];
 
-const sizeConfigs = {
-  large: {
-    iconSize: 50,
-  },
-  medium: {
-    iconSize: 40,
-  },
-  small: {
-    iconSize: 35,
-  },
-};
-
 const TrophyEmoji = styled(Emoji).attrs({
   align: 'center',
   name: 'trophy',
@@ -34,14 +22,14 @@ const TrophyEmoji = styled(Emoji).attrs({
 const TokenFamilyHeaderIcon = ({
   familyImage,
   familyName,
-  size = 'small',
+  isCoinRow,
   style,
 }) => {
   const { colors } = useTheme();
-  const { iconSize } = sizeConfigs[size];
-  const circleStyle = useMemo(() => borders.buildCircleAsObject(iconSize), [
-    iconSize,
-  ]);
+  const circleStyle = useMemo(
+    () => borders.buildCircleAsObject(isCoinRow ? 40 : 32),
+    [isCoinRow]
+  );
 
   const shadows = useMemo(() => shadowsFactory(colors), [colors]);
 

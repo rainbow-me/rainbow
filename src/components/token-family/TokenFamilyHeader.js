@@ -96,7 +96,7 @@ const TokenFamilyHeader = ({
             <TokenFamilyHeaderIcon
               familyImage={familyImage}
               familyName={title}
-              size={isCoinRow ? 'medium' : 'small'}
+              isCoinRow={isCoinRow}
             />
           )}
         </RowWithMargins>
