@@ -249,10 +249,14 @@ export default function SendSheet(props) {
           isSufficientBalance: true,
           nativeAmount: '0',
         });
-        setSelected({
-          ...newSelected,
-          symbol: newSelected?.asset_contract?.name,
-        });
+
+        // Prevent a state update loop
+        if (selected?.uniqueId !== newSelected?.uniqueId) {
+          setSelected({
+            ...newSelected,
+            symbol: newSelected?.asset_contract?.name,
+          });
+        }
       } else {
         setSelected(newSelected);
         sendUpdateAssetAmount('');
@@ -278,6 +282,7 @@ export default function SendSheet(props) {
       accountAddress,
       currentNetwork,
       currentProvider,
+      selected?.uniqueId,
       sendUpdateAssetAmount,
       updateAssetOnchainBalanceIfNeeded,
       updateMaxInputBalance,
@@ -670,7 +675,7 @@ export default function SendSheet(props) {
   }, [checkAddress]);
 
   useEffect(() => {
-    if (isValidAddress) {
+    if (isValidAddress && !isEmpty(selected) && currentNetwork) {
       estimateGasLimit(
         {
           address: accountAddress,
@@ -682,15 +687,18 @@ export default function SendSheet(props) {
         currentProvider,
         currentNetwork
       )
-        .then(gasLimit => updateTxFee(gasLimit, null, currentNetwork))
-        .catch(() => updateTxFee(null, null, currentNetwork));
+        .then(gasLimit => {
+          updateTxFee(gasLimit, null, currentNetwork);
+        })
+        .catch(() => {
+          updateTxFee(null, null, currentNetwork);
+        });
     }
   }, [
     accountAddress,
     amountDetails.assetAmount,
     currentNetwork,
     currentProvider,
-    dispatch,
     isValidAddress,
     recipient,
     selected,
