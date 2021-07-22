@@ -25,6 +25,8 @@ const Content = styled(Centered)`
 
 export default function RequestVendorLogoIcon({
   backgroundColor,
+  badgeXPosition = -18,
+  badgeYPosition = -6,
   borderRadius = RVLIBorderRadius,
   dappName,
   imageUrl,
@@ -89,8 +91,8 @@ export default function RequestVendorLogoIcon({
       </ShadowStack>
       <ChainBadge
         assetType={network}
-        badgeXPosition={-18}
-        badgeYPosition={-6}
+        badgeXPosition={badgeXPosition}
+        badgeYPosition={badgeYPosition}
         size="medium"
       />
     </View>

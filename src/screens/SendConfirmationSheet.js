@@ -11,6 +11,7 @@ import Pill from '../components/Pill';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import { ButtonPressAnimation } from '../components/animations';
 import { CoinIcon } from '../components/coin-icon';
+import RequestVendorLogoIcon from '../components/coin-icon/RequestVendorLogoIcon';
 import { ContactAvatar } from '../components/contacts';
 import { Centered, Column, Row } from '../components/layout';
 import { SendButton } from '../components/send';
@@ -249,7 +250,6 @@ export default function SendConfirmationSheet() {
   }
 
   const contentHeight = realSheetHeight - (isL2 ? 50 : 30);
-
   return (
     <Container
       deviceHeight={deviceHeight}
@@ -268,24 +268,46 @@ export default function SendConfirmationSheet() {
         <Column height={contentHeight}>
           <Column padding={24}>
             <Row>
-              <Column>
-                <Text size="big" weight="bold">
-                  {nativeDisplayAmount}
-                </Text>
+              <Column width="80%">
+                <TruncatedText size="big" weight="bold">
+                  {isNft ? asset?.name : nativeDisplayAmount}
+                </TruncatedText>
+
                 <Row paddingTop={4}>
-                  <Text color={color} size="lmedium" weight="700">
-                    {amountDetails.assetAmount} {asset.symbol}
+                  <Text
+                    color={
+                      isNft ? colors.alpha(colors.blueGreyDark, 0.6) : color
+                    }
+                    size="lmedium"
+                    weight="700"
+                  >
+                    {isNft
+                      ? asset.familyName
+                      : `${amountDetails.assetAmount} ${asset.symbol}`}
                   </Text>
                 </Row>
               </Column>
               <Column align="end" flex={1} justify="end">
                 <Row>
-                  <CoinIcon
-                    badgeXPosition={-15}
-                    badgeYPosition={-15}
-                    size={50}
-                    {...asset}
-                  />
+                  {isNft ? (
+                    <RequestVendorLogoIcon
+                      backgroundColor={asset.background || colors.lightestGrey}
+                      badgeXPosition={-19}
+                      badgeYPosition={-16}
+                      borderRadius={10}
+                      imageUrl={asset.image_thumbnail_url || asset.image_url}
+                      network={asset.network}
+                      showLargeShadow
+                      size={50}
+                    />
+                  ) : (
+                    <CoinIcon
+                      badgeXPosition={-15}
+                      badgeYPosition={-15}
+                      size={50}
+                      {...asset}
+                    />
+                  )}
                 </Row>
               </Column>
             </Row>

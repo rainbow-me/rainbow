@@ -254,7 +254,7 @@ export default function SendSheet(props) {
         if (selected?.uniqueId !== newSelected?.uniqueId) {
           setSelected({
             ...newSelected,
-            symbol: newSelected?.asset_contract?.name,
+            symbol: newSelected?.collection?.name,
           });
         }
       } else {
