@@ -12,6 +12,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.5.16](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.16)
+
+### Added
+* NFT image loading 
+* NFT Share button 
+
+### Changed
+* Send Sheet V2
+* QR Scanner navigation fix
+* Scrollable Settings Modal
+* Fixed Uniswap pools network calls
+* Rainbow Token Icon URL
+
+
+
 ## [1.5.15](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.15)
 
 ### Changed
