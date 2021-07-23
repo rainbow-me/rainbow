@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated from 'react-native-reanimated';
 import { useValues } from 'react-native-redash';
 import { useDispatch } from 'react-redux';
@@ -40,11 +41,11 @@ const ScrollableColorPicker = styled.ScrollView`
 const SelectedColorRing = styled(Animated.View)`
   height: 38;
   width: 38;
-  border-radius: 19;
+  border-radius: 20;
   border-width: 3;
   position: absolute;
   align-self: center;
-  left: 0.75;
+  left: 1;
   border-color: ${({ selectedColor }) => selectedColor};
 `;
 
@@ -63,7 +64,7 @@ const AvatarBuilder = ({ route: { params } }) => {
   const { height, width } = useDimensions();
   const { wallets, selectedWallet } = useWallets();
   const { updateWebProfile } = useWebData();
-  const [translateX] = useValues(params.initialAccountColor * 39);
+  const [translateX] = useValues(params.initialAccountColor * 40);
   const { goBack } = useNavigation();
   const { accountAddress } = useAccountSettings();
   const { colors } = useTheme();
@@ -73,6 +74,7 @@ const AvatarBuilder = ({ route: { params } }) => {
   const dispatch = useDispatch();
 
   const onChangeEmoji = event => {
+    ReactNativeHapticFeedback.trigger('selection');
     saveInfo(`${event} ${params.initialAccountName}`);
   };
 
@@ -82,7 +84,7 @@ const AvatarBuilder = ({ route: { params } }) => {
       isSelected={index - 4 === 0}
       key={color}
       onPressColor={() => {
-        const destination = index * 39;
+        const destination = index * 40;
         springTo(translateX, destination);
         setCurrentAccountColor(color);
         saveInfo(null, colors.avatarBackgrounds.indexOf(color));
@@ -122,9 +124,9 @@ const AvatarBuilder = ({ route: { params } }) => {
   const colorCircleBottomPadding = 19;
 
   const selectedOffset = useMemo(() => {
-    const maxOffset = colors.avatarBackgrounds.length * 39 - width + 20;
+    const maxOffset = colors.avatarBackgrounds.length * 40 - width + 20;
     const rawOffset =
-      params.initialAccountColor * 39 - width / 2 + width ** 0.5 * 1.5;
+      params.initialAccountColor * 40 - width / 2 + width ** 0.5 * 1.5;
     let finalOffset = rawOffset;
     if (rawOffset < 0) {
       finalOffset = 0;
