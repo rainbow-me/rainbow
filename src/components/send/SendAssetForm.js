@@ -84,8 +84,12 @@ export default function SendAssetForm({
 
   const { colors } = useTheme();
 
-  const address = selected?.address;
-  const colorForAsset = useColorForAsset({ address });
+  const address = selected?.mainnet_address || selected?.address;
+
+  let colorForAsset = useColorForAsset({ address });
+  if (isNft) {
+    colorForAsset = colors.appleBlue;
+  }
 
   const noShadows = [[0, 0, 0, colors.transparent, 0]];
   const shadows = useMemo(() => AssetRowShadow(colors), [colors]);
@@ -108,6 +112,7 @@ export default function SendAssetForm({
         >
           {isTinyPhone ? null : <AssetRowGradient />}
           <AssetRowElement
+            badgeYPosition={5}
             disablePressAnimation
             item={selected}
             selected

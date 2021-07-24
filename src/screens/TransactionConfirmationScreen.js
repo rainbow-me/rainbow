@@ -22,6 +22,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import URL from 'url-parse';
 import Divider from '../components/Divider';
+import L2Disclaimer from '../components/L2Disclaimer';
 import { RequestVendorLogoIcon } from '../components/coin-icon';
 import { ContactAvatar } from '../components/contacts';
 import { GasSpeedButton } from '../components/gas';
@@ -42,9 +43,13 @@ import {
 import {
   estimateGas,
   estimateGasWithPadding,
+  getProviderForNetwork,
+  isL2Network,
   toHex,
+  web3Provider,
 } from '@rainbow-me/handlers/web3';
 import { isDappAuthenticated } from '@rainbow-me/helpers/dappNameHandler';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   useAccountAssets,
   useAccountProfile,
@@ -66,6 +71,7 @@ import {
 } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
 import { walletConnectRemovePendingRedirect } from '@rainbow-me/redux/walletconnect';
+import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
 import {
   convertAmountToNativeDisplay,
@@ -143,6 +149,8 @@ const NOOP = () => undefined;
 export default function TransactionConfirmationScreen() {
   const { colors } = useTheme();
   const { allAssets } = useAccountAssets();
+  const [provider, setProvider] = useState();
+  const [network, setNetwork] = useState();
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const [isKeyboardVisible, showKeyboard, hideKeyboard] = useBooleanState();
   const [methodName, setMethodName] = useState(null);
@@ -161,10 +169,14 @@ export default function TransactionConfirmationScreen() {
   const keyboardHeight = useKeyboardHeight();
   const dispatch = useDispatch();
   const { params: routeParams } = useRoute();
-  const { goBack } = useNavigation();
+  const { goBack, navigate } = useNavigation();
 
   const pendingRedirect = useSelector(
     ({ walletconnect }) => walletconnect.pendingRedirect
+  );
+
+  const walletConnectors = useSelector(
+    ({ walletconnect }) => walletconnect.walletConnectors
   );
 
   const {
@@ -186,6 +198,26 @@ export default function TransactionConfirmationScreen() {
       requestId,
     },
   } = routeParams;
+
+  const walletConnector = walletConnectors[peerId];
+
+  const isL2 = useMemo(() => {
+    return isL2Network(network);
+  }, [network]);
+
+  useEffect(() => {
+    setNetwork(
+      ethereumUtils.getNetworkFromChainId(Number(walletConnector._chainId))
+    );
+  }, [walletConnector._chainId]);
+
+  useEffect(() => {
+    const initProvider = async () => {
+      const p = isL2 ? await getProviderForNetwork(network) : web3Provider;
+      setProvider(p);
+    };
+    network && initProvider();
+  }, [isL2, network]);
 
   const isMessageRequest = isMessageDisplayType(method);
 
@@ -210,6 +242,12 @@ export default function TransactionConfirmationScreen() {
   const isAuthenticated = useMemo(() => {
     return isDappAuthenticated(dappUrl);
   }, [dappUrl]);
+
+  const handleL2DisclaimerPress = useCallback(() => {
+    navigate(Routes.EXPLAIN_SHEET, {
+      type: network,
+    });
+  }, [navigate, network]);
 
   const fetchMethodName = useCallback(
     async data => {
@@ -244,8 +282,8 @@ export default function TransactionConfirmationScreen() {
       Vibration.vibrate();
     }
     InteractionManager.runAfterInteractions(() => {
-      if (!isMessageRequest) {
-        startPollingGasPrices();
+      if (!isMessageRequest && network) {
+        startPollingGasPrices(network);
         fetchMethodName(params[0].data);
       } else {
         setMethodName(lang.t('wallet.message_signing.request'));
@@ -256,6 +294,7 @@ export default function TransactionConfirmationScreen() {
     fetchMethodName,
     isMessageRequest,
     method,
+    network,
     openAutomatically,
     params,
     startPollingGasPrices,
@@ -328,7 +367,7 @@ export default function TransactionConfirmationScreen() {
     try {
       // attempt to re-run estimation
       logger.log('Estimating gas limit');
-      const rawGasLimit = await estimateGas(txPayload);
+      const rawGasLimit = await estimateGas(txPayload, provider);
       logger.log('Estimated gas limit', rawGasLimit);
       if (rawGasLimit) {
         gas = toHex(rawGasLimit);
@@ -339,15 +378,16 @@ export default function TransactionConfirmationScreen() {
     logger.log('Setting gas limit to', convertHexToString(gas));
     // Wait until the gas prices are populated
     setTimeout(() => {
-      updateTxFee(gas);
+      updateTxFee(gas, null, network);
     }, 1000);
-  }, [params, updateTxFee]);
+  }, [network, params, provider, updateTxFee]);
 
   useEffect(() => {
     if (
       !isEmpty(gasPrices) &&
       !calculatingGasLimit.current &&
-      !isMessageRequest
+      !isMessageRequest &&
+      provider
     ) {
       InteractionManager.runAfterInteractions(() => {
         calculateGasLimit();
@@ -360,6 +400,7 @@ export default function TransactionConfirmationScreen() {
     isMessageRequest,
     method,
     params,
+    provider,
     updateTxFee,
   ]);
 
@@ -421,19 +462,26 @@ export default function TransactionConfirmationScreen() {
         gasLimitFromPayload: convertHexToString(gasLimitFromPayload),
       });
 
-      // Estimate the tx with gas limit padding before sending
-      const rawGasLimit = await estimateGasWithPadding(txPayload);
+      if (network === networkTypes.mainnet) {
+        // Estimate the tx with gas limit padding before sending
+        const rawGasLimit = await estimateGasWithPadding(
+          txPayload,
+          null,
+          null,
+          provider
+        );
 
-      // If the estimation with padding is higher or gas limit was missing,
-      // let's use the higher value
-      if (
-        (isNil(gas) && isNil(gasLimitFromPayload)) ||
-        (!isNil(gas) && greaterThan(rawGasLimit, convertHexToString(gas))) ||
-        (!isNil(gasLimitFromPayload) &&
-          greaterThan(rawGasLimit, convertHexToString(gasLimitFromPayload)))
-      ) {
-        logger.log('⛽ using padded estimation!', rawGasLimit.toString());
-        gas = toHex(rawGasLimit);
+        // If the estimation with padding is higher or gas limit was missing,
+        // let's use the higher value
+        if (
+          (isNil(gas) && isNil(gasLimitFromPayload)) ||
+          (!isNil(gas) && greaterThan(rawGasLimit, convertHexToString(gas))) ||
+          (!isNil(gasLimitFromPayload) &&
+            greaterThan(rawGasLimit, convertHexToString(gasLimitFromPayload)))
+        ) {
+          logger.log('⛽ using padded estimation!', rawGasLimit.toString());
+          gas = toHex(rawGasLimit);
+        }
       }
     } catch (error) {
       logger.log('⛽ error estimating gas', error);
@@ -454,10 +502,12 @@ export default function TransactionConfirmationScreen() {
     try {
       if (sendInsteadOfSign) {
         result = await sendTransaction({
+          provider,
           transaction: txPayloadUpdated,
         });
       } else {
         result = await signTransaction({
+          provider,
           transaction: txPayloadUpdated,
         });
       }
@@ -481,10 +531,10 @@ export default function TransactionConfirmationScreen() {
           gasLimit,
           gasPrice,
           hash: result.hash,
+          network,
           nonce: result.nonce,
           to: displayDetails?.request?.to,
         };
-
         dispatch(dataAddNewTransaction(txDetails));
       }
       analytics.track('Approved WalletConnect transaction request');
@@ -521,6 +571,8 @@ export default function TransactionConfirmationScreen() {
     params,
     selectedGasPrice?.value?.amount,
     gasLimit,
+    network,
+    provider,
     callback,
     requestId,
     closeScreen,
@@ -534,11 +586,11 @@ export default function TransactionConfirmationScreen() {
     removeRequest,
     walletConnectSendStatus,
     peerId,
+    onCancel,
     dappScheme,
     dappUrl,
     formattedDappUrl,
     isAuthenticated,
-    onCancel,
   ]);
 
   const handleSignMessage = useCallback(async () => {
@@ -767,6 +819,10 @@ export default function TransactionConfirmationScreen() {
     sheetHeight += 140;
   }
 
+  if (isL2) {
+    sheetHeight += 30;
+  }
+
   return (
     <SheetKeyboardAnimation
       as={AnimatedContainer}
@@ -801,7 +857,11 @@ export default function TransactionConfirmationScreen() {
           >
             <SheetHandleFixedToTop showBlur={false} />
             <Column marginBottom={17} />
-            <DappLogo dappName={dappName || ''} imageUrl={imageUrl || ''} />
+            <DappLogo
+              dappName={dappName || ''}
+              imageUrl={imageUrl || ''}
+              network={network}
+            />
             <Row marginBottom={5}>
               <Text
                 align="center"
@@ -843,6 +903,14 @@ export default function TransactionConfirmationScreen() {
               <Divider color={colors.rowDividerLight} inset={[0, 143.5]} />
             )}
             {renderTransactionSection()}
+            {isL2 && (
+              <L2Disclaimer
+                assetType={network}
+                colors={colors}
+                onPress={handleL2DisclaimerPress}
+                symbol="request"
+              />
+            )}
             {renderTransactionButtons()}
             <RowWithMargins css={padding(0, 24, 30)} margin={15}>
               <Column>
@@ -878,6 +946,7 @@ export default function TransactionConfirmationScreen() {
           {!isMessageRequest && (
             <GasSpeedButtonContainer>
               <GasSpeedButton
+                currentNetwork={network}
                 onCustomGasBlur={hideKeyboard}
                 onCustomGasFocus={showKeyboard}
                 type="transaction"

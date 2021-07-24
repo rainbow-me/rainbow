@@ -140,7 +140,7 @@ export default function ExchangeModal({
   } = useGas();
 
   const { initWeb3Listener, stopWeb3Listener } = useBlockPolling();
-  const { nativeCurrency } = useAccountSettings();
+  const { nativeCurrency, network } = useAccountSettings();
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
 
@@ -568,10 +568,11 @@ export default function ExchangeModal({
             <ConfirmExchangeButton
               {...confirmButtonProps}
               onPressViewDetails={navigateToSwapDetailsModal}
-              testID={`${testID}-confirm`}
+              testID={`${testID}-confirm-button`}
             />
           )}
           <GasSpeedButton
+            currentNetwork={network}
             dontBlur
             onCustomGasBlur={handleCustomGasBlur}
             options={['normal', 'fast', 'custom']}

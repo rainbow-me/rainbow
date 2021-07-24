@@ -148,7 +148,7 @@ export default function ConfirmExchangeButton({
             : shadows.default
         }
         showBiometryIcon={!isDisabled && !isHighPriceImpact}
-        testID={`${testID}-${label}`}
+        testID={testID}
         {...props}
       />
     </Container>

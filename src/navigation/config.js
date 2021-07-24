@@ -7,7 +7,8 @@ import { SheetHandleFixedToTopHeight } from '../components/sheet';
 import { Text } from '../components/text';
 import { useTheme } from '../context/ThemeContext';
 import colors from '../context/currentColors';
-import { ExplainSheetHeight } from '../screens/ExplainSheet';
+import { explainers, ExplainSheetHeight } from '../screens/ExplainSheet';
+import { SendConfirmationSheetHeight } from '../screens/SendConfirmationSheet';
 import { onWillPop } from './Navigation';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import { fonts } from '@rainbow-me/styles';
@@ -89,11 +90,33 @@ export const addTokenSheetConfig = {
   }),
 };
 
+export const sendConfirmationSheetConfig = {
+  options: ({ route: { params = {} } }) => {
+    let height = params.shouldShowChecks
+      ? SendConfirmationSheetHeight
+      : SendConfirmationSheetHeight - 150;
+
+    if (!params.isL2) {
+      height -= 60;
+    }
+    return {
+      ...buildCoolModalConfig({
+        ...params,
+        longFormHeight: height,
+      }),
+    };
+  },
+};
+
 export const explainSheetConfig = {
   options: ({ route: { params = {} } }) => {
     return buildCoolModalConfig({
       ...params,
-      longFormHeight: ExplainSheetHeight,
+      longFormHeight:
+        ExplainSheetHeight +
+        (explainers[params?.type]?.extraHeight
+          ? explainers[params?.type]?.extraHeight
+          : 0),
     });
   },
 };
@@ -155,7 +178,7 @@ export const restoreSheetConfig = {
   },
 };
 
-export const savingsSheetConfig = {
+export const basicSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,

@@ -261,5 +261,5 @@ export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
   return rows;
 };
 
-export const buildUniqueTokenName = ({ asset_contract, id, name }) =>
-  name || `${asset_contract.name} #${id}`;
+export const buildUniqueTokenName = ({ collection, id, name }) =>
+  name || `${collection.name} #${id}`;

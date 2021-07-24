@@ -72,14 +72,18 @@ const BottomRow = ({
     >
       {showNativeValue
         ? `${fiatValue} available`
-        : `${balance?.display}${selected ? ' available' : ''}`}
+        : balance?.display
+        ? `${balance?.display}${selected ? ' available' : ''}`
+        : 'Fetching balances...'}
     </Text>
   );
 };
 
 const TopRow = ({ item, name, selected }) => {
   const { colors } = useTheme();
-  const colorForAsset = useColorForAsset(item, undefined, false);
+  const address = item?.mainnet_address || item?.address;
+
+  const colorForAsset = useColorForAsset({ address });
 
   return (
     <CoinName

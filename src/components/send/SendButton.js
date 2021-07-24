@@ -1,23 +1,17 @@
 import React from 'react';
 import { HoldToAuthorizeButton } from '../buttons';
-import { useColorForAsset } from '@rainbow-me/hooks';
 
 export default function SendButton({
-  assetAmount,
+  backgroundColor,
+  disabled,
   isAuthorizing,
   isNft,
-  isSufficientBalance,
-  isSufficientGas,
   onLongPress,
-  selected,
   testID,
   ...props
 }) {
-  const isZeroAssetAmount = Number(assetAmount) <= 0;
-
   const { colors, isDarkMode } = useTheme();
-  const erc20Color = useColorForAsset(selected, undefined, false);
-  const colorForAsset = isNft ? colors.appleBlue : erc20Color;
+  const colorForAsset = isNft ? colors.appleBlue : backgroundColor;
 
   const shadows = {
     colored: [
@@ -30,20 +24,6 @@ export default function SendButton({
     ],
   };
 
-  let disabled = true;
-  let label = 'Enter an Amount';
-
-  if (!isZeroAssetAmount && !isSufficientGas) {
-    disabled = true;
-    label = 'Insufficient ETH';
-  } else if (!isZeroAssetAmount && !isSufficientBalance) {
-    disabled = true;
-    label = 'Insufficient Funds';
-  } else if (!isZeroAssetAmount) {
-    disabled = false;
-    label = 'Hold to Send';
-  }
-
   return (
     <HoldToAuthorizeButton
       {...props}
@@ -52,12 +32,12 @@ export default function SendButton({
       disabledBackgroundColor={colorForAsset}
       hideInnerBorder
       isAuthorizing={isAuthorizing}
-      label={label}
+      label={disabled ? 'Complete checks' : 'Hold to Send'}
       onLongPress={onLongPress}
       parentHorizontalPadding={19}
       shadows={disabled ? shadows.disabled : shadows.colored}
       showBiometryIcon={!disabled}
-      testID={`${testID}-${label}`}
+      testID={testID}
     />
   );
 }

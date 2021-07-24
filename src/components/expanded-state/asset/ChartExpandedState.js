@@ -12,6 +12,7 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import useAdditionalAssetData from '../../../hooks/useAdditionalAssetData';
 import { ModalContext } from '../../../react-native-cool-modals/NativeStackView';
+import L2Disclaimer from '../../L2Disclaimer';
 import { ButtonPressAnimation } from '../../animations';
 import { CoinDividerHeight } from '../../coin-divider';
 import CoinDividerOpenButton from '../../coin-divider/CoinDividerOpenButton';
@@ -45,6 +46,8 @@ import {
   useDimensions,
   useUniswapAssetsInWallet,
 } from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
+import Routes from '@rainbow-me/routes';
 import { ethereumUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 
 const defaultCarouselHeight = 60;
@@ -190,6 +193,13 @@ export default function ChartExpandedState({ asset }) {
       )
     : asset;
 
+  if (assetWithPrice?.mainnet_address) {
+    assetWithPrice.address = assetWithPrice.mainnet_address;
+  }
+
+  // This one includes the original l2 address if exists
+  const ogAsset = { ...assetWithPrice, address: assetWithPrice.uniqueId };
+
   const { height: screenHeight } = useDimensions();
   const {
     description,
@@ -265,6 +275,14 @@ export default function ChartExpandedState({ asset }) {
     ChartExpandedStateSheetHeight -= 60;
   }
 
+  const { navigate } = useNavigation();
+
+  const handleL2DisclaimerPress = useCallback(() => {
+    navigate(Routes.EXPLAIN_SHEET, {
+      type: assetWithPrice.type,
+    });
+  }, [assetWithPrice.type, navigate]);
+
   const { layout } = useContext(ModalContext) || {};
 
   const [morePoolsVisible, setMorePoolsVisible] = useState(false);
@@ -272,6 +290,8 @@ export default function ChartExpandedState({ asset }) {
   const delayedMorePoolsVisible = useDelayedValueWithLayoutAnimation(
     morePoolsVisible
   );
+
+  const { colors } = useTheme();
 
   const MoreButton = useCallback(() => {
     return (
@@ -326,16 +346,24 @@ export default function ChartExpandedState({ asset }) {
         </TokenInfoSection>
       )}
       {needsEth ? (
-        <SheetActionButtonRow>
+        <SheetActionButtonRow
+          paddingBottom={assetWithPrice?.mainnet_address && 19}
+        >
           <BuyActionButton color={color} fullWidth />
         </SheetActionButtonRow>
       ) : (
-        <SheetActionButtonRow>
+        <SheetActionButtonRow
+          paddingBottom={assetWithPrice?.mainnet_address && 19}
+        >
           {showSwapButton && (
             <SwapActionButton color={color} inputType={AssetInputTypes.in} />
           )}
           {hasBalance ? (
-            <SendActionButton color={color} fullWidth={!showSwapButton} />
+            <SendActionButton
+              asset={ogAsset}
+              color={color}
+              fullWidth={!showSwapButton}
+            />
           ) : (
             <SwapActionButton
               color={color}
@@ -349,6 +377,15 @@ export default function ChartExpandedState({ asset }) {
           )}
         </SheetActionButtonRow>
       )}
+      {assetWithPrice?.mainnet_address && (
+        <L2Disclaimer
+          assetType={assetWithPrice.type}
+          colors={colors}
+          onPress={handleL2DisclaimerPress}
+          symbol={assetWithPrice.symbol}
+        />
+      )}
+
       <CarouselWrapper
         isAnyItemLoading={
           totalVolumeLoading || totalLiquidityLoading || marketCapLoading

@@ -151,6 +151,17 @@ const getColorsByTheme = darkMode => {
     red: '#C95050', // '201, 80, 80',
   };
 
+  let networkColors = {
+    arbitrum: '#2D374B',
+    goerli: '#f6c343',
+    kovan: '#7057ff',
+    mainnet: '#0E76FD',
+    optimism: '#FF4040',
+    polygon: '#8247E5',
+    rinkeby: '#f6c343',
+    ropsten: '#ff4a8d',
+  };
+
   let gradients = {
     lighterGrey: [buildRgba('#ECF1F5', 0.15), buildRgba('#DFE4EB', 0.5)],
     lightestGrey: ['#FFFFFF', '#F2F4F7'],
@@ -246,6 +257,17 @@ const getColorsByTheme = darkMode => {
       secondGradient: '#12131A80',
       thirdGradient: '#12131Aff',
     };
+
+    networkColors = {
+      arbitrum: '#96BEDC',
+      goerli: '#f6c343',
+      kovan: '#7057ff',
+      mainnet: '#0E76FD',
+      optimism: '#FF4040',
+      polygon: '#8247E5',
+      rinkeby: '#f6c343',
+      ropsten: '#ff4a8d',
+    };
   }
 
   return {
@@ -260,6 +282,7 @@ const getColorsByTheme = darkMode => {
     isColorDark,
     isColorLight,
     listHeaders,
+    networkColors,
     sendScreen,
     ...base,
     ...transparent,

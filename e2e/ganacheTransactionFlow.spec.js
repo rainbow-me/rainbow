@@ -141,7 +141,8 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
     await Helpers.tap('send-savings-cSAI');
     await Helpers.typeText('selected-asset-field-input', '1.69', true);
-    await Helpers.tapAndLongPress('send-sheet-confirm-Hold to Send');
+    await Helpers.tap('send-sheet-confirm-action-button');
+    await Helpers.tapAndLongPress('send-confirmation-button');
     await Helpers.checkIfVisible('profile-screen');
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
@@ -162,9 +163,9 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
     await Helpers.tap('CryptoKitties-family-header');
     await Helpers.tapByText('Arun Cattybinky');
-    await Helpers.tapAndLongPress('send-sheet-confirm-Hold to Send');
+    await Helpers.tap('send-sheet-confirm-action-button');
+    await Helpers.tapAndLongPress('send-confirmation-button');
     await Helpers.checkIfVisible('profile-screen');
-
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
@@ -173,7 +174,8 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
     await Helpers.tap('send-asset-BAT');
     await Helpers.typeText('selected-asset-field-input', '1.02', true);
-    await Helpers.tapAndLongPress('send-sheet-confirm-Hold to Send');
+    await Helpers.tap('send-sheet-confirm-action-button');
+    await Helpers.tapAndLongPress('send-confirmation-button');
     await Helpers.checkIfVisible('profile-screen');
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
@@ -183,7 +185,8 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
     await Helpers.tap('send-asset-ETH');
     await Helpers.typeText('selected-asset-field-input', '0.003', true);
-    await Helpers.tapAndLongPress('send-sheet-confirm-Hold to Send');
+    await Helpers.tap('send-sheet-confirm-action-button');
+    await Helpers.tapAndLongPress('send-confirmation-button');
     await Helpers.checkIfVisible('profile-screen');
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
@@ -220,7 +223,7 @@ describe('Ganache Transaction Flow', () => {
     const isConnected = await connected;
     if (!isConnected) throw new Error('WC Connection failed');
     await Helpers.checkIfVisible('wc-redirect-sheet');
-    await Helpers.tap('wallet-screen');
+    await Helpers.swipe('wc-redirect-sheet', 'down', 'fast');
   });
 
   it('Should be able to sign personal messages via WC', async () => {
@@ -344,7 +347,6 @@ describe('Ganache Transaction Flow', () => {
       await Helpers.checkIfVisible('Sending-Compound Sai');
     }
   });*/
-
   it('Should show completed send ERC20 (cSAI)', async () => {
     try {
       await Helpers.checkIfVisible('Sent-Compound SAI-1.69 cSAI');

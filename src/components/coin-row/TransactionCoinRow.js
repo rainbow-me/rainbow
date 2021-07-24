@@ -91,7 +91,7 @@ export default function TransactionCoinRow({ item, ...props }) {
   const { navigate } = useNavigation();
 
   const onPressTransaction = useCallback(async () => {
-    const { hash, from, minedAt, pending, to, status, type } = item;
+    const { hash, from, minedAt, pending, to, status, type, network } = item;
 
     const date = getHumanReadableDate(minedAt);
     const isSent =
@@ -129,7 +129,9 @@ export default function TransactionCoinRow({ item, ...props }) {
       let buttons = [
         ...(canBeResubmitted ? [TransactionActions.speedUp] : []),
         ...(canBeCancelled ? [TransactionActions.cancel] : []),
-        TransactionActions.viewOnEtherscan,
+        ethereumUtils.supportsEtherscan(network)
+          ? TransactionActions.viewOnEtherscan
+          : TransactionActions.viewOnBlockExplorer,
         ...(ios ? [TransactionActions.close] : []),
       ];
       if (showContactInfo) {
@@ -179,8 +181,9 @@ export default function TransactionCoinRow({ item, ...props }) {
                 type: 'cancel',
               });
               break;
+            case TransactionActions.viewOnBlockExplorer:
             case TransactionActions.viewOnEtherscan: {
-              ethereumUtils.openTransactionEtherscanURL(hash);
+              ethereumUtils.openTransactionInBlockExplorer(hash, network);
               break;
             }
             default:

@@ -89,7 +89,13 @@ const OptionsIcon = ({ onPress }) => {
   );
 };
 
-export default function AddressRow({ data, editMode, onPress, onEditWallet }) {
+export default function AddressRow({
+  data,
+  editMode,
+  onPress,
+  onEditWallet,
+  watchOnly,
+}) {
   const {
     address,
     balance,
@@ -135,7 +141,7 @@ export default function AddressRow({ data, editMode, onPress, onEditWallet }) {
     <View style={sx.accountRow}>
       <ButtonPressAnimation
         enableHapticFeedback={!editMode}
-        onLongPress={onOptionsPress}
+        onLongPress={!watchOnly ? onOptionsPress : onPress}
         onPress={editMode ? onOptionsPress : onPress}
         scaleTo={editMode ? 1 : 0.98}
       >

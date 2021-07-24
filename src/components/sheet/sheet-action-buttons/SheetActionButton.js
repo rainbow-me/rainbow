@@ -27,7 +27,7 @@ const Content = styled(RowWithMargins).attrs({
   margin: 4,
 })`
   height: ${({ size }) => (size === 'big' ? 56 : 46)};
-  padding-bottom: ${({ label }) => (containsEmoji(label) ? 5.5 : 4)};
+  padding-bottom: ${({ label }) => (label && containsEmoji(label) ? 5.5 : 4)};
   padding-horizontal: 19;
   z-index: 1;
 `;
@@ -52,6 +52,7 @@ const WhiteButtonGradient = React.memo(
 const SheetActionButton = ({
   androidWidth,
   borderRadius = 56,
+  children,
   color: givenColor,
   disabled,
   elevation = 24,
@@ -132,14 +133,18 @@ const SheetActionButton = ({
         <Content label={label} size={size}>
           {emoji && <Emoji lineHeight={23} name={emoji} size="medium" />}
           {icon && <Icon color="white" height={18} name={icon} size={18} />}
-          <Text
-            align="center"
-            color={textColor}
-            size={size === 'big' ? 'larger' : 'large'}
-            weight={weight}
-          >
-            {label}
-          </Text>
+          {label ? (
+            <Text
+              align="center"
+              color={textColor}
+              size={size === 'big' ? 'larger' : 'large'}
+              weight={weight}
+            >
+              {label}
+            </Text>
+          ) : (
+            children
+          )}
         </Content>
       </Button>
     </View>

@@ -13,7 +13,8 @@
     "chain": "ETH",
     "network": "ropsten",
     "chain_id": 3,
-    "network_id": 3
+    "network_id": 3,
+    "testnet": true
   },
   {
     "name": "Ethereum Rinkeby",
@@ -21,7 +22,8 @@
     "chain": "ETH",
     "network": "rinkeby",
     "chain_id": 4,
-    "network_id": 4
+    "network_id": 4,
+    "testnet": true
   },
   {
     "name": "Ethereum Kovan",
@@ -29,7 +31,8 @@
     "chain": "ETH",
     "network": "kovan",
     "chain_id": 42,
-    "network_id": 42
+    "network_id": 42,
+    "testnet": true
   },
   {
     "name": "Ethereum Görli",
@@ -37,6 +40,31 @@
     "chain": "ETH",
     "network": "goerli",
     "chain_id": 5,
-    "network_id": 5
+    "network_id": 5,
+    "testnet": true
+  },
+  {
+    "name": "Optimism",
+    "short_name": "omainnet",
+    "chain": "ETH",
+    "network": "optimism",
+    "chain_id": 10,
+    "network_id": 10
+  },
+  {
+    "name": "Polygon (Matic)",
+    "short_name": "poly",
+    "chain": "ETH",
+    "network": "polygon",
+    "chain_id": 137,
+    "network_id": 137
+  },
+  {
+    "name": "Arbitrum One",
+    "short_name": "arb",
+    "chain": "ETH",
+    "network": "arbitrum",
+    "chain_id": 42161,
+    "network_id": 42161
   }
 ]

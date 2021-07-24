@@ -310,6 +310,7 @@ export default class SendAssetList extends React.Component {
   balancesRenderItem = item => (
     <SendCoinRow
       {...item}
+      badgeYPosition={-5}
       onPress={() => this.props.onSelectAsset(item)}
       rowHeight={rowHeight}
       testID="send-asset"
