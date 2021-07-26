@@ -24,15 +24,11 @@ const Message = styled(View)`
   text-align: center;
   padding: 30px;
 `;
-interface Props {
-  onResetApp: () => void;
-}
 
-export default function Fallback({ onResetApp }: Props) {
+export default function Fallback() {
   const { colors } = useTheme();
   const { width: deviceWidth } = useDimensions();
   const handleRestart = () => {
-    onResetApp();
     logger.sentry('Restarting app after Error Boundary catch');
     Restart.Restart();
   };

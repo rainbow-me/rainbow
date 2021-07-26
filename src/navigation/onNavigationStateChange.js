@@ -21,7 +21,7 @@ const isOnSwipeScreen = name =>
   ].includes(name);
 
 export function triggerOnSwipeLayout(newAction) {
-  if (isOnSwipeScreen(Navigation.getActiveRoute().name)) {
+  if (isOnSwipeScreen(Navigation.getActiveRoute()?.name)) {
     newAction();
   } else {
     action = newAction;

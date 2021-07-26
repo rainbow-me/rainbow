@@ -20,15 +20,9 @@ export default class ErrorBoundary extends React.Component {
     captureException(error);
   }
 
-  onResetApp() {
-    this.setState({
-      hasError: false,
-    });
-  }
-
   render() {
     if (this.state.hasError) {
-      return <Fallback onResetApp={this.onResetApp} />;
+      return <Fallback />;
     }
 
     return this.props.children;
