@@ -20,6 +20,7 @@ import { Linking, NativeModules } from 'react-native';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import { useSelector } from 'react-redux';
 import URL from 'url-parse';
+import { isTestnet } from '@rainbow-me/handlers/web3';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   convertAmountAndPriceToNativeDisplay,
@@ -186,13 +187,18 @@ const getChainIdFromNetwork = network => {
  * @desc get etherscan host from network string
  * @param  {String} network
  */
-function getEtherscanHostForNetwork() {
-  const { network } = store.getState().settings;
+function getEtherscanHostForNetwork(network) {
   const base_host = 'etherscan.io';
-  if (network === networkTypes.mainnet) {
-    return base_host;
-  } else {
+  if (network === networkTypes.optimism) {
+    return OPTIMISM_BLOCK_EXPLORER_URL;
+  } else if (network === networkTypes.polygon) {
+    return POLYGON_BLOCK_EXPLORER_URL;
+  } else if (network === networkTypes.arbitrum) {
+    return ARBITRUM_BLOCK_EXPLORER_URL;
+  } else if (isTestnet(network)) {
     return `${network}.${base_host}`;
+  } else {
+    return base_host;
   }
 }
 
@@ -326,45 +332,36 @@ const deriveAccountFromWalletInput = input => {
   return deriveAccountFromMnemonic(input);
 };
 
-function supportsEtherscan(network) {
-  return network !== networkTypes.arbitrum && network !== networkTypes.polygon;
+function getBlockExplorer(network) {
+  switch (network) {
+    case networkTypes.mainnet:
+      return 'etherscan';
+    case networkTypes.polygon:
+      return 'polygonScan';
+    case networkTypes.optimism:
+      return 'etherscan';
+    case networkTypes.arbitrum:
+      return 'arbitrumExplorer';
+    default:
+      return 'etherscan';
+  }
 }
 
 function openAddressInBlockExplorer(address, network) {
-  if (network === networkTypes.optimism) {
-    Linking.openURL(`${OPTIMISM_BLOCK_EXPLORER_URL}/address/${address}`);
-    return;
-  } else if (network === networkTypes.polygon) {
-    Linking.openURL(`${POLYGON_BLOCK_EXPLORER_URL}/address/${address}`);
-    return;
-  } else if (network === networkTypes.arbitrum) {
-    Linking.openURL(`${ARBITRUM_BLOCK_EXPLORER_URL}/address/${address}`);
-    return;
-  }
-  const etherscanHost = getEtherscanHostForNetwork();
+  const etherscanHost = getEtherscanHostForNetwork(network);
   Linking.openURL(`https://${etherscanHost}/address/${address}`);
 }
 
-function openTokenEtherscanURL(address) {
+function openTokenEtherscanURL(address, network) {
   if (!isString(address)) return;
-  const etherscanHost = getEtherscanHostForNetwork();
+  const etherscanHost = getEtherscanHostForNetwork(network);
   Linking.openURL(`https://${etherscanHost}/token/${address}`);
 }
 
 function openTransactionInBlockExplorer(hash, network) {
   const normalizedHash = hash.replace(/-.*/g, '');
-  if (network === networkTypes.optimism) {
-    Linking.openURL(`${OPTIMISM_BLOCK_EXPLORER_URL}/tx/${normalizedHash}`);
-    return;
-  } else if (network === networkTypes.polygon) {
-    Linking.openURL(`${POLYGON_BLOCK_EXPLORER_URL}/tx/${normalizedHash}`);
-    return;
-  } else if (network === networkTypes.arbitrum) {
-    Linking.openURL(`${ARBITRUM_BLOCK_EXPLORER_URL}/tx/${normalizedHash}`);
-    return;
-  }
   if (!isString(hash)) return;
-  const etherscanHost = getEtherscanHostForNetwork();
+  const etherscanHost = getEtherscanHostForNetwork(network);
   Linking.openURL(`https://${etherscanHost}/tx/${normalizedHash}`);
 }
 
@@ -377,8 +374,10 @@ export default {
   getAsset,
   getAssetPrice,
   getBalanceAmount,
+  getBlockExplorer,
   getChainIdFromNetwork,
   getDataString,
+  getEtherscanHostForNetwork,
   getEthPriceUnit,
   getHash,
   getMaticPriceUnit,
@@ -391,5 +390,4 @@ export default {
   openTransactionInBlockExplorer,
   padLeft,
   removeHexPrefix,
-  supportsEtherscan,
 };
