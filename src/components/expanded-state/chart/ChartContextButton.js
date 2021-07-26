@@ -1,4 +1,5 @@
 import lang from 'i18n-js';
+import { startCase } from 'lodash';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { ContextCircleButton } from '../../context-menu';
 import EditOptions from '@rainbow-me/helpers/editOptionTypes';
@@ -31,22 +32,28 @@ export default function ChartContextButton({ asset, color }) {
       } else if (buttonIndex === 1) {
         // 🙈️ Hide
         setHiddenCoins();
-      } else if (buttonIndex === 2 && asset?.address !== 'eth') {
+      } else if (buttonIndex === 2 && asset?.uniqueId !== 'eth') {
         // 🔍 View on Etherscan
-        ethereumUtils.openTokenEtherscanURL(asset?.address);
+        ethereumUtils.openTokenEtherscanURL(asset?.uniqueId, asset?.type);
       }
     },
-    [asset?.address, setHiddenCoins, setPinnedCoins]
+    [asset?.type, asset?.uniqueId, setHiddenCoins, setPinnedCoins]
   );
 
   const options = useMemo(
     () => [
       `📌️ ${currentAction === EditOptions.unpin ? 'Unpin' : 'Pin'}`,
       `🙈️ ${currentAction === EditOptions.unhide ? 'Unhide' : 'Hide'}`,
-      ...(asset?.address === 'eth' ? [] : ['🔍 View on Etherscan']),
+      ...(asset?.uniqueId === 'eth'
+        ? []
+        : [
+            `🔍 View on ${startCase(
+              ethereumUtils.getBlockExplorer(asset?.type)
+            )}`,
+          ]),
       ...(ios ? [lang.t('wallet.action.cancel')] : []),
     ],
-    [asset?.address, currentAction]
+    [asset.type, asset?.uniqueId, currentAction]
   );
 
   return (
