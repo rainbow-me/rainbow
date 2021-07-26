@@ -1,8 +1,9 @@
+import { startCase } from 'lodash';
 import React from 'react';
 import styled from 'styled-components';
 import Link from '../../Link';
+import { ethereumUtils } from '@rainbow-me/utils';
 
-const ETHERSCAN_URL = 'https://etherscan.io/token/';
 const TWITTER_URL = 'https://twitter.com/';
 const TELEGRAM_URL = 'https://t.me/';
 const FACEBOOK_URL = 'https://www.facebook.com/';
@@ -29,15 +30,17 @@ const CommunityLink = styled(Link).attrs({
   margin-horizontal: 10;
 `;
 
-export default function SocialLinks({ color, links, address }) {
+export default function SocialLinks({ color, links, uniqueId, type }) {
+  const etherscanURL = ethereumUtils.getEtherscanHostForNetwork(type);
+  const blockExplorerName = ethereumUtils.getBlockExplorer(type);
   return (
     <Carousel height={59}>
       <CommunityLink
         color={color}
-        display="Etherscan"
+        display={` ${startCase(blockExplorerName)}`}
         emoji="􀉣"
         transformOrigin="center"
-        url={`${ETHERSCAN_URL}${address}`}
+        url={`https://${etherscanURL}/token/${uniqueId}`}
       />
       {!!links?.twitter_screen_name && (
         <CommunityLink
