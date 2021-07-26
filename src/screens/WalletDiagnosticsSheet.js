@@ -23,8 +23,11 @@ import { useNavigation } from '../navigation/Navigation';
 import { privateKeyKey, seedPhraseKey } from '../utils/keychainConstants';
 import AesEncryptor from '@rainbow-me/handlers/aesEncryption';
 import { authenticateWithPIN } from '@rainbow-me/handlers/authentication';
-import { useDimensions, useImportingWallet } from '@rainbow-me/hooks';
-import { useWalletsWithBalancesAndNames } from '@rainbow-me/hooks/useWalletsWithBalancesAndNames';
+import {
+  useDimensions,
+  useImportingWallet,
+  useWalletsWithBalancesAndNames,
+} from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils, haptics } from '@rainbow-me/utils';
 import logger from 'logger';
