@@ -284,12 +284,16 @@ export const USER_POSITIONS = gql`
         reserve1
         reserveUSD
         token0 {
+          decimals
           id
+          name
           symbol
           derivedETH
         }
         token1 {
+          decimals
           id
+          name
           symbol
           derivedETH
         }
