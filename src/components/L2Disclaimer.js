@@ -4,7 +4,7 @@ import RadialGradient from 'react-native-radial-gradient';
 import ButtonPressAnimation from './animations/ButtonPressAnimation';
 import ChainBadge from './coin-icon/ChainBadge';
 import { Column, Row } from './layout';
-import { Text } from './text';
+import { Text, TruncatedText } from './text';
 import { position } from '@rainbow-me/styles';
 
 const L2Disclaimer = ({ assetType, colors, onPress, sending, symbol }) => {
@@ -44,15 +44,15 @@ const L2Disclaimer = ({ assetType, colors, onPress, sending, symbol }) => {
             badgeYPosition={-15}
           />
         </Column>
-        <Column marginLeft={27}>
-          <Text
+        <Column marginLeft={27} width="80%">
+          <TruncatedText
             color={colors.alpha(colors.blueGreyDark, 0.6)}
             size="smedium"
             weight="bold"
           >
             {sending ? `Sending` : `This ${symbol} is`} on the{' '}
             {capitalize(assetType)} network
-          </Text>
+          </TruncatedText>
         </Column>
         <Column align="end" flex={1} justify="end">
           <Text color={colors.alpha(colors.blueGreyDark, 0.3)} size="smedium">
