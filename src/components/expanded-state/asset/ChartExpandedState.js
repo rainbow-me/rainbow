@@ -18,7 +18,6 @@ import { CoinDividerHeight } from '../../coin-divider';
 import CoinDividerOpenButton from '../../coin-divider/CoinDividerOpenButton';
 import EdgeFade from '../../discover-sheet/EdgeFade';
 import UniswapPools from '../../discover-sheet/UniswapPoolsSection';
-
 import {
   BuyActionButton,
   SendActionButton,
@@ -38,6 +37,7 @@ import { Chart } from '../../value-chart';
 import ExpandedStateSection from '../ExpandedStateSection';
 import SocialLinks from './SocialLinks';
 import { ChartPathProvider } from '@rainbow-me/animated-charts';
+import { isL2Network } from '@rainbow-me/handlers/web3';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 import {
   useAccountSettings,
@@ -199,6 +199,9 @@ export default function ChartExpandedState({ asset }) {
 
   // This one includes the original l2 address if exists
   const ogAsset = { ...assetWithPrice, address: assetWithPrice.uniqueId };
+  const isL2 = useMemo(() => {
+    return isL2Network(assetWithPrice.type);
+  }, [assetWithPrice.type]);
 
   const { height: screenHeight } = useDimensions();
   const {
@@ -346,15 +349,11 @@ export default function ChartExpandedState({ asset }) {
         </TokenInfoSection>
       )}
       {needsEth ? (
-        <SheetActionButtonRow
-          paddingBottom={assetWithPrice?.mainnet_address && 19}
-        >
+        <SheetActionButtonRow paddingBottom={isL2 && 19}>
           <BuyActionButton color={color} fullWidth />
         </SheetActionButtonRow>
       ) : (
-        <SheetActionButtonRow
-          paddingBottom={assetWithPrice?.mainnet_address && 19}
-        >
+        <SheetActionButtonRow paddingBottom={isL2 && 19}>
           {showSwapButton && (
             <SwapActionButton color={color} inputType={AssetInputTypes.in} />
           )}
@@ -377,7 +376,7 @@ export default function ChartExpandedState({ asset }) {
           )}
         </SheetActionButtonRow>
       )}
-      {assetWithPrice?.mainnet_address && (
+      {isL2 && (
         <L2Disclaimer
           assetType={assetWithPrice.type}
           colors={colors}
@@ -386,40 +385,42 @@ export default function ChartExpandedState({ asset }) {
         />
       )}
 
-      <CarouselWrapper
-        isAnyItemLoading={
-          totalVolumeLoading || totalLiquidityLoading || marketCapLoading
-        }
-        isAnyItemVisible={!!(totalVolume || totalLiquidity || marketCap)}
-        setCarouselHeight={setCarouselHeight}
-      >
-        <Carousel>
-          <CarouselItem
-            loading={totalVolumeLoading}
-            showDivider
-            title="24h volume"
-            weight="bold"
-          >
-            {totalVolume}
-          </CarouselItem>
-          <CarouselItem
-            loading={totalLiquidityLoading}
-            showDivider
-            title="Uniswap liquidity"
-            weight="bold"
-          >
-            {totalLiquidity}
-          </CarouselItem>
-          <CarouselItem
-            loading={marketCapLoading}
-            title="Market cap"
-            weight="bold"
-          >
-            {marketCap}
-          </CarouselItem>
-        </Carousel>
-        <EdgeFade />
-      </CarouselWrapper>
+      {!isL2 && (
+        <CarouselWrapper
+          isAnyItemLoading={
+            totalVolumeLoading || totalLiquidityLoading || marketCapLoading
+          }
+          isAnyItemVisible={!!(totalVolume || totalLiquidity || marketCap)}
+          setCarouselHeight={setCarouselHeight}
+        >
+          <Carousel>
+            <CarouselItem
+              loading={totalVolumeLoading}
+              showDivider
+              title="24h volume"
+              weight="bold"
+            >
+              {totalVolume}
+            </CarouselItem>
+            <CarouselItem
+              loading={totalLiquidityLoading}
+              showDivider
+              title="Uniswap liquidity"
+              weight="bold"
+            >
+              {totalLiquidity}
+            </CarouselItem>
+            <CarouselItem
+              loading={marketCapLoading}
+              title="Market cap"
+              weight="bold"
+            >
+              {marketCap}
+            </CarouselItem>
+          </Carousel>
+          <EdgeFade />
+        </CarouselWrapper>
+      )}
       <AdditionalContentWrapper
         onLayout={({
           nativeEvent: {
@@ -430,14 +431,16 @@ export default function ChartExpandedState({ asset }) {
           layout?.();
         }}
       >
-        <UniswapPools
-          ShowMoreButton={MoreButton}
-          alwaysShowMoreButton
-          forceShowAll={delayedMorePoolsVisible}
-          hideIfEmpty
-          initialPageAmount={3}
-          token={asset?.address}
-        />
+        {!isL2 && (
+          <UniswapPools
+            ShowMoreButton={MoreButton}
+            alwaysShowMoreButton
+            forceShowAll={delayedMorePoolsVisible}
+            hideIfEmpty
+            initialPageAmount={3}
+            token={asset?.address}
+          />
+        )}
 
         {!!delayedDescriptions && (
           <ExpandedStateSection title={`About ${asset?.name}`}>
