@@ -2,20 +2,15 @@ import { capitalize } from 'lodash';
 import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import ButtonPressAnimation from './animations/ButtonPressAnimation';
-import ChainBadge from './coin-icon/ChainBadge';
+import ChainIcon from './coin-icon/ChainIcon';
 import { Column, Row } from './layout';
-import { Text, TruncatedText } from './text';
+import { Text } from './text';
 import { position } from '@rainbow-me/styles';
 
 const L2Disclaimer = ({ assetType, colors, onPress, sending, symbol }) => {
-  const { isDarkMode } = useTheme();
-  const gradientColors = ['#F0F2F5', '#FFFFFF'];
   const radialGradientProps = {
     center: [0, 1],
-    colors: [
-      colors.alpha(gradientColors[0], isDarkMode ? 0.05 : 0.5),
-      colors.alpha(gradientColors[1], isDarkMode ? 0.01 : 0.5),
-    ],
+    colors: colors.gradients.lightGreyWhite,
     pointerEvents: 'none',
     style: {
       ...position.coverAsObject,
@@ -37,25 +32,23 @@ const L2Disclaimer = ({ assetType, colors, onPress, sending, symbol }) => {
           borderRadius={16}
           radius={600}
         />
-        <Column>
-          <ChainBadge
-            assetType={assetType}
-            badgeXPosition={-10}
-            badgeYPosition={-15}
-          />
+        <Column justify="center">
+          <ChainIcon assetType={assetType} size="medium" />
         </Column>
-        <Column marginLeft={27} width="80%">
-          <TruncatedText
+        <Column justify="center" marginLeft={8} width="80%">
+          <Text
+            align="left"
             color={colors.alpha(colors.blueGreyDark, 0.6)}
+            numberOfLines={2}
             size="smedium"
             weight="bold"
           >
             {sending ? `Sending` : `This ${symbol} is`} on the{' '}
             {capitalize(assetType)} network
-          </TruncatedText>
+          </Text>
         </Column>
-        <Column align="end" flex={1} justify="end">
-          <Text color={colors.alpha(colors.blueGreyDark, 0.3)} size="smedium">
+        <Column align="center" flex={1} justify="center">
+          <Text color={colors.alpha(colors.blueGreyDark, 0.3)} size="large">
             􀅵
           </Text>
         </Column>
