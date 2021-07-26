@@ -18,8 +18,11 @@ const AnimatedTruncatedAddress = Animated.createAnimatedComponent(
 );
 
 const ContractActionsEnum = {
+  arbitrumExplorer: 'arbitrumExplorer',
   copyAddress: 'copyAddress',
   etherscan: 'etherscan',
+  optimism: 'etherscan',
+  polygonScan: 'polygonScan',
 };
 
 const ContractActions = {
@@ -34,6 +37,30 @@ const ContractActions = {
   [ContractActionsEnum.etherscan]: {
     actionKey: ContractActionsEnum.etherscan,
     actionTitle: 'View on Etherscan',
+    icon: {
+      iconType: 'SYSTEM',
+      iconValue: 'safari',
+    },
+  },
+  [ContractActionsEnum.optimism]: {
+    actionKey: ContractActionsEnum.etherscan,
+    actionTitle: 'View on Etherscan',
+    icon: {
+      iconType: 'SYSTEM',
+      iconValue: 'safari',
+    },
+  },
+  [ContractActionsEnum.arbitrumExplorer]: {
+    actionKey: ContractActionsEnum.etherscan,
+    actionTitle: 'View on Aribtrum',
+    icon: {
+      iconType: 'SYSTEM',
+      iconValue: 'safari',
+    },
+  },
+  [ContractActionsEnum.polygonScan]: {
+    actionKey: ContractActionsEnum.etherscan,
+    actionTitle: 'View on Polygon Scan',
     icon: {
       iconType: 'SYSTEM',
       iconValue: 'safari',
@@ -104,10 +131,11 @@ export default function SwapDetailsContractRow({
     [onCopySwapDetailsText, setClipboard]
   );
 
+  const blockExplorerAction = ethereumUtils.getBlockExplorer(asset?.type);
   const menuConfig = useMemo(
     () => ({
       menuItems: [
-        ContractActions[ContractActionsEnum.etherscan],
+        ContractActions[ContractActionsEnum[blockExplorerAction]],
         {
           ...ContractActions[ContractActionsEnum.copyAddress],
           discoverabilityTitle: abbreviations.formatAddressForDisplay(
@@ -117,7 +145,7 @@ export default function SwapDetailsContractRow({
       ],
       menuTitle: `${asset?.name} (${asset?.symbol})`,
     }),
-    [asset]
+    [asset?.address, asset?.name, asset?.symbol, blockExplorerAction]
   );
 
   const handlePressMenuItem = useCallback(
@@ -125,7 +153,7 @@ export default function SwapDetailsContractRow({
       if (actionKey === ContractActionsEnum.copyAddress) {
         handleCopyContractAddress(asset?.address);
       } else if (actionKey === ContractActionsEnum.etherscan) {
-        ethereumUtils.openTokenEtherscanURL(asset?.address);
+        ethereumUtils.openTokenEtherscanURL(asset?.address, asset?.type);
       }
     },
     [asset, handleCopyContractAddress]
@@ -144,7 +172,7 @@ export default function SwapDetailsContractRow({
           handleCopyContractAddress(asset?.address);
         }
         if (idx === 1) {
-          ethereumUtils.openTokenEtherscanURL(asset?.address);
+          ethereumUtils.openTokenEtherscanURL(asset?.address, asset?.type);
         }
       }
     );

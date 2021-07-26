@@ -10,7 +10,6 @@ import { Text } from '../text';
 import { CoinRowHeight } from './CoinRow';
 import { useClipboard } from '@rainbow-me/hooks';
 import { fonts, fontWithWidth, padding } from '@rainbow-me/styles';
-
 import {
   abbreviations,
   ethereumUtils,
@@ -58,8 +57,11 @@ const Icon = styled(Text).attrs(({ theme: { colors } }) => ({
 `;
 
 const CoinRowActionsEnum = {
+  arbitrumExplorer: 'arbitrumExplorer',
   copyAddress: 'copyAddress',
   etherscan: 'etherscan',
+  optimism: 'etherscan',
+  polygonScan: 'polygonScan',
 };
 
 const CoinRowActions = {
@@ -74,6 +76,30 @@ const CoinRowActions = {
   [CoinRowActionsEnum.etherscan]: {
     actionKey: CoinRowActionsEnum.etherscan,
     actionTitle: 'View on Etherscan',
+    icon: {
+      iconType: 'SYSTEM',
+      iconValue: 'safari',
+    },
+  },
+  [CoinRowActionsEnum.optimism]: {
+    actionKey: CoinRowActionsEnum.etherscan,
+    actionTitle: 'View on Etherscan',
+    icon: {
+      iconType: 'SYSTEM',
+      iconValue: 'safari',
+    },
+  },
+  [CoinRowActionsEnum.arbitrumExplorer]: {
+    actionKey: CoinRowActionsEnum.etherscan,
+    actionTitle: 'View on Arbitrum',
+    icon: {
+      iconType: 'SYSTEM',
+      iconValue: 'safari',
+    },
+  },
+  [CoinRowActionsEnum.polygonScan]: {
+    actionKey: CoinRowActionsEnum.etherscan,
+    actionTitle: 'View on Polygon Scan',
     icon: {
       iconType: 'SYSTEM',
       iconValue: 'safari',
@@ -111,16 +137,18 @@ const CoinRowInfoButton = ({ item, onCopySwapDetailsText }) => {
           handleCopyContractAddress(item?.address);
         }
         if (idx === 1) {
-          ethereumUtils.openTokenEtherscanURL(item?.address);
+          ethereumUtils.openTokenEtherscanURL(item?.uniqueId, item?.type);
         }
       }
     );
   }, [item, handleCopyContractAddress]);
 
+  const blockExplorerAction = ethereumUtils.getBlockExplorer(item?.type);
+
   const menuConfig = useMemo(
     () => ({
       menuItems: [
-        CoinRowActions[CoinRowActionsEnum.etherscan],
+        CoinRowActions[CoinRowActionsEnum[blockExplorerAction]],
         {
           ...CoinRowActions[CoinRowActionsEnum.copyAddress],
           discoverabilityTitle: abbreviations.formatAddressForDisplay(
@@ -130,7 +158,7 @@ const CoinRowInfoButton = ({ item, onCopySwapDetailsText }) => {
       ],
       menuTitle: `${item?.name} (${item?.symbol})`,
     }),
-    [item]
+    [blockExplorerAction, item?.address, item?.name, item?.symbol]
   );
 
   const handlePressMenuItem = useCallback(
@@ -138,7 +166,7 @@ const CoinRowInfoButton = ({ item, onCopySwapDetailsText }) => {
       if (actionKey === CoinRowActionsEnum.copyAddress) {
         handleCopyContractAddress(item?.address);
       } else if (actionKey === CoinRowActionsEnum.etherscan) {
-        ethereumUtils.openTokenEtherscanURL(item?.address);
+        ethereumUtils.openTokenEtherscanURL(item?.uniqueId, item?.type);
       }
     },
     [item, handleCopyContractAddress]
