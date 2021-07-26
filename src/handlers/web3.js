@@ -64,11 +64,31 @@ export const web3SetHttpProvider = async network => {
   return web3Provider.ready;
 };
 
+/**
+ * @desc returns true if the given network is a Layer 2
+ * @param {String} network
+ */
 export const isL2Network = network => {
   switch (network) {
     case NetworkTypes.arbitrum:
     case NetworkTypes.optimism:
     case NetworkTypes.polygon:
+      return true;
+    default:
+      return false;
+  }
+};
+
+/**
+ * @desc returns true if the given network is a testnet
+ * @param {String} network
+ */
+export const isTestnet = network => {
+  switch (network) {
+    case NetworkTypes.goerli:
+    case NetworkTypes.kovan:
+    case NetworkTypes.rinkeby:
+    case NetworkTypes.ropsten:
       return true;
     default:
       return false;
