@@ -5,15 +5,16 @@ import ButtonPressAnimation from './animations/ButtonPressAnimation';
 import ChainBadge from './coin-icon/ChainBadge';
 import { Column, Row } from './layout';
 import { Text } from './text';
-import { lightModeThemeColors, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 
 const L2Disclaimer = ({ assetType, colors, onPress, sending, symbol }) => {
+  const { isDarkMode } = useTheme();
   const gradientColors = ['#F0F2F5', '#FFFFFF'];
   const radialGradientProps = {
     center: [0, 1],
     colors: [
-      lightModeThemeColors.alpha(gradientColors[0], 0.5),
-      lightModeThemeColors.alpha(gradientColors[1], 0.5),
+      colors.alpha(gradientColors[0], isDarkMode ? 0.05 : 0.5),
+      colors.alpha(gradientColors[1], isDarkMode ? 0.01 : 0.5),
     ],
     pointerEvents: 'none',
     style: {
