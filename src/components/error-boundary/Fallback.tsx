@@ -67,6 +67,7 @@ export default function Fallback() {
         </Centered>
         <Spacer height={33} />
         <Centered>
+          {/* @ts-ignore */}
           <SheetActionButton
             androidWidth={deviceWidth - 60}
             color={colors.alpha(colors.appleBlue, 0.06)}
