@@ -1,3 +1,4 @@
+import { startCase } from 'lodash';
 import React from 'react';
 import { View } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
@@ -81,37 +82,20 @@ const CoinRowActions = {
       iconValue: 'safari',
     },
   },
-  [CoinRowActionsEnum.optimism]: {
-    actionKey: CoinRowActionsEnum.etherscan,
-    actionTitle: 'View on Etherscan',
-    icon: {
-      iconType: 'SYSTEM',
-      iconValue: 'safari',
-    },
-  },
-  [CoinRowActionsEnum.arbitrumExplorer]: {
-    actionKey: CoinRowActionsEnum.etherscan,
-    actionTitle: 'View on Arbitrum',
-    icon: {
-      iconType: 'SYSTEM',
-      iconValue: 'safari',
-    },
-  },
-  [CoinRowActionsEnum.polygonScan]: {
-    actionKey: CoinRowActionsEnum.etherscan,
-    actionTitle: 'View on Polygon Scan',
-    icon: {
-      iconType: 'SYSTEM',
-      iconValue: 'safari',
-    },
-  },
 };
 
-const androidContractActions = [
-  'Copy Contract Address',
-  'View on Etherscan',
-  'Cancel',
-];
+const buildBlockExplorerAction = type => {
+  const blockExplorerText =
+    'View on ' + startCase(ethereumUtils.getBlockExplorer(type));
+  return {
+    actionKey: CoinRowActionsEnum.etherscan,
+    actionTitle: blockExplorerText,
+    icon: {
+      iconType: 'SYSTEM',
+      iconValue: 'safari',
+    },
+  };
+};
 
 const CoinRowInfoButton = ({ item, onCopySwapDetailsText }) => {
   const { setClipboard } = useClipboard();
@@ -125,6 +109,14 @@ const CoinRowInfoButton = ({ item, onCopySwapDetailsText }) => {
   );
 
   const onPressAndroid = useCallback(() => {
+    const blockExplorerText =
+      'View on ' + startCase(ethereumUtils.getBlockExplorer(item?.type));
+    const androidContractActions = [
+      'Copy Contract Address',
+      blockExplorerText,
+      'Cancel',
+    ];
+
     showActionSheetWithOptions(
       {
         cancelButtonIndex: 2,
@@ -143,12 +135,11 @@ const CoinRowInfoButton = ({ item, onCopySwapDetailsText }) => {
     );
   }, [item, handleCopyContractAddress]);
 
-  const blockExplorerAction = ethereumUtils.getBlockExplorer(item?.type);
-
-  const menuConfig = useMemo(
-    () => ({
+  const menuConfig = useMemo(() => {
+    const blockExplorerAction = buildBlockExplorerAction(item?.type);
+    return {
       menuItems: [
-        CoinRowActions[CoinRowActionsEnum[blockExplorerAction]],
+        blockExplorerAction,
         {
           ...CoinRowActions[CoinRowActionsEnum.copyAddress],
           discoverabilityTitle: abbreviations.formatAddressForDisplay(
@@ -157,9 +148,8 @@ const CoinRowInfoButton = ({ item, onCopySwapDetailsText }) => {
         },
       ],
       menuTitle: `${item?.name} (${item?.symbol})`,
-    }),
-    [blockExplorerAction, item?.address, item?.name, item?.symbol]
-  );
+    };
+  }, [item?.address, item?.name, item?.symbol, item?.type]);
 
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {

@@ -1,3 +1,4 @@
+import { startCase } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import Animated from 'react-native-reanimated';
@@ -42,37 +43,20 @@ const ContractActions = {
       iconValue: 'safari',
     },
   },
-  [ContractActionsEnum.optimism]: {
-    actionKey: ContractActionsEnum.etherscan,
-    actionTitle: 'View on Etherscan',
-    icon: {
-      iconType: 'SYSTEM',
-      iconValue: 'safari',
-    },
-  },
-  [ContractActionsEnum.arbitrumExplorer]: {
-    actionKey: ContractActionsEnum.etherscan,
-    actionTitle: 'View on Aribtrum',
-    icon: {
-      iconType: 'SYSTEM',
-      iconValue: 'safari',
-    },
-  },
-  [ContractActionsEnum.polygonScan]: {
-    actionKey: ContractActionsEnum.etherscan,
-    actionTitle: 'View on Polygon Scan',
-    icon: {
-      iconType: 'SYSTEM',
-      iconValue: 'safari',
-    },
-  },
 };
 
-const androidContractActions = [
-  'Copy Contract Address',
-  'View on Etherscan',
-  'Cancel',
-];
+const buildBlockExplorerAction = type => {
+  const blockExplorerText =
+    'View on ' + startCase(ethereumUtils.getBlockExplorer(type));
+  return {
+    actionKey: ContractActionsEnum.etherscan,
+    actionTitle: blockExplorerText,
+    icon: {
+      iconType: 'SYSTEM',
+      iconValue: 'safari',
+    },
+  };
+};
 
 function SwapDetailsContractRowContent({
   asset,
@@ -131,11 +115,11 @@ export default function SwapDetailsContractRow({
     [onCopySwapDetailsText, setClipboard]
   );
 
-  const blockExplorerAction = ethereumUtils.getBlockExplorer(asset?.type);
-  const menuConfig = useMemo(
-    () => ({
+  const menuConfig = useMemo(() => {
+    const blockExplorerAction = buildBlockExplorerAction(asset?.type);
+    return {
       menuItems: [
-        ContractActions[ContractActionsEnum[blockExplorerAction]],
+        blockExplorerAction,
         {
           ...ContractActions[ContractActionsEnum.copyAddress],
           discoverabilityTitle: abbreviations.formatAddressForDisplay(
@@ -144,9 +128,8 @@ export default function SwapDetailsContractRow({
         },
       ],
       menuTitle: `${asset?.name} (${asset?.symbol})`,
-    }),
-    [asset?.address, asset?.name, asset?.symbol, blockExplorerAction]
-  );
+    };
+  }, [asset?.address, asset?.name, asset?.symbol, asset?.type]);
 
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
@@ -160,6 +143,13 @@ export default function SwapDetailsContractRow({
   );
 
   const onPressAndroid = useCallback(() => {
+    const blockExplorerText =
+      'View on ' + startCase(ethereumUtils.getBlockExplorer(asset?.type));
+    const androidContractActions = [
+      'Copy Contract Address',
+      blockExplorerText,
+      'Cancel',
+    ];
     showActionSheetWithOptions(
       {
         cancelButtonIndex: 2,
