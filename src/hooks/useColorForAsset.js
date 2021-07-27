@@ -1,4 +1,3 @@
-import { toLower } from 'lodash';
 import { useMemo } from 'react';
 import { lightModeThemeColors } from '../styles/colors';
 import useImageMetadata from './useImageMetadata';
@@ -31,11 +30,6 @@ export default function useColorForAsset(
         ? colors.brighten(lightModeThemeColors.dark)
         : colors.dark
       : pseudoRandomArrayItemFromString(address, colors.avatarColor);
-    // This grey makes UI elements to look disabled
-    // mostly on ETH so we change it to BLUE
-    if (toLower(color) === '#737e8d') {
-      return colors.appleBlue;
-    }
     return color;
   }, [address, colors, isDarkMode]);
 
