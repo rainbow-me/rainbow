@@ -37,6 +37,7 @@ import {
   useWallets,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
+import { ETH_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
 import logger from 'logger';
@@ -182,7 +183,7 @@ export default function SendConfirmationSheet() {
     address: asset.mainnet_address || asset.address,
   });
 
-  if (isNft) {
+  if (isNft || asset.address === ETH_ADDRESS) {
     color = colors.appleBlue;
   }
 

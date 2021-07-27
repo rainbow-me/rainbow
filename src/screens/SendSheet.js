@@ -170,7 +170,7 @@ export default function SendSheet(props) {
   let color = useColorForAsset({
     address: selected?.mainnet_address || selected.address,
   });
-  if (isNft) {
+  if (isNft || selected.address === ETH_ADDRESS) {
     color = colors.appleBlue;
   }
 
