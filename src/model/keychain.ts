@@ -100,7 +100,7 @@ export async function loadString(
         if (err.toString() === 'Error: Wrapped error: User not authenticated') {
           return -2;
         }
-        captureMessage('Keychain write second attempt failed');
+        captureMessage('Keychain read second attempt failed');
         logger.sentry(
           `Keychain: failed to load string for key: ${key} error: ${err}`
         );
