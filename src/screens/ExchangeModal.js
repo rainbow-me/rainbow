@@ -194,6 +194,7 @@ export default function ExchangeModal({
     priceImpactColor,
     priceImpactNativeAmount,
     priceImpactPercentDisplay,
+    outputPriceValue,
   } = usePriceImpactDetails(inputAmount, outputAmount, tradeDetails);
 
   const isDismissing = useRef(false);
@@ -362,8 +363,9 @@ export default function ExchangeModal({
       });
     }
 
+    const outputInUSD = outputPriceValue * outputAmount;
     const gasPrice = selectedGasPrice?.txFee?.native?.value?.amount;
-    const cancelTransaction = await checkGasvInput(gasPrice, amountInUSD);
+    const cancelTransaction = await checkGasvInput(gasPrice, outputInUSD);
 
     if (cancelTransaction) {
       return;
@@ -420,12 +422,13 @@ export default function ExchangeModal({
     nativeCurrency,
     navigate,
     outputAmount,
+    outputAmountDisplay,
     outputCurrency?.address,
     outputCurrency?.name,
     outputCurrency?.symbol,
     priceImpactPercentDisplay,
     priceOfEther,
-    selectedGasPrice,
+    selectedGasPrice?.txFee?.native?.value?.amount,
     setParams,
     tradeDetails,
     type,
