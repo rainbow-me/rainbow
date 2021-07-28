@@ -30,7 +30,7 @@ export default function useExpandedStateNavigation(inputType) {
 
   return useCallback(
     (routeName, traverseParams) => {
-      if (isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
+      if (isReadOnlyWallet || !enableActionsOnReadOnlyWallet) {
         watchingAlert();
         return;
       }
