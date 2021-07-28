@@ -13,13 +13,11 @@ import logger from 'logger';
 
 const BACKUP_SHEET_DELAY_MS = 3000;
 
-export const runKeychainIntegrityChecks = () => {
-  setTimeout(async () => {
-    const keychainIntegrityState = await getKeychainIntegrityState();
-    if (!keychainIntegrityState) {
-      await store.dispatch(checkKeychainIntegrity());
-    }
-  }, 5000);
+export const runKeychainIntegrityChecks = async () => {
+  const keychainIntegrityState = await getKeychainIntegrityState();
+  if (!keychainIntegrityState) {
+    await store.dispatch(checkKeychainIntegrity());
+  }
 };
 
 export const runWalletBackupStatusChecks = () => {

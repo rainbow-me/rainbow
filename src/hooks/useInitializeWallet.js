@@ -10,6 +10,7 @@ import {
   settingsLoadNetwork,
   settingsUpdateAccountAddress,
 } from '../redux/settings';
+import { uniswapGetAllExchanges, uniswapPairsInit } from '../redux/uniswap';
 import { walletsLoadState } from '../redux/wallets';
 import useAccountSettings from './useAccountSettings';
 import useHideSplashScreen from './useHideSplashScreen';
@@ -18,6 +19,8 @@ import useInitializeDiscoverData from './useInitializeDiscoverData';
 import useLoadAccountData from './useLoadAccountData';
 import useLoadGlobalData from './useLoadGlobalData';
 import useResetAccountState from './useResetAccountState';
+import { runKeychainIntegrityChecks } from '@rainbow-me/handlers/walletReadyEvents';
+import { additionalDataCoingeckoIds } from '@rainbow-me/redux/additionalAssetsData';
 import logger from 'logger';
 
 export default function useInitializeWallet() {
@@ -76,6 +79,12 @@ export default function useInitializeWallet() {
           walletAddress,
         });
 
+        if (!switching) {
+          // Run keychain integrity checks right after walletInit
+          // Except when switching wallets!
+          await runKeychainIntegrityChecks();
+        }
+
         if (seedPhrase || isNew) {
           logger.sentry('walletsLoadState call #2');
           await dispatch(walletsLoadState());
@@ -109,19 +118,27 @@ export default function useInitializeWallet() {
         hideSplashScreen();
         logger.sentry('Hide splash screen');
         initializeAccountData();
+
         if (!isImporting) {
           dispatch(appStateUpdate({ walletReady: true }));
         }
 
         if (!switching) {
+          dispatch(uniswapPairsInit());
+          dispatch(uniswapGetAllExchanges());
           initializeDiscoverData();
+          dispatch(additionalDataCoingeckoIds);
         }
 
         logger.sentry('💰 Wallet initialized');
+
         return walletAddress;
       } catch (error) {
         logger.sentry('Error while initializing wallet');
         // TODO specify error states more granular
+        if (!switching) {
+          await runKeychainIntegrityChecks();
+        }
         hideSplashScreen();
         captureException(error);
         Alert.alert('Something went wrong while importing. Please try again!');
@@ -130,14 +147,14 @@ export default function useInitializeWallet() {
       }
     },
     [
-      resetAccountState,
       dispatch,
       hideSplashScreen,
       initializeAccountData,
       initializeDiscoverData,
-      loadGlobalData,
       loadAccountData,
+      loadGlobalData,
       network,
+      resetAccountState,
     ]
   );
 

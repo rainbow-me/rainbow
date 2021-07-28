@@ -1,38 +1,44 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { captureEvent, captureException } from '@sentry/react-native';
-import { get, isEmpty, isString, toLower } from 'lodash';
+import { isEmpty, isString, toLower } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { InteractionManager, Keyboard, StatusBar } from 'react-native';
-import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
+import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { dismissingScreenListener } from '../../shim';
+import { GasSpeedButton } from '../components/gas';
 import { Column } from '../components/layout';
 import {
   SendAssetForm,
   SendAssetList,
-  SendButton,
   SendContactList,
   SendHeader,
-  SendTransactionSpeed,
 } from '../components/send';
-import { createSignableTransaction, estimateGasLimit } from '../handlers/web3';
-import AssetTypes from '../helpers/assetTypes';
-import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
+import { SheetActionButton } from '../components/sheet';
+import { AssetType, AssetTypes } from '@rainbow-me/entities';
+import { isNativeAsset } from '@rainbow-me/handlers/assets';
 import {
-  convertAmountAndPriceToNativeDisplay,
-  convertAmountFromNativeValue,
-  formatInputDecimals,
-} from '../helpers/utilities';
-import { checkIsValidAddressOrDomain } from '../helpers/validators';
-import { sendTransaction } from '../model/wallet';
-import { useNavigation } from '../navigation/Navigation';
+  createSignableTransaction,
+  estimateGasLimit,
+  getProviderForNetwork,
+  isL2Network,
+  resolveNameOrAddress,
+  web3Provider,
+} from '@rainbow-me/handlers/web3';
+import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
+import {
+  checkIsValidAddressOrDomain,
+  isENSAddressFormat,
+} from '@rainbow-me/helpers/validators';
 import {
   useAccountAssets,
   useAccountSettings,
   useCoinListEditOptions,
+  useColorForAsset,
   useContacts,
   useDimensions,
   useGas,
@@ -44,11 +50,23 @@ import {
   useSendSavingsAccount,
   useTransactionConfirmation,
   useUpdateAssetOnchainBalance,
+  useUserAccounts,
 } from '@rainbow-me/hooks';
-import { ETH_ADDRESS } from '@rainbow-me/references';
+import { sendTransaction } from '@rainbow-me/model/wallet';
+import { useNavigation } from '@rainbow-me/navigation/Navigation';
+import {
+  chainAssets,
+  ETH_ADDRESS,
+  RAINBOW_TOKEN_LIST,
+} from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { borders } from '@rainbow-me/styles';
-import { deviceUtils, gasUtils } from '@rainbow-me/utils';
+import {
+  convertAmountAndPriceToNativeDisplay,
+  convertAmountFromNativeValue,
+  formatInputDecimals,
+} from '@rainbow-me/utilities';
+import { deviceUtils, ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const sheetHeight = deviceUtils.dimensions.height - (android ? 30 : 10);
@@ -80,21 +98,18 @@ const KeyboardSizeView = styled(KeyboardArea)`
 export default function SendSheet(props) {
   const dispatch = useDispatch();
   const { isTinyPhone } = useDimensions();
-  const { navigate, addListener } = useNavigation();
+  const { goBack, navigate, addListener } = useNavigation();
   const { dataAddNewTransaction } = useTransactionConfirmation();
   const updateAssetOnchainBalanceIfNeeded = useUpdateAssetOnchainBalance();
   const { allAssets } = useAccountAssets();
   const {
     gasLimit,
-    gasPrices,
     isSufficientGas,
     prevSelectedGasPrice,
     selectedGasPrice,
     startPollingGasPrices,
     stopPollingGasPrices,
-    txFees,
     updateDefaultGasLimit,
-    updateGasPriceOption,
     updateTxFee,
   } = useGas();
   const isDismissing = useRef(false);
@@ -124,55 +139,72 @@ export default function SendSheet(props) {
     };
   }, [addListener]);
   const { contacts, onRemoveContact, filteredContacts } = useContacts();
+  const { userAccounts } = useUserAccounts();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
-  const {
-    accountAddress,
-    nativeCurrency,
-    nativeCurrencySymbol,
-    network,
-  } = useAccountSettings();
+  const { accountAddress, nativeCurrency, network } = useAccountSettings();
 
   const savings = useSendSavingsAccount();
   const fetchData = useRefreshAccountData();
   const { hiddenCoins, pinnedCoins } = useCoinListEditOptions();
-
+  const [toAddress, setToAddress] = useState();
   const [amountDetails, setAmountDetails] = useState({
     assetAmount: '',
     isSufficientBalance: false,
     nativeAmount: '',
   });
+  const [currentNetwork, setCurrentNetwork] = useState();
+  const prevNetwork = usePrevious(currentNetwork);
   const [currentInput, setCurrentInput] = useState('');
-  const [isAuthorizing, setIsAuthorizing] = useState(false);
   const [isValidAddress, setIsValidAddress] = useState(false);
   const [recipient, setRecipient] = useState('');
   const [selected, setSelected] = useState({});
   const { maxInputBalance, updateMaxInputBalance } = useMaxInputBalance();
+  const [currentProvider, setCurrentProvider] = useState();
+  const { colors, isDarkMode } = useTheme();
 
   const showEmptyState = !isValidAddress;
   const showAssetList = isValidAddress && isEmpty(selected);
   const showAssetForm = isValidAddress && !isEmpty(selected);
 
-  const { handleFocus, triggerFocus } = useMagicAutofocus(
-    recipientFieldRef,
-    useCallback(
-      lastFocusedRef => (showAssetList ? null : lastFocusedRef.current),
-      [showAssetList]
-    )
-  );
+  const isNft = selected?.type === AssetTypes.nft;
+  let color = useColorForAsset({
+    address: selected?.mainnet_address || selected.address,
+  });
+  if (isNft) {
+    color = colors.appleBlue;
+  }
+
+  const isL2 = useMemo(() => {
+    return isL2Network(currentNetwork);
+  }, [currentNetwork]);
+
+  const { triggerFocus } = useMagicAutofocus(recipientFieldRef);
 
   useEffect(() => {
-    InteractionManager.runAfterInteractions(() => startPollingGasPrices());
+    // We can start fetching gas prices
+    // after we know the network that the asset
+    // belongs to
+    if (prevNetwork !== currentNetwork) {
+      InteractionManager.runAfterInteractions(() =>
+        startPollingGasPrices(currentNetwork)
+      );
+    }
     return () => {
       InteractionManager.runAfterInteractions(() => stopPollingGasPrices());
     };
-  }, [startPollingGasPrices, stopPollingGasPrices]);
+  }, [
+    currentNetwork,
+    prevNetwork,
+    startPollingGasPrices,
+    stopPollingGasPrices,
+  ]);
 
   // Recalculate balance when gas price changes
   useEffect(() => {
     if (
       selected?.address === ETH_ADDRESS &&
-      get(prevSelectedGasPrice, 'txFee.value.amount', 0) !==
-        get(selectedGasPrice, 'txFee.value.amount', 0)
+      (prevSelectedGasPrice?.txFee?.value?.amount ?? 0) !==
+        (selectedGasPrice?.txFee?.value?.amount ?? 0)
     ) {
       updateMaxInputBalance(selected);
     }
@@ -183,7 +215,7 @@ export default function SendSheet(props) {
       const _assetAmount = newAssetAmount.replace(/[^0-9.]/g, '');
       let _nativeAmount = '';
       if (_assetAmount.length) {
-        const priceUnit = get(selected, 'price.value', 0);
+        const priceUnit = selected?.price?.value ?? 0;
         const {
           amount: convertedNativeAmount,
         } = convertAmountAndPriceToNativeDisplay(
@@ -196,6 +228,7 @@ export default function SendSheet(props) {
           _assetAmount
         );
       }
+
       const _isSufficientBalance =
         Number(_assetAmount) <= Number(maxInputBalance);
       setAmountDetails({
@@ -210,40 +243,105 @@ export default function SendSheet(props) {
   const sendUpdateSelected = useCallback(
     newSelected => {
       updateMaxInputBalance(newSelected);
-      if (get(newSelected, 'type') === AssetTypes.nft) {
+      if (newSelected?.type === AssetTypes.nft) {
         setAmountDetails({
           assetAmount: '1',
           isSufficientBalance: true,
           nativeAmount: '0',
         });
-        setSelected({
-          ...newSelected,
-          symbol: get(newSelected, 'asset_contract.name'),
-        });
+
+        // Prevent a state update loop
+        if (selected?.uniqueId !== newSelected?.uniqueId) {
+          setSelected({
+            ...newSelected,
+            symbol: newSelected?.collection?.name,
+          });
+        }
       } else {
         setSelected(newSelected);
         sendUpdateAssetAmount('');
         // Since we don't trust the balance from zerion,
         // let's hit the blockchain and update it
-        updateAssetOnchainBalanceIfNeeded(
-          newSelected,
-          accountAddress,
-          updatedAsset => {
-            // set selected asset with new balance
-            setSelected(updatedAsset);
-            // Update selected to recalculate the maxInputAmount
-            sendUpdateSelected(updatedAsset);
-          }
-        );
+        if (currentProvider) {
+          updateAssetOnchainBalanceIfNeeded(
+            newSelected,
+            accountAddress,
+            currentNetwork,
+            currentProvider,
+            updatedAsset => {
+              // set selected asset with new balance
+              setSelected(updatedAsset);
+              // Update selected to recalculate the maxInputAmount
+              sendUpdateSelected(updatedAsset);
+            }
+          );
+        }
       }
     },
     [
       accountAddress,
+      currentNetwork,
+      currentProvider,
+      selected?.uniqueId,
       sendUpdateAssetAmount,
       updateAssetOnchainBalanceIfNeeded,
       updateMaxInputBalance,
     ]
   );
+
+  useEffect(() => {
+    const updateNetworkAndProvider = async () => {
+      const assetNetwork =
+        selected?.type === AssetType.token || selected?.type === AssetType.nft
+          ? network
+          : selected.type;
+      if (
+        selected?.type &&
+        (assetNetwork !== currentNetwork ||
+          !currentNetwork ||
+          prevNetwork !== currentNetwork)
+      ) {
+        let provider = web3Provider;
+        switch (selected.type) {
+          case AssetType.polygon:
+            setCurrentNetwork(networkTypes.polygon);
+            provider = await getProviderForNetwork(networkTypes.polygon);
+            break;
+          case AssetType.arbitrum:
+            setCurrentNetwork(networkTypes.arbitrum);
+            provider = await getProviderForNetwork(networkTypes.arbitrum);
+            break;
+          case AssetTypes.optimism:
+            setCurrentNetwork(networkTypes.optimism);
+            provider = await getProviderForNetwork(networkTypes.optimism);
+            break;
+          default:
+            setCurrentNetwork(network);
+        }
+        setCurrentProvider(provider);
+      }
+    };
+    updateNetworkAndProvider();
+  }, [
+    currentNetwork,
+    network,
+    prevNetwork,
+    selected,
+    selected.type,
+    sendUpdateSelected,
+  ]);
+
+  useEffect(() => {
+    if (currentProvider?._network?.chainId) {
+      const currentProviderNetwork = ethereumUtils.getNetworkFromChainId(
+        currentProvider._network.chainId
+      );
+      if (currentProviderNetwork === currentNetwork) {
+        sendUpdateSelected(selected);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentProvider, currentNetwork, selected]);
 
   const onChangeNativeAmount = useCallback(
     newNativeAmount => {
@@ -251,7 +349,7 @@ export default function SendSheet(props) {
       const _nativeAmount = newNativeAmount.replace(/[^0-9.]/g, '');
       let _assetAmount = '';
       if (_nativeAmount.length) {
-        const priceUnit = get(selected, 'price.value', 0);
+        const priceUnit = selected?.price?.value ?? 0;
         const convertedAssetAmount = convertAmountFromNativeValue(
           _nativeAmount,
           priceUnit,
@@ -288,22 +386,33 @@ export default function SendSheet(props) {
     [sendUpdateAssetAmount]
   );
 
+  useEffect(() => {
+    const resolveAddressIfNeeded = async () => {
+      let realAddress = recipient;
+      if (isENSAddressFormat(recipient)) {
+        realAddress = await resolveNameOrAddress(recipient);
+      }
+      setToAddress(realAddress);
+    };
+    resolveAddressIfNeeded();
+  }, [recipient]);
+
   const onSubmit = useCallback(async () => {
     const validTransaction =
       isValidAddress && amountDetails.isSufficientBalance && isSufficientGas;
-    if (!selectedGasPrice.txFee || !validTransaction || isAuthorizing) {
+    if (!selectedGasPrice.txFee || !validTransaction) {
       logger.sentry('preventing tx submit for one of the following reasons:');
       logger.sentry('selectedGasPrice.txFee ? ', selectedGasPrice?.txFee);
       logger.sentry('validTransaction ? ', validTransaction);
-      logger.sentry('isAuthorizing ? ', isAuthorizing);
       captureEvent('Preventing tx submit');
       return false;
     }
 
     let submitSuccess = false;
     let updatedGasLimit = null;
+
     // Attempt to update gas limit before sending ERC20 / ERC721
-    if (selected?.address !== ETH_ADDRESS) {
+    if (!isNativeAsset(selected.address, currentNetwork)) {
       try {
         // Estimate the tx with gas limit padding before sending
         updatedGasLimit = await estimateGasLimit(
@@ -311,15 +420,17 @@ export default function SendSheet(props) {
             address: accountAddress,
             amount: amountDetails.assetAmount,
             asset: selected,
-            recipient,
+            recipient: toAddress,
           },
-          true
+          true,
+          currentNetwork
         );
         logger.log('gasLimit updated before sending', {
           after: updatedGasLimit,
           before: gasLimit,
         });
-        updateTxFee(updatedGasLimit);
+
+        updateTxFee(updatedGasLimit, null, currentNetwork);
         // eslint-disable-next-line no-empty
       } catch (e) {}
     }
@@ -329,13 +440,14 @@ export default function SendSheet(props) {
       asset: selected,
       from: accountAddress,
       gasLimit: updatedGasLimit || gasLimit,
-      gasPrice: get(selectedGasPrice, 'value.amount'),
+      gasPrice: selectedGasPrice.value?.amount,
       nonce: null,
-      to: recipient,
+      to: toAddress,
     };
     try {
       const signableTransaction = await createSignableTransaction(txDetails);
       const txResult = await sendTransaction({
+        provider: currentProvider,
         transaction: signableTransaction,
       });
       const { hash, nonce } = txResult;
@@ -343,77 +455,174 @@ export default function SendSheet(props) {
         submitSuccess = true;
         txDetails.hash = hash;
         txDetails.nonce = nonce;
-        await dispatch(dataAddNewTransaction(txDetails));
+        txDetails.network = currentNetwork;
+        await dispatch(
+          dataAddNewTransaction(txDetails, null, false, currentProvider)
+        );
       }
     } catch (error) {
       logger.sentry('TX Details', txDetails);
       logger.sentry('SendSheet onSubmit error');
+      logger.sentry(error);
       captureException(error);
       submitSuccess = false;
-    } finally {
-      setIsAuthorizing(false);
     }
     return submitSuccess;
   }, [
     accountAddress,
     amountDetails.assetAmount,
     amountDetails.isSufficientBalance,
+    currentNetwork,
+    currentProvider,
     dataAddNewTransaction,
     dispatch,
     gasLimit,
-    isAuthorizing,
     isSufficientGas,
     isValidAddress,
-    recipient,
     selected,
-    selectedGasPrice,
+    selectedGasPrice.txFee,
+    selectedGasPrice.value?.amount,
+    toAddress,
     updateTxFee,
   ]);
 
   const submitTransaction = useCallback(async () => {
-    setIsAuthorizing(true);
     if (Number(amountDetails.assetAmount) <= 0) {
       logger.sentry('amountDetails.assetAmount ? ', amountDetails?.assetAmount);
       captureEvent('Preventing tx submit due to amount <= 0');
       return false;
     }
+    const submitSuccessful = await onSubmit();
+    analytics.track('Sent transaction', {
+      assetName: selected?.name || '',
+      assetType: selected?.type || '',
+      isRecepientENS: toLower(recipient.slice(-4)) === '.eth',
+    });
 
-    try {
-      const submitSuccessful = await onSubmit();
-      analytics.track('Sent transaction', {
-        assetName: selected?.name || '',
-        assetType: selected?.type || '',
-        isRecepientENS: toLower(recipient.slice(-4)) === '.eth',
-      });
-      if (submitSuccessful) {
+    if (submitSuccessful) {
+      goBack();
+      navigate(Routes.WALLET_SCREEN);
+      InteractionManager.runAfterInteractions(() => {
         navigate(Routes.PROFILE_SCREEN);
-      }
-    } catch (error) {
-      setIsAuthorizing(false);
+      });
     }
-  }, [amountDetails.assetAmount, navigate, onSubmit, recipient, selected]);
+  }, [
+    amountDetails.assetAmount,
+    goBack,
+    navigate,
+    onSubmit,
+    recipient,
+    selected?.name,
+    selected?.type,
+  ]);
 
-  const onPressTransactionSpeed = useCallback(
-    onSuccess => {
-      const hideCustom = true;
-      gasUtils.showTransactionSpeedOptions(
-        gasPrices,
-        txFees,
-        gasPriceOption => updateGasPriceOption(gasPriceOption),
-        onSuccess,
-        hideCustom
-      );
+  const validateRecipient = useCallback(
+    async toAddress => {
+      // Don't allow send to known ERC20 contracts on mainnet
+      if (RAINBOW_TOKEN_LIST[toLower(toAddress)]) {
+        return false;
+      }
+
+      // Don't allow sending funds directly to known ERC20 contracts on L2
+      if (isL2) {
+        const currentChainAssets = chainAssets[currentNetwork];
+        const found = currentChainAssets.find(
+          item => toLower(item.asset?.asset_code) === toLower(toAddress)
+        );
+        if (found) {
+          return false;
+        }
+      }
+      return true;
     },
-    [txFees, gasPrices, updateGasPriceOption]
+    [currentNetwork, isL2]
   );
 
-  const onLongPressSend = useCallback(() => {
-    if (isIphoneX()) {
-      submitTransaction();
-    } else {
-      onPressTransactionSpeed(submitTransaction);
+  const { buttonDisabled, buttonLabel } = useMemo(() => {
+    const isZeroAssetAmount = Number(amountDetails.assetAmount) <= 0;
+
+    let disabled = true;
+    let label = 'Enter an Amount';
+
+    let nativeToken = 'ETH';
+    if (network === networkTypes.polygon) {
+      nativeToken = 'MATIC';
     }
-  }, [onPressTransactionSpeed, submitTransaction]);
+
+    if (!isZeroAssetAmount && !isSufficientGas) {
+      disabled = true;
+      label = `Insufficient ${nativeToken}`;
+    } else if (!isZeroAssetAmount && !amountDetails.isSufficientBalance) {
+      disabled = true;
+      label = 'Insufficient Funds';
+    } else if (!isZeroAssetAmount) {
+      disabled = false;
+      label = '􀕹 Review';
+    }
+
+    return { buttonDisabled: disabled, buttonLabel: label };
+  }, [
+    amountDetails.assetAmount,
+    amountDetails.isSufficientBalance,
+    isSufficientGas,
+    network,
+  ]);
+
+  const showConfirmationSheet = useCallback(async () => {
+    if (buttonDisabled) return;
+    let toAddress = recipient;
+    if (isENSAddressFormat(recipient)) {
+      toAddress = await resolveNameOrAddress(recipient);
+    }
+    const validRecipient = await validateRecipient(toAddress);
+
+    if (!validRecipient) {
+      navigate(Routes.EXPLAIN_SHEET, {
+        onClose: () => {
+          // Nasty workaround to take control over useMagicAutofocus :S
+          InteractionManager.runAfterInteractions(() => {
+            setTimeout(() => {
+              recipientFieldRef?.current?.focus();
+            }, 210);
+          });
+        },
+        type: 'sending_funds_to_contract',
+      });
+      return;
+    }
+
+    navigate(Routes.SEND_CONFIRMATION_SHEET, {
+      amountDetails: amountDetails,
+      asset: selected,
+      callback: submitTransaction,
+      currentInput,
+      from: accountAddress,
+      gasLimit: gasLimit,
+      gasPrice: selectedGasPrice.value?.amount,
+      isL2,
+      isNft,
+      isSufficientGas,
+      network: currentNetwork,
+      to: recipient,
+      toAddress,
+    });
+  }, [
+    accountAddress,
+    amountDetails,
+    buttonDisabled,
+    currentInput,
+    currentNetwork,
+    gasLimit,
+    isL2,
+    isNft,
+    isSufficientGas,
+    navigate,
+    recipient,
+    selected,
+    selectedGasPrice.value?.amount,
+    submitTransaction,
+    validateRecipient,
+  ]);
 
   const onResetAssetSelection = useCallback(() => {
     analytics.track('Reset asset selection in Send flow');
@@ -466,23 +675,34 @@ export default function SendSheet(props) {
   }, [checkAddress]);
 
   useEffect(() => {
-    if (isValidAddress) {
-      estimateGasLimit({
-        address: accountAddress,
-        amount: amountDetails.assetAmount,
-        asset: selected,
-        recipient,
-      })
-        .then(gasLimit => updateTxFee(gasLimit))
-        .catch(() => updateTxFee(null));
+    if (isValidAddress && !isEmpty(selected) && currentNetwork) {
+      estimateGasLimit(
+        {
+          address: accountAddress,
+          amount: amountDetails.assetAmount,
+          asset: selected,
+          recipient: toAddress,
+        },
+        false,
+        currentProvider,
+        currentNetwork
+      )
+        .then(gasLimit => {
+          updateTxFee(gasLimit, null, currentNetwork);
+        })
+        .catch(() => {
+          updateTxFee(null, null, currentNetwork);
+        });
     }
   }, [
     accountAddress,
     amountDetails.assetAmount,
-    dispatch,
+    currentNetwork,
+    currentProvider,
     isValidAddress,
     recipient,
     selected,
+    toAddress,
     updateTxFee,
   ]);
 
@@ -492,15 +712,16 @@ export default function SendSheet(props) {
       <SheetContainer>
         <SendHeader
           contacts={contacts}
+          hideDivider={showAssetForm}
           isValidAddress={isValidAddress}
           onChangeAddressInput={onChangeInput}
-          onFocus={handleFocus}
           onPressPaste={setRecipient}
           onRefocusInput={triggerFocus}
           recipient={recipient}
           recipientFieldRef={recipientFieldRef}
           removeContact={onRemoveContact}
           showAssetList={showAssetList}
+          userAccounts={userAccounts}
         />
         {showEmptyState && (
           <SendContactList
@@ -508,6 +729,7 @@ export default function SendSheet(props) {
             currentInput={currentInput}
             onPressContact={setRecipient}
             removeContact={onRemoveContact}
+            userAccounts={userAccounts}
           />
         )}
         {showAssetList && (
@@ -526,36 +748,44 @@ export default function SendSheet(props) {
         {showAssetForm && (
           <SendAssetForm
             {...props}
-            allAssets={allAssets}
             assetAmount={amountDetails.assetAmount}
             buttonRenderer={
-              <SendButton
-                {...props}
-                assetAmount={amountDetails.assetAmount}
-                isAuthorizing={isAuthorizing}
-                isSufficientBalance={amountDetails.isSufficientBalance}
-                isSufficientGas={isSufficientGas}
-                onLongPress={onLongPressSend}
-                smallButton={isTinyPhone}
+              <SheetActionButton
+                color={
+                  buttonDisabled
+                    ? isDarkMode
+                      ? colors.darkGrey
+                      : colors.lightGrey
+                    : color
+                }
+                disabled={buttonDisabled}
+                label={buttonLabel}
+                onPress={showConfirmationSheet}
+                size="big"
                 testID="send-sheet-confirm"
+                weight="bold"
               />
             }
             nativeAmount={amountDetails.nativeAmount}
             nativeCurrency={nativeCurrency}
             onChangeAssetAmount={onChangeAssetAmount}
             onChangeNativeAmount={onChangeNativeAmount}
-            onFocus={handleFocus}
             onResetAssetSelection={onResetAssetSelection}
             selected={selected}
             sendMaxBalance={sendMaxBalance}
             txSpeedRenderer={
-              isIphoneX() && (
-                <SendTransactionSpeed
-                  gasPrice={selectedGasPrice}
-                  nativeCurrencySymbol={nativeCurrencySymbol}
-                  onPressTransactionSpeed={onPressTransactionSpeed}
-                />
-              )
+              <GasSpeedButton
+                currentNetwork={currentNetwork}
+                horizontalPadding={isTinyPhone ? 0 : 5}
+                options={
+                  currentNetwork === networkTypes.optimism
+                    ? ['normal']
+                    : undefined
+                }
+                theme={isDarkMode ? 'dark' : 'light'}
+                topPadding={isTinyPhone ? 8 : 15}
+                type="transaction"
+              />
             }
           />
         )}

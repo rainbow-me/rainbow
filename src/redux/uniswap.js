@@ -77,6 +77,7 @@ const parseTokens = tokens => {
       highLiquidity,
       name: token.name,
       symbol: token.symbol,
+      totalLiquidity: Number(token.totalLiquidity),
       uniqueId: tokenAddress,
       ...metadata,
     };

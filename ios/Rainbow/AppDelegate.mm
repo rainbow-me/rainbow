@@ -14,30 +14,12 @@
 #import <React/RCTLinkingManager.h>
 #import <React/RCTRootView.h>
 #import <React/RCTReloadCommand.h>
-#import <RNCPushNotificationIOS.h>
 #import <Sentry/Sentry.h>
 #import "RNSplashScreen.h"
 #import <AVFoundation/AVFoundation.h>
 #import <mach/mach.h>
 
-#if DEBUG
-#import <FlipperKit/FlipperClient.h>
-#import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
-#import <FlipperKitUserDefaultsPlugin/FKUserDefaultsPlugin.h>
-#import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
-#import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
-#import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
 
-static void InitializeFlipper(UIApplication *application) {
-  FlipperClient *client = [FlipperClient sharedClient];
-  SKDescriptorMapper *layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWithDefaults];
-  [client addPlugin:[[FlipperKitLayoutPlugin alloc] initWithRootNode:application withDescriptorMapper:layoutDescriptorMapper]];
-  [client addPlugin:[[FKUserDefaultsPlugin alloc] initWithSuiteName:nil]];
-  [client addPlugin:[FlipperKitReactPlugin new]];
-  [client addPlugin:[[FlipperKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
-  [client start];
-}
-#endif
 
 @interface RainbowSplashScreenManager : NSObject <RCTBridgeModule>
 @end
@@ -75,36 +57,11 @@ RCT_EXPORT_METHOD(hideAnimated) {
   }];
 }
 
-- (void)applicationDidReceiveMemoryWarning:(UIApplication *)application {
-  SentryMessage *msg = [[SentryMessage alloc] initWithFormatted:@"applicationDidReceiveMemoryWarning was called"];
-  SentryEvent *sentryEvent = [[SentryEvent alloc] init];
-  [sentryEvent setMessage: msg];
-  [SentrySDK captureEvent:sentryEvent];
-  struct task_basic_info info;
-  mach_msg_type_number_t size = TASK_BASIC_INFO_COUNT;
-  kern_return_t kerr = task_info(mach_task_self(),
-                                 TASK_BASIC_INFO,
-                                 (task_info_t)&info,
-                                 &size);
-  if( kerr == KERN_SUCCESS ) {
-    NSString* memInMBWarn = [NSString stringWithFormat: @"Memory in use (in MiB): %f", ((CGFloat)info.resident_size / 1048576)];
-    SentryMessage *msg = [[SentryMessage alloc] initWithFormatted:memInMBWarn];
-    SentryEvent *sentryEvent = [[SentryEvent alloc] init];
-    [sentryEvent setMessage: msg];
-    [SentrySDK captureEvent:sentryEvent];
-  }
-}
-
-
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
 
   // Developer support; define whether internal support has been declared for this build.
   NSLog(@"⚙️ Rainbow internals are %@.", RAINBOW_INTERNALS_ENABLED ? @"enabled" : @"disabled");
-
-  #if DEBUG
-    InitializeFlipper(application);
-  #endif
 
   [FIRApp configure];
   // Define UNUserNotificationCenter
@@ -136,12 +93,26 @@ RCT_EXPORT_METHOD(hideAnimated) {
   selector:@selector(handleRapComplete:)
       name:@"rapCompleted"
     object:nil];
+  
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleRsEscape:)
+                                                 name:@"rsEscape"
+                                               object:nil];
 
   // Splashscreen - react-native-splash-screen
   [RNSplashScreen showSplash:@"LaunchScreen" inRootView:rootView];
 
 
   return YES;
+}
+
+- (void)handleRsEscape:(NSNotification *)notification {
+  NSDictionary* userInfo = notification.userInfo;
+  NSString *msg = [NSString stringWithFormat:@"Escape via %@", userInfo[@"url"]];
+  SentryBreadcrumb *breadcrumb = [[SentryBreadcrumb alloc] init];
+  [breadcrumb setMessage:msg];
+  [SentrySDK addBreadcrumb:breadcrumb];
+  [SentrySDK captureMessage:msg];
 }
 
 - (void)handleRapInProgress:(NSNotification *)notification {
@@ -167,29 +138,6 @@ RCT_EXPORT_METHOD(hideAnimated) {
   completionHandler(UNAuthorizationOptionSound | UNAuthorizationOptionAlert | UNAuthorizationOptionBadge);
 }
 
-// Required to register for notifications
--(void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
-{
-  [RNCPushNotificationIOS didRegisterUserNotificationSettings:notificationSettings];
-}
-// Required for the register event.
--(void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
-{
-  [RNCPushNotificationIOS didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
-}
-
-// Required for the notification event. You must call the completion handler after handling the remote notification.
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
-fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
-{
-  [RNCPushNotificationIOS didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
-}
-
-// Required for the localNotification event.
-- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
-{
-  [RNCPushNotificationIOS didReceiveLocalNotification:notification];
-}
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
 sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
@@ -231,6 +179,10 @@ sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
     [SentrySDK captureMessage:@"Keychain Wiped!"];
     RCTTriggerReloadCommandListeners(@"keychain wiped");
   }
+  // delete the badge
+  [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
+  // delete the notifications
+  [[UNUserNotificationCenter currentNotificationCenter] removeAllDeliveredNotifications];
 }
 
 @end

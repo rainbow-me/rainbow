@@ -33,6 +33,7 @@ export default function ExchangeMaxButton({
 }) {
   const colorForAsset = useColorForAsset({ address });
   const { colors } = useTheme();
+
   return (
     <Container disabled={disabled} onPress={onPress} testID={testID}>
       <MaxButtonContent>

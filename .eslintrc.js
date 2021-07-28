@@ -20,6 +20,7 @@ const globalVars = parse(babelParse(data, { sourceType: 'module' }))
 
 module.exports = {
   extends: 'satya164',
+  plugins: ['jest'],
   settings: {
     'react': { version: '16' },
     'import/resolver': {

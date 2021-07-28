@@ -1,3 +1,4 @@
+import { Logger } from '@ethersproject/logger';
 import { Wallet } from '@ethersproject/wallet';
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
@@ -60,6 +61,15 @@ export interface Rap {
   actions: RapAction[];
 }
 
+interface RapActionResponse {
+  baseNonce?: number | null;
+  errorMessage: string | null;
+}
+
+interface EthersError extends Error {
+  code?: string | null;
+}
+
 const NOOP = () => null;
 
 export const RapActionTypes = {
@@ -119,6 +129,18 @@ const getRapFullName = (actions: RapAction[]) => {
   return join(actionTypes, ' + ');
 };
 
+const parseError = (error: EthersError): string => {
+  const errorCode = error?.code;
+  switch (errorCode) {
+    case Logger.errors.UNPREDICTABLE_GAS_LIMIT:
+      return 'Oh no! We were unable to estimate the gas limit. Please try again.';
+    case Logger.errors.INSUFFICIENT_FUNDS:
+      return 'Oh no! The gas price changed and you no longer have enough funds for this transaction. Please try again with a lower amount.';
+    default:
+      return 'Oh no! There was a problem submitting the transaction. Please try again.';
+  }
+};
+
 const executeAction = async (
   action: RapAction,
   wallet: Wallet,
@@ -126,7 +148,7 @@ const executeAction = async (
   index: number,
   rapName: string,
   baseNonce?: number
-) => {
+): Promise<RapActionResponse> => {
   logger.log('[1 INNER] index', index);
   const { parameters, type } = action;
   const actionPromise = findActionByType(type);
@@ -139,16 +161,22 @@ const executeAction = async (
       parameters,
       baseNonce
     );
-    return nonce;
+    return { baseNonce: nonce, errorMessage: null };
   } catch (error) {
-    logger.sentry('[3 INNER] error running action');
+    logger.sentry('[3 INNER] error running action, code:', error?.code);
     captureException(error);
     analytics.track('Rap failed', {
       category: 'raps',
       failed_action: type,
       label: rapName,
     });
-    return null;
+    // If the first action failed, return an error message
+    if (index === 0) {
+      const errorMessage = parseError(error);
+      logger.log('[4 INNER] displaying error message', errorMessage);
+      return { baseNonce: null, errorMessage };
+    }
+    return { baseNonce: null, errorMessage: null };
   }
 };
 
@@ -156,7 +184,7 @@ export const executeRap = async (
   wallet: Wallet,
   type: string,
   swapParameters: SwapActionParameters,
-  callback: () => void
+  callback: (success?: boolean, errorMessage?: string | null) => void
 ) => {
   const rap: Rap = await createRapByType(type, swapParameters);
   const { actions } = rap;
@@ -168,16 +196,24 @@ export const executeRap = async (
   });
 
   logger.log('[common - executing rap]: actions', actions);
-  let baseNonce = null;
   if (actions.length) {
     const firstAction = actions[0];
-    baseNonce = await executeAction(firstAction, wallet, rap, 0, rapName);
+    const { baseNonce, errorMessage } = await executeAction(
+      firstAction,
+      wallet,
+      rap,
+      0,
+      rapName
+    );
     if (baseNonce) {
       for (let index = 1; index < actions.length; index++) {
         const action = actions[index];
         await executeAction(action, wallet, rap, index, rapName, baseNonce);
       }
-      callback();
+      callback(true);
+    } else {
+      // Callback with failure state
+      callback(false, errorMessage);
     }
   }
 

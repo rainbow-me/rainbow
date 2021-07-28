@@ -26,27 +26,27 @@ const UniqueTokenCardItem = styled(UniqueTokenCard).attrs({
   margin-left: ${({ index }) => (index >= 1 ? CardMargin : 0)};
 `;
 
-const UniqueTokenRow = magicMemo(({ item }) => {
+const UniqueTokenRow = magicMemo(({ item, external = false }) => {
   const { isReadOnlyWallet } = useWallets();
   const { navigate } = useNavigation();
 
   const handleItemPress = useCallback(
     asset =>
-      navigate(
-        ios ? Routes.EXPANDED_ASSET_SHEET : Routes.EXPANDED_ASSET_SCREEN,
-        {
-          asset,
-          isReadOnlyWallet,
-          type: 'unique_token',
-        }
-      ),
-    [isReadOnlyWallet, navigate]
+      navigate(Routes.EXPANDED_ASSET_SHEET, {
+        asset,
+        cornerRadius: 30,
+        external,
+        isReadOnlyWallet,
+        type: 'unique_token',
+      }),
+    [external, isReadOnlyWallet, navigate]
   );
 
   return (
     <Container>
       {item.map((uniqueToken, index) => (
         <UniqueTokenCardItem
+          disabled={false}
           index={index}
           item={uniqueToken}
           key={uniqueToken.uniqueId}

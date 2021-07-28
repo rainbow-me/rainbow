@@ -7,13 +7,6 @@ import {
 } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import styled from 'styled-components';
-import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
-import { buildTransactionUniqueIdentifier } from '../../helpers/transactions';
-import {
-  deviceUtils,
-  isNewValueForPath,
-  safeAreaInsetValues,
-} from '../../utils';
 import {
   ContractInteractionCoinRow,
   RequestCoinRow,
@@ -24,6 +17,13 @@ import { ProfileMasthead } from '../profile';
 import ActivityListEmptyState from './ActivityListEmptyState';
 import ActivityListHeader from './ActivityListHeader';
 import LoadingState from './LoadingState';
+import { TransactionStatusTypes } from '@rainbow-me/entities';
+import { buildTransactionUniqueIdentifier } from '@rainbow-me/helpers/transactions';
+import {
+  deviceUtils,
+  isNewValueForPath,
+  safeAreaInsetValues,
+} from '@rainbow-me/utils';
 
 const ViewTypes = {
   COMPONENT_HEADER: 0,
@@ -73,7 +73,9 @@ export default class RecyclerActivityList extends PureComponent {
     this.layoutProvider = new LayoutProvider(
       index => {
         if (index === 0) {
-          return ViewTypes.COMPONENT_HEADER;
+          return props.showcase
+            ? ViewTypes.SHOWCASE_HEADER
+            : ViewTypes.COMPONENT_HEADER;
         }
 
         if (this.state.headersIndices.includes(index)) {
@@ -97,6 +99,8 @@ export default class RecyclerActivityList extends PureComponent {
           dim.height = 70;
         } else if (type === ViewTypes.SWAPPED_ROW) {
           dim.height = 70;
+        } else if (type === ViewTypes.SHOWCASE_HEADER) {
+          dim.height = 400;
         } else if (type === ViewTypes.FOOTER) {
           dim.height = 19;
         } else if (type === ViewTypes.HEADER) {

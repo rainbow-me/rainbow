@@ -11,9 +11,8 @@ import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
+import { TransactionStatusTypes, TransactionTypes } from '@rainbow-me/entities';
 import TransactionActions from '@rainbow-me/helpers/transactionActions';
-import TransactionStatusTypes from '@rainbow-me/helpers/transactionStatusTypes';
-import TransactionTypes from '@rainbow-me/helpers/transactionTypes';
 import {
   getHumanReadableDate,
   hasAddableContact,
@@ -92,7 +91,7 @@ export default function TransactionCoinRow({ item, ...props }) {
   const { navigate } = useNavigation();
 
   const onPressTransaction = useCallback(async () => {
-    const { hash, from, minedAt, pending, to, status, type } = item;
+    const { hash, from, minedAt, pending, to, status, type, network } = item;
 
     const date = getHumanReadableDate(minedAt);
     const isSent =
@@ -130,7 +129,9 @@ export default function TransactionCoinRow({ item, ...props }) {
       let buttons = [
         ...(canBeResubmitted ? [TransactionActions.speedUp] : []),
         ...(canBeCancelled ? [TransactionActions.cancel] : []),
-        TransactionActions.viewOnEtherscan,
+        ethereumUtils.supportsEtherscan(network)
+          ? TransactionActions.viewOnEtherscan
+          : TransactionActions.viewOnBlockExplorer,
         ...(ios ? [TransactionActions.close] : []),
       ];
       if (showContactInfo) {
@@ -180,8 +181,9 @@ export default function TransactionCoinRow({ item, ...props }) {
                 type: 'cancel',
               });
               break;
+            case TransactionActions.viewOnBlockExplorer:
             case TransactionActions.viewOnEtherscan: {
-              ethereumUtils.openTransactionEtherscanURL(hash);
+              ethereumUtils.openTransactionInBlockExplorer(hash, network);
               break;
             }
             default:

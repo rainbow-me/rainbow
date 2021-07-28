@@ -54,7 +54,13 @@ const Wrapper = styled(RowWithMargins).attrs({
   justify: 'space-between',
   margin: 10,
 })`
-  ${padding(9, 19, 10, 19)};
+  ${({ ignorePaddingHorizontal }) =>
+    padding(
+      9,
+      ignorePaddingHorizontal ? 0 : 19,
+      10,
+      ignorePaddingHorizontal ? 0 : 19
+    )};
   ${position.size('100%')};
   background-color: ${({ theme: { colors } }) => colors.transparent};
 `;
@@ -137,10 +143,16 @@ class AssetListItemSkeleton extends PureComponent {
   }
 
   render() {
-    const { animated, descendingOpacity, index, colors } = this.props;
+    const {
+      animated,
+      descendingOpacity,
+      ignorePaddingHorizontal,
+      index,
+      colors,
+    } = this.props;
 
     const skeletonElement = (
-      <Wrapper index={index}>
+      <Wrapper ignorePaddingHorizontal={ignorePaddingHorizontal} index={index}>
         <FakeAvatar />
         <ColumnWithMargins
           backgroundColor={colors.transparent}

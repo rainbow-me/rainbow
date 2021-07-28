@@ -2,7 +2,7 @@ import React, { useEffect, useMemo } from 'react';
 import Animated, { useSharedValue } from 'react-native-reanimated';
 import styled from 'styled-components';
 import { useCallbackOne } from 'use-memo-one';
-import { CoinIconGroup } from '../../coin-icon';
+import { CoinIcon, CoinIconGroup } from '../../coin-icon';
 import { Column, ColumnWithMargins, Row, RowWithMargins } from '../../layout';
 import ChartAddToListButton from './ChartAddToListButton';
 import ChartContextButton from './ChartContextButton';
@@ -57,6 +57,7 @@ export default function ChartExpandedStateHeader({
   priceRef,
   chartTimeSharedValue,
   showChart,
+  testID,
   overrideValue = false,
 }) {
   const { colors } = useTheme();
@@ -95,9 +96,16 @@ export default function ChartExpandedStateHeader({
       <Row
         align="center"
         justify="space-between"
-        testID="expanded-state-header"
+        testID={
+          testID ? `${testID}-expanded-state-header` : 'expanded-state-header'
+        }
       >
-        <CoinIconGroup tokens={tokens} />
+        {tokens.length === 1 ? (
+          <CoinIcon badgeXPosition={-15} badgeYPosition={-15} {...asset} />
+        ) : (
+          <CoinIconGroup tokens={tokens} />
+        )}
+
         <Row>
           <ChartAddToListButton asset={asset} />
           <ChartContextButton asset={asset} color={color} />
@@ -143,6 +151,7 @@ export default function ChartExpandedStateHeader({
             color={
               isNoPriceData ? colors.alpha(colors.blueGreyDark, 0.8) : color
             }
+            testID={`chart-header-${titleOrNoPriceData}`}
             weight={isNoPriceData ? 'semibold' : 'bold'}
           >
             {titleOrNoPriceData}

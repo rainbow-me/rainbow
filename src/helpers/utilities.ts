@@ -222,7 +222,8 @@ export const handleSignificantDecimalsWithThreshold = (
 export const handleSignificantDecimals = (
   value: BigNumberish,
   decimals: number,
-  buffer: number = 3
+  buffer: number = 3,
+  skipDecimals = false
 ): string => {
   if (lessThan(new BigNumber(value).abs(), 1)) {
     decimals = new BigNumber(value).toFixed().slice(2).search(/[^0]/g) + buffer;
@@ -234,7 +235,9 @@ export const handleSignificantDecimals = (
     new BigNumber(value).toFixed(decimals)
   ).toFixed();
   const resultBN = new BigNumber(result);
-  return resultBN.dp() <= 2 ? resultBN.toFormat(2) : resultBN.toFormat();
+  return resultBN.dp() <= 2
+    ? resultBN.toFormat(skipDecimals ? 0 : 2)
+    : resultBN.toFormat();
 };
 
 /**
@@ -361,11 +364,17 @@ export const convertBipsToPercentage = (
 export const convertAmountToNativeDisplay = (
   value: BigNumberish,
   nativeCurrency: string,
-  buffer?: number
+  buffer?: number,
+  skipDecimals?: boolean
 ) => {
   const nativeSelected = get(supportedNativeCurrencies, `${nativeCurrency}`);
   const { decimals } = nativeSelected;
-  const display = handleSignificantDecimals(value, decimals, buffer);
+  const display = handleSignificantDecimals(
+    value,
+    decimals,
+    buffer,
+    skipDecimals
+  );
   if (nativeSelected.alignment === 'left') {
     return `${nativeSelected.symbol}${display}`;
   }
@@ -389,4 +398,18 @@ export const fromWei = (number: BigNumberish): string =>
  */
 export const delay = (ms: number): Promise<void> => {
   return new Promise(resolve => setTimeout(resolve, ms));
+};
+
+/**
+ * @desc Array.prototype.some repurposed for async iteration
+ */
+export const asyncSome = async (
+  arr: any[],
+  callback: (element: any, index: number) => any
+) => {
+  if (!arr || !callback) return null;
+  for (let [index, element] of arr.entries()) {
+    if (await callback(element, index)) return true;
+  }
+  return false;
 };

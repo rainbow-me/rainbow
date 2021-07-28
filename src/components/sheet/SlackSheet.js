@@ -88,6 +88,7 @@ export default forwardRef(function SlackSheet(
     renderHeader,
     scrollEnabled = true,
     showBlur,
+    testID,
     removeClippedSubviews = false,
     ...props
   },
@@ -150,6 +151,7 @@ export default forwardRef(function SlackSheet(
         contentHeight={contentHeight}
         deferredHeight={deferredHeight}
         deviceHeight={deviceHeight}
+        testID={testID}
         {...props}
       >
         {android && (

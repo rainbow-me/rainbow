@@ -7,6 +7,8 @@ import { SheetHandleFixedToTopHeight } from '../components/sheet';
 import { Text } from '../components/text';
 import { useTheme } from '../context/ThemeContext';
 import colors from '../context/currentColors';
+import { explainers, ExplainSheetHeight } from '../screens/ExplainSheet';
+import { SendConfirmationSheetHeight } from '../screens/SendConfirmationSheet';
 import { onWillPop } from './Navigation';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import { fonts } from '@rainbow-me/styles';
@@ -19,16 +21,22 @@ const buildCoolModalConfig = params => ({
   allowsTapToDismiss: true,
   backgroundOpacity: params.backgroundOpacity || 0.7,
   blocksBackgroundTouches: true,
-  cornerRadius: params.cornerRadius || (params.longFormHeight ? 39 : 30),
+  cornerRadius: params.cornerRadius || 39,
   customStack: true,
+  disableShortFormAfterTransitionToLongForm:
+    params.disableShortFormAfterTransitionToLongForm ||
+    params?.type === 'token' ||
+    params?.type === 'uniswap',
   gestureEnabled: true,
   headerHeight: params.headerHeight || 25,
   ignoreBottomOffset: true,
-  isShortFormEnabled: params.isShortFormEnabled,
+  isShortFormEnabled: params.isShortFormEnabled || params?.type === 'token',
   longFormHeight: params.longFormHeight,
   onAppear: params.onAppear || null,
   scrollEnabled: params.scrollEnabled,
   single: params.single,
+  startFromShortForm:
+    params.startFromShortForm || params?.type === 'token' || false,
   topOffset: params.topOffset || sharedCoolModalTopOffset,
 });
 
@@ -82,12 +90,53 @@ export const addTokenSheetConfig = {
   }),
 };
 
+export const sendConfirmationSheetConfig = {
+  options: ({ route: { params = {} } }) => {
+    let height = params.shouldShowChecks
+      ? SendConfirmationSheetHeight
+      : SendConfirmationSheetHeight - 150;
+
+    if (!params.isL2) {
+      height -= 60;
+    }
+    return {
+      ...buildCoolModalConfig({
+        ...params,
+        longFormHeight: height,
+      }),
+    };
+  },
+};
+
+export const explainSheetConfig = {
+  options: ({ route: { params = {} } }) => {
+    return buildCoolModalConfig({
+      ...params,
+      longFormHeight:
+        ExplainSheetHeight +
+        (explainers[params?.type]?.extraHeight
+          ? explainers[params?.type]?.extraHeight
+          : 0),
+    });
+  },
+};
+
 export const expandedAssetSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,
       scrollEnabled: true,
     }),
+  }),
+};
+
+export const expandedAssetSheetConfigWithLimit = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      scrollEnabled: true,
+    }),
+    limitActiveModals: true,
   }),
 };
 
@@ -129,7 +178,7 @@ export const restoreSheetConfig = {
   },
 };
 
-export const savingsSheetConfig = {
+export const basicSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,

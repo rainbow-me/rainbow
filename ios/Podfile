@@ -5,67 +5,15 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 # Prevent Cocoapods from collecting stats, which adds time to each pod installation
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
-def use_flipper!(versions = {})
-  versions['Flipper'] ||= '~> 0.33.1'
-  versions['DoubleConversion'] ||= '1.1.7'
-  versions['Flipper-Folly'] ||= '~> 2.1'
-  versions['Flipper-Glog'] ||= '0.3.6'
-  versions['Flipper-PeerTalk'] ||= '~> 0.0.4'
-  versions['Flipper-RSocket'] ||= '~> 1.0'
-
-  pod 'FlipperKit', versions['Flipper'], :configuration => 'Debug'
-  pod 'FlipperKit/FlipperKitLayoutPlugin', versions['Flipper'], :configuration => 'Debug'
-  pod 'FlipperKit/SKIOSNetworkPlugin', versions['Flipper'], :configuration => 'Debug'
-  pod 'FlipperKit/FlipperKitUserDefaultsPlugin', versions['Flipper'], :configuration => 'Debug'
-  pod 'FlipperKit/FlipperKitReactPlugin', versions['Flipper'], :configuration => 'Debug'
-
-  # List all transitive dependencies for FlipperKit pods
-  # to avoid them being linked in Release builds
-  pod 'Flipper', versions['Flipper'], :configuration => 'Debug'
-  pod 'Flipper-DoubleConversion', versions['DoubleConversion'], :configuration => 'Debug'
-  pod 'Flipper-Folly', versions['Flipper-Folly'], :configuration => 'Debug'
-  pod 'Flipper-Glog', versions['Flipper-Glog'], :configuration => 'Debug'
-  pod 'Flipper-PeerTalk', versions['Flipper-PeerTalk'], :configuration => 'Debug'
-  pod 'Flipper-RSocket', versions['Flipper-RSocket'], :configuration => 'Debug'
-  pod 'FlipperKit/Core', versions['Flipper'], :configuration => 'Debug'
-  pod 'FlipperKit/CppBridge', versions['Flipper'], :configuration => 'Debug'
-  pod 'FlipperKit/FBCxxFollyDynamicConvert', versions['Flipper'], :configuration => 'Debug'
-  pod 'FlipperKit/FBDefines', versions['Flipper'], :configuration => 'Debug'
-  pod 'FlipperKit/FKPortForwarding', versions['Flipper'], :configuration => 'Debug'
-  pod 'FlipperKit/FlipperKitHighlightOverlay', versions['Flipper'], :configuration => 'Debug'
-  pod 'FlipperKit/FlipperKitLayoutTextSearchable', versions['Flipper'], :configuration => 'Debug'
-  pod 'FlipperKit/FlipperKitNetworkPlugin', versions['Flipper'], :configuration => 'Debug'
-end
-
-# Post Install processing for Flipper
-def flipper_post_install(installer)
-  installer.pods_project.targets.each do |target|
-    if target.name == 'YogaKit'
-      target.build_configurations.each do |config|
-        config.build_settings['SWIFT_VERSION'] = '4.1'
-    end
-  end
-  file_name = Dir.glob("*.xcodeproj")[0]
-  app_project = Xcodeproj::Project.open(file_name)
-  app_project.native_targets.each do |target|
-    target.build_configurations.each do |config|
-      cflags = config.build_settings['OTHER_CFLAGS'] || '$(inherited) '
-      unless cflags.include? '-DFB_SONARKIT_ENABLED=1'
-        puts 'Adding -DFB_SONARKIT_ENABLED=1 in OTHER_CFLAGS...'
-        cflags << '-DFB_SONARKIT_ENABLED=1'
-      end
-      config.build_settings['OTHER_CFLAGS'] = cflags
-    end
-    app_project.save
-  end
-  installer.pods_project.save
- end
-end
 
 target 'Rainbow' do
   # Pods for Rainbow
   config = use_native_modules!
-  use_react_native!(:path => config["reactNativePath"])
+  use_react_native!(
+    :path => config[:reactNativePath],
+    # to enable hermes on iOS, change `false` to `true` and then install pods
+    :hermes_enabled => ENV['USE_HERMES'] != 'NO'
+  )
 
   # Rainbow's Internal Modules.
   pod 'Rainbow-Internals', :path => './Internals'
@@ -75,26 +23,23 @@ target 'Rainbow' do
   pod 'RNInputMask', :path => '../node_modules/react-native-text-input-mask/ios/InputMask'
 
   permissions_path = '../node_modules/react-native-permissions/ios'
-  pod 'Permission-Camera', :path => "#{permissions_path}/Camera.podspec"
-  pod 'Permission-FaceID', :path => "#{permissions_path}/FaceID.podspec"
+  pod 'Permission-Camera', :path => "#{permissions_path}/Camera"
+  pod 'Permission-FaceID', :path => "#{permissions_path}/FaceID"
+  pod 'Permission-Notifications', :path => "#{permissions_path}/Notifications"
 
   pod "PanModal", :git => 'https://github.com/osdnk/PanModal', :commit => '42c1ac03b79d1333ff06c4234aba2e3e47a32c99'
 
   pod 'Shimmer'
 
   use_native_modules!
-
-  # Enables Flipper.
-  #
-  # Note that if you have use_frameworks! enabled, Flipper will not work and
-  # you should disable these next few lines.
   if ENV['SKIP_FLIPPER'] != "true"
-    use_flipper!
-    post_install do |installer|
-      flipper_post_install(installer)
-      installer.pods_project.build_configurations.each do |config|
-        config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
-      end
+    use_flipper!()
+  end
+
+  post_install do |installer|
+    react_native_post_install(installer)
+    installer.pods_project.build_configurations.each do |config|
+      config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
     end
   end
 end

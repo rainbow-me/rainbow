@@ -3,6 +3,7 @@ import React, { Fragment } from 'react';
 import ReactCoinIcon from 'react-coin-icon';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
+import ChainBadge from './ChainBadge';
 import CoinIconFallback from './CoinIconFallback';
 import CoinIconIndicator from './CoinIconIndicator';
 import { useColorForAsset } from '@rainbow-me/hooks';
@@ -21,13 +22,16 @@ const CoinIcon = ({
   isPinned,
   size = CoinIconSize,
   symbol = '',
+  type,
+  badgeXPosition,
+  badgeYPosition,
   ...props
 }) => {
-  const tokenMetadata = getTokenMetadata(address);
-  const color = useColorForAsset({ address });
+  const tokenMetadata = getTokenMetadata(props.mainnet_address || address);
+  const color = useColorForAsset({ address: props.mainnet_address || address });
   const { colors, isDarkMode } = useTheme();
-
-  const forceFallback = !isETH(address) && isNil(tokenMetadata);
+  const forceFallback =
+    !isETH(props.mainnet_address || address) && isNil(tokenMetadata);
 
   return (
     <Fragment>
@@ -47,6 +51,11 @@ const CoinIcon = ({
         size={size}
         symbol={symbol}
       />
+      <ChainBadge
+        assetType={type}
+        badgeXPosition={badgeXPosition}
+        badgeYPosition={badgeYPosition}
+      />
     </Fragment>
   );
 };
@@ -56,6 +65,7 @@ export default magicMemo(CoinIcon, [
   'isHidden',
   'isPinned',
   'size',
+  'type',
   'symbol',
   'shadowColor',
 ]);

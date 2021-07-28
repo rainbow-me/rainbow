@@ -3,12 +3,13 @@ import React, { useCallback } from 'react';
 import { Linking, Share } from 'react-native';
 import styled from 'styled-components';
 import { buildUniqueTokenName } from '../../../helpers/assets';
-import { magicMemo } from '../../../utils';
 import Pill from '../../Pill';
 import { ContextCircleButton } from '../../context-menu';
 import { ColumnWithMargins, FlexItem, Row, RowWithMargins } from '../../layout';
 import { Text } from '../../text';
+import { useAccountProfile } from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
+import { buildRainbowUrl, magicMemo } from '@rainbow-me/utils';
 
 const contextButtonOptions = [
   'Share',
@@ -35,19 +36,21 @@ const HeadingColumn = styled(ColumnWithMargins).attrs({
 `;
 
 const UniqueTokenExpandedStateHeader = ({ asset }) => {
+  const { accountAddress, accountENS } = useAccountProfile();
+
   const handleActionSheetPress = useCallback(
     buttonIndex => {
       if (buttonIndex === 0) {
         Share.share({
           title: `Share ${buildUniqueTokenName(asset)} Info`,
-          url: asset.permalink,
+          url: buildRainbowUrl(asset, accountENS, accountAddress),
         });
       } else if (buttonIndex === 1) {
         // View on OpenSea
         Linking.openURL(asset.permalink);
       }
     },
-    [asset]
+    [accountAddress, accountENS, asset]
   );
 
   const { colors } = useTheme();
@@ -63,9 +66,9 @@ const UniqueTokenExpandedStateHeader = ({ asset }) => {
             uppercase
             weight="semibold"
           >
-            {asset.asset_contract.name}
+            {asset.familyName}
           </Text>
-          <Pill maxWidth={150}>#{asset.id}</Pill>
+          <Pill maxWidth={125}>#{asset.id}</Pill>
         </RowWithMargins>
         <FlexItem flex={1}>
           <Text

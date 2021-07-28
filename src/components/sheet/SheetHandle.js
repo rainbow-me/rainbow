@@ -1,18 +1,18 @@
-import { VibrancyView } from '@react-native-community/blur';
 import React from 'react';
-import { View } from 'react-native';
 import styled from 'styled-components';
 
 export const HandleHeight = 5;
 
-const defaultColor = colors =>
-  android ? colors.alpha(colors.blueGreyDark, 0.7) : colors.blueGreyDark30;
+const defaultColor = (colors, showBlur) =>
+  android
+    ? showBlur
+      ? colors.alpha(colors.blueGreyDark, 0.3)
+      : colors.blueGreyDark30
+    : colors.alpha(colors.blueGreyDark30, showBlur ? 0.7 : 1.0);
 
-const Handle = styled.View.attrs({
-  blurAmount: 20,
-})`
-  background-color: ${({ color, theme: { colors } }) =>
-    color || defaultColor(colors)};
+const Handle = styled.View`
+  background-color: ${({ color, theme: { colors }, showBlur }) =>
+    color || defaultColor(colors, showBlur)};
   border-radius: 3;
   height: ${HandleHeight};
   overflow: hidden;
@@ -23,13 +23,5 @@ const Handle = styled.View.attrs({
 export default function SheetHandle({ showBlur, ...props }) {
   const { isDarkMode } = useTheme();
 
-  return (
-    <Handle
-      {...props}
-      as={showBlur && ios ? VibrancyView : View}
-      blurType={isDarkMode ? 'chromeMaterial' : 'light'}
-      isDarkMode={isDarkMode}
-      showBlur={showBlur}
-    />
-  );
+  return <Handle {...props} isDarkMode={isDarkMode} showBlur={showBlur} />;
 }

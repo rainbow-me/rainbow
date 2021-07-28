@@ -26,12 +26,11 @@ const RightAction = ({ onPress, progress, text, x }) => {
     <AnimatedCentered
       flex={1}
       marginRight={isEdit ? 0 : 10}
-      marginTop={12}
       style={{ transform: [{ translateX }] }}
     >
       <ButtonPressAnimation onPress={onPress} scaleTo={0.9}>
         <ImgixImage
-          css={margin(0, 10, 5, 10)}
+          css={margin(0, 10, android ? 0 : 3, 10)}
           source={isEdit ? EditIcon : DeleteIcon}
           style={position.sizeAsObject(35)}
         />
@@ -40,7 +39,7 @@ const RightAction = ({ onPress, progress, text, x }) => {
           color={colors.alpha(colors.blueGreyDark, 0.4)}
           letterSpacing="roundedTight"
           size="smaller"
-          weight="medium"
+          weight="semibold"
         >
           {text}
         </Text>
@@ -50,7 +49,16 @@ const RightAction = ({ onPress, progress, text, x }) => {
 };
 
 const SwipeableContactRow = (
-  { address, color, nickname, onPress, onSelectEdit, onTouch, removeContact },
+  {
+    accountType,
+    address,
+    color,
+    nickname,
+    onPress,
+    onSelectEdit,
+    onTouch,
+    removeContact,
+  },
   forwardedRef
 ) => {
   const swipeableRef = useRef();
@@ -77,8 +85,6 @@ const SwipeableContactRow = (
     () => swipeableRef.current?.openRight?.(),
     []
   );
-
-  const handlePress = useCallback(() => onPress(address), [address, onPress]);
 
   const handlePressStart = useCallback(() => onTouch(address), [
     address,
@@ -113,11 +119,12 @@ const SwipeableContactRow = (
       rightThreshold={0}
     >
       <ContactRow
+        accountType={accountType}
         address={address}
         color={color}
         nickname={nickname}
         onLongPress={handleLongPress}
-        onPress={handlePress}
+        onPress={onPress}
         onPressStart={handlePressStart}
       />
     </Swipeable>

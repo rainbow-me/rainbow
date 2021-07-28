@@ -12,6 +12,168 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.5.16](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.16)
+
+### Added
+* NFT image loading 
+* NFT Share button 
+
+### Changed
+* Send Sheet V2
+* QR Scanner navigation fix
+* Scrollable Settings Modal
+* Fixed Uniswap pools network calls
+* Rainbow Token Icon URL
+
+
+## [1.5.15](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.15)
+
+### Changed
+* Updated Profile Emoji's & Colors
+* Improved Contact ENS Support
+* Fixed NFT Share Menu
+
+## [1.5.14](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.14)
+
+### Changed
+* Fixed Uniswap v3 NFT related crash
+
+
+## [1.5.13](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.13)
+
+### Added
+* SVG NFT Support
+* Share NFTs via Rainbow.me
+
+### Changed
+* Fixed Info Button on Swap Input
+* Improved ENS Cards
+* Android Discover Sheet Fixes
+* Android Search Fixes
+
+
+## [1.5.12](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.12)
+
+### Added
+* Nerf Tooltips & Alerts
+* NFT Markdown Support
+* Custom ENS Assets
+* Exchange Token Info Menu
+
+### Changed
+* Move Fetching of Uniswap subgraph
+* Mo's Bottom Sheets
+* Swap Focus Fixes
+* Improved Wallet Diagnostics Sheet
+
+## [1.5.11](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.11)
+
+### Changed
+* Improved Swap Analytics
+* WC signing fix
+
+## [1.5.10](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.10)
+
+### Added
+* Moves iOS to Hermes
+
+### Changed
+* NFT background Fix
+* Secret Phrase Change
+* Wallet Switcher on Wallet Screen
+* Removed background execution
+* Add Cash Warning for Read-Only
+* Offline token metadata
+
+
+## [1.5.9](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.9)
+
+### Added
+* Bumped React Native 0.64
+
+### Changed
+* Settings Modal Height
+* Sharing URL Adjustments
+
+
+
+## [1.5.8](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.8)
+
+### Added
+* Rainbow Web Profiles
+* Swap / Deposit / Withdraw Analytics
+
+### Changed
+* Fixed Speeding Up ERC20 Send
+* OpenSea Adjustments
+* Gas Fixes
+
+## [1.5.7](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.7)
+
+### Added
+* Increased Analytics Tracking
+
+### Changed
+* Patched WalletConnect 
+* Bumped Token List
+
+## [1.5.6](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.6)
+
+### Added
+* Added Accounts to Send Sheet
+
+### Changed
+* Expanded Asset Improvements
+* Improved Add Cash Error Messaging
+* Increased Search Debounce
+
+## [1.5.5](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.5)
+
+### Changed
+* Updated Transaction Error Logging
+* Removed Slow Speed from Swap
+
+## [1.5.4](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.4)
+
+### Added
+* Token Price Fallback via The Graph
+* Gas Estimation Logging
+
+### Changed
+* Top Movers Animation tweaked
+
+## [1.5.3](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.4)
+
+### Added
+* Extra Details for LP Positions
+* Extra Token Details
+
+### Changed
+* Numerous Performance Improvements
+
+## [1.5.2](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.2)
+
+### Added
+* Support for new WC bridges
+
+### Changed
+* Fixes in apps connected button
+
+## [1.5.1](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.1)
+
+### Changed
+* Typescript Transaction Parser
+* Bug Fixes
+
+## [1.5.0](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.0)
+
+### Added
+* Discover Page
+
+### Changed
+* RecyclerView Refactor 
+* Performance Improvements
+
 ## [1.2.58](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.58)
 
 ### Changed

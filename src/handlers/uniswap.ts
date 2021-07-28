@@ -1,6 +1,5 @@
 import { Provider } from '@ethersproject/abstract-provider';
 import { Signer } from '@ethersproject/abstract-signer';
-import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
 import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
@@ -17,7 +16,7 @@ import { get, mapKeys, mapValues, toLower } from 'lodash';
 import { uniswapClient } from '../apollo/client';
 import { UNISWAP_ALL_TOKENS } from '../apollo/queries';
 import { loadWallet } from '../model/wallet';
-import { toHex, web3Provider } from './web3';
+import { estimateGasWithPadding, toHex, web3Provider } from './web3';
 import { Asset } from '@rainbow-me/entities';
 import { Network } from '@rainbow-me/networkTypes';
 import store from '@rainbow-me/redux/store';
@@ -32,7 +31,6 @@ import {
   UNISWAP_V2_ROUTER_ABI,
   UNISWAP_V2_ROUTER_ADDRESS,
 } from '@rainbow-me/references';
-import { addBuffer } from '@rainbow-me/utilities';
 import logger from 'logger';
 
 export enum Field {
@@ -113,11 +111,18 @@ export const estimateSwapGasLimit = async ({
     });
 
     const params = { from: accountAddress, ...(value ? { value } : {}) };
-    const gasEstimates: (BigNumber | undefined)[] = await Promise.all(
+    const gasEstimates: (string | undefined)[] = await Promise.all(
       methodNames.map((methodName: string) =>
-        exchange.estimateGas[methodName](...updatedMethodArgs, params)
-          .then((value: BigNumber) => value)
-          .catch((_: Error) => {
+        estimateGasWithPadding(
+          params,
+          exchange.estimateGas[methodName],
+          updatedMethodArgs
+        )
+          .then((value: string) => value)
+          .catch((error: Error) => {
+            logger.sentry(
+              `Error estimating swap method ${methodName} with: ${error}`
+            );
             return undefined;
           })
       )
@@ -150,10 +155,7 @@ export const estimateSwapGasLimit = async ({
     } else {
       methodName = methodNames[indexOfSuccessfulEstimation];
       const gasEstimate = gasEstimates[indexOfSuccessfulEstimation];
-      let gasLimit: string | number = ethUnits.basic_swap;
-      if (gasEstimate) {
-        gasLimit = addBuffer(gasEstimate.toString());
-      }
+      const gasLimit: string | number = gasEstimate ?? ethUnits.basic_swap;
       return { gasLimit, methodName };
     }
   } catch (error) {

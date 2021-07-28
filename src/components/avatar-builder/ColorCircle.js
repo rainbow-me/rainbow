@@ -9,7 +9,7 @@ const ColorCircle = ({ backgroundColor, isSelected, onPressColor }) => {
   const { colors } = useTheme();
 
   return (
-    <View align="center" height={42} justify="center" width={39}>
+    <View align="center" height={42} justify="center" width={40}>
       <ButtonPressAnimation
         alignSelf="center"
         duration={100}
@@ -18,7 +18,7 @@ const ColorCircle = ({ backgroundColor, isSelected, onPressColor }) => {
         justifyContent="center"
         onPress={onPressColor}
         scaleTo={0.7}
-        width={39}
+        width={40}
       >
         <View
           alignSelf="center"

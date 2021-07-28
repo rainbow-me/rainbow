@@ -34,9 +34,21 @@ export default function AvatarCircle({
   onPress,
   overlayStyles,
   image,
+  showcaseAccountSymbol,
+  showcaseAccountColor,
 }) {
   const { colors, isDarkMode } = useTheme();
-  const { accountColor, accountSymbol } = useAccountProfile();
+  const {
+    accountColor: profileAccountColor,
+    accountSymbol: profileAccountSymbol,
+  } = useAccountProfile();
+  const accountSymbol = showcaseAccountSymbol || profileAccountSymbol;
+  const resolvedColor =
+    showcaseAccountColor != null
+      ? typeof showcaseAccountColor === 'string'
+        ? showcaseAccountColor
+        : colors.avatarBackgrounds[showcaseAccountColor]
+      : colors.avatarBackgrounds[profileAccountColor || 0];
   const shadows = useMemo(
     () => ({
       default: [
@@ -45,9 +57,7 @@ export default function AvatarCircle({
           0,
           6,
           10,
-          isDarkMode
-            ? colors.trueBlack
-            : colors.alpha(colors.avatarColor[accountColor || 0], 0.6),
+          isDarkMode ? colors.trueBlack : colors.alpha(resolvedColor, 0.6),
         ],
       ],
       overlay: [
@@ -55,7 +65,7 @@ export default function AvatarCircle({
         [0, 2, 5, isDarkMode ? colors.trueBlack : colors.shadowBlack, 0.12],
       ],
     }),
-    [accountColor, colors, isDarkMode]
+    [resolvedColor, colors, isDarkMode]
   );
 
   return (
@@ -81,7 +91,7 @@ export default function AvatarCircle({
         {image ? (
           <ImageAvatar image={image} size="large" />
         ) : (
-          <AvatarCircleView backgroundColor={colors.avatarColor[accountColor]}>
+          <AvatarCircleView backgroundColor={resolvedColor}>
             <FirstLetter>{accountSymbol}</FirstLetter>
             {!overlayStyles && <InnerBorder opacity={0.02} radius={65} />}
           </AvatarCircleView>

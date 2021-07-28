@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import Text from './Text';
+import { toChecksumAddress } from '@rainbow-me/handlers/web3';
 import { abbreviations } from '@rainbow-me/utils';
 
 const TruncatedAddress = (
@@ -10,7 +11,7 @@ const TruncatedAddress = (
     () =>
       address
         ? abbreviations.formatAddressForDisplay(
-            address,
+            toChecksumAddress(address),
             truncationLength,
             firstSectionLength
           )

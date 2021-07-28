@@ -184,7 +184,7 @@ export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
   const showcaseTokens = [];
   const bundledShowcaseTokens = [];
 
-  const grouped = groupBy(uniqueTokens, token => token.asset_contract.name);
+  const grouped = groupBy(uniqueTokens, token => token.familyName);
   const families = Object.keys(grouped);
 
   for (let i = 0; i < families.length; i++) {
@@ -227,8 +227,8 @@ export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
 
   showcaseTokens.sort(function (a, b) {
     return (
-      selectedShowcaseTokens.indexOf(a.uniqueId) -
-      selectedShowcaseTokens.indexOf(b.uniqueId)
+      selectedShowcaseTokens?.indexOf(a.uniqueId) -
+      selectedShowcaseTokens?.indexOf(b.uniqueId)
     );
   });
 
@@ -261,5 +261,5 @@ export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
   return rows;
 };
 
-export const buildUniqueTokenName = ({ asset_contract, id, name }) =>
-  name || `${asset_contract.name} #${id}`;
+export const buildUniqueTokenName = ({ collection, id, name }) =>
+  name || `${collection.name} #${id}`;

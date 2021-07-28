@@ -15,13 +15,13 @@ import {
 import { CopyToast, ToastPositionContainer } from '../toasts';
 import {
   SwapDetailsContent,
-  SwapDetailsContentMinHeight,
   SwapDetailsMasthead,
   SwapDetailsMastheadHeight,
   SwapDetailsSlippageMessage,
 } from './swap-details';
 import { ExchangeModalTypes } from '@rainbow-me/helpers';
 import {
+  useAccountSettings,
   useBooleanState,
   useDimensions,
   useHeight,
@@ -62,6 +62,9 @@ const Header = styled(Column).attrs({
   width: 100%;
 `;
 
+const FOOTER_MIN_HEIGHT = 143;
+const FOOTER_CONTENT_MIN_HEIGHT = 241;
+
 function useAndroidDisableGesturesOnFocus() {
   const { params } = useRoute();
   const isFocused = useIsFocused();
@@ -88,6 +91,7 @@ export default function SwapDetailsState({
   confirmButtonProps,
   restoreFocusOnSwapModal,
 }) {
+  const { network } = useAccountSettings();
   const { setParams } = useNavigation();
   const { params: { longFormHeight } = {} } = useRoute();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
@@ -115,10 +119,10 @@ export default function SwapDetailsState({
     onCopySwapDetailsText,
   } = useSwapDetailsClipboardState();
 
-  const [footerHeight, setFooterHeight] = useHeight();
+  const [footerHeight, setFooterHeight] = useHeight(FOOTER_MIN_HEIGHT);
   const [slippageMessageHeight, setSlippageMessageHeight] = useHeight();
   const [contentHeight, setContentHeight] = useHeight(
-    SwapDetailsContentMinHeight
+    FOOTER_CONTENT_MIN_HEIGHT
   );
 
   useEffect(() => () => restoreFocusOnSwapModal(), [restoreFocusOnSwapModal]);
@@ -210,7 +214,7 @@ export default function SwapDetailsState({
         <Footer onLayout={setFooterHeight}>
           <ConfirmExchangeButton
             {...confirmButtonProps}
-            testID="swap-details-confirm"
+            testID="swap-details-confirm-button"
           />
           <Column
             justify="center"
@@ -218,6 +222,7 @@ export default function SwapDetailsState({
             width={deviceWidth - 10}
           >
             <GasSpeedButton
+              currentNetwork={network}
               onCustomGasBlur={hideKeyboard}
               onCustomGasFocus={showKeyboard}
               testID="swap-details-gas"

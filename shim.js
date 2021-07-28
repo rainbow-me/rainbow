@@ -1,12 +1,12 @@
 import 'react-native-get-random-values';
 import '@ethersproject/shims';
 import AsyncStorage from '@react-native-community/async-storage';
-import { enableES5 } from 'immer';
 // eslint-disable-next-line import/default
 import ReactNative from 'react-native';
 import Animated from 'react-native-reanimated';
 import Storage from 'react-native-storage';
-import { debugLayoutAnimations } from './src/config/debug';
+// import { debugLayoutAnimations } from './src/config/debug';
+import toLocaleStringPolyfill from '@rainbow-me/helpers/toLocaleStringPolyfill';
 import logger from 'logger';
 
 if (typeof btoa === 'undefined') {
@@ -21,8 +21,7 @@ if (typeof atob === 'undefined') {
   };
 }
 
-// Can remove when we update hermes after they enable Proxy support
-ReactNative.Platform.OS === 'android' && enableES5();
+toLocaleStringPolyfill();
 
 ReactNative.Platform.OS === 'ios' &&
   Animated.addWhitelistedNativeProps({ d: true });
@@ -91,6 +90,14 @@ if (SHORTEN_PROP_TYPES_ERROR) {
       );
       return;
     }
+    if (
+      typeof arguments[0] === 'string' &&
+      arguments[0].startsWith(
+        'VirtualizedLists should never be nested inside plain ScrollViews'
+      )
+    ) {
+      return;
+    }
     oldConsoleError?.apply(this, arguments);
   };
 }
@@ -120,18 +127,19 @@ if (typeof localStorage !== 'undefined') {
   localStorage.debug = isDev ? '*' : '';
 }
 
-const oldConfigureNext = ReactNative.LayoutAnimation.configureNext;
+ReactNative.LayoutAnimation.configureNext = () => null;
+// const oldConfigureNext = ReactNative.LayoutAnimation.configureNext;
 
-if (
-  !ReactNative.LayoutAnimation.configureNext.__shimmed &&
-  debugLayoutAnimations
-) {
-  ReactNative.LayoutAnimation.configureNext = (...args) => {
-    logger.sentry('LayoutAnimation.configureNext', args);
-    oldConfigureNext(...args);
-  };
-  ReactNative.LayoutAnimation.configureNext.__shimmed = true;
-}
+// if (
+//   !ReactNative.LayoutAnimation.configureNext.__shimmed &&
+//   debugLayoutAnimations
+// ) {
+//   ReactNative.LayoutAnimation.configureNext = (...args) => {
+//     logger.sentry('LayoutAnimation.configureNext', args);
+//     oldConfigureNext(...args);
+//   };
+//   ReactNative.LayoutAnimation.configureNext.__shimmed = true;
+// }
 
 if (!ReactNative.InteractionManager._shimmed) {
   const oldCreateInteractionHandle =

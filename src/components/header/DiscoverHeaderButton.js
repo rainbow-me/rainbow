@@ -3,7 +3,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components';
 import { useNavigation } from '../../navigation/Navigation';
 import { Row, RowWithMargins } from '../layout';
-import { Emoji, Text } from '../text';
+import { Text } from '../text';
 import HeaderButton from './HeaderButton';
 import Routes from '@rainbow-me/routes';
 import { padding, position } from '@rainbow-me/styles';
@@ -34,7 +34,9 @@ const DiscoverButtonContent = styled(RowWithMargins).attrs({
   align: 'center',
   margin: 2,
 })`
-  ${padding(5.5, 10, 7.5)};
+  align-items: center;
+  justify-content: center;
+  ${padding(2, 10, 7.5)};
   height: 34;
   z-index: 2;
 `;
@@ -47,13 +49,19 @@ export default function DiscoverHeaderButton() {
     navigate,
   ]);
 
+  const onLongPress = useCallback(
+    () => navigate(Routes.SHOWCASE_SHEET, { address: 'vitalik.eth' }),
+    [navigate]
+  );
+
   const shadows = useMemo(() => DiscoverButtonShadowsFactory(colors), [colors]);
 
   return (
     <HeaderButton
+      {...(__DEV__ ? { onLongPress } : {})}
       onPress={onPress}
       scaleTo={0.9}
-      testID="goToDiscover"
+      testID="discover-button"
       transformOrigin="right"
     >
       <Row>
@@ -71,16 +79,14 @@ export default function DiscoverHeaderButton() {
           <BackgroundGradient />
         </ShadowStack>
         <DiscoverButtonContent>
-          <Emoji lineHeight={18} size="medium">
-            🪐
-          </Emoji>
           <Text
             color={colors.alpha(colors.blueGreyDark, isDarkMode ? 1 : 0.8)}
             letterSpacing="roundedTight"
             size="large"
             weight="bold"
+            {...(android && { lineHeight: 32 })}
           >
-            Discover
+            🪐 Discover
           </Text>
         </DiscoverButtonContent>
       </Row>

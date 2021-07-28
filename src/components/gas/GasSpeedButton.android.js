@@ -1,4 +1,4 @@
-import { get, isEmpty } from 'lodash';
+import { get, isEmpty, isNil } from 'lodash';
 import React, {
   useCallback,
   useEffect,
@@ -6,7 +6,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Keyboard, LayoutAnimation } from 'react-native';
+import { Keyboard, LayoutAnimation, View } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import styled from 'styled-components';
@@ -19,21 +19,25 @@ import { Input } from '../inputs';
 import { Column, Row } from '../layout';
 import { AnimatedNumber, Text } from '../text';
 import GasSpeedLabelPager from './GasSpeedLabelPager';
+import { isL2Network } from '@rainbow-me/handlers/web3';
 import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
 import { useAccountSettings, useGas } from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
 import { gweiToWei, weiToGwei } from '@rainbow-me/parsers';
+import Routes from '@rainbow-me/routes';
 import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
 import { darkModeThemeColors } from '@rainbow-me/styles/colors';
 import { gasUtils, magicMemo } from '@rainbow-me/utils';
 
-const { GasSpeedOrder, CUSTOM, FAST, SLOW } = gasUtils;
+const { GasSpeedOrder, CUSTOM, FAST, NORMAL, SLOW } = gasUtils;
 
 const Container = styled(Row).attrs({
   justify: 'space-between',
   opacityTouchable: true,
   pointerEvents: 'auto',
 })`
-  ${padding(15, 19, 0)};
+  ${({ horizontalPadding, topPadding }) =>
+    padding(topPadding, horizontalPadding, 0)};
   height: 76;
   width: 100%;
 `;
@@ -41,7 +45,9 @@ const Container = styled(Row).attrs({
 const Label = styled(Text).attrs({
   size: 'smedium',
   weight: 'semibold',
-})``;
+})`
+  ${fontWithWidth(fonts.weight.semibold)};
+`;
 
 const ButtonLabel = styled(BorderlessButton).attrs(({ theme: { colors } }) => ({
   color: colors.appleBlue,
@@ -74,14 +80,19 @@ const GasInput = styled(Input).attrs(
   })
 )`
   ${fontWithWidth(fonts.weight.bold)};
-  ${margin(-13, 0)}
+  ${margin(-13, 0, -15, -4)}
 `;
 
 const LittleBorderlessButton = ({ onPress, children, testID }) => {
   const { colors } = useTheme();
   return (
     <ButtonLabel onPress={onPress} testID={testID} width={120}>
-      <Text color={colors.appleBlue} size="smedium" weight="bold">
+      <Text
+        {...(android && { lineHeight: 21 })}
+        color={colors.appleBlue}
+        size="smedium"
+        weight="bold"
+      >
         {children}
       </Text>
     </ButtonLabel>
@@ -98,16 +109,11 @@ const BottomRightLabel = ({ formatter, theme }) => {
           ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)
           : colors.alpha(colors.blueGreyDark, 0.6)
       }
+      style={{ marginTop: -2 }}
     >
       {formatter()}
     </Label>
   );
-};
-
-const formatGasPrice = (gasPrice, nativeCurrency) => {
-  return nativeCurrency === 'ETH'
-    ? (Math.ceil(Number(gasPrice) * 10000) / 10000).toFixed(4)
-    : (Math.ceil(Number(gasPrice) * 100) / 100).toFixed(2);
 };
 
 const getActionLabel = type => {
@@ -129,17 +135,19 @@ Keyboard.addListener('keyboardDidHide', () => listener?.());
 
 const GasSpeedButton = ({
   dontBlur,
+  horizontalPadding = 19,
   onCustomGasBlur,
   onCustomGasFocus,
   testID,
   type,
   theme = 'dark',
+  topPadding = 15,
   options = null,
   minGasPrice = null,
+  currentNetwork,
 }) => {
   const { colors } = useTheme();
   const inputRef = useRef(null);
-  const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
   const {
     gasPrices,
     updateCustomValues,
@@ -162,7 +170,7 @@ const GasSpeedButton = ({
     return filteredGasPrices;
   }, [gasPrices, minGasPrice, options]);
 
-  const gasPrice = get(selectedGasPrice, 'txFee.native.value.amount');
+  const gasPrice = get(selectedGasPrice, 'txFee.native.value.display');
   const customGasPriceTimeEstimateHandler = useRef(null);
   useEffect(() => {
     listener = () => {
@@ -178,18 +186,44 @@ const GasSpeedButton = ({
   const [estimatedTimeValue, setEstimatedTimeValue] = useState(0);
   const [estimatedTimeUnit, setEstimatedTimeUnit] = useState('min');
   const [inputFocused, setInputFocused] = useState(false);
+  const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
 
   const defaultCustomGasPrice = Math.round(
     weiToGwei(gasPricesAvailable?.fast?.value?.amount)
   );
-  const defaultCustomGasPriceUsd = get(
+  const defaultCustomGasPriceNative = get(
     txFees?.fast,
-    'txFee.native.value.amount'
+    'txFee.native.value.display'
   );
   const defaultCustomGasConfirmationTime =
     gasPricesAvailable?.fast?.estimatedTime?.display;
 
-  const price = isNaN(gasPrice) ? '0.00' : gasPrice;
+  // Because of the animated number component
+  // we need to trim the native currency symbol
+  // (and leave the number only!)
+  // which gets added later in the formatGasPrice function
+  const price = (isNil(gasPrice) ? '0.00' : gasPrice)
+    .replace(nativeCurrencySymbol, '')
+    .trim();
+
+  const formatGasPrice = useCallback(
+    animatedValue => {
+      // L2's are very cheap,
+      // so let's default to the last 2 significant decimals
+      if (isL2Network(currentNetwork)) {
+        return `${nativeCurrencySymbol}${Number.parseFloat(
+          animatedValue
+        ).toPrecision(2)}`;
+      } else {
+        return `${nativeCurrencySymbol}${
+          nativeCurrency === 'ETH'
+            ? (Math.ceil(Number(animatedValue) * 10000) / 10000).toFixed(4)
+            : (Math.ceil(Number(animatedValue) * 100) / 100).toFixed(2)
+        }`;
+      }
+    },
+    [currentNetwork, nativeCurrencySymbol, nativeCurrency]
+  );
 
   useEffect(() => {
     const estimatedTime = get(
@@ -205,14 +239,14 @@ const GasSpeedButton = ({
   const calculateCustomPriceEstimatedTime = useCallback(
     async price => {
       try {
-        await updateCustomValues(price);
-        updateGasPriceOption(CUSTOM);
+        await updateCustomValues(price, currentNetwork);
+        updateGasPriceOption(CUSTOM, currentNetwork);
       } catch (e) {
         setEstimatedTimeValue(0);
         setEstimatedTimeUnit('min');
       }
     },
-    [updateCustomValues, updateGasPriceOption]
+    [currentNetwork, updateCustomValues, updateGasPriceOption]
   );
 
   useEffect(() => {
@@ -258,30 +292,25 @@ const GasSpeedButton = ({
     }
     LayoutAnimation.easeInEaseOut();
     const gasOptions = options || GasSpeedOrder;
-    const currentSpeedIndex = gasOptions.indexOf(selectedGasPriceOption);
-    const nextSpeedIndex = (currentSpeedIndex + 1) % gasOptions.length;
+    const currentSpeedIndex = gasOptions?.indexOf(selectedGasPriceOption);
+    const nextSpeedIndex = (currentSpeedIndex + 1) % gasOptions?.length;
 
     const nextSpeed = gasOptions[nextSpeedIndex];
     updateGasPriceOption(nextSpeed);
   }, [inputFocused, options, selectedGasPriceOption, updateGasPriceOption]);
 
-  const formatAnimatedGasPrice = useCallback(
-    animatedPrice =>
-      `${nativeCurrencySymbol}${formatGasPrice(animatedPrice, nativeCurrency)}`,
-    [nativeCurrencySymbol, nativeCurrency]
-  );
-
   const formatBottomRightLabel = useCallback(() => {
     const actionLabel = getActionLabel(type);
     const time = parseFloat(estimatedTimeValue || 0).toFixed(0);
-    const gasPriceGwei = get(selectedGasPrice, 'value.display');
+    let gasPriceGwei = get(selectedGasPrice, 'value.display');
+    if (gasPriceGwei === '0 Gwei') {
+      gasPriceGwei = '< 1 Gwei';
+    }
     let timeSymbol = '~';
 
     if (selectedGasPriceOption === CUSTOM) {
       if (!customGasPriceInput) {
-        return `${formatAnimatedGasPrice(
-          defaultCustomGasPriceUsd
-        )} ~ ${defaultCustomGasConfirmationTime}`;
+        return `${defaultCustomGasPriceNative} ~ ${defaultCustomGasConfirmationTime}`;
       } else if (gasPricesAvailable[CUSTOM]?.value) {
         const priceInWei = Number(gasPricesAvailable[CUSTOM].value.amount);
         const minGasPriceSlow = gasPricesAvailable[SLOW]
@@ -294,9 +323,7 @@ const GasSpeedButton = ({
           timeSymbol = '<';
         }
 
-        return `${formatAnimatedGasPrice(
-          gasPrice
-        )} ${timeSymbol} ${time} ${estimatedTimeUnit}`;
+        return `${gasPrice} ${timeSymbol} ${time} ${estimatedTimeUnit}`;
       } else {
         return `${actionLabel} ...`;
       }
@@ -311,10 +338,9 @@ const GasSpeedButton = ({
   }, [
     customGasPriceInput,
     defaultCustomGasConfirmationTime,
-    defaultCustomGasPriceUsd,
+    defaultCustomGasPriceNative,
     estimatedTimeUnit,
     estimatedTimeValue,
-    formatAnimatedGasPrice,
     gasPrice,
     gasPricesAvailable,
     selectedGasPrice,
@@ -365,7 +391,21 @@ const GasSpeedButton = ({
       return;
     }
 
-    if (minGasPrice && Number(customGasPriceInput) < minGasPrice) {
+    const minKey = options?.indexOf(SLOW) !== -1 ? SLOW : NORMAL;
+
+    const minGasPriceAllowed = Number(
+      gasPricesAvailable?.[minKey]?.value?.amount || 0
+    );
+
+    // The minimum gas for the tx is the higher amount between:
+    // - 10% more than the submitted gas of the previous tx (If speeding up / cancelling)
+    // - The new "normal" gas price from our third party API
+
+    const minimumGasAcceptedForTx = minGasPrice
+      ? Math.max(minGasPrice, minGasPriceAllowed)
+      : minGasPriceAllowed;
+
+    if (minGasPrice && Number(customGasPriceInput) < minimumGasAcceptedForTx) {
       Alert({
         buttons: [
           {
@@ -373,20 +413,17 @@ const GasSpeedButton = ({
             text: 'OK',
           },
         ],
-        message: `The minimum gas price valid allowed is ${minGasPrice} GWEI`,
+        message: `The minimum gas price valid allowed is ${minimumGasAcceptedForTx} GWEI`,
         title: 'Gas Price Too Low',
       });
       return;
     }
 
     const priceInWei = gweiToWei(customGasPriceInput);
-    const minGasPriceSlow = Number(
-      gasPricesAvailable?.slow?.value?.amount || 0
-    );
     const maxGasPriceFast = Number(
       gasPricesAvailable?.fast?.value?.amount || 0
     );
-    let tooLow = priceInWei < minGasPriceSlow;
+    let tooLow = priceInWei < minGasPriceAllowed;
     let tooHigh = priceInWei > maxGasPriceFast * 2.5;
 
     if (tooLow || tooHigh) {
@@ -415,9 +452,9 @@ const GasSpeedButton = ({
   }, [
     customGasPriceInput,
     inputFocused,
+    options,
+    gasPricesAvailable,
     minGasPrice,
-    gasPricesAvailable?.slow?.value?.amount,
-    gasPricesAvailable?.fast?.value?.amount,
     dontBlur,
     handleCustomGasBlur,
   ]);
@@ -425,23 +462,37 @@ const GasSpeedButton = ({
   const focusOnInput = useCallback(() => inputRef.current?.focus(), []);
   const isCustom = selectedGasPriceOption === CUSTOM ? true : false;
 
+  const { navigate } = useNavigation();
+
+  const openGasHelper = useCallback(() => {
+    Keyboard.dismiss();
+    navigate(Routes.EXPLAIN_SHEET, { type: 'gas' });
+  }, [navigate]);
+
   return (
     <Container
-      as={!isCustom ? ButtonPressAnimation : ScaleButtonZoomableAndroid}
+      as={ScaleButtonZoomableAndroid}
+      horizontalPadding={horizontalPadding}
       onPress={handlePress}
       testID={testID}
+      topPadding={topPadding}
     >
       <Column>
-        <Row align="end" height={30} justify="space-between">
+        <Row align="end" height={30} justify="start">
           {!isCustom ? (
-            <AnimatedNumber
-              formatter={formatAnimatedGasPrice}
-              interval={6}
-              renderContent={renderGasPriceText}
-              steps={6}
-              timing="linear"
-              value={price}
-            />
+            <ButtonPressAnimation onPress={handlePress} reanimatedButton>
+              <View pointerEvents="none">
+                <AnimatedNumber
+                  formatter={formatGasPrice}
+                  interval={6}
+                  renderContent={renderGasPriceText}
+                  steps={6}
+                  textAlign="left"
+                  timing="linear"
+                  value={price}
+                />
+              </View>
+            </ButtonPressAnimation>
           ) : (
             <BorderlessButton onPress={focusOnInput}>
               <Row>
@@ -476,18 +527,32 @@ const GasSpeedButton = ({
           )}
         </Row>
 
-        <Row justify="space-between" style={{ height: 27 }}>
+        <Row justify="space-between" style={{ marginTop: isCustom ? -3 : 0 }}>
           {!isCustom ? (
-            <Label
-              color={
-                theme === 'dark'
-                  ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)
-                  : colors.alpha(colors.blueGreyDark, 0.6)
-              }
-              height={10}
+            <ButtonPressAnimation
+              onPress={openGasHelper}
+              style={{ marginTop: -7, zIndex: 10 }}
+              wrapperStyle={{ zIndex: 10 }}
             >
-              Network Fee
-            </Label>
+              <Label
+                color={
+                  theme === 'dark'
+                    ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)
+                    : colors.alpha(colors.blueGreyDark, 0.6)
+                }
+              >
+                Network Fee{' '}
+                <Label
+                  color={
+                    theme === 'dark'
+                      ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.4)
+                      : colors.alpha(colors.blueGreyDark, 0.4)
+                  }
+                >
+                  􀅵
+                </Label>
+              </Label>
+            </ButtonPressAnimation>
           ) : (
             <LittleBorderlessButton
               onPress={handleInputButtonManager}
@@ -502,12 +567,12 @@ const GasSpeedButton = ({
       </Column>
       <Column
         align="end"
-        as={isCustom && ButtonPressAnimation}
+        as={ButtonPressAnimation}
         onPress={handlePress}
         reanimatedButton
         wrapperStyle={{ flex: 1 }}
       >
-        <Row align="end" css={margin(3, 0)} justify="end" marginBottom={1}>
+        <Row align="end" justify="end" marginBottom={1}>
           <GasSpeedLabelPager
             label={selectedGasPriceOption}
             options={options}

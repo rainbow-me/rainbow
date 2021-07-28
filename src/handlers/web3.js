@@ -2,14 +2,30 @@ import { getAddress } from '@ethersproject/address';
 import { BigNumber } from '@ethersproject/bignumber';
 import { isHexString as isEthersHexString } from '@ethersproject/bytes';
 import { isValidMnemonic as ethersIsValidMnemonic } from '@ethersproject/hdnode';
-
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { parseEther } from '@ethersproject/units';
 import UnstoppableResolution from '@unstoppabledomains/resolution';
 import { get, replace, startsWith } from 'lodash';
-import { INFURA_PROJECT_ID, INFURA_PROJECT_ID_DEV } from 'react-native-dotenv';
-import AssetTypes from '../helpers/assetTypes';
-import NetworkTypes from '../helpers/networkTypes';
+import {
+  ARBITRUM_MAINNET_RPC,
+  INFURA_PROJECT_ID,
+  INFURA_PROJECT_ID_DEV,
+  OPTIMISM_MAINNET_RPC,
+  POLYGON_MAINNET_RPC,
+} from 'react-native-dotenv';
+import {
+  ARBITRUM_ETH_ADDRESS,
+  ETH_ADDRESS,
+  ethUnits,
+  MATIC_POLYGON_ADDRESS,
+  OPTIMISM_ETH_ADDRESS,
+  smartContractMethods,
+} from '../references';
+
+import { isNativeAsset } from './assets';
+import { AssetTypes } from '@rainbow-me/entities';
+import NetworkTypes from '@rainbow-me/helpers/networkTypes';
+
 import {
   addBuffer,
   convertAmountToRawAmount,
@@ -18,14 +34,15 @@ import {
   greaterThan,
   handleSignificantDecimals,
   multiply,
-} from '../helpers/utilities';
-import smartContractMethods from '../references/smartcontract-methods.json';
-import { ethereumUtils } from '../utils';
-import { ethUnits } from '@rainbow-me/references';
+} from '@rainbow-me/utilities';
+import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const infuraProjectId = __DEV__ ? INFURA_PROJECT_ID_DEV : INFURA_PROJECT_ID;
 const infuraUrl = `https://network.infura.io/v3/${infuraProjectId}`;
+
+export const networkProviders = {};
+
 /**
  * @desc web3 http instance
  */
@@ -42,22 +59,65 @@ export const web3SetHttpProvider = async network => {
   if (network.startsWith('http://')) {
     web3Provider = new JsonRpcProvider(network, NetworkTypes.mainnet);
   } else {
-    web3Provider = new JsonRpcProvider(
-      replace(infuraUrl, 'network', network),
-      network
-    );
+    web3Provider = new JsonRpcProvider(replace(infuraUrl, 'network', network));
   }
   return web3Provider.ready;
 };
 
-export const sendRpcCall = async payload =>
-  web3Provider.send(payload.method, payload.params);
+export const isL2Network = network => {
+  switch (network) {
+    case NetworkTypes.arbitrum:
+    case NetworkTypes.optimism:
+    case NetworkTypes.polygon:
+      return true;
+    default:
+      return false;
+  }
+};
 
-export const getTransactionReceipt = txHash =>
-  sendRpcCall({
-    method: 'eth_getTransactionReceipt',
-    params: [txHash],
-  });
+/**
+ * @desc returns a web3 provider for the specified network
+ * @param {String} network
+ */
+export const getProviderForNetwork = async network => {
+  if (networkProviders[network]) {
+    return networkProviders[network];
+  }
+  if (network.startsWith('http://')) {
+    return new JsonRpcProvider(network, NetworkTypes.mainnet);
+  } else {
+    let url;
+    switch (network) {
+      case NetworkTypes.arbitrum:
+        url = ARBITRUM_MAINNET_RPC;
+        break;
+      case NetworkTypes.optimism:
+        url = OPTIMISM_MAINNET_RPC;
+        break;
+      case NetworkTypes.polygon:
+        url = POLYGON_MAINNET_RPC;
+        break;
+      default:
+        url = replace(infuraUrl, 'network', network);
+    }
+    const provider = new JsonRpcProvider(url);
+    networkProviders[network] = provider;
+    await provider.ready;
+    return provider;
+  }
+};
+
+export const sendRpcCall = async (payload, provider = null) =>
+  (provider || web3Provider).send(payload.method, payload.params);
+
+export const getTransactionReceipt = (txHash, provider = null) =>
+  sendRpcCall(
+    {
+      method: 'eth_getTransactionReceipt',
+      params: [txHash],
+    },
+    provider
+  );
 
 /**
  * @desc check if hex string
@@ -103,9 +163,10 @@ export const toChecksumAddress = address => {
  * @param  {String} address
  * @return {String} gas limit
  */
-export const estimateGas = async estimateGasData => {
+export const estimateGas = async (estimateGasData, provider = null) => {
   try {
-    const gasLimit = await web3Provider.estimateGas(estimateGasData);
+    const p = provider || web3Provider;
+    const gasLimit = await p.estimateGas(estimateGasData);
     return gasLimit.toString();
   } catch (error) {
     return null;
@@ -114,36 +175,49 @@ export const estimateGas = async estimateGasData => {
 
 export const estimateGasWithPadding = async (
   txPayload,
+  contractCallEstimateGas = null,
+  callArguments = null,
+  provider = null,
   paddingFactor = 1.1
 ) => {
   try {
+    const p = provider || web3Provider;
     const txPayloadToEstimate = { ...txPayload };
-    const { gasLimit } = await web3Provider.getBlock();
+    const { gasLimit } = await p.getBlock();
     const { to, data } = txPayloadToEstimate;
     // 1 - Check if the receiver is a contract
-    const code = to ? await web3Provider.getCode(to) : undefined;
+    const code = to ? await p.getCode(to) : undefined;
     // 2 - if it's not a contract AND it doesn't have any data use the default gas limit
-    if (!to || (to && !data && (!code || code === '0x'))) {
-      logger.log(
+    if (
+      (!contractCallEstimateGas && !to) ||
+      (to && !data && (!code || code === '0x'))
+    ) {
+      logger.sentry(
         '⛽ Skipping estimates, using default',
         ethUnits.basic_tx.toString()
       );
       return ethUnits.basic_tx.toString();
     }
-    logger.log('⛽ Calculating safer gas limit for last block');
+
+    logger.sentry('⛽ Calculating safer gas limit for last block');
     // 3 - If it is a contract, call the RPC method `estimateGas` with a safe value
     const saferGasLimit = fraction(gasLimit.toString(), 19, 20);
-    logger.log('⛽ safer gas limit for last block is', saferGasLimit);
+    logger.sentry('⛽ safer gas limit for last block is', saferGasLimit);
 
-    txPayloadToEstimate.gas = toHex(saferGasLimit);
-    const estimatedGas = await web3Provider.estimateGas(txPayloadToEstimate);
+    txPayloadToEstimate[contractCallEstimateGas ? 'gasLimit' : 'gas'] = toHex(
+      saferGasLimit
+    );
+
+    const estimatedGas = await (contractCallEstimateGas
+      ? contractCallEstimateGas(...callArguments, txPayloadToEstimate)
+      : p.estimateGas(txPayloadToEstimate));
 
     const lastBlockGasLimit = addBuffer(gasLimit.toString(), 0.9);
     const paddedGas = addBuffer(
       estimatedGas.toString(),
       paddingFactor.toString()
     );
-    logger.log('⛽ GAS CALCULATIONS!', {
+    logger.sentry('⛽ GAS CALCULATIONS!', {
       estimatedGas: estimatedGas.toString(),
       gasLimit: gasLimit.toString(),
       lastBlockGasLimit: lastBlockGasLimit,
@@ -151,7 +225,7 @@ export const estimateGasWithPadding = async (
     });
     // If the safe estimation is above the last block gas limit, use it
     if (greaterThan(estimatedGas, lastBlockGasLimit)) {
-      logger.log(
+      logger.sentry(
         '⛽ returning orginal gas estimation',
         estimatedGas.toString()
       );
@@ -159,11 +233,11 @@ export const estimateGasWithPadding = async (
     }
     // If the estimation is below the last block gas limit, use the padded estimate
     if (greaterThan(lastBlockGasLimit, paddedGas)) {
-      logger.log('⛽ returning padded gas estimation', paddedGas);
+      logger.sentry('⛽ returning padded gas estimation', paddedGas);
       return paddedGas;
     }
     // otherwise default to the last block gas limit
-    logger.log('⛽ returning last block gas limit', lastBlockGasLimit);
+    logger.sentry('⛽ returning last block gas limit', lastBlockGasLimit);
     return lastBlockGasLimit;
   } catch (error) {
     logger.error('Error calculating gas limit with padding', error);
@@ -205,7 +279,9 @@ export const getTxDetails = async transaction => {
   const { to } = transaction;
   const data = transaction.data ? transaction.data : '0x';
   const value = transaction.amount ? toHex(toWei(transaction.amount)) : '0x00';
-  const gasLimit = toHex(transaction.gasLimit) || undefined;
+  const gasLimit = transaction.gasLimit
+    ? toHex(transaction.gasLimit)
+    : undefined;
   const gasPrice = toHex(transaction.gasPrice) || undefined;
   const tx = {
     data,
@@ -236,12 +312,13 @@ export const resolveUnstoppableDomain = async domain => {
   return res;
 };
 
-const resolveNameOrAddress = async nameOrAddress => {
+export const resolveNameOrAddress = async (nameOrAddress, provider) => {
   if (!isHexString(nameOrAddress)) {
     if (/^([\w-]+\.)+(crypto)$/.test(nameOrAddress)) {
       return resolveUnstoppableDomain(nameOrAddress);
     }
-    return web3Provider.resolveName(nameOrAddress);
+    const p = provider || web3Provider;
+    return p.resolveName(nameOrAddress);
   }
   return nameOrAddress;
 };
@@ -292,7 +369,12 @@ export const getTransferTokenTransaction = async transaction => {
  * @return {Promise}
  */
 export const createSignableTransaction = async transaction => {
-  if (get(transaction, 'asset.address') === 'eth') {
+  if (
+    get(transaction, 'asset.address') === ETH_ADDRESS ||
+    get(transaction, 'asset.address') === ARBITRUM_ETH_ADDRESS ||
+    get(transaction, 'asset.address') === OPTIMISM_ETH_ADDRESS ||
+    get(transaction, 'asset.address') === MATIC_POLYGON_ADDRESS
+  ) {
     return getTxDetails(transaction);
   }
   const isNft = get(transaction, 'asset.type') === AssetTypes.nft;
@@ -361,14 +443,16 @@ export const getDataForNftTransfer = (from, to, asset) => {
  */
 export const estimateGasLimit = async (
   { asset, address, recipient, amount },
-  addPadding = false
+  addPadding = false,
+  provider = null,
+  network = NetworkTypes.mainnet
 ) => {
   const _amount =
     amount && Number(amount)
       ? convertAmountToRawAmount(amount, asset.decimals)
       : estimateAssetBalancePortion(asset);
   const value = _amount.toString();
-  const _recipient = await resolveNameOrAddress(recipient);
+  const _recipient = await resolveNameOrAddress(recipient, provider);
   let estimateGasData = {
     data: '0x',
     from: address,
@@ -383,7 +467,7 @@ export const estimateGasLimit = async (
       from: address,
       to: contractAddress,
     };
-  } else if (asset.symbol !== 'ETH') {
+  } else if (!isNativeAsset(asset.address, network)) {
     const transferData = getDataForTokenTransfer(value, _recipient);
     estimateGasData = {
       data: transferData,
@@ -393,8 +477,8 @@ export const estimateGasLimit = async (
     };
   }
   if (addPadding) {
-    return estimateGasWithPadding(estimateGasData);
+    return estimateGasWithPadding(estimateGasData, null, null, provider);
   } else {
-    return estimateGas(estimateGasData);
+    return estimateGas(estimateGasData, provider);
   }
 };

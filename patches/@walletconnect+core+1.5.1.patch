@@ -1,0 +1,147 @@
+diff --git a/node_modules/@walletconnect/core/dist/esm/index.js b/node_modules/@walletconnect/core/dist/esm/index.js
+index 4cfb8e6..4bd906e 100644
+--- a/node_modules/@walletconnect/core/dist/esm/index.js
++++ b/node_modules/@walletconnect/core/dist/esm/index.js
+@@ -227,10 +227,10 @@ class Connector {
+             event,
+             callback,
+         };
+-        this._eventManager.subscribe(eventEmitter);
++        this?._eventManager?.subscribe(eventEmitter);
+     }
+     off(event) {
+-        this._eventManager.unsubscribe(event);
++        this?._eventManager?.unsubscribe(event);
+     }
+     async createInstantRequest(instantRequest) {
+         this._key = await this._generateKey();
+@@ -246,7 +246,7 @@ class Connector {
+         });
+         this.handshakeId = request.id;
+         this.handshakeTopic = uuid();
+-        this._eventManager.trigger({
++        this?._eventManager?.trigger({
+             event: "display_uri",
+             params: [this.uri],
+         });
+@@ -312,7 +312,7 @@ class Connector {
+         this._sendSessionRequest(request, "Session update rejected", {
+             topic: this.handshakeTopic,
+         });
+-        this._eventManager.trigger({
++        this?._eventManager?.trigger({
+             event: "display_uri",
+             params: [this.uri],
+         });
+@@ -342,7 +342,7 @@ class Connector {
+         this._sendResponse(response);
+         this._connected = true;
+         this._setStorageSession();
+-        this._eventManager.trigger({
++        this?._eventManager?.trigger({
+             event: "connect",
+             params: [
+                 {
+@@ -365,7 +365,7 @@ class Connector {
+         });
+         this._sendResponse(response);
+         this._connected = false;
+-        this._eventManager.trigger({
++        this?._eventManager?.trigger({
+             event: "disconnect",
+             params: [{ message }],
+         });
+@@ -391,7 +391,7 @@ class Connector {
+             params: [sessionParams],
+         });
+         this._sendSessionRequest(request, "Session update rejected");
+-        this._eventManager.trigger({
++        this?._eventManager?.trigger({
+             event: "session_update",
+             params: [
+                 {
+@@ -572,7 +572,7 @@ class Connector {
+     }
+     _sendCallRequest(request, options) {
+         this._sendRequest(request, options);
+-        this._eventManager.trigger({
++        this?._eventManager?.trigger({
+             event: "call_request_sent",
+             params: [{ request, options }],
+         });
+@@ -629,7 +629,7 @@ class Connector {
+         if (this._handshakeTopic) {
+             this._handshakeTopic = "";
+         }
+-        this._eventManager.trigger({
++        this?._eventManager?.trigger({
+             event: "disconnect",
+             params: [{ message }],
+         });
+@@ -653,7 +653,7 @@ class Connector {
+                     if (sessionParams.peerMeta && !this.peerMeta) {
+                         this.peerMeta = sessionParams.peerMeta;
+                     }
+-                    this._eventManager.trigger({
++                    this?._eventManager?.trigger({
+                         event: "connect",
+                         params: [
+                             {
+@@ -672,7 +672,7 @@ class Connector {
+                     if (sessionParams.accounts) {
+                         this.accounts = sessionParams.accounts;
+                     }
+-                    this._eventManager.trigger({
++                    this?._eventManager?.trigger({
+                         event: "session_update",
+                         params: [
+                             {
+@@ -706,7 +706,7 @@ class Connector {
+         }
+         const payload = await this._decrypt(encryptionPayload);
+         if (payload) {
+-            this._eventManager.trigger(payload);
++            this?._eventManager?.trigger(payload);
+         }
+     }
+     _subscribeToSessionRequest() {
+@@ -755,7 +755,7 @@ class Connector {
+         this.on("display_uri", () => {
+             if (this._qrcodeModal) {
+                 this._qrcodeModal.open(this.uri, () => {
+-                    this._eventManager.trigger({
++                    this?._eventManager?.trigger({
+                         event: "modal_closed",
+                         params: [],
+                     });
+@@ -769,7 +769,7 @@ class Connector {
+         });
+         this.on("wc_sessionRequest", (error, payload) => {
+             if (error) {
+-                this._eventManager.trigger({
++                this?._eventManager?.trigger({
+                     event: "error",
+                     params: [
+                         {
+@@ -783,7 +783,7 @@ class Connector {
+             this.peerId = payload.params[0].peerId;
+             this.peerMeta = payload.params[0].peerMeta;
+             const internalPayload = Object.assign(Object.assign({}, payload), { method: "session_request" });
+-            this._eventManager.trigger(internalPayload);
++            this?._eventManager?.trigger(internalPayload);
+         });
+         this.on("wc_sessionUpdate", (error, payload) => {
+             if (error) {
+@@ -794,9 +794,9 @@ class Connector {
+     }
+     _initTransport() {
+         this._transport.on("message", (socketMessage) => this._handleIncomingMessages(socketMessage));
+-        this._transport.on("open", () => this._eventManager.trigger({ event: "transport_open", params: [] }));
+-        this._transport.on("close", () => this._eventManager.trigger({ event: "transport_close", params: [] }));
+-        this._transport.on("error", () => this._eventManager.trigger({
++        this._transport.on("open", () => this?._eventManager?.trigger({ event: "transport_open", params: [] }));
++        this._transport.on("close", () => this?._eventManager?.trigger({ event: "transport_close", params: [] }));
++        this._transport.on("error", () => this?._eventManager?.trigger({
+             event: "transport_error",
+             params: ["Websocket connection failed"],
+         }));

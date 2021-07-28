@@ -56,6 +56,7 @@ typedef NS_ENUM(NSInteger, RNSScreenStackAnimation) {
 @property (nonatomic) BOOL showDragIndicator;
 @property (nonatomic) BOOL ignoreBottomOffset;
 @property (nonatomic) BOOL interactWithScrollView;
+@property (nonatomic) BOOL disableShortFormAfterTransitionToLongForm;
 @property (nonatomic) NSNumber* topOffset;
 @property (nonatomic) NSNumber* cornerRadius;
 @property (nonatomic) RNSScreenStackAnimation stackAnimation;
@@ -75,6 +76,7 @@ typedef NS_ENUM(NSInteger, RNSScreenStackAnimation) {
 @property (nonatomic, nonnull) NSNumber *headerHeight;
 @property (nonatomic, nonnull) NSNumber *shortFormHeight;
 @property (nonatomic) BOOL startFromShortForm;
+@property (nonatomic) BOOL hidden;
 
 - (void)notifyFinishTransitioning;
 - (void)willDismiss;

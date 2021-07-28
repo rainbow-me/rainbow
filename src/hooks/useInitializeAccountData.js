@@ -4,7 +4,6 @@ import { InteractionManager } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { explorerInit } from '../redux/explorer';
 import { uniqueTokensRefreshState } from '../redux/uniqueTokens';
-import { uniswapGetAllExchanges, uniswapPairsInit } from '../redux/uniswap';
 import logger from 'logger';
 
 export default function useInitializeAccountData() {
@@ -15,12 +14,6 @@ export default function useInitializeAccountData() {
       InteractionManager.runAfterInteractions(() => {
         logger.sentry('Initialize account data');
         dispatch(explorerInit());
-      });
-
-      InteractionManager.runAfterInteractions(async () => {
-        logger.sentry('Initialize uniswapPairsInit & getAllExchanges');
-        dispatch(uniswapPairsInit());
-        await dispatch(uniswapGetAllExchanges());
       });
 
       InteractionManager.runAfterInteractions(async () => {

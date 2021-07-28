@@ -1,5 +1,5 @@
 import React from 'react';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, PixelRatio, StyleSheet, View } from 'react-native';
 import styled from 'styled-components';
 import { magicMemo } from '../../../utils';
 import { SimpleModelView } from '../../3d';
@@ -15,18 +15,20 @@ import {
 } from '@rainbow-me/hooks';
 import { margin, padding, position } from '@rainbow-me/styles';
 
-const paddingHorizontal = 19;
+const GOOGLE_USER_CONTENT_URL = 'https://lh3.googleusercontent.com/';
+const pixelRatio = PixelRatio.get();
 
 const Container = styled(Centered)`
-  ${padding(0, paddingHorizontal)};
+  ${({ horizontalPadding }) => padding(0, horizontalPadding)};
   height: ${({ height }) => height};
   ${android ? `margin-bottom: 10;` : ``}
 `;
 
 const ImageWrapper = styled(Centered)`
-  ${({ isImageHuge }) => margin(isImageHuge ? paddingHorizontal : 0, 0)};
+  ${({ isImageHuge, horizontalPadding }) =>
+    margin(isImageHuge ? horizontalPadding : 0, 0)};
   ${position.size('100%')};
-  border-radius: 10;
+  border-radius: ${({ borderRadius }) => borderRadius || 10};
   overflow: hidden;
 `;
 
@@ -44,14 +46,39 @@ const LoadingWrapper = styled(View)`
   justify-content: flex-end;
 `;
 
-const UniqueTokenExpandedStateImage = ({ asset }) => {
+const UniqueTokenExpandedStateImage = ({
+  asset,
+  borderRadius,
+  height,
+  horizontalPadding = 19,
+  resizeMode = 'contain',
+}) => {
   const { width: deviceWidth } = useDimensions();
 
   const isSVG = isSupportedUriExtension(asset.image_url, ['.svg']);
-  const imageUrl = isSVG ? asset.image_preview_url : asset.image_url;
+  const imageUrl = isSVG
+    ? asset.image_preview_url
+    : asset.image_url ||
+      asset.image_original_url ||
+      asset.image_preview_url ||
+      asset.image_thumbnail_url;
   const { dimensions: imageDimensions } = useImageMetadata(imageUrl);
+  const size = Math.ceil((deviceWidth * pixelRatio) / 100) * 100;
+  const url = useMemo(() => {
+    if (asset.image_url?.startsWith?.(GOOGLE_USER_CONTENT_URL) && size > 0) {
+      return `${asset.image_url}=w${size}`;
+    }
+    return asset.image_url;
+  }, [asset.image_url, size]);
 
-  const maxImageWidth = deviceWidth - paddingHorizontal * 2;
+  const lowResUrl = useMemo(() => {
+    if (asset.image_url?.startsWith?.(GOOGLE_USER_CONTENT_URL) && size > 0) {
+      return `${asset.image_url}=w${12}`;
+    }
+    return null;
+  }, [asset.image_url, size]);
+
+  const maxImageWidth = deviceWidth - horizontalPadding * 2;
   const maxImageHeight = maxImageWidth * 1.5;
 
   const heightForDeviceSize =
@@ -66,8 +93,15 @@ const UniqueTokenExpandedStateImage = ({ asset }) => {
   const [loading, setLoading] = React.useState(supports3d || supportsVideo);
 
   return (
-    <Container height={containerHeight}>
-      <ImageWrapper isImageHuge={heightForDeviceSize > maxImageHeight}>
+    <Container
+      height={height || containerHeight}
+      horizontalPadding={horizontalPadding}
+    >
+      <ImageWrapper
+        borderRadius={borderRadius}
+        horizontalPadding={horizontalPadding}
+        isImageHuge={heightForDeviceSize > maxImageHeight}
+      >
         <View style={StyleSheet.absoluteFill}>
           {supportsVideo ? (
             <SimpleVideo
@@ -89,9 +123,10 @@ const UniqueTokenExpandedStateImage = ({ asset }) => {
           ) : (
             <UniqueTokenImage
               backgroundColor={asset.background}
-              imageUrl={imageUrl}
+              imageUrl={url}
               item={asset}
-              resizeMode="contain"
+              lowResUrl={lowResUrl}
+              resizeMode={resizeMode}
             />
           )}
           {!!loading && (

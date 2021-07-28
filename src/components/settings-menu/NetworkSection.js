@@ -13,7 +13,7 @@ import {
   useResetAccountState,
 } from '@rainbow-me/hooks';
 
-const networks = values(networkInfo);
+const networks = values(networkInfo).filter(network => !network.layer2);
 
 const NetworkSection = () => {
   const { network } = useAccountSettings();
@@ -43,6 +43,7 @@ const NetworkSection = () => {
         key: value,
         label: name,
         selected: toLower(network) === toLower(value),
+        testID: `${value}-network`,
         value,
       }))}
       marginTop={7}

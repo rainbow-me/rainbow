@@ -3,24 +3,36 @@ import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components';
 import { OpacityToggler } from '../animations';
-import { Column, ColumnWithMargins } from '../layout';
-import { UniqueTokenCard } from '../unique-token';
+import { UniqueTokenExpandedStateContent } from '../expanded-state/unique-token';
+import { Column } from '../layout';
 import { useDimensions, useImageMetadata } from '@rainbow-me/hooks';
 import { padding, position } from '@rainbow-me/styles';
 
 const defaultImageDimensions = { height: 512, width: 512 };
 
-const ButtonWrapper = styled(ColumnWithMargins).attrs(({ isTallPhone }) => ({
-  margin: isTallPhone ? 25 : 15.5,
-}))`
-  ${padding(0, 15, 15)};
-  margin-bottom: 29;
+const ButtonWrapper = styled(Column).attrs({
+  margin: 0,
+})`
+  ${padding(0, 19, 15)};
+  margin-bottom: 21;
   width: 100%;
   z-index: 3;
 `;
 
 const Footer = styled(Column).attrs({ justify: 'end' })`
-  height: 210;
+  width: 100%;
+`;
+
+const NFTSizer = styled.View`
+  height: ${({ height }) => height};
+  width: ${({ width }) => width};
+`;
+
+const NFTWrapper = styled(Column).attrs({
+  align: 'center',
+  flex: 1,
+  justify: 'center',
+})`
   width: 100%;
 `;
 
@@ -33,7 +45,6 @@ const Gradient = styled(LinearGradient).attrs(
   })
 )`
   ${position.cover};
-  border-radius: 19;
   overflow: hidden;
 `;
 
@@ -41,18 +52,6 @@ const GradientToggler = styled(OpacityToggler).attrs({
   tension: 500,
 })`
   ${position.cover};
-`;
-
-const SendFormUniqueTokenCard = styled(UniqueTokenCard).attrs(
-  ({ theme: { colors } }) => ({
-    borderEnabled: false,
-    enableHapticFeedback: false,
-    resizeMode: 'contain',
-    scaleTo: 1,
-    shadow: [0, 10, 25, colors.shadow, 0.4],
-  })
-)`
-  opacity: 1;
 `;
 
 export default function SendAssetFormCollectible({
@@ -64,6 +63,7 @@ export default function SendAssetFormCollectible({
   const {
     height: deviceHeight,
     isTallPhone,
+    isTinyPhone,
     width: deviceWidth,
   } = useDimensions();
 
@@ -78,12 +78,13 @@ export default function SendAssetFormCollectible({
   const { height: imageHeight, width: imageWidth } = useMemo(() => {
     const imgDims = cachedImageDimensions || defaultImageDimensions;
 
-    const defaultWidth = deviceWidth - 30;
+    const defaultWidth = deviceWidth - 38;
     const defaultHeight = (defaultWidth * imgDims.height) / imgDims.width;
     let width = defaultWidth;
     let height = defaultHeight;
 
-    const calculatedHeight = deviceHeight - (isTallPhone ? 440 : 330);
+    const calculatedHeight =
+      deviceHeight - (isTallPhone ? 440 : isTinyPhone ? 360 : 420);
 
     if (height > calculatedHeight) {
       height = calculatedHeight;
@@ -95,7 +96,13 @@ export default function SendAssetFormCollectible({
     }
 
     return { height, width };
-  }, [cachedImageDimensions, deviceHeight, deviceWidth, isTallPhone]);
+  }, [
+    cachedImageDimensions,
+    deviceHeight,
+    deviceWidth,
+    isTallPhone,
+    isTinyPhone,
+  ]);
 
   const handleLayout = useCallback(
     ({ nativeEvent: { layout } }) => {
@@ -110,16 +117,21 @@ export default function SendAssetFormCollectible({
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <Column align="end" flex={1} width="100%">
-        <Column align="center" flex={1} onLayout={handleLayout} width="100%">
+        <NFTWrapper onLayout={handleLayout}>
           {!!containerHeight && !!containerWidth && (
-            <SendFormUniqueTokenCard
-              {...props}
-              height={imageHeight}
-              item={asset}
-              width={imageWidth}
-            />
+            <NFTSizer height={imageHeight} width={imageWidth}>
+              <UniqueTokenExpandedStateContent
+                {...props}
+                asset={asset}
+                borderRadius={20}
+                height={imageHeight}
+                horizontalPadding={0}
+                resizeMode="cover"
+                width={imageWidth}
+              />
+            </NFTSizer>
           )}
-        </Column>
+        </NFTWrapper>
         <Footer>
           <ButtonWrapper isTallPhone={isTallPhone}>
             {buttonRenderer}

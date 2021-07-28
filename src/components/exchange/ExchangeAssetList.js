@@ -1,20 +1,26 @@
 import { useIsFocused } from '@react-navigation/native';
 import React, {
   forwardRef,
+  Fragment,
   useCallback,
   useContext,
   useImperativeHandle,
   useRef,
 } from 'react';
-import { Alert, SectionList } from 'react-native';
+import { Alert, Keyboard, SectionList } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components';
+import { ButtonPressAnimation } from '../../components/animations';
 import { CoinRowHeight, ExchangeCoinRow } from '../coin-row';
 import DiscoverSheetContext from '../discover-sheet/DiscoverSheetContext';
 import { GradientText, Text } from '../text';
+import { CopyToast, ToastPositionContainer } from '../toasts';
+import { TokenSectionTypes } from '@rainbow-me/helpers';
 import { usePrevious } from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
+import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
-import { deviceUtils, magicMemo } from '@rainbow-me/utils';
+import { abbreviations, deviceUtils, magicMemo } from '@rainbow-me/utils';
 
 const deviceWidth = deviceUtils.dimensions.width;
 
@@ -51,23 +57,7 @@ const HeaderTitleGradient = styled(GradientText).attrs({
   weight: 'heavy',
 })``;
 
-const HeaderTitleWrapper = styled.View`
-  width: ${android ? '150' : '143'}px;
-`;
-
-const ExchangeAssetSectionListHeader = ({ section }) => {
-  const TitleComponent = section.useGradientText
-    ? HeaderTitleGradient
-    : HeaderTitle;
-  return section?.title ? (
-    <Header>
-      <HeaderBackground />
-      <HeaderTitleWrapper>
-        <TitleComponent color={section.color}>{section.title}</TitleComponent>
-      </HeaderTitleWrapper>
-    </Header>
-  ) : null;
-};
+const HeaderTitleWrapper = styled.View``;
 
 const contentContainerStyle = { paddingBottom: 9.5 };
 const keyExtractor = ({ uniqueId }) => `ExchangeAssetList-${uniqueId}`;
@@ -80,6 +70,20 @@ const getItemLayout = ({ showBalance }, index) => {
     offset: height * index,
   };
 };
+
+function useSwapDetailsClipboardState() {
+  const [copiedText, setCopiedText] = useState(undefined);
+  const [copyCount, setCopyCount] = useState(0);
+  const onCopySwapDetailsText = useCallback(text => {
+    setCopiedText(abbreviations.formatAddressForDisplay(text));
+    setCopyCount(count => count + 1);
+  }, []);
+  return {
+    copiedText,
+    copyCount,
+    onCopySwapDetailsText,
+  };
+}
 
 const ExchangeAssetSectionList = styled(SectionList).attrs({
   alwaysBounceVertical: true,
@@ -105,10 +109,16 @@ const ExchangeAssetList = (
   const { sectionListRef = useRef() } = useContext(DiscoverSheetContext) || {};
   useImperativeHandle(ref, () => sectionListRef.current);
   const prevQuery = usePrevious(query);
+  const { navigate } = useNavigation();
+  const {
+    copiedText,
+    copyCount,
+    onCopySwapDetailsText,
+  } = useSwapDetailsClipboardState();
 
   // Scroll to top once the query is cleared
   if (prevQuery && prevQuery.length && !query.length) {
-    sectionListRef.current.scrollToLocation({
+    sectionListRef.current?.scrollToLocation({
       animated: true,
       itemIndex: 0,
       sectionIndex: 0,
@@ -141,32 +151,66 @@ const ExchangeAssetList = (
     [itemProps]
   );
 
+  const openVerifiedExplainer = useCallback(() => {
+    android && Keyboard.dismiss();
+    navigate(Routes.EXPLAIN_SHEET, { type: 'verified' });
+  }, [navigate]);
+
+  const ExchangeAssetSectionListHeader = ({ section }) => {
+    const TitleComponent = section.useGradientText
+      ? HeaderTitleGradient
+      : HeaderTitle;
+    const isVerified = section.title === TokenSectionTypes.verifiedTokenSection;
+    return section?.title ? (
+      <ButtonPressAnimation
+        disabled={!isVerified}
+        onPress={openVerifiedExplainer}
+        scaleTo={0.96}
+      >
+        <Header>
+          <HeaderBackground />
+          <HeaderTitleWrapper>
+            <TitleComponent color={section.color}>
+              {`${section.title}${isVerified ? '  􀅵' : ' '}`}
+            </TitleComponent>
+          </HeaderTitleWrapper>
+        </Header>
+      </ButtonPressAnimation>
+    ) : null;
+  };
+
   const renderItemCallback = useCallback(
     ({ item }) => (
       <ExchangeCoinRow
         {...itemProps}
         isVerified={item.isVerified}
         item={item}
+        onCopySwapDetailsText={onCopySwapDetailsText}
         onUnverifiedTokenPress={handleUnverifiedTokenPress}
         testID={testID}
       />
     ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [onCopySwapDetailsText]
   );
 
   const isFocused = useIsFocused();
 
   return (
-    <ExchangeAssetSectionList
-      keyboardDismissMode={keyboardDismissMode}
-      onLayout={onLayout}
-      ref={sectionListRef}
-      renderItem={renderItemCallback}
-      renderSectionHeader={ExchangeAssetSectionListHeader}
-      scrollsToTop={isFocused}
-      sections={items.map(createItem)}
-    />
+    <Fragment>
+      <ExchangeAssetSectionList
+        keyboardDismissMode={keyboardDismissMode}
+        onLayout={onLayout}
+        ref={sectionListRef}
+        renderItem={renderItemCallback}
+        renderSectionHeader={ExchangeAssetSectionListHeader}
+        scrollsToTop={isFocused}
+        sections={items.map(createItem)}
+      />
+      <ToastPositionContainer>
+        <CopyToast copiedText={copiedText} copyCount={copyCount} />
+      </ToastPositionContainer>
+    </Fragment>
   );
 };
 

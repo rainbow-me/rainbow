@@ -10,9 +10,9 @@ import { FloatingEmojis } from '../floating-emojis';
 import useExperimentalFlag, {
   AVATAR_PICKER,
 } from '@rainbow-me/config/experimentalHooks';
+import { TransactionStatusTypes } from '@rainbow-me/entities';
 import showWalletErrorAlert from '@rainbow-me/helpers/support';
 import TransactionActions from '@rainbow-me/helpers/transactionActions';
-import TransactionStatusTypes from '@rainbow-me/helpers/transactionStatusTypes';
 import {
   getHumanReadableDate,
   hasAddableContact,
@@ -128,7 +128,7 @@ export default function TransactionList({
     e => {
       const { index } = e.nativeEvent;
       const item = transactions[index];
-      const { hash, from, minedAt, pending, to, status, type } = item;
+      const { hash, from, minedAt, network, pending, to, status, type } = item;
 
       const date = getHumanReadableDate(minedAt);
 
@@ -168,7 +168,9 @@ export default function TransactionList({
         let buttons = [
           ...(canBeResubmitted ? [TransactionActions.speedUp] : []),
           ...(canBeCancelled ? [TransactionActions.cancel] : []),
-          TransactionActions.viewOnEtherscan,
+          ethereumUtils.supportsEtherscan(network)
+            ? TransactionActions.viewOnEtherscan
+            : TransactionActions.viewOnBlockExplorer,
           ...(ios ? [TransactionActions.close] : []),
         ];
         if (showContactInfo) {
@@ -218,8 +220,9 @@ export default function TransactionList({
                   type: 'cancel',
                 });
                 break;
+              case TransactionActions.viewOnBlockExplorer:
               case TransactionActions.viewOnEtherscan: {
-                ethereumUtils.openTransactionEtherscanURL(hash);
+                ethereumUtils.openTransactionInBlockExplorer(hash, network);
                 break;
               }
               default:
@@ -274,7 +277,7 @@ export default function TransactionList({
     <Container>
       <Container
         accountAddress={accountName}
-        accountColor={colors.avatarColor[accountColor]}
+        accountColor={colors.avatarBackgrounds[accountColor]}
         accountImage={safeAccountImage}
         accountName={accountSymbol}
         addCashAvailable={addCashAvailable}

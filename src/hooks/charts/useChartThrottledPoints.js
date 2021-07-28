@@ -13,7 +13,7 @@ import { ETH_ADDRESS } from '@rainbow-me/references';
 
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
 
-export const UniBalanceHeightDifference = 150;
+export const UniBalanceHeightDifference = 100;
 
 const traverseData = (prev, data) => {
   if (!data || data.length === 0) {
@@ -21,8 +21,8 @@ const traverseData = (prev, data) => {
   }
   const filtered = data.filter(({ y }) => y);
   if (
-    filtered[0].y === prev?.nativePoints[0]?.y &&
-    filtered[0].x === prev?.nativePoints[0]?.x
+    filtered[0]?.y === prev?.nativePoints[0]?.y &&
+    filtered[0]?.x === prev?.nativePoints[0]?.x
   ) {
     return prev;
   }
@@ -37,7 +37,13 @@ const traverseData = (prev, data) => {
   };
 };
 
-function useJumpingForm(isLong, heightWithChart, heightWithoutChart) {
+function useJumpingForm(
+  isLong,
+  heightWithChart,
+  heightWithoutChart,
+  shortHeightWithChart,
+  shortHeightWithoutChart
+) {
   const { setOptions } = useNavigation();
 
   const { jumpToShort, jumpToLong } = useContext(ModalContext) || {};
@@ -50,12 +56,18 @@ function useJumpingForm(isLong, heightWithChart, heightWithoutChart) {
       ) {
         setOptions({
           longFormHeight: heightWithoutChart,
+          ...(shortHeightWithoutChart && {
+            shortFormHeight: shortHeightWithoutChart,
+          }),
         });
       }
     } else {
       if (typeof heightWithChart === 'number' && !isNaN(heightWithChart)) {
         setOptions({
           longFormHeight: heightWithChart,
+          ...(shortHeightWithChart && {
+            shortFormHeight: shortHeightWithChart,
+          }),
         });
       }
     }
@@ -66,6 +78,8 @@ function useJumpingForm(isLong, heightWithChart, heightWithoutChart) {
     setOptions,
     jumpToShort,
     jumpToLong,
+    shortHeightWithoutChart,
+    shortHeightWithChart,
   ]);
 }
 
@@ -75,7 +89,9 @@ export default function useChartThrottledPoints({
   heightWithoutChart,
   isPool,
   uniBalance = true,
-  dpi,
+  secondStore,
+  shortHeightWithChart,
+  shortHeightWithoutChart,
 }) {
   const { nativeCurrency } = useAccountSettings();
 
@@ -90,7 +106,7 @@ export default function useChartThrottledPoints({
 
   const { chart, chartType, fetchingCharts, ...chartData } = useChartData(
     asset,
-    dpi
+    secondStore
   );
 
   const [throttledPoints, setThrottledPoints] = useState(() =>
@@ -133,7 +149,9 @@ export default function useChartThrottledPoints({
   useJumpingForm(
     showChart,
     heightWithChart - (uniBalance ? 0 : UniBalanceHeightDifference),
-    heightWithoutChart - (uniBalance ? 0 : UniBalanceHeightDifference)
+    heightWithoutChart - (uniBalance ? 0 : UniBalanceHeightDifference),
+    shortHeightWithChart - (uniBalance ? 0 : UniBalanceHeightDifference),
+    shortHeightWithoutChart - (uniBalance ? 0 : UniBalanceHeightDifference)
   );
 
   const [throttledData, setThrottledData] = useState({

@@ -43,7 +43,7 @@ export default function CoinRow({
   tokens,
   ...props
 }) {
-  const accountSettings = useAccountSettings();
+  const { nativeCurrency, nativeCurrencySymbol } = useAccountSettings();
 
   return (
     <Container css={containerStyles}>
@@ -55,16 +55,26 @@ export default function CoinRow({
           isHidden,
           isPinned,
           symbol,
-          ...accountSettings,
           ...props,
         })
       )}
       <Content isHidden={isHidden} justify="center" style={contentStyles}>
         <Row align="center" testID={`${testID}-${symbol || ''}`}>
-          {topRowRender({ name, symbol, ...accountSettings, ...props })}
+          {topRowRender({
+            name,
+            nativeCurrency,
+            nativeCurrencySymbol,
+            symbol,
+            ...props,
+          })}
         </Row>
         <Row align="center" marginBottom={0.5}>
-          {bottomRowRender({ symbol, ...accountSettings, ...props })}
+          {bottomRowRender({
+            nativeCurrency,
+            nativeCurrencySymbol,
+            symbol,
+            ...props,
+          })}
         </Row>
       </Content>
       {typeof children === 'function'

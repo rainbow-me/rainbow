@@ -24,7 +24,7 @@ const springAnimation = {
   duration: 200,
   update: {
     initialVelocity: 0,
-    springDamping: 1,
+    springDamping: ios ? 1 : 3,
     type: LayoutAnimation.Types.spring,
   },
 };

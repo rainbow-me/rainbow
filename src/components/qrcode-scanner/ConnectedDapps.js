@@ -11,6 +11,7 @@ import Routes from '@rainbow-me/routes';
 
 const LabelText = styled(Text)`
   margin-top: ${android ? 0 : -3};
+  line-height: 46;
 `;
 
 const Overlay = styled(Centered)`

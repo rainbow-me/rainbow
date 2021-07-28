@@ -7,14 +7,16 @@
 export { default as abbreviations } from './abbreviations';
 export { default as addressUtils } from './address';
 export { default as AllowancesCache } from './allowancesCache';
+export { default as buildRainbowUrl } from './buildRainbowUrl';
 export { default as TokensListenedCache } from './tokensListenedCache';
-export { default as backgroundTask } from './backgroundTask';
 export { default as checkTokenIsScam } from './checkTokenIsScam';
 export { default as deviceUtils } from './deviceUtils';
+export { default as defaultProfileUtils } from './defaultProfileUtils';
 export { default as dimensionsPropType } from './dimensionsPropType';
 export { default as directionPropType } from './directionPropType';
 export { default as ethereumUtils } from './ethereumUtils';
 export { default as gasUtils } from './gas';
+export { default as getBlocksFromTimestamps } from './getBlocksFromTimestamps';
 export { default as getDominantColorFromImage } from './getDominantColorFromImage';
 export { default as getTokenMetadata } from './getTokenMetadata';
 export { default as getUrlForTrustIconFallback } from './getUrlForTrustIconFallback';
@@ -44,4 +46,5 @@ export {
   removeLeadingZeros,
   sanitizeSeedPhrase,
 } from './formatters';
+export { default as watchingAlert } from './watchingAlert';
 export { default as withSpeed } from './withSpeed';

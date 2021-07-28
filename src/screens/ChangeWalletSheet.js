@@ -1,12 +1,7 @@
+import { useRoute } from '@react-navigation/core';
 import { captureException } from '@sentry/react-native';
 import { get, toLower } from 'lodash';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { useDispatch } from 'react-redux';
@@ -31,14 +26,15 @@ import {
   walletsSetSelected,
   walletsUpdate,
 } from '../redux/wallets';
-import { getRandomColor } from '../styles/colors';
+import { asyncSome } from '@rainbow-me/helpers/utilities';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import {
   useAccountSettings,
   useInitializeWallet,
   useWallets,
+  useWalletsWithBalancesAndNames,
+  useWebData,
 } from '@rainbow-me/hooks';
-import { useWalletsWithBalancesAndNames } from '@rainbow-me/hooks/useWalletsWithBalancesAndNames';
 import Routes from '@rainbow-me/routes';
 import {
   abbreviations,
@@ -87,7 +83,9 @@ const EditButtonLabel = styled(Text).attrs(
     size: 'large',
     weight: editMode ? 'semibold' : 'medium',
   })
-)``;
+)`
+  height: 40px;
+`;
 const Whitespace = styled.View`
   background-color: ${({ theme: { colors } }) => colors.white};
   bottom: -400px;
@@ -108,22 +106,28 @@ const getWalletRowCount = wallets => {
 };
 
 export default function ChangeWalletSheet() {
+  const { params = {} } = useRoute();
+  const { onChangeWallet, watchOnly = false, currentAccountAddress } = params;
   const {
     isDamaged,
     selectedWallet,
     setIsWalletLoading,
     wallets,
   } = useWallets();
-  const [editMode, setEditMode] = useState(false);
-  const { colors } = useTheme();
 
-  const { goBack, navigate, replace } = useNavigation();
-  const dispatch = useDispatch();
+  const { colors } = useTheme();
+  const { updateWebProfile } = useWebData();
   const { accountAddress } = useAccountSettings();
+  const { goBack, navigate } = useNavigation();
+  const dispatch = useDispatch();
   const initializeWallet = useInitializeWallet();
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
   const creatingWallet = useRef();
-  const [currentAddress, setCurrentAddress] = useState(accountAddress);
+
+  const [editMode, setEditMode] = useState(false);
+  const [currentAddress, setCurrentAddress] = useState(
+    currentAccountAddress || accountAddress
+  );
   const [currentSelectedWallet, setCurrentSelectedWallet] = useState(
     selectedWallet
   );
@@ -132,7 +136,8 @@ export default function ChangeWalletSheet() {
 
   let headerHeight = android ? 0 : 30;
   let listHeight =
-    walletRowHeight * walletRowCount + footerHeight + listPaddingBottom;
+    walletRowHeight * walletRowCount +
+    (!watchOnly ? footerHeight + listPaddingBottom : 0);
   let scrollEnabled = false;
   let showDividers = false;
   if (listHeight > maxListHeight) {
@@ -142,16 +147,18 @@ export default function ChangeWalletSheet() {
     showDividers = true;
   }
 
-  useEffect(() => {
-    setCurrentAddress(accountAddress);
-  }, [accountAddress]);
-
   const onChangeAccount = useCallback(
     async (walletId, address, fromDeletion = false) => {
       if (editMode && !fromDeletion) return;
+      const wallet = wallets[walletId];
+      if (watchOnly) {
+        setCurrentAddress(address);
+        setCurrentSelectedWallet(wallet);
+        onChangeWallet(address, wallet);
+        return;
+      }
       if (address === currentAddress) return;
       try {
-        const wallet = wallets[walletId];
         setCurrentAddress(address);
         setCurrentSelectedWallet(wallet);
         const p1 = dispatch(walletsSetSelected(wallet));
@@ -164,7 +171,16 @@ export default function ChangeWalletSheet() {
         logger.log('error while switching account', e);
       }
     },
-    [currentAddress, dispatch, editMode, goBack, initializeWallet, wallets]
+    [
+      currentAddress,
+      dispatch,
+      editMode,
+      goBack,
+      initializeWallet,
+      onChangeWallet,
+      wallets,
+      watchOnly,
+    ]
   );
 
   const deleteWallet = useCallback(
@@ -216,18 +232,29 @@ export default function ChangeWalletSheet() {
               if (args) {
                 const newWallets = { ...wallets };
                 if ('name' in args) {
-                  newWallets[walletId].addresses.some((account, index) => {
-                    if (account.address === address) {
-                      newWallets[walletId].addresses[index].label = args.name;
-                      newWallets[walletId].addresses[index].color = args.color;
-                      if (currentSelectedWallet.id === walletId) {
-                        setCurrentSelectedWallet(wallet);
-                        dispatch(walletsSetSelected(newWallets[walletId]));
+                  asyncSome(
+                    newWallets[walletId].addresses,
+                    async (account, index) => {
+                      if (account.address === address) {
+                        newWallets[walletId].addresses[index].label = args.name;
+                        newWallets[walletId].addresses[index].color =
+                          args.color;
+                        if (currentSelectedWallet.id === walletId) {
+                          await setCurrentSelectedWallet(wallet);
+                          await dispatch(
+                            walletsSetSelected(newWallets[walletId])
+                          );
+                        }
+                        updateWebProfile(
+                          address,
+                          args.name,
+                          colors.avatarBackgrounds[args.color]
+                        );
+                        return true;
                       }
-                      return true;
+                      return false;
                     }
-                    return false;
-                  });
+                  );
                   await dispatch(walletsUpdate(newWallets));
                 }
               }
@@ -241,7 +268,15 @@ export default function ChangeWalletSheet() {
         }, 50);
       });
     },
-    [dispatch, goBack, navigate, currentSelectedWallet.id, wallets]
+    [
+      wallets,
+      goBack,
+      navigate,
+      dispatch,
+      currentSelectedWallet.id,
+      updateWebProfile,
+      colors.avatarBackgrounds,
+    ]
   );
 
   const onEditWallet = useCallback(
@@ -293,7 +328,7 @@ export default function ChangeWalletSheet() {
                   if (!isLastAvailableWallet) {
                     await cleanUpWalletKeys();
                     goBack();
-                    replace(Routes.WELCOME_SCREEN);
+                    navigate(Routes.WELCOME_SCREEN);
                   } else {
                     // If we're deleting the selected wallet
                     // we need to switch to another one
@@ -326,7 +361,7 @@ export default function ChangeWalletSheet() {
       goBack,
       onChangeAccount,
       renameWallet,
-      replace,
+      navigate,
       wallets,
     ]
   );
@@ -350,7 +385,7 @@ export default function ChangeWalletSheet() {
               if (args) {
                 setIsWalletLoading(WalletLoadingStates.CREATING_WALLET);
                 const name = get(args, 'name', '');
-                const color = get(args, 'color', getRandomColor());
+                const color = get(args, 'color', null);
                 // Check if the selected wallet is the primary
                 let primaryWalletKey = selectedWallet.primary
                   ? selectedWallet.id
@@ -466,11 +501,13 @@ export default function ChangeWalletSheet() {
           <Divider color={colors.rowDividerExtraLight} inset={[0, 15]} />
         )}
       </Column>
-      <EditButton editMode={editMode} onPress={() => setEditMode(e => !e)}>
-        <EditButtonLabel editMode={editMode}>
-          {editMode ? 'Done' : 'Edit'}
-        </EditButtonLabel>
-      </EditButton>
+      {!watchOnly && (
+        <EditButton editMode={editMode} onPress={() => setEditMode(e => !e)}>
+          <EditButtonLabel editMode={editMode}>
+            {editMode ? 'Done' : 'Edit'}
+          </EditButtonLabel>
+        </EditButton>
+      )}
       <WalletList
         accountAddress={currentAddress}
         allWallets={walletsWithBalancesAndNames}
@@ -483,6 +520,7 @@ export default function ChangeWalletSheet() {
         onPressImportSeedPhrase={onPressImportSeedPhrase}
         scrollEnabled={scrollEnabled}
         showDividers={showDividers}
+        watchOnly={watchOnly}
       />
     </Sheet>
   );

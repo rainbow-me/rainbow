@@ -24,17 +24,17 @@ import SavingsListHeader from '../savings/SavingsListHeader';
 import TokenFamilyHeader from '../token-family/TokenFamilyHeader';
 import { ImgixImage } from '@rainbow-me/images';
 
-const dividerMargin = 10;
-const dividerHeight = DividerSize + dividerMargin * 2;
-const familyRowHeight = 58;
-const familyHeaderHeight = 62;
-const rowHeight = 64;
-const smallBalancesHeader = 36;
+const dividerMargin = 5;
+const dividerHeight = DividerSize + dividerMargin * 4;
+const familyRowHeight = 59;
+const familyHeaderHeight = 49;
+const rowHeight = 59;
+const smallBalancesHeader = 42;
 
 const SendAssetListCoinDividerOpenButton = styled(CoinDividerOpenButton).attrs({
-  coinDividerHeight: 30,
+  coinDividerHeight: 34,
 })`
-  margin-left: ${android ? 0 : 16};
+  margin-left: ${android ? 0 : 19};
 `;
 
 const SendAssetRecyclerListView = styled(RecyclerListView)`
@@ -45,7 +45,7 @@ const SendAssetListDivider = () => {
   const { colors } = useTheme();
   return (
     <Centered marginVertical={dividerMargin}>
-      <Divider color={colors.rowDividerLight} />
+      <Divider color={colors.rowDividerExtraLight} />
     </Centered>
   );
 };
@@ -240,7 +240,7 @@ export default class SendAssetList extends React.Component {
           familiesHeight += familyHeaderHeight;
         }
       }
-      const smallBalanesheight =
+      const smallBalancesheight =
         allAssets.length === visibleAssetsLength
           ? 0
           : smallBalancesHeader +
@@ -253,7 +253,7 @@ export default class SendAssetList extends React.Component {
           : 0;
       const heightBelow =
         visibleAssetsLength * rowHeight +
-        smallBalanesheight +
+        smallBalancesheight +
         savingsHeight +
         familiesHeight +
         dividerHeight;
@@ -310,6 +310,7 @@ export default class SendAssetList extends React.Component {
   balancesRenderItem = item => (
     <SendCoinRow
       {...item}
+      badgeYPosition={-5}
       onPress={() => this.props.onSelectAsset(item)}
       rowHeight={rowHeight}
       testID="send-asset"
@@ -356,7 +357,6 @@ export default class SendAssetList extends React.Component {
         <TokenFamilyHeader
           childrenAmount={item.data.length}
           familyImage={item.familyImage}
-          isCoinRow
           isOpen={this.state.openCards[item.familyId]}
           onPress={() => {
             this.changeOpenTab(item.familyId);

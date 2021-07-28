@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
-import { Alert, StatusBar } from 'react-native';
+import { StatusBar } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components';
@@ -33,6 +33,7 @@ import {
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
+import { watchingAlert } from '@rainbow-me/utils';
 
 export const SavingsSheetEmptyHeight = 313;
 export const SavingsSheetHeight = android
@@ -112,7 +113,7 @@ const SavingsSheet = () => {
         label: underlying.symbol,
       });
     } else {
-      Alert.alert(`You need to import the wallet in order to do this`);
+      watchingAlert();
     }
   }, [
     cTokenBalance,
@@ -140,7 +141,7 @@ const SavingsSheet = () => {
         label: underlying.symbol,
       });
     } else {
-      Alert.alert(`You need to import the wallet in order to do this`);
+      watchingAlert();
     }
   }, [isEmpty, isReadOnlyWallet, navigate, underlying]);
 

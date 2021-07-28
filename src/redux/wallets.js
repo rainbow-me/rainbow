@@ -11,6 +11,7 @@ import { web3Provider } from '../handlers/web3';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 import WalletTypes from '../helpers/walletTypes';
 import { hasKey } from '../model/keychain';
+import { PreferenceActionType, setPreference } from '../model/preferences';
 import {
   generateAccount,
   getAllWallets,
@@ -23,11 +24,14 @@ import {
 } from '../model/wallet';
 import { settingsUpdateAccountAddress } from '../redux/settings';
 import { logger } from '../utils';
+import { addressHashedColorIndex } from '../utils/defaultProfileUtils';
 import {
   addressKey,
   privateKeyKey,
   seedPhraseKey,
 } from '../utils/keychainConstants';
+import { updateWebDataEnabled } from './showcaseTokens';
+import { lightModeThemeColors } from '@rainbow-me/styles';
 
 // -- Constants --------------------------------------- //
 const WALLETS_ADDED_ACCOUNT = 'wallets/WALLETS_ADDED_ACCOUNT';
@@ -185,15 +189,22 @@ export const createAccountForWallet = (id, color, name) => async (
   );
   const newIndex = index + 1;
   const account = await generateAccount(id, newIndex);
+  const walletColorIndex =
+    color !== null ? color : addressHashedColorIndex(account.address);
   newWallets[id].addresses.push({
     address: account.address,
     avatar: null,
-    color,
+    color: walletColorIndex,
     index: newIndex,
     label: name,
     visible: true,
   });
 
+  setPreference(PreferenceActionType.init, 'profile', account.address, {
+    accountColor: lightModeThemeColors.avatarBackgrounds[walletColorIndex],
+  });
+
+  await dispatch(updateWebDataEnabled(true, account.address));
   // Save all the wallets
   saveAllWallets(newWallets);
   // Set the address selected (KEYCHAIN)

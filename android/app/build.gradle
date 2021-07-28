@@ -112,7 +112,6 @@ project.ext.react = [
 
 apply from: "../../node_modules/react-native/react.gradle"
 apply from: "../../node_modules/@sentry/react-native/sentry.gradle"
-apply from: "../../node_modules/react-native-code-push/android/codepush.gradle"
 
 
 /**
@@ -176,7 +175,7 @@ android {
         applicationId "me.rainbow"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 27
+        versionCode 36
         versionName "1.0"
         missingDimensionStrategy 'react-native-camera', 'general'
         renderscriptTargetApi 23
@@ -237,6 +236,8 @@ android {
             signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            // Detox-specific additions to pro-guard
+            proguardFile "${rootProject.projectDir}/../node_modules/detox/android/detox/proguard-rules-app.pro"
         }
     }
 
@@ -254,7 +255,7 @@ android {
             def abi = output.getFilter(OutputFile.ABI)
             if (abi != null) {  // null for the universal-debug, universal-release variants
                 output.versionCodeOverride =
-                        versionCodes.get(abi) * 1000 + defaultConfig.versionCode
+                        defaultConfig.versionCode * 1000 + versionCodes.get(abi)
             }
 
         }
@@ -292,7 +293,7 @@ dependencies {
     }
 
     // DETOX
-    androidTestImplementation(project(path: ":detox"))
+    androidTestImplementation('com.wix:detox:+')
 
 }
 

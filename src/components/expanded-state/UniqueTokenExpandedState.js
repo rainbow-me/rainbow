@@ -1,4 +1,7 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
+import { Share } from 'react-native';
+import styled from 'styled-components';
+import useWallets from '../../hooks/useWallets';
 import Link from '../Link';
 import { Column, ColumnWithDividers } from '../layout';
 import {
@@ -8,7 +11,7 @@ import {
   SheetDivider,
   SlackSheet,
 } from '../sheet';
-import { Text } from '../text';
+import { MarkdownText } from '../text';
 import { ToastPositionContainer, ToggleStateToast } from '../toasts';
 import { UniqueTokenAttributes } from '../unique-token';
 import ExpandedStateSection from './ExpandedStateSection';
@@ -16,17 +19,27 @@ import {
   UniqueTokenExpandedStateContent,
   UniqueTokenExpandedStateHeader,
 } from './unique-token';
-import { useDimensions, useShowcaseTokens } from '@rainbow-me/hooks';
-import { magicMemo } from '@rainbow-me/utils';
+import { buildUniqueTokenName } from '@rainbow-me/helpers/assets';
+import {
+  useAccountProfile,
+  useDimensions,
+  useShowcaseTokens,
+} from '@rainbow-me/hooks';
+import {
+  buildRainbowUrl,
+  magicMemo,
+  safeAreaInsetValues,
+} from '@rainbow-me/utils';
 
-const UniqueTokenExpandedState = ({ asset }) => {
+const Spacer = styled.View`
+  height: ${safeAreaInsetValues.bottom + 20};
+`;
+
+const UniqueTokenExpandedState = ({ asset, external }) => {
   const {
-    asset_contract: {
-      description: familyDescription,
-      external_link: familyLink,
-      name: familyName,
-    },
+    collection: { description: familyDescription, external_link: familyLink },
     description,
+    familyName,
     isSendable,
     traits,
     uniqueId,
@@ -37,6 +50,8 @@ const UniqueTokenExpandedState = ({ asset }) => {
     removeShowcaseToken,
     showcaseTokens,
   } = useShowcaseTokens();
+
+  const { isReadOnlyWallet } = useWallets();
 
   const isShowcaseAsset = useMemo(() => showcaseTokens.includes(uniqueId), [
     showcaseTokens,
@@ -50,6 +65,15 @@ const UniqueTokenExpandedState = ({ asset }) => {
       addShowcaseToken(uniqueId);
     }
   }, [addShowcaseToken, isShowcaseAsset, removeShowcaseToken, uniqueId]);
+
+  const { accountAddress, accountENS } = useAccountProfile();
+
+  const handlePressShare = useCallback(() => {
+    Share.share({
+      title: `Share ${buildUniqueTokenName(asset)} Info`,
+      url: buildRainbowUrl(asset, accountENS, accountAddress),
+    });
+  }, [accountAddress, accountENS, asset]);
 
   const { height: screenHeight } = useDimensions();
   const { colors, isDarkMode } = useTheme();
@@ -65,15 +89,26 @@ const UniqueTokenExpandedState = ({ asset }) => {
       >
         <UniqueTokenExpandedStateHeader asset={asset} />
         <UniqueTokenExpandedStateContent asset={asset} />
-        <SheetActionButtonRow>
-          <SheetActionButton
-            color={isDarkMode ? colors.darkModeDark : colors.dark}
-            label={isShowcaseAsset ? '􀁏 Showcase' : '􀁍 Showcase'}
-            onPress={handlePressShowcase}
-            weight="bold"
-          />
-          {isSendable && <SendActionButton />}
-        </SheetActionButtonRow>
+        {!external && !isReadOnlyWallet ? (
+          <SheetActionButtonRow>
+            <SheetActionButton
+              color={isDarkMode ? colors.darkModeDark : colors.dark}
+              label={isShowcaseAsset ? '􀁏 Showcase' : '􀁍 Showcase'}
+              onPress={handlePressShowcase}
+              weight="bold"
+            />
+            {isSendable && <SendActionButton />}
+          </SheetActionButtonRow>
+        ) : (
+          <SheetActionButtonRow>
+            <SheetActionButton
+              color={isDarkMode ? colors.darkModeDark : colors.dark}
+              label="􀈂 Share"
+              onPress={handlePressShare}
+              weight="bold"
+            />
+          </SheetActionButtonRow>
+        )}
         <SheetDivider />
         <ColumnWithDividers dividerRenderer={SheetDivider}>
           {!!description && (
@@ -89,18 +124,19 @@ const UniqueTokenExpandedState = ({ asset }) => {
           {!!familyDescription && (
             <ExpandedStateSection title={`About ${familyName}`}>
               <Column>
-                <Text
+                <MarkdownText
                   color={colors.alpha(colors.blueGreyDark, 0.5)}
                   lineHeight="paragraphSmall"
                   size="lmedium"
                 >
                   {familyDescription}
-                </Text>
+                </MarkdownText>
                 {familyLink && <Link url={familyLink} />}
               </Column>
             </ExpandedStateSection>
           )}
         </ColumnWithDividers>
+        <Spacer />
       </SlackSheet>
       <ToastPositionContainer>
         <ToggleStateToast

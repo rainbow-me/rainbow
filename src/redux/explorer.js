@@ -1,12 +1,15 @@
 import { concat, isEmpty, isNil, keys, toLower } from 'lodash';
 import { DATA_API_KEY, DATA_ORIGIN } from 'react-native-dotenv';
 import io from 'socket.io-client';
+// eslint-disable-next-line import/no-cycle
+import { arbitrumExplorerInit } from './arbitrumExplorer';
 import { assetChartsReceived, DEFAULT_CHART_TYPE } from './charts';
 /* eslint-disable-next-line import/no-cycle */
 import {
   addressAssetsReceived,
   assetPricesChanged,
   assetPricesReceived,
+  portfolioReceived,
   transactionsReceived,
   transactionsRemoved,
 } from './data';
@@ -15,11 +18,20 @@ import {
   fallbackExplorerClearState,
   fallbackExplorerInit,
 } from './fallbackExplorer';
+// eslint-disable-next-line import/no-cycle
+import { optimismExplorerInit } from './optimismExplorer';
+// eslint-disable-next-line import/no-cycle
+import { polygonExplorerInit } from './polygonExplorer';
 import { updateTopMovers } from './topMovers';
 import { disableCharts, forceFallbackProvider } from '@rainbow-me/config/debug';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
+import currencyTypes from '@rainbow-me/helpers/currencyTypes';
 import NetworkTypes from '@rainbow-me/helpers/networkTypes';
-import { DPI_ADDRESS, ETH_ADDRESS } from '@rainbow-me/references';
+import {
+  DPI_ADDRESS,
+  ETH_ADDRESS,
+  MATIC_MAINNET_ADDRESS,
+} from '@rainbow-me/references';
 import { TokensListenedCache } from '@rainbow-me/utils';
 import logger from 'logger';
 
@@ -42,6 +54,9 @@ const messages = {
     CHANGED: 'changed address assets',
     RECEIVED: 'received address assets',
     REMOVED: 'removed address assets',
+  },
+  ADDRESS_PORTFOLIO: {
+    RECEIVED: 'received address portfolio',
   },
   ADDRESS_TRANSACTIONS: {
     APPENDED: 'appended address transactions',
@@ -89,12 +104,29 @@ const addressSubscription = (address, currency, action = 'subscribe') => [
   },
 ];
 
+const portfolioSubscription = (address, currency, action = 'get') => [
+  action,
+  {
+    payload: {
+      address,
+      currency: toLower(currency),
+      portfolio_fields: 'all',
+    },
+    scope: ['portfolio'],
+  },
+];
+
 const assetPricesSubscription = (
   tokenAddresses,
   currency,
   action = 'subscribe'
 ) => {
-  const assetCodes = concat(tokenAddresses, ETH_ADDRESS, DPI_ADDRESS);
+  const assetCodes = concat(
+    tokenAddresses,
+    ETH_ADDRESS,
+    DPI_ADDRESS,
+    MATIC_MAINNET_ADDRESS
+  );
   return [
     action,
     {
@@ -106,6 +138,17 @@ const assetPricesSubscription = (
     },
   ];
 };
+
+const ethUSDSubscription = [
+  'subscribe',
+  {
+    payload: {
+      asset_codes: [ETH_ADDRESS],
+      currency: currencyTypes.usd,
+    },
+    scope: ['prices'],
+  },
+];
 
 const assetInfoRequest = (currency, order = 'desc') => [
   'get',
@@ -149,7 +192,7 @@ export const fetchAssetPrices = assetAddress => (dispatch, getState) => {
       scope: ['prices'],
     },
   ];
-  assetsSocket.emit(...payload);
+  assetsSocket?.emit(...payload);
 };
 
 const explorerUnsubscribe = () => (dispatch, getState) => {
@@ -253,6 +296,12 @@ export const explorerInit = () => async (dispatch, getState) => {
     if (!disableCharts) {
       // We need this for Uniswap Pools profit calculation
       dispatch(emitChartsRequest([ETH_ADDRESS, DPI_ADDRESS], ChartTypes.month));
+      dispatch(
+        emitChartsRequest([ETH_ADDRESS], ChartTypes.month, currencyTypes.usd)
+      );
+      dispatch(
+        emitChartsRequest([ETH_ADDRESS], ChartTypes.day, currencyTypes.usd)
+      );
     }
   });
 
@@ -274,6 +323,16 @@ export const explorerInit = () => async (dispatch, getState) => {
   }
 };
 
+export const emitPortfolioRequest = (address, currency) => (
+  dispatch,
+  getState
+) => {
+  const nativeCurrency = currency || getState().settings.nativeCurrency;
+  const { addressSocket } = getState().explorer;
+
+  addressSocket?.emit(...portfolioSubscription(address, nativeCurrency));
+};
+
 export const emitAssetRequest = assetAddress => (dispatch, getState) => {
   const { nativeCurrency } = getState().settings;
   const { assetsSocket } = getState().explorer;
@@ -282,14 +341,22 @@ export const emitAssetRequest = assetAddress => (dispatch, getState) => {
     ? assetAddress
     : [assetAddress];
 
-  const newAssetsCodes = assetCodes.filter(code => !TokensListenedCache[code]);
+  const newAssetsCodes = assetCodes.filter(
+    code => !TokensListenedCache?.[nativeCurrency]?.[code]
+  );
 
-  newAssetsCodes.forEach(code => (TokensListenedCache[code] = true));
+  newAssetsCodes.forEach(code => {
+    if (!TokensListenedCache?.[nativeCurrency]) {
+      TokensListenedCache[nativeCurrency] = {};
+    }
+    TokensListenedCache[nativeCurrency][code] = true;
+  });
 
   if (newAssetsCodes.length > 0) {
     assetsSocket?.emit(
       ...assetPricesSubscription(newAssetsCodes, nativeCurrency)
     );
+    assetsSocket?.emit(...ethUSDSubscription);
   }
 };
 
@@ -308,9 +375,11 @@ export const emitAssetInfoRequest = () => (dispatch, getState) => {
 
 export const emitChartsRequest = (
   assetAddress,
-  chartType = DEFAULT_CHART_TYPE
+  chartType = DEFAULT_CHART_TYPE,
+  givenNativeCurrency
 ) => (dispatch, getState) => {
-  const { nativeCurrency } = getState().settings;
+  const nativeCurrency =
+    givenNativeCurrency || getState().settings.nativeCurrency;
   const { assetsSocket } = getState().explorer;
   const assetCodes = Array.isArray(assetAddress)
     ? assetAddress
@@ -341,7 +410,11 @@ const listenOnAssetMessages = socket => dispatch => {
   });
 };
 
-const listenOnAddressMessages = socket => dispatch => {
+const listenOnAddressMessages = socket => (dispatch, getState) => {
+  socket.on(messages.ADDRESS_PORTFOLIO.RECEIVED, message => {
+    dispatch(portfolioReceived(message));
+  });
+
   socket.on(messages.ADDRESS_TRANSACTIONS.RECEIVED, message => {
     // logger.log('txns received', message?.payload?.transactions);
     dispatch(transactionsReceived(message));
@@ -369,6 +442,14 @@ const listenOnAddressMessages = socket => dispatch => {
         '😬 Cancelling fallback data provider listener. Zerion is good!'
       );
       dispatch(disableFallbackIfNeeded());
+      if (getState().settings.network === NetworkTypes.mainnet) {
+        // Start watching arbitrum assets
+        dispatch(arbitrumExplorerInit());
+        // Start watching optimism assets
+        dispatch(optimismExplorerInit());
+        // Start watching polygon assets
+        dispatch(polygonExplorerInit());
+      }
     }
   });
 

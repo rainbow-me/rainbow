@@ -32,6 +32,7 @@ const Footer = styled(Column).attrs({
 })`
   ${padding(0, 15, 21)};
   width: 100%;
+  margin-bottom: ${android ? 30 : 0};
 `;
 
 const Masthead = styled(Column).attrs({

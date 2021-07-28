@@ -3,14 +3,11 @@ import { FallbackIcon } from 'react-coin-icon';
 import styled from 'styled-components';
 import { initials } from '../../utils';
 import { Emoji } from '../text';
-import { ImageWithCachedMetadata } from '@rainbow-me/images';
+import { ImgixImage } from '@rainbow-me/images';
 import { borders } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
-const shadowsFactory = colors => [
-  [0, 4, android ? 1 : 6, colors.shadow, 0.04],
-  [0, 1, 3, colors.shadow, 0.08],
-];
+const shadowsFactory = colors => [[0, 3, 9, colors.shadow, 0.1]];
 
 const TrophyEmoji = styled(Emoji).attrs({
   align: 'center',
@@ -46,7 +43,7 @@ const TokenFamilyHeaderIcon = ({
       style={style}
     >
       {familyImage ? (
-        <ImageWithCachedMetadata imageUrl={familyImage} style={circleStyle} />
+        <ImgixImage source={{ uri: familyImage }} style={circleStyle} />
       ) : (
         <FallbackIcon {...circleStyle} symbol={initials(familyName)} />
       )}

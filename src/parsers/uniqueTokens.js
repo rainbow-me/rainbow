@@ -1,16 +1,18 @@
 import { filter, find, get, isNil, map, pick, uniq } from 'lodash';
-import AssetTypes from '../helpers/assetTypes';
+import { AssetTypes } from '@rainbow-me/entities';
+import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';
 
 /**
  * @desc parse unique tokens from opensea
  * @param  {Object}
  * @return {Array}
  */
+
 export const parseAccountUniqueTokens = data => {
   const erc721s = get(data, 'data.assets', null);
   if (isNil(erc721s)) throw new Error('Invalid data from OpenSea');
   return erc721s.map(
-    ({ asset_contract, background_color, token_id, ...asset }) => ({
+    ({ asset_contract, background_color, collection, token_id, ...asset }) => ({
       ...pick(asset, [
         'animation_url',
         'current_price',
@@ -26,21 +28,28 @@ export const parseAccountUniqueTokens = data => {
       ]),
       asset_contract: pick(asset_contract, [
         'address',
+        'name',
+        'nft_version',
+        'schema_name',
+        'symbol',
+        'total_supply',
+      ]),
+      background: background_color ? `#${background_color}` : null,
+      collection: pick(collection, [
         'description',
-        'external_link',
+        'external_url',
         'featured_image_url',
         'hidden',
         'image_url',
         'name',
-        'nft_version',
-        'schema_name',
         'short_description',
-        'symbol',
-        'total_supply',
         'wiki_link',
       ]),
-      background: background_color ? `#${background_color}` : null,
-      familyImage: asset_contract.image_url,
+      familyImage: collection.image_url,
+      familyName:
+        asset_contract.address === ENS_NFT_CONTRACT_ADDRESS
+          ? 'ENS'
+          : collection.name,
       id: token_id,
       isSendable:
         asset_contract.nft_version === '1.0' ||
@@ -48,7 +57,10 @@ export const parseAccountUniqueTokens = data => {
         asset_contract.schema_name === 'ERC1155',
       lastPrice: asset.last_sale ? Number(asset.last_sale.total_price) : null,
       type: AssetTypes.nft,
-      uniqueId: `${get(asset_contract, 'address')}_${token_id}`,
+      uniqueId:
+        asset_contract.address === ENS_NFT_CONTRACT_ADDRESS
+          ? asset.name
+          : `${get(asset_contract, 'address')}_${token_id}`,
     })
   );
 };

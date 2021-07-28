@@ -1,22 +1,26 @@
 import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
 import { get, toLower, uniqBy } from 'lodash';
-import { web3Provider } from '../handlers/web3';
-import AssetTypes from '../helpers/assetTypes';
-import networkInfo from '../helpers/networkInfo';
-import networkTypes from '../helpers/networkTypes';
-import { delay } from '../helpers/utilities';
-import balanceCheckerContractAbi from '../references/balances-checker-abi.json';
-import coingeckoIdsFallback from '../references/coingecko/ids.json';
-import migratedTokens from '../references/migratedTokens.json';
-import testnetAssets from '../references/testnet-assets.json';
 /* eslint-disable-next-line import/no-cycle */
+import { arbitrumExplorerInit } from './arbitrumExplorer';
+// eslint-disable-next-line import/no-cycle
+import { addressAssetsReceived, fetchAssetPrices } from './data';
+// eslint-disable-next-line import/no-cycle
+import { optimismExplorerInit } from './optimismExplorer';
+// eslint-disable-next-line import/no-cycle
+import { polygonExplorerInit } from './polygonExplorer';
+import { AssetTypes } from '@rainbow-me/entities';
+import { web3Provider } from '@rainbow-me/handlers/web3';
+import networkInfo from '@rainbow-me/helpers/networkInfo';
+import NetworkTypes from '@rainbow-me/helpers/networkTypes';
 import {
-  addressAssetsReceived,
-  COINGECKO_IDS_ENDPOINT,
-  fetchAssetPrices,
-} from './data';
-import { ETH_ADDRESS, ETH_COINGECKO_ID } from '@rainbow-me/references';
+  balanceCheckerContractAbi,
+  chainAssets,
+  ETH_ADDRESS,
+  ETH_COINGECKO_ID,
+  migratedTokens,
+} from '@rainbow-me/references';
+import { delay } from '@rainbow-me/utilities';
 import logger from 'logger';
 
 // -- Constants --------------------------------------- //
@@ -69,28 +73,13 @@ const findNewAssetsToWatch = () => async (dispatch, getState) => {
   }
 };
 
-export const fetchCoingeckoIds = async () => {
-  let ids;
-  try {
-    const request = await fetch(COINGECKO_IDS_ENDPOINT);
-    ids = await request.json();
-  } catch (e) {
-    ids = coingeckoIdsFallback;
-  }
-
-  const idsMap = {};
-  ids.forEach(({ id, platforms: { ethereum: tokenAddress } }) => {
-    const address = tokenAddress && toLower(tokenAddress);
-    if (address && address.substr(0, 2) === '0x') {
-      idsMap[address] = id;
-    }
-  });
-  return idsMap;
-};
-
-const findAssetsToWatch = async (address, latestTxBlockNumber, dispatch) => {
+const findAssetsToWatch = async (
+  address,
+  latestTxBlockNumber,
+  dispatch,
+  coingeckoIds
+) => {
   // 1 - Discover the list of tokens for the address
-  const coingeckoIds = await fetchCoingeckoIds();
   const tokensInWallet = await discoverTokens(
     coingeckoIds,
     address,
@@ -215,7 +204,6 @@ const fetchAssetBalances = async (tokens, address, network) => {
   );
   try {
     const values = await balanceCheckerContract.balances([address], tokens);
-
     const balances = {};
     [address].forEach((addr, addrIdx) => {
       balances[addr] = {};
@@ -239,15 +227,17 @@ export const fallbackExplorerInit = () => async (dispatch, getState) => {
   const { accountAddress, nativeCurrency, network } = getState().settings;
   const { latestTxBlockNumber, mainnetAssets } = getState().fallbackExplorer;
   const formattedNativeCurrency = toLower(nativeCurrency);
+  const { coingeckoIds } = getState().additionalAssetsData;
   // If mainnet, we need to get all the info
   // 1 - Coingecko ids
   // 2 - All tokens list
   // 3 - Etherscan token transfer transactions
-  if (networkTypes.mainnet === network) {
+  if (NetworkTypes.mainnet === network) {
     const newMainnetAssets = await findAssetsToWatch(
       accountAddress,
       latestTxBlockNumber,
-      dispatch
+      dispatch,
+      coingeckoIds
     );
 
     await dispatch({
@@ -263,7 +253,7 @@ export const fallbackExplorerInit = () => async (dispatch, getState) => {
     const { network } = getState().settings;
     const { mainnetAssets } = getState().fallbackExplorer;
     const assets =
-      network === networkTypes.mainnet ? mainnetAssets : testnetAssets[network];
+      network === NetworkTypes.mainnet ? mainnetAssets : chainAssets[network];
     if (!assets || !assets.length) {
       const fallbackExplorerBalancesHandle = setTimeout(
         fetchAssetsBalancesAndPrices,
@@ -344,7 +334,7 @@ export const fallbackExplorerInit = () => async (dispatch, getState) => {
       UPDATE_BALANCE_AND_PRICE_FREQUENCY
     );
     let fallbackExplorerAssetsHandle = null;
-    if (networkTypes.mainnet === network) {
+    if (NetworkTypes.mainnet === network) {
       fallbackExplorerAssetsHandle = setTimeout(
         () => dispatch(findNewAssetsToWatch(accountAddress)),
         DISCOVER_NEW_ASSETS_FREQUENCY
@@ -360,6 +350,14 @@ export const fallbackExplorerInit = () => async (dispatch, getState) => {
     });
   };
   fetchAssetsBalancesAndPrices();
+  if (network === NetworkTypes.mainnet) {
+    // Start watching arbitrum assets
+    dispatch(arbitrumExplorerInit());
+    // Start watching optimism assets
+    dispatch(optimismExplorerInit());
+    // Start watching polygon assets
+    dispatch(polygonExplorerInit());
+  }
 };
 
 export const fallbackExplorerClearState = () => (dispatch, getState) => {

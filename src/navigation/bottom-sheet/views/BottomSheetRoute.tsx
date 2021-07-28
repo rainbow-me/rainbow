@@ -3,8 +3,8 @@ import BottomSheet, {
   BottomSheetBackdropProps,
 } from '@gorhom/bottom-sheet';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import type { ViewStyle } from 'react-native';
 import { View } from 'react-native';
+import type { ViewStyle } from 'react-native';
 import {
   CONTAINER_HEIGHT,
   DEFAULT_ANIMATION_DURATION,
@@ -38,6 +38,7 @@ const BottomSheetRoute = ({
     backdropColor = DEFAULT_BACKDROP_COLOR,
     backdropOpacity = DEFAULT_BACKDROP_OPACITY,
     height = DEFAULT_HEIGHT,
+    offsetY = android ? 20 : 3,
   } = options || {};
   //#endregion
 
@@ -147,6 +148,7 @@ const BottomSheetRoute = ({
   return (
     <BottomSheetNavigatorContext.Provider value={contextVariables}>
       <BottomSheet
+        activeOffsetY={[-offsetY, offsetY]}
         animateOnMount
         animationDuration={DEFAULT_ANIMATION_DURATION}
         backdropComponent={renderBackdropComponent}
@@ -158,7 +160,9 @@ const BottomSheetRoute = ({
         index={index}
         onChange={handleOnChange}
         ref={ref}
+        simultaneousHandlers={[]}
         snapPoints={enhancedSpanPoints}
+        waitFor={[]}
       >
         <View style={screenContainerStyle}>{render()}</View>
       </BottomSheet>

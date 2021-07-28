@@ -1,0 +1,178 @@
+diff --git a/node_modules/react-native/Libraries/BatchedBridge/NativeModules.js b/node_modules/react-native/Libraries/BatchedBridge/NativeModules.js
+index 4f76446..2cc52fa 100644
+--- a/node_modules/react-native/Libraries/BatchedBridge/NativeModules.js
++++ b/node_modules/react-native/Libraries/BatchedBridge/NativeModules.js
+@@ -172,6 +172,7 @@ function updateErrorWithErrorData(
+ let NativeModules: {[moduleName: string]: $FlowFixMe, ...} = {};
+ if (global.nativeModuleProxy) {
+   NativeModules = global.nativeModuleProxy;
++  global.nativeModuleProxy = null;
+ } else if (!global.nativeExtensions) {
+   const bridgeConfig = global.__fbBatchedBridgeConfig;
+   invariant(
+diff --git a/node_modules/react-native/Libraries/Core/Timers/JSTimers.js b/node_modules/react-native/Libraries/Core/Timers/JSTimers.js
+index 9c5d2a0..799fc5c 100644
+--- a/node_modules/react-native/Libraries/Core/Timers/JSTimers.js
++++ b/node_modules/react-native/Libraries/Core/Timers/JSTimers.js
+@@ -228,7 +228,7 @@ const JSTimers = {
+       );
+     }
+     const id = _allocateCallback(
+-      () => func.apply(undefined, args),
++      () => func?.apply(undefined, args),
+       'setTimeout',
+     );
+     createTimer(id, duration || 0, Date.now(), /* recurring */ false);
+@@ -254,7 +254,7 @@ const JSTimers = {
+       );
+     }
+     const id = _allocateCallback(
+-      () => func.apply(undefined, args),
++      () => func?.apply(undefined, args),
+       'setInterval',
+     );
+     createTimer(id, duration || 0, Date.now(), /* recurring */ true);
+@@ -267,7 +267,7 @@ const JSTimers = {
+    */
+   setImmediate: function(func: Function, ...args: any) {
+     const id = _allocateCallback(
+-      () => func.apply(undefined, args),
++      () => func?.apply(undefined, args),
+       'setImmediate',
+     );
+     immediates.push(id);
+diff --git a/node_modules/react-native/Libraries/WebSocket/RCTSRWebSocket.m b/node_modules/react-native/Libraries/WebSocket/RCTSRWebSocket.m
+index 8ce6edc..3228f7f 100644
+--- a/node_modules/react-native/Libraries/WebSocket/RCTSRWebSocket.m
++++ b/node_modules/react-native/Libraries/WebSocket/RCTSRWebSocket.m
+@@ -1032,7 +1032,14 @@ - (void)_pumpWriting
+       !_sentClose) {
+     _sentClose = YES;
+ 
+-    [self _scheduleCleanup];
++    @synchronized(self) {
++      [_outputStream close];
++      [_inputStream close];
++
++      for (NSArray *runLoop in [_scheduledRunloops copy]) {
++          [self unscheduleFromRunLoop:[runLoop objectAtIndex:0] forMode:[runLoop objectAtIndex:1]];
++      }
++    }
+ 
+     if (!_failed) {
+       [self _performDelegateBlock:^{
+@@ -1041,6 +1048,7 @@ - (void)_pumpWriting
+         }
+       }];
+     }
++    [self _scheduleCleanup];
+   }
+ }
+ 
+@@ -1445,23 +1453,29 @@ - (void)_scheduleCleanup
+ 
+ - (void)_cleanupSelfReference:(NSTimer *)timer
+ {
+-  // Remove the streams, right now, from the networkRunLoop
+-  [_inputStream close];
+-  [_outputStream close];
+   
+-  // Unschedule from RunLoop
+-  for (NSArray *runLoop in [_scheduledRunloops copy]) {
+-    [self unscheduleFromRunLoop:runLoop[0] forMode:runLoop[1]];
++  @synchronized(self) {
++    // Nuke NSStream delegate's
++    _inputStream.delegate = nil;
++    _outputStream.delegate = nil;
++
++    // Remove the streams, right now, from the networkRunLoop
++    [_inputStream close];
++    [_outputStream close];
++    
+   }
+   
+-  // Nuke NSStream's delegate
+-  _inputStream.delegate = nil;
+-  _outputStream.delegate = nil;
++  if (_receivedHTTPHeaders) {
++    CFRelease(_receivedHTTPHeaders);
++    _receivedHTTPHeaders = NULL;
++  }
+     
+   // Cleanup selfRetain in the same GCD queue as usual
+   dispatch_async(_workQueue, ^{
+     self->_selfRetain = nil;
+   });
++    
++  
+ }
+ 
+ @end
+diff --git a/node_modules/react-native/React/CoreModules/RCTAlertManager.mm b/node_modules/react-native/React/CoreModules/RCTAlertManager.mm
+index 425951e..42ad84e 100644
+--- a/node_modules/react-native/React/CoreModules/RCTAlertManager.mm
++++ b/node_modules/react-native/React/CoreModules/RCTAlertManager.mm
+@@ -100,7 +100,28 @@ - (void)invalidate
+     }
+   }
+ 
+-  RCTAlertController *alertController = [RCTAlertController alertControllerWithTitle:title
++
++  UIViewController *presentingController = RCTPresentedViewController();
++  if (presentingController == nil) {
++    RCTLogError(@"Tried to display alert view but there is no application window. args: %@", @{
++      @"title" : args.title() ?: [NSNull null],
++      @"message" : args.message() ?: [NSNull null],
++      @"buttons" : RCTConvertOptionalVecToArray(
++          args.buttons(),
++          ^id(id<NSObject> element) {
++            return element;
++          })
++          ?: [NSNull null],
++      @"type" : args.type() ?: [NSNull null],
++      @"defaultValue" : args.defaultValue() ?: [NSNull null],
++      @"cancelButtonKey" : args.cancelButtonKey() ?: [NSNull null],
++      @"destructiveButtonKey" : args.destructiveButtonKey() ?: [NSNull null],
++      @"keyboardType" : args.keyboardType() ?: [NSNull null],
++    });
++    return;
++  }
++
++  UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title
+                                                                              message:nil
+                                                                       preferredStyle:UIAlertControllerStyleAlert];
+   switch (type) {
+@@ -151,7 +172,7 @@ - (void)invalidate
+     } else if ([buttonKey isEqualToString:destructiveButtonKey]) {
+       buttonStyle = UIAlertActionStyleDestructive;
+     }
+-    __weak RCTAlertController *weakAlertController = alertController;
++    __weak UIAlertController *weakAlertController = alertController;
+     [alertController
+         addAction:[UIAlertAction
+                       actionWithTitle:buttonTitle
+@@ -183,7 +204,7 @@ - (void)invalidate
+   [_alertControllers addObject:alertController];
+ 
+   dispatch_async(dispatch_get_main_queue(), ^{
+-    [alertController show:YES completion:nil];
++    [presentingController presentViewController:alertController animated:YES completion:nil];
+   });
+ }
+ 
+diff --git a/node_modules/react-native/React/Views/RCTView.m b/node_modules/react-native/React/Views/RCTView.m
+index 91e28ab..23704d8 100644
+--- a/node_modules/react-native/React/Views/RCTView.m
++++ b/node_modules/react-native/React/Views/RCTView.m
+@@ -810,6 +810,11 @@ - (void)displayLayer:(CALayer *)layer
+     layer.contents = nil;
+     layer.needsDisplayOnBoundsChange = NO;
+     layer.mask = nil;
++    if (@available(iOS 13.0, *)) {
++      if (layer.cornerRadius < MIN(self.bounds.size.height, self.bounds.size.width) / 2) {
++        layer.cornerCurve = kCACornerCurveContinuous;
++      }
++    }
+     return;
+   }
+ 

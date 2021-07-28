@@ -2,8 +2,6 @@ import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useTheme } from '../../context/ThemeContext';
-import { removeFirstEmojiFromString } from '../../helpers/emojiHandler';
-import { deviceUtils } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText } from '../coin-row';
 import CoinCheckButton from '../coin-row/CoinCheckButton';
@@ -12,7 +10,12 @@ import ImageAvatar from '../contacts/ImageAvatar';
 import { Icon } from '../icons';
 import { Centered, Column, ColumnWithMargins, Row } from '../layout';
 import { TruncatedAddress, TruncatedText } from '../text';
+import {
+  removeFirstEmojiFromString,
+  returnStringFirstEmoji,
+} from '@rainbow-me/helpers/emojiHandler';
 import { fonts, getFontSize } from '@rainbow-me/styles';
+import { defaultProfileUtils, deviceUtils } from '@rainbow-me/utils';
 
 const maxAccountLabelWidth = deviceUtils.dimensions.width - 88;
 const NOOP = () => undefined;
@@ -86,14 +89,19 @@ const OptionsIcon = ({ onPress }) => {
   );
 };
 
-export default function AddressRow({ data, editMode, onPress, onEditWallet }) {
+export default function AddressRow({
+  data,
+  editMode,
+  onPress,
+  onEditWallet,
+  watchOnly,
+}) {
   const {
     address,
     balance,
     color: accountColor,
     ens,
     image: accountImage,
-    index,
     isSelected,
     isReadOnly,
     label,
@@ -133,7 +141,7 @@ export default function AddressRow({ data, editMode, onPress, onEditWallet }) {
     <View style={sx.accountRow}>
       <ButtonPressAnimation
         enableHapticFeedback={!editMode}
-        onLongPress={onOptionsPress}
+        onLongPress={!watchOnly ? onOptionsPress : onPress}
         onPress={editMode ? onOptionsPress : onPress}
         scaleTo={editMode ? 1 : 0.98}
       >
@@ -150,7 +158,12 @@ export default function AddressRow({ data, editMode, onPress, onEditWallet }) {
                 color={accountColor}
                 marginRight={10}
                 size="medium"
-                value={label || ens || `${index + 1}`}
+                value={
+                  returnStringFirstEmoji(label) ||
+                  defaultProfileUtils.addressHashedEmoji(address) ||
+                  label ||
+                  ens
+                }
               />
             )}
             <ColumnWithMargins margin={3}>
