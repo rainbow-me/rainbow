@@ -1,17 +1,8 @@
-diff --git a/node_modules/@walletconnect/core/dist/cjs/index.js b/node_modules/@walletconnect/core/dist/cjs/index.js
-index 50bc485..200984b 100644
---- a/node_modules/@walletconnect/core/dist/cjs/index.js
-+++ b/node_modules/@walletconnect/core/dist/cjs/index.js
-@@ -24,7 +24,7 @@ class Connector {
-         this._chainId = 0;
-         this._networkId = 0;
-         this._rpcUrl = "";
--        this._eventManager = new events_1.default();
-+        this?._eventManager? = new events_1.default();
-         this._clientMeta = utils_1.getClientMeta() || opts.connectorOpts.clientMeta || null;
-         this._cryptoLib = opts.cryptoLib;
-         this._sessionStorage = opts.sessionStorage || new storage_1.default(opts.connectorOpts.storageId);
-@@ -230,10 +230,10 @@ class Connector {
+diff --git a/node_modules/@walletconnect/core/dist/esm/index.js b/node_modules/@walletconnect/core/dist/esm/index.js
+index 4cfb8e6..4bd906e 100644
+--- a/node_modules/@walletconnect/core/dist/esm/index.js
++++ b/node_modules/@walletconnect/core/dist/esm/index.js
+@@ -227,10 +227,10 @@ class Connector {
              event,
              callback,
          };
@@ -22,27 +13,27 @@ index 50bc485..200984b 100644
 -        this._eventManager.unsubscribe(event);
 +        this?._eventManager?.unsubscribe(event);
      }
-     createInstantRequest(instantRequest) {
-         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-@@ -250,7 +250,7 @@ class Connector {
-             });
-             this.handshakeId = request.id;
-             this.handshakeTopic = utils_1.uuid();
--            this._eventManager.trigger({
-+            this?._eventManager?.trigger({
-                 event: "display_uri",
-                 params: [this.uri],
-             });
-@@ -320,7 +320,7 @@ class Connector {
-             this._sendSessionRequest(request, "Session update rejected", {
-                 topic: this.handshakeTopic,
-             });
--            this._eventManager.trigger({
-+            this?._eventManager?.trigger({
-                 event: "display_uri",
-                 params: [this.uri],
-             });
-@@ -351,7 +351,7 @@ class Connector {
+     async createInstantRequest(instantRequest) {
+         this._key = await this._generateKey();
+@@ -246,7 +246,7 @@ class Connector {
+         });
+         this.handshakeId = request.id;
+         this.handshakeTopic = uuid();
+-        this._eventManager.trigger({
++        this?._eventManager?.trigger({
+             event: "display_uri",
+             params: [this.uri],
+         });
+@@ -312,7 +312,7 @@ class Connector {
+         this._sendSessionRequest(request, "Session update rejected", {
+             topic: this.handshakeTopic,
+         });
+-        this._eventManager.trigger({
++        this?._eventManager?.trigger({
+             event: "display_uri",
+             params: [this.uri],
+         });
+@@ -342,7 +342,7 @@ class Connector {
          this._sendResponse(response);
          this._connected = true;
          this._setStorageSession();
@@ -51,7 +42,7 @@ index 50bc485..200984b 100644
              event: "connect",
              params: [
                  {
-@@ -374,7 +374,7 @@ class Connector {
+@@ -365,7 +365,7 @@ class Connector {
          });
          this._sendResponse(response);
          this._connected = false;
@@ -60,7 +51,7 @@ index 50bc485..200984b 100644
              event: "disconnect",
              params: [{ message }],
          });
-@@ -400,7 +400,7 @@ class Connector {
+@@ -391,7 +391,7 @@ class Connector {
              params: [sessionParams],
          });
          this._sendSessionRequest(request, "Session update rejected");
@@ -69,7 +60,7 @@ index 50bc485..200984b 100644
              event: "session_update",
              params: [
                  {
-@@ -603,7 +603,7 @@ class Connector {
+@@ -572,7 +572,7 @@ class Connector {
      }
      _sendCallRequest(request, options) {
          this._sendRequest(request, options);
@@ -78,7 +69,7 @@ index 50bc485..200984b 100644
              event: "call_request_sent",
              params: [{ request, options }],
          });
-@@ -660,7 +660,7 @@ class Connector {
+@@ -629,7 +629,7 @@ class Connector {
          if (this._handshakeTopic) {
              this._handshakeTopic = "";
          }
@@ -87,7 +78,7 @@ index 50bc485..200984b 100644
              event: "disconnect",
              params: [{ message }],
          });
-@@ -684,7 +684,7 @@ class Connector {
+@@ -653,7 +653,7 @@ class Connector {
                      if (sessionParams.peerMeta && !this.peerMeta) {
                          this.peerMeta = sessionParams.peerMeta;
                      }
@@ -96,7 +87,7 @@ index 50bc485..200984b 100644
                          event: "connect",
                          params: [
                              {
-@@ -703,7 +703,7 @@ class Connector {
+@@ -672,7 +672,7 @@ class Connector {
                      if (sessionParams.accounts) {
                          this.accounts = sessionParams.accounts;
                      }
@@ -105,16 +96,16 @@ index 50bc485..200984b 100644
                          event: "session_update",
                          params: [
                              {
-@@ -738,7 +738,7 @@ class Connector {
-             }
-             const payload = yield this._decrypt(encryptionPayload);
-             if (payload) {
--                this._eventManager.trigger(payload);
-+                this?._eventManager?.trigger(payload);
-             }
-         });
+@@ -706,7 +706,7 @@ class Connector {
+         }
+         const payload = await this._decrypt(encryptionPayload);
+         if (payload) {
+-            this._eventManager.trigger(payload);
++            this?._eventManager?.trigger(payload);
+         }
      }
-@@ -788,7 +788,7 @@ class Connector {
+     _subscribeToSessionRequest() {
+@@ -755,7 +755,7 @@ class Connector {
          this.on("display_uri", () => {
              if (this._qrcodeModal) {
                  this._qrcodeModal.open(this.uri, () => {
@@ -123,7 +114,7 @@ index 50bc485..200984b 100644
                          event: "modal_closed",
                          params: [],
                      });
-@@ -802,7 +802,7 @@ class Connector {
+@@ -769,7 +769,7 @@ class Connector {
          });
          this.on("wc_sessionRequest", (error, payload) => {
              if (error) {
@@ -132,7 +123,7 @@ index 50bc485..200984b 100644
                      event: "error",
                      params: [
                          {
-@@ -816,7 +816,7 @@ class Connector {
+@@ -783,7 +783,7 @@ class Connector {
              this.peerId = payload.params[0].peerId;
              this.peerMeta = payload.params[0].peerMeta;
              const internalPayload = Object.assign(Object.assign({}, payload), { method: "session_request" });
@@ -141,7 +132,7 @@ index 50bc485..200984b 100644
          });
          this.on("wc_sessionUpdate", (error, payload) => {
              if (error) {
-@@ -827,9 +827,9 @@ class Connector {
+@@ -794,9 +794,9 @@ class Connector {
      }
      _initTransport() {
          this._transport.on("message", (socketMessage) => this._handleIncomingMessages(socketMessage));
