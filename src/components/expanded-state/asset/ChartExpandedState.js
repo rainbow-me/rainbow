@@ -199,9 +199,9 @@ export default function ChartExpandedState({ asset }) {
 
   // This one includes the original l2 address if exists
   const ogAsset = { ...assetWithPrice, address: assetWithPrice.uniqueId };
-  const isL2 = useMemo(() => {
-    return isL2Network(assetWithPrice.type);
-  }, [assetWithPrice.type]);
+  const isL2 = useMemo(() => isL2Network(assetWithPrice.type), [
+    assetWithPrice.type,
+  ]);
 
   const { height: screenHeight } = useDimensions();
   const {
