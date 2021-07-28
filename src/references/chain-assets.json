@@ -261,6 +261,42 @@
           "type": "optimism"
         },
         "quantity": 0
+      },
+      {
+        "asset": {
+          "mainnet_address": "0x57ab1ec28d129707052df4df418d58a2d46d5f51",
+          "asset_code": "0x8c6f28f2F1A3C87F0f938b96d27520d9751ec8d9",
+          "coingecko_id": "susd",
+          "decimals": 18,
+          "icon_url": "https://s3.amazonaws.com/icons.assets/SUSD.png",
+          "name": "Synthetix USD",
+          "price": {
+            "changed_at": 1582562452,
+            "relative_change_24h": 0.8470466197462612,
+            "value": 1
+          },
+          "symbol": "susd",
+          "type": "optimism"
+        },
+        "quantity": 0
+      },
+      {
+        "asset": {
+          "mainnet_address": "0x514910771af9ca656af840dff83e8264ecf986ca",
+          "asset_code": "0x350a791bfc2c21f9ed5d10980dad2e2638ffa7f6",
+          "coingecko_id": "chainlink",
+          "decimals": 18,
+          "icon_url": "https://s3.amazonaws.com/icons.assets/LINK.png",
+          "name": "Chainlink",
+          "price": {
+            "changed_at": 1582562452,
+            "relative_change_24h": 0.8470466197462612,
+            "value": 19.13
+          },
+          "symbol": "LINK",
+          "type": "optimism"
+        },
+        "quantity": 0
       }
     ],
     "polygon": [
