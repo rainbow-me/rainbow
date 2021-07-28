@@ -97,8 +97,9 @@ const ContactRowInfoButton = ({ item, network }) => {
   );
 
   const onPressAndroid = useCallback(() => {
-    const blockExplorerText =
-      'View on ' + startCase(ethereumUtils.getBlockExplorer(item?.type));
+    const blockExplorerText = `View on ' ${startCase(
+      ethereumUtils.getBlockExplorer(item?.type)
+    )}`;
     const androidContractActions = [
       'Copy Contract Address',
       blockExplorerText,
