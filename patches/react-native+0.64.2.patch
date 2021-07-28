@@ -42,23 +42,69 @@ index 9c5d2a0..799fc5c 100644
      );
      immediates.push(id);
 diff --git a/node_modules/react-native/Libraries/WebSocket/RCTSRWebSocket.m b/node_modules/react-native/Libraries/WebSocket/RCTSRWebSocket.m
-index 8ce6edc..904fbda 100644
+index 8ce6edc..3228f7f 100644
 --- a/node_modules/react-native/Libraries/WebSocket/RCTSRWebSocket.m
 +++ b/node_modules/react-native/Libraries/WebSocket/RCTSRWebSocket.m
-@@ -1104,6 +1104,7 @@ - (BOOL)_innerPumpScanner
-   BOOL didWork = NO;
+@@ -1032,7 +1032,14 @@ - (void)_pumpWriting
+       !_sentClose) {
+     _sentClose = YES;
  
-   if (self.readyState >= RCTSR_CLOSING) {
-+    [self _disconnect];
-     return didWork;
+-    [self _scheduleCleanup];
++    @synchronized(self) {
++      [_outputStream close];
++      [_inputStream close];
++
++      for (NSArray *runLoop in [_scheduledRunloops copy]) {
++          [self unscheduleFromRunLoop:[runLoop objectAtIndex:0] forMode:[runLoop objectAtIndex:1]];
++      }
++    }
+ 
+     if (!_failed) {
+       [self _performDelegateBlock:^{
+@@ -1041,6 +1048,7 @@ - (void)_pumpWriting
+         }
+       }];
+     }
++    [self _scheduleCleanup];
    }
+ }
  
-@@ -1462,6 +1463,8 @@ - (void)_cleanupSelfReference:(NSTimer *)timer
+@@ -1445,23 +1453,29 @@ - (void)_scheduleCleanup
+ 
+ - (void)_cleanupSelfReference:(NSTimer *)timer
+ {
+-  // Remove the streams, right now, from the networkRunLoop
+-  [_inputStream close];
+-  [_outputStream close];
+   
+-  // Unschedule from RunLoop
+-  for (NSArray *runLoop in [_scheduledRunloops copy]) {
+-    [self unscheduleFromRunLoop:runLoop[0] forMode:runLoop[1]];
++  @synchronized(self) {
++    // Nuke NSStream delegate's
++    _inputStream.delegate = nil;
++    _outputStream.delegate = nil;
++
++    // Remove the streams, right now, from the networkRunLoop
++    [_inputStream close];
++    [_outputStream close];
++    
+   }
+   
+-  // Nuke NSStream's delegate
+-  _inputStream.delegate = nil;
+-  _outputStream.delegate = nil;
++  if (_receivedHTTPHeaders) {
++    CFRelease(_receivedHTTPHeaders);
++    _receivedHTTPHeaders = NULL;
++  }
+     
+   // Cleanup selfRetain in the same GCD queue as usual
    dispatch_async(_workQueue, ^{
      self->_selfRetain = nil;
    });
 +    
-+  _cleanupScheduled = NO;
++  
  }
  
  @end
