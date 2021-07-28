@@ -191,10 +191,10 @@ export default function ExchangeModal({
 
   const {
     isHighPriceImpact,
+    outputPriceValue,
     priceImpactColor,
     priceImpactNativeAmount,
     priceImpactPercentDisplay,
-    outputPriceValue,
   } = usePriceImpactDetails(inputAmount, outputAmount, tradeDetails);
 
   const isDismissing = useRef(false);
@@ -422,10 +422,10 @@ export default function ExchangeModal({
     nativeCurrency,
     navigate,
     outputAmount,
-    outputAmountDisplay,
     outputCurrency?.address,
     outputCurrency?.name,
     outputCurrency?.symbol,
+    outputPriceValue,
     priceImpactPercentDisplay,
     priceOfEther,
     selectedGasPrice?.txFee?.native?.value?.amount,
