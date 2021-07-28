@@ -18,7 +18,7 @@ const L2Disclaimer = ({ assetType, colors, onPress, sending, symbol }) => {
     },
   };
   return (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.99}>
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.95}>
       <Row
         background={colors.red}
         borderRadius={16}
@@ -38,7 +38,7 @@ const L2Disclaimer = ({ assetType, colors, onPress, sending, symbol }) => {
         <Column justify="center" marginLeft={8} width="80%">
           <Text
             align="left"
-            color={colors.alpha(colors.blueGreyDark, 0.6)}
+            color={colors.alpha(colors.blueGreyDark, 0.7)}
             numberOfLines={2}
             size="smedium"
             weight="bold"

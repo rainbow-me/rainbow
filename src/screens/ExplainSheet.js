@@ -79,7 +79,7 @@ export const explainers = {
     text: OPTIMISM_EXPLAINER,
     title: `What's Optimism?`,
     readMoreLink: 'https://optimism.io/',
-    extraHeight: 120,
+    extraHeight: 150,
   },
   arbitrum: {
     emoji: '⛽️',
@@ -89,7 +89,7 @@ export const explainers = {
     text: ARBITRUM_EXPLAINER,
     title: `What's Arbitrum?`,
     readMoreLink: 'https://arbitrum.io/',
-    extraHeight: 120,
+    extraHeight: 150,
   },
   polygon: {
     emoji: '⛽️',
