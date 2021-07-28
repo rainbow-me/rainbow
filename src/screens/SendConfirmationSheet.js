@@ -1,6 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import { capitalize, get, toLower } from 'lodash';
-import React, { useCallback, useEffect } from 'react';
+import React, { Fragment, useCallback, useEffect } from 'react';
 import { StatusBar } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useSafeArea } from 'react-native-safe-area-context';
@@ -49,9 +49,18 @@ const Container = styled(Centered).attrs({
     height ? `height: ${height + deviceHeight}` : null};
 `;
 
+const CheckboxLabelText = styled(Text).attrs({
+  direction: 'column',
+  lineHeight: 'loose',
+  size: 'lmedium',
+  weight: '700',
+})`
+  flex-shrink: 1;
+`;
+
 export const SendConfirmationSheetHeight = android
-  ? 600 - getSoftMenuBarHeight()
-  : 594;
+  ? 551 - getSoftMenuBarHeight()
+  : 545;
 
 const ChevronDown = () => {
   const { colors } = useTheme();
@@ -78,21 +87,19 @@ const Checkbox = ({ id, checked, label, onPress, activeColor }) => {
   return (
     <Column marginBottom={20}>
       <ButtonPressAnimation onPress={handlePress}>
-        <Row>
+        <Row align="center">
           <Text
             color={(checked && activeColor) || colors.blueGreyDark80}
-            size="lmedium"
+            size="larger"
             weight="700"
           >
             {checked ? '􀃳 ' : '􀂒 '}
           </Text>
-          <Text
+          <CheckboxLabelText
             color={(checked && activeColor) || colors.blueGreyDark80}
-            size="lmedium"
-            weight="700"
           >
             {label}
-          </Text>
+          </CheckboxLabelText>
         </Row>
       </ButtonPressAnimation>
     </Column>
@@ -266,10 +273,10 @@ export default function SendConfirmationSheet() {
       >
         <SheetTitle>Sending</SheetTitle>
         <Column height={contentHeight}>
-          <Column padding={24}>
+          <Column padding={24} paddingBottom={30}>
             <Row>
               <Column width="80%">
-                <TruncatedText size="big" weight="bold">
+                <TruncatedText size="big" weight="heavy">
                   {isNft ? asset?.name : nativeDisplayAmount}
                 </TruncatedText>
 
@@ -314,8 +321,12 @@ export default function SendConfirmationSheet() {
 
             <Row marginBottom={22} marginTop={22}>
               <Column>
-                <Pill borderRadius={20} paddingHorizontal={10}>
-                  <Column padding={5}>
+                <Pill
+                  borderRadius={20}
+                  paddingHorizontal={10}
+                  paddingVertical={4}
+                >
+                  <Column>
                     <Text
                       color={colors.blueGreyDark60}
                       size="large"
@@ -330,12 +341,11 @@ export default function SendConfirmationSheet() {
                 <ChevronDown />
               </Column>
             </Row>
-
-            <Row marginBottom={30}>
+            <Row>
               <Column flex={1}>
                 <Row width="70%">
                   <Column>
-                    <TruncatedText size="big" weight="bold">
+                    <TruncatedText size="big" weight="heavy">
                       {avatarName}
                     </TruncatedText>
                   </Column>
@@ -372,17 +382,23 @@ export default function SendConfirmationSheet() {
               </Column>
             </Row>
           </Column>
-          <SheetDivider />
           {isL2 && (
-            <L2Disclaimer
-              assetType={asset.type}
-              colors={colors}
-              onPress={handleL2DisclaimerPress}
-              sending
-              symbol={asset.symbol}
-            />
+            <Fragment>
+              <Column paddingBottom={22}>
+                <Row paddingRight={19}>
+                  <SheetDivider />
+                </Row>
+              </Column>
+              <L2Disclaimer
+                assetType={asset.type}
+                colors={colors}
+                onPress={handleL2DisclaimerPress}
+                sending
+                symbol={asset.symbol}
+              />
+            </Fragment>
           )}
-          <Column padding={24} paddingTop={19}>
+          <Column paddingBottom={15} paddingHorizontal={24} paddingTop={4}>
             {shouldShowChecks &&
               checkboxes.map((check, i) => (
                 <Checkbox
