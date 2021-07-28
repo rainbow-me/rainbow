@@ -44,7 +44,7 @@ function ConnectedDapps() {
     [walletConnectorsCount, walletConnectV2SessionsCount]
   );
 
-  return connectionsNumber === 0 ? null : (
+  return (
     <Overlay>
       <ButtonPressAnimation
         onPress={() => navigate(Routes.CONNECTED_DAPPS)}

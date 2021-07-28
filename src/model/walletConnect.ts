@@ -58,6 +58,8 @@ const isSupportedChain = (chain: string) =>
   SUPPORTED_MAIN_CHAINS.includes(chain) ||
   SUPPORTED_TEST_CHAINS.includes(chain);
 
+// const getPush =
+
 export const getAddressAndChainIdFromWCAccount = (
   account: string
 ): { address: string; chainId: number } => {
@@ -156,6 +158,33 @@ export const walletConnectInit = async (store: any) => {
     }
   );
 
+  wcLogger('Client started! on 1');
+
+  // client.on(CLIENT_EVENTS.session.created,
+  //   async (session: SessionTypes.Settled) => {
+  // // axios post push url
+  // axios.post("<PUSH_URL>", {
+  //   bridge: "https://relay.walletconnect.org",
+  //   topic: session.topic,
+  //   type,
+  //   token,
+  //   peerName: session.peer.metadata.name,
+  //   language
+  // })
+
+  // }
+  // )
+
+  // client.on(CLIENT_EVENTS.pairing.created,
+  // // axios post push url
+  // axios.post("<PUSH_URL>", {
+  //   bridge: "https://relay.walletconnect.org",
+  //   topic: session.topic,
+  //   type,
+  //   token,
+  //   language
+  // })
+
   client.on(
     CLIENT_EVENTS.session.request,
     async (requestEvent: SessionTypes.RequestEvent) => {
@@ -246,6 +275,8 @@ export const walletConnectInit = async (store: any) => {
       }
     }
   );
+  wcLogger('Client started! on 2');
+  return client;
 };
 
 export const walletConnectDisconnectAllSessions = async () => {
@@ -271,11 +302,21 @@ export const walletConnectUpdateSessionByDappName = async (
   const newAccount = generateWalletConnectAccount(address, eip55ChainId);
   session.permissions.blockchain = [eip55ChainId];
   session.state.accounts = [newAccount];
-
+  // await client.upgrade({
+  //   permissions: {
+  //     blockchain: {
+  //       chains: [eip55ChainId],
+  //     },
+  //   },
+  //   topic: session.topic,
+  // });
+  wcLogger('client.upgrade out');
   await client.update({
     state: session.state.accounts,
     topic: session.topic,
   });
+  wcLogger('client.update out');
+
   return client.session.values;
 };
 

@@ -56,12 +56,10 @@ const walletConnectSelector = createSelector(
 
 const walletConnectV2Selector = createSelector(
   state => state.walletconnect.clientV2Sessions,
-  clientV2Sessions => {
-    return {
-      walletConnectV2Sessions: formatSessionsData(clientV2Sessions),
-      walletConnectV2SessionsCount: clientV2Sessions.length,
-    };
-  }
+  clientV2Sessions => ({
+    walletConnectV2Sessions: formatSessionsData(clientV2Sessions),
+    walletConnectV2SessionsCount: clientV2Sessions.length,
+  })
 );
 
 export default function useWalletConnectConnections() {
@@ -105,14 +103,15 @@ export default function useWalletConnectConnections() {
   );
 
   const walletConnectV2UpdateSessionByDappName = useCallback(
-    (dappName, accountAddress, chainId) =>
+    (dappName, accountAddress, chainId) => {
       dispatch(
         rawWalletConnectV2UpdateSessionByDappName(
           dappName,
           accountAddress,
           chainId
         )
-      ),
+      );
+    },
     [dispatch]
   );
 

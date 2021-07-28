@@ -22,7 +22,6 @@ export default function ConnectedDappsSheet() {
     walletConnectV2SessionsCount,
     walletConnectV2Sessions,
   } = useWalletConnectConnections();
-
   const { connectionsNumber, connections } = useMemo(
     () => ({
       connections: walletConnectorsByDappName.concat(walletConnectV2Sessions),
