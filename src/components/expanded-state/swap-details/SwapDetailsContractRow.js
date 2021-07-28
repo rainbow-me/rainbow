@@ -19,11 +19,8 @@ const AnimatedTruncatedAddress = Animated.createAnimatedComponent(
 );
 
 const ContractActionsEnum = {
-  arbitrumExplorer: 'arbitrumExplorer',
+  blockExplorer: 'blockExplorer',
   copyAddress: 'copyAddress',
-  etherscan: 'etherscan',
-  optimism: 'etherscan',
-  polygonScan: 'polygonScan',
 };
 
 const ContractActions = {
@@ -35,21 +32,13 @@ const ContractActions = {
       iconValue: 'doc.on.doc',
     },
   },
-  [ContractActionsEnum.etherscan]: {
-    actionKey: ContractActionsEnum.etherscan,
-    actionTitle: 'View on Etherscan',
-    icon: {
-      iconType: 'SYSTEM',
-      iconValue: 'safari',
-    },
-  },
 };
 
 const buildBlockExplorerAction = type => {
   const blockExplorerText =
     'View on ' + startCase(ethereumUtils.getBlockExplorer(type));
   return {
-    actionKey: ContractActionsEnum.etherscan,
+    actionKey: ContractActionsEnum.blockExplorer,
     actionTitle: blockExplorerText,
     icon: {
       iconType: 'SYSTEM',
@@ -135,7 +124,7 @@ export default function SwapDetailsContractRow({
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === ContractActionsEnum.copyAddress) {
         handleCopyContractAddress(asset?.address);
-      } else if (actionKey === ContractActionsEnum.etherscan) {
+      } else if (actionKey === ContractActionsEnum.blockExplorer) {
         ethereumUtils.openTokenEtherscanURL(asset?.address, asset?.type);
       }
     },

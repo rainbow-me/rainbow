@@ -58,11 +58,8 @@ const Icon = styled(Text).attrs(({ theme: { colors } }) => ({
 `;
 
 const CoinRowActionsEnum = {
-  arbitrumExplorer: 'arbitrumExplorer',
+  blockExplorer: 'blockExplorer',
   copyAddress: 'copyAddress',
-  etherscan: 'etherscan',
-  optimism: 'etherscan',
-  polygonScan: 'polygonScan',
 };
 
 const CoinRowActions = {
@@ -74,21 +71,13 @@ const CoinRowActions = {
       iconValue: 'doc.on.doc',
     },
   },
-  [CoinRowActionsEnum.etherscan]: {
-    actionKey: CoinRowActionsEnum.etherscan,
-    actionTitle: 'View on Etherscan',
-    icon: {
-      iconType: 'SYSTEM',
-      iconValue: 'safari',
-    },
-  },
 };
 
 const buildBlockExplorerAction = type => {
   const blockExplorerText =
     'View on ' + startCase(ethereumUtils.getBlockExplorer(type));
   return {
-    actionKey: CoinRowActionsEnum.etherscan,
+    actionKey: CoinRowActionsEnum.blockExplorer,
     actionTitle: blockExplorerText,
     icon: {
       iconType: 'SYSTEM',
@@ -155,7 +144,7 @@ const CoinRowInfoButton = ({ item, onCopySwapDetailsText }) => {
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === CoinRowActionsEnum.copyAddress) {
         handleCopyContractAddress(item?.address);
-      } else if (actionKey === CoinRowActionsEnum.etherscan) {
+      } else if (actionKey === CoinRowActionsEnum.blockExplorer) {
         ethereumUtils.openTokenEtherscanURL(item?.uniqueId, item?.type);
       }
     },
