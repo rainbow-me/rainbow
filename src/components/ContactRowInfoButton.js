@@ -121,7 +121,7 @@ const ContactRowInfoButton = ({ item, network }) => {
         }
       }
     );
-  }, [item?.name, item?.address, handleCopyAddress, network]);
+  }, [item?.type, item?.name, item?.address, handleCopyAddress, network]);
 
   const menuConfig = useMemo(() => {
     const blockExplorerAction = buildBlockExplorerAction(item?.type);
