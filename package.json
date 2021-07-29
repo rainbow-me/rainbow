@@ -428,12 +428,8 @@
       "react-native-storage": false,
       "react-query": false,
       "secp256k1": false,
-<<<<<<< HEAD
       "@sentry/cli": true,
       "better-sqlite3": false
-=======
-      "@sentry/cli": true
->>>>>>> develop
     }
   }
 }

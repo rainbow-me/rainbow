@@ -72,7 +72,7 @@ export default function WalletConnectListItem({
     walletConnectV2UpdateSessionByDappName,
   } = useWalletConnectConnections();
   const { colors } = useTheme();
-  const { wallets, walletNames } = useWallets();
+  const { selectedWallet, walletNames } = useWallets();
   const { network } = useAccountSettings();
 
   const isAuthenticated = useMemo(() => {
