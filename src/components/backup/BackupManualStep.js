@@ -104,7 +104,7 @@ export default function BackupManualStep() {
       <Masthead>
         <MastheadTitleRow>
           <MastheadIcon>􀉆</MastheadIcon>
-          <MastheadTitle>Back up manually</MastheadTitle>
+          <MastheadTitle>Your secret phrase</MastheadTitle>
         </MastheadTitleRow>
         <MastheadDescription>
           <MastheadDescription weight="semibold">
