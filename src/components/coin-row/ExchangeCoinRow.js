@@ -40,12 +40,16 @@ const FloatingFavoriteEmojis = styled(FloatingEmojis).attrs({
   z-index: 100;
 `;
 
+const ExchangeCoinName = styled(CoinName)`
+  width: ${({ showBalance }) => (showBalance ? '100%' : '90%')};
+`;
+
 const BottomRow = ({ showBalance, symbol }) =>
   showBalance ? null : <BottomRowText>{symbol}</BottomRowText>;
 
 const TopRow = ({ name, showBalance }) => (
   <Row height={showBalance ? CoinIconSize : null}>
-    <CoinName showBalance={showBalance}>{name}</CoinName>
+    <ExchangeCoinName showBalance={showBalance}>{name}</ExchangeCoinName>
   </Row>
 );
 

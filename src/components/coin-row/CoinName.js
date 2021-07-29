@@ -10,7 +10,6 @@ const CoinName = styled(TruncatedText).attrs(
   })
 )`
   padding-right: ${({ paddingRight = 19 }) => paddingRight};
-  width: ${({ showBalance }) => (showBalance ? '100%' : '90%')};
 `;
 
 export default CoinName;
