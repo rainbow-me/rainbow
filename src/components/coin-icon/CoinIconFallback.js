@@ -63,7 +63,7 @@ function WrappedFallbackImage({
 const FallbackImageElement = android ? WrappedFallbackImage : FallbackImage;
 
 const CoinIconFallback = fallbackProps => {
-  const { address = '', height, icon_url, symbol, width } = fallbackProps;
+  const { address = '', height, symbol, width } = fallbackProps;
 
   const [showImage, showFallbackImage, hideFallbackImage] = useBooleanState(
     false
@@ -71,9 +71,8 @@ const CoinIconFallback = fallbackProps => {
 
   const fallbackIconColor = useColorForAsset({ address });
   const imageUrl = useMemo(() => {
-    if (icon_url) return icon_url;
     return getUrlForTrustIconFallback(address);
-  }, [address, icon_url]);
+  }, [address]);
 
   return (
     <Centered height={height} width={width}>
