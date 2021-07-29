@@ -128,8 +128,8 @@ const Spacer = styled.View`
 
 // truncate after the first paragraph or 4th dot
 function truncate(text) {
-  const firstParagraph = text.split('\n')[0];
-  const first4Sentences = text.split('.').slice(0, 4).join('.') + '.';
+  const firstParagraph = text?.split('\n')[0];
+  const first4Sentences = text?.split('.').slice(0, 4).join('.') + '.';
   const shorterOne =
     first4Sentences.length < firstParagraph.length
       ? first4Sentences
