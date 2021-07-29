@@ -95,6 +95,10 @@ platforms with XCode._
 
 3. Run the project by clicking the play button.
 
+If there is a build error `error: unable to open file (in project "Rainbow")` go into `Rainbow.xcodeproj` and turn the debugging off.
+
+<img src="https://user-images.githubusercontent.com/16931094/127331791-85a4a211-dd44-4674-a82c-72fc6b3e5d8d.png" height="400" >
+
 ### Linux
 
 _Note: Linux development environments cannot develop or build Darwin versions of the
