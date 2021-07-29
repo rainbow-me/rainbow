@@ -44,6 +44,7 @@ function handleWalletConnect(uri) {
   const { query, pathname } = new URL(uri);
   if (uri && query) {
     const [, version] = pathname.split('@');
+    console.log('handleWalletConnect', version, !!uri);
     if (version === '2') {
       walletConnectPair(uri);
     } else {

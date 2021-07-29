@@ -96,9 +96,11 @@ export const walletConnectInit = async (store: any) => {
     CLIENT_EVENTS.session.proposal,
     async (proposal: SessionTypes.Proposal) => {
       try {
+        wcLogger('CLIENT_EVENTS.session.proposal');
         const { proposer, permissions } = proposal;
         const { metadata } = proposer;
         const chains = permissions.blockchain.chains;
+        wcLogger('CLIENT_EVENTS.session.proposal 2');
 
         if (!isSupportedChain(chains[0])) {
           Alert.alert('Chain not supported', `${chains[0]} is not supported`);
@@ -109,6 +111,7 @@ export const walletConnectInit = async (store: any) => {
           return;
         }
         wcTrack('Showing Walletconnect session request', metadata);
+        wcLogger('CLIENT_EVENTS.session.proposal 3');
 
         Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {
           callback: async (
@@ -337,6 +340,7 @@ const walletConnectDisconnect = async (topic: string) => {
 };
 
 export const walletConnectPair = async (uri: string) => {
+  wcLogger('on about to walletConnectPair', uri);
   const pair = await client.pair({ uri });
   wcLogger('on walletConnectPair', pair);
 };
