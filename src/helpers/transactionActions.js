@@ -4,6 +4,4 @@ export default {
   close: 'Close',
   speedUp: '🚀 Speed Up',
   viewContact: 'View Contact',
-  viewOnBlockExplorer: 'View on Block Explorer',
-  viewOnEtherscan: 'View on Etherscan',
 };

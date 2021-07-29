@@ -447,7 +447,12 @@ export default function ChartExpandedState({ asset }) {
             <Description text={description} />
           </ExpandedStateSection>
         )}
-        <SocialLinks address={asset?.address} color={color} links={links} />
+        <SocialLinks
+          color={color}
+          links={links}
+          type={asset?.type}
+          uniqueId={asset?.uniqueId}
+        />
         <Spacer />
       </AdditionalContentWrapper>
     </SlackSheet>

@@ -43,9 +43,9 @@ export {
 } from './wyre';
 
 // Block Explorers
-export const ARBITRUM_BLOCK_EXPLORER_URL = 'https://explorer.arbitrum.io';
-export const POLYGON_BLOCK_EXPLORER_URL = 'https://polygonscan.com';
-export const OPTIMISM_BLOCK_EXPLORER_URL = 'https://optimistic.etherscan.io';
+export const ARBITRUM_BLOCK_EXPLORER_URL = 'explorer.arbitrum.io';
+export const POLYGON_BLOCK_EXPLORER_URL = 'polygonscan.com';
+export const OPTIMISM_BLOCK_EXPLORER_URL = 'optimistic.etherscan.io';
 
 // NFTs Contracts
 export const ENS_NFT_CONTRACT_ADDRESS =

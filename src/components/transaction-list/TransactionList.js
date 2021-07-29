@@ -1,6 +1,6 @@
 import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
-import { toLower } from 'lodash';
+import { startCase, toLower } from 'lodash';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { requireNativeComponent } from 'react-native';
 import { useDispatch } from 'react-redux';
@@ -164,13 +164,15 @@ export default function TransactionList({
       const canBeCancelled =
         canBeResubmitted && status !== TransactionStatusTypes.cancelling;
 
+      const blockExplorerAction = `View on ${startCase(
+        ethereumUtils.getBlockExplorer(network)
+      )}`;
+
       if (hash) {
         let buttons = [
           ...(canBeResubmitted ? [TransactionActions.speedUp] : []),
           ...(canBeCancelled ? [TransactionActions.cancel] : []),
-          ethereumUtils.supportsEtherscan(network)
-            ? TransactionActions.viewOnEtherscan
-            : TransactionActions.viewOnBlockExplorer,
+          blockExplorerAction,
           ...(ios ? [TransactionActions.close] : []),
         ];
         if (showContactInfo) {
@@ -220,12 +222,12 @@ export default function TransactionList({
                   type: 'cancel',
                 });
                 break;
-              case TransactionActions.viewOnBlockExplorer:
-              case TransactionActions.viewOnEtherscan: {
+              case TransactionActions.close:
+                return;
+              default: {
                 ethereumUtils.openTransactionInBlockExplorer(hash, network);
                 break;
               }
-              default:
             }
           }
         );
