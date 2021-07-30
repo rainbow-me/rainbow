@@ -199,16 +199,13 @@ export default function TransactionConfirmationScreen() {
 
   const accountInfo = useMemo(() => {
     const address = walletConnector._accounts?.[0];
-    logger.debug('ADDRESS', address);
     const selectedWallet = findWalletWithAccount(wallets, address);
-    logger.debug('selectedWallet', selectedWallet);
     const profileInfo = getAccountProfileInfo(
       selectedWallet,
       walletNames,
       network,
       address
     );
-    logger.debug(selectedWallet);
     return {
       ...profileInfo,
       address,
