@@ -224,9 +224,6 @@ export type RecyclerAssetListReduxProps = {
       readonly [key: string]: boolean;
     };
   };
-  readonly settings: {
-    readonly nativeCurrency: string;
-  };
 };
 
 const NoStickyContainer = ({
@@ -244,7 +241,6 @@ export type RecyclerAssetListProps = {
     readonly alpha: (color: string, alpha: number) => string;
     readonly blueGreyDark: string;
   };
-  readonly nativeCurrency: string;
   readonly sections: readonly RecyclerAssetListSection[];
   readonly paddingBottom?: number;
   readonly isBlockingUpdate: boolean;
@@ -267,7 +263,6 @@ function RecyclerAssetList({
   isCoinListEdited,
   fetchData,
   colors,
-  nativeCurrency,
   sections,
   openInvestmentCards,
   openFamilyTabs,
@@ -710,9 +705,6 @@ function RecyclerAssetList({
       ),
     [disableAutoScrolling, ref]
   );
-  useEffect(() => {
-    requestAnimationFrame(() => ref?.scrollToTop(false));
-  }, [nativeCurrency, ref]);
 
   const lastSections = usePrevious(sections) || sections;
   const lastOpenFamilyTabs = usePrevious(openFamilyTabs) || openFamilyTabs;
@@ -908,10 +900,8 @@ export default connect(
       openSavings,
       openSmallBalances,
     },
-    settings: { nativeCurrency },
   }: RecyclerAssetListReduxProps) => ({
     isCoinListEdited,
-    nativeCurrency,
     openFamilyTabs,
     openInvestmentCards,
     openSavings,
