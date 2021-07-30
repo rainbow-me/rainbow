@@ -1,5 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
+import { captureException } from '@sentry/react-native';
 import { capitalize, get } from 'lodash';
 import React, {
   useCallback,
@@ -44,6 +45,7 @@ import { useAccountSettings, useWallets } from '@rainbow-me/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils } from '@rainbow-me/utils';
+import logger from 'logger';
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
   ({ theme: { colors } }) => ({
@@ -111,37 +113,6 @@ export default function WalletConnectApprovalSheet() {
 
   const callback = params?.callback;
   const walletConnector = params?.walletConnector;
-
-  walletConnector?.on('session_request', (error, payload) => {
-    if (error) {
-      analytics.track('Error on wc session_request', {
-        error,
-        payload,
-      });
-      // logger.log('Error on wc session_request', payload);
-      // captureException(error);
-      throw error;
-    }
-    const { peerId, peerMeta } = payload.params[0];
-
-    const imageUrl =
-      dappLogoOverride(peerMeta.url) || get(peerMeta, 'icons[0]');
-    const dappName = dappNameOverride(peerMeta.url) || peerMeta.name;
-    const dappUrl = peerMeta.url;
-    const dappScheme = peerMeta.scheme;
-    analytics.track('Showing Walletconnect session request', {
-      dappName,
-      dappUrl,
-    });
-    const meta = {
-      dappName,
-      dappScheme,
-      dappUrl,
-      imageUrl,
-      peerId,
-    };
-    setMeta(meta);
-  });
 
   const checkIfScam = useCallback(
     async dappUrl => {
@@ -283,6 +254,39 @@ export default function WalletConnectApprovalSheet() {
       watchOnly: true,
     });
   }, [approvalAccount.address]);
+
+  useEffect(() => {
+    walletConnector?.on('session_request', (error, payload) => {
+      if (error) {
+        analytics.track('Error on wc session_request', {
+          error,
+          payload,
+        });
+        logger.log('Error on wc session_request', payload);
+        captureException(error);
+        throw error;
+      }
+      const { peerId, peerMeta } = payload.params[0];
+
+      const imageUrl =
+        dappLogoOverride(peerMeta.url) || get(peerMeta, 'icons[0]');
+      const dappName = dappNameOverride(peerMeta.url) || peerMeta.name;
+      const dappUrl = peerMeta.url;
+      const dappScheme = peerMeta.scheme;
+      analytics.track('Showing Walletconnect session request', {
+        dappName,
+        dappUrl,
+      });
+      const meta = {
+        dappName,
+        dappScheme,
+        dappUrl,
+        imageUrl,
+        peerId,
+      };
+      setMeta(meta);
+    });
+  }, [walletConnector]);
 
   useEffect(() => {
     if (scam) {
