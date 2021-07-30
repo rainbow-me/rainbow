@@ -51,7 +51,8 @@ const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
   ({ theme: { colors } }) => ({
     color: colors.lightGrey,
   })
-)``;
+);
+
 const DappLogo = styled(RequestVendorLogoIcon).attrs(
   ({ theme: { colors } }) => ({
     backgroundColor: colors.transparent,
@@ -108,10 +109,10 @@ export default function WalletConnectApprovalSheet() {
   const type = params?.type || WalletConnectApprovalSheetType.connect;
   const chainId = params?.chainId || 1;
 
-  const { dappName, dappUrl, dappScheme, imageUrl, peerId } = meta;
-
   const callback = params?.callback;
   const walletConnector = params?.walletConnector;
+
+  const { dappName, dappUrl, dappScheme, imageUrl, peerId } = meta;
 
   const checkIfScam = useCallback(
     async dappUrl => {
