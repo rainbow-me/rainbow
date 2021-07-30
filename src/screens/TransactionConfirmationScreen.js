@@ -25,6 +25,7 @@ import Divider from '../components/Divider';
 import L2Disclaimer from '../components/L2Disclaimer';
 import { RequestVendorLogoIcon } from '../components/coin-icon';
 import { ContactAvatar } from '../components/contacts';
+import ImageAvatar from '../components/contacts/ImageAvatar';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, Column, Row, RowWithMargins } from '../components/layout';
 import {
@@ -48,11 +49,12 @@ import {
   toHex,
   web3Provider,
 } from '@rainbow-me/handlers/web3';
+import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
 import { isDappAuthenticated } from '@rainbow-me/helpers/dappNameHandler';
+import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   useAccountAssets,
-  useAccountProfile,
   useAccountSettings,
   useBooleanState,
   useDimensions,
@@ -156,14 +158,8 @@ export default function TransactionConfirmationScreen() {
   const [methodName, setMethodName] = useState(null);
   const calculatingGasLimit = useRef(false);
   const [isBalanceEnough, setIsBalanceEnough] = useState(true);
-  const {
-    accountAddress,
-    accountColor,
-    accountName,
-    accountSymbol,
-  } = useAccountProfile();
   const { height: deviceHeight } = useDimensions();
-  const { wallets } = useWallets();
+  const { wallets, walletNames } = useWallets();
   const balances = useWalletBalances(wallets);
   const { nativeCurrency } = useAccountSettings();
   const keyboardHeight = useKeyboardHeight();
@@ -200,6 +196,24 @@ export default function TransactionConfirmationScreen() {
   } = routeParams;
 
   const walletConnector = walletConnectors[peerId];
+
+  const accountInfo = useMemo(() => {
+    const address = walletConnector._accounts?.[0];
+    logger.debug('ADDRESS', address);
+    const selectedWallet = findWalletWithAccount(wallets, address);
+    logger.debug('selectedWallet', selectedWallet);
+    const profileInfo = getAccountProfileInfo(
+      selectedWallet,
+      walletNames,
+      network,
+      address
+    );
+    logger.debug(selectedWallet);
+    return {
+      ...profileInfo,
+      address,
+    };
+  }, [network, walletConnector._accounts, walletNames, wallets]);
 
   const isL2 = useMemo(() => {
     return isL2Network(network);
@@ -917,15 +931,24 @@ export default function TransactionConfirmationScreen() {
                 <WalletLabel>Wallet</WalletLabel>
                 <RowWithMargins margin={5}>
                   <Column marginTop={ios ? 2 : 8}>
-                    <ContactAvatar
-                      color={
-                        isNaN(accountColor) ? colors.skeleton : accountColor
-                      }
-                      size="smaller"
-                      value={accountSymbol}
-                    />
+                    {accountInfo.accountImage ? (
+                      <ImageAvatar
+                        image={accountInfo.accountImage}
+                        size="smaller"
+                      />
+                    ) : (
+                      <ContactAvatar
+                        color={
+                          isNaN(accountInfo.accountColor)
+                            ? colors.skeleton
+                            : accountInfo.accountColor
+                        }
+                        size="smaller"
+                        value={accountInfo.accountSymbol}
+                      />
+                    )}
                   </Column>
-                  <WalletText>{accountName}</WalletText>
+                  <WalletText>{accountInfo.accountName}</WalletText>
                 </RowWithMargins>
               </Column>
               <Column align="flex-end" flex={1} justify="end">
@@ -938,7 +961,7 @@ export default function TransactionConfirmationScreen() {
                   {isBalanceEnough === false &&
                     isSufficientGas !== undefined &&
                     '􀇿 '}
-                  {balances[accountAddress]} ETH
+                  {balances[accountInfo.address]} ETH
                 </WalletText>
               </Column>
             </RowWithMargins>
