@@ -315,6 +315,7 @@ export const dataResetState = () => (dispatch, getState) => {
     uniswapPricesSubscription.unsubscribe &&
     uniswapPricesSubscription.unsubscribe();
   pendingTransactionsHandle && clearTimeout(pendingTransactionsHandle);
+  genericAssetsHandle && clearTimeout(genericAssetsHandle);
   dispatch({ type: DATA_CLEAR_STATE });
 };
 
