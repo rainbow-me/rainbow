@@ -16,7 +16,8 @@ import Routes from '@rainbow-me/routes';
 import { logger, watchingAlert } from '@rainbow-me/utils';
 
 // eslint-disable-next-line no-console
-const wcLogger = (a: String, b?: any) => console.info(`::: WC ::: ${a}`, b);
+const wcLogger = (a: String, b?: any) =>
+  console.info(`::: WC 🐞🐞🐞 ::: ${a}`, b);
 
 const wcTrack = (
   event: string,
@@ -81,204 +82,213 @@ export const walletConnectV2HandleAction = (type: string, scheme?: string) => {
 let client: WalletConnectClient;
 
 export const walletConnectInit = async (store: any) => {
-  client = await WalletConnectClient.init({
-    controller: true,
-    logger: 'fatal',
-    metadata: RAINBOW_METADATA,
-    relayProvider: 'wss://relay.walletconnect.org',
-    storageOptions: {
-      asyncStorage: AsyncStorage as any,
-    },
-  });
+  if (!client) {
+    wcLogger('🚗 🚗 🚗  WC INIT', client);
+    client = await WalletConnectClient.init({
+      controller: true,
+      logger: 'debug',
+      metadata: RAINBOW_METADATA,
+      relayProvider: 'wss://relay.walletconnect.org',
+      storageOptions: {
+        asyncStorage: AsyncStorage as any,
+      },
+    });
+    wcLogger('🚗 🚗 🚗  WC INITIALIZED', client);
 
-  wcLogger('Client started!');
-  client.on(
-    CLIENT_EVENTS.session.proposal,
-    async (proposal: SessionTypes.Proposal) => {
-      try {
-        wcLogger('CLIENT_EVENTS.session.proposal');
-        const { proposer, permissions } = proposal;
-        const { metadata } = proposer;
-        const chains = permissions.blockchain.chains;
-        wcLogger('CLIENT_EVENTS.session.proposal 2');
+    wcLogger('Client started!');
+    client.on(
+      CLIENT_EVENTS.session.proposal,
+      async (proposal: SessionTypes.Proposal) => {
+        wcLogger('🚗 🚗 🚗  CLIENT_EVENTS.session.proposal', client);
+        try {
+          wcLogger('CLIENT_EVENTS.session.proposal');
+          const { proposer, permissions } = proposal;
+          const { metadata } = proposer;
+          const chains = permissions.blockchain.chains;
+          wcLogger('CLIENT_EVENTS.session.proposal 2');
 
-        if (!isSupportedChain(chains[0])) {
-          Alert.alert('Chain not supported', `${chains[0]} is not supported`);
-          wcTrack('Walletconnect chain not supported', metadata, {
-            chain: chains[0],
+          if (!isSupportedChain(chains[0])) {
+            Alert.alert('Chain not supported', `${chains[0]} is not supported`);
+            wcTrack('Walletconnect chain not supported', metadata, {
+              chain: chains[0],
+            });
+            client.reject({ proposal });
+            return;
+          }
+          wcTrack('Showing Walletconnect session request', metadata);
+          wcLogger('CLIENT_EVENTS.session.proposal 3');
+
+          Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {
+            callback: async (
+              approved: boolean,
+              chainId: string,
+              accountAddress: string
+            ) => {
+              if (approved) {
+                const chain = toEIP55Format(chainId);
+                const walletConnectAccount = generateWalletConnectAccount(
+                  accountAddress,
+                  chain
+                );
+                const response: SessionTypes.Response = {
+                  metadata: RAINBOW_METADATA,
+                  state: {
+                    accounts: [walletConnectAccount],
+                  },
+                };
+                wcTrack('Approved new WalletConnect session', metadata);
+                walletConnectV2HandleAction('connect');
+                await client.approve({ proposal, response });
+              } else {
+                wcTrack('Rejected new WalletConnect session', metadata);
+                walletConnectV2HandleAction('reject');
+                await client.reject({ proposal });
+              }
+              return client.session.values;
+            },
+            chainId: fromEIP55Format(chains?.[0]),
+            meta: {
+              dappName: metadata.name,
+              dappUrl: metadata.url,
+              imageUrl: metadata.icons?.[0],
+            },
+            version: 'v2',
           });
-          client.reject({ proposal });
-          return;
+        } catch (error) {
+          logger.log('Exception during wc session.proposal');
+          analytics.track('Exception on wc session.proposal', {
+            error,
+            version: 'v2',
+          });
+          captureException(error);
+          Alert.alert(lang.t('wallet.wallet_connect.error'));
         }
-        wcTrack('Showing Walletconnect session request', metadata);
-        wcLogger('CLIENT_EVENTS.session.proposal 3');
-
-        Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {
-          callback: async (
-            approved: boolean,
-            chainId: string,
-            accountAddress: string
-          ) => {
-            if (approved) {
-              const chain = toEIP55Format(chainId);
-              const walletConnectAccount = generateWalletConnectAccount(
-                accountAddress,
-                chain
-              );
-              const response: SessionTypes.Response = {
-                metadata: RAINBOW_METADATA,
-                state: {
-                  accounts: [walletConnectAccount],
-                },
-              };
-              wcTrack('Approved new WalletConnect session', metadata);
-              walletConnectV2HandleAction('connect');
-              await client.approve({ proposal, response });
-            } else {
-              wcTrack('Rejected new WalletConnect session', metadata);
-              walletConnectV2HandleAction('reject');
-              await client.reject({ proposal });
-            }
-            return client.session.values;
-          },
-          chainId: fromEIP55Format(chains?.[0]),
-          meta: {
-            dappName: metadata.name,
-            dappUrl: metadata.url,
-            imageUrl: metadata.icons?.[0],
-          },
-          version: 'v2',
-        });
-      } catch (error) {
-        logger.log('Exception during wc session.proposal');
-        analytics.track('Exception on wc session.proposal', {
-          error,
-          version: 'v2',
-        });
-        captureException(error);
-        Alert.alert(lang.t('wallet.wallet_connect.error'));
       }
-    }
-  );
+    );
 
-  wcLogger('Client started! on 1');
+    wcLogger('Client started! on 1');
 
-  // client.on(CLIENT_EVENTS.session.created,
-  //   async (session: SessionTypes.Settled) => {
-  // // axios post push url
-  // axios.post("<PUSH_URL>", {
-  //   bridge: "https://relay.walletconnect.org",
-  //   topic: session.topic,
-  //   type,
-  //   token,
-  //   peerName: session.peer.metadata.name,
-  //   language
-  // })
+    // client.on(
+    //   CLIENT_EVENTS.session.created,
+    //   async (session: SessionTypes.Settled) => {
+    // // axios post push url
+    // axios.post("<PUSH_URL>", {
+    //   bridge: "https://relay.walletconnect.org",
+    //   topic: session.topic,
+    //   type,
+    //   token,
+    //   peerName: session.peer.metadata.name,
+    //   language
+    // })
+    //     console.log('🚗 🚗 🚗  CLIENT_EVENTS.session.created', client);
+    //   }
+    // );
 
-  // }
-  // )
+    // client.on(CLIENT_EVENTS.pairing.created,
+    // // axios post push url
+    // axios.post("<PUSH_URL>", {
+    //   bridge: "https://relay.walletconnect.org",
+    //   topic: session.topic,
+    //   type,
+    //   token,
+    //   language
+    // })
 
-  // client.on(CLIENT_EVENTS.pairing.created,
-  // // axios post push url
-  // axios.post("<PUSH_URL>", {
-  //   bridge: "https://relay.walletconnect.org",
-  //   topic: session.topic,
-  //   type,
-  //   token,
-  //   language
-  // })
+    client.on(
+      CLIENT_EVENTS.session.request,
+      async (requestEvent: SessionTypes.RequestEvent) => {
+        wcLogger('🚗 🚗 🚗  CLIENT_EVENTS.session.request', client);
+        try {
+          const { topic, request } = requestEvent;
+          const session = await client.session.get(requestEvent.topic);
 
-  client.on(
-    CLIENT_EVENTS.session.request,
-    async (requestEvent: SessionTypes.RequestEvent) => {
-      try {
-        const { topic, request } = requestEvent;
-        const session = await client.session.get(requestEvent.topic);
-
-        if (request.method === 'wallet_addEthereumChain') {
-          wcLogger('wallet_addEthereumChain');
-        } else if (!isSigningMethod(request.method)) {
-          sendRpcCall(request)
-            .then(async result => {
-              const response = {
-                response: {
-                  id: request.id,
-                  jsonrpc: '2.0',
-                  result,
-                },
-                topic,
-              };
-              await client.respond(response);
-            })
-            .catch(async () => {
+          if (request.method === 'wallet_addEthereumChain') {
+            wcLogger('wallet_addEthereumChain');
+          } else if (!isSigningMethod(request.method)) {
+            sendRpcCall(request)
+              .then(async result => {
+                const response = {
+                  response: {
+                    id: request.id,
+                    jsonrpc: '2.0',
+                    result,
+                  },
+                  topic,
+                };
+                await client.respond(response);
+              })
+              .catch(async () => {
+                const response = {
+                  response: notSupportedResponse(request.id),
+                  topic,
+                };
+                await client.respond(response);
+              });
+            return;
+          } else {
+            const { dispatch, getState } = store;
+            const { selected } = getState().wallets;
+            const selectedWallet = selected || {};
+            const isReadOnlyWallet =
+              selectedWallet.type === walletTypes.readOnly;
+            if (isReadOnlyWallet && !enableActionsOnReadOnlyWallet) {
+              watchingAlert();
               const response = {
                 response: notSupportedResponse(request.id),
                 topic,
               };
               await client.respond(response);
-            });
-          return;
-        } else {
-          const { dispatch, getState } = store;
-          const { selected } = getState().wallets;
-          const selectedWallet = selected || {};
-          const isReadOnlyWallet = selectedWallet.type === walletTypes.readOnly;
-          if (isReadOnlyWallet && !enableActionsOnReadOnlyWallet) {
-            watchingAlert();
-            const response = {
-              response: notSupportedResponse(request.id),
-              topic,
-            };
-            await client.respond(response);
-            return;
-          }
+              return;
+            }
 
-          const requestToApprove = await dispatch(
-            addRequestToApproveV2(request.id, session, request)
-          );
+            const requestToApprove = await dispatch(
+              addRequestToApproveV2(request.id, session, request)
+            );
 
-          if (requestToApprove) {
-            InteractionManager.runAfterInteractions(() => {
-              wcTrack('Showing Walletconnect signing request', session);
-              Navigation.handleAction(Routes.CONFIRM_REQUEST, {
-                callback: async (res: { error: string; result: string }) => {
-                  const { error, result } = res;
-                  const response = {
-                    response: {
-                      id: request.id,
-                      jsonrpc: '2.0',
-                      ...(error
-                        ? {
-                            error: {
-                              // internal error
-                              code: -32603,
-                              message: error,
-                            },
-                          }
-                        : { result }),
-                    },
-                    topic,
-                  };
-                  await client.respond(response);
-                },
-                openAutomatically: true,
-                transactionDetails: requestToApprove,
+            if (requestToApprove) {
+              InteractionManager.runAfterInteractions(() => {
+                wcTrack('Showing Walletconnect signing request', session);
+                Navigation.handleAction(Routes.CONFIRM_REQUEST, {
+                  callback: async (res: { error: string; result: string }) => {
+                    const { error, result } = res;
+                    const response = {
+                      response: {
+                        id: request.id,
+                        jsonrpc: '2.0',
+                        ...(error
+                          ? {
+                              error: {
+                                // internal error
+                                code: -32603,
+                                message: error,
+                              },
+                            }
+                          : { result }),
+                      },
+                      topic,
+                    };
+                    await client.respond(response);
+                  },
+                  openAutomatically: true,
+                  transactionDetails: requestToApprove,
+                });
               });
-            });
+            }
           }
+        } catch (error) {
+          logger.log('Exception during wc session.request');
+          analytics.track('Exception on wc session.request', {
+            error,
+            version: 'v2',
+          });
+          captureException(error);
+          Alert.alert(lang.t('wallet.wallet_connect.error'));
         }
-      } catch (error) {
-        logger.log('Exception during wc session.request');
-        analytics.track('Exception on wc session.request', {
-          error,
-          version: 'v2',
-        });
-        captureException(error);
-        Alert.alert(lang.t('wallet.wallet_connect.error'));
       }
-    }
-  );
-  wcLogger('Client started! on 2');
+    );
+    wcLogger('Client started! on 2');
+  }
+
   return client;
 };
 
@@ -305,14 +315,14 @@ export const walletConnectUpdateSessionByDappName = async (
   const newAccount = generateWalletConnectAccount(address, eip55ChainId);
   session.permissions.blockchain = [eip55ChainId];
   session.state.accounts = [newAccount];
-  // await client.upgrade({
-  //   permissions: {
-  //     blockchain: {
-  //       chains: [eip55ChainId],
-  //     },
-  //   },
-  //   topic: session.topic,
-  // });
+  await client.upgrade({
+    permissions: {
+      blockchain: {
+        chains: [eip55ChainId],
+      },
+    },
+    topic: session.topic,
+  });
   wcLogger('client.upgrade out');
   await client.update({
     state: session.state.accounts,
@@ -324,10 +334,14 @@ export const walletConnectUpdateSessionByDappName = async (
 };
 
 export const walletConnectDisconnectByDappName = async (dappName: string) => {
-  const session = client?.session?.values?.find(
-    value => dappName === value?.peer?.metadata?.name
-  );
+  wcLogger('walletConnectDisconnectByDappName', client?.session?.values);
+  const session = client?.session?.values?.find(value => {
+    wcLogger('value', value);
+    return dappName === value?.peer?.metadata?.name;
+  });
+  wcLogger('walletConnectDisconnect', session.topic);
   await walletConnectDisconnect(session.topic);
+  wcLogger('disconnected', client.session.values);
   return client.session.values;
 };
 
@@ -336,6 +350,7 @@ const walletConnectDisconnect = async (topic: string) => {
     code: 400,
     message: 'User disconnected',
   };
+  wcLogger('walletConnectDisconnect ---- ------ ', client);
   await client.disconnect({ reason, topic });
 };
 

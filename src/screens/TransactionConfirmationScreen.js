@@ -206,15 +206,15 @@ export default function TransactionConfirmationScreen() {
     setNetwork(ethereumUtils.getNetworkFromChainId(Number(chainId)));
   }, [chainId]);
 
+  const isL2 = useMemo(() => isL2Network(network), [network]);
+
   useEffect(() => {
     const initProvider = async () => {
-      const p = isL2Network(network)
-        ? await getProviderForNetwork(network)
-        : web3Provider;
+      const p = isL2 ? await getProviderForNetwork(network) : web3Provider;
       setProvider(p);
     };
     network && initProvider();
-  }, [network]);
+  }, [isL2, network]);
 
   const isMessageRequest = isMessageDisplayType(method);
 

@@ -159,7 +159,9 @@ class App extends Component {
   }
 
   identifyFlow = async () => {
+    console.log('---- LOAD ADDREESS');
     const address = await loadAddress();
+    console.log('---- LOAD ADDREESS 11');
     if (address) {
       this.setState({ initialRoute: Routes.SWIPE_LAYOUT });
     } else {
