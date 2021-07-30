@@ -50,7 +50,6 @@ import logger from 'logger';
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
   ({ theme: { colors } }) => ({
     color: colors.lightGrey,
-    size: 100,
   })
 )``;
 const DappLogo = styled(RequestVendorLogoIcon).attrs(
@@ -298,7 +297,7 @@ export default function WalletConnectApprovalSheet() {
     <Sheet hideHandle>
       {!Object.keys(meta).length ? (
         <Centered height={400}>
-          <LoadingSpinner />
+          <LoadingSpinner size="large" />
         </Centered>
       ) : (
         <Flex direction="column">
