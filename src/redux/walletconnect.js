@@ -115,6 +115,7 @@ export const walletConnectOnSessionRequest = (
   callback
 ) => async dispatch => {
   let walletConnector = null;
+  console.log('walletConnectOnSessionRequest');
   try {
     const { clientMeta, push } = await getNativeOptions();
     try {
