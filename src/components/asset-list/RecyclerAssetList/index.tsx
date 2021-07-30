@@ -64,24 +64,42 @@ const extractCollectiblesIdFromRow = (row: {
     // eslint-disable-next-line no-empty
   } catch (e) {}
 };
-const extractRelevantRowInfo = (row: {
-  item: {
-    address: EthereumAddress;
-    balance: { display: string };
-    price: { value: string };
-  };
-  uniqueId: string;
+
+const extractRelevantAssetInfo = (asset: {
+  address: EthereumAddress;
+  balance: { display: string };
+  price: { relative_change_24h: string };
+  native: { balance: { display: string } };
 }) => {
   try {
     const {
-      item: {
-        address,
-        balance: { display: balanceDisplay },
-        price: { value: priceValue },
+      address,
+      balance: { display: balanceDisplay },
+      price: { relative_change_24h: relativeChange24h },
+      native: {
+        balance: { display: nativeBalanceDisplay },
       },
-      uniqueId,
-    } = row;
-    return { address, balanceDisplay, priceValue, uniqueId };
+    } = asset;
+    return {
+      address,
+      balanceDisplay,
+      nativeBalanceDisplay,
+      relativeChange24h,
+    };
+    // eslint-disable-next-line no-empty
+  } catch (e) {}
+};
+
+const extractPoolRelevantAssetsInfo = (data: any[]) => {
+  try {
+    return data?.map(asset => ({
+      address: asset.address,
+      balanceDisplay: asset.balance?.display,
+      nativeBalanceDisplay: asset.native?.balance?.display,
+      priceDisplay: asset.price?.value,
+      relativeChange24h: asset.price?.relative_change_24h,
+      totalNativeDisplay: asset.totalNativeDisplay,
+    }));
     // eslint-disable-next-line no-empty
   } catch (e) {}
 };
@@ -97,32 +115,32 @@ const isEqualDataProvider = new DataProvider((r1, r2) => {
     // Savings
   } else if (r1.item?.savingsContainer) {
     return isEqual(r1.item.assets, r2.item?.assets);
-    // Headers
-  } else if (r1.isHeader) {
-    return isEqual(r1, r2);
     // Family sections
   } else if (r1.familySectionIndex === 0 || r1.familySectionIndex > 0) {
     const nftsRow1 = extractCollectiblesIdFromRow(r1);
     const nftsRow2 = extractCollectiblesIdFromRow(r2);
-    const isFamilyRowEqual =
+    return (
       r1.item.childrenAmount === r2.item?.childrenAmount &&
       r1.item.familyName === r2.item?.familyName &&
-      isEqual(nftsRow1, nftsRow2);
-    if (!isFamilyRowEqual) {
-      logger.log('TOKEN FAMILY NOT EQUAL', nftsRow1, nftsRow2);
-    }
+      isEqual(nftsRow1, nftsRow2)
+    );
 
-    return isFamilyRowEqual;
     // Coin Rows
   } else if (r1.item?.address) {
-    const slimR1 = extractRelevantRowInfo(r1);
-    const slimR2 = extractRelevantRowInfo(r2);
-    const isCoinRowEqual = isEqual(slimR1, slimR2);
-    //logger.debug({ isCoinRowEqual });
-    if (!isCoinRowEqual) {
-      logger.log('COIN ROW NOT EQUAL', slimR1, slimR2);
-    }
-    return isCoinRowEqual;
+    const slimR1 = extractRelevantAssetInfo(r1.item);
+    const slimR2 = extractRelevantAssetInfo(r2.item);
+    return isEqual(slimR1, slimR2);
+    // Pool rows
+  } else if (r1.data) {
+    const r1Assets = r1.data.map(extractPoolRelevantAssetsInfo);
+    const r2Assets = r2.data?.map(extractPoolRelevantAssetsInfo);
+    return isEqual(r1Assets, r2Assets);
+    // Small balances rows
+  } else if (r1.item?.assets) {
+    const r1Assets = r1.item.assets.map(extractRelevantAssetInfo);
+    const r2Assets = r2.item?.assets?.map(extractRelevantAssetInfo);
+    return isEqual(r1Assets, r2Assets);
+    // Headers, which are very small objects :D
   } else {
     return isEqual(r1, r2);
   }
@@ -833,10 +851,6 @@ function RecyclerAssetList({
     : StickyContainer;
 
   const isInsideBottomSheet = !!useBottomSheet();
-
-  useEffect(() => {
-    logger.debug('SHIT RE-RENDERING => dataProvider');
-  }, [dataProvider]);
 
   return (
     <StyledContainer onLayout={onLayout}>
