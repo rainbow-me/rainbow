@@ -1,6 +1,7 @@
 import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
 import { get, toLower, uniqBy } from 'lodash';
+import isEqual from 'react-fast-compare';
 /* eslint-disable-next-line import/no-cycle */
 import { arbitrumExplorerInit } from './arbitrumExplorer';
 // eslint-disable-next-line import/no-cycle
@@ -23,6 +24,7 @@ import {
 import { delay } from '@rainbow-me/utilities';
 import logger from 'logger';
 
+let lastUpdatePayload = null;
 // -- Constants --------------------------------------- //
 const FALLBACK_EXPLORER_CLEAR_STATE = 'explorer/FALLBACK_EXPLORER_CLEAR_STATE';
 const FALLBACK_EXPLORER_SET_ASSETS = 'explorer/FALLBACK_EXPLORER_SET_ASSETS';
@@ -318,16 +320,24 @@ export const fallbackExplorerInit = () => async (dispatch, getState) => {
 
     logger.log('😬 FallbackExplorer updating assets');
 
-    dispatch(
-      addressAssetsReceived({
-        meta: {
-          address: accountAddress,
-          currency: 'usd',
-          status: 'ok',
-        },
-        payload: { assets },
-      })
-    );
+    const newPayload = { assets };
+
+    if (!isEqual(lastUpdatePayload, newPayload)) {
+      dispatch(
+        addressAssetsReceived(
+          {
+            meta: {
+              address: accountAddress,
+              currency: nativeCurrency,
+              status: 'ok',
+            },
+            payload: newPayload,
+          },
+          true
+        )
+      );
+      lastUpdatePayload = newPayload;
+    }
 
     const fallbackExplorerBalancesHandle = setTimeout(
       fetchAssetsBalancesAndPrices,
