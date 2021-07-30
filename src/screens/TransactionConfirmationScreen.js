@@ -285,19 +285,18 @@ export default function TransactionConfirmationScreen() {
   );
 
   useEffect(() => {
-    analytics.track('Shown Walletconnect signing request');
-  }, []);
-
-  useEffect(() => {
     if (openAutomatically && !isEmulatorSync()) {
       Vibration.vibrate();
     }
     InteractionManager.runAfterInteractions(() => {
-      if (!isMessageRequest && network) {
-        startPollingGasPrices(network);
-        fetchMethodName(params[0].data);
-      } else {
-        setMethodName(lang.t('wallet.message_signing.request'));
+      if (network) {
+        if (!isMessageRequest) {
+          startPollingGasPrices(network);
+          fetchMethodName(params[0].data);
+        } else {
+          setMethodName(lang.t('wallet.message_signing.request'));
+        }
+        analytics.track('Shown Walletconnect signing request');
       }
     });
   }, [
