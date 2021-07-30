@@ -58,7 +58,7 @@ interface Position {
   token1PriceUSD: number;
 }
 
-export type StoredPositions = Position &
+export type StoredPosition = Position &
   ReturnMetrics & { fees: { sum: number } };
 
 // --- fetching ----------------//
@@ -305,7 +305,7 @@ async function fetchSnapshots(account: string): Promise<Position[]> {
   return [];
 }
 
-async function fetchData(account: string): Promise<StoredPositions[]> {
+async function fetchData(account: string): Promise<StoredPosition[]> {
   const priceOfEther = ethereumUtils.getEthPriceUnit();
 
   try {

@@ -3,13 +3,13 @@ import { useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
 import useNativeCurrencyToUSD from './useNativeCurrencyToUSD';
 import { AppState } from '@rainbow-me/redux/store';
-import { StoredPositions } from '@rainbow-me/redux/usersPositions';
+import { StoredPosition } from '@rainbow-me/redux/usersPositions';
 
 export default function useTotalFeeEarnedPerAsset(
   address: string
 ): number | undefined {
   const { accountAddress } = useAccountSettings();
-  const positions: StoredPositions[] = useSelector(
+  const positions: StoredPosition[] = useSelector(
     (state: AppState) => state.usersPositions
   )[accountAddress];
 
